@@ -1599,7 +1599,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	Rectangle rectangle = new Rectangle (x, y, width, heitgh);
+	Rectangle rectangle = new Rectangle (x, y, width, height);
 	if (from != null) {
 		Rect rect = new Rect ();
 		OS.GetControlBounds (from.handle, rect);

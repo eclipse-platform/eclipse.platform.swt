@@ -1411,7 +1411,7 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 	checkDevice ();
 	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
-	Rectangle rect = new Rectangle (x, y, width, heitgh);
+	Rectangle rect = new Rectangle (x, y, width, height);
 	if (from != null) {
 		short [] position_x = new short [1], position_y = new short [1];
 		OS.PtGetAbsPosition (from.handle, position_x, position_y);
