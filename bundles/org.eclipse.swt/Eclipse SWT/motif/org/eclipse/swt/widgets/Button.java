@@ -589,12 +589,11 @@ void setBitmap (Image image) {
 		}
 	}
 	int [] argList = {
-		OS.XmNlabelType, OS.XmPIXMAP,
+		OS.XmNlabelType, image == null ? OS.XmSTRING : OS.XmPIXMAP,
 		OS.XmNlabelPixmap, labelPixmap,
 		OS.XmNlabelInsensitivePixmap, labelInsensitivePixmap,
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
-	if (image == null && text != null && !text.equals("")) _setText(text);
 }
 void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
@@ -714,9 +713,7 @@ public void setText (String string) {
 	* do nothing.
 	*/
 	if (text.equals (string)) return;
-	_setText (text = string);
-}
-void _setText(String string) {
+	text = string;
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
 	int mnemonic = fixMnemonic (text);
