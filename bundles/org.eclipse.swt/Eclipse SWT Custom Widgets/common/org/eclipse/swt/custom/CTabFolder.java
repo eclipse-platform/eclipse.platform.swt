@@ -1754,7 +1754,7 @@ boolean setButtonBounds() {
 	oldX = chevronRect.x;
 	oldWidth = chevronRect.width;
 	chevronRect.x = chevronRect.y = chevronRect.height = chevronRect.width = 0;
-	if ((single && items.length >0) || items.length > 1) {
+	if (items.length > 1) {
 		CTabItem item = items[items.length-1];
 		int rightEdge = size.x - border - closeRect.width;
 		if (single || topTabIndex > 0 || item.x + item.width > rightEdge) {
@@ -1943,15 +1943,14 @@ boolean setItemSize() {
 		widths[i] = items[i].preferredWidth(gc, i == selectedIndex);
 	}
 	gc.dispose();
-	int selectedWidth = selectedIndex == -1 ? 0 : widths[selectedIndex];
-
 	int tabAreaWidth = size.x - 2*border - expandRect.width - closeRect.width;
 	if (items.length > 1) {
+		int selectedWidth = selectedIndex == -1 ? 0 : widths[selectedIndex];
+		int count = selectedIndex == -1 ? items.length : items.length - 1;
+		int averageWidth = (tabAreaWidth - selectedWidth) / count;
 		int oldAverageWidth = 0;
-		int averageWidth = (tabAreaWidth - selectedWidth) / (items.length - 1);
 		while (averageWidth > oldAverageWidth) {
 			int width = tabAreaWidth - selectedWidth;
-			int count = items.length - 1;
 			for (int i = 0; i < items.length; i++) {
 				if (i == selectedIndex) continue;
 				if (widths[i] < averageWidth) {
@@ -1964,7 +1963,7 @@ boolean setItemSize() {
 				averageWidth = width / count;
 			}
 		}
-		averageWidth = Math.max(averageWidth, MIN_TAB_WIDTH * tabHeight+curve[curve.length-2]);
+		averageWidth = Math.max(averageWidth, MIN_TAB_WIDTH * tabHeight);
 		for (int i = 0; i < items.length; i++) {
 			if (i == selectedIndex) continue;
 			if (widths[i] > averageWidth) {
@@ -1981,7 +1980,7 @@ boolean setItemSize() {
 		totalWidth += widths[i];
 	}
 	if (totalWidth <= tabAreaWidth) {
-		topTabIndex = 0;
+		topTabIndex = 0;		
 	}
 	return changed;
 }
