@@ -38,7 +38,6 @@ import org.eclipse.swt.events.*;
  */
 
 public abstract class Widget {
-	
 	public int handle;
 	int style, state;
 	EventTable eventTable;
@@ -64,7 +63,6 @@ public abstract class Widget {
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
-	static final char Mnemonic = '&';
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -229,20 +227,10 @@ protected void checkWidget () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
-/*
- *  HANDLE CODE
- *
- *  HANDLE CODE 1: HANDLE CREATION CODE - The createWidget() cycle.
- */
-
 void createWidget (int index) {
-	createHandle    (index);
-	hookEvents      ();
-	configure       ();
-	setHandleStyle  ();
-	register        ();
-	setInitialSize  ();
-	showHandle      ();
+	createHandle (index);
+	hookEvents ();
+	register ();
 }
 
 void register () {
@@ -250,22 +238,17 @@ void register () {
 	if ((state & HANDLE) != 0) WidgetTable.put (handle, this);
 }
 
-void createHandle (int index) {}
-void configure () {}
-void setHandleStyle () {}
-void setInitialSize () {}
-void hookEvents  () {}
-void showHandle  () {}
-int  paintHandle () { return 0; }
+void createHandle (int index) {
+}
 
-/* HANDLE CODE 3:
- * Handle Destruction
- */
+void hookEvents () {
+}
 
 void deregister () {
 	if (handle == 0) return;
 	if ((state & HANDLE) != 0) WidgetTable.remove (handle);
 }
+
 void destroyWidget () {
 	int topHandle = topHandle ();
 	releaseHandle ();
@@ -273,6 +256,7 @@ void destroyWidget () {
 		OS.gtk_widget_destroy (topHandle);
 	}
 }
+
 /**
  * Disposes of the operating system resources associated with
  * the receiver and all its descendents. After this method has
@@ -565,12 +549,13 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		case SWT.Iconify:			return processIconify         	(int0, int1, int2);
 		case SWT.Deiconify:			return processDeiconify       	(int0, int1, int2);
 		case SWT.Modify:			return processModify          	(int0, int1, int2);
-		case SWT.MouseDown:			return processMouseDown       	(int0, int1, int2);
+//		case SWT.MouseDown:			return processMouseDown       	(int0, int1, int2);
+		case SWT.MouseDown:			return processMouse		       	(int0, int1, int2);
 		case SWT.MouseEnter:		return processMouseEnter      	(int0, int1, int2);
 		case SWT.MouseExit:			return processMouseExit       	(int0, int1, int2);
 		case SWT.MouseHover:		return processMouseHover      	(int0, int1, int2);
 		case SWT.MouseMove:			return processMouseMove       	(int0, int1, int2);
-		case SWT.MouseUp:			return processMouseUp         	(int0, int1, int2);
+//		case SWT.MouseUp:			return processMouseUp         	(int0, int1, int2);
 		case SWT.Paint:				return processPaint           	(int0, int1, int2);
 		case SWT.Resize:			return processResize          	(int0, int1, int2);
 		case SWT.Show:				return processShow            	(int0, int1, int2);
@@ -631,6 +616,16 @@ int processKeyUp (int arg0, int arg1, int int2) {
 	return 0;
 }
 int processModify (int arg0, int arg1, int int2) {
+	return 0;
+}
+int processMouse (int callData, int arg1, int int2) {
+	switch (OS.GDK_EVENT_TYPE(callData)) {
+		case OS.GDK_BUTTON_PRESS:
+		case OS.GDK_2BUTTON_PRESS:
+			return processMouseDown (callData, arg1, int2);
+		case OS.GDK_BUTTON_RELEASE:
+			return processMouseUp (callData, arg1, int2);
+	}
 	return 0;
 }
 int processMouseDown (int arg0, int arg1, int int2) {
@@ -897,9 +892,11 @@ public String toString () {
 	}
 	return getName () + " {" + string + "}";
 }
+
 int topHandle () {
 	return handle;
 }
+
 char wcsToMbcs (char ch) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
@@ -910,4 +907,5 @@ char wcsToMbcs (char ch) {
 	}
 	return 0;
 }
+
 }

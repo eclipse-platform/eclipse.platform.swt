@@ -74,41 +74,38 @@ public Text (Composite parent, int style) {
 
 void createHandle (int index) {
 	state |= HANDLE;
+	int parentHandle = parent.parentingHandle ();
 	if ((style & SWT.SINGLE) != 0) {
 		handle = OS.gtk_entry_new ();
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (parentHandle, handle);
+		OS.gtk_entry_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 	} else {
+		fixedHandle = OS.gtk_fixed_new ();
+		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_fixed_set_has_window (fixedHandle, true);
 		scrolledHandle = OS.gtk_scrolled_window_new (0, 0);
 		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = OS.gtk_text_new (0, 0);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (parentHandle, fixedHandle);
+		OS.gtk_container_add (fixedHandle, scrolledHandle);
+		OS.gtk_container_add (scrolledHandle, handle);
+		OS.gtk_widget_show (fixedHandle);
+		OS.gtk_widget_show (scrolledHandle);
+		OS.gtk_text_set_editable (handle, (style & SWT.READ_ONLY) == 0);
+		OS.gtk_text_set_word_wrap (handle, (style & SWT.WRAP) != 0 ? 1 : 0);
+		int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_AUTOMATIC;
+		int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_AUTOMATIC;
+		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
 	}
-}
-
-void setHandleStyle() {
-	/*OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
-	if ((style & SWT.SINGLE) == 0)
-	OS.gtk_text_set_word_wrap (handle, (style & SWT.WRAP) != 0 ? 1 : 0);
-	if (scrolledHandle!=0) setScrollingPolicy();
-	// When 2.0 arrives, we'll be able to set the flat appearance*/
-	
-}
-
-void configure() {
-	parent._connectChild(topHandle());
-	if (scrolledHandle != 0) OS.gtk_container_add (scrolledHandle, handle);
-}
-
-void showHandle() {
-	if (scrolledHandle != 0) OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
-	OS.gtk_widget_realize (handle);
 }
 
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
-/*	super.hookEvents();
-	signal_connect_after (handle, "changed", SWT.Modify, 2);
+	super.hookEvents();
+/*	signal_connect_after (handle, "changed", SWT.Modify, 2);
 	signal_connect (handle, "insert-text", SWT.Verify, 5);
 	signal_connect (handle, "delete-text", SWT.Verify, 4);
 	signal_connect (handle, "activate", SWT.Selection, 2);*/
@@ -353,7 +350,7 @@ public Point getCaretLocation () {
 public int getCaretPosition () {
 	checkWidget ();
 //	return OS.gtk_editable_get_position (handle);
-return 0;
+	return 0;
 }
 
 
@@ -1089,12 +1086,12 @@ public void setTabs (int tabs) {
  */
 public void setText (String string) {
 	checkWidget ();
-	/*if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_editable_delete_text (handle, 0, -1);
 	int [] position = new int [1];
 	byte [] buffer = Converter.wcsToMbcs (null, string);
 	OS.gtk_editable_insert_text (handle, buffer, buffer.length, position);
-	OS.gtk_editable_set_position (handle, 0);*/
+	OS.gtk_editable_set_position (handle, 0);
 }
 
 /**

@@ -63,71 +63,33 @@ public class ToolBar extends Composite {
  */
 public ToolBar (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	/*
+	* Ensure that either of HORIZONTAL or VERTICAL is set.
+	* NOTE: HORIZONTAL and VERTICAL have the same values
+	* as H_SCROLL and V_SCROLL so it is necessary to first
+	* clear these bits to avoid scroll bars and then reset
+	* the bits using the original style supplied by the
+	* programmer.
+	*/
+	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
+	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_ORIENTATION_VERTICAL : OS.GTK_ORIENTATION_HORIZONTAL;
+	OS.gtk_toolbar_set_orientation (handle, orientation);
 }
 
-/*
- *  === Handle code ===
- */
 void createHandle (int index) {
 	state |= HANDLE;
-	
-	boxHandle = OS.gtk_event_box_new();
-	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	fixedHandle = OS.eclipse_fixed_new();
-	if (fixedHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	
-	int orientation = ((style&SWT.VERTICAL)!=0)?
-		OS.GTK_ORIENTATION_VERTICAL : OS.GTK_ORIENTATION_HORIZONTAL;
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_toolbar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_toolbar_set_orientation(handle, orientation);
-}	
-
-void setHandleStyle() {
-/*	int relief = ((style&SWT.FLAT)!=0)? OS.GTK_RELIEF_NONE : OS.GTK_RELIEF_NORMAL;
-	OS.gtk_toolbar_set_button_relief(handle, relief);*/
-}
-
-void configure() {
-	parent._connectChild(boxHandle);
-	OS.gtk_container_add(boxHandle, fixedHandle);	
-	OS.gtk_container_add(fixedHandle, handle);
-}
-
-void showHandle() {
-	OS.gtk_widget_show (boxHandle);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
-	OS.gtk_widget_realize (handle);
-}
-
-void register() {
-	super.register ();
-}
-
-void deregister() {
-	super.deregister ();
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-}
-
-int topHandle() { return boxHandle; }
-int parentingHandle() { return fixedHandle; } 
-boolean isMyHandle(int h) {
-	return super.isMyHandle(h);
-}
-
-
-/*
- *   ===  GEOMETRY  ===
- */
-
-void _setSize (int width, int height) {
-	OS.eclipse_fixed_set_size(parent.parentingHandle(), boxHandle, width, height);
-	OS.eclipse_fixed_set_size(fixedHandle, handle, width, height);
+/*	int relief = ((style&SWT.FLAT)!=0)? OS.GTK_RELIEF_NONE : OS.GTK_RELIEF_NORMAL;
+	OS.gtk_toolbar_set_button_relief(handle, relief);*/
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -135,7 +97,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (layout != null) super.computeSize(wHint, hHint, changed);
 	return computeNativeSize(handle, wHint, hHint, changed);
 }
-
 
 /**
  * Returns the item at the given, zero-relative index in the
@@ -156,8 +117,6 @@ public ToolItem getItem (int index) {
 	checkWidget();
 	return getItems()[index];
 }
-
-
 
 /**
  * Returns the item at the given point in the receiver
@@ -192,7 +151,7 @@ public ToolItem getItem (Point point) {
 public int getItemCount () {
 	checkWidget();
 	int list = OS.gtk_container_children (handle);
-	return OS.g_list_length (list);
+	return list != 0 ? OS.g_list_length (list) : 0;
 }
 
 /**
@@ -213,14 +172,13 @@ public int getItemCount () {
  */
 public ToolItem [] getItems () {
 	checkWidget();
-	int count = 0;
 	int list = OS.gtk_container_children (handle);
-	int length = OS.g_list_length (list);
-	ToolItem [] result = new ToolItem [length];
-	for (int i=0; i<length; i++) {
+	int count = list != 0 ? OS.g_list_length (list) : 0;
+	ToolItem [] result = new ToolItem [count];
+	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);
 		Widget widget = WidgetTable.get (data);
-		result [count++] = (ToolItem) widget;
+		result [i] = (ToolItem) widget;
 	}
 	return result;
 }
@@ -241,13 +199,6 @@ public ToolItem [] getItems () {
 public int getRowCount () {
 	checkWidget();
 	return 1; /* On GTK, toolbars never wrap */
-}
-
-Control _childFromHandle(int h) {
-	Widget child = WidgetTable.get(h);
-	if (child==null) return null;
-	if (child instanceof ToolItem) return null; // ToolItems are not our children
-	return (Control)child;
 }
 
 /**

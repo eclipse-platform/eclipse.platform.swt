@@ -189,6 +189,7 @@ public MenuItem getItem (int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int list = OS.gtk_container_children (handle);
+	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int data = OS.g_list_nth_data (list, index);
 	if (data == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return (MenuItem) WidgetTable.get (data);
@@ -207,7 +208,7 @@ public int getItemCount () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int list = OS.gtk_container_children (handle);
-	return OS.g_list_length (list);
+	return list != 0 ? OS.g_list_length (list) : 0;
 }
 /**
  * Returns an array of <code>MenuItem</code>s which are the items
@@ -229,7 +230,7 @@ public MenuItem [] getItems () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int list = OS.gtk_container_children (handle);
-	int count = OS.g_list_length (list);
+	int count = list != 0 ? OS.g_list_length (list) : 0;
 	MenuItem [] items = new MenuItem [count];
 	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);

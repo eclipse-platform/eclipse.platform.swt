@@ -192,9 +192,6 @@ void createHandle (int index) {
 	}
 }
 
-/* Already done in createHandle() */
-void configure()  {}
-void showHandle() {}
 
 void register() {
 	super.register ();
@@ -206,9 +203,8 @@ void deregister() {
 }
 
 int topHandle() {
-	return (boxHandle==0)? handle : boxHandle;
+	return boxHandle == 0 ? handle : boxHandle;
 }
-
 
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -375,6 +371,7 @@ public int getWidth () {
 	return 15;
 }
 void hookEvents () {
+	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	signal_connect(handle, "clicked",   SWT.Selection, 2);
 	signal_connect(handle, "enter-notify-event", SWT.MouseEnter, 3);
