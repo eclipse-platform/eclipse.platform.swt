@@ -2001,13 +2001,13 @@ void claimRightFreeSpace() {
  * @param background background color to use for clearing the margin
  * @param clientArea widget client area dimensions
  */
-void clearMargin(GC gc, Color background, Rectangle clientArea) {
+void clearMargin(GC gc, Color background, Rectangle clientArea, int y) {
 	// clear the margin background
 	gc.setBackground(background);
 	// top margin
-	gc.fillRectangle(0, 0, clientArea.width, topMargin);
+	gc.fillRectangle(0, 0 - y, clientArea.width, topMargin);
 	// bottom margin
-	gc.fillRectangle(0, clientArea.height - bottomMargin, clientArea.width, bottomMargin);
+	gc.fillRectangle(0, clientArea.height - bottomMargin - y, clientArea.width, bottomMargin);
 	// left margin
 	gc.fillRectangle(0, topMargin, leftMargin, clientArea.height - bottomMargin - topMargin);
 	// right margin
@@ -3257,9 +3257,6 @@ void draw(int x, int y, int width, int height, boolean clearBackground) {
 	
 		if (isSingleLine()) {
 			lineCount = 1;
-			if (startLine > 1) {
-				startLine = 1;
-			}
 		}
 		for (int i = startLine; paintY < endY && i < lineCount; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
@@ -5598,11 +5595,12 @@ void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 			lineGC.setForeground(background);
 			lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
 		}
+		clearMargin(lineGC, background, clientArea, startY);
 		gc.drawImage(lineBuffer, 0, startY);
 		lineGC.dispose();
 		lineBuffer.dispose();
 	}
-	clearMargin(gc, background, clientArea);
+	clearMargin(gc, background, clientArea, 0);
 }
 /** 
  * Prints the widget's text to the default printer.
