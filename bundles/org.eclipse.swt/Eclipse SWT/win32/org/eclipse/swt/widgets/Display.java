@@ -110,9 +110,10 @@ public class Display extends Device {
 	Event [] eventQueue;
 	Callback windowCallback;
 	int windowProc, threadId;
-	TCHAR windowClass;
+	TCHAR windowClass, windowShadowClass;
 	static int WindowClassCount;
 	static final String WindowName = "SWT_Window"; //$NON-NLS-1$
+	static final String WindowShadowName = "SWT_WindowShadow"; //$NON-NLS-1$
 	EventTable eventTable, filterTable;
 
 	/* Widget Table */
@@ -1860,9 +1861,11 @@ protected void init () {
 	threadId = OS.GetCurrentThreadId ();
 	
 	/* Use the character encoding for the default locale */
-	windowClass = new TCHAR (0, WindowName + WindowClassCount++, true);
+	windowClass = new TCHAR (0, WindowName + WindowClassCount, true);
+	windowShadowClass = new TCHAR (0, WindowShadowName + WindowClassCount, true);
+	WindowClassCount++;
 
-	/* Register the SWT window class */
+	/* Register the SWT window classes */
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
 	WNDCLASS lpWndClass = new WNDCLASS ();
@@ -1871,9 +1874,13 @@ protected void init () {
 	lpWndClass.style = OS.CS_BYTEALIGNWINDOW | OS.CS_DBLCLKS;
 	lpWndClass.hCursor = OS.LoadCursor (0, OS.IDC_ARROW);
 	int byteCount = windowClass.length () * TCHAR.sizeof;
-	int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	lpWndClass.lpszClassName = lpszClassName;
-	OS.MoveMemory (lpszClassName, windowClass, byteCount);
+	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpWndClass.lpszClassName, windowClass, byteCount);
+	OS.RegisterClass (lpWndClass);
+	lpWndClass.style |= OS.CS_DROPSHADOW;
+	byteCount = windowShadowClass.length () * TCHAR.sizeof;
+	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpWndClass.lpszClassName, windowShadowClass, byteCount);
 	OS.RegisterClass (lpWndClass);
 	
 	/* Initialize the system font */
@@ -2629,14 +2636,17 @@ void releaseDisplay () {
 	messageCallback = null;
 	messageProc = 0;
 	
-	/* Unregister the SWT Window class */
+	/* Unregister the SWT Window classes */
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
 	WNDCLASS lpWndClass = new WNDCLASS ();
 	OS.GetClassInfo (0, windowClass, lpWndClass);
 	OS.UnregisterClass (windowClass, hInstance);
 	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
-	windowClass = null;
+	OS.GetClassInfo (0, windowShadowClass, lpWndClass);
+	OS.UnregisterClass (windowShadowClass, hInstance);
+	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
+	windowClass = windowShadowClass = null;
 	windowCallback.dispose ();
 	windowCallback = null;
 	windowProc = 0;

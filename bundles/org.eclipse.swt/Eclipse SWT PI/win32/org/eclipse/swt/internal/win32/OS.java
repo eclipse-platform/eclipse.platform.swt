@@ -328,6 +328,7 @@ public class OS extends Platform {
 	public static final int CP_INSTALLED = 0x1;
 	public static final int CS_BYTEALIGNWINDOW = 0x2000;
 	public static final int CS_DBLCLKS = 0x8;
+	public static final int CS_DROPSHADOW = 0x20000;
 	public static final int CS_GLOBALCLASS = 0x4000;
 	public static final int CS_HREDRAW = 0x2;
 	public static final int CS_VREDRAW = 0x1;

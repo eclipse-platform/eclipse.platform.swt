@@ -3671,7 +3671,7 @@ void hideToolTip() {
 }
 void showToolTip (int x, int y) {
 	if (toolTipShell == null) {
-		toolTipShell = new Shell (getShell(), SWT.ON_TOP);
+		toolTipShell = new Shell (getShell(), SWT.ON_TOP | SWT.TOOL);
 		toolTipLabel = new Label (toolTipShell, SWT.CENTER);
 		Display display = toolTipShell.getDisplay();
 		toolTipLabel.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));

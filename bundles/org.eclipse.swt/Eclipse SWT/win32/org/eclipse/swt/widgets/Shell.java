@@ -383,6 +383,10 @@ public void addShellListener (ShellListener listener) {
 }
 
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
+	if ((style & SWT.TOOL) != 0) {
+		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
+		if ((style & trim) == 0) return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+	}
 	if (parent != null) {
 		if (handle == 0) return 0;
 		switch (msg) {
@@ -1318,7 +1322,8 @@ int widgetParent () {
 
 int widgetExtStyle () {
 	int bits = super.widgetExtStyle () & ~OS.WS_EX_MDICHILD;
-
+	if ((style & SWT.TOOL) != 0) bits |= OS.WS_EX_TOOLWINDOW;
+	
 	/*
 	* Feature in Windows.  When a window that does not have a parent
 	* is created, it is automatically added to the Windows Task Bar,
@@ -1360,11 +1365,19 @@ int widgetExtStyle () {
 
 TCHAR windowClass () {
 	if (OS.IsSP) return DialogClass;
+	if ((style & SWT.TOOL) != 0) {
+		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
+		if ((style & trim) == 0) return display.windowShadowClass;
+	}
 	return parent != null ? DialogClass : super.windowClass ();
 }
 
 int windowProc () {
 	if (OS.IsSP) return DialogProc;
+	if ((style & SWT.TOOL) != 0) {
+		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX | SWT.BORDER | SWT.RESIZE;
+		if ((style & trim) == 0) super.windowProc ();
+	}
 	return parent != null ? DialogProc : super.windowProc ();
 }
 

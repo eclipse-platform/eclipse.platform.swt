@@ -74,7 +74,7 @@ public static void main (String[] args) {
 					TableItem item = table.getItem (new Point (event.x, event.y));
 					if (item != null) {
 						if (tip != null  && !tip.isDisposed ()) tip.dispose ();
-						tip = new Shell (shell, SWT.ON_TOP);
+						tip = new Shell (shell, SWT.ON_TOP | SWT.TOOL);
 						tip.setLayout (new FillLayout ());
 						label = new Label (tip, SWT.NONE);
 						label.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
