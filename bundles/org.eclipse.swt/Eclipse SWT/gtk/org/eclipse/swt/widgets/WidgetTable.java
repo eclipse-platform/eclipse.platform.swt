@@ -15,17 +15,17 @@ class WidgetTable {
 	static int GrowSize = 1024;
 	static int [] IndexTable = new int [GrowSize];
 	static Widget [] WidgetTable = new Widget [GrowSize];
-	static final int Key;
+	static final int SWT_OBJECT_INDEX;
 	static {
-		byte [] buffer = Converter.wcsToMbcs (null, "SWT_OBJ_INDEX", true);
-		Key = OS.g_quark_from_string (buffer);
+		byte [] buffer = Converter.wcsToMbcs (null, "SWT_OBJECT_INDEX", true);
+		SWT_OBJECT_INDEX = OS.g_quark_from_string (buffer);
 		for (int i=0; i<GrowSize-1; i++) IndexTable [i] = i + 1;
 		IndexTable [GrowSize - 1] = -1;
 	}
 	
 public static synchronized Widget get (int handle) {
 	if (handle == 0) return null;
-	int index = OS.g_object_get_qdata (handle, Key) - 1;
+	int index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
 	if (0 <= index && index < WidgetTable.length) return WidgetTable [index];
 	return null;
 }
@@ -46,7 +46,7 @@ public synchronized static void put(int handle, Widget widget) {
 		WidgetTable = newWidgetTable;
 	}
 	int index = FreeSlot + 1;
-	OS.g_object_set_qdata (handle, Key, index);
+	OS.g_object_set_qdata (handle, SWT_OBJECT_INDEX, index);
 	int oldSlot = FreeSlot;
 	FreeSlot = IndexTable[oldSlot];
 	IndexTable [oldSlot] = -2;
@@ -56,13 +56,13 @@ public synchronized static void put(int handle, Widget widget) {
 public static synchronized Widget remove (int handle) {
 	if (handle == 0) return null;
 	Widget widget = null;
-	int index = OS.g_object_get_qdata (handle, Key) - 1;
+	int index = OS.g_object_get_qdata (handle, SWT_OBJECT_INDEX) - 1;
 	if (0 <= index && index < WidgetTable.length) {
 		widget = WidgetTable [index];
 		WidgetTable [index] = null;
 		IndexTable [index] = FreeSlot;
 		FreeSlot = index;
-		OS.g_object_set_qdata (handle, Key, 0);
+		OS.g_object_set_qdata (handle, SWT_OBJECT_INDEX, 0);
 	}
 	return widget;
 }
