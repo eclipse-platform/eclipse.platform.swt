@@ -355,10 +355,15 @@ int getCaretPosition(int logicalOffset, int direction) {
 		}
 	}
 	else
+	// consider local numbers as R2L in determining direction boundaries.
+	// fixes 1GK9API.
 	if (direction == ST.COLUMN_NEXT &&
-		isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
+		isRightToLeftInput(logicalOffset) != isRightToLeftInput(logicalOffset - 1)) {
 		int visualOffset = order[logicalOffset-1];
-		// moving between segments
+		// moving between segments.
+		// do not consider local numbers as R2L here, to determine position,
+		// because local numbers are navigated L2R and we want the caret to 
+		// be to the right of the number. see 1GK9API
 		if (isRightToLeft(logicalOffset - 1)) {
 			// moving from RtoL to LtoR
 			caretX = renderPositions[visualOffset];
@@ -369,11 +374,16 @@ int getCaretPosition(int logicalOffset, int direction) {
 		}
 	}
 	else
+	// consider local numbers as R2L in determining direction boundaries.
+	// fixes 1GK9API.
 	if (direction == ST.COLUMN_PREVIOUS &&
-		isRightToLeft(logicalOffset) != isRightToLeft(logicalOffset - 1)) {
+		isRightToLeftInput(logicalOffset) != isRightToLeftInput(logicalOffset - 1)) {
 		int visualOffset = order[logicalOffset];
-		// moving between segments
-		if (isRightToLeft(logicalOffset - 1)) {
+		// moving between segments.
+		// consider local numbers as R2L here, to determine position, because
+		// we want to stay in L2R segment and place the cursor to the left of
+		// first L2R character. see 1GK9API
+		if (isRightToLeftInput(logicalOffset - 1)) {
 			// moving from LtoR to RtoL
 			caretX = renderPositions[visualOffset];
 		}
