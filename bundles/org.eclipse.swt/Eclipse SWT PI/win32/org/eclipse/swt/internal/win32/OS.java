@@ -671,8 +671,10 @@ public class OS {
 	public static final int RBBS_BREAK = 0x1;
 	public static final int RBBS_GRIPPERALWAYS = 0x80;
 	public static final int RBBS_NOGRIPPER = 0x00000100;
+	public static final int RBBS_USECHEVRON = 0x00000200;
 	public static final int RBBS_VARIABLEHEIGHT = 0x40;
 	public static final int RBN_FIRST = 0xfffffcc1;
+	public static final int RBN_CHEVRONPUSHED = RBN_FIRST - 10;
 	public static final int RBN_HEIGHTCHANGE = 0xfffffcc1;
 	public static final int RBS_DBLCLKTOGGLE = 0x8000;
 	public static final int RBS_BANDBORDERS = 0x400;
