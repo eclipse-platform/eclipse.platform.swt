@@ -98,7 +98,7 @@ public class Display extends Device {
 	Runnable [] disposeList;
 	
 	/* Timers */
-	int [] timerIDs;
+	int [] timerIds;
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;
@@ -108,7 +108,7 @@ public class Display extends Device {
 	/* Caret */
 	Caret currentCaret;
 	Callback caretCallback;
-	int caretID, caretProc;
+	int caretId, caretProc;
 	
 	/* Pixmaps */
 	int nullPixmap;
@@ -1185,18 +1185,18 @@ void releaseDisplay () {
 	windowCallback5.dispose ();  windowCallback5 = null;
 
 	/* Dispose the caret callback */
-	if (caretID != 0) OS.gtk_timeout_remove (caretID);
-	caretID = caretProc = 0;
+	if (caretId != 0) OS.gtk_timeout_remove (caretId);
+	caretId = caretProc = 0;
 	caretCallback.dispose ();
 	caretCallback = null;
 	
 	/* Dispose the timer callback */
-	if (timerIDs != null) {
-		for (int i=0; i<timerIDs.length; i++) {
-			if (timerIDs [i] != 0) OS.gtk_timeout_remove (timerIDs [i]);
+	if (timerIds != null) {
+		for (int i=0; i<timerIds.length; i++) {
+			if (timerIds [i] != 0) OS.gtk_timeout_remove (timerIds [i]);
 		}
 	}
-	timerIDs = null;
+	timerIds = null;
 	timerList = null;
 	timerProc = 0;
 	timerCallback.dispose ();
@@ -1462,24 +1462,38 @@ public boolean sleep () {
  */
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
+	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (timerList == null) timerList = new Runnable [4];
-	if (timerIDs == null) timerIDs = new int [4];
+	if (timerIds == null) timerIds = new int [4];	
 	int index = 0;
 	while (index < timerList.length) {
-		if (timerList [index] == null) break;
+		if (timerList [index] == runnable) break;
 		index++;
 	}
-	if (index == timerList.length) {
-		Runnable [] newTimerList = new Runnable [timerList.length + 4];
-		System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
-		timerList = newTimerList;
-		int [] newTimerIDs = new int [timerIDs.length + 4];
-		System.arraycopy (timerIDs, 0, newTimerIDs, 0, timerIDs.length);
-		timerIDs = newTimerIDs;
+	if (index != timerList.length) {
+		OS.gtk_timeout_remove (timerIds [index]);
+		timerList [index] = null;
+		timerIds [index] = 0;
+		if (milliseconds < 0) return;
+	} else {
+		if (milliseconds < 0) return;
+		index = 0;
+		while (index < timerList.length) {
+			if (timerList [index] == null) break;
+			index++;
+		}
+		if (index == timerList.length) {
+			Runnable [] newTimerList = new Runnable [timerList.length + 4];
+			System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
+			timerList = newTimerList;
+			int [] newTimerIds = new int [timerIds.length + 4];
+			System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
+			timerIds = newTimerIds;
+		}
 	}
-	int timerID = OS.gtk_timeout_add (milliseconds, timerProc, index);
-	if (timerID != 0) {
-		timerIDs [index] = timerID;
+	int timerId = OS.gtk_timeout_add (milliseconds, timerProc, index);
+	if (timerId != 0) {
+		timerIds [index] = timerId;
 		timerList [index] = runnable;
 	}
 }
@@ -1489,20 +1503,20 @@ int timerProc (int index, int id) {
 	if (0 <= index && index < timerList.length) {
 		Runnable runnable = timerList [index];
 		timerList [index] = null;
-		timerIDs [index] = 0;
+		timerIds [index] = 0;
 		if (runnable != null) runnable.run ();
 	}
 	return 0;
 }
 
 int caretProc (int clientData, int id) {
-	caretID = 0;
+	caretId = 0;
 	if (currentCaret == null) {
 		return 0;
 	}
 	if (currentCaret.blinkCaret()) {
 		int blinkRate = currentCaret.blinkRate;
-		caretID = OS.gtk_timeout_add (blinkRate, caretProc, 0);
+		caretId = OS.gtk_timeout_add (blinkRate, caretProc, 0);
 	} else {
 		currentCaret = null;
 	}
@@ -1510,12 +1524,12 @@ int caretProc (int clientData, int id) {
 }
 
 void setCurrentCaret (Caret caret) {
-	if (caretID != 0) OS.gtk_timeout_remove(caretID);
-	caretID = 0;
+	if (caretId != 0) OS.gtk_timeout_remove(caretId);
+	caretId = 0;
 	currentCaret = caret;
 	if (caret == null) return;
 	int blinkRate = currentCaret.blinkRate;
-	caretID = OS.gtk_timeout_add (blinkRate, caretProc, 0); 
+	caretId = OS.gtk_timeout_add (blinkRate, caretProc, 0); 
 }
 
 /**
