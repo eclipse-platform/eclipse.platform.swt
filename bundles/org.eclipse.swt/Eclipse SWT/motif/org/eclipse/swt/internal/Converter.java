@@ -221,6 +221,7 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 public static void release () {
 	synchronized (LOCK) {
 		if (Ucs2Buffer != 0) OS.XtFree (Ucs2Buffer);
+		if (Utf8Buffer != 0) OS.XtFree (Utf8Buffer);
 		if (MbcsBuffer != 0) OS.XtFree (MbcsBuffer);
 		if (LastUCS2ToMbcs != -1) OS.iconv_close (LastUCS2ToMbcs);
 		if (LastUTF8ToMbcs != -1) OS.iconv_close (LastUTF8ToMbcs);
