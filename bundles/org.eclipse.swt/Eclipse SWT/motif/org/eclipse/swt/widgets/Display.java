@@ -208,14 +208,20 @@ public class Display extends Device {
 
 	/* Workaround for GP when disposing a display */
 	static boolean DisplayDisposed;
-			
-	/* Package name */
-	static final String PACKAGE_NAME;
-	static {
-		String name = Display.class.getName ();
-		int index = name.lastIndexOf ('.');
-		PACKAGE_NAME = name.substring (0, index + 1);
-	}
+
+	/* Package Name */
+	static final String PACKAGE_NAME = "org.eclipse.swt.widgets";
+	/*
+	* This code is intentionally commented.  In order
+	* to support CLDC, .class cannot be used because
+	* it does not compile on some Java compilers when
+	* they are targeted for CLDC.
+	*/
+//	static {
+//		String name = Display.class.getName ();
+//		int index = name.lastIndexOf ('.');
+//		PACKAGE_NAME = name.substring (0, index + 1);
+//	}
 	
 	/* Mouse Hover */
 	Callback mouseHoverCallback;
@@ -399,23 +405,11 @@ protected void create (DeviceData data) {
 void createDisplay (DeviceData data) {
 	
 	/* Initialize X and Xt */
-	synchronized (Display.class) {
+	synchronized (APP_NAME) {
 		if (!XtInitialized) {
 			OS.XInitThreads ();
 			OS.XtToolkitThreadInitialize ();
 			OS.XtToolkitInitialize ();
-	
-			/* Bug in XpExtention. If XInitThreads is called before
-			* any Xp functions then XpCheckExtInit hangs.  The workaround
-			* is to create the printer display before calling XInitThreads.
-			*/
-//			int xtContext = OS.XtCreateApplicationContext ();
-//			byte[] buffer = Converter.wcsToMbcs ( null, Device.XDefaultPrintServer, true );
-//			xPrinter = OS.XtOpenDisplay (xtContext, buffer, null, null, 0, 0, new int [] {0}, 0);
-//			if (xPrinter != 0) {
-//				OS.XpQueryVersion (xPrinter, new short [1], new short [1]);
-//			}
-//			//OS.XInitThreads ();
 		}
 		XtInitialized = true;
 	}
