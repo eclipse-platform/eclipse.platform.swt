@@ -32,10 +32,9 @@ import org.eclipse.swt.graphics.*;
  */
 public class TreeItem extends Item {
 	Tree parent;
-	boolean cached;
-	boolean grayed;
 	Font font;
 	Font[] cellFont;
+	boolean cached, grayed;
 	static final int EXPANDER_EXTRA_PADDING = 4;
 
 /**
@@ -1175,7 +1174,10 @@ public void setGrayed (boolean grayed) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	this.grayed = grayed;
-	// Render checked+grayed as "inconsistent", unchcked+grayed as blank.
+	/*
+	* GTK+'s "inconsistent" state does not match SWT's concept of grayed.
+	* Render checked+grayed as "inconsistent", unchecked+grayed as blank.
+	*/
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	OS.gtk_tree_model_get (parent.modelHandle, handle, Tree.CHECKED_COLUMN, ptr, -1);
 	OS.gtk_tree_store_set (parent.modelHandle, handle, Tree.GRAYED_COLUMN, ptr [0] == 0 ? false : grayed, -1);
