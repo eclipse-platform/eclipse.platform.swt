@@ -329,6 +329,7 @@ public class OS {
 	public static native void SetPortVisibleRegion(int portHandle, int rgnHandle);
 	public static native void QDFlushPortBuffer(int port, int rgnHandle);
 	public static native int QDGetDirtyRegion(int portHandle, int rgnHandle);
+	public static native int QDSetDirtyRegion(int portHandle, int rgnHandle);
 	public static native int LockPortBits(int portHandle);
 	public static native int UnlockPortBits(int portHandle);
 
