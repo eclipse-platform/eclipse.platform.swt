@@ -477,6 +477,15 @@ public void disposeExec (Runnable runnable) {
 }
 
 int drawProc (int handle, int damage) {
+	/*
+	* Feature in Photon. On QNX 6.2, if a widget is damaged, PtBlit() will
+	* call its draw function before blitting pixels. This is not wrong
+	* but it is unwanted, since the callback might happen in a thread other
+	* than the display thread. The fix is to detect that the callback happened
+	* in the wrong thread and return right away.
+	*/
+	//TEMPORARY CODE
+	if (thread != Thread.currentThread()) return 0;
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
 	return widget.processPaint (damage);
