@@ -921,10 +921,19 @@ public void setVisible (boolean visible) {
 			* even though the values for SIF_RANGE and SIF_PAGE,
 			* when set for a visible scroll bar would not disable
 			* the scroll bar.  The fix is to enable the scroll bar
-			* when already enabled after showing the scroll bar.
+			* when not disabled by the application and the current
+			* scroll bar ranges would cause the scroll bar to be
+			* enabled had they been set when the scroll bar was
+			* visible.
 			*/
 			if ((state & DISABLED) == 0) {
-				OS.EnableScrollBar (hwnd, type, OS.ESB_ENABLE_BOTH);
+				SCROLLINFO info = new SCROLLINFO ();
+				info.cbSize = SCROLLINFO.sizeof;
+				info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
+				OS.GetScrollInfo (hwnd, type, info);
+				if (info.nMax - info.nMin - info.nPage >= 0) {
+					OS.EnableScrollBar (hwnd, type, OS.ESB_ENABLE_BOTH);
+				}
 			}
 			sendEvent (visible ? SWT.Show : SWT.Hide);
 			// widget could be disposed at this point
