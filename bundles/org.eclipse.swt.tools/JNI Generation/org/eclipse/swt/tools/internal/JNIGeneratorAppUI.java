@@ -28,9 +28,36 @@ public class JNIGeneratorAppUI {
 	Table classesLt, membersLt, paramsLt;
 	FileDialog fileDialog;
 	
-	TableEditor paramTextEditor, paramListEditor, memberTextEditor, memberListEditor, classTextEditor, classListEditor;
+	TableEditor paramTextEditor, memberTextEditor, classTextEditor;
+	FlagsEditor paramListEditor, memberListEditor, classListEditor;
 	Text paramEditorTx, memberEditorTx, classEditorTx;
 	List paramEditorLt, memberEditorLt, classEditorLt;
+	
+	static class FlagsEditor {
+		Table parent;
+		int column = -1;
+		TableItem item;
+		
+		public FlagsEditor(Table parent) {
+			this.parent = parent;
+		}
+		
+		public int getColumn() {
+			return column;
+		}
+		
+		public TableItem getItem() {
+			return item;
+		}
+		
+		public void setColumn(int column) {
+			this.column = column;
+		}
+		
+		public void setItem(TableItem item) {
+			this.item = item;
+		}
+	}
 	
 	JNIGeneratorApp app;
 
@@ -288,16 +315,15 @@ void createClassesPanel(Composite panel) {
 	classEditorTx.addListener(SWT.DefaultSelection, classTextListener);
 	classEditorTx.addListener(SWT.FocusOut, classTextListener);
 	
-	classListEditor = new TableEditor(classesLt);
-	classEditorLt = new List(classesLt, SWT.MULTI | SWT.BORDER);
+	final Shell floater = new Shell(shell, SWT.NO_TRIM);
+	floater.setLayout(new FillLayout());
+	classListEditor = new FlagsEditor(classesLt);
+	classEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
 	classEditorLt.setItems(ClassData.getAllFlags());
-	Point size = classEditorLt.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	classListEditor.minimumWidth = size.x;
-	classListEditor.minimumHeight = size.y;
-	classListEditor.setEditor(classEditorLt);
+	floater.pack();
 	Listener classesListListener = new Listener() {
 		public void handleEvent(Event e) {
-			classEditorLt.setVisible(false);
+			floater.setVisible(false);
 			TableItem item = classListEditor.getItem();
 			if (item == null) return;
 			int column = classListEditor.getColumn();
@@ -339,15 +365,11 @@ void createClassesPanel(Composite panel) {
 				classEditorTx.setVisible(true);
 				classEditorTx.setFocus();
 			} else if (column == CLASS_FLAGS_COLUMN) {
-				if (classesLt.getClientArea().contains(pt.x, pt.y + classEditorLt.getSize().y)) {
-					classListEditor.verticalAlignment = SWT.TOP;
-				} else {
-					classListEditor.verticalAlignment = SWT.BOTTOM;
-				}
 				classListEditor.setColumn(column);
 				classListEditor.setItem(item);
 				classEditorLt.setSelection(data.getFlags());
-				classEditorLt.setVisible(true);
+				floater.setLocation(classesLt.toDisplay(e.x, e.y));
+				floater.setVisible(true);
 				classEditorLt.setFocus();
 			}
 		}
@@ -424,12 +446,13 @@ void createMembersPanel(Composite panel) {
 	memberEditorTx.addListener(SWT.DefaultSelection, memberTextListener);
 	memberEditorTx.addListener(SWT.FocusOut, memberTextListener);
 	
-	memberListEditor = new TableEditor(membersLt);
-	memberEditorLt = new List(membersLt, SWT.MULTI | SWT.BORDER);
-	memberListEditor.setEditor(memberEditorLt);
+	final Shell floater = new Shell(shell, SWT.NO_TRIM);
+	floater.setLayout(new FillLayout());
+	memberListEditor = new FlagsEditor(membersLt);
+	memberEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
 	Listener memberListListener = new Listener() {
 		public void handleEvent(Event e) {
-			memberEditorLt.setVisible(false);
+			floater.setVisible(false);
 			TableItem item = memberListEditor.getItem();
 			if (item == null) return;
 			int column = memberListEditor.getColumn();
@@ -484,19 +507,13 @@ void createMembersPanel(Composite panel) {
 					memberEditorTx.setVisible(true);
 					memberEditorTx.setFocus();
 				} else if (column == FIELD_FLAGS_COLUMN) {
-					if (membersLt.getClientArea().contains(pt.x, pt.y + memberEditorLt.getSize().y)) {
-						memberListEditor.verticalAlignment = SWT.TOP;
-					} else {
-						memberListEditor.verticalAlignment = SWT.BOTTOM;
-					}
 					memberListEditor.setColumn(column);
 					memberListEditor.setItem(item);
 					memberEditorLt.setItems(FieldData.getAllFlags());
-					Point size = memberEditorLt.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-					memberListEditor.minimumWidth = size.x;
-					memberListEditor.minimumHeight = size.y;
 					memberEditorLt.setSelection(data.getFlags());
-					memberEditorLt.setVisible(true);
+					floater.setLocation(membersLt.toDisplay(e.x, e.y));
+					floater.pack();
+					floater.setVisible(true);
 					memberEditorLt.setFocus();
 				}
 			} else if (itemData instanceof MethodData) {
@@ -514,19 +531,13 @@ void createMembersPanel(Composite panel) {
 					memberEditorTx.setVisible(true);
 					memberEditorTx.setFocus();
 				} else if (column == METHOD_FLAGS_COLUMN) {
-					if (membersLt.getClientArea().contains(pt.x, pt.y + memberEditorLt.getSize().y)) {
-						memberListEditor.verticalAlignment = SWT.TOP;
-					} else {
-						memberListEditor.verticalAlignment = SWT.BOTTOM;
-					}
 					memberListEditor.setColumn(column);
 					memberListEditor.setItem(item);
 					memberEditorLt.setItems(MethodData.getAllFlags());
-					Point size = memberEditorLt.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-					memberListEditor.minimumWidth = size.x;
-					memberListEditor.minimumHeight = size.y;
 					memberEditorLt.setSelection(data.getFlags());
-					memberEditorLt.setVisible(true);
+					floater.setLocation(membersLt.toDisplay(e.x, e.y));
+					floater.pack();
+					floater.setVisible(true);
 					memberEditorLt.setFocus();
 				}
 			}
@@ -585,16 +596,15 @@ void createParametersPanel(Composite panel) {
 	paramEditorTx.addListener(SWT.DefaultSelection, paramTextListener);
 	paramEditorTx.addListener(SWT.FocusOut, paramTextListener); 
 	
-	paramListEditor = new TableEditor(paramsLt);
-	paramEditorLt = new List(paramsLt, SWT.MULTI | SWT.BORDER);
+	final Shell floater = new Shell(shell, SWT.NO_TRIM);
+	floater.setLayout(new FillLayout());
+	paramListEditor = new FlagsEditor(paramsLt);
+	paramEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
 	paramEditorLt.setItems(ParameterData.getAllFlags());
-	Point size = paramEditorLt.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	paramListEditor.minimumWidth = size.x;
-	paramListEditor.minimumHeight = size.y;
-	paramListEditor.setEditor(paramEditorLt);
+	floater.pack();
 	Listener paramListListener = new Listener() {
 		public void handleEvent(Event e) {
-			paramEditorLt.setVisible(false);
+			floater.setVisible(false);
 			TableItem item = paramListEditor.getItem();
 			if (item == null) return;
 			int column = paramListEditor.getColumn();
@@ -635,15 +645,11 @@ void createParametersPanel(Composite panel) {
 				paramEditorTx.setVisible(true);
 				paramEditorTx.setFocus();
 			} else if (column == PARAM_FLAGS_COLUMN) {
-				if (paramsLt.getClientArea().contains(pt.x, pt.y + paramEditorLt.getSize().y)) {
-					paramListEditor.verticalAlignment = SWT.TOP;
-				} else {
-					paramListEditor.verticalAlignment = SWT.BOTTOM;
-				}
 				paramListEditor.setColumn(column);
 				paramListEditor.setItem(item);
 				paramEditorLt.setSelection(data.getFlags());
-				paramEditorLt.setVisible(true);
+				floater.setLocation(paramsLt.toDisplay(e.x, e.y));
+				floater.setVisible(true);
 				paramEditorLt.setFocus();
 			}
 		}
