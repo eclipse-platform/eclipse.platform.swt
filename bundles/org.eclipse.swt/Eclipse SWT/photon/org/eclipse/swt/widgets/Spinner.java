@@ -86,6 +86,7 @@ void createHandle (int index) {
 	int parentHandle = parent.parentingHandle ();
 	boolean hasBorder = (style & SWT.BORDER) != 0;
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
+	boolean wrap = (style & SWT.WRAP) != 0;
 	int [] args = new int [] {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		OS.Pt_ARG_NUMERIC_INCREMENT, 1, 0,
@@ -93,6 +94,7 @@ void createHandle (int index) {
 		OS.Pt_ARG_NUMERIC_MAX, 100, 0,
 		OS.Pt_ARG_TEXT_FLAGS, textFlags, OS.Pt_EDITABLE,
 		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
+		OS.Pt_ARG_NUMERIC_FLAGS, wrap ? OS.Pt_NUMERIC_WRAP : 0, OS.Pt_NUMERIC_WRAP,
 	};
 	handle = OS.PtCreateWidget (display.PtNumericInteger, parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);

@@ -351,6 +351,7 @@ public class OS extends Platform {
 	public static final int Pt_ARG_MULTITEXT_TABS = 0x1395;
 	public static final int Pt_ARG_MULTITEXT_TOP_LINE = 0x138f;
 	public static final int Pt_ARG_MULTITEXT_WRAP_FLAGS = 0x1389;
+	public static final int Pt_ARG_NUMERIC_FLAGS = 0xcf09;
 	public static final int Pt_ARG_NUMERIC_INCREMENT = 0xcf0b;
 	public static final int Pt_ARG_NUMERIC_MAX = 0xcf0e;
 	public static final int Pt_ARG_NUMERIC_MIN = 0xcf0d;
@@ -491,6 +492,7 @@ public class OS extends Platform {
 	public static final int Pt_NUMERIC_CHANGED = 0x1;
 	public static final int Pt_NUMERIC_UPDOWN_ACTIVATE = 0x8;
 	public static final int Pt_NUMERIC_UPDOWN_REPEAT = 0x4;	
+	public static final int Pt_NUMERIC_WRAP= 0x04;
 	public static final int Pt_ONE_OF_MANY = 0x1;
 	public static final int Pt_PG_INVALID = 0xffff;
 	public static final int Pt_PG_SELECTOR_ON_BOTTOM = 0x0001;
