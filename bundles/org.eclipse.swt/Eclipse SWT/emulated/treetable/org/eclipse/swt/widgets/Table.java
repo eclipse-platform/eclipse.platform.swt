@@ -2267,6 +2267,7 @@ void onPaint (Event event) {
 	TableColumn[] orderedColumns = getOrderedColumns ();
 	GC gc = event.gc;
 	Rectangle clipping = gc.getClipping ();
+	int headerHeight = getHeaderHeight ();
 	int numColumns = orderedColumns.length;
 	int startColumn = -1, endColumn = -1;
 	if (numColumns > 0) {
@@ -2293,7 +2294,6 @@ void onPaint (Event event) {
 		/* horizontal item lines */
 		int bottomY = clipping.y + clipping.height;
 		int rightX = clipping.x + clipping.width;
-		int headerHeight = getHeaderHeight ();
 		int y = (clipping.y - headerHeight) / itemHeight * itemHeight + headerHeight;
 		while (y <= bottomY) {
 			gc.drawLine (clipping.x, y, rightX, y);
@@ -2303,7 +2303,7 @@ void onPaint (Event event) {
 	}
 	
 	/* Determine the TableItems to be painted */
-	int startIndex = (clipping.y - getHeaderHeight ()) / itemHeight + topIndex;
+	int startIndex = (clipping.y - headerHeight) / itemHeight + topIndex;
 	if (itemsCount < startIndex) return;		/* no items to paint */
 	int endIndex = startIndex + Compatibility.ceil (clipping.height, itemHeight);
 	if (endIndex < 0) return;		/* no items to paint */
