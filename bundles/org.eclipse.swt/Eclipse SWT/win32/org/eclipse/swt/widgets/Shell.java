@@ -150,7 +150,7 @@ public Shell (int style) {
  * </ul>
  */
 public Shell (Display display) {
-	this (display, (OS.IsWinCE ? SWT.NULL : SWT.SHELL_TRIM));
+	this (display, OS.IsWinCE ? SWT.NONE : SWT.SHELL_TRIM);
 }
 
 /**
@@ -223,7 +223,7 @@ Shell (Display display, Shell parent, int style, int handle) {
  * </ul>
  */
 public Shell (Shell parent) {
-	this (parent, (OS.IsWinCE ? SWT.NULL : SWT.DIALOG_TRIM));
+	this (parent, OS.IsWinCE ? SWT.NONE : SWT.DIALOG_TRIM);
 }
 
 /**
