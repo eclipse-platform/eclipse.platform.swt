@@ -48,9 +48,9 @@ public void test_Constructor() {
 		 * constructor throws an ERROR_NO_HANDLES SWTError.
 		 */
 		try {
-			new Printer();
-		}
-		catch (SWTError ex) {
+			Printer printer = new Printer();
+			printer.dispose();
+		} catch (SWTError ex) {
 			if (ex.code == SWT.ERROR_NO_HANDLES) exceptionThrown = true;
 		}
 		assertTrue("ERROR_NO_HANDLES not thrown", exceptionThrown);
@@ -59,7 +59,8 @@ public void test_Constructor() {
 		 * the constructor does not throw any exceptions.
 		 */
 		try {
-			new Printer();
+			Printer printer = new Printer();
+			printer.dispose();
 		} catch (Throwable ex) {
 			exceptionThrown = true;
 			detail = ex.getMessage();
@@ -77,9 +78,9 @@ public void test_ConstructorLorg_eclipse_swt_printing_PrinterData() {
 		 * constructor throws an ERROR_NO_HANDLES SWTError.
 		 */
 		try {
-			new Printer(data);
-		}
-		catch (SWTError ex) {
+			Printer printer = new Printer(data);
+			printer.dispose();
+		} catch (SWTError ex) {
 			if (ex.code == SWT.ERROR_NO_HANDLES) exceptionThrown = true;
 		}
 		assertTrue("ERROR_NO_HANDLES not thrown", exceptionThrown);
@@ -88,7 +89,8 @@ public void test_ConstructorLorg_eclipse_swt_printing_PrinterData() {
 		 * the constructor does not throw any exceptions.
 		 */
 		try {
-			new Printer(data);
+			Printer printer = new Printer(data);
+			printer.dispose();
 		} catch (Throwable ex) {
 			exceptionThrown = true;
 			detail = ex.getMessage();
@@ -108,6 +110,7 @@ public void test_computeTrimIIII() {
 	Printer printer = new Printer(data);
 	Rectangle trim = printer.computeTrim(0, 0, 10, 10);
 	assertTrue("trim width or height is incorrect", trim.width >= 10 && trim.height >= 10);
+	printer.dispose();
 }
 
 public void test_endJob() {
@@ -125,6 +128,7 @@ public void test_getBounds() {
 	Printer printer = new Printer(data);
 	Rectangle bounds = printer.getBounds();
 	assertTrue("bounds width or height is zero", bounds.width > 0 && bounds.height > 0);
+	printer.dispose();
 }
 
 public void test_getClientArea() {
@@ -134,6 +138,7 @@ public void test_getClientArea() {
 	Printer printer = new Printer(data);
 	Rectangle clientArea = printer.getClientArea();
 	assertTrue("clientArea width or height is zero", clientArea.width > 0 && clientArea.height > 0);
+	printer.dispose();
 }
 
 public void test_getDPI() {
@@ -143,6 +148,7 @@ public void test_getDPI() {
 	Printer printer = new Printer(data);
 	Point dpi = printer.getDPI();
 	assertTrue("dpi x or y is zero", dpi.x > 0 && dpi.y > 0);
+	printer.dispose();
 }
 
 public void test_getDefaultPrinterData() {
@@ -156,6 +162,7 @@ public void test_getPrinterData() {
 	Printer printer = new Printer(data);
 	assertTrue("getPrinterData != data used in constructor",
 			data == printer.getPrinterData());
+	printer.dispose();
 }
 
 public void test_getPrinterList() {
