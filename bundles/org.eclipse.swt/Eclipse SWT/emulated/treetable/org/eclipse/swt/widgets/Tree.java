@@ -695,6 +695,7 @@ void doEnd (int stateMask) {
 	/* Shift+End */
 	if (anchorItem == null) anchorItem = focusItem;
 	TreeItem selectedItem = availableItems [lastAvailableIndex];
+	if (selectedItem == focusItem && selectedItem.isSelected ()) return;
 	int anchorIndex = anchorItem.availableIndex;
 	int selectIndex = selectedItem.availableIndex;
 	TreeItem[] newSelection = new TreeItem [selectIndex - anchorIndex + 1];
@@ -786,6 +787,7 @@ void doHome (int stateMask) {
 	/* Shift+Home */
 	if (anchorItem == null) anchorItem = focusItem;
 	TreeItem selectedItem = availableItems [0];
+	if (selectedItem == focusItem && selectedItem.isSelected ()) return;
 	int anchorIndex = anchorItem.availableIndex;
 	int selectIndex = selectedItem.availableIndex;
 	TreeItem[] newSelection = new TreeItem [anchorIndex + 1];
@@ -1024,6 +1026,7 @@ void doPageDown (int stateMask) {
 		/* PageDown with no modifiers */
 		int newFocusIndex = focusItem.availableIndex + visibleItemCount - 1;
 		newFocusIndex = Math.min (newFocusIndex, availableItems.length - 1);
+		if (newFocusIndex == focusItem.availableIndex) return;
 		TreeItem item = availableItems [newFocusIndex];
 		selectItem (item, false);
 		setFocusItem (item, true);
@@ -1044,6 +1047,7 @@ void doPageDown (int stateMask) {
 			/* Shift+PageDown */
 			int newFocusIndex = focusItem.availableIndex + visibleItemCount - 1;
 			newFocusIndex = Math.min (newFocusIndex, availableItems.length - 1);
+			if (newFocusIndex == focusItem.availableIndex) return;
 			TreeItem item = availableItems [newFocusIndex];
 			selectItem (item, false);
 			setFocusItem (item, true);
@@ -1087,6 +1091,7 @@ void doPageDown (int stateMask) {
 	} else {
 		/* already at bottom of viewport, so select to bottom of one page down */
 		selectIndex = Math.min (availableItems.length - 1, bottomIndex + visibleItemCount);
+		if (selectIndex == focusItem.availableIndex && focusItem.isSelected ()) return;
 	}
 	TreeItem selectedItem = availableItems [selectIndex];
 	TreeItem[] newSelection = new TreeItem [Math.abs (anchorIndex - selectIndex) + 1];
@@ -1107,8 +1112,8 @@ void doPageUp (int stateMask) {
 	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
 		/* PageUp with no modifiers */
-		int newFocusIndex = focusItem.availableIndex - visibleItemCount + 1;
-		newFocusIndex = Math.max (newFocusIndex, 0);
+		int newFocusIndex = Math.max (0, focusItem.availableIndex - visibleItemCount + 1);
+		if (newFocusIndex == focusItem.availableIndex) return;
 		TreeItem item = availableItems [newFocusIndex];
 		selectItem (item, false);
 		setFocusItem (item, true);
@@ -1126,8 +1131,8 @@ void doPageUp (int stateMask) {
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
 			/* Shift+PageUp */
-			int newFocusIndex = focusItem.availableIndex - visibleItemCount + 1;
-			newFocusIndex = Math.max (newFocusIndex, 0);
+			int newFocusIndex = Math.max (0, focusItem.availableIndex - visibleItemCount + 1);
+			if (newFocusIndex == focusItem.availableIndex) return;
 			TreeItem item = availableItems [newFocusIndex];
 			selectItem (item, false);
 			setFocusItem (item, true);
@@ -1168,6 +1173,7 @@ void doPageUp (int stateMask) {
 	} else {
 		/* already at top of viewport, so select to top of one page up */
 		selectIndex = Math.max (0, topIndex - visibleItemCount);
+		if (selectIndex == focusItem.availableIndex && focusItem.isSelected ()) return;
 	}
 	TreeItem selectedItem = availableItems [selectIndex];
 	TreeItem[] newSelection = new TreeItem [Math.abs (anchorIndex - selectIndex) + 1];
@@ -1319,16 +1325,15 @@ void doScrollVertical (Event event) {
 }
 void doSpace () {
 	if (focusItem == null) return;
-	boolean redrawItem = false;
 	if (!focusItem.isSelected ()) {
 		selectItem (focusItem, (style & SWT.MULTI) != 0);
-		redrawItem = true;
+		redrawItem (focusItem.availableIndex, true);
 	}
 	if ((style & SWT.CHECK) != 0) {
 		focusItem.checked = !focusItem.checked;
-		redrawItem = true;
-	}
-	if (redrawItem) redrawItem (focusItem.availableIndex, true);	
+		Rectangle bounds = focusItem.getCheckboxBounds ();
+		redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	}	
 	showItem (focusItem);
 	Event event = new Event ();
 	event.item = focusItem;

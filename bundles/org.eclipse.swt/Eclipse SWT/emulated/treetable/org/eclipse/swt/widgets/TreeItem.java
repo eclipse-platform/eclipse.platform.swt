@@ -1026,8 +1026,8 @@ public void setExpanded (boolean value) {
 		TreeItem focusItem = parent.focusItem;
 		if (focusItem != null && focusItem != this && focusItem.hasAncestor (this)) {
 			parent.setFocusItem (this, false);
-			if ((style & SWT.SINGLE) != 0) {
-				parent.selectedItems = new TreeItem[] {this};
+			if ((parent.style & SWT.SINGLE) != 0) {
+				parent.selectItem (this, false);
 			}
 			/* Fire an event since the selection is being changed automatically */
 			Event newEvent = new Event ();
