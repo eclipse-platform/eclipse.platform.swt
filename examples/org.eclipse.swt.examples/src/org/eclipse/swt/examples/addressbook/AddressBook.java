@@ -6,14 +6,14 @@ package org.eclipse.swt.examples.addressbook;
  */
 
 /* Imports */
-import org.eclipse.swt.events.*;
+import java.io.*;
+import java.util.*;
+
 import org.eclipse.swt.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
-import java.io.*;
-import java.util.zip.*;
-import java.util.ResourceBundle;
 
 /**
  * AddressBookExample is an example that uses <code>org.eclipse.swt</code> 
@@ -34,7 +34,7 @@ public class AddressBook {
 	
 	private String[] copyBuffer;
 	
-	private static final String DELIMITER = ",";
+	private static final String DELIMITER = "\t";
 	private static final String[] columnNames = {resAddressBook.getString("Last_name"),
 												 resAddressBook.getString("First_name"),
 												 resAddressBook.getString("Business_phone"),
@@ -242,91 +242,6 @@ private boolean findMatch(String searchString, TableItem item, int column, boole
 	}
 	return false;
 }
-/**
- * Merges two arrays (assumed to be individually sorted) of string arrays into 
- * one sorted array by the value stored at the columnIndex parameter.  This method 
- * is used in <code>mergeSort(String[][] tableItems, int columnIndex)</code>.
- *
- * @param	firstHalf	String[][]
- *			The first array of Strings to be merged.
- * @param	secondHalf	String[][]
- *			The second array of Strings to be merged.
- * @param	columnIndex	int
- *			The column by which the String arrays will be compared.
- * @return	String[][]
- *			An array of array of String that is the merged (and sorted) combination
- *			of the two parameter arrays.
- */
-private String[][] merge(String[][] firstHalf, String[][] secondHalf, int column) {
-	int x = firstHalf.length + secondHalf.length;
-	int y = Math.max(firstHalf[0].length, secondHalf[0].length);
-	String[][] sorted = new String[x][y];
-	
-	int firstHalfIndex = 0;
-	int secondHalfIndex = 0;
-	int sortedIndex = 0;
-
-	//merge
-	while(firstHalfIndex < firstHalf.length && secondHalfIndex < secondHalf.length) {
-		if(firstHalf[firstHalfIndex][column].compareToIgnoreCase(secondHalf[secondHalfIndex][column]) <= 0 ) {
-			sorted[sortedIndex] = firstHalf[firstHalfIndex];
-			sortedIndex++;
-			firstHalfIndex++;
-		} else {
-			sorted[sortedIndex] = secondHalf[secondHalfIndex];
-			sortedIndex++;
-			secondHalfIndex++;
-		}
-	}
-	
-	//copy remaining items into sorted.
-	while(firstHalfIndex < firstHalf.length) {
-		sorted[sortedIndex] = firstHalf[firstHalfIndex];
-		sortedIndex++;
-		firstHalfIndex++;
-	}
-	
-	while(secondHalfIndex < secondHalf.length) {
-		sorted[sortedIndex] = secondHalf[secondHalfIndex];
-		sortedIndex++;
-		secondHalfIndex++;
-	}
-	
-	return sorted;
-}
-/**
- * Takes an array of array of Strings and sorts them into ascending order according to the
- * data in the column specified.  Note that this sort is recursive.
- * 
- * @param	tableItems 	String[][]
- *			The array of Strings that will be sorted.
- * @param	columnIndex	int
- *			The column in the String arrays by which the arrays will be compared.
- * @return	String[][]
- *			The resultant sorted version of the tableItems parameter.
- * @see	#merge(String[][] firstHalf, String[][] secondHalf, int columnIndex)
- */
-private String[][] mergeSort(String[][] items, int column) {
-	int numItems = items.length;
-
-	if(numItems <= 1)	return items;
-	
-	int split = numItems / 2;
-	String[][] firstHalf = new String[split][items[0].length];
-	String[][] secondHalf = new String[numItems - split][items[0].length];
-	for(int i = 0; i < firstHalf.length; i++) {
-		firstHalf[i] = items[i];
-	}
-	for(int i = 0; i < secondHalf.length; i++) {
-		secondHalf[i] = items[split + i];
-	}
-	
-	String[][] firstHalfSorted = mergeSort(firstHalf, column);
-	String[][] secondHalfSorted = mergeSort(secondHalf, column);
-	String[][] sortedItems = merge(firstHalfSorted, secondHalfSorted, column);
-		
-	return sortedItems;
-}
 private void newAddressBook() {	
 	shell.setText(resAddressBook.getString("Title_bar") + resAddressBook.getString("New_title"));
 	file = null;
@@ -402,7 +317,9 @@ private void openAddressBook() {
 	for (int i = 0; i < data.length; i++) {
 		tableInfo[i] = decodeLine(data[i]);
 	}
-	tableInfo = mergeSort(tableInfo, 0);
+
+	Arrays.sort(tableInfo, new RowComparator(0));
+
 	for (int i = 0; i < tableInfo.length; i++) {
 		TableItem item = new TableItem(table, SWT.NONE);
 		item.setText(tableInfo[i]);
@@ -495,7 +412,7 @@ private void sort(int column) {
 		}
 	}
 	
-	data = mergeSort(data, column);
+	Arrays.sort(data, new RowComparator(column));
 	
 	for (int i = 0; i < data.length; i++) {
 		items[i].setText(data[i]);
@@ -904,5 +821,35 @@ private void createHelpMenu(Menu menuBar) {
 			box.open();		
 		}
 	});
+}
+
+/**
+ * To compare entries (rows) by the given column
+ */
+private class RowComparator implements Comparator {
+	private int column;
+	
+	/**
+	 * Constructs a RowComparator given the column index
+	 * @param col The index (starting at zero) of the column
+	 */
+	public RowComparator(int col) {
+		column = col;
+	}
+	
+	/**
+	 * Compares two rows (type String[]) using the specified
+	 * column entry.
+	 * @param obj1 First row to compare
+	 * @param obj2 Second row to compare
+	 * @return negative if obj1 less than obj2, positive if
+	 * 			obj1 greater than obj2, and zero if equal.
+	 */
+	public int compare(Object obj1, Object obj2) {
+		String[] row1 = (String[])obj1;
+		String[] row2 = (String[])obj2;
+		
+		return row1[column].compareTo(row2[column]);
+	}
 }
 }
