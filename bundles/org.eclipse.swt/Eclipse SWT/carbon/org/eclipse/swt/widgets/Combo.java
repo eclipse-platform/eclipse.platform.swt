@@ -1376,6 +1376,7 @@ public void setItem (int index, String string) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the items array is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if an item in the items array is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1388,11 +1389,13 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	removeAll();
 	if (items.length == 0) return;
 	for (int i= 0; i < items.length; i++) {
 		String string = items[i];
-		if (string == null) continue;
 		char [] buffer = new char [string.length ()];
 		string.getChars (0, buffer.length, buffer, 0);
 		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
