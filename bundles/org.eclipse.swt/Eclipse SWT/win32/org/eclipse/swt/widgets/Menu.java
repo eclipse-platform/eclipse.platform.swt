@@ -45,6 +45,7 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
+	ImageList imageList;
 	
 	/* Resource ID for SHMENUBARINFO */
 	static final int ID_PPC = 100;
@@ -420,10 +421,12 @@ void createItem (MenuItem item, int index) {
 		if (OS.IsSP) return;
 		TBBUTTON lpButton = new TBBUTTON ();
 		lpButton.idCommand = item.id;
-		lpButton.fsStyle = (byte) (OS.TBSTYLE_DROPDOWN | OS.TBSTYLE_AUTOSIZE | 0x80);
+		lpButton.fsStyle = (byte) OS.TBSTYLE_AUTOSIZE;
+		if ((item.style & SWT.CASCADE) != 0) lpButton.fsStyle |= OS.TBSTYLE_DROPDOWN | 0x80;
+		if ((item.style & SWT.CHECK) != 0) lpButton.fsStyle |= OS.BTNS_CHECK;
+		if ((item.style & SWT.SEPARATOR) != 0) lpButton.fsStyle = (byte) OS.BTNS_SEP;
 		lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
 		lpButton.iBitmap = OS.I_IMAGENONE;
-		if ((item.style & SWT.SEPARATOR) != 0) lpButton.fsStyle = (byte) OS.BTNS_SEP;
 		success = OS.SendMessage (hwndCB, OS.TB_INSERTBUTTON, index, lpButton) != 0;
 	} else {
 		if (OS.IsWinCE) {
@@ -525,6 +528,14 @@ void destroyItem (MenuItem item) {
 			int index = OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
 			if (OS.SendMessage (hwndCB, OS.TB_DELETEBUTTON, index, 0) == 0) {
 				error (SWT.ERROR_ITEM_NOT_REMOVED);
+			}
+			int count = OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
+			if (count == 0) {
+				if (imageList != null) {
+					OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
+					display.releaseImageList (imageList);
+					imageList = null;
+				}
 			}
 		} else {
 			int index = 0;
@@ -856,6 +867,24 @@ public boolean getVisible () {
 	return this == getShell ().activeMenu;
 }
 
+int imageIndex (Image image) {
+	if (hwndCB == 0 || image == null) return OS.I_IMAGENONE;
+	if (imageList == null) {
+		int hOldList = OS.SendMessage (hwndCB, OS.TB_GETIMAGELIST, 0, 0);
+		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
+		Rectangle bounds = image.getBounds ();
+		imageList = display.getImageList (new Point (bounds.width, bounds.height));
+		int index = imageList.indexOf (image);
+		if (index == -1) index = imageList.add (image);
+		int hImageList = imageList.getHandle ();
+		OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, hImageList);
+		return index;
+	}
+	int index = imageList.indexOf (image);
+	if (index != -1) return index;
+	return imageList.add (image);
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -978,6 +1007,13 @@ void releaseWidget () {
 			} else {
 				item.releaseResources ();
 			}
+		}
+	}
+	if (OS.IsPPC && hwndCB != 0) {
+		if (imageList != null) {
+			OS.SendMessage (hwndCB, OS.TB_SETIMAGELIST, 0, 0);
+			display.releaseToolImageList (imageList);
+			imageList = null;
 		}
 	}
 	super.releaseWidget ();

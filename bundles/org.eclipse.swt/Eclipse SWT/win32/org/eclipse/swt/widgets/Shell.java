@@ -1329,13 +1329,21 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 		}
 	}
 	/* 
-	* Note in WinCE PPC.  Menu events originate from the command bar.
+	* Note in WinCE PPC.  Sub menu item events originate from the menubar.
+	* Top menu items event originate from the toolbar used internally by
+	* the menubar. The toolbar has been observed to be the first child
+	* of the menubar.
 	*/
 	if (OS.IsPPC || OS.IsSP) {
 		if (menuBar != null) {
 			int hwndCB = menuBar.hwndCB;
-			if (hwndCB != 0 && lParam == hwndCB) {
-				return super.WM_COMMAND (wParam, 0);
+			if (lParam != 0 && hwndCB != 0) {
+				if (lParam == hwndCB) {
+					return super.WM_COMMAND (wParam, 0);
+				} else {
+					int hwndChild = OS.GetWindow (hwndCB, OS.GW_CHILD);
+					if (lParam == hwndChild) return super.WM_COMMAND (wParam, 0);					
+				}
 			}
 		}
 	}
