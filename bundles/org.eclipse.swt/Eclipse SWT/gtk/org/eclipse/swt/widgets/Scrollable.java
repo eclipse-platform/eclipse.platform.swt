@@ -247,7 +247,7 @@ boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
 	int [] hsp = new int [1], vsp = new int [1];
 	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	int policy = visible ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
-	if ((style & SWT.HORIZONTAL) != 0) {
+	if ((bar.style & SWT.HORIZONTAL) != 0) {
 		if (hsp [0] == policy) return false;
 		hsp [0] = policy;
 	} else {
