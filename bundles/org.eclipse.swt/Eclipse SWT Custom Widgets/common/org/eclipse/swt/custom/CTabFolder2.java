@@ -75,7 +75,7 @@ public class CTabFolder2 extends Composite {
 	 * 
 	 * NOTE This field is badly named for historical reasons.  It is not static.
 	 */
-	public int MIN_TAB_WIDTH = 3;
+	public int MIN_TAB_WIDTH = 8;
 	
 	/**
 	 * Color of innermost line of drop shadow border.
@@ -2927,7 +2927,7 @@ void showList (Rectangle rect, int alignment) {
 					int index = table.getSelectionIndex();						
 					if (index != -1) {
 						setSelection(index, true);
-						setFocus();
+						//setFocus();
 					}
 					shell.dispose();
 					break;
