@@ -71,10 +71,12 @@ public void javaToNative (Object object, TransferData transferData){
 	}
 	switch (transferData.type) {
 		case COM.CF_UNICODETEXT: {
-			TCHAR buffer = new TCHAR(0, string, true);
-			int byteCount = buffer.length() * TCHAR.sizeof;
+			int charCount = string.length ();
+			char[] chars = new char[charCount+1];
+			string.getChars (0, charCount, chars, 0);
+			int byteCount = chars.length * 2;
 			int newPtr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, byteCount);
-			COM.MoveMemory(newPtr, buffer, byteCount);	
+			COM.MoveMemory(newPtr, chars, byteCount);
 			transferData.stgmedium = new STGMEDIUM();
 			transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
 			transferData.stgmedium.unionField = newPtr;
@@ -130,15 +132,22 @@ public Object nativeToJava(TransferData transferData){
 	try {
 		switch (transferData.type) {
 			case CF_UNICODETEXTID: {
-				/* Ensure byteCount is a multiple of 2 bytes on UNICODE platforms */
-				int size = COM.GlobalSize(hMem) / TCHAR.sizeof * TCHAR.sizeof;
+				/* Ensure byteCount is a multiple of 2 bytes */
+				int size = COM.GlobalSize(hMem) / 2 * 2;
 				if (size == 0) return null;
-				TCHAR buffer = new TCHAR(0, size / TCHAR.sizeof);
+				char[] chars = new char[size/2];
 				int ptr = COM.GlobalLock(hMem);
 				if (ptr == 0) return null;
 				try {
-					COM.MoveMemory(buffer, ptr, size);
-					return buffer.toString(0, buffer.strlen());
+					COM.MoveMemory(chars, ptr, size);
+					int length = chars.length;
+					for (int i=0; i<chars.length; i++) {
+						if (chars [i] == '\0') {
+							length = i;
+							break;
+						}
+					}
+					return new String (chars, 0, length);
 				} finally {
 					COM.GlobalUnlock(hMem);	
 				}
