@@ -66,7 +66,7 @@ void generateSTATS_C(Class[] classes) {
 		gen.setOutput(print);
 		gen.generate();
 		print.flush();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getOutputName());
+		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -85,7 +85,7 @@ void generateSTATS_H(Class[] classes) {
 		gen.setOutput(print);
 		gen.generate();
 		print.flush();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getOutputName());
+		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -104,7 +104,7 @@ void generateSTRUCTS_H(Class[] classes) {
 		gen.setOutput(print);
 		gen.generate();
 		print.flush();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getOutputName());
+		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -124,7 +124,7 @@ void generateSTRUCTS_C(Class[] classes) {
 		gen.setOutput(print);
 		gen.generate();
 		print.flush();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getOutputName());
+		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -144,7 +144,7 @@ void generateSWT_C(Class[] classes) {
 		gen.setOutput(print);
 		gen.generate();
 		print.flush();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getOutputName());
+		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -168,7 +168,7 @@ void generateAllMetaData() {
 			System.out.println("Warning: Meta data output dir does not exist");
 			return;
 		}
-		if (out.size() > 0) output(out.toByteArray(), getMetaDataDir() + gen.getOutputName());
+		if (out.size() > 0) output(out.toByteArray(), getMetaDataDir() + gen.getFileName());
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);

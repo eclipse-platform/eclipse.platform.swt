@@ -309,7 +309,7 @@ public String getExtension() {
 }
 
 public String getFileName() {
-	return getClassName(getMainClass()).toLowerCase();
+	return getOutputName() + getSuffix() + getExtension();
 }
 
 public PrintStream getOutput() {
@@ -317,7 +317,7 @@ public PrintStream getOutput() {
 }
 
 public String getOutputName() {
-	return getFileName() + getSuffix() + getExtension();
+	return getClassName(getMainClass()).toLowerCase();
 }
 
 public Class getMainClass() {
