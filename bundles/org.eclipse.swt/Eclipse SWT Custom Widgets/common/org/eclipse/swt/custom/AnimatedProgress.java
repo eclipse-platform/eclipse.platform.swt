@@ -1,8 +1,8 @@
 package org.eclipse.swt.custom;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;

@@ -1,10 +1,9 @@
 package org.eclipse.swt.custom;
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp 2000, 2001
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import java.util.EventListener;
 
 public interface ExtendedModifyListener extends EventListener {
