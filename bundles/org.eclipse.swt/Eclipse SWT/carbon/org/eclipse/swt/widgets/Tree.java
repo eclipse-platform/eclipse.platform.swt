@@ -911,12 +911,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	Shell shell = getShell ();
-    /*
-     * Silenio:
-     * This is nasty, but it was the best we could do. Oddly enough, 
-     * it doesn't bring the shell forward on McQ's machine.
-     */
-	shell.bringToTop (false);
+	shell.bringToTop (true);
 	/*
 	* Feature in the Macintosh.  For some reason, when the user
 	* clicks on the data browser, focus is assigned, then lost

@@ -554,8 +554,8 @@ Cursor findCursor () {
  */
 public void forceActive () {
 	checkWidget ();
-	OS.SetFrontProcess (new int [] {0, OS.kCurrentProcess});
 	OS.SelectWindow (shellHandle);
+	OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 }
 
 public Rectangle getClientArea () {
