@@ -1607,6 +1607,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					tvItem = new TVITEM ();
 					int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
 					OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);
+					hAnchor = tvItem.hItem;
 				} else {
 					int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 					if (hItem != 0) {
@@ -1618,10 +1619,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 				Event event = new Event ();
 				if (tvItem != null) {
-					/*
-					* This code is intentionally commented.
-					*/
-//					hAnchor = tvItem.hItem;
 					event.item = items [tvItem.lParam];
 				}
 				if (code == OS.TVN_SELCHANGED) {
