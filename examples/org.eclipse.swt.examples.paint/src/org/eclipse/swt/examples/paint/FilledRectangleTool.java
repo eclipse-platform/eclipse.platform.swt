@@ -48,9 +48,9 @@ public class FilledRectangleTool extends DragInteractivePaintSession implements 
 	 * Template methods for drawing
 	 */
 	protected Meta createMeta(Point a, Point b) {
-		Meta.Container container = new Meta.Container();
-		container.add(new Meta.Rectangle(drawFGColor, a.x, a.y, b.x, b.y));
-		container.add(new Meta.SolidRectangle(drawBGColor,
+		MetaContainer container = new MetaContainer();
+		container.add(new MetaRectangle(drawFGColor, a.x, a.y, b.x, b.y));
+		container.add(new MetaSolidRectangle(drawBGColor,
 			Math.min(a.x, b.x) + 1, Math.min(a.y, b.y) + 1,
 			Math.max(a.x, b.x) - 1, Math.max(a.y, b.y) - 1));
 		return container;
