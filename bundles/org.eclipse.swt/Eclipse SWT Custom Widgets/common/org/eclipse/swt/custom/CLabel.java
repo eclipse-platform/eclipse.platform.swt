@@ -548,7 +548,7 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
 		}
 		if (getDisplay().getDepth() < 15) {
 			// Don't use gradients on low color displays
-			colors = new Color[] { colors[0] };
+			colors = new Color[] {colors[colors.length - 1]};
 			percents = new int[] { };
 		}
 		for (int i = 0; i < percents.length; i++) {

@@ -2300,7 +2300,7 @@ void setBackground(Color[] colors, int[] percents, boolean vertical) {
 		}
 		if (getDisplay().getDepth() < 15) {
 			// Don't use gradients on low color displays
-			colors = new Color[] {colors[0]};
+			colors = new Color[] {colors[colors.length - 1]};
 			percents = new int[] {};
 		}
 	}
@@ -3021,7 +3021,7 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
 		}
 		if (getDisplay().getDepth() < 15) {
 			// Don't use gradients on low color displays
-			colors = new Color[] {colors[0]};
+			colors = new Color[] {colors[colors.length - 1]};
 			percents = new int[] {};
 		}
 	}
