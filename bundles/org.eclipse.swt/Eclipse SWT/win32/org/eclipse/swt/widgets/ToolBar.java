@@ -989,7 +989,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				event.x = rect.left;
 				event.y = rect.bottom;
 				child.postEvent (SWT.Selection, event);
-				break;
 			}
 			break;
 		case OS.NM_CUSTOMDRAW: 
