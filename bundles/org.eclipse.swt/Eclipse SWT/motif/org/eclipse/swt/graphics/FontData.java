@@ -6,6 +6,7 @@ package org.eclipse.swt.graphics;
  */
 
 import org.eclipse.swt.*;
+import java.util.Locale;
  
 /**
  * Instances of this class describe operating system fonts.
@@ -103,6 +104,12 @@ public final class FontData {
 	 * Warning: This field is platform dependent.
 	 */
 	public String characterSetName;
+
+	/**
+	 * The locale of the font
+	 * (Warning: This field is platform dependent)
+	 */
+	Locale locale;
 /**	 
  * Constructs a new un-initialized font data.
  */
@@ -380,6 +387,15 @@ public void setName(String name) {
 	} else {
 		fontFamily = name;
 	}
+}
+/**
+ * Sets the locale of the receiver.
+ *
+ * @param locale the Locale of the <code>FontData</code>
+ *
+ */
+public void setLocale(Locale locale) {
+	this.locale = locale;
 }
 /**
  * Sets the style of the receiver to the argument which must
