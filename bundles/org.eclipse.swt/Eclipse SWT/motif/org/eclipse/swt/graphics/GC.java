@@ -153,6 +153,7 @@ public void dispose () {
 	drawable = null;
 	data.device = null;
 	data.image = null;
+	data.codePage = null;
 	data = null;
 	handle = 0;
 }
@@ -2262,12 +2263,10 @@ public void setClipping (Region region) {
  */
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (font == null) {
-		data.fontList = data.device.systemFont.handle;
-	} else {
-		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		data.fontList = font.handle;
-	}
+	if (font == null) font = data.device.systemFont;
+	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	data.fontList = font.handle;
+	data.codePage = font.codePage;
 	if (data.renderTable != 0) OS.XmRenderTableFree(data.renderTable);
 	data.renderTable = 0;
 }
