@@ -177,9 +177,10 @@ void hookEvents () {
 	* The signal is hooked to the fixedHandle to catch events sent to
 	* lightweight widgets.
 	*/
-	OS.g_signal_connect_after (fixedHandle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
-	OS.g_signal_connect_after (fixedHandle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
-	OS.g_signal_connect_after (fixedHandle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
+	int /*long*/ blockHandle = fixedHandle != 0 ? fixedHandle : eventHandle;
+	OS.g_signal_connect_after (blockHandle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
+	OS.g_signal_connect_after (blockHandle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
+	OS.g_signal_connect_after (blockHandle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
 
 	/* Connect the event_after signal for both key and mouse */
 	OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
