@@ -130,7 +130,7 @@ public FontData open () {
 		OS.gtk_window_set_transient_for(handle, parent.topHandle);
 	}
 	if (fontData != null) {
-		byte[] buffer = Converter.wcsToMbcs(null, fontData.getXlfd(), true);
+		byte[] buffer = Converter.wcsToMbcs(null, fontData.gtk_getXlfd(), true);
 		OS.gtk_font_selection_set_font_name(dialog.fontsel, buffer);
 	}
 	Callback destroyCallback = new Callback (this, "destroyFunc", 2);
