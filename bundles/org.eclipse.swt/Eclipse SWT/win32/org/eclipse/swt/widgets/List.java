@@ -1541,8 +1541,8 @@ public void showSelection () {
 	OS.GetClientRect (handle, rect);
 	int topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	int visibleCount = Math.max (rect.bottom / height, 1);
-	int bottomIndex = Math.min (topIndex + visibleCount + 1, count - 1);
-	if ((topIndex <= index) && (index <= bottomIndex)) return;
+	int bottomIndex = Math.min (topIndex + visibleCount, count) - 1;
+	if (topIndex <= index && index <= bottomIndex) return;
 	int newTop = Math.min (Math.max (index - (visibleCount / 2), 0), count - 1);
 	OS.SendMessage (handle, OS.LB_SETTOPINDEX, newTop, 0);
 }
