@@ -6898,6 +6898,7 @@ public void setSelection(int start) {
  * </p>
  *
  * @param point x=selection start offset, y=selection end offset
+ * 	The caret will be placed at the selection start when x > y.
  * @see #setSelection(int,int)
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -6923,7 +6924,8 @@ public void setSelection(Point point) {
  * N+1 caret positions, ranging from 0..N
  * </p>
  *
- * @param start selection start offset
+ * @param start selection start offset. The caret will be placed at the 
+ * 	selection start when start > end.
  * @param end selection end offset
  * @see #setSelectionRange(int,int)
  * @exception SWTException <ul>
@@ -6947,8 +6949,9 @@ public void setSelection(int start, int end) {
  * <p>
  *
  * @param start offset of the first selected character, start >= 0 must be true.
- * @param length number of characters to select, start <= start + length <= getCharCount() 
+ * @param length number of characters to select, 0 <= start + length <= getCharCount() 
  * 	must be true.
+ * 	A negative length places the caret at the selection start.
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -6964,7 +6967,7 @@ public void setSelectionRange(int start, int length) {
 	int contentLength = getCharCount();
 	int end = start + length;
 	
-	if (start > end || start < 0 || end > contentLength) {
+	if (start < 0 || end < 0 || start > contentLength || end > contentLength) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}
 	if (isLineDelimiter(start) || isLineDelimiter(end)) {
@@ -6987,22 +6990,36 @@ public void setSelectionRange(int start, int length) {
  * <p>
  *
  * @param start offset of the first selected character, start >= 0 must be true.
- * @param length number of characters to select, start <= start + length 
- * 	<= getCharCount() must be true.
- * @param sendEvent	a Selection event is sent when set to true and when 
+ * @param length number of characters to select, 0 <= start + length 
+ * 	<= getCharCount() must be true. 
+ * 	A negative length places the caret at the selection start.
+ * @param sendEvent a Selection event is sent when set to true and when 
  * 	the selection is reset.
  */
 void internalSetSelection(int start, int length, boolean sendEvent) {
 	int end = start + length;
 	
-	if (selection.x != start || selection.y != end) {
+	if (start > end) {
+		int temp = end;
+		end = start;
+		start = temp;
+	}
+	// is the selection range different or is the selection direction 
+	// different?
+	if (selection.x != start || selection.y != end || 
+		(length > 0 && selectionAnchor != selection.x) || 
+		(length < 0 && selectionAnchor != selection.y)) {
 		clearSelection(sendEvent);
-		selectionAnchor = selection.x = start;
-		caretOffset = selection.y = end;
-		caretLine = content.getLineAtOffset(caretOffset);
-		if (length > 0) {
-			internalRedrawRange(selection.x, selection.y - selection.x, true);
+		if (length < 0) {
+			selectionAnchor = selection.y = end;
+			caretOffset = selection.x = start;
 		}
+		else {
+			selectionAnchor = selection.x = start;
+			caretOffset = selection.y = end;
+		}
+		caretLine = content.getLineAtOffset(caretOffset);
+		internalRedrawRange(selection.x, selection.y - selection.x, true);
 	}
 }
 /** 
