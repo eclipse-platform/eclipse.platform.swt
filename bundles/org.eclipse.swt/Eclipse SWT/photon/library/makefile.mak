@@ -1,7 +1,7 @@
  # Makefile for module 'swt'
 
 maj_ver=0
-min_ver=108
+min_ver=110
 revision=0
 
 #assumes IVE_HOME is set in the environment
