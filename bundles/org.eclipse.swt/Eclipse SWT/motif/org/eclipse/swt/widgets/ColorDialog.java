@@ -44,7 +44,6 @@ public class ColorDialog extends Dialog {
 
 	private boolean okSelected;
 	private RGB rgb;
-	private int colorDepth;								// color depth of the display
 	private int colorSwatchExtent;						// the size of each color square
 	private Color colorGrid[][];						// the colors displayed in the dialog
 	
@@ -425,7 +424,6 @@ void paint(Event event) {
 	}
 }
 void setColorDepth(int bits) {
-	colorDepth = bits;
 	if (bits == 4) {
 		colorSwatchExtent = COLORSWATCH_SIZE_DEPTH4;
 		colorGrid = new Color[8][2];
