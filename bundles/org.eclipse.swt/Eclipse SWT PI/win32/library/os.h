@@ -58,6 +58,7 @@
 #define NO_GCP_RESULTS
 #define NO_GRADIENT_RECT
 #define NO_HELPINFO
+#define NO_MENUBARINFO
 #define NO_MENUINFO
 #define NO_NMREBARCHEVRON
 #define NO_NMTTDISPINFO
@@ -176,10 +177,12 @@
 #define NO_GetLayout
 #define NO_GetLocaleInfoA
 #define NO_GetMenu
+#define NO_GetMenuBarInfo
 #define NO_GetMenuDefaultItem
 #define NO_GetMenuInfo
 #define NO_GetMenuItemCount
 #define NO_GetMenuItemInfoA
+#define NO_GetMenuItemRect
 #define NO_GetMessageA
 #define NO_GetMessageTime
 #define NO_GetModuleHandleA
