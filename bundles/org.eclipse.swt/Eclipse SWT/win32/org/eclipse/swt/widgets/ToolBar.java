@@ -876,56 +876,8 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (code == 0) return LRESULT.ZERO;
 		return new LRESULT (code);
 	}
-
-	/*
-	* Feature in Windows.  When a tool bar that contains
-	* separators is wrapped, under certain circumstances,
-	* Windows redraws the entire tool bar unnecessarily
-	* when resized and no item moves.  Whether the entire
-	* toolbar is damaged or not seems to depend on the size
-	* of the tool bar and the position of the separators.
-	* The fix is to ensure that the newly exposed areas are
-	* always damaged, and avoid the redraw when no tool item
-	* moves.
-	*/
-	RECT [] rects = null;
-	int rgn = 0, oldCount = 0;
-	boolean fixRedraw = drawCount == 0 &&
-		(style & SWT.WRAP) != 0 &&
-		OS.IsWindowVisible (handle) &&
-		OS.SendMessage (handle, OS.TB_GETROWS, 0, 0) != 1;
-	if (fixRedraw) {
-		rgn = OS.CreateRectRgn (0, 0, 0, 0);
-		OS.GetUpdateRgn (handle, rgn, false);
-		oldCount = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
-		rects = new RECT [oldCount];
-		for (int i=0; i<oldCount; i++) {
-			rects [i] = new RECT ();
-			OS.SendMessage (handle, OS.TB_GETITEMRECT, i, rects [i]);
-		}
-	}
-
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	if (isDisposed ()) return result;
-
-	if (fixRedraw) {
-		int newCount = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
-		if (newCount == oldCount) {
-			int index = 0;
-			RECT rect = new RECT ();
-			while (index < newCount) {
-				OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
-				if (!OS.EqualRect (rects [index], rect)) break;
-				index++;
-			}
-			if (index == newCount) {
-				OS.ValidateRect (handle, null);
-				OS.InvalidateRgn (handle, rgn, false);
-			}
-		}
-		OS.DeleteObject (rgn);
-	}
-
 	layoutItems ();
 	return result;
 }
@@ -933,17 +885,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam, lParam);
 	if (result != null) return result;
-	/*
-	* Feature in Windows.  When a tool bar that contains
-	* separators is wrapped, under certain circumstances,
-	* Windows redraws the entire tool bar unnecessarily
-	* when resized no item is moves.  Whether the entire
-	* toolbar is damaged or not seems to depend on the
-	* size of the tool bar and the position of the separators.
-	* The fix is to ensure that the newly exposed areas are
-	* always damaged, and avoid the redraw when no tool item
-	* moves.
-	*/
 	if (drawCount != 0) return result;
 	if ((style & SWT.WRAP) == 0) return result;
 	if (!OS.IsWindowVisible (handle)) return result;
