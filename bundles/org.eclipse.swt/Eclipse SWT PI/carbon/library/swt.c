@@ -164,6 +164,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUCreateTextLayout)
 }
 #endif
 
+#ifndef NO_ATSUCreateTextLayoutWithTextPtr
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSUCreateTextLayoutWithTextPtr
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintArray arg5, jintArray arg6, jintArray arg7)
+{
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUCreateTextLayoutWithTextPtr\n")
+
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	rc = (jint)ATSUCreateTextLayoutWithTextPtr((ConstUniCharArrayPtr)arg0, arg1, arg2, arg3, arg4, (const UniCharCount *)lparg5, (ATSUStyle *)lparg6, (ATSUTextLayout *)lparg7);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUDisposeStyle
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUDisposeStyle)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -271,6 +293,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUSetTextPointerLocation)
 	DEBUG_CALL("ATSUSetTextPointerLocation\n")
 
 	return (jint)ATSUSetTextPointerLocation((ATSUTextLayout)arg0, (ConstUniCharArrayPtr)arg1, (UniCharArrayOffset)arg2, (UniCharCount)arg3, (UniCharCount)arg4);
+}
+#endif
+
+#ifndef NO_ATSUTextDeleted
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSUTextDeleted
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("ATSUTextDeleted\n")
+
+	return (jint)ATSUTextDeleted((ATSUTextLayout)arg0, arg1, arg2);
+}
+#endif
+
+#ifndef NO_ATSUTextInserted
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSUTextInserted
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("ATSUTextInserted\n")
+
+	return (jint)ATSUTextInserted((ATSUTextLayout)arg0, arg1, arg2);
 }
 #endif
 
@@ -715,6 +757,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetFillC
 }
 #endif /* NO_CGContextSetFillColorSpace */
 
+#ifndef NO_CGContextSetFont
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetFont
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CGContextSetFont\n")
+
+	CGContextSetFont((CGContextRef)arg0, (CGFontRef)arg1);
+}
+#endif
+
 #ifndef NO_CGContextSetFontSize
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetFontSize
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
@@ -782,6 +834,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetStrok
 	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
 }
 #endif /* NO_CGContextSetStrokeColor */
+
+#ifndef NO_CGContextSetShouldAntialias
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetShouldAntialias
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("CGContextSetShouldAntialias\n")
+
+	CGContextSetShouldAntialias((CGContextRef)arg0, arg1);
+}
+#endif
 
 #ifndef NO_CGContextSetStrokeColorSpace
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetStrokeColorSpace
@@ -918,6 +980,32 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGDataProviderRel
 	CGDataProviderRelease((CGDataProviderRef)arg0);
 }
 #endif /* NO_CGDataProviderRelease */
+
+#ifndef NO_CGFontCreateWithPlatformFont
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGFontCreateWithPlatformFont
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("CGFontCreateWithPlatformFont\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)CGFontCreateWithPlatformFont((void *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGFontRelease
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGFontRelease
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CGFontRelease\n")
+
+	CGFontRelease((CGFontRef)arg0);
+}
+#endif
 
 #ifndef NO_CGImageCreate
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGImageCreate
@@ -2146,6 +2234,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(FMDisposeFontFamilyInstanceIterator)
 	DEBUG_CALL("FMDisposeFontFamilyInstanceIterator\n")
 
 	return (jint)FMDisposeFontFamilyInstanceIterator((FMFontFamilyInstanceIterator *)arg0);
+}
+#endif
+
+#ifndef NO_FMGetATSFontRefFromFont
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetATSFontRefFromFont
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("FMGetATSFontRefFromFont\n")
+
+	return (jint)FMGetATSFontRefFromFont((FMFont)arg0);
 }
 #endif
 
@@ -7458,6 +7556,20 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_Rect_2
 	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setRectFields(env, arg0, lparg0);
+}
+#endif
+
+#ifndef NO_memcpy__ILjava_lang_String_2I
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILjava_lang_String_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	const jchar *lparg1= NULL;
+
+	DEBUG_CALL("memcpy__ILjava_lang_String_2I\n")
+
+	if (arg1) lparg1 = (*env)->GetStringChars(env, arg1, NULL);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseStringChars(env, arg1, lparg1);
 }
 #endif
 

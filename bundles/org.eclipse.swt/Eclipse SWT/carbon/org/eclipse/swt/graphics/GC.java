@@ -725,7 +725,6 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (length == 0) return;
 	OS.CGContextSaveGState(handle);
 	OS.CGContextScaleCTM(handle, 1, -1);
-	OS.CGContextTranslateCTM(handle, 0, -data.fontAscent);
 	OS.CGContextSetFillColor(handle, data.foreground);
 	if (string != data.string) {
 		if (data.stringPtr != 0) OS.DisposePtr(data.stringPtr);
@@ -740,7 +739,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 		data.string = string;
 		data.stringPtr = ptr;
 	}
-	OS.ATSUDrawText(data.layout, 0, length, x << 16, -y << 16);
+	OS.ATSUDrawText(data.layout, 0, length, x << 16, -(y + data.fontAscent) << 16);
 	OS.CGContextRestoreGState(handle);
 }
 
