@@ -222,14 +222,15 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 Point computeNativeSize (int h, int wHint, int hHint, boolean changed) {
-	OS.gtk_widget_set_usize(h, wHint==SWT.DEFAULT? -1:wHint, hHint==SWT.DEFAULT? -1:hHint);
-	GtkRequisition requisition = new GtkRequisition();
-	OS.gtk_widget_size_request(h, requisition);
-	/* This is the only place where we use the horrible and deprecated
-	 * set_usize, so we don't need to restore the previous value
-	 */
-	OS.gtk_widget_set_usize(h, -1, -1);
-	return new Point (requisition.width, requisition.height);	
+	int width = OS.GTK_WIDGET_WIDTH (h);
+	int height = OS.GTK_WIDGET_HEIGHT (h);
+	OS.gtk_widget_set_size_request (h, -1, -1);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (h, requisition);
+	OS.gtk_widget_set_size_request (h, width, height);
+	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	return new Point (width, height);	
 }
 
 /**
