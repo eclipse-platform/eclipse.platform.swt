@@ -1786,6 +1786,30 @@ static boolean isValidClass (Class clazz) {
 	int index = name.lastIndexOf ('.');
 	return name.substring (0, index + 1).equals (PACKAGE_PREFIX);
 }
+public Rectangle map (Control from, Control to, Rectangle rectangle) {
+	checkDevice();
+	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+}
+public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
+	checkDevice();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Rectangle rect = new Rectangle (x, y, width, height);
+	if (from != null) {
+		short [] root_x = new short [1], root_y = new short [1];
+		OS.XtTranslateCoords (from.handle, (short) x, (short) y, root_x, root_y);
+		rect.x = root_x [0];
+		rect.y = root_y [0];
+	}
+	if (to != null) {
+		short [] root_x = new short [1], root_y = new short [1];
+		OS.XtTranslateCoords (to.handle, (short) 0, (short) 0, root_x, root_y);
+		rect.x -= root_x [0];
+		rect.y -= root_y [0];
+	}
+	return rect;
+}
 int mouseHoverProc (int handle, int id) {
 	mouseHoverID = mouseHoverHandle = 0;
 	Widget widget = WidgetTable.get (handle);

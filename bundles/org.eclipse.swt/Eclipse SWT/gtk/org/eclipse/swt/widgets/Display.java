@@ -1436,6 +1436,38 @@ boolean isValidThread () {
 	return thread == Thread.currentThread ();
 }
 
+public Rectangle map (Control from, Control to, Rectangle rectangle) {
+	checkDevice();
+	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+}
+
+public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
+	checkDevice();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Rectangle rect = new Rectangle (x, y, width, height);
+	if (from != null) {
+		int eventHandle = from.eventHandle ();
+		OS.gtk_widget_realize (eventHandle);
+		int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int [] origin_x = new int [1], origin_y = new int [1];
+		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		rect.x += origin_x [0];
+		rect.y += origin_y [0];
+	}
+	if (to != null) {
+		int eventHandle = to.eventHandle ();
+		OS.gtk_widget_realize (eventHandle);
+		int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+		int [] origin_x = new int [1], origin_y = new int [1];
+		OS.gdk_window_get_origin (window, origin_x, origin_y);
+		rect.x -= origin_x [0];
+		rect.y -= origin_y [0];
+	}
+	return rect;
+}
+
 int mouseHoverProc (int handle) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;

@@ -1588,6 +1588,40 @@ void postEvent (Event event) {
 	}
 	eventQueue [index] = event;
 }
+
+public Rectangle map (Control from, Control to, Rectangle rectangle) {
+	checkDevice ();
+	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+}
+
+public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
+	checkDevice ();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Rectangle rectangle = new Rectangle (x, y, width, heitgh);
+	if (from != null) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (from.handle, rect);
+		rectangle.x += rect.left; 
+		rectangle.y += rect.top;
+		int window = OS.GetControlOwner (from.handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		rectangle.x += rect.left;
+		rectangle.y += rect.top;
+	}
+	if (to != null) {
+		Rect rect = new Rect ();
+		OS.GetControlBounds (to.handle, rect);
+		rectangle.x -= rect.left; 
+		rectangle.y -= rect.top;
+		int window = OS.GetControlOwner (to.handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		rectangle.x -= rect.left;
+		rectangle.y -= rect.top;
+	}
+	return rectangle;
+}
 	
 int menuProc (int nextHandler, int theEvent, int userData) {
 	if (userData != 0) {

@@ -1401,6 +1401,32 @@ static boolean isValidClass (Class clazz) {
 	return name.substring (0, index + 1).equals (PACKAGE_NAME);
 }
 
+public Rectangle map (Control from, Control to, Rectangle rectangle) {
+	checkDevice ();
+	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+}
+
+public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
+	checkDevice ();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	Rectangle rect = new Rectangle (x, y, width, heitgh);
+	if (from != null) {
+		short [] position_x = new short [1], position_y = new short [1];
+		OS.PtGetAbsPosition (from.handle, position_x, position_y);
+		rect.x += position_x [0];
+		rect.y += position_y [0];
+	}
+	if (to != null) {
+		short [] position_x = new short [1], position_y = new short [1];
+		OS.PtGetAbsPosition (to.handle, position_x, position_y);
+		rect.x -= position_x [0];
+		rect.y -= position_y [0];
+	}
+	return rect;
+}
+	
 void postEvent (Event event) {
 	/*
 	* Place the event at the end of the event queue.
