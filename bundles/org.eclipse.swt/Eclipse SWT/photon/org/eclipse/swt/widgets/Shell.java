@@ -104,6 +104,7 @@ public class Shell extends Decorations {
 	Menu activeMenu;
 	int blockedList;
 	Control lastActive;
+	Region region;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -530,29 +531,6 @@ public Rectangle getBounds () {
 	return new Rectangle (area.pos_x, area.pos_y, width, height);
 }
 
-/** 
- * Sets the region managed by the argument to the current
- * shape of the shell.
- *
- * @param region the region to fill with the clipping region
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
- * </ul>	
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- *
- */
-public void getClipping (Region region) {
-	checkWidget ();
-	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	// TODO
-}
-
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -602,6 +580,24 @@ public boolean getMinimized () {
 	int [] args = {OS.Pt_ARG_WINDOW_STATE, 0, OS.Ph_WM_STATE_ISICONIFIED};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
 	return (args [1] & OS.Ph_WM_STATE_ISICONIFIED) != 0;
+}
+
+/** 
+ * Returns the region that defines the shape of the shell.
+ *
+ * @return the region that defines the shape of the shell
+ *	
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public Region getRegion () {
+	checkWidget ();
+	return region;
 }
 
 public Shell getShell () {
@@ -793,6 +789,7 @@ void releaseWidget () {
 	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
 	blockedList = 0;
 	lastActive = null;
+	region = null;
 }
 
 /**
@@ -965,27 +962,6 @@ int setBounds (int x, int y, int width, int height, boolean move, boolean resize
 }
 
 /**
- * Sets the shape of the shell to the region specified
- * by the argument.  A null region will restore the default shape.
- * Shell must be created with the style SWT.NO_TRIM.
- *
- * @param rect the clipping region.
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- *
- */
-public void setClipping(Region region) {
-	checkWidget ();
-	if ((style & SWT.NO_TRIM) == 0) return;
-	// TODO
-}
-
-/**
  * Sets the input method editor mode to the argument which 
  * should be the result of bitwise OR'ing together one or more
  * of the following constants defined in class <code>SWT</code>:
@@ -1058,6 +1034,28 @@ public void setMinimized (boolean minimized) {
 		event.event_state = (short) (minimized ? OS.Ph_WM_EVSTATE_HIDE : OS.Ph_WM_EVSTATE_UNHIDE);
 		OS.PtForwardWindowEvent (event);
 	}
+}
+
+/**
+ * Sets the shape of the shell to the region specified
+ * by the argument.  A null region will restore the default shape.
+ * Shell must be created with the style SWT.NO_TRIM.
+ *
+ * @param rgn the region that defines the shape of the shell
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void setRegion (Region region) {
+	checkWidget ();
+	if ((style & SWT.NO_TRIM) == 0) return;
+	// TODO implement setRegion
+	this.region = region;
 }
 
 public void setText (String string) {
