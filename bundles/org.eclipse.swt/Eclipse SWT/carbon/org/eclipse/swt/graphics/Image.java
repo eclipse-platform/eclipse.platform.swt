@@ -724,7 +724,6 @@ void init(Device device, ImageData image) {
 	
 	/* Initialize data */
 	int bpr = width * 4;
-	PaletteData newPalette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 	byte[] buffer = new byte[dataSize];
 	if (palette.isDirect) {
 		ImageData.blit(ImageData.BLIT_SRC,
@@ -748,7 +747,7 @@ void init(Device device, ImageData image) {
 		ImageData.blit(ImageData.BLIT_SRC,
 			image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, srcReds, srcGreens, srcBlues,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
-			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, width, height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
+			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, width, height, 0xFF0000, 0xFF00, 0xFF,
 			false, false);
 	}
 	
