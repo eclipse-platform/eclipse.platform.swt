@@ -607,10 +607,8 @@ public Rectangle getLineBounds(int lineIndex) {
 	int lineCount = breaks.length;
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int lineY = 0;
-	for (int i=0, start=0; i<lineIndex; i++) {
-		int lineBreak = breaks[i];
+	for (int i=0; i<lineIndex; i++) {
 		lineY += lineHeight[i];
-		start = lineBreak;
 	}
 	return new Rectangle(lineX[lineIndex], lineY, lineWidth[lineIndex], lineHeight[lineIndex]);
 }
