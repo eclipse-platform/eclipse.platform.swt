@@ -982,9 +982,9 @@ public Point getCursorLocation () {
 	return new Point (pt.h, pt.v);
 }
 
-public Point getCursorSize () {
+public Point [] getCursorSizes () {
 	checkDevice ();
-	return new Point (16, 16);
+	return new Point [] {new Point (16, 16)};
 }
 
 /**
@@ -1150,6 +1150,13 @@ Control getFocusControl (int window) {
  */
 public int getIconDepth () {
 	return getDepth ();
+}
+
+public Point [] getIconSizes () {
+	checkDevice ();
+	return new Point [] { 
+		new Point (16, 16), new Point (32, 32), 
+		new Point (64, 64), new Point (128, 128)};	
 }
 
 int getLastEventTime () {
