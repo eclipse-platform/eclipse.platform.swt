@@ -331,6 +331,7 @@ void onDispose(DisposeEvent event) {
 	appToolTipText = null;
 }
 void onMnemonic(TraverseEvent event) {
+	if (text == null) return;
 	char mnemonic = findMnemonic(text);
 	if (mnemonic == '\0') return;
 	if (Character.toUpperCase(event.character) != Character.toUpperCase(mnemonic)) return;
