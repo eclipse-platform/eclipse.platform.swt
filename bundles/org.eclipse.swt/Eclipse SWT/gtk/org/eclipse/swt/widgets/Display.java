@@ -183,7 +183,8 @@ public class Display extends Device {
 	int /*long*/ defaultFont;
 
 	/* System Images */
-	int /*long*/ errorImage, infoImage, questionImage, warningImage;
+	int /*long*/ errorPixmap, infoPixmap, questionPixmap, warningPixmap;
+	int /*long*/ errorMask, infoMask, questionMask, warningMask;
 	
 	/* System Cursors */
 	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
@@ -643,16 +644,21 @@ synchronized void createDisplay (DeviceData data) {
 	OS.gdk_event_handler_set (eventProc, 0, 0);
 }
 
-int /*long*/ createImage (String name) {
+int /*long*/[] createImage (String name) {
 	int /*long*/ shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
-	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (shellHandle == 0) return null;
 	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);
 	byte[] buffer = Converter.wcsToMbcs (null, name, true);
-	int /*long*/ image = OS.gtk_icon_set_render_icon (
+	int /*long*/ pixbuf = OS.gtk_icon_set_render_icon (
 		OS.gtk_icon_factory_lookup_default (buffer), style,
 		OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, -1, 0, 0);
 	OS.gtk_widget_destroy (shellHandle);
-	return image;
+	if (pixbuf == 0) return null;
+	int /*long*/[] pixmap_return = new int /*long*/[1];
+	int /*long*/[] mask_return = new int /*long*/[1];
+	OS.gdk_pixbuf_render_pixmap_and_mask (pixbuf, pixmap_return, mask_return, 128);
+	OS.g_object_unref (pixbuf);
+	return new int /*long*/[] {pixmap_return [0], mask_return [0]};
 }
 
 synchronized void deregister () {
@@ -1380,43 +1386,56 @@ public Cursor getSystemCursor (int id) {
 }
 
 public Image getSystemImage (int id) {
-	int /*long*/ image = 0;
+	int /*long*/ imagePixmap = 0, imageMask = 0;
 	switch (id) {
-		case SWT.ICON_ERROR: {
-			if (errorImage == 0) {
-				errorImage = createImage ("gtk-dialog-error");
+		case SWT.ICON_ERROR:
+			if (errorPixmap == 0) {
+				int /*long*/[] image = createImage ("gtk-dialog-error");
+				if (image != null) {
+					errorPixmap = image [0];
+					errorMask = image [1];
+				}
 			}
-			image = errorImage;
+			imagePixmap = errorPixmap;
+			imageMask = errorMask;
 			break;
-		}
 		case SWT.ICON_INFORMATION:
-		case SWT.ICON_WORKING: {
-			if (infoImage == 0) {
-				infoImage = createImage ("gtk-dialog-info");
+		case SWT.ICON_WORKING:
+			if (infoPixmap == 0) {
+				int /*long*/[] image = createImage ("gtk-dialog-info");
+				if (image != null) {
+					infoPixmap = image [0];
+					infoMask = image [1];
+				}
 			}
-			image = infoImage;
+			imagePixmap = infoPixmap;
+			imageMask = infoMask;
 			break;
-		}
-		case SWT.ICON_QUESTION: {
-			if (questionImage == 0) {
-				questionImage = createImage ("gtk-dialog-question");
+		case SWT.ICON_QUESTION:
+			if (questionPixmap == 0) {
+				int /*long*/[] image = createImage ("gtk-dialog-question");
+				if (image != null) {
+					questionPixmap = image [0];
+					questionMask = image [1];
+				}
 			}
-			image = questionImage;
+			imagePixmap = questionPixmap;
+			imageMask = questionMask;
 			break;
-		}
-		case SWT.ICON_WARNING: {
-			if (warningImage == 0) {
-				warningImage = createImage ("gtk-dialog-warning");
+		case SWT.ICON_WARNING:
+			if (warningPixmap == 0) {
+				int /*long*/[] image = createImage ("gtk-dialog-warning");
+				if (image != null) {
+					warningPixmap = image [0];
+					warningMask = image [1];
+				}
 			}
-			image = warningImage;
+			imagePixmap = warningPixmap;
+			imageMask = warningMask;
 			break;
-		}
 	}
-	if (image == 0) return null;
-	int /*long*/[] pixmap_return = new int /*long*/[1];
-	int /*long*/[] mask_return = new int /*long*/[1];
-	OS.gdk_pixbuf_render_pixmap_and_mask (image, pixmap_return, mask_return, 128);
-	return Image.gtk_new (this, SWT.ICON, pixmap_return [0], mask_return [0]);
+	if (imagePixmap == 0) return null;
+	return Image.gtk_new (this, SWT.ICON, imagePixmap, imageMask);
 }
 
 void initializeSystemResources () {
@@ -2019,11 +2038,24 @@ void releaseDisplay () {
 	defaultFont = 0;
 	
 	/* Dispose the System Images */
-	if (errorImage != 0) OS.g_object_unref (errorImage);
-	if (infoImage != 0) OS.g_object_unref (infoImage);
-	if (questionImage != 0) OS.g_object_unref (questionImage);
-	if (warningImage != 0) OS.g_object_unref (warningImage);
-	errorImage = infoImage = questionImage = warningImage = 0;
+	if (errorPixmap != 0) {
+		OS.g_object_unref (errorPixmap);
+		OS.g_object_unref (errorMask);
+	}
+	if (infoPixmap != 0) {
+		OS.g_object_unref (infoPixmap);
+		OS.g_object_unref (infoMask);
+	}
+	if (questionPixmap != 0) {
+		OS.g_object_unref (questionPixmap);
+		OS.g_object_unref (questionMask);
+	}
+	if (warningPixmap != 0) {
+		OS.g_object_unref (warningPixmap);
+		OS.g_object_unref (warningMask);
+	}
+	errorPixmap = infoPixmap = questionPixmap = warningPixmap = 0;
+	errorMask = infoMask = questionMask = warningMask = 0;
 	
 	/* Release the System Cursors */
 	for (int i = 0; i < cursors.length; i++) {
