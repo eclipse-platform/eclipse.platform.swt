@@ -668,6 +668,14 @@ public Display getDisplay () {
 	return display;
 }
 
+int getDrawCount (int control) {
+	return 0;
+}
+
+Rect getInset () {
+	return EMPTY_RECT;
+}
+
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf(".");
@@ -725,14 +733,6 @@ void hookEvents () {
 boolean hooks (int eventType) {
 	if (eventTable == null) return false;
 	return eventTable.hooks (eventType);
-}
-
-int getDrawCount (int control) {
-	return 0;
-}
-
-Rect getInset () {
-	return EMPTY_RECT;
 }
 
 void invalidateVisibleRegion (int control) {
