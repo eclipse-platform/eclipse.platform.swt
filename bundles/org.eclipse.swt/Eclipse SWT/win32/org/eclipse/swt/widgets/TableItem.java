@@ -406,8 +406,13 @@ public Rectangle getImageBounds (int index) {
 	* value even when the subitem does not contain an image.  The
 	* fix is to set the width to zero.
 	*/
-	if (index != 0 && images != null && images [index] == null) {
-		width = 0;
+	if (index != 0) {
+		LVITEM lvItem = new LVITEM ();
+		lvItem.mask = OS.LVIF_IMAGE;
+		lvItem.iItem = itemIndex;
+		lvItem.iSubItem = index;
+		OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
+		if (lvItem.iImage < 0) width = 0;
 	}
 
 	/*
@@ -498,7 +503,7 @@ void redraw (int column, boolean drawText, boolean drawImage) {
 			} else {
 				rect.top = column;
 				if (OS.SendMessage (hwnd, OS. LVM_GETSUBITEMRECT, index, rect) != 0) {
-					if (drawText && !drawImage && images != null && images [column] != null) {
+					if (drawText && !drawImage && images != null) {
 						RECT iconRect = new RECT ();
 						iconRect.left = OS.LVIR_ICON;
 						iconRect.top = column;
