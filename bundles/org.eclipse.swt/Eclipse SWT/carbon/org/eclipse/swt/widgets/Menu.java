@@ -7,9 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -31,9 +31,6 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade, defaultItem;
 	Decorations parent;
-	// AW
-	private static int fgMenuId= 5000;
-	// AW
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -218,7 +215,7 @@ static int checkStyle (int style) {
 void createHandle () {
 	Display display= getDisplay();
 	int menuHandle[]= new int[1];
-	if (OS.CreateNewMenu(fgMenuId++, 0, menuHandle) == OS.kNoErr)
+	if (OS.CreateNewMenu(display.nextMenuId(), 0, menuHandle) == OS.kNoErr)
 		handle= menuHandle[0];
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.RetainMenu(handle);
@@ -837,7 +834,9 @@ public void setLocation (int x, int y) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+	/* AW
 	int hwndParent = parent.handle;
+	*/
 	if (!visible) {
 		/* AW
 		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
