@@ -127,11 +127,6 @@ public Tracker (Display display, int style) {
 	xWindow = calculateWindow();
 }
 
-
-/*
- *   ===  ADD / REMOVE LISTENERS  ===
- */
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -176,10 +171,13 @@ public void close () {
  * Figure which GdkWindow we'll draw on.
  * That's normally the root X window, or the parent's GdkWindow if we have a parent.
  */
-private int calculateWindow() {
+int calculateWindow() {
 	int answer;
-	if (parent == null) answer = OS.GDK_ROOT_PARENT();
-		else answer = OS.GTK_WIDGET_WINDOW(parent.paintHandle());
+	if (parent == null) {
+		answer = OS.GDK_ROOT_PARENT();
+	} else {
+		answer = OS.GTK_WIDGET_WINDOW(parent.paintHandle());
+	} 
 	if (answer==0) error(SWT.ERROR_UNSPECIFIED);
 	return answer;
 }
@@ -227,7 +225,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 	return result;
 }
 
-private void drawRectangles () {
+void drawRectangles () {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		parent.getShell ().update ();
@@ -290,7 +288,8 @@ public boolean getStippled () {
 }
 
 void grab() {
-	ptrGrabResult = OS.gdk_pointer_grab(xWindow,
+	ptrGrabResult = OS.gdk_pointer_grab(
+		xWindow,
 		false,
 		OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK,
 		xWindow,
@@ -370,7 +369,10 @@ public boolean open () {
 		switch (eventType) {
 			case OS.GDK_BUTTON_RELEASE:
 			case OS.GDK_MOTION_NOTIFY:
-				if (cursor != lastCursor) { ungrab(); grab(); }
+				if (cursor != lastCursor) {
+					ungrab();
+					grab();
+				}
 				OS.gdk_window_get_pointer(xWindow, newX,newY, null);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					drawRectangles ();
