@@ -753,7 +753,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 		data.string = string;
 		data.stringPtr = ptr;
 	}
-	OS.ATSUDrawText(data.layout, 0, length, x << 16, -(y + data.fontAscent) << 16);
+	OS.ATSUDrawText(data.layout, 0, length, OS.X2Fix(x), OS.X2Fix(-(y + data.fontAscent)));
 	OS.CGContextRestoreGState(handle);
 }
 
@@ -1749,9 +1749,9 @@ public Point stringExtent(String string) {
 		data.stringPtr = ptr;
 	}	
 	ATSTrapezoid trapezoid = new ATSTrapezoid();
-	OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);	
-	int width = (trapezoid.upperRight_x >> 16) - (trapezoid.upperLeft_x >> 16);
-	int height = (trapezoid.lowerRight_y >> 16) - (trapezoid.upperRight_y >> 16);
+	OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+	int width = OS.Fix2Long(trapezoid.upperRight_x) - OS.Fix2Long(trapezoid.upperLeft_x);
+	int height = OS.Fix2Long(trapezoid.lowerRight_y) - OS.Fix2Long(trapezoid.upperRight_y);
 	return new Point(width, height);
 }
 

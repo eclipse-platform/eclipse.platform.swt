@@ -579,6 +579,7 @@ public static final native void CGContextSetFontSize (int ctx, float size);
 public static final native void CGContextSetLineDash (int ctx, float phase, float[] lengths, int count);
 public static final native void CGContextSetLineWidth (int ctx, float width);
 public static final native void CGContextSetShouldAntialias (int ctx, boolean shouldAntialias);
+public static final native void CGContextSetShouldSmoothFonts (int ctx, boolean shouldSmooth);
 public static final native void CGContextSetStrokeColorSpace (int ctx, int colorspace);
 public static final native void CGContextSetStrokeColor (int ctx, float[] value);
 public static final native void CGContextSetRGBFillColor (int ctx, float r, float g, float b, float alpha);
@@ -836,6 +837,7 @@ public static final native int HIViewGetSubviewHit(int inView, CGPoint inPoint, 
 public static final native int HIViewGetViewForMouseEvent(int inView, int inEvent, int[] outView);
 public static final native boolean HIViewIsVisible(int inView);
 public static final native int HIViewRemoveFromSuperview(int inView);
+public static final native int HIViewSetBoundsOrigin(int inView, float inX, float inY); 
 public static final native int HIViewSetDrawingEnabled(int inView, boolean isEnabled);
 public static final native int HIViewSetFrame(int inView, CGRect inRect);
 public static final native int HIViewSetNeedsDisplay(int inView, boolean inNeedsDisplay);
@@ -1075,6 +1077,7 @@ public static final native void UnionRgn(int srcRgnA, int srcRgnB, int dstRgn);
 public static final native int UnlockPortBits(int portHandle);
 public static final native void UpdateControls(int wHandle, int rgnHandle);
 public static final native int UpdateDataBrowserItems(int cHandle, int container, int numItems, int[] items, int preSortProperty, int propertyID);
+public static final native int X2Fix(double x);
 public static final native int ZoomWindowIdeal(int inWindow, short inPartCode, Point ioIdealSize);
 public static final native void memcpy(ATSTrapezoid dest, int src, int n);
 public static final native void memcpy(byte[] dest, int src, int n);
@@ -1097,6 +1100,4 @@ public static final native void memcpy(Rect dest, int src, int n);
 public static final native void memcpy(int dest, Rect src, int n);
 public static final native void memcpy(int dest, String src, int n);
 public static final native void memset(int dest, int value, int size);
-
-public static final native int HIViewSetBoundsOrigin(int inView, float inX, float inY); 
 }

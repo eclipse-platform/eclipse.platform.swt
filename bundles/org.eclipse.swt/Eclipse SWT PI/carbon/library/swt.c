@@ -864,6 +864,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetShoul
 }
 #endif
 
+#ifndef NO_CGContextSetShouldSmoothFonts
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetShouldSmoothFonts
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("CGContextSetShouldSmoothFonts\n")
+
+	CGContextSetShouldSmoothFonts((CGContextRef)arg0, arg1);
+}
+#endif
+
 #ifndef NO_CGContextSetStrokeColorSpace
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSetStrokeColorSpace
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -7641,6 +7651,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset
 	memset((void *)arg0, arg1, arg2);
 }
 #endif /* NO_memset */
+
+#ifndef NO_X2Fix
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_X2Fix
+	(JNIEnv *env, jclass that, jdouble arg0)
+{
+	DEBUG_CALL("X2Fix\n")
+
+	return (jint)X2Fix(arg0);
+}
+#endif
 
 #ifndef NO_ZoomWindowIdeal
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ZoomWindowIdeal

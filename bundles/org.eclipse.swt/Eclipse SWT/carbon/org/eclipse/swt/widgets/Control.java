@@ -454,7 +454,11 @@ public int internal_new_GC (GCData data) {
 	if (context == 0) {
 		int window = OS.GetControlOwner (handle);
 		int port = OS.GetWindowPort (window);
-		OS.CreateCGContextForPort (port, buffer);
+		if (false && data.paintEvent != 0) {
+			OS.QDBeginCGContext(port, buffer);
+		} else {
+			OS.CreateCGContextForPort (port, buffer);
+		}
 		context = buffer [0];
 		if (context != 0) {
 			Rect rect = new Rect ();
@@ -500,6 +504,12 @@ public void internal_dispose_GC (int context, GCData data) {
 			OS.DisposeRgn (data.visibleRgn);
 			data.visibleRgn = 0;
 		}
+		if (false && data.paintEvent != 0) {
+			int window = OS.GetControlOwner (handle);
+			int port = OS.GetWindowPort (window);
+			OS.QDEndCGContext(port, new int[]{context});
+			return;
+		}	
 		if (paintContext == context) return;
 	}
 	OS.CGContextFlush (context);

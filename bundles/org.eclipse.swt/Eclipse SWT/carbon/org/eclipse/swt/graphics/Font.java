@@ -151,7 +151,7 @@ int createStyle () {
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int ptr = OS.NewPtr(16);
 	OS.memcpy(ptr, new int[]{handle}, 4); 
-	OS.memcpy(ptr + 4, new int[]{size << 16}, 4); 
+	OS.memcpy(ptr + 4, new int[]{OS.X2Fix(size)}, 4); 
 	OS.memcpy(ptr + 8, new byte[]{(style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
 	OS.memcpy(ptr + 9, new byte[]{(style & OS.italic) != 0 ? (byte)1 : 0}, 1); 
 	int[] tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag, OS.kATSUQDBoldfaceTag, OS.kATSUQDItalicTag};

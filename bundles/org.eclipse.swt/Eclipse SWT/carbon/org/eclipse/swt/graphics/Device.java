@@ -261,7 +261,7 @@ public Point getDPI () {
 	OS.memcpy(ptr, device.gdPMap, 4);
 	PixMap pixmap = new PixMap();
 	OS.memcpy(pixmap, ptr[0], PixMap.sizeof);
-	return new Point (pixmap.hRes >> 16, pixmap.vRes >> 16);
+	return new Point (OS.Fix2Long (pixmap.hRes), OS.Fix2Long (pixmap.vRes));
 }
 
 /**

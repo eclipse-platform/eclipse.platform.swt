@@ -829,6 +829,7 @@ public int internal_new_GC (GCData data) {
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.CGContextScaleCTM(context, 1, -1);
 	OS.CGContextTranslateCTM(context, 0, -height);
+	OS.CGContextSetShouldSmoothFonts(context, false);
 	if (data != null) {
 		data.device = device;
 		data.background = device.COLOR_WHITE.handle;
