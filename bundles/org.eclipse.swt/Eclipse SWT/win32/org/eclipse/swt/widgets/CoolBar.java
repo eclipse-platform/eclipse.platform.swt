@@ -305,7 +305,7 @@ void destroyItem (CoolItem item) {
 	* When a wrapped item is being deleted, make the next
 	* item in the row wrapped in order to preserve the row.
 	* In order to avoid an unnecessary layout, temporarily
-	* ignore WM_SIZE.  If the next item is wrappedm then a
+	* ignore WM_SIZE.  If the next item is wrapped then a
 	* row will be deleted and the WM_SIZE is necessary.
 	*/
 	CoolItem nextItem = null;
