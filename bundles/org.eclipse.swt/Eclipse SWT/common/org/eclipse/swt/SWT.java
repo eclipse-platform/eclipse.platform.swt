@@ -621,7 +621,7 @@ public class SWT {
 	 * ASCII character convenience constant for the backspace character
 	 * (value is the <code>char</code> '\b')
 	 */
-      public static final char BS = '\b';
+	public static final char BS = '\b';
 
 	/**
 	 * ASCII character convenience constant for the carriage return character
