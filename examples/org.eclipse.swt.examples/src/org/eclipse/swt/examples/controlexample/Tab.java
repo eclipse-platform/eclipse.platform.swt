@@ -1099,32 +1099,7 @@ abstract class Tab {
 			}
 			controls [i].setLayoutData (gridData);
 		}
-		/*
-		 * Force the entire widget tree to layout,
-		 * even when the child sizes may not have
-		 * changed.
-		 */
-		int seenCount = 0;
-		Composite [] seen = new Composite [4];
-		for (int i=0; i<controls.length; i++) {
-			Control control = controls [i];
-			while (control != exampleGroup) {
-				Composite parent = control.getParent ();
-				int index = 0;
-				while (index < seenCount) {
-					if (seen [index] == parent) break;
-					index++;
-				}
-				if (index == seenCount) parent.layout ();
-				if (seenCount == seen.length) {
-					Composite [] newSeen = new Composite [seen.length + 4];
-					System.arraycopy (seen, 0, newSeen, 0, seen.length);
-					seen = newSeen;
-				}
-				seen [seenCount++] = parent;
-				control = control.getParent ();
-			}
-		}
+		exampleGroup.layout (controls);
 	}
 	
 	/**
