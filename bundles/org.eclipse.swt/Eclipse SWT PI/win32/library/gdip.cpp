@@ -4,7 +4,7 @@
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
 * http://www.eclipse.org/legal/epl-v10.html
-* 
+*
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
@@ -561,6 +561,30 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetInterpolationMode)
 }
 #endif
 
+#ifndef NO_Graphics_1GetSmoothingMode
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetSmoothingMode)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1GetSmoothingMode_FUNC);
+	rc = (jint)((Graphics *)arg0)->GetSmoothingMode();
+	Gdip_NATIVE_EXIT(env, that, Graphics_1GetSmoothingMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1GetTextRenderingHint
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTextRenderingHint)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1GetTextRenderingHint_FUNC);
+	rc = (jint)((Graphics *)arg0)->GetTextRenderingHint();
+	Gdip_NATIVE_EXIT(env, that, Graphics_1GetTextRenderingHint_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Graphics_1GetTransform
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetTransform)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -633,6 +657,30 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetInterpolationMode)
 	Gdip_NATIVE_ENTER(env, that, Graphics_1SetInterpolationMode_FUNC);
 	rc = (jint)((Graphics *)arg0)->SetInterpolationMode((InterpolationMode)arg1);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1SetInterpolationMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1SetSmoothingMode
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetSmoothingMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetSmoothingMode_FUNC);
+	rc = (jint)((Graphics *)arg0)->SetSmoothingMode((SmoothingMode)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetSmoothingMode_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Graphics_1SetTextRenderingHint
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetTextRenderingHint)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1SetTextRenderingHint_FUNC);
+	rc = (jint)((Graphics *)arg0)->SetTextRenderingHint((TextRenderingHint)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1SetTextRenderingHint_FUNC);
 	return rc;
 }
 #endif

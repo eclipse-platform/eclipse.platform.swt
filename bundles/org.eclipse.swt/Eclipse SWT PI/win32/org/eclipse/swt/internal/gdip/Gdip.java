@@ -72,13 +72,17 @@ public static final native int Graphics_FillRectangle(int graphics, int brush, i
 public static final native int Graphics_GetClipBounds(int graphics, RectF rect);
 public static final native int Graphics_GetClipBounds(int graphics, Rect rect);
 public static final native int Graphics_GetInterpolationMode(int graphics);
+public static final native int Graphics_GetSmoothingMode(int graphics);
+public static final native int Graphics_GetTextRenderingHint(int graphics);
 public static final native int Graphics_GetTransform(int graphics, int matrix);
 public static final native int Graphics_ResetClip(int graphics);
 public static final native int Graphics_SetClip(int graphics, int hrgn, int combineMode);
 public static final native int Graphics_SetClip(int graphics, int path);
 public static final native int Graphics_SetClip(int graphics, RectF rect);
+public static final native int Graphics_SetSmoothingMode(int graphics, int smoothingMode);
 public static final native int Graphics_SetTransform(int graphics, int matrix);
 public static final native int Graphics_SetInterpolationMode(int graphics, int mode);
+public static final native int Graphics_SetTextRenderingHint(int graphics, int mode);
 public static final native int Color_new(int argb);
 public static final native void Color_delete(int color);
 public static final native int Font_new(int hdc, int hfont);

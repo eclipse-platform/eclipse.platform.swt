@@ -4,7 +4,7 @@
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
 * http://www.eclipse.org/legal/epl-v10.html
-* 
+*
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
@@ -66,12 +66,16 @@ typedef enum {
 	Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
 	Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2_FUNC,
 	Graphics_1GetInterpolationMode_FUNC,
+	Graphics_1GetSmoothingMode_FUNC,
+	Graphics_1GetTextRenderingHint_FUNC,
 	Graphics_1GetTransform_FUNC,
 	Graphics_1ResetClip_FUNC,
 	Graphics_1SetClip__II_FUNC,
 	Graphics_1SetClip__III_FUNC,
 	Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2_FUNC,
 	Graphics_1SetInterpolationMode_FUNC,
+	Graphics_1SetSmoothingMode_FUNC,
+	Graphics_1SetTextRenderingHint_FUNC,
 	Graphics_1SetTransform_FUNC,
 	Graphics_1delete_FUNC,
 	Graphics_1new_FUNC,

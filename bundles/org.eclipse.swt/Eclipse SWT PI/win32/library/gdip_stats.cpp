@@ -4,7 +4,7 @@
 * are made available under the terms of the Eclipse Public License v1.0
 * which accompanies this distribution, and is available at
 * http://www.eclipse.org/legal/epl-v10.html
-* 
+*
 * Contributors:
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 79;
-int Gdip_nativeFunctionCallCount[79];
+int Gdip_nativeFunctionCount = 83;
+int Gdip_nativeFunctionCallCount[83];
 char * Gdip_nativeFunctionNames[] = {
 	"Bitmap_1delete",
 	"Bitmap_1new",
@@ -62,12 +62,16 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2",
 	"Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2",
 	"Graphics_1GetInterpolationMode",
+	"Graphics_1GetSmoothingMode",
+	"Graphics_1GetTextRenderingHint",
 	"Graphics_1GetTransform",
 	"Graphics_1ResetClip",
 	"Graphics_1SetClip__II",
 	"Graphics_1SetClip__III",
 	"Graphics_1SetClip__ILorg_eclipse_swt_internal_gdip_RectF_2",
 	"Graphics_1SetInterpolationMode",
+	"Graphics_1SetSmoothingMode",
+	"Graphics_1SetTextRenderingHint",
 	"Graphics_1SetTransform",
 	"Graphics_1delete",
 	"Graphics_1new",
