@@ -1849,12 +1849,15 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  Despite the fact that the
 	* edit control is read only, it still returns a
-	* dialog code indicating that it wants keys.  The
-	* fix is to detect this case and clear the bits.
+	* dialog code indicating that it wants all keys.  
+	* The fix is to detect this case and clear the bits.
+	* 
+	* NOTE: A read only edit control processes arrow keys
+	* so DLGC_WANTARROWS should not be cleared.
 	*/
 	if ((style & SWT.READ_ONLY) != 0) {
 		int code = callWindowProc (OS.WM_GETDLGCODE, wParam, lParam);
-		code &= ~(OS.DLGC_WANTALLKEYS | OS.DLGC_WANTTAB | OS.DLGC_WANTARROWS);
+		code &= ~(OS.DLGC_WANTALLKEYS | OS.DLGC_WANTTAB);
 		return new LRESULT (code);
 	}
 	return null;
