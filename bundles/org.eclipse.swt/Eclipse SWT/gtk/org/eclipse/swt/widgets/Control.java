@@ -10,6 +10,7 @@ import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.accessibility.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -32,6 +33,7 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
+	Accessible accessible;
 
 /*
  *   ===  CONSTRUCTORS  ===
@@ -238,6 +240,29 @@ Point computeNativeSize (int h, int wHint, int hHint, boolean changed) {
 	int width = wHint == SWT.DEFAULT ? requisition.width : wHint;
 	int height = hHint == SWT.DEFAULT ? requisition.height : hHint;
 	return new Point (width, height);	
+}
+
+/**
+ * Returns the accessible object for the receiver.
+ * If this is the first time this object is requested,
+ * then the object is created and returned.
+ *
+ * @return the accessible object
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see addAccessibleListener
+ * @see addAccessibleControlListener
+ */
+public Accessible getAccessible () {
+	checkWidget ();
+	if (accessible == null) {
+		accessible = Accessible.internal_new_Accessible (this);
+	}
+	return accessible;
 }
 
 /**
