@@ -1729,7 +1729,7 @@ public void setXORMode(boolean xor) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Point stringExtent(String string) {	
+public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int length = string.length();
@@ -1744,12 +1744,9 @@ public Point stringExtent(String string) {
 		OS.ATSUSetRunStyle(data.layout, atsuiStyle, 0, length);
 		data.string = string;
 		data.stringPtr = ptr;
-	}
-	int ptr = OS.NewPtr(ATSTrapezoid.sizeof);
-	OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, ptr, null);
+	}	
 	ATSTrapezoid trapezoid = new ATSTrapezoid();
-	OS.memcpy(trapezoid, ptr, ATSTrapezoid.sizeof);
-	OS.DisposePtr(ptr);
+	OS.ATSUGetGlyphBounds(data.layout, 0, 0, 0, length, (short)OS.kATSUseDeviceOrigins, 1, trapezoid, null);	
 	int width = (trapezoid.upperRight_x >> 16) - (trapezoid.upperLeft_x >> 16);
 	int height = (trapezoid.lowerRight_y >> 16) - (trapezoid.upperRight_y >> 16);
 	return new Point(width, height);

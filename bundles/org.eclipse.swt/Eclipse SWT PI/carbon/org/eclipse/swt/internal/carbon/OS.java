@@ -6,7 +6,7 @@ package org.eclipse.swt.internal.carbon;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
-
+ 
 import org.eclipse.swt.internal.Library;
 
 public class OS {
@@ -524,6 +524,7 @@ public static final native int ATSUDisposeStyle(int iStyle);
 public static final native int ATSUDisposeTextLayout(int iTextLayout);
 public static final native int ATSUDrawText(int iTextLayout, int iLineOffset, int iLineLength, int iLocationX, int iLocationY);
 public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, int oGlyphBounds, int[] oActualNumberOfBounds);
+public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, ATSTrapezoid oGlyphBounds, int[] oActualNumberOfBounds);
 public static final native int ATSUSetAttributes(int iStyle, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue); 
 public static final native int ATSUSetLayoutControls(int iTextLayout, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue);
 public static final native int ATSUSetRunStyle(int iTextLayout, int iStyle, int iRunStart, int iRunLength);

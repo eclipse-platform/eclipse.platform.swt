@@ -216,17 +216,36 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUDrawText)
 }
 #endif
 
-#ifndef NO_ATSUGetGlyphBounds
-JNIEXPORT jint JNICALL OS_NATIVE(ATSUGetGlyphBounds)
+#ifndef NO_ATSUGetGlyphBounds__IIIIISII_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSUGetGlyphBounds__IIIIISII_3I
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jshort arg5, jint arg6, jint arg7, jintArray arg8)
 {
 	jint *lparg8=NULL;
 	jint rc;
 
-	DEBUG_CALL("ATSUGetGlyphBounds\n")
+	DEBUG_CALL("ATSUGetGlyphBounds__IIIIISII_3I\n")
 
 	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
 	rc = (jint)ATSUGetGlyphBounds((ATSUTextLayout)arg0, (ATSUTextMeasurement)arg1, (ATSUTextMeasurement)arg2, (UniCharArrayOffset)arg3, (UniCharCount)arg4, (UInt16)arg5, (ItemCount)arg6, (ATSTrapezoid *)arg7, (ItemCount *)lparg8);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUGetGlyphBounds__IIIIISILorg_eclipse_swt_internal_carbon_ATSTrapezoid_2_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSUGetGlyphBounds__IIIIISILorg_eclipse_swt_internal_carbon_ATSTrapezoid_2_3I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jshort arg5, jint arg6, jobject arg7, jintArray arg8)
+{
+	ATSTrapezoid _arg7, *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUGetGlyphBounds__IIIIISILorg_eclipse_swt_internal_carbon_ATSTrapezoid_2_3I\n")
+
+	if (arg7) lparg7 = getATSTrapezoidFields(env, arg7, &_arg7);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	rc = (jint)ATSUGetGlyphBounds((ATSUTextLayout)arg0, (ATSUTextMeasurement)arg1, (ATSUTextMeasurement)arg2, (UniCharArrayOffset)arg3, (UniCharCount)arg4, (UInt16)arg5, (ItemCount)arg6, (ATSTrapezoid *)lparg7, (ItemCount *)lparg8);
+	if (arg7) setATSTrapezoidFields(env, arg7, lparg7);
 	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
 	return rc;
 }
