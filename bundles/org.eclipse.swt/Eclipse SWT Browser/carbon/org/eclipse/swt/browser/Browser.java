@@ -1057,24 +1057,25 @@ void didStartProvisionalLoadForFrame(int frame) {
 
 void didCommitLoadForFrame(int frame) {
 	int webView = WebKit.HIWebViewGetWebView(webViewHandle);
-	if (frame == WebKit.objc_msgSend(webView, WebKit.S_mainFrame)) {
+	//id url= [[[[frame provisionalDataSource] request] URL] absoluteString];
+	int dataSource = WebKit.objc_msgSend(frame, WebKit.S_dataSource);
+	int request = WebKit.objc_msgSend(dataSource, WebKit.S_request);
+	int url = WebKit.objc_msgSend(request, WebKit.S_URL);
+	int s = WebKit.objc_msgSend(url, WebKit.S_absoluteString);	
+	int length = OS.CFStringGetLength(s);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(s, range, buffer);
+	String url2 = new String(buffer);
+	final Display display = getDisplay();
+
+	boolean top = frame == WebKit.objc_msgSend(webView, WebKit.S_mainFrame);
+	if (top) {
 		/* reset resource status variables */
-		resourceCount = 0;
-		
-		//id url= [[[[frame provisionalDataSource] request] URL] absoluteString];
-		int dataSource = WebKit.objc_msgSend(frame, WebKit.S_dataSource);
-		int request = WebKit.objc_msgSend(dataSource, WebKit.S_request);
-		int url = WebKit.objc_msgSend(request, WebKit.S_URL);
-		int s = WebKit.objc_msgSend(url, WebKit.S_absoluteString);	
-		int length = OS.CFStringGetLength(s);
-		char[] buffer = new char[length];
-		CFRange range = new CFRange();
-		range.length = length;
-		OS.CFStringGetCharacters(s, range, buffer);
-		String url2 = new String(buffer);		
+		resourceCount = 0;		
 		this.url = url2;
 		
-		final Display display = getDisplay();
 		final ProgressEvent progress = new ProgressEvent(this);
 		progress.display = display;
 		progress.widget = this;
@@ -1107,15 +1108,14 @@ void didCommitLoadForFrame(int frame) {
 		statusText.text = url2;
 		for (int i = 0; i < statusTextListeners.length; i++)
 			statusTextListeners[i].changed(statusText);
-
-		LocationEvent location = new LocationEvent(Browser.this);
-		location.display = display;
-		location.widget = this;
-		location.location = url2;
-		location.top = true;
-		for (int i = 0; i < locationListeners.length; i++)
-			locationListeners[i].changed(location);
 	}
+	LocationEvent location = new LocationEvent(Browser.this);
+	location.display = display;
+	location.widget = this;
+	location.location = url2;
+	location.top = top;
+	for (int i = 0; i < locationListeners.length; i++)
+		locationListeners[i].changed(location);
 }
 
 /* WebResourceLoadDelegate */
@@ -1201,34 +1201,25 @@ int identifierForInitialRequest(int request, int dataSource) {
 }
 
 int willSendRequest(int identifier, int request, int redirectResponse, int dataSource) {
-	boolean doit = true;
-	/*
-	* Note.  Safari can send multiple willSendRequest for the top frame corresponding to internal resources to be loaded.
-	* The identifier is used to check the willSendRequest message corresponding to the initial resource - the one whose URL
-	* should be set in the location toolbar of a browser.
-	*/
-	if (this.identifier == identifier) {
-		int url = WebKit.objc_msgSend(request, WebKit.S_URL);
-		int s = WebKit.objc_msgSend(url, WebKit.S_absoluteString);
-		int length = OS.CFStringGetLength(s);
-		char[] buffer = new char[length];
-		CFRange range = new CFRange();
-		range.length = length;
-		OS.CFStringGetCharacters(s, range, buffer);
-		String url2 = new String(buffer);
+	int url = WebKit.objc_msgSend(request, WebKit.S_URL);
+	int s = WebKit.objc_msgSend(url, WebKit.S_absoluteString);
+	int length = OS.CFStringGetLength(s);
+	char[] buffer = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(s, range, buffer);
+	String url2 = new String(buffer);
 	
-		LocationEvent newEvent = new LocationEvent(this);
-		newEvent.display = getDisplay();
-		newEvent.widget = this;
-		newEvent.location = url2;
-		newEvent.doit = true;
-		if (locationListeners != null) {
-			for (int i = 0; i < locationListeners.length; i++)
-				locationListeners[i].changing(newEvent);
-		}
-		doit = newEvent.doit;
+	LocationEvent newEvent = new LocationEvent(this);
+	newEvent.display = getDisplay();
+	newEvent.widget = this;
+	newEvent.location = url2;
+	newEvent.doit = true;
+	if (locationListeners != null) {
+		for (int i = 0; i < locationListeners.length; i++)
+			locationListeners[i].changing(newEvent);
 	}
-	return doit ? request : 0;
+	return newEvent.doit ? request : 0;
 }
 
 /* handleNotification */

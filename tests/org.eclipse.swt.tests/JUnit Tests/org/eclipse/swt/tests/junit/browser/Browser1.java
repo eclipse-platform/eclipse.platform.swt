@@ -34,7 +34,8 @@ public class Browser1 {
 			public void changing(LocationEvent event) {
 				System.out.println("changing "+event.location);
 				/* certain browsers do send multiple changing events. Safari does this. */
-				passed = !locationChanged && !progressCompleted;
+				/* verify the page has not been reported as being loaded */
+				passed = !progressCompleted;
 				locationChanging = true;
 				if (!passed) shell.close();
 			}
@@ -42,6 +43,8 @@ public class Browser1 {
 				System.out.println("changed "+event.location);
 				/* ignore non top frame loading */
 				if (!event.top) return;
+				/* verify a changed follows at least one changing */
+				/* verify the page has not been reported as being loaded */
 				passed = locationChanging && !progressCompleted;
 				locationChanged = true;
 				if (!passed) shell.close();
