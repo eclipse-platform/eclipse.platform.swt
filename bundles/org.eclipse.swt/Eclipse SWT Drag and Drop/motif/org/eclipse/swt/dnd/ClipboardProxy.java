@@ -64,9 +64,13 @@ class ClipboardProxy {
 ClipboardProxy(Display display) {	
 	this.display = display;
 	XtConvertSelectionCallback = new Callback(this, "XtConvertSelection", 7); //$NON-NLS-1$
+	if (XtConvertSelectionCallback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	XtLoseSelectionCallback = new Callback(this, "XtLoseSelection", 2); //$NON-NLS-1$
+	if (XtLoseSelectionCallback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	XtSelectionDoneCallback = new Callback(this, "XtSelectionDone", 3); //$NON-NLS-1$
+	if (XtSelectionDoneCallback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	XtSelectionCallbackCallback = new Callback(this, "XtSelectionCallback", 7); //$NON-NLS-1$
+	if (XtSelectionCallbackCallback.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	int widgetClass = OS.topLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (null, null, widgetClass, display.xDisplay, null, 0);
@@ -227,9 +231,10 @@ void wait(int timeout) {
 	int xDisplay = OS.XtDisplay(shellHandle);
 	if (xDisplay == 0) return;
 	long start = System.currentTimeMillis();
-	int xEvent = OS.XtMalloc (XEvent.sizeof);
 	Callback checkEventCallback = new Callback(this, "checkEvent", 3); //$NON-NLS-1$
 	int checkEventProc = checkEventCallback.getAddress();
+	if (checkEventProc == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+	int xEvent = OS.XtMalloc (XEvent.sizeof);
 	display.timerExec(timeout, new Runnable() {
 		public void run() {
 			// timer required to force display.sleep() to wake up

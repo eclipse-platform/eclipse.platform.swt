@@ -111,8 +111,11 @@ public class DropTarget extends Widget {
 	
 	static {
 		DropProc = new Callback(DropTarget.class, "DropProcCallback", 3); //$NON-NLS-1$
+		if (DropProc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		DragProc = new Callback(DropTarget.class, "DragProcCallback", 3); //$NON-NLS-1$
+		if (DragProc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		TransferProc = new Callback(DropTarget.class, "TransferProcCallback", 7); //$NON-NLS-1$
+		if (TransferProc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	
 /**

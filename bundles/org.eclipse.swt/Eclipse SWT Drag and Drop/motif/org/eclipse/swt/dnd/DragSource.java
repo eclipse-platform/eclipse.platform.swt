@@ -106,8 +106,11 @@ public class DragSource extends Widget {
 	static private Callback DropFinish;
 	static {
 		ConvertProc = new Callback(DragSource.class, "ConvertProcCallback", 10);
+		if (ConvertProc.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		DragDropFinish = new Callback(DragSource.class, "DragDropFinishCallback", 3);
+		if (DragDropFinish.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 		DropFinish = new Callback(DragSource.class, "DropFinishCallback", 3);
+		if (DropFinish.getAddress() == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	}
 	private boolean moveRequested;
 
