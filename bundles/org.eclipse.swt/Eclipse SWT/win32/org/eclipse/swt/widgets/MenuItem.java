@@ -718,13 +718,11 @@ public void setMenu (Menu menu) {
 		* The fix is to temporarily remove the bitmap and restore it after
 		* the text and submenu have been set.
 		*/
-		if (!OS.IsWinCE) {
-			if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
-				if (image != null) {
-					info.fMask = OS.MIIM_BITMAP;
-					info.hbmpItem = 0;
-					success = OS.SetMenuItemInfo (hMenu, id, false, info);
-				}
+		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+			if (image != null) {
+				info.fMask = OS.MIIM_BITMAP;
+				info.hbmpItem = 0;
+				success = OS.SetMenuItemInfo (hMenu, id, false, info);
 			}
 		}
 		
@@ -928,13 +926,11 @@ public void setText (String string) {
 		* the MIIM_BITMAP style.  The fix is to reset both MIIM_BITMAP.
 		* Note, this does not happen on Windows 98.
 		*/
-		if (!OS.IsWinCE) {
-			if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
-				if (image != null) {
-					info.fMask = OS.MIIM_BITMAP;
-					info.hbmpItem = OS.HBMMENU_CALLBACK;
-					success = OS.SetMenuItemInfo (hMenu, id, false, info);
-				}
+		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+			if (image != null) {
+				info.fMask = OS.MIIM_BITMAP;
+				info.hbmpItem = OS.HBMMENU_CALLBACK;
+				success = OS.SetMenuItemInfo (hMenu, id, false, info);
 			}
 		}
 	}

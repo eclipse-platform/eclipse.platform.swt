@@ -1032,7 +1032,7 @@ public int internal_new_GC (GCData data) {
 	}
 	if (hDC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
-		if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+		if (!OS.IsWinCE && (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
 			int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 			if ((data.style & mask) != 0) {
 				data.layout = (data.style & SWT.RIGHT_TO_LEFT) != 0 ? OS.LAYOUT_RTL : 0;
