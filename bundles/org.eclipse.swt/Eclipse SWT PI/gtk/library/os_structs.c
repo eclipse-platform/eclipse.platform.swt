@@ -1783,3 +1783,40 @@ void setGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStru
 }
 #endif
 
+#ifndef NO_PangoAttribute
+typedef struct PangoAttribute_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID klass, start_index, end_index;
+} PangoAttribute_FID_CACHE;
+
+PangoAttribute_FID_CACHE PangoAttributeFc;
+
+void cachePangoAttributeFields(JNIEnv *env, jobject lpObject)
+{
+	if (PangoAttributeFc.cached) return;
+	PangoAttributeFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PangoAttributeFc.klass = (*env)->GetFieldID(env, PangoAttributeFc.clazz, "klass", "I");
+	PangoAttributeFc.start_index = (*env)->GetFieldID(env, PangoAttributeFc.clazz, "start_index", "I");
+	PangoAttributeFc.end_index = (*env)->GetFieldID(env, PangoAttributeFc.clazz, "end_index", "I");
+	PangoAttributeFc.cached = 1;
+}
+
+PangoAttribute *getPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpStruct)
+{
+	if (!PangoAttributeFc.cached) cachePangoAttributeFields(env, lpObject);
+	lpStruct->klass = (const PangoAttrClass *)(*env)->GetIntField(env, lpObject, PangoAttributeFc.klass);
+	lpStruct->start_index = (*env)->GetIntField(env, lpObject, PangoAttributeFc.start_index);
+	lpStruct->end_index = (*env)->GetIntField(env, lpObject, PangoAttributeFc.end_index);
+	return lpStruct;
+}
+
+void setPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpStruct)
+{
+	if (!PangoAttributeFc.cached) cachePangoAttributeFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, PangoAttributeFc.klass, (jint)lpStruct->klass);
+	(*env)->SetIntField(env, lpObject, PangoAttributeFc.start_index, (jint)lpStruct->start_index);
+	(*env)->SetIntField(env, lpObject, PangoAttributeFc.end_index, (jint)lpStruct->end_index);
+}
+#endif
+

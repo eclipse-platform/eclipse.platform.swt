@@ -207,3 +207,11 @@ void setGtkTargetPairFields(JNIEnv *env, jobject lpObject, GtkTargetPair *lpStru
 #define setGtkTargetPairFields(a,b,c)
 #endif
 
+#ifndef NO_PangoAttribute
+PangoAttribute *getPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpStruct);
+void setPangoAttributeFields(JNIEnv *env, jobject lpObject, PangoAttribute *lpStruct);
+#else
+#define getPangoAttributeFields(a,b,c) NULL
+#define setPangoAttributeFields(a,b,c)
+#endif
+

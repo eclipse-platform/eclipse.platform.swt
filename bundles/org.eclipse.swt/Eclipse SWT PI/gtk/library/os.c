@@ -979,6 +979,22 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1draw_1layout)
 }
 #endif
 
+#ifndef NO_gdk_1draw_1layout_1with_1colors
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1draw_1layout_1with_1colors)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jobject arg5, jobject arg6)
+{
+	GdkColor _arg5, *lparg5=NULL;
+	GdkColor _arg6, *lparg6=NULL;
+	NATIVE_ENTER(env, that, "gdk_1draw_1layout_1with_1colors\n")
+	if (arg5) lparg5 = getGdkColorFields(env, arg5, &_arg5);
+	if (arg6) lparg6 = getGdkColorFields(env, arg6, &_arg6);
+	gdk_draw_layout_with_colors((GdkDrawable *)arg0, (GdkGC *)arg1, (gint)arg2, (gint)arg3, (PangoLayout *)arg4, lparg5, lparg6);
+	if (arg5) setGdkColorFields(env, arg5, lparg5);
+	if (arg6) setGdkColorFields(env, arg6, lparg6);
+	NATIVE_EXIT(env, that, "gdk_1draw_1layout_1with_1colors\n")
+}
+#endif
+
 #ifndef NO_gdk_1draw_1line
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1draw_1line)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
@@ -1417,6 +1433,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1pango_1context_1get)
 	rc = (jint)gdk_pango_context_get();
 	NATIVE_EXIT(env, that, "gdk_1pango_1context_1get\n")
 	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1pango_1context_1set_1colormap
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1pango_1context_1set_1colormap)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "gdk_1pango_1context_1set_1colormap\n")
+	gdk_pango_context_set_colormap((PangoContext *)arg0, (GdkColormap *)arg1);
+	NATIVE_EXIT(env, that, "gdk_1pango_1context_1set_1colormap\n")
 }
 #endif
 
@@ -6488,6 +6514,18 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkTarg
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	PangoAttribute _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I\n")
+	if (arg1) lparg1 = getPangoAttributeFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I\n")
+}
+#endif
+
 #ifndef NO_memmove__I_3BI
 JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
@@ -6670,6 +6708,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkTarge
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PangoAttribute _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setPangoAttributeFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2II\n")
+}
+#endif
+
 #ifndef NO_memmove___3BII
 JNIEXPORT void JNICALL OS_NATIVE(memmove___3BII)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
@@ -6725,6 +6776,28 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3I_3BI)
 }
 #endif
 
+#ifndef NO_pango_1attr_1list_1insert
+JNIEXPORT void JNICALL OS_NATIVE(pango_1attr_1list_1insert)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "pango_1attr_1list_1insert\n")
+	pango_attr_list_insert((PangoAttrList *)arg0, (PangoAttribute *)arg1);
+	NATIVE_EXIT(env, that, "pango_1attr_1list_1insert\n")
+}
+#endif
+
+#ifndef NO_pango_1attr_1list_1new
+JNIEXPORT jint JNICALL OS_NATIVE(pango_1attr_1list_1new)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "pango_1attr_1list_1new\n")
+	rc = (jint)pango_attr_list_new();
+	NATIVE_EXIT(env, that, "pango_1attr_1list_1new\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_pango_1attr_1list_1unref
 JNIEXPORT void JNICALL OS_NATIVE(pango_1attr_1list_1unref)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6732,6 +6805,18 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1attr_1list_1unref)
 	NATIVE_ENTER(env, that, "pango_1attr_1list_1unref\n")
 	pango_attr_list_unref((PangoAttrList *)arg0);
 	NATIVE_EXIT(env, that, "pango_1attr_1list_1unref\n")
+}
+#endif
+
+#ifndef NO_pango_1attr_1underline_1new
+JNIEXPORT jint JNICALL OS_NATIVE(pango_1attr_1underline_1new)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "pango_1attr_1underline_1new\n")
+	rc = (jint)pango_attr_underline_new(arg0);
+	NATIVE_EXIT(env, that, "pango_1attr_1underline_1new\n")
+	return rc;
 }
 #endif
 
@@ -7064,6 +7149,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(pango_1layout_1new)
 }
 #endif
 
+#ifndef NO_pango_1layout_1set_1attributes
+JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1set_1attributes)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "pango_1layout_1set_1attributes\n")
+	pango_layout_set_attributes((PangoLayout *)arg0, (PangoAttrList *)arg1);
+	NATIVE_EXIT(env, that, "pango_1layout_1set_1attributes\n")
+}
+#endif
+
 #ifndef NO_pango_1layout_1set_1font_1description
 JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1set_1font_1description)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -7071,6 +7166,26 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1set_1font_1description)
 	NATIVE_ENTER(env, that, "pango_1layout_1set_1font_1description\n")
 	pango_layout_set_font_description((PangoLayout *)arg0, (PangoFontDescription *)arg1);
 	NATIVE_EXIT(env, that, "pango_1layout_1set_1font_1description\n")
+}
+#endif
+
+#ifndef NO_pango_1layout_1set_1single_1paragraph_1mode
+JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1set_1single_1paragraph_1mode)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	NATIVE_ENTER(env, that, "pango_1layout_1set_1single_1paragraph_1mode\n")
+	pango_layout_set_single_paragraph_mode((PangoLayout *)arg0, (gboolean)arg1);
+	NATIVE_EXIT(env, that, "pango_1layout_1set_1single_1paragraph_1mode\n")
+}
+#endif
+
+#ifndef NO_pango_1layout_1set_1tabs
+JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1set_1tabs)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "pango_1layout_1set_1tabs\n")
+	pango_layout_set_tabs((PangoLayout *)arg0, (PangoTabArray *)arg1);
+	NATIVE_EXIT(env, that, "pango_1layout_1set_1tabs\n")
 }
 #endif
 

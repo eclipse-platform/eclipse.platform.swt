@@ -57,6 +57,8 @@ public abstract class Device implements Drawable {
 	/* System Font */
 	Font systemFont;
 	
+	int emptyTab;
+
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -486,6 +488,10 @@ protected void init () {
 	COLOR_MAGENTA = new Color (this, 0xFF,0,0xFF);
 	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
+
+	emptyTab = OS.pango_tab_array_new(1, false);
+	OS.pango_tab_array_set_tab(emptyTab, 0, OS.PANGO_TAB_LEFT, 1);
+	if (emptyTab == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
 /**	 
@@ -600,6 +606,9 @@ protected void release () {
 	COLOR_DARK_MAGENTA = COLOR_DARK_CYAN = COLOR_GRAY = COLOR_DARK_GRAY = COLOR_RED =
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 		
+	if (emptyTab != 0) OS.pango_tab_array_free(emptyTab);
+	emptyTab = 0;
+
 	/* Free the GTK error and warning handler */
 	for (int i=0; i<handler_ids.length; i++) {
 		if (handler_ids [i] != 0) {

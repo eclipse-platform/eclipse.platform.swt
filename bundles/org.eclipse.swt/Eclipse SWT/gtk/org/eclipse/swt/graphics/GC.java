@@ -793,35 +793,7 @@ public void drawString (String string, int x, int y) {
  * </ul>
  */
 public void drawString(String string, int x, int y, boolean isTransparent) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	//FIXME - need to avoid delimiter and tabs, background color
-	int layout = data.layout;
-	byte[] buffer = Converter.wcsToMbcs(null, string, false);
-	OS.pango_layout_set_text(layout, buffer, buffer.length);
-	if (!data.xorMode) {
-		OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
-	} else {
-		int[] w = new int[1], h = new int[1];
-		OS.pango_layout_get_size(layout, w, h);
-		int width = OS.PANGO_PIXELS(w[0]);
-		int height = OS.PANGO_PIXELS(h[0]);
-		int pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), width, height, -1);
-		if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int gdkGC = OS.gdk_gc_new(pixmap);
-		if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		GdkColor foreground = new GdkColor();
-		OS.gdk_gc_set_foreground(gdkGC, foreground);
-		OS.gdk_draw_rectangle(pixmap, gdkGC, 1, 0, 0, width, height);
-		GdkGCValues values = new GdkGCValues();
-		OS.gdk_gc_get_values(handle, values);
-		foreground.pixel = values.foreground_pixel;
-		OS.gdk_gc_set_foreground(gdkGC, foreground);
-		OS.gdk_draw_layout(pixmap, gdkGC, 0, 0, layout);
-		OS.g_object_unref(gdkGC);
-		OS.gdk_draw_drawable(data.drawable, handle, pixmap, 0, 0, x, y, width, height);
-		OS.g_object_unref(pixmap);
-	}
+	drawText(string, x, y, isTransparent ? SWT.DRAW_TRANSPARENT : 0);
 }
 
 /** 
@@ -909,12 +881,43 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
 public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	//FIXME - check flags, background color
+	int mnemonic, length = string.length();
+	if (length == 0) return;
+	byte[] buffer;
 	int layout = data.layout;
-	byte[] buffer = Converter.wcsToMbcs(null, string, false);
+	char[] text = new char[length];
+	string.getChars(0, length, text, 0);
+	if ((flags & SWT.DRAW_MNEMONIC) != 0 && (mnemonic = fixMnemonic(text)) != -1) {
+		char[] text1 = new char[mnemonic - 1];
+		System.arraycopy(text, 0, text1, 0, text1.length);
+		byte[] buffer1 = Converter.wcsToMbcs(null, text1, false);
+		char[] text2 = new char[text.length - mnemonic];
+		System.arraycopy(text, mnemonic - 1, text2, 0, text2.length);
+		byte[] buffer2 = Converter.wcsToMbcs(null, text2, false);
+		buffer = new byte[buffer1.length + buffer2.length];
+		System.arraycopy(buffer1, 0, buffer, 0, buffer1.length);
+		System.arraycopy(buffer2, 0, buffer, buffer1.length, buffer2.length);
+		int attr_list = OS.pango_attr_list_new();
+		int attr = OS.pango_attr_underline_new(OS.PANGO_UNDERLINE_LOW);
+		PangoAttribute attribute = new PangoAttribute();
+		OS.memmove(attribute, attr, PangoAttribute.sizeof);
+		attribute.start_index = buffer1.length;
+		attribute.end_index = buffer1.length + 1;
+		OS.memmove(attr, attribute, PangoAttribute.sizeof);
+		OS.pango_attr_list_insert(attr_list, attr);
+		OS.pango_layout_set_attributes(layout, attr_list);
+		OS.pango_attr_list_unref(attr_list);
+	} else {
+		buffer = Converter.wcsToMbcs(null, text, false);
+		OS.pango_layout_set_attributes(layout, 0);
+	}
 	OS.pango_layout_set_text(layout, buffer, buffer.length);
+	OS.pango_layout_set_single_paragraph_mode(layout, (flags & SWT.DRAW_DELIMITER) == 0);
+	OS.pango_layout_set_tabs(layout, (flags & SWT.DRAW_TAB) != 0 ? 0 : data.device.emptyTab);
+	GdkColor background = null;
+	if ((flags & SWT.DRAW_TRANSPARENT) == 0) background = getBackground().handle;
 	if (!data.xorMode) {
-		OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
+		OS.gdk_draw_layout_with_colors(data.drawable, handle, x, y, layout, null, background);
 	} else {
 		int[] w = new int[1], h = new int[1];
 		OS.pango_layout_get_size(layout, w, h);
@@ -931,7 +934,7 @@ public void drawText (String string, int x, int y, int flags) {
 		OS.gdk_gc_get_values(handle, values);
 		foreground.pixel = values.foreground_pixel;
 		OS.gdk_gc_set_foreground(gdkGC, foreground);
-		OS.gdk_draw_layout(pixmap, gdkGC, 0, 0, layout);
+		OS.gdk_draw_layout_with_colors(pixmap, gdkGC, 0, 0, layout, null, background);
 		OS.g_object_unref(gdkGC);
 		OS.gdk_draw_drawable(data.drawable, handle, pixmap, 0, 0, x, y, width, height);
 		OS.g_object_unref(pixmap);
@@ -1269,6 +1272,21 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	OS.gdk_gc_set_foreground(handle, color);
 }
 
+int fixMnemonic (char [] buffer) {
+	int i=0, j=0;
+	int mnemonic=-1;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == '&') {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == '&') {i++; continue;}
+			if (mnemonic == -1) mnemonic = j;
+			j--;
+		}
+	}
+	while (j < buffer.length) buffer [j++] = 0;
+	return mnemonic;
+}
+
 /**
  * Returns the <em>advance width</em> of the specified character in
  * the font which is currently selected into the receiver.
@@ -1531,6 +1549,7 @@ void init(Drawable drawable, GCData data, int gdkGC) {
 	int context = OS.gdk_pango_context_get();
 	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.pango_context_set_language(context, OS.gtk_get_default_language());
+	OS.gdk_pango_context_set_colormap(context, OS.gdk_colormap_get_system());
 	data.context = context;	
 	int layout = OS.pango_layout_new(context);
 	if (layout == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -1838,15 +1857,7 @@ public void setXORMode(boolean xor) {
  * </ul>
  */
 public Point stringExtent(String string) {	
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	//FIXME - need to avoid delimiter and tabs
-	int layout = data.layout;
-	byte[] buffer = Converter.wcsToMbcs(null, string, false);
-	OS.pango_layout_set_text(layout, buffer, buffer.length);
-	int[] width = new int[1], height = new int[1];
-	OS.pango_layout_get_size(layout, width, height);
-	return new Point(OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
+	return textExtent(string, 0);
 }
 
 /**
@@ -1906,10 +1917,37 @@ public Point textExtent(String string) {
 public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	//FIXME - check flags
+	int mnemonic, length = string.length();
+	byte[] buffer;
 	int layout = data.layout;
-	byte[] buffer = Converter.wcsToMbcs(null, string, false);
+	char[] text = new char[length];
+	string.getChars(0, length, text, 0);
+	if ((flags & SWT.DRAW_MNEMONIC) != 0 && (mnemonic = fixMnemonic(text)) != -1) {
+		char[] text1 = new char[mnemonic - 1];
+		System.arraycopy(text, 0, text1, 0, text1.length);
+		byte[] buffer1 = Converter.wcsToMbcs(null, text1, false);
+		char[] text2 = new char[text.length - mnemonic];
+		System.arraycopy(text, mnemonic - 1, text2, 0, text2.length);
+		byte[] buffer2 = Converter.wcsToMbcs(null, text2, false);
+		buffer = new byte[buffer1.length + buffer2.length];
+		System.arraycopy(buffer1, 0, buffer, 0, buffer1.length);
+		System.arraycopy(buffer2, 0, buffer, buffer1.length, buffer2.length);
+		int attr_list = OS.pango_attr_list_new();
+		int attr = OS.pango_attr_underline_new(OS.PANGO_UNDERLINE_LOW);
+		PangoAttribute attribute = new PangoAttribute();
+		OS.memmove(attribute, attr, PangoAttribute.sizeof);
+		attribute.start_index = buffer1.length;
+		attribute.end_index = buffer1.length + 1;
+		OS.memmove(attr, attribute, PangoAttribute.sizeof);
+		OS.pango_attr_list_insert(attr_list, attr);
+		OS.pango_layout_set_attributes(layout, attr_list);
+		OS.pango_attr_list_unref(attr_list);
+	} else {
+		buffer = Converter.wcsToMbcs(null, text, false);
+	}
 	OS.pango_layout_set_text(layout, buffer, buffer.length);
+	OS.pango_layout_set_single_paragraph_mode(layout, (flags & SWT.DRAW_DELIMITER) == 0);
+	OS.pango_layout_set_tabs(layout, (flags & SWT.DRAW_TAB) != 0 ? 0 : data.device.emptyTab);
 	int[] width = new int[1], height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
 	return new Point(OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
