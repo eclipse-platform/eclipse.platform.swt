@@ -1088,6 +1088,40 @@ void setHDITEMFields(JNIEnv *env, jobject lpObject, HDITEM *lpStruct)
 }
 #endif
 
+#ifndef NO_HDLAYOUT
+typedef struct HDLAYOUT_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID prc, pwpos;
+} HDLAYOUT_FID_CACHE;
+
+HDLAYOUT_FID_CACHE HDLAYOUTFc;
+
+void cacheHDLAYOUTFields(JNIEnv *env, jobject lpObject)
+{
+	if (HDLAYOUTFc.cached) return;
+	HDLAYOUTFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HDLAYOUTFc.prc = (*env)->GetFieldID(env, HDLAYOUTFc.clazz, "prc", "I");
+	HDLAYOUTFc.pwpos = (*env)->GetFieldID(env, HDLAYOUTFc.clazz, "pwpos", "I");
+	HDLAYOUTFc.cached = 1;
+}
+
+HDLAYOUT *getHDLAYOUTFields(JNIEnv *env, jobject lpObject, HDLAYOUT *lpStruct)
+{
+	if (!HDLAYOUTFc.cached) cacheHDLAYOUTFields(env, lpObject);
+	lpStruct->prc = (RECT *)(*env)->GetIntField(env, lpObject, HDLAYOUTFc.prc);
+	lpStruct->pwpos = (WINDOWPOS *)(*env)->GetIntField(env, lpObject, HDLAYOUTFc.pwpos);
+	return lpStruct;
+}
+
+void setHDLAYOUTFields(JNIEnv *env, jobject lpObject, HDLAYOUT *lpStruct)
+{
+	if (!HDLAYOUTFc.cached) cacheHDLAYOUTFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HDLAYOUTFc.prc, (jint)lpStruct->prc);
+	(*env)->SetIntField(env, lpObject, HDLAYOUTFc.pwpos, (jint)lpStruct->pwpos);
+}
+#endif
+
 #ifndef NO_HELPINFO
 typedef struct HELPINFO_FID_CACHE {
 	int cached;
@@ -2617,6 +2651,67 @@ void setNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpSt
 }
 #endif
 
+#ifndef NO_NMREBARCHILDSIZE
+typedef struct NMREBARCHILDSIZE_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID uBand, wID, rcChild_left, rcChild_top, rcChild_right, rcChild_bottom, rcBand_left, rcBand_top, rcBand_right, rcBand_bottom;
+} NMREBARCHILDSIZE_FID_CACHE;
+
+NMREBARCHILDSIZE_FID_CACHE NMREBARCHILDSIZEFc;
+
+void cacheNMREBARCHILDSIZEFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMREBARCHILDSIZEFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMREBARCHILDSIZEFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMREBARCHILDSIZEFc.uBand = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "uBand", "I");
+	NMREBARCHILDSIZEFc.wID = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "wID", "I");
+	NMREBARCHILDSIZEFc.rcChild_left = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "rcChild_left", "I");
+	NMREBARCHILDSIZEFc.rcChild_top = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "rcChild_top", "I");
+	NMREBARCHILDSIZEFc.rcChild_right = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "rcChild_right", "I");
+	NMREBARCHILDSIZEFc.rcChild_bottom = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "rcChild_bottom", "I");
+	NMREBARCHILDSIZEFc.rcBand_left = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "rcBand_left", "I");
+	NMREBARCHILDSIZEFc.rcBand_top = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "rcBand_top", "I");
+	NMREBARCHILDSIZEFc.rcBand_right = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "rcBand_right", "I");
+	NMREBARCHILDSIZEFc.rcBand_bottom = (*env)->GetFieldID(env, NMREBARCHILDSIZEFc.clazz, "rcBand_bottom", "I");
+	NMREBARCHILDSIZEFc.cached = 1;
+}
+
+NMREBARCHILDSIZE *getNMREBARCHILDSIZEFields(JNIEnv *env, jobject lpObject, NMREBARCHILDSIZE *lpStruct)
+{
+	if (!NMREBARCHILDSIZEFc.cached) cacheNMREBARCHILDSIZEFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->uBand = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.uBand);
+	lpStruct->wID = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.wID);
+	lpStruct->rcChild.left = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcChild_left);
+	lpStruct->rcChild.top = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcChild_top);
+	lpStruct->rcChild.right = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcChild_right);
+	lpStruct->rcChild.bottom = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcChild_bottom);
+	lpStruct->rcBand.left = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcBand_left);
+	lpStruct->rcBand.top = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcBand_top);
+	lpStruct->rcBand.right = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcBand_right);
+	lpStruct->rcBand.bottom = (*env)->GetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcBand_bottom);
+	return lpStruct;
+}
+
+void setNMREBARCHILDSIZEFields(JNIEnv *env, jobject lpObject, NMREBARCHILDSIZE *lpStruct)
+{
+	if (!NMREBARCHILDSIZEFc.cached) cacheNMREBARCHILDSIZEFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.uBand, (jint)lpStruct->uBand);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.wID, (jint)lpStruct->wID);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcChild_left, (jint)lpStruct->rcChild.left);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcChild_top, (jint)lpStruct->rcChild.top);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcChild_right, (jint)lpStruct->rcChild.right);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcChild_bottom, (jint)lpStruct->rcChild.bottom);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcBand_left, (jint)lpStruct->rcBand.left);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcBand_top, (jint)lpStruct->rcBand.top);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcBand_right, (jint)lpStruct->rcBand.right);
+	(*env)->SetIntField(env, lpObject, NMREBARCHILDSIZEFc.rcBand_bottom, (jint)lpStruct->rcBand.bottom);
+}
+#endif
+
 #ifndef NO_NMRGINFO
 typedef struct NMRGINFO_FID_CACHE {
 	int cached;
@@ -2963,6 +3058,67 @@ void setNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpSt
 #ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, NMTVCUSTOMDRAWFc.iLevel, (jint)lpStruct->iLevel);
 #endif
+}
+#endif
+
+#ifndef NO_NMTVDISPINFO
+typedef struct NMTVDISPINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID mask, hItem, state, stateMask, pszText, cchTextMax, iImage, iSelectedImage, cChildren, lParam;
+} NMTVDISPINFO_FID_CACHE;
+
+NMTVDISPINFO_FID_CACHE NMTVDISPINFOFc;
+
+void cacheNMTVDISPINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMTVDISPINFOFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMTVDISPINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMTVDISPINFOFc.mask = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "mask", "I");
+	NMTVDISPINFOFc.hItem = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "hItem", "I");
+	NMTVDISPINFOFc.state = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "state", "I");
+	NMTVDISPINFOFc.stateMask = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "stateMask", "I");
+	NMTVDISPINFOFc.pszText = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "pszText", "I");
+	NMTVDISPINFOFc.cchTextMax = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "cchTextMax", "I");
+	NMTVDISPINFOFc.iImage = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "iImage", "I");
+	NMTVDISPINFOFc.iSelectedImage = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "iSelectedImage", "I");
+	NMTVDISPINFOFc.cChildren = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "cChildren", "I");
+	NMTVDISPINFOFc.lParam = (*env)->GetFieldID(env, NMTVDISPINFOFc.clazz, "lParam", "I");
+	NMTVDISPINFOFc.cached = 1;
+}
+
+NMTVDISPINFO *getNMTVDISPINFOFields(JNIEnv *env, jobject lpObject, NMTVDISPINFO *lpStruct)
+{
+	if (!NMTVDISPINFOFc.cached) cacheNMTVDISPINFOFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->item.mask = (*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.mask);
+	lpStruct->item.hItem = (HTREEITEM)(*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.hItem);
+	lpStruct->item.state = (*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.state);
+	lpStruct->item.stateMask = (*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.stateMask);
+	lpStruct->item.pszText = (LPTSTR)(*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.pszText);
+	lpStruct->item.cchTextMax = (*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.cchTextMax);
+	lpStruct->item.iImage = (*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.iImage);
+	lpStruct->item.iSelectedImage = (*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.iSelectedImage);
+	lpStruct->item.cChildren = (*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.cChildren);
+	lpStruct->item.lParam = (*env)->GetIntField(env, lpObject, NMTVDISPINFOFc.lParam);
+	return lpStruct;
+}
+
+void setNMTVDISPINFOFields(JNIEnv *env, jobject lpObject, NMTVDISPINFO *lpStruct)
+{
+	if (!NMTVDISPINFOFc.cached) cacheNMTVDISPINFOFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.mask, (jint)lpStruct->item.mask);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.hItem, (jint)lpStruct->item.hItem);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.state, (jint)lpStruct->item.state);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.stateMask, (jint)lpStruct->item.stateMask);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.pszText, (jint)lpStruct->item.pszText);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.cchTextMax, (jint)lpStruct->item.cchTextMax);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.iImage, (jint)lpStruct->item.iImage);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.iSelectedImage, (jint)lpStruct->item.iSelectedImage);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.cChildren, (jint)lpStruct->item.cChildren);
+	(*env)->SetIntField(env, lpObject, NMTVDISPINFOFc.lParam, (jint)lpStruct->item.lParam);
 }
 #endif
 

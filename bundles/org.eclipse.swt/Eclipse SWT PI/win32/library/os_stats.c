@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 608;
-int OS_nativeFunctionCallCount[608];
+int OS_nativeFunctionCount = 615;
+int OS_nativeFunctionCallCount[615];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -367,6 +367,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I",
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVDISPINFO_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I",
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_UDACCEL_2I",
@@ -395,12 +396,14 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVDISPINFO_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVFINDITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHILDSIZE_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMRGINFO_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTBHOTITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOA_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFOW_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II",
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVDISPINFO_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_POINT_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II",
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II",
@@ -496,6 +499,8 @@ char * OS_nativeFunctionNames[] = {
 	"SelectPalette",
 	"SendInput",
 	"SendMessageA__IIII",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2",
+	"SendMessageA__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 	"SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2",
@@ -516,6 +521,8 @@ char * OS_nativeFunctionNames[] = {
 	"SendMessageA__II_3II",
 	"SendMessageA__II_3I_3I",
 	"SendMessageW__IIII",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_HDITEM_2",
+	"SendMessageW__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2",
 	"SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2",

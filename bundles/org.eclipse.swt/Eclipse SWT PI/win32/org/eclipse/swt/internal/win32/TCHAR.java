@@ -21,11 +21,10 @@ package org.eclipse.swt.internal.win32;
  */
 
 public class TCHAR {
-	
-int codePage;
-public char [] chars;
-public byte [] bytes;
-int byteCount;
+	int codePage;
+	public char [] chars;
+	public byte [] bytes;
+	int byteCount;
 
 public final static int sizeof = OS.IsUnicode ? 2 : 1;
 
@@ -39,15 +38,18 @@ public TCHAR (int codePage, int length) {
 }
 
 public TCHAR (int codePage, char ch, boolean terminate) {
-	this (codePage, String.valueOf (ch), terminate);
+	this (codePage, terminate ? new char [] {ch, '\0'} : new char [] {ch}, false);
 }
 
-public TCHAR (int codePage, String string, boolean terminate) {
+public TCHAR (int codePage, char [] chars, boolean terminate) {
 	this.codePage = codePage;
-	int charCount = string.length ();
-	char [] chars = new char [charCount + (terminate ? 1 : 0)];
-	string.getChars (0, charCount, chars, 0);
+	int charCount = chars.length;
 	if (OS.IsUnicode) {
+		if (terminate && charCount > 0 && chars [charCount - 1] != 0) {
+			char [] newChars = new char [charCount + 1];
+			System.arraycopy (chars, 0, newChars, 0, charCount);
+			chars = newChars;
+		}
 		this.chars = chars;
 	} else {
 		int cp = codePage != 0 ? codePage : OS.CP_ACP;
@@ -55,6 +57,17 @@ public TCHAR (int codePage, String string, boolean terminate) {
 		byteCount = OS.WideCharToMultiByte (cp, 0, chars, charCount, bytes, byteCount, null, null);
 		if (terminate) byteCount++;
 	}
+}
+
+public TCHAR (int codePage, String string, boolean terminate) {
+	this (codePage, getChars (string, terminate), false);
+}
+
+static char [] getChars (String string, boolean terminate) {
+	int length = string.length ();
+	char [] chars = new char [length + (terminate ? 1 : 0)];
+	string.getChars (0, length, chars, 0);
+	return chars;
 }
 
 public int length () {

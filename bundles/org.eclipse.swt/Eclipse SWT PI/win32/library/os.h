@@ -69,6 +69,7 @@
 #define NO_MENUINFO
 #define NO_MINMAXINFO
 #define NO_NMREBARCHEVRON
+#define NO_NMREBARCHILDSIZE
 #define NO_NMTBHOTITEM
 #define NO_NMTTDISPINFO
 #define NO_NMTTDISPINFOA
@@ -267,6 +268,7 @@
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_EXTLOGPEN_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHILDSIZE_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I
@@ -321,6 +323,8 @@
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_MARGINS_2
 #define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_UDACCEL_2
+#define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDITEM_2
+#define NO_SendMessageA__IIILorg_eclipse_swt_internal_win32_HDLAYOUT_2
 #define NO_SendMessageA__IIII
 #define NO_SendMessageA__III_3S
 #define NO_SendMessageA__III_3I

@@ -251,6 +251,18 @@ void setHDITEMFields(JNIEnv *env, jobject lpObject, HDITEM *lpStruct);
 #define HDITEM_sizeof() 0
 #endif
 
+#ifndef NO_HDLAYOUT
+void cacheHDLAYOUTFields(JNIEnv *env, jobject lpObject);
+HDLAYOUT *getHDLAYOUTFields(JNIEnv *env, jobject lpObject, HDLAYOUT *lpStruct);
+void setHDLAYOUTFields(JNIEnv *env, jobject lpObject, HDLAYOUT *lpStruct);
+#define HDLAYOUT_sizeof() sizeof(HDLAYOUT)
+#else
+#define cacheHDLAYOUTFields(a,b)
+#define getHDLAYOUTFields(a,b,c) NULL
+#define setHDLAYOUTFields(a,b,c)
+#define HDLAYOUT_sizeof() 0
+#endif
+
 #ifndef NO_HELPINFO
 void cacheHELPINFOFields(JNIEnv *env, jobject lpObject);
 HELPINFO *getHELPINFOFields(JNIEnv *env, jobject lpObject, HELPINFO *lpStruct);
@@ -623,6 +635,18 @@ void setNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpSt
 #define NMREBARCHEVRON_sizeof() 0
 #endif
 
+#ifndef NO_NMREBARCHILDSIZE
+void cacheNMREBARCHILDSIZEFields(JNIEnv *env, jobject lpObject);
+NMREBARCHILDSIZE *getNMREBARCHILDSIZEFields(JNIEnv *env, jobject lpObject, NMREBARCHILDSIZE *lpStruct);
+void setNMREBARCHILDSIZEFields(JNIEnv *env, jobject lpObject, NMREBARCHILDSIZE *lpStruct);
+#define NMREBARCHILDSIZE_sizeof() sizeof(NMREBARCHILDSIZE)
+#else
+#define cacheNMREBARCHILDSIZEFields(a,b)
+#define getNMREBARCHILDSIZEFields(a,b,c) NULL
+#define setNMREBARCHILDSIZEFields(a,b,c)
+#define NMREBARCHILDSIZE_sizeof() 0
+#endif
+
 #ifndef NO_NMRGINFO
 void cacheNMRGINFOFields(JNIEnv *env, jobject lpObject);
 NMRGINFO *getNMRGINFOFields(JNIEnv *env, jobject lpObject, NMRGINFO *lpStruct);
@@ -705,6 +729,18 @@ void setNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpSt
 #define getNMTVCUSTOMDRAWFields(a,b,c) NULL
 #define setNMTVCUSTOMDRAWFields(a,b,c)
 #define NMTVCUSTOMDRAW_sizeof() 0
+#endif
+
+#ifndef NO_NMTVDISPINFO
+void cacheNMTVDISPINFOFields(JNIEnv *env, jobject lpObject);
+NMTVDISPINFO *getNMTVDISPINFOFields(JNIEnv *env, jobject lpObject, NMTVDISPINFO *lpStruct);
+void setNMTVDISPINFOFields(JNIEnv *env, jobject lpObject, NMTVDISPINFO *lpStruct);
+#define NMTVDISPINFO_sizeof() sizeof(NMTVDISPINFO)
+#else
+#define cacheNMTVDISPINFOFields(a,b)
+#define getNMTVDISPINFOFields(a,b,c) NULL
+#define setNMTVDISPINFOFields(a,b,c)
+#define NMTVDISPINFO_sizeof() 0
 #endif
 
 #ifndef NO_NONCLIENTMETRICS

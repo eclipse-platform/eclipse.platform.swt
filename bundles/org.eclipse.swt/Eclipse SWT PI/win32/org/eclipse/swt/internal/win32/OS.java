@@ -149,6 +149,7 @@ public class OS extends Platform {
 
 	/* Constants */
 	public static final int ALTERNATE = 1;
+	public static final int BDR_SUNKENINNER = 0x8;
 	public static final int BFFM_INITIALIZED = 0x1;
 	public static final int BFFM_SETSELECTION = IsUnicode ? 0x467 : 0x466;
 	public static final int BFFM_VALIDATEFAILED = IsUnicode ? 0x4 : 0x3;
@@ -234,15 +235,18 @@ public class OS extends Platform {
 	public static final int CC_ENABLEHOOK = 0x10;
 	public static final int CC_RGBINIT = 0x1;
 	public static final int CDDS_POSTERASE = 0x00000004;
+	public static final int CDDS_POSTPAINT = 0x00000002;
 	public static final int CDDS_PREERASE = 0x00000003;
 	public static final int CDDS_PREPAINT = 0x00000001;
 	public static final int CDDS_ITEM = 0x00010000;
+	public static final int CDDS_ITEMPOSTPAINT = CDDS_ITEM | CDDS_POSTPAINT;
 	public static final int CDDS_ITEMPREPAINT = CDDS_ITEM | CDDS_PREPAINT;
 	public static final int CDDS_SUBITEM = 0x00020000;
 	public static final int CDRF_DODEFAULT = 0x00000000;
 	public static final int CDRF_NEWFONT = 0x00000002;
 	public static final int CDRF_NOTIFYITEMDRAW = 0x00000020;
 	public static final int CDRF_NOTIFYPOSTERASE = 0x00000040;
+	public static final int CDRF_NOTIFYPOSTPAINT = 0x00000010;
 	public static final int CDRF_NOTIFYSUBITEMDRAW = 0x00000020;
 	public static final int CFE_AUTOCOLOR = 0x40000000;
 	public static final int CFE_ITALIC = 0x2;
@@ -337,12 +341,16 @@ public class OS extends Platform {
 	public static final int DST_BITMAP = 0x4;
 	public static final int DST_ICON = 0x3;
 	public static final int DT_CALCRECT = 0x400;
+	public static final int DT_CENTER = 0x1;
 	public static final int DT_EDITCONTROL = 0x2000;
 	public static final int DT_EXPANDTABS = 0x40;
+	public static final int DT_ENDELLIPSIS = 32768;
 	public static final int DT_LEFT = 0x0;
 	public static final int DT_NOPREFIX = 0x800;
-	public static final int DT_RASPRINTER = 0x2;	
+	public static final int DT_RASPRINTER = 0x2;
+	public static final int DT_RIGHT = 0x2;
 	public static final int DT_SINGLELINE = 0x20;
+	public static final int DT_VCENTER = 4;
 	public static final int DT_WORDBREAK = 0x10;
 	public static final int ECOOP_AND = 0x3;
 	public static final int ECOOP_OR = 0x2;
@@ -438,10 +446,31 @@ public class OS extends Platform {
 	public static final int GW_OWNER = 0x4;
 	public static final int HBMMENU_CALLBACK = 0xffffffff;
 	public static final int HCF_HIGHCONTRASTON = 0x1;
+	public static final int HDF_CENTER = 2;
+	public static final int HDF_JUSTIFYMASK = 0x3;
+	public static final int HDF_IMAGE = 0x0800;
+	public static final int HDF_LEFT = 0;
+	public static final int HDF_RIGHT = 1;
+	public static final int HDI_IMAGE = 32;
+	public static final int HDI_TEXT = 0x2;
 	public static final int HDI_WIDTH = 0x1;
+	public static final int HDI_FORMAT = 0x4;
 	public static final int HDM_FIRST = 0x1200;
+	public static final int HDM_DELETEITEM = HDM_FIRST + 2;
 	public static final int HDM_GETBITMAPMARGIN = HDM_FIRST + 21;
 	public static final int HDM_GETITEMCOUNT = 0x1200;
+	public static final int HDM_GETITEMA = HDM_FIRST + 3;
+	public static final int HDM_GETITEMW = HDM_FIRST + 11;
+	public static final int HDM_GETITEM = IsUnicode ? HDM_GETITEMW : HDM_GETITEMA;
+	public static final int HDM_GETITEMRECT = HDM_FIRST + 7;
+	public static final int HDM_INSERTITEMA = HDM_FIRST + 1;
+	public static final int HDM_INSERTITEMW = HDM_FIRST + 10;
+	public static final int HDM_INSERTITEM = IsUnicode ? HDM_INSERTITEMW : HDM_INSERTITEMA;
+	public static final int HDM_LAYOUT = HDM_FIRST + 5;
+	public static final int HDM_SETIMAGELIST = HDM_FIRST + 8;
+	public static final int HDM_SETITEMA = HDM_FIRST + 4;
+	public static final int HDM_SETITEMW = HDM_FIRST + 12;
+	public static final int HDM_SETITEM = IsUnicode ? HDM_SETITEMW : HDM_SETITEMA;
 	public static final int HDN_FIRST = 0xfffffed4;
 	public static final int HDN_BEGINTRACK = IsUnicode ? 0xfffffeba : 0xfffffece;
 	public static final int HDN_BEGINTRACKW = 0xfffffeba;
@@ -452,9 +481,14 @@ public class OS extends Platform {
 	public static final int HDN_ITEMCHANGED = IsUnicode ? 0xfffffebf : 0xfffffed3;
 	public static final int HDN_ITEMCHANGEDW = 0xfffffebf;
 	public static final int HDN_ITEMCHANGEDA = 0xfffffed3;
+	public static final int HDN_ITEMCHANGINGW = HDN_FIRST - 20;
+	public static final int HDN_ITEMCHANGINGA = HDN_FIRST;
 	public static final int HDN_ITEMDBLCLICKW = HDN_FIRST - 23;
 	public static final int HDN_ITEMDBLCLICKA = HDN_FIRST - 3;
 	public static final int HDN_ITEMDBLCLICK = IsUnicode ? HDN_ITEMDBLCLICKW : HDN_ITEMDBLCLICKA;
+	public static final int HDS_BUTTONS = 0x2;
+	public static final int HDS_FULLDRAG = 0x80;
+	public static final int HDS_HIDDEN = 0x8;
 	public static final int HEAP_ZERO_MEMORY = 0x8;
 	public static final int HELPINFO_MENUITEM = 0x2;
 	public static final int HICF_ARROWKEYS = 0x2;
@@ -864,6 +898,7 @@ public class OS extends Platform {
 	public static final int RBBS_USECHEVRON = 0x00000200;
 	public static final int RBBS_VARIABLEHEIGHT = 0x40;
 	public static final int RBN_FIRST = 0xfffffcc1;
+	public static final int RBN_CHILDSIZE = RBN_FIRST - 8;
 	public static final int RBN_CHEVRONPUSHED = RBN_FIRST - 10;
 	public static final int RBN_HEIGHTCHANGE = 0xfffffcc1;
 	public static final int RBS_DBLCLKTOGGLE = 0x8000;
@@ -1199,20 +1234,19 @@ public class OS extends Platform {
 	public static final int TVM_SETINSERTMARK = 0x111a;
 	public static final int TVM_SETITEM = IsUnicode ? 0x113f : 0x110d;
 	public static final int TVM_SETTEXTCOLOR = 0x111e;
-	public static final int TVN_BEGINDRAG = IsUnicode ? 0xfffffe38 : 0xfffffe69;
 	public static final int TVN_BEGINDRAGW = 0xfffffe38;
 	public static final int TVN_BEGINDRAGA = 0xfffffe69;
-	public static final int TVN_BEGINRDRAG = IsUnicode ? 0xfffffe37 : 0xfffffe68;
 	public static final int TVN_BEGINRDRAGW = 0xfffffe37;
 	public static final int TVN_BEGINRDRAGA = 0xfffffe68;
 	public static final int TVN_FIRST = 0xfffffe70;
-	public static final int TVN_ITEMEXPANDING = IsUnicode ? 0xfffffe3a : 0xfffffe6b;
+	public static final int TVN_GETDISPINFOA = TVN_FIRST - 3;
+	public static final int TVN_GETDISPINFOW = TVN_FIRST - 52;
+	public static final int TVN_ITEMEXPANDEDA = TVN_FIRST -6;
+	public static final int TVN_ITEMEXPANDEDW = TVN_FIRST - 55;
 	public static final int TVN_ITEMEXPANDINGW = 0xfffffe3a;
 	public static final int TVN_ITEMEXPANDINGA = 0xfffffe6b;
-	public static final int TVN_SELCHANGED = IsUnicode ? 0xfffffe3d : 0xfffffe6e;
 	public static final int TVN_SELCHANGEDW = 0xfffffe3d;
 	public static final int TVN_SELCHANGEDA = 0xfffffe6e;
-	public static final int TVN_SELCHANGING = IsUnicode ? 0xfffffe3e : 0xfffffe6f;
 	public static final int TVN_SELCHANGINGW = 0xfffffe3e;
 	public static final int TVN_SELCHANGINGA = 0xfffffe6f;
 	public static final int TVSIL_NORMAL = 0x0;
@@ -1222,6 +1256,7 @@ public class OS extends Platform {
 	public static final int TVS_HASBUTTONS = 0x1;
 	public static final int TVS_HASLINES = 0x2;
 	public static final int TVS_LINESATROOT = 0x4;
+	public static final int TVS_NOHSCROLL = 0x8000;
 	public static final int TVS_NOTOOLTIPS = 0x80;
 	public static final int TVS_SHOWSELALWAYS = 0x20;
 	public static final int UDM_GETACCEL = 0x046C;
@@ -1305,6 +1340,7 @@ public class OS extends Platform {
 	public static final int VK_APP4 = 0xc4;
 	public static final int VK_APP5 = 0xc5;
 	public static final int VK_APP6 = 0xc6;
+	public static final String WC_HEADER = "SysHeader32"; //$NON-NLS-1$
 	public static final String WC_LISTVIEW = "SysListView32"; //$NON-NLS-1$
 	public static final String WC_TABCONTROL = "SysTabControl32"; //$NON-NLS-1$
 	public static final String WC_TREEVIEW = "SysTreeView32"; //$NON-NLS-1$
@@ -1417,6 +1453,7 @@ public class OS extends Platform {
 	public static final int WS_CHILD = 0x40000000;
 	public static final int WS_CLIPCHILDREN = 0x2000000;
 	public static final int WS_CLIPSIBLINGS = 0x4000000;
+	public static final int WS_DISABLED = 0x4000000;
 	public static final int WS_EX_CAPTIONOKBTN = 0x80000000;
 	public static final int WS_EX_CLIENTEDGE = 0x200;
 	public static final int WS_EX_DLGMODALFRAME = 0x1;
@@ -2136,6 +2173,16 @@ public static final int SendMessage (int hWnd, int Msg, int wParam, UDACCEL lPar
 	return SendMessageA (hWnd, Msg, wParam, lParam);
 }
 
+public static final int SendMessage (int hWnd, int Msg, int wParam, HDITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, HDLAYOUT lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
 public static final boolean SetMenuItemInfo (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii) {
 	if (IsUnicode) return SetMenuItemInfoW (hMenu, uItem, fByPosition, lpmii);
 	return SetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
@@ -2604,10 +2651,13 @@ public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int Sour
 public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (int Destination, NMTVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (int Destination, NMLVDISPINFO Source, int Length);
+public static final native void MoveMemory (int Destination, NMTVDISPINFO Source, int Length);
 public static final native void MoveMemory (NMLVDISPINFO Destination, int Source, int Length);
+public static final native void MoveMemory (NMTVDISPINFO Destination, int Source, int Length);
 public static final native void MoveMemory (NMLVFINDITEM Destination, int Source, int Length);
 public static final native void MoveMemory (NMHEADER Destination, int Source, int Length);
 public static final native void MoveMemory (NMLISTVIEW Destination, int Source, int Length);
+public static final native void MoveMemory (NMREBARCHILDSIZE Destination, int Source, int Length);
 public static final native void MoveMemory (NMREBARCHEVRON Destination, int Source, int Length);
 public static final native void MoveMemory (NMTOOLBAR Destination, int Source, int Length);
 public static final native void MoveMemory (NMTTDISPINFOW Destination, int Source, int Length);
@@ -2716,6 +2766,8 @@ public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVHI
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVINSERTSTRUCT lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVITEM lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, UDACCEL lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, HDITEM lParam);
+public static final native int SendMessageW (int hWnd, int Msg, int wParam, HDLAYOUT lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int [] wParam, int [] lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int [] wParam, int lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, byte [] lParam);
@@ -2736,6 +2788,8 @@ public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVHI
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVINSERTSTRUCT lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, TVITEM lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, UDACCEL lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, HDITEM lParam);
+public static final native int SendMessageA (int hWnd, int Msg, int wParam, HDLAYOUT lParam);
 public static final native int SetActiveWindow (int hWnd);
 public static final native int SetBkColor (int hdc, int colorRef);
 public static final native int SetBkMode (int hdc, int mode);
