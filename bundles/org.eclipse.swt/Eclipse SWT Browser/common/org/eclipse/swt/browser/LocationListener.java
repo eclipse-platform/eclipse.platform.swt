@@ -16,21 +16,28 @@ import org.eclipse.swt.internal.SWTEventListener;
  * This listener interface may be implemented in order to receive
  * LocationEvents.
  * 
+ * <p>
+ * NOTE: The API in the browser package is NOT finalized.
+ * Use at your own risk, because it will most certainly change.
+ * The only reason this API is being released at this time is so that 
+ * other teams can try it out.
+ * </p>
+ * 
  * @see LocationEvent
  * 
  * @since 3.0
  */
 public interface LocationListener extends SWTEventListener {
 
-	/**
-	 * This method is called when the current location is changed.
-	 * <p>
-	 *
-	 * @param event.location the current location 
-	 *
-	 * @see LocationEvent
-	 * 
-	 * @since 3.0
-	 */ 
-	public void changed(LocationEvent event);
+/**
+ * This method is called when the current location is changed.
+ * <p>
+ *
+ * @param event.location the current location 
+ *
+ * @see LocationEvent
+ * 
+ * @since 3.0
+ */ 
+public void changed(LocationEvent event);
 }

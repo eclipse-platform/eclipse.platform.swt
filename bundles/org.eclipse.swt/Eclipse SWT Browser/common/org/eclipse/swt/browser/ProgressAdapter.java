@@ -10,25 +10,25 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import org.eclipse.swt.internal.SWTEventListener;
-
 /**
- * This listener interface may be implemented in order to receive
- * ProgressEvents.
- * 
+ * This adapter class provides default implementations for the
+ * methods described by the <code>ProgressListener</code> interface.
  * <p>
+ * Classes that wish to deal with <code>ProgressEvent</code>s can
+ * extend this class and override only the methods which they are
+ * interested in.
+ * </p><p>
  * NOTE: The API in the browser package is NOT finalized.
  * Use at your own risk, because it will most certainly change.
  * The only reason this API is being released at this time is so that 
  * other teams can try it out.
  * </p>
  * 
+ * @see ProgressListener
  * @see ProgressEvent
- * 
- * @since 3.0
  */
-public interface ProgressListener extends SWTEventListener {
-	
+public abstract class ProgressAdapter implements ProgressListener {
+
 /**
  * This method is called when a progress is made during the loading of the current location.
  * <p>
@@ -40,7 +40,8 @@ public interface ProgressListener extends SWTEventListener {
  * 
  * @since 3.0
  */   
-public void changed(ProgressEvent event);
+public void changed(ProgressEvent event) {
+}
 	
 /**
  * This method is called when the current location has been completely loaded.
@@ -50,5 +51,6 @@ public void changed(ProgressEvent event);
  * 
  * @since 3.0
  */
-public void completed(ProgressEvent event);
+public void completed(ProgressEvent event) {
+}
 }

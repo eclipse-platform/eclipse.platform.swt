@@ -17,6 +17,13 @@ import org.eclipse.swt.events.*;
  * This event is sent to LocationListeners when the location
  * is changed.
  * 
+ * <p>
+ * NOTE: The API in the browser package is NOT finalized.
+ * Use at your own risk, because it will most certainly change.
+ * The only reason this API is being released at this time is so that 
+ * other teams can try it out.
+ * </p>
+ * 
  * @since 3.0
  */
 public class LocationEvent extends TypedEvent {

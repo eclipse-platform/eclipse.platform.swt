@@ -23,6 +23,11 @@ import org.eclipse.swt.widgets.*;
  * it does not make sense to set a layout on it.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p><p>
+ * NOTE: The API in the browser package is NOT finalized.
+ * Use at your own risk, because it will most certainly change.
+ * The only reason this API is being released at this time is so that 
+ * other teams can try it out.
  * </p>
  * 
  * @since 3.0

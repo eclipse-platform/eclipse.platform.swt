@@ -18,6 +18,13 @@ import org.eclipse.swt.events.*;
  * during the loading of the current URI or when the loading of the
  * current URI has been completed.
  * 
+ * <p>
+ * NOTE: The API in the browser package is NOT finalized.
+ * Use at your own risk, because it will most certainly change.
+ * The only reason this API is being released at this time is so that 
+ * other teams can try it out.
+ * </p>
+ * 
  * @since 3.0
  */
 public class ProgressEvent extends TypedEvent {
