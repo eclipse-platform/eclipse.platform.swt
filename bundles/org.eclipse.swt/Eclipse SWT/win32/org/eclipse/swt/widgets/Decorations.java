@@ -998,6 +998,17 @@ void setParent () {
 	display.lockActiveWindow = false;
 }
 
+public boolean setParent (Composite parent) {
+	checkWidget ();
+	/*
+	* Feature in Windows.  Calling SetParent() for a shell causes
+	* a kind of fake MDI to happen.  It doesn't work well on Windows
+	* and is not supported on the other platforms.  The fix is to
+	* disallow the SetParent().
+	*/
+	return false;
+}
+
 void setPlacement (int x, int y, int width, int height, int flags) {
 	WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
 	lpwndpl.length = WINDOWPLACEMENT.sizeof;
