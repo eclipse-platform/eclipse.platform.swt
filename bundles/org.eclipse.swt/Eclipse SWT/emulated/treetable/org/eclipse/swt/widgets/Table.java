@@ -2109,6 +2109,9 @@ void removeColumn(TableColumn column) {
 	else {		
 		getColumnVector().removeElementAt(index);
 		columnCount = getColumnCount();
+		if (index < columnCount) {					// is there a column after the removed one?
+			reindexColumns(index);
+		}
 		// Never remove the data of the last user created column. 
 		// SWT for Windows does the same.
 		if (columnCount > 0) {
@@ -2143,9 +2146,6 @@ void removeColumn(TableColumn column) {
 		else {
 			redraw();
 			getHeader().redraw();
-		}
-		if (index < columnCount) {					// is there a column after the removed one?
-			reindexColumns(index);
 		}
 		// last user created column is about to be removed.
 		if (columnCount == 0) {		
