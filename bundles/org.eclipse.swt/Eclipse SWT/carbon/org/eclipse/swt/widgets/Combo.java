@@ -218,6 +218,7 @@ void createHandle () {
 }
 
 public void cut () {
+	//NEEDS WORK - Modify/Verify
 	checkWidget ();
 	int [] str = new int [1];
 	short start, end;
@@ -274,6 +275,7 @@ public void cut () {
 		int ptr = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, newBuffer, newBuffer.length, encoding, true);
 		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
 		OS.CFRelease (ptr);
+		sendEvent (SWT.Modify);
 	}
 	
 	OS.CFRelease (str [0]);
@@ -442,20 +444,9 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	if (keyCode [0] == 36) { //CR
-		sendEvent (SWT.DefaultSelection);
-		return OS.noErr;
-	}
-	return OS.eventNotHandledErr;
-}
-		
 public void paste () {
 	checkWidget ();
+	//NEEDS WORK - Modify/Verify
 	int[] scrap = new int [1];
 	OS.GetCurrentScrap (scrap);
 	int [] size = new int [1];
@@ -497,6 +488,7 @@ public void paste () {
 		int ptr = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, newBuffer, newBuffer.length, encoding, true);
 		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
 		OS.CFRelease (ptr);
+		sendEvent (SWT.Modify);
 	}
 }
 
@@ -576,6 +568,7 @@ public void removeSelectionListener (SelectionListener listener) {
 
 public void select (int index) {
 	checkWidget ();
+	//NEEDS WORK Modify/Verify
 	int count = getItemCount ();
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
 	if ((style & SWT.READ_ONLY) != 0) {
@@ -586,8 +579,70 @@ public void select (int index) {
 		OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr);
 		OS.CFRelease (ptr [0]);		
 	}
+	sendEvent (SWT.Modify);
 }
 
+boolean sendKeyEvent (int type, Event event) {
+	//NEEDS WORK - start/end and CR
+	if (!super.sendKeyEvent (type, event)) {
+		return false;
+	}
+	if (type != SWT.KeyDown) return true;
+	if (event.character == 0) return true;
+	if ((style & SWT.READ_ONLY) != 0) return false;
+	String oldText = "";
+	//int charCount = getCharCount ();
+	//Point selection = getSelection ();
+	int [] ptr = new int [1];
+	int [] actualSize = new int [1];
+	int charCount;
+	int result = OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
+	if (result == OS.noErr) {
+		charCount = OS.CFStringGetLength (ptr [0]);
+		OS.CFRelease (ptr [0]);
+	} else {
+		charCount = 0;
+	}
+	Point selection = new Point (0, charCount - 1);
+	int start = selection.x, end = selection.y;
+	switch (event.character) {
+		case SWT.BS:
+			if (start == end) {
+				if (start == 0) return true;
+				start = Math.max (0, start - 1);
+			}
+			break;
+		case SWT.DEL:
+			if (start == end) {
+				if (start == charCount) return true;
+				end = Math.min (end + 1, charCount);
+			}
+			break;
+		case SWT.CR:
+			if ((style & SWT.SINGLE) != 0) {
+				postEvent (SWT.DefaultSelection);
+				return true;
+			}
+			break;
+		default:
+			if (event.character != '\t' && event.character < 0x20) return true;
+			oldText = new String (new char [] {event.character});
+	}
+	String newText = verifyText (oldText, start, end);
+	if (newText == null) return false;
+	if (charCount - (end - start) + newText.length () > LIMIT/*textLimit*/) {
+		return false;
+	}
+	if (newText != oldText) setText (newText);
+	/*
+	* Post the modify event so that the character will be inserted
+	* into the widget when the modify event is delivered.  Normally,
+	* modify events are sent but it is safe to post the event here
+	* because this method is called from the event loop.
+	*/
+	postEvent (SWT.Modify);
+	return newText == oldText;
+}
 public void setItem (int index, String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -645,6 +700,7 @@ public void setSelection (Point selection) {
 
 public void setText (String string) {
 	checkWidget ();
+	//NEEDS WORK - Modify/Verify
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = indexOf (string);
@@ -656,6 +712,7 @@ public void setText (String string) {
 		if (ptr == 0) return;	
 		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
 		OS.CFRelease (ptr);
+		sendEvent (SWT.Modify);
 	}
 }
 
@@ -665,4 +722,19 @@ public void setTextLimit (int limit) {
 	// NEEDS WORK
 }
 
+String verifyText (String string, int start, int end) {
+	Event event = new Event ();
+	event.text = string;
+	event.start = start;
+	event.end = end;
+	/*
+	 * It is possible (but unlikely), that application
+	 * code could have disposed the widget in the verify
+	 * event.  If this happens, answer null to cancel
+	 * the operation.
+	 */
+	sendEvent (SWT.Verify, event);
+	if (!event.doit || isDisposed ()) return null;
+	return event.text;
+}
 }
