@@ -15,15 +15,15 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
  
 public class TreeColumn extends Item {
-	Tree2 parent;
+	Tree parent;
 	int width;
 	boolean resizable = true;
 	int textWidth;
 	
-public TreeColumn (Tree2 parent, int style) {
+public TreeColumn (Tree parent, int style) {
 	this (parent, style, checkNull (parent).getColumnCount ());
 }
-public TreeColumn (Tree2 parent, int style, int index) {
+public TreeColumn (Tree parent, int style, int index) {
 	super (parent, checkStyle (style), index);
 	if (!(0 <= index && index <= parent.getColumnCount ())) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
@@ -43,7 +43,7 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.Selection, typedListener);
 	addListener (SWT.DefaultSelection, typedListener);
 }
-static Tree2 checkNull (Tree2 tree) {
+static Tree checkNull (Tree tree) {
 	if (tree == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return tree;
 }
@@ -81,7 +81,7 @@ int getIndex () {
 	}
 	return -1;
 }
-public Tree2 getParent () {
+public Tree getParent () {
 	checkWidget ();
 	return parent;
 }
@@ -109,7 +109,7 @@ void paint (GC gc) {
 	} else {
 		int contentWidth = textWidth;
 		if (image != null) {
-			contentWidth += image.getBounds ().width + Tree2.MARGIN_IMAGE;
+			contentWidth += image.getBounds ().width + Tree.MARGIN_IMAGE;
 		}
 		if ((style & SWT.RIGHT) != 0) {
 			startX = x + width - padding - contentWidth;	
@@ -136,7 +136,7 @@ void paint (GC gc) {
 			imageBounds.width, imageBounds.height,
 			startX, (headerHeight - drawHeight) / 2,
 			imageBounds.width, drawHeight); 
-		startX += imageBounds.width + Tree2.MARGIN_IMAGE; 
+		startX += imageBounds.width + Tree.MARGIN_IMAGE; 
 	}
 	if (text.length () > 0) {
 		int fontHeight = parent.fontHeight;

@@ -24,7 +24,7 @@ class TreeRoots extends AbstractTreeItem {
  * Create a tree item that holds one or more root items 
  * @param parent - Tree widget the receiver belongs to
  */
-TreeRoots(Tree parent) {
+TreeRoots(Tree2 parent) {
 	super(parent, 0);
 	initialize();
 }
@@ -34,11 +34,11 @@ TreeRoots(Tree parent) {
  */
 void calculateVisibleItemCount() {
 	Vector children = getChildren();
-	TreeItem child;
+	TreeItem2 child;
 	int visibleItemCount = children.size();
 	
 	for (int i = 0; i < children.size(); i++) {
-		child = (TreeItem) children.elementAt(i);
+		child = (TreeItem2) children.elementAt(i);
 		visibleItemCount += child.getVisibleItemCount();
 	}
 	setVisibleItemCount(visibleItemCount);
@@ -51,7 +51,7 @@ void calculateVisibleItemCountParent() {}
 
 public void dispose() {
 	if (isDisposed()) return;
-	Tree parent = (Tree) getSelectableParent();
+	Tree2 parent = (Tree2) getSelectableParent();
 	
 	// all tree items are removed so we don't need to do
 	// time consuming screen updates for each removed item
@@ -93,11 +93,11 @@ int getVisibleIndex() {
  */
 int getVisibleIndex(int childIndex) {
 	Enumeration children = getChildren().elements();
-	TreeItem child;
+	TreeItem2 child;
 	int globalItemIndex = 0;
 
 	while (children.hasMoreElements() == true) {
-		child = (TreeItem) children.nextElement();
+		child = (TreeItem2) children.nextElement();
 		if (child.getIndex() == childIndex) {
 			break;
 		}
@@ -119,16 +119,16 @@ int getVisibleIndex(int childIndex) {
  * the parents of the item are expanded. An item is only 
  * visible on screen if it is within the widget client area.
  */
-TreeItem getVisibleItem(int searchIndex) {
-	TreeItem child;
-	TreeItem foundItem = null;
+TreeItem2 getVisibleItem(int searchIndex) {
+	TreeItem2 child;
+	TreeItem2 foundItem = null;
 	Enumeration children = getChildren().elements();
 
 	searchIndex++;						// skip this fake root item
 
 	// Search for expanded items first. Count all subitems in the process.
 	while (children.hasMoreElements() == true && foundItem == null) {
-		child = (TreeItem) children.nextElement();
+		child = (TreeItem2) children.nextElement();
 		searchIndex--;
 		if (child.internalGetExpanded() == true) {
 			searchIndex -= child.getVisibleItemCount();	// count children of all expanded items
