@@ -1745,7 +1745,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	return event.doit;
 }
 
-boolean sendFocusEvent (int type, int hwnd) {
+boolean sendFocusEvent (int type) {
 	Shell shell = getShell ();
 	
 	/*
@@ -1778,8 +1778,7 @@ boolean sendFocusEvent (int type, int hwnd) {
 				shell.setActiveControl (this);
 				break;
 			case SWT.FocusOut:
-				Control control = display.findControl (hwnd);
-				if (control == null || shell != control.getShell ()) {
+				if (shell != display.getActiveShell ()) {
 					shell.setActiveControl (null);
 				}
 				break;
@@ -3616,7 +3615,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	int code = callWindowProc (OS.WM_KILLFOCUS, wParam, lParam);
-	sendFocusEvent (SWT.FocusOut, wParam);
+	sendFocusEvent (SWT.FocusOut);
 	// widget could be disposed at this point
 	
 	/*
@@ -4145,7 +4144,7 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	int code = callWindowProc (OS.WM_SETFOCUS, wParam, lParam);
-	sendFocusEvent (SWT.FocusIn, wParam);
+	sendFocusEvent (SWT.FocusIn);
 	// widget could be disposed at this point
 
 	/*

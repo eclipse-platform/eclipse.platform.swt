@@ -1435,10 +1435,10 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		Control control = display.findControl (lParam);
 		if (control == null || control instanceof Shell) {
 			if (this instanceof Shell) {
+				sendEvent (SWT.Deactivate);
+				if (isDisposed ()) return LRESULT.ZERO;
 				Shell shell = getShell ();
 				shell.setActiveControl (null);
-				if (isDisposed ()) return LRESULT.ZERO;
-				sendEvent (SWT.Deactivate);
 				if (isDisposed ()) return LRESULT.ZERO;
 			}
 		}

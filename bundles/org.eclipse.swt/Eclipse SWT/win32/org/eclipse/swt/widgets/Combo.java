@@ -1692,7 +1692,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			* Windows message by returning zero as the result of
 			* the window proc.
 			*/
-			sendFocusEvent (SWT.FocusIn, OS.GetFocus ());
+			sendFocusEvent (SWT.FocusIn);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
 		case OS.CBN_KILLFOCUS:
@@ -1703,7 +1703,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			* Windows message by returning zero as the result of
 			* the window proc.
 			*/
-			sendFocusEvent (SWT.FocusOut, OS.GetFocus ());
+			sendFocusEvent (SWT.FocusOut);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
 	}

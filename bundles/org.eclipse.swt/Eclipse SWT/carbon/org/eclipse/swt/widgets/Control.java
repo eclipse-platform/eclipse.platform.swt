@@ -1925,22 +1925,20 @@ void resetVisibleRegion (int control) {
 }
 
 void sendFocusEvent (int type, boolean post) {
+	Display display = this.display;
 	Shell shell = getShell ();
+	/*
+	* Feature in the Macintosh.  GetKeyboardFocus() returns NULL during
+	* kEventControlSetFocusPart if the focus part is not kControlFocusNoPart.
+	* The fix is to remember the focus control and return it during
+	* kEventControlSetFocusPart.
+	*/
+	display.focusControl = this;
+	display.focusEvent = type;
 	if (post) {
 		postEvent (type);
 	} else {
-		/*
-		* Feature in the Macintosh.  GetKeyboardFocus() returns NULL during
-		* kEventControlSetFocusPart if the focus part is not kControlFocusNoPart.
-		* The fix is to remember the focus control and return it during
-		* kEventControlSetFocusPart.
-		*/
-		Display display = this.display;
-		display.focusControl = this;
-		display.focusEvent = type;
 		sendEvent (type);
-		display.focusEvent = SWT.None;
-		display.focusControl = null;
 	}	
 	/*
 	* It is possible that the shell may be
@@ -1954,14 +1952,14 @@ void sendFocusEvent (int type, boolean post) {
 				shell.setActiveControl (this);
 				break;
 			case SWT.FocusOut:
-				Display display = shell.display;
-				Control control = display.getFocusControl ();
-				if (control == null || shell != control.getShell () ) {
+				if (shell != display.getActiveShell ()) {
 					shell.setActiveControl (null);
 				}
 				break;
 		}
 	}
+	display.focusEvent = SWT.None;
+	display.focusControl = null;
 }
 
 boolean sendKeyEvent (int type, int theEvent) {
