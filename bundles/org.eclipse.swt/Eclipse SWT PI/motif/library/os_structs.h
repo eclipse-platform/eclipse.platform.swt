@@ -51,6 +51,14 @@ void setXCharStructFields(JNIEnv *env, jobject lpObject, XCharStruct *lpStruct);
 #define setXCharStructFields(a,b,c)
 #endif
 
+#ifndef NO_XClientMessageEvent
+XClientMessageEvent *getXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct);
+void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct);
+#else
+#define getXClientMessageEventFields(a,b,c) NULL
+#define setXClientMessageEventFields(a,b,c)
+#endif
+
 #ifndef NO_XColor
 XColor *getXColorFields(JNIEnv *env, jobject lpObject, XColor *lpStruct);
 void setXColorFields(JNIEnv *env, jobject lpObject, XColor *lpStruct);
@@ -67,12 +75,28 @@ void setXConfigureEventFields(JNIEnv *env, jobject lpObject, XConfigureEvent *lp
 #define setXConfigureEventFields(a,b,c)
 #endif
 
+#ifndef NO_XCreateWindowEvent
+XCreateWindowEvent *getXCreateWindowEventFields(JNIEnv *env, jobject lpObject, XCreateWindowEvent *lpStruct);
+void setXCreateWindowEventFields(JNIEnv *env, jobject lpObject, XCreateWindowEvent *lpStruct);
+#else
+#define getXCreateWindowEventFields(a,b,c) NULL
+#define setXCreateWindowEventFields(a,b,c)
+#endif
+
 #ifndef NO_XCrossingEvent
 XCrossingEvent *getXCrossingEventFields(JNIEnv *env, jobject lpObject, XCrossingEvent *lpStruct);
 void setXCrossingEventFields(JNIEnv *env, jobject lpObject, XCrossingEvent *lpStruct);
 #else
 #define getXCrossingEventFields(a,b,c) NULL
 #define setXCrossingEventFields(a,b,c)
+#endif
+
+#ifndef NO_XDestroyWindowEvent
+XDestroyWindowEvent *getXDestroyWindowEventFields(JNIEnv *env, jobject lpObject, XDestroyWindowEvent *lpStruct);
+void setXDestroyWindowEventFields(JNIEnv *env, jobject lpObject, XDestroyWindowEvent *lpStruct);
+#else
+#define getXDestroyWindowEventFields(a,b,c) NULL
+#define setXDestroyWindowEventFields(a,b,c)
 #endif
 
 #ifndef NO_XExposeEvent
@@ -131,12 +155,28 @@ void setXMotionEventFields(JNIEnv *env, jobject lpObject, XMotionEvent *lpStruct
 #define setXMotionEventFields(a,b,c)
 #endif
 
+#ifndef NO_XPropertyEvent
+XPropertyEvent *getXPropertyEventFields(JNIEnv *env, jobject lpObject, XPropertyEvent *lpStruct);
+void setXPropertyEventFields(JNIEnv *env, jobject lpObject, XPropertyEvent *lpStruct);
+#else
+#define getXPropertyEventFields(a,b,c) NULL
+#define setXPropertyEventFields(a,b,c)
+#endif
+
 #ifndef NO_XRectangle
 XRectangle *getXRectangleFields(JNIEnv *env, jobject lpObject, XRectangle *lpStruct);
 void setXRectangleFields(JNIEnv *env, jobject lpObject, XRectangle *lpStruct);
 #else
 #define getXRectangleFields(a,b,c) NULL
 #define setXRectangleFields(a,b,c)
+#endif
+
+#ifndef NO_XReparentEvent
+XReparentEvent *getXReparentEventFields(JNIEnv *env, jobject lpObject, XReparentEvent *lpStruct);
+void setXReparentEventFields(JNIEnv *env, jobject lpObject, XReparentEvent *lpStruct);
+#else
+#define getXReparentEventFields(a,b,c) NULL
+#define setXReparentEventFields(a,b,c)
 #endif
 
 #ifndef NO_XSetWindowAttributes

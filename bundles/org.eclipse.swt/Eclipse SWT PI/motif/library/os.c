@@ -846,6 +846,33 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(XGetWindowAttributes)
 }
 #endif
 
+#ifndef NO_XGetWindowProperty
+JNIEXPORT jint JNICALL OS_NATIVE(XGetWindowProperty)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jboolean arg5, jint arg6, jintArray arg7, jintArray arg8, jintArray arg9, jintArray arg10, jintArray arg11)
+{
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint *lparg9=NULL;
+	jint *lparg10=NULL;
+	jint *lparg11=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XGetWindowProperty\n")
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	if (arg9) lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL);
+	if (arg10) lparg10 = (*env)->GetIntArrayElements(env, arg10, NULL);
+	if (arg11) lparg11 = (*env)->GetIntArrayElements(env, arg11, NULL);
+	rc = (jint)XGetWindowProperty((Display *)arg0, (Window)arg1, (Atom)arg2, arg3, arg4, (Bool)arg5, (Atom)arg6, (Atom *)lparg7, (int *)lparg8, (unsigned long *)lparg9, (unsigned long *)lparg10, (unsigned char **)lparg11);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
+	if (arg10) (*env)->ReleaseIntArrayElements(env, arg10, lparg10, 0);
+	if (arg11) (*env)->ReleaseIntArrayElements(env, arg11, lparg11, 0);
+	NATIVE_EXIT(env, that, "XGetWindowProperty\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XGrabKeyboard
 JNIEXPORT jint JNICALL OS_NATIVE(XGrabKeyboard)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
@@ -987,6 +1014,26 @@ JNIEXPORT jint JNICALL OS_NATIVE(XLowerWindow)
 	rc = (jint)XLowerWindow((Display *)arg0, (Window)arg1);
 	NATIVE_EXIT(env, that, "XLowerWindow\n")
 	return rc;
+}
+#endif
+
+#ifndef NO_XMapWindow
+JNIEXPORT void JNICALL OS_NATIVE(XMapWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XMapWindow\n")
+	XMapWindow((Display *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XMapWindow\n")
+}
+#endif
+
+#ifndef NO_XMoveResizeWindow
+JNIEXPORT void JNICALL OS_NATIVE(XMoveResizeWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	NATIVE_ENTER(env, that, "XMoveResizeWindow\n")
+	XMoveResizeWindow((Display *)arg0, (Window)arg1, arg2, arg3, arg4, arg5);
+	NATIVE_EXIT(env, that, "XMoveResizeWindow\n")
 }
 #endif
 
@@ -1160,6 +1207,28 @@ JNIEXPORT jint JNICALL OS_NATIVE(XRootWindowOfScreen)
 	NATIVE_ENTER(env, that, "XRootWindowOfScreen\n")
 	rc = (jint)XRootWindowOfScreen((Screen *)arg0);
 	NATIVE_EXIT(env, that, "XRootWindowOfScreen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XSelectInput
+JNIEXPORT void JNICALL OS_NATIVE(XSelectInput)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XSelectInput\n")
+	XSelectInput((Display *)arg0, (Window)arg1, arg2);
+	NATIVE_EXIT(env, that, "XSelectInput\n")
+}
+#endif
+
+#ifndef NO_XSendEvent
+JNIEXPORT jint JNICALL OS_NATIVE(XSendEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XSendEvent\n")
+	rc = (jint)XSendEvent((Display *)arg0, (Window)arg1, (Bool)arg2, (long)arg3, (XEvent *)arg4);
+	NATIVE_EXIT(env, that, "XSendEvent\n")
 	return rc;
 }
 #endif
@@ -1416,6 +1485,16 @@ JNIEXPORT void JNICALL OS_NATIVE(XUnionRegion)
 	NATIVE_ENTER(env, that, "XUnionRegion\n")
 	XUnionRegion((Region)arg0, (Region)arg1, (Region)arg2);
 	NATIVE_EXIT(env, that, "XUnionRegion\n")
+}
+#endif
+
+#ifndef NO_XUnmapWindow
+JNIEXPORT void JNICALL OS_NATIVE(XUnmapWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XUnmapWindow\n")
+	XUnmapWindow((Display *)arg0, (Window)arg1);
+	NATIVE_EXIT(env, that, "XUnmapWindow\n")
 }
 #endif
 
@@ -4292,6 +4371,26 @@ JNIEXPORT void JNICALL OS_NATIVE(XtRealizeWidget)
 }
 #endif
 
+#ifndef NO_XtRegisterDrawable
+JNIEXPORT void JNICALL OS_NATIVE(XtRegisterDrawable)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XtRegisterDrawable\n")
+	XtRegisterDrawable((Display *)arg0, (Drawable)arg1, (Widget)arg2);
+	NATIVE_EXIT(env, that, "XtRegisterDrawable\n")
+}
+#endif
+
+#ifndef NO_XtRemoveEventHandler
+JNIEXPORT void JNICALL OS_NATIVE(XtRemoveEventHandler)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4)
+{
+	NATIVE_ENTER(env, that, "XtRemoveEventHandler\n")
+	XtRemoveEventHandler((Widget)arg0, arg1, arg2, (XtEventHandler)arg3, (XtPointer)arg4);
+	NATIVE_EXIT(env, that, "XtRemoveEventHandler\n")
+}
+#endif
+
 #ifndef NO_XtRemoveInput
 JNIEXPORT void JNICALL OS_NATIVE(XtRemoveInput)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4425,6 +4524,16 @@ JNIEXPORT void JNICALL OS_NATIVE(XtUnmapWidget)
 }
 #endif
 
+#ifndef NO_XtUnregisterDrawable
+JNIEXPORT void JNICALL OS_NATIVE(XtUnregisterDrawable)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "XtUnregisterDrawable\n")
+	XtUnregisterDrawable((Display *)arg0, (Drawable)arg1);
+	NATIVE_EXIT(env, that, "XtUnregisterDrawable\n")
+}
+#endif
+
 #ifndef NO_XtWindow
 JNIEXPORT jint JNICALL OS_NATIVE(XtWindow)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4552,6 +4661,32 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XButt
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XClientMessageEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XClientMessageEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XClientMessageEvent _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XClientMessageEvent_2I\n")
+	if (arg1) lparg1 = getXClientMessageEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setXClientMessageEventFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XClientMessageEvent_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XConfigureEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XConfigureEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XConfigureEvent _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XConfigureEvent_2I\n")
+	if (arg1) lparg1 = getXConfigureEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setXConfigureEventFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XConfigureEvent_2I\n")
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -4573,6 +4708,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XImag
 	if (arg1) lparg1 = getXImageFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XImage_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XKeyEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XKeyEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XKeyEvent _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XKeyEvent_2I\n")
+	if (arg1) lparg1 = getXKeyEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setXKeyEventFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XKeyEvent_2I\n")
 }
 #endif
 
@@ -4677,19 +4825,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_Visual
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
-{
-	XAnyEvent _arg0, *lparg0=NULL;
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II\n")
-	if (arg0) lparg0 = &_arg0;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) setXAnyEventFields(env, arg0, lparg0);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II\n")
-}
-#endif
-
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -4716,6 +4851,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XCharS
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XClientMessageEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XClientMessageEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XClientMessageEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XClientMessageEvent_2II\n")
+	if (arg0) lparg0 = getXClientMessageEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXClientMessageEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XClientMessageEvent_2II\n")
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XConfigureEvent_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XConfigureEvent_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -4729,6 +4877,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XConfi
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XCreateWindowEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XCreateWindowEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XCreateWindowEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XCreateWindowEvent_2II\n")
+	if (arg0) lparg0 = getXCreateWindowEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXCreateWindowEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XCreateWindowEvent_2II\n")
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XCrossingEvent_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XCrossingEvent_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -4739,6 +4900,32 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XCross
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXCrossingEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XCrossingEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XDestroyWindowEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XDestroyWindowEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XDestroyWindowEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XDestroyWindowEvent_2II\n")
+	if (arg0) lparg0 = getXDestroyWindowEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXDestroyWindowEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XDestroyWindowEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XEvent_2II\n")
+	if (arg0) lparg0 = getXEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XEvent_2II\n")
 }
 #endif
 
@@ -4817,6 +5004,32 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XMotio
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXMotionEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XPropertyEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XPropertyEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XPropertyEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XPropertyEvent_2II\n")
+	if (arg0) lparg0 = getXPropertyEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXPropertyEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XPropertyEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XReparentEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XReparentEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XReparentEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XReparentEvent_2II\n")
+	if (arg0) lparg0 = getXReparentEventFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXReparentEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XReparentEvent_2II\n")
 }
 #endif
 

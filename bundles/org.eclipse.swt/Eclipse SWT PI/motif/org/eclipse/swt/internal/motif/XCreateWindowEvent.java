@@ -11,18 +11,17 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XConfigureEvent extends XEvent {
+public class XCreateWindowEvent extends XEvent {
 	public int serial;
 	public int send_event;
 	public int display;
-	public int event;
+	public int parent;
 	public int window;
 	public int x;
 	public int y;
 	public int width;
 	public int height;
 	public int border_width;
-	public int above;
 	public int override_redirect;
-	public static final int sizeof = 52;
+	public static final int sizeof = 48;
 }

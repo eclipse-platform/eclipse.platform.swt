@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -40,9 +41,13 @@ import org.eclipse.swt.graphics.*;
  */
 public class Composite extends Scrollable {
 	Layout layout;
-	int focusHandle, damagedRegion;
+	public int embeddedHandle;
+	int focusHandle, damagedRegion, clientWindow;
 	Control [] tabList;
 	
+	static byte [] _XEMBED_INFO = Converter.wcsToMbcs (null, "_XEMBED_INFO", true);
+	static byte[] _XEMBED = Converter.wcsToMbcs (null, "_XEMBED", true);
+
 Composite () {
 	/* Do nothing */
 }
@@ -184,6 +189,20 @@ void createHandle (int index) {
 		focusHandle = OS.XmCreateDrawingArea (handle, null, argList, argList.length / 2);
 		if (focusHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
+	if ((style & SWT.EMBEDDED) != 0) {
+		Shell shell = getShell ();
+		if (shell.focusProxy == 0) {
+			int [] argList = {OS.XmNx, -1, OS.XmNy, -1, OS.XmNwidth, 1, OS.XmNheight, 1};
+			int focusProxy = OS.XmCreateDrawingArea (shell.shellHandle, null, argList, argList.length / 2);
+			if (focusProxy == 0) error (SWT.ERROR_NO_HANDLES);
+			shell.focusProxy = focusProxy;
+			OS.XtSetMappedWhenManaged (focusProxy, false);
+			OS.XtManageChild (focusProxy);
+			OS.XtSetMappedWhenManaged (focusProxy, true);
+		}
+		if (!OS.XtIsRealized (handle)) shell.realizeWidget ();
+		embeddedHandle = OS.XtWindow (handle);
+	}
 }
 void createScrolledHandle (int topHandle) {
 	int [] argList = {OS.XmNancestorSensitive, 1};
@@ -234,6 +253,46 @@ void deregister () {
 int focusHandle () {
 	if (focusHandle == 0) return super.focusHandle ();
 	return focusHandle;
+}
+int focusProc (int w, int client_data, int call_data, int continue_to_dispatch) {
+	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
+	OS.memmove (xEvent, call_data, XFocusChangeEvent.sizeof);
+	int handle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
+	Shell shell = getShell ();
+	if (handle != shell.shellHandle) {
+		return super.XFocusChange (w, client_data, call_data, continue_to_dispatch);
+	}
+	if (xEvent.mode != OS.NotifyNormal) return 0;
+	switch (xEvent.detail) {
+		case OS.NotifyNonlinear:
+		case OS.NotifyNonlinearVirtual: {
+			switch (xEvent.type) {
+				case OS.FocusIn: 
+					sendClientEvent (OS.CurrentTime, OS.XEMBED_WINDOW_ACTIVATE, 0, 0, 0);	
+					break;
+				case OS.FocusOut:
+					sendClientEvent (OS.CurrentTime, OS.XEMBED_WINDOW_DEACTIVATE, 0, 0, 0);	
+					break;
+			}
+		}
+	}
+	return 0;
+}
+boolean fowardKeyEvent (int event) {
+	if (clientWindow == 0) return false;
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, event, XKeyEvent.sizeof);
+	xEvent.window = clientWindow;
+	int newEvent = OS.XtMalloc (XEvent.sizeof);
+	OS.memmove (newEvent, xEvent, XKeyEvent.sizeof);
+	int xDisplay = OS.XtDisplay (handle);
+	OS.XSendEvent (xDisplay, clientWindow, false, 0, newEvent);
+	OS.XSync (xDisplay, false);
+	OS.XtFree (newEvent);
+	display.setWarnings (warnings);
+	return true;
 }
 /**
  * Returns an array containing the receiver's children.
@@ -314,6 +373,14 @@ void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
 		OS.XtInsertEventHandler (handle, 0, true, display.windowProc, NON_MASKABLE, OS.XtListTail);
+	}
+	if ((style & SWT.EMBEDDED) != 0) {
+		int focusProc = display.focusProc;
+		int windowProc = display.windowProc;
+		OS.XtInsertEventHandler (handle, OS.StructureNotifyMask | OS.SubstructureNotifyMask, false, windowProc, STRUCTURE_NOTIFY, OS.XtListTail);		OS.XtInsertEventHandler (handle, OS.PropertyChangeMask, false, windowProc, PROPERTY_CHANGE, OS.XtListTail);
+		OS.XtInsertEventHandler (handle, 0, true, windowProc, NON_MASKABLE, OS.XtListTail);
+		Shell shell = getShell ();
+		OS.XtInsertEventHandler (shell.shellHandle, OS.FocusChangeMask, false, focusProc, handle, OS.XtListTail);
 	}
 }
 
@@ -511,12 +578,50 @@ void releaseHandle () {
 	focusHandle = 0;
 }
 void releaseWidget () {
+	if ((style & SWT.EMBEDDED) != 0) {
+		Shell shell = getShell ();
+		int focusProc = display.focusProc;
+		OS.XtRemoveEventHandler (shell.shellHandle, OS.FocusChangeMask, false, focusProc, handle);
+		setClientWindow (0);
+	}
 	releaseChildren ();
 	super.releaseWidget ();
 	layout = null;
 	tabList = null;
 	if (damagedRegion != 0) OS.XDestroyRegion (damagedRegion);
 	damagedRegion = 0;
+}
+void resizeClientWindow	() {
+	if (clientWindow == 0) return;
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int xDisplay = OS.XtDisplay (handle);
+	OS.XMoveResizeWindow (xDisplay, clientWindow, 0, 0, Math.max(1, argList [1]), Math.max(1, argList [3]));
+	display.setWarnings (warnings);
+}
+void sendClientEvent (int time, int message, int detail, int data1, int data2) {
+	if (clientWindow == 0) return;
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	int xDisplay = OS.XtDisplay (handle);
+	XClientMessageEvent xEvent = new XClientMessageEvent ();
+	xEvent.type = OS.ClientMessage;
+	xEvent.window = clientWindow;
+	xEvent.message_type = OS.XInternAtom (xDisplay, _XEMBED, false);
+	xEvent.format = 32;
+	xEvent.data [0] = time != 0 ? time : OS.XtLastTimestampProcessed (xDisplay);
+	xEvent.data [1] = message;
+	xEvent.data [2] = detail;
+	xEvent.data [3] = data1;
+	xEvent.data [4] = data2;
+	int event = OS.XtMalloc (XEvent.sizeof);
+	OS.memmove (event, xEvent, XClientMessageEvent.sizeof);
+	OS.XSendEvent (xDisplay, clientWindow, false, 0, event);
+	OS.XSync (xDisplay, false);
+	OS.XtFree (event);
+	display.setWarnings (warnings);
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
@@ -541,8 +646,35 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 			OS.XtConfigureWidget (focusHandle, 0, 0, argList [1], argList [3], 0);
 		}
 		if (layout != null) layout.layout (this, false);
+		if ((style & SWT.EMBEDDED) != 0) resizeClientWindow ();
 	}
 	return changed;
+}
+void setClientWindow (int window) {
+	if (window == OS.XtWindow (focusHandle)) return;
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	int xDisplay = OS.XtDisplay (handle);
+	if (window != 0) {
+		clientWindow = window;
+		sendClientEvent (0, OS.XEMBED_EMBEDDED_NOTIFY, 0, 0, 0);
+		OS.XtRegisterDrawable (xDisplay, clientWindow, handle);
+		OS.XSelectInput (xDisplay, clientWindow, OS.PropertyChangeMask);
+		updateMapped ();		
+		resizeClientWindow ();
+		Shell shell = getShell ();
+		if (shell == display.getActiveShell ()) {
+			shell.bringToTop (true);
+			sendClientEvent (0, OS.XEMBED_WINDOW_ACTIVATE, 0, 0, 0);
+			if (this == display.getFocusControl ()) {
+				sendClientEvent (0, OS.XEMBED_FOCUS_IN, OS.XEMBED_FOCUS_CURRENT, 0, 0);
+			}
+		}
+	} else {
+		OS.XtUnregisterDrawable (xDisplay, clientWindow);
+		clientWindow = 0;
+	}
+	display.setWarnings (warnings);
 }
 public boolean setFocus () {
 	checkWidget ();
@@ -614,7 +746,7 @@ boolean setTabGroupFocus () {
 	if ((style & SWT.NO_FOCUS) == 0) {
 		boolean takeFocus = true;
 		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
-		if (takeFocus && setTabItemFocus ()) return true;
+		if ((takeFocus || (style & SWT.EMBEDDED) != 0) && setTabItemFocus ()) return true;
 	}
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -627,7 +759,7 @@ boolean setTabItemFocus () {
 	if ((style & SWT.NO_FOCUS) == 0) {
 		boolean takeFocus = true;
 		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
-		if (takeFocus) {
+		if (takeFocus || (style & SWT.EMBEDDED) != 0) {
 			if (!isShowing ()) return false;
 			if (forceFocus ()) return true;
 		}
@@ -649,6 +781,10 @@ boolean translateMnemonic (char key, XKeyEvent xEvent) {
 		if (child.translateMnemonic (key, xEvent)) return true;
 	}
 	return false;
+}
+boolean translateTraversal (int key, XKeyEvent xEvent) {
+	if ((style & SWT.EMBEDDED) != 0) return false;
+	return super.translateTraversal (key, xEvent);
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
@@ -715,12 +851,135 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	damagedRegion = 0;
 	return 0;
 }
+int xFocusIn (XFocusChangeEvent xEvent) {
+	int result = super.xFocusIn (xEvent);
+	if (handle != 0 && (style & SWT.EMBEDDED) != 0) {
+		sendClientEvent (0, OS.XEMBED_FOCUS_IN, OS.XEMBED_FOCUS_CURRENT, 0, 0);
+	}
+	return result;
+}
+int xFocusOut (XFocusChangeEvent xEvent) {
+	int result = super.xFocusOut (xEvent);
+	if (handle != 0 && (style & SWT.EMBEDDED) != 0) {
+		sendClientEvent (0, OS.XEMBED_FOCUS_OUT, 0, 0, 0);
+	}
+	return result;
+}
+int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if ((style & SWT.EMBEDDED) != 0) {
+		if (fowardKeyEvent (call_data)) return 0;
+	}
+	return super.XKeyPress (w, client_data, call_data, continue_to_dispatch);
+}
+int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if ((style & SWT.EMBEDDED) != 0) {
+		if (fowardKeyEvent (call_data)) return 0;
+	}
+	return super.XKeyRelease (w, client_data, call_data, continue_to_dispatch);
+}
 int XNonMaskable (int w, int client_data, int call_data, int continue_to_dispatch) {
+	if ((style & SWT.EMBEDDED) != 0) {
+		XEvent xEvent = new XEvent ();
+		OS.memmove (xEvent, call_data, XEvent.sizeof);
+		if (xEvent.type == OS.ClientMessage) {
+			XClientMessageEvent xClientEvent = new XClientMessageEvent ();
+			OS.memmove (xClientEvent, call_data, XClientMessageEvent.sizeof);
+			int xDisplay = OS.XtDisplay (handle);
+			if (xClientEvent.message_type == OS.XInternAtom (xDisplay, _XEMBED, false)) {
+				int type = xClientEvent.data [1];
+				switch (type) {
+					case OS.XEMBED_REQUEST_FOCUS: {
+						setFocus ();
+						break;
+					}
+					case OS.XEMBED_FOCUS_PREV: {
+						traverse (SWT.TRAVERSE_TAB_PREVIOUS);
+						break;
+					}
+					case OS.XEMBED_FOCUS_NEXT: {
+						traverse (SWT.TRAVERSE_TAB_NEXT);
+						break;
+					}
+				}
+			}
+			return 0;
+		}
+	}
 	if ((state & CANVAS) != 0) {
-		XAnyEvent xEvent = new XAnyEvent ();
-		OS.memmove (xEvent, call_data, XAnyEvent.sizeof);
-		if (xEvent.type == OS.GraphicsExpose) return XExposure (w, client_data, call_data, continue_to_dispatch);
+		XEvent xEvent = new XEvent ();
+		OS.memmove (xEvent, call_data, XEvent.sizeof);
+		if (xEvent.type == OS.GraphicsExpose) {
+			return XExposure (w, client_data, call_data, continue_to_dispatch);
+		}
 	}
 	return 0;
+}
+int XPropertyChange (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XPropertyChange (w, client_data, call_data, continue_to_dispatch);
+	if ((style & SWT.EMBEDDED) != 0) {
+		XPropertyEvent xPropertyEvent = new XPropertyEvent ();
+		OS.memmove(xPropertyEvent, call_data, XPropertyEvent.sizeof);
+		if (xPropertyEvent.window == clientWindow) {
+			int atom = xPropertyEvent.atom;
+			int xDisplay = xPropertyEvent.display;
+			if (atom == OS.XInternAtom (xDisplay, _XEMBED_INFO, false)) {
+				updateMapped ();
+			}
+		}
+	}
+	return result;
+}
+int XStructureNotify (int w, int client_data, int call_data, int continue_to_dispatch) {
+	int result = super.XStructureNotify (w, client_data, call_data, continue_to_dispatch);
+	if ((style & SWT.EMBEDDED) != 0) {
+		XEvent xEvent = new XEvent ();
+		OS.memmove (xEvent, call_data, XEvent.sizeof);
+		switch (xEvent.type) {
+			case OS.ReparentNotify: {
+				XReparentEvent xReparentEvent = new XReparentEvent ();
+				OS.memmove (xReparentEvent, call_data, XReparentEvent.sizeof);
+				if (clientWindow == 0) setClientWindow (xReparentEvent.window);
+				break;
+			}
+			case OS.CreateNotify: {
+				XCreateWindowEvent xCreateEvent = new XCreateWindowEvent ();
+				OS.memmove (xCreateEvent, call_data, XCreateWindowEvent.sizeof);
+				if (clientWindow == 0) setClientWindow (xCreateEvent.window);
+				break;
+			}
+			case OS.DestroyNotify: {
+				XDestroyWindowEvent xDestroyEvent = new XDestroyWindowEvent ();
+				OS.memmove (xDestroyEvent, call_data, XDestroyWindowEvent.sizeof);
+				if (xDestroyEvent.window == clientWindow) setClientWindow (0);
+				break;
+			}
+		}
+	}
+	return result;
+}
+void updateMapped () {
+	if (clientWindow == 0) return;
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	int xDisplay = OS.XtDisplay (handle);
+	int prop = OS.XInternAtom (xDisplay, _XEMBED_INFO, false);
+	int [] type = new int [1], format = new int [1];
+	int [] nitems = new int [1], bytes_after = new int [1], data = new int [1];
+	if (OS.XGetWindowProperty (xDisplay, clientWindow, prop, 0, 2, false, prop, type, format, nitems, bytes_after, data) == 0) {
+		if (type [0] == prop) {
+			if (nitems [0] >= 2) {
+				int [] buffer = new int [2];
+				OS.memmove (buffer, data [0], buffer.length * 4);
+				int flags = buffer [1];
+				if ((flags & OS.XEMBED_MAPPED) != 0) {
+					OS.XMapWindow (xDisplay, clientWindow);
+				} else {
+					OS.XUnmapWindow (xDisplay, clientWindow);
+				}
+			}
+		}
+	}
+	if (data [0] != 0) OS.XFree (data [0]);
+	display.setWarnings (warnings);
 }
 }

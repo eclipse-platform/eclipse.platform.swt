@@ -245,6 +245,52 @@ void setXCharStructFields(JNIEnv *env, jobject lpObject, XCharStruct *lpStruct)
 }
 #endif
 
+#ifndef NO_XClientMessageEvent
+typedef struct XClientMessageEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID message_type, format, data;
+} XClientMessageEvent_FID_CACHE;
+
+XClientMessageEvent_FID_CACHE XClientMessageEventFc;
+
+void cacheXClientMessageEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XClientMessageEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XClientMessageEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XClientMessageEventFc.message_type = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "message_type", "I");
+	XClientMessageEventFc.format = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "format", "I");
+	XClientMessageEventFc.data = (*env)->GetFieldID(env, XClientMessageEventFc.clazz, "data", "[I");
+	XClientMessageEventFc.cached = 1;
+}
+
+XClientMessageEvent *getXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct)
+{
+	if (!XClientMessageEventFc.cached) cacheXClientMessageEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->message_type = (Atom)(*env)->GetIntField(env, lpObject, XClientMessageEventFc.message_type);
+	lpStruct->format = (*env)->GetIntField(env, lpObject, XClientMessageEventFc.format);
+	{
+	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
+	(*env)->GetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (void *)lpStruct->data.l);
+	}
+	return lpStruct;
+}
+
+void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct)
+{
+	if (!XClientMessageEventFc.cached) cacheXClientMessageEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.message_type, (jint)lpStruct->message_type);
+	(*env)->SetIntField(env, lpObject, XClientMessageEventFc.format, (jint)lpStruct->format);
+	{
+	jintArray lpObject1 = (*env)->GetObjectField(env, lpObject, XClientMessageEventFc.data);
+	(*env)->SetIntArrayRegion(env, lpObject1, 0, sizeof(lpStruct->data.l) / 4, (void *)lpStruct->data.l);
+	}
+}
+#endif
+
 #ifndef NO_XColor
 typedef struct XColor_FID_CACHE {
 	int cached;
@@ -295,7 +341,7 @@ void setXColorFields(JNIEnv *env, jobject lpObject, XColor *lpStruct)
 typedef struct XConfigureEvent_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID x, y, width, height, border_width, above, override_redirect;
+	jfieldID serial, send_event, display, event, window, x, y, width, height, border_width, above, override_redirect;
 } XConfigureEvent_FID_CACHE;
 
 XConfigureEvent_FID_CACHE XConfigureEventFc;
@@ -303,8 +349,13 @@ XConfigureEvent_FID_CACHE XConfigureEventFc;
 void cacheXConfigureEventFields(JNIEnv *env, jobject lpObject)
 {
 	if (XConfigureEventFc.cached) return;
-	cacheXAnyEventFields(env, lpObject);
+	cacheXEventFields(env, lpObject);
 	XConfigureEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XConfigureEventFc.serial = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "serial", "I");
+	XConfigureEventFc.send_event = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "send_event", "I");
+	XConfigureEventFc.display = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "display", "I");
+	XConfigureEventFc.event = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "event", "I");
+	XConfigureEventFc.window = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "window", "I");
 	XConfigureEventFc.x = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "x", "I");
 	XConfigureEventFc.y = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "y", "I");
 	XConfigureEventFc.width = (*env)->GetFieldID(env, XConfigureEventFc.clazz, "width", "I");
@@ -318,13 +369,18 @@ void cacheXConfigureEventFields(JNIEnv *env, jobject lpObject)
 XConfigureEvent *getXConfigureEventFields(JNIEnv *env, jobject lpObject, XConfigureEvent *lpStruct)
 {
 	if (!XConfigureEventFc.cached) cacheXConfigureEventFields(env, lpObject);
-	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	getXEventFields(env, lpObject, (XEvent *)lpStruct);
+	lpStruct->serial = (*env)->GetIntField(env, lpObject, XConfigureEventFc.serial);
+	lpStruct->send_event = (*env)->GetIntField(env, lpObject, XConfigureEventFc.send_event);
+	lpStruct->display = (Display *)(*env)->GetIntField(env, lpObject, XConfigureEventFc.display);
+	lpStruct->event = (Window)(*env)->GetIntField(env, lpObject, XConfigureEventFc.event);
+	lpStruct->window = (Window)(*env)->GetIntField(env, lpObject, XConfigureEventFc.window);
 	lpStruct->x = (*env)->GetIntField(env, lpObject, XConfigureEventFc.x);
 	lpStruct->y = (*env)->GetIntField(env, lpObject, XConfigureEventFc.y);
 	lpStruct->width = (*env)->GetIntField(env, lpObject, XConfigureEventFc.width);
 	lpStruct->height = (*env)->GetIntField(env, lpObject, XConfigureEventFc.height);
 	lpStruct->border_width = (*env)->GetIntField(env, lpObject, XConfigureEventFc.border_width);
-	lpStruct->above = (*env)->GetIntField(env, lpObject, XConfigureEventFc.above);
+	lpStruct->above = (Window)(*env)->GetIntField(env, lpObject, XConfigureEventFc.above);
 	lpStruct->override_redirect = (*env)->GetIntField(env, lpObject, XConfigureEventFc.override_redirect);
 	return lpStruct;
 }
@@ -332,7 +388,12 @@ XConfigureEvent *getXConfigureEventFields(JNIEnv *env, jobject lpObject, XConfig
 void setXConfigureEventFields(JNIEnv *env, jobject lpObject, XConfigureEvent *lpStruct)
 {
 	if (!XConfigureEventFc.cached) cacheXConfigureEventFields(env, lpObject);
-	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	setXEventFields(env, lpObject, (XEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.serial, (jint)lpStruct->serial);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.send_event, (jint)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.display, (jint)lpStruct->display);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.event, (jint)lpStruct->event);
+	(*env)->SetIntField(env, lpObject, XConfigureEventFc.window, (jint)lpStruct->window);
 	(*env)->SetIntField(env, lpObject, XConfigureEventFc.x, (jint)lpStruct->x);
 	(*env)->SetIntField(env, lpObject, XConfigureEventFc.y, (jint)lpStruct->y);
 	(*env)->SetIntField(env, lpObject, XConfigureEventFc.width, (jint)lpStruct->width);
@@ -340,6 +401,70 @@ void setXConfigureEventFields(JNIEnv *env, jobject lpObject, XConfigureEvent *lp
 	(*env)->SetIntField(env, lpObject, XConfigureEventFc.border_width, (jint)lpStruct->border_width);
 	(*env)->SetIntField(env, lpObject, XConfigureEventFc.above, (jint)lpStruct->above);
 	(*env)->SetIntField(env, lpObject, XConfigureEventFc.override_redirect, (jint)lpStruct->override_redirect);
+}
+#endif
+
+#ifndef NO_XCreateWindowEvent
+typedef struct XCreateWindowEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID serial, send_event, display, parent, window, x, y, width, height, border_width, override_redirect;
+} XCreateWindowEvent_FID_CACHE;
+
+XCreateWindowEvent_FID_CACHE XCreateWindowEventFc;
+
+void cacheXCreateWindowEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XCreateWindowEventFc.cached) return;
+	cacheXEventFields(env, lpObject);
+	XCreateWindowEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XCreateWindowEventFc.serial = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "serial", "I");
+	XCreateWindowEventFc.send_event = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "send_event", "I");
+	XCreateWindowEventFc.display = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "display", "I");
+	XCreateWindowEventFc.parent = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "parent", "I");
+	XCreateWindowEventFc.window = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "window", "I");
+	XCreateWindowEventFc.x = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "x", "I");
+	XCreateWindowEventFc.y = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "y", "I");
+	XCreateWindowEventFc.width = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "width", "I");
+	XCreateWindowEventFc.height = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "height", "I");
+	XCreateWindowEventFc.border_width = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "border_width", "I");
+	XCreateWindowEventFc.override_redirect = (*env)->GetFieldID(env, XCreateWindowEventFc.clazz, "override_redirect", "I");
+	XCreateWindowEventFc.cached = 1;
+}
+
+XCreateWindowEvent *getXCreateWindowEventFields(JNIEnv *env, jobject lpObject, XCreateWindowEvent *lpStruct)
+{
+	if (!XCreateWindowEventFc.cached) cacheXCreateWindowEventFields(env, lpObject);
+	getXEventFields(env, lpObject, (XEvent *)lpStruct);
+	lpStruct->serial = (*env)->GetIntField(env, lpObject, XCreateWindowEventFc.serial);
+	lpStruct->send_event = (*env)->GetIntField(env, lpObject, XCreateWindowEventFc.send_event);
+	lpStruct->display = (Display *)(*env)->GetIntField(env, lpObject, XCreateWindowEventFc.display);
+	lpStruct->parent = (Window)(*env)->GetIntField(env, lpObject, XCreateWindowEventFc.parent);
+	lpStruct->window = (Window)(*env)->GetIntField(env, lpObject, XCreateWindowEventFc.window);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XCreateWindowEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XCreateWindowEventFc.y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, XCreateWindowEventFc.width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, XCreateWindowEventFc.height);
+	lpStruct->border_width = (*env)->GetIntField(env, lpObject, XCreateWindowEventFc.border_width);
+	lpStruct->override_redirect = (*env)->GetIntField(env, lpObject, XCreateWindowEventFc.override_redirect);
+	return lpStruct;
+}
+
+void setXCreateWindowEventFields(JNIEnv *env, jobject lpObject, XCreateWindowEvent *lpStruct)
+{
+	if (!XCreateWindowEventFc.cached) cacheXCreateWindowEventFields(env, lpObject);
+	setXEventFields(env, lpObject, (XEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.serial, (jint)lpStruct->serial);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.send_event, (jint)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.display, (jint)lpStruct->display);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.parent, (jint)lpStruct->parent);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.window, (jint)lpStruct->window);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.height, (jint)lpStruct->height);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.border_width, (jint)lpStruct->border_width);
+	(*env)->SetIntField(env, lpObject, XCreateWindowEventFc.override_redirect, (jint)lpStruct->override_redirect);
 }
 #endif
 
@@ -407,6 +532,52 @@ void setXCrossingEventFields(JNIEnv *env, jobject lpObject, XCrossingEvent *lpSt
 	(*env)->SetIntField(env, lpObject, XCrossingEventFc.same_screen, (jint)lpStruct->same_screen);
 	(*env)->SetIntField(env, lpObject, XCrossingEventFc.focus, (jint)lpStruct->focus);
 	(*env)->SetIntField(env, lpObject, XCrossingEventFc.state, (jint)lpStruct->state);
+}
+#endif
+
+#ifndef NO_XDestroyWindowEvent
+typedef struct XDestroyWindowEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID serial, send_event, display, event, window;
+} XDestroyWindowEvent_FID_CACHE;
+
+XDestroyWindowEvent_FID_CACHE XDestroyWindowEventFc;
+
+void cacheXDestroyWindowEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XDestroyWindowEventFc.cached) return;
+	cacheXEventFields(env, lpObject);
+	XDestroyWindowEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XDestroyWindowEventFc.serial = (*env)->GetFieldID(env, XDestroyWindowEventFc.clazz, "serial", "I");
+	XDestroyWindowEventFc.send_event = (*env)->GetFieldID(env, XDestroyWindowEventFc.clazz, "send_event", "I");
+	XDestroyWindowEventFc.display = (*env)->GetFieldID(env, XDestroyWindowEventFc.clazz, "display", "I");
+	XDestroyWindowEventFc.event = (*env)->GetFieldID(env, XDestroyWindowEventFc.clazz, "event", "I");
+	XDestroyWindowEventFc.window = (*env)->GetFieldID(env, XDestroyWindowEventFc.clazz, "window", "I");
+	XDestroyWindowEventFc.cached = 1;
+}
+
+XDestroyWindowEvent *getXDestroyWindowEventFields(JNIEnv *env, jobject lpObject, XDestroyWindowEvent *lpStruct)
+{
+	if (!XDestroyWindowEventFc.cached) cacheXDestroyWindowEventFields(env, lpObject);
+	getXEventFields(env, lpObject, (XEvent *)lpStruct);
+	lpStruct->serial = (*env)->GetIntField(env, lpObject, XDestroyWindowEventFc.serial);
+	lpStruct->send_event = (*env)->GetIntField(env, lpObject, XDestroyWindowEventFc.send_event);
+	lpStruct->display = (Display *)(*env)->GetIntField(env, lpObject, XDestroyWindowEventFc.display);
+	lpStruct->event = (Window)(*env)->GetIntField(env, lpObject, XDestroyWindowEventFc.event);
+	lpStruct->window = (Window)(*env)->GetIntField(env, lpObject, XDestroyWindowEventFc.window);
+	return lpStruct;
+}
+
+void setXDestroyWindowEventFields(JNIEnv *env, jobject lpObject, XDestroyWindowEvent *lpStruct)
+{
+	if (!XDestroyWindowEventFc.cached) cacheXDestroyWindowEventFields(env, lpObject);
+	setXEventFields(env, lpObject, (XEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XDestroyWindowEventFc.serial, (jint)lpStruct->serial);
+	(*env)->SetIntField(env, lpObject, XDestroyWindowEventFc.send_event, (jint)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, XDestroyWindowEventFc.display, (jint)lpStruct->display);
+	(*env)->SetIntField(env, lpObject, XDestroyWindowEventFc.event, (jint)lpStruct->event);
+	(*env)->SetIntField(env, lpObject, XDestroyWindowEventFc.window, (jint)lpStruct->window);
 }
 #endif
 
@@ -912,6 +1083,46 @@ void setXMotionEventFields(JNIEnv *env, jobject lpObject, XMotionEvent *lpStruct
 }
 #endif
 
+#ifndef NO_XPropertyEvent
+typedef struct XPropertyEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID atom, time, state;
+} XPropertyEvent_FID_CACHE;
+
+XPropertyEvent_FID_CACHE XPropertyEventFc;
+
+void cacheXPropertyEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XPropertyEventFc.cached) return;
+	cacheXAnyEventFields(env, lpObject);
+	XPropertyEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XPropertyEventFc.atom = (*env)->GetFieldID(env, XPropertyEventFc.clazz, "atom", "I");
+	XPropertyEventFc.time = (*env)->GetFieldID(env, XPropertyEventFc.clazz, "time", "I");
+	XPropertyEventFc.state = (*env)->GetFieldID(env, XPropertyEventFc.clazz, "state", "I");
+	XPropertyEventFc.cached = 1;
+}
+
+XPropertyEvent *getXPropertyEventFields(JNIEnv *env, jobject lpObject, XPropertyEvent *lpStruct)
+{
+	if (!XPropertyEventFc.cached) cacheXPropertyEventFields(env, lpObject);
+	getXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	lpStruct->atom = (*env)->GetIntField(env, lpObject, XPropertyEventFc.atom);
+	lpStruct->time = (*env)->GetIntField(env, lpObject, XPropertyEventFc.time);
+	lpStruct->state = (*env)->GetIntField(env, lpObject, XPropertyEventFc.state);
+	return lpStruct;
+}
+
+void setXPropertyEventFields(JNIEnv *env, jobject lpObject, XPropertyEvent *lpStruct)
+{
+	if (!XPropertyEventFc.cached) cacheXPropertyEventFields(env, lpObject);
+	setXAnyEventFields(env, lpObject, (XAnyEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XPropertyEventFc.atom, (jint)lpStruct->atom);
+	(*env)->SetIntField(env, lpObject, XPropertyEventFc.time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, XPropertyEventFc.state, (jint)lpStruct->state);
+}
+#endif
+
 #ifndef NO_XRectangle
 typedef struct XRectangle_FID_CACHE {
 	int cached;
@@ -949,6 +1160,64 @@ void setXRectangleFields(JNIEnv *env, jobject lpObject, XRectangle *lpStruct)
 	(*env)->SetShortField(env, lpObject, XRectangleFc.y, (jshort)lpStruct->y);
 	(*env)->SetShortField(env, lpObject, XRectangleFc.width, (jshort)lpStruct->width);
 	(*env)->SetShortField(env, lpObject, XRectangleFc.height, (jshort)lpStruct->height);
+}
+#endif
+
+#ifndef NO_XReparentEvent
+typedef struct XReparentEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID serial, send_event, display, event, window, parent, x, y, override_redirect;
+} XReparentEvent_FID_CACHE;
+
+XReparentEvent_FID_CACHE XReparentEventFc;
+
+void cacheXReparentEventFields(JNIEnv *env, jobject lpObject)
+{
+	if (XReparentEventFc.cached) return;
+	cacheXEventFields(env, lpObject);
+	XReparentEventFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XReparentEventFc.serial = (*env)->GetFieldID(env, XReparentEventFc.clazz, "serial", "I");
+	XReparentEventFc.send_event = (*env)->GetFieldID(env, XReparentEventFc.clazz, "send_event", "I");
+	XReparentEventFc.display = (*env)->GetFieldID(env, XReparentEventFc.clazz, "display", "I");
+	XReparentEventFc.event = (*env)->GetFieldID(env, XReparentEventFc.clazz, "event", "I");
+	XReparentEventFc.window = (*env)->GetFieldID(env, XReparentEventFc.clazz, "window", "I");
+	XReparentEventFc.parent = (*env)->GetFieldID(env, XReparentEventFc.clazz, "parent", "I");
+	XReparentEventFc.x = (*env)->GetFieldID(env, XReparentEventFc.clazz, "x", "I");
+	XReparentEventFc.y = (*env)->GetFieldID(env, XReparentEventFc.clazz, "y", "I");
+	XReparentEventFc.override_redirect = (*env)->GetFieldID(env, XReparentEventFc.clazz, "override_redirect", "I");
+	XReparentEventFc.cached = 1;
+}
+
+XReparentEvent *getXReparentEventFields(JNIEnv *env, jobject lpObject, XReparentEvent *lpStruct)
+{
+	if (!XReparentEventFc.cached) cacheXReparentEventFields(env, lpObject);
+	getXEventFields(env, lpObject, (XEvent *)lpStruct);
+	lpStruct->serial = (*env)->GetIntField(env, lpObject, XReparentEventFc.serial);
+	lpStruct->send_event = (*env)->GetIntField(env, lpObject, XReparentEventFc.send_event);
+	lpStruct->display = (Display *)(*env)->GetIntField(env, lpObject, XReparentEventFc.display);
+	lpStruct->event = (Window)(*env)->GetIntField(env, lpObject, XReparentEventFc.event);
+	lpStruct->window = (Window)(*env)->GetIntField(env, lpObject, XReparentEventFc.window);
+	lpStruct->parent = (Window)(*env)->GetIntField(env, lpObject, XReparentEventFc.parent);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, XReparentEventFc.x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, XReparentEventFc.y);
+	lpStruct->override_redirect = (*env)->GetIntField(env, lpObject, XReparentEventFc.override_redirect);
+	return lpStruct;
+}
+
+void setXReparentEventFields(JNIEnv *env, jobject lpObject, XReparentEvent *lpStruct)
+{
+	if (!XReparentEventFc.cached) cacheXReparentEventFields(env, lpObject);
+	setXEventFields(env, lpObject, (XEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, XReparentEventFc.serial, (jint)lpStruct->serial);
+	(*env)->SetIntField(env, lpObject, XReparentEventFc.send_event, (jint)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, XReparentEventFc.display, (jint)lpStruct->display);
+	(*env)->SetIntField(env, lpObject, XReparentEventFc.event, (jint)lpStruct->event);
+	(*env)->SetIntField(env, lpObject, XReparentEventFc.window, (jint)lpStruct->window);
+	(*env)->SetIntField(env, lpObject, XReparentEventFc.parent, (jint)lpStruct->parent);
+	(*env)->SetIntField(env, lpObject, XReparentEventFc.x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, XReparentEventFc.y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, XReparentEventFc.override_redirect, (jint)lpStruct->override_redirect);
 }
 #endif
 

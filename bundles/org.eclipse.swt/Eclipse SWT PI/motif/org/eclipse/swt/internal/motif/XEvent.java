@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.motif;
 
  
-public abstract class XEvent {
+public class XEvent {
 	public int type;
 	public static final int sizeof = 96;
 }

@@ -11,7 +11,7 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XAnyEvent extends XEvent {
+public abstract class XAnyEvent extends XEvent {
 	public int serial;
 	public int send_event;
 	public int display;

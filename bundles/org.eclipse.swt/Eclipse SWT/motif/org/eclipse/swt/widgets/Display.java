@@ -284,6 +284,10 @@ public class Display extends Device {
 	int checkResizeProc, resizeWidth, resizeHeight, resizeCount, resizeWindow;
 	XConfigureEvent xConfigureEvent = new XConfigureEvent ();
 	
+	/* Focus Proc */
+	Callback focusCallback;
+	int focusProc;
+
 	/* Wake and Sleep */
 	Callback wakeCallback;
 	int wakeProc, read_fd, write_fd, inputID;
@@ -855,6 +859,11 @@ boolean filterEvent (int event) {
 public Widget findWidget (int handle) {
 	checkDevice ();
 	return getWidget (handle);
+}
+int focusProc (int w, int client_data, int call_data, int continue_to_dispatch) {
+	Widget widget = getWidget (client_data);
+	if (widget == null) return 0;
+	return widget.focusProc (w, client_data, call_data, continue_to_dispatch);
 }
 /**
  * Returns the currently active <code>Shell</code>, or null
@@ -1521,6 +1530,9 @@ void initializeDialog () {
 void initializeDisplay () {
 	
 	/* Create the callbacks */
+	focusCallback = new Callback (this, "focusProc", 4);
+	focusProc = focusCallback.getAddress ();
+	if (focusProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	windowCallback = new Callback (this, "windowProc", 4);
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -2049,6 +2061,9 @@ void releaseDisplay () {
 	wakeProc = 0;
 	OS.close (read_fd);
 	OS.close (write_fd);
+
+	focusCallback.dispose (); focusCallback = null;
+	focusProc = 0;
 		
 	/* Free the font lists */
 	if (buttonFont != null) {

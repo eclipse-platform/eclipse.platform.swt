@@ -100,7 +100,7 @@ import org.eclipse.swt.events.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	int shellHandle;
+	int shellHandle, focusProxy;
 	boolean reparented, realized, configured;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
@@ -468,7 +468,7 @@ void bringToTop (boolean force) {
 	if (!isVisible ()) return;
 	int xDisplay = OS.XtDisplay (shellHandle);
 	if (xDisplay == 0) return;
-	int xWindow = OS.XtWindow (shellHandle);
+	int xWindow = OS.XtWindow (focusProxy != 0 ? focusProxy : shellHandle);
 	if (xWindow == 0) return;
 	if (!force) {
 		int [] buffer1 = new int [1], buffer2 = new int [1];
@@ -1370,7 +1370,12 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 		case OS.NotifyNonlinear:
 		case OS.NotifyNonlinearVirtual: {
 			switch (xEvent.type) {
-				case OS.FocusIn: 
+				case OS.FocusIn:
+					if (focusProxy != 0) {
+						int xWindow = OS.XtWindow (focusProxy);
+						int xDisplay = OS.XtDisplay (focusProxy);
+						OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
+					}
 					postEvent (SWT.Activate);
 					break;
 				case OS.FocusOut:
@@ -1384,6 +1389,10 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 int XStructureNotify (int w, int client_data, int call_data, int continue_to_dispatch) {
 	XConfigureEvent xEvent = new XConfigureEvent ();
 	OS.memmove (xEvent, call_data, XConfigureEvent.sizeof);
+	int handle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
+	if (handle != shellHandle) {
+		return super.XStructureNotify (w, client_data, call_data, continue_to_dispatch);
+	}
 	switch (xEvent.type) {
 		case OS.ReparentNotify: {
 			if (reparented) return 0;

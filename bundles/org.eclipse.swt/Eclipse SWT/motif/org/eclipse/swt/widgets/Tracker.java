@@ -395,7 +395,7 @@ public boolean open () {
 	}
 
 	int xEvent = OS.XtMalloc (XEvent.sizeof);
-	XAnyEvent anyEvent = new XAnyEvent();
+	XEvent anyEvent = new XEvent();
 	int [] newX = new int [1], newY = new int [1];
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	
@@ -423,7 +423,7 @@ public boolean open () {
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
 		OS.XtAppNextEvent (xtContext, xEvent);
-		OS.memmove (anyEvent, xEvent, XAnyEvent.sizeof);
+		OS.memmove (anyEvent, xEvent, XEvent.sizeof);
 		switch (anyEvent.type) {
 			case OS.MotionNotify:
 				if (cursor != 0) {

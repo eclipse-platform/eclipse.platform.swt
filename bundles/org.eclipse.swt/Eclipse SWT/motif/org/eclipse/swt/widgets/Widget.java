@@ -110,7 +110,8 @@ public abstract class Widget {
 	static final int UNMAP_CALLBACK  = 30;
 	static final int DELETE_WINDOW = 31;
 	static final int EXPOSURE_CALLBACK  = 32;
-	static final int MULTIPLE_SELECTION_CALLBACK  = 33;	
+	static final int MULTIPLE_SELECTION_CALLBACK  = 33;
+	static final int PROPERTY_CHANGE = 34;
 
 Widget () {
 	/* Do nothing */
@@ -348,6 +349,9 @@ void error (int code) {
 }
 boolean filters (int eventType) {
 	return display.filters (eventType);
+}
+int focusProc (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
 }
 /**
  * Returns the application defined widget data associated
@@ -993,6 +997,7 @@ int windowProc (int w, int client_data, int call_data, int continue_to_dispatch)
 		case KEY_PRESS:					return XKeyPress (w, client_data, call_data, continue_to_dispatch);
 		case KEY_RELEASE:					return XKeyRelease (w, client_data, call_data, continue_to_dispatch);
 		case LEAVE_WINDOW:					return XLeaveWindow (w, client_data, call_data, continue_to_dispatch);
+		case PROPERTY_CHANGE:				return XPropertyChange (w, client_data, call_data, continue_to_dispatch);
 		case ACTIVATE_CALLBACK:			return XmNactivateCallback (w, client_data, call_data);
 		case ARM_CALLBACK:					return XmNarmCallback (w, client_data, call_data);
 		case BROWSE_SELECTION_CALLBACK:	return XmNbrowseSelectionCallback (w, client_data, call_data);
@@ -1049,6 +1054,9 @@ int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatc
 	return 0;
 }
 int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispatch) {
+	return 0;
+}
+int XPropertyChange (int w, int client_data, int call_data, int continue_to_dispatch) {
 	return 0;
 }
 int XmNactivateCallback (int w, int client_data, int call_data) {

@@ -787,17 +787,19 @@ public class SWT {
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
 	 * 
-	 * <p>
-	 * <b>NOTE:</b> This API element is part of an interim API that is still under
-	 * development and is expected to change significantly before reaching stability.
-	 * It is being made available at this early stage to solicit feedback from
-	 * pioneering adopters on the understanding that any code that uses this API
-	 * will almost certainly be broken (repeatedly) as the API evolves.
-	 * </p>
-	 * 
-	 * @since 2.1
+	 * @since 3.0
 	 */
 	public static final int MIRRORED = 1 << 27;
+	
+	/**
+	 * Style constant to allow embedding (value is 1&lt;&lt;1).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Composite</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.0
+	 */
+	public static final int EMBEDDED = 1 << 1;
 
 	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
