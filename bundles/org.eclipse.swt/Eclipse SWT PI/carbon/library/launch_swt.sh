@@ -43,7 +43,7 @@
 #
 
 #
-# Place of the SWT dll. 
+# Default place of the SWT dll (in case you are not building your own dll). 
 #
 SWT_DLL="$JAVA_LIBRARY_PATH"/plugins/org.eclipse.swt.carbon_*/os/macosx/ppc/libswt-carbon-*.jnilib
 
@@ -51,7 +51,7 @@ SWT_DLL="$JAVA_LIBRARY_PATH"/plugins/org.eclipse.swt.carbon_*/os/macosx/ppc/libs
 # Since I'm building my own dll, I set SWT_DLL to the place where the
 # Ant-script 'make_carbon.xml' places it.
 #
-#SWT_DLL="/Users/weinand/tmp/eclipse/workspace3/export/libswt-carbon-2106.jnilib"
+#SWT_DLL="somewhere/libswt-carbon-XXXX.jnilib"
 
 #
 # In order to build an application bundle under MacOS X we need
