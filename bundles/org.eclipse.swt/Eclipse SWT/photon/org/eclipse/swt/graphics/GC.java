@@ -835,15 +835,16 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 	string = replaceTabs(string, 8);
 	byte[] buffer = Converter.wcsToMbcs(null, string, false);
 	PhRect_t rect = new PhRect_t();
-	rect.ul_x = (short)x;
-	rect.ul_y = (short)y;
-	rect.lr_x = (short)0xFFFF;
-	rect.lr_y = (short)0xFFFF;
 
 	int flags = OS.PtEnter(0);
 	try {
 		int prevContext = setGC();	
 		setGCClipping();
+		OS.PgExtentMultiText(rect, null, data.font, buffer, buffer.length, 0);
+		rect.lr_x += (short)(x - rect.ul_x);
+		rect.lr_y += (short)(y - rect.ul_y);
+		rect.ul_x = (short)x;
+		rect.ul_y = (short)y;
 		OS.PgDrawMultiTextArea(buffer, buffer.length, rect, drawFlags, OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP, 0);
 		unsetGC(prevContext);
 	} finally {
