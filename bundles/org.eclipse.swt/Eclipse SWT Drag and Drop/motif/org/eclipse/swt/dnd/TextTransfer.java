@@ -111,7 +111,7 @@ public Object nativeToJava(TransferData transferData){
 		int[] list_return = new int[1];
 		int[] count_return = new int[1];
 		int result = OS.XmbTextPropertyToTextList (xDisplay, text_prop, list_return, count_return);
-		if (result != 0) return null;
+		if (result != 0 || list_return[0] == 0) return null;
 		//Note: only handling the first string in list
 		int[] ptr = new int[1];
 		OS.memmove(ptr, list_return[0], 4);
