@@ -855,6 +855,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XGetInputFocus)
 }
 #endif
 
+#ifndef NO_XGetModifierMapping
+JNIEXPORT jint JNICALL OS_NATIVE(XGetModifierMapping)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XGetModifierMapping\n")
+	rc = (jint)XGetModifierMapping((Display *)arg0);
+	NATIVE_EXIT(env, that, "XGetModifierMapping\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XGetWindowAttributes
 JNIEXPORT jboolean JNICALL OS_NATIVE(XGetWindowAttributes)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
@@ -955,6 +967,18 @@ JNIEXPORT void JNICALL OS_NATIVE(XIntersectRegion)
 	NATIVE_ENTER(env, that, "XIntersectRegion\n")
 	XIntersectRegion((Region)arg0, (Region)arg1, (Region)arg2);
 	NATIVE_EXIT(env, that, "XIntersectRegion\n")
+}
+#endif
+
+#ifndef NO_XKeysymToKeycode
+JNIEXPORT jint JNICALL OS_NATIVE(XKeysymToKeycode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XKeysymToKeycode\n")
+	rc = (jint)XKeysymToKeycode((Display *)arg0, (KeySym)arg1);
+	NATIVE_EXIT(env, that, "XKeysymToKeycode\n")
+	return rc;
 }
 #endif
 
@@ -5022,6 +5046,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XKeyEv
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXKeyEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XModifierKeymap_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XModifierKeymap_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XModifierKeymap _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XModifierKeymap_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXModifierKeymapFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XModifierKeymap_2II\n")
 }
 #endif
 

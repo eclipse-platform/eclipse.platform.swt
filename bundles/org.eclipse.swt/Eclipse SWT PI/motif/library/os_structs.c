@@ -1022,6 +1022,40 @@ void setXKeyEventFields(JNIEnv *env, jobject lpObject, XKeyEvent *lpStruct)
 }
 #endif
 
+#ifndef NO_XModifierKeymap
+typedef struct XModifierKeymap_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID max_keypermod, modifiermap;
+} XModifierKeymap_FID_CACHE;
+
+XModifierKeymap_FID_CACHE XModifierKeymapFc;
+
+void cacheXModifierKeymapFields(JNIEnv *env, jobject lpObject)
+{
+	if (XModifierKeymapFc.cached) return;
+	XModifierKeymapFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	XModifierKeymapFc.max_keypermod = (*env)->GetFieldID(env, XModifierKeymapFc.clazz, "max_keypermod", "I");
+	XModifierKeymapFc.modifiermap = (*env)->GetFieldID(env, XModifierKeymapFc.clazz, "modifiermap", "I");
+	XModifierKeymapFc.cached = 1;
+}
+
+XModifierKeymap *getXModifierKeymapFields(JNIEnv *env, jobject lpObject, XModifierKeymap *lpStruct)
+{
+	if (!XModifierKeymapFc.cached) cacheXModifierKeymapFields(env, lpObject);
+	lpStruct->max_keypermod = (*env)->GetIntField(env, lpObject, XModifierKeymapFc.max_keypermod);
+	lpStruct->modifiermap = (KeyCode *)(*env)->GetIntField(env, lpObject, XModifierKeymapFc.modifiermap);
+	return lpStruct;
+}
+
+void setXModifierKeymapFields(JNIEnv *env, jobject lpObject, XModifierKeymap *lpStruct)
+{
+	if (!XModifierKeymapFc.cached) cacheXModifierKeymapFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, XModifierKeymapFc.max_keypermod, (jint)lpStruct->max_keypermod);
+	(*env)->SetIntField(env, lpObject, XModifierKeymapFc.modifiermap, (jint)lpStruct->modifiermap);
+}
+#endif
+
 #ifndef NO_XMotionEvent
 typedef struct XMotionEvent_FID_CACHE {
 	int cached;

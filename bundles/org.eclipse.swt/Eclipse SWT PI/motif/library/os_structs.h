@@ -147,6 +147,14 @@ void setXKeyEventFields(JNIEnv *env, jobject lpObject, XKeyEvent *lpStruct);
 #define setXKeyEventFields(a,b,c)
 #endif
 
+#ifndef NO_XModifierKeymap
+XModifierKeymap *getXModifierKeymapFields(JNIEnv *env, jobject lpObject, XModifierKeymap *lpStruct);
+void setXModifierKeymapFields(JNIEnv *env, jobject lpObject, XModifierKeymap *lpStruct);
+#else
+#define getXModifierKeymapFields(a,b,c) NULL
+#define setXModifierKeymapFields(a,b,c)
+#endif
+
 #ifndef NO_XMotionEvent
 XMotionEvent *getXMotionEventFields(JNIEnv *env, jobject lpObject, XMotionEvent *lpStruct);
 void setXMotionEventFields(JNIEnv *env, jobject lpObject, XMotionEvent *lpStruct);

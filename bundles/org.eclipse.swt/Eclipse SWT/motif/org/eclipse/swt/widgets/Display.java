@@ -235,6 +235,7 @@ public class Display extends Device {
 		{OS.XK_KP_9,		SWT.KP_9},
 		*/
 	};
+	static String numLock;
 
 	/* Multiple Displays. */
 	static Display Default;
@@ -1414,6 +1415,7 @@ protected void init () {
 	initializeDefaults ();
 	initializeTranslations ();
 	initializeWidgetTable ();
+	initializeNumLock ();
 }
 void initializeButton () {
 
@@ -1667,6 +1669,29 @@ void initializeList () {
 			listSelect = argList [7];	// the middle color to use
 	}
 	OS.XtDestroyWidget (shellHandle);
+}
+
+void initializeNumLock () {
+	int numLockCode = OS.XKeysymToKeycode (xDisplay, OS.XK_Num_Lock);
+	int keymapHandle = OS.XGetModifierMapping (xDisplay);
+	XModifierKeymap keymap = new XModifierKeymap ();
+	OS.memmove (keymap, keymapHandle, XModifierKeymap.sizeof);
+	for (int i = 0; i < 8 * keymap.max_keypermod; i++) {
+		int [] keymapCode = new int [1];
+		OS.memmove (keymapCode, keymap.modifiermap + i, 1);
+		if (keymapCode [0] == numLockCode) {
+			int modIndex = i / keymap.max_keypermod;
+			switch (modIndex) {
+				case OS.Mod1MapIndex: numLock = "Mod1"; break;
+				case OS.Mod2MapIndex: numLock = "Mod2"; break;
+				case OS.Mod3MapIndex: numLock = "Mod3"; break;
+				case OS.Mod4MapIndex: numLock = "Mod4"; break;
+				case OS.Mod5MapIndex: numLock = "Mod5"; break;
+				default: numLock = "Mod2";
+			}
+			break;
+		}
+	}
 }
 void initializeScrollBar () {
 	int shellHandle, widgetHandle;
