@@ -43,7 +43,7 @@ import org.eclipse.swt.events.*;
 
 public class Table extends Composite {
 	TableItem [] items;
-	int lastIndexOf;
+	int lastIndexOf, lastWidth;
 	TableColumn [] columns;
 	ImageList imageList;
 	boolean ignoreSelect, dragStarted, ignoreResize, mouseDown, customDraw;
@@ -2395,16 +2395,34 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			}
 			case OS.HDN_ITEMCHANGEDW:
 			case OS.HDN_ITEMCHANGEDA: {
+				/*
+				* Bug in Windows.  When a table has the LVS_EX_GRIDLINES extended
+				* style and the user drags any column over the first column in the
+				* table, making the size become zero, when the user drags a column
+				* such that the size of the first column becomes non-zero, the grid
+				* lines are not redrawn.  The fix is to detect the case and force
+				* a redraw of the first column.
+				*/
+				int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+				if (lastWidth == 0 && width > 0) {
+					int bits = OS.SendMessage (handle, OS.LVM_GETEXTENDEDLISTVIEWSTYLE, 0, 0);
+					if ((bits & OS.LVS_EX_GRIDLINES) != 0) {
+						RECT rect = new RECT ();
+						OS.GetClientRect (handle, rect);
+						rect.right = rect.left + width;
+						OS.InvalidateRect (handle, rect, true);
+					}
+				}
+				lastWidth = width;
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
-				Event event = new Event ();
 				if (phdn.pitem != 0) {
 					HDITEM pitem = new HDITEM ();
 					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
 					if ((pitem.mask & OS.HDI_WIDTH) != 0) {
 						TableColumn column = columns [phdn.iItem];
 						if (column != null) {
-							column.sendEvent (SWT.Resize, event);
+							column.sendEvent (SWT.Resize);
 							/*
 							* It is possible (but unlikely), that application
 							* code could have disposed the widget in the resize
@@ -2425,7 +2443,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 							System.arraycopy (columns, 0, newColumns, 0, count);
 							for (int i=phdn.iItem+1; i<count; i++) {
 								if (!newColumns [i].isDisposed ()) {
-									newColumns [i].sendEvent (SWT.Move, event);
+									newColumns [i].sendEvent (SWT.Move);
 								}
 							}
 						}
