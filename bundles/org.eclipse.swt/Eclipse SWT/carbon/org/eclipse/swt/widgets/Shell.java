@@ -813,6 +813,22 @@ int kEventWindowGetRegion (int nextHandler, int theEvent, int userData) {
 		case OS.kWindowStructureRgn:
 			OS.RectRgn (hRegion, clipRect);
 			OS.SectRgn (hRegion, clipRgn, hRegion);
+			/*
+			* Bug in the Macintosh. In kEventWindowGetRegion, 
+			* Carbon assumes the origin of the Region is (0, 0)
+			* and ignores the actual origin.  This causes the 
+			* window to be shifted.  The fix is to modify the origin.
+			*/
+			// TODO - find a better fix
+			Rect r = new Rect ();
+			OS.GetRegionBounds (hRegion, r);
+			if (r.left != 0 || r.top != 0) {
+				OS.SetRect (r, (short)0, (short)0, (short)1, (short)1);
+				int rectRgn = OS.NewRgn ();
+				OS.RectRgn (rectRgn, r);
+				OS.UnionRgn (rectRgn, hRegion, hRegion);
+				OS.DisposeRgn (rectRgn);
+			}
 			return OS.noErr;
 		default:
 			OS.DiffRgn (hRegion, hRegion, hRegion);
@@ -1056,22 +1072,6 @@ public void setClipping(Region region) {
 		OS.SetRect (clipRect, (short) 0, (short) 0, (short) (clipRect.right - clipRect.left), (short) (clipRect.bottom - clipRect.top));
 		clipRgn = OS.NewRgn ();
 		OS.CopyRgn (region.handle, clipRgn);
-		/*
-		* Bug in the Macintosh. In kEventWindowGetRegion, 
-		* Carbon assumes the origin of the Region is (0, 0)
-		* and ignores the actual origin.  This causes the 
-		* window to be shifted.  The fix is to modify the origin.
-		*/
-		// TODO - find a better fix
-		Rect r = new Rect ();
-		OS.GetRegionBounds (clipRgn, r);
-		if (r.left != 0 || r.top != 0) {
-			OS.SetRect (r, (short)0, (short)0, (short)1, (short)1);
-			int rectRgn = OS.NewRgn ();
-			OS.RectRgn (rectRgn, r);
-			OS.UnionRgn (rectRgn, clipRgn, clipRgn);
-			OS.DisposeRgn (rectRgn);
-		}
 	}
 	OS.ReshapeCustomWindow (shellHandle);
 }
