@@ -390,8 +390,8 @@ public void setControl (Control control) {
 }
 public void setSize (int width, int height) {
 	checkWidget();
-	requestedWidth = width;
 	width = Math.max (width, MINIMUM_WIDTH);
+	requestedWidth = width;
 	height = Math.max (height, DEFAULT_HEIGHT);
 	OS.XtResizeWidget (handle, width, height, 0);			
 	if (control != null) {
