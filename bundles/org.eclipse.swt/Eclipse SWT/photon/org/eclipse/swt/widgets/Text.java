@@ -956,7 +956,7 @@ int Pt_CB_MODIFY_VERIFY (int widget, int info) {
 				PhKeyEvent_t ke = new PhKeyEvent_t ();
 				OS.memmove (ke, data, PhKeyEvent_t.sizeof);
 				if ((ke.key_flags & (OS.Pk_KF_Key_Down | OS.Pk_KF_Key_Repeat)) != 0) {
-					setKeyState (event, ke);
+					setKeyState (event, SWT.Verify, ke);
 				}
 			}
 		}

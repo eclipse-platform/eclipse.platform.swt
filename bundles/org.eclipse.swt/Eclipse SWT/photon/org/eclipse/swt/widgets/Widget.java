@@ -1017,63 +1017,25 @@ public void setData (String key, Object value) {
 	}
 }
 
-void setInputState(Event event, int key_mods, int button_state) {
+boolean setInputState (Event event, int type, int key_mods, int button_state) {
 	if ((key_mods & OS.Pk_KM_Alt) != 0) event.stateMask |= SWT.ALT;
 	if ((key_mods & OS.Pk_KM_Shift) != 0) event.stateMask |= SWT.SHIFT;
 	if ((key_mods & OS.Pk_KM_Ctrl) != 0) event.stateMask |= SWT.CONTROL;
 	if ((button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
-}
-
-void setKeyState(Event event, PhKeyEvent_t ke) {
-	/*
-	* Fetuare in Photon.  The key_sym value is not valid when Ctrl
-	* or Alt is pressed. The fix is to detect this case and try to
-	* use the key_cap value.
-	*/
-	int key = 0;
-	if ((ke.key_flags & OS.Pk_KF_Sym_Valid) != 0) {
-		 key = ke.key_sym;
-	} else if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0) {
-		if ((ke.key_flags & (OS.Pk_KF_Key_Down | OS.Pk_KF_Key_Repeat)) != 0) {
-			key = ke.key_cap;
-			if ((ke.key_mods & OS.Pk_KM_Ctrl) != 0) {
-				if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
-				if (64 <= key && key <= 95) key -= 64;
-			}
-		}
-	}
-	event.keyCode = Display.translateKey (key);
-	switch (key) {
-		case OS.Pk_BackSpace:	event.character = '\b'; break;
-		case OS.Pk_Linefeed:	event.character = '\n'; break;
-		case OS.Pk_Return: 	event.character = '\r'; break;
-		case OS.Pk_Delete:		event.character = 0x7F; break;
-		case OS.Pk_Cancel:
-		case OS.Pk_Escape:		event.character = 0x1B; break;
-		case OS.Pk_KP_Tab:
-		case OS.Pk_Tab: 		event.character = '\t'; break;
-		/* These keys have no mapping in SWT yet */
-		case OS.Pk_Clear:
-		case OS.Pk_Pause:
-		case OS.Pk_Print:
-		case OS.Pk_Menu:
-		case OS.Pk_Hyper_L:
-		case OS.Pk_Hyper_R:
-		case OS.Pk_Caps_Lock:
-		case OS.Pk_Num_Lock:
-		case OS.Pk_Scroll_Lock:	break;
-		default:
-			if (event.keyCode == 0 && key != 0) {
-				event.character = (char) key;
-				if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0) {
-					event.keyCode = ke.key_cap;
-				}
-			}
-	}
-	setInputState(event, ke.key_mods, ke.button_state);
-	switch (event.type) {
+	switch (type) {
+		case SWT.MouseDown:
+		case SWT.MouseDoubleClick:
+			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
+			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
+			if (event.button == 3) event.stateMask &= ~SWT.BUTTON3;
+			break;
+		case SWT.MouseUp:
+			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
+			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
+			if (event.button == 3) event.stateMask |= SWT.BUTTON3;
+			break;
 		case SWT.KeyDown:
 		case SWT.Traverse:
 			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
@@ -1086,9 +1048,77 @@ void setKeyState(Event event, PhKeyEvent_t ke) {
 			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
 			break;
 	}
+	return true;
 }
 
-void setMouseState(Event event, PhPointerEvent_t pe, PhEvent_t ev) {
+boolean setKeyState (Event event, int type, PhKeyEvent_t ke) {
+	boolean isNull = false;
+	/*
+	* Fetuare in Photon.  The key_sym value is not valid when Ctrl
+	* or Alt is pressed. The fix is to detect this case and try to
+	* use the key_cap value.
+	*/
+	int key = 0;
+	if ((ke.key_flags & OS.Pk_KF_Sym_Valid) != 0) {
+		event.keyCode = Display.translateKey (key = ke.key_sym);
+	} else if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0) {
+		event.keyCode = Display.translateKey (key = ke.key_cap);
+	}
+	switch (key) {
+		case OS.Pk_BackSpace:		event.character = '\b'; break;
+		case OS.Pk_Linefeed:		event.character = '\n'; break;
+		case OS.Pk_KP_Enter:
+		case OS.Pk_Return: 		event.character = '\r'; break;
+		case OS.Pk_Delete:		event.character = 0x7F; break;
+		case OS.Pk_Cancel:
+		case OS.Pk_Escape:		event.character = 0x1B; break;
+		case OS.Pk_KP_Tab:
+		case OS.Pk_Tab: 	event.character = '\t'; break;
+		/* These keys have no mapping in SWT yet */
+		case OS.Pk_Break:
+		case OS.Pk_Clear:
+		case OS.Pk_Pause:
+		case OS.Pk_Print:
+		case OS.Pk_Menu:
+		case OS.Pk_Help:
+		case OS.Pk_Hyper_L:
+		case OS.Pk_Hyper_R:
+		case OS.Pk_Caps_Lock:
+		case OS.Pk_Num_Lock:
+		case OS.Pk_Scroll_Lock:	break;
+		default: {
+			if (event.keyCode == 0) {
+				if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0) {
+					event.keyCode = ke.key_cap;
+				}
+				if ((ke.key_mods & (OS.Pk_KM_Alt | OS.Pk_KM_Ctrl)) != 0) {
+					if ((ke.key_mods & OS.Pk_KM_Ctrl) != 0) {
+						isNull = key == '@';
+						if ('a' <= key && key <= 'z') key -= 'a' - 'A';
+						if (64 <= key && key <= 95) key -= 64;
+						event.character = (char) key;
+						isNull &= key == 0;
+					} else {
+						event.character = (char) key;			
+					}
+				} else {
+					byte [] buffer = new byte [6];
+					int length = OS.PhKeyToMb (buffer, ke);
+					if (length > 0) {
+						char [] unicode = Converter.mbcsToWcs (null, buffer);
+						if (unicode.length > 0) event.character = unicode [0];
+					}
+				}
+			}
+		}
+	}
+	if (event.keyCode == 0 && event.character == 0) {
+		if (!isNull) return false;
+	}
+	return setInputState (event, type, ke.key_mods, ke.button_state);
+}
+
+boolean setMouseState(Event event, int type, PhPointerEvent_t pe, PhEvent_t ev) {
 	int buttons = pe.buttons;
 	event.x = pe.pos_x + ev.translation_x;
 	event.y = pe.pos_y + ev.translation_y;
@@ -1099,20 +1129,7 @@ void setMouseState(Event event, PhPointerEvent_t pe, PhEvent_t ev) {
 			case OS.Ph_BUTTON_MENU:		event.button = 3; break;
 		}
 	}
-	setInputState(event, pe.key_mods, pe.button_state);
-	switch (ev.type) {
-		case OS.Ph_EV_BUT_PRESS:
-			if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask &= ~SWT.BUTTON1;
-			if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask &= ~SWT.BUTTON2;
-			if (buttons == OS.Ph_BUTTON_MENU) event.stateMask &= ~SWT.BUTTON3;
-			break;
-		case OS.Ph_EV_BUT_RELEASE:
-		case OS.Ph_EV_DRAG:
-			if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask |= SWT.BUTTON1;
-			if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask |= SWT.BUTTON2;
-			if (buttons == OS.Ph_BUTTON_MENU) event.stateMask |= SWT.BUTTON3;
-			break;
-	}
+	return setInputState(event, type, pe.key_mods, pe.button_state);
 }
 
 int topHandle () {

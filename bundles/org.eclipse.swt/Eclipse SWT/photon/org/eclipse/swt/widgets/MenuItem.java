@@ -416,13 +416,13 @@ int Pt_CB_ACTIVATE (int widget, int info) {
 					case OS.Ph_EV_KEY:
 						PhKeyEvent_t ke = new PhKeyEvent_t ();
 						OS.memmove (ke, data, PhKeyEvent_t.sizeof);
-						setKeyState (event, ke);
+						setInputState (event, SWT.Selection, ke.key_mods, ke.button_state);
 						break;
 					case OS.Ph_EV_BUT_PRESS:
 					case OS.Ph_EV_BUT_RELEASE:
 						PhPointerEvent_t pe = new PhPointerEvent_t ();
 						OS.memmove (pe, data, PhPointerEvent_t.sizeof);
-						setMouseState (event, pe, ev);
+						setInputState (event, SWT.Selection, pe.key_mods, pe.button_state);
 						break;
 				}	
 			}

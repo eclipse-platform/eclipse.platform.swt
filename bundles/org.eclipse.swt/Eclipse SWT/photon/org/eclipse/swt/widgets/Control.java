@@ -1231,23 +1231,32 @@ int Ph_EV_BOUNDARY (int widget, int info) {
 	if (data == 0) return OS.Pt_END;
 	PhPointerEvent_t pe = new PhPointerEvent_t ();
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
-	Event event = new Event ();
-	event.time = ev.timestamp;
-	setMouseState (event, pe, ev);
 	switch ((int) ev.subtype) {
 		case OS.Ph_EV_PTR_ENTER:
-		case OS.Ph_EV_PTR_ENTER_FROM_CHILD:
+		case OS.Ph_EV_PTR_ENTER_FROM_CHILD:{
+			Event event = new Event ();
+			event.time = ev.timestamp;
+			setMouseState (event, SWT.MouseEnter, pe, ev);
 			sendEvent (SWT.MouseEnter, event);
 			break;
+		}
 		case OS.Ph_EV_PTR_LEAVE:
-		case OS.Ph_EV_PTR_LEAVE_TO_CHILD:
+		case OS.Ph_EV_PTR_LEAVE_TO_CHILD: {
+			Event event = new Event ();
+			event.time = ev.timestamp;
+			setMouseState (event, SWT.MouseExit, pe, ev);
 			sendEvent (SWT.MouseExit, event);
 			break;
-		case OS.Ph_EV_PTR_STEADY:
+		}
+		case OS.Ph_EV_PTR_STEADY: {
+			Event event = new Event ();
+			event.time = ev.timestamp;
+			setMouseState (event, SWT.MouseHover, pe, ev);
 			postEvent (SWT.MouseHover, event);
 			destroyToolTip (toolTipHandle);
 			toolTipHandle = createToolTip (toolTipText, handle, getFont ().handle);
 			break;
+		}
 		case OS.Ph_EV_PTR_UNSTEADY:
 			destroyToolTip (toolTipHandle);
 			toolTipHandle = 0;
@@ -1274,15 +1283,11 @@ int Ph_EV_BUT_PRESS (int widget, int info) {
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	Event event = new Event ();
 	event.time = ev.timestamp;
-	setMouseState (event, pe, ev);
+	setMouseState (event, SWT.MouseDown, pe, ev);
 	postEvent (SWT.MouseDown, event);
 	if (pe.click_count == 2) {
 		Event clickEvent = new Event ();
-		clickEvent.time = event.time;
-		clickEvent.x = event.x;
-		clickEvent.y = event.y;
-		clickEvent.button = event.button;
-		clickEvent.stateMask = event.stateMask;
+		setMouseState (clickEvent, SWT.MouseDoubleClick, pe, ev);
 		postEvent (SWT.MouseDoubleClick, clickEvent);
 	}
 	if (event.button == 3) {
@@ -1333,7 +1338,7 @@ int Ph_EV_BUT_RELEASE (int widget, int info) {
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	Event event = new Event ();
 	event.time = ev.timestamp;
-	setMouseState (event, pe, ev);
+	setMouseState (event, SWT.MouseUp, pe, ev);
 	postEvent (SWT.MouseUp, event);
 	return OS.Pt_CONTINUE;
 }
@@ -1357,7 +1362,7 @@ int Ph_EV_DRAG (int widget, int info) {
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	Event event = new Event ();
 	event.time = ev.timestamp;
-	setMouseState (event, pe, ev);
+	setMouseState (event, SWT.MouseMove, pe, ev);
 	postEvent (SWT.MouseMove, event);
 	return OS.Pt_CONTINUE;
 }
@@ -1456,7 +1461,7 @@ int Ph_EV_KEY (int widget, int info) {
 
 	Event event = new Event ();
 	event.time = ev.timestamp;
-	setKeyState (event, ke);
+	if (!setKeyState (event, type, ke)) return OS.Pt_PROCESS;
 	if (type == SWT.KeyDown) {
 		display.lastKey = event.keyCode;
 		display.lastAscii = event.character;
@@ -1491,7 +1496,7 @@ int Ph_EV_PTR_MOTION (int widget, int info) {
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
 	Event event = new Event ();
 	event.time = ev.timestamp;
-	setMouseState (event, pe, ev);
+	setMouseState (event, SWT.MouseMove, pe, ev);
 	postEvent (SWT.MouseMove, event);
 	return OS.Pt_CONTINUE;
 }
@@ -2548,7 +2553,7 @@ boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
 	Event event = new Event ();
 	event.doit = (code & detail) != 0;
 	event.detail = detail;
-	setKeyState (event, phEvent);
+	if (!setKeyState (event, SWT.Traverse, phEvent)) return false;
 	Shell shell = getShell ();
 	Control control = this;
 	do {
