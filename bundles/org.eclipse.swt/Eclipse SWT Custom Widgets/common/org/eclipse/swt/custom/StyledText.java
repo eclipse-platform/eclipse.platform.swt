@@ -5030,6 +5030,62 @@ boolean isLineDelimiter(int offset) {
 	return offsetInLine > content.getLine(line).length();
 }
 /**
+ * Returns whether or not the given lines are visible.
+ * <p>
+ *
+ * @return true if any of the lines is visible
+ * false if none of the lines is visible
+ */
+boolean isAreaVisible(int firstLine, int lastLine) {
+	int partialBottomIndex = getPartialBottomIndex();
+	int partialTopIndex = verticalScrollOffset / lineHeight;
+	boolean notVisible = firstLine > partialBottomIndex || lastLine < partialTopIndex;
+	return !notVisible;
+}
+/**
+ * Returns whether or not the given styles will necessitate a redraw for the given start line.  
+ * A redraw is necessary when font style changes after the start of a style will take place.  
+ * This method assumes ranges is in order and non-overlapping.
+ * <p>
+ *
+ * @return true if a redraw of the given line is necessary, false otherwise
+ */
+boolean isRedrawFirstLine(StyleRange[] ranges, int firstLine, int firstLineOffset) {
+	int lineEnd = firstLineOffset + content.getLine(firstLine).length();
+	for (int i=0; i<ranges.length; i++) {
+		StyleRange range = ranges[i];
+		// does the style start on the first line?
+		if (range.start < lineEnd) {
+			int rangeEnd = range.start + range.length;
+			if (isStyleChanging(range, range.start, Math.min(rangeEnd, lineEnd))) return true;
+		} else {
+			return false;
+		}
+	}
+	return false;
+}
+/**
+ * Returns whether or not the given styles will necessitate a redraw for the given end line.  
+ * A redraw is necessary when font style changes after the start of a style will take place.  
+ * This method assumes ranges is in order and non-overlapping.
+ * <p>
+ *
+ * @return true if a redraw of the last line is necessary, false otherwise
+ */
+boolean isRedrawLastLine(StyleRange[] ranges, int lastLine, int lastLineOffset) {
+	for (int i = ranges.length - 1; i >= 0; i--) {
+		StyleRange range = ranges[i];
+		int rangeEnd = range.start + range.length;
+		// does style range end on the last line?
+		if (rangeEnd >= lastLineOffset) {
+			if (isStyleChanging(range, Math.max(range.start, lastLineOffset), rangeEnd)) return true;
+		} else {
+			break;
+		}
+	}
+	return false;
+}
+/**
  * Returns whether the widget can have only one line.
  * <p>
  *
@@ -5358,6 +5414,24 @@ void redrawBidiLines(int firstLine, int offsetInFirstLine, int lastLine, int end
 	gc.dispose();
 }
 /** 
+ * Redraw the given line.
+ * <p>
+ *
+ * @param line index of the line to redraw
+ * @param offset offset in line to start redrawing
+ */
+void redrawLine(int line, int offset) {
+	int redrawX = 0;
+	if (offset > 0) {
+		String lineText = content.getLine(line);
+		redrawX = getXAtOffset(lineText, line, offset);
+	}
+	int redrawY = line * lineHeight - verticalScrollOffset;
+	super.redraw(
+		redrawX + leftMargin, redrawY + topMargin, 
+		getClientArea().width, lineHeight, true);
+}
+/** 
  * Redraws a text range in the specified lines
  * <p>
  *
@@ -5652,6 +5726,100 @@ public void removeVerifyListener(VerifyListener verifyListener) {
 public void removeVerifyKeyListener(VerifyKeyListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	removeListener(VerifyKey, listener);	
+}
+/** 
+ * Replaces the styles in the given range with new styles.  This method
+ * effectively deletes the styles in the given range and then adds the
+ * the new styles. 
+ * <p>
+ * Should not be called if a LineStyleListener has been set since the 
+ * listener maintains the styles.
+ * </p>
+ *
+ * @param start offset of first character where styles will be replaced
+ * @param length number of characters to replace. Use 0 to insert text
+ * @param ranges StyleRange objects containing the new style information.
+ * The ranges should not overlap and should be within the specified start 
+ * and length. The style rendering is undefined if the ranges do overlap
+ * or are ill-defined. Must not be null.
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception IllegalArgumentException <ul>
+ *   <li>ERROR_INVALID_RANGE when either start or end is outside the valid range (0 <= offset <= getCharCount())</li> 
+ *   <li>ERROR_NULL_ARGUMENT when string is null</li>
+ * </ul>
+ * @since 2.0
+ */
+public void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
+	checkWidget();
+	if (userLineStyle) {
+		return;
+	}
+ 	if (ranges == null) {
+ 		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+ 	}
+ 	if (ranges.length == 0) {
+ 		setStyleRange(new StyleRange(start, length, null, null));
+ 		return;
+ 	}
+	int end = start + length;
+	if (start > end || start < 0 || end > getCharCount()) {
+		SWT.error(SWT.ERROR_INVALID_RANGE);
+	}	
+	
+	int firstLine = content.getLineAtOffset(start);
+	int lastLine = content.getLineAtOffset(end);
+
+	// if the area is not visible, there is no need to redraw
+	boolean redrawLines = isAreaVisible(firstLine, lastLine);
+
+	if (!redrawLines) {
+		defaultLineStyler.replaceStyleRanges(start, length, ranges);
+		lineCache.reset(firstLine, lastLine - firstLine + 1, true);
+	} else {
+		boolean redrawFirstLine = false;
+		boolean redrawLastLine = false;	
+		// the first and last line needs to be redrawn completely if the 
+		// font style is changing from SWT.NORMAL to something else or 
+		// vice versa. fixes 1G7M5WE.
+		int firstLineOffset = content.getOffsetAtLine(firstLine);
+		if (isBidi()) {
+			redrawFirstLine = true;
+			redrawLastLine = true;
+		} else {
+			int firstLineEnd = firstLineOffset + content.getLine(firstLine).length();
+			redrawFirstLine = isRedrawFirstLine(ranges, firstLine, firstLineOffset);
+			// check if any bold styles will be cleared
+			StyleRange clearRange = new StyleRange(firstLineOffset, firstLineEnd - firstLineOffset, null, null);
+			redrawFirstLine = redrawFirstLine || isRedrawFirstLine(new StyleRange[] {clearRange}, firstLine, firstLineOffset);
+			if (lastLine != firstLine) {
+				int lastLineOffset = content.getOffsetAtLine(lastLine);
+				int lastLineEnd = lastLineOffset + content.getLine(lastLine).length();
+				redrawLastLine = isRedrawLastLine(ranges, lastLine, lastLineOffset);
+				// check if any bold styles will be cleared
+				clearRange = new StyleRange(lastLineOffset, lastLineEnd - lastLineOffset, null, null);
+				redrawLastLine = redrawLastLine || isRedrawLastLine(new StyleRange[] {clearRange}, lastLine, lastLineOffset);
+			}
+		}
+		defaultLineStyler.replaceStyleRanges(start, length, ranges);
+		// reset all lines affected by the style change but let the redraw
+		// recalculate only those that are visible.
+		lineCache.reset(firstLine, lastLine - firstLine + 1, true);
+		internalRedrawRange(start, length, true);
+		if (redrawFirstLine) {
+			redrawLine(firstLine, start - firstLineOffset);
+		}
+		if (redrawLastLine) {
+			redrawLine(lastLine, 0);
+		}
+	}
+
+	// make sure that the caret is positioned correctly.
+	// caret location may change if font style changes.
+	// fixes 1G8FODP
+	setCaretLocation();
 }
 /**
  * Replaces the given text range with new text.
@@ -6606,8 +6774,6 @@ void internalSetSelection(int start, int length, boolean sendEvent) {
  */
 public void setStyleRange(StyleRange range) {
 	checkWidget();
-	boolean redrawFirstLine = false;
-	boolean redrawLastLine = false;
 	
 	// this API can not be used if the client is providing the line styles
 	if (userLineStyle) {
@@ -6619,62 +6785,51 @@ public void setStyleRange(StyleRange range) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	} 	
 	if (range != null) {
-		// the first and last line needs to be redrawn completely if the 
-		// font style is changing from SWT.NORMAL to something else or 
-		// vice versa. fixes 1G7M5WE.
-		int rangeEnd = range.start + range.length;
-		int firstLine = content.getLineAtOffset(range.start);
-		int lastLine = content.getLineAtOffset(rangeEnd);
-		int firstLineOffset = content.getOffsetAtLine(firstLine);
-		if (isStyleChanging(range, range.start, Math.min(rangeEnd, firstLineOffset + content.getLine(firstLine).length()))) {
-			redrawFirstLine = true;
-		}				
-		if (lastLine != firstLine) {
-			int lastLineOffset = content.getOffsetAtLine(lastLine);
-			if (isStyleChanging(range, lastLineOffset, rangeEnd)) {
-				redrawLastLine = true;
-			}				
-		}
-	}
-	if (isBidi()) {
-		redrawFirstLine = true;
-		redrawLastLine = true;
-	}
-	defaultLineStyler.setStyleRange(range);
-	if (range != null) {
+		boolean redrawFirstLine = false;
+		boolean redrawLastLine = false;
 		int firstLine = content.getLineAtOffset(range.start);
 		int lastLine = content.getLineAtOffset(range.start + range.length);
-	
-		// reset all lines affected by the style change but let the redraw
-		// recalculate only those that are visible.
-		lineCache.reset(firstLine, lastLine - firstLine + 1, true);
-		internalRedrawRange(range.start, range.length, true);
-		if (redrawFirstLine) {
-			// redraw starting at the style change start offset since
-			// single line text changes, followed by style changes will
-			// flash otherwise
+
+		// if the style is not visible, there is no need to redraw
+		boolean redrawLines = isAreaVisible(firstLine, lastLine);
+
+		if (!redrawLines) {
+			defaultLineStyler.setStyleRange(range);
+			lineCache.reset(firstLine, lastLine - firstLine + 1, true);
+		} else {
+			// the first and last line needs to be redrawn completely if the 
+			// font style is changing from SWT.NORMAL to something else or 
+			// vice versa. fixes 1G7M5WE.
 			int firstLineOffset = content.getOffsetAtLine(firstLine);
-			String firstLineText = content.getLine(firstLine);
-			int redrawX = getXAtOffset(firstLineText, firstLine, range.start - firstLineOffset);
-			int redrawY = firstLine * lineHeight - verticalScrollOffset;
-			super.redraw(
-				redrawX + leftMargin, redrawY + topMargin, 
-				getClientArea().width, lineHeight, true);
+			int lastLineOffset = content.getOffsetAtLine(lastLine);
+			if (isBidi()) {
+				redrawFirstLine = true;
+				redrawLastLine = true;
+			} else {
+				redrawFirstLine = isRedrawFirstLine(new StyleRange[] {range}, firstLine, firstLineOffset);
+				if (lastLine != firstLine) {
+					redrawLastLine = isRedrawLastLine(new StyleRange[] {range}, lastLine, lastLineOffset);
+				}
+			}
+			defaultLineStyler.setStyleRange(range);
+			// reset all lines affected by the style change but let the redraw
+			// recalculate only those that are visible.
+			lineCache.reset(firstLine, lastLine - firstLine + 1, true);
+			internalRedrawRange(range.start, range.length, true);
+			if (redrawFirstLine) {
+				redrawLine(firstLine, range.start - firstLineOffset);
+			}
+			if (redrawLastLine) {
+				redrawLine(lastLine, 0);
+			}
 		}
-		if (redrawLastLine) {
-			// redraw the whole line if the font style changed on the last line	
-			int redrawY = lastLine * lineHeight - verticalScrollOffset;
-			super.redraw(
-				leftMargin, redrawY + topMargin, 
-				getClientArea().width, lineHeight, true);
-		}
-	}
-	else {
-		// reset all lines but let the redraw recalculate only those that 
-		// are visible.
+	} else {
+		// clearing all styles
+		defaultLineStyler.setStyleRange(range);
 		lineCache.reset(0, content.getLineCount(), false);
 		redraw();
 	}
+	
 	// make sure that the caret is positioned correctly.
 	// caret location may change if font style changes.
 	// fixes 1G8FODP
