@@ -318,7 +318,7 @@ public void open () {
 
 void createMainClassPanel(Composite panel, Listener updateListener) {
 	Label mainClassLb = new Label(panel, SWT.NONE);
-	mainClassLb.setText("Main Class:");
+	mainClassLb.setText("&Main Class:");
 
 	GridData data;
 	mainClassCb = new Combo(panel, SWT.DROP_DOWN);
@@ -330,7 +330,7 @@ void createMainClassPanel(Composite panel, Listener updateListener) {
 	mainClassCb.addListener(SWT.DefaultSelection, updateListener);
 
 	Label outputDirLb = new Label(panel, SWT.NONE);
-	outputDirLb.setText("Output Dir:");
+	outputDirLb.setText("&Output Dir:");
 	
 	outputDirCb = new Combo(panel, SWT.DROP_DOWN);
 	String outputDir = app.getOutputDir();
@@ -352,7 +352,7 @@ void createMainClassPanel(Composite panel, Listener updateListener) {
 
 void createClassesPanel(Composite panel) {
 	Label classesLb = new Label(panel, SWT.NONE);
-	classesLb.setText("Classes:");
+	classesLb.setText("&Classes:");
 
 	GridData data;
 	classesLt = new Table(panel, SWT.CHECK | SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
@@ -493,7 +493,7 @@ void createClassesPanel(Composite panel) {
 
 void createMembersPanel(Composite panel) {
 	Label membersLb = new Label(panel, SWT.NONE);
-	membersLb.setText("Members:");
+	membersLb.setText("Mem&bers:");
 
 	GridData data;
 	membersLt = new Table(panel, SWT.CHECK | SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
@@ -688,7 +688,7 @@ void createMembersPanel(Composite panel) {
 
 void createParametersPanel(Composite panel) {
 	Label paramsLb = new Label(panel, SWT.NONE);
-	paramsLb.setText("Parameters:");
+	paramsLb.setText("&Parameters:");
 	
 	GridData data;
 	paramsLt = new Table(panel, SWT.MULTI | SWT.BORDER | SWT.H_SCROLL | SWT.V_SCROLL | SWT.FULL_SELECTION);
@@ -855,32 +855,32 @@ void createActionButtons(Composite parent) {
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	separator.setLayoutData(data);
 	
-	createActionButton(actionsPanel, "Generate Structs Header", new Listener() {
+	createActionButton(actionsPanel, "Generate Structs &Header", new Listener() {
 		public void handleEvent(Event e) {
 			generateStructsHeader();
 		}
 	});
-	createActionButton(actionsPanel, "Generate Structs", new Listener() {
+	createActionButton(actionsPanel, "Generate &Structs", new Listener() {
 		public void handleEvent(Event e) {
 			generateStructs();
 		}
 	});
-	createActionButton(actionsPanel, "Generate Natives", new Listener() {
+	createActionButton(actionsPanel, "Generate &Natives", new Listener() {
 		public void handleEvent(Event e) {
 			generateNatives();
 		}
 	});
-	createActionButton(actionsPanel, "Generate Meta Data", new Listener() {
+	createActionButton(actionsPanel, "Generate Meta &Data", new Listener() {
 		public void handleEvent(Event e) {
 			generateMetaData();
 		}
 	});
-	createActionButton(actionsPanel, "Generate Constants", new Listener() {
+	createActionButton(actionsPanel, "Generate Cons&tants", new Listener() {
 		public void handleEvent(Event e) {
 			generateConstants();
 		}
 	});	
-	createActionButton(actionsPanel, "Generate Sizeof", new Listener() {
+	createActionButton(actionsPanel, "Generate Si&zeof", new Listener() {
 		public void handleEvent(Event e) {
 			generateSizeof();
 		}
