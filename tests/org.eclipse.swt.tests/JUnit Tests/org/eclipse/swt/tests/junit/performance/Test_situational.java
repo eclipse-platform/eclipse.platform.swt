@@ -139,33 +139,48 @@ public void test_layout() {
 		
 		for(int i = 0; i < 10; i++) {
 			Composite c = new Composite(parent, SWT.BORDER);
-			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			data = new GridData();
+			data.horizontalAlignment = GridData.FILL;
+			data.verticalAlignment = GridData.FILL;
 			c.setLayoutData(data);
 			c.setLayout(new GridLayout(2, false));
 			
 			Composite c1 = new Composite(c, SWT.BORDER);
-			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			data = new GridData();
+			data.horizontalAlignment = GridData.FILL;
+			data.verticalAlignment = GridData.FILL;
 			data.widthHint = data.heightHint = 2;
 			c1.setLayoutData(data);
 			
 			Composite c2 = new Composite(c, SWT.BORDER);
-			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			data = new GridData();
+			data.horizontalAlignment = GridData.FILL;
+			data.verticalAlignment = GridData.FILL;
 			data.widthHint = data.heightHint = 2;
 			c2.setLayoutData(data);
 			
 			Composite c3 = new Composite(c, SWT.BORDER);
-			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			data = new GridData();
+			data.horizontalAlignment = GridData.FILL;
+			data.verticalAlignment = GridData.FILL;
 			data.widthHint = data.heightHint = 2;
 			c3.setLayoutData(data);
 			
 			Composite c4 = new Composite(c, SWT.BORDER);
-			data = new GridData(SWT.FILL, SWT.FILL, false, false);
+			data = new GridData();
+			data.horizontalAlignment = GridData.FILL;
+			data.verticalAlignment = GridData.FILL;
 			c4.setLayoutData(data);
 			c4.setLayout(new GridLayout());
 			parent = c4;
 		}
 		changedLabel = new Label(parent, SWT.NONE);
-		changedLabel.setLayoutData(new GridData(SWT.FILL, SWT.FILL, true, true));
+		data = new GridData();
+		data.horizontalAlignment = GridData.FILL;
+		data.verticalAlignment = GridData.FILL;
+		data.grabExcessHorizontalSpace = true;
+		data.grabExcessVerticalSpace = true;
+		changedLabel.setLayoutData(data);
 		
 		shell.open();
 		while(display.readAndDispatch());
@@ -226,7 +241,10 @@ public void test_windowDrawing() {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
 		Canvas c = new Canvas(shell, SWT.NONE);
-		c.setLayoutData(new GridData(width, height));
+		GridData data = new GridData();
+		data.widthHint = width;
+		data.heightHint = height;
+		c.setLayoutData(data);
 		shell.pack();
 		shell.open();
 		while(display.readAndDispatch());
@@ -265,7 +283,10 @@ public void test_stringDrawing() {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
 		Canvas c = new Canvas(shell, SWT.NONE);
-		c.setLayoutData(new GridData(width, height));
+		GridData data = new GridData();
+		data.widthHint = width;
+		data.heightHint = height;
+		c.setLayoutData(data);
 		shell.pack();
 		shell.open();
 		while(display.readAndDispatch());
@@ -308,7 +329,10 @@ public void test_fastStringDrawing() {
 		Shell shell = new Shell(display);
 		shell.setLayout(new GridLayout());
 		Canvas c = new Canvas(shell, SWT.NONE);
-		c.setLayoutData(new GridData(width, height));
+		GridData data = new GridData();
+		data.widthHint = width;
+		data.heightHint = height;
+		c.setLayoutData(data);
 		shell.pack();
 		shell.open();
 		while(display.readAndDispatch());
