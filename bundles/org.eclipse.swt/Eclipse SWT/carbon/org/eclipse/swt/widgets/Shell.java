@@ -511,6 +511,8 @@ void setActiveControl (Control control) {
 
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget ();
+	width = Math.max (0, width);
+	height = Math.max (0, height);
 	Rect rect = new Rect ();
 	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
 	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
@@ -547,6 +549,8 @@ public void setMinimized (boolean minimized) {
 
 public void setSize (int width, int height) {
 	checkWidget();
+	width = Math.max (0, width);
+	height = Math.max (0, height);
 	Rect rect = new Rect ();
 	OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
 	OS.SetRect (rect, rect.left, rect.top, (short)(rect.left + width), (short)(rect.top + height));

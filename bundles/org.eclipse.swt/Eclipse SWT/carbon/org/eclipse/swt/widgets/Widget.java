@@ -288,37 +288,6 @@ boolean filters (int eventType) {
 	return display.filters (eventType);
 }
 
-int getClipping (int control) {
-	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
-	int window = OS.GetControlOwner (control);
-	int port = OS.GetWindowPort (window);
-	OS.GetPortVisibleRegion (port, visibleRgn);
-	short [] count = new short [1];
-	int [] outControl = new int [1];
-	int tempControl = control, lastControl = 0;
-	while (tempControl != 0) {
-		OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
-		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
-		if (OS.EmptyRgn (visibleRgn)) break;
-		OS.CountSubControls (tempControl, count);
-		for (int i = 0; i < count [0]; i++) {
-			OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
-			int child = outControl [0];
-			if (child == lastControl) break;
-			if (!OS.IsControlVisible (child)) continue;
-			OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
-			OS.UnionRgn (tempRgn, childRgn, childRgn);
-		}
-		lastControl = tempControl;
-		OS.GetSuperControl (tempControl, outControl);
-		tempControl = outControl [0];
-	}
-	OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
-	OS.DisposeRgn (childRgn);
-	OS.DisposeRgn (tempRgn);
-	return visibleRgn;
-}
-
 Rect getControlBounds (int control) {
 	Rect rect = new Rect();
 	OS.GetControlBounds (control, rect);
@@ -382,6 +351,37 @@ String getNameText () {
 public int getStyle () {
 	checkWidget();
 	return style;
+}
+
+int getVisibleRegion (int control) {
+	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
+	int window = OS.GetControlOwner (control);
+	int port = OS.GetWindowPort (window);
+	OS.GetPortVisibleRegion (port, visibleRgn);
+	short [] count = new short [1];
+	int [] outControl = new int [1];
+	int tempControl = control, lastControl = 0;
+	while (tempControl != 0) {
+		OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
+		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
+		if (OS.EmptyRgn (visibleRgn)) break;
+		OS.CountSubControls (tempControl, count);
+		for (int i = 0; i < count [0]; i++) {
+			OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
+			int child = outControl [0];
+			if (child == lastControl) break;
+			if (!OS.IsControlVisible (child)) continue;
+			OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
+			OS.UnionRgn (tempRgn, childRgn, childRgn);
+		}
+		lastControl = tempControl;
+		OS.GetSuperControl (tempControl, outControl);
+		tempControl = outControl [0];
+	}
+	OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
+	OS.DisposeRgn (childRgn);
+	OS.DisposeRgn (tempRgn);
+	return visibleRgn;
 }
 
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
@@ -459,16 +459,15 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
 	int [] region = new int [1];	
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
-	int clipRgn = getClipping (theControl [0]);
+	int visibleRgn = getVisibleRegion (theControl [0]);
 	int oldClip = OS.NewRgn ();
 	OS.GetClip (oldClip);
-//	OS.SectRgn(oldRgn, clipRgn, clipRgn);
-	OS.SectRgn(region [0], clipRgn, clipRgn);
-	OS.SetClip (clipRgn);
+	OS.SectRgn(region [0], visibleRgn, visibleRgn);
+	OS.SetClip (visibleRgn);
 	drawWidget (theControl [0]);
 	int result = OS.CallNextEventHandler (nextHandler, theEvent);
 	OS.SetClip (oldClip);
-	OS.DisposeRgn (clipRgn);
+	OS.DisposeRgn (visibleRgn);
 	OS.DisposeRgn (oldClip);
 	return result;
 }

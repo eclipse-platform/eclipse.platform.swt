@@ -61,9 +61,9 @@ boolean drawCaret () {
 	OS.GetPort (currentPort);
 	OS.SetPort (port);
 	int oldClip = OS.NewRgn ();
-	int clipRgn = getClipping (parentHandle);
+	int visibleRgn = getVisibleRegion (parentHandle);
 	OS.GetClip (oldClip);
-	OS.SetClip (clipRgn);
+	OS.SetClip (visibleRgn);
 	Rect rect = new Rect ();
 	OS.GetControlBounds (parentHandle, rect);
 	int left = rect.left + x;
@@ -76,7 +76,7 @@ boolean drawCaret () {
 	OS.RGBBackColor (color);
 	OS.InvertRect (rect);	
 	OS.SetClip (oldClip);
-	OS.DisposeRgn (clipRgn);
+	OS.DisposeRgn (visibleRgn);
 	OS.DisposeRgn (oldClip);
 	OS.SetPort (currentPort [0]);
 	return true;

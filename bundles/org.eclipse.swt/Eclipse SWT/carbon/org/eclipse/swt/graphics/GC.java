@@ -331,7 +331,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//NOT DONE
-	drawRectangle (x, y, width, height);
+//	drawRectangle (x, y, width - 1, height - 1);
 }
 
 /**

@@ -360,7 +360,7 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 				* such that the help text will stay in the same position.
 		        */
 		        int cursorHeight = 16;
-		        helpContent.tagSide = OS.kHMAbsoluteCenterAligned;
+		        helpContent.tagSide = (short) OS.kHMAbsoluteCenterAligned;
 				int x = (short) (inGlobalMouse & 0xFFFF);
 				int y = (short) (inGlobalMouse >> 16);
 				if (display.helpControl != this) {
@@ -441,13 +441,12 @@ public int internal_new_GC (GCData data) {
 			OS.GetControlBounds (handle, rect);
 			Rect portRect = new Rect ();
 			OS.GetPortBounds (port, portRect);
-			int clipRgn = getClipping (handle);
-			if (paintRgn != 0) OS.SectRgn (paintRgn, clipRgn, clipRgn);
-			OS.ClipCGContextToRegion (context, portRect, clipRgn);
+			visibleRgn = getVisibleRegion (handle);
+			if (paintRgn != 0) OS.SectRgn (paintRgn, visibleRgn, visibleRgn);
+			OS.ClipCGContextToRegion (context, portRect, visibleRgn);
 			int portHeight = portRect.bottom - portRect.top;
 			OS.CGContextScaleCTM (context, 1, -1);
 			OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
-			visibleRgn = clipRgn;
 		}
 	}
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
