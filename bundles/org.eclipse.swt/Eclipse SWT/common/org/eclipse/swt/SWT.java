@@ -978,8 +978,8 @@ public class SWT {
 	 * keyboard modifiers.  To allow for the future, this mask
 	 * is intended to be used in place of code that references
 	 * each individual keyboard mask.  For example, the following
-	 * expression will determine that any modifer is pressed
-	 * and will continue to work as new modifiers are added.
+	 * expression will determine whether any modifer is pressed
+	 * and will continue to work as new modifier masks are added.
 	 * 
  	 * <code>(stateMask & SWT.MODIFIER_MASK) != 0</code>.
 	 * 
@@ -1010,8 +1010,8 @@ public class SWT {
 	 * mouse buttons.  To allow for the future, this mask
 	 * is intended to be used in place of code that references
 	 * each individual button mask.  For example, the following
-	 * expression will determine that any button is pressed
-	 * and will continue to work as new buttons are added.
+	 * expression will determine whether any button is pressed
+	 * and will continue to work as new button masks are added.
 	 * 
  	 * <code>(stateMask & SWT.BUTTON_MASK) != 0</code>.
 	 * 
