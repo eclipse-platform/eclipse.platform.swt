@@ -175,10 +175,16 @@ public Browser(Composite parent, int style) {
 						c.removeListener(SWT.Hide, this);
 						c = c.getParent();
 					} while (c != shell);
-
+					
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
-					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver_name_object, delegate, 0, webView);
-					WebKit.objc_msgSend(delegate, WebKit.S_release);
+
+					WebKit.objc_msgSend(webView, WebKit.S_setFrameLoadDelegate, 0);
+					WebKit.objc_msgSend(webView, WebKit.S_setResourceLoadDelegate, 0);
+					WebKit.objc_msgSend(webView, WebKit.S_setUIDelegate, 0);
+					WebKit.objc_msgSend(webView, WebKit.S_setPolicyDelegate, 0);
+					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver, delegate);
+					
+					WebKit.objc_msgSend(delegate, WebKit.S_release);					
 					break;
 				}
 				case SWT.Hide: {
@@ -251,7 +257,6 @@ public Browser(Composite parent, int style) {
 					break;
 				}
 				case SWT.Resize: {
-					System.out.println("Browser Resize");
 					/*
 					* Bug on Safari. Resizing the height of a Shell containing a Browser at
 					* a fixed location causes the Browser to redraw at a wrong location.
