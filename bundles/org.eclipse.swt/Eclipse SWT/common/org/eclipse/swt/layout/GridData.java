@@ -50,10 +50,10 @@ public final class GridData {
 	 *
 	 * Possible values are:
 	 *
-	 * BEGINNING: Position the control at the top of the cell
-	 * CENTER: Position the control in the vertical center of the cell
-	 * END: Position the control at the bottom of the cell
-	 * FILL: Resize the control to fill the cell vertically
+	 * SWT.BEGINNING (or SWT.TOP): Position the control at the top of the cell
+	 * SWT.CENTER: Position the control in the vertical center of the cell
+	 * SWT.END (or SWT.BOTTOM): Position the control at the bottom of the cell
+	 * SWT.FILL: Resize the control to fill the cell vertically
 	 */
 	public int verticalAlignment = CENTER;
 	/**
@@ -64,10 +64,10 @@ public final class GridData {
 	 *
 	 * Possible values are:
 	 *
-	 * BEGINNING: Position the control at the left of the cell
-	 * CENTER: Position the control in the horizontal center of the cell
-	 * END: Position the control at the right of the cell
-	 * FILL: Resize the control to fill the cell horizontally
+	 * SWT.BEGINNING (or SWT.LEFT): Position the control at the left of the cell
+	 * SWT.CENTER: Position the control in the horizontal center of the cell
+	 * SWT.END (or SWT.RIGHT): Position the control at the right of the cell
+	 * SWT.FILL: Resize the control to fill the cell horizontally
 	 */
 	public int horizontalAlignment = BEGINNING;
 	/**
@@ -236,28 +236,36 @@ public String toString () {
 	switch (horizontalAlignment) {
 		case SWT.FILL: hAlign = "SWT.FILL"; break; //$NON-NLS-1$
 		case SWT.BEGINNING: hAlign = "SWT.BEGINNING"; break; //$NON-NLS-1$
+		case SWT.LEFT: hAlign = "SWT.LEFT"; break; //$NON-NLS-1$
 		case SWT.END: hAlign = "SWT.END"; break; //$NON-NLS-1$
+		case END: hAlign = "GridData.END"; break; //$NON-NLS-1$
+		case SWT.RIGHT: hAlign = "SWT.RIGHT"; break; //$NON-NLS-1$
 		case SWT.CENTER: hAlign = "SWT.CENTER"; break; //$NON-NLS-1$
-		default: hAlign = "Undefined "+horizontalAlignment; break;
+		case CENTER: hAlign = "GridData.CENTER"; break; //$NON-NLS-1$
+		default: hAlign = "Undefined "+horizontalAlignment; break; //$NON-NLS-1$
 	}
 	String vAlign = ""; //$NON-NLS-1$
 	switch (verticalAlignment) {
 		case SWT.FILL: vAlign = "SWT.FILL"; break; //$NON-NLS-1$
 		case SWT.BEGINNING: vAlign = "SWT.BEGINNING"; break; //$NON-NLS-1$
+		case SWT.TOP: vAlign = "SWT.TOP"; break; //$NON-NLS-1$
 		case SWT.END: vAlign = "SWT.END"; break; //$NON-NLS-1$
+		case END: vAlign = "GridData.END"; break; //$NON-NLS-1$
+		case SWT.BOTTOM: vAlign = "SWT.BOTTOM"; break; //$NON-NLS-1$
 		case SWT.CENTER: vAlign = "SWT.CENTER"; break; //$NON-NLS-1$
-		default: vAlign = "Undefined "+verticalAlignment; break;
+		case CENTER: vAlign = "GridData.CENTER"; break; //$NON-NLS-1$
+		default: vAlign = "Undefined "+verticalAlignment; break; //$NON-NLS-1$
 	}
- 	String string = getName()+":";
- 	if (heightHint != SWT.DEFAULT) string += " heightHint = "+heightHint;
- 	string += " horizontalAlignment = "+hAlign;
- 	if (horizontalIndent != 0) string +=" horizontalIndent = "+horizontalIndent;
- 	if (horizontalSpan != 1) string += " horizontalSpan = "+horizontalSpan;
- 	if (grabExcessHorizontalSpace) string += " grabExcessHorizontalSpace = "+grabExcessHorizontalSpace;
- 	if (widthHint != SWT.DEFAULT) string += " widthHint = "+widthHint;
- 	string += " verticalAlignment = "+vAlign;
- 	if (verticalSpan != 1) string += " verticalSpan = "+verticalSpan;
- 	if (grabExcessVerticalSpace) string += " grabExcessVerticalSpace = "+grabExcessVerticalSpace;
+ 	String string = getName()+":"; //$NON-NLS-1$
+ 	if (heightHint != SWT.DEFAULT) string += " heightHint = "+heightHint; //$NON-NLS-1$
+ 	string += " horizontalAlignment = "+hAlign; //$NON-NLS-1$
+ 	if (horizontalIndent != 0) string +=" horizontalIndent = "+horizontalIndent; //$NON-NLS-1$
+ 	if (horizontalSpan != 1) string += " horizontalSpan = "+horizontalSpan; //$NON-NLS-1$
+ 	if (grabExcessHorizontalSpace) string += " grabExcessHorizontalSpace = "+grabExcessHorizontalSpace; //$NON-NLS-1$
+ 	if (widthHint != SWT.DEFAULT) string += " widthHint = "+widthHint; //$NON-NLS-1$
+ 	string += " verticalAlignment = "+vAlign; //$NON-NLS-1$
+ 	if (verticalSpan != 1) string += " verticalSpan = "+verticalSpan; //$NON-NLS-1$
+ 	if (grabExcessVerticalSpace) string += " grabExcessVerticalSpace = "+grabExcessVerticalSpace; //$NON-NLS-1$
 	return string;
 }
 }
