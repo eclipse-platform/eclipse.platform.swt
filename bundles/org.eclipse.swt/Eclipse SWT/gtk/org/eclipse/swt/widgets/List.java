@@ -1152,17 +1152,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	return result;
 }
 
-void setFocusIndex (int index) {
-	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	if (!(0 <= index && index < count))  return;
-	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-	OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-	int path = OS.gtk_tree_model_get_path (modelHandle, iter);
-	OS.gtk_tree_view_set_cursor (handle, path, 0, false);
-	OS.gtk_tree_path_free (path);
-	OS.g_free (iter);
-}
-
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	OS.gtk_widget_modify_text (handle, 0, color);
@@ -1261,9 +1250,6 @@ public void setSelection (int index) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
 	showSelection ();
-	if ((style & SWT.MULTI) != 0) {
-		if (index >= 0) setFocusIndex (index);
-	}
 }
 
 /**
@@ -1288,9 +1274,6 @@ public void setSelection (int start, int end) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
 	showSelection ();
-	if ((style & SWT.MULTI) != 0) {
-		if (start >= 0) setFocusIndex (start);
-	}
 }
 
 /**
@@ -1316,12 +1299,6 @@ public void setSelection(int[] indices) {
 	deselectAll ();
 	select (indices);
 	showSelection ();
-	if ((style & SWT.MULTI) != 0) {
-		if (indices.length != 0) {
-			int focusIndex = indices [0];
-			if (focusIndex  >= 0) setFocusIndex (focusIndex);
-		}
-	}
 }
 
 /**
@@ -1346,14 +1323,11 @@ public void setSelection (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
-	int focusIndex = -1;
 	for (int i=items.length-1; i>=0; --i) {
 		int index = 0;
 		String string = items [i];
 		if (string != null) {
-			int localFocus = -1;
 			while ((index = indexOf (string, index)) != -1) {
-				if (localFocus == -1) localFocus = index;
 				select (index);
 				if (((style & SWT.SINGLE) != 0) && isSelected (index)) {
 					showSelection ();
@@ -1361,14 +1335,10 @@ public void setSelection (String [] items) {
 				}
 				index++;
 			}
-			if (localFocus  >= 0) focusIndex = localFocus;
 		}
 	}
 	if ((style & SWT.SINGLE) != 0) deselectAll ();
 	showSelection ();
-	if ((style & SWT.MULTI) != 0) {
-		if (focusIndex != -1) setFocusIndex (focusIndex);
-	}
 }
 
 /**
