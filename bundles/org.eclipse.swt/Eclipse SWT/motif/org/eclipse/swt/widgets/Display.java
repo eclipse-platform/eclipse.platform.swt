@@ -1694,38 +1694,26 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	this.synchronizer = synchronizer;
 }
 void showToolTip (int handle, String toolTipText) {
-	if (toolTipText == null || toolTipText.length() == 0 || toolTipHandle != 0) {
+	if (toolTipText == null || toolTipText.length () == 0 || toolTipHandle != 0) {
 		 return;
 	}
 	
-	/* Create the tooltip widgets */	
+	/* Create the shell and tool tip widget */
 	int widgetClass = OS.OverrideShellWidgetClass ();
 	int [] argList1 = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
 	int shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList1, argList1.length / 2);
-	toolTipHandle = OS.XmCreateLabel(shellHandle, null, null, 0);
-	
-	/* Set the tooltip foreground and background */
-	Color infoForeground = getSystemColor(SWT.COLOR_INFO_FOREGROUND);
-	Color infoBackground = getSystemColor(SWT.COLOR_INFO_BACKGROUND);
-	int foregroundPixel = (infoForeground == null) ? defaultForeground : infoForeground.handle.pixel;
-	int backgroundPixel = (infoBackground == null) ? defaultBackground : infoBackground.handle.pixel;
-	int [] argList2 = {OS.XmNforeground, foregroundPixel, OS.XmNbackground, backgroundPixel};
-	OS.XtSetValues (toolTipHandle, argList2, argList2.length / 2);
-	OS.XtManageChild (toolTipHandle);		
-	
-	/* Set the tooltip label string */
+	Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
+	Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
+	int foregroundPixel = infoForeground.handle.pixel;
+	int backgroundPixel = infoBackground.handle.pixel;
 	byte [] buffer = Converter.wcsToMbcs (null, toolTipText, true);
-	int xmString = OS.XmStringParseText (
-		buffer,
-		0,
-		OS.XmFONTLIST_DEFAULT_TAG, 
-		OS.XmCHARSET_TEXT, 
-		null,
-		0,
-		0);
-	int [] argList3 = {OS.XmNlabelString, xmString};
-	OS.XtSetValues (toolTipHandle, argList3, argList3.length / 2);
-	if (xmString != 0) OS.XmStringFree (xmString);	
+	int [] argList2 = {
+		OS.XmNforeground, foregroundPixel, 
+		OS.XmNbackground, backgroundPixel,
+		OS.XmNalignment, OS.XmALIGNMENT_BEGINNING,
+	};
+	toolTipHandle = OS.XmCreateLabel (shellHandle, buffer, argList2, argList2.length / 2);
+	OS.XtManageChild (toolTipHandle);	
 		
 	/*
 	* Feature in X.  There is no way to query the size of a cursor.
@@ -1737,7 +1725,7 @@ void showToolTip (int handle, String toolTipText) {
 	int x = rootX [0] + 16, y = rootY [0] + 16;
 	
 	/*
-	* Ensure that the tooltip is on the screen.
+	* Ensure that the tool tip is on the screen.
 	*/
 	int screen = OS.XDefaultScreen (xDisplay);
 	int width = OS.XDisplayWidth (xDisplay, screen);
