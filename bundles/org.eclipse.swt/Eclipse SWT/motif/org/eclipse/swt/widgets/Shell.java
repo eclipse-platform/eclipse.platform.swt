@@ -104,7 +104,7 @@ public class Shell extends Decorations {
 	boolean reparented, realized, configured;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
-	int clippingRgn;
+	int clipRgn;
 
 	static final  byte [] WM_DELETE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
 /**
@@ -817,8 +817,22 @@ public Rectangle getBounds () {
 public void getClipping (Region region) {
 	checkWidget ();
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (clippingRgn == 0) return;
-	OS.XUnionRegion (clippingRgn, region.handle, region.handle);
+	int hRegion = region.handle;
+	OS.XSubtractRegion (hRegion, hRegion, hRegion);
+	if (clipRgn != 0) {
+		OS.XUnionRegion (clipRgn, hRegion, hRegion);
+	} else {
+		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+		OS.XtGetValues (shellHandle, argList, argList.length / 2);
+		int border = argList [5];
+		int trimWidth = trimWidth (), trimHeight = trimHeight ();
+		int width = argList [1] + trimWidth + (border * 2);
+		int height = argList [3] + trimHeight + (border * 2);
+		XRectangle xRect = new XRectangle ();
+		xRect.width = (short)width;
+		xRect.height = (short)height;
+		OS.XUnionRectWithRegion (xRect, hRegion, hRegion);
+	}
 }
 
 /**
@@ -1015,8 +1029,8 @@ void releaseWidget () {
 	releaseShells ();
 	super.releaseWidget ();
 	lastActive = null;
-	if (clippingRgn != 0) OS.XDestroyRegion (clippingRgn);
-	clippingRgn = 0;
+	if (clipRgn != 0) OS.XDestroyRegion (clipRgn);
+	clipRgn = 0;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1196,24 +1210,16 @@ public void setClipping(Region region) {
 	if (xDisplay == 0) return;
 	int xWindow = OS.XtWindow (shellHandle);
 	if (xWindow == 0) return;
-	if (clippingRgn != 0) OS.XDestroyRegion (clippingRgn);
-	clippingRgn = 0;
+	if (clipRgn != 0) OS.XDestroyRegion (clipRgn);
+	clipRgn = 0;
 	if (region != null) {
-		clippingRgn = OS.XCreateRegion ();
-		OS.XUnionRegion (clippingRgn, region.handle, clippingRgn);
-		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, clippingRgn, OS.ShapeSet);
-		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeClip, 0, 0, clippingRgn, OS.ShapeSet);
+		clipRgn = OS.XCreateRegion ();
+		OS.XUnionRegion (clipRgn, region.handle, clipRgn);
+		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, clipRgn, OS.ShapeSet);
+		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeClip, 0, 0, clipRgn, OS.ShapeSet);
 	} else {
-		// TODO - find a better way to clear region
-		int screen = OS.XDefaultScreen (xDisplay);
-		XRectangle xRect = new XRectangle ();
-		xRect.width = (short) OS.XDisplayWidth (xDisplay, screen);
-		xRect.height = (short) OS.XDisplayHeight (xDisplay, screen);
-		int rgn = OS.XCreateRegion ();
-		OS.XUnionRectWithRegion (xRect, rgn, rgn);
-		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, rgn, OS.ShapeSet);
-		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeClip, 0, 0, rgn, OS.ShapeSet);
-		OS.XDestroyRegion (rgn);
+		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeBounding, 0, 0, 0, OS.ShapeSet);
+		OS.XShapeCombineMask (xDisplay, xWindow, OS.ShapeClip, 0, 0, 0, OS.ShapeSet);
 	}
 }
 public void setMinimized (boolean minimized) {

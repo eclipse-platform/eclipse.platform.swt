@@ -657,6 +657,7 @@ public static final synchronized native int XSetLineAttributes(int display, int 
 public static final synchronized native void XSetRegion(int display, int gc, int region);
 public static final synchronized native void XSetStipple(int display, int gc, int pixmap);
 public static final synchronized native void XSetSubwindowMode(int display, int gc, int subwindow_mode);
+public static final synchronized native void XShapeCombineMask(int display, int dest, int dest_kind, int x_off, int y_off, int src, int op);
 public static final synchronized native void XShapeCombineRegion(int display, int dest, int dest_kind, int x_off, int y_off, int region, int op);
 public static final synchronized native void XSubtractRegion(int sra, int srb, int dr_return);
 public static final synchronized native void XSync(int display, boolean discard);
