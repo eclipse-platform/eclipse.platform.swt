@@ -47,7 +47,7 @@ public class Table extends Composite {
 	ImageList imageList;
 	int lastIndexOf, lastWidth;
 	boolean fixScrollWidth;
-	boolean ignoreSelect, dragStarted, ignoreResize, ignoreRedraw, mouseDown, customDraw;
+	boolean ignoreSelect, dragStarted, ignoreResize, ignoreRedraw, mouseDown, customDraw, ignoreShrink;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
 	static {
@@ -645,7 +645,14 @@ void createItem (TableItem item, int index) {
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	if (count == items.length) {
-		int length = drawCount == 0 ? items.length + 4 : items.length * 3 / 2;
+		/*
+		* Grow the array faster when redraw is off or the
+		* table is not visible.  When the table is painted,
+		* the items array is resized to be smaller to reduce
+		* memory usage.
+		*/
+		boolean small = drawCount == 0 && OS.IsWindowVisible (handle);
+		int length = small ? items.length + 4 : items.length * 3 / 2;
 		TableItem [] newItems = new TableItem [length];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
@@ -932,9 +939,9 @@ void destroyItem (TableItem item) {
 		index++;
 	}
 	if (index == count) return;
-	ignoreSelect = true;
+	ignoreSelect = ignoreShrink = true;
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
-	ignoreSelect = false;
+	ignoreSelect = ignoreShrink = false;
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
@@ -1519,9 +1526,9 @@ void releaseWidget () {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		for (int i=itemCount-1; i>=0; --i) {
 			TableItem item = items [i];
-			ignoreSelect = true;
+			ignoreSelect = ignoreShrink = true;
 			OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
-			ignoreSelect = false;
+			ignoreSelect = ignoreShrink = false;
 			if (item != null && !item.isDisposed ()) item.releaseResources ();
 		}
 	} else {	
@@ -1578,9 +1585,9 @@ public void remove (int [] indices) {
 		int index = newIndices [i];
 		if (index != last) {
 			TableItem item = items [index];
-			ignoreSelect = true;
+			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
-			ignoreSelect = false;
+			ignoreSelect = ignoreShrink = false;
 			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 			if (item != null && !item.isDisposed ()) item.releaseResources ();
 			System.arraycopy (items, index + 1, items, index, --count - index);
@@ -1612,9 +1619,9 @@ public void remove (int index) {
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	TableItem item = items [index];
-	ignoreSelect = true;
+	ignoreSelect = ignoreShrink = true;
 	int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
-	ignoreSelect = false;
+	ignoreSelect = ignoreShrink = false;
 	if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	if (item != null && !item.isDisposed ()) item.releaseResources ();
 	System.arraycopy (items, index + 1, items, index, --count - index);
@@ -1653,9 +1660,9 @@ public void remove (int start, int end) {
 		int index = start;
 		while (index <= end) {
 			TableItem item = items [index];
-			ignoreSelect = true;
+			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
-			ignoreSelect = false;
+			ignoreSelect = ignoreShrink = false;
 			if (code == 0) break;
 			if (item != null && !item.isDisposed ()) item.releaseResources ();
 			index++;
@@ -1701,9 +1708,9 @@ public void removeAll () {
 		int index = itemCount - 1;
 		while (index >= 0) {
 			TableItem item = items [index];
-			ignoreSelect = true;
+			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
-			ignoreSelect = false;
+			ignoreSelect = ignoreShrink = false;
 			if (code == 0) break;
 			if (item != null && !item.isDisposed ()) item.releaseResources ();
 			--index;
@@ -1721,9 +1728,9 @@ public void removeAll () {
 		}
 		if (index != -1) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	} else {
-		ignoreSelect = true;
+		ignoreSelect = ignoreShrink = true;
 		int code = OS.SendMessage (handle, OS.LVM_DELETEALLITEMS, 0, 0);
-		ignoreSelect = false;
+		ignoreSelect = ignoreShrink = false;
 		if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
@@ -2189,9 +2196,9 @@ public void setItemCount (int count) {
 	while (index < itemCount) {
 		TableItem item = items [index];
 		if (!isVirtual) {
-			ignoreSelect = true;
+			ignoreSelect = ignoreShrink = true;
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, count, 0);
-			ignoreSelect = false;
+			ignoreSelect = ignoreShrink = false;
 			if (code == 0) break;
 		}
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
@@ -2269,14 +2276,6 @@ public void setRedraw (boolean redraw) {
 			* This code is intentionally commented. 
 			*/
 //			subclass ();
-
-			/* Resize the item array to match the item count */
-			int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-			if (items.length > 4 && items.length - count > 3) {
-				TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
-				System.arraycopy (items, 0, newItems, 0, count);
-				items = newItems;
-			}
 			
 			/* Set the width of the horizontal scroll bar */
 			setScrollWidth (null, true);
@@ -2960,6 +2959,15 @@ LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
 }
 
 LRESULT WM_PAINT (int wParam, int lParam) {
+	if (!ignoreShrink) {
+		/* Resize the item array to match the item count */
+		int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		if (items.length > 4 && items.length - count > 3) {
+			TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+			System.arraycopy (items, 0, newItems, 0, count);
+			items = newItems;
+		}
+	}
 	if (fixScrollWidth) setScrollWidth (null, true);
 	return super.WM_PAINT (wParam, lParam);
 }
