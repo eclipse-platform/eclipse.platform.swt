@@ -87,32 +87,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_setDataBrowserCa
 	SetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_newColumnDesc(JNIEnv *env, jclass zz,
-			jint propertyID, jint propertyType, jint propertyFlags, jshort minimumWidth, jshort maximumWidth) {
-
-	DataBrowserListViewColumnDesc *columnDesc= (DataBrowserListViewColumnDesc*) calloc(sizeof(DataBrowserListViewColumnDesc), 1);
-			
-	columnDesc->propertyDesc.propertyID= propertyID;
-	columnDesc->propertyDesc.propertyType= propertyType;
-	columnDesc->propertyDesc.propertyFlags= propertyFlags;
-	
-	columnDesc->headerBtnDesc.version= kDataBrowserListViewLatestHeaderDesc;
-	columnDesc->headerBtnDesc.minimumWidth= minimumWidth;
-	columnDesc->headerBtnDesc.maximumWidth= maximumWidth;
-
-	columnDesc->headerBtnDesc.titleOffset= 0;
-	columnDesc->headerBtnDesc.titleString= NULL;
-	columnDesc->headerBtnDesc.initialOrder= kDataBrowserOrderIncreasing;
-	
-	/*
-	columnDesc.headerBtnDesc.titleAlignment= teCenter;
-	columnDesc.headerBtnDesc.titleFontTypeID= kControlFontViewSystemFont;
-	columnDesc.headerBtnDesc.btnFontStyle= normal;
-	*/
-
-	return (jint)columnDesc;
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_GetEventHICommand(JNIEnv *env, jclass zz,
 			jint eRefHandle, jintArray outParamType) {
 	jint status;

@@ -12,6 +12,7 @@ import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.events.TreeListener;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
 
 /**
  * Instances of this class provide a selectable user interface object
@@ -230,15 +231,45 @@ void createHandle (int index) {
 		OS.AutoSizeDataBrowserListViewColumns(handle);
 		
 	if ((style & SWT.CHECK) != 0) {
-		int checkColumnDesc= OS.newColumnDesc(CHECK_COL_ID, OS.kDataBrowserCheckboxType,
-						OS.kDataBrowserPropertyIsMutable,
-						(short)40, (short)40);
+		DataBrowserListViewColumnDesc checkColumnDesc= new DataBrowserListViewColumnDesc();
+		checkColumnDesc.propertyDesc_propertyID= CHECK_COL_ID;
+		checkColumnDesc.propertyDesc_propertyType= OS.kDataBrowserCheckboxType;
+		checkColumnDesc.propertyDesc_propertyFlags= OS.kDataBrowserPropertyIsMutable;
+	
+		checkColumnDesc.headerBtnDesc_version= OS.kDataBrowserListViewLatestHeaderDesc;
+		checkColumnDesc.headerBtnDesc_minimumWidth= 40;
+		checkColumnDesc.headerBtnDesc_maximumWidth= 40;
+
+		checkColumnDesc.headerBtnDesc_titleOffset= 0;
+		checkColumnDesc.headerBtnDesc_titleString= 0;
+		checkColumnDesc.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
+	
+		/*
+		checkColumnDesc.headerBtnDesc_titleAlignment= teCenter;
+		checkColumnDesc.headerBtnDesc_titleFontTypeID= OS.kControlFontViewSystemFont;
+		checkColumnDesc.headerBtnDesc_btnFontStyle= normal;
+		*/
 		OS.AddDataBrowserListViewColumn(handle, checkColumnDesc, 1999);
 	}
-					
-	int columnDesc= OS.newColumnDesc(COL_ID, OS.kDataBrowserTextType, // OS.kDataBrowserIconAndTextType,
-					OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags,
-					(short)0, (short)300);
+	
+	DataBrowserListViewColumnDesc columnDesc= new DataBrowserListViewColumnDesc();
+	columnDesc.propertyDesc_propertyID= COL_ID;
+	columnDesc.propertyDesc_propertyType= OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
+	columnDesc.propertyDesc_propertyFlags= OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
+	
+	columnDesc.headerBtnDesc_version= OS.kDataBrowserListViewLatestHeaderDesc;
+	columnDesc.headerBtnDesc_minimumWidth= 0;
+	columnDesc.headerBtnDesc_maximumWidth= 300;
+
+	columnDesc.headerBtnDesc_titleOffset= 0;
+	columnDesc.headerBtnDesc_titleString= 0;
+	columnDesc.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
+	
+	/*
+	columnDesc.headerBtnDesc_titleAlignment= teCenter;
+	columnDesc.headerBtnDesc_titleFontTypeID= OS.kControlFontViewSystemFont;
+	columnDesc.headerBtnDesc_btnFontStyle= normal;
+	*/			
 	OS.AddDataBrowserListViewColumn(handle, columnDesc, 2000);
 	OS.SetDataBrowserListViewDisclosureColumn(handle, COL_ID, false);
 	

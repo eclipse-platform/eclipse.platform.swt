@@ -394,6 +394,100 @@ void setControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoR
 }
 #endif /* NO_ControlTabInfoRecV1 */
 
+#ifndef NO_DataBrowserListViewColumnDesc
+typedef struct DataBrowserListViewColumnDesc_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID propertyDesc_propertyID, propertyDesc_propertyType, propertyDesc_propertyFlags, headerBtnDesc_version, headerBtnDesc_minimumWidth, headerBtnDesc_maximumWidth, headerBtnDesc_titleOffset, headerBtnDesc_titleString, headerBtnDesc_initialOrder, headerBtnDesc_btnFontStyle_flags, headerBtnDesc_btnFontStyle_font, headerBtnDesc_btnFontStyle_size, headerBtnDesc_btnFontStyle_style, headerBtnDesc_btnFontStyle_mode, headerBtnDesc_btnFontStyle_just, headerBtnDesc_btnFontStyle_foreColor_red, headerBtnDesc_btnFontStyle_foreColor_green, headerBtnDesc_btnFontStyle_foreColor_blue, headerBtnDesc_btnFontStyle_backColor_red, headerBtnDesc_btnFontStyle_backColor_green, headerBtnDesc_btnFontStyle_backColor_blue, headerBtnDesc_btnContentInfo_contentType;
+} DataBrowserListViewColumnDesc_FID_CACHE;
+
+DataBrowserListViewColumnDesc_FID_CACHE DataBrowserListViewColumnDescFc;
+
+void cacheDataBrowserListViewColumnDescFids(JNIEnv *env, jobject lpObject)
+{
+	if (DataBrowserListViewColumnDescFc.cached) return;
+	DataBrowserListViewColumnDescFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	DataBrowserListViewColumnDescFc.propertyDesc_propertyID = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "propertyDesc_propertyID", "I");
+	DataBrowserListViewColumnDescFc.propertyDesc_propertyType = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "propertyDesc_propertyType", "I");
+	DataBrowserListViewColumnDescFc.propertyDesc_propertyFlags = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "propertyDesc_propertyFlags", "I");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_version = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_version", "I");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_minimumWidth = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_minimumWidth", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_maximumWidth = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_maximumWidth", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_titleOffset = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_titleOffset", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_titleString = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_titleString", "I");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_initialOrder = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_initialOrder", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_flags = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_flags", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_font = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_font", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_size = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_size", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_style = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_style", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_mode = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_mode", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_just = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_just", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_foreColor_red = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_foreColor_red", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_foreColor_green = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_foreColor_green", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_foreColor_blue = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_foreColor_blue", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_backColor_red = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_backColor_red", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_backColor_green = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_backColor_green", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_backColor_blue = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnFontStyle_backColor_blue", "S");
+	DataBrowserListViewColumnDescFc.headerBtnDesc_btnContentInfo_contentType = (*env)->GetFieldID(env, DataBrowserListViewColumnDescFc.clazz, "headerBtnDesc_btnContentInfo_contentType", "S");
+	DataBrowserListViewColumnDescFc.cached = 1;
+}
+
+DataBrowserListViewColumnDesc *getDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct)
+{
+	if (!DataBrowserListViewColumnDescFc.cached) cacheDataBrowserListViewColumnDescFids(env, lpObject);
+	lpStruct->propertyDesc.propertyID = (DataBrowserPropertyID)(*env)->GetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyID);
+	lpStruct->propertyDesc.propertyType = (OSType)(*env)->GetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyType);
+	lpStruct->propertyDesc.propertyFlags = (DataBrowserPropertyFlags)(*env)->GetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyFlags);
+	lpStruct->headerBtnDesc.version = (UInt32)(*env)->GetIntField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_version);
+	lpStruct->headerBtnDesc.minimumWidth = (UInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_minimumWidth);
+	lpStruct->headerBtnDesc.maximumWidth = (UInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_maximumWidth);
+	lpStruct->headerBtnDesc.titleOffset = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_titleOffset);
+	lpStruct->headerBtnDesc.titleString = (CFStringRef)(*env)->GetIntField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_titleString);
+	lpStruct->headerBtnDesc.initialOrder = (DataBrowserSortOrder)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_initialOrder);
+	lpStruct->headerBtnDesc.btnFontStyle.flags = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_flags);
+	lpStruct->headerBtnDesc.btnFontStyle.font = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_font);
+	lpStruct->headerBtnDesc.btnFontStyle.size = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_size);
+	lpStruct->headerBtnDesc.btnFontStyle.style = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_style);
+	lpStruct->headerBtnDesc.btnFontStyle.mode = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_mode);
+	lpStruct->headerBtnDesc.btnFontStyle.just = (SInt16)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_just);
+	lpStruct->headerBtnDesc.btnFontStyle.foreColor.red = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_foreColor_red);
+	lpStruct->headerBtnDesc.btnFontStyle.foreColor.green = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_foreColor_green);
+	lpStruct->headerBtnDesc.btnFontStyle.foreColor.blue = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_foreColor_blue);
+	lpStruct->headerBtnDesc.btnFontStyle.backColor.red = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_backColor_red);
+	lpStruct->headerBtnDesc.btnFontStyle.backColor.green = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_backColor_green);
+	lpStruct->headerBtnDesc.btnFontStyle.backColor.blue = (unsigned short)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_backColor_blue);
+	lpStruct->headerBtnDesc.btnContentInfo.contentType = (ControlContentType)(*env)->GetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnContentInfo_contentType);
+	return lpStruct;
+}
+
+void setDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct)
+{
+	if (!DataBrowserListViewColumnDescFc.cached) cacheDataBrowserListViewColumnDescFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyID, (jint)lpStruct->propertyDesc.propertyID);
+	(*env)->SetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyType, (jint)lpStruct->propertyDesc.propertyType);
+	(*env)->SetIntField(env, lpObject, DataBrowserListViewColumnDescFc.propertyDesc_propertyFlags, (jint)lpStruct->propertyDesc.propertyFlags);
+	(*env)->SetIntField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_version, (jint)lpStruct->headerBtnDesc.version);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_minimumWidth, (jshort)lpStruct->headerBtnDesc.minimumWidth);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_maximumWidth, (jshort)lpStruct->headerBtnDesc.maximumWidth);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_titleOffset, (jshort)lpStruct->headerBtnDesc.titleOffset);
+	(*env)->SetIntField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_titleString, (jint)lpStruct->headerBtnDesc.titleString);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_initialOrder, (jshort)lpStruct->headerBtnDesc.initialOrder);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_flags, (jshort)lpStruct->headerBtnDesc.btnFontStyle.flags);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_font, (jshort)lpStruct->headerBtnDesc.btnFontStyle.font);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_size, (jshort)lpStruct->headerBtnDesc.btnFontStyle.size);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_style, (jshort)lpStruct->headerBtnDesc.btnFontStyle.style);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_mode, (jshort)lpStruct->headerBtnDesc.btnFontStyle.mode);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_just, (jshort)lpStruct->headerBtnDesc.btnFontStyle.just);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_foreColor_red, (jshort)lpStruct->headerBtnDesc.btnFontStyle.foreColor.red);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_foreColor_green, (jshort)lpStruct->headerBtnDesc.btnFontStyle.foreColor.green);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_foreColor_blue, (jshort)lpStruct->headerBtnDesc.btnFontStyle.foreColor.blue);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_backColor_red, (jshort)lpStruct->headerBtnDesc.btnFontStyle.backColor.red);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_backColor_green, (jshort)lpStruct->headerBtnDesc.btnFontStyle.backColor.green);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnFontStyle_backColor_blue, (jshort)lpStruct->headerBtnDesc.btnFontStyle.backColor.blue);
+	(*env)->SetShortField(env, lpObject, DataBrowserListViewColumnDescFc.headerBtnDesc_btnContentInfo_contentType, (jshort)lpStruct->headerBtnDesc.btnContentInfo.contentType);
+}
+#endif /* NO_DataBrowserListViewColumnDesc */
+
 #ifndef NO_NavDialogCreationOptions
 typedef struct NavDialogCreationOptions_FID_CACHE {
 	int cached;

@@ -34,11 +34,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserIte
 
 #ifndef NO_AddDataBrowserListViewColumn
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserListViewColumn
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
+	DataBrowserListViewColumnDesc _arg1, *lparg1=NULL;
+	jint rc;
+
 	DEBUG_CALL("AddDataBrowserListViewColumn\n")
 
-	return (jint)AddDataBrowserListViewColumn((ControlRef)arg0, (DataBrowserListViewColumnDesc *)arg1, (DataBrowserTableViewColumnIndex)arg2);
+	if (arg1) lparg1 = getDataBrowserListViewColumnDescFields(env, arg1, &_arg1);
+	rc = (jint)AddDataBrowserListViewColumn((ControlRef)arg0, (DataBrowserListViewColumnDesc *)lparg1, (DataBrowserTableViewColumnIndex)arg2);
+	if (arg1) setDataBrowserListViewColumnDescFields(env, arg1, lparg1);
+	return rc;
 }
 #endif /* NO_AddDataBrowserListViewColumn */
 

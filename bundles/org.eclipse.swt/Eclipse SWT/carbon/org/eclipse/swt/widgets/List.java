@@ -14,6 +14,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
 
 /** 
  * Instances of this class represent a selectable user interface
@@ -274,10 +275,26 @@ void createHandle (int index) {
 	OS.SetDataBrowserHasScrollBars(handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
 	if ((style & SWT.H_SCROLL) == 0)
 		OS.AutoSizeDataBrowserListViewColumns(handle);
-		
-	int columnDesc= OS.newColumnDesc(COL_ID, OS.kDataBrowserTextType,
-					OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags,
-					(short)0, (short)2000);
+
+	DataBrowserListViewColumnDesc columnDesc= new DataBrowserListViewColumnDesc();
+	columnDesc.propertyDesc_propertyID= COL_ID;
+	columnDesc.propertyDesc_propertyType= OS.kDataBrowserTextType;
+	columnDesc.propertyDesc_propertyFlags= OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
+	
+	columnDesc.headerBtnDesc_version= OS.kDataBrowserListViewLatestHeaderDesc;
+	columnDesc.headerBtnDesc_minimumWidth= 0;
+	columnDesc.headerBtnDesc_maximumWidth= 2000;
+
+	columnDesc.headerBtnDesc_titleOffset= 0;
+	columnDesc.headerBtnDesc_titleString= 0;
+	columnDesc.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
+	
+	/*
+	columnDesc.headerBtnDesc_titleAlignment= teCenter;
+	columnDesc.headerBtnDesc_titleFontTypeID= OS.kControlFontViewSystemFont;
+	columnDesc.headerBtnDesc_btnFontStyle= normal;
+	*/
+
 	OS.AddDataBrowserListViewColumn(handle, columnDesc, 10000);
 }
 ScrollBar createScrollBar (int type) {

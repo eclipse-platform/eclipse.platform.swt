@@ -75,6 +75,14 @@ void setControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoR
 #define setControlTabInfoRecV1Fields(a,b,c)
 #endif /* NO_ControlTabInfoRecV1 */
 
+#ifndef NO_DataBrowserListViewColumnDesc
+DataBrowserListViewColumnDesc *getDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct);
+void setDataBrowserListViewColumnDescFields(JNIEnv *env, jobject lpObject, DataBrowserListViewColumnDesc *lpStruct);
+#else
+#define getDataBrowserListViewColumnDescFields(a,b,c) NULL
+#define setDataBrowserListViewColumnDescFields(a,b,c)
+#endif /* NO_DataBrowserListViewColumnDesc */
+
 #ifndef NO_EventRecord
 EventRecord *getEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct);
 void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct);
