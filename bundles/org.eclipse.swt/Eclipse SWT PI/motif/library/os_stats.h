@@ -112,6 +112,7 @@ typedef enum {
 	XLowerWindow_FUNC,
 	XMapWindow_FUNC,
 	XMoveResizeWindow_FUNC,
+	XOffsetRegion_FUNC,
 	XOpenDisplay_FUNC,
 	XPointInRegion_FUNC,
 	XPolygonRegion_FUNC,

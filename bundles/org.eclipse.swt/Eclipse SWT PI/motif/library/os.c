@@ -1152,6 +1152,16 @@ JNIEXPORT void JNICALL OS_NATIVE(XMoveResizeWindow)
 }
 #endif
 
+#ifndef NO_XOffsetRegion
+JNIEXPORT void JNICALL OS_NATIVE(XOffsetRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, XOffsetRegion_FUNC);
+	XOffsetRegion((Region)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, XOffsetRegion_FUNC);
+}
+#endif
+
 #ifndef NO_XOpenDisplay
 JNIEXPORT jint JNICALL OS_NATIVE(XOpenDisplay)
 	(JNIEnv *env, jclass that, jbyteArray arg0)
