@@ -10,4 +10,4 @@
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
 
-make -f make_carbon.mak $1 $2 $3 $4 $5 $6 $7 $8 $9
+make -f make_macosx.mak $1 $2 $3 $4 $5 $6 $7 $8 $9
