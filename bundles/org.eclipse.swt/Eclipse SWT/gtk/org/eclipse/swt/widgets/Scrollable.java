@@ -97,9 +97,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	int border = getBorderWidth ();
 	int trimX = x - border, trimY = y - border;
 	int trimWidth = width + (border * 2), trimHeight = height + (border * 2);
-	//FIXME - figure out scrollbar size
-	if (horizontalBar != null) trimHeight += 18;
-	if (verticalBar != null) trimWidth += 18;
+	trimHeight += hScrollBarWidth();
+	trimWidth  += vScrollBarWidth();
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
 

@@ -133,7 +133,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = getHeaderHeight();
 		height += OS.GTK_CLIST_ROW_HEIGHT (handle) * getItemCount();
 		height += 2 * st.ythickness;
-		if ((style & SWT.H_SCROLL) != 0) height += 18; //WRONG, must obtain the real size
+		height += hScrollBarWidth();
 		// FIXME - check for border
 	}
 	
@@ -145,7 +145,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		width = 2 * st.xthickness;
 		int count = getColumnCount();
 		for (int i = 0; i<count; i++) width += getColumn(i).getWidth();
-		if ((style & SWT.V_SCROLL) != 0) width += 18; //WRONG, must obtain the real size
+		width += vScrollBarWidth();
 		// FIXME - check for border
 	}
 	
