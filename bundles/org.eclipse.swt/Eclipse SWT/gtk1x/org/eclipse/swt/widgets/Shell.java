@@ -697,16 +697,16 @@ public void setImeInputMode (int mode) {
 }
 
 public void setMaximized (boolean maximized) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-//	GtkWidget widget = new GtkWidget ();
-//	OS.memmove (widget, shellHandle, GtkWidget.sizeof);
-//	OS.gdk_window_set_functions (window, OS.GDK_FUNC_MAXIMIZE);
+	checkWidget();
+	
+	/*
+	 * Out of luck on curent GDK.
+	 */
 }
-public void setMenuBar (Menu menu) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 
+public void setMenuBar (Menu menu) {
+	checkWidget();
+	
 	if (menuBar == menu) return;
 	if (menu != null) {
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
