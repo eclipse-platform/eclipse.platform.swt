@@ -192,13 +192,11 @@ public int getSelection () {
 	int [] argList = {
 		OS.XmNminimum, 0,
 		OS.XmNsliderSize, 0,
-		OS.XmNforeground, 0,
-		OS.XmNtroughColor, 0
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int minimum = argList [1], sliderSize = argList [3];
-	int foregroundColor = argList [5], troughColor = argList [7];
-	if (sliderSize == 1 && foregroundColor == troughColor) sliderSize = 0;
+	boolean invisible = lastForeground != -1;
+	if (invisible) sliderSize = 0;
 	return minimum + sliderSize;
 }
 int processTimer (int id) {
@@ -245,8 +243,7 @@ public void setBackground (Color color) {
 			OS.XmNtroughColor, 0
 		};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		argList [0] = OS.XmNforeground;
-		OS.XtSetValues (handle, argList, argList.length / 2);
+		setForegroundPixel (argList [1]);
 	}
 }
 
@@ -364,34 +361,26 @@ public void setSelection (int value) {
 void setThumb (int sliderSize) {
 	int [] argList1 = new int [] {
 		OS.XmNtroughColor, 0,
-		OS.XmNforeground, 0,
 		OS.XmNminimum, 0,
 	};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
-	int troughColor = argList1 [1], foregroundColor = argList1 [3];
+	int troughColor = argList1 [1];
 
+	boolean invisible = lastForeground != -1;
 	if (sliderSize == 0) {
-		if (troughColor != foregroundColor) {
-			lastForeground = foregroundColor;
-			int [] argList2 = new int [] {
-				OS.XmNforeground, troughColor,
-			};
-			OS.XtSetValues (handle, argList2, argList2.length / 2);
+		if (!invisible) {
+			lastForeground = getForegroundPixel ();
+			setForegroundPixel (troughColor);
 		}
 	} else {
-		if (troughColor == foregroundColor) {
-			if (lastForeground != -1) {
-				int [] argList2 = new int [] {
-					OS.XmNforeground, lastForeground, 
-				};
-				OS.XtSetValues (handle, argList2, argList2.length / 2);
-				lastForeground = -1;
-			}
+		if (invisible) {
+			setForegroundPixel (lastForeground);
+			lastForeground = -1;
 		}
 	}
 	int [] argList3 = new int [] {
 		OS.XmNsliderSize, (sliderSize == 0) ? 1 : sliderSize,
-		OS.XmNvalue, argList1 [5]
+		OS.XmNvalue, argList1 [3]
 	};
 	
 	Display display = getDisplay ();
