@@ -803,7 +803,6 @@ void drawBody(Event event) {
 
 void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
-	Display display = getDisplay();
 	// draw chevron (10x7)
 	Color chevronBorder = single ? getSelectionForeground() : getForeground();
 	int indent = 1;
