@@ -261,30 +261,21 @@ public Image getImage (int index) {
  */
 public Rectangle getImageBounds (int index) {
 	checkWidget ();
-	// FIXME - images not implemented yet
-	return new Rectangle(0,0,0,0);
-/*	int CELL_SPACING = 1;
-	int clist = parent.handle;
-	int columnHandle = OS.GTK_CLIST_COLUMN (clist);
-	columnHandle= columnHandle + index * GtkCListColumn.sizeof;
-	GtkCListColumn column = new GtkCListColumn ();
-	OS.memmove (column, columnHandle, GtkCListColumn.sizeof);
-	int x = column.area_x + OS.GTK_CLIST_HOFFSET (clist) + 1;
-	int height = OS.GTK_CLIST_ROW_HEIGHT (clist);
-	int row = parent.indexOf (this);
-	int headerHeight = OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (clist);
-	int y = headerHeight + OS.GTK_CLIST_VOFFSET (clist) + (height + CELL_SPACING) * row + 3;
-	int width = 0;
-	if (!(index == 0 && (parent.style & SWT.CHECK) != 0)) {
-		int [] pixmap = new int [1];
-		OS.gtk_clist_get_pixtext (clist, row, index, null, null, pixmap, null);
-		if (pixmap [0] != 0) {
-			int [] w = new int [1], h = new int [1];
-			OS.gdk_drawable_get_size (pixmap [0], w, h);
-			width = w [0];
-		}
+	int renderer;
+	if (parent.getColumnCount()==0) {
+		if (index!=0) return new Rectangle(0,0,0,0);
+		renderer = parent.fakePixbufRenderer;
+	} else {
+		if (index<0 || index>parent.getColumnCount()) return new Rectangle(0,0,0,0);
+		renderer = parent.columns[index].pixbufRendererHandle;
 	}
-	return new Rectangle (x, y, width, height);*/
+	int[] x = new int[1];
+	int[] y = new int[1];
+	int[] w = new int[1];
+	int[] h = new int[1];
+	GdkRectangle rect = new GdkRectangle();
+	OS.gtk_cell_renderer_get_size(renderer, parent.handle, rect, x, y, w, h);
+	return new Rectangle(x[0],y[0],w[0],h[0]);
 }
 
 /**

@@ -540,6 +540,10 @@ int processToggle(int pathString, int handle) {
 	boolean checked = items[index[0]].getChecked();
 	checked = !checked;
 	items[index[0]].setChecked(checked);
+	Event event = new Event();
+	event.detail = SWT.CHECK;
+	event.item = items[index[0]];
+	postEvent(SWT.Selection, event);
 	return 0;
 }
 

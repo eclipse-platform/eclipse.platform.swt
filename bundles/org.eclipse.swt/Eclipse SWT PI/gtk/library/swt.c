@@ -6069,3 +6069,28 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1store_1cl
 
 	gtk_tree_store_clear((GtkTreeStore*)arg0);
 }
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1cell_1renderer_1get_1size
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jintArray arg3, jintArray arg4, jintArray arg5, jintArray arg6)
+{
+	GdkRectangle _arg2, *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+
+	DEBUG_CALL("gtk_1cell_1renderer_1get_1size\n")
+
+	if (arg2) lparg2 = getGdkRectangleFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	gtk_cell_renderer_get_size((GtkCellRenderer*)arg0, (GtkWidget*)arg1, (GdkRectangle*)lparg2, (gint*)lparg3, (gint*)lparg4, (gint*)lparg5, (gint*)lparg6);
+	if (arg2) setGdkRectangleFields(env, arg2, lparg2);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+}
+

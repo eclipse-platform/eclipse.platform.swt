@@ -29,6 +29,8 @@ import org.eclipse.swt.events.*;
  */
 public class TableColumn extends Item {
 	Table parent;
+	int pixbufRendererHandle;
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value

@@ -38,7 +38,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Table extends Composite {
-	int modelHandle, fakeColumn;
+	int modelHandle, fakeColumn, fakePixbufRenderer;
 	boolean selected;
 	int itemCount, columnCount, imageHeight;
 	TableItem [] items;
@@ -175,35 +175,39 @@ void createHandle (int index) {
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
 
-	fakeColumn = _createColumnHandle(index);
+	fakeColumn = _createColumnHandle(index, null);
 	OS.gtk_tree_view_insert_column(handle, fakeColumn, 0);
 }
 
-int _createColumnHandle(int index) {
+int _createColumnHandle(int index, TableColumn column) {
 	int columnHandle = OS.gtk_tree_view_column_new();
 	if (columnHandle == 0) error(SWT.ERROR_NO_HANDLES);
-	int renderer;
-	renderer = OS.gtk_cell_renderer_text_new();
-	if (renderer == 0) error(SWT.ERROR_NO_HANDLES);
-	OS.gtk_tree_view_column_pack_end(columnHandle, renderer, true);
-	OS.gtk_tree_view_column_add_attribute(columnHandle, renderer, "text", index);
-	OS.gtk_tree_view_column_add_attribute(columnHandle, renderer, "foreground-gdk", 2*MAX_COLUMNS+1);
-	OS.gtk_tree_view_column_add_attribute(columnHandle, renderer, "background-gdk", 2*MAX_COLUMNS+2);
-	renderer = OS.gtk_cell_renderer_pixbuf_new();
-	if (renderer == 0) error(SWT.ERROR_NO_HANDLES);
-	OS.gtk_tree_view_column_pack_end(columnHandle, renderer, false);
-	OS.gtk_tree_view_column_add_attribute(columnHandle, renderer, "pixbuf", index+MAX_COLUMNS);
+	int textRenderer = OS.gtk_cell_renderer_text_new();
+	if (textRenderer == 0) error(SWT.ERROR_NO_HANDLES);
+	OS.gtk_tree_view_column_pack_end(columnHandle, textRenderer, true);
+	OS.gtk_tree_view_column_add_attribute(columnHandle, textRenderer, "text", index);
+	OS.gtk_tree_view_column_add_attribute(columnHandle, textRenderer, "foreground-gdk", 2*MAX_COLUMNS+1);
+	OS.gtk_tree_view_column_add_attribute(columnHandle, textRenderer, "background-gdk", 2*MAX_COLUMNS+2);
+	int pixbufRenderer = OS.gtk_cell_renderer_pixbuf_new();
+	if (pixbufRenderer == 0) error(SWT.ERROR_NO_HANDLES);
+	OS.gtk_tree_view_column_pack_end(columnHandle, pixbufRenderer, false);
+	OS.gtk_tree_view_column_add_attribute(columnHandle, pixbufRenderer, "pixbuf", index+MAX_COLUMNS);
 	if ((style & SWT.CHECK) != 0 && (index==0)) {
-		renderer = OS.gtk_cell_renderer_toggle_new();
-		if (renderer == 0) error(SWT.ERROR_NO_HANDLES);
-		OS.gtk_tree_view_column_pack_end(columnHandle, renderer, false);
-		OS.gtk_tree_view_column_add_attribute(columnHandle, renderer, "active", 2*MAX_COLUMNS);
-		OS.g_signal_connect(renderer, OS.toggled, getDisplay().toggleProc, columnHandle);
+		int checkRenderer = OS.gtk_cell_renderer_toggle_new();
+		if (checkRenderer == 0) error(SWT.ERROR_NO_HANDLES);
+		OS.gtk_tree_view_column_pack_end(columnHandle, checkRenderer, false);
+		OS.gtk_tree_view_column_add_attribute(columnHandle, checkRenderer, "active", 2*MAX_COLUMNS);
+		OS.g_signal_connect(checkRenderer, OS.toggled, getDisplay().toggleProc, columnHandle);
 	}
 	OS.gtk_tree_view_column_set_resizable(columnHandle, true);
 	WidgetTable.put (columnHandle, this);
 	OS.gtk_tree_view_column_set_clickable(columnHandle, true);
 	OS.g_signal_connect(columnHandle, OS.clicked, getDisplay().windowProc2, SWT.Activate);	
+	if (column!=null) {
+		column.pixbufRendererHandle = pixbufRenderer;
+	} else {
+		fakePixbufRenderer = pixbufRenderer;
+	}
 	return columnHandle;
 }
 
@@ -218,7 +222,7 @@ void createItem (TableColumn column, int index) {
 		column.handle = fakeColumn;
 		fakeColumn = 0;
 	} else {
-		column.handle = _createColumnHandle(index);
+		column.handle = _createColumnHandle(index, column);
 		OS.gtk_tree_view_insert_column(handle, column.handle, index);
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
@@ -558,6 +562,7 @@ public TableItem getItem (Point pt) {
 	if (!OS.gtk_tree_view_get_path_at_pos(handle, pt.x, clientY, path, column, null, null)) return null;
 	if (path[0]==0) return null;
 	int indexPtr = OS.gtk_tree_path_get_indices(path[0]);
+	OS.gtk_tree_path_free(path[0]);
 	if (indexPtr==0) return null;
 	int[] indices = new int[1];
 	OS.memmove(indices, indexPtr, 4);
@@ -788,6 +793,7 @@ int processMouseDown (int int0, int int1, int int2) {
 		Event event = new Event ();
 		event.item = items [indices[0]];
 		postEvent (SWT.DefaultSelection, event);
+		OS.gtk_tree_path_free(path[0]);
 	}
 	int headerHeight = getHeaderHeight();
 	e.y += headerHeight;
@@ -839,7 +845,9 @@ public int getTopIndex () {
 	int[] path = new int[1];
 	int[] column = new int[1];
 	if (!OS.gtk_tree_view_get_path_at_pos(handle, 1, 1, path, column, null, null)) return 0;
+	if (path[0]==0) return -1;
 	int indexPtr = OS.gtk_tree_path_get_indices(path[0]);
+	OS.gtk_tree_path_free(path[0]);
 	if (indexPtr==0) return -1;
 	int[] indices = new int[1];
 	OS.memmove(indices, indexPtr, 4);
@@ -1181,6 +1189,10 @@ int processToggle(int path, int handle) {
 	boolean checked = items[itemIndex].getChecked();
 	checked = !checked;
 	items[itemIndex].setChecked(checked);
+	Event event = new Event();
+	event.detail = SWT.CHECK;
+	event.item = items[itemIndex];
+	postEvent(SWT.Selection, event);
 	return 0;
 }
 

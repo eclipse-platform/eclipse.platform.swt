@@ -866,6 +866,7 @@ public static final native int gdk_pixbuf_get_type();
 public static final native int gtk_cell_renderer_text_new();
 public static final native int gtk_cell_renderer_pixbuf_new();
 public static final native int gtk_cell_renderer_toggle_new();
+public static final native void gtk_cell_renderer_get_size(int cell, int widget, GdkRectangle area, int[] x_offset, int[] y_offset, int[] width, int[] height);
 public static final native void gtk_list_store_clear(int store);
 public static final native int  gtk_list_store_newv(int numColumns, int[] types);
 public static final native void gtk_list_store_remove(int list_store, int iter);
