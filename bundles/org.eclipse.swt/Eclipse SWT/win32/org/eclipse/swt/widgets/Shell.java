@@ -908,7 +908,7 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		* Note: this does not work when we get WM_ACTIVATE prior
 		* to adding a listener.
 		*/
-		if (hooks (SWT.HardKey)) {
+		if (hooks (SWT.HardKeyDown) || hooks (SWT.HardKeyUp)) {
 			int fActive = wParam & 0xFFFF;
 			int hwnd = fActive != 0 ? handle : 0;
 			for (int bVk=OS.VK_APP1; bVk<=OS.VK_APP6; bVk++) {

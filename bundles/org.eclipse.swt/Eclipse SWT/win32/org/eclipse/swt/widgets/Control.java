@@ -1882,17 +1882,7 @@ void setForegroundPixel (int pixel) {
 	OS.InvalidateRect (handle, null, true);
 }
 
-boolean setKeyState (Event event, int type) {
-	Display display = getDisplay ();
-	if (display.lastAscii != 0) {
-		event.character = mbcsToWcs ((char) display.lastAscii);
-	}
-	if (display.lastVirtual) {
-		event.keyCode = Display.translateKey (display.lastKey);
-	}
-	if (event.keyCode == 0 && event.character == 0) {
-		return false;
-	}
+boolean setInputState (Event event, int type) {
 	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
 	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
 	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
@@ -1913,6 +1903,20 @@ boolean setKeyState (Event event, int type) {
 			break;
 	}		
 	return true;
+}
+
+boolean setKeyState (Event event, int type) {
+	Display display = getDisplay ();
+	if (display.lastAscii != 0) {
+		event.character = mbcsToWcs ((char) display.lastAscii);
+	}
+	if (display.lastVirtual) {
+		event.keyCode = Display.translateKey (display.lastKey);
+	}
+	if (event.keyCode == 0 && event.character == 0) {
+		return false;
+	}
+	return setInputState (event, type);
 }
 
 /**
@@ -2915,7 +2919,7 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 }
 
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
-	
+
 	/*
 	* Do not report a lead byte as a key pressed.
 	*/
@@ -3061,13 +3065,18 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_KEYUP (int wParam, int lParam) {
+	Display display = getDisplay ();
 	
 	/* Check for hardware keys */
 	if (OS.IsWinCE) {
 		if (OS.VK_APP1 <= wParam && wParam <= OS.VK_APP6) {
+			display.lastVirtual = false;
+			display.lastKey = display.lastAscii = 0;
 			Event event = new Event ();
 			event.detail = wParam - OS.VK_APP1 + 1;
-			sendEvent (SWT.HardKey, event);
+			/* Check the bit 30 to get the key state */
+			int type = (lParam & 0x40000000) != 0 ? SWT.HardKeyUp : SWT.HardKeyDown;
+			if (setInputState (event, type)) sendEvent (type, event);
 			return null;
 		}
 	}
@@ -3076,7 +3085,6 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	* If the key up is not hooked, reset last key
 	* and last ascii in case the key down is hooked.
 	*/
-	Display display = getDisplay ();
 	if (!hooks (SWT.KeyUp)) {
 		display.lastVirtual = false;
 		display.lastKey = display.lastAscii = 0;
