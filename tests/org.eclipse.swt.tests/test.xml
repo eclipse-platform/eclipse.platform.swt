@@ -49,7 +49,8 @@
   <target name="performance-suite">
     <property name="swt-performance-folder" value="${eclipse-home}/swt_performance_folder" /> 
     <delete dir="${swt-performance-folder}" quiet="true" /> 
-    <ant target="ui-test" antfile="${library-file}" dir="${eclipse-home}">
+    <ant target="core-test" antfile="${library-file}" dir="${eclipse-home}">
+      <property name="timeout" value="14400000"/>
       <property name="data-dir" value="${swt-performance-folder}" /> 
       <property name="plugin-name" value="${plugin-name}" /> 
       <property name="classname" value="org.eclipse.swt.tests.junit.performance.PerformanceTests" /> 
