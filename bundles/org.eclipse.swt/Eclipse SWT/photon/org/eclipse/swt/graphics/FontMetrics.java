@@ -47,6 +47,7 @@ public int getAscent() {
 }
 
 public int getAverageCharWidth() {
+	if ((handle.style & OS.PHFONT_INFO_FIXED) != 0) return handle.width;
 	return handle.width / 2;
 }
 
