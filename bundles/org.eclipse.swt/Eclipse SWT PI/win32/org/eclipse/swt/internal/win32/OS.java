@@ -895,6 +895,7 @@ public class OS {
 	public static final int RGN_OR = 0x2;
 	public static final int SBS_HORZ = 0x0;
 	public static final int SBS_VERT = 0x1;
+	public static final int SB_BOTH = 0x3;
 	public static final int SB_BOTTOM = 0x7;
 	public static final int SB_CTL = 0x2;
 	public static final int SB_ENDSCROLL = 0x8;

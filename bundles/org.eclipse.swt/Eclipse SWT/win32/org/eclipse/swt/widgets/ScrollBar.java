@@ -645,7 +645,8 @@ boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
 	* the opposite scroll bar is incorrectly made visible
 	* so that the next time the parent is resized (or another
 	* scroll bar operation is performed), the opposite scroll
-	* bar draws.  The fix is turn off redraw for the parent.
+	* bar draws.  The fix is turn off redraw for the parent
+	* and hide both scroll bars.
 	*/
 	boolean fixRedraw = false;
 	if ((state & (DISABLED | HIDDEN)) != 0) {
@@ -671,7 +672,17 @@ boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
 		*/
 //		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 		if (!OS.IsWinCE) {
-			OS.ShowScrollBar (hwnd, flags, false);
+			ScrollBar bar = null;
+			switch (flags) {
+				case OS.SB_HORZ:
+					bar = parent.getVerticalBar ();
+					break;
+				case OS.SB_VERT:
+					bar = parent.getHorizontalBar ();
+					break;
+			}
+			boolean both = bar != null && !bar.getVisible ();
+			OS.ShowScrollBar (hwnd, both ? OS.SB_BOTH : flags, false);
 		}
 	}
 		
