@@ -85,10 +85,6 @@ void createHandle (int index) {
 	}
 }
 
-Point _computeSize (int a, int b, boolean c) {
-	return super._computeSize (a, b, c);
-}
-
 void setHandleStyle() {
 	OS.gtk_editable_set_editable (handle, (style & SWT.READ_ONLY) == 0);
 	if ((style & SWT.SINGLE) == 0)
