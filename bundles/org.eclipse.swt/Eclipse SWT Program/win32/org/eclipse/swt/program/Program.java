@@ -289,7 +289,7 @@ public ImageData getImageData () {
 		String iconIndex = iconName.substring (index + 1, iconName.length ()).trim ();
 		try {
 			nIconIndex = Integer.parseInt (iconIndex);
-		} catch (NumberFormatException e) {};
+		} catch (NumberFormatException e) {}
 	}
 	/* Use the character encoding for the default locale */
 	TCHAR lpszFile = new TCHAR (0, fileName, true);
