@@ -179,9 +179,8 @@ public String open () {
 
 	/* Make the parent shell be temporary modal */
 	Shell oldModal = null;
-	Display display = null;
+	Display display = parent.getDisplay ();
 	if ((style & (SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0) {
-		display = parent.getDisplay ();
 		oldModal = display.getModalDialogShell ();
 		display.setModalDialogShell (parent);
 	}
@@ -210,7 +209,22 @@ public String open () {
 	* with the SEM_FAILCRITICALERRORS flag around SHBrowseForFolder().
 	*/
 	int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
+	
+	/*
+	* Bug in Windows.  When a WH_MSGFILTER hook is used to run code
+	* during the message loop for SHBrowseForFolder(), running code
+	* in the hook can cause a GP.  Specifically, SetWindowText()
+	* for static controls seemed to make the problem happen.
+	* The fix is to ignore the hook while the directory dialog
+	* is open.
+	* 
+	* NOTE:  This only happens in versions of the comctl32.dll
+	* earlier than 6.0.
+	*/
+	boolean oldIgnore = display.ignoreMsgFilter;
+	if (OS.COMCTL32_MAJOR < 6) display.ignoreMsgFilter = true;
 	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
+	if (OS.COMCTL32_MAJOR < 6) display.ignoreMsgFilter = oldIgnore;
 	OS.SetErrorMode(oldErrorMode);
 	
 	/* Clear the temporary dialog modal parent */

@@ -122,6 +122,7 @@ public class Display extends Device {
 	Callback msgFilterCallback;
 	int msgFilterProc, filterHook;
 	MSG hookMsg = new MSG ();
+	boolean ignoreMsgFilter;
 	
 	/* Message Hook */
 	Callback getMsgCallback, embeddedCallback;
@@ -2185,10 +2186,12 @@ int monitorEnumProc (int hmonitor, int hdc, int lprcMonitor, int dwData) {
 }
 
 int msgFilterProc (int code, int wParam, int lParam) {
-	if (code >= 0) {
-		OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
-		if (hookMsg.message == OS.WM_NULL) {
-			if (runAsyncMessages ()) wakeThread ();
+	if (!ignoreMsgFilter) {
+		if (code >= 0) {
+			OS.MoveMemory (hookMsg, lParam, MSG.sizeof);
+			if (hookMsg.message == OS.WM_NULL) {
+				if (runAsyncMessages ()) wakeThread ();
+			}
 		}
 	}
 	return OS.CallNextHookEx (filterHook, code, wParam, lParam);
