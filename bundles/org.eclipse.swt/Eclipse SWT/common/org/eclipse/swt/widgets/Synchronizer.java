@@ -29,7 +29,7 @@ import org.eclipse.swt.internal.Compatibility;
  */
 public class Synchronizer {
 	Display display;
-	int messagesSize;
+	int messageCount;
 	RunnableLock [] messages;
 	Object messageLock = new Object ();
 	Thread syncThread;
@@ -38,15 +38,15 @@ public Synchronizer (Display display) {
 	this.display = display;
 }
 	
-void addLast (RunnableLock entry) {
+void addLast (RunnableLock lock) {
 	synchronized (messageLock) {
 		if (messages == null) messages = new RunnableLock [4];
-		if (messagesSize == messages.length) {
-			RunnableLock[] newMessages = new RunnableLock [messagesSize + 4];
-			System.arraycopy (messages, 0, newMessages, 0, messagesSize);
+		if (messageCount == messages.length) {
+			RunnableLock[] newMessages = new RunnableLock [messageCount + 4];
+			System.arraycopy (messages, 0, newMessages, 0, messageCount);
 			messages = newMessages;
 		}
-		messages [messagesSize++] = entry;
+		messages [messageCount++] = lock;
 	}
 }
 
@@ -73,22 +73,20 @@ void releaseSynchronizer () {
 	syncThread = null;
 }
 
-RunnableLock removeFirst () {
-	synchronized (messageLock) {
-		if (messagesSize == 0) return null;
-		RunnableLock lock = messages [0];
-		System.arraycopy (messages, 1, messages, 0, --messagesSize);
-		messages [messagesSize] = null;
-		if (messagesSize == 0) messages = null;
-		return lock;
-	}
-}
-
 boolean runAsyncMessages () {
-	if (messagesSize == 0) return false;
-	do {
-		RunnableLock lock = removeFirst ();
-		if (lock == null) return true;
+	if (messageCount == 0) return false;
+	int listCount;
+	RunnableLock [] list;
+	synchronized (messageLock) {
+		listCount = messageCount;
+		list = messages;
+		messageCount = 0;
+		messages = null;
+	}
+	int index = 0;
+	while (index < listCount) {
+		RunnableLock lock = list [index];
+		if (lock == null) break;
 		synchronized (lock) {
 			syncThread = lock.thread;
 			try {
@@ -101,7 +99,9 @@ boolean runAsyncMessages () {
 				lock.notifyAll ();
 			}
 		}
-	} while (true);
+		index++;
+	}
+	return true;
 }
 
 /**
