@@ -4711,6 +4711,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideCha
 	return rc;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MsgWaitForMultipleObjectsEx
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("MsgWaitForMultipleObjectsEx\n")
+	
+	return (jint)MsgWaitForMultipleObjectsEx((DWORD)arg0, (LPHANDLE)arg1, (DWORD)arg2, (DWORD)arg3, (DWORD)arg4);
+}
+
 #ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_OleInitialize
 	(JNIEnv *env, jclass that, jint arg0)

@@ -1861,12 +1861,7 @@ int shiftedKey (int key) {
 public boolean sleep () {
 	checkDevice ();
 	if (OS.IsWinCE) {
-		OS.GetMessage (msg, 0, 0, 0);
-		if (!filterMessage (msg)) {
-			OS.TranslateMessage (msg);
-			OS.DispatchMessage (msg);
-		}
-		runDeferredEvents ();
+		OS.MsgWaitForMultipleObjectsEx (0, 0, OS.INFINITE, OS.QS_ALLINPUT, 0);
 		return true;
 	}
 	return OS.WaitMessage ();

@@ -435,6 +435,7 @@ public class OS {
 	public static final int IME_CMODE_KATAKANA = 0x2;
 	public static final int IME_CMODE_NATIVE = 0x1;
 	public static final int IME_CMODE_ROMAN = 0x10;
+	public static final int INFINITE = 0xffffffff;
 	public static final int KEY_ENUMERATE_SUB_KEYS = 0x8;
 	public static final int KEY_NOTIFY = 0x10;
 	public static final int KEY_QUERY_VALUE = 0x1;
@@ -668,6 +669,14 @@ public class OS {
 	public static final int PS_JOIN_MITER = 0x2000;
 	public static final int PS_SOLID = 0x0;
 	public static final int PS_STYLE_MASK = 0xf;
+	public static final int QS_KEY = 0x0001;
+	public static final int QS_MOUSEMOVE = 0x0002;
+	public static final int QS_MOUSEBUTTON = 0x0004;
+	public static final int QS_POSTMESSAGE = 0x0008;
+	public static final int QS_TIMER = 0x0010;
+	public static final int QS_PAINT = 0x0020;
+	public static final int QS_SENDMESSAGE = 0x0040;
+	public static final int QS_ALLINPUT = QS_MOUSEMOVE | QS_MOUSEBUTTON | QS_KEY | QS_POSTMESSAGE | QS_TIMER | QS_PAINT | QS_SENDMESSAGE;
 	public static final int R2_COPYPEN = 0xd;
 	public static final int R2_XORPEN = 0x7;
 	public static final int RASTERCAPS = 0x26;
@@ -2200,6 +2209,7 @@ public static final native void MoveMemory(int DestinationPtr, double[] Source, 
 public static final native void MoveMemory(int DestinationPtr, float[] Source, int Length);
 public static final native void MoveMemory(int DestinationPtr, short[] Source, int Length);
 public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint);
+public static final native int MsgWaitForMultipleObjectsEx (int nCount, int pHandles, int dwMilliseconds, int dwWakeMask, int dwFlags);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, int lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int OleInitialize (int pvReserved);
