@@ -313,6 +313,7 @@ public class OS {
 	public static final byte[] button_relief = signal("button_relief");
 	public static final byte[] focus_line_width = signal("focus_line_width");
 	public static final byte[] foreground_gdk = signal("foreground-gdk");
+	public static final byte[] horizontal_separator = signal("horizontal_separator");
 	public static final byte[] interior_focus = signal("interior_focus");
 	public static final byte[] mode = signal("mode");
 	public static final byte[] xalign = signal("xalign");
