@@ -1053,15 +1053,9 @@ void setMouseState(int type, Event event, PhPointerEvent_t pe) {
 	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
 	if (type == OS.Ph_EV_BUT_PRESS) {
-		if (buttons == OS.Ph_BUTTON_SELECT && (button_state & OS.Ph_BUTTON_SELECT) != 0) {
-			event.stateMask &= ~SWT.BUTTON1;
-		}
-		if (buttons == OS.Ph_BUTTON_ADJUST && (button_state & OS.Ph_BUTTON_ADJUST) != 0) {
-			event.stateMask &= ~SWT.BUTTON2;
-		}
-		if (buttons == OS.Ph_BUTTON_MENU && (button_state & OS.Ph_BUTTON_MENU) != 0) {
-			event.stateMask &= ~SWT.BUTTON3;
-		}
+		if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask &= ~SWT.BUTTON1;
+		if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask &= ~SWT.BUTTON2;
+		if (buttons == OS.Ph_BUTTON_MENU) event.stateMask &= ~SWT.BUTTON3;
 	} else if (type == OS.Ph_EV_BUT_RELEASE || type == OS.Ph_EV_DRAG) {
 		if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask |= SWT.BUTTON1;
 		if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask |= SWT.BUTTON2;

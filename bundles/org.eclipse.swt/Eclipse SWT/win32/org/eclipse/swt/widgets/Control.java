@@ -1465,20 +1465,17 @@ boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
 	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
 	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
 	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
-	if (button != 1 || (type != SWT.MouseDown && type != SWT.MouseDoubleClick)) {
-		if (type == SWT.MouseUp || (wParam & OS.MK_LBUTTON) != 0) {
-			event.stateMask |= SWT.BUTTON1;
-		}
-	}
-	if (button != 2 || (type != SWT.MouseDown && type != SWT.MouseDoubleClick)) {
-		if (type == SWT.MouseUp || (wParam & OS.MK_MBUTTON) != 0) {
-			event.stateMask |= SWT.BUTTON2;
-		}
-	}
-	if (button != 3 || (type != SWT.MouseDown && type != SWT.MouseDoubleClick)) {
-		if (type == SWT.MouseUp || (wParam & OS.MK_RBUTTON) != 0) {
-			event.stateMask |= SWT.BUTTON3;
-		}
+	if ((wParam & OS.MK_LBUTTON) != 0) event.stateMask |= SWT.BUTTON1;
+	if ((wParam & OS.MK_MBUTTON) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((wParam & OS.MK_RBUTTON) != 0) event.stateMask |= SWT.BUTTON3;
+	if (type == SWT.MouseDown || type == SWT.MouseDoubleClick) {
+		if (button == 1) event.stateMask &= ~SWT.BUTTON1;
+		if (button == 2) event.stateMask &= ~SWT.BUTTON2;
+		if (button == 3) event.stateMask &= ~SWT.BUTTON3;
+	} else if (type == SWT.MouseUp) {
+		if (button == 1) event.stateMask |= SWT.BUTTON1;
+		if (button == 2) event.stateMask |= SWT.BUTTON2;
+		if (button == 3) event.stateMask |= SWT.BUTTON3;
 	}
 	return sendMouseEvent (type, msg, wParam, lParam, event);
 }
