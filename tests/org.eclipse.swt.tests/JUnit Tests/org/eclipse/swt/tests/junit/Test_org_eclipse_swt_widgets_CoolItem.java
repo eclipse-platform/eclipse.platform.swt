@@ -11,11 +11,11 @@
 package org.eclipse.swt.tests.junit;
 
 
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
-import junit.framework.*;
-import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.CoolItem
@@ -23,8 +23,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.CoolItem
  */
 public class Test_org_eclipse_swt_widgets_CoolItem extends Test_org_eclipse_swt_widgets_Item {
-
-static final boolean MINIMAL_CONFORMANCE = false;
 
 public Test_org_eclipse_swt_widgets_CoolItem(String name) {
 	super(name);
@@ -42,6 +40,7 @@ protected void setUp() {
 }
 
 protected void tearDown() {
+	super.tearDown();
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarI() {
@@ -79,8 +78,8 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CoolBarII() {
 	assertEquals(coolItem, coolBar.getItem(0));	
 }
 
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
+public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
+	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
 public void test_computeSizeII() {
@@ -144,24 +143,43 @@ public void test_getControl() {
 	assertEquals(button, control);
 }
 
-public void test_getDisplay() {
-	CoolBar coolBar = new CoolBar(shell, 0);
-	CoolItem coolItem = new CoolItem(coolBar, 0);
-	assertEquals(coolBar.getDisplay(), coolItem.getDisplay());
-	
-	coolBar.dispose();
-	try {
-		coolItem.getDisplay();
-		fail("No exception thrown for getDisplay() when parent is disposed");	
-	}
-	catch (SWTException e) {
-	}
+public void test_getMinimumSize() {
+	warnUnimpl("Test test_getMinimumSize not written");
 }
 
 public void test_getParent() {
 	CoolBar coolBar = new CoolBar(shell, 0);
 	CoolItem coolItem = new CoolItem(coolBar, 0);
 	assertEquals(coolBar, coolItem.getParent());
+}
+
+public void test_getPreferredSize() {
+	CoolBar coolBar = new CoolBar(shell, 0);
+	CoolItem coolItem = new CoolItem(coolBar, 0);
+	Button button = new Button(coolBar, SWT.PUSH);
+	button.setText("foobar");
+	coolItem.setControl(button);
+	
+	Point pref = coolItem.getPreferredSize();
+	coolItem.setPreferredSize(pref);
+	assertEquals(pref, coolItem.getPreferredSize());
+}
+
+public void test_getSize() {
+	CoolBar coolBar = new CoolBar(shell, 0);
+	CoolItem coolItem = new CoolItem(coolBar, 0);
+	Button button = new Button(coolBar, SWT.PUSH);
+	button.setText("foo");
+	coolItem.setControl(button);
+	
+	Point size = coolItem.getSize();
+	Rectangle rect = coolItem.getBounds();
+	assertEquals(rect.width, size.x);
+	assertEquals(rect.height, size.y);
+}
+
+public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener() {
+	warnUnimpl("Test test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
 public void test_setControlLorg_eclipse_swt_widgets_Control() {
@@ -201,16 +219,12 @@ public void test_setControlLorg_eclipse_swt_widgets_Control() {
 	}
 }
 
-public void test_getPreferredSize() {
-	CoolBar coolBar = new CoolBar(shell, 0);
-	CoolItem coolItem = new CoolItem(coolBar, 0);
-	Button button = new Button(coolBar, SWT.PUSH);
-	button.setText("foobar");
-	coolItem.setControl(button);
-	
-	Point pref = coolItem.getPreferredSize();
-	coolItem.setPreferredSize(pref);
-	assertEquals(pref, coolItem.getPreferredSize());
+public void test_setMinimumSizeII() {
+	warnUnimpl("Test test_setMinimumSizeII not written");
+}
+
+public void test_setMinimumSizeLorg_eclipse_swt_graphics_Point() {
+	warnUnimpl("Test test_setMinimumSizeLorg_eclipse_swt_graphics_Point not written");
 }
 
 public void test_setPreferredSizeII() {
@@ -239,19 +253,6 @@ public void test_setPreferredSizeLorg_eclipse_swt_graphics_Point() {
 	Point size2 = coolItem.getPreferredSize();
 	coolItem.setPreferredSize(50, 30);
 	assertEquals(size2, coolItem.getPreferredSize());
-}
-
-public void test_getSize() {
-	CoolBar coolBar = new CoolBar(shell, 0);
-	CoolItem coolItem = new CoolItem(coolBar, 0);
-	Button button = new Button(coolBar, SWT.PUSH);
-	button.setText("foo");
-	coolItem.setControl(button);
-	
-	Point size = coolItem.getSize();
-	Rectangle rect = coolItem.getBounds();
-	assertEquals(rect.width, size.x);
-	assertEquals(rect.height, size.y);
 }
 
 public void test_setSizeII() {
@@ -303,17 +304,20 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CoolBarI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CoolBarII");
-	methodNames.addElement("test_checkSubclass");
+	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_computeSizeII");
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getControl");
-	methodNames.addElement("test_getDisplay");
+	methodNames.addElement("test_getMinimumSize");
 	methodNames.addElement("test_getParent");
-	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_getPreferredSize");
+	methodNames.addElement("test_getSize");
+	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
+	methodNames.addElement("test_setControlLorg_eclipse_swt_widgets_Control");
+	methodNames.addElement("test_setMinimumSizeII");
+	methodNames.addElement("test_setMinimumSizeLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setPreferredSizeII");
 	methodNames.addElement("test_setPreferredSizeLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_getSize");
 	methodNames.addElement("test_setSizeII");
 	methodNames.addElement("test_setSizeLorg_eclipse_swt_graphics_Point");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Item.methodNames()); // add superclass method names
@@ -322,19 +326,26 @@ public static java.util.Vector methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CoolBarI")) test_ConstructorLorg_eclipse_swt_widgets_CoolBarI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CoolBarII")) test_ConstructorLorg_eclipse_swt_widgets_CoolBarII();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
+	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_computeSizeII")) test_computeSizeII();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getControl")) test_getControl();
-	else if (getName().equals("test_getDisplay")) test_getDisplay();
+	else if (getName().equals("test_getMinimumSize")) test_getMinimumSize();
 	else if (getName().equals("test_getParent")) test_getParent();
-	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_getPreferredSize")) test_getPreferredSize();
+	else if (getName().equals("test_getSize")) test_getSize();
+	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
+	else if (getName().equals("test_setControlLorg_eclipse_swt_widgets_Control")) test_setControlLorg_eclipse_swt_widgets_Control();
+	else if (getName().equals("test_setMinimumSizeII")) test_setMinimumSizeII();
+	else if (getName().equals("test_setMinimumSizeLorg_eclipse_swt_graphics_Point")) test_setMinimumSizeLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_setPreferredSizeII")) test_setPreferredSizeII();
 	else if (getName().equals("test_setPreferredSizeLorg_eclipse_swt_graphics_Point")) test_setPreferredSizeLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_getSize")) test_getSize();
 	else if (getName().equals("test_setSizeII")) test_setSizeII();
 	else if (getName().equals("test_setSizeLorg_eclipse_swt_graphics_Point")) test_setSizeLorg_eclipse_swt_graphics_Point();
 	else super.runTest();
 }
+
+/* custom */
+static final boolean MINIMAL_CONFORMANCE = false;
+
 }

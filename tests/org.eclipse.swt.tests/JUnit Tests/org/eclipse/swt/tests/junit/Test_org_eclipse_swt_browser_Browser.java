@@ -18,7 +18,7 @@ import junit.textui.*;
  *
  * @see org.eclipse.swt.browser.Browser
  */
-public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite_NEW {
+public class Test_org_eclipse_swt_browser_Browser extends Test_org_eclipse_swt_widgets_Composite {
 
 public Test_org_eclipse_swt_browser_Browser(String name) {
 	super(name);
@@ -114,7 +114,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
 	methodNames.addElement("test_setUrlLjava_lang_String");
 	methodNames.addElement("test_stop");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite_NEW.methodNames()); // add superclass method names
+	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
 

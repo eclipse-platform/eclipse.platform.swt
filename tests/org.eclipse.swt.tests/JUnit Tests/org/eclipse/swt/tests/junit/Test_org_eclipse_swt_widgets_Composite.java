@@ -44,13 +44,6 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-protected void setWidget(Widget w) {
-	if (composite != null)
-		composite.dispose();
-	composite = (Composite)w;
-	super.setWidget(w);
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	try {
 		composite = new Composite(null, 0);
@@ -157,5 +150,13 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setLayoutLorg_eclipse_swt_widgets_Layout")) test_setLayoutLorg_eclipse_swt_widgets_Layout();
 	else if (getName().equals("test_setTabList$Lorg_eclipse_swt_widgets_Control")) test_setTabList$Lorg_eclipse_swt_widgets_Control();
 	else super.runTest();
+}
+
+/* custom */
+protected void setWidget(Widget w) {
+	if (composite != null)
+		composite.dispose();
+	composite = (Composite)w;
+	super.setWidget(w);
 }
 }

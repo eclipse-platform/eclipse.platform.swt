@@ -111,10 +111,6 @@ public void test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener()
 	warnUnimpl("Test test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener not written");
 }
 
-public void test_checkSubclass() {
-	warnUnimpl("Test test_checkSubclass not written");
-}
-
 public void test_clearSelection() {
 	int number = 5;
 	for (int i = 0; i < number; i++)
@@ -142,6 +138,10 @@ public void test_cut() {
 	warnUnimpl("Test test_cut not written");
 }
 
+public void test_deselectAll() {
+	warnUnimpl("Test test_deselectAll not written");
+}
+
 public void test_deselectI() {
 	combo.deselect(2);
 
@@ -156,28 +156,8 @@ public void test_deselectI() {
 	}
 }
 
-public void test_deselectAll() {
-	warnUnimpl("Test test_deselectAll not written");
-}
-
 public void test_getChildren() {
 	// Combo cannot have children
-}
-
-public void test_getItemI() {
-	try {
-		combo.getItem(0);
-		fail("No exception thrown for illegal index argument");
-	}
-	catch (IllegalArgumentException e) {
-	}
-
-	int number = 10;
-	for (int i = 0; i < number; i++) {
-		combo.add("fred" + i);
-	}
-	for (int i = 0; i < number; i++)
-		assertTrue(combo.getItem(i).equals("fred" + i));
 }
 
 public void test_getItemCount() {
@@ -200,8 +180,28 @@ public void test_getItemHeight() {
 	combo.getItemHeight();
 }
 
+public void test_getItemI() {
+	try {
+		combo.getItem(0);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+	int number = 10;
+	for (int i = 0; i < number; i++) {
+		combo.add("fred" + i);
+	}
+	for (int i = 0; i < number; i++)
+		assertTrue(combo.getItem(i).equals("fred" + i));
+}
+
 public void test_getItems() {
 	warnUnimpl("Test test_getItems not written");
+}
+
+public void test_getOrientation() {
+	warnUnimpl("Test test_getOrientation not written");
 }
 
 public void test_getSelection() {
@@ -301,6 +301,14 @@ public void test_indexOfLjava_lang_StringI() {
 		assertTrue(":b:" + i, combo.indexOf("fred" + i, 3) == i);
 	for (int i = 0; i < number; i++)
 		assertTrue(":b:" + i, combo.indexOf("fred" + i, i) == i);
+}
+
+public void test_paste() {
+	warnUnimpl("Test test_paste not written");
+}
+
+public void test_removeAll() {
+	warnUnimpl("Test test_removeAll not written");
 }
 
 public void test_removeI() {
@@ -448,14 +456,6 @@ public void test_removeLjava_lang_String() {
 	assertEquals(number, combo.getItemCount());
 }
 
-public void test_paste() {
-	warnUnimpl("Test test_paste not written");
-}
-
-public void test_removeAll() {
-	warnUnimpl("Test test_removeAll not written");
-}
-
 public void test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener() {
 	warnUnimpl("Test test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener not written");
 }
@@ -466,22 +466,6 @@ public void test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListene
 
 public void test_selectI() {
 	warnUnimpl("Test test_selectI not written");
-}
-
-public void test_setBoundsIIII() {
-	combo.setBounds(10, 20, 30, 40);
-	// only check x, y, and width - you can't set the height of a combo
-	assertTrue(combo.getBounds().x == 10);
-	assertTrue(combo.getBounds().y == 20);
-	assertTrue(combo.getBounds().width == 30);
-}
-
-public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
-	combo.setBounds(new Rectangle(10, 20, 30, 40));
-	// only check x, y, and width - you can't set the height of a combo
-	assertTrue(combo.getBounds().x == 10);
-	assertTrue(combo.getBounds().y == 20);
-	assertTrue(combo.getBounds().width == 30);
 }
 
 public void test_setItemILjava_lang_String() {
@@ -540,6 +524,10 @@ public void test_setItems$Ljava_lang_String() {
 		assertEquals(":a:" + i, items[i], combo.getItems());}
 }
 
+public void test_setOrientationI() {
+	warnUnimpl("Test test_setOrientationI not written");
+}
+
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	int number = 5;
 	for (int i = 0; i < number; i++)
@@ -549,6 +537,141 @@ public void test_setSelectionLorg_eclipse_swt_graphics_Point() {
 	combo.setText("some text");
 	combo.setSelection(new Point(0, 5));
 	assertTrue(":b:", combo.getSelection().equals(new Point(0, 5)));
+}
+
+public void test_setTextLimitI() {
+	warnUnimpl("Test test_setTextLimitI not written");
+}
+
+public void test_setTextLjava_lang_String() {
+	String[] cases = {"", "fred", "fred0"};
+	for (int i = 0; i < cases.length; i++) {
+		combo.setText(cases[i]);
+		assertTrue(":a:" + i, combo.getText().equals(cases[i]));
+	}
+	for (int i = 0; i < 5; i++) {
+		combo.add("fred");
+	}
+	for (int i = 0; i < cases.length; i++) {
+		combo.setText(cases[i]);
+		assertTrue(":b:" + i, combo.getText().equals(cases[i]));
+	}
+	for (int i = 0; i < 5; i++) {
+		combo.add("fred" + i);
+	}
+	for (int i = 0; i < cases.length; i++) {
+		combo.setText(cases[i]);
+		assertTrue(":c:" + i, combo.getText().equals(cases[i]));
+	}
+}
+
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_widgets_Combo((String)e.nextElement()));
+	}
+	return suite;
+}
+public static java.util.Vector methodNames() {
+	java.util.Vector methodNames = new java.util.Vector();
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
+	methodNames.addElement("test_addLjava_lang_String");
+	methodNames.addElement("test_addLjava_lang_StringI");
+	methodNames.addElement("test_addModifyListenerLorg_eclipse_swt_events_ModifyListener");
+	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
+	methodNames.addElement("test_clearSelection");
+	methodNames.addElement("test_computeSizeIIZ");
+	methodNames.addElement("test_copy");
+	methodNames.addElement("test_cut");
+	methodNames.addElement("test_deselectAll");
+	methodNames.addElement("test_deselectI");
+	methodNames.addElement("test_getItemCount");
+	methodNames.addElement("test_getItemHeight");
+	methodNames.addElement("test_getItemI");
+	methodNames.addElement("test_getItems");
+	methodNames.addElement("test_getOrientation");
+	methodNames.addElement("test_getSelection");
+	methodNames.addElement("test_getSelectionIndex");
+	methodNames.addElement("test_getText");
+	methodNames.addElement("test_getTextHeight");
+	methodNames.addElement("test_getTextLimit");
+	methodNames.addElement("test_indexOfLjava_lang_String");
+	methodNames.addElement("test_indexOfLjava_lang_StringI");
+	methodNames.addElement("test_paste");
+	methodNames.addElement("test_removeAll");
+	methodNames.addElement("test_removeI");
+	methodNames.addElement("test_removeII");
+	methodNames.addElement("test_removeLjava_lang_String");
+	methodNames.addElement("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener");
+	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
+	methodNames.addElement("test_selectI");
+	methodNames.addElement("test_setItemILjava_lang_String");
+	methodNames.addElement("test_setItems$Ljava_lang_String");
+	methodNames.addElement("test_setOrientationI");
+	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
+	methodNames.addElement("test_setTextLimitI");
+	methodNames.addElement("test_setTextLjava_lang_String");
+	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
+	return methodNames;
+}
+protected void runTest() throws Throwable {
+	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
+	else if (getName().equals("test_addLjava_lang_String")) test_addLjava_lang_String();
+	else if (getName().equals("test_addLjava_lang_StringI")) test_addLjava_lang_StringI();
+	else if (getName().equals("test_addModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_addModifyListenerLorg_eclipse_swt_events_ModifyListener();
+	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
+	else if (getName().equals("test_clearSelection")) test_clearSelection();
+	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
+	else if (getName().equals("test_copy")) test_copy();
+	else if (getName().equals("test_cut")) test_cut();
+	else if (getName().equals("test_deselectAll")) test_deselectAll();
+	else if (getName().equals("test_deselectI")) test_deselectI();
+	else if (getName().equals("test_getItemCount")) test_getItemCount();
+	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
+	else if (getName().equals("test_getItemI")) test_getItemI();
+	else if (getName().equals("test_getItems")) test_getItems();
+	else if (getName().equals("test_getOrientation")) test_getOrientation();
+	else if (getName().equals("test_getSelection")) test_getSelection();
+	else if (getName().equals("test_getSelectionIndex")) test_getSelectionIndex();
+	else if (getName().equals("test_getText")) test_getText();
+	else if (getName().equals("test_getTextHeight")) test_getTextHeight();
+	else if (getName().equals("test_getTextLimit")) test_getTextLimit();
+	else if (getName().equals("test_indexOfLjava_lang_String")) test_indexOfLjava_lang_String();
+	else if (getName().equals("test_indexOfLjava_lang_StringI")) test_indexOfLjava_lang_StringI();
+	else if (getName().equals("test_paste")) test_paste();
+	else if (getName().equals("test_removeAll")) test_removeAll();
+	else if (getName().equals("test_removeI")) test_removeI();
+	else if (getName().equals("test_removeII")) test_removeII();
+	else if (getName().equals("test_removeLjava_lang_String")) test_removeLjava_lang_String();
+	else if (getName().equals("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener();
+	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
+	else if (getName().equals("test_selectI")) test_selectI();
+	else if (getName().equals("test_setItemILjava_lang_String")) test_setItemILjava_lang_String();
+	else if (getName().equals("test_setItems$Ljava_lang_String")) test_setItems$Ljava_lang_String();
+	else if (getName().equals("test_setOrientationI")) test_setOrientationI();
+	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
+	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
+	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
+	else super.runTest();
+}
+
+/* custom */
+public void test_setBoundsIIII() {
+	combo.setBounds(10, 20, 30, 40);
+	// only check x, y, and width - you can't set the height of a combo
+	assertTrue(combo.getBounds().x == 10);
+	assertTrue(combo.getBounds().y == 20);
+	assertTrue(combo.getBounds().width == 30);
+}
+
+public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
+	combo.setBounds(new Rectangle(10, 20, 30, 40));
+	// only check x, y, and width - you can't set the height of a combo
+	assertTrue(combo.getBounds().x == 10);
+	assertTrue(combo.getBounds().y == 20);
+	assertTrue(combo.getBounds().width == 30);
 }
 
 public void test_setSizeII() {
@@ -575,129 +698,5 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	combo.setSize(new Point(32, 43));
 	// only check the width - you can't set the height of a combo
 	assertTrue(combo.getSize().x == 32);
-}
-
-public void test_setTabGroupFocus() {
-	warnUnimpl("Test test_setTabGroupFocus not written");
-}
-
-public void test_setTextLjava_lang_String() {
-	String[] cases = {"", "fred", "fred0"};
-	for (int i = 0; i < cases.length; i++) {
-		combo.setText(cases[i]);
-		assertTrue(":a:" + i, combo.getText().equals(cases[i]));
-	}
-	for (int i = 0; i < 5; i++) {
-		combo.add("fred");
-	}
-	for (int i = 0; i < cases.length; i++) {
-		combo.setText(cases[i]);
-		assertTrue(":b:" + i, combo.getText().equals(cases[i]));
-	}
-	for (int i = 0; i < 5; i++) {
-		combo.add("fred" + i);
-	}
-	for (int i = 0; i < cases.length; i++) {
-		combo.setText(cases[i]);
-		assertTrue(":c:" + i, combo.getText().equals(cases[i]));
-	}
-}
-
-public void test_setTextLimitI() {
-	warnUnimpl("Test test_setTextLimitI not written");
-}
-
-public static Test suite() {
-	TestSuite suite = new TestSuite();
-	java.util.Vector methodNames = methodNames();
-	java.util.Enumeration e = methodNames.elements();
-	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Combo((String)e.nextElement()));
-	}
-	return suite;
-}
-public static java.util.Vector methodNames() {
-	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
-	methodNames.addElement("test_addLjava_lang_String");
-	methodNames.addElement("test_addLjava_lang_StringI");
-	methodNames.addElement("test_addModifyListenerLorg_eclipse_swt_events_ModifyListener");
-	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_checkSubclass");
-	methodNames.addElement("test_clearSelection");
-	methodNames.addElement("test_computeSizeIIZ");
-	methodNames.addElement("test_copy");
-	methodNames.addElement("test_cut");
-	methodNames.addElement("test_deselectI");
-	methodNames.addElement("test_deselectAll");
-	methodNames.addElement("test_getItemI");
-	methodNames.addElement("test_getItemCount");
-	methodNames.addElement("test_getItemHeight");
-	methodNames.addElement("test_getItems");
-	methodNames.addElement("test_getSelection");
-	methodNames.addElement("test_getSelectionIndex");
-	methodNames.addElement("test_getText");
-	methodNames.addElement("test_getTextHeight");
-	methodNames.addElement("test_getTextLimit");
-	methodNames.addElement("test_hasFocus");
-	methodNames.addElement("test_indexOfLjava_lang_String");
-	methodNames.addElement("test_indexOfLjava_lang_StringI");
-	methodNames.addElement("test_removeI");
-	methodNames.addElement("test_removeII");
-	methodNames.addElement("test_removeLjava_lang_String");
-	methodNames.addElement("test_paste");
-	methodNames.addElement("test_removeAll");
-	methodNames.addElement("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener");
-	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
-	methodNames.addElement("test_selectI");
-	methodNames.addElement("test_setItemILjava_lang_String");
-	methodNames.addElement("test_setItems$Ljava_lang_String");
-	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_setTabGroupFocus");
-	methodNames.addElement("test_setTextLjava_lang_String");
-	methodNames.addElement("test_setTextLimitI");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
-	return methodNames;
-}
-protected void runTest() throws Throwable {
-	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
-	else if (getName().equals("test_addLjava_lang_String")) test_addLjava_lang_String();
-	else if (getName().equals("test_addLjava_lang_StringI")) test_addLjava_lang_StringI();
-	else if (getName().equals("test_addModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_addModifyListenerLorg_eclipse_swt_events_ModifyListener();
-	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_checkSubclass")) test_checkSubclass();
-	else if (getName().equals("test_clearSelection")) test_clearSelection();
-	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
-	else if (getName().equals("test_copy")) test_copy();
-	else if (getName().equals("test_cut")) test_cut();
-	else if (getName().equals("test_deselectI")) test_deselectI();
-	else if (getName().equals("test_deselectAll")) test_deselectAll();
-	else if (getName().equals("test_getItemI")) test_getItemI();
-	else if (getName().equals("test_getItemCount")) test_getItemCount();
-	else if (getName().equals("test_getItemHeight")) test_getItemHeight();
-	else if (getName().equals("test_getItems")) test_getItems();
-	else if (getName().equals("test_getSelection")) test_getSelection();
-	else if (getName().equals("test_getSelectionIndex")) test_getSelectionIndex();
-	else if (getName().equals("test_getText")) test_getText();
-	else if (getName().equals("test_getTextHeight")) test_getTextHeight();
-	else if (getName().equals("test_getTextLimit")) test_getTextLimit();
-	else if (getName().equals("test_hasFocus")) test_hasFocus();
-	else if (getName().equals("test_indexOfLjava_lang_String")) test_indexOfLjava_lang_String();
-	else if (getName().equals("test_indexOfLjava_lang_StringI")) test_indexOfLjava_lang_StringI();
-	else if (getName().equals("test_removeI")) test_removeI();
-	else if (getName().equals("test_removeII")) test_removeII();
-	else if (getName().equals("test_removeLjava_lang_String")) test_removeLjava_lang_String();
-	else if (getName().equals("test_paste")) test_paste();
-	else if (getName().equals("test_removeAll")) test_removeAll();
-	else if (getName().equals("test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener")) test_removeModifyListenerLorg_eclipse_swt_events_ModifyListener();
-	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
-	else if (getName().equals("test_selectI")) test_selectI();
-	else if (getName().equals("test_setItemILjava_lang_String")) test_setItemILjava_lang_String();
-	else if (getName().equals("test_setItems$Ljava_lang_String")) test_setItems$Ljava_lang_String();
-	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_setTabGroupFocus")) test_setTabGroupFocus();
-	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
-	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
-	else super.runTest();
 }
 }

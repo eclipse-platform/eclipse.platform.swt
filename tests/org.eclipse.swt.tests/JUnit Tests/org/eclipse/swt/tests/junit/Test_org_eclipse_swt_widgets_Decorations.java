@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import junit.framework.*;
-import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Decorations
@@ -23,9 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.widgets.Decorations
  */
 public class Test_org_eclipse_swt_widgets_Decorations extends Test_org_eclipse_swt_widgets_Canvas {
-
-Decorations decorations;
-Image[] images = new Image [3];
 
 public Test_org_eclipse_swt_widgets_Decorations(String name) {
 	super(name);
@@ -45,31 +41,16 @@ protected void tearDown() {
 	super.tearDown();
 }
 
-protected void setWidget(Widget w) {
-	if (!decorations.isDisposed())
-		decorations.dispose();
-	decorations = (Decorations)w;
-	super.setWidget(w);
-}
-
-// this method must be private or protected so the auto-gen tool keeps it
-private void loadImages() {
-	images [0] = new Image (shell.getDisplay(), this.getClass().getResourceAsStream("folder.bmp"));
-	images [1] = new Image (shell.getDisplay(), this.getClass().getResourceAsStream("folderOpen.bmp"));
-	images [2] = new Image (shell.getDisplay(), this.getClass().getResourceAsStream("target.bmp"));
-}
-
-// this method must be private or protected so the auto-gen tool keeps it
-private void freeImages() {
-	for (int i=0; i<images.length; i++) images[i].dispose();
-}
-
 public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_CompositeI not written");
 }
 
 public void test_computeTrimIIII() {
 	warnUnimpl("Test test_computeTrimIIII not written");
+}
+
+public void test_dispose() {
+	warnUnimpl("Test test_dispose not written");
 }
 
 public void test_getBounds() {
@@ -126,10 +107,6 @@ public void test_setDefaultButtonLorg_eclipse_swt_widgets_Button() {
 		decorations.setDefaultButton(null);
 		assertNull(decorations.getDefaultButton());
 	}
-}
-
-public void test_setFocus() {
-	decorations.setFocus();
 }
 
 public void test_setImageLorg_eclipse_swt_graphics_Image() {
@@ -210,6 +187,7 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_CompositeI");
 	methodNames.addElement("test_computeTrimIIII");
+	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getClientArea");
 	methodNames.addElement("test_getDefaultButton");
@@ -220,8 +198,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getMinimized");
 	methodNames.addElement("test_getSize");
 	methodNames.addElement("test_getText");
+	methodNames.addElement("test_isReparentable");
 	methodNames.addElement("test_setDefaultButtonLorg_eclipse_swt_widgets_Button");
-	methodNames.addElement("test_setFocus");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setMaximizedZ");
 	methodNames.addElement("test_setMenuBarLorg_eclipse_swt_widgets_Menu");
@@ -234,6 +212,7 @@ public static java.util.Vector methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_widgets_CompositeI")) test_ConstructorLorg_eclipse_swt_widgets_CompositeI();
 	else if (getName().equals("test_computeTrimIIII")) test_computeTrimIIII();
+	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getClientArea")) test_getClientArea();
 	else if (getName().equals("test_getDefaultButton")) test_getDefaultButton();
@@ -244,8 +223,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getMinimized")) test_getMinimized();
 	else if (getName().equals("test_getSize")) test_getSize();
 	else if (getName().equals("test_getText")) test_getText();
+	else if (getName().equals("test_isReparentable")) test_isReparentable();
 	else if (getName().equals("test_setDefaultButtonLorg_eclipse_swt_widgets_Button")) test_setDefaultButtonLorg_eclipse_swt_widgets_Button();
-	else if (getName().equals("test_setFocus")) test_setFocus();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setMaximizedZ")) test_setMaximizedZ();
 	else if (getName().equals("test_setMenuBarLorg_eclipse_swt_widgets_Menu")) test_setMenuBarLorg_eclipse_swt_widgets_Menu();
@@ -253,5 +232,28 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else super.runTest();
+}
+
+/* custom */
+Decorations decorations;
+Image[] images = new Image [3];
+
+protected void setWidget(Widget w) {
+	if (!decorations.isDisposed())
+		decorations.dispose();
+	decorations = (Decorations)w;
+	super.setWidget(w);
+}
+
+// this method must be private or protected so the auto-gen tool keeps it
+private void loadImages() {
+	images [0] = new Image (shell.getDisplay(), this.getClass().getResourceAsStream("folder.bmp"));
+	images [1] = new Image (shell.getDisplay(), this.getClass().getResourceAsStream("folderOpen.bmp"));
+	images [2] = new Image (shell.getDisplay(), this.getClass().getResourceAsStream("target.bmp"));
+}
+
+// this method must be private or protected so the auto-gen tool keeps it
+private void freeImages() {
+	for (int i=0; i<images.length; i++) images[i].dispose();
 }
 }
