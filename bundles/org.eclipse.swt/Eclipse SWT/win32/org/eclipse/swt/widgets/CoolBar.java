@@ -197,13 +197,18 @@ void destroyItem (CoolItem item) {
 	* is to show the child.
 	*/		
 	Control control = item.control;
-	boolean wasVisible = control != null && control.getVisible ();
+	boolean wasVisible = control != null && !control.isDisposed() && control.getVisible ();
 	if (OS.SendMessage (handle, OS.RB_DELETEBAND, index, 0) == 0) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	items [item.id] = null;
 	item.id = -1;
 	if (wasVisible) control.setVisible (true);
+	index = 0;
+	while (index < originalItems.length) {
+		if (originalItems [index] == item) break;
+		index++;
+	}
 	int length = originalItems.length - 1;
 	CoolItem [] newOriginals = new CoolItem [length];
 	System.arraycopy (originalItems, 0, newOriginals, 0, index);
@@ -438,11 +443,21 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
  */
 public int [] getItemOrder () {
 	checkWidget ();
-	int [] indices = new int [originalItems.length];
-	for (int i=0; i<originalItems.length; i++) {
-		int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, originalItems [i].id, 0);
-		if (index < 0 || index >= indices.length) error (SWT.ERROR_CANNOT_GET_ITEM);
-		indices [index] = i;
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int [] indices = new int [count];
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_ID;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		CoolItem item = items [rbBand.wID];
+		int index = 0;
+		while (index<originalItems.length) {
+			if (originalItems [j] == item) break;
+			index++;
+		}
+		if (index == originalItems.length) error (SWT.ERROR_CANNOT_GET_ITEM);
+		indices [i] = index;
 	}
 	return indices;
 }
@@ -520,7 +535,7 @@ void setItemOrder (int [] itemOrder) {
 	int itemCount = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	if (itemOrder.length != itemCount) error (SWT.ERROR_INVALID_ARGUMENT);
 	
-	/* Ensure that itemOrder does not contain any duplicates. */	
+	/* Ensure that itemOrder does not contain any duplicates. */
 	boolean [] set = new boolean [itemCount];
 	for (int i = 0; i < set.length; i++) set [i] = false;
 	for (int i = 0; i < itemOrder.length; i++) {
@@ -529,8 +544,9 @@ void setItemOrder (int [] itemOrder) {
 		set [itemOrder [i]] = true;
 	}
 	
-	for (int i = 0; i < itemCount; i++) {
-		int currentIndex = OS.SendMessage (handle, OS.RB_IDTOINDEX, itemOrder [i], 0);
+	for (int i = 0; i < itemOrder.length; i++) {
+		int id = originalItems [itemOrder [i]].id;
+		int currentIndex = OS.SendMessage (handle, OS.RB_IDTOINDEX, id, 0);
 		OS.SendMessage (handle, OS.RB_MOVEBAND, currentIndex, i);
 	}
 }

@@ -350,15 +350,18 @@ void createItem (CoolItem item, int index) {
 	originalItems = newOriginals;
 }
 void destroyItem(CoolItem item) {
-	Point location = findItem(item);
-	int row = location.y;
-	int index = location.x;
+	int row = findItem(item).y;
 	if (row == -1) return;
 	Rectangle bounds = item.getBounds();
 	removeItemFromRow(item, row);
 	redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
 	layoutItems();
 
+	int index = 0;
+	while (index < originalItems.length) {
+		if (originalItems [index] == item) break;
+		index++;
+	}
 	int length = originalItems.length - 1;
 	CoolItem [] newOriginals = new CoolItem [length];
 	System.arraycopy (originalItems, 0, newOriginals, 0, index);
@@ -778,14 +781,23 @@ public void setSize (int width, int height) {
  * </ul>
  */
 public int[] getItemOrder () {
-	checkWidget();
-	int[] indices = new int[originalItems.length];
-	for (int i = 0; i < originalItems.length; i++) {
-		int index = indexOf(originalItems[i]);
-		if (index < 0 || index >= indices.length) error(SWT.ERROR_CANNOT_GET_ITEM);
-		indices [index] = i;
+	checkWidget ();
+	int count = getItemCount ();
+	int [] indices = new int [count];
+	count = 0;
+	for (int i = 0; i < items.length; i++) {
+		for (int j = 0; j < items[i].length; j++) {
+			CoolItem item = items[i][j];
+			int index = 0;
+			while (index<originalItems.length) {
+				if (originalItems [index] == item) break;
+				index++;	
+			}
+			if (index == originalItems.length) error (SWT.ERROR_CANNOT_GET_ITEM);
+			indices [count++] = index;
+		}
 	}
-	return indices;	
+	return indices;
 }
 void setItemOrder (int[] itemOrder) {
 	if (itemOrder == null) error(SWT.ERROR_NULL_ARGUMENT);
