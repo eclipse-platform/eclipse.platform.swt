@@ -716,7 +716,7 @@ void drawBackground(GC gc, int[] shape, int x, int y, int width, int height, Col
 					}
 					if (pos < height) {
 						gc.setBackground(defaultBackground);
-						gc.fillRectangle(x, pos, width, height-pos);
+						gc.fillRectangle(x, pos, width, height-pos+1);
 					}
 				}
 			} else { //horizontal gradient
@@ -2419,9 +2419,10 @@ void setButtonBounds() {
 	}
 	if (oldX != maxRect.x || oldWidth != maxRect.width ||
 	    oldY != maxRect.y || oldHeight != maxRect.height) {
-		int left = Math.min(oldX, maxRect.x), top = Math.min(oldY, maxRect.y);
-		int right = Math.max(oldX + oldWidth, maxRect.x + maxRect.width), bottom = Math.max(oldY + oldHeight, maxRect.y + maxRect.height);
-		redraw(left, top, right - left, bottom - top, false); 
+		int left = Math.min(oldX, maxRect.x);
+		int right = Math.max(oldX + oldWidth, maxRect.x + maxRect.width);
+		int top = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+		redraw(left, top, right - left, tabHeight, false); 
 	}
 	
 	// min button
@@ -2439,9 +2440,10 @@ void setButtonBounds() {
 	}
 	if (oldX != minRect.x || oldWidth != minRect.width ||
 	    oldY != minRect.y || oldHeight != minRect.height) {
-		int left = Math.min(oldX, minRect.x), top = Math.min(oldY, minRect.y);
-		int right = Math.max(oldX + oldWidth, minRect.x + minRect.width), bottom = Math.max(oldY + oldHeight, minRect.y + minRect.height);
-		redraw(left, top, right - left, bottom - top, false);
+		int left = Math.min(oldX, minRect.x);
+		int right = Math.max(oldX + oldWidth, minRect.x + minRect.width);
+		int top = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+		redraw(left, top, right - left, tabHeight, false);
 	}
 	
 	// top right control
@@ -2531,9 +2533,10 @@ void setButtonBounds() {
 	}
 	if (oldX != chevronRect.x || oldWidth != chevronRect.width ||
 	    oldY != chevronRect.y || oldHeight != chevronRect.height) {
-		int left = Math.min(oldX, chevronRect.x), top = Math.min(oldY, chevronRect.y);
-		int right = Math.max(oldX + oldWidth, chevronRect.x + chevronRect.width), bottom = Math.max(oldY + oldHeight, chevronRect.y + chevronRect.height);
-		redraw(left, top, right - left, bottom - top, false);
+		int left = Math.min(oldX, chevronRect.x);
+		int right = Math.max(oldX + oldWidth, chevronRect.x + chevronRect.width);
+		int top = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+		redraw(left, top, right - left, tabHeight, false);
 	}
 }
 void setFirstItem(int index) {
