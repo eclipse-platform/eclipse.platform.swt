@@ -334,6 +334,10 @@ public void addTraverseListener (TraverseListener listener) {
 
 abstract int callWindowProc (int msg, int wParam, int lParam);
 
+boolean checkHandle (int handle) {
+	return this.handle == handle;
+}
+
 void checkMirrored () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
@@ -3001,6 +3005,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_IME_CHAR:			result = WM_IME_CHAR (wParam, lParam); break;
 		case OS.WM_IME_COMPOSITION:		result = WM_IME_COMPOSITION (wParam, lParam); break;
 		case OS.WM_INITMENUPOPUP:		result = WM_INITMENUPOPUP (wParam, lParam); break;
+		case OS.WM_INPUTLANGCHANGE:		result = WM_INPUTLANGCHANGE (wParam, lParam); break;
 		case OS.WM_HOTKEY:				result = WM_HOTKEY (wParam, lParam); break;		
 		case OS.WM_KEYDOWN:				result = WM_KEYDOWN (wParam, lParam); break;
 		case OS.WM_KEYUP:				result = WM_KEYUP (wParam, lParam); break;
@@ -3309,6 +3314,10 @@ LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 		newMenu.sendEvent (SWT.Show);
 		// widget could be disposed at this point
 	}
+	return null;
+}
+
+LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
 	return null;
 }
 

@@ -255,18 +255,27 @@ void killFocus () {
 void move () {
 	moved = false;
 	if (!OS.SetCaretPos (x, y)) return;
-	if (OS.IsDBLocale) {
-		POINT ptCurrentPos = new POINT ();
-		if (!OS.GetCaretPos (ptCurrentPos)) return;
-		COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
-		lpCompForm.dwStyle = OS.CFS_POINT;
-		lpCompForm.x = ptCurrentPos.x;
-		lpCompForm.y = ptCurrentPos.y;
-		int hwnd = parent.handle;
-		int hIMC = OS.ImmGetContext (hwnd);
-		OS.ImmSetCompositionWindow (hIMC, lpCompForm);
-		OS.ImmReleaseContext (hwnd, hIMC);
-	}
+	resizeIME ();
+}
+
+void resizeIME () {
+	if (!OS.IsDBLocale) return;
+	POINT ptCurrentPos = new POINT ();
+	if (!OS.GetCaretPos (ptCurrentPos)) return;
+	int hwnd = parent.handle;
+	RECT rect = new RECT ();
+	OS.GetClientRect (hwnd, rect);
+	COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
+	lpCompForm.dwStyle = OS.CFS_RECT;
+	lpCompForm.x = ptCurrentPos.x;
+	lpCompForm.y = ptCurrentPos.y;
+	lpCompForm.left = rect.left;
+	lpCompForm.right = rect.right;
+	lpCompForm.top = rect.top;
+	lpCompForm.bottom = rect.bottom;
+	int hIMC = OS.ImmGetContext (hwnd);
+	OS.ImmSetCompositionWindow (hIMC, lpCompForm);
+	OS.ImmReleaseContext (hwnd, hIMC);
 }
 
 void releaseChild () {

@@ -229,6 +229,12 @@ public void setFont (Font font) {
 	super.setFont (font);
 }
 
+LRESULT WM_INPUTLANGCHANGE (int wParam, int lParam) {
+	LRESULT result  = super.WM_INPUTLANGCHANGE (wParam, lParam);
+	if (caret != null) caret.resizeIME ();
+	return result;
+}
+
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	LRESULT result  = super.WM_KILLFOCUS (wParam, lParam);
 	if (caret != null) caret.killFocus ();
@@ -238,6 +244,12 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result  = super.WM_SETFOCUS (wParam, lParam);
 	if (caret != null) caret.setFocus ();
+	return result;
+}
+
+LRESULT WM_SIZE (int wParam, int lParam) {
+	LRESULT result  = super.WM_SIZE (wParam, lParam);
+	if (caret != null) caret.resizeIME ();
 	return result;
 }
 
