@@ -1260,6 +1260,7 @@ public void setOrientation (int orientation) {
  */
 public void setSelection (Point selection) {
 	checkWidget();
+	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
