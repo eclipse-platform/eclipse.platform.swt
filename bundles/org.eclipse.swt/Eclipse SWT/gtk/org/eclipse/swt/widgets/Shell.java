@@ -809,7 +809,7 @@ void resizeBounds (int width, int height, boolean notify) {
 		OS.gtk_widget_size_request (menuHandle, requisition);
 		menuHeight = requisition.height;
 		OS.gtk_widget_set_size_request (menuHandle, width, menuHeight);
-		height = height - menuHeight;
+		height = Math.max (1, height - menuHeight);
 	}
 	OS.gtk_fixed_move (fixedHandle, scrolledHandle, 0, menuHeight);
 	OS.gtk_widget_set_size_request (scrolledHandle, width, height);
