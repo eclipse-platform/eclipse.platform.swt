@@ -1025,6 +1025,10 @@ public int internal_new_GC (GCData data) {
 	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNcolormap, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= style & (mask | SWT.MIRRORED);
+		}
 		data.device = display;
 		data.display = xDisplay;
 		data.drawable = xWindow;

@@ -1761,6 +1761,11 @@ public int internal_new_GC (GCData data) {
 
 	if (data != null) {
 		/* Set the GCData fields */
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= SWT.LEFT_TO_RIGHT;
+			data.layout = -1;
+		}
 		data.device = device;
 		data.image = this;
 		data.hFont = device.systemFont;

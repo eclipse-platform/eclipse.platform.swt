@@ -62,9 +62,13 @@ GC() {
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
  * </ul>
  */
-public GC (Drawable drawable) {
+public GC(Drawable drawable) {
+	this(drawable, 0);
+}
+public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
+	data.style = checkStyle(style);
 	int xGC = drawable.internal_new_GC(data);
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
@@ -73,7 +77,10 @@ public GC (Drawable drawable) {
 	init(drawable, data, xGC);
 	if (device.tracking) device.new_Object(this);
 }
-
+static int checkStyle (int style) {
+	if ((style & SWT.LEFT_TO_RIGHT) != 0) style &= ~SWT.RIGHT_TO_LEFT;
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
+}
 /**
  * Copies a rectangular area of the receiver at the source
  * position onto the receiver at the destination position.
@@ -2142,6 +2149,10 @@ public int getLineWidth() {
 	XGCValues values = new XGCValues();
 	OS.XGetGCValues(data.display, handle, OS.GCLineWidth, values);
 	return values.line_width;
+}
+public int getStyle () {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.style;
 }
 /** 
  * Returns <code>true</code> if this GC is drawing in the mode

@@ -1363,6 +1363,11 @@ public int internal_new_GC (GCData data) {
 	int hDC = OS.GetDC (0);
 	if (hDC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= SWT.LEFT_TO_RIGHT;
+			data.layout = -1;
+		}
 		data.device = this;
 		data.hFont = systemFont ();
 	}

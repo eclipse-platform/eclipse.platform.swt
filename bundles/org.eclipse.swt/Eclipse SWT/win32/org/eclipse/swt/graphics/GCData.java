@@ -26,6 +26,7 @@ import org.eclipse.swt.internal.win32.*;
 
 public final class GCData {
 	public Device device;
+	public int style;
 	public Image image;
 	public int foreground = -1;
 	public int background = -1;
@@ -33,4 +34,5 @@ public final class GCData {
 	public int hNullBitmap;
 	public int hwnd;
 	public PAINTSTRUCT ps;
+	public int layout;
 }
