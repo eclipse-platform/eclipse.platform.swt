@@ -234,18 +234,7 @@ public void dispose () {
 	arrowImage = null;
 }
 
-Image getArrowImage () {
-
-	int height = Math.min (control.getSize ().y, itemBounds.height) - CHEVRON_VERTICAL_TRIM;
-	if (arrowImage != null) {
-		if (arrowImage.getBounds().height == height) {
-			return arrowImage;
-		} else {
-			arrowImage.dispose();
-			arrowImage = null;
-		}
-	}
-	int width = CHEVRON_IMAGE_WIDTH; 
+Image createArrowImage (int width, int height) {
 	Display display = getDisplay ();
 	Color foreground = parent.getForeground ();
 	Color black = display.getSystemColor (SWT.COLOR_BLACK);
@@ -254,9 +243,9 @@ Image getArrowImage () {
 	PaletteData palette = new PaletteData (new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
 	ImageData imageData = new ImageData (width, height, 4, palette);
 	imageData.transparentPixel = 1;
-	arrowImage = new Image (display, imageData);
+	Image image = new Image (display, imageData);
 		
-	GC gc = new GC (arrowImage);
+	GC gc = new GC (image);
 	gc.setBackground (background);
 	gc.fillRectangle (0, 0, width, height);
 	gc.setForeground (black);
@@ -276,7 +265,7 @@ Image getArrowImage () {
 	gc.drawLine (startX, startY, startX + step, startY + step);
 	gc.drawLine (startX, startY + (2 * step), startX + step, startY + step);
 	gc.dispose ();
-	return arrowImage;
+	return image;
 }
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -620,15 +609,19 @@ void updateChevron() {
 			if (chevron == null) {
 				chevron = new ToolBar (parent, SWT.FLAT | SWT.NO_FOCUS);
 				ToolItem toolItem = new ToolItem (chevron, SWT.PUSH);
-				if (height > 6) {
-					toolItem.setImage (getArrowImage ());
-				}	
-				chevron.setBackground(parent.getBackground());
+				chevron.setBackground (parent.getBackground());
 				toolItem.addListener (SWT.Selection, new Listener() {
 					public void handleEvent (Event event) {
 						CoolItem.this.onSelection (event);
 					}
 				});
+			}
+			int imageHeight = Math.max(1, height - CHEVRON_VERTICAL_TRIM);
+			if (arrowImage == null || (arrowImage != null && arrowImage.getBounds().height != imageHeight)) {
+				Image image = createArrowImage (CHEVRON_IMAGE_WIDTH, imageHeight);
+				chevron.getItem (0).setImage (image);
+				if (arrowImage != null) arrowImage.dispose ();
+				arrowImage = image;
 			}
 			chevron.setBounds (
 				itemBounds.x + width - CHEVRON_LEFT_MARGIN - CHEVRON_IMAGE_WIDTH - CHEVRON_HORIZONTAL_TRIM,
