@@ -516,7 +516,11 @@ public void setMenuBar (Menu menu) {
 		}
 		menu.addAccelerators ();
 	}
-		
+	
+	/* Save the old client area */
+	int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	
 	/*
 	* Bug in Motif.  When a XmMainWindowSetAreas () is used
 	* to replace an existing menu, both menus must be managed
@@ -532,7 +536,7 @@ public void setMenuBar (Menu menu) {
 		OS.XtSetMappedWhenManaged (newHandle, false);
 		OS.XtManageChild (newHandle);
 	}
-	int clientHandle = (formHandle != 0) ? formHandle : handle;
+	int clientHandle = formHandle != 0 ? formHandle : handle;
 	OS.XmMainWindowSetAreas (scrolledHandle, newHandle, 0, hHandle, vHandle, clientHandle);
 	if (oldHandle != 0) OS.XtUnmanageChild (oldHandle);
 	if (newHandle != 0) {
@@ -551,6 +555,18 @@ public void setMenuBar (Menu menu) {
 		OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 		OS.XtResizeWidget (scrolledHandle, argList [1] + 1, argList [3], argList [5]);
 		OS.XtResizeWidget (scrolledHandle, argList [1], argList [3], argList [5]);
+	}
+	
+	/*
+	* Compare the old client area with the new client area.
+	* If the client area has changed, send a resize event
+	* and layout.
+	*/
+	int [] argList2 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList2, argList2.length / 2);
+	if (argList1 [1] != argList2 [1] || argList1 [3] != argList2 [3]) {
+		sendEvent (SWT.Resize);
+		if (layout != null) layout (false);
 	}
 }
 /**
