@@ -525,7 +525,23 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget();
-	OS.PtSetResource (handle, OS.Pt_ARG_MAXIMUM, value - 1, 0);
+	int [] args = {
+		OS.Pt_ARG_MAXIMUM, 0, 0,
+		OS.Pt_ARG_MINIMUM, 0, 0,
+		OS.Pt_ARG_SLIDER_SIZE, 0, 0,
+		OS.Pt_ARG_GAUGE_VALUE, 0, 0,
+	};
+	OS.PtGetResources (handle, args.length / 3, args);
+	int minimum = args [4];
+	if (value <= minimum) return;
+	int thumb = args [7];
+	thumb = Math.min (thumb, value - minimum);
+	int selection = args [10];
+	selection = Math.min (selection, value - thumb);
+	args [1] = value - 1;
+	args [7] = thumb;
+	args [10] = selection;
+	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 /**
@@ -542,7 +558,24 @@ public void setMaximum (int value) {
  */
 public void setMinimum (int value) {
 	checkWidget();
-	OS.PtSetResource (handle, OS.Pt_ARG_MINIMUM, value, 0);
+	if (value < 0) return;
+	int [] args = {
+		OS.Pt_ARG_MAXIMUM, 0, 0,
+		OS.Pt_ARG_MINIMUM, 0, 0,
+		OS.Pt_ARG_SLIDER_SIZE, 0, 0,
+		OS.Pt_ARG_GAUGE_VALUE, 0, 0,
+	};
+	OS.PtGetResources (handle, args.length / 3, args);
+	int maximum = args [1] + 1;
+	if (value >= maximum) return;
+	int thumb = args [7];
+	thumb = Math.min (thumb, maximum - value);
+	int selection = args [10];
+	selection = Math.max (selection, value);
+	args [4] = value;
+	args [7] = thumb;
+	args [10] = selection;
+	OS.PtSetResources (handle, args.length / 3, args);
 }
 
 /**
