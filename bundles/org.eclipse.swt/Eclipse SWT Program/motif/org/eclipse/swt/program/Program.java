@@ -70,7 +70,7 @@ static int getDesktop(Display display) {
 	int /*long*/ propList = OS.XListProperties(xDisplay, rootWindow, numProp);
 	int /*long*/ [] property = new int /*long*/ [numProp[0]];
 	if (propList != 0) {
-		OS.memmove(property, propList, (property.length * 4));
+		OS.memmove(property, propList, (property.length * OS.PTR_SIZEOF));
 		OS.XFree(propList);
 	}
 	
