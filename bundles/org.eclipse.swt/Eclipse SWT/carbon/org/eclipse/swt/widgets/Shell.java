@@ -102,7 +102,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	state |= CANVAS;
+	state |= CANVAS | GRAB;
 	int attributes = OS.kWindowCompositingAttribute | OS.kWindowStandardHandlerAttribute;
 	if ((style & SWT.NO_TRIM) == 0) {
 		if ((style & SWT.CLOSE) != 0) attributes |= OS.kWindowCloseBoxAttribute;
@@ -333,6 +333,7 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowCollapsed,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
 		OS.kEventClassWindow, OS.kEventWindowExpanded,
+		OS.kEventClassMouse, OS.kEventMouseDown,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, display.windowProc, mask.length / 2, mask, shellHandle, null);

@@ -10,6 +10,8 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.CGPoint;
+import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -35,9 +37,12 @@ public class Display extends Device {
 	Runnable [] timerList;
 	int timerProc;	
 	
+	/* Grabs */
+	Control grabControl;
+
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
-		
+
 		/* Non-Numeric Keypad Keys */
 		{126,	SWT.ARROW_UP},
 		{125,	SWT.ARROW_DOWN},
@@ -398,6 +403,12 @@ protected void init () {
 	/* Install Application Event Handlers */
 	int[] mask1 = new int[] {
 		OS.kEventClassMouse, OS.kEventMouseDown,
+		OS.kEventClassMouse, OS.kEventMouseDragged,
+		OS.kEventClassMouse, OS.kEventMouseEntered,
+		OS.kEventClassMouse, OS.kEventMouseExited,
+		OS.kEventClassMouse, OS.kEventMouseMoved,
+		OS.kEventClassMouse, OS.kEventMouseUp,
+		OS.kEventClassMouse, OS.kEventMouseWheelMoved,
 	};
 	int appTarget = OS.GetApplicationEventTarget ();
 	OS.InstallEventHandler (appTarget, windowProc, mask1.length / 2, mask1, 0, null);
@@ -461,6 +472,42 @@ public boolean readAndDispatch () {
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
 		runDeferredEvents ();
+		Rect rect = new Rect ();
+		int [] outModifiers = new int [1];
+		short [] outResult = new short [1];
+		CGPoint ioPoint = new CGPoint ();
+		org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+		try {
+			while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
+				OS.TrackMouseLocationWithOptions (0, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
+				int type = 0;
+				switch (outResult [0]) {
+					case OS.kMouseTrackingMouseDown:					type = SWT.MouseDown; break;
+					case OS.kMouseTrackingMouseUp:						type = SWT.MouseUp; break;
+					case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
+					case OS.kMouseTrackingMouseEntered: 				type = SWT.MouseEnter; break;
+					case OS.kMouseTrackingMouseDragged: 				type = SWT.MouseMove; break;
+					case OS.kMouseTrackingMouseKeyModifiersChanged: {
+						lastModifiers = outModifiers [0];
+						break;
+					}
+					case OS.kMouseTrackingUserCancelled:				break;
+					case OS.kMouseTrackingTimedOut: 					break;
+					case OS.kMouseTrackingMouseMoved: 					type = SWT.MouseMove; break;
+				}
+				if (type != 0) {	
+					int handle = grabControl.handle;
+					int window = OS.GetControlOwner (handle);
+					OS.GetWindowBounds (window, (short) OS.kWindowStructureRgn, rect);
+					ioPoint.x = (int) (outPt.h - rect.left);
+					ioPoint.y = (int) (outPt.v - rect.top);
+					OS.HIViewConvertPoint (ioPoint, 0, handle); 
+					grabControl.sendMouseEvent (type, (short)0, (short)ioPoint.x, (short)ioPoint.y, outModifiers [0]);
+				}
+			}
+		} finally {
+			grabControl = null;
+		}
 		return true;
 	}
 	return runAsyncMessages ();
@@ -721,8 +768,8 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 			Control control = WidgetTable.get (theControl [0]);
 			if (control != null) {
 				switch (eventKind) {
-					case OS.kEventControlDraw:				return control.kEventControlDraw (nextHandler, theEvent, userData);
 					case OS.kEventControlBoundsChanged:	return control.kEventControlBoundsChanged (nextHandler, theEvent, userData);
+					case OS.kEventControlDraw:				return control.kEventControlDraw (nextHandler, theEvent, userData);
 				}
 			}
 			break;
@@ -737,31 +784,61 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 				OS.GetRootControl (theWindow, theControl);
 			}
 			Control control = WidgetTable.get (theControl [0]);
-			System.out.println ("KEY: " + control);
 			if (control != null) {
 				switch (eventKind) {
 					case OS.kEventRawKeyDown:				return control.kEventRawKeyDown (nextHandler, theEvent, userData);
+					case OS.kEventRawKeyModifiersChanged:	return control.kEventRawKeyModifiersChanged (nextHandler, theEvent, userData);
 					case OS.kEventRawKeyRepeat:			return control.kEventRawKeyRepeat (nextHandler, theEvent, userData);
 					case OS.kEventRawKeyUp:				return control.kEventRawKeyUp (nextHandler, theEvent, userData);
-					case OS.kEventRawKeyModifiersChanged:	return control.kEventRawKeyModifiersChanged (nextHandler, theEvent, userData);
 				}
 			}
 			break;
 		}
 		case OS.kEventClassMouse: {
-			switch (eventKind) {
-				case OS.kEventMouseDown: {
-					int [] w = new int [1];
-					short[] loc= new short[2];
-					OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, loc.length*2, null, loc);
-					org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point();
-					OS.SetPt (where, loc[1], loc[0]);
-					short part = OS.FindWindow (where, w);
-					if (part == OS.inMenuBar) {
-						OS.MenuSelect (where);
-						return OS.noErr;
+			short [] pt = new short [2];
+			OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.length * 2, null, pt);
+			int [] theWindow = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamWindowRef, OS.typeWindowRef, null, 4, null, theWindow);
+			if (theWindow [0] == 0) {
+				org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+				OS.SetPt (where, pt [1], pt [0]);
+				short part = OS.FindWindow (where, theWindow);
+				if (eventKind == OS.kEventMouseDown && part == OS.inMenuBar) {
+					OS.MenuSelect (where);
+					return OS.noErr;
+				}
+			}
+			int [] theRoot = new int [1];
+			OS.GetRootControl (theWindow [0], theRoot);
+			int [] theControl = new int [1];
+			Rect rect = new Rect ();
+			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowStructureRgn, rect);
+			pt [1] -= rect.left;
+			pt [0] -= rect.top;	
+			CGPoint inPoint = new CGPoint ();
+			inPoint.x = pt [1];
+			inPoint.y = pt [0];
+			OS.HIViewConvertPoint (inPoint, 0, theRoot [0]); 
+			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+			//BOGUS
+			if (theControl [0] == 0) {
+				if (0 <= inPoint.x && inPoint.x < (rect.right - rect.left)) {
+					if (0 <= inPoint.y && inPoint.y < (rect.bottom - rect.top)) {
+						OS.HIViewGetViewForMouseEvent (theRoot [0], theEvent, theControl);
 					}
-					break;
+				}
+			}
+//			System.out.println ("CONTROL: " + theControl [0]);
+			Control control = WidgetTable.get (theControl [0]);
+			if (control != null) {
+				switch (eventKind) {
+					case OS.kEventMouseDown:  			return control.kEventMouseDown (nextHandler, theEvent, userData);
+					case OS.kEventMouseUp: 			return control.kEventMouseUp (nextHandler, theEvent, userData);
+					case OS.kEventMouseDragged:		return control.kEventMouseDragged (nextHandler, theEvent, userData);
+//					case OS.kEventMouseEntered:			return control.kEventMouseEntered (nextHandler, theEvent, userData);
+//					case OS.kEventMouseExited:			return control.kEventMouseExited (nextHandler, theEvent, userData);
+					case OS.kEventMouseMoved:			return control.kEventMouseMoved (nextHandler, theEvent, userData);
+					case OS.kEventMouseWheelMoved:		return control.kEventMouseWheelMoved (nextHandler, theEvent, userData);
 				}
 			}
 			break;

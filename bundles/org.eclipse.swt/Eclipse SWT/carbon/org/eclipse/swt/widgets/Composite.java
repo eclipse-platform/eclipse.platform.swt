@@ -109,7 +109,7 @@ Control [] computeTabList () {
 }
 
 void createHandle () {
-	state |= CANVAS;
+	state |= CANVAS | GRAB;
 	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);

@@ -22,7 +22,7 @@ public abstract class Widget {
 	/* Global state flags */
 //	static final int AUTOMATIC		= 1 << 0;
 //	static final int ACTIVE			= 1 << 1;
-//	static final int AUTOGRAB		= 1 << 2;
+	static final int GRAB		= 1 << 2;
 //	static final int MULTIEXPOSE	= 1 << 3;
 //	static final int RESIZEREDRAW	= 1 << 4;
 //	static final int WRAP			= 1 << 5;
@@ -319,14 +319,18 @@ public void setData (String key, Object value) {
 
 void setInputState (Event event, int theEvent) {
 	int [] modifiers = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, modifiers.length * 4, null, modifiers);
-	if ((modifiers [0] & OS.optionKey) != 0) event.stateMask |= SWT.ALT;
-	if ((modifiers [0] & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
-	if ((modifiers [0] & OS.controlKey) != 0) event.stateMask |= SWT.CONTROL;
-	if ((modifiers [0] & OS.cmdKey) != 0) event.stateMask |= SWT.COMMAND;
-	short[] button = new short[1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, button.length * 2, null, button);
-	switch (button [0]) {
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+	short [] button = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+	setInputState (event, button [0], modifiers [0]);
+}
+
+void setInputState (Event event, short button, int modifiers) {
+	if ((modifiers & OS.optionKey) != 0) event.stateMask |= SWT.ALT;
+	if ((modifiers & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
+	if ((modifiers & OS.controlKey) != 0) event.stateMask |= SWT.CONTROL;
+	if ((modifiers & OS.cmdKey) != 0) event.stateMask |= SWT.COMMAND;
+	switch (button) {
 		case OS.kEventMouseButtonPrimary: event.stateMask |= SWT.BUTTON1; break;
 		case OS.kEventMouseButtonSecondary: event.stateMask |= SWT.BUTTON3; break;
 		case OS.kEventMouseButtonTertiary:	event.stateMask |= SWT.BUTTON2; break;
@@ -351,22 +355,22 @@ void setInputState (Event event, int theEvent) {
 			if (event.keyCode != 0 || event.character != 0) return;
 			Display display = getDisplay ();
 			int lastModifiers = display.lastModifiers;
-			if ((modifiers [0] & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) {
+			if ((modifiers & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) {
 				event.stateMask &= ~SWT.SHIFT;
 				event.keyCode = SWT.SHIFT;
 				return;
 			}
-			if ((modifiers [0] & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) {
+			if ((modifiers & OS.controlKey) != 0 && (lastModifiers & OS.controlKey) == 0) {
 				event.stateMask &= ~SWT.CONTROL;
 				event.keyCode = SWT.CONTROL;
 				return;
 			}
-			if ((modifiers [0] & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) {
+			if ((modifiers & OS.cmdKey) != 0 && (lastModifiers & OS.cmdKey) == 0) {
 				event.stateMask &= ~SWT.COMMAND;
 				event.keyCode = SWT.COMMAND;
 				return;
 			}	
-			if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
+			if ((modifiers & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
 				event.stateMask &= ~SWT.ALT;
 				event.keyCode = SWT.ALT;
 				return;
@@ -377,22 +381,22 @@ void setInputState (Event event, int theEvent) {
 			if (event.keyCode != 0 || event.character != 0) return;
 			Display display = getDisplay ();
 			int lastModifiers = display.lastModifiers;
-			if ((modifiers [0] & OS.shiftKey) == 0 && (lastModifiers & OS.shiftKey) != 0) {
+			if ((modifiers & OS.shiftKey) == 0 && (lastModifiers & OS.shiftKey) != 0) {
 				event.stateMask |= SWT.SHIFT;
 				event.keyCode = SWT.SHIFT;
 				return;
 			}
-			if ((modifiers [0] & OS.controlKey) == 0 && (lastModifiers & OS.controlKey) != 0) {
+			if ((modifiers & OS.controlKey) == 0 && (lastModifiers & OS.controlKey) != 0) {
 				event.stateMask |= SWT.CONTROL;
 				event.keyCode = SWT.CONTROL;
 				return;
 			}
-			if ((modifiers [0] & OS.cmdKey) == 0 && (lastModifiers & OS.cmdKey) != 0) {
+			if ((modifiers & OS.cmdKey) == 0 && (lastModifiers & OS.cmdKey) != 0) {
 				event.stateMask |= SWT.COMMAND;
 				event.keyCode = SWT.COMMAND;
 				return;
 			}	
-			if ((modifiers [0] & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
+			if ((modifiers & OS.optionKey) != 0 && (lastModifiers & OS.optionKey) == 0) {
 				event.stateMask |= SWT.ALT;
 				event.keyCode = SWT.ALT;
 				return;

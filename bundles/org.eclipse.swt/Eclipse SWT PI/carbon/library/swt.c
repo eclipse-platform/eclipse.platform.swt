@@ -3030,6 +3030,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetRoot
 }
 #endif /* NO_HIViewGetRoot */
 
+#ifndef NO_HIViewGetSubviewHit
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetSubviewHit
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jboolean arg2, jintArray arg3)
+{
+	CGPoint _arg1, *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("HIViewGetSubviewHit\n")
+	
+	if (arg1) lparg1 = getCGPointFields(env, arg1, &_arg1);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)HIViewGetSubviewHit((HIViewRef)arg0, (CGPoint *)lparg1, (Boolean)arg2, (HIViewRef *)lparg3);
+	if (arg1) setCGPointFields(env, arg1, lparg1);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif /* NO_HIViewGetSubviewHit */
+
 #ifndef NO_HIViewGetViewForMouseEvent
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetViewForMouseEvent
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
@@ -5366,24 +5385,27 @@ JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextWidth
 }
 #endif /* NO_TextWidth */
 
-#ifndef NO_TrackMouseLocation
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackMouseLocation
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jshortArray arg2)
+#ifndef NO_TrackMouseLocationWithOptions
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackMouseLocationWithOptions
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jdouble arg2, jobject arg3, jintArray arg4, jshortArray arg5)
 {
-	Point _arg1, *lparg1=NULL;
-	jshort *lparg2=NULL;
+	Point _arg3, *lparg3=NULL;
+	jint *lparg4=NULL;
+	jshort *lparg5=NULL;
 	jint rc;
 
 	DEBUG_CALL("TrackMouseLocation\n")
 
-	if (arg1) lparg1 = getPointFields(env, arg1, &_arg1);
-	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
-	rc = (jint)TrackMouseLocation((GrafPtr)arg0, (Point *)lparg1, (MouseTrackingResult *)lparg2);
-	if (arg1) setPointFields(env, arg1, lparg1);
-	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	if (arg3) lparg3 = getPointFields(env, arg3, &_arg3);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetShortArrayElements(env, arg5, NULL);
+	rc = (jint)TrackMouseLocationWithOptions((GrafPtr)arg0, (OptionBits)arg1, (EventTimeout)arg2, (Point *)lparg3, (UInt32 *)lparg4, (MouseTrackingResult *)lparg5);
+	if (arg3) setPointFields(env, arg3, lparg3);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseShortArrayElements(env, arg5, lparg5, 0);
 	return rc;
 }
-#endif /* NO_TrackMouseLocation */
+#endif /* NO_TrackMouseLocationWithOptions */
 
 #ifndef NO_UnionRgn
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_UnionRgn
