@@ -370,6 +370,9 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
  	}
+ 	OS.CGContextSaveGState(handle);
+ 	OS.CGContextScaleCTM(handle, 1, -1);
+ 	OS.CGContextTranslateCTM(handle, 0, -(destHeight + 2 * destY));
  	CGRect rect = new CGRect();
  	rect.x = destX;
  	rect.y = destY;
@@ -394,6 +397,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  		OS.CGContextDrawImage(handle, rect, subImage);
  		OS.CGImageRelease(subImage);
  	}
+ 	OS.CGContextRestoreGState(handle);
 }
 
 /** 
@@ -655,7 +659,6 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	OS.CGContextSaveGState(handle);
-	short[] info = new short[4];
 	OS.CGContextScaleCTM(handle, 1, -1);
 	OS.CGContextTranslateCTM(handle, 0, -data.fontAscent);
 	OS.CGContextSetFillColor(handle, data.foreground);

@@ -567,17 +567,6 @@ public ImageData getImageData() {
 	byte[] srcData = new byte[dataSize];
 	OS.memcpy(srcData, data, dataSize);
 	
-	/* Flip y */
-	int h2 = height / 2;
-	byte[] line = new byte[bpr];
-	for (int y=0; y<h2; y++) {
-		int index1 = y * bpr;
-		int index2 = (height - y - 1) * bpr;
-		System.arraycopy(srcData, index1, line, 0, bpr);
-		System.arraycopy(srcData, index2, srcData, index1, bpr);
-		System.arraycopy(line, 0, srcData, index2, bpr);
-	}
-
 	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 	ImageData data = new ImageData(width, height, bpp, palette);
 	data.data = srcData;
@@ -703,7 +692,8 @@ void init(Device device, ImageData image) {
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 	int colorspace = device.colorspace;
-	int alphaInfo = image.getTransparencyType() == SWT.TRANSPARENCY_NONE ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaFirst;
+	int transparency = image.getTransparencyType(); 
+	int alphaInfo = transparency == SWT.TRANSPARENCY_NONE ? OS.kCGImageAlphaNoneSkipFirst : OS.kCGImageAlphaFirst;
 	handle = OS.CGImageCreate(width, height, 8, 32, width * 4, colorspace, alphaInfo, provider, null, false, 0);
 	OS.CGDataProviderRelease(provider);
 	if (handle == 0) {
@@ -721,7 +711,7 @@ void init(Device device, ImageData image) {
 			image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, palette.redMask, palette.greenMask, palette.blueMask,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
 			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, width, height, 0xFF0000, 0xFF00, 0xFF,
-			false, true);
+			false, false);
 	} else {
 		RGB[] rgbs = palette.getRGBs();
 		int length = rgbs.length;
@@ -739,23 +729,23 @@ void init(Device device, ImageData image) {
 			image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, srcReds, srcGreens, srcBlues,
 			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 			buffer, 32, bpr, ImageData.MSB_FIRST, 0, 0, width, height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
-			false, true);
+			false, false);
 	}
 	
 	/* Initialize transparency */
-	if (image.getTransparencyType() == SWT.TRANSPARENCY_MASK || image.transparentPixel != -1) {
+	if (transparency == SWT.TRANSPARENCY_MASK || image.transparentPixel != -1) {
 		this.type = image.transparentPixel != -1 ? SWT.BITMAP : SWT.ICON;
 		if (image.transparentPixel != -1) {}
 		ImageData maskImage = image.getTransparencyMask();
 		byte[] maskData = maskImage.data;
 		int maskBpl = maskImage.bytesPerLine;
-		int offset = 0, maskOffset = maskData.length - maskBpl;
+		int offset = 0, maskOffset = 0;
 		for (int y = 0; y<height; y++) {
 			for (int x = 0; x<width; x++) {
 				buffer[offset] = ((maskData[maskOffset + (x >> 3)]) & (1 << (7 - (x & 0x7)))) != 0 ? (byte)0xff : 0;
 				offset += 4;
 			}
-			maskOffset -= maskBpl;
+			maskOffset += maskBpl;
 		}
 	} else {
 		this.type = SWT.BITMAP;
@@ -768,13 +758,13 @@ void init(Device device, ImageData image) {
 		} else if (image.alphaData != null) {
 			this.alphaData = new byte[image.alphaData.length];
 			System.arraycopy(image.alphaData, 0, this.alphaData, 0, alphaData.length);
-			int offset = 0, alphaOffset = alphaData.length - width;
+			int offset = 0, alphaOffset = 0;
 			for (int y = 0; y<height; y++) {
 				for (int x = 0; x<width; x++) {
-					buffer[offset] = alphaData[alphaOffset + x];
+					buffer[offset] = alphaData[alphaOffset];
 					offset += 4;
+					alphaOffset += 1;
 				}
-				alphaOffset -= width;
 			}
 		}
 	}
@@ -808,6 +798,9 @@ public int internal_new_GC (GCData data) {
 	int bpr = OS.CGImageGetBytesPerRow(handle);
 	int colorspace = OS.CGImageGetColorSpace(handle);
 	int context = OS.CGBitmapContextCreate(this.data, width, height, bpc, bpr, colorspace, OS.kCGImageAlphaNoneSkipFirst);
+	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.CGContextScaleCTM(context, 1, -1);
+	OS.CGContextTranslateCTM(context, 0, -height);
 	if (data != null) {
 		data.device = device;
 		data.background = device.COLOR_WHITE.handle;
