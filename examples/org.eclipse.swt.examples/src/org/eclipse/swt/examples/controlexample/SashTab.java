@@ -103,6 +103,13 @@ class SashTab extends Tab {
 	}
 	
 	/**
+	 * Gets the "Example" widget children.
+	 */
+	Control [] getExampleWidgets () {
+		return new Control [] {hSash, vSash};
+	}
+	
+	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {

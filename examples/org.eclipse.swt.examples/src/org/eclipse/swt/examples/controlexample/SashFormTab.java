@@ -74,6 +74,13 @@ class SashFormTab extends Tab {
 	}
 	
 	/**
+	 * Gets the "Example" widget children.
+	 */
+	Control [] getExampleWidgets () {
+		return new Control [] {fullForm, topForm};
+	}
+	
+	/**
 	 * Gets the text for the tab folder item.
 	 */
 	String getTabText () {
