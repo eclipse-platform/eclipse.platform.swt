@@ -5,7 +5,7 @@ import org.eclipse.swt.graphics.GC;
 /*
  * Used to bidi enable the StyledText widget.
  */
-public class BidiText {
+public class BidiUtil {
 	// Keyboard language ids
 	public static final int KEYBOARD_LATIN = 0;
 	public static final int KEYBOARD_HEBREW = 1;
