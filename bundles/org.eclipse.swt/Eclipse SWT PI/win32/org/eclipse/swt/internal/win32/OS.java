@@ -251,6 +251,7 @@ public class OS {
 	public static final int COLOR_WINDOWTEXT = 0x8 | SYS_COLOR_INDEX_FLAG;
 	public static final int COMPLEXREGION = 0x3;
 	public static final int CP_ACP = 0x0;
+	public static final int CP_INSTALLED = 0x1;
 	public static final int CS_BYTEALIGNWINDOW = 0x2000;
 	public static final int CS_DBLCLKS = 0x8;
 	public static final int CS_HREDRAW = 0x2;
