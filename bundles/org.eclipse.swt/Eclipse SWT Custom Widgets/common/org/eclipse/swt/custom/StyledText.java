@@ -420,8 +420,10 @@ public class StyledText extends Canvas {
 		clientArea.width -= (clientArea.x + trim.width);
 		clientArea.height -= (clientArea.y + trim.height); 
 		
-		gc = new GC(printer);
-		gc.setFont(printerFont);				
+		// make the orientation of the printer gc match the 
+		int mask = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+		gc = new GC(printer, parent.getStyle() & mask);
+		gc.setFont(printerFont);
 		renderer = new PrintRenderer(
 			printer, printerFont, gc, printerContent,
 			lineBackgrounds, lineStyles, bidiSegments, 

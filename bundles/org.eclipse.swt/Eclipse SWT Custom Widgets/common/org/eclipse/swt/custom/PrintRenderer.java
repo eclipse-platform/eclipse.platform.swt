@@ -202,7 +202,8 @@ private int getLogicalLineOffset(int visualLineOffset) {
 	return logicalContent.getOffsetAtLine(logicalLineIndex);
 }
 protected  int getOrientation () {
-	return SWT.LEFT_TO_RIGHT;
+	int mask = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	return gc.getStyle() & mask;
 }
 protected Color getSelectionBackground() {
 	return null;
