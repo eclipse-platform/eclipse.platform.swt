@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -135,7 +135,6 @@ public FontDialog (Shell parent) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
-
 public FontDialog (Shell parent, int style) {
 	super (parent, style | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
 	checkSubclass ();

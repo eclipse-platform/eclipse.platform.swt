@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -27,7 +27,6 @@ import org.eclipse.swt.events.*;
  * within the SWT implementation.
  * </p>
  */
-
 public /*final*/ class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
@@ -62,7 +61,6 @@ public /*final*/ class Sash extends Control {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Sash (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }

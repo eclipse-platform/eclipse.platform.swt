@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -67,7 +67,6 @@ Control () {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Control (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
@@ -144,7 +143,6 @@ public void addFocusListener(FocusListener listener) {
  * @see HelpListener
  * @see #removeHelpListener
  */
-
 public void addHelpListener (HelpListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -333,7 +331,6 @@ public void addTraverseListener (TraverseListener listener) {
  * @see #pack
  * @see "computeTrim, getClientArea for controls that implement them"
  */
-
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
 }
@@ -371,7 +368,6 @@ public Point computeSize (int wHint, int hHint) {
  * @see #pack
  * @see "computeTrim, getClientArea for controls that implement them"
  */
-
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = DEFAULT_WIDTH;
@@ -520,7 +516,6 @@ public boolean forceFocus () {
  * 
  * @since 2.0
  */
-
 public Accessible getAccessible () {
 	checkWidget ();
 	if (accessible == null) {
@@ -935,7 +930,6 @@ void hookEvents () {
  *
  * @private
  */
-
 public int internal_new_GC (GCData data) {
 	checkWidget();
     /* AW
@@ -990,7 +984,6 @@ public int internal_new_GC (GCData data) {
  *
  * @private
  */
-
 public void internal_dispose_GC (int xGC, GCData data) {
 	checkWidget ();
     /* AW
@@ -1105,7 +1098,6 @@ boolean mnemonicMatch (char key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void moveAbove (Control control) {
 	checkWidget();
 	if (control != null && control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1128,7 +1120,6 @@ public void moveAbove (Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void moveBelow (Control control) {
 	checkWidget();
 	if (control != null && control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
@@ -1169,7 +1160,6 @@ public void pack () {
  *
  * @see #computeSize
  */
-
 public void pack (boolean changed) {
 	checkWidget();
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
@@ -1491,7 +1481,6 @@ public void redraw () {
  *
  * @see #update
  */
-
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget ();
 	if (width <= 0 || height <= 0) return;
@@ -1827,7 +1816,6 @@ void sendMouseEvent (int type, int button, MacEvent xEvent) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setBackground (Color color) {
 	checkWidget();
 	int pixel = -1;
@@ -1869,7 +1857,6 @@ void setBackgroundPixel (int pixel) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
 	/*
@@ -1925,7 +1912,6 @@ public void setBounds (int x, int y, int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setBounds (Rectangle rect) {
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, rect.width, rect.height);
@@ -1985,7 +1971,6 @@ public void setCapture (boolean capture) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setCursor (Cursor cursor) {
 	checkWidget();
     /* AW
@@ -2040,7 +2025,6 @@ public void setEnabled (boolean enabled) {
  *
  * @see #forceFocus
  */
-
 public boolean setFocus () {
 	checkWidget();
 	return forceFocus ();
@@ -2106,7 +2090,6 @@ public void setFont (Font font) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setForeground (Color color) {
 	checkWidget();
     /* AW
@@ -2151,7 +2134,6 @@ void setGrabCursor (int cursor) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setLayoutData (Object layoutData) {
 	checkWidget();
 	this.layoutData = layoutData;
@@ -2225,7 +2207,6 @@ public void setLocation (Point location) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setMenu (Menu menu) {
 	checkWidget();
 	if (menu != null) {
@@ -2256,7 +2237,6 @@ public void setMenu (Menu menu) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  */
-
 public boolean setParent (Composite parent) {
 	checkWidget();
 	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2285,7 +2265,6 @@ public boolean setParent (Composite parent) {
  * @see #redraw
  * @see #update
  */
-
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	/*
@@ -2383,7 +2362,6 @@ public void setToolTipText (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setVisible (boolean visible) {
 	checkWidget();
 	int topHandle = topHandle ();
@@ -2667,7 +2645,6 @@ boolean traverseReturn () {
  *
  * @see #redraw
  */
-
 public void update () {
 	checkWidget();
     /* AW

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -23,7 +23,6 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
 public class CoolItem extends Item {
 	Control control;
 	CoolBar parent;
@@ -75,7 +74,6 @@ public class CoolItem extends Item {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public CoolItem (CoolBar parent, int style) {
 	super (parent, style);
 	this.parent = parent;

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -85,7 +85,6 @@ public FileDialog (Shell parent) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
-
 public FileDialog (Shell parent, int style) {
 	super (parent, style);
 }
@@ -97,7 +96,6 @@ public FileDialog (Shell parent, int style) {
  * 
  * @return the relative path of the file
  */
-
 public String getFileName () {
 	if (fileNames.length > 0)
 		return fileNames[0];
@@ -144,7 +142,6 @@ public String [] getFilterNames () {
  * 
  * @see #setFilterExtensions
  */
-
 public String getFilterPath () {
 	return filterPath;
 }
@@ -283,7 +280,6 @@ public void setFilterNames (String [] names) {
  * 
  * @see #setFilterExtensions
  */
-
 public void setFilterPath (String string) {
 	filterPath = string;
 }

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -27,7 +27,6 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
 public class Text extends Scrollable {
 	// AW
 	private int fTextLimit= LIMIT;
@@ -682,7 +681,6 @@ int getLineNumber (int position) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public Point getSelection () {
 	checkWidget();
 	int [] start = new int [1], end = new int [1];
@@ -715,7 +713,6 @@ public int getSelectionCount () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public String getSelectionText () {
 	checkWidget();
 	return getTXNText(OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
@@ -794,7 +791,6 @@ public String getText (int start, int end) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public int getTextLimit () {
 	checkWidget();
     return fTextLimit;
@@ -1082,7 +1078,6 @@ public void selectAll () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setDoubleClickEnabled (boolean doubleClick) {
 	checkWidget();
 	System.out.println("Text.setDoubleClickEnabled: nyi");
@@ -1138,8 +1133,8 @@ public void setEditable (boolean editable) {
     */
 }
 /**
-* Sets the redraw flag.
-*/
+ * Sets the redraw flag.
+ */
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
@@ -1250,8 +1245,7 @@ public void setSelection (Point selection) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
-*/
-
+ */
 public void setTabs (int tabs) {
 	checkWidget();
 	System.out.println("Text.setTabs: nyi");
@@ -1357,7 +1351,6 @@ void setWrap (boolean wrap) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void showSelection () {
 	checkWidget();
 	OS.TXNShowSelection(fTX, false);

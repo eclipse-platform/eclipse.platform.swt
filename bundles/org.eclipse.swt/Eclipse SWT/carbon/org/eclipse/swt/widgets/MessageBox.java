@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -30,7 +30,6 @@ import org.eclipse.swt.widgets.*;
  * within the SWT implementation.
  * </p>
  */
-
 public  class MessageBox extends Dialog {
 	String message = "";
 	
@@ -90,7 +89,6 @@ public MessageBox (Shell parent) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
-
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (style));
 }

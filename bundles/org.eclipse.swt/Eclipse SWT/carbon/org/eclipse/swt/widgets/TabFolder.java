@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -73,7 +73,6 @@ public class TabFolder extends Composite {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public TabFolder (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }

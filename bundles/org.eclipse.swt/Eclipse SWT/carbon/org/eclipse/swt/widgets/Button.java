@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -34,7 +34,6 @@ import org.eclipse.swt.events.*;
  * within the SWT implementation.
  * </p>
  */
-
 public /*final*/ class Button extends Control {
 	Image image, bitmap, disabled;
 /**
@@ -73,7 +72,6 @@ public /*final*/ class Button extends Control {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Button (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -150,7 +148,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	width += result.width;
 	height += result.height;
     */
-	/**
+	/*
 	 * Feature in Motif. If a button's labelType is XmSTRING but it
 	 * has no label set into it yet, recomputing the size will
 	 * not take into account the height of the font, as we would
@@ -331,7 +329,6 @@ int defaultForeground () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public int getAlignment () {
 	checkWidget();
     /*
@@ -400,7 +397,6 @@ String getNameText () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
@@ -584,7 +580,6 @@ void selectRadio () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setAlignment (int alignment) {
 	checkWidget();
     /* AW
@@ -682,7 +677,6 @@ void setDefault (boolean value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setImage (Image image) {
 	checkWidget();
 	setBitmap (this.image = image);
@@ -703,7 +697,6 @@ public void setImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
@@ -730,7 +723,6 @@ public void setSelection (boolean selected) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -32,7 +32,6 @@ import org.eclipse.swt.graphics.*;
  *
  * @see Canvas
  */
-
 public class Composite extends Scrollable {
 	Layout layout;
 	/* AW
@@ -72,7 +71,6 @@ Composite () {
  * @see SWT#NO_RADIO_GROUP
  * @see Widget#getStyle
  */
-
 public Composite (Composite parent, int style) {
 	super (parent, style);
 }
@@ -270,7 +268,6 @@ public boolean forceFocus () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public Control [] getChildren () {
 	checkWidget();
 	return _getChildren ();
@@ -317,7 +314,6 @@ public Layout getLayout () {
  * 
  * @see #setTabList
  */
-
 public Control [] getTabList () {
 	checkWidget ();
     /* AW
@@ -370,7 +366,6 @@ void hookEvents () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void layout () {
 	checkWidget();
 	layout (true);
@@ -392,7 +387,6 @@ public void layout () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void layout (boolean changed) {
 	checkWidget();
 	if (layout == null) return;
@@ -631,7 +625,6 @@ public boolean setFocus() {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setLayout (Layout layout) {
 	checkWidget();
 	this.layout = layout;
@@ -655,7 +648,6 @@ public void setSize (int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setTabList (Control [] tabList) {
 	checkWidget ();
 	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);

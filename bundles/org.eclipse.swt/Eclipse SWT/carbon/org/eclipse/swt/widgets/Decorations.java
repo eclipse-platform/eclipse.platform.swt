@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -81,7 +81,6 @@ import org.eclipse.swt.graphics.*;
  * @see Shell
  * @see SWT
  */
-
 public class Decorations extends Canvas {
 	String label;
 	Image image;
@@ -135,7 +134,6 @@ Decorations () {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Decorations (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -264,7 +262,6 @@ public Button getDefaultButton () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public Image getImage () {
 	checkWidget();
 	return image;
@@ -283,7 +280,6 @@ public Image getImage () {
  *
  * @see #setMaximized
  */
-
 public boolean getMaximized () {
 	checkWidget();
 	return maximized;
@@ -317,7 +313,6 @@ public Menu getMenuBar () {
  *
  * @see #setMinimized
  */
-
 public boolean getMinimized () {
 	checkWidget();
 	return minimized;
@@ -338,7 +333,6 @@ String getNameText () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public String getText () {
 	checkWidget();
 	return label;
@@ -433,7 +427,6 @@ void saveFocus () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setDefaultButton (Button button) {
 	checkWidget();
 	setDefaultButton (button, true);
@@ -473,7 +466,6 @@ void setDefaultButton (Button button, boolean save) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setImage (Image image) {
 	checkWidget();
 	int pixmap = 0, mask = 0;
@@ -651,7 +643,6 @@ void setSavedFocus (Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

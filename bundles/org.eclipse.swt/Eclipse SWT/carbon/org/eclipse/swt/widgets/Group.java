@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -30,7 +30,6 @@ import org.eclipse.swt.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
 public /*final*/ class Group extends Composite {
 	// AW
 	private static final int LABEL_HEIGHT= 20;
@@ -69,7 +68,6 @@ public /*final*/ class Group extends Composite {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Group (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -230,7 +228,6 @@ boolean mnemonicMatch (char key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

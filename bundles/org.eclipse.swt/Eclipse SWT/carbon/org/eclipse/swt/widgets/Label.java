@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -31,7 +31,6 @@ import org.eclipse.swt.internal.carbon.*;
  * within the SWT implementation.
  * </p>
  */
-
 public /*final*/ class Label extends Control {
 	String text = "";
 	Image image, bitmap, disabled;
@@ -73,7 +72,6 @@ public /*final*/ class Label extends Control {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -118,7 +116,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = bounds[1];
 			height = bounds[0];
 		}
-		/**
+		/*
 		* Feature in Motif. If a label's labelType is XmSTRING but it
 		* has no label set into it yet, recomputing the size will
 		* not take into account the height of the font, as we would
@@ -169,7 +167,6 @@ int defaultForeground () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public int getAlignment () {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return SWT.LEFT;
@@ -340,7 +337,6 @@ int separatorType () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setAlignment (int alignment) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -434,7 +430,6 @@ public void setFont (Font font) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setImage (Image image) {
 	checkWidget();
 	setBitmap (this.image = image);
@@ -460,7 +455,6 @@ public void setSize (int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

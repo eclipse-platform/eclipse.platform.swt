@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -47,7 +47,6 @@ import org.eclipse.swt.events.*;
  *
  * @see List
  */
-
 public /*final*/ class Combo extends Composite {
 
 	// AW
@@ -66,7 +65,6 @@ public /*final*/ class Combo extends Composite {
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
 	 */
-
 	public static int LIMIT;
 
 	/*
@@ -111,7 +109,6 @@ public /*final*/ class Combo extends Composite {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -317,7 +314,6 @@ protected void checkSubclass () {
  *
  * @see #deselectAll
  */
-
 public void clearSelection () {
 	checkWidget();
     /* AW
@@ -456,7 +452,6 @@ void deregister () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void deselect (int index) {
 	checkWidget();
 	if (index == -1) return;
@@ -599,7 +594,6 @@ public int getItemHeight () {
  *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
  * </ul>
  */
-
 public String [] getItems () {
 	checkWidget();
 	int itemCount= OS.CountMenuItems(fMenuHandle);
@@ -764,7 +758,6 @@ public int getTextHeight () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public int getTextLimit () {
 	checkWidget();
     return fTextLimit;
@@ -802,7 +795,6 @@ void hookEvents () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public int indexOf (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -834,7 +826,6 @@ public int indexOf (String string) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -979,7 +970,6 @@ public void remove (int index) {
  *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
-
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
@@ -1034,7 +1024,6 @@ void register () {
  *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
-
 public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1156,7 +1145,6 @@ public void removeSelectionListener (SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void select (int index) {
 	checkWidget();
     /* AW
@@ -1333,7 +1321,6 @@ public void setItems (String [] items) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setSelection (Point selection) {
 	checkWidget();
 	if (fTX != 0)
@@ -1368,7 +1355,6 @@ public void setSize (int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

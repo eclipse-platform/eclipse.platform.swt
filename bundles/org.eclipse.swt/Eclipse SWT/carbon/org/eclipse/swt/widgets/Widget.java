@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -37,7 +37,6 @@ import org.eclipse.swt.events.*;
  *
  * @see #checkSubclass
  */
-
 public abstract class Widget {
 
 	public int handle;
@@ -106,7 +105,6 @@ Widget () {
  * @see #checkSubclass
  * @see #getStyle
  */
-
 public Widget (Widget parent, int style) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
@@ -201,27 +199,27 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 /**
-* Checks access to a widget.
-* <p>
-* Throws an exception when access to the widget
-* is denied.
-*
-* It is an error to call a method on a widget that
-* has been disposed or to call a method on a widget
-* from a thread that is different from the thread
-* that created the widget.  There may be more or
-* less error checks in future or different versions
-* of SWT may issue different errors.
-*
-* This method is intended to be called by widget
-* implementors to enforce the standard SWT error
-* checking prologue in API methods.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Checks access to a widget.
+ * <p>
+ * Throws an exception when access to the widget
+ * is denied.
+ *
+ * It is an error to call a method on a widget that
+ * has been disposed or to call a method on a widget
+ * from a thread that is different from the thread
+ * that created the widget.  There may be more or
+ * less error checks in future or different versions
+ * of SWT may issue different errors.
+ *
+ * This method is intended to be called by widget
+ * implementors to enforce the standard SWT error
+ * checking prologue in API methods.
+ *
+ * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
+ *	when called from the wrong thread
+ * @exception SWTError(ERROR_WIDGET_DISPOSED)
+ *	when the widget has been disposed
+ */
 protected void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -321,7 +319,6 @@ void error (int code) {
  *
  * @see #setData
  */
-
 public Object getData () {
 	checkWidget();
 	return data;
@@ -847,7 +844,6 @@ void sendEvent (int eventType, Event event) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
  * </ul>
  */
-
 public void setData (Object data) {
 	checkWidget();
 	this.data = data;

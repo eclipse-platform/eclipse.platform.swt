@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -59,7 +59,6 @@ Scrollable () {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
@@ -86,7 +85,6 @@ public Scrollable (Composite parent, int style) {
  *
  * @see #getClientArea
  */
-
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	int border = getBorderWidth ();
@@ -176,7 +174,6 @@ void enableWidget (boolean enabled) {
  *
  * @see #computeTrim
  */
-
 public Rectangle getClientArea () {
 	checkWidget();
     /* AW

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -73,7 +73,6 @@ import org.eclipse.swt.events.*;
  * @see Scrollable#getHorizontalBar
  * @see Scrollable#getVerticalBar
  */
-
 public /*final*/ class ScrollBar extends Widget {
 	Scrollable parent;
 	// AW
@@ -300,7 +299,6 @@ public int getSelection () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public Point getSize () {
 	checkWidget();
     /* AW
@@ -520,7 +518,6 @@ public void setEnabled (boolean enabled) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
@@ -637,7 +634,6 @@ public void setThumb (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
 	checkWidget();
 	if (selection < 0) return;
@@ -670,7 +666,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setVisible (boolean visible) {
 	checkWidget();
 	/*

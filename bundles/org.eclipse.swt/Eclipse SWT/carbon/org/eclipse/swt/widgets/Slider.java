@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -58,7 +58,6 @@ import org.eclipse.swt.internal.carbon.*;
  *
  * @see ScrollBar
  */
-
 public /*final*/ class Slider extends Control {
 	private int fIncrement= 1;	// AW
 	private int fPageIncrement= 10;	// AW
@@ -91,7 +90,6 @@ public /*final*/ class Slider extends Control {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Slider (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -358,7 +356,6 @@ public void removeSelectionListener(SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
@@ -473,7 +470,6 @@ public void setThumb (int value) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setValues (int selection, int minimum, int maximum, int thumb, int increment, int pageIncrement) {
 	checkWidget();
 	if (selection < 0) return;

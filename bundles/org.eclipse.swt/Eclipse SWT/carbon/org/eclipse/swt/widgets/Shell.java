@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -93,7 +93,6 @@ import org.eclipse.swt.events.*;
  * @see Decorations
  * @see SWT
  */
-
 public /*final*/ class Shell extends Decorations {
 	Display display;
 	int shellHandle;
@@ -117,7 +116,6 @@ public /*final*/ class Shell extends Decorations {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
-
 public Shell () {
 	this ((Display) null);
 }
@@ -178,7 +176,6 @@ public Shell (int style) {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
-
 public Shell (Display display) {
 	this (display, SWT.SHELL_TRIM);
 }
@@ -389,7 +386,7 @@ void adjustTrim () {
 	}
     */
 
-	/**
+	/*
 	 * Translate the coordinates of the shell window to the
 	 * coordinates of the direct child of the root window
 	 */
@@ -811,7 +808,6 @@ public boolean getEnabled () {
  *
  * @see SWT
  */
-
 public int getImeInputMode () {
 	checkWidget();
 	return SWT.NONE;
@@ -843,7 +839,6 @@ public Shell getShell () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public Shell [] getShells () {
 	checkWidget();
 	int count = 0;
@@ -1004,7 +999,7 @@ void manageChildren () {
  * @see Decorations#setDefaultButton
  * @see Shell#setActive
  * @see Shell#forceActive
-*/
+ */
 public void open () {
 	checkWidget();
 	setVisible (true);
@@ -1318,7 +1313,6 @@ public void setEnabled (boolean enabled) {
  *
  * @see SWT
  */
-
 public void setImeInputMode (int mode) {
 	checkWidget();
 }

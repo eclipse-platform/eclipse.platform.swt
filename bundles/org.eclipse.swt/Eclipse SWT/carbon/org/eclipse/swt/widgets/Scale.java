@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -28,7 +28,6 @@ import org.eclipse.swt.graphics.*;
  * within the SWT implementation.
  * </p>
  */
-
 public /*final*/ class Scale extends Control {
 	private int fIncrement= 1;	// AW
 	private int fPageIncrement= 10;	// AW
@@ -280,7 +279,6 @@ public void removeSelectionListener(SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -31,7 +31,6 @@ import org.eclipse.swt.events.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
 public /*final*/ class List extends Scrollable {
 
 	// AW
@@ -68,7 +67,6 @@ public /*final*/ class List extends Scrollable {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public List (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
@@ -387,7 +385,6 @@ public void deselect (int index) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void deselect (int start, int end) {
 	checkWidget();
 	if (start > end) return;
@@ -419,7 +416,6 @@ public void deselect (int start, int end) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -591,7 +587,6 @@ public int getItemHeight () {
  *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure while getting the item count</li>
  * </ul>
  */
-
 public String [] getItems () {
 	checkWidget();
     /* AW
@@ -644,7 +639,6 @@ public String [] getItems () {
  *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
  * </ul>
  */
-
 public String [] getSelection () {
 	checkWidget();
     /* AW
@@ -750,7 +744,6 @@ public int getSelectionIndex () {
  *    <li>ERROR_CANNOT_GET_SELECTION - if the operation fails because of an operating system failure</li>
  * </ul>
  */
-
 public int [] getSelectionIndices () {
 	checkWidget();
     /*
@@ -850,7 +843,6 @@ public int indexOf (String string) {
  *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure while getting an item</li>
  * </ul>
  */
-
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -964,7 +956,6 @@ public void remove (int index) {
  *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
-
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
@@ -1007,7 +998,6 @@ public void remove (int start, int end) {
  *    <li>ERROR_ITEM_NOT_REMOVED - if the operation fails because of an operating system failure</li>
  * </ul>
  */
-
 public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1117,7 +1107,6 @@ public void removeSelectionListener(SelectionListener listener) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void select (int index) {
 	checkWidget();
 	if (index == -1) return;
@@ -1234,7 +1223,6 @@ public void select (int start, int end) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void select (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -1483,7 +1471,6 @@ public void setItems (String [] items) {
  * @see List#deselectAll()
  * @see List#select(int)
  */
-
 public void setSelection (int index) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
@@ -1503,7 +1490,6 @@ public void setSelection (int index) {
  * @see Table#deselectAll()
  * @see Table#select(int,int)
  */
-
 public void setSelection (int start, int end) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
@@ -1525,7 +1511,6 @@ public void setSelection (int start, int end) {
  * @see List#deselectAll()
  * @see List#select(int[])
  */
-
 public void setSelection(int[] indices) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (indices);

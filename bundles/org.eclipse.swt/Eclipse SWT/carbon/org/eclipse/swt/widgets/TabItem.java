@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -22,7 +22,6 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
 public class TabItem extends Item {
 	TabFolder parent;
 	Control control;
@@ -58,7 +57,6 @@ public class TabItem extends Item {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public TabItem (TabFolder parent, int style) {
 	super (parent, style);
 	this.parent = parent;
@@ -96,7 +94,6 @@ public TabItem (TabFolder parent, int style) {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public TabItem (TabFolder parent, int style, int index) {
 	super (parent, style);
 	this.parent = parent;

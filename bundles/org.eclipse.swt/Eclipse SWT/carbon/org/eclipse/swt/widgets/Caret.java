@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -23,7 +23,6 @@ import org.eclipse.swt.graphics.*;
  * within the SWT implementation.
  * </p>
  */
-
 public /*final*/ class Caret extends Widget {
 	Canvas parent;
 	Image image;
@@ -59,7 +58,6 @@ public /*final*/ class Caret extends Widget {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Caret (Canvas parent, int style) {
 	super (parent, style);
 	this.parent = parent;
@@ -324,7 +322,6 @@ void releaseWidget () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
 	boolean samePosition, sameExtent, showing;
@@ -363,7 +360,6 @@ public void setBounds (int x, int y, int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setBounds (Rectangle rect) {
 	checkWidget();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -390,7 +386,6 @@ void setFocus () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setFont (Font font) {
 	checkWidget();
 	if (font != null && font.isDisposed ()) {
@@ -412,7 +407,6 @@ public void setFont (Font font) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed ()) {
@@ -506,7 +500,6 @@ public void setSize (Point size) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible == isVisible) return;

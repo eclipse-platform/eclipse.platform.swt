@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -62,7 +62,6 @@ Canvas () {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public Canvas (Composite parent, int style) {
 	super (parent, style);
 }
@@ -153,7 +152,6 @@ void releaseWidget () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget();
 	if (width <= 0 || height <= 0) return;

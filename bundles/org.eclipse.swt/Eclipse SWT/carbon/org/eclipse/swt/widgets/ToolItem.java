@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -26,7 +26,6 @@ import org.eclipse.swt.internal.carbon.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-
 public class ToolItem extends Item {
 	ToolBar parent;
 	Image hotImage, disabledImage;
@@ -77,7 +76,6 @@ public class ToolItem extends Item {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public ToolItem (ToolBar parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
@@ -120,7 +118,6 @@ public ToolItem (ToolBar parent, int style) {
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
-
 public ToolItem (ToolBar parent, int style, int index) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
@@ -412,7 +409,6 @@ public ToolBar getParent () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
@@ -710,7 +706,6 @@ public void setImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;

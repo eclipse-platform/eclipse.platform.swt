@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -439,7 +439,7 @@ void ensureRightFreeSpaceUsed() {
  * If the tab at 'tabIndex' is not visible or partially covered by the tab 
  * scroll buttons and there is enough space to completely show the tab, 
  * the tab is scrolled to the left to make it fully visible.
- */ 
+ */
 void ensureVisible(int tabIndex) {
 	if (items == null || tabIndex < 0 || tabIndex >= items.length) return;
 	if (!isTabScrolling()) return;
@@ -670,7 +670,7 @@ boolean isRightButtonHit(Event event) {
 /**
  * Answer true if not all tabs can be visible in the receive
  * thus requiring the scroll buttons to be visible.
- */ 
+ */
 boolean isTabScrolling() {
 	boolean isVisible = false;
 	
@@ -909,7 +909,7 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 /**
  * The widget was resized. Adjust the size of the currently selected page.
- */ 
+ */
 void resize() {
 	if (selectedIndex != -1) {
 		Control control = items[selectedIndex].getControl();
