@@ -1024,7 +1024,7 @@ public class OS {
 	public static final int WM_ERASEBKGND = 0x14;
 	public static final int WM_GETDLGCODE = 0x87;
 	public static final int WM_GETFONT = 0x31;
-	public static final int WM_GETICON = 0x7f;
+//	public static final int WM_GETICON = 0x7f;
 	public static final int WM_HELP = 0x53;
 	public static final int WM_HSCROLL = 0x114;
 	public static final int WM_IME_CHAR = 0x286;
