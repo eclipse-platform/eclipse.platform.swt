@@ -336,7 +336,25 @@ public void close () {
 
 void createHandle () {
 	boolean embedded = handle != 0;
+	
+	/*
+	* On Windows 98 and NT, setting a window to be the
+	* top most window using HWND_TOPMOST can result in a
+	* parent dialog shell being moved behind its parent
+	* if the dialog has a sibling that is currently on top
+	* This only occurs using SetWindowPos (), not when the
+	* handle is created.
+	*/
+	/*
+	* The following code is intentionally commented.
+	*/
+//	if ((style & SWT.ON_TOP) != 0) display.lockActiveWindow = true;
 	super.createHandle ();
+	/*
+	* The following code is intentionally commented.
+	*/
+//	if ((style & SWT.ON_TOP) != 0)  display.lockActiveWindow = false;
+	
 	if (!embedded) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 		bits &= ~OS.WS_OVERLAPPED;
@@ -754,6 +772,19 @@ void setParent () {
 void setToolTipText (int hwnd, String text) {
 	if (OS.IsWinCE) return;
 	if (toolTipHandle == 0) {
+
+		/*
+		* On Windows 98 and NT, setting a window to be the
+		* top most window using HWND_TOPMOST can result in a
+		* parent dialog shell being moved behind its parent
+		* if the dialog has a sibling that is currently on top
+		* This only occurs using SetWindowPos (), not when the
+		* handle is created.
+		*/
+		/*
+		* The following code is intentionally commented.
+		*/
+//		display.lockActiveWindow = true;
 		toolTipHandle = OS.CreateWindowEx (
 			OS.WS_EX_TOPMOST,
 			new TCHAR (0, OS.TOOLTIPS_CLASS, true),
@@ -764,7 +795,12 @@ void setToolTipText (int hwnd, String text) {
 			0,
 			OS.GetModuleHandle (null),
 			null);
+		/*
+		* The following code is intentionally commented.
+		*/
+//		display.lockActiveWindow = false;
 		if (toolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		
 		/*
 		* Feature in Windows.  Despite the fact that the
 		* tool tip text contains \r\n, the tooltip will
