@@ -148,7 +148,7 @@ public class Display extends Device {
 		{OS.GDK_Control_L,	SWT.CONTROL},
 		{OS.GDK_Control_R,	SWT.CONTROL},
 		
-		/* Non-Numeric Keypad Constants */
+		/* Non-Numeric Keypad Keys */
 		{OS.GDK_Up,			SWT.ARROW_UP},
 		{OS.GDK_Down,		SWT.ARROW_DOWN},
 		{OS.GDK_Left,		SWT.ARROW_LEFT},
@@ -159,8 +159,15 @@ public class Display extends Device {
 		{OS.GDK_End,		SWT.END},
 		{OS.GDK_Insert,		SWT.INSERT},
 		
-		/* NOT CURRENTLY USED */
-//		{OS.GDK_Delete,		SWT.DELETE},
+		/* Virtual and Ascii Keys */
+		{OS.GDK_BackSpace,		SWT.BS},
+		{OS.GDK_Return,			SWT.CR},
+		{OS.GDK_Delete,			SWT.DEL},
+		{OS.GDK_Escape,			SWT.ESC},
+		{OS.GDK_Cancel,			SWT.ESC},
+		{OS.GDK_Linefeed,		SWT.LF},
+		{OS.GDK_Tab,			SWT.TAB},
+		{OS.GDK_ISO_Left_Tab, 	SWT.TAB},
 	
 		/* Functions Keys */
 		{OS.GDK_F1,		SWT.F1},
@@ -177,7 +184,6 @@ public class Display extends Device {
 		{OS.GDK_F12,	SWT.F12},
 		
 		/* Numeric Keypad Constants */
-		/* NOT CURRENTLY USED */
 //		{OS.GDK_KP_Add,		SWT.KP_PLUS},
 //		{OS.GDK_KP_Subtract,	SWT.KP_MINUS},
 //		{OS.GDK_KP_Multiply,	SWT.KP_TIMES},

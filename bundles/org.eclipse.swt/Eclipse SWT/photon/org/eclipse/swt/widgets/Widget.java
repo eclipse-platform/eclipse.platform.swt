@@ -968,8 +968,8 @@ void setKeyState(Event event, PhKeyEvent_t ke) {
 		case OS.Pk_BackSpace:	event.character = '\b'; break;
 		case OS.Pk_Linefeed:	event.character = '\n'; break;
 		case OS.Pk_Return: 	event.character = '\r'; break;
-		case OS.Pk_Cancel:
 		case OS.Pk_Delete:		event.character = 0x7F; break;
+		case OS.Pk_Cancel:
 		case OS.Pk_Escape:		event.character = 0x1B; break;
 		case OS.Pk_KP_Tab:
 		case OS.Pk_Tab: 		event.character = '\t'; break;
