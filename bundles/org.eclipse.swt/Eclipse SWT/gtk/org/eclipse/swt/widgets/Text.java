@@ -234,9 +234,9 @@ public void append (String string) {
  */
 public void clearSelection () {
 	checkWidget ();
-	/*int position = OS.gtk_editable_get_position (handle);
+	int position = OS.gtk_editable_get_position (handle);
 	OS.gtk_editable_delete_selection(handle);
-	OS.gtk_editable_set_position (handle, position);*/
+	OS.gtk_editable_set_position (handle, position);
 }
 
 /**
@@ -252,14 +252,7 @@ public void clearSelection () {
  */
 public void copy () {
 	checkWidget ();
-	/*byte [] clipboard = Converter.wcsToMbcs (null, "CLIPBOARD", true);
-	OS.gtk_selection_owner_set(handle, OS.gdk_atom_intern(clipboard, 0), 0);
-	GtkEditable widget = new GtkEditable ();
-	OS.memmove(widget, handle, GtkEditable.sizeof);
-	int start = Math.min(widget.selection_start_pos, widget.selection_end_pos);
-	int end = Math.max(widget.selection_start_pos, widget.selection_end_pos);
-	widget.clipboard_text = OS.gtk_editable_get_chars(handle, start, end);
-	OS.memmove (handle, widget, GtkEditable.sizeof);*/
+	OS.gtk_editable_copy_clipboard(handle);
 }
 /**
  * Cuts the selected text.
@@ -278,15 +271,7 @@ public void copy () {
  */
 public void cut () {
 	checkWidget ();
-	/*byte [] clipboard = Converter.wcsToMbcs (null, "CLIPBOARD", true);
-	OS.gtk_selection_owner_set(handle, OS.gdk_atom_intern(clipboard, 0), 0);
-	GtkEditable widget = new GtkEditable ();
-	OS.memmove (widget, handle, GtkEditable.sizeof);
-	int start = Math.min(widget.selection_start_pos, widget.selection_end_pos);
-	int end = Math.max(widget.selection_start_pos, widget.selection_end_pos);
-	widget.clipboard_text = OS.gtk_editable_get_chars(handle, start, end);
-	OS.memmove (handle, widget, GtkEditable.sizeof);
-	OS.gtk_editable_delete_text(handle, start, end);*/
+	OS.gtk_editable_cut_clipboard(handle);
 }
 
 /**
@@ -307,9 +292,9 @@ public void cut () {
  */
 public int getCaretLineNumber () {
 	checkWidget ();
-	/*int addr_index=getCaretPosition();
+	int addr_index=getCaretPosition();
 	String tmpString= new String(getText(0,addr_index));
-	return getLineNumberInString(tmpString,'\n');*/
+	return getLineNumberInString(tmpString,'\n');
 	return 0;
 }
 
