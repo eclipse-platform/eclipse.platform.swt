@@ -452,12 +452,18 @@ public boolean isEnabled () {
 	return getEnabled ();
 }
 String keysymName (int keysym) {
-	if (keysym == 8) return "BackSpace";
-	if (keysym == 13) return "Return";
-	if (keysym == 27) return "Escape";
-	if (keysym == 127) return "Delete";
-	if (33 <= keysym && keysym <= 126) {
-		return new String (new char [] {(char) keysym});
+	switch (keysym) {
+		case 8: return "BackSpace";
+		case 9: return "Tab";
+		case 10: return "Linefeed";
+		case 13: return "Return";
+		case 27: return "Escape";
+		case 127: return "Delete";
+	}
+	if (('0' <= keysym && keysym <= '9') ||
+		('a' <= keysym && keysym <= 'z') ||
+		('A' <= keysym && keysym <= 'Z')) {
+			return new String (new char [] {(char) keysym});
 	}
 	/**
 	 * Note that XKeysymToString returns a value in a static
