@@ -176,7 +176,7 @@ public String toString () {
  	string += " type = "+((type == SWT.VERTICAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
  	if (marginWidth != 0) string += " marginWidth = "+marginWidth; //$NON-NLS-1$
  	if (marginHeight != 0) string += " marginHeight = "+marginHeight; //$NON-NLS-1$
- 	if (spacing != 0) string += " horizontalSpacing = "+spacing; //$NON-NLS-1$
+ 	if (spacing != 0) string += " spacing = "+spacing; //$NON-NLS-1$
  	return string;
 }
 }

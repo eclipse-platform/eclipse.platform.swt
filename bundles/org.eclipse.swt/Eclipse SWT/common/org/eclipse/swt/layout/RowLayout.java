@@ -408,4 +408,26 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 	}
 	return new Point (x + maxWidth + marginRight + marginWidth, maxY);
 }
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+public String toString () {
+ 	String string = getName ()+":"; //$NON-NLS-1$
+ 	string += " type = "+((type != SWT.HORIZONTAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL"); //$NON-NLS-1$//$NON-NLS-2$//$NON-NLS-3$
+ 	if (marginWidth != 0) string += " marginWidth = "+marginWidth; //$NON-NLS-1$
+ 	if (marginHeight != 0) string += " marginHeight = "+marginHeight; //$NON-NLS-1$
+ 	if (marginLeft != 3) string += " marginLeft = "+marginLeft; //$NON-NLS-1$
+ 	if (marginTop != 3) string += " marginTop = "+marginTop; //$NON-NLS-1$
+ 	if (marginRight != 3) string += " marginRight = "+marginRight; //$NON-NLS-1$
+ 	if (marginBottom != 3) string += " marginBottom = "+marginBottom; //$NON-NLS-1$
+ 	if (spacing != 3) string += " spacing = "+spacing; //$NON-NLS-1$
+ 	if (!wrap) string += " wrap = "+wrap; //$NON-NLS-1$
+	if (!pack) string += " pack = "+pack; //$NON-NLS-1$
+	if (fill) string += " fill = "+fill; //$NON-NLS-1$
+	if (justify) string += " justify = "+justify; //$NON-NLS-1$
+ 	return string;
+}
 }
