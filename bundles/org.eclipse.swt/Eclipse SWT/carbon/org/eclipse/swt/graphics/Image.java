@@ -218,9 +218,19 @@ public Image(Device device, Image srcImage, int flag) {
 	case SWT.IMAGE_DISABLE:
 		/* Get src image data */
 		int srcDepth= getDepth(srcImage.pixmap);
-		int srcRowBytes= rowBytes(width, srcDepth);
 		int srcBitsPerPixel= srcDepth;
 		
+		if (srcBitsPerPixel == 1) {
+			/*
+			 * Nothing we can reasonably do here except copy
+			 * the bitmap; we can't make it a higher color depth.
+			 * Short-circuit the rest of the code and return.
+			 */
+			pixmap = duplicate(srcImage.pixmap);
+			return;
+		}
+		
+		int srcRowBytes= rowBytes(width, srcDepth);
 		byte[] srcData = new byte[srcRowBytes * height];
 		copyPixMapData(srcImage.pixmap, srcData);
 
@@ -238,15 +248,11 @@ public Image(Device device, Image srcImage, int flag) {
 
 		switch (srcBitsPerPixel) {
 		case 1:
-			/*
-			 * Nothing we can reasonably do here except copy
-			 * the bitmap; we can't make it a higher color depth.
-			 * Short-circuit the rest of the code and return.
-			 */
-			pixmap = duplicate(srcImage.pixmap);
+			// should not happen; see above
 			return;
 		case 4:
-			SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+			//SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+			pixmap = duplicate(srcImage.pixmap);
 			break;
 		case 8:
 			int index = 0;
@@ -297,19 +303,20 @@ public Image(Device device, Image srcImage, int flag) {
 			for (int y = 0; y < height; y++) {
 				int xIndex = 0;
 				for (int x = 0; x < srcRowBytes; x += 2) {
-					srcPixel = ((srcData[index + xIndex + 1] & 0xFF) << 8) | (srcData[index + xIndex] & 0xFF);
+					int ix= index + xIndex;
+					srcPixel = ((srcData[ix + 1] & 0xFF) << 8) | (srcData[ix] & 0xFF);
 					r = (srcPixel & redMask) << rShift >> 16;
 					g = (srcPixel & greenMask) << gShift >> 16;
 					b = (srcPixel & blueMask) << bShift >> 16;
 					/* See if the rgb maps to 0 or 1 */
 					if ((r * r + g * g + b * b) < 98304) {
 						/* Map down to 0 */
-						destData[index + xIndex] = zeroLow;
-						destData[index + xIndex + 1] = zeroHigh;
+						destData[ix] = zeroLow;
+						destData[ix + 1] = zeroHigh;
 					} else {
 						/* Map up to 1 */
-						destData[index + xIndex] = oneLow;
-						destData[index + xIndex + 1] = oneHigh;
+						destData[ix] = oneLow;
+						destData[ix + 1] = oneHigh;
 					}
 					xIndex += srcBitsPerPixel / 8;
 				}
@@ -368,26 +375,12 @@ public Image(Device device, Image srcImage, int flag) {
 		ImageData data = srcImage.getImageData();
 		PaletteData palette = data.palette;
 		ImageData newData = data;
-		if (!palette.isDirect) {
-			/* Convert the palette entries to gray. */
-			RGB [] rgbs = palette.getRGBs();
-			for (int i=0; i<rgbs.length; i++) {
-				if (data.transparentPixel != i) {
-					RGB color = rgbs [i];
-					int red = color.red;
-					int green = color.green;
-					int blue = color.blue;
-					int intensity = (red+red+green+green+green+green+green+blue) >> 3;
-					color.red = color.green = color.blue = intensity;
-				}
-			}
-			newData.palette = new PaletteData(rgbs);
-		} else {
+		if (palette.isDirect) {
 			/* Create a 8 bit depth image data with a gray palette. */
 			RGB[] rgbs = new RGB[256];
-			for (int i=0; i<rgbs.length; i++) {
-				rgbs[i] = new RGB(i, i, i);
-			}
+			for (int i= 0; i < rgbs.length; i++)
+				rgbs[i]= new RGB(i, i, i);
+			
 			newData = new ImageData(width, height, 8, new PaletteData(rgbs));
 			newData.maskData = data.maskData;
 			newData.maskPad = data.maskPad;
@@ -399,10 +392,10 @@ public Image(Device device, Image srcImage, int flag) {
 			int redShift = palette.redShift;
 			int greenShift = palette.greenShift;
 			int blueShift = palette.blueShift;
-			for (int y=0; y<height; y++) {
+			for (int y= 0; y < height; y++) {
 				int offset = y * newData.bytesPerLine;
 				data.getPixels(0, y, width, scanline, 0);
-				for (int x=0; x<width; x++) {
+				for (int x= 0; x < width; x++) {
 					int pixel = scanline[x];
 					int red = pixel & redMask;
 					red = (redShift < 0) ? red >>> -redShift : red << redShift;
@@ -414,9 +407,24 @@ public Image(Device device, Image srcImage, int flag) {
 						(byte)((red+red+green+green+green+green+green+blue) >> 3);
 				}
 			}
+		} else {
+			/* Convert the palette entries to gray. */
+			RGB [] rgbs = palette.getRGBs();
+			for (int i= 0; i < rgbs.length; i++) {
+				if (data.transparentPixel != i) {
+					RGB color = rgbs [i];
+					int red = color.red;
+					int green = color.green;
+					int blue = color.blue;
+					int intensity = (red+red+green+green+green+green+green+blue) >> 3;
+					color.red = color.green = color.blue = intensity;
+				}
+			}
+			newData.palette = new PaletteData(rgbs);
 		}
 		init (device, newData);
 		break;
+		
 	default:
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -716,78 +724,81 @@ public ImageData getImageData() {
 	int width = srcBounds.width;
 	int height = srcBounds.height;
     int srcDepth= getDepth(pixmap);
-    int srcRowBytes= rowBytes(width, srcDepth);
-    int srcBitsPerPixel= srcDepth;
-
-	/* Calculate the palette depending on the display attributes */
-	PaletteData palette = null;
 
 	/* Get the data for the source image. */
+    int srcRowBytes= rowBytes(width, srcDepth);
+    int srcBitsPerPixel= srcDepth;
 	byte[] srcData = new byte[srcRowBytes * height];
  	copyPixMapData(pixmap, srcData);
-	
-	switch (srcDepth) {
-		case 1:
-			palette = new PaletteData(new RGB[] {
-				new RGB(0, 0, 0),
-				new RGB(255, 255, 255)
-			});
-			break;
-		case 4:
-			/*
-			 * We currently don't run on a 4-bit server, so 4-bit images
-			 * should not exist.
-			 */
-			SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
-		case 8:
-			/* Normalize the pixels in the source image data (by making the
-			 * pixel values sequential starting at pixel 0). Reserve normalized
-			 * pixel 0 so that it maps to real pixel 0. This assumes pixel 0 is
-			 * always used in the image.
-			 */
-			byte[] normPixel = new byte[ 256 ];
-			for (int index = 0; index < normPixel.length; index++) {
-				normPixel[ index ] = 0;
-			}
-			int numPixels = 1;
-			int index = 0;
-			for (int y = 0; y < height; y++) {
-				for (int x = 0; x < srcRowBytes; x++) {
-					int srcPixel = srcData[ index + x ] & 0xFF;
-					if (srcPixel != 0 && normPixel[ srcPixel ] == 0) {
-						normPixel[ srcPixel ] = (byte)numPixels++;
-					}
-					srcData[ index + x ] = normPixel[ srcPixel ];
-				}
-				index += srcRowBytes;
-			}
-			
-			short[] colorTable= getColorTable(pixmap);
 
-			/* Create a palette with only the RGB values used in the image. */
-			RGB[] rgbs = new RGB[ numPixels ];
-			for (int srcPixel = 0; srcPixel < normPixel.length; srcPixel++) {
-				// If the pixel value was used in the image, get its RGB values.
-				if (srcPixel == 0 || normPixel[ srcPixel ] != 0) {
-					int packed= getRGB(colorTable, srcPixel);
-					int rgbIndex = normPixel[ srcPixel ] & 0xFF;
-					rgbs[ rgbIndex ] = new RGB((packed >> 16) & 0xFF, (packed >> 8) & 0xFF, (packed >> 0) & 0xFF);					
+	/* Build the palette */
+	PaletteData palette = null;
+	switch (srcDepth) {
+	case 1:
+		palette = new PaletteData(new RGB[] {
+			new RGB(0, 0, 0),
+			new RGB(255, 255, 255)
+		});
+		break;
+	case 4:
+		short[] colorTable4= getColorTable(pixmap);
+		RGB[] rgbs4 = new RGB[ colorTable4.length/4 ];
+		for (int i = 0; i < rgbs4.length; i++) {
+			int packed= getRGB(colorTable4, i);
+			rgbs4[i] = new RGB((packed >> 16) & 0xFF, (packed >> 8) & 0xFF, (packed >> 0) & 0xFF);
+		}
+		palette = new PaletteData(rgbs4);
+		break;
+	case 8:
+		/* Normalize the pixels in the source image data (by making the
+		 * pixel values sequential starting at pixel 0). Reserve normalized
+		 * pixel 0 so that it maps to real pixel 0. This assumes pixel 0 is
+		 * always used in the image.
+		 */
+		byte[] normPixel = new byte[ 256 ];
+		for (int index = 0; index < normPixel.length; index++) {
+			normPixel[ index ] = 0;
+		}
+		int numPixels = 1;
+		int index = 0;
+		for (int y = 0; y < height; y++) {
+			for (int x = 0; x < srcRowBytes; x++) {
+				int srcPixel = srcData[ index + x ] & 0xFF;
+				if (srcPixel != 0 && normPixel[ srcPixel ] == 0) {
+					normPixel[ srcPixel ] = (byte)numPixels++;
 				}
+				srcData[ index + x ] = normPixel[ srcPixel ];
 			}
-			palette = new PaletteData(rgbs);
-			break;
-		case 16:
-		case 24:
-		case 32:
-			palette = new PaletteData(getRedMask(srcDepth), getGreenMask(srcDepth), getBlueMask(srcDepth));
-			break;
-		default:
-			SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
+			index += srcRowBytes;
+		}
+		
+		short[] colorTable= getColorTable(pixmap);
+
+		/* Create a palette with only the RGB values used in the image. */
+		RGB[] rgbs = new RGB[ numPixels ];
+		for (int srcPixel = 0; srcPixel < normPixel.length; srcPixel++) {
+			// If the pixel value was used in the image, get its RGB values.
+			if (srcPixel == 0 || normPixel[ srcPixel ] != 0) {
+				int packed= getRGB(colorTable, srcPixel);
+				int rgbIndex = normPixel[ srcPixel ] & 0xFF;
+				rgbs[ rgbIndex ] = new RGB((packed >> 16) & 0xFF, (packed >> 8) & 0xFF, (packed >> 0) & 0xFF);					
+			}
+		}
+		palette = new PaletteData(rgbs);
+		break;
+	case 16:
+	case 24:
+	case 32:
+		palette = new PaletteData(getRedMask(srcDepth), getGreenMask(srcDepth), getBlueMask(srcDepth));
+		break;
+	default:
+		SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
+	
 	
 	ImageData data = new ImageData(width, height, srcDepth, palette);
 	data.data = srcData;
-	if (false && srcBitsPerPixel == 32) {
+	if (srcBitsPerPixel == 32) {
 		/*
 		 * If bits per pixel is 32, scale the data down to 24, since we do not
 		 * support 32-bit images
@@ -798,17 +809,14 @@ public ImageData getImageData() {
 		byte[] newData = new byte[bytesPerLine * height];
 		int destIndex = 0;
 		int srcIndex = 0;
-		int rOffset = 0, gOffset = 1, bOffset = 2;
-		// MSBFirst:
-		rOffset = 3; gOffset = 2; bOffset = 1;
 		
 		for (int y = 0; y < height; y++) {
 			destIndex = y * bytesPerLine;
 			srcIndex = y * srcRowBytes;
 			for (int x = 0; x < width; x++) {
-				newData[destIndex] = oldData[srcIndex + rOffset];
-				newData[destIndex + 1] = oldData[srcIndex + gOffset];
-				newData[destIndex + 2] = oldData[srcIndex + bOffset];
+				newData[destIndex] = oldData[srcIndex + 1];
+				newData[destIndex + 1] = oldData[srcIndex + 2];
+				newData[destIndex + 2] = oldData[srcIndex + 3];
 				srcIndex += 4;
 				destIndex += 3;
 			}
@@ -915,12 +923,11 @@ void init(Device device, int width, int height) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	/* Create the pixmap */
-	if (width <= 0 | height <= 0) {
+	if (width <= 0 | height <= 0)
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
 
 	this.type = SWT.BITMAP;
-	int pixmap = createPixMap(width, height, device.fScreenDepth);
+	this.pixmap = createPixMap(width, height, device.fScreenDepth);
 
 	/* Fill the bitmap with white */
     int[] offscreenGWorld= new int[1];
@@ -936,8 +943,6 @@ void init(Device device, int width, int height) {
 	OS.SetGWorld(savePort[0], saveGWorld[0]);
 	
 	OS.DisposeGWorld(gw);
-	
-	this.pixmap = pixmap;
 }
 void init(Device device, ImageData image) {
 	if (device == null) device = Device.getDevice();
@@ -945,13 +950,14 @@ void init(Device device, ImageData image) {
 	this.device = device;
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 
-	int screenDepth = device.fScreenDepth;
-	int pixmap = createPixMap(image.width, image.height, screenDepth);
+	//int pixmapDepth = device.fScreenDepth;
+	int pixmapDepth = image.depth;
+	int pixmap = createPixMap(image.width, image.height, pixmapDepth);
 
 	int[] transPixel = null;
 	if (image.transparentPixel != -1) transPixel = new int[]{image.transparentPixel};
-	int error= putImage(image, 0, 0, image.width, image.height,
-							    0, 0, image.width, image.height, screenDepth, transPixel, pixmap);
+	
+	int error= putImage(image, pixmapDepth, transPixel, pixmap);
 	if (error != 0) {
 		disposeBitmapOrPixmap(pixmap);
 		SWT.error(error);
@@ -1045,6 +1051,7 @@ public void internal_dispose_GC (int gc, GCData data) {
 public boolean isDisposed() {
 	return pixmap == 0;
 }
+/*
 public static Image macosx_new(Device device, int type, int pixmap, int mask) {
 	if (device == null) device = Device.getDevice();
 	Image image = new Image();
@@ -1054,13 +1061,15 @@ public static Image macosx_new(Device device, int type, int pixmap, int mask) {
 	image.mask = mask;
 	return image;
 }
+*/
 /**
  * Put a device-independent image of any depth into a drawable of any depth,
- * stretching if necessary.
  */
-static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHeight,
-		int destX, int destY, int destWidth, int destHeight,
-		int screenDepth, int[] transparentPixel, int drawable) {
+static int putImage(ImageData image, int screenDepth, int[] transparentPixel, int drawable) {
+	
+	int srcX= 0, srcY= 0;
+	int srcWidth= image.width, srcHeight= image.height;
+	int destX= srcX, destY= srcY, destWidth= srcWidth, destHeight= srcHeight;
 			
 	PaletteData palette = image.palette;
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
@@ -1077,6 +1086,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		destHeight = -destHeight;
 		destY = destY - destHeight;
 	}
+	
 	byte[] srcReds = null, srcGreens = null, srcBlues = null;
 	if (!palette.isDirect) {
 		RGB[] rgbs = palette.getRGBs();
@@ -1092,23 +1102,20 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			srcBlues[i] = (byte)rgb.blue;
 		}
 	}
+	
 	byte[] destReds = null, destGreens = null, destBlues = null;
 	int destRedMask = 0, destGreenMask = 0, destBlueMask = 0;
 	final boolean screenDirect;
 	if (screenDepth <= 8) {
-		/*
-		if (xcolors == null) return SWT.ERROR_UNSUPPORTED_DEPTH;
-		destReds = new byte[xcolors.length];
-		destGreens = new byte[xcolors.length];
-		destBlues = new byte[xcolors.length];
-		for (int i = 0; i < xcolors.length; i++) {
-			XColor color = xcolors[i];
-			if (color == null) continue;
-			destReds[i] = (byte)((color.red >> 8) & 0xFF);
-			destGreens[i] = (byte)((color.green >> 8) & 0xFF);
-			destBlues[i] = (byte)((color.blue >> 8) & 0xFF);
+		destReds = new byte[srcReds.length];
+		destGreens = new byte[srcGreens.length];
+		destBlues = new byte[srcBlues.length];
+		for (int i = 0; i < srcReds.length; i++) {
+			destReds[i] = srcReds[i];
+			destGreens[i] = srcGreens[i];
+			destBlues[i] = srcBlues[i];
 		}
-		*/
+		setColorTable(drawable, destReds, destGreens, destBlues);
 		screenDirect = false;
 	} else {
 		destRedMask = getRedMask(screenDepth);
@@ -1136,14 +1143,14 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
 	}
 	
-	int destDepth= 32;
+	int destDepth= screenDepth; // Device.getDeviceDepth(OS.GetMainDevice());
 	int destBitsPerPixel= destDepth;
 	
 	int dest_red_mask= getRedMask(destBitsPerPixel);
 	int dest_green_mask= getGreenMask(destBitsPerPixel);
 	int dest_blue_mask= getBlueMask(destBitsPerPixel);
 	
-	int destRowBytes= rowBytes(destWidth, 32);
+	int destRowBytes= rowBytes(destWidth, destDepth);
 	int bufSize = destRowBytes * destHeight;	
 	byte[] buf = new byte[bufSize];
 
@@ -1377,12 +1384,14 @@ public String toString () {
 			int bytesPerRow= rowBytes(w, depth);
 			byte[] data= new byte[bytesPerRow*h];
 		
-			short[] reds= new short[256];
-			short[] greens= new short[256];
-			short[] blues= new short[256];
+			byte[] reds= new byte[256];
+			byte[] greens= new byte[256];
+			byte[] blues= new byte[256];
 			
 			int[] values= new int[256];
 			int i, fill= 0;
+			
+			boolean d16= id.depth == 16;
 			
 			for (int y= 0; y < h; y++) {
 				for (int x= 0; x < w; x++) {
@@ -1397,9 +1406,15 @@ public String toString () {
 					if (i >= fill) {
 						index= fill++;
 						values[index]= value;
-						reds[index]= (short)((value >> 16) & 0xFF);
-						greens[index]= (short)((value >> 8) & 0xFF); 
-						blues[index]= (short)(value & 0xFF); 
+						if (!d16) {
+							reds[index]= (byte)((value >> 16) & 0xFF);
+							greens[index]= (byte)((value >> 8) & 0xFF); 
+							blues[index]= (byte)((value) & 0xFF);
+						} else {
+							reds[index]= (byte)(((value >> 10) & 0x1F) << 3);
+							greens[index]= (byte)(((value >> 5) & 0x1F) << 3); 
+							blues[index]= (byte)(((value) & 0x1F) << 3);
+						}
 					}
 					if (index >= 0)
 						data[y*bytesPerRow+x]= (byte)index;
@@ -1409,7 +1424,7 @@ public String toString () {
 			setColorTable(pm, reds, greens, blues);
 			setPixMapData(pm, data);
 		} else {
-			System.out.println("---> CIcon: can use pixmap");
+			//System.out.println("---> CIcon: can use pixmap");
 		}
 		
 		int icon= 0;
@@ -1439,7 +1454,7 @@ public String toString () {
 		//fgIconCount--;
 	}
 	
-	private static void setColorTable(int pixmapHandle, short[] red, short[] green, short[] blue) {
+	private static void setColorTable(int pixmapHandle, byte[] red, byte[] green, byte[] blue) {
 		int n= Math.max(Math.max(red.length, green.length), blue.length);
 		short[] colorSpec= new short[n*4];
 		int j= 0;
@@ -1495,6 +1510,7 @@ public String toString () {
 	
 	private static int getRedMask(int depth) {
 		switch (depth) {
+		case 15:
 		case 16:
 			return 0x7C00;
 		case 24:
@@ -1506,6 +1522,7 @@ public String toString () {
 	
 	private static int getGreenMask(int depth) {
 		switch (depth) {
+		case 15:
 		case 16:
 			return 0x03E0;
 		case 24:
@@ -1517,6 +1534,7 @@ public String toString () {
 	
 	private static int getBlueMask(int depth) {
 		switch (depth) {
+		case 15:
 		case 16:
 			return 0x001F;
 		case 24:
@@ -1582,6 +1600,10 @@ public String toString () {
 		if (colorTable == null)
 			return 0;
 		int base= pixel*4;
+		if (base + 3 >= colorTable.length) {
+			System.out.println("Image.getRGB: out of bounds");
+			return 0;
+		}
 		int red= colorTable[base+1] >> 8;
 		int green= colorTable[base+2] >> 8;
 		int blue= colorTable[base+3] >> 8;
