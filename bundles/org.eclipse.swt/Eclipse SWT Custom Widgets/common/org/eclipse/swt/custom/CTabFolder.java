@@ -70,6 +70,8 @@ public class CTabFolder extends Composite {
 	 * 
 	 * NOTE This field is badly named and can not be fixed for backwards compatability.
 	 * It should not be capitalized.
+	 * 
+	 * @deprecated This field is no longer used.  See setMinimumCharacters(int)
 	 */
 	public int MIN_TAB_WIDTH = 4;
 	
@@ -108,6 +110,7 @@ public class CTabFolder extends Composite {
 	boolean simple = true;
 	int fixedTabHeight = SWT.DEFAULT;
 	int tabHeight;
+	int minChars = 5;
 	
 	/* item management */
 	CTabItem items[] = new CTabItem[0];
@@ -472,9 +475,9 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 		}
 		RGB from = lineRGB;
 		RGB to = outerRGB;
-		int red = from.red + 4*(to.red - from.red)/5;
-		int green = from.green + 4*(to.green - from.green)/5;
-		int blue = from.blue + 4*(to.blue - from.blue)/5;
+		int red = from.red + 2*(to.red - from.red)/3;
+		int green = from.green + 2*(to.green - from.green)/3;
+		int blue = from.blue + 2*(to.blue - from.blue)/3;
 		Color color = new Color(getDisplay(), red, green, blue);
 		gc.setForeground(color);
 		gc.drawPolyline(outer);
@@ -495,9 +498,9 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 		}
 		RGB from = lineRGB;
 		RGB to = innerRGB;
-		int red = from.red + 4*(to.red - from.red)/5;
-		int green = from.green + 4*(to.green - from.green)/5;
-		int blue = from.blue + 4*(to.blue - from.blue)/5;
+		int red = from.red + 2*(to.red - from.red)/3;
+		int green = from.green + 2*(to.green - from.green)/3;
+		int blue = from.blue + 2*(to.blue - from.blue)/3;
 		Color color = new Color(getDisplay(), red, green, blue);
 		gc.setForeground(color);
 		gc.drawPolyline(inner);
@@ -511,9 +514,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	GC gc = new GC(this);
 	for (int i = 0; i < items.length; i++) {
 		if (single) {
-			tabW = Math.max(tabW, items[i].preferredWidth(gc, true));
+			tabW = Math.max(tabW, items[i].preferredWidth(gc, true, false));
 		} else {
-			tabW += items[i].preferredWidth(gc, i == selectedIndex);
+			tabW += items[i].preferredWidth(gc, i == selectedIndex, false);
 			if (!simple && i == selectedIndex) tabW += curveWidth - curveIndent;
 		}
 	}
@@ -1324,6 +1327,14 @@ public boolean getMinimizeVisible() {
 	checkWidget();
 	return showMin;
 }
+/** 
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public int getMinimumCharacters() {
+	checkWidget();
+	return minChars;
+}
 /**
  * Returns <code>true</code> if the receiver is maximized,
  * and false otherwise.
@@ -2075,7 +2086,7 @@ void onResize() {
 		redraw();
 		return;
 	}
-	if (updateItems()) redraw();
+	if (updateItems()) redrawTabs();
 	showSelection();
 	
 	Point size = getSize();
@@ -2086,12 +2097,13 @@ void onResize() {
 			redraw();
 		} else {
 			int x1 = Math.min(size.x, oldSize.x);
-			if (size.x != oldSize.x) x1 -= 10;
+			if (size.x != oldSize.x) x1 -= borderRight + highlight_margin;
+			if (!simple) x1 -= 5; // rounded top right corner
 			int y1 = Math.min(size.y, oldSize.y);
-			if (size.y != oldSize.y) y1 -= 10;
+			if (size.y != oldSize.y) y1 -= borderBottom + highlight_margin;
 			int x2 = Math.max(size.x, oldSize.x);
 			int y2 = Math.max(size.y, oldSize.y);		
-			redraw(0, y1, x2 + 10, y2 - y1, false);
+			redraw(0, y1, x2, y2 - y1, false);
 			redraw(x1, 0, x2 - x1, y2, false);
 		}
 	}
@@ -2127,6 +2139,14 @@ void onTraverse (Event event) {
 			event.doit = onPageTraversal(event);
 			event.detail = SWT.TRAVERSE_NONE;
 			break;
+	}
+}
+void redrawTabs() {
+	Point size = getSize();
+	if (onBottom) {
+		redraw(0, size.y - borderBottom - tabHeight - highlight_header - 1, size.x, borderBottom + tabHeight + highlight_header + 1, false);
+	} else {
+		redraw(0, 0, size.x, borderTop + tabHeight + highlight_header + 1, false);
 	}
 }
 /**
@@ -2403,11 +2423,10 @@ public void setBorderVisible(boolean show) {
 	}
 	redraw();
 }
-boolean setButtonBounds() {
-	int oldX, oldY, oldWidth, oldHeight;
-	boolean changed = false;
+void setButtonBounds() {
 	Point size = getSize();
-	
+	int oldX, oldY, oldWidth, oldHeight;
+	// max button
 	oldX = maxRect.x;
 	oldY = maxRect.y;
 	oldWidth = maxRect.width;
@@ -2421,8 +2440,13 @@ boolean setButtonBounds() {
 		maxRect.height = BUTTON_SIZE;
 	}
 	if (oldX != maxRect.x || oldWidth != maxRect.width ||
-	    oldY != maxRect.y || oldHeight != maxRect.height) changed = true;
+	    oldY != maxRect.y || oldHeight != maxRect.height) {
+		int left = Math.min(oldX, maxRect.x), top = Math.min(oldY, maxRect.y);
+		int right = Math.max(oldX + oldWidth, maxRect.x + maxRect.width), bottom = Math.max(oldY + oldHeight, maxRect.y + maxRect.height);
+		redraw(left, top, right - left, bottom - top, false); 
+	}
 	
+	// min button
 	oldX = minRect.x;
 	oldY = minRect.y;
 	oldWidth = minRect.width;
@@ -2436,8 +2460,13 @@ boolean setButtonBounds() {
 		minRect.height = BUTTON_SIZE;
 	}
 	if (oldX != minRect.x || oldWidth != minRect.width ||
-	    oldY != minRect.y || oldHeight != minRect.height) changed = true;
+	    oldY != minRect.y || oldHeight != minRect.height) {
+		int left = Math.min(oldX, minRect.x), top = Math.min(oldY, minRect.y);
+		int right = Math.max(oldX + oldWidth, minRect.x + minRect.width), bottom = Math.max(oldY + oldHeight, minRect.y + minRect.height);
+		redraw(left, top, right - left, bottom - top, false);
+	}
 	
+	// top right control
 	oldX = topRightRect.x;
 	oldY = topRightRect.y;
 	oldWidth = topRightRect.width;
@@ -2486,9 +2515,9 @@ boolean setButtonBounds() {
 	}
 	if (oldX != topRightRect.x || oldWidth != topRightRect.width ||
 		oldY != topRightRect.y || oldHeight != topRightRect.height) {	
-		changed = true;
 	}
-		
+	
+	// chevron button
 	oldX = chevronRect.x;
 	oldY = chevronRect.y;
 	oldWidth = chevronRect.width;
@@ -2522,9 +2551,11 @@ boolean setButtonBounds() {
 		}
 	}
 	if (oldX != chevronRect.x || oldWidth != chevronRect.width ||
-	    oldY != chevronRect.y || oldHeight != chevronRect.height) changed = true;
-	
-	return changed;
+	    oldY != chevronRect.y || oldHeight != chevronRect.height) {
+		int left = Math.min(oldX, chevronRect.x), top = Math.min(oldY, chevronRect.y);
+		int right = Math.max(oldX + oldWidth, chevronRect.x + chevronRect.width), bottom = Math.max(oldY + oldHeight, chevronRect.y + chevronRect.height);
+		redraw(left, top, right - left, bottom - top, false);
+	}
 }
 void setFirstItem(int index) {
 	if (index < 0 || index > items.length - 1) return;
@@ -2532,7 +2563,7 @@ void setFirstItem(int index) {
 	firstIndex = index;
 	setItemLocation();
 	setButtonBounds();
-	redraw();
+	redrawTabs();
 }
 public void setFont(Font font) {
 	checkWidget();
@@ -2606,26 +2637,26 @@ public void setInsertMark(int index, boolean after) {
 //	if (oldIndex > 1) redrawTabArea(oldIndex);
 }
 boolean setItemLocation() {
-	if (items.length == 0) return false;
+	boolean changed = false;
+	if (items.length == 0) return changed;
 	Point size = getSize();
 	int y = onBottom ? Math.max(borderBottom, size.y - borderBottom - tabHeight) : borderTop;
-	boolean changed = false;
 	if (single) {
 		int defaultX = size.x + 10; // off screen
 		for (int i = 0; i < items.length; i++) {
-			if (items[i].x != defaultX) changed = true;
-			items[i].x = defaultX; 	
-		}
-		if (selectedIndex > -1) {
-			CTabItem item = items[selectedIndex];
-			int oldX = item.x, oldY = item.y;
-			item.x = borderLeft;
-			item.y = y;
-			if (showClose || item.showClose) {
-				item.closeRect.x = borderLeft + CTabItem.LEFT_MARGIN;
-				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
+			if (i == selectedIndex) {
+				CTabItem item = items[selectedIndex];
+				int oldX = item.x, oldY = item.y;
+				item.x = borderLeft;
+				item.y = y;
+				if (showClose || item.showClose) {
+					item.closeRect.x = borderLeft + CTabItem.LEFT_MARGIN;
+					item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
+				}
+				if (item.x != oldX || item.y != oldY) changed = true;
+			} else {
+				items[i].x = defaultX;
 			}
-			if (item.x != oldX || item.y != oldY) changed = true;
 		}
 	} else {
 		int x = -1;
@@ -2633,7 +2664,6 @@ boolean setItemLocation() {
 			// if the first visible tab is not the first tab
 			CTabItem item = items[i];
 			x -= item.width; 
-			if (!changed && (item.x != x || item.y != y) ) changed = true;
 			// layout tab items from right to left thus making them invisible
 			item.x = x;
 			item.y = y;
@@ -2646,6 +2676,7 @@ boolean setItemLocation() {
 			// continue laying out remaining, visible items left to right 
 			CTabItem item = items[i];
 			if (i > firstIndex && !simple && i-1 == selectedIndex) x -= curveIndent;
+			if (item.x != x || item.y != y) changed = true;
 			item.x = x;
 			item.y = y;
 			if (i == selectedIndex) {
@@ -2661,8 +2692,11 @@ boolean setItemLocation() {
 
 		CTabItem item = items[items.length - 1];
 		if (item.x + item.width < getRightItemEdge()) {
-			setLastIndex(items.length - 1);
-			changed = true;
+			int lastIndex = getLastIndex();
+			if (lastIndex < items.length - 1) {
+				setLastIndex(items.length - 1);
+				changed = true;
+			}
 		}
 	}
 	return changed;
@@ -2684,7 +2718,7 @@ boolean setItemSize() {
 		if (selectedIndex != -1) {
 			CTabItem tab = items[selectedIndex];
 			GC gc = new GC(this);
-			int width = tab.preferredWidth(gc, true);
+			int width = tab.preferredWidth(gc, true, false);
 			gc.dispose();
 			width = Math.min(width, getRightItemEdge() - borderLeft);
 			if (tab.height != tabHeight || tab.width != width) {
@@ -2707,16 +2741,15 @@ boolean setItemSize() {
 	widths = new int[items.length];
 	GC gc = new GC(this);
 	for (int i = 0; i < items.length; i++) {
-		widths[i] = items[i].preferredWidth(gc, i == selectedIndex);
-	}
-	gc.dispose();
-	
-	if (items.length > 1) {
+		widths[i] = items[i].preferredWidth(gc, i == selectedIndex, false);
+	}	
+	if (items.length > 0) {
 		int totalWidth = 0;
 		int tabAreaWidth = size.x - borderLeft - borderRight - 3;
 		if (showMin) tabAreaWidth -= BUTTON_SIZE;
 		if (showMax) tabAreaWidth -= BUTTON_SIZE;
 		if (!simple) tabAreaWidth -= curveWidth - curveIndent;
+		tabAreaWidth = Math.max(0, tabAreaWidth);
 		int count = items.length;
 		for (int i = 0 ; i < count; i++) {
 			totalWidth += widths[i];
@@ -2726,17 +2759,20 @@ boolean setItemSize() {
 			firstIndex = 0;
 		} else {
 			// try to compress items
-			int minWidth = MIN_TAB_WIDTH * tabHeight;
 			totalWidth = 0;
 			int large = 0;
+			int[] minWidths = new int[items.length];
 			for (int i = 0 ; i < count; i++) {
-				totalWidth += Math.min(widths[i], minWidth);
-				if (widths[i] > minWidth) large++;
+				minWidths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
+				totalWidth += Math.min(widths[i], minWidths[i]);
+				if (widths[i] > minWidths[i]) large++;
 			}
 			if (totalWidth > tabAreaWidth) {
-				// maximum compression required
-				showChevron = true;
+				//  maximum compression required and a chevron
+				showChevron = items.length > 1;
+				if (showChevron) tabAreaWidth -= 3 *BUTTON_SIZE/2; 
 				for (int i = 0; i < count; i++) {
+					int minWidth = Math.min(tabAreaWidth, minWidths[i]);
 					widths[i] = Math.min(widths[i], minWidth);
 				}
 			} else {
@@ -2747,8 +2783,8 @@ boolean setItemSize() {
 					totalWidth = 0;
 					large = 0;
 					for (int i = 0 ; i < count; i++) {
-						totalWidth += Math.min(widths[i], minWidth + extra);
-						if (widths[i] > minWidth + extra) large++;
+						totalWidth += Math.min(widths[i], minWidths[i] + extra);
+						if (widths[i] > minWidths[i] + extra) large++;
 					}
 					if (totalWidth >= tabAreaWidth) {
 						extra--;
@@ -2758,21 +2794,22 @@ boolean setItemSize() {
 					extra++;
 				}
 				for (int i = 0; i < items.length; i++) {
-					widths[i] = Math.min(widths[i], minWidth + extra);
+					widths[i] = Math.min(widths[i], minWidths[i] + extra);
 				}	
 			}
 		}
 	}
 	
 	for (int i = 0; i < items.length; i++) {
-		if (!simple && i == selectedIndex) widths[i] += curveWidth - curveIndent;
 		CTabItem tab = items[i];
-		if (tab.height != tabHeight || tab.width != widths[i]) {
+		int width = widths[i];
+		if (!simple && i == selectedIndex) width += curveWidth - curveIndent;
+		if (tab.height != tabHeight || tab.width != width) {
 			changed = true;
 			tab.shortenedText = null;
 			tab.shortenedTextWidth = 0;
 			tab.height = tabHeight;
-			tab.width = widths[i];
+			tab.width = width;
 			tab.closeRect.width = tab.closeRect.height = 0;
 			if (showClose || tab.showClose) {
 				if (i == selectedIndex || showUnselectedClose) {
@@ -2782,6 +2819,7 @@ boolean setItemSize() {
 			}
 		}
 	}
+	gc.dispose();
 	return changed;
 }
 void setLastIndex(int index) {
@@ -2799,7 +2837,7 @@ void setLastIndex(int index) {
 	firstIndex = index;
 	setItemLocation();
 	setButtonBounds();
-	redraw();
+	redrawTabs();
 }
 /**
  * UNDER CONSTRUCTION
@@ -2846,6 +2884,18 @@ public void setMinimized(boolean minimize) {
 	if (minimize && this.maximized) setMaximized(false);
 	this.minimized = minimize;
 	redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+}
+
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public void setMinimumCharacters(int count) {
+	checkWidget ();
+	if (count < 0) SWT.error(SWT.ERROR_INVALID_RANGE);
+	if (minChars == count) return;
+	minChars = count;
+	if (updateItems()) redrawTabs();
 }
 /**
  * Set the selection to the tab at the specified item.
@@ -3378,7 +3428,7 @@ boolean updateItems() {
 	boolean changed = false;
 	if (setItemSize()) changed = true;
 	if (setItemLocation()) changed = true;
-	if (setButtonBounds()) changed = true;
+	setButtonBounds();
 	if (selectedIndex != -1) {
 		int top = firstIndex;
 		showItem(items[selectedIndex]);
@@ -3409,16 +3459,16 @@ boolean updateTabHeight(boolean force){
 	oldSize = null;
 	if (onBottom) {
 		int d = tabHeight - 12;
-		curve = new int[]{0,13+d, 0,12+d, 3,12+d, 4,11+d, 6,11+d, 7,10+d, 8,10+d, 10,8+d, 11,8+d,
-				          12,7+d, 12+d,7,
-						  13+d,6, 14+d,6, 16+d,4, 17+d,4, 18+d,3, 20+d,3, 21+d,2, 25+d,2, 26+d,1}; 
+		curve = new int[]{0,13+d, 0,12+d, 2,12+d, 3,11+d, 5,11+d, 6,10+d, 7,10+d, 9,8+d, 10,8+d,
+				          11,7+d, 11+d,7,
+						  12+d,6, 13+d,6, 15+d,4, 16+d,4, 17+d,3, 19+d,3, 20+d,2, 22+d,2, 23+d,1}; 
 		curveWidth = 26+d;
 		curveIndent = curveWidth/3;	
 	} else {
 		int d = tabHeight - 12;
-		curve = new int[]{0,0, 0,1, 3,1, 4,2, 6,2, 7,3, 8,3, 10,5, 11,5,
-				          12,6, 12+d,6+d,
-				          13+d,7+d, 14+d,7+d, 16+d,9+d, 17+d,9+d, 18+d,10+d, 20+d,10+d, 21+d,11+d, 25+d,11+d, 26+d,12+d};
+		curve = new int[]{0,0, 0,1, 2,1, 3,2, 5,2, 6,3, 7,3, 9,5, 10,5,
+				          11,6, 11+d,6+d,
+				          12+d,7+d, 13+d,7+d, 15+d,9+d, 16+d,9+d, 17+d,10+d, 19+d,10+d, 20+d,11+d, 22+d,11+d, 23+d,12+d};
 		curveWidth = 26+d;
 		curveIndent = curveWidth/3;
 	}
