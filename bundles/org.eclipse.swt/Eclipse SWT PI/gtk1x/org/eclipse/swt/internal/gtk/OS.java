@@ -552,6 +552,8 @@ static int malloc(String name) {
 	}
 	return OS.g_strdup (buffer);
 }
+
+public static final native void gtk_widget_show_all(int widget);
 public static final native void gtk_widget_show_now(int widget);
 public static final native void gtk_widget_queue_draw(int widget);
 public static final native void gtk_widget_set_style(int widget, int style);
@@ -595,8 +597,9 @@ public static final native void memmove(GtkCombo dest, int src, int size);
 public static final native void memmove(GtkContainer dest, int src, int size);
 public static final native void memmove(GtkCTreeRow dest, int src, int size);
 public static final native void memmove(GtkEditable dest, int src, int size);
-public static final native void memmove(GtkObject dest, int src, int size);
-public static final native void memmove(GtkWidget dest, int src, int size);
+public static final native void memmove(GtkDialog dest,   int src, int size);
+public static final native void memmove(GtkObject dest,   int src, int size);
+public static final native void memmove(GtkWidget dest,   int src, int size);
 public static final native void memmove(int dest, GtkAdjustment src, int size);
 public static final native void memmove(int dest, GtkBin src, int size);
 public static final native void memmove(int dest, GtkCListColumn src, int size);

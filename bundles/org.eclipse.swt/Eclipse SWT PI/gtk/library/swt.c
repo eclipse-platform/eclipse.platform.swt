@@ -1101,7 +1101,8 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1dialog_1new
 	fprintf(stderr, "gtk_dialog_new");
 #endif
 
-	return (jint)gtk_dialog_new();
+	GtkDialog* dialog = (GtkDialog*)gtk_dialog_new();
+	return (jint)dialog;
 }
 
 /*
@@ -3153,6 +3154,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1show_1n
 #endif
 
 	gtk_widget_show_now((GtkWidget*)widget);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1show_1all
+  (JNIEnv *env, jclass that, jint widget)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_widget_show_all");
+#endif
+
+	gtk_widget_show_all((GtkWidget*)widget);
 }
 
 /*
@@ -5847,6 +5858,23 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 		dest1 = &dest_struct;
 		cacheGdkColorFids(env, dest, &PGLOB(GdkColorFc));
 		setGdkColorFields(env, dest, dest1, &PGLOB(GdkColorFc));
+	}
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GtkDialog_2II
+  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	GtkDialog dest_struct={0}, *dest1 = NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_gtk_GtkDialog_2II\n");
+#endif
+
+	memmove((void*)&dest_struct, (void*)src, count);
+	if (dest) {
+		dest1 = &dest_struct;
+		cacheGtkDialogFids(env, dest, &PGLOB(GtkDialogFc));
+		setGtkDialogFields(env, dest, dest1, &PGLOB(GtkDialogFc));
 	}
 }
 

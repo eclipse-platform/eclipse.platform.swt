@@ -43,6 +43,7 @@ GtkMenuShell_FID_CACHE GtkMenuShellFc;
 GtkMenuItem_FID_CACHE GtkMenuItemFc;
 GtkCheckMenuItem_FID_CACHE GtkCheckMenuItemFc;
 GtkWindow_FID_CACHE GtkWindowFc;
+GtkDialog_FID_CACHE GtkDialogFc;
 GtkColorSelectionDialog_FID_CACHE GtkColorSelectionDialogFc;\
 GtkBox_FID_CACHE GtkBoxFc;
 GtkHBox_FID_CACHE GtkHBoxFc;
@@ -880,6 +881,19 @@ void cacheGtkWindowFids(JNIEnv *env, jobject lpGtkWindow, PGtkWindow_FID_CACHE l
 	lpCache->position = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "position", "I");
 	lpCache->use_uposition = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "use_uposition", "I");
 	lpCache->modal = (*env)->GetFieldID(env, lpCache->GtkWindowClass, "modal", "I");
+
+	lpCache->cached = 1;
+};
+
+void cacheGtkDialogFids(JNIEnv *env, jobject lpGtkDialog, PGtkDialog_FID_CACHE lpCache)
+{
+	DECL_GLOB(pGlob)
+	if (lpCache->cached) return;
+
+	lpCache->GtkDialogClass = (*env)->GetObjectClass(env, lpGtkDialog);
+	cacheGtkWindowFids(env, lpGtkDialog, &PGLOB(GtkWindowFc));
+	lpCache->vbox = (*env)->GetFieldID(env, lpCache->GtkDialogClass, "vbox", "I");
+	lpCache->action_area = (*env)->GetFieldID(env, lpCache->GtkDialogClass, "action_area", "I");
 
 	lpCache->cached = 1;
 };
@@ -2414,6 +2428,22 @@ void setGtkWindowFields(JNIEnv *env, jobject lpObject, GtkWindow *lpGtkWindow, G
 	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->position, (jint)lpGtkWindow->position);
 	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->use_uposition, (jint)lpGtkWindow->use_uposition);
 	(*env)->SetIntField(env, lpObject, lpGtkWindowFc->modal, (jint)lpGtkWindow->modal);
+}
+
+void getGtkDialogFields(JNIEnv *env, jobject lpObject, GtkDialog *lpGtkDialog, GtkDialog_FID_CACHE *lpGtkDialogFc)
+{
+	DECL_GLOB(pGlob)
+	getGtkWindowFields(env, lpObject, &lpGtkDialog->window, &PGLOB(GtkWindowFc));
+	lpGtkDialog->vbox =        (*env)->GetIntField(env, lpObject, lpGtkDialogFc->vbox);
+	lpGtkDialog->action_area = (*env)->GetIntField(env, lpObject, lpGtkDialogFc->action_area);
+}
+
+void setGtkDialogFields(JNIEnv *env, jobject lpObject, GtkDialog *lpGtkDialog, GtkDialog_FID_CACHE *lpGtkDialogFc)
+{
+	DECL_GLOB(pGlob)
+	setGtkWindowFields(env, lpObject, &lpGtkDialog->window, &PGLOB(GtkWindowFc));
+	(*env)->SetIntField(env, lpObject, lpGtkDialogFc->vbox, (jint)lpGtkDialog->vbox);
+	(*env)->SetIntField(env, lpObject, lpGtkDialogFc->action_area, (jint)lpGtkDialog->action_area);
 }
 
 void getGtkMenuFields(JNIEnv *env, jobject lpObject, GtkMenu *lpGtkMenu, GtkMenu_FID_CACHE *lpGtkMenuFc)
