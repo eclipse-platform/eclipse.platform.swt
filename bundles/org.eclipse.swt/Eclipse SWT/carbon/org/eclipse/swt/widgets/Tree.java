@@ -276,7 +276,7 @@ void createHandle () {
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
 	column.headerBtnDesc_initialOrder = (short) OS.kDataBrowserOrderIncreasing;
 	OS.AddDataBrowserListViewColumn (handle, column, position);
-	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, true);
+	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, false);
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) 0);
 
 	/*
@@ -337,7 +337,7 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 	boolean expanded = true;
 	if (parentItem != null) {
 		parentID = parentItem.id;
-		expanded = parentItem._getExpanded ();
+		expanded = parentItem.getExpanded ();
 	}
 	if (expanded) {
 		if (OS.AddDataBrowserItems (handle, parentID, 1, new int[] {item.id}, OS.kDataBrowserItemNoProperty) != OS.noErr) {
@@ -396,13 +396,15 @@ public void deselectAll () {
 }
 
 void destroyItem (TreeItem item) {
-	int parentID = item.parentItem == null ? OS.kDataBrowserNoItem : item.parentItem.id;
-	if (OS.RemoveDataBrowserItems (handle, parentID, 1, new int[] {item.id}, 0) != OS.noErr) {
-		error (SWT.ERROR_ITEM_NOT_REMOVED);
+	TreeItem parentItem = item.parentItem;
+	if (parentItem == null || parentItem.getExpanded ()) {
+		int parentID = parentItem == null ? OS.kDataBrowserNoItem : item.parentItem.id;
+		if (OS.RemoveDataBrowserItems (handle, parentID, 1, new int[] {item.id}, 0) != OS.noErr) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
 	}
 	releaseItems (item.getItems ());
 	releaseItem (item);
-	TreeItem parentItem = item.parentItem;
 	for (int i=0; i<items.length; i++) {
 		if (items [i] != null && items [i].parentItem == parentItem) {
 			if (items [i].index >= item.index) --items [i].index;
