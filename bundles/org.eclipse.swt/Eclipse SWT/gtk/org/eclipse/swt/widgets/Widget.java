@@ -911,13 +911,4 @@ char wcsToMbcs (char ch) {
 	}
 	return 0;
 }
-
-byte[] string2bytesConvertMnemonic(String string) {
-	//FIXME need to double _'s
-	char [] t = new char [string.length ()];
-	string.getChars (0, t.length, t, 0);
-	for (int i=0; i<t.length; i++) {if (t [i] == '&') t [i] = '_';}
-	return Converter.wcsToMbcs (null, t, true);
-}
-	
 }

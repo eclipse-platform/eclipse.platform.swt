@@ -193,12 +193,17 @@ public void setImage (Image image) {
 	super.setImage (image);
 }
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
-	byte [] buffer = string2bytesConvertMnemonic(string);
-	OS.gtk_label_parse_uline(handle, buffer);
+	int length = string.length ();
+	char [] text = new char [length + 1];
+	string.getChars (0, length, text, 0);
+	for (int i=0; i<length; i++) {
+		if (text [i] == '&') text [i] = '_';
+	}
+	byte [] buffer = Converter.wcsToMbcs (null, text);
+	OS.gtk_label_set_text_with_mnemonic (handle, buffer);
 }
 /**
  * Sets the receiver's tool tip text to the argument, which

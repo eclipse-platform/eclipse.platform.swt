@@ -590,34 +590,18 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	text = string;
-	if ((style & SWT.ARROW) != 0) return;
+	super.setText (string);
 	int length = string.length ();
-	int index = string.indexOf('\t');
+	int index = string.indexOf ('\t');
 	if (index != -1) length = index;
 	char [] text = new char [length + 1];
-	char [] pattern = new char [length + 1];
 	string.getChars (0, length, text, 0);
-	int i = 0, j = 0;
-	while (i < length) {
-		pattern [j] = ' ';
-		if (text [i] == '&') {
-			i++;
-			if (i < length && text [i] != '&') {
-				pattern [j] = '_';
-			}
-		}
-		text [j++] = text [i++];
-	}
-	while (j < i) {
-		text [j] = pattern [j] = '\0';
-		j++;
+	for (int i=0; i<length; i++) {
+		if (text [i] == '&') text [i] = '_';
 	}
 	int list = OS.gtk_container_children (handle);
 	int label = OS.g_list_nth_data (list, 0);
-	byte [] buffer1 = Converter.wcsToMbcs (null, text);
-	OS.gtk_label_set_text (label, buffer1);
-	byte [] buffer2 = Converter.wcsToMbcs (null, pattern);
-	OS.gtk_label_set_pattern (label, buffer2);
+	byte [] buffer = Converter.wcsToMbcs (null, text);
+	OS.gtk_label_set_text_with_mnemonic (label, buffer);
 }
 }

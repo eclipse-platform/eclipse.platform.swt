@@ -635,37 +635,22 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	text = string;
-	if ((style & SWT.ARROW) != 0) return;
+	super.setText (string);
 	int length = string.length ();
 	char [] text = new char [length + 1];
-	char [] pattern = new char [length + 1];
 	string.getChars (0, length, text, 0);
-	int i = 0, j = 0;
-	while (i < length) {
-		pattern [j] = ' ';
-		if (text [i] == '&') {
-			i++;
-			if (i < length && text [i] != '&') {
-				pattern [j] = '_';
-			}
-		}
-		text [j++] = text [i++];
-	}
-	while (j < i) {
-		text [j] = pattern [j] = '\0';
-		j++;
+	for (int i=0; i<length; i++) {
+		if (text [i] == '&') text [i] = '_';
 	}
 	int list = OS.gtk_container_children (handle);
 	if (list != 0) {
 		int widget = OS.g_list_nth_data (list, 0);
 		if (widget !=  0) OS.gtk_widget_destroy (widget);
 	}
-	int label = OS.gtk_label_new (string);
-	byte [] buffer2 = Converter.wcsToMbcs (null, pattern);
-	OS.gtk_label_set_pattern (label, buffer2);	
+	byte [] buffer = Converter.wcsToMbcs (null, text);
+	int label = OS.gtk_label_new_with_mnemonic (buffer);
 	OS.gtk_container_add (handle, label);
-	OS.gtk_widget_show (label);	
+	OS.gtk_widget_show (label);
 }
 /**
  * Sets the receiver's tool tip text to the argument, which

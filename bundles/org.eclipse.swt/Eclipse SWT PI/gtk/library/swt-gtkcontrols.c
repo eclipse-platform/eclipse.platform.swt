@@ -485,4 +485,49 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1hseparator_1new
 	return (jint)gtk_hseparator_new();
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1set_1text_1with_1mnemonic
+  (JNIEnv *env, jclass that, jint label, jbyteArray str)
+{
+	jbyte *str1 = NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_label_set_text_with_mnemonic");
+#endif
 
+	if (str) {
+		str1 = (*env)->GetByteArrayElements(env, str, NULL);
+	}
+	gtk_label_set_text_with_mnemonic((GtkLabel*)label, (gchar*)str1);
+	if (str) {
+		(*env)->ReleaseByteArrayElements(env, str, str1, 0);
+	}
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1label_1new_1with_1mnemonic
+  (JNIEnv *env, jclass that, jbyteArray str)
+{
+	jbyte *str1 = NULL;
+	GtkWidget * result;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_label_new_with_mnemonic");
+#endif
+
+	if (str) {
+		str1 = (*env)->GetByteArrayElements(env, str, NULL);
+	}
+	result = gtk_label_new_with_mnemonic((gchar*)str1);
+	if (str) {
+		(*env)->ReleaseByteArrayElements(env, str, str1, 0);
+	}
+	return (jint) result;
+}
+
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1frame_1get_1label_1widget
+  (JNIEnv *env, jclass that, jint frame)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gtk_frame_get_label_widget");
+#endif
+
+	return (jint)gtk_frame_get_label_widget((GtkFrame*)frame);
+}

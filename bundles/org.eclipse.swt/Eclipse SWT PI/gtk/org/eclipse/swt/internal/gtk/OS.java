@@ -772,4 +772,7 @@ public static final native void gdk_window_process_all_updates();
 public static final native void gdk_window_process_updates(int window, boolean update_children);
 //public static final native boolean gtk_widget_translate_coordinates(int src_widget, int dest_widget, int src_x, int src_y, int [] dest_x, int [] dest_y);
 
+public static final native void gtk_label_set_text_with_mnemonic(int label, byte[] str);
+public static final native int gtk_label_new_with_mnemonic(byte[] str);
+public static final native int gtk_frame_get_label_widget(int frame);
 }
