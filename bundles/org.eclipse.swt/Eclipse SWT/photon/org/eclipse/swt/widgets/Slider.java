@@ -135,10 +135,11 @@ public void addSelectionListener (SelectionListener listener) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	//NOT DONE - hard coding value to be the same as list's scrollbars
-	int width = 17, height = 100;
+	Display display = getDisplay ();
+	int border = getBorderWidth () * 2;
+	int width = display.SCROLLBAR_WIDTH + border, height = width * 5;
 	if ((style & SWT.HORIZONTAL) != 0) {
-		width = 100; height = 17;
+		height = display.SCROLLBAR_HEIGHT + border; width = height * 5; 
 	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		PhRect_t rect = new PhRect_t ();
@@ -282,6 +283,7 @@ public int getThumb () {
 	return args [1];
 }
 void hookEvents () {
+	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_SCROLL_MOVE, windowProc, SWT.Selection);
 }

@@ -96,7 +96,16 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	PhDim_t dim = new PhDim_t();
 	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidget (handle);
 	OS.PtWidgetPreferredSize(handle, dim);
-	int width = dim.w * 7; int height = dim.h;
+	/*
+	* Feature in Photon.  The preferred size of PtSlider is only the
+	* handle size. Add extra space for the rest.
+	*/
+	int width, height;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		width = dim.w * 7; height = dim.h * 2;
+	} else {
+		width = dim.w * 2; height = dim.h * 7;
+	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		PhRect_t rect = new PhRect_t ();
 		PhArea_t area = new PhArea_t ();
@@ -216,6 +225,7 @@ public int getSelection () {
 }
 
 void hookEvents () {
+	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
 	OS.PtAddCallback (handle, OS.Pt_CB_SLIDER_MOVE, windowProc, SWT.Selection);
 }
