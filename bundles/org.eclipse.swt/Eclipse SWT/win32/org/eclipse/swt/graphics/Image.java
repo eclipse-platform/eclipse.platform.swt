@@ -1264,7 +1264,7 @@ public ImageData getImageData() {
 					}
 					handle = createDIBFromDDB(hDC, this.handle, width, height);
 					if (mustRestore) {
-						int hOldBitmap = OS.SelectObject(memGC.handle, handle);
+						int hOldBitmap = OS.SelectObject(memGC.handle, this.handle);
 						memGC.data.hNullBitmap = hOldBitmap;
 					}
 					isDib = true;
