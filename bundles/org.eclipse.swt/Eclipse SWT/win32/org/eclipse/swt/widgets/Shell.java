@@ -618,9 +618,10 @@ public Point getLocation () {
 }
 
 /** 
- * Returns the region that defines the shape of the shell.
+ * Returns the region that defines the shape of the shell,
+ * or null if the shell has the default shape.
  *
- * @return the region that defines the shape of the shell
+ * @return the region that defines the shape of the shell (or null)
  *	
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1000,10 +1001,12 @@ void setParent () {
 
 /**
  * Sets the shape of the shell to the region specified
- * by the argument.  A null region will restore the default shape.
- * Shell must be created with the style SWT.NO_TRIM.
+ * by the argument.  When the argument is null, the
+ * default shape of the shell is restored.  The shell
+ * must be created with the style SWT.NO_TRIM in order
+ * to specify a region.
  *
- * @param rgn the region that defines the shape of the shell
+ * @param region the region that defines the shape of the shell (or null)
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
