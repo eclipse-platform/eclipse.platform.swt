@@ -1671,7 +1671,9 @@ public void test_redrawRangeIIZ() {
 		text.redrawRange(0, 1, true);
 	}
 	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
+		if (e.getMessage().equals("Index out of bounds")) {
+			exceptionThrown = true;
+		}
 	}
 	assertTrue(exceptionThrown);
 
@@ -1680,7 +1682,9 @@ public void test_redrawRangeIIZ() {
 		text.redrawRange(0, 1, false);
 	}
 	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
+		if (e.getMessage().equals("Index out of bounds")) {
+			exceptionThrown = true;
+		}
 	}
 	assertTrue(exceptionThrown);
 		
@@ -1689,7 +1693,9 @@ public void test_redrawRangeIIZ() {
 		text.redrawRange(-1, 2, true);
 	}
 	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
+		if (e.getMessage().equals("Index out of bounds")) {
+			exceptionThrown = true;
+		}
 	}
 	assertTrue(exceptionThrown);
 
@@ -1698,7 +1704,9 @@ public void test_redrawRangeIIZ() {
 		text.redrawRange(-1, 2, false);
 	}
 	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
+		if (e.getMessage().equals("Index out of bounds")) {
+			exceptionThrown = true;
+		}
 	}
 	assertTrue(exceptionThrown);
 
@@ -1709,13 +1717,17 @@ public void test_redrawRangeIIZ() {
 	text.redrawRange(0, 1, false);	
 	text.redrawRange(8, 2, true);
 	text.redrawRange(8, 2, false);	
+	text.redrawRange(10, 0, true);	
+	text.redrawRange(10, 0, false);	
 
 	exceptionThrown = false;
 	try {
 		text.redrawRange(10, 1, true);
 	}
 	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
+		if (e.getMessage().equals("Index out of bounds")) {
+			exceptionThrown = true;
+		}
 	}
 	assertTrue(exceptionThrown);
 	
@@ -1724,7 +1736,9 @@ public void test_redrawRangeIIZ() {
 		text.redrawRange(10, 1, false);
 	}
 	catch (IllegalArgumentException e) {
-		exceptionThrown = true;
+		if (e.getMessage().equals("Index out of bounds")) {
+			exceptionThrown = true;
+		}
 	}
 	assertTrue(exceptionThrown);
 }
