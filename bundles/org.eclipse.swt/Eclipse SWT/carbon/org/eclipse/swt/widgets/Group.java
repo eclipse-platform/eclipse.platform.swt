@@ -128,9 +128,9 @@ public Rectangle getClientArea () {
 	OS.GetRegionBounds (rgnHandle, client);
 	OS.DisposeRgn (rgnHandle);
 	int x = Math.max (0, client.left - bounds.left);
-	int y = Math.max (0, client.top - bounds.top);
+	int y = text == null ? x : Math.max (0, client.top - bounds.top);
 	int width = Math.max (0, client.right - client.left);
-	int height = Math.max (0, client.bottom - client.top);
+	int height = Math.max (0, text == null ? bounds.bottom - bounds.top - 2*y : client.bottom - client.top);
 	return new Rectangle (x, y, width, height);
 }
 
