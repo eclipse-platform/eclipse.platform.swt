@@ -336,8 +336,6 @@ public Shell (Shell parent, int style) {
  *
  * @param display the display for the shell
  * @param handle the handle for the shell
- * 
- * @private
  */
 public static Shell win32_new (Display display, int handle) {
 	return new Shell (display, null, SWT.NO_TRIM, handle);

@@ -34,7 +34,7 @@ import org.eclipse.swt.events.*;
  *		TableColumn column1 = new TableColumn(table, SWT.NONE);
  *		TableColumn column2 = new TableColumn(table, SWT.NONE);
  *		TableColumn column3 = new TableColumn(table, SWT.NONE);
- *		for (int i = 0; i < 100; i++) {
+ *		for (int i = 0; i &lt; 100; i++) {
  *			TableItem item = new TableItem(table, SWT.NONE);
  *			item.setText(new String[] { "cell "+i+" 0", "cell "+i+" 1", "cell "+i+" 2"});
  *		}

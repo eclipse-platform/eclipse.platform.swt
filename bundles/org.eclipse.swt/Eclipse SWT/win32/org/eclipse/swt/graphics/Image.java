@@ -1738,8 +1738,6 @@ void init(Device device, ImageData i) {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
- *
- * @private
  */
 public int internal_new_GC (GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
@@ -1778,8 +1776,6 @@ public int internal_new_GC (GCData data) {
  *
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
- *
- * @private
  */
 public void internal_dispose_GC (int hDC, GCData data) {
 	OS.DeleteDC(hDC);
@@ -1892,8 +1888,6 @@ public String toString () {
  * @param type the type of the image (<code>SWT.BITMAP</code> or <code>SWT.ICON</code>)
  * @param handle the OS handle for the image
  * @param hPalette the OS handle for the palette, or 0
- *
- * @private
  */
 public static Image win32_new(Device device, int type, int handle) {
 	if (device == null) device = Device.getDevice();

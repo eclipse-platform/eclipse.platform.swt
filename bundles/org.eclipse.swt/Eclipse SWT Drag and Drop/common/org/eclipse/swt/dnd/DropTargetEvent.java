@@ -29,10 +29,10 @@ public class DropTargetEvent extends TypedEvent {
 	
 	/**
 	 * The operation being performed.
-	 * @see DND.DROP_NONE
-	 * @see DND.DROP_MOVE
-	 * @see DND.DROP_COPY
-	 * @see DND.DROP_LINK
+	 * @see DND#DROP_NONE
+	 * @see DND#DROP_MOVE
+	 * @see DND#DROP_COPY
+	 * @see DND#DROP_LINK
 	 */
 	public int detail;
 	
@@ -40,10 +40,10 @@ public class DropTargetEvent extends TypedEvent {
 	 * A bitwise OR'ing of the operations that the DragSource can support 
 	 * (e.g. DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK).
 	 * The detail value must be a member of this list or DND.DROP_NONE.
-	 * @see DND.DROP_NONE
-	 * @see DND.DROP_MOVE
-	 * @see DND.DROP_COPY
-	 * @see DND.DROP_LINK
+	 * @see DND#DROP_NONE
+	 * @see DND#DROP_MOVE
+	 * @see DND#DROP_COPY
+	 * @see DND#DROP_LINK
 	 */
 	public int operations;
 	
@@ -53,11 +53,11 @@ public class DropTargetEvent extends TypedEvent {
 	 * <p>A value of DND.FEEDBACK_NONE indicates that no drag under effect will be displayed.</p>
 	 * <p>Feedback effects will only be applied if they are applicable.</p>
 	 * <p>The default value is DND.FEEDBACK_SELECT.</p>
-	 * @see DND.FEEDBACK_SELECT
-	 * @see DND.FEEDBACK_INSERT_BEFORE
-	 * @see DND.FEEDBACK_INSERT_AFTER
-	 * @see DND.FEEDBACK_SCROLL
-	 * @see DND.FEEDBACK_EXPAND
+	 * @see DND#FEEDBACK_SELECT
+	 * @see DND#FEEDBACK_INSERT_BEFORE
+	 * @see DND#FEEDBACK_INSERT_AFTER
+	 * @see DND#FEEDBACK_SCROLL
+	 * @see DND#FEEDBACK_EXPAND
 	 */
 	public int feedback;
 	

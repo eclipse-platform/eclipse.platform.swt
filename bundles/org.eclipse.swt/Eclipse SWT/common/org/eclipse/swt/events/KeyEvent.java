@@ -40,7 +40,7 @@ public class KeyEvent extends TypedEvent {
 	 * typing Ctrl+M or Return both result in the character '\r' but the
 	 * keyCode field will also contain '\r' when Return was typed.
 	 * 
-	 * @see SWT
+	 * @see org.eclipse.swt.SWT
 	 */
 	public int keyCode;
 	

@@ -250,11 +250,15 @@ public OleClientSite(Composite parent, int style, String progId) {
 	}
 }
 /**
- * @private
- *
  * Create an OleClientSite child widget to edit the specified file using the specified OLE Document
  * application.  Use style bits to select a particular look or set of properties. 
- *
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+ * API for <code>OleClientSite</code>. It is marked public only so that it
+ * can be shared within the packages provided by SWT. It is not
+ * available on all platforms, and should never be called from
+ * application code.
+ * </p>
  * @param parent a composite widget; must be an OleFrame
  * @param style the bitwise OR'ing of widget styles
  * @param progID the unique program identifier of am OLE Document application; 

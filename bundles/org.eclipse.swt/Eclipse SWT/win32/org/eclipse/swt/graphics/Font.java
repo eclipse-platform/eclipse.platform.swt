@@ -246,8 +246,6 @@ public String toString () {
  *
  * @param device the device on which to allocate the color
  * @param handle the handle for the font
- * 
- * @private
  */
 public static Font win32_new(Device device, int handle) {
 	if (device == null) device = Device.getDevice();

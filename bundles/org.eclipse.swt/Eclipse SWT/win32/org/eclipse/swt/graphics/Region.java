@@ -290,8 +290,6 @@ public boolean isEmpty () {
  * </p>
  *
  * @param handle the handle for the region
- * 
- * @private
  */
 public static Region win32_new(int handle) {
 	return new Region(handle);

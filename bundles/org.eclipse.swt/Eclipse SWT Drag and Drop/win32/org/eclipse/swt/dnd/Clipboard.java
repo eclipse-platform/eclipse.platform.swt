@@ -400,7 +400,7 @@ private int Release() {
  * sub-class.  It should NOT be used within an application because it provides 
  * platform specific information.</p>
  * 
- * @returns a platform specific list of the data types currently available on the 
+ * @return a platform specific list of the data types currently available on the 
  * system clipboard
  */
 public String[] getAvailableTypeNames() {

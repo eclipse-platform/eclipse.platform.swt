@@ -469,8 +469,6 @@ void setAllFields(int width, int height, int depth, int scanlinePad,
  * <p>
  * This method is for internal use, and is not described further.
  * </p>
- * 
- * @private
  */
 public static ImageData internal_new(
 	int width, int height, int depth, PaletteData palette,

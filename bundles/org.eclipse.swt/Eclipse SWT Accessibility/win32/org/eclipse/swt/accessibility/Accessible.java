@@ -111,8 +111,6 @@ public class Accessible {
 	 *
 	 * @param control the control to get the accessible object for
 	 * @return the platform specific accessible object
-	 *
-	 * @private
 	 */
 	public static Accessible internal_new_Accessible(Control control) {
 		return new Accessible(control);
@@ -162,7 +160,7 @@ public class Accessible {
 	 * </ul>
 	 *
 	 * @see AccessibleListener
-	 * @see #addDisposeListener
+	 * @see #addAccessibleListener
 	 */
 	public void removeAccessibleListener(AccessibleListener listener) {
 		checkWidget();
@@ -251,8 +249,6 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
-	 *
-	 * @private
 	 */
 	public void internal_dispose_Accessible() {
 		if (iaccessible != null)
@@ -270,8 +266,6 @@ public class Accessible {
 	 * available on all platforms, and should never be called from
 	 * application code.
 	 * </p>
-	 *
-	 * @private
 	 */
 	public int internal_WM_GETOBJECT (int wParam, int lParam) {
 		if (objIAccessible == null) return 0;

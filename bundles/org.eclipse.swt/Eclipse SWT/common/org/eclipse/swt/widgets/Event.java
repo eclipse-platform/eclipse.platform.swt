@@ -45,7 +45,7 @@ public class Event {
 	 * the type of event, as defined by the event type constants
 	 * in class <code>SWT</code>
 	 *
-	 * @see SWT
+	 * @see org.eclipse.swt.SWT
 	 */
 	public int type;
 	
@@ -53,7 +53,7 @@ public class Event {
 	 * the event specific detail field, as defined by the detail constants
 	 * in class <code>SWT</code>
 	 * 
-	 * @see SWT
+	 * @see org.eclipse.swt.SWT
 	 */
 	public int detail;
 	
@@ -140,7 +140,7 @@ public class Event {
 	 * typing Ctrl+M or Return both result in the character '\r' but the
 	 * keyCode field will also contain '\r' when Return was typed.
 	 * 
-	 * @see SWT
+	 * @see org.eclipse.swt.SWT
 	 */
 	public int keyCode;
 	
@@ -148,7 +148,7 @@ public class Event {
 	 * depending on the event, the state of the keyboard modifier
 	 * keys and mouse masks at the time the event was generated.
 	 * 
-	 * @see SWT
+	 * @see org.eclipse.swt.SWT
 	 */
 	public int stateMask;
 	

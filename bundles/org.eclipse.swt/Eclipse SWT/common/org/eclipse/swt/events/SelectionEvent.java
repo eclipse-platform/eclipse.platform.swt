@@ -33,19 +33,19 @@ public class SelectionEvent extends TypedEvent {
 	/**
 	 * extra detail information about the selection, depending on the widget
 	 * <p><b>Sash</b><ul>
-	 * <li>{@link SWT#DRAG}</li>
+	 * <li>{@link org.eclipse.swt.SWT#DRAG}</li>
 	 * </ul></p><p><b>ScrollBar and Slider</b><ul>
-	 * <li>{@link SWT#DRAG}</li>
-	 * <li>{@link SWT#HOME}</li>
-	 * <li>{@link SWT#END}</li>
-	 * <li>{@link SWT#ARROW_DOWN}</li>
-	 * <li>{@link SWT#ARROW_UP}</li>
-	 * <li>{@link SWT#PAGE_DOWN}</li>
-	 * <li>{@link SWT#PAGE_UP}</li>
+	 * <li>{@link org.eclipse.swt.SWT#DRAG}</li>
+	 * <li>{@link org.eclipse.swt.SWT#HOME}</li>
+	 * <li>{@link org.eclipse.swt.SWT#END}</li>
+	 * <li>{@link org.eclipse.swt.SWT#ARROW_DOWN}</li>
+	 * <li>{@link org.eclipse.swt.SWT#ARROW_UP}</li>
+	 * <li>{@link org.eclipse.swt.SWT#PAGE_DOWN}</li>
+	 * <li>{@link org.eclipse.swt.SWT#PAGE_UP}</li>
 	 * </ul></p><p><b>Table, Tree and TableTree</b><ul>
-	 * <li>{@link SWT#CHECK}</li>
+	 * <li>{@link org.eclipse.swt.SWT#CHECK}</li>
 	 * </ul></p><p><b>CoolItem and ToolItem</b><ul>
-	 * <li>{@link SWT#ARROW}</li>
+	 * <li>{@link org.eclipse.swt.SWT#ARROW}</li>
 	 * </ul></p>
 	 */
 	public int detail;

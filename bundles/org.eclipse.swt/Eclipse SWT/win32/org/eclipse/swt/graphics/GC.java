@@ -2299,8 +2299,6 @@ public String toString () {
  * @param data the data for the receiver.
  *
  * @return a new <code>GC</code>
- *
- * @private
  */
 public static GC win32_new(Drawable drawable, GCData data) {
 	GC gc = new GC();

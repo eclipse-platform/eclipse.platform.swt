@@ -223,8 +223,6 @@ protected void create(DeviceData deviceData) {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
- *
- * @private
  */
 public int internal_new_GC(GCData data) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -249,8 +247,6 @@ public int internal_new_GC(GCData data) {
  *
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
- *
- * @private
  */
 public void internal_dispose_GC(int hDC, GCData data) {
 	if (data != null) isGCCreated = false;

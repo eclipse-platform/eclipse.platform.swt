@@ -27,8 +27,6 @@ import org.eclipse.swt.events.*;
  * </p>
  *
  * @see Listener
- *
- * @private
  */
 public class TypedListener implements Listener {
 	
