@@ -365,9 +365,8 @@ Point computeLayoutSize(Composite composite, int wHint, int hHint, boolean flush
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
 	Control[] children = composite.getChildren();
 	int numChildren = children.length;
-
 	if (numChildren == 0) return new Point(0,0);
-
+	if (numColumns < 1) return new Point (0, 0);
 	if (flushCache) {
 		// Cause the grid and its related information to be calculated
 		// again.
@@ -489,6 +488,7 @@ GridData[] emptyRow() {
 	return row;
 }
 protected void layout(Composite composite, boolean flushCache) {
+	if (numColumns < 1) return;
 	int[] columnWidths;
 	int[] rowHeights;
 	int rowSize, rowY, columnX;
