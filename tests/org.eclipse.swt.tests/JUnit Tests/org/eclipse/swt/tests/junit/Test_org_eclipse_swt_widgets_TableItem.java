@@ -123,6 +123,14 @@ public void test_getChecked() {
 	warnUnimpl("Test test_getChecked not written");
 }
 
+public void test_getFont() {
+	warnUnimpl("Test test_getFont not written");
+}
+
+public void test_getFontI() {
+	warnUnimpl("Test test_getFontI not written");
+}
+
 public void test_getForeground() {
 	// tested in test_setForegroundLorg_eclipse_swt_graphics_Color
 }
@@ -256,6 +264,13 @@ public void test_setCheckedZ() {
 	ti.setChecked(false);
 	assertEquals(false, ti.getChecked());
 	t.dispose();
+}
+public void test_setFontLorg_eclipse_swt_graphics_Font() {
+	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
+}
+
+public void test_setFontILorg_eclipse_swt_graphics_Font() {
+	warnUnimpl("Test test_setFontILorg_eclipse_swt_graphics_Font not written");
 }
 
 public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
@@ -467,6 +482,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getBackgroundI");
 	methodNames.addElement("test_getBoundsI");
 	methodNames.addElement("test_getChecked");
+	methodNames.addElement("test_getFont");
+	methodNames.addElement("test_getFontI");
 	methodNames.addElement("test_getForeground");
 	methodNames.addElement("test_getForegroundI");
 	methodNames.addElement("test_getGrayed");
@@ -478,6 +495,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setBackgroundILorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setCheckedZ");
+	methodNames.addElement("test_setFontILorg_eclipse_swt_graphics_Font");
+	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setForegroundILorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setGrayedZ");
@@ -498,6 +517,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getBackgroundI")) test_getBackgroundI();
 	else if (getName().equals("test_getBoundsI")) test_getBoundsI();
 	else if (getName().equals("test_getChecked")) test_getChecked();
+	else if (getName().equals("test_getFont")) test_getFont();
+	else if (getName().equals("test_getFontI")) test_getFontI();
 	else if (getName().equals("test_getForeground")) test_getForeground();
 	else if (getName().equals("test_getForegroundI")) test_getForegroundI();
 	else if (getName().equals("test_getGrayed")) test_getGrayed();
@@ -509,6 +530,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setBackgroundILorg_eclipse_swt_graphics_Color")) test_setBackgroundILorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setCheckedZ")) test_setCheckedZ();
+	else if (getName().equals("test_setFontILorg_eclipse_swt_graphics_Font")) test_setFontILorg_eclipse_swt_graphics_Font();
+	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setForegroundILorg_eclipse_swt_graphics_Color")) test_setForegroundILorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setForegroundLorg_eclipse_swt_graphics_Color")) test_setForegroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setGrayedZ")) test_setGrayedZ();
