@@ -462,10 +462,20 @@ public boolean isEnabled () {
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
+	/*
+	 * FIXME.  The following line of code is wrong:
+	 * the pointer position is relative to item, not the toolbar.
+	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
+	 */
 	parent.processMouseDown (callData, arg1, int2);
 	return 0;
 }
 int processMouseUp (int callData, int arg1, int int2) {
+	/*
+	 * FIXME.  The following line of code is wrong:
+	 * the pointer position is relative to item, not the toolbar.
+	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
+	 */
 	parent.processMouseUp (callData, arg1, int2);
 	return 0;
 }
