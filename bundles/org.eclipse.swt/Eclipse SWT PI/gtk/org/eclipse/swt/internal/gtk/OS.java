@@ -581,6 +581,7 @@ public static final native void gtk_menu_item_set_submenu(int menu_item, int sub
 public static final native int gtk_menu_new();
 public static final native void gtk_menu_popdown(int menu);
 public static final native void gtk_menu_popup(int menu, int parent_menu_shell, int parent_menu_item, int func, int data, int button, int activate_time);
+public static final native void gtk_menu_shell_deactivate(int menu_shell);
 public static final native void gtk_menu_shell_insert(int menu_shell, int child, int position);
 public static final native void gtk_menu_shell_select_item(int menu_shell, int menu_item);
 public static final native int gtk_message_dialog_new(int parent, int flags, int type, int buttons, String message_format);

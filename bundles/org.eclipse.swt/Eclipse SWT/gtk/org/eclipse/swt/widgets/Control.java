@@ -1889,15 +1889,16 @@ void releaseWidget () {
 	layoutData = null;
 }
 
-void sendHelpEvent (int helpType) {
+boolean sendHelpEvent (int helpType) {
 	Control control = this;
 	while (control != null) {
 		if (control.hooks (SWT.Help)) {
 			control.postEvent (SWT.Help);
-			return;
+			return true;
 		}
 		control = control.parent;
 	}
+	return false;
 }
 
 void sendKeyEvent (int type, int gdkEvent) {
