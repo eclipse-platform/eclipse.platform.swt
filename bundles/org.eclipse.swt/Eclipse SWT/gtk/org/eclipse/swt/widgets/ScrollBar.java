@@ -152,6 +152,7 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget ();
+	//NOT DONE
 	return true;
 }
 
@@ -268,8 +269,8 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget ();
-	/* FIXME - NOT_IMPLEMENTED.  We can no longer look at the allocation. */
-	return new Point (10,10);
+	//FIXME - NOT_IMPLEMENTED
+	return new Point (10, 10);
 }
 
 /**
@@ -310,10 +311,12 @@ public int getThumb () {
  */
 public boolean getVisible () {
 	checkWidget ();
+	//NOT DONE
 	return true;
 }
 
 void hookEvents () {
+	super.hookEvents ();
 	signal_connect (handle, "value_changed",  SWT.Selection, 2);
 }
 
@@ -418,6 +421,7 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
+	//NOT DONE
 }
 
 /**
@@ -621,6 +625,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget ();
+	//NOT DONE
 }
 
 }

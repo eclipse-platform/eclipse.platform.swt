@@ -25,8 +25,10 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class TabItem extends Item {
+	int pageHandle;
 	Control control;
 	TabFolder parent;
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>TabFolder</code>) and a style value
@@ -62,6 +64,7 @@ public TabItem (TabFolder parent, int style) {
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
 }
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>TabFolder</code>), a style value
@@ -98,6 +101,7 @@ public TabItem (TabFolder parent, int style, int index) {
 	this.parent = parent;
 	parent.createItem (this, index);
 }
+
 /**
  * Returns the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.  If no
@@ -115,11 +119,13 @@ public Control getControl () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return control;
 }
+
 public Display getDisplay () {
 	TabFolder parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns the receiver's parent, which must be a <code>TabFolder</code>.
  *
@@ -135,6 +141,7 @@ public TabFolder getParent () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent;
 }
+
 /**
  * Returns the receiver's tool tip text, or null if it has
  * not been set.
@@ -151,14 +158,17 @@ public String getToolTipText () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return "";
 }
+
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
 }
+
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 }
+
 /**
  * Sets the control that is used to fill the client area of
  * the tab folder when the user selects the tab item.
@@ -180,18 +190,23 @@ public void setControl (Control control) {
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
 	int index = parent.indexOf (this);
-	if (index != parent.getSelectionIndex ()) return;
+	if (index != parent.getSelectionIndex ()) {
+		if (newControl != null) newControl.setVisible (false);
+		return;
+	}
 	if (newControl != null) {
 		newControl.setBounds (parent.getClientArea ());
 		newControl.setVisible (true);
 	}
 	if (oldControl != null) oldControl.setVisible (false);
 }
+
 public void setImage (Image image) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	super.setImage (image);
 }
+
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -205,6 +220,7 @@ public void setText (String string) {
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (handle, buffer);
 }
+
 /**
  * Sets the receiver's tool tip text to the argument, which
  * may be null indicating that no tool tip text should be shown.
@@ -220,4 +236,5 @@ public void setToolTipText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
+
 }

@@ -67,23 +67,16 @@ public Sash (Composite parent, int style) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	handle=OS.gtk_drawing_area_new();
+	handle = OS.gtk_drawing_area_new();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-}
-
-void setHandleStyle() {}
-
-void showHandle() {
-	createCursor();
-	OS.gtk_widget_show(handle);
-	OS.gtk_widget_realize(handle);
-}
-
-private void createCursor() {
-	int cursorType = ((style&SWT.VERTICAL)!=0)?
-		OS.GDK_SB_H_DOUBLE_ARROW:OS.GDK_SB_V_DOUBLE_ARROW;
-	cursor = OS.gdk_cursor_new(cursorType);
-	OS.gdk_window_set_cursor(OS.GTK_WIDGET_WINDOW(handle), cursor);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, handle);
+	OS.gtk_widget_show (handle);
+	int type = (style & SWT.VERTICAL) != 0 ? OS.GDK_SB_H_DOUBLE_ARROW:OS.GDK_SB_V_DOUBLE_ARROW;
+	cursor = OS.gdk_cursor_new (type);
+	OS.gtk_widget_realize (handle);
+	int window = OS.GTK_WIDGET_WINDOW (handle);
+	OS.gdk_window_set_cursor (window, cursor);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -99,8 +92,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 	return new Point (width, height);
 }
-
-
 
 /**
  * Adds the listener to the collection of listeners who will
@@ -328,7 +319,7 @@ static int checkStyle (int style) {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	OS.gdk_cursor_destroy (cursor);
+	if (cursor != 0) OS.gdk_cursor_destroy (cursor);
 	cursor = 0;
 }
 
