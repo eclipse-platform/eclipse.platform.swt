@@ -857,7 +857,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	
 	Font font1 = control.getFont();
 	FontData[] data = font1.getFontData();
-	data[0].height += 2;
+	data[0].setHeight(data[0].getHeight() + 2);
 	Font font2 = new Font(control.getDisplay(), data);
 	Font[] fonts = new Font[COUNT];
 	for (int i = 0; i < COUNT; i += 4) {
