@@ -540,6 +540,15 @@ int /*long*/ createMask(ImageData image, boolean copy) {
 	return OS.gdk_bitmap_create_from_data(0, maskData, mask.width, mask.height);
 }
 
+void createSurface() {
+	if (surface != 0) return;
+	int /*long*/ xDisplay = OS.GDK_DISPLAY();
+	int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(pixmap);
+	int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
+	int /*long*/ xColormap = OS.gdk_x11_colormap_get_xcolormap(OS.gdk_colormap_get_system());
+	surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 0, xColormap);
+}
+
 /**
  * Destroy the receiver's mask if it exists.
  */

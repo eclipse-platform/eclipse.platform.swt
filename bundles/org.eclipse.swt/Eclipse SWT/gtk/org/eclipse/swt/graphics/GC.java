@@ -452,13 +452,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
 	int /*long*/ cairo = data.cairo;
 	if (cairo != 0) {
-		if (srcImage.surface == 0) {
-			int /*long*/ xDisplay = OS.GDK_DISPLAY();
-			int /*long*/ xDrawable = OS.GDK_PIXMAP_XID(srcImage.pixmap);
-			int /*long*/ xVisual = OS.gdk_x11_visual_get_xvisual(OS.gdk_visual_get_system());
-			int /*long*/ xColormap = OS.gdk_x11_colormap_get_xcolormap(OS.gdk_colormap_get_system());
-			srcImage.surface = Cairo.cairo_xlib_surface_create(xDisplay, xDrawable, xVisual, 0, xColormap);
-		}
+		srcImage.createSurface();
 		Cairo.cairo_save(cairo);
 		//TODO - draw a piece of the image
 //		if (srcX != 0 || srcY != 0) {
@@ -905,7 +899,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 //		Cairo.cairo_arc_to(cairo, 0, fh, 1, fh, 1);
 //		Cairo.cairo_arc_to(cairo, fw, fh, fw, fh - 1, 1);
 //		Cairo.cairo_arc_to(cairo, fw, 0, fw - 1, 0, 1);
-		Cairo.cairo_close_path(handle);
+		Cairo.cairo_close_path(cairo);
 		Cairo.cairo_stroke(cairo);
 		Cairo.cairo_restore(cairo);
 		return;
@@ -1520,7 +1514,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 //		Cairo.cairo_arc_to(cairo, 0, fh, 1, fh, 1);
 //		Cairo.cairo_arc_to(cairo, fw, fh, fw, fh - 1, 1);
 //		Cairo.cairo_arc_to(cairo, fw, 0, fw - 1, 0, 1);
-		Cairo.cairo_close_path(handle);
+		Cairo.cairo_close_path(cairo);
 		Cairo.cairo_stroke(cairo);
 		Cairo.cairo_restore(cairo);
 		return;
@@ -1909,8 +1903,12 @@ public void getTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	initCairo();
-	Cairo.cairo_matrix_copy(transform.handle, data.matrix);
+	int /*long*/ cairo = data.cairo;
+	if (cairo != 0) {
+		Cairo.cairo_matrix_copy(transform.handle, data.matrix);
+	} else {
+		transform.setElements(1, 0, 0, 1, 0, 0);
+	}
 }
 
 /** 
@@ -2618,14 +2616,19 @@ void setString(String string, int flags) {
  */
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	initCairo();
 	int /*long*/ cairo = data.cairo;
-	Cairo.cairo_set_matrix(cairo, transform.handle);
-	Cairo.cairo_matrix_copy(data.matrix, transform.handle);
-	Cairo.cairo_matrix_copy(data.inverseMatrix, transform.handle);
-	Cairo.cairo_matrix_invert(data.inverseMatrix);
+	Cairo.cairo_concat_matrix(cairo, data.inverseMatrix);
+	if (transform != null) {
+		Cairo.cairo_concat_matrix(cairo, transform.handle);
+		Cairo.cairo_matrix_copy(data.matrix, transform.handle);
+		Cairo.cairo_matrix_copy(data.inverseMatrix, transform.handle);
+		Cairo.cairo_matrix_invert(data.inverseMatrix);
+	} else {
+		Cairo.cairo_matrix_set_identity(data.matrix);
+		Cairo.cairo_matrix_set_identity(data.inverseMatrix);
+	}
 	//TODO - round off problems
 	int /*long*/ clipRgn = data.clipRgn;
 	if (clipRgn != 0) {
