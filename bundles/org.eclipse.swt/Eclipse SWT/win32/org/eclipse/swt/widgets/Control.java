@@ -3269,28 +3269,30 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if (dragging) {
 		postEvent (SWT.DragDetect);
 	} else {
-		/*
-		* Feature in Windows.  DragDetect() captures the mouse
-		* and tracks its movement until the user releases the
-		* left mouse button, presses the ESC key, or moves the
-		* mouse outside the drag rectangle.  If the user moves
-		* the mouse outside of the drag rectangle, DragDetect
-		* returns true and a drag and drop operation can be
-		* started.  When the left mouse button is released or
-		* the ESC key is pressed, these events are consumed by
-		* DragDetect() so that application code that matches
-		* mouse down/up pairs or looks for the ESC key will not
-		* function properly.  The fix is to send these events
-		* when the drag has not started.
-		* 
-		* NOTE: For now, don't send a fake WM_KEYDOWN/WM_KEYUP
-		* events for the ESC key.  This would require computing
-		* wParam (the key) and lParam (the repeat count, scan code,
-		* extended-key flag, context code, previous key-state flag,
-		* and transition-state flag) which is non-trivial.
-		*/
-		if (OS.GetKeyState (OS.VK_ESCAPE) >= 0) {
-			OS.SendMessage (handle, OS.WM_LBUTTONUP, wParam, lParam);
+		if (hooks (SWT.DragDetect)) {
+			/*
+			* Feature in Windows.  DragDetect() captures the mouse
+			* and tracks its movement until the user releases the
+			* left mouse button, presses the ESC key, or moves the
+			* mouse outside the drag rectangle.  If the user moves
+			* the mouse outside of the drag rectangle, DragDetect
+			* returns true and a drag and drop operation can be
+			* started.  When the left mouse button is released or
+			* the ESC key is pressed, these events are consumed by
+			* DragDetect() so that application code that matches
+			* mouse down/up pairs or looks for the ESC key will not
+			* function properly.  The fix is to send these events
+			* when the drag has not started.
+			* 
+			* NOTE: For now, don't send a fake WM_KEYDOWN/WM_KEYUP
+			* events for the ESC key.  This would require computing
+			* wParam (the key) and lParam (the repeat count, scan code,
+			* extended-key flag, context code, previous key-state flag,
+			* and transition-state flag) which is non-trivial.
+			*/
+			if (OS.GetKeyState (OS.VK_ESCAPE) >= 0) {
+				OS.SendMessage (handle, OS.WM_LBUTTONUP, wParam, lParam);
+			}
 		}
 	}
 	return new LRESULT (result);
