@@ -40,6 +40,8 @@ public final class GCData {
 	public int lineJoin = SWT.JOIN_MITER;
 	public float[] dashes;
 	public boolean xorMode;
+	public int antialias = SWT.DEFAULT;
+	public int textAntialias = SWT.DEFAULT;
 	public int fillRule = SWT.FILL_EVEN_ODD;
 	
 	public Font font;
@@ -58,7 +60,7 @@ public final class GCData {
 	
 	public Thread thread;
 
-	public int window;	
+	public int window;
 	public int paintEvent;
 	public int visibleRgn;
 	public int control;
