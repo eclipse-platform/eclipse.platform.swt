@@ -807,7 +807,15 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	if (!hasFocus ()) return 0;
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
-	if (gdkEvent.time != lastEventTime) {
+	/*
+	* Bug in GTK.  On simplified Chinese, when the IM is open and the user
+	* presses a tab key, focus traversal occurs and the IM stops working.
+	* In order to process keys properly in SWT, if the same key event is
+	* dispatched twice, it is ignored.  If the tab key is not dispatched twice,
+	* the IM fails.  The fix is to dispatch it.
+	*/
+	boolean isTab = gdkEvent.keyval == OS.GDK_Tab || gdkEvent.keyval == OS.GDK_ISO_Left_Tab;
+	if (gdkEvent.time != lastEventTime ||  isTab) {
 		lastEventTime = gdkEvent.time;
 		int /*long*/ imContext = imContext ();
 		if (imContext != 0) {
