@@ -32,6 +32,11 @@ public final class Region {
 	 */
 	public int handle;
 	
+	/**
+	 * the device where this cursor was created
+	 */
+	Device device;
+
 	static int EMPTY_REGION = -1;
 
 /**
@@ -42,12 +47,20 @@ public final class Region {
  * </ul>
  */
 public Region () {
-	handle = EMPTY_REGION;
+	this(null);
 }
-Region(int handle) {
-	this.handle = handle;
+public Region (Device device) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	handle = EMPTY_REGION;
+	if (device.tracking) device.new_Object(this);
 }
 
+Region(Device device, int handle) {
+	this.device = device;
+	this.handle = handle;
+}
 
 /**
  * Adds the given rectangle to the collection of rectangles
@@ -160,8 +173,11 @@ public boolean contains (Point pt) {
  */
 public void dispose () {
 	if (handle == 0) return;
+	if (device.isDisposed()) return;
 	if (handle != EMPTY_REGION) OS.PhFreeTiles (handle);
 	handle = 0;
+	if (device.tracking) device.dispose_Object(this);
+	device = null;
 }
 
 /**
@@ -226,6 +242,37 @@ public Rectangle getBounds() {
  */
 public int hashCode () {
 	return handle;
+}
+
+public void intersect (Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (handle == 0 || handle == EMPTY_REGION) return;
+	int tile_ptr = OS.PhGetTile();
+	PhTile_t tile = new PhTile_t();
+	tile.rect_ul_x = (short)rect.x;
+	tile.rect_ul_y = (short)rect.y;
+	tile.rect_lr_x = (short)(rect.x + rect.width - 1);
+	tile.rect_lr_y = (short)(rect.y + rect.height - 1);
+	OS.memmove(tile_ptr, tile, PhTile_t.sizeof);
+	int intersection = OS.PhIntersectTilings(handle, tile_ptr, null);
+	OS.PhFreeTiles(tile_ptr);
+	OS.PhFreeTiles(handle);
+	handle = intersection;
+	if (handle == 0) handle = EMPTY_REGION;
+}
+
+public void intersect (Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (handle == 0 || handle == EMPTY_REGION) return;
+	int intersection = 0;
+	if (region.handle != EMPTY_REGION) OS.PhIntersectTilings(handle, region.handle, null);
+	OS.PhFreeTiles(handle);
+	handle = intersection;
+	if (handle == 0) handle = EMPTY_REGION;
 }
 
 /**
@@ -314,8 +361,35 @@ public boolean isEmpty () {
 	
 }
 
-public static Region photon_new(int handle) {
-	return new Region(handle);
+public static Region photon_new(Device device, int handle) {
+	return new Region(device, handle);
+}
+
+public void subtract (Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (handle == 0 || handle == EMPTY_REGION) return;
+	int tile_ptr = OS.PhGetTile();
+	PhTile_t tile = new PhTile_t();
+	tile.rect_ul_x = (short)rect.x;
+	tile.rect_ul_y = (short)rect.y;
+	tile.rect_lr_x = (short)(rect.x + rect.width - 1);
+	tile.rect_lr_y = (short)(rect.y + rect.height - 1);
+	OS.memmove(tile_ptr, tile, PhTile_t.sizeof);
+	handle = OS.PhClipTilings(handle, tile_ptr, null);
+	OS.PhFreeTiles(tile_ptr);
+	if (handle == 0) handle = EMPTY_REGION;
+}
+
+public void subtract (Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (handle == 0 || handle == EMPTY_REGION) return;
+	if (region.handle == EMPTY_REGION) return;
+	handle = OS.PhClipTilings(handle, region.handle, null);
+	if (handle == 0) handle = EMPTY_REGION;
 }
 
 /**
