@@ -1608,6 +1608,11 @@ void register () {
 	display.addWidget (handle, this);
 }
 
+void releaseChild () {
+	super.releaseChild ();
+	setVisible (topHandle (), false);
+}
+
 void releaseHandle () {
 	super.releaseHandle ();
 	handle = 0;

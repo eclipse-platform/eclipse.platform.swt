@@ -394,6 +394,7 @@ void releaseWidget () {
 		ToolItem item = items [i];
 		if (!item.isDisposed ()) item.releaseResources ();
 	}
+	itemCount = 0;
 	items = null;
 	super.releaseWidget ();
 }

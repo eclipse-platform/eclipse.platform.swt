@@ -677,6 +677,7 @@ void register () {
 
 void releaseChild () {
 	super.releaseChild ();
+	setVisible (handle, false);
 	parent.destroyItem (this);
 }
 
