@@ -648,8 +648,8 @@ int widgetExtStyle () {
 	/*
 	* Bug in Windows.  If a scroll bar control is given a border,
 	* dragging the scroll bar thumb eats away parts of the border 
-	* while the thumb is dragged.  The fix is to clear WS_BORDER
-	* for all scroll bars.
+	* while the thumb is dragged.  The fix is to clear border for
+	* all scroll bars.
 	*/
 	int bits = super.widgetExtStyle ();
 	if ((style & SWT.BORDER) != 0) bits &= ~OS.WS_EX_CLIENTEDGE;

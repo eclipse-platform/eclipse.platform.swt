@@ -244,12 +244,14 @@ Point adjustResizeCursor () {
 		
 	return new Point (pt.x, pt.y);
 }
+
 static int checkStyle (int style) {
 	if ((style & (SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN)) == 0) {
 		style |= SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN;
 	}
 	return style;
 }
+
 /**
  * Stops displaying the tracker rectangles.  Note that this is not considered
  * to be a cancelation by the user.
