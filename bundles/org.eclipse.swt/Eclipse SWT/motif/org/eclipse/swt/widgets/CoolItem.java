@@ -29,8 +29,8 @@ public /*final*/ class CoolItem extends Item {
 	CoolBar parent;
 	boolean dragging;
 	int mouseXOffset;
-	int preferredWidth = -1;
-	int preferredHeight = -1;
+	int preferredWidth = 0;
+	int requestedWidth = 0;
 	int id;
 	
 	static final int MARGIN_WIDTH = 4;
@@ -137,11 +137,11 @@ protected void checkSubclass () {
  */
 public Point computeSize (int wHint, int hHint) {
 	checkWidget();
-	if (preferredWidth > -1) return new Point(preferredWidth, preferredHeight);
-	int width = MINIMUM_WIDTH;
-	int height = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) width = wHint + MINIMUM_WIDTH + MARGIN_WIDTH; 
-	if (hHint != SWT.DEFAULT) height = hHint + (2 + MARGIN_HEIGHT);
+	int width = wHint, height = hHint;
+	if (wHint == SWT.DEFAULT) width = 32;
+	if (hHint == SWT.DEFAULT) height = 32;
+	width += MINIMUM_WIDTH + MARGIN_WIDTH;
+	height += 2 * MARGIN_HEIGHT;
 	return new Point (width, height);
 }
 void createHandle (int index) {
@@ -220,7 +220,7 @@ public CoolBar getParent () {
 	checkWidget();
 	return parent;
 }
-Point getSize () {
+public Point getSize () {
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Point (argList [1], argList [3]);
@@ -390,6 +390,7 @@ public void setControl (Control control) {
 }
 public void setSize (int width, int height) {
 	checkWidget();
+	requestedWidth = width;
 	width = Math.max (width, MINIMUM_WIDTH);
 	height = Math.max (height, DEFAULT_HEIGHT);
 	OS.XtResizeWidget (handle, width, height, 0);			
@@ -453,17 +454,16 @@ void setBounds (int x, int y, int width, int height) {
 }
 public Point getPreferredSize () {
 	checkWidget();
-	return new Point(preferredWidth, preferredHeight);
+	int[] argList = new int[] {OS.XmNheight, 0};
+	OS.XtGetValues(handle, argList, argList.length / 2);
+	return new Point(preferredWidth, argList[1] + (2 * MARGIN_HEIGHT));
 }
 public void setPreferredSize (int width, int height) {
 	checkWidget();
 	preferredWidth = Math.max (width, MINIMUM_WIDTH);
-	preferredHeight = Math.max (height, DEFAULT_HEIGHT);
-	OS.XtResizeWidget (handle, preferredWidth, preferredHeight, 0);
+	OS.XtResizeWidget (handle, preferredWidth, height, 0);
 	if (control != null) {
-		int controlWidth = preferredWidth - MINIMUM_WIDTH - MARGIN_WIDTH;
-		int controlHeight = preferredHeight - (2 * MARGIN_HEIGHT);
-		control.setSize(controlWidth, controlHeight);
+		control.setSize(control.getSize().x, height - (2 * MARGIN_HEIGHT));
 	}
 }
 public void setPreferredSize (Point size) {

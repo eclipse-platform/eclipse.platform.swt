@@ -173,7 +173,7 @@ int getRowHeight (int rowIndex) {
 	int height = 0;
 	for (int i = 0; i < row.size(); i++) {
 		CoolItem item = (CoolItem) row.elementAt(i);
-		int itemHeight = item.computeSize(SWT.DEFAULT, SWT.DEFAULT).y;
+		int itemHeight = item.getSize().y;
 		height = Math.max(height, itemHeight);
 	}
 	return height;
@@ -267,6 +267,7 @@ void insertItemIntoRow(CoolItem item, Vector row, int x_root, int rowY) {
 			newWidth = CoolItem.MINIMUM_WIDTH;
 		}
 		left.setBounds(leftBounds.x, leftBounds.y, newWidth, leftBounds.height);
+		left.requestedWidth = newWidth;
 	}
 	
 	/* Set the item's bounds. */
@@ -282,6 +283,7 @@ void insertItemIntoRow(CoolItem item, Vector row, int x_root, int rowY) {
 		width = getBounds().width - x;
 	}
 	item.setBounds(x, rowY, width, item.getBounds().height);
+	item.requestedWidth = width;
 }
 void createItem (CoolItem item, int index) {
 	int itemCount = getItemCount();
@@ -371,8 +373,10 @@ void moveLeft(CoolItem item, int pixels) {
 	}
 	int leftWidth = Math.max(CoolItem.MINIMUM_WIDTH, leftBounds.width - pixels);
 	left.setBounds(leftBounds.x, leftBounds.y, leftWidth, leftBounds.height);
+	left.requestedWidth = leftWidth;
 	int width = bounds.width + (bounds.x - x);
-	item.setBounds(x, bounds.y, width, bounds.height); 
+	item.setBounds(x, bounds.y, width, bounds.height);
+	item.requestedWidth = width;
 }
 void moveRight(CoolItem item, int pixels) {
 	Vector row = getRow(item);
@@ -396,10 +400,12 @@ void moveRight(CoolItem item, int pixels) {
 		width = rightBounds.x - x;
 	}
 	item.setBounds(x, bounds.y, width, bounds.height);
+	item.requestedWidth = width;
 	CoolItem left = (CoolItem) row.elementAt(index - 1);
 	Rectangle leftBounds = left.getBounds();
 	int leftWidth = x - leftBounds.x;
-	left.setBounds(leftBounds.x, leftBounds.y, leftWidth, leftBounds.height);	
+	left.setBounds(leftBounds.x, leftBounds.y, leftWidth, leftBounds.height);
+	left.requestedWidth = leftWidth;
 }
 void moveUp(CoolItem item, int x_root) {
 	int oldRowIndex = getRowIndex(item);
@@ -500,38 +506,26 @@ void adjustItemHeights(int startIndex) {
 	Point size = getSize();
 	if (size.y != y) super.setSize(size.x, y);
 }
-/**
- * The row has been assigned a new width. Grow or
- * shrink the row's items as necessary.
- */
-void adjustItemWidths (Vector row, int width) {
-	CoolItem last = (CoolItem) row.lastElement();
-	Rectangle bounds = last.getBounds();
-	int rowWidth = bounds.x + bounds.width;
-	if (width == rowWidth) return;
-	if (width > rowWidth || width > bounds.x + CoolItem.MINIMUM_WIDTH) {
-		last.setBounds(bounds.x, bounds.y, width - bounds.x, bounds.height);
-		return;
-	}
-	/* Shifting the last item ensures that all hidden items
-	   to its left are made visible as well.*/
-	last.setBounds(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height);
-	moveLeft(last, bounds.x - width + CoolItem.MINIMUM_WIDTH); 
-}
 Point layout (int width, boolean resize) {
 	int y = ROW_SPACING, maxWidth = 0;
 	for (int i = 0; i < rows.size(); i++) {
 		Vector row = (Vector) rows.elementAt(i);
-		if (row.size() > 0) {
+		int count = row.size();
+		if (count > 0) {
+			int available = width - count * CoolItem.MINIMUM_WIDTH;
+			if (available < 0) available = count * CoolItem.MINIMUM_WIDTH;
 			int x = 0, rowHeight = getRowHeight(i);
-			for (int j = 0; j < row.size(); j++) {
+			for (int j = 0; j < count; j++) {
 				CoolItem child = (CoolItem) row.elementAt(j);
-				int childWidth = child.getSize().x;
-				if (resize) child.setBounds(x, y, childWidth, rowHeight);
-				x += childWidth;
+				int newWidth = available + CoolItem.MINIMUM_WIDTH;
+				if (j + 1 < count) {
+					newWidth = Math.min(newWidth, child.requestedWidth);
+					available -= (newWidth - CoolItem.MINIMUM_WIDTH);
+				}
+				if (resize) child.setBounds(x, y, newWidth, rowHeight);
+				x += resize ? newWidth : child.requestedWidth;
 			}		
 			maxWidth = Math.max(maxWidth, x);
-			if (resize) adjustItemWidths(row, width);
 			y += ROW_SPACING + rowHeight;
 		}
 	}
@@ -550,8 +544,9 @@ void realizeChildren () {
 	layout(getSize().x, true);
 }
 void relayout() {
-	Point size = layout(getSize().x, true);
-	super.setSize(size.x, size.y);
+	int width = getSize().x;
+	int height = layout(width, true).y;
+	super.setSize(width, height);
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
