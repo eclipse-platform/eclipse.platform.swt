@@ -1250,17 +1250,18 @@ public static void setAppName (String name) {
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
- * program to move the user's pointer.</b>
+ * program to move the on-screen pointer location.</b>
  *
- * @param pt new position 
- *
+ * @param point new position 
+ * @since 2.0
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if pt.x is not between 0 and display.width, or pt.y is not between 0 and display.height
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null
  * </ul>
  */
-public void setCursorLocation (Point pt) {
-	// NOT IMPLEMENTED
+public void setCursorLocation (Point point) {
+	checkDevice ();
+	/* This is not supported on GTK */
 }
 
 /**

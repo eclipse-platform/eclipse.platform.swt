@@ -1283,22 +1283,23 @@ boolean runDeferredEvents () {
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
- * program to move the user's pointer.</b>
+ * program to move the on-screen pointer location.</b>
  *
- * @param pt new position 
- *
+ * @param point new position 
+ * @since 2.0
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- *    <li>ERROR_INVALID_ARGUMENT - if pt.x is not between 0 and display.width, or pt.y is not between 0 and display.height
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null
  * </ul>
  */
-public void setCursorLocation (Point pt) {
+public void setCursorLocation (Point point) {
 	checkDevice ();
-	int x = pt.x;
-	int y = pt.y;
-	if (x < 0 || y < 0) error (SWT.ERROR_INVALID_ARGUMENT);
-	Rectangle bounds = getBounds ();
-	if (x > bounds.width || y > bounds.height) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int x = point.x;
+	int y = point.y;
+//	if (x < 0 || y < 0) error (SWT.ERROR_INVALID_ARGUMENT);
+//	Rectangle bounds = getBounds ();
+//	if (x > bounds.width || y > bounds.height) error (SWT.ERROR_INVALID_ARGUMENT);
 	OS.PhMoveCursorAbs (OS.PhInputGroup (0), x, y);	
 }
 
