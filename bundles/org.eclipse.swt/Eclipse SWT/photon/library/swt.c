@@ -5654,7 +5654,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtColorPalette
  * Method:    PtGroup
  * Signature: ()I
  */
-/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGroup
   (JNIEnv *env, jobject that)
 {
@@ -5664,7 +5663,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtGroup
 	
 	return (jint)PtGroup;
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_photon_OS

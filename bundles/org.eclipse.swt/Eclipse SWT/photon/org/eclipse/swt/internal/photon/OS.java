@@ -1444,7 +1444,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_ARG_GRID_VERTICAL                                  = ( 43 * 1000 + 1 );
 	public static final int Pt_ARG_GROUP_FLAGS                                    = ( 11 * 1000 + 0 );
 	public static final int Pt_ARG_GROUP_HORZ_ALIGN                               = ( 11 * 1000 + 1 );
-//public static final int Pt_ARG_GROUP_ORIENTATION                              = ( 11 * 1000 + 2 );
+	public static final int Pt_ARG_GROUP_ORIENTATION                              = ( 11 * 1000 + 2 );
 //public static final int Pt_ARG_GROUP_ROWS_COLS                                = ( 11 * 1000 + 5 );
 	public static final int Pt_ARG_GROUP_SPACING                                  = ( 11 * 1000 + 3 );
 //public static final int Pt_ARG_GROUP_SPACING_X                                = ( 11 * 1000 + 6 );
@@ -2074,9 +2074,9 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_GROUP_ASIS                                         = 2;
 	public static final int Pt_GROUP_EQUAL_SIZE                                   = 0x00000002;
 //public static final int Pt_GROUP_EQUAL_SIZE_HORIZONTAL                        = 0x00000100;
-//public static final int Pt_GROUP_EQUAL_SIZE_VERTICAL                          = 0x00000200;
+	public static final int Pt_GROUP_EQUAL_SIZE_VERTICAL                          = 0x00000200;
 //public static final int Pt_GROUP_EXCLUSIVE                                    = 0x00000001;
-//public static final int Pt_GROUP_HORIZONTAL                                   = 0;
+	public static final int Pt_GROUP_HORIZONTAL                                   = 0;
 //public static final int Pt_GROUP_HORZ_CENTER                                  = 0;
 //public static final int Pt_GROUP_HORZ_LEFT                                    = 1;
 //public static final int Pt_GROUP_HORZ_NONE                                    = -1;
@@ -2874,7 +2874,7 @@ public static final native int PtToolbar ();
 //public static final native int PtColorPatch ();
 //public static final native int PtColorPalette ();
 
-//public static final native int PtGroup ();
+public static final native int PtGroup ();
 
 //public static final native int Pg_CM_RGB ();
 //public static final native int Pg_CM_HSB ();

@@ -16,6 +16,7 @@ public /*final*/ class ToolItem extends Item {
 	Control control;
 	String toolTipText;
 	Image hotImage, disabledImage;
+	int button, arrow;
 
 public ToolItem (ToolBar parent, int style) {
 	this(parent, style, parent.getItemCount ());
@@ -44,6 +45,30 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+int createArrowImage () {
+	short width = 5;
+	short height = 4;
+	int image = OS.PhCreateImage(null, width, height, OS.Pg_IMAGE_DIRECT_888, 0, 0, 0);
+	if (image == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	PhDim_t dim = new PhDim_t();
+	dim.w = width;
+	dim.h = height;
+	int mc = OS.PmMemCreateMC(image, dim, new PhPoint_t());
+	if (mc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.PmMemStart(mc);
+	OS.PgSetFillColor(0xFFFFFF);
+	OS.PgDrawIRect(0, 0, width, height, OS.Pg_DRAW_FILL);
+	OS.PgSetStrokeColor(0x000000);
+	OS.PgSetFillColor(0x000000);
+	short [] points = {(short)0, (short)1, (short)2, (short)3, (short)4, (short)1};
+	OS.PgDrawPolygon(points, points.length / 2,	new PhPoint_t(), OS.Pg_DRAW_FILL | OS.Pg_DRAW_STROKE | OS.Pg_CLOSED);
+	OS.PmMemFlush(mc, image);
+	OS.PmMemStop(mc);
+	OS.PmMemReleaseMC(mc);
+	OS.PhMakeTransBitmap(image, 0xFFFFFF);
+	return image;
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	int count = parent.getItemCount();
@@ -58,6 +83,30 @@ void createHandle (int index) {
 			OS.Pt_ARG_RESIZE_FLAGS, OS.Pt_RESIZE_Y_ALWAYS, OS.Pt_RESIZE_XY_BITS,
 		};		
 		handle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
+	} else if ((style & SWT.DROP_DOWN) != 0) {
+		int [] args =  {
+			OS.Pt_ARG_GROUP_ORIENTATION, OS.Pt_GROUP_HORIZONTAL, 0,
+			OS.Pt_ARG_GROUP_FLAGS, OS.Pt_GROUP_EQUAL_SIZE_VERTICAL, OS.Pt_GROUP_EQUAL_SIZE_VERTICAL,
+		};
+		handle = OS.PtCreateWidget (OS.PtGroup (), parentHandle, args.length / 3, args);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		boolean rightAligned = (parent.style & SWT.RIGHT) != 0;
+		args =  new int [] {
+			OS.Pt_ARG_BALLOON_POSITION, rightAligned ? OS.Pt_BALLOON_RIGHT : OS.Pt_BALLOON_BOTTOM, 0,
+			OS.Pt_ARG_BASIC_FLAGS, 0, OS.Pt_RIGHT_ETCH | OS.Pt_RIGHT_OUTLINE,
+		};
+		button = OS.PtCreateWidget (OS.PtButton (), handle, args.length / 3, args);
+		if (button == 0) error (SWT.ERROR_NO_HANDLES);
+		int arrowImage = createArrowImage ();
+		args =  new int [] {
+			OS.Pt_ARG_LABEL_IMAGE, arrowImage, 0,
+			OS.Pt_ARG_LABEL_TYPE, OS.Pt_IMAGE, 0,
+			OS.Pt_ARG_MARGIN_WIDTH, 1, 0,
+			OS.Pt_ARG_BASIC_FLAGS, 0, OS.Pt_LEFT_ETCH | OS.Pt_LEFT_OUTLINE,
+		};
+		arrow = OS.PtCreateWidget (OS.PtButton (), handle, args.length / 3, args);
+		OS.free (arrowImage);
+		if (arrow == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
 		boolean rightAligned = (parent.style & SWT.RIGHT) != 0;
 		boolean toggle = (style & (SWT.CHECK | SWT.RADIO)) != 0;
@@ -65,7 +114,7 @@ void createHandle (int index) {
 			OS.Pt_ARG_BALLOON_POSITION, rightAligned ? OS.Pt_BALLOON_RIGHT : OS.Pt_BALLOON_BOTTOM, 0,
 			OS.Pt_ARG_FLAGS, toggle ? OS.Pt_TOGGLE : 0, OS.Pt_TOGGLE,
 		};
-		handle = OS.PtCreateWidget (OS.PtButton (), parentHandle, args.length / 3, args);
+		handle = button = OS.PtCreateWidget (OS.PtButton (), parentHandle, args.length / 3, args);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if (index != count) {
@@ -85,6 +134,14 @@ void createHandle (int index) {
 	}
 	if (OS.PtWidgetIsRealized (parentHandle)) {
 		OS.PtRealizeWidget (topHandle ());
+	}
+}
+
+void deregister () {
+	super.deregister ();
+	if ((style & SWT.DROP_DOWN) != 0) {
+		WidgetTable.remove (button);
+		WidgetTable.remove (arrow);
 	}
 }
 
@@ -159,14 +216,28 @@ public int getWidth () {
 
 void hookEvents () {
 	super.hookEvents ();
+	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
+	OS.PtAddCallback (button, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
+	if ((style & SWT.DROP_DOWN) != 0) {
+		OS.PtAddCallback (arrow, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
+	}
 }
 
 public boolean isEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	return getEnabled () && parent.isEnabled ();
+}
+
+int processEvent (int widget, int data, int info) {
+	if (widget == arrow && data == SWT.Selection) {
+		Event event = new Event ();
+		event.detail = SWT.ARROW;
+		postEvent (SWT.Selection, event);
+		return OS.Pt_CONTINUE;
+	}
+	return super.processEvent (widget, data, info);;
 }
 
 int processSelection (int info) {
@@ -189,9 +260,22 @@ int processSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
 
+void register () {
+	super.register ();
+	if ((style & SWT.DROP_DOWN) != 0) {
+		WidgetTable.put (button, this);
+		WidgetTable.put (arrow, this);
+	}
+}
+
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	arrow = button = 0;
 }
 
 void releaseWidget () {
@@ -263,7 +347,7 @@ public void setImage (Image image) {
 	if (image != null) {
 		imageHandle = copyPhImage (image.handle);
 		int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
-		OS.PtGetResources (handle, args.length / 3, args);
+		OS.PtGetResources (button, args.length / 3, args);
 		if (args [1] != 0 && OS.strlen (args [1]) > 0) type = OS.Pt_TEXT_IMAGE;
 		else type = OS.Pt_IMAGE;
 	}	
@@ -271,8 +355,20 @@ public void setImage (Image image) {
 		OS.Pt_ARG_LABEL_IMAGE, imageHandle, 0,
 		OS.Pt_ARG_LABEL_TYPE, type, 0
 	};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResources (button, args.length / 3, args);
 	if (imageHandle != 0) OS.free (imageHandle);
+	
+	/*
+	* Bug on Photon.  When a the text/image is set on a
+	* DROP_DOWN item that is realized, the item does not resize
+	* to show the new text/image.  The fix is to force the item
+	* to recalculate the size.
+	*/
+	if ((style & SWT.DROP_DOWN) != 0) {
+		if (OS.PtWidgetIsRealized (handle)) {
+			OS.PtExtentWidget (handle);
+		}
+	}
 }
 
 public void setSelection (boolean selected) {
@@ -295,7 +391,7 @@ public void setText (String string) {
 		ptr = OS.malloc (buffer.length);
 		OS.memmove (ptr, buffer, buffer.length);
 		int [] args = {OS.Pt_ARG_LABEL_IMAGE, 0, 0};
-		OS.PtGetResources (handle, args.length / 3, args);
+		OS.PtGetResources (button, args.length / 3, args);
 		if (args [1] != 0) type = OS.Pt_TEXT_IMAGE;
 		else type = OS.Pt_Z_STRING;
 	}	
@@ -303,8 +399,20 @@ public void setText (String string) {
 		OS.Pt_ARG_TEXT_STRING, ptr, 0,
 		OS.Pt_ARG_LABEL_TYPE, type, 0,
 	};
-	OS.PtSetResources (handle, args.length / 3, args);
+	OS.PtSetResources (button, args.length / 3, args);
 	if (ptr != 0) OS.free (ptr);
+	
+	/*
+	* Bug on Photon.  When a the text/image is set on a
+	* DROP_DOWN item that is realized, the item does not resize
+	* to show the new text/image.  The fix is to force the item
+	* to recalculate the size.
+	*/
+	if ((style & SWT.DROP_DOWN) != 0) {
+		if (OS.PtWidgetIsRealized (handle)) {
+			OS.PtExtentWidget (handle);
+		}
+	}
 }
 
 public void setToolTipText (String string) {
