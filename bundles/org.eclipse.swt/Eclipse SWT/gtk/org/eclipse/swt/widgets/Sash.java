@@ -162,6 +162,8 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	int button = gdkEvent.button;
 	if (button != 1) return 0;
+	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) return 0;
+	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (widget);
 	int [] origin_x = new int [1], origin_y = new int [1];
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
