@@ -375,6 +375,7 @@ String getText2 () {
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, address, length);
 		OS.XtFree (address);
+		/* Use the character encoding for the default locale */
 		result = Converter.mbcsToWcs (null, buffer);
 	}
 	String accelText = "";
@@ -393,6 +394,7 @@ String getText2 () {
 			byte [] buffer = new byte [length];
 			OS.memmove (buffer, address, length);
 			OS.XtFree (address);
+			/* Use the character encoding for the default locale */
 			accelText = '\t' + new String (Converter.mbcsToWcs (null, buffer));
 		}
 	}
@@ -466,6 +468,7 @@ String keysymName (int keysym) {
 	int length = OS.strlen (ptr);
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, ptr, buffer.length);
+	/* Use the character encoding for the default locale */
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 void manageChildren () {
@@ -626,7 +629,8 @@ public void setAccelerator (int accelerator) {
 			keysym = wcsToMbcs ((char) keysym);
 		}
 		String key = "<Key>" + keysymName (keysym);
-		byte [] buffer = Converter.wcsToMbcs (null, ctrl + alt + shift + key, true);
+		/* Use the character encoding for the default locale */
+		byte [] buffer = Converter.wcsToMbcs (null, ctrl + alt + shift + key, true);		
 		ptr = OS.XtMalloc (buffer.length);
 		if (ptr != 0) OS.memmove (ptr, buffer, buffer.length);
 	}
@@ -756,6 +760,7 @@ public void setText (String string) {
 	if (accel && ++i < text.length) {
 		char [] accelText = new char [text.length - i];
 		System.arraycopy (text, i, accelText, 0, accelText.length);
+		/* Use the character encoding for the default locale */
 		buffer2 = Converter.wcsToMbcs (null, accelText, true);
 	} else {
 		buffer2 = new byte [1];
@@ -770,6 +775,7 @@ public void setText (String string) {
 		0);
 	if (xmString2 == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	while (j < text.length) text [j++] = 0;
+	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, text, true);
 	int xmString1 = OS.XmStringParseText (
 		buffer1,

@@ -89,7 +89,7 @@ public List (Composite parent, int style) {
 public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.XmListAddItemUnselected (handle, xmString, 0);
@@ -136,7 +136,7 @@ public void add (String string, int index) {
 	if (!(0 <= index && index <= argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.XmListAddItemUnselected (handle, xmString, index + 1);
@@ -446,7 +446,7 @@ public String getItem (int index) {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
 	OS.XtFree (address);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
 }
 /**
  * Returns the number of items contained in the receiver.
@@ -520,6 +520,7 @@ public String [] getItems () {
 	int items = argList [1], itemCount = argList [3];
 	int [] buffer1 = new int [1];
 	String [] result = new String [itemCount];
+	String codePage = getCodePage ();
 	for (int i=0; i<itemCount; i++) {
 		OS.memmove (buffer1, items, 4);
 		int ptr = buffer1 [0];
@@ -536,7 +537,7 @@ public String [] getItems () {
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, address, length);
 		OS.XtFree (address);
-		result[i] = new String (Converter.mbcsToWcs (null, buffer));
+		result[i] = new String (Converter.mbcsToWcs (codePage, buffer));
 		items += 4;
 	}
 	return result;
@@ -568,6 +569,7 @@ public String [] getSelection () {
 	int items = argList [1], itemCount = argList [3];
 	int [] buffer1 = new int [1];
 	String [] result = new String [itemCount];
+	String codePage = getCodePage ();
 	for (int i=0; i<itemCount; i++) {
 		OS.memmove (buffer1, items, 4);
 		int ptr = buffer1 [0];
@@ -584,7 +586,7 @@ public String [] getSelection () {
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, address, length);
 		OS.XtFree (address);
-		result[i] = new String (Converter.mbcsToWcs (null, buffer));
+		result[i] = new String (Converter.mbcsToWcs (codePage, buffer));
 		items += 4;
 	}
 	return result;
@@ -710,7 +712,7 @@ void hookEvents () {
 public int indexOf (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) return -1;
 	int index = OS.XmListItemPos (handle, xmString);
@@ -746,7 +748,7 @@ public int indexOf (String string, int start) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int items = argList [1], itemCount = argList [3];
 	if (!((0 <= start) && (start < itemCount))) return -1;
-	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer1 = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringCreateLocalized (buffer1);
 	if (xmString == 0) return -1;
 	int index = start;
@@ -871,7 +873,7 @@ public void remove (int start, int end) {
 public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	int index = OS.XmListItemPos (handle, xmString);
@@ -1124,9 +1126,10 @@ public void select (int [] indices) {
 void select (String [] items) {
 	checkWidget();
 	int [] table = new int [items.length];
+	String codePage = getCodePage ();
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
+		byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
 		int xmString = OS.XmStringCreateLocalized (buffer);
 		table [i] = xmString;
 	}
@@ -1242,7 +1245,7 @@ public void setItem (int index, String string) {
 	if (!(0 <= index && index < argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	boolean isSelected = OS.XmListPosSelected (handle, index + 1);
@@ -1282,10 +1285,11 @@ public void setItems (String [] items) {
 	}
 	int index = 0;
 	int [] table = new int [items.length];
+	String codePage = getCodePage ();
 	while (index < items.length) {
 		String string = items [index];
 		if (string == null) break; 
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
+		byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
 		int xmString = OS.XmStringCreateLocalized (buffer);
 		if (xmString == 0) break;
 		table [index++] = xmString;
@@ -1386,11 +1390,12 @@ public void setSelection(int[] indices) {
 public void setSelection (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	String codePage = getCodePage ();
 	if ((style & SWT.SINGLE) != 0) {
 		for (int i=items.length-1; i>=0; --i) {
 			String string = items [i];
 			if (string != null) {
-				byte [] buffer = Converter.wcsToMbcs (null, string, true);
+				byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
 				int xmString = OS.XmStringCreateLocalized (buffer);
 				if (xmString != 0) {
 					int index = OS.XmListItemPos (handle, xmString);
@@ -1409,7 +1414,7 @@ public void setSelection (String [] items) {
 	for (int i=0; i<items.length; i++) {
 		String string = items [i];
 		if (string != null) {
-			byte [] buffer = Converter.wcsToMbcs (null, string, true);
+			byte [] buffer = Converter.wcsToMbcs (codePage, string, true);
 			int xmString = OS.XmStringCreateLocalized (buffer);
 			if (xmString != 0) table [length++] = xmString;
 		}

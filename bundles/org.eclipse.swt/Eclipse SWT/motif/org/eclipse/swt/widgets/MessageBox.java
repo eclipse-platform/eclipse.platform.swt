@@ -155,6 +155,7 @@ public int open () {
 	*/
 	String string = title;
 	if (string.length () == 0) string = " ";
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int xmStringPtr = OS.XmStringParseText (
 		buffer,
@@ -253,6 +254,7 @@ void setButtons (int dialogHandle) {
 	}
 	if ((style & (SWT.YES | SWT.NO | SWT.CANCEL)) == (SWT.YES | SWT.NO | SWT.CANCEL)) {
 		OS.XtManageChild (help);
+		/* Use the character encoding for the default locale */
 		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Yes"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
@@ -262,6 +264,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_No"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
@@ -271,6 +274,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer3 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Cancel"), true);
 		int xmString3 = OS.XmStringParseText (
 			buffer3,
@@ -286,6 +290,7 @@ void setButtons (int dialogHandle) {
 		return;
 	}
 	if ((style & (SWT.YES | SWT.NO)) == (SWT.YES | SWT.NO)) {
+		/* Use the character encoding for the default locale */
 		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Yes"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
@@ -295,6 +300,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_No"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
@@ -310,6 +316,7 @@ void setButtons (int dialogHandle) {
 		return;
 	}
 	if ((style & (SWT.RETRY | SWT.CANCEL)) == (SWT.RETRY | SWT.CANCEL)) {
+		/* Use the character encoding for the default locale */
 		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Retry"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
@@ -319,6 +326,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Cancel"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
@@ -335,6 +343,7 @@ void setButtons (int dialogHandle) {
 	}
 	if ((style & (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) == (SWT.ABORT | SWT.RETRY | SWT.IGNORE)) {
 		OS.XtManageChild (help);
+		/* Use the character encoding for the default locale */
 		byte [] buffer1 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Abort"), true);
 		int xmString1 = OS.XmStringParseText (
 			buffer1,
@@ -344,6 +353,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer2 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Retry"), true);
 		int xmString2 = OS.XmStringParseText (
 			buffer2,
@@ -353,6 +363,7 @@ void setButtons (int dialogHandle) {
 			null,
 			0,
 			0);
+		/* Use the character encoding for the default locale */
 		byte [] buffer3 = Converter.wcsToMbcs (null, SWT.getMessage("SWT_Ignore"), true);
 		int xmString3 = OS.XmStringParseText (
 			buffer3,
@@ -383,6 +394,7 @@ void setMessage (int dialogHandle) {
 			text = display.wrapText (message, fontList, width * 3 / 5);
 		}
 	}
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	int [] parseTable = Display.getDefault ().parseTable;
 	int xmStringPtr = OS.XmStringParseText (

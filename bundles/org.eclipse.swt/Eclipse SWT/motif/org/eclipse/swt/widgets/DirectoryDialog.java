@@ -126,6 +126,7 @@ public String open () {
 	int parentHandle = appContext.shellHandle;
 	if ((parent != null) && (parent.getDisplay () == appContext))
 		parentHandle = parent.shellHandle;
+
 	/* Compute the dialog title */	
 	/*
 	* Feature in Motif.  It is not possible to set a shell
@@ -134,6 +135,8 @@ public String open () {
 	*/
 	String string = title;
 	if (string.length () == 0) string = " ";
+
+	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
 	int xmStringPtr1 = OS.XmStringParseText (
 		buffer1,
@@ -143,7 +146,9 @@ public String open () {
 		null,
 		0,
 		0);
+
 	/* Compute the filter */
+	/* Use the character encoding for the default locale */
 	byte [] buffer2 = Converter.wcsToMbcs (null, "*", true);
 	int xmStringPtr2 = OS.XmStringParseText (
 		buffer2,
@@ -156,6 +161,7 @@ public String open () {
 
 	/* Compute the filter path */
 	if (filterPath == null) filterPath = "";
+	/* Use the character encoding for the default locale */
 	byte [] buffer3 = Converter.wcsToMbcs (null, filterPath, true);
 	int xmStringPtr3 = OS.XmStringParseText (
 		buffer3,
@@ -166,6 +172,7 @@ public String open () {
 		0,
 		0);
 
+	/* Use the character encoding for the default locale */
 	byte [] buffer7 = Converter.wcsToMbcs (null, "Selection", true);
 	int xmStringPtr4 = OS.XmStringParseText (
 		buffer7,
@@ -175,6 +182,7 @@ public String open () {
 		null,
 		0,
 		0);
+
 	/* Create the dialog */
 	int [] argList1 = {
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
@@ -185,6 +193,7 @@ public String open () {
 		OS.XmNdirectory, xmStringPtr3,
 		OS.XmNfilterLabelString, xmStringPtr4
 	};
+
 	/*
 	* Feature in Linux.  For some reason, the XmCreateFileSelectionDialog()
 	* will not accept NULL for the widget name.  This works fine on the other
@@ -212,6 +221,7 @@ public String open () {
 	OS.XmStringFree (xmStringPtr4);
 
 	// Add label widget for message text.
+	/* Use the character encoding for the default locale */
 	byte [] buffer4 = Converter.wcsToMbcs (null, message, true);
 	int [] parseTable = Display.getDefault ().parseTable;
 	int xmString1 = OS.XmStringParseText (
@@ -262,6 +272,7 @@ public String open () {
 			byte [] buffer = new byte [length];
 			OS.memmove (buffer, ptr, length);
 			OS.XtFree (ptr);
+			/* Use the character encoding for the default locale */
 			directoryPath = new String (Converter.mbcsToWcs (null, buffer));
 		}
 		OS.XmStringFree (xmString3);

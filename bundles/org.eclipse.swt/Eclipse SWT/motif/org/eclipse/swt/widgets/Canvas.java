@@ -92,6 +92,12 @@ public Caret getCaret () {
 	return caret;
 }
 
+short [] getIMECaretPos () {
+	if (caret == null) return super.getIMECaretPos ();
+	int width = caret.width;
+	if (width <= 0) width = 2;
+	return new short[]{(short) (caret.x + width), (short) (caret.y + caret.height)};
+}
 int processFocusIn () {
 	int result = super.processFocusIn ();
 	if (caret != null) caret.setFocus ();
@@ -248,5 +254,15 @@ public void setSize (int width, int height) {
 	if (isFocus) caret.killFocus ();
 	super.setSize (width, height);
 	if (isFocus) caret.setFocus ();
+}
+void updateCaret () {
+	if (caret == null) return;
+	if (!IsDBLocale) return;
+	short [] point = getIMECaretPos ();
+	int ptr = OS.XtMalloc (4);
+	OS.memmove (ptr, point, 4);
+	int[] argList = {OS.XmNspotLocation, ptr};
+	OS.XmImSetValues (handle, argList, argList.length / 2);
+	if (ptr != 0) OS.XtFree (ptr);
 }
 }

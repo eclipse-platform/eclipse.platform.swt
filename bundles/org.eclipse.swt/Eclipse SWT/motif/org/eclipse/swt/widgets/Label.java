@@ -427,9 +427,9 @@ public void setText (String string) {
 		Display display = getDisplay ();
 		if (mnemonic != 0) string = new String(unicode);
 		string = display.wrapText (string, argList [1], width);
-		buffer = Converter.wcsToMbcs (null, string, true);
+		buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	} else {
-		buffer = Converter.wcsToMbcs (null, unicode, true);
+		buffer = Converter.wcsToMbcs (getCodePage (), unicode, true);
 	}
 	
 	int [] parseTable = getDisplay ().parseTable;

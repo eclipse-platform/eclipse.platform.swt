@@ -397,7 +397,7 @@ public String getText () {
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, address, length);
 		OS.XtFree (address);
-		result = Converter.mbcsToWcs (null, buffer);
+		result = Converter.mbcsToWcs (getCodePage (), buffer);
 	}	
 	if (xmString != 0) OS.XmStringFree (xmString);
 	int count = 0;
@@ -665,7 +665,7 @@ public void setText (String string) {
 		}
 	}
 	while (j < text.length) text [j++] = 0;
-	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), text, true);
 	int xmString = OS.XmStringParseText (
 		buffer,
 		0,

@@ -178,7 +178,7 @@ public void append (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int position = OS.XmTextGetLastPosition (handle);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
@@ -553,7 +553,7 @@ int getLineNumber (int position) {
 	* does not support multibyte locales.
 	*/
 	byte [] buffer1 = null;
-	if (IsLinux) buffer1 = new byte [page + 1];
+	if (OS.IsLinux) buffer1 = new byte [page + 1];
 	int end = ((position + page - 1) / page) * page;
 	while (start < end) {
 		int length = page;
@@ -561,7 +561,7 @@ int getLineNumber (int position) {
 		if (echoCharacter != '\0') {
 			hiddenText.getChars (start, start + length, buffer, 0);
 		} else {
-			if (IsLinux) {
+			if (OS.IsLinux) {
 				OS.XmTextGetSubstring (handle, start, length, buffer1.length, buffer1);
 				for (int i=0; i<length; i++) buffer [i] = (char) buffer1 [i];
 			} else {
@@ -643,7 +643,7 @@ public String getSelectionText () {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, ptr, length);
 	OS.XtFree (ptr);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
 }
 /**
  * Gets the number of tabs.
@@ -687,7 +687,7 @@ public String getText () {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, ptr, length);
 	OS.XtFree (ptr);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
 }
 /**
  * Gets a range of text.
@@ -717,7 +717,7 @@ public String getText (int start, int end) {
 	byte [] buffer = new byte [length];
 	int code = OS.XmTextGetSubstring (handle, start, numChars, length, buffer);
 	if (code == OS.XmCOPY_FAILED) return "";
-	char [] unicode = Converter.mbcsToWcs (null, buffer);
+	char [] unicode = Converter.mbcsToWcs (getCodePage (), buffer);
 	if (code == OS.XmCOPY_TRUNCATED) {
 		numChars = OS.XmTextGetLastPosition (handle) - start;
 	}
@@ -828,7 +828,7 @@ public void insert (String string) {
 	if (start [0] == end [0]) {
 		start [0] = end [0] = OS.XmTextGetInsertionPosition (handle);
 	}
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
@@ -887,6 +887,12 @@ int processFocusOut () {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	return 0;
 }
+int processIMEFocusIn () {
+	return 0;
+}
+int processIMEFocusOut () {
+	return 0;
+}
 int processModify (int callData) {
 	if (!ignoreChange) super.processModify (callData);
 	return 0;
@@ -900,7 +906,8 @@ int processVerify (int callData) {
 	OS.memmove (textBlock, textVerify.text, XmTextBlockRec.sizeof);
 	byte [] buffer = new byte [textBlock.length];
 	OS.memmove (buffer, textBlock.ptr, textBlock.length);
-	String text = new String (Converter.mbcsToWcs (null, buffer));
+	String codePage = getCodePage ();
+	String text = new String (Converter.mbcsToWcs (codePage, buffer));
 	String newText = text;
 	if (!ignoreChange) {
 		Event event = new Event ();
@@ -929,7 +936,7 @@ int processVerify (int callData) {
 			newText = new String (charBuffer);
 		}
 		if (newText != text) {
-			byte [] buffer2 = Converter.wcsToMbcs (null, newText, true);
+			byte [] buffer2 = Converter.wcsToMbcs (codePage, newText, true);
 			int length = buffer2.length;
 			int ptr = OS.XtMalloc (length);
 			OS.memmove (ptr, buffer2, length);
@@ -1011,6 +1018,37 @@ public void removeVerifyListener (VerifyListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);	
+}
+byte [] sendKeyEvent (int type, XKeyEvent xEvent) {
+	byte [] mbcs = super.sendKeyEvent (type, xEvent);
+	
+	/*
+	* Bug in Motif. On Solaris and Linux, XmImMbLookupString() clears
+	* the characters from the IME. This causes tht characters to be
+	* stolen from the text widget. The fix is to detect that the IME
+	* has been cleared and use XmTextInsert() to insert the stolen
+	* characters. This problem does not happen on AIX.
+	*/
+	if (mbcs == null || xEvent.keycode != 0) return null;
+	byte [] buffer = new byte [2];
+	int [] keysym = new int [1];
+	int [] status = new int [1];
+	int size = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, keysym, status);
+	if (size != 0) return null;
+	int [] start = new int [1], end = new int [1];
+	OS.XmTextGetSelectionPosition (handle, start, end);
+	if (start [0] == end [0]) {
+		start [0] = end [0] = OS.XmTextGetInsertionPosition (handle);
+	}
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.XmTextReplace (handle, start [0], end [0], mbcs);
+	int position = start [0] + mbcs.length - 1;
+	OS.XmTextSetInsertionPosition (handle, position);
+	display.setWarnings (warnings);
+	
+	return mbcs;
 }
 /**
  * Selects all the text in the receiver.
@@ -1336,7 +1374,7 @@ public void setTabs (int tabs) {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
@@ -1348,7 +1386,7 @@ public void setText (String string) {
 	* it does not send a Modify to notify the application
 	* that the text has changed.  The fix is to send the event.
 	*/
-	if (IsLinux && (style & SWT.MULTI) != 0) sendEvent (SWT.Modify);
+	if (OS.IsLinux && (style & SWT.MULTI) != 0) sendEvent (SWT.Modify);
 }
 /**
  * Sets the maximum number of characters that the receiver

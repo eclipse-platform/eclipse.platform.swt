@@ -181,6 +181,7 @@ public String open () {
 	*/
 	String string = title;
 	if (string.length () == 0) string = " ";
+	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
 	int xmStringPtr1 = OS.XmStringParseText (
 		buffer1,
@@ -204,6 +205,7 @@ public String open () {
 			if (filter.indexOf (';', 0) == -1) mask = filter;
 		}
 	}
+	/* Use the character encoding for the default locale */
 	byte [] buffer2 = Converter.wcsToMbcs (null, mask, true);
 	int xmStringPtr2 = OS.XmStringParseText (
 		buffer2,
@@ -216,6 +218,7 @@ public String open () {
 
 	/* Compute the filter path */
 	if (filterPath == null) filterPath = "";
+	/* Use the character encoding for the default locale */
 	byte [] buffer3 = Converter.wcsToMbcs (null, filterPath, true);
 	int xmStringPtr3 = OS.XmStringParseText (
 		buffer3,
@@ -309,6 +312,7 @@ public String open () {
 			byte [] buffer = new byte [length];
 			OS.memmove (buffer, ptr, length);
 			OS.XtFree (ptr);
+			/* Use the character encoding for the default locale */
 			filterPath = new String (Converter.mbcsToWcs (null, buffer));
 		}
 		OS.XmStringFree (xmString3);
@@ -326,6 +330,7 @@ public String open () {
 			byte [] buffer = new byte [length];
 			OS.memmove (buffer, ptr, length);
 			OS.XtFree (ptr);
+			/* Use the character encoding for the default locale */
 			fullPath = new String (Converter.mbcsToWcs (null, buffer));
 		}
 		OS.XmStringFree (xmString4);

@@ -419,6 +419,7 @@ void createDisplay (DeviceData data) {
 		if (data.application_name != null) application_name = data.application_name;
 		if (data.application_class != null) application_class = data.application_class;
 	}
+	/* Use the character encoding for the default locale */
 	if (display_name != null) displayName = Converter.wcsToMbcs (null, display_name, true);
 	if (application_name != null) appName = Converter.wcsToMbcs (null, application_name, true);
 	if (application_class != null) appClass = Converter.wcsToMbcs (null, application_class, true);
@@ -473,7 +474,7 @@ boolean filterEvent (XAnyEvent event) {
 
 	/* Check the event and find the widget */
 	if (event.type != OS.KeyPress) return false;
-	if (OS.XFilterEvent(event, OS.None)) return true;
+	if (!OS.IsLinux && OS.XFilterEvent(event, OS.None)) return true;
 	XKeyEvent keyEvent = new XKeyEvent ();
 	
 	/* Move the any event into the key event */
@@ -1706,6 +1707,7 @@ void showToolTip (int handle, String toolTipText) {
 	Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
 	int foregroundPixel = infoForeground.handle.pixel;
 	int backgroundPixel = infoBackground.handle.pixel;
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (null, toolTipText, true);
 	int [] argList2 = {
 		OS.XmNforeground, foregroundPixel, 
@@ -1771,7 +1773,8 @@ public void syncExec (Runnable runnable) {
 }
 int textWidth (String string, int fontList) {
 	if (string.length () == 0) return 0;
-	byte [] textBuffer = Converter.wcsToMbcs (null, string, true);
+	String codePage = Converter.getCodePage (xDisplay, fontList);
+	byte [] textBuffer = Converter.wcsToMbcs (codePage, string, true);
 	int xmString = OS.XmStringGenerate (textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
 	int width = OS.XmStringWidth (fontList, xmString);
 	OS.XmStringFree (xmString);

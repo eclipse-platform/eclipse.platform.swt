@@ -278,15 +278,13 @@ public void setBounds (int x, int y, int width, int height) {
 			moved = true;
 			if (isVisible ()) {
 				moved = false;
-				//IsDBLocale ifTrue: [
-				//widget == nil ifFalse: [widget updateCaret]].
+				parent.updateCaret ();
 			}
 	} else {
 			resized = true;
 			if (isVisible ()) {
 				moved = false;
-				//IsDBLocale ifTrue: [
-				//widget == nil ifFalse: [widget updateCaret]].
+				parent.updateCaret ();
 				resized = false;
 			}
 	}

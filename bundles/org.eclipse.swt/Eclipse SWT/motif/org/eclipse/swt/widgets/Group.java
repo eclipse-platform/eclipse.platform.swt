@@ -207,7 +207,7 @@ public String getText () {
 	OS.memmove (buffer, address, length);
 	OS.XtFree (address);
 	OS.XmStringFree (xmString);
-	return new String (Converter.mbcsToWcs (null, buffer));
+	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
 }
 boolean mnemonicHit () {
 	return setFocus ();
@@ -251,7 +251,7 @@ void releaseHandle () {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringParseText (
 		buffer,
 		0,

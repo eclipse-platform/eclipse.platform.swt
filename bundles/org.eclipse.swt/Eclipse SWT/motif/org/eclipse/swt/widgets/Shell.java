@@ -89,6 +89,8 @@ public /*final*/ class Shell extends Decorations {
 	boolean reparented, realized;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastFocus;
+
+	static final  byte [] WM_DETELE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -415,7 +417,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	Rectangle trim = super.computeTrim (x, y, width, height);
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	trim.x -= trimWidth / 2; trim.y -= trimHeight - (trimWidth / 2);
-	trim.width += trimWidth; trim.height += trimHeight;
+	trim.width += trimWidth; trim.height += trimHeight + imeHeight ();
 	return trim;
 }
 void createHandle (int index) {
@@ -493,6 +495,15 @@ void createHandle (int index) {
 		int [] argList1 = {OS.XmNborderWidth, 1};
 		OS.XtSetValues (handle, argList1, argList1.length / 2);
 	}
+	
+	/*
+	* Feature in Motif. There is no Motif API to negociate for the
+	* status line. The fix is to force the status line to appear
+	* by creating a hidden text widget.  This is much safer than
+	* using X API because this may conflict with Motif.
+	*/
+	int textHandle = OS.XmCreateTextField (handle, null, null, 0);
+	if (textHandle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 void deregister () {
 	super.deregister ();
@@ -681,14 +692,18 @@ void hookEvents () {
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
 	int xDisplay = OS.XtDisplay (shellHandle);
 	if (xDisplay != 0) {
-		byte [] WM_DETELE_WINDOW = Converter.wcsToMbcs (null, "WM_DELETE_WINDOW\0", false);
 		int atom = OS.XmInternAtom (xDisplay, WM_DETELE_WINDOW, false);	
 		OS.XmAddWMProtocolCallback (shellHandle, atom, windowProc, SWT.Dispose);
 	}
 }
-int inputContext () {
-	//NOT DONE
-	return 0;
+int imeHeight () {
+	if (!IsDBLocale) return 0;
+//	realizeWidget ();
+	int [] argList1 = {OS.XmNheight, 0};
+	OS.XtGetValues (shellHandle, argList1, argList1.length / 2);
+	int [] argList2 = {OS.XmNheight, 0};
+	OS.XtGetValues (scrolledHandle, argList2, argList2.length / 2);
+	return argList1 [1] - argList2 [1];
 }
 public boolean isEnabled () {
 	checkWidget();
@@ -979,6 +994,7 @@ public void setText (String string) {
 	* title to an empty string.  The fix is to set the title
 	* to be a single space.
 	*/
+	/* Use the character encoding for the default locale */
 	if (string.length () == 0) string = " ";
 	byte [] buffer1 = Converter.wcsToMbcs (null, string, true);
 	int length = buffer1.length - 1;

@@ -370,6 +370,14 @@ void createWidget (int index) {
 	super.createWidget (index);
 	
 	/*
+	* Register for the IME.  This is necessary on single byte
+	* platforms as well as double byte platforms in order to
+	* get composed characters. For example, accented characters
+	* on a German locale.
+	*/
+	OS.XmImRegister (handle, 0);
+	
+	/*
 	* Feature in MOTIF.  When a widget is created before the
 	* parent has been realized, the widget is created behind
 	* all siblings in the Z-order.  When a widget is created
@@ -512,6 +520,9 @@ Point getClientLocation () {
 	short [] topHandle_x = new short [1], topHandle_y = new short [1];
 	OS.XtTranslateCoords (parent.handle, (short) 0, (short) 0, topHandle_x, topHandle_y);
 	return new Point (handle_x [0] - topHandle_x [0], handle_y [0] - topHandle_y [0]);
+}
+String getCodePage () {
+	return Converter.getCodePage (OS.XtDisplay (handle), getFontList ());
 }
 /**
  * Returns the display that the receiver was created on.
@@ -679,6 +690,9 @@ int getForegroundPixel () {
 	int [] argList = {OS.XmNforeground, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
+}
+short [] getIMECaretPos () {
+	return new short[]{0, 0};
 }
 /**
  * Returns layout data which is associated with the receiver.
@@ -869,9 +883,6 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.ExposureMask, false, windowProc, SWT.Paint);
 	OS.XtAddEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn);
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, SWT.Help);
-}
-int inputContext () {
-	return getShell ().inputContext ();
 }
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
@@ -1108,16 +1119,45 @@ int processDefaultSelection (int callData) {
 }
 int processFocusIn () {
 	sendEvent (SWT.FocusIn);
-//	IsDBLocale ifTrue: [self killImeFocus].
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	processIMEFocusIn ();
 	return 0;
 }
 int processFocusOut () {
 	sendEvent (SWT.FocusOut);
-//	IsDBLocale ifTrue: [self killImeFocus].
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	processIMEFocusOut ();
 	return 0;
 }
 int processHelp (int callData) {
 	sendHelpEvent (callData);
+	return 0;
+}
+int processIMEFocusIn () {
+	if (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp))) return 0;
+	short [] point = getIMECaretPos ();
+	int ptr = OS.XtMalloc (4);
+	OS.memmove (ptr, point, 4);
+	
+	/*
+	* Bug in Motif. On Linux Japanese only, XmImSetFocusValues will cause
+	* a GPF. The fix is to call XmImVaSetFocusValues instead.
+	*/
+	OS.XmImVaSetFocusValues (handle, 
+		OS.XmNforeground, getForegroundPixel(),
+		OS.XmNbackground, getBackgroundPixel(),
+		OS.XmNspotLocation, ptr,
+		OS.XmNfontList, getFontList(),
+		0);
+	
+	if (ptr != 0) OS.XtFree (ptr);
+	return 0;
+}
+int processIMEFocusOut () {
+	if (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp))) return 0;
+	OS.XmImUnsetFocus (handle);
 	return 0;
 }
 int processKeyDown (int callData) {
@@ -1378,26 +1418,7 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
-/*
-	"Release the IME."
-	self isMenu ifFalse: [
-		handle xtIsWidget ifTrue: [
-			handle xmImUnregister.
-
-			"Bug in X.  On Solaris only, destroying the window that has IME focus causes
-			a segment fault.  The fix is to set focus to the IME client window (typically
-			the shell) when the receiver is being destroyed.  Destroying the shell window
-			does not have the problem.  Note that this fix is not necessary on AIX."
-			(xIC := self inputContext) == nil ifFalse: [
-				(window := handle xtWindow) isNull ifFalse: [
-					xIC xGetICValues: XNFocusWindow with: (buffer := ByteArray new: 4) with: 0.
-					(buffer uint32At: 0) = window asInteger ifTrue: [
-						xIC xGetICValues: XNClientWindow with: (buffer := ByteArray new: 4) with: 0.
-						xIC
-							xUnsetICFocus;
-							xSetICValues: XNFocusWindow with: (buffer uint32At: 0) with: 0;
-							xSetICFocus]]]]].
-*/
+	OS.XmImUnregister (handle);
 	parent = null;
 	layoutData = null;
 }
@@ -1624,7 +1645,7 @@ void sendHelpEvent (int callData) {
 		control = control.parent;
 	}
 }
-void sendKeyEvent (int type, XKeyEvent xEvent) {
+byte [] sendKeyEvent (int type, XKeyEvent xEvent) {
 	
 	/* Look up the keysym and character(s) */
 	byte [] buffer;
@@ -1634,23 +1655,18 @@ void sendKeyEvent (int type, XKeyEvent xEvent) {
 		buffer = new byte [1];
 		isVirtual = OS.XLookupString (xEvent, buffer, buffer.length, keysym, status) == 0;
 	} else {
-		int size = 0;
-		buffer = new byte [2];
-		int xIC = inputContext ();
-		if (xIC == 0) {
-			size = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, keysym, status);
-			if (status [0] == OS.XBufferOverflow) {
-				buffer = new byte [size];
-				size = OS.XmImMbLookupString (handle, xEvent, buffer, size, keysym, status);
-			}
-		} else {
-			size = OS.XmbLookupString (xIC, xEvent, buffer, buffer.length, keysym, status);
-			if (status [0] == OS.XBufferOverflow) {
-				buffer = new byte [size];
-				size = OS.XmbLookupString (xIC, xEvent, buffer, size, keysym, status);
-			}
+		/*
+		* Bug in Motif. On Linux only, XmImMbLookupString() does not return 
+		* XBufferOverflow as the status if the buffer is too small. The fix is
+		* to pass a bigger buffer.
+		*/
+		buffer = new byte [512];
+		int size = OS.XmImMbLookupString (handle, xEvent, buffer, buffer.length, keysym, status);
+		if (status [0] == OS.XBufferOverflow) {
+			buffer = new byte [size];
+			size = OS.XmImMbLookupString (handle, xEvent, buffer, size, keysym, status);
 		}
-		if (size == 0) return;
+		if (size == 0) return null;
 	}
 
 	/*
@@ -1659,7 +1675,7 @@ void sendKeyEvent (int type, XKeyEvent xEvent) {
 	* to 0x1005FF10 and 0x1005FF11 respectively.  The fix is to
 	* look for these values explicitly and correct them.
 	*/
-	if (IsSunOS) {
+	if (OS.IsSunOS) {
 		if ((keysym [0] == 0x1005FF10) || (keysym [0] == 0x1005FF11)) {
 			if (keysym [0] == 0x1005FF10) keysym [0] = OS.XK_F11;
 			if (keysym [0] == 0x1005FF11) keysym [0] = OS.XK_F12;
@@ -1675,11 +1691,14 @@ void sendKeyEvent (int type, XKeyEvent xEvent) {
 	keysym [0] &= 0xFFFF;
 
 	/* Convert from MBCS to UNICODE and send the event */
+	/* Use the character encoding for the default locale */
 	char [] result = Converter.mbcsToWcs (null, buffer);
-	for (int i=0; i<result.length; i++) {
+	int index = 0;
+	while (index < result.length) {
+		if (result [index] == 0) break;
 		Event event = new Event ();
 		event.time = xEvent.time;
-		event.character = result [i];
+		event.character = result [index];
 		if (isVirtual) event.keyCode = Display.translateKey (keysym [0]);
 		if ((xEvent.state & OS.Mod1Mask) != 0) event.stateMask |= SWT.ALT;
 		if ((xEvent.state & OS.ShiftMask) != 0) event.stateMask |= SWT.SHIFT;
@@ -1688,7 +1707,10 @@ void sendKeyEvent (int type, XKeyEvent xEvent) {
 		if ((xEvent.state & OS.Button2Mask) != 0) event.stateMask |= SWT.BUTTON2;
 		if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
 		postEvent (type, event);
+		index++;
 	}
+	
+	return buffer;
 }
 void sendMouseEvent (int type, int button, int mask, XWindowEvent xEvent) {
 	Event event = new Event ();

@@ -933,7 +933,7 @@ public void drawString (String string, int x, int y) {
 public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringCreate (buffer, OS.XmFONTLIST_DEFAULT_TAG);
 	if (isTransparent) {
 		OS.XmStringDraw (data.display, data.drawable, data.fontList, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
@@ -1041,7 +1041,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (data.renderTable == 0) createRenderTable();
 	int renderTable = data.renderTable;
-	byte [] textBuffer = Converter.wcsToMbcs (null, string, true);
+	byte [] textBuffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringGenerate(textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
 	if (isTransparent) {
 		OS.XmStringDraw (data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
@@ -1428,7 +1428,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int fontList  = data.fontList;
-	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch }, false);
+	byte[] charBuffer = Converter.wcsToMbcs(getCodePage (), new char[] { ch }, false);
 	int val = charBuffer[0] & 0xFF;
 	/* Create a font context to iterate over each element in the font list */
 	int[] buffer = new int[1];
@@ -1552,7 +1552,7 @@ public Color getBackground() {
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int fontList = data.fontList;
-	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch }, false);
+	byte[] charBuffer = Converter.wcsToMbcs(getCodePage (), new char[] { ch }, false);
 	int val = charBuffer[0] & 0xFF;
 	/* Create a font context to iterate over each element in the font list */
 	int[] buffer = new int[1];
@@ -1693,6 +1693,9 @@ public void getClipping(Region region) {
 	}
 	OS.XSubtractRegion (hRegion, hRegion, hRegion);
 	OS.XUnionRegion (clipRgn, hRegion, hRegion);
+}
+String getCodePage () {
+	return Converter.getCodePage(data.display, data.fontList);
 }
 /** 
  * Returns the font currently being used by the receiver
@@ -1987,7 +1990,6 @@ public boolean getXORMode() {
 	OS.XGetGCValues (data.display, handle, OS.GCFunction, values);
 	return values.function == OS.GXxor;
 }
-
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -2305,7 +2307,7 @@ public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) return new Point(0, getFontHeight());
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
+	byte[] buffer = Converter.wcsToMbcs(getCodePage (), string, true);
 	int xmString = OS.XmStringCreate(buffer, OS.XmFONTLIST_DEFAULT_TAG);
 	int fontList = data.fontList;
 	int width = OS.XmStringWidth(fontList, xmString);
@@ -2336,7 +2338,7 @@ public Point textExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) return new Point(0, getFontHeight());
-	byte [] textBuffer = Converter.wcsToMbcs (null, string, true);
+	byte [] textBuffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int xmString = OS.XmStringGenerate(textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
 	if (data.renderTable == 0) createRenderTable();
 	int renderTable = data.renderTable;

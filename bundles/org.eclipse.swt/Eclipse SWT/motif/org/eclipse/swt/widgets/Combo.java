@@ -113,7 +113,7 @@ public void add (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.XmComboBoxAddItem(handle, xmString, -1, false);
@@ -161,7 +161,7 @@ public void add (String string, int index) {
 	if (!(0 <= index && index <= argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.XmComboBoxAddItem(handle, xmString, index + 1, false);
@@ -446,7 +446,7 @@ public String getItem (int index) {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, address, length);
 	OS.XtFree (address);
-	return decodeString(new String (Converter.mbcsToWcs (null, buffer)));
+	return decodeString(new String (Converter.mbcsToWcs (getCodePage (), buffer)));
 }
 /**
  * Returns the number of items contained in the receiver's list.
@@ -517,6 +517,7 @@ public String [] getItems () {
 	int items = argList [1], itemCount = argList [3];
 	int [] buffer1 = new int [1];
 	String [] result = new String [itemCount];
+	String codePage = getCodePage ();
 	for (int i = 0; i < itemCount; i++) {
 		OS.memmove (buffer1, items, 4);
 		int ptr = buffer1 [0];
@@ -533,7 +534,7 @@ public String [] getItems () {
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, address, length);
 		OS.XtFree (address);
-		result[i] = decodeString(new String (Converter.mbcsToWcs (null, buffer)));
+		result[i] = decodeString(new String (Converter.mbcsToWcs (codePage, buffer)));
 		items += 4;
 	}
 	return result;
@@ -612,7 +613,7 @@ public String getText () {
 	byte [] buffer = new byte [length];
 	OS.memmove (buffer, ptr, length);
 	OS.XtFree (ptr);
-	return decodeString(new String (Converter.mbcsToWcs (null, buffer)));
+	return decodeString(new String (Converter.mbcsToWcs (getCodePage (), buffer)));
 }
 /**
  * Returns the height of the receivers's text field.
@@ -709,7 +710,7 @@ public int indexOf (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) return -1;
 	
@@ -745,7 +746,7 @@ public int indexOf (String string, int start) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int items = argList [1], itemCount = argList [3];
 	if (!((0 <= start) && (start < itemCount))) return -1;
-	byte [] buffer1 = Converter.wcsToMbcs (null, encodeString(string), true);
+	byte [] buffer1 = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer1);
 	if (xmString == 0) return -1;
 	int index = start;
@@ -874,7 +875,7 @@ public void remove (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
-	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	
@@ -1030,7 +1031,7 @@ public void setItem (int index, String string) {
 	if (!(0 <= index && index < argList [3])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), encodeString(string), true);
 	int xmString = OS.XmStringCreateLocalized (buffer);
 	if (xmString == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	boolean isSelected = OS.XmListPosSelected (argList[1], index + 1);
@@ -1062,10 +1063,11 @@ public void setItems (String [] items) {
 	
 	int index = 0;
 	int [] table = new int [items.length];
+	String codePage = getCodePage ();
 	while (index < items.length) {
 		String string = items [index];
 		if (string == null) break; 
-		byte [] buffer = Converter.wcsToMbcs (null, encodeString(string), true);
+		byte [] buffer = Converter.wcsToMbcs (codePage, encodeString(string), true);
 		int xmString = OS.XmStringCreateLocalized (buffer);
 		if (xmString == 0) break;
 		table [index++] = xmString;
@@ -1161,7 +1163,7 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 
 	if ((style & SWT.READ_ONLY) == 0) {
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
+		byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 		int xmString = OS.XmStringCreateLocalized (buffer);
 		if (xmString == 0) return;
 		int [] argList = {OS.XmNtextField, 0, OS.XmNlist, 0};
@@ -1185,7 +1187,7 @@ public void setText (String string) {
 		* it does not send a Modify to notify the application
 		* that the text has changed.  The fix is to send the event.
 		*/
-		if (IsLinux && (style & SWT.MULTI) != 0) sendEvent (SWT.Modify);
+		if (OS.IsLinux && (style & SWT.MULTI) != 0) sendEvent (SWT.Modify);
 	}
 }
 /**
