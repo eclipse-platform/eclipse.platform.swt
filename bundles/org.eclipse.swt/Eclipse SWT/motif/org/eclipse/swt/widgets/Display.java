@@ -708,14 +708,6 @@ int createMask (int pixbuf) {
 	return mask;
 }
 int createPixmap (String name) {
-	/*
-	* Feature in Motif.  The system pixmaps are initially installed the first
-	* time a system dialog is created, so create and destroy a system dialog
-	* in order to make these pixmaps available.  
-	*/
-	int dialog = OS.XmCreateErrorDialog (shellHandle, null, null, 0);
-	OS.XtDestroyWidget (dialog);
-	
 	int screen  = OS.XDefaultScreenOfDisplay (xDisplay);
 	int fgPixel = OS.XBlackPixel (xDisplay, OS.XDefaultScreen (xDisplay));
 	int bgPixel = OS.XWhitePixel (xDisplay, OS.XDefaultScreen (xDisplay));
@@ -1590,57 +1582,51 @@ public Font getSystemFont () {
 }
 public Image getSystemImage (int style) {
 	checkDevice ();
-	int image = 0;
-	int mask = 0;
+	int imagePixmap = 0, maskPixmap = 0;
 	switch (style) {
-		case SWT.ICON_ERROR: {
+		case SWT.ICON_ERROR:
 			if (errorPixmap == 0) {
 				errorPixmap = createPixmap ("xm_error");
 				errorMask = createMask (errorPixmap);
 			}
-			image = errorPixmap;
-			mask = errorMask;
+			imagePixmap = errorPixmap;
+			maskPixmap = errorMask;
 			break;
-		}
-		case SWT.ICON_INFORMATION: {
+		case SWT.ICON_INFORMATION:
 			if (infoPixmap == 0) {
 				infoPixmap = createPixmap ("xm_information");
 				infoMask = createMask (infoPixmap);
 			}
-			image = infoPixmap;
-			mask = infoMask;
+			imagePixmap = infoPixmap;
+			maskPixmap = infoMask;
 			break;
-		}
-		case SWT.ICON_QUESTION: {
+		case SWT.ICON_QUESTION:
 			if (questionPixmap == 0) {
 				questionPixmap = createPixmap ("xm_question");
 				questionMask = createMask (questionPixmap);
 			}
-			image = questionPixmap;
-			mask = questionMask;
+			imagePixmap = questionPixmap;
+			maskPixmap = questionMask;
 			break;
-		}
-		case SWT.ICON_WARNING: {
+		case SWT.ICON_WARNING:
 			if (warningPixmap == 0) {
 				warningPixmap = createPixmap ("xm_warning");
 				warningMask = createMask (warningPixmap);
 			}
-			image = warningPixmap;
-			mask = warningMask;
+			imagePixmap = warningPixmap;
+			maskPixmap = warningMask;
 			break;
-		}
-		case SWT.ICON_WORKING: {
+		case SWT.ICON_WORKING:
 			if (workingPixmap == 0) {
 				workingPixmap = createPixmap ("xm_working");
 				workingMask = createMask (workingPixmap);
 			}
-			image = workingPixmap;
-			mask = workingMask;
+			imagePixmap = workingPixmap;
+			maskPixmap = workingMask;
 			break;
-		}
 	}
-	if (image == 0) return null;
-	return Image.motif_new (this, SWT.ICON, image, mask);
+	if (imagePixmap == 0) return null;
+	return Image.motif_new (this, SWT.ICON, imagePixmap, maskPixmap);
 }
 public Tray getSystemTray () {
 	if (tray != null) return tray;
@@ -1706,6 +1692,7 @@ protected void init () {
 	initializeTranslations ();
 	initializeWidgetTable ();
 	initializeNumLock ();
+	initializePixmaps ();
 }
 void initializeButton () {
 
@@ -1973,6 +1960,15 @@ void initializeNumLock () {
 			break;
 		}
 	}
+}
+void initializePixmaps () {
+	/*
+	* Feature in Motif.  The system pixmaps are initially installed the first
+	* time a system dialog is created, so create and destroy a system dialog
+	* in order to make these pixmaps available.  
+	*/
+	int dialog = OS.XmCreateErrorDialog (shellHandle, null, null, 0);
+	OS.XtDestroyWidget (dialog);
 }
 void initializeScrollBar () {
 	int shellHandle, widgetHandle;
@@ -2367,23 +2363,23 @@ void releaseDisplay () {
 	int screen = OS.XDefaultScreenOfDisplay (xDisplay);
 	if (errorPixmap != 0) {
 		OS.XmDestroyPixmap (screen, errorPixmap);
-		OS.XmDestroyPixmap (screen, errorMask);
+		OS.XFreePixmap (xDisplay, errorMask);
 	}
 	if (infoPixmap != 0) {
 		OS.XmDestroyPixmap (screen, infoPixmap);
-		OS.XmDestroyPixmap (screen, infoMask);
+		OS.XFreePixmap (xDisplay, infoMask);
 	}
 	if (questionPixmap != 0) {
 		OS.XmDestroyPixmap (screen, questionPixmap);
-		OS.XmDestroyPixmap (screen, questionMask);
+		OS.XFreePixmap (xDisplay, questionMask);
 	}
 	if (warningPixmap != 0) {
 		OS.XmDestroyPixmap (screen, warningPixmap);
-		OS.XmDestroyPixmap (screen, warningMask);
+		OS.XFreePixmap (xDisplay, warningMask);
 	}
 	if (workingPixmap != 0) {
 		OS.XmDestroyPixmap (screen, workingPixmap);
-		OS.XmDestroyPixmap (screen, workingMask);
+		OS.XFreePixmap (xDisplay, workingMask);
 	}
 	errorPixmap = infoPixmap = questionPixmap = warningPixmap = workingPixmap = 0;
 	errorMask = infoMask = questionMask = warningMask = workingMask = 0;
