@@ -102,6 +102,13 @@ public class Shell extends Decorations {
 	boolean showWithParent;
 	int toolTipHandle, lpstrTip;
 	Control lastActive;
+	static final int DialogProc;
+	static final TCHAR DialogClass = new TCHAR (0, OS.IsWinCE ? "Dialog" : "#32770", true);
+	static {
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, DialogClass, lpWndClass);
+		DialogProc = lpWndClass.lpfnWndProc;
+	}
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -369,6 +376,19 @@ public void addShellListener (ShellListener listener) {
 	addListener (SWT.Deiconify,typedListener);
 	addListener (SWT.Activate, typedListener);
 	addListener (SWT.Deactivate, typedListener);
+}
+
+int callWindowProc (int msg, int wParam, int lParam) {
+	if (parent != null) {
+		if (handle == 0) return 0;
+		switch (msg) {
+			case OS.WM_KILLFOCUS:
+			case OS.WM_SETFOCUS: 
+				return OS.DefWindowProc (handle, msg, wParam, lParam);
+		}
+		return OS.CallWindowProc (DialogProc, handle, msg, wParam, lParam);
+	}
+	return super.callWindowProc (msg, wParam, lParam);
 }
 
 /**
@@ -1024,6 +1044,14 @@ int widgetExtStyle () {
 	return bits;
 }
 
+TCHAR windowClass () {
+	return parent != null ? DialogClass : super.windowClass ();
+}
+
+int windowProc () {
+	return parent != null ? DialogProc : super.windowProc ();
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () & ~OS.WS_POPUP;
 	if (handle != 0) return bits | OS.WS_CHILD;
@@ -1083,7 +1111,10 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 			OS.ImmSetOpenStatus (hIMC, false);
 		}
 	}
-	return super.WM_ACTIVATE (wParam, lParam);
+	
+	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
+	if (parent != null) return LRESULT.ZERO;
+	return result;
 }
 
 LRESULT WM_CLOSE (int wParam, int lParam) {
