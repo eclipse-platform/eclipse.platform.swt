@@ -141,7 +141,7 @@ public final class GridData {
 	public boolean grabExcessVerticalSpace = false;
 
 	/**
-	 * minHeight specifies the minimum height in pixels.  This value
+	 * minimumHeight specifies the minimum height in pixels.  This value
 	 * applies only if grabExcessVerticalSpace is true.  A value of 
 	 * SWT#DEFAULT means that the minimum height will be the result
 	 * of Control#computeSize(int, int, boolean) where hHint is 
@@ -151,10 +151,10 @@ public final class GridData {
 	 *
 	 * @since 3.1
 	 */
-	public int minHeight = 0;
+	public int minimumHeight = 0;
 	
 	/**
-	 * minWidth specifies the minimum desired width in pixels.  This value
+	 * minimumWidth specifies the minimum desired width in pixels.  This value
 	 * applies only if grabExcessHorizontalSpace is true. A value of 
 	 * SWT#DEFAULT means that the minimum width will be the result
 	 * of Control#computeSize(int, int, boolean) where wHint is 
@@ -164,7 +164,7 @@ public final class GridData {
 	 *
 	 * @since 3.1
 	 */
-	public int minWidth = 0;
+	public int minimumWidth = 0;
 	
 	/**
 	 * Value for horizontalAlignment or verticalAlignment.
@@ -470,12 +470,12 @@ public String toString () {
  	if (horizontalSpan != 1) string += "horizontalSpan="+horizontalSpan+" ";
  	if (grabExcessHorizontalSpace) string += "grabExcessHorizontalSpace="+grabExcessHorizontalSpace+" ";
  	if (widthHint != SWT.DEFAULT) string += "widthHint="+widthHint+" ";
- 	if (minWidth != 0) string += "minWidth="+minWidth+" ";
+ 	if (minimumWidth != 0) string += "minimumWidth="+minimumWidth+" ";
  	string += "verticalAlignment="+vAlign+" ";
 	if (verticalSpan != 1) string += "verticalSpan="+verticalSpan+" ";
  	if (grabExcessVerticalSpace) string += "grabExcessVerticalSpace="+grabExcessVerticalSpace+" ";
  	if (heightHint != SWT.DEFAULT) string += "heightHint="+heightHint+" ";
- 	if (minHeight != 0) string += "minHeight="+minHeight+" ";
+ 	if (minimumHeight != 0) string += "minimumHeight="+minimumHeight+" ";
  	string = string.trim();
  	string += "}";
 	return string;
