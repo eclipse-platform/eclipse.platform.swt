@@ -28,9 +28,9 @@ import org.eclipse.swt.internal.gtk.*;
 public class HTMLTransfer extends ByteArrayTransfer {
 
 	private static HTMLTransfer _instance = new HTMLTransfer();
-	private static final String TEXT_HTML = "text/html";
+	private static final String TEXT_HTML = "text/html"; //$NON-NLS-1$
 	private static final int TEXT_HTML_ID = registerType(TEXT_HTML);
-	private static final String TEXT_HTML2 = "TEXT/HTML";
+	private static final String TEXT_HTML2 = "TEXT/HTML"; //$NON-NLS-1$
 	private static final int TEXT_HTML2_ID = registerType(TEXT_HTML2);
 
 private HTMLTransfer() {}

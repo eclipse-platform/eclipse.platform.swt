@@ -11,6 +11,7 @@
 package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.internal.win32.*;
 
 /**
  * The class <code>HTMLTransfer</code> provides a platform specific mechanism 
@@ -30,7 +31,7 @@ public class HTMLTransfer extends ByteArrayTransfer {
 	static HTMLTransfer _instance = new HTMLTransfer();
 	static final String HTML_FORMAT = "HTML Format"; //$NON-NLS-1$
 	static final int HTML_FORMATID = registerType(HTML_FORMAT);
-	static int CodePage = COM.GetACP();
+	static int CodePage = OS.GetACP();
 
 private HTMLTransfer() {}
 
@@ -67,14 +68,14 @@ public void javaToNative (Object object, TransferData transferData){
 	if (count == 0) return;
 	char[] chars = new char[count + 1];
 	string.getChars(0, count, chars, 0);
-	int cchMultiByte = COM.WideCharToMultiByte(CodePage, 0, chars, -1, null, 0, null, null);
+	int cchMultiByte = OS.WideCharToMultiByte(CodePage, 0, chars, -1, null, 0, null, null);
 	if (cchMultiByte == 0) {
 		transferData.stgmedium = new STGMEDIUM();
 		transferData.result = COM.DV_E_STGMEDIUM;
 		return;
 	}
-	int lpMultiByteStr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
-	COM.WideCharToMultiByte(CodePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
+	int lpMultiByteStr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, cchMultiByte);
+	OS.WideCharToMultiByte(CodePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 	transferData.stgmedium = new STGMEDIUM();
 	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
 	transferData.stgmedium.unionField = lpMultiByteStr;
@@ -105,19 +106,19 @@ public Object nativeToJava(TransferData transferData){
 	if (transferData.result != COM.S_OK) return null;
 	int hMem = stgmedium.unionField;
 	try {
-		int lpMultiByteStr = COM.GlobalLock(hMem);
+		int lpMultiByteStr = OS.GlobalLock(hMem);
 		if (lpMultiByteStr == 0) return null;
 		try {
-			int cchWideChar  = COM.MultiByteToWideChar (CodePage, COM.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
+			int cchWideChar  = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
 			if (cchWideChar == 0) return null;
 			char[] lpWideCharStr = new char [cchWideChar - 1];
-			COM.MultiByteToWideChar (CodePage, COM.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
+			OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
 			return new String(lpWideCharStr);
 		} finally {
-			COM.GlobalUnlock(hMem);
+			OS.GlobalUnlock(hMem);
 		}
 	} finally {
-		COM.GlobalFree(hMem);
+		OS.GlobalFree(hMem);
 	}
 }
 protected int[] getTypeIds(){
