@@ -2914,15 +2914,35 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 }
 
 LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
+	if (wParam != handle) return null;
+	
+	/*
+	* Feature in Windows.  When the user presses  WM_NCRBUTTONUP,
+	* a WM_CONTEXTMENU message is generated.  This happens when
+	* the user releases the mouse over a scroll bar.  Normally,
+	* window displays the default scrolling menu but applications
+	* can process WM_CONTEXTMENU to display a different menu.
+	* Typically, an application does not want to supply a special
+	* scroll menu.  The fix is to look for a WM_CONTEXTMENU that
+	* originated from a mouse event and display the menu when the
+	* mouse was released in the client area.
+	*/
+	POINT pt = new POINT ();
+	pt.x = (short) (lParam & 0xFFFF);
+	pt.y = (short) (lParam >> 16);
+	if (pt.x != -1 || pt.y != -1) {
+		RECT rect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		OS.ScreenToClient (handle, pt);
+		if (!OS.PtInRect (rect, pt)) return null;
+	}
+	
 	/*
 	* Because context menus can be shared between controls
 	* and the parent of all menus is the shell, the menu may
-	* have been destroyed but not removed from the control.
+	* have been destroyed.
 	*/
-	if (wParam != handle) return null;
 	if (menu != null && !menu.isDisposed ()) {
-//		int x = (short) (lParam & 0xFFFF);
-//		int y = (short) (lParam >> 16);
 //		menu.setLocation (x, y);
 		menu.setVisible (true);
 		return LRESULT.ZERO;
