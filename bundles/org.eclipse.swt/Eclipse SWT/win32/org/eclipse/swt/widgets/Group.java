@@ -72,6 +72,16 @@ public Group (Composite parent, int style) {
 
 int callWindowProc (int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
+	/*
+	* Feature in Windows.  When the user clicks on the group
+	* box label, the group box takes focus.  This is unwanted.
+	* The fix is to avoid calling the group box window proc.
+	*/
+	switch (msg) {
+		case OS.WM_LBUTTONDOWN:
+		case OS.WM_LBUTTONDBLCLK: 
+			return OS.DefWindowProc (handle, msg, wParam, lParam);
+	}
 	return OS.CallWindowProc (GroupProc, handle, msg, wParam, lParam);
 }
 
@@ -248,79 +258,21 @@ int windowProc () {
 	return GroupProc;
 }
 
-LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
-	/*
-	* Feature in Windows.  When the user clicks on the group
-	* box label, the group box takes focus.  This is unwanted.
-	* The fix is to avoid calling the group box window proc.
-	*/
-	/*
-	* Bug in Windows.  For some reason, if we allow the group
-	* box to take focus, it will draw on top of pull down combo
-	* box children.  The fix is to avoid calling the window proc
-	* to disallow the receiver from getting focus.
-	*/
-	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
-	sendMouseEvent (SWT.MouseDoubleClick, 1, OS.WM_LBUTTONDBLCLK, wParam, lParam);
-	if (OS.GetCapture () != handle) OS.SetCapture (handle);
-	return LRESULT.ZERO;
-}
-
-LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	/*
-	* Feature in Windows.  When the user clicks on the group
-	* box label, the group box takes focus.  This is unwanted.
-	* The fix is to avoid calling the group box window proc.
-	*/
-	/*
-	* Bug in Windows.  For some reason, if we allow the group
-	* box to take focus, it will draw on top of pull down combo
-	* box children.  The fix is to avoid calling the window proc
-	* to disallow the receiver from getting focus.
-	*/
-	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
-	if (OS.GetCapture () != handle) OS.SetCapture (handle);
-	if (hooks (SWT.DragDetect)) {
-		POINT pt = new POINT ();
-		pt.x = (short) (lParam & 0xFFFF);
-		pt.y = (short) (lParam >> 16);
-		if (!OS.IsWinCE) {
-			/*
-			* The DragDetect function captures the mouse and tracks its movement until the user releases
-			* the left button, presses the ESC key, or moves the mouse outside the drag rectangle around 
-			* the specified point.   If the user moves the mouse outside of the drag rectangle, DragDetect
-			* returns true.
-			*/
-			if (OS.DragDetect (handle, pt)) {
-				postEvent (SWT.DragDetect);
-			} else {
-				/*
-				* The Mouse up event and the ESC key event have been consumed by DragDetect so 
-				* detect the cases and send the events.
-				*/
-				if (OS.GetKeyState (OS.VK_ESCAPE) >=  0) {
-					sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
-					// widget could be disposed at this point
-				}
-			}
-		}
-	}
-	return LRESULT.ZERO;
-}
-
 LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	LRESULT result = super.WM_NCHITTEST (wParam, lParam);
 	if (result != null) return result;
 	/*
 	* Feature in Windows.  The window proc for the group box
-	* returns HTTRANSPARTENT indicating that mouse messages
+	* returns HTTRANSPARENT indicating that mouse messages
 	* should not be delivered to the receiver and any children.
 	* Normally, group boxes in Windows do not have children and
 	* this is the correct behavior for this case.  Because we
 	* allow children, answer HTCLIENT to allow mouse messages
 	* to be delivered to the children.
 	*/
-	return new LRESULT (OS.HTCLIENT);
+	int code = callWindowProc (OS.WM_NCHITTEST, wParam, lParam);
+	if (code == OS.HTTRANSPARENT) code = OS.HTCLIENT;
+	return new LRESULT (code);
 }
 
 }

@@ -3256,32 +3256,41 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
-	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
-	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
-	if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	boolean dragging = false;
 	if (hooks (SWT.DragDetect)) {
 		POINT pt = new POINT ();
 		pt.x = (short) (lParam & 0xFFFF);
 		pt.y = (short) (lParam >> 16);
-		if (!OS.IsWinCE) {
-			/*
-			* The DragDetect function captures the mouse and tracks its movement until the user releases
-			* the left button, presses the ESC key, or moves the mouse outside the drag rectangle around 
-			* the specified point.   If the user moves the mouse outside of the drag rectangle, DragDetect
-			* returns true.
-			*/
-			if (OS.DragDetect (handle, pt)) {
-				postEvent (SWT.DragDetect);
-			} else {
-				/*
-				* The Mouse up event and the ESC key event have been consumed by DragDetect so 
-				* detect the cases and send the events.
-				*/
-				if (OS.GetKeyState (OS.VK_ESCAPE) >= 0) {
-					sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
-					// widget could be disposed at this point
-				}
-			}
+		if (!OS.IsWinCE) dragging = OS.DragDetect (handle, pt);
+	}
+	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
+	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
+	if (OS.GetCapture () != handle) OS.SetCapture (handle);
+	if (dragging) {
+		postEvent (SWT.DragDetect);
+	} else {
+		/*
+		* Feature in Windows.  DragDetect() captures the mouse
+		* and tracks its movement until the user releases the
+		* left mouse button, presses the ESC key, or moves the
+		* mouse outside the drag rectangle.  If the user moves
+		* the mouse outside of the drag rectangle, DragDetect
+		* returns true and a drag and drop operation can be
+		* started.  When the left mouse button is released or
+		* the ESC key is pressed, these events are consumed by
+		* DragDetect() so that application code that matches
+		* mouse down/up pairs or looks for the ESC key will not
+		* function properly.  The fix is to send these events
+		* when the drag has not started.
+		* 
+		* NOTE: For now, don't send a fake WM_KEYDOWN/WM_KEYUP
+		* events for the ESC key.  This would require computing
+		* wParam (the key) and lParam (the repeat count, scan code,
+		* extended-key flag, context code, previous key-state flag,
+		* and transition-state flag) which is non-trivial.
+		*/
+		if (OS.GetKeyState (OS.VK_ESCAPE) >= 0) {
+			OS.SendMessage (handle, OS.WM_LBUTTONUP, wParam, lParam);
 		}
 	}
 	return new LRESULT (result);
