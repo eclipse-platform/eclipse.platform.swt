@@ -88,6 +88,7 @@ public class Display extends Device {
 	Callback windowCallback;
 	int windowProc, shellHandle;
 	static boolean XtInitialized;
+	static Object XInitLock = new Object ();
 	static String APP_NAME = "SWT";
 	byte [] displayName, appName, appClass;
 	Event [] eventQueue;
@@ -405,7 +406,7 @@ protected void create (DeviceData data) {
 void createDisplay (DeviceData data) {
 	
 	/* Initialize X and Xt */
-	synchronized (APP_NAME) {
+	synchronized (XInitLock) {
 		if (!XtInitialized) {
 			OS.XInitThreads ();
 			OS.XtToolkitThreadInitialize ();
