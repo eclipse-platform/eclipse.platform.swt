@@ -16,7 +16,7 @@ public class TreeItem extends Item {
 	int[] textWidths = new int [1];		/* cached string measurements */
 	int fontHeight;						/* cached item font height */
 	int[] fontHeights;
-	Image[] images = new Image [1];
+	Image[] images;
 	Color foreground, background;
 	String[] displayTexts;
 	Color[] cellForegrounds, cellBackgrounds;
@@ -39,12 +39,11 @@ public TreeItem (Tree parent, int style, int index) {
 	int columnCount = parent.columns.length;
 	if (columnCount > 0) {
 		displayTexts = new String [columnCount];
-	}
-	int validColumnCount = Math.max (1, columnCount);
-	if (validColumnCount > 1) {
-		texts = new String [validColumnCount];
-		textWidths = new int [validColumnCount];
-		images = new Image [validColumnCount];
+		if (columnCount > 1) {
+			texts = new String [columnCount];
+			textWidths = new int [columnCount];
+			images = new Image [columnCount];
+		}
 	}
 }
 public TreeItem (TreeItem parentItem, int style) {
@@ -61,12 +60,11 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	int columnCount = parent.columns.length;
 	if (columnCount > 0) {
 		displayTexts = new String [columnCount];
-	}
-	int validColumnCount = Math.max (1, columnCount);
-	if (validColumnCount > 1) {
-		texts = new String [validColumnCount];
-		textWidths = new int [validColumnCount];
-		images = new Image [validColumnCount];
+		if (columnCount > 1) {
+			texts = new String [columnCount];
+			textWidths = new int [columnCount];
+			images = new Image [columnCount];
+		}
 	}
 }
 /*
@@ -76,10 +74,6 @@ void addColumn (TreeColumn column) {
 	int index = column.getIndex ();
 	int columnCount = parent.columns.length;
 
-	/*
-	 * The texts, textWidths and images arrays always maintain at least one index, representing
-	 * the automatic column that a Tree with no specified TreeColumns gets.
-	 */
 	if (columnCount > 1) {
 		if (columnCount == 2) {
 			texts = new String [2];
@@ -89,17 +83,30 @@ void addColumn (TreeColumn column) {
 			System.arraycopy (texts, index, newTexts, index + 1, columnCount - index - 1);
 			texts = newTexts;
 		}
-	
-		Image[] newImages = new Image [columnCount];
-		System.arraycopy (images, 0, newImages, 0, index);
-		System.arraycopy (images, index, newImages, index + 1, columnCount - index - 1);
-		images = newImages;
+		if (index == 0) {
+			texts [1] = text;
+			text = "";
+		}
+
+		if (columnCount == 2) {
+			images = new Image [2];
+		} else {
+			Image[] newImages = new Image [columnCount];
+			System.arraycopy (images, 0, newImages, 0, index);
+			System.arraycopy (images, index, newImages, index + 1, columnCount - index - 1);
+			images = newImages;
+		}
+		if (index == 0) {
+			images [1] = image;
+			image = null;
+		}
 		
 		int[] newTextWidths = new int [columnCount];
 		System.arraycopy (textWidths, 0, newTextWidths, 0, index);
 		System.arraycopy (textWidths, index, newTextWidths, index + 1, columnCount - index - 1);
 		textWidths = newTextWidths;
 	}
+
 	/*
 	 * The length of displayTexts always matches the parent's column count, unless this
 	 * count is zero, in which case displayTexts is null.  
@@ -110,12 +117,6 @@ void addColumn (TreeColumn column) {
 		System.arraycopy (displayTexts, index, newDisplayTexts, index + 1, columnCount - index - 1);
 	}
 	displayTexts = newDisplayTexts;
-	if (columnCount == 1) {
-		GC gc = new GC (parent);
-		computeDisplayText (0, gc);
-		textWidths [0] = gc.textExtent (getDisplayText (0)).x;
-		gc.dispose ();
-	}
 
 	if (cellBackgrounds != null) {
 		Color[] newCellBackgrounds = new Color [columnCount];
@@ -139,6 +140,18 @@ void addColumn (TreeColumn column) {
 		System.arraycopy (fontHeights, 0, newFontHeights, 0, index);
 		System.arraycopy (fontHeights, index, newFontHeights, index + 1, columnCount - index - 1);
 		fontHeights = newFontHeights;
+	}
+
+	if (index == 0 && columnCount > 1) {
+		/*
+		 * The new second column now has more space available to it than it did while it
+		 * was the first column since it no longer has to show hierarchy decorations, so
+		 * recompute its displayText.
+		 */
+		GC gc = new GC (parent);
+		gc.setFont (getFont (1));
+		computeDisplayText (1, gc);
+		gc.dispose ();
 	}
 	
 	/* notify all child items as well */
@@ -372,7 +385,7 @@ public void dispose () {
 void dispose (boolean notifyParent) {
 	if (isDisposed ()) return;
 	if (notifyParent) parent.destroyItem (this);
-	super.dispose ();	/* the use of super is intentional here */
+	super.dispose ();	/* super is intentional here */
 	for (int i = 0; i < items.length; i++) {
 		items [i].dispose (notifyParent);
 	}
@@ -479,7 +492,7 @@ public boolean getChecked () {
 }
 int getContentWidth (int columnIndex) {
 	int width = getTextPaintWidth (columnIndex);
-	Image image = images [columnIndex];
+	Image image = getImage (columnIndex);
 	if (image != null) {
 		width += Tree.MARGIN_IMAGE + image.getBounds ().width;
 	}
@@ -652,12 +665,13 @@ Rectangle getHitBounds () {
 }
 public Image getImage () {
 	checkWidget ();
-	return getImage (0);
+	return super.getImage ();
 }
 public Image getImage (int columnIndex) {
 	checkWidget ();
 	int validColumnCount = Math.max (1, parent.columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return null;
+	if (columnIndex == 0) return getImage ();
 	return images [columnIndex];
 }
 public Rectangle getImageBounds (int columnIndex) {
@@ -670,7 +684,7 @@ public Rectangle getImageBounds (int columnIndex) {
 	int itemHeight = parent.itemHeight;
 	int imageSpaceY = itemHeight - 2 * padding;
 	int y = parent.getItemY (this);
-	Image image = images [columnIndex]; 
+	Image image = getImage (columnIndex); 
 	if (image == null) {
 		return new Rectangle (startX, y + padding, 0, imageSpaceY);
 	}
@@ -920,7 +934,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		}
 	}
 
-	Image image = images [columnIndex];
+	Image image = getImage (columnIndex);
 	String text = getDisplayText (columnIndex);
 	Rectangle imageArea = getImageBounds (columnIndex);
 	int startX = imageArea.x;
@@ -999,6 +1013,7 @@ void redrawItem () {
  */
 void removeColumn (TreeColumn column, int index) {
 	int columnCount = parent.columns.length;
+
 	if (columnCount == 0) {
 		/* reverts to normal tree when last column disposed */
 		cellBackgrounds = cellForegrounds = null;
@@ -1016,14 +1031,10 @@ void removeColumn (TreeColumn column, int index) {
 		return;
 	}
 
-	if (columnCount < 2) {
-		texts = null;
-	} else {
-		String[] newTexts = new String [columnCount];
-		System.arraycopy (texts, 0, newTexts, 0, index);
-		System.arraycopy (texts, index + 1, newTexts, index, columnCount - index);
-		texts = newTexts;
-	}
+	String[] newTexts = new String [columnCount];
+	System.arraycopy (texts, 0, newTexts, 0, index);
+	System.arraycopy (texts, index + 1, newTexts, index, columnCount - index);
+	texts = newTexts;
 	
 	Image[] newImages = new Image [columnCount];
 	System.arraycopy (images, 0, newImages, 0, index);
@@ -1062,6 +1073,26 @@ void removeColumn (TreeColumn column, int index) {
 		System.arraycopy (fontHeights, 0, newFontHeights, 0, index);
 		System.arraycopy (fontHeights, index + 1, newFontHeights, index, columnCount - index);
 		fontHeights = newFontHeights;
+	}
+
+	if (index == 0) {
+		text = texts [0] != null ? texts [0] : "";
+		texts [0] = null;
+		image = images [0];
+		images [0] = null;
+		/* 
+		 * The new first column will not have as much width available to it as it did when it was
+		 * the second column since it now has to show hierarchy decorations as well, so recompute
+		 * its displayText. 
+		 */
+		GC gc = new GC (parent);
+		gc.setFont (getFont (0));
+		computeDisplayText (0, gc);
+		gc.dispose ();
+	}
+	if (columnCount < 2) {
+		texts = null;
+		images = null;
 	}
 
 	/* notify all child items as well */
@@ -1341,9 +1372,14 @@ public void setImage (int columnIndex, Image value) {
 	TreeColumn[] columns = parent.columns;
 	int validColumnCount = Math.max (1, columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
-	if (value == images [columnIndex]) return;
-	if (value != null && value.equals (images [columnIndex])) return;
-	images [columnIndex] = value;
+	Image image = getImage (columnIndex);
+	if (value == image) return;
+	if (value != null && value.equals (image)) return;
+	if (columnIndex == 0) {
+		super.setImage (value);
+	} else {
+		images [columnIndex] = value;
+	}
 	
 	/* 
 	 * An image width change may affect the space available for the item text, so
