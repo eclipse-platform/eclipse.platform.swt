@@ -1494,7 +1494,6 @@ void updateMenuBar (Shell shell) {
 	}
 	setMenuBar (shell != null ? shell.menuBar : null);
 	if (menuBar != null && modal) {
-		int theMenu = menuBar.handle;
 		MenuItem [] items = menuBar.getItems ();
 		for (int i=0; i<items.length; i++) items [i]._setEnabled (false);
 	}
