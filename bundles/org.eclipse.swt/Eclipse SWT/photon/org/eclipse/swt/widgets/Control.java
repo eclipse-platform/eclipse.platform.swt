@@ -2373,6 +2373,13 @@ void sort (int [] items) {
 	}
 }
 
+public Point toControl (int x, int y) {
+	checkWidget();
+	short [] position_x = new short [1], position_y = new short [1];
+	OS.PtGetAbsPosition (handle, position_x, position_y);
+	return new Point (x - position_x [0], y - position_y [0]);
+}
+
 /**
  * Returns a point which is the result of converting the
  * argument, which is specified in display relative coordinates,
@@ -2390,9 +2397,15 @@ void sort (int [] items) {
  */
 public Point toControl (Point point) {
 	checkWidget();
-	short [] x = new short [1], y = new short [1];
-	OS.PtGetAbsPosition (handle, x, y);
-	return new Point (point.x - x [0], point.y - y [0]);
+	if (point == null)error (SWT.ERROR_NULL_ARGUMENT);
+	return toControl (point.x, point.y);
+}
+
+public Point toDisplay (int x, int y) {
+	checkWidget();
+	short [] position_x = new short [1], position_y = new short [1];
+	OS.PtGetAbsPosition (handle, position_x, position_y);
+	return new Point (x + position_x [0], y + position_y [0]);
 }
 
 /**
@@ -2412,9 +2425,8 @@ public Point toControl (Point point) {
  */
 public Point toDisplay (Point point) {
 	checkWidget();
-	short [] x = new short [1], y = new short [1];
-	OS.PtGetAbsPosition (handle, x, y);
-	return new Point (point.x + x [0], point.y + y [0]);
+	if (point == null)error (SWT.ERROR_NULL_ARGUMENT);
+	return toDisplay (point.x, point.y);
 }
 
 boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
