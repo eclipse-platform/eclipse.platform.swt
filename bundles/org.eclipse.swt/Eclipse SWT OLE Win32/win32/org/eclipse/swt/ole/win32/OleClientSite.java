@@ -89,13 +89,12 @@ protected OleClientSite(Composite parent, int style) {
 	createCOMInterfaces();
 	
 	// install the Ole Frame for this Client Site
-	while (true) {
+	while (parent != null) {
 		if (parent instanceof OleFrame){
 			frame = (OleFrame)parent;
 			break;
 		}
 		parent = parent.getParent();
-		if (parent == null) break;
 	}
 	if (frame == null) OLE.error(SWT.ERROR_INVALID_ARGUMENT);
 	frame.AddRef();
@@ -109,23 +108,13 @@ protected OleClientSite(Composite parent, int style) {
 		public void handleEvent(Event e) {
 			switch (e.type) {
 			case SWT.Resize :
-			case SWT.Move :
-				onResize(e);
-				break;
-			case SWT.Dispose :
-				onDispose(e);
-				break;
-			case SWT.FocusIn:
-				onFocusIn(e);
-				break;
-			case SWT.Paint:
-				onPaint(e);
-				break;
-			case SWT.Traverse:
-				onTraverse(e);
-				break;
-			case SWT.KeyDown:
-				break;
+			case SWT.Move :    onResize(e); break;
+			case SWT.Dispose : onDispose(e); break;
+			case SWT.FocusIn:  onFocusIn(e); break;
+			case SWT.FocusOut:  onFocusOut(e); break;
+			case SWT.Paint:    onPaint(e); break;
+			case SWT.Traverse: onTraverse(e); break;
+			case SWT.KeyDown: /* required for traversal */ break;
 			default :
 				OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
 			}
@@ -136,6 +125,7 @@ protected OleClientSite(Composite parent, int style) {
 	frame.addListener(SWT.Move, listener);
 	addListener(SWT.Dispose, listener);
 	addListener(SWT.FocusIn, listener);
+	addListener(SWT.FocusOut, listener);
 	addListener(SWT.Paint, listener);
 	addListener(SWT.Traverse, listener);
 	addListener(SWT.KeyDown, listener);
@@ -776,14 +766,13 @@ public boolean isDirty() {
 public boolean isFocusControl () {
 	checkWidget ();
 	int focusHwnd = OS.GetFocus();
-	if (focusHwnd == handle) return (objIOleInPlaceObject == null);
-	if (objIOleInPlaceObject == null) return false;
+	if (objIOleInPlaceObject == null) return (handle == focusHwnd); 
 	int[] phwnd = new int[1];
 	objIOleInPlaceObject.GetWindow(phwnd);
-	if (phwnd[0] == 0) return false;
-	do {
+	while (focusHwnd != 0) {
 		if (phwnd[0] == focusHwnd) return true;
-	} while ((focusHwnd = OS.GetParent (focusHwnd)) != 0);
+		focusHwnd = OS.GetParent(focusHwnd);
+	}
 	return false;
 }
 private int OnClose() {
@@ -800,20 +789,26 @@ private void onDispose(Event e) {
 	deleteTempStorage();
 	
 	// remove listeners
-	removeListener(SWT.Resize, listener);
-	removeListener(SWT.Move, listener);
 	removeListener(SWT.Dispose, listener);
+	removeListener(SWT.FocusIn, listener);
+	removeListener(SWT.Paint, listener);
+	removeListener(SWT.Traverse, listener);
+	removeListener(SWT.KeyDown, listener);
 	frame.removeListener(SWT.Resize, listener);
+	frame.removeListener(SWT.Move, listener);
+	
 	frame.Release();
 	frame = null;
 }
-private void onFocusIn(Event e) {
+void onFocusIn(Event e) {
 	if (objIOleInPlaceObject == null) return;
 	if (isFocusControl()) return;
 	int[] phwnd = new int[1];
 	objIOleInPlaceObject.GetWindow(phwnd);
 	if (phwnd[0] == 0) return;
 	OS.SetFocus(phwnd[0]);
+}
+void onFocusOut(Event e) {
 }
 private int OnInPlaceActivate() {
 	active = true;
@@ -826,9 +821,7 @@ private int OnInPlaceActivate() {
 	return COM.S_OK;
 }
 private int OnInPlaceDeactivate() {
-	
-	if (objIOleInPlaceObject != null)
-		objIOleInPlaceObject.Release();
+	if (objIOleInPlaceObject != null) objIOleInPlaceObject.Release();
 	objIOleInPlaceObject = null;
 	active = false;
 	return COM.S_OK;

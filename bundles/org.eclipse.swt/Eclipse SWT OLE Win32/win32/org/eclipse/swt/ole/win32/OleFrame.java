@@ -78,13 +78,9 @@ public OleFrame(Composite parent, int style) {
 	listener = new Listener()  {
 		public void handleEvent(Event e) {
 			switch (e.type) {
-			case SWT.Dispose :
-				onDispose(e);
-				break;
+			case SWT.Dispose :  onDispose(e); break;
 			case SWT.Resize :
-			case SWT.Move :
-				onResize(e);
-				break;
+			case SWT.Move :     onResize(e); break;
 			default :
 				OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
 			}
@@ -117,35 +113,35 @@ private static void initCheckFocus (final Display display) {
 	final Control[] lastFocus = new Control[1];
 	timer[0] = new Runnable() {
 		public void run() {
-			Control currentFocus = display.getFocusControl();
-			if (lastFocus[0] != currentFocus) {
-				Event event = new Event();
-				if (lastFocus[0] instanceof OleFrame) {
-					if (!lastFocus [0].isDisposed()) {
-						OleFrame frame = (OleFrame) lastFocus[0];
-						OleClientSite client = frame.getCurrentDocument();
-						if (client != null) {
-							client.notifyListeners (SWT.FocusOut, event);
-						}
+			if (lastFocus[0] instanceof OleClientSite && !lastFocus[0].isDisposed()) {
+				// ignore popup menus and dialogs
+				int hwnd = OS.GetFocus();
+				while (hwnd != 0) {
+					int ownerHwnd = OS.GetWindow(hwnd, 4/*GW_OWNER*/);
+					if (ownerHwnd != 0) {			
+						display.timerExec(time, timer[0]);
+						return;
 					}
-				}
-				if (lastFocus [0] instanceof OleControlSite) {
-					if (!lastFocus[0].isDisposed()) {
-						lastFocus[0].notifyListeners (SWT.FocusOut, event);
-					}
-				}
+					hwnd = OS.GetParent(hwnd);
+				}	
+			}
+			if (lastFocus[0] == null || lastFocus[0].isDisposed() || !lastFocus[0].isFocusControl()) {
+				Control currentFocus = display.getFocusControl();
 				if (currentFocus instanceof OleFrame) {
 					OleFrame frame = (OleFrame) currentFocus;
-					OleClientSite client = frame.getCurrentDocument();
-					if (client != null) {
-						client.notifyListeners (SWT.FocusIn, event);
+					currentFocus = frame.getCurrentDocument();
+				}
+				if (lastFocus[0] != currentFocus) {
+					Event event = new Event();
+					if (lastFocus[0] instanceof OleClientSite && !lastFocus[0].isDisposed()) {
+						lastFocus[0].notifyListeners (SWT.FocusOut, event);
+					}
+					if (currentFocus instanceof OleClientSite && !currentFocus.isDisposed()) {
+						currentFocus.notifyListeners(SWT.FocusIn, event);
 					}
 				}
-				if (currentFocus instanceof OleControlSite) {
-					currentFocus.notifyListeners(SWT.FocusIn, event);
-				}
+				lastFocus[0] = currentFocus;
 			}
-			lastFocus[0] = currentFocus;
 			display.timerExec(time, timer[0]);
 		}
 	};
@@ -451,6 +447,9 @@ private void onDispose(Event e) {
 	currentdoc = null;
 
 	this.Release();
+	removeListener(SWT.Dispose, listener);
+	removeListener(SWT.Resize, listener);
+	removeListener(SWT.Move, listener);
 }
 private void onResize(Event e) {
 	if (objIOleInPlaceActiveObject != null) {
@@ -563,7 +562,7 @@ private int SetBorderSpace(int pborderwidths) {
 	//   valid BORDERWIDTHS structure containing nothing but zeros in the pborderwidths parameter, or, 
 	// Use no toolbars but allow the in-place container to leave its toolbars up by 
 	//   passing NULL as the pborderwidths parameter.
-	
+	if (objIOleInPlaceActiveObject == null) return COM.S_OK;
 	RECT borderwidth = new RECT();
 	if (pborderwidths == 0 || currentdoc == null ) return COM.S_OK;
 		
@@ -625,7 +624,6 @@ public void setFileMenus(MenuItem[] fileMenus){
 	fileMenuItems = fileMenus;
 }
 private int SetMenu(int hmenuShared, int holemenu, int hwndActiveObject) {
-
 	int inPlaceActiveObject = 0;
 	if (objIOleInPlaceActiveObject != null)
 		inPlaceActiveObject = objIOleInPlaceActiveObject.getAddress();		
