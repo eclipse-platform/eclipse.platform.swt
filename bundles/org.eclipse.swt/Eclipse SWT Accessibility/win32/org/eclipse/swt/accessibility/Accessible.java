@@ -43,7 +43,9 @@ public class Accessible {
 	int refCount = 0, enumIndex = 0;
 	COMObject objIAccessible, objIEnumVARIANT;
 	IAccessible iaccessible;
-	Vector accessibleListeners = new Vector(), accessibleControlListeners = new Vector();
+	Vector accessibleListeners = new Vector();
+	Vector accessibleControlListeners = new Vector();
+	Vector textListeners = new Vector ();
 	Object[] variants;
 	Control control;
 
@@ -143,30 +145,6 @@ public class Accessible {
 		accessibleListeners.addElement(listener);
 	}
 	
-	/**
-	 * Removes the listener from the collection of listeners who will
-	 * be notifed when an accessible client asks for certain strings,
-	 * such as name, description, help, or keyboard shortcut.
-	 *
-	 * @param listener the listener that should no longer be notified when the receiver
-	 * is asked for a name, description, help, or keyboard shortcut string
-	 *
-	 * @exception IllegalArgumentException <ul>
-	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
-	 * </ul>
-	 * @exception SWTException <ul>
-	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
-	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
-	 * </ul>
-	 *
-	 * @see AccessibleListener
-	 * @see #addAccessibleListener
-	 */
-	public void removeAccessibleListener(AccessibleListener listener) {
-		checkWidget();
-		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-		accessibleListeners.removeElement(listener);
-	}
 	
 	/**
 	 * Adds the listener to the collection of listeners who will
@@ -196,21 +174,94 @@ public class Accessible {
 	}
 
 	/**
-	 * Sends a message to accessible clients that the child selection
-	 * within a custom container control has changed.
+	 * Adds the listener to the collection of listeners who will
+	 * be notifed when an accessible client asks for custom text control
+	 * specific information. The listener is notified by sending it
+	 * one of the messages defined in the <code>AccessibleTextListener</code>
+	 * interface.
 	 *
+	 * @param listener the listener that should be notified when the receiver
+	 * is asked for custom text control specific information
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
 	 * @exception SWTException <ul>
 	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
 	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
 	 * </ul>
+	 *
+	 * @see AccessibleTextListener
+	 * @see #removeAccessibleTextListener
 	 * 
 	 * @since 3.0
 	 */
-	public void selectionChanged () {
-		checkWidget();
-		COM.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
+	public void addAccessibleTextListener (AccessibleTextListener listener) {
+		checkWidget ();
+		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		textListeners.addElement (listener);		
 	}
 	
+	/**
+	 * Invokes platform specific functionality to dispose an accessible object.
+	 * <p>
+	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+	 * API for <code>Accessible</code>. It is marked public only so that it
+	 * can be shared within the packages provided by SWT. It is not
+	 * available on all platforms, and should never be called from
+	 * application code.
+	 * </p>
+	 */
+	public void internal_dispose_Accessible() {
+		if (iaccessible != null)
+			iaccessible.Release();
+		iaccessible = null;
+		Release();
+	}
+	
+	/**
+	 * Invokes platform specific functionality to handle a window message.
+	 * <p>
+	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+	 * API for <code>Accessible</code>. It is marked public only so that it
+	 * can be shared within the packages provided by SWT. It is not
+	 * available on all platforms, and should never be called from
+	 * application code.
+	 * </p>
+	 */
+	public int internal_WM_GETOBJECT (int wParam, int lParam) {
+		if (objIAccessible == null) return 0;
+		if (lParam == COM.OBJID_CLIENT) {
+			return COM.LresultFromObject(COM.IIDIAccessible, wParam, objIAccessible.getAddress());
+		}
+		return 0;
+	}
+
+	/**
+	 * Removes the listener from the collection of listeners who will
+	 * be notifed when an accessible client asks for certain strings,
+	 * such as name, description, help, or keyboard shortcut.
+	 *
+	 * @param listener the listener that should no longer be notified when the receiver
+	 * is asked for a name, description, help, or keyboard shortcut string
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleListener
+	 * @see #addAccessibleListener
+	 */
+	public void removeAccessibleListener(AccessibleListener listener) {
+		checkWidget();
+		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+		accessibleListeners.removeElement(listener);
+	}
+
 	/**
 	 * Removes the listener from the collection of listeners who will
 	 * be notifed when an accessible client asks for custom control
@@ -235,7 +286,50 @@ public class Accessible {
 		if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 		accessibleControlListeners.removeElement(listener);
 	}
-	
+
+	/**
+	 * Removes the listener from the collection of listeners who will
+	 * be notifed when an accessible client asks for custom text control
+	 * specific information.
+	 *
+	 * @param listener the listener that should no longer be notified when the receiver
+	 * is asked for custom text control specific information
+	 *
+	 * @exception IllegalArgumentException <ul>
+	 *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+	 * </ul>
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 *
+	 * @see AccessibleTextListener
+	 * @see #addAccessibleTextListener
+	 * 
+	 * @since 3.0
+	 */
+	public void removeAccessibleTextListener (AccessibleTextListener listener) {
+		checkWidget ();
+		if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+		textListeners.remove (listener);
+	}
+
+	/**
+	 * Sends a message to accessible clients that the child selection
+	 * within a custom container control has changed.
+	 *
+	 * @exception SWTException <ul>
+	 *    <li>ERROR_WIDGET_DISPOSED - if the receiver's control has been disposed</li>
+	 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver's control</li>
+	 * </ul>
+	 * 
+	 * @since 3.0
+	 */
+	public void selectionChanged () {
+		checkWidget();
+		COM.NotifyWinEvent (COM.EVENT_OBJECT_SELECTIONWITHIN, control.handle, COM.OBJID_CLIENT, COM.CHILDID_SELF);
+	}
+
 	/**
 	 * Sends a message to accessible clients indicating that the focus
 	 * has changed within a custom control.
@@ -314,41 +408,6 @@ public class Accessible {
 		// not an MSAA event
 	}
 	
-	/**
-	 * Invokes platform specific functionality to dispose an accessible object.
-	 * <p>
-	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
-	 * API for <code>Accessible</code>. It is marked public only so that it
-	 * can be shared within the packages provided by SWT. It is not
-	 * available on all platforms, and should never be called from
-	 * application code.
-	 * </p>
-	 */
-	public void internal_dispose_Accessible() {
-		if (iaccessible != null)
-			iaccessible.Release();
-		iaccessible = null;
-		Release();
-	}
-	
-	/**
-	 * Invokes platform specific functionality to handle a window message.
-	 * <p>
-	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
-	 * API for <code>Accessible</code>. It is marked public only so that it
-	 * can be shared within the packages provided by SWT. It is not
-	 * available on all platforms, and should never be called from
-	 * application code.
-	 * </p>
-	 */
-	public int internal_WM_GETOBJECT (int wParam, int lParam) {
-		if (objIAccessible == null) return 0;
-		if (lParam == COM.OBJID_CLIENT) {
-			return COM.LresultFromObject(COM.IIDIAccessible, wParam, objIAccessible.getAddress());
-		}
-		return 0;
-	}
-
 	int QueryInterface(int arg1, int arg2) {
 		if (iaccessible == null) return COM.CO_E_OBJNOTCONNECTED;
 		GUID guid = new GUID();
