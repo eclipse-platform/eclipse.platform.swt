@@ -2764,6 +2764,7 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 			* events.
 			*/
 			if (!shell.isDisposed ()) {
+				Display display = shell.display;
 				Control control = display.getFocusControl ();
 				if (control == null || shell != control.getShell () ) {
 					shell.setActiveControl (null);

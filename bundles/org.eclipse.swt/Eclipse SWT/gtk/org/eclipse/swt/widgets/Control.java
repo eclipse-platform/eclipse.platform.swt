@@ -1703,6 +1703,7 @@ int gtk_focus_out_event (int widget, int event) {
 	*/
 	Shell shell = _getShell ();
 	if (!shell.isDisposed ()) {
+		Display display = shell.display;
 		Control control = display.getFocusControl ();
 		if (control == null || shell != control.getShell () ) {
 			shell.setActiveControl (null);
