@@ -1578,17 +1578,20 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
-void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int topHandle = topHandle ();
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (topHandle, area);
+	width = Math.max (width, 0);
+	height = Math.max (height, 0);
 	boolean sameOrigin = x == area.pos_x && y == area.pos_y;
 	boolean sameExtent = width == area.size_w && height == area.size_h;
 	if (move && resize) {
+		if (sameOrigin && sameExtent) return false;
 		area.pos_x = (short) x;
 		area.pos_y = (short) y;
-		area.size_w = (short) (Math.max (width, 0));
-		area.size_h = (short) (Math.max (height, 0));
+		area.size_w = (short) width;
+		area.size_h = (short) height;
 		int ptr = OS.malloc (PhArea_t.sizeof);
 		OS.memmove (ptr, area, PhArea_t.sizeof);
 		int [] args = {OS.Pt_ARG_AREA, ptr, 0};
@@ -1596,6 +1599,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 		OS.free (ptr);
 	} else {
 		if (move) {
+			if (sameOrigin) return false;
 			PhPoint_t pt = new PhPoint_t ();
 			pt.x = (short) x;
 			pt.y = (short) y;
@@ -1604,11 +1608,11 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 			int [] args = {OS.Pt_ARG_POS, ptr, 0};
 			OS.PtSetResources (topHandle, args.length / 3, args);
 			OS.free (ptr);
-		}
-		if (resize) {
+		} else if (resize) {
+			if (sameExtent) return false;
 			int [] args = {
-				OS.Pt_ARG_WIDTH, Math.max (width, 0), 0,
-				OS.Pt_ARG_HEIGHT, Math.max (height, 0), 0,
+				OS.Pt_ARG_WIDTH, width, 0,
+				OS.Pt_ARG_HEIGHT, height, 0,
 			};
 			OS.PtSetResources (topHandle, args.length / 3, args);
 		}
@@ -1618,6 +1622,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	}
 	if (!sameOrigin & move) sendEvent (SWT.Move);
 	if (!sameExtent & resize & sendResize()) sendEvent (SWT.Resize);
+	return true;
 }
 
 /**

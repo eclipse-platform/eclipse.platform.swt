@@ -216,12 +216,13 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isVisible) caret.showCaret ();
 }
 
-void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	checkWidget();
 	boolean isVisible = (caret != null) && (caret.isVisible ());
 	if (isVisible) caret.hideCaret ();
-	super.setBounds (x, y, width, height, move, resize);
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	if (isVisible) caret.showCaret ();
+	return changed;
 }
 
 /**

@@ -708,12 +708,12 @@ public void removeShellListener (ShellListener listener) {
 	eventTable.unhook (SWT.Deactivate, listener);
 }
 
-void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	checkWidget();
 	if (OS.PtWidgetClass (shellHandle) != OS.PtWindow ()) {
-		super.setBounds (x, y, width, height, move, resize);
-		if (resize) resizeBounds (width, height);
-		return;
+		boolean changed = super.setBounds (x, y, width, height, move, resize);
+		if (changed && resize) resizeBounds (width, height);
+		return changed;
 	}
 	int [] args = {OS.Pt_ARG_WINDOW_RENDER_FLAGS, 0, 0};
 	OS.PtGetResources (shellHandle, args.length / 3, args);
@@ -735,11 +735,13 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	}
 	boolean sameOrigin = x == area.pos_x && y == area.pos_y;
 	boolean sameExtent = width == frameWidth && height == frameHeight;
+	if (sameOrigin && sameExtent) return false;
+	if (sameOrigin && move && !resize) return false;
+	if (sameExtent && resize && !move) return false;
 	area.pos_x = (short) x;
 	area.pos_y = (short) y;
 	area.size_w = (short) (Math.max (width - left [0] - right [0], 0));
 	area.size_h = (short) (Math.max (height - top [0] - bottom [0], 0));
-//TO DO - for some reason shell will move but won't resize after realize
 	int ptr = OS.malloc (PhArea_t.sizeof);
 	OS.memmove (ptr, area, PhArea_t.sizeof);
 	args = new int [] {OS.Pt_ARG_AREA, ptr, 0};
@@ -757,6 +759,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 			sendEvent (SWT.Resize);
 		}
 	}
+	return true;
 }
 
 public void setImage (Image image) {

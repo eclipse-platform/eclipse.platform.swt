@@ -307,9 +307,10 @@ public void setAlignment (int alignment) {
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
-void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	super.setBounds (x, y, width, height, move, resize);
-	if (resize && (style & SWT.WRAP) != 0) setText (text);
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize && (style & SWT.WRAP) != 0) setText (text);
+	return changed;
 }
 
 public boolean setFocus () {
