@@ -32,6 +32,7 @@ public final class GCData {
 	public int background = -1;
 	public int hPen;
 	public int lineWidth;
+	public int[] dashes;
 	public int hBrush;
 	public int hFont;
 	public int hNullBitmap;

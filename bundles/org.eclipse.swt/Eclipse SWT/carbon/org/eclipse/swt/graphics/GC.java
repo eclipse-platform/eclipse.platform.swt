@@ -1599,6 +1599,17 @@ public int getLineCap() {
 	return data.lineCap;
 }
 
+public int[] getLineDash() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	float[] lengths = data.dashes;
+	if (lengths == null) return null;
+	int[] dashes = new int[lengths.length];
+	for (int i = 0; i < dashes.length; i++) {
+		dashes[i] = (int)lengths[i];
+	}
+	return dashes;
+}
+
 public int getLineJoin() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineJoin;
@@ -1969,6 +1980,24 @@ public void setLineCap(int cap) {
 	OS.CGContextSetLineCap(handle, cap_style);
 }
 
+public void setLineDash(int[] dashes) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	float[] lengths = null;
+	if (dashes != null && dashes.length != 0) {
+		lengths = new float[dashes.length];
+		for (int i = 0; i < lengths.length; i++) {
+			int dash = dashes[i];
+			if (dash <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			lengths[i] = dash;
+		}
+		data.lineStyle = SWT.LINE_CUSTOM;
+	} else {
+		data.lineStyle = SWT.LINE_SOLID;
+	}
+	OS.CGContextSetLineDash(handle, 0, lengths, lengths != null ? lengths.length : 0);
+	data.dashes = lengths;
+}
+
 public void setLineJoin(int join) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int join_style = 0;
@@ -2018,6 +2047,15 @@ public void setLineStyle(int lineStyle) {
 			break;
 		case SWT.LINE_DASHDOTDOT:
 			OS.CGContextSetLineDash(handle, 0, new float[]{9, 3, 3, 3, 3, 3}, 6);
+			break;
+		case SWT.LINE_CUSTOM:
+			float[] lengths = data.dashes;
+			if (lengths != null) {
+				OS.CGContextSetLineDash(handle, 0, lengths, lengths.length);
+			} else {
+				OS.CGContextSetLineDash(handle, 0, null, 0);
+				lineStyle = SWT.LINE_SOLID;
+			}
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);

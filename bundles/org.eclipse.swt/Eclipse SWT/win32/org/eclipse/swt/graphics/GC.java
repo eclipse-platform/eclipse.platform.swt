@@ -2072,7 +2072,15 @@ public int getLineCap() {
 		style = logPen.lopnStyle | OS.PS_ENDCAP_FLAT;
 	} else {
 		EXTLOGPEN logPen = new EXTLOGPEN();
-		OS.GetObject(hPen, size, logPen);
+		if (size <= EXTLOGPEN.sizeof) {
+			OS.GetObject(hPen, size, logPen);
+		} else {
+			int hHeap = OS.GetProcessHeap();
+			int ptr = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size);
+			OS.GetObject(hPen, size, ptr);
+			OS.MoveMemory(logPen, ptr, EXTLOGPEN.sizeof);
+			OS.HeapFree(hHeap, 0, ptr);
+		}
 		style = logPen.elpPenStyle & OS.PS_ENDCAP_MASK;
 	}
 	int cap = SWT.CAP_ROUND;
@@ -2082,6 +2090,25 @@ public int getLineCap() {
 		case OS.PS_ENDCAP_SQUARE: cap = SWT.CAP_SQUARE; break;
 	}
 	return cap;
+}
+
+/** 
+ * Returns the receiver's line dash style.
+ *
+ * @return the lin dash style used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
+public int[] getLineDash() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.dashes == null) return null;
+	int[] dashes = new int[data.dashes.length];
+	System.arraycopy(data.dashes, 0, dashes, 0, dashes.length);
+	return dashes;	
 }
 
 /** 
@@ -2107,7 +2134,15 @@ public int getLineJoin() {
 		style = logPen.lopnStyle | OS.PS_JOIN_MITER;
 	} else {
 		EXTLOGPEN logPen = new EXTLOGPEN();
-		OS.GetObject(hPen, size, logPen);
+		if (size <= EXTLOGPEN.sizeof) {
+			OS.GetObject(hPen, size, logPen);
+		} else {
+			int hHeap = OS.GetProcessHeap();
+			int ptr = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size);
+			OS.GetObject(hPen, size, ptr);
+			OS.MoveMemory(logPen, ptr, EXTLOGPEN.sizeof);
+			OS.HeapFree(hHeap, 0, ptr);
+		}
 		style = logPen.elpPenStyle & OS.PS_JOIN_MASK;
 	}
 	int join = SWT.JOIN_ROUND;
@@ -2141,7 +2176,15 @@ public int getLineStyle() {
 		style = logPen.lopnStyle;
 	} else {
 		EXTLOGPEN logPen = new EXTLOGPEN();
-		OS.GetObject(hPen, size, logPen);
+		if (size <= EXTLOGPEN.sizeof) {
+			OS.GetObject(hPen, size, logPen);
+		} else {
+			int hHeap = OS.GetProcessHeap();
+			int ptr = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size);
+			OS.GetObject(hPen, size, ptr);
+			OS.MoveMemory(logPen, ptr, EXTLOGPEN.sizeof);
+			OS.HeapFree(hHeap, 0, ptr);
+		}
 		style = logPen.elpPenStyle & OS.PS_STYLE_MASK;
 	}
 	switch (style) {
@@ -2150,6 +2193,7 @@ public int getLineStyle() {
 		case OS.PS_DOT:			return SWT.LINE_DOT;
 		case OS.PS_DASHDOT:		return SWT.LINE_DASHDOT;
 		case OS.PS_DASHDOTDOT:	return SWT.LINE_DASHDOTDOT;
+		case OS.PS_USERSTYLE:	return SWT.LINE_CUSTOM;
 		default:				return SWT.LINE_SOLID;
 	}
 }
@@ -2176,7 +2220,15 @@ public int getLineWidth() {
 		return logPen.x;
 	} else {
 		EXTLOGPEN logPen = new EXTLOGPEN();
-		OS.GetObject(hPen, size, logPen);
+		if (size <= EXTLOGPEN.sizeof) {
+			OS.GetObject(hPen, size, logPen);
+		} else {
+			int hHeap = OS.GetProcessHeap();
+			int ptr = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size);
+			OS.GetObject(hPen, size, ptr);
+			OS.MoveMemory(logPen, ptr, EXTLOGPEN.sizeof);
+			OS.HeapFree(hHeap, 0, ptr);
+		}
 		return logPen.elpWidth;
 	}
 }
@@ -2463,7 +2515,7 @@ public void setForeground (Color color) {
 	if (OS.GetTextColor(handle) == color.handle) return;
 	data.foreground = color.handle;
 	OS.SetTextColor(handle, color.handle);
-	setPen(color.handle, -1, -1, -1, -1);
+	setPen(color.handle, -1, -1, -1, -1, data.dashes);
 }
 
 /** 
@@ -2498,7 +2550,36 @@ public void setLineCap(int cap) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	setPen(-1, -1, -1, capStyle, -1);
+	setPen(-1, -1, -1, capStyle, -1, data.dashes);
+}
+
+/** 
+ * Sets the receiver's line dash style to the argument.
+ *
+ * @param dashes the dash style to be used for drawing lines
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the values in the array is less than or equal 0</li>
+ * </ul> 
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
+public void setLineDash(int[] dashes) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (dashes != null && dashes.length > 0) {
+		data.dashes = new int[dashes.length];
+		for (int i = 0; i < dashes.length; i++) {
+			int dash = dashes[i];
+			if (dash <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			data.dashes[i] = dash;
+		}
+	} else {
+		data.dashes = null;
+	}
+	setPen(-1, -1, data.dashes == null ? OS.PS_SOLID : OS.PS_USERSTYLE, -1, -1, data.dashes);	
 }
 
 /** 
@@ -2533,7 +2614,7 @@ public void setLineJoin(int join) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	setPen(-1, -1, -1, -1, joinStyle);
+	setPen(-1, -1, -1, -1, joinStyle, data.dashes);
 }
 
 /** 
@@ -2560,11 +2641,12 @@ public void setLineStyle(int lineStyle) {
 		case SWT.LINE_DOT:        style = OS.PS_DOT; break;
 		case SWT.LINE_DASHDOT:    style = OS.PS_DASHDOT; break;
 		case SWT.LINE_DASHDOTDOT: style = OS.PS_DASHDOTDOT; break;
+		case SWT.LINE_CUSTOM:     style = data.dashes == null ? OS.PS_SOLID : OS.PS_USERSTYLE; break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	OS.SetBkMode (handle, style == OS.PS_SOLID ? OS.OPAQUE : OS.TRANSPARENT);
-	setPen(-1, -1, style, -1, -1);
+	setPen(-1, -1, style, -1, -1, data.dashes);
 }
 
 /** 
@@ -2581,10 +2663,10 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int lineWidth) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	setPen(-1, lineWidth, -1, -1, -1);
+	setPen(-1, lineWidth, -1, -1, -1, data.dashes);
 }
 
-void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinStyle) {
+void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinStyle, int[] dashes) {
 	boolean extPen = false, changed = false;
 	int style, color, width, size, hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
 	if ((size = OS.GetObject(hPen, 0, (LOGPEN)null)) == LOGPEN.sizeof) {
@@ -2599,13 +2681,21 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		* from other platforms.  The fix is to change these values when
 		* line width is widen.
 		*/
-		if (width <= 1 && newWidth > 1) {
+		if (width <= 1 && (newWidth > 1 || lineStyle == OS.PS_USERSTYLE)) {
 			if (capStyle == -1) capStyle = OS.PS_ENDCAP_FLAT;
 			if (joinStyle == -1) joinStyle = OS.PS_JOIN_MITER;
 		}
 	} else {
 		EXTLOGPEN logPen = new EXTLOGPEN();
-		OS.GetObject(hPen, size, logPen);
+		if (size <= EXTLOGPEN.sizeof) {
+			OS.GetObject(hPen, size, logPen);
+		} else {
+			int hHeap = OS.GetProcessHeap();
+			int ptr = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, size);
+			OS.GetObject(hPen, size, ptr);
+			OS.MoveMemory(logPen, ptr, EXTLOGPEN.sizeof);
+			OS.HeapFree(hHeap, 0, ptr);
+		}
 		color = logPen.elpColor;
 		width = logPen.elpWidth;
 		style = logPen.elpPenStyle;
@@ -2624,7 +2714,7 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		}
 	}
 	if (lineStyle != -1) {
-		if ((style & OS.PS_STYLE_MASK) != lineStyle) {
+		if ((style & OS.PS_STYLE_MASK) != lineStyle || (style & OS.PS_STYLE_MASK) == OS.PS_USERSTYLE) {
 			style = (style & ~OS.PS_STYLE_MASK) | lineStyle;
 			changed = true;
 		}
@@ -2642,17 +2732,18 @@ void setPen(int newColor, int newWidth, int lineStyle, int capStyle, int joinSty
 		}
 	}
 	if (!changed) return;
+	if ((style & OS.PS_STYLE_MASK) != OS.PS_USERSTYLE) dashes = null;
 	/*
-	* Feature in Windows.  Windows XP does not honour the line style
-	* for pens wider than 1 pixel created with CreatePen().  The fix
+	* Feature in Windows.  Windows does not honour line styles other then
+	* PS_SOLID for pens wider than 1 pixel created with CreatePen().  The fix
 	* is to use ExtCreatePen() instead.
 	*/
 	int newPen;
-	if (!OS.IsWinCE && (extPen || width > 1)) {
+	if (!OS.IsWinCE && (extPen || width > 1 || (style & OS.PS_STYLE_MASK) == OS.PS_USERSTYLE)) {
 		LOGBRUSH logBrush = new LOGBRUSH();
 		logBrush.lbStyle = OS.BS_SOLID;
 		logBrush.lbColor = color;
-		newPen = OS.ExtCreatePen (style | OS.PS_GEOMETRIC, width, logBrush, 0, null);
+		newPen = OS.ExtCreatePen (style | OS.PS_GEOMETRIC, width, logBrush, dashes != null ? dashes.length : 0, dashes);
 	} else {
 		newPen = OS.CreatePen(style, width, color);
 	}

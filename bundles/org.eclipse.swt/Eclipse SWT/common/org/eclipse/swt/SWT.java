@@ -2434,6 +2434,16 @@ public class SWT {
 	public static final int LINE_DASHDOTDOT = 5;
 
 	/**
+	 * Line drawing style for custom dashed lines (value is 6).
+	 * 
+	 * @see org.eclipse.swt.graphics.GC#setLineDash(int[])
+	 * @see org.eclipse.swt.graphics.GC#getLineDash()
+	 * 
+	 * @since 3.1
+	 */
+	public static final int LINE_CUSTOM = 6;
+
+	/**
 	 * Image format constant indicating an unknown image type (value is -1).
 	 */
 	public static final int IMAGE_UNDEFINED = -1;

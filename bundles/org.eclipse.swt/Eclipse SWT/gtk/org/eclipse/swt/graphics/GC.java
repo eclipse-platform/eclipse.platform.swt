@@ -1512,6 +1512,17 @@ public int getLineCap() {
 	return cap;
 }
 
+public int[] getLineDash() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	byte[] dash_list = data.dashes;
+	if (dash_list == null) return null;
+	int[] dashes = new int[dash_list.length];
+	for (int i = 0; i < dash_list.length; i++) {
+		dashes[i] = dash_list[i] & 0xFF;
+	}
+	return dashes;
+}
+
 public int getLineJoin() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	GdkGCValues values = new GdkGCValues();
@@ -1861,6 +1872,28 @@ public void setLineCap(int cap) {
 	OS.gdk_gc_set_line_attributes(handle, values.line_width, line_style, cap_style, values.join_style);
 }
 
+public void setLineDash(int[] dashes) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (dashes != null && dashes.length > 0) {
+		byte[] dash_list = new byte[dashes.length];
+		for (int i = 0; i < dashes.length; i++) {
+			int dash = dashes[i];
+			if (dash <= 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			dash_list[i] = (byte)dash;
+		}
+		OS.gdk_gc_set_dashes(handle, 0, dash_list, dash_list.length);
+		data.dashes = dash_list;
+		data.lineStyle = SWT.LINE_CUSTOM;
+	} else {
+		data.dashes = null;
+		data.lineStyle = SWT.LINE_SOLID;
+	}
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
+	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.GDK_LINE_SOLID : OS.GDK_LINE_ON_OFF_DASH;
+	OS.gdk_gc_set_line_attributes(handle, values.line_width, line_style, values.cap_style, values.join_style);
+}
+
 public void setLineJoin(int join) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int join_style = 0;
@@ -1913,6 +1946,13 @@ public void setLineStyle(int lineStyle) {
 			break;
 		case SWT.LINE_DASHDOTDOT:
 			OS.gdk_gc_set_dashes(handle, 0, new byte[] {9, 3, 3, 3, 3, 3}, 6);
+		case SWT.LINE_CUSTOM:
+			byte[] dash_list = data.dashes;
+			if (dash_list != null) {
+				OS.gdk_gc_set_dashes(handle, 0, dash_list, dash_list.length);
+			} else {
+				line_style = OS.GDK_LINE_SOLID;				
+			}
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);

@@ -35,6 +35,7 @@ public final class GCData {
 	public int lineStyle = SWT.LINE_SOLID;
 	public int lineCap = SWT.CAP_FLAT;
 	public int lineJoin = SWT.JOIN_MITER;
+	public float[] dashes;
 	public boolean xorMode;
 	
 	public Font font;

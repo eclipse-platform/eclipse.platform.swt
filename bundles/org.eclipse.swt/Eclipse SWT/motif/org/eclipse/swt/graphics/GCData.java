@@ -35,6 +35,7 @@ public final class GCData {
 	public int colormap;
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
+	public byte[] dashes;
 	public int renderTable;
 
 	public String string;
