@@ -30,7 +30,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection, Collapse, Expand</dd>
  * </dl>
@@ -41,13 +41,17 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Tree extends Composite {
-	int hAnchor;
 	TreeItem [] items;
+	TreeColumn [] columns;
+	int hwndParent, hwndHeader, hAnchor;
 	ImageList imageList;
 	boolean dragStarted, gestureCompleted;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect;
 	boolean lockSelection, oldSelected, newSelected;
-	boolean customDraw;
+	boolean linesVisible, customDraw;
+	static final int INSET = 3;
+	static final int GRID_WIDTH = 1;
+	static final int HEADER_MARGIN = 10;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
 	static {
@@ -188,8 +192,15 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 } 
 
+int borderHandle () {
+	return hwndParent != 0 ? hwndParent : handle;
+}
+
 int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
+	if (hwndParent != 0 && hwnd == hwndParent) {
+		return OS.DefWindowProc (hwnd, msg, wParam, lParam);
+	}
 	/*
 	* Bug in Windows.  For some reason, when the user clicks
 	* on this control, the Windows hook WH_MSGFILTER is sent
@@ -208,6 +219,10 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 			return code;
 	}
 	return OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
+}
+
+boolean checkHandle (int hwnd) {
+	return hwnd == handle || (hwndParent != 0 && hwnd == hwndParent);
 }
 
 boolean checkScroll (int hItem) {
@@ -238,6 +253,18 @@ protected void checkSubclass () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int width = 0, height = 0;
+	if (hwndHeader != 0) {
+		HDITEM hdItem = new HDITEM ();
+		hdItem.mask = OS.HDI_WIDTH;
+		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		for (int i=0; i<count; i++) {
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+			width += hdItem.cxy;
+		}
+		RECT rect = new RECT ();					
+		OS.GetWindowRect (hwndHeader, rect);
+		height += rect.bottom - rect.top;
+	}
 	RECT rect = new RECT ();
 	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
 	while (hItem != 0) {
@@ -253,7 +280,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	int border = getBorderWidth ();
-	width += border * 2;  height += border * 2;
+	width += border * 2;
+	height += border * 2;
 	if ((style & SWT.V_SCROLL) != 0) {
 		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
 	}
@@ -302,8 +330,103 @@ void createHandle () {
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
 
+void createItem (TreeColumn column, int index) {
+	if (hwndHeader == 0) createParent ();
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
+	if (count == columns.length) {
+		TreeColumn [] newColumns = new TreeColumn [columns.length + 4];
+		System.arraycopy (columns, 0, newColumns, 0, columns.length);
+		columns = newColumns;
+	}
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null) {
+			String [] strings = item.strings;
+			if (strings != null) {
+				String [] temp = new String [count + 1];
+				System.arraycopy (strings, 0, temp, 0, index);
+				System.arraycopy (strings, index, temp, index + 1, count - index);
+				item.strings = temp;
+			}
+			Image [] images = item.images;
+			if (images != null) {
+				Image [] temp = new Image [count + 1];
+				System.arraycopy (images, 0, temp, 0, index);
+				System.arraycopy (images, index, temp, index + 1, count - index);
+				item.images = temp;
+			}
+			if (index == 0) {
+				if (count != 0) {
+					if (strings == null) {
+						item.strings = new String [count + 1];
+						item.strings [1] = item.text;
+					}
+					item.text = "";
+					if (images == null) {
+						item.images = new Image [count + 1];
+						item.images [1] = item.image;
+					}
+					item.image = null;
+				}
+			}
+			if (item.cellBackground != null) {
+				int [] cellBackground = item.cellBackground;
+				int [] temp = new int [count + 1];
+				System.arraycopy (cellBackground, 0, temp, 0, index);
+				System.arraycopy (cellBackground, index, temp, index + 1, count - index);
+				temp [index] = -1;
+				item.cellBackground = temp;
+			}
+			if (item.cellForeground != null) {
+				int [] cellForeground = item.cellForeground;
+				int [] temp = new int [count + 1];
+				System.arraycopy (cellForeground, 0, temp, 0, index);
+				System.arraycopy (cellForeground, index, temp, index + 1, count - index);
+				temp [index] = -1;
+				item.cellForeground = temp;
+			}
+			if (item.cellFont != null) {
+				int [] cellFont = item.cellFont;
+				int [] temp = new int [count + 1];
+				System.arraycopy (cellFont, 0, temp, 0, index);
+				System.arraycopy (cellFont, index, temp, index + 1, count- index);
+				temp [index] = -1;
+				item.cellFont = temp;
+			}
+		}
+	}
+	System.arraycopy (columns, index, columns, index + 1, count - index);
+	columns [index] = column;
+	
+	/*
+	* Bug in Windows.  For some reason, when HDM_INSERTITEM
+	* is used to insert an item into a header without text,
+	* if is not possible to set the text at a later time.
+	* The fix is to insert the item with an empty string.
+	*/
+	int hHeap = OS.GetProcessHeap ();
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
+	HDITEM hdItem = new HDITEM ();
+	hdItem.mask = OS.HDI_TEXT | OS.HDI_FORMAT;
+	hdItem.pszText = pszText;
+	if ((column.style & SWT.LEFT) == SWT.LEFT) hdItem.fmt = OS.HDF_LEFT;
+	if ((column.style & SWT.CENTER) == SWT.CENTER) hdItem.fmt = OS.HDF_CENTER;
+	if ((column.style & SWT.RIGHT) == SWT.RIGHT) hdItem.fmt = OS.HDF_RIGHT;
+	OS.SendMessage (hwndHeader, OS.HDM_INSERTITEM, index, hdItem);
+	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+	
+	/* Update the scroll bars */
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if  ((bits & OS.TVS_NOHSCROLL) == 0) {
+		bits |= OS.TVS_NOHSCROLL;
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	}
+	setScrollWidth ();
+	updateScrollBar ();
+}
+
 void createItem (TreeItem item, int hParent, int hInsertAfter) {
-	item.foreground = item.background = item.font = -1;
 	int id = 0;
 	while (id < items.length && items [id] != null) id++;
 	if (id == items.length) {
@@ -315,23 +438,19 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 	tvInsert.hParent = hParent;
 	tvInsert.hInsertAfter = hInsertAfter;
 	tvInsert.lParam = id;
-	tvInsert.iImage = OS.I_IMAGENONE;
-	tvInsert.iSelectedImage = tvInsert.iImage;
-	tvInsert.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE;
-	
-	/* Set the initial unchecked state */
+	tvInsert.pszText = OS.LPSTR_TEXTCALLBACK;
+	tvInsert.iImage = tvInsert.iSelectedImage = OS.I_IMAGECALLBACK;
+	tvInsert.mask = OS.TVIF_TEXT | OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE | OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	if ((style & SWT.CHECK) != 0) {
 		tvInsert.mask = tvInsert.mask | OS.TVIF_STATE;
 		tvInsert.state = 1 << 12;
 		tvInsert.stateMask = OS.TVIS_STATEIMAGEMASK;
 	}
-
-	/* Insert the item */
 	int hItem = OS.SendMessage (handle, OS.TVM_INSERTITEM, 0, tvInsert);
 	if (hItem == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	item.handle = hItem;
 	items [id] = item;
-	
+
 	/*
 	* This code is intentionally commented.
 	*/
@@ -357,15 +476,102 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 			OS.InvalidateRect (handle, rect, true);
 		}
 	}
+	updateScrollBar ();
+}
+
+void createParent () {
+	forceResize ();
+	RECT rect = new RECT ();
+	OS.GetWindowRect (handle, rect);
+	OS.MapWindowPoints (0, parent.handle, rect, 2);
+	int oldStyle = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	int newStyle = super.widgetStyle () & ~OS.WS_VISIBLE;
+	if ((oldStyle & OS.WS_DISABLED) != 0) newStyle |= OS.WS_DISABLED;
+//	if ((oldStyle & OS.WS_VISIBLE) != 0) newStyle |= OS.WS_VISIBLE;
+	int newExtStyle = super.widgetExtStyle ();
+	hwndParent = OS.CreateWindowEx (
+		newExtStyle,
+		super.windowClass (),
+		null,
+		newStyle,
+		rect.left, 
+		rect.top, 
+		rect.right - rect.left, 
+		rect.bottom - rect.top,
+		parent.handle,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (hwndParent == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.SetWindowLong (hwndParent, OS.GWL_ID, hwndParent);
+	hwndHeader = OS.CreateWindowEx (
+		0,
+		new TCHAR (0, OS.WC_HEADER, true),
+		null,
+		OS.HDS_BUTTONS | OS.HDS_FULLDRAG | OS.HDS_HIDDEN | OS.WS_CHILD | OS.WS_CLIPSIBLINGS,
+		0, 0, 0, 0,
+		hwndParent,
+		0,
+		OS.GetModuleHandle (null),
+		null);
+	if (hwndHeader == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.SetWindowLong (hwndHeader, OS.GWL_ID, hwndHeader);
+	if (OS.IsDBLocale) {
+		int hIMC = OS.ImmGetContext (handle);
+		OS.ImmAssociateContext (hwndParent, hIMC);
+		OS.ImmAssociateContext (hwndHeader, hIMC);		
+		OS.ImmReleaseContext (handle, hIMC);
+	}
+	if (!OS.IsPPC) {
+		if ((style & SWT.BORDER) != 0) {
+			int oldExStyle = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			oldExStyle &= ~OS.WS_EX_CLIENTEDGE;
+			OS.SetWindowLong (handle, OS.GWL_EXSTYLE, oldExStyle);
+		}
+	}
+	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+	if (hFont != 0) OS.SendMessage (hwndHeader, OS.WM_SETFONT, hFont, 0);
+	int hImageList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
+	if (hImageList != 0) {
+		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
+	}
+	int hwndInsertAfter = OS.GetWindow (handle, OS.GW_HWNDPREV);
+	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE;
+	SetWindowPos (hwndParent, hwndInsertAfter, 0, 0, 0, 0, flags);
+	SCROLLINFO info = new SCROLLINFO ();
+	info.cbSize = SCROLLINFO.sizeof;
+	info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
+	OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
+	info.nPage = info.nMax + 1;
+	OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
+	OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
+	info.nPage = info.nMax + 1;
+	OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+	if ((oldStyle & OS.WS_VISIBLE) != 0) {
+		OS.ShowWindow (hwndParent, OS.SW_SHOW);
+	}
+	customDraw = true;
+	deregister ();
+	int hwndFocus = OS.GetFocus ();
+	if (hwndFocus == handle) OS.SetFocus (hwndParent);
+	OS.SetParent (handle, hwndParent);
+	if (hwndFocus == handle) OS.SetFocus (handle);
+	register ();
 }
 
 void createWidget () {
 	super.createWidget ();
 	items = new TreeItem [4];
+	columns = new TreeColumn [4];
 }
 
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
+}
+
+void deregister () {
+	super.deregister ();
+	if (hwndParent != 0) display.removeControl (hwndParent);
 }
 
 /**
@@ -398,6 +604,113 @@ public void deselectAll () {
 			}
 		}
 		OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
+	}
+}
+
+void destroyItem (TreeColumn column) {
+	if (hwndHeader == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	int index = 0;
+	while (index < count) {
+		if (columns [index] == column) break;
+		index++;
+	}
+	if (OS.SendMessage (hwndHeader, OS.HDM_DELETEITEM, index, 0) == 0) {
+		error (SWT.ERROR_ITEM_NOT_REMOVED);
+	}
+	System.arraycopy (columns, index + 1, columns, index, --count - index);
+	columns [count] = null;
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null) {
+			if (count == 0) {
+				item.strings = null;
+			} else {
+				String [] strings = item.strings;
+				if (strings != null) {
+					if (index == 0) item.text = strings [1];
+					String [] temp = new String [count];
+					System.arraycopy (strings, 0, temp, 0, index);
+					System.arraycopy (strings, index + 1, temp, index, count - index);
+					item.strings = temp;
+				} else {
+					if (index == 0) item.text = "";
+				}
+			}
+			if (count == 0) {
+				item.images = null;
+			} else {
+				Image [] images = item.images;
+				if (images != null) {
+					if (index == 0) item.image = images [1];
+					Image [] temp = new Image [count];
+					System.arraycopy (images, 0, temp, 0, index);
+					System.arraycopy (images, index + 1, temp, index, count - index);
+					item.images = temp;
+				} else {
+					if (index == 0) item.image = null;
+				}
+			}
+			if (item.cellBackground != null) {
+				if (count == 0) {
+					item.cellBackground = null;
+				} else {
+					int [] cellBackground = item.cellBackground;
+					int [] temp = new int [count];
+					System.arraycopy (cellBackground, 0, temp, 0, index);
+					System.arraycopy (cellBackground, index + 1, temp, index, count - index);
+					item.cellBackground = temp;
+				}
+			}
+			if (item.cellForeground != null) {
+				if (count == 0) {
+					item.cellForeground = null;
+				} else {
+					int [] cellForeground = item.cellForeground;
+					int [] temp = new int [count];
+					System.arraycopy (cellForeground, 0, temp, 0, index);
+					System.arraycopy (cellForeground, index + 1, temp, index, count - index);
+					item.cellForeground = temp;
+				}
+			}
+			if (item.cellFont != null) {
+				if (count == 0) {
+					item.cellFont = null;
+				} else {
+					int [] cellFont = item.cellFont;
+					int [] temp = new int [count];
+					System.arraycopy (cellFont, 0, temp, 0, index);
+					System.arraycopy (cellFont, index + 1, temp, index, count - index);
+					item.cellFont = temp;
+				}
+			}
+		}
+	}
+	if (count == 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		if  ((bits & OS.TVS_NOHSCROLL) != 0) {
+			bits &= ~OS.TVS_NOHSCROLL;
+			OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		}
+		//TODO - try to do only one setScrollWidth () outside of the if
+		setScrollWidth ();
+	} else {
+		setScrollWidth ();
+		if (index == 0) {
+			columns [0].style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+			columns [0].style |= SWT.LEFT;
+			HDITEM hdItem = new HDITEM ();
+			hdItem.mask = OS.HDI_FORMAT | OS.HDI_IMAGE;
+			OS.SendMessage (hwndHeader, OS.HDM_GETITEM, index, hdItem);
+			hdItem.fmt &= ~OS.HDF_JUSTIFYMASK;
+			hdItem.fmt |= OS.HDF_LEFT;
+			OS.SendMessage (hwndHeader, OS.HDM_SETITEM, index, hdItem);
+		}
+		RECT rect = new RECT (), itemRect = new RECT ();
+		OS.GetClientRect (handle, rect);
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, index - 1, itemRect);
+		rect.left = itemRect.right;
+	    OS.InvalidateRect (handle, rect, true);
 	}
 }
 
@@ -449,12 +762,16 @@ void destroyItem (TreeItem item) {
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
+			if (hwndHeader != 0) {
+				OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
+			}
 			display.releaseImageList (imageList);
 		}
 		imageList = null;
-		customDraw = false;
-		items = new TreeItem [4];	
+		if (hwndParent == 0) customDraw = false;
+		items = new TreeItem [4];
 	}
+	updateScrollBar ();
 }
 
 void enableWidget (boolean enabled) {
@@ -470,6 +787,7 @@ void enableWidget (boolean enabled) {
 	if (background != -1) {
 		_setBackgroundPixel (enabled ? background : -1);
 	}
+	if (hwndParent != 0) OS.EnableWindow (hwndParent, enabled);
 }
 
 int getBackgroundPixel () {
@@ -496,6 +814,158 @@ int getForegroundPixel () {
 }
 
 /**
+ * Returns the width in pixels of a grid line.
+ *
+ * @return the width of a grid line in pixels
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public int getGridLineWidth () {
+	checkWidget ();
+	return GRID_WIDTH;
+}
+
+/**
+ * Returns the height of the receiver's header 
+ *
+ * @return the height of the header or zero if the header is not visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1 
+ */
+public int getHeaderHeight () {
+	checkWidget ();
+	if (hwndHeader == 0) return 0;
+	RECT rect = new RECT ();					
+	OS.GetWindowRect (hwndHeader, rect);
+	return rect.bottom - rect.top;
+}
+
+/**
+ * Returns <code>true</code> if the receiver's header is visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the receiver's header's visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public boolean getHeaderVisible () {
+	checkWidget ();
+	if (hwndHeader == 0) return false;
+	int bits = OS.GetWindowLong (hwndHeader, OS.GWL_STYLE);
+	return (bits & OS.WS_VISIBLE) != 0;
+}
+
+Point getImageSize () {
+	if (imageList != null) return imageList.getImageSize ();
+	int imageWidth = getItemHeight ();
+	return new Point (imageWidth, imageWidth);
+}
+
+/**
+ * Returns the column at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ * If no <code>TreeColumn</code>s were created by the programmer,
+ * this method will throw <code>ERROR_INVALID_RANGE</code> despite
+ * the fact that a single column of data may be visible in the tree.
+ * This occurs when the programmer uses the tree like a list, adding
+ * items but never creating a column.
+ *
+ * @param index the index of the column to return
+ * @return the column at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public TreeColumn getColumn (int index) {
+	checkWidget ();
+	if (hwndHeader == 0) error (SWT.ERROR_INVALID_RANGE);
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	return columns [index];
+}
+
+/**
+ * Returns the number of columns contained in the receiver.
+ * If no <code>TreeColumn</code>s were created by the programmer,
+ * this value is zero, despite the fact that visually, one column
+ * of items is may be visible. This occurs when the programmer uses
+ * the tree like a list, adding items but never creating a column.
+ *
+ * @return the number of columns
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public int getColumnCount () {
+	checkWidget ();
+	if (hwndHeader == 0) return 0;
+	return OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+}
+
+/**
+ * Returns an array of <code>TreeColumn</code>s which are the
+ * columns in the receiver. If no <code>TreeColumn</code>s were
+ * created by the programmer, the array is empty, despite the fact
+ * that visually, one column of items may be visible. This occurs
+ * when the programmer uses the tree like a list, adding items but
+ * never creating a column.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the items in the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public TreeColumn [] getColumns () {
+	checkWidget ();
+	if (hwndHeader == 0) return new TreeColumn [0];
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	TreeColumn [] result = new TreeColumn [count];
+	System.arraycopy (columns, 0, result, 0, count);
+	return result;
+}
+
+/**
  * Returns the item at the given point in the receiver
  * or null if no such item exists. The point is in the
  * coordinate system of the receiver.
@@ -518,12 +988,14 @@ public TreeItem getItem (Point point) {
 	lpht.x = point.x;
 	lpht.y = point.y;
 	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
-	if (lpht.hItem != 0 && (lpht.flags & OS.TVHT_ONITEM) != 0) {
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-		tvItem.hItem = lpht.hItem;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		return items [tvItem.lParam];	
+	if (lpht.hItem != 0) {
+		if ((style & SWT.FULL_SELECTION) != 0 || (lpht.flags & OS.TVHT_ONITEM) != 0) {
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
+			tvItem.hItem = lpht.hItem;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			return items [tvItem.lParam];
+		}
 	}
 	return null;
 }
@@ -627,6 +1099,30 @@ TreeItem [] getItems (int hTreeItem) {
 		result = newResult;
 	}
 	return result;
+}
+
+/**
+ * Returns <code>true</code> if the receiver's lines are visible,
+ * and <code>false</code> otherwise.
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, this method
+ * may still indicate that it is considered visible even though
+ * it may not actually be showing.
+ * </p>
+ *
+ * @return the visibility state of the lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public boolean getLinesVisible () {
+	checkWidget ();
+	return linesVisible;
 }
 
 /**
@@ -790,11 +1286,51 @@ int imageIndex (Image image) {
 		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, hImageList);
+		if (hwndHeader != 0) {
+			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, hImageList);
+		}
+		updateScrollBar ();
 		return index;
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
 	return imageList.add (image);
+}
+
+/**
+ * Searches the receiver's list starting at the first column
+ * (index 0) until a column is found that is equal to the 
+ * argument, and returns the index of that column. If no column
+ * is found, returns -1.
+ *
+ * @param column the search column
+ * @return the index of the column
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+/*public*/ int indexOf (TreeColumn column) {
+	//TODO - make public and add Tree.indexOf(TreeItem) and TreeItem.indexOf(TreeItem)?
+	checkWidget ();
+	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (hwndHeader == 0) return -1;
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	for (int i=0; i<count; i++) {
+		if (columns [i] == column) return i;
+	}
+	return -1;
+}
+
+void register () {
+	super.register ();
+	if (hwndParent != 0) display.addControl (hwndParent, this);
 }
 
 boolean releaseItem (TreeItem item, TVITEM tvItem) {
@@ -820,31 +1356,44 @@ void releaseItems (TreeItem [] nodes, TVITEM tvItem) {
 	}
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	hwndParent = hwndHeader = 0;
+}
+
 void releaseWidget () {
+	int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+	int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	for (int i=0; i<columnCount; i++) {
+		TreeColumn column = columns [i];
+		if (!column.isDisposed ()) column.releaseResources ();
+	}
+	columns = null;
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
 			item.releaseResources ();
 		}
 	}
+	items = null;
 	/*
-	* Feature in Windows.  For some reason, when
-	* TVM_GETIMAGELIST or TVM_SETIMAGELIST is sent,
-	* the tree issues NM_CUSTOMDRAW messages.  This
-	* behavior is unwanted when the tree is being
-	* disposed.  The fix is to ingore NM_CUSTOMDRAW
-	* messages by usnig the custom draw flag.
+	* Feature in Windows.  For some reason, when TVM_GETIMAGELIST
+	* or TVM_SETIMAGELIST is sent, the tree issues NM_CUSTOMDRAW
+	* messages.  This behavior is unwanted when the tree is being
+	* disposed.  The fix is to ingore NM_CUSTOMDRAW messages by
+	* clearing the custom draw flag.
 	* 
 	* NOTE: This only happens on Windows XP.
 	*/
 	customDraw = false;
-	items = null;
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
+		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
 		display.releaseImageList (imageList);
 	} else {
 		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
+		OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
 		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 	}
 	imageList = null;
@@ -853,7 +1402,6 @@ void releaseWidget () {
 	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 	super.releaseWidget ();
 }
-
 
 /**
  * Removes all of the items from the receiver.
@@ -893,12 +1441,16 @@ public void removeAll () {
 	}
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
+		if (hwndHeader != 0) {
+			OS.SendMessage (hwndHeader, OS.HDM_SETIMAGELIST, 0, 0);
+		}
 		display.releaseImageList (imageList);
 	}
 	imageList = null;
-	customDraw = false;
+	if (hwndParent == 0) customDraw = false;
 	items = new TreeItem [4];
 	hAnchor = 0;
+	updateScrollBar ();
 }
 
 /**
@@ -978,6 +1530,37 @@ public void setInsertMark (TreeItem item, boolean before) {
 }
 
 /**
+ * Marks the receiver's lines as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param show the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public void setLinesVisible (boolean show) {
+	checkWidget ();
+	if (linesVisible == show) return;
+	linesVisible = show;
+	OS.InvalidateRect (handle, null, true);
+}
+
+int scrolledHandle () {
+	if (hwndHeader == 0) return handle;
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	return count == 0 ? handle : hwndParent;
+}
+
+/**
  * Selects all of the items in the receiver.
  * <p>
  * If the receiver is single-select, do nothing.
@@ -1041,7 +1624,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 void setCursor () {
 	/*
 	* Bug in Windows.  Under certain circumstances, when WM_SETCURSOR
-	* is sent using SendMessage(), Windows GP's in the window proc for
+	* is sent from SendMessage(), Windows GP's in the window proc for
 	* the tree.  The fix is to avoid calling the tree window proc and
 	* set the cursor for the tree outside of WM_SETCURSOR.
 	* 
@@ -1101,6 +1684,43 @@ void setForegroundPixel (int pixel) {
 	OS.SendMessage (handle, OS.TVM_SETTEXTCOLOR, 0, pixel);
 }
 
+/**
+ * Marks the receiver's header as visible if the argument is <code>true</code>,
+ * and marks it invisible otherwise. 
+ * <p>
+ * If one of the receiver's ancestors is not visible or some
+ * other condition makes the receiver not visible, marking
+ * it visible may not actually cause it to be displayed.
+ * </p>
+ *
+ * @param show the new visibility state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public void setHeaderVisible (boolean show) {
+	checkWidget ();
+	if (hwndHeader == 0) createParent ();
+	int bits = OS.GetWindowLong (hwndHeader, OS.GWL_STYLE);
+	if (show) {
+		if ((bits & OS.HDS_HIDDEN) == 0) return;
+		bits &= ~OS.HDS_HIDDEN;
+		OS.SetWindowLong (hwndHeader, OS.GWL_STYLE, bits);
+		OS.ShowWindow (hwndHeader, OS.SW_SHOW);
+	} else {
+		if ((bits & OS.HDS_HIDDEN) != 0) return;
+		bits |= OS.HDS_HIDDEN;
+		OS.SetWindowLong (hwndHeader, OS.GWL_STYLE, bits);
+		OS.ShowWindow (hwndHeader, OS.SW_HIDE);
+	}
+	setScrollWidth ();
+	updateScrollBar ();
+}
+
 public void setRedraw (boolean redraw) {
 	checkWidget ();
 	/*
@@ -1128,6 +1748,55 @@ public void setRedraw (boolean redraw) {
 	if (hItem != 0) {
 		OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
 	}
+}
+
+void setScrollWidth () {
+	if (hwndHeader == 0 || hwndParent == 0) return;
+	int width = 0;
+	HDITEM hdItem = new HDITEM ();
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	for (int i=0; i<count; i++) {
+		hdItem.mask = OS.HDI_WIDTH;
+		OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+		width += hdItem.cxy;
+	}
+	int left = 0;
+	RECT rect = new RECT ();
+	SCROLLINFO info = new SCROLLINFO ();
+	info.cbSize = SCROLLINFO.sizeof;
+	info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
+	if (count == 0) {
+		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
+		info.nPage = info.nMax + 1;
+		OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
+		OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
+		info.nPage = info.nMax + 1;
+		OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+	} else {
+		OS.GetClientRect (hwndParent, rect);
+		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
+		info.nMax = width;
+		info.nPage = rect.right - rect.left;
+		OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
+		info.fMask = OS.SIF_POS;
+		OS.GetScrollInfo (hwndParent, OS.SB_HORZ, info);
+		left = info.nPos;
+	}
+	OS.GetClientRect (hwndParent, rect);
+	int hHeap = OS.GetProcessHeap ();
+	HDLAYOUT playout = new HDLAYOUT ();
+	playout.prc = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, RECT.sizeof);
+	playout.pwpos = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, WINDOWPOS.sizeof);
+	OS.MoveMemory (playout.prc, rect, RECT.sizeof);
+	OS.SendMessage (hwndHeader, OS.HDM_LAYOUT, 0, playout);
+	WINDOWPOS pos = new WINDOWPOS ();
+	OS.MoveMemory (pos, playout.pwpos, WINDOWPOS.sizeof);
+	if (playout.prc != 0) OS.HeapFree (hHeap, 0, playout.prc);
+	if (playout.pwpos != 0) OS.HeapFree (hHeap, 0, playout.pwpos);
+	SetWindowPos (hwndHeader, OS.HWND_TOP, pos.x - left, pos.y, pos.cx + left, pos.cy, OS.SWP_NOACTIVATE);
+	int w = pos.cx + (count == 0 ? 0 : OS.GetSystemMetrics (OS.SM_CXVSCROLL));
+	int h = rect.bottom - rect.top - pos.cy;
+	SetWindowPos (handle, 0, pos.x - left, pos.y + pos.cy, w + left, h, OS.SWP_NOACTIVATE | OS.SWP_NOZORDER);
 }
 
 /**
@@ -1281,6 +1950,7 @@ public void setTopItem (TreeItem item) {
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
+	updateScrollBar ();
 }
 
 void showItem (int hItem) {
@@ -1331,6 +2001,85 @@ void showItem (int hItem) {
 			if (fixScroll) {
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+			}
+		}
+	}
+	if (hwndParent != 0) {
+		RECT itemRect = new RECT ();
+		itemRect.left = hItem;
+		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+			forceResize ();
+			RECT rect = new RECT ();
+			OS.GetClientRect (hwndParent, rect);
+			OS.MapWindowPoints (hwndParent, handle, rect, 2);
+			POINT pt = new POINT ();
+			pt.x = itemRect.left;
+			pt.y = itemRect.top;
+			if (!OS.PtInRect (rect, pt)) {
+				pt.y = itemRect.bottom;
+				if (!OS.PtInRect (rect, pt)) {
+					SCROLLINFO info = new SCROLLINFO ();
+					info.cbSize = SCROLLINFO.sizeof;
+					info.fMask = OS.SIF_POS;
+					info.nPos = Math.max (0, pt.x - Tree.INSET / 2);
+					OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
+					setScrollWidth ();
+				}
+			}
+		}
+	}
+	updateScrollBar ();
+}
+
+/**
+ * Shows the column.  If the column is already showing in the receiver,
+ * this method simply returns.  Otherwise, the columns are scrolled until
+ * the column is visible.
+ *
+ * @param column the column to be shown
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.1
+ */
+public void showColumn (TreeColumn column) {
+	checkWidget ();
+	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (column.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (column.parent != this) return;
+	int index = indexOf (column);
+	if (index == -1) return;
+	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	if (0 <= index && index < count) {
+		if (hwndParent != 0) {
+			forceResize ();
+			RECT rect = new RECT ();
+			OS.GetClientRect (hwndParent, rect);
+			OS.MapWindowPoints (hwndParent, handle, rect, 2);
+			int x = 0;
+			HDITEM hdItem = new HDITEM ();
+			for (int i=0; i<index; i++) {
+				hdItem.mask = OS.HDI_WIDTH;
+				OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+				x += hdItem.cxy;
+			}
+			POINT pt = new POINT ();
+			pt.x = x;
+			pt.y = rect.top;
+			if (!OS.PtInRect (rect, pt)) {
+				SCROLLINFO info = new SCROLLINFO ();
+				info.cbSize = SCROLLINFO.sizeof;
+				info.fMask = OS.SIF_POS;
+				info.nPos = Math.max (0, pt.x - Tree.INSET / 2);
+				OS.SetScrollInfo (hwndParent, OS.SB_HORZ, info, true);
+				setScrollWidth ();
 			}
 		}
 	}
@@ -1407,24 +2156,44 @@ public void showSelection () {
 	if (hItem != 0) showItem (hItem);
 }
 
+void showWidget (boolean visible) {
+	super.showWidget (visible);
+	if (hwndParent != 0) {
+		OS.ShowWindow (hwndParent, visible ? OS.SW_SHOW : OS.SW_HIDE);
+	}
+}
+
 String toolTipText (NMTTDISPINFO hdr) {
 	int hwndToolTip = OS.SendMessage (handle, OS.TVM_GETTOOLTIPS, 0, 0);
 	if (hwndToolTip == hdr.hwndFrom && toolTipText != null) return ""; //$NON-NLS-1$
 	return super.toolTipText (hdr);
 }
 
+int topHandle () {
+	return hwndParent != 0 ? hwndParent : handle;
+}
+
+void updateScrollBar () {
+	if (hwndParent != 0) {
+		int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (count != 0) {
+			SCROLLINFO info = new SCROLLINFO ();
+			info.cbSize = SCROLLINFO.sizeof;
+			info.fMask = OS.SIF_ALL;
+			OS.GetScrollInfo (handle, OS.SB_VERT, info);
+			OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+		}
+	}
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.TVS_SHOWSELALWAYS;
-	bits |= OS.TVS_LINESATROOT | OS.TVS_HASLINES | OS.TVS_HASBUTTONS;
-	/*
-	* This code is intentionally commented.  In future,
-	* FULL_SELECTION may be implemented for trees.
-	*/
-//	if ((style & SWT.FULL_SELECTION) != 0) {
-//		bits |= OS.TVS_FULLROWSELECT;
-//	} else {
-//		bits |= OS.TVS_HASLINES | OS.TVS_HASBUTTONS;
-//	}
+	bits |= OS.TVS_LINESATROOT | OS.TVS_HASBUTTONS;
+	if ((style & SWT.FULL_SELECTION) != 0) {
+		bits |= OS.TVS_FULLROWSELECT;
+	} else {
+		bits |= OS.TVS_HASLINES;
+	}
 //	bits |= OS.TVS_NOTOOLTIPS;
 	return bits;
 }
@@ -1435,6 +2204,83 @@ TCHAR windowClass () {
 
 int windowProc () {
 	return TreeProc;
+}
+
+int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (hwndParent != 0 && hwnd == hwndParent) {
+		switch (msg) {
+			case OS.WM_COMMAND:
+			case OS.WM_NOTIFY:
+			case OS.WM_SYSCOLORCHANGE: {
+				return OS.SendMessage (handle, msg, wParam, lParam);
+			}
+			case OS.WM_VSCROLL: {
+				SCROLLINFO info = new SCROLLINFO ();
+				info.cbSize = SCROLLINFO.sizeof;
+				info.fMask = OS.SIF_ALL;
+				OS.GetScrollInfo (hwndParent, OS.SB_VERT, info);
+				OS.SetScrollInfo (handle, OS.SB_VERT, info, true);
+				int code = OS.SendMessage (handle, OS.WM_VSCROLL, wParam, lParam);
+				OS.GetScrollInfo (handle, OS.SB_VERT, info);
+				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
+				return code;
+			}
+			case OS.WM_HSCROLL:
+				/*
+				* Bug on WinCE.  lParam should be NULL when the message is not sent
+				* by a scroll bar control, but it contains the handle to the window.
+				* When the message is sent by a scroll bar control, it correctly
+				* contains the handle to the scroll bar.  The fix is to check for
+				* both.
+				*/
+				if (horizontalBar != null && (lParam == 0 || lParam == hwndParent)) {
+					wmScroll (horizontalBar, true, hwndParent, OS.WM_HSCROLL, wParam, lParam);
+				}
+				//FALL THROUGH
+			case OS.WM_SIZE: {
+				setScrollWidth ();
+				break;
+			}
+		}
+		return callWindowProc (hwnd, msg, wParam, lParam);
+	}
+	int code = super.windowProc (handle, msg, wParam, lParam);
+	switch (msg) {
+		/* Keyboard messages */
+		case OS.WM_CHAR:
+		case OS.WM_IME_CHAR:
+		case OS.WM_KEYDOWN:
+		case OS.WM_KEYUP:
+		case OS.WM_SYSCHAR:
+		case OS.WM_SYSKEYDOWN:
+		case OS.WM_SYSKEYUP:
+			
+		/* Mouse messages */
+		case OS.WM_LBUTTONDBLCLK:
+		case OS.WM_LBUTTONDOWN:
+		case OS.WM_LBUTTONUP:
+		case OS.WM_MBUTTONDBLCLK:
+		case OS.WM_MBUTTONDOWN:
+		case OS.WM_MBUTTONUP:
+		case OS.WM_MOUSEHOVER:
+		case OS.WM_MOUSELEAVE:
+		case OS.WM_MOUSEMOVE:
+		case OS.WM_MOUSEWHEEL:
+		case OS.WM_RBUTTONDBLCLK:
+		case OS.WM_RBUTTONDOWN:
+		case OS.WM_RBUTTONUP:
+		case OS.WM_XBUTTONDBLCLK:
+		case OS.WM_XBUTTONDOWN:
+		case OS.WM_XBUTTONUP:
+			
+		/* Other messages */
+		case OS.WM_SIZE:
+		case OS.WM_SETFONT:
+		case OS.WM_TIMER: {
+			updateScrollBar ();
+		}
+	}
+	return code;
 }
 
 LRESULT WM_CHAR (int wParam, int lParam) {
@@ -1552,6 +2398,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		case OS.VK_HOME:
 		case OS.VK_END: {
 			if ((style & SWT.SINGLE) != 0) break;
+			OS.SendMessage (handle, OS.WM_CHANGEUISTATE, OS.UIS_INITIALIZE, 0);
 			if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
 				int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 				if (hItem != 0) {
@@ -1718,6 +2565,46 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
+	if ((style & SWT.CHECK) != 0) {
+		TVHITTESTINFO lpht = new TVHITTESTINFO ();
+		lpht.x = (short) (lParam & 0xFFFF);
+		lpht.y = (short) (lParam >> 16);
+		OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+		if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
+			sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+			sendMouseEvent (SWT.MouseDoubleClick, 1, handle, OS.WM_LBUTTONDBLCLK, wParam, lParam);
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
+			TVITEM tvItem = new TVITEM ();
+			tvItem.hItem = lpht.hItem;
+			tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
+			tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			int state = tvItem.state >> 12;
+			if ((state & 0x1) != 0) {
+				state++;
+			} else  {
+				--state;
+			}
+			tvItem.state = state << 12;
+			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			if (!OS.IsWinCE) {	
+				int id = tvItem.hItem;
+				if (OS.COMCTL32_MAJOR >= 6) {
+					id = OS.SendMessage (handle, OS.TVM_MAPHTREEITEMTOACCID, tvItem.hItem, 0);
+				}
+				OS.NotifyWinEvent (OS.EVENT_OBJECT_FOCUS, handle, OS.OBJID_CLIENT, id);	
+			}
+			Event event = new Event ();
+			event.item = items [tvItem.lParam];
+			event.detail = SWT.CHECK;
+			postEvent (SWT.Selection, event);
+			return LRESULT.ZERO;
+		}
+	}
+	return super.WM_LBUTTONDBLCLK (wParam, lParam);
+}
+
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When a tree item is
@@ -1769,10 +2656,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				}
 			}
 		}
+		dragStarted = gestureCompleted = false;
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = true;
 		int code = callWindowProc (handle, OS.WM_LBUTTONDOWN, wParam, lParam);
 		if (fixSelection) ignoreDeselect = ignoreSelect = lockSelection = false;
-		if (OS.GetCapture () != handle) OS.SetCapture (handle);
+		if (dragStarted && OS.GetCapture () != handle) OS.SetCapture (handle);
 		if (deselected) {
 			TVITEM tvItem = new TVITEM ();
 			tvItem.mask = OS.TVIF_PARAM;
@@ -1788,6 +2676,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	/* Look for check/uncheck */
 	if ((style & SWT.CHECK) != 0) {
 		if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
+			sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
+			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 			TVITEM tvItem = new TVITEM ();
 			tvItem.hItem = lpht.hItem;
 			tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;	
@@ -1812,8 +2702,6 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			event.item = items [tvItem.lParam];
 			event.detail = SWT.CHECK;
 			postEvent (SWT.Selection, event);
-			sendMouseEvent (SWT.MouseDown, 1, handle, OS.WM_LBUTTONDOWN, wParam, lParam);
-			if (OS.GetCapture () != handle) OS.SetCapture (handle);
 			return LRESULT.ZERO;
 		}
 	}
@@ -1995,6 +2883,107 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
+LRESULT WM_NOTIFY (int wParam, int lParam) {
+	NMHDR hdr = new NMHDR ();
+	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+	if (hwndHeader != 0 && hdr.hwndFrom == hwndHeader) {
+		/*
+		* Feature in Windows.  On NT, the automatically created
+		* header control is created as a UNICODE window, not an
+		* ANSI window despite the fact that the parent is created
+		* as an ANSI window.  This means that it sends UNICODE
+		* notification messages to the parent window on NT for
+		* no good reason.  The data and size in the NMHEADER and
+		* HDITEM structs is identical between the platforms so no
+		* different message is actually necessary.  Despite this,
+		* Windows sends different messages.  The fix is to look
+		* for both messages, despite the platform.  This works
+		* because only one will be sent on either platform, never
+		* both.
+		*/
+		switch (hdr.code) {
+			case OS.HDN_BEGINTRACKW:
+			case OS.HDN_BEGINTRACKA:
+			case OS.HDN_DIVIDERDBLCLICKW:
+			case OS.HDN_DIVIDERDBLCLICKA: {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				TreeColumn column = columns [phdn.iItem];
+				if (column != null && !column.getResizable ()) {
+					return LRESULT.ONE;
+				}
+				break;
+			}
+			case OS.HDN_ITEMCHANGINGW:
+			case OS.HDN_ITEMCHANGINGA: {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.pitem != 0) {
+					HDITEM newItem = new HDITEM ();
+					OS.MoveMemory (newItem, phdn.pitem, HDITEM.sizeof);
+					if ((newItem.mask & OS.HDI_WIDTH) != 0) {
+						int inset = 2;
+						HDITEM oldItem = new HDITEM ();
+						oldItem.mask = OS.HDI_WIDTH;
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEM, phdn.iItem, oldItem);
+						int deltaX = newItem.cxy - oldItem.cxy;
+						RECT rect = new RECT (), itemRect = new RECT ();
+						OS.GetClientRect (handle, rect);
+						OS.SendMessage (hwndHeader, OS.HDM_GETITEMRECT, phdn.iItem, itemRect);
+						rect.left = itemRect.right - inset + 1;
+						int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
+						OS.ScrollWindowEx (handle, deltaX, 0, rect, null, 0, null, flags);
+						//TODO - column flashes when resized
+						if (phdn.iItem != 0) {
+							rect.left = itemRect.left;
+							rect.right = itemRect.right;
+							OS.InvalidateRect (handle, rect, true);
+						}
+						setScrollWidth ();
+					}
+				}
+				break;
+			}
+			case OS.HDN_ITEMCHANGEDW:
+			case OS.HDN_ITEMCHANGEDA: {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				if (phdn.pitem != 0) {
+					HDITEM pitem = new HDITEM ();
+					OS.MoveMemory (pitem, phdn.pitem, HDITEM.sizeof);
+					if ((pitem.mask & OS.HDI_WIDTH) != 0) {
+						TreeColumn column = columns [phdn.iItem];
+						if (column != null) {
+							column.sendEvent (SWT.Resize);
+							if (isDisposed ()) return LRESULT.ZERO;	
+							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+							TreeColumn [] newColumns = new TreeColumn [count];
+							System.arraycopy (columns, 0, newColumns, 0, count);
+							for (int i=phdn.iItem+1; i<count; i++) {
+								if (!newColumns [i].isDisposed ()) {
+									newColumns [i].sendEvent (SWT.Move);
+								}
+							}
+						}
+					}
+				}
+				break;
+			}
+			case OS.HDN_ITEMDBLCLICKW:      
+			case OS.HDN_ITEMDBLCLICKA: {
+				NMHEADER phdn = new NMHEADER ();
+				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
+				TreeColumn column = columns [phdn.iItem];
+				if (column != null) {
+					column.postEvent (SWT.DefaultSelection);
+				}
+				break;
+			}
+		}
+	}
+	return super.WM_NOTIFY (wParam, lParam);
+}
+
 LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  The receiver uses WM_RBUTTONDOWN
@@ -2082,15 +3071,80 @@ LRESULT wmColorChild (int wParam, int lParam) {
 LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-	int code = hdr.code;
-	switch (code) {
+	switch (hdr.code) {
+		case OS.TVN_GETDISPINFOA:
+		case OS.TVN_GETDISPINFOW: {
+			NMTVDISPINFO lptvdi = new NMTVDISPINFO ();
+			OS.MoveMemory (lptvdi, lParam, NMTVDISPINFO.sizeof);
+			/*
+			* Feature in Windows.  When a new tree item is inserted
+			* using TVM_INSERTITEM, a TVN_GETDISPINFO is sent before
+			* TVM_INSERTITEM returns and before the item is added to
+			* the items array.  The fix is to check for null.
+			* 
+			* NOTE: This only happens on XP with the version 6.00 of
+			* COMCTL32.DLL,
+			*/
+			if (items == null) break;
+			TreeItem item = items [lptvdi.lParam];
+			if (item == null) break;
+			if ((lptvdi.mask & OS.TVIF_TEXT) != 0) {
+				String string = item.text;
+				TCHAR buffer = new TCHAR (getCodePage (), string, false);
+				int byteCount = Math.min (buffer.length (), lptvdi.cchTextMax - 1) * TCHAR.sizeof;
+				OS.MoveMemory (lptvdi.pszText, buffer, byteCount);
+				OS.MoveMemory (lptvdi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
+				lptvdi.cchTextMax = Math.min (lptvdi.cchTextMax, string.length () + 1);
+			}
+			if ((lptvdi.mask & (OS.TVIF_IMAGE | OS.TVIF_SELECTEDIMAGE)) != 0) {
+				Image image = item.image;
+				lptvdi.iImage = OS.I_IMAGENONE;
+				if (image != null) {
+					lptvdi.iImage = lptvdi.iSelectedImage = imageIndex (image);
+				}
+			}
+			OS.MoveMemory (lParam, lptvdi, NMTVDISPINFO.sizeof);
+			break;
+		}
 		case OS.NM_CUSTOMDRAW: {
 			if (!customDraw) break;
 			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMTVCUSTOMDRAW.sizeof);		
 			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREPAINT: return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
-				case OS.CDDS_ITEMPREPAINT:
+				case OS.CDDS_PREPAINT: {
+					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW | OS.CDRF_NOTIFYPOSTPAINT);
+				}
+				case OS.CDDS_POSTPAINT: {
+					if (linesVisible) {
+						int hDC = nmcd.hdc;
+						if (hwndHeader != 0) {
+							int x = 0;
+							RECT rect = new RECT ();
+							HDITEM hdItem = new HDITEM ();
+							hdItem.mask = OS.HDI_WIDTH;
+							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+							for (int i=0; i<count; i++) {
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom);
+								OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_RIGHT);
+								x += hdItem.cxy;
+							}
+						}
+						RECT rect = new RECT ();
+						int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
+						rect.left = hItem;
+						if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+							int height = rect.bottom - rect.top;
+							while (rect.bottom < nmcd.bottom) {
+								int top = rect.top + height;
+								OS.SetRect (rect, rect.left, top, rect.right, top + height);
+								OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+							}
+						}
+					}
+					return new LRESULT (OS.CDRF_DODEFAULT);
+				}
+				case OS.CDDS_ITEMPREPAINT: {
 					/*
 					* Feature in Windows.  When a new tree item is inserted
 					* using TVM_INSERTITEM and the tree is using custom draw,
@@ -2103,21 +3157,152 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					*/
 					TreeItem item = items [nmcd.lItemlParam];
 					if (item == null) break;
+					if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) {
+						break;
+					}
+					int hDC = nmcd.hdc;
+					OS.SaveDC (hDC);
+					if (linesVisible) {
+						RECT rect = new RECT ();
+						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
+						OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+					}
+					if (hwndHeader != 0) {
+						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+						if (count != 0) {
+							HDITEM hdItem = new HDITEM ();
+							hdItem.mask = OS.HDI_WIDTH;
+							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
+							int hRgn = OS.CreateRectRgn (nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+							OS.SelectClipRgn (hDC, hRgn);
+							OS.DeleteObject (hRgn);
+						}
+					}
+					if (item.font == -1 && item.foreground == -1 && item.background == -1) {
+						if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
+							return new LRESULT (OS.CDRF_DODEFAULT | OS.CDRF_NOTIFYPOSTPAINT);
+						}
+					}
 					TVITEM tvItem = new TVITEM ();
 					tvItem.mask = OS.TVIF_STATE;
 					tvItem.hItem = item.handle;
 					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-					int hFont = item.font, clrText = item.foreground, clrTextBk = item.background;
-					if (hFont == -1 && clrText == -1 && clrTextBk == -1) break;
-					if (hFont != -1) OS.SelectObject (nmcd.hdc, hFont);
+					int hFont = item.cellFont != null ? item.cellFont [0] : item.font;
+					if (hFont != -1) OS.SelectObject (hDC, hFont);
 					if ((tvItem.state & (OS.TVIS_SELECTED | OS.TVIS_DROPHILITED)) == 0) {
 						if (OS.IsWindowEnabled (handle)) {
-						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
-						nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
+							int clrText = item.cellForeground != null ? item.cellForeground [0] : item.foreground;
+							nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
+							int clrTextBk = item.cellBackground != null ? item.cellBackground [0] : item.background;
+							nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 							OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
 						}
 					}
-					return new LRESULT (OS.CDRF_NEWFONT);
+					return new LRESULT (OS.CDRF_NEWFONT | OS.CDRF_NOTIFYPOSTPAINT);
+				}
+				case OS.CDDS_ITEMPOSTPAINT: {
+					TreeItem item = items [nmcd.lItemlParam];
+					if (item == null) break;
+					/*
+					* Feature in Windows.  Under certain circumstances, Windows
+					* sends CDDS_ITEMPOSTPAINT for an empty rectangle.  This is
+					* not a problem providing that graphics do not occur outside
+					* the rectangle.  The fix is to test for the rectangle and
+					* draw nothing.
+					* 
+					* NOTE:  This seems to happen when both I_IMAGECALLBACK
+					* and LPSTR_TEXTCALLBACK are used at the same time with
+					* TVM_SETITEM.
+					*/
+					if (nmcd.left >= nmcd.right || nmcd.top >= nmcd.bottom) {
+						break;
+					}
+					int hDC = nmcd.hdc;
+					OS.RestoreDC (hDC, -1);
+					OS.SetBkMode (hDC, OS.TRANSPARENT);
+					if (OS.IsWindowEnabled (handle)) {
+						OS.SetTextColor (hDC, getForegroundPixel ());
+					}
+					if (hwndHeader != 0) {
+						GCData data = new GCData();
+						data.device = display;
+						GC gc = GC.win32_new (hDC, data);
+						int x = 0;
+						Point size = null;
+						RECT rect = new RECT ();
+						HDITEM hdItem = new HDITEM ();
+						hdItem.mask = OS.HDI_WIDTH;
+						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+						for (int i=0; i<count; i++) {
+							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
+							if (i > 0) {
+								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom - GRID_WIDTH);
+								if (OS.IsWindowEnabled (handle)) {
+									int clrTextBk = item.cellBackground != null ? item.cellBackground [i] : item.background;
+									if (clrTextBk != -1) drawBackground (hDC, clrTextBk, rect);
+								}
+								Image image = item.images != null ? item.images [i] : null;
+								if (image != null) {
+									Rectangle bounds = image.getBounds ();
+									if (size == null) size = getImageSize ();
+									gc.drawImage (image, 0, 0, bounds.width, bounds.height, rect.left, rect.top, size.x, size.y);
+									OS.SetRect (rect, rect.left + size.x + INSET, rect.top, rect.right - INSET, rect.bottom);
+								} else {
+									OS.SetRect (rect, rect.left + INSET, rect.top, rect.right - INSET, rect.bottom);
+								}
+								/*
+								* Bug in Windows.  When DrawText() is used with DT_VCENTER
+								* and DT_ENDELLIPSIS, the ellipsis can draw outside of the
+								* rectangle when the rectangle is empty.  The fix is avoid
+								* all text drawing for empty rectangles.
+								*/
+								if (rect.left < rect.right) {
+									String string = item.strings != null ? item.strings [i] : "";		
+									int hFont = item.cellFont != null ? item.cellFont [i] : item.font;
+									hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
+									int clrText = -1;
+									if (OS.IsWindowEnabled (handle)) {
+										clrText = item.cellForeground != null ? item.cellForeground [i] : item.foreground;
+										clrText = clrText != -1? OS.SetTextColor (hDC, clrText) : -1;
+									}
+									int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_ENDELLIPSIS;
+									TreeColumn column = columns [i];
+									if ((column.style & SWT.LEFT) != 0) flags |= OS.DT_LEFT;
+									if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
+									if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
+									TCHAR buffer = new TCHAR (getCodePage (), string, false);
+									OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+									if (hFont != -1) OS.SelectObject (hDC, hFont);
+									if (clrText != -1) OS.SetTextColor (hDC, clrText);
+								}
+							}
+							x += hdItem.cxy;
+						}
+						gc.dispose ();
+					}
+					if (linesVisible) {
+						RECT rect = new RECT ();
+						rect.left = item.handle;
+						if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect) != 0) {
+							int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+							if (hItem == item.handle) {
+								OS.SetRect (rect, rect.right, nmcd.top, nmcd.right, nmcd.bottom);
+							} else {
+								TVITEM tvItem = new TVITEM ();
+								tvItem.mask = OS.TVIF_STATE;
+								tvItem.hItem = item.handle;
+								OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+								if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+									OS.SetRect (rect, rect.right, nmcd.top, nmcd.right, nmcd.bottom);
+								} else {
+									OS.SetRect (rect, rect.left, nmcd.top, nmcd.right, nmcd.bottom);
+								}
+							}
+							OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+						} 
+					}
+					return new LRESULT (OS.CDRF_DODEFAULT);
+				}
 			}
 			break;
 		}
@@ -2181,6 +3366,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				event.item = items [tvItem.lParam];
 				postEvent (SWT.Selection, event);
 			}
+			updateScrollBar ();
 			break;
 		}
 		case OS.TVN_SELCHANGINGA:
@@ -2203,6 +3389,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		}
+		case OS.TVN_ITEMEXPANDEDA:
+		case OS.TVN_ITEMEXPANDEDW: {
+			updateScrollBar ();
+			break;
+		}
 		case OS.TVN_ITEMEXPANDINGA:
 		case OS.TVN_ITEMEXPANDINGW: {
 			if (!ignoreExpand) {
@@ -2216,6 +3407,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				* the item has already been removed from the list of
 				* items.  The fix is to check for null. 
 				*/
+				if (items == null) break;
 				TreeItem item = items [tvItem.lParam];
 				if (item == null) break;
 				Event event = new Event ();
