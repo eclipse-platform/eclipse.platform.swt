@@ -899,49 +899,72 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	/*
-	* This line is intentionally commented.  Currently
-	* always show scrollbar as being enabled and visible.
-	*/
-//	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
-	if (!OS.IsWinCE) {
-		/*
-		* Set the state bits before calling ShowScrollBar ()
-		* because hiding and showing the scroll bar can cause
-		* WM_SIZE messages when the client area is resized.
-		* Setting the state before the call means that code
-		* that runs during WM_SIZE that queries the visibility
-		* of the scroll bar will get the correct value.
-		*/
-		state &= ~HIDDEN;
-		if (!visible) state |= HIDDEN;
+	if (OS.IsWinCE) {
+		SCROLLINFO info = new SCROLLINFO ();
+		info.cbSize = SCROLLINFO.sizeof;
 		int hwnd = hwndScrollBar (), type = scrollBarType ();
-		if (OS.ShowScrollBar (hwnd, type, visible)) {
+		info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
+		if (visible) info.fMask |= OS.SIF_DISABLENOSCROLL;
+		OS.GetScrollInfo (hwnd, type, info);
+		if (info.nPage == info.nMax - info.nMin + 1) {
 			/*
-			* Bug in Windows.  For some reason, when the widget
-			* is a standard scroll bar, and SetScrollInfo () is
-			* called with SIF_RANGE or SIF_PAGE while the widget
-			* is not visible, the widget is incorrectly disabled
-			* even though the values for SIF_RANGE and SIF_PAGE,
-			* when set for a visible scroll bar would not disable
-			* the scroll bar.  The fix is to enable the scroll bar
-			* when not disabled by the application and the current
-			* scroll bar ranges would cause the scroll bar to be
-			* enabled had they been set when the scroll bar was
-			* visible.
-			*/
-			if ((state & DISABLED) == 0) {
-				SCROLLINFO info = new SCROLLINFO ();
-				info.cbSize = SCROLLINFO.sizeof;
-				info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
-				OS.GetScrollInfo (hwnd, type, info);
-				if (info.nMax - info.nMin - info.nPage >= 0) {
-					OS.EnableScrollBar (hwnd, type, OS.ESB_ENABLE_BOTH);
-				}
-			}
-			sendEvent (visible ? SWT.Show : SWT.Hide);
-			// widget could be disposed at this point
+			* Bug in Windows.  When the only changed flag to
+			* SetScrollInfo () is OS.SIF_DISABLENOSCROLL, 
+			* Windows does not update the scroll bar state.
+			* The fix is to increase and then decrease the
+			* maximum, causing Windows to honour the flag.
+			*/  
+			int max = info.nMax;
+			info.nMax++;
+			OS.SetScrollInfo (hwnd, type, info, false);
+			info.nMax = max;
+			OS.SetScrollInfo (hwnd, type, info, true);
+		} else {
+        	/*
+        	* This line is intentionally commented.  Currently
+        	* always show scrollbar as being enabled and visible.
+        	*/
+//			if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 		}
+		return;
+	}
+	
+	/*
+	* Set the state bits before calling ShowScrollBar ()
+	* because hiding and showing the scroll bar can cause
+	* WM_SIZE messages when the client area is resized.
+	* Setting the state before the call means that code
+	* that runs during WM_SIZE that queries the visibility
+	* of the scroll bar will get the correct value.
+	*/
+	state &= ~HIDDEN;
+	if (!visible) state |= HIDDEN;
+	int hwnd = hwndScrollBar (), type = scrollBarType ();
+	if (OS.ShowScrollBar (hwnd, type, visible)) {
+		/*
+		* Bug in Windows.  For some reason, when the widget
+		* is a standard scroll bar, and SetScrollInfo () is
+		* called with SIF_RANGE or SIF_PAGE while the widget
+		* is not visible, the widget is incorrectly disabled
+		* even though the values for SIF_RANGE and SIF_PAGE,
+		* when set for a visible scroll bar would not disable
+		* the scroll bar.  The fix is to enable the scroll bar
+		* when not disabled by the application and the current
+		* scroll bar ranges would cause the scroll bar to be
+		* enabled had they been set when the scroll bar was
+		* visible.
+		*/
+		if ((state & DISABLED) == 0) {
+			SCROLLINFO info = new SCROLLINFO ();
+			info.cbSize = SCROLLINFO.sizeof;
+			info.fMask = OS.SIF_RANGE | OS.SIF_PAGE;
+			OS.GetScrollInfo (hwnd, type, info);
+			if (info.nMax - info.nMin - info.nPage >= 0) {
+				OS.EnableScrollBar (hwnd, type, OS.ESB_ENABLE_BOTH);
+			}
+		}
+		sendEvent (visible ? SWT.Show : SWT.Hide);
+		// widget could be disposed at this point
 	}
 }
 
