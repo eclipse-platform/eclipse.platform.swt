@@ -616,7 +616,10 @@ void setPRINTDLGFields(JNIEnv *env, jobject lpObject, PRINTDLG *lpStruct, PPRINT
 typedef struct REBARBANDINFO_FID_CACHE {
 	int cached;
 	jclass clazz;
-	jfieldID cbSize, fMask, fStyle, clrFore, clrBack, lpText, cch, iImage, hwndChild, cxMinChild, cyMinChild, cx, hbmBack, wID, cyChild, cyMaxChild, cyIntegral, cxIdeal, lParam, cxHeader;
+	jfieldID cbSize, fMask, fStyle, clrFore, clrBack, lpText, cch, iImage, hwndChild, cxMinChild, cyMinChild, cx, hbmBack, wID, cyChild, cyMaxChild, cyIntegral, cxIdeal, lParam;
+#ifndef _WIN32_WCE
+	jfieldID cxHeader;
+#endif // _WIN32_WCE
 } REBARBANDINFO_FID_CACHE;
 typedef REBARBANDINFO_FID_CACHE *PREBARBANDINFO_FID_CACHE;
 

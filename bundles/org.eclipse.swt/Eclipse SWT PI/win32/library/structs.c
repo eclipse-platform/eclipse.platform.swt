@@ -2436,12 +2436,12 @@ void cacheREBARBANDINFOFids(JNIEnv *env, jobject lpObject, PREBARBANDINFO_FID_CA
 	lpCache->cx = (*env)->GetFieldID(env, lpCache->clazz, "cx", "I");
 	lpCache->hbmBack = (*env)->GetFieldID(env, lpCache->clazz, "hbmBack", "I");
 	lpCache->wID = (*env)->GetFieldID(env, lpCache->clazz, "wID", "I");
-#ifndef _WIN32_WCE
 	lpCache->cyChild = (*env)->GetFieldID(env, lpCache->clazz, "cyChild", "I");
 	lpCache->cyMaxChild = (*env)->GetFieldID(env, lpCache->clazz, "cyMaxChild", "I");
 	lpCache->cyIntegral = (*env)->GetFieldID(env, lpCache->clazz, "cyIntegral", "I");
 	lpCache->cxIdeal = (*env)->GetFieldID(env, lpCache->clazz, "cxIdeal", "I");
 	lpCache->lParam = (*env)->GetFieldID(env, lpCache->clazz, "lParam", "I");
+#ifndef _WIN32_WCE
 	lpCache->cxHeader = (*env)->GetFieldID(env, lpCache->clazz, "cxHeader", "I");
 #endif // _WIN32_WCE
 	lpCache->cached = 1;
@@ -2464,12 +2464,12 @@ REBARBANDINFO* getREBARBANDINFOFields(JNIEnv *env, jobject lpObject, REBARBANDIN
 	lpStruct->cx = (*env)->GetIntField(env, lpObject, lpCache->cx);
 	lpStruct->hbmBack = (HBITMAP)(*env)->GetIntField(env, lpObject, lpCache->hbmBack);
 	lpStruct->wID = (*env)->GetIntField(env, lpObject, lpCache->wID);
-#ifndef _WIN32_WCE
 	lpStruct->cyChild = (*env)->GetIntField(env, lpObject, lpCache->cyChild);
 	lpStruct->cyMaxChild = (*env)->GetIntField(env, lpObject, lpCache->cyMaxChild);
 	lpStruct->cyIntegral = (*env)->GetIntField(env, lpObject, lpCache->cyIntegral);
 	lpStruct->cxIdeal = (*env)->GetIntField(env, lpObject, lpCache->cxIdeal);
 	lpStruct->lParam = (*env)->GetIntField(env, lpObject, lpCache->lParam);
+#ifndef _WIN32_WCE
 	lpStruct->cxHeader = (*env)->GetIntField(env, lpObject, lpCache->cxHeader);
 #endif // _WIN32_WCE
 	return lpStruct;
@@ -2492,12 +2492,12 @@ void setREBARBANDINFOFields(JNIEnv *env, jobject lpObject, REBARBANDINFO *lpStru
 	(*env)->SetIntField(env, lpObject, lpCache->cx, lpStruct->cx);
 	(*env)->SetIntField(env, lpObject, lpCache->hbmBack, (jint)lpStruct->hbmBack);
 	(*env)->SetIntField(env, lpObject, lpCache->wID, lpStruct->wID);
-#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, lpCache->cyChild, lpStruct->cyChild);
 	(*env)->SetIntField(env, lpObject, lpCache->cyMaxChild, lpStruct->cyMaxChild);
 	(*env)->SetIntField(env, lpObject, lpCache->cyIntegral, lpStruct->cyIntegral);
 	(*env)->SetIntField(env, lpObject, lpCache->cxIdeal, lpStruct->cxIdeal);
 	(*env)->SetIntField(env, lpObject, lpCache->lParam, lpStruct->lParam);
+#ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, lpCache->cxHeader, lpStruct->cxHeader);
 #endif // _WIN32_WCE
 }
