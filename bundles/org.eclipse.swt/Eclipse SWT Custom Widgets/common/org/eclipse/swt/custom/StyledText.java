@@ -4556,11 +4556,9 @@ public void invokeAction(int action) {
 			break;
 		case ST.DELETE_PREVIOUS:
 			doBackspace();
-			clearSelection(true);
 			break;
 		case ST.DELETE_NEXT:
 			doDelete();
-			clearSelection(true);
 			break;
 		// Miscellaneous
 		case ST.TOGGLE_OVERWRITE:
@@ -4682,7 +4680,7 @@ void modifyContent(Event event, boolean updateCaret) {
 		// fixes 1GBB8NJ
 		if (updateCaret) {		
 			// always update the caret location. fixes 1G8FODP
-			internalSetSelection(event.start + event.text.length(), 0);
+			internalSetSelection(event.start + event.text.length(), 0, true);
 			if (isBidi()) {
 				// Update the caret direction so that the caret moves to the 
 				// typed/deleted character. Fixes 1GJLQ16.
@@ -5742,7 +5740,7 @@ public void setSelection(int start, int end) {
 		// is thrown. Fixes 1GDKK3R
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}				
-	internalSetSelection(start, end - start);
+	internalSetSelection(start, end - start, false);
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
 	if (isBidi()) {
@@ -5782,7 +5780,7 @@ public void setSelectionRange(int start, int length) {
 		// is thrown. Fixes 1GDKK3R
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}					
-	internalSetSelection(start, length);
+	internalSetSelection(start, length, false);
 	// always update the caret location. fixes 1G8FODP
 	setCaretLocation();
 	if (isBidi()) {
@@ -5798,12 +5796,14 @@ public void setSelectionRange(int start, int length) {
  * @param start offset of the first selected character, start >= 0 must be true.
  * @param length number of characters to select, start <= start + length 
  * 	<= getCharCount() must be true.
+ * @param sendEvent	a Selection event is sent when set to true and when 
+ * 	the selection is reset.
  */
-void internalSetSelection(int start, int length) {
+void internalSetSelection(int start, int length, boolean sendEvent) {
 	int end = start + length;
 	
 	if (selection.x != start || selection.y != end) {
-		clearSelection(false);
+		clearSelection(sendEvent);
 		selectionAnchor = selection.x = start;
 		caretOffset = selection.y = end;
 		if (length > 0) {
@@ -6459,13 +6459,13 @@ void updateSelection(int startOffset, int replacedLength, int newLength) {
 	}
 	if (selection.y > startOffset && selection.x < startOffset + replacedLength) {
 		// selection intersects replaced text. set caret behind text change
-		internalSetSelection(startOffset + newLength, 0);
+		internalSetSelection(startOffset + newLength, 0, true);
 		// always update the caret location. fixes 1G8FODP
 		setCaretLocation();
 	}
 	else {
 		// move selection to keep same text selected
-		internalSetSelection(selection.x + newLength - replacedLength, selection.y - selection.x);
+		internalSetSelection(selection.x + newLength - replacedLength, selection.y - selection.x, true);
 		// always update the caret location. fixes 1G8FODP
 		setCaretLocation();
 	}	
