@@ -287,12 +287,27 @@ void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
 	int controlProc = display.controlProc;
-	int [] mask = new int [] {
+	int [] mask1 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
+	OS.InstallEventHandler (controlTarget, controlProc, mask1.length / 2, mask1, handle, null);
+	int [] mask2 = new int [] {
+		OS.kEventClassControl, OS.kEventControlDraw,
+	};
+	if (iconHandle != 0) {
+		controlTarget = OS.GetControlEventTarget (iconHandle);
+		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, iconHandle, null);
+	}
+	if (labelHandle != 0) {
+		controlTarget = OS.GetControlEventTarget (labelHandle);
+		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, labelHandle, null);
+	}
+	if (arrowHandle != 0) {
+		controlTarget = OS.GetControlEventTarget (arrowHandle);
+		OS.InstallEventHandler (controlTarget, controlProc, mask2.length / 2, mask2, arrowHandle, null);
+	}
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
 }
