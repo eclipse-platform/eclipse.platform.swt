@@ -2769,7 +2769,7 @@ public boolean traverse (int traversal) {
 
 boolean traverse (Event event) {
 	sendEvent (SWT.Traverse, event);
-	if (isDisposed ()) return false;
+	if (isDisposed ()) return true;
 	if (!event.doit) return false;
 	switch (event.detail) {
 		case SWT.TRAVERSE_NONE:				return true;
