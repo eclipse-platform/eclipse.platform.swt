@@ -1415,6 +1415,7 @@ static final native int setResourceMem (int start, int end);
 
 public static final synchronized native int XCreateFontSet (int display, byte [] base_font_name_list, int [] missing_charset_list_return, int [] missing_charset_count_return, int [] def_string_return);
 public static final synchronized native int XLocaleOfFontSet (int fontSet);
+public static final synchronized native void XFreeStringList (int list);
 
 public static final synchronized native void XtInsertEventHandler (int w, int event_mask, boolean nonmaskable, int proc, int client_data, int position);
 //public static final synchronized native void XmAddToPostFromList (int menu, int post_from_list);

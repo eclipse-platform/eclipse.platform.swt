@@ -8940,3 +8940,13 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtAppSetFallbackRe
 
     XtAppSetFallbackResources((XtAppContext)app_context, (String *)specification_list);
 }
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XFreeStringList
+  (JNIEnv *env, jclass that, jint list)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XFreeStringList\n");
+#endif
+
+    XFreeStringList((char **)list);
+}

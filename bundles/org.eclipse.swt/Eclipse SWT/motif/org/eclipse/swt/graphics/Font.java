@@ -484,6 +484,7 @@ void init (Device device, FontData[] fds) {
 			if (stringBuffer.length() != 0) stringBuffer.append(",");
 			stringBuffer.append(newFds[index].getXlfd());
 			buffer = Converter.wcsToMbcs(null, stringBuffer.toString(), true);
+			if (missingCharset[0] != 0) OS.XFreeStringList (missingCharset[0]);
 			if (fontSet != 0) OS.XFreeFontSet(xDisplay, fontSet);
 			fontSet = OS.XCreateFontSet(xDisplay, buffer, missingCharset, missingCharsetCount, defString);
 	  		if (fontSet != 0) {
@@ -498,6 +499,7 @@ void init (Device device, FontData[] fds) {
 	  		}
 		}
 	}
+	if (missingCharset[0] != 0) OS.XFreeStringList (missingCharset[0]);
 	
 	/* If no font could be loaded, use the system font. */
 	if (fontSet == 0) {
