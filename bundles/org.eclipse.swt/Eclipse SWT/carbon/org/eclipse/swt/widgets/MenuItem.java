@@ -312,8 +312,16 @@ public boolean getSelection () {
 }
 
 void handleMenuSelect () {
-	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
+	if ((style & SWT.CHECK) != 0) {
 		setSelection (!getSelection ());
+	} else {
+		if ((style & SWT.RADIO) != 0) {
+			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) != 0) {
+				setSelection (!getSelection ());
+			} else {
+				selectRadio ();
+			}
+		}
 	}
 	Event event = new Event ();
 	/* AW
@@ -397,6 +405,9 @@ void releaseWidget () {
 	menu = null;
 	super.releaseWidget ();
 	accelerator = 0;
+	if (this == parent.defaultItem) {
+		parent.defaultItem = null;
+	}
 	Decorations shell = parent.parent;
 	shell.remove (this);
 	parent = null;
@@ -479,6 +490,17 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void selectRadio () {
+	int index = 0;
+	MenuItem [] items = parent.getItems ();
+	while (index < items.length && items [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && items [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < items.length && items [j].setRadioSelection (false)) j++;
+	setSelection (true);
+}
+
 /**
  * Sets the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
@@ -543,9 +565,15 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
+	short [] outIndex = new short [1];
+	OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex);
+	int outMenuRef [] = new int [1];
+	OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
 	if (enabled) {
+		if (outMenuRef [0] != 0) OS.EnableMenuItem (outMenuRef [0], (short) 0);
 		OS.EnableMenuCommand (parent.handle, id);
 	} else {
+		if (outMenuRef [0] != 0) OS.DisableMenuItem (outMenuRef [0], (short) 0);
 		OS.DisableMenuCommand (parent.handle, id);
 	}
 }
@@ -634,6 +662,15 @@ public void setMenu (Menu menu) {
 		OS.SetMenuTitleWithCFString (inHierMenu, outString [0]);
 		OS.CFRelease (outString [0]);
 	}
+}
+
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
 }
 
 /**
