@@ -352,13 +352,18 @@ void createLayout () {
 	OS.memcpy(ptr1, buffer, 4);	
 	int ptr2 = OS.NewPtr(4);
 	buffer[0] = OS.kATSLineUseDeviceMetrics;
-	OS.memcpy(ptr2, buffer, 4);	
-	int[] tags = new int[]{OS.kATSUCGContextTag, OS.kATSULineLayoutOptionsTag};
-	int[] sizes = new int[]{4, 4};
-	int[] values = new int[]{ptr1, ptr2};
+	OS.memcpy(ptr2, buffer, 4);
+	int lineDir = OS.kATSULeftToRightBaseDirection;
+	if ((data.style & SWT.RIGHT_TO_LEFT) != 0) lineDir = OS.kATSURightToLeftBaseDirection;
+	int ptr3 = OS.NewPtr(1);
+	OS.memcpy(ptr3, new byte[] {(byte)lineDir}, 1);
+	int[] tags = new int[]{OS.kATSUCGContextTag, OS.kATSULineLayoutOptionsTag, OS.kATSULineDirectionTag};
+	int[] sizes = new int[]{4, 4, 1};
+	int[] values = new int[]{ptr1, ptr2, ptr3};
 	OS.ATSUSetLayoutControls(data.layout, tags.length, tags, sizes, values);
 	OS.DisposePtr(ptr1);
 	OS.DisposePtr(ptr2);
+	OS.DisposePtr(ptr3);
 }
 
 void createTabs () {

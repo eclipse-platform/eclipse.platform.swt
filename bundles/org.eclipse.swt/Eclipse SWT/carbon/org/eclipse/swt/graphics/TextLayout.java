@@ -167,7 +167,8 @@ public TextLayout (Device device) {
 	int[] buffer = new int[1];
 	OS.ATSUCreateTextLayout(buffer);
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	layout = buffer[0];	
+	layout = buffer[0];
+	setLayoutControl(OS.kATSULineDirectionTag, OS.kATSULeftToRightBaseDirection, 1);
 	OS.ATSUSetHighlightingMethod(layout, 1, new ATSUUnhighlightData());
 	ascent = descent = -1;
 	text = "";
@@ -306,15 +307,7 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	if (selectionBackground != null && selectionBackground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int length = text.length();
 	if (length == 0) return;
-	int[] buffer = new int[1];
-	int ptr = OS.NewPtr(4);
-	buffer[0] = gc.handle;
-	OS.memcpy(ptr, buffer, 4);	
-	int[] tags = new int[]{OS.kATSUCGContextTag};
-	int[] sizes = new int[]{4};
-	int[] values = new int[]{ptr};
-	OS.ATSUSetLayoutControls(layout, tags.length, tags, sizes, values);
-	OS.DisposePtr(ptr);	
+	setLayoutControl(OS.kATSUCGContextTag, gc.handle, 4);
 	boolean hasSelection = selectionStart <= selectionEnd && selectionStart != -1 && selectionEnd != -1;
 	OS.CGContextSaveGState(gc.handle);
 
@@ -1089,10 +1082,16 @@ public void setDescent (int descent) {
 }
 
 void setLayoutControl(int tag, int value, int size) {
-	int[] buffer = new int[1];
-	int ptr1 = OS.NewPtr(4);
-	buffer[0] = value;
-	OS.memcpy(ptr1, buffer, 4);
+	int ptr1 = OS.NewPtr(size);
+	if (size == 1) {
+		byte[] buffer = new byte[1];
+		buffer[0] = (byte) value;
+		OS.memcpy(ptr1, buffer, size);
+	} else {
+		int[] buffer = new int[1];
+		buffer[0] = value;
+		OS.memcpy(ptr1, buffer, size);
+	}
 	int[] tags = new int[]{tag};
 	int[] sizes = new int[]{size};
 	int[] values = new int[]{ptr1};
