@@ -150,6 +150,7 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 		WindowEvent event = new WindowEvent(src);
 		event.display = display;
 		event.widget = src;
+		event.required = true;
 		for (int i = 0; i < src.openWindowListeners.length; i++)
 			src.openWindowListeners[i].open(event);
 		browser = event.browser;

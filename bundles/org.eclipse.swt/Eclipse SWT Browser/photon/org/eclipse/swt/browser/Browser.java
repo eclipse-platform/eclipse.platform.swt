@@ -682,6 +682,7 @@ int Pt_CB_WEB_NEW_WINDOW(int info) {
 	WindowEvent event = new WindowEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
+	event.required = true;
 	for (int i = 0; i < openWindowListeners.length; i++)
 		openWindowListeners[i].open(event);
 	if (event.browser != null && !event.browser.isDisposed()) hidden.browser = event.browser;

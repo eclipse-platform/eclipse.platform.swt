@@ -1330,6 +1330,7 @@ int createWebViewWithRequest(int request) {
 	WindowEvent newEvent = new WindowEvent(Browser.this);
 	newEvent.display = getDisplay();
 	newEvent.widget = this;
+	newEvent.required = true;
 	if (openWindowListeners != null) {
 		for (int i = 0; i < openWindowListeners.length; i++)
 			openWindowListeners[i].open(newEvent);
