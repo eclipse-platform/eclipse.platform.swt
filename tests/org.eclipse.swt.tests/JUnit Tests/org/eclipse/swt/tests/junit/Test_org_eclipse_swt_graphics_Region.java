@@ -94,10 +94,10 @@ public void test_add$I() {
 	}
 	
 	reg = new Region(display);
-	reg.add(new int[] {10,10, 60,40, 70,20, 70,60, 0,60, 20,20});
+	reg.add(new int[] {10,10, 40,30, 20,60, 5,55});
 	box = reg.getBounds();
 	reg.dispose();
-	expected = new Rectangle (1,11,69,49);
+	expected = new Rectangle (5,10,35,50);
 	if (!box.equals(expected)) {
 		fail("add 3 failed - expected: "+expected+" actual: "+box);
 	}
