@@ -2527,7 +2527,7 @@ public void setSelection(int index) {
  */
 public void setSelection(int start, int end) {
 	checkWidget();
-	Vector keepSelected = new Vector(end - start + 1);
+	Vector keepSelected = new Vector();
 	
 	for (int i = start; i <= end; i++) {
 		SelectableItem item = getVisibleItem(i);
