@@ -455,7 +455,7 @@ public static final synchronized native boolean XCheckWindowEvent(int /*long*/ d
 public static final synchronized native boolean XCheckIfEvent(int /*long*/ display, int /*long*/ event_return, int /*long*/ predicate, int /*long*/ arg);
 public static final synchronized native int XDefaultScreen(int /*long*/ display);
 public static final synchronized native int /*long*/ XGetSelectionOwner(int /*long*/ display, int /*long*/ selection);
-public static final synchronized native int XQueryTree(int /*long*/ display, int /*long*/ w, int /*long*/[] root_return, int /*long*/[] parent_return, int[] /*long*/ children_return, int[] nchildren_return);
+public static final synchronized native int XQueryTree(int /*long*/ display, int /*long*/ w, int /*long*/[] root_return, int /*long*/[] parent_return, int /*long*/[] children_return, int[] nchildren_return);
 public static final synchronized native int XKeysymToKeycode(int /*long*/ display, int /*long*/ keysym);
 public static final synchronized native int XReconfigureWMWindow(int /*long*/ display, int /*long*/ window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XSendEvent(int /*long*/ display, int /*long*/ w, boolean propogate, int /*long*/ event_mask, int /*long*/ event_send);
