@@ -606,9 +606,11 @@ void setItemOrder (int [] itemOrder) {
 			if (index == lastItemSrcRow) {
 				rbBand.fMask = OS.RBBIM_IDEALSIZE;
 				OS.SendMessage (handle, OS.RB_GETBANDINFO, index, rbBand);
-				RECT rect = new RECT ();
-				OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, rect);
-				rbBand.cx = rbBand.cxIdeal + rect.left + rect.right;
+				//TEMPORARY CODE
+//				RECT rect = new RECT ();
+//				OS.SendMessage (handle, OS.RB_GETBANDBORDERS, index, rect);
+//				rbBand.cx = rbBand.cxIdeal + rect.left + rect.right;
+				rbBand.cx = rbBand.cxIdeal; 
 				rbBand.fMask = OS.RBBIM_SIZE;
 				OS.SendMessage (handle, OS.RB_SETBANDINFO, index, rbBand);
 				if (index - 1 >= 0) {
