@@ -59,50 +59,7 @@ import java.io.*;
  * @see ImageLoader
  */
 public final class Image implements Drawable {
-
-    static class XImage {
-        int byte_order= OS.MSBFirst;
-		int bitmap_bit_order= OS.MSBFirst;
-        int depth;
-        int width;
-        int height;
-        int bits_per_pixel;
-        int bytes_per_line;
-		int red_mask;
-		int green_mask;
-		int blue_mask;
 		
-        XImage(int w, int h, int d) {
-			width= w;
-			height= h;
-			depth= d;
-			bits_per_pixel= d;
-			bytes_per_line= rowBytes(width, depth);
-			//bytes_per_line= (((width*depth-1)/(8*DEFAULT_SCANLINE_PAD))+1)*DEFAULT_SCANLINE_PAD;
-			switch (d) {
-			case 16:
-				red_mask= 0x7C00;
-				green_mask= 0x03E0;
-				blue_mask= 0x001F;
-				break;
-			case 24:
-			case 32:
-				red_mask= 0xff0000;
-				green_mask= 0x00ff00;
-				blue_mask= 0x0000ff;
-				break;
-			default:
-				break;
-			}
-        }
-    }
-	
-	static class XColor {
-		short red;
-		short green;
-		short blue;
-	}
-	
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)
@@ -228,17 +185,10 @@ public Image(Device device, Image srcImage, int flag) {
 	this.device = device;
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	
-	// AW
-	//if (flag == SWT.IMAGE_DISABLE)
-		flag= SWT.IMAGE_COPY;
-	// AW
-		
-	/* AW
-	int xDisplay = device.xDisplay;
-	*/
+			
 	this.type = srcImage.type;
 	this.mask = 0;
+	
 	MacRect bounds= new MacRect();
 	OS.GetPixBounds(srcImage.pixmap, bounds.getData());
  	int width = bounds.getWidth();
@@ -248,308 +198,232 @@ public Image(Device device, Image srcImage, int flag) {
 	if (flag != SWT.IMAGE_GRAY && srcImage.mask != 0) {
 		/* Generate the mask if necessary. */
 		if (srcImage.transparentPixel != -1) srcImage.createMask();
-        /* AW
-		int mask = OS.XCreatePixmap(xDisplay, drawable, width, height, 1);
-		int gc = OS.XCreateGC(xDisplay, mask, 0, null);
-		OS.XCopyArea(xDisplay, srcImage.mask, mask, gc, 0, 0, width, height, 0, 0);
-		OS.XFreeGC(xDisplay, gc);
-		*/
-		this.mask = OS.duplicatePixMap(srcImage.mask);
+		this.mask = duplicate(srcImage.mask);
 		/* Destroy the image mask if the there is a GC created on the image */
 		if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 	}
+	
 	switch (flag) {
-		case SWT.IMAGE_COPY:
-            /* AW
-			int[] depth = new int[1];
-			OS.XGetGeometry(xDisplay, srcImage.pixmap, unused, unused, unused, unused, unused, unused, depth);
-			int pixmap = OS.XCreatePixmap(xDisplay, drawable, width, height, depth[0]);
-			int gc = OS.XCreateGC(xDisplay, pixmap, 0, null);
-			OS.XCopyArea(xDisplay, srcImage.pixmap, pixmap, gc, 0, 0, width, height, 0, 0);
-			OS.XFreeGC(xDisplay, gc);
-			*/
-			this.pixmap = OS.duplicatePixMap(srcImage.pixmap);
-			transparentPixel = srcImage.transparentPixel;
-			alpha = srcImage.alpha;
-			if (srcImage.alphaData != null) {
-				alphaData = new byte[srcImage.alphaData.length];
-				System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
-			}
-			return;
-		case SWT.IMAGE_DISABLE:
-			/* Get src image data */
-			int dd= OS.GetPixDepth(srcImage.pixmap);
-			if (dd < 0)
-				dd= 1;
-			XImage srcXImage = new XImage(width, height, dd);
-            /* AW
-			int srcXImagePtr = OS.XGetImage(xDisplay, srcImage.pixmap, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
-			OS.memmove(srcXImage, srcXImagePtr, XImage.sizeof);
-			*/
-			byte[] srcData = new byte[srcXImage.bytes_per_line * srcXImage.height];
-			/* AW
-			OS.memmove(srcData, srcXImage.data, srcData.length);
-            */
-			/* Create destination image */
-            /* AW
-			int destPixmap = OS.XCreatePixmap(xDisplay, drawable, width, height, srcXImage.depth);
-			*/
-			int destPixmap = createPixMap((short)width, (short)height, (short)srcXImage.depth, null, null, null, null);			
-			XImage destXImage = new XImage(width, height, srcXImage.depth);
-			/* AW
-			int destXImagePtr = OS.XGetImage(xDisplay, drawable, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
-			OS.memmove(destXImage, destXImagePtr, XImage.sizeof);
-			*/
-			byte[] destData = new byte[destXImage.bytes_per_line * destXImage.height];
-			/* Find the colors to map to */
-			Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
-			Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
-			/* AW
-			int zeroPixel = zeroColor.handle.pixel;
-			int onePixel = oneColor.handle.pixel;
-			*/
-			int zeroPixel = 0;
-			int onePixel = 1;
+		
+	case SWT.IMAGE_COPY:
+		this.pixmap = duplicate(srcImage.pixmap);
+		transparentPixel = srcImage.transparentPixel;
+		alpha = srcImage.alpha;
+		if (srcImage.alphaData != null) {
+			alphaData = new byte[srcImage.alphaData.length];
+			System.arraycopy(srcImage.alphaData, 0, alphaData, 0, alphaData.length);
+		}
+		return;
+		
+	case SWT.IMAGE_DISABLE:
+		/* Get src image data */
+		int srcDepth= getDepth(srcImage.pixmap);
+		int srcRowBytes= rowBytes(width, srcDepth);
+		int srcBitsPerPixel= srcDepth;
+		
+		byte[] srcData = new byte[srcRowBytes * height];
+		OS.copyPixmapData(srcImage.pixmap, srcData);
 
-			switch (srcXImage.bits_per_pixel) {
-				case 1:
-					/*
-					 * Nothing we can reasonably do here except copy
-					 * the bitmap; we can't make it a higher color depth.
-					 * Short-circuit the rest of the code and return.
-					 */
-                    /* AW
-					gc = OS.XCreateGC(xDisplay, drawable, 0, null);
-					pixmap = OS.XCreatePixmap(xDisplay, drawable, width, height, 1);
-					OS.XCopyArea(xDisplay, srcImage.pixmap, pixmap, gc, 0, 0, width, height, 0, 0);
-					*/
-					pixmap = OS.duplicatePixMap(srcImage.pixmap);
-					/* AW
-					OS.XDestroyImage(srcXImagePtr);
-					OS.XDestroyImage(destXImagePtr);
-					OS.XFreeGC(xDisplay, gc);
-                    */
-					return;
-				case 4:
-					SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-					break;
-				case 8:
-					int index = 0;
-					int srcPixel, r, g, b;
-                    /* AW
-					XColor[] colors = new XColor[256];
-					int colormap = OS.XDefaultColormap(xDisplay, OS.XDefaultScreen(xDisplay));
-					for (int y = 0; y < srcXImage.height; y++) {
-						for (int x = 0; x < srcXImage.bytes_per_line; x++) {
-							srcPixel = srcData[index + x] & 0xFF;
-                            */
-							/* Get the RGB values of srcPixel */
-                            /* AW
-							if (colors[srcPixel] == null) {
-								XColor color = new XColor();
-								color.pixel = srcPixel;
-								OS.XQueryColor(xDisplay, colormap, color);
-								colors[srcPixel] = color;
-							}
-							XColor xColor = colors[srcPixel];
-							r = (xColor.red >> 8) & 0xFF;
-							g = (xColor.green >> 8) & 0xFF;
-							b = (xColor.blue >> 8) & 0xFF;
-                            */
-							/* See if the rgb maps to 0 or 1 */
-                            /* AW
-							if ((r * r + g * g + b * b) < 98304) {
-                            */
-								/* Map down to 0 */
-                                /* AW
-								destData[index + x] = (byte)zeroPixel;
-							} else {
-                            */
-								/* Map up to 1 */
-                                /* AW
-								destData[index + x] = (byte)onePixel;
-							}
-						}
-						index += srcXImage.bytes_per_line;
-					}
-                    */
-					System.out.println("Image.Image(4): nyi");
-					break;
-				case 16:
-					index = 0;
-					/* Get masks */
-                    /* AW
-					Visual visual = new Visual();
-					int screenNum = OS.XDefaultScreen(xDisplay);
-					int visualPtr = OS.XDefaultVisual(xDisplay, screenNum);
-					OS.memmove(visual, visualPtr, Visual.sizeof);
-					int redMask = visual.red_mask;
-					int greenMask = visual.green_mask;
-					int blueMask = visual.blue_mask;
-                    */
-					int redMask = 0x7C00;
-					int greenMask = 0x03E0;
-					int blueMask = 0x001F;					
-					/* Calculate mask shifts */
-					int[] shift = new int[1];
-					getOffsetForMask(16, redMask, srcXImage.byte_order, shift);
-					int rShift = 24 - shift[0];
-					getOffsetForMask(16, greenMask, srcXImage.byte_order, shift);
-					int gShift = 24 - shift[0];
-					getOffsetForMask(16, blueMask, srcXImage.byte_order, shift);
-					int bShift = 24 - shift[0];
-					byte zeroLow = (byte)(zeroPixel & 0xFF);
-					byte zeroHigh = (byte)((zeroPixel >> 8) & 0xFF);
-					byte oneLow = (byte)(onePixel & 0xFF);
-					byte oneHigh = (byte)((onePixel >> 8) & 0xFF);
-					for (int y = 0; y < srcXImage.height; y++) {
-						int xIndex = 0;
-						for (int x = 0; x < srcXImage.bytes_per_line; x += 2) {
-							srcPixel = ((srcData[index + xIndex + 1] & 0xFF) << 8) | (srcData[index + xIndex] & 0xFF);
-							r = (srcPixel & redMask) << rShift >> 16;
-							g = (srcPixel & greenMask) << gShift >> 16;
-							b = (srcPixel & blueMask) << bShift >> 16;
-							/* See if the rgb maps to 0 or 1 */
-							if ((r * r + g * g + b * b) < 98304) {
-								/* Map down to 0 */
-								destData[index + xIndex] = zeroLow;
-								destData[index + xIndex + 1] = zeroHigh;
-							} else {
-								/* Map up to 1 */
-								destData[index + xIndex] = oneLow;
-								destData[index + xIndex + 1] = oneHigh;
-							}
-							xIndex += srcXImage.bits_per_pixel / 8;
-						}
-						index += srcXImage.bytes_per_line;
-					}
-					break;
-				case 24:
-				case 32:
-					index = 0;
-					/* Get masks */
-                    /* AW
-					visual = new Visual();
-					screenNum = OS.XDefaultScreen(xDisplay);
-					visualPtr = OS.XDefaultVisual(xDisplay, screenNum);
-					OS.memmove(visual, visualPtr, Visual.sizeof);
-					redMask = visual.red_mask;
-					greenMask = visual.green_mask;
-					blueMask = visual.blue_mask;
-                    */
-					redMask = 0xff0000;
-					greenMask = 0x00ff00;
-					blueMask = 0x0000ff;					
-					/* Calculate mask shifts */
-					shift = new int[1];
-					getOffsetForMask(srcXImage.bits_per_pixel, redMask, srcXImage.byte_order, shift);
-					rShift = shift[0];
-					getOffsetForMask(srcXImage.bits_per_pixel, greenMask, srcXImage.byte_order, shift);
-					gShift = shift[0];
-					getOffsetForMask(srcXImage.bits_per_pixel, blueMask, srcXImage.byte_order, shift);
-					bShift = shift[0];
-					byte zeroR = (byte)zeroColor.getRed();
-					byte zeroG = (byte)zeroColor.getGreen();
-					byte zeroB = (byte)zeroColor.getBlue();
-					byte oneR = (byte)oneColor.getRed();
-					byte oneG = (byte)oneColor.getGreen();
-					byte oneB = (byte)oneColor.getBlue();
-					for (int y = 0; y < srcXImage.height; y++) {
-						int xIndex = 0;
-						for (int x = 0; x < srcXImage.width; x++) {
-							r = srcData[index + xIndex + rShift] & 0xFF;
-							g = srcData[index + xIndex + gShift] & 0xFF;
-							b = srcData[index + xIndex + bShift] & 0xFF;
-							/* See if the rgb maps to 0 or 1 */
-							if ((r * r + g * g + b * b) < 98304) {
-								/* Map down to 0 */
-								destData[index + xIndex + rShift] = zeroR;
-								destData[index + xIndex + gShift] = zeroG;
-								destData[index + xIndex + bShift] = zeroB;
-							} else {
-								/* Map up to 1 */
-								destData[index + xIndex + rShift] = oneR;
-								destData[index + xIndex + gShift] = oneG;
-								destData[index + xIndex + bShift] = oneB;
-							}
-							xIndex += destXImage.bits_per_pixel / 8;
-						}
-						index += srcXImage.bytes_per_line;
-					}
-					break;
-				default:
-					SWT.error(SWT.ERROR_INVALID_IMAGE);
-			}
-            /* AW
-			OS.memmove(destXImage.data, destData, destData.length);
-			gc = OS.XCreateGC(xDisplay, destPixmap, 0, null);
-			OS.XPutImage(xDisplay, destPixmap, gc, destXImagePtr, 0, 0, 0, 0, width, height);
-			*/
+		/* Create destination image */
+		int destPixmap = createPixMap(width, height, srcDepth);
+		int destBitsPerPixel= srcDepth;
+		byte[] destData = new byte[srcRowBytes * height];
+		
+		/* Find the colors to map to */
+		Color zeroColor = device.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+		Color oneColor = device.getSystemColor(SWT.COLOR_WIDGET_BACKGROUND);
+		int zeroPixel= 0;
+		int onePixel= 1;
+		setColorTable(destPixmap, new Color[] { zeroColor, oneColor });
+
+		switch (srcBitsPerPixel) {
+		case 1:
+			/*
+			 * Nothing we can reasonably do here except copy
+			 * the bitmap; we can't make it a higher color depth.
+			 * Short-circuit the rest of the code and return.
+			 */
+			pixmap = duplicate(srcImage.pixmap);
+			return;
+		case 4:
+			SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
+			break;
+		case 8:
+			int index = 0;
+			int srcPixel, r, g, b;
 			
-			System.out.println("Image.Image(5): nyi");
-			/* AW
-			OS.XDestroyImage(destXImagePtr);
-			OS.XDestroyImage(srcXImagePtr);
-			OS.XFreeGC(xDisplay, gc);
-			*/
-			this.pixmap = destPixmap;
-			return;
-
-		case SWT.IMAGE_GRAY:
-			ImageData data = srcImage.getImageData();
-			PaletteData palette = data.palette;
-			ImageData newData = data;
-			if (!palette.isDirect) {
-				/* Convert the palette entries to gray. */
-				RGB [] rgbs = palette.getRGBs();
-				for (int i=0; i<rgbs.length; i++) {
-					if (data.transparentPixel != i) {
-						RGB color = rgbs [i];
-						int red = color.red;
-						int green = color.green;
-						int blue = color.blue;
-						int intensity = (red+red+green+green+green+green+green+blue) >> 3;
-						color.red = color.green = color.blue = intensity;
+			int[] colors= new int[256];
+			for (int i= 0; i < 256; i++)
+				colors[i]= -1;
+				
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < srcRowBytes; x++) {
+					srcPixel = srcData[index + x] & 0xFF;
+					/* Get the RGB values of srcPixel */
+					int color= colors[srcPixel];
+					if (color == -1)			
+						colors[srcPixel]= color= OS.getRGB(srcImage.pixmap, srcPixel);
+					r = (color >> 16) & 0xFF;
+					g = (color >> 8) & 0xFF;
+					b = (color) & 0xFF;
+					/* See if the rgb maps to 0 or 1 */
+					if ((r * r + g * g + b * b) < 98304) {
+						/* Map down to 0 */
+						destData[index + x] = (byte)zeroPixel;
+					} else {
+						/* Map up to 1 */
+						destData[index + x] = (byte)onePixel;
 					}
 				}
-				newData.palette = new PaletteData(rgbs);
-			} else {
-				/* Create a 8 bit depth image data with a gray palette. */
-				RGB[] rgbs = new RGB[256];
-				for (int i=0; i<rgbs.length; i++) {
-					rgbs[i] = new RGB(i, i, i);
-				}
-				newData = new ImageData(width, height, 8, new PaletteData(rgbs));
-				newData.maskData = data.maskData;
-				newData.maskPad = data.maskPad;
-				/* Convert the pixels. */
-				int[] scanline = new int[width];
-				int redMask = palette.redMask;
-				int greenMask = palette.greenMask;
-				int blueMask = palette.blueMask;
-				int redShift = palette.redShift;
-				int greenShift = palette.greenShift;
-				int blueShift = palette.blueShift;
-				for (int y=0; y<height; y++) {
-					int offset = y * newData.bytesPerLine;
-					data.getPixels(0, y, width, scanline, 0);
-					for (int x=0; x<width; x++) {
-						int pixel = scanline[x];
-						int red = pixel & redMask;
-						red = (redShift < 0) ? red >>> -redShift : red << redShift;
-						int green = pixel & greenMask;
-						green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
-						int blue = pixel & blueMask;
-						blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
-						newData.data[offset++] =
-							(byte)((red+red+green+green+green+green+green+blue) >> 3);
-					}
-				}
+				index += srcRowBytes;
 			}
-			init (device, newData);
+			break;
+		case 16:
+			index = 0;
+			/* Get masks */
+			int redMask = getRedMask(16);
+			int greenMask = getGreenMask(16);
+			int blueMask = getBlueMask(16);					
+			/* Calculate mask shifts */
+			int[] shift = new int[1];
+			getOffsetForMask(16, redMask, true, shift);
+			int rShift = 24 - shift[0];
+			getOffsetForMask(16, greenMask, true, shift);
+			int gShift = 24 - shift[0];
+			getOffsetForMask(16, blueMask, true, shift);
+			int bShift = 24 - shift[0];
+			byte zeroLow = (byte)(zeroPixel & 0xFF);
+			byte zeroHigh = (byte)((zeroPixel >> 8) & 0xFF);
+			byte oneLow = (byte)(onePixel & 0xFF);
+			byte oneHigh = (byte)((onePixel >> 8) & 0xFF);
+			for (int y = 0; y < height; y++) {
+				int xIndex = 0;
+				for (int x = 0; x < srcRowBytes; x += 2) {
+					srcPixel = ((srcData[index + xIndex + 1] & 0xFF) << 8) | (srcData[index + xIndex] & 0xFF);
+					r = (srcPixel & redMask) << rShift >> 16;
+					g = (srcPixel & greenMask) << gShift >> 16;
+					b = (srcPixel & blueMask) << bShift >> 16;
+					/* See if the rgb maps to 0 or 1 */
+					if ((r * r + g * g + b * b) < 98304) {
+						/* Map down to 0 */
+						destData[index + xIndex] = zeroLow;
+						destData[index + xIndex + 1] = zeroHigh;
+					} else {
+						/* Map up to 1 */
+						destData[index + xIndex] = oneLow;
+						destData[index + xIndex + 1] = oneHigh;
+					}
+					xIndex += srcBitsPerPixel / 8;
+				}
+				index += srcRowBytes;
+			}
+			break;
+		case 24:
+		case 32:
+			index = 0;
+			/* Get masks */
+			redMask = getRedMask(srcBitsPerPixel);
+			greenMask = getGreenMask(srcBitsPerPixel);
+			blueMask = getBlueMask(srcBitsPerPixel);					
+			/* Calculate mask shifts */
+			shift = new int[1];
+			getOffsetForMask(srcBitsPerPixel, redMask, true, shift);
+			rShift = shift[0];
+			getOffsetForMask(srcBitsPerPixel, greenMask, true, shift);
+			gShift = shift[0];
+			getOffsetForMask(srcBitsPerPixel, blueMask, true, shift);
+			bShift = shift[0];
+			byte zeroR = (byte)zeroColor.getRed();
+			byte zeroG = (byte)zeroColor.getGreen();
+			byte zeroB = (byte)zeroColor.getBlue();
+			byte oneR = (byte)oneColor.getRed();
+			byte oneG = (byte)oneColor.getGreen();
+			byte oneB = (byte)oneColor.getBlue();
+			for (int y = 0; y < height; y++) {
+				int xIndex = 0;
+				for (int x = 0; x < height; x++) {
+					r = srcData[index + xIndex + rShift] & 0xFF;
+					g = srcData[index + xIndex + gShift] & 0xFF;
+					b = srcData[index + xIndex + bShift] & 0xFF;
+					/* See if the rgb maps to 0 or 1 */
+					if ((r * r + g * g + b * b) < 98304) {
+						/* Map down to 0 */
+						destData[index + xIndex + rShift] = zeroR;
+						destData[index + xIndex + gShift] = zeroG;
+						destData[index + xIndex + bShift] = zeroB;
+					} else {
+						/* Map up to 1 */
+						destData[index + xIndex + rShift] = oneR;
+						destData[index + xIndex + gShift] = oneG;
+						destData[index + xIndex + bShift] = oneB;
+					}
+					xIndex += destBitsPerPixel / 8;
+				}
+				index += srcRowBytes;
+			}
 			break;
 		default:
-			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			SWT.error(SWT.ERROR_INVALID_IMAGE);
+		}
+		OS.setBitMapData(destPixmap, destData);
+		this.pixmap = destPixmap;
+		return;
+
+	case SWT.IMAGE_GRAY:
+		ImageData data = srcImage.getImageData();
+		PaletteData palette = data.palette;
+		ImageData newData = data;
+		if (!palette.isDirect) {
+			/* Convert the palette entries to gray. */
+			RGB [] rgbs = palette.getRGBs();
+			for (int i=0; i<rgbs.length; i++) {
+				if (data.transparentPixel != i) {
+					RGB color = rgbs [i];
+					int red = color.red;
+					int green = color.green;
+					int blue = color.blue;
+					int intensity = (red+red+green+green+green+green+green+blue) >> 3;
+					color.red = color.green = color.blue = intensity;
+				}
+			}
+			newData.palette = new PaletteData(rgbs);
+		} else {
+			/* Create a 8 bit depth image data with a gray palette. */
+			RGB[] rgbs = new RGB[256];
+			for (int i=0; i<rgbs.length; i++) {
+				rgbs[i] = new RGB(i, i, i);
+			}
+			newData = new ImageData(width, height, 8, new PaletteData(rgbs));
+			newData.maskData = data.maskData;
+			newData.maskPad = data.maskPad;
+			/* Convert the pixels. */
+			int[] scanline = new int[width];
+			int redMask = palette.redMask;
+			int greenMask = palette.greenMask;
+			int blueMask = palette.blueMask;
+			int redShift = palette.redShift;
+			int greenShift = palette.greenShift;
+			int blueShift = palette.blueShift;
+			for (int y=0; y<height; y++) {
+				int offset = y * newData.bytesPerLine;
+				data.getPixels(0, y, width, scanline, 0);
+				for (int x=0; x<width; x++) {
+					int pixel = scanline[x];
+					int red = pixel & redMask;
+					red = (redShift < 0) ? red >>> -redShift : red << redShift;
+					int green = pixel & greenMask;
+					green = (greenShift < 0) ? green >>> -greenShift : green << greenShift;
+					int blue = pixel & blueMask;
+					blue = (blueShift < 0) ? blue >>> -blueShift : blue << blueShift;
+					newData.data[offset++] =
+						(byte)((red+red+green+green+green+green+green+blue) >> 3);
+				}
+			}
+		}
+		init (device, newData);
+		break;
+	default:
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 }
 /**
@@ -713,26 +587,29 @@ public Image(Device device, String filename) {
  */
 void createMask() {
 	if (mask != 0) return;
-    /* AW
-	int xDisplay = device.xDisplay;
-	int drawable = OS.XDefaultRootWindow(xDisplay);
-	int screenDepth = OS.XDefaultDepthOfScreen(OS.XDefaultScreenOfDisplay(xDisplay));
-	*/
-	int screenDepth = 32;
-	/* AW
-	int visual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
-	*/
-	ImageData maskImage = getImageData().getTransparencyMask();
-	/* AW
-	int maskPixmap = OS.XCreatePixmap(xDisplay, drawable, maskImage.width, maskImage.height, 1);
-	*/
-	int maskPixmap = createBitMap(maskImage.width, maskImage.height, null);
-	/* AW
-	XColor[] xcolors = device.xcolors;
-	*/
-	XColor[] xcolors = null;
-	Image.putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, screenDepth, xcolors, null, true, maskPixmap);
-	this.mask = maskPixmap;
+	mask = createMaskImage(getImageData().getTransparencyMask());
+}
+/**
+ * Creates a Quickdraw BitMap from a device-independent image of depth 1.
+ */
+private static int createMaskImage(ImageData image) {
+	if (image.depth != 1) return 0;
+	
+	int w= image.width;
+	int h= image.height;
+	int bitmap= createBitMap(w, h);
+	int rowBytes= rowBytes(w, 1);
+	byte[] data= new byte[rowBytes * h];
+
+	ImageData.blit(ImageData.BLIT_SRC,
+		image.data, 1, image.bytesPerLine, image.getByteOrder(), 0, 0, w, h, null, null, null,
+		ImageData.ALPHA_OPAQUE, null, 0,
+		data, 1, rowBytes, ImageData.MSB_FIRST, 0, 0, w, h, null, null, null,
+		false, false);
+	
+	OS.setBitMapData(bitmap, data);
+
+	return bitmap;
 }
 /**
  * Disposes of the operating system resources associated with
@@ -742,8 +619,8 @@ void createMask() {
 public void dispose () {
 	if (pixmap == 0) return;
 	if (device.isDisposed()) return;
-	if (pixmap != 0) OS.DisposePixMap(pixmap);
-	if (mask != 0) DisposeBitMap(mask);
+	if (pixmap != 0) Dispose(pixmap);
+	if (mask != 0) Dispose(mask);
 	device = null;
 	memGC = null;
 	pixmap = mask = 0;
@@ -753,7 +630,7 @@ public void dispose () {
  */
 void destroyMask() {
 	if (mask == 0) return;
-	DisposeBitMap(mask);
+	Dispose(mask);
 	mask= 0;
 }
 /**
@@ -771,8 +648,8 @@ public boolean equals (Object object) {
 	if (!(object instanceof Image)) return false;
 	Image image = (Image)object;
 	return device == image.device && pixmap == image.pixmap &&
-		transparentPixel == image.transparentPixel &&
-		mask == image.mask;
+			transparentPixel == image.transparentPixel &&
+					mask == image.mask;
 }
 /**
  * Returns the color to which to map the transparent pixel, or null if
@@ -803,6 +680,7 @@ public Color getBackground() {
 	OS.XQueryColor(xDisplay, colormap, xColor);
 	return Color.motif_new(device, xColor);
     */
+    System.out.println("Image.getBackground: nyi");
     return null;
 }
 /**
@@ -819,10 +697,6 @@ public Color getBackground() {
  */
 public Rectangle getBounds () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-    /* AW
-	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
- 	OS.XGetGeometry (device.xDisplay, pixmap, unused, unused, unused, width, height, unused, unused);
-    */
 	MacRect bounds= new MacRect();		
 	OS.GetPixBounds(pixmap, bounds.getData());
 	return bounds.toRectangle();
@@ -846,31 +720,18 @@ public ImageData getImageData() {
 	Rectangle srcBounds = getBounds();
 	int width = srcBounds.width;
 	int height = srcBounds.height;
-    /* AW
-	int xDisplay = device.xDisplay;
-	int xSrcImagePtr = OS.XGetImage(xDisplay, pixmap, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
-	if (xSrcImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-    */
-    int dd= OS.GetPixDepth(pixmap);
-    if (dd < 0)
-    	dd= 1;
-	XImage xSrcImage = new XImage((short)width, (short)height, dd);
-    /* AW
-	OS.memmove(xSrcImage, xSrcImagePtr, XImage.sizeof);
-    */
+    int srcDepth= getDepth(pixmap);
+    int srcRowBytes= rowBytes(width, srcDepth);
+    int srcBitsPerPixel= srcDepth;
+
 	/* Calculate the palette depending on the display attributes */
 	PaletteData palette = null;
 
 	/* Get the data for the source image. */
-	int length = xSrcImage.bytes_per_line * xSrcImage.height;
-	byte[] srcData = new byte[length];
-    /* AW
-	OS.memmove(srcData, xSrcImage.data, length);
-    */
-	if (OS.copyPixmapData(srcData, pixmap, length) != OS.kNoErr)
-		System.out.println("Image.getImageData: copyPixmapData error");
+	byte[] srcData = new byte[srcRowBytes * height];
+ 	OS.copyPixmapData(pixmap, srcData);
 	
-	switch (xSrcImage.depth) {
+	switch (srcDepth) {
 		case 1:
 			palette = new PaletteData(new RGB[] {
 				new RGB(0, 0, 0),
@@ -895,92 +756,58 @@ public ImageData getImageData() {
 			}
 			int numPixels = 1;
 			int index = 0;
-			for (int y = 0; y < xSrcImage.height; y++) {
-				for (int x = 0; x < xSrcImage.bytes_per_line; x++) {
+			for (int y = 0; y < height; y++) {
+				for (int x = 0; x < srcRowBytes; x++) {
 					int srcPixel = srcData[ index + x ] & 0xFF;
 					if (srcPixel != 0 && normPixel[ srcPixel ] == 0) {
 						normPixel[ srcPixel ] = (byte)numPixels++;
 					}
 					srcData[ index + x ] = normPixel[ srcPixel ];
 				}
-				index += xSrcImage.bytes_per_line;
+				index += srcRowBytes;
 			}
 
 			/* Create a palette with only the RGB values used in the image. */
-            /* AW
-			int colormap = OS.XDefaultColormap(xDisplay, OS.XDefaultScreen(xDisplay));
-			*/
 			RGB[] rgbs = new RGB[ numPixels ];
-			/* AW
-			XColor color = new XColor();
-			*/
 			for (int srcPixel = 0; srcPixel < normPixel.length; srcPixel++) {
 				// If the pixel value was used in the image, get its RGB values.
 				if (srcPixel == 0 || normPixel[ srcPixel ] != 0) {
-					/*
-					color.pixel = srcPixel;
-					OS.XQueryColor(xDisplay, colormap, color);
-					*/
 					int packed= OS.getRGB(pixmap, srcPixel);
 					int rgbIndex = normPixel[ srcPixel ] & 0xFF;
 					rgbs[ rgbIndex ] = new RGB((packed >> 16) & 0xFF, (packed >> 8) & 0xFF, (packed >> 0) & 0xFF);					
-					/*
-					rgbs[ rgbIndex ] = new RGB((color.red >> 8) & 0xFF, (color.green >> 8) & 0xFF, (color.blue >> 8) & 0xFF);
-					*/
 				}
 			}
-			
 			palette = new PaletteData(rgbs);
 			break;
 		case 16:
-			/*
-			 * For some reason, the XImage does not have the mask information.
-			 * We must get it from the visual.
-			 */
-            /* AW
-			int visual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
-			Visual v = new Visual();
-			OS.memmove(v, visual, Visual.sizeof);
-			palette = new PaletteData(v.red_mask, v.green_mask, v.blue_mask);
-            */
-			// AW assumes Mac
-			palette = new PaletteData(0x7C00, 0x03E0, 0x001F);
-			break;
 		case 24:
-		// AW
 		case 32:
-		// AW
-			/* We always create 24-bit ImageData with the following palette */
-			/* AW
-			palette = new PaletteData(0xFF, 0xFF00, 0xFF0000);
-			*/
-			// AW assumes Mac
-			palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
+			palette = new PaletteData(getRedMask(srcDepth), getGreenMask(srcDepth), getBlueMask(srcDepth));
 			break;
 		default:
-			System.out.println("unsupported depth: " + xSrcImage.depth);
 			SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
-	ImageData data = new ImageData(width, height, xSrcImage.depth, palette);
+	
+	ImageData data = new ImageData(width, height, srcDepth, palette);
 	data.data = srcData;
-	if (false && xSrcImage.bits_per_pixel == 32) {
+	if (false && srcBitsPerPixel == 32) {
 		/*
 		 * If bits per pixel is 32, scale the data down to 24, since we do not
 		 * support 32-bit images
 		 */
 		byte[] oldData = data.data;
-		int bytesPerLine = (xSrcImage.width * xSrcImage.depth + 7) / 8;
+		int bytesPerLine = (width * srcDepth + 7) / 8;
 		bytesPerLine = (bytesPerLine + 3) / 4 * 4;
-		byte[] newData = new byte[bytesPerLine * xSrcImage.height];
+		byte[] newData = new byte[bytesPerLine * height];
 		int destIndex = 0;
 		int srcIndex = 0;
 		int rOffset = 0, gOffset = 1, bOffset = 2;
-		if (xSrcImage.byte_order == OS.MSBFirst) {
-			rOffset = 3; gOffset = 2; bOffset = 1;
-		}
+		// MSBFirst:
+		rOffset = 3; gOffset = 2; bOffset = 1;
+		
 		for (int y = 0; y < height; y++) {
 			destIndex = y * bytesPerLine;
-			srcIndex = y * xSrcImage.bytes_per_line;
+			srcIndex = y * srcRowBytes;
 			for (int x = 0; x < width; x++) {
 				newData[destIndex] = oldData[srcIndex + rOffset];
 				newData[destIndex + 1] = oldData[srcIndex + gOffset];
@@ -994,34 +821,9 @@ public ImageData getImageData() {
 	if (transparentPixel == -1 && type == SWT.ICON && mask != 0) {
 		/* Get the icon data */
 		data.maskPad = 4;
-        /* AW
-		int xMaskPtr = OS.XGetImage(xDisplay, mask, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
-		if (xMaskPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		*/
-		int ddd= OS.GetPixDepth(mask);
-		//if (ddd < 0)
-			ddd= 1;
-		XImage xMask = new XImage((short)width, (short)height, ddd);
-		/* AW
-		OS.memmove(xMask, xMaskPtr, XImage.sizeof);
-		*/
-		data.maskData = new byte[xMask.bytes_per_line * xMask.height];
-		if (OS.copyPixmapData(data.maskData, mask, data.maskData.length) != OS.kNoErr)
-			System.out.println("Image.getImageData: copyPixmapData error");
-		/* AW
-		OS.memmove(data.maskData, xMask.data, data.maskData.length);
-		OS.XDestroyImage(xMaskPtr);
-        */
-		/* Bit swap the mask data if necessary */
-		if (xMask.bitmap_bit_order == OS.LSBFirst) {
-			byte[] maskData = data.maskData;
-			for (int i = 0; i < maskData.length; i++) {
-				byte b = maskData[i];
-				maskData[i] = (byte)(((b & 0x01) << 7) | ((b & 0x02) << 5) |
-					((b & 0x04) << 3) |	((b & 0x08) << 1) | ((b & 0x10) >> 1) |
-					((b & 0x20) >> 3) |	((b & 0x40) >> 5) | ((b & 0x80) >> 7));
-			}
-		}
+		int maskRowBytes= rowBytes(width, getDepth(mask));
+		data.maskData = new byte[maskRowBytes * height];
+		OS.copyPixmapData(mask, data.maskData);
 	}
 	data.transparentPixel = transparentPixel;
 	data.alpha = alpha;
@@ -1029,9 +831,6 @@ public ImageData getImageData() {
 		data.alphaData = new byte[alphaData.length];
 		System.arraycopy(alphaData, 0, data.alphaData, 0, alphaData.length);
 	}
-    /* AW
-	OS.XDestroyImage(xSrcImagePtr);
-    */
 	return data;
 }
 /**
@@ -1049,7 +848,7 @@ public ImageData getImageData() {
  * have their color components aligned on byte boundaries, and 16-bit images
  * do not.
  */
-static boolean getOffsetForMask(int bitspp, int mask, int byteOrder, int[] poff) {
+static boolean getOffsetForMask(int bitspp, int mask, boolean msbFirst, int[] poff) {
 	if (bitspp % 8 != 0) {
 		return false;
 	}
@@ -1092,7 +891,7 @@ static boolean getOffsetForMask(int bitspp, int mask, int byteOrder, int[] poff)
 	if (poff[0] >= bitspp / 8) {
 		return false;
 	}
-	if (byteOrder == OS.MSBFirst) {
+	if (msbFirst) {
 		poff[0] = (bitspp/8 - 1) - poff[0];
 	}
 	return true;
@@ -1120,40 +919,23 @@ void init(Device device, int width, int height) {
 	}
 
 	this.type = SWT.BITMAP;
-    /* AW
-	int xDisplay = device.xDisplay;
-	int screen = OS.XDefaultScreenOfDisplay(xDisplay);
-	int depth = OS.XDefaultDepthOfScreen(screen);
-	*/
-	int depth= 32;
-	/* AW
-	int screenNum = OS.XDefaultScreen(xDisplay);
-	int drawable = OS.XDefaultRootWindow(xDisplay);
-	int pixmap = OS.XCreatePixmap(xDisplay, drawable, width, height, depth);
-	*/
-	int pixmap = createPixMap(width, height, depth, null, null, null, null);
+	int pixmap = createPixMap(width, height, device.fScreenDepth);
 
 	/* Fill the bitmap with white */
-    /* AW
-	int xGC = OS.XCreateGC(xDisplay, drawable, 0, null);
-	OS.XSetForeground(xDisplay, xGC, OS.XWhitePixel(xDisplay, screenNum));
-	OS.XFillRectangle(xDisplay, pixmap, xGC, 0, 0, width, height);
-	OS.XFreeGC(xDisplay, xGC);
-    */
-	// AW
-	/*
-	// FIXME: we set the pixmap to black or white in NewPixMap for now
+    int[] offscreenGWorld= new int[1];
+	OS.NewGWorldFromPtr(offscreenGWorld, pixmap);
+	int xGC = offscreenGWorld[0];
+	if (xGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+
 	int[] savePort= new int[1];
 	int[] saveGWorld= new int[1];
 	OS.GetGWorld(savePort, saveGWorld);
 	OS.SetGWorld(xGC, 0);
-	MacRect mr= new MacRect();
-	OS.GetPixBounds(pixmap, mr.getData());
-	OS.EraseRect(mr.getData());
-	OS.FrameRect(mr.getData());
+	OS.EraseRect(new short[] { 0, 0, (short)width, (short)height } );
 	OS.SetGWorld(savePort[0], saveGWorld[0]);
-	*/
-	// AW
+	
+	OS.DisposeGWorld(xGC);
+	
 	this.pixmap = pixmap;
 }
 void init(Device device, ImageData image) {
@@ -1161,44 +943,23 @@ void init(Device device, ImageData image) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	/* AW
-	int xDisplay = device.xDisplay;
-	int drawable = OS.XDefaultRootWindow(xDisplay);
-	int screenDepth = OS.XDefaultDepthOfScreen(OS.XDefaultScreenOfDisplay(xDisplay));
-	*/
-	int screenDepth = 32;
-	/* AW
-	int visual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
-	int pixmap = OS.XCreatePixmap(xDisplay, drawable, image.width, image.height, screenDepth);
-	*/
-	int pixmap = createPixMap(image.width, image.height, screenDepth, null, null, null, null);
-	/* AW
-	int gc = OS.XCreateGC(xDisplay, pixmap, 0, null);
-	*/
+
+	int screenDepth = device.fScreenDepth;
+	int pixmap = createPixMap(image.width, image.height, screenDepth);
+
 	int[] transPixel = null;
 	if (image.transparentPixel != -1) transPixel = new int[]{image.transparentPixel};
-	int error = putImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height, screenDepth, null /* AW device.xcolors */, transPixel, false, pixmap);
+	int error= putImage(image, 0, 0, image.width, image.height,
+							    0, 0, image.width, image.height, screenDepth, transPixel, pixmap);
 	if (error != 0) {
-		OS.DisposePixMap(pixmap);
+		Dispose(pixmap);
 		SWT.error(error);
 	}
 	if (image.getTransparencyType() == SWT.TRANSPARENCY_MASK || image.transparentPixel != -1) {
 		if (image.transparentPixel != -1) transparentPixel = transPixel[0];
-		ImageData maskImage = image.getTransparencyMask();
-		/* AW
-		int mask = OS.XCreatePixmap(xDisplay, drawable, image.width, image.height, 1);
-		*/
-		int mask = createBitMap(image.width, image.height, null);
-		/* AW
-		gc = OS.XCreateGC(xDisplay, mask, 0, null);
-		*/
-		error = putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, screenDepth, null /* AW device.xcolors */, null, true, mask);
-		/* AW
-		OS.XFreeGC(xDisplay, gc);
-		*/
-		if (error != 0) {
-			OS.DisposePixMap(pixmap);
-			DisposeBitMap(mask);
+		int mask= createMaskImage(image.getTransparencyMask());
+		if (mask == 0) {
+			Dispose(pixmap);
 			SWT.error(error);
 		}
 		this.mask = mask;
@@ -1244,21 +1005,11 @@ public int internal_new_GC (GCData data) {
 	if (xGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		data.device = device;
-		/* AW
-		data.display = xDisplay;
-		data.drawable = pixmap;
-		data.fontList = device.systemFont;
-		data.colormap = OS.XDefaultColormap (xDisplay, OS.XDefaultScreen (xDisplay));
-		*/
 		data.image = this;
-		
-		// AW
 		data.font = device.systemFont;
 		data.foreground = 0x00000000;	// black
 		data.background = 0x00ffffff;	// white
-		// AW
 	}
-		
 	return xGC;
 }
 /**	 
@@ -1277,13 +1028,6 @@ public int internal_new_GC (GCData data) {
  * @private
  */
 public void internal_dispose_GC (int gc, GCData data) {
-    /* AW
-	int xDisplay = 0;
-	if (data != null) xDisplay = data.display;
-	if (xDisplay == 0 && device != null) xDisplay = device.xDisplay;
-	if (xDisplay == 0) SWT.error (SWT.ERROR_NO_HANDLES);;
-	OS.XFreeGC(xDisplay, gc);
-    */
 	if (gc != 0)
 		OS.DisposeGWorld(gc);
 }
@@ -1313,12 +1057,15 @@ public static Image macosx_new(Device device, int type, int pixmap, int mask) {
  * Put a device-independent image of any depth into a drawable of any depth,
  * stretching if necessary.
  */
-static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, int screenDepth, XColor[] xcolors, int[] transparentPixel, boolean isMask, int drawable) {
+static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHeight,
+		int destX, int destY, int destWidth, int destHeight,
+		int screenDepth, int[] transparentPixel, int drawable) {
+			
 	PaletteData palette = image.palette;
 	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
 		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
 			return SWT.ERROR_UNSUPPORTED_DEPTH;
-
+			
 	boolean flipX = destWidth < 0;
 	boolean flipY = destHeight < 0;
 	if (flipX) {
@@ -1348,6 +1095,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	int destRedMask = 0, destGreenMask = 0, destBlueMask = 0;
 	final boolean screenDirect;
 	if (screenDepth <= 8) {
+		/*
 		if (xcolors == null) return SWT.ERROR_UNSUPPORTED_DEPTH;
 		destReds = new byte[xcolors.length];
 		destGreens = new byte[xcolors.length];
@@ -1359,19 +1107,12 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			destGreens[i] = (byte)((color.green >> 8) & 0xFF);
 			destBlues[i] = (byte)((color.blue >> 8) & 0xFF);
 		}
+		*/
 		screenDirect = false;
 	} else {
-		/* AW
-		Visual xVisual = new Visual();
-		OS.memmove(xVisual, visual, Visual.sizeof);
-		destRedMask = xVisual.red_mask;
-		destGreenMask = xVisual.green_mask;
-		destBlueMask = xVisual.blue_mask;
-		*/
-		// AW
-		destRedMask = 0xff0000;
-		destGreenMask = 0x00ff00;
-		destBlueMask = 0x0000ff;
+		destRedMask = getRedMask(screenDepth);
+		destGreenMask = getGreenMask(screenDepth);
+		destBlueMask = getBlueMask(screenDepth);
 		screenDirect = true;
 	}
 	if (transparentPixel != null) {
@@ -1393,95 +1134,32 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		transparentPixel[0] = ImageData.closestMatch(screenDepth, (byte)transRed, (byte)transGreen, (byte)transBlue,
 			destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
 	}
-
-	/* Depth 1 */
-	if (image.depth == 1 && isMask) {
-		int bplX = ((destWidth + 7) / 8 + 3) & 0xFFFC;
-		int bufSize = bplX * destHeight;
-		byte[] buf = new byte[bufSize];
-		/* AW
-		int bufPtr = OS.XtMalloc(bufSize);
-		int xImagePtr = OS.XCreateImage(display, visual, 1, OS.XYBitmap, 0, bufPtr, destWidth, destHeight, 32, bplX);
-		if (xImagePtr == 0) {
-			OS.XtFree(bufPtr);
-			return SWT.ERROR_NO_HANDLES;
-		}
-		*/
-		/* AW code never executed because isMask == true
-		int foreground = 1, background = 0;
-		if (!isMask) {
-			foreground = 0;
-			if (srcReds.length > 1) {
-				foreground = ImageData.closestMatch(screenDepth, srcReds[1], srcGreens[1], srcBlues[1],
-					destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
-			}
-			if (srcReds.length > 0) {
-				background = ImageData.closestMatch(screenDepth, srcReds[0], srcGreens[0], srcBlues[0],
-					destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
-			}
-		}
-		*/
-		/* AW
-		XImage xImage = new XImage();
-		OS.memmove(xImage, xImagePtr, XImage.sizeof);
-		xImage.byte_order = OS.MSBFirst;
-		xImage.bitmap_unit = 8;
-		xImage.bitmap_bit_order = OS.MSBFirst;
-		OS.memmove(xImagePtr, xImage, XImage.sizeof);
-		*/
-		int destOrder = ImageData.MSB_FIRST;
-		ImageData.blit(ImageData.BLIT_SRC,
-			image.data, 1, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, null, null, null,
-			ImageData.ALPHA_OPAQUE, null, 0,
-			buf, 1, bplX, destOrder, 0, 0, destWidth, destHeight, null, null, null,
-			flipX, flipY);
-		
-		/* AW
-		OS.memmove(xImage.data, buf, bufSize);
-		XGCValues values = new XGCValues();
-		OS.XGetGCValues(display, gc, OS.GCForeground | OS.GCBackground, values);
-		OS.XSetForeground(display, gc, foreground);
-		OS.XSetBackground(display, gc, background);
-		OS.XPutImage(display, drawable, gc, xImagePtr, 0, 0, destX, destY, destWidth, destHeight);
-		OS.XSetForeground(display, gc, values.foreground);
-		OS.XSetBackground(display, gc, values.background);
-		OS.XDestroyImage(xImagePtr);
-		*/
-		OS.setBitMapData(drawable, buf);
-		return 0;
-	}
 	
-	/* Depths other than 1 */
-	/* AW
-	int xImagePtr = OS.XCreateImage(display, visual, screenDepth, OS.ZPixmap, 0, 0, destWidth, destHeight, 32, 0);
-	if (xImagePtr == 0) return SWT.ERROR_NO_HANDLES;
-	*/
-	XImage xImage = new XImage(destWidth, destHeight, 32);
-	/* AW
-	OS.memmove(xImage, xImagePtr, XImage.sizeof);
-	*/
-	int bufSize = xImage.bytes_per_line * destHeight;	
+	int destDepth= 32;
+	int destBitsPerPixel= destDepth;
+	
+	int dest_red_mask= getRedMask(destBitsPerPixel);
+	int dest_green_mask= getGreenMask(destBitsPerPixel);
+	int dest_blue_mask= getBlueMask(destBitsPerPixel);
+	
+	int destRowBytes= rowBytes(destWidth, 32);
+	int bufSize = destRowBytes * destHeight;	
 	byte[] buf = new byte[bufSize];
-	/*
-	int bufPtr = OS.XtMalloc(bufSize);
-	xImage.data = bufPtr;
-	OS.memmove(xImagePtr, xImage, XImage.sizeof);
-	*/
+
 	int srcOrder = image.getByteOrder();
-	int destOrder = xImage.byte_order == OS.MSBFirst ? ImageData.MSB_FIRST : ImageData.LSB_FIRST;
 	
 	if (palette.isDirect) {
 		if (screenDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0,
-				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
+				buf, destBitsPerPixel, destRowBytes, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, dest_red_mask, dest_green_mask, dest_blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
 				ImageData.ALPHA_OPAQUE, null, 0,
-				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
+				buf, destBitsPerPixel, destRowBytes, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
 		}
 	} else {
@@ -1489,21 +1167,16 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0,
-				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
+				buf, destBitsPerPixel, destRowBytes, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, dest_red_mask, dest_green_mask, dest_blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
 				ImageData.ALPHA_OPAQUE, null, 0,
-				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
+				buf, destBitsPerPixel, destRowBytes, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
 		}
 	}
-	/* AW
-	OS.memmove(xImage.data, buf, bufSize);
-	OS.XPutImage(display, drawable, gc, xImagePtr, 0, 0, destX, destY, destWidth, destHeight);
-	OS.XDestroyImage(xImagePtr);
-	*/
 	OS.setBitMapData(drawable, buf);
 	return 0;
 }
@@ -1588,7 +1261,7 @@ public String toString () {
 		return (((width*depth-1)/(8*DEFAULT_SCANLINE_PAD))+1)*DEFAULT_SCANLINE_PAD;
 	}
 
-	private static int createBitMap(int width, int height, byte[] data) {
+	private static int createBitMap(int width, int height) {
 		int rowBytes= rowBytes(width, 1);
 		if (rowBytes > 0x3fff) {
 			System.out.println("Image.createBitMap: rowBytes >= 0x4000");
@@ -1597,16 +1270,13 @@ public String toString () {
 		int bitmap= OS.NewBitMap((short)width, (short)height, (short)rowBytes);
 		if (bitmap == 0)
 			SWT.error(SWT.ERROR_NO_HANDLES);
-		if (data != null) {
-			OS.setBitMapData(bitmap, data);
-		} else {
-			OS.initBitMapData(bitmap, rowBytes * height, (byte)0);
-		}
+			
+		OS.initBitMapData(bitmap, rowBytes * height, (byte)0);
+		
 		return bitmap;
 	}
 	
-	private static int createPixMap(int width, int height, int depth,
-					short[] reds, short[] greens, short[] blues, byte[] data) {
+	private static int createPixMap(int width, int height, int depth) {
 		int rowBytes= rowBytes(width, depth);
 		if (rowBytes > 0x3fff) {
 			System.out.println("Image.createPixMap: rowBytes >= 0x4000");
@@ -1615,16 +1285,8 @@ public String toString () {
 		int pixmap= NewPixMap(width, height, depth, rowBytes);
 		if (pixmap == 0)
 			SWT.error(SWT.ERROR_NO_HANDLES);
-		if (data != null) {
-			OS.setBitMapData(pixmap, data);
-		} else {
-			OS.initBitMapData(pixmap, rowBytes * height, (byte)0);
-		}
-		
-		if (depth > 8) {
-		} else {
-			OS.setColorTable(pixmap, 1 << depth, reds, greens, blues);
-		}
+			
+		OS.initBitMapData(pixmap, rowBytes * height, (byte)0);
 
 		return pixmap;
 	}
@@ -1667,22 +1329,21 @@ public String toString () {
 				(short)cmpSize, (short)cmpCount, (short)pixelFormat);
 	}
 	
-	public static void DisposeBitMap(int bitmapHandle) {
+	private static void Dispose(int handle) {
 
-		if (bitmapHandle == 0) {
-			System.out.println("Image.DisposeBitMap: bitmapHandle == 0");
+		if (handle == 0)
+			return;
+
+		if ((OS.getRowBytes(handle) & 0x8000) != 0) {	// Pixmap
+			OS.DisposePixMap(handle);
 			return;
 		}
-
-		if ((OS.getRowBytes(bitmapHandle) & 0x8000) != 0) {	// Pixmap
-			System.out.println("Image.DisposeBitMap: warning: bitmap is pixmap");
-		}
 		
-		int baseAddr= OS.getBaseAddr(bitmapHandle);
+		int baseAddr= OS.getBaseAddr(handle);
 		if (baseAddr != 0)
 			OS.DisposePtr(baseAddr);
 		
-		OS.DisposeHandle(bitmapHandle);
+		OS.DisposeHandle(handle);
 	}
 	
 	//private static int fgIconCount;
@@ -1697,7 +1358,7 @@ public String toString () {
 
 		int pm= image.pixmap;
 		
-		if (pm != 0 && OS.GetPixDepth(pm) > 8) {
+		if (pm != 0 && getDepth(pm) > 8) {
 			
 			//System.out.println("reduce depth");
 		
@@ -1737,7 +1398,7 @@ public String toString () {
 				}
 			}
 			pm= NewPixMap(w, h, depth, bytesPerRow);
-			OS.setColorTable(pm, 256, reds, greens, blues);
+			setColorTable(pm, reds, greens, blues);
 			OS.setBitMapData(pm, data);
 		} else {
 			System.out.println("---> CIcon: can use pixmap");
@@ -1756,7 +1417,7 @@ public String toString () {
 			int icon= OS.NewCIcon(pm, mask);
 			
 			if (mask != image.mask)
-				DisposeBitMap(mask);
+				Dispose(mask);
 			
 			//System.out.println("CIcons: " + fgIconCount++);
 			
@@ -1778,5 +1439,80 @@ public String toString () {
 		OS.DisposeHandle(iconHandle);
 		
 		//fgIconCount--;
+	}
+	
+	private static void setColorTable(int pixmapHandle, short[] red, short[] green, short[] blue) {
+		int n= Math.max(Math.max(red.length, green.length), blue.length);
+		short[] colorSpec= new short[n*4];
+		int j= 0;
+		for (int i= 0; i < n; i++) {
+			colorSpec[j++]= (short) i;
+			colorSpec[j++]= (short) (red[i]*257);
+			colorSpec[j++]= (short) (green[i]*257);
+			colorSpec[j++]= (short) (blue[i]*257);
+		}
+		OS.setColorTable(pixmapHandle, colorSpec);
+	}
+	
+	private static void setColorTable(int pixmapHandle, Color[] table) {
+		int n= table.length;
+		short[] colorSpec= new short[n*4];
+		int j= 0;
+		for (int i= 0; i < n; i++) {
+			colorSpec[j++]= (short) i;
+			colorSpec[j++]= (short) (table[i].getRed() * 257);
+			colorSpec[j++]= (short) (table[i].getGreen() * 257);
+			colorSpec[j++]= (short) (table[i].getBlue() * 257);
+		}
+		OS.setColorTable(pixmapHandle, colorSpec);
+	}
+	
+	private static int getDepth(int bitmapHandle) {
+		if ((OS.getRowBytes(bitmapHandle) & 0x8000) != 0)	// Pixmap
+			return OS.GetPixDepth(bitmapHandle);
+		return 1;
+	}
+	
+	private static boolean isBitMap(int handle) {
+		return (OS.getRowBytes(handle) & 0x8000) == 0;
+	}
+	
+	private static int duplicate(int handle) {
+		if (isBitMap(handle))
+			return OS.duplicateBitMap(handle);
+		return OS.duplicatePixMap(handle);
+	}
+	
+	private static int getRedMask(int depth) {
+		switch (depth) {
+		case 16:
+			return 0x7C00;
+		case 24:
+		case 32:
+			return 0xff0000;
+		}
+		return -1;
+	}
+	
+	private static int getGreenMask(int depth) {
+		switch (depth) {
+		case 16:
+			return 0x03E0;
+		case 24:
+		case 32:
+			return 0x00ff00;
+		}
+		return -1;
+	}
+	
+	private static int getBlueMask(int depth) {
+		switch (depth) {
+		case 16:
+			return 0x001F;
+		case 24:
+		case 32:
+			return 0x0000ff;
+		}
+		return -1;
 	}
 }
