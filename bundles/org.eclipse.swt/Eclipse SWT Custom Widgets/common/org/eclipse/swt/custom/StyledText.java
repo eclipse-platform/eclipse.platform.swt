@@ -6906,7 +6906,7 @@ public void setSelection(int start) {
  * </ul>
  * @exception IllegalArgumentException <ul>
  *   <li>ERROR_NULL_ARGUMENT when point is null</li>
- *   <li>ERROR_INVALID_RANGE when start and end is outside the widget content
+ *   <li>ERROR_INVALID_RANGE when start or end is outside the widget content
  *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
  * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul> 
@@ -6933,7 +6933,7 @@ public void setSelection(Point point) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * @exception IllegalArgumentException <ul>
- *   <li>ERROR_INVALID_RANGE when start and end is outside the widget content
+ *   <li>ERROR_INVALID_RANGE when start or end is outside the widget content
  *   <li>ERROR_INVALID_ARGUMENT when either the start or the end of the selection range is inside a 
  * multi byte line delimiter (and thus neither clearly in front of or after the line delimiter)
  * </ul>
