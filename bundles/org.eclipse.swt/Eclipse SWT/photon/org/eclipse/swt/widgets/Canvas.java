@@ -21,8 +21,7 @@ public Canvas (Composite parent, int style) {
 }
 
 public Caret getCaret () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return caret;
 }
 
@@ -115,8 +114,7 @@ void releaseWidget () {
 }
 
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
@@ -130,8 +128,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	boolean isVisible = (caret != null) && (caret.isVisible ());
 	if (isVisible) caret.hideCaret ();
 	super.setBounds (x, y, width, height, move, resize);
@@ -139,8 +136,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 }
 
 public void setCaret (Caret caret) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Caret newCaret = caret;
 	Caret oldCaret = this.caret;
 	this.caret = newCaret;

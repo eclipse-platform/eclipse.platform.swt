@@ -23,8 +23,7 @@ static int checkStyle (int style) {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) {
 		int border = getBorderWidth ();
 		int width = border * 2, height = border * 2;
@@ -147,8 +146,7 @@ void createHandle (int index) {
 }
 
 public int getAlignment () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return 0;
 	if ((style & SWT.LEFT) != 0) return SWT.LEFT;
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
@@ -157,8 +155,7 @@ public int getAlignment () {
 }
 
 public Image getImage () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return image;
 }
 
@@ -167,8 +164,7 @@ String getNameText () {
 }
 
 public String getText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
 }
@@ -205,8 +201,7 @@ void releaseWidget () {
 }
 
 public void setAlignment (int alignment) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
@@ -232,8 +227,7 @@ public void setFont (Font font) {
 }
 
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	this.image = image;
 	int imageHandle = 0;
@@ -247,8 +241,7 @@ public void setImage (Image image) {
 }
 
 public void setText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;

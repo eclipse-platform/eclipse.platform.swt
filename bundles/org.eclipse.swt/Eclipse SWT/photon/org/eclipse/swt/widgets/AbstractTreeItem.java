@@ -110,7 +110,7 @@ void deselectAll() {
 	}
 }
 public void dispose() {
-	if (!isValidWidget ()) return;
+	if (isDisposed()) return;
 	Vector children = getChildren();
 	AbstractTreeItem child;
 	while (children.size() > 0) {		// TreeItem objects are removed from vector during dispose
@@ -141,18 +141,14 @@ Vector getChildren() {
  * 	false - the receiver is collapsed, making its children invisible 
  */
 public boolean getExpanded() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return isExpanded;
 }
 /**
  * Answer the number of children.
  */
 public int getItemCount() {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-
+	checkWidget();
 	return getChildren().size();
 }
 /**

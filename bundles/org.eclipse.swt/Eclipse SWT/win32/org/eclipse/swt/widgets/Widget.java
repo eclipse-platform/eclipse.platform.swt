@@ -240,6 +240,7 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the parent is disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
@@ -248,6 +249,7 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /**
@@ -307,7 +309,7 @@ protected void checkSubclass () {
  */
 protected void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
 /**
@@ -359,7 +361,7 @@ public void dispose () {
 	* Note:  It is valid to attempt to dispose a widget
 	* more than once.  If this happens, fail silently.
 	*/
-	if (!isValidWidget ()) return;
+	if (!isDisposed ()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	releaseChild ();
 	releaseWidget ();
@@ -579,21 +581,6 @@ boolean isValidSubclass () {
  */
 boolean isValidThread () {
 	return getDisplay ().isValidThread ();
-}
-
-/**
- * Returns <code>true</code> if the widget is not disposed,
- * and <code>false</code> otherwise.
- * <p>
- * Note: This method is no longer required and will be deprecated.
- * </p>
- *
- * @return <code>true</code> when the widget is not disposed and <code>false</code> otherwise
- *
- * @see #isDisposed
- */
-boolean isValidWidget () {
-	return (state & DISPOSED) == 0;
 }
 
 /*

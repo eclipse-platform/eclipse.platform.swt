@@ -51,8 +51,7 @@ protected void checkSubclass () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Point size;
 	if (layout != null) {
 		if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
@@ -134,8 +133,7 @@ void createScrolledHandle (int parentHandle) {
 }
 
 public Rectangle getClientArea () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (scrolledHandle == 0) return super.getClientArea ();
 	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (handle, area);
@@ -215,8 +213,7 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 }
 
 public Control [] getChildren () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return _getChildren ();
 }
 
@@ -231,8 +228,7 @@ int getChildrenCount () {
 }
 
 public Layout getLayout () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return layout;
 }
 
@@ -251,8 +247,7 @@ void hookEvents () {
 }
 
 public void layout () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	layout (true);
 }
 
@@ -268,8 +263,7 @@ Point minimumSize () {
 }
 
 public void layout (boolean changed) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (layout == null) return;
 	int count = getChildrenCount ();
 	if (count == 0) return;
@@ -455,8 +449,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 }
 
 public void setLayout (Layout layout) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	this.layout = layout;
 }
 
