@@ -1018,10 +1018,50 @@ public void drawRectangle (Rectangle rect) {
  */
 public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
-	int oldBrush = OS.SelectObject(handle, nullBrush);
-	OS.RoundRect(handle, x,y,x+width,y+height, arcWidth, arcHeight);
-	OS.SelectObject(handle,oldBrush);
+	if (OS.IsWinCE) {
+		/* 
+		* Bug in WinCE PPC.  On certain devices, RoundRect does not draw
+		* all the pixels.  The workaround is to draw a round rectangle
+		* using lines and arcs.
+		*/
+		if (width == 0 || height == 0) return;									
+		if (arcWidth == 0 || arcHeight == 0) {
+			drawRectangle(x, y, width, height);
+			return;
+		}
+		if (width < 0) {
+			x += width;
+			width = -width;
+		}
+		if (height < 0) {
+			y += height;
+			height = -height;
+		};
+		if (arcWidth < 0) arcWidth = -arcWidth;
+		if (arcHeight < 0) arcHeight = -arcHeight;
+		if (arcWidth > width) arcWidth = width;
+		if (arcHeight > height) arcHeight = height;
+				
+		if (arcWidth < width) {
+			drawLine(x+arcWidth/2, y, x+width-arcWidth/2, y);
+			drawLine(x+arcWidth/2, y+height-1, x+width-arcWidth/2, y+height-1);
+		}
+		if (arcHeight < height) {
+			drawLine(x, y+arcHeight/2, x, y+height-arcHeight/2);
+			drawLine(x+width-1, y+arcHeight/2, x+width-1, y+height-arcHeight/2);
+		}			
+		if (arcWidth != 0 && arcHeight != 0) {
+			drawArc(x, y, arcWidth, arcHeight, 90, 90);				
+			drawArc(x+width-arcWidth-1, y, arcWidth, arcHeight, 0, 90);
+			drawArc(x+width-arcWidth-1, y+height-arcHeight-1, arcWidth, arcHeight, 0, -90);
+			drawArc(x, y+height-arcHeight-1, arcWidth, arcHeight, 180, 90);
+		} 
+	} else {
+		int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
+		int oldBrush = OS.SelectObject(handle, nullBrush);
+		OS.RoundRect(handle, x,y,x+width,y+height, arcWidth, arcHeight);
+		OS.SelectObject(handle,oldBrush);
+	}
 }
 
 /** 
