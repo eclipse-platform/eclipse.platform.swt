@@ -96,4 +96,11 @@ public class MacRect {
 	public boolean contains(Point p) {
 		return p.x >= fData[1] && p.x < fData[3] && p.y >= fData[0] && p.y < fData[2];
 	}
+	
+	public void inset(int left, int top, int right, int bottom) {
+		fData[0]+= top;
+		fData[1]+= left;
+		fData[2]-= bottom;
+		fData[3]-= right;
+	}
 }
