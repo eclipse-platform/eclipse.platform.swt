@@ -145,6 +145,13 @@ void addColumn(TableColumn column) {
 				System.arraycopy (cellFont, index, temp, index+1, columnCount - index - 1);
 				item.cellFont = temp;
 			}
+			int [] textWidth = item.textWidthCache;
+			if (textWidth != null) {
+				int [] temp = new int [columnCount];
+				System.arraycopy (textWidth, 0, temp, 0, index);
+				System.arraycopy (textWidth, index, temp, index + 1, columnCount - index - 1);
+				item.textWidthCache = temp;
+			}
 		}
 	
 	}
@@ -2141,6 +2148,13 @@ void removeColumn(TableColumn column) {
 					System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
 					item.cellFont = temp;
 				}
+				int [] textWidth = item.textWidthCache;
+				if (textWidth != null) {
+					int [] temp = new int [columnCount];
+					System.arraycopy (textWidth, 0, temp, 0, index);
+					System.arraycopy (textWidth, index + 1, temp, index, columnCount - index);
+					item.textWidthCache = temp;
+				}
 			}		
 		}
 		else {
@@ -2616,7 +2630,9 @@ public void setFont(Font font) {
 	gc.dispose();
 	
 	for (int i = 0; i < itemCount; i++) {
-		itemChanged(getItem(i), 0, getClientArea().width);
+		TableItem item = getItem (i);
+		item.clearTextWidthCache ();
+		itemChanged (item, 0, getClientArea ().width);
 	}
 	setRedraw(true);						// re-enable redraw
 	getHeader().setFont(font);

@@ -51,7 +51,8 @@ public class TableItem extends SelectableItem {
 	Color foreground = null;
 	Font font = null;
 	Color [] cellBackground, cellForeground;
-	Font[] cellFont;
+	Font [] cellFont;
+	int [] textWidthCache;
 	boolean cached;
 	
 /**
@@ -171,7 +172,16 @@ void clear() {
 	font = null;
 	cellBackground = cellForeground = null;
 	cellFont = null;
+	textWidthCache = null;
 	cached = false;
+}
+void clearTextWidthCache() {
+	textWidthCache = null;
+}
+void clearTextWidthCache(int columnIndex) {
+	if (textWidthCache != null) {
+		textWidthCache [columnIndex] = 0;
+	}
 }
 public void dispose() {
 	if (isDisposed()) return;
@@ -188,6 +198,7 @@ void doDispose() {
 	font = null;
 	cellForeground = cellBackground = null;
 	cellFont = null;
+	textWidthCache = null;
 	super.doDispose();
 }
 
@@ -741,7 +752,7 @@ int getPreferredWidth(int index) {
 	int size = getImageStopX(index);
 	String text = getText(index);
 	if (text != null) {
-		size += getTextWidth(text) + getTextIndent(index) * 2 + 1;
+		size += getTextWidth (index) + getTextIndent (index) * 2 + 1;
 	}
 	return size;
 }
@@ -852,6 +863,20 @@ int getTextIndent(int columnIndex) {
 	}
 	return textIndent;
 }
+int getTextWidth (int columnIndex) {
+	if (textWidthCache == null) {
+		int count = Math.max (1, getParent ().getColumnCount ());
+		textWidthCache = new int [count];
+	}
+	String text = getText (columnIndex);
+	if (text != null && textWidthCache [columnIndex] == 0 && text.length () > 0) {
+		GC gc = new GC (getParent ());
+		gc.setFont (getFont (columnIndex));
+		textWidthCache [columnIndex] = gc.stringExtent (text).x;
+		gc.dispose ();
+	}
+	return textWidthCache [columnIndex];
+}
 /**
  * Answer the cached trimmed text for column 'columnIndex'. 
  * Answer null if it hasn't been calculated yet.
@@ -872,20 +897,6 @@ String getTrimmedText(int columnIndex) {
  */
 String [] getTrimmedTexts() {
 	return trimmedLabels;
-}
-/**
- * Answer the width of 'text' in pixel.
- * Answer 0 if 'text' is null.
- */
-int getTextWidth(String text) {
-	int textWidth = 0;
-	if (text != null) {
-		GC gc = new GC(getParent());
-		gc.setFont(getFont());
-		textWidth = gc.stringExtent(text).x;
-		gc.dispose();
-	}
-	return textWidth;
 }
 /**
  * Ensure that the image and label vectors have at least 
@@ -993,6 +1004,7 @@ void internalSetText(int columnIndex, String string) {
 		oldText = (String) labels.elementAt(columnIndex);
 		if (string.equals(oldText) == false) {
 			labels.setElementAt(string, columnIndex);
+			clearTextWidthCache(columnIndex);
 			reset(columnIndex);
 			notifyTextChanged(columnIndex, oldText == null);
 		}
@@ -1260,7 +1272,7 @@ public void setBackground (int index, Color color) {
  * 
  * @since 3.0
  */
-public void setFont (Font font){
+public void setFont (Font font) {
 	checkWidget ();
 	if (font != null && font.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
@@ -1268,6 +1280,7 @@ public void setFont (Font font){
 	if (this.font == font) return;
 	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
+	clearTextWidthCache ();
 	redraw ();
 }
 
@@ -1304,6 +1317,7 @@ public void setFont (int index, Font font) {
 	if (cellFont [index] == font) return;
 	if (cellFont [index] != null && cellFont [index].equals (font)) return;
 	cellFont [index] = font;
+	clearTextWidthCache (index);
 	redraw ();
 }
 
