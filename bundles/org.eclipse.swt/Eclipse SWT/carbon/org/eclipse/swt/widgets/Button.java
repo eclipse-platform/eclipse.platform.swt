@@ -17,7 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
-public  class Button extends Control {
+public class Button extends Control {
 	String text;
 	Image image;
 	
@@ -50,6 +50,7 @@ static int checkStyle (int style) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	// NEEDS WORK
+	// - empty string/icon case is broken
 	if ((style & SWT.ARROW) != 0) {
 		return new Point (10, 10);
 	}
@@ -58,7 +59,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.GetBestControlRect (handle, rect, base);
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	if ((style & SWT.CHECK) != 0 || (style & SWT.RADIO) != 0) {
+	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		height -= 17;
 	}
 	if ((style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
