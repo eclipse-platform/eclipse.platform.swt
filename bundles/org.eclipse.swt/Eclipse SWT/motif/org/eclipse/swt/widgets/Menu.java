@@ -10,6 +10,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -724,6 +725,11 @@ public void setLocation (int x, int y) {
 	int [] argList = {OS.XmNx, x, OS.XmNy, y};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	hasLocation = true;
+}
+public void setLocation (Point location) {
+	checkWidget();
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setLocation (location.x, location.y);
 }
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,

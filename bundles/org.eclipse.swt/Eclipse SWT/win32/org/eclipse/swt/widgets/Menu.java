@@ -9,6 +9,7 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
@@ -1124,6 +1125,32 @@ public void setLocation (int x, int y) {
 	this.x = x;
 	this.y = y;
 	hasLocation = true;
+}
+
+/**
+ * Sets the receiver's location to the point specified by
+ * the arguments which are relative to the display.
+ * <p>
+ * Note:  This is different from most widgets where the
+ * location of the widget is relative to the parent.
+ * </p>
+ *
+ * @param location the new location for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
+public void setLocation (Point location) {
+	checkWidget ();
+	if (location == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	setLocation (location.x, location.y);
 }
 
 /**

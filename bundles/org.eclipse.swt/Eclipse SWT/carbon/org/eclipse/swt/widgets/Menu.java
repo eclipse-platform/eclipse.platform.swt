@@ -7,9 +7,12 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.MenuTrackingData;
+ 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.graphics.*;
 
 public class Menu extends Widget {
 	int handle;
@@ -380,6 +383,12 @@ public void setLocation (int x, int y) {
 	this.x = x;
 	this.y = y;
 	hasLocation = true;
+}
+
+public void setLocation (Point location) {
+	checkWidget ();
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setLocation (location.x, location.y);
 }
 
 public void setVisible (boolean visible) {

@@ -7,10 +7,11 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class are user interface objects that contain
@@ -734,6 +735,12 @@ public void setLocation (int x, int y) {
 	this.x = x;
 	this.y = y;
 	hasLocation = true;	
+}
+
+public void setLocation (Point location) {
+	checkWidget();
+	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setLocation (location.x, location.y);
 }
 
 /**
