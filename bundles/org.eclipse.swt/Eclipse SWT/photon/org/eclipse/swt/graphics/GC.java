@@ -577,6 +577,7 @@ void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int
 	 	} 	
 		if (srcWidth != destWidth || srcHeight != destHeight) {
 			drawImage = scaleImage(image, phDrawImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight);
+			if (drawImage == 0) return;
 			srcX = (short)0;
 			srcY = (short)0;
 			srcWidth = (short)destWidth;
@@ -738,11 +739,11 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 	}
 	/* Scale the image */
 	int memImage = OS.PhCreateImage(null, (short)destWidth, (short)destHeight, type, phImage.palette, phImage.colors, 0);
-	if (memImage == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	if (memImage == 0) return 0;
 	int mc = OS.PmMemCreateMC(memImage, scale, trans);
 	if (mc == 0) {
 		Image.destroyImage(memImage);
-		SWT.error(SWT.ERROR_NO_HANDLES);
+		return 0;
 	}
 	int prevContext = OS.PmMemStart(mc);
 	OS.PgSetDrawBufferSize(DrawBufferSize);
@@ -775,13 +776,13 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 		int maskImage = OS.PhCreateImage(null, (short)destWidth, (short)destHeight, OS.Pg_IMAGE_PALETTE_BYTE, palettePtr, palette.length, 0);
 		if (maskImage == 0) {
 			Image.destroyImage(memImage);
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			return 0;
 		}
 		mc = OS.PmMemCreateMC(maskImage, scale, trans);
 		if (mc == 0) {
 			Image.destroyImage(maskImage);
 			Image.destroyImage(memImage);
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			return 0;
 		}
 		prevContext = OS.PmMemStart(mc);
 		OS.PgSetDrawBufferSize(DrawBufferSize);
@@ -815,7 +816,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 		int alphaPtr = OS.malloc(PgAlpha_t.sizeof);
 		if (alphaPtr == 0) {
 			Image.destroyImage(memImage);
-			SWT.error(SWT.ERROR_NO_HANDLES);
+			return 0;
 		}
 		
 		/* Scale alpha data */
@@ -835,7 +836,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 				OS.free(palettePtr);
 				OS.free(alphaPtr);
 				Image.destroyImage(memImage);
-				SWT.error(SWT.ERROR_NO_HANDLES);
+				return 0;
 			}
 			mc = OS.PmMemCreateMC(alphaImage, scale, trans);
 			if (mc == 0) {
@@ -843,7 +844,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 				OS.free(alphaPtr);
 				Image.destroyImage(alphaImage);
 				Image.destroyImage(memImage);
-				SWT.error(SWT.ERROR_NO_HANDLES);
+				return 0;
 			}
 			prevContext = OS.PmMemStart(mc);
 			OS.PgSetPalette(palettePtr, 0, (short)0, (short)palette.length, OS.Pg_PALSET_SOFT, 0);
