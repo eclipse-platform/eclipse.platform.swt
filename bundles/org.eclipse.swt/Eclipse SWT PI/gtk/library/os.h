@@ -30,6 +30,7 @@
 #include <pango/pango-font.h>
 #include <string.h>
 #include <dlfcn.h>
+#include <locale.h>
 
 #ifndef GDK_WINDOWING_X11
 

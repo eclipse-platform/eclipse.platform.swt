@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 979;
-int OS_nativeFunctionCallCount[979];
+int OS_nativeFunctionCount = 980;
+int OS_nativeFunctionCallCount[980];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -938,6 +938,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1pango_1tab_1array_1set_1tab",
 	"g_1main_1context_1wakeup",
 	"getenv",
+	"localeconv_1decimal_1point",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GObjectClass_2",
 	"memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I",

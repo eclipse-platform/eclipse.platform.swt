@@ -84,4 +84,5 @@
 #define gtk_style_get_text(arg0, arg1, arg2) *arg2 = (arg0)->text[arg1]
 #define gtk_style_get_xthickness(arg0) (arg0)->xthickness
 #define gtk_style_get_ythickness(arg0) (arg0)->ythickness
+#define localeconv_decimal_point() localeconv()->decimal_point
 
