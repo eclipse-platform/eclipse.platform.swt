@@ -644,6 +644,7 @@ public boolean isVisible () {
 int menuPositionProc (int menu, int x, int y, int push_in, int user_data) {
 	if (x != 0) OS.memmove (x, new int [] {this.x}, 4);
 	if (y != 0) OS.memmove (y, new int [] {this.y}, 4);
+	if (push_in != 0) OS.memmove (push_in, new int [] {1}, 4);
 	return 0;
 }
 
