@@ -38,6 +38,6 @@ public final class GCData {
 	public int style;
 	
 	public int paintEvent;
-	public int damageRgn;
+	public int visibleRgn;
 	public int control;
 }

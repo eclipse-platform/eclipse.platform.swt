@@ -1496,11 +1496,11 @@ void setCGClipping () {
 		int rgn = OS.NewRgn();
 		OS.CopyRgn(data.clipRgn, rgn);
 		OS.OffsetRgn(rgn, rect.left, rect.top);
-		OS.SectRgn(data.damageRgn, rgn, rgn);
+		OS.SectRgn(data.visibleRgn, rgn, rgn);
 		OS.ClipCGContextToRegion(handle, portRect, rgn);
 		OS.DisposeRgn(rgn);
 	} else {
-		OS.ClipCGContextToRegion(handle, portRect, data.damageRgn);
+		OS.ClipCGContextToRegion(handle, portRect, data.visibleRgn);
 	}
 	OS.CGContextScaleCTM(handle, 1, -1);
 	OS.CGContextTranslateCTM(handle, rect.left, -portHeight + rect.top);

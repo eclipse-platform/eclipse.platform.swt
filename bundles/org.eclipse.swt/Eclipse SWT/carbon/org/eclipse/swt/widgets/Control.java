@@ -366,13 +366,13 @@ void hookEvents () {
 public int internal_new_GC (GCData data) {
 	checkWidget();
 	int [] buffer = new int [1];
-	int context = 0, damageRgn = 0;
+	int context = 0, paintRgn = 0, visibleRgn = 0;
 	if (data.paintEvent != 0) {
 		int theEvent = data.paintEvent;
 		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
 		context = buffer [0];	
 		OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, buffer);
-		damageRgn = buffer [0];
+		visibleRgn = paintRgn = buffer [0];
 	}
 	if (context == 0) {
 		int window = OS.GetControlOwner (handle);
@@ -389,8 +389,8 @@ public int internal_new_GC (GCData data) {
 			int portHeight = portRect.bottom - portRect.top;
 			OS.CGContextScaleCTM (context, 1, -1);
 			OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
-			if (damageRgn != 0) OS.SectRgn (damageRgn, clipRgn, clipRgn);
-			damageRgn = clipRgn;
+			if (paintRgn != 0) OS.SectRgn (paintRgn, clipRgn, clipRgn);
+			visibleRgn = clipRgn;
 		}
 	}
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
@@ -400,8 +400,10 @@ public int internal_new_GC (GCData data) {
 		data.foreground = foreground != null ? foreground : display.getSystemColor (SWT.COLOR_BLACK).handle;
 		data.background = background != null ? background : display.getSystemColor (SWT.COLOR_WHITE).handle;
 //		data.font = ;
-		data.damageRgn = damageRgn;
+		data.visibleRgn = visibleRgn;
 		data.control = handle;
+	} else {
+		if (visibleRgn != paintRgn) OS.DisposeRgn (visibleRgn);
 	}
 	return context;
 }
@@ -417,9 +419,9 @@ public void internal_dispose_GC (int context, GCData data) {
 		OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, buffer);
 		paintRgn = buffer [0];
 	}
-	if (data.damageRgn != paintRgn) {
-		OS.DisposeRgn (data.damageRgn);
-		data.damageRgn = 0;
+	if (data.visibleRgn != paintRgn) {
+		OS.DisposeRgn (data.visibleRgn);
+		data.visibleRgn = 0;
 	}
 	if (paintContext != context) {
 		OS.CGContextFlush (context);
