@@ -515,7 +515,7 @@ int /*long*/ gtk_output (int /*long*/ widget) {
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
 	String value = String.valueOf ((int)adjustment.value);
-	int ptr = OS.gtk_entry_get_text (handle);
+	int /*long*/ ptr = OS.gtk_entry_get_text (handle);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
 		if (length > 0) {
