@@ -790,7 +790,7 @@ public void drawOval (int x, int y, int width, int height) {
 	// set the background color, we may not have to do this work?
 	int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
 	int oldBrush = OS.SelectObject(handle, nullBrush);
-	OS.Ellipse(handle, x,y,x+width,y+height);
+	OS.Ellipse(handle, x,y,x+width+1,y+height+1);
 	OS.SelectObject(handle,oldBrush);
 }
 
@@ -1148,7 +1148,7 @@ public void fillOval (int x, int y, int width, int height) {
 	/* Assumes that user sets the background color. */
 	int nullPen = OS.GetStockObject(OS.NULL_PEN);
 	int oldPen = OS.SelectObject(handle, nullPen);
-	OS.Ellipse(handle, x,y,x+width,y+height);
+	OS.Ellipse(handle, x,y,x+width+1,y+height+1);
 	OS.SelectObject(handle,oldPen);
 }
 
