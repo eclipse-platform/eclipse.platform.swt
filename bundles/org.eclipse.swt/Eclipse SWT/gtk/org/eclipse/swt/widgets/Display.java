@@ -293,10 +293,10 @@ protected void checkDevice () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
-synchronized void checkDisplay () {
+static synchronized void checkDisplay (Thread thread) {
 	for (int i=0; i<Displays.length; i++) {
 		if (Displays [i] != null && Displays [i].thread == thread) {
-			error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		}
 	}
 }
@@ -306,9 +306,8 @@ protected void checkSubclass () {
 }
 
 protected void create (DeviceData data) {
-	checkDisplay ();
 	checkSubclass ();
-	thread = Thread.currentThread ();
+	checkDisplay(thread = Thread.currentThread ());
 	createDisplay (data);
 	register ();
 	if (Default == null) Default = this;
@@ -633,7 +632,7 @@ public static synchronized Display getDefault () {
 static boolean isValidClass (Class clazz) {
 	String name = clazz.getName ();
 	int index = name.lastIndexOf ('.');
-	return name.substring (0, index + 1).equals (PACKAGE_NAME);
+	return name.substring (0, index + 1).equals (PACKAGE_PREFIX);
 }
 
 /**
