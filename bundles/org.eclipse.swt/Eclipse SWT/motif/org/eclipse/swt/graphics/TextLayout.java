@@ -215,12 +215,11 @@ void computeRuns () {
 
 public void dispose () {
 	if (device == null) return;
-	runs = null;
+	freeRuns();
 	font = null;
 	text = null;
 	tabs = null;
 	styles = null;
-	runs = null;
 	lineOffset = null;
 	lineY = null;
 	lineWidth = null;
@@ -251,60 +250,66 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	final Color foreground = gc.getForeground();
 	final Color background = gc.getBackground();
 	final Font gcFont = gc.getFont();
+	Rectangle clip = gc.getClipping();
 	for (int line=0; line<runs.length; line++) {
 		int drawX = x, drawY = y + lineY[line];
 		StyleItem[] lineRuns = runs[line];
-		int baseline = 0;
-		for (int i = 0; i < lineRuns.length; i++) {
-			baseline = Math.max(baseline, lineRuns[i].baseline);
-		}
-		int lineHeight = lineY[line+1] - lineY[line];
 		if (wrapWidth != -1) {
 			switch (alignment) {
 				case SWT.CENTER: drawX += (wrapWidth - lineWidth[line]) / 2; break;
 				case SWT.RIGHT: drawX += wrapWidth - lineWidth[line]; break;
 			}
 		}
+		if (drawX > clip.x + clip.width) continue;
+		if (drawX + lineWidth[line] < clip.x) continue;
+		int baseline = 0;
+		for (int i = 0; i < lineRuns.length; i++) {
+			baseline = Math.max(baseline, lineRuns[i].baseline);
+		}
+		int lineHeight = lineY[line+1] - lineY[line];
 		for (int i = 0; i < lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
 			if (run.length == 0) continue;
-			if (!run.lineBreak || run.softBreak) {
-				String string = text.substring(run.start, run.start + run.length);
-				int drawRunY = drawY + (baseline - run.baseline);
-				int end = run.start + run.length - 1;
-				gc.setFont(getItemFont(run));
-				boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
-				if (fullSelection) {
-					gc.setBackground(selectionBackground);
-					gc.fillRectangle(drawX, drawY, run.width, lineHeight);
-					if (!run.tab) {
-						gc.setForeground(selectionForeground);
-						gc.drawString(string, drawX, drawRunY, true);
-					}
-				} else {
-					if (run.style != null && run.style.background != null) {
-						Color bg = run.style.background;
-						gc.setBackground(bg);
-						gc.fillRectangle(drawX, drawRunY, run.width, run.height);
-					}
-					if (!run.tab) {
-						Color fg = foreground;
-						if (run.style != null && run.style.foreground != null) fg = run.style.foreground;
-						gc.setForeground(fg);
-						gc.drawString(string, drawX, drawRunY, true);
-						boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
-						if (partialSelection) {
-							int selStart = Math.max(selectionStart, run.start);
-							int selEnd = Math.min(selectionEnd, end);
-							string = text.substring(run.start, selStart);
-							int selX = drawX + gc.stringExtent(string).x;
-							string = text.substring(selStart, selEnd + 1);
-							int selWidth = gc.stringExtent(string).x;
-							gc.setBackground(selectionBackground);
-							gc.fillRectangle(selX, drawY, selWidth, lineHeight);
-							if (fg != selectionForeground) {
-								gc.setForeground(selectionForeground);
-								gc.drawString(string, selX, drawRunY, true);
+			if (drawX > clip.x + clip.width) break;
+			if (drawX + run.width >= clip.x) {
+				if (!run.lineBreak || run.softBreak) {
+					String string = text.substring(run.start, run.start + run.length);
+					int drawRunY = drawY + (baseline - run.baseline);
+					int end = run.start + run.length - 1;
+					gc.setFont(getItemFont(run));
+					boolean fullSelection = hasSelection && selectionStart <= run.start && selectionEnd >= end;
+					if (fullSelection) {
+						gc.setBackground(selectionBackground);
+						gc.fillRectangle(drawX, drawY, run.width, lineHeight);
+						if (!run.tab) {
+							gc.setForeground(selectionForeground);
+							gc.drawString(string, drawX, drawRunY, true);
+						}
+					} else {
+						if (run.style != null && run.style.background != null) {
+							Color bg = run.style.background;
+							gc.setBackground(bg);
+							gc.fillRectangle(drawX, drawRunY, run.width, run.height);
+						}
+						if (!run.tab) {
+							Color fg = foreground;
+							if (run.style != null && run.style.foreground != null) fg = run.style.foreground;
+							gc.setForeground(fg);
+							gc.drawString(string, drawX, drawRunY, true);
+							boolean partialSelection = hasSelection && !(selectionStart > end || run.start > selectionEnd);
+							if (partialSelection) {
+								int selStart = Math.max(selectionStart, run.start);
+								int selEnd = Math.min(selectionEnd, end);
+								string = text.substring(run.start, selStart);
+								int selX = drawX + gc.stringExtent(string).x;
+								string = text.substring(selStart, selEnd + 1);
+								int selWidth = gc.stringExtent(string).x;
+								gc.setBackground(selectionBackground);
+								gc.fillRectangle(selX, drawY, selWidth, lineHeight);
+								if (fg != selectionForeground) {
+									gc.setForeground(selectionForeground);
+									gc.drawString(string, selX, drawRunY, true);
+								}
 							}
 						}
 					}
@@ -316,6 +321,10 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	gc.setForeground(foreground);
 	gc.setBackground(background);
 	gc.setFont(gcFont);
+}
+
+void freeRuns() {
+	runs = null;
 }
 
 public int getAlignment () {
@@ -793,7 +802,9 @@ public void setAlignment (int alignment) {
 
 public void setFont (Font font) {
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	runs = null;
+	if (this.font == font) return;
+	if (font != null && font.equals(this.font)) return;
+	freeRuns();
 	this.font = font;
 	defaultFontHeight = getFontHeigth(font != null ? font : device.getSystemFont());
 }
@@ -801,7 +812,8 @@ public void setFont (Font font) {
 public void setSpacing (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	runs = null;
+	if (this.lineSpacing == spacing) return;
+	freeRuns();
 	this.lineSpacing = spacing;
 }
 
@@ -821,31 +833,50 @@ public void setStyle (TextStyle style, int start, int end) {
 	if (start > end) return;
 	start = Math.min(Math.max(0, start), length - 1);
 	end = Math.min(Math.max(0, end), length - 1);
-	runs = null;
+	int low = -1;
+	int high = styles.length;
+	while (high - low > 1) {
+		int index = (high + low) / 2;
+		if (start <= styles[index].start) {
+			high = index;
+		} else {
+			low = index;
+		}
+	}
+	if (0 <= high && high < styles.length) {
+		StyleItem item = styles[high];
+		if (item.start == start && styles[high + 1].start - 1 == end) {
+			if (style == item.style) return;
+			if (style != null && style.equals(item.style)) return;
+		}
+	}
+	freeRuns();
 	int count = 0, i;
 	StyleItem[] newStyles = new StyleItem[styles.length + 2];
-	StyleItem previousStyle = null;
 	for (i = 0; i < styles.length; i++) {
 		StyleItem item = styles[i];
-		if (item.start >= start) {
-			if (item.start == start) previousStyle = item;
-			break;
-		}
+		if (item.start >= start) break;
 		newStyles[count++] = item;
 	}
 	StyleItem newItem = new StyleItem();
 	newItem.start = start;
 	newItem.style = style;
 	newStyles[count++] = newItem;
-	for (; i<styles.length; i++) {
-		StyleItem item = styles[i];
-		if (item.start >= end) break;
-		previousStyle = null;
+	if (styles[i].start > end) {
+		newItem = new StyleItem();
+		newItem.start = end + 1;
+		newItem.style = styles[i -1].style;
+		newStyles[count++] = newItem;
+	} else {
+		for (; i<styles.length; i++) {
+			StyleItem item = styles[i];
+			if (item.start > end) break;
+		}
+		if (end != styles[i].start - 1) {
+			i--;
+			styles[i].start = end + 1;
+		}
 	}
-	newItem = new StyleItem();
-	newItem.style = previousStyle != null ? previousStyle.style : styles[Math.max(0, i - 1)].style;
-	newItem.start = end + 1;
-	newStyles[count++] = newItem;
 	for (; i<styles.length; i++) {
 		StyleItem item = styles[i];
 		if (item.start > end) newStyles[count++] = item;
@@ -860,24 +891,37 @@ public void setStyle (TextStyle style, int start, int end) {
 
 public void setTabs (int[] tabs) {
 	checkLayout();
-	runs = null;
+	if (this.tabs == null && tabs == null) return;
+	if (this.tabs != null && tabs !=null) {
+		if (this.tabs.length == tabs.length) {
+			int i;
+			for (i = 0; i <tabs.length; i++) {
+				if (this.tabs[i] != tabs[i]) break;
+			}
+			if (i == tabs.length) return;
+		}
+	}
+	freeRuns();
 	this.tabs = tabs;
 } 
 
 public void setText (String text) {
 	checkLayout();
 	if (text == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	runs = null;
+	if (text.equals(this.text)) return;
+	freeRuns();
 	this.text = text;
+	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
-	styles[1] = new StyleItem();
-	styles[styles.length - 1].start = text.length();
+	styles[1] = new StyleItem();	
+	styles[1].start = text.length();
 }
 
 public void setWidth (int width) {
 	checkLayout();
 	if (width < -1 || width == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	runs = null;
+	if (this.wrapWidth == width) return;
+	freeRuns();
 	this.wrapWidth = width;
 }
 }

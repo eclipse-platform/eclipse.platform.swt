@@ -29,7 +29,7 @@ public class TextLayout {
 	Font font;
 	String text;
 	StyleItem[] styles;
-	int /*long*/ layout, context;
+	int /*long*/ layout, context, attrList;
 	
 public TextLayout (Device device) {
 	if (device == null) device = Device.getDevice();
@@ -53,10 +53,58 @@ void checkLayout() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 }
 
+void computeRuns () {
+	if (attrList != 0) return;
+	if (styles.length == 2 && styles[0].style == null) return;
+	int /*long*/ ptr = OS.pango_layout_get_text(layout);
+	attrList = OS.pango_attr_list_new();	
+	PangoAttribute attribute = new PangoAttribute();	
+	for (int i = 0; i < styles.length - 1; i++) {
+		StyleItem styleItem = styles[i];
+		TextStyle style = styleItem.style; 
+		if (style == null) continue;
+		int start = styleItem.start;
+		int end = styles[i+1].start - 1;
+		int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
+		int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
+		Font font = style.font;
+		if (font != null && !font.isDisposed()) {
+			int /*long*/ attr = OS.pango_attr_font_desc_new (font.handle);
+			OS.memmove (attribute, attr, PangoAttribute.sizeof);
+			attribute.start_index = byteStart;
+			attribute.end_index = byteEnd;
+			OS.memmove (attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);
+		}
+		Color foreground = style.foreground;
+		if (foreground != null && !foreground.isDisposed()) {
+			GdkColor fg = foreground.handle;
+			int /*long*/ attr = OS.pango_attr_foreground_new(fg.red, fg.green, fg.blue);
+			OS.memmove (attribute, attr, PangoAttribute.sizeof);
+			attribute.start_index = byteStart;
+			attribute.end_index = byteEnd;
+			OS.memmove (attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);
+		}
+		Color background = style.background;
+		if (background != null && !background.isDisposed()) {
+			GdkColor bg = background.handle;
+			int /*long*/ attr = OS.pango_attr_background_new(bg.red, bg.green, bg.blue);
+			OS.memmove (attribute, attr, PangoAttribute.sizeof);
+			attribute.start_index = byteStart;
+			attribute.end_index = byteEnd;
+			OS.memmove (attr, attribute, PangoAttribute.sizeof);
+			OS.pango_attr_list_insert(attrList, attr);
+		}
+	}
+	OS.pango_layout_set_attributes(layout, attrList);
+}
+
 public void dispose() {
 	if (layout == 0) return;
 	font = null;
 	text = null;
+	freeRuns();
 	if (layout != 0) OS.g_object_unref(layout);
 	layout = 0;
 	if (context != 0) OS.g_object_unref(context);
@@ -67,6 +115,7 @@ public void dispose() {
 
 public void draw(GC gc, int x, int y) {
 	checkLayout ();
+	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.gdk_draw_layout(gc.data.drawable, gc.handle, x, y, layout);
@@ -74,6 +123,7 @@ public void draw(GC gc, int x, int y) {
 
 public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
 	checkLayout ();
+	computeRuns();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (selectionForeground != null && selectionForeground.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -110,6 +160,13 @@ public void draw(GC gc, int x, int y, int selectionStart, int selectionEnd, Colo
 	}
 }
 
+void freeRuns() {
+	if (attrList == 0) return;
+	OS.pango_layout_set_attributes(layout, 0);
+	OS.pango_attr_list_unref(attrList);
+	attrList = 0;
+}
+
 public int getAlignment() {
 	checkLayout();
 	int align = OS.pango_layout_get_alignment(layout);
@@ -122,6 +179,7 @@ public int getAlignment() {
 
 public Rectangle getBounds() {
 	checkLayout();
+	computeRuns();
 	int[] w = new int[1], h = new int[1];
 	OS.pango_layout_get_size(layout, w, h);
 	int wrapWidth = OS.pango_layout_get_width(layout);
@@ -132,6 +190,7 @@ public Rectangle getBounds() {
 
 public Rectangle getBounds(int start, int end) {
 	checkLayout();
+	computeRuns();
 	int length = text.length();
 	if (length == 0) return new Rectangle(0, 0, 0, 0);
 	if (start > end) return new Rectangle(0, 0, 0, 0);
@@ -156,6 +215,7 @@ public Font getFont () {
 
 public int getLevel(int offset) {
 	checkLayout();
+	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int /*long*/ iter = OS.pango_layout_get_iter(layout);
@@ -182,6 +242,7 @@ public int getLevel(int offset) {
 
 public Rectangle getLineBounds(int lineIndex) {
 	checkLayout();
+	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int /*long*/ iter = OS.pango_layout_get_iter(layout);
@@ -199,11 +260,13 @@ public Rectangle getLineBounds(int lineIndex) {
 
 public int getLineCount() {
 	checkLayout ();
+	computeRuns();
 	return OS.pango_layout_get_line_count(layout);
 }
 
 public int getLineIndex(int offset) {
 	checkLayout ();
+	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int line = 0;
@@ -221,6 +284,7 @@ public int getLineIndex(int offset) {
 
 public FontMetrics getLineMetrics (int lineIndex) {
 	checkLayout ();
+	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int /*long*/ font = this.font != null ? this.font.handle : device.getSystemFont().handle;
@@ -268,6 +332,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 
 public Point getLineOffsets(int lineIndex) {
 	checkLayout ();
+	computeRuns();
 	int lineCount = OS.pango_layout_get_line_count(layout);
 	if (!(0 <= lineIndex && lineIndex < lineCount)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	PangoLayoutLine line = new PangoLayoutLine();
@@ -285,6 +350,7 @@ public Point getLineOffsets(int lineIndex) {
 
 public Point getLocation(int offset, int trailing) {
 	checkLayout();
+	computeRuns();
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int /*long*/ ptr = OS.pango_layout_get_text(layout);
@@ -335,6 +401,7 @@ public int getOffset(Point point, int[] trailing) {
 
 public int getOffset(int x, int y, int[] trailing) {
 	checkLayout();
+	computeRuns();
 	if (trailing != null && trailing.length < 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int[] index = new int[1];
 	int[] piTrailing = new int[1];
@@ -423,6 +490,8 @@ public void setAlignment (int alignment) {
 public void setFont (Font font) {
 	checkLayout ();
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (this.font == font) return;
+	if (font != null && font.equals(this.font)) return;
 	this.font = font;
 	OS.pango_layout_set_font_description(layout, font != null ? font.handle : 0);
 }
@@ -434,6 +503,7 @@ public void setOrientation(int orientation) {
 	if (orientation == 0) return;
 	if ((orientation & SWT.LEFT_TO_RIGHT) != 0) orientation = SWT.LEFT_TO_RIGHT;
 	int baseDir = orientation == SWT.RIGHT_TO_LEFT ? OS.PANGO_DIRECTION_RTL : OS.PANGO_DIRECTION_LTR;
+	if (OS.pango_context_get_base_dir(context) == baseDir) return;
 	OS.pango_context_set_base_dir(context, baseDir);
 	OS.pango_layout_context_changed(layout);
 }
@@ -466,30 +536,50 @@ public void setStyle (TextStyle style, int start, int end) {
 		end++;
 	}
 
+	int low = -1;
+	int high = styles.length;
+	while (high - low > 1) {
+		int index = (high + low) / 2;
+		if (start <= styles[index].start) {
+			high = index;
+		} else {
+			low = index;
+		}
+	}
+	if (0 <= high && high < styles.length) {
+		StyleItem item = styles[high];
+		if (item.start == start && styles[high + 1].start - 1 == end) {
+			if (style == item.style) return;
+			if (style != null && style.equals(item.style)) return;
+		}
+	}
+	freeRuns();
 	int count = 0, i;
 	StyleItem[] newStyles = new StyleItem[styles.length + 2];
-	StyleItem previousStyle = null;
 	for (i = 0; i < styles.length; i++) {
 		StyleItem item = styles[i];
-		if (item.start >= start) {
-			if (item.start >= start) previousStyle = item; 
-			break;
-		}
+		if (item.start >= start) break;
 		newStyles[count++] = item;
 	}
 	StyleItem newItem = new StyleItem();
 	newItem.start = start;
 	newItem.style = style;
 	newStyles[count++] = newItem;
-	for (; i<styles.length; i++) {
-		StyleItem item = styles[i];
-		if (item.start >= end) break;
-		previousStyle = null;
+	if (styles[i].start > end) {
+		newItem = new StyleItem();
+		newItem.start = end + 1;
+		newItem.style = styles[i -1].style;
+		newStyles[count++] = newItem;
+	} else {
+		for (; i<styles.length; i++) {
+			StyleItem item = styles[i];
+			if (item.start > end) break;
+		}
+		if (end != styles[i].start - 1) {
+			i--;
+			styles[i].start = end + 1;
+		}
 	}
-	newItem = new StyleItem();
-	newItem.style = previousStyle != null ? previousStyle.style : styles[Math.max(0, i - 1)].style;
-	newItem.start = end + 1;
-	newStyles[count++] = newItem;
 	for (; i<styles.length; i++) {
 		StyleItem item = styles[i];
 		if (item.start > end) newStyles[count++] = item;
@@ -500,26 +590,6 @@ public void setStyle (TextStyle style, int start, int end) {
 	} else {
 		styles = newStyles;
 	}
-	
-	int /*long*/ ptr = OS.pango_layout_get_text(layout);
-	int byteStart = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, start) - ptr);
-	int byteEnd = (int)/*64*/(OS.g_utf8_offset_to_pointer(ptr, end + 1) - ptr);
-	int /*long*/[] attributes = style.createAttributes();
-	PangoAttribute attribute = new PangoAttribute();
-	int /*long*/ attribList = OS.pango_layout_get_attributes(layout);
-	boolean newList = attribList == 0;
-	if (newList) attribList = OS.pango_attr_list_new();
-	for (i = 0; i < attributes.length; i++) {
-		int /*long*/ attr = attributes[i];
-		if (attr == 0) break;
-		OS.memmove (attribute, attr, PangoAttribute.sizeof);
-		attribute.start_index = byteStart;
-		attribute.end_index = byteEnd;
-		OS.memmove (attr, attribute, PangoAttribute.sizeof);
-		OS.pango_attr_list_change(attribList, attr);
-	}
-	OS.pango_layout_set_attributes(layout, attribList);
-	if (newList) OS.pango_attr_list_unref(attribList);
 }
 
 public void setTabs(int[] tabs) {
@@ -541,10 +611,11 @@ public void setTabs(int[] tabs) {
 public void setText (String text) {
 	checkLayout ();
 	if (text == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (text.equals(this.text)) return;
+	freeRuns();
 	this.text = text;
 	byte[] buffer = Converter.wcsToMbcs(null, text, false);
 	OS.pango_layout_set_text (layout, buffer, buffer.length);
-	OS.pango_layout_set_attributes(layout, 0);
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
