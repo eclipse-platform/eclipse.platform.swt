@@ -1303,4 +1303,8 @@ public class OS {
 	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);
 	
 	public static native int GetIconRef(short vRefNum, int creator, int iconType, int[] iconRef);
+
+	// process manager
+	public static native int GetCurrentProcess(int[] psn);
+	public static native int SetFrontProcess(int[] psn);
 }

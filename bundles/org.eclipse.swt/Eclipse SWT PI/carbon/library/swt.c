@@ -3203,6 +3203,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetIconRef(JNIEnv
 	return rc;
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentProcess(JNIEnv *env, jclass zz,
+			jintArray psn) {
+	jint *sa= (*env)->GetIntArrayElements(env, psn, 0);
+	jint status= (jint) GetCurrentProcess((ProcessSerialNumberPtr)sa);
+	(*env)->ReleaseIntArrayElements(env, psn, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetFrontProcess(JNIEnv *env, jclass zz,
+			jintArray psn) {
+	jint *sa= (*env)->GetIntArrayElements(env, psn, 0);
+	jint status= (jint) SetFrontProcess((ProcessSerialNumberPtr)sa);
+	(*env)->ReleaseIntArrayElements(env, psn, sa, 0);
+	return status;
+}
+
 //---- utilities
 
 static Point point(JNIEnv *env, jshortArray a) {

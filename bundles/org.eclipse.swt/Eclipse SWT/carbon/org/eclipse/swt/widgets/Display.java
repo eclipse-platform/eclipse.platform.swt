@@ -426,7 +426,10 @@ void createDisplay (DeviceData data) {
 			OS.QDSwapTextFlags(OS.kQDUseCGTextRendering + OS.kQDUseCGTextMetrics);
 			if (OS.InitContextualMenus() != OS.kNoErr)
 				System.out.println("Display.createDisplay: error in OS.InitContextualMenus");
-		}
+			int[] psn= new int[2];
+			if (OS.GetCurrentProcess(psn) == OS.kNoErr)
+	    		OS.SetFrontProcess(psn);
+	    }
 		fgCarbonInitialized = true;
 	}
 	
