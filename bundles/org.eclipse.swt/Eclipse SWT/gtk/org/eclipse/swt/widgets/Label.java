@@ -436,8 +436,8 @@ void setForegroundColor (GdkColor color) {
  */
 public void setImage (Image image) {
 	checkWidget ();
-	this.image = image;
 	if ((style & SWT.SEPARATOR) != 0) return;
+	this.image = image;
 	if (image != null) {
 		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
 		OS.gtk_widget_hide (labelHandle);
