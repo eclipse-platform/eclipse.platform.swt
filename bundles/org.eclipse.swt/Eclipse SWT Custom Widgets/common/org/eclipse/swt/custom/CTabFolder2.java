@@ -161,6 +161,12 @@ public class CTabFolder2 extends Composite {
 	static final int[] TOP_RIGHT_OUTSIDE_CORNER = new int[] {-7,0, -7,1, -5,1, -4,2, -3,3, -2,4, -1,5, -1,7, 0,7};
 	static final int[] BOTTOM_LEFT_OUTSIDE_CORNER = new int[] {0,-7, 1,-7, 1,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-1, 7,-1, 7,0};
 	static final int[] BOTTOM_RIGHT_OUTSIDE_CORNER = new int[] {-7,0, -7,-1, -6,-1, -5,-2, -4,-3, -3,-4, -2,-5, -1,-6, -1,-7, 0,-7};
+	
+	static final int SELECTION_FOREGROUND = SWT.COLOR_TITLE_FOREGROUND;
+	static final int SELECTION_BACKGROUND = SWT.COLOR_TITLE_BACKGROUND;
+	static final int BORDER_COLOR = SWT.COLOR_LIST_SELECTION;
+	static final int FOREGROUND = SWT.COLOR_TITLE_INACTIVE_FOREGROUND;
+	static final int BACKGROUND = SWT.COLOR_TITLE_INACTIVE_BACKGROUND;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -201,11 +207,11 @@ public CTabFolder2(Composite parent, int style) {
 	
 	//set up default colors
 	Display display = getDisplay();
-	selectionForeground = display.getSystemColor(SWT.COLOR_TITLE_FOREGROUND);
-	selectionBackground = display.getSystemColor(SWT.COLOR_TITLE_BACKGROUND);
-	borderColor = display.getSystemColor(SWT.COLOR_LIST_SELECTION);
-	setForeground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND));
-	setBackground(display.getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND));
+	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
+	selectionBackground = display.getSystemColor(SELECTION_BACKGROUND);
+	borderColor = display.getSystemColor(BORDER_COLOR);
+	setForeground(display.getSystemColor(FOREGROUND));
+	setBackground(display.getSystemColor(BACKGROUND));
 	
 	initAccessible();
 	
@@ -1862,7 +1868,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	removeListener(SWT.DefaultSelection, listener);	
 }
 public void setBackground (Color color) {
-	if (color == null) color = getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND);
+	if (color == null) color = getDisplay().getSystemColor(BACKGROUND);
 	super.setBackground(color);
 	redraw();
 }
@@ -1872,6 +1878,7 @@ public void setBackground (Color color) {
  */
 public void setBorderColor(Color color) {
 	checkWidget();
+	if (color == null) color = getDisplay().getSystemColor(BORDER_COLOR);
 	borderColor = color;
 	redraw();
 }
@@ -1978,7 +1985,7 @@ public void setFont(Font font) {
 	}
 }
 public void setForeground (Color color) {
-	if (color == null) color = getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND);
+	if (color == null) color = getDisplay().getSystemColor(FOREGROUND);
 	super.setForeground(color);
 	redraw();
 }
@@ -2238,7 +2245,7 @@ void setSelection(int index, boolean notify) {
 public void setSelectionBackground (Color color) {
 	checkWidget();
 	if (selectionBackground == color) return;
-	if (color == null) color = getForeground();
+	if (color == null) color = getDisplay().getSystemColor(SELECTION_BACKGROUND);
 	selectionBackground = color;
 	if (selectedIndex > -1) redrawTabArea();
 }
@@ -2365,7 +2372,7 @@ public void setSelectionBackground(Image image) {
 public void setSelectionForeground (Color color) {
 	checkWidget();
 	if (selectionForeground == color) return;
-	if (color == null) color = getForeground();
+	if (color == null) color = getDisplay().getSystemColor(SELECTION_FOREGROUND);
 	selectionForeground = color;
 	if (selectedIndex > -1) redrawTabArea();
 }
