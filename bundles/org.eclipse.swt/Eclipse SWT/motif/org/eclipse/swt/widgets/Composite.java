@@ -1,9 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
 */
 
 /**
@@ -18,7 +17,6 @@ package org.eclipse.swt.widgets;
 *
 **/
 
-/* Imports */
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -40,7 +38,6 @@ import org.eclipse.swt.graphics.*;
  *
  * @see Canvas
  */
-/* Class Definition */
 public class Composite extends Scrollable {
 	Layout layout;
 	int damagedRegion;

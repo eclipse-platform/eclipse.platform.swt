@@ -1,9 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
 */
 
 /**
@@ -27,7 +26,6 @@ package org.eclipse.swt.widgets;
 *
 **/
 
-/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.graphics.*;
@@ -49,7 +47,6 @@ import org.eclipse.swt.events.*;
  * within the SWT implementation.
  * </p>
  */
-/* Class Definition */
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	int fontList;

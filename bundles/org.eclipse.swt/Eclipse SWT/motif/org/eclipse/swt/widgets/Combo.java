@@ -1,9 +1,8 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
 */
 
 /**
@@ -23,7 +22,6 @@ package org.eclipse.swt.widgets;
 *
 **/
 
-/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
@@ -63,7 +61,6 @@ import org.eclipse.swt.events.*;
  *
  * @see List
  */
-/* Class Definition */
 public /*final*/ class Combo extends Composite {
 	/**
 	 * the operating system limit for the number of characters

@@ -1,11 +1,10 @@
 package org.eclipse.swt.widgets;
 
 /*
- * Licensed Materials - Property of IBM,
- * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
-/* Imports */
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -82,7 +81,6 @@ import org.eclipse.swt.graphics.*;
  * @see Shell
  * @see SWT
  */
-/* Class Definition */
 public class Decorations extends Canvas {
 	String label;
 	Image image;
