@@ -63,10 +63,20 @@ GC() {
  * </ul>
  */
 public GC(Drawable drawable) {
+	this(drawable, 0);
+}
+
+public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
+	data.style = checkStyle(style);
 	int gdkGC = drawable.internal_new_GC(data);
 	init(drawable, data, gdkGC);
+}
+
+static int checkStyle (int style) {
+	if ((style & SWT.LEFT_TO_RIGHT) != 0) style &= ~SWT.RIGHT_TO_LEFT;
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
 /**	 
@@ -1368,6 +1378,11 @@ public int getLineStyle() {
 public int getLineWidth() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineWidth;
+}
+
+public int getStyle () {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.style;
 }
 
 /** 

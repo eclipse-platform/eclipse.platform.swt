@@ -25,6 +25,7 @@ import org.eclipse.swt.*;
  */
 public final class GCData {
 	public Device device;
+	public int style;
 	public Image image;
 	public float[] foreground;
 	public float[] background;

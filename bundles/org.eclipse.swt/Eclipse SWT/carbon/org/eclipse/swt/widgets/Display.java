@@ -1491,6 +1491,10 @@ public int internal_new_GC (GCData data) {
 	int context = buffer [0];
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= SWT.LEFT_TO_RIGHT;
+		}
 		data.device = this;
 		data.background = new float [] {0, 0, 0, 1};
 		data.foreground = new float [] {1, 1, 1, 1};
