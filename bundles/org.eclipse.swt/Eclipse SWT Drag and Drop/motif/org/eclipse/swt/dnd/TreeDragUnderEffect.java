@@ -13,42 +13,53 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.*;
 
 class TreeDragUnderEffect extends DragUnderEffect {
-
 	private Tree tree;
 	private int currentEffect = DND.FEEDBACK_NONE;
-	private TreeItem[] selection = new TreeItem[0];
+	
 	private TreeItem dropSelection = null;
+	private PaintListener paintListener;
+	
 	private TreeItem insertMark = null;
 	private boolean insertBefore = false;
 	
 	private TreeItem scrollItem;
 	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 400; // milli seconds
-	private static final int SCROLL_WIDTH = 100; // pixels
-	
+	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
+
 	private TreeItem expandItem;
 	private long expandBeginTime;
 	private static final int EXPAND_HYSTERESIS = 1000; // milli seconds
 
 TreeDragUnderEffect(Tree tree) {
 	this.tree = tree;
+	paintListener = new PaintListener() {
+		public void paintControl(PaintEvent e) {
+			if (dropSelection == null  || dropSelection.isDisposed()) return;
+			GC gc = e.gc;
+			Color foreground = gc.getForeground();
+			Display display = e.widget.getDisplay();
+			gc.setForeground(display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));
+			Rectangle bounds = dropSelection.getBounds();
+			gc.drawRectangle(bounds.x + 1, bounds.y + 1, bounds.width - 3, bounds.height - 3);
+			gc.setForeground(foreground);
+		}
+	};
 }
 void show(int effect, int x, int y) {
 	effect = checkEffect(effect);
 	TreeItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
 	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = tree.getSelection();
-		tree.deselectAll();
+		tree.addPaintListener(paintListener);
 	}
 	scrollHover(effect, item, x, y);
 	expandHover(effect, item, x, y);
 	setDragUnderEffect(effect, item);
 	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		tree.setSelection(selection);
-		selection = new TreeItem[0];
+		tree.removePaintListener(paintListener);
 	}
 	currentEffect = effect;
 }
@@ -59,7 +70,7 @@ private int checkEffect(int effect) {
 	if (bits == DND.FEEDBACK_INSERT_AFTER || bits == DND.FEEDBACK_INSERT_BEFORE || bits == DND.FEEDBACK_SELECT) return effect;
 	return (effect & ~mask);
 }
-private TreeItem findItem(int x , int y){
+private TreeItem findItem(int x, int y){
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
 	Rectangle area = tree.getClientArea();
@@ -70,24 +81,21 @@ private TreeItem findItem(int x , int y){
 
 	// Scan across the width of the tree.
 	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		coordinates = new Point(x1, coordinates.y);
-		item = tree.getItem(coordinates);
+		Point pt = new Point(x1, coordinates.y);
+		item = tree.getItem(pt);
 		if (item != null) return item;
 	}
 	// Check if we are just below the last item of the tree
-	coordinates = new Point(x, y);
-	coordinates = tree.toControl(coordinates);
 	if (coordinates.y > area.y + area.height - tree.getItemHeight()) {;
 		int y1 = area.y + area.height - tree.getItemHeight();
-		coordinates = new Point(coordinates.x, y1);
-		
-		item = tree.getItem(coordinates);	
+		Point pt = new Point(coordinates.x, y1);
+		item = tree.getItem(pt);	
 		if (item != null) return item;
 		
 		// Scan across the width of the tree just above the bottom..
 		for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-			coordinates = new Point(x1, y1);
-			item = tree.getItem(coordinates);
+			pt = new Point(x1, y1);
+			item = tree.getItem(pt);
 			if (item != null) return item;
 		}
 	}
@@ -103,22 +111,32 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 		return;
 	}
 	if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-		(effect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
+	    (effect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
 		if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
 			setDropSelection(null);
 		}
 		setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
 		return;
 	}
-	
-	setInsertMark(null, false);
-	setDropSelection(null);
+	if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
+	    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
+		tree.setInsertMark(null, false);
+	}
+	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
+		setDropSelection(null);
+	}
 }
 private void setDropSelection (TreeItem item) {	
 	if (item == dropSelection) return;
-	if (dropSelection != null) tree.deselectAll();
+	if (dropSelection != null && !dropSelection.isDisposed()) {
+		Rectangle bounds = dropSelection.getBounds();
+		tree.redraw(bounds.x, bounds.y, bounds.width, bounds.height, true);
+	}
 	dropSelection = item;
-	if (dropSelection != null) tree.setSelection(new TreeItem[]{dropSelection});
+	if (dropSelection != null && !dropSelection.isDisposed()) {
+		Rectangle bounds = dropSelection.getBounds();
+		tree.redraw(bounds.x, bounds.y, bounds.width, bounds.height, true);
+	}
 }
 private void setInsertMark(TreeItem item, boolean before) {
 	if (item == insertMark && before == insertBefore) return;
@@ -148,10 +166,29 @@ private void scroll(TreeItem item, int x, int y) {
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
 	Rectangle area = tree.getClientArea();
+	
+// INTENTIONALLY COMMENTED - Tree.setTopItem does not work
+//
+//	TreeItem top = tree.getTopItem();
+//	TreeItem newTop = null;
+//	// scroll if two lines from top or bottom
+//	int scroll_width = 2*tree.getItemHeight();
+//	if (coordinates.y < area.y + scroll_width) {
+//		 newTop = getPreviousVisibleItem(top);
+//	} else if (coordinates.y > area.y + area.height - scroll_width) {
+//		newTop = getNextVisibleItem(top, true);
+//	}
+//	if (newTop != null && newTop != top) {
+//		System.out.println("set top item "+newTop);
+//		tree.setTopItem(newTop);
+//	}
+
 	TreeItem showItem = null;
-	if (coordinates.y - area.y < SCROLL_WIDTH) {
+	// scroll if two lines from top or bottom
+	int scroll_width = 2*tree.getItemHeight();
+	if (coordinates.y < area.y + scroll_width) {
 		showItem = getPreviousVisibleItem(item);
-	} else if ((area.y + area.height - coordinates.y) < SCROLL_WIDTH) {
+	} else if (coordinates.y > area.y + area.height - scroll_width) {
 		showItem = getNextVisibleItem(item, true);
 	}
 	if (showItem != null) {
