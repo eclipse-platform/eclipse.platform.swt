@@ -12,6 +12,7 @@ public class OS {
 
     static {
 		Library.loadLibrary("swt");
+		Init();
 	}
 	
 	public static final int MSBFirst= 1;
@@ -1107,6 +1108,7 @@ public class OS {
 	// Misc
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 
+	public static native void Init();
 	public static native void ExitToShell();
     public static native void InitCursor();
 	public static native short HiWord(int doubleWord);
