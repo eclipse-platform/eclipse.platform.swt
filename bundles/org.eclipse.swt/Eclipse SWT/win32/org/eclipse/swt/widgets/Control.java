@@ -2928,7 +2928,7 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 	* originated from a mouse event and display the menu when the
 	* mouse was released in the client area.
 	*/
-	if (lParam == -1) {
+	if (lParam != -1) {
 		POINT pt = new POINT ();
 		pt.x = (short) (lParam & 0xFFFF);
 		pt.y = (short) (lParam >> 16);
