@@ -289,7 +289,6 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 }
 void hookEvents () {
 	super.hookEvents ();
-	if ((style & SWT.SEPARATOR) != 0) return;
 	Display display = getDisplay ();
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {

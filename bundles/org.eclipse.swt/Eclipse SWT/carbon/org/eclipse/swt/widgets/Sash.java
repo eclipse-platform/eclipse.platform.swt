@@ -87,6 +87,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	event.width = width;
 	event.height = height;
 	sendEvent (SWT.Selection, event);
+	update ();
 	if (!event.doit) return result;
 	
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
@@ -128,6 +129,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 				event.detail = 0; //outResult [0] == OS.kMouseTrackingMouseDragged ? SWT.DRAG : 0;
 				sendEvent (SWT.Selection, event);
 				if (event.doit) setBounds (handle, newX, newY, width, height, true, true);
+				update ();
 				break;
 			}
 			default:
