@@ -905,8 +905,8 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, SWT.MouseMove);
 	OS.XtAddEventHandler (handle, OS.EnterWindowMask, false, windowProc, SWT.MouseEnter);
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, SWT.MouseExit);
-	OS.XtAddEventHandler (handle, OS.ExposureMask, false, windowProc, SWT.Paint);
-	OS.XtAddEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn);
+	OS.XtInsertEventHandler (handle, OS.ExposureMask, false, windowProc, SWT.Paint, OS.XtListTail);
+	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, SWT.FocusIn, OS.XtListTail);
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, SWT.Help);
 }
 /**	 
@@ -1044,10 +1044,11 @@ public boolean isVisible () {
 void manageChildren () {
 	OS.XtSetMappedWhenManaged (handle, false);
 	OS.XtManageChild (handle);
-	int [] argList = {OS.XmNborderWidth, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	OS.XtResizeWidget (handle, 1, 1, argList [1]);
+	int [] argList1 = {OS.XmNborderWidth, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	OS.XtResizeWidget (handle, 1, 1, argList1 [1]);
 	OS.XtSetMappedWhenManaged (handle, true);
+	if (parent != null) parent.enableTraversal (true);
 }
 Decorations menuShell () {
 	return parent.menuShell ();
@@ -2371,18 +2372,12 @@ public Point toDisplay (Point point) {
 }
 boolean translateMnemonic (char key, XKeyEvent xEvent) {
 	if (!isVisible () || !isEnabled ()) return false;
-	boolean doit = mnemonicMatch (key);
-	if (hooks (SWT.Traverse)) {
-		Event event = new Event();
-		event.doit = doit;
-		event.detail = SWT.TRAVERSE_MNEMONIC;
-		event.time = xEvent.time;
-		setKeyState (event, xEvent);
-		sendEvent (SWT.Traverse, event);
-		doit = event.doit;
-	}
-	if (doit) return mnemonicHit (key);
-	return false;
+	Event event = new Event();
+	event.doit = mnemonicMatch (key);
+	event.detail = SWT.TRAVERSE_MNEMONIC;
+	event.time = xEvent.time;
+	setKeyState (event, xEvent);
+	return traverse (event);
 }
 boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	if (xEvent.state != OS.Mod1Mask) {
@@ -2398,7 +2393,8 @@ boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	return false;
 }
 boolean translateTraversal (int key, XKeyEvent xEvent) {
-	int detail = 0;
+	int detail = SWT.TRAVERSE_NONE;
+	boolean all = false;
 	switch (key) {
 		case OS.XK_Escape:
 		case OS.XK_Cancel:
@@ -2427,32 +2423,36 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 		case OS.XK_Right:
 			detail = SWT.TRAVERSE_ARROW_NEXT;
 			break;
+		case OS.XK_Page_Up:
+		case OS.XK_Page_Down:
+			all = true;
+			if ((xEvent.state & OS.ControlMask) == 0) return false;
+			detail = key == OS.XK_Page_Down ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
+			break;
 		default:
 			return false;
 	}
 	boolean doit = (detail & traversalCode ()) != 0;
-	if (hooks (SWT.Traverse)) {
-		Event event = new Event();
-		event.doit = doit;
-		event.detail = detail;
-		event.time = xEvent.time;
-		setKeyState (event, xEvent);
-		sendEvent (SWT.Traverse, event);
-		doit = event.doit;
-		detail = event.detail;
-	}
 	/*
 	* NOTE:  The native widgets handle tab and arrow key traversal
 	* so it is not necessary to traverse these keys.  A canvas widget
 	* has no native traversal by definition so it is necessary to
 	* traverse all keys.
 	*/
-	if (doit) {
-		int flags = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_ESCAPE;
-		if ((detail & flags) != 0 || (state & CANVAS) != 0) {
-			return traverse (detail);
-		}
-	}
+	int flags = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_ESCAPE | SWT.TRAVERSE_PAGE_NEXT | SWT.TRAVERSE_PAGE_PREVIOUS;
+	if ((detail & flags) == 0 && (state & CANVAS) == 0) return false;
+	Event event = new Event ();
+	event.doit = doit;
+	event.detail = detail;
+	event.time = xEvent.time;
+	setKeyState (event, xEvent);
+	Shell shell = getShell ();
+	Control control = this;
+	do {
+		if (control.traverse (event)) return true;
+		if (control == shell) return false;
+		control = control.parent;
+	} while (all && control != null);
 	return false;
 }
 int traversalCode () {
@@ -2466,9 +2466,23 @@ int traversalCode () {
 	}
 	return code;
 }
-boolean traverseMnemonic (char key) {
-	if (!isVisible () || !isEnabled ()) return false;
-	return mnemonicMatch (key) && mnemonicHit (key);
+boolean traverse (Event event) {
+	sendEvent (SWT.Traverse, event);
+	if (isDisposed ()) return false;
+	if (!event.doit) return false;
+	switch (event.detail) {
+		case SWT.TRAVERSE_NONE:				return true;
+		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
+		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
+		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
+		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
+		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
+		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
+		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event.character);	
+		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
+		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
+	}
+	return false;
 }
 /**
  * Based on the argument, perform one of the expected platform
@@ -2488,16 +2502,10 @@ boolean traverseMnemonic (char key) {
 public boolean traverse (int traversal) {
 	checkWidget();
 	if (!isFocusControl () && !setFocus ()) return false;
-	switch (traversal) {
-		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
-		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
-		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
-		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
-		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
-		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-//		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (??);	
-	}
-	return false;
+	Event event = new Event ();
+	event.doit = true;
+	event.detail = traversal;
+	return traverse (event);
 }
 boolean traverseEscape () {
 	Shell shell = getShell ();
@@ -2511,6 +2519,12 @@ boolean traverseGroup (boolean next) {
 }
 boolean traverseItem (boolean next) {
 	return OS.XmProcessTraversal (handle, next ? OS.XmTRAVERSE_NEXT : OS.XmTRAVERSE_PREV);
+}
+boolean traversePage (boolean next) {
+	return false;
+}
+boolean traverseMnemonic (char key) {
+	return mnemonicHit (key);
 }
 boolean traverseReturn () {
 	Button button = menuShell ().getDefaultButton ();

@@ -113,10 +113,10 @@ void createItem (ToolItem item, int index) {
 	items [index] = item;
 }
 
-void createHandle (int index) {
-	super.createHandle (index);
-	state &= ~CANVAS;
-}
+//void createHandle (int index) {
+//	super.createHandle (index);
+//	state &= ~CANVAS;
+//}
 
 void createWidget (int index) {
 	super.createWidget (index);
