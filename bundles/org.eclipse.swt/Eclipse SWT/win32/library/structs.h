@@ -35,13 +35,6 @@
 #include <richedit.h>
 #include <shlwapi.h>
 
-/* Some versions of the Microsoft Platform SDK contain a #define hack
- * on wReserved in richtext.h that causes compilation problems.
- */
-#ifdef wReserved
-#undef wReserved
-#endif
-
 /* All globals to be declared in globals.h */
 #define FID_CACHE_GLOBALS \
 	MULTI_QI_FID_CACHE MultiqiFc; \

@@ -3220,6 +3220,38 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalUnlock
     return (jboolean) GlobalUnlock((HANDLE)hMem);
 }
 
+#ifdef USE_2000_CALLS
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GradientFill
+ * Signature: (IIIIII)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GradientFill
+  (JNIEnv *env, jclass that, jint hdc, int pVertex, jint dwNumVertex, int pMesh, jint dwNumMesh, jint dwMode)
+{
+	DECL_GLOB(pGlob)
+	BOOL rc = FALSE;
+    HMODULE hm;
+    FARPROC fp;
+	
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GradientFill\n");
+#endif
+    /*
+    **  GradientFill is a Win2000 and Win98 specific call
+    **  If you link it into swt.dll, a system modal entry point not found dialog will
+    **  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    **  only do the call if it exists.
+    */
+    if (! (hm = GetModuleHandle("msimg32.dll"))) hm = LoadLibrary("msimg32.dll");
+    if (hm && (fp = GetProcAddress(hm, "GradientFill"))) {
+		rc = fp((HDC)hdc, (PTRIVERTEX)pVertex, (ULONG)dwNumVertex, (PVOID)pMesh, (ULONG)dwNumMesh, (ULONG)dwMode);
+//		rc = GradientFill((HDC)hdc, (PTRIVERTEX)pVertex, (ULONG)dwNumVertex, (PVOID)pMesh, (ULONG)dwNumMesh, (ULONG)dwMode);
+    }
+    return (jboolean) rc;
+}
+#endif
+
 /*
  * Class:     org_eclipse_swt_internal_win32_OS
  * Method:    HeapAlloc
@@ -4357,6 +4389,29 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3II
 /*
  * Class:     org_eclipse_swt_internal_win32_OS
  * Method:    MoveMemory
+ * Signature: (ILorg/eclipse/swt/internal/win32/GRADIENT_RECT;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I
+  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
+{
+	DECL_GLOB(pGlob)
+    GRADIENT_RECT gradientrect, *lpSource1=NULL;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I\n");
+#endif
+
+    if (Source) {
+        lpSource1 = &gradientrect;
+        cacheGradientrectFids(env, Source, &PGLOB(GradientrectFc));
+        getGradientrectFields(env, Source, lpSource1, &PGLOB(GradientrectFc));
+    }
+    MoveMemory((PVOID)Destination, lpSource1, Length);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    MoveMemory
  * Signature: (ILorg/eclipse/swt/internal/win32/LOGFONT;I)V
  */
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONT_2I
@@ -4465,6 +4520,29 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_
         lpSource1 = &rect;
         cacheRectFids(env, Source, &PGLOB(RectFc));
         getRectFields(env, Source, lpSource1, &PGLOB(RectFc));
+    }
+    MoveMemory((PVOID)Destination, lpSource1, Length);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    MoveMemory
+ * Signature: (ILorg/eclipse/swt/internal/win32/TRIVERTEX;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I
+  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
+{
+	DECL_GLOB(pGlob)
+    TRIVERTEX trivertex, *lpSource1=NULL;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I\n");
+#endif
+
+    if (Source) {
+        lpSource1 = &trivertex;
+        cacheTrivertexFids(env, Source, &PGLOB(TrivertexFc));
+        getTrivertexFields(env, Source, lpSource1, &PGLOB(TrivertexFc));
     }
     MoveMemory((PVOID)Destination, lpSource1, Length);
 }
