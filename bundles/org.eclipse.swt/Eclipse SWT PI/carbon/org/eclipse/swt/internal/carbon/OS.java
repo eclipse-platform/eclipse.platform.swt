@@ -13,11 +13,9 @@
 package org.eclipse.swt.internal.carbon;
 
  
-import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.internal.*;
 
-public class OS {
-
-	/* Load the SWT library. */
+public class OS extends Platform {
 	static {
 		Library.loadLibrary ("swt-pi");
 	}
