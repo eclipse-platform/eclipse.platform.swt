@@ -204,7 +204,7 @@ public void setSelection (int value) {
 }
 
 int timerProc (int widget) {
-	OS.gtk_progress_bar_pulse (handle);
+	if (isVisible ()) OS.gtk_progress_bar_pulse (handle);
 	return 1;
 }
 
