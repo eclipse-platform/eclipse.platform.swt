@@ -129,7 +129,7 @@ public PaletteData(int redMask, int greenMask, int blueMask) {
 }
 
 /**
- * Returns the pixel value corresponding to the given <code>RBG</code>.
+ * Returns the pixel value corresponding to the given <code>RGB</code>.
  *
  * @param rgb the RGB to get the pixel value for
  * @return the pixel value for the given RGB
