@@ -394,7 +394,7 @@ public void dispose() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
+public void drawArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -404,36 +404,36 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
+	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (startAngle > 0) {
-		if (arcAngle > 0) {
+		if (endAngle > 0) {
 			//No need to modify start angle.
-			arcAngle += startAngle;
+			endAngle += startAngle;
 		} else {
 			int newStartAngle;
 			int newStopAngle = startAngle;
-			if (startAngle > Math.abs(arcAngle)) {
-				newStartAngle = startAngle - Math.abs(arcAngle);
+			if (startAngle > Math.abs(endAngle)) {
+				newStartAngle = startAngle - Math.abs(endAngle);
 			} else {
-				newStartAngle = startAngle + 360 - Math.abs(arcAngle);
+				newStartAngle = startAngle + 360 - Math.abs(endAngle);
 			}
 			startAngle = newStartAngle;
-			arcAngle = newStopAngle;
+			endAngle = newStopAngle;
 		}
 	} else {
-		if (arcAngle > 0) {
-			arcAngle = arcAngle + startAngle;
+		if (endAngle > 0) {
+			endAngle = endAngle + startAngle;
 			startAngle = 360 - Math.abs(startAngle);
 		} else {
 			int newStopAngle = 360 + startAngle;
-			startAngle = newStopAngle - Math.abs(arcAngle);
-			arcAngle = newStopAngle;			
+			startAngle = newStopAngle - Math.abs(endAngle);
+			endAngle = newStopAngle;			
 		}
 	}
 	startAngle = (int) (startAngle * 65536 / 360);
-	arcAngle = (int) (arcAngle * 65536 / 360);
+	endAngle   = (int) (endAngle * 65536 / 360);
 
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)(x + (width / 2));
@@ -446,7 +446,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int ar
 	try {
 		int prevContext = setGC();
 		setGCClipping();
-		OS.PgDrawArc(center, radii, startAngle, arcAngle, OS.Pg_ARC | OS.Pg_DRAW_STROKE);
+		OS.PgDrawArc(center, radii, startAngle, endAngle, OS.Pg_ARC | OS.Pg_DRAW_STROKE);
 		unsetGC(prevContext);
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);
@@ -1437,7 +1437,7 @@ public boolean equals (Object object) {
  *
  * @see #drawArc
  */
-public void fillArc (int x, int y, int width, int height, int startAngle, int arcAngle) {
+public void fillArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -1447,36 +1447,36 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
+	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (startAngle > 0) {
-		if (arcAngle > 0) {
+		if (endAngle > 0) {
 			//No need to modify start angle.
-			arcAngle += startAngle;
+			endAngle += startAngle;
 		} else {
 			int newStartAngle;
 			int newStopAngle = startAngle;
-			if (startAngle > Math.abs(arcAngle)) {
-				newStartAngle = startAngle - Math.abs(arcAngle);
+			if (startAngle > Math.abs(endAngle)) {
+				newStartAngle = startAngle - Math.abs(endAngle);
 			} else {
-				newStartAngle = startAngle + 360 - Math.abs(arcAngle);
+				newStartAngle = startAngle + 360 - Math.abs(endAngle);
 			}
 			startAngle = newStartAngle;
-			arcAngle = newStopAngle;
+			endAngle = newStopAngle;
 		}
 	} else {
-		if (arcAngle > 0) {
-			arcAngle = arcAngle + startAngle;
+		if (endAngle > 0) {
+			endAngle = endAngle + startAngle;
 			startAngle = 360 - Math.abs(startAngle);
 		} else {
 			int newStopAngle = 360 + startAngle;
-			startAngle = newStopAngle - Math.abs(arcAngle);
-			arcAngle = newStopAngle;			
+			startAngle = newStopAngle - Math.abs(endAngle);
+			endAngle = newStopAngle;			
 		}
 	}			
 	startAngle = (int) (startAngle * 65536 / 360);
-	arcAngle = (int) (arcAngle * 65536 / 360);
+	endAngle   = (int) (endAngle * 65536 / 360);
 	
 	PhPoint_t center = new PhPoint_t();
 	center.x = (short)(x + (width / 2));
@@ -1489,7 +1489,7 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int ar
 	try {
 		int prevContext = setGC();	
 		setGCClipping();
-		OS.PgDrawArc(center, radii, startAngle, arcAngle, OS.Pg_ARC_PIE | OS.Pg_DRAW_FILL);
+		OS.PgDrawArc(center, radii, startAngle, endAngle, OS.Pg_ARC_PIE | OS.Pg_DRAW_FILL);
 		unsetGC(prevContext);
 	} finally {
 		if (flags >= 0) OS.PtLeave(flags);

@@ -217,7 +217,7 @@ public void dispose () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+public void drawArc(int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -227,10 +227,10 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
+	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	OS.XDrawArc(data.display, data.drawable, handle, x, y, width, height, startAngle * 64, arcAngle * 64);
+	OS.XDrawArc(data.display,data.drawable,handle,x,y,width,height,startAngle * 64 ,endAngle * 64);
 }
 /** 
  * Draws a rectangle, based on the specified arguments, which has
@@ -1162,7 +1162,7 @@ public boolean equals (Object object) {
  *
  * @see #drawArc
  */
-public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+public void fillArc(int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -1172,14 +1172,14 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
+	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int xDisplay = data.display;
 	XGCValues values = new XGCValues ();
 	OS.XGetGCValues (xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
 	OS.XSetForeground (xDisplay, handle, values.background);
-	OS.XFillArc(xDisplay, data.drawable, handle, x, y, width, height, startAngle * 64, arcAngle * 64);
+	OS.XFillArc(xDisplay,data.drawable,handle,x,y,width,height,startAngle * 64 ,endAngle * 64);
 	OS.XSetForeground (xDisplay, handle, values.foreground);
 }
 
@@ -2473,30 +2473,29 @@ public void setForeground (Color color) {
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
-	int line_style = OS.LineOnOffDash;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
-			line_style = OS.LineSolid;
-			break;
+			data.lineStyle = lineStyle;
+			OS.XSetLineAttributes(xDisplay, handle, 0, OS.LineSolid, OS.CapButt, OS.JoinMiter);
+			return;
 		case SWT.LINE_DASH:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{6, 2}, 2);
+			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2},2);
 			break;
 		case SWT.LINE_DOT:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{3, 1}, 2);
+			OS.XSetDashes(xDisplay,handle,0, new byte[] {3, 1},2);
 			break;
 		case SWT.LINE_DASHDOT:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{6, 2, 3, 1}, 4);
+			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2, 3, 1},4);
 			break;
 		case SWT.LINE_DASHDOTDOT:
-			OS.XSetDashes(xDisplay, handle, 0, new byte[]{6, 2, 3, 1, 3, 1}, 6);
+			OS.XSetDashes(xDisplay,handle,0, new byte[] {6, 2, 3, 1, 3, 1},6);
 			break;
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
-	XGCValues values = new XGCValues();
-	OS.XGetGCValues(xDisplay, handle, OS.GCLineWidth, values);
-	OS.XSetLineAttributes(xDisplay, handle, values.line_width, line_style, OS.CapButt, OS.JoinMiter);
+	OS.XSetLineAttributes(xDisplay, handle, 0, OS.LineOnOffDash, OS.CapButt, OS.JoinMiter);
+	
 }
 /** 
  * Sets the width that will be used when drawing lines
@@ -2512,8 +2511,11 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int width) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.LineSolid : OS.LineOnOffDash;
-	OS.XSetLineAttributes(data.display, handle, width, line_style, OS.CapButt, OS.JoinMiter);	
+	if (data.lineStyle == SWT.LINE_SOLID) {
+		OS.XSetLineAttributes(data.display, handle, width, OS.LineSolid, OS.CapButt, OS.JoinMiter);
+	} else {
+		OS.XSetLineAttributes(data.display, handle, width, OS.LineDoubleDash, OS.CapButt, OS.JoinMiter);
+	}
 }
 /** 
  * If the argument is <code>true</code>, puts the receiver

@@ -245,7 +245,7 @@ public void dispose() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+public void drawArc(int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -255,10 +255,10 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
+	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}	
-	OS.gdk_draw_arc(data.drawable, handle, 0, x, y, width, height, startAngle * 64, arcAngle * 64);
+	OS.gdk_draw_arc(data.drawable, handle, 0, x, y, width, height, startAngle * 64, endAngle * 64);
 }
 
 /** 
@@ -991,7 +991,7 @@ public boolean equals(Object object) {
  *
  * @see #drawArc
  */
-public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+public void fillArc(int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
@@ -1001,7 +1001,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
+	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	GdkGCValues values = new GdkGCValues();
@@ -1009,7 +1009,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 	GdkColor color = new GdkColor();
 	color.pixel = values.background_pixel;
 	OS.gdk_gc_set_foreground(handle, color);
-	OS.gdk_draw_arc(data.drawable, handle, 1, x, y, width, height, startAngle * 64, arcAngle * 64);
+	OS.gdk_draw_arc(data.drawable, handle, 1, x, y, width, height, startAngle * 64, endAngle * 64);
 	color.pixel = values.foreground_pixel;
 	OS.gdk_gc_set_foreground(handle, color);
 }
@@ -1758,11 +1758,11 @@ public void setForeground(Color color) {
  */
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int line_style = OS.GDK_LINE_ON_OFF_DASH;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
-			line_style = OS.GDK_LINE_SOLID;
-			break;
+			this.data.lineStyle = lineStyle;
+			OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+			return;
 		case SWT.LINE_DASH:
 			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2}, 2);
 			break;
@@ -1779,9 +1779,7 @@ public void setLineStyle(int lineStyle) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
-	GdkGCValues values = new GdkGCValues();
-	OS.gdk_gc_get_values(handle, values);
-	OS.gdk_gc_set_line_attributes(handle, values.line_width, line_style, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_ON_OFF_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
 }
 
 /** 
@@ -1798,8 +1796,11 @@ public void setLineStyle(int lineStyle) {
  */
 public void setLineWidth(int width) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int line_style = data.lineStyle == SWT.LINE_SOLID ? OS.GDK_LINE_SOLID : OS.GDK_LINE_ON_OFF_DASH;
-	OS.gdk_gc_set_line_attributes(handle, width, line_style, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	if (data.lineStyle == SWT.LINE_SOLID) {
+		OS.gdk_gc_set_line_attributes(handle, width, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	} else {
+		OS.gdk_gc_set_line_attributes(handle, width, OS.GDK_LINE_DOUBLE_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	}
 }
 
 /** 

@@ -325,7 +325,7 @@ public void dispose() {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void drawArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+public void drawArc(int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.updateClip) setCGClipping();
 	if (width < 0) {
@@ -336,7 +336,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
+	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}	
 	OS.CGContextBeginPath(handle);
@@ -344,7 +344,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int arc
 	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
 	OS.CGContextTranslateCTM(handle, x + offset + width / 2f, y + offset + height / 2f);
 	OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
-	OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -(startAngle + arcAngle) * (float)Math.PI / 180, true);
+	OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -endAngle * (float)Math.PI / 180, true);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
 	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
@@ -972,7 +972,7 @@ public boolean equals(Object object) {
  *
  * @see #drawArc
  */
-public void fillArc(int x, int y, int width, int height, int startAngle, int arcAngle) {
+public void fillArc(int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.updateClip) setCGClipping();
 	if (width < 0) {
@@ -983,7 +983,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
 		y = y + height;
 		height = -height;
 	}
-	if (width == 0 || height == 0 || arcAngle == 0) {
+	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	OS.CGContextBeginPath(handle);
@@ -991,7 +991,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int arc
     OS.CGContextTranslateCTM(handle, x + width / 2f, y + height / 2f);
     OS.CGContextScaleCTM(handle, width / 2f, height / 2f);
     OS.CGContextMoveToPoint(handle, 0, 0);
-    OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -(startAngle + arcAngle) * (float)Math.PI / 180, true);
+    OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -endAngle * (float)Math.PI / 180, true);
     OS.CGContextClosePath(handle);
     OS.CGContextRestoreGState(handle);
 	OS.CGContextFillPath(handle);
