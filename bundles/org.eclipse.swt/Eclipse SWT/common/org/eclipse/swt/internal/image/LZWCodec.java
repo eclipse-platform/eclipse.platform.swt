@@ -26,7 +26,7 @@ final class LZWCodec {
 	ImageData image;
 	ImageLoader loader;
 	boolean interlaced;
-	static final int[] maskTable = new int[] {
+	static final int[] MASK_TABLE = new int[] {
 		0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F,
 		0xFF, 0x1FF, 0x3FF, 0x7FF, 0xFFF
 	};
@@ -45,7 +45,7 @@ void decode() {
 	while ((c = nextCode()) != endCode) {
 		if (c == clearCode) {
 			codeSize = bitsPerPixel + 1;
-			codeMask = maskTable[bitsPerPixel];
+			codeMask = MASK_TABLE[bitsPerPixel];
 			currentSlot = newCodes;
 			topSlot = 1 << codeSize;
 			while ((c = nextCode()) == clearCode) {};
@@ -83,7 +83,7 @@ void decode() {
 			}
 			if (currentSlot >= topSlot) {
 				if (codeSize < 12) {
-					codeMask = maskTable[codeSize];
+					codeMask = MASK_TABLE[codeSize];
 					codeSize++;
 					topSlot = topSlot + topSlot;
 				}
@@ -203,7 +203,7 @@ int encodeLoop() {
 		if (currentSlot < 4096) {
 			if (currentSlot > topSlot) {
 				codeSize++;
-				codeMask = maskTable[codeSize - 1];
+				codeMask = MASK_TABLE[codeSize - 1];
 				topSlot *= 2;
 			}
 		} else {
@@ -211,7 +211,7 @@ int encodeLoop() {
 			for (int i = 0; i < nodeStack.length; i++)
 				nodeStack[i].children = null;
 			codeSize = bitsPerPixel + 1;
-			codeMask = maskTable[codeSize - 1];
+			codeMask = MASK_TABLE[codeSize - 1];
 			currentSlot = newCodes;
 			topSlot = 1 << codeSize;
 		}
@@ -232,7 +232,7 @@ void initializeForDecoding() {
 	currentByte = -1;
 	blockSize = bitsLeft = 0;
 	blockIndex = 0;
-	codeMask = maskTable[codeSize - 1];
+	codeMask = MASK_TABLE[codeSize - 1];
 	stack = new int[4096];
 	suffix = new int[4096];
 	prefix = new int[4096];
@@ -342,7 +342,7 @@ void nextPutCode(int aCode) {
 	int codeBitsToDo = codeSize;
 	// Fill in the remainder of the current byte with the
 	// *high-order* bits of the code.
-	int c = codeToDo & maskTable[bitsLeft - 1];
+	int c = codeToDo & MASK_TABLE[bitsLeft - 1];
 	currentByte = currentByte | (c << (8 - bitsLeft));
 	block[blockIndex] = (byte)currentByte;
 	codeBitsToDo -= bitsLeft;
