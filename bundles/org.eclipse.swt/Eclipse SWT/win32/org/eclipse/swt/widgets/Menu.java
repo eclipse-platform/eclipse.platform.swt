@@ -193,7 +193,8 @@ void _setVisible (boolean visible) {
 		OS.SendMessage (hwndParent, OS.WM_CANCELMODE, 0, 0);
 		return;
 	}
-	int flags = OS.TPM_LEFTBUTTON | OS.TPM_RIGHTBUTTON;
+	int flags = OS.TPM_LEFTBUTTON;
+	if (OS.GetKeyState (OS.VK_LBUTTON) >= 0) flags |= OS.TPM_RIGHTBUTTON;
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) flags |= OS.TPM_RIGHTALIGN;
 	if ((parent.style & SWT.MIRRORED) != 0) {
 		flags &= ~OS.TPM_RIGHTALIGN;
@@ -1236,7 +1237,7 @@ public void setVisible (boolean visible) {
 		display.addPopup (this);
 	} else {
 		display.removePopup (this);
-		_setVisible (false);
+		_setVisible (visible);
 	}
 }
 
