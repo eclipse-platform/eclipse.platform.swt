@@ -946,8 +946,8 @@ abstract class Tab {
 		setExampleWidgetForeground ();
 		setExampleWidgetFont ();
 		setExampleWidgetSize ();
-		Control [] controls = getExampleWidgets ();
 		//TEMPORARY CODE
+//		Control [] controls = getExampleWidgets ();
 //		for (int i=0; i<controls.length; i++) {
 //			log ("Control=" + controls [i] + ", border width=" + controls [i].getBorderWidth ());
 //		}
