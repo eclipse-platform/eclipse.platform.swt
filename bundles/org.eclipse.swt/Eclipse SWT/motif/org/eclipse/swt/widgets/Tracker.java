@@ -542,6 +542,7 @@ void resizeRectangles (int xChange, int yChange) {
 
 public void setCursor (Cursor value) {
 	checkWidget ();
+	cursor = 0;
 	if (value != null) cursor = value.handle;
 }
 /**
