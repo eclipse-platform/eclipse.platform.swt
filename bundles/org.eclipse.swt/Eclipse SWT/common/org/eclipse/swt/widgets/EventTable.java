@@ -66,7 +66,7 @@ public void hook (int eventType, Listener listener) {
 public boolean hooks (int eventType) {
 	if (types == null) return false;
 	for (int i=0; i<types.length; i++) {
-		if (types [i] == eventType || types [i] == -eventType) return true;
+		if (types [i] == eventType) return true;
 	}
 	return false;
 }
@@ -78,13 +78,6 @@ public void sendEvent (Event event) {
 		for (int i=0; i<types.length; i++) {
 			if (event.type == SWT.None) return;
 			if (types [i] == event.type) {
-				Listener listener = listeners [i];
-				if (listener != null) listener.handleEvent (event);
-			}
-		}
-		for (int i=0; i<types.length; i++) {
-			if (event.type == SWT.None) return;
-			if (types [i] == -event.type) {
 				Listener listener = listeners [i];
 				if (listener != null) listener.handleEvent (event);
 			}
@@ -122,29 +115,12 @@ public void unhook (int eventType, Listener listener) {
 			return;
 		}
 	}
-	for (int i=0; i<types.length; i++) {
-		if (types [i] == -eventType && listeners [i] == listener) {
-			remove (i);
-			return;
-		}
-	}
 }
 
 public void unhook (int eventType, SWTEventListener listener) {
 	if (types == null) return;
 	for (int i=0; i<types.length; i++) {
 		if (types [i] == eventType) {
-			if (listeners [i] instanceof TypedListener) {
-				TypedListener typedListener = (TypedListener) listeners [i];
-				if (typedListener.getEventListener () == listener) {
-					remove (i);
-					return;
-				}
-			}
-		}
-	}
-	for (int i=0; i<types.length; i++) {
-		if (types [i] == -eventType) {
 			if (listeners [i] instanceof TypedListener) {
 				TypedListener typedListener = (TypedListener) listeners [i];
 				if (typedListener.getEventListener () == listener) {
