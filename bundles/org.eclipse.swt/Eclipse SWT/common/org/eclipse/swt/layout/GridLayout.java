@@ -630,17 +630,31 @@ protected void layout(Composite composite, boolean flushCache) {
 			}
 
 			//
-			spannedHeight = rowHeight;
-			for (int k = 1; k < spec.verticalSpan; k++) {
-				if ((r + k) <= grid.size()) {
-					spannedHeight = spannedHeight + rowHeights[r + k] + verticalSpacing;
-				}
-			}
-
-			//
 			if (spec.isItemData()) {
 				Control child = children[spec.childIndex];
-				Point childExtent = child.computeSize(spec.widthHint, spec.heightHint, flushCache);
+				Point childExtent;
+				// Check to see if the control needs to be wrapped
+				boolean needsWrap = (child.getStyle() & SWT.WRAP) != 0
+					&& spec.horizontalAlignment == GridData.FILL
+					&& spec.grabExcessHorizontalSpace;
+			 	if (needsWrap) {
+					childExtent = child.computeSize(spannedWidth, spec.heightHint, flushCache);
+					rowHeights[r] = Math.max(childExtent.y, rowHeight);
+				} else {
+					childExtent = child.computeSize(spec.widthHint, spec.heightHint, flushCache);
+			 	}
+			 	
+				spannedHeight = rowHeights[r];
+				for (int k = 1; k < spec.verticalSpan; k++) {
+					if ((r + k) <= grid.size()) {
+						spannedHeight += rowHeights[r + k] + verticalSpacing;
+					}
+				}
+				
+				// Allow the height of the control to grow if the control can wrap
+				if (needsWrap && childExtent.y > spannedHeight) {
+					spannedHeight = childExtent.y; 
+				}
 				hAlign = spec.horizontalAlignment;
 				widgetX = columnX;
 
@@ -685,6 +699,25 @@ protected void layout(Composite composite, boolean flushCache) {
 		}
 		// Update the starting y value and since we're starting a new row, reset the starting x value.
 		rowY = rowY + rowHeights[r] + verticalSpacing;
+		// Check for any expandable rows below the specified row and resize them
+		if (expandableRows.length != 0) {
+			int excessHeight = rowHeights[r] - rowHeight;
+			if (excessHeight > 0) {
+				int excess = excessHeight / expandableRows.length;
+				int remainder = excessHeight % expandableRows.length;
+				int last = -1;
+				for (int i = 0; i < expandableRows.length; i++) {
+					int expandableRow = expandableRows[i];
+					if (expandableRow > r) {
+						rowHeights[expandableRow] -= excess;
+						last = Math.max(last, expandableRow);
+					}
+				}
+				if (last >= 0) {
+					rowHeights[last] -= remainder;
+				}
+			}
+		}
 		columnX = marginWidth + composite.getClientArea().x;
 	}
 }
