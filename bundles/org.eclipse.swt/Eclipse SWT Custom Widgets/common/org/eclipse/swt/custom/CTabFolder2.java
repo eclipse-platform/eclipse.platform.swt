@@ -103,7 +103,7 @@ public class CTabFolder2 extends Composite {
 
 	/* External Listener management */
 	CTabFolderCloseListener[] closeListeners = new CTabFolderCloseListener[0];
-	CTabFolderExpandListener[] expandListeners = new CTabFolderExpandListener[0];
+	CTabFolderMinMaxListener[] minmaxListeners = new CTabFolderMinMaxListener[0];
 	CTabFolderListListener[] listListeners = new CTabFolderListListener[0];
 	
 	/* Color appearance */
@@ -117,18 +117,21 @@ public class CTabFolder2 extends Composite {
 	static Color borderColor2;
 	static Color borderColor3;
 	
-	// close, expand and chevron buttons
+	// close, min/max and chevron buttons
 	boolean showClose = false;
-	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
-	int closeImageState = NORMAL;
 	
 	Rectangle chevronRect = new Rectangle(0, 0, 0, 0);
 	int chevronImageState = NORMAL;
 	
-	boolean showExpand = false;
-	Rectangle expandRect = new Rectangle(0, 0, 0, 0);
-	boolean expanded = true;
-	int expandImageState = NORMAL;
+	boolean showMin = false;
+	Rectangle minRect = new Rectangle(0, 0, 0, 0);
+	boolean minimized = false;
+	int minImageState = NORMAL;
+	
+	boolean showMax = false;
+	Rectangle maxRect = new Rectangle(0, 0, 0, 0);
+	boolean maximized = false;
+	int maxImageState = NORMAL;
 	
 	Control topRight;
 	Rectangle topRightRect = new Rectangle(0, 0, 0, 0);
@@ -137,7 +140,7 @@ public class CTabFolder2 extends Composite {
 	boolean ignoreUp;
 	
 	// borders and shapes
-	boolean showHighlight =  false;
+	boolean showHighlight =  true;
 	int borderLeft = 0;
 	int borderRight = 0;
 	int borderTop = 0;
@@ -189,8 +192,8 @@ public class CTabFolder2 extends Composite {
 	static final int SELECTED = 3;
 	static final RGB CLOSE_BORDER = new RGB(221, 106, 106);
 	static final RGB CLOSE_FILL = new RGB(214, 195, 195);
-	static final RGB EXPAND_BORDER = new RGB(114, 106, 221);
-	static final RGB EXPAND_FILL = new RGB(199, 196, 242);
+	static final RGB MINMAX_BORDER = new RGB(114, 106, 221);
+	static final RGB MINMAX_FILL = new RGB(199, 196, 242);
 	static final RGB CHEVRON_BORDER = new RGB(111, 220, 106);
 	static final RGB CHEVRON_FILL = new RGB(199, 242, 196);
 	
@@ -230,6 +233,9 @@ public CTabFolder2(Composite parent, int style) {
 	super(parent, checkStyle (style));
 	int style2 = super.getStyle();
 	onBottom = (style2 & SWT.BOTTOM) != 0;
+	showClose = (style2 & SWT.CLOSE) != 0;
+//	showMin = (style2 & SWT.MIN) != 0; - conflicts with SWT.TOP
+//	showMax = (style2 & SWT.MAX) != 0; - conflicts with SWT.BOTTOM
 	single = (style2 & SWT.SINGLE) != 0;
 	borderLeft = borderRight = (style & SWT.BORDER) != 0 ? ((style2 & SWT.FLAT) != 0 ? 1 : 1 + HIGHLIGHT_MARGIN) : 0;
 	borderTop = onBottom ? borderLeft : 0;
@@ -310,7 +316,7 @@ static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int 
 	return polygon;
 }
 static int checkStyle (int style) {
-	int mask = SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
+	int mask = SWT.CLOSE | SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.SINGLE | SWT.MULTI;
 	style = style & mask;
 	// TOP and BOTTOM are mutually exlusive.
 	// TOP is the default
@@ -357,12 +363,6 @@ static void fillRegion(GC gc, Region region) {
 public void addCTabFolderCloseListener(CTabFolderCloseListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (closeListeners.length == 0) {
-		// display close button
-		showClose = true;
-		updateItems();
-		redraw();
-	}
 	// add to array
 	CTabFolderCloseListener[] newListeners = new CTabFolderCloseListener[closeListeners.length + 1];
 	System.arraycopy(closeListeners, 0, newListeners, 0, closeListeners.length);
@@ -382,21 +382,14 @@ public void addCTabFolderCloseListener(CTabFolderCloseListener listener) {
  * 
  * @since 3.0
  */
-public void addCTabFolderExpandListener(CTabFolderExpandListener listener) {
+public void addCTabFolderMinMaxListener(CTabFolderMinMaxListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (expandListeners.length == 0) {
-		// display expand button
-		showExpand = true;
-		updateItems();
-		redraw();
-	}
-
 	// add to array
-	CTabFolderExpandListener[] newListeners = new CTabFolderExpandListener[expandListeners.length + 1];
-	System.arraycopy(expandListeners, 0, newListeners, 0, expandListeners.length);
-	expandListeners = newListeners;
-	expandListeners[expandListeners.length - 1] = listener;
+	CTabFolderMinMaxListener[] newListeners = new CTabFolderMinMaxListener[minmaxListeners.length + 1];
+	System.arraycopy(minmaxListeners, 0, newListeners, 0, minmaxListeners.length);
+	minmaxListeners = newListeners;
+	minmaxListeners[minmaxListeners.length - 1] = listener;
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -420,6 +413,12 @@ public void addCTabFolderExpandListener(CTabFolderExpandListener listener) {
  */
 public void addCTabFolderListener(CTabFolderListener listener) {
 	addCTabFolderCloseListener(listener);
+	if (closeListeners.length == 1) {
+		// display close button
+		showClose = true;
+		updateItems();
+		redraw();
+	}
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -551,7 +550,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (minWidth == 0) minWidth = DEFAULT_WIDTH;
 	if (minHeight == 0) minHeight = DEFAULT_HEIGHT;
 
-	if (!expanded) minHeight = 0;
+	if (minimized) minHeight = 0;
 	
 	if (wHint != SWT.DEFAULT) minWidth  = wHint;
 	if (hHint != SWT.DEFAULT) minHeight = hHint;
@@ -565,7 +564,7 @@ public boolean getBorderVisible() {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	if (!expanded) {
+	if (minimized) {
 		int trimX = x - borderLeft;
 		int trimY = onBottom ? y - borderTop : y - HIGHLIGHT_HEADER - tabHeight - borderTop;
 		int trimWidth = width + borderLeft + borderRight;
@@ -1041,116 +1040,148 @@ void drawChevron(GC gc) {
 		}
 	}
 }
-void drawClose(GC gc) {
-	if (closeRect.width == 0 || closeRect.height == 0) return;
+void drawMaximize(GC gc) {
+	if (maxRect.width == 0 || maxRect.height == 0) return;
 	Display display = getDisplay();
 	if (!single) {
 		gc.setBackground(getParent().getBackground());
-		gc.fillRectangle(closeRect);
+		gc.fillRectangle(maxRect);
 	}
-	// draw X (10x10 or 11x11)
 	int indent = Math.max(1, (tabHeight-11)/2);
-	int x = closeRect.x + indent - 1;
-	int y = closeRect.y + indent;
-	switch (closeImageState) {
+	int x = maxRect.x + indent - 1;
+	int y = maxRect.y + indent;
+	switch (maxImageState) {
 		case NORMAL: {
-			int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y, 
-					                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
-			                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
-			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
-			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-			gc.fillPolygon(shape);
-			gc.setForeground(borderColor1);
-			gc.drawPolygon(shape);
-			break;
-		}
-		case HOT: {
-			int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y, 
-					                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
-			                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
-			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
-			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
-			gc.fillPolygon(shape);
-			Color border = new Color(display, CLOSE_BORDER);
-			gc.setForeground(border);
-			gc.drawPolygon(shape);
-			border.dispose();
-			break;
-		}
-		case SELECTED:
-			int[] shape = new int[] {x+1,y+1, x+3,y+1, x+5,y+3, x+6,y+3, x+8,y+1, x+10,y+1, 
-					                 x+10,y+3, x+8,y+5, x+8,y+6, x+10,y+8, x+10,y+10,
-			                         x+8,y+10, x+6,y+8, x+5,y+8, x+3,y+10, x+1,y+10,
-			                         x+1,y+8, x+3,y+6, x+3,y+5, x+1,y+3};
-			Color fill = new Color(display, CLOSE_FILL);
-			gc.setBackground(fill);
-			gc.fillPolygon(shape);
-			fill.dispose();
-			Color border = new Color(display, CLOSE_BORDER);
-			gc.setForeground(border);
-			gc.drawPolygon(shape);
-			border.dispose();
-			break;
-	}
-}
-void drawExpand(GC gc) {
-	if (expandRect.width == 0 || expandRect.height == 0) return;
-	Display display = getDisplay();
-	if (!single) {
-		gc.setBackground(getParent().getBackground());
-		gc.fillRectangle(expandRect);
-	}
-	// draw triangle (7x4 or 4x7)
-	int indent = Math.max(1, (tabHeight-11)/2);
-	int x = expandRect.x + indent - 1;
-	int y = expandRect.y + indent;
-	switch (expandImageState) {
-		case NORMAL: {
-			if (expanded) {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
-				gc.fillRectangle(x, y, 9, 3);
-				gc.setForeground(borderColor1);
-				gc.drawRectangle(x, y, 9, 3);
-			} else {
+			if (!maximized) {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y, 7, 9);
 				gc.setForeground(borderColor1);
 				gc.drawRectangle(x, y, 7, 9);
 				gc.drawLine(x+1, y+2, x+6, y+2);
+			} else {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y+3, 5, 4);
+				gc.fillRectangle(x+2, y, 5, 4);
+				gc.setForeground(borderColor1);
+				gc.drawRectangle(x, y+3, 5, 4);
+				gc.drawRectangle(x+2, y, 5, 4);
+				gc.drawLine(x+3, y+1, x+6, y+1);
+				gc.drawLine(x+1, y+4, x+4, y+4);
 			}
 			break;
 		}
 		case HOT: {
-			Color border = new Color(display, EXPAND_BORDER);
-			if (expanded) {
-				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
-				gc.fillRectangle(x, y, 9, 3);
-				gc.setForeground(border);
-				gc.drawRectangle(x, y, 9, 3);
-			} else {
+			Color border = new Color(display, MINMAX_BORDER);
+			if (!maximized) {
 				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
 				gc.fillRectangle(x, y, 7, 9);
 				gc.setForeground(border);
 				gc.drawRectangle(x, y, 7, 9);
 				gc.drawLine(x+1, y+2, x+6, y+2);
+			} else {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y+3, 5, 4);
+				gc.fillRectangle(x+2, y, 5, 4);
+				gc.setForeground(border);
+				gc.drawRectangle(x, y+3, 5, 4);
+				gc.drawRectangle(x+2, y, 5, 4);
+				gc.drawLine(x+3, y+1, x+6, y+1);
+				gc.drawLine(x+1, y+4, x+4, y+4);
 			}
 			border.dispose();
 			break;
 		}
 		case SELECTED: {
-			Color fill = new Color(display, EXPAND_FILL);
-			Color border = new Color(display, EXPAND_BORDER);
-			if (expanded) {
+			Color fill = new Color(display, MINMAX_FILL);
+			Color border = new Color(display, MINMAX_BORDER);
+			if (!maximized) {
+				gc.setBackground(fill);
+				gc.fillRectangle(x+1, y+1, 7, 9);
+				gc.setForeground(border);
+				gc.drawRectangle(x+1, y+1, 7, 9);
+				gc.drawLine(x+2, y+3, x+7, y+3);
+			} else {
+				gc.setBackground(fill);
+				gc.fillRectangle(x+1, y+4, 5, 4);
+				gc.fillRectangle(x+3, y+1, 5, 4);
+				gc.setForeground(border);
+				gc.drawRectangle(x+1, y+4, 5, 4);
+				gc.drawRectangle(x+3, y+1, 5, 4);
+				gc.drawLine(x+4, y+2, x+7, y+2);
+				gc.drawLine(x+2, y+5, x+5, y+5);
+			}
+			fill.dispose();
+			border.dispose();
+			break;
+		}
+	}
+}
+void drawMinimize(GC gc) {
+	if (minRect.width == 0 || minRect.height == 0) return;
+	Display display = getDisplay();
+	if (!single) {
+		gc.setBackground(getParent().getBackground());
+		gc.fillRectangle(minRect);
+	}
+	int indent = Math.max(1, (tabHeight-11)/2);
+	int x = minRect.x + indent - 1;
+	int y = minRect.y + indent;
+	switch (minImageState) {
+		case NORMAL: {
+			if (!minimized) {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y, 9, 3);
+				gc.setForeground(borderColor1);
+				gc.drawRectangle(x, y, 9, 3);
+			} else {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y+3, 5, 4);
+				gc.fillRectangle(x+2, y, 5, 4);
+				gc.setForeground(borderColor1);
+				gc.drawRectangle(x, y+3, 5, 4);
+				gc.drawRectangle(x+2, y, 5, 4);
+				gc.drawLine(x+3, y+1, x+6, y+1);
+				gc.drawLine(x+1, y+4, x+4, y+4);
+			}
+			break;
+		}
+		case HOT: {
+			Color border = new Color(display, MINMAX_BORDER);
+			if (!minimized) {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y, 9, 3);
+				gc.setForeground(border);
+				gc.drawRectangle(x, y, 9, 3);
+			} else {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y+3, 5, 4);
+				gc.fillRectangle(x+2, y, 5, 4);
+				gc.setForeground(border);
+				gc.drawRectangle(x, y+3, 5, 4);
+				gc.drawRectangle(x+2, y, 5, 4);
+				gc.drawLine(x+3, y+1, x+6, y+1);
+				gc.drawLine(x+1, y+4, x+4, y+4);
+			}
+			border.dispose();
+			break;
+		}
+		case SELECTED: {
+			Color fill = new Color(display, MINMAX_FILL);
+			Color border = new Color(display, MINMAX_BORDER);
+			if (!minimized) {
 				gc.setBackground(fill);
 				gc.fillRectangle(x+1, y+1, 9, 3);
 				gc.setForeground(border);
 				gc.drawRectangle(x+1, y+1, 9, 3);
 			} else {
 				gc.setBackground(fill);
-				gc.fillRectangle(x+1, y+1, 7, 9);
+				gc.fillRectangle(x+1, y+4, 5, 4);
+				gc.fillRectangle(x+3, y+1, 5, 4);
 				gc.setForeground(border);
-				gc.drawRectangle(x+1, y+1, 7, 9);
-				gc.drawLine(x+2, y+3, x+7, y+3);
+				gc.drawRectangle(x+1, y+4, 5, 4);
+				gc.drawRectangle(x+3, y+1, 5, 4);
+				gc.drawLine(x+4, y+2, x+7, y+2);
+				gc.drawLine(x+2, y+5, x+5, y+5);
 			}
 			fill.dispose();
 			border.dispose();
@@ -1236,7 +1267,7 @@ void drawSelectionBackground(GC gc, int[] shape) {
 }
 public Rectangle getClientArea() {
 	checkWidget();
-	if (!expanded) return new Rectangle(xClient, yClient, 0, 0);
+	if (minimized) return new Rectangle(xClient, yClient, 0, 0);
 	Point size = getSize();
 	int width = size.x  - borderLeft - borderRight - 2*marginWidth;
 	int height = size.y - borderTop - borderBottom - 2*marginHeight;
@@ -1248,22 +1279,21 @@ public Rectangle getClientArea() {
 }
 
 /**
- * Returns <code>true</code> if the receiver is expanded,
- * and false otherwise.
+ * Returns <code>false</code> if the receiver is minimized,
+ * and true otherwise.
  * <p>
  *
- * @return the expanded state
+ * @return the minimized state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @since 3.0
+ * @deprecated use getMinimized(boolean)
  */
 public boolean getExpanded() {
-	checkWidget();
-	return expanded;
+	return getMinimized();
 }
 /**
  * Return the tab that is located at the specified index.
@@ -1350,8 +1380,44 @@ char getMnemonic (String string) {
 	} while (index < length);
  	return '\0';
 }
+/**
+ * Returns <code>true</code> if the receiver is minimized,
+ * and false otherwise.
+ * <p>
+ *
+ * @return the minimized state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @deprecated
+ */
+public boolean getMinimized() {
+	checkWidget();
+	return minimized;
+}
+/**
+ * Returns <code>true</code> if the receiver is maximized,
+ * and false otherwise.
+ * <p>
+ *
+ * @return the maximized state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @deprecated
+ */
+public boolean getMaximized() {
+	checkWidget();
+	return maximized;
+}
 int getRightItemEdge (){
-	return getSize().x - borderRight - closeRect.width - expandRect.width - topRightRect.width - chevronRect.width - 1;
+	return getSize().x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width - 1;
 }
 /**
  * Return the selected tab item, or an empty array if there
@@ -1714,45 +1780,48 @@ void onMouse(Event event) {
 	int x = event.x, y = event.y;
 	switch (event.type) {
 		case SWT.MouseExit: {
-			if (closeImageState != NORMAL) {
-				closeImageState = NORMAL;
-				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+			if (minImageState != NORMAL) {
+				minImageState = NORMAL;
+				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+				update();
 			}
-			if (expandImageState != NORMAL) {
-				expandImageState = NORMAL;
-				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+			if (maxImageState != NORMAL) {
+				maxImageState = NORMAL;
+				redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
+				update();
 			}
 			if (chevronImageState != NORMAL) {
 				chevronImageState = NORMAL;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+				update();
 			}
-			if (showClose && !single) {
-				for (int i=0; i<items.length; i++) {
-					CTabItem2 item = items[i];
-					if (i != selectedIndex && item.closeImageState != NONE) {
-						item.closeImageState = NONE;
-						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
-					}
-					if (i == selectedIndex && item.closeImageState != NORMAL) {
-						item.closeImageState = NORMAL;
-						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
-					}
+			for (int i=0; i<items.length; i++) {
+				CTabItem2 item = items[i];
+				if (i != selectedIndex && item.closeImageState != NONE) {
+					item.closeImageState = NONE;
+					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					update();
+				}
+				if (i == selectedIndex && item.closeImageState != NORMAL) {
+					item.closeImageState = NORMAL;
+					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					update();
 				}
 			}
 			break;
 		}
 		case SWT.MouseDown: {
-			if (closeRect.contains(x, y)) {
+			if (minRect.contains(x, y)) {
 				if (event.button != 1) return;
-				closeImageState = SELECTED;
-				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+				minImageState = SELECTED;
+				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
 				update();
 				return;
-			} 
-			if (expandRect.contains(x, y)) {
+			}
+			if (maxRect.contains(x, y)) {
 				if (event.button != 1) return;
-				expandImageState = SELECTED;
-				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+				maxImageState = SELECTED;
+				redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
 				update();
 				return;
 			}
@@ -1784,19 +1853,21 @@ void onMouse(Event event) {
 			break;
 		}
 		case SWT.MouseMove: {
-			boolean close = false, expand = false, chevron = false;
-			if (closeRect.contains(x, y)) {
-				close = true;
-				if (closeImageState != HOT) {
-					closeImageState = HOT;
-					redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+			boolean close = false, minimize = false, maximize = false, chevron = false;
+			if (minRect.contains(x, y)) {
+				minimize = true;
+				if (minImageState != HOT) {
+					minImageState = HOT;
+					redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+					update();
 				}
-			} 
-			if (expandRect.contains(x, y)) {
-				expand = true;
-				if (expandImageState != HOT) {
-					expandImageState = HOT;
-					redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+			}
+			if (maxRect.contains(x, y)) {
+				maximize = true;
+				if (maxImageState != HOT) {
+					maxImageState = HOT;
+					redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
+					update();
 				}
 			}
 			if (chevronRect.contains(x, y)) {
@@ -1804,46 +1875,52 @@ void onMouse(Event event) {
 				if (chevronImageState != HOT) {
 					chevronImageState = HOT;
 					redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+					update();
 				}
 			}
-			if (closeImageState == HOT && !close) {
-				closeImageState = NORMAL;
-				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+			if (minImageState == HOT && !minimize) {
+				minImageState = NORMAL;
+				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+				update();
 			}
-			if (expandImageState == HOT && !expand) {
-				expandImageState = NORMAL;
-				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+			if (maxImageState == HOT && !maximize) {
+				maxImageState = NORMAL;
+				redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
+				update();
 			}
 			if (chevronImageState == HOT && !chevron) {
 				chevronImageState = NORMAL;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+				update();
 			}
-			if (showClose && !single) {
-				for (int i=0; i<items.length; i++) {
-					CTabItem2 item = items[i];
-					close = false;
-					if (item.getBounds().contains(x, y)) {
-						close = true;
-						if (item.closeRect.contains(x, y)) {
-							if (item.closeImageState != HOT) {
-								item.closeImageState = HOT;
-								redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
-							}
-						} else {
-							if (item.closeImageState != NORMAL) {
-								item.closeImageState = NORMAL;
-								redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
-							}
+			for (int i=0; i<items.length; i++) {
+				CTabItem2 item = items[i];
+				close = false;
+				if (item.getBounds().contains(x, y)) {
+					close = true;
+					if (item.closeRect.contains(x, y)) {
+						if (item.closeImageState != HOT) {
+							item.closeImageState = HOT;
+							redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+							update();
 						}
-					} 
-					if (i != selectedIndex && item.closeImageState != NONE && !close) {
-						item.closeImageState = NONE;
-						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					} else {
+						if (item.closeImageState != NORMAL) {
+							item.closeImageState = NORMAL;
+							redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+							update();
+						}
 					}
-					if (i == selectedIndex && item.closeImageState != NORMAL && !close) {
-						item.closeImageState = NORMAL;
-						redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
-					}
+				} 
+				if (i != selectedIndex && item.closeImageState != NONE && !close) {
+					item.closeImageState = NONE;
+					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					update();
+				}
+				if (i == selectedIndex && item.closeImageState != NORMAL && !close) {
+					item.closeImageState = NORMAL;
+					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					update();
 				}
 			}
 			break;
@@ -1855,25 +1932,10 @@ void onMouse(Event event) {
 			}
 			if (event.button != 1) return;
 			Display display = getDisplay();
-			if (closeRect.contains(x, y)) {
-				closeImageState = HOT;
-				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
-				if (selectedIndex == -1) return;
-				CTabItem2 item = items[selectedIndex];
-				CTabFolderEvent e = new CTabFolderEvent(this);
-				e.widget = this;
-				e.time = event.time;
-				e.item = item;
-				e.doit = true;
-				for (int i = 0; i < closeListeners.length; i++) {
-					closeListeners[i].itemClosed(e);
-				}
-				if (e.doit) item.dispose();
-				return;
-			}
 			if (chevronRect.contains(x, y)) {
 				chevronImageState = HOT;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+				update();
 				Rectangle rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
 				if (single && selectedIndex != -1){
 					rect = items[selectedIndex].getBounds();	
@@ -1893,23 +1955,50 @@ void onMouse(Event event) {
 				}
 				return;
 			}
-			if (expandRect.contains(x, y)) {
-				expandImageState = HOT;
+			if (minRect.contains(x, y)) {
+				minImageState = HOT;
+				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+				update();
 				CTabFolderEvent e = new CTabFolderEvent(this);
 				e.widget = this;
 				e.time = event.time;
 				e.doit = true;
-				for (int i = 0; i < expandListeners.length; i++) {
-					if (expanded) {
-						expandListeners[i].collapse(e);
+				boolean restore = minimized;
+				for (int i = 0; i < minmaxListeners.length; i++) {
+					if (restore) {
+						minmaxListeners[i].restore(e);
 					} else {
-						expandListeners[i].expand(e);
+						minmaxListeners[i].minimize(e);
 					}
 				}
 				if (e.doit) {
-					expanded = !expanded;
+					minimized = !restore;
+					redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+					update();
 				}
-				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+				return;
+			}
+			if (maxRect.contains(x, y)) {
+				maxImageState = HOT;
+				redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
+				update();
+				CTabFolderEvent e = new CTabFolderEvent(this);
+				e.widget = this;
+				e.time = event.time;
+				e.doit = true;
+				boolean restore = maximized;
+				for (int i = 0; i < minmaxListeners.length; i++) {
+					if (restore) {
+						minmaxListeners[i].restore(e);
+					} else {
+						minmaxListeners[i].maximize(e);
+					}
+				}
+				if (e.doit) {
+					maximized = !restore;
+					redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
+					update();
+				}
 				return;
 			}
 			for (int i=0; i<items.length; i++) {
@@ -1917,6 +2006,7 @@ void onMouse(Event event) {
 				if (item.closeRect.contains(x,y)){
 					item.closeImageState = HOT;
 					redraw(item.closeRect.x, item.closeRect.y, item.closeRect.width, item.closeRect.height, false);
+					update();
 					CTabFolderEvent e = new CTabFolderEvent(this);
 					e.widget = this;
 					e.time = event.time;
@@ -2109,11 +2199,10 @@ void onPaint(Event event) {
 			item.onPaint(gc, true);
 		}
 	}
-	
-	drawClose(gc);
+
 	drawChevron(gc);
-	drawExpand(gc);
-	
+	drawMinimize(gc);
+	drawMaximize(gc);
 	drawBorder(gc);
 	
 	
@@ -2234,11 +2323,7 @@ public void removeCTabFolderCloseListener(CTabFolderCloseListener listener) {
 	}
 	if (index == -1) return;
 	if (closeListeners.length == 1) {
-		// hide close button
 		closeListeners = new CTabFolderCloseListener[0];
-		showClose = false;
-		updateItems();
-		redraw();
 		return;
 	}
 	CTabFolderCloseListener[] newTabListeners = new CTabFolderCloseListener[closeListeners.length - 1];
@@ -2258,30 +2343,26 @@ public void removeCTabFolderCloseListener(CTabFolderCloseListener listener) {
  *
  * @since 3.0
  */
-public void removeCTabFolderExpandListener(CTabFolderExpandListener listener) {
+public void removeCTabFolderMinMaxListener(CTabFolderMinMaxListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (expandListeners.length == 0) return;
+	if (minmaxListeners.length == 0) return;
 	int index = -1;
-	for (int i = 0; i < expandListeners.length; i++) {
-		if (listener == expandListeners[i]){
+	for (int i = 0; i < minmaxListeners.length; i++) {
+		if (listener == minmaxListeners[i]){
 			index = i;
 			break;
 		}
 	}
 	if (index == -1) return;
-	if (expandListeners.length == 1) {
-		// hide expand button
-		expandListeners = new CTabFolderExpandListener[0];
-		showExpand = false;
-		updateItems();
-		redraw();
+	if (minmaxListeners.length == 1) {
+		minmaxListeners = new CTabFolderMinMaxListener[0];
 		return;
 	}
-	CTabFolderExpandListener[] newListeners = new CTabFolderExpandListener[expandListeners.length - 1];
-	System.arraycopy(expandListeners, 0, newListeners, 0, index);
-	System.arraycopy(expandListeners, index + 1, newListeners, index, expandListeners.length - index - 1);
-	expandListeners = newListeners;
+	CTabFolderMinMaxListener[] newListeners = new CTabFolderMinMaxListener[minmaxListeners.length - 1];
+	System.arraycopy(minmaxListeners, 0, newListeners, 0, index);
+	System.arraycopy(minmaxListeners, index + 1, newListeners, index, minmaxListeners.length - index - 1);
+	minmaxListeners = newListeners;
 }
 /**	 
  * Removes the listener.
@@ -2301,6 +2382,14 @@ public void removeCTabFolderExpandListener(CTabFolderExpandListener listener) {
  */
 public void removeCTabFolderListener(CTabFolderListener listener) {
 	removeCTabFolderCloseListener(listener);
+	if (closeListeners.length == 0) {
+		// hide close button
+		closeListeners = new CTabFolderCloseListener[0];
+		showClose = false;
+		updateItems();
+		redraw();
+		return;
+	}
 }
 /**
  * 
@@ -2384,37 +2473,37 @@ boolean setButtonBounds() {
 	boolean changed = false;
 	Point size = getSize();
 	
-	oldX = closeRect.x;
-	oldY = closeRect.y;
-	oldWidth = closeRect.width;
-	oldHeight = closeRect.height;
-	closeRect.x = closeRect.y = closeRect.height = closeRect.width = 0;
-	if (showClose && single && selectedIndex != -1) {
-		closeRect.x = size.x - borderRight - BUTTON_SIZE;
-		if (borderRight > 0) closeRect.x += 1; // align with first line of trim
-		if (single) closeRect.x -= 3;
-		closeRect.y = onBottom ? size.y - borderBottom - tabHeight : borderTop + 1;
-		closeRect.width = BUTTON_SIZE;
-		closeRect.height = tabHeight;
+	oldX = maxRect.x;
+	oldY = maxRect.y;
+	oldWidth = maxRect.width;
+	oldHeight = maxRect.height;
+	maxRect.x = maxRect.y = maxRect.width = maxRect.height = 0;
+	if (showMax) {
+		maxRect.x = size.x - borderRight - BUTTON_SIZE;
+		if (borderRight > 0) maxRect.x += 1;
+		if (single) maxRect.x -= 3;
+		maxRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+		maxRect.width = BUTTON_SIZE;
+		maxRect.height = tabHeight;
 	}
-	if (oldX != closeRect.x || oldWidth != closeRect.width ||
-	    oldY != closeRect.y || oldHeight != closeRect.height) changed = true;
+	if (oldX != maxRect.x || oldWidth != maxRect.width ||
+	    oldY != maxRect.y || oldHeight != maxRect.height) changed = true;
 	
-	oldX = expandRect.x;
-	oldY = expandRect.y;
-	oldWidth = expandRect.width;
-	oldHeight = expandRect.height;
-	expandRect.x = expandRect.y = expandRect.width = expandRect.height = 0;
-	if (showExpand) {
-		expandRect.x = size.x - borderRight - closeRect.width - BUTTON_SIZE;
-		if (borderRight > 0) expandRect.x += 1;
-		if (single) expandRect.x -= 3;
-		expandRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
-		expandRect.width = BUTTON_SIZE;
-		expandRect.height = tabHeight;
+	oldX = minRect.x;
+	oldY = minRect.y;
+	oldWidth = minRect.width;
+	oldHeight = minRect.height;
+	minRect.x = minRect.y = minRect.width = minRect.height = 0;
+	if (showMin) {
+		minRect.x = size.x - borderRight - maxRect.width - BUTTON_SIZE;
+		if (borderRight > 0) minRect.x += 1;
+		if (single) minRect.x -= 3;
+		minRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
+		minRect.width = BUTTON_SIZE;
+		minRect.height = tabHeight;
 	}
-	if (oldX != expandRect.x || oldWidth != expandRect.width ||
-	    oldY != expandRect.y || oldHeight != expandRect.height) changed = true;
+	if (oldX != minRect.x || oldWidth != minRect.width ||
+	    oldY != minRect.y || oldHeight != minRect.height) changed = true;
 	
 	oldX = topRightRect.x;
 	oldY = topRightRect.y;
@@ -2425,9 +2514,9 @@ boolean setButtonBounds() {
 		Point topRightSize = topRight.computeSize(SWT.DEFAULT, tabHeight);
 		if (single && selectedIndex > -1) {
 			CTabItem2 item = items[selectedIndex];
-			topRightRect.x = Math.min(item.x +item.width + BUTTON_SIZE, size.x - borderRight - closeRect.width - expandRect.width - topRightSize.x - 3);
+			topRightRect.x = Math.min(item.x +item.width + BUTTON_SIZE, size.x - borderRight - minRect.width - maxRect.width - topRightSize.x - 3);
 		} else {
-			topRightRect.x = size.x - borderRight - closeRect.width - expandRect.width - topRightSize.x;
+			topRightRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightSize.x;
 		}
 		topRightRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 		topRightRect.width = topRightSize.x;
@@ -2447,7 +2536,7 @@ boolean setButtonBounds() {
 	if (items.length > 1) {
 		if (single && selectedIndex != -1){
 			CTabItem2 item = items[selectedIndex];
-			chevronRect.x = Math.min(item.x +item.width - 3, size.x - borderRight - closeRect.width - expandRect.width - topRightRect.width - BUTTON_SIZE - 3);
+			chevronRect.x = Math.min(item.x +item.width - 3, size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - BUTTON_SIZE - 3);
 			if (borderRight > 0) chevronRect.x += 1;
 			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 			chevronRect.width = BUTTON_SIZE;
@@ -2456,7 +2545,7 @@ boolean setButtonBounds() {
 			int rightEdge = getRightItemEdge();
 			CTabItem2 item = items[items.length-1];
 			if (topTabIndex > 0 || item.x + item.width >= rightEdge) {
-				chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - topRightRect.width - BUTTON_SIZE;
+				chevronRect.x = size.x - borderRight - minRect.width - maxRect.width - topRightRect.width - BUTTON_SIZE;
 				if (borderRight > 0) chevronRect.x += 1;
 				chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop + 1;
 				chevronRect.width = BUTTON_SIZE;
@@ -2470,10 +2559,11 @@ boolean setButtonBounds() {
 	return changed;
 }
 /**
- * Sets the expanded state of the receiver.
+ * Sets the minimized state of the receiver.
  * <p>
  *
- * @param expanded the new expanded state
+ * @deprecated
+ * @param minimized false if folder is to be minimized
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2481,10 +2571,7 @@ boolean setButtonBounds() {
  * </ul>
  */
 public void setExpanded (boolean expanded) {
-	checkWidget ();
-	if (this.expanded == expanded) return;
-	this.expanded = expanded;
-	redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+	setMinimized(!expanded);
 }
 void setFirstItem(int index) {
 	if (index < 0 || index > items.length - 1) return;
@@ -2579,10 +2666,14 @@ boolean setItemLocation() {
 		if (selectedIndex > -1) {
 			CTabItem2 item = items[selectedIndex];
 			int oldX = item.x, oldY = item.y;
-			int tabWidth = size.x - borderLeft - borderRight - closeRect.width - expandRect.width - chevronRect.width;
+			int tabWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
 			int indent = Math.max(0, (tabWidth-item.width)/2);
 			item.x = borderLeft + indent; 
 			item.y = y;
+			if (showClose || item.showClose) {
+				item.closeRect.x = item.x + item.width - BUTTON_SIZE - CTabItem2.RIGHT_MARGIN - 8;
+				item.closeRect.y = onBottom ? y : y + CTabItem2.TOP_MARGIN;
+			}
 			if (item.x != oldX || item.y != oldY) changed = true;
 		}
 	} else {
@@ -2642,7 +2733,7 @@ boolean setItemSize() {
 		widths[i] = items[i].preferredWidth(gc, i == selectedIndex);
 	}
 	gc.dispose();
-	int tabAreaWidth = size.x - borderLeft - borderRight - closeRect.width - expandRect.width - chevronRect.width;
+	int tabAreaWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
 	if (items.length > 1) {
 		int selectedWidth = selectedIndex == -1 ? 0 : widths[selectedIndex];
 		int count = selectedIndex == -1 ? items.length : items.length - 1;
@@ -2677,7 +2768,7 @@ boolean setItemSize() {
 		tab.height = tabHeight;
 		tab.width = widths[i];
 		tab.closeRect.width = tab.closeRect.height = 0;
-		if (showClose && !single) {
+		if (showClose || tab.showClose) {
 			tab.closeRect.width = BUTTON_SIZE;
 			tab.closeRect.height = BUTTON_SIZE;
 		}
@@ -2692,7 +2783,7 @@ void setLastItem(int index) {
 	if (index < 0 || index > items.length - 1) return;
 	Point size = getSize();
 	if (size.x <= 0) return;
-	int maxWidth = size.x - borderLeft - borderRight - closeRect.width - expandRect.width - chevronRect.width;
+	int maxWidth = size.x - borderLeft - borderRight - minRect.width - maxRect.width - chevronRect.width;
 	int tabWidth = items[index].width;
 	while (index > 0) {
 		tabWidth += items[index - 1].width;
@@ -2703,6 +2794,50 @@ void setLastItem(int index) {
 	topTabIndex = index;
 	setItemLocation();
 	redraw();
+}
+/**
+ * 
+ * 
+ */
+public void setMaximizeVisible(boolean visible) {
+	checkWidget();
+	if (showMax == visible) return;
+	// display maximize button
+	showMax = visible;
+	updateItems();
+	redraw();
+}
+/**
+ * 
+ */
+public void setMaximized(boolean maximize) {
+	checkWidget ();
+	if (this.maximized == maximize) return;
+	this.maximized = maximize;
+	redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
+	update();
+}
+/**
+ * 
+ * 
+ */
+public void setMinimizeVisible(boolean visible) {
+	checkWidget();
+	if (showMin == visible) return;
+	// display maximize button
+	showMin = visible;
+	updateItems();
+	redraw();
+}
+/**
+ * 
+ */
+public void setMinimized(boolean minimize) {
+	checkWidget ();
+	if (this.minimized == minimize) return;
+	this.minimized = minimize;
+	redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+	update();
 }
 /**
  * Set the selection to the tab at the specified item.
@@ -2744,12 +2879,11 @@ public void setSelection(int index) {
 	
 	int oldIndex = selectedIndex;
 	selectedIndex = index;
-	if (!single) {
-		if (oldIndex != -1) {
-			items[oldIndex].closeImageState = NONE;
-		}
-		items[selectedIndex].closeImageState = NORMAL;
+	if (oldIndex != -1) {
+		items[oldIndex].closeImageState = NONE;
 	}
+	items[selectedIndex].closeImageState = NORMAL;
+	
 	Control control = items[index].control;
 	if (control != null && !control.isDisposed()) {
 		control.setBounds(getClientArea());

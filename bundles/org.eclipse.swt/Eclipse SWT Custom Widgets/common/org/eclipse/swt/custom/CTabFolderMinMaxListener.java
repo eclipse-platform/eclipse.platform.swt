@@ -17,8 +17,21 @@ import org.eclipse.swt.internal.*;
 *
 * @ since 3.0
 */
-public interface CTabFolderExpandListener extends SWTEventListener {
+public interface CTabFolderMinMaxListener extends SWTEventListener {
 
-public void expand(CTabFolderEvent event);
-public void collapse(CTabFolderEvent event);
+/**
+ * 
+ */
+public void minimize(CTabFolderEvent event);
+
+/**
+ * 
+ */
+public void maximize(CTabFolderEvent event);
+
+/**
+ * 
+ */
+public void restore(CTabFolderEvent event);
+
 }

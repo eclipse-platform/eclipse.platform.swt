@@ -31,8 +31,10 @@ public class CTabItem2 extends Item {
 	Image disabledImage;
 	String shortenedText;
 	int shortenedTextWidth;
+	
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
 	int closeImageState = CTabFolder2.NONE;
+	boolean showClose = false;
 	
 	// internal constants
 	static final int LEFT_MARGIN = 6;
@@ -105,6 +107,7 @@ public CTabItem2 (CTabFolder2 parent, int style) {
  */
 public CTabItem2 (CTabFolder2 parent, int style, int index) {
 	super (parent, checkStyle(style));
+	showClose = (style & SWT.CLOSE) != 0;
 	parent.createItem (this, index);
 }
 static int checkStyle(int style) {
@@ -319,7 +322,7 @@ void drawSelected(GC gc ) {
 	gc.setForeground(parent.selectionForeground);
 	gc.drawText(shortenedText, xDraw, textY, FLAGS);
 	
-	if (parent.showClose && !parent.single) drawClose(gc);
+	if (parent.showClose || showClose) drawClose(gc);
 	
 	// draw a Focus rectangle
 	if (parent.isFocusControl()) {
@@ -446,7 +449,7 @@ void drawUnselected(GC gc) {
 	gc.setForeground(parent.getForeground());
 	gc.drawText(shortenedText, x + LEFT_MARGIN, textY, FLAGS);
 	
-	if (parent.showClose && !parent.single) drawClose(gc);
+	if (parent.showClose || showClose) drawClose(gc);
 }
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -550,7 +553,7 @@ int preferredWidth(GC gc, boolean isSelected) {
 		if (w > 0) w += INTERNAL_SPACING;
 		w += gc.textExtent(text, FLAGS).x;
 	}
-	if (!parent.single && parent.showClose) {
+	if (parent.showClose || showClose) {
 		if (w > 0) w += INTERNAL_SPACING;
 		w += CTabFolder2.BUTTON_SIZE;
 	}
