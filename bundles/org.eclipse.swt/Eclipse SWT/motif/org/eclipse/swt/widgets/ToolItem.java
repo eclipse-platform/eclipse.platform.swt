@@ -148,15 +148,19 @@ void createHandle (int index) {
 	state |= HANDLE;
 	int parentHandle = parent.handle;
 	if ((style & SWT.SEPARATOR) != 0) {
+		int separatorOrientation =
+			(parent.style & SWT.HORIZONTAL) != 0 ? OS.XmVERTICAL : OS.XmHORIZONTAL;
 		int [] argList = {
-			OS.XmNwidth, 8,
-			OS.XmNheight, 5,
-			OS.XmNrecomputeSize, 0,
-			OS.XmNpositionIndex, index,
-			OS.XmNmappedWhenManaged, 0,
+			OS.XmNheight, separatorOrientation == OS.XmVERTICAL ? 22 : 2,
+			OS.XmNwidth, separatorOrientation == OS.XmHORIZONTAL ? 24 : 2,
 			OS.XmNancestorSensitive, 1,
+			OS.XmNborderWidth, 0,
+			OS.XmNorientation, separatorOrientation,
+			OS.XmNrecomputeSize, 0,
+			OS.XmNhighlightThickness, 0,
+			OS.XmNseparatorType, (parent.getStyle() & SWT.FLAT) != 0 ? OS.XmSHADOW_ETCHED_IN : OS.XmSHADOW_ETCHED_OUT,
 		};
-		handle = OS.XmCreateDrawnButton (parentHandle, null, argList, argList.length / 2);
+		handle = OS.XmCreateSeparator (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
@@ -177,6 +181,7 @@ void createHandle (int index) {
 	int pixel = parent.getBackgroundPixel ();
 	setBackgroundPixel (pixel);
 }
+
 
 Point computeSize () {
 	if ((style & SWT.SEPARATOR) != 0) {
