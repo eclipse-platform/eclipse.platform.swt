@@ -53,6 +53,27 @@ case $OS in
 				makefile="make_linux.mak"
 				echo "Building Linux GTK x86 version of SWT"
 				;;
+			"ppc")
+				CC=gcc
+				LD=gcc
+				if [ "${JAVA_HOME}" = "" ]; then
+					echo "JAVA_HOME is missing. Build will probably fail.
+				fi
+				AWT_LIB_PATH=$JAVA_HOME/jre/bin
+				XTEST_LIB_PATH=/usr/X11R6/lib
+				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/ppc
+				;;
+			"ppc64")
+				CC=gcc
+				LD=gcc
+				if [ "${JAVA_HOME}" = "" ]; then
+					echo "JAVA_HOME is missing. Build will probably fail.
+				fi
+				AWT_LIB_PATH=$JAVA_HOME/jre/bin
+				XTEST_LIB_PATH=/usr/X11R6/lib
+				SWT_PTR_CFLAGS=-DSWT_PTR_SIZE_64
+				OUTPUT_DIR=../../../org.eclipse.swt.gtk64/os/linux/ppc64
+				;;
 			*)
 				echo "*** Unknown MODEL <${MODEL}>"
 				;;	
