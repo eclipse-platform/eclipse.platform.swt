@@ -912,6 +912,27 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
+	if (result != null || COMCTL32_MAJOR >= 6) return result;
+		
+	/*
+	* Feature in Windows.  For some reason, Windows
+	* does not fully erase the area that the cool bar
+	* occupies when the size of the cool bar is larger
+	* than the space occupied by the cool bar items.
+	* The fix is to erase the cool bar background.
+	*/
+	drawBackground (wParam);
+	
+	/*
+	* NOTE: The cool bar draws separators in WM_ERASEBKGND
+	* so it is essential to run the cool bar window proc
+	* after the background has been erased.
+	*/
+	return null;
+}
+
 LRESULT WM_NOTIFY (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the cool bar window
@@ -1002,20 +1023,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		case OS.NM_CUSTOMDRAW:
-			/*
-			* Feature in Windows.  For some reason, Windows
-			* does not fully erase the area that the cool bar
-			* occupies when the size of the cool bar is larger
-			* than the space occupied by the cool bar items.
-			* The fix is to erase the cool bar background in
-			* all cases.
-			*
-			* NOTE:  This work around is unnecessary on XP
-			* and interferes with the drawing of the theme.
-			*/
-			if (COMCTL32_MAJOR >= 6) {
-				if (background == -1) break;
-			}
+			if (COMCTL32_MAJOR < 6 || background == -1) break;
 			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
