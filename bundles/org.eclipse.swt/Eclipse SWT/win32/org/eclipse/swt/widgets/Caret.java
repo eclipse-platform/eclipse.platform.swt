@@ -309,7 +309,7 @@ void saveIMEFont () {
 	int hwnd = parent.handle;
 	int hIMC = OS.ImmGetContext (hwnd);
 	oldFont = OS.IsUnicode ? (LOGFONT) new LOGFONTW () : new LOGFONTA ();
-	if (OS.ImmGetCompositionFont (hIMC, oldFont)) oldFont = null;
+	if (!OS.ImmGetCompositionFont (hIMC, oldFont)) oldFont = null;
 	OS.ImmReleaseContext (hwnd, hIMC);
 }
 
