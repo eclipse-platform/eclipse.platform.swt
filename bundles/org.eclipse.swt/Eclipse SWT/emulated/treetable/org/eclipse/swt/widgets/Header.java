@@ -43,7 +43,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	int height = 0;
 
 	for (int i = 0; i < getItemCount(); i++) {
-		width += getBounds(i).width;
+		width += getItemBounds(i).width;
 		if (height == 0) {
 			height = getBounds(i).height;
 		}
@@ -68,7 +68,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
  * @param itemIndex - specifies the item to draw
  */
 void drawHighlightShadow(GC gc, int itemIndex) {
-	Rectangle bounds = getBounds(itemIndex);
+	Rectangle bounds = getItemBounds(itemIndex);
 	Color oldForeground = getForeground();
 
 	gc.setForeground(getDisplay().getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW));	
@@ -129,7 +129,7 @@ void drawLowlightShadows(GC gc, int itemIndex) {
  *	should be returned.
  * @return the bouding rectangle of the item identified by 'itemIndex'.
  */
-Rectangle getBounds(int itemIndex) {
+Rectangle getItemBounds(int itemIndex) {
 	Rectangle bounds = null;
 	int itemCount = getItemCount();
 
