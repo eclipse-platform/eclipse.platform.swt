@@ -48,8 +48,7 @@ private void makeCleanEnvironment() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_TableI(){
-
-	if (fCheckSwtNullExceptions) {
+ 	if (fCheckSwtNullExceptions) {
 		try {
 			TableItem tItem = new TableItem(null, SWT.NULL);
 			fail("No exception thrown for parent == null");
@@ -67,32 +66,30 @@ public void test_checkSubclass() {
 	warnUnimpl("Test test_checkSubclass not written");
 }
 
+public void test_getBackground() {
+	// tested in test_setBackgroundLorg_eclipse_swt_graphics_Color
+}
+
 public void test_getBoundsI(){
 	int boundsX;
 	Rectangle bounds;
 	Table table2 = new Table(shell, SWT.CHECK);
 	TableItem tableItem2 = new TableItem(table2, SWT.NULL);
-
-	bounds = tableItem.getBounds(0);
+ 	bounds = tableItem.getBounds(0);
 	assertTrue(":a:", bounds.x > 0 && bounds.width > 0);
 	boundsX = bounds.x;
-
-	bounds = tableItem.getBounds(-1);
+ 	bounds = tableItem.getBounds(-1);
 	assertTrue(":b:", bounds.equals(new Rectangle(0, 0, 0, 0)));	
-
-	bounds = tableItem.getBounds(1);
+ 	bounds = tableItem.getBounds(1);
 	assertTrue(":c:", bounds.equals(new Rectangle(0, 0, 0, 0)));
-
-	//table2.setWidths(new int[] {30});
+ 	//table2.setWidths(new int[] {30});
 	TableColumn column = new TableColumn(table2, SWT.NONE, 0);
 	column.setWidth(30);
 	bounds = tableItem2.getBounds(0);
 	assertTrue(":d:", bounds.x > boundsX && bounds.width > 0);
-
-	bounds = tableItem2.getBounds(-1);
+ 	bounds = tableItem2.getBounds(-1);
 	assertEquals(new Rectangle(0, 0, 0, 0), bounds);	
-
-	bounds = tableItem2.getBounds(1);
+ 	bounds = tableItem2.getBounds(1);
 	assertEquals(new Rectangle(0, 0, 0, 0), bounds);			
 
 	
@@ -112,26 +109,21 @@ public void test_getBoundsI(){
 	bounds = tableItem.getBounds(0);
 	assertTrue(":a:", bounds.x > 0 && bounds.width > 0);
 	boundsX = bounds.x;
-
-	bounds = tableItem.getBounds(-1);
+ 	bounds = tableItem.getBounds(-1);
 	assertEquals(new Rectangle(0, 0, 0, 0), bounds);	
-
-	bounds = tableItem.getBounds(1);
+ 	bounds = tableItem.getBounds(1);
 	//assert(":c:", bounds.x > 0 && bounds.width > 0);  // ?? setting the image in one column does not affect width of other columns
 	assertTrue(":c:", bounds.x > 0 && bounds.height > 0);
-
-
+ 
 	column = new TableColumn(table2, SWT.NULL);
 	column.setWidth(30);
 	new TableColumn(table2, SWT.NULL);	
 	tableItem2.setImage(1, image);
 	bounds = tableItem2.getBounds(0);
 	assertTrue(":d:", bounds.x > boundsX && bounds.width > 0);
-
-	bounds = tableItem2.getBounds(-1);
+ 	bounds = tableItem2.getBounds(-1);
 	assertEquals(new Rectangle(0, 0, 0, 0), bounds);	
-
-	bounds = tableItem2.getBounds(1);
+ 	bounds = tableItem2.getBounds(1);
 	//assert(":f:", bounds.x > 0 && bounds.width > 0); // ?? setting the image in one column does not affect width of other columns
 	assertTrue(":f:", bounds.x > 0 && bounds.height > 0);
 }
@@ -142,6 +134,10 @@ public void test_getChecked() {
 
 public void test_getDisplay() {
 	assertEquals(table.getDisplay(), tableItem.getDisplay());
+}
+
+public void test_getForeground() {
+	// tested in test_setForegroundLorg_eclipse_swt_graphics_Color
 }
 
 public void test_getGrayed() {
@@ -175,8 +171,7 @@ public void test_getImageBoundsI(){
 	assertTrue(":e:", bounds.x > imageX && bounds.width == 0);
 	
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
-
-	//
+ 	//
 	makeCleanEnvironment();
 	
 	Image image = images[0];	
@@ -189,8 +184,7 @@ public void test_getImageBoundsI(){
 	
 	bounds = tableItem.getImageBounds(0);
 	assertTrue(":b:", bounds.x > 0 && bounds.width == imageWidth && bounds.height == imageHeight);	
-
-	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(1));	
+ 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(1));	
 
 
 	//
@@ -201,15 +195,13 @@ public void test_getImageBoundsI(){
 	tableItem2.dispose();
 	tableItem2 = new TableItem(table2, SWT.NULL);
 	Rectangle imageBounds = image.getBounds();
-	imageWidth = imageBounds.width;
-	tableItem2.setImage(0, image);
+	imageWidth = imageBounds.width; 	tableItem2.setImage(0, image);
 	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
 	
 	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if they are wider than image
 	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
-
-	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));	
+ 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));	
 
 
 	//
@@ -222,15 +214,12 @@ public void test_getImageBoundsI(){
 	image = images[1];
 	imageBounds = image.getBounds();
 	imageWidth = imageBounds.width;
-
-	tableItem2.setImage(0, image);
+ 	tableItem2.setImage(0, image);
 	imageHeight = table2.getItemHeight() - table2.getGridLineWidth();
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
-
-	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
+ 	bounds = tableItem2.getImageBounds(0);	// bounds.width should be check box width if check box is wider than image
 	assertTrue(":b:", bounds.x > 0 && bounds.width > 0 && bounds.height == imageHeight);
-
-	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
+ 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
 }
 
 public void test_getImageIndent() {
@@ -245,13 +234,26 @@ public void test_getTextI() {
 	warnUnimpl("Test test_getTextI not written");
 }
 
+public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(tableItem.getDisplay(), 255, 0, 0);
+	tableItem.setBackground(color);
+	assertEquals(color, tableItem.getBackground());
+	tableItem.setBackground(null);
+	assertEquals(table.getBackground(),tableItem.getBackground());
+	color.dispose();
+	try { 
+		tableItem.setBackground(color);
+		fail("No exception thrown for color disposed");		
+	} catch (IllegalArgumentException e) {
+	}
+}
+
 public void test_setCheckedZ(){
 	assertEquals(false, tableItem.getChecked());
 	
 	tableItem.setChecked(true);
 	assertEquals(false, tableItem.getChecked());
-
-	Table t = new Table(shell, SWT.CHECK);
+ 	Table t = new Table(shell, SWT.CHECK);
 	TableItem ti = new TableItem(t, SWT.NULL);
 	ti.setChecked(true);
 	assertTrue(ti.getChecked());
@@ -261,20 +263,32 @@ public void test_setCheckedZ(){
 	t.dispose();
 }
 
+public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(tableItem.getDisplay(), 255, 0, 0);
+	tableItem.setForeground(color);
+	assertEquals(color, tableItem.getForeground());
+	tableItem.setForeground(null);
+	assertEquals(table.getForeground(),tableItem.getForeground());
+	color.dispose();
+	try { 
+		tableItem.setForeground(color);
+		fail("No exception thrown for color disposed");
+	} catch (IllegalArgumentException e) {
+	}
+}
+
 public void test_setGrayedZ() {
 	warnUnimpl("Test test_setGrayedZ not written");
 }
 
 public void test_setImage$Lorg_eclipse_swt_graphics_Image(){
 	assertNull(tableItem.getImage(1));	
-
-	tableItem.setImage(-1, null);		
+ 	tableItem.setImage(-1, null);		
 	assertNull(tableItem.getImage(-1));	
 		
 	tableItem.setImage(0, images[0]);
 	assertEquals(images[0], tableItem.getImage(0));	
-
-	String texts[] = new String[images.length];
+ 	String texts[] = new String[images.length];
 	for (int i = 0; i < texts.length; i++) {
 		texts[i] = String.valueOf(i);
 	}
@@ -292,8 +306,7 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image(){
 	}
 	tableItem.setImage(1, images[1]);
 	assertEquals(images[1], tableItem.getImage(1));	
-
-	tableItem.setImage(images);
+ 	tableItem.setImage(images);
 	for (int i = 0; i < images.length; i++) {
 		assertEquals(images[i], tableItem.getImage(i));
 	}
@@ -315,11 +328,9 @@ public void test_setImageLorg_eclipse_swt_graphics_Image() {
 
 public void test_setImageIndentI(){
 	assertEquals(0, tableItem.getImageIndent());
-
-	tableItem.setImageIndent(1);
+ 	tableItem.setImageIndent(1);
 	assertEquals(1, tableItem.getImageIndent());
-
-	tableItem.setImageIndent(-1);
+ 	tableItem.setImageIndent(-1);
 	assertEquals(1, tableItem.getImageIndent());
 }
 
@@ -377,15 +388,13 @@ public void test_setTextILjava_lang_String(){
  	*/
 	
 	assertEquals(0, tableItem.getText(1).length());	
-
-	tableItem.setText(1, TestString);
+ 	tableItem.setText(1, TestString);
 	assertEquals(0, tableItem.getText(1).length());	
 	assertEquals(0, tableItem.getText(0).length());
 	
 	tableItem.setText(0, TestString);
 	assertEquals(TestString, tableItem.getText(0));
-
-	tableItem.setText(-1, TestStrings[1]);
+ 	tableItem.setText(-1, TestStrings[1]);
 	assertEquals(0, tableItem.getText(-1).length());	
 
    /*
@@ -433,8 +442,7 @@ public void test_setTextILjava_lang_String(){
 		fail("No exception thrown for string == null");
 	}
 	catch (IllegalArgumentException e) {
-	}
-
+	} 
 
 
 }
@@ -468,6 +476,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getTextI");
 	methodNames.addElement("test_setCheckedZ");
 	methodNames.addElement("test_setGrayedZ");
+	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");	
+	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");		
 	methodNames.addElement("test_setImage$Lorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setImageILorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
@@ -491,7 +501,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getImageIndent")) test_getImageIndent();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getTextI")) test_getTextI();
+	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setCheckedZ")) test_setCheckedZ();
+	else if (getName().equals("test_setForegroundLorg_eclipse_swt_graphics_Color")) test_setForegroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setGrayedZ")) test_setGrayedZ();
 	else if (getName().equals("test_setImage$Lorg_eclipse_swt_graphics_Image")) test_setImage$Lorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setImageILorg_eclipse_swt_graphics_Image")) test_setImageILorg_eclipse_swt_graphics_Image();

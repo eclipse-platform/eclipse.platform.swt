@@ -92,6 +92,10 @@ public void test_checkSubclass() {
 	warnUnimpl("Test test_checkSubclass not written");
 }
 
+public void test_getBackground() {
+	// tested in test_setBackgroundLorg_eclipse_swt_graphics_Color
+}
+
 public void test_getBounds() {
 	warnUnimpl("Test test_getBounds not written");
 }
@@ -118,6 +122,10 @@ public void test_getExpanded(){
 	assertTrue(treeItem.getExpanded());
 	treeItem.setExpanded(false);
 	assertEquals(false, treeItem.getExpanded());
+}
+
+public void test_getForeground() {
+	// tested in test_setForegroundLorg_eclipse_swt_graphics_Color
 }
 
 public void test_getGrayed() {
@@ -155,6 +163,21 @@ public void test_getParentItem(){
 	assertEquals(treeItem, tItem.getParentItem());
 }
 
+public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(treeItem.getDisplay(), 255, 0, 0);
+	treeItem.setBackground(color);
+	assertEquals(color, treeItem.getBackground());
+	treeItem.setBackground(null);
+	assertEquals(tree.getBackground(),treeItem.getBackground());
+	color.dispose();
+	try { 
+		treeItem.setBackground(color);
+		fail("No exception thrown for color disposed");		
+	} catch (IllegalArgumentException e) {
+	}
+}
+
+
 public void test_setCheckedZ(){
 	assertEquals(false, treeItem.getChecked());
 	
@@ -189,6 +212,20 @@ public void test_setExpandedZ(){
 	ti.setExpanded(true);
 	treeItem.setExpanded(false);
 	assertEquals(false, ti.getExpanded());
+}
+
+public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
+	Color color = new Color(treeItem.getDisplay(), 255, 0, 0);
+	treeItem.setForeground(color);
+	assertEquals(color, treeItem.getForeground());
+	treeItem.setForeground(null);
+	assertEquals(tree.getForeground(),treeItem.getForeground());
+	color.dispose();
+	try { 
+		treeItem.setForeground(color);
+		fail("No exception thrown for color disposed");
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_setGrayedZ() {
@@ -233,8 +270,10 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getItems");
 	methodNames.addElement("test_getParent");
 	methodNames.addElement("test_getParentItem");
+	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setCheckedZ");
 	methodNames.addElement("test_setExpandedZ");
+	methodNames.addElement("test_setForegroundLorg_eclipse_swt_graphics_Color");	
 	methodNames.addElement("test_setGrayedZ");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextLjava_lang_String");
@@ -256,8 +295,10 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getItems")) test_getItems();
 	else if (getName().equals("test_getParent")) test_getParent();
 	else if (getName().equals("test_getParentItem")) test_getParentItem();
+	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();		
 	else if (getName().equals("test_setCheckedZ")) test_setCheckedZ();
 	else if (getName().equals("test_setExpandedZ")) test_setExpandedZ();
+	else if (getName().equals("test_setForegroundLorg_eclipse_swt_graphics_Color")) test_setForegroundLorg_eclipse_swt_graphics_Color();	
 	else if (getName().equals("test_setGrayedZ")) test_setGrayedZ();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
