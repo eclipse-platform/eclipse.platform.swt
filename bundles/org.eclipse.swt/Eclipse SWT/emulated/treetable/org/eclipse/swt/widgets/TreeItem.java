@@ -8,9 +8,8 @@ public class TreeItem extends Item {
 	Tree parent;
 	TreeItem parentItem;
 	TreeItem[] items = new TreeItem [0];
-	/* index in parent's flat list of available (though not necessarily visible) items */
-	int availableIndex = -1;
-	int depth = 0;
+	int availableIndex = -1;	/* index in parent's flat list of available (though not necessarily within viewport) items */
+	int depth = 0;				/* cached for performance, does not change after instantiation */
 	boolean checked, grayed, expanded;
 
 	String[] texts = new String [1];
@@ -23,7 +22,7 @@ public class TreeItem extends Item {
 	Font font;
 	Font[] cellFonts;
 	
-	static final int INDENT_HIERARCHY = 6;
+	static final int INDENT_HIERARCHY = 6;	/* the margin between an item's expander and its checkbox or content */
 	static final int MARGIN_TEXT = 3;			/* the left and right margins within the text's space */
 
 public TreeItem (Tree parent, int style) {
@@ -60,6 +59,9 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 		images = new Image [validColumnCount];
 	}
 }
+/*
+ * Updates internal structures in the receiver and its child items to handle the creation of a new column.
+ */
 void addColumn (TreeColumn column) {
 	int index = column.getIndex ();
 	int columnCount = parent.columns.length;
@@ -114,15 +116,17 @@ void addColumn (TreeColumn column) {
 		items[i].addColumn (column);
 	}
 }
+/*
+ * Adds a child item to the receiver.
+ */
 void addItem (TreeItem item, int index) {
-	/* adds a child item to the receiver */
 	TreeItem[] newChildren = new TreeItem [items.length + 1];
 	System.arraycopy (items, 0, newChildren, 0, index);
 	newChildren [index] = item;
 	System.arraycopy (items, index, newChildren, index + 1, items.length - index);
 	items = newChildren;
 
-	/* if item should be available immediately then update parent accordingly */
+	/* if item should be available immediately then update parent */
 	if (item.isAvailable ()) {
 		parent.makeAvailable (item);
 		parent.redrawFromItemDownwards (availableIndex);
@@ -135,7 +139,6 @@ static Tree checkNull (Tree tree) {
 	if (tree == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return tree;
 }
-
 static TreeItem checkNull (TreeItem item) {
 	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	return item;
@@ -148,7 +151,7 @@ static TreeItem checkNull (TreeItem item) {
 TreeItem[] computeAllDescendents () {
 	int childCount = items.length;
 	TreeItem[][] childResults = new TreeItem [childCount][];
-	int count = 1;	/* self */
+	int count = 1;	/* receiver */
 	for (int i = 0; i < childCount; i++) {
 		childResults [i] = items [i].computeAllDescendents ();
 		count += childResults [i].length;
@@ -163,8 +166,8 @@ TreeItem[] computeAllDescendents () {
 	return result;
 }
 /*
- * Returns the number of tree items descending from the receiver (including the
- * receiver) that are currently available.  It is assumed that the receiver is
+ * Returns the number of tree items descending from the receiver, including the
+ * receiver, that are currently available.  It is assumed that the receiver is
  * currently available. 
  */
 int computeAvailableDescendentCount () {
@@ -176,8 +179,8 @@ int computeAvailableDescendentCount () {
 	return result;
 }
 /*
- * Returns a collection of the tree items descending from the receiver (including
- * the receiver) that are currently available.  It is assumed that the receiver is
+ * Returns a collection of the tree items descending from the receiver, including
+ * the receiver, that are currently available.  It is assumed that the receiver is
  * currently available.  The order of the items in this collection are receiver,
  * child0tree, child1tree, ..., childNtree. 
  */
@@ -185,7 +188,7 @@ TreeItem[] computeAvailableDescendents () {
 	if (!expanded) return new TreeItem[] {this};
 	int childCount = items.length;
 	TreeItem[][] childResults = new TreeItem [childCount][];
-	int count = 1;	/* self */
+	int count = 1;	/* receiver */
 	for (int i = 0; i < childCount; i++) {
 		childResults [i] = items [i].computeAvailableDescendents ();
 		count += childResults [i].length;
@@ -230,9 +233,7 @@ public void dispose () {
 			parent.redrawItem (focusItem.availableIndex, true);
 		}
 	}
-	if (parentItem != null) {
-		parentItem.removeItem (this, index);
-	}
+	if (parentItem != null) parentItem.removeItem (this, index);
 	dispose (true);
 	if (startIndex != -1) {
 		parent.redrawItems (startIndex, endIndex, false);
@@ -278,71 +279,61 @@ public Color getBackground (int columnIndex) {
 public Rectangle getBounds () {
 	checkWidget ();
 	if (!isAvailable()) return new Rectangle (0, 0, 0, 0);
-	
-	TreeColumn[] columns = parent.columns;
-	int columnCount = columns.length;
-	int focusX = getFocusX ();
-	
-	/*
-	 * If there are no columns then this is essentially the bounds of the text
-	 */
-	if (columnCount == 0) {
-		return new Rectangle (
-			focusX,
-			parent.getItemY (this),
-			getTextPaintWidth (0),
-			parent.itemHeight);
-	}
-	
-	/*
-	 * If there are columns then this runs from the beginning of the column 0
-	 * text to the end of the last column.
-	 */
-	TreeColumn lastColumn = columns [columnCount - 1];
-	return new Rectangle (
-		focusX,
-		parent.getItemY (this),
-		lastColumn.width - parent.horizontalOffset - focusX,
-		parent.itemHeight);
+	return new Rectangle (getTextX (0), parent.getItemY (this), getTextPaintWidth (0), parent.itemHeight - 1);
 }
 public Rectangle getBounds (int columnIndex) {
 	checkWidget ();
 	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
-
 	TreeColumn[] columns = parent.columns;
 	int columnCount = columns.length;
 	int validColumnCount = Math.max (1, columnCount);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) {
 		return new Rectangle (0, 0, 0, 0);
 	}
-	
 	/*
-	 * If there are no columns then this is the bounds of the receiver from the
-	 * beginning of its expander to the end of its text.
+	 * If there are no columns then this is the bounds of the receiver's content.
 	 */
 	if (columnCount == 0) {
-		int x = getExpanderBounds ().x;
-		int width = getFocusX () + getTextPaintWidth (0) - x;
-		return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight);
+		int width = getContentWidth (0);
+		return new Rectangle (
+			getContentX (0),
+			parent.getItemY (this),
+			width,
+			parent.itemHeight - 1);
 	}
+	
 	TreeColumn column = columns [columnIndex];
 	if (columnIndex == 0) {
-		int columnX = column.getX ();
-		int xOffset = getExpanderBounds ().x - columnX;
-		int width = Math.max (0, column.width - xOffset);	/* for columns with width < expander x */
-		return new Rectangle (columnX + xOffset, parent.getItemY (this), width, parent.itemHeight);
+		/* 
+		 * For column 0 this is bounds from the beginning of the content to the
+		 * end of the column.
+		 */
+		int x = getContentX (0);
+		int offset = x - column.getX ();
+		int width = Math.max (0, column.width - offset);		/* max is for columns with small widths */
+		return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight - 1);
 	}
-	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight);
+	/*
+	 * For columns > 0 this is the bounds of the tree cell.
+	 */
+	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight - 1);
 }
+/*
+ * Returns the full bounds of a cell in a tree, regardless of its content.
+ */
 Rectangle getCellBounds (int columnIndex) {
-	if (parent.columns.length == 0 || columnIndex != 0) {
-		return getBounds (columnIndex);
+	int y = parent.getItemY (this);
+	if (parent.columns.length == 0) {
+		int width = getTextX (0) + getTextPaintWidth (0) + parent.horizontalOffset;
+		return new Rectangle (-parent.horizontalOffset, y, width, parent.itemHeight);
 	}
-	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
-
 	TreeColumn column = parent.columns [columnIndex];
-	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight);
+	return new Rectangle (column.getX (), y, column.width, parent.itemHeight);
 }
+/*
+ * Returns the bounds of the receiver's checkbox, or null if the parent's style does not
+ * include SWT.CHECK.
+ */
 Rectangle getCheckboxBounds () {
 	if ((parent.getStyle () & SWT.CHECK) == 0) return null;
 	int itemHeight = parent.itemHeight;
@@ -356,11 +347,19 @@ public boolean getChecked () {
 	checkWidget ();
 	return checked;
 }
+int getContentWidth (int columnIndex) {
+	int width = getTextPaintWidth (columnIndex);
+	Image image = images [columnIndex];
+	if (image != null) {
+		width += Tree.MARGIN_IMAGE + image.getBounds ().width;
+	}
+	return width;
+}
 /*
  * Returns the x value where the receiver's content (ie.- its image or text) begins
- * for the specified column.  For columns > 0 this must consider column alignment, and
- * for column 0 this is dependent upon the receiver's depth in the tree item hierarchy
- * and the presence/absence of a checkbox.
+ * for the specified column.  For columns > 0 this is dependent upon column alignment,
+ * and for column 0 this is dependent upon the receiver's depth in the tree item
+ * hierarchy and the presence/absence of a checkbox.
  */
 int getContentX (int columnIndex) {
 	if (columnIndex > 0) {
@@ -368,11 +367,8 @@ int getContentX (int columnIndex) {
 		int contentX = column.getX () + MARGIN_TEXT;
 		if ((column.style & SWT.LEFT) != 0) return contentX;
 		
-		int contentWidth = textWidths [columnIndex];
-		Image image = images [columnIndex];
-		if (image != null) {
-			contentWidth += Tree.MARGIN_IMAGE + image.getBounds ().width;
-		}
+		/* column is not left-aligned */
+		int contentWidth = getContentWidth (columnIndex);
 		if ((column.style & SWT.RIGHT) != 0) {
 			int padding = parent.getCellPadding ();
 			contentX = Math.max (contentX, column.getX () + column.width - padding - contentWidth);	
@@ -382,22 +378,22 @@ int getContentX (int columnIndex) {
 		return contentX;
 	}
 
-	/* column 0 */
+	/* column 0 (always left-aligned) */
 	if ((parent.style & SWT.CHECK) != 0) {
 		Rectangle checkBounds = getCheckboxBounds ();
 		return checkBounds.x + checkBounds.width + Tree.MARGIN_IMAGE;
 	}
 	
-	int x = parent.getCellPadding () - parent.horizontalOffset;
+	int contentX = parent.getCellPadding () - parent.horizontalOffset;
 	if (parentItem != null) {
 		int expanderWidth = parent.expanderBounds.width + INDENT_HIERARCHY;
-		x += expanderWidth * depth;
+		contentX += expanderWidth * depth;
 	}
-	x += parent.expanderBounds.width;
+	contentX += parent.expanderBounds.width;
 	if (items.length == 0) {
-		x += Compatibility.floor (parent.expanderBounds.width, 2);
+		contentX += Compatibility.floor (parent.expanderBounds.width, 2);
 	}
-	return x + Tree.MARGIN_IMAGE + INDENT_HIERARCHY;
+	return contentX + Tree.MARGIN_IMAGE + INDENT_HIERARCHY;
 }
 public boolean getExpanded () {
 	checkWidget ();
@@ -427,7 +423,7 @@ Rectangle getFocusBounds () {
 	int width;
 	TreeColumn[] columns = parent.columns;
 	if (columns.length == 0) {
-		width = getTextPaintWidth (0) - 1;
+		width = getTextPaintWidth (0);
 	} else {
 		width = columns [0].width - parent.horizontalOffset - x - 2;
 	}
@@ -487,10 +483,10 @@ public boolean getGrayed () {
 Point[] getHconnectorEndpoints () {
 	Rectangle expanderBounds = getExpanderBounds ();
 	int x, width;
-	if (items.length == 0) {
+	if (items.length == 0) {	/* no child items, so no expander box */
 		x = expanderBounds.x + Compatibility.ceil (expanderBounds.width, 2);
 		width = Compatibility.floor (expanderBounds.width, 2) + INDENT_HIERARCHY;
-	} else {
+	} else {					/* has child items */
 		x = expanderBounds.x + expanderBounds.width;
 		width = INDENT_HIERARCHY;
 	}
@@ -501,16 +497,24 @@ Point[] getHconnectorEndpoints () {
 	};
 }
 /*
- * Returns the bounds representing the clickable region that should select the receiver
+ * Returns the bounds representing the clickable region that should select the receiver.
  */
 Rectangle getHitBounds () {
 	int contentX = getContentX (0);
 	int width = 0;
 	TreeColumn[] columns = parent.columns;
 	if (columns.length == 0) {
+		/* 
+		 * If there are no columns then this spans from the beginning of the receiver's
+		 * image or text to the end of its text.
+		 */
 		width = getFocusX () + getTextPaintWidth (0) - contentX; 
 	} else {
-		width = columns [0].width - parent.horizontalOffset - contentX;
+		/* 
+		 * If there are columns then this spans from the beginning of the receiver's column 0
+		 * image or text to the end of column 0.
+		 */
+		width = columns [0].width - contentX - parent.horizontalOffset;
 	}
 	return new Rectangle (contentX, parent.getItemY (this), width, parent.itemHeight);
 }
@@ -532,10 +536,11 @@ public Rectangle getImageBounds (int columnIndex) {
 	int padding = parent.getCellPadding ();
 	int startX = getContentX (columnIndex);
 	int itemHeight = parent.itemHeight;
+	int imageSpaceY = itemHeight - 2 * padding;
 	int y = parent.getItemY (this);
 	Image image = images [columnIndex]; 
 	if (image == null) {
-		return new Rectangle (startX, y + padding, 0, itemHeight - 2 * padding);
+		return new Rectangle (startX, y + padding, 0, imageSpaceY);
 	}
 	
 	Rectangle imageBounds = image.getBounds ();
@@ -551,7 +556,6 @@ public Rectangle getImageBounds (int columnIndex) {
 	} else {
 		drawWidth = imageBounds.width;
 	}
-	int imageSpaceY = itemHeight - (2 * padding);
 	int drawHeight = Math.min (imageSpaceY, imageBounds.height);
 	return new Rectangle (
 		startX, y + (itemHeight - drawHeight) / 2,
@@ -587,6 +591,9 @@ public TreeItem getParentItem () {
 	checkWidget ();
 	return parentItem;
 }
+/*
+ * Returns the receiver's ideal width for the specified columnIndex.
+ */
 int getPreferredWidth (int columnIndex) {
 	int result = getTextX (columnIndex) + getTextPaintWidth (columnIndex);
 	result -= parent.columns [columnIndex].getX ();
@@ -613,7 +620,7 @@ int getTextPaintWidth (int columnIndex) {
 	return result;
 }
 /*
- * Returns the x value at which the receiver's text begins.
+ * Returns the x value where the receiver's text begins.
  */
 int getTextX (int columnIndex) {
 	if (columnIndex > 0) {
@@ -635,6 +642,9 @@ boolean hasAncestor (TreeItem item) {
 	if (parentItem == null) return false;
 	return parentItem.hasAncestor (item);
 }
+/*
+ * Returns true if the receiver is currently available (though not necessary in the viewport).
+ */
 boolean isAvailable () {
 	if (parentItem == null) return true; 	/* root items are always available */
 	if (!parentItem.expanded) return false;
@@ -671,15 +681,15 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	Rectangle cellBounds = getCellBounds (columnIndex);
 	int cellRightX = 0;
 	if (column != null) {
-		cellRightX = column.getX () + column.width;
+		cellRightX = column.getX () + column.width - 1;
 	} else {
-		cellRightX = cellBounds.x + cellBounds.width;
+		cellRightX = cellBounds.x + cellBounds.width - 1;
 	}
 
 	/* if this cell is completely to the left of the client area then there's no need to paint it */
 	if (cellRightX < 0) return;
 
-	/* restrict the clipping region to the full cell */
+	/* restrict the clipping region to the cell */
 	gc.setClipping (x, cellBounds.y, cellRightX - x, cellBounds.height);
 	
 	int y = parent.getItemY (this);
@@ -693,7 +703,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		gc.setBackground (background);
 		if (columnIndex == 0) {
 			int focusX = getFocusX ();
-			gc.fillRectangle (focusX, y + 1, cellRightX - focusX - 1, itemHeight - 1);
+			gc.fillRectangle (focusX, y + 1, cellRightX - focusX, itemHeight - 1);
 		} else {
 			gc.fillRectangle (cellBounds.x, cellBounds.y + 1, cellBounds.width - 1, cellBounds.height - 1);
 		}
@@ -704,12 +714,8 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	if (isSelected () && columnIndex == 0) {
 		Color oldBackground = gc.getBackground ();
 		gc.setBackground (parent.selectionBackgroundColor);
-		int startX = getFocusX () + 1;
-		gc.fillRectangle (
-			startX,
-			cellBounds.y + padding,
-			Math.max (0, cellRightX - startX - 2),
-			Math.max (0, cellBounds.height - (padding * 2) + 1));
+		Rectangle focusBounds = getFocusBounds ();
+		gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, focusBounds.width - 2, focusBounds.height - 2);
 		gc.setBackground (oldBackground);
 	}
 		
@@ -728,7 +734,6 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		if (items.length == 0) {
 			y2 += expanderBounds.height / 2;
 		}
-		
 		/* Do not draw this line iff this is the very first item in the tree */ 
 		if (parentItem != null || getIndex () != 0) {
 			gc.drawLine (lineX, y, lineX, y2);
@@ -746,7 +751,8 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		
 		/* 
 		 * Draw hierarchy lines that are needed by other items that are shown below
-		 * this item but whose parents are shown above.
+		 * this item but whose parents are shown above (ie.- lines to the left of
+		 * this item's connector line).
 		 */
 		TreeItem item = parentItem;
 		while (item != null) {
@@ -770,7 +776,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 			Image baseImage = grayed ? parent.grayUncheckedImage : parent.uncheckedImage;
 			Rectangle checkboxBounds = getCheckboxBounds ();
 			gc.drawImage (baseImage, checkboxBounds.x, checkboxBounds.y);
-
+			/* Draw checkmark if item is checked */
 			if (checked) {
 				Rectangle checkmarkBounds = parent.checkmarkImage.getBounds ();
 				int xInset = (checkboxBounds.width - checkmarkBounds.width) / 2;
@@ -829,6 +835,9 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		if (fontChanged) gc.setFont (oldFont);
 	}
 }
+/*
+ * Recomputes the cached text widths.
+ */
 void recomputeTextWidths (GC gc) {
 	textWidths = new int [texts.length];
 	Font oldFont = gc.getFont ();
@@ -849,6 +858,9 @@ void recomputeTextWidths (GC gc) {
 void redrawItem () {
 	parent.redraw (0, parent.getItemY (this), parent.getClientArea ().width, parent.itemHeight, false);
 }
+/*
+ * Updates internal structures in the receiver and its child items to handle the removal of a column.
+ */
 void removeColumn (TreeColumn column, int index) {
 	int columnCount = parent.columns.length;
 	if (columnCount == 0) {
@@ -914,7 +926,7 @@ void removeColumn (TreeColumn column, int index) {
 	}
 }
 /*
- * Make changes that are needed to handle the disposal of a child item.
+ * Removes a child item from the receiver.
  */
 void removeItem (TreeItem item, int index) {
 	if (isDisposed ()) return;
@@ -922,7 +934,7 @@ void removeItem (TreeItem item, int index) {
 	System.arraycopy (items, 0, newItems, 0, index);
 	System.arraycopy (items, index + 1, newItems, index, newItems.length - index);
 	items = newItems;
-	// TODO second condition below is ugly, handles creation of item within Expand callback
+	/* second condition below handles creation of item within Expand callback */
 	if (items.length == 0 && !parent.inExpand) {
 		expanded = false;
 		if (isAvailable ()) redrawItem ();	/* expander no longer needed */
@@ -965,7 +977,6 @@ public void setExpanded (boolean value) {
 	checkWidget ();
 	if (expanded == value) return;
 	if (items.length == 0) return;
-	// TODO the next line seems to match other platforms, test case is lazy Tree snippet
 	if (parent.inExpand) return;
 	if (value) {
 		expanded = value;
@@ -1006,15 +1017,20 @@ public void setFont (Font value) {
 	Rectangle bounds = getBounds ();
 	int oldRightX = bounds.x + bounds.width;
 	font = value;
+	
 	/* recompute cached values for string measurements */
 	GC gc = new GC (parent);
 	gc.setFont (getFont ());
 	recomputeTextWidths (gc);
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
-	bounds = getBounds ();
-	int newRightX = bounds.x + bounds.width;
-	parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
+	
+	/* horizontal bar could be affected if tree has no columns */
+	if (parent.columns.length == 0) {
+		bounds = getBounds ();
+		int newRightX = bounds.x + bounds.width;
+		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
+	}
 	redrawItem ();
 }
 public void setFont (int columnIndex, Font value) {
@@ -1090,9 +1106,8 @@ public void setImage (Image[] value) {
 }
 public void setImage (int columnIndex, Image value) {
 	checkWidget ();
-	if (value != null && value.isDisposed ()) {
-		error (SWT.ERROR_INVALID_ARGUMENT);
-	}
+	if (value != null && value.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+
 	TreeColumn[] columns = parent.columns;
 	int validColumnCount = Math.max (1, columns.length);
 	if (!(0 <= columnIndex && columnIndex < validColumnCount)) return;
@@ -1144,9 +1159,12 @@ public void setText (String value) {
 	Rectangle bounds = getBounds ();
 	int oldRightX = bounds.x + bounds.width;
 	setText (0, value);
-	bounds = getBounds ();
-	int newRightX = bounds.x + bounds.width;
-	parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
+	/* horizontal bar could be affected if tree has no columns */
+	if (parent.columns.length == 0) {
+		bounds = getBounds ();
+		int newRightX = bounds.x + bounds.width;
+		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
+	}
 }
 public void setText (String[] value) {
 	checkWidget ();
@@ -1157,9 +1175,12 @@ public void setText (String[] value) {
 	for (int i = 0; i < value.length; i++) {
 		if (value [i] != null) setText (i, value [i]);
 	}
-	bounds = getBounds ();
-	int newRightX = bounds.x + bounds.width;
-	parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
+	/* horizontal bar could be affected if tree has no columns */
+	if (parent.columns.length == 0) {
+		bounds = getBounds ();
+		int newRightX = bounds.x + bounds.width;
+		parent.updateHorizontalBar (newRightX, newRightX - oldRightX);
+	}
 }
 public void setText (int columnIndex, String value) {
 	checkWidget ();
