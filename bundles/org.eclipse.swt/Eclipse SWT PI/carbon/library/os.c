@@ -526,6 +526,28 @@ JNIEXPORT void JNICALL OS_NATIVE(BringToFront)
 }
 #endif
 
+#ifndef NO_CFArrayAppendValue
+JNIEXPORT void JNICALL OS_NATIVE(CFArrayAppendValue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "CFArrayAppendValue\n")
+	CFArrayAppendValue((CFMutableArrayRef)arg0, (const void *)arg1);
+	NATIVE_EXIT(env, that, "CFArrayAppendValue\n")
+}
+#endif
+
+#ifndef NO_CFArrayCreateMutable
+JNIEXPORT jint JNICALL OS_NATIVE(CFArrayCreateMutable)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "CFArrayCreateMutable\n")
+	rc = (jint)CFArrayCreateMutable((CFAllocatorRef)arg0, (CFIndex)arg1, (const CFArrayCallBacks *)arg2);
+	NATIVE_EXIT(env, that, "CFArrayCreateMutable\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CFRelease
 JNIEXPORT void JNICALL OS_NATIVE(CFRelease)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -6096,6 +6118,396 @@ JNIEXPORT void JNICALL OS_NATIVE(OpenRgn)
 	NATIVE_ENTER(env, that, "OpenRgn\n")
 	OpenRgn();
 	NATIVE_EXIT(env, that, "OpenRgn\n")
+}
+#endif
+
+#ifndef NO_PMCreatePageFormat
+JNIEXPORT jint JNICALL OS_NATIVE(PMCreatePageFormat)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMCreatePageFormat\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)PMCreatePageFormat((PMPageFormat *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PMCreatePageFormat\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMCreatePrintSettings
+JNIEXPORT jint JNICALL OS_NATIVE(PMCreatePrintSettings)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMCreatePrintSettings\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)PMCreatePrintSettings((PMPrintSettings *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PMCreatePrintSettings\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMCreateSession
+JNIEXPORT jint JNICALL OS_NATIVE(PMCreateSession)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMCreateSession\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)PMCreateSession((PMPrintSession *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PMCreateSession\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetAdjustedPageRect
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetAdjustedPageRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PMRect _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetAdjustedPageRect\n")
+	if (arg1) lparg1 = getPMRectFields(env, arg1, &_arg1);
+	rc = (jint)PMGetAdjustedPageRect((PMPageFormat)arg0, (PMRect *)lparg1);
+	if (arg1) setPMRectFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PMGetAdjustedPageRect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetAdjustedPaperRect
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetAdjustedPaperRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PMRect _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetAdjustedPaperRect\n")
+	if (arg1) lparg1 = getPMRectFields(env, arg1, &_arg1);
+	rc = (jint)PMGetAdjustedPaperRect((PMPageFormat)arg0, (PMRect *)lparg1);
+	if (arg1) setPMRectFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PMGetAdjustedPaperRect\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetCopies
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetCopies)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetCopies\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMGetCopies((PMPrintSettings)arg0, (UInt32 *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetCopies\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetFirstPage
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetFirstPage)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetFirstPage\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMGetFirstPage((PMPrintSettings)arg0, (UInt32 *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetFirstPage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetJobNameCFString
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetJobNameCFString)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetJobNameCFString\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMGetJobNameCFString((PMPrintSettings)arg0, (CFStringRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetJobNameCFString\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetLastPage
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetLastPage)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetLastPage\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)PMGetLastPage((PMPrintSettings)arg0, (UInt32 *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetLastPage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetPageRange
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetPageRange)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetPageRange\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PMGetPageRange((PMPrintSettings)arg0, (UInt32 *)lparg1, (UInt32 *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "PMGetPageRange\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMGetResolution
+JNIEXPORT jint JNICALL OS_NATIVE(PMGetResolution)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	PMResolution _arg1, *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMGetResolution\n")
+	if (arg1) lparg1 = getPMResolutionFields(env, arg1, &_arg1);
+	rc = (jint)PMGetResolution((PMPageFormat)arg0, (PMResolution *)lparg1);
+	if (arg1) setPMResolutionFields(env, arg1, lparg1);
+	NATIVE_EXIT(env, that, "PMGetResolution\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMRelease
+JNIEXPORT jint JNICALL OS_NATIVE(PMRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMRelease\n")
+	rc = (jint)PMRelease((PMObject)arg0);
+	NATIVE_EXIT(env, that, "PMRelease\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionBeginDocumentNoDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionBeginDocumentNoDialog)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionBeginDocumentNoDialog\n")
+	rc = (jint)PMSessionBeginDocumentNoDialog((PMPrintSession)arg0, (PMPrintSettings)arg1, (PMPageFormat)arg2);
+	NATIVE_EXIT(env, that, "PMSessionBeginDocumentNoDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionBeginPageNoDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionBeginPageNoDialog)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	PMRect _arg2, *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionBeginPageNoDialog\n")
+	if (arg2) lparg2 = getPMRectFields(env, arg2, &_arg2);
+	rc = (jint)PMSessionBeginPageNoDialog((PMPrintSession)arg0, (PMPageFormat)arg1, (const PMRect *)lparg2);
+	if (arg2) setPMRectFields(env, arg2, lparg2);
+	NATIVE_EXIT(env, that, "PMSessionBeginPageNoDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionDefaultPageFormat
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionDefaultPageFormat)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionDefaultPageFormat\n")
+	rc = (jint)PMSessionDefaultPageFormat((PMPrintSession)arg0, (PMPageFormat)arg1);
+	NATIVE_EXIT(env, that, "PMSessionDefaultPageFormat\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionDefaultPrintSettings
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionDefaultPrintSettings)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionDefaultPrintSettings\n")
+	rc = (jint)PMSessionDefaultPrintSettings((PMPrintSession)arg0, (PMPrintSettings)arg1);
+	NATIVE_EXIT(env, that, "PMSessionDefaultPrintSettings\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionEndDocumentNoDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionEndDocumentNoDialog)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionEndDocumentNoDialog\n")
+	rc = (jint)PMSessionEndDocumentNoDialog((PMPrintSession)arg0);
+	NATIVE_EXIT(env, that, "PMSessionEndDocumentNoDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionEndPageNoDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionEndPageNoDialog)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionEndPageNoDialog\n")
+	rc = (jint)PMSessionEndPageNoDialog((PMPrintSession)arg0);
+	NATIVE_EXIT(env, that, "PMSessionEndPageNoDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionGetGraphicsContext
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionGetGraphicsContext)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionGetGraphicsContext\n")
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionGetGraphicsContext((PMPrintSession)arg0, (CFStringRef)arg1, (void **)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionGetGraphicsContext\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionPageSetupDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionPageSetupDialog)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbooleanArray arg2)
+{
+	jboolean *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionPageSetupDialog\n")
+	if (arg2) lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionPageSetupDialog((PMPrintSession)arg0, (PMPageFormat)arg1, (Boolean *)lparg2);
+	if (arg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionPageSetupDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionPrintDialog
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionPrintDialog)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbooleanArray arg3)
+{
+	jboolean *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionPrintDialog\n")
+	if (arg3) lparg3 = (*env)->GetBooleanArrayElements(env, arg3, NULL);
+	rc = (jint)PMSessionPrintDialog((PMPrintSession)arg0, (PMPrintSettings)arg1, (PMPageFormat)arg2, (Boolean *)lparg3);
+	if (arg3) (*env)->ReleaseBooleanArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "PMSessionPrintDialog\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionSetDocumentFormatGeneration
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionSetDocumentFormatGeneration)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionSetDocumentFormatGeneration\n")
+	rc = (jint)PMSessionSetDocumentFormatGeneration((PMPrintSession)arg0, (CFStringRef)arg1, (CFArrayRef)arg2, (CFTypeRef)arg3);
+	NATIVE_EXIT(env, that, "PMSessionSetDocumentFormatGeneration\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionUseSheets
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionUseSheets)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionUseSheets\n")
+	rc = (jint)PMSessionUseSheets((PMPrintSession)arg0, (WindowRef)arg1, (PMSheetDoneUPP)arg2);
+	NATIVE_EXIT(env, that, "PMSessionUseSheets\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionValidatePageFormat
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionValidatePageFormat)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbooleanArray arg2)
+{
+	jboolean *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionValidatePageFormat\n")
+	if (arg2) lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionValidatePageFormat((PMPrintSession)arg0, (PMPageFormat)arg1, (Boolean *)lparg2);
+	if (arg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionValidatePageFormat\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSessionValidatePrintSettings
+JNIEXPORT jint JNICALL OS_NATIVE(PMSessionValidatePrintSettings)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbooleanArray arg2)
+{
+	jboolean *lparg2=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSessionValidatePrintSettings\n")
+	if (arg2) lparg2 = (*env)->GetBooleanArrayElements(env, arg2, NULL);
+	rc = (jint)PMSessionValidatePrintSettings((PMPrintSession)arg0, (PMPrintSettings)arg1, (Boolean *)lparg2);
+	if (arg2) (*env)->ReleaseBooleanArrayElements(env, arg2, lparg2, 0);
+	NATIVE_EXIT(env, that, "PMSessionValidatePrintSettings\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSetFirstPage
+JNIEXPORT jint JNICALL OS_NATIVE(PMSetFirstPage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSetFirstPage\n")
+	rc = (jint)PMSetFirstPage((PMPrintSettings)arg0, (UInt32)arg1, (Boolean)arg2);
+	NATIVE_EXIT(env, that, "PMSetFirstPage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSetLastPage
+JNIEXPORT jint JNICALL OS_NATIVE(PMSetLastPage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSetLastPage\n")
+	rc = (jint)PMSetLastPage((PMPrintSettings)arg0, (UInt32)arg1, (Boolean)arg2);
+	NATIVE_EXIT(env, that, "PMSetLastPage\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PMSetPageRange
+JNIEXPORT jint JNICALL OS_NATIVE(PMSetPageRange)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "PMSetPageRange\n")
+	rc = (jint)PMSetPageRange((PMPrintSettings)arg0, (UInt32)arg1, (UInt32)arg2);
+	NATIVE_EXIT(env, that, "PMSetPageRange\n")
+	return rc;
 }
 #endif
 

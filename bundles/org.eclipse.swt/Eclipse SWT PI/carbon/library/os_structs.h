@@ -227,6 +227,22 @@ void setNavReplyRecordFields(JNIEnv *env, jobject lpObject, NavReplyRecord *lpSt
 #define setNavReplyRecordFields(a,b,c)
 #endif
 
+#ifndef NO_PMRect
+PMRect *getPMRectFields(JNIEnv *env, jobject lpObject, PMRect *lpStruct);
+void setPMRectFields(JNIEnv *env, jobject lpObject, PMRect *lpStruct);
+#else
+#define getPMRectFields(a,b,c) NULL
+#define setPMRectFields(a,b,c)
+#endif
+
+#ifndef NO_PMResolution
+PMResolution *getPMResolutionFields(JNIEnv *env, jobject lpObject, PMResolution *lpStruct);
+void setPMResolutionFields(JNIEnv *env, jobject lpObject, PMResolution *lpStruct);
+#else
+#define getPMResolutionFields(a,b,c) NULL
+#define setPMResolutionFields(a,b,c)
+#endif
+
 #ifndef NO_PixMap
 PixMap *getPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct);
 void setPixMapFields(JNIEnv *env, jobject lpObject, PixMap *lpStruct);
