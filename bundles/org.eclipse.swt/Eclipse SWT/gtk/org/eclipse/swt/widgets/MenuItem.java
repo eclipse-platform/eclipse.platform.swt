@@ -396,7 +396,24 @@ int processHelp (int int0, int int1, int int2) {
 
 int processSelection (int int0, int int1, int int2) {
 	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
-	postEvent (SWT.Selection);
+	Event event = new Event ();
+	int ptr = OS.gtk_get_current_event ();
+	if (ptr != 0) {
+		GdkEvent gdkEvent = new GdkEvent ();
+		OS.memmove (gdkEvent, ptr, GdkEvent.sizeof);
+		switch (gdkEvent.type) {
+			case OS.GDK_KEY_PRESS:
+			case OS.GDK_KEY_RELEASE: 
+			case OS.GDK_BUTTON_PRESS:
+			case OS.GDK_2BUTTON_PRESS: 
+			case OS.GDK_BUTTON_RELEASE: {
+				setInputState (event, ptr);
+				break;
+			}
+		}
+		OS.gdk_event_free (ptr);
+	}
+	postEvent (SWT.Selection, event);
 	return 0;
 }
 
