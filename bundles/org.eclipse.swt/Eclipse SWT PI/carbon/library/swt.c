@@ -1430,7 +1430,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountDragItems
 	jshort *lparg1=NULL;
 	jint rc;
 
-	DEBUG_CALL("v\n")
+	DEBUG_CALL("CountSubControls\n")
 
 	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
 	rc = (jint)CountDragItems((DragRef)arg0, (UInt16 *)lparg1);
