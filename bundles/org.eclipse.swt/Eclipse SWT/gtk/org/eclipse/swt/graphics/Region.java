@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -18,7 +18,6 @@ import org.eclipse.swt.*;
  * when those instances are no longer required.
  * </p>
  */
-
 public final class Region {
 	/**
 	 * the OS resource for the region

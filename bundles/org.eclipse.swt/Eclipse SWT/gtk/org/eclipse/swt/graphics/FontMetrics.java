@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -14,7 +14,6 @@ package org.eclipse.swt.graphics;
  *
  * @see GC#getFontMetrics
  */
-
 public final class FontMetrics {
 	int ascent, descent, averageCharWidth, leading, height;
 

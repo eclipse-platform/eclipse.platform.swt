@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -34,13 +34,11 @@ import org.eclipse.swt.internal.image.*;
  * Note: Only one of the above styles may be specified.
  * </p>
  */
-
 public final class Cursor {
 	/**
 	 * the handle to the OS cursor resource
 	 * (Warning: This field is platform dependent)
 	 */
-
 	public int handle;
 
 	/**

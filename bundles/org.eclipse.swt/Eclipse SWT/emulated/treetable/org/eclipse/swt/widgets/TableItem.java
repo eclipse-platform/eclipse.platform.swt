@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -829,16 +829,16 @@ void internalSetImage(int columnIndex, Image image) {
 	}
 }
 /**
-* Sets the widget text.
-*
-* The widget text for an item is the label of the
-* item or the label of the text specified by a column
-* number.
-*
-* @param index the column number
-* @param text the new text
-*
-*/
+ * Sets the widget text.
+ *
+ * The widget text for an item is the label of the
+ * item or the label of the text specified by a column
+ * number.
+ *
+ * @param index the column number
+ * @param text the new text
+ *
+ */
 void internalSetText(int columnIndex, String string) {
 	Vector labels = getDataLabels();
 	Table parent = getParent();

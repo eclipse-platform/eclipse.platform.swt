@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -22,13 +22,11 @@ import org.eclipse.swt.internal.gtk.*;
  *
  * @see FontData
  */
-
 public final class Font {
 	/**
 	 * the handle to the OS font resource
 	 * (Warning: This field is platform dependent)
 	 */
-
 	public int handle;
 
 	/**
@@ -97,7 +95,6 @@ public Font(Device display, String name, int height, int style) {
  * the font. Applications must dispose of all fonts which
  * they allocate.
  */
-
 public void dispose() {
 	if (handle != 0) OS.pango_font_description_free(handle);
 	handle = 0;
@@ -113,7 +110,6 @@ public void dispose() {
  *
  * @see #hashCode
  */
-
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Font)) return false;
@@ -132,7 +128,6 @@ public boolean equals(Object object) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
@@ -191,7 +186,6 @@ public static Font gtk_new(Device device, int handle) {
  *
  * @see #equals
  */
-
 public int hashCode() {
 	return handle;
 }
@@ -230,7 +224,6 @@ void init(Device device, String name, int height, int style, byte[] fontString) 
  *
  * @return <code>true</code> when the font is disposed and <code>false</code> otherwise
  */
-
 public boolean isDisposed() {
 	return handle == 0;
 }
@@ -241,7 +234,6 @@ public boolean isDisposed() {
  *
  * @return a string representation of the receiver
  */
-
 public String toString () {
 	if (isDisposed()) return "Font {*DISPOSED*}";
 	return "Font {" + handle + "}";
