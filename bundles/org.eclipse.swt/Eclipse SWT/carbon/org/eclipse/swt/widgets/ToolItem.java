@@ -584,7 +584,7 @@ void updateArrow () {
 	if (arrowCIcon != 0) destroyCIcon (arrowCIcon);
 	arrowCIcon = 0;
 	Display display = getDisplay ();
-	Image image = new Image (display, 6, 4);
+	Image image = new Image (display, 7, 4);
 	GC gc = new GC (image);
 	int startX = 0, startY = 0;
 	int [] arrow = {startX, startY, startX + 3, startY + 3, startX + 6, startY};
