@@ -704,6 +704,36 @@ public String getUrl() {
 	return url;
 }
 
+public boolean isBackEnabled() {
+	checkWidget();
+	int[] result = new int[1];
+	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	
+	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
+	boolean[] aCanGoBack = new boolean[1];
+	rc = webNavigation.GetCanGoBack(aCanGoBack);	
+	webNavigation.Release();
+	
+	return aCanGoBack[0];
+}
+
+public boolean isForwardEnabled() {
+	checkWidget();
+	int[] result = new int[1];
+	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	
+	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
+	boolean[] aCanGoForward = new boolean[1];
+	rc = webNavigation.GetCanGoForward(aCanGoForward);
+	webNavigation.Release();
+
+	return aCanGoForward[0];
+}
+
 static String error(int code) {
 	throw new SWTError("XPCOM error "+code); //$NON-NLS-1$
 }
@@ -1496,7 +1526,6 @@ int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	location.GetSpec(aSpec);
 	int length = XPCOM.nsCString_Length(aSpec);
 	int buffer = XPCOM.nsCString_get(aSpec);
-	buffer = XPCOM.nsCString_get(aSpec);
 	byte[] dest = new byte[length + 1];
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsCString_delete(aSpec);

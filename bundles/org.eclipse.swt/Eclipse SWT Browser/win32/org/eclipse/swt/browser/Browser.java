@@ -41,8 +41,8 @@ public class Browser extends Composite {
 	OleControlSite site;
 	OleAutomation auto;
 
-	boolean backwardEnabled;
-	boolean forwardEnabled;
+	boolean back;
+	boolean forward;
 	Point location;
 	Point size;
 
@@ -70,7 +70,6 @@ public class Browser extends Composite {
 	static final int WindowSetTop = 0x109;
 	static final int WindowSetWidth = 0x10a;
 
-	static final short CSC_UPDATECOMMANDS = -1;
 	static final short CSC_NAVIGATEFORWARD = 1;
 	static final short CSC_NAVIGATEBACK = 2;
 
@@ -178,8 +177,10 @@ public Browser(Composite parent, int style) {
 					int command = varResult.getInt();
 					varResult = event.arguments[1];
 					enabled = varResult.getBoolean();
-					if (command == CSC_NAVIGATEBACK) backwardEnabled = enabled;
-					if (command == CSC_NAVIGATEFORWARD) forwardEnabled = enabled;
+					switch (command) {
+						case CSC_NAVIGATEBACK : back = enabled; break;
+						case CSC_NAVIGATEFORWARD : forward = enabled; break;
+					}
 					break;
 				}
 				case DocumentComplete: {
@@ -571,8 +572,7 @@ public void addVisibilityWindowListener(VisibilityWindowListener listener) {
  */
 public boolean back() {
 	checkWidget();
-	if (!backwardEnabled)
-		return false;
+	if (!back) return false;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "GoBack" }); //$NON-NLS-1$
 	Variant pVarResult = auto.invoke(rgdispid[0]);
 	return pVarResult.getType() == OLE.VT_EMPTY;
@@ -602,10 +602,46 @@ protected void checkSubclass() {
  */
 public boolean forward() {
 	checkWidget();
-	if (!forwardEnabled) return false;
+	if (!forward) return false;
 	int[] rgdispid = auto.getIDsOfNames(new String[] { "GoForward" }); //$NON-NLS-1$
 	Variant pVarResult = auto.invoke(rgdispid[0]);
 	return pVarResult.getType() == OLE.VT_EMPTY;
+}
+
+/**
+ * Returns <code>true</code> if the receiver can navigate to the 
+ * previous session history item, and <code>false</code> otherwise.
+ *
+ * @return the receiver's back command enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #back
+ */
+public boolean isBackEnabled() {
+	checkWidget();
+	return back;
+}
+
+/**
+ * Returns <code>true</code> if the receiver can navigate to the 
+ * next session history item, and <code>false</code> otherwise.
+ *
+ * @return the receiver's forward command enabled state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #forward
+ */
+public boolean isForwardEnabled() {
+	checkWidget();
+	return forward;
 }
 
 /**
