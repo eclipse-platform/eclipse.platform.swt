@@ -243,8 +243,10 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		Control child = children [i];
 		FormData data = (FormData) child.getLayoutData ();
 		if (data == null) child.setLayoutData (data = new FormData ());
-		data.flushCache ();
+		if (flushCache) data.cacheWidth = data.cacheHeight = -1;
+		data.cacheLeft = data.cacheRight = data.cacheTop = data.cacheBottom = null;
 	}
+	boolean [] flush = null;
 	Rectangle [] bounds = null;
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
@@ -262,6 +264,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 					//bug (x2 - x1) needs to get rid of trim
 					//int border = child.getBorderWidth ();
 					//data.computeCache (child, x2 - x1 - border * 2, data.height, flushCache);
+					if (flush == null) flush = new boolean [children.length];
+					flush [i] = true;
 				}
 			}
 			int y1 = data.getTopAttachment (child, spacing, flushCache).solveX (height);
@@ -276,11 +280,12 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		FormData data = (FormData) child.getLayoutData ();
-		data.flushCache ();
+		if (flush != null && flush [i]) data.cacheWidth = data.cacheHeight = -1;
+		data.cacheLeft = data.cacheRight = data.cacheTop = data.cacheBottom = null;
 	}
 	if (move) {
 		for (int i=0; i<children.length; i++) {
-			children [i].setBounds (bounds [i]);		
+			children [i].setBounds (bounds [i]);
 		}
 	}
 	return move ? null : new Point (width, height);

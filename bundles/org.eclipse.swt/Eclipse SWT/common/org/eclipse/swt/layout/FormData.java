@@ -92,11 +92,6 @@ void computeCache (Control control, int width, int height, boolean flushCache) {
 	}
 }
 
-void flushCache () {
-	cacheWidth = cacheHeight = -1;
-	cacheLeft = cacheRight = cacheTop = cacheBottom = null;
-}
-
 int getWidth (Control control, boolean flushCache) {
 	computeCache (control, width, height, flushCache);
 	return cacheWidth;
