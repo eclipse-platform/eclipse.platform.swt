@@ -7,7 +7,7 @@ public class Tool {
 	public String name;
 	public String group;
 	public int type;
-	public Object action;
+	public Runnable action;
 	public Image image = null;
 	public Object data;
 	

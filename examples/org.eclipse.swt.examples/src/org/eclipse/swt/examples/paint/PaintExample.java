@@ -123,11 +123,12 @@ public class PaintExample {
 		ToolBar toolbar = new ToolBar (parent, SWT.NONE);
 		String group = null;
 		for (int i = 0; i < tools.length; i++) {
-			if (group != null && !tools[i].group.equals(group)) {
+			Tool tool = tools[i];
+			if (group != null && !tool.group.equals(group)) {
 				new ToolItem (toolbar, SWT.SEPARATOR);
 			}
-			group = tools[i].group;
-			ToolItem item = addToolItem(toolbar, tools[i]);
+			group = tool.group;
+			ToolItem item = addToolItem(toolbar, tool);
 			if (i == Default_tool || i == Default_fill || i == Default_linestyle) item.setSelection(true);
 		}
 	}
@@ -136,13 +137,17 @@ public class PaintExample {
 	 * Adds a tool item to the toolbar.
 	 * Note: Only called by standalone.
 	 */
-	private ToolItem addToolItem(final ToolBar toolbar, Tool tool) {
+	private ToolItem addToolItem(final ToolBar toolbar, final Tool tool) {
 		final String id = tool.group + '.' + tool.name;
 		ToolItem item = new ToolItem (toolbar, tool.type);
 		item.setText (getResourceString(id + ".label"));
 		item.setToolTipText(getResourceString(id + ".tooltip"));
 		item.setImage(tool.image);
-		item.addSelectionListener((SelectionListener)tool.action);
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				tool.action.run();
+			}
+		});
 		final int childID = toolbar.indexOf(item);
 		toolbar.getAccessible().addAccessibleListener(new AccessibleAdapter() {
 			public void getName(org.eclipse.swt.accessibility.AccessibleEvent e) {
@@ -342,9 +347,10 @@ public class PaintExample {
 	 */
 	public void freeResources() {
 		for (int i = 0; i < tools.length; ++i) {
-			final Image image = tools[i].image;
+			Tool tool = tools[i];
+			final Image image = tool.image;
 			if (image != null) image.dispose();
-			tools[i].image = null;
+			tool.image = null;
 		}
 	}
 	
@@ -420,26 +426,26 @@ public class PaintExample {
 			final Tool tool = tools[i];
 			String group = tool.group;
 			if (group.equals("tool")) {
-				tool.action = new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
+				tool.action = new Runnable() {
+					public void run() {
 						setPaintTool(tool.id);
 					}
 				};
 			} else if (group.equals("fill")) {
-				tool.action = new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
+				tool.action = new Runnable() {
+					public void run() {
 						setFillType(tool.id);
 					}
 				};
 			} else if (group.equals("linestyle")) {
-				tool.action = new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
+				tool.action = new Runnable() {
+					public void run() {
 						setLineStyle(tool.id);
 					}
 				};
 			} else if (group.equals("options")) {
-				tool.action = new SelectionAdapter() {
-					public void widgetSelected(SelectionEvent e) {
+				tool.action = new Runnable() {
+					public void run() {
 						FontDialog fontDialog = new FontDialog(paintSurface.getShell(), SWT.PRIMARY_MODAL);
 						FontData[] fontDatum = toolSettings.commonFont.getFontData();
 						if (fontDatum != null && fontDatum.length > 0) {
