@@ -42,22 +42,6 @@ import org.eclipse.swt.graphics.*;
  * @see GridData
  */
 public final class GridLayout extends Layout {
-
-	/**
-	 * marginWidth specifies the number of pixels of horizontal margin
-	 * that will be placed along the left and right edges of the layout.
-	 *
-	 * The default value is 5.
-	 */
- 	public int marginWidth = 5;
- 	
-	/**
-	 * marginHeight specifies the number of pixels of vertical margin
-	 * that will be placed along the top and bottom edges of the layout.
-	 *
-	 * The default value is 5.
-	 */
- 	public int marginHeight = 5;
  
  	/**
  	 * numColumns specifies the number of cell columns in the layout.
@@ -73,6 +57,22 @@ public final class GridLayout extends Layout {
 	 * The default value is false.
 	 */
 	public boolean makeColumnsEqualWidth = false;
+	
+	/**
+	 * marginWidth specifies the number of pixels of horizontal margin
+	 * that will be placed along the left and right edges of the layout.
+	 *
+	 * The default value is 5.
+	 */
+ 	public int marginWidth = 5;
+ 	
+	/**
+	 * marginHeight specifies the number of pixels of vertical margin
+	 * that will be placed along the top and bottom edges of the layout.
+	 *
+	 * The default value is 5.
+	 */
+ 	public int marginHeight = 5;
 
 	/**
 	 * horizontalSpacing specifies the number of pixels between the right
