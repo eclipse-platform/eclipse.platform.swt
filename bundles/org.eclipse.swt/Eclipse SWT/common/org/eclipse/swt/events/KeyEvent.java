@@ -26,8 +26,8 @@ public class KeyEvent extends TypedEvent {
  	 * the character represented by the key that was typed.  
 	 * This is the final character that results after all modifiers have been
  	 * applied.  For example, when the user types Ctrl+A, the character value
- 	 * is 0x01 (NUL).  It is important that applications do not attempt to modify
- 	 * the character value based on a stateMask (such as SWT.CTRL) or the resulting
+ 	 * is 0x01.  It is important that applications do not attempt to modify the
+ 	 * character value based on a stateMask (such as SWT.CTRL) or the resulting
  	 * character will not be correct.
  	 */
 	public char character;
@@ -50,6 +50,12 @@ public class KeyEvent extends TypedEvent {
 	 */
 	public int stateMask;
 	
+	/**
+	 * A flag indicating whether the operation should be allowed.
+	 * Setting this field to <code>false</code> will cancel the operation.
+	 */
+	public boolean doit;
+
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.
@@ -61,6 +67,22 @@ public KeyEvent(Event e) {
 	this.character = e.character;
 	this.keyCode = e.keyCode;
 	this.stateMask = e.stateMask;
+	this.doit = e.doit;
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
+public String toString() {
+	String string = super.toString ();
+	return string.substring (0, string.length() - 1) // remove trailing '}'
+		+ " character='" + ((character == 0) ? "\\0" : "" + character) + "'"
+		+ " keyCode=" + keyCode
+		+ " stateMask=" + stateMask
+		+ " doit=" + doit
+		+ "}";
+}
 }

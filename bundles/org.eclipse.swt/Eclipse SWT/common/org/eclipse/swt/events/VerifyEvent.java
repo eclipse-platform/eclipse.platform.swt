@@ -35,12 +35,6 @@ public final class VerifyEvent extends KeyEvent {
 	 */
 	public String text;
 
-	/**
-	 * a flag indicating whether the operation should be allowed.
-	 * Setting this field to false will cancel the operation.
-	 */
-	public boolean doit;
-	
 /**
  * Constructs a new instance of this class based on the
  * information in the given untyped event.
@@ -55,7 +49,20 @@ public VerifyEvent(Event e) {
 	this.start = e.start;
 	this.end = e.end;
 	this.text = e.text;
-	this.doit = e.doit;
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the event
+ */
+public String toString() {
+	String string = super.toString ();
+	return string.substring (0, string.length() - 1) // remove trailing '}'
+		+ " start=" + start
+		+ " end=" + end
+		+ " text=" + text
+		+ "}";
+}
 }
