@@ -1422,6 +1422,7 @@ public void redraw (int x, int y, int width, int height, boolean all) {
  * @param item - SelectableItem that should have the selection redrawn.
  */
 void redrawSelection(SelectableItem item) {
+	if (item.isDisposed()) return;
 	int redrawPosition = getVisibleRedrawY(item);
 	if (redrawPosition != -1) {
 		item.redrawSelection(redrawPosition);
