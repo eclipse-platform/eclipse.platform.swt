@@ -71,8 +71,13 @@ public GC (Drawable drawable) {
  * @param height the height of the area to copy
  * @param destX the x coordinate in the receiver of the area to copy to
  * @param destY the y coordinate in the receiver of the area to copy to
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void copyArea(int x, int y, int width, int height, int destX, int destY) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
@@ -107,12 +112,16 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the image is not a bitmap</li> 
+ *    <li>ERROR_INVALID_ARGUMENT - if the image is not a bitmap or has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public void copyArea(Image image, int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (image.type != SWT.BITMAP) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	Rectangle rect = image.getBounds();
 	int xDisplay = data.display;
 	int xGC = OS.XCreateGC(xDisplay, image.pixmap, 0, null);
@@ -177,8 +186,12 @@ public void dispose () {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if any of the width, height or endAngle is zero.</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawArc(int x, int y, int width, int height, int startAngle, int endAngle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -203,9 +216,14 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
  * @param width the width of the rectangle
  * @param height the height of the rectangle
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
  * @see #drawRectangle
  */
 public void drawFocus (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	/*
 	* When the drawable is not a widget, the highlight
 	* color is zero.
@@ -246,12 +264,18 @@ public void drawFocus (int x, int y, int width, int height) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of the image</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawImage(Image image, int x, int y) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, 0, 0, -1, -1, x, y, -1, -1, true);
 }
 /**
@@ -274,18 +298,24 @@ public void drawImage(Image image, int x, int y) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
- *    <li>ERROR_INVALID_IMAGE - if the given coordinates are outside the bounds of their respective images</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of their respective images</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTError <uo>
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (srcWidth == 0 || srcHeight == 0 || destWidth == 0 || destHeight == 0) return;
 	if (srcX < 0 || srcY < 0 || srcWidth < 0 || srcHeight < 0 || destWidth < 0 || destHeight < 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
 }
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
@@ -581,8 +611,13 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
  * @param y1 the first point's y coordinate
  * @param x2 the second point's x coordinate
  * @param y2 the second point's y coordinate
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawLine (int x1, int y1, int x2, int y2) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.XDrawLine (data.display, data.drawable, handle, x1, y1, x2, y2);
 }
 /** 
@@ -601,8 +636,13 @@ public void drawLine (int x1, int y1, int x2, int y2) {
  * @param y the y coordinate of the upper left corner of the oval to be drawn
  * @param width the width of the oval to be drawn
  * @param height the height of the oval to be drawn
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawOval(int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -626,8 +666,12 @@ public void drawOval(int x, int y, int width, int height) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT if pointArray is null</li>
  * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawPolygon(int[] pointArray) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	
 	// Motif does not have a native drawPolygon() call. Instead we ensure 
@@ -681,8 +725,12 @@ public void drawPolygon(int[] pointArray) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point array is null</li>
  * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawPolyline(int[] pointArray) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	short[] xPoints = new short[pointArray.length];
 	for (int i = 0; i<pointArray.length;i++) {
@@ -700,8 +748,13 @@ public void drawPolyline(int[] pointArray) {
  * @param y the y coordinate of the rectangle to be drawn
  * @param width the width of the rectangle to be drawn
  * @param height the height of the rectangle to be drawn
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawRectangle (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -724,6 +777,9 @@ public void drawRectangle (int x, int y, int width, int height) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
  * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawRectangle (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -743,8 +799,13 @@ public void drawRectangle (Rectangle rect) {
  * @param height the height of the rectangle to be drawn
  * @param arcWidth the horizontal diameter of the arc at the four corners
  * @param arcHeight the vertical diameter of the arc at the four corners
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 
 	// X does not have a native for drawing round rectangles. Do the work in Java
 	// and use drawLine() drawArc() calls.
@@ -797,6 +858,9 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawString (String string, int x, int y) {
 	drawString(string, x, y, false);
@@ -817,8 +881,12 @@ public void drawString (String string, int x, int y) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawString (String string, int x, int y, boolean isTransparent) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int xmString = OS.XmStringCreate (buffer, OS.XmFONTLIST_DEFAULT_TAG);
@@ -896,6 +964,9 @@ void createRenderTable() {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawText (String string, int x, int y) {
 	drawText(string, x, y, false);
@@ -916,8 +987,12 @@ public void drawText (String string, int x, int y) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void drawText (String string, int x, int y, boolean isTransparent) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (data.renderTable == 0) createRenderTable();
 	int renderTable = data.renderTable;
@@ -944,8 +1019,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof GC)) return false;
-	GC gc = (GC)object;
-	return data.device == gc.data.device && handle == gc.handle;
+	return handle == ((GC)object).handle;
 }
 /**
  * Fills the interior of a circular or elliptical arc within
@@ -976,10 +1050,14 @@ public boolean equals (Object object) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if any of the width, height or endAngle is zero.</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  *
  * @see #drawArc
  */
 public void fillArc(int x, int y, int width, int height, int startAngle, int endAngle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1008,9 +1086,14 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int end
  * @param width the width of the oval to be filled
  * @param height the height of the oval to be filled
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
  * @see #drawOval
  */
 public void fillOval (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1039,10 +1122,14 @@ public void fillOval (int x, int y, int width, int height) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT if pointArray is null</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  *
  * @see #drawPolygon	
  */
 public void fillPolygon(int[] pointArray) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	short[] xPoints = new short[pointArray.length];
 	for (int i = 0; i<pointArray.length;i++) {
@@ -1064,9 +1151,14 @@ public void fillPolygon(int[] pointArray) {
  * @param width the width of the rectangle to be filled
  * @param height the height of the rectangle to be filled
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
  * @see #drawRectangle
  */
 public void fillRectangle (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1091,17 +1183,15 @@ public void fillRectangle (int x, int y, int width, int height) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  *
  * @see #drawRectangle
  */
 public void fillRectangle (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int xDisplay = data.display;
-	XGCValues values = new XGCValues ();
-	OS.XGetGCValues (xDisplay, handle, OS.GCForeground | OS.GCBackground, values);
-	OS.XSetForeground (xDisplay, handle, values.background);
-	OS.XFillRectangle (xDisplay, data.drawable, handle, rect.x, rect.y, rect.width, rect.height);
-	OS.XSetForeground (xDisplay, handle, values.foreground);
+	fillRectangle(rect.x, rect.y, rect.width, rect.height);
 }
 /** 
  * Fills the interior of the round-cornered rectangle specified by 
@@ -1114,9 +1204,14 @@ public void fillRectangle (Rectangle rect) {
  * @param arcWidth the horizontal diameter of the arc at the four corners
  * @param arcHeight the vertical diameter of the arc at the four corners
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
  * @see #drawRoundRectangle
  */
 public void fillRoundRectangle (int x, int y, int width, int height, int arcWidth, int arcHeight) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int nx = x;
 	int ny = y;
 	int nw = width;
@@ -1167,8 +1262,13 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  *
  * @param ch the character to measure
  * @return the distance in the x direction to move past the character before painting the next
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getAdvanceWidth(char ch) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int fontList  = data.fontList;
 	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch }, false);
 	int val = charBuffer[0] & 0xFF;
@@ -1259,8 +1359,13 @@ public int getAdvanceWidth(char ch) {
  * Returns the background color.
  *
  * @return the receiver's background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Color getBackground() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
 	XGCValues values = new XGCValues();
 	if (OS.XGetGCValues(xDisplay, handle, OS.GCBackground, values) == 0) {
@@ -1285,8 +1390,13 @@ public Color getBackground() {
  *
  * @param ch the character to measure
  * @return the width of the character
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getCharWidth(char ch) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int fontList = data.fontList;
 	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch }, false);
 	int val = charBuffer[0] & 0xFF;
@@ -1380,8 +1490,13 @@ public int getCharWidth(char ch) {
  * object the receiver is drawing on.
  *
  * @return the bounding rectangle of the clipping region
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Rectangle getClipping() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
@@ -1402,8 +1517,12 @@ public Rectangle getClipping() {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
  * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void getClipping(Region region) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int hRegion = region.handle;
 	int clipRgn = data.clipRgn;
@@ -1426,8 +1545,13 @@ public void getClipping(Region region) {
  * to draw and measure text.
  *
  * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Font getFont () {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return Font.motif_new(data.device, data.fontList);
 }
 int getFontHeight () {
@@ -1478,8 +1602,13 @@ int getFontHeight () {
  * to draw and measure text.
  *
  * @return font metrics for the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public FontMetrics getFontMetrics() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
 	int fontList = data.fontList;
 	/* Create a font context to iterate over each element in the font list */
@@ -1634,8 +1763,13 @@ public FontMetrics getFontMetrics() {
  * Returns the receiver's foreground color.
  *
  * @return the color used for drawing foreground things
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Color getForeground() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
 	XGCValues values = new XGCValues();
 	if (OS.XGetGCValues(xDisplay, handle, OS.GCForeground, values) == 0) {
@@ -1656,8 +1790,13 @@ public Color getForeground() {
  * <code>SWT.LINE_DASHDOTDOT<code>.
  *
  * @return the style used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getLineStyle() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.lineStyle;
 }
 /** 
@@ -1667,8 +1806,13 @@ public int getLineStyle() {
  * <code>drawPolyline</code>, and so forth.
  *
  * @return the receiver's line width 
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getLineWidth() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	XGCValues values = new XGCValues();
 	OS.XGetGCValues(data.display, handle, OS.GCLineWidth, values);
 	return values.line_width;
@@ -1682,8 +1826,13 @@ public int getLineWidth() {
  * replaced with the source color value.
  *
  * @return <code>true</code> true if the receiver is in XOR mode, and false otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public boolean getXORMode() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	XGCValues values = new XGCValues ();
 	OS.XGetGCValues (data.display, handle, OS.GCFunction, values);
 	return values.function == OS.GXxor;
@@ -1730,8 +1879,13 @@ void init(Drawable drawable, GCData data, int xGC) {
  * that can be accessed with <code>getClipping(region)</code>.
  *
  * @return <code>true</code> if the GC has a clipping region, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public boolean isClipped() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return data.clipRgn != 0;
 }
 /**
@@ -1762,9 +1916,14 @@ public static GC motif_new(Drawable drawable, GCData data) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
  * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setBackground (Color color) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.XSetBackground(data.display, handle, color.handle.pixel);
@@ -1779,8 +1938,12 @@ public void setBackground (Color color) {
  * @param width the width of the clipping rectangle
  * @param height the height of the clipping rectangle
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setClipping (int x, int y, int width, int height) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int clipRgn = data.clipRgn;
 	if (clipRgn == 0) {
 		clipRgn = OS.XCreateRegion ();
@@ -1800,11 +1963,12 @@ public void setClipping (int x, int y, int width, int height) {
  *
  * @param rect the clipping rectangle
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public void setClipping (Rectangle rect) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
 		OS.XSetClipMask (data.display, handle, OS.None);
 		return;
@@ -1817,8 +1981,13 @@ public void setClipping (Rectangle rect) {
  * by the argument.
  *
  * @param rect the clipping region.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setClipping (Region region) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int clipRgn = data.clipRgn;
 	if (region == null) {
 		OS.XSetClipMask (data.display, handle, OS.None);
@@ -1843,10 +2012,22 @@ public void setClipping (Region region) {
  * for the platform will be used instead.
  *
  * @param font the new font for the receiver, or null to indicate a default font
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setFont (Font font) {
-	if (font == null || font.isDisposed()) data.fontList = data.device.systemFont;
-	else data.fontList = font.handle;
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (font == null) {
+		data.fontList = data.device.systemFont;
+	} else {
+		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		data.fontList = font.handle;
+	}
 	if (data.renderTable != 0) OS.XmRenderTableFree(data.renderTable);
 	data.renderTable = 0;
 }
@@ -1855,8 +2036,17 @@ public void setFont (Font font) {
  * for drawing operations including when text is drawn.
  *
  * @param color the new foreground color for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the color is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the color has been disposed</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setForeground (Color color) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.XSetForeground(data.display, handle, color.handle.pixel);
@@ -1868,8 +2058,13 @@ public void setForeground (Color color) {
  * <code>SWT.LINE_DASHDOTDOT<code>.
  *
  * @param lineStyle the style to be used for drawing lines
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setLineStyle(int lineStyle) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
@@ -1902,8 +2097,13 @@ public void setLineStyle(int lineStyle) {
  * <code>drawPolyline</code>, and so forth.
  *
  * @param lineWidth the width of a line
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void setLineWidth(int width) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.lineStyle == SWT.LINE_SOLID) {
 		OS.XSetLineAttributes(data.display, handle, width, OS.LineSolid, OS.CapButt, OS.JoinMiter);
 	} else {
@@ -1919,9 +2119,14 @@ public void setLineWidth(int width) {
  * is replaced with the source color value.
  *
  * @param xor if <code>true</code>, then <em>xor</em> mode is used, otherwise <em>source copy</em> mode is used
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
-public void setXORMode(boolean val) {
-	if (val)
+public void setXORMode(boolean xor) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (xor)
 		OS.XSetFunction(data.display, handle, OS.GXxor);
 	else
 		OS.XSetFunction(data.display, handle, OS.GXcopy);
@@ -1937,8 +2142,16 @@ public void setXORMode(boolean val) {
  *
  * @param string the string to measure
  * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Point stringExtent(String string) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) return new Point(0, getFontHeight());
 	byte[] buffer = Converter.wcsToMbcs(null, string, true);
@@ -1960,8 +2173,16 @@ public Point stringExtent(String string) {
  *
  * @param string the string to measure
  * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Point textExtent(String string) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) return new Point(0, getFontHeight());
 	byte [] textBuffer = Converter.wcsToMbcs (null, string, true);
@@ -1972,5 +2193,15 @@ public Point textExtent(String string) {
 	int height =  OS.XmStringHeight(renderTable, xmString);
 	OS.XmStringFree(xmString);
 	return new Point(width, height);
+}
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "GC {*DISPOSED*}";
+	return "GC {" + handle + "}";
 }
 }
