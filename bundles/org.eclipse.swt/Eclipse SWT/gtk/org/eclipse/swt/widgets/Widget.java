@@ -112,7 +112,8 @@ public abstract class Widget {
 	static final int SWITCH_PAGE = 35;
 	static final int TOGGLED = 36;
 	static final int UNMAP_EVENT = 37;
-	static final int VALUE_CHANGED = 38;
+	static final int UNREALIZE = 38;
+	static final int VALUE_CHANGED = 39;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -638,6 +639,10 @@ int gtk_unmap_event (int widget, int event) {
 	return 0;
 }
 
+int gtk_unrealize (int widget) {
+	return 0;
+}
+
 int gtk_value_changed (int adjustment) {
 	return 0;
 }
@@ -1133,6 +1138,7 @@ int windowProc (int handle, int user_data) {
 		case SELECT: return gtk_select (handle);
 		case SHOW: return gtk_show (handle);
 		case VALUE_CHANGED: return gtk_value_changed (handle);
+		case UNREALIZE: return gtk_unrealize (handle);
 		default: return 0;
 	}
 }

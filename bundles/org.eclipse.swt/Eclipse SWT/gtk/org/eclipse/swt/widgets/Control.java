@@ -161,6 +161,7 @@ void hookEvents () {
 	if (imHandle != 0) {
 		int topHandle = topHandle ();
 		OS.g_signal_connect (handle, OS.map_event, windowProc3, MAP_EVENT);
+		OS.g_signal_connect (handle, OS.unrealize, windowProc2, UNREALIZE);
 		OS.g_signal_connect (topHandle, OS.hide, windowProc2, HIDE);
 		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
 		OS.g_signal_connect (imHandle, OS.preedit_changed, windowProc2, PREEDIT_CHANGED);
@@ -1824,6 +1825,12 @@ int gtk_show_help (int widget, int helpType) {
 	return 0;
 }
 
+int gtk_unrealize (int widget) {
+	int imHandle = imHandle ();
+	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, 0);
+	return 0;	
+}
+
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
  * <p>
@@ -2490,13 +2497,8 @@ public void setVisible (boolean visible) {
 		* By observation, a widget that is not realized will
 		* not respond to a mnemonic.  The fix is to unrealize
 		* the widget hierarchy every time a widget is hidden.
-		* 
-		* Note: Controls who have an IM context associated cannot
-		* call gtk_widget_unrealize() because it forces the widget to
-		* be remapped.
 		*/
-		int imHandle = imHandle ();
-		if (imHandle == 0) OS.gtk_widget_unrealize (topHandle);
+		OS.gtk_widget_unrealize (topHandle);
 		sendEvent (SWT.Hide);
 	}
 }

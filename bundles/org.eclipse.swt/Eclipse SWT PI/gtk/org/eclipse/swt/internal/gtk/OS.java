@@ -254,6 +254,7 @@ public class OS {
 	public static final byte[] switch_page = signal("switch_page");
 	public static final byte[] toggled = signal("toggled");
 	public static final byte[] unmap_event = signal("unmap_event");
+	public static final byte[] unrealize = signal("unrealize");
 	public static final byte[] value_changed = signal("value_changed");
 	
 	/** Properties */
