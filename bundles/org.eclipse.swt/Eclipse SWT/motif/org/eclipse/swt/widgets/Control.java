@@ -10,9 +10,7 @@ import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
-/* Start ACCESSIBILITY */
 import org.eclipse.swt.accessibility.*;
-/* End ACCESSIBILITY */
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -35,9 +33,7 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
-/* Start ACCESSIBILITY */
 	Accessible accessible;
-/* End ACCESSIBILITY */
 
 Control () {
 	/* Do nothing */
@@ -509,8 +505,6 @@ public boolean forceFocus () {
 	return OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
 }
 
-
-/* Start ACCESSIBILITY */
 /**
  * Returns the accessible object for the receiver.
  * If this is the first time this object is requested,
@@ -533,7 +527,6 @@ public Accessible getAccessible () {
 	}
 	return accessible;
 }
-/* End ACCESSIBILITY */
 
 /**
  * Returns the receiver's background color.
