@@ -44,7 +44,7 @@ public static void drawGlyphs(GC gc, byte[] renderBuffer, int[] renderDx, int x,
 /*
  * Not implemented.
  */
-public static int getFontStyle(GC gc) {
+public static int getFontBidiAttributes(GC gc) {
 	return 0;	
 }
 /*

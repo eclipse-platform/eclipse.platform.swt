@@ -209,7 +209,7 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 /*
  * Return information about the font for the given GC.
  */
-public static int getFontStyle(GC gc) {
+public static int getFontBidiAttributes(GC gc) {
 	int fontStyle = 0;
 	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
 	if (((fontLanguageInfo & GCP_REORDER) != 0)) {
