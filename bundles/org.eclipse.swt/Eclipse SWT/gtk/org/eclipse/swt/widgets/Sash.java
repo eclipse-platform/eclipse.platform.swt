@@ -119,8 +119,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  * @see SelectionEvent
  */
 public void addSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
@@ -145,8 +144,7 @@ public void addSelectionListener (SelectionListener listener) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
@@ -154,10 +152,8 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
-/*	OS.gtk_grab_add(handle);
-	dragging = true;
-	int button = OS.gdk_event_button_get_button(callData);
-	if (button != 1) return 0;
+	super.processMouseDown (callData,arg1,int2);
+	if (OS.gdk_event_button_get_button(callData) != 1) return 0;
 	double[] px = new double[1];
 	double[] py = new double[1];
 	OS.gdk_event_get_coords(callData, px, py);
@@ -165,25 +161,35 @@ int processMouseDown (int callData, int arg1, int int2) {
 	OS.gdk_event_get_root_coords(callData, px, py);
 	start_root_x=(int)(px[0]); start_root_y=(int)(py[0]);
 	drawX=startX; drawY=startY;
-	GtkWidget gtkwidget =  new GtkWidget();
-	OS.memmove(gtkwidget, handle, GtkWidget.sizeof);
-	int border = 0, width = gtkwidget.alloc_width+border*2, height = gtkwidget.alloc_height+border*2;
-	lastX = gtkwidget.alloc_x - border;  lastY = gtkwidget.alloc_y - border;
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	lastX = OS.GTK_WIDGET_X(handle);  lastY = OS.GTK_WIDGET_Y(handle);
+	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
 	event.time = OS.gdk_event_get_time(callData);
 	event.x = lastX;  event.y = lastY;
 	event.width = width;  event.height = height;
-	sendEvent (SWT.MouseDown, event);*/
+	/*
+	 * It is possible (but unlikely) that client code could have disposed
+	 * the widget in the selection event.  If this happens end the processing
+	 * of this message by returning.
+	 */
+	sendEvent (SWT.MouseDown, event);
+	if (isDisposed ()) return 0;
+	if (event.doit) {
+		dragging = true;
+		drawBand (lastX = event.x, lastY = event.y, width, height);
+	}
 	return 0;
 }
 
 int processMouseMove (int callData, int arg1, int int2) {
 	if (!dragging) return 0;
-/*	GtkWidget gtkwidget =  new GtkWidget();
-	OS.memmove(gtkwidget, handle, GtkWidget.sizeof);
-	int border = 0, width = gtkwidget.alloc_width+border*2, height = gtkwidget.alloc_height+border*2;
-	int x = gtkwidget.alloc_x - border,  y = gtkwidget.alloc_y - border;
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	int x = OS.GTK_WIDGET_X(handle);
+	int y = OS.GTK_WIDGET_Y(handle);
 	Rectangle rect = parent.getClientArea();
 	int parentWidth = rect.width - 2;
 	int parentHeight = rect.height - 2;
@@ -205,18 +211,18 @@ int processMouseMove (int callData, int arg1, int int2) {
 			newY = Math.min (Math.max (0, y + (last_root_y-start_root_y)  - startY ), parentHeight - height);
 	}
 	if ((newX == lastX) && (newY == lastY)) return 0;
-	drawBand(newX, newY, width, height);*/
+	drawBand(newX, newY, width, height);
 	return 0;
 }
 
 int processMouseUp (int callData, int arg1, int int2) {
-/*	int button = OS.gdk_event_button_get_button(callData);
+	int button = OS.gdk_event_button_get_button(callData);
 	if (button != 1) return 0;
 	if (!dragging) return 0;
-	GtkWidget gtkwidget =  new GtkWidget();
-	OS.memmove(gtkwidget, handle, GtkWidget.sizeof);
-	int border = 0, width = gtkwidget.alloc_width+border*2, height = gtkwidget.alloc_height+border*2;
-	int x = gtkwidget.alloc_x - border,  y = gtkwidget.alloc_y - border;
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	int x = OS.GTK_WIDGET_X(handle);
+	int y = OS.GTK_WIDGET_Y(handle);
 	Rectangle rect = parent.getClientArea();
 	int parentWidth = rect.width - 2;
 	int parentHeight = rect.height - 2;
@@ -246,19 +252,16 @@ int processMouseUp (int callData, int arg1, int int2) {
 	drawBand(newX, newY, width, height);
 	drawing = false;
 	OS.gtk_grab_remove(handle);
-	sendEvent (SWT.Selection, event);*/
+	sendEvent (SWT.Selection, event);
 	return 0;
 }
-/*
+
 int processMouseEnter (int callData, int arg1, int int2) {
-	GdkEventMotion gdkEvent = new GdkEventMotion ();
-	OS.memmove (gdkEvent, callData, GdkEventMotion.sizeof);
-	GtkWidget gtkwidget =  new GtkWidget();
-	OS.memmove(gtkwidget, handle, GtkWidget.sizeof);
-	int border = 0, width = gtkwidget.alloc_width+border*2, height = gtkwidget.alloc_height+border*2;
-	lastX = gtkwidget.alloc_x - border;  lastY = gtkwidget.alloc_y - border;
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	lastX = OS.GTK_WIDGET_X(handle);  lastY = OS.GTK_WIDGET_Y(handle);
 	Event event = new Event ();
-	event.time = gdkEvent.time;
+	event.time = OS.gdk_event_get_time(callData);
 	event.detail = SWT.DRAG;
 	event.x = lastX;  event.y = lastY;
 	event.width = width;  event.height = height;
@@ -272,16 +275,15 @@ int processMouseEnter (int callData, int arg1, int int2) {
 	sendEvent (SWT.Selection, event);
 	return 0;
 }
-*/
+
 int processMouseExit (int callData, int arg1, int int2) {
-/*	GtkWidget gtkwidget =  new GtkWidget();
-	OS.memmove(gtkwidget, handle, GtkWidget.sizeof);
-	int border = 0, width = gtkwidget.alloc_width+border*2, height = gtkwidget.alloc_height+border*2;
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
 	Event event = new Event ();
 	event.time = OS.gdk_event_get_time(callData);
 	event.x = lastX;  event.y = lastY;
 	event.width = width;  event.height = height;
-	sendEvent (SWT.MouseExit, event);*/
+	sendEvent (SWT.MouseExit, event);
 	return 0;
 	
 }
