@@ -17,7 +17,9 @@ import org.eclipse.swt.graphics.*;
  * A layout controls the position and size
  * of the children of a composite widget.
  * This class is the abstract base class for
- * layouts. 
+ * layouts.
+ * 
+ *  @see Composite#setLayout(Layout)
  */
 public abstract class Layout {
 
