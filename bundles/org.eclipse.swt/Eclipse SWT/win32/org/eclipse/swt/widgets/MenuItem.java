@@ -221,7 +221,8 @@ void fillAccel (ACCEL accel) {
 	accel.cmd = accel.key = 0;
 	if (accelerator == 0) return;
 	int fVirt = OS.FVIRTKEY;
-	int key = accelerator & ~(SWT.ALT | SWT.CTRL | SWT.SHIFT);
+	int modifiers = SWT.ALT | SWT.SHIFT | SWT.CONTROL | SWT.COMMAND;
+	int key = accelerator & ~modifiers;
 	int vKey = Display.untranslateKey (key);
 	if (vKey != 0) {
 		key = vKey;	
@@ -255,8 +256,9 @@ void fillAccel (ACCEL accel) {
 	accel.cmd = (short) id;
 	accel.fVirt = (byte) fVirt;
 	if ((accelerator & SWT.ALT) != 0) accel.fVirt |= OS.FALT;
-	if ((accelerator & SWT.CTRL) != 0) accel.fVirt |= OS.FCONTROL;
 	if ((accelerator & SWT.SHIFT) != 0) accel.fVirt |= OS.FSHIFT;
+	if ((accelerator & SWT.CONTROL) != 0) accel.fVirt |= OS.FCONTROL;
+	if ((accelerator & SWT.COMMAND) != 0) accel.fVirt |= OS.FCONTROL;
 }
 
 /**

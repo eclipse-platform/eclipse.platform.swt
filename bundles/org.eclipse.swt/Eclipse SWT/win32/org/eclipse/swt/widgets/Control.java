@@ -1658,6 +1658,7 @@ boolean sendMouseEvent (int type, int button, int msg, int wParam, int lParam) {
 	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
 	if ((wParam & OS.MK_SHIFT) != 0) event.stateMask |= SWT.SHIFT;
 	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.CONTROL;
+	if ((wParam & OS.MK_CONTROL) != 0) event.stateMask |= SWT.COMMAND;
 	if ((wParam & OS.MK_LBUTTON) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((wParam & OS.MK_MBUTTON) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((wParam & OS.MK_RBUTTON) != 0) event.stateMask |= SWT.BUTTON3;
