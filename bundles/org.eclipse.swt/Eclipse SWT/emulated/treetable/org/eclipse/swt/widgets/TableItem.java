@@ -52,7 +52,7 @@ public class TableItem extends SelectableItem {
 	Font font = null;
 	Color [] cellBackground, cellForeground;
 	Font [] cellFont;
-	int [] textWidth;
+	int [] textWidths;
 	boolean cached;
 	
 /**
@@ -172,15 +172,15 @@ void clear() {
 	font = null;
 	cellBackground = cellForeground = null;
 	cellFont = null;
-	textWidth = null;
+	textWidths = null;
 	cached = false;
 }
-void clearTextWidthCache() {
-	textWidth = null;
+void clearTextWidths() {
+	textWidths = null;
 }
-void clearTextWidthCache(int columnIndex) {
-	if (textWidth != null) {
-		textWidth [columnIndex] = 0;
+void clearTextWidths(int columnIndex) {
+	if (textWidths != null) {
+		textWidths [columnIndex] = 0;
 	}
 }
 public void dispose() {
@@ -198,7 +198,7 @@ void doDispose() {
 	font = null;
 	cellForeground = cellBackground = null;
 	cellFont = null;
-	textWidth = null;
+	textWidths = null;
 	super.doDispose();
 }
 
@@ -864,18 +864,18 @@ int getTextIndent(int columnIndex) {
 	return textIndent;
 }
 int getTextWidth (int columnIndex) {
-	if (textWidth == null) {
+	if (textWidths == null) {
 		int count = Math.max (1, getParent ().getColumnCount ());
-		textWidth = new int [count];
+		textWidths = new int [count];
 	}
 	String text = (String) getDataLabels().elementAt (columnIndex);
-	if (text != null && textWidth [columnIndex] == 0 && text.length () > 0) {
+	if (text != null && textWidths [columnIndex] == 0 && text.length () > 0) {
 		GC gc = new GC (getParent ());
 		gc.setFont (getFont (columnIndex));
-		textWidth [columnIndex] = gc.stringExtent (text).x;
+		textWidths [columnIndex] = gc.stringExtent (text).x;
 		gc.dispose ();
 	}
-	return textWidth [columnIndex];
+	return textWidths [columnIndex];
 }
 /**
  * Answer the cached trimmed text for column 'columnIndex'. 
@@ -1004,7 +1004,7 @@ void internalSetText(int columnIndex, String string) {
 		oldText = (String) labels.elementAt(columnIndex);
 		if (string.equals(oldText) == false) {
 			labels.setElementAt(string, columnIndex);
-			clearTextWidthCache(columnIndex);
+			clearTextWidths(columnIndex);
 			reset(columnIndex);
 			notifyTextChanged(columnIndex, oldText == null);
 		}
@@ -1280,7 +1280,7 @@ public void setFont (Font font) {
 	if (this.font == font) return;
 	if (this.font != null && this.font.equals (font)) return;
 	this.font = font;
-	clearTextWidthCache ();
+	clearTextWidths ();
 	redraw ();
 }
 
@@ -1317,7 +1317,7 @@ public void setFont (int index, Font font) {
 	if (cellFont [index] == font) return;
 	if (cellFont [index] != null && cellFont [index].equals (font)) return;
 	cellFont [index] = font;
-	clearTextWidthCache (index);
+	clearTextWidths (index);
 	redraw ();
 }
 
