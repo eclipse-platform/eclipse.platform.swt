@@ -938,9 +938,7 @@ public void setForeground (Color color) {
 	if (arrow != null) arrow.setForeground(color);
 }
 /**
-* Sets the text of an item.
-* <p>
-* Indexing is zero based.
+* Sets the text of an item; indexing is zero based.
 *
 * This operation will fail when the index is out
 * of range or an item could not be changed in
@@ -965,7 +963,7 @@ public void setItem (int index, String string) {
 }
 /**
 * Sets all items.
-* <p>
+*
 * @param items the array of items
 *
 * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
@@ -986,7 +984,7 @@ public void setItems (String [] items) {
 }
 /**
 * Sets the new selection.
-* <p>
+*
 * @param selection point representing the start and the end of the new selection
 *
 * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
@@ -1003,8 +1001,8 @@ public void setSelection (Point selection) {
 }
 
 /**
-* Sets the widget text
-* <p>
+* Sets the widget text.
+*
 * @param string the widget text
 *
 * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
