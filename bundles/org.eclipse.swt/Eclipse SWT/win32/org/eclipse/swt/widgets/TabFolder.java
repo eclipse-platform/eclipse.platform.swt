@@ -362,8 +362,7 @@ int imageIndex (Image image) {
 	}
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
-	imageList.add (image);
-	return imageList.size () - 1;
+	return imageList.add (image);
 }
 
 /**
