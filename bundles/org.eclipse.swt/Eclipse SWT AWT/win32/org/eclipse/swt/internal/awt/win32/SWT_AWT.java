@@ -72,14 +72,24 @@ public static Panel new_Panel (final Composite parent) {
 	frame.add (panel);
 	parent.addListener (SWT.Activate, new Listener () {
 		public void handleEvent (Event e) {
-			frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
-			frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
+			/* Needed to fix focus for lightweights in JDK 1.3.1 */
+			EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
+					frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
+				}
+			});
 		}
 	});
 	parent.addListener (SWT.Deactivate, new Listener () {
 		public void handleEvent (Event e) {
-			frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
-			frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
+			/* Needed to fix focus for lightweights in JDK 1.3.1 */
+			EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
+					frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
+				}
+			});
 		}
 	});
 	parent.getShell ().addListener (SWT.Move, new Listener () {
