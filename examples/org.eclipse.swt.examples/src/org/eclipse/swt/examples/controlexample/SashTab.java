@@ -167,7 +167,7 @@ class SashTab extends Tab {
 	 */
 	void layout () {
 		
-		Rectangle clientArea = sashGroup.getClientArea ();
+		Rectangle clientArea = sashComp.getClientArea ();
 		Rectangle hSashBounds = hSash.getBounds ();
 		Rectangle vSashBounds = vSash.getBounds ();
 		
@@ -204,7 +204,7 @@ class SashTab extends Tab {
 	void resized () {
 	
 		/* Get the client area for the shell */
-		Rectangle clientArea = sashGroup.getClientArea ();
+		Rectangle clientArea = sashComp.getClientArea ();
 		
 		/*
 		* Make list 1 half the width and half the height of the tab leaving room for the sash.
