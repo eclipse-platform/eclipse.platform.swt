@@ -431,15 +431,15 @@ TextLayout getTextLayout(String line, int lineOffset) {
 				end = Math.min(length, start + style.length);
 			}
 			if (start >= length) break;
-			if (lastOffset != start) {
+			if (lastOffset < start) {
 				layout.setStyle(null, lastOffset, start - 1);	
 			}
 			TextStyle textStyle = new TextStyle(getFont(style.fontStyle), style.foreground, style.background);
 			layout.setStyle(textStyle, start, end - 1);
-			lastOffset = end;
+			lastOffset = Math.max(lastOffset, end);
 		}
 	}
-	if (lastOffset != length) layout.setStyle(null, lastOffset, length);
+	if (lastOffset < length) layout.setStyle(null, lastOffset, length);
 	return layout;
 }
 TextLayout createTextLayout(int lineOffset) {
