@@ -695,6 +695,7 @@ void hookEvents () {
 	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNbrowseSelectionCallback, windowProc, BROWSE_SELECTION_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNextendedSelectionCallback, windowProc, EXTENDED_SELECTION_CALLBACK);
+	OS.XtAddCallback (handle, OS.XmNmultipleSelectionCallback, windowProc, MULTIPLE_SELECTION_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNdefaultActionCallback, windowProc, DEFAULT_ACTION_CALLBACK);
 }
 /**
@@ -1546,6 +1547,10 @@ int XmNdefaultActionCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNextendedSelectionCallback (int w, int client_data, int call_data) {
+	postEvent (SWT.Selection);
+	return 0;
+}
+int XmNmultipleSelectionCallback (int w, int client_data, int call_data) {
 	postEvent (SWT.Selection);
 	return 0;
 }

@@ -109,7 +109,8 @@ public abstract class Widget {
 	static final int MAP_CALLBACK = 29;
 	static final int UNMAP_CALLBACK  = 30;
 	static final int DELETE_WINDOW = 31;
-	static final int EXPOSURE_CALLBACK  = 32;	
+	static final int EXPOSURE_CALLBACK  = 32;
+	static final int MULTIPLE_SELECTION_CALLBACK  = 33;	
 
 Widget () {
 	/* Do nothing */
@@ -1003,6 +1004,7 @@ int windowProc (int w, int client_data, int call_data, int continue_to_dispatch)
 		case HELP_CALLBACK:				return XmNhelpCallback (w, client_data, call_data);
 		case INCREMENT_CALLBACK:			return XmNincrementCallback (w, client_data, call_data);
 		case MODIFY_VERIFY_CALLBACK:		return XmNmodifyVerifyCallback (w, client_data, call_data);
+		case MULTIPLE_SELECTION_CALLBACK:		return XmNmultipleSelectionCallback (w, client_data, call_data);
 		case PAGE_DECREMENT_CALLBACK:		return XmNpageDecrementCallback (w, client_data, call_data);
 		case PAGE_INCREMENT_CALLBACK:		return XmNpageIncrementCallback (w, client_data, call_data);
 		case SELECTION_CALLBACK:			return XmNselectionCallback (w, client_data, call_data);
@@ -1086,6 +1088,9 @@ int XmNmapCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNmodifyVerifyCallback (int w, int client_data, int call_data) {
+	return 0;
+}
+int XmNmultipleSelectionCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNpageDecrementCallback (int w, int client_data, int call_data) {
