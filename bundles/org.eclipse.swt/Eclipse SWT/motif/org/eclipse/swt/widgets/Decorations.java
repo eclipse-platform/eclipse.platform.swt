@@ -146,6 +146,7 @@ void bringToTop (boolean force) {
 	*/
 	if (minimized) return;
 	if (!isVisible ()) return;
+	if ((style & SWT.ON_TOP) != 0) return;
 	int display = OS.XtDisplay (handle);
 	if (display == 0) return;
 	int window = OS.XtWindow (handle);
