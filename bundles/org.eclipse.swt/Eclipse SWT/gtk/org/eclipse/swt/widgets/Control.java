@@ -1748,6 +1748,15 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 int /*long*/ gtk_button_release_event (int /*long*/ widget, int /*long*/ event) {
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	
+	/*
+	* Feature in GTK.  When button 4, 5, 6, or 7 is released, GTK
+	* does not deliver a corresponding GTK event.  Button 6 and 7
+	* are mapped to buttons 4 and 5 in SWT.  The fix is to change
+	* the button number of the event to a negative number so that
+	* it gets dispatched by GTK.  SWT has been modified to look
+	* for negative button numbers.
+	*/
 	int button = gdkEvent.button;
 	if (button == -6) button = 4;
 	if (button == -7) button = 5;
