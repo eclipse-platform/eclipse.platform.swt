@@ -217,6 +217,7 @@
 #define NO_LoadLibraryA
 #define NO_MapVirtualKeyA
 #define NO_MessageBoxA
+#define NO_MonitorFromWindow
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMREBARCHEVRON_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II

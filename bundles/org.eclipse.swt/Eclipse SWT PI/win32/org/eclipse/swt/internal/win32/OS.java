@@ -648,6 +648,7 @@ public class OS {
 	public static final int MM_TEXT = 0x1;
 	public static final int MNC_CLOSE = 0x1;
 	public static final int MNS_CHECKORBMP = 0x4000000;
+	public static final int MONITOR_DEFAULTTONEAREST = 0x2;
 	public static final int MONITORINFOF_PRIMARY = 0x1;
 	public static final int MWMO_INPUTAVAILABLE = 0x4;
 	public static final int NM_CLICK = 0xfffffffe;
@@ -2269,6 +2270,7 @@ public static final native int MapWindowPoints (int hWndFrom, int hWndTo, RECT l
 public static final native boolean MessageBeep (int uType);
 public static final native int MessageBoxW (int hWnd, char [] lpText, char [] lpCaption, int uType);
 public static final native int MessageBoxA (int hWnd, byte [] lpText, byte [] lpCaption, int uType);
+public static final native int MonitorFromWindow (int hwnd, int dwFlags);
 public static final native void MoveMemory (char[] Destination, int SourcePtr, int Length);
 public static final native void MoveMemory (byte [] Destination, int Source, int Length);
 public static final native void MoveMemory (byte [] Destination, ACCEL Source, int Length);

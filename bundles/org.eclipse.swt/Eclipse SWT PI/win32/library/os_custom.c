@@ -305,6 +305,31 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsSP)
 }
 #endif
 
+#ifndef NO_MonitorFromWindow
+JNIEXPORT jint JNICALL OS_NATIVE(MonitorFromWindow)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "MonitorFromWindow\n")
+	//rc = (jint)MonitorFromWindow(arg0, arg1);
+	{
+		/*
+		*  MonitorFromWindow is a Win2000 and Win98 specific call
+		*  If you link it into swt.dll a system modal entry point not found dialog will
+		*  appear as soon as swt.dll is loaded. Here we check for the entry point and
+		*  only do the call if it exists.
+		*/
+		HMODULE hm;
+		FARPROC fp;
+		if ((hm=GetModuleHandle("user32.dll")) && (fp=GetProcAddress(hm, "MonitorFromWindow"))) {
+			rc = (jint)(fp)(arg0, arg1);
+		}
+	}
+	NATIVE_EXIT(env, that, "MonitorFromWindow\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_SendMessageW__II_3I_3I
 JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)

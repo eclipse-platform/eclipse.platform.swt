@@ -830,6 +830,35 @@ public Menu getMenu () {
 }
 
 /**
+ * Returns the receiver's monitor.
+ * 
+ * @return the receiver's monitor
+ * 
+ * @since 3.0
+ */
+public Monitor getMonitor () {
+	checkWidget ();
+	if (OS.IsWinCE || (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
+		return display.getPrimaryMonitor ();
+	}
+	int hmonitor = OS.MonitorFromWindow (handle, OS.MONITOR_DEFAULTTONEAREST);
+	MONITORINFO lpmi = new MONITORINFO ();
+	lpmi.cbSize = MONITORINFO.sizeof;
+	OS.GetMonitorInfo (hmonitor, lpmi);
+	Monitor monitor = new Monitor ();
+	monitor.handle = hmonitor;
+	monitor.x = lpmi.rcMonitor_left;
+	monitor.y = lpmi.rcMonitor_top;
+	monitor.width = lpmi.rcMonitor_right - lpmi.rcMonitor_left;
+	monitor.height = lpmi.rcMonitor_bottom - lpmi.rcMonitor_top;
+	monitor.clientX = lpmi.rcWork_left;
+	monitor.clientY = lpmi.rcWork_top;
+	monitor.clientWidth = lpmi.rcWork_right - lpmi.rcWork_left;
+	monitor.clientHeight = lpmi.rcWork_bottom - lpmi.rcWork_top;
+	return monitor;
+}
+
+/**
  * Returns the receiver's parent, which must be a <code>Composite</code>
  * or null when the receiver is a shell that was created with null or
  * a display for a parent.
