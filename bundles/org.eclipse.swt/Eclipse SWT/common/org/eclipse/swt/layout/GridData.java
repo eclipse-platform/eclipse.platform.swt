@@ -113,6 +113,7 @@ public final class GridData {
 	// Private
 	int childIndex;
 	boolean isItemData = true;
+	int hSpan;
 public GridData() {
 	super();
 }

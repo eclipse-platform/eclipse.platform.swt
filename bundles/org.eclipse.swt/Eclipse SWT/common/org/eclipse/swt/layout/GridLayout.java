@@ -56,7 +56,6 @@ public final class GridLayout extends Layout {
  	public int verticalSpacing = 5;
 
   	// Private variables.  Cached values used to cut down on grid calculations.
-	boolean initialLayout = true;
 	Vector grid = new Vector();
 	int [] pixelColumnWidths;
 	int [] pixelRowHeights;
@@ -72,12 +71,12 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 			GridData spec = ((GridData[]) grid.elementAt(row))[column];
 			if (spec.isItemData()) {
 				// Widgets spanning columns.
-				if (spec.horizontalSpan > 1) {
+				if (spec.hSpan > 1) {
 					Control child = composite.getChildren()[spec.childIndex];
 					Point extent = child.computeSize(spec.widthHint, spec.heightHint, flushCache);
 
 					// Calculate the size of the widget's spanned columns.
-					int lastSpanIndex = column + spec.horizontalSpan;
+					int lastSpanIndex = column + spec.hSpan;
 					int spannedSize = 0;
 					for (int c = column; c < lastSpanIndex; c++) {
 						spannedSize = spannedSize + pixelColumnWidths[c] + horizontalSpacing;
@@ -88,7 +87,7 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 					// sizes to account for the extra space that is needed.
 					if (extent.x + spec.horizontalIndent > spannedSize) {
 						int extraSpaceNeeded = extent.x + spec.horizontalIndent - spannedSize;
-						int lastColumn = column + spec.horizontalSpan - 1;
+						int lastColumn = column + spec.hSpan - 1;
 						int colWidth;
 						if (makeColumnsEqualWidth) {
 							// Evenly distribute the extra space amongst all of the columns.
@@ -196,7 +195,7 @@ void calculateGridDimensions(Composite composite, boolean flushCache) {
 				Control child = children[spec.childIndex];
 				childSizes[spec.childIndex] = child.computeSize(spec.widthHint, spec.heightHint, flushCache);
 				childWidth = childSizes[spec.childIndex].x + spec.horizontalIndent;
-				if (spec.horizontalSpan == 1) {
+				if (spec.hSpan == 1) {
 					maxWidth = Math.max(maxWidth, childWidth);
 				}
 			}
@@ -224,7 +223,6 @@ void calculateGridDimensions(Composite composite, boolean flushCache) {
 		for (int column = 0; column < numColumns; column++) {
 			GridData spec = ((GridData[]) grid.elementAt(row))[column];
 			if (spec.isItemData()) {
-				Control child = children[spec.childIndex];
 				childHeight = childSizes[spec.childIndex].y;
 				if (spec.verticalSpan == 1) {
 					maxHeight = Math.max(maxHeight, childHeight);
@@ -245,7 +243,7 @@ void computeExpandableCells() {
 		for (int row = 0; row < grid.size(); row++) {
 			GridData spec = ((GridData[]) grid.elementAt(row))[col];
 			if (spec.grabExcessHorizontalSpace) {
-				growColumns.put(new Integer(col + spec.horizontalSpan - 1), new Object());
+				growColumns.put(new Integer(col + spec.hSpan - 1), new Object());
 			}
 			if (spec.grabExcessVerticalSpace) {
 				growRows.put(new Integer(row + spec.verticalSpan - 1), new Object());
@@ -319,15 +317,6 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 
 	if (numChildren == 0) return new Point(0,0);
 
-	// Make sure that all of the composite children have a layout spec.  Do this by
-	// using the initialLayout flag.
-	if (flushCache)
-		initialLayout = true;
-	if (initialLayout) {
-		initializeLayoutData(composite);
-		initialLayout = false;
-	}
-
 	if (flushCache) {
 		// Cause the grid and its related information to be calculated
 		// again.
@@ -335,9 +324,42 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	}
 	return computeLayoutSize(composite, wHint, hHint, flushCache);
 }
+Point getFirstEmptyCell(int row, int column) {
+	GridData[] rowData = (GridData[]) grid.elementAt(row);
+	while (column < numColumns && rowData[column] != null) {
+		column++;
+	}
+	if (column == numColumns) {
+		row++;
+		column = 0;
+		if (row  == grid.size()) {
+			grid.addElement(emptyRow());
+		}
+		return getFirstEmptyCell(row, column);
+	}
+	return new Point(row, column);
+}
+Point getLastEmptyCell(int row, int column) {
+	GridData[] rowData = (GridData[])grid.elementAt(row);
+	while (column < numColumns && rowData[column] == null ) {
+		column++;
+	}
+	return new Point(row, column - 1);
+}	
+Point getCell(int row, int column, int width, int height) {
+	Point start = getFirstEmptyCell(row, column);
+	Point end = getLastEmptyCell(start.x, start.y);
+	if (end.y + 1 - start.y >= width) return start;
+	GridData[] rowData = (GridData[]) grid.elementAt(start.x);
+	for (int j = start.y; j < end.y + 1; j++) {
+		GridData spacerSpec = new GridData();
+		spacerSpec.isItemData = false;
+		rowData[j] = spacerSpec;
+	}
+	return getCell(end.x, end.y, width, height);
+}
 void createGrid(Composite composite) {
 	int row, column, rowFill, columnFill;
-	Vector rows;
 	Control[] children;
 	GridData spacerSpec;
 
@@ -355,23 +377,13 @@ void createGrid(Composite composite) {
 		// Find the first available spot in the grid.
 		Control child = children[i];
 		GridData spec = (GridData) child.getLayoutData();
-		while (((GridData[]) grid.elementAt(row))[column] != null) {
-			column = column + 1;
-			if (column >= numColumns) {
-				row = row + 1;
-				column = 0;
-				if (row >= grid.size()) {
-					grid.addElement(emptyRow());
-				}
-			}
+		if (spec == null) {
+			spec = new GridData();
+			child.setLayoutData(spec);
 		}
-		// See if the place will support the widget's horizontal span.  If not, go to the
-		// next row.
-		if (column + spec.horizontalSpan - 1 >= numColumns) {
-			grid.addElement(emptyRow());
-			row = row + 1;
-			column = 0;
-		}
+		spec.hSpan = Math.min(spec.horizontalSpan, numColumns);
+		Point p = getCell(row, column, spec.hSpan, spec.verticalSpan);
+		row = p.x; column = p.y;
 
 		// The vertical span for the item will be at least 1.  If it is > 1,
 		// add other rows to the grid.
@@ -389,9 +401,9 @@ void createGrid(Composite composite) {
 		// Put spacers in the grid to account for the item's vertical and horizontal
 		// span.
 		rowFill = spec.verticalSpan - 1;
-		columnFill = spec.horizontalSpan - 1;
+		columnFill = spec.hSpan - 1;
 		for (int r = 1; r <= rowFill; r++) {
-			for (int c = 0; c < spec.horizontalSpan; c++) {
+			for (int c = 0; c < spec.hSpan; c++) {
 				spacerSpec = new GridData();
 				spacerSpec.isItemData = false;
 				((GridData[]) grid.elementAt(row + r))[column + c] = spacerSpec;
@@ -404,19 +416,19 @@ void createGrid(Composite composite) {
 				((GridData[]) grid.elementAt(row + r))[column + c] = spacerSpec;
 			}
 		}
-		column = column + spec.horizontalSpan - 1;
+		column = column + spec.hSpan - 1;
 	}
 
 	// Fill out empty grid cells with spacers.
-	for (int k = column + 1; k < numColumns; k++) {
-		spacerSpec = new GridData();
-		spacerSpec.isItemData = false;
-		((GridData[]) grid.elementAt(row))[k] = spacerSpec;
-	}
-	for (int k = row + 1; k < grid.size(); k++) {
-		spacerSpec = new GridData();
-		spacerSpec.isItemData = false;
-		((GridData[]) grid.elementAt(k))[column] = spacerSpec;
+	for (int r = row; r < grid.size(); r++) {
+		GridData[] rowData = (GridData[]) grid.elementAt(r);
+		for (int c = 0; c < numColumns; c++) {
+			if (rowData[c] == null) {
+				spacerSpec = new GridData();
+				spacerSpec.isItemData = false;
+				rowData[c] = spacerSpec;
+			}
+		}
 	}
 }
 GridData[] emptyRow() {
@@ -425,19 +437,10 @@ GridData[] emptyRow() {
 		row[i] = null;}
 	return row;
 }
-void initializeLayoutData(Composite composite) {
-	Control[] children = composite.getChildren();
-		for (int i = 0; i < children.length; i++) {
-			Control child = children[i];
-			if (child.getLayoutData() == null) {
-				child.setLayoutData(new GridData());
-			}
-		}
-}
 protected void layout(Composite composite, boolean flushCache) {
 	int[] columnWidths;
 	int[] rowHeights;
-	int columnSize, rowSize, rowY, columnX;
+	int rowSize, rowY, columnX;
 	int compositeWidth, compositeHeight;
 	int excessHorizontal, excessVertical;
 	Control[] children;
@@ -461,7 +464,6 @@ protected void layout(Composite composite, boolean flushCache) {
 		rowHeights[i] = pixelRowHeights[i];
 	}
 	int columnWidth = 0;
-	columnSize = Math.max(1, numColumns);
 	rowSize = Math.max(1, grid.size());
 
 	// 
@@ -568,7 +570,7 @@ protected void layout(Composite composite, boolean flushCache) {
 
 			//
 			spannedWidth = columnWidth;
-			for (int k = 1; k < spec.horizontalSpan; k++) {
+			for (int k = 1; k < spec.hSpan; k++) {
 				if ((c + k) <= numColumns) {
 					if (!makeColumnsEqualWidth) {
 						columnWidth = columnWidths[c + k];
