@@ -149,10 +149,18 @@ public Object clone() {
 public String toString() {
 	StringBuffer buf = new StringBuffer();
 	buf.append(start + "," + length + " fg:" + foreground + " bg:" + background + " fStyle:");
-	if (fontStyle == SWT.NORMAL) {
-		buf.append("normal");
-	} else if (fontStyle == SWT.BOLD) {
-		buf.append("bold");
+	switch (fontStyle) {
+		case SWT.BOLD:
+			buf.append("bold");
+			break;
+		case SWT.ITALIC:
+			buf.append("italic");
+			break;
+		case SWT.BOLD | SWT.ITALIC:
+			buf.append("bold-italic");
+			break;
+		default:
+			buf.append("normal");
 	}
 	return buf.toString();
 }
