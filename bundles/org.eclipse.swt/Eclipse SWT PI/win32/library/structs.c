@@ -1153,10 +1153,6 @@ void cacheLOGFONTAFields(JNIEnv *env, jobject lpObject)
 LOGFONTA *getLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct)
 {
 	if (!LOGFONTAFc.cached) cacheLOGFONTAFields(env, lpObject);
-	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (void *)lpStruct->lfFaceName);
-	}
 	lpStruct->lfHeight = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfHeight);
 	lpStruct->lfWidth = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfWidth);
 	lpStruct->lfEscapement = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfEscapement);
@@ -1170,16 +1166,16 @@ LOGFONTA *getLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct)
 	lpStruct->lfClipPrecision = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfClipPrecision);
 	lpStruct->lfQuality = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfQuality);
 	lpStruct->lfPitchAndFamily = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (void *)lpStruct->lfFaceName);
+	}
 	return lpStruct;
 }
 
 void setLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct)
 {
 	if (!LOGFONTAFc.cached) cacheLOGFONTAFields(env, lpObject);
-	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (void *)lpStruct->lfFaceName);
-	}
 	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfHeight, (jint)lpStruct->lfHeight);
 	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfWidth, (jint)lpStruct->lfWidth);
 	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfEscapement, (jint)lpStruct->lfEscapement);
@@ -1193,6 +1189,10 @@ void setLOGFONTAFields(JNIEnv *env, jobject lpObject, LOGFONTA *lpStruct)
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfClipPrecision, (jbyte)lpStruct->lfClipPrecision);
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfQuality, (jbyte)lpStruct->lfQuality);
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily, (jbyte)lpStruct->lfPitchAndFamily);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTAFc.lfFaceName);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName), (void *)lpStruct->lfFaceName);
+	}
 }
 #endif
 
@@ -1217,10 +1217,6 @@ void cacheLOGFONTWFields(JNIEnv *env, jobject lpObject)
 LOGFONTW *getLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct)
 {
 	if (!LOGFONTWFc.cached) cacheLOGFONTWFields(env, lpObject);
-	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / 2, (void *)lpStruct->lfFaceName);
-	}
 	lpStruct->lfHeight = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfHeight);
 	lpStruct->lfWidth = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfWidth);
 	lpStruct->lfEscapement = (*env)->GetIntField(env, lpObject, LOGFONTFc.lfEscapement);
@@ -1234,16 +1230,16 @@ LOGFONTW *getLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct)
 	lpStruct->lfClipPrecision = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfClipPrecision);
 	lpStruct->lfQuality = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfQuality);
 	lpStruct->lfPitchAndFamily = (*env)->GetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily);
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / 2, (void *)lpStruct->lfFaceName);
+	}
 	return lpStruct;
 }
 
 void setLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct)
 {
 	if (!LOGFONTWFc.cached) cacheLOGFONTWFields(env, lpObject);
-	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
-	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / 2, (void *)lpStruct->lfFaceName);
-	}
 	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfHeight, (jint)lpStruct->lfHeight);
 	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfWidth, (jint)lpStruct->lfWidth);
 	(*env)->SetIntField(env, lpObject, LOGFONTFc.lfEscapement, (jint)lpStruct->lfEscapement);
@@ -1257,6 +1253,10 @@ void setLOGFONTWFields(JNIEnv *env, jobject lpObject, LOGFONTW *lpStruct)
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfClipPrecision, (jbyte)lpStruct->lfClipPrecision);
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfQuality, (jbyte)lpStruct->lfQuality);
 	(*env)->SetByteField(env, lpObject, LOGFONTFc.lfPitchAndFamily, (jbyte)lpStruct->lfPitchAndFamily);
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, LOGFONTWFc.lfFaceName);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->lfFaceName) / 2, (void *)lpStruct->lfFaceName);
+	}
 }
 #endif
 
@@ -2119,7 +2119,7 @@ NMTTDISPINFO *getNMTTDISPINFOFields(JNIEnv *env, jobject lpObject, NMTTDISPINFO 
 {
 	if (!NMTTDISPINFOFc.cached) cacheNMTTDISPINFOFields(env, lpObject);
 	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
-	lpStruct->lpszText = (LPTSTR)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lpszText);
+	lpStruct->lpszText = (void *)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lpszText);
 	lpStruct->hinst = (HINSTANCE)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.hinst);
 	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
 	lpStruct->lParam = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lParam);
@@ -2158,34 +2158,30 @@ void cacheNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject)
 NMTTDISPINFOA *getNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStruct)
 {
 	if (!NMTTDISPINFOAFc.cached) cacheNMTTDISPINFOAFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->lpszText = (void *)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lpszText);
+	lpStruct->hinst = (HINSTANCE)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.hinst);
+	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
+	lpStruct->lParam = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lParam);
 	{
 	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOAFc.szText);
 	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText), (void *)lpStruct->szText);
 	}
-	lpStruct->lpszText = (LPTSTR)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lpszText);
-	lpStruct->hinst = (HINSTANCE)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.hinst);
-	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
-	lpStruct->lParam = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lParam);
-	lpStruct->hdr.hwndFrom = (HWND)(*env)->GetIntField(env, lpObject, NMHDRFc.hwndFrom);
-	lpStruct->hdr.idFrom = (*env)->GetIntField(env, lpObject, NMHDRFc.idFrom);
-	lpStruct->hdr.code = (*env)->GetIntField(env, lpObject, NMHDRFc.code);
 	return lpStruct;
 }
 
 void setNMTTDISPINFOAFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOA *lpStruct)
 {
 	if (!NMTTDISPINFOAFc.cached) cacheNMTTDISPINFOAFields(env, lpObject);
-	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOAFc.szText);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText), (void *)lpStruct->szText);
-	}
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.lpszText, (jint)lpStruct->lpszText);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.hinst, (jint)lpStruct->hinst);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.lParam, (jint)lpStruct->lParam);
-	(*env)->SetIntField(env, lpObject, NMHDRFc.hwndFrom, (jint)lpStruct->hdr.hwndFrom);
-	(*env)->SetIntField(env, lpObject, NMHDRFc.idFrom, (jint)lpStruct->hdr.idFrom);
-	(*env)->SetIntField(env, lpObject, NMHDRFc.code, (jint)lpStruct->hdr.code);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOAFc.szText);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText), (void *)lpStruct->szText);
+	}
 }
 #endif
 
@@ -2210,34 +2206,30 @@ void cacheNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject)
 NMTTDISPINFOW *getNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpStruct)
 {
 	if (!NMTTDISPINFOWFc.cached) cacheNMTTDISPINFOWFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->lpszText = (void *)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lpszText);
+	lpStruct->hinst = (HINSTANCE)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.hinst);
+	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
+	lpStruct->lParam = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lParam);
 	{
 	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOWFc.szText);
 	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / 2, (void *)lpStruct->szText);
 	}
-	lpStruct->lpszText = (LPTSTR)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lpszText);
-	lpStruct->hinst = (HINSTANCE)(*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.hinst);
-	lpStruct->uFlags = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.uFlags);
-	lpStruct->lParam = (*env)->GetIntField(env, lpObject, NMTTDISPINFOFc.lParam);
-	lpStruct->hdr.hwndFrom = (HWND)(*env)->GetIntField(env, lpObject, NMHDRFc.hwndFrom);
-	lpStruct->hdr.idFrom = (*env)->GetIntField(env, lpObject, NMHDRFc.idFrom);
-	lpStruct->hdr.code = (*env)->GetIntField(env, lpObject, NMHDRFc.code);
 	return lpStruct;
 }
 
 void setNMTTDISPINFOWFields(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpStruct)
 {
 	if (!NMTTDISPINFOWFc.cached) cacheNMTTDISPINFOWFields(env, lpObject);
-	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOWFc.szText);
-	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / 2, (void *)lpStruct->szText);
-	}
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.lpszText, (jint)lpStruct->lpszText);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.hinst, (jint)lpStruct->hinst);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.uFlags, (jint)lpStruct->uFlags);
 	(*env)->SetIntField(env, lpObject, NMTTDISPINFOFc.lParam, (jint)lpStruct->lParam);
-	(*env)->SetIntField(env, lpObject, NMHDRFc.hwndFrom, (jint)lpStruct->hdr.hwndFrom);
-	(*env)->SetIntField(env, lpObject, NMHDRFc.idFrom, (jint)lpStruct->hdr.idFrom);
-	(*env)->SetIntField(env, lpObject, NMHDRFc.code, (jint)lpStruct->hdr.code);
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, NMTTDISPINFOWFc.szText);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szText) / 2, (void *)lpStruct->szText);
+	}
 }
 #endif
 
@@ -2368,6 +2360,16 @@ void cacheNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject)
 NONCLIENTMETRICSA *getNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct)
 {
 	if (!NONCLIENTMETRICSAFc.cached) cacheNONCLIENTMETRICSAFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize);
+	lpStruct->iBorderWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth);
+	lpStruct->iScrollWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth);
+	lpStruct->iScrollHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight);
+	lpStruct->iCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth);
+	lpStruct->iCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight);
+	lpStruct->iSmCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth);
+	lpStruct->iSmCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight);
+	lpStruct->iMenuWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth);
+	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfCaptionFont);
 	getLOGFONTAFields(env, lpObject1, &lpStruct->lfCaptionFont);
@@ -2388,22 +2390,22 @@ NONCLIENTMETRICSA *getNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NON
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMessageFont);
 	getLOGFONTAFields(env, lpObject1, &lpStruct->lfMessageFont);
 	}
-	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize);
-	lpStruct->iBorderWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth);
-	lpStruct->iScrollWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth);
-	lpStruct->iScrollHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight);
-	lpStruct->iCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth);
-	lpStruct->iCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight);
-	lpStruct->iSmCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth);
-	lpStruct->iSmCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight);
-	lpStruct->iMenuWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth);
-	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight);
 	return lpStruct;
 }
 
 void setNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA *lpStruct)
 {
 	if (!NONCLIENTMETRICSAFc.cached) cacheNONCLIENTMETRICSAFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth, (jint)lpStruct->iBorderWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth, (jint)lpStruct->iScrollWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight, (jint)lpStruct->iScrollHeight);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth, (jint)lpStruct->iCaptionWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight, (jint)lpStruct->iCaptionHeight);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth, (jint)lpStruct->iSmCaptionWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight, (jint)lpStruct->iSmCaptionHeight);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth, (jint)lpStruct->iMenuWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight, (jint)lpStruct->iMenuHeight);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfCaptionFont);
 	setLOGFONTAFields(env, lpObject1, &lpStruct->lfCaptionFont);
@@ -2424,16 +2426,6 @@ void setNONCLIENTMETRICSAFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSA
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSAFc.lfMessageFont);
 	setLOGFONTAFields(env, lpObject1, &lpStruct->lfMessageFont);
 	}
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize, (jint)lpStruct->cbSize);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth, (jint)lpStruct->iBorderWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth, (jint)lpStruct->iScrollWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight, (jint)lpStruct->iScrollHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth, (jint)lpStruct->iCaptionWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight, (jint)lpStruct->iCaptionHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth, (jint)lpStruct->iSmCaptionWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight, (jint)lpStruct->iSmCaptionHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth, (jint)lpStruct->iMenuWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight, (jint)lpStruct->iMenuHeight);
 }
 #endif
 
@@ -2462,6 +2454,16 @@ void cacheNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject)
 NONCLIENTMETRICSW *getNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct)
 {
 	if (!NONCLIENTMETRICSWFc.cached) cacheNONCLIENTMETRICSWFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize);
+	lpStruct->iBorderWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth);
+	lpStruct->iScrollWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth);
+	lpStruct->iScrollHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight);
+	lpStruct->iCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth);
+	lpStruct->iCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight);
+	lpStruct->iSmCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth);
+	lpStruct->iSmCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight);
+	lpStruct->iMenuWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth);
+	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfCaptionFont);
 	getLOGFONTWFields(env, lpObject1, &lpStruct->lfCaptionFont);
@@ -2482,22 +2484,22 @@ NONCLIENTMETRICSW *getNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NON
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMessageFont);
 	getLOGFONTWFields(env, lpObject1, &lpStruct->lfMessageFont);
 	}
-	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize);
-	lpStruct->iBorderWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth);
-	lpStruct->iScrollWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth);
-	lpStruct->iScrollHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight);
-	lpStruct->iCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth);
-	lpStruct->iCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight);
-	lpStruct->iSmCaptionWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth);
-	lpStruct->iSmCaptionHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight);
-	lpStruct->iMenuWidth = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth);
-	lpStruct->iMenuHeight = (*env)->GetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight);
 	return lpStruct;
 }
 
 void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW *lpStruct)
 {
 	if (!NONCLIENTMETRICSWFc.cached) cacheNONCLIENTMETRICSWFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth, (jint)lpStruct->iBorderWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth, (jint)lpStruct->iScrollWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight, (jint)lpStruct->iScrollHeight);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth, (jint)lpStruct->iCaptionWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight, (jint)lpStruct->iCaptionHeight);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth, (jint)lpStruct->iSmCaptionWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight, (jint)lpStruct->iSmCaptionHeight);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth, (jint)lpStruct->iMenuWidth);
+	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight, (jint)lpStruct->iMenuHeight);
 	{
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfCaptionFont);
 	setLOGFONTWFields(env, lpObject1, &lpStruct->lfCaptionFont);
@@ -2518,16 +2520,6 @@ void setNONCLIENTMETRICSWFields(JNIEnv *env, jobject lpObject, NONCLIENTMETRICSW
 	jobject lpObject1 = (*env)->GetObjectField(env, lpObject, NONCLIENTMETRICSWFc.lfMessageFont);
 	setLOGFONTWFields(env, lpObject1, &lpStruct->lfMessageFont);
 	}
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.cbSize, (jint)lpStruct->cbSize);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iBorderWidth, (jint)lpStruct->iBorderWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollWidth, (jint)lpStruct->iScrollWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iScrollHeight, (jint)lpStruct->iScrollHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionWidth, (jint)lpStruct->iCaptionWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iCaptionHeight, (jint)lpStruct->iCaptionHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionWidth, (jint)lpStruct->iSmCaptionWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iSmCaptionHeight, (jint)lpStruct->iSmCaptionHeight);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuWidth, (jint)lpStruct->iMenuWidth);
-	(*env)->SetIntField(env, lpObject, NONCLIENTMETRICSFc.iMenuHeight, (jint)lpStruct->iMenuHeight);
 }
 #endif
 
@@ -2683,30 +2675,30 @@ void cacheOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject)
 OSVERSIONINFOA *getOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpStruct)
 {
 	if (!OSVERSIONINFOAFc.cached) cacheOSVERSIONINFOAFields(env, lpObject);
-	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOAFc.szCSDVersion);
-	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (void *)lpStruct->szCSDVersion);
-	}
 	lpStruct->dwOSVersionInfoSize = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwOSVersionInfoSize);
 	lpStruct->dwMajorVersion = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwMajorVersion);
 	lpStruct->dwMinorVersion = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwMinorVersion);
 	lpStruct->dwBuildNumber = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwBuildNumber);
 	lpStruct->dwPlatformId = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwPlatformId);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOAFc.szCSDVersion);
+	(*env)->GetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (void *)lpStruct->szCSDVersion);
+	}
 	return lpStruct;
 }
 
 void setOSVERSIONINFOAFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOA *lpStruct)
 {
 	if (!OSVERSIONINFOAFc.cached) cacheOSVERSIONINFOAFields(env, lpObject);
-	{
-	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOAFc.szCSDVersion);
-	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (void *)lpStruct->szCSDVersion);
-	}
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwOSVersionInfoSize, (jint)lpStruct->dwOSVersionInfoSize);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwMajorVersion, (jint)lpStruct->dwMajorVersion);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwMinorVersion, (jint)lpStruct->dwMinorVersion);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwBuildNumber, (jint)lpStruct->dwBuildNumber);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwPlatformId, (jint)lpStruct->dwPlatformId);
+	{
+	jbyteArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOAFc.szCSDVersion);
+	(*env)->SetByteArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion), (void *)lpStruct->szCSDVersion);
+	}
 }
 #endif
 
@@ -2731,30 +2723,30 @@ void cacheOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject)
 OSVERSIONINFOW *getOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpStruct)
 {
 	if (!OSVERSIONINFOWFc.cached) cacheOSVERSIONINFOWFields(env, lpObject);
-	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOWFc.szCSDVersion);
-	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (void *)lpStruct->szCSDVersion);
-	}
 	lpStruct->dwOSVersionInfoSize = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwOSVersionInfoSize);
 	lpStruct->dwMajorVersion = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwMajorVersion);
 	lpStruct->dwMinorVersion = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwMinorVersion);
 	lpStruct->dwBuildNumber = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwBuildNumber);
 	lpStruct->dwPlatformId = (*env)->GetIntField(env, lpObject, OSVERSIONINFOFc.dwPlatformId);
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOWFc.szCSDVersion);
+	(*env)->GetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (void *)lpStruct->szCSDVersion);
+	}
 	return lpStruct;
 }
 
 void setOSVERSIONINFOWFields(JNIEnv *env, jobject lpObject, OSVERSIONINFOW *lpStruct)
 {
 	if (!OSVERSIONINFOWFc.cached) cacheOSVERSIONINFOWFields(env, lpObject);
-	{
-	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOWFc.szCSDVersion);
-	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (void *)lpStruct->szCSDVersion);
-	}
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwOSVersionInfoSize, (jint)lpStruct->dwOSVersionInfoSize);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwMajorVersion, (jint)lpStruct->dwMajorVersion);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwMinorVersion, (jint)lpStruct->dwMinorVersion);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwBuildNumber, (jint)lpStruct->dwBuildNumber);
 	(*env)->SetIntField(env, lpObject, OSVERSIONINFOFc.dwPlatformId, (jint)lpStruct->dwPlatformId);
+	{
+	jcharArray lpObject1 = (*env)->GetObjectField(env, lpObject, OSVERSIONINFOWFc.szCSDVersion);
+	(*env)->SetCharArrayRegion(env, lpObject1, 0, sizeof(lpStruct->szCSDVersion) / 2, (void *)lpStruct->szCSDVersion);
+	}
 }
 #endif
 
@@ -3684,10 +3676,6 @@ void cacheTEXTMETRICAFields(JNIEnv *env, jobject lpObject)
 TEXTMETRICA *getTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lpStruct)
 {
 	if (!TEXTMETRICAFc.cached) cacheTEXTMETRICAFields(env, lpObject);
-	lpStruct->tmFirstChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmFirstChar);
-	lpStruct->tmLastChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmLastChar);
-	lpStruct->tmDefaultChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmDefaultChar);
-	lpStruct->tmBreakChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmBreakChar);
 	lpStruct->tmHeight = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmHeight);
 	lpStruct->tmAscent = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmAscent);
 	lpStruct->tmDescent = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDescent);
@@ -3704,16 +3692,16 @@ TEXTMETRICA *getTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lp
 	lpStruct->tmStruckOut = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut);
 	lpStruct->tmPitchAndFamily = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmPitchAndFamily);
 	lpStruct->tmCharSet = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmCharSet);
+	lpStruct->tmFirstChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmFirstChar);
+	lpStruct->tmLastChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmLastChar);
+	lpStruct->tmDefaultChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmDefaultChar);
+	lpStruct->tmBreakChar = (*env)->GetByteField(env, lpObject, TEXTMETRICAFc.tmBreakChar);
 	return lpStruct;
 }
 
 void setTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lpStruct)
 {
 	if (!TEXTMETRICAFc.cached) cacheTEXTMETRICAFields(env, lpObject);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmFirstChar, (jbyte)lpStruct->tmFirstChar);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmLastChar, (jbyte)lpStruct->tmLastChar);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmDefaultChar, (jbyte)lpStruct->tmDefaultChar);
-	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmBreakChar, (jbyte)lpStruct->tmBreakChar);
 	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmHeight, (jint)lpStruct->tmHeight);
 	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmAscent, (jint)lpStruct->tmAscent);
 	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDescent, (jint)lpStruct->tmDescent);
@@ -3730,6 +3718,10 @@ void setTEXTMETRICAFields(JNIEnv *env, jobject lpObject, TEXTMETRICA *lpStruct)
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut, (jbyte)lpStruct->tmStruckOut);
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmPitchAndFamily, (jbyte)lpStruct->tmPitchAndFamily);
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmCharSet, (jbyte)lpStruct->tmCharSet);
+	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmFirstChar, (jbyte)lpStruct->tmFirstChar);
+	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmLastChar, (jbyte)lpStruct->tmLastChar);
+	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmDefaultChar, (jbyte)lpStruct->tmDefaultChar);
+	(*env)->SetByteField(env, lpObject, TEXTMETRICAFc.tmBreakChar, (jbyte)lpStruct->tmBreakChar);
 }
 #endif
 
@@ -3757,10 +3749,6 @@ void cacheTEXTMETRICWFields(JNIEnv *env, jobject lpObject)
 TEXTMETRICW *getTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct)
 {
 	if (!TEXTMETRICWFc.cached) cacheTEXTMETRICWFields(env, lpObject);
-	lpStruct->tmFirstChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmFirstChar);
-	lpStruct->tmLastChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmLastChar);
-	lpStruct->tmDefaultChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmDefaultChar);
-	lpStruct->tmBreakChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmBreakChar);
 	lpStruct->tmHeight = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmHeight);
 	lpStruct->tmAscent = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmAscent);
 	lpStruct->tmDescent = (*env)->GetIntField(env, lpObject, TEXTMETRICFc.tmDescent);
@@ -3777,16 +3765,16 @@ TEXTMETRICW *getTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lp
 	lpStruct->tmStruckOut = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut);
 	lpStruct->tmPitchAndFamily = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmPitchAndFamily);
 	lpStruct->tmCharSet = (*env)->GetByteField(env, lpObject, TEXTMETRICFc.tmCharSet);
+	lpStruct->tmFirstChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmFirstChar);
+	lpStruct->tmLastChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmLastChar);
+	lpStruct->tmDefaultChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmDefaultChar);
+	lpStruct->tmBreakChar = (*env)->GetCharField(env, lpObject, TEXTMETRICWFc.tmBreakChar);
 	return lpStruct;
 }
 
 void setTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct)
 {
 	if (!TEXTMETRICWFc.cached) cacheTEXTMETRICWFields(env, lpObject);
-	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmFirstChar, (jchar)lpStruct->tmFirstChar);
-	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmLastChar, (jchar)lpStruct->tmLastChar);
-	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmDefaultChar, (jchar)lpStruct->tmDefaultChar);
-	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmBreakChar, (jchar)lpStruct->tmBreakChar);
 	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmHeight, (jint)lpStruct->tmHeight);
 	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmAscent, (jint)lpStruct->tmAscent);
 	(*env)->SetIntField(env, lpObject, TEXTMETRICFc.tmDescent, (jint)lpStruct->tmDescent);
@@ -3803,6 +3791,10 @@ void setTEXTMETRICWFields(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpStruct)
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmStruckOut, (jbyte)lpStruct->tmStruckOut);
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmPitchAndFamily, (jbyte)lpStruct->tmPitchAndFamily);
 	(*env)->SetByteField(env, lpObject, TEXTMETRICFc.tmCharSet, (jbyte)lpStruct->tmCharSet);
+	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmFirstChar, (jchar)lpStruct->tmFirstChar);
+	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmLastChar, (jchar)lpStruct->tmLastChar);
+	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmDefaultChar, (jchar)lpStruct->tmDefaultChar);
+	(*env)->SetCharField(env, lpObject, TEXTMETRICWFc.tmBreakChar, (jchar)lpStruct->tmBreakChar);
 }
 #endif
 
