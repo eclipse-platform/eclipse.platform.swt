@@ -68,7 +68,7 @@ public FontData() {
 	// We set the charset field so that
 	// wildcard searching will work properly
 	// out of the box
-	data.lfCharSet = OS.DEFAULT_CHARSET;
+	data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 	height = 12;
 }
 
@@ -142,7 +142,7 @@ public FontData(String string) {
 	start = end + 1;
 	end = string.indexOf('|', start);
 	data = OS.IsUnicode ? (LOGFONT)new LOGFONTW() : new LOGFONTA();
-	data.lfCharSet = OS.DEFAULT_CHARSET;
+	data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 	setName(name);
 	setHeight(height);
 	setStyle(style);
@@ -252,7 +252,7 @@ public FontData(String name, int height, int style) {
 	// We set the charset field so that
 	// wildcard searching will work properly
 	// out of the box
-	data.lfCharSet = OS.DEFAULT_CHARSET;
+	data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 }
 
 /**
@@ -490,7 +490,7 @@ public void setLocale(String locale) {
 		if (length > secondSep + 1) variant = locale.substring(secondSep + 1);
 	}
 	if (lang == null) {
-		data.lfCharSet = OS.DEFAULT_CHARSET;
+		data.lfCharSet = (byte)OS.DEFAULT_CHARSET;
 	} else {
 		Callback callback = new Callback (this, "EnumLocalesProc", 1);
 		int lpEnumLocalesProc = callback.getAddress ();	

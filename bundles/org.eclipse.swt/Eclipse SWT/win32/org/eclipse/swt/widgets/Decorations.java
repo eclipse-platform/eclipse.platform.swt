@@ -330,9 +330,9 @@ void createAccelerators () {
 		* Note on WinCE PPC.  Close the shell when user taps CTRL-Q.
 		* IDOK represents the "Done Button" which also closes the shell.
 		*/
-		accel.fVirt = OS.FVIRTKEY | OS.FCONTROL;
-		accel.key = (byte)'Q';
-		accel.cmd = OS.IDOK;
+		accel.fVirt = (byte) (OS.FVIRTKEY | OS.FCONTROL);
+		accel.key = (short) 'Q';
+		accel.cmd = (short) OS.IDOK;
 		OS.MoveMemory (buffer1, accel, size);
 		System.arraycopy (buffer1, 0, buffer2, nAccel * size, size);
 		nAccel++;			

@@ -2276,11 +2276,11 @@ public boolean post (Event event) {
 			if (inputs.wVk == 0) {
 				char key = event.character;
 				switch (key) {
-					case 27: inputs.wVk = OS.VK_ESCAPE; break;
-					case 127: inputs.wVk = OS.VK_DELETE; break;
+					case 27: inputs.wVk = (short) OS.VK_ESCAPE; break;
+					case 127: inputs.wVk = (short) OS.VK_DELETE; break;
 					default : {
 						if (OS.IsWinCE) {
-							inputs.wVk = OS.CharUpper ((short) key);
+							inputs.wVk = (short) OS.CharUpper ((short) key);
 						} else {
 							inputs.wVk = (short) OS.VkKeyScan ((short) wcsToMbcs (key,0));
 							if (inputs.wVk == -1) return false;

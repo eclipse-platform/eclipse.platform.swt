@@ -1858,7 +1858,7 @@ void shape (final int hdc, final StyleItem run) {
 			cachedLogFont.lfWidth = logFont.lfWidth;
 			int newFont = OS.CreateFontIndirect(cachedLogFont);
 			OS.SelectObject(hdc, newFont);
-			int hr = OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
+			OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
 			run.glyphCount = buffer[0];
 			run.fallbackFont = newFont;
 		} else {
