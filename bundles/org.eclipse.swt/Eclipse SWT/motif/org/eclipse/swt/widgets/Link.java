@@ -323,6 +323,8 @@ String parse (String string) {
 		int mnemonic = parseMnemonics (buffer, linkStart, index, result);
 		if (mnemonic == -1) mnemonic = tmp;
 		mnemonics [linkIndex] = mnemonic;
+	} else {
+		mnemonics [linkIndex] = -1;
 	}
 	if (offsets.length != linkIndex) {
 		Point [] newOffsets = new Point [linkIndex];
