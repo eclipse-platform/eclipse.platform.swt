@@ -258,17 +258,17 @@ void createItem (TreeItem item, int node, int index) {
 	 * selectionMode field just for the insertion.  Do not use the policy
 	 * changing API because this will cause a selection callback.
 	 */ 
-//	GtkCTree ctree = new GtkCTree ();
-//	OS.memmove (ctree, handle, GtkCTree.sizeof);
-//	int selection_mode = ctree.selection_mode;
-//	ctree.selection_mode = OS.GTK_SELECTION_MULTIPLE;
-//	OS.memmove (handle, ctree, GtkCTree.sizeof);
-	int [] sm = new int [1];
-	OS.memmove (sm, handle+148, 1);
-	int selectionMode = sm[0];
-	sm [0] = OS.GTK_SELECTION_MULTIPLE;
-	OS.memmove (handle+148, sm, 1);
-// FIXME		
+////	GtkCTree ctree = new GtkCTree ();
+////	OS.memmove (ctree, handle, GtkCTree.sizeof);
+////	int selection_mode = ctree.selection_mode;
+////	ctree.selection_mode = OS.GTK_SELECTION_MULTIPLE;
+////	OS.memmove (handle, ctree, GtkCTree.sizeof);
+//	int [] sm = new int [1];
+//	OS.memmove (sm, handle+148, 1);
+//	int selectionMode = sm[0];
+//	sm [0] = OS.GTK_SELECTION_MULTIPLE;
+//	OS.memmove (handle+148, sm, 1);
+//// FIXME		
 	int sibling = index == -1 ? 0 : findSibling (node, index);
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	item.handle = OS.gtk_ctree_insert_node (handle, node, sibling, null, (byte) 2, uncheck, 0, uncheck, 0, false, false);
@@ -279,8 +279,8 @@ void createItem (TreeItem item, int node, int index) {
 //	OS.memmove (ctree, handle, GtkCTree.sizeof);
 //	ctree.selection_mode = selection_mode;
 //	OS.memmove (handle, ctree, GtkCTree.sizeof);
-	sm [0] = selectionMode;
-	OS.memmove (handle+148, sm, 1);
+//	sm [0] = selectionMode;
+//	OS.memmove (handle+148, sm, 1);
 	items [id] = item;
 }
 
