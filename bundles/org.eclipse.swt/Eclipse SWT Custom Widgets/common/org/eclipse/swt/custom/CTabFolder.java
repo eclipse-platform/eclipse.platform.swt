@@ -732,8 +732,10 @@ void drawBackground(GC gc, int[] shape, Color defaultBackground, Image image, Co
 		}
 	} else {
 		// draw a solid background using default background in shape
-		gc.setBackground(defaultBackground);
-		gc.fillRectangle(x, y, width, height);
+		if ((getStyle() & SWT.NO_BACKGROUND) != 0 || !defaultBackground.equals(getBackground())) {
+			gc.setBackground(defaultBackground);
+			gc.fillRectangle(x, y, width, height);
+		}
 	}
 	gc.setClipping(clipping);
 	clipping.dispose();
