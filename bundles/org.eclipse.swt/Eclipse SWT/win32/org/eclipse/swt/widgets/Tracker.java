@@ -311,7 +311,7 @@ Rectangle [] computeProportions (Rectangle [] rects) {
 /**
  * Draw the rectangles displayed by the tracker.
  */
-void drawRectangles (Rectangle [] rects) {
+void drawRectangles (Rectangle [] rects, boolean stippled) {
 	if (parent != null) {
 		if (parent.isDisposed ()) return;
 		Shell shell = parent.getShell ();
@@ -487,7 +487,7 @@ public boolean open () {
 		OS.SetWindowLong (hwndTransparent, OS.GWL_WNDPROC, newProc.getAddress ());
 	}
 
-	drawRectangles (rectangles);
+	drawRectangles (rectangles, stippled);
 	Point cursorPos;
 	if (mouseDown) {
 		POINT pt = new POINT ();
@@ -517,6 +517,7 @@ public boolean open () {
 				int newY = (short) (newPos >> 16);	
 				if (newX != oldX || newY != oldY) {
 					Rectangle [] oldRectangles = rectangles;
+					boolean oldStippled = stippled;
 					Rectangle [] rectsToErase = new Rectangle [rectangles.length];
 					for (int i = 0; i < rectangles.length; i++) {
 						Rectangle current = rectangles [i];
@@ -567,8 +568,8 @@ public boolean open () {
 							draw = true;
 						}
 						if (draw) {
-							drawRectangles (rectsToErase);
-							drawRectangles (rectangles);
+							drawRectangles (rectsToErase, oldStippled);
+							drawRectangles (rectangles, stippled);
 						}
 						cursorPos = adjustResizeCursor ();
 						newX = cursorPos.x;  newY = cursorPos.y;
@@ -614,8 +615,8 @@ public boolean open () {
 							draw = true;
 						}
 						if (draw) {
-							drawRectangles (rectsToErase);
-							drawRectangles (rectangles);
+							drawRectangles (rectsToErase, oldStippled);
+							drawRectangles (rectangles, stippled);
 						}
 					}
 					oldX = newX;  oldY = newY;
@@ -652,6 +653,7 @@ public boolean open () {
 				}
 				if (xChange != 0 || yChange != 0) {
 					Rectangle [] oldRectangles = rectangles;
+					boolean oldStippled = stippled;
 					Rectangle [] rectsToErase = new Rectangle [rectangles.length];
 					for (int i = 0; i < rectangles.length; i++) {
 						Rectangle current = rectangles [i];
@@ -697,8 +699,8 @@ public boolean open () {
 							draw = true;
 						}
 						if (draw) {
-							drawRectangles (rectsToErase);
-							drawRectangles (rectangles);
+							drawRectangles (rectsToErase, oldStippled);
+							drawRectangles (rectangles, stippled);
 						}
 						cursorPos = adjustResizeCursor ();
 					} else {
@@ -739,8 +741,8 @@ public boolean open () {
 							draw = true;
 						}
 						if (draw) {
-							drawRectangles (rectsToErase);
-							drawRectangles (rectangles);
+							drawRectangles (rectsToErase, oldStippled);
+							drawRectangles (rectangles, stippled);
 						}
 						cursorPos = adjustMoveCursor ();
 					}
@@ -753,7 +755,7 @@ public boolean open () {
 		OS.DispatchMessage (msg);
 	}
 	if (mouseDown) OS.ReleaseCapture ();
-	if (!isDisposed()) drawRectangles (rectangles);
+	if (!isDisposed()) drawRectangles (rectangles, stippled);
 	/*
 	* Cleanup: If a transparent window was created in order to capture events then
 	* destroy it and its callback object now.
