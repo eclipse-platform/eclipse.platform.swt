@@ -914,30 +914,12 @@ Control getControl (int handle) {
 	if (0 <= index && index < controlTable.length) {
 		Control control = controlTable [index];
 		/*
-		* This code is intentionally commented.  It is possible
-		* find the SWT control that is associated with a handle
-		* that belongs to another process when the handle was
-		* created by an in-proc OLE client.  In this case, the
-		* handle comes from another process, but it is a child
-		* of an SWT control.  For now, it is necessary to look
-		* at handles that do not belong to the SWT process.
-		*/
-//		int [] hwndProcessId = new int [1];
-//		int hwndThreadId = OS.GetWindowThreadProcessId (handle, hwndProcessId);
-//		if (hwndProcessId [0] != processId || hwndThreadId != threadId) {
-//			return null;
-//		}
-
-		/*
 		* Because GWL_USERDATA can be used by native widgets that
 		* do not belong to SWT, it is possible that GWL_USERDATA
 		* could return an index that is in the range of the table,
 		* but was not put there by SWT.  Therefore, it is necessary
 		* to check the handle of the control that is in the table
 		* against the handle that provided the GWL_USERDATA.
-		* 
-		* NOTE:  This check will not work in the case where the same
-		* widget is registered multiple times with different handles.
 		*/
 		if (control != null && control.checkHandle (handle)) {
 			return control;
@@ -1806,9 +1788,8 @@ protected void init () {
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	/* Remember the current procsss and thread */
+	/* Remember the current thread id */
 	threadId = OS.GetCurrentThreadId ();
-	//processId = OS.GetCurrentProcessId ();
 	
 	/* Use the character encoding for the default locale */
 	windowClass = new TCHAR (0, WindowName + WindowClassCount++, true);
