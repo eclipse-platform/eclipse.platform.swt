@@ -371,6 +371,15 @@ void releaseChildren () {
 void releaseWidget () {
 	releaseChildren ();
 	super.releaseWidget ();
+	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
+		int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+		if (hwndChild != 0) {
+			int threadId = OS.GetWindowThreadProcessId (hwndChild, null);
+			if (threadId != OS.GetCurrentThreadId ()) {
+				OS.SetParent (hwndChild, 0);
+			}
+		}
+	}
 	layout = null;
 	tabList = null;
 	lpwp = null;
@@ -864,17 +873,19 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	/* Resize the embedded window */
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
-		int threadId = OS.GetWindowThreadProcessId (hwndChild, null);
-		if (threadId != OS.GetCurrentThreadId ()) {
-			if (display.msgHook == 0) {
-				if (!OS.IsWinCE) {
-					display.getMsgCallback = new Callback (display, "getMsgProc", 3);
-					display.getMsgProc = display.getMsgCallback.getAddress ();
-					if (display.getMsgProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-					display.msgHook = OS.SetWindowsHookEx (OS.WH_GETMESSAGE, display.getMsgProc, OS.GetLibraryHandle(), threadId);
+		if (hwndChild != 0) {
+			int threadId = OS.GetWindowThreadProcessId (hwndChild, null);
+			if (threadId != OS.GetCurrentThreadId ()) {
+				if (display.msgHook == 0) {
+					if (!OS.IsWinCE) {
+						display.getMsgCallback = new Callback (display, "getMsgProc", 3);
+						display.getMsgProc = display.getMsgCallback.getAddress ();
+						if (display.getMsgProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+						display.msgHook = OS.SetWindowsHookEx (OS.WH_GETMESSAGE, display.getMsgProc, OS.GetLibraryHandle(), threadId);
+					}
 				}
+				OS.PostThreadMessage (threadId, Display.SWT_RESIZE, hwndChild, lParam);
 			}
-			OS.PostThreadMessage (threadId, Display.SWT_RESIZE, hwndChild, lParam);
 		}
 	}
 	return result;
