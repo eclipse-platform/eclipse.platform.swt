@@ -323,6 +323,14 @@ void setNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpSt
 #define setNMLVCUSTOMDRAWFields(a,b,c)
 #endif
 
+#ifndef NO_NMLVDISPINFO
+NMLVDISPINFO *getNMLVDISPINFOFields(JNIEnv *env, jobject lpObject, NMLVDISPINFO *lpStruct);
+void setNMLVDISPINFOFields(JNIEnv *env, jobject lpObject, NMLVDISPINFO *lpStruct);
+#else
+#define getNMLVDISPINFOFields(a,b,c) NULL
+#define setNMLVDISPINFOFields(a,b,c)
+#endif
+
 #ifndef NO_NMREBARCHEVRON
 NMREBARCHEVRON *getNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpStruct);
 void setNMREBARCHEVRONFields(JNIEnv *env, jobject lpObject, NMREBARCHEVRON *lpStruct);

@@ -2020,6 +2020,67 @@ void setNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpSt
 }
 #endif
 
+#ifndef NO_NMLVDISPINFO
+typedef struct NMLVDISPINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID mask, iItem, iSubItem, state, stateMask, pszText, cchTextMax, iImage, lParam, iIndent;
+} NMLVDISPINFO_FID_CACHE;
+
+NMLVDISPINFO_FID_CACHE NMLVDISPINFOFc;
+
+void cacheNMLVDISPINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (NMLVDISPINFOFc.cached) return;
+	cacheNMHDRFields(env, lpObject);
+	NMLVDISPINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	NMLVDISPINFOFc.mask = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "mask", "I");
+	NMLVDISPINFOFc.iItem = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "iItem", "I");
+	NMLVDISPINFOFc.iSubItem = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "iSubItem", "I");
+	NMLVDISPINFOFc.state = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "state", "I");
+	NMLVDISPINFOFc.stateMask = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "stateMask", "I");
+	NMLVDISPINFOFc.pszText = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "pszText", "I");
+	NMLVDISPINFOFc.cchTextMax = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "cchTextMax", "I");
+	NMLVDISPINFOFc.iImage = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "iImage", "I");
+	NMLVDISPINFOFc.lParam = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "lParam", "I");
+	NMLVDISPINFOFc.iIndent = (*env)->GetFieldID(env, NMLVDISPINFOFc.clazz, "iIndent", "I");
+	NMLVDISPINFOFc.cached = 1;
+}
+
+NMLVDISPINFO *getNMLVDISPINFOFields(JNIEnv *env, jobject lpObject, NMLVDISPINFO *lpStruct)
+{
+	if (!NMLVDISPINFOFc.cached) cacheNMLVDISPINFOFields(env, lpObject);
+	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	lpStruct->item.mask = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.mask);
+	lpStruct->item.iItem = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iItem);
+	lpStruct->item.iSubItem = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iSubItem);
+	lpStruct->item.state = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.state);
+	lpStruct->item.stateMask = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.stateMask);
+	lpStruct->item.pszText = (LPTSTR)(*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.pszText);
+	lpStruct->item.cchTextMax = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.cchTextMax);
+	lpStruct->item.iImage = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iImage);
+	lpStruct->item.lParam = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.lParam);
+	lpStruct->item.iIndent = (*env)->GetIntField(env, lpObject, NMLVDISPINFOFc.iIndent);
+	return lpStruct;
+}
+
+void setNMLVDISPINFOFields(JNIEnv *env, jobject lpObject, NMLVDISPINFO *lpStruct)
+{
+	if (!NMLVDISPINFOFc.cached) cacheNMLVDISPINFOFields(env, lpObject);
+	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.mask, (jint)lpStruct->item.mask);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iItem, (jint)lpStruct->item.iItem);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iSubItem, (jint)lpStruct->item.iSubItem);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.state, (jint)lpStruct->item.state);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.stateMask, (jint)lpStruct->item.stateMask);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.pszText, (jint)lpStruct->item.pszText);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.cchTextMax, (jint)lpStruct->item.cchTextMax);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iImage, (jint)lpStruct->item.iImage);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.lParam, (jint)lpStruct->item.lParam);
+	(*env)->SetIntField(env, lpObject, NMLVDISPINFOFc.iIndent, (jint)lpStruct->item.iIndent);
+}
+#endif
+
 #ifndef NO_NMREBARCHEVRON
 typedef struct NMREBARCHEVRON_FID_CACHE {
 	int cached;
