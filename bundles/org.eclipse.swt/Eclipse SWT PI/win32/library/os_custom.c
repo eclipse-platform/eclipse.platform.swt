@@ -191,6 +191,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetLayout)
 }
 #endif
 
+#ifndef NO_GetMenuBarInfo
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuBarInfo)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	MENUBARINFO _arg3, *lparg3=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GetMenuBarInfo\n")
+	if (arg3) lparg3 = getMENUBARINFOFields(env, arg3, &_arg3);
+	//rc = (jboolean)GetMenuBarInfo((HWND)arg0, arg1, arg2, lparg3);
+	{
+		/*
+		*  GetMenuBarInfo is a Win2000 and Win98 specific call
+		*  If you link it into swt.dll a system modal entry point not found dialog will
+		*  appear as soon as swt.dll is loaded. Here we check for the entry point and
+		*  only do the call if it exists.
+		*/
+		HMODULE hm;
+		FARPROC fp;
+		if ((hm=GetModuleHandle("user32.dll")) && (fp=GetProcAddress(hm, "GetMenuBarInfo"))) {
+			rc = (jboolean)(fp)((HWND)arg0, arg1, arg2, lparg3);
+		}
+	}
+	if (arg3) setMENUBARINFOFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "GetMenuBarInfo\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetMenuInfo
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuInfo)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)

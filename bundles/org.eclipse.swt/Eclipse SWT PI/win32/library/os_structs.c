@@ -1566,6 +1566,61 @@ void setMEASUREITEMSTRUCTFields(JNIEnv *env, jobject lpObject, MEASUREITEMSTRUCT
 }
 #endif
 
+#ifndef NO_MENUBARINFO
+typedef struct MENUBARINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cbSize, left, top, right, bottom, hMenu, hwndMenu, fBarFocused, fFocused;
+} MENUBARINFO_FID_CACHE;
+
+MENUBARINFO_FID_CACHE MENUBARINFOFc;
+
+void cacheMENUBARINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (MENUBARINFOFc.cached) return;
+	MENUBARINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	MENUBARINFOFc.cbSize = (*env)->GetFieldID(env, MENUBARINFOFc.clazz, "cbSize", "I");
+	MENUBARINFOFc.left = (*env)->GetFieldID(env, MENUBARINFOFc.clazz, "left", "I");
+	MENUBARINFOFc.top = (*env)->GetFieldID(env, MENUBARINFOFc.clazz, "top", "I");
+	MENUBARINFOFc.right = (*env)->GetFieldID(env, MENUBARINFOFc.clazz, "right", "I");
+	MENUBARINFOFc.bottom = (*env)->GetFieldID(env, MENUBARINFOFc.clazz, "bottom", "I");
+	MENUBARINFOFc.hMenu = (*env)->GetFieldID(env, MENUBARINFOFc.clazz, "hMenu", "I");
+	MENUBARINFOFc.hwndMenu = (*env)->GetFieldID(env, MENUBARINFOFc.clazz, "hwndMenu", "I");
+	MENUBARINFOFc.fBarFocused = (*env)->GetFieldID(env, MENUBARINFOFc.clazz, "fBarFocused", "Z");
+	MENUBARINFOFc.fFocused = (*env)->GetFieldID(env, MENUBARINFOFc.clazz, "fFocused", "Z");
+	MENUBARINFOFc.cached = 1;
+}
+
+MENUBARINFO *getMENUBARINFOFields(JNIEnv *env, jobject lpObject, MENUBARINFO *lpStruct)
+{
+	if (!MENUBARINFOFc.cached) cacheMENUBARINFOFields(env, lpObject);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, MENUBARINFOFc.cbSize);
+	lpStruct->rcBar.left = (*env)->GetIntField(env, lpObject, MENUBARINFOFc.left);
+	lpStruct->rcBar.top = (*env)->GetIntField(env, lpObject, MENUBARINFOFc.top);
+	lpStruct->rcBar.right = (*env)->GetIntField(env, lpObject, MENUBARINFOFc.right);
+	lpStruct->rcBar.bottom = (*env)->GetIntField(env, lpObject, MENUBARINFOFc.bottom);
+	lpStruct->hMenu = (HMENU)(*env)->GetIntField(env, lpObject, MENUBARINFOFc.hMenu);
+	lpStruct->hwndMenu = (HWND)(*env)->GetIntField(env, lpObject, MENUBARINFOFc.hwndMenu);
+	lpStruct->fBarFocused = (*env)->GetBooleanField(env, lpObject, MENUBARINFOFc.fBarFocused);
+	lpStruct->fFocused = (*env)->GetBooleanField(env, lpObject, MENUBARINFOFc.fFocused);
+	return lpStruct;
+}
+
+void setMENUBARINFOFields(JNIEnv *env, jobject lpObject, MENUBARINFO *lpStruct)
+{
+	if (!MENUBARINFOFc.cached) cacheMENUBARINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, MENUBARINFOFc.cbSize, (jint)lpStruct->cbSize);
+	(*env)->SetIntField(env, lpObject, MENUBARINFOFc.left, (jint)lpStruct->rcBar.left);
+	(*env)->SetIntField(env, lpObject, MENUBARINFOFc.top, (jint)lpStruct->rcBar.top);
+	(*env)->SetIntField(env, lpObject, MENUBARINFOFc.right, (jint)lpStruct->rcBar.right);
+	(*env)->SetIntField(env, lpObject, MENUBARINFOFc.bottom, (jint)lpStruct->rcBar.bottom);
+	(*env)->SetIntField(env, lpObject, MENUBARINFOFc.hMenu, (jint)lpStruct->hMenu);
+	(*env)->SetIntField(env, lpObject, MENUBARINFOFc.hwndMenu, (jint)lpStruct->hwndMenu);
+	(*env)->SetBooleanField(env, lpObject, MENUBARINFOFc.fBarFocused, (jboolean)lpStruct->fBarFocused);
+	(*env)->SetBooleanField(env, lpObject, MENUBARINFOFc.fFocused, (jboolean)lpStruct->fFocused);
+}
+#endif
+
 #ifndef NO_MENUINFO
 typedef struct MENUINFO_FID_CACHE {
 	int cached;

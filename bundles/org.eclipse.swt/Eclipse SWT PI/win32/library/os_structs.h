@@ -251,6 +251,14 @@ void setMEASUREITEMSTRUCTFields(JNIEnv *env, jobject lpObject, MEASUREITEMSTRUCT
 #define setMEASUREITEMSTRUCTFields(a,b,c)
 #endif
 
+#ifndef NO_MENUBARINFO
+MENUBARINFO *getMENUBARINFOFields(JNIEnv *env, jobject lpObject, MENUBARINFO *lpStruct);
+void setMENUBARINFOFields(JNIEnv *env, jobject lpObject, MENUBARINFO *lpStruct);
+#else
+#define getMENUBARINFOFields(a,b,c) NULL
+#define setMENUBARINFOFields(a,b,c)
+#endif
+
 #ifndef NO_MENUINFO
 MENUINFO *getMENUINFOFields(JNIEnv *env, jobject lpObject, MENUINFO *lpStruct);
 void setMENUINFOFields(JNIEnv *env, jobject lpObject, MENUINFO *lpStruct);

@@ -2261,6 +2261,21 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuItemInfoW)
 }
 #endif
 
+#ifndef NO_GetMenuItemRect
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetMenuItemRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	RECT _arg3, *lparg3=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GetMenuItemRect\n")
+	if (arg3) lparg3 = getRECTFields(env, arg3, &_arg3);
+	rc = (jboolean)GetMenuItemRect((HWND)arg0, (HMENU)arg1, arg2, lparg3);
+	if (arg3) setRECTFields(env, arg3, lparg3);
+	NATIVE_EXIT(env, that, "GetMenuItemRect\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetMessageA
 JNIEXPORT jboolean JNICALL OS_NATIVE(GetMessageA)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3)
