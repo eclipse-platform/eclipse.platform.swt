@@ -352,6 +352,10 @@ public boolean forceFocus () {
 	return hasFocus ();
 }
 
+void checkBuffered () {
+	style &= ~SWT.DOUBLE_BUFFERED;
+}
+
 /**
  * Returns the preferred size of the receiver.
  * <p>
@@ -460,6 +464,7 @@ Control [] computeTabList () {
 
 void createWidget (int index) {
 	checkOrientation (parent);
+	checkBuffered ();
 	super.createWidget (index);
 	setZOrder ();
 	realizeWidget ();

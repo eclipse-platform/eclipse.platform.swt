@@ -844,6 +844,16 @@ public class SWT {
 	public static final int VIRTUAL = 1 << 28;
 
 	/**
+	 * Style constant to indicate double buffering (value is 1&lt;&lt;29).
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code></li>
+	 * </ul></p>
+	 * 
+	 * @since 3.1
+	 */
+	public static final int DOUBLE_BUFFERED = 1 << 29;
+	
+	/**
 	 * Style constant for align up behavior (value is 1&lt;&lt;7,
 	 * since align UP and align TOP are considered the same).
 	 * <p><b>Used By:</b><ul>

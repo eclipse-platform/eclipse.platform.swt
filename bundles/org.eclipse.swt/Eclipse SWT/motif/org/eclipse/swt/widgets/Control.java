@@ -317,6 +317,9 @@ public void addTraverseListener (TraverseListener listener) {
 int borderHandle () {
 	return topHandle ();
 }
+void checkBuffered () {
+	style &= ~SWT.DOUBLE_BUFFERED;
+}
 /**
  * Returns the preferred size of the receiver.
  * <p>
@@ -424,6 +427,7 @@ Control [] computeTabList () {
 
 void createWidget (int index) {
 	checkOrientation (parent);
+	checkBuffered ();
 	super.createWidget (index);
 	setParentTraversal ();
 	overrideTranslations ();

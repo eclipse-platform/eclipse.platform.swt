@@ -366,6 +366,10 @@ int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor)
 	return OS.eventNotHandledErr;
 }
 
+void checkBuffered () {
+	style |= SWT.DOUBLE_BUFFERED;
+}
+
 /**
  * Returns the preferred size of the receiver.
  * <p>
@@ -474,6 +478,7 @@ Control computeTabRoot () {
 
 void createWidget () {
 	checkOrientation (parent);
+	checkBuffered ();
 	super.createWidget ();
 	setDefaultFont ();
 	setZOrder ();

@@ -307,12 +307,17 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
+void checkBuffered () {
+	style |= SWT.DOUBLE_BUFFERED;
+}
+
 void checkBorder () {
 	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
 }
 
 void createWidget (int index) {
 	checkOrientation (parent);
+	checkBuffered ();
 	super.createWidget (index);
 	showWidget ();
 	setInitialBounds ();

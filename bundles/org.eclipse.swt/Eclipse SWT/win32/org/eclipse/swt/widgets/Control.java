@@ -346,6 +346,10 @@ void checkBorder () {
 	if (getBorderWidth () == 0) style &= ~SWT.BORDER;
 }
 
+void checkBuffered () {
+	style &= ~SWT.DOUBLE_BUFFERED;
+}
+
 boolean checkHandle (int hwnd) {
 	return hwnd == handle;
 }
@@ -490,6 +494,7 @@ void createHandle () {
 void createWidget () {
 	foreground = background = -1;
 	checkOrientation (parent);
+	checkBuffered ();
 	createHandle ();
 	register ();
 	subclass ();
