@@ -38,6 +38,7 @@ final static RGB GREEN = new RGB(0,255,0);
 final static RGB YELLOW = new RGB(255,255,0);
 final static RGB CYAN = new RGB(0,255,255);
 final static RGB PURPLE = new RGB(255,0,255);
+final static String PLATFORM_LINE_DELIMITER = System.getProperty("line.separator");
 Hashtable colors = new Hashtable();
 private boolean listenerCalled;	
 private boolean listener2Called;
@@ -1646,7 +1647,7 @@ public void test_invokeActionI() {
 
 	text.invokeAction(ST.LINE_END);
 	text.invokeAction(ST.PASTE);
-	assertEquals("\r\nLine2\r\n", text.getText());
+	assertEquals("\r\nLine2" + PLATFORM_LINE_DELIMITER, text.getText());
 
 	text.invokeAction(ST.DELETE_PREVIOUS);
 	assertEquals("\r\nLine2", text.getText());
