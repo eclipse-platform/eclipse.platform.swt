@@ -24,6 +24,7 @@ public class OS {
 		if (osName.equals ("Linux")) isLinux = true;
 		if (osName.equals ("AIX")) isAIX = true;
 		if (osName.equals ("Solaris")) isSunOS = true;
+		if (osName.equals ("SunOS")) isSunOS = true;
 		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;
 	}
 	public static final int CODESET = OS.IsLinux ? 14 : 49;
