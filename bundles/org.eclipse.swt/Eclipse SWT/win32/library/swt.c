@@ -322,8 +322,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CommDlgExtendedErr
 	return (jint)CommDlgExtendedError();
 }
 
-
-
 #ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CopyImage
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
@@ -1157,6 +1155,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOutA
 	RECT _arg4, *lparg4=NULL;
 	jbyte *lparg5=NULL;
 	jint *lparg7=NULL;
+	jboolean rc;
 
 	DEBUG_CALL("ExtTextOutA\n")
 
@@ -1164,7 +1163,13 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOutA
 	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
 	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
 
-	return (jboolean)ExtTextOutA((HDC)arg0, arg1, arg2, arg3, lparg4, (LPSTR)lparg5, arg6, (CONST INT*)lparg7);
+	rc = (jboolean)ExtTextOutA((HDC)arg0, arg1, arg2, arg3, lparg4, (LPSTR)lparg5, arg6, (CONST INT*)lparg7);
+	
+	if (arg4) setRECTFields(env, arg4, &_arg4, &PGLOB(RECTFc));
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	
+	return rc;
 }
 #endif // _WIN32_WCE
 
@@ -1175,6 +1180,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOutW
 	RECT _arg4, *lparg4=NULL;
 	jchar *lparg5=NULL;
 	jint *lparg7=NULL;
+	jboolean rc;
 
 	DEBUG_CALL("ExtTextOutW\n")
 
@@ -1182,7 +1188,13 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOutW
 	if (arg5) lparg5 = (*env)->GetCharArrayElements(env, arg5, NULL);
 	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
 
-	return (jboolean)ExtTextOutW((HDC)arg0, arg1, arg2, arg3, lparg4, (LPWSTR)lparg5, arg6, (CONST INT*)lparg7);
+	rc = (jboolean)ExtTextOutW((HDC)arg0, arg1, arg2, arg3, lparg4, (LPWSTR)lparg5, arg6, (CONST INT*)lparg7);
+
+	if (arg4) setRECTFields(env, arg4, &_arg4, &PGLOB(RECTFc));
+	if (arg5) (*env)->ReleaseCharArrayElements(env, arg5, lparg5, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	
+	return rc;
 }
 
 #ifndef _WIN32_WCE
@@ -6585,4 +6597,3 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WindowFromPoint
 
 	return rc;
 }
-
