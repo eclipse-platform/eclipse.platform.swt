@@ -308,8 +308,8 @@ private boolean needVScroll(Rectangle contentRect, boolean hVisible) {
 	ScrollBar hBar = getHorizontalBar();
 	if (hVisible && hBar != null) hostRect.height -= hBar.getSize().y;
 	
-	if (!expandHorizontal && contentRect.height > hostRect.height) return true;
-	if (expandHorizontal && minHeight > hostRect.height) return true;
+	if (!expandVertical && contentRect.height > hostRect.height) return true;
+	if (expandVertical && minHeight > hostRect.height) return true;
 	return false;
 }
 
