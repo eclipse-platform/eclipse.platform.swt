@@ -2701,7 +2701,11 @@ public static void setAppName (String name) {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
-	/* This is not supported on GTK */
+	if (OS.GDK_WINDOWING_X11 ()) {
+		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
+		int /*long*/ xWindow = OS.XDefaultRootWindow (xDisplay);
+		OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
+	}
 }
 
 /**

@@ -1008,6 +1008,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XCrossingEvent_1sizeof)
 }
 #endif
 
+#ifndef NO_XDefaultRootWindow
+JNIEXPORT jint JNICALL OS_NATIVE(XDefaultRootWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XDefaultRootWindow_FUNC);
+	rc = (jint)XDefaultRootWindow((Display *)arg0);
+	OS_NATIVE_EXIT(env, that, XDefaultRootWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_XDefaultScreen
 JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreen)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1193,6 +1205,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XVisibilityEvent_1sizeof)
 	OS_NATIVE_ENTER(env, that, XVisibilityEvent_1sizeof_FUNC);
 	rc = (jint)XVisibilityEvent_sizeof();
 	OS_NATIVE_EXIT(env, that, XVisibilityEvent_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XWarpPointer
+JNIEXPORT jint JNICALL OS_NATIVE(XWarpPointer)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XWarpPointer_FUNC);
+	rc = (jint)XWarpPointer((Display *)arg0, (Window)arg1, (Window)arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+	OS_NATIVE_EXIT(env, that, XWarpPointer_FUNC);
 	return rc;
 }
 #endif
