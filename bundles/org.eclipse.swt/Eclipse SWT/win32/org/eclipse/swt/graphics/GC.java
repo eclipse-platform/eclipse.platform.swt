@@ -2789,16 +2789,17 @@ void setClipping(int clipRgn) {
 	int hRgn = clipRgn;
 	int gdipGraphics = data.gdipGraphics;
 	if (hRgn != 0) {
-		float[] xform = new float[6];
+		boolean result;
+		float[] xform = new float[]{1, 0, 0, 1, 0, 0};
 		if (gdipGraphics != 0) {
 			int matrix = Gdip.Matrix_new(1, 0, 0, 1, 0, 0);
-			Gdip.Graphics_GetTransform(gdipGraphics, matrix);
+			result = Gdip.Graphics_GetTransform(gdipGraphics, matrix) == 0;
 			Gdip.Matrix_GetElements(matrix, xform);
 			Gdip.Matrix_delete(matrix);
 		} else {
-			OS.GetWorldTransform(handle, xform);
+			result = OS.GetWorldTransform(handle, xform);
 		}
-		if (!isIdentity(xform)) {
+		if (result && !isIdentity(xform)) {
 			int count = OS.GetRegionData(hRgn, 0, null);
 			int[] lpRgnData = new int[count / 4];
 			OS.GetRegionData(hRgn, count, lpRgnData);
