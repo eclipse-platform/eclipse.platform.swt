@@ -191,7 +191,8 @@ Point computeSize () {
 		int stringWidth = 0, stringHeight = 0;
 		if (text.length () != 0) {
 			GC gc = new GC (parent);
-			Point size = gc.stringExtent (text);
+			int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
+			Point size = gc.textExtent (text, flags);
 			stringWidth = size.x;
 			stringHeight = size.y;
 			gc.dispose ();
@@ -751,7 +752,8 @@ void setBounds (int x, int y, int width, int height) {
 	int stringWidth = 0, stringHeight = 0;
 	if (text.length () != 0) {
 		GC gc = new GC (parent);
-		Point size = gc.stringExtent (text);
+		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
+		Point size = gc.textExtent (text, flags);
 		stringWidth = size.x;
 		stringHeight = size.y;
 		gc.dispose ();
