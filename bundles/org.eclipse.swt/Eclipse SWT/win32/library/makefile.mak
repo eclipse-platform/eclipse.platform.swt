@@ -13,7 +13,7 @@ APPVER=5.0
 !include <win32.mak>
 
 maj_ver=2
-min_ver=015
+min_ver=016
 bld_num=0
 
 pgm_ver_str="SWT $(maj_ver).$(min_ver) for Windows"
