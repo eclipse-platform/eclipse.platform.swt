@@ -194,7 +194,7 @@ static String getCodePage (int xDisplay, int fontList) {
 			OS.memmove(fontStruct,fontPtr,20 * 4);
 			int propPtr = fontStruct.properties;
 			for (int i = 0; i < fontStruct.n_properties; i++) {
-				/* Reef through properties looking for XAFONT */
+				/* Look through properties for XAFONT */
 				int[] prop = new int[2];
 				OS.memmove(prop, propPtr, 8);
 				if (prop[0] == OS.XA_FONT) {
