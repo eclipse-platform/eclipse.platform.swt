@@ -90,7 +90,7 @@ public /*final*/ class Shell extends Decorations {
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
 
-	static final  byte [] WM_DETELE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
+	static final  byte [] WM_DELETE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -696,7 +696,7 @@ void hookEvents () {
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
 	int xDisplay = OS.XtDisplay (shellHandle);
 	if (xDisplay != 0) {
-		int atom = OS.XmInternAtom (xDisplay, WM_DETELE_WINDOW, false);	
+		int atom = OS.XmInternAtom (xDisplay, WM_DELETE_WINDOW, false);	
 		OS.XmAddWMProtocolCallback (shellHandle, atom, windowProc, SWT.Dispose);
 	}
 }
