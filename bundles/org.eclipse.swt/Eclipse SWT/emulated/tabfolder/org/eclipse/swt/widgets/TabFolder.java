@@ -532,6 +532,17 @@ public TabItem [] getItems() {
 	System.arraycopy(items, 0, tabItems, 0, items.length);
 	return tabItems;
 }
+char getMnemonic (String string) {
+	int index = 0;
+	int length = string.length ();
+	do {
+		while ((index < length) && (string.charAt (index) != '&')) index++;
+		if (++index >= length) return '\0';
+		if (string.charAt (index) != '&') return string.charAt (index);
+		index++;
+	} while (index < length);
+ 	return '\0';
+}
 /** 
  * Returns the area where the two scroll buttons are drawn.
  */
@@ -611,7 +622,8 @@ void handleEvents (Event event){
 			focus(event);
 			break;
 		case SWT.KeyDown:
-			//do nothing - this callback exists so that widget is included in tab order
+			// this callback is always needed so that widget is included in tab order
+			keyDown(event);
 			break;
 		default:
 			break;
@@ -700,7 +712,34 @@ void itemChanged(TabItem item) {
 		redrawScrollButtons();
 	}	
 }
-
+/** 
+ * A key was pressed.  If one of the tab-selection keys that is not a traversal
+ * was pressed then change tabs accordingly.
+ */
+void keyDown(Event event) {
+	int count = items.length;
+	if (count < 2) return;
+	if (event.keyCode == SWT.ARROW_RIGHT) {
+		if (selectedIndex < items.length - 1) {
+			setSelection(selectedIndex + 1, true);
+		}
+	}
+	if (event.keyCode == SWT.ARROW_LEFT) {
+		if (selectedIndex > 0) {
+			setSelection(selectedIndex - 1, true);
+		}
+	}
+	if (event.keyCode == SWT.HOME) {
+		if (selectedIndex > 0) {
+			setSelection(0, true);
+		}
+	}
+	if (event.keyCode == SWT.END) {
+		if (selectedIndex < count - 1) {
+			setSelection(count - 1, true);
+		}
+	}
+}
 /**
  * Layout the items and store the client area size.
  */
@@ -757,6 +796,18 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 		}
 	}
 	return new Point (width, height);
+}
+boolean mnemonicHit (char key) {
+	for (int i = 0; i < items.length; i++) {
+		char mnemonic = getMnemonic (items[i].getText ());
+		if (mnemonic != '\0') {
+			if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+				setSelection(i, true);
+				return true;
+			}
+		}
+	}
+	return false;
 }
 /** 
  * A mouse button was pressed down. 
@@ -1086,70 +1137,28 @@ void traversal(Event event) {
 		case SWT.TRAVERSE_RETURN:
 		case SWT.TRAVERSE_TAB_NEXT:
 		case SWT.TRAVERSE_TAB_PREVIOUS:
-			event.doit = true;
-			break;
 		case SWT.TRAVERSE_MNEMONIC:
-			event.doit = mnemonicTraversal(event);
-			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
-			break;
 		case SWT.TRAVERSE_PAGE_NEXT:
 		case SWT.TRAVERSE_PAGE_PREVIOUS:
-			event.doit = pageTraversal(event);
-			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
-			break;
 		case SWT.TRAVERSE_ARROW_NEXT:
-			if (selectedIndex < items.length - 1) {
-				setSelection(selectedIndex + 1, true);
-			}
-			event.doit = true;
-			event.detail = SWT.TRAVERSE_NONE;
-			break;
 		case SWT.TRAVERSE_ARROW_PREVIOUS: 
-			if (selectedIndex > 0) {
-				setSelection(selectedIndex - 1, true);
-			}
 			event.doit = true;
-			event.detail = SWT.TRAVERSE_NONE;
-			break;
 	}
 }
-
-boolean pageTraversal(Event event) {
-	int count = getItemCount ();
+boolean traverseItem (boolean next) {
+	return false;
+}
+boolean traversePage (boolean next) {
+	int count = items.length;
 	if (count == 0) return false;
-	int index = getSelectionIndex ();
+	int index = selectedIndex;
 	if (index == -1) {
 		index = 0;
 	} else {
-		int offset = (event.detail == SWT.TRAVERSE_PAGE_NEXT) ? 1 : -1;
+		int offset = next ? 1 : -1;
 		index = (index + offset + count) % count;
 	}
 	setSelection (index, true);
 	return true;
-}
-
-boolean mnemonicTraversal (Event event) {
-	char key = event.character;
-	for (int i = 0; i < items.length; i++) {
-		char mnemonic = getMnemonic (items[i].getText ());
-		if (mnemonic != '\0') {
-			if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
-				setSelection(i, true);
-				return true;
-			}
-		}
-	}
-	return false;
-}
-char getMnemonic (String string) {
-	int index = 0;
-	int length = string.length ();
-	do {
-		while ((index < length) && (string.charAt (index) != '&')) index++;
-		if (++index >= length) return '\0';
-		if (string.charAt (index) != '&') return string.charAt (index);
-		index++;
-	} while (index < length);
- 	return '\0';
 }
 }
