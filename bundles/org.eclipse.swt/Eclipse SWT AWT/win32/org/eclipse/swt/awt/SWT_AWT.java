@@ -14,6 +14,7 @@ import java.lang.reflect.Constructor;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -141,6 +142,18 @@ public static Frame new_Frame (final Composite parent) {
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
 					frame.dispose ();
+				}
+			});
+		}
+	});
+	parent.getDisplay().asyncExec(new Runnable() {
+		public void run () {
+			if (parent.isDisposed()) return;
+			final Rectangle rect = parent.getClientArea ();
+			java.awt.EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					frame.setSize (rect.width, rect.height);
+					frame.validate ();
 				}
 			});
 		}
