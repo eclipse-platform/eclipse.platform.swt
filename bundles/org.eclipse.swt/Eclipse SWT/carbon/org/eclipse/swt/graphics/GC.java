@@ -109,12 +109,7 @@ public void copyArea(Image image, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (image == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (image.type != SWT.BITMAP || image.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-//	Rectangle rect = image.getBounds();
-//	int gdkGC = OS.gdk_gc_new(image.pixmap);
-//	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-//	OS.gdk_gc_set_subwindow(gdkGC, OS.GDK_INCLUDE_INFERIORS);
-//	OS.gdk_draw_drawable(image.pixmap, gdkGC, data.drawable, x, y, 0, 0, rect.width, rect.height);
-//	OS.g_object_unref(gdkGC);
+	//NOT IMPLEMENTED
 }
 
 /**
@@ -137,42 +132,21 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - srcX, deltaY = destY - srcY;
 	if (deltaX == 0 && deltaY == 0) return;
-//	int drawable = data.drawable;
-//	OS.gdk_gc_set_exposures(handle, true);
-//	OS.gdk_draw_drawable(drawable, handle, drawable, srcX, srcY, destX, destY, width, height);
-//	OS.gdk_gc_set_exposures(handle, false);
-//	if (data.image != null) return;
-//	boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
-//	GdkRectangle rect = new GdkRectangle ();
-//	if (disjoint) {
-//		rect.x = srcX;
-//		rect.y = srcY;
-//		rect.width = width;
-//		rect.height = height;
-//		OS.gdk_window_invalidate_rect (drawable, rect, false);
-////		OS.gdk_window_clear_area_e(drawable, srcX, srcY, width, height);
-//	} else {
-//		if (deltaX != 0) {
-//			int newX = destX - deltaX;
-//			if (deltaX < 0) newX = destX + width;
-//			rect.x = newX;
-//			rect.y = srcY;
-//			rect.width = Math.abs(deltaX);
-//			rect.height = height;
-//			OS.gdk_window_invalidate_rect (drawable, rect, false);
-////			OS.gdk_window_clear_area_e(drawable, newX, srcY, Math.abs(deltaX), height);
-//		}
-//		if (deltaY != 0) {
-//			int newY = destY - deltaY;
-//			if (deltaY < 0) newY = destY + height;
-//			rect.x = srcX;
-//			rect.y = newY;
-//			rect.width = width;
-//			rect.height = Math.abs(deltaY);
-//			OS.gdk_window_invalidate_rect (drawable, rect, false);
-////			OS.gdk_window_clear_area_e(drawable, srcX, newY, width, Math.abs(deltaY));
-//		}
-//	}
+	if (data.image != null) {
+ 		OS.CGContextSaveGState(handle);
+ 		OS.CGContextScaleCTM(handle, 1, -1);
+ 		OS.CGContextTranslateCTM(handle, 0, -(height + 2 * destY));
+ 		CGRect rect = new CGRect();
+ 		rect.x = destX;
+ 		rect.y = destY;
+ 		rect.width = width;
+		rect.height = height;
+		//NOT DONE - transparency
+ 		OS.CGContextDrawImage(handle, rect, data.image.handle);
+ 		OS.CGContextRestoreGState(handle);
+ 		return;
+	}
+	//NOT DONE
 }
 
 /**
@@ -1480,7 +1454,9 @@ public void setClipping(Region region) {
 
 void setCGClipping () {
 	if (data.control == 0) {
-		//NOT DONE
+		OS.CGContextScaleCTM(handle, 1, -1);
+		OS.ClipCGContextToRegion(handle, new Rect(), data.clipRgn);
+		OS.CGContextScaleCTM(handle, 1, -1);
 		return;
 	}
 	int window = OS.GetControlOwner(data.control);
