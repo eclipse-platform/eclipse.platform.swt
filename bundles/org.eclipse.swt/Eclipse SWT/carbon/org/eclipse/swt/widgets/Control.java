@@ -422,6 +422,7 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlHit,
 		OS.kEventClassControl, OS.kEventControlSetCursor,
 		OS.kEventClassControl, OS.kEventControlSetFocusPart,
+		OS.kEventClassControl, OS.kEventControlTrack,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
@@ -633,6 +634,11 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	}
 	return OS.eventNotHandledErr;
 }	
+
+int kEventControlTrack (int nextHandler, int theEvent, int userData) {
+//	if (isEnabledModal ()) sendMouseEvent (SWT.MouseMove, theEvent);
+	return OS.eventNotHandledErr;
+}
 
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	Shell shell = getShell ();

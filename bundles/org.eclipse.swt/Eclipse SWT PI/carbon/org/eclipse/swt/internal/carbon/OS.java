@@ -203,6 +203,7 @@ public class OS {
 	public static final int kEventControlSetCursor = 11;
 	public static final int kEventControlSetFocusPart = 7;
 	public static final int kEventControlRemovingSubControl = 153;
+	public static final int kEventControlTrack = 51;
 	public static final int kEventPriorityStandard = 1;
 	public static final double kEventDurationForever = -1.0;
 	public static final double kEventDurationNoWait = 0.0;
