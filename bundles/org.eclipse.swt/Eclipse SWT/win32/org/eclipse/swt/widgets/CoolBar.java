@@ -373,16 +373,15 @@ public Point [] getItemSizes () {
  */
 public boolean getLocked () {
 	checkWidget ();
-	boolean locked = true;
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_STYLE;
 	for (int i=0; i<count; i++) {
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		locked = locked && ((rbBand.fStyle & OS.RBBS_NOGRIPPER) != 0);
+		if ((rbBand.fStyle & OS.RBBS_NOGRIPPER) == 0) return false;
 	}
-	return locked;
+	return true;
 }
 
 /**

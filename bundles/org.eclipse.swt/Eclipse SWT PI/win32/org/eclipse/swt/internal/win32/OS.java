@@ -117,6 +117,7 @@ public class OS {
 	public static final int BF_BOTTOM = 0x8;
 	public static final int BF_RIGHT = 0x4;
 	public static final int BIF_EDITBOX = 0x10;
+	public static final int BIF_NEWDIALOGSTYLE = 0x40;
 	public static final int BIF_RETURNONLYFSDIRS = 0x1;
 	public static final int BIF_VALIDATE = 0x20;
 	public static final int BITSPIXEL = 0xc;
