@@ -376,8 +376,7 @@ public int getSelectionCount () {
 public int getSelectionIndex () {
 	checkWidget();
 	int [] first = new int [1], last = new int [1];
-	OS.GetDataBrowserSelectionAnchor (handle, first, last);
-	if (OS.GetDataBrowserTableViewItemID (handle, first [0], first) != OS.noErr) return -1;
+	if (OS.GetDataBrowserSelectionAnchor (handle, first, last) != OS.noErr) return -1;
     return first [0] - 1;
 }
 
