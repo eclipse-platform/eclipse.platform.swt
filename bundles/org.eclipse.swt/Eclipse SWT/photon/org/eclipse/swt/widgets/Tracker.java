@@ -512,7 +512,10 @@ public boolean open () {
 						* event.  If this happens, return false to indicate
 						* that the tracking has failed.
 						*/
-						if (isDisposed ()) return false;
+						if (isDisposed ()) {
+							cancelled = true;
+							break;
+						}
 						drawRectangles (rectangles);
 						oldX = newX;  oldY = newY;
 					}
@@ -568,7 +571,10 @@ public boolean open () {
 							* event.  If this happens return false to indicate
 							* that the tracking has failed.
 							*/
-							if (isDisposed ()) return false;
+							if (isDisposed ()) {
+								cancelled = true;
+								break;
+							}
 							drawRectangles (rectangles);
 							oldX = cursorPos.x;  oldY = cursorPos.y;
 						}
@@ -592,7 +598,7 @@ public boolean open () {
 		}
 		OS.PtEventHandler (buffer);
 	}
-	drawRectangles (rectangles);
+	if (!isDisposed ()) drawRectangles (rectangles);
 	tracking = false;
 	if (region != 0) OS.PtDestroyWidget (region);
 	return !cancelled;
