@@ -598,6 +598,7 @@ public void test_copy() {
 	}
 	assertTrue(":g:", clipboardText != null && clipboardText.equals(convertedText));
 
+	testRtfCopy();
 	clipboard.dispose();
 }
 
@@ -4166,4 +4167,73 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else super.runTest();
 }
+/**
+ * Regression test for bug 19985
+ */
+protected void testRtfCopy() {
+	String lines = "Line0\nLine1\nLine2\nLine3\nLine4\nLine5";
+	boolean exceptionThrown = false;
+	final int[] linesCalled = new int[] {0};
+	LineStyleListener listener = new LineStyleListener() {
+		public void lineGetStyle(LineStyleEvent event) {
+			Display display = Display.getDefault();
+			Color red = display.getSystemColor(SWT.COLOR_RED);
+			StyledText styledText = (StyledText) event.widget;
+			int lineIndex = styledText.getLineAtOffset(event.lineOffset);
+			int lineStart = event.lineOffset;
+			int lineEnd = lineStart + event.lineText.length();
+			StyleRange goodRange = new StyleRange(0, 1, red, red);
+			
+			event.styles = new StyleRange[2];
+			switch (lineIndex % 6) {
+				case 0:
+					event.styles[0] = goodRange;
+					event.styles[1] = new StyleRange(lineEnd, 1, red, red);
+					linesCalled[0]++;
+					break;
+				case 1:
+					event.styles[0] = goodRange;
+					event.styles[1] = new StyleRange(lineEnd, -1, red, red);
+					linesCalled[0]++;
+					break;
+				case 2:
+					event.styles[0] = goodRange;
+					event.styles[1] = new StyleRange(lineEnd - 1, -1, red, red);
+					linesCalled[0]++;	
+					break;
+				case 3:
+					event.styles[0] = goodRange;
+					event.styles[1] = new StyleRange(lineStart, -1, red, red);
+					linesCalled[0]++;	
+					break;
+				case 4:
+					event.styles[0] = new StyleRange(lineStart, 1, red, red);
+					event.styles[1] = new StyleRange(lineStart, -1, red, red);
+					linesCalled[0]++;	
+					break;
+				case 5:
+					event.styles[0] = new StyleRange(lineEnd / 2, 1, red, red);
+					event.styles[1] = new StyleRange(lineEnd / 2, -1, red, red);
+					linesCalled[0]++;	
+					break;
+			}			
+		}
+	};
+	text.setText(lines);	
+	// cause StyledText to call the listener. 
+	text.setSelection(0, text.getCharCount());
+	text.addLineStyleListener(listener);
+	text.copy();
+	assertTrue("not all lines tested for RTF copy", linesCalled[0] == text.getLineCount());
+	
+	Clipboard clipboard = new Clipboard(text.getDisplay());
+	RTFTransfer rtfTranfer = RTFTransfer.getInstance();
+	String clipboardText = (String) clipboard.getContents(rtfTranfer);
+	assertTrue("RTF copy failed", clipboardText.length() > 0);
+
+	clipboard.dispose();
+	text.removeLineStyleListener(listener);	
 }
+
+}
+
