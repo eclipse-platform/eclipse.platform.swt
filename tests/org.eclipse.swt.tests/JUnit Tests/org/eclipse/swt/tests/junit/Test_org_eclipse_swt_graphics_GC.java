@@ -207,15 +207,33 @@ public void test_drawTextLjava_lang_StringII() {
 	gc.drawText("", 0, 0);				
 }
 
-public void test_drawTextLjava_lang_StringIII() {
+public void test_drawTextLjava_lang_StringIII() {			
+	gc.drawText("abc", 5, 5, 0);
+	gc.drawText("abc", 5, 5, SWT.DRAW_TRANSPARENT);
+	gc.drawText("abc", 5, 5, SWT.DRAW_DELIMITER);
+	gc.drawText("abc", 5, 5, SWT.DRAW_MNEMONIC);
+	gc.drawText("abc", 5, 5, SWT.DRAW_TAB);
+	gc.drawText("", 0, 0, 0);
+	gc.drawText("", 0, 0, SWT.DRAW_TRANSPARENT);				
+	gc.drawText("", 0, 0, SWT.DRAW_DELIMITER);				
+	gc.drawText("", 0, 0, SWT.DRAW_MNEMONIC);				
+	gc.drawText("", 0, 0, SWT.DRAW_TAB);				
+	gc.drawText("\t\r\na&bc&", 5, 5, 0);
+	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_TRANSPARENT);
+	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_DELIMITER);
+	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_MNEMONIC);
+	gc.drawText("\t\r\na&bc&", 5, 5, SWT.DRAW_TAB);
+	gc.drawText("\r", 5, 5, SWT.DRAW_DELIMITER);
+	gc.drawText("\n", 5, 5, SWT.DRAW_DELIMITER);
+	gc.drawText("&", 5, 5, SWT.DRAW_MNEMONIC);
+	gc.drawText("\t", 5, 5, SWT.DRAW_TAB);
+}
+
+public void test_drawTextLjava_lang_StringIIZ() {
 	gc.drawText("abc", 5, 5, true);				
 	gc.drawText("abc", 5, 5, false);				
 	gc.drawText("", 0, 0, true);				
 	gc.drawText("", 0, 0, false);				
-}
-
-public void test_drawTextLjava_lang_StringIIZ() {
-	gc.drawText("abc", 5, 5, 0);				
 }
 
 public void test_equalsLjava_lang_Object() {
