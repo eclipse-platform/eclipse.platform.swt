@@ -212,7 +212,6 @@ public Browser(Composite parent, int style) {
 	};
 	addListener(SWT.Dispose, listener);
 	addListener(SWT.Resize, listener);
-	addListener(SWT.Paint, listener);
 	Shell shell = getShell();
 	shell.addListener(SWT.Resize, listener);
 	shell.addListener(SWT.Show, listener);
