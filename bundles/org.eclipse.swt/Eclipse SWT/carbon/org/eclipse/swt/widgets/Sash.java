@@ -128,7 +128,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 				event.height = height;
 				event.detail = 0; //outResult [0] == OS.kMouseTrackingMouseDragged ? SWT.DRAG : 0;
 				sendEvent (SWT.Selection, event);
-				if (event.doit) setBounds (handle, newX, newY, width, height, true, true);
+				if (event.doit) setBounds (newX, newY, width, height);
 				update ();
 				break;
 			}

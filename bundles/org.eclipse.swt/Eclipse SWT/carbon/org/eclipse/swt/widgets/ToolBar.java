@@ -63,8 +63,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	super.createHandle ();
-	state &= ~CANVAS;
+	state |= GRAB;
+	super.createHandle (parent.handle);
 }
 
 void createItem (ToolItem item, int index) {
