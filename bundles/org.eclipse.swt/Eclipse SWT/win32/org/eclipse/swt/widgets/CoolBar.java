@@ -32,7 +32,6 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class CoolBar extends Composite {
-	
 	CoolItem [] items;
 	CoolItem [] originalItems;
 	static final int ReBarProc;
@@ -264,6 +263,47 @@ public int getItemCount () {
 }
 
 /**
+ * Returns an array of zero-relative indices which map the order
+ * that the items in the receiver were added in to
+ * the order which they are currently being displayed.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the receiver's item order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
+public int [] getItemOrder () {
+	checkWidget ();
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int [] indices = new int [count];
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_ID;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		CoolItem item = items [rbBand.wID];
+		int index = 0;
+		while (index<originalItems.length) {
+			if (originalItems [index] == item) break;
+			index++;
+		}
+		if (index == originalItems.length) error (SWT.ERROR_CANNOT_GET_ITEM);
+		indices [i] = index;
+	}
+	return indices;
+}
+
+/**
  * Returns an array of <code>CoolItems</code>s which are the
  * items in the receiver. 
  * <p>
@@ -294,6 +334,58 @@ public CoolItem [] getItems () {
 		result [i] = items [rbBand.wID];
 	}
 	return result;
+}
+
+/**
+ * Returns an array of points whose x and y coordinates describe
+ * the widths and heights (respectively) of the items in the receiver.
+ *
+ * @return the receiver's item sizes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Point [] getItemSizes () {
+	checkWidget ();	
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	Point [] sizes = new Point [count];
+	for (int i=0; i<count; i++) {
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
+		sizes [i] = new Point (rect.right - rect.left, rect.bottom - rect.top);
+	}
+	return sizes;
+}
+
+/**
+ * Returns an array of ints which describe the zero-relative
+ * row number of the row which each of the items in the 
+ * receiver occurs in.
+ *
+ * @return the receiver's wrap indices
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int [] getWrapIndices () {
+	checkWidget ();
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	int [] indices = new int [count];
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_STYLE;
+	int wrapCount = 0;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) indices [wrapCount++] = i;	
+	}
+	int [] answer = new int [wrapCount];
+	System.arraycopy(indices, 0, answer, 0, wrapCount);
+	return answer;
 }
 
 /**
@@ -360,6 +452,133 @@ void setItemColors (int foreColor, int backColor) {
 	}
 }
 
+/**
+ * Sets the receiver's item order, wrap indices, and item
+ * sizes at once. This equivalent to calling the setter
+ * methods for each of these values individually.
+ *
+ * @param itemOrder the new item order
+ * @param wrapIndices the new wrap indices
+ * @param size the new item sizes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes) {
+	checkWidget ();
+	setItemOrder (itemOrder);
+	setItemSizes (sizes);
+	setWrapIndices(wrapIndices);
+}
+
+/**
+ * Sets the the order that the items in the receiver should 
+ * be displayed in to the given argument which is described
+ * in terms of the zero-relative ordering of when the items
+ * were added.
+ *
+ * @param itemOrder the new item order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
+void setItemOrder (int [] itemOrder) {
+	if (itemOrder == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int itemCount = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	if (itemOrder.length != itemCount) error (SWT.ERROR_INVALID_ARGUMENT);
+	
+	/* Ensure that itemOrder does not contain any duplicates. */
+	boolean [] set = new boolean [itemCount];
+	for (int i=0; i<itemOrder.length; i++) {
+		int index = itemOrder [i];
+		if (index < 0 || index >= itemCount) error (SWT.ERROR_INVALID_RANGE);
+		if (set [index]) error (SWT.ERROR_INVALID_ARGUMENT);
+		set [index] = true;
+	}
+	
+	for (int i=0; i<itemOrder.length; i++) {
+		int id = originalItems [itemOrder [i]].id;
+		int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, id, 0);
+		OS.SendMessage (handle, OS.RB_MOVEBAND, index, i);
+	}
+}
+
+/**
+ * Sets the width and height of the areas in the receiver which
+ * are used to display its items to the ones specified by the
+ * argument, which is an array of points whose x and y coordinates
+ * describe the widths and heights (respectively) in the order the 
+ * items were added.
+ *
+ * @param sizes the new sizes for each of the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+void setItemSizes (Point [] sizes) {
+	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	if (sizes.length != count) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<count; i++) {
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, i, rect);
+		REBARBANDINFO rbBand = new REBARBANDINFO ();
+		rbBand.cbSize = REBARBANDINFO.sizeof;
+		rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
+		int width = sizes [i].x, height = sizes [i].y;
+		rbBand.cx = width;
+		rbBand.cxIdeal = width - rect.left - rect.right;
+		rbBand.cyChild = rbBand.cyMinChild = rbBand.cyMaxChild = height;
+		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+	}
+}
+
+/**
+ * Sets the row that each of the receiver's items will be
+ * displayed in to the given array of ints which describe
+ * the zero-relative row number of the row for each item.
+ * If indices is null, the items will be placed on one line.
+ *
+ * @param indices the new wrap indices
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setWrapIndices (int [] indices) {
+	checkWidget ();
+	if (indices == null) indices = new int [0];
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	for (int i=0; i<indices.length; i++) {
+		if (indices [i] < 0 || indices [i] >= count) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}	
+	}
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_STYLE;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		rbBand.fStyle &= ~OS.RBBS_BREAK;
+		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+	}
+	for (int i=0; i<indices.length; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, indices [i], rbBand);
+		rbBand.fStyle |= OS.RBBS_BREAK;
+		OS.SendMessage (handle, OS.RB_SETBANDINFO, indices [i], rbBand);
+	}
+}
+
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE;
 	bits |= OS.RBS_VARHEIGHT | OS.RBS_BANDBORDERS;
@@ -419,224 +638,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 	}
 	return super.wmNotifyChild (wParam, lParam);
-}
-
-/**
- * Returns an array of zero-relative indices which map the order
- * that the items in the receiver were added in to
- * the order which they are currently being displayed.
- * <p>
- * Note: This is not the actual structure used by the receiver
- * to maintain its list of items, so modifying the array will
- * not affect the receiver. 
- * </p>
- *
- * @return the receiver's item order
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
- * </ul>
- */
-public int [] getItemOrder () {
-	checkWidget ();
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	int [] indices = new int [count];
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_ID;
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		CoolItem item = items [rbBand.wID];
-		int index = 0;
-		while (index<originalItems.length) {
-			if (originalItems [index] == item) break;
-			index++;
-		}
-		if (index == originalItems.length) error (SWT.ERROR_CANNOT_GET_ITEM);
-		indices [i] = index;
-	}
-	return indices;
-}
-
-/**
- * Returns an array of points whose x and y coordinates describe
- * the widths and heights (respectively) of the items in the receiver.
- *
- * @return the receiver's item sizes
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Point [] getItemSizes () {
-	checkWidget ();	
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	Point [] sizes = new Point [count];
-	for (int i=0; i<count; i++) {
-		RECT rect = new RECT ();
-		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
-		sizes [i] = new Point (rect.right - rect.left, rect.bottom - rect.top);
-	}
-	return sizes;
-}
-
-/**
- * Returns an array of ints which describe the zero-relative
- * row number of the row which each of the items in the 
- * receiver occurs in.
- *
- * @return the receiver's wrap indices
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public int [] getWrapIndices () {
-	checkWidget ();
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	int [] indices = new int [count];
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_STYLE;
-	int wrapCount = 0;
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) indices [wrapCount++] = i;	
-	}
-	int [] answer = new int [wrapCount];
-	System.arraycopy(indices, 0, answer, 0, wrapCount);
-	return answer;
-}
-
-/**
- * Sets the the order that the items in the receiver should 
- * be displayed in to the given argument which is described
- * in terms of the zero-relative ordering of when the items
- * were added.
- *
- * @param itemOrder the new item order
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
- * </ul>
- */
-void setItemOrder (int [] itemOrder) {
-	if (itemOrder == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int itemCount = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	if (itemOrder.length != itemCount) error (SWT.ERROR_INVALID_ARGUMENT);
-	
-	/* Ensure that itemOrder does not contain any duplicates. */
-	boolean [] set = new boolean [itemCount];
-	for (int i = 0; i < set.length; i++) set [i] = false;
-	for (int i = 0; i < itemOrder.length; i++) {
-		if (itemOrder [i] < 0 || itemOrder [i] >= itemCount) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (set [itemOrder [i]]) error (SWT.ERROR_INVALID_ARGUMENT);
-		set [itemOrder [i]] = true;
-	}
-	
-	for (int i = 0; i < itemOrder.length; i++) {
-		int id = originalItems [itemOrder [i]].id;
-		int currentIndex = OS.SendMessage (handle, OS.RB_IDTOINDEX, id, 0);
-		OS.SendMessage (handle, OS.RB_MOVEBAND, currentIndex, i);
-	}
-}
-
-/**
- * Sets the width and height of the areas in the receiver which
- * are used to display its items to the ones specified by the
- * argument, which is an array of points whose x and y coordinates
- * describe the widths and heights (respectively) in the order the 
- * items were added.
- *
- * @param sizes the new sizes for each of the receiver's items
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-void setItemSizes (Point [] sizes) {
-	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	if (sizes.length != count) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<count; i++) {
-		RECT rect = new RECT ();
-		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, i, rect);
-		REBARBANDINFO rbBand = new REBARBANDINFO ();
-		rbBand.cbSize = REBARBANDINFO.sizeof;
-		rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
-		int width = sizes [i].x, height = sizes [i].y;
-		rbBand.cx = width;
-		rbBand.cxIdeal = width - rect.left - rect.right;
-		rbBand.cyChild = rbBand.cyMinChild = rbBand.cyMaxChild = height;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
-	}
-}
-
-/**
- * Sets the row that each of the receiver's items will be
- * displayed in to the given array of ints which describe
- * the zero-relative row number of the row for each item.
- * If indices is null, the items will be placed on one line.
- *
- * @param indices the new wrap indices
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setWrapIndices (int [] indices) {
-	checkWidget ();
-	if (indices == null) indices = new int [0];
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	for (int i=0; i<indices.length; i++) {
-		if (indices [i] < 0 || indices [i] >= count) error (SWT.ERROR_INVALID_ARGUMENT);	
-	}
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_STYLE;
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		rbBand.fStyle &= ~OS.RBBS_BREAK;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
-	}
-	for (int i=0; i<indices.length; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, indices [i], rbBand);
-		rbBand.fStyle |= OS.RBBS_BREAK;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, indices [i], rbBand);
-	}
-}
-
-/**
- * Sets the receiver's item order, wrap indices, and item
- * sizes at once. This equivalent to calling the setter
- * methods for each of these values individually.
- *
- * @param itemOrder the new item order
- * @param wrapIndices the new wrap indices
- * @param size the new item sizes
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes) {
-	checkWidget ();
-	setItemOrder (itemOrder);
-	setItemSizes (sizes);
-	setWrapIndices(wrapIndices);
 }
 
 }
