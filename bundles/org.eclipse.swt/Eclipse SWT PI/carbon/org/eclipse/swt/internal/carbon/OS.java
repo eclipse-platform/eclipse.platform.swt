@@ -151,6 +151,7 @@ public class OS extends OS2 {
 	public static final int kEventParamAEEventID = ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
 	public static final int kEventParamAttributes = ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r';
 	public static final int kEventParamCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
+	public static final int kEventParamControlPart= ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
 	public static final int kEventParamControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	public static final int kEventParamDirectObject = ('-'<<24) + ('-'<<16) + ('-'<<8) + '-';
 	public static final int kEventParamKeyCode = ('k'<<24) + ('c'<<16) + ('o'<<8) + 'd';
@@ -311,6 +312,7 @@ public class OS extends OS2 {
 	public static final int srcOr = 1;
 	public static final int typeCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
 	public static final int typeChar = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
+	public static final int typeControlPartCode = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
 	public static final int typeControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	public static final int typeFSRef = ('f'<<24) + ('s'<<16) + ('r'<<8) + 'f';
 	public static final int typeMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
