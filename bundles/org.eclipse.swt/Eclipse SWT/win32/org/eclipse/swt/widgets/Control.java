@@ -3359,7 +3359,8 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		if ((mapKey & 0x8000) != 0) return null;
 	}
 	MSG msg = new MSG ();
-	if (OS.PeekMessage (msg, handle, OS.WM_DEADCHAR, OS.WM_DEADCHAR, OS.PM_NOREMOVE)) {
+	int flags = OS.PM_NOREMOVE | OS.PM_NOYIELD;
+	if (OS.PeekMessage (msg, handle, OS.WM_DEADCHAR, OS.WM_DEADCHAR, flags)) {
 		display.lastDead = true;
 		display.lastVirtual = mapKey == 0;
 		display.lastKey = display.lastVirtual ? wParam : mapKey;
@@ -3915,7 +3916,8 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 						* before mouse enter events.
 						*/
 						MSG msg = new MSG ();
-						while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, OS.PM_REMOVE)) {
+						int flags = OS.PM_REMOVE | OS.PM_NOYIELD;
+						while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, flags)) {
 							OS.TranslateMessage (msg);
 							OS.DispatchMessage (msg);
 						}
