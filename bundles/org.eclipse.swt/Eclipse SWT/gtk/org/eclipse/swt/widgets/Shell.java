@@ -881,12 +881,8 @@ public void setVisible (boolean visible) {
 		OS.gtk_window_get_size (shellHandle, width, height);
 		resizeBounds (width [0], height [0], true);
 		
-		// NOT DONE - shell should be fully drawn before setVisible()
-		// returns. Note we cannot use gtk_widget_show_now because
-		// it dispatches events.
-//		OS.gtk_widget_show_now (shellHandle);
-		OS.gtk_widget_show (shellHandle);
-		display.update();
+		// NOT DONE - gtk_widget_show_now dispatches events.
+		OS.gtk_widget_show_now (shellHandle);
 		adjustTrim ();
 	} else {	
 		OS.gtk_widget_hide (shellHandle);

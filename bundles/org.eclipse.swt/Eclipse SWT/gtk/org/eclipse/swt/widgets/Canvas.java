@@ -160,7 +160,10 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 //	gc.copyArea (x, y, width, height, destX, destY);
 //	gc.dispose ();
 
-	update ();
+	OS.gdk_flush ();
+	while ((OS.gtk_events_pending()) != 0) {
+		OS.gtk_main_iteration ();
+	}
 	
 	int window = paintWindow ();
 	int visibleRegion = OS.gdk_drawable_get_visible_region (window);

@@ -2518,11 +2518,8 @@ boolean traverseMnemonic (Event event) {
  */
 public void update () {
 	checkWidget ();
-	//NOT DONE - should only dispatch paint events
-//	OS.gdk_window_process_updates (window, all);
 	OS.gdk_flush ();
-	while ((OS.gtk_events_pending()) != 0) {
-		OS.gtk_main_iteration ();
-	}	
+	int window = paintWindow ();
+	OS.gdk_window_process_updates (window, false);
 }
 }
