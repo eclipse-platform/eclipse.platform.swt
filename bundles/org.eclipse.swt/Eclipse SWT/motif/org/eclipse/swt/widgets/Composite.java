@@ -546,6 +546,12 @@ public void setTabList (Control [] tabList) {
 	}
 	int [] argList2 = new int [] {OS.XmNnavigationType, OS.XmEXCLUSIVE_TAB_GROUP};
 	for (int i=0; i<tabList.length; i++) {
+		/*
+		* Set the XmNnavigationType twice, once to clear the
+		* old value and once to set the new.  If the old value
+		* is not cleared, Motif detects that the values are the
+		* same and does not change the tab order.
+		*/
 		Control control = tabList [i];
 		OS.XtSetValues (control.handle, argList1, argList1.length / 2);
 		OS.XtSetValues (control.handle, argList2, argList2.length / 2);
