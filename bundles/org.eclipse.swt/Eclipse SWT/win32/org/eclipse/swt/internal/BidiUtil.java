@@ -32,7 +32,20 @@ public class BidiUtil {
 	// switching 
 	static Hashtable map = new Hashtable ();
 	static Hashtable oldProcMap = new Hashtable ();
-	static Callback callback = new Callback (BidiUtil.class, "windowProc", 4);
+	/*
+	 * This code is intentionally commented.  In order
+	 * to support CLDC, .class cannot be used because
+	 * it does not compile on some Java compilers when
+	 * they are targeted for CLDC.
+	 */
+	//	static Callback callback = new Callback (BidiUtil.class, "windowProc", 4);
+	static final String CLASS_NAME = "org.eclipse.swt.internal.BidiUtil";
+	static Callback callback;
+	static {
+		try {
+			callback = new Callback (Class.forName (CLASS_NAME), "windowProc", 4);
+		} catch (ClassNotFoundException e) {}
+	}
 
 	// GetCharacterPlacement constants
 	static final int GCP_REORDER = 0x0002;
