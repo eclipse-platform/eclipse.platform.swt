@@ -10,10 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.swt.internal.*;
+
 class WebKit {
 		
 static {
-	System.loadLibrary("WebKit"); //$NON-NLS-1$
+	Library.loadLibrary("swt-webkit"); //$NON-NLS-1$
 	WebInitForCarbon();
 }
 	
