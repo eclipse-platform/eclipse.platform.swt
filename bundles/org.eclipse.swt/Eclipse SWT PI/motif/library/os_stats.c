@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 440;
-int OS_nativeFunctionCallCount[440];
+int OS_nativeFunctionCount = 443;
+int OS_nativeFunctionCallCount[443];
 char * OS_nativeFunctionNames[] = {
 	"CODESET",
 	"FD_1ISSET",
@@ -352,11 +352,13 @@ char * OS_nativeFunctionNames[] = {
 	"_1XtCreatePopupShell",
 	"_1XtDestroyApplicationContext",
 	"_1XtDestroyWidget",
+	"_1XtDisownSelection",
 	"_1XtDispatchEvent",
 	"_1XtDisplay",
 	"_1XtDisplayToApplicationContext",
 	"_1XtFree",
 	"_1XtGetMultiClickTime",
+	"_1XtGetSelectionValue",
 	"_1XtGetValues",
 	"_1XtInsertEventHandler",
 	"_1XtIsManaged",
@@ -371,6 +373,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1XtNameToWidget",
 	"_1XtOpenDisplay",
 	"_1XtOverrideTranslations",
+	"_1XtOwnSelection",
 	"_1XtParent",
 	"_1XtParseTranslationTable",
 	"_1XtPopdown",

@@ -165,6 +165,9 @@ public class OS extends Platform {
 	public static final int ReparentNotify = 21;
 	public static final int ResizeRedirectMask = 1 << 18;
 	public static final int RevertToParent = 0x2;
+	public static final int SelectionClear = 29;
+	public static final int SelectionNotify = 31;
+	public static final int SelectionRequest = 30;
 	public static final int ShapeBounding = 0;
 	public static final int ShapeClip = 1;
 	public static final int ShapeSet = 0;
@@ -3624,6 +3627,15 @@ public static final void XtDestroyWidget(int widget) {
 		lock.unlock();
 	}
 }
+public static final native void _XtDisownSelection(int w, int selection, int time);
+public static final void XtDisownSelection(int w, int selection, int time) {
+	lock.lock();
+	try {
+		_XtDisownSelection(w, selection, time);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _XtDispatchEvent(int event);
 public static final boolean XtDispatchEvent(int event) {
 	lock.lock();
@@ -3665,6 +3677,15 @@ public static final int XtGetMultiClickTime(int display) {
 	lock.lock();
 	try {
 		return _XtGetMultiClickTime(display);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _XtGetSelectionValue(int w, int selection, int target, int callback, int client_data, int time);
+public static final void XtGetSelectionValue(int w, int selection, int target, int callback, int client_data, int time) {
+	lock.lock();
+	try {
+		_XtGetSelectionValue(w, selection, target, callback, client_data, time);
 	} finally {
 		lock.unlock();
 	}
@@ -3791,6 +3812,15 @@ public static final void XtOverrideTranslations(int w, int translations) {
 	lock.lock();
 	try {
 		_XtOverrideTranslations(w, translations);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native boolean _XtOwnSelection(int w, int selection, int time, int convert_proc, int lose_selection, int done_proc);
+public static final boolean XtOwnSelection(int w, int selection, int time, int convert_proc, int lose_selection, int done_proc) {
+	lock.lock();
+	try {
+		return _XtOwnSelection(w, selection, time, convert_proc, lose_selection, done_proc);
 	} finally {
 		lock.unlock();
 	}

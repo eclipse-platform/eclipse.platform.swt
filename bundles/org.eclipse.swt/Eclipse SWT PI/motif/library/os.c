@@ -4550,6 +4550,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XtDestroyWidget)
 }
 #endif
 
+#ifndef NO__1XtDisownSelection
+JNIEXPORT void JNICALL OS_NATIVE(_1XtDisownSelection)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, _1XtDisownSelection_FUNC);
+	XtDisownSelection((Widget)arg0, (Atom)arg1, (Time)arg2);
+	OS_NATIVE_EXIT(env, that, _1XtDisownSelection_FUNC);
+}
+#endif
+
 #ifndef NO__1XtDispatchEvent
 JNIEXPORT jboolean JNICALL OS_NATIVE(_1XtDispatchEvent)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4605,6 +4615,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1XtGetMultiClickTime)
 	rc = (jint)XtGetMultiClickTime((Display *)arg0);
 	OS_NATIVE_EXIT(env, that, _1XtGetMultiClickTime_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1XtGetSelectionValue
+JNIEXPORT void JNICALL OS_NATIVE(_1XtGetSelectionValue)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	OS_NATIVE_ENTER(env, that, _1XtGetSelectionValue_FUNC);
+	XtGetSelectionValue((Widget)arg0, (Atom)arg1, (Atom)arg2, (XtSelectionCallbackProc)arg3, (XtPointer)arg4, (Time)arg5);
+	OS_NATIVE_EXIT(env, that, _1XtGetSelectionValue_FUNC);
 }
 #endif
 
@@ -4768,6 +4788,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1XtOverrideTranslations)
 	OS_NATIVE_ENTER(env, that, _1XtOverrideTranslations_FUNC);
 	XtOverrideTranslations((Widget)arg0, (XtTranslations)arg1);
 	OS_NATIVE_EXIT(env, that, _1XtOverrideTranslations_FUNC);
+}
+#endif
+
+#ifndef NO__1XtOwnSelection
+JNIEXPORT jboolean JNICALL OS_NATIVE(_1XtOwnSelection)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, _1XtOwnSelection_FUNC);
+	rc = (jboolean)XtOwnSelection((Widget)arg0, (Atom)arg1, (Time)arg2, (XtConvertSelectionProc)arg3, (XtLoseSelectionProc)arg4, (XtSelectionDoneProc)arg5);
+	OS_NATIVE_EXIT(env, that, _1XtOwnSelection_FUNC);
+	return rc;
 }
 #endif
 

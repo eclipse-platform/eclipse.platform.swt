@@ -24,8 +24,36 @@ import org.eclipse.swt.internal.motif.*;
  */
 public class Clipboard {
 
-	private Display display;
-	private int shellHandle;
+	Display display;
+	int shellHandle;
+	int clipboardAtom, primaryAtom, targetsAtom;
+	
+	static int[][] convertData = new int[10][3];
+	static Clipboard activeClipboard = null;
+	static Clipboard activePrimaryClipboard = null;
+	static Object[] ClipboardData;
+	static Transfer[] ClipboardDataTypes;
+	static Object[] PrimaryClipboardData;
+	static Transfer[] PrimaryClipboardDataTypes;
+	
+	static boolean done = false;
+	static Object selectionValue;
+	static Transfer selectionTransfer;
+	
+	static byte [] CLIPBOARD = Converter.wcsToMbcs (null, "CLIPBOARD", true);
+	static byte [] PRIMARY = Converter.wcsToMbcs (null, "PRIMARY", true);
+	static byte [] TARGETS = Converter.wcsToMbcs (null, "TARGETS", true);
+	static Callback XtConvertSelectionCallback;
+	static Callback XtLoseSelectionCallback;
+	static Callback XtSelectionDoneCallback;
+	static Callback XtSelectionCallbackCallback;
+	
+	static {
+		XtConvertSelectionCallback = new Callback(Clipboard.class, "XtConvertSelection", 7); //$NON-NLS-1$
+		XtLoseSelectionCallback = new Callback(Clipboard.class, "XtLoseSelection", 2); //$NON-NLS-1$
+		XtSelectionDoneCallback = new Callback(Clipboard.class, "XtSelectionDone", 3); //$NON-NLS-1$
+		XtSelectionCallbackCallback = new Callback(Clipboard.class, "XtSelectionCallback", 7); //$NON-NLS-1$
+	}
 
 /**
  * Constructs a new instance of this class.  Creating an instance of a Clipboard
@@ -59,6 +87,10 @@ public Clipboard(Display display) {
 	shellHandle = OS.XtAppCreateShell (null, null, widgetClass, display.xDisplay, null, 0);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);
+	int xDisplay = OS.XtDisplay(shellHandle);
+	clipboardAtom = OS.XmInternAtom(xDisplay, CLIPBOARD, false);
+	primaryAtom = OS.XmInternAtom(xDisplay, PRIMARY, false);
+	targetsAtom = OS.XmInternAtom(xDisplay, TARGETS, false);
 }
 
 /**
@@ -95,6 +127,7 @@ protected void checkSubclass () {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
 }
+
 /**
  * Throws an <code>SWTException</code> if the receiver can not
  * be accessed by the caller. This may include both checks on
@@ -170,19 +203,14 @@ public void clearContents() {
  */
 public void clearContents(int clipboards) {
 	checkWidget();
-	// TODO only clear clipbaord if current Clipboard object is the owner
-	if (true || (clipboards & DND.CLIPBOARD) == 0) return;
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);	
-	// Open clipboard for setting
-	int[] item_id = new int[1];			
-	if (OS.XmClipboardStartCopy(xDisplay, xWindow, 0, OS.XtLastTimestampProcessed(xDisplay), shellHandle, 0, item_id) != OS.XmClipboardSuccess){
-		return;
+	int xDisplay = OS.XtDisplay(shellHandle);
+	if (xDisplay == 0) return;
+	if ((clipboards & DND.CLIPBOARD) != 0 && activeClipboard == this) {
+		OS.XtDisownSelection(shellHandle, clipboardAtom, OS.CurrentTime);
 	}
-	// close clipboard  for setting
-	OS.XmClipboardEndCopy(xDisplay, xWindow, item_id[0]);
+	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0 && activePrimaryClipboard == this) {
+		OS.XtDisownSelection(shellHandle, primaryAtom, OS.CurrentTime);
+	}
 }
 
 /**
@@ -200,8 +228,19 @@ public void clearContents(int clipboards) {
 public void dispose () {
 	if (isDisposed()) return;
 	if (display.getThread() != Thread.currentThread()) DND.error(SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
-	shellHandle = 0;
+	if (shellHandle != 0) {
+		int xDisplay = OS.XtDisplay(shellHandle);
+		if (xDisplay != 0) {
+			if (activeClipboard != null) {
+				OS.XtDisownSelection(shellHandle, clipboardAtom, OS.CurrentTime);
+			}
+			if (activePrimaryClipboard != null) {
+				OS.XtDisownSelection(shellHandle, primaryAtom, OS.CurrentTime);
+			}
+		}
+		OS.XtDestroyWidget (shellHandle);
+		shellHandle = 0;
+	}
 	display = null;
 }
 
@@ -287,55 +326,41 @@ public Object getContents(Transfer transfer) {
 public Object getContents(Transfer transfer, int clipboards) {
 	checkWidget();
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
-	if ((clipboards & DND.CLIPBOARD) == 0) return null;
 	int xDisplay = OS.XtDisplay (shellHandle);
 	if (xDisplay == 0) return null;
-	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0) return null;
-	
-	// Open clipboard for retrieval
-	if (OS.XmClipboardStartRetrieve(xDisplay, xWindow, OS.XtLastTimestampProcessed(xDisplay)) != OS.XmClipboardSuccess) return null;
-	byte[] data = null;
-	byte[] type = null;
-	try {
-		// Does Clipboard have data in required format?
-		int[] length = new int[1];
-		String[] supportedTypes = transfer.getTypeNames();
-		for (int i = 0; i < supportedTypes.length; i++) {
-			byte[] bName = Converter.wcsToMbcs(null, supportedTypes[i], true);
-			if (OS.XmClipboardInquireLength(xDisplay, xWindow, bName, length) == OS.XmClipboardSuccess) {
-				type = bName;
-				break;
-			}
-		}
-		// Retrieve data from Clipboard
-		if (type == null) return null;
-		data = new byte[length[0]];
-		if (OS.XmClipboardRetrieve(xDisplay, xWindow, type, data, length[0], new int[1], new int[1]) != OS.XmClipboardSuccess) {
-			return null;
-		}
-	} finally {
-		// Close Clipboard
-		OS.XmClipboardEndRetrieve(xDisplay, xWindow);
+	Object result = null;
+	if ((clipboards & DND.CLIPBOARD) != 0) {
+		 result = getContents(xDisplay, transfer, clipboardAtom);
 	}
-	
-	// Pass data to transfer agent for conversion to a Java Object
-	// Memory is allocated here to emulate the way Drag and Drop transfers data.
-	int pValue = OS.XtMalloc(data.length);
-	if (pValue == 0) return null;
-	try {
-		OS.memmove(pValue, data, data.length);
-		TransferData transferData = new TransferData();
-		transferData.type = OS.XmInternAtom (xDisplay, type, true);
-		transferData.length = data.length;
-		transferData.format = 8;
-		transferData.pValue = pValue;
-		transferData.result = 1;
-		return transfer.nativeToJava(transferData);
-	} finally {
-		// Clean up allocated memory
-		OS.XtFree(pValue);
+	if (result != null) return result;
+	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
+		result = getContents(xDisplay, transfer, primaryAtom);
 	}
+	return result;
+}
+	
+Object getContents(int xDisplay, Transfer transfer, int selection) {
+	int[] types = getAvailableTypes(xDisplay, selection);
+	int index = -1;
+	TransferData transferData = new TransferData();
+	for (int i = 0; i < types.length; i++) {
+		transferData.type = types[i];
+		if (transfer.isSupportedType(transferData)) {
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return null;
+	done = false;
+	selectionValue = null; selectionTransfer = transfer;
+	OS.XtGetSelectionValue(shellHandle, selection, types[index], XtSelectionCallbackCallback.getAddress(), 0, OS.CurrentTime);
+	if (!done) {
+		int xtContext = OS.XtDisplayToApplicationContext(xDisplay);
+		int selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
+		_wait(selectionTimeout);
+		
+	}
+	return (!done) ? null : selectionValue;
 }
 
 /**
@@ -353,6 +378,136 @@ public Object getContents(Transfer transfer, int clipboards) {
  */
 public boolean isDisposed () {
 	return (display == null);
+}
+
+/**
+ * Returns an array of the data types currently available on the system 
+ * clipboard. Use with Transfer.isSupportedType.
+ *
+ * @return array of data types currently available on teh system clipboard
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Transfer#isSupportedType
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	return getAvailableTypes(DND.CLIPBOARD);
+}
+
+/**
+ * Returns an array of the data types currently available on the specified 
+ * clipboard. Use with Transfer.isSupportedType.
+ * 
+ * <p>The clipboards value is either one of the clipboard constants defined in
+ * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>DND</code> clipboard constants.</p>
+ * 
+ * @param clipboards from which to get the data types
+ * @return array of data types currently available on the specified clipboard
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Transfer#isSupportedType
+ * @see DND#CLIPBOARD
+ * @see DND#SELECTION_CLIPBOARD
+ * 
+ * @since 3.1
+ */
+public TransferData[] getAvailableTypes(int clipboards) {
+	checkWidget();
+	int xDisplay = OS.XtDisplay (shellHandle);
+	if (xDisplay == 0) return null;
+	int[] types = null;
+	if ((clipboards & DND.CLIPBOARD) != 0) {
+		types = getAvailableTypes(xDisplay, clipboardAtom);
+	}
+	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
+		int[] primaryTypes = getAvailableTypes(xDisplay, primaryAtom);
+		if (types == null) {
+			types = primaryTypes;
+		} else {
+			int[] newTypes = new int[types.length + primaryTypes.length];
+			System.arraycopy(types, 0, newTypes, 0, types.length);
+			System.arraycopy(primaryTypes, 0, newTypes, types.length, primaryTypes.length);
+			types = newTypes;
+		}
+	}
+	if (types == null) return new TransferData[0];
+	TransferData[] result = new TransferData[types.length];
+	for (int i = 0; i < types.length; i++) {
+		result[i] = new TransferData();
+		result[i].type = types[i];
+	}
+	return result;
+}
+
+/**
+ * Returns a platform specific list of the data types currently available on the 
+ * system clipboard.
+ * 
+ * <p>Note: <code>getAvailableTypeNames</code> is a utility for writing a Transfer 
+ * sub-class.  It should NOT be used within an application because it provides 
+ * platform specific information.</p>
+ * 
+ * @return a platform specific list of the data types currently available on the 
+ * system clipboard
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public String[] getAvailableTypeNames() {
+	checkWidget();
+	int xDisplay = OS.XtDisplay (shellHandle);
+	if (xDisplay == 0) return new String[0];
+	int[] types = getAvailableTypes(xDisplay, clipboardAtom);
+	int[] primaryTypes = getAvailableTypes(xDisplay, primaryAtom);
+	String[] names = new String[types.length + primaryTypes.length];
+	int index = 0;
+	for (int i = 0; i < types.length; i++) {
+		int ptr = OS.XmGetAtomName(xDisplay, types[i]);
+		int length = OS.strlen(ptr);
+		byte[] nameBuf = new byte[length];
+		OS.memmove(nameBuf, ptr, length);
+		OS.XtFree(ptr);
+		/* Use the character encoding for the default locale */
+		String name = new String(Converter.mbcsToWcs(null, nameBuf));
+		names[index++] = "CLIPBOARD "+name;
+	}
+	for (int i = 0; i < primaryTypes.length; i++) {
+		int ptr = OS.XmGetAtomName(xDisplay, primaryTypes[i]);
+		int length = OS.strlen(ptr);
+		byte[] nameBuf = new byte[length];
+		OS.memmove(nameBuf, ptr, length);
+		OS.XtFree(ptr);
+		/* Use the character encoding for the default locale */
+		String name = new String(Converter.mbcsToWcs(null, nameBuf));
+		names[index++] = "PRIMARY "+name;
+	}
+	return names;
+}
+
+int[] getAvailableTypes(int xDisplay, int selection) {
+	done = false;
+	selectionValue = null; selectionTransfer = null;
+	OS.XtGetSelectionValue(shellHandle, selection, targetsAtom, XtSelectionCallbackCallback.getAddress(), 0, OS.CurrentTime);
+	if (!done) {
+		int xtContext = OS.XtDisplayToApplicationContext(xDisplay);
+		int selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
+		_wait(selectionTimeout);
+		
+	}
+	return (!done || selectionValue == null) ? new int[0] : (int[])selectionValue;
 }
 
 /**
@@ -475,160 +630,214 @@ public void setContents(Object[] data, Transfer[] dataTypes, int clipboards) {
 			DND.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 	}
-	if ((clipboards & DND.CLIPBOARD) == 0) return;
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);	
-	// Open clipboard for setting
-	int[] item_id = new int[1];			
-	if (OS.XmClipboardStartCopy(xDisplay, xWindow, 0, OS.XtLastTimestampProcessed(xDisplay), shellHandle, 0, item_id) != OS.XmClipboardSuccess){
+	if ((clipboards & DND.CLIPBOARD) != 0) {
+		ClipboardData = data;
+		ClipboardDataTypes = dataTypes;
+		_setContents(data, dataTypes, clipboardAtom);
+		activeClipboard = this;
+	}
+	if ((clipboards & DND.SELECTION_CLIPBOARD) != 0) {
+		PrimaryClipboardData = data;
+		PrimaryClipboardDataTypes = dataTypes;
+		_setContents(data, dataTypes, primaryAtom);
+		activePrimaryClipboard = this;
+	}
+}
+void _setContents(Object[] data, Transfer[] dataTypes, int selection) {
+	int XtConvertSelectionProc = XtConvertSelectionCallback.getAddress();
+	int XtLoseSelectionProc = XtLoseSelectionCallback.getAddress();
+	int XtSelectionDoneProc = XtSelectionDoneCallback.getAddress();
+	if (!OS.XtOwnSelection(shellHandle, selection, OS.CurrentTime, XtConvertSelectionProc, XtLoseSelectionProc, XtSelectionDoneProc)) {
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	}
-	try {
-		// copy data directly over to System clipboard (not deferred)
-		for (int i = 0; i < dataTypes.length; i++) {
-			int[] ids = dataTypes[i].getTypeIds();
-			String[] names = dataTypes[i].getTypeNames();
-			for (int j = 0; j < names.length; j++) {
-				TransferData transferData = new TransferData();
-				transferData.type = ids[j];
-				dataTypes[i].javaToNative(data[i], transferData);
-				if (transferData.result != 1) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-				try {
-					if (transferData.format != 8) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-					byte[] buffer = new byte[transferData.length];
-					OS.memmove(buffer, transferData.pValue, transferData.length);
-					byte[] bName = Converter.wcsToMbcs(null, names[j], true);
-					if (OS.XmClipboardCopy(xDisplay, xWindow, item_id[0], bName, buffer, transferData.length, 0, null) != OS.XmClipboardSuccess) {
-						DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-					}
-				} finally {
-					OS.XtFree(transferData.pValue);
-				}
-			}
-		}
-	} finally {
-		// close clipboard  for setting
-		OS.XmClipboardEndCopy(xDisplay, xWindow, item_id[0]);
-	}
 }
 
-/**
- * Returns an array of the data types currently available on the system 
- * clipboard. Use with Transfer.isSupportedType.
- *
- * @return array of data types currently available on teh system clipboard
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see Transfer#isSupportedType
- * 
- * @since 3.0
- */
-public TransferData[] getAvailableTypes() {
-	return getAvailableTypes(DND.CLIPBOARD);
-}
-
-/**
- * Returns an array of the data types currently available on the specified 
- * clipboard. Use with Transfer.isSupportedType.
- * 
- * <p>The clipboards value is either one of the clipboard constants defined in
- * class <code>DND</code>, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>DND</code> clipboard constants.</p>
- * 
- * @param clipboards from which to get the data types
- * @return array of data types currently available on the specified clipboard
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see Transfer#isSupportedType
- * @see DND#CLIPBOARD
- * @see DND#SELECTION_CLIPBOARD
- * 
- * @since 3.1
- */
-public TransferData[] getAvailableTypes(int clipboards) {
-	checkWidget();
-	if ((clipboards & DND.CLIPBOARD) == 0) return new TransferData[0];
-	int xDisplay = OS.XtDisplay(shellHandle);
-	if (xDisplay == 0) return new TransferData[0];
-	byte[][] types = _getAvailableTypes();
-	TransferData[] result = new TransferData[types.length];
-	for (int i = 0; i < types.length; i++) {
-		int atom = OS.XmInternAtom(xDisplay, types[i], true);
-		result[i] = new TransferData();
-		result[i].type = atom;
-	}
-	return result;
-}
-
-/**
- * Returns a platform specific list of the data types currently available on the 
- * system clipboard.
- * 
- * <p>Note: <code>getAvailableTypeNames</code> is a utility for writing a Transfer 
- * sub-class.  It should NOT be used within an application because it provides 
- * platform specific information.</p>
- * 
- * @return a platform specific list of the data types currently available on the 
- * system clipboard
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public String[] getAvailableTypeNames() {
-	checkWidget();
-	byte[][] types = _getAvailableTypes();
-	String[] names = new String[types.length];
-	for (int i = 0; i < names.length; i++) {
-		/* Use the character encoding for the default locale */
-		names[i] = new String(Converter.mbcsToWcs(null, types[i]));
-	}
-	return names;
-}
-
-private byte[][] _getAvailableTypes() {
-	byte[][] types = new byte[0][];
-	int[] count = new int[1];
-	int[] max_length = new int[1];
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) return types;
-	int xWindow = OS.XtWindow (shellHandle);
-	if (xWindow == 0) return types;
-	if (OS.XmClipboardInquireCount(xDisplay, xWindow, count, max_length) == 0) {
-		return types;
-	}
-	if (count[0] == 0) return types;
-	types = new byte[count[0]][];
+static void storePtr(int ptr, int selection, int target) {
 	int index = -1;
-	for (int i = 0; i < count[0]; i++) {
-		byte[] buffer = new byte[max_length[0]];
-		int[] copied_length = new int[1];
-		int rc = OS.XmClipboardInquireFormat(xDisplay, xWindow, i + 1, buffer, buffer.length, copied_length);
-		if (rc != OS.XmClipboardSuccess) continue;
-		index++;
-		byte[] buffer2 = new byte[copied_length[0]];
-		System.arraycopy(buffer, 0, buffer2, 0, copied_length[0]);
-		types[index] = buffer2;
+	for (int i = 0; i < convertData.length; i++) {
+		if (convertData[i][0] == 0){
+			index = i;
+			break;
+		}
 	}
 	if (index == -1) {
-		types = new byte[0][0];
-	} else if (index + 1 < types.length) {
-		byte[][] newTypes = new byte[index + 1][];
-		System.arraycopy(types, 0, newTypes, 0, index + 1);
-		types = newTypes;
+		int[][] newConvertData = new int[convertData.length][3];
+		System.arraycopy(convertData, 0, newConvertData, 0, convertData.length);
+		index = convertData.length;
+		convertData = newConvertData;
 	}
-	return types;
+	convertData[index][0] = selection;
+	convertData[index][1] = target;
+	convertData[index][2] = ptr;
+}
+
+void _wait(int timeout) {
+	int xDisplay = OS.XtDisplay(shellHandle);
+	if (xDisplay == 0) return;
+	long start = System.currentTimeMillis();
+	int xEvent = OS.XtMalloc (XEvent.sizeof);
+	Callback checkEventCallback = new Callback(this, "checkEvent", 3);
+	int checkEventProc = checkEventCallback.getAddress();
+	display.timerExec(timeout, new Runnable() {
+		public void run() {
+			// timer required to force display.sleep() to wake up
+			// in the case where no events are received
+		}
+	});
+	while (!done && System.currentTimeMillis() - start <  timeout && !isDisposed()) {
+		if (OS.XCheckIfEvent (xDisplay, xEvent, checkEventProc, 0) != 0) {
+			OS.XtDispatchEvent(xEvent);
+		} else {
+			display.sleep();
+		}
+	}
+	OS.XtFree (xEvent);
+	checkEventCallback.dispose();
+}
+int checkEvent(int display, int event, int arg) {
+	XEvent xEvent = new XEvent();
+	OS.memmove (xEvent, event, XEvent.sizeof);
+	switch (xEvent.type) {
+		case OS.SelectionClear:
+		case OS.SelectionNotify:
+		case OS.SelectionRequest:
+		case OS.PropertyNotify:
+			return 1;
+	}
+	return 0;
+}
+static int XtConvertSelection(int widget, int selection, int target, int type, int value, int length, int format) {
+	int xDisplay = OS.XtDisplay (widget);
+	if (xDisplay == 0) return 0;
+	int selectionAtom = 0;
+	if (selection != 0) {
+		int[] dest = new int[1];
+		OS.memmove(dest, selection, 4);
+		selectionAtom = dest[0];
+	}
+	if (selectionAtom == 0) return 0;
+	int clipboardAtom = OS.XInternAtom (xDisplay, CLIPBOARD, false);
+	int primaryAtom = OS.XInternAtom (xDisplay, PRIMARY, false);
+	int targetsAtom = OS.XInternAtom (xDisplay, TARGETS, false);
+	Transfer[] types = null;
+	if (selectionAtom == clipboardAtom) types = ClipboardDataTypes;
+	if (selectionAtom == primaryAtom) types = PrimaryClipboardDataTypes;
+	if (types == null) return 0;
+	
+	int targetAtom = 0;
+	if (target != 0) {
+		int[] dest = new int[1];
+		OS.memmove(dest, target, 4);
+		targetAtom = dest[0];
+	}
+	if (targetAtom == targetsAtom) {
+		int[] transferTypes = new int[] {targetAtom};
+		for (int i = 0; i < types.length; i++) {
+			TransferData[] subTypes = types[i].getSupportedTypes();
+			int[] newtransferTypes = new int[transferTypes.length + subTypes.length];
+			System.arraycopy(transferTypes, 0, newtransferTypes, 0, transferTypes.length);
+			int index = transferTypes.length;
+			transferTypes = newtransferTypes;
+			for (int j = 0; j < subTypes.length; j++) {
+				transferTypes[index++] = subTypes[j].type;
+			}
+		}
+		int ptr = OS.XtMalloc(transferTypes.length*4);
+		storePtr(ptr, selectionAtom, targetAtom);
+		OS.memmove(ptr, transferTypes, transferTypes.length*4);
+		OS.memmove(type, new int[]{targetsAtom}, 4);
+		OS.memmove(value, new int[] {ptr}, 4);
+		OS.memmove(length, new int[]{transferTypes.length}, 4);
+		OS.memmove(format, new int[]{32}, 4);		
+		return 1;
+	}
+	
+	TransferData tdata = new TransferData();
+	tdata.type = targetAtom;
+	int index = -1;
+	for (int i = 0; i < types.length; i++) {
+		if (types[i].isSupportedType(tdata)) {
+			index = i;
+			break;
+		}
+	}
+	if (index == -1) return 0;
+	Object[] data = selectionAtom == clipboardAtom ? ClipboardData : PrimaryClipboardData;
+	types[index].javaToNative(data[index], tdata);
+	if (tdata.format < 8 || tdata.format % 8 != 0) {
+		OS.XtFree(tdata.pValue);
+		return 0;
+	}
+	// copy data back to value
+	OS.memmove(type, new int[]{tdata.type}, 4);
+	OS.memmove(value, new int[]{tdata.pValue}, 4);
+	OS.memmove(length, new int[]{tdata.length}, 4);
+	OS.memmove(format, new int[]{tdata.format}, 4);
+	storePtr(tdata.pValue, selectionAtom, targetAtom);
+	return 1;
+}
+
+static int XtLoseSelection(int widget, int selection) {
+	int xDisplay = OS.XtDisplay (widget);
+	int clipboardAtom = OS.XInternAtom (xDisplay, CLIPBOARD, false);
+	if (selection == clipboardAtom) {
+		activeClipboard = null;
+		ClipboardData = null;
+		ClipboardDataTypes = null;
+	}
+	int primaryAtom = OS.XInternAtom (xDisplay, PRIMARY, false);
+	if (selection == primaryAtom) {
+		activePrimaryClipboard = null;
+		PrimaryClipboardData = null;
+		PrimaryClipboardDataTypes = null;
+	}
+	return 0;
+}
+
+static int XtSelectionCallback(int widget, int client_data, int selection, int type, int value, int length, int format) {
+	done = true;
+	int[] selectionType = new int[1];
+	if (type != 0) OS.memmove(selectionType, type, 4);
+	if (selectionType[0] == 0) return 0;
+	int[] selectionLength = new int[1];
+	if (length != 0) OS.memmove(selectionLength, length, 4);
+	if (selectionLength[0] == 0) return 0;
+	int[] selectionFormat = new int[1];
+	if (format != 0) OS.memmove(selectionFormat, format, 4);
+	int xDisplay = OS.XtDisplay (widget);
+	if (xDisplay == 0) return 0;
+	int targetsAtom = OS.XInternAtom (xDisplay, TARGETS, false);
+	if (selectionType[0] == targetsAtom) {
+		int[] targets = new int[selectionLength[0]];
+		OS.memmove(targets, value, selectionLength[0] * selectionFormat [0] / 8);
+		selectionValue = targets;
+		return 0;
+	}
+	if (selectionTransfer != null) {
+		TransferData transferData = new TransferData();
+		transferData.type = selectionType[0];
+		transferData.length = selectionLength[0];
+		transferData.format = selectionFormat[0];
+		transferData.pValue = value;
+		transferData.result = 1;
+		selectionValue = selectionTransfer.nativeToJava(transferData);
+	}
+	return 0;
+}
+
+static int XtSelectionDone(int widget, int selection, int target) {
+	if (target == 0 || selection == 0) return 0;
+	int[] selectionAtom = new int[1];
+	OS.memmove(selectionAtom, selection, 4);
+	int[] targetAtom = new int[1];
+	OS.memmove(targetAtom, target, 4);
+	for (int i = 0; i < convertData.length; i++) {
+		if (convertData[i][0] == selectionAtom[0] && convertData[i][1] == targetAtom[0]) {
+			OS.XtFree(convertData[i][2]);
+			convertData[i][0] = convertData[i][1] = convertData[i][2] = 0;
+			break;
+		}
+	}
+	return 0;
 }
 }
