@@ -162,7 +162,7 @@ void createHandle (int index) {
 	};
 	handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	createScrollBars();
+	createStandardScrollBars ();
 }
 
 void createWidget (int index) {

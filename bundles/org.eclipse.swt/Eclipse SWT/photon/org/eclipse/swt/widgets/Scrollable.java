@@ -63,7 +63,7 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
-void createScrollBars () {
+void createStandardScrollBars () {
 	/* Search the handle to find the scroll bars */
 	int child = OS.PtWidgetChildFront (handle);
 	while (child != 0) {
