@@ -610,7 +610,7 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	if (value < 0) return;
-	int maximum = OS.GetControl32BitMinimum (handle);
+	int maximum = OS.GetControl32BitMaximum (handle);
 	int viewSize = OS.GetControlViewSize (handle);
 	if (maximum - value - viewSize < 0) return;
 	OS.SetControl32BitMinimum (handle, value);
@@ -669,8 +669,10 @@ public void setSelection (int value) {
 public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
+	int minimum = OS.GetControl32BitMinimum (handle);
 	int maximum = OS.GetControl32BitMaximum (handle);
 	int viewSize = OS.GetControlViewSize (handle);
+	if (value > maximum + viewSize - minimum) return;
 	OS.SetControl32BitMaximum (handle, maximum + viewSize - value);
     OS.SetControlViewSize (handle, value);
 }
