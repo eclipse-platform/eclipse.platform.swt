@@ -695,7 +695,7 @@ public Point getLocation () {
  */
 public Menu getMenu () {
 	checkWidget();
-	return null;
+	return menu;
 }
 
 /**
@@ -1408,15 +1408,9 @@ int processShow (int info) {
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
 	if (cbinfo.reason == OS.Pt_CB_MENU) {
-		//TEMPORARY CODE
-		Display display = getDisplay ();
-		display.asyncExec(new Runnable () {
-			public void run() {
-				if (menu != null && !menu.isDisposed ()) {
-					menu.setVisible (true);
-				}
-			}
-		});
+		if (menu != null && !menu.isDisposed ()) {
+			menu.setVisible (true);
+		}
 	}	
 	return OS.Pt_CONTINUE;
 }

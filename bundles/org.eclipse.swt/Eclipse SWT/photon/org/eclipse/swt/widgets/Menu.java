@@ -757,12 +757,6 @@ public void setVisible (boolean visible) {
 			OS.PtSetResource (handle, OS.Pt_ARG_POS, ptr, 0);
 			OS.free (ptr);
 			OS.PtRealizeWidget (handle);
-			
-			/* Run an event loop */
-			Display display = getDisplay ();
-			while (!isDisposed () && getVisible ()) {
-				if (!display.readAndDispatch ()) display.sleep ();
-			}
 		} else {
 			sendEvent (SWT.Hide);
 		}
