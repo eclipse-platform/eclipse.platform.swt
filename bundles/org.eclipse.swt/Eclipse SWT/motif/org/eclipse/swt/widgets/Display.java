@@ -528,6 +528,23 @@ void createDisplay (DeviceData data) {
 	int xtContext = OS.XtCreateApplicationContext ();
 	OS.XtSetLanguageProc (xtContext, 0, 0);
 	
+	/* 
+	* On some DB Linux platforms, the default font list may not be properly
+	* initialized to contain a FontSet. This causes the input method to
+	* fail. The fix is to set the fallback resource with an appropriated
+	* font.	*/
+	int ptr1 = 0, ptr2 = 0; 
+	if (OS.IsLinux && OS.IsDBLocale) {
+		String resource = "*fontList: -*-fixed-medium-r-*-*-12-*-*-*-*-*-*-*:";
+		byte [] buffer = Converter.wcsToMbcs (null, resource, true);
+		ptr1 = OS.XtMalloc (buffer.length);
+		if (ptr1 != 0) OS.memmove (ptr1, buffer, buffer.length);
+		int [] spec = new int[]{ptr1, 0};
+		ptr2 = OS.XtMalloc (spec.length * 4);
+		if (ptr2 != 0)OS.memmove (ptr2, spec, spec.length * 4);
+		OS.XtAppSetFallbackResources(xtContext, ptr2); 
+	}
+	
 	/* Compute the display name, application name and class */
 	String display_name = null;
 	String application_name = APP_NAME;
@@ -545,6 +562,12 @@ void createDisplay (DeviceData data) {
 	/* Create the XDisplay */
 	xDisplay = OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, argc, 0);
 	DisplayDisposed = false;
+	
+	if (ptr2 != 0) {
+		OS.XtAppSetFallbackResources (xtContext, 0);
+		OS.XtFree (ptr2);
+	}
+	if (ptr1 != 0) OS.XtFree (ptr1);
 }
 synchronized static void deregister (Display display) {
 	for (int i=0; i<Displays.length; i++) {
