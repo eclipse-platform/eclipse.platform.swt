@@ -46,7 +46,7 @@ public final class FontData {
 	 */
 	public String fontFamily;
 	/**
-	 * The weight ("normal", "bold")
+	 * The weight ("medium", "bold")
 	 * Warning: This field is platform dependent.
 	 */
 	public String weight;
@@ -234,14 +234,16 @@ public FontData (String name, int height, int style) {
 		fontFamily = name;
 	}
 	points = height * 10;
-	if ((style & SWT.BOLD) != 0)
+	if ((style & SWT.BOLD) != 0) {
 		weight = "bold";
-	else
+	} else {
 		weight = "medium";
-	if ((style & SWT.ITALIC) != 0)
+	}
+	if ((style & SWT.ITALIC) != 0) {
 		slant = "i";
-	else
+	} else {
 		slant = "r";
+	}
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -296,10 +298,8 @@ public String getName() {
  */
 public int getStyle() {
 	int style = 0;
-	if (weight.equals("bold"))
-		style |= SWT.BOLD;
-	if (slant.equals("i"))
-		style |= SWT.ITALIC;
+	if (weight != null && weight.equals("bold")) style |= SWT.BOLD;
+	if (slant != null && slant.equals("i")) style |= SWT.ITALIC;
 	return style;
 }
 String getXlfd() {
@@ -440,14 +440,16 @@ public void setLocale(String locale) {
  * @see #getStyle
  */
 public void setStyle(int style) {
-	if ((style & SWT.BOLD) == SWT.BOLD)
+	if ((style & SWT.BOLD) != 0) {
 		weight = "bold";
-	else
-		weight = "normal";
-	if ((style & SWT.ITALIC) == SWT.ITALIC)
+	} else {
+		weight = "medium";
+	}
+	if ((style & SWT.ITALIC) != 0) {
 		slant = "i";
-	else
+	} else {
 		slant = "r";
+	}
 	averageWidth = 0;
 }
 void setXlfd(String xlfd) {
