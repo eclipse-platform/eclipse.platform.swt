@@ -290,7 +290,6 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 	//event.time = ??;
 	event.dataType = transferData;
 	notifyListeners(DND.DragSetData,event);
-	if (event.data == null) return 0;
 
 	Transfer transferAgent = null;
 	for (int i = 0; i < transferAgents.length; i++){
@@ -300,7 +299,7 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 		}
 	}
 	if (transferAgent == null) return 0;
-	
+
 	transferAgent.javaToNative(event.data, transferData);
 	if (transferData.result == 1){
 		OS.memmove(ppValue_return, new int[]{transferData.pValue}, 4);
