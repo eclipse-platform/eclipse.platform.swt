@@ -612,6 +612,17 @@ public String getText () {
 	return buffer.toString (0, length);
 }
 
+public boolean isReparentable () {
+	checkWidget ();
+	/*
+	* Feature in Windows.  Calling SetParent() for a shell causes
+	* a kind of fake MDI to happen.  It doesn't work well on Windows
+	* and is not supported on the other platforms.  The fix is to
+	* disallow the SetParent().
+	*/
+	return false;
+}
+
 boolean isTabGroup () {
 	/*
 	* Can't test WS_TAB bits because they are the same as WS_MAXIMIZEBOX.
@@ -1018,17 +1029,6 @@ void setParent () {
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	OS.SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	display.lockActiveWindow = false;
-}
-
-public boolean setParent (Composite parent) {
-	checkWidget ();
-	/*
-	* Feature in Windows.  Calling SetParent() for a shell causes
-	* a kind of fake MDI to happen.  It doesn't work well on Windows
-	* and is not supported on the other platforms.  The fix is to
-	* disallow the SetParent().
-	*/
-	return false;
 }
 
 void setPlacement (int x, int y, int width, int height, int flags) {
