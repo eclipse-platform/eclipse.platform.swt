@@ -1227,7 +1227,7 @@ boolean sendKeyEvent (int type, Event event) {
 	}
 	if (type != SWT.KeyDown) return true;
 	if (event.character == 0) return true;
-	if ((style & SWT.READ_ONLY) != 0) return false;
+	if ((style & SWT.READ_ONLY) != 0) return true;
 	/*
 	* Post the modify event so that the character will be inserted
 	* into the widget when the modify event is delivered.  Normally,
