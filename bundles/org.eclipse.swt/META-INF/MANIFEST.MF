@@ -1,0 +1,18 @@
+Bundle-Name: org.eclipse.swt
+Bundle-Version: 3.0.0
+Manifest-Version: 1.0
+Export-Package: 
+ org.eclipse.swt,
+ org.eclipse.swt.accessibility,
+ org.eclipse.swt.browser,
+ org.eclipse.swt.custom,
+ org.eclipse.swt.dnd,
+ org.eclipse.swt.events,
+ org.eclipse.swt.graphics,
+ org.eclipse.swt.internal,
+ org.eclipse.swt.internal.awt,
+ org.eclipse.swt.internal.image,
+ org.eclipse.swt.layout,
+ org.eclipse.swt.printing,
+ org.eclipse.swt.program,
+ org.eclipse.swt.widgets
