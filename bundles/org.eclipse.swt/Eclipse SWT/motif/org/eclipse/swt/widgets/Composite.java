@@ -445,12 +445,21 @@ int processPaint (int callData) {
 	OS.memmove (xEvent, callData, XExposeEvent.sizeof);
 	int exposeCount = xEvent.count;
 	if (exposeCount == 0) {
-		XAnyEvent event = new XAnyEvent ();
-		Display display = getDisplay ();
-		display.exposeCount = 0;
-		int checkExposeProc = display.checkExposeProc;
-		OS.XCheckIfEvent (xEvent.display, event, checkExposeProc, xEvent.window);
-		exposeCount = display.exposeCount;
+		if (OS.XEventsQueued (xEvent.display, OS.QueuedAfterReading) != 0) {
+			XAnyEvent xAnyEvent = new XAnyEvent ();
+			Display display = getDisplay ();
+			display.exposeCount = display.lastExpose = 0;
+			int checkExposeProc = display.checkExposeProc;
+			OS.XCheckIfEvent (xEvent.display, xAnyEvent, checkExposeProc, xEvent.window);
+			exposeCount = display.exposeCount;
+			int lastExpose = display.lastExpose;
+			if (exposeCount != 0 && lastExpose != 0) {
+				XExposeEvent xExposeEvent = display.xExposeEvent;
+				OS.memmove (xExposeEvent, lastExpose, XExposeEvent.sizeof);
+				xExposeEvent.count = 0;
+				OS.memmove (lastExpose, xExposeEvent, XExposeEvent.sizeof);
+			}
+		}
 	}
 	if (exposeCount == 0 && damagedRegion == 0) {
 		return super.processPaint (callData);

@@ -235,7 +235,7 @@ public class Display extends Device {
 	
 	/* Check Expose Proc */
 	Callback checkExposeCallback;
-	int checkExposeProc, exposeCount;
+	int checkExposeProc, exposeCount, lastExpose;
 	XExposeEvent xExposeEvent  = new XExposeEvent ();
 	
 	/* Check Resize Proc */
@@ -360,6 +360,7 @@ int caretProc (int clientData, int id) {
 	}
 	return 0;
 }
+
 int checkExposeProc (int display, int event, int window) {
 	OS.memmove (xExposeEvent, event, XExposeEvent.sizeof);
 	if (xExposeEvent.window != window) return 0;
@@ -367,6 +368,9 @@ int checkExposeProc (int display, int event, int window) {
 		case OS.Expose:
 		case OS.GraphicsExpose:
 			exposeCount++;
+			lastExpose = event;
+			xExposeEvent.count = 1;
+			OS.memmove (event, xExposeEvent, XExposeEvent.sizeof);
 			break;
 	}
 	return 0;

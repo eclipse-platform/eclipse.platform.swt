@@ -8882,3 +8882,40 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS__1XmSetMenuTravers
 
 	_XmSetMenuTraversal ((Widget) menu, traversal);
 }
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XEventsQueued
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XEventsQueued
+  (JNIEnv *env, jclass that, jint display, jint mode)
+{
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XEventsQueued\n");
+#endif
+
+	return (jint) XEventsQueued ((Display *) display, mode);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/motif/XExposeEvent;I)V
+ */
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I
+  (JNIEnv *env, jclass that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+    XEvent xEvent, *src1=NULL;
+
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I\n");
+#endif
+    if (src) {
+        src1=&xEvent;
+        cacheXexposeeventFids(env, src, &PGLOB(XexposeeventFc));
+        getXexposeeventFields(env, src, src1, &PGLOB(XexposeeventFc));
+    }
+    memmove((void *)dest, (void *)src1, count);
+}

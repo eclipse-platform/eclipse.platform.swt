@@ -38,6 +38,13 @@ public class OS {
 	}
 	
 	/*
+	* Added for XEventsQueued.
+	*/	
+//	public static final int QueuedAlready = 0;
+	public static final int QueuedAfterReading = 1;
+//	public static final int QueuedAfterFlush = 2
+	
+	/*
 	* Added for XmNpopupEnabled.
 	*/
 //	public static final int XmPOPUP_DISABLED = 0;
@@ -1399,4 +1406,6 @@ public static final synchronized native void XtInsertEventHandler (int w, int ev
 //public static final synchronized native void XmRemoveFromPostFromList (int menu, int post_from_list);
 //public static final synchronized native void XmMenuPosition (int menu, int event);
 public static final synchronized native void _XmSetMenuTraversal (int menu, boolean traversal);
+public static final synchronized native int XEventsQueued (int display, int mode);
+public static final native void memmove (int dest, XExposeEvent src, int count);
 }
