@@ -206,6 +206,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	int width = getContentWidth();
 	int height = getItemCount() * getItemHeight();
 	int style = getStyle();
+	int scrollBarWidth = computeTrim(0, 0, 0, 0).width;
 				
 	if (width == 0) {
 		width = DEFAULT_WIDTH;
@@ -219,14 +220,11 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) {
 		height = hHint;
 	}
-	boolean hasVBar = (style & SWT.V_SCROLL) != 0;
-	boolean hasHBar = (style & SWT.H_SCROLL) != 0;
-	
-	if (hasVBar) {
-		width += computeVBarWidth(hasHBar); 
+	if ((getStyle() & SWT.V_SCROLL) != 0) {
+		width += scrollBarWidth; 
 	}
-	if (hasHBar) {
-		height += computeHBarHeight(hasVBar);
+	if ((getStyle() & SWT.H_SCROLL) != 0) {
+		height += scrollBarWidth;
 	}
 	return new Point(width, height);
 }

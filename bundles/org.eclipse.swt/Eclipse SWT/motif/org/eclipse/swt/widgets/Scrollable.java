@@ -60,14 +60,6 @@ Scrollable () {
 public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
-int computeHBarHeight(boolean hasVBar) {
-	Display display = getDisplay ();
-	int height = display.scrolledInsetY + display.scrolledMarginY;
-	if (!hasVBar)
-		height -= display.scrolledInsetY * 2;
-	return height;
-}
-
 /**
  * Given a desired <em>client area</em> for the receiver
  * (as described by the arguments), returns the bounding
@@ -101,29 +93,24 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (hasHBar) {
 		Display display = getDisplay ();
 		trimY -= display.scrolledInsetY;
-		trimHeight += computeHBarHeight(hasVBar);
+		trimHeight += display.scrolledInsetY + display.scrolledMarginY;
 		if (!hasVBar) {
 			trimX -= display.scrolledInsetX;
 			trimWidth += display.scrolledInsetX * 2;
+			trimHeight -= display.scrolledInsetY * 2;
 		}
 	}
 	if (hasVBar) {
 		Display display = getDisplay ();
 		trimX -= display.scrolledInsetX;
-		trimWidth += computeVBarWidth(hasHBar);
+		trimWidth += display.scrolledInsetX + display.scrolledMarginX;
 		if (!hasHBar) {
 			trimY -= display.scrolledInsetY;
 			trimHeight += display.scrolledInsetY * 2;
+			trimWidth -= display.scrolledInsetX * 2;
 		}
 	}
 	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
-}
-int computeVBarWidth(boolean hasHBar) {
-	Display display = getDisplay ();
-	int width = display.scrolledInsetX + display.scrolledMarginX;
-	if (!hasHBar)
-		width -= display.scrolledInsetX * 2;
-	return width;
 }
 ScrollBar createScrollBar (int type) {
 	return new ScrollBar (this, type);
