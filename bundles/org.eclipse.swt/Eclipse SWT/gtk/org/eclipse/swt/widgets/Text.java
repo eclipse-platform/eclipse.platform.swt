@@ -1530,8 +1530,8 @@ public void setText (String string) {
 		string = verifyText (string, 0, getCharCount ());
 		if (string == null) return;
 	}
-	byte [] buffer = Converter.wcsToMbcs (null, string, false);
 	if ((style & SWT.SINGLE) != 0) {
+		byte [] buffer = Converter.wcsToMbcs (null, string, true);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
@@ -1540,6 +1540,7 @@ public void setText (String string) {
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 	} else {
+		byte [] buffer = Converter.wcsToMbcs (null, string, false);
 		byte [] position =  new byte [ITER_SIZEOF];
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);

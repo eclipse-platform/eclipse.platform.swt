@@ -1386,7 +1386,7 @@ public void setText (String string) {
 		string = verifyText (string, 0, OS.g_utf8_strlen (ptr, -1));
 		if (string == null) return;
 	}
-	byte [] buffer = Converter.wcsToMbcs (null, string, false);
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_TEXT);
 	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
