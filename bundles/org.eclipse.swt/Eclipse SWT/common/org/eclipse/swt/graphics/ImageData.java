@@ -46,7 +46,7 @@ public final class ImageData implements CloneableCompatibility {
 	/**
 	 * The color depth of the image, in bits per pixel.
 	 * <p>
-	 * Note that a depth of 8 or less does not necessary
+	 * Note that a depth of 8 or less does not necessarily
 	 * mean that the image is palette indexed, or
 	 * conversely that a depth greater than 8 means that
 	 * the image is direct color.  Check the associated
