@@ -2132,8 +2132,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (rect.width, rect.height);
 }
 /**
- * Copies the selected text to the clipboard.  The text will be put in the 
- * clipboard in plain text format and RTF format.
+ * Copies the selected text to the <code>DND.CLIPBOARD</code> clipboard.
+ * The text will be put on the clipboard in plain text format and RTF format.
+ * The <code>DND.CLIPBOARD</code> clipboard is used for data that is
+ *  transferred by keyboard accelerator (such as Ctrl+C/Ctrl+V) or 
+ *  by menu action.
+ * 
  * <p>
  *
  * @exception SWTException <ul>
@@ -2143,10 +2147,37 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy() {
 	checkWidget();
+	copy(DND.CLIPBOARD);
+}
+
+/**
+ * Copies the selected text to the specified clipboard.  The text will be put in the 
+ * clipboard in plain text format and RTF format.
+ * 
+ * <p>The clipboardType is  one of the clipboard constants defined in class 
+ * <code>DND</code>.  The <code>DND.CLIPBOARD</code>  clipboard is 
+ * used for data that is transferred by keyboard accelerator (such as Ctrl+C/Ctrl+V) 
+ * or by menu action.  The <code>DND.SELECTION_CLIPBOARD</code> 
+ * clipboard is used for data that is transferred by selecting text and pasting 
+ * with the middle mouse button.</p>
+ * 
+ * @param clipboardType indicates the type of clipboard
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public void copy(int clipboardType) {
+	checkWidget();
+	if (clipboardType != DND.CLIPBOARD && 
+		 clipboardType != DND.SELECTION_CLIPBOARD) return;
 	int length = selection.y - selection.x;
 	if (length > 0) {
 		try {
-			setClipboardContent(selection.x, length, DND.CLIPBOARD);
+			setClipboardContent(selection.x, length, clipboardType);
 		}
 		catch (SWTError error) {
 			// Copy to clipboard failed. This happens when another application 
@@ -5638,11 +5669,11 @@ void modifyContent(Event event, boolean updateCaret) {
 	}
 }
 /** 
- * Replaces the selection with the clipboard text or insert the text at 
- * the current caret offset if there is no selection. 
- * If the widget has the SWT.SINGLE style and the clipboard text contains
- * more than one line, only the first line without line delimiters is 
- * inserted in the widget.
+ * Replaces the selection with the text on the <code>DND.CLIPBOARD</code>  
+ * clipboard  or, if there is no selection,  inserts the text at the current 
+ * caret offset.   If the widget has the SWT.SINGLE style and the 
+ * clipboard text contains more than one line, only the first line without
+ * line delimiters is  inserted in the widget.
  * <p>
  *
  * @exception SWTException <ul>
