@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt;
 
+import org.eclipse.swt.internal.*;
 
 /**
  * This error is thrown whenever an unrecoverable error
@@ -131,7 +132,7 @@ public String getMessage () {
  */
 public void printStackTrace () {
 	super.printStackTrace ();
-	if (!SWT.IS_JDK1_4 && throwable != null) {
+	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0) && throwable != null) {
 		System.err.println ("*** Stack trace of contained error ***"); //$NON-NLS-1$
 		throwable.printStackTrace ();
 	}

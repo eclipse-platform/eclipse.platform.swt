@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt;
 
+import org.eclipse.swt.internal.*;
 
 /**
  * This runtime exception is thrown whenever a recoverable error
@@ -122,7 +123,7 @@ public String getMessage () {
  */
 public void printStackTrace () {
 	super.printStackTrace ();
-	if (!SWT.IS_JDK1_4 && throwable != null) {
+	if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0) && throwable != null) {
 		System.err.println ("*** Stack trace of contained exception ***"); //$NON-NLS-1$
 		throwable.printStackTrace ();
 	}
