@@ -66,7 +66,11 @@ MOZILLACFLAGS = -O \
 	-I$(MOZILLA_HOME)/include/gfx
 MOZILLALIBS = -L$(MOZILLA_HOME)/lib -lembed_base_s -lxpcom
 # Specify the default location of supported Mozilla versions
-MOZILLALDFLAGS = -s -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.6 -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.5 -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.4
+# for RedHat and Suse
+MOZILLALDFLAGS = -s -Xlinker -rpath -Xlinker /usr/lib/mozilla-1.6 \
+					-Xlinker -rpath -Xlinker /usr/lib/mozilla-1.5 \
+					-Xlinker -rpath -Xlinker /usr/lib/mozilla-1.4 \
+					-Xlinker -rpath -Xlinker /opt/mozilla/lib
 
 SWT_OBJECTS		= callback.o
 AWT_OBJECTS		= swt_awt.o
