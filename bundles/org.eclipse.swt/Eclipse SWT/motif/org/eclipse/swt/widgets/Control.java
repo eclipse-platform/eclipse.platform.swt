@@ -2064,6 +2064,7 @@ public void setCursor (Cursor cursor) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget();
+	if (enabled == getEnabled ()) return;
 	Control control = null;
 	boolean fixFocus = false;
 	if (!enabled) {

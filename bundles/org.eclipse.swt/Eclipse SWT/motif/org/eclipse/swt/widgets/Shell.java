@@ -1218,6 +1218,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 }
 public void setEnabled (boolean enabled) {
 	checkWidget ();
+	if (enabled == getEnabled ()) return;
 	super.setEnabled (enabled);
 	if (enabled && this == display.getActiveShell ()) {
 		if (!restoreFocus ()) traverseGroup (false);
