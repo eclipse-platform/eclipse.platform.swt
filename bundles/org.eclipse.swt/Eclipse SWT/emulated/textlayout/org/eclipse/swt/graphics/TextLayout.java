@@ -862,15 +862,8 @@ public int getOffset (int x, int y, int[] trailing) {
 			case SWT.RIGHT: x -= wrapWidth - lineWidth[line]; break;
 		}
 	}
-	if (x < 0) return lineOffset[line];
-	if (x > lineWidth[line]) {
-		if (lineOffset[line + 1] > lineOffset[line]) {
-			if (trailing != null) trailing[0] = 1;
-			return lineOffset[line + 1]  - 1;	
-		}
-		if (trailing != null) trailing[0] = 0;
-		return lineOffset[line + 1];
-	}
+	if (x >= lineWidth[line]) x = lineWidth[line] - 1;
+	if (x < 0) x = 0;
 	StyleItem[] lineRuns = runs[line];
 	int width = 0;
 	for (int i = 0; i < lineRuns.length; i++) {
