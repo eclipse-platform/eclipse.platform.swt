@@ -196,23 +196,21 @@ void createItem (TabItem item, int index) {
 	int oldPtr = args [1];
 	int newPtr = OS.malloc ((count + 1) * 4);
 	if (newPtr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	int offset = 0;
-	for (int i=0; i<count; i++) {
-		if (i == index) offset = 1;
-		int [] address = new int [1];
-		OS.memmove (address, oldPtr + (i * 4), 4);
-		int length = OS.strlen (address [0]);
-		int str = OS.malloc (length + 1);
-		if (str == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-		OS.memmove (str, address [0], length + 1);
-		OS.memmove (newPtr + ((i + offset) * 4), new int [] {str}, 4);
+	int j = 0;
+	int [] str = new int [1];
+	int [] address = new int [1];
+	for (int i=0; i<=count; i++) {
+		if (i == index) {
+			str [0] = OS.malloc (1);
+		} else {
+			OS.memmove (address, oldPtr + (j++ * 4), 4);
+			str [0] = OS.strdup (address [0]);
+		}
+		if (str [0] == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
+		OS.memmove (newPtr + (i * 4), str, 4);
 	}
-	int str = OS.malloc (1);
-	if (str == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	OS.memmove (newPtr + (index * 4), new int [] {str}, 4);
 	OS.PtSetResource (handle, OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count + 1);
-	for (int i=0; i<count+1; i++) {
-		int [] address = new int [1];
+	for (int i=0; i<=count; i++) {
 		OS.memmove (address, newPtr + (i * 4), 4);
 		OS.free (address [0]);
 	}
@@ -239,23 +237,18 @@ void destroyItem (TabItem item) {
 	int oldPtr = args [1];
 	int newPtr = OS.malloc ((count - 1) * 4);
 	if (newPtr == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-	int offset = 0;
+	int j = 0;
+	int [] str = new int [1];
+	int [] address = new int [1];
 	for (int i=0; i<count; i++) {
-		if (i == index) {
-			offset = -1;
-			continue;
-		}
-		int [] address = new int [1];
+		if (i == index) continue;
 		OS.memmove (address, oldPtr + (i * 4), 4);
-		int length = OS.strlen (address [0]);
-		int str = OS.malloc (length + 1);
-		if (str == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
-		OS.memmove (str, address [0], length + 1);
-		OS.memmove (newPtr + ((i + offset) * 4), new int [] {str}, 4);
+		str [0] = OS.strdup (address [0]);
+		if (str [0] == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
+		OS.memmove (newPtr + (j++ * 4), str, 4);
 	}
 	OS.PtSetResource (handle, OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count - 1);
 	for (int i=0; i<count-1; i++) {
-		int [] address = new int [1];
 		OS.memmove (address, newPtr + (i * 4), 4);
 		OS.free (address [0]);
 	}

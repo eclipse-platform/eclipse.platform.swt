@@ -2737,6 +2737,7 @@ public static final native void PtListUnselectPos (int widget, int pos);
 public static final native void memmove (short [] buffer, int address, int size);
 public static final native void memmove (int address, short [] buffer, int size);
 public static final native int strlen (int string);
+public static final native int strdup (int string);
 
 public static final native int PtListDeleteItemPos (int widget, int item_count, int position);
 public static final native int PtListDeleteAllItems (int widget);

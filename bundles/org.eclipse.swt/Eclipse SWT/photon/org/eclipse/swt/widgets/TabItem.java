@@ -223,24 +223,21 @@ public void setText (String string) {
 	int count = args [2];
 	int oldPtr = args [1];
 	int newPtr = OS.malloc (count * 4);
+	int [] str = new int [1];
+	int [] address = new int [1];
+	byte [] buffer = Converter.wcsToMbcs (null, stripMnemonics (string));
 	for (int i=0; i<count; i++) {
-		int str;
 		if (i == index) {
-			byte [] buffer = Converter.wcsToMbcs (null, stripMnemonics (string));
-			str = OS.malloc (buffer.length + 1);
-			OS.memmove (str, buffer, buffer.length);
+			str [0] = OS.malloc (buffer.length + 1);
+			OS.memmove (str [0], buffer, buffer.length);
 		} else {
-			int [] address = new int [1];
 			OS.memmove (address, oldPtr + (i * 4), 4);
-			int length = OS.strlen (address [0]);
-			str = OS.malloc (length + 1);
-			OS.memmove (str, address [0], length + 1);
+			str [0] = OS.strdup (address [0]);
 		}
-		OS.memmove (newPtr + (i * 4), new int [] {str}, 4);
+		OS.memmove (newPtr + (i * 4), str, 4);
 	}
 	OS.PtSetResource (parent.handle, OS.Pt_ARG_PG_PANEL_TITLES, newPtr, count);
 	for (int i=0; i<count; i++) {
-		int [] address = new int [1];
 		OS.memmove (address, newPtr + (i * 4), 4);
 		OS.free (address [0]);
 	}

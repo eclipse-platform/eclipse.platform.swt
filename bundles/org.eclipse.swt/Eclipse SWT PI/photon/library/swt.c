@@ -3098,6 +3098,17 @@ JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_strlen
 	return (jint) strlen((char *) string);
 }
 
+JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_photon_OS_strdup
+  (JNIEnv *env, jobject that, jint string)
+{
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "strdup\n");
+#endif
+
+	return (jint) strdup((char *) string);
+}
+
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PtListDeleteItemPos
