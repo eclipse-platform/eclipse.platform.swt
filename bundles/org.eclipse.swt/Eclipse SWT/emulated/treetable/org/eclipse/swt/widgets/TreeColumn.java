@@ -90,6 +90,10 @@ public Tree getParent () {
 	checkWidget ();
 	return parent;
 }
+int getPreferredWidth () {
+	if (!parent.getHeaderVisible ()) return 0;
+	return 0;	// TODO
+}
 public boolean getResizable () {
 	checkWidget ();
 	return resizable;
@@ -150,7 +154,7 @@ public void pack () {
 	TreeItem[] availableItems = parent.availableItems;
 	if (availableItems.length == 0) return;
 	int index = getIndex ();
-	int width = -1;
+	int width = getPreferredWidth ();
 	for (int i = 0; i < availableItems.length; i++) {
 		width = Math.max (width, availableItems [i].getPreferredWidth (index));
 	}

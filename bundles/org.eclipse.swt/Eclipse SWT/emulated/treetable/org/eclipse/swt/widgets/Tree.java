@@ -942,8 +942,10 @@ void doPaint (Event event) {
 	
 	/* Determine the TreeItems to be painted */
 	int startIndex = (clipping.y - getHeaderHeight ()) / itemHeight + topIndex;
-	if (!(0 <= startIndex && startIndex < availableItems.length)) return;	/* no items to paint */
+	if (availableItems.length < startIndex) return;	/* no items to paint */
 	int endIndex = startIndex + Compatibility.ceil (clipping.height, itemHeight);
+	if (endIndex < 0) return;	/* no items to paint */
+	startIndex = Math.max (0, startIndex);
 	endIndex = Math.min (endIndex, availableItems.length - 1);
 	int current = 0;
 	for (int i = startIndex; i <= endIndex; i++) {
