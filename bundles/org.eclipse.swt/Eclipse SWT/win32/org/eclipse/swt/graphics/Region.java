@@ -89,6 +89,30 @@ Region(Device device, int handle) {
 }
 
 /**
+ * Adds the given polygon to the collection of rectangles
+ * the receiver maintains to describe its area.
+ *
+ * @param pointArray points that describe the polygon to merge with the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+*
+ */
+public void add (int[] pointArray) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	int polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, 2);
+	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_OR);
+	OS.DeleteObject (polyRgn);
+}
+
+/**
  * Adds the given rectangle to the collection of rectangles
  * the receiver maintains to describe its area.
  *
@@ -364,6 +388,29 @@ public boolean isEmpty () {
 	int result = OS.GetRgnBox (handle, rect);
 	if (result == OS.NULLREGION) return true;
 	return ((rect.right - rect.left) <= 0) || ((rect.bottom - rect.top) <= 0);
+}
+
+/**
+ * Subtracts the given polygon from the collection of rectangles
+ * the receiver maintains to describe its area.
+ *
+ * param pointArray points that describe the polygon to merge with the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void subtract (int[] pointArray) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	int polyRgn = OS.CreatePolygonRgn(pointArray, pointArray.length / 2, 2);
+	OS.CombineRgn (handle, handle, polyRgn, OS.RGN_DIFF);
+	OS.DeleteObject (polyRgn);
 }
 
 /**
