@@ -662,9 +662,9 @@ public void open () {
 	checkWidget ();
 	bringToTop ();
 	/*
-	* Feature on WinCE PPC.  A new application becomes the
-	* foreground application only if it has at least one
-	* visible window before the event loop is started.
+	* Feature on WinCE PPC.  A new application becomes
+	* the foreground application only if it has at least
+	* one visible window before the event loop is started.
 	* The workaround is to explicitely force the shell to
 	* be the foreground window.
 	*/
