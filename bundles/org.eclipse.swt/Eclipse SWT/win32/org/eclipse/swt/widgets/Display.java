@@ -278,6 +278,7 @@ public class Display extends Device {
 	static final int SWT_DESTROY	 	= OS.WM_APP + 3;
 	static final int SWT_RESIZE			= OS.WM_APP + 4;
 	static final int SWT_TRAYICONMSG	= OS.WM_APP + 5;
+	static int SWT_TASKBARCREATED;
 	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets."; //$NON-NLS-1$
@@ -1807,6 +1808,9 @@ protected void init () {
 		filterHook = OS.SetWindowsHookEx (OS.WH_MSGFILTER, msgFilterProc, 0, threadId);
 	}
 	
+	/* Register the task bar created message */
+	SWT_TASKBARCREATED = OS.RegisterWindowMessage (new TCHAR (0, "TaskbarCreated", true));
+
 	/* Initialize the Widget Table */
 	indexTable = new int [GROW_SIZE];
 	controlTable = new Control [GROW_SIZE];
@@ -2158,6 +2162,15 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_TIMER:
 			runTimer (wParam);
 			break;
+	}
+	if (msg == SWT_TASKBARCREATED) {
+		if (tray != null) {
+			TrayItem [] items = tray.items;
+			for (int i=0; i<items.length; i++) {
+				TrayItem item = items [i];
+				if (item != null) item.recreate ();
+			}
+		}
 	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }

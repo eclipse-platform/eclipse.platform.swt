@@ -73,14 +73,7 @@ public TrayItem (Tray parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	parent.createItem (this, parent.getItemCount ());
-	if (OS.IsWinCE) return;
-	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
-	iconData.cbSize = NOTIFYICONDATA.sizeof;
-	iconData.uID = id = display.nextTrayId++;
-	iconData.hWnd = display.hwndMessage;
-	iconData.uFlags = OS.NIF_MESSAGE;
-	iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
-	OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
+	createWidget ();
 }
 
 /**
@@ -113,6 +106,17 @@ public void addSelectionListener(SelectionListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
+}
+
+void createWidget () {
+	if (OS.IsWinCE) return;
+	NOTIFYICONDATA iconData = OS.IsUnicode ? (NOTIFYICONDATA) new NOTIFYICONDATAW () : new NOTIFYICONDATAA ();
+	iconData.cbSize = NOTIFYICONDATA.sizeof;
+	iconData.uID = id = display.nextTrayId++;
+	iconData.hWnd = display.hwndMessage;
+	iconData.uFlags = OS.NIF_MESSAGE;
+	iconData.uCallbackMessage = Display.SWT_TRAYICONMSG;
+	OS.Shell_NotifyIcon (OS.NIM_ADD, iconData);
 }
 
 /**
@@ -185,6 +189,14 @@ int messageProc (int hwnd, int msg, int wParam, int lParam) {
 	}
 	display.wakeThread ();
 	return 0;
+}
+
+void recreate () {
+	createWidget ();
+	if (!visible) setVisible (false);
+	if (text.length () != 0) setText (text);
+	if (image != null) setImage (image);
+	if (toolTipText != null) setToolTipText (toolTipText);
 }
 
 void releaseChild () {
