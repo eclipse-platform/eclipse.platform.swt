@@ -2008,14 +2008,18 @@ void claimRightFreeSpace() {
 void clearMargin(GC gc, Color background, Rectangle clientArea, int y) {
 	// clear the margin background
 	gc.setBackground(background);
-	// top margin
-	gc.fillRectangle(0, 0 - y, clientArea.width, topMargin);
-	// bottom margin
-	gc.fillRectangle(0, clientArea.height - bottomMargin - y, clientArea.width, bottomMargin);
-	// left margin
-	gc.fillRectangle(0, 0, leftMargin, clientArea.height);
-	// right margin
-	gc.fillRectangle(clientArea.width - rightMargin, 0, rightMargin, clientArea.height);
+	if (topMargin > 0) {
+		gc.fillRectangle(0, -y, clientArea.width, topMargin);
+	}
+	if (bottomMargin > 0) {
+		gc.fillRectangle(0, clientArea.height - bottomMargin - y, clientArea.width, bottomMargin);
+	}
+	if (leftMargin > 0) {
+		gc.fillRectangle(0, -y, leftMargin, clientArea.height);
+	}
+	if (rightMargin > 0) {
+		gc.fillRectangle(clientArea.width - rightMargin, -y, rightMargin, clientArea.height);
+	}
 }
 /**
  * Removes the widget selection.
