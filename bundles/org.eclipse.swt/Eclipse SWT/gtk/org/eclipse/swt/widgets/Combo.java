@@ -909,7 +909,6 @@ void setBackgroundColor (GdkColor color) {
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	checkWidget();
 	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }
