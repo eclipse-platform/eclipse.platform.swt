@@ -1263,7 +1263,7 @@ JNIEXPORT jdouble JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1adjustment_1
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1adjustment_1new
-	(JNIEnv *env, jclass that, jfloat arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5)
+	(JNIEnv *env, jclass that, jdouble arg0, jdouble arg1, jdouble arg2, jdouble arg3, jdouble arg4, jdouble arg5)
 {
 	DEBUG_CALL("gtk_1adjustment_1new\n")
 
@@ -1271,7 +1271,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1adjustment_1new
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1adjustment_1set_1value
-	(JNIEnv *env, jclass that, jint arg0, jfloat arg1)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
 {
 	DEBUG_CALL("gtk_1adjustment_1set_1value\n")
 
@@ -2781,7 +2781,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1configure
-	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3)
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jdouble arg3)
 {
 	DEBUG_CALL("gtk_1progress_1configure\n")
 
