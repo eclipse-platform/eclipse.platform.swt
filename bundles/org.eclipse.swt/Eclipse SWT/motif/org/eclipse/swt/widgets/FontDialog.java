@@ -49,13 +49,35 @@ public class FontDialog extends Dialog {
 	private static final int DEFAULT_SIZE = 14;
 	private static final String DEFAULT_STYLE = "medium";
 	private static final Integer SCALABLE_KEY = new Integer (0);
-	
-	// more constants
-	// TEMPORARY CODE
-	private static final int ColumnOneWidth = 200;
-	private static final int ColumnTwoWidth = 150;
-	private static final int ColumnThreeWidth = 100;
 	private static final Integer NO_SELECTION = new Integer (-1);
+	private static final int COLUMN1_WIDTH = 200;
+	private static final int COLUMN2_WIDTH = 150;
+	private static final int COLUMN3_WIDTH = 100;
+	private static final String PREFIX_ISO8859 = "iso8859";
+	private static final String PREFIX_ISO646 = "iso646";
+	private static final String PREFIX_UNICODE = "ucs";
+	private static final String PREFIX_JAPANESE = "jis";
+	private static final String PREFIX_SIMPLIFIEDCHINESE = "gb";
+	private static final String PREFIX_TRADITIONALCHINESE = "cns";
+	private static final String PREFIX_KOREAN = "ks";
+	private static final String [] ISO_CHARSETS = new String [] {
+		"",	// undefined
+		SWT.getMessage ("SWT_Charset_Western"),
+		SWT.getMessage ("SWT_Charset_EastEuropean"),
+		SWT.getMessage ("SWT_Charset_SouthEuropean"),
+		SWT.getMessage ("SWT_Charset_NorthEuropean"),
+		SWT.getMessage ("SWT_Charset_Cyrillic"),
+		SWT.getMessage ("SWT_Charset_Arabic"),
+		SWT.getMessage ("SWT_Charset_Greek"),
+		SWT.getMessage ("SWT_Charset_Hebrew"),
+		SWT.getMessage ("SWT_Charset_Turkish"),
+		SWT.getMessage ("SWT_Charset_Nordic"),
+		SWT.getMessage ("SWT_Charset_Thai"),
+		"",	// undefined
+		SWT.getMessage ("SWT_Charset_BalticRim"),
+		SWT.getMessage ("SWT_Charset_Celtic"),
+		SWT.getMessage ("SWT_Charset_Euro")
+	};
 
 /**
  * Constructs a new instance of this class given only its
@@ -80,7 +102,7 @@ public class FontDialog extends Dialog {
  * </ul>
  */
 public FontDialog (Shell parent) {
-	this (parent, SWT.NULL);
+	this (parent, SWT.NONE);
 }
 
 /**
@@ -167,10 +189,9 @@ void addFonts (FontData fonts[]) {
  * Create the widgets of the dialog.
  */
 void createChildren () {
-	Shell dialog = shell;
-	Label characterSetLabel = new Label (dialog, SWT.NULL);
-	Label faceNameLabel = new Label (dialog, SWT.NULL);
-	Label extendedStyleLabel = new Label (dialog, SWT.NULL);	
+	Label characterSetLabel = new Label (shell, SWT.NONE);
+	Label faceNameLabel = new Label (shell, SWT.NONE);
+	Label extendedStyleLabel = new Label (shell, SWT.NONE);	
 	GridLayout layout = new GridLayout ();
 	
 	layout.numColumns = 4;
@@ -178,36 +199,36 @@ void createChildren () {
 	layout.marginHeight = 15;
 	layout.horizontalSpacing = 10;
 	layout.verticalSpacing = 2;
-	dialog.setLayout (layout);
+	shell.setLayout (layout);
 
 	// row one
 	characterSetLabel.setText (SWT.getMessage ("SWT_Character_set") + ":");
 	faceNameLabel.setText (SWT.getMessage ("SWT_Font") + ":");
 	extendedStyleLabel.setText (SWT.getMessage ("SWT_Extended_style") + ":");
 	
-	new Label (dialog, SWT.NULL);
+	new Label (shell, SWT.NONE);
 
 	// row two	
-	charSetCombo = new Combo (dialog, SWT.SIMPLE | SWT.V_SCROLL);
+	charSetCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
 	GridData gridData = new GridData ();
-	gridData.widthHint = ColumnOneWidth;
+	gridData.widthHint = COLUMN1_WIDTH;
 	gridData.heightHint = 150;
 	gridData.verticalSpan = 2;
 	charSetCombo.setLayoutData (gridData);
 	charSetCombo.setData (NO_SELECTION);
 	
-	faceNameCombo = new Combo (dialog, SWT.SIMPLE | SWT.V_SCROLL);
+	faceNameCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
 	gridData = new GridData ();
-	gridData.widthHint = ColumnTwoWidth;
+	gridData.widthHint = COLUMN2_WIDTH;
 	gridData.heightHint = 150;	
 	gridData.verticalSpan = 2;
 	gridData.verticalAlignment = GridData.FILL;
 	faceNameCombo.setLayoutData (gridData);
 	faceNameCombo.setData (NO_SELECTION);
 	
-	extStyleCombo = new Combo (dialog, SWT.SIMPLE | SWT.V_SCROLL);
+	extStyleCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
 	gridData = new GridData ();
-	gridData.widthHint = ColumnThreeWidth;
+	gridData.widthHint = COLUMN3_WIDTH;
 	gridData.heightHint = 150;	
 	gridData.verticalSpan = 2;
 	gridData.verticalAlignment = GridData.FILL;	
@@ -221,18 +242,18 @@ void createChildren () {
 	createEmptyRow ();
 	
 	// row five
-	Label fontSizeLabel = new Label (dialog, SWT.NULL);	
+	Label fontSizeLabel = new Label (shell, SWT.NONE);	
 	fontSizeLabel.setText (SWT.getMessage ("SWT_Size") + ":");	
-	Label fontStyleLabel = new Label (dialog, SWT.NULL);
+	Label fontStyleLabel = new Label (shell, SWT.NONE);
 	fontStyleLabel.setText (SWT.getMessage ("SWT_Style") + ":");
 	
-	Label fillLabel = new Label (dialog, SWT.NULL);
+	Label fillLabel = new Label (shell, SWT.NONE);
 	gridData = new GridData ();
 	gridData.horizontalSpan = 2;
 	fillLabel.setLayoutData (gridData);
 
 	// row six
-	fontSizeCombo = new Combo (dialog, SWT.SIMPLE | SWT.V_SCROLL);
+	fontSizeCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
 	gridData = new GridData ();
 	gridData.horizontalAlignment = GridData.FILL;
 	gridData.verticalAlignment = GridData.FILL;		
@@ -240,14 +261,14 @@ void createChildren () {
 	fontSizeCombo.setLayoutData (gridData);
 	fontSizeCombo.setData (NO_SELECTION);
 			
-	fontStyleCombo = new Combo (dialog, SWT.SIMPLE | SWT.V_SCROLL);
+	fontStyleCombo = new Combo (shell, SWT.SIMPLE | SWT.V_SCROLL);
 	gridData = new GridData ();
 	gridData.horizontalAlignment = GridData.FILL;
 	gridData.verticalAlignment = GridData.FILL;		
 	fontStyleCombo.setLayoutData (gridData);
 	fontStyleCombo.setData (NO_SELECTION);
 	
-	fillLabel = new Label (dialog, SWT.NULL);
+	fillLabel = new Label (shell, SWT.NONE);
 	gridData = new GridData ();
 	gridData.horizontalSpan = 2;
 	fillLabel.setLayoutData (gridData);
@@ -256,7 +277,7 @@ void createChildren () {
 	createEmptyRow ();
 	
 	// row eight
-	Group sampleGroup = new Group (dialog, SWT.NULL);
+	Group sampleGroup = new Group (shell, SWT.NONE);
 	sampleGroup.setText (SWT.getMessage ("SWT_Sample"));
 	gridData = new GridData ();
 	gridData.heightHint = 70;	
@@ -278,9 +299,7 @@ void createChildren () {
 	gridData.verticalAlignment = GridData.FILL;	
 	gridData.horizontalAlignment = GridData.FILL;	
 	sampleLabel.setLayoutData (gridData);
-
-	//TEMPORARY CODE
-	dialog.setSize (445, 410);
+	shell.setSize (445, 410);
 }
 
 /**
@@ -289,12 +308,11 @@ void createChildren () {
  * groups of widgets (ie. new rows of Text/Combo combinations).
  */
 void createEmptyRow () {
-	Shell dialog = shell;
-	Label fillLabel = new Label (dialog, SWT.NULL);
+	Label fillLabel = new Label (shell, SWT.NONE);
 	GridData gridData = new GridData ();
 	
 	gridData.heightHint = 5;
-	gridData.horizontalSpan = ((GridLayout) dialog.getLayout ()).numColumns;
+	gridData.horizontalSpan = ((GridLayout) shell.getLayout ()).numColumns;
 	fillLabel.setLayoutData (gridData);
 }
 
@@ -302,17 +320,15 @@ void createEmptyRow () {
  * Create the widgets of the dialog.
  */
 void createOkCancel () {
-	Shell dialog = shell;
-	
-	okButton = new Button (dialog, SWT.PUSH);
+	okButton = new Button (shell, SWT.PUSH);
 	okButton.setText (SWT.getMessage ("SWT_OK"));
-	dialog.setDefaultButton (okButton);	
+	shell.setDefaultButton (okButton);	
 	GridData gridData = new GridData ();
 	gridData.horizontalAlignment = GridData.FILL;
 	gridData.widthHint = 70;
 	okButton.setLayoutData (gridData);
 
-	cancelButton = new Button (dialog, SWT.PUSH);
+	cancelButton = new Button (shell, SWT.PUSH);
 	cancelButton.setText (SWT.getMessage ("SWT_Cancel"));
 	gridData = new GridData ();
 	gridData.horizontalAlignment = GridData.FILL;
@@ -357,14 +373,6 @@ FontData getFontData (String charsetName, String faceName, String extStyle, int 
  */
 Hashtable getFonts () {
 	return characterSets;
-}
-
-/**
- * Return the sample font created from the selected font metrics.
- * This font is set into the sampleLabel.
- */
-Font getSampleFont () {
-	return sampleFont;
 }
 
 /**
@@ -426,7 +434,7 @@ String getTranslatedCharSet (FontData fontData) {
 	String characterSet = fontData.characterSetRegistry;
 	String translatedCharSet = null;
 
-	if (characterSet.startsWith ("iso8859")) {
+	if (characterSet.startsWith (PREFIX_ISO8859)) {
 		int charSetName = 1;
 		try {
 			charSetName = Integer.valueOf (fontData.characterSetName).intValue ();
@@ -437,77 +445,32 @@ String getTranslatedCharSet (FontData fontData) {
 			 */
 		}
 
-		characterSet += "-" + charSetName;		
-		switch (charSetName) {
-			case 2:
-				translatedCharSet = "east european";
-				break;
-			case 3:
-				translatedCharSet = "south european";
-				break;
-			case 4:
-				translatedCharSet = "north european";
-				break;
-			case 5:
-				translatedCharSet = "cyrillic";
-				break;
-			case 6:
-				translatedCharSet = "arabic";
-				break;
-			case 7:
-				translatedCharSet = "greek";
-				break;
-			case 8:
-				translatedCharSet = "hebrew";
-				break;
-			case 9:
-				translatedCharSet = "turkish";
-				break;
-			case 10:
-				translatedCharSet = "nordic";
-				break;
-			case 11:
-				translatedCharSet = "thai";
-				break;
-			case 12:
-				// not defined
-				break;
-			case 13:
-				translatedCharSet = "baltic rim";
-				break;
-			case 14:
-				translatedCharSet = "celtic";
-				break;
-			case 15:
-				translatedCharSet = "euro";
-				break;
-			default:
-				translatedCharSet = "western";
-		}
+		characterSet += "-" + charSetName;
+		translatedCharSet = ISO_CHARSETS [charSetName];
 	}
 	else	
-	if (characterSet.startsWith ("iso646")) {
-		translatedCharSet = "ASCII";
+	if (characterSet.startsWith (PREFIX_ISO646)) {
+		translatedCharSet = SWT.getMessage("SWT_Charset_ASCII");
 	}
 	else	
-	if (characterSet.startsWith ("ucs")) {
-		translatedCharSet = "unicode";
+	if (characterSet.startsWith (PREFIX_UNICODE)) {
+		translatedCharSet = SWT.getMessage("SWT_Charset_Unicode");
 	}
 	else	
-	if (characterSet.startsWith ("jis")) {
-		translatedCharSet = "japanese";
+	if (characterSet.startsWith (PREFIX_JAPANESE)) {
+		translatedCharSet = SWT.getMessage("SWT_Charset_Japanese");
 	}
 	else	
-	if (characterSet.startsWith ("gb")) {
-		translatedCharSet = "simplified chinese";
+	if (characterSet.startsWith (PREFIX_SIMPLIFIEDCHINESE)) {
+		translatedCharSet = SWT.getMessage("SWT_Charset_SimplifiedChinese");
 	}
 	else	
-	if (characterSet.startsWith ("cns")) {
-		translatedCharSet = "traditional chinese";
+	if (characterSet.startsWith (PREFIX_TRADITIONALCHINESE)) {
+		translatedCharSet = SWT.getMessage("SWT_Charset_TraditionalChinese");
 	}
 	else	
-	if (characterSet.startsWith ("ks")) {
-		translatedCharSet = "korean";
+	if (characterSet.startsWith (PREFIX_KOREAN)) {
+		translatedCharSet = SWT.getMessage("SWT_Charset_Korean");
 	}
 	if (translatedCharSet != null) {
 		translatedCharSet += " (" + characterSet + ')';
@@ -561,7 +524,7 @@ void handleEvent (Event event) {
 			else if (combo == faceNameCombo) initExtStyleCombo ();
 			else if (combo == extStyleCombo) initSizeCombo ();
 			else if (combo == fontSizeCombo) initStyleCombo ();
-			updateSample ();
+			updateSampleFont ();
 			if (newSelectIndex != -1) {
 				// in case it came by typing the name
 				combo.select (newSelectIndex);
@@ -640,7 +603,7 @@ void initializeWidgets () {
 		setFontCombos (initialFont.getFontData ()[0]);
 		ignoreEvents = false;
 		initialFont.dispose ();
-		updateSample ();
+		updateSampleFont ();
 	}
 }
 
@@ -765,11 +728,18 @@ void installListeners () {
  * </ul>
  */
 public FontData open () {
-	Shell dialog = new Shell (getParent (), getStyle () | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
-	shell = dialog;
+	shell = new Shell (getParent (), getStyle () | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
 	createChildren ();
 	installListeners ();	
-	openModal ();
+	
+	initializeWidgets ();
+	setFontData (null);
+	openDialog ();
+	Display display = shell.getDisplay ();
+	while (!shell.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+	
 	FontData result = null;
 	if (okSelected) result = getFontData ();
 	if (sampleFont != null) sampleFont.dispose ();
@@ -781,17 +751,15 @@ public FontData open () {
  * the layout manager.
  */
 void openDialog () {
-	Shell dialog = shell;
-		
 	// Start everything off by setting the shell size to its computed size.
-	Point pt = dialog.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
+	Point pt = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
 	
 	// Ensure that the width of the shell fits the display.
-	Rectangle displayRect = dialog.getDisplay().getBounds();
+	Rectangle displayRect = shell.getDisplay().getBounds();
 	int widthLimit = displayRect.width * 7 / 8;
 	int heightLimit = displayRect.height * 7 / 8;
 	if (pt.x > widthLimit) {
-		pt = dialog.computeSize (widthLimit, SWT.DEFAULT, false);
+		pt = shell.computeSize (widthLimit, SWT.DEFAULT, false);
 	}
 	
 	// centre the dialog on its parent, and ensure that the
@@ -803,26 +771,11 @@ void openDialog () {
 	int originY = (parentBounds.height - pt.y) / 2 + parentBounds.y;
 	originY = Math.max (originY, 0);
 	originY = Math.min (originY, heightLimit - pt.y);
-	dialog.setBounds (originX, originY, pt.x, pt.y);
+	shell.setBounds (originX, originY, pt.x, pt.y);
 	
-	dialog.setText(getText());
+	shell.setText(getText());
 	// Open the window.
-	dialog.open();
-}
-
-/**
- * Initialize the widgets of the receiver, open the dialog
- * and block the method until the dialog is closed by the user.
- */
-void openModal () {
-	Shell dialog = shell;
-	initializeWidgets ();
-	setFontData (null);
-	openDialog ();
-	Display display = dialog.getDisplay ();
-	while (!dialog.isDisposed ()) {
-		if (!display.readAndDispatch ()) display.sleep ();
-	}
+	shell.open();
 }
 
 /**
@@ -883,19 +836,6 @@ void setItemsSorted (Combo combo, Hashtable items) {
 	}
 	sort (sortedItems);
 	combo.setItems (sortedItems);
-}
-
-/**
- * Set the sample font created from the selected font metrics 
- * to 'newSampleFont'.
- * This font is set into the sampleLabel.
- */
-void setSampleFont (Font newSampleFont) {
-	sampleLabel.setFont (newSampleFont);
-	if (sampleFont != null) {
-		sampleFont.dispose ();
-	}		
-	sampleFont = newSampleFont;
 }
 
 /**
@@ -961,16 +901,15 @@ void sort (String items[]) {
  * Display an error in place of the sample text if the selected 
  * font could not be loaded.
  */
-void updateSample () {
-	Display display = shell.getDisplay ();
+void updateSampleFont () {
 	FontData selectionFontData = getSelectionFontData ();
-
 	/*
 	 * sampleFont may not be the same as the one specified in selectionFontData.
-	 * This happens when selectionFontData specifies a font alias. In that case, 
-	 * Font loads the real font. See 1FG3UWX for details.
+	 * This happens when selectionFontData specifies a font alias.
 	 */
-	Font sampleFont = new Font (display, selectionFontData);
-	setSampleFont (sampleFont);
+	Font newSampleFont = new Font (shell.getDisplay (), selectionFontData);
+	sampleLabel.setFont (newSampleFont);
+	if (sampleFont != null) sampleFont.dispose ();
+	sampleFont = newSampleFont;
 }
 }
