@@ -114,8 +114,8 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle (x, y, width, height);
 }
 
-ScrollBar createScrollBar (int type) {
-    return new ScrollBar (this, type);
+ScrollBar createScrollBar (int style) {
+    return new ScrollBar (this, style);
 }
 
 ScrollBar createStandardBar (int style) {
@@ -123,7 +123,7 @@ ScrollBar createStandardBar (int style) {
 	OS.CountSubControls (handle, count);
 	if (count [0] == 0) return null;
 	int [] outControl = new int [1];
-	int index = (style & SWT.HORIZONTAL) != 0 ? 1 : 2;
+	int index = (style & SWT.H_SCROLL) != 0 ? 1 : 2;
 	int status = OS.GetIndexedSubControl (handle, (short)index, outControl);
 	if (status != OS.noErr) return null;
 	ScrollBar bar = new ScrollBar ();
