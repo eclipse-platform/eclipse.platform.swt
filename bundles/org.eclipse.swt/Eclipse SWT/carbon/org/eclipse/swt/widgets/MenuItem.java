@@ -392,11 +392,26 @@ void releaseChild () {
 void releaseWidget () {
 	if (menu != null) {
 		menu.releaseWidget ();
-		menu.releaseHandle ();
+		menu.destroyWidget ();
+	} else {
+		if ((parent.style & SWT.BAR) != 0) {
+			short [] outIndex = new short [1];
+			if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) == OS.noErr) {
+				int [] outMenuRef = new int [1];
+				OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
+				if (outMenuRef [0] != 0) {
+					OS.DeleteMenu (OS.GetMenuID (outMenuRef [0]));
+					OS.DisposeMenu (outMenuRef [0]);
+				}
+			}
+		}
 	}
 	menu = null;
 	super.releaseWidget ();
 	accelerator = 0;
+	if (this == parent.defaultItem) {
+		parent.defaultItem = null;
+	}
 	Decorations shell = parent.parent;
 	shell.remove (this);
 	parent = null;
@@ -543,9 +558,15 @@ public void setAccelerator (int accelerator) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
+	short [] outIndex = new short [1];
+	OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex);
+	int outMenuRef [] = new int [1];
+	OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
 	if (enabled) {
+		if (outMenuRef [0] != 0) OS.EnableMenuItem (outMenuRef [0], (short) 0);
 		OS.EnableMenuCommand (parent.handle, id);
 	} else {
+		if (outMenuRef [0] != 0) OS.DisableMenuItem (outMenuRef [0], (short) 0);
 		OS.DisableMenuCommand (parent.handle, id);
 	}
 }
@@ -615,24 +636,46 @@ public void setMenu (Menu menu) {
 	}
 	
 	/* Assign the new menu */
-	if (this.menu == menu) return;
-	if (this.menu != null) this.menu.cascade = null;
+	Menu oldMenu = this.menu;
+	if (oldMenu == menu) return;
+	if (oldMenu != null) oldMenu.cascade = null;
+	this.menu = menu;
+	
+	/* Update the menu in the OS */
 	short [] outIndex = new short [1];
 	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.noErr) {
 		error (SWT.ERROR_CANNOT_SET_MENU);
 	}
-	int inHierMenu = menu != null ? menu.handle : 0;
-	if (OS.SetMenuItemHierarchicalMenu (parent.handle, outIndex [0], inHierMenu) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_SET_MENU);
-	}
-	if ((this.menu = menu) != null) {
+	int outMenuRef [] = new int [1];
+	if (menu == null) {
+		if ((parent.style & SWT.BAR) != 0) {
+			Display display = getDisplay ();
+			short menuID = display.nextMenuId ();
+			if (OS.CreateNewMenu (menuID, 0, outMenuRef) != OS.noErr) {
+				error (SWT.ERROR_NO_HANDLES);
+			}
+		}
+	} else {
 		menu.cascade = this;
+		if ((parent.style & SWT.BAR) != 0) {
+			if (oldMenu == null) {
+				OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
+				if (outMenuRef [0] != 0) {
+					OS.DeleteMenu (OS.GetMenuID (outMenuRef [0]));
+					OS.DisposeMenu (outMenuRef [0]);
+				}
+			}
+		}
+		outMenuRef [0] = menu.handle;
 		int [] outString = new int [1];
 		if (OS.CopyMenuItemTextAsCFString (parent.handle, outIndex [0], outString) != OS.noErr) {
 			error (SWT.ERROR_CANNOT_SET_MENU);
 		}
-		OS.SetMenuTitleWithCFString (inHierMenu, outString [0]);
+		OS.SetMenuTitleWithCFString (outMenuRef [0], outString [0]);
 		OS.CFRelease (outString [0]);
+	}
+	if (OS.SetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef [0]) != OS.noErr) {
+		error (SWT.ERROR_CANNOT_SET_MENU);
 	}
 }
 

@@ -107,6 +107,14 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
 #define setHICommandFields(a,b,c)
 #endif /* NO_HICommand */
 
+#ifndef NO_MenuTrackingData
+MenuTrackingData *getMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct);
+void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct);
+#else
+#define getMenuTrackingDataFields(a,b,c) NULL
+#define setMenuTrackingDataFields(a,b,c)
+#endif /* NO_MenuTrackingData */
+
 #ifndef NO_NavDialogCreationOptions
 NavDialogCreationOptions *getNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogCreationOptions *lpStruct);
 void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogCreationOptions *lpStruct);

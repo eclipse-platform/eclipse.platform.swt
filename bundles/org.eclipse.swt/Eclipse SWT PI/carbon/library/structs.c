@@ -634,6 +634,60 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct)
 	(*env)->SetShortField(env, lpObject, HICommandFc.menu_menuItemIndex, (jshort)lpStruct->menu.menuItemIndex);
 }
 #endif /* NO_HICommand */
+#ifndef NO_MenuTrackingData
+typedef struct MenuTrackingData_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID menu, itemSelected, itemUnderMouse, top, left, bottom, right, virtualMenuTop, virtualMenuBottom;
+} MenuTrackingData_FID_CACHE;
+
+MenuTrackingData_FID_CACHE MenuTrackingDataFc;
+
+void cacheMenuTrackingDataFids(JNIEnv *env, jobject lpObject)
+{
+	if (MenuTrackingDataFc.cached) return;
+	MenuTrackingDataFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	MenuTrackingDataFc.menu = (*env)->GetFieldID(env, MenuTrackingDataFc.clazz, "menu", "I");
+	MenuTrackingDataFc.itemSelected = (*env)->GetFieldID(env, MenuTrackingDataFc.clazz, "itemSelected", "S");
+	MenuTrackingDataFc.itemUnderMouse = (*env)->GetFieldID(env, MenuTrackingDataFc.clazz, "itemUnderMouse", "S");
+	MenuTrackingDataFc.top = (*env)->GetFieldID(env, MenuTrackingDataFc.clazz, "top", "S");
+	MenuTrackingDataFc.left = (*env)->GetFieldID(env, MenuTrackingDataFc.clazz, "left", "S");
+	MenuTrackingDataFc.bottom = (*env)->GetFieldID(env, MenuTrackingDataFc.clazz, "bottom", "S");
+	MenuTrackingDataFc.right = (*env)->GetFieldID(env, MenuTrackingDataFc.clazz, "right", "S");
+	MenuTrackingDataFc.virtualMenuTop = (*env)->GetFieldID(env, MenuTrackingDataFc.clazz, "virtualMenuTop", "I");
+	MenuTrackingDataFc.virtualMenuBottom = (*env)->GetFieldID(env, MenuTrackingDataFc.clazz, "virtualMenuBottom", "I");
+	MenuTrackingDataFc.cached = 1;
+}
+
+MenuTrackingData *getMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct)
+{
+	if (!MenuTrackingDataFc.cached) cacheMenuTrackingDataFids(env, lpObject);
+	lpStruct->menu = (MenuRef)(*env)->GetIntField(env, lpObject, MenuTrackingDataFc.menu);
+	lpStruct->itemSelected = (*env)->GetShortField(env, lpObject, MenuTrackingDataFc.itemSelected);
+	lpStruct->itemUnderMouse = (*env)->GetShortField(env, lpObject, MenuTrackingDataFc.itemUnderMouse);
+	lpStruct->itemRect.top = (*env)->GetShortField(env, lpObject, MenuTrackingDataFc.top);
+	lpStruct->itemRect.left = (*env)->GetShortField(env, lpObject, MenuTrackingDataFc.left);
+	lpStruct->itemRect.bottom = (*env)->GetShortField(env, lpObject, MenuTrackingDataFc.bottom);
+	lpStruct->itemRect.right = (*env)->GetShortField(env, lpObject, MenuTrackingDataFc.right);
+	lpStruct->virtualMenuTop = (*env)->GetIntField(env, lpObject, MenuTrackingDataFc.virtualMenuTop);
+	lpStruct->virtualMenuBottom = (*env)->GetIntField(env, lpObject, MenuTrackingDataFc.virtualMenuBottom);
+	return lpStruct;
+}
+
+void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct)
+{
+	if (!MenuTrackingDataFc.cached) cacheMenuTrackingDataFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, MenuTrackingDataFc.menu, (jint)lpStruct->menu);
+	(*env)->SetShortField(env, lpObject, MenuTrackingDataFc.itemSelected, (jshort)lpStruct->itemSelected);
+	(*env)->SetShortField(env, lpObject, MenuTrackingDataFc.itemUnderMouse, (jshort)lpStruct->itemUnderMouse);
+	(*env)->SetShortField(env, lpObject, MenuTrackingDataFc.top, (jshort)lpStruct->itemRect.top);
+	(*env)->SetShortField(env, lpObject, MenuTrackingDataFc.left, (jshort)lpStruct->itemRect.left);
+	(*env)->SetShortField(env, lpObject, MenuTrackingDataFc.bottom, (jshort)lpStruct->itemRect.bottom);
+	(*env)->SetShortField(env, lpObject, MenuTrackingDataFc.right, (jshort)lpStruct->itemRect.right);
+	(*env)->SetIntField(env, lpObject, MenuTrackingDataFc.virtualMenuTop, (jint)lpStruct->virtualMenuTop);
+	(*env)->SetIntField(env, lpObject, MenuTrackingDataFc.virtualMenuBottom, (jint)lpStruct->virtualMenuBottom);
+}
+#endif /* NO_MenuTrackingData */
 
 #ifndef NO_NavDialogCreationOptions
 typedef struct NavDialogCreationOptions_FID_CACHE {

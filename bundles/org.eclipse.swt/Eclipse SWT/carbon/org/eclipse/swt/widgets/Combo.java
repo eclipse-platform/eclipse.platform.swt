@@ -389,7 +389,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		MacUtil.insertControl(handle, parent.handle, -1);
 		int[] menuRef= new int[1];
-		OS.CreateNewMenu(20000, 0, menuRef);
+		OS.CreateNewMenu((short)20000, 0, menuRef);
 		menuHandle= menuRef[0];
 		if (menuHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.SetControlPopupMenuHandle(handle, menuHandle);

@@ -222,7 +222,7 @@ public class Display extends Device {
 	private static final int HOVER_TIMEOUT= 500;	// in milli seconds
 	private static final int SWT_USER_EVENT= ('S'<<24) + ('W'<<16) + ('T'<<8) + '1';
 
-	private int fMenuId= 5000;
+	private short fMenuId= 5000;
 	
 	// Callbacks
 	private ArrayList fCallbacks;
@@ -1858,7 +1858,8 @@ static String convertToLf(String text) {
 // Some Mac helper functions
 ////////////////////////////////////////////////////////////////////////////
 
-	int nextMenuId() {
+	short nextMenuId() {
+		//FIXME - menu id's are 16-bit and wrap at 0xFFFF
 		return fMenuId++;
 	}
 

@@ -140,6 +140,25 @@ public Menu (MenuItem parentItem) {
 	this (checkNull (parentItem).parent);
 }
 
+static Control checkNull (Control control) {
+	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return control;
+}
+
+static Menu checkNull (Menu menu) {
+	if (menu == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return menu;
+}
+
+static MenuItem checkNull (MenuItem item) {
+	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	return item;
+}
+
+static int checkStyle (int style) {
+	return checkBits (style, SWT.POP_UP, SWT.BAR, SWT.DROP_DOWN, 0, 0, 0);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when help events are generated for the control,
@@ -193,38 +212,20 @@ public void addMenuListener (MenuListener listener) {
 	addListener (SWT.Show,typedListener);
 }
 
-static Control checkNull (Control control) {
-	if (control == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return control;
-}
-
-static Menu checkNull (Menu menu) {
-	if (menu == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return menu;
-}
-
-static MenuItem checkNull (MenuItem item) {
-	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	return item;
-}
-
-static int checkStyle (int style) {
-	return checkBits (style, SWT.POP_UP, SWT.BAR, SWT.DROP_DOWN, 0, 0, 0);
-}
-
 void createHandle () {
 	state |= HIDDEN;
-	Display display= getDisplay();
-	int menuHandle[]= new int[1];
-	if (OS.CreateNewMenu(display.nextMenuId(), 0, menuHandle) == OS.noErr)
-		handle= menuHandle[0];
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.RetainMenu(handle);
-	int[] mask = new int[] {
+	Display display = getDisplay ();
+	short menuID = display.nextMenuId ();
+	int outMenuRef [] = new int [1];
+	if (OS.CreateNewMenu (menuID, 0, outMenuRef) != OS.noErr) {
+		error (SWT.ERROR_NO_HANDLES);
+	}
+	handle = outMenuRef [0];
+	int [] mask = new int [] {
 		OS.kEventClassMenu, OS.kEventMenuOpening,
-		OS.kEventClassMenu, OS.kEventMenuClosed
+		OS.kEventClassMenu, OS.kEventMenuClosed,
 	};
-	OS.InstallEventHandler(OS.GetMenuEventTarget(handle), display.fMenuProc, mask.length / 2, mask, handle, null);
+	OS.InstallEventHandler (OS.GetMenuEventTarget (handle), display.fMenuProc, mask.length / 2, mask, handle, null);
 }
 
 void createItem (MenuItem item, int index) {
@@ -232,45 +233,22 @@ void createItem (MenuItem item, int index) {
 	int count = OS.CountMenuItems (handle);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	parent.add (item);
-	boolean success = false;
-	/*
-	if (OS.IsWinCE) {
-		int flags = OS.MF_BYPOSITION;
-		if ((style & SWT.SEPARATOR) != 0) flags |= OS.MF_SEPARATOR;
-		success = OS.InsertMenu (handle, index, flags, item.id, null); 
-	} else {
-		int hHeap = OS.GetProcessHeap ();
-		int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_ID | OS.MIIM_TYPE;
-		info.wID = item.id;
-		info.fType = item.widgetStyle ();
-		info.dwTypeData = pszText;
-		success = OS.InsertMenuItem (handle, index, true, info);
-		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-	}
-	*/
-	
-	/*
-	if ((style & SWT.SEPARATOR) != 0) return OS.MFT_SEPARATOR;
-	if ((style & SWT.RADIO) != 0) return OS.MFT_RADIOCHECK;
-	return OS.MFT_STRING;
-	*/
-	
-	int attributes= 0;
-	if ((item.style & SWT.SEPARATOR) != 0) 
-		attributes= OS.kMenuItemAttrSeparator;
-	if (OS.InsertMenuItemTextWithCFString(handle, 0, (short) index, attributes, item.id) == OS.noErr)
-		success= true;
-	
-	if (!success) {
+	int attributes = 0;
+	if ((item.style & SWT.SEPARATOR) != 0) attributes = OS.kMenuItemAttrSeparator;
+	int result = OS.InsertMenuItemTextWithCFString (handle, 0, (short) index, attributes, item.id);
+	if (result != OS.noErr) {
 		parent.remove (item);
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
-	/* AW	
-	redraw ();
-	*/
+	if ((style & SWT.BAR) != 0) {
+		Display display = getDisplay ();
+		short menuID = display.nextMenuId ();
+		int outMenuRef [] = new int [1];
+		if (OS.CreateNewMenu (menuID, 0, outMenuRef) != OS.noErr) {
+			error (SWT.ERROR_NO_HANDLES);
+		}
+		OS.SetMenuItemHierarchicalMenu (handle, (short) (index + 1), outMenuRef [0]);
+	}
 }
 
 void createWidget () {
@@ -279,36 +257,28 @@ void createWidget () {
 	register ();
 }
 
-void destroyAcceleratorTable () {
-	/* AW
-	parent.destroyAcceleratorTable ();
-	*/
-}
-
 void destroyItem (MenuItem item) {
-	/* AW
-	if (!OS.RemoveMenu (handle, item.id, OS.MF_BYCOMMAND)) {
+	short [] outIndex = new short [1];
+	if (OS.GetIndMenuItemWithCommandID (handle, item.id, 1, null, outIndex) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
-	*/
-	short[] index= new short[1];
-	OS.GetIndMenuItemWithCommandID(handle, item.id, 1, null, index);
-	if (index[0] >= 1) {
-		OS.DeleteMenuItem(handle, index[0]);
-	} else
-		error (SWT.ERROR_ITEM_NOT_REMOVED);
-	
-	redraw ();
+	if ((style & SWT.BAR) != 0) {
+		int [] outMenuRef = new int [1];
+		OS.GetMenuItemHierarchicalMenu (handle, outIndex [0], outMenuRef);
+		if (outMenuRef [0] != 0) {
+			OS.DeleteMenu (OS.GetMenuID (outMenuRef [0]));
+			OS.DisposeMenu (outMenuRef [0]);
+		}
+	}
+	OS.DeleteMenuItem (handle, outIndex [0]);
 }
 
 void destroyWidget () {
-	int hMenu = handle;
+	int theMenu = handle;
 	releaseHandle ();
-	if (hMenu != 0) {
-		/* AW
-		OS.DestroyMenu (hMenu);
-		*/
-		OS.DisposeMenu (hMenu);
+	if (theMenu != 0) {
+		OS.DeleteMenu (OS.GetMenuID (theMenu));
+		OS.DisposeMenu (theMenu);
 	}
 }
 
@@ -350,10 +320,7 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	/* AW
-	return (state & DISABLED) == 0;
-	*/
-	return OS.IsMenuItemEnabled(handle, (short)0);
+	return OS.IsMenuItemEnabled (handle, (short)0);
 }
 
 /**
@@ -373,10 +340,11 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget ();
-	int[] commandID= new int[1];
-	if (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) != OS.noErr)
+	int [] outCommandID= new int [1];
+	if (OS.GetMenuItemCommandID (handle, (short)(index+1), outCommandID) != OS.noErr) {
 		error (SWT.ERROR_INVALID_RANGE);
-	return parent.findMenuItem (commandID[0]);
+	}
+	return parent.findMenuItem (outCommandID[0]);
 }
 
 /**
@@ -412,30 +380,16 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget ();
-	int index = 0;
-	int length = OS.CountMenuItems(handle);
+	int length = OS.CountMenuItems (handle);
 	MenuItem [] items = new MenuItem [length];
-	/* AW
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_ID;
-	while (OS.GetMenuItemInfo (handle, index, true, info)) {
-	*/
-	int[] commandID= new int[1];	
-	while (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) == OS.noErr) {
-		if (index == items.length) {
-			MenuItem [] newItems = new MenuItem [index + 4];
-			System.arraycopy (newItems, 0, items, 0, index);
-			items = newItems;
+	int [] outCommandID= new int [1];	
+	for (int i=0; i<items.length; i++) {
+		if (OS.GetMenuItemCommandID (handle, (short)(i+1), outCommandID) != OS.noErr) {
+			error (SWT.ERROR_CANNOT_GET_ITEM);
 		}
-		items [index] = parent.findMenuItem (commandID [0]);
-		if (items [index] != null)
-			index++;
+		items [i] = parent.findMenuItem (outCommandID [0]);
 	}
-	if (index == items.length) return items;
-	MenuItem [] result = new MenuItem [index];
-	System.arraycopy (result, 0, items, 0, index);
-	return result;
+	return items;
 }
 
 String getNameText () {
@@ -543,9 +497,18 @@ public boolean getVisible () {
 	if ((style & SWT.BAR) != 0) {
 		return this == parent.menuShell ().menuBar;
 	}
-	return (state & HIDDEN) == 0;
+	MenuTrackingData outData = new MenuTrackingData ();
+	return OS.GetMenuTrackingData (handle, outData) == OS.noErr;
 }
 
+void handleMenu (int menuResult) {
+	int index= OS.LoWord (menuResult) - 1;	
+	if (index >= 0 && index < getItemCount ()) {
+		MenuItem item= getItem (index);
+		if (item != null) item.handleMenuSelect ();
+	}
+}
+	
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -566,24 +529,11 @@ public boolean getVisible () {
 public int indexOf (MenuItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	
-	/* AW
-	int index = 0;
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_ID;
-	while (OS.GetMenuItemInfo (handle, index, true, info)) {
-		if (info.wID == item.id) return index;
-		index++;
-	}
-	*/
-	
-	int[] menu= new int[1];
-	short[] index= new short[1];
-	if (OS.GetIndMenuItemWithCommandID(handle, item.id, 1, menu, index) == OS.noErr) {
-		if (handle == menu[0])	// ensure that we found item not in submenu
-			return index[0];
-	}
+	int [] outMenu = new int [1];
+	short [] outIndex = new short [1];
+	if (OS.GetIndMenuItemWithCommandID (handle, item.id, 1, outMenu, outIndex) == OS.noErr) {
+		return handle == outMenu [0] ? outIndex [0] - 1 : 0;
+	}	
 	return -1;
 }
 
@@ -629,8 +579,8 @@ public boolean isVisible () {
 }
 
 int processHide (Object callData) {
-	//sendEvent (SWT.Hide);
 	state |= HIDDEN;
+//	sendEvent (SWT.Hide);
 	postEvent (SWT.Hide);	// fix for #23947
 	return 0;
 }
@@ -639,40 +589,6 @@ int processShow (Object callData) {
 	state &= ~HIDDEN;
 	sendEvent (SWT.Show);
 	return 0;
-}
-
-void redraw () {
-	if ((style & SWT.BAR) != 0) {
-		//AW OS.DrawMenuBar (parent.handle);
-		return;
-	}
-	/* AW
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
-		return;
-	}
-	boolean hasCheck = false, hasImage = false;
-	MenuItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
-		if (item.getImage () != null) {
-			if ((hasImage = true) && hasCheck) break;
-		}
-		if ((item.getStyle () & (SWT.CHECK | SWT.RADIO)) != 0) {
-			if ((hasCheck = true) && hasImage) break;
-		}
-	}
-	if (OS.IsWinCE) return;
-	MENUINFO lpcmi = new MENUINFO ();
-	lpcmi.cbSize = MENUINFO.sizeof;
-	lpcmi.fMask = OS.MIM_STYLE;
-	OS.GetMenuInfo (handle, lpcmi);
-	if (hasImage && !hasCheck) {
-		lpcmi.dwStyle |= OS.MNS_CHECKORBMP;
-	} else {
-		lpcmi.dwStyle &= ~OS.MNS_CHECKORBMP;
-	}
-	OS.SetMenuInfo (handle, lpcmi);
-	*/
 }
 
 void releaseChild () {
@@ -782,14 +698,11 @@ public void setDefaultItem (MenuItem item) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	/* AW
-	state &= ~DISABLED;
-	if (!enabled) state |= DISABLED;
-	*/
-	if (enabled)
-		OS.EnableMenuItem(handle, (short)0);
-	else
-		OS.DisableMenuItem(handle, (short)0);
+	if (enabled) {
+		OS.EnableMenuItem (handle, (short)0);
+	} else {
+		OS.DisableMenuItem (handle, (short)0);
+	}
 }
 
 /**
@@ -889,18 +802,5 @@ public void setVisible (boolean visible) {
 		*/
 	}
 }
-
-///////////////////////////////////////////////////
-// Mac stuff
-///////////////////////////////////////////////////
-
-	void handleMenu(int menuResult) {
-		int index= OS.LoWord(menuResult)-1;	
-		if (index >= 0 && index < getItemCount()) {
-			MenuItem item= getItem(index);
-			if (item != null)
-				item.handleMenuSelect();
-		}
-	}
 	
 }

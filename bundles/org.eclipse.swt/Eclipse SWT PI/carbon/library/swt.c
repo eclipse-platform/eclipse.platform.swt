@@ -991,7 +991,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateEvent
 
 #ifndef NO_CreateNewMenu
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateNewMenu
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+	(JNIEnv *env, jclass that, jshort arg0, jint arg1, jintArray arg2)
 {
 	jint *lparg2=NULL;
 	jint rc;
@@ -2291,6 +2291,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuItemRefCon
 	return rc;
 }
 #endif /* NO_GetMenuItemRefCon */
+
+#ifndef NO_GetMenuTrackingData
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuTrackingData
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	MenuTrackingData _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetMenuTrackingData\n")
+
+	if (arg1) lparg1 = getMenuTrackingDataFields(env, arg1, &_arg1);
+	rc = (jint)GetMenuTrackingData((MenuRef)arg0, lparg1);
+	if (arg1) setMenuTrackingDataFields(env, arg1, lparg1);
+	return rc;
+}
+#endif
 
 #ifndef NO_GetMouse
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMouse
