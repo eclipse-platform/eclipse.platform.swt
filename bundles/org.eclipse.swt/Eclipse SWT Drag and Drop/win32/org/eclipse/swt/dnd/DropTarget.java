@@ -341,14 +341,15 @@ private int DragOver(
 	if (keyState == DND.DROP_DEFAULT && (style & DND.DROP_DEFAULT) == 0) {
 		keyState = DND.DROP_MOVE;
 	}
-	event.detail = DND.DROP_NONE;
-	if ((keyState & style) == keyState){
-		event.detail = keyState;
-	}
 	try {
 		if (keyState == oldKeyState) {
+			event.detail = lastOperation;
 			notifyListeners(DND.DragOver,event);
 		} else {
+			event.detail = DND.DROP_NONE;
+			if ((keyState & style) == keyState){
+				event.detail = keyState;
+			}
 			notifyListeners(DND.DragOperationChanged, event);
 		}	
 	} catch (Throwable e) {
