@@ -149,7 +149,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		GridData data = (GridData) child.getLayoutData ();
 		if (data == null) child.setLayoutData (data = new GridData ());
 		if (flushCache) data.flushCache ();
-		data.computeSize (child, flushCache);
+		data.computeSize (child, data.widthHint, data.heightHint, flushCache);
 	}
 	
 	/* Build the grid */
@@ -383,11 +383,8 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 							} else {
 								trim = child.getBorderWidth () * 2;
 							}
-							int oldWidthHint = data.widthHint;
-							data.widthHint = Math.max (0, currentWidth - trim);
 							data.cacheWidth = data.cacheHeight = SWT.DEFAULT;
-							data.computeSize(child, false);
-							data.widthHint = oldWidthHint;
+							data.computeSize(child, Math.max (0, currentWidth - trim), data.heightHint, false);
 							if (flush == null) flush = new GridData [children.length];
 							flush [flushLength++] = data;
 						}

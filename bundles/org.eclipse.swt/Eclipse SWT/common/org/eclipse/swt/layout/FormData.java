@@ -72,6 +72,8 @@ public final class FormData {
 	public FormAttachment bottom;
 	
 	int cacheWidth = -1, cacheHeight = -1;
+	int defaultWhint, defaultHhint, defaultWidth = -1, defaultHeight = -1;
+	int currentWhint, currentHhint, currentWidth = -1, currentHeight = -1;
 	FormAttachment cacheLeft, cacheRight, cacheTop, cacheBottom;
 	boolean isVisited, needed;
 	
@@ -84,12 +86,35 @@ public FormData (int width, int height) {
 	this.height = height;
 }
 
-void computeSize (Control control, int width, int height, boolean flushCache) {
-	if (cacheWidth == -1 || cacheHeight == -1) {
-		Point size = control.computeSize (width, height, flushCache);
-		cacheWidth = size.x;
-		cacheHeight = size.y;
+void computeSize (Control control, int wHint, int hHint, boolean flushCache) {
+	if (cacheWidth != -1 && cacheHeight != -1) return;
+	if (wHint == this.width && hHint == this.height) {
+		if (defaultWidth == -1 || defaultHeight == -1) {
+			Point size =  control.computeSize (wHint, hHint, flushCache);
+			defaultWhint = wHint;
+			defaultHhint = hHint;
+			defaultWidth = size.x;
+			defaultHeight = size.y;
+		}
+		cacheWidth = defaultWidth;
+		cacheHeight = defaultHeight;
+		return;
 	}
+	if (currentWidth == -1 || currentHeight == -1 || wHint != currentWhint || hHint != currentHhint) {
+		Point size =  control.computeSize (wHint, hHint, flushCache);
+		currentWhint = wHint;
+		currentHhint = hHint;
+		currentWidth = size.x;
+		currentHeight = size.y;
+	}
+	cacheWidth = currentWidth;
+	cacheHeight = currentHeight;
+}
+
+void flushCache () {
+	cacheWidth = cacheHeight = -1;
+	defaultHeight = defaultWidth = -1;
+	currentHeight = currentWidth = -1;
 }
 
 int getWidth (Control control, boolean flushCache) {

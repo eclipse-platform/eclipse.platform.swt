@@ -282,8 +282,8 @@ public final class GridData {
 	public static final int FILL_BOTH = FILL_VERTICAL | FILL_HORIZONTAL;
 
 	int cacheWidth = -1, cacheHeight = -1;
-	int [][] cache = new int[2][4];
-	int cacheIndex = -1;
+	int defaultWhint, defaultHhint, defaultWidth = -1, defaultHeight = -1;
+	int currentWhint, currentHhint, currentWidth = -1, currentHeight = -1;
 
 /**
  * Constructs a new instance of GridData using
@@ -365,29 +365,35 @@ public GridData (int width, int height) {
 	this.heightHint = height;
 }
 
-Point computeSize (Control control, boolean flushCache) {
-	if (cacheWidth != -1 && cacheHeight != -1) {
-		return new Point (cacheWidth, cacheHeight);
-	}
-	for (int i = 0; i < cacheIndex + 1; i++) {
-		if (cache [i][0] == widthHint && cache [i][1] == heightHint) {
-			cacheWidth = cache [i][2];
-			cacheHeight = cache [i][3];
-			return new Point (cacheWidth, cacheHeight);
+void computeSize (Control control, int wHint, int hHint, boolean flushCache) {
+	if (cacheWidth != -1 && cacheHeight != -1) return;
+	if (wHint == this.widthHint && hHint == this.heightHint) {
+		if (defaultWidth == -1 || defaultHeight == -1) {
+			Point size =  control.computeSize (wHint, hHint, flushCache);
+			defaultWhint = wHint;
+			defaultHhint = hHint;
+			defaultWidth = size.x;
+			defaultHeight = size.y;
 		}
+		cacheWidth = defaultWidth;
+		cacheHeight = defaultHeight;
+		return;
 	}
-	Point size =  control.computeSize (widthHint, heightHint, flushCache);
-	if (cacheIndex < cache.length - 1) cacheIndex++;
-	cache [cacheIndex][0] = widthHint;
-	cache [cacheIndex][1] = heightHint;
-	cacheWidth = cache [cacheIndex][2] = size.x;
-	cacheHeight = cache [cacheIndex][3] = size.y;
-	return size;
+	if (currentWidth == -1 || currentHeight == -1 || wHint != currentWhint || hHint != currentHhint) {
+		Point size =  control.computeSize (wHint, hHint, flushCache);
+		currentWhint = wHint;
+		currentHhint = hHint;
+		currentWidth = size.x;
+		currentHeight = size.y;
+	}
+	cacheWidth = currentWidth;
+	cacheHeight = currentHeight;
 }
 
 void flushCache () {
 	cacheWidth = cacheHeight = -1;
-	cacheIndex = -1;
+	defaultWidth = defaultHeight = -1;
+	currentWidth = currentHeight = -1;
 }
 
 String getName () {
@@ -436,5 +442,4 @@ public String toString () {
  	string += "}";
 	return string;
 }
-
 }

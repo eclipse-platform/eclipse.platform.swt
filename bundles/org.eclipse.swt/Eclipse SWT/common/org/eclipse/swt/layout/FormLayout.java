@@ -195,9 +195,9 @@ int computeHeight (Control control, FormData data, boolean flushCache) {
 }
 
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
-	Point size = layout (composite, false, 0, 0, 0, 0, flushCache);
-	size.x += marginWidth * 2;
-	size.y += marginHeight * 2;
+	Point size = layout (composite, false, 0, 0, wHint, hHint, flushCache);
+	if (wHint != SWT.DEFAULT) size.x = wHint;
+	if (hHint != SWT.DEFAULT) size.y = hHint;
 	return size;
 }
 
@@ -243,42 +243,62 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		Control child = children [i];
 		FormData data = (FormData) child.getLayoutData ();
 		if (data == null) child.setLayoutData (data = new FormData ());
-		if (flushCache) data.cacheWidth = data.cacheHeight = -1;
+		if (flushCache) data.flushCache ();
 		data.cacheLeft = data.cacheRight = data.cacheTop = data.cacheBottom = null;
 	}
 	boolean [] flush = null;
 	Rectangle [] bounds = null;
+	int w = 0, h = 0;
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		FormData data = (FormData) child.getLayoutData ();
-		if (move) {
+		if (width != SWT.DEFAULT) {
 			data.needed = false;
 			FormAttachment left = data.getLeftAttachment (child, spacing, flushCache);
 			FormAttachment right = data.getRightAttachment (child, spacing, flushCache);
 			int x1 = left.solveX (width), x2 = right.solveX (width);
-			//TEMPORARY CODE
-			if (data.width == SWT.DEFAULT && data.height == SWT.DEFAULT) {
-				if (!data.needed && (child.getStyle () & SWT.WRAP) != 0) {
-					int trim = 0;
-					if (child instanceof Scrollable) {
-						Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
-						trim = rect.width;
-					} else {
-						trim = child.getBorderWidth () * 2;
-					}
-					int currentWidth = Math.max (0, x2 - x1 - trim);
-					data.computeSize (child, currentWidth, data.height, flushCache);
-					if (flush == null) flush = new boolean [children.length];
-					flush [i] = true;
+			if (data.height == SWT.DEFAULT && !data.needed) {
+				//TEMPORARY CODE
+				int trim = 0;
+				if (child instanceof Group) {
+					Group g = (Group)child;
+					trim = g.getSize ().x - g.getClientArea ().width;
+				} else if (child instanceof Scrollable) {
+					Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
+					trim = rect.width;
+				} else {
+					trim = child.getBorderWidth () * 2;
 				}
+				data.cacheWidth = data.cacheHeight = -1;
+				int currentWidth = Math.max (0, x2 - x1 - trim);
+				data.computeSize (child, currentWidth, data.height, flushCache);
+				if (flush == null) flush = new boolean [children.length];
+				flush [i] = true;
 			}
+			w = Math.max (x2, w);
+			if (move) {
+				if (bounds == null) bounds = new Rectangle [children.length];
+				bounds [i] = new Rectangle (0, 0, 0, 0);
+				bounds [i].x = x + x1;
+				bounds [i].width = x2 - x1;
+			}
+		} else {
+			w = Math.max (computeWidth (child, data, flushCache), w);
+		}
+	}
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		FormData data = (FormData) child.getLayoutData ();
+		if (height != SWT.DEFAULT) {
 			int y1 = data.getTopAttachment (child, spacing, flushCache).solveX (height);
 			int y2 = data.getBottomAttachment (child, spacing, flushCache).solveX (height);
-			if (bounds == null) bounds = new Rectangle [children.length];
-			bounds [i] = new Rectangle (x + x1, y + y1, x2 - x1, y2 - y1);
+			h = Math.max (y2, h);
+			if (move) {
+				bounds [i].y = y + y1;
+				bounds [i].height = y2 - y1;
+			}
 		} else {
-			width = Math.max (computeWidth (child, data, flushCache), width);
-			height = Math.max (computeHeight (child, data, flushCache), height);
+			h = Math.max (computeHeight (child, data, flushCache), h);
 		}
 	}
 	for (int i=0; i<children.length; i++) {
@@ -292,7 +312,9 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			children [i].setBounds (bounds [i]);
 		}
 	}
-	return move ? null : new Point (width, height);
+	w += marginWidth * 2;
+	h += marginHeight * 2;
+	return new Point (w, h);
 }
 
 public String toString () {
