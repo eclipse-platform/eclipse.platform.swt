@@ -124,6 +124,8 @@ public static final native int PR_GetEnv(byte[] name);
 public static final native int PR_Malloc(int Length);
 public static final native int strlen(int s);
 
+public static final native boolean isDependent(byte[] filename, byte[] libname);
+
 public static final native int Call(int ptr, int aInStream, int aClosure, byte[] aFromSegment, int aToOffset, int aCount, int[] aWriteCount);
 
 static final native int VtblCall(int fnNumber, int ppVtbl, nsID arg0, int[] arg1);

@@ -121,7 +121,18 @@ public Browser(Composite parent, int style) {
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown mozilla path]");
 		}
-
+		
+//		String filename = mozillaPath+"/libgtkembedmoz.so\0";
+//		String libname = "libgtk-1.2.so.0\0";
+//		boolean isGTK12 = false;
+//		try {
+//			isGTK12 = XPCOM.isDependent(filename.getBytes("UTF-8"), libname.getBytes("UTF-8"));
+//		} catch (UnsupportedEncodingException e) {
+//		}
+//		if (isGTK12) {
+//			SWT.error(SWT.ERROR_NO_HANDLES, null, " [INCOMPATIBLE MOZILLA GTK1.2 DETECTED. MUST INSTALL MOZILLA GTK2.]");				
+//		}
+		
 		int[] retVal = new int[1];
 		nsEmbedString path = new nsEmbedString(mozillaPath);
 		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);

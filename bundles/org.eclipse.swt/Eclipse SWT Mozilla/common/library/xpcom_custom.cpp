@@ -29,6 +29,8 @@
 #include "swt.h"
 #include "xpcom_structs.h"
 #include "xpcom_stats.h"
+#include <stdio.h>
+#include <elf.h>
 
 extern "C" {
 
@@ -52,4 +54,79 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(strlen_1PRUnichar)
 }
 #endif
 
+int isDependent(char *filename, char *libname) {
+	Elf32_Ehdr hdr;
+	char *strdata = 0;
+	FILE *fd;
+	int i, result = 0;
+	fd = fopen(filename, "r");
+    if (fd == NULL) return 0;
+    if (fread(&hdr, sizeof(Elf32_Ehdr), 1, fd) != 1) goto clean;
+    
+	/* Jump to the section header table. */
+	if (fseek(fd, hdr.e_shoff, SEEK_SET) != 0) goto clean;
+
+	/* Find and load the dynamic symbol strings. */
+	for (i=0; i<hdr.e_shnum; i++) {
+		Elf32_Shdr shdr;
+		if (fseek(fd, hdr.e_shoff + (i * hdr.e_shentsize), SEEK_SET) != 0) goto clean;
+		if (fread(&shdr, sizeof(Elf32_Shdr), 1, fd) != 1) goto clean;
+		if (shdr.sh_type == SHT_DYNSYM) {
+			Elf32_Shdr symstr;
+			if (fseek(fd, hdr.e_shoff + (shdr.sh_link * hdr.e_shentsize), SEEK_SET) != 0) goto clean;
+			if (fread(&symstr, sizeof(Elf32_Shdr), 1, fd) != 1) goto clean;
+			if (fseek(fd, symstr.sh_offset, SEEK_SET) != 0) goto clean;
+			strdata = (char *)malloc(symstr.sh_size);
+			if (fread(strdata, symstr.sh_size, 1, fd) != 1) goto clean;
+			break;
+		}
+	}
+	if (strdata == NULL) goto clean;
+    
+	/* Now find the .dynamic section. */
+	for(i=0; i<hdr.e_shnum; i++) {
+		Elf32_Shdr shdr;
+		if (fseek(fd, hdr.e_shoff+(i*hdr.e_shentsize), SEEK_SET) != 0) goto clean;
+		if (fread(&shdr, sizeof( Elf32_Shdr ), 1, fd) != 1) goto clean;
+		if(shdr.sh_type == SHT_DYNAMIC) {
+			int j;
+			/* Load its data and print all DT_NEEDED strings. */
+			if (fseek(fd, shdr.sh_offset, SEEK_SET) != 0) goto clean;
+			for (j=0; j<shdr.sh_size/sizeof(Elf32_Dyn); j++) {
+				Elf32_Dyn cur;
+				if (fread(&cur, sizeof(Elf32_Dyn), 1, fd) != 1) goto clean;
+				if(cur.d_tag == DT_NEEDED) {
+					char *name = strdata + cur.d_un.d_val;
+					if (strcmp(name, libname) == 0) {
+						result = 1;
+						goto clean;			
+					}
+				}
+			}
+		}
+	}
+clean:
+	if (fd != NULL) fclose(fd);
+	if (strdata != NULL) free(strdata);
+    return result;
+}
+
+#ifndef NO_isDependent
+JNIEXPORT jboolean JNICALL XPCOM_NATIVE(isDependent)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jboolean rc = 0;
+	XPCOM_NATIVE_ENTER(env, that, isDependent_FUNC);
+	if (arg0) if ((lparg0 = env->GetByteArrayElements(arg0, NULL)) == NULL) goto fail;
+	if (arg1) if ((lparg1 = env->GetByteArrayElements(arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)isDependent((char *)lparg0, (char *)lparg1);
+fail:
+	if (arg1 && lparg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
+	if (arg0 && lparg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
+	XPCOM_NATIVE_EXIT(env, that, isDependent_FUNC);
+	return rc;
+}
+#endif
 }
