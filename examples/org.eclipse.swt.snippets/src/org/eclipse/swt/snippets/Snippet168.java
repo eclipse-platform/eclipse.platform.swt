@@ -11,7 +11,7 @@
 package org.eclipse.swt.snippets;
 
 /*
- * Draw lines with specific extremities
+ * Draw lines and polygons with different cap and join styles
  *
  * For a list of all SWT example snippets see
  * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
@@ -28,13 +28,10 @@ public class Snippet168 {
 		Shell shell = new Shell(display);
 		shell.addListener(SWT.Paint, new Listener() {
 			public void handleEvent(Event event) {
+				int x = 20, y = 20, w = 120, h = 60;
 				GC gc = event.gc;
-				gc.setLineWidth(10);
 				gc.setForeground(display.getSystemColor(SWT.COLOR_BLUE));
-				int x = 20;
-				int y = 20;
-				int w = 120;
-				int h = 60;
+				gc.setLineWidth(10);
 				int[] caps = {SWT.CAP_FLAT, SWT.CAP_ROUND, SWT.CAP_SQUARE};
 				for (int i = 0; i < caps.length; i++) {
 					gc.setLineCap(caps[i]);
