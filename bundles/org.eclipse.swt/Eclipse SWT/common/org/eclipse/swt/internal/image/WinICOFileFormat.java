@@ -118,7 +118,7 @@ ImageData loadIcon(int[] iconHeader) {
 	infoHeader[14] = 1;
 	infoHeader[15] = 0;
 	byte[] maskData = bmpFormat.loadData(infoHeader);
-	maskData = convertPad(maskData, width, height, 1, 4, 1);
+	maskData = convertPad(maskData, width, height, 1, 4, 2);
 	bitInvertData(maskData, 0, maskData.length);
 	return ImageData.internal_new(
 		width,
@@ -127,7 +127,7 @@ ImageData loadIcon(int[] iconHeader) {
 		palette,
 		4,
 		shapeData,
-		1,
+		2,
 		maskData,
 		null,
 		-1,
