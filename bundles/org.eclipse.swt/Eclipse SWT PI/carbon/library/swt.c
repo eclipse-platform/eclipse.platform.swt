@@ -271,6 +271,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddArc
 }
 #endif /* NO_CGContextAddArc */
 
+#ifndef NO_CGContextAddArcToPoint
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddArcToPoint
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2, jfloat arg3, jfloat arg4, jfloat arg5)
+{
+	DEBUG_CALL("CGContextAddArcToPoint\n")
+
+	CGContextAddArcToPoint((CGContextRef)arg0, (float)arg1, (float)arg2, (float)arg3, (float)arg4, (float)arg5);
+}
+#endif /* NO_CGContextAddArc */
+
 #ifndef NO_CGContextAddLineToPoint
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddLineToPoint
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
@@ -285,13 +295,13 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddLineT
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddLines
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
-	CGPoint _arg1, *lparg1=NULL;
+	jfloat *lparg1=NULL;
 
 	DEBUG_CALL("CGContextAddLines\n")
 
-	if (arg1) lparg1 = getCGPointFields(env, arg1, &_arg1);
+	if (arg1) lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL);
 	CGContextAddLines((CGContextRef)arg0, (const CGPoint *)lparg1, (size_t)arg2);
-	if (arg1) setCGPointFields(env, arg1, lparg1);
+	if (arg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
 }
 #endif /* NO_CGContextAddLines */
 
@@ -638,6 +648,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextTranslat
 	CGContextTranslateCTM((CGContextRef)arg0, (float)arg1, (float)arg2);
 }
 #endif /* NO_CGContextTranslateCTM */
+
+#ifndef NO_CGContextSynchronize
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSynchronize
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
+{
+	DEBUG_CALL("CGContextSynchronize\n")
+
+	CGContextSynchronize((CGContextRef)arg0);
+}
+#endif /* NO_CGContextSynchronize */
 
 #ifndef NO_CGDataProviderCreateWithData
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGDataProviderCreateWithData

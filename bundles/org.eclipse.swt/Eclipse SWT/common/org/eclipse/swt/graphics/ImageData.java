@@ -1049,7 +1049,7 @@ public ImageData getTransparencyMask() {
 public int getTransparencyType() {
 	if (maskData != null) return SWT.TRANSPARENCY_MASK;
 	if (transparentPixel != -1) return SWT.TRANSPARENCY_PIXEL;
-	if (alphaData != null) return SWT.TRANSPARENCY_ALPHA;
+	if (alpha != -1 || alphaData != null) return SWT.TRANSPARENCY_ALPHA;
 	return SWT.TRANSPARENCY_NONE;
 }
 

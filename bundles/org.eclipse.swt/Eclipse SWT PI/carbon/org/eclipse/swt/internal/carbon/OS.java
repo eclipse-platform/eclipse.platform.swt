@@ -41,6 +41,8 @@ public class OS {
 	public static final int kAtSpecifiedOrigin = 0;
 	public static final int kCFAllocatorDefault = 0;
 	public static final int kCFURLPOSIXPathStyle = 0;
+	public static final int kCGImageAlphaFirst = 4;
+	public static final int kCGImageAlphaNoneSkipFirst = 6;
 	public static final int kColorPickerDialogIsMoveable =  1;
 	public static final int kColorPickerDialogIsModal = 2;
 	public static final int kControlBehaviorPushbutton = 0;
@@ -376,8 +378,9 @@ public static final native int CGBitmapContextCreate(int data, int width, int he
 public static final native int CGColorSpaceCreateDeviceRGB ();
 public static final native void CGColorSpaceRelease (int cs);
 public static final native void CGContextAddArc (int ctx, float x, float y, float radius, float startAngle, float endAngle, boolean clockwise);
+public static final native void CGContextAddArcToPoint (int ctx, float x1, float y1, float x2, float y2, float radius);
 public static final native void CGContextAddLineToPoint (int ctx, float x, float y);
-public static final native void CGContextAddLines (int ctx, CGPoint points, int count);
+public static final native void CGContextAddLines (int ctx, float[] points, int count);
 public static final native void CGContextBeginPath (int ctx);
 public static final native void CGContextClip (int ctx);
 public static final native void CGContextClosePath (int ctx);
@@ -406,6 +409,7 @@ public static final native void CGContextShowText (int ctx, byte[] cstring, int 
 public static final native void CGContextShowTextAtPoint (int ctx, float x, float y, byte[] cstring, int length);
 public static final native void CGContextSetTextMatrix (int ctx, float[] transform);
 public static final native void CGContextStrokePath (int ctx);
+public static final native void CGContextSynchronize (int ctx);
 public static final native int CGDataProviderCreateWithData (int info, int data, int size, int releaseData);
 public static final native void CGDataProviderRelease (int provider);
 public static final native int CGImageCreate (int width, int height, int bitsPerComponent, int bitsPerPixel, int bytesPerRow, int colorspace, int alphaInfo, int provider, float[] decode, boolean shouldInterpolate, int intent);

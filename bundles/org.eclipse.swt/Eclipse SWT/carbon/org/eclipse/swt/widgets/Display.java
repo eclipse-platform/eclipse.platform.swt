@@ -352,8 +352,7 @@ public Thread getSyncThread () {
 
 public Color getSystemColor (int id) {
 	checkDevice ();
-
-//	switch (id) {
+	switch (id) {
 //		case SWT.COLOR_INFO_FOREGROUND: 		return COLOR_INFO_FOREGROUND;
 //		case SWT.COLOR_INFO_BACKGROUND: 		return COLOR_INFO_BACKGROUND;	
 //		case SWT.COLOR_TITLE_FOREGROUND:		return super.getSystemColor (SWT.COLOR_WHITE);
@@ -373,10 +372,9 @@ public Color getSystemColor (int id) {
 //		case SWT.COLOR_LIST_BACKGROUND: 	xColor = COLOR_LIST_BACKGROUND; break;
 //		case SWT.COLOR_LIST_SELECTION: 		xColor = COLOR_LIST_SELECTION; break;
 //		case SWT.COLOR_LIST_SELECTION_TEXT: 	xColor = COLOR_LIST_SELECTION_TEXT; break;
-//		default:
-//			return super.getSystemColor (id);	
-//	}
-	return null;
+		default:
+			return super.getSystemColor (id);	
+	}
 }
 
 public Font getSystemFont () {
