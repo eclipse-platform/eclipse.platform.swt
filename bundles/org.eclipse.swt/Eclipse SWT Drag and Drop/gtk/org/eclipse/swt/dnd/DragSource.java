@@ -90,13 +90,20 @@ import org.eclipse.swt.internal.gtk.*;
  * </dl>
  */
 public final class DragSource extends Widget {
+	
+	static Callback DragGetData;
+	static Callback DragEnd;
+	static Callback DragDataDelete;
+	static {
+		DragGetData = new Callback(DragSource.class, "DragGetData", 6);	
+		DragEnd = new Callback(DragSource.class, "DragEnd", 3);
+		DragDataDelete = new Callback(DragSource.class, "DragDataDelete", 3);
+	}
+	static final String DRAGSOURCEID = "DragSource";
+	
 	Control control;
 	Listener controlListener;
 	Transfer[] transferAgents = new Transfer[0];
-	
-	Callback dragGetData;
-	Callback dragEnd;
-	Callback dragDataDelete;
 	int targetList;
 	boolean movePerformed;
 	
@@ -112,6 +119,8 @@ public final class DragSource extends Widget {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_INIT_DRAG - unable to initiate drag source</li>
  * </ul>
  *
  * @see DragSource#dispose
@@ -123,22 +132,15 @@ public final class DragSource extends Widget {
  */
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
-	this.control = control;	
-	
-	// Drag Get Data Callback	
-	dragGetData = new Callback(this, "dragGetData", 6);
+	this.control = control;
+	if (control.getData(DRAGSOURCEID) != null) DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+	control.setData(DRAGSOURCEID, this);
 	byte[] buffer = Converter.wcsToMbcs(null, "drag_data_get", true);
-	OS.g_signal_connect(control.handle, buffer, dragGetData.getAddress(), 0);
-
-	// Drag End Callback	
-	dragEnd = new Callback(this, "dragEnd", 3);
+	OS.g_signal_connect(control.handle, buffer, DragGetData.getAddress(), 0);	
 	buffer = Converter.wcsToMbcs(null, "drag_end", true);
-	OS.g_signal_connect(control.handle, buffer, dragEnd.getAddress(), 0);
-
-	// Drag Data Delete Callback	
-	dragDataDelete = new Callback(this, "dragDataDelete", 3);
+	OS.g_signal_connect(control.handle, buffer, DragEnd.getAddress(), 0);
 	buffer = Converter.wcsToMbcs(null, "drag_data_delete", true);
-	OS.g_signal_connect(control.handle, buffer, dragDataDelete.getAddress(), 0);
+	OS.g_signal_connect(control.handle, buffer, DragDataDelete.getAddress(), 0);
 	
 	controlListener = new Listener () {
 		public void handleEvent (Event event) {
@@ -152,7 +154,6 @@ public DragSource(Control control, int style) {
 					DragSource.this.drag(event);
 				}
 			}
-			
 		}
 	};
 	this.control.addListener (SWT.Dispose, controlListener);
@@ -163,7 +164,29 @@ public DragSource(Control control, int style) {
 			onDispose();
 		}
 	});
-		
+}
+
+static DragSource FindDragSource(int handle) {
+	Display display = Display.findDisplay(Thread.currentThread());
+	if (display == null || display.isDisposed()) return null;
+	Widget widget = display.findWidget(handle);
+	if (widget == null) return null;
+	return (DragSource)widget.getData(DRAGSOURCEID);
+}
+static int DragEnd(int widget, int context, int data){
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	return source.dragEnd(widget, context, data);
+}	
+static int DragGetData(int widget, int context, int selection_data,  int info, int time, int data){
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	return source.dragGetData(widget, context, selection_data, info, time, data);
+}
+static int DragDataDelete(int widget, int context, int data){
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	return source.dragDataDelete(widget, context, data);
 }
 
 /**
@@ -298,6 +321,7 @@ int dragDataDelete(int widget, int context, int data){
 	movePerformed = true;
 	return 1;
 }
+
 public Display getDisplay () {
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	return control.getDisplay ();
@@ -323,18 +347,6 @@ private void onDispose(){
 	if (targetList != 0) 
 		OS.gtk_target_list_unref(targetList);
 	targetList = 0;
-	
-	if (dragGetData != null ) 
-		dragGetData.dispose();
-	dragGetData = null;
-	
-	if (dragEnd != null ) 
-		dragEnd.dispose();
-	dragEnd = null;
-	
-	if (dragDataDelete != null ) 
-		dragDataDelete.dispose();
-	dragDataDelete = null;
 }
 
 private int opToOsOp(int operation){

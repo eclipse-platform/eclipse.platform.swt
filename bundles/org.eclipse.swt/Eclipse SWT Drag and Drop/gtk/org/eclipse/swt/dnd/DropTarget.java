@@ -66,10 +66,17 @@ import org.eclipse.swt.internal.gtk.*;
  */
 public final class DropTarget extends Widget {
 
-	Callback dragMotion;
-	Callback dragLeave;
-	Callback dragDataReceived;
-	Callback dragDrop;
+	static Callback DragMotion;
+	static Callback DragLeave;
+	static Callback DragDataReceived;
+	static Callback DragDrop;
+	static {	
+		DragMotion = new Callback(DropTarget.class, "DragMotion", 5);
+		DragLeave = new Callback(DropTarget.class, "DragLeave", 3);
+		DragDataReceived = new Callback(DropTarget.class, "DragDataReceived", 7);
+		DragDrop = new Callback(DropTarget.class, "DragDrop", 5);
+	}
+	static final String DROPTARGETID = "DropTarget";
 	
 	// Track key state changes
 	int lastOperation = -1;
@@ -99,6 +106,13 @@ public final class DropTarget extends Widget {
  * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
  *		   DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_INIT_DROP - unable to initiate drop target</li>
+ * </ul>
+ * 
  * @see DropTarget#dispose
  * @see DropTarget#checkSubclass
  * @see DND#DROP_NONE
@@ -109,26 +123,16 @@ public final class DropTarget extends Widget {
 public DropTarget(Control control, int style) {
 	super(control, checkStyle(style));
 	this.control = control;
-	
-	// Drag Motion Callback	
-	dragMotion = new Callback(this, "dragMotion", 5);
+	if (control.getData(DROPTARGETID) != null) DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	control.setData(DROPTARGETID, this);
 	byte[] buffer = Converter.wcsToMbcs(null, "drag_motion", true);
-	OS.g_signal_connect(control.handle, buffer, dragMotion.getAddress(), 0);
-
-	// Drag Leave Callback	
-	dragLeave = new Callback(this, "dragLeave", 3);
+	OS.g_signal_connect(control.handle, buffer, DragMotion.getAddress(), 0);
 	buffer = Converter.wcsToMbcs(null, "drag_leave", true);
-	OS.g_signal_connect(control.handle, buffer, dragLeave.getAddress(), 0);
-	
-	// Drag Data Received Callback	
-	dragDataReceived = new Callback(this, "dragDataReceived", 7);
+	OS.g_signal_connect(control.handle, buffer, DragLeave.getAddress(), 0);
 	buffer = Converter.wcsToMbcs(null, "drag_data_received", true);
-	OS.g_signal_connect(control.handle, buffer, dragDataReceived.getAddress(), 0);
-	
-	// Drag Data Received Callback	
-	dragDrop = new Callback(this, "dragDrop", 5);
+	OS.g_signal_connect(control.handle, buffer, DragDataReceived.getAddress(), 0);
 	buffer = Converter.wcsToMbcs(null, "drag_drop", true);
-	OS.g_signal_connect(control.handle, buffer, dragDrop.getAddress(), 0);
+	OS.g_signal_connect(control.handle, buffer, DragDrop.getAddress(), 0);
 
 	// Dispose listeners	
 	controlListener = new Listener(){
@@ -197,6 +201,33 @@ public DropTarget(Control control, int style) {
 	};
 }
 
+static DropTarget FindDropTarget(int handle) {
+	Display display = Display.findDisplay(Thread.currentThread());
+	if (display == null || display.isDisposed()) return null;
+	Widget widget = display.findWidget(handle);
+	if (widget == null) return null;
+	return (DropTarget)widget.getData(DROPTARGETID);
+}
+static int DragDataReceived ( int widget, int context, int x, int y, int data, int info, int time){
+	DropTarget target = FindDropTarget(widget);
+	if (target == null) return 0;
+	return target.dragDataReceived (widget, context, x, y, data, info, time);
+}
+static int DragDrop(int widget, int context, int x, int y, int time) {
+	DropTarget target = FindDropTarget(widget);
+	if (target == null) return 0;
+	return target.dragDrop (widget, context, x, y, time);
+}
+static int DragLeave ( int widget, int context, int time){
+	DropTarget target = FindDropTarget(widget);
+	if (target == null) return 0;
+	return target.dragLeave (widget, context, time);
+}
+static int DragMotion ( int widget, int context, int x, int y, int time){
+	DropTarget target = FindDropTarget(widget);
+	if (target == null) return 0;
+	return target.dragMotion (widget, context, x, y, time);
+}
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when a drag and drop operation is in progress, by sending
@@ -490,22 +521,6 @@ private void onDispose(){
 	}
 	control = null;
 	controlListener = null;
-	
-	if (dragMotion != null ) 
-		dragMotion.dispose();
-	dragMotion = null;
-	
-	if (dragDataReceived != null ) 
-		dragDataReceived.dispose();
-	dragDataReceived = null;
-	
-	if (dragLeave!= null ) 
-		dragLeave.dispose();
-	dragLeave = null;
-	
-	if (dragDrop != null ) 
-		dragDrop.dispose();
-	dragDrop = null;
 }
 
 private int opToOsOp(int operation){
