@@ -128,26 +128,26 @@ public Object getContents(Transfer transfer) {
 	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (transfer == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
-		
-	int[] scrapHandle = new int[1];
-	OS.GetCurrentScrap(scrapHandle);
-	int scrap= scrapHandle[0];
-		
-	// Does Clipboard have data in required format?
+	
+	int[] scrap = new int[1];
+	if (OS.GetCurrentScrap(scrap) != OS.noErr) return null;
 	int[] typeIds = transfer.getTypeIds();
-	for (int i= 0; i < typeIds.length; i++) {
+	int[] size = new int[1];	
+	// get data from system clipboard
+	for (int i=0; i<typeIds.length; i++) {
 		int type = typeIds[i];
-		int[] size = new int[1];
-		if (OS.GetScrapFlavorSize(scrap, type, size) == OS.noErr) {
-			if (size[0] > 0) {
+		size[0] = 0;
+		if (OS.GetScrapFlavorSize(scrap[0], type, size) == OS.noErr && size[0] > 0) {
+			byte[] buffer = new byte[size[0]];
+			if (OS.GetScrapFlavorData(scrap[0], type, size, buffer) == OS.noErr) {
 				TransferData tdata = new TransferData();
 				tdata.type = type;		
-				tdata.data = new byte[size[0]];
-				OS.GetScrapFlavorData(scrap, type, size, tdata.data);
+				tdata.data = new byte[1][];
+				tdata.data[0] = buffer;
 				return transfer.nativeToJava(tdata);
 			}
 		}
-	}		
+	}
 	return null;	// No data available for this transfer
 }
 
@@ -193,21 +193,27 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
-	OS.ClearCurrentScrap();
-	int[] scrapHandle = new int[1];
-	OS.GetCurrentScrap(scrapHandle);
-	int scrap = scrapHandle[0];
+	if (OS.ClearCurrentScrap() != OS.noErr) {
+		DND.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	int[] scrap = new int[1];
+	if (OS.GetCurrentScrap(scrap) != OS.noErr) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+	}
 	// copy data directly over to System clipboard (not deferred)
-	for (int i= 0; i < dataTypes.length; i++) {
-		int[] ids = dataTypes[i].getTypeIds();
-		for (int j= 0; j < ids.length; j++) {
+	for (int i=0; i<dataTypes.length; i++) {
+		int[] typeIds = dataTypes[i].getTypeIds();
+		for (int j=0; j<typeIds.length; j++) {
 			TransferData transferData = new TransferData();
-			transferData.type = ids[j];
-			dataTypes[i].javaToNative(data[i], transferData);
-			if (transferData.result != OS.noErr)
+			transferData.type = typeIds[j];
+			dataTypes[i].javaToNative(data[i], transferData); 
+			if (transferData.result != OS.noErr) {
 				DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-			if (OS.PutScrapFlavor(scrap, transferData.type, 0, transferData.data.length, transferData.data) != OS.noErr){
+			}
+			//Drag and Drop can handle multiple items in one transfer but the
+			//Clipboard can not.
+			byte[] datum = transferData.data[0];
+			if (OS.PutScrapFlavor(scrap[0], transferData.type, 0, datum.length, datum) != OS.noErr){
 				DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 			}
 		}
@@ -228,24 +234,47 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 public String[] getAvailableTypeNames() {
 	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
-	
-	int[] scrapHandle = new int[1];
-	OS.GetCurrentScrap(scrapHandle);
-	int scrap = scrapHandle[0];	
-	int[] count = new int[1];
-	OS.GetScrapFlavorCount(scrap, count);
-	if (count [0] == 0) return new String [0];
-	int[] info = new int[count[0] * 2];
-	OS.GetScrapFlavorInfoList(scrap, count, info);
-	String[] result = new String[count[0]];
-	for (int i= 0; i < count [0]; i++) {
-		int type = info[i*2];
+	int[] types = _getAvailableTypes();
+	String[] result = new String[types.length];
+	for (int i = 0; i < types.length; i++) {
+		int type = types[i];
 		StringBuffer sb = new StringBuffer();
 		sb.append((char)((type & 0xff000000) >> 24));
 		sb.append((char)((type & 0x00ff0000) >> 16));
 		sb.append((char)((type & 0x0000ff00) >> 8));
 		sb.append((char)((type & 0x000000ff) >> 0));
 		result[i] = sb.toString();
+	}
+	return result;
+}
+/**
+ * 
+ * @return array of TransferData
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	int[] types = _getAvailableTypes();
+	TransferData[] result = new TransferData[types.length];
+	for (int i = 0; i < types.length; i++) {
+		result[i] = new TransferData();
+		result[i].type = types[i];
+	}
+	return result;
+}
+
+int[] _getAvailableTypes() {
+	int[] scrap = new int[1];
+	if (OS.GetCurrentScrap(scrap) != OS.noErr) return new int[0];
+	int[] count = new int[1];
+	if (OS.GetScrapFlavorCount(scrap[0], count) != OS.noErr || count[0] == 0) return new int[0];
+	int[] info = new int[count[0] * 2];
+	if (OS.GetScrapFlavorInfoList(scrap[0], count, info) != OS.noErr) return new int[0];
+	int[] result = new int[count[0]];
+	for (int i= 0; i < count [0]; i++) {
+		result[i] = info[i*2];
 	}
 	return result;
 }

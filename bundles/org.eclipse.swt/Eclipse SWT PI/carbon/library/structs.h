@@ -199,14 +199,6 @@ void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *
 #define setHMHelpContentRecFields(a,b,c)
 #endif /* NO_HMHelpContentRec */
 
-#ifndef NO_HFSFlavor
-HFSFlavor *getHFSFlavorFields(JNIEnv *env, jobject lpObject, HFSFlavor *lpStruct);
-void setHFSFlavorFields(JNIEnv *env, jobject lpObject, HFSFlavor *lpStruct);
-#else
-#define getHFSFlavorFields(a,b,c) NULL
-#define setHFSFlavorFields(a,b,c)
-#endif /* NO_HFSFlavor */
-
 #ifndef NO_MenuTrackingData
 MenuTrackingData *getMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct);
 void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct);

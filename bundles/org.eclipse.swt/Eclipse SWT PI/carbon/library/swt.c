@@ -596,6 +596,32 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCreateFromFS
 }
 #endif /* NO_CFURLCreateFromFSRef */
 
+#ifndef NO_CFURLCreateWithFileSystemPath
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCreateWithFileSystemPath
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
+{
+	DEBUG_CALL("CFURLCreateWithFileSystemPath\n")
+
+	return (jint)CFURLCreateWithFileSystemPath((CFAllocatorRef)arg0, (CFStringRef)arg1, (CFURLPathStyle)arg2, arg3);
+}
+#endif
+
+#ifndef NO_CFURLGetFSRef
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLGetFSRef
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("CFURLGetFSRef\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jboolean)CFURLGetFSRef((CFURLRef)arg0, (struct FSRef *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGBitmapContextCreate
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGBitmapContextCreate
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
@@ -1404,7 +1430,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountDragItems
 	jshort *lparg1=NULL;
 	jint rc;
 
-	DEBUG_CALL("CountSubControls\n")
+	DEBUG_CALL("v\n")
 
 	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
 	rc = (jint)CountDragItems((DragRef)arg0, (UInt16 *)lparg1);
@@ -1412,6 +1438,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountDragItems
 	return rc;
 }
 #endif /* NO_CountDragItems */
+
+#ifndef NO_CountDragItemFlavors
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountDragItemFlavors
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2)
+{
+	jshort *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("CountDragItemFlavors\n")
+
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)CountDragItemFlavors((DragRef)arg0, (DragItemRef)arg1, (UInt16 *)lparg2);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_CountDragItemFlavors */
 
 #ifndef NO_CountMenuItems
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountMenuItems
@@ -2492,6 +2534,53 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FPShowHideFontPan
 	DEBUG_CALL("FPShowHideFontPanel\n")
 
 	return (jint)FPShowHideFontPanel();
+}
+#endif
+
+#ifndef NO_FSpMakeFSRef
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FSpMakeFSRef
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("FSpMakeFSRef\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)FSpMakeFSRef((const FSSpec *)lparg0, (FSRef *)lparg1);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_FSGetCatalogInfo
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FSGetCatalogInfo
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jbyteArray arg2, jbyteArray arg3, jbyteArray arg4, jbyteArray arg5)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jbyte *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("FSGetCatalogInfo\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
+	rc = (jint)FSGetCatalogInfo((FSRef *)lparg0, (FSCatalogInfoBitmap)arg1, (FSCatalogInfo *)lparg2, (HFSUniStr255 *)lparg3, (FSSpec *)lparg4, (FSRef *)lparg5);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	return rc;
 }
 #endif
 
@@ -8103,23 +8192,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILjava_la
 	if (arg1) lparg1 = (*env)->GetStringChars(env, arg1, NULL);
 	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	if (arg1) (*env)->ReleaseStringChars(env, arg1, lparg1);
-}
-#endif
-
-#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_HFSFlavor_2_3BI
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_eclipse_swt_internal_carbon_HFSFlavor_2_3BI
-	(JNIEnv *env, jclass that, jobject arg0, jbyteArray arg1, jint arg2)
-{
-	HFSFlavor _arg0, *lparg0=NULL;
-	jbyte *lparg1=NULL;
-
-	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_HFSFlavor_2_3BI\n")
-
-	if (arg0) lparg0 = getHFSFlavorFields(env, arg0, &_arg0);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	memcpy((void *)lparg0, (const void *)lparg1, (size_t)arg2);
-	if (arg0) setHFSFlavorFields(env, arg0, lparg0);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 }
 #endif
 

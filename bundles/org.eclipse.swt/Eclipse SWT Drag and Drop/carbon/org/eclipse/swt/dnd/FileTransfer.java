@@ -10,8 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
- 
-import org.eclipse.swt.internal.Converter;
+import java.io.*;
+import org.eclipse.swt.internal.carbon.*;
  
 /**
  * The class <code>FileTransfer</code> provides a platform specific mechanism 
@@ -35,8 +35,13 @@ import org.eclipse.swt.internal.Converter;
 public class FileTransfer extends ByteArrayTransfer {
 	
 	private static FileTransfer _instance = new FileTransfer();
-	private static final String TYPENAME = "text/uri-list";
-	private static final int TYPEID = registerType(TYPENAME);
+	//the text/uri-list is used only for transfers within the same application
+	private static final String URILIST = "text/uri-list";
+	private static final String HFS = "hfs ";
+	static final int URILISTID = registerType(URILIST);
+	static final int HFSID = registerType(HFS);
+	static final String URILIST_PREFIX = "file:";
+	static final String URILIST_SEPARATOR = "\r";
 	
 private FileTransfer() {}
 /**
@@ -60,18 +65,60 @@ public static FileTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative(Object object, TransferData transferData) {
-	if (object == null || !(object instanceof String[])) return;
-	// build a byte array from data
+	transferData.result = -1;
+	if (object == null || !(object instanceof String[]) || !isSupportedType(transferData)) return;
 	String[] files = (String[])object;
-	
-	// create a string separated by "new lines" to represent list of files
-	String nativeFormat = "";
-	for (int i = 0, length = files.length; i < length; i++){
-		nativeFormat += "file:"+files[i]+"\r";
+	if (files.length == 0) return;		
+
+	if (transferData.type == URILISTID) {
+		// create a string separated by "new lines" to represent list of files
+		StringBuffer sb = new StringBuffer();
+		for (int i = 0, length = files.length; i < length; i++){
+			sb.append(URILIST_PREFIX);
+			sb.append(files[i]);
+			sb.append(URILIST_SEPARATOR);
+		}
+		String str = sb.toString();
+		char[] chars = new char[str.length()];
+		str.getChars (0, chars.length, chars, 0);
+		byte[] buffer = new byte[chars.length * 2];
+		OS.memcpy(buffer, chars, buffer.length);
+		transferData.data = new byte[1][];
+		transferData.data[0] = buffer;
+		transferData.result = 0;
 	}
-	byte[] buffer = Converter.wcsToMbcs(null, nativeFormat, true);
-	// pass byte array on to super to convert to native
-	super.javaToNative(buffer, transferData);
+	if (transferData.type == HFSID) {
+		byte[][] data = new byte[files.length][];
+		for (int i = 0; i < data.length; i++) {
+			File file = new File(files[i]);
+			boolean isDirectory = file.isDirectory();
+			String fileName = files[i];
+			char [] chars = new char [fileName.length ()];
+			fileName.getChars (0, chars.length, chars, 0);
+			int cfstring = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, chars, chars.length);
+			if (cfstring == 0) return;
+			try {
+				int url = OS.CFURLCreateWithFileSystemPath(OS.kCFAllocatorDefault, cfstring, OS.kCFURLPOSIXPathStyle, isDirectory);
+				if (url == 0) return;
+				try {
+					byte[] fsRef = new byte[80];
+					if (!OS.CFURLGetFSRef(url, fsRef)) return;
+					byte[] fsSpec = new byte[70];
+					if (OS.FSGetCatalogInfo(fsRef, 0, null, null, fsSpec, null) != OS.noErr) return;
+					byte[] hfsflavor = new byte[10 + fsSpec.length];
+					//OS.FpGetFInfo();
+					System.arraycopy(fsSpec, 0, hfsflavor, 10, fsSpec.length);
+					data[i] = hfsflavor;
+				} finally {
+					OS.CFRelease(url);
+				}
+			} finally {
+				OS.CFRelease(cfstring);
+			}
+		}
+		transferData.data = data;
+		transferData.result = 0;
+	}
 }
 /**
  * This implementation of <code>nativeToJava</code> converts a platform specific 
@@ -85,36 +132,70 @@ public void javaToNative(Object object, TransferData transferData) {
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData) {
-
-	byte[] data = (byte[])super.nativeToJava(transferData);
-	if (data == null) return null;
-	char[] unicode = Converter.mbcsToWcs(null, data);
-	String string  = new String(unicode);
-	// parse data and convert string to array of files
-	int start = string.indexOf("file:");
-	if (start == -1) return null;
-	start += 5;
-	String[] fileNames = new String[0];
-	while (start < string.length()) { 
-		int end = string.indexOf("\r", start);
-		if (end == -1) end = string.length() - 1;
-		String fileName = string.substring(start, end);
-		
-		String[] newFileNames = new String[fileNames.length + 1];
-		System.arraycopy(fileNames, 0, newFileNames, 0, fileNames.length);
-		newFileNames[fileNames.length] = fileName;
-		fileNames = newFileNames;
-
-		start = string.indexOf("file:", end);
-		if (start == -1) break;
-		start += 5;
+	if (!isSupportedType(transferData) || transferData.data == null) return null;
+	if (transferData.data.length == 0) return null;
+	
+	if (transferData.type == URILISTID) {
+		byte[] data = transferData.data[0];
+		if (data.length == 0) return null;
+		char[] chars = new char[(data.length + 1) / 2];
+		OS.memcpy(chars, data, data.length);
+		String str = new String(chars);
+		int start = str.indexOf(URILIST_PREFIX);
+		if (start == -1) return null;
+		start += URILIST_PREFIX.length();
+		String[] fileNames = new String[0];
+		while (start < str.length()) { 
+			int end = str.indexOf(URILIST_SEPARATOR, start);
+			if (end == -1) end = str.length() - 1;
+			String fileName = str.substring(start, end);
+			String[] newFileNames = new String[fileNames.length + 1];
+			System.arraycopy(fileNames, 0, newFileNames, 0, fileNames.length);
+			newFileNames[fileNames.length] = fileName;
+			fileNames = newFileNames;
+			start = str.indexOf(URILIST_PREFIX, end);
+			if (start == -1) break;
+			start += URILIST_PREFIX.length();
+		}
+		return fileNames;
 	}
-	return fileNames;
+	if (transferData.type == HFSID) {
+		int count = transferData.data.length;
+		String[] fileNames = new String[count];
+		for (int i=0; i<count; i++) {
+			byte[] data = transferData.data[i];
+			byte[] fsspec = new byte[data.length - 10];
+			System.arraycopy(data, 10, fsspec, 0, fsspec.length);
+			byte[] fsRef = new byte[80];
+			if (OS.FSpMakeFSRef(fsspec, fsRef) != OS.noErr) return null;
+			int url = OS.CFURLCreateFromFSRef(OS.kCFAllocatorDefault, fsRef);
+			if (url == 0) return null;
+			try {
+				int path = OS.CFURLCopyFileSystemPath(url, OS.kCFURLPOSIXPathStyle);
+				if (path == 0) return null;
+				try {
+					int length = OS.CFStringGetLength(path);
+					if (length == 0) return null;
+					char[] buffer= new char[length];
+					CFRange range = new CFRange();
+					range.length = length;
+					OS.CFStringGetCharacters(path, range, buffer);
+					fileNames[i] = new String(buffer);
+				} finally {
+					OS.CFRelease(path);
+				}
+			} finally {
+				OS.CFRelease(url);
+			}
+		}
+		return fileNames;
+	}
+	return null;
 }
 protected String[] getTypeNames(){
-	return new String[] { TYPENAME };
+	return new String[] {URILIST, HFS};
 }
 protected int[] getTypeIds(){
-	return new int[] { TYPEID };
+	return new int[] {URILISTID, HFSID};
 }
 }

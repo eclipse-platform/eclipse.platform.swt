@@ -57,7 +57,7 @@ package org.eclipse.swt.dnd;
  * 			// write data to a byte array and then ask super to convert to pMedium
  * 			ByteArrayOutputStream out = new ByteArrayOutputStream();
  * 			DataOutputStream writeOut = new DataOutputStream(out);
- * 			for (int i = 0, length = myTypes.length; i < length;  i++){
+ * 			for (int i = 0, length = myTypes.length; i &lt length;  i++){
  * 				byte[] buffer = myTypes[i].fileName.getBytes();
  * 				writeOut.writeInt(buffer.length);
  * 				writeOut.write(buffer);
@@ -117,21 +117,20 @@ package org.eclipse.swt.dnd;
 public abstract class ByteArrayTransfer extends Transfer {
 	
 public TransferData[] getSupportedTypes() {
-	int[] types= getTypeIds();
-	TransferData[] data= new TransferData[types.length];
-	for (int i= 0; i < types.length; i++) {
-		data[i]= new TransferData();
-		data[i].type= types[i];
+	int[] types = getTypeIds();
+	TransferData[] data = new TransferData[types.length];
+	for (int i=0; i<types.length; i++) {
+		data[i] = new TransferData();
+		data[i].type = types[i];
 	}
 	return data;
 }
 
 public boolean isSupportedType(TransferData transferData){
 	if (transferData == null) return false;
-	int[] types= getTypeIds();
-	for (int i= 0; i < types.length; i++) {
-		if (transferData.type == types[i])
-			return true;
+	int[] types = getTypeIds();
+	for (int i=0; i<types.length; i++) {
+		if (transferData.type == types[i]) return true;
 	}
 	return false;
 }
@@ -148,14 +147,13 @@ public boolean isSupportedType(TransferData transferData){
  *  object will be filled in on return with the platform specific format of the data
  */
 protected void javaToNative (Object object, TransferData transferData) {
-	if ((object == null) || !(object instanceof byte[]) || !(isSupportedType(transferData))) {
-		transferData.result = -1;
-		return;
-	}
+	transferData.result = -1;
+	if (object == null || !(object instanceof byte[]) || !isSupportedType(transferData)) return;
 	byte[] orig = (byte[])object;
-	byte[] buffer= new byte[orig.length];
+	byte[] buffer = new byte[orig.length];
 	System.arraycopy(orig, 0, buffer, 0, orig.length);
-	transferData.data = buffer;
+	transferData.data = new byte[1][];
+	transferData.data[0] = buffer;
 	transferData.result = 0;
 }
 
@@ -172,8 +170,8 @@ protected void javaToNative (Object object, TransferData transferData) {
  * conversion was successful; otherwise null
  */
 protected Object nativeToJava(TransferData transferData) {
-	if (!isSupportedType(transferData)) return null;
-	return transferData.data;
+	if (!isSupportedType(transferData) || transferData.data == null) return null;
+	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
+	return transferData.data[0];
 }
-
 }

@@ -34,9 +34,10 @@ public class TransferData {
 	
 	/**
 	 * The data being transferred.
+	 * The data field may contain multiple values.
 	 * (Warning: This field is platform dependent)
 	 */
-	public byte[] data;
+	public byte[][] data;
 	
 	/**
 	 * The result field contains the result of converting a java data type

@@ -55,35 +55,41 @@ public static TextTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) {
-		transferData.result = -1;
-		return;
-	}
+	transferData.result = -1;
+	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
+
 	String string = (String)object;
 	char[] chars = new char[string.length()];
 	string.getChars (0, chars.length, chars, 0);
 	switch (transferData.type) {
 		case TEXTID: {
-			int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
-			if (ptr == 0) {
-				transferData.result = -1;
-				return;
+			int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+			if (cfstring == 0) return;
+			byte[] buffer = null;
+			try {
+				CFRange range = new CFRange();
+				range.length = chars.length;
+				int encoding = OS.CFStringGetSystemEncoding();
+				int[] size = new int[1];
+				int numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, null, 0, size);
+				if (numChars == 0) return;
+				buffer = new byte[size[0]];
+				numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, buffer, size [0], size);
+				if (numChars == 0) return;
+			} finally {
+				OS.CFRelease(cfstring);
 			}
-			CFRange range = new CFRange();
-			range.length = chars.length;
-			int encoding = OS.CFStringGetSystemEncoding();
-			int[] size = new int[1];
-			OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, null, 0, size);
-			byte[] buffer = new byte[size[0]];
-			OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, buffer, size [0], size);
-			OS.CFRelease(ptr);
-			super.javaToNative(buffer, transferData);
+			transferData.data = new byte[1][];
+			transferData.data[0] = buffer;
+			transferData.result = OS.noErr;
 			break;
 		}
 		case UTEXTID: {
 			byte[] buffer = new byte[chars.length * 2];
 			OS.memcpy(buffer, chars, buffer.length);
-			super.javaToNative(buffer, transferData);
+			transferData.data = new byte[1][];
+			transferData.data[0] = buffer;
+			transferData.result = OS.noErr;
 			break;
 		}
 	}
@@ -100,25 +106,31 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	// get byte array from super
-	byte[] buffer = (byte[])super.nativeToJava(transferData);
-	if (buffer == null) return null;
-	if (transferData.type == TEXTID) {
-		// convert byte array to a string
-		int encoding = OS.CFStringGetSystemEncoding();
-		int ptr = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
-		int length = OS.CFStringGetLength(ptr);
-		char[] chars = new char[length];
-		CFRange range = new CFRange();
-		range.length = length;
-		OS.CFStringGetCharacters(ptr, range, chars);
-		OS.CFRelease (ptr);
-		return new String (chars);
-	}
-	if (transferData.type == UTEXTID) {
-		char[] chars = new char[(transferData.data.length + 1) / 2];
-		OS.memcpy(chars, transferData.data, transferData.data.length);
-		return new String(chars);
+	if (!isSupportedType(transferData) || transferData.data == null) return null;
+	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
+	byte[] buffer = transferData.data[0];
+	switch (transferData.type) {
+		case TEXTID: {
+			int encoding = OS.CFStringGetSystemEncoding();
+			int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+			if (cfstring == 0) return null;
+			try {
+				int length = OS.CFStringGetLength(cfstring);
+				if (length == 0) return null;
+				char[] chars = new char[length];
+				CFRange range = new CFRange();
+				range.length = length;
+				OS.CFStringGetCharacters(cfstring, range, chars);
+				return new String(chars);
+			} finally {
+				OS.CFRelease(cfstring);
+			}
+		}
+		case UTEXTID: {
+			char[] chars = new char[(buffer.length + 1) / 2];
+			OS.memcpy(chars, buffer, buffer.length);
+			return new String(chars);
+		}
 	}
 	return null;
 }
