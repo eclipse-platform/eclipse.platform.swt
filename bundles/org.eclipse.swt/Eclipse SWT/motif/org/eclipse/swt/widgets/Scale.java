@@ -136,10 +136,6 @@ void deregister () {
 	super.deregister ();
 	if (scrollHandle != 0) display.removeWidget (scrollHandle);
 }
-int focusHandle () {
-	if (scrollHandle == 0) return super.focusHandle ();
-	return scrollHandle;
-}
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
@@ -227,6 +223,11 @@ void hookEvents () {
 	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, DRAG_CALLBACK);
+	if (scrollHandle != 0) {
+		OS.XtAddEventHandler (scrollHandle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
+		OS.XtAddEventHandler (scrollHandle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
+		OS.XtInsertEventHandler (scrollHandle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
+	}
 }
 void overrideTranslations () {
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
