@@ -14,32 +14,6 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.mozilla.*;
 
 class AppFileLocProvider {
-
-	static final String NS_GRE_DIR = "GreD"; //$NON-NLS-1$
-	static final String NS_GRE_COMPONENT_DIR = "GreComsD"; //$NON-NLS-1$
-	static final String NS_APP_DEFAULTS_50_DIR = "DefRt"; //$NON-NLS-1$
-	static final String NS_APP_PREF_DEFAULTS_50_DIR = "PrfDef"; //$NON-NLS-1$
-	static final String NS_APP_PROFILE_DEFAULTS_50_DIR = "profDef"; //$NON-NLS-1$
-	static final String NS_APP_PROFILE_DEFAULTS_NLOC_50_DIR = "ProfDefNoLoc"; //$NON-NLS-1$
-	static final String NS_APP_USER_PROFILES_ROOT_DIR = "DefProfRt"; //$NON-NLS-1$
-	static final String NS_APP_RES_DIR = "ARes"; //$NON-NLS-1$
-	static final String NS_APP_CHROME_DIR = "AChrom"; //$NON-NLS-1$
-	static final String NS_APP_PLUGINS_DIR = "APlugns"; //$NON-NLS-1$
-	static final String NS_APP_SEARCH_DIR = "SrchPlugns"; //$NON-NLS-1$
-	static final String NS_APP_PLUGINS_DIR_LIST = "APluginsDL"; //$NON-NLS-1$
-	static final String DEFAULTS_DIR_NAME = "defaults"; //$NON-NLS-1$
-	static final String DEFAULTS_PREF_DIR_NAME = "pref"; //$NON-NLS-1$
-	static final String DEFAULTS_PROFILE_DIR_NAME = "profile"; //$NON-NLS-1$
-	static final String RES_DIR_NAME = "res"; //$NON-NLS-1$
-	static final String CHROME_DIR_NAME ="chrome"; //$NON-NLS-1$
-	static final String PLUGINS_DIR_NAME = "plugins"; //$NON-NLS-1$
-	static final String SEARCH_DIR_NAME = "searchplugins"; //$NON-NLS-1$
-	static final String COMPONENTS_DIR_NAME = "components"; //$NON-NLS-1$
-	static final String NS_XPCOM_INIT_CURRENT_PROCESS_DIR = "MozBinD"; //$NON-NLS-1$
-	static final String NS_XPCOM_CURRENT_PROCESS_DIR = "XCurProcD"; //$NON-NLS-1$
-	static final String NS_XPCOM_COMPONENT_DIR = "ComsD"; //$NON-NLS-1$
-	static final String NS_OS_CURRENT_PROCESS_DIR = "CurProcD"; //$NON-NLS-1$
-
 	XPCOMObject supports;
 	XPCOMObject directoryServiceProvider;
 	XPCOMObject directoryServiceProvider2;	
@@ -143,7 +117,7 @@ int getFiles(int str, int nsISimpleEnumerator) {
 	String prop = new String(dest);	
 	XPCOM.memmove(nsISimpleEnumerator, new int[] {0}, 4);	
 	nsILocalFile localFile = null;	
-	if (NS_APP_PLUGINS_DIR_LIST.equals(prop)) {
+	if (XPCOM.NS_APP_PLUGINS_DIR_LIST.equals(prop)) {
 		if (mozillaPath == null) return XPCOM.NS_ERROR_FAILURE;
 		if (mozillaPath.length() <= 0) return XPCOM.NS_ERROR_FAILURE;
 		String path = new String(mozillaPath);
@@ -151,7 +125,7 @@ int getFiles(int str, int nsISimpleEnumerator) {
 		rc = XPCOM.NS_NewLocalFile(path, true, retVal);
 		if (rc == XPCOM.NS_OK && retVal[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;
 		if (rc == XPCOM.NS_OK) localFile = new nsILocalFile(retVal[0]);
-        nsString node = new nsString(PLUGINS_DIR_NAME);  
+        nsString node = new nsString(XPCOM.PLUGINS_DIR_NAME);  
 		rc = localFile.Append(node.getAddress());
         node.dispose();
 	}
@@ -176,31 +150,31 @@ int getFile(int str, int persistent, int nsFile) {
 	XPCOM.memmove(persistent, new int[] {1}, 4);
 	XPCOM.memmove(nsFile, new int[] {0}, 4);	
 	nsILocalFile localFile = null;		
-	if (NS_GRE_DIR.equals(prop) || NS_GRE_COMPONENT_DIR.equals(prop)) {
+	if (XPCOM.NS_GRE_DIR.equals(prop) || XPCOM.NS_GRE_COMPONENT_DIR.equals(prop)) {
 		if (grePath == null || grePath.length() == 0) return XPCOM.NS_ERROR_FAILURE;
 		int[] retVal = new int[1];
 		rc = XPCOM.NS_NewLocalFile(grePath,true,retVal);
 		if (rc == XPCOM.NS_OK && retVal[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;                          
 		if (rc == XPCOM.NS_OK) {
 			localFile = new nsILocalFile(retVal[0]);
-			if (NS_GRE_COMPONENT_DIR.equals(prop)) {
-                nsString node = new nsString(COMPONENTS_DIR_NAME);
+			if (XPCOM.NS_GRE_COMPONENT_DIR.equals(prop)) {
+                nsString node = new nsString(XPCOM.COMPONENTS_DIR_NAME);
                 rc = localFile.Append(node.getAddress());
                 node.dispose(); 
             } 
 		}
 	}
-	else if (NS_XPCOM_INIT_CURRENT_PROCESS_DIR.equals(prop) || 
-		NS_OS_CURRENT_PROCESS_DIR.equals(prop) ||
-		NS_XPCOM_COMPONENT_DIR.equals(prop)) {
+	else if (XPCOM.NS_XPCOM_INIT_CURRENT_PROCESS_DIR.equals(prop) || 
+		XPCOM.NS_OS_CURRENT_PROCESS_DIR.equals(prop) ||
+		XPCOM.NS_XPCOM_COMPONENT_DIR.equals(prop)) {
 		if (mozillaPath == null || mozillaPath.length() == 0) return XPCOM.NS_ERROR_FAILURE;
 		int[] retVal = new int[1];
 		rc = XPCOM.NS_NewLocalFile(mozillaPath,true,retVal);
 		if (rc == XPCOM.NS_OK && retVal[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;
 		if (rc == XPCOM.NS_OK) {
 			localFile = new nsILocalFile(retVal[0]);
-			if (NS_XPCOM_COMPONENT_DIR.equals(prop)) {
-                nsString node = new nsString(COMPONENTS_DIR_NAME);
+			if (XPCOM.NS_XPCOM_COMPONENT_DIR.equals(prop)) {
+                nsString node = new nsString(XPCOM.COMPONENTS_DIR_NAME);
                 rc = localFile.Append(node.getAddress());
                 node.dispose(); 
             } 

@@ -34,6 +34,16 @@ public class XPCOM {
 	static final int MINOR = 4;
 	static final String SUPPORTED_VERSION = MAJOR + "." + MINOR; //$NON-NLS-1$
 
+	/* nsDirectoryServiceDefs constants */
+	public static final String NS_GRE_DIR = "GreD"; //$NON-NLS-1$
+	public static final String NS_GRE_COMPONENT_DIR = "GreComsD"; //$NON-NLS-1$
+	public static final String NS_APP_PLUGINS_DIR_LIST = "APluginsDL"; //$NON-NLS-1$
+	public static final String PLUGINS_DIR_NAME = "plugins"; //$NON-NLS-1$
+	public static final String COMPONENTS_DIR_NAME = "components"; //$NON-NLS-1$
+	public static final String NS_XPCOM_INIT_CURRENT_PROCESS_DIR = "MozBinD"; //$NON-NLS-1$
+	public static final String NS_XPCOM_COMPONENT_DIR = "ComsD"; //$NON-NLS-1$
+	public static final String NS_OS_CURRENT_PROCESS_DIR = "CurProcD"; //$NON-NLS-1$
+
 	/* NsWidgetCID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
 
