@@ -986,7 +986,7 @@ public void remove (int start, int end) {
 	if (!(0 <= start && start <= end && end < argList [1])) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
-	if (argList [1] == 1) {
+	if (argList [1] == (end - start + 1)) {
 		removeAll ();
 	} else {
 		for (int i = start; i <= end; i++) {
