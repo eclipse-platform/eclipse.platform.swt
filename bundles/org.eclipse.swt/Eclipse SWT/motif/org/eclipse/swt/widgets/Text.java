@@ -778,7 +778,7 @@ public String getText (int start, int end) {
 	if (!(0 <= start && start <= end)) error (SWT.ERROR_INVALID_RANGE);
 	if (echoCharacter != '\0') {
 		if (hiddenText.length () <= end) error (SWT.ERROR_INVALID_RANGE);
-		return hiddenText.substring (start, end);
+		return hiddenText.substring (start, end + 1);
 	}
 	int textLength = OS.XmTextGetLastPosition (handle);
 	if (textLength <= end) error (SWT.ERROR_INVALID_RANGE);
