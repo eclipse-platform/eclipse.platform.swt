@@ -1394,7 +1394,7 @@ public void setSelection (int index) {
 
 /**
  * Selects the items at the given zero-relative indices in the receiver. 
- * The current selected if first cleared, then the new items are selected.
+ * The current selected is first cleared, then the new items are selected.
  *
  * @param start the start index of the items to select
  * @param end the end index of the items to select
