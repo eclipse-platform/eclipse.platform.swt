@@ -1478,6 +1478,9 @@ boolean setInputState (Event event, int type, int chord, int modifiers) {
 	if ((chord & 0x01) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((chord & 0x02) != 0) event.stateMask |= SWT.BUTTON3;
 	if ((chord & 0x04) != 0) event.stateMask |= SWT.BUTTON2;
+	if ((chord & 0x08) != 0) event.stateMask |= SWT.BUTTON4;
+	if ((chord & 0x10) != 0) event.stateMask |= SWT.BUTTON5;
+	
 	if ((modifiers & OS.optionKey) != 0) event.stateMask |= SWT.ALT;
 	if ((modifiers & OS.shiftKey) != 0) event.stateMask |= SWT.SHIFT;
 	if ((modifiers & OS.controlKey) != 0) event.stateMask |= SWT.CONTROL;
@@ -1488,11 +1491,15 @@ boolean setInputState (Event event, int type, int chord, int modifiers) {
 			if (event.button == 1) event.stateMask &= ~SWT.BUTTON1;
 			if (event.button == 2) event.stateMask &= ~SWT.BUTTON2;
 			if (event.button == 3)  event.stateMask &= ~SWT.BUTTON3;
+			if (event.button == 4)  event.stateMask &= ~SWT.BUTTON4;
+			if (event.button == 5)  event.stateMask &= ~SWT.BUTTON5;
 			break;
 		case SWT.MouseUp:
 			if (event.button == 1) event.stateMask |= SWT.BUTTON1;
 			if (event.button == 2) event.stateMask |= SWT.BUTTON2;
 			if (event.button == 3) event.stateMask |= SWT.BUTTON3;
+			if (event.button == 4) event.stateMask |= SWT.BUTTON4;
+			if (event.button == 5) event.stateMask |= SWT.BUTTON5;
 			break;
 		case SWT.KeyDown:
 		case SWT.Traverse: {

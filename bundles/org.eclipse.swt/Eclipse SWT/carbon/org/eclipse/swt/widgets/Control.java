@@ -1437,6 +1437,18 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMouseWheelMoved (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int [] wheelDelta = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, 4, null, wheelDelta);
+	Event event = new Event ();
+	event.detail = SWT.SCROLL_LINE;
+	event.count = wheelDelta [0];
+	sendEvent (SWT.MouseWheel, event);
+	return event.doit ? OS.eventNotHandledErr : OS.noErr;
+}
+
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
 	int [] keyboardEvent = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
@@ -1948,6 +1960,8 @@ boolean sendMouseEvent (int type, short button, int chord, short x, short y, int
 		case 1: event.button = 1; break;
 		case 2: event.button = 3; break;
 		case 3: event.button = 2; break;
+		case 4: event.button = 4; break;
+		case 5: event.button = 5; break;
 	}
 	event.x = x;
 	event.y = y;
