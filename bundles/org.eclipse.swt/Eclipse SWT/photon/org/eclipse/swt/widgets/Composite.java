@@ -478,16 +478,18 @@ int processMouse (int info) {
 	
 			/* Grab pointer */
 			if (!(menu != null && pe.buttons == OS.Ph_BUTTON_MENU)) {
-				PhRect_t rect = new PhRect_t ();
-				PhPoint_t pos = new PhPoint_t();
-				pos.x = pe.pos_x;
-				pos.y = pe.pos_y;
-				rect.ul_x = rect.lr_x = (short) (pos.x + ev.translation_x);
-				rect.ul_y = rect.lr_y = (short) (pos.y + ev.translation_y);
-				int rid = OS.PtWidgetRid (handle);
-				int input_group = OS.PhInputGroup (0);
-				int flags = OS.Ph_DRAG_KEY_MOTION | OS.Ph_DRAG_TRACK | OS.Ph_TRACK_DRAG;
-				OS.PhInitDrag (rid, flags, rect, null, input_group, null, null, null, pos, null);
+				if (pe.click_count == 1) {
+					PhRect_t rect = new PhRect_t ();
+					PhPoint_t pos = new PhPoint_t();
+					pos.x = pe.pos_x;
+					pos.y = pe.pos_y;
+					rect.ul_x = rect.lr_x = (short) (pos.x + ev.translation_x);
+					rect.ul_y = rect.lr_y = (short) (pos.y + ev.translation_y);
+					int rid = OS.PtWidgetRid (handle);
+					int input_group = OS.PhInputGroup (0);
+					int flags = OS.Ph_DRAG_KEY_MOTION | OS.Ph_DRAG_TRACK | OS.Ph_TRACK_DRAG;
+					OS.PhInitDrag (rid, flags, rect, null, input_group, null, null, null, pos, null);
+				}
 			}
 	
 			int result = super.processMouse (info);
