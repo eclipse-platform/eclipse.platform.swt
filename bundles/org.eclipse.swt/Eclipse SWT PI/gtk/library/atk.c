@@ -16,7 +16,7 @@
 #include "swt.h"
 #include "atk_structs.h"
 
-#define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_ATK_##func
+#define ATK_NATIVE(func) Java_org_eclipse_swt_internal_gtk_ATK_##func
 
 #ifndef NO_ATK_1ACTION_1GET_1IFACE
 JNIEXPORT jint JNICALL ATK_NATIVE(ATK_1ACTION_1GET_1IFACE)
