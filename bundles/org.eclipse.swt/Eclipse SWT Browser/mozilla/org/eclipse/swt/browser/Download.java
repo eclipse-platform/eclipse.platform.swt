@@ -180,8 +180,8 @@ public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int s
 	nsILocalFile target = new nsILocalFile(aTarget);
 	int aNativeTarget = XPCOM.nsEmbedCString_new();
 	target.GetNativeLeafName(aNativeTarget);
-	length = XPCOM.nsEmbedCString_Length(aSpec);
-	buffer = XPCOM.nsEmbedCString_get(aSpec);
+	length = XPCOM.nsEmbedCString_Length(aNativeTarget);
+	buffer = XPCOM.nsEmbedCString_get(aNativeTarget);
 	dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
 	XPCOM.nsEmbedCString_delete(aNativeTarget);
