@@ -500,7 +500,7 @@ void postEvent (int eventType, Event event) {
 	if (event.time == 0) {
 		event.time = (int) System.currentTimeMillis ();
 	}
-	getDisplay ().postEvent (event);
+	display.postEvent (event);
 }
 
 void postEvent (int eventType) {

@@ -382,7 +382,7 @@ public Shell getShell () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return true;
+	return OS.PtWidgetIsRealized (handle);
 }
 
 void hookEvents () {

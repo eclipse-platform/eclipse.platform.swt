@@ -137,6 +137,9 @@ void createHandle (int index) {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (OS.PtToolbar (), parentingHandle, args.length / 3, args);
+	if ((style & SWT.FLAT) != 0) {
+		OS.PtSetResource (handle, OS.Pt_ARG_BASIC_FLAGS, OS.Pt_FLAT_FILL, OS.Pt_FLAT_FILL);
+	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 

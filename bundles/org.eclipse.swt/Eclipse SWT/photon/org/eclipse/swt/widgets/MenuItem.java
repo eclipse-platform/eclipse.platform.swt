@@ -595,8 +595,27 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	
-	//NOT DONE - The OS has support
+	if ((style & SWT.PUSH) == 0) return;
+	int imageHandle = 0;
+	int type = OS.Pt_Z_STRING;
+	if (image != null) {
+		imageHandle = copyPhImage (image.handle);
+		if (text.length () != 0) type = OS.Pt_TEXT_IMAGE;
+		else type = OS.Pt_IMAGE;
+	}	
+	int [] args = {
+		OS.Pt_ARG_LABEL_IMAGE, imageHandle, 0,
+		OS.Pt_ARG_LABEL_TYPE, type, 0
+	};
+	OS.PtSetResources (handle, args.length / 3, args);
+	if (imageHandle != 0) OS.free (imageHandle);
+	/*
+	* Bug on Photon.  When a the text is set on a menu
+	* item that is realized, the menu item does not resize
+	* to show the new text.  The fix is to force the item
+	* to recalculate the size.
+	*/
+	if (OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (parent.handle);
 }
 
 /**
@@ -722,11 +741,16 @@ public void setText (String string) {
 	if ((parent.style & SWT.BAR) != 0) {
 		replaceMnemonic (mnemonic, false, true);
 	}
+	int type = OS.Pt_Z_STRING;
+	if ((style & SWT.PUSH) != 0) {
+		if (image != null)  type = OS.Pt_TEXT_IMAGE;
+	}
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, ptr1, 0,
 		OS.Pt_ARG_ACCEL_TEXT, ptr2, 0,
 		OS.Pt_ARG_MODIFIER_KEYS, keyMods, keyMods,
 		OS.Pt_ARG_ACCEL_KEY, ptr3, 0,
+		OS.Pt_ARG_LABEL_TYPE, type, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
 	OS.free (ptr1);
@@ -738,7 +762,7 @@ public void setText (String string) {
 	* to show the new text.  The fix is to force the item
 	* to recalculate the size.
 	*/
-	if (OS.PtWidgetIsRealized (handle)) OS.PtExtentWidget (handle);
+	if (OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (parent.handle);
 }
 
 void showMenu() {

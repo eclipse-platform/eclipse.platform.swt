@@ -713,9 +713,7 @@ public void setImage (Image image) {
 	int type = OS.Pt_Z_STRING;
 	if (image != null) {
 		imageHandle = copyPhImage (image.handle);
-		int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
-		OS.PtGetResources (button, args.length / 3, args);
-		if (args [1] != 0 && OS.strlen (args [1]) > 0) type = OS.Pt_TEXT_IMAGE;
+		if(text.length() != 0) type = OS.Pt_TEXT_IMAGE;
 		else type = OS.Pt_IMAGE;
 	}	
 	int [] args = {
@@ -761,19 +759,14 @@ public void setSelection (boolean selected) {
 
 public void setText (String string) {
 	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	int ptr = 0;
-	int type = OS.Pt_IMAGE;
-	if (string != null) {
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
-		ptr = OS.malloc (buffer.length);
-		OS.memmove (ptr, buffer, buffer.length);
-		int [] args = {OS.Pt_ARG_LABEL_IMAGE, 0, 0};
-		OS.PtGetResources (button, args.length / 3, args);
-		if (args [1] != 0) type = OS.Pt_TEXT_IMAGE;
-		else type = OS.Pt_Z_STRING;
-	}	
+	byte [] buffer = Converter.wcsToMbcs (null, string, true);
+	int ptr = OS.malloc (buffer.length);
+	OS.memmove (ptr, buffer, buffer.length);
+	int type = OS.Pt_Z_STRING;
+	if (image != null) type = OS.Pt_TEXT_IMAGE;
 	int [] args = {
 		OS.Pt_ARG_TEXT_STRING, ptr, 0,
 		OS.Pt_ARG_LABEL_TYPE, type, 0,
