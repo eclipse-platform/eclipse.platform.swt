@@ -1100,8 +1100,8 @@ public class SWT {
 
 	/**
 	 * accelerator constant used to extract the key stroke portion of
-	 * an accelerator.  The key strike may be a key code or a unicode
-	 * character.  If the key stroke is a key code <code>KEYCODE_BIT</code>
+	 * an accelerator.  The key stroke may be a key code or a unicode
+	 * value.  If the key stroke is a key code <code>KEYCODE_BIT</code>
 	 * will be set.
 	 * 
 	 * @since 2.1
