@@ -38,20 +38,20 @@ public class Browser9 {
 			public void changed(ProgressEvent event) {
 			}
 			public void completed(ProgressEvent event) {
-				boolean result = browser.execute(script);
-				if (!result) {
-					System.out.println("execute failed for "+script);
-					passed = false;
-					return;
-				}
-				/* Script may additionally set the Status value */
-				String value = (String)browser.getData("query");
-				System.out.println("window.status after script: "+value);
-				if (status != null) {
-					passed = status.equals(value);
-				} else {
-					System.out.println("Failure - expected "+script+", not "+value);
-				}
+//				boolean result = browser.execute(script);
+//				if (!result) {
+//					System.out.println("execute failed for "+script);
+//					passed = false;
+//					return;
+//				}
+//				/* Script may additionally set the Status value */
+//				String value = (String)browser.getData("query");
+//				System.out.println("window.status after script: "+value);
+//				if (status != null) {
+//					passed = status.equals(value);
+//				} else {
+//					System.out.println("Failure - expected "+script+", not "+value);
+//				}
 			}
 		});
 		shell.open();

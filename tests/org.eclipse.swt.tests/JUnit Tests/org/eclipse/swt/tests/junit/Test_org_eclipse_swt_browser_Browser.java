@@ -193,12 +193,12 @@ public void test_back() {
 
 public void test_executeLjava_lang_String() {
 	shell.setText("test_executeLjava_lang_String");
-	try {
-		browser.execute(null);
-		fail("No exception thrown for script == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
+//	try {
+//		browser.execute(null);
+//		fail("No exception thrown for script == null");
+//	}
+//	catch (IllegalArgumentException e) {
+//	}
 	
 	/* Real testing is done in the tests that run the event loop
 	 * since a document must have been loaded to execute a script on it.

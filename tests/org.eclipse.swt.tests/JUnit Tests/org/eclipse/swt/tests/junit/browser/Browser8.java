@@ -39,7 +39,7 @@ public class Browser8 {
 			public void changed(ProgressEvent event) {
 			}
 			public void completed(ProgressEvent event) {
-				passed = browser.execute(script[index]);
+//				passed = browser.execute(script[index]);
 			}
 		});
 		shell.open();

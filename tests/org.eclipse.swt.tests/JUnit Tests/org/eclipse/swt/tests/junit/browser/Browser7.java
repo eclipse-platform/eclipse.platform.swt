@@ -68,7 +68,7 @@ public class Browser7 {
 				shell.setVisible(false);
 			}
 			public void show(WindowEvent event) {
-				System.out.println("VisibilityWindowListener.show location="+event.location+" size="+event.size+" addressBar="+event.addressBar+" menuBar="+event.menuBar+" statusBar="+event.statusBar+" toolBar="+event.toolBar);
+//				System.out.println("VisibilityWindowListener.show location="+event.location+" size="+event.size+" addressBar="+event.addressBar+" menuBar="+event.menuBar+" statusBar="+event.statusBar+" toolBar="+event.toolBar);
 				Browser browser = (Browser)event.widget;
 				Shell shell = browser.getShell();
 				if (event.location != null) shell.setLocation(event.location);
