@@ -17,7 +17,6 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
 
-
 /**
  * A StyledText is an editable user interface object that displays lines 
  * of text.  The following style attributes can be defined for the text: 
@@ -4721,9 +4720,10 @@ void handleKey(Event event) {
 		action = getKeyBinding(event.character | event.stateMask);
 	}
 	if (action == SWT.NULL) {
-		// ignore anything below SPACE and ignore DEL
-		if (event.character > 31 && 
-			event.character != SWT.DEL && event.stateMask != SWT.ALT || 
+		// ignore anything below SPACE, ignore DEL and ignore any ALT 
+		// key combination.
+		if ((event.stateMask & SWT.ALT) == 0 && 
+			event.character > 31 && event.character != SWT.DEL || 
 		    event.character == SWT.CR || event.character == SWT.LF || 
 		    event.character == TAB) {
 			doContent(event.character);
