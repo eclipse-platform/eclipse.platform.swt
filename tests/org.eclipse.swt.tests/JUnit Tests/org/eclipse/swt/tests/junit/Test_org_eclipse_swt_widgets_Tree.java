@@ -222,7 +222,19 @@ public void test_setSelection$Lorg_eclipse_swt_widgets_TreeItem() {
 	}
 	TreeItem[] itemsToBeSelected = {items[5], items[16], items[19]};
 	tree.setSelection(itemsToBeSelected);
-	assertEquals(":a:", itemsToBeSelected, tree.getSelection());
+	TreeItem[] selItems = tree.getSelection();
+	int selLength = selItems.length;
+	assertTrue(":len:" + String.valueOf(selLength), selLength == itemsToBeSelected.length);
+	for (int i = 0; i < itemsToBeSelected.length; i++) {
+		boolean found = false;
+		for (int j = 0; j < selLength; j++) {
+			if (itemsToBeSelected[i] == selItems[i]) {
+				found = true;
+				break;
+			}
+		}
+		if (!found) fail ("tree item not selected, index: " + i);
+	}
 	tree.setSelection(tree.getItems());
 	assertEquals(":b:", items, tree.getSelection());
 	tree.setSelection(new TreeItem[] {});
