@@ -308,7 +308,7 @@ public void setIncrement (int value) {
  */
 public void setMaximum (int value) {
 	checkWidget();
-	OS.PtSetResource (handle, OS.Pt_ARG_MAXIMUM, value - 1, 0);
+	OS.PtSetResource (handle, OS.Pt_ARG_MAXIMUM, value, 0);
 }
 
 /**
