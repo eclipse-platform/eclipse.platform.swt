@@ -6147,5 +6147,5 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtSendEventToWidg
 	fprintf(stderr, "PtSendEventToWidget\n");
 #endif
 
-    return (jint) PtSendEventToWidget((PtWidget_t *)widget, event);
+    return (jint) PtSendEventToWidget((PtWidget_t *)widget, (void *)event);
 }
