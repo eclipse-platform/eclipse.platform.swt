@@ -15,7 +15,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * This event is sent to VisibilityListeners when the Browser
+ * This event is sent to VisibilityWindowListeners when the Browser
  * should be displayed or hidden.
  *
  * <p>
@@ -27,7 +27,7 @@ import org.eclipse.swt.graphics.*;
  * 
  * @since 3.0
  */
-public class VisibilityEvent extends TypedEvent {
+public class VisibilityWindowEvent extends TypedEvent {
 
 	/** 
 	 * Requested location for the Shell hosting the Browser. Null if no location
@@ -41,7 +41,7 @@ public class VisibilityEvent extends TypedEvent {
 	 */
 	public Point size;
 	
-VisibilityEvent(Widget w) {
+VisibilityWindowEvent(Widget w) {
 	super(w);
 }
 }

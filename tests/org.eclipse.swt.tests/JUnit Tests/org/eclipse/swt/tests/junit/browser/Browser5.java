@@ -42,10 +42,10 @@ public class Browser5 {
 				newShell.setLayout(new FillLayout());
 				Browser browser = new Browser(newShell, SWT.NONE);
 				browser.setData("index", new Integer(index));
-				browser.addVisibilityListener(new VisibilityListener() {
-					public void hide(VisibilityEvent event) {
+				browser.addVisibilityWindowListener(new VisibilityWindowListener() {
+					public void hide(VisibilityWindowEvent event) {
 					}
-					public void show(VisibilityEvent event) {
+					public void show(VisibilityWindowEvent event) {
 						Browser browser = (Browser)event.widget;
 						Shell parent = browser.getShell();
 						if (event.location != null) parent.setLocation(event.location);

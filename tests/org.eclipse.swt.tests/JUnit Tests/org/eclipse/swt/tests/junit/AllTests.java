@@ -219,8 +219,8 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
 	addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
 	addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
-	addTest(Test_org_eclipse_swt_browser_VisibilityAdapter.suite());
-	addTest(Test_org_eclipse_swt_browser_VisibilityListener.suite());
+	addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
+	addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
 	addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
 
 

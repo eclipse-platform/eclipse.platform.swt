@@ -144,8 +144,23 @@ public void test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListene
 	for (int i = 0; i < 100; i++) browser.removeStatusTextListener(listener);
 }
 
-public void test_addVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener() {
-	warnUnimpl("Test test_addVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener not written");
+public void test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
+	shell.setText("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
+	try {
+		browser.addVisibilityWindowListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	VisibilityWindowListener listener = new VisibilityWindowListener() {
+		public void hide(VisibilityWindowEvent event) {
+		}
+		public void show(VisibilityWindowEvent event) {
+		}
+	};
+	for (int i = 0; i < 100; i++) browser.addVisibilityWindowListener(listener);
+	for (int i = 0; i < 100; i++) browser.removeVisibilityWindowListener(listener);
 }
 
 public void test_back() {
@@ -234,8 +249,14 @@ public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextList
 	// tested in addStatusTextListener
 }
 
-public void test_removeVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener() {
-	warnUnimpl("Test test_removeVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener not written");
+public void test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener() {
+	try {
+		browser.removeVisibilityWindowListener(null);
+		fail("No exception thrown for listener == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	// tested in addVisibilityWindowListener
 }
 
 public void test_setTextLjava_lang_String() {
@@ -301,7 +322,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
 	methodNames.addElement("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	methodNames.addElement("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
-	methodNames.addElement("test_addVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener");
+	methodNames.addElement("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
 	methodNames.addElement("test_back");
 	methodNames.addElement("test_forward");
 	methodNames.addElement("test_getUrl");
@@ -311,7 +332,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener");
 	methodNames.addElement("test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	methodNames.addElement("test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
-	methodNames.addElement("test_removeVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener");
+	methodNames.addElement("test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setUrlLjava_lang_String");
 	methodNames.addElement("test_stop");
@@ -326,7 +347,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener")) test_addOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener();
 	else if (getName().equals("test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener")) test_addProgressListenerLorg_eclipse_swt_browser_ProgressListener();
 	else if (getName().equals("test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener")) test_addStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener();
-	else if (getName().equals("test_addVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener")) test_addVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener();
+	else if (getName().equals("test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener")) test_addVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener();
 	else if (getName().equals("test_back")) test_back();
 	else if (getName().equals("test_forward")) test_forward();
 	else if (getName().equals("test_getUrl")) test_getUrl();
@@ -336,7 +357,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener")) test_removeOpenWindowListenerLorg_eclipse_swt_browser_OpenWindowListener();
 	else if (getName().equals("test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener")) test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener();
 	else if (getName().equals("test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener")) test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener();
-	else if (getName().equals("test_removeVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener")) test_removeVisibilityListenerLorg_eclipse_swt_browser_VisibilityListener();
+	else if (getName().equals("test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener")) test_removeVisibilityWindowListenerLorg_eclipse_swt_browser_VisibilityWindowListener();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setUrlLjava_lang_String")) test_setUrlLjava_lang_String();
 	else if (getName().equals("test_stop")) test_stop();

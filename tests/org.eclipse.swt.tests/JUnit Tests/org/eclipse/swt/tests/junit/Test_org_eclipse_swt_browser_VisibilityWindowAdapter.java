@@ -17,13 +17,13 @@ import org.eclipse.swt.browser.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Automated Test Suite for class org.eclipse.swt.browser.VisibilityListener
+ * Automated Test Suite for class org.eclipse.swt.browser.VisibilityWindowAdapter
  *
- * @see org.eclipse.swt.browser.VisibilityListener
+ * @see org.eclipse.swt.browser.VisibilityWindowAdapter
  */
-public class Test_org_eclipse_swt_browser_VisibilityListener extends SwtTestCase {
+public class Test_org_eclipse_swt_browser_VisibilityWindowAdapter extends SwtTestCase {
 
-public Test_org_eclipse_swt_browser_VisibilityListener(String name) {
+public Test_org_eclipse_swt_browser_VisibilityWindowAdapter(String name) {
 	super(name);
 }
 
@@ -37,21 +37,20 @@ protected void setUp() {
 protected void tearDown() {
 }
 
-public void test_hideLorg_eclipse_swt_browser_VisibilityEvent() {
+public void test_Constructor() {
+	new VisibilityWindowAdapter() {};
+}
+
+public void test_hideLorg_eclipse_swt_browser_VisibilityWindowEvent() {
 	Display display = Display.getCurrent();
 	Shell shell = new Shell(display);
 	Browser browser = new Browser(shell, SWT.NONE);
-	browser.addVisibilityListener(new VisibilityListener() {
-		public void hide(VisibilityEvent event) {
-		}
-		public void show(VisibilityEvent event) {
-		}
-	});
+	browser.addVisibilityWindowListener(new VisibilityWindowAdapter(){});
 	shell.close();
 }
 
-public void test_showLorg_eclipse_swt_browser_VisibilityEvent() {
-	// tested in test_hideLorg_eclipse_swt_browser_VisibilityEvent
+public void test_showLorg_eclipse_swt_browser_VisibilityWindowEvent() {
+	// tested in test_hideLorg_eclipse_swt_browser_VisibilityWindowEvent
 }
 
 
@@ -60,20 +59,22 @@ public static Test suite() {
 	java.util.Vector methodNames = methodNames();
 	java.util.Enumeration e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_browser_VisibilityListener((String)e.nextElement()));
+		suite.addTest(new Test_org_eclipse_swt_browser_VisibilityWindowAdapter((String)e.nextElement()));
 	}
 	return suite;
 }
 
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_hideLorg_eclipse_swt_browser_VisibilityEvent");
-	methodNames.addElement("test_showLorg_eclipse_swt_browser_VisibilityEvent");
+	methodNames.addElement("test_Constructor");
+	methodNames.addElement("test_hideLorg_eclipse_swt_browser_VisibilityWindowEvent");
+	methodNames.addElement("test_showLorg_eclipse_swt_browser_VisibilityWindowEvent");
 	return methodNames;
 }
 
 protected void runTest() throws Throwable {
-	if (getName().equals("test_hideLorg_eclipse_swt_browser_VisibilityEvent")) test_hideLorg_eclipse_swt_browser_VisibilityEvent();
-	else if (getName().equals("test_showLorg_eclipse_swt_browser_VisibilityEvent")) test_showLorg_eclipse_swt_browser_VisibilityEvent();
+	if (getName().equals("test_Constructor")) test_Constructor();
+	else if (getName().equals("test_hideLorg_eclipse_swt_browser_VisibilityWindowEvent")) test_hideLorg_eclipse_swt_browser_VisibilityWindowEvent();
+	else if (getName().equals("test_showLorg_eclipse_swt_browser_VisibilityWindowEvent")) test_showLorg_eclipse_swt_browser_VisibilityWindowEvent();
 }
 }

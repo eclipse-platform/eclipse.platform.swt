@@ -70,13 +70,13 @@ public class Browser4 {
 				locationChanging = true;
 			}
 		});
-		browser2.addVisibilityListener(new VisibilityListener() {
-			public void hide(VisibilityEvent event) {
+		browser2.addVisibilityWindowListener(new VisibilityWindowListener() {
+			public void hide(VisibilityWindowEvent event) {
 				System.out.println("Failure - did not expect VisibilityEvent.hide");
 				passed = false;
 				shell.close();
 			}
-			public void show(VisibilityEvent event) {
+			public void show(VisibilityWindowEvent event) {
 				if (!openWindow) {
 					System.out.println("Failure - Visibility.show received at wrong time");
 					passed = false;
