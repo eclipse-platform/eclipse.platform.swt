@@ -276,6 +276,43 @@ public void clearSelection () {
 	OS.gtk_editable_delete_selection (handle);
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	OS.gtk_widget_set_size_request (handle, wHint, hHint);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
+	GtkRequisition entryRequesition = new GtkRequisition ();
+	OS.gtk_widget_size_request (entryHandle, entryRequesition);
+	GtkRequisition listRequesition = new GtkRequisition ();
+	int listParent = OS.gtk_widget_get_parent (listHandle);
+	OS.gtk_widget_size_request (listParent != 0 ? listParent : listHandle, listRequesition);
+	OS.gtk_widget_set_size_request (handle, width, height);
+	width = (requisition.width - entryRequesition.width) + listRequesition.width;
+	width = wHint == SWT.DEFAULT ? width : wHint;
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	return new Point (width, height);
+}
+
+/**
+ * Copies the selected text.
+ * <p>
+ * The current selection is copied to the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void copy () {
+	checkWidget ();
+	OS.gtk_editable_copy_clipboard (entryHandle);
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.gtk_fixed_new ();
@@ -295,6 +332,28 @@ void createHandle (int index) {
 	boolean editable = (style & SWT.READ_ONLY) == 0;
 	OS.gtk_entry_set_editable (entryHandle, editable);
 	OS.gtk_combo_set_case_sensitive (handle, true);
+}
+
+/**
+ * Cuts the selected text.
+ * <p>
+ * The current selection is first copied to the
+ * clipboard and then deleted from the widget.
+ * </p>
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void cut () {
+	checkWidget ();
+	OS.gtk_editable_cut_clipboard (entryHandle);
 }
 
 GdkColor defaultBackground () {
@@ -361,25 +420,6 @@ void hookEvents () {
 		OS.gtk_signal_connect_after (handle, OS.key_release_event, windowProc3, -SWT.KeyUp);
 		OS.gtk_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -SWT.MouseMove);
 	}
-}
-
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
-	OS.gtk_widget_set_size_request (handle, wHint, hHint);
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (handle, requisition);
-	GtkRequisition entryRequesition = new GtkRequisition ();
-	OS.gtk_widget_size_request (entryHandle, entryRequesition);
-	GtkRequisition listRequesition = new GtkRequisition ();
-	int listParent = OS.gtk_widget_get_parent (listHandle);
-	OS.gtk_widget_size_request (listParent != 0 ? listParent : listHandle, listRequesition);
-	OS.gtk_widget_set_size_request (handle, width, height);
-	width = (requisition.width - entryRequesition.width) + listRequesition.width;
-	width = wHint == SWT.DEFAULT ? width : wHint;
-	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-	return new Point (width, height);
 }
 
 /**
@@ -699,6 +739,25 @@ public int indexOf (String string, int start) {
 		if (string.equals(items [i])) return i;
 	}
 	return -1;
+}
+
+/**
+ * Pastes text from clipboard.
+ * <p>
+ * The selected text is deleted from the widget
+ * and new text inserted from the clipboard.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public void paste () {
+	checkWidget ();
+	OS.gtk_editable_paste_clipboard (entryHandle);
 }
 
 int parentingHandle() {
