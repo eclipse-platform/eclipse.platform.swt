@@ -510,29 +510,7 @@ void createHandle (int index) {
 		OS.gtk_window_set_resizable (shellHandle, false);
 	}
 	createHandle (index, true);
-	OS.gtk_widget_realize (shellHandle);
-	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
-	int decorations = 0;
-	if ((style & SWT.NO_TRIM) == 0) {
-		if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
-		if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
-		if ((style & SWT.BORDER) != 0) decorations |= OS.GDK_DECOR_BORDER;
-		if ((style & SWT.MENU) != 0) decorations |= OS.GDK_DECOR_MENU;
-		if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
-		/*
-		* Feature in GTK.  Under some Window Managers (Sawmill), in order
-		* to get any border at all from the window manager it is necessary to
-		* set GDK_DECOR_BORDER.  The fix is to force these bits when any
-		* kind of border is requested.
-		*/
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
-	}
-	OS.gdk_window_set_decorations (window, decorations);
 	OS.gtk_window_set_title (shellHandle, new byte [1]);
-	if ((style & SWT.ON_TOP) != 0) {
-		OS.gdk_window_set_override_redirect (window, true);
-	}
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
 		OS.gtk_container_set_border_width (shellHandle, 1);
 		GdkColor color = new GdkColor ();
@@ -565,10 +543,6 @@ void hookEvents () {
 	OS.g_signal_connect (shellHandle, OS.map_event, shellMapProc, 0);
 	OS.g_signal_connect (shellHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
 	OS.g_signal_connect (shellHandle, OS.move_focus, windowProc3, MOVE_FOCUS);
-	if (OS.GDK_WINDOWING_X11 ()) {
-		int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
-		OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
-	}
 }
 
 public boolean isEnabled () {
@@ -857,6 +831,35 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 		resizeBounds (width [0], height [0], true);
 	}
 	return 0;
+}
+
+int /*long*/ gtk_realize (int /*long*/ widget) {
+	int result = super.gtk_realize (widget);
+	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
+	if ((style & SWT.SHELL_TRIM) != SWT.SHELL_TRIM) {
+		int decorations = 0;
+		if ((style & SWT.NO_TRIM) == 0) {
+			if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
+			if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
+			if ((style & SWT.BORDER) != 0) decorations |= OS.GDK_DECOR_BORDER;
+			if ((style & SWT.MENU) != 0) decorations |= OS.GDK_DECOR_MENU;
+			if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
+			/*
+			* Feature in GTK.  Under some Window Managers (Sawmill), in order
+			* to get any border at all from the window manager it is necessary to
+			* set GDK_DECOR_BORDER.  The fix is to force these bits when any
+			* kind of border is requested.
+			*/
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
+		}
+		OS.gdk_window_set_decorations (window, decorations);
+	}
+	if ((style & SWT.ON_TOP) != 0) {
+		OS.gdk_window_set_override_redirect (window, true);
+	}
+	OS.gdk_window_add_filter  (window, display.filterProc, shellHandle);
+	return result;
 }
 
 int /*long*/ gtk_unmap_event (int /*long*/ widget, int /*long*/ event) {
