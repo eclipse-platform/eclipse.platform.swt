@@ -129,6 +129,7 @@ void createHandle () {
         hInstance,
         null);
 	if (hwndText == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.SetWindowLong (hwndText, OS.GWL_ID, hwndText);
 	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY | OS.UDS_WRAP | OS.UDS_SETBUDDYINT;
 	hwndUpDown = OS.CreateWindowEx (
         0,
@@ -141,6 +142,13 @@ void createHandle () {
         hInstance,
         null);
 	if (hwndUpDown == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.SetWindowLong (hwndUpDown, OS.GWL_ID, hwndUpDown);
+	if (OS.IsDBLocale) {
+		int hIMC = OS.ImmGetContext (handle);
+		OS.ImmAssociateContext (hwndText, hIMC);
+		OS.ImmAssociateContext (hwndUpDown, hIMC);		
+		OS.ImmReleaseContext (handle, hIMC);
+	}
 	OS.SendMessage (hwndUpDown, OS.UDM_SETRANGE32, 0, 100);
 	OS.SendMessage (hwndUpDown, OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, 0);
 	pageIncrement = 10;
