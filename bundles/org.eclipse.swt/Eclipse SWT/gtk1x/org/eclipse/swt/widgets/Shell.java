@@ -84,6 +84,9 @@ import org.eclipse.swt.events.*;
  * </dl>
  * </p>
  * <p>
+ * Note: Only one of the styles APPLICATION_MODAL, MODELESS, 
+ * PRIMARY_MODAL and SYSTEM_MODAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is not intended to be subclassed.
  * </p>
  *

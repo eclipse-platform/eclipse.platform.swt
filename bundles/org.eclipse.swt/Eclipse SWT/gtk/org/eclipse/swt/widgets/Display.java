@@ -102,6 +102,8 @@ public class Display extends Device {
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;
+	Callback windowTimerCallback;
+	int windowTimerProc;
 	
 	/* Caret */
 	Caret currentCaret;
@@ -115,7 +117,9 @@ public class Display extends Device {
 	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
 	GdkColor COLOR_WIDGET_HIGHLIGHT_SHADOW, COLOR_WIDGET_BACKGROUND, COLOR_WIDGET_FOREGROUND, COLOR_WIDGET_BORDER;
 	GdkColor COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
-	GdkColor COLOR_INFO_BACKGROUND;
+	GdkColor COLOR_INFO_BACKGROUND, COLOR_INFO_FOREGROUND;
+	GdkColor COLOR_TITLE_FOREGROUND, COLOR_TITLE_BACKGROUND, COLOR_TITLE_BACKGROUND_GRADIENT;
+	GdkColor COLOR_TITLE_INACTIVE_FOREGROUND, COLOR_TITLE_INACTIVE_BACKGROUND, COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT;
 		
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
@@ -536,7 +540,7 @@ Control findControl(int h) {
 public Point getCursorLocation () {
 	checkDevice ();
 	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_pointer (0, x, y, 0);
+	OS.gdk_window_get_pointer (0, x, y, null);
 	return new Point (x [0], y [0]);
 }
 
@@ -765,14 +769,14 @@ public Color getSystemColor (int id) {
 	checkDevice ();
 	GdkColor gdkColor = null;
 	switch (id) {
-		case SWT.COLOR_INFO_FOREGROUND: 					return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_INFO_BACKGROUND: 					gdkColor = COLOR_INFO_BACKGROUND;
-		case SWT.COLOR_TITLE_FOREGROUND:					return super.getSystemColor (SWT.COLOR_WHITE);
-		case SWT.COLOR_TITLE_BACKGROUND:					return super.getSystemColor (SWT.COLOR_DARK_BLUE);
-		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			return super.getSystemColor (SWT.COLOR_BLUE);
-		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			return super.getSystemColor (SWT.COLOR_DARK_GRAY);
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_GRAY);
+		case SWT.COLOR_INFO_FOREGROUND: 					gdkColor = COLOR_INFO_FOREGROUND; break;
+		case SWT.COLOR_INFO_BACKGROUND: 					gdkColor = COLOR_INFO_BACKGROUND; break;
+		case SWT.COLOR_TITLE_FOREGROUND:					gdkColor = COLOR_TITLE_FOREGROUND; break;
+		case SWT.COLOR_TITLE_BACKGROUND:					gdkColor = COLOR_TITLE_BACKGROUND; break;
+		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			gdkColor = COLOR_TITLE_BACKGROUND_GRADIENT; break;
+		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			gdkColor = COLOR_TITLE_INACTIVE_FOREGROUND; break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			gdkColor = COLOR_TITLE_INACTIVE_BACKGROUND; break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	gdkColor = COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT; break;
 		case SWT.COLOR_WIDGET_DARK_SHADOW:					gdkColor = COLOR_WIDGET_DARK_SHADOW; break;
 		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				gdkColor = COLOR_WIDGET_NORMAL_SHADOW; break;
 		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				gdkColor = COLOR_WIDGET_LIGHT_SHADOW; break;
@@ -792,35 +796,32 @@ public Color getSystemColor (int id) {
 }
 
 final void initializeSystemColors() {
-	
-	/* Get the theme colors */
-	int colormap = OS.gdk_colormap_get_system();
-	GtkStyle style = new GtkStyle(OS.gtk_widget_get_default_style());	
-		
-	GdkColor gdkColor;
+	int shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
+	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_widget_realize (shellHandle);
 
+	GdkColor gdkColor;
+	GtkStyle style = new GtkStyle(OS.gtk_widget_get_style (shellHandle));
+
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.black_pixel;
+	gdkColor.red   = style.black_red;
+	gdkColor.green = style.black_green;
+	gdkColor.blue  = style.black_blue;
+	COLOR_WIDGET_DARK_SHADOW = gdkColor;
+	
 	gdkColor = new GdkColor();
 	gdkColor.pixel = style.dark0_pixel;
 	gdkColor.red   = style.dark0_red;
 	gdkColor.green = style.dark0_green;
 	gdkColor.blue  = style.dark0_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
-	COLOR_WIDGET_DARK_SHADOW = gdkColor;
-
-	gdkColor = new GdkColor();
-	gdkColor.pixel = style.mid0_pixel;
-	gdkColor.red   = style.mid0_red;
-	gdkColor.green = style.mid0_green;
-	gdkColor.blue  = style.mid0_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_WIDGET_NORMAL_SHADOW = gdkColor;
 
 	gdkColor = new GdkColor();
-	gdkColor.pixel = style.light0_pixel;
-	gdkColor.red   = style.light0_red;
-	gdkColor.green = style.light0_green;
-	gdkColor.blue  = style.light0_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
+	gdkColor.pixel = style.bg0_pixel;
+	gdkColor.red   = style.bg0_red;
+	gdkColor.green = style.bg0_green;
+	gdkColor.blue  = style.bg0_blue;
 	COLOR_WIDGET_LIGHT_SHADOW = gdkColor;
 
 	gdkColor = new GdkColor();
@@ -828,7 +829,6 @@ final void initializeSystemColors() {
 	gdkColor.red   = style.light0_red;
 	gdkColor.green = style.light0_green;
 	gdkColor.blue  = style.light0_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = gdkColor;
 
 	gdkColor = new GdkColor();
@@ -836,7 +836,6 @@ final void initializeSystemColors() {
 	gdkColor.red   = style.fg0_red;
 	gdkColor.green = style.fg0_green;
 	gdkColor.blue  = style.fg0_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_WIDGET_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
@@ -844,7 +843,6 @@ final void initializeSystemColors() {
 	gdkColor.red   = style.bg0_red;
 	gdkColor.green = style.bg0_green;
 	gdkColor.blue  = style.bg0_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_WIDGET_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
@@ -852,7 +850,6 @@ final void initializeSystemColors() {
 	gdkColor.red   = style.text0_red;
 	gdkColor.green = style.text0_green;
 	gdkColor.blue  = style.text0_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_LIST_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
@@ -860,7 +857,6 @@ final void initializeSystemColors() {
 	gdkColor.red   = style.base0_red;
 	gdkColor.green = style.base0_green;
 	gdkColor.blue  = style.base0_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_LIST_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
@@ -868,7 +864,6 @@ final void initializeSystemColors() {
 	gdkColor.red   = style.fg3_red;
 	gdkColor.green = style.fg3_green;
 	gdkColor.blue  = style.fg3_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_LIST_SELECTION_TEXT = gdkColor;
 
 	gdkColor = new GdkColor();
@@ -876,16 +871,65 @@ final void initializeSystemColors() {
 	gdkColor.red   = style.bg3_red;
 	gdkColor.green = style.bg3_green;
 	gdkColor.blue  = style.bg3_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_LIST_SELECTION = gdkColor;
+
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.text3_pixel;
+	gdkColor.red   = style.text3_red;
+	gdkColor.green = style.text3_green;
+	gdkColor.blue  = style.text3_blue;
+	COLOR_INFO_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
 	gdkColor.pixel = style.base3_pixel;
 	gdkColor.red   = style.base3_red;
 	gdkColor.green = style.base3_green;
 	gdkColor.blue  = style.base3_blue;
-	OS.gdk_colormap_alloc_color(colormap, gdkColor, true, true);
 	COLOR_INFO_BACKGROUND = gdkColor;
+	
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.bg3_pixel;
+	gdkColor.red   = style.bg3_red;
+	gdkColor.green = style.bg3_green;
+	gdkColor.blue  = style.bg3_blue;
+	COLOR_TITLE_BACKGROUND = gdkColor;
+	
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.fg3_pixel;
+	gdkColor.red   = style.fg3_red;
+	gdkColor.green = style.fg3_green;
+	gdkColor.blue  = style.fg3_blue;
+	COLOR_TITLE_FOREGROUND = gdkColor;
+	
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.light3_pixel;
+	gdkColor.red   = style.light3_red;
+	gdkColor.green = style.light3_green;
+	gdkColor.blue  = style.light3_blue;
+	COLOR_TITLE_BACKGROUND_GRADIENT = gdkColor;
+	
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.bg4_pixel;
+	gdkColor.red   = style.bg4_red;
+	gdkColor.green = style.bg4_green;
+	gdkColor.blue  = style.bg4_blue;
+	COLOR_TITLE_INACTIVE_BACKGROUND = gdkColor;
+	
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.fg4_pixel;
+	gdkColor.red   = style.fg4_red;
+	gdkColor.green = style.fg4_green;
+	gdkColor.blue  = style.fg4_blue;
+	COLOR_TITLE_INACTIVE_FOREGROUND = gdkColor;
+	
+	gdkColor = new GdkColor();
+	gdkColor.pixel = style.light4_pixel;
+	gdkColor.red   = style.light4_red;
+	gdkColor.green = style.light4_green;
+	gdkColor.blue  = style.light4_blue;
+	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
+
+	OS.gtk_widget_destroy (shellHandle);
 }
 
 /**
@@ -950,6 +994,10 @@ void initializeCallbacks () {
 	timerCallback = new Callback (this, "timerProc", 2);
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+	windowTimerCallback = new Callback (this, "windowTimerProc", 2);
+	windowTimerProc = windowTimerCallback.getAddress ();
+	if (windowTimerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 
 	caretCallback = new Callback(this, "caretProc", 2);
 	caretProc = caretCallback.getAddress();
@@ -1085,8 +1133,6 @@ synchronized void register () {
 }
 
 protected void release () {
-
-	/* Release shells */
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1095,20 +1141,15 @@ protected void release () {
 		}
 	}
 	while (readAndDispatch ()) {};
-	
-	/* Run dispose list */
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {
 			if (disposeList [i] != null) disposeList [i].run ();
 		}
 	}
 	disposeList = null;
-	
-	/* Release synchronizer */
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
 	releaseDisplay ();
-
 	super.release ();
 }
 
@@ -1135,6 +1176,9 @@ void releaseDisplay () {
 	timerProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
+	windowTimerProc = 0;
+	windowTimerCallback.dispose ();
+	windowTimerCallback = null;
 
 	messages = null;  messageLock = null; thread = null;
 	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
@@ -1181,6 +1225,11 @@ boolean runDeferredEvents () {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
 				widget.notifyListeners (event.type, event);
+				
+				/* Ask for the next mouse event */
+				if (event.type == SWT.MouseMove) {
+					OS.gdk_window_get_pointer (0, null, null, null);
+				}
 			}
 		}
 
@@ -1205,6 +1254,23 @@ boolean runDeferredEvents () {
  */
 public static void setAppName (String name) {
 	/* Do nothing - Gtk doesn't have the concept of application name. */
+}
+
+/**
+ * Sets the location of the on-screen pointer relative to the top left corner
+ * of the screen.  <b>Note: It is typically considered bad practice for a
+ * program to move the on-screen pointer location.</b>
+ *
+ * @param point new position 
+ * @since 2.0
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null
+ * </ul>
+ */
+public void setCursorLocation (Point point) {
+	checkDevice ();
+	/* This is not supported on GTK */
 }
 
 /**
@@ -1498,6 +1564,12 @@ int windowProc (int handle, int int0, int int1, int int2, int user_data) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return 0;
 	return widget.processEvent (user_data, int0, int1, int2);
+}
+
+int windowTimerProc (int handle, int id) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return 0;
+	return widget.processTimer (id);
 }
 
 }

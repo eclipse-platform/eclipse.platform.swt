@@ -18,6 +18,8 @@ import org.eclipse.swt.graphics.*;
  * <dd> Move, Resize, Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -346,17 +348,7 @@ public void pack() {
 		setWidth(parent.getPreferredColumnWidth(index));
 	}
 }
-/**
- * Draw the 'item' at 'yPosition' in the receiver column.
- * @param item - TableItem that should be drawn.
- * @param gc - GC to draw on
- * @param yPosition - y position to draw at in the column.
- */
-void paint(TableItem item, GC gc, int yPosition) {
-	Point paintPosition = new Point(bounds.x, bounds.y + yPosition);
 
-	item.paint(gc, paintPosition, this);
-}
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is moved or resized.

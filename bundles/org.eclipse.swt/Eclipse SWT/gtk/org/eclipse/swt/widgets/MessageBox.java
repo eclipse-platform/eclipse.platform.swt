@@ -24,6 +24,9 @@ import org.eclipse.swt.widgets.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles ICON_ERROR, ICON_INFORMATION, ICON_QUESTION,
+ * ICON_WARNING and ICON_WORKING may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
@@ -147,7 +150,8 @@ public void setMessage (String string) {
 public int open () {
 	createHandle();
 	createMessage(); // includes configuring
-	createActionButtons();
+	Callback okCallback = new Callback (this, "activateFunc", 2);
+	createActionButtons(okCallback);
 	state=0;
 	Callback destroyCallback = new Callback (this, "destroyFunc", 2);
 	int destroyFunc = destroyCallback.getAddress ();
@@ -156,6 +160,8 @@ public int open () {
 	showHandle();
 	while(state==0) OS.gtk_main_iteration();
 	OS.gtk_widget_destroy(handle);
+	destroyCallback.dispose();
+	okCallback.dispose();
 	return state;
 }
 
@@ -175,16 +181,16 @@ private void createMessage() {
 	if (label==0) error(SWT.ERROR_NO_HANDLES);
 	OS.gtk_box_pack_start (OS.GTK_DIALOG_VBOX(handle), label, true, true, 5); // FIXME should we use container_add??
 }
-private void createActionButtons() {	
-	if ((style & SWT.OK) != 0) buttonOK = createButton("OK");
-	if ((style & SWT.CANCEL) != 0) buttonCANCEL = createButton("CANCEL");
+private void createActionButtons(Callback callback) {	
+	if ((style & SWT.OK) != 0) buttonOK = createButton("OK", callback);
+	if ((style & SWT.CANCEL) != 0) buttonCANCEL = createButton("CANCEL", callback);
 
-	if ((style & SWT.YES) != 0) buttonYES = createButton("YES");
-	if ((style & SWT.NO) != 0) buttonNO = createButton("NO");
+	if ((style & SWT.YES) != 0) buttonYES = createButton("YES", callback);
+	if ((style & SWT.NO) != 0) buttonNO = createButton("NO", callback);
 
-	if ((style & SWT.ABORT) != 0) buttonABORT = createButton("ABORT");
-	if ((style & SWT.RETRY) != 0) buttonRETRY = createButton("RETRY");
-	if ((style & SWT.IGNORE) != 0) buttonIGNORE = createButton("IGNORE");
+	if ((style & SWT.ABORT) != 0) buttonABORT = createButton("ABORT", callback);
+	if ((style & SWT.RETRY) != 0) buttonRETRY = createButton("RETRY", callback);
+	if ((style & SWT.IGNORE) != 0) buttonIGNORE = createButton("IGNORE", callback);
 }
 private void showHandle() {
 	OS.gtk_widget_show_all (handle);
@@ -202,19 +208,14 @@ private void showHandle() {
 		OS.gtk_window_set_title(handle, bytes);
 	}
 }
-int createButton(String buttonName) {
+int createButton(String buttonName, Callback callback) {
 	byte[] bytes = Converter.wcsToMbcs (null, buttonName, true);
 	int buttonHandle = OS.gtk_button_new_with_label(bytes);
 	OS.gtk_box_pack_start (OS.GTK_DIALOG_ACTION_AREA(handle), buttonHandle, true, true, 0);
-	hookSelection(buttonHandle);
-	return buttonHandle;
-}
-private void hookSelection(int h) {
 	byte [] clicked = Converter.wcsToMbcs (null, "clicked", true);
-	
-	Callback okCallback = new Callback (this, "activateFunc", 2);
-	int okFunc = okCallback.getAddress ();
-	OS.gtk_signal_connect (h, clicked, okFunc, h);
+	int function = callback.getAddress ();
+	OS.gtk_signal_connect (buttonHandle, clicked, function, buttonHandle);
+	return buttonHandle;
 }
 private static int checkStyle (int style) {
 	int mask = (SWT.YES | SWT.NO | SWT.OK | SWT.CANCEL | SWT.ABORT | SWT.RETRY | SWT.IGNORE);

@@ -21,6 +21,10 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
+ * <p>
+ * Note: Only one of the styles MULTI and SINGLE may be specified.
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  */
@@ -39,7 +43,7 @@ public class Text extends Scrollable {
 		LIMIT = 0x7FFFFFFF;
 		DELIMITER = "\n";
 	}
-		
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -72,6 +76,15 @@ public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+static int checkStyle (int style) {
+	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
+	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
+		return style | SWT.MULTI;
+	}
+	return style | SWT.SINGLE;
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	int parentHandle = parent.parentingHandle ();
@@ -90,7 +103,19 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (parentHandle, fixedHandle);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
+
+		/*
+		* Feature in GTK.  Calling gtk_container_add to add a
+		* GtkText correctly adds the widget but issues warnings
+		* about horizontal scrolling.  The fix is to hide the
+		* the warnings.
+		*/
+		Display display = getDisplay ();
+		boolean warnings = display.getWarnings ();
+		display.setWarnings (false);
 		OS.gtk_container_add (scrolledHandle, handle);
+		display.setWarnings (warnings);
+
 		OS.gtk_widget_show (fixedHandle);
 		OS.gtk_widget_show (scrolledHandle);
 		OS.gtk_text_set_editable (handle, (style & SWT.READ_ONLY) == 0);
@@ -108,7 +133,7 @@ void hookEvents () {
 	signal_connect_after (handle, "changed", SWT.Modify, 2);
 	signal_connect (handle, "insert-text", SWT.Verify, 5);
 	signal_connect (handle, "delete-text", SWT.Verify, 4);
-	signal_connect (handle, "activate", SWT.Selection, 2);
+	signal_connect (handle, "activate", SWT.DefaultSelection, 2);
 }
 
 /**
@@ -453,8 +478,16 @@ public int getLineHeight () {
 	OS.memmove(gdkfont, fontHandle, GdkFont.sizeof);
 	return gdkfont.ascent + gdkfont.descent;*/
 	return 10;
-	
 }
+
+int getLineNumberInString( String string,char delimiter) {
+	int count=0;
+	for (int i=0; i<string.length (); i++) {
+		if (string.charAt (i) == delimiter) count++;
+	}
+	return count;			
+}
+
 /**
  * Gets the position of the selected text.
  * <p>
@@ -779,7 +812,7 @@ int processVerify (int int0, int int1, int int2) {
 	return 0;
 }
 
-int processSelection (int int0, int int1, int int2) {
+int processDefaultSelection (int int0, int int1, int int2) {
 	postEvent (SWT.DefaultSelection);
 	return 0;
 }
@@ -867,7 +900,12 @@ public void removeVerifyListener (VerifyListener listener) {
  */
 public void selectAll () {
 	checkWidget ();
-	/*OS.gtk_editable_select_region (handle, 0, -1);*/
+	OS.gtk_editable_select_region (handle, 0, -1);
+}
+
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
 /**
@@ -924,6 +962,11 @@ public void setEchoChar (char echo) {
 public void setEditable (boolean editable) {
 	checkWidget ();
 	/*OS.gtk_editable_set_editable (handle, editable);*/
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	OS.gtk_widget_modify_text (handle, 0, color);
 }
 
 /**
@@ -1180,6 +1223,22 @@ public void showSelection () {
 */
 }
 
+int traversalCode (int key, int event) {
+	int bits = super.traversalCode (key, event);
+	if ((style & SWT.MULTI) != 0) {
+		bits &= ~SWT.TRAVERSE_RETURN;
+		if (key == OS.GDK_Tab && event != 0) {
+			int [] state = new int [1];
+			OS.gdk_event_get_state (event, state);
+			boolean next = (state[0] & OS.GDK_SHIFT_MASK) == 0;
+			if (next && (state[0] & OS.GDK_CONTROL_MASK) == 0) {
+				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
+			}
+		}
+	}
+	return bits;
+}
+
 String verifyText (String string, int start, int end) {
 	Event event = new Event ();
 	event.text = string;
@@ -1190,20 +1249,4 @@ String verifyText (String string, int start, int end) {
 	return event.text;
 }
 
-int getLineNumberInString( String string,char delimiter) {
-	int count=0;
-	for (int i=0; i<string.length (); i++) {
-		if (string.charAt (i) == delimiter) count++;
-	}
-	return count;			
-}
-
-static int checkStyle (int style) {
-	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL);
-	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
-		return style | SWT.MULTI;
-	}
-	return style | SWT.SINGLE;
-}
 }

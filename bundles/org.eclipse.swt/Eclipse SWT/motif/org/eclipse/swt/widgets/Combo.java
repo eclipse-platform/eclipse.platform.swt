@@ -39,6 +39,9 @@ import org.eclipse.swt.events.*;
  * <dd>DefaultSelection, Modify, Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles DROP_DOWN and SIMPLE 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
@@ -691,6 +694,7 @@ void hookEvents () {
 	OS.XtAddCallback (argList[1], OS.XmNvalueChangedCallback, windowProc, SWT.Modify);
 	OS.XtAddEventHandler (argList[1], OS.KeyPressMask, false, windowProc, SWT.KeyDown);
 	OS.XtAddEventHandler (argList[1], OS.KeyReleaseMask, false, windowProc, SWT.KeyUp);
+	OS.XtInsertEventHandler (argList[1], OS.FocusChangeMask, false, windowProc, SWT.FocusIn, OS.XtListTail);
 }
 /**
  * Searches the receiver's list starting at the first item

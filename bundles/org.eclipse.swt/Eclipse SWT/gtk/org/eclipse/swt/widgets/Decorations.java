@@ -87,9 +87,9 @@ import org.eclipse.swt.graphics.*;
 public class Decorations extends Canvas {
 	String text;
 	Image image;
+	boolean minimized, maximized;
 	Menu menuBar;
 	Menu [] menus;
-	Button defaultButton, saveDefault;
 Decorations () {
 	/* Do nothing */
 }
@@ -145,6 +145,14 @@ void add (Menu menu) {
 	menus = newMenus;
 }
 
+Control computeTabGroup () {
+	return this;
+}
+
+Control computeTabRoot () {
+	return this;
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	text = "";
@@ -165,7 +173,11 @@ void createWidget (int index) {
  */
 public Button getDefaultButton () {
 	checkWidget();
-	return defaultButton;
+	int buttonHandle = OS.gtk_window_get_default(topHandle());
+	if (buttonHandle==0) return null;
+	Widget button = WidgetTable.get(buttonHandle);
+	if (!(button instanceof Button)) return null;
+	return (Button)button;
 }
 /**
  * Returns the receiver's image if it had previously been 
@@ -208,7 +220,7 @@ public Image getImage () {
  */
 public boolean getMaximized () {
 	checkWidget();
-	return false;
+	return maximized;
 }
 /**
  * Returns the receiver's menu bar if one had previously
@@ -241,7 +253,7 @@ public Menu getMenuBar () {
  */
 public boolean getMinimized () {
 	checkWidget();
-	return false;
+	return minimized;
 }
 String getNameText () {
 	return getText ();
@@ -263,6 +275,15 @@ public String getText () {
 	checkWidget();
 	return text;
 }
+
+boolean isTabGroup () {
+	return true;
+}
+
+boolean isTabItem () {
+	return false;
+}
+
 Decorations menuShell () {
 	return this;
 }
@@ -294,7 +315,6 @@ void releaseWidget () {
 	menus = null;
 	super.releaseWidget ();
 	image = null;
-	defaultButton = saveDefault = null;
 }
 /**
  * If the argument is not null, sets the receiver's default
@@ -318,13 +338,12 @@ void releaseWidget () {
  */
 public void setDefaultButton (Button button) {
 	checkWidget();
+	int buttonHandle= 0;
 	if (button != null) {
-		if (button.isDisposed()) return;
-		OS.GTK_WIDGET_SET_FLAGS(button.handle, OS.GTK_CAN_DEFAULT);
-		OS.gtk_window_set_default(topHandle(), button.handle);
-		return;
+		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		buttonHandle = button.handle;
 	}
-	else OS.gtk_window_set_default(topHandle(), 0);
+	OS.gtk_window_set_default(topHandle(), buttonHandle);
 }
 
 /**
@@ -380,6 +399,7 @@ public void setImage (Image image) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget();
+	this.maximized = maximized;
 }
 /**
  * Sets the receiver's menu bar to the argument, which
@@ -430,6 +450,7 @@ public void setMenuBar (Menu menu) {
  */
 public void setMinimized (boolean minimized) {
 	checkWidget();
+	this.minimized = minimized;
 }
 /**
  * Sets the receiver's text, which is the string that the
@@ -450,5 +471,10 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
+}
+boolean traverseReturn () {
+	int shellHandle = _getShell ().topHandle ();
+	boolean processed = OS.gtk_window_activate_default(shellHandle);
+	return processed;
 }
 }

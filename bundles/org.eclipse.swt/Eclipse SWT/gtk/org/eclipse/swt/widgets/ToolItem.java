@@ -14,22 +14,26 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a button in a tool bar.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>PUSH, CHECK, RADIO, SEPARATOR, DROP_DOWN</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
- * </p>
+ * <p>
+ * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public class ToolItem extends Item {
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
+	String toolTipText;
 
-	int boxHandle, arrowHandle;
+	int boxHandle, arrowHandle, arrowButtonHandle;
 	
 	int currentpixmap;
 	boolean drawHotImage;
@@ -146,7 +150,7 @@ public void addSelectionListener(SelectionListener listener) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	switch (style & (SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH)) {
+	switch (style & (SWT.SEPARATOR | SWT.RADIO | SWT.CHECK | SWT.PUSH | SWT.DROP_DOWN)) {
 		case SWT.PUSH:
 		case 0:
 			handle = OS.gtk_toolbar_insert_element (parent.handle,
@@ -184,6 +188,40 @@ void createHandle (int index) {
 			OS.gtk_widget_show(boxHandle);
 			OS.gtk_widget_show(handle);
 			return;
+		case SWT.DROP_DOWN:
+			/* create the box */
+			isVertical = (parent.getStyle()&SWT.VERTICAL) != 0;
+			boxHandle = isVertical? OS.gtk_vbox_new(false, 0) : OS.gtk_hbox_new(false, 0);
+			if (boxHandle==0) error(SWT.ERROR_NO_HANDLES);
+			/* create the button */
+			handle = OS.gtk_button_new();
+			if (handle==0) error(SWT.ERROR_NO_HANDLES);
+			OS.gtk_button_set_relief(handle, OS.GTK_RELIEF_NONE);
+			/* create the arrow */
+			arrowHandle = OS.gtk_arrow_new (OS.GTK_ARROW_DOWN, OS.GTK_SHADOW_NONE);
+			if (arrowHandle==0) error(SWT.ERROR_NO_HANDLES);
+			arrowButtonHandle = OS.gtk_button_new ();
+			if (arrowButtonHandle==0) error(SWT.ERROR_NO_HANDLES);
+			OS.gtk_button_set_relief(arrowButtonHandle, OS.GTK_RELIEF_NONE);
+			OS.gtk_container_set_border_width(arrowButtonHandle,0);
+			int style = OS.gtk_style_copy(OS.gtk_widget_get_style(arrowButtonHandle));
+			OS.gtk_style_set_xthickness(style, 0);
+			OS.gtk_widget_set_style(arrowButtonHandle, style);
+			// when the arrow gets destroyed, it will dereference the clone
+			
+			OS.gtk_toolbar_insert_widget (
+				parent.handle,
+				boxHandle,
+				new byte[1], new byte[1],
+				index);
+			OS.gtk_box_pack_start(boxHandle, handle, true,true,0);
+			OS.gtk_box_pack_end(boxHandle, arrowButtonHandle, true,true,0);
+			OS.gtk_container_add (arrowButtonHandle, arrowHandle);
+			OS.gtk_widget_show(handle);
+			OS.gtk_widget_show (arrowHandle);
+			OS.gtk_widget_show (arrowButtonHandle);
+			OS.gtk_widget_show(boxHandle);
+			return;
 		default:
 			/*
 			 * Can not specify more than one style
@@ -196,10 +234,14 @@ void createHandle (int index) {
 void register() {
 	super.register ();
 	if (boxHandle != 0) WidgetTable.put(boxHandle, this);
+	if (arrowButtonHandle != 0) WidgetTable.put(arrowButtonHandle, this);
+	if (arrowHandle != 0) WidgetTable.put(arrowHandle, this);
 }
 void deregister() {
 	super.deregister ();
 	if (boxHandle != 0) WidgetTable.remove (boxHandle);
+	if (arrowButtonHandle != 0) WidgetTable.remove (arrowButtonHandle);
+	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
 }
 
 int topHandle() {
@@ -354,7 +396,7 @@ public boolean getSelection () {
  */
 public String getToolTipText () {
 	checkWidget();
-	return "";
+	return toolTipText;
 }
 
 /**
@@ -378,6 +420,7 @@ void hookEvents () {
 	signal_connect(handle, "clicked",   SWT.Selection, 2);
 	signal_connect(handle, "enter-notify-event", SWT.MouseEnter, 3);
 	signal_connect(handle, "leave-notify-event", SWT.MouseExit,  3);
+	if (arrowButtonHandle!=0) signal_connect(arrowButtonHandle, "clicked",   SWT.DefaultSelection, 2);
 }
 
 /**
@@ -453,9 +496,15 @@ int processSelection  (int int0, int int1, int int2) {
 	postEvent (SWT.Selection, event);
 	return 0;
 }
+int processDefaultSelection (int int0, int int1, int int2) {
+	Event event = new Event ();
+	event.detail = SWT.ARROW;
+	postEvent (SWT.Selection, event);
+	return 0;
+}
 void releaseWidget () {
 	super.releaseWidget ();
-	tooltipsHandle = 0;
+	tooltipsHandle = arrowButtonHandle = arrowHandle = 0;
 	parent = null;
 }
 
@@ -569,6 +618,28 @@ public void setEnabled (boolean enabled) {
 	OS.gtk_widget_set_sensitive (handle, enabled);
 }
 
+void setFontDescription (int font) {
+	int list = OS.gtk_container_get_children (handle);
+	if (list != 0) {
+		int fontHandle = OS.g_list_nth_data (list, 0);
+		OS.g_list_free (list);
+		OS.gtk_widget_modify_font (fontHandle, font);
+		return;
+	}
+	OS.gtk_widget_modify_font (handle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	int list = OS.gtk_container_get_children (handle);
+	if (list != 0) {
+		int colorHandle = OS.g_list_nth_data (list, 0);
+		OS.g_list_free (list);
+		OS.gtk_widget_modify_fg (colorHandle, 0, color);
+		return;
+	}
+	OS.gtk_widget_modify_fg (handle, 0, color);
+}
+
 /**
  * Sets the receiver's hot image to the argument, which may be
  * null indicating that no hot image should be displayed.
@@ -595,10 +666,11 @@ public void setImage (Image image) {
 	checkWidget();
 	super.setImage (image);
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	if (list != 0) {
 		int widget = OS.g_list_nth_data (list, 0);
 		if (widget != 0) OS.gtk_widget_destroy (widget);
+		OS.g_list_free (list);
 	}
 	if (image != null) {
 		int pixmap = OS.gtk_pixmap_new (image.pixmap, image.mask);
@@ -641,10 +713,11 @@ public void setText (String string) {
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	if (list != 0) {
 		int widget = OS.g_list_nth_data (list, 0);
 		if (widget !=  0) OS.gtk_widget_destroy (widget);
+		OS.g_list_free (list);
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	int label = OS.gtk_label_new_with_mnemonic (buffer);
@@ -664,9 +737,11 @@ public void setText (String string) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
+	toolTipText = string;
 	if (tooltipsHandle == 0) tooltipsHandle = OS.gtk_tooltips_new();
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.gtk_tooltips_set_tip(tooltipsHandle, handle, buffer, null);
+	byte [] buffer = null;
+	if (string != null) buffer = Converter.wcsToMbcs (null, string, true);
+	OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
 }
 /**
  * Sets the width of the receiver.

@@ -81,6 +81,10 @@ public class OS {
 	public static final int GDK_End = 0xFF57;
 	public static final int GDK_Insert = 0xFF63;
 	public static final int GDK_Delete = 0xFFFF;
+	public static final int GDK_Return = 0xFF0D;
+	public static final int GDK_Escape = 0xFF1B;
+	public static final int GDK_Cancel = 0xFF69;
+	public static final int GDK_Tab = 0xFF09;
 	/* Functions Keys */
 	public static final int GDK_F1 = 0xFFBE;
 	public static final int GDK_F2 = 0xFFBF;
@@ -94,7 +98,6 @@ public class OS {
 	public static final int GDK_F10 = 0xFFC7;
 	public static final int GDK_F11 = 0xFFC8;
 	public static final int GDK_F12 = 0xFFC9;
-	public static final int GDK_Return = 0xFF0D;
 	/* Numeric Keypad */
 	public static final int GDK_KP_Add = 0xFFAB;
 	public static final int GDK_KP_Subtract = 0xFFAD;
@@ -155,6 +158,7 @@ public class OS {
 	public static final int GDK_BUTTON_RELEASE = 7;
 	public static final int GDK_KEY_PRESS = 8;
 	public static final int GDK_KEY_RELEASE = 9;
+	public static final int GDK_FOCUS_CHANGE = 12;
 	public static final int GDK_NO_EXPOSE = 30;
 
 	/* The values for the GdkModifierType constants are specified in the
@@ -255,8 +259,7 @@ public class OS {
 	public static final int GTK_VISIBILITY_PARTIAL = 1;
 	public static final int GTK_VISIBILITY_FULL = 2;
 	public static final int GTK_WINDOW_TOPLEVEL = 0;
-	public static final int GTK_WINDOW_DIALOG = 1;
-	public static final int GTK_WINDOW_POPUP = 2;
+	public static final int GTK_WINDOW_POPUP = 1;
 	public static final int GTK_ACCEL_VISIBLE = 1 << 0;
 	public static final int GTK_NO_WINDOW = 1 << 5;
 	public static final int GTK_MAPPED = 1 << 7;
@@ -265,6 +268,7 @@ public class OS {
 	public static final int GTK_CAN_FOCUS = 1 << 11;
 	public static final int GTK_HAS_FOCUS = 1 << 12;
 	public static final int GTK_CAN_DEFAULT = 1 << 13;
+	public static final int GTK_WIDGET_DOUBLE_BUFFERED = 1 << 21;
 	public static final int GTK_CLIST_SHOW_TITLES         = 1 <<  2;
 	public static final int GTK_PROGRESS_CONTINUOUS = 0;
 	public static final int GTK_PROGRESS_DISCRETE = 1;
@@ -272,6 +276,7 @@ public class OS {
 	public static final int GTK_PROGRESS_RIGHT_TO_LEFT = 1;
 	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 2;
 	public static final int GTK_PROGRESS_TOP_TO_BOTTOM = 3;
+	public static final int GTK_RECEIVES_DEFAULT = 1<<20;
 	
 	/* The values for the GdkGrabStatus constants are specified in
 	 * the documentation, therefore there is no need to get them from the OS.
@@ -281,6 +286,21 @@ public class OS {
 	public static final int GDK_GRAB_INVALID_TIME = 2;
 	public static final int GDK_GRAB_NOT_VIEWABLE = 3;
 	public static final int GDK_GRAB_FROZEN = 4;
+	
+	/* The values for the GtkResponseType constants are specified in
+	 * the documentation, therefore there is no need to get them from the OS.
+	 */
+	public static final int GTK_RESPONSE_NONE   = -1;
+	public static final int GTK_RESPONSE_REJECT = -2;
+	public static final int GTK_RESPONSE_ACCEPT = -3;
+	public static final int GTK_RESPONSE_DELETE_EVENT = -4;
+	public static final int GTK_RESPONSE_OK     = -5;
+	public static final int GTK_RESPONSE_CANCEL = -6;
+	public static final int GTK_RESPONSE_CLOSE  = -7;
+	public static final int GTK_RESPONSE_YES    = -8;
+	public static final int GTK_RESPONSE_NO     = -9;
+	public static final int GTK_RESPONSE_APPLY  = -10;
+	public static final int GTK_RESPONSE_HELP   = -11;
 	
 
 public static final native int GTK_TOOLBAR_CHILD_SPACE();
@@ -330,7 +350,6 @@ public static final native boolean GTK_WIDGET_NO_WINDOW(int wid);
 public static final native boolean GTK_WIDGET_SENSITIVE(int wid);
 public static final native boolean GTK_WIDGET_IS_SENSITIVE(int wid);
 public static final native boolean GTK_WIDGET_TOPLEVEL(int wid);
-public static final native boolean GTK_WIDGET_REALISED(int wid);
 public static final native boolean GTK_WIDGET_MAPPED(int wid);
 public static final native boolean GTK_WIDGET_VISIBLE(int wid);
 public static final native boolean GTK_WIDGET_DRAWABLE(int wid);
@@ -343,8 +362,6 @@ public static final native boolean GTK_WIDGET_HAS_GRAB(int wid);
 
 public static final native int GTK_FONT_SELECTION_DIALOG_OK_BUTTON(int handle);
 public static final native int GTK_FONT_SELECTION_DIALOG_CANCEL_BUTTON(int handle);
-public static final native int GTK_FILE_SELECTION_OK_BUTTON(int handle);
-public static final native int GTK_FILE_SELECTION_CANCEL_BUTTON(int handle);
 public static final native int GTK_COLOR_SELECTION_OK_BUTTON(int handle);
 public static final native int GTK_COLOR_SELECTION_CANCEL_BUTTON(int handle);
 public static final native int GTK_COLOR_SELECTION_HELP_BUTTON(int handle);
@@ -486,9 +503,12 @@ public static final native void gdk_gc_set_fill(int gc, int fill);
 public static final native int gdk_atom_intern(byte[] atom_name, int only_if_exists);
 public static final native int gdk_event_get();
 public static final native void gdk_region_get_clipbox(int region, GdkRectangle rectangle);
+public static final native void gdk_region_get_rectangles(int region, int[] rectangles, int[] n_rectangles);
 public static final native int gdk_region_new();
 public static final native void gdk_region_union_with_rect(int region, GdkRectangle rect);
 public static final native void gdk_region_subtract(int source1, int source2);
+public static final native void gdk_region_intersect(int source1, int source2);
+public static final native void gdk_region_offset(int region, int dx, int dy);
 public static final native void gdk_region_union(int source1, int source2);
 public static final native void gdk_region_destroy(int region);
 public static final native int gdk_pixmap_new(int window, int width, int height, int depth);
@@ -503,8 +523,8 @@ public static final native void gdk_string_extents(int font, byte[] string, int[
 public static final native int gdk_string_height(int font, byte[] string);
 public static final native int gdk_string_width(int font, byte[] string);
 public static final native void gdk_window_copy_area(int window, int gc, int x, int y, int source_window, int source_x, int source_y, int width, int height);
-public static final native void gdk_window_clear_area(int window, int x, int y, int width, int height);
-public static final native void gdk_window_clear_area_e(int window, int x, int y, int width, int height);
+//public static final native void gdk_window_clear_area(int window, int x, int y, int width, int height);
+//public static final native void gdk_window_clear_area_e(int window, int x, int y, int width, int height);
 public static final native void gdk_window_resize(int window, int width, int height);
 public static final native void gdk_window_move  (int window, int x, int y);
 public static final native int gdk_window_at_pointer(int[] win_x, int[] win_y);
@@ -516,7 +536,7 @@ public static final native int  gdk_drawable_get_depth(int drawable);
 public static final native void gdk_window_raise(int window);
 public static final native void gdk_window_lower(int window);
 public static final native int gdk_window_get_origin(int window, int[] x, int[] y);
-public static final native int gdk_window_get_pointer(int window, int[] x, int[] y, int mask);
+public static final native int gdk_window_get_pointer(int window, int[] x, int[] y, int[] mask);
 public static final native void gdk_window_set_cursor(int window, int cursor);
 public static final native void gdk_window_set_icon(int window, int icon_window, int pixmap, int mask);
 public static final native void gdk_window_set_user_data(int window, int user_data);
@@ -565,7 +585,7 @@ public static final native void gtk_clist_set_column_width(int clist, int column
 public static final native void gtk_clist_set_pixtext(int clist, int row, int column, byte[] text, byte spacing, int pixmap, int mask);
 //public static final native void gtk_clist_set_pixmap(int clist, int row, int column, int pixmap, int mask);
 public static final native void gtk_container_add(int container, int widget);
-public static final native int gtk_container_children(int container);
+public static final native int gtk_container_get_children(int container);
 public static final native int gtk_color_selection_dialog_new(byte[] title);
 public static final native void gtk_color_selection_get_color(int colorsel, double[] color);
 public static final native void gtk_color_selection_set_color(int colorsel, double[] color);
@@ -666,7 +686,7 @@ public static final native void gtk_menu_insert(int menu, int child, int positio
 public static final native void gtk_menu_item_set_submenu(int menu_item, int submenu);
 public static final native void gtk_menu_item_remove_submenu(int menu_item);
 public static final native int gtk_notebook_new();
-public static final native void gtk_notebook_append_page(int notebook, int child, int tab_label);
+public static final native void gtk_notebook_insert_page(int notebook, int child, int tab_label, int position);
 public static final native int gtk_notebook_get_current_page(int notebook);
 public static final native void gtk_object_ref(int object);
 public static final native void gtk_notebook_set_show_tabs(int notebook, boolean show_tabs);
@@ -795,10 +815,13 @@ public static final native void pango_font_family_list_faces(int family, int[] f
 public static final native int pango_font_face_describe(int face);
 
 public static final native int pango_language_from_string(byte[] language);
+public static final native int pango_language_to_string(int language);
 
 public static final native int  pango_layout_new(int context);
 public static final native void pango_layout_set_text(int layout, byte[] text, int length);
 public static final native void pango_layout_get_size(int layout, int[] width, int[] height);
+public static final native void pango_layout_set_font_description(int layout, int desc);
+public static final native void pango_layout_set_markup_with_accel(int layout, byte[] markup, int length, char accel_marker, char[] accel_char);
 
 public static final native int pango_font_description_new();
 public static final native int pango_font_description_from_string(byte[] str);
@@ -873,6 +896,7 @@ public static final native void memmove(byte[] dest, int src, int size);
 public static final native void memmove(int[] dest, byte[] src, int size);
 public static final native void memmove(int dest, byte[] src, int size);
 public static final native void memmove(int dest, int[] src, int size);
+public static final native void memmove(GdkRectangle dest, int src, int size);
 
 
 /* Read memmoves */
@@ -885,7 +909,7 @@ static final native void memmove(GtkAdjustment dest, int src);
 static final native void memmove(GtkCombo dest, int src);
 static final native void memmove(GtkEditable dest, int src);
 static final native void memmove(GtkStyle dest, int src);
-static final native void memmove(GtkStyleClass dest, int src);
+//static final native void memmove(GtkStyleClass dest, int src);
 static final native void memmove(GtkCListRow dest, int src);
 static final native void memmove(GtkCListColumn dest, int src);
 static final native void memmove(GtkCList dest, int src);
@@ -906,6 +930,7 @@ public static final native void gdk_window_process_updates(int window, boolean u
 public static final native void gtk_label_set_text_with_mnemonic(int label, byte[] str);
 public static final native int gtk_label_new_with_mnemonic(byte[] str);
 public static final native int gtk_frame_get_label_widget(int frame);
+public static final native void gtk_frame_set_label_widget(int frame, int label_widget);
 
 public static final native void gtk_widget_set_size_request(int widget, int width, int height);
 public static final native void gtk_widget_get_size_request(int widget, int [] width, int [] height);
@@ -921,6 +946,9 @@ public static final native void gtk_fixed_move(int fixed, int widget, int x, int
 public static final native void gtk_fixed_set_has_window(int fixed, boolean has_window);
 public static final native void gtk_scrolled_window_add_with_viewport (int scrolled_window, int child);
 public static final native void gtk_widget_modify_bg (int widget, int state, GdkColor color);
+public static final native void gtk_widget_modify_fg (int widget, int state, GdkColor color);
+public static final native void gtk_widget_modify_base (int widget, int state, GdkColor color);
+public static final native void gtk_widget_modify_text (int widget, int state, GdkColor color);
 public static final native void GTK_BIN_SET_CHILD (int bin, int child);
 public static final native void gtk_scrolled_window_set_shadow_type(int scrolled_window, int type);
 public static final native void gtk_widget_queue_resize(int widget);
@@ -930,4 +958,44 @@ public static final native int gdk_pointer_grab(int window, boolean owner_events
 public static final native int gdk_pointer_ungrab(int time);
 public static final native int g_signal_connect_swapped(int instance, byte[] detailed_sigal, int c_handler, int data);
 public static final native void gtk_window_set_default(int window, int widget);
+public static final native int gtk_window_get_default(int window);
+public static final native boolean gtk_window_activate_default(int window);
+public static final native void gtk_widget_activate(int widget);
+public static final native void gtk_clist_set_row_height(int clist, int height);
+public static final native boolean gdk_event_focus_get_in(int event);
+public static final native void gdk_window_set_back_pixmap(int window, int pixmap, boolean parent_relative);
+public static final native void gdk_window_set_override_redirect(int window, boolean override_redirect);
+
+public static final native int gtk_widget_send_expose(int widget, int event); 
+public static final native void gdk_window_scroll(int window, int dx, int dy);
+public static final native void gtk_container_set_border_width(int container, int border_width);
+public static final native int gdk_drawable_get_visible_region (int drawable);
+
+public static final native void gdk_window_invalidate_rect(int window, GdkRectangle rectangle, boolean invalidate_children);
+public static final native void gdk_window_invalidate_region(int window, int region, boolean invalidate_children);
+public static final native void  gtk_notebook_set_scrollable(int notebook, boolean scrollable);
+public static final native boolean  gtk_notebook_get_scrollable(int notebook);
+public static final native void  gtk_button_set_relief(int button, int newstyle);
+
+/* Clipboard */
+public static final native int gtk_clipboard_clear( int clipboard );
+public static final native int gtk_clipboard_get( int selection );
+public static final native boolean gtk_clipboard_set_with_data (int clipboard, int targets, int n_targets, int get_func, int clear_func, int user_data);
+public static final native int gtk_clipboard_wait_for_contents (int clipboard, int target);			
+public static final native int gtk_selection_data_free( int selection_data );
+public static final native void gtk_selection_data_set(int selection_data, int type, int format, int data, int length);	
+public static final native void memmove(int dest, GtkTargetEntry src);
+public static final native void memmove(GtkSelectionData dest, int src);
+
+/* Temporary code */
+public static final native void  gtk_style_set_xthickness(int style, int xthickness);
+public static final native void  gtk_style_set_ythickness(int style, int ythickness);
+
+public static final native void  gtk_window_set_destroy_with_parent (int window, boolean setting);
+public static final native void gdk_window_get_internal_paint_info(int window, int[] drawable, int[] x_offset, int[] y_offset);
+public static final native int gtk_dialog_run(int dialog);
+public static final native void gtk_file_selection_set_select_multiple(int filesel, boolean select_multiple);
+public static final native int gtk_file_selection_get_selections(int filesel);
+public static final native void g_strfreev(int string_array);
+public static final native int g_filename_to_utf8(int opsysstring, int len, int bytes_read, int bytes_written, int error);
 }

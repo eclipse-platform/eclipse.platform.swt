@@ -223,7 +223,7 @@ void resize () {
 	if (tableTree.isDisposed()) return;
 	if (item == null || item.isDisposed()) return;
 	Table table = tableTree.getTable();
-	if (column < 0 || column >= table.getItemCount()) return;
+	if (column < 0 || column >= table.getColumnCount()) return;
 	super.resize();
 }
 }

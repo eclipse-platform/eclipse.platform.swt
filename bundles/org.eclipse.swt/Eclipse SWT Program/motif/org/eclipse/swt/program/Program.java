@@ -526,6 +526,9 @@ static String gnome_getMimeValue(String mimeType, String key) {
 }
 
 static boolean kde_init () {
+	// TEMPORARY CODE
+	if (true) return false;
+	
 	try {
 		Library.loadLibrary("swt-kde");
 	} catch (Throwable e) {

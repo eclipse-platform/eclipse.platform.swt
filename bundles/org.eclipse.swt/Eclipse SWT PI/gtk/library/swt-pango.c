@@ -296,3 +296,28 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1language_1fro
    return rc;
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1set_1font_1description
+  (JNIEnv *env, jclass that, jint layout, jint descr)
+{
+   pango_layout_set_font_description((PangoLayout*)layout, (PangoFontDescription*)descr);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1language_1to_1string
+  (JNIEnv *env, jclass that, jint language)
+{   
+   return (jint)pango_language_to_string((PangoLanguage*)language);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1set_1markup_1with_1accel
+  (JNIEnv *env, jclass that, jint layout, jbyteArray markup, jint length, jchar accel_marker, jcharArray accel_char)
+{
+   jbyte *markup1 = NULL;
+   jchar *accel_char1 = NULL;
+
+   if (markup != NULL) markup1 = (*env)->GetByteArrayElements(env, markup, NULL);
+   if (accel_char != NULL) accel_char1 = (*env)->GetCharArrayElements(env, accel_char, NULL);
+   pango_layout_set_markup_with_accel((PangoLayout*)layout, (const char *)markup1, length, (gunichar)accel_marker, (gunichar*)accel_char1);
+   if (markup != NULL) (*env)->ReleaseByteArrayElements(env, markup, markup1, 0);
+   if (accel_char != NULL) (*env)->ReleaseCharArrayElements(env, accel_char, accel_char1, 0);
+}
+

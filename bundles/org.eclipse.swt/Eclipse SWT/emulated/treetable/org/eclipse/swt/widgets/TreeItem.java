@@ -90,7 +90,9 @@ public class TreeItem extends AbstractTreeItem {
 
 	//Determine whether the item is being expanded
 	private boolean isExpanding = false;
-
+	Color background = null;
+	Color foreground = null;
+	
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
@@ -369,29 +371,6 @@ Point drawImage(GC gc, Point destinationPosition) {
 	return destinationPosition;
 }
 /**
- * Draw a filled rectangle indicating the item selection state
- * The rectangle will be filled with the selection color if the 
- * receiver is selected. Otherwise the rectangle will be filled
- * in the background color to remove the selection.
- * @param gc - GC to draw on. 
- * @param position - position on the GC to draw at.
- */
-void drawSelection(GC gc, Point position) {
-	Tree parent = getParent();
-	Point selectionExtent = getSelectionExtent();
-
-	if (selectionExtent == null) {
-		return;
-	}
-	if (isSelected() == true) {
-		gc.setBackground(getSelectionBackgroundColor());
-	}
-	gc.fillRectangle(position.x, position.y, selectionExtent.x, selectionExtent.y);
-	if (isSelected() == true) {
-		gc.setBackground(parent.getBackground());
-	}
-}
-/**
  * Draw a rectangle enclosing the item label. The rectangle
  * indicates that the receiver was selected last and that it has
  * the input focus.
@@ -409,27 +388,6 @@ void drawSelectionFocus(GC gc, Point position) {
 		gc.drawFocus(
 			position.x, position.y, 
 			selectionExtent.x, selectionExtent.y);
-	}
-}
-/** 
- * Draw the item label at 'position' using 'gc'.
- * @param gc - GC to draw on. 
- * @param position - position on the GC to draw at.
- */
-void drawText(GC gc, Point position) {
-	Tree parent = getParent();
-	String text = getText();
-	
-	if (text != null) {
-		if (isSelected() == true) {
-			gc.setBackground(getSelectionBackgroundColor());
-			gc.setForeground(getSelectionForegroundColor());
-		}
-		gc.drawString(text, position.x, position.y);
-		if (isSelected() == true) {
-			gc.setBackground(parent.getBackground());
-			gc.setForeground(parent.getForeground());
-		}
 	}
 }
 /**
@@ -512,7 +470,6 @@ Point drawVerticalItemConnector(GC gc, Point position) {
 	}
 	return position;
 }
-
 /**
  * Returns the receiver's background color.
  *
@@ -528,10 +485,10 @@ Point drawVerticalItemConnector(GC gc, Point position) {
  */
 public Color getBackground () {
 	checkWidget ();
+	if (background != null) return background;
 	Tree parent = getParent();
 	return parent.getBackground();
 }
-
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
@@ -586,6 +543,7 @@ int getDecorationsWidth() {
  */
 public Color getForeground () {
 	checkWidget ();
+	if (foreground != null) return foreground;
 	Tree parent = getParent();
 	return parent.getForeground();
 }
@@ -1057,12 +1015,13 @@ void makeVisible() {
  * @param yPosition - y coordinate where the receiver should draw at.
  */
 void paint(GC gc, int yPosition) {
-	Tree parent = getParent();
-	Point paintPosition = new Point(getPaintStartX(), yPosition);
-	
 	if (isVisible() == false) {
 		return;
 	}
+	
+	Tree parent = getParent();
+	Point paintPosition = new Point(getPaintStartX(), yPosition);
+	Point extent = getSelectionExtent();
 	gc.setForeground(parent.CONNECTOR_LINE_COLOR);
 	paintPosition = drawVerticalItemConnector(gc, paintPosition);
 	paintPosition = drawHierarchyIndicator(gc, paintPosition);
@@ -1073,13 +1032,31 @@ void paint(GC gc, int yPosition) {
 		paintPosition = drawCheckbox(gc, new Point(paintPosition.x, yPosition));
 	}
 	paintPosition = drawImage(gc, new Point(paintPosition.x, yPosition));
-	drawSelection(gc, paintPosition);
+	if (isSelected() == true) {
+		gc.setBackground(getSelectionBackgroundColor());
+		gc.setForeground(getSelectionForegroundColor());
+		gc.fillRectangle(paintPosition.x, paintPosition.y, extent.x, extent.y);
+	} else {
+		gc.setBackground(getBackground());
+		gc.setForeground(getForeground());
+		if(getBackground() != parent.getBackground()){
+			gc.fillRectangle(paintPosition.x, paintPosition.y, extent.x, extent.y);		
+		}
+	}	
+	if (text != null) {		
+		gc.drawString(text, getTextXPos(), paintPosition.y + getTextYPosition(gc), true);
+	}
 	if (this == parent.getInsertItem()) {
 		drawInsertMark(gc, paintPosition);
 	}
-	drawText(gc, new Point(getTextXPos(), paintPosition.y + getTextYPosition(gc)));
 	drawSelectionFocus(gc, paintPosition);
 }
+
+void redraw(){
+	Rectangle bounds = getBounds();
+	getParent().redraw(bounds.x, bounds.y, bounds.width, bounds.height, false);
+}
+
 /**
  * Update the display to reflect the expanded state of the
  * receiver.
@@ -1312,6 +1289,8 @@ public void setBackground (Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ())
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	background = color;	
+	redraw();
 }
 /**
  * Sets the checked state of the receiver.
@@ -1355,6 +1334,8 @@ public void setForeground (Color color) {
 	checkWidget ();
 	if (color != null && color.isDisposed ())
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	foreground = color;	
+	redraw(); 
 }
 /**
  * Sets the grayed state of the receiver.

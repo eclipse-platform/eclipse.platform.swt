@@ -123,7 +123,10 @@ public RGB open () {
 	byte [] titleBytes;
 	titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_color_selection_dialog_new (titleBytes);
-	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
+	if (parent!=null) {
+		OS.gtk_window_set_modal(handle, true);
+		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	}	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
 	OS.memmove (dialog, handle, GtkColorSelectionDialog.sizeof);
 	OS.gtk_widget_hide (dialog.help_button);
 	if (rgb != null) {

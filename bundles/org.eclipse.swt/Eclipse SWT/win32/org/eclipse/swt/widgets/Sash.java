@@ -21,6 +21,8 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
@@ -209,7 +211,19 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 				newY = Math.min (Math.max (0, pt.y - startY), clientHeight - height);
 			}
 			if (newX == lastX && newY == lastY) return result;
-		
+
+			/* Update the pointer position */
+			POINT cursorPt = new POINT ();
+			cursorPt.x = pt.x;  cursorPt.y = pt.y;
+			OS.ClientToScreen (parent.handle, cursorPt);
+			if ((style & SWT.VERTICAL) != 0) {
+				cursorPt.y += height / 2;
+			}
+			else {
+				cursorPt.x += width / 2;
+			}
+			OS.SetCursorPos (cursorPt.x, cursorPt.y);
+
 			/* The event must be sent because doit flag is used */
 			Event event = new Event ();
 			event.x = newX;  event.y = newY;

@@ -93,16 +93,15 @@ Control [] _getChildren () {
 }
 Control [] _getTabList () {
 	if (tabList == null) return tabList;
-	int index = 0, count = 0;
-	while (index < tabList.length) {
-		if (!tabList [index].isDisposed ()) count++;
-		index++;
-	}
-	if (index == count) return tabList;
-	Control [] newList = new Control [count];
-	index = 0;
+	int count = 0;
 	for (int i=0; i<tabList.length; i++) {
-		if (!tabList [index].isDisposed ()) {
+		if (!tabList [i].isDisposed ()) count++;
+	}
+	if (count == tabList.length) return tabList;
+	Control [] newList = new Control [count];
+	int index = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [i].isDisposed ()) {
 			newList [index++] = tabList [i];
 		}
 	}
@@ -471,17 +470,18 @@ int processPaint (int callData) {
 	if (xDisplay == 0) return 0;
 	Event event = new Event ();
 	GC gc = event.gc = new GC (this);
-	OS.XSetRegion (xDisplay, gc.handle, damagedRegion);
+	Region region = Region.motif_new (damagedRegion);
+	gc.setClipping (region);
 	XRectangle rect = new XRectangle ();
 	OS.XClipBox (damagedRegion, rect);
-	OS.XDestroyRegion (damagedRegion);
-	damagedRegion = 0;
 	event.time = OS.XtLastTimestampProcessed (xDisplay);
 	event.x = rect.x;  event.y = rect.y;
 	event.width = rect.width;  event.height = rect.height;
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
+	OS.XDestroyRegion (damagedRegion);
+	damagedRegion = 0;
 	return 0;
 }
 void propagateChildren (boolean enabled) {
@@ -587,10 +587,9 @@ public void setLayout (Layout layout) {
  * Sets the tabbing order for the specified controls to
  * match the order that they occur in the argument list.
  *
- * @param tabList the ordered list of controls representing the tab order; must not be null
+ * @param tabList the ordered list of controls representing the tab order or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tabList is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
  *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
  * </ul>
@@ -601,13 +600,27 @@ public void setLayout (Layout layout) {
  */
 public void setTabList (Control [] tabList) {
 	checkWidget ();
-	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<tabList.length; i++) {
-		Control control = tabList [i];
-		if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
-	}
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			Control control = tabList [i];
+			if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			/*
+			* This code is intentionally commented.
+			* Tab lists are currently only supported
+			* for the direct children of a composite.
+			*/
+//			Shell shell = control.getShell ();
+//			while (control != shell && control != this) {
+//				control = control.parent;
+//			}
+//			if (control != this) error (SWT.ERROR_INVALID_PARENT);
+			if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
+		}
+		Control [] newList = new Control [tabList.length];
+		System.arraycopy (tabList, 0, newList, 0, tabList.length);
+		tabList = newList;
+	} 
 	this.tabList = tabList;
 }
 boolean setTabGroupFocus () {

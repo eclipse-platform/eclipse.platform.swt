@@ -1683,6 +1683,7 @@ private static final int
  *        (see ALPHA_MODE_xxx constants)
  * @param alphaData the alpha blending or mask data, varies depending
  *        on the value of alphaMode and sometimes ignored
+ * @param alphaStride the alpha data number of bytes per line
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 8, 16, 24, 32
  * @param destStride the destination number of bytes per line
@@ -2105,6 +2106,7 @@ static void blit(int op,
  *        (see ALPHA_MODE_xxx constants)
  * @param alphaData the alpha blending or mask data, varies depending
  *        on the value of alphaMode and sometimes ignored
+ * @param alphaStride the alpha data number of bytes per line
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 1, 2, 4, 8
  * @param destStride the destination number of bytes per line
@@ -2629,6 +2631,7 @@ static void blit(int op,
  *        (see ALPHA_MODE_xxx constants)
  * @param alphaData the alpha blending or mask data, varies depending
  *        on the value of alphaMode and sometimes ignored
+ * @param alphaStride the alpha data number of bytes per line
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 8, 16, 24, 32
  * @param destStride the destination number of bytes per line
@@ -2965,6 +2968,7 @@ static void blit(int op,
  *        (see ALPHA_MODE_xxx constants)
  * @param alphaData the alpha blending or mask data, varies depending
  *        on the value of alphaMode and sometimes ignored
+ * @param alphaStride the alpha data number of bytes per line
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 1, 2, 4, 8
  * @param destStride the destination number of bytes per line

@@ -24,6 +24,8 @@ import org.eclipse.swt.events.*;
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
  * <p>
+ * Note: Only one of SINGLE and MULTI may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -185,6 +187,10 @@ void createHandle (int index) {
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
 	
+	/* Force row_height to be computed */
+	OS.gtk_clist_set_row_height (handle, 0);
+	
+	/* Single or Multiple Selection */
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_EXTENDED :OS.GTK_SELECTION_BROWSE;
 	OS.gtk_clist_set_selection_mode (handle, mode);
 	
@@ -202,6 +208,7 @@ void hookEvents () {
 	super.hookEvents();
 	signal_connect (handle, "select_row", SWT.Selection, 5);
 	signal_connect (handle, "unselect_row", SWT.Selection, 5);
+	signal_connect (handle, "event_after", 0, 3);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -430,9 +437,9 @@ public String [] getItems () {
  */
 public String [] getSelection () {
 	checkWidget();
-	GtkCList widget = new GtkCList (handle);
-	int list = widget.selection;
-	if (list==0) return new String[0];
+	GtkCList clist = new GtkCList (handle);
+	int list = clist.selection;
+	if (list == 0) return new String [0];
 	int length = OS.g_list_length (list);
 	String [] items = new String [length];
 	int [] buffer = new int [1];
@@ -463,8 +470,9 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	GtkCList widget = new GtkCList (handle);
-	return OS.g_list_length (widget.selection);
+	GtkCList clist = new GtkCList (handle);
+	if (clist.selection == 0) return 0;
+	return OS.g_list_length (clist.selection);
 }
 
 /**
@@ -484,9 +492,9 @@ public int getSelectionCount () {
 public int getSelectionIndex () {
 	checkWidget();
 	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
-	if (OS.g_list_length (list) == 0) return -1;
-	return OS.g_list_nth_data (list, 0);
+	if (clist.selection == 0) return 0;
+	if (OS.g_list_length (clist.selection) == 0) return -1;
+	return OS.g_list_nth_data (clist.selection, 0);
 }
 
 /**
@@ -509,8 +517,9 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
-	GtkCList widget = new GtkCList (handle);
-	int list = widget.selection;
+	GtkCList clist = new GtkCList (handle);
+	int list = clist.selection;
+	if (list == 0) return new int [0];
 	int length = OS.g_list_length (list);
 	int [] indices = new int [length];
 	for (int i=0; i<length; i++) {
@@ -624,52 +633,107 @@ int paintWindow () {
 	return clist.clist_window;
 }
 
-int processMouseDown (int callData, int arg1, int int2) {
-	if ((style & SWT.MULTI) != 0) selected = true;
-	return super.processMouseDown (callData, arg1, int2);
-}
-
-int processMouseUp (int callData, int arg1, int int2) {
-	int result = super.processMouseUp (callData, arg1, int2);
-	if ((style & SWT.MULTI) != 0) {
-		/*
-		* Feature in GTK.  When an item is reselected, GTK
-		* does not issue notification.  The fix is to detect
-		* that the mouse was released over a selected item when
-		* no selection signal was set and issue a fake selection
-		* event.
-		*/
-		double[] px = new double[1];
-		double[] py = new double[1];
-		OS.gdk_event_get_coords(callData, px, py);
-		int x = (int) (px[0]), y = (int) (py[0]);
-		int [] row = new int [1], column = new int [1];
-		int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
-		if (code != 0) {
-			GtkCList clist = new GtkCList (handle);
-			if (selected && clist.selection != 0) {
-				int list = clist.selection;
-				int length = OS.g_list_length (list);
-				for (int i=0; i<length; i++) {
-					if (row [0] == OS.g_list_nth_data (list, i)) {
-						postEvent (SWT.Selection);
+int processEvent (int eventNumber, int int0, int int1, int int2) {
+	if (eventNumber == 0) {
+		switch (OS.GDK_EVENT_TYPE (int0)) {
+			case OS.GDK_BUTTON_PRESS:
+			case OS.GDK_2BUTTON_PRESS: {
+				if ((style & SWT.MULTI) != 0) selected = true;
+				break;
+			}
+			case OS.GDK_BUTTON_RELEASE: {
+				if ((style & SWT.MULTI) != 0) {
+					/*
+					* Feature in GTK.  When an item is reselected, GTK
+					* does not issue notification.  The fix is to detect
+					* that the mouse was released over a selected item when
+					* no selection signal was set and issue a fake selection
+					* event.
+					*/
+					double[] px = new double [1], py = new double [1];
+					OS.gdk_event_get_coords (int0, px, py);
+					int x = (int) (px[0]), y = (int) (py[0]);
+					int [] row = new int [1], column = new int [1];
+					if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
+						GtkCList clist = new GtkCList (handle);
+						if (selected && clist.selection != 0) {
+							int list = clist.selection;
+							int length = OS.g_list_length (list);
+							for (int i=0; i<length; i++) {
+								if (row [0] == OS.g_list_nth_data (list, i)) {
+									postEvent (SWT.Selection);
+								}
+							}
+						}
 					}
+					selected = false;
 				}
+				break;
 			}
 		}
-		selected = false;
+		return 1;
+	}
+	return super.processEvent (eventNumber, int0, int1, int2);
+}
+
+int processKeyDown (int callData, int arg1, int int2) {
+	int result = super.processKeyDown (callData, arg1, int2);
+	/*
+	* Feature in GTK.  When an item is reselected using
+	* the space bar, GTK does not issue notification.
+	* The fix is to ignore the notification that is sent
+	* by GTK and look for the space key.
+	*/
+	int length = OS.gdk_event_key_get_length (callData);
+	if (length == 1) {
+		int string = OS.gdk_event_key_get_string (callData);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, string, length);
+		char [] unicode = Converter.mbcsToWcs (null, buffer);
+		switch (unicode [0]) {
+			case ' ':
+				GtkCList clist = new GtkCList (handle);
+				if (clist.focus_row != -1) {
+					postEvent (SWT.Selection);
+				}
+				break;
+		}
 	}
 	return result;
 }
+
+int processKeyUp (int callData, int arg1, int int2) {
+	int result = super.processKeyUp (callData, arg1, int2);
+	/*
+	* Feature in GTK.  For some reason, when the selection
+	* is extended using the shift key, the notification is
+	* issued when the widget loses focus.  The fix is to force
+	* the notification to be issued by temporarily losing and
+	* gaining focus every time the shift key is released.
+	*/
+	int keyval = OS.gdk_event_key_get_keyval (callData);
+	switch (keyval) {
+		case OS.GDK_Shift_L:
+		case OS.GDK_Shift_R:
+			OS.gtk_widget_grab_focus (scrolledHandle);
+			OS.gtk_widget_grab_focus (handle);
+	}
+	return result;
+}
+
 
 int processSelection (int int0, int int1, int int2) {
 	GtkCList clist = new GtkCList (handle);
 	if (int0 != clist.focus_row) return 0;
 	if ((style & SWT.MULTI) != 0) selected = false;
-	int type = SWT.Selection;
-	if (int2 != 0)
-	  if (OS.GDK_EVENT_TYPE(int2) == OS.GDK_2BUTTON_PRESS) type = SWT.DefaultSelection;
-	postEvent (type);
+	int eventType = SWT.Selection;
+	if (int2 != 0) {
+		int type = OS.GDK_EVENT_TYPE (int2);
+		if (type == OS.GDK_2BUTTON_PRESS) {
+			eventType = SWT.DefaultSelection;
+		}
+	}
+	postEvent (eventType);
 	return 0;
 }
 
@@ -912,6 +976,11 @@ public void selectAll () {
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	OS.gtk_widget_modify_base (handle, 0, color);
+}
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent
@@ -984,6 +1053,15 @@ public void setSelection (int index) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (index);
 	showSelection ();
+}
+
+public void setRedraw (boolean redraw) {
+	checkWidget ();
+	if (redraw) {
+		OS.gtk_clist_thaw (handle);
+	} else {
+		OS.gtk_clist_freeze (handle);
+	}
 }
 
 /**
@@ -1106,9 +1184,9 @@ public void setTopIndex (int index) {
 public void showSelection () {
 	checkWidget();
 	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
-	if (OS.g_list_length (list) == 0) return;
-	int index = OS.g_list_nth_data (list, 0);
+	if (clist.selection == 0) return;
+	if (OS.g_list_length (clist.selection) == 0) return;
+	int index = OS.g_list_nth_data (clist.selection, 0);
 	int visibility = OS.gtk_clist_row_is_visible (handle, index);
 	if (visibility == OS.GTK_VISIBILITY_FULL) return;
 	//BUG IN GTK - doesn't scroll correctly before shell open

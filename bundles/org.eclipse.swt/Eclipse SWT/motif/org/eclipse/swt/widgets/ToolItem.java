@@ -14,15 +14,18 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a button in a tool bar.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>PUSH, CHECK, RADIO, SEPARATOR, DROP_DOWN</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
- * </p>
+ * <p>
+ * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public class ToolItem extends Item {
 	ToolBar parent;
@@ -575,6 +578,33 @@ public void setControl (Control control) {
 	this.control = control;
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
+		/*
+		 * It is possible that the control was created with a 
+		 * z-order below that of the current tool item. In this
+		 * case, the control is not visible because it is 
+		 * obscured by the tool item. The fix is to move the 
+		 * control above this tool item in the z-order.  
+		 * The code below is similar to the code found in 
+		 * setZOrder.
+		 */
+		int xDisplay = OS.XtDisplay (handle);
+		if (xDisplay == 0) return;
+		if (!OS.XtIsRealized (handle)) {
+			Shell shell = parent.getShell ();
+			shell.realizeWidget ();
+		}
+		int topHandle1 = control.topHandle ();
+		int window1 = OS.XtWindow (topHandle1);
+		if (window1 == 0) return;
+		int topHandle2 = this.topHandle ();
+		int window2 = OS.XtWindow (topHandle2);
+		if (window2 == 0) return;
+		XWindowChanges struct = new XWindowChanges ();
+		struct.sibling = window2;
+		struct.stack_mode = OS.Above;
+		int screen = OS.XDefaultScreen (xDisplay);
+		int flags = OS.CWStackMode | OS.CWSibling;
+		OS.XReconfigureWMWindow (xDisplay, window1, screen, flags, struct);
 	}
 }
 /**
@@ -741,10 +771,23 @@ void setDrawPressed (boolean value) {
 int processKeyDown (int callData) {
 	XKeyEvent xEvent = new XKeyEvent ();
 	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-
+	int [] keysym = new int [1];
+	OS.XLookupString (xEvent, null, 0, keysym, null);
+	keysym [0] &= 0xFFFF;
+	switch (keysym [0]) {
+		case OS.XK_space:
+			click (false, xEvent);
+			break;
+		case OS.XK_Return:
+			click (true, xEvent);
+			break;
+		case OS.XK_Down:
+			if ((style & SWT.DROP_DOWN) != 0) click (true, xEvent);
+			break;
+	}
 	/*
 	* Forward the key event to the parent.
-	* This is necessary so that mouse listeners
+	* This is necessary so that key listeners
 	* in the parent will be called, despite the
 	* fact that the event did not really occur
 	* in X in the parent.  This is done to be
@@ -758,18 +801,10 @@ int processKeyDown (int callData) {
 int processKeyUp (int callData) {
 	XKeyEvent xEvent = new XKeyEvent ();
 	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-	int [] keysym = new int [1];
-	OS.XLookupString (xEvent, null, 0, keysym, null);
-	keysym [0] &= 0xFFFF;
-	switch (keysym [0]) {
-		case OS.XK_space:
-		case OS.XK_Return:
-			click (keysym [0] == OS.XK_Return, xEvent);
-			break;
-	}
+
 	/*
 	* Forward the key event to the parent.
-	* This is necessary so that mouse listeners
+	* This is necessary so that key listeners
 	* in the parent will be called, despite the
 	* fact that the event did not really occur
 	* in X in the parent.  This is done to be
@@ -844,6 +879,7 @@ boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	return parent.translateMnemonic (key, xEvent);
 }
 boolean translateTraversal (int key, XKeyEvent xEvent) {
+	if (key == OS.XK_Down) return true;
 	return parent.translateTraversal (key, xEvent);
 }
 int processMouseHover (int id) {

@@ -28,8 +28,7 @@ import org.eclipse.swt.graphics.*;
 public class Caret extends Widget {
 	Canvas parent;
 	int x, y, width, height;
-	boolean moved, resized;
-	boolean isVisible,isShowing;
+	boolean isVisible, isShowing;
 	int blinkRate = 500;
 	Image image;
 
@@ -84,25 +83,20 @@ void createWidget (int index) {
 
 boolean drawCaret () {
 	if (parent == null) return false;
-	if (parent.isDisposed ()) return false;
-	
-	int window = OS.GTK_WIDGET_WINDOW (parent.handle);
+	if (parent.isDisposed ()) return false;	
+	int window = parent.paintWindow ();
 	int gc = OS.gdk_gc_new (window);
-
-	/* Actually, we should look at the background and foreground colors.
-	 * This would require distinguishing between the cases when the GC
-	 * gives the color as RGB or Pixel, and in the case of Pixel, we
-	 * would need to distinguish between direct and indexed color.
-	 * In general, it's not easy to find out the RGB value of a GdkColor
-	 * (somebody please correct me if I am wrong).
-	 */
-	GdkColor c = new GdkColor ();
-	c.red = c.green = c.blue = (short) 0xFFFF;
-	OS.gdk_color_alloc (OS.gdk_colormap_get_system (), c);
-	OS.gdk_gc_set_foreground (gc, c);
+	int fontHandle = parent.fontHandle ();
+	int hStyle = OS.gtk_widget_get_style (fontHandle);
+	GtkStyle style = new GtkStyle (hStyle);
+	GdkColor color = new GdkColor ();
+	color.red = (short) (style.fg0_red ^ style.bg0_red);
+	color.green = (short) (style.fg0_green ^ style.bg0_green);
+	color.blue = (short) (style.fg0_blue ^ style.bg0_blue);
+	int colormap = OS.gdk_colormap_get_system ();
+	OS.gdk_colormap_alloc_color (colormap, color, true, true);
+	OS.gdk_gc_set_foreground (gc, color);
 	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
-	
-	/* Draw the caret */
 	int nWidth = width, nHeight = height;
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
@@ -112,6 +106,7 @@ boolean drawCaret () {
 	if (nWidth <= 0) nWidth = 2;
 	OS.gdk_draw_rectangle (window, gc, 1, x, y, nWidth, nHeight);
 	OS.g_object_unref (gc);
+	OS.gdk_colormap_free_colors (colormap, color, 1);
 	return true;
 }
 
@@ -244,8 +239,6 @@ public boolean getVisible () {
 }
 
 boolean hideCaret () {
-	Display display = getDisplay ();
-	if (display.currentCaret != this) return false;
 	if (!isShowing) return true;
 	isShowing = false;
 	return drawCaret ();
@@ -270,14 +263,19 @@ boolean hideCaret () {
  */
 public boolean isVisible () {
 	checkWidget();
-	return isVisible && parent.isVisible () && parent.isFocusControl ();
+	return isVisible && parent.isVisible () && parent.hasFocus ();
+}
+
+boolean isFocusCaret () {
+	Display display = getDisplay ();
+	return this == display.currentCaret;
 }
 
 void killFocus () {
 	Display display = getDisplay ();
 	if (display.currentCaret != this) return;
-	if (isVisible) hideCaret ();
 	display.setCurrentCaret (null);
+	if (isVisible) hideCaret ();
 }
 
 void releaseChild () {
@@ -289,7 +287,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	Display display = getDisplay ();
 	if (display.currentCaret == this) {
-		if (isVisible) hideCaret ();
+		if (isShowing) hideCaret ();
 		display.setCurrentCaret (null);
 	}
 	parent = null;
@@ -314,26 +312,13 @@ void releaseWidget () {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	boolean samePosition, sameExtent, showing;
-	samePosition = (this.x == x) && (this.y == y);
-	sameExtent = (this.width == width) && (this.height == height);
-	if ((samePosition) && (sameExtent)) return;
-	if (isShowing) hideCaret ();
+	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
+	boolean showing = isShowing;
+	boolean isFocus = isFocusCaret ();
+	if (isFocus && showing) hideCaret ();
 	this.x = x; this.y = y;
 	this.width = width; this.height = height;
-	if (sameExtent) {
-			moved = true;
-			if (isVisible ()) {
-				moved = false;
-			}
-	} else {
-			resized = true;
-			if (isVisible ()) {
-				moved = false;
-				resized = false;
-			}
-	}
-	if (isShowing) showCaret ();
+	if (isFocus && showing) showCaret ();
 }
 
 /**
@@ -404,9 +389,11 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (isShowing) hideCaret ();
+	boolean showing = isShowing;
+	boolean isFocus = isFocusCaret ();
+	if (isFocus && showing) hideCaret ();
 	this.image = image;
-	if (isShowing) showCaret ();
+	if (isFocus && showing) showCaret ();
 }
 
 /**
@@ -500,7 +487,9 @@ public void setSize (Point size) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible == isVisible) return;
-	if (isVisible = visible) {
+	isVisible = visible;
+	if (!isFocusCaret ()) return;
+	if (isVisible) {
 		showCaret ();
 	} else {
 		hideCaret ();
@@ -508,7 +497,6 @@ public void setVisible (boolean visible) {
 }
 
 boolean showCaret () {
-	if (getDisplay ().currentCaret != this) return false;
 	if (isShowing) return true;
 	isShowing = true;
 	return drawCaret ();

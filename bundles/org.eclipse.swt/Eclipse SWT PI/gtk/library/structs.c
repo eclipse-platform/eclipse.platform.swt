@@ -39,6 +39,9 @@ GtkCListColumn_FID_CACHE GtkCListColumnFc;
 GtkCTreeRow_FID_CACHE GtkCTreeRowFc;
 GtkCTree_FID_CACHE GtkCTreeFc;
 
+GtkTargetEntry_FID_CACHE GtkTargetEntryFc;
+GtkSelectionData_FID_CACHE GtkSelectionDataFc;
+
 /* ----------- fid and class caches  ----------- */
 /*
  * Used for Java objects passed into JNI that are
@@ -634,10 +637,11 @@ void getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent
 void setGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventExpose_FID_CACHE *lpGdkEventExposeFc)
 {
 	GdkEventExpose *lpGdkEventExpose = (GdkEventExpose*)lpGdkEvent;
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->x, (jshort)lpGdkEventExpose->area.x);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->y, (jshort)lpGdkEventExpose->area.y);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->width, (jshort)lpGdkEventExpose->area.width);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->height, (jshort)lpGdkEventExpose->area.height);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->x, (jint)lpGdkEventExpose->area.x);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->y, (jint)lpGdkEventExpose->area.y);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->width, (jint)lpGdkEventExpose->area.width);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->height, (jint)lpGdkEventExpose->area.height);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->region, (jint)lpGdkEventExpose->region);
 	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->count, (jint)lpGdkEventExpose->count);
 }
 
@@ -1107,6 +1111,7 @@ void getGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkS
 	lpGtkStyle->white.red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_red);
 	lpGtkStyle->white.green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_green);
 	lpGtkStyle->white.blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_blue);
+	lpGtkStyle->font_desc = (PangoFontDescription*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->font_desc);
 	lpGtkStyle->fg_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc0);
 	lpGtkStyle->fg_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc1);
 	lpGtkStyle->fg_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc2);
@@ -1302,6 +1307,8 @@ void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkS
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->white_red, (jshort)lpGtkStyle->white.red);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->white_green, (jshort)lpGtkStyle->white.green);
 	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->white_blue, (jshort)lpGtkStyle->white.blue);
+
+	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->font_desc, (jint)lpGtkStyle->font_desc);
 
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc0, (jint)lpGtkStyle->fg_gc[0]);
 	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc1, (jint)lpGtkStyle->fg_gc[1]);
@@ -1501,4 +1508,67 @@ void setGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpGtkCTree
 	(*env)->SetShortField(env, lpObject, lpGtkCTreeRowFc->level, (jshort)lpGtkCTreeRow->level);
 	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->is_leaf, (jint)lpGtkCTreeRow->is_leaf);
 	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->expanded, (jint)lpGtkCTreeRow->expanded);
+}
+
+void cacheGtkSelectionDataFids(JNIEnv *env, jobject lpObject, PGtkSelectionData_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->selection = (*env)->GetFieldID(env, lpCache->clazz, "selection", "I");
+	lpCache->target = (*env)->GetFieldID(env, lpCache->clazz, "target", "I");
+	lpCache->type = (*env)->GetFieldID(env, lpCache->clazz, "type", "I");
+	lpCache->format = (*env)->GetFieldID(env, lpCache->clazz, "format", "I");
+	lpCache->data = (*env)->GetFieldID(env, lpCache->clazz, "data", "I");
+	lpCache->length = (*env)->GetFieldID(env, lpCache->clazz, "length", "I");
+	lpCache->cached = 1;
+}
+
+GtkSelectionData* getGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct, PGtkSelectionData_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheGtkSelectionDataFids(env, lpObject, lpCache);
+	lpStruct->selection = (GdkAtom)(*env)->GetIntField(env, lpObject, lpCache->selection);
+	lpStruct->target = (GdkAtom)(*env)->GetIntField(env, lpObject, lpCache->target);
+	lpStruct->type = (GdkAtom)(*env)->GetIntField(env, lpObject, lpCache->type);
+	lpStruct->format = (*env)->GetIntField(env, lpObject, lpCache->format);
+	lpStruct->data = (guchar*)(*env)->GetIntField(env, lpObject, lpCache->data);
+	lpStruct->length = (*env)->GetIntField(env, lpObject, lpCache->length);
+	return lpStruct;
+}
+
+void setGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct, PGtkSelectionData_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheGtkSelectionDataFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->selection, (jint) lpStruct->selection);
+	(*env)->SetIntField(env, lpObject, lpCache->target, (jint)lpStruct->target);
+	(*env)->SetIntField(env, lpObject, lpCache->type, (jint)lpStruct->type);
+	(*env)->SetIntField(env, lpObject, lpCache->format, lpStruct->format);
+	(*env)->SetIntField(env, lpObject, lpCache->data, (jint)lpStruct->data);
+	(*env)->SetIntField(env, lpObject, lpCache->length, lpStruct->length);
+}
+
+void cacheGtkTargetEntryFids(JNIEnv *env, jobject lpObject, PGtkTargetEntry_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->target = (*env)->GetFieldID(env, lpCache->clazz, "target", "I");
+	lpCache->flags = (*env)->GetFieldID(env, lpCache->clazz, "flags", "I");
+	lpCache->info = (*env)->GetFieldID(env, lpCache->clazz, "info", "I");
+	lpCache->cached = 1;
+}
+
+GtkTargetEntry* getGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct, PGtkTargetEntry_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheGtkTargetEntryFids(env, lpObject, lpCache);
+	lpStruct->target = (gchar*)(*env)->GetIntField(env, lpObject, lpCache->target);
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, lpCache->flags);
+	lpStruct->info = (*env)->GetIntField(env, lpObject, lpCache->info);
+	return lpStruct;
+}
+
+void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct, PGtkTargetEntry_FID_CACHE lpCache)
+{
+	if (!lpCache->cached) cacheGtkTargetEntryFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->target, (jint)lpStruct->target);
+	(*env)->SetIntField(env, lpObject, lpCache->flags, (jint)lpStruct->flags);
+	(*env)->SetIntField(env, lpObject, lpCache->info, (jint)lpStruct->info);
 }

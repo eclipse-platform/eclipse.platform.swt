@@ -1,7 +1,7 @@
 package org.eclipse.swt.layout;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 import org.eclipse.swt.*;
@@ -38,14 +38,30 @@ import org.eclipse.swt.widgets.*;
  * object belongs will lie at 20% of the parent composite, minus 5 pixels.
  * </p>
  * <p>
- * Control sides can also be attached to the adjacent side of another control.
+ * Control sides can also be attached to another control.
  * For example:
  * <pre>
  * 		FormAttachment attach = new FormAttachment (button, 10);
  * </pre>
  * specifies that the side to which the <code>FormAttachment</code>
  * object belongs will lie in the same position as the adjacent side of 
- * the <code>button</code> control, plus 10 pixels.
+ * the <code>button</code> control, plus 10 pixels. The control side can 
+ * also be attached to the opposite side of the specified control.
+ * For example:
+ * <pre>
+ * 		FormData data = new FormData ();
+ * 		data.left = new FormAttachment (button, 0, SWT.LEFT);
+ * </pre>
+ * specifies that the left side of the control will lie in the same position
+ * as the left side of the <code>button</code> control. The control can also 
+ * be attached in a position that will center the control on the specified 
+ * control. For example:
+ * <pre>
+ * 		data.left = new FormAttachment (button, 0, SWT.CENTER);
+ * </pre>
+ * specifies that the left side of the control will be positioned so that it is
+ * centered between the left and right sides of the <code>button</code> control.
+ * If the alignment is not specified, the default is to attach to the adjacent side.
  * </p>
  * 
  * @see FormLayout
@@ -83,10 +99,38 @@ public final class FormAttachment {
 	 * attached.
 	 */
 	public Control control;
+	/**
+	 * alignment specifies the alignment of the control side that is
+	 * attached to a control.
+	 * For top and bottom attachments, TOP, BOTTOM and CENTER are used. For left 
+	 * and right attachments, LEFT, RIGHT and CENTER are used. If any other case
+	 * occurs, the default will be used instead.
+	 * 
+	 * Possible values are:
+	 * 
+	 * TOP: Attach the side to the top side of the specified control.
+	 * BOTTOM : Attach the side to the bottom side of the specified control.
+	 * LEFT: Attach the side to the left side of the specified control.
+	 * RIGHT: Attach the side to the right side of the specified control.
+	 * CENTER: Attach the side at a position which will center the control on
+	 * the specified control.
+	 * DEFAULT: Attach the side to the adjacent side of the specified control.
+	 */
+	public int alignment;
 	
 FormAttachment () {
 }
 
+/**
+ * Constructs a new instance of this class given a numerator 
+ * and denominator and an offset. The position of the side is
+ * given by the fraction of the form defined by the numerator
+ * and denominator.
+ *
+ * @param numerator the numerator of the position
+ * @param denominator the denominator of the position
+ * @param offset the offset of the side from the position
+ */
 public FormAttachment (int numerator, int denominator, int offset) {
 	if (denominator == 0) SWT.error (SWT.ERROR_CANNOT_BE_ZERO);
 	this.numerator = numerator;
@@ -94,29 +138,103 @@ public FormAttachment (int numerator, int denominator, int offset) {
 	this.offset = offset;
 }
 
+/**
+ * Constructs a new instance of this class given a numerator
+ * and an offset. Since no denominator is specified, the default
+ * is to read the numerator as a percentage of the form, with a 
+ * denominator of 100.
+ * 
+ * @param numerator the percentage of the position
+ * @param offset the offset of the side from the position
+ */
 public FormAttachment (int numerator, int offset) {
 	this (numerator, 100, offset);
 }
 
-public FormAttachment (Control control, int offset) {
+/**
+ * Constructs a new instance of this class given a control,
+ * an offset and an alignment.
+ * 
+ * @param control the control the side is attached to
+ * @param offset the offset of the side from the control
+ * @param alignment the alignment of the side to the control it is attached to
+ */
+public FormAttachment (Control control, int offset, int alignment) {
 	this.control = control;
 	this.offset = offset;
+	this.alignment = alignment;
+}
+	
+/**
+ * Constructs a new instance of this class given a control
+ * and an offset. Since no alignment is specified, the default
+ * alignment is to attach the side to the adjacent side of the 
+ * specified control.
+ * 
+ * @param control the control the side is attached to
+ * @param offset the offset of the side from the control
+ */
+public FormAttachment (Control control, int offset) {
+	this (control, offset, SWT.DEFAULT);
 }
 
+/**
+ * Constructs a new instance of this class given a control.
+ * Since no alignment is specified, the default alignment is
+ * to attach the side to the adjacent side of the specified 
+ * control. Since no offset is specified, an offset of 0 is
+ * used.
+ * 
+ * @param control the control the side is attached to
+ */
 public FormAttachment (Control control) {
-	this (control, 0);
+	this (control, 0, SWT.DEFAULT);
+}
+
+FormAttachment divide (int value) {
+	return new FormAttachment (numerator, denominator * value, offset / value);
+}
+
+int gcd (int m, int n) {
+	int temp;
+	m = Math.abs (m); n = Math.abs (n);
+	if (m < n) {
+		temp = m;
+		m = n;
+		n = temp;
+	}
+	while (n != 0){
+		temp = m;
+		m = n;
+		n = temp % n;
+	}
+	return m;
 }
 
 FormAttachment minus (FormAttachment attachment) {
-	FormAttachment solution = new FormAttachment();
+	FormAttachment solution = new FormAttachment ();
 	solution.numerator = numerator * attachment.denominator - denominator * attachment.numerator;
 	solution.denominator = denominator * attachment.denominator;
+	int gcd = gcd (solution.denominator, solution.numerator);
+	solution.numerator = solution.numerator / gcd;
+	solution.denominator = solution.denominator / gcd;
 	solution.offset = offset - attachment.offset;
 	return solution;
 }
 
 FormAttachment minus (int value) {
 	return new FormAttachment (numerator, denominator, offset - value);
+}
+
+FormAttachment plus (FormAttachment attachment) {
+	FormAttachment solution = new FormAttachment ();
+	solution.numerator = numerator * attachment.denominator + denominator * attachment.numerator;
+	solution.denominator = denominator * attachment.denominator;
+	int gcd = gcd (solution.denominator, solution.numerator);
+	solution.numerator = solution.numerator / gcd;
+	solution.denominator = solution.denominator / gcd;
+	solution.offset = offset + attachment.offset;
+	return solution;
 }
 
 FormAttachment plus (int value) {

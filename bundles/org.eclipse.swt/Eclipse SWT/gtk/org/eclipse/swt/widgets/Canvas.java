@@ -88,6 +88,42 @@ public Caret getCaret () {
 	return caret;
 }
 
+int processFocusIn (int int0, int int1, int int2) {
+	int result = super.processFocusIn (int0, int1, int2);
+	if (caret != null) caret.setFocus ();
+	return result;
+}
+
+int processFocusOut(int int0, int int1, int int2) {
+	int result = super.processFocusOut (int0, int1, int2);
+	if (caret != null) caret.killFocus ();
+	return result;
+}
+
+int processPaint (int callData, int int1, int int2) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	int result = super.processPaint (callData, int1, int2);
+	if (isFocus) caret.setFocus ();
+	return result;
+}
+
+void redrawWidget (int x, int y, int width, int height, boolean all) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	super.redrawWidget (x, y, width, height, all);
+	if (isFocus) caret.setFocus ();
+}
+
+void releaseWidget () {
+	if (caret != null) {
+		caret.releaseWidget ();
+		caret.releaseHandle ();
+	}
+	caret = null;
+	super.releaseWidget();
+}
+
 /**
  * Scrolls a rectangular area of the receiver by first copying 
  * the source area to the destination and then causing the area
@@ -112,54 +148,82 @@ public Caret getCaret () {
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget();
-
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - x, deltaY = destY - y;
 	if (deltaX == 0 && deltaY == 0) return;
 	if (!isVisible ()) return;
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
 	
-	/* Hide the caret */
-	boolean isVisible = (caret != null) && (caret.isVisible ());
-	if (isVisible) caret.hideCaret ();
+//	update ();
+//	GC gc = new GC (this);
+//	gc.copyArea (x, y, width, height, destX, destY);
+//	gc.dispose ();
+
+	update ();
 	
-	int window = OS.GTK_WIDGET_WINDOW(paintHandle());
-
-	/* Emit a NoExpose Event */
-	int gc = OS.gdk_gc_new (window);
-	OS.gdk_gc_set_exposures(gc, true);
-	OS.gdk_window_copy_area (window, gc, x, y, window, x, y, width, height);
-	OS.g_object_unref (gc);
-
-	/* Flush outstanding Exposes */
-	int eventHandle=0;
-	while ((eventHandle = OS.gdk_event_get_graphics_expose(window)) != 0) {
-		OS.gtk_widget_event(handle, eventHandle);
-		OS.gdk_event_free(eventHandle);	
-	}
-
-	/* Scroll the window */
-	int gc1 = OS.gdk_gc_new (window);
-	OS.gdk_gc_set_exposures(gc1, true);
-	OS.gdk_window_copy_area (window, gc1, destX, destY, window, x, y, width, height);
-	OS.g_object_unref (gc1);
+	int window = paintWindow ();
+	int visibleRegion = OS.gdk_drawable_get_visible_region (window);
+	GdkRectangle srcRect = new GdkRectangle ();
+	srcRect.x = x;
+	srcRect.y = y;
+	srcRect.width = width;
+	srcRect.height = height;
+	int copyRegion = OS.gdk_region_new ();
+	OS.gdk_region_union_with_rect (copyRegion, srcRect);
+	OS.gdk_region_intersect(copyRegion, visibleRegion);
+	int invalidateRegion = OS.gdk_region_new ();
+	OS.gdk_region_union_with_rect (invalidateRegion, srcRect);	
+	OS.gdk_region_subtract (invalidateRegion, visibleRegion);
+	OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
+	GdkRectangle copyRect = new GdkRectangle();
+	OS.gdk_region_get_clipbox (copyRegion, copyRect);
+	int gdkGC = OS.gdk_gc_new (window);
+	OS.gdk_gc_set_exposures (gdkGC, true);
+	OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);
+	OS.g_object_unref (gdkGC);
 	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
+	GdkRectangle rect = new GdkRectangle ();
 	if (disjoint) {
-		OS.gdk_window_clear_area(window, x, y, width, height);
+		rect.x = x;
+		rect.y = y;
+		rect.width = width;
+		rect.height = height;
+		OS.gdk_region_union_with_rect (invalidateRegion, rect);
 	} else {
 		if (deltaX != 0) {
 			int newX = destX - deltaX;
 			if (deltaX < 0) newX = destX + width;
-			OS.gdk_window_clear_area_e(window, newX, y, Math.abs (deltaX), height);
+			rect.x = newX;
+			rect.y = y;
+			rect.width = Math.abs(deltaX);
+			rect.height = height;
+			OS.gdk_region_union_with_rect (invalidateRegion, rect);
 		}
 		if (deltaY != 0) {
 			int newY = destY - deltaY;
 			if (deltaY < 0) newY = destY + height;
-			OS.gdk_window_clear_area_e (window, x, newY, width, Math.abs (deltaY));
+			rect.x = x;
+			rect.y = newY;
+			rect.width = width;
+			rect.height = Math.abs(deltaY);
+			OS.gdk_region_union_with_rect (invalidateRegion, rect);
 		}
-	}
+	}	
+	OS.gdk_window_invalidate_region(window, invalidateRegion, all);
+	OS.gdk_region_destroy (visibleRegion);
+	OS.gdk_region_destroy (copyRegion);
+	OS.gdk_region_destroy (invalidateRegion);
 	
-	/* Show the caret */
-	if (isVisible) caret.showCaret ();
+	if (isFocus) caret.setFocus ();
+}
+
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean isFocus = caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (isFocus) caret.setFocus ();
+	return changed;
 }
 
 /**
@@ -183,40 +247,23 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
  * </ul>
  */
 public void setCaret (Caret caret) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	Caret newCaret = caret;
 	Caret oldCaret = this.caret;
 	this.caret = newCaret;
-	if (isFocusControl()) {
+	if (hasFocus ()) {
 		if (oldCaret != null) oldCaret.killFocus ();
-		if (newCaret != null) newCaret.setFocus ();
+		if (newCaret != null) {
+			if (newCaret.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+			newCaret.setFocus ();
+		}
 	}
 }
 
 public boolean setFocus () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if ((style & SWT.NO_FOCUS) != 0) return false;
 	return super.setFocus ();
-}
-
-int processFocusIn (int int0, int int1, int int2) {
-	int result = super.processFocusIn (int0, int1, int2);
-	if (caret != null) caret.setFocus ();
-	return result;
-}
-
-int processFocusOut(int int0, int int1, int int2) {
-	int result = super.processFocusOut (int0, int1, int2);
-	if (caret != null) caret.killFocus ();
-	return result;
-}
-
-void releaseWidget () {
-	if (caret != null) caret.releaseWidget ();
-	caret = null;
-	super.releaseWidget ();
 }
 
 }

@@ -22,6 +22,9 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
@@ -308,7 +311,8 @@ public String getText () {
 }
 
 boolean isTabItem () {
-	if ((style & SWT.PUSH) != 0) return true;
+	//TEMPORARY CODE
+	//if ((style & SWT.PUSH) != 0) return true;
 	return super.isTabItem ();
 }
 

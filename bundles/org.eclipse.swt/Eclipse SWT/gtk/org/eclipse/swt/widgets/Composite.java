@@ -30,6 +30,7 @@ import org.eclipse.swt.graphics.*;
 public class Composite extends Scrollable {
 	int radioHandle;
 	Layout layout;
+	Control[] tabList;
 
 Composite () {
 	/* Do nothing */
@@ -67,6 +68,91 @@ public Composite (Composite parent, int style) {
 	super (parent, style);
 }
 
+Control [] _getChildren () {
+	int parentHandle = parentingHandle ();
+	int list = OS.gtk_container_get_children (parentHandle);
+	if (list == 0) return new Control [0];
+	int count = OS.g_list_length (list);
+	Control [] children = new Control [count];
+	int i = 0, j = 0;
+	while (i < count) {
+		int handle = OS.g_list_nth_data (list, i);
+		if (handle != 0) {
+			Widget widget = WidgetTable.get (handle);
+			if (widget != null && widget != this) {
+				if (widget instanceof Control) {
+					children [j++] = (Control) widget;
+				}
+			}
+		}
+		i++;
+	}
+	OS.g_list_free (list);
+	if (i == j) return children;
+	Control [] newChildren = new Control [j];
+	System.arraycopy (children, 0, newChildren, 0, j);
+	return newChildren;
+}
+
+Control [] _getTabList () {
+	if (tabList == null) return tabList;
+	int count = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [i].isDisposed ()) count++;
+	}
+	if (count == tabList.length) return tabList;
+	Control [] newList = new Control [count];
+	int index = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [i].isDisposed ()) {
+			newList [index++] = tabList [i];
+		}
+	}
+	tabList = newList;
+	return tabList;
+}
+
+protected void checkSubclass () {
+	/* Do nothing - Subclassing is allowed */
+}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	Point size;
+	if (layout != null) {
+		if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+			size = layout.computeSize (this, wHint, hHint, changed);
+		} else {
+			size = new Point (wHint, hHint);
+		}
+	} else {
+		size = minimumSize ();
+	}
+	if (size.x == 0) size.x = DEFAULT_WIDTH;
+	if (size.y == 0) size.y = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) size.x = wHint;
+	if (hHint != SWT.DEFAULT) size.y = hHint;
+	Rectangle trim = computeTrim (0, 0, size.x, size.y);
+	return new Point (trim.width, trim.height);
+}
+
+Control [] computeTabList () {
+	Control result [] = super.computeTabList ();
+	if (result.length == 0) return result;
+	Control [] list = tabList != null ? _getTabList () : _getChildren ();
+	for (int i=0; i<list.length; i++) {
+		Control child = list [i];
+		Control [] childList = child.computeTabList ();
+		if (childList.length != 0) {
+			Control [] newResult = new Control [result.length + childList.length];
+			System.arraycopy (result, 0, newResult, 0, result.length);
+			System.arraycopy (childList, 0, newResult, result.length, childList.length);
+			result = newResult;
+		}
+	}
+	return result;
+}
+
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	createScrolledHandle (parent.parentingHandle ());
@@ -94,14 +180,11 @@ void createScrolledHandle (int parentHandle) {
 	if (isScrolled) {
 		OS.gtk_container_add (parentHandle, fixedHandle);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
-
-//		/*
-//		* Force the scrolledWindow to have a single child that is
-//		* not scrolled automatically.  Calling gtk_container_add
-//		* seems to add the child correctly but cause a warning.
-//		*/
-//		OS.GTK_BIN_SET_CHILD(scrolledHandle, handle);
-//		OS.gtk_widget_set_parent(handle, scrolledHandle);
+		/*
+		* Force the scrolledWindow to have a single child that is
+		* not scrolled automatically.  Calling gtk_container_add
+		* seems to add the child correctly but cause a warning.
+		*/
 		Display display = getDisplay ();
 		boolean warnings = display.getWarnings ();
 		display.setWarnings (false);
@@ -113,7 +196,7 @@ void createScrolledHandle (int parentHandle) {
 		int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
 		int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
 		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
-		//CHECK WITH IS THERE ALREADY THEN DON'T SET
+		//CHECK WIDTH IS THERE ALREADY THEN DON'T SET
 		if ((style & SWT.BORDER) != 0) {
 			OS.gtk_scrolled_window_set_shadow_type(scrolledHandle, OS.GTK_SHADOW_ETCHED_IN);
 		}
@@ -122,69 +205,33 @@ void createScrolledHandle (int parentHandle) {
 	}
 	OS.gtk_widget_show (handle);
 	
-	//DOESN'T WORK RIGHT NOW
+	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_WIDGET_DOUBLE_BUFFERED);
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		setBackgroundPixmap ();
+	}
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
 	}
 }
 
-int parentingHandle () {
-	if ((state & CANVAS) != 0) return handle;
-	return fixedHandle != 0 ? fixedHandle : handle;
-}
-
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (changed && resize && layout != null) layout.layout (this, false);
-	return changed;
-}
-
-// USE FOR TRIM ????
-// 
-//Point getScrollableTrim() {
-//	/*
-//	 * This is very tricky.
-//	 * In SWT/GTK, layout is not managed by the GtkContainers.
-//	 * Therefore, the native preferred minimum sizes are
-//	 * generally ignored.  This allows us to set the native
-//	 * size of the fixed to whatever value we want, and it is
-//	 * guaranteed to be disregarded by the layout code.
-//	 * At this point, that size is requested by the Scrollable,
-//	 * gets added to by whatever is between the scrollable
-//	 * and the fixed, and serves as the basis for the native
-//	 * Scrollable size requisition (which is also guaranteed
-//	 * to be thrown away).
-//	 */
-//	OS.GTK_WIDGET_SET_FLAGS(parentingHandle(), OS.GTK_VISIBLE);
-//	OS.GTK_WIDGET_SET_FLAGS(boxHandle, OS.GTK_VISIBLE);
-//	GtkRequisition clientReq = new GtkRequisition();
-//	GtkRequisition req = new GtkRequisition();
-//	OS.gtk_widget_size_request(parentingHandle(), clientReq);
-//	OS.gtk_widget_size_request(scrolledHandle, req);
-//	if ((style&SWT.H_SCROLL&SWT.V_SCROLL)!=0) return new Point (req.width-clientReq.width, req.height-clientReq.height);
-//	if ((style&SWT.H_SCROLL)!=0) return new Point (0, req.height-clientReq.height);
-//	if ((style&SWT.V_SCROLL)!=0) return new Point (req.width-clientReq.width, 0);
-//	return new Point (0,0);
-//}
-
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	Point size;
-	if (layout != null) {
-		if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
-			size = layout.computeSize (this, wHint, hHint, changed);
-		} else {
-			size = new Point (wHint, hHint);
-		}
-	} else {
-		size = minimumSize ();
-	}
-	if (size.x == 0) size.x = DEFAULT_WIDTH;
-	if (size.y == 0) size.y = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
-	Rectangle trim = computeTrim (0, 0, size.x, size.y);
-	return new Point (trim.width, trim.height);
+/**
+ * Returns an array containing the receiver's children.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of children, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return an array of children
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Control [] getChildren () {
+	checkWidget();
+	return _getChildren ();
 }
 
 /**
@@ -219,65 +266,11 @@ public Control [] getTabList () {
 	return new Control [0];
 }
 
-/**
- * Sets the layout which is associated with the receiver to be
- * the argument which may be null.
- *
- * @param layout the receiver's new layout or null
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public void setLayout (Layout layout) {
-	checkWidget();
-	this.layout = layout;
-}
-
-/**
- * Returns an array containing the receiver's children.
- * <p>
- * Note: This is not the actual structure used by the receiver
- * to maintain its list of children, so modifying the array will
- * not affect the receiver. 
- * </p>
- *
- * @return an array of children
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Control [] getChildren () {
-	checkWidget();
-	return _getChildren ();
-}
-
-Control [] _getChildren () {
-	int parentHandle = parentingHandle ();
-	int list = OS.gtk_container_children (parentHandle);
-	int count = (list != 0) ? OS.g_list_length (list) : 0;
-	if (count == 0) return new Control [0];
-	Control [] children = new Control [count];
-	int i = 0, j = 0;
-	while (i < count) {
-		int handle = OS.g_list_nth_data (list, i);
-		if (handle != 0) {
-			Widget widget = WidgetTable.get (handle);
-			if (widget != null && widget != this) {
-				if (widget instanceof Control) {
-					children [j++] = (Control) widget;
-				}
-			}
-		}
-		i++;
+void hookEvents () {
+	super.hookEvents ();
+	if ((state & CANVAS) != 0) {
+		OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
 	}
-	if (i == j) return children;
-	Control [] newChildren = new Control [j];
-	System.arraycopy (children, 0, newChildren, 0, j);
-	return newChildren;
 }
 
 /**
@@ -330,18 +323,88 @@ Point minimumSize () {
 	}
 	return new Point (width, height);
 }
+
+int parentingHandle () {
+	if ((state & CANVAS) != 0) return handle;
+	return fixedHandle != 0 ? fixedHandle : handle;
+}
+
+int processFocusIn(int int0, int int1, int int2) {
+	return super.processFocusIn(int0, int1, int2);
+}
+
+int processFocusOut(int int0, int int1, int int2) {
+	return super.processFocusOut(int0, int1, int2);
+}
+
+int processMouseDown (int callData, int arg1, int int2) {
+	int result = super.processMouseDown (callData, arg1, int2);
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) == 0) {
+			int count = 0;
+			int list = OS.gtk_container_get_children (handle);
+			if (list != 0) {
+				count = OS.g_list_length (list);
+				OS.g_list_free (list);
+			}
+			if (count == 0) OS.gtk_widget_grab_focus (handle);
+		}
+	}
+	return result;
+}
+
+int processMouseUp (int callData, int arg1, int int2) {
+	int result = super.processMouseUp (callData, arg1, int2);
+	return result;
+}
+
+int processPaint (int callData, int int1, int int2) {
+	if ((state & CANVAS) == 0) {
+		return super.processPaint (callData, int1, int2);
+	}
+	if ((style & SWT.NO_BACKGROUND) == 0) {
+		int window = paintWindow ();
+		int gc = OS.gdk_gc_new (window);
+		OS.gdk_gc_set_foreground (gc, getBackgroundColor ());
+		GdkEventExpose gdkEvent = new GdkEventExpose (callData);
+		int x = gdkEvent.x, y = gdkEvent.y;
+		int width = gdkEvent.width, height = gdkEvent.height;
+		OS.gdk_gc_set_clip_region (gc, gdkEvent.region);
+		OS.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
+		OS.g_object_unref (gc);
+	}
+	if ((style & SWT.NO_MERGE_PAINTS) == 0) {
+		return super.processPaint (callData, int1, int2);
+	}
+	if (!hooks (SWT.Paint)) return 0;
+	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
+	int [] rectangles = new int [1];
+	int [] n_rectangles = new int [1];
+	OS.gdk_region_get_rectangles (gdkEvent.region, rectangles, n_rectangles);
+	GdkRectangle rect = new GdkRectangle ();
+	for (int i=0; i<n_rectangles[0]; i++) {
+		Event event = new Event ();
+		OS.memmove (rect, rectangles [0] + i * GdkRectangle.sizeof, GdkRectangle.sizeof);
+		event.x = rect.x;
+		event.y = rect.y;
+		event.width = rect.width;
+		event.height = rect.height;
+		GC gc = event.gc = new GC (this);
+		gc.setClipping (event.x, event.y, event.width, event.height);
+		sendEvent (SWT.Paint, event);
+		gc.dispose ();
+		event.gc = null;
+	}
+	OS.g_free (rectangles [0]);
+	return 0;
+}
+
 int radioGroup() {
-	if (radioHandle==0) _initializeRadioGroup();
-	return OS.gtk_radio_button_group(radioHandle);
-}
-
-public void redraw () {
-	checkWidget();
-	OS.gtk_widget_queue_draw(paintHandle());
-}
-
-void _initializeRadioGroup() {
-	radioHandle = OS.gtk_radio_button_new(0);
+	if (radioHandle == 0) {
+		radioHandle = OS.gtk_radio_button_new (0);
+		if (radioHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	}
+	return OS.gtk_radio_button_group (radioHandle);
 }
 
 void releaseChildren () {
@@ -354,53 +417,35 @@ void releaseChildren () {
 		}
 	}
 }
-void releaseWidget () {
-	releaseChildren ();
-	super.releaseWidget ();
-	layout = null;
-}
+
 void releaseHandle () {
 	super.releaseHandle ();
 	radioHandle = 0;
 }
 
-int processMouseDown (int callData, int arg1, int int2) {
-	int result = super.processMouseDown (callData, arg1, int2);
-	if ((state & CANVAS) != 0) {
-		//NOT DONE - only grab when not already grabbing
-		OS.gtk_grab_add (handle);
-		if ((style & SWT.NO_FOCUS) == 0) {
-			int list = OS.gtk_container_children (handle);
-			int count = list != 0 ? OS.g_list_length (list) : 0;
-			if (count == 0) OS.gtk_widget_grab_focus (handle);
-		}
-		return 1;
+void releaseWidget () {
+	releaseChildren ();
+	super.releaseWidget ();
+	layout = null;
+}
+
+void setBackgroundPixmap () {
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		OS.gtk_widget_realize (handle);
+		int window = OS.GTK_WIDGET_WINDOW (handle);
+		OS.gdk_window_set_back_pixmap (window, 0, false);
 	}
-	return result;
 }
 
-int processMouseMove (int callData, int arg1, int int2) {
-	int result = super.processMouseMove (callData, arg1, int2);
-	return (state & CANVAS) != 0 ? 1 : result;
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	if ((state & CANVAS) != 0) setBackgroundPixmap ();
 }
 
-int processMouseUp (int callData, int arg1, int int2) {
-	int result = super.processMouseUp (callData, arg1, int2);
-	//NOT DONE - only release when last button goes up
-	if ((state & CANVAS) != 0) {
-		OS.gtk_grab_remove (handle);
-		return 1;
-	}
-	return result;
-}
-
-int processFocusIn(int int0, int int1, int int2) {
-	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_HAS_FOCUS);
-	return super.processFocusIn(int0, int1, int2);
-}
-int processFocusOut(int int0, int int1, int int2) {
-	OS.GTK_WIDGET_UNSET_FLAGS(handle, OS.GTK_HAS_FOCUS);
-	return super.processFocusOut(int0, int1, int2);
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize && layout != null) layout.layout (this, false);
+	return changed;
 }
 
 public boolean setFocus () {
@@ -413,35 +458,39 @@ public boolean setFocus () {
 	return super.setFocus ();
 }
 
-void setInitialSize () {
-	if (scrolledHandle != 0) {
-		super.setInitialSize ();
-		return;
-	}
-	/*
-	* Bug in GTK. The scrollbars are not visible when a scrolled window
-	* is resize and then shown. The fix is to change the scrolling policy
-	* before and after resizing.
-	*/
-	if ((state & CANVAS) != 0) {
-		OS.gtk_scrolled_window_set_policy (scrolledHandle, OS.GTK_POLICY_NEVER, OS.GTK_POLICY_NEVER);
-	}
-	super.setInitialSize ();
-	if ((state & CANVAS) != 0) {
-		int hsp = (style & SWT.H_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-		int vsp = (style & SWT.V_SCROLL) == 0 ? OS.GTK_POLICY_NEVER : OS.GTK_POLICY_ALWAYS;
-		OS.gtk_scrolled_window_set_policy (scrolledHandle, hsp, vsp);
-	}
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	if ((state & CANVAS) != 0) setBackgroundPixmap ();
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	if ((state & CANVAS) != 0) setBackgroundPixmap ();
+}
+
+/**
+ * Sets the layout which is associated with the receiver to be
+ * the argument which may be null.
+ *
+ * @param layout the receiver's new layout or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setLayout (Layout layout) {
+	checkWidget();
+	this.layout = layout;
 }
 
 /**
  * Sets the tabbing order for the specified controls to
  * match the order that they occur in the argument list.
  *
- * @param tabList the ordered list of controls representing the tab order; must not be null
+ * @param tabList the ordered list of controls representing the tab order or null
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the tabList is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
  *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
  * </ul>
@@ -451,10 +500,37 @@ void setInitialSize () {
  * </ul>
  */
 public void setTabList (Control [] tabList) {
+	checkWidget ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			Control control = tabList [i];
+			if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			/*
+			* This code is intentionally commented.
+			* Tab lists are currently only supported
+			* for the direct children of a composite.
+			*/
+//			Shell shell = control.getShell ();
+//			while (control != shell && control != this) {
+//				control = control.parent;
+//			}
+//			if (control != this) error (SWT.ERROR_INVALID_PARENT);
+			if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
+		}
+		Control [] newList = new Control [tabList.length];
+		System.arraycopy (tabList, 0, newList, 0, tabList.length);
+		tabList = newList;
+	} 
+	this.tabList = tabList;
 }
 
-protected void checkSubclass () {
-	/* Do nothing - Subclassing is allowed */
+int traversalCode(int key, int event) {
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) != 0) return 0;
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) return 0;
+	}
+	return super.traversalCode (key, event);
 }
 
 }

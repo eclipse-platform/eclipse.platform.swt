@@ -25,6 +25,8 @@ import org.eclipse.swt.graphics.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the above styles may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -256,6 +258,28 @@ TCHAR windowClass () {
 
 int windowProc () {
 	return GroupProc;
+}
+
+LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  In version 6.00 of COMCTL32.DLL,
+	* when WM_PRINTCLIENT is sent from a child BS_GROUP
+	* control to a parent BS_GROUP, the parent BS_GROUP
+	* clears the font from the HDC.  Normally, group boxes
+	* in Windows do not have children so this behavior is
+	* undefined.  When the parent of a BS_GROUP is not a
+	* BS_GROUP, there is no problem.  The fix is to save
+	* and restore the current font.
+	*/
+	if (COMCTL32_MAJOR >= 6) {
+		int hFont = OS.GetCurrentObject (wParam, OS.OBJ_FONT);
+		int code = callWindowProc (OS.WM_PRINTCLIENT, wParam, lParam);
+		OS.SelectObject (wParam, hFont);
+		return new LRESULT (code);
+	}
+	return result;
 }
 
 LRESULT WM_NCHITTEST (int wParam, int lParam) {

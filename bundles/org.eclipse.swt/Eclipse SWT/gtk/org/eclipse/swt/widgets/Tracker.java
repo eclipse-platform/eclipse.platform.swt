@@ -272,7 +272,7 @@ public boolean open () {
 	int[] newY = new int[1];
 	int[] oldX = new int[1];
 	int[] oldY = new int[1];
-	OS.gdk_window_get_pointer(xWindow, oldX,oldY, 0);
+	OS.gdk_window_get_pointer(xWindow, oldX,oldY, null);
 	grab();
 
 	/*
@@ -285,7 +285,7 @@ public boolean open () {
 			case OS.GDK_BUTTON_RELEASE:
 			case OS.GDK_MOTION_NOTIFY:
 				if (cursor != lastCursor) { ungrab(); grab(); }
-				OS.gdk_window_get_pointer(xWindow, newX,newY, 0);
+				OS.gdk_window_get_pointer(xWindow, newX,newY, null);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					drawRectangles ();
 					for (int i=0; i<rectangles.length; i++) {

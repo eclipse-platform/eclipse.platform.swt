@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -34,6 +34,7 @@ import org.eclipse.swt.graphics.*;
 public class CoolBar extends Composite {
 	CoolItem [] items;
 	CoolItem [] originalItems;
+	boolean locked;
 	static final int ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
 	static {
@@ -168,6 +169,9 @@ void createItem (CoolItem item, int index) {
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_TEXT | OS.RBBIM_STYLE | OS.RBBIM_ID;
 	rbBand.fStyle = OS.RBBS_VARIABLEHEIGHT | OS.RBBS_GRIPPERALWAYS;
+	if ((item.style & SWT.DROP_DOWN) != 0) {
+		rbBand.fStyle |= OS.RBBS_USECHEVRON;
+	}
 	rbBand.lpText = lpText;
 	rbBand.wID = id;
 	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
@@ -361,7 +365,7 @@ public Point [] getItemSizes () {
 }
 
 /**
- * Returns whether or not the coolbar is 'locked'. When a coolbar
+ * Returns whether or not the reciever is 'locked'. When a coolbar
  * is locked, its items cannot be repositioned.
  *
  * @return true if the coolbar is locked, false otherwise
@@ -370,18 +374,12 @@ public Point [] getItemSizes () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 2.0
  */
 public boolean getLocked () {
 	checkWidget ();
-	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_STYLE;
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		if ((rbBand.fStyle & OS.RBBS_NOGRIPPER) == 0) return false;
-	}
-	return true;
+	return locked;
 }
 
 /**
@@ -544,6 +542,10 @@ void setItemOrder (int [] itemOrder) {
  *
  * @param sizes the new sizes for each of the receiver's items
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of sizes is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the array of sizes is not the same length as the number of items</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -552,23 +554,18 @@ void setItemOrder (int [] itemOrder) {
 void setItemSizes (Point [] sizes) {
 	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	if (sizes.length != count) error (SWT.ERROR_NULL_ARGUMENT);
+	if (sizes.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_ID;
 	for (int i=0; i<count; i++) {
-		RECT rect = new RECT ();
-		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, i, rect);
-		REBARBANDINFO rbBand = new REBARBANDINFO ();
-		rbBand.cbSize = REBARBANDINFO.sizeof;
-		rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
-		int width = sizes [i].x, height = sizes [i].y;
-		rbBand.cx = width;
-		rbBand.cxIdeal = width - rect.left - rect.right;
-		rbBand.cyChild = rbBand.cyMinChild = rbBand.cyMaxChild = height;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		items [rbBand.wID].setSize (sizes [i].x, sizes [i].y);
 	}
 }
 
 /**
- * Sets whether the reciever is 'locked' or not. When a coolbar
+ * Sets whether or not the reciever is 'locked'. When a coolbar
  * is locked, its items cannot be repositioned.
  *
  * @param locked lock the coolbar if true, otherwise unlock the coolbar
@@ -577,9 +574,12 @@ void setItemSizes (Point [] sizes) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 2.0
  */
 public void setLocked (boolean locked) {
 	checkWidget ();
+	this.locked = locked;
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
@@ -650,18 +650,20 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the coolbar window
 	* proc processes WM_COMMAND, it forwards this
-	* message to the parent.  This is done so that
-	* children of the coolbar that send WM_COMMAND
-	* messages to their parents will notify not only
-	* the coolbar but also the parent of the coolbar,
+	* message to its parent.  This is done so that
+	* children of this control that send this message 
+	* type to their parent will notify not only
+	* this control but also the parent of this control,
 	* which is typically the application window and
-	* the window that is looking for this message.
-	* If the coolbar did not do this, applications
-	* would have to subclass the coolbar window to
-	* see WM_COMMAND messages. Because the coolbar
-	* window is subclassed, the WM_COMMAND message
-	* is delivered twice.  The fix is to avoid
-	* calling the coolbar window proc.
+	* the window that is looking for the message.
+	* If the control did not forward the message, 
+	* applications would have to subclass the control 
+	* window to see the message. Because the control
+	* window is subclassed by SWT, the message
+	* is delivered twice, once by SWT and once when
+	* the message is forwarded by the window proc.
+	* The fix is to avoid calling the window proc 
+	* for this control.
 	*/
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
 	if (result != null) return result;
@@ -679,6 +681,30 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	return null;
 }
 
+LRESULT WM_NOTIFY (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  When the coolbar window
+	* proc processes WM_NOTIFY, it forwards this
+	* message to its parent.  This is done so that
+	* children of this control that send this message 
+	* type to their parent will notify not only
+	* this control but also the parent of this control,
+	* which is typically the application window and
+	* the window that is looking for the message.
+	* If the control did not forward the message, 
+	* applications would have to subclass the control 
+	* window to see the message. Because the control
+	* window is subclassed by SWT, the message
+	* is delivered twice, once by SWT and once when
+	* the message is forwarded by the window proc.
+	* The fix is to avoid calling the window proc 
+	* for this control.
+	*/
+	LRESULT result = super.WM_NOTIFY (wParam, lParam);
+	if (result != null) return result;
+	return LRESULT.ZERO;
+}
+
 LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
@@ -688,6 +714,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			int border = getBorderWidth ();
 			int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
 			setSize (size.x, height + (border * 2));
+			break;
+		case OS.RBN_CHEVRONPUSHED:
+			NMREBARCHEVRON lpnm = new NMREBARCHEVRON ();
+			OS.MoveMemory (lpnm, lParam, NMREBARCHEVRON.sizeof);
+			CoolItem child = items [lpnm.wID];
+			if (child != null) {
+				Event event = new Event();
+				event.detail = SWT.ARROW;
+				event.x = lpnm.left;
+				event.y = lpnm.bottom;
+				child.postEvent (SWT.Selection, event);
+			}
 			break;
 	}
 	return super.wmNotifyChild (wParam, lParam);

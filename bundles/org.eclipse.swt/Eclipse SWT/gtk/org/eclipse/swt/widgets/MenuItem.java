@@ -20,7 +20,10 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>Arm, Help, Selection</dd>
  * </dl>
- *<p>
+ * <p>
+ * Note: Only one of the styles CHECK, CASCADE, PUSH, RADIO, and SEPARATOR 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -486,7 +489,7 @@ public void setAccelerator (int accelerator) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	int accel_group = parent.getShell ().accelGroup;
-	if (accelerator != 0) removeAccelerator (accel_group);
+	if (this.accelerator != 0) removeAccelerator (accel_group);
 	this.accelerator = accelerator;
 	if (accelerator != 0) addAccelerator (accel_group);
 }
@@ -599,8 +602,9 @@ public void setText (String string) {
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	int list = OS.gtk_container_children (handle);
+	int list = OS.gtk_container_get_children (handle);
 	int label = OS.g_list_nth_data (list, 0);
+	OS.g_list_free (list);
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (label, buffer);
 }

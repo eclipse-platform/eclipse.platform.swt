@@ -17,5 +17,6 @@ public class NMTOOLBAR extends NMHDR {
 	public int pszText;
 //	RECT rcButton;
 	public int left, top, right, bottom;
-	public static final int sizeof = 60;
+	/* Note in WinCE.  The field rcButton is not defined. */
+	public static final int sizeof = OS.IsWinCE ? 44 : 60;
 }

@@ -100,7 +100,7 @@ public FontData getFontData() {
 int okFunc (int widget, int callData) {
 	int fontName = OS.gtk_font_selection_dialog_get_font_name (callData);
 	int length = OS.strlen (fontName);
-	byte [] buffer = new byte [length];
+	byte [] buffer = new byte [length + 1];
 	OS.memmove (buffer, fontName, length);
 	int fontDesc = OS.pango_font_description_from_string (buffer);
 	Display display = parent != null ? parent.getDisplay () : Display.getCurrent ();
@@ -136,7 +136,7 @@ public FontData open () {
 		Font font = new Font (display, fontData);
 		int fontName = OS.pango_font_description_to_string (font.handle);
 		int length = OS.strlen (fontName);
-		byte [] buffer = new byte [length];
+		byte [] buffer = new byte [length + 1];
 		OS.memmove (buffer, fontName, length);
 		font.dispose();
 		OS.g_free (fontName);

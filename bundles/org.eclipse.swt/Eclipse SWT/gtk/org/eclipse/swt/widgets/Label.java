@@ -23,6 +23,10 @@ import org.eclipse.swt.graphics.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of SHADOW_IN and SHADOW_OUT may be specified. Only
+ * one of HORIZONTAL and VERTICAL may be specified. Only one of CENTER,
+ * LEFT and RIGHT may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
@@ -70,35 +74,73 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	if ((style & SWT.SEPARATOR) != 0) {
+		if ((style & SWT.HORIZONTAL) != 0) {
+			if (wHint == SWT.DEFAULT) wHint = DEFAULT_WIDTH;
+		} else {
+			if (hHint == SWT.DEFAULT) hHint = DEFAULT_HEIGHT;
+		}
+	}
+	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
+	int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
+	GtkRequisition requisition = new GtkRequisition ();
+	if (frameHandle != 0) {
+		OS.gtk_widget_set_size_request (frameHandle, -1, -1);
+		/*
+		 * Temporary code.
+		 * If the wHint is set, the GtkLabel will believe it has
+		 * more width at its disposal than it actually does (by a few pixels).
+		 * In other words, the frame width is included in the hint and
+		 * it shouldn't.  It is possible (but unlikely) that this will
+		 * cause the label to answer the wrong (smaller) height.
+		 */
+		OS.gtk_widget_set_size_request (handle, wHint, hHint);
+		OS.gtk_widget_size_request (frameHandle, requisition);
+		OS.gtk_widget_set_size_request (frameHandle, width, height);
+	} else {
+		OS.gtk_widget_set_size_request (handle, wHint, hHint);
+		OS.gtk_widget_size_request (handle, requisition);
+	}
+	OS.gtk_widget_set_size_request (handle, labelWidth, labelHeight);
+	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	return new Point (width, height);	
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.gtk_fixed_new ();
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
-	frameHandle = OS.gtk_frame_new(null);
-	if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.SEPARATOR) != 0) {
 		if ((style & SWT.HORIZONTAL)!= 0) {
-			handle = OS.gtk_hseparator_new();
+			handle = OS.gtk_hseparator_new ();
 		} else {
-			handle = OS.gtk_vseparator_new();
+			handle = OS.gtk_vseparator_new ();
 		}
 	} else {
 		handle = OS.gtk_label_new (null);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	
 	int parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add(parentHandle, fixedHandle);
-	OS.gtk_container_add(fixedHandle, frameHandle);
-	OS.gtk_container_add(frameHandle, handle);
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	if ((style & SWT.BORDER) != 0) {
+		frameHandle = OS.gtk_frame_new (null);
+		if (frameHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (fixedHandle, frameHandle);
+		OS.gtk_container_add (frameHandle, handle);
+		OS.gtk_widget_show (frameHandle);
+		// CHECK THEME
+		OS.gtk_frame_set_shadow_type (frameHandle, OS.GTK_SHADOW_ETCHED_IN);
+	} else {
+		OS.gtk_container_add (fixedHandle, handle);
+	}
 	OS.gtk_widget_show (fixedHandle);
-	OS.gtk_widget_show (frameHandle);
 	OS.gtk_widget_show (handle);
-
-	// CHECK THEME
-	int type = (style & SWT.BORDER) != 0 ? OS.GTK_SHADOW_ETCHED_IN : OS.GTK_SHADOW_NONE;	
-	OS.gtk_frame_set_shadow_type (frameHandle, type);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if ((style & SWT.WRAP) != 0) OS.gtk_label_set_line_wrap (handle, true);
 	if ((style & SWT.LEFT) != 0) {
@@ -123,43 +165,13 @@ void createWidget (int index) {
 	text = "";
 }
 
-void register () {
-	super.register ();
-	WidgetTable.put (frameHandle, this);
-}
-
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (frameHandle);
+	if (frameHandle != 0) WidgetTable.remove (frameHandle);
 }
 
-void releaseWidget () {
-	super.releaseWidget ();
-	image = null;
-	text = null;
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-	frameHandle = 0;
-}
-
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	if ((style&SWT.SEPARATOR) != 0) {
-		int w, h;
-		if ((style&SWT.HORIZONTAL)!= 0) {
-			w = 45;
-			h = 6;
-		} else {  // vertical
-			w = 6;
-			h = 45;
-		}
-		if (wHint != SWT.DEFAULT) w = wHint;
-		if (hHint != SWT.DEFAULT) h = hHint;
-		return new Point(w,h);
-	}
-	return super.computeSize(wHint, hHint, changed);
+int eventHandle () {
+	return fixedHandle;
 }
 
 /**
@@ -221,6 +233,58 @@ public String getText () {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	return text;
+}
+
+void register () {
+	super.register ();
+	if (frameHandle != 0) WidgetTable.put (frameHandle, this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	frameHandle = 0;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	image = null;
+	text = null;
+}
+
+void resizeHandle (int width, int height) {
+	/*
+	* Bug in GTK.  For some reason, when the label is
+	* wrappable and the frame is resized, it does not
+	* cause the label to be wrapped.  The fix is to
+	* determine the size that will wrap the label
+	* and expilictly set that size to force the label
+	* to wrap.
+	* 
+	* This part of the fix causes the label to be
+	* resized to the preferred size but it still
+	* won't draw properly.
+	*/
+	if (frameHandle != 0) {
+		OS.gtk_widget_set_size_request (frameHandle, width, height);
+		OS.gtk_widget_set_size_request (handle, -1, -1);
+	}
+	super.resizeHandle (width, height);
+	/*
+	* Bug in GTK.  For some reason, when the label is
+	* wrappable and the frame is resized, it does not
+	* cause the label to be wrapped.  The fix is to
+	* determine the size that will wrap the label
+	* and expilictly set that size to force the label
+	* to wrap.
+	* 
+	* This part of the fix forces the label to be
+	* resized so that it will draw wrapped.
+	*/
+	if (frameHandle != 0) {
+		int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
+		int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
+		OS.gtk_widget_set_size_request (handle, labelWidth, labelHeight);
+	}
 }
 
 /**
@@ -286,7 +350,11 @@ public void setImage (Image image) {
 	} else {
 		handle = OS.gtk_pixmap_new (image.pixmap, image.mask);
 	}
-	OS.gtk_container_add (frameHandle, handle);
+	if ((style & SWT.BORDER) != 0) {
+		OS.gtk_container_add (frameHandle, handle);
+	} else {
+		OS.gtk_container_add (fixedHandle, handle);
+	}
 	WidgetTable.put (handle, this);
 	int alignment = style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	switch (alignment) {
@@ -294,6 +362,9 @@ public void setImage (Image image) {
 		case SWT.CENTER: OS.gtk_misc_set_alignment (handle, 0.5f, 0.0f); break;
 		case SWT.RIGHT: OS.gtk_misc_set_alignment (handle, 1.0f, 0.0f); break;
 	}
+	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	resizeHandle (width, height); 
 	OS.gtk_widget_show (handle);
 }
 
@@ -325,7 +396,11 @@ public void setText (String string) {
 		WidgetTable.remove (handle);
 		OS.gtk_widget_destroy (handle);
 		handle = OS.gtk_label_new (null);
-		OS.gtk_container_add (frameHandle, handle);
+		if ((style & SWT.BORDER) != 0) {
+			OS.gtk_container_add (frameHandle, handle);
+		} else {
+			OS.gtk_container_add (fixedHandle, handle);
+		}
 		WidgetTable.put (handle, this);
 		int alignment = style & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 		switch (alignment) {
@@ -342,6 +417,10 @@ public void setText (String string) {
 			OS.gtk_label_set_justify (handle, OS.GTK_JUSTIFY_RIGHT);
 			break;
 		}
+		int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
+		int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+		resizeHandle (width, height); 
+		OS.gtk_widget_show (handle);
 	}
 	int length = string.length ();
 	char [] text = new char [length + 1];
@@ -351,24 +430,6 @@ public void setText (String string) {
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (handle, buffer);
-}
-
-void resizeHandle (int width, int height) {
-	int topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
-	OS.gtk_widget_set_size_request (fixedHandle, width, height);
-	OS.gtk_widget_set_size_request (frameHandle, width, height);
-	//FIXME - causes scrollbar problems when button child of table
-	int parentHandle = parent.parentingHandle ();
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.gtk_container_resize_children (parentHandle);
-	display.setWarnings (warnings);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
-	}
 }
 
 }

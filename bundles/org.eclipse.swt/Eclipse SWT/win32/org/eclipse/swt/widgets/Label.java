@@ -23,6 +23,10 @@ import org.eclipse.swt.graphics.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of SHADOW_IN and SHADOW_OUT may be specified. Only
+ * one of HORIZONTAL and VERTICAL may be specified. Only one of CENTER,
+ * LEFT and RIGHT may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
@@ -492,18 +496,20 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* WM_SIZE message.
 	*/
 	if (isDisposed ()) return result;
+	if ((style & SWT.SEPARATOR) != 0) {
+		OS.InvalidateRect (handle, null, true);
+		return result;
+	}
 	
 	/*
 	* Bug in Windows.  For some reason, a label with
 	* style SS_LEFT, SS_CENTER or SS_RIGHT does not
 	* redraw the text in the new position when resized.
-	* Note that SS_LEFTNOWORDWRAP does no have the problem.
+	* Note that SS_LEFTNOWORDWRAP does not have the problem.
 	* The fix is to force the redraw.
 	*/
-	if ((style & SWT.SEPARATOR) == 0) {
-		if ((style & (SWT.WRAP | SWT.CENTER | SWT.RIGHT)) != 0) {
-			OS.InvalidateRect (handle, null, true);
-		}
+	if ((style & (SWT.WRAP | SWT.CENTER | SWT.RIGHT)) != 0) {
+		OS.InvalidateRect (handle, null, true);
 	}
 	return result;
 }

@@ -542,7 +542,9 @@ public void setForeground (Color color){
 
 public void setImage (Image image) {
 	checkWidget();
-	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (image != null && image.isDisposed()) {
+		error(SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if ((parent.style & SWT.CHECK) != 0) return;
 	this.image = image;
 	int pixmap = 0, mask = 0;
@@ -556,6 +558,17 @@ public void setImage (Image image) {
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	OS.gtk_ctree_get_node_info (ctree, handle, null, spacing, null, null, null, null, is_leaf, expanded);
 	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap, mask, pixmap, mask, is_leaf [0], expanded [0]);
+	if (image != null) {
+		if (parent.imageHeight == 0) {		
+			int [] width = new int [1], height = new int [1];
+			OS.gdk_drawable_get_size (pixmap, width, height);
+			GtkCList widget = new GtkCList (ctree);
+			if (height [0] > widget.row_height) {
+				parent.imageHeight = height [0];
+				OS.gtk_clist_set_row_height (ctree, height [0]);
+			}
+		}
+	}
 }
 
 /**

@@ -27,6 +27,8 @@ import org.eclipse.swt.graphics.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -326,6 +328,11 @@ void createWidget () {
 	super.createWidget ();
 	items = new ToolItem [4];
 	lastFocusId = -1;
+}
+
+int defaultBackground () {
+	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_BTNFACE);
+	return super.defaultBackground ();
 }
 
 void destroyItem (ToolItem item) {
@@ -665,18 +672,20 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the toolbar window
 	* proc processes WM_COMMAND, it forwards this
-	* message to the parent.  This is done so that
-	* children of the toolbar that send WM_COMMAND
-	* messages to their parents will notify not only
-	* the toolbar but also the parent of the toolbar,
+	* message to its parent.  This is done so that
+	* children of this control that send this message 
+	* type to their parent will notify not only
+	* this control but also the parent of this control,
 	* which is typically the application window and
-	* the window that is looking for this message.
-	* If the toolbar did not do this, applications
-	* would have to subclass the toolbar window to
-	* see WM_COMMAND messages. Because the toolbar
-	* window is subclassed, the WM_COMMAND message
-	* is delivered twice.  The fix is to avoid
-	* calling the toolbar window proc.
+	* the window that is looking for the message.
+	* If the control did not forward the message, 
+	* applications would have to subclass the control 
+	* window to see the message. Because the control
+	* window is subclassed by SWT, the message
+	* is delivered twice, once by SWT and once when
+	* the message is forwarded by the window proc.
+	* The fix is to avoid calling the window proc 
+	* for this control.
 	*/
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
 	if (result != null) return result;
@@ -685,22 +694,6 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
-	if (result != null) return result;
-	switch (wParam) {
-		case OS.VK_RETURN:
-		case OS.VK_SPACE:
-			int index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
-			if (index != -1) {
-				TBBUTTON lpButton = new TBBUTTON ();
-				int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
-				if (code != 0) return LRESULT.ZERO;
-			}
-	}
-	return result;
-}
-
-LRESULT WM_KEYUP (int wParam, int lParam) {
-	LRESULT result = super.WM_KEYUP (wParam, lParam);
 	if (result != null) return result;
 	switch (wParam) {
 		case OS.VK_RETURN:
@@ -724,6 +717,30 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
 	if (code != 0) lastFocusId = lpButton.idCommand;
 	return super.WM_KILLFOCUS (wParam, lParam);
+}
+
+LRESULT WM_NOTIFY (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  When the toolbar window
+	* proc processes WM_NOTIFY, it forwards this
+	* message to its parent.  This is done so that
+	* children of this control that send this message 
+	* type to their parent will notify not only
+	* this control but also the parent of this control,
+	* which is typically the application window and
+	* the window that is looking for the message.
+	* If the control did not forward the message, 
+	* applications would have to subclass the control 
+	* window to see the message. Because the control
+	* window is subclassed by SWT, the message
+	* is delivered twice, once by SWT and once when
+	* the message is forwarded by the window proc.
+	* The fix is to avoid calling the window proc 
+	* for this control.
+	*/
+	LRESULT result = super.WM_NOTIFY (wParam, lParam);
+	if (result != null) return result;
+	return LRESULT.ZERO;
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {

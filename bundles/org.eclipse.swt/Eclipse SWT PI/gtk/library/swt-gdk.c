@@ -88,6 +88,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1get_1cl
 	}
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1get_1rectangles
+  (JNIEnv *env, jclass that, jint region, jintArray rectangles, jintArray n_rectangles)
+{
+	jint *rectangles1 = NULL;
+	jint *n_rectangles1 = NULL;
+	if (rectangles) rectangles1 = (*env)->GetIntArrayElements(env, rectangles, NULL);
+	if (n_rectangles) n_rectangles1 = (*env)->GetIntArrayElements(env, n_rectangles, NULL);
+	gdk_region_get_rectangles((GdkRegion*)region, (GdkRectangle**)rectangles1, (gint *)n_rectangles1);
+	if (rectangles) (*env)->ReleaseIntArrayElements(env, rectangles, rectangles1, 0);
+	if (n_rectangles) (*env)->ReleaseIntArrayElements(env, n_rectangles, n_rectangles1, 0);
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1empty
   (JNIEnv *env, jclass that, jint region)
 {
@@ -152,6 +164,17 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1subtrac
 	gdk_region_subtract((GdkRegion*)source1, (GdkRegion*)source2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1intersect
+  (JNIEnv *env, jclass that, jint source1, jint source2)
+{
+	gdk_region_intersect((GdkRegion*)source1, (GdkRegion*)source2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1offset
+  (JNIEnv *env, jclass that, jint region, jint dx, jint dy)
+{
+	gdk_region_offset((GdkRegion*)region, dx, dy);
+}
 
 /*  ***** Graphics Contexts *****  */
 
@@ -934,23 +957,30 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1or
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1pointer
-  (JNIEnv *env, jclass that, jint window, jintArray x, jintArray y, jint mask)
+  (JNIEnv *env, jclass that, jint window, jintArray x, jintArray y, jintArray mask)
 {
 	jint rc;
 	jint *x1 = NULL;
 	jint *y1 = NULL;
+	jint *mask1 = NULL;
 	if (x) {
 		x1 = (*env)->GetIntArrayElements(env, x, NULL);
 	}
 	if (y) {
 		y1 = (*env)->GetIntArrayElements(env, y, NULL);
 	}
-	rc = (jint)gdk_window_get_pointer((GdkWindow*)window, (gint*)x1, (gint*)y1, (GdkModifierType*)mask);
+	if (mask) {
+		mask1 = (*env)->GetIntArrayElements(env, mask, NULL);
+	}
+	rc = (jint)gdk_window_get_pointer((GdkWindow*)window, (gint*)x1, (gint*)y1, (GdkModifierType*)mask1);
 	if (x) {
 		(*env)->ReleaseIntArrayElements(env, x, x1, 0);
 	}
 	if (y) {
 		(*env)->ReleaseIntArrayElements(env, y, y1, 0);
+	}
+	if (mask) {
+		(*env)->ReleaseIntArrayElements(env, mask, mask1, 0);
 	}
 	return rc;
 }
@@ -1213,4 +1243,71 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pointer_1ungrab
   (JNIEnv *env, jclass that, jint time)
 {
   gdk_pointer_ungrab((guint32) time);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1set_1override_1redirect
+  (JNIEnv *env, jclass that, jint window, jint override_redirect)
+{
+  gdk_window_set_override_redirect((GdkWindow*)window, (gboolean)override_redirect);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1focus_1get_1in
+  (JNIEnv *env, jclass that, jint event)
+{
+  return (jboolean) (((GdkEventFocus*)event) -> in);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1set_1back_1pixmap
+  (JNIEnv *env, jclass that, jint window, jint pixmap, jboolean parent_relative)
+{
+	gdk_window_set_back_pixmap((GdkWindow*)window, (GdkPixmap*)pixmap, (gboolean)parent_relative);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1scroll
+  (JNIEnv *env, jclass that, jint window, jint dx, jint dy)
+{
+	gdk_window_scroll((GdkWindow*)window, dx, dy);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1invalidate_1rect
+  (JNIEnv *env, jclass that, jint window, jobject rectangle, jboolean invalidate_children)
+{
+	DECL_GLOB(pGlob)
+	GdkRectangle rectangle_struct, *rectangle1 = NULL;
+	if (rectangle) {
+		rectangle1 = &rectangle_struct;
+		cacheGdkRectangleFids(env, rectangle, &PGLOB(GdkRectangleFc));
+		getGdkRectangleFields(env, rectangle, rectangle1, &PGLOB(GdkRectangleFc));
+	}
+	gdk_window_invalidate_rect((GdkWindow*)window, (GdkRectangle*)rectangle1, (gboolean) invalidate_children);
+	if (rectangle) {
+		setGdkRectangleFields(env, rectangle, rectangle1, &PGLOB(GdkRectangleFc));
+	}
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1invalidate_1region
+  (JNIEnv *env, jclass that, jint window, jint region, jboolean invalidate_children)
+{
+	gdk_window_invalidate_region((GdkWindow*)window, (GdkRegion*)region, (gboolean) invalidate_children);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1drawable_1get_1visible_1region
+  (JNIEnv *env, jclass that, jint drawable)
+{
+	return (jint)gdk_drawable_get_visible_region((GdkDrawable*)drawable);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1internal_1paint_1info
+  (JNIEnv *env, jclass that, jint window, jintArray drawable, jintArray x_offset, jintArray y_offset)
+{
+	jint *drawable1 = NULL;
+	jint *x_offset1 = NULL;
+	jint *y_offset1 = NULL;
+	if (drawable) drawable1 = (*env)->GetIntArrayElements(env, drawable, NULL);
+ 	if (x_offset) x_offset1 = (*env)->GetIntArrayElements(env, x_offset, NULL);
+	if (y_offset) y_offset1 = (*env)->GetIntArrayElements(env, y_offset, NULL);
+	gdk_window_get_internal_paint_info((GdkWindow*)window, (GdkDrawable**)drawable1, (gint *)x_offset1, (gint *)y_offset1);
+	if (drawable) (*env)->ReleaseIntArrayElements(env, drawable, drawable1, 0);
+	if (x_offset) (*env)->ReleaseIntArrayElements(env, x_offset, x_offset1, 0);
+	if (y_offset) (*env)->ReleaseIntArrayElements(env, y_offset, y_offset1, 0);
 }

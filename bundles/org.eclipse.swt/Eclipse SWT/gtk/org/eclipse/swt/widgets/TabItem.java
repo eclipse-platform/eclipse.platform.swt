@@ -28,6 +28,7 @@ public class TabItem extends Item {
 	int pageHandle;
 	Control control;
 	TabFolder parent;
+	String toolTipText;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -115,8 +116,7 @@ public TabItem (TabFolder parent, int style, int index) {
  * </ul>
  */
 public Control getControl () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return control;
 }
 
@@ -137,8 +137,7 @@ public Display getDisplay () {
  * </ul>
  */
 public TabFolder getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	return parent;
 }
 
@@ -154,9 +153,8 @@ public TabFolder getParent () {
  * </ul>
  */
 public String getToolTipText () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return "";
+	checkWidget ();
+	return toolTipText;
 }
 
 void releaseChild () {
@@ -185,8 +183,7 @@ void releaseWidget () {
  * </ul>
  */
 public void setControl (Control control) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
 	int index = parent.indexOf (this);
@@ -201,9 +198,16 @@ public void setControl (Control control) {
 	if (oldControl != null) oldControl.setVisible (false);
 }
 
+void setFontDescription (int font) {
+	OS.gtk_widget_modify_font (handle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	OS.gtk_widget_modify_fg (handle, 0, color);
+}
+
 public void setImage (Image image) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	super.setImage (image);
 }
 
@@ -219,6 +223,7 @@ public void setText (String string) {
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (handle, buffer);
+	parent.fixPage ();
 }
 
 /**
@@ -233,8 +238,8 @@ public void setText (String string) {
  * </ul>
  */
 public void setToolTipText (String string) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
+	toolTipText = string;
 }
 
 }

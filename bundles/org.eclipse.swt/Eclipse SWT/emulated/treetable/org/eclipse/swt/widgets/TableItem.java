@@ -41,6 +41,9 @@ public class TableItem extends SelectableItem {
 															// are indented. The multiplier is the image width.
 	private int index;										// index of the item in the parent widget
 
+	Color background = null;
+	Color foreground = null;
+	
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value
@@ -109,6 +112,7 @@ public TableItem(Table parent, int style) {
 public TableItem(Table parent, int style, int index) {
 	super(parent, style);
 	parent.addItem(this, index);
+	trimmedLabels = new String[ parent.getColumnCount() ];
 }
 
 /**
@@ -175,6 +179,7 @@ Point drawImage(GC gc, Point destinationPosition, int index) {
 	Image image = getImage(index);
 	Rectangle sourceImageBounds;
 	Point destinationImageExtent = parent.getImageExtent();
+	int imageOffset;
 	
 	if (image != null) {
 		sourceImageBounds = image.getBounds();
@@ -185,10 +190,11 @@ Point drawImage(GC gc, Point destinationPosition, int index) {
 				destinationPosition.x, destinationPosition.y,			
 				destinationImageExtent.x, destinationImageExtent.y);
 		}
+		imageOffset = (parent.getItemHeight() - destinationImageExtent.y) / 2;
 		gc.drawImage(
 			image, 0, 0, 													// source x, y
 			sourceImageBounds.width, sourceImageBounds.height, 				// source width, height
-			destinationPosition.x, destinationPosition.y,					// destination x, y
+			destinationPosition.x, destinationPosition.y + imageOffset,										// destination x, y
 			destinationImageExtent.x, destinationImageExtent.y);			// destination width, height
 	}
 	if (((index == TableColumn.FIRST &&										// always add the image width for the first column 
@@ -213,24 +219,18 @@ void drawText(String label, GC gc, Point position, int index) {
 	Table parent = getParent();
 	boolean drawSelection;
 	int textOffset;
-	int textHeight;
 		
 	if (label != null) {
 		drawSelection = (index == TableColumn.FIRST || (parent.getStyle() & SWT.FULL_SELECTION) != 0);
 		if (isSelected() == true && drawSelection == true) {
-			gc.setBackground(getSelectionBackgroundColor());
 			gc.setForeground(getSelectionForegroundColor());
+		} else {
+			gc.setForeground(getForeground());
 		}
-		textHeight = gc.stringExtent(label).y;
-		textOffset = (parent.getItemHeight() - textHeight) / 2;			// vertically center the text
-		gc.drawString(label, position.x, position.y + textOffset);
-		if (isSelected() == true && drawSelection == true) {
-			gc.setBackground(parent.getBackground());
-			gc.setForeground(parent.getForeground());
-		}
+		textOffset = (parent.getItemHeight() - parent.getFontHeight()) / 2;			// vertically center the text
+		gc.drawString(label, position.x, position.y + textOffset, true);
 	}
 }
-
 /**
  * Returns the receiver's background color.
  *
@@ -244,8 +244,9 @@ void drawText(String label, GC gc, Point position, int index) {
  * @since 2.0
  * 
  */
-public Color getBackground () {
+public Color getBackground(){
 	checkWidget ();
+	if (background != null) return background;
 	Table parent = getParent();
 	return parent.getBackground();
 }
@@ -296,6 +297,7 @@ public Rectangle getBounds(int index) {
 	}
 	return itemBounds;
 }
+
 /**
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
@@ -374,8 +376,9 @@ int getDotStartX(int columnIndex, int columnWidth) {
  * @since 2.0
  * 
  */
-public Color getForeground () {
+public Color getForeground(){
 	checkWidget ();
+	if (foreground != null) return foreground;
 	Table parent = getParent();
 	return parent.getForeground();
 }
@@ -436,7 +439,6 @@ public Rectangle getImageBounds(int index) {
 	int itemIndex = parent.indexOf (this);
 	int imageWidth = 0;
 	Point imageExtent = parent.getImageExtent();
-	Rectangle checkboxBounds;
 	Rectangle imageBounds = getBounds(index);
 	
 	if (itemIndex == -1) {
@@ -746,6 +748,12 @@ void insertColumn(TableColumn column) {
 	imageData = new Image[images.size()];
 	images.copyInto(imageData);
 	setImage(imageData);
+	
+	String[] tempTrimmed = new String[trimmedLabels.length + 1];
+	System.arraycopy(trimmedLabels, 0, tempTrimmed, 0, index);
+	System.arraycopy(trimmedLabels, index, tempTrimmed, index + 1, trimmedLabels.length - index);
+	trimmedLabels = tempTrimmed; 
+	
 }
 /**
  * Sets the image at an index.
@@ -925,6 +933,16 @@ void removeColumn(TableColumn column) {
 		images.copyInto(imageData);
 		setImage(imageData);
 	}
+	
+	if (trimmedLabels.length == 1) {
+		trimmedLabels = new String[0];
+	} else {
+		String[] tempTrimmed = new String[trimmedLabels.length - 1];
+		System.arraycopy(trimmedLabels, 0, tempTrimmed, 0, index);	
+		System.arraycopy(trimmedLabels, index +1, tempTrimmed, index, trimmedLabels.length - index -1);
+		trimmedLabels = tempTrimmed; 
+	}
+
 }
 /**
  * Reset the cached trimmed label for the sub item identified by 
@@ -940,6 +958,62 @@ void reset(int index) {
 	if (index == TableColumn.FIRST) {
 		selectionExtent = null;
 	}
+}
+
+void redraw(){
+	Table parent = getParent();
+	int y = parent.getRedrawY(this);
+	parent.redraw(0, y, parent.getClientArea().width, parent.getItemHeight(), false);
+}
+/**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	background = color;
+	redraw();
+}
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setForeground (Color color){
+	checkWidget ();
+	if (color != null && color.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	foreground = color;	
+	redraw(); 
 }
 /**
  * Sets the image for multiple columns in the Table. 
@@ -1092,29 +1166,6 @@ void setTrimmedText(String label, int columnIndex) {
 	}
 }
 /**
- * Sets the receiver's background color to the color specified
- * by the argument, or to the default system color for the item
- * if the argument is null.
- *
- * @param color the new color (or null)
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public void setBackground (Color color) {
-	checkWidget ();
-	if (color != null && color.isDisposed ())
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
-}
-/**
  * Sets the checked state of the receiver.
  *
  * @param checked the new checked state
@@ -1127,29 +1178,6 @@ public void setBackground (Color color) {
 public void setChecked(boolean checked) {
 	checkWidget();
 	super.setChecked(checked);
-}
-/**
- * Sets the receiver's foreground color to the color specified
- * by the argument, or to the default system color for the item
- * if the argument is null.
- *
- * @param color the new color (or null)
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- * 
- */
-public void setForeground (Color color){
-	checkWidget ();
-	if (color != null && color.isDisposed ())
-		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 }
 /**
  * Sets the grayed state of the receiver.

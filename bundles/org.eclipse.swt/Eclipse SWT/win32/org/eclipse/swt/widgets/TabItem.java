@@ -214,6 +214,16 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
+	/*
+	* Bug in Windows.  In version 6.00 of COMCTL32.DLL, tab
+	* items with an image and a label that includes '&' cause
+	* the tab to draw incorrectly (even when doubled '&&').
+	* The image  overlaps the label.  The fix is to remove
+	* all '&' characters from the string. 
+	*/
+	if (COMCTL32_MAJOR >= 6) {
+		if (text.indexOf ('&') != -1) setText (text);
+	}
 	int hwnd = parent.handle;
 	TCITEM tcItem = new TCITEM ();
 	tcItem.mask = OS.TCIF_IMAGE;
@@ -227,6 +237,25 @@ public void setText (String string) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setText (string);
+	/*
+	* Bug in Windows.  In version 6.00 of COMCTL32.DLL, tab
+	* items with an image and a label that includes '&' cause
+	* the tab to draw incorrectly (even when doubled '&&').
+	* The image  overlaps the label.  The fix is to remove
+	* all '&' characters from the string. 
+	*/
+	if (COMCTL32_MAJOR >= 6 && image != null) {
+		if (text.indexOf ('&') != -1) {
+			int length = string.length ();
+			char[] text = new char [length];
+			string.getChars ( 0, length, text, 0);
+			int i = 0, j = 0;
+			for (i=0; i<length; i++) {
+				if (text[i] != '&') text [j++] = text [i];
+			}
+			if (j < i) string = new String (text, 0, j);
+		}
+	}
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
 	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);

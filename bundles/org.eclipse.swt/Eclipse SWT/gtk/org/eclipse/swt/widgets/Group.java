@@ -25,11 +25,13 @@ import org.eclipse.swt.graphics.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the above styles may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
 public class Group extends Composite {
-	int clientHandle;
+	int clientHandle, labelHandle;
 	String text = "";
 
 /**
@@ -73,61 +75,6 @@ static int checkStyle (int style) {
 	* the SWT style.
 	*/
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
-}
-
-void createHandle(int index) {
-	state |= HANDLE;
-	fixedHandle = OS.gtk_fixed_new ();
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_fixed_set_has_window (fixedHandle, true);
-	handle = OS.gtk_frame_new(null);
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	clientHandle = OS.gtk_fixed_new();
-	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
-	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_container_add (handle, clientHandle);
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_show (clientHandle);
-	OS.gtk_widget_show (fixedHandle);
-	
-	if ((style & SWT.SHADOW_IN) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_IN);
-	}
-	if ((style & SWT.SHADOW_OUT) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_OUT);
-	}
-	if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_IN);
-	}
-	if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
-		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_OUT);
-	}
-}
-
-void register () {
-	super.register ();
-	WidgetTable.put (clientHandle, this);
-}
-
-void releaseHandle () {
-	super.releaseHandle ();
-	clientHandle = 0;
-}
-
-void releaseWidget () {
-	super.releaseWidget ();
-	text = null;
-}
-
-void deregister () {
-	super.deregister ();
-	WidgetTable.remove (clientHandle);
-}
-
-int parentingHandle() {
-	return clientHandle;
 }
 
 int clientHandle () {
@@ -178,6 +125,51 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle (x-trims[1], y-trims[0], width+trims[1]+trims[2], height+trims[0]+trims[3]);
 }
 
+void createHandle(int index) {
+	state |= HANDLE;
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
+	handle = OS.gtk_frame_new (null);
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	labelHandle = OS.gtk_label_new (null);
+	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	clientHandle = OS.gtk_fixed_new();
+	if (clientHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, handle);
+	OS.gtk_container_add (handle, clientHandle);
+	OS.gtk_widget_show (handle);
+	OS.gtk_widget_show (clientHandle);
+	OS.gtk_widget_show (fixedHandle);
+	
+	OS.gtk_frame_set_label_widget (handle, labelHandle);
+	
+	if ((style & SWT.SHADOW_IN) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_IN);
+	}
+	if ((style & SWT.SHADOW_OUT) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_OUT);
+	}
+	if ((style & SWT.SHADOW_ETCHED_IN) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_IN);
+	}
+	if ((style & SWT.SHADOW_ETCHED_OUT) != 0) {
+		OS.gtk_frame_set_shadow_type (handle, OS.GTK_SHADOW_ETCHED_OUT);
+	}
+}
+
+void deregister () {
+	super.deregister ();
+	WidgetTable.remove (clientHandle);
+	WidgetTable.remove (labelHandle);
+}
+
+int eventHandle () {
+	return fixedHandle;
+}
+
 public Rectangle getClientArea () {
 	checkWidget();
 	int width = OS.GTK_WIDGET_WIDTH (clientHandle);
@@ -206,21 +198,34 @@ public String getText () {
 	return text;
 }
 
-void resizeHandle (int width, int height) {
-	int topHandle = topHandle ();
-	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
-	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
-	int parentHandle = parent.parentingHandle ();
-	OS.gtk_widget_set_size_request (fixedHandle, width, height);
-	OS.gtk_widget_set_size_request (handle, width, height);
-	Display display = getDisplay ();
-	boolean warnings = display.getWarnings ();
-	display.setWarnings (false);
-	OS.gtk_container_resize_children (parentHandle);
-	display.setWarnings (warnings);
-	if ((flags & OS.GTK_VISIBLE) == 0) {
-		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
-	}
+int parentingHandle() {
+	return clientHandle;
+}
+
+void register () {
+	super.register ();
+	WidgetTable.put (clientHandle, this);
+	WidgetTable.put (labelHandle, this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	clientHandle = labelHandle = 0;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	text = null;
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	OS.gtk_widget_modify_font (labelHandle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	OS.gtk_widget_modify_fg (labelHandle, 0, color);
 }
 
 /**
@@ -248,14 +253,9 @@ public void setText (String string) {
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	//FIXME - create label widget when frame handle is created
 	byte [] buffer = Converter.wcsToMbcs (null, text);
-	int label = OS.gtk_frame_get_label_widget (handle);
-	if (label == 0) {
-		OS.gtk_frame_set_label (handle, buffer);
-		label = OS.gtk_frame_get_label_widget (handle);
-	}
-	OS.gtk_label_set_text_with_mnemonic (label, buffer);
+	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	OS.gtk_widget_show (labelHandle);
 }
 
 }

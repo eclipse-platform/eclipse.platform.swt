@@ -84,6 +84,9 @@ import org.eclipse.swt.events.*;
  * </dl>
  * </p>
  * <p>
+ * Note: Only one of the styles APPLICATION_MODAL, MODELESS, 
+ * PRIMARY_MODAL and SYSTEM_MODAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is not intended to be subclassed.
  * </p>
  *
@@ -97,6 +100,7 @@ public class Shell extends Decorations {
 	int accelGroup;
 	boolean hasFocus;
 	int oldX, oldY, oldWidth, oldHeight;
+	Control lastActive;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -363,52 +367,74 @@ void closeWidget () {
 	if (event.doit && !isDisposed ()) dispose ();
 }
 
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
+	Rectangle trim = super.computeTrim (x, y, width, height);
+	int trimWidth = trimWidth (), trimHeight = trimHeight ();
+	trim.x -= trimWidth / 2; trim.y -= trimHeight - (trimWidth / 2);
+	trim.width += trimWidth; trim.height += trimHeight;
+	return trim;
+}
+
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	int type = true || parent == null ? OS.GTK_WINDOW_TOPLEVEL : OS.GTK_WINDOW_DIALOG;
+	int type = (style & SWT.NO_TRIM) == 0 ? OS.GTK_WINDOW_TOPLEVEL : OS.GTK_WINDOW_POPUP;
 	shellHandle = OS.gtk_window_new (type);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
-	OS.gtk_window_set_title (shellHandle, new byte [1]);
 	if (parent != null) {
 		OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
+		OS.gtk_window_set_destroy_with_parent(shellHandle, true);
 	}
+	// The following line represents the approach we used in 1.2.
+	// The set_policy call is deprecated, and we achieve the same effect
+	// with the two lines that follow.
+	// OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
+	OS.gtk_widget_set_size_request(shellHandle, 0, 0);
+	OS.gtk_window_set_resizable(shellHandle, true);
 	createScrolledHandle (shellHandle);
-
-	boolean modal = (style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
-	OS.gtk_window_set_modal (shellHandle, modal);	
-	int decorations = 0;
-	if ((style & SWT.NO_TRIM) == 0) {
-		if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
-		if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
-		if ((style & SWT.BORDER) != 0) decorations |= OS.GDK_DECOR_BORDER;
-		if ((style & SWT.MENU) != 0) decorations |= OS.GDK_DECOR_MENU;
-		if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
-		/*
-		 * Under some Window Managers (Sawmill), in order
-		 * to get any border at all from the window manager it is necessary
-		 * to set GDK_DECOR_BORDER.  The fix is to force these bits when any
-		 * kind of border is requested.
-		 */
-		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
-	}	
+	/*
+	* High level GTK helpers, like gtk_window_set_decorated, simply
+	* use gdk_window_set_decorations() with specific values.
+	* Therefore we use that function manually.
+	*/
 	OS.gtk_widget_realize (shellHandle);
 	int window = OS.GTK_WIDGET_WINDOW (shellHandle);
-	// TEMPORARY CODE - trim does not work for dialogs
-//	OS.gdk_window_set_decorations (window, decorations);
-	
+	if ((style & SWT.ON_TOP) != 0) {
+		OS.gdk_window_set_override_redirect (window, true);
+	} else {
+		int decorations = 0;
+		if ((style & SWT.NO_TRIM) == 0) {
+			if ((style & SWT.MIN) != 0) decorations |= OS.GDK_DECOR_MINIMIZE;
+			if ((style & SWT.MAX) != 0) decorations |= OS.GDK_DECOR_MAXIMIZE;
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_RESIZEH;
+			if ((style & SWT.BORDER) != 0) decorations |= OS.GDK_DECOR_BORDER;
+			if ((style & SWT.MENU) != 0) decorations |= OS.GDK_DECOR_MENU;
+			if ((style & SWT.TITLE) != 0) decorations |= OS.GDK_DECOR_TITLE;
+			/*
+			* Feature in GTK.  Under some Window Managers (Sawmill), in order
+			* to get any border at all from the window manager it is necessary
+			* to set GDK_DECOR_BORDER.  The fix is to force these bits when any
+			* kind of border is requested.
+			*/
+			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
+		}
+		OS.gdk_window_set_decorations (window, decorations);
+		OS.gtk_window_set_title (shellHandle, new byte [1]);
+	}
+	boolean modal = (style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
+	OS.gtk_window_set_modal (shellHandle, modal);
 	accelGroup = OS.gtk_accel_group_new ();
 	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
 }
 
 void hookEvents () {
 	super.hookEvents ();
-	signal_connect_after(shellHandle, "map-event", SWT.Deiconify, 3);
-	signal_connect_after(shellHandle, "unmap-event", SWT.Iconify, 3);
+	signal_connect(shellHandle, "map-event", SWT.Deiconify, 3);
+	signal_connect(shellHandle, "unmap-event", SWT.Iconify, 3);
 	signal_connect(shellHandle, "size-allocate", SWT.Resize, 3);
 	signal_connect(shellHandle, "configure-event", SWT.Move, 3);
 	signal_connect(shellHandle, "delete-event", SWT.Dispose, 3);
+	signal_connect(shellHandle, "event-after", SWT.Activate, 3);
 }
 
 void register () {
@@ -510,25 +536,35 @@ public Shell [] getShells () {
 	return result;
 }
 
-
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
  * shells on that display, which are not the receiver's
  * children will be drawn behind it), marks it visible,
- * and sets focus to its default button (if it has one).
+ * and sets focus to its default button (if it has one)
+ * and asks the window manager to make the shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see Control#moveAbove
+ * @see Control#setFocus
  * @see Control#setVisible
+ * @see Display#getActiveShell
  * @see Decorations#setDefaultButton
+ * @see Shell#setActive
+ * @see Shell#forceActive
 */
 public void open () {
-	checkWidget();
 	setVisible (true);
+}
+
+int processDeiconify (int int0, int int1, int int2) {
+	minimized = false;
+	sendEvent (SWT.Deiconify);
+	return 0;
 }
 
 int processDispose (int int0, int int1, int int2) {
@@ -536,15 +572,17 @@ int processDispose (int int0, int int1, int int2) {
 	return 0;
 }
 
-int processFocusIn(int int0, int int1, int int2) {
-	hasFocus=true;
-	postEvent(SWT.Activate);
+int processActivate (int int0, int int1, int int2) {
+	if (OS.GDK_EVENT_TYPE (int0) == OS.GDK_FOCUS_CHANGE) {
+		hasFocus = OS.gdk_event_focus_get_in (int0);
+		postEvent (hasFocus ? SWT.Activate : SWT.Deactivate);
+	}
 	return 0;
 }
 
-int processFocusOut(int int0, int int1, int int2) {
-	hasFocus=false;
-	postEvent(SWT.Deactivate);
+int processIconify (int int0, int int1, int int2) {
+	minimized = true;
+	sendEvent (SWT.Iconify);
 	return 0;
 }
 
@@ -598,6 +636,70 @@ public void removeShellListener (ShellListener listener) {
 	eventTable.unhook (SWT.Deactivate, listener);
 }
 
+/**
+ * Moves the receiver to the top of the drawing order for
+ * the display on which it was created (so that all other
+ * shells on that display, which are not the receiver's
+ * children will be drawn behind it) and asks the window
+ * manager to make the shell active.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ * @see Control#moveAbove
+ * @see Control#setFocus
+ * @see Control#setVisible
+ * @see Display#getActiveShell
+ * @see Decorations#setDefaultButton
+ * @see Shell#open
+ * @see Shell#setActive
+*/
+public void setActive () {
+	checkWidget ();
+	//NOT IMPLEMENTED
+	setVisible (true);
+}
+
+void setActiveControl (Control control) {
+	if (control != null && control.isDisposed ()) control = null;
+	if (lastActive != null && lastActive.isDisposed ()) lastActive = null;
+	if (lastActive == control) return;
+	
+	/*
+	* Compute the list of controls to be activated and
+	* deactivated by finding the first common parent
+	* control.
+	*/
+	Control [] activate = (control == null) ? new Control[0] : control.getPath ();
+	Control [] deactivate = (lastActive == null) ? new Control[0] : lastActive.getPath ();
+	lastActive = control;
+	int index = 0, length = Math.min (activate.length, deactivate.length);
+	while (index < length) {
+		if (activate [index] != deactivate [index]) break;
+		index++;
+	}
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have destroyed some of the widgets. If
+	* this happens, keep processing those widgets that
+	* are not disposed.
+	*/
+	for (int i=deactivate.length-1; i>=index; --i) {
+		if (!deactivate [i].isDisposed ()) {
+			deactivate [i].sendEvent (SWT.Deactivate);
+		}
+	}
+	for (int i=activate.length-1; i>=index; --i) {
+		if (!activate [i].isDisposed ()) {
+			activate [i].sendEvent (SWT.Activate);
+		}
+	}
+}
+
 void resizeBounds (int width, int height, boolean notify) {
 	int menuHeight = 0;
 	if (menuBar != null) {
@@ -633,7 +735,8 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		int [] w = new int [1], h = new int [1];
 		OS.gtk_window_get_size (shellHandle, w, h);
 		oldWidth = w [0];  oldHeight = h [0];
-		width -= trimWidth ();  height -= trimHeight ();
+		width = Math.max (1, width - trimWidth ());
+		height = Math.max (1, height - trimHeight ());
 		OS.gtk_window_resize (shellHandle, width, height);
 		resizeBounds (width, height, true);
 	}
@@ -738,7 +841,12 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 	}
 }
-
+boolean traverseEscape () {
+	if (parent == null) return false;
+	if (!isVisible () || !isEnabled ()) return false;
+	close ();
+	return true;
+}
 int trimHeight () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
@@ -776,6 +884,33 @@ void deregister () {
 	WidgetTable.remove (shellHandle);
 }
 
+/**
+ * Moves the receiver to the top of the drawing order for
+ * the display on which it was created (so that all other
+ * shells on that display, which are not the receiver's
+ * children will be drawn behind it) and forces the window
+ * manager to make the shell active.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ * @see Control#moveAbove
+ * @see Control#setFocus
+ * @see Control#setVisible
+ * @see Display#getActiveShell
+ * @see Decorations#setDefaultButton
+ * @see Shell#open
+ * @see Shell#setActive
+*/
+public void forceActive () {
+	checkWidget ();
+	//NOT IMPLEMENTED
+	setVisible (true);
+}
+
 public Rectangle getBounds () {
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
@@ -804,5 +939,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (accelGroup != 0) OS.gtk_accel_group_unref (accelGroup);
 	accelGroup = 0;
+	display = null;
+	lastActive = null;
 }
 }

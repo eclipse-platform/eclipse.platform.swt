@@ -39,6 +39,9 @@ import org.eclipse.swt.events.*;
  * <dd>DefaultSelection, Modify, Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles DROP_DOWN and SIMPLE 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
@@ -299,6 +302,7 @@ void hookEvents () {
 	// TO DO - fix multiple selection events for one user action
 	signal_connect (listHandle, "select_child", SWT.Selection, 3);
 	signal_connect_after (entryHandle, "changed", SWT.Modify, 2);
+	signal_connect (entryHandle, "activate", SWT.DefaultSelection, 2);
 	int mask =
 		OS.GDK_POINTER_MOTION_MASK | 
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
@@ -307,15 +311,17 @@ void hookEvents () {
 	int [] handles = new int [] {entryHandle, listHandle, /*combo.button*/};
 	for (int i=0; i<handles.length; i++) {
 		int handle = handles [i];
-		if (!OS.GTK_WIDGET_NO_WINDOW (handle)) {
-			OS.gtk_widget_add_events (handle, mask);
-		}
-		signal_connect_after (handle, "event", SWT.MouseDown, 3);
-		signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
-//		signal_connect_after (handle, "button_press_event", SWT.MouseDown, 3);
-//		signal_connect_after (handle, "button_release_event", SWT.MouseUp, 3);
-		signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
-		signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
+		OS.gtk_widget_add_events (handle, mask);
+		signal_connect (handle, "button_press_event", SWT.MouseDown, 3);
+		signal_connect (handle, "button_release_event", SWT.MouseUp, 3);
+		signal_connect (handle, "key_press_event", SWT.KeyDown, 3);
+		signal_connect (handle, "key_release_event", SWT.KeyUp, 3);
+		signal_connect (handle, "motion_notify_event", SWT.MouseMove, 3);
+		signal_connect_after (handle, "button_press_event", -SWT.MouseDown, 3);
+		signal_connect_after (handle, "button_release_event", -SWT.MouseUp, 3);
+		signal_connect_after (handle, "key_press_event", -SWT.KeyDown, 3);
+		signal_connect_after (handle, "key_release_event", -SWT.KeyUp, 3);
+		signal_connect_after (handle, "motion_notify_event", -SWT.MouseMove, 3);
 	}
 }
 
@@ -627,6 +633,11 @@ int parentingHandle() {
 	return fixedHandle;
 }
 
+int processDefaultSelection (int int0, int int1, int int2) {
+	postEvent (SWT.DefaultSelection);
+	return 0;
+}
+
 int processModify (int arg0, int arg1, int int2) {
 	sendEvent (SWT.Modify);
 	return 0;
@@ -833,10 +844,28 @@ public void select (int index) {
 	OS.gtk_signal_handler_unblock_by_data (listHandle, SWT.Selection);
 }
 
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	if (entryHandle != 0) OS.gtk_widget_modify_base (entryHandle, 0, color);
+	if (listHandle != 0) OS.gtk_widget_modify_base (listHandle, 0, color);
+}
+
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	checkWidget();
 	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight() : height;
 	return super.setBounds (x, y, width, newHeight, move, resize);
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
+	if (listHandle != 0) OS.gtk_widget_modify_font (listHandle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	if (entryHandle != 0) OS.gtk_widget_modify_text (entryHandle, 0, color);
+	if (listHandle != 0) OS.gtk_widget_modify_text (listHandle, 0, color);
 }
 
 /**
@@ -940,9 +969,9 @@ public void setItems (String [] items) {
  */
 public void setSelection (Point selection) {
 	checkWidget();
-	/*if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_editable_set_position (entryHandle, selection.x);
-	OS.gtk_editable_select_region (entryHandle, selection.x, selection.y);*/
+	OS.gtk_editable_select_region (entryHandle, selection.x, selection.y);
 }
 
 /**
@@ -968,13 +997,13 @@ public void setSelection (Point selection) {
  */
 public void setText (String string) {
 	checkWidget();
-	/*if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	OS.gtk_editable_delete_text (entryHandle, 0, -1);
 	int [] position = new int [1];
 	byte [] buffer = Converter.wcsToMbcs (null, string);
 	OS.gtk_editable_insert_text (entryHandle, buffer, buffer.length, position);
-	OS.gtk_editable_set_position (entryHandle, 0);*/
+	OS.gtk_editable_set_position (entryHandle, 0);
 }
 
 /**

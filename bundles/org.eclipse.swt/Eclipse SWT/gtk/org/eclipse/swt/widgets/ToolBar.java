@@ -28,6 +28,8 @@ import org.eclipse.swt.graphics.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles HORIZONTAL and VERTICAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -88,12 +90,18 @@ void createHandle (int index) {
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
+	setForegroundColor (parent.getForegroundColor ());
+	setFontDescription (parent.getFontDescription ());
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (layout != null) super.computeSize(wHint, hHint, changed);
 	return computeNativeSize(handle, wHint, hHint, changed);
+}
+
+int eventHandle () {
+	return fixedHandle;
 }
 
 /**
@@ -148,8 +156,11 @@ public ToolItem getItem (Point point) {
  */
 public int getItemCount () {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	return list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) return 0;
+	int itemCount = OS.g_list_length (list);
+	OS.g_list_free (list);
+	return itemCount;
 }
 
 /**
@@ -170,14 +181,16 @@ public int getItemCount () {
  */
 public ToolItem [] getItems () {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	int count = list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) return new ToolItem [0];
+	int count = OS.g_list_length (list);
 	ToolItem [] result = new ToolItem [count];
 	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);
 		Widget widget = WidgetTable.get (data);
 		result [i] = (ToolItem) widget;
 	}
+	OS.g_list_free (list);
 	return result;
 }
 
@@ -251,6 +264,26 @@ static int checkStyle (int style) {
 	* the SWT style.
 	*/
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	ToolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setFontDescription (font);
+		}
+	}
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	ToolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setForegroundColor (color);
+		}
+	}
 }
 
 }

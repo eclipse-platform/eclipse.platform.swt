@@ -14,15 +14,18 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a button in a tool bar.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>PUSH, CHECK, RADIO, SEPARATOR, DROP_DOWN</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
- * </p>
+ * <p>
+ * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public class ToolItem extends Item {
 	ToolBar parent;
@@ -455,14 +458,20 @@ public void removeSelectionListener(SelectionListener listener) {
 
 void resizeControl () {
 	if (control != null && !control.isDisposed ()) {
+		/*
+		* Set the size and location of the control
+		* separately to minimize flashing in the
+		* case where the control does not resize
+		* to the size that was requested.  This
+		* case can occur when the control is a
+		* combo box.
+		*/
 		Rectangle itemRect = getBounds ();
-		control.setBounds (itemRect);
+		control.setSize (itemRect.width, itemRect.height);
 		Rectangle rect = control.getBounds ();
-		if (!rect.equals (itemRect)) {
-			rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
-			rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
-			control.setBounds (rect);
-		}
+		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
+		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
+		control.setLocation (rect.x, rect.y);
 	}
 }
 

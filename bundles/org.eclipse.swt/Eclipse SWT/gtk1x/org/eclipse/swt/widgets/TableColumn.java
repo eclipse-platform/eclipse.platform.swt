@@ -20,6 +20,8 @@ import org.eclipse.swt.events.*;
  * <dd> Move, Resize, Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */

@@ -30,6 +30,9 @@ import org.eclipse.swt.internal.image.*;
  *   CURSOR_SIZESW, CURSOR_SIZENW, CURSOR_UPARROW, CURSOR_IBEAM, CURSOR_NO, CURSOR_HAND
  * </dd>
  * </dl>
+ * <p>
+ * Note: Only one of the above styles may be specified.
+ * </p>
  */
 public final class Cursor {
 	/**

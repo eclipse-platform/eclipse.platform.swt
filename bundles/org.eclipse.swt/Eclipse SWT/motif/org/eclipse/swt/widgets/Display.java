@@ -666,9 +666,7 @@ public Control getCursorControl () {
 public Point getCursorLocation () {
 	checkDevice ();
 	int window = OS.XDefaultRootWindow (xDisplay);
-	int [] rootX = new int [1];
-	int [] rootY = new int [1];
-	int [] unused = new int [1];
+	int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
 	OS.XQueryPointer(xDisplay, window, unused, unused, rootX, rootY, unused, unused, unused);
 	return new Point (rootX [0], rootY [0]);
 }
@@ -1418,8 +1416,6 @@ static synchronized void register (Display display) {
 	Displays = newDisplays;
 }
 protected void release () {
-	
-	/* Release shells */
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1428,20 +1424,15 @@ protected void release () {
 		}
 	}
 	while (readAndDispatch ()) {};
-	
-	/* Run dispose list */
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {
 			if (disposeList [i] != null) disposeList [i].run ();
 		}
 	}
-	disposeList = null;
-	
-	/* Release synchronizer */
+	disposeList = null;	
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
 	releaseDisplay ();
-
 	super.release ();
 }
 void releaseDisplay () {
@@ -1572,6 +1563,26 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return true;
+}
+/**
+ * Sets the location of the on-screen pointer relative to the top left corner
+ * of the screen.  <b>Note: It is typically considered bad practice for a
+ * program to move the on-screen pointer location.</b>
+ *
+ * @param point new position 
+ * @since 2.0
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null
+ * </ul>
+ */
+public void setCursorLocation (Point point) {
+	checkDevice ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int x = point.x;
+	int y = point.y;
+	int xWindow = OS.XDefaultRootWindow (xDisplay);	
+	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
 }
 /**
  * On platforms which support it, sets the application name
@@ -1732,7 +1743,11 @@ void showToolTip (int handle, String toolTipText) {
 		if (xmString != 0) OS.XmStringFree (xmString);
 	} else {
 		int widgetClass = OS.OverrideShellWidgetClass ();
-		int [] argList1 = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
+		int [] argList1 = {
+			OS.XmNmwmDecorations, 0,
+			OS.XmNborderWidth, 1,
+			OS.XmNallowShellResize, 1,
+		};
 		shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList1, argList1.length / 2);
 		Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
 		Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
@@ -1808,7 +1823,7 @@ public boolean sleep () {
 	OS.FD_SET (display_fd, fd_set);
 	OS.FD_SET (read_fd, fd_set);
 	timeout [0] = 0;
-	timeout [1] = 100;
+	timeout [1] = 100000;
 	OS.select (max_fd + 1, fd_set, null, null, timeout);
 	return OS.FD_ISSET (display_fd, fd_set);
 }

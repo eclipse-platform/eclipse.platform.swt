@@ -122,6 +122,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1add_1ac
  *  DIALOGS
  */
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1dialog_1run
+  (JNIEnv *env, jclass that, jint dialog)
+{
+	return (jint)gtk_dialog_run((GtkDialog*)dialog);
+}
+
 /*
  *  Color selection
  */
@@ -265,6 +271,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection
 	return (jint)gtk_file_selection_get_filename((GtkFileSelection*)filesel);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection_1get_1selections
+  (JNIEnv *env, jclass that, jint filesel)
+{
+    return (jint)gtk_file_selection_get_selections((GtkFileSelection*)filesel);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection_1complete
   (JNIEnv *env, jclass that, jint filesel, jbyteArray pattern)
 {
@@ -296,6 +308,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1FILE_1SELECTION
     return (jint) (((GtkFileSelection*)fsd)->cancel_button);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection_1set_1select_1multiple
+  (JNIEnv *env, jclass that, jint filesel, jboolean select_multiple)
+{
+	gtk_file_selection_set_select_multiple((GtkFileSelection*)filesel, (gboolean)select_multiple);
+}
 
 
 /*
@@ -360,4 +377,52 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1de
   (JNIEnv *env, jclass that, jint window, jint widget)
 {
     gtk_window_set_default((GtkWindow*)window, (GtkWidget*)widget);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1get_1default
+  (JNIEnv *env, jclass that, jint window)
+{
+    return (jint)(((GtkWindow*)window)->default_widget);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1activate_1default
+  (JNIEnv *env, jclass that, jint window)
+{
+    return (jboolean)gtk_window_activate_default((GtkWindow*)window);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1iconify
+  (JNIEnv *env, jclass that, jint window)
+{
+    gtk_window_iconify((GtkWindow*)window);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1deiconify
+  (JNIEnv *env, jclass that, jint window)
+{
+    gtk_window_deiconify((GtkWindow*)window);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1maximize
+  (JNIEnv *env, jclass that, jint window)
+{
+    gtk_window_maximize((GtkWindow*)window);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1unmaximize
+  (JNIEnv *env, jclass that, jint window)
+{
+    gtk_window_unmaximize((GtkWindow*)window);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1get_1focus
+  (JNIEnv *env, jclass that, jint window)
+{
+    return (jint)gtk_window_get_focus((GtkWindow*)window);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1destroy_1with_1parent
+  (JNIEnv *env, jclass that, jint window, jboolean setting)
+{
+    gtk_window_set_destroy_with_parent((GtkWindow*)window, (gboolean)setting);
 }

@@ -84,6 +84,9 @@ import org.eclipse.swt.events.*;
  * </dl>
  * </p>
  * <p>
+ * Note: Only one of the styles APPLICATION_MODAL, MODELESS, 
+ * PRIMARY_MODAL and SYSTEM_MODAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is not intended to be subclassed.
  * </p>
  *
@@ -432,6 +435,32 @@ void deregister () {
 	WidgetTable.remove (shellHandle);
 }
 
+/**
+ * Moves the receiver to the top of the drawing order for
+ * the display on which it was created (so that all other
+ * shells on that display, which are not the receiver's
+ * children will be drawn behind it) and forces the window
+ * manager to make the shell active.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ * @see Control#moveAbove
+ * @see Control#setFocus
+ * @see Control#setVisible
+ * @see Display#getActiveShell
+ * @see Decorations#setDefaultButton
+ * @see Shell#open
+ * @see Shell#setActive
+*/
+public void forceActive () {
+	checkWidget ();
+	bringToTop ();
+}
+
 public Rectangle getBounds () {
 	checkWidget();
 	PhArea_t area = new PhArea_t ();
@@ -574,15 +603,21 @@ void hookEvents () {
  * the display on which it was created (so that all other
  * shells on that display, which are not the receiver's
  * children will be drawn behind it), marks it visible,
- * and sets focus to its default button (if it has one).
+ * and sets focus to its default button (if it has one)
+ * and asks the window manager to make the shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see Control#moveAbove
+ * @see Control#setFocus
  * @see Control#setVisible
+ * @see Display#getActiveShell
  * @see Decorations#setDefaultButton
+ * @see Shell#setActive
+ * @see Shell#forceActive
 */
 public void open () {
 	checkWidget();
@@ -717,6 +752,32 @@ public void removeShellListener (ShellListener listener) {
 	eventTable.unhook (SWT.Deiconify,listener);
 	eventTable.unhook (SWT.Activate, listener);
 	eventTable.unhook (SWT.Deactivate, listener);
+}
+
+/**
+ * Moves the receiver to the top of the drawing order for
+ * the display on which it was created (so that all other
+ * shells on that display, which are not the receiver's
+ * children will be drawn behind it) and asks the window
+ * manager to make the shell active.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ * @see Control#moveAbove
+ * @see Control#setFocus
+ * @see Control#setVisible
+ * @see Display#getActiveShell
+ * @see Decorations#setDefaultButton
+ * @see Shell#open
+ * @see Shell#setActive
+*/
+public void setActive () {
+	checkWidget ();
+	bringToTop ();
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {

@@ -129,18 +129,34 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	OS.gdk_gc_set_exposures(handle, false);
 	if (data.image != null) return;
 	boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
+	GdkRectangle rect = new GdkRectangle ();
 	if (disjoint) {
-		OS.gdk_window_clear_area_e(drawable, srcX, srcY, width, height);
+		rect.x = srcX;
+		rect.y = srcY;
+		rect.width = width;
+		rect.height = height;
+		OS.gdk_window_invalidate_rect (drawable, rect, false);
+//		OS.gdk_window_clear_area_e(drawable, srcX, srcY, width, height);
 	} else {
 		if (deltaX != 0) {
 			int newX = destX - deltaX;
 			if (deltaX < 0) newX = destX + width;
-			OS.gdk_window_clear_area_e(drawable, newX, srcY, Math.abs(deltaX), height);
+			rect.x = newX;
+			rect.y = srcY;
+			rect.width = Math.abs(deltaX);
+			rect.height = height;
+			OS.gdk_window_invalidate_rect (drawable, rect, false);
+//			OS.gdk_window_clear_area_e(drawable, newX, srcY, Math.abs(deltaX), height);
 		}
 		if (deltaY != 0) {
 			int newY = destY - deltaY;
 			if (deltaY < 0) newY = destY + height;
-			OS.gdk_window_clear_area_e(drawable, srcX, newY, width, Math.abs(deltaY));
+			rect.x = srcX;
+			rect.y = newY;
+			rect.width = width;
+			rect.height = Math.abs(deltaY);
+			OS.gdk_window_invalidate_rect (drawable, rect, false);
+//			OS.gdk_window_clear_area_e(drawable, srcX, newY, width, Math.abs(deltaY));
 		}
 	}
 }
@@ -291,8 +307,9 @@ public void drawImage(Image image, int x, int y) {
  * different sized) rectangular area in the receiver. If the source
  * and destination areas are of differing sizes, then the source
  * area will be stretched or shrunk to fit the destination area
- * as it is copied. The copy fails if any of the given coordinates
- * are negative or lie outside the bounds of their respective images.
+ * as it is copied. The copy fails if any part of the source rectangle
+ * lies outside the bounds of the source image, or if any of the width
+ * or height arguments are negative.
  *
  * @param image the source image
  * @param srcX the x coordinate in the source image to copy from
@@ -307,7 +324,8 @@ public void drawImage(Image image, int x, int y) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
- *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of their respective images</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if any of the width or height arguments are negative.
+ *    <li>ERROR_INVALID_ARGUMENT - if the source rectangle is not contained within the bounds of the source image</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>

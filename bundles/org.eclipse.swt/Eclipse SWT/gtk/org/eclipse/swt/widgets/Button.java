@@ -22,11 +22,15 @@ import org.eclipse.swt.events.*;
  * <dd>Selection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles ARROW, CHECK, PUSH, RADIO, and TOGGLE 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
  */
 public class Button extends Control {
+	int boxHandle, labelHandle, pixmapHandle, arrowHandle;
 	Image image;
 	String text;
 
@@ -108,6 +112,19 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	OS.gtk_widget_set_size_request (handle, wHint, hHint);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
+	OS.gtk_widget_set_size_request (handle, width, height);
+	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	return new Point (width, height);	
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	int bits = SWT.ARROW | SWT.TOGGLE | SWT.CHECK | SWT.RADIO | SWT.PUSH;
@@ -116,49 +133,77 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	switch (style & bits) {
 		case SWT.ARROW:
+			int alignment = OS.GTK_ARROW_UP;
+			if ((style & SWT.UP) != 0) alignment = OS.GTK_ARROW_UP;
+			if ((style & SWT.DOWN) != 0) alignment = OS.GTK_ARROW_DOWN;
+			if ((style & SWT.LEFT) != 0) alignment = OS.GTK_ARROW_LEFT;
+			if ((style & SWT.RIGHT) != 0) alignment = OS.GTK_ARROW_RIGHT;
 			handle = OS.gtk_button_new ();
-			int arrow = OS.gtk_arrow_new (OS.GTK_ARROW_UP, OS.GTK_SHADOW_OUT);
-			OS.gtk_container_add (handle, arrow);
-			OS.gtk_widget_show (arrow);
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			arrowHandle = OS.gtk_arrow_new (alignment, OS.GTK_SHADOW_OUT);
+			if (arrowHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.TOGGLE:
 			handle = OS.gtk_toggle_button_new ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.CHECK:
 			handle = OS.gtk_check_button_new ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.RADIO:
 			handle = OS.gtk_radio_button_new (parent.radioGroup());
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.PUSH:
 		default:
 			handle = OS.gtk_button_new ();
+			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_DEFAULT);
 			break;
 	}
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	if ((style & SWT.ARROW) != 0) {
+		OS.gtk_container_add (handle, arrowHandle);
+		OS.gtk_widget_show (arrowHandle);
+	} else {
+		boxHandle = OS.gtk_hbox_new (false, 0);
+		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		labelHandle = OS.gtk_label_new_with_mnemonic (null);
+		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		int pixmap = OS.gdk_pixmap_new(OS.GDK_ROOT_PARENT(), 1, 1, -1);
+		if (pixmap == 0) error (SWT.ERROR_NO_HANDLES);
+		pixmapHandle = OS.gtk_pixmap_new (pixmap, 0);
+		OS.g_object_unref (pixmap);
+		if (pixmapHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (handle, boxHandle);
+		OS.gtk_container_add (boxHandle, labelHandle);
+		OS.gtk_container_add (boxHandle, pixmapHandle);
+		OS.gtk_widget_show (boxHandle);
+	}
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, fixedHandle);
 	OS.gtk_container_add (fixedHandle, handle);
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_widget_show (handle);
-}
-
-void hookEvents () {
-	//TEMPORARY CODE
-	super.hookEvents();
-	/*
-	* Feature in GTK.  For some reason, when the widget
-	* is a check or radio button, mouse move and key
-	* release events are not signaled.  The fix is to
-	* look for them on the parent.
-	*/
-//	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
-//		int mask = OS.GDK_POINTER_MOTION_MASK | OS.GDK_KEY_RELEASE_MASK;
-//		OS.gtk_widget_add_events (boxHandle, mask);
-//		signal_connect_after (boxHandle, "motion_notify_event", SWT.MouseMove, 3);
-//		signal_connect_after (boxHandle, "key_release_event", SWT.KeyUp, 3);
-//	}
-	signal_connect (handle, "clicked", SWT.Selection, 2);
+	
+	if ((style & SWT.LEFT) != 0) {
+		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
+		OS.gtk_misc_set_alignment (pixmapHandle, 0.0f, 0.5f);
+		return;
+	}
+	if ((style & SWT.CENTER) != 0) {
+		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
+		OS.gtk_misc_set_alignment (pixmapHandle, 0.5f, 0.5f);
+		return;
+	}
+	if ((style & SWT.RIGHT) != 0) {
+		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
+		OS.gtk_misc_set_alignment (pixmapHandle, 1.0f, 0.5f);
+		return;
+	}
 }
 
 void createWidget (int index) {
@@ -166,13 +211,16 @@ void createWidget (int index) {
 	text = "";
 }
 
+void deregister () {
+	super.deregister ();
+	if (boxHandle != 0) WidgetTable.remove (boxHandle);
+	if (labelHandle != 0) WidgetTable.remove (labelHandle);
+	if (pixmapHandle != 0) WidgetTable.remove (pixmapHandle);
+	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
+}
+
 int fontHandle () {
-	//FIX ME - font lost when no text
-	int list = OS.gtk_container_children (handle);
-	if (list != 0) {
-		int widget = OS.g_list_nth_data (list, 0);
-		if (widget != 0) return widget;
-	}
+	if (labelHandle != 0) return labelHandle;
 	return super.fontHandle ();
 }
 
@@ -250,6 +298,51 @@ public boolean getSelection () {
 }
 
 /**
+ * Returns the receiver's text, which will be an empty
+ * string if it has never been set.
+ *
+ * @return the receiver's text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public String getText () {
+	checkWidget();
+	return text;
+}
+
+void hookEvents () {
+	super.hookEvents();
+	signal_connect (handle, "clicked", SWT.Selection, 2);
+}
+
+int processSelection (int int0, int int1, int int2) {
+	postEvent(SWT.Selection);
+	return 0;
+}
+
+void register () {
+	super.register ();
+	if (boxHandle != 0) WidgetTable.put (boxHandle, this);
+	if (labelHandle != 0) WidgetTable.put (labelHandle, this);
+	if (pixmapHandle != 0) WidgetTable.put (pixmapHandle, this);
+	if (arrowHandle != 0) WidgetTable.put (arrowHandle, this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	boxHandle = pixmapHandle = labelHandle = arrowHandle = 0;
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	image = null;
+	text = null;
+}
+
+/**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
  *
@@ -298,46 +391,53 @@ public void setAlignment (int alignment) {
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		int arrow_type = OS.GTK_ARROW_UP;
 		switch (alignment) {
-			case SWT.UP:
-				arrow_type = OS.GTK_ARROW_UP;
-				break;
-			case SWT.DOWN:
-				arrow_type = OS.GTK_ARROW_DOWN;
-				break;
-			case SWT.LEFT:
-				arrow_type = OS.GTK_ARROW_LEFT;
-				break;
-			case SWT.RIGHT:
-				arrow_type = OS.GTK_ARROW_RIGHT;
-				break;
+			case SWT.UP: arrow_type = OS.GTK_ARROW_UP; break;
+			case SWT.DOWN: arrow_type = OS.GTK_ARROW_DOWN; break;
+			case SWT.LEFT: arrow_type = OS.GTK_ARROW_LEFT; break;
+			case SWT.RIGHT: arrow_type = OS.GTK_ARROW_RIGHT; break;
 		}
-		int list = OS.gtk_container_children (handle);
-		int arrow = OS.g_list_nth_data (list, 0);
-		OS.gtk_arrow_set (arrow, arrow_type, OS.GTK_SHADOW_OUT);
+		OS.gtk_arrow_set (arrowHandle, arrow_type, OS.GTK_SHADOW_OUT);
 		return;
 	}
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
-	int list = OS.gtk_container_children (handle);
-	int label = OS.g_list_nth_data (list, 0);
-	if (label == 0) return;
-	boolean isText = OS.GTK_WIDGET_TYPE (handle) == OS.gtk_label_get_type ();
 	if ((style & SWT.LEFT) != 0) {
-		OS.gtk_misc_set_alignment (label, 0.0f, 0.5f);
-		if (isText) OS.gtk_label_set_justify (label, OS.GTK_JUSTIFY_LEFT);
+		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
+		OS.gtk_misc_set_alignment (pixmapHandle, 0.0f, 0.5f);
 		return;
 	}
 	if ((style & SWT.CENTER) != 0) {
-		OS.gtk_misc_set_alignment (label, 0.5f, 0.5f);
-		if (isText) OS.gtk_label_set_justify (label, OS.GTK_JUSTIFY_CENTER);
+		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
+		OS.gtk_misc_set_alignment (pixmapHandle, 0.5f, 0.5f);
 		return;
 	}
 	if ((style & SWT.RIGHT) != 0) {
-		OS.gtk_misc_set_alignment (label, 1.0f, 0.5f);
-		if (isText) OS.gtk_label_set_justify (label, OS.GTK_JUSTIFY_RIGHT);
+		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
+		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
+		OS.gtk_misc_set_alignment (pixmapHandle, 1.0f, 0.5f);
 		return;
 	}
+}
+
+void setBackgroundColor (GdkColor color) {
+	super.setBackgroundColor (color);
+	OS.gtk_widget_modify_bg (labelHandle, 0, color);
+	OS.gtk_widget_modify_bg (pixmapHandle, 0, color);
+}
+	
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	OS.gtk_widget_modify_font (labelHandle, font);
+	OS.gtk_widget_modify_font (pixmapHandle, font);
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	OS.gtk_widget_modify_fg (labelHandle, 0, color);
+	OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
 }
 
 /**
@@ -358,32 +458,18 @@ public void setImage (Image image) {
 	checkWidget ();
 	this.image = image;
 	if ((style & SWT.ARROW) != 0) return;
-	int list = OS.gtk_container_children (handle);
-	if (list != 0) {
-		int widget = OS.g_list_nth_data (list, 0);
-		if (widget != 0) OS.gtk_widget_destroy (widget);
-	}
+	OS.gtk_widget_hide (labelHandle);
 	if (image != null) {
-		int pixmap = OS.gtk_pixmap_new (image.pixmap, image.mask);
-		OS.gtk_container_add (handle, pixmap);
-		OS.gtk_widget_show (pixmap);
+		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
+		OS.gtk_widget_show (pixmapHandle);
+	} else {
+//		int pixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), 1, 1, -1);
+//		if (pixmap == 0) error (SWT.ERROR_NO_HANDLES);
+//		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
+//		OS.g_object_unref (pixmap);
+		//??? REF
+		OS.gtk_widget_hide (pixmapHandle);
 	}
-}
-
-/**
- * Returns the receiver's text, which will be an empty
- * string if it has never been set.
- *
- * @return the receiver's text
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public String getText () {
-	checkWidget();
-	return text;
 }
 
 /**
@@ -438,25 +524,10 @@ public void setText (String string) {
 	for (int i=0; i<length; i++) {
 		if (text [i] == '&') text [i] = '_';
 	}
-	int list = OS.gtk_container_children (handle);
-	if (list != 0) {
-		int widget = OS.g_list_nth_data (list, 0);
-		if (widget != 0) OS.gtk_widget_destroy (widget);
-	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
-	int label = OS.gtk_label_new_with_mnemonic (buffer);
-	OS.gtk_container_add (handle, label);
-	OS.gtk_widget_show (label);
+	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	OS.gtk_widget_hide (pixmapHandle);
+	OS.gtk_widget_show (labelHandle);
 }
 
-int processSelection (int int0, int int1, int int2) {
-	postEvent(SWT.Selection);
-	return 0;
-}
-
-void releaseWidget () {
-	super.releaseWidget ();
-	image = null;
-	text = null;
-}
 }

@@ -264,14 +264,13 @@ public class OS {
 //	public static final int NorthEastGravity = 3;
 //	public static final int NorthGravity = 2;
 	public static final int NorthWestGravity = 1;
-//	public static final int NorthWestGravity = 1;
 	public static final int NotifyAncestor = 0x0;
 //	public static final int NotifyDetailNone = 0x7;
 //	public static final int NotifyGrab = 0x1;
 //	public static final int NotifyHint = 0x1;
 	public static final int NotifyInferior = 0x2;
 	public static final int NotifyNonlinear = 0x3;
-//	public static final int NotifyNonlinearVirtual = 0x4;
+	public static final int NotifyNonlinearVirtual = 0x4;
 	public static final int NotifyNormal = 0x0;
 //	public static final int NotifyPointer = 0x5;
 //	public static final int NotifyPointerRoot = 0x6;

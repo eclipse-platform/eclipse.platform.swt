@@ -24,6 +24,10 @@ import org.eclipse.swt.graphics.*;
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: Only one of SHADOW_IN and SHADOW_OUT may be specified. Only
+ * one of HORIZONTAL and VERTICAL may be specified. Only one of CENTER,
+ * LEFT and RIGHT may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>

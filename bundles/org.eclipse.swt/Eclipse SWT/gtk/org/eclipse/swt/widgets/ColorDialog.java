@@ -117,10 +117,12 @@ int okFunc (int widget, int callData) {
  * </ul>
  */
 public RGB open () {
-	int handle;
-	byte [] titleBytes;
-	titleBytes = Converter.wcsToMbcs (null, title, true);
-	handle = OS.gtk_color_selection_dialog_new (titleBytes);
+	byte [] buffer = Converter.wcsToMbcs (null, title, true);
+	int handle = OS.gtk_color_selection_dialog_new (buffer);
+	if (parent!=null) {
+		OS.gtk_window_set_modal(handle, true);
+		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	}
 	OS.gtk_widget_hide (OS.GTK_COLOR_SELECTION_OK_BUTTON(handle));
 	if (rgb != null) {
 		double [] color = new double [4];

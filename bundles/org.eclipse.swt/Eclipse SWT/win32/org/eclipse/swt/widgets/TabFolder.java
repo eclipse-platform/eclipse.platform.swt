@@ -679,6 +679,30 @@ LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	return new LRESULT (hittest);
 }
 
+LRESULT WM_NOTIFY (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  When the tab folder window
+	* proc processes WM_NOTIFY, it forwards this
+	* message to its parent.  This is done so that
+	* children of this control that send this message 
+	* type to their parent will notify not only
+	* this control but also the parent of this control,
+	* which is typically the application window and
+	* the window that is looking for the message.
+	* If the control did not forward the message, 
+	* applications would have to subclass the control 
+	* window to see the message. Because the control
+	* window is subclassed by SWT, the message
+	* is delivered twice, once by SWT and once when
+	* the message is forwarded by the window proc.
+	* The fix is to avoid calling the window proc 
+	* for this control.
+	*/
+	LRESULT result = super.WM_NOTIFY (wParam, lParam);
+	if (result != null) return result;
+	return LRESULT.ZERO;
+}
+
 LRESULT WM_SIZE (int wParam, int lParam) {
 	LRESULT result = super.WM_SIZE (wParam, lParam);
 	/*

@@ -68,115 +68,17 @@ public TabFolder (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-void createHandle (int index) {
-	state |= HANDLE;
-	fixedHandle = OS.gtk_fixed_new ();
-	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_fixed_set_has_window (fixedHandle, true);
-	handle = OS.gtk_notebook_new ();
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	int parentHandle = parent.parentingHandle ();
-	OS.gtk_container_add (parentHandle, fixedHandle);
-	OS.gtk_container_add (fixedHandle, handle);
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_show (fixedHandle);
+static int checkStyle (int style) {
+	/*
+	* Even though it is legal to create this widget
+	* with scroll bars, they serve no useful purpose
+	* because they do not automatically scroll the
+	* widget's client area.  The fix is to clear
+	* the SWT style.
+	*/
+	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
-void hookEvents () {
-	super.hookEvents ();
-	signal_connect (handle, "switch_page", SWT.Selection, 4);
-}
-
-void createWidget (int index) {
-	super.createWidget(index);
-	items = new TabItem [4];
-}
-
-public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	//notebookHandle
-/*	int width = _computeSize(wHint, hHint, changed).x;
-	int height = 0;
-	Point size;
-	if (layout != null) {
-		size = layout.computeSize (this, wHint, hHint, changed);
-	} else {
-		size = minimumSize ();
-	}
-	if (size.x == 0) size.x = DEFAULT_WIDTH;
-	if (size.y == 0) size.y = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
-	width = Math.max (width, size.x);
-	height = Math.max (height, size.y);
-	Rectangle trim = computeTrim (0, 0, width, height);
-	width = trim.width;  height = trim.height;
-	return new Point (width, height);*/
-	/* FIXME */
-	return new Point(300,300);
-}
-
-int clientHandle () {
-	if (items [0] != null) return items [0].pageHandle;
-	return handle;
-}
-
-/**
- * Computes the widget trim.
- */
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
-	return new Rectangle(x-2, y-33, width+4, height+35);
-}
-
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (changed && resize) {
-		int index = getSelectionIndex ();
-		if (index != -1) {
-			TabItem item = items [index];
-			Control control = item.control;
-			if (control != null && !control.isDisposed ()) {
-				control.setBounds (getClientArea ());
-			}
-		}
-	}
-	return changed;
-}
-
-void createItem (TabItem item, int index) {
-	int list = OS.gtk_container_children (handle);
-	int itemCount = (list != 0) ? OS.g_list_length (list) : 0;
-	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
-	if (itemCount == items.length) {
-		TabItem [] newItems = new TabItem [items.length + 4];
-		System.arraycopy (items, 0, newItems, 0, items.length);
-		items = newItems;
-	}
-	
-	// create a new label	
-	int labelHandle = OS.gtk_label_new ("");
-	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-	// create a new fake page
-	int pageHandle = OS.gtk_fixed_new();
-	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	
-	// put the label and the fake page inside the notebook
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	OS.gtk_notebook_append_page(handle, pageHandle, labelHandle);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
-	
-	OS.gtk_widget_show(labelHandle);
-	OS.gtk_widget_show(pageHandle);
-
-	item.state |= HANDLE;
-	item.handle = labelHandle;
-	item.pageHandle = pageHandle;
-	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
-	items [index] = item;
-	OS.gtk_notebook_set_show_tabs (handle, true);
-}
 
 /**
  * Adds the listener to the collection of listeners who will
@@ -203,12 +105,132 @@ void createItem (TabItem item, int index) {
  * @see SelectionEvent
  */
 public void addSelectionListener(SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener(listener);
 	addListener(SWT.Selection,typedListener);
 	addListener(SWT.DefaultSelection,typedListener);
+}
+
+int clientHandle () {
+	int index = OS.gtk_notebook_get_current_page (handle);
+	if (index != -1 && items [index] != null) {
+		return items [index].pageHandle;
+	}
+	return handle;
+}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	OS.gtk_widget_set_size_request (handle, wHint, hHint);
+	GtkRequisition requisition = new GtkRequisition ();
+	boolean scrollable = OS.gtk_notebook_get_scrollable (handle);
+	OS.gtk_notebook_set_scrollable (handle, false);
+	OS.gtk_widget_size_request (handle, requisition);
+	OS.gtk_notebook_set_scrollable (handle, scrollable);
+	OS.gtk_widget_set_size_request (handle, width, height);
+	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	Point size;
+	if (layout != null) {
+		size = layout.computeSize (this, wHint, hHint, changed);
+	} else {
+		size = minimumSize ();
+	}
+	if (size.x == 0) size.x = DEFAULT_WIDTH;
+	if (size.y == 0) size.y = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) size.x = wHint;
+	if (hHint != SWT.DEFAULT) size.y = hHint;
+	width = Math.max (width, size.x);
+	height = Math.max (height, size.y);
+	return new Point (width, height);
+}
+
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
+	return new Rectangle(x-2, y-33, width+4, height+35);
+}
+
+void createHandle (int index) {
+	state |= HANDLE;
+	fixedHandle = OS.gtk_fixed_new ();
+	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_fixed_set_has_window (fixedHandle, true);
+	handle = OS.gtk_notebook_new ();
+	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_container_add (parentHandle, fixedHandle);
+	OS.gtk_container_add (fixedHandle, handle);
+	OS.gtk_widget_show (handle);
+	OS.gtk_widget_show (fixedHandle);
+	OS.gtk_notebook_set_scrollable (handle, true);
+	OS.gtk_notebook_set_show_tabs (handle, true);
+}
+
+void createWidget (int index) {
+	super.createWidget(index);
+	items = new TabItem [4];
+}
+
+void createItem (TabItem item, int index) {
+	int list = OS.gtk_container_get_children (handle);
+	int itemCount = 0;
+	if (list != 0) {
+		itemCount = OS.g_list_length (list);
+		OS.g_list_free (list);
+	}
+	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_ITEM_NOT_ADDED);
+	if (itemCount == items.length) {
+		TabItem [] newItems = new TabItem [items.length + 4];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+	}
+	int labelHandle = OS.gtk_label_new (null);
+	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	int pageHandle = OS.gtk_fixed_new ();
+	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	OS.gtk_notebook_insert_page (handle, pageHandle, labelHandle, index);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	OS.gtk_widget_show (labelHandle);
+	OS.gtk_widget_show (pageHandle);
+	item.state |= HANDLE;
+	item.handle = labelHandle;
+	item.pageHandle = pageHandle;
+	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
+	items [index] = item;
+	item.setForegroundColor (getForegroundColor ());
+	item.setFontDescription (getFontDescription ());
+	if (itemCount == 1) {
+		fixPage ();
+		Event event = new Event();
+		event.item = items[0];
+		sendEvent (SWT.Selection, event);
+		// the widget could be destroyed at this point
+	}
+}
+
+void fixPage () {
+	/*
+	* Feature in GTK.  For some reason, the positioning of
+	* tab labels and pages become corrupted when when there
+	* is no current page.  The fix is to force the notebook
+	* to resize which causes the current page to be set.
+	*/
+//	int index = OS.gtk_notebook_get_current_page (handle);
+//	if (index != -1) return;
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
+	int flags = OS.GTK_WIDGET_FLAGS (handle);
+	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_VISIBLE);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
+	OS.gtk_container_resize_children (handle);
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS(handle, OS.GTK_VISIBLE);	
+	}
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
 void destroyItem (TabItem item) {
@@ -219,10 +241,32 @@ void destroyItem (TabItem item) {
 		index++;
 	}
 	if (index == itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	int oldIndex = OS.gtk_notebook_get_current_page (handle);
+	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_notebook_remove_page (handle, index);
+	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	item.handle = 0;
+	if (index == oldIndex) {
+		fixPage ();
+		int newIndex = OS.gtk_notebook_get_current_page (handle);
+		if (newIndex != -1) {
+			Control control = items [newIndex].getControl ();
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea());
+				control.setVisible (true);
+			}
+			Event event = new Event ();
+			event.item = items [newIndex];
+			sendEvent (SWT.Selection, event);	
+			// the widget could be destroyed at this point
+		}
+	}
+}
+
+int eventHandle () {
+	return fixedHandle;
 }
 		
 /**
@@ -243,8 +287,10 @@ void destroyItem (TabItem item) {
 
 public TabItem getItem (int index) {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	int itemCount = list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+	int itemCount = OS.g_list_length (list);
+	OS.g_list_free (list);
 	if (!(0 <= index && index < itemCount)) error (SWT.ERROR_CANNOT_GET_ITEM);
 	return items [index];
 }
@@ -261,8 +307,11 @@ public TabItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	return list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) return 0;
+	int itemCount = OS.g_list_length (list);
+	OS.g_list_free (list);
+	return itemCount;
 }
 
 /**
@@ -283,8 +332,7 @@ public int getItemCount () {
  */
 public TabItem [] getItems () {
 	checkWidget();
-	int list = OS.gtk_container_children (handle);
-	int count = list != 0 ? OS.g_list_length (list) : 0;
+	int count = getItemCount ();
 	TabItem [] result = new TabItem [count];
 	System.arraycopy (items, 0, result, 0, count);
 	return result;
@@ -329,6 +377,11 @@ public int getSelectionIndex () {
 	return OS.gtk_notebook_get_current_page (handle);
 }
 
+void hookEvents () {
+	super.hookEvents ();
+	signal_connect (handle, "switch_page", SWT.Selection, 4);
+}
+
 /**
  * Searches the receiver's list starting at the first item
  * (index 0) until an item is found that is equal to the 
@@ -349,8 +402,10 @@ public int getSelectionIndex () {
 public int indexOf (TabItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int list = OS.gtk_container_children (handle);
-	int count = list != 0 ? OS.g_list_length (list) : 0;
+	int list = OS.gtk_container_get_children (handle);
+	if (list == 0) return -1;
+	int count = OS.g_list_length (list);
+	OS.g_list_free (list);
 	for (int i=0; i<count; i++) {
 		if (items [i] == item) return i;
 	}
@@ -376,6 +431,16 @@ int processSelection (int int0, int int1, int int2) {
 	return 0;
 }
 
+void releaseWidget () {
+	int count = getItemCount ();
+	for (int i=0; i<count; i++) {
+		TabItem item = items [i];
+		if (!item.isDisposed ()) item.releaseWidget ();
+	}
+	items = null;
+	super.releaseWidget ();
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's selection changes.
@@ -394,13 +459,48 @@ int processSelection (int int0, int int1, int int2) {
  * @see #addSelectionListener
  */
 public void removeSelectionListener (SelectionListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
+
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	if (changed && resize) {
+		int index = getSelectionIndex ();
+		if (index != -1) {
+			TabItem item = items [index];
+			Control control = item.control;
+			if (control != null && !control.isDisposed ()) {
+				control.setBounds (getClientArea ());
+			}
+		}
+	}
+	return changed;
+}
+
+void setFontDescription (int font) {
+	super.setFontDescription (font);
+	TabItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setFontDescription (font);
+		}
+	}
+}
+
+void setForegroundColor (GdkColor color) {
+	super.setForegroundColor (color);
+	TabItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		if (items[i] != null) {
+			items[i].setForegroundColor (color);
+		}
+	}
+}
+
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
@@ -415,11 +515,37 @@ public void removeSelectionListener (SelectionListener listener) {
  * </ul>
  */
 public void setSelection (int index) {
-	checkWidget();
-	if (index == -1) return;
+	checkWidget ();
+	setSelection (index, false);
+}
+
+void setSelection (int index, boolean notify) {
+	if (index < 0) return;
+	int oldIndex = OS.gtk_notebook_get_current_page (handle);
+	if (oldIndex != -1) {
+		TabItem item = items [oldIndex];
+		Control control = item.control;
+		if (control != null && !control.isDisposed ()) {
+			control.setVisible (false);
+		}
+	}
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_notebook_set_page (handle, index);
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	int newIndex = OS.gtk_notebook_get_current_page (handle);
+	if (newIndex != -1) {
+		TabItem item = items [newIndex];
+		Control control = item.control;
+		if (control != null && !control.isDisposed ()) {
+			control.setBounds (getClientArea ());
+			control.setVisible (true);
+		}
+		if (notify) {
+			Event event = new Event ();
+			event.item = item;
+			sendEvent (SWT.Selection, event);
+		}
+	}
 }
 
 /**
@@ -447,24 +573,4 @@ public void setSelection (TabItem [] items) {
 	}
 }
 
-void releaseWidget () {
-	int count = getItemCount ();
-	for (int i=0; i<count; i++) {
-		TabItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
-	}
-	items = null;
-	super.releaseWidget ();
-}
-
-static int checkStyle (int style) {
-	/*
-	* Even though it is legal to create this widget
-	* with scroll bars, they serve no useful purpose
-	* because they do not automatically scroll the
-	* widget's client area.  The fix is to clear
-	* the SWT style.
-	*/
-	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
-}
 }

@@ -20,7 +20,10 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>Arm, Help, Selection</dd>
  * </dl>
- *<p>
+ * <p>
+ * Note: Only one of the styles CHECK, CASCADE, PUSH, RADIO and SEPARATOR
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -721,17 +724,19 @@ public void setText (String string) {
 			/*
 			* Bug in WinCE PPC.  Tool items on the menubar don't resize
 			* correctly when the character '&' is used (even when it
-			* is a sequence '&&'.  
-			* The workaround is to remove all '&' in the string. 
+			* is a sequence '&&').  The fix is to remove all '&' from
+			* the string. 
 			*/
-			int length = string.length();
-			char[] text = new char[length];
-			string.getChars(0, length, text, 0);
-			int i = 0, j = 0;
-			for (i = 0; i < length; i++) {
-				if (text[i] != '&') text[j++] = text[i];
+			if (string.indexOf ('&') != -1) {
+				int length = string.length ();
+				char[] text = new char [length];
+				string.getChars( 0, length, text, 0);
+				int i = 0, j = 0;
+				for (i=0; i<length; i++) {
+					if (text[i] != '&') text [j++] = text [i];
+				}
+				if (j < i) string = new String (text, 0, j);
 			}
-			if (j < i) string = new String(text, 0, j);
 		}
 	}
 	int hMenu = parent.handle;
@@ -747,9 +752,23 @@ public void setText (String string) {
 	info.fType = widgetStyle ();
 	info.dwTypeData = pszText;
 	boolean success = OS.SetMenuItemInfo (hMenu, id, false, info);
+	/*
+	* Bug in Windows 2000.  For some reason, when MIIM_TYPE is set
+	* on a menu item that also has MIIM_BITMAP, the MIIM_TYPE clears
+	* the MIIM_BITMAP style.  The fix is to reset both MIIM_BITMAP.
+	* Note, this does not happen on Windows 98.
+	*/
+	if (!OS.IsWinCE) {
+		if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+			if (image != null) {
+				info.fMask = OS.MIIM_BITMAP;
+				info.hbmpItem = OS.HBMMENU_CALLBACK;
+				success = OS.SetMenuItemInfo (hMenu, id, false, info);
+			}
+		}
+	}
 	if (fixPPCMenuBar) {
 		Decorations shell = parent.parent;
-		/* set text on corresponding tool item */
 		TBBUTTONINFO info2 = new TBBUTTONINFO ();
 		info2.cbSize = TBBUTTONINFO.sizeof;
 		info2.dwMask = OS.TBIF_TEXT;

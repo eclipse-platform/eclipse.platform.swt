@@ -1137,11 +1137,23 @@ boolean isShowing () {
 }
 
 boolean isTabGroup () {
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return true;
+		}
+	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	return (bits & OS.WS_TABSTOP) != 0;
 }
 
 boolean isTabItem () {
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return false;
+		}
+	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 	if ((bits & OS.WS_TABSTOP) != 0) return false;
 	int code = OS.SendMessage (handle, OS.WM_GETDLGCODE, 0, 0);
@@ -2228,8 +2240,8 @@ public void setVisible (boolean visible) {
 	* focus.  If no window will take focus, set focus to the
 	* desktop.
 	*/
-//	boolean fixFocus = false;
-//	if (!visible) fixFocus = isFocusAncestor ();
+	boolean fixFocus = false;
+	if (!visible) fixFocus = isFocusAncestor ();
 	OS.ShowWindow (handle, visible ? OS.SW_SHOW : OS.SW_HIDE);
 	if (!visible) {
 		/*
@@ -2240,7 +2252,7 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Hide);
 		if (isDisposed ()) return;
 	}
-//	if (fixFocus) fixFocus ();
+	if (fixFocus) fixFocus ();
 }
 
 void sort (int [] items) {
@@ -2653,6 +2665,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_CUT:				result = WM_CUT (wParam, lParam); break;
 		case OS.WM_DESTROY:			result = WM_DESTROY (wParam, lParam); break;
 		case OS.WM_DRAWITEM:			result = WM_DRAWITEM (wParam, lParam); break;
+		case OS.WM_ENDSESSION:			result = WM_ENDSESSION (wParam, lParam); break;
 		case OS.WM_ERASEBKGND:			result = WM_ERASEBKGND (wParam, lParam); break;
 		case OS.WM_GETDLGCODE:			result = WM_GETDLGCODE (wParam, lParam); break;
 		case OS.WM_HELP:				result = WM_HELP (wParam, lParam); break;
@@ -2687,6 +2700,8 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
 		case OS.WM_PASTE:				result = WM_PASTE (wParam, lParam); break;
+		case OS.WM_PRINTCLIENT:		result = WM_PRINTCLIENT (wParam, lParam); break;
+		case OS.WM_QUERYENDSESSION:	result = WM_QUERYENDSESSION (wParam, lParam); break;
 		case OS.WM_QUERYNEWPALETTE:	result = WM_QUERYNEWPALETTE (wParam, lParam); break;
 		case OS.WM_QUERYOPEN:			result = WM_QUERYOPEN (wParam, lParam); break;
 		case OS.WM_RBUTTONDBLCLK:		result = WM_RBUTTONDBLCLK (wParam, lParam); break;
@@ -2829,6 +2844,10 @@ LRESULT WM_DRAWITEM (int wParam, int lParam) {
 	Control control = WidgetTable.get (struct.hwndItem);
 	if (control == null) return null;
 	return control.wmDrawChild (wParam, lParam);
+}
+
+LRESULT WM_ENDSESSION (int wParam, int lParam) {
+	return null;
 }
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
@@ -3627,6 +3646,14 @@ LRESULT WM_PALETTECHANGED (int wParam, int lParam) {
 }
 
 LRESULT WM_PASTE (int wParam, int lParam) {
+	return null;
+}
+
+LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+	return null;
+}
+
+LRESULT WM_QUERYENDSESSION (int wParam, int lParam) {
 	return null;
 }
 

@@ -245,7 +245,7 @@ public boolean equals (Object object) {
 	if (object == this) return true;
 	if (!(object instanceof FontData)) return false;
 	FontData data = (FontData)object;
-	return name == name && height == data.height && style == data.style;
+	return name.equals(data.name) && height == data.height && style == data.style;
 }
 
 /**

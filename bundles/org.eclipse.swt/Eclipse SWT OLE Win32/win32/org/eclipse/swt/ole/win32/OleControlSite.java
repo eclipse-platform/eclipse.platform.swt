@@ -222,28 +222,6 @@ static GUID getDefaultEventSinkGUID(IUnknown unknown) {
  * Adds the listener to receive events.
  *
  * @since 2.0
- * @deprecated - use OleControlSite.addEventListener(OleAutomation, int, OleListener)
- * 
- * @param automation the automation object that provides the event notification
- * 
- * @param guid the identifier of the events COM interface
- * 
- * @param eventID the id of the event
- * 
- * @param listener the listener
- *
- * @exception SWTError 
- *	<ul><li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
- */
-public void addEventListener(OleAutomation automation, GUID guid, int eventID, OleListener listener) {
-	if (listener == null || automation == null || guid == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
-	addEventListener(automation.getAddress(), guid, eventID, listener);
-	
-}
-/**	 
- * Adds the listener to receive events.
- *
- * @since 2.0
  * 
  * @param automation the automation object that provides the event notification
  * 

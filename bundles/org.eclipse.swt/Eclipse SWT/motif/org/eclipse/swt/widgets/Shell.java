@@ -84,6 +84,9 @@ import org.eclipse.swt.events.*;
  * </dl>
  * </p>
  * <p>
+ * Note: Only one of the styles APPLICATION_MODAL, MODELESS, 
+ * PRIMARY_MODAL and SYSTEM_MODAL may be specified.
+ * </p><p>
  * IMPORTANT: This class is not intended to be subclassed.
  * </p>
  *
@@ -582,6 +585,31 @@ void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	enableHandle (enabled, shellHandle);
 }
+/**
+ * Moves the receiver to the top of the drawing order for
+ * the display on which it was created (so that all other
+ * shells on that display, which are not the receiver's
+ * children will be drawn behind it) and forces the window
+ * manager to make the shell active.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ * @see Control#moveAbove
+ * @see Control#setFocus
+ * @see Control#setVisible
+ * @see Display#getActiveShell
+ * @see Decorations#setDefaultButton
+ * @see Shell#open
+ * @see Shell#setActive
+*/
+public void forceActive () {
+	checkWidget ();
+	bringToTop ();
+}
 public int getBorderWidth () {
 	checkWidget();
 	int [] argList = {OS.XmNborderWidth, 0};
@@ -746,15 +774,21 @@ void manageChildren () {
  * the display on which it was created (so that all other
  * shells on that display, which are not the receiver's
  * children will be drawn behind it), marks it visible,
- * and sets focus to its default button (if it has one).
+ * and sets focus to its default button (if it has one)
+ * and asks the window manager to make the shell active.
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
+ * @see Control#moveAbove
+ * @see Control#setFocus
  * @see Control#setVisible
+ * @see Display#getActiveShell
  * @see Decorations#setDefaultButton
+ * @see Shell#setActive
+ * @see Shell#forceActive
 */
 public void open () {
 	checkWidget();
@@ -825,14 +859,18 @@ int processSetFocus (int callData) {
 	int handle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
 	if (handle != shellHandle) return super.processSetFocus (callData);
 	if (xEvent.mode != OS.NotifyNormal) return 0;
-	if (xEvent.detail != OS.NotifyNonlinear) return 0;
-	switch (xEvent.type) {
-		case OS.FocusIn:
-			postEvent (SWT.Activate);
-			break;
-		case OS.FocusOut:
-			postEvent (SWT.Deactivate);
-			break;
+	switch (xEvent.detail) {
+		case OS.NotifyNonlinear:
+		case OS.NotifyNonlinearVirtual: {
+			switch (xEvent.type) {
+				case OS.FocusIn: 
+					postEvent (SWT.Activate);
+					break;
+				case OS.FocusOut:
+					postEvent (SWT.Deactivate);
+					break;
+			}
+		}
 	}
 	return 0;
 }
@@ -906,6 +944,32 @@ void saveBounds () {
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	oldX = root_x [0] - trimWidth; oldY = root_y [0] - trimHeight;
 	oldWidth = argList [1];  oldHeight = argList [3];
+}
+
+/**
+ * Moves the receiver to the top of the drawing order for
+ * the display on which it was created (so that all other
+ * shells on that display, which are not the receiver's
+ * children will be drawn behind it) and asks the window
+ * manager to make the shell active.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 2.0
+ * @see Control#moveAbove
+ * @see Control#setFocus
+ * @see Control#setVisible
+ * @see Display#getActiveShell
+ * @see Decorations#setDefaultButton
+ * @see Shell#open
+ * @see Shell#setActive
+*/
+public void setActive () {
+	checkWidget ();
+	bringToTop ();
 }
 
 void setActiveControl (Control control) {

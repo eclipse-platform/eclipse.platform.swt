@@ -20,7 +20,10 @@ import org.eclipse.swt.events.*;
  * <dt><b>Events:</b></dt>
  * <dd>Arm, Help, Selection</dd>
  * </dl>
- *<p>
+ * <p>
+ * Note: Only one of the styles CHECK, CASCADE, PUSH, RADIO, and SEPARATOR 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */

@@ -30,6 +30,8 @@ import java.util.Vector;
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
  * <p>
+ * Note: Only one of the styles SINGLE, and MULTI may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
@@ -53,7 +55,8 @@ public class Table extends SelectableItemWidget {
 														// by user defined columns
 	private TableColumn defaultColumn;					// Default column that is created as soon as the table is created.
 														// Fix for 1FUSJY5
-	private int dotsWidth = -1;							// width of the static String dots (see above)
+	private int dotsWidth;								// width of the static String dots (see above)
+	private int fontHeight;								// font height, avoid use GC.stringExtend for each pain
 
 /**
  * Constructs a new instance of this class given its parent
@@ -84,7 +87,7 @@ public class Table extends SelectableItemWidget {
  * @see Widget#getStyle
  */
 public Table(Composite parent, int style) {
-	// use NO_MERGE_PAINTS to avoid flashing during column and widget resize redraw
+	// use NO_REDRAW_RESIZE to avoid flashing during widget resize redraw
 	super(parent, checkStyle(style| SWT.NO_REDRAW_RESIZE));
 }
 
@@ -194,6 +197,7 @@ void columnChange(TableColumn column, Rectangle newBounds) {
 	int columnIndex = column.getIndex();
 
 	if (widthChange != 0) {
+		getHeader().widthChange(columnIndex, widthChange);
 		if (columnIndex != TableColumn.FILL) {
 			if (getLinesVisible() == true) {
 				oldXPosition -= getGridLineWidth();						// include vertical grid line when scrolling resized column.
@@ -213,7 +217,6 @@ void columnChange(TableColumn column, Rectangle newBounds) {
 			resizeRedraw(column, columnBounds.width, newBounds.width);
 		}
 	}
-	getHeader().widthChange(columnIndex, widthChange);
 }
 /**
  * The mouse pointer was double clicked on the receiver.
@@ -439,9 +442,10 @@ void doDispose() {
 	Vector items = getItemVector();
 	
 	super.doDispose();
-	while (items.size() > 0) {								// TableItem objects are removed from vector during dispose()
-		((TableItem) items.lastElement()).dispose();
+	for (int i = items.size() - 1; i >= 0; i--) {
+		((TableItem) items.elementAt(i)).dispose();
 	}
+	setItemVector(null);
 	items = getColumnVector();
 	while (items.size() > 0) {								// TableColumn objects are removed from vector during dispose()
 		((TableColumn) items.lastElement()).dispose();
@@ -508,29 +512,7 @@ void drawGridLines(Event event, Enumeration drawColumns) {
 	}
 	gc.setForeground(oldForeground);
 }
-/**
- * Draw a filled rectangle indicating the selection state of 'item'
- * If 'item' is selected the rectangle will be filled with the 
- * selection background color. Otherwise the rectangle will be filled 
- * with the background color to remove selection.
- * The selection color depends on whether the table widget has 
- * focus or not. See getSelectionBackgroundColor() for details.
- * The rectangle is drawn in either the first column or in all columns 
- * for full row select.
- * @param item - item for which the selection state should be drawn
- * @param gc - GC to draw on. 
- * @param position - position on the GC to draw at.
- * @param extent - extent of the selection rectangle.
- */
-void drawSelection(TableItem item, GC gc, Point position, Point extent) {
-	if (item.isSelected() == true) {
-		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION));
-	}
-	gc.fillRectangle(position.x, position.y, extent.x, extent.y);
-	if (item.isSelected() == true) {
-		gc.setBackground(getBackground());
-	}
-}
+
 /**
  * If the receiver has input focus draw a rectangle enclosing 
  * the label of 'item' to indicate the input focus.
@@ -705,9 +687,6 @@ TableColumn getDefaultColumn() {
  *	String
  */
 int getDotsWidth(GC gc) {
-	if (dotsWidth == -1) {
-		dotsWidth = gc.stringExtent(DOT_STRING).x;
-	}
 	return dotsWidth;
 }
 /**
@@ -1086,6 +1065,10 @@ public int getSelectionCount() {
 
 	return super.getSelectionCount();
 }
+
+int getFontHeight(){
+	return fontHeight;
+}
 /**
  * Answer the size of the full row selection rectangle for 'item'.
  */
@@ -1354,6 +1337,11 @@ public int indexOf(TableItem item) {
 void initialize() {
 	columns = new Vector();
 	setItemVector(new Vector());
+	GC gc = new GC(this);
+	Point extent = gc.stringExtent(DOT_STRING);
+	dotsWidth = extent.x;
+	fontHeight = extent.y;
+	gc.dispose();
 	tableHeader = new Header(this);
 	tableHeader.setVisible(false);					// SWT table header is invisible by default, too
 	fillColumn = TableColumn.createFillColumn(this);
@@ -1661,22 +1649,31 @@ TableItem paintItems(Event event, int topPaintIndex, int bottomPaintIndex, Vecto
 	TableItem paintItem;
 	TableItem focusItem = null;
 	Point selectionExtent;
-	Point selectionPosition;
-	int itemHeight = getItemHeight();
-
+	GC gc = event.gc;
+	Color selectionColor = getDisplay().getSystemColor(SWT.COLOR_LIST_SELECTION);
+	Point fullSelectionExtent;	
+	int paintXPosition;
+	int paintYPosition;
+		
 	topPaintIndex += getTopIndex();
 	bottomPaintIndex += getTopIndex();
 	for (int i = topPaintIndex; i <= bottomPaintIndex; i++) {
 		paintItem = (TableItem) getVisibleItem(i);
-		selectionExtent = paintItem.getSelectionExtent();
-		if (selectionExtent != null) {
-			selectionPosition = new Point(paintItem.getSelectionX(), getRedrawY(paintItem));
-			drawSelection(paintItem, event.gc, selectionPosition, selectionExtent);
-		}
-		columns = paintColumns.elements();
+		paintXPosition = paintItem.getSelectionX();
+		paintYPosition = getRedrawY(paintItem);
+		fullSelectionExtent = getFullSelectionExtent(paintItem);
+		gc.setBackground(paintItem.getBackground());
+		gc.fillRectangle(paintXPosition, paintYPosition, fullSelectionExtent.x, fullSelectionExtent.y);
+		
+		if (paintItem.isSelected() == true) {
+			selectionExtent = paintItem.getSelectionExtent();
+			gc.setBackground(selectionColor);
+			gc.fillRectangle(paintXPosition, paintYPosition, selectionExtent.x, selectionExtent.y);
+		} 
+		columns = paintColumns.elements(); 
 		while (columns.hasMoreElements() == true) {
 			column = (TableColumn) columns.nextElement();
-			paintSubItem(event, paintItem, column, i * itemHeight);
+			paintSubItem(event, paintItem, column, paintYPosition);
 		}
 		if (hasFocus(paintItem)) {
 			focusItem = paintItem;
@@ -1697,6 +1694,7 @@ TableItem paintItems(Event event, int topPaintIndex, int bottomPaintIndex, Vecto
  */
 void paintSubItem(Event event, TableItem paintItem, TableColumn column, int paintYPosition) {
 	Rectangle columnBounds = column.getBounds();
+	Point paintPosition;
 	int gridLineWidth = getGridLineWidth();
 	int itemDrawStopX = columnBounds.x + columnBounds.width - gridLineWidth;
 	int clipX;
@@ -1705,9 +1703,10 @@ void paintSubItem(Event event, TableItem paintItem, TableColumn column, int pain
 		clipX = Math.max(columnBounds.x, event.x);
 		event.gc.setClipping(											// clip the drawing area
 			clipX, event.y, 
-			itemDrawStopX - clipX, event.height);		
+			Math.max(0, itemDrawStopX - clipX), event.height);		
 	}
-	column.paint(paintItem, event.gc, paintYPosition);
+	paintPosition = new Point(columnBounds.x, paintYPosition);
+	paintItem.paint(event.gc, paintPosition, column);
 	if (event.x + event.width > itemDrawStopX) {
 		event.gc.setClipping(event.x, event.y, event.width, event.height); // restore original clip rectangle
 	}
@@ -1842,7 +1841,7 @@ public void removeAll() {
 
 	setRedraw(false);
 	setRemovingAll(true);
-	for (int i = 0; i < items.size(); i++) {
+	for (int i = items.size() - 1; i >= 0; i--) {
 		((TableItem) items.elementAt(i)).dispose();
 	}
 	setItemVector(new Vector());
@@ -1855,7 +1854,6 @@ public void removeAll() {
  * Remove 'column' from the receiver.
  */
 void removeColumn(TableColumn column) {
-	TableColumn lastColumn;
 	int index = column.getIndex();
 	int columnWidth = column.getWidth();
 	int columnCount;
@@ -1918,21 +1916,18 @@ void removeColumnVisual(TableColumn column) {
  * @param item - item that should be removed from the receiver
  */
 void removeItem(TableItem item) {
+	if (isRemovingAll() == true) return;
+	
 	Vector items = getItemVector();
 	int index = items.indexOf(item);
-
-	if (index != -1) {
-		if (isRemovingAll() == false) {
-			removingItem(item);	
-		}			
+	if (index != -1) {		
+		removingItem(item);				
 		items.removeElementAt(index);
 		for (int i = index; i < items.size(); i++) {
 			TableItem anItem = (TableItem) items.elementAt(i);
 			anItem.setIndex(anItem.getIndex() - 1);
 		}		
-		if (isRemovingAll() == false) {
-			removedItem(item);
-		}			
+		removedItem(item);		
 	}
 }
 /**
@@ -2193,7 +2188,6 @@ public void select(int index) {
 public void select(int start, int end) {
 	checkWidget();
 	SelectableItem item = null;
-	int selectionCount = 1;
 	
 	if (isMultiSelect() == false) {
 		if (start < 0 && end >= 0) {
@@ -2311,7 +2305,6 @@ void setFirstColumnWidth(TableItem item) {
 }
 public void setFont(Font font) {
 	checkWidget();
-	SelectableItem item;
 	int itemCount = getItemCount();
 
 	if (font == null || font.equals(getFont()) == true) {
@@ -2320,6 +2313,13 @@ public void setFont(Font font) {
 	setRedraw(false);						// disable redraw because itemChanged() triggers undesired redraw	
 	resetItemData();	
 	super.setFont(font);
+	
+	GC gc = new GC(this);
+	Point extent = gc.stringExtent(DOT_STRING);
+	dotsWidth = extent.x;
+	fontHeight = extent.y;
+	gc.dispose();
+	
 	for (int i = 0; i < itemCount; i++) {
 		itemChanged(getItem(i), 0, getClientArea().width);
 	}
