@@ -6,8 +6,8 @@
  * http://www.eclipse.org/legal/cpl-v10.html
  * 
  * Contributors:
- *     IBM Corporation - initial API and implementation
- *     Sebastian Davids
+ *     Sebastian Davids - initial implementation
+ *     IBM Corporation
  *******************************************************************************/
 package org.eclipse.swt.snippets;
 
@@ -33,9 +33,9 @@ public class Snippet174 {
 public static void main(String[] args) {
     Display display = new Display();
     Shell shell = new Shell(display);
-    shell.setText("OpenGL SWT");
+    shell.setText("OpenGL in SWT");
     shell.setLayout(new FillLayout());
-    final Canvas canvas = new Canvas(shell, SWT.NONE);
+    final Canvas canvas = new Canvas(shell, SWT.NO_BACKGROUND);
     canvas.addControlListener(new ControlAdapter() {
         public void controlResized(ControlEvent e) {
             resize(canvas);
@@ -49,10 +49,10 @@ public static void main(String[] args) {
     });
     new Runnable() {
         public void run() {
-            if (canvas.isDisposed()/* || canvas.getShell() == null*/) return;
+            if (canvas.isDisposed()) return;
             render();
             context.swapBuffers();
-            canvas.getDisplay().timerExec(100, this);
+            canvas.getDisplay().timerExec(50, this);
         }
     }.run();
     shell.open();
