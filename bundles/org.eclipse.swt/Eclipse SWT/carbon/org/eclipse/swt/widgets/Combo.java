@@ -928,26 +928,8 @@ int processMouseDown (Object callData) {
 	return 0;
 }
 int processPaint (Object callData) {
-	if (fTX != 0) {
-		MacRect b= new MacRect();
-		OS.GetControlBounds(handle, b.getData());
-	
-		int[] textBounds= new int[4];
-		OS.TXNGetRectBounds(fTX, null, null, textBounds);
-		int h= textBounds[2]-textBounds[0];
-		int x= b.getX() + FOCUS_BORDER;
-		int y= b.getY() + (b.getHeight()-h)/2;
-		int w= b.getWidth()-BUTTON_WIDTH-2*FOCUS_BORDER-3;
-	
-		Rectangle oldRect= fFrameRect;
-		fFrameRect= new Rectangle(x, y, w, h);
-		if (oldRect == null || !oldRect.equals(fFrameRect)) {
-			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
-		}
-	
-		OS.TXNDraw(fTX, 0);
-		drawFrame();
-	}
+	syncBounds();
+	drawFrame();
 	return 0;
 }
 int processSelection (Object callData) {
@@ -1474,6 +1456,30 @@ void enableWidget (boolean enabled) {
 // Mac stuff
 ////////////////////////////////////////////////////////
 
+	private void syncBounds() {
+		
+		if (fTX == 0)
+			return;
+	
+		MacRect b= new MacRect();
+		OS.GetControlBounds(handle, b.getData());
+	
+		int[] textBounds= new int[4];
+		OS.TXNGetRectBounds(fTX, null, null, textBounds);
+		int h= textBounds[2]-textBounds[0];
+		int x= b.getX() + FOCUS_BORDER;
+		int y= b.getY() + (b.getHeight()-h)/2;
+		int w= b.getWidth()-BUTTON_WIDTH-2*FOCUS_BORDER-3;
+	
+		Rectangle oldRect= fFrameRect;
+		fFrameRect= new Rectangle(x, y, w, h);
+		if (oldRect == null || !oldRect.equals(fFrameRect)) {
+			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
+		}
+	
+		OS.TXNDraw(fTX, 0);
+	}
+	
 	/**
 	 * Overridden from Control. Takes care of shadow
 	 * x and y are relative to window!
@@ -1486,6 +1492,8 @@ void enableWidget (boolean enabled) {
 			OS.SetControlBounds(fPopupButton, new MacRect(x, y, BUTTON_WIDTH, BUTTON_WIDTH).getData());
 		} else
 			OS.SetControlBounds(fPopupButton, new MacRect(x, y, width, height).getData());
+			
+		syncBounds();
 	}
 	
 	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {

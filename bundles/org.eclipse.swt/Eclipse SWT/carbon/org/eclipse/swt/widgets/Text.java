@@ -372,24 +372,27 @@ void createHandle (int index) {
 	int[] tnxObject= new int[1];
 	int[] frameID= new int[1];
 	
-	// count number of controls under root before we create the MLTE
+	// AW: HACK ALERT!
+	// count number of controls under root before we create the MLTE so that we know later
+	// how many controls were created by TXNNewObject
 	short[] numControls= new short[1];
 	int[] rootHandle= new int[1];
 	OS.GetRootControl(wHandle, rootHandle);
 	int root= rootHandle[0];
 	short[] cnt= new short[1];
 	OS.CountSubControls(root, cnt);
-        short oldCount= cnt[0];
+	short oldCount= cnt[0];
 	
 	int status= OS.TXNNewObject(0, wHandle, bounds.getData(), frameOptions, frameType, iFileType, iPermanentEncoding,
 						tnxObject, frameID, handle);
-	if (status == 0) {		 
+	if (status == OS.kNoErr) {		 
 		fTX= tnxObject[0];
 		fFrameID= frameID[0];
 		OS.TXNActivate(fTX, fFrameID, OS.kScrollBarsSyncWithFocus);
 	}
 	
 	// AW: HACK ALERT!
+	// determine how many controls were created by TXNNewObject under the root control;
 	// remove all controls created by MLTE from the root control and embed them
 	// in the user pane
 	short[] newCnt= new short[1];
@@ -958,29 +961,7 @@ int processMouseDown (Object callData) {
 	return 0;
 }
 int processPaint (Object callData) {
-
-	MacRect b= new MacRect();
-	OS.GetControlBounds(handle, b.getData());
-
-	int x= b.getX();
-	int y= b.getY();
-	int w= b.getWidth();
-	int h= b.getHeight();
-
-	if ((style & SWT.BORDER) != 0) {
-		x+= FOCUS_BORDER;
-		y+= FOCUS_BORDER;
-		w-= 2*FOCUS_BORDER;
-		h-= 2*FOCUS_BORDER;
-	}
-	
-	Rectangle oldRect= fFrameRect;
-	fFrameRect= new Rectangle(x, y, w, h);
-	if (oldRect == null || !oldRect.equals(fFrameRect)) {
-		OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
-	}
-
-	OS.TXNDraw(fTX, 0);
+	syncBounds();
 	drawFrame();
 	return 0;
 }
@@ -1402,8 +1383,44 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		char[] chars= new char[l];
 		s.getChars(0, l, chars, 0); 
 		OS.TXNSetData(fTX, chars, start, end);
-	
+		
+		syncBounds();
+		
 		sendEvent (SWT.Modify);
+	}
+	
+	private void syncBounds() {
+		
+		if (fTX == 0)
+			return;
+	
+		MacRect b= new MacRect();
+		OS.GetControlBounds(handle, b.getData());
+	
+		int x= b.getX();
+		int y= b.getY();
+		int w= b.getWidth();
+		int h= b.getHeight();
+		
+		if ((style & SWT.BORDER) != 0) {
+			x+= FOCUS_BORDER;
+			y+= FOCUS_BORDER;
+			w-= 2*FOCUS_BORDER;
+			h-= 2*FOCUS_BORDER;
+		}
+		
+		Rectangle oldRect= fFrameRect;
+		fFrameRect= new Rectangle(x, y, w, h);
+		if (oldRect == null || !oldRect.equals(fFrameRect)) {
+			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
+		}
+		
+		OS.TXNDraw(fTX, 0);
+	}
+	
+	void handleResize(int hndl, int x, int y, int width, int height) {
+		super.handleResize(hndl, x, y, width, height);
+		syncBounds();
 	}
 
 	private String getTXNText(int start, int end) {
