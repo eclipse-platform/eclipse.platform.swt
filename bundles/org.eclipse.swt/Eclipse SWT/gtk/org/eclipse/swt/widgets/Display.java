@@ -124,6 +124,9 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* System Tray */
+	Tray tray;
+	
 	/* Timers */
 	int [] timerIds;
 	Runnable [] timerList;
@@ -1036,6 +1039,11 @@ public Control getFocusControl () {
 	return null;
 }
 
+public boolean getHighContrast () {
+	checkDevice ();
+	return false;
+}
+
 public int getDepth () {
 	checkDevice ();
 	GdkVisual visual = new GdkVisual ();
@@ -1366,6 +1374,11 @@ void initializeSystemResources () {
 public Font getSystemFont () {
 	checkDevice ();
 	return Font.gtk_new (this, defaultFont);
+}
+
+public Tray getSystemTray () {
+	if (tray != null) return tray;
+	return tray = new Tray (this, SWT.NULL);
 }
 
 /**
