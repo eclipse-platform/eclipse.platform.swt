@@ -25,10 +25,17 @@
   <target name="suite">
     <property name="data" value="${eclipse-home}/swt_sniff_folder"/>
     <delete dir="${location1}" quiet="true"/>
+    <!-- Run all SWT tests on Windows. Run only Browser tests otherwise. -->
+    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllBrowserTests">
+      <os family="unix"/>
+    </condition>
+    <condition property="class-tests" value="org.eclipse.swt.tests.junit.AllTests">
+      <os family="windows"/>
+    </condition>
     <ant target="core-test" antfile="${library-file}" dir="${eclipse-home}">
       <property name="data-dir" value="${data}"/>
       <property name="plugin-name" value="${plugin-name}"/>
-      <property name="classname" value="org.eclipse.swt.tests.junit.AllTests"/>
+      <property name="classname" value="${class-tests}"/>
     </ant>
   </target>
 
