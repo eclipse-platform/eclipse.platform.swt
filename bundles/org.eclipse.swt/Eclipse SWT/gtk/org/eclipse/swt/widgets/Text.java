@@ -893,14 +893,25 @@ int gtk_commit (int imContext, int text) {
 
 int gtk_delete_range (int widget, int iter1, int iter2) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
-	byte [] startIter =  new byte [ITER_SIZEOF];
-	byte [] endIter =  new byte [ITER_SIZEOF];
+	byte [] startIter = new byte [ITER_SIZEOF];
+	byte [] endIter = new byte [ITER_SIZEOF];
 	OS.memmove (startIter, iter1, startIter.length);
 	OS.memmove (endIter, iter2, endIter.length);
 	int start = OS.gtk_text_iter_get_offset (startIter);
 	int end = OS.gtk_text_iter_get_offset (endIter);
 	String newText = verifyText ("", start, end);
 	if (newText == null) {
+		OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
+		return 0;
+	}
+	if (newText.length () > 0) {
+		byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
+		OS.gtk_text_buffer_delete (bufferHandle, startIter, endIter);
+		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
+		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+		OS.gtk_text_buffer_insert (bufferHandle, startIter, buffer, buffer.length);
+		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 		OS.g_signal_stop_emission_by_name (bufferHandle, OS.delete_range);
 	}
 	return 0;
