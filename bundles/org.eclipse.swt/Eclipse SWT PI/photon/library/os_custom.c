@@ -22,24 +22,6 @@
 #define PtClippedBlit PtClippedBlit_
 #endif
 
-#ifndef NO_PfGenerateFontName
-JNIEXPORT jbyteArray JNICALL OS_NATIVE(PfGenerateFontName)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jbyteArray arg3)
-{
-	jbyte *lparg0=NULL;
-	jbyte *lparg3=NULL;
-	jbyteArray rc;
-	NATIVE_ENTER(env, that, "PfGenerateFontName\n")
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
-	rc = (jbyteArray)PfGenerateFontName((char const *)lparg0, arg1, arg2, (char *)lparg3);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
-	NATIVE_EXIT(env, that, "PfGenerateFontName\n")
-	return rc == NULL ? NULL : arg3;
-}
-#endif
-
 #ifndef NO_PhGetTile
 JNIEXPORT jint JNICALL OS_NATIVE(PhGetTile)
 	(JNIEnv *env, jclass that)

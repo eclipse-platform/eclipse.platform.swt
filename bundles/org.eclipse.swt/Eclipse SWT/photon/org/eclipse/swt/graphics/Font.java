@@ -228,7 +228,7 @@ void init(Device device, String name, int height, int style, byte[] stem) {
 		if ((style & SWT.BOLD) != 0) osStyle |= OS.PF_STYLE_BOLD;
 		if ((style & SWT.ITALIC) != 0) osStyle |= OS.PF_STYLE_ITALIC;
 		byte[] buffer = new byte[OS.MAX_FONT_TAG];
-		handle = OS.PfGenerateFontName(description, osStyle, height, buffer);
+		if (OS.PfGenerateFontName(description, osStyle, height, buffer) != 0) handle = buffer;
 		if (handle == null) {
 			byte[] defaultFont = device.systemFont;
 			int fontID = OS.PfDecomposeStemToID(defaultFont);
@@ -238,7 +238,7 @@ void init(Device device, String name, int height, int style, byte[] stem) {
 				byte[] defaultFontName = new byte[length + 1];
 				OS.memmove(defaultFontName, desc, length);
 				OS.PfFreeFont(fontID);
-				handle = OS.PfGenerateFontName(defaultFontName, osStyle, height, buffer);
+				if (OS.PfGenerateFontName(defaultFontName, osStyle, height, buffer) != 0) handle = buffer;
 			}
 			if (handle == null) handle = defaultFont;
 		}

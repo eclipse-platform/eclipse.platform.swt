@@ -30,16 +30,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(PfDecomposeStemToID)
 #endif
 
 #ifndef NO_PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III
-JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III)
+JNIEXPORT jint JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jint arg2, jint arg3, jint arg4)
 {
 	PhRect_t _arg0, *lparg0=NULL;
 	PhPoint_t _arg1, *lparg1=NULL;
-	jobject rc;
+	jint rc;
 	NATIVE_ENTER(env, that, "PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III\n")
 	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
-	rc = (jobject)PfExtentText(lparg0, lparg1, (const char *)arg2, (const char *)arg3, arg4);
+	rc = (jint)PfExtentText(lparg0, lparg1, (const char *)arg2, (const char *)arg3, arg4);
 	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
 	if (arg0) setPhRect_tFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2III\n")
@@ -48,20 +48,20 @@ JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_phot
 #endif
 
 #ifndef NO_PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI
-JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI)
+JNIEXPORT jint JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jbyteArray arg2, jbyteArray arg3, jint arg4)
 {
 	PhRect_t _arg0, *lparg0=NULL;
 	PhPoint_t _arg1, *lparg1=NULL;
 	jbyte *lparg2=NULL;
 	jbyte *lparg3=NULL;
-	jobject rc;
+	jint rc;
 	NATIVE_ENTER(env, that, "PfExtentText__Lorg_eclipse_swt_internal_photon_PhRect_1t_2Lorg_eclipse_swt_internal_photon_PhPoint_1t_2_3B_3BI\n")
 	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
-	rc = (jobject)PfExtentText(lparg0, lparg1, (const char *)lparg2, (const char *)lparg3, arg4);
+	rc = (jint)PfExtentText(lparg0, lparg1, (const char *)lparg2, (const char *)lparg3, arg4);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
@@ -72,20 +72,20 @@ JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentText__Lorg_eclipse_swt_internal_phot
 #endif
 
 #ifndef NO_PfExtentWideText
-JNIEXPORT jobject JNICALL OS_NATIVE(PfExtentWideText)
+JNIEXPORT jint JNICALL OS_NATIVE(PfExtentWideText)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jbyteArray arg2, jcharArray arg3, jint arg4)
 {
 	PhRect_t _arg0, *lparg0=NULL;
 	PhPoint_t _arg1, *lparg1=NULL;
 	jbyte *lparg2=NULL;
 	jchar *lparg3=NULL;
-	jobject rc;
+	jint rc;
 	NATIVE_ENTER(env, that, "PfExtentWideText\n")
 	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL);
-	rc = (jobject)PfExtentWideText(lparg0, lparg1, (const char *)lparg2, (const uint16_t *)lparg3, arg4);
+	rc = (jint)PfExtentWideText(lparg0, lparg1, (const char *)lparg2, (const uint16_t *)lparg3, arg4);
 	if (arg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) setPhPoint_tFields(env, arg1, lparg1);
@@ -139,6 +139,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(PfFreeFont)
 	NATIVE_ENTER(env, that, "PfFreeFont\n")
 	rc = (jint)PfFreeFont((FontID *)arg0);
 	NATIVE_EXIT(env, that, "PfFreeFont\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_PfGenerateFontName
+JNIEXPORT jint JNICALL OS_NATIVE(PfGenerateFontName)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jbyteArray arg3)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg3=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "PfGenerateFontName\n")
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jint)PfGenerateFontName((char const *)lparg0, arg1, arg2, (char *)lparg3);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "PfGenerateFontName\n")
 	return rc;
 }
 #endif
@@ -469,20 +487,20 @@ JNIEXPORT jint JNICALL OS_NATIVE(PgDrawText)
 #endif
 
 #ifndef NO_PgExtentMultiText
-JNIEXPORT jobject JNICALL OS_NATIVE(PgExtentMultiText)
+JNIEXPORT jint JNICALL OS_NATIVE(PgExtentMultiText)
 	(JNIEnv *env, jclass that, jobject arg0, jobject arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jint arg5)
 {
 	PhRect_t _arg0, *lparg0=NULL;
 	PhPoint_t _arg1, *lparg1=NULL;
 	jbyte *lparg2=NULL;
 	jbyte *lparg3=NULL;
-	jobject rc;
+	jint rc;
 	NATIVE_ENTER(env, that, "PgExtentMultiText\n")
 	if (arg0) lparg0 = getPhRect_tFields(env, arg0, &_arg0);
 	if (arg1) lparg1 = getPhPoint_tFields(env, arg1, &_arg1);
 	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
-	rc = (jobject)PgExtentMultiText((PhRect_t *)lparg0, (PhPoint_t *)lparg1, (char *)lparg2, (char *)lparg3, arg4, arg5);
+	rc = (jint)PgExtentMultiText((PhRect_t *)lparg0, (PhPoint_t *)lparg1, (char *)lparg2, (char *)lparg3, arg4, arg5);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) setPhPoint_tFields(env, arg1, lparg1);

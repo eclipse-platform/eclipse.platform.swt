@@ -328,6 +328,7 @@ public class OS {
 	public static final int Pt_ARG_OUTLINE_COLOR = 0x7e6;
 	public static final int Pt_ARG_PAGE_INCREMENT = 0x714d;
 	public static final int Pt_ARG_PG_CURRENT_INDEX = 0xfa05;
+	public static final int Pt_ARG_PG_FLAGS = 64 * 1000;
 	public static final int Pt_ARG_PG_PANEL_TITLES = 0xfa02;
 	public static final int Pt_ARG_POS = 0x3ef;
 	public static final int Pt_ARG_REGION_FLAGS = 0x3a9b;
@@ -449,6 +450,7 @@ public class OS {
 	public static final int Pt_N_OF_MANY = 0x0;
 	public static final int Pt_ONE_OF_MANY = 0x1;
 	public static final int Pt_PG_INVALID = 0xffff;
+	public static final int Pt_PG_SELECTOR_ON_BOTTOM = 0x0001;
 	public static final int Pt_PROCESS = 0x0;
 	public static final int Pt_RESIZE_XY_BITS = 0x3f00000;
 	public static final int Pt_RESIZE_X_ALWAYS = 0x800000;
@@ -509,14 +511,14 @@ public class OS {
 
 /** Natives */
 public static final native int PfDecomposeStemToID(byte[] pkszStem);
-public static final native org.eclipse.swt.internal.photon.PhRect_t PfExtentText(PhRect_t extent, PhPoint_t pos, int font, int str, int len);
-public static final native org.eclipse.swt.internal.photon.PhRect_t PfExtentText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int len);
-public static final native org.eclipse.swt.internal.photon.PhRect_t PfExtentWideText(PhRect_t extent, PhPoint_t pos, byte[] font, char[] str, int len);
+public static final native int PfExtentText(PhRect_t extent, PhPoint_t pos, int font, int str, int len);
+public static final native int PfExtentText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int len);
+public static final native int PfExtentWideText(PhRect_t extent, PhPoint_t pos, byte[] font, char[] str, int len);
 public static final native int PfFontDescription(int ptsID);
 public static final native int PfFontFlags(int ptsID);
 public static final native int PfFontSize(int ptsID);
 public static final native int PfFreeFont(int ptsID);
-public static final native byte[] PfGenerateFontName(byte[] pkucDescription, int kuiFlags, int kuiSize, byte[] pucBuff);
+public static final native int PfGenerateFontName(byte[] pkucDescription, int kuiFlags, int kuiSize, byte[] pucBuff);
 public static final native int PfLoadMetrics(byte[] font);
 public static final native int PfQueryFontInfo(byte[] font, FontQueryInfo info);
 public static final native int PfQueryFonts(int symbol, int flags, int list, int n);
@@ -538,7 +540,7 @@ public static final native int PgDrawPolygon(short[] ptr, int num, PhPoint_t pos
 public static final native int PgDrawRoundRect(PhRect_t rect, PhPoint_t radii, int flags);
 public static final native int PgDrawTImage(int ptr, int type, PhPoint_t pos, PhDim_t size, int bpl, int tag, int TransPtr, int TransBPl);
 public static final native int PgDrawText(byte[] ptr, int len, PhPoint_t pos, int flags);
-public static final native org.eclipse.swt.internal.photon.PhRect_t PgExtentMultiText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int n, int linespacing);
+public static final native int PgExtentMultiText(PhRect_t extent, PhPoint_t pos, byte[] font, byte[] str, int n, int linespacing);
 public static final native int PgFlush();
 public static final native int PgGetVideoMode(PgDisplaySettings_t settings);
 public static final native int PgGetVideoModeInfo(short mode_number, PgVideoModeInfo_t mode_info);

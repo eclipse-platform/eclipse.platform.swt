@@ -150,8 +150,9 @@ public FontData open () {
 			int osStyle = 0, style = fontData.getStyle();
 			if ((style & SWT.BOLD) != 0) osStyle |= OS.PF_STYLE_BOLD;
 			if ((style & SWT.ITALIC) != 0) osStyle |= OS.PF_STYLE_ITALIC;
-			int size = fontData.getHeight();		
-			font = OS.PfGenerateFontName(description, osStyle, size, new byte[OS.MAX_FONT_TAG]);
+			int size = fontData.getHeight();
+			byte [] buffer = new byte[OS.MAX_FONT_TAG];
+			if (OS.PfGenerateFontName(description, osStyle, size, buffer) != 0) font = buffer;
 		}
 		fontData = null;
 	}
