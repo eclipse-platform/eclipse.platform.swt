@@ -424,15 +424,7 @@ public void setText (String string) {
 		buffer = Converter.wcsToMbcs (getCodePage (), unicode, true);
 	}
 	
-	int [] parseTable = getDisplay ().parseTable;
-	int xmString = OS.XmStringParseText (
-		buffer,
-		0,
-		OS.XmFONTLIST_DEFAULT_TAG, 
-		OS.XmCHARSET_TEXT, 
-		parseTable,
-		parseTable.length,
-		0);
+	int xmString = OS.XmStringGenerate(buffer, null, OS.XmCHARSET_TEXT, null);
 	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 		
 	/*

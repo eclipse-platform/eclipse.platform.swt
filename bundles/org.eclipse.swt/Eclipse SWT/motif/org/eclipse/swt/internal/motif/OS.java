@@ -878,7 +878,6 @@ public class OS {
 	public static final native void XmListDeselectItem (int list, int xmString);
 	public static final native void XmListSelectItem (int list, int xmString, boolean notify);
 	public static final native int XmPushButtonWidgetClass ();
-	public static final native void XmStringDrawUnderline (int display, int window, int fontlist, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip, int xmStringUnderline);
 	public static final native int XmStringLineCount (int xmString);
 	public static final native boolean XmTextRemove (int widget);
 	public static final native int XtAppSetErrorHandler (int app_context, int handler);
@@ -1119,6 +1118,7 @@ public static final native int XmStringCreateLocalized (byte [] string);
 public static final native int XmStringCreateLtoR (byte [] string, byte [] charset);
 public static final native void XmStringDraw (int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
 public static final native void XmStringDrawImage (int display, int window, int renderTable, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip);
+public static final native void XmStringDrawUnderline (int display, int window, int fontlist, int xmString, int gc, int x, int y, int width, int align, int lay_dir, XRectangle clip, int xmStringUnderline);
 public static final native boolean XmStringEmpty (int s1);
 public static final native void XmStringFree (int xmString);
 public static final native boolean XmStringGetLtoR (int xmString, byte [] charset, int [] text);

@@ -32,8 +32,6 @@ public final class GC {
 	
 	Drawable drawable;
 	GCData data;
-	
-	static final byte[] _MOTIF_DEFAULT_LOCALE = Converter.wcsToMbcs(null, "_MOTIF_DEFAULT_LOCALE");
 
 GC() {
 }
@@ -1007,7 +1005,7 @@ void createRenderTable() {
 			OS.XmNfont, fontPtr,
 			OS.XmNfontType, fontType,
 		};
-		int rendition = OS.XmRenditionCreate(shellHandle, _MOTIF_DEFAULT_LOCALE, argList, argList.length / 2);
+		int rendition = OS.XmRenditionCreate(shellHandle, OS.XmFONTLIST_DEFAULT_TAG, argList, argList.length / 2);
 		renditions[renditionCount++] = rendition;
 		if (renditionCount == renditions.length) {
 			int[] newArray = new int[renditions.length + 4];
@@ -1043,7 +1041,7 @@ void createRenderTable() {
  * </ul>
  */
 public void drawText (String string, int x, int y) {
-	drawText(string, x, y, false);
+	drawText(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 /** 
  * Draws the given string, using the receiver's current font and
@@ -1066,19 +1064,76 @@ public void drawText (String string, int x, int y) {
  * </ul>
  */
 public void drawText (String string, int x, int y, boolean isTransparent) {
+	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
+	if (isTransparent) flags |= SWT.DRAW_TRANSPARENT;
+	drawText(string, x, y, flags);
+}
+/** 
+ * Draws the given string, using the receiver's current font and
+ * foreground color. Tab expansion, line delimiter and mnemonic
+ * processing are performed according to the specified flags. If
+ * <code>flags</code> includes <code>DRAW_TRANSPARENT</code>,
+ * then the background of the rectangular area where the text is being
+ * drawn will not be modified, otherwise it will be filled with the
+ * receiver's background color.
+ * <p>
+ * The parameter <code>flags</code> may be a combination of:
+ * <dl>
+ * <dt><b>DRAW_DELIMITER</b></dt>
+ * <dd>draw multiple lines</dd>
+ * <dt><b>DRAW_TAB</b></dt>
+ * <dd>expand tabs</dd>
+ * <dt><b>DRAW_MNEMONIC</b></dt>
+ * <dd>underline the mnemonic character</dd>
+ * <dt><b>DRAW_TRANSPARENT</b></dt>
+ * <dd>transparent background</dd>
+ * </dl>
+ * </p>
+ *
+ * @param string the string to be drawn
+ * @param x the x coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param y the y coordinate of the top left corner of the rectangular area where the text is to be drawn
+ * @param flags the flags specifing how to process the text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public void drawText (String string, int x, int y, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (data.renderTable == 0) createRenderTable();
 	int renderTable = data.renderTable;
-	byte [] textBuffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	int xmString = OS.XmStringGenerate(textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
-	if (isTransparent) {
-		OS.XmStringDraw (data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
+
+	char mnemonic=0;
+	int tableLength = 0;
+	Device device = data.device;
+	int[] parseTable = new int[2];
+	char[] text = new char[string.length()];
+	string.getChars(0, text.length, text, 0);
+	if ((flags & SWT.DRAW_DELIMITER) != 0) parseTable[tableLength++] = device.crMapping;
+	if ((flags & SWT.DRAW_TAB) != 0) parseTable[tableLength++] = device.tabMapping;
+	if ((flags & SWT.DRAW_MNEMONIC) != 0) mnemonic = stripMnemonic(text);
+	
+	String codePage = getCodePage();
+	byte[] buffer = Converter.wcsToMbcs(codePage, text, true);
+	int xmString = OS.XmStringParseText(buffer, 0, OS.XmFONTLIST_DEFAULT_TAG, OS.XmCHARSET_TEXT, parseTable, tableLength, 0);
+	if (mnemonic != 0) {
+		byte [] buffer1 = Converter.wcsToMbcs(codePage, new char[]{mnemonic}, true);
+		int xmStringUnderline = OS.XmStringCreate (buffer1, OS.XmFONTLIST_DEFAULT_TAG);
+		OS.XmStringDrawUnderline(data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null, xmStringUnderline);
+		OS.XmStringFree(xmStringUnderline);
 	} else {
-		OS.XmStringDrawImage (data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);	
-	}		
-//	OS.XmStringDrawUnderline (display, drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null, 0);
-	OS.XmStringFree (xmString);
+		if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
+			OS.XmStringDraw(data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
+		} else {
+			OS.XmStringDrawImage(data.display, data.drawable, renderTable, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
+		}
+	}
+	OS.XmStringFree(xmString);
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -2344,6 +2399,20 @@ public Point stringExtent(String string) {
 	OS.XmStringFree(xmString);
 	return new Point(width, height);
 }
+char stripMnemonic(char[] text) {
+	char mnemonic=0;
+	int i=0, j=0;
+	while (i < text.length) {
+		if ((text [j++] = text [i++]) == '&') {
+			if (i == text.length) {continue;}
+			if (text [i] == '&') {i++; continue;}
+			if (mnemonic == 0) mnemonic = text [i];
+			j--;
+		}
+	}
+	while (j < text.length) text [j++] = 0;
+	return mnemonic;
+}
 /**
  * Returns the extent of the given string. Tab expansion and
  * carriage return processing are performed.
@@ -2364,13 +2433,57 @@ public Point stringExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string) {
+	return textExtent(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
+}
+/**
+ * Returns the extent of the given string. Tab expansion, line
+ * delimiter and mnemonic processing are performed according to
+ * the specified flags, which can be a combination of:
+ * <dl>
+ * <dt><b>DRAW_DELIMITER</b></dt>
+ * <dd>draw multiple lines</dd>
+ * <dt><b>DRAW_TAB</b></dt>
+ * <dd>expand tabs</dd>
+ * <dt><b>DRAW_MNEMONIC</b></dt>
+ * <dd>underline the mnemonic character</dd>
+ * <dt><b>DRAW_TRANSPARENT</b></dt>
+ * <dd>transparent background</dd>
+ * </dl>
+ * <p>
+ * The <em>extent</em> of a string is the width and height of
+ * the rectangular area it would cover if drawn in a particular
+ * font (in this case, the current font in the receiver).
+ * </p>
+ *
+ * @param string the string to measure
+ * @param flags the flags specifing how to process the text
+ * @return a point containing the extent of the string
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ */
+public Point textExtent(String string, int flags) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) return new Point(0, getFontHeight());
-	byte [] textBuffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	int xmString = OS.XmStringGenerate(textBuffer, null, OS.XmCHARSET_TEXT, _MOTIF_DEFAULT_LOCALE);
 	if (data.renderTable == 0) createRenderTable();
 	int renderTable = data.renderTable;
+
+	int tableLength = 0;
+	Device device = data.device;
+	int[] parseTable = new int[2];
+	char[] text = new char[string.length()];
+	string.getChars(0, text.length, text, 0);	
+	if ((flags & SWT.DRAW_DELIMITER) != 0) parseTable[tableLength++] = device.crMapping;
+	if ((flags & SWT.DRAW_TAB) != 0) parseTable[tableLength++] = device.tabMapping;
+	if ((flags & SWT.DRAW_MNEMONIC) != 0) stripMnemonic(text);	
+
+	byte[] buffer = Converter.wcsToMbcs(getCodePage(), text, true);
+	int xmString = OS.XmStringParseText(buffer, 0, OS.XmFONTLIST_DEFAULT_TAG, OS.XmCHARSET_TEXT, parseTable, tableLength, 0);
 	int width = OS.XmStringWidth(renderTable, xmString);
 	int height =  OS.XmStringHeight(renderTable, xmString);
 	OS.XmStringFree(xmString);

@@ -223,21 +223,14 @@ public String open () {
 	// Add label widget for message text.
 	/* Use the character encoding for the default locale */
 	byte [] buffer4 = Converter.wcsToMbcs (null, message, true);
-	int [] parseTable = Display.getDefault ().parseTable;
-	int xmString1 = OS.XmStringParseText (
-		buffer4,
-		0,
-		OS.XmFONTLIST_DEFAULT_TAG, 
-		OS.XmCHARSET_TEXT, 
-		parseTable,
-		parseTable.length,
-		0);
+	int xmString1 = OS.XmStringGenerate(buffer4, null, OS.XmCHARSET_TEXT, null);
 	int [] argList = {
 		OS.XmNlabelType, OS.XmSTRING,
 		OS.XmNlabelString, xmString1
 	};
 	int textArea = OS.XmCreateLabel(dialog, name, argList, argList.length/2);
 	OS.XtManageChild(textArea);
+	OS.XmStringFree (xmString1);
 
 	/* Hook the callbacks. */
 	Callback callback = new Callback (this, "activate", 3);

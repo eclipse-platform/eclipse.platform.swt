@@ -48,6 +48,9 @@ public abstract class Device implements Drawable {
 	int xErrorProc, xtWarningProc, xIOErrorProc, xtErrorProc;
 	int xNullErrorProc, xtNullWarningProc, xNullIOErrorProc, xtNullErrorProc;
 	
+	/* Parsing Tables */
+	int tabMapping, crMapping, tabPointer, crPointer;
+	
 	public static String XDefaultPrintServer = ":1";
 	static {
 		/* Read the default print server name from
@@ -478,6 +481,28 @@ protected void init () {
 	COLOR_MAGENTA = new Color (this, 0xFF,0,0xFF);
 	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
+
+	/* Create the parsing tables */
+	byte[] tabBuffer = {(byte) '\t', 0};
+	tabPointer = OS.XtMalloc (tabBuffer.length);
+	OS.memmove (tabPointer, tabBuffer, tabBuffer.length);		
+	int tabString = OS.XmStringComponentCreate(OS.XmSTRING_COMPONENT_TAB, 0, null);
+	int [] argList = {
+		OS.XmNpattern, tabPointer,
+		OS.XmNsubstitute, tabString,
+	};
+	tabMapping = OS.XmParseMappingCreate(argList, argList.length / 2);
+	OS.XmStringFree(tabString);	
+	byte[] crBuffer = {(byte) '\n', 0};
+	crPointer = OS.XtMalloc (crBuffer.length);		
+	OS.memmove (crPointer, crBuffer, crBuffer.length);		
+	int crString = OS.XmStringComponentCreate(OS.XmSTRING_COMPONENT_SEPARATOR, 0, null);
+	argList = new int[] {
+		OS.XmNpattern, crPointer,
+		OS.XmNsubstitute, crString,
+	};
+	crMapping = OS.XmParseMappingCreate(argList, argList.length / 2);
+	OS.XmStringFree(crString);
 }
 
 /**	 
@@ -547,6 +572,13 @@ void new_Object (Object object) {
 }
 
 protected void release () {
+	/* Free the parsing tables */
+	OS.XtFree(tabPointer);
+	OS.XtFree(crPointer);
+	int[] parseTable = {tabMapping, crMapping};
+	OS.XmParseTableFree(parseTable, parseTable.length);
+	tabPointer = crPointer = tabMapping = crMapping = 0;
+
 	/*
 	* Free the palette.  Note that this disposes all colors on
 	* the display that were allocated using the Color constructor.

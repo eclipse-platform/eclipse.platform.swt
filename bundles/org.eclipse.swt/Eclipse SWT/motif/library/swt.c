@@ -7185,9 +7185,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetPixmapByDepth
  * Method:    XmStringDrawUnderline
  * Signature: (IIIIIIIIIILorg/eclipse/swt/internal/motif/XRectangle;I)V
  */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringDrawUnderline
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmStringDrawUnderline
   (JNIEnv *env, jclass that, jint display, jint window, jint fontlist, jint xmString, jint gc, jint x, jint y, jint width, jint align, jint lay_dir, jobject clip, jint xmStringUnderline)
 {
+	DECL_GLOB(pGlob)
 	XRectangle xRect, *lpxRect=NULL;
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "XmStringDrawUnderline\n");
@@ -7195,15 +7196,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XmGetPixmapByDepth
 
     if (clip) {
         lpxRect = &xRect;
-        cacheXrectangleFids(env, clip, &XrectangleFc);
-        getXrectangleFields(env, clip, lpxRect, &XrectangleFc);
+        cacheXrectangleFids(env, clip, &PGLOB(XrectangleFc));
+        getXrectangleFields(env, clip, lpxRect, &PGLOB(XrectangleFc));
     }
     XmStringDrawUnderline((Display *)display, window, (XmFontList)fontlist, (XmString)xmString, (GC)gc, x, y, width, align, lay_dir, lpxRect, (XmString)xmStringUnderline);
     if (clip) {
-        setXrectangleFields(env, clip, lpxRect, &XrectangleFc);
+        setXrectangleFields(env, clip, lpxRect, &PGLOB(XrectangleFc));
     }
 }
-*/
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS

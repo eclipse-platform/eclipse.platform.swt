@@ -396,18 +396,10 @@ void setMessage (int dialogHandle) {
 	}
 	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
-	int [] parseTable = Display.getDefault ().parseTable;
-	int xmStringPtr = OS.XmStringParseText (
-		buffer,
-		0,
-		OS.XmFONTLIST_DEFAULT_TAG, 
-		OS.XmCHARSET_TEXT, 
-		parseTable,
-		parseTable.length,
-		0);
-	int [] argList = {OS.XmNmessageString, xmStringPtr};
+	int xmString = OS.XmStringGenerate(buffer, null, OS.XmCHARSET_TEXT, null);
+	int [] argList = {OS.XmNmessageString, xmString};
 	OS.XtSetValues (dialogHandle, argList, argList.length / 2);
-	OS.XmStringFree (xmStringPtr);
+	OS.XmStringFree (xmString);
 }
 
 /**

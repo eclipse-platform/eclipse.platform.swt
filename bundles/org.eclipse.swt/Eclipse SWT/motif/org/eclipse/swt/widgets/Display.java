@@ -221,10 +221,6 @@ public class Display extends Device {
 	int mouseHoverID, mouseHoverProc;
 	int mouseHoverHandle, toolTipHandle;
 	
-	/* Parse Tables */
-	int [] parseTable;
-	int crPointer, tabPointer;
-	
 	/* Xt Translations */
 	int dragTranslations;
 	int arrowTranslations, tabTranslations;
@@ -913,7 +909,6 @@ protected void init () {
 	initializeText ();
 	initializeSystemColors ();
 	initializeDefaults ();
-	initializeParseTable ();
 	initializeTranslations ();
 }
 void initializeButton () {
@@ -1168,33 +1163,6 @@ void initializeList () {
 		}
 	}
 	OS.XtDestroyWidget (shellHandle);
-}
-void initializeParseTable () {
-	byte[] tabBuffer = {(byte) '\t', 0};
-	tabPointer = OS.XtMalloc (tabBuffer.length);
-	OS.memmove (tabPointer, tabBuffer, tabBuffer.length);		
-	int tabString = OS.XmStringComponentCreate(OS.XmSTRING_COMPONENT_TAB, 0, null);
-	int [] argList = {
-		OS.XmNpattern, tabPointer,
-		OS.XmNsubstitute, tabString,
-	};
-	int tabMapping = OS.XmParseMappingCreate(argList, argList.length / 2);
-	OS.XmStringFree(tabString);
-	
-	byte[] crBuffer = {(byte) '\n', 0};
-	crPointer = OS.XtMalloc (crBuffer.length);		
-	OS.memmove (crPointer, crBuffer, crBuffer.length);		
-	int crString = OS.XmStringComponentCreate(OS.XmSTRING_COMPONENT_SEPARATOR, 0, null);
-	argList = new int[] {
-		OS.XmNpattern, crPointer,
-		OS.XmNsubstitute, crString,
-	};
-	int crMapping = OS.XmParseMappingCreate(argList, argList.length / 2);
-	OS.XmStringFree(crString);
-				
-	parseTable = new int[2];
-	parseTable[0] = tabMapping;
-	parseTable[1] = crMapping;
 }
 void initializeScrollBar () {
 	int shellHandle, widgetHandle;
@@ -1502,12 +1470,6 @@ void releaseDisplay () {
 	listFont = textFont = labelFont = buttonFont = 0;
 	defaultFontList = defaultFont = 0;
 
-	/* Free the parse table */
-	OS.XtFree(tabPointer);
-	OS.XtFree(crPointer);
-	OS.XmParseTableFree(parseTable, parseTable.length);
-	parseTable = null;
-	
 	/* Free the translations (no documentation describes how to do this) */
 	//OS.XtFree (arrowTranslations);
 	//OS.XtFree (tabTranslations);
