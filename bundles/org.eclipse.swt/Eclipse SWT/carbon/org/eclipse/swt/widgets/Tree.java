@@ -1231,6 +1231,21 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 }
 
 int itemNotificationProc (int browser, int id, int message) {
+	if (message == OS.kDataBrowserUserStateChanged) {
+		short [] width = new short [1];
+		TreeColumn [] newColumns = getColumns ();
+		for (int i = 0; i < columnCount; i++) {
+			TreeColumn column = newColumns [i];
+			if (!column.isDisposed ()) {
+				OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, width);
+				if (width [0] != column.lastWidth) {
+					column.resized (width [0]);
+					return OS.noErr;
+				}
+			}
+		}
+		return OS.noErr;
+	}
 	int index = id - 1;
 	if (!(0 <= index && index < items.length)) return OS.noErr;
 	TreeItem item = items [index];
