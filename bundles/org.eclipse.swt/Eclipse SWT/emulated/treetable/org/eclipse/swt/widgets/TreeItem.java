@@ -1501,6 +1501,11 @@ public void setText (int columnIndex, String value) {
 	textWidths [columnIndex] = gc.textExtent (getDisplayText (columnIndex)).x;
 	gc.dispose ();
 	if (availableIndex == -1) return;
+	if (parent.columns.length == 0) {
+		Rectangle bounds = getBounds ();
+		int rightX = bounds.x + bounds.width;
+		parent.updateHorizontalBar (rightX, textWidths [columnIndex] - oldWidth);
+	}
 	parent.redraw (
 		getTextX (columnIndex),
 		parent.getItemY (this),

@@ -79,11 +79,13 @@ public Tree (Composite parent, int style) {
 	header.addListener (SWT.MouseExit, listener);
 
 	ScrollBar vBar = getVerticalBar ();
-	vBar.setMaximum (1);
-	vBar.addListener (SWT.Selection, listener);
 	ScrollBar hBar = getHorizontalBar ();
-	hBar.addListener (SWT.Selection, listener);
+	vBar.setMaximum (1);
 	hBar.setMaximum (1);
+	vBar.setVisible (false);
+	hBar.setVisible (false);
+	vBar.addListener (SWT.Selection, listener);
+	hBar.addListener (SWT.Selection, listener);
 }
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
@@ -181,10 +183,10 @@ void createItem (TreeItem item, int index) {
 	}
 
 	/* update scrollbars */
+	updateVerticalBar ();
 	Rectangle bounds = item.getBounds ();
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
-	updateVerticalBar ();
 	/* 
 	 * If new item is above viewport then adjust topIndex and the vertical
 	 * scrollbar so that the current viewport items will not change.
@@ -238,6 +240,7 @@ void destroyItem (TreeColumn column) {
 		}
 		ScrollBar hBar = getHorizontalBar (); 
 		hBar.setMaximum (newWidth);
+		hBar.setVisible (getClientArea ().width < newWidth);
 		int selection = hBar.getSelection ();
 		if (selection != horizontalOffset) {
 			horizontalOffset = selection;
@@ -274,9 +277,9 @@ void destroyItem (TreeItem item) {
 			availableItems [i].availableIndex = i;
 		}
 		item.availableIndex = -1;
-		updateHorizontalBar (0, -rightX);
 		int oldTopIndex = topIndex;
 		updateVerticalBar ();
+		updateHorizontalBar (0, -rightX);
 		/* 
 		 * If destroyed item is above viewport then adjust topIndex and the vertical
 		 * scrollbar so that the current viewport items will not change. 
@@ -1820,20 +1823,33 @@ void onPaint (Event event) {
 void onResize (Event event) {
 	Rectangle clientArea = getClientArea ();
 	/* vertical scrollbar */
-	int value = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	ScrollBar vBar = getVerticalBar ();
-	vBar.setThumb (value);
-	vBar.setPageIncrement (value);
+	int clientHeight = (clientArea.height - getHeaderHeight ()) / itemHeight;
+	int thumb = Math.min (clientHeight, availableItems.length);
+	vBar.setThumb (thumb);
+	vBar.setPageIncrement (thumb);
 	int index = vBar.getSelection ();
 	if (index != topIndex) {
 		topIndex = index;
 		redraw ();
 	}
-	/* horizontal scrollbar */
+	boolean visible = clientHeight < availableItems.length;
+	if (visible != vBar.getVisible ()) {
+		vBar.setVisible (visible);
+		clientArea = getClientArea ();
+	}
+	/* horizontal scrollbar */ 
 	ScrollBar hBar = getHorizontalBar ();
-	hBar.setThumb (clientArea.width);
-	hBar.setPageIncrement (clientArea.width);
+	int hBarMaximum = hBar.getMaximum ();
+	thumb = Math.min (clientArea.width, hBarMaximum);
+	hBar.setThumb (thumb);
+	hBar.setPageIncrement (thumb);
 	horizontalOffset = hBar.getSelection ();
+	visible = clientArea.width < hBarMaximum;
+	if (visible != hBar.getVisible ()) {
+		hBar.setVisible (visible);
+		clientArea = getClientArea ();
+	}
 	/* header */
 	int headerHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	header.setSize (clientArea.width, headerHeight);
@@ -1989,8 +2005,12 @@ public void removeAll () {
 		items [i].dispose (false);
 	}
 	topIndex = 0;
-	getVerticalBar ().setMaximum (1);
-	getHorizontalBar ().setMaximum (1);
+	ScrollBar vBar = getVerticalBar ();
+	ScrollBar hBar = getHorizontalBar ();
+	vBar.setMaximum (1);
+	hBar.setMaximum (1);
+	vBar.setVisible (false);
+	hBar.setVisible (false);
 	redraw ();
 }
 void removeSelectedItem (int index) {
@@ -2079,11 +2099,11 @@ public void setFont (Font value) {
 	/* update scrollbars */
 	updateHorizontalBar ();
 	ScrollBar vBar = getVerticalBar ();
-	int pageSize = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
-	vBar.setThumb (pageSize);
-	vBar.setPageIncrement (pageSize);
+	int thumb = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+	vBar.setThumb (thumb);
+	vBar.setPageIncrement (thumb);
 	topIndex = vBar.getSelection ();
-
+	vBar.setVisible (thumb < vBar.getMaximum ());
 	redraw ();
 }
 void setHeaderImageHeight (int value) {
@@ -2249,6 +2269,7 @@ void updateColumnWidth (TreeColumn column, int width) {
 	hBar.setMaximum (maximum);
 	hBar.setThumb (bounds.width);
 	hBar.setPageIncrement (bounds.width);
+	hBar.setVisible (bounds.width < maximum);
 	boolean offsetChanged = false;
 	int selection = hBar.getSelection ();
 	if (selection != horizontalOffset) {
@@ -2287,30 +2308,33 @@ void updateColumnWidth (TreeColumn column, int width) {
  * This is a naive implementation that computes the value from scratch.
  */
 void updateHorizontalBar () {
-	/* the horizontal range is never affected by an item change if there are columns */
-	if (columns.length > 0) return;
-	
 	ScrollBar hBar = getHorizontalBar ();
 	int maxX = 0;
-	for (int i = 0; i < availableItems.length; i++) {
-		Rectangle itemBounds = availableItems [i].getBounds ();
-		maxX = Math.max (maxX, itemBounds.x + itemBounds.width);
+	if (columns.length > 0) {
+		for (int i = 0; i < columns.length; i++) {
+			maxX += columns [i].width;
+		}
+	} else {
+		for (int i = 0; i < availableItems.length; i++) {
+			Rectangle itemBounds = availableItems [i].getBounds ();
+			maxX = Math.max (maxX, itemBounds.x + itemBounds.width + horizontalOffset);
+		}
 	}
-	maxX += horizontalOffset;
-
-	int barMax = hBar.getMaximum ();
-	if (barMax == maxX) return;
+	
 	int clientWidth = getClientArea ().width;
-	if (maxX <= clientWidth && barMax <= clientWidth) return;
-
-	hBar.setMaximum (maxX);
-	int pageSize = Math.min (maxX, clientWidth);
-	hBar.setThumb (pageSize);
-	hBar.setPageIncrement (pageSize);
-
+	if (maxX != hBar.getMaximum ()) {
+		hBar.setMaximum (maxX);
+	}
+	int thumb = Math.min (clientWidth, maxX);
+	if (thumb != hBar.getThumb ()) {
+		hBar.setThumb (thumb);
+		hBar.setPageIncrement (thumb);
+	}
+	hBar.setVisible (clientWidth < maxX);
+	
 	/* reclaim any space now left on the right */
-	if (maxX < horizontalOffset + pageSize) {
-		horizontalOffset = maxX - pageSize;
+	if (maxX < horizontalOffset + thumb) {
+		horizontalOffset = maxX - thumb;
 		hBar.setSelection (horizontalOffset);
 		redraw ();
 	} else {
@@ -2328,41 +2352,48 @@ void updateHorizontalBar () {
  * newRightX (so oldRightX + rightXchange = newRightX)
  */
 void updateHorizontalBar (int newRightX, int rightXchange) {
-	/* the horizontal range is never affected by an item change if there are columns */
-	if (columns.length > 0) return;
-
 	newRightX += horizontalOffset;
 	ScrollBar hBar = getHorizontalBar ();
-	int maximum = hBar.getMaximum ();
-	if (newRightX > maximum) {	/* item has extended beyond previous maximum */
+	int barMaximum = hBar.getMaximum ();
+	if (newRightX > barMaximum) {	/* item has extended beyond previous maximum */
 		hBar.setMaximum (newRightX);
-		int pageSize = Math.min (newRightX, getClientArea ().width);
-		hBar.setThumb (pageSize);
-		hBar.setPageIncrement (pageSize);
+		int clientAreaWidth = getClientArea ().width;
+		int thumb = Math.min (newRightX, clientAreaWidth);
+		hBar.setThumb (thumb);
+		hBar.setPageIncrement (thumb);
+		hBar.setVisible (clientAreaWidth <= newRightX);
 		return;
 	}
 
 	int previousRightX = newRightX - rightXchange;
-	if (previousRightX != maximum) return;	/* this is not the rightmost item */
+	if (previousRightX != barMaximum) {
+		/* this was not the rightmost item, so just check for client width change */
+		int clientAreaWidth = getClientArea ().width;
+		int thumb = Math.min (barMaximum, clientAreaWidth);
+		hBar.setThumb (thumb);
+		hBar.setPageIncrement (thumb);
+		hBar.setVisible (clientAreaWidth <= barMaximum);
+		return;
+	}
 	updateHorizontalBar ();		/* must search for the new rightmost item */
 }
 void updateVerticalBar () {
-	ScrollBar vBar = getVerticalBar ();
-	int maximum = Math.max (1, availableItems.length);
-	int barMaximum = vBar.getMaximum ();
-	if (maximum == barMaximum) return;
-
 	int pageSize = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
-	if (maximum <= pageSize && barMaximum <= pageSize) return;
-	pageSize = Math.min (pageSize, maximum);
-
-	vBar.setMaximum (maximum);
-	vBar.setThumb (pageSize);
-	vBar.setPageIncrement (pageSize);
+	int maximum = Math.max (1, availableItems.length);
+	ScrollBar vBar = getVerticalBar ();
+	if (maximum != vBar.getMaximum ()) {
+		vBar.setMaximum (maximum);
+	}
+	int thumb = Math.min (pageSize, maximum);
+	if (thumb != vBar.getThumb ()) {
+		vBar.setThumb (thumb);
+		vBar.setPageIncrement (thumb);
+	}
+	vBar.setVisible (pageSize < maximum);
 
 	/* reclaim any space now left on the bottom */
-	if (maximum < topIndex + pageSize) {
-		topIndex = maximum - pageSize;
+	if (maximum < topIndex + thumb) {
+		topIndex = maximum - thumb;
 		vBar.setSelection (topIndex);
 		redraw ();
 	} else {
