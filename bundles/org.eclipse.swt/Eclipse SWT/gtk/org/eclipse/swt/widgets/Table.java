@@ -404,14 +404,6 @@ void createWidget (int index) {
 	itemCount = columnCount = 0;
 }
 
-GdkColor defaultBackground () {
-	return display.COLOR_LIST_BACKGROUND;
-}
-
-GdkColor defaultForeground () {
-	return display.COLOR_LIST_FOREGROUND;
-}
-
 void deregister() {
 	super.deregister ();
 	display.removeWidget (OS.gtk_tree_view_get_selection (handle));

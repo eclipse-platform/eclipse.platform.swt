@@ -86,16 +86,8 @@ public Control (Composite parent, int style) {
 	createWidget (0);
 }
 
-GdkColor defaultBackground () {
-	return display.COLOR_WIDGET_BACKGROUND;
-}
-
 int defaultFont () {
 	return display.defaultFont;
-}
-
-GdkColor defaultForeground () {
-	return display.COLOR_WIDGET_FOREGROUND;
 }
 
 void deregister () {
@@ -1344,15 +1336,17 @@ GdkColor getBackgroundColor () {
 
 GdkColor getBgColor () {
 	int fontHandle = fontHandle ();
+	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
-	OS.gtk_style_get_bg (OS.gtk_widget_get_style (fontHandle), 0, color);
+	OS.gtk_style_get_bg (OS.gtk_widget_get_style (fontHandle), OS.GTK_STATE_NORMAL, color);
 	return color;
 }
 
 GdkColor getBaseColor () {
 	int fontHandle = fontHandle ();
+	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
-	OS.gtk_style_get_base (OS.gtk_widget_get_style (fontHandle), 0, color);
+	OS.gtk_style_get_base (OS.gtk_widget_get_style (fontHandle), OS.GTK_STATE_NORMAL, color);
 	return color;
 }
 
@@ -1433,8 +1427,9 @@ GdkColor getForegroundColor () {
 
 GdkColor getFgColor () {
 	int fontHandle = fontHandle ();
+	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
-	OS.gtk_style_get_fg (OS.gtk_widget_get_style (fontHandle), 0, color);
+	OS.gtk_style_get_fg (OS.gtk_widget_get_style (fontHandle), OS.GTK_STATE_NORMAL, color);
 	return color;
 }
 
@@ -1444,8 +1439,9 @@ Point getIMCaretPos () {
 
 GdkColor getTextColor () {
 	int fontHandle = fontHandle ();
+	OS.gtk_widget_realize (fontHandle);
 	GdkColor color = new GdkColor ();
-	OS.gtk_style_get_text (OS.gtk_widget_get_style (fontHandle), 0, color);
+	OS.gtk_style_get_text (OS.gtk_widget_get_style (fontHandle), OS.GTK_STATE_NORMAL, color);
 	return color;
 }
 
@@ -2290,18 +2286,32 @@ void sendMouseEvent (int type, int button, int gdkEvent) {
  */
 public void setBackground (Color color) {
 	checkWidget();
-	GdkColor gdkColor;
-	if (color == null) {
-		gdkColor = defaultBackground ();
-	} else {
+	GdkColor gdkColor = null;
+	if (color != null) {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
 	}
 	setBackgroundColor (gdkColor);
 }
 
+void setBackgroundColor (int handle, GdkColor color) {
+	int index = OS.GTK_STATE_NORMAL;
+	int style = OS.gtk_widget_get_modifier_style (handle);
+	int ptr = OS.gtk_rc_style_get_bg_pixmap_name (style, index);
+	if (ptr != 0) OS.g_free (ptr);
+	String name = color == null ? "<parent>" : "<none>";
+	byte[] buffer = Converter.wcsToMbcs (null, name, true);
+	ptr = OS.g_malloc (buffer.length);
+	OS.memmove (ptr, buffer, buffer.length);
+	OS.gtk_rc_style_set_bg_pixmap_name (style, index, ptr);
+	OS.gtk_rc_style_set_bg (style, index, color);
+	int flag = OS.gtk_rc_style_get_color_flags(style, index);
+	flag = (color == null) ? flag & ~OS.GTK_RC_BG : flag | OS.GTK_RC_BG;
+	OS.gtk_rc_style_set_color_flags(style, index, flag);
+	OS.gtk_widget_modify_style (handle, style);
+}
 void setBackgroundColor (GdkColor color) {
-	OS.gtk_widget_modify_bg (handle, 0, color);
+	setBackgroundColor(handle, color);
 }
 
 /**
@@ -2452,10 +2462,8 @@ void setFontDescription (int font) {
  */
 public void setForeground (Color color) {
 	checkWidget();
-	GdkColor gdkColor;
-	if (color == null) {
-		gdkColor = defaultForeground ();
-	} else {
+	GdkColor gdkColor = null;
+	if (color != null) {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		gdkColor = color.handle;
 	}
@@ -2463,7 +2471,7 @@ public void setForeground (Color color) {
 }
 
 void setForegroundColor (GdkColor color) {
-	OS.gtk_widget_modify_fg (handle, 0, color);
+	OS.gtk_widget_modify_fg (handle, OS.GTK_STATE_NORMAL, color);
 }
 
 void setInitialSize () {

@@ -400,14 +400,6 @@ public void cut () {
 	OS.gtk_editable_cut_clipboard (entryHandle);
 }
 
-GdkColor defaultBackground () {
-	return display.COLOR_TEXT_BACKGROUND;
-}
-
-GdkColor defaultForeground () {
-	return display.COLOR_TEXT_FOREGROUND;
-}
-
 void deregister () {
 	super.deregister ();
 	if (arrowHandle != 0) display.removeWidget (arrowHandle);
@@ -1107,7 +1099,7 @@ void setForegroundColor (GdkColor color) {
 			int count = OS.g_list_length (itemsList);
 			for (int i=count - 1; i>=0; i--) {
 				int widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-				OS.gtk_widget_modify_fg (widget, 0, color);
+				OS.gtk_widget_modify_fg (widget,  OS.GTK_STATE_NORMAL, color);
 			}
 			OS.g_list_free (itemsList);
 		}
@@ -1205,7 +1197,7 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 			int count = OS.g_list_length (itemsList);
 			for (int i=count - 1; i>=0; i--) {
 				int widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-				OS.gtk_widget_modify_fg (widget, 0, color);
+				OS.gtk_widget_modify_fg (widget,  OS.GTK_STATE_NORMAL, color);
 				OS.gtk_widget_modify_font (widget, font);
 			}
 			OS.g_list_free (itemsList);

@@ -375,14 +375,6 @@ public void cut () {
 	}
 }
 
-GdkColor defaultBackground () {
-	return display.COLOR_TEXT_BACKGROUND;
-}
-
-GdkColor defaultForeground () {
-	return display.COLOR_TEXT_FOREGROUND;
-}
-
 void deregister () {
 	super.deregister ();
 	if (bufferHandle != 0) display.removeWidget (bufferHandle);

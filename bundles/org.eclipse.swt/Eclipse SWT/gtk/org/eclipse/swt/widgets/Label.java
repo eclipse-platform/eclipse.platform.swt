@@ -385,9 +385,9 @@ public void setAlignment (int alignment) {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	OS.gtk_widget_modify_bg (fixedHandle, 0, color);
-	if (labelHandle != 0) OS.gtk_widget_modify_bg (labelHandle, 0, color);
-	if (imageHandle != 0) OS.gtk_widget_modify_bg (imageHandle, 0, color);
+	setBackgroundColor(fixedHandle, color);
+	if (labelHandle != 0) setBackgroundColor(labelHandle, color);
+	if (imageHandle != 0) setBackgroundColor(imageHandle, color);
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -436,9 +436,9 @@ void setFontDescription (int font) {
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	OS.gtk_widget_modify_fg (fixedHandle, 0, color);
-	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle, 0, color);
-	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle, 0, color);
+	OS.gtk_widget_modify_fg (fixedHandle,  OS.GTK_STATE_NORMAL, color);
+	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle,  OS.GTK_STATE_NORMAL, color);
+	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle,  OS.GTK_STATE_NORMAL, color);
 }
 
 void setOrientation () {

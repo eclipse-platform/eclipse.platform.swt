@@ -306,6 +306,64 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1n_1monitors)
 }
 #endif
 
+#ifndef NO_gtk_1rc_1style_1get_1bg_1pixmap_1name
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1rc_1style_1get_1bg_1pixmap_1name)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	
+	NATIVE_ENTER(env, that, "gtk_1rc_1style_1get_1bg_1pixmap_1name\n")
+	rc =  (jint) ((GtkRcStyle *)arg0)->bg_pixmap_name[arg1] ;
+	NATIVE_EXIT(env, that, "gtk_1rc_1style_1get_1bg_1pixmap_1name\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1rc_1style_1get_1color_1flags
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1rc_1style_1get_1color_1flags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	
+	NATIVE_ENTER(env, that, "gtk_1rc_1style_1get_1color_1flags\n")
+	rc =  (jint) ((GtkRcStyle *)arg0)->color_flags[arg1] ;
+	NATIVE_EXIT(env, that, "gtk_1rc_1style_1get_1color_1flags\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1rc_1style_1set_1bg
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1bg)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	GdkColor _arg2, *lparg2=NULL;
+	NATIVE_ENTER(env, that, "gtk_1rc_1style_1set_1bg\n")
+	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	((GtkRcStyle *)arg0)->bg[arg1] = (GdkColor)_arg2;
+	NATIVE_EXIT(env, that, "gtk_1rc_1style_1set_1bg\n")
+}
+#endif
+	
+#ifndef NO_gtk_1rc_1style_1set_1bg_1pixmap_1name
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1bg_1pixmap_1name)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "gtk_1rc_1style_1set_1bg_1pixmap_1name\n")
+	((GtkRcStyle *)arg0)->bg_pixmap_name[arg1] = (char *)arg2;
+	NATIVE_EXIT(env, that, "gtk_1rc_1style_1set_1bg_1pixmap_1name\n")
+}
+#endif
+
+#ifndef NO_gtk_1rc_1style_1set_1color_1flags
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1color_1flags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "gtk_1rc_1style_1set_1color_1flags\n")
+	((GtkRcStyle *)arg0)->color_flags[arg1] = arg2;
+	NATIVE_EXIT(env, that, "gtk_1rc_1style_1set_1color_1flags\n")
+}
+#endif
+
 #ifndef NO_gtk_1rc_1style_1set_1xthickness
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1xthickness)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

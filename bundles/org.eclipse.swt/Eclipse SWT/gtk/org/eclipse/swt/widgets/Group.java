@@ -280,7 +280,7 @@ void releaseWidget () {
 
 void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
-	OS.gtk_widget_modify_bg (fixedHandle, 0, color);
+	setBackgroundColor(fixedHandle, color);
 }
 
 void setFontDescription (int font) {
@@ -290,7 +290,7 @@ void setFontDescription (int font) {
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
-	OS.gtk_widget_modify_fg (labelHandle, 0, color);
+	OS.gtk_widget_modify_fg (labelHandle,  OS.GTK_STATE_NORMAL, color);
 }
 
 void setOrientation () {
