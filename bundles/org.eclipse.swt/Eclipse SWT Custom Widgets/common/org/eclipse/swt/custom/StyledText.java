@@ -5940,8 +5940,8 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
  * listener maintains the styles.
  * </p>
  *
- * @param start offset of first character where styles will be replaced
- * @param length number of characters to replace. Use 0 to insert text
+ * @param start offset of first character where styles will be deleted
+ * @param length length of the range to delete styles in
  * @param ranges StyleRange objects containing the new style information.
  * The ranges should not overlap and should be within the specified start 
  * and length. The style rendering is undefined if the ranges do overlap
