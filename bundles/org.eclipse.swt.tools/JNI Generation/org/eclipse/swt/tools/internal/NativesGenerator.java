@@ -145,15 +145,13 @@ void generateNativeMacro(Class clazz) {
 	outputln();
 }
 
-void generateGetParameter(Method method, int i, Class paramType, ParameterData paramData, boolean critical, int indent) {
-	if (paramType.isPrimitive()) return;
+boolean generateGetParameter(Method method, int i, Class paramType, ParameterData paramData, boolean critical, int indent) {
+	if (paramType.isPrimitive()) return false;
 	String iStr = String.valueOf(i);
 	for (int j = 0; j < indent; j++) output("\t");
 	output("if (arg");
 	output(iStr);
-	output(") CHECK_NULL");
-	if (method.getReturnType() == Void.TYPE) output("_VOID");
-	output("(lparg");
+	output(") if ((lparg");
 	output(iStr);
 	output(" = ");
 	if (paramType.isArray()) {
@@ -217,7 +215,8 @@ void generateGetParameter(Method method, int i, Class paramType, ParameterData p
 			output(")");
 		}
 	}	
-	outputln(");");
+	outputln(") == NULL) goto failTag;");
+	return true;
 }
 
 void generateSetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
@@ -225,6 +224,8 @@ void generateSetParameter(int i, Class paramType, ParameterData paramData, boole
 	String iStr = String.valueOf(i);
 	if (paramType.isArray()) {
 		output("\tif (arg");
+		output(iStr);
+		output(" && lparg");
 		output(iStr);
 		output(") ");
 		Class componentType = paramType.getComponentType();
@@ -266,6 +267,8 @@ void generateSetParameter(int i, Class paramType, ParameterData paramData, boole
 	} else if (paramType == String.class) {
 		output("\tif (arg");
 		output(iStr);
+		output(" && lparg");
+		output(iStr);
 		output(") ");
 		if (paramData.getFlag("unicode")) {
 			if (isCPP) {
@@ -287,6 +290,8 @@ void generateSetParameter(int i, Class paramType, ParameterData paramData, boole
 	} else {
 		if (!paramData.getFlag("no_out")) {
 			output("\tif (arg");
+			output(iStr);
+			output(" && lparg");
 			output(iStr);
 			output(") ");
 			output("set");
@@ -355,19 +360,20 @@ boolean generateLocalVars(Method method, Class[] paramTypes, Class returnType) {
 		if (returnType != Void.TYPE) {
 			output("\t");
 			output(getTypeSignature2(returnType));
-			outputln(" rc;");
+			outputln(" rc = 0;");
 		}
 	}
 	return needsReturn;
 }
 
-void generateGetters(Method method, Class[] paramTypes) {
+boolean generateGetters(Method method, Class[] paramTypes) {
+	boolean genFailTag = false;
 	int criticalCount = 0;
 	for (int i = 0; i < paramTypes.length; i++) {
 		Class paramType = paramTypes[i];
 		ParameterData paramData = getMetaData().getMetaData(method, i);
 		if (!isCritical(paramType, paramData)) {
-			generateGetParameter(method, i, paramType, paramData, false, 1);
+			genFailTag |= generateGetParameter(method, i, paramType, paramData, false, 1);
 		} else {
 			criticalCount++;
 		}
@@ -379,7 +385,7 @@ void generateGetters(Method method, Class[] paramTypes) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
 			if (isCritical(paramType, paramData)) {
-				generateGetParameter(method, i, paramType, paramData, true, 2);
+				genFailTag |= generateGetParameter(method, i, paramType, paramData, true, 2);
 			}
 		}
 		outputln("\t} else");
@@ -389,11 +395,12 @@ void generateGetters(Method method, Class[] paramTypes) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
 			if (isCritical(paramType, paramData)) {
-				generateGetParameter(method, i, paramType, paramData, false, 2);
+				genFailTag |= generateGetParameter(method, i, paramType, paramData, false, 2);
 			}
 		}
 		outputln("\t}");
 	}
+	return genFailTag;
 }
 
 void generateSetters(Method method, Class[] paramTypes) {
@@ -687,12 +694,13 @@ void generateFunctionBody(Method method, MethodData methodData, String function,
 	} else {
 		boolean needsReturn = generateLocalVars(method, paramTypes, returnType);
 		generateEnterMacro(method, function);
-		generateGetters(method, paramTypes);
+		boolean genFailTag = generateGetters(method, paramTypes);
 		if (methodData.getFlag("dynamic")) {
 			generateDynamicFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
 		} else {
 			generateFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
 		}
+		if (genFailTag) outputln("failTag:");
 		generateSetters(method, paramTypes);
 		generateExitMacro(method, function);
 		generateReturn(method, returnType, needsReturn);
