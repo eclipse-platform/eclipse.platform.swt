@@ -1090,7 +1090,7 @@ void traversal(Event event) {
 			break;
 		case SWT.TRAVERSE_MNEMONIC:
 			event.doit = mnemonicTraversal(event);
-			if (event.doit) event.detail = SWT.TRAVERSE_NONE;
+			if (event.doit) event.detail = SWT.TRAVERSE_MNEMONIC;
 			break;
 		case SWT.TRAVERSE_PAGE_NEXT:
 			event.doit = pageTraversal(event);
