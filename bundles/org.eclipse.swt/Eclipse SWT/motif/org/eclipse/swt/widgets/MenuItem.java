@@ -455,7 +455,13 @@ String keysymName (int keysym) {
 	switch (keysym) {
 		case 8: return "BackSpace";
 		case 9: return "Tab";
-		case 10: return "Linefeed";
+		/*
+		* Bug in Motif. For some reason, the XmNaccelerator
+		* resource will not accept Linefeed and prints Xt
+		* warnings.  The fix is to use Return instead.
+		*/
+//		case 10: return "Linefeed";
+		case 10:
 		case 13: return "Return";
 		case 27: return "Escape";
 		case 127: return "Delete";
