@@ -585,7 +585,7 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget();
-	return getFontHeight ();
+	return getFontHeight (font.handle);
 }
 int getLineNumber (int position) {
 	if (position == 0) return 0;

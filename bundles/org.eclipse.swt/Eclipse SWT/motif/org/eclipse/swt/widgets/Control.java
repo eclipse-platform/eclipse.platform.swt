@@ -745,11 +745,11 @@ int getFontAscent (int font) {
 	return ascent;
 }
 
-int getFontHeight () {
+int getFontHeight (int font) {
 
 	/* Create a font context to iterate over each element in the font list */
 	int [] buffer = new int [1];
-	if (!OS.XmFontListInitFontContext (buffer, font.handle)) {
+	if (!OS.XmFontListInitFontContext (buffer, font)) {
 		error (SWT.ERROR_NO_HANDLES);
 	}
 	int context = buffer [0];

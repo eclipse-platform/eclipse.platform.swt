@@ -176,7 +176,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		int [] argList1 = {OS.XmNlabelString, 0};
 		OS.XtGetValues (handle, argList1, argList1.length / 2);
 		int xmString = argList1 [1];
-		if (OS.XmStringEmpty (xmString)) height += getFontHeight ();
+		if (OS.XmStringEmpty (xmString)) height += getFontHeight (font.handle);
 		if (xmString != 0) OS.XmStringFree (xmString);
 	}
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {	

@@ -499,7 +499,7 @@ public int getItemHeight () {
 	int spacing = argList [1], highlight = argList [3];
 
 	/* Result is from empirical analysis on Linux and AIX */
-	return getFontHeight () + spacing + highlight + 1;
+	return getFontHeight (font.handle) + spacing + highlight + 1;
 }
 /**
  * Returns an array of <code>String</code>s which are the items

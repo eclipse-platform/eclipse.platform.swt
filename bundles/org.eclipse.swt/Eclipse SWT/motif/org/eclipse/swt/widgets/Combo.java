@@ -54,6 +54,8 @@ import org.eclipse.swt.events.*;
  * @see List
  */
 public class Combo extends Composite {
+	int visibleCount = 5;
+
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -537,11 +539,11 @@ public int getItemHeight () {
 	checkWidget();
 	int [] listHandleArgs = {OS.XmNlist, 0};
 	OS.XtGetValues (handle, listHandleArgs, listHandleArgs.length / 2);
-	int [] argList = {OS.XmNlistSpacing, 0, OS.XmNhighlightThickness, 0};
+	int [] argList = {OS.XmNlistSpacing, 0, OS.XmNhighlightThickness, 0, OS.XmNfontList, 0};
 	OS.XtGetValues (listHandleArgs[1], argList, argList.length / 2);
-	int spacing = argList [1], highlight = argList [3];
+	int spacing = argList [1], highlight = argList [3], fontList = argList [5];
 	/* Result is from empirical analysis on Linux and AIX */
-	return getFontHeight () + spacing + (2 * highlight);
+	return getFontHeight (fontList) + spacing + (2 * highlight);
 }
 /**
  * Returns an array of <code>String</code>s which are the items
@@ -720,7 +722,7 @@ public int getTextHeight () {
 		OS.XtGetValues (handle, argList, argList.length / 2);	
 		int [] argList2 = {OS.XmNmarginHeight, 0};
 		OS.XtGetValues (argList[1], argList2, argList2.length / 2);	
-		int height = getFontHeight ();
+		int height = getFontHeight (font.handle);
 		XRectangle rect = new XRectangle ();
 		OS.XmWidgetGetDisplayRect (argList[1], rect);
 		height += (rect.y * 2) + (2 * argList2[1]);
@@ -751,6 +753,26 @@ public int getTextLimit () {
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return OS.XmTextGetMaxLength (argList[1]);
+}
+/**
+ * Gets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @return the number of items that are visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public int getVisibleCount () {
+	checkWidget ();
+	if ((style & SWT.SIMPLE) != 0) return visibleCount;
+	int [] argList = new int [] {OS.XmNvisibleItemCount, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	return argList [1];
 }
 void hookEvents () {
 	super.hookEvents ();
@@ -1375,7 +1397,36 @@ public void setTextLimit (int limit) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	OS.XmTextSetMaxLength (argList[1], limit);
 }
-
+/**
+ * Sets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @param count the new number of items to be visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setVisibleCount (int count) {
+	checkWidget ();
+	if (count < 0) return;
+	this.visibleCount = count;
+	/*
+	* But in Motif.  Setting the XmNvisibleItemCount resource
+	* for the combo box after it has been realized causes the
+	* widget is layout badly, sometimes moving the drop down
+	* arrow part of the combo box outside of the bounds.
+	* The fix is to set the XmNvisibleItemCount resource on
+	* the list instead.
+	*/
+	int [] argList1 = new int [] {OS.XmNlist, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	int [] argList2 = {OS.XmNvisibleItemCount, count};
+	OS.XtSetValues (argList1 [1], argList2, argList2.length / 2);
+}
 void deregister () {
 	super.deregister ();
 	int [] argList = {OS.XmNtextField, 0};
