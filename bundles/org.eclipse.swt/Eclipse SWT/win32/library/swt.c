@@ -5071,6 +5071,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHGetPathFromI
 }
 #endif // _WIN32_WCE
 
+#ifdef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHSetAppKeyWndAssoc
+	(JNIEnv *env, jclass that, jbyte arg0, jint arg1)
+{
+	DEBUG_CALL("SHSetAppKeyWndAssoc\n")
+
+	return (jboolean) SHSetAppKeyWndAssoc((BYTE)arg0, (HWND)arg1);
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ScreenToClient
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
