@@ -244,6 +244,21 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void setBackgroundPixel (int pixel) {
+	if (background == pixel) return;
+	super.setBackgroundPixel (pixel);
+	/*
+	* Bug in Windows.  Changing the background color of the Scale
+	* widget and calling InvalidateRect still draws with the older color.
+	* The fix is to post a fake WM_SETFOCUS event to cause it to redraw
+	* with the new background color.
+	* 
+	* Note.  This WM_SETFOCUS message causes recursion when
+	* setBackground is called from within the focus event listener.
+	*/
+	OS.PostMessage (handle, OS.WM_SETFOCUS, 0, 0);
+}
+
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
