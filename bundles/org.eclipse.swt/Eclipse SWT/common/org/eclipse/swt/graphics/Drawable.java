@@ -27,7 +27,7 @@ public interface Drawable {
  * @return the platform specific GC handle
  */
  
-public int internal_new_GC (GCData data);
+public int /*long*/ internal_new_GC (GCData data);
 
 /**	 
  * Invokes platform specific functionality to dispose a GC handle.
@@ -42,6 +42,6 @@ public int internal_new_GC (GCData data);
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC (int handle, GCData data);
+public void internal_dispose_GC (int /*long*/ handle, GCData data);
 
 }
