@@ -329,7 +329,8 @@ void createWidget () {
 }
 
 int defaultBackground () {
-	return OS.GetSysColor (OS.COLOR_BTNFACE);
+	if (OS.IsWinCE) return OS.GetSysColor (OS.COLOR_BTNFACE);
+	return super.defaultBackground ();
 }
 
 void destroyItem (ToolItem item) {
