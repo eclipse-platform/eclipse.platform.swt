@@ -1,12 +1,12 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.internal.motif.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
  
+import org.eclipse.swt.internal.motif.*;
+
 class WidgetTable {
 	static int FreeSlot = 0;
 	static int GrowSize = 1024;

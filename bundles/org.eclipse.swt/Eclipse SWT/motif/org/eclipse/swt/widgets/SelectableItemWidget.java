@@ -1,14 +1,14 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import java.io.*;
-import java.util.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
+ 
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import java.io.*;
+import java.util.*;
  
 /**
  * This class is intended for widgets that display data of 

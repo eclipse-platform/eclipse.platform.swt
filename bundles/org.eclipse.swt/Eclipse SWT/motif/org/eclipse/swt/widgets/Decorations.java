@@ -1,11 +1,10 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
-
+ * Licensed Materials - Property of IBM,
+ * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
+ */
+ 
 /**
 *	The decorations class implements a widget that
 * looks and behaves like a shell, but has the same

@@ -1,14 +1,14 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.events.*;
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.*;
-import java.util.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
+ 
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.*;
+import java.util.*;
  
 /**
  * This class display rows of items arranged in one or more 

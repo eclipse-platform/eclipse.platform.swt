@@ -1,10 +1,9 @@
 package org.eclipse.swt.widgets;
 
 /*
-* Licensed Materials - Property of IBM,
-* SWT - The Simple Widget Toolkit,
-* (c) Copyright IBM Corp 1998, 1999.
-*/
+ * Licensed Materials - Property of IBM,
+ * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
+ */
 
 /**
 *	A display is the class used to represent a group of widgets

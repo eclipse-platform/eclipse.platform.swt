@@ -1,12 +1,12 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.graphics.*;
-import java.util.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
+ 
+import org.eclipse.swt.graphics.*;
+import java.util.*;
  
 /** 
  * This class is used to store tree root items.

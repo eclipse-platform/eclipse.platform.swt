@@ -1,12 +1,12 @@
 package org.eclipse.swt.graphics;
 
-import org.eclipse.swt.internal.motif.*;
-import org.eclipse.swt.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
+ 
+import org.eclipse.swt.internal.motif.*;
+import org.eclipse.swt.*;
  
 public final class Region {
 	/**

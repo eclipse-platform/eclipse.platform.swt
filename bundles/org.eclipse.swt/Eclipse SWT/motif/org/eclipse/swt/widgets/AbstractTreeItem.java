@@ -1,14 +1,14 @@
 package org.eclipse.swt.widgets;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
-import java.util.*;
-
 /*
  * Licensed Materials - Property of IBM,
  * (c) Copyright IBM Corp. 1998, 2000  All Rights Reserved
  */
- 
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import java.util.*;
+
 /** 
  * This class stores and manages child items of a tree item.
  * It provides protocol to query the index of an item relative 
