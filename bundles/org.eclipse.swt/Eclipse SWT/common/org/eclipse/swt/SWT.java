@@ -720,7 +720,6 @@ public class SWT {
 	 * style constant for left to right orientation (value is 1&lt;&lt;25)
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
-	 * <li><code>Dialog</code></li>
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
 	 * 
@@ -732,7 +731,6 @@ public class SWT {
 	 * style constant for right to left orientation (value is 1&lt;&lt;26)
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
-	 * <li><code>Dialog</code></li>
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
 	 * 
@@ -744,7 +742,6 @@ public class SWT {
 	 * style constant to indicate coordinate mirroring (value is 1&lt;&lt;27)
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
-	 * <li><code>Dialog</code></li>
 	 * <li><code>Menu</code></li>
 	 * </ul></p>
 	 * 
