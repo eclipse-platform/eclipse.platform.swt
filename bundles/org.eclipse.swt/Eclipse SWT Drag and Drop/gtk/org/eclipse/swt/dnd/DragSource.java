@@ -341,6 +341,7 @@ private void onDispose(){
 			control.removeListener(SWT.Dispose, controlListener);
 			control.removeListener(SWT.DragDetect, controlListener);
 	}	
+	control.setData(DRAGSOURCEID, null);
 	control = null;
 	controlListener = null;
 	

@@ -519,6 +519,7 @@ private void onDispose(){
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
 	}
+	control.setData(DROPTARGETID, null);
 	control = null;
 	controlListener = null;
 }
