@@ -546,6 +546,12 @@ void drawWidget (int widget, int damage) {
 	if (widgetClass != 0) OS.PtSuperClassDraw (widgetClass, handle, damage);
 }
 
+void enableWidget (boolean enabled) {
+	int topHandle = topHandle ();
+	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
+}
+
 /**
  * Returns the accessible object for the receiver.
  * If this is the first time this object is requested,
@@ -720,8 +726,7 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	int topHandle = topHandle ();
-	return (OS.PtWidgetFlags (topHandle) & OS.Pt_BLOCKED) == 0;
+	return (state & DISABLED) == 0;
 }
 
 /**
@@ -1990,9 +1995,14 @@ public void setCursor (Cursor cursor) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	int topHandle = topHandle ();
-	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
-	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
+	if (enabled) {
+		if ((state & DISABLED) == 0) return;
+		state &= ~DISABLED;
+	} else {
+		if ((state & DISABLED) != 0) return;
+		state |= DISABLED;
+	}
+	enableWidget (enabled);
 }
 
 /**
