@@ -10,6 +10,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
@@ -27,6 +28,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class TableColumn extends Item {
+	int boxHandle, labelHandle, imageHandle;
 	Table parent;
 	int modelIndex;
 
@@ -362,7 +364,19 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setAlignment (int alignment) {
 	checkWidget();
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
-	//NOT IMPLEMENTED - there is OS support
+	//TODO - there is OS support
+}
+
+public void setImage (Image image) {
+	checkWidget ();
+	super.setImage (image);
+	if (image != null) {
+		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		OS.gtk_widget_show (imageHandle);
+	} else {
+		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
+		OS.gtk_widget_hide (imageHandle);
+	}
 }
 
 /**
@@ -386,8 +400,14 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
-	byte[] bytes = Converter.wcsToMbcs (null, string, true);
-	OS.gtk_tree_view_column_set_title (handle, bytes);
+	char [] chars = fixMnemonic (string);
+	byte [] buffer = Converter.wcsToMbcs (null, chars, false);
+	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
+	if (string.length () != 0) {
+		OS.gtk_widget_show (labelHandle);
+	} else {
+		OS.gtk_widget_hide (labelHandle);
+	}
 }
 
 /**

@@ -269,6 +269,20 @@ void createItem (TableColumn column, int index) {
 	} else {
 		createColumn (column, index);
 	}
+	int boxHandle = OS.gtk_hbox_new (false, 0);
+	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	int labelHandle = OS.gtk_label_new_with_mnemonic (null);
+	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	int imageHandle = OS.gtk_image_new ();
+	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_container_add (boxHandle, imageHandle);
+	OS.gtk_container_add (boxHandle, labelHandle);
+	OS.gtk_widget_show (boxHandle);
+	OS.gtk_widget_show (labelHandle);
+	column.boxHandle = boxHandle;
+	column.labelHandle = labelHandle;
+	column.imageHandle = imageHandle;	
+	OS.gtk_tree_view_column_set_widget (column.handle, boxHandle);
 	if (columnCount == columns.length) {
 		TableColumn [] newColumns = new TableColumn [columns.length + 4];
 		System.arraycopy (columns, 0, newColumns, 0, columns.length);

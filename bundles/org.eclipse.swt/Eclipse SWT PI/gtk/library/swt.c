@@ -5178,6 +5178,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1col
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1set_1widget
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1column_1set_1widget
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1view_1column_1set_1widget\n")
+
+	gtk_tree_view_column_set_widget((GtkTreeViewColumn *)arg0, (GtkWidget *)arg1);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1expand_1row
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1expand_1row
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)

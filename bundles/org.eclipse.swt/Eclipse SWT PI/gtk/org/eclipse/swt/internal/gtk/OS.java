@@ -727,6 +727,7 @@ public static final synchronized native void gtk_tree_view_column_set_fixed_widt
 public static final synchronized native void gtk_tree_view_column_set_resizable(int column, boolean resizable);
 public static final synchronized native void gtk_tree_view_column_set_sizing(int column, int type);
 public static final synchronized native void gtk_tree_view_column_set_title(int tree_column, byte[] title);
+public static final synchronized native void gtk_tree_view_column_set_widget(int tree_column, int widget);
 public static final synchronized native boolean gtk_tree_view_expand_row(int view, int path, boolean open_all);
 public static final synchronized native int gtk_tree_view_get_bin_window(int tree_view);
 public static final synchronized native void gtk_tree_view_get_cell_area(int tree_view, int path, int column, GdkRectangle rect);
