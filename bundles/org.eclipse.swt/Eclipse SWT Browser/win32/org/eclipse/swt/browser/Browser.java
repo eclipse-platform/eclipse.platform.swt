@@ -208,7 +208,11 @@ public Browser(Composite parent, int style) {
 										}
 										persistStreamInit.Release();
 									}
-									dispatchDocument.Release();
+									/*
+									* This code is intentionally commented.  The IDispatch obtained from a Variant
+									* did not increase the reference count for the enclosed interface.
+									*/
+									//dispatchDocument.Release();
 									IUnknown stream = new IUnknown(ppstm[0]);
 									stream.Release();
 								} else {
