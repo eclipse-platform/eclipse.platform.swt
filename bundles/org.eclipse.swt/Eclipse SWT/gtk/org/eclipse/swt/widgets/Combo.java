@@ -183,6 +183,7 @@ public void add (String string, int index) {
 	int /*long*/ label = OS.gtk_bin_get_child (item); 
 	OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, getForegroundColor ());
 	OS.gtk_widget_modify_font (label, getFontDescription ());
+	OS.gtk_widget_set_direction (label, OS.gtk_widget_get_direction (handle));
 	OS.gtk_widget_show (item);
 	int /*long*/ items = OS.g_list_append (0, item);
 	OS.gtk_list_insert_items (listHandle, items, index);
@@ -1389,6 +1390,7 @@ public void setItems (String [] items) {
 		int /*long*/ label = OS.gtk_bin_get_child (item); 
 		OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, color);
 		OS.gtk_widget_modify_font (label, font);
+		OS.gtk_widget_set_direction (label, OS.gtk_widget_get_direction (handle));
 		OS.gtk_container_add (listHandle, item);
 		OS.gtk_widget_show (item);
 		i++;
@@ -1399,6 +1401,13 @@ public void setItems (String [] items) {
 	OS.gtk_entry_set_text (entryHandle, new byte[0]);
 }
 
+void setOrientation() {
+	super.setOrientation();
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (listHandle, OS.GTK_TEXT_DIR_RTL);
+		OS.gtk_widget_set_direction (entryHandle, OS.GTK_TEXT_DIR_RTL);
+	}
+}
 /**
  * Sets the orientation of the receiver, which must be one
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.RIGHT_TO_LEFT</code>.
@@ -1415,6 +1424,24 @@ public void setItems (String [] items) {
  */
 public void setOrientation (int orientation) {
 	checkWidget();
+	int flags = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	if ((orientation & flags) == 0 || (orientation & flags) == flags) return;
+	style &= ~flags;
+	style |= orientation & flags;
+	int dir = (orientation & SWT.RIGHT_TO_LEFT) != 0 ? OS.GTK_TEXT_DIR_RTL : OS.GTK_TEXT_DIR_LTR;
+	OS.gtk_widget_set_direction (fixedHandle, dir);
+	OS.gtk_widget_set_direction (handle, dir);
+	OS.gtk_widget_set_direction (listHandle, dir);
+	OS.gtk_widget_set_direction (entryHandle, dir);
+	int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
+	if (itemsList != 0) {
+		int count = OS.g_list_length (itemsList);
+		for (int i=count - 1; i>=0; i--) {
+			int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
+			OS.gtk_widget_set_direction (widget, dir);
+		}
+		OS.g_list_free (itemsList);
+	}
 }
 
 /**
