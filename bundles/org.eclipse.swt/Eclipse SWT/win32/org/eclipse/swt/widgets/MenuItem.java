@@ -991,7 +991,14 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 		GCData data = new GCData();
 		data.device = display;
 		GC gc = GC.win32_new (struct.hDC, data);
-		gc.drawImage (image, struct.left, struct.top + 2);
+		/*
+		* Bug in Windows.  When a bitmap is included in the
+		* menu bar, the HDC seems to already include the left
+		* coordinate.  The fix is to ignore this value when
+		* the item is in a menu bar.
+		*/
+		int x = (parent.style & SWT.BAR) != 0 ? (OS.IsWin95 ? 4 : 2) : struct.left;
+		gc.drawImage (image, x, struct.top + 2);
 		gc.dispose ();
 	}
 	return null;
