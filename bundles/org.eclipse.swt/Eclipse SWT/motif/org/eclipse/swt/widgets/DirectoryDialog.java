@@ -284,6 +284,7 @@ public String open () {
 				}
 			}
 		}
+		filterPath = directoryPath;
 	}
 
 	/* Destroy the dialog and update the display. */
