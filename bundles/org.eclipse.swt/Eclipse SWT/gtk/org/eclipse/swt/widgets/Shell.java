@@ -765,7 +765,7 @@ int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ directionType) {
 	Control control = display.getFocusControl ();
 	if (control != null) {
 		int /*long*/ focusHandle = control.focusHandle ();
-		OS.gtk_widget_child_focus (focusHandle, directionType);
+		OS.gtk_widget_child_focus (focusHandle, (int)/*64*/directionType);
 	}
 	OS.g_signal_stop_emission_by_name (shellHandle, OS.move_focus);
 	return 1;
