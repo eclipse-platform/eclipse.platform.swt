@@ -66,6 +66,14 @@ public Caret (Canvas parent, int style) {
 	this.parent = parent;
 	createWidget (0);
 }
+
+boolean blinkCaret () {
+	if (!isVisible) return true;
+	if (!isShowing) return showCaret ();
+	if (blinkRate == 0) return true;
+	return hideCaret ();
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	isVisible = true;
@@ -74,26 +82,13 @@ void createWidget (int index) {
 	}
 }
 
-boolean blinkCaret () {
-	if (!isVisible) return true;
-	if (!isShowing) return showCaret();
-	if (blinkRate==0) return true;
-	return hideCaret();
-}
-
 boolean drawCaret () {
 	if (parent == null) return false;
 	if (parent.isDisposed ()) return false;
 	
-	/* The parent is a Canvas; its handle is a GtkDrawingArea.
-	 * Get the DA's GDK window to draw on.
-	 */
 	int window = OS.GTK_WIDGET_WINDOW(parent.handle);
+	int gc = OS.gdk_gc_new (window);
 
-	/* Create the GC, and set the working color and rop. */
-	int gc = OS.gdk_gc_new(window);
-	GdkGCValues gcvalues = new GdkGCValues();
-	OS.gdk_gc_get_values(gc, gcvalues);
 	/* Actually, we should look at the background and foreground colors.
 	 * This would require distinguishing between the cases when the GC
 	 * gives the color as RGB or Pixel, and in the case of Pixel, we
@@ -103,17 +98,23 @@ boolean drawCaret () {
 	 */
 	GdkColor c = new GdkColor();
 	c.red = c.green = c.blue = (short)0xFFFF;
-	OS.gdk_color_alloc(OS.gdk_colormap_get_system(), c);
-	OS.gdk_gc_set_foreground(gc, c);
-	OS.gdk_gc_set_function(gc, OS.GDK_XOR);
+	OS.gdk_color_alloc (OS.gdk_colormap_get_system(), c);
+	OS.gdk_gc_set_foreground (gc, c);
+	OS.gdk_gc_set_function (gc, OS.GDK_XOR);
 	
 	/* Draw the caret */
-	int nWidth = width;
+	int nWidth = width, nHeight = height;
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		nWidth = rect.width;
+		nHeight = rect.height;
+	}
 	if (nWidth <= 0) nWidth = 2;
-	OS.gdk_draw_rectangle(window, gc, 1, x, y, nWidth, height);
+	OS.gdk_draw_rectangle(window, gc, 1, x, y, nWidth, nHeight);
 	OS.g_object_unref(gc);
 	return true;
 }
+
 /**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent (or its display if its parent is null).
@@ -126,15 +127,20 @@ boolean drawCaret () {
  * </ul>
  */
 public Rectangle getBounds () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Rectangle (x, y, rect.width, rect.height);
+	}
 	return new Rectangle (x, y, width, height);
 }
+
 public Display getDisplay () {
 	Composite parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+
 /**
  * Returns the font that the receiver will use to paint textual information.
  *
@@ -146,10 +152,25 @@ public Display getDisplay () {
  * </ul>
  */
 public Font getFont () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent.getFont ();
 }
+
+/**
+ * Returns the image that the receiver will use to paint the caret.
+ *
+ * @return the receiver's image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Image getImage () {
+	checkWidget();
+	return image;
+}
+
 /**
  * Returns a point describing the receiver's location relative
  * to its parent (or its display if its parent is null).
@@ -162,10 +183,10 @@ public Font getFont () {
  * </ul>
  */
 public Point getLocation () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return new Point (x, y);
 }
+
 /**
  * Returns the receiver's parent, which must be a <code>Canvas</code>.
  *
@@ -177,10 +198,10 @@ public Point getLocation () {
  * </ul>
  */
 public Canvas getParent () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return parent;
 }
+
 /**
  * Returns a point describing the receiver's size.
  *
@@ -192,10 +213,14 @@ public Canvas getParent () {
  * </ul>
  */
 public Point getSize () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Point (rect.width, rect.height);
+	}
 	return new Point (width, height);
 }
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -214,17 +239,18 @@ public Point getSize () {
  * </ul>
  */
 public boolean getVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return isVisible;
 }
+
 boolean hideCaret () {
-//	Display display = getDisplay ();
-//	if (display.currentCaret != this) return false;
+	Display display = getDisplay ();
+	if (display.currentCaret != this) return false;
 	if (!isShowing) return true;
 	isShowing = false;
 	return drawCaret ();
 }
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
@@ -243,37 +269,27 @@ boolean hideCaret () {
  * </ul>
  */
 public boolean isVisible () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return isVisible && parent.isVisible ();	// && parent.hasFocus ();
+	checkWidget();
+	return isVisible && parent.isVisible () && parent.isFocusControl ();
 }
+
 void killFocus () {
-//	OS.DestroyCaret ();
-//	self restoreFont.
+	Display display = getDisplay ();
+	if (display.currentCaret != this) return;
+	if (isVisible) hideCaret ();
+	display.setCurrentCaret (null);
 }
-void move () {
-	showCaret();
-	moved = false;
-}
+
 void releaseChild () {
 	super.releaseChild ();
 	if (this == parent.getCaret ()) parent.setCaret (null);
 }
+
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 }
-void resize () {
-	int hwnd = parent.handle;
-	if (hwnd == 0) return;
-//	OS.DestroyCaret ();		
-//	OS.CreateCaret (hwnd, 0, width, height);
-//	OS.SetCaretPos (x, y);
-//	OS.ShowCaret (hwnd);
-//	self move.
-//	showCaret();
-	resized = false;
-}
+
 /**
  * Sets the receiver's size and location to the rectangular
  * area specified by the arguments. The <code>x</code> and 
@@ -291,25 +307,29 @@ void resize () {
  * </ul>
  */
 public void setBounds (int x, int y, int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	boolean samePosition, sameExtent, showing;
 	samePosition = (this.x == x) && (this.y == y);
 	sameExtent = (this.width == width) && (this.height == height);
-	if (samePosition && sameExtent) return;
+	if ((samePosition) && (sameExtent)) return;
 	if (isShowing) hideCaret ();
 	this.x = x; this.y = y;
 	this.width = width; this.height = height;
 	if (sameExtent) {
-		moved = true;
-		if (isVisible ()) move ();
+			moved = true;
+			if (isVisible ()) {
+				moved = false;
+			}
 	} else {
-		resized = true;
-		if (isVisible ()) resize ();
+			resized = true;
+			if (isVisible ()) {
+				moved = false;
+				resized = false;
+			}
 	}
-	if(isVisible())
-		showCaret ();
+	if (isShowing) showCaret ();
 }
+
 /**
  * Sets the receiver's size and location to the rectangular
  * area specified by the argument. The <code>x</code> and 
@@ -324,13 +344,15 @@ public void setBounds (int x, int y, int width, int height) {
  * </ul>
  */
 public void setBounds (Rectangle rect) {
+	checkWidget();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
+
 void setFocus () {
-	Display display = getDisplay();
-	if (display.currentCaret==this) return;
-	display.setCurrentCaret(this);
+	Display display = getDisplay ();
+	if (display.currentCaret == this) return;
+	display.setCurrentCaret (this);
 	if (isVisible) showCaret ();
 }
 
@@ -350,27 +372,12 @@ void setFocus () {
  * </ul>
  */
 public void setFont (Font font) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (font != null && font.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 }
 
-/**
- * Returns the image that the receiver will use to paint the caret.
- *
- * @return the receiver's image
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Image getImage () {
-	checkWidget();
-	return image;
-}
 /**
  * Sets the image that the receiver will use to paint the caret
  * to the image specified by the argument, or to the default
@@ -395,6 +402,7 @@ public void setImage (Image image) {
 	this.image = image;
 	if (isShowing) showCaret ();
 }
+
 /**
  * Sets the receiver's location to the point specified by
  * the arguments which are relative to the receiver's
@@ -409,10 +417,10 @@ public void setImage (Image image) {
  * </ul>
  */
 public void setLocation (int x, int y) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	setBounds (x, y, width, height);
 }
+
 /**
  * Sets the receiver's location to the point specified by
  * the argument which is relative to the receiver's
@@ -426,11 +434,11 @@ public void setLocation (int x, int y) {
  * </ul>
  */
 public void setLocation (Point location) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
+
 /**
  * Sets the receiver's size to the point specified by the arguments.
  *
@@ -443,13 +451,10 @@ public void setLocation (Point location) {
  * </ul>
  */
 public void setSize (int width, int height) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (this.width == width && this.height == height) return;
-	this.width = width;  this.height = height;
-	resized = true;
-	if (isVisible ()) resize ();
+	checkWidget();
+	setBounds (x, y, width, height);
 }
+
 /**
  * Sets the receiver's size to the point specified by the argument.
  *
@@ -465,11 +470,11 @@ public void setSize (int width, int height) {
  * </ul>
  */
 public void setSize (Point size) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
+
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
@@ -487,20 +492,20 @@ public void setSize (Point size) {
  * </ul>
  */
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (visible == isVisible) return;
 	if (isVisible = visible) {
 		showCaret ();
 	} else {
 		hideCaret ();
 	}
-
 }
+
 boolean showCaret () {
-//	if (getDisplay ().currentCaret != this) return false;
+	if (getDisplay ().currentCaret != this) return false;
 	if (isShowing) return true;
 	isShowing = true;
 	return drawCaret ();
 }
+
 }
