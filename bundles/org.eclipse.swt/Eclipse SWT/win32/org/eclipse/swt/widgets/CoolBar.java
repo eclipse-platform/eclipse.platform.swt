@@ -37,6 +37,7 @@ public class CoolBar extends Composite {
 	CoolItem [] items;
 	CoolItem [] originalItems;
 	boolean locked;
+	boolean ignoreResize;
 	static final int ReBarProc;
 	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
 	static {
@@ -105,32 +106,55 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	int width = 0, rowWidth = 0, height = 0, rowHeight = 0;
-	RECT rect = new RECT ();
-	REBARBANDINFO rbBand = new REBARBANDINFO ();
-	rbBand.cbSize = REBARBANDINFO.sizeof;
-	rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_CHILDSIZE | OS.RBBIM_STYLE;
+	int width = 0, height = 0;
+	int border = getBorderWidth ();
+	int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + (border * 2);
+	int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + (border * 2);
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	for (int i=0; i<count; i++) {
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, i, rect);
-		if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
-			width = Math.max (width, rowWidth);
-			height += rowHeight;
-			rowWidth = rowHeight = 0;
+	if (count != 0) {
+		ignoreResize = true;
+		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		if (redraw) {
+			OS.UpdateWindow (handle);	
+			OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		}
-		rowWidth += rbBand.cxIdeal + rect.left + rect.right + 2;
-		rowHeight = Math.max (rowHeight, rbBand.cyMinChild + rect.top + rect.bottom);
+		RECT oldRect = new RECT ();
+		OS.GetWindowRect (handle, oldRect);
+		int oldWidth = oldRect.right - oldRect.left;
+		int oldHeight = oldRect.bottom - oldRect.top;
+		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;	
+		OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
+		RECT rect = new RECT ();
+		OS.SendMessage (handle, OS.RB_GETRECT, count - 1, rect);
+		height = Math.max (height, rect.bottom - rect.top);
+		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
+		REBARBANDINFO rbBand = new REBARBANDINFO ();
+		rbBand.cbSize = REBARBANDINFO.sizeof;
+		rbBand.fMask = OS.RBBIM_IDEALSIZE | OS.RBBIM_STYLE;
+		int rowWidth = 0;
+		for (int i = 0; i < count; i++) {
+			OS.SendMessage(handle, OS.RB_GETBANDINFO, i, rbBand);
+			OS.SendMessage(handle, OS.RB_GETBANDBORDERS, i, rect);
+			if ((rbBand.fStyle & OS.RBBS_BREAK) != 0) {
+				width = Math.max(width, rowWidth);
+				rowWidth = 0;
+			}
+			rowWidth += rbBand.cxIdeal + rect.left + rect.right + 2;
+		}
+		width = Math.max(width, rowWidth);
+		
+		if (redraw) {
+			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+			OS.ValidateRect (handle, null);
+		}		
+		ignoreResize = false;
 	}
-	width = Math.max (width, rowWidth);
-	height += rowHeight - rect.top - rect.bottom;
 	if (width == 0) width = DEFAULT_WIDTH;
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
-	int border = getBorderWidth ();
-	width += border * 2;
 	height += border * 2;
+	width += border * 2;	
 	return new Point (width, height);
 }
 
@@ -894,11 +918,25 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
+LRESULT WM_SIZE(int wParam, int lParam) {
+	if (ignoreResize) {
+		int code = callWindowProc (OS.WM_SIZE, wParam, lParam);
+		if (code == 0) return LRESULT.ZERO;
+		return new LRESULT (code);
+	}
+	return super.WM_SIZE(wParam, lParam);
+}
+
 LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
 		case OS.RBN_HEIGHTCHANGE:
+			if (ignoreResize) {
+				int code = callWindowProc (OS.RBN_HEIGHTCHANGE, wParam, lParam);
+				if (code == 0) return LRESULT.ZERO;
+				return new LRESULT (code);
+			}
 			Point size = getSize ();
 			int border = getBorderWidth ();
 			int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
@@ -919,7 +957,4 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	}
 	return super.wmNotifyChild (wParam, lParam);
 }
-
-
-
 }
