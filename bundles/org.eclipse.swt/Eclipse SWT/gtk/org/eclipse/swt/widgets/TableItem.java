@@ -143,10 +143,10 @@ public Color getBackground () {
  */
 public Color getBackground (int index) {
 	checkWidget ();
-	int count = parent.columnCount;
-	if (0 > index || index > (count == 0 ? 0 : count - 1)) return getBackground ();
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return getBackground ();
 	int [] ptr = new int [1];
-	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
+	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 3, ptr, -1);
 	if (ptr [0] == 0) return getBackground ();
 	GdkColor gdkColor = new GdkColor ();
@@ -239,10 +239,10 @@ public Color getForeground () {
  */
 public Color getForeground (int index) {
 	checkWidget ();
-	int count = parent.columnCount;
-	if (0 > index || index > (count == 0 ? 0 : count - 1)) return getForeground ();
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return getForeground ();
 	int [] ptr = new int [1];
-	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
+	int modelIndex =  parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + 2, ptr, -1);
 	if (ptr [0] == 0) return getForeground ();
 	GdkColor gdkColor = new GdkColor ();
@@ -493,13 +493,13 @@ public void setBackground (int index, Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int count = parent.getColumnCount ();
-	if (0 > index || index > (count == 0 ? 0 : count - 1)) return;
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	int parentHandle = parent.handle;
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
-	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
+	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 3, gdkColor, -1);
 	
 	if (color != null) {
@@ -587,13 +587,13 @@ public void setForeground (int index, Color color){
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	int count = parent.columnCount;
-	if (0 > index || index > (count == 0 ? 0 : count - 1)) return;
+	int count = Math.max (1, parent.columnCount);
+	if (0 > index || index > count - 1) return;
 	GdkColor gdkColor = color != null ? color.handle : null;
 	int parentHandle = parent.handle;
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return;
-	int modelIndex = count == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
+	int modelIndex = parent.columnCount == 0 ? Table.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_list_store_set (parent.modelHandle, handle, modelIndex + 2, gdkColor, -1);
 	
 	if (color != null) {
