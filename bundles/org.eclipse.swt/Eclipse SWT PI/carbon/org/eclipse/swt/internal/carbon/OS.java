@@ -975,6 +975,8 @@ public class OS {
 	public static final int kDataBrowserViewSpecificFlagsOffset = 16;
 	public static final int kDataBrowserListViewSelectionColumn= 1 << kDataBrowserViewSpecificFlagsOffset;
  
+ 	// data browser item states
+ 	public static final int kDataBrowserItemIsSelected = 1 << 0;
  
 	public static native int newColumnDesc(int propertyID, int propertyType, int propertyFlags,
 			short minimumWidth, short maximumWidth);
@@ -997,6 +999,7 @@ public class OS {
 	public static native int SetDataBrowserListViewHeaderBtnHeight(int cHandle, short height);
 	public static native int UpdateDataBrowserItems(int cHandle, int container, int numItems, int[] items, int preSortProperty, int propertyID);
 	public static native int GetDataBrowserItemCount(int cHandle, int container, boolean recurse, int state, int[] numItems);
+	public static native int GetDataBrowserItems(int cHandle, int container, boolean recurse, int state, int handle);
 
 	/* Set operations for use with SetDataBrowserSelectedItems */
 	public static final int kDataBrowserItemsAdd          = 0;    /* add specified items to existing set */
@@ -1201,6 +1204,7 @@ public class OS {
 	public static native void DisposeHandle(int handle);
 	public static native int GetHandleSize(int handle);
 	public static native void getHandleData(int handle, char[] data);
+	public static native void getHandleData(int handle, int[] data);
 	public static native int DerefHandle(int handle);
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////
