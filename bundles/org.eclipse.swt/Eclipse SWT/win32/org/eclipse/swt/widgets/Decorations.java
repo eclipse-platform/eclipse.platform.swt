@@ -92,8 +92,7 @@ public class Decorations extends Canvas {
 	MenuItem [] items;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
-	int swFlags, hAccel, nAccel;
-	int hwndCB, hwndTB, hIcon;
+	int swFlags, hAccel, nAccel, hIcon;
 	
 	/*
 	* The start value for WM_COMMAND id's.
@@ -347,7 +346,7 @@ Menu findMenu (int hMenu) {
 	if (menus == null) return null;
 	for (int i=0; i<menus.length; i++) {
 		Menu menu = menus [i];
-		if ((menu != null) && (hMenu == menu.handle)) return menu;
+		if (menu != null && hMenu == menu.handle) return menu;
 	}
 	return null;
 }
@@ -383,7 +382,8 @@ public Rectangle getClientArea () {
 	*/
 	if (OS.IsHPC) {
 		Rectangle rect = super.getClientArea ();
-		if (hwndCB != 0) {
+		if (menuBar != null) {
+			int hwndCB = menuBar.hwndCB;
 			int height = OS.CommandBar_Height (hwndCB);
 			rect.y += height;
 			rect.height -= height;
@@ -585,59 +585,6 @@ Decorations menuShell () {
 	return this;
 }
 
-boolean moveMenu (int hMenuSrc, int hMenuDest) {
-	boolean success = true;
-	TCHAR lpNewItem = new TCHAR (0, "", true);
-	int index = 0, cch = 128;
-	int byteCount = cch * TCHAR.sizeof;
-	int hHeap = OS.GetProcessHeap ();
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	MENUITEMINFO lpmii = new MENUITEMINFO ();
-	lpmii.cbSize = MENUITEMINFO.sizeof;
-	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA | OS.MIIM_SUBMENU;
-	lpmii.dwTypeData = pszText;
-	lpmii.cch = cch;
-	while (OS.GetMenuItemInfo (hMenuSrc, 0, true, lpmii)) {
-		int uFlags = OS.MF_BYPOSITION | OS.MF_ENABLED;
-		int uIDNewItem = lpmii.wID;
-		if ((lpmii.fType & OS.MFT_SEPARATOR) != 0) {
-			uFlags |= OS.MFT_SEPARATOR;
-		} else if (lpmii.hSubMenu != 0) {
-			uFlags |= OS.MF_POPUP;
-			uIDNewItem = lpmii.hSubMenu;
-		}
-		success = OS.InsertMenu (hMenuDest, index, uFlags, uIDNewItem, lpNewItem);
-		if (!success) break;
-		/* Set application data and text info */
-		if ((lpmii.fType & OS.MFT_SEPARATOR) != 0) {
-			lpmii.fMask = OS.MIIM_DATA;
-			success = OS.SetMenuItemInfo (hMenuDest, index, true, lpmii);
-			if (!success) break;
-		} else {
-			lpmii.fMask = OS.MIIM_DATA | OS.MIIM_TYPE;
-			success = OS.SetMenuItemInfo (hMenuDest, index, true, lpmii);
-			if (!success) break;
-			if ((lpmii.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) != 0) {
-				OS.EnableMenuItem (hMenuDest, index, OS.MF_BYPOSITION | OS.MF_GRAYED);
-			}
-			if ((lpmii.fState & OS.MFS_CHECKED) != 0) {
-				OS.CheckMenuItem (hMenuDest, index, OS.MF_BYPOSITION | OS.MF_CHECKED);
-			}
-		}
-		OS.RemoveMenu (hMenuSrc, 0, OS.MF_BYPOSITION);
-		index++;
-		lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA | OS.MIIM_SUBMENU;
-		/*
-		* Bug in WinCE.  Calling GetItemInfo on an item of type MFT_SEPARATOR with the mask MIIM_TYPE
-		* modifies the value of the field dwTypeData.  The workaround is to reset the field.
-		*/
-		lpmii.dwTypeData = pszText;
-		lpmii.cch = cch;
-	}
-	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
-	return success;
-}
-
 void releaseWidget () {
 	if (menuBar != null) menuBar.releaseResources ();
 	menuBar = null;
@@ -659,7 +606,6 @@ void releaseWidget () {
 	defaultButton = saveDefault = null;
 	if (hAccel != 0 && hAccel != -1) OS.DestroyAcceleratorTable (hAccel);
 	hAccel = -1;
-	hwndCB = 0;
 }
 
 void remove (Menu menu) {
@@ -922,6 +868,7 @@ public void setMaximized (boolean maximized) {
 			if (OS.IsPPC) {
 				/* Leave space for the menu bar */
 				if (menuBar != null) {
+					int hwndCB = menuBar.hwndCB;
 					RECT rectCB = new RECT ();
 					OS.GetWindowRect (hwndCB, rectCB);
 					height -= rectCB.bottom - rectCB.top;
@@ -970,129 +917,30 @@ public void setMenuBar (Menu menu) {
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}	
-	if (OS.IsPPC) {
-		/*
-		* Note in WinCE PPC.  MenuBar is a separate popup window. If
-		* the Shell is full screen, resize its window to leave
-		* space for the MenuBar.
-		*/
-		boolean resize = (getMaximized() && menuBar != menu);
-		if (menuBar != null) {
-			OS.CommandBar_Destroy (hwndCB);
-			hwndCB = 0;
-			hwndTB = 0;
-		}
-		menuBar = menu;
-		if (menuBar != null) {		
-			SHMENUBARINFO mbi = new SHMENUBARINFO ();
-			mbi.cbSize = mbi.sizeof;
-			mbi.hwndParent = handle;
-			mbi.dwFlags = 0;
-			mbi.nToolBarId = 100; /* as defined in .rc file */
-			mbi.hInstRes = OS.GetLibraryHandle ();
-			boolean success = OS.SHCreateMenuBar (mbi);
-			hwndCB = mbi.hwndMB;
-
-			/* get toolbar */
-			if (success && hwndCB != 0) hwndTB = OS.GetWindow (hwndCB, OS.GW_CHILD);
-						
-			if (hwndTB == 0) {
-				/* we can't use the menubar */
-				if (hwndCB != 0) OS.CommandBar_Destroy (hwndCB);
-				return;
+	if (OS.IsWinCE) {
+		if (OS.IsHPC) {
+			boolean resize = menuBar != menu;
+			if (menuBar != null) OS.CommandBar_Show (menuBar.hwndCB, false);
+			menuBar = menu;
+			if (menuBar != null) OS.CommandBar_Show (menuBar.hwndCB, true);
+			if (resize) {
+				sendEvent (SWT.Resize);
+				layout (false);
 			}
-			/* remove the menu item coming from the resource file */
-			OS.SendMessage (hwndTB, OS.TB_DELETEBUTTON, 0, 0);
-			
-			/* populate tool bar mapping menu items to tool items */
-			if (menuBar.getItemCount () > 0) {
-				MenuItem[] items = menuBar.getItems ();
-				TBBUTTON lpButton = new TBBUTTON ();
-				TBBUTTONINFO info = new TBBUTTONINFO ();
-				info.cbSize = TBBUTTONINFO.sizeof;
-				info.dwMask = OS.TBIF_TEXT;
-				
-				int cch = 128;
-				int hHeap = OS.GetProcessHeap ();
-				int byteCount = cch * TCHAR.sizeof;
-				int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-				MENUITEMINFO mii = new MENUITEMINFO ();
-				mii.cbSize = MENUITEMINFO.sizeof;
-				mii.fMask = OS.MIIM_STATE | OS.MIIM_TYPE;
-				mii.dwTypeData = pszText;
-
-				for (int i = 0; i < items.length; i++) {
-					MenuItem item = items[i];
-					/* insert item */
-					lpButton.idCommand = item.id;
-					lpButton.fsStyle = (byte) (OS.TBSTYLE_DROPDOWN | OS.TBSTYLE_AUTOSIZE | 0x80);
-					lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
-					lpButton.iBitmap = OS.I_IMAGENONE;
-					if ((item.style & SWT.SEPARATOR) != 0) {
-						lpButton.fsStyle = (byte) OS.BTNS_SEP;
-					}
-					OS.SendMessage (hwndTB, OS.TB_INSERTBUTTON, i, lpButton);
-
-					if ((item.style & SWT.SEPARATOR) == 0) {
-						/* set text and state info */
-						Menu parent = item.parent;
-						int id = item.id;
-						int hMenu = parent.handle;
-												
-						mii.cch = cch;
-						success = OS.GetMenuItemInfo (hMenu, i, true, mii);
-						if (!success) error (SWT.ERROR_INVALID_ARGUMENT);
-						boolean enabled = (mii.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) == 0;
-						if (!enabled) {
-							info.dwMask |= OS.TBIF_STATE;
-							info.fsStyle = 0;
-						}						
-						info.pszText = pszText;
-						OS.SendMessage (hwndTB, OS.TB_SETBUTTONINFO, item.id, info);
-
-						/* set menu */
-						Menu menu2 = item.menu;
-						if (menu2 != null) {
-							OS.SendMessage (hwndCB, OS.SHCMBM_SETSUBMENU, item.id, menu2.handle);
-						}
-					}
-				}
-				if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+		} else {
+			if (OS.IsPPC) {
+				/*
+				* Note in WinCE PPC.  The menu bar is a separate popup window.
+				* If the shell is full screen, resize its window to leave
+				* space for the menu bar.
+				*/
+				boolean resize = getMaximized () && menuBar != menu;
+				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_HIDE);
+				menuBar = menu;
+				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_SHOW);
+				if (resize) setMaximized (true);
 			}
-		}
-		if (resize) setMaximized (true);
-	} else if (OS.IsHPC) {
-		boolean resize = menuBar != menu;
-		if (menuBar != null) {
-			/*
-			* Because CommandBar_Destroy destroys the menu bar, it
-			* is necessary to move the current items into a new menu
-			* before it is called.
-			*/
-			int hMenu = OS.CreateMenu ();
-			if (!moveMenu (menuBar.handle, hMenu)) {
-				error (SWT.ERROR_CANNOT_SET_MENU);
-			}
-			menuBar.handle = hMenu;
-			if (hwndCB != 0) OS.CommandBar_Destroy (hwndCB);
-			hwndCB = 0;
-		}
-		menuBar = menu;
-		if (menuBar != null) {		
-			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), handle, 1);
-			OS.CommandBar_InsertMenubarEx (hwndCB, 0, menuBar.handle, 0);
-			/*
-			* The command bar hosts the 'close' button when the window does not
-			* have a caption.
-			*/
-			if ((style & SWT.CLOSE) != 0 && (style & SWT.TITLE) == 0) {
-				OS.CommandBar_AddAdornments(hwndCB, 0, 0);
-			}
-		}
-		if (resize) {
-			sendEvent (SWT.Resize);
-			layout (false);
-		}
+		} 
 	} else {
 		menuBar = menu;
 		int hMenu = 0;
@@ -1237,7 +1085,12 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		if (OS.IsHPC) OS.CommandBar_DrawMenuBar (hwndCB, 0);
+		if (OS.IsHPC) {
+			if (menuBar != null) {
+				int hwndCB = menuBar.hwndCB;
+				OS.CommandBar_DrawMenuBar (hwndCB, 0);
+			}
+		}
 		if (OS.IsWinCE) {
 			OS.ShowWindow (handle, OS.SW_SHOW);
 		} else {
