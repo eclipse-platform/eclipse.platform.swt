@@ -1818,29 +1818,25 @@ boolean setKeyState (Event event, int type) {
 	if (event.keyCode == 0 && event.character == 0) {
 		return false;
 	}
-	if (OS.GetKeyState (OS.VK_MENU) < 0) {
-		if (type != SWT.KeyDown || event.keyCode != SWT.ALT) {
-			event.stateMask |= SWT.ALT;
-		}
-	}
-	if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
-		if (type != SWT.KeyDown || event.keyCode != SWT.SHIFT) {
-			event.stateMask |= SWT.SHIFT;
-		}
-	}
-	if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-		if (type != SWT.KeyDown || event.keyCode != SWT.CONTROL) {
-			event.stateMask |= SWT.CONTROL;
-		}
-	}
-	if (type == SWT.KeyUp) {
-		if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
-		if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
-		if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
-	}
+	if (OS.GetKeyState (OS.VK_MENU) < 0) event.stateMask |= SWT.ALT;
+	if (OS.GetKeyState (OS.VK_SHIFT) < 0) event.stateMask |= SWT.SHIFT;
+	if (OS.GetKeyState (OS.VK_CONTROL) < 0) event.stateMask |= SWT.CONTROL;
 	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) event.stateMask |= SWT.BUTTON1;
 	if (OS.GetKeyState (OS.VK_MBUTTON) < 0) event.stateMask |= SWT.BUTTON2;
 	if (OS.GetKeyState (OS.VK_RBUTTON) < 0) event.stateMask |= SWT.BUTTON3;
+	switch (type) {
+		case SWT.KeyDown:
+		case SWT.Traverse:
+			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
+			break;
+		case SWT.KeyUp:
+			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
+			break;
+	}		
 	return true;
 }
 
@@ -2926,6 +2922,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	if (!hooks (SWT.KeyUp)) {
 		display.lastVirtual = false;
 		display.lastKey = display.lastAscii = 0;
+		return null;
 	}
 	
 	/* Map the virtual key. */
@@ -2958,10 +2955,14 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 		}
 		display.lastVirtual = display.isVirtualKey (display.lastKey);
 	}
+	
+	LRESULT result = null;
 	if (!sendKeyEvent (SWT.KeyUp, OS.WM_KEYUP, wParam, lParam)) {
-		return LRESULT.ZERO;
+		result = LRESULT.ZERO;
 	}
-	return null;
+	display.lastVirtual = false;
+	display.lastKey = display.lastAscii = 0;
+	return result;
 }
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
