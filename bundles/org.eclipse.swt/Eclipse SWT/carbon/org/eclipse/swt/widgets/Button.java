@@ -48,7 +48,7 @@ public class Button extends Control {
 	String text = "";
 	Image image;
 	int cIcon;
-	boolean isImage;
+	boolean isImage, tracking;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -435,6 +435,43 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	/*
+	* Feature in the Macintosh.  Some controls call TrackControl() or
+	* HandleControlClick() to track the mouse.  Unfortunately, mouse move
+	* events and the mouse up events are consumed.  The fix is to call the
+	* default handler and send a fake mouse up when tracking is finished.
+	* 
+	* NOTE: No mouse move events are sent while tracking.  There is no
+	* fix for this at this time.
+	*/
+	display.grabControl = null;
+	display.runDeferredEvents ();
+	tracking = false;
+	result = OS.CallNextEventHandler (nextHandler, theEvent);
+	if (tracking) {
+		org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetGlobalMouse (outPt);
+		Rect rect = new Rect ();
+		int window = OS.GetControlOwner (handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		int x = outPt.h - rect.left;
+		int y = outPt.v - rect.top;
+		OS.GetControlBounds (parent.handle, rect);
+		x -= rect.left;
+		y -=  rect.top;
+		short [] button = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+		int chord = OS.GetCurrentEventButtonState ();
+		int modifiers = OS.GetCurrentEventKeyModifiers ();
+		sendMouseEvent (SWT.MouseUp, button [0], chord, (short)x, (short)y, modifiers, false);
+	}
+	tracking = false;
+	return result;
+}
+
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -444,6 +481,13 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 		menuShell ().setDefaultButton (part [0] != OS.kControlFocusNoPart ? this : null, false);	
 	}
 	return result;
+}
+
+int kEventControlTrack (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	tracking = true;
+	return OS.eventNotHandledErr;
 }
 
 void releaseWidget () {
