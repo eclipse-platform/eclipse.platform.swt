@@ -55,6 +55,9 @@ public class TabFolder extends Composite {
 	static final int ID_UPDOWN = 1;
 	
 	static {
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, TabFolderClass, lpWndClass);
+		TabFolderProc = lpWndClass.lpfnWndProc;
 		/*
 		* Feature in Windows.  The tab control window class
 		* uses the CS_HREDRAW and CS_VREDRAW style bits to
@@ -74,10 +77,6 @@ public class TabFolder extends Composite {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		WNDCLASS lpWndClass = new WNDCLASS ();
-		TCHAR WC_TABCONTROL = new TCHAR (0, OS.WC_TABCONTROL, true);
-		OS.GetClassInfo (0, WC_TABCONTROL, lpWndClass);
-		TabFolderProc = lpWndClass.lpfnWndProc;
 		int hInstance = OS.GetModuleHandle (null);
 		int hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;

@@ -38,12 +38,15 @@ public class ProgressBar extends Control {
 	static final int ProgressBarProc;
 	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
 	static {
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, ProgressBarClass, lpWndClass);
+		ProgressBarProc = lpWndClass.lpfnWndProc;
 		/*
-		* Feature in Windows.  The progres bar window class
-		* does not include CS_DBLCLKS.  This mean that progress
-		* bars will not get double click messages such as
+		* Feature in Windows.  The progress bar window class
+		* does not include CS_DBLCLKS.  This mean that these
+		* controls will not get double click messages such as
 		* WM_LBUTTONDBLCLK.  The fix is to register a new 
-		* window class with these bits.
+		* window class with CS_DBLCLKS.
 		* 
 		* NOTE:  Screen readers look for the exact class name
 		* of the control in order to provide the correct kind
@@ -55,9 +58,6 @@ public class ProgressBar extends Control {
 		* code, other than SWT, could create a control with
 		* this class name, and fail unexpectedly.
 		*/
-		WNDCLASS lpWndClass = new WNDCLASS ();
-		OS.GetClassInfo (0, ProgressBarClass, lpWndClass);
-		ProgressBarProc = lpWndClass.lpfnWndProc;
 		int hInstance = OS.GetModuleHandle (null);
 		int hHeap = OS.GetProcessHeap ();
 		lpWndClass.hInstance = hInstance;
