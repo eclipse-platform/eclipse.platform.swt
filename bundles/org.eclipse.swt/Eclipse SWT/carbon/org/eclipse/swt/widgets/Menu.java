@@ -253,7 +253,7 @@ void hookEvents () {
 		OS.kEventClassMenu, OS.kEventMenuClosed,
 	};
 	int menuTarget = OS.GetMenuEventTarget (handle);
-	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, handle, null);
+	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, 0, null);
 }
 
 int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
