@@ -29,7 +29,6 @@ import org.eclipse.swt.events.*;
  */
 
 public /*final*/ class List extends Scrollable {
-	int rows, columns;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -185,12 +184,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	if (hHint == SWT.DEFAULT || wHint == SWT.DEFAULT) {
-		int count = rows;
-		if (count == 0) {
-			int [] argList = {OS.XmNitemCount, 0};
-			OS.XtGetValues (handle, argList, argList.length / 2);
-			count = argList [1];
-		}
+		int [] argList = {OS.XmNitemCount, 0};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int count = argList [1];
 		if (hHint == SWT.DEFAULT) {
 			if (count == 0) {
 				height = DEFAULT_HEIGHT;
