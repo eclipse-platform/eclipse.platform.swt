@@ -690,8 +690,9 @@ public class OS {
 	public static final int NM_DBLCLK = 0xfffffffd;
 	public static final int NM_RECOGNIZEGESTURE = NM_FIRST - 16;
 	public static final int NM_RETURN = 0xfffffffc;
-	public static final int NOTIFYICONDATA_V1_SIZE = 88;
-	public static final int NOTIFYICONDATA_V2_SIZE = 488;
+	public static final int NOTIFYICONDATAA_V2_SIZE = 488;
+	public static final int NOTIFYICONDATAW_V2_SIZE = 936;
+	public static final int NOTIFYICONDATA_V2_SIZE = IsUnicode ? NOTIFYICONDATAW_V2_SIZE : NOTIFYICONDATAA_V2_SIZE;
 	public static final int NOTSRCCOPY = 0x330008;
 	public static final int NULLREGION = 0x1;
 	public static final int NULL_BRUSH = 0x5;

@@ -77,18 +77,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(IsSP)
 }
 #endif
 
-#ifndef NO_NOTIFYICONDATA_1sizeof
-JNIEXPORT jint JNICALL OS_NATIVE(NOTIFYICONDATA_1sizeof)
-	(JNIEnv *env, jclass that)
-{
-	jint rc;
-	NATIVE_ENTER(env, that, "NOTIFYICONDATA_1sizeof\n")
-	rc = (jint)sizeof(NOTIFYICONDATA);
-	NATIVE_EXIT(env, that, "NOTIFYICONDATA_1sizeof\n")
-	return rc;
-}
-#endif
-
 #ifndef NO_SendMessageW__II_3I_3I
 JNIEXPORT jint JNICALL OS_NATIVE(SendMessageW__II_3I_3I)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)

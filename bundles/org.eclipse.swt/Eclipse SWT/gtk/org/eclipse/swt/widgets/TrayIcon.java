@@ -143,10 +143,16 @@ public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
-	Rectangle rect = image.getBounds ();
-	OS.gtk_widget_set_size_request (handle, rect.width, rect.height);
-	OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
-	OS.gtk_widget_show (imageHandle);
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		OS.gtk_widget_set_size_request (handle, rect.width, rect.height);
+		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		OS.gtk_widget_show (imageHandle);
+	} else {
+		OS.gtk_widget_set_size_request (handle, 1, 1);
+		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
+		OS.gtk_widget_hide (imageHandle);
+	}
 }
 
 void setMenu (Menu menu) {
