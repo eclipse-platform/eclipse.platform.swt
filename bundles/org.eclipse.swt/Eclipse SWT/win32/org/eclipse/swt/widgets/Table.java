@@ -2073,6 +2073,16 @@ int windowProc () {
 	return TableProc;
 }
 
+/* Override WM_GETOBJECT from Control because checkbox table needs
+ * to provide additional accessibility support for checked items.
+ */
+LRESULT WM_GETOBJECT (int wParam, int lParam) {
+	if ((style & SWT.CHECK) != 0) {
+		if (accessible == null) accessible = new_Accessible (this);
+	}
+	return super.WM_GETOBJECT (wParam, lParam);
+}
+
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;

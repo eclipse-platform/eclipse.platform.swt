@@ -593,9 +593,7 @@ public boolean forceFocus () {
  */
 public Accessible getAccessible () {
 	checkWidget ();
-	if (accessible == null) {
-		accessible = Accessible.internal_new_Accessible (this);
-	}
+	if (accessible == null) accessible = new_Accessible (this);
 	return accessible;
 }
 
@@ -1265,6 +1263,10 @@ public void moveBelow (Control control) {
 	if (hwndAbove == 0 || hwndAbove == handle) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	OS.SetWindowPos (handle, hwndAbove, 0, 0, 0, 0, flags);
+}
+
+Accessible new_Accessible (Control control) {
+	return Accessible.internal_new_Accessible (this);
 }
 
 /**

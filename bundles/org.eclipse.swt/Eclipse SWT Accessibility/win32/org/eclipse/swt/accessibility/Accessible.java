@@ -529,13 +529,46 @@ public class Accessible {
 	}
 	
 	int get_accRole(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pvarRole) {
-		if (accessibleControlListeners.size() == 0) {
-			return iaccessible.get_accRole(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarRole);
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
+
+		/* Get the default role from the OS. */
+		int osRole = COM.ROLE_SYSTEM_CLIENT;
+		int code = iaccessible.get_accRole(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarRole);
+		if (code == COM.S_OK) {
+			short[] pvt = new short[1];
+			COM.MoveMemory(pvt, pvarRole, 2);
+			if (pvt[0] == COM.VT_I4) {
+				int[] pRole = new int[1];
+				COM.MoveMemory(pRole, pvarRole + 8, 4);
+				osRole = pRole[0];
+			}
 		}
 
-		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = varChild_lVal - 1;
+		event.detail = osToRole(osRole);
+		if (varChild_lVal == COM.CHILDID_SELF) {
+			event.childID = ACC.CHILDID_SELF;
+		} else {
+			if (control instanceof Tree) {
+				/* Tree item childIDs are pointers (not 1-based indices). */
+				event.childID = varChild_lVal;
+				
+				/* Currently our checkbox tree is emulated using state mask images,
+				 * so we need to specify 'checkbox' role for the items here. */
+				Tree tree = (Tree) control;
+				if ((tree.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
+			} else if (control instanceof Table) {
+				event.childID = varChild_lVal - 1;
+				
+				/* Currently our checkbox table is emulated using state mask images,
+				 * so we need to specify 'checkbox' role for the items here. */
+				Table table = (Table) control;
+				if ((table.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
+			} else {
+				event.childID = varChild_lVal - 1;
+			}
+		}
+
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getRole(event);
@@ -585,13 +618,55 @@ public class Accessible {
 	}
 	
 	int get_accState(int varChild_vt, int varChild_reserved1, int varChild_lVal, int varChild_reserved2, int pvarState) {
-		if (accessibleControlListeners.size() == 0) {
-			return iaccessible.get_accState(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarState);
+		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
+
+		/* Get the default state from the OS. */
+		int osState = 0;
+		int code = iaccessible.get_accState(varChild_vt, varChild_reserved1, varChild_lVal, varChild_reserved2, pvarState);
+		if (code == COM.S_OK) {
+			short[] pvt = new short[1];
+			COM.MoveMemory(pvt, pvarState, 2);
+			if (pvt[0] == COM.VT_I4) {
+				int[] pState = new int[1];
+				COM.MoveMemory(pState, pvarState + 8, 4);
+				osState = pState[0];
+			}
 		}
 
-		if ((varChild_vt & 0xFFFF) != COM.VT_I4) return COM.E_INVALIDARG;
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		event.childID = varChild_lVal - 1;
+		event.detail = osToState(osState);
+		if (varChild_lVal == COM.CHILDID_SELF) {
+			event.childID = ACC.CHILDID_SELF;
+		} else {
+			if (control instanceof Tree) {
+				/* Tree item childIDs are pointers (not 1-based indices). */
+				event.childID = varChild_lVal;
+				
+				/* Currently our checkbox tree is emulated using state mask images,
+				 * so we need to determine if the item is 'checked' here. */
+				int hwnd = control.handle;
+				TVITEM tvItem = new TVITEM ();
+				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
+				tvItem.hItem = varChild_lVal;
+				tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
+				int result = OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
+				boolean checked = (result != 0) && (((tvItem.state >> 12) & 1) == 0);
+				if (checked) event.detail |= ACC.STATE_CHECKED;
+			} else if (control instanceof Table) {
+				event.childID = varChild_lVal - 1;
+
+				/* Currently our checkbox table is emulated using state mask images,
+				 * so we need to determine if the item is 'checked' here. */
+				Table table = (Table) control;
+				TableItem item = table.getItem(event.childID);
+				if (item != null) {
+					if (item.getChecked()) event.detail |= ACC.STATE_CHECKED;
+				}
+			} else {
+				event.childID = varChild_lVal - 1;
+			}
+		}
+
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getState(event);
@@ -696,53 +771,43 @@ public class Accessible {
 	}
 	
 	int stateToOs(int state) {
-		int osState = ACC.STATE_NORMAL;
-		if ((state & ACC.STATE_SELECTED) != 0){
-			osState |= COM.STATE_SYSTEM_SELECTED;
-		}
-		if ((state & ACC.STATE_SELECTABLE) != 0){
-			osState |= COM.STATE_SYSTEM_SELECTABLE;
-		}
-		if ((state & ACC.STATE_MULTISELECTABLE) != 0){
-			osState |= COM.STATE_SYSTEM_MULTISELECTABLE;
-		}
-		if ((state & ACC.STATE_FOCUSED) != 0){
-			osState |= COM.STATE_SYSTEM_FOCUSED;
-		}
-		if ((state & ACC.STATE_FOCUSABLE) != 0){
-			osState |= COM.STATE_SYSTEM_FOCUSABLE;
-		}
-		if ((state & ACC.STATE_PRESSED) != 0){
-			osState |= COM.STATE_SYSTEM_PRESSED;
-		}
-		if ((state & ACC.STATE_CHECKED) != 0){
-			osState |= COM.STATE_SYSTEM_CHECKED;
-		}
-		if ((state & ACC.STATE_EXPANDED) != 0){
-			osState |= COM.STATE_SYSTEM_EXPANDED;
-		}
-		if ((state & ACC.STATE_COLLAPSED) != 0){
-			osState |= COM.STATE_SYSTEM_COLLAPSED;
-		}
-		if ((state & ACC.STATE_HOTTRACKED) != 0){
-			osState |= COM.STATE_SYSTEM_HOTTRACKED;
-		}
-		if ((state & ACC.STATE_BUSY) != 0){
-			osState |= COM.STATE_SYSTEM_BUSY;
-		}
-		if ((state & ACC.STATE_READONLY) != 0){
-			osState |= COM.STATE_SYSTEM_READONLY;
-		}
-		if ((state & ACC.STATE_INVISIBLE) != 0){
-			osState |= COM.STATE_SYSTEM_INVISIBLE;
-		}
-		if ((state & ACC.STATE_OFFSCREEN) != 0){
-			osState |= COM.STATE_SYSTEM_OFFSCREEN;
-		}
-		if ((state & ACC.STATE_SIZEABLE) != 0){
-			osState |= COM.STATE_SYSTEM_SIZEABLE;
-		}
+		int osState = 0;
+		if ((state & ACC.STATE_SELECTED) != 0) osState |= COM.STATE_SYSTEM_SELECTED;
+		if ((state & ACC.STATE_SELECTABLE) != 0) osState |= COM.STATE_SYSTEM_SELECTABLE;
+		if ((state & ACC.STATE_MULTISELECTABLE) != 0) osState |= COM.STATE_SYSTEM_MULTISELECTABLE;
+		if ((state & ACC.STATE_FOCUSED) != 0) osState |= COM.STATE_SYSTEM_FOCUSED;
+		if ((state & ACC.STATE_FOCUSABLE) != 0) osState |= COM.STATE_SYSTEM_FOCUSABLE;
+		if ((state & ACC.STATE_PRESSED) != 0) osState |= COM.STATE_SYSTEM_PRESSED;
+		if ((state & ACC.STATE_CHECKED) != 0) osState |= COM.STATE_SYSTEM_CHECKED;
+		if ((state & ACC.STATE_EXPANDED) != 0) osState |= COM.STATE_SYSTEM_EXPANDED;
+		if ((state & ACC.STATE_COLLAPSED) != 0) osState |= COM.STATE_SYSTEM_COLLAPSED;
+		if ((state & ACC.STATE_HOTTRACKED) != 0) osState |= COM.STATE_SYSTEM_HOTTRACKED;
+		if ((state & ACC.STATE_BUSY) != 0) osState |= COM.STATE_SYSTEM_BUSY;
+		if ((state & ACC.STATE_READONLY) != 0) osState |= COM.STATE_SYSTEM_READONLY;
+		if ((state & ACC.STATE_INVISIBLE) != 0) osState |= COM.STATE_SYSTEM_INVISIBLE;
+		if ((state & ACC.STATE_OFFSCREEN) != 0) osState |= COM.STATE_SYSTEM_OFFSCREEN;
+		if ((state & ACC.STATE_SIZEABLE) != 0) osState |= COM.STATE_SYSTEM_SIZEABLE;
 		return osState;
+	}
+	
+	int osToState(int osState) {
+		int state = ACC.STATE_NORMAL;
+		if ((osState & COM.STATE_SYSTEM_SELECTED) != 0) state |= ACC.STATE_SELECTED;
+		if ((osState & COM.STATE_SYSTEM_SELECTABLE) != 0) state |= ACC.STATE_SELECTABLE;
+		if ((osState & COM.STATE_SYSTEM_MULTISELECTABLE) != 0) state |= ACC.STATE_MULTISELECTABLE;
+		if ((osState & COM.STATE_SYSTEM_FOCUSED) != 0) state |= ACC.STATE_FOCUSED;
+		if ((osState & COM.STATE_SYSTEM_FOCUSABLE) != 0) state |= ACC.STATE_FOCUSABLE;
+		if ((osState & COM.STATE_SYSTEM_PRESSED) != 0) state |= ACC.STATE_PRESSED;
+		if ((osState & COM.STATE_SYSTEM_CHECKED) != 0) state |= ACC.STATE_CHECKED;
+		if ((osState & COM.STATE_SYSTEM_EXPANDED) != 0) state |= ACC.STATE_EXPANDED;
+		if ((osState & COM.STATE_SYSTEM_COLLAPSED) != 0) state |= ACC.STATE_COLLAPSED;
+		if ((osState & COM.STATE_SYSTEM_HOTTRACKED) != 0) state |= ACC.STATE_HOTTRACKED;
+		if ((osState & COM.STATE_SYSTEM_BUSY) != 0) state |= ACC.STATE_BUSY;
+		if ((osState & COM.STATE_SYSTEM_READONLY) != 0) state |= ACC.STATE_READONLY;
+		if ((osState & COM.STATE_SYSTEM_INVISIBLE) != 0) state |= ACC.STATE_INVISIBLE;
+		if ((osState & COM.STATE_SYSTEM_OFFSCREEN) != 0) state |= ACC.STATE_OFFSCREEN;
+		if ((osState & COM.STATE_SYSTEM_SIZEABLE) != 0) state |= ACC.STATE_SIZEABLE;
+		return state;
 	}
 
 	int roleToOs(int role) {
@@ -774,6 +839,38 @@ public class Accessible {
 			case ACC.ROLE_SLIDER: return COM.ROLE_SYSTEM_SLIDER;
 		}
 		return COM.ROLE_SYSTEM_CLIENT;
+	}
+
+	int osToRole(int osRole) {
+		int role = COM.ROLE_SYSTEM_CLIENT;
+		switch (role) {
+			case COM.ROLE_SYSTEM_CLIENT: return ACC.ROLE_CLIENT_AREA;
+			case COM.ROLE_SYSTEM_WINDOW: return ACC.ROLE_WINDOW;
+			case COM.ROLE_SYSTEM_MENUBAR: return ACC.ROLE_MENUBAR;
+			case COM.ROLE_SYSTEM_MENUPOPUP: return ACC.ROLE_MENU;
+			case COM.ROLE_SYSTEM_MENUITEM: return ACC.ROLE_MENUITEM;
+			case COM.ROLE_SYSTEM_SEPARATOR: return ACC.ROLE_SEPARATOR;
+			case COM.ROLE_SYSTEM_TOOLTIP: return ACC.ROLE_TOOLTIP;
+			case COM.ROLE_SYSTEM_SCROLLBAR: return ACC.ROLE_SCROLLBAR;
+			case COM.ROLE_SYSTEM_DIALOG: return ACC.ROLE_DIALOG;
+			case COM.ROLE_SYSTEM_STATICTEXT: return ACC.ROLE_LABEL;
+			case COM.ROLE_SYSTEM_PUSHBUTTON: return ACC.ROLE_PUSHBUTTON;
+			case COM.ROLE_SYSTEM_CHECKBUTTON: return ACC.ROLE_CHECKBUTTON;
+			case COM.ROLE_SYSTEM_RADIOBUTTON: return ACC.ROLE_RADIOBUTTON;
+			case COM.ROLE_SYSTEM_COMBOBOX: return ACC.ROLE_COMBOBOX;
+			case COM.ROLE_SYSTEM_TEXT: return ACC.ROLE_TEXT;
+			case COM.ROLE_SYSTEM_TOOLBAR: return ACC.ROLE_TOOLBAR;
+			case COM.ROLE_SYSTEM_LIST: return ACC.ROLE_LIST;
+			case COM.ROLE_SYSTEM_LISTITEM: return ACC.ROLE_LISTITEM;
+			case COM.ROLE_SYSTEM_TABLE: return ACC.ROLE_TABLE;
+			case COM.ROLE_SYSTEM_COLUMNHEADER: return ACC.ROLE_TABLECOLUMN;
+			case COM.ROLE_SYSTEM_OUTLINE: return ACC.ROLE_TREE;
+			case COM.ROLE_SYSTEM_PAGETABLIST: return ACC.ROLE_TABFOLDER;
+			case COM.ROLE_SYSTEM_PAGETAB: return ACC.ROLE_TABITEM;
+			case COM.ROLE_SYSTEM_PROGRESSBAR: return ACC.ROLE_PROGRESSBAR;
+			case COM.ROLE_SYSTEM_SLIDER: return ACC.ROLE_SLIDER;
+		}
+		return role;
 	}
 
 	/* checkWidget was copied from Widget, and rewritten to work in this package */
