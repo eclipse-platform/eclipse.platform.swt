@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -19,7 +19,6 @@ package org.eclipse.swt.dnd;
  * <code>byte[]</code>, you should sub-class <code>Transfer</code> directly 
  * and do your own mapping to a platform data type.</p>
  */
- 
 public abstract class ByteArrayTransfer extends Transfer {
 public TransferData[] getSupportedTypes(){
 	return null;

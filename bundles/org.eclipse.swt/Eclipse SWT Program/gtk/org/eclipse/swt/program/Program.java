@@ -1,7 +1,7 @@
 package org.eclipse.swt.program;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 

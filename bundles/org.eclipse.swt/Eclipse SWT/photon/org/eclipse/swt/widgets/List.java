@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -173,7 +173,7 @@ public void add (String string, int index) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 
-	/**
+	/*
 	 * Feature in Photon - The preferred width calculated by
 	 * PtWidgetPreferredSize is the current width.
 	 */

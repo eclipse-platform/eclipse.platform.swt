@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -74,7 +74,6 @@ import org.eclipse.swt.internal.motif.*;
  *	<dt><b>Events</b> <dd>DND.DragEnd, DND.DragSetData
  * </dl>
  */
- 
 public class DragSource extends Widget {
 
 	private Callback convertProc;
@@ -138,7 +137,6 @@ public DragSource(Control control, int style) {
  * 		<li>ERROR_WIDGET_DISPOSED  when the widget has been disposed</li>
  * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  */
-
 public void addDragListener(DragSourceListener listener) {
 	if (listener == null) DND.error (SWT.ERROR_NULL_ARGUMENT);
 	DNDListener typedListener = new DNDListener (listener);
@@ -393,9 +391,6 @@ private int dropFinishCallback(int widget, int client_data, int call_data) {
 public Control getControl () {
 	return control;
 }
-/**
-* Gets the Display.
-*/
 public Display getDisplay () {
 
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);

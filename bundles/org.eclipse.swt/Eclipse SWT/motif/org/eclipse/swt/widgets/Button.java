@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -34,7 +34,6 @@ import org.eclipse.swt.events.*;
  * within the SWT implementation.
  * </p>
  */
-
 public class Button extends Control {
 	Image image, bitmap, disabled;
 	static final byte [] ARM_AND_ACTIVATE;
@@ -135,9 +134,6 @@ static int checkStyle (int style) {
 void click () {
 	OS.XtCallActionProc (handle, ARM_AND_ACTIVATE, new XAnyEvent (), null, 0);
 }
-/**
-* Computes the preferred size.
-*/
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int border = getBorderWidth ();
@@ -157,7 +153,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	OS.XtSetValues(handle, argList3, argList3.length / 2);
 	width += result.width;
 	height += result.height;
-	/**
+	/*
 	 * Feature in Motif. If a button's labelType is XmSTRING but it
 	 * has no label set into it yet, recomputing the size will
 	 * not take into account the height of the font, as we would

@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -62,7 +62,6 @@ import org.eclipse.swt.widgets.*;
  *                        DND.Drop, DND.DropAccept
  * </dl>
  */
- 
 public class DropTarget extends Widget {
 	
 	private Callback dropProc;

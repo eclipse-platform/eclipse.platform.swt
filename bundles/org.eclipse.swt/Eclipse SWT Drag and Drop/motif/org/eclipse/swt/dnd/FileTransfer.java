@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 import org.eclipse.swt.internal.Converter;
@@ -12,7 +12,6 @@ import org.eclipse.swt.internal.Converter;
  * platform specific representation of the data and vice versa.  
  * See <code>Transfer</code> for additional information.
  */
-
 public class FileTransfer extends ByteArrayTransfer {
 	
 	private static FileTransfer _instance = new FileTransfer();

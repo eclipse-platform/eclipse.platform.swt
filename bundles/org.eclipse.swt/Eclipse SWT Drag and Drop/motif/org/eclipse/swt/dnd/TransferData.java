@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -19,7 +19,6 @@ package org.eclipse.swt.dnd;
  * are implementing a Transfer subclass and you are unable to subclass the 
  * ByteArrayTransfer class.</p>
  */
-
 public class TransferData {
 	/**
 	 * The type is a unique identifier of a system format or user defined format.

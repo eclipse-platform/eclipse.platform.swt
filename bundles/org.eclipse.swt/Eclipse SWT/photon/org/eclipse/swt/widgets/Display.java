@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -87,7 +87,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Display extends Device {
 
-	/**** TEMPORARY CODE FOR EMULATED TABLE ***/
+	/* TEMPORARY CODE FOR EMULATED TABLE */
 	static int textHighlightThickness = 0;
 	
 	/* TEMPORARY HACK FOR PHOTON */

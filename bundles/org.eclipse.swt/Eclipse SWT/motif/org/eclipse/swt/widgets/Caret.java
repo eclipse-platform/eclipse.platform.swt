@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -23,7 +23,6 @@ import org.eclipse.swt.graphics.*;
  * within the SWT implementation.
  * </p>
  */
-
 public class Caret extends Widget {
 	Canvas parent;
 	Image image;
@@ -122,9 +121,6 @@ public Rectangle getBounds () {
 	}
 	return new Rectangle (x, y, width, height);
 }
-/**
-* Gets the Display.
-*/
 public Display getDisplay () {
 	Composite parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);

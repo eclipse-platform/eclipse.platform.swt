@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -137,9 +137,6 @@ void createHandle (int index) {
 	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
-/**
-* Gets the Display.
-*/
 public Display getDisplay () {
 	Scrollable parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);

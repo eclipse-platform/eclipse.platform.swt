@@ -1,7 +1,7 @@
 package org.eclipse.swt.printing;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.*;
  * within the SWT implementation.
  * </p>
  */
-
 public class PrintDialog extends Dialog {
 	int scope = PrinterData.ALL_PAGES;
 	int startPage = -1, endPage = -1;

@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -98,7 +98,6 @@ public void addDropListener(DropTargetListener listener) {
  * user positions the cursor to drop the data.
  *
  * @return the Control which is registered for this DropTarget
- *
  */
 public Control getControl () {
 	return null;
@@ -110,8 +109,7 @@ public Display getDisplay () {
  * Returns the list of data types that can be transferred to this DropTarget.
  *
  * @return the list of data types that can be transferred to this DropTarget
- *
- */ 
+ */
 public Transfer[] getTransfer() { return null; }
 public void notifyListener (int eventType, Event event) {}
 /**	 

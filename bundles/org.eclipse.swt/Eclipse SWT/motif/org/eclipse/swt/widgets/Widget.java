@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -196,27 +196,27 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 /**
-* Checks access to a widget.
-* <p>
-* Throws an exception when access to the widget
-* is denied.
-*
-* It is an error to call a method on a widget that
-* has been disposed or to call a method on a widget
-* from a thread that is different from the thread
-* that created the widget.  There may be more or
-* less error checks in future or different versions
-* of SWT may issue different errors.
-*
-* This method is intended to be called by widget
-* implementors to enforce the standard SWT error
-* checking prologue in API methods.
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Throws an <code>SWTException</code> if the receiver can not
+ * be accessed by the caller. This may include both checks on
+ * the state of the receiver and more generally on the entire
+ * execution context. This method <em>should</em> be called by
+ * widget implementors to enforce the standard SWT invariants.
+ * <p>
+ * Currently, it is an error to invoke any method (other than
+ * <code>isDisposed()</code>) on a widget that has had its 
+ * <code>dispose()</code> method called. It is also an error
+ * to call widget methods from any thread that is different
+ * from the thread that created the widget.
+ * </p><p>
+ * In future releases of SWT, there may be more or fewer error
+ * checks and exceptions may be thrown for different reasons.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 protected void checkWidget () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -681,8 +681,29 @@ public void removeListener (int eventType, Listener handler) {
 	eventTable.unhook (eventType, handler);
 }
 /**
-* Warning: API under construction.
-*/
+ * Removes the listener from the collection of listeners who will
+ * be notifed when an event of the given type occurs.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It should never be
+ * referenced from application code.
+ * </p>
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should no longer be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #addListener
+ */
 protected void removeListener (int eventType, SWTEventListener handler) {
 	checkWidget();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);

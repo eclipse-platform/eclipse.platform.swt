@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -111,7 +111,7 @@ public Display getDisplay () {
  *
  * @return the list of data types that can be transferred to this DropTarget
  *
- */ 
+ */
 public Transfer[] getTransfer() { return null; }
 public void notifyListener (int eventType, Event event) {}
 /**	 

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -60,7 +60,7 @@ public class List extends Scrollable {
  * @see Widget#getStyle
  */
 public List (Composite parent, int style) {
-	/**
+	/*
 	 * Feature in Motif.  It is not possible to create
 	 * scrolled list that will never show the vertical
 	 * scroll bar.  Therefore, not matter what style
@@ -214,7 +214,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (horizontalBar != null) {
 		int [] argList = {OS.XmNheight, 0};
 		OS.XtGetValues (horizontalBar.handle, argList, argList.length / 2);
-		/**
+		/*
 		 * Motif adds four pixels between the bottom of the
 		 * list and the horizontal scroll bar. Add those now.
 		 */

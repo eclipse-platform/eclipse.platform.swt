@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -73,7 +73,7 @@ import org.eclipse.swt.internal.photon.*;
  *	<dt><b>Styles</b> <dd>DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK 
  *	<dt><b>Events</b> <dd>DND.DragEnd, DND.DragSetData
  * </dl>
- */ 
+ */
 public class DragSource extends Widget {
 
 	private Callback convertProc;
@@ -164,9 +164,6 @@ static int checkStyle (int style) {
 public Control getControl () {
 	return control;
 }
-/**
-* Gets the Display.
-*/
 public Display getDisplay () {
 
 	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);

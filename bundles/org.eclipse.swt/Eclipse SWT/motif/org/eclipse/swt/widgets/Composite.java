@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -116,9 +116,6 @@ Control [] _getTabList () {
 	tabList = newList;
 	return tabList;
 }
-/**
-* Computes the preferred size.
-*/
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	Point size;

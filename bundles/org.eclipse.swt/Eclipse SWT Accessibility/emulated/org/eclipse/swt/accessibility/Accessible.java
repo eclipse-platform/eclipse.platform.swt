@@ -1,7 +1,7 @@
 package org.eclipse.swt.accessibility;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -28,7 +28,6 @@ import org.eclipse.swt.widgets.Control;
  * 
  * @since 2.0
  */
-
 public class Accessible {
 
 	Accessible(Control control) {
@@ -49,7 +48,6 @@ public class Accessible {
 	 *
 	 * @private
 	 */
-
 	public static Accessible internal_new_Accessible(Control control) {
 		return new Accessible(control);
 	}
@@ -172,7 +170,6 @@ public class Accessible {
 	 *
 	 * @private
 	 */
-
 	public void internal_dispose_Accessible() {
 	}
 	

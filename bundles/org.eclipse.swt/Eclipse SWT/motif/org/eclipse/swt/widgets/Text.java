@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -1228,9 +1228,6 @@ public void setEditable (boolean editable) {
 	int [] argList = {OS.XmNcursorPositionVisible, editable && hasFocus () ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
-/**
-* Sets the redraw flag.
-*/
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
@@ -1365,7 +1362,7 @@ public void setSelection (Point selection) {
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSelection (selection.x, selection.y);
 }
- /**
+/**
  * Sets the number of tabs.
  * <p>
  * Tab stop spacing is specified in terms of the
@@ -1380,7 +1377,7 @@ public void setSelection (Point selection) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
-*/
+ */
 public void setTabs (int tabs) {
 	checkWidget();
 	/* Do nothing.  Tabs are not supported in MOTIF. */

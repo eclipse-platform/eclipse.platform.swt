@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -14,7 +14,6 @@ import org.eclipse.swt.internal.photon.OS;
  * to a platform specific representation of the data and vice versa.  See 
  * <code>Transfer</code> for additional information.
  */
-
 public class TextTransfer extends ByteArrayTransfer {
 
 	private static TextTransfer _instance = new TextTransfer();

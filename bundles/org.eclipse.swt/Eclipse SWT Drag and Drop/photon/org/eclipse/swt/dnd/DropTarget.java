@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -61,7 +61,7 @@ import org.eclipse.swt.internal.photon.*;
  *	<dt><b>Events</b> <dd>DND.DragEnter, DND.DragLeave, DND.DragOver, DND.DragOperationChanged, 
  *                        DND.Drop, DND.DropAccept
  * </dl>
- */ 
+ */
 public class DropTarget extends Widget {
 	
 	private Callback dropProc;
@@ -154,7 +154,6 @@ static int checkStyle (int style) {
  * user positions the cursor to drop the data.
  *
  * @return the Control which is registered for this DropTarget
- *
  */
 public Control getControl () {
 	return control;
@@ -168,8 +167,7 @@ public Display getDisplay () {
  * Returns the list of data types that can be transferred to this DropTarget.
  *
  * @return the list of data types that can be transferred to this DropTarget
- *
- */ 
+ */
 public Transfer[] getTransfer(){
 	return transferAgents;
 }

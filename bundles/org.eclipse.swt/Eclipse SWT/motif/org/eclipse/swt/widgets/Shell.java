@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -374,7 +374,7 @@ void adjustTrim () {
 		if (parent [0] == 0) return;	
 	}
 	
-	/**
+	/*
 	 * Translate the coordinates of the shell window to the
 	 * coordinates of the direct child of the root window
 	 */
@@ -667,7 +667,7 @@ void enableWidget (boolean enabled) {
  * @see Decorations#setDefaultButton
  * @see Shell#open
  * @see Shell#setActive
-*/
+ */
 public void forceActive () {
 	checkWidget ();
 	bringToTop (true);
@@ -859,7 +859,7 @@ void manageChildren () {
  * @see Decorations#setDefaultButton
  * @see Shell#setActive
  * @see Shell#forceActive
-*/
+ */
 public void open () {
 	checkWidget();
 	setVisible (true);
@@ -1041,7 +1041,7 @@ void saveBounds () {
  * @see Decorations#setDefaultButton
  * @see Shell#open
  * @see Shell#setActive
-*/
+ */
 public void setActive () {
 	checkWidget ();
 	bringToTop (false);

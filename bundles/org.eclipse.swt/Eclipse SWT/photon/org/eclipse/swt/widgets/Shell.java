@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -500,7 +500,7 @@ void deregister () {
  * @see Decorations#setDefaultButton
  * @see Shell#open
  * @see Shell#setActive
-*/
+ */
 public void forceActive () {
 	checkWidget ();
 	bringToTop ();
@@ -819,7 +819,7 @@ public void removeShellListener (ShellListener listener) {
  * @see Decorations#setDefaultButton
  * @see Shell#open
  * @see Shell#setActive
-*/
+ */
 public void setActive () {
 	checkWidget ();
 	bringToTop ();

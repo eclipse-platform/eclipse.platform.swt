@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -17,7 +17,6 @@ package org.eclipse.swt.dnd;
  * String rtfData = "{\\rtf1{\\colortbl;\\red255\\green0\\blue0;}\\uc1\\b\\i Hello World}";
  * </code></pre>
  */
-
 public class RTFTransfer extends ByteArrayTransfer {
 
 	private static RTFTransfer _instance = new RTFTransfer();

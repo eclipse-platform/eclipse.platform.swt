@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -14,7 +14,6 @@ import org.eclipse.swt.widgets.*;
  * 
  * <p>IMPORTANT: This class is <em>not</em> intended to be subclassed.</p>
  */
- 
 public class Clipboard {
 	
 	private Display display;
@@ -68,7 +67,6 @@ public void dispose () {
  * 
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
-
 public Object getContents(Transfer transfer) {
 	if (display.isDisposed() || !(transfer instanceof TextTransfer)) return null;
 	return display.getData("TextTransfer");
@@ -109,7 +107,6 @@ public Object getContents(Transfer transfer) {
  *         otherwise unavailable</li>
  * </ul>
  */
-
 public void setContents(Object[] data, Transfer[] transferAgents){
 	
 	if (data == null) {
@@ -140,7 +137,6 @@ public void setContents(Object[] data, Transfer[] transferAgents){
  * @returns a platform specific list of the data types currently available on the 
  * system clipboard
  */
-
 /*
  * Note: getAvailableTypeNames is a tool for writing a Transfer sub-class only.  It should
  * NOT be used within an application because it provides platform specfic 

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -1068,12 +1068,13 @@ void initializeButton () {
 	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
 	buttonForeground = argList [1];  buttonBackground = argList [3];
 	buttonShadowThickness = argList [5];
-	/**
+	/*
 	 * Feature in Motif. Querying the font list from the widget and
 	 * then destroying the shell (and the widget) could cause the
 	 * font list to be freed as well. The fix is to make a copy of
 	 * the font list, then to free it when the display is disposed.
-	 */ 
+	 */
+  
 	buttonFont = Font.motif_new (this, OS.XmFontListCopy (argList [7]));
 	OS.XtDestroyWidget (shellHandle);
 }
@@ -1225,12 +1226,13 @@ void initializeLabel () {
 	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNfontList, 0};
 	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
 	labelForeground = argList [1];  labelBackground = argList [3]; 
-	/**
+	/*
 	 * Feature in Motif. Querying the font list from the widget and
 	 * then destroying the shell (and the widget) could cause the
 	 * font list to be freed as well. The fix is to make a copy of
 	 * the font list, then to free it when the display is disposed.
-	 */ 
+	 */
+  
 	labelFont = Font.motif_new (this, OS.XmFontListCopy (argList [5]));
 	OS.XtDestroyWidget (shellHandle);
 }
@@ -1247,15 +1249,16 @@ void initializeList () {
 	listForeground = argList [1];
 	listBackground = argList [3];
 	
-	/**
+	/*
 	 * Feature in Motif. Querying the font list from the widget and
 	 * then destroying the shell (and the widget) could cause the
 	 * font list to be freed as well. The fix is to make a copy of
 	 * the font list, then to free it when the display is disposed.
-	 */ 
+	 */
+  
 	listFont = Font.motif_new (this, OS.XmFontListCopy (argList [5]));
 	
-	/**
+	/*
 	* Feature in Motif.  If the value of resource XmNselectColor is
 	* XmDEFAULT_SELECT_COLOR then querying for this resource gives
 	* the value of the selection color to use, which is between the
@@ -1353,12 +1356,13 @@ void initializeText () {
 	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
 	textForeground = argList [1];  textBackground = argList [3];  
 	textHighlightThickness = argList[7];
-	/**
+	/*
 	 * Feature in Motif. Querying the font list from the widget and
 	 * then destroying the shell (and the widget) could cause the
 	 * font list to be freed as well. The fix is to make a copy of
 	 * the font list, then to free it when the display is disposed.
-	 */ 
+	 */
+  
 	textFont = Font.motif_new (this, OS.XmFontListCopy (argList [5])); 
 	OS.XtDestroyWidget (shellHandle);
 

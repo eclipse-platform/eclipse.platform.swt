@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -414,7 +414,7 @@ String keysymName (int keysym) {
 		('A' <= keysym && keysym <= 'Z')) {
 			return new String (new char [] {(char) keysym});
 	}
-	/**
+	/*
 	 * Note that XKeysymToString returns a value in a static
 	 * area which must not be modified or freed.
 	 */
@@ -692,18 +692,6 @@ public void setSelection (boolean selected) {
 	int [] argList = {OS.XmNset, selected ? 1 : 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 }
-/**
-* Sets the widget text.
-* <p>
-* @param string the widget text
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-* @exception SWTError(ERROR_NULL_ARGUMENT)
-*	when string is null
-*/
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

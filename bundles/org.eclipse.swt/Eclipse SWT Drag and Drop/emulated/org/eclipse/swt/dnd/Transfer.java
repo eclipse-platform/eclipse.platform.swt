@@ -1,7 +1,7 @@
 package org.eclipse.swt.dnd;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -20,7 +20,6 @@ import org.eclipse.swt.widgets.Display;
  * 
  * @see ByteArrayTransfer
  */
-
 public abstract class Transfer {
 /**
  * Returns a list of the platform specific data types that can be converted using 
