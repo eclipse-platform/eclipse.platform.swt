@@ -34,7 +34,7 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 //
 
 VS_VERSION_INFO VERSIONINFO
- FILEVERSION 1,1,3,3
+ FILEVERSION 1,1,3,4
  PRODUCTVERSION 0,0,0,0
  FILEFLAGSMASK 0x3fL
 #ifdef _DEBUG
@@ -52,10 +52,10 @@ BEGIN
         BEGIN
             VALUE "CompanyName", "IBM Corporation\0"
             VALUE "FileDescription", "Standard Widget Toolkit\0"
-            VALUE "FileVersion", "win32 1.133\0"
+            VALUE "FileVersion", "win32 1.134\0"
             VALUE "InternalName", "SWT\0"
             VALUE "LegalCopyright", "© Copyright IBM Corp. 2000, 2001. All Rights Reserved.\0"
-            VALUE "OriginalFilename", "swt-win32-1133.dll\0"
+            VALUE "OriginalFilename", "swt-win32-1134.dll\0"
             VALUE "ProductName", "\0"
             VALUE "ProductVersion", "0, 0, 0, 0\0"
         END
