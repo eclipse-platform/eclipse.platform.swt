@@ -748,8 +748,8 @@ void initializeCallbacks () {
 	int[] mask2 = new int[] {
 		OS.kEventClassMouse, OS.kEventMouseDown,
 		OS.kEventClassMouse, OS.kEventMouseDragged,
-		OS.kEventClassMouse, OS.kEventMouseEntered,
-		OS.kEventClassMouse, OS.kEventMouseExited,
+//		OS.kEventClassMouse, OS.kEventMouseEntered,
+//		OS.kEventClassMouse, OS.kEventMouseExited,
 		OS.kEventClassMouse, OS.kEventMouseMoved,
 		OS.kEventClassMouse, OS.kEventMouseUp,
 		OS.kEventClassMouse, OS.kEventMouseWheelMoved,
@@ -947,7 +947,9 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 					}
 				}
 			}
-			if (widget != null) return widget.mouseProc (nextHandler, theEvent, userData);
+			if (widget != null) {
+				return userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
+			}
 			break;
 		}
 	}

@@ -152,7 +152,8 @@ public int getSelection () {
 
 public Point getSize () {
 	checkWidget();
-	return getSize (handle);
+	Rect rect = getSize (handle);
+	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public int getThumb () {

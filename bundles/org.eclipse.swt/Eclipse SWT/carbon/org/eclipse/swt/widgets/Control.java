@@ -236,7 +236,8 @@ public int getBorderWidth () {
 
 public Rectangle getBounds () {
 	checkWidget();
-	return getBounds (topHandle ());
+	Rect rect = getBounds (topHandle ());
+	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public Display getDisplay () {
@@ -269,7 +270,8 @@ public Object getLayoutData () {
 
 public Point getLocation () {
 	checkWidget();
-	return getLocation (topHandle ());
+	Rect rect = getBounds (topHandle ());
+	return new Point (rect.left, rect.top);
 }
 
 public Menu getMenu () {
@@ -306,7 +308,8 @@ public Shell getShell () {
 
 public Point getSize () {
 	checkWidget();
-	return getSize (topHandle ());
+	Rect rect = getSize (topHandle ());
+	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public String getToolTipText () {
