@@ -315,7 +315,6 @@ void drawRectangles (Rectangle [] rects) {
 }
 
 public Display getDisplay () {
-	checkWidget ();
 	return display;
 }
 

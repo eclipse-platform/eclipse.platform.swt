@@ -270,7 +270,6 @@ void drawRectangles () {
 	OS.XFreeGC (xDisplay, gc);
 }
 public Display getDisplay () {
-	checkWidget ();
 	return display;
 }
 /**
