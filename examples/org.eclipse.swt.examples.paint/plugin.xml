@@ -8,7 +8,9 @@
 
 <!-- Runtime -->
    <runtime>
-      <library name="paint.jar"/>
+      <library name="paint.jar">
+         <packages prefixes="org.eclipse.swt.examples.paint"/>
+      </library>
    </runtime>
 <!-- Required plugins -->
    <requires>
