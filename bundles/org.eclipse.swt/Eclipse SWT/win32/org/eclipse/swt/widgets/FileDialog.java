@@ -295,7 +295,7 @@ public String open () {
 			while (index < buffer.length ()) {
 				int ch = buffer.tcharAt (index);
 				if (ch == 0) break;
-				if (ch == '\\') nFileOffset = index;
+				if (ch == '\\') nFileOffset = index + 1;
 				index++;
 			}
 		}
