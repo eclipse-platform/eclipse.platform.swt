@@ -1847,21 +1847,32 @@ int setString(String string, int flags) {
 		int i=0, j=0;
 		while (i < chars.length) {
 			char c = chars [j++] = chars [i++];
-			if (c == '&' && (flags & SWT.DRAW_MNEMONIC) != 0) {
-				if (i == chars.length) {continue;}
-				if (chars [i] == '&') {i++; continue;}
-				j--;
-			} else if (c == '\n' && (flags & SWT.DRAW_DELIMITER) != 0) {
-				j--;
-				if (breaks == null) {
-					breaks = new int[4];
-				} else if (breakCount == breaks.length) {
-					int[] newBreaks = new int[breaks.length + 4];
-					System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
-					breaks = newBreaks;
+			switch (c) {
+				case '&': {
+					if ((flags & SWT.DRAW_MNEMONIC) != 0) {
+						if (i == chars.length) {continue;}
+						if (chars [i] == '&') {i++; continue;}
+						j--;
+					}
+					break;
 				}
-				breaks[breakCount++] = j;
-			}			
+				case '\r':
+				case '\n': {
+					if ((flags & SWT.DRAW_DELIMITER) != 0) {
+						if (c == '\r' && i != chars.length && chars[i] == '\n') i++;
+						j--;
+						if (breaks == null) {
+							breaks = new int[4];
+						} else if (breakCount == breaks.length) {
+							int[] newBreaks = new int[breaks.length + 4];
+							System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
+							breaks = newBreaks;
+						}
+						breaks[breakCount++] = j;
+					}
+					break;
+				}
+			}
 		}
 		length = j;
 	}
