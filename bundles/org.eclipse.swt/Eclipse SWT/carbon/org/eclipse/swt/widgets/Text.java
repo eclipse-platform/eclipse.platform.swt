@@ -930,7 +930,7 @@ int processFocusIn () {
 	
 	OS.TXNFocus(fTX, true);
 	//fgTextInFocus= this;
-	drawFrame();
+	drawFrame(null);
 	
 	if ((style & SWT.MULTI) != 0) return 0;
     /* AW
@@ -947,7 +947,7 @@ int processFocusOut () {
 	
 	//fgTextInFocus= null;
 	OS.TXNFocus(fTX, false);
-	drawFrame();
+	drawFrame(null);
 	
 	if ((style & SWT.MULTI) != 0) return 0;
     /* AW
@@ -967,7 +967,7 @@ int processMouseDown (Object callData) {
 }
 int processPaint (Object callData) {
 	syncBounds();
-	drawFrame();
+	drawFrame(callData);
 	return 0;
 }
 /**
@@ -1516,19 +1516,32 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		return status;
 	}
 	
-	private void drawFrame() {
+	private void drawFrame(Object callData) {
+		
 		if ((style & SWT.BORDER) == 0)
 			return;
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(handle, bounds.getData());
-		int b= 1;
-		bounds.set(bounds.getX()+b, bounds.getY()+b, bounds.getWidth()-2*b, bounds.getHeight()-2*b);
-		OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
-		if ((style & SWT.READ_ONLY) == 0) {
-			Control focus= getDisplay().getFocusControl();
-			boolean hasFocus= focus == this;
-			//System.out.println("drawFrame: " + hasFocus);
-			OS.DrawThemeFocusRect(bounds.getData(), hasFocus);
+			
+		GC gc= new GC(this);
+		int damageRegion= 0;
+		if (callData instanceof MacControlEvent)
+			damageRegion= ((MacControlEvent)callData).getDamageRegionHandle();
+		try {
+			Rectangle r= gc.carbon_focus(damageRegion);
+			if (!r.isEmpty()) {
+				MacRect bounds= new MacRect();
+				OS.GetControlBounds(handle, bounds.getData());
+				int b= 1;
+				bounds.set(0+b, 0+b, bounds.getWidth()-2*b, bounds.getHeight()-2*b);
+				OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
+				if ((style & SWT.READ_ONLY) == 0) {
+					Control focus= getDisplay().getFocusControl();
+					boolean hasFocus= focus == this;
+					//System.out.println("drawFrame: " + hasFocus);
+					OS.DrawThemeFocusRect(bounds.getData(), hasFocus);
+				}
+			}
+		} finally {
+			gc.carbon_unfocus();
 		}
 	}
 }

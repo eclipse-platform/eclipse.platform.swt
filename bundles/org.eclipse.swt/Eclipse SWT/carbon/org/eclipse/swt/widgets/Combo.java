@@ -904,7 +904,7 @@ int processFocusIn () {
 	if (fTX != 0) {
 		OS.TXNFocus(fTX, true);
 		//Text.fgTextInFocus= this;
-		drawFrame();
+		drawFrame(null);
 	}
 	return 0;
 }
@@ -915,7 +915,7 @@ int processFocusOut () {
 	if (fTX != 0) {
 		//Text.fgTextInFocus= null;
 		OS.TXNFocus(fTX, false);
-		drawFrame();
+		drawFrame(null);
 	}
 	return 0;
 }
@@ -930,7 +930,7 @@ int processMouseDown (Object callData) {
 }
 int processPaint (Object callData) {
 	syncBounds();
-	drawFrame();
+	drawFrame(callData);
 	return 0;
 }
 int processSelection (Object callData) {
@@ -1528,17 +1528,28 @@ void enableWidget (boolean enabled) {
 		return status;
 	}
 
-	private void drawFrame() {
+	private void drawFrame(Object callData) {
 		if (fFrameRect != null) {
-			MacRect bounds= new MacRect(fFrameRect);
-			short[] b= bounds.getData();
-			b[0]--;
-			b[1]--;
-			b[2]++;
-			b[3]++;
-			OS.DrawThemeEditTextFrame(b, OS.kThemeStateActive);
-			Control focus= getDisplay().getFocusControl();
-			OS.DrawThemeFocusRect(b, focus == this);
+			GC gc= new GC(this);
+			int damageRegion= 0;
+			if (callData instanceof MacControlEvent)
+				damageRegion= ((MacControlEvent)callData).getDamageRegionHandle();
+			try {
+				Rectangle r= gc.carbon_focus(damageRegion);
+				if (!r.isEmpty()) {
+					MacRect bounds= new MacRect(fFrameRect);
+					short[] b= bounds.getData();
+					b[0]--;
+					b[1]--;
+					b[2]++;
+					b[3]++;
+					OS.DrawThemeEditTextFrame(b, OS.kThemeStateActive);
+					Control focus= getDisplay().getFocusControl();
+					OS.DrawThemeFocusRect(b, focus == this);
+				}
+			} finally {
+				gc.carbon_unfocus();
+			}
 		}
 	}
 }
