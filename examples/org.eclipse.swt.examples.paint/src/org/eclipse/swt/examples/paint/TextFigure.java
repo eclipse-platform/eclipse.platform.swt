@@ -33,14 +33,15 @@ public class TextFigure extends Figure {
 		gc.drawText(text, x + offset.x, y + offset.y, true);
 	}
 	public Object drawPreview(GC gc, Point offset) {
-		Point textExtent = gc.textExtent(text);
-		Image backingStore = new Image(null, textExtent.x, textExtent.y);
-		gc.copyArea(backingStore, x + offset.x, y + offset.y);
-		
-		gc.setFont(font);
 		Color oldColor = gc.getForeground();
+		gc.setFont(font);
 		gc.setForeground(color);
 		gc.setXORMode(false);
+
+		Point textExtent = gc.textExtent(text);
+		Image backingStore = new Image(null, textExtent.x, textExtent.y);
+		gc.copyArea(backingStore, x + offset.x, y + offset.y);	
+
 		gc.drawText(text, x + offset.x, y + offset.y, true);
 		gc.setForeground(oldColor);
 		gc.setXORMode(true);
@@ -48,7 +49,6 @@ public class TextFigure extends Figure {
 	}
 	public void erasePreview(GC gc, Point offset, Object rememberedData) {
 		Image backingStore = (Image) rememberedData;
-		gc.setFont(font);
 		gc.setXORMode(false);
 		gc.drawImage(backingStore, x + offset.x, y + offset.y);
 		gc.setXORMode(true);

@@ -322,8 +322,9 @@ public class PaintView extends ViewPart {
 		final PaintTool activePaintTool = paintSurface.getPaintTool();
 		if (activePaintTool == null) return;
 		
+		activePaintTool.endSession();
 		activePaintTool.set(toolSettings);
-		activePaintTool.resetSession();
+		activePaintTool.beginSession();
 	}
 
 	/**
@@ -444,7 +445,10 @@ public class PaintView extends ViewPart {
 				fontDialog.setFontData(fontDatum[0]);
 			}
 			fontDialog.setText(PaintPlugin.getResourceString("options.Font.dialog.title"));
+
+			paintSurface.hideRubberband();
 			FontData fontData = fontDialog.open();
+			paintSurface.showRubberband();
 			if (fontData != null) {
 				try {
 					Font font = new Font(workbenchDisplay, fontData);
