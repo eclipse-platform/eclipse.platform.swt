@@ -67,6 +67,35 @@ public Font(Device device, FontData fd) {
 }
 
 /**	 
+ * Constructs a new font given a device and font datas
+ * which describes the desired font's appearance.
+ * <p>
+ * You must dispose the font when it is no longer required. 
+ * </p>
+ *
+ * @param device the device to create the font on
+ * @param fds the array of FontData that describes the desired font (must not be null)
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the fds argument is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the length of fds is zero</li>
+ *    <li>ERROR_NULL_ARGUMENT - if any fd in the array is null</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
+ * </ul>
+ */
+public Font(Device device, FontData[] fds) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (fds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (fds.length == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	init(device, fds[0]);
+	if (device.tracking) device.new_Object(this);	
+}
+
+/**	 
  * Constructs a new font given a device, a font name,
  * the height of the desired font in points, and a font
  * style.
