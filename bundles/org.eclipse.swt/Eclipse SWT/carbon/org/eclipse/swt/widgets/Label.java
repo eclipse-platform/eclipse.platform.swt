@@ -122,6 +122,7 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	this.image = image;
 	isImage = true;
+	OS.HIViewSetNeedsDisplay (handle, true);
 }
 
 public void setText (String string) {
