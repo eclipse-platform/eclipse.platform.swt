@@ -74,7 +74,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 public void clearSelection () {
 	checkWidget();
-	OS.PtTextSetSelection (handle, new int [] {0}, new int [] {0});
+	int [] position = {0};
+	if ((style & SWT.SINGLE) != 0) {
+		int [] args = {OS.Pt_ARG_CURSOR_POSITION, 0, 0};
+		OS.PtGetResources (handle, args.length / 3, args);
+		position [0] = args [1];
+	}
+	OS.PtTextSetSelection (handle, position, position);
 }
 void createHandle (int index) {
 	state |= HANDLE;
