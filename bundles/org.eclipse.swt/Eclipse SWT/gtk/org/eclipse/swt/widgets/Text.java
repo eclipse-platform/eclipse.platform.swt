@@ -26,7 +26,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Text extends Scrollable {
-	int textLimit = LIMIT;
+	int textLimit = 0xFFFF;
 	boolean visibility = true;
 	public final static int LIMIT;
 	public final static String DELIMITER;
@@ -114,7 +114,7 @@ void showHandle() {
 void hookEvents () {
 	//TO DO - get rid of enter/exit for mouse crossing border
 	super.hookEvents();
-	signal_connect_after(handle, "changed", SWT.Modify, 2);
+	signal_connect_after (handle, "changed", SWT.Modify, 2);
 	signal_connect (handle, "insert_text", SWT.Verify, 5);
 	signal_connect (handle, "delete_text", SWT.Verify, 4);
 	signal_connect (handle, "activate", SWT.Selection, 2);

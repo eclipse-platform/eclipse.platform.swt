@@ -46,9 +46,19 @@ import org.eclipse.swt.events.*;
  */
 
 public class Combo extends Composite {
-	int padHandle, _entryHandle, _listHandle, _arrowHandle;
-	int glist;
-	boolean isSelection;
+	int padHandle, glist;
+	int textLimit = LIMIT;
+	public final static int LIMIT;
+	
+	/*
+	* These values can be different on different platforms.
+	* Therefore they are not initialized in the declaration
+	* to stop the compiler from inlining.
+	*/
+	static {
+		LIMIT = 0xFFFF;
+	}
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -80,6 +90,7 @@ public class Combo extends Composite {
 public Combo (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
 /**
  * Adds the argument to the end of the receiver's list.
  *
@@ -107,6 +118,7 @@ public void add (String string) {
 	newItems [items.length] = string;
 	setItems (newItems);
 }
+
 /**
  * Adds the argument to the receiver's list at the given
  * zero-relative index.
@@ -145,6 +157,7 @@ public void add (String string, int index) {
 	newItems [index] = string;
 	setItems (newItems);
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's text is modified, by sending
@@ -170,6 +183,7 @@ public void addModifyListener (ModifyListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Modify, typedListener);
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending
@@ -201,6 +215,7 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
 }
+
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -228,6 +243,7 @@ static int checkStyle (int style) {
 	if ((style & SWT.SIMPLE) != 0) return style & ~SWT.READ_ONLY;
 	return style;
 }
+
 /**
  * Sets the selection in the receiver's text field to an empty
  * selection starting just before the first character. If the
@@ -247,12 +263,11 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget();
-	int position = OS.gtk_editable_get_position (_entryHandle);
-	OS.gtk_editable_set_position (_entryHandle, position);
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	int position = OS.gtk_editable_get_position (combo.entry);
+	OS.gtk_editable_set_position (combo.entry, position);
 }
-
-
-/*   ===  Handle code 1 (creation)  =========   */
 
 void createHandle (int index) {
 	state |= HANDLE;
@@ -264,26 +279,20 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	fixedHandle = OS.gtk_fixed_new();
 	if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);
-
-	// The GtkCombo internal widgets.
-	// We don't create them, and actually these are not all of them
-	GtkCombo gtkCombo = new GtkCombo();
-	OS.memmove (gtkCombo, handle, GtkCombo.sizeof);
-	_entryHandle = gtkCombo.entry;
-	_listHandle  = gtkCombo.list;
-	_arrowHandle = gtkCombo.button;
 }
 
 void setHandleStyle() {
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
 	boolean isEditable = (style & SWT.READ_ONLY) == 0;
-	OS.gtk_entry_set_editable(_entryHandle, isEditable);
+	OS.gtk_entry_set_editable (combo.entry, isEditable);
 }
 
 void configure () {
 	_connectParent();
 	OS.gtk_container_add(eventBoxHandle, padHandle);
 	OS.gtk_fixed_put (padHandle, fixedHandle, (short)0, (short)0);
-	OS.gtk_fixed_put (padHandle, handle,       (short)0, (short)0);
+	OS.gtk_fixed_put (padHandle, handle, (short)0, (short)0);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -299,31 +308,29 @@ void showHandle() {
 	OS.gtk_widget_realize (handle);
 }
 
-void register () {
-	super.register ();
-	WidgetTable.put (padHandle, this);
-	WidgetTable.put (_entryHandle, this);
-	WidgetTable.put (_listHandle, this);
-	WidgetTable.put (_arrowHandle, this);
-}
-
 void deregister () {
 	super.deregister ();
 	WidgetTable.remove (padHandle);
-	WidgetTable.remove (_entryHandle);
-	WidgetTable.remove (_listHandle);
-	WidgetTable.remove (_arrowHandle);
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	WidgetTable.remove (combo.entry);
+	WidgetTable.remove (combo.list);
+	WidgetTable.remove (combo.button);
 }
 
 void hookEvents () {
 	// TO DO - expose, enter/exit, focus in/out
 	super.hookEvents ();
-	signal_connect(_entryHandle, "changed", SWT.Selection, 2);
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	// TO DO - fix multiple selection events for one user action
+	signal_connect (combo.list, "select_child", SWT.Selection, 3);
+	signal_connect_after (combo.entry, "changed", SWT.Modify, 2);
 	int mask =
 		OS.GDK_POINTER_MOTION_MASK | 
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK;
-	int [] handles = new int [] {_entryHandle, _listHandle, _arrowHandle};
+	int [] handles = new int [] {combo.entry, combo.list, combo.button};
 	for (int i=0; i<handles.length; i++) {
 		int handle = handles [i];
 		if (!OS.GTK_WIDGET_NO_WINDOW (handle)) {
@@ -337,7 +344,6 @@ void hookEvents () {
 	}
 }
 
-/*  ===  Handle code 2 (identification)  ===  */
 int topHandle() { return eventBoxHandle; }
 int parentingHandle() { return fixedHandle; }
 boolean isMyHandle(int h) {
@@ -345,11 +351,11 @@ boolean isMyHandle(int h) {
 	if (h==padHandle) return true;
 	if (h==fixedHandle) return true;
 	if (h==handle) return true;
-	
-	if (h==_arrowHandle) return true;
-	if (h==_entryHandle) return true;
-	if (h==_listHandle)  return true;
-	
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	if (h== combo.entry) return true;
+	if (h== combo.list) return true;
+	if (h== combo.button) return true;
 	return false;
 }
 
@@ -357,9 +363,7 @@ void _connectChild (int h) {
 	OS.gtk_fixed_put (fixedHandle, h, (short)0, (short)0);
 }
 
-/* Geometry */
-
-protected Point _getClientAreaSize () {
+Point _getClientAreaSize () {
 	return UtilFuncs.getSize(fixedHandle);
 }
 
@@ -386,6 +390,7 @@ public void deselect (int index) {
 	checkWidget();
 	setItems (getItems ());
 }
+
 /**
  * Deselects all selected items in the receiver's list.
  * <p>
@@ -404,6 +409,7 @@ public void deselectAll () {
 	checkWidget();
 	setItems (getItems ());
 }
+
 /**
  * Returns the item at the given, zero-relative index in the
  * receiver's list. Throws an exception if the index is out
@@ -425,12 +431,13 @@ public void deselectAll () {
  */
 public String getItem (int index) {
 	checkWidget();
-	if (!(0 <= index && index < getItemCount ())) {
+	String [] items = getItems ();
+	if (!(0 <= index && index < items.length)) {
 		error (SWT.ERROR_CANNOT_GET_ITEM);
 	}
-	String [] items = getItems ();
 	return items [index];
 }
+
 /**
  * Returns the number of items contained in the receiver's list.
  *
@@ -449,6 +456,7 @@ public int getItemCount () {
 	if (glist == 0) return 0;
 	return OS.g_list_length (glist);
 }
+
 /**
  * Returns the height of the area which would be used to
  * display <em>one</em> of the items in the receiver's list.
@@ -468,6 +476,7 @@ public int getItemHeight () {
 	/* FIXME */
 	return 0;
 }
+
 /**
  * Returns an array of <code>String</code>s which are the items
  * in the receiver's list. 
@@ -502,6 +511,7 @@ public String [] getItems () {
 	}
 	return items;
 }
+
 /**
  * Returns a <code>Point</code> whose x coordinate is the start
  * of the selection in the receiver's text field, and whose y
@@ -517,10 +527,14 @@ public String [] getItems () {
  * </ul>
  */
 public Point getSelection () {
-	GtkEditable widget = new GtkEditable();
-	OS.memmove (widget, _entryHandle, GtkEditable.sizeof);
-	return new Point (widget.selection_start_pos, widget.selection_end_pos);
+	checkWidget ();
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	GtkEditable editable = new GtkEditable();
+	OS.memmove (editable, combo.entry, GtkEditable.sizeof);
+	return new Point (editable.selection_start_pos, editable.selection_end_pos);
 }
+
 /**
  * Returns the zero-relative index of the item which is currently
  * selected in the receiver's list, or -1 if no item is selected.
@@ -534,8 +548,10 @@ public Point getSelection () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	return indexOf(getText());
+	//NOT RIGHT FOR EDITABLE
+	return indexOf (getText ());
 }
+
 /**
  * Returns a string containing a copy of the contents of the
  * receiver's text field.
@@ -549,14 +565,22 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget();
-	int address = OS.gtk_entry_get_text(_entryHandle);
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	int address = OS.gtk_entry_get_text (combo.entry);
 	int length = OS.strlen (address);
 	byte [] buffer1 = new byte [length];
 	OS.memmove (buffer1, address, length);
-	//OS.g_free (address);
+	/*
+	* This code is intentionally commented.
+	* The GTK documentation explicitly states
+	* that this address should not be freed.
+	*/
+//	OS.g_free (address);
 	char [] buffer2 = Converter.mbcsToWcs (null, buffer1);
 	return new String (buffer2, 0, buffer2.length);
 }
+
 String getText (int start, int stop) {
 	/*
 	* NOTE: The current implementation uses substring ()
@@ -565,6 +589,7 @@ String getText (int start, int stop) {
 	*/
 	return getText ().substring (start, stop - 1);
 }
+
 /**
  * Returns the height of the receivers's text field.
  *
@@ -588,6 +613,7 @@ public int getTextHeight () {
 	 error (SWT.ERROR_CANNOT_GET_ITEM_HEIGHT);
 	 return 0;
 }
+
 /**
  * Returns the maximum number of characters that the receiver's
  * text field is capable of holding. If this has not been changed
@@ -603,14 +629,7 @@ public int getTextHeight () {
  */
 public int getTextLimit () {
 	checkWidget();
-	/* Temporary implementation.
-	 * Gtk lacks API to get the text limit, and GtkEntry is private.
-	 */
-	int limitAddress = _entryHandle + GtkEditable.sizeof + 4*5;
-	int[] bytes = new int[2];
-	OS.memmove(bytes, limitAddress, 4*2);
-	
-	return 0xFFFF & bytes[0];
+	return textLimit;
 }
 
 /**
@@ -634,6 +653,7 @@ public int indexOf (String string) {
 	checkWidget();
 	return indexOf (string, 0);
 }
+
 /**
  * Searches the receiver's list starting at the given, 
  * zero-relative index until an item is found that is equal
@@ -662,17 +682,29 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
-int processSelection (int int0, int int1, int int2) {
-	if (!isSelection){
-		postEvent (SWT.Selection);
-		postEvent (SWT.Modify);
-	}	
+int processModify (int arg0, int arg1, int int2) {
+	sendEvent (SWT.Modify);
 	return 0;
+}
+
+int processSelection (int int0, int int1, int int2) {
+	postEvent (SWT.Selection);
+	return 0;
+}
+
+void register () {
+	super.register ();
+	WidgetTable.put (padHandle, this);
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	WidgetTable.put (combo.entry, this);
+	WidgetTable.put (combo.list, this);
+	WidgetTable.put (combo.button, this);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
-	int padHandle = _entryHandle = _listHandle =  _arrowHandle = 0;
+	int padHandle = 0;
 }
 
 void releaseWidget () {
@@ -687,6 +719,7 @@ void releaseWidget () {
 	glist = 0;
 	super.releaseWidget ();
 }
+
 /**
  * Removes the item from the receiver's list at the given
  * zero-relative index.
@@ -715,6 +748,7 @@ public void remove (int index) {
 	System.arraycopy (oldItems, index + 1, newItems, index, oldItems.length - index - 1);
 	setItems (newItems);
 }
+
 /**
  * Removes the items from the receiver's list which are
  * between the given zero-relative start and end 
@@ -745,6 +779,7 @@ public void remove (int start, int end) {
 	System.arraycopy (oldItems, end + 1, newItems, start, oldItems.length - end - 1);
 	setItems (newItems);
 }
+
 /**
  * Searches the receiver's list starting at the first item
  * until an item is found that is equal to the argument, 
@@ -769,6 +804,7 @@ public void remove (String string) {
 	int index = indexOf (string, 0);
 	if (index != -1) remove (index);
 }
+
 /**
  * Removes all of the items from the receiver's list.
  * <p>
@@ -779,13 +815,9 @@ public void remove (String string) {
  */
 public void removeAll () {
 	checkWidget();
-	_removeAll();
+	setItems (new String [0]);
 }
-void _removeAll() {
-	clearSelection ();
-	OS.gtk_list_clear_items(_listHandle, 0, -1);
-	glist = 0;
-}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's text is modified.
@@ -809,6 +841,7 @@ public void removeModifyListener (ModifyListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Modify, listener);	
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's selection changes.
@@ -833,6 +866,7 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
+
 /**
  * Selects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already selected, it remains
@@ -847,14 +881,19 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void select (int index) {
 	checkWidget();
-	String selectedText = getItems()[index];
-	GtkCombo gtkCombo = new GtkCombo ();
-	OS.memmove (gtkCombo, handle, GtkCombo.sizeof);
-	int list = gtkCombo.list;
-	int entry = gtkCombo.entry;
-	OS.gtk_list_select_item (list, index);
-	OS.gtk_entry_set_text (entry, Converter.wcsToMbcs (null, selectedText, true));
+	String [] items = getItems ();
+	if (index >= items.length) return;
+	String selectedText = items [index];
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	OS.gtk_signal_handler_block_by_data (combo.entry, SWT.Modify);
+	OS.gtk_signal_handler_block_by_data (combo.list, SWT.Selection);
+	OS.gtk_list_select_item (combo.list, index);
+	OS.gtk_entry_set_text (combo.entry, Converter.wcsToMbcs (null, selectedText, true));
+	OS.gtk_signal_handler_unblock_by_data (combo.entry, SWT.Modify);
+	OS.gtk_signal_handler_unblock_by_data (combo.list, SWT.Selection);
 }
+
 /**
  * Sets the text of the item in the receiver's list at the given
  * zero-relative index to the string argument. This is equivalent
@@ -886,6 +925,7 @@ public void setItem (int index, String string) {
 	items [index] = string;
 	setItems (items);
 }
+
 /**
  * Sets the receiver's list to be the given array of items.
  *
@@ -902,31 +942,43 @@ public void setItem (int index, String string) {
 public void setItems (String [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (items.length==0) {
-		_removeAll();
-		return;
-	}
-	int new_glist = 0;
-	for (int i=0; i<items.length; i++) {
-		String string = items [i];
-		// FIXME leaked strings and glist
-		if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-		byte [] buffer = Converter.wcsToMbcs (null, string, true);
-		int data = OS.g_malloc (buffer.length);
-		OS.memmove (data, buffer, buffer.length);
-		new_glist = OS.g_list_append (new_glist, data);
-	}
-	OS.gtk_combo_set_popdown_strings (handle, new_glist);
-	if (glist != 0) {
-		int count = OS.g_list_length (glist);
-		for (int i=0; i<count; i++) {
-			int data = OS.g_list_nth_data (glist, i);
-			if (data != 0) OS.g_free (data);
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	if (items.length == 0) {
+		OS.gtk_list_clear_items (combo.list, 0, -1);
+		//LEAK
+		glist = 0;
+	} else {
+		int new_glist = 0;
+		for (int i=0; i<items.length; i++) {
+			String string = items [i];
+			// FIXME leaked strings and glist
+			if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+			byte [] buffer = Converter.wcsToMbcs (null, string, true);
+			int data = OS.g_malloc (buffer.length);
+			OS.memmove (data, buffer, buffer.length);
+			new_glist = OS.g_list_append (new_glist, data);
 		}
-		OS.g_list_free (glist);
+		OS.gtk_signal_handler_block_by_data (combo.entry, SWT.Modify);
+		OS.gtk_signal_handler_block_by_data (combo.list, SWT.Selection);
+		OS.gtk_combo_set_popdown_strings (handle, new_glist);
+		OS.gtk_signal_handler_unblock_by_data (combo.entry, SWT.Modify);
+		OS.gtk_signal_handler_unblock_by_data (combo.list, SWT.Selection);
+		if (glist != 0) {
+			int count = OS.g_list_length (glist);
+			for (int i=0; i<count; i++) {
+				int data = OS.g_list_nth_data (glist, i);
+				if (data != 0) OS.g_free (data);
+			}
+			OS.g_list_free (glist);
+		}
+		glist = new_glist;
 	}
-	glist = new_glist;
+	OS.gtk_signal_handler_block_by_data (combo.entry, SWT.Modify);
+	OS.gtk_editable_delete_text (combo.entry, 0, -1);
+	OS.gtk_signal_handler_unblock_by_data (combo.entry, SWT.Modify);
 }
+
 /**
  * Sets the selection in the receiver's text field to the
  * range specified by the argument whose x coordinate is the
@@ -949,11 +1001,10 @@ public void setSelection (Point selection) {
 	GtkCombo gtkCombo = new GtkCombo ();
 	OS.memmove (gtkCombo, handle, GtkCombo.sizeof);
 	int entry = gtkCombo.entry;
-	isSelection = true;
 	OS.gtk_editable_set_position (entry, selection.x);
 	OS.gtk_editable_select_region (entry, selection.x, selection.y);
-	isSelection = false;
 }
+
 /**
  * Sets the contents of the receiver's text field to the
  * given string.
@@ -988,6 +1039,7 @@ public void setText (String string) {
 	OS.gtk_editable_insert_text (entry, buffer, buffer.length, position);
 	OS.gtk_editable_set_position (entry, 0);
 }
+
 /**
  * Sets the maximum number of characters that the receiver's
  * text field is capable of holding to be the argument.
@@ -1005,6 +1057,10 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	OS.gtk_entry_set_max_length(_entryHandle, (short)limit);
+	this.textLimit = (short) limit;
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle, GtkCombo.sizeof);
+	OS.gtk_entry_set_max_length (combo.entry, (short) limit);
 }
+
 }
