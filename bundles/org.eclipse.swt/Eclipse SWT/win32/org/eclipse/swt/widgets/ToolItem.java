@@ -146,6 +146,33 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void click (boolean dropDown) {	
+	/*
+	* In order to emulate all the processing that
+	* happens when a mnemonic key is pressed, fake
+	* a mouse press and release.  This will ensure
+	* that radio and pull down items are handled
+	* properly.
+	*/
+	int hwnd = parent.handle;
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) return;
+	int index = OS.SendMessage (hwnd, OS.TB_COMMANDTOINDEX, id, 0);
+	RECT rect = new RECT ();
+	OS.SendMessage (hwnd, OS.TB_GETITEMRECT, index, rect);
+	int lParam = 0;
+	if (dropDown) {
+		lParam = rect.right | (rect.top << 16);
+	} else {
+		lParam = rect.left | (rect.top << 16);
+	}
+	int hotIndex = OS.SendMessage (hwnd, OS.TB_GETHOTITEM, 0, 0);
+	OS.SendMessage (hwnd, OS.WM_LBUTTONDOWN, 0, lParam);
+	OS.SendMessage (hwnd, OS.WM_LBUTTONUP, 0, lParam);
+	if (hotIndex != -1) {
+		OS.SendMessage (hwnd, OS.TB_SETHOTITEM, hotIndex, 0);
+	}
+}
+
 Image createDisabledImage (Image image, Color color) {
 	Display display = getDisplay ();
 	if (OS.IsWinCE) {

@@ -1670,6 +1670,8 @@ boolean translateTraversal (MSG msg) {
 			case OS.VK_DOWN:
 			case OS.VK_LEFT:
 			case OS.VK_RIGHT:
+			case OS.VK_PRIOR:
+			case OS.VK_NEXT:
 				Control control = findControl (msg.hwnd);
 				if (control == null) return false;
 				return control.translateTraversal (msg);

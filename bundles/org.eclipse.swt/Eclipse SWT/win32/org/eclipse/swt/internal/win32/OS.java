@@ -791,6 +791,7 @@ public class OS {
 	public static final int TB_GETBUTTONTEXT = IsUnicode ? 0x44b : 0x42d;
 	public static final int TB_GETDISABLEDIMAGELIST = 0x437;
 	public static final int TB_GETHOTIMAGELIST = 0x435;
+	public static final int TB_GETHOTITEM = 0x0400 + 71;
 	public static final int TB_GETIMAGELIST = 0x431;
 	public static final int TB_GETITEMRECT = 0x41d;
 	public static final int TB_GETROWS = 0x428;
@@ -798,12 +799,14 @@ public class OS {
 	public static final int TB_GETTOOLTIPS = 0x423;
 	public static final int TB_INSERTBUTTON = IsUnicode ? 0x443 : 0x415;
 	public static final int TB_LOADIMAGES = 0x432;
+	public static final int TB_MAPACCELERATOR = 0x0400 + (IsUnicode ? 90 : 78);
 	public static final int TB_SETBITMAPSIZE = 0x420;
 	public static final int TB_SETBUTTONINFO = IsUnicode ? 0x440 : 0x442;
 	public static final int TB_SETBUTTONSIZE = 0x41f;
 	public static final int TB_SETDISABLEDIMAGELIST = 0x436;
 	public static final int TB_SETEXTENDEDSTYLE = 0x454;
 	public static final int TB_SETHOTIMAGELIST = 0x434;
+	public static final int TB_SETHOTITEM =  0x0400 + 72;
 	public static final int TB_SETIMAGELIST = 0x430;
 	public static final int TB_SETROWS = 0x427;
 	public static final int TB_SETSTATE = 0x411;

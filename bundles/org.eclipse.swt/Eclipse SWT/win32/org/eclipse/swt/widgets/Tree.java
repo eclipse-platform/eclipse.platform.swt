@@ -974,8 +974,8 @@ public void setSelection (TreeItem [] items) {
 }
 
 boolean setTabGroupFocus () {
-	if (super.setTabGroupFocus()) return true;
-	return setTabItemFocus();
+	if (super.setTabGroupFocus ()) return true;
+	return setTabItemFocus ();
 }
 
 /**

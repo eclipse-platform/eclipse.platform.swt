@@ -556,12 +556,7 @@ boolean setTabGroupFocus () {
 }
 
 boolean setTabItemFocus () {
-	//????
-	Control [] path = getPath ();
-	for (int i=0; i<path.length; i++) {
-		Point size = path [i].getSize ();
-		if (size.x == 0 || size.y == 0) return false;
-	}
+	if (!isShowing ()) return false;
 	return forceFocus ();
 }
 
@@ -583,7 +578,7 @@ public void setSelection (int index) {
 	setSelection (index, false);
 }
 
-public void setSelection (int index, boolean notify) {
+void setSelection (int index, boolean notify) {
 	int oldIndex = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
 	if (oldIndex != -1) {
 		TabItem item = items [oldIndex];
@@ -604,8 +599,7 @@ public void setSelection (int index, boolean notify) {
 		if (notify) {
 			Event event = new Event ();
 			event.item = item;
-			///??? post or send
-			postEvent (SWT.Selection, event);
+			sendEvent (SWT.Selection, event);
 		}
 	}
 }
@@ -621,12 +615,26 @@ String toolTipText (NMTTDISPINFO hdr) {
 	int index = hdr.idFrom;
 	int hwndToolTip = toolTipHandle ();
 	if (hwndToolTip == hdr.hwndFrom) {
-		if ((0 <= index) && (index < items.length)) {
+		if (0 <= index && index < items.length) {
 			TabItem item = items [index];
 			if (item != null) return item.toolTipText;
 		}
 	}
 	return super.toolTipText (hdr);
+}
+
+boolean traversePage (boolean next) {
+	int count = getItemCount ();
+	if (count == 0) return false;
+	int index = getSelectionIndex ();
+	if (index == -1) {
+		index = 0;
+	} else {
+		int offset = (next) ? 1 : -1;
+		index = (index + offset + count) % count;
+	}
+	setSelection (index, true);
+	return index == getSelectionIndex ();
 }
 
 int widgetStyle () {
@@ -654,8 +662,8 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
 	/*
 	* Return DLGC_BUTTON so that mnemonics will be
-	* processed without needing to press the ALT when
-	* the tab folder has focus.
+	* processed without needing to press the ALT key
+	* when the tab folder has focus.
 	*/
 	if (result != null) return result;
 	return new LRESULT (OS.DLGC_BUTTON);

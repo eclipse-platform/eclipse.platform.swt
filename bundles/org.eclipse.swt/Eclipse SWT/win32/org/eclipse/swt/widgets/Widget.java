@@ -591,26 +591,23 @@ char mbcsToWcs (int ch) {
  * @return the WCS character
  */
 char mbcsToWcs (int ch, int codePage) {
-	if (OS.IsUnicode) {
-		return (char) ch;
+	if (OS.IsUnicode) return (char) ch;
+	int key = ch & 0xFFFF;
+	if (key <= 0x7F) return (char) ch;
+	byte [] buffer;
+	if (key <= 0xFF) {
+		buffer = new byte [1];
+		buffer [0] = (byte) key;
 	} else {
-		int key = ch & 0xFFFF;
-		if (key <= 0x7F) return (char) ch;
-		byte [] buffer;
-		if (key <= 0xFF) {
-			buffer = new byte [1];
-			buffer [0] = (byte) key;
-		} else {
-			buffer = new byte [2];
-			buffer [0] = (byte) ((key >> 8) & 0xFF);
-			buffer [1] = (byte) (key & 0xFF);
-		}
-		char [] unicode = new char [1];
-		int cp = codePage != 0 ? codePage : OS.CP_ACP;
-		int count = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, buffer.length, unicode, 1);
-		if (count == 0) return 0;
-		return unicode [0];
+		buffer = new byte [2];
+		buffer [0] = (byte) ((key >> 8) & 0xFF);
+		buffer [1] = (byte) (key & 0xFF);
 	}
+	char [] unicode = new char [1];
+	int cp = codePage != 0 ? codePage : OS.CP_ACP;
+	int count = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, buffer.length, unicode, 1);
+	if (count == 0) return 0;
+	return unicode [0];
 }
 
 /**
@@ -953,18 +950,6 @@ public String toString () {
 	}
 	return getName () + " {" + string + "}";
 }
-/*
- * Returns a single character, converted from the wide
- * character set (WCS) used by Java to the default
- * multi-byte character set used by the operating system
- * widgets.
- *
- * @param ch the WCS character
- * @return the MBCS character
- */
-int wcsToMbcs (char ch) {
-	return wcsToMbcs (ch, 0);
-}
 
 /*
  * Returns a single character, converted from the wide
@@ -981,6 +966,19 @@ int wcsToMbcs (char ch, int codePage) {
 	if (ch <= 0x7F) return ch;
 	TCHAR buffer = new TCHAR (codePage, ch, false);
 	return buffer.tcharAt (0);
+}
+
+/*
+ * Returns a single character, converted from the wide
+ * character set (WCS) used by Java to the default
+ * multi-byte character set used by the operating system
+ * widgets.
+ *
+ * @param ch the WCS character
+ * @return the MBCS character
+ */
+int wcsToMbcs (char ch) {
+	return wcsToMbcs (ch, 0);
 }
 
 }

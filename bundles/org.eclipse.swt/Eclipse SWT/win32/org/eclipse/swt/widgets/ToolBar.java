@@ -524,6 +524,26 @@ void layoutItems () {
 	}
 }
 
+boolean mnemonicHit (char ch) {
+	int key = wcsToMbcs (ch);
+	int [] id = new int [1];
+	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) == 0) {
+		return false;
+	}
+	if (!setTabGroupFocus ()) return false;
+	int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, id [0], 0);
+	if (index == -1) return false;
+	OS.SendMessage (handle, OS.TB_SETHOTITEM, index, 0);
+	items [index].click (false);
+	return true;
+}
+
+boolean mnemonicMatch (char ch) {
+	int key = wcsToMbcs (ch);
+	int [] id = new int [1];
+	return OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) != 0;
+}
+
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		ToolItem item = items [i];
@@ -565,11 +585,6 @@ void setDisabledImageList (ImageList imageList) {
 	OS.SendMessage (handle, OS.TB_SETDISABLEDIMAGELIST, 0, hImageList);
 }
 
-
-public boolean setFocus () {
-	return false;
-}
-
 void setHotImageList (ImageList imageList) {
 	if (hotImageList == imageList) return;
 	int hImageList = 0;
@@ -586,6 +601,15 @@ void setImageList (ImageList imageList) {
 		hImageList = imageList.getHandle ();
 	}
 	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
+}
+
+boolean setTabGroupFocus () {
+	return setTabItemFocus();
+}
+
+boolean setTabItemFocus () {
+	if (!isShowing ()) return false;
+	return forceFocus ();
 }
 
 int toolTipHandle () {
@@ -643,6 +667,37 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
 	if (result != null) return result;
 	return LRESULT.ZERO;
+}
+
+
+LRESULT WM_CHAR (int wParam, int lParam) {
+	LRESULT result = super.WM_CHAR (wParam, lParam);
+	if (result != null) return result;
+	int [] id = new int [1];
+	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, wParam, id) != 0) {
+		int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, id [0], 0);
+		if (index != -1) {
+			OS.SendMessage (handle, OS.TB_SETHOTITEM, index, 0);
+			items [index].click (false);
+			return LRESULT.ZERO;
+		}
+	}
+	return result;
+}
+
+LRESULT WM_KEYDOWN (int wParam, int lParam) {
+	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+	if (result != null) return result;
+	switch (wParam) {
+		case OS.VK_RETURN:
+		case OS.VK_SPACE:
+			int index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
+			if (index != -1) {
+				items [index].click (wParam == OS.VK_RETURN);
+				return LRESULT.ZERO;
+			}
+	}
+	return result;
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {

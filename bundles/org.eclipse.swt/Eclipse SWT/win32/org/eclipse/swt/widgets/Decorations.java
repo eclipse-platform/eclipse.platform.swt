@@ -931,6 +931,10 @@ boolean traverseItem (boolean next) {
 	return false;
 }
 
+boolean traversePage (boolean next) {
+	return false;
+}
+
 int widgetExtStyle () {
 	int bits = 0;
 	if ((style & SWT.TOOL) != 0) bits |= OS.WS_EX_TOOLWINDOW;
