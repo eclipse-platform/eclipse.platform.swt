@@ -5445,14 +5445,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GtkTreeIter_1sizeof
 	return (jint) sizeof (GtkTreeIter);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GValue_1sizeof
-	(JNIEnv *env, jclass that)
-{
-	DEBUG_CALL("GValue_1sizeof\n")
-
-	return (jint) sizeof (GValue);
-}
-
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1list_1store_1set__IIIZI
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3, jint arg4)
 {

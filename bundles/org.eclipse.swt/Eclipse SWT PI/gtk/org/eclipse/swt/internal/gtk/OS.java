@@ -906,8 +906,7 @@ public static final native void    gtk_tree_view_scroll_to_cell(int tree_view, i
 public static final native void    gtk_tree_view_set_headers_visible(int tree_view, boolean visible);
 public static final native void    gtk_tree_view_get_cell_area(int tree_view, int path, int column, GdkRectangle rect);
 public static final native int     gtk_tree_view_get_selection(int tree_view);
-static final native int GtkTreeIter_sizeof();
-static final native int GValue_sizeof();
+public static final native int GtkTreeIter_sizeof();
 public static final native int G_TYPE_BOOLEAN();
 public static final native int G_TYPE_STRING();
 public static final native int GDK_TYPE_COLOR();
