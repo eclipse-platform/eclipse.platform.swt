@@ -60,8 +60,8 @@ public class CBanner extends Composite {
 	static final int BORDER_TOP = 3;
 	static final int BORDER_STRIPE = 1;
 	static final int CURVE_TAIL = 200;
-	static final int MIN_LEFT = 50;
-	static final int MIN_RIGHT = 100;
+	static final int MIN_LEFT = 100;
+	static final int MIN_RIGHT = 150;
 	
 	static RGB BORDER1 = null;
 	
@@ -497,9 +497,9 @@ public void setRightWidth(int width) {
 void updateCurve (int height) {
 	int d = height - 12;
 	curve = new int[]{0,12+d, 0,11+d, 3,11+d, 4,10+d, 6,10+d, 7,9+d, 8,9+d, 10,7+d, 11,7+d,
-			          12,6+d, 12+d,6,
-					  13+d,5, 14+d,5, 16+d,3, 17+d,3, 18+d,2, 20+d,2, 21+d,1, 25+d,1, 26+d,0}; 
-	curveWidth = 26+d;
+			          12,6+d, 22,6,
+					  23,5, 24,5, 26,3, 27,3, 28,2, 30,2, 31,1, 35,1, 36,0}; 
+	curveWidth = 36;
 	curveIndent = 5;	
 }
 }
