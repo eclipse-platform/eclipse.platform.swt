@@ -402,17 +402,6 @@ void createWidget (int index) {
 		*/
 		realizeChildren ();
 	}
-	/*
-	* Bug in Motif.  When drag and drop is attempted in an
-	* Override shell, Motif segment faults.  The fix is to
-	* detect this case and disable the drag sequence.
-	*/
-//	Shell shell = getShell ();
-//	int shellHandle = shell.shellHandle;
-//	if (OS.XtIsSubclass (shellHandle, OS.OverrideShellWidgetClass ()))  {
-//		Display display = getDisplay ();
-//		OS.XtOverrideTranslations (handle, display.dragTranslations);
-//	}
 }
 int defaultBackground () {
 	return getDisplay ().defaultBackground;
@@ -1265,10 +1254,10 @@ int processSetFocus (int callData) {
 	XFocusChangeEvent xEvent = new XFocusChangeEvent ();
 	OS.memmove (xEvent, callData, XFocusChangeEvent.sizeof);
 
-	/* Ignore focus changes caused by grabbing and ungrabing. */
+	/* Ignore focus changes caused by grabbing and ungrabing */
 	if (xEvent.mode != OS.NotifyNormal) return 0;
 
-	/* Only process focus callbacks between windows. */
+	/* Only process focus callbacks between windows */
 	if (xEvent.detail != OS.NotifyAncestor &&
 		xEvent.detail != OS.NotifyInferior &&
 		xEvent.detail != OS.NotifyNonlinear) return 0;
@@ -1288,46 +1277,52 @@ int processSetFocus (int callData) {
 		if (widget != 0 && OS.XtClass (widget) == OS.XmMenuShellWidgetClass ()) return 0;
 	}
 	
-	/* Process the focus change for the widget. */
-	if (xEvent.type == OS.FocusIn) {
-		int result = processFocusIn ();
-		int index = 0;
-		Shell shell = getShell ();
-		Control [] focusIn = getPath ();
-		Control lastFocus = shell.lastFocus;
-		if (lastFocus != null) {
-			if (!lastFocus.isDisposed ()) {
-				Control [] focusOut = lastFocus.getPath ();
-				int length = Math.min (focusIn.length, focusOut.length);
-				while (index < length) {
-					if (focusIn [index] != focusOut [index]) break;
-					index++;
+	/* Process the focus change for the widget */
+	switch (xEvent.type) {
+		case OS.FocusIn: {
+			processFocusIn ();
+			// widget could be disposed at this point
+			if (handle == 0) return 0;
+			int index = 0;
+			Shell shell = getShell ();
+			Control [] focusIn = getPath ();
+			Control lastFocus = shell.lastFocus;
+			if (lastFocus != null) {
+				if (!lastFocus.isDisposed ()) {
+					Control [] focusOut = lastFocus.getPath ();
+					int length = Math.min (focusIn.length, focusOut.length);
+					while (index < length) {
+						if (focusIn [index] != focusOut [index]) break;
+						index++;
+					}
+					for (int i=focusOut.length-1; i>=index; --i) {
+						focusOut [i].sendEvent (SWT.Deactivate);
+					}
 				}
-				for (int i=focusOut.length-1; i>=index; --i) {
+				shell.lastFocus = null;
+			}
+			for (int i=focusIn.length-1; i>=index; --i) {
+				focusIn [i].sendEvent (SWT.Activate);
+			}
+			break;
+		}
+		case OS.FocusOut: {
+			processFocusOut ();
+			// widget could be disposed at this point
+			if (handle == 0) return 0;
+			Shell shell = getShell ();
+			shell.lastFocus = this;
+			Display display = getDisplay ();
+			Control focusControl = display.getFocusControl ();
+			if (focusControl == null || shell != focusControl.getShell ()) {
+				Control [] focusOut = getPath ();
+				for (int i=focusOut.length-1; i>=0; --i) {
 					focusOut [i].sendEvent (SWT.Deactivate);
 				}
+				shell.lastFocus = null;
 			}
-			shell.lastFocus = null;
+			break;
 		}
-		for (int i=focusIn.length-1; i>=index; --i) {
-			focusIn [i].sendEvent (SWT.Activate);
-		}
-		return result;
-	}
-	if (xEvent.type == OS.FocusOut) {
-		int result = processFocusOut ();
-		Shell shell = getShell ();
-		shell.lastFocus = this;
-		Display display = getDisplay ();
-		Control focusControl = display.getFocusControl ();
-		if (focusControl == null || shell != focusControl.getShell ()) {
-			Control [] focusOut = getPath ();
-			for (int i=focusOut.length-1; i>=0; --i) {
-				focusOut [i].sendEvent (SWT.Deactivate);
-			}
-			shell.lastFocus = null;
-		}
-		return result;
 	}
 	return 0;
 }

@@ -434,12 +434,16 @@ boolean mnemonicMatch (char key) {
 }
 int processFocusIn () {
 	super.processFocusIn ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) == 0) return 0;
 	getShell ().setDefaultButton (this, false);
 	return 0;
 }
 int processFocusOut () {
 	super.processFocusOut ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) == 0) return 0;
 	if (getDefault ()) {
 		getShell ().setDefaultButton (null, false);

@@ -894,6 +894,8 @@ public void paste () {
 }
 int processFocusIn () {
 	super.processFocusIn ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
 	if ((style & SWT.READ_ONLY) != 0) return 0;
 	if ((style & SWT.MULTI) != 0) return 0;
 	int [] argList = {OS.XmNcursorPositionVisible, 1};
@@ -902,6 +904,8 @@ int processFocusIn () {
 }
 int processFocusOut () {
 	super.processFocusOut ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
 	if ((style & SWT.READ_ONLY) != 0) return 0;
 	if ((style & SWT.MULTI) != 0) return 0;
 	int [] argList = {OS.XmNcursorPositionVisible, 0};

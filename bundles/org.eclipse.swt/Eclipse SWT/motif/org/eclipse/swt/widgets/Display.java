@@ -226,7 +226,8 @@ public class Display extends Device {
 	int crPointer, tabPointer;
 	
 	/* Xt Translations */
-	int arrowTranslations, tabTranslations, dragTranslations;
+	int arrowTranslations, tabTranslations;
+//	int dragTranslations;
 	
 	/* Check Expose Proc */
 	Callback checkExposeCallback;
@@ -362,18 +363,6 @@ void createDisplay (DeviceData data) {
 			OS.XInitThreads ();
 			OS.XtToolkitThreadInitialize ();
 			OS.XtToolkitInitialize ();
-	
-			/* Bug in XpExtention. If XInitThreads is called before
-			* any Xp functions then XpCheckExtInit hangs.  The workaround
-			* is to create the printer display before calling XInitThreads.
-			*/
-//			int xtContext = OS.XtCreateApplicationContext ();
-//			byte[] buffer = Converter.wcsToMbcs ( null, Device.XDefaultPrintServer, true );
-//			xPrinter = OS.XtOpenDisplay (xtContext, buffer, null, null, 0, 0, new int [] {0}, 0);
-//			if (xPrinter != 0) {
-//				OS.XpQueryVersion (xPrinter, new short [1], new short [1]);
-//			}
-//			//OS.XInitThreads ();
 		}
 		XtInitialized = true;
 	}
@@ -1238,8 +1227,8 @@ void initializeTranslations () {
 	arrowTranslations = OS.XtParseTranslationTable (buffer1);
 	byte [] buffer2 = Converter.wcsToMbcs (null, "~Meta ~Alt <Key>Tab:\nShift ~Meta ~Alt <Key>Tab:\0");
 	tabTranslations = OS.XtParseTranslationTable (buffer2);
-	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0");
-	dragTranslations = OS.XtParseTranslationTable (buffer3);
+//	byte [] buffer3 = Converter.wcsToMbcs (null, "<Btn2Down>:\0");
+//	dragTranslations = OS.XtParseTranslationTable (buffer3);
 }
 /**	 
  * Invokes platform specific functionality to allocate a new GC handle.
