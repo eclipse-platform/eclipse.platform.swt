@@ -270,3 +270,12 @@ void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct);
 #define getTXNLongRectFields(a,b,c) NULL
 #define setTXNLongRectFields(a,b,c)
 #endif /* NO_TXNLongRect */
+
+#ifndef NO_TXNBackground
+TXNBackground *getTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStruct);
+void setTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStruct);
+#else
+#define getTXNBackgroundFields(a,b,c) NULL
+#define setTXNBackgroundFields(a,b,c)
+#endif /* NO_TXNBackground */
+

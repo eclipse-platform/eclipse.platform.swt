@@ -12,8 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.EventRecord;
+import org.eclipse.swt.internal.carbon.TXNBackground;
 import org.eclipse.swt.internal.carbon.TXNLongRect;
 
 import org.eclipse.swt.*;
@@ -1076,6 +1078,18 @@ boolean sendKeyEvent (int type, Event event) {
 	return newText == oldText;
 }
 
+void setBackground (float [] color) {
+	TXNBackground txnColor = new TXNBackground (); 
+	txnColor.bgType = OS.kTXNBackgroundTypeRGB;
+	int red = (short) (color == null ? 0xff : color [0] * 255);
+	int green = (short) (color == null ? 0xff : color [1] * 255);
+	int blue = (short) (color == null ? 0xff : color [2] * 255);
+	txnColor.bg_red = (short) (red << 8 | red);
+	txnColor.bg_green = (short) (green << 8 | green);
+	txnColor.bg_blue = (short) (blue << 8 | blue);
+	OS.TXNSetBackground (txnObject, txnColor);
+}
+
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	int result = super.setBounds(control, x, y, width, height, move, resize, events);
 	if ((result & (RESIZED | MOVED)) != 0) setTXNBounds ();
@@ -1145,6 +1159,43 @@ public void setEditable (boolean editable) {
 	} else {
 		style |= SWT.READ_ONLY;
 	}
+}
+
+void setForeground (float [] color) {
+	int [] attrib = new int [3];
+	attrib [0] = OS.kTXNQDFontColorAttribute;
+	attrib [1] = OS.kTXNQDFontColorAttributeSize;
+	int ptr2 = OS.NewPtr (OS.kTXNQDFontColorAttributeSize);
+	RGBColor rgb;
+	if (color == null) {	
+		rgb = new RGBColor ();
+	} else {
+		rgb = toRGBColor (foreground);
+	}
+	OS.memcpy (ptr2, rgb, RGBColor.sizeof);
+	attrib [2] = ptr2;
+	int ptr1 = OS.NewPtr (attrib.length * 4);
+	OS.memcpy (ptr1, attrib, attrib.length * 4);
+	OS.TXNSetTypeAttributes (txnObject, attrib.length / 3, ptr1, 0, 0);
+	OS.DisposePtr (ptr1);
+	OS.DisposePtr (ptr2);
+}
+
+void setFontStyle (Font font) {
+	int [] attrib = new int [9];
+	attrib [0] = OS.kTXNQDFontSizeAttribute;
+	attrib [1] = OS.kTXNQDFontSizeAttributeSize;
+	attrib [2] = font == null ? OS.kTXNDefaultFontSize : OS.X2Fix (font.size);
+	attrib [3] = OS.kTXNQDFontStyleAttribute;
+	attrib [4] = OS.kTXNQDFontStyleAttributeSize;
+	attrib [5] = font == null ? OS.kTXNDefaultFontStyle : font.style;
+	attrib [6] = OS.kTXNQDFontFamilyIDAttribute;
+	attrib [7] = OS.kTXNQDFontFamilyIDAttributeSize;
+	attrib [8] = font == null ? OS.kTXNDefaultFontName : font.id;
+	int ptr = OS.NewPtr (attrib.length * 4);
+	OS.memcpy (ptr, attrib, attrib.length * 4);
+	OS.TXNSetTypeAttributes (txnObject, attrib.length / 3, ptr, 0, 0);
+	OS.DisposePtr (ptr);
 }
 
 /**

@@ -7237,6 +7237,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSelectAll
 }
 #endif /* NO_TXNSelectAll */
 
+#ifndef NO_TXNSetBackground
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetBackground
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	TXNBackground _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNSetBackground\n")
+
+	if (arg1) lparg1 = getTXNBackgroundFields(env, arg1, &_arg1);
+	rc = (jint)TXNSetBackground((TXNObject)arg0, (const TXNBackground *)lparg1);
+	if (arg1) setTXNBackgroundFields(env, arg1, lparg1);
+	return rc;
+}
+#endif
+
 #ifndef NO_TXNSetData
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetData
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jint arg4, jint arg5)
@@ -7289,6 +7305,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetSelection
 	return (jint)TXNSetSelection((TXNObject)arg0, (TXNOffset)arg1, (TXNOffset)arg2);
 }
 #endif /* NO_TXNSetSelection */
+
+#ifndef NO_TXNSetTypeAttributes
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetTypeAttributes
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("TXNSetTypeAttributes\n")
+
+	return (jint)TXNSetTypeAttributes((TXNObject)arg0, (ItemCount)arg1, (const TXNTypeAttributes *)arg2, (TXNOffset)arg3, (TXNOffset)arg4);
+}
+#endif
 
 #ifndef NO_TXNSetTXNObjectControls
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetTXNObjectControls
@@ -7749,6 +7775,20 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_Rect_2
 	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setRectFields(env, arg0, lparg0);
+}
+#endif
+
+#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_RGBColor_2I
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILorg_eclipse_swt_internal_carbon_RGBColor_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	RGBColor _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__ILorg_eclipse_swt_internal_carbon_RGBColor_2I\n")
+
+	if (arg1) lparg1 = getRGBColorFields(env, arg1, &_arg1);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) setRGBColorFields(env, arg1, lparg1);
 }
 #endif
 

@@ -1804,8 +1804,12 @@ public void setBackground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	background = color != null ? color.handle : null;
-	setFontStyle (font);
+	setBackground (background);
 	redrawWidget (handle, false);
+}
+
+void setBackground (float [] color) {
+	setFontStyle (font);	
 }
 
 /**
@@ -2097,8 +2101,12 @@ public void setForeground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	foreground = color != null ? color.handle : null;
-	setFontStyle (font);
+	setForeground (foreground);
 	redrawWidget (handle, false);
+}
+
+void setForeground (float [] color) {
+	setFontStyle (font);	
 }
 
 /**
