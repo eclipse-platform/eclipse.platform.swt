@@ -79,12 +79,9 @@ public class OS extends Platform {
 		IsUnicode = !IsWin32s && !IsWin95;
 
 		/* Get the DBCS flag */
-		int index = 0;
-		while (index <= 0xFF) {
-			if (OS.IsDBCSLeadByte ((byte) index)) break;
-			index++;
-		}
-		IsDBLocale = index <= 0xFF;
+		boolean dbcsEnabled = OS.GetSystemMetrics (OS.SM_DBCSENABLED) != 0;
+		boolean immEnabled = OS.GetSystemMetrics (OS.SM_IMMENABLED) != 0;
+		IsDBLocale = dbcsEnabled || immEnabled;
 	}
 	
 	/* Get the COMCTL32.DLL version */
@@ -1056,6 +1053,8 @@ public class OS extends Platform {
 	public static final int SM_CYMINTRACK = 35;
 	public static final int SM_CYSCREEN = 0x1;
 	public static final int SM_CYVSCROLL = 0x14;
+	public static final int SM_DBCSENABLED = 0x2A;
+	public static final int SM_IMMENABLED = 0x52;
 	public static final int SPI_GETFONTSMOOTHINGTYPE = 0x200A;
 	public static final int SPI_GETHIGHCONTRAST = 66;
 	public static final int SPI_GETWORKAREA = 0x30;
