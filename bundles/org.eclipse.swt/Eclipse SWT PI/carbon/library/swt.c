@@ -1832,6 +1832,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(FetchFontInfo)
 }
 #endif
 
+#ifndef NO_Fix2Long
+JNIEXPORT jint JNICALL OS_NATIVE(Fix2Long)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("Fix2Long\n")
+	
+	return (jint)Fix2Long((Fixed)arg0);
+}
+#endif NO_Fix2Long
+
 #ifndef NO_FMGetFontFamilyFromName
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyFromName
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -3563,6 +3573,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewRemoveFromS
 	return (jint)HIViewRemoveFromSuperview((HIViewRef)arg0);
 }
 #endif /* NO_HIViewRemoveFromSuperview */
+
+#ifndef NO_HIViewSetBoundsOrigin
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewSetBoundsOrigin)
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
+{
+	DEBUG_CALL("HIViewSetBoundsOrigin\n")
+
+	return (jint)HIViewSetBoundsOrigin((HIViewRef)arg0, (float)arg1, (float)arg2);
+}
+#endif
 
 #ifndef NO_HIViewSetDrawingEnabled
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetDrawingEnabled
@@ -5678,6 +5698,44 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetLineCount
 }
 #endif /* NO_TXNGetLineCount */
 
+#ifndef NO_TXNGetLineMetrics
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetLineMetrics
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNGetLineMetrics\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)TXNGetLineMetrics((TXNObject)arg0, (UInt32)arg1, (Fixed *)lparg2, (Fixed *)lparg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif /* NO_TXNGetLineMetrics*/
+
+#ifndef NO_TXNGetTXNObjectControls
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetTXNObjectControls
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNGetTXNObjectControls\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)TXNGetTXNObjectControls((TXNObject)arg0, (ItemCount)arg1, (const TXNControlTag *)lparg2, (const TXNControlData *)lparg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif /* NO_TXNGetTXNObjectControls */
+
 #ifndef NO_TXNGetSelection
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetSelection
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
@@ -6190,13 +6248,3 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ZoomWindowIdeal
 	return rc;
 }
 #endif /* NO_ZoomWindowIdeal */
-
-#ifndef NO_HIViewSetBoundsOrigin
-JNIEXPORT jint JNICALL OS_NATIVE(HIViewSetBoundsOrigin)
-	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
-{
-	DEBUG_CALL("HIViewSetBoundsOrigin\n")
-
-	return (jint)HIViewSetBoundsOrigin(arg0, arg1, arg2);
-}
-#endif

@@ -108,6 +108,15 @@ void createWidget () {
 	layoutControl ();
 }
 
+int [] controlEvents () {
+	 return new int [] {
+//		OS.kEventClassControl, OS.kEventControlBoundsChanged,
+		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
+		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassControl, OS.kEventControlHit,
+	};
+}
+
 void createHandle () {
 	state |= CANVAS | GRAB;
 	int attributes = OS.kWindowCompositingAttribute | OS.kWindowStandardHandlerAttribute;
@@ -326,9 +335,6 @@ int kEventWindowClose (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	closeWidget ();
 	return OS.noErr;
-}
-
-void hookBounds () {
 }
 
 void hookEvents () {

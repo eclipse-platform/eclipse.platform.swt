@@ -65,8 +65,8 @@ public ScrollBar getVerticalBar () {
 	return verticalBar;
 }
 
-void hookBounds () {
-	super.hookBounds ();
+void hookEvents () {
+	super.hookEvents ();
 	if ((state & CANVAS) != 0 && scrolledHandle != 0) {
 		Display display = getDisplay ();
 		int [] mask = new int [] {

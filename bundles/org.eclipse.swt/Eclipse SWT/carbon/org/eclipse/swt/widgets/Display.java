@@ -260,6 +260,7 @@ protected void create (DeviceData data) {
 
 void createDisplay (DeviceData data) {
 	queue = OS.GetCurrentEventQueue ();
+	OS.TXNInitTextension (0, 0, 0);
 }
 
 synchronized static void deregister (Display display) {
@@ -657,6 +658,11 @@ void releaseDisplay () {
 	windowCallback.dispose ();
 	actionCallback = itemDataCallback = timerCallback = scrollBarActionCallback = windowCallback = null;
 	actionProc = itemDataProc = timerProc = scrollBarActionProc = windowProc = 0;
+	
+	//NOT DONE - call terminate TXN if this is the last display 
+	//NOTE: - display create and dispose needs to be synchronized on all platforms
+//	 TXNTerminateTextension ();
+
 }
 
 public void removeFilter (int eventType, Listener listener) {

@@ -157,6 +157,15 @@ Control computeTabRoot () {
 	return parent.computeTabRoot ();
 }
 
+int [] controlEvents () {
+	 return new int [] {
+		OS.kEventClassControl, OS.kEventControlBoundsChanged,
+		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
+		OS.kEventClassControl, OS.kEventControlDraw,
+		OS.kEventClassControl, OS.kEventControlHit,
+	};
+}
+
 void createHandle () {
 }
 
@@ -164,7 +173,6 @@ void createWidget () {
 	createHandle ();
 	register ();
 	hookEvents ();
-	hookBounds ();
 }
 
 void deregister () {
@@ -292,23 +300,9 @@ boolean hasFocus () {
 	return (this == getDisplay ().getFocusControl ());
 }
 
-void hookBounds () {
-	Display display = getDisplay ();
-	int [] mask = new int [] {
-		OS.kEventClassControl, OS.kEventControlBoundsChanged,
-	};
-	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, display.windowProc, mask.length / 2, mask, handle, null);
-}
-
 void hookEvents () {
 	Display display = getDisplay ();
-	int [] mask = new int [] {
-//		OS.kEventClassControl, OS.kEventControlBoundsChanged,
-		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
-		OS.kEventClassControl, OS.kEventControlDraw,
-		OS.kEventClassControl, OS.kEventControlHit,
-	};
+	int [] mask = controlEvents ();
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, display.windowProc, mask.length / 2, mask, handle, null);
 }
