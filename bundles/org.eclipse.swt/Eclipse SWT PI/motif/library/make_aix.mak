@@ -28,7 +28,7 @@ SWT_LIB      = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm 
 CDE_PREFIX   = swt-cde
 CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CDE_OBJ      = cde.o
-CDE_LIB      = -L$(CDE_HOME)/lib -G -bnoentry -bexpall -lDtSvc
+CDE_LIB      = -L$(CDE_HOME)/lib -G -lc -bnoentry -bexpall -lDtSvc
 
 #
 # The following CFLAGS are for compiling both the SWT library and the CDE
