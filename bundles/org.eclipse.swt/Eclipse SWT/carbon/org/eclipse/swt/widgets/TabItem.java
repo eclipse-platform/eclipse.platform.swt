@@ -172,6 +172,9 @@ void releaseChild () {
 }
 
 void releaseWidget () {
+	//TEMPORARY CODE
+	if (control != null) control.setVisible (false);
+	
 	super.releaseWidget ();
 	if (cIcon != 0) {
 		destroyCIcon (cIcon);
