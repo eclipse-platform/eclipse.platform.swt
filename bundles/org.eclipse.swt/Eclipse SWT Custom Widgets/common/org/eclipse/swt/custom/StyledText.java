@@ -636,6 +636,7 @@ public class StyledText extends Canvas {
 		int copyEnd;
 		int startOffset = getStart();		
 		int endOffset = startOffset + super.getCharCount();
+		int lineEndOffset = Math.min(lineLength, endOffset - lineOffset);
 		int writeOffset = startOffset - lineOffset;
 		
 		if (writeOffset >= line.length()) {
@@ -662,21 +663,17 @@ public class StyledText extends Canvas {
 			if (end < writeOffset) {
 				continue;
 			}
-			// break on partial last line
-			if (style.start > endOffset) {
+			// style starts beyond line end or RTF write end
+			if (start >= lineEndOffset) {
 				break;
 			}
 			// write any unstyled text
 			if (lineIndex < start) { 
-				// copy to start of style or end of write range (specified 
-				// during object creation) or end of line
-				copyEnd = Math.min(start, endOffset - lineOffset);
-				copyEnd = Math.min(copyEnd, lineLength);
-				write(line, lineIndex, copyEnd);
-				lineIndex = copyEnd;
-				if (copyEnd != start) {
-					break;
-				}
+				// copy to start of style
+				// style starting betond end of write range or end of line 
+				// is guarded against above.
+				write(line, lineIndex, start);
+				lineIndex = start;
 			}
 			// write styled text
 			colorIndex = getColorIndex(style.background, DEFAULT_BACKGROUND);
@@ -690,23 +687,20 @@ public class StyledText extends Canvas {
 				write("\\b"); 
 			}
 			write(" "); 
-			// copy to end of style or end of write range (specified 
-			// during object creation) or end of line
-			copyEnd = Math.min(end, endOffset - lineOffset);
-			copyEnd = Math.min(copyEnd, lineLength);
+			// copy to end of style or end of write range or end of line
+			copyEnd = Math.min(end, lineEndOffset);
+			// guard against invalid styles and let style processing continue
+			copyEnd = Math.max(copyEnd, lineIndex);
 			write(line, lineIndex, copyEnd);
 			if (style.fontStyle == SWT.BOLD) {
 				write("\\b0"); 
 			}
 			write("}");
 			lineIndex = copyEnd;
-			if (copyEnd != end) {
-				break;
-			}
 		}
-		copyEnd = Math.min(lineLength, endOffset - lineOffset);
-		if (lineIndex < copyEnd) {
-			write(line, lineIndex, copyEnd);
+		// write unstyled text at the end of the line
+		if (lineIndex < lineEndOffset) {
+			write(line, lineIndex, lineEndOffset);
 		}		
 		if (lineBackground != null) {
 			write("}");
