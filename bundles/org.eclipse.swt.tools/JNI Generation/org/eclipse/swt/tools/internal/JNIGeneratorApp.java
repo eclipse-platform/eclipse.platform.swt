@@ -61,8 +61,7 @@ void generateSTATS_C(Class[] classes) {
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		PrintStream print = new PrintStream(out);
-		gen.setOutput(print);
+		gen.setOutput(new PrintStream(out));
 		gen.generate();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
@@ -79,8 +78,7 @@ void generateSTATS_H(Class[] classes) {
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		PrintStream print = new PrintStream(out);
-		gen.setOutput(print);
+		gen.setOutput(new PrintStream(out));
 		gen.generate();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
@@ -97,8 +95,7 @@ void generateSTRUCTS_H(Class[] classes) {
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		PrintStream print = new PrintStream(out);
-		gen.setOutput(print);
+		gen.setOutput(new PrintStream(out));
 		gen.generate();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
@@ -116,8 +113,7 @@ void generateSTRUCTS_C(Class[] classes) {
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		PrintStream print = new PrintStream(out);
-		gen.setOutput(print);
+		gen.setOutput(new PrintStream(out));
 		gen.generate();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
@@ -135,8 +131,7 @@ void generateSWT_C(Class[] classes) {
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		PrintStream print = new PrintStream(out);
-		gen.setOutput(print);
+		gen.setOutput(new PrintStream(out));
 		gen.generate();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + gen.getFileName());
 	} catch (Exception e) {
@@ -154,8 +149,7 @@ void generateMetaData(Class[] classes) {
 		gen.setMetaData(metaData);
 		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
-		PrintStream print = new PrintStream(out);
-		gen.setOutput(print);
+		gen.setOutput(new PrintStream(out));
 		gen.generate();
 		if (!new File(getMetaDataDir()).exists()) {
 			System.out.println("Warning: Meta data output dir does not exist");
