@@ -974,10 +974,7 @@ void releaseShells () {
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed ()) {
-			shell.releaseWidget ();
-			shell.releaseHandle ();
-		}
+		if (!shell.isDisposed ()) shell.releaseResources ();
 	}
 }
 void releaseWidget () {

@@ -1070,7 +1070,7 @@ public void removeVerifyListener (VerifyListener listener) {
 byte [] sendIMEKeyEvent (int type, XKeyEvent xEvent) {
 	/*
 	* Bug in Motif. On Solaris and Linux, XmImMbLookupString () clears
-	* the characters from the IME. This causes tht characters to be
+	* the characters from the IME. This causes the characters to be
 	* stolen from the text widget. The fix is to detect that the IME
 	* has been cleared and use XmTextInsert () to insert the stolen
 	* characters. This problem does not happen on AIX.

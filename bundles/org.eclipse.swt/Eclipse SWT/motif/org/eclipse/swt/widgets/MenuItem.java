@@ -471,10 +471,7 @@ void releaseChild () {
 	menu = null;
 }
 void releaseWidget () {
-	if (menu != null && !menu.isDisposed()) {
-		menu.releaseWidget ();
-		menu.releaseHandle ();
-	}
+	if (menu != null && !menu.isDisposed()) menu.releaseResources ();
 	menu = null;
 	super.releaseWidget ();
 	accelerator = 0;

@@ -538,10 +538,7 @@ void releaseChildren () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
-		if (!child.isDisposed ()) {
-			child.releaseWidget ();
-			child.releaseHandle ();
-		}
+		if (!child.isDisposed ()) child.releaseResources ();
 	}
 }
 void releaseWidget () {
