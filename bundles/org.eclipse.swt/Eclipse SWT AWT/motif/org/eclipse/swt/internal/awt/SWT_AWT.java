@@ -6,9 +6,9 @@
  * http://www.eclipse.org/legal/cpl-v10.html
  * 
  * Contributors:
- *     IBM Corporation - initial API and implementation
+ *     IBM Corporanew_FramePI and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.awt.motif;
+package org.eclipse.swt.internal.awt;
  
 import java.lang.reflect.Constructor;
 
@@ -26,7 +26,6 @@ import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Canvas;
 import java.awt.Frame;
-import java.awt.Panel;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 
@@ -39,7 +38,7 @@ public class SWT_AWT {
 
 static native final int getAWTHandle (Canvas canvas);
 
-public static Panel new_Panel (final Composite parent) {
+public static Frame new_Frame (final Composite parent) {
 	int handle = parent.embeddedHandle;
 	/*
 	 * Some JREs have implemented the embedded frame constructor to take an integer
@@ -69,8 +68,6 @@ public static Panel new_Panel (final Composite parent) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
 	final Frame frame = (Frame) value;	
-	Panel panel = new Panel ();
-	frame.add (panel);
 	parent.getShell ().addListener (SWT.Move, new Listener () {
 		public void handleEvent (Event e) {
 			EventQueue.invokeLater(new Runnable () {
@@ -86,7 +83,7 @@ public static Panel new_Panel (final Composite parent) {
 			frame.dispose ();
 		}
 	});
-	return panel;
+	return frame;
 }
 
 public static Shell new_Shell (Display display, final Canvas parent) {
