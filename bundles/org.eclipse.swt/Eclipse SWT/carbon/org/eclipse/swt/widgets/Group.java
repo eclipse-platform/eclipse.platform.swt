@@ -167,13 +167,15 @@ public Rectangle getClientArea () {
 	}
 	return new Rectangle (x, y, width, height);
     */
-	Point e= getSize();
-	Rectangle r= new Rectangle(MARGIN, LABEL_HEIGHT, e.x-(2*MARGIN), e.y-(LABEL_HEIGHT+MARGIN));
-	// never return negative sizes
-	if (r.width < 0)
-		r.width= 0;
-	if (r.height < 0)
-		r.height= 0;
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	Rectangle r= new Rectangle (MARGIN, LABEL_HEIGHT,
+			bounds.right-bounds.left-(2*MARGIN), bounds.bottom-bounds.top-(LABEL_HEIGHT+MARGIN));
+	// never return negative values
+	if (r.x < 0) r.x= 0;
+	if (r.y < 0) r.y= 0;
+	if (r.width < 0) r.width= 0;
+	if (r.height < 0) r.height= 0;
     return r;
 }
 /**

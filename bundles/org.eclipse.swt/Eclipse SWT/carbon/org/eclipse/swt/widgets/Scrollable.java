@@ -181,11 +181,11 @@ public Rectangle getClientArea () {
 	Rect bounds= new Rect();
 	OS.GetControlBounds(handle, bounds);
 	Rectangle r= new Rectangle (0, 0, bounds.right-bounds.left, bounds.bottom-bounds.top);
-	// never return negative sizes
-	if (r.width < 0)
-		r.width= 0;
-	if (r.height < 0)
-		r.height= 0;
+	// never return negative values
+	if (r.x < 0) r.x= 0;
+	if (r.y < 0) r.y= 0;
+	if (r.width < 0) r.width= 0;
+	if (r.height < 0) r.height= 0;
 	return r;
 }
 /**

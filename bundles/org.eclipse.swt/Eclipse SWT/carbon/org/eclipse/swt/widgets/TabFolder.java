@@ -284,11 +284,11 @@ public Rectangle getClientArea () {
 	Rect inner= new Rect();
 	OS.GetControlData(handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, inner, null);
 	Rectangle r= new Rectangle(inner.left, inner.top, inner.right-inner.left, inner.bottom-inner.top);
-	// never return negative sizes
-	if (r.width < 0)
-		r.width= 0;
-	if (r.height < 0)
-		r.height= 0;
+	// never return negative values
+	if (r.x < 0) r.x= 0;
+	if (r.y < 0) r.y= 0;
+	if (r.width < 0) r.width= 0;
+	if (r.height < 0) r.height= 0;
 	return r;
 }
 
