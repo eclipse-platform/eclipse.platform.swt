@@ -15,6 +15,7 @@ td {height:48px; width:48px; table-layout: fixed;}
 
 .whitelink a {display: block; background: url(./empty.png) no-repeat; width:48px; height:48px;}
 .blacklink a {display: block; background: url(./empty.png) no-repeat; width:48px; height:48px;}
+.empty {display: block; background: url(./empty.png) no-repeat; width:48px; height:48px;}
 
 .whitelink a:hover {display: block; background: url(./white.png) no-repeat; width:48px; height:48px;}
 .blacklink a:hover {display: block; background: url(./black.png) no-repeat; width:48px; height:48px;}
