@@ -338,8 +338,8 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 				byte[] b = new byte[inBytes];
 				for (int j=0; j<inBytes; j+=2) {
 					int c = buffer [j >> 1];
-					b [j] = (byte)(c >> 8);
-					b [j + 1] = (byte)(c & 0xFF);
+					b [j] = (byte)(c & 0xFF);
+					b [j + 1] = (byte)(c >> 8);
 				}
 				OS.memmove (ptr1, b, inBytes);
 				
