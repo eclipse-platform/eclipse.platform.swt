@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 736;
-int OS_nativeFunctionCallCount[736];
+int OS_nativeFunctionCount = 743;
+int OS_nativeFunctionCallCount[743];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -127,8 +127,12 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextTranslateCTM", 
 	"CGDataProviderCreateWithData", 
 	"CGDataProviderRelease", 
+	"CGDisplayBitsPerPixel", 
+	"CGDisplayBitsPerSample", 
+	"CGDisplayBytesPerRow", 
 	"CGFontCreateWithPlatformFont", 
 	"CGFontRelease", 
+	"CGGetDisplaysWithRect", 
 	"CGImageCreate", 
 	"CGImageGetAlphaInfo", 
 	"CGImageGetBitsPerComponent", 
@@ -295,6 +299,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetDataBrowserScrollPosition", 
 	"GetDataBrowserSelectionAnchor", 
 	"GetDataBrowserSelectionFlags", 
+	"GetDataBrowserSortProperty", 
 	"GetDataBrowserTableViewColumnPosition", 
 	"GetDataBrowserTableViewItemID", 
 	"GetDataBrowserTableViewItemRow", 
@@ -400,6 +405,7 @@ char * OS_nativeFunctionNames[] = {
 	"HIViewAddSubview", 
 	"HIViewClick", 
 	"HIViewConvertPoint", 
+	"HIViewCreateOffscreenImage", 
 	"HIViewFindByID", 
 	"HIViewGetFirstSubview", 
 	"HIViewGetFrame", 
@@ -620,6 +626,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetDataBrowserScrollPosition", 
 	"SetDataBrowserSelectedItems", 
 	"SetDataBrowserSelectionFlags", 
+	"SetDataBrowserSortOrder", 
 	"SetDataBrowserTableViewColumnPosition", 
 	"SetDataBrowserTableViewHiliteStyle", 
 	"SetDataBrowserTableViewItemRow", 

@@ -1457,6 +1457,42 @@ JNIEXPORT void JNICALL OS_NATIVE(CGDataProviderRelease)
 }
 #endif
 
+#ifndef NO_CGDisplayBitsPerPixel
+JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayBitsPerPixel)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, CGDisplayBitsPerPixel_FUNC);
+	rc = (jint)CGDisplayBitsPerPixel((CGDirectDisplayID)arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayBitsPerPixel_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGDisplayBitsPerSample
+JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayBitsPerSample)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, CGDisplayBitsPerSample_FUNC);
+	rc = (jint)CGDisplayBitsPerSample((CGDirectDisplayID)arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayBitsPerSample_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGDisplayBytesPerRow
+JNIEXPORT jint JNICALL OS_NATIVE(CGDisplayBytesPerRow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, CGDisplayBytesPerRow_FUNC);
+	rc = (jint)CGDisplayBytesPerRow((CGDirectDisplayID)arg0);
+	OS_NATIVE_EXIT(env, that, CGDisplayBytesPerRow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGFontCreateWithPlatformFont
 JNIEXPORT jint JNICALL OS_NATIVE(CGFontCreateWithPlatformFont)
 	(JNIEnv *env, jclass that, jintArray arg0)
@@ -1479,6 +1515,27 @@ JNIEXPORT void JNICALL OS_NATIVE(CGFontRelease)
 	OS_NATIVE_ENTER(env, that, CGFontRelease_FUNC);
 	CGFontRelease((CGFontRef)arg0);
 	OS_NATIVE_EXIT(env, that, CGFontRelease_FUNC);
+}
+#endif
+
+#ifndef NO_CGGetDisplaysWithRect
+JNIEXPORT jint JNICALL OS_NATIVE(CGGetDisplaysWithRect)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	CGRect _arg0, *lparg0=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, CGGetDisplaysWithRect_FUNC);
+	if (arg0) lparg0 = getCGRectFields(env, arg0, &_arg0);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)CGGetDisplaysWithRect(*lparg0, (CGDisplayCount)arg1, (CGDirectDisplayID *)lparg2, (CGDisplayCount *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg0) setCGRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, CGGetDisplaysWithRect_FUNC);
+	return rc;
 }
 #endif
 
@@ -3840,6 +3897,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserSelectionFlags)
 }
 #endif
 
+#ifndef NO_GetDataBrowserSortProperty
+JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserSortProperty)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GetDataBrowserSortProperty_FUNC);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetDataBrowserSortProperty((ControlRef)arg0, lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetDataBrowserSortProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetDataBrowserTableViewColumnPosition
 JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserTableViewColumnPosition)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
@@ -5375,6 +5447,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(HIViewConvertPoint)
 	rc = (jint)HIViewConvertPoint((HIPoint *)lparg0, (HIViewRef)arg1, (HIViewRef)arg2);
 	if (arg0) setCGPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, HIViewConvertPoint_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_HIViewCreateOffscreenImage
+JNIEXPORT jint JNICALL OS_NATIVE(HIViewCreateOffscreenImage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jintArray arg3)
+{
+	CGRect _arg2, *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, HIViewCreateOffscreenImage_FUNC);
+	if (arg2) lparg2 = getCGRectFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)HIViewCreateOffscreenImage((HIViewRef)arg0, (OptionBits)arg1, (HIRect *)lparg2, (CGImageRef *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg2) setCGRectFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, HIViewCreateOffscreenImage_FUNC);
 	return rc;
 }
 #endif
@@ -8235,6 +8325,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserSelectionFlags)
 	OS_NATIVE_ENTER(env, that, SetDataBrowserSelectionFlags_FUNC);
 	rc = (jint)SetDataBrowserSelectionFlags((ControlRef)arg0, (DataBrowserSelectionFlags)arg1);
 	OS_NATIVE_EXIT(env, that, SetDataBrowserSelectionFlags_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetDataBrowserSortOrder
+JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserSortOrder)
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, SetDataBrowserSortOrder_FUNC);
+	rc = (jint)SetDataBrowserSortOrder((ControlRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, SetDataBrowserSortOrder_FUNC);
 	return rc;
 }
 #endif

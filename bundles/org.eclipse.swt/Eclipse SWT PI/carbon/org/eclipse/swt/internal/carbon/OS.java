@@ -214,6 +214,7 @@ public class OS {
 	public static final int kDataBrowserListView = ('l'<<24) + ('s'<<16) + ('t'<<8) + 'v';
 	public static final int kDataBrowserListViewLatestHeaderDesc = 0;
 	public static final int kDataBrowserListViewSelectionColumn = 1 << OS.kDataBrowserViewSpecificFlagsOffset;
+	public static final int kDataBrowserListViewSortableColumn = 1 << 18;
 	public static final int kDataBrowserNeverEmptySelectionSet = 1 << 6;
 	public static final int kDataBrowserNoItem = 0;
 	public static final int kDataBrowserOrderIncreasing = 1;
@@ -225,6 +226,7 @@ public class OS {
 	public static final int kDataBrowserRevealAndCenterInView = 1 << 0;
 	public static final int kDataBrowserRevealWithoutSelecting = 1 << 1;
 	public static final int kDataBrowserSelectOnlyOne = 1 << 1;
+	public static final int kDataBrowserUserStateChanged = 13;
 	public static final int kDataBrowserUserToggledContainer = 16;
 	public static final int kDataBrowserTextType = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kDataBrowserTableViewFillHilite = 1;
@@ -779,8 +781,12 @@ public static final native void CGContextStrokePath (int ctx);
 public static final native void CGContextSynchronize (int ctx);
 public static final native int CGDataProviderCreateWithData (int info, int data, int size, int releaseData);
 public static final native void CGDataProviderRelease (int provider);
+public static final native int CGDisplayBitsPerPixel (int display);
+public static final native int CGDisplayBitsPerSample (int display);
+public static final native int CGDisplayBytesPerRow (int display);
 public static final native int CGFontCreateWithPlatformFont (int[] platformFontReference);
 public static final native void CGFontRelease (int font);
+public static final native int CGGetDisplaysWithRect (CGRect rect, int maxDisplays, int[] dspys, int[] dspyCnt);
 public static final native int CGImageCreate (int width, int height, int bitsPerComponent, int bitsPerPixel, int bytesPerRow, int colorspace, int alphaInfo, int provider, float[] decode, boolean shouldInterpolate, int intent);
 public static final native int CGImageGetAlphaInfo (int image);
 public static final native int CGImageGetBitsPerComponent (int image);
@@ -952,6 +958,7 @@ public static final native int GetDataBrowserScrollBarInset(int browser, Rect in
 public static final native int GetDataBrowserScrollPosition(int cHandle, int[] top, int[] left);
 public static final native int GetDataBrowserSelectionAnchor(int browser, int [] first, int [] last);
 public static final native int GetDataBrowserSelectionFlags(int browser, int [] selectionFlags);
+public static final native int GetDataBrowserSortProperty(int browser, int[] property);
 public static final native int GetDblTime();
 public static final native short GetDefFontSize();
 public static final native int GetDeviceList();
@@ -1053,6 +1060,7 @@ public static final native int HIObjectRegisterSubclass(int inClassID, int inBas
 public static final native int HIViewAddSubview(int parent, int child);
 public static final native int HIViewClick(int inView, int inEvent);
 public static final native int HIViewConvertPoint(CGPoint ioPoint, int inSourceView, int inDestView);
+public static final native int HIViewCreateOffscreenImage(int inView, int inOptions, CGRect outFrame, int[] outImage	);
 public static final native int HIViewFindByID(int inStartView, int inID, int[] outControl);
 public static final native int HIViewGetFirstSubview(int inView);
 public static final native int HIViewGetLastSubview(int inView);
@@ -1272,6 +1280,7 @@ public static final native int SetDataBrowserListViewHeaderDesc(int browser, int
 public static final native int SetDataBrowserScrollPosition(int cHandle, int top, int left);
 public static final native int SetDataBrowserSelectedItems(int cHandle, int numItems, int[] items, int operation);
 public static final native int SetDataBrowserSelectionFlags(int cHandle, int selectionFlags);
+public static final native int SetDataBrowserSortOrder(int browser, short order);
 public static final native int SetDataBrowserTableViewColumnPosition(int browser, int column, int position);
 public static final native int SetDataBrowserTableViewHiliteStyle(int browser, int hiliteStyle);  
 public static final native int SetDataBrowserTableViewItemRow(int browser, int item, int row);
