@@ -28,17 +28,70 @@ public /*final*/ class Tracker extends Widget {
 	Display display;
 	boolean tracking, stippled;
 	Rectangle [] rectangles = new Rectangle [0];
+
 /**
-* Creates a new instance of the widget.
-*/
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
 public Tracker (Composite parent, int style) {
 	super (parent, style);
 	this.parent = parent;
 	display = parent.getDisplay ();
 }
+
 /**
-* Creates a new instance of the widget.
-*/
+ * Constructs a new instance of this class given the display
+ * to create it on and a style value describing its behavior
+ * and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p><p>
+ * Note: Currently, null can be passed in for the display argument.
+ * This has the effect of creating the tracker on the currently active
+ * display if there is one. If there is no current display, the 
+ * tracker is created on a "default" display. <b>Passing in null as
+ * the display argument is not considered to be good coding style,
+ * and may not be supported in a future release of SWT.</b>
+ * </p>
+ *
+ * @param display the display to create the tracker on
+ * @param style the style of control to construct
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ */
 public Tracker (Display display, int style) {
 	if (display == null) display = Display.getCurrent ();
 	if (display == null) display = Display.getDefault ();
@@ -48,6 +101,7 @@ public Tracker (Display display, int style) {
 	this.style = style;
 	this.display = display;
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is moved or resized, by sending
@@ -82,6 +136,7 @@ public void addControlListener(ControlListener listener) {
  * </ul>
  */
 public void close () {
+	checkWidget();
 	tracking = false;
 }
 void drawRectangles () {
@@ -136,6 +191,7 @@ public Display getDisplay () {
  * </ul>
  */
 public Rectangle [] getRectangles () {
+	checkWidget();
 	return rectangles;
 }
 /**
@@ -149,6 +205,7 @@ public Rectangle [] getRectangles () {
  * </ul>
  */
 public boolean getStippled () {
+	checkWidget();
 	return stippled;
 }
 /**
@@ -160,6 +217,7 @@ public boolean getStippled () {
  * </ul>
  */
 public boolean open () {
+	checkWidget();
 	int xDisplay = display.xDisplay;
 	int color = OS.XWhitePixel (xDisplay, 0);
 	int xWindow = OS.XDefaultRootWindow (xDisplay);
@@ -246,6 +304,7 @@ public void removeControlListener (ControlListener listener) {
  * </ul>
  */
 public void setRectangles (Rectangle [] rectangles) {
+	checkWidget();
 	this.rectangles = rectangles;
 }
 /**
@@ -259,6 +318,7 @@ public void setRectangles (Rectangle [] rectangles) {
  * </ul>
  */
 public void setStippled (boolean stippled) {
+	checkWidget();
 	this.stippled = stippled;
 }
 }

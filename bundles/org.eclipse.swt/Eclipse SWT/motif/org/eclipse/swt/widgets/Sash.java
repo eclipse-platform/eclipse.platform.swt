@@ -30,6 +30,7 @@ public /*final*/ class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
 	int cursor;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -61,6 +62,7 @@ public /*final*/ class Sash extends Control {
 public Sash (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected, by sending

@@ -58,6 +58,7 @@ public /*final*/ class Table extends SelectableItemWidget {
 	private TableColumn defaultColumn;					// Default column that is created as soon as the table is created.
 														// Fix for 1FUSJY5
 	private int dotsWidth = -1;							// width of the static String dots (see above)
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -90,6 +91,7 @@ public Table(Composite parent, int style) {
 	// use NO_MERGE_PAINTS to avoid flashing during column and widget resize redraw
 	super(parent, checkStyle(style| SWT.NO_MERGE_PAINTS));
 }
+
 /**
  * Add 'column' to the receiver.
  * @param column - new table column that should be added to 
@@ -171,14 +173,10 @@ void addItem(TableItem item, int index) {
  */
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget();
-	TypedListener typedListener;
-
-	if (listener == null) {
-		error(SWT.ERROR_NULL_ARGUMENT);
-	}
-	typedListener = new TypedListener(listener);	
-	addListener(SWT.Selection, typedListener);
-	addListener(SWT.DefaultSelection, typedListener);
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener(listener);
+	addListener(SWT.Selection,typedListener);
+	addListener(SWT.DefaultSelection,typedListener);
 }
 static int checkStyle (int style) {
 	return checkBits (style, SWT.SINGLE, SWT.MULTI, 0, 0, 0, 0);
@@ -2194,7 +2192,7 @@ void scrollVerticalRemovedItem(int index) {
  * @param indices the array of indices for the items to select
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of indices is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2479,7 +2477,7 @@ void setResizeColumn(TableColumn column) {
  * @param indices the indices of the items to select
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of indices is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2514,7 +2512,8 @@ public void setSelection(int [] indices) {
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2624,7 +2623,8 @@ void setTopIndexNoScroll(int index, boolean adjustScrollbar) {
  * @param item the item to be shown
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -2635,9 +2635,8 @@ void setTopIndexNoScroll(int index, boolean adjustScrollbar) {
  */
 public void showItem(TableItem item) {
 	checkWidget();
-	if (item == null)  {
-		error(SWT.ERROR_NULL_ARGUMENT);
-	}	
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	showSelectableItem(item);
 }
 /**

@@ -29,6 +29,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget();
 	//NOT DONE - hard coding value to be the same as list's scrollbars
 	int width = 17, height = 100;
 	if ((style & SWT.HORIZONTAL) != 0) {

@@ -1024,7 +1024,6 @@ int getRedrawY(SelectableItem item) {
  */
 public int getSelectionCount() {
 	checkWidget();
-
 	return getSelectionVector().size();
 }
 /**
@@ -1379,7 +1378,6 @@ void motif_setInsertMark(SelectableItem item, boolean after) {
  */
 public void redraw () {
 	checkWidget();
-
 	if (drawCount == 0) {
 		super.redraw();
 	}
@@ -1390,7 +1388,6 @@ public void redraw () {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
-
 	if (drawCount == 0) {
 		super.redraw(x, y, width, height, all);
 	}
@@ -1402,7 +1399,6 @@ public void redraw (int x, int y, int width, int height, boolean all) {
  */
 void redrawSelection(SelectableItem item) {
 	int redrawPosition = getVisibleRedrawY(item);
-
 	if (redrawPosition != -1) {
 		item.redrawSelection(redrawPosition);
 	}	
@@ -1743,7 +1739,6 @@ void setCtrlSelection(boolean isCtrlSelection) {
  */
 public void setFont(Font font) {
 	checkWidget();
-
 	super.setFont(font);
 	textHeight = -1;
 }
@@ -1754,7 +1749,6 @@ public void setFont(Font font) {
  */
 void setHorizontalOffset(int offset) {
 	int offsetChange = offset - horizontalOffset;
-	
 	if (offsetChange != 0) {
 		scrollHorizontal(offsetChange);
 		horizontalOffset = offset;
@@ -1832,7 +1826,6 @@ void setLastSelection(SelectableItem selectedItem, boolean showItem) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
-	
 	if (redraw) {
 		if (--drawCount == 0) redraw();
 	} else {
@@ -1867,6 +1860,7 @@ void setSelectableSelection(SelectableItem selectionItems[]) {
 	keepSelected = new Vector(selectionItems.length);
 	for (int i = 0; i < selectionCount; i++) {
 		if (selectionItems[i] != null) {
+			if (selectionItems[i].isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 			keepSelected.addElement(selectionItems[i]);
 		}
 	}

@@ -41,7 +41,7 @@ public /*final*/ class CoolItem extends Item {
 		
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>CoolBar</code> and a style value
+ * (which must be a <code>CoolBar</code>) and a style value
  * describing its behavior and appearance. The item is added
  * to the end of the items maintained by its parent.
  * <p>
@@ -76,7 +76,7 @@ public CoolItem (CoolBar parent, int style) {
 }
 /**
  * Constructs a new instance of this class given its parent
- * (which must be a <code>CoolBar</code>, a style value
+ * (which must be a <code>CoolBar</code>), a style value
  * describing its behavior and appearance, and the index
  * at which to place it in the items maintained by its parent.
  * <p>
@@ -328,6 +328,9 @@ int processPaint (int callData) {
  *
  * @param control the new control
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -335,8 +338,9 @@ int processPaint (int callData) {
  */
 public void setControl (Control control) {
 	checkWidget();
-	if (control != null && control.parent != parent) {
-		error (SWT.ERROR_INVALID_PARENT);
+	if (control != null) {
+		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	Control oldControl = this.control;
 	if (oldControl != null) oldControl.setVisible(false);
@@ -434,6 +438,7 @@ public void setPreferredSize (int width, int height) {
 	}
 }
 public void setPreferredSize (Point size) {
+	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setPreferredSize(size.x, size.y);
 }
 	

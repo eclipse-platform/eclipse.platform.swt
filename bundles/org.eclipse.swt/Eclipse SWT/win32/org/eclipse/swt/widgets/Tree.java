@@ -734,6 +734,9 @@ public void removeTreeListener(TreeListener listener) {
  * @param after true places the insert mark above 'item'. false places 
  *	the insert mark below 'item'.
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -742,7 +745,10 @@ public void removeTreeListener(TreeListener listener) {
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
 	int hItem = 0;
-	if (item != null) hItem = item.handle;
+	if (item != null) {
+		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		hItem = item.handle;
+	}
 	OS.SendMessage (handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
 }
 
@@ -853,7 +859,8 @@ void setForegroundPixel (int pixel) {
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -879,7 +886,10 @@ public void setSelection (TreeItem [] items) {
 	} else {
 		int hNewItem = 0;
 		TreeItem item = items [0];
-		if (item != null) hNewItem = item.handle;
+		if (item != null) {
+			if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+			hNewItem = item.handle;
+		}
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
 		ignoreSelect = false;
@@ -910,6 +920,7 @@ public void setSelection (TreeItem [] items) {
 	for (int i=0; i<this.items.length; i++) {
 		TreeItem item = this.items [i];
 		if (item != null) {
+			if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 			int index = 0;
 			while (index < items.length) {
 				if (items [index] == item) break;
@@ -941,7 +952,8 @@ public void setSelection (TreeItem [] items) {
  * @param item the item to be shown
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -953,6 +965,7 @@ public void setSelection (TreeItem [] items) {
 public void showItem (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, item.handle);
 }
 

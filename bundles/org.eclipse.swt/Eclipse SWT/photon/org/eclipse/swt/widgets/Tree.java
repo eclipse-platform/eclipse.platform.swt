@@ -1467,6 +1467,9 @@ public void setFont(Font font) {
  * @param after true places the insert mark above 'item'. false places 
  *	the insert mark below 'item'.
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1474,6 +1477,7 @@ public void setFont(Font font) {
  */
 public void setInsertMark(TreeItem item, boolean before){
 	checkWidget();
+	if (item != null && item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	motif_setInsertMark(item, !before);
 }
 /**
@@ -1484,7 +1488,8 @@ public void setInsertMark(TreeItem item, boolean before){
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of items is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1524,7 +1529,8 @@ void setTopIndex(int index, boolean adjustScrollbar) {
  * @param item the item to be shown
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1535,9 +1541,8 @@ void setTopIndex(int index, boolean adjustScrollbar) {
  */
 public void showItem(TreeItem item) {
 	checkWidget();
-	if (item == null)  {
-		error(SWT.ERROR_NULL_ARGUMENT);
-	}	
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	showSelectableItem(item);
 }
 /**

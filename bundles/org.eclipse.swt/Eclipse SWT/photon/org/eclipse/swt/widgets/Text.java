@@ -253,6 +253,7 @@ public String getLineDelimiter () {
 }
 
 public int getLineHeight () {
+	checkWidget();
 	if ((style & SWT.SINGLE) != 0) {
 		PhDim_t dim = new PhDim_t ();
 		if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidget (handle);

@@ -32,6 +32,7 @@ public /*final*/ class TableColumn extends Item {
 	private Rectangle bounds = new Rectangle(0, 0, 0, 0);
 	private boolean isDefaultWidth = true;
 	private boolean resize = true;
+	
 /**
  * Create a new TableColumn without adding it to the parent.
  * Currently used to create fill columns and default columns.
@@ -43,22 +44,71 @@ TableColumn(Table parent) {
 	super(parent, SWT.NULL);
 	this.parent = parent;		
 }
+
 /**
- * Create a new instance of TableColumn and append it to the existing 
- * columns in 'parent'.
- * @param parent - Table widget the new instance will be a child of.
- * @param syle - style of the new TableColumn
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Table</code>) and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
 public TableColumn(Table parent, int style) {
 	this(parent, style, checkNull(parent).getColumnCount());
 }
+
 /**
- * Create a new instance of TableColumn at position 'index' in the Table
- * identified by 'parent'.
- * @param parent - Table widget the new instance will be a child of.
- * @param index - position in the 'parent' at which the new instance will
- *	be located relative to the other columns.
- * @param syle - style of the new TableColumn
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Table</code>), a style value
+ * describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
 public TableColumn(Table parent, int style, int index) {
 	super(parent, checkStyle (style), index);
@@ -228,7 +278,6 @@ int getIndex() {
  */
 public Table getParent() {
 	checkWidget();
-	
 	return parent;
 }
 /**
@@ -245,7 +294,6 @@ public Table getParent() {
  */
 public boolean getResizable() {
 	checkWidget();
-	
 	return resize;
 }
 /**
@@ -260,7 +308,6 @@ public boolean getResizable() {
  */
 public int getWidth () {
 	checkWidget();
-
 	return getBounds().width;
 }
 /**
@@ -434,7 +481,6 @@ void setIndex(int newIndex) {
  */
 public void setResizable(boolean resize) {
 	checkWidget();
-
 	this.resize = resize;
 }
 public void setText(String newText) {

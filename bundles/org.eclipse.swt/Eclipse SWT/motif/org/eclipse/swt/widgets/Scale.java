@@ -58,6 +58,7 @@ public /*final*/ class Scale extends Control {
 public Scale (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's value changes, by sending

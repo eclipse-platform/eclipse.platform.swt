@@ -40,26 +40,77 @@ public /*final*/ class TableItem extends SelectableItem {
 	private int imageIndent = 0;							// the factor by which the item image and check box, if any, 
 															// are indented. The multiplier is the image width.
 	private int index;										// index of the item in the parent widget
+
 /**
- * Create a table item in the table widget 'parent'. Append the new 
- * item to the existing items in 'parent'.
- * @param parent - table widget the new item is added to.
- * @param style - widget style. See Widget class for details
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Table</code>) and a style value
+ * describing its behavior and appearance. The item is added
+ * to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
 public TableItem(Table parent, int style) {
 	this(parent, style, checkNull(parent).getItemCount());
 }
+
 /**
- * Create a table item in the table widget 'parent'. Add the new 
- * item at position 'index' to the existing items in 'parent'.
- * @param parent - table widget the new item is added to.
- * @param style - widget style. See Widget class for details
- * @param index - position the new item is inserted at in 'parent'
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Table</code>), a style value
+ * describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
 public TableItem(Table parent, int style, int index) {
 	super(parent, style);
 	parent.addItem(this, index);
 }
+
 /**
  * Calculate the size of the rectangle drawn to indicate a selected 
  * item. This is also used to draw the selection focus rectangle. 
@@ -683,6 +734,7 @@ void internalSetImage(int columnIndex, Image image) {
 		if (((Image) images.elementAt(columnIndex)) == null && image != null) {
 			imageWasNull = true;
 		}
+		if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		images.setElementAt(image, columnIndex);
 		reset(columnIndex);						// new image may cause text to no longer fit in the column
 		notifyImageChanged(columnIndex, imageWasNull);
@@ -856,10 +908,11 @@ void reset(int index) {
 /**
  * Sets the image for multiple columns in the Table. 
  * 
- * @param strings the array of new images
+ * @param images the array of new images
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -882,20 +935,20 @@ public void setImage(Image [] images) {
  * Sets the receiver's image at a column.
  *
  * @param index the column index
- * @param string the new image
+ * @param image the new image
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setImage(int columnIndex, Image image) {
+public void setImage(int index, Image image) {
 	checkWidget();	
 	if (getParent().indexOf(this) != -1) {
-		internalSetImage(columnIndex, image);
+		internalSetImage(index, image);
 	}
 }
 public void setImage(Image image) {
@@ -969,13 +1022,13 @@ public void setText(String [] strings) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void setText (int columnIndex, String string) {
+public void setText (int index, String string) {
 	checkWidget();
 	if (string == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
 	if (getParent().indexOf(this) != -1) {
-		internalSetText(columnIndex, string);
+		internalSetText(index, string);
 	}
 }
 public void setText(String text) {

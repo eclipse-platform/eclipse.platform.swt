@@ -46,6 +46,7 @@ public /*final*/ class TabFolder extends Composite {
 	static final int CLIENT_MARGIN_WIDTH = 2; 				// distance between widget border and client rect
 	static final int SELECTED_TAB_TOP_EXPANSION = 2; 		// amount we expand the selected tab on top
 	static final int SELECTED_TAB_HORIZONTAL_EXPANSION = 2; // amount we expand so it overlays to left and right
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -111,14 +112,10 @@ public TabFolder(Composite parent, int style) {
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
-	TypedListener typedListener;
-
-	if (listener == null) {
-		error(SWT.ERROR_NULL_ARGUMENT);
-	}
-	typedListener = new TypedListener(listener);
-	addListener(SWT.Selection, typedListener);
-	addListener(SWT.DefaultSelection, typedListener);
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener(listener);
+	addListener(SWT.Selection,typedListener);
+	addListener(SWT.DefaultSelection,typedListener);
 }
 static int checkStyle (int style) {
 	/*
@@ -485,7 +482,6 @@ int getImageHeight() {
  */
 public TabItem getItem (int index) {
 	checkWidget();
-
 	if (!(0 <= index && index < getItemCount())) error(SWT.ERROR_INVALID_RANGE);
 	return items [index];
 }
@@ -501,7 +497,6 @@ public TabItem getItem (int index) {
  */
 public int getItemCount(){
 	checkWidget();
-
 	if (items == null) 
 		return 0;
 	else return items.length;
@@ -524,7 +519,6 @@ public int getItemCount(){
  */
 public TabItem [] getItems() {
 	checkWidget();
-
 	if (items == null) return new TabItem[0];
 	TabItem[] tabItems = new TabItem [items.length];
 	System.arraycopy(items, 0, tabItems, 0, items.length);
@@ -556,7 +550,6 @@ Rectangle getScrollButtonArea() {
  */
 public TabItem [] getSelection() {
 	checkWidget();
-
 	if (selectedIndex == -1) return new TabItem [0];
 	return new TabItem [] {items[selectedIndex]};
 }
@@ -573,7 +566,6 @@ public TabItem [] getSelection() {
  */
 public int getSelectionIndex() {
 	checkWidget();
-
 	return selectedIndex;
 }
 /**
@@ -619,7 +611,6 @@ void handleEvents (Event event){
  */
 public int indexOf(TabItem item) {
 	checkWidget();
-
 	if (item == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -882,7 +873,6 @@ void redrawTabs() {
  */
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
-
 	if (listener == null) {
 		error(SWT.ERROR_NULL_ARGUMENT);
 	}
@@ -928,7 +918,6 @@ void scrollRight() {
 }
 public void setFont(Font font) {
 	checkWidget();
-
 	if (font != null && font.equals(getFont())) return;
 	super.setFont(font);	
 	layoutItems();
@@ -987,7 +976,6 @@ public void setSelection(int index) {
  */
 public void setSelection(TabItem selectedItems[]) {
 	checkWidget();
-
 	if (selectedItems == null) error(SWT.ERROR_NULL_ARGUMENT);
 	int index = -1;
 	if (selectedItems.length > 0) {

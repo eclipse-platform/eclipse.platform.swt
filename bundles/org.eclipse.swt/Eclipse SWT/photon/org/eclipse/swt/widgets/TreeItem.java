@@ -85,46 +85,146 @@ public /*final*/ class TreeItem extends AbstractTreeItem {
 	private Point itemExtent;								// Size of the item (image + label)
 	private Point imageExtent;								// original size of the item image	
 	private int textYPosition = -1;							// Centered y position of the item text	
+
 /**
- * Create a root item and add it to the tree widget identified
- * by 'parent'.
- * @param parent - Tree widget the receiver is added to
- * @param swtStyle - widget style. see Widget class for details
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
+ * and a style value describing its behavior and appearance.
+ * The item is added to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
-public TreeItem(Tree parent, int swtStyle) {
-	this(parent, swtStyle, checkNull(parent).getItemCount());
+public TreeItem(Tree parent, int style) {
+	this(parent, style, checkNull(parent).getItemCount());
 }
+
 /**
- * Create a root item and add it to the tree widget identified
- * by 'parent'.
- * @param parent - Tree widget the receiver is added to.
- * @param swtStyle - widget style. see Widget class for details
- * @param position - position in 'parentItem' the receiver will 
- *	be inserted at 
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Tree</code> or a <code>TreeItem</code>),
+ * a style value describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
-public TreeItem(Tree parent, int swtStyle, int position) {
-	super(parent, swtStyle);
-	parent.addItem(this, position);
+public TreeItem(Tree parent, int style, int index) {
+	super(parent, style);
+	parent.addItem(this, index);
 }
+
 /**
- * Create a root item with 'parentItem' as the parent item.
- * @param parentItem - the parent item of the receiver
- * @param swtStyle - widget style. see Widget class for details
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
+ * and a style value describing its behavior and appearance.
+ * The item is added to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
-public TreeItem(TreeItem parentItem, int swtStyle) {
-	this(parentItem, swtStyle, checkNull(parentItem).getItemCount());
+public TreeItem(TreeItem parentItem, int style) {
+	this(parentItem, style, checkNull(parentItem).getItemCount());
 }
+
 /**
- * Create a root item with 'parentItem' as the parent item.
- * @param parentItem - the parent item of the receiver
- * @param swtStyle - widget style. see Widget class for details
- * @param position - position in 'parentItem' the receiver will 
- *	be inserted at 
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>Tree</code> or a <code>TreeItem</code>),
+ * a style value describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
  */
-public TreeItem(TreeItem parentItem, int swtStyle, int position) {
-	super(checkNull(parentItem).getParent(), swtStyle);
+public TreeItem(TreeItem parentItem, int style, int index) {
+	super(checkNull(parentItem).getParent(), style);
 	setParentItem(parentItem);	
-	parentItem.add(this, position);
+	parentItem.add(this, index);
 }
 /**
  * Calculate the number of expanded children.

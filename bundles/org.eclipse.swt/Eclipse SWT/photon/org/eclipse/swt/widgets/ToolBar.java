@@ -144,6 +144,7 @@ public int getRowCount () {
 public int indexOf (ToolItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int count = itemCount;
 	for (int i=0; i<count; i++) {
 		if (items [i] == item) return i;

@@ -313,8 +313,9 @@ public void removeSelectionListener(SelectionListener listener) {
 
 public void setControl (Control control) {
 	checkWidget();
-	if (control != null && control.parent != parent) {
-		error (SWT.ERROR_INVALID_PARENT);
+	if (control != null) {
+		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
 	if ((style & SWT.SEPARATOR) == 0) return;
 	Control oldControl = this.control;
@@ -330,6 +331,7 @@ public void setControl (Control control) {
 
 public void setDisabledImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	disabledImage = image;
 }
@@ -345,6 +347,7 @@ public void setEnabled (boolean enabled) {
 
 public void setHotImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 
 	/* TEMPORARY CODE: remove when when FLAT tool bars are implemented */
@@ -355,6 +358,7 @@ public void setHotImage (Image image) {
 
 public void setImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;	
 	super.setImage (image);
 

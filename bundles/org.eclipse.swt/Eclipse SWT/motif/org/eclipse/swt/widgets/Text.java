@@ -24,7 +24,6 @@ import org.eclipse.swt.events.*;
  * </p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  */
-
 public class Text extends Scrollable {
 	char echoCharacter;
 	boolean ignoreChange;
@@ -44,6 +43,7 @@ public class Text extends Scrollable {
 		LIMIT = 0x7FFFFFFF;
 		DELIMITER = "\n";
 	}
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -75,6 +75,7 @@ public class Text extends Scrollable {
 public Text (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's text is modified, by sending
@@ -1021,7 +1022,6 @@ public void removeVerifyListener (VerifyListener listener) {
  */
 public void selectAll () {
 	checkWidget();
-	
 	/* Clear the highlight before setting the selection. */
 	int position = OS.XmTextGetLastPosition (handle);
 //	OS.XmTextSetHighlight (handle, 0, position, OS.XmHIGHLIGHT_NORMAL);
@@ -1180,7 +1180,6 @@ public void setRedraw (boolean redraw) {
  */
 public void setSelection (int start) {
 	checkWidget();
-	
 	/* Clear the selection and highlight before moving the i-beam. */
 	int xDisplay = OS.XtDisplay (handle);
 	if (xDisplay == 0) return;
@@ -1225,7 +1224,6 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget();
-	
 	/* Clear the highlight before setting the selection. */
 	int position = OS.XmTextGetLastPosition (handle);
 //	OS.XmTextSetHighlight (handle, 0, position, OS.XmHIGHLIGHT_NORMAL);
