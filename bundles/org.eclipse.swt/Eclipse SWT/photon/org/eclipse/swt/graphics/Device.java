@@ -162,7 +162,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 	for (int i = 0; i < nfonts; i++) {
 		OS.memmove(details, ptr, FontDetails.sizeof);
 		String name = new String(Converter.mbcsToWcs(null, details.desc)).trim();
-		if (faceName == null || faceName.equalsIgnoreCase(name)) {
+		if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
 			int size;
 			if (details.losize == 0 && details.hisize == 0) size = 9; // This value was taken from the PhAB editor
 			else size = details.losize;

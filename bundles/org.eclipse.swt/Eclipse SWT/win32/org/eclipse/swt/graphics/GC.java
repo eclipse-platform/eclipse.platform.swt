@@ -273,8 +273,6 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int x1, y1, x2, y2,tmp;
 	boolean isNegative;
-	double pi = 3.1415926535;
-	double toRadians = 2 * pi / 360;
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -299,12 +297,11 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 			startAngle = endAngle;
 			endAngle = tmp;
 		}
- 		x1 = (int) (Math.cos(startAngle * toRadians) * width) + x + width/2;;
-		y1 = (int) (-1 * Math.sin(startAngle * toRadians) * height) + y + height/2;
-
-		x2 = (int) (Math.cos(endAngle * toRadians) * width) + x + width/2;
-		y2 = (int) (-1 * Math.sin(endAngle * toRadians) * height) + y + height/2;
-
+		x1 = Compatibility.cos(startAngle, width) + x + width/2;
+		y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
+		
+		x2 = Compatibility.cos(endAngle, width) + x + width/2;
+		y2 = -1 * Compatibility.sin(endAngle, height) + y + height/2; 		
 	}
 	int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
 	int oldBrush = OS.SelectObject(handle, nullBrush);
@@ -1109,8 +1106,6 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int x1, y1, x2, y2,tmp;
 	boolean isNegative;
-	double pi = 3.1415926535;
-	double toRadians = 2 * pi / 360;
 
 	if (width < 0) {
 		x = x + width;
@@ -1138,12 +1133,11 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 			startAngle = endAngle;
 			endAngle = tmp;
 		}
- 		x1 = (int) (Math.cos(startAngle * toRadians) * width) + x + width/2;;
-		y1 = (int) (-1 * Math.sin(startAngle * toRadians) * height) + y + height/2;
-
-		x2 = (int) (Math.cos(endAngle * toRadians) * width) + x + width/2;
-		y2 = (int) (-1 * Math.sin(endAngle * toRadians) * height) + y + height/2;
-
+		x1 = Compatibility.cos(startAngle, width) + x + width/2;
+		y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
+		
+		x2 = Compatibility.cos(endAngle, width) + x + width/2;
+		y2 = -1 * Compatibility.sin(endAngle, height) + y + height/2; 				
 	}
 
 	int nullPen = OS.GetStockObject(OS.NULL_PEN);
