@@ -68,7 +68,7 @@ public void parse(String str) {
 		String param = params[i];
 		int equals = param.indexOf('=');
 		if (equals ==  -1) {
-			System.out.println();
+			System.out.println("Error: " + str + " param " + param);
 		}
 		String key = param.substring(0, equals).trim();
 		String value = param.substring(equals + 1).trim();
