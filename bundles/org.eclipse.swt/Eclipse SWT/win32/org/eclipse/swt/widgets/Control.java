@@ -1670,7 +1670,7 @@ boolean sendFocusEvent (int type, int hwnd) {
 			* events.
 			*/
 			if (!shell.isDisposed ()) {
-				Display display = shell.getDisplay ();
+				Display display = shell.display;
 				Control control = hwnd != -1 ? display.findControl (hwnd) : display.getFocusControl ();
 				if (control == null || shell != control.getShell ()) {
 					shell.setActiveControl (null);
