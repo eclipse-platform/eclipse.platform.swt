@@ -95,10 +95,11 @@ fail:
 #endif
 
 #ifndef NO_cairo_1points
-#define PATH_MOVE_TO 0
-#define PATH_LINE_TO 1
-#define PATH_CURVE_TO 3
-#define PATH_CLOSE 4
+#define PATH_MOVE_TO 1
+#define PATH_LINE_TO 2
+#define PATH_QUAD_TO 3
+#define PATH_CUBIC_TO 4
+#define PATH_CLOSE 5
 typedef struct _points_data {
 	jint *n_types;
 	jint *n_points;
@@ -129,7 +130,7 @@ static void pointsLineTo(points_data *data, double x, double y) {
 }
 
 static void pointsCurveTo(points_data *data, double x1, double y1, double x2, double y2, double x3, double y3) {
-	if (data->types != NULL) data->types[data->n_types[0]] = PATH_CURVE_TO;
+	if (data->types != NULL) data->types[data->n_types[0]] = PATH_CUBIC_TO;
 	if (data->points != NULL) {
 		int offset = data->n_points[0] * 2;
 		data->points[offset] = x1;

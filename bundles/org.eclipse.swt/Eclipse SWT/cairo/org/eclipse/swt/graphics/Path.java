@@ -93,7 +93,7 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 	return result;
 }
 
-public void curveTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
+public void cubicTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Cairo.cairo_curve_to(handle, cx1, cy1, cx2, cy2, x, y);
 }
@@ -118,6 +118,20 @@ public void getCurrentPoint(float[] point) {
 	Cairo.cairo_current_point(handle, x, y);
 	point[0] = (float)x[0];
 	point[1] = (float)y[0];
+}
+
+public PathData getPathData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	int[] n_types = new int[1];
+	int[] n_points = new int[1];
+	Cairo.cairo_points(handle, n_types, n_points, null, null);
+	byte[] types = new byte[n_types[0]];
+	float[] points = new float[n_points[0] * 2];
+	Cairo.cairo_points(handle, n_types, n_points, types, points);
+	PathData result = new PathData();
+	result.types = types;
+	result.points = points;
+	return result;
 }
 
 public void lineTo(float x, float y) {
