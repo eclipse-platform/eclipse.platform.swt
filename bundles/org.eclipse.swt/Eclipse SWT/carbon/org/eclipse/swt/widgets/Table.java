@@ -2096,6 +2096,7 @@ boolean setScrollWidth (TableItem item) {
 public void setSelection (int index) {
 	checkWidget();
 	checkItems (false);
+	deselectAll ();
 	setSelection (index, false);
 }
 
