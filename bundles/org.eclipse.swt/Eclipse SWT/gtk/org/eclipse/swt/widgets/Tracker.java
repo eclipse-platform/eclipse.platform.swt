@@ -374,11 +374,8 @@ private int waitEvent() {
  */
 private int calculateWindow() {
 	int answer;
-	if (parent == null) {
-		answer = OS.GDK_ROOT_PARENT();
-	} else {
-		answer = /*parent._gdkWindow();*/ 0;
-	}
+	if (parent == null) answer = OS.GDK_ROOT_PARENT();
+		else answer = OS.GTK_WIDGET_WINDOW(parent.paintHandle());
 	if (answer==0) error(SWT.ERROR_UNSPECIFIED);
 	return answer;
 }
