@@ -1210,8 +1210,10 @@ public class OS {
 	public static final int TVS_NOTOOLTIPS = 0x80;
 	public static final int TVS_SHOWSELALWAYS = 0x20;
 	public static final int UDM_GETRANGE32 = 0x0470;
+	public static final int UDM_GETPOS = 0x468;
 	public static final int UDM_GETPOS32 = 0x0472;
 	public static final int UDM_SETRANGE32 = 0x046f;
+	public static final int UDM_SETPOS = 0x467;
 	public static final int UDM_SETPOS32 = 0x0471;
 	public static final int UDS_AUTOBUDDY = 0x0010;
 	public static final int UDS_WRAP = 0x0001;
