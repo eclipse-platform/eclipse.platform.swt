@@ -36,7 +36,6 @@ public interface AccessibleControlListener extends SWTEventListener {
 	public void get_accChildCount(AccessibleControlEvent e);
 	public void get_accDefaultAction(AccessibleControlEvent e);
 	public void get_accFocus(AccessibleControlEvent e);
-	public void get_accParent(AccessibleControlEvent e);
 	public void get_accRole(AccessibleControlEvent e);
 	public void get_accSelection(AccessibleControlEvent e);
 	public void get_accState(AccessibleControlEvent e);
@@ -45,6 +44,7 @@ public interface AccessibleControlListener extends SWTEventListener {
 	// May not implement
 	public void accDoDefaultAction(AccessibleControlEvent e);
 	public void accSelect(AccessibleControlEvent e);
+	public void get_accParent(AccessibleControlEvent e);
 	
 	// Will not implement
 	//public void put_accName(AccessibleControlEvent e);

@@ -218,10 +218,10 @@ public CTabFolder(Composite parent, int style) {
 	
 /* Start ACCESSIBILITY */
 	accessible = new Accessible(this);
-	accessible.addAccessibleListener(new AccessibleListener() {
+	accessible.addAccessibleListener(new AccessibleAdapter() {
 		public void get_accDescription(AccessibleEvent e) {
 			int childID = e.childID;
-			if (childID > items.length) return; // sigh - probably need to have an error code in the event object
+			if (childID > items.length) return;
 			if (childID == ACC.CHILDID_SELF) {
 				e.result = "This is a CTabFolder";
 			} else {
@@ -231,7 +231,7 @@ public CTabFolder(Composite parent, int style) {
 		
 		public void get_accHelp(AccessibleEvent e) {
 			int childID = e.childID;
-			if (childID > items.length) return; // sigh - probably need to have an error code in the event object
+			if (childID > items.length) return;
 			if (childID == ACC.CHILDID_SELF) {
 				e.result = getToolTipText();
 			} else {
@@ -242,7 +242,7 @@ public CTabFolder(Composite parent, int style) {
 		
 		public void get_accKeyboardShortcut(AccessibleEvent e) {
 			int childID = e.childID;
-			if (childID > items.length) return; // sigh - probably need to have an error code in the event object
+			if (childID > items.length) return;
 			if (childID != ACC.CHILDID_SELF) {
 				e.result = "Ctrl+TAB";
 			}
@@ -250,7 +250,7 @@ public CTabFolder(Composite parent, int style) {
 		
 		public void get_accName(AccessibleEvent e) {
 			int childID = e.childID;
-			if (childID > items.length) return; // sigh - probably need to have an error code in the event object
+			if (childID > items.length) return;
 			if (childID == ACC.CHILDID_SELF) {
 				e.result = "CTabFolder";
 			} else {
@@ -260,10 +260,7 @@ public CTabFolder(Composite parent, int style) {
 		}
 	});
 		
-	accessible.addAccessibleControlListener(new AccessibleControlListener() {
-		public void accDoDefaultAction(AccessibleControlEvent e) {
-			// do nothing... (need an adapter for stuff like this)
-		}
+	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
 		public void accHitTest(AccessibleControlEvent e) {
 			Point testPoint = toControl(new Point(e.x, e.y));
 			int childID = ACC.CHILDID_SELF;
@@ -326,14 +323,9 @@ public CTabFolder(Composite parent, int style) {
 			}
 		}
 		
-		public void accSelect(AccessibleControlEvent e) {
-			// must implement for the items because they support selection
-			return;
-		}
-		
 		public void get_accChild(AccessibleControlEvent e) {
 			int childID = e.childID;
-			if (childID > items.length) return; // sigh - probably need to have an error code in the event object
+			if (childID > items.length) return;
 			if (childID == ACC.CHILDID_SELF) {
 				e.accessible = accessible;
 			}
@@ -345,23 +337,15 @@ public CTabFolder(Composite parent, int style) {
 		
 		public void get_accDefaultAction(AccessibleControlEvent e) {
 			int childID = e.childID;
-			if (childID > items.length) return; // sigh - probably need to have an error code in the event object
+			if (childID > items.length) return;
 			if (childID != ACC.CHILDID_SELF) {
 				e.result = "Switch";
 			}
 		}
-		
-		public void get_accFocus(AccessibleControlEvent e) {
-			// not yet implemented - probably return the same as selected, but only if the tab folder has focus
-		}
-		
-		public void get_accParent(AccessibleControlEvent e) {
-			e.accessible = accessible; // not sure about this...
-		}
-		
+
 		public void get_accRole(AccessibleControlEvent e) {
 			int childID = e.childID;
-			if (childID > items.length) return; // sigh - probably need to have an error code in the event object
+			if (childID > items.length) return;
 			if (childID == ACC.CHILDID_SELF) {
 				e.code = ACC.ROLE_SYSTEM_PAGETABLIST;
 			} else {
@@ -379,7 +363,7 @@ public CTabFolder(Composite parent, int style) {
 		
 		public void get_accState(AccessibleControlEvent e) {
 			int childID = e.childID;
-			if (childID > items.length) return; // sigh - probably need to have an error code in the event object
+			if (childID > items.length) return;
 			int state;
 			if (childID == ACC.CHILDID_SELF) {
 				state = ACC.STATE_SYSTEM_NORMAL;
@@ -390,10 +374,6 @@ public CTabFolder(Composite parent, int style) {
 				}
 			}
 			e.code = state;
-		}
-		
-		public void get_accValue(AccessibleControlEvent e) {
-			// not yet implemented... none of the tabs has a value... should really do nothing... need an adapter...
 		}
 	});
 /* End ACCESSIBILITY */

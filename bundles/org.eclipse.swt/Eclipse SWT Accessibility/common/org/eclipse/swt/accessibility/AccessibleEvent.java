@@ -19,8 +19,8 @@ import org.eclipse.swt.internal.SWTEventObject;
  * @see AccessibleListener
  */
 public class AccessibleEvent extends SWTEventObject {
-	public int childID;	// IN
-	public String result;	// OUT
+	public int childID;	// IN - can be CHILDID_SELF or a positive integer
+	public String result;	// OUT - result depends on the listener method called
 	
 public AccessibleEvent(Object source) {
 	super(source);
