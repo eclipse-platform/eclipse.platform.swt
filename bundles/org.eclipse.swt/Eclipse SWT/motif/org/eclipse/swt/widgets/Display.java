@@ -1560,6 +1560,7 @@ public Font getSystemFont () {
 	return defaultFont;
 }
 public Image getSystemImage (int style) {
+	checkDevice ();
 	int image = 0;
 	int mask = 0;
 	switch (style) {
