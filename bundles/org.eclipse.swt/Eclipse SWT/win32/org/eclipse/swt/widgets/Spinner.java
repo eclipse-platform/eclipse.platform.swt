@@ -133,7 +133,8 @@ void createHandle () {
         null);
 	if (hwndText == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SetWindowLong (hwndText, OS.GWL_ID, hwndText);
-	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY | OS.UDS_WRAP | OS.UDS_SETBUDDYINT;
+	int upDownStyle = OS.WS_CHILD | OS.WS_VISIBLE | OS.UDS_AUTOBUDDY | OS.UDS_SETBUDDYINT;
+	if ((style & SWT.WRAP) != 0) upDownStyle |= OS.UDS_WRAP;
 	hwndUpDown = OS.CreateWindowEx (
         0,
         UpDownClass,
@@ -1076,12 +1077,16 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 		case OS.VK_NEXT: delta = -pageIncrement; break;
 	}
 	if (delta != 0) {
-		int value = getSelectionText () + delta;
+		int value = getSelectionText ();
+		int newValue = value + delta;
 		int [] max = new int [1], min = new int [1];
 		OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
-		if (value < min [0]) value = max [0];
-		if (value > max [0]) value = min [0];
-		setSelection (value, true);
+		if ((style & SWT.WRAP) != 0) {
+			if (newValue < min [0]) newValue = max [0];
+			if (newValue > max [0]) newValue = min [0];
+		}
+		newValue = Math.min (Math.max (min [0], newValue), max [0]);
+		if (value != newValue) setSelection (newValue, true);
 	}
 	
 	/*  Stop the edit control from moving the caret */

@@ -416,6 +416,7 @@ public class SWT {
 	 * <li><code>Label</code></li>
 	 * <li><code>Text</code></li>
 	 * <li><code>ToolBar</code></li>
+	 * <li><code>Spinner</code></li>
 	 * </ul></p>
 	 */
 	public static final int WRAP = 1 << 6;
