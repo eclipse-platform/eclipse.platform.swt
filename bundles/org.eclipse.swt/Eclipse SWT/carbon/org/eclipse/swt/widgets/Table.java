@@ -352,7 +352,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		GC gc = new GC (this);
 		int columnCount = Math.max (this.columnCount, 1);
 		for (int j=0; j<columnCount; j++) {
-			int columnWidth = 0;
+			int columnWidth = this.columnCount != 0 ? columns [j].getWidth () : 0;
 			for (int i=0; i<itemCount; i++) {
 				TableItem item = items [i];
 				if (item != null) {
