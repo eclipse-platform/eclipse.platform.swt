@@ -347,7 +347,7 @@ void addDisposeWindow (int window) {
 //	disposeWindows [index] = window;
 }
 
-void addFilter (int eventType, Listener listener) {
+public void addFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) filterTable = new EventTable ();
@@ -1913,7 +1913,7 @@ void releaseDisplay () {
 
 }
 
-void removeFilter (int eventType, Listener listener) {
+public void removeFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) return;

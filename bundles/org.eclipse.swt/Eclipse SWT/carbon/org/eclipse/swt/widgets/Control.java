@@ -1849,14 +1849,19 @@ boolean sendKeyEvent (int type, int theEvent) {
 	int [] length = new int [1];
 	int status = OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, 4, length, (char[])null);
 	if (status == OS.noErr && length [0] > 2) {
+		int count = 0;
 		char [] chars = new char [length [0] / 2];
 		OS.GetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, null, chars.length * 2, null, chars);
-		for (int i = 0; i < chars.length; i++) {
+		for (int i=0; i<chars.length; i++) {
 			Event event = new Event ();
 			event.type = type;
 			event.character = chars [i];
 			setInputState(event, theEvent);
-			sendKeyEvent (type, event);
+			if (sendKeyEvent (type, event)) chars [count++] = chars [i];
+		}
+		if (count == 0) return false;
+		if (count != chars.length - 1) {
+			OS.SetEventParameter (theEvent, OS.kEventParamKeyUnicodes, OS.typeUnicodeText, count * 2, chars);
 		}
 		return true;
 	} else {
@@ -1868,8 +1873,8 @@ boolean sendKeyEvent (int type, int theEvent) {
 }
 
 boolean sendKeyEvent (int type, Event event) {
-	postEvent (type, event);
-	return true;
+	sendEvent (type, event);
+	return event.doit;
 }
 
 boolean sendMouseEvent (int type, int theEvent) {
