@@ -33,7 +33,7 @@ import org.eclipse.swt.widgets.*;
  */
 public class MessageBox extends Dialog {
 
-	String message;
+	String message = "";
 	int handle;
 /**
  * Constructs a new instance of this class given only its
