@@ -102,7 +102,7 @@ import org.eclipse.swt.events.*;
 public class Shell extends Decorations {
 	int /*long*/ shellHandle, tooltipsHandle;
 	boolean hasFocus, mapped;
-	int oldX, oldY, oldWidth, oldHeight;
+	int oldX = -1, oldY = -1, oldWidth, oldHeight;
 	int minWidth, minHeight;
 	Control lastActive;
 	Region region;
