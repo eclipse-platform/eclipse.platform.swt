@@ -198,11 +198,17 @@ public CTabFolder(Composite parent, int style) {
 	
 	// tool tip support
 	Display display = getDisplay();
-	tip = new Shell (getShell(), SWT.NONE);
-	tip.setLayout(new FillLayout());
+	tip = new Shell (getShell(), SWT.ON_TOP);
+	GridLayout layout = new GridLayout();
+	layout.marginWidth = layout.marginHeight = 1;
+	tip.setLayout(layout);
 	Label label = new Label (tip, SWT.NONE);
+	label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+	
 	label.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
 	label.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
+	tip.setBackground(label.getBackground());
+	
 	addMouseTrackListener (new MouseTrackAdapter () {
 		public void mouseExit(MouseEvent e) {
 			if (tip.isVisible()) tip.setVisible(false);
@@ -213,12 +219,23 @@ public CTabFolder(Composite parent, int style) {
 			if (item != null) {
 				String tooltip = item.getToolTipText();
 				if (tooltip != null) {
-					pt.y = (onBottom) ? pt.y - 26 : pt.y + 26;
-					pt = toDisplay(pt);
-					tip.setLocation(pt);
+					
 					Label label = (Label) (tip.getChildren() [0]);
-					label.setText(tooltip);  
+					label.setText(tooltip);
 					tip.pack();
+					
+					pt.y = (onBottom) ? pt.y - 16 : pt.y + 16;
+					pt = toDisplay(pt);
+					/*
+					* Ensure that the tooltip is on the screen.
+					*/
+					Display display = tip.getDisplay();
+					Rectangle rect = display.getBounds();
+					Point size = tip.getSize();
+					pt.x = Math.max (0, Math.min (pt.x, rect.width - size.x));
+					pt.y = Math.max (0, Math.min (pt.y, rect.height - size.y));
+					tip.setLocation(pt);
+					
 					tip.setVisible(true);
 					return;
 				}
