@@ -730,13 +730,13 @@ public void disposeExec (Runnable runnable) {
 }
 
 void dragDetect (Control control) {
-	if (!dragging && control.hooks (SWT.DragDetect)) {
-		if (OS.WaitMouseMoved (dragMouseStart)) {
-			dragging = true;
-			//control.postEvent (SWT.DragDetect);
-			control.sendEvent (SWT.DragDetect);
-		}
-	}
+//	if (!dragging && control.hooks (SWT.DragDetect)) {
+//		if (OS.WaitMouseMoved (dragMouseStart)) {
+//			dragging = true;
+//			//control.postEvent (SWT.DragDetect);
+//			control.sendEvent (SWT.DragDetect);
+//		}
+//	}
 }
 
 int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
