@@ -743,7 +743,7 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
-	if (start > end) return "";
+	if (!(start <= end && 0 <= end)) return "";
 	int length = OS.TXNDataSize (txnObject) / 2;
 	start = Math.max (0, start);
 	end = Math.min (end, length - 1);
