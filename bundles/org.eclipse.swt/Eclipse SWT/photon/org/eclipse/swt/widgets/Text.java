@@ -95,31 +95,46 @@ static int checkStyle (int style) {
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
+	
+	int [] args = new int [] {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	boolean wrap = (style & SWT.WRAP) != 0;
+	if (wrap) {
+		if (wHint == SWT.DEFAULT) {
+			OS.PtSetResource (handle, OS.Pt_ARG_MULTITEXT_WRAP_FLAGS, OS.Pt_EMT_NEWLINE, ~0);
+		} else {
+			OS.PtSetResource (handle, OS.Pt_ARG_WIDTH, wHint, 0);
+		}
+	}
+	int resizeFlags = OS.Pt_RESIZE_X_ALWAYS | OS.Pt_RESIZE_Y_ALWAYS;
+	OS.PtSetResource (handle, OS.Pt_ARG_RESIZE_FLAGS, resizeFlags, OS.Pt_RESIZE_XY_BITS);
+	if ((style & SWT.MULTI) != 0 || !OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
 	PhDim_t dim = new PhDim_t ();
-	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
 	OS.PtWidgetPreferredSize (handle, dim);
 	int width = dim.w, height = dim.h;
-	if ((style & SWT.MULTI) != 0) {
-		int child = OS.PtWidgetChildBack (handle);
-		OS.PtWidgetPreferredSize (child, dim);
-		width += dim.w - 1;
-		height += dim.h - 1;
+	OS.PtSetResource (handle, OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS);
+	if (wrap) {
+		if (wHint == SWT.DEFAULT) {
+			int wrapFlags = OS.Pt_EMT_WORD | OS.Pt_EMT_CHAR | OS.Pt_EMT_NEWLINE;
+			OS.PtSetResource (handle, OS.Pt_ARG_MULTITEXT_WRAP_FLAGS, wrapFlags, ~0);
+		}
 	}
+	OS.PtSetResources (handle, args.length / 3, args);
+
+	ScrollBar scroll;
+	int scrollWidth = (scroll = getVerticalBar ()) != null ? scroll.getSize ().x : 0;
+	int scrollHeight = (scroll = getHorizontalBar ()) != null ? scroll.getSize ().y : 0;
+	width += scrollWidth;
+	if (!wrap) height += scrollHeight;
+
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
 		PhRect_t rect = new PhRect_t ();
 		PhArea_t area = new PhArea_t ();
 		rect.lr_x = (short) (wHint - 1);
 		rect.lr_y = (short) (hHint - 1);
 		OS.PtSetAreaFromWidgetCanvas (handle, rect, area);
-		ScrollBar scroll;
-		if (wHint != SWT.DEFAULT) {
-			width = area.size_w;
-			if ((scroll = getVerticalBar ()) != null) width += scroll.getSize().x;
-		}
-		if (hHint != SWT.DEFAULT) {
-			height = area.size_h;
-			if ((scroll = getHorizontalBar ()) != null) height += scroll.getSize().y;
-		}
+		if (wHint != SWT.DEFAULT) width = area.size_w + scrollWidth;
+		if (hHint != SWT.DEFAULT) height = area.size_h + scrollHeight;
 	}
 	return new Point(width, height);
 }
@@ -917,6 +932,16 @@ int processVerify (int info) {
 		event.end = textVerify.end_pos;
 		event.doit = textVerify.doit != 0;
 		event.text = text;
+		if (cbinfo.event != 0) {
+			int data = OS.PhGetData (cbinfo.event);
+			if (data != 0) {
+				PhKeyEvent_t ke = new PhKeyEvent_t ();
+				OS.memmove (ke, data, PhKeyEvent_t.sizeof);
+				if ((ke.key_flags & (OS.Pk_KF_Key_Down | OS.Pk_KF_Key_Repeat)) != 0) {
+					setKeyState (event, ke);
+				}
+			}
+		}
 		sendEvent (SWT.Verify, event);
 		newText = event.text;
 		textVerify.doit = (event.doit && newText != null) ? 1 : 0;

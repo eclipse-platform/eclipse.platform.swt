@@ -167,7 +167,7 @@ int createArrowImage () {
 	dim.h = height;
 	int mc = OS.PmMemCreateMC(image, dim, new PhPoint_t());
 	if (mc == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	OS.PmMemStart(mc);
+	int prevContext = OS.PmMemStart(mc);
 	OS.PgSetFillColor(0xFFFFFF);
 	OS.PgDrawIRect(0, 0, width, height, OS.Pg_DRAW_FILL);
 	OS.PgSetStrokeColor(0x000000);
@@ -177,6 +177,7 @@ int createArrowImage () {
 	OS.PmMemFlush(mc, image);
 	OS.PmMemStop(mc);
 	OS.PmMemReleaseMC(mc);
+	OS.PhDCSetCurrent(prevContext);
 	OS.PhMakeTransBitmap(image, 0xFFFFFF);
 	return image;
 }

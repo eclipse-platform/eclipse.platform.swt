@@ -132,10 +132,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	
 	/* Calculate maximum text width */
 	int [] args = new int [] {
-		OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0,
-		OS.Pt_ARG_ITEMS, 0, 0,
-		OS.Pt_ARG_TEXT_FONT, 0, 0,
-		OS.Pt_ARG_TEXT_STRING, 0, 0,
+		OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0, // 1
+		OS.Pt_ARG_ITEMS, 0, 0, // 4
+		OS.Pt_ARG_TEXT_FONT, 0, 0, // 7
+		OS.Pt_ARG_TEXT_STRING, 0, 0, // 10
 	};
 	OS.PtGetResources (handle, args.length / 3, args);
 	int maxWidth = 0;
@@ -160,7 +160,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			maxWidth = Math.max(maxWidth, rect.lr_x - rect.ul_x + 1);
 		}
 	}
-	if (maxWidth == 0) maxWidth = DEFAULT_WIDTH;	
+	if (maxWidth == 0) maxWidth = DEFAULT_WIDTH;
+	int [] args1 = new int [] {
+		OS.Pt_ARG_MARGIN_WIDTH, 0, 0,	// 1
+		OS.Pt_ARG_MARGIN_LEFT, 0, 0,	// 4
+		OS.Pt_ARG_MARGIN_RIGHT, 0, 0,	// 7
+	};
+	OS.PtGetResources (textWidget, args1.length / 3, args1);
+	maxWidth += args1 [1] + args1 [4] + args1 [7];
 	
 	width += maxWidth;
 	
@@ -819,8 +826,7 @@ int processModify (int info) {
 
 int processPaint (int damage) {
 	OS.PtSuperClassDraw (OS.PtComboBox (), handle, damage);
-	sendPaintEvent (damage);
-	return OS.Pt_CONTINUE;
+	return super.processPaint (damage);
 }
 
 int processSelection (int info) {
@@ -1126,7 +1132,7 @@ public void setText (String string) {
 		int index = OS.PtListItemPos(handle, buffer);
 		if (index > 0) {
 			OS.PtSetResource (handle, OS.Pt_ARG_CBOX_SELECTION_ITEM, index, 0);
-//			sendEvent (SWT.Modify);
+			sendEvent (SWT.Modify);
 		}
 		return;
 	}
@@ -1134,6 +1140,7 @@ public void setText (String string) {
 	OS.memmove (ptr, buffer, buffer.length);
 	OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, ptr, 0);
 	OS.free (ptr);
+	sendEvent (SWT.Modify);
 }
 
 /**

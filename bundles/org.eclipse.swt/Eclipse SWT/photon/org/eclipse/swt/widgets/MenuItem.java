@@ -409,7 +409,7 @@ int processSelection (int info) {
 					case OS.Ph_EV_BUT_RELEASE:
 						PhPointerEvent_t pe = new PhPointerEvent_t ();
 						OS.memmove (pe, data, PhPointerEvent_t.sizeof);
-						setMouseState (ev.type, event, pe);
+						setMouseState (event, pe, ev);
 						break;
 				}	
 			}

@@ -168,8 +168,7 @@ Point getTitleSize() {
 
 int processPaint (int damage) {
 	OS.PtSuperClassDraw (OS.PtPane (), handle, damage);
-	sendPaintEvent (damage);
-	return OS.Pt_CONTINUE;
+	return super.processPaint (damage);
 }
 
 /**

@@ -213,6 +213,7 @@ public class Display extends Device {
 	static int PtTree;
 	static int PtSlider;
 	static int PtSeparator;
+	static int PtToolbar;
 				
 	/* Colors */
 	int WIDGET_DARK_SHADOW, WIDGET_NORMAL_SHADOW, WIDGET_LIGHT_SHADOW;
@@ -936,6 +937,7 @@ void initializeWidgetClasses () {
 		OS.PtCreateWidgetClass (OS.PtTree (), 0, args.length / 3, args), 0, 0,
 		OS.PtCreateWidgetClass (OS.PtSlider (), 0, args.length / 3, args), 0, 0,
 		OS.PtCreateWidgetClass (OS.PtSeparator (), 0, args.length / 3, args), 0, 0,
+		OS.PtCreateWidgetClass (OS.PtToolbar (), 0, args.length / 3, args), 0, 0,
 	};
 	ClassesPtr = OS.malloc (buffer.length * 4);
 	OS.memmove (ClassesPtr, buffer, buffer.length * 4);
@@ -957,6 +959,7 @@ void initializeWidgetClasses () {
 	PtTree = ClassesPtr + 180;
 	PtSlider = ClassesPtr + 192;
 	PtSeparator = ClassesPtr + 204;
+	PtToolbar = ClassesPtr + 216;
 }
 
 void initializeWidgetColors () {
@@ -1217,6 +1220,7 @@ void postEvent (Event event) {
 public boolean readAndDispatch () {
 	checkDevice ();
 	idle = false;
+	OS.PtRelease ();
 	OS.PtHold ();
 	int id = OS.PtAppAddWorkProc (app_context, workProc, 0);
 	OS.PtAppProcessEvent (app_context);
@@ -1228,6 +1232,7 @@ public boolean readAndDispatch () {
 		runDeferredEvents ();
 	}
 	OS.PtRelease ();
+	OS.PtHold ();
 	return result;
 }
 

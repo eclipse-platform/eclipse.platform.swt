@@ -1019,9 +1019,6 @@ void mouseDown(Event event) {
 	SelectableItem selectionItem = getLastSelection();
 	int itemAction;
 
-	if (event.button != 1) {		// only react to button one clicks.
-		return;
-	}
 	hitItemIndex = event.y / getItemHeight();
 	hitItem = getRoot().getVisibleItem(hitItemIndex + getTopIndex());
 	if (hitItem == null) {
@@ -1029,6 +1026,7 @@ void mouseDown(Event event) {
 	}
 	switch (itemAction = itemAction(hitItem, event.x, event.y)) {
 		case ActionExpandCollapse:
+			if (event.button != 1) return;
 			if (hitItem.getExpanded() == true) {
 				collapse(hitItem, true);
 			}
@@ -1040,6 +1038,7 @@ void mouseDown(Event event) {
 			doMouseSelect(hitItem, hitItemIndex + getTopIndex(), event.stateMask, event.button);
 			break;
 		case ActionCheck:
+			if (event.button != 1) return;
 			doCheckItem(hitItem);
 			break;
 	}

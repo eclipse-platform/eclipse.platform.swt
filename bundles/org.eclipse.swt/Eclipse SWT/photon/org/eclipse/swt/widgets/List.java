@@ -175,53 +175,31 @@ public void add (String string, int index) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 
-	/*
-	 * Feature in Photon - The preferred width calculated by
-	 * PtWidgetPreferredSize is the current width.
-	 */
-	PhDim_t dim = new PhDim_t();
-	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidget (handle);
-	OS.PtWidgetPreferredSize(handle, dim);
-	int width = 0, height = dim.h;
-	int [] args = new int [] {
-		OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0,
-		OS.Pt_ARG_ITEMS, 0, 0,
-		OS.Pt_ARG_LIST_FONT, 0, 0,
-	};
+	int [] args = new int [] {OS.Pt_ARG_WIDTH, 0, 0, OS.Pt_ARG_HEIGHT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	PhRect_t rect = new PhRect_t();
-	int font = args [7];
-	int [] buffer = new int [1];
-	for (int i = 0; i < args [1]; i++) {
-		OS.memmove (buffer, args [4] + (i * 4), 4);
-		int str = buffer [0];
-		int length = OS.strlen (str);
-		if (length > 0) {
-			OS.PfExtentText(rect, null, font, str, length);
-			width = Math.max(width, rect.lr_x - rect.ul_x + 1);
-		}
-	}
-	rect = new PhRect_t ();
-	PhArea_t area = new PhArea_t ();
-	rect.lr_x = (short) (width + 1);
-	OS.PtSetAreaFromWidgetCanvas (handle, rect, area);
-	width = area.size_w;
+	int resizeFlags = OS.Pt_RESIZE_X_ALWAYS | OS.Pt_RESIZE_Y_ALWAYS;
+	OS.PtSetResource (handle, OS.Pt_ARG_RESIZE_FLAGS, resizeFlags, OS.Pt_RESIZE_XY_BITS);
+	if (!OS.PtWidgetIsRealized (handle)) OS.PtExtentWidgetFamily (handle);
+	PhDim_t dim = new PhDim_t ();
+	OS.PtWidgetPreferredSize (handle, dim);
+	int width = dim.w, height = dim.h;
+	OS.PtSetResource (handle, OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS);
+	OS.PtSetResources (handle, args.length / 3, args);
+			
 	if (wHint != SWT.DEFAULT || hHint != SWT.DEFAULT) {
-		rect = new PhRect_t ();
-		area = new PhArea_t ();
+		PhRect_t rect = new PhRect_t ();
+		PhArea_t area = new PhArea_t ();
 		rect.lr_x = (short) (wHint - 1);
 		rect.lr_y = (short) (hHint - 1);
 		OS.PtSetAreaFromWidgetCanvas (handle, rect, area);
 		ScrollBar scroll;
 		if (wHint != SWT.DEFAULT) {
 			width = area.size_w;
-			if ((scroll = getVerticalBar()) != null)
-				width += scroll.getSize().x;
+			if ((scroll = getVerticalBar()) != null) width += scroll.getSize ().x;
 		}
 		if (hHint != SWT.DEFAULT) {
 			height = area.size_h;
-			if ((scroll = getHorizontalBar()) != null)
-				height += scroll.getSize().y;
+			if ((scroll = getHorizontalBar()) != null) height += scroll.getSize ().y;
 		}
 	}
 	return new Point(width, height);
@@ -243,10 +221,12 @@ void createHandle (int index) {
 	}
 	mode |= OS.Pt_SELECTION_MODE_NOFOCUS;
 	boolean hasBorder = (style & SWT.BORDER) != 0;
+	int listFlags = OS.Pt_LIST_SCROLLBAR_ALWAYS | OS.Pt_LIST_SCROLLBAR_AS_REQUIRED;
 	int [] args = {
 		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_SELECTION_MODE, mode, 0,
 		OS.Pt_ARG_FLAGS, OS.Pt_SELECTABLE | OS.Pt_SELECT_NOREDRAW, OS.Pt_SELECTABLE | OS.Pt_SELECT_NOREDRAW,
+		OS.Pt_ARG_LIST_FLAGS, (style & SWT.V_SCROLL) != 0 ? OS.Pt_LIST_SCROLLBAR_AS_REQUIRED : 0, listFlags,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);

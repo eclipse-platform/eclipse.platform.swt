@@ -828,7 +828,6 @@ void hookEvents () {
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, SWT.MouseEnter);	
 	OS.PtAddCallback (focusHandle, OS.Pt_CB_GOT_FOCUS, windowProc, SWT.FocusIn);
 	OS.PtAddCallback (focusHandle, OS.Pt_CB_LOST_FOCUS, windowProc, SWT.FocusOut);
-	OS.PtAddCallback (handle, OS.Pt_CB_MENU, windowProc, SWT.Show);
 }
 
 int focusHandle () {
@@ -1202,6 +1201,8 @@ int processKey (int info) {
 	if (ke.key_flags == OS.Pk_KF_Scan_Valid) {
 		return OS.Pt_PROCESS;
 	}
+
+	/* Ignore repeating modifier keys */
 	if ((ke.key_flags & OS.Pk_KF_Key_Repeat) != 0) {
 		if ((ke.key_flags & OS.Pk_KF_Sym_Valid) != 0) {
 			switch (ke.key_sym) {
@@ -1216,9 +1217,14 @@ int processKey (int info) {
 		}
 	}
 						
-	/* Determine if this is a traverse event */
+	/* Determine event type */
+	int type = SWT.KeyUp;
 	if ((ke.key_flags & (OS.Pk_KF_Key_Down | OS.Pk_KF_Key_Repeat)) != 0) {
-		
+		type = SWT.KeyDown;
+	}
+
+	/* Determine if this is a traverse event */
+	if (type == SWT.KeyDown) {
 		/*
 		* Fetuare in Photon.  The key_sym value is not valid when Ctrl
 		* or Alt is pressed. The fix is to detect this case and try to
@@ -1233,6 +1239,7 @@ int processKey (int info) {
 				}
 			}
 		}
+
 		switch (key) {
 			case OS.Pk_Escape:
 			case OS.Pk_Return:
@@ -1258,48 +1265,15 @@ int processKey (int info) {
 			}
 		}
 	}
-	Display display = getDisplay ();
+
 	Event event = new Event ();
 	event.time = ev.timestamp;
-	int type = SWT.KeyUp;
-	if ((ke.key_flags & (OS.Pk_KF_Key_Down | OS.Pk_KF_Key_Repeat)) != 0) {
-		type = SWT.KeyDown;
-	}
-	int key = 0;
-	if ((ke.key_flags & OS.Pk_KF_Sym_Valid) != 0) {
-		 key = ke.key_sym;
-	} else {
-		if ((ke.key_flags & OS.Pk_KF_Cap_Valid) != 0 && type == SWT.KeyDown) {
-			key = ke.key_cap;
-			if ((ke.key_mods & OS.Pk_KM_Ctrl) != 0) {
-				if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
-				if (64 <= key && key <= 95) key -= 64;
-			}
-		}
-	}
-	event.keyCode = Display.translateKey (key);
-	if (event.keyCode == 0) {
-		switch (key) {
-			case OS.Pk_BackSpace:	event.character = '\b'; break;
-			case OS.Pk_KP_Tab:
-			case OS.Pk_Tab: 				event.character = '\t'; break;
-			case OS.Pk_Linefeed:		event.character = '\n'; break;
-			case OS.Pk_Clear: 			event.character = 0xB; break;
-			case OS.Pk_Return: 			event.character = '\r'; break;
-			case OS.Pk_Pause:			event.character = 0x13; break;
-			case OS.Pk_Scroll_Lock:	event.character = 0x14; break;
-			case OS.Pk_Escape:		event.character = 0x1B; break;
-			case OS.Pk_Delete:			event.character = 0x7F; break;
-			default:
-				event.character = (char) key;
-		}
-	}
+	setKeyState (event, ke);
+	Display display = getDisplay ();
 	if (type == SWT.KeyDown) {
 		display.lastKey = event.keyCode;
 		display.lastAscii = event.character;
-	}
-	setKeyState(event, ke);
-	if (type == SWT.KeyUp) {	
+	} else {
 		if (event.keyCode == 0) event.keyCode = display.lastKey;
 		if (event.character == 0) event.character = (char) display.lastAscii;
 	}
@@ -1321,65 +1295,56 @@ int processMouse (int info) {
 		ev.processing_flags |= OS.Ph_CONSUMED;
 		OS.memmove (cbinfo.event, ev, PhEvent_t.sizeof);
 	}
-	Event event = new Event ();
+	int type = 0;
 	switch (ev.type) {
 		case OS.Ph_EV_BUT_PRESS:
-			event.type = SWT.MouseDown;
+			type = SWT.MouseDown;
 			break;
 		case OS.Ph_EV_BUT_RELEASE:
 			if (ev.subtype != OS.Ph_EV_RELEASE_PHANTOM) {
 				return OS.Pt_CONTINUE;
 			}
-			//TEMPORARY CODE
-//			if ((state & CANVAS) != 0) return OS.Pt_CONTINUE;
-			event.type = SWT.MouseUp;
+			type = SWT.MouseUp;
 			break;
 		case OS.Ph_EV_PTR_MOTION_BUTTON:
 			if ((state & CANVAS) != 0) return OS.Pt_CONTINUE;
 		case OS.Ph_EV_PTR_MOTION_NOBUTTON:
-			event.type = SWT.MouseMove;
+			type = SWT.MouseMove;
 			break;
 		case OS.Ph_EV_DRAG:
-			switch (ev.subtype) {
-				case OS.Ph_EV_DRAG_MOTION_EVENT:
-					event.type = SWT.MouseMove;
-					break;
-				case OS.Ph_EV_DRAG_COMPLETE:
-					event.type = SWT.MouseUp;
-					break;
-				default:
-					return OS.Pt_CONTINUE;
+			if (ev.subtype != OS.Ph_EV_DRAG_MOTION_EVENT) {
+				return OS.Pt_CONTINUE;
 			}
+			type = SWT.MouseMove;
 			break;
 		default:
 			return OS.Pt_CONTINUE;
 	}
-	event.time = ev.timestamp;
 	int data = OS.PhGetData (cbinfo.event);
 	if (data == 0) return OS.Pt_END;
 	PhPointerEvent_t pe = new PhPointerEvent_t ();
 	OS.memmove (pe, data, PhPointerEvent_t.sizeof);
-	event.x = pe.pos_x + ev.translation_x;
-	event.y = pe.pos_y + ev.translation_y;
-	if (event.type == SWT.MouseDown || event.type == SWT.MouseUp) {
-		switch (pe.buttons) {
-			case OS.Ph_BUTTON_SELECT:	event.button = 1; break;
-			case OS.Ph_BUTTON_ADJUST:	event.button = 2; break;
-			case OS.Ph_BUTTON_MENU:		event.button = 3; break;
+	Event event = new Event ();
+	event.time = ev.timestamp;
+	setMouseState (event, pe, ev);
+	postEvent (type, event);
+	if (type == SWT.MouseDown) {
+		if (event.button == 3) {
+			if (menu != null && !menu.isDisposed ()) {
+				Display display = getDisplay ();
+				display.runDeferredEvents ();
+				menu.setVisible (true);
+			}
 		}
-	}
-	setMouseState (ev.type, event, pe);
-	postEvent (event.type, event);
-	if (ev.type == OS.Ph_EV_BUT_PRESS && pe.click_count == 2) {
-		Event clickEvent = new Event ();
-		clickEvent.time = event.time;
-		clickEvent.x = event.x;
-		clickEvent.y = event.y;
-		clickEvent.button = event.button;
-		clickEvent.stateMask = event.stateMask;
-		postEvent (SWT.MouseDoubleClick, clickEvent);
-	}
-	if (event.type == SWT.MouseDown) {
+		if (pe.click_count == 2) {
+			Event clickEvent = new Event ();
+			clickEvent.time = event.time;
+			clickEvent.x = event.x;
+			clickEvent.y = event.y;
+			clickEvent.button = event.button;
+			clickEvent.stateMask = event.stateMask;
+			postEvent (SWT.MouseDoubleClick, clickEvent);
+		}
 		/*
 		* It is possible that the shell may be
 		* disposed at this point.  If this happens
@@ -1428,18 +1393,6 @@ int processMouseEnter (int info) {
 			break;		
 	}
 	return OS.Pt_END;
-}
-
-int processShow (int info) {
-	if (info == 0) return OS.Pt_END;
-	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
-	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
-	if (cbinfo.reason == OS.Pt_CB_MENU) {
-		if (menu != null && !menu.isDisposed ()) {
-			menu.setVisible (true);
-		}
-	}	
-	return OS.Pt_CONTINUE;
 }
 
 void realizeWidget() {

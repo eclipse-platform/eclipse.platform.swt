@@ -143,7 +143,7 @@ void createHandle (int index) {
 		OS.Pt_ARG_TOOLBAR_FLAGS, 0, OS.Pt_TOOLBAR_DRAGGABLE | OS.Pt_TOOLBAR_END_SEPARATOR,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
-	handle = OS.PtCreateWidget (OS.PtToolbar (), parentingHandle, args.length / 3, args);
+	handle = OS.PtCreateWidget (display.PtToolbar, parentingHandle, args.length / 3, args);
 	if ((style & SWT.FLAT) != 0) {
 		OS.PtSetResource (handle, OS.Pt_ARG_BASIC_FLAGS, OS.Pt_FLAT_FILL, OS.Pt_FLAT_FILL);
 	}
@@ -355,6 +355,11 @@ int processMouseEnter (int info) {
 			return OS.Pt_CONTINUE;
 	}
 	return super.processMouseEnter (info);
+}
+
+int processPaint (int damage) {
+	OS.PtSuperClassDraw (OS.PtToolbar (), handle, damage);
+	return super.processPaint (damage);
 }
 
 void register () {

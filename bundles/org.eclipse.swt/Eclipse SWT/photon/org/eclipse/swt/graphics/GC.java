@@ -152,7 +152,7 @@ public void copyArea(Image image, int x, int y) {
 		scale.w = (short)bounds.width;
 		scale.h = (short)bounds.height;
 		int mc = OS.PmMemCreateMC(image.handle, scale, trans);
-		OS.PmMemStart(mc);
+		int prevContext = OS.PmMemStart(mc);
 		OS.PgSetDrawBufferSize(DrawBufferSize);
 		if (phImage.palette != 0) OS.PgSetPalette(phImage.palette, 0, (short)0, (short)phImage.colors, OS.Pg_PALSET_SOFT, 0);
 		OS.PgDrawImage(phImage.image, phImage.type, pos, scale, phImage.bpl, 0);
@@ -160,6 +160,7 @@ public void copyArea(Image image, int x, int y) {
 		OS.PmMemFlush(mc, image.handle);
 		OS.PmMemStop(mc);
 		OS.PmMemReleaseMC(mc);
+		OS.PhDCSetCurrent(prevContext);
 		if (sharedMem) {
 			OS.PgShmemDestroy(memImage);
 		} else {
@@ -224,7 +225,7 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 				}
 				int memImage = OS.PhCreateImage(null, (short)width, (short)height, type, phDrawImage.palette, phDrawImage.colors, 0);
 				int mc = OS.PmMemCreateMC(memImage, scale, trans);
-				OS.PmMemStart(mc);
+				int prevContext = OS.PmMemStart(mc);
 				OS.PgSetDrawBufferSize(DrawBufferSize);
 				if (phDrawImage.palette != 0) OS.PgSetPalette(phDrawImage.palette, 0, (short)0, (short)phDrawImage.colors, OS.Pg_PALSET_SOFT, 0);
 				OS.PgDrawImage(phDrawImage.image, phDrawImage.type, pos, dim, phDrawImage.bpl, 0);
@@ -232,6 +233,7 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 				OS.PmMemFlush(mc, memImage);
 				OS.PmMemStop(mc);
 				OS.PmMemReleaseMC(mc);
+				OS.PhDCSetCurrent(prevContext);
 				x = (short)0;
 				y = (short)0;
 				drawImage = memImage;
@@ -820,7 +822,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 		Image.destroyImage(memImage);
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
-	OS.PmMemStart(mc);
+	int prevContext = OS.PmMemStart(mc);
 	OS.PgSetDrawBufferSize(DrawBufferSize);
 	if (phImage.palette != 0) OS.PgSetPalette(phImage.palette, 0, (short)0, (short)phImage.colors, OS.Pg_PALSET_SOFT, 0);
 	OS.PgDrawImage(phImage.image, phImage.type, pos, dim, phImage.bpl, 0);
@@ -828,6 +830,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 	OS.PmMemFlush(mc, memImage);
 	OS.PmMemStop(mc);
 	OS.PmMemReleaseMC(mc);
+	OS.PhDCSetCurrent(prevContext);
 	
 	PhImage_t phMemImage = new PhImage_t();
 	OS.memmove(phMemImage, memImage, PhImage_t.sizeof);
@@ -858,7 +861,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 			Image.destroyImage(memImage);
 			SWT.error(SWT.ERROR_NO_HANDLES);
 		}
-		OS.PmMemStart(mc);
+		prevContext = OS.PmMemStart(mc);
 		OS.PgSetDrawBufferSize(DrawBufferSize);
 		OS.PgSetFillColor(palette[0]);
 		OS.PgSetTextColor(palette[1]);
@@ -866,6 +869,7 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 		OS.PmMemFlush(mc, maskImage);
 		OS.PmMemStop(mc);
 		OS.PmMemReleaseMC(mc);
+		OS.PhDCSetCurrent(prevContext);
 		OS.free(palettePtr);
 		
 		/* Transfer the mask to the scaled image */
@@ -919,13 +923,14 @@ static int scaleImage(Image image, PhImage_t phImage, int srcX, int srcY, int sr
 				Image.destroyImage(memImage);
 				SWT.error(SWT.ERROR_NO_HANDLES);
 			}
-			OS.PmMemStart(mc);
+			prevContext = OS.PmMemStart(mc);
 			OS.PgSetPalette(palettePtr, 0, (short)0, (short)palette.length, OS.Pg_PALSET_SOFT, 0);
 			OS.PgDrawImage(alpha.src_alpha_map_map, OS.Pg_IMAGE_PALETTE_BYTE, pos, dim, alpha.src_alpha_map_bpl, 0);
 			OS.PgSetPalette(0, 0, (short)0, (short)-1, 0, 0);
 			OS.PmMemFlush(mc, alphaImage);
 			OS.PmMemStop(mc);
 			OS.PmMemReleaseMC(mc);
+			OS.PhDCSetCurrent(prevContext);
 			OS.free(palettePtr);
 				
 			/* Transfer the image to the scaled image alpha data*/
@@ -1745,9 +1750,10 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 void flushImage () {
 	Image image = data.image;
 	if (image == null) return;
-	OS.PmMemStart(handle);
+	int prevContext = OS.PmMemStart(handle);
 	OS.PmMemFlush(handle, image.handle);
 	OS.PmMemStop(handle);
+	OS.PhDCSetCurrent(prevContext);
 }
 
 /**
@@ -2034,10 +2040,10 @@ void init(Drawable drawable, GCData data, int context) {
 	Image image = data.image;
 	if (image != null) {
 		image.memGC = this;
-		OS.PmMemStart(context);
+		int prevContext = OS.PmMemStart(context);
 		OS.PgSetDrawBufferSize(DrawBufferSize);
 		OS.PmMemStop(context);
-		
+		OS.PhDCSetCurrent(prevContext);
 		
 		/*
 		* Destroy the mask when it is generated from a transparent
@@ -2588,6 +2594,7 @@ void unsetGC(int prevContext) {
 	if (image != null) {
 //		OS.PmMemFlush(handle, image.handle);
 		OS.PmMemStop(handle);
+		OS.PhDCSetCurrent(prevContext);
 	} else if (data.rid == OS.Ph_DEV_RID || data.widget != 0) {
 		OS.PgSetGC(prevContext);
 //		OS.PgFlush();

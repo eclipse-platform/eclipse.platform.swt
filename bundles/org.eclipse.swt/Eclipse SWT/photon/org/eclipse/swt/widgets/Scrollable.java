@@ -75,10 +75,14 @@ void createStandardScrollBars () {
 			OS.PtGetResources (child, args.length / 3, args);
 			switch (args [1]) {
 				case OS.Pt_HORIZONTAL:
-					horizontalBar = new ScrollBar (this, SWT.HORIZONTAL, child);
+					if ((style & SWT.H_SCROLL) != 0) {
+						horizontalBar = new ScrollBar (this, SWT.HORIZONTAL, child);
+					}
 					break;
 				case OS.Pt_VERTICAL:
-					verticalBar = new ScrollBar (this, SWT.VERTICAL, child);
+					if ((style & SWT.V_SCROLL) != 0) {
+						verticalBar = new ScrollBar (this, SWT.VERTICAL, child);
+					}
 					break;
 			}
 		}

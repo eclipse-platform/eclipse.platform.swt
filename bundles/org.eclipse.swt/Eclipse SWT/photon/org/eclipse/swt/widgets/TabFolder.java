@@ -420,8 +420,7 @@ int parentingHandle () {
 
 int processPaint (int damage) {
 	OS.PtSuperClassDraw (OS.PtPanelGroup (), handle, damage);
-	sendPaintEvent (damage);
-	return OS.Pt_CONTINUE;
+	return super.processPaint (damage);
 }
 
 int processSelection (int info) {

@@ -288,8 +288,7 @@ int processMouse (int info) {
 
 int processPaint (int damage) {
 	OS.PtSuperClassDraw (OS.PtContainer (), handle, damage);
-	sendPaintEvent (damage);
-	return OS.Pt_CONTINUE;
+	return super.processPaint (damage);
 }
 
 /**

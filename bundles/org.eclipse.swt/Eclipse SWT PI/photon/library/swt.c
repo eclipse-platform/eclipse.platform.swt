@@ -6975,3 +6975,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_getenv
 
 	return result;
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhDCSetCurrent
+  (JNIEnv *env, jobject that, jint draw_context)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PhDCSetCurrent\n");
+#endif
+	
+	return (jint)PhDCSetCurrent((PhDrawContext_t *)draw_context);
+}
+

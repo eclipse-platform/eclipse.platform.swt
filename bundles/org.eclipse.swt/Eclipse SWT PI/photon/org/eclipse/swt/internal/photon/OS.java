@@ -1552,7 +1552,7 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_ARG_LIST_BALLOON                                   = ( 23 * 1000 + 31 );
 //public static final int Pt_ARG_LIST_COLUMN_ATTR                               = ( 23 * 1000 + 28 );
 //public static final int Pt_ARG_LIST_COLUMN_POS                                = ( 23 * 1000 + 27 );
-//public static final int Pt_ARG_LIST_FLAGS                                     = ( 23 * 1000 +  2 );
+	public static final int Pt_ARG_LIST_FLAGS                                     = ( 23 * 1000 +  2 );
 	public static final int Pt_ARG_LIST_FONT                                      = ( 23 * 1000 +  3 );
 	public static final int Pt_ARG_LIST_ITEM_COUNT                                = ( 23 * 1000 + 14 );
 //public static final int Pt_ARG_LIST_SB_RES                                    = ( 23 * 1000 + 25 );
@@ -2214,8 +2214,8 @@ public static final int Pg_BITMAP_TRANSPARENT                                 = 
 //public static final int Pt_LIST_REMOVE_ALL_ITEMS                              = 0;
 //public static final int Pt_LIST_SCROLL_LIST                                   = 0x00;
 //public static final int Pt_LIST_SCROLL_SCROLLBAR                              = 0x01;
-//public static final int Pt_LIST_SCROLLBAR_ALWAYS                              = 0x0001;
-//public static final int Pt_LIST_SCROLLBAR_AS_REQUIRED                         = 0x0002;
+	public static final int Pt_LIST_SCROLLBAR_ALWAYS                              = 0x0001;
+	public static final int Pt_LIST_SCROLLBAR_AS_REQUIRED                         = 0x0002;
 //public static final int Pt_LIST_SCROLLBAR_AUTORESIZE                          = 0x0800;
 //public static final int Pt_LIST_SCROLLBAR_GETS_FOCUS                          = 0x0100;
 //public static final int Pt_LIST_SCROLLBAR_MASK                                = 0x0003;
@@ -2992,4 +2992,5 @@ public static final native void memmove (PtTreeCallback_t dest, int src, int siz
 public static final native int PtTreeShow(int widget, int item );
 public static final native void PhMoveCursorAbs (int input_group, int x, int y );
 public static final native int getenv(byte[] name);
+public static final native int PhDCSetCurrent(int draw_context);
 }
