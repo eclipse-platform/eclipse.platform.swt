@@ -105,7 +105,7 @@ private int /*long*/ getFunc( int /*long*/ clipboard, int /*long*/ selection_dat
 	}
 	if (index == -1) return 0;
 	dataTypes[index].javaToNative(data[index], tdata);
-	if (tdata.format == 0 || tdata.length == 0) {
+	if (tdata.format < 8 || tdata.format % 8 != 0) {
 		return 0;
 	}
 	OS.gtk_selection_data_set(selection_data, tdata.type, tdata.format, tdata.pValue, tdata.length);	
