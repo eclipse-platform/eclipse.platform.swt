@@ -2148,6 +2148,7 @@ static final void blit(int op,
 					int mask = (0xff << destDepth) >>> 8;
 					for (int i = 0; i < paletteMapping.length; ++i) paletteMapping[i] = (byte)(i & mask);
 				}
+				break;
 			}
 		case ALPHA_MASK_UNPACKED:
 		case ALPHA_MASK_PACKED:
