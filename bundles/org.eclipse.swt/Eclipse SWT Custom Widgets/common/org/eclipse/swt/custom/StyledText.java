@@ -4985,13 +4985,16 @@ void handleKey(Event event) {
 		action = getKeyBinding(event.character | event.stateMask);
 	}
 	if (action == SWT.NULL) {
-		// -ignore any ALT and CTRL key combination except for CTRL + ALT 
-		//  itself which is the Alt Gr key on some keyboards.
+		// -ignore any ALT, SHIFT+ALT, CTRL, SHIFT+CTRL key combination; 
+		//  Don't ignore CTRL+ALT combinations since that is the Alt Gr 
+		//	key on some keyboards.
 		// -ignore anything below SPACE except for line delimiter keys and tab.
 		// -ignore DEL 
-		boolean isCtrlAlt = (event.stateMask & (SWT.ALT | SWT.CTRL)) == 0 || 
-			event.stateMask == (SWT.ALT | SWT.CTRL);
-		if (isCtrlAlt && event.character > 31 && event.character != SWT.DEL || 
+		boolean isCtrlAlt = (event.stateMask ^ SWT.ALT) == 0 || 
+							(event.stateMask ^ SWT.CTRL) == 0 ||
+							(event.stateMask ^ (SWT.ALT | SWT.SHIFT)) == 0 ||
+							(event.stateMask ^ (SWT.CTRL | SWT.SHIFT)) == 0;
+		if (isCtrlAlt == false && event.character > 31 && event.character != SWT.DEL || 
 		    event.character == SWT.CR || event.character == SWT.LF || 
 		    event.character == TAB) {
 			doContent(event.character);
