@@ -279,7 +279,51 @@ public Point getDPI () {
  */
 public FontData[] getFontList (String faceName, boolean scalable) {	
 	checkDevice ();
-	return new FontData[0];
+	//NOT DONE - scalable
+	int nFds = 0;
+	FontData[] fds = new FontData[4];
+
+	int[] font = new int[1];
+	short[] fontFamily = new short[1];
+	short[] style = new short[1];
+	short[] size = new short[1];
+	byte[] buffer = new byte[256];
+	int familyIter = OS.NewPtrClear(16 * 4);
+	int fontIter = OS.NewPtrClear(16 * 4);
+	OS.FMCreateFontFamilyIterator(0, 0, 0, familyIter);
+	while (OS.FMGetNextFontFamily(familyIter, fontFamily) != OS.kFMIterationCompleted) {
+		OS.FMGetFontFamilyName(fontFamily[0], buffer);
+		int length = buffer[0] & 0xFF;
+		char[] chars = new char[length];
+		for (int i=0; i<length; i++) {
+			chars[i]= (char)buffer[i+1];
+		}
+		String name = new String(chars);
+		if (faceName == null || Compatibility.equalsIgnoreCase(faceName, name)) {
+			OS.FMCreateFontFamilyInstanceIterator(fontFamily[0], fontIter);
+			while (OS.FMGetNextFontFamilyInstance(fontIter, font, style, size) != OS.kFMIterationCompleted) {
+				int s = SWT.NORMAL;
+				if ((style[0] & OS.italic) != 0) s |= SWT.ITALIC;
+				if ((style[0] & OS.bold) != 0) s |= SWT.BOLD;
+				FontData data = new FontData(name, s, size[0]);
+				if (nFds == fds.length) {
+					FontData[] newFds = new FontData[fds.length + 4];
+					System.arraycopy(fds, 0, newFds, 0, nFds);
+					fds = newFds;
+				}
+				fds[nFds++] = data;
+			}
+			OS.FMDisposeFontFamilyInstanceIterator(fontIter);
+		}
+	}
+	OS.FMDisposeFontFamilyIterator(familyIter);
+	OS.DisposePtr(familyIter);
+	OS.DisposePtr(fontIter);
+	
+	if (nFds == fds.length) return fds;
+	FontData[] result = new FontData[nFds];
+	System.arraycopy(fds, 0, result, 0, nFds);
+	return result;
 }
 
 /**

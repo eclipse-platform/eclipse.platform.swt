@@ -2019,6 +2019,46 @@ JNIEXPORT jint JNICALL OS_NATIVE(Fix2Long)
 }
 #endif NO_Fix2Long
 
+#ifndef NO_FMCreateFontFamilyIterator
+JNIEXPORT jint JNICALL OS_NATIVE(FMCreateFontFamilyIterator)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("FMCreateFontFamilyIterator\n")
+
+	return (jint)FMCreateFontFamilyIterator((const FMFilter *)arg0, (void *)arg1, (OptionBits)arg2, (FMFontFamilyIterator *)arg3);
+}
+#endif
+
+#ifndef NO_FMCreateFontFamilyInstanceIterator
+JNIEXPORT jint JNICALL OS_NATIVE(FMCreateFontFamilyInstanceIterator)
+	(JNIEnv *env, jclass that, jshort arg0, jint arg1)
+{
+	DEBUG_CALL("FMCreateFontFamilyInstanceIterator\n")
+
+	return (jint)FMCreateFontFamilyInstanceIterator((FMFontFamily)arg0, (FMFontFamilyInstanceIterator *)arg1);
+}
+#endif
+
+#ifndef NO_FMDisposeFontFamilyIterator
+JNIEXPORT jint JNICALL OS_NATIVE(FMDisposeFontFamilyIterator)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("FMDisposeFontFamilyIterator\n")
+
+	return (jint)FMDisposeFontFamilyIterator((FMFontFamilyIterator *)arg0);
+}
+#endif
+
+#ifndef NO_FMDisposeFontFamilyInstanceIterator
+JNIEXPORT jint JNICALL OS_NATIVE(FMDisposeFontFamilyInstanceIterator)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("FMDisposeFontFamilyInstanceIterator\n")
+
+	return (jint)FMDisposeFontFamilyInstanceIterator((FMFontFamilyInstanceIterator *)arg0);
+}
+#endif
+
 #ifndef NO_FMGetFontFamilyFromName
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyFromName
 	(JNIEnv *env, jclass that, jbyteArray arg0)
@@ -2065,6 +2105,44 @@ JNIEXPORT jint JNICALL OS_NATIVE(FMGetFontFromFontFamilyInstance)
 	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
 	rc = (jint)FMGetFontFromFontFamilyInstance((FMFontFamily)arg0, (FMFontStyle)arg1, (FMFont *)lparg2, (FMFontStyle *)lparg3);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_FMGetNextFontFamily
+JNIEXPORT jint JNICALL OS_NATIVE(FMGetNextFontFamily)
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("FMGetNextFontFamily\n")
+
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	rc = (jint)FMGetNextFontFamily((FMFontFamilyIterator *)arg0, (FMFontFamily *)lparg1);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_FMGetNextFontFamilyInstance
+JNIEXPORT jint JNICALL OS_NATIVE(FMGetNextFontFamilyInstance)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jshortArray arg2, jshortArray arg3)
+{
+	jint *lparg1=NULL;
+	jshort *lparg2=NULL;
+	jshort *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("FMGetNextFontFamilyInstance\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	rc = (jint)FMGetNextFontFamilyInstance((FMFontFamilyInstanceIterator *)arg0, (FMFont *)lparg1, (FMFontStyle *)lparg2, (FMFontSize *)lparg3);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
 	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
 	return rc;
 }
