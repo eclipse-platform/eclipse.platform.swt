@@ -778,12 +778,24 @@ public void setSelection (TreeItem [] items) {
 	int selection = OS.gtk_tree_view_get_selection (handle);
 	blockSignal(handle, SWT.Selection);
 	OS.gtk_tree_selection_unselect_all (selection);
-	for (int i = 0; i < items.length; i++) {
-		if (items[i].isDisposed ()) break;
-		OS.gtk_tree_selection_select_iter (selection, items[i].handle);
+	int i = 0;
+	boolean first = true;
+	while (i < items.length) {
+		TreeItem item = items [i];
+		if (item == null) continue;
+		if (item.isDisposed ()) break;
+		if (first) {
+			int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
+			showItem (path);
+			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
+			OS.gtk_tree_path_free (path);
+			first = false;
+		}
+		OS.gtk_tree_selection_select_iter (selection, item.handle);
+		i++;
 	}
-	if (items.length > 0 && items [0] != null) showItem (items [0]);
 	unblockSignal (handle, SWT.Selection);
+	if (i < items.length) error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /**
@@ -805,6 +817,22 @@ public void showSelection () {
 	checkWidget();
 	TreeItem [] items = getSelection ();
 	if (items.length == 0 && items [0] != null) showItem (items [0]);
+}
+
+void showItem (int path) {
+	int depth = OS.gtk_tree_path_get_depth (path);
+	if (depth > 1) {
+		int [] indices = new int [depth - 1];
+		int indicesPtr = OS.gtk_tree_path_get_indices (path);
+		OS.memmove (indices, indicesPtr, indices.length * 4);
+		int tempPath = OS.gtk_tree_path_new ();
+		for (int i=0; i<indices.length; i++) {
+			OS.gtk_tree_path_append_index (tempPath, indices [i]);
+			OS.gtk_tree_view_expand_row (handle, tempPath, false);
+		}
+		OS.gtk_tree_path_free (tempPath);		
+	}
+	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.5f);
 }
 
 /**
@@ -830,19 +858,7 @@ public void showItem (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
-	int depth = OS.gtk_tree_path_get_depth (path);
-	if (depth > 1) {
-		int [] indices = new int [depth - 1];
-		int indicesPtr = OS.gtk_tree_path_get_indices (path);
-		OS.memmove (indices, indicesPtr, indices.length * 4);
-		int tempPath = OS.gtk_tree_path_new ();
-		for (int i=0; i<indices.length; i++) {
-			OS.gtk_tree_path_append_index (tempPath, indices [i]);
-			OS.gtk_tree_view_expand_row (handle, tempPath, false);
-		}
-		OS.gtk_tree_path_free (tempPath);		
-	}
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.5f);
+	showItem (path);
 	OS.gtk_tree_path_free (path);
 }
 
