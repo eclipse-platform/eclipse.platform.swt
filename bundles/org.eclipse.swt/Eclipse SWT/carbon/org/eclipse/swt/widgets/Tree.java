@@ -8,19 +8,20 @@ package org.eclipse.swt.widgets;
  */
  
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
 import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
 
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 public class Tree extends Composite {
 	TreeItem [] items;
-	boolean ignoreSelect;
 	int anchorFirst, anchorLast;
-	static final int COLUMN_ID = 1024;
-	static final int CHECK_COLUMN_ID = 1025;
+	boolean ignoreSelect, ignoreExpand;
+	static final int CHECK_COLUMN_ID = 1024;
+	static final int COLUMN_ID = 1025;
 
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -69,15 +70,15 @@ void createHandle () {
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	int selectionFlags = OS.kDataBrowserSelectOnlyOne;
-	if ((style & SWT.MULTI) != 0) selectionFlags = OS.kDataBrowserCmdTogglesSelection;
+	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne : OS.kDataBrowserCmdTogglesSelection;
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
 	//NOT DONE
 	if ((style & SWT.H_SCROLL) == 0) OS.AutoSizeDataBrowserListViewColumns (handle);
+	int position = 0;
 	if ((style & SWT.CHECK) != 0) {
-		DataBrowserListViewColumnDesc checkColumn= new DataBrowserListViewColumnDesc ();
+		DataBrowserListViewColumnDesc checkColumn = new DataBrowserListViewColumnDesc ();
 		checkColumn.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 		checkColumn.propertyDesc_propertyID = CHECK_COLUMN_ID;
 		checkColumn.propertyDesc_propertyType = OS.kDataBrowserCheckboxType;
@@ -86,7 +87,7 @@ void createHandle () {
 		checkColumn.headerBtnDesc_minimumWidth = 40;
 		checkColumn.headerBtnDesc_maximumWidth = 40;
 		checkColumn.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
-		OS.AddDataBrowserListViewColumn (handle, checkColumn, 0);
+		OS.AddDataBrowserListViewColumn (handle, checkColumn, position++);
 	}
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
@@ -94,9 +95,9 @@ void createHandle () {
 	column.propertyDesc_propertyType = OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
 	//NOT DONE
-	column.headerBtnDesc_maximumWidth= 300;
-	column.headerBtnDesc_initialOrder= OS.kDataBrowserOrderIncreasing;
-	OS.AddDataBrowserListViewColumn (handle, column, 1);
+	column.headerBtnDesc_maximumWidth = 300;
+	column.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
+	OS.AddDataBrowserListViewColumn (handle, column, position);
 	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, true);
 }
 
@@ -181,6 +182,18 @@ void destroyItem (TreeItem item) {
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	//OPTIMIZE
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.SetPt (pt, (short) point.x, (short) point.y);
+	Rect rect = new Rect ();
+	int [] id = new int [1];
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null) {
+			OS.GetDataBrowserItemPartBounds (handle, item.id, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect);
+			if (OS.PtInRect (pt, rect)) return item;
+		}
+	}
 	return null;
 }
 
@@ -358,16 +371,19 @@ int itemNotificationProc (int browser, int id, int message) {
 			postEvent (SWT.DefaultSelection, event);
 			break;
 		}
-		case OS.kDataBrowserContainerClosed: {		
+		case OS.kDataBrowserContainerClosed: {
+			if (ignoreExpand) break;	
 			Event event = new Event ();
 			event.item = item;
 			sendEvent (SWT.Collapse, event);
 			break;
 		}
-		case OS.kDataBrowserContainerOpened: {
-			Event event = new Event ();
-			event.item = item;
-			sendEvent (SWT.Expand, event);
+		case OS.kDataBrowserContainerOpened: {	
+			if (!ignoreExpand) {
+				Event event = new Event ();
+				event.item = item;
+				sendEvent (SWT.Expand, event);
+			}
 			int count = 0;
 			for (int i=0; i<items.length; i++) {
 				if (items [i] != null && items [i].parentItem == item) count++;

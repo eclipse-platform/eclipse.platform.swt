@@ -91,8 +91,7 @@ void createHandle () {
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
-	int selectionFlags = OS.kDataBrowserSelectOnlyOne;
-	if ((style & SWT.MULTI) != 0) selectionFlags = OS.kDataBrowserCmdTogglesSelection;
+	int selectionFlags = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserSelectOnlyOne : OS.kDataBrowserCmdTogglesSelection;
 	OS.SetDataBrowserSelectionFlags (handle, selectionFlags);
 	OS.SetDataBrowserListViewHeaderBtnHeight (handle, (short) 0);
 	OS.SetDataBrowserHasScrollBars (handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);

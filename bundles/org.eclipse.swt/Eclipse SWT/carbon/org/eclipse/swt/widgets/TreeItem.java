@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.carbon.*;
-import org.eclipse.swt.widgets.Item;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -153,11 +152,13 @@ public void setChecked (boolean checked) {
 
 public void setExpanded (boolean expanded) {
 	checkWidget ();
+	parent.ignoreExpand = true;
 	if (expanded) {
 		OS.OpenDataBrowserContainer (parent.handle, id);
 	} else {
 		OS.CloseDataBrowserContainer (parent.handle, id);
 	}
+	parent.ignoreExpand = false;
 }
 
 public void setForeground (Color color) {

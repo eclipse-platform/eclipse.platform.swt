@@ -2434,6 +2434,38 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserCal
 }
 #endif /* NO_GetDataBrowserCallbacks */
 
+#ifndef NO_GetDataBrowserTableViewColumnPosition
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewColumnPosition
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserTableViewColumnPosition\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetDataBrowserTableViewColumnPosition((ControlRef)arg0, (DataBrowserTableViewColumnID)arg1, (DataBrowserTableViewColumnIndex *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_GetDataBrowserTableViewColumnPosition */
+
+#ifndef NO_GetDataBrowserTableViewColumnWidth
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewColumnWidth
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserTableViewColumnWidth\n")
+
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	rc = (jint)GetDataBrowserTableViewColumnWidth((ControlRef)arg0, (UInt16 *)lparg1);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_GetDataBrowserTableViewColumnWidth */
+
 #ifndef NO_GetDataBrowserItemCount
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemCount
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jintArray arg4)
@@ -2507,6 +2539,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserIte
 	return rc;
 }
 #endif /* NO_GetDataBrowserItemState */
+
+#ifndef NO_GetDataBrowserListViewHeaderBtnHeight
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserListViewHeaderBtnHeight
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserListViewHeaderBtnHeight\n")
+
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	rc = (jint)GetDataBrowserListViewHeaderBtnHeight((ControlRef)arg0, (UInt16 *)lparg1);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_GetDataBrowserListViewHeaderBtnHeight */
 
 #ifndef NO_GetDataBrowserTableViewItemID
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserTableViewItemID
@@ -4975,7 +5023,18 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveDataBrowser
 }
 #endif /* NO_RemoveDataBrowserItems */
 
-#ifndef NO_RemoveEventHandler
+#ifndef NO_RemoveDataBrowserTableViewColumn
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveDataBrowserTableViewColumn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("RemoveDataBrowserTableViewColumn\n")
+
+	return (jint)RemoveDataBrowserTableViewColumn((ControlRef)arg0, (DataBrowserTableViewColumnID)arg1);
+
+}
+#endif /* NO_RemoveDataBrowserTableViewColumn */
+
+ifndef NO_RemoveEventHandler
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveEventHandler
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -5327,6 +5386,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserCal
 }
 #endif /* NO_SetDataBrowserCallbacks */
 
+#ifndef NO_SetDataBrowserTableViewColumnWidth
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTableViewColumnWidth
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	DEBUG_CALL("SetDataBrowserTableViewColumnWidth\n")
+
+	return (jint)SetDataBrowserTableViewColumnWidth((ControlRef)arg0, (UInt16)arg1);
+}
+#endif /* NO_SetDataBrowserTableViewColumnWidth */
+
 #ifndef NO_SetDataBrowserHasScrollBars
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserHasScrollBars
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jboolean arg2)
@@ -5442,6 +5511,18 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserSel
 	return (jint)SetDataBrowserSelectionFlags((ControlRef)arg0, (DataBrowserSelectionFlags)arg1);
 }
 #endif /* NO_SetDataBrowserSelectionFlags */
+
+#ifndef NO_SetDataBrowserTableViewColumnPosition
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTableViewColumnPosition
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+
+	DEBUG_CALL("SetDataBrowserTableViewColumnPosition\n")
+
+	return (jint)SetDataBrowserTableViewColumnPosition((ControlRef)arg0, (DataBrowserTableViewColumnID)arg1, (DataBrowserTableViewColumnIndex)arg2);
+
+}
+#endif /* NO_SetDataBrowserTableViewColumnPosition */
 
 #ifndef NO_SetDataBrowserTableViewItemRow
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTableViewItemRow
