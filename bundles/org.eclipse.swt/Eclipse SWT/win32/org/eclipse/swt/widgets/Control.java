@@ -3763,6 +3763,31 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 			if ((bits & OS.WS_SYSMENU) == 0) return LRESULT.ZERO;
 			break;
 		case OS.SC_KEYMENU:
+			if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+				Decorations shell = menuShell ();
+				Menu menu = shell.getMenuBar ();
+				if (menu != null) {
+					char key = mbcsToWcs (lParam);
+					if (key != 0) {
+						key = Character.toUpperCase (key);
+						MenuItem [] items = menu.getItems ();
+						for (int i=0; i<items.length; i++) {
+							MenuItem item = items [i];
+							String text = item.getText ();
+							char mnemonic = findMnemonic (text);
+							if (text.length () > 0 && mnemonic == 0) {
+								char ch = text.charAt (0);
+								if (Character.toUpperCase (ch) == key) {
+									Display display = getDisplay ();
+									display.mnemonicKeyHit = false;
+									return LRESULT.ZERO;
+								}
+							}
+						}
+					}
+				}
+			}
+			// FALL THROUGH
 		case OS.SC_HSCROLL:
 		case OS.SC_VSCROLL:
 			/*
