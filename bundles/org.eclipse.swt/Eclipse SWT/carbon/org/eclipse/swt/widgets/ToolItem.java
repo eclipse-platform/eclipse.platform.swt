@@ -129,7 +129,7 @@ void createHandle () {
 			OS.kEventClassMenu, OS.kEventMenuOpening,
 		};
 		int menuTarget = OS.GetMenuEventTarget (menuHandle);
-		OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, parent.handle, null);
+		OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, handle, null);
 	}
 	
 	if ((style & SWT.PUSH) != 0) {
@@ -328,9 +328,10 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
-	//HIDE THE MENU
-	OS.SetControl32BitValue (handle, 0);
-	return OS.eventNotHandledErr;
+	Event event = new Event ();
+	event.detail = SWT.ARROW;
+	postEvent (SWT.Selection, event);
+	return OS.userCanceledErr;
 }
 
 public void redraw () {
@@ -361,6 +362,10 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (cIcon != 0) destroyCIcon (cIcon);
 	cIcon = 0;
+	if (menuHandle != 0) {
+//		OS.DeleteMenu (OS.GetMenuID (menuHandle));
+		OS.DisposeMenu (menuHandle);
+	}
 	parent = null;
 	control = null;
 	toolTipText = null;

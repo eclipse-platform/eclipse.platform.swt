@@ -466,6 +466,7 @@ public class OS {
 	public static final int typeWindowRef = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
 	public static final int updateEvt = 6;
 	public static final int updateMask = 1 << updateEvt;
+	public static final int userCanceledErr = -128;
 
 /** Natives */
 public static final native int kHIViewWindowContentID();
