@@ -429,6 +429,7 @@ public class OS {
 	public static final int GW_HWNDLAST = 0x1;
 	public static final int GW_HWNDNEXT = 0x2;
 	public static final int GW_HWNDPREV = 0x3;
+	public static final int GW_OWNER = 0x4;
 	public static final int HBMMENU_CALLBACK = 0xffffffff;
 	public static final int HCF_HIGHCONTRASTON = 0x1;
 	public static final int HDI_WIDTH = 0x1;

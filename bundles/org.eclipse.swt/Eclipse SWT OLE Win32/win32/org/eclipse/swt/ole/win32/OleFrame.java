@@ -123,7 +123,7 @@ private static void initCheckFocus (final Display display) {
 				// ignore popup menus and dialogs
 				int hwnd = OS.GetFocus();
 				while (hwnd != 0) {
-					int ownerHwnd = OS.GetWindow(hwnd, 4/*GW_OWNER*/);
+					int ownerHwnd = OS.GetWindow(hwnd, OS.GW_OWNER);
 					if (ownerHwnd != 0) {			
 						display.timerExec(time, timer[0]);
 						return;
