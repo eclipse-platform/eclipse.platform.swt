@@ -948,6 +948,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(XInternAtom)
 }
 #endif
 
+#ifndef NO_XIntersectRegion
+JNIEXPORT void JNICALL OS_NATIVE(XIntersectRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	NATIVE_ENTER(env, that, "XIntersectRegion\n")
+	XIntersectRegion((Region)arg0, (Region)arg1, (Region)arg2);
+	NATIVE_EXIT(env, that, "XIntersectRegion\n")
+}
+#endif
+
 #ifndef NO_XKeysymToString
 JNIEXPORT jint JNICALL OS_NATIVE(XKeysymToString)
 	(JNIEnv *env, jclass that, jint arg0)

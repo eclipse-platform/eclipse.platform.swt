@@ -605,6 +605,7 @@ public static final synchronized native int XGrabKeyboard(int display, int grabW
 public static final synchronized native int XGrabPointer(int display, int grabWindow, int ownerEvents, int eventMask, int pointerMode, int keyboardMode, int confineToWindow, int cursor, int time);
 public static final synchronized native int XInitThreads();
 public static final synchronized native int XInternAtom(int display, byte[] name, boolean ifExists);
+public static final synchronized native void XIntersectRegion(int sra, int srb, int dr_return);
 public static final synchronized native int XKeysymToString(int keysym);
 public static final synchronized native int XListFonts(int display, byte[] pattern, int maxnames, int[] actual_count_return);
 public static final synchronized native int XListProperties(int display, int window, int[] num_prop_return);
