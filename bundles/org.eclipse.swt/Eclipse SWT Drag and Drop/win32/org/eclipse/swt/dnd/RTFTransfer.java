@@ -111,8 +111,8 @@ public Object nativeToJava(TransferData transferData){
 		try {
 			int cchWideChar  = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
 			if (cchWideChar != 0) {
-				char[] lpWideCharStr = new char [cchWideChar];
-				OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, cchWideChar);
+				char[] lpWideCharStr = new char [cchWideChar - 1];
+				OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
 				return new String(lpWideCharStr);
 			}
 		} finally {
