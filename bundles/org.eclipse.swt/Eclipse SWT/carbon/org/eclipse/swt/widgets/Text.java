@@ -30,12 +30,12 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public class Text extends Scrollable {
 	// AW
+	private static final int FOCUS_BORDER= 3;
+
 	private int fTextLimit= LIMIT;
 	private int fTX;
 	private int fFrameID;
 	private Rectangle fFrameRect;
-	
-	private static final int FOCUS_BORDER= 3;
 	// AW
 	
 	char echoCharacter;
@@ -957,7 +957,7 @@ int processFocusOut () {
 	return 0;
 }
 int processMouseDown (Object callData) {
-	if (callData instanceof MacEvent) {
+	if (callData instanceof MacEvent && isEnabled()) {
 		MacEvent me= (MacEvent) callData;
 		int macEvent[]= me.toOldMacEvent();
 		if (macEvent != null)
@@ -966,7 +966,7 @@ int processMouseDown (Object callData) {
 	return 0;
 }
 int processPaint (Object callData) {
-	syncBounds();
+	syncBounds(null);
 	drawFrame(callData);
 	return 0;
 }
@@ -1389,45 +1389,11 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		s.getChars(0, l, chars, 0); 
 		OS.TXNSetData(fTX, chars, start, end);
 		
-		syncBounds();
+		syncBounds(null);
 		
 		sendEvent (SWT.Modify);
 	}
 	
-	private void syncBounds() {
-		
-		if (fTX == 0)
-			return;
-	
-		MacRect b= new MacRect();
-		OS.GetControlBounds(handle, b.getData());
-	
-		int x= b.getX();
-		int y= b.getY();
-		int w= b.getWidth();
-		int h= b.getHeight();
-		
-		if ((style & SWT.BORDER) != 0) {
-			x+= FOCUS_BORDER;
-			y+= FOCUS_BORDER;
-			w-= 2*FOCUS_BORDER;
-			h-= 2*FOCUS_BORDER;
-		}
-		
-		Rectangle oldRect= fFrameRect;
-		fFrameRect= new Rectangle(x, y, w, h);
-		if (oldRect == null || !oldRect.equals(fFrameRect)) {
-			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
-		}
-		
-		OS.TXNDraw(fTX, 0);
-	}
-	
-	void handleResize(int hndl, MacRect bounds) {
-		super.handleResize(hndl, bounds);
-		syncBounds();
-	}
-
 	private String getTXNText(int start, int end) {
 		int[] dataHandle= new int[1];
 		OS.TXNGetData(fTX, start, end, dataHandle);
@@ -1515,9 +1481,45 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		
 		return status;
 	}
+
+	private void syncBounds(MacRect b) {
+		
+		if (fTX == 0)
+			return;
+	
+		if (b == null) {
+			b= new MacRect();
+			OS.GetControlBounds(handle, b.getData());
+		}
+	
+		int x= b.getX();
+		int y= b.getY();
+		int w= b.getWidth();
+		int h= b.getHeight();
+		
+		if ((style & SWT.BORDER) != 0) {
+			x+= FOCUS_BORDER;
+			y+= FOCUS_BORDER;
+			w-= 2*FOCUS_BORDER;
+			h-= 2*FOCUS_BORDER;
+		}
+		
+		Rectangle oldRect= fFrameRect;
+		fFrameRect= new Rectangle(x, y, w, h);
+		if (oldRect == null || !oldRect.equals(fFrameRect)) {
+			OS.TXNSetFrameBounds(fTX, y, x, y+h, x+w, fFrameID);
+		}
+		
+		OS.TXNDraw(fTX, 0);
+	}
+	
+	void handleResize(int hndl, MacRect bounds) {
+		super.handleResize(hndl, bounds);
+		syncBounds(bounds);
+	}
 	
 	private void drawFrame(Object callData) {
-		
+
 		if ((style & SWT.BORDER) == 0)
 			return;
 			
@@ -1530,14 +1532,13 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 			if (!r.isEmpty()) {
 				MacRect bounds= new MacRect();
 				OS.GetControlBounds(handle, bounds.getData());
-				int b= 1;
-				bounds.set(0+b, 0+b, bounds.getWidth()-2*b, bounds.getHeight()-2*b);
+				bounds.setLocation(0, 0);
+				bounds.inset(FOCUS_BORDER, FOCUS_BORDER, FOCUS_BORDER, FOCUS_BORDER);
 				OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
 				if ((style & SWT.READ_ONLY) == 0) {
-					Control focus= getDisplay().getFocusControl();
-					boolean hasFocus= focus == this;
-					//System.out.println("drawFrame: " + hasFocus);
-					OS.DrawThemeFocusRect(bounds.getData(), hasFocus);
+					OS.DrawThemeFocusRect(bounds.getData(), false);
+					if (getDisplay().getFocusControl() == this)
+						OS.DrawThemeFocusRect(bounds.getData(), true);
 				}
 			}
 		} finally {
