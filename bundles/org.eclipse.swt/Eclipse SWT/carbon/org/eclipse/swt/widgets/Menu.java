@@ -237,7 +237,6 @@ public void addMenuListener (MenuListener listener) {
 
 void createHandle () {
 	Display display = getDisplay ();
-	int menuProc = display.menuProc;
 	display.addMenu (this);
 	int outMenuRef [] = new int [1];
 	OS.CreateNewMenu (id, 0, outMenuRef);

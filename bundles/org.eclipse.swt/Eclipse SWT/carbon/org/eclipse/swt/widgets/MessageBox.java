@@ -217,7 +217,7 @@ public int open () {
 	}
 	
 	int [] dialogRef= new int [1];
-	int result = OS.CreateStandardAlert (alertType, error, explanation, param, dialogRef);
+	OS.CreateStandardAlert (alertType, error, explanation, param, dialogRef);
 	if (error != 0) OS.CFRelease(error);
 	if (explanation != 0) OS.CFRelease(explanation);
 	if (defaultStr != 0) OS.CFRelease(defaultStr);

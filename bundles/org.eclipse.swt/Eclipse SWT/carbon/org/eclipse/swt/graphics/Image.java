@@ -465,7 +465,6 @@ public Image(Device display, String filename) {
 
 void createMask () {
 	if (transparentPixel == -1) return;
-	int width = OS.CGImageGetWidth(handle);
 	int height = OS.CGImageGetHeight(handle);
 	int bpr = OS.CGImageGetBytesPerRow(handle);
 	int dataSize = height * bpr;

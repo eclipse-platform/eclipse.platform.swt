@@ -69,7 +69,6 @@ public Scale (Composite parent, int style) {
 }
 
 int actionProc (int theControl, int partCode) {
-	Event event = new Event ();
 	sendEvent (SWT.Selection);
 	Shell shell = getShell ();
 	shell.update (true);

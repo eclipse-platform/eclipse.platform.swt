@@ -446,8 +446,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  	if (simple) {
  		OS.CGContextDrawImage(handle, rect, imageHandle);
  	} else {
-	 	int width = OS.CGImageGetWidth(imageHandle);
-		int height = OS.CGImageGetHeight(imageHandle);
 		int bpc = OS.CGImageGetBitsPerComponent(imageHandle);
 		int bpp = OS.CGImageGetBitsPerPixel(imageHandle);
 		int bpr = OS.CGImageGetBytesPerRow(imageHandle);

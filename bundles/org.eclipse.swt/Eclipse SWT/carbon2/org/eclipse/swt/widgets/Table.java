@@ -466,7 +466,6 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.memcpy (rect, theRect, Rect.sizeof);
 	int x = rect.left;
 	int y = rect.top;
-	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
 	Rect controlRect = new Rect ();
