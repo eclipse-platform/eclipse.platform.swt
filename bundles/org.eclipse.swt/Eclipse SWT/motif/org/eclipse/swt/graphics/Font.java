@@ -116,8 +116,13 @@ public boolean equals (Object object) {
  * fonts. To support this case, we return an array of font data objects.
  *
  * @return an array of font data objects describing the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public FontData[] getFontData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = device.xDisplay;
 	/**
 	 * Create a font context to iterate over each element in the font list.
@@ -257,5 +262,15 @@ public static Font motif_new(Device device, int handle) {
 	font.device = device;
 	font.handle = handle;
 	return font;
+}
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Font {*DISPOSED*}";
+	return "Font {" + handle + "}";
 }
 }

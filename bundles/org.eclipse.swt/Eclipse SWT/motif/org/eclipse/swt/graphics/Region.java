@@ -42,8 +42,12 @@ Region (int handle) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void add (Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	XRectangle xRect = new XRectangle();
 	xRect.x = (short)rect.x;
@@ -62,8 +66,12 @@ public void add (Rectangle rect) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void add (Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	OS.XUnionRegion(handle, region.handle, handle);
 }
@@ -75,8 +83,13 @@ public void add (Region region) {
  * @param x the x coordinate of the point to test for containment
  * @param y the y coordinate of the point to test for containment
  * @return <code>true</code> if the region contains the point and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public boolean contains (int x, int y) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.XPointInRegion(handle, x, y);
 }
 /**
@@ -89,6 +102,9 @@ public boolean contains (int x, int y) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public boolean contains (Point pt) {
@@ -129,9 +145,14 @@ public boolean equals (Object object) {
  *
  * @return a bounding rectangle for the region
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
  * @see Rectangle#union
  */
 public Rectangle getBounds() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	XRectangle rect = new XRectangle();
 	OS.XClipBox(handle, rect);
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
@@ -160,9 +181,14 @@ public int hashCode () {
  * @param height the height of the rectangle
  * @return <code>true</code> if the rectangle intersects with the receiver, and <code>false</code> otherwise
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
  * @see Rectangle#intersects
  */
 public boolean intersects (int x, int y, int width, int height) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.XRectInRegion (handle, x, y, width, height) != OS.RectangleOut;
 }
 /**
@@ -175,6 +201,9 @@ public boolean intersects (int x, int y, int width, int height) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see Rectangle#intersects
@@ -202,11 +231,26 @@ public boolean isDisposed() {
  * the receiver does cover some area in the plane.
  *
  * @return <code>true</code> if the receiver is empty, and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public boolean isEmpty () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.XEmptyRegion(handle);
 }
 public static Region motif_new(int handle) {
 	return new Region(handle);
+}
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Region {*DISPOSED*}";
+	return "Region {" + handle + "}";
 }
 }

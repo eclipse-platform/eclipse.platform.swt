@@ -122,6 +122,7 @@ public boolean equals (Object object) {
 	if (!(object instanceof Color)) return false;
 	Color color = (Color)object;
 	XColor xColor = color.handle;
+	if (handle == xColor) return true;
 	return device == color.device && handle.red == xColor.red &&
 		handle.green == xColor.green && handle.blue == xColor.blue;
 }
@@ -129,30 +130,50 @@ public boolean equals (Object object) {
  * Returns the amount of blue in the color, from 0 to 255.
  *
  * @return the blue component of the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getBlue () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle.blue >> 8) & 0xFF;
 }
 /**
  * Returns the amount of green in the color, from 0 to 255.
  *
  * @return the green component of the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getGreen () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle.green >> 8) & 0xFF;
 }
 /**
  * Returns the amount of red in the color, from 0 to 255.
  *
  * @return the red component of the color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int getRed () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return (handle.red >> 8) & 0xFF;
 }
 /**
  * Returns an <code>RGB</code> representing the receiver.
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public RGB getRGB () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return new RGB((handle.red >> 8) & 0xFF, (handle.green >> 8) & 0xFF, (handle.blue >> 8) & 0xFF);
 }
 /**
@@ -166,6 +187,7 @@ public RGB getRGB () {
  * @see #equals
  */
 public int hashCode () {
+	if (isDisposed()) return 0;
 	return handle.red ^ handle.green ^ handle.blue;
 }
 void init(Device device, int red, int green, int blue) {
@@ -304,6 +326,7 @@ public static Color motif_new(Device device, XColor xColor) {
  * @return a string representation of the receiver
  */
 public String toString () {
+	if (isDisposed()) return "Color {*DISPOSED*}";
 	return "Color {" + getRed() + ", " + getGreen() + ", " + getBlue() + "}";
 }
 }

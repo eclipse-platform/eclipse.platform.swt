@@ -255,4 +255,14 @@ public static Cursor motif_new(Device device, int handle) {
 	cursor.handle = handle;
 	return cursor;
 }
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Cursor {*DISPOSED*}";
+	return "Cursor {" + handle + "}";
+}
 }

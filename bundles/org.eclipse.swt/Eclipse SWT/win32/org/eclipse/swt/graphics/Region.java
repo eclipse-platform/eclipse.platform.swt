@@ -53,8 +53,12 @@ Region(int handle) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void add (Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int rectRgn = OS.CreateRectRgn (rect.x, rect.y, rect.x + rect.width, rect.y + rect.height);
 	OS.CombineRgn (handle, handle, rectRgn, OS.RGN_OR);
@@ -71,8 +75,12 @@ public void add (Rectangle rect) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void add (Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	OS.CombineRgn (handle, handle, region.handle, OS.RGN_OR);
 }
@@ -85,8 +93,13 @@ public void add (Region region) {
  * @param x the x coordinate of the point to test for containment
  * @param y the y coordinate of the point to test for containment
  * @return <code>true</code> if the region contains the point and <code>false</code> otherwise
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public boolean contains (int x, int y) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.PtInRegion (handle, x, y);
 }
 
@@ -100,6 +113,9 @@ public boolean contains (int x, int y) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public boolean contains (Point pt) {
@@ -143,9 +159,14 @@ public boolean equals (Object object) {
  *
  * @return a bounding rectangle for the region
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
  * @see Rectangle#union
  */
 public Rectangle getBounds() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	RECT rect = new RECT();
 	OS.GetRgnBox(handle, rect);
 	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
@@ -176,9 +197,14 @@ public int hashCode () {
  * @param height the height of the rectangle
  * @return <code>true</code> if the rectangle intersects with the receiver, and <code>false</code> otherwise
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
  * @see Rectangle#intersects
  */
 public boolean intersects (int x, int y, int width, int height) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	RECT r = new RECT ();
 	OS.SetRect (r, x, y, x + width, y + height);
 	return OS.RectInRegion (handle, r);
@@ -194,6 +220,9 @@ public boolean intersects (int x, int y, int width, int height) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see Rectangle#intersects
@@ -225,6 +254,7 @@ public boolean isDisposed() {
  * @return <code>true</code> if the receiver is empty, and <code>false</code> otherwise
  */
 public boolean isEmpty () {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	RECT rect = new RECT ();
 	int result = OS.GetRgnBox (handle, rect);
 	if (result == OS.NULLREGION) return true;
@@ -247,6 +277,17 @@ public boolean isEmpty () {
  */
 public static Region win32_new(int handle) {
 	return new Region(handle);
+}
+
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Region {*DISPOSED*}";
+	return "Region {" + handle + "}";
 }
 
 }

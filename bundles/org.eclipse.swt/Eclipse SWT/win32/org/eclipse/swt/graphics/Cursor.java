@@ -318,6 +318,17 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
+/**
+ * Returns a string containing a concise, human-readable
+ * description of the receiver.
+ *
+ * @return a string representation of the receiver
+ */
+public String toString () {
+	if (isDisposed()) return "Cursor {*DISPOSED*}";
+	return "Cursor {" + handle + "}";
+}
+
 /**	 
  * Invokes platform specific functionality to allocate a new cursor.
  * <p>
