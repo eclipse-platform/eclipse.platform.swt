@@ -304,6 +304,24 @@ public void deselectAll () {
 }
 
 /**
+ * Returns the zero-relative index of the item which is currently
+ * has the focus in the receiver, or -1 if no item is has focus.
+ *
+ * @return the index of the selected item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int getFocusIndex () {
+	checkWidget();
+	GtkCList clist = new GtkCList();
+	OS.memmove(clist, handle, GtkCList.sizeof);
+	return clist.focus_row;
+}
+
+/**
  * Returns the item at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
  *
