@@ -670,9 +670,8 @@ void getImageData1() {
 	String fileName = SwtTestCase.imageFilenames[0];
 	for (int i=0; i<numFormats; i++) {
 		String format = SwtTestCase.imageFormats[i];
-		ImageLoader loader = new ImageLoader();
 		InputStream stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
-		ImageData data1 = loader.load(stream)[0];
+		ImageData data1 = new ImageData(stream);
 		Image image = new Image(display, data1);
 		ImageData data2 = image.getImageData();
 		image.dispose();

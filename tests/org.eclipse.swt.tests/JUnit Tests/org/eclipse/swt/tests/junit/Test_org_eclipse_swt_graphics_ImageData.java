@@ -169,8 +169,7 @@ public void test_clone() {
 	InputStream stream = null;
 	try {
 		stream = SwtTestCase.class.getResourceAsStream(SwtTestCase.imageFilenames[0] + "." + SwtTestCase.imageFormats[0]);
-		ImageLoader loader = new ImageLoader();
-		ImageData data1 = loader.load(stream)[0];
+		ImageData data1 = new ImageData(stream);
 		ImageData data2 = (ImageData) data1.clone();
 		// imageData does not implement an equals(Object) method
 		assertEquals(":a:", data1.alpha, data2.alpha);
