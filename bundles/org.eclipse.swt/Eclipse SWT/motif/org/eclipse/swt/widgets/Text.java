@@ -439,7 +439,7 @@ public Point getCaretLocation () {
 	}
 	short [] x = new short [1], y = new short [1];
 	OS.XmTextPosToXY (handle, position, x, y);
-	return new Point (x [0], y [0] - getFontAscent ());
+	return new Point (x [0], y [0] - getFontAscent (font.handle));
 }
 /**
  * Gets the position of the caret.

@@ -305,7 +305,7 @@ public void setBounds (int x, int y, int width, int height) {
 	if (isFocus) hideCaret ();
 	this.x = x; this.y = y;
 	this.width = width; this.height = height;
-	parent.updateCaret ();
+	if (isVisible) parent.updateIM ();
 	if (isFocus) showCaret ();
 }
 /**
@@ -353,14 +353,7 @@ public void setFont (Font font) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.font = font;
-	if (isVisible && parent.hasFocus()) {
-		int [] argList = {OS.XmNfontList, font.handle};
-		OS.XmImSetValues (handle, argList, argList.length / 2);
-		int focusHandle = parent.focusHandle ();
-		if (handle != focusHandle) {
-			OS.XmImSetValues (focusHandle, argList, argList.length / 2);
-		}
-	}
+	if (isVisible) parent.updateIM ();
 }
 /**
  * Sets the image that the receiver will use to paint the caret

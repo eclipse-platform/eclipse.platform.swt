@@ -93,12 +93,8 @@ public Caret getCaret () {
 	checkWidget();
 	return caret;
 }
-
-short [] getIMCaretPos () {
-	if (caret == null) return super.getIMCaretPos ();
-	int x = caret.x + (caret.width <= 0 ? 2 : caret.width);
-	int y = caret.y + getFontAscent();
-	return new short[]{(short) x, (short) y};
+Caret getIMCaret () {
+	return caret;
 }
 void redrawWidget (int x, int y, int width, int height, boolean all) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
@@ -222,28 +218,8 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 }
 public void setFont (Font font) {
 	checkWidget();
-	super.setFont (font);
 	if (caret != null) caret.setFont (font);
-}
-void updateCaret () {
-	if (caret == null) return;
-	if (!OS.IsDBLocale) return;
-	short [] point = getIMCaretPos ();
-	int ptr1 = OS.XtMalloc (4);
-	OS.memmove (ptr1, point, 4);
-	int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (handle, argList1, argList1.length / 2);
-	short [] rect = new short[]{0, 0, (short) argList1 [1], (short) argList1 [3]};
-	int ptr2 = OS.XtMalloc (8);
-	OS.memmove (ptr2, rect, 8);
-	int [] argList2 = {OS.XmNspotLocation, ptr1, OS.XmNarea, ptr2};
-	OS.XmImSetValues (handle, argList2, argList2.length / 2);
-	int focusHandle = focusHandle ();
-	if (handle != focusHandle) {
-		OS.XmImSetValues (focusHandle, argList2, argList2.length / 2);
-	}
-	if (ptr1 != 0) OS.XtFree (ptr1);
-	if (ptr2 != 0) OS.XtFree (ptr2);
+	super.setFont (font);
 }
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
