@@ -140,7 +140,23 @@ void columnAdded (TreeColumn column) {
 }
 void columnRemoved (TreeColumn column, int index) {
 	int columnCount = parent.getColumnCount ();
-	if (columnCount == 0) return;	/* reverts to normal tree when last column disposed */
+	if (columnCount == 0) {
+		/* reverts to normal tree when last column disposed */
+		cellBackgrounds = cellForegrounds = null;
+		boolean recomputeTextWidths = cellFonts != null;
+		cellFonts = null;
+		if (recomputeTextWidths) {
+			GC gc = new GC (parent);
+			gc.setFont (getFont ());
+			recomputeTextWidths (gc);
+			gc.dispose ();
+		}
+		/* notify all child items as well */
+		for (int i = 0; i < items.length; i++) {
+			items[i].columnRemoved (column, index);
+		}
+		return;
+	}
 
 	String[] newTexts = new String [columnCount];
 	System.arraycopy (texts, 0, newTexts, 0, index);
