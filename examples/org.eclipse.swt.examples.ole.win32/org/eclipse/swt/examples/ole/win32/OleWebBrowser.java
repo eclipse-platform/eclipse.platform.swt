@@ -55,13 +55,8 @@ class OleWebBrowser {
 
 	// Web Browser properties
 	public static final int DISPID_READYSTATE = -525;
-	 
-	// Keep track of the whether it is possible to navigate in the forward and backward directions
-	private boolean backwardEnabled;
-	private boolean forwardEnabled;
 
 	private OleAutomation  oleAutomation;
-	private OleControlSite oleControlSite;
 
 	/**
 	 * Creates a Web browser control.
@@ -76,54 +71,10 @@ class OleWebBrowser {
      * @param oleAutomation the OleAutomation object for this control.
      * @param oleControlSite the OleControlSite object for this control.
 	 */
-	public OleWebBrowser(OleAutomation oleAutomation, OleControlSite oleControlSite) {
+	public OleWebBrowser(OleAutomation oleAutomation) {
 		this.oleAutomation = oleAutomation;
-		this.oleControlSite = oleControlSite;
-	
-		backwardEnabled = false;
-		forwardEnabled = false;
-		
-		// Listen for changes to the Command States
-		oleControlSite.addEventListener(OleWebBrowser.CommandStateChange, new OleListener() {
-			public void handleEvent(OleEvent event) {
-				switch (event.type){
-				case (OleWebBrowser.CommandStateChange) :
-					int command = 0;
-					boolean enabled = false;
-					
-					Variant varResult = event.arguments[0];
-					if (varResult != null){
-						command = varResult.getInt();
-					}
-				
-					varResult = event.arguments[1];
-					if (varResult != null){
-						enabled = varResult.getBoolean();
-					}
-				
-					if (command == CSC_NAVIGATEBACK) 	backwardEnabled = enabled;
-					if (command == CSC_NAVIGATEFORWARD) forwardEnabled = enabled;		
-					return;
-				}
-			}
-		});
 	}
 	
-	/**
-	 * Activates the web browser control.
-	 */
-	public void activate() {
-		if (oleControlSite == null || oleControlSite.isDisposed()) return;
-		oleControlSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
-	}
-	
-	/**
-	 * Deactivates the web browser control.
-	 */
-	public void deactivate() {
-		if (oleControlSite == null || oleControlSite.isDisposed()) return;
-		oleControlSite.deactivateInPlaceClient();
-	}
 	
 	/**
 	 * Disposes of the Web browser control.
@@ -195,8 +146,7 @@ class OleWebBrowser {
 	 * 
 	 * @return the platform-defined result code for the "GoBack" method invocation
 	 */
-	public int doGoBack() {
-		if (!backwardEnabled) return OLE.S_FALSE;
+	public int GoBack() {
 	
 		// dispid=100, type=METHOD, name="GoBack"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"GoBack"}); 
@@ -212,8 +162,7 @@ class OleWebBrowser {
 	 * 
 	 * @return the platform-defined result code for the "GoForward" method invocation
 	 */
-	public int doGoForward() {
-		if (!forwardEnabled) return OLE.S_FALSE;
+	public int GoForward() {
 	
 		// dispid=101, type=METHOD, name="GoForward"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"GoForward"}); 
@@ -229,7 +178,7 @@ class OleWebBrowser {
 	 *
 	 * @return the platform-defined result code for the "GoHome" method invocation
 	 */
-	public int doGoHome() {
+	public int GoHome() {
 		// dispid=102, type=METHOD, name="GoHome"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"GoHome"}); 
 		int dispIdMember = rgdispid[0];
@@ -244,7 +193,7 @@ class OleWebBrowser {
 	 *
 	 * @return the platform-defined result code for the "GoSearch" method invocation
 	 */
-	public int doGoSearch() {
+	public int GoSearch() {
 		// dispid=103, type=METHOD, name="GoSearch"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"GoSearch"}); 
 		int dispIdMember = rgdispid[0];
@@ -259,7 +208,7 @@ class OleWebBrowser {
 	 *
 	 * @return the platform-defined result code for the "Navigate" method invocation
 	 */
-	public int doNavigate(String url) {
+	public int Navigate(String url) {
 		// dispid=104, type=METHOD, name="Navigate"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"Navigate", "URL"}); 
 		int dispIdMember = rgdispid[0];
@@ -279,7 +228,7 @@ class OleWebBrowser {
 	 *
 	 * @return the platform-defined result code for the "Refresh" method invocation
 	 */
-	public void doRefresh(){
+	public void Refresh(){
 		// dispid= 4294966746, type=METHOD, name="Refresh"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"Refresh"}); 
 		int dispIdMember = rgdispid[0];
@@ -292,7 +241,7 @@ class OleWebBrowser {
 	 *
 	 * @return the platform-defined result code for the "Stop" method invocation
 	 */
-	public void doStop() {
+	public void Stop() {
 		// dispid=106, type=METHOD, name="Stop"
 		int[] rgdispid = oleAutomation.getIDsOfNames(new String[]{"Stop"}); 
 		int dispIdMember = rgdispid[0];

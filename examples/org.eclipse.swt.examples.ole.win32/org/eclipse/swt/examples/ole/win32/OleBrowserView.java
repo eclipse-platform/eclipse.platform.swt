@@ -31,6 +31,8 @@ public class OleBrowserView extends ViewPart {
 	private ToolItem webCommandStop;
 	private ToolItem webCommandRefresh;
 	private ToolItem webCommandSearch;
+	
+	private boolean activated = false;
 
 	/**
 	 * Constructs the OLE browser view.
@@ -55,16 +57,16 @@ public class OleBrowserView extends ViewPart {
 		createBrowserFrame();		
 		createStatusArea();
 		createBrowserControl();	
-
-		if (webBrowser != null) webBrowser.activate();
-		webFrame.setVisible(true);
-		webBrowser.doGoHome();
 	}
 	
 	/**
 	 * Cleanup
 	 */
 	public void dispose() {
+		if (activated) {
+			webControlSite.deactivateInPlaceClient();
+			activated = false;
+		}
 		if (webBrowser != null) webBrowser.dispose();
 		webBrowser = null;
 		super.dispose();
@@ -89,8 +91,6 @@ public class OleBrowserView extends ViewPart {
 		gridData.horizontalSpan = 3;
 		bar.setLayoutData(gridData);
 		
-		ToolItem item; // used below
-		
 		// Add a button to navigate backwards through previously visited web sites
 		webCommandBackward = new ToolItem(bar, SWT.NONE);
 		webCommandBackward.setToolTipText(OlePlugin.getResourceString("browser.Back.tooltip"));
@@ -100,7 +100,7 @@ public class OleBrowserView extends ViewPart {
 		webCommandBackward.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				if (webBrowser == null) return;
-				webBrowser.doGoBack();
+				webBrowser.GoBack();
 			}
 		});
 	
@@ -113,12 +113,12 @@ public class OleBrowserView extends ViewPart {
 		webCommandForward.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				if (webBrowser == null) return;
-				webBrowser.doGoForward();
+				webBrowser.GoForward();
 			}
 		});
 
 		// Add a separator
-		item = new ToolItem(bar, SWT.SEPARATOR);
+		new ToolItem(bar, SWT.SEPARATOR);
 		
 		// Add a button to navigate to the Home page
 		webCommandHome = new ToolItem(bar, SWT.NONE);
@@ -129,7 +129,7 @@ public class OleBrowserView extends ViewPart {
 		webCommandHome.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				if (webBrowser == null) return;
-				webBrowser.doGoHome();
+				webBrowser.GoHome();
 			}
 		});
 
@@ -142,7 +142,7 @@ public class OleBrowserView extends ViewPart {
 		webCommandStop.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				if (webBrowser == null) return;
-				webBrowser.doStop();
+				webBrowser.Stop();
 			}
 		});
 
@@ -155,12 +155,12 @@ public class OleBrowserView extends ViewPart {
 		webCommandRefresh.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				if (webBrowser == null) return;
-				webBrowser.doRefresh();
+				webBrowser.Refresh();
 			}
 		});
 
 		// Add a separator
-		item = new ToolItem(bar, SWT.SEPARATOR);
+		new ToolItem(bar, SWT.SEPARATOR);
 
 		// Add a button to search the web
 		webCommandSearch = new ToolItem(bar, SWT.NONE);
@@ -171,7 +171,7 @@ public class OleBrowserView extends ViewPart {
 		webCommandSearch.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event e) {
 				if (webBrowser == null) return;
-				webBrowser.doGoSearch();
+				webBrowser.GoSearch();
 			}
 		});
 
@@ -209,7 +209,7 @@ public class OleBrowserView extends ViewPart {
 		webNavigateButton.addListener(SWT.Selection, new Listener() {
 			public void handleEvent(Event event) {
 				if (webBrowser == null) return;
-				webBrowser.doNavigate(webUrl.getText());
+				webBrowser.Navigate(webUrl.getText());
 			}
 		});
 		
@@ -217,7 +217,7 @@ public class OleBrowserView extends ViewPart {
 			public void handleEvent(Event event) {
 				if (webBrowser == null) return;
 				if (event.keyCode == 13) {
-					webBrowser.doNavigate(webUrl.getText());
+					webBrowser.Navigate(webUrl.getText());
 				}
 			}
 		});
@@ -261,7 +261,7 @@ public class OleBrowserView extends ViewPart {
 			// Create an Automation object for access to extended capabilities
 			webControlSite = new OleControlSite(webFrame, SWT.NONE, "Shell.Explorer");
 			OleAutomation oleAutomation = new OleAutomation(webControlSite);
-			webBrowser = new OleWebBrowser(oleAutomation, webControlSite);
+			webBrowser = new OleWebBrowser(oleAutomation);
 		} catch (SWTException ex) {
 			// Creation may have failed because control is not installed on machine
 			Label label = new Label(webFrame, SWT.BORDER);
@@ -294,7 +294,6 @@ public class OleBrowserView extends ViewPart {
 		});
 		
 		// Listen for changes to the ready state and print out the current state 
-		// Note - this does not do anything but is here as an example of how to listen for a state change
 		webControlSite.addPropertyListener(OleWebBrowser.DISPID_READYSTATE, new OleListener() {
 			public void handleEvent(OleEvent event) {
 				if (event.detail == OLE.PROPERTY_CHANGING) return;
@@ -356,5 +355,9 @@ public class OleBrowserView extends ViewPart {
 				}
 			}
 		});
+
+		// in place activate the ActiveX control		
+		activated = (webControlSite.doVerb(OLE.OLEIVERB_INPLACEACTIVATE) == OLE.S_OK);
+		if (activated) webBrowser.GoHome();
 	}
 }
