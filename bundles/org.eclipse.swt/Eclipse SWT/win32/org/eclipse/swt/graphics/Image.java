@@ -782,7 +782,6 @@ public Image (Device device, String filename) {
 int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 	
 	/* Determine the DDB depth */
-	byte[] bmi;
 	int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
 	int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
 	int depth = bits * planes;
@@ -802,46 +801,21 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 	
 	int biClrUsed = 0;
 	boolean useBitfields = OS.IsWinCE && (depth == 16 || depth == 32);
-	if (isDirect) bmi = new byte[40 + (useBitfields ? 12 : 0)];
-	else  bmi = new byte[40 + rgbs.length * 4];
-	/* DWORD biSize = 40 */
-	bmi[0] = 40; bmi[1] = 0; bmi[2] = 0; bmi[3] = 0;
-	/* LONG biWidth = width */
-	bmi[4] = (byte)(width & 0xFF);
-	bmi[5] = (byte)((width >> 8) & 0xFF);
-	bmi[6] = (byte)((width >> 16) & 0xFF);
-	bmi[7] = (byte)((width >> 24) & 0xFF);
-	/* LONG biHeight = height */
-	int height2 = -height;
-	bmi[8] = (byte)(height2 & 0xFF);
-	bmi[9] = (byte)((height2 >> 8) & 0xFF);
-	bmi[10] = (byte)((height2 >> 16) & 0xFF);
-	bmi[11] = (byte)((height2 >> 24) & 0xFF);
-	/* WORD biPlanes = 1 */
-	bmi[12] = 1;
-	bmi[13] = 0;
-	/* WORD biBitCount = depth */
-	bmi[14] = (byte)(depth & 0xFF);
-	bmi[15] = (byte)((depth >> 8) & 0xFF);
-	if (useBitfields) {
-		/* DWORD biCompression = BI_BITFIELDS = 3 */
-		bmi[16] = 3; bmi[17] = bmi[18] = bmi[19] = 0;
-	} else {
-		/* DWORD biCompression = BI_RGB = 0 */
-		bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
-	}
-	/* DWORD biSizeImage = 0 (default) */
-	bmi[20] = bmi[21] = bmi[22] = bmi[23] = 0;
-	/* LONG biXPelsPerMeter = 0 */
-	bmi[24] = bmi[25] = bmi[26] = bmi[27] = 0;
-	/* LONG biYPelsPerMeter = 0 */
-	bmi[28] = bmi[29] = bmi[30] = bmi[31] = 0;
-	/* DWORD biClrUsed */
-	bmi[32] = bmi[33] = bmi[34] = bmi[35] = 0;
-	/* DWORD biClrImportant = 0 */
-	bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
+	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
+	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+	bmiHeader.biWidth = width;
+	bmiHeader.biHeight = -height;
+	bmiHeader.biPlanes = 1;
+	bmiHeader.biBitCount = (short)depth;
+	if (useBitfields) bmiHeader.biCompression = OS.BI_BITFIELDS;
+	else bmiHeader.biCompression = OS.BI_RGB;
+	byte[] bmi;
+	if (isDirect) bmi = new byte[BITMAPINFOHEADER.sizeof + (useBitfields ? 12 : 0)];
+	else  bmi = new byte[BITMAPINFOHEADER.sizeof + rgbs.length * 4];
+	OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+
 	/* Set the rgb colors into the bitmap info */
-	int offset = 40;
+	int offset = BITMAPINFOHEADER.sizeof;
 	if (isDirect) {
 		if (useBitfields) {
 			int redMask = 0;
@@ -853,36 +827,36 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 					greenMask = 0x3E0;
 					blueMask = 0x1F;
 					/* little endian */
-					bmi[40] = (byte)((redMask & 0xFF) >> 0);
-					bmi[41] = (byte)((redMask & 0xFF00) >> 8);
-					bmi[42] = (byte)((redMask & 0xFF0000) >> 16);
-					bmi[43] = (byte)((redMask & 0xFF000000) >> 24);
-					bmi[44] = (byte)((greenMask & 0xFF) >> 0);
-					bmi[45] = (byte)((greenMask & 0xFF00) >> 8);
-					bmi[46] = (byte)((greenMask & 0xFF0000) >> 16);
-					bmi[47] = (byte)((greenMask & 0xFF000000) >> 24);
-					bmi[48] = (byte)((blueMask & 0xFF) >> 0);
-					bmi[49] = (byte)((blueMask & 0xFF00) >> 8);
-					bmi[50] = (byte)((blueMask & 0xFF0000) >> 16);
-					bmi[51] = (byte)((blueMask & 0xFF000000) >> 24);
+					bmi[offset] = (byte)((redMask & 0xFF) >> 0);
+					bmi[offset + 1] = (byte)((redMask & 0xFF00) >> 8);
+					bmi[offset + 2] = (byte)((redMask & 0xFF0000) >> 16);
+					bmi[offset + 3] = (byte)((redMask & 0xFF000000) >> 24);
+					bmi[offset + 4] = (byte)((greenMask & 0xFF) >> 0);
+					bmi[offset + 5] = (byte)((greenMask & 0xFF00) >> 8);
+					bmi[offset + 6] = (byte)((greenMask & 0xFF0000) >> 16);
+					bmi[offset + 7] = (byte)((greenMask & 0xFF000000) >> 24);
+					bmi[offset + 8] = (byte)((blueMask & 0xFF) >> 0);
+					bmi[offset + 9] = (byte)((blueMask & 0xFF00) >> 8);
+					bmi[offset + 10] = (byte)((blueMask & 0xFF0000) >> 16);
+					bmi[offset + 11] = (byte)((blueMask & 0xFF000000) >> 24);
 					break;
 				case 32: 
 					redMask = 0xFF00;
 					greenMask = 0xFF0000;
 					blueMask = 0xFF000000;
 					/* big endian */
-					bmi[40] = (byte)((redMask & 0xFF000000) >> 24);
-					bmi[41] = (byte)((redMask & 0xFF0000) >> 16);
-					bmi[42] = (byte)((redMask & 0xFF00) >> 8);
-					bmi[43] = (byte)((redMask & 0xFF) >> 0);
-					bmi[44] = (byte)((greenMask & 0xFF000000) >> 24);
-					bmi[45] = (byte)((greenMask & 0xFF0000) >> 16);
-					bmi[46] = (byte)((greenMask & 0xFF00) >> 8);
-					bmi[47] = (byte)((greenMask & 0xFF) >> 0);
-					bmi[48] = (byte)((blueMask & 0xFF000000) >> 24);
-					bmi[49] = (byte)((blueMask & 0xFF0000) >> 16);
-					bmi[50] = (byte)((blueMask & 0xFF00) >> 8);
-					bmi[51] = (byte)((blueMask & 0xFF) >> 0);
+					bmi[offset] = (byte)((redMask & 0xFF000000) >> 24);
+					bmi[offset + 1] = (byte)((redMask & 0xFF0000) >> 16);
+					bmi[offset + 2] = (byte)((redMask & 0xFF00) >> 8);
+					bmi[offset + 3] = (byte)((redMask & 0xFF) >> 0);
+					bmi[offset + 4] = (byte)((greenMask & 0xFF000000) >> 24);
+					bmi[offset + 5] = (byte)((greenMask & 0xFF0000) >> 16);
+					bmi[offset + 6] = (byte)((greenMask & 0xFF00) >> 8);
+					bmi[offset + 7] = (byte)((greenMask & 0xFF) >> 0);
+					bmi[offset + 8] = (byte)((blueMask & 0xFF000000) >> 24);
+					bmi[offset + 9] = (byte)((blueMask & 0xFF0000) >> 16);
+					bmi[offset + 10] = (byte)((blueMask & 0xFF00) >> 8);
+					bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
 					break;
 				default:
 					SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
@@ -1109,38 +1083,16 @@ public ImageData getImageData() {
 			int numColors = 0;
 			if (depth <= 8) numColors = 1 << depth;
 			/* Create the BITMAPINFO */
-			byte[] bmi = new byte[40 + numColors * 4];
-			/* DWORD biSize = 40 */
-			bmi[0] = 40; bmi[1] = bmi[2] = bmi[3] = 0;
-			/* LONG biWidth = width */
-			bmi[4] = (byte)(width & 0xFF);
-			bmi[5] = (byte)((width >> 8) & 0xFF);
-			bmi[6] = (byte)((width >> 16) & 0xFF);
-			bmi[7] = (byte)((width >> 24) & 0xFF);
-			/* LONG biHeight = height */
-			bmi[8] = (byte)(-height & 0xFF);
-			bmi[9] = (byte)((-height >> 8) & 0xFF);
-			bmi[10] = (byte)((-height >> 16) & 0xFF);
-			bmi[11] = (byte)((-height >> 24) & 0xFF);
-			/* WORD biPlanes = 1 */
-			bmi[12] = 1;
-			bmi[13] = 0;
-			/* WORD biBitCount = bm.bmPlanes * bm.bmBitsPixel */
-			bmi[14] = (byte)(depth & 0xFF);
-			bmi[15] = (byte)((depth >> 8) & 0xFF);
-			/* DWORD biCompression = BI_RGB = 0 */
-			bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
-			/* DWORD biSizeImage = 0 (default) */
-			bmi[20] = bmi[21] = bmi[22] = bmi[23] = 0;
-			/* LONG biXPelsPerMeter = 0 */
-			bmi[24] = bmi[25] = bmi[26] = bmi[27] = 0;
-			/* LONG biYPelsPerMeter = 0 */
-			bmi[28] = bmi[29] = bmi[30] = bmi[31] = 0;
-			/* DWORD biClrUsed = 0 */
-			bmi[32] = bmi[33] = bmi[34] = bmi[35] = 0;
-			/* DWORD biClrImportant = 0 */
-			bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
-
+			BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
+			bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+			bmiHeader.biWidth = width;
+			bmiHeader.biHeight = -height;
+			bmiHeader.biPlanes = 1;
+			bmiHeader.biBitCount = (short)depth;
+			bmiHeader.biCompression = OS.BI_RGB;
+			byte[] bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
+			OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+			
 			/* Get the HDC for the device */
 			int hDC = device.internal_new_GC(null);
 	
@@ -1161,7 +1113,8 @@ public ImageData getImageData() {
 			/* Call with null lpBits to get the image size */
 			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, 0, bmi, OS.DIB_RGB_COLORS);
-			imageSize = (bmi[20] & 0xFF) | ((bmi[21] & 0xFF) << 8) | ((bmi[22] & 0xFF) << 16) | ((bmi[23] & 0xFF) << 24);
+			OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
+			imageSize = bmiHeader.biSizeImage;
 			byte[] data = new byte[imageSize];
 			/* Get the bitmap data */
 			int hHeap = OS.GetProcessHeap();
@@ -1200,47 +1153,26 @@ public ImageData getImageData() {
 			} else {
 				/* Do the entire mask */
 				/* Create the BITMAPINFO */
-				bmi = new byte[48];
-				/* DWORD biSize = 40 */
-				bmi[0] = 40; bmi[1] = bmi[2] = bmi[3] = 0;
-				/* LONG biWidth = width */
-				bmi[4] = (byte)(width & 0xFF);
-				bmi[5] = (byte)((width >> 8) & 0xFF);
-				bmi[6] = (byte)((width >> 16) & 0xFF);
-				bmi[7] = (byte)((width >> 24) & 0xFF);
-				/* LONG biHeight = height */
-				bmi[8] = (byte)(-height & 0xFF);
-				bmi[9] = (byte)((-height >> 8) & 0xFF);
-				bmi[10] = (byte)((-height >> 16) & 0xFF);
-				bmi[11] = (byte)((-height >> 24) & 0xFF);
-				/* WORD biPlanes = 1 */
-				bmi[12] = 1;
-				bmi[13] = 0;
-				/* WORD biBitCount = 1 */
-				bmi[14] = 1;
-				bmi[15] = 0;
-				/* DWORD biCompression = BI_RGB = 0 */
-				bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
-				/* DWORD biSizeImage = 0 (default) */
-				bmi[20] = bmi[21] = bmi[22] = bmi[23] = 0;
-				/* LONG biXPelsPerMeter = 0 */
-				bmi[24] = bmi[25] = bmi[26] = bmi[27] = 0;
-				/* LONG biYPelsPerMeter = 0 */
-				bmi[28] = bmi[29] = bmi[30] = bmi[31] = 0;
-				/* DWORD biClrUsed = 0 */
-				bmi[32] = bmi[33] = bmi[34] = bmi[35] = 0;
-				/* DWORD biClrImportant = 0 */
-				bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
-				/* First color black */
-				bmi[40] = bmi[41] = bmi[42] = bmi[43] = 0;
-				/* Second color white */
-				bmi[44] = bmi[45] = bmi[46] = (byte)0xFF;
-				bmi[47] = 0;
+				bmiHeader = new BITMAPINFOHEADER();
+				bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+				bmiHeader.biWidth = width;
+				bmiHeader.biHeight = -height;
+				bmiHeader.biPlanes = 1;
+				bmiHeader.biBitCount = 1;
+				bmiHeader.biCompression = OS.BI_RGB;
+				bmi = new byte[BITMAPINFOHEADER.sizeof + 8];
+				OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+				
+				/* First color black, second color white */
+				int offset = BITMAPINFOHEADER.sizeof;
+				bmi[offset + 4] = bmi[offset + 5] = bmi[offset + 6] = (byte)0xFF;
+				bmi[offset + 7] = 0;
 				OS.SelectObject(hBitmapDC, info.hbmMask);
 				/* Call with null lpBits to get the image size */
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, 0, bmi, OS.DIB_RGB_COLORS);
-				imageSize = (bmi[20] & 0xFF) | ((bmi[21] & 0xFF) << 8) | ((bmi[22] & 0xFF) << 16) | ((bmi[23] & 0xFF) << 24);
+				OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
+				imageSize = bmiHeader.biSizeImage;
 				maskData = new byte[imageSize];
 				int lpvMaskBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
@@ -1341,38 +1273,17 @@ public ImageData getImageData() {
 			}
 			/* Create the BITMAPINFO */
 			byte[] bmi = null;
+			BITMAPINFOHEADER bmiHeader = null;
 			if (!isDib) {
-				bmi = new byte[40 + numColors * 4];
-				/* DWORD biSize = 40 */
-				bmi[0] = 40; bmi[1] = bmi[2] = bmi[3] = 0;
-				/* LONG biWidth = width */
-				bmi[4] = (byte)(width & 0xFF);
-				bmi[5] = (byte)((width >> 8) & 0xFF);
-				bmi[6] = (byte)((width >> 16) & 0xFF);
-				bmi[7] = (byte)((width >> 24) & 0xFF);
-				/* LONG biHeight = height */
-				bmi[8] = (byte)(-height & 0xFF);
-				bmi[9] = (byte)((-height >> 8) & 0xFF);
-				bmi[10] = (byte)((-height >> 16) & 0xFF);
-				bmi[11] = (byte)((-height >> 24) & 0xFF);
-				/* WORD biPlanes = 1 */
-				bmi[12] = 1;
-				bmi[13] = 0;
-				/* WORD biBitCount = bm.bmPlanes * bm.bmBitsPixel */
-				bmi[14] = (byte)(depth & 0xFF);
-				bmi[15] = (byte)((depth >> 8) & 0xFF);
-				/* DWORD biCompression = BI_RGB = 0 */
-				bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
-				/* DWORD biSizeImage = 0 (default) */
-				bmi[20] = bmi[21] = bmi[22] = bmi[23] = 0;
-				/* LONG biXPelsPerMeter = 0 */
-				bmi[24] = bmi[25] = bmi[26] = bmi[27] = 0;
-				/* LONG biYPelsPerMeter = 0 */
-				bmi[28] = bmi[29] = bmi[30] = bmi[31] = 0;
-				/* DWORD biClrUsed = 0 */
-				bmi[32] = bmi[33] = bmi[34] = bmi[35] = 0;
-				/* DWORD biClrImportant = 0 */
-				bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
+				bmiHeader = new BITMAPINFOHEADER();
+				bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+				bmiHeader.biWidth = width;
+				bmiHeader.biHeight = -height;
+				bmiHeader.biPlanes = 1;
+				bmiHeader.biBitCount = (short)depth;
+				bmiHeader.biCompression = OS.BI_RGB;
+				bmi = new byte[BITMAPINFOHEADER.sizeof + numColors * 4];
+				OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 			}
 			
 			/* Create the DC and select the bitmap */
@@ -1395,7 +1306,8 @@ public ImageData getImageData() {
 				/* Call with null lpBits to get the image size */
 				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, handle, 0, height, 0, bmi, OS.DIB_RGB_COLORS);
-				imageSize = (bmi[20] & 0xFF) | ((bmi[21] & 0xFF) << 8) | ((bmi[22] & 0xFF) << 16) | ((bmi[23] & 0xFF) << 24);
+				OS.MoveMemory(bmiHeader, bmi, BITMAPINFOHEADER.sizeof);
+				imageSize = bmiHeader.biSizeImage;
 			}
 			byte[] data = new byte[imageSize];
 			/* Get the bitmap data */
@@ -1462,7 +1374,7 @@ public ImageData getImageData() {
 			} else {
 				if (depth <= 8) {
 					RGB[] rgbs = new RGB[numColors];
-					int srcIndex = 40;
+					int srcIndex = BITMAPINFOHEADER.sizeof;
 					for (int i = 0; i < numColors; i++) {
 						rgbs[i] = new RGB(bmi[srcIndex + 2] & 0xFF, bmi[srcIndex + 1] & 0xFF, bmi[srcIndex] & 0xFF);
 						srcIndex += 4;
@@ -1658,57 +1570,24 @@ static int[] init(Device device, Image image, ImageData i) {
 	}
 	/* Construct bitmap info header by hand */
 	RGB[] rgbs = i.palette.getRGBs();
-	byte[] bmi;
 	boolean useBitfields = OS.IsWinCE && (i.depth == 16 || i.depth == 32);
+	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
+	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+	bmiHeader.biWidth = i.width;
+	bmiHeader.biHeight = -i.height;
+	bmiHeader.biPlanes = 1;
+	bmiHeader.biBitCount = (short)i.depth;
+	if (useBitfields) bmiHeader.biCompression = OS.BI_BITFIELDS;
+	else bmiHeader.biCompression = OS.BI_RGB;
+	bmiHeader.biClrUsed = rgbs == null ? 0 : rgbs.length;
+	byte[] bmi;
 	if (i.palette.isDirect)
-		bmi = new byte[40 + (useBitfields ? 12 : 0)];
+		bmi = new byte[BITMAPINFOHEADER.sizeof + (useBitfields ? 12 : 0)];
 	else
-		bmi = new byte[40 + rgbs.length * 4];
-	/* DWORD biSize = 40 */
-	bmi[0] = 40; bmi[1] = 0; bmi[2] = 0; bmi[3] = 0;
-	/* LONG biWidth = width */
-	bmi[4] = (byte)(i.width & 0xFF);
-	bmi[5] = (byte)((i.width >> 8) & 0xFF);
-	bmi[6] = (byte)((i.width >> 16) & 0xFF);
-	bmi[7] = (byte)((i.width >> 24) & 0xFF);
-	/* LONG biHeight = height */
-	int height = -i.height;
-	bmi[8] = (byte)(height & 0xFF);
-	bmi[9] = (byte)((height >> 8) & 0xFF);
-	bmi[10] = (byte)((height >> 16) & 0xFF);
-	bmi[11] = (byte)((height >> 24) & 0xFF);
-	/* WORD biPlanes = 1 */
-	bmi[12] = 1;
-	bmi[13] = 0;
-	/* WORD biBitCount = depth */
-	bmi[14] = (byte)(i.depth & 0xFF);
-	bmi[15] = (byte)((i.depth >> 8) & 0xFF);
-	if (useBitfields) {
-		/* DWORD biCompression = BI_BITFIELDS = 3 */
-		bmi[16] = 3; bmi[17] = bmi[18] = bmi[19] = 0;
-	} else {
-		/* DWORD biCompression = BI_RGB = 0 */
-		bmi[16] = bmi[17] = bmi[18] = bmi[19] = 0;
-	}
-	/* DWORD biSizeImage = 0 (default) */
-	bmi[20] = bmi[21] = bmi[22] = bmi[23] = 0;
-	/* LONG biXPelsPerMeter = 0 */
-	bmi[24] = bmi[25] = bmi[26] = bmi[27] = 0;
-	/* LONG biYPelsPerMeter = 0 */
-	bmi[28] = bmi[29] = bmi[30] = bmi[31] = 0;
-	/* DWORD biClrUsed */
-	if (rgbs == null) {
-		bmi[32] = bmi[33] = bmi[34] = bmi[35] = 0;
-	} else {
-		bmi[32] = (byte)(rgbs.length & 0xFF);
-		bmi[33] = (byte)((rgbs.length >> 8) & 0xFF);
-		bmi[34] = (byte)((rgbs.length >> 16) & 0xFF);
-		bmi[35] = (byte)((rgbs.length >> 24) & 0xFF);
-	}
-	/* DWORD biClrImportant = 0 */
-	bmi[36] = bmi[37] = bmi[38] = bmi[39] = 0;
+		bmi = new byte[BITMAPINFOHEADER.sizeof + rgbs.length * 4];
+	OS.MoveMemory(bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
 	/* Set the rgb colors into the bitmap info */
-	int offset = 40;
+	int offset = BITMAPINFOHEADER.sizeof;
 	if (i.palette.isDirect) {
 		if (useBitfields) {
 			PaletteData palette = i.palette;
@@ -1719,31 +1598,31 @@ static int[] init(Device device, Image image, ImageData i) {
 			 * The color masks must be written based on the
 			 * endianness of the ImageData.			 */
 			if (i.getByteOrder() == ImageData.LSB_FIRST) {
-				bmi[40] = (byte)((redMask & 0xFF) >> 0);
-				bmi[41] = (byte)((redMask & 0xFF00) >> 8);
-				bmi[42] = (byte)((redMask & 0xFF0000) >> 16);
-				bmi[43] = (byte)((redMask & 0xFF000000) >> 24);
-				bmi[44] = (byte)((greenMask & 0xFF) >> 0);
-				bmi[45] = (byte)((greenMask & 0xFF00) >> 8);
-				bmi[46] = (byte)((greenMask & 0xFF0000) >> 16);
-				bmi[47] = (byte)((greenMask & 0xFF000000) >> 24);
-				bmi[48] = (byte)((blueMask & 0xFF) >> 0);
-				bmi[49] = (byte)((blueMask & 0xFF00) >> 8);
-				bmi[50] = (byte)((blueMask & 0xFF0000) >> 16);
-				bmi[51] = (byte)((blueMask & 0xFF000000) >> 24);
+				bmi[offset] = (byte)((redMask & 0xFF) >> 0);
+				bmi[offset + 1] = (byte)((redMask & 0xFF00) >> 8);
+				bmi[offset + 2] = (byte)((redMask & 0xFF0000) >> 16);
+				bmi[offset + 3] = (byte)((redMask & 0xFF000000) >> 24);
+				bmi[offset + 4] = (byte)((greenMask & 0xFF) >> 0);
+				bmi[offset + 5] = (byte)((greenMask & 0xFF00) >> 8);
+				bmi[offset + 6] = (byte)((greenMask & 0xFF0000) >> 16);
+				bmi[offset + 7] = (byte)((greenMask & 0xFF000000) >> 24);
+				bmi[offset + 8] = (byte)((blueMask & 0xFF) >> 0);
+				bmi[offset + 9] = (byte)((blueMask & 0xFF00) >> 8);
+				bmi[offset + 10] = (byte)((blueMask & 0xFF0000) >> 16);
+				bmi[offset + 11] = (byte)((blueMask & 0xFF000000) >> 24);
 			} else {
-				bmi[40] = (byte)((redMask & 0xFF000000) >> 24);
-				bmi[41] = (byte)((redMask & 0xFF0000) >> 16);
-				bmi[42] = (byte)((redMask & 0xFF00) >> 8);
-				bmi[43] = (byte)((redMask & 0xFF) >> 0);
-				bmi[44] = (byte)((greenMask & 0xFF000000) >> 24);
-				bmi[45] = (byte)((greenMask & 0xFF0000) >> 16);
-				bmi[46] = (byte)((greenMask & 0xFF00) >> 8);
-				bmi[47] = (byte)((greenMask & 0xFF) >> 0);
-				bmi[48] = (byte)((blueMask & 0xFF000000) >> 24);
-				bmi[49] = (byte)((blueMask & 0xFF0000) >> 16);
-				bmi[50] = (byte)((blueMask & 0xFF00) >> 8);
-				bmi[51] = (byte)((blueMask & 0xFF) >> 0);
+				bmi[offset] = (byte)((redMask & 0xFF000000) >> 24);
+				bmi[offset + 1] = (byte)((redMask & 0xFF0000) >> 16);
+				bmi[offset + 2] = (byte)((redMask & 0xFF00) >> 8);
+				bmi[offset + 3] = (byte)((redMask & 0xFF) >> 0);
+				bmi[offset + 4] = (byte)((greenMask & 0xFF000000) >> 24);
+				bmi[offset + 5] = (byte)((greenMask & 0xFF0000) >> 16);
+				bmi[offset + 6] = (byte)((greenMask & 0xFF00) >> 8);
+				bmi[offset + 7] = (byte)((greenMask & 0xFF) >> 0);
+				bmi[offset + 8] = (byte)((blueMask & 0xFF000000) >> 24);
+				bmi[offset + 9] = (byte)((blueMask & 0xFF0000) >> 16);
+				bmi[offset + 10] = (byte)((blueMask & 0xFF00) >> 8);
+				bmi[offset + 11] = (byte)((blueMask & 0xFF) >> 0);
 			}
 		}
 	} else {
