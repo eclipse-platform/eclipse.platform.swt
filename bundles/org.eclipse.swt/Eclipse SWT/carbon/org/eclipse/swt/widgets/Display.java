@@ -231,7 +231,7 @@ public class Display extends Device {
 	private String fToolTipText;
 	private int fLastHoverHandle;
 	private boolean fInContextMenu;	// true while tracking context menu
-	private int fCurrentCursor;
+	public int fCurrentCursor;
 	
 	private static boolean fgCarbonInitialized;
 	private static boolean fgInitCursorCalled;
@@ -2096,14 +2096,15 @@ static String convertToLf(String text) {
 				
 				fCurrentControl= whichControl;
 				
-				int cursor= 0;
 				Widget w= findWidget(fCurrentControl);
 				if (w instanceof Control) {
 					Control c= (Control) w;
-					if (c.fCursor != null && c.fCursor.handle != -1)
-						cursor= c.fCursor.handle;
-				}
-				setCursor(cursor);
+					if (c.fCursor != null)
+						c.fCursor.install(this);	
+					else
+						setCursor(0);		
+				} else
+					setCursor(0);
 				
 				windowProc(fCurrentControl, SWT.MouseMove, me);
 				
@@ -2311,13 +2312,13 @@ static String convertToLf(String text) {
 		fMenuIsVisible= menuIsVisible;
 	}
 	
-	void setCursor(int cursor) {
+	public void setCursor(int cursor) {
 		if (fCurrentCursor != cursor) {
 			fCurrentCursor= cursor;
-			if (fCurrentCursor == 0)
+			if (cursor == 0)
 				OS.InitCursor();
 			else
-				OS.SetCursor(fCurrentCursor);
+				OS.SetCursor(cursor);
 		}
 	}
 }
