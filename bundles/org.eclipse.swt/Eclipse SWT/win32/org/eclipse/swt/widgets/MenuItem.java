@@ -828,6 +828,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 		setSelection (!getSelection ());
 	}
 	Event event = new Event ();
+	setInputState (event, SWT.Selection);
 	postEvent (SWT.Selection, event);
 	return null;
 }
