@@ -1692,13 +1692,12 @@ int processPaint (int callData, int int2, int int3) {
 	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
 	Event event = new Event ();
 	event.count = gdkEvent.count;
-	event.x = gdkEvent.x;  event.y = gdkEvent.y;
-	event.width = gdkEvent.width;  event.height = gdkEvent.height;
+	event.x = gdkEvent.x;
+	event.y = gdkEvent.y;
+	event.width = gdkEvent.width;
+	event.height = gdkEvent.height;
 	GC gc = event.gc = new GC (this);
-	GdkRectangle rect = new GdkRectangle ();
-	rect.x = gdkEvent.x;  rect.y = gdkEvent.y;
-	rect.width = gdkEvent.width;  rect.height = gdkEvent.height;
-	OS.gdk_gc_set_clip_rectangle (gc.handle, rect);
+	OS.gdk_gc_set_clip_region (gc.handle, gdkEvent.region);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;

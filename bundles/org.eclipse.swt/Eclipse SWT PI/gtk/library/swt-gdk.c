@@ -1285,3 +1285,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1drawable_1get_1
 	return (jint)gdk_drawable_get_visible_region((GdkDrawable*)drawable);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1internal_1paint_1info
+  (JNIEnv *env, jclass that, jint window, jintArray drawable, jintArray x_offset, jintArray y_offset)
+{
+	jint *drawable1 = NULL;
+	jint *x_offset1 = NULL;
+	jint *y_offset1 = NULL;
+	if (drawable) drawable1 = (*env)->GetIntArrayElements(env, drawable, NULL);
+ 	if (x_offset) x_offset1 = (*env)->GetIntArrayElements(env, x_offset, NULL);
+	if (y_offset) y_offset1 = (*env)->GetIntArrayElements(env, y_offset, NULL);
+	gdk_window_get_internal_paint_info((GdkWindow*)window, (GdkDrawable**)drawable1, (gint *)x_offset1, (gint *)y_offset1);
+	if (drawable) (*env)->ReleaseIntArrayElements(env, drawable, drawable1, 0);
+	if (x_offset) (*env)->ReleaseIntArrayElements(env, x_offset, x_offset1, 0);
+	if (y_offset) (*env)->ReleaseIntArrayElements(env, y_offset, y_offset1, 0);
+}

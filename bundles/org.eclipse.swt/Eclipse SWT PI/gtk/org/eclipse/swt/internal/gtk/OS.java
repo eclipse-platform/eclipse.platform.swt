@@ -268,6 +268,7 @@ public class OS {
 	public static final int GTK_CAN_FOCUS = 1 << 11;
 	public static final int GTK_HAS_FOCUS = 1 << 12;
 	public static final int GTK_CAN_DEFAULT = 1 << 13;
+	public static final int GTK_WIDGET_DOUBLE_BUFFERED = 1 << 21;
 	public static final int GTK_CLIST_SHOW_TITLES         = 1 <<  2;
 	public static final int GTK_PROGRESS_CONTINUOUS = 0;
 	public static final int GTK_PROGRESS_DISCRETE = 1;
@@ -977,4 +978,6 @@ public static final native void  gtk_style_set_xthickness(int style, int xthickn
 public static final native void  gtk_style_set_ythickness(int style, int ythickness);
 
 public static final native void  gtk_window_set_destroy_with_parent (int window, boolean setting);
+
+public static final native void gdk_window_get_internal_paint_info(int window, int[] drawable, int[] x_offset, int[] y_offset);
 }
