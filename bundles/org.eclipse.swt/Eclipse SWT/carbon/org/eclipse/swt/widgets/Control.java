@@ -1210,15 +1210,25 @@ Decorations menuShell () {
 }
 
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
-	if (menu != null && !menu.isDisposed ()) {
-		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
-		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
-		Rect rect = new Rect ();
-		int window = OS.GetControlOwner (handle);
-		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-		menu.setLocation (pt.h + rect.left, pt.v + rect.top);
-		menu.setVisible (true);
+	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
+	Rect rect = new Rect ();
+	int window = OS.GetControlOwner (handle);
+	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+	int x = pt.h + rect.left;
+	int y = pt.v + rect.top;
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.MenuDetect);
+	if (event.doit) {
+		if (menu != null && !menu.isDisposed ()) {
+			if (event.x != x || event.y != y) {
+				menu.setLocation (event.x, event.y);
+			}
+			menu.setVisible (true);
+		}
 	}
 	return OS.eventNotHandledErr;
 }
