@@ -49,8 +49,8 @@ AWT_LIBS      = -L$(JAVA_HOME)/jre/bin -ljawt -shared
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs atk gtk+-2.0`
 
-GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0`
-GNOMELIBS = `pkg-config --libs gnome-vfs-module-2.0 libgnome-2.0`
+GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
+GNOMELIBS = `pkg-config --libs gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 
 MOZILLACFLAGS = -O \
 	-fno-rtti	\
