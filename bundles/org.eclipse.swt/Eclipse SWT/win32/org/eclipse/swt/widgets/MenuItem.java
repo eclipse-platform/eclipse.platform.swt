@@ -47,7 +47,7 @@ public class MenuItem extends Item {
  * describes the style constants which are applicable to the class.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a menu control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  *
  * @exception IllegalArgumentException <ul>
@@ -83,7 +83,7 @@ public MenuItem (Menu parent, int style) {
  * describes the style constants which are applicable to the class.
  * </p>
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a menu control which will be the parent of the new instance (cannot be null)
  * @param style the style of control to construct
  * @param index the index to store the receiver in its parent
  *
