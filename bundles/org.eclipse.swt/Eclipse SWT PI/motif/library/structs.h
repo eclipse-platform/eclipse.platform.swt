@@ -266,6 +266,18 @@ typedef struct XMDROPFINISHCALLBACK_FID_CACHE {
 
 typedef XMDROPFINISHCALLBACK_FID_CACHE *PXMDROPFINISHCALLBACK_FID_CACHE;
 
+/* XMLISTPROCCALLBACK struct */
+typedef struct XMLISTPROCCALLBACK_FID_CACHE {
+    
+    int cached;
+    jclass xmlistproccallbackClass;
+    jfieldID reason, event, item, item_length, item_position, selected_items, 
+             selected_item_count, selected_item_positions, selection_type, auto_selection_type;
+
+} XMLISTPROCCALLBACK_FID_CACHE;
+
+typedef XMLISTPROCCALLBACK_FID_CACHE *PXMLISTPROCCALLBACK_FID_CACHE;
+
 /* XMTEXTBLOCKREC struct */
 typedef struct XMTEXTBLOCKREC_FID_CACHE {
     
@@ -369,6 +381,7 @@ void cacheXmanycallbackstructFids(JNIEnv *env, jobject lpXmanycallbackstruct, PX
 void cacheXmdragproccallbackFids(JNIEnv *env, jobject lpXmdragproccallback, PXMDRAGPROCCALLBACK_FID_CACHE lpCache);
 void cacheXmdropproccallbackFids(JNIEnv *env, jobject lpXmdropproccallback, PXMDROPPROCCALLBACK_FID_CACHE lpCache);
 void cacheXmdropfinishcallbackFids(JNIEnv *env, jobject lpXmdropfinishcallback, PXMDROPFINISHCALLBACK_FID_CACHE lpCache);
+void cacheXmlistproccallbackFids(JNIEnv *env, jobject lpXmlistproccallback, PXMLISTPROCCALLBACK_FID_CACHE lpCache);
 void cacheXmtextblockrecFids(JNIEnv *env, jobject lpXmtextblockrec, PXMTEXTBLOCKREC_FID_CACHE lpCache);
 void cacheXmtextverifycallbackstructFids(JNIEnv *env, jobject lpXmtextverifycallbackstruct, PXMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE lpCache);
 void cacheXrectangleFids(JNIEnv *env, jobject lpRect, PXRECTANGLE_FID_CACHE lpCache);
@@ -421,6 +434,8 @@ void getXmdropproccallbackFields(JNIEnv *env, jobject lpObject, XmDropProcCallba
 void setXmdropproccallbackFields(JNIEnv *env, jobject lpObject, XmDropProcCallbackStruct *lpXmdropproccallback, PXMDROPPROCCALLBACK_FID_CACHE lpXmdropproccallbackFc);
 void getXmdropfinishcallbackFields(JNIEnv *env, jobject lpObject, XmDropFinishCallbackStruct *lpXmdropfinishcallback, PXMDROPFINISHCALLBACK_FID_CACHE lpXmdropfinishcallbackFc);
 void setXmdropfinishcallbackFields(JNIEnv *env, jobject lpObject, XmDropFinishCallbackStruct *lpXmdropfinishcallback, PXMDROPFINISHCALLBACK_FID_CACHE lpXmdropfinishcallbackFc);
+void getXmlistproccallbackFields(JNIEnv *env, jobject lpObject, XmListCallbackStruct *lpXmlistproccallback, PXMLISTPROCCALLBACK_FID_CACHE lpXmlistproccallbackFc);
+void setXmlistproccallbackFields(JNIEnv *env, jobject lpObject, XmListCallbackStruct *lpXmlistproccallback, PXMLISTPROCCALLBACK_FID_CACHE lpXmlistproccallbackFc);
 void getXmtextblockrecFields(JNIEnv *env, jobject lpObject, XmTextBlockRec *lpXmtextblockrec, PXMTEXTBLOCKREC_FID_CACHE lpXmtextblockrecFc);
 void setXmtextblockrecFields(JNIEnv *env, jobject lpObject, XmTextBlockRec *lpXmtextblockrec, PXMTEXTBLOCKREC_FID_CACHE lpXmtextblockrecFc);
 void getXmtextverifycallbackstructFields(JNIEnv *env, jobject lpObject, XmTextVerifyCallbackStruct *lpXmtextverifycallbackstruct, PXMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE lpXmtextverifycallbackstructFc);
@@ -453,6 +468,7 @@ extern XMANYCALLBACKSTRUCT_FID_CACHE XmanycallbackstructFc;
 extern XMDRAGPROCCALLBACK_FID_CACHE XmdragproccallbackFc;
 extern XMDROPFINISHCALLBACK_FID_CACHE XmdropfinishcallbackFc;
 extern XMDROPPROCCALLBACK_FID_CACHE XmdropproccallbackFc;
+extern XMLISTPROCCALLBACK_FID_CACHE XmlistproccallbackFc;
 extern XMOTIONEVENT_FID_CACHE XmotioneventFc;
 extern XMTEXTBLOCKREC_FID_CACHE XmtextblockrecFc;
 extern XMTEXTVERIFYCALLBACKSTRUCT_FID_CACHE XmtextverifycallbackstructFc;
