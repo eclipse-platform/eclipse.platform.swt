@@ -1128,10 +1128,19 @@ public int getCharWidth(char ch) {
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.clipRgn == 0) {
-//		int[] width = new int[1]; int[] height = new int[1];
-//		OS.gdk_drawable_get_size(data.drawable, width, height);
-//		return new Rectangle(0, 0, width[0], height[0]);
-		return null;
+		int width = 0, height = 0;
+		if (data.control != 0) {
+			Rect bounds = new Rect();
+			OS.GetControlBounds(data.control, bounds);
+			width = bounds.right - bounds.left;
+			height = bounds.bottom - bounds.top;
+		}
+		if (data.image != null) {
+			int image = data.image.handle;
+			width = OS.CGImageGetWidth(image);
+			height = OS.CGImageGetHeight(image);
+		}
+		return new Rectangle(0, 0, width, height);
 	}
 	Rect bounds = new Rect();
 	OS.GetRegionBounds(data.clipRgn, bounds);
@@ -1157,12 +1166,19 @@ public void getClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (data.clipRgn == 0) {
-//		int[] width = new int[1]; int[] height = new int[1];
-//		OS.gdk_drawable_get_size(data.drawable, width, height);
-//		GdkRectangle rect = new GdkRectangle();
-//		rect.x = 0; rect.y = 0;
-//		rect.width = width[0]; rect.height = height[0];
-//		OS.gdk_region_union_with_rect(hRegion, rect);
+		int width = 0, height = 0;
+		if (data.control != 0) {
+			Rect bounds = new Rect();
+			OS.GetControlBounds(data.control, bounds);
+			width = bounds.right - bounds.left;
+			height = bounds.bottom - bounds.top;
+		}
+		if (data.image != null) {
+			int image = data.image.handle;
+			width = OS.CGImageGetWidth(image);
+			height = OS.CGImageGetHeight(image);
+		}
+		OS.SetRectRgn(region.handle, (short) 0, (short) 0, (short) width, (short) height);
 		return;
 	}
 	OS.CopyRgn(data.clipRgn, region.handle);
@@ -1463,42 +1479,27 @@ public void setClipping(Region region) {
 }
 
 void setCGClipping () {
-	Rect rect = new Rect ();
-	//TEMPORARY CODE
-	if (data.paintEvent != 0 && data.control != 0) {
-		int window = OS.GetControlOwner(data.control);
-		int[] root = new int[1];
-		OS.GetRootControl(window, root);
-		OS.GetControlBounds(data.control, rect);
-		short x = 0, y = 0;
-		Rect tmpRect = new Rect();
-		int tempHandle = data.control;
-		int[] parentHandle = new int[1];
-		int rc= OS.GetSuperControl(tempHandle, parentHandle);
-		while (parentHandle[0] != root[0]) {
-			OS.GetControlBounds(parentHandle [0], tmpRect);
-			x += tmpRect.left;
-			y += tmpRect.top;
-			tempHandle = parentHandle[0];
-			OS.GetSuperControl(tempHandle, parentHandle);
-		}
-		rect.left += x;
-		rect.top += y;
-		rect.right += x;
-		rect.bottom += y;
+	int window = OS.GetControlOwner(data.control);
+	int port = OS.GetWindowPort(window);
+	Rect rect = new Rect();
+	OS.GetControlBounds(data.control, rect);
+	Rect portRect = new Rect();
+	OS.GetPortBounds(port, portRect);
+	int portHeight = portRect.bottom - portRect.top;
+	OS.CGContextTranslateCTM(handle, -rect.left, portHeight - rect.top);
+	OS.CGContextScaleCTM(handle, 1, -1);
+	if (data.clipRgn != 0) { 
+		int rgn = OS.NewRgn();
+		OS.CopyRgn(data.clipRgn, rgn);
+		OS.OffsetRgn(rgn, rect.left, rect.top);
+		OS.SectRgn(data.damageRgn, rgn, rgn);
+		OS.ClipCGContextToRegion(handle, portRect, rgn);
+		OS.DisposeRgn(rgn);
+	} else {
+		OS.ClipCGContextToRegion(handle, portRect, data.damageRgn);
 	}
 	OS.CGContextScaleCTM(handle, 1, -1);
-	OS.CGContextTranslateCTM(handle, 0, -(rect.bottom - rect.top));
-	int rgn = data.clipRgn;
-	if (data.damageRgn != 0) { 
-		rgn = OS.NewRgn();
-		OS.SectRgn(data.damageRgn, data.clipRgn, rgn);
-		org.eclipse.swt.internal.carbon.Point p = new org.eclipse.swt.internal.carbon.Point();
-	}
-	OS.ClipCGContextToRegion(handle, rect, rgn);
-	if (rgn != data.clipRgn) OS.DisposeRgn(rgn);
-	OS.CGContextScaleCTM(handle, 1, -1);
-	OS.CGContextTranslateCTM(handle, 0, -(rect.bottom - rect.top));
+	OS.CGContextTranslateCTM(handle, rect.left, -portHeight + rect.top);
 }
 
 /** 

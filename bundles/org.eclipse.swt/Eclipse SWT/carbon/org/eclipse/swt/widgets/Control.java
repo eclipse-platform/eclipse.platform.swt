@@ -27,6 +27,7 @@ public abstract class Control extends Widget implements Drawable {
 	Object layoutData;
 	int drawCount;
 	Menu menu;
+	float [] foreground, background;
 
 Control () {
 	/* Do nothing */
@@ -203,7 +204,8 @@ public boolean forceFocus () {
 public Color getBackground () {
 	checkWidget();
 	//WRONG
-	return getDisplay ().getSystemColor (SWT.COLOR_WHITE);
+	if (background == null) return getDisplay ().getSystemColor (SWT.COLOR_WHITE);
+	return Color.carbon_new (getDisplay (), background);
 }
 
 public int getBorderWidth () {
@@ -218,6 +220,36 @@ public Rectangle getBounds () {
 	OS.GetControlBounds (topHandle, rect);
 	toControl (topHandle, rect);
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+}
+
+int getClipping (int control) {
+	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn();
+	short [] count = new short [1];
+	Rect rect = new Rect();
+	OS.GetControlBounds (control, rect);
+	OS.RectRgn (visibleRgn, rect);
+	int tempControl = control, lastControl = 0;
+	int [] child = new int [1], parent = new int [1];
+	while (tempControl != 0) {
+		OS.GetControlBounds (tempControl, rect);
+		OS.RectRgn (tempRgn, rect);
+		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
+		OS.CountSubControls (tempControl, count);
+		for (int i = count [0] - 1; i >= 0; i--) {
+			OS.GetIndexedSubControl (tempControl, (short)(i + 1), child);
+			if (child [0] == lastControl) break;
+			OS.GetControlBounds (child [0], rect);
+			OS.RectRgn (tempRgn, rect);
+			OS.UnionRgn (tempRgn, childRgn, childRgn);
+		}
+		lastControl = tempControl;
+		OS.GetSuperControl (tempControl, parent);
+		tempControl = parent [0];
+	}
+	OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
+	OS.DisposeRgn (childRgn);
+	OS.DisposeRgn (tempRgn);
+	return visibleRgn;
 }
 
 public Display getDisplay () {
@@ -239,7 +271,8 @@ public Font getFont () {
 public Color getForeground () {
 	checkWidget();
 	//WRONG
-	return getDisplay ().getSystemColor (SWT.COLOR_BLACK);
+	if (foreground == null) return getDisplay ().getSystemColor (SWT.COLOR_BLACK);
+	return Color.carbon_new (getDisplay (), foreground);
 }
 
 public Object getLayoutData () {
@@ -330,65 +363,44 @@ void hookEvents () {
 	OS.InstallEventHandler (controlTarget, controlProc, length / 2, mask, handle, null);
 }
 
-
 public int internal_new_GC (GCData data) {
 	checkWidget();
-	int context = 0;
-	int region = 0;
+	int [] buffer = new int [1];
+	int context = 0, damageRgn = 0;
 	if (data.paintEvent != 0) {
 		int theEvent = data.paintEvent;
-		int [] buffer = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
 		context = buffer [0];	
-		if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, buffer);
-		region = buffer [0];
-	} else {
+		damageRgn = buffer [0];
+	}
+	if (context == 0) {
 		int window = OS.GetControlOwner (handle);
 		int port = OS.GetWindowPort (window);
-		int [] buffer = new int [1];
 		OS.CreateCGContextForPort (port, buffer);
 		context = buffer [0];
-		if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-		Rect portRect = new Rect ();
-		OS.GetPortBounds (port, portRect);
-		
-		//TEMPORARY CODE
-		Rect rect = new Rect ();
-		int[] root = new int[1];
-		OS.GetRootControl (window, root);
-		OS.GetControlBounds (handle, rect);
-		short x = 0, y = 0;
-		Rect tmpRect = new Rect ();
-		int tempHandle = handle;
-		int [] parentHandle = new int [1];
-		int rc= OS.GetSuperControl (tempHandle, parentHandle);
-		while (parentHandle [0] != root [0]) {
-			OS.GetControlBounds(parentHandle [0], tmpRect);
-			x += tmpRect.left;
-			y += tmpRect.top;
-			tempHandle = parentHandle [0];
-			OS.GetSuperControl (tempHandle, parentHandle);
+		if (context != 0) {
+			Rect rect = new Rect ();
+			OS.GetControlBounds (handle, rect);
+			Rect portRect = new Rect ();
+			OS.GetPortBounds (port, portRect);
+			int clipRgn = getClipping (handle);
+			OS.ClipCGContextToRegion (context, portRect, clipRgn);
+			int portHeight = portRect.bottom - portRect.top;
+			OS.CGContextScaleCTM (context, 1, -1);
+			OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
+			if (damageRgn != 0) OS.SectRgn (damageRgn, clipRgn, clipRgn);
+			damageRgn = clipRgn;
 		}
-		rect.left += x;
-		rect.top += y;
-		rect.right += x;
-		rect.bottom += y;
-		
-		OS.CGContextScaleCTM (context, 1, -1);
-		OS.CGContextTranslateCTM (context, rect.left, -(portRect.bottom - portRect.top) + rect.top);
-		int rgn = OS.NewRgn();
-		OS.SetRectRgn (rgn, rect.left, rect.top, rect.right, rect.bottom);
-		OS.OffsetRgn(rgn, (short)-rect.left, (short)-rect.top);
-		OS.ClipCGContextToRegion (context, rect, rgn);
-		region = rgn;
 	}
+	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
-		data.device = getDisplay ();
-//		data.foreground = getForegroundPixel ();
-//		data.background = getBackgroundPixel ();
-//		data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-		data.damageRgn = region;
+		Display display = getDisplay ();
+		data.device = display;
+		data.foreground = foreground != null ? foreground : display.getSystemColor (SWT.COLOR_BLACK).handle;
+		data.background = background != null ? background : display.getSystemColor (SWT.COLOR_WHITE).handle;
+//		data.font = ;
+		data.damageRgn = damageRgn;
 		data.control = handle;
 	}
 	return context;
@@ -396,16 +408,24 @@ public int internal_new_GC (GCData data) {
 
 public void internal_dispose_GC (int context, GCData data) {
 	checkWidget ();
-	if (data.paintEvent == 0) {
-		if (data.damageRgn != 0) {
-			OS.DisposeRgn (data.damageRgn);
-			data.damageRgn = 0;
-		}
+	int paintContext = 0, paintRgn = 0;
+	if (data.paintEvent != 0) {
+		int theEvent = data.paintEvent;
+		int [] buffer = new int [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
+		paintContext = buffer [0];	
+		OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, buffer);
+		paintRgn = buffer [0];
+	}
+	if (data.damageRgn != paintRgn) {
+		OS.DisposeRgn (data.damageRgn);
+		data.damageRgn = 0;
+	}
+	if (paintContext != context) {
 		OS.CGContextFlush (context);
 		OS.CGContextRelease (context);
 	}
 }
-
 
 public boolean isEnabled () {
 	checkWidget();
@@ -522,9 +542,9 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 
 	/* Retrieve the damage region */
 	int [] region = new int [1];	
-	OS.GetEventParameter(theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
-	Rect bounds = new Rect();
-	OS.GetRegionBounds(region [0], bounds);
+	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
+	Rect bounds = new Rect ();
+	OS.GetRegionBounds (region [0], bounds);
 
 	GCData data = new GCData ();
 	data.paintEvent = theEvent;
@@ -850,6 +870,7 @@ public void setBackground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	background = color != null ? color.handle : null;
 }
 
 public void setBounds (int x, int y, int width, int height) {
@@ -904,6 +925,7 @@ public void setForeground (Color color) {
 	if (color != null) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	foreground = color != null ? color.handle : null;
 }
 
 public void setLayoutData (Object layoutData) {
