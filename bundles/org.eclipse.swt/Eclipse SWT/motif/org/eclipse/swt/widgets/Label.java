@@ -273,17 +273,6 @@ boolean mnemonicMatch (char key) {
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
-int processFocusOut () {
-	int result = super.processFocusOut ();
-	if (handle == 0) return result;
-	int [] argList = new int [] {OS.XmNtraversalOn, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] != 0) {
-		argList [1] = 0;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-	return result;
-}
 void releaseWidget () {
 	super.releaseWidget ();
 	int [] argList = {
@@ -473,5 +462,16 @@ public void setText (String string) {
 	};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (xmString != 0) OS.XmStringFree (xmString);
+}
+int xFocusOut () {
+	int result = super.xFocusOut ();
+	if (handle == 0) return result;
+	int [] argList = new int [] {OS.XmNtraversalOn, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	if (argList [1] != 0) {
+		argList [1] = 0;
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
+	return result;
 }
 }

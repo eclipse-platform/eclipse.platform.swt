@@ -1306,50 +1306,6 @@ public void pack (boolean changed) {
 	checkWidget();
 	setSize (computeSize (SWT.DEFAULT, SWT.DEFAULT, changed));
 }
-int processFocusIn () {
-	sendEvent (SWT.FocusIn);
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if (!hasIMSupport()) {
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			short [] point = getIMCaretPos ();
-			int ptr = OS.XtMalloc (4);
-			OS.memmove (ptr, point, 4);
-			/*
-			* Bug in Motif. On Linux Japanese only, XmImSetFocusValues() causes
-			* a GP when the XmNfontList resources does not containt a FontSet.
-			* The fix is to call XmImSetValues() to set the values and then call
-			* XmImSetFocusValues() with no parameters to set the IME focus.
-			*/
-			int[] argList = {
-//				OS.XmNforeground, getForegroundPixel(),
-//				OS.XmNbackground, getBackgroundPixel(),
-				OS.XmNspotLocation, ptr,
-				OS.XmNfontList, font.handle,
-			};
-			OS.XmImSetValues (handle, argList, argList.length / 2);
-			OS.XmImSetFocusValues (handle, null, 0);
-			if (ptr != 0) OS.XtFree (ptr);
-		}
-	}	
-	return 0;
-}
-int processFocusOut () {
-	Display display = getDisplay ();
-	if (display.postFocusOut) {
-		postEvent (SWT.FocusOut);
-	} else {
-		sendEvent (SWT.FocusOut);
-		// widget could be disposed at this point
-		if (handle == 0) return 0;
-	}
-	if (!hasIMSupport()) {
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			OS.XmImUnsetFocus (handle);
-		}
-	}
-	return 0;
-}
 void propagateChildren (boolean enabled) {
 	propagateWidget (enabled);
 }
@@ -1654,7 +1610,7 @@ void sendHelpEvent (int callData) {
 		control = control.parent;
 	}
 }
-byte [] sendIMEKeyEvent (int type, XKeyEvent xEvent) {
+byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	/*
 	* Bug in Motif. On Linux only, XmImMbLookupString () does not return 
 	* XBufferOverflow as the status if the buffer is too small. The fix
@@ -2722,7 +2678,7 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	switch (xEvent.type) {
 		case OS.FocusIn: {
 			Shell shell = getShell ();
-			processFocusIn ();
+			xFocusIn ();
 			// widget could be disposed at this point
 			
 			/*
@@ -2740,7 +2696,7 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 			Shell shell = getShell ();
 			Display display = getDisplay ();
 			
-			processFocusOut ();
+			xFocusOut ();
 			// widget could be disposed at this point
 			
 			/*
@@ -2760,13 +2716,57 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	}
 	return 0;
 }
+int xFocusIn () {
+	sendEvent (SWT.FocusIn);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if (!hasIMSupport()) {
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+			short [] point = getIMCaretPos ();
+			int ptr = OS.XtMalloc (4);
+			OS.memmove (ptr, point, 4);
+			/*
+			* Bug in Motif. On Linux Japanese only, XmImSetFocusValues() causes
+			* a GP when the XmNfontList resources does not containt a FontSet.
+			* The fix is to call XmImSetValues() to set the values and then call
+			* XmImSetFocusValues() with no parameters to set the IME focus.
+			*/
+			int[] argList = {
+//				OS.XmNforeground, getForegroundPixel(),
+//				OS.XmNbackground, getBackgroundPixel(),
+				OS.XmNspotLocation, ptr,
+				OS.XmNfontList, font.handle,
+			};
+			OS.XmImSetValues (handle, argList, argList.length / 2);
+			OS.XmImSetFocusValues (handle, null, 0);
+			if (ptr != 0) OS.XtFree (ptr);
+		}
+	}	
+	return 0;
+}
+int xFocusOut () {
+	Display display = getDisplay ();
+	if (display.postFocusOut) {
+		postEvent (SWT.FocusOut);
+	} else {
+		sendEvent (SWT.FocusOut);
+		// widget could be disposed at this point
+		if (handle == 0) return 0;
+	}
+	if (!hasIMSupport()) {
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
+			OS.XmImUnsetFocus (handle);
+		}
+	}
+	return 0;
+}
 int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	XKeyEvent xEvent = new XKeyEvent ();
 	OS.memmove (xEvent, call_data, XKeyEvent.sizeof);
 	if (xEvent.keycode != 0) {
 		sendKeyEvent (SWT.KeyDown, xEvent);
 	} else {
-		sendIMEKeyEvent (SWT.KeyDown, xEvent);
+		sendIMKeyEvent (SWT.KeyDown, xEvent);
 	}
 	return 0;
 }

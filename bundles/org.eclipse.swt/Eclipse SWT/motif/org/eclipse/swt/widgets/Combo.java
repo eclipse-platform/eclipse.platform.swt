@@ -1057,7 +1057,7 @@ public void select (int index) {
 		ignoreSelect = false;
 	}
 }
-byte [] sendIMEKeyEvent (int type, XKeyEvent xEvent) {
+byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	/*
 	* Bug in Motif. On Solaris and Linux, XmImMbLookupString() clears
 	* the characters from the IME. This causes the characters to be
@@ -1065,7 +1065,7 @@ byte [] sendIMEKeyEvent (int type, XKeyEvent xEvent) {
 	* has been cleared and use XmTextInsert() to insert the stolen
 	* characters. This problem does not happen on AIX.
 	*/
-	byte [] mbcs = super.sendIMEKeyEvent (type, xEvent);
+	byte [] mbcs = super.sendIMKeyEvent (type, xEvent);
 	if (mbcs == null || xEvent.keycode != 0) return null;
 	int [] argList = {OS.XmNtextField, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);

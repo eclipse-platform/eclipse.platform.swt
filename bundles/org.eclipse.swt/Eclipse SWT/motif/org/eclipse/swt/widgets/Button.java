@@ -473,24 +473,6 @@ boolean mnemonicMatch (char key) {
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
-int processFocusIn () {
-	super.processFocusIn ();
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if ((style & SWT.PUSH) != 0) {
-		menuShell ().setDefaultButton (this, false);
-	}
-	return 0;
-}
-int processFocusOut () {
-	super.processFocusOut ();
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if ((style & SWT.PUSH) != 0 && getDefault ()) {
-		menuShell ().setDefaultButton (null, false);
-	}
-	return 0;
-}
 void releaseWidget () {
 	super.releaseWidget ();
 	int [] argList = {
@@ -746,6 +728,24 @@ void updateShadows () {
 		int [] argList2 = {OS.XmNtopShadowColor, pixel};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
+}
+int xFocusIn () {
+	super.xFocusIn ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if ((style & SWT.PUSH) != 0) {
+		menuShell ().setDefaultButton (this, false);
+	}
+	return 0;
+}
+int xFocusOut () {
+	super.xFocusOut ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if ((style & SWT.PUSH) != 0 && getDefault ()) {
+		menuShell ().setDefaultButton (null, false);
+	}
+	return 0;
 }
 int XmNactivateCallback (int w, int client_data, int call_data) {
 	postEvent (SWT.Selection);

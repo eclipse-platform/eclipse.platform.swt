@@ -96,16 +96,6 @@ short [] getIMCaretPos () {
 	if (width <= 0) width = 2;
 	return new short[]{(short) (caret.x + width), (short) (caret.y + caret.height)};
 }
-int processFocusIn () {
-	int result = super.processFocusIn ();
-	if (caret != null) caret.setFocus ();
-	return result;
-}
-int processFocusOut () {
-	int result = super.processFocusOut ();
-	if (caret != null) caret.killFocus ();
-	return result;
-}
 void redrawWidget (int x, int y, int width, int height, boolean all) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
@@ -246,6 +236,16 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	if (isFocus) caret.killFocus ();
 	int result = super.XExposure (w, client_data, call_data, continue_to_dispatch);
 	if (isFocus) caret.setFocus ();
+	return result;
+}
+int xFocusIn () {
+	int result = super.xFocusIn ();
+	if (caret != null) caret.setFocus ();
+	return result;
+}
+int xFocusOut () {
+	int result = super.xFocusOut ();
+	if (caret != null) caret.killFocus ();
 	return result;
 }
 }

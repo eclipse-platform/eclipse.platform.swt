@@ -153,23 +153,6 @@ void drawBand (int x, int y, int width, int height) {
 	OS.XFreePixmap (display, stipplePixmap);
 	OS.XFreeGC (display, gc);
 }
-int processFocusIn () {
-	int result = super.processFocusIn ();
-	if (handle == 0) return result;
-	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	lastX = argList [1];
-	lastY = argList [3];
-	return result;
-}
-
-int processFocusOut () {
-	int result = super.processFocusOut ();
-	if (handle == 0) return result;
-	int [] argList = new int [] {OS.XmNtraversalOn, 0};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	return result;
-}
 void realizeChildren () {
 	super.realizeChildren ();
 	int window = OS.XtWindow (handle);
@@ -276,6 +259,23 @@ int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispa
 	drawBand (lastX, lastY, width, height);
 	sendEvent (SWT.Selection, event);
 	/* widget could be disposed here */
+	return result;
+}
+int xFocusIn () {
+	int result = super.xFocusIn ();
+	if (handle == 0) return result;
+	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	lastX = argList [1];
+	lastY = argList [3];
+	return result;
+}
+
+int xFocusOut () {
+	int result = super.xFocusOut ();
+	if (handle == 0) return result;
+	int [] argList = new int [] {OS.XmNtraversalOn, 0};
+	OS.XtSetValues (handle, argList, argList.length / 2);
 	return result;
 }
 int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {	

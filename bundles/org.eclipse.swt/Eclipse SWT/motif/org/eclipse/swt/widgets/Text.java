@@ -922,26 +922,6 @@ public void paste () {
 	}
 	display.setWarnings (warnings);
 }
-int processFocusIn () {
-	super.processFocusIn ();
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if ((style & SWT.READ_ONLY) != 0) return 0;
-	if ((style & SWT.MULTI) != 0) return 0;
-	int [] argList = {OS.XmNcursorPositionVisible, 1};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	return 0;
-}
-int processFocusOut () {
-	super.processFocusOut ();
-	// widget could be disposed at this point
-	if (handle == 0) return 0;
-	if ((style & SWT.READ_ONLY) != 0) return 0;
-	if ((style & SWT.MULTI) != 0) return 0;
-	int [] argList = {OS.XmNcursorPositionVisible, 0};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	return 0;
-}
 void releaseWidget () {
 	super.releaseWidget ();
 	hiddenText = null;
@@ -1017,7 +997,7 @@ public void removeVerifyListener (VerifyListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Verify, listener);	
 }
-byte [] sendIMEKeyEvent (int type, XKeyEvent xEvent) {
+byte [] sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	/*
 	* Bug in Motif. On Solaris and Linux, XmImMbLookupString() clears
 	* the characters from the IME. This causes the characters to be
@@ -1025,7 +1005,7 @@ byte [] sendIMEKeyEvent (int type, XKeyEvent xEvent) {
 	* has been cleared and use XmTextInsert() to insert the stolen
 	* characters. This problem does not happen on AIX.
 	*/
-	byte [] mbcs = super.sendIMEKeyEvent (type, xEvent);
+	byte [] mbcs = super.sendIMKeyEvent (type, xEvent);
 	if (mbcs == null || xEvent.keycode != 0) return null;
 	int [] unused = new int [1];
 	byte [] buffer = new byte [2];
@@ -1464,6 +1444,26 @@ int traversalCode (int key, XKeyEvent xEvent) {
 		}
 	}
 	return bits;
+}
+int xFocusIn () {
+	super.xFocusIn ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if ((style & SWT.READ_ONLY) != 0) return 0;
+	if ((style & SWT.MULTI) != 0) return 0;
+	int [] argList = {OS.XmNcursorPositionVisible, 1};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	return 0;
+}
+int xFocusOut () {
+	super.xFocusOut ();
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if ((style & SWT.READ_ONLY) != 0) return 0;
+	if ((style & SWT.MULTI) != 0) return 0;
+	int [] argList = {OS.XmNcursorPositionVisible, 0};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	return 0;
 }
 int XmNactivateCallback (int w, int client_data, int call_data) {
 	postEvent (SWT.DefaultSelection);
