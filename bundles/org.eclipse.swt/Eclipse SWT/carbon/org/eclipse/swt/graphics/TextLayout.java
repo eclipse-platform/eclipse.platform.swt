@@ -656,7 +656,7 @@ public void setTabs(int[] tabs) {
 	if (tabsPtr != 0) OS.DisposePtr(tabsPtr);
 	tabsPtr = 0;
 	if (tabs == null) {
-		OS.ATSUSetTabArray(layout, 0, 0);		
+		OS.ATSUSetTabArray(layout, 0, 0);
 	} else {
 		ATSUTab tab = new ATSUTab();
 		tab.tabPosition = OS.Long2Fix(0);
