@@ -20,11 +20,11 @@ public class TreeColumn extends Item {
 	boolean resizable = true;
 	
 public TreeColumn (Tree parent, int style) {
-	this (parent, style, checkNull (parent).getColumnCount ());
+	this (parent, style, checkNull (parent).columns.length);
 }
 public TreeColumn (Tree parent, int style, int index) {
 	super (parent, checkStyle (style), index);
-	if (!(0 <= index && index <= parent.getColumnCount ())) error (SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= index && index <= parent.columns.length)) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
 	parent.createItem (this, index);
 }

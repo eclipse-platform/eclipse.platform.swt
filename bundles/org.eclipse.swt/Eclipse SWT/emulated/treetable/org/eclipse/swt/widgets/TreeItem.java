@@ -294,7 +294,7 @@ public Rectangle getBounds () {
 	 * If there are columns then this runs from the beginning of the column 0
 	 * text to the end of the last column.
 	 */
-	TreeColumn lastColumn = parent.getColumn (columnCount - 1);
+	TreeColumn lastColumn = parent.columns [columnCount - 1];
 	return new Rectangle (
 		focusX,
 		parent.getItemY (this),
@@ -318,7 +318,7 @@ public Rectangle getBounds (int columnIndex) {
 		int width = getFocusX () + getTextPaintWidth (0) - x;
 		return new Rectangle (x, parent.getItemY (this), width, parent.itemHeight);
 	}
-	TreeColumn column = parent.getColumn (columnIndex);
+	TreeColumn column = parent.columns [columnIndex];
 	return new Rectangle (column.getX (), parent.getItemY (this), column.width, parent.itemHeight);
 }
 Rectangle getCheckboxBounds () {
@@ -342,7 +342,7 @@ public boolean getChecked () {
  */
 int getContentX (int columnIndex) {
 	if (columnIndex > 0) {
-		TreeColumn column = parent.getColumn (columnIndex);
+		TreeColumn column = parent.columns [columnIndex];
 		int contentX = column.getX () + MARGIN_TEXT;
 		if ((column.style & SWT.LEFT) != 0) return contentX;
 		
@@ -406,7 +406,7 @@ Rectangle getFocusBounds () {
 	if (parent.columns.length == 0) {
 		width = getTextPaintWidth (0) - 1;
 	} else {
-		width = parent.getColumn (0).width - parent.horizontalOffset - x - 2;
+		width = parent.columns [0].width - parent.horizontalOffset - x - 2;
 	}
 	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
 }
@@ -486,7 +486,7 @@ Rectangle getHitBounds () {
 	if (parent.columns.length == 0) {
 		width = getFocusX () + getTextPaintWidth (0) - contentX; 
 	} else {
-		width = parent.getColumn (0).width - parent.horizontalOffset - contentX;
+		width = parent.columns [0].width - parent.horizontalOffset - contentX;
 	}
 	return new Rectangle (contentX, parent.getItemY (this), width, parent.itemHeight);
 }
@@ -565,7 +565,7 @@ public TreeItem getParentItem () {
 }
 int getPreferredWidth (int columnIndex) {
 	int result = getTextX (columnIndex) + getTextPaintWidth (columnIndex);
-	result -= parent.getColumn (columnIndex).getX ();
+	result -= parent.columns [columnIndex].getX ();
 	return result;
 }
 public String getText () {
@@ -1103,7 +1103,7 @@ public void setImage (int columnIndex, Image value) {
 		} else {
 			parent.redraw (
 				0, 0,
-				parent.getColumn (0).width,
+				parent.columns [0].width,
 				parent.getClientArea ().height,
 				true);
 		}
