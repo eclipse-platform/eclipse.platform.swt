@@ -59,7 +59,11 @@ public void dispose () {
 	int x = getX ();
 	Tree parent = this.parent;
 	dispose (true);
-	parent.redraw (x, 0, parentBounds.width - x, parentBounds.height, true);
+	int width = parentBounds.width - x;
+	parent.redraw (x, 0, width, parentBounds.height, false);
+	if (parent.getHeaderVisible ()) {
+		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);
+	}
 }
 void dispose (boolean notifyParent) {
 	super.dispose ();	/* the use of super is intentional here */
@@ -103,30 +107,27 @@ int getX () {
 void paint (GC gc) {
 	int padding = parent.getHeaderPadding ();
 	
-	int startX;
 	int x = getX ();
-	if ((style & SWT.LEFT) != 0) {
-		startX = x + padding;
-	} else {
+	int startX = x + padding;
+	if ((style & SWT.LEFT) == 0) {
 		int contentWidth = textWidth;
 		if (image != null) {
 			contentWidth += image.getBounds ().width + Tree.MARGIN_IMAGE;
 		}
 		if ((style & SWT.RIGHT) != 0) {
-			startX = x + width - padding - contentWidth;	
+			startX = Math.max (startX, x + width - padding - contentWidth);	
 		} else {	/* SWT.CENTER */
-			startX = x + (width - contentWidth) / 2;	
+			startX = Math.max (startX, x + (width - contentWidth) / 2);	
 		}
 	}
-	startX = Math.max (startX, padding);
 	int headerHeight = parent.getHeaderHeight ();
 
 	/* restrict the clipping region to the header cell */
 	gc.setClipping (
 		x + padding,
 		padding,
-		Math.max (0, width - 2 * padding),
-		Math.max (0, headerHeight - 2 * padding));
+		width - 2 * padding,
+		headerHeight - 2 * padding);
 	
 	if (image != null) {
 		Rectangle imageBounds = image.getBounds ();
@@ -174,7 +175,11 @@ public void setAlignment (int alignment) {
 	if ((style & alignment) != 0) return;				/* same value */
 	style &= ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 	style |= alignment;
-	parent.redraw (getX (), 0, width, parent.getClientArea ().height, true);
+	int x = getX ();
+	parent.redraw (x, 0, width, parent.getClientArea ().height, false);
+	if (parent.getHeaderVisible ()) {
+		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);		
+	}
 }
 public void setImage (Image value) {
 	checkWidget ();
@@ -196,7 +201,7 @@ public void setImage (Image value) {
 		}
 	}
 	
-	parent.redraw (getX (), 0, width, parent.getHeaderHeight (), true);
+	parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 }
 public void setResizable (boolean value) {
 	checkWidget ();
@@ -210,7 +215,7 @@ public void setText (String value) {
 	GC gc = new GC (parent);
 	textWidth = gc.textExtent (value, SWT.DRAW_MNEMONIC).x;
 	gc.dispose ();
-	parent.redraw (getX (), 0, width, parent.getHeaderHeight (), true);
+	parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
 }
 public void setWidth (int value) {
 	checkWidget ();

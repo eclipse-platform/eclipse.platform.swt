@@ -875,8 +875,8 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	gc.setClipping (
 		startX,
 		cellBounds.y + padding,
-		Math.max (0, cellRightX - startX - padding),
-		Math.max (0, cellBounds.height - (2 * padding)));
+		cellRightX - startX - padding,
+		cellBounds.height - (2 * padding));
 
 	/* draw the image */
 	if (image != null) {

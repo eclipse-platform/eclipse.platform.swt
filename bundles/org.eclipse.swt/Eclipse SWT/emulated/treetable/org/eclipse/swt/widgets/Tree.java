@@ -1336,10 +1336,7 @@ void headerDoPaint (Event event) {
 	if (startColumn == -1) return;
 	
 	/* paint each of the column headers */
-	int headerHeight = getHeaderHeight ();
 	if (numColumns == 0) return;
-	int padding = getHeaderPadding ();
-	int twoPaddings = padding + padding; 
 	for (int i = startColumn; i <= endColumn; i++) {
 		headerPaintShadow (gc, columns[i].getBounds (), false, true);
 		columns[i].paint (gc);
@@ -1901,7 +1898,10 @@ void updateColumnWidth (TreeColumn column, int width) {
 	hBar.setMaximum (lastColumn.getX () + lastColumn.width);
 	hBar.setThumb (bounds.width);
 	int x = column.getX ();
-	redraw (x, 0, bounds.width - x, bounds.height, true);
+	redraw (x, 0, bounds.width - x, bounds.height, false);
+	if (getHeaderVisible ()) {
+		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
+	}
 }
 /*
  * This is a naive implementation just to make it work.  The args are not currently used.
