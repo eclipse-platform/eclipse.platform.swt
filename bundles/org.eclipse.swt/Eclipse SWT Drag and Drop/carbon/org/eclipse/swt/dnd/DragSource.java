@@ -13,8 +13,9 @@ package org.eclipse.swt.dnd;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.carbon.EventRecord;
+import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Point;
 
 /**
@@ -101,6 +102,11 @@ public class DragSource extends Widget {
 	private Transfer[] transferAgents = new Transfer[0];
 
 	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
+	private static Callback DragSendDataProc;
+	
+	static {
+		DragSendDataProc = new Callback(DragSource.class, "DragSendDataProc", 4); //$NON-NLS-1$
+	}
 
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -166,6 +172,21 @@ public DragSource(Control control, int style) {
 static int checkStyle (int style) {
 	if (style == SWT.NONE) return DND.DROP_MOVE;
 	return style;
+}
+
+private static int DragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDrag) {
+	DragSource source = FindDragSource(dragSendRefCon, theDrag);
+	if (source == null) return OS.cantGetFlavorErr;
+	return source.dragSendDataProc(theType, dragSendRefCon, theItemRef, theDrag);
+}
+
+private static DragSource FindDragSource(int dragSendRefCon, int theDrag) {
+	if (dragSendRefCon == 0) return null;
+	Display display = Display.findDisplay(Thread.currentThread());
+	if (display == null || display.isDisposed()) return null;
+	Widget widget = display.findWidget(dragSendRefCon);
+	if (widget == null) return null;
+	return (DragSource)widget.getData(DRAGSOURCEID); 
 }
 
 /**
@@ -235,34 +256,11 @@ private void drag(Event dragEvent) {
 	Point pt = new Point();
 	OS.GetGlobalMouse (pt);
 	
-	EventRecord theEvent = new EventRecord();
-	theEvent.message = OS.kEventMouseMoved;
-	theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
-	theEvent.what = (short)OS.osEvt;
-	theEvent.where_h = (short)pt.h;
-	theEvent.where_v = (short)pt.v;
-	
-	// Immediately get data for transfer.  On other platforms, we wait
-	// until the data is requested, but on the mac, particularly in the case of files,
-	// we need to know how many items are being transferred when registering.  
-	// The only way to know this is to get the data.
 	int index = 0;
 	for (int i = 0; i < transferAgents.length; i++) {
 		int[] types = transferAgents[i].getTypeIds();
 		for (int j = 0; j < types.length; j++) {
-			TransferData transferData = new TransferData();
-			transferData.type = types[j];
-			event = new DNDEvent();
-			event.widget = this;
-			event.time = (int)System.currentTimeMillis(); 
-			event.dataType = transferData; 
-			notifyListeners(DND.DragSetData, event);
-			transferAgents[i].javaToNative(event.data, transferData);
-			if (transferData.result != OS.noErr || transferData.data == null) continue; 
-			for (int k = 0; k < transferData.data.length; k++) {
-				byte[] data = transferData.data[k];
-				OS.AddDragItemFlavor(theDrag[0], index++, types[j], data, data.length, 0);	
-			}	
+			OS.AddDragItemFlavor(theDrag[0], index++, types[j], null, 0, 0);	
 		}	
 	}
 
@@ -277,8 +275,10 @@ private void drag(Event dragEvent) {
 		return;
 	}
 	
+	OS.SetDragSendProc(theDrag[0], DragSendDataProc.getAddress(), control.handle);
+	
 	int theRegion = 0;
-	try {
+	try {	
 		theRegion = OS.NewRgn();
 		OS.SetRectRgn(theRegion, (short)(pt.h-10), (short)(pt.v-10), (short)(pt.h+10), (short)(pt.v+10));
 		
@@ -287,6 +287,12 @@ private void drag(Event dragEvent) {
 		OS.SetDragAllowableActions(theDrag[0], operations, true);
 		OS.SetDragAllowableActions(theDrag[0], operations, false);
 		
+		EventRecord theEvent = new EventRecord();
+		theEvent.message = OS.kEventMouseMoved;
+		theEvent.modifiers = (short)OS.GetCurrentEventKeyModifiers();
+		theEvent.what = (short)OS.osEvt;
+		theEvent.where_h = (short)pt.h;
+		theEvent.where_v = (short)pt.v;	
 		int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
 		
 		int operation = DND.DROP_NONE;
@@ -306,6 +312,34 @@ private void drag(Event dragEvent) {
 		if (theRegion != 0) OS.DisposeRgn(theRegion);
 	}
 	OS.DisposeDrag(theDrag[0]);
+}
+
+int dragSendDataProc(int theType, int dragSendRefCon, int theItemRef, int theDrag) {
+	if (theType == 0) return OS.badDragFlavorErr;
+	TransferData transferData = new TransferData();
+	transferData.type = theType;
+	DNDEvent event = new DNDEvent();
+	event.widget = this;
+	event.time = (int)System.currentTimeMillis(); 
+	event.dataType = transferData; 
+	notifyListeners(DND.DragSetData, event);
+	Transfer transfer = null;
+	for (int i = 0; i < transferAgents.length; i++) {
+		if (transferAgents[i].isSupportedType(transferData)) {
+			transfer = transferAgents[i];
+			break;
+		}
+	}
+	if (transfer == null) return OS.badDragFlavorErr;
+	transfer.javaToNative(event.data, transferData);
+	if (transferData.result != OS.noErr) return transferData.result;
+	for (int i = 0; i < transferData.data.length; i++) {
+		byte[] data = transferData.data[i];
+		if (data == null) return OS.cantGetFlavorErr;
+		int result = OS.SetDragItemFlavorData(theDrag, theItemRef, theType, data, data.length, 0);
+		if (result != OS.noErr) return result;
+	}
+	return OS.noErr;
 }
 
 /**
