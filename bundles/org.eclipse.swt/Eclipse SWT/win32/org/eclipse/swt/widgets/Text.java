@@ -1917,7 +1917,8 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			return LRESULT.ONE;
 		}
 	}
-	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);	
+	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);
+	if (OS.GetCapture () != handle) OS.SetCapture (handle);
 	return new LRESULT (result);
 }
 
