@@ -607,6 +607,7 @@ public static final synchronized native int /*long*/ gdk_visual_get_system();
 public static final synchronized native int /*long*/ gdk_window_at_pointer(int[] win_x, int[] win_y);
 public static final synchronized native void gdk_window_begin_paint_rect(int /*long*/ window, GdkRectangle rectangle);
 public static final synchronized native void gdk_window_end_paint(int /*long*/ window);
+public static final synchronized native int gdk_window_get_events(int /*long*/ window);
 public static final synchronized native void gdk_window_focus(int /*long*/ window, int timestamp);
 public static final synchronized native void gdk_window_freeze_updates(int /*long*/ window);
 public static final synchronized native void gdk_window_get_frame_extents(int /*long*/ window, GdkRectangle rect);
@@ -623,6 +624,7 @@ public static final synchronized native void gdk_window_set_accept_focus(int /*l
 public static final synchronized native void gdk_window_set_back_pixmap(int /*long*/ window, int /*long*/ pixmap, boolean parent_relative);
 public static final synchronized native void gdk_window_set_cursor(int /*long*/ window, int /*long*/ cursor);
 public static final synchronized native void gdk_window_set_decorations(int /*long*/ window, int decorations);
+public static final synchronized native void gdk_window_set_events(int /*long*/ window, int event_mask);
 public static final synchronized native void gdk_window_set_icon(int /*long*/ window, int /*long*/ icon_window, int /*long*/ pixmap, int /*long*/ mask);
 public static final synchronized native void gdk_window_set_icon_list(int /*long*/ window, int /*long*/ pixbufs);
 public static final synchronized native void gdk_window_set_keep_above(int /*long*/ window, boolean setting);

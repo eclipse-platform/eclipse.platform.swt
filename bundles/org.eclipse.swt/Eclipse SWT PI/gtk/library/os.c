@@ -3159,6 +3159,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1freeze_1updates)
 }
 #endif
 
+#ifndef NO_gdk_1window_1get_1events
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1get_1events)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1window_1get_1events\n")
+	rc = (jint)gdk_window_get_events((GdkWindow *)arg0);
+	NATIVE_EXIT(env, that, "gdk_1window_1get_1events\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1window_1get_1frame_1extents
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1get_1frame_1extents)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -3341,6 +3353,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1decorations)
 	NATIVE_ENTER(env, that, "gdk_1window_1set_1decorations\n")
 	gdk_window_set_decorations((GdkWindow *)arg0, (GdkWMDecoration)arg1);
 	NATIVE_EXIT(env, that, "gdk_1window_1set_1decorations\n")
+}
+#endif
+
+#ifndef NO_gdk_1window_1set_1events
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1set_1events)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "gdk_1window_1set_1events\n")
+	gdk_window_set_events((GdkWindow *)arg0, arg1);
+	NATIVE_EXIT(env, that, "gdk_1window_1set_1events\n")
 }
 #endif
 
