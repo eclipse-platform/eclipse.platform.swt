@@ -490,8 +490,8 @@ protected void init () {
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
 
 	emptyTab = OS.pango_tab_array_new(1, false);
-	OS.pango_tab_array_set_tab(emptyTab, 0, OS.PANGO_TAB_LEFT, 1);
 	if (emptyTab == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.pango_tab_array_set_tab(emptyTab, 0, OS.PANGO_TAB_LEFT, 1);
 }
 
 /**	 
