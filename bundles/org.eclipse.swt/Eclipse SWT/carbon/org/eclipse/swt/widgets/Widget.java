@@ -66,6 +66,7 @@ public abstract class Widget {
 	static final int EXPANDING        = 1 << 8;
 	static final int LAYOUT_NEEDED    = 1 << 9;
 	static final int LAYOUT_CHANGED   = 1 << 10;
+	static final int IGNORE_WHEEL     = 1 << 11;
 
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

@@ -1438,14 +1438,36 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseWheelMoved (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
+	if ((state & IGNORE_WHEEL) != 0) return OS.eventNotHandledErr;
+	short [] wheelAxis = new short [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelAxis, OS.typeMouseWheelAxis, null, 2, null, wheelAxis);
 	int [] wheelDelta = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, 4, null, wheelDelta);
-	if (!sendMouseEvent (SWT.MouseWheel, (short) 0, wheelDelta [0], SWT.SCROLL_LINE, true, theEvent)) {
-		return OS.noErr;
+	Shell shell = getShell ();
+	Control control = this;
+	while (control != null) {
+		if (!control.sendMouseEvent (SWT.MouseWheel, (short) 0, wheelDelta [0], SWT.SCROLL_LINE, true, theEvent)) {
+			break;
+		}
+		if (control.sendMouseWheel (wheelAxis [0], wheelDelta [0])) {
+			break;
+		}
+		if (control == this) {
+			/*
+			* Feature in the Macintosh.  For some reason, the kEventMouseWheelMoved
+			* event is sent twice to each application handler with the same mouse wheel
+			* data.  The fix is to set an ignore flag before calling the next handler 
+			* in the handler chain.
+			*/
+			state |= IGNORE_WHEEL;
+			int result = OS.CallNextEventHandler(nextHandler, theEvent);
+			state &= ~IGNORE_WHEEL;
+			if (result == OS.noErr) break;
+		}
+		if (control == shell) break;
+		control = control.parent;
 	}
-	return OS.eventNotHandledErr;
+	return OS.noErr;
 }
 
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
@@ -1973,6 +1995,10 @@ boolean sendMouseEvent (int type, short button, int count, int detail, int chord
 	setInputState (event, type, chord, modifiers);
 	sendEvent (type, event, send);
 	return event.doit;
+}
+
+boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
+	return false;
 }
 
 /**

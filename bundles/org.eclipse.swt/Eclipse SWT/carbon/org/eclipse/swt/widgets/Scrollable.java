@@ -249,34 +249,9 @@ boolean isTrimHandle (int trimHandle) {
 }
 
 int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventMouseWheelMoved (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	if ((state & CANVAS) != 0) {
-		short [] wheelAxis = new short [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelAxis, OS.typeMouseWheelAxis, null, 2, null, wheelAxis);
-		ScrollBar bar = wheelAxis [0] == OS.kEventMouseWheelAxisX ? horizontalBar : verticalBar;
-		if (bar != null && bar.getVisible ()) {
-			int [] wheelDelta = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, 4, null, wheelDelta);
-			bar.setSelection (Math.max (0, bar.getSelection () - bar.getIncrement () * wheelDelta [0]));
-			Event event = new Event ();
-		    event.detail = wheelDelta [0] > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
-			bar.sendEvent (SWT.Selection, event);
-//			Display display = getDisplay ();
-//			display.update ();
-			update ();
-		}
-		/*
-		* Feature in the Macintosh.   For some reason, when eventNotHandledErr
-		* is returned from kEventMouseWheelMoved the event is sent twiced to
-		* the same control with the same mouse wheel data.  The fix is to return
-		* noErr to stop further event processing.
-		*/
-		return OS.noErr;
-	}
 	int vPosition = verticalBar == null ? 0 : verticalBar.getSelection ();
 	int hPosition = horizontalBar == null ? 0 : horizontalBar.getSelection ();
-	result = OS.CallNextEventHandler (nextHandler, theEvent);
+	int result = super.kEventMouseWheelMoved (nextHandler, theEvent, userData);
 	if (verticalBar != null) {
 		int position = verticalBar.getSelection ();
 		if (position != vPosition) {
@@ -340,6 +315,23 @@ void resizeClientArea () {
 	if (isVisibleVBar) {
 		setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
 	}
+}
+
+boolean sendMouseWheel (short wheelAxis, int wheelDelta) {
+	if ((state & CANVAS) != 0) {
+		ScrollBar bar = wheelAxis == OS.kEventMouseWheelAxisX ? horizontalBar : verticalBar;
+		if (bar != null && bar.getVisible ()) {
+			bar.setSelection (Math.max (0, bar.getSelection () - bar.getIncrement () * wheelDelta));
+			Event event = new Event ();
+		    event.detail = wheelDelta > 0 ? SWT.PAGE_UP : SWT.PAGE_DOWN;	
+			bar.sendEvent (SWT.Selection, event);
+//			Display display = getDisplay ();
+//			display.update ();
+			update ();
+			return true;
+		}
+	}
+	return false;
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
