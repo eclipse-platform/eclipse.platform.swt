@@ -779,6 +779,8 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
+		Display display = getDisplay ();
+		display.runDeferredEvents ();
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
 			int xDisplay = OS.XtDisplay (handle);
@@ -840,25 +842,6 @@ int XmNhelpCallback (int w, int client_data, int call_data) {
 }
 int XmNmapCallback (int w, int client_data, int call_data) {
 	if ((style & SWT.POP_UP) != 0) return 0;
-	/*
-	* SWT.Selection events are posted to allow stepping
-	* in the VA/Java debugger.  SWT.Show events are
-	* sent to ensure that application event handler
-	* code runs before the menu is displayed.  This
-	* means that SWT.Show events would normally occur
-	* before SWT.Selection events.  While this is not 
-	* strictly incorrect, applications often use the 
-	* SWT.Selection event to update the state of menu
-	* items and would like the ordering of events to 
-	* be the other way around.
-	*
-	* The fix is to run the deferred events before
-	* the menu is shown.  This means that stepping
-	* through a selection event that was caused by
-	* a popup menu will fail in VA/Java.
-	*/
-	Display display = getDisplay ();
-	display.runDeferredEvents ();
 	sendEvent (SWT.Show);
 	return 0;
 }

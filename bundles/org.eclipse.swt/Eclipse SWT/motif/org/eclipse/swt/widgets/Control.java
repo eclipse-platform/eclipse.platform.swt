@@ -2305,6 +2305,20 @@ void setZOrder (Control control, boolean above, boolean fixChildren) {
 		if (fixChildren) parent.moveBelow (topHandle1, topHandle2);
 	}
 }
+void showMenu (int x, int y) {
+	Event event = new Event ();
+	event.x = x;
+	event.y = y;
+	sendEvent (SWT.MenuDetect, event);
+	if (event.doit) {
+		if (menu != null && !menu.isDisposed ()) {
+			if (event.x != x || event.y != y) {
+				menu.setLocation (event.x, event.y);
+			}
+			menu.setVisible (true);
+		}
+	}
+}
 /**
  * Returns a point which is the result of converting the
  * argument, which is specified in display relative coordinates,
@@ -2656,11 +2670,9 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
 		postEvent (SWT.DragDetect);
 	}
-	if (xEvent.button == 3 && menu != null) {
+	if (xEvent.button == 3) {
 		setFocus ();
-//		menu.setLocation (xEvent.x_root, xEvent.y_root);
-		display.runDeferredEvents ();
-		menu.setVisible (true);
+		showMenu (xEvent.x_root, xEvent.y_root);
 	}
 	int clickTime = display.getDoubleClickTime ();
 	int lastTime = display.lastTime, eventTime = xEvent.time;
@@ -2848,8 +2860,7 @@ int XKeyRelease (int w, int client_data, int call_data, int continue_to_dispatch
 		int [] keysym = new int [1];	
 		OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
 		if (keysym [0] == OS.XK_F10) {
-			menu.setVisible (true);
-			return 0;
+			showMenu (xEvent.x_root, xEvent.y_root);
 		}
 	}
 	sendKeyEvent (SWT.KeyUp, xEvent);
