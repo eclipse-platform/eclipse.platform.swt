@@ -1160,6 +1160,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 }
 
 void setFocusIndex (int index) {
+//	checkWidget ();	
 	OS.SendMessage (handle, OS.LB_SETCARETINDEX, index, 0);
 }
 

@@ -1691,6 +1691,7 @@ void setCheckboxImageList (int width, int height) {
 }
 
 void setFocusIndex (int index) {
+//	checkWidget ();	
 	LVITEM lvItem = new LVITEM ();
 	lvItem.mask = OS.LVIF_STATE;
 	lvItem.state = OS.LVIS_FOCUSED;
