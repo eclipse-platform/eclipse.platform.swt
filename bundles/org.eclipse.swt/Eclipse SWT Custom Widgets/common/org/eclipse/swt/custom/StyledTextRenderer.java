@@ -447,7 +447,7 @@ int getLineEndSpaceWidth() {
  * @param lineOffset offset of the line start relative to the start
  * 	of the content.
  * @param line line to get line background data for
- * @return line background data for the given line.
+ * @return line background data for the given line. may return null
  */
 protected abstract StyledTextEvent getLineBackgroundData(int lineOffset, String line);
 /**

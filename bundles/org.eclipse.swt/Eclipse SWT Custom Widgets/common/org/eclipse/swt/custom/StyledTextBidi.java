@@ -97,7 +97,8 @@ class StyledTextBidi {
  * 	proper measuring of bold text segments.
  * @param offset text segments that should be measured and reordered 
  * 	separately, may be needed to preserve the order of separate R2L 
- * 	segments to each other
+ * 	segments to each other. Must have at least two elements, 0 and the text
+ * 	length.
  */
 public StyledTextBidi(GC gc, int tabWidth, String text, StyleRange[] ranges, Font boldFont, int[] offsets) {
 	int length = text.length();
