@@ -234,6 +234,34 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's text is verified, by sending
+ * it one of the messages defined in the <code>VerifyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #removeVerifyListener
+ * 
+ * @since 3.1
+ */
+void addVerifyListener (VerifyListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Verify, typedListener);
+}
+
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -451,7 +479,11 @@ void hookEvents () {
 	super.hookEvents ();
 	int /*long*/ windowProc2 = display.windowProc2;
 	int /*long*/ windowProc3 = display.windowProc3;
+	int /*long*/ windowProc4 = display.windowProc4;
+	int /*long*/ windowProc5 = display.windowProc5;
 	OS.g_signal_connect_after (entryHandle, OS.changed, windowProc2, CHANGED);
+	OS.g_signal_connect (entryHandle, OS.insert_text, windowProc5, INSERT_TEXT);
+	OS.g_signal_connect (entryHandle, OS.delete_text, windowProc4, DELETE_TEXT);
 	OS.g_signal_connect (entryHandle, OS.activate, windowProc2, ACTIVATE);
 	int eventMask =	OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_PRESS_MASK |
 		OS.GDK_BUTTON_RELEASE_MASK | OS.GDK_ENTER_NOTIFY_MASK |
@@ -820,6 +852,55 @@ int /*long*/ gtk_commit (int /*long*/ imContext, int /*long*/ text) {
 	return 0;
 }
 
+int /*long*/ gtk_delete_text (int /*long*/ widget, int /*long*/ start_pos, int /*long*/ end_pos) {
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
+	String newText = verifyText ("", (int)/*64*/start_pos, (int)/*64*/end_pos);
+	if (newText == null) {
+		OS.g_signal_stop_emission_by_name (entryHandle, OS.delete_text);
+	} else {
+		if (newText.length () > 0) {
+			int [] pos = new int [1];
+			pos [0] = (int)/*64*/end_pos;
+			byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.gtk_editable_insert_text (entryHandle, buffer, buffer.length, pos);
+			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+			OS.gtk_editable_set_position (entryHandle, pos [0]);
+		}
+	}
+	return 0;
+}
+
+int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;	
+	if (new_text == 0 || new_text_length == 0) return 0;
+	byte [] buffer = new byte [(int)/*64*/new_text_length];
+	OS.memmove (buffer, new_text, buffer.length);
+	String oldText = new String (Converter.mbcsToWcs (null, buffer));
+	int [] pos = new int [1];
+	OS.memmove (pos, position, 4);
+	if (pos [0] == -1)  {
+		int /*long*/ ptr = OS.gtk_entry_get_text (entryHandle);
+		pos [0] = OS.g_utf8_strlen (ptr, -1);
+	}
+	String newText = verifyText (oldText, pos [0], pos [0]);
+	if (newText == null) {
+		OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
+	} else {
+		if (newText != oldText) {
+			byte [] buffer3 = Converter.wcsToMbcs (null, newText, false);
+			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.gtk_editable_insert_text (entryHandle, buffer3, buffer3.length, pos);
+			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+			OS.g_signal_stop_emission_by_name (entryHandle, OS.insert_text);
+			OS.memmove (position, pos, 4);
+		}
+	}
+	return 0;
+}
+
 int /*long*/ gtk_popup_menu (int /*long*/ widget) {
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
@@ -1062,6 +1143,32 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is verified.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #addVerifyListener
+ * 
+ * @since 3.1
+ */
+void removeVerifyListener (VerifyListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Verify, listener);	
 }
 
 /**
@@ -1338,6 +1445,34 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 		}
 	}
 	return super.translateTraversal (keyEvent);
+}
+
+String verifyText (String string, int start, int end) {
+	if (string.length () == 0 && start == end) return null;
+	Event event = new Event ();
+	event.text = string;
+	event.start = start;
+	event.end = end;
+	int /*long*/ eventPtr = OS.gtk_get_current_event ();
+	if (eventPtr != 0) {
+		GdkEventKey gdkEvent = new GdkEventKey ();
+		OS.memmove (gdkEvent, eventPtr, GdkEventKey.sizeof);
+		switch (gdkEvent.type) {
+			case OS.GDK_KEY_PRESS:
+				setKeyState (event, gdkEvent);
+				break;
+		}
+		OS.gdk_event_free (eventPtr);
+	}
+	/*
+	 * It is possible (but unlikely), that application
+	 * code could have disposed the widget in the verify
+	 * event.  If this happens, answer null to cancel
+	 * the operation.
+	 */
+	sendEvent (SWT.Verify, event);
+	if (!event.doit || isDisposed ()) return null;
+	return event.text;
 }
 
 }
