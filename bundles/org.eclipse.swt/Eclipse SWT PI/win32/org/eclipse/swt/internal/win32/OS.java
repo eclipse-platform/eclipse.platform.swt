@@ -791,6 +791,7 @@ public class OS {
 	public static final int PHYSICALWIDTH = 0x6e;
 	public static final int PLANES = 0xe;
 	public static final int PM_NOREMOVE = 0x0;
+	public static final int PM_NOYIELD = 0x2;
 	public static final int PM_REMOVE = 0x1;
 	public static final String PROGRESS_CLASS = "msctls_progress32"; //$NON-NLS-1$
 	public static final int PS_DASH = 0x1;
