@@ -133,7 +133,7 @@ void _setSize (int width, int height) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	if (layout != null) super.computeSize(wHint, hHint, changed);
-	return new Point(300,30);
+	return computeNativeSize(handle, wHint, hHint, changed);
 }
 
 
