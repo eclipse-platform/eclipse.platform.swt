@@ -631,6 +631,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1strfreev
 	g_strfreev((gchar **)arg0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1thread_1init
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("g_1thread_1init\n")
+
+	g_thread_init((GThreadFunctions *)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1thread_1supported
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("g_1thread_1supported\n")
+
+	return (jboolean)g_thread_supported();
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf16_1to_1utf8
 	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
 {
@@ -1414,6 +1430,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1screen_1width_1
 	DEBUG_CALL("gdk_1screen_1width_1mm\n")
 
 	return (jint)gdk_screen_width_mm();
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1threads_1init
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gdk_1threads_1init\n")
+
+	gdk_threads_init();
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1visual_1get_1system

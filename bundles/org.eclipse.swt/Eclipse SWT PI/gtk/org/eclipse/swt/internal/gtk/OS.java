@@ -343,6 +343,8 @@ public static final native int g_signal_handlers_block_matched(int instance, int
 public static final native int g_signal_handlers_unblock_matched(int instance, int mask, int signal_id, int detail, int closure, int func, int data);
 public static final native void g_signal_stop_emission_by_name(int instance, byte[] detailed_signal);
 public static final native void g_strfreev(int string_array);
+public static final native void g_thread_init(int vtable);
+public static final native  boolean g_thread_supported();
 public static final native int g_utf8_to_utf16(byte[] str, int len, int[] items_read, int[] items_written, int[] error);
 public static final native int g_utf16_to_utf8(char[] str, int len, int[] items_read, int[] items_written, int[] error);
 public static final native int gdk_atom_intern(byte[] atom_name, boolean only_if_exists);
@@ -423,6 +425,7 @@ public static final native void gdk_rgb_init();
 public static final native int gdk_screen_height();
 public static final native int gdk_screen_width();
 public static final native int gdk_screen_width_mm();
+public static final native void gdk_threads_init();
 public static final native int gdk_visual_get_system();
 public static final native int gdk_window_at_pointer(int[] win_x, int[] win_y);
 public static final native void gdk_window_get_frame_extents(int window, GdkRectangle rect);

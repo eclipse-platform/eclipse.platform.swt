@@ -61,7 +61,7 @@ GTKCFLAGS = `pkg-config --cflags $(GTKTARGET)` `pkg-config --cflags pango`
 # below was obtained by running pkg-config and removing "-lpangoxft-1.0" from
 # the result.
 #
-GTKLIBS = -L/usr/local/lib -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
+GTKLIBS = `pkg-config --libs gthread-2.0` -L/usr/local/lib -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgdk_pixbuf-2.0 -lm -lpangox-1.0 -lpango-1.0 -lgobject-2.0 -lgmodule-2.0 -ldl -lglib-2.0
 #GTKLIBS = `pkg-config --libs $(GTKTARGET)`
 
 
