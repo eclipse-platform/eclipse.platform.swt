@@ -25,6 +25,9 @@ class ToolBarTab extends Tab {
 	/* Style widgets added to the "Style" group */
 	Button horizontalButton, verticalButton, flatButton, shadowOutButton, wrapButton, rightButton;
 
+	/* Other widgets added to the "Other" group */
+	Button comboChildButton;
+	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
 	 */
@@ -104,6 +107,14 @@ class ToolBarTab extends Tab {
 		item.setToolTipText ("SWT.RADIO");
 		item = new ToolItem (imageToolBar, SWT.SEPARATOR);
 		item.setToolTipText("SWT.SEPARATOR");
+		if (comboChildButton.getSelection ()) {
+			Combo combo = new Combo (imageToolBar, SWT.NONE);
+			combo.setItems (new String [] {"250", "500", "750"});
+			combo.setText (combo.getItem (0));
+			combo.pack ();
+			item.setWidth (combo.getSize ().x);
+			item.setControl (combo);
+		}
 		item = new ToolItem (imageToolBar, SWT.DROP_DOWN);
 		item.setImage (instance.images[ControlExample.ciTarget]);
 		item.setToolTipText ("SWT.DROP_DOWN");
@@ -134,6 +145,14 @@ class ToolBarTab extends Tab {
 		item.setToolTipText("SWT.RADIO");
 		item = new ToolItem (textToolBar, SWT.SEPARATOR);
 		item.setToolTipText("SWT.SEPARATOR");
+		if (comboChildButton.getSelection ()) {
+			Combo combo = new Combo (textToolBar, SWT.NONE);
+			combo.setItems (new String [] {"250", "500", "750"});
+			combo.setText (combo.getItem (0));
+			combo.pack ();
+			item.setWidth (combo.getSize ().x);
+			item.setControl (combo);
+		}
 		item = new ToolItem (textToolBar, SWT.DROP_DOWN);
 		item.setText (ControlExample.getResourceString("Drop_Down"));
 		item.setToolTipText("SWT.DROP_DOWN");
@@ -171,6 +190,14 @@ class ToolBarTab extends Tab {
 		item.setToolTipText("SWT.RADIO");
 		item = new ToolItem (imageTextToolBar, SWT.SEPARATOR);
 		item.setToolTipText("SWT.SEPARATOR");
+		if (comboChildButton.getSelection ()) {
+			Combo combo = new Combo (imageTextToolBar, SWT.NONE);
+			combo.setItems (new String [] {"250", "500", "750"});
+			combo.setText (combo.getItem (0));
+			combo.pack ();
+			item.setWidth (combo.getSize ().x);
+			item.setControl (combo);
+		}
 		item = new ToolItem (imageTextToolBar, SWT.DROP_DOWN);
 		item.setImage (instance.images[ControlExample.ciTarget]);
 		item.setText (ControlExample.getResourceString("Drop_Down"));
@@ -183,6 +210,24 @@ class ToolBarTab extends Tab {
 		* widget does nothing special when the drop down area
 		* is selected.
 		*/
+	}
+	
+	/**
+	 * Creates the "Other" group.
+	 */
+	void createOtherGroup () {
+		super.createOtherGroup ();
+	
+		/* Create display controls specific to this example */
+		comboChildButton = new Button (otherGroup, SWT.CHECK);
+		comboChildButton.setText (ControlExample.getResourceString("Combo_child"));
+	
+		/* Add the listeners */
+		comboChildButton.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				recreateExampleWidgets ();
+			}
+		});
 	}
 	
 	/**

@@ -18,12 +18,16 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
 
 class CoolBarTab extends Tab {
-	Button dropDownButton, lockedButton, flatButton;
-
 	/* Example widgets and group that contains them */
 	CoolBar coolBar;
-	CoolItem pushItem, dropDownItem, radioItem, checkItem;
+	CoolItem pushItem, dropDownItem, radioItem, checkItem, textItem;
 	Group coolBarGroup;
+	
+	/* Style widgets added to the "Style" group */
+	Button dropDownButton, flatButton;
+
+	/* Other widgets added to the "Other" group */
+	Button lockedButton;
 	
 	Point[] sizes;
 	int[] wrapIndices;
@@ -167,6 +171,16 @@ class CoolBarTab extends Tab {
 		checkItem.setMinimumSize(item.getWidth(), checkSize.y);
         checkItem.addSelectionListener (new CoolItemSelectionListener());
 		
+        /* create the text */
+		Text text = new Text (coolBar, SWT.BORDER | SWT.SINGLE);
+		textItem = new CoolItem (coolBar, itemStyle);
+		textItem.setControl (text);
+		Point textSize = text.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+		textSize = textItem.computeSize(textSize.x, textSize.y);
+		textItem.setSize(textSize);
+		textItem.setMinimumSize(textSize);
+        textItem.addSelectionListener (new CoolItemSelectionListener());
+
 		/* if we have saved state, restore it */
 		if (order != null) {
 			coolBar.setItemLayout(order, wrapIndices, sizes);
@@ -180,6 +194,7 @@ class CoolBarTab extends Tab {
 			dropDownItem.setPreferredSize(dropSize);
 			radioItem.setPreferredSize(radioSize);
 			checkItem.setPreferredSize(checkSize);
+			textItem.setPreferredSize(textSize);
 		}
 		else {
 			coolBar.setWrapIndices(new int[] {1, 3});
