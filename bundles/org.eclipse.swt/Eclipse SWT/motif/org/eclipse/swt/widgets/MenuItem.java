@@ -143,11 +143,15 @@ void addAccelerator () {
 	* Feature in Motif.  Motif does not activate an accelerator
 	* when the CapsLock, NumLock and NumLock+CapsLock keys are pressed.
 	* In order to activate accelerators when these keys are pressed,
-	* it is necessary to look for all of these key sequences.
+	* it is necessary to look for all of these key sequences.  The fix
+	* is to add these modifiers to the accelerator.
 	*/
-	String numLock = Display.numLock;
 	String key = ctrl + alt + shift + "<Key>" + keysymName (keysym);
-	String allKeys = key + ",Lock " + key + "," + numLock + " " + key + ",Lock " + numLock + " " + key;
+	String allKeys = key + ",Lock " + key;
+	String numLock = Display.numLock;
+	if (numLock != null) {
+		allKeys += "," + numLock + " " + key + ",Lock " + numLock + " " + key;
+	}
 	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (null, allKeys, true);		
 	int ptr = OS.XtMalloc (buffer.length);
