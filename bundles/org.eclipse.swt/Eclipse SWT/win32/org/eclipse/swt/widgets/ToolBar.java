@@ -93,8 +93,17 @@ static int checkStyle (int style) {
 	* A vertical tool bar cannot wrap because TB_SETROWS
 	* fails when the toobar has TBSTYLE_WRAPABLE.
 	*/
-	if ((style & SWT.VERTICAL) != 0) style &= ~SWT.WRAP;
 	
+	/*
+	* This code is intentionally commented.
+	*/
+	//if ((style & SWT.VERTICAL) != 0) style &= ~SWT.WRAP;
+	/*
+	* The TB_SETROWS calls are currently commented, so force
+	* the wrap style if this bar is vertical.
+	*/
+	if ((style & SWT.VERTICAL) != 0) style |= SWT.WRAP;
+		
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -263,9 +272,12 @@ void createItem (ToolItem item, int index) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	items [item.id = id] = item;
-	if ((style & SWT.VERTICAL) != 0) {
-		OS.SendMessage (handle, OS.TB_SETROWS, count+1, 0);
-	}
+	/*
+	* This code is intentionally commented.
+	*/
+//	if ((style & SWT.VERTICAL) != 0) {
+//		OS.SendMessage (handle, OS.TB_SETROWS, count+1, 0);
+//	}
 	layoutItems ();
 }
 
@@ -315,9 +327,12 @@ void destroyItem (ToolItem item) {
 		imageList = hotImageList = disabledImageList = null;
 		items = new ToolItem [4];
 	}
-	if ((style & SWT.VERTICAL) != 0) {
-		OS.SendMessage (handle, OS.TB_SETROWS, count-1, 0);
-	}
+	/*
+	* This code is intentionally commented.
+	*/
+//	if ((style & SWT.VERTICAL) != 0) {
+//		OS.SendMessage (handle, OS.TB_SETROWS, count-1, 0);
+//	}
 	layoutItems ();
 }
 
