@@ -48,11 +48,19 @@ public static int getFontBidiAttributes(GC gc) {
 	return 0;	
 }
 /*
- *  Not implemented. Returns null.
+ *  Not implemented.
  *
  *	gc, text & flags are input parameters
  *  classBuffer is input/output parameter
  *	order & dx are output parameters
+ */
+public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
+/*
+ *  Not implemented. Returns null.
+ *
+ *	gc, text, flags, & offsets are input parameters
+ *  classBuffer is input/output parameter
+ *	order is output parameters
  */
 public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] classBuffer, int[] dx, int flags) {
 	return null;

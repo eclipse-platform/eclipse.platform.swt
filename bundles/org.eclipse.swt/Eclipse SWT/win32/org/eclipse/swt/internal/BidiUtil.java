@@ -194,6 +194,84 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	OS.HeapFree(hHeap, 0, lpOrder);
 	return glyphBuffer;
 }
+/*
+ *  Wraps GetFontLanguageInfo and GetCharacterPlacement functions.  Just returns
+ *  ordering information from GCP.  Does not return rendering information (e.g., glyphs,
+ *  dx values).  Use this method when you only need ordering information.  Doing so
+ *  will improve performance.
+ *
+ *	gc, text, flags, & offsets are input parameters
+ *  classBuffer is input/output parameter
+ *	order is output parameters
+ */
+public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
+	int fontLanguageInfo = OS.GetFontLanguageInfo(gc.handle);
+	int hHeap = OS.GetProcessHeap();
+	int[] lpCs = new int[8];
+	int cs = OS.GetTextCharset(gc.handle);
+	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
+	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
+	int byteCount = textBuffer.length();
+
+	GCP_RESULTS result = new GCP_RESULTS();
+	result.lStructSize = GCP_RESULTS.sizeof;
+	result.nGlyphs = byteCount;
+	int lpOrder = result.lpOrder = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount * 4);
+	int lpClass = result.lpClass = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+
+	// set required dwFlags
+	int dwFlags = 0;
+	if (((fontLanguageInfo & GCP_REORDER) == GCP_REORDER)) {
+		dwFlags |= GCP_REORDER;
+	}
+	if ((fontLanguageInfo & GCP_LIGATE) == GCP_LIGATE) {
+		dwFlags |= GCP_LIGATE;
+	}
+	if ((flags & CLASSIN) == CLASSIN) {
+		// set classification values for the substring
+		dwFlags |= GCP_CLASSIN;
+		OS.MoveMemory(result.lpClass, classBuffer, classBuffer.length);
+	}
+
+	int glyphCount = 0;
+	for (int i=0; i<offsets.length-1; i++) {
+		int offset = offsets [i];
+		int length = offsets [i+1] - offsets [i];
+
+		// The number of glyphs expected is <= length (segment length);
+		// the actual number returned may be less in case of Arabic ligatures.
+		result.nGlyphs = length;
+		TCHAR textBuffer2 = new TCHAR(lpCs[1], text.substring(offset, offset + length), false);
+		OS.GetCharacterPlacement(gc.handle, textBuffer2, textBuffer2.length(), 0, result, dwFlags);
+
+		if (order != null) {
+			int [] order2 = new int [length];
+			OS.MoveMemory(order2, result.lpOrder, order2.length * 4);
+			for (int j=0; j<length; j++) {
+				order2 [j] += glyphCount;
+			}
+			System.arraycopy (order2, 0, order, offset, length);
+		}
+		if (classBuffer != null) {
+			byte [] classBuffer2 = new byte [length];
+			OS.MoveMemory(classBuffer2, result.lpClass, classBuffer2.length);
+			System.arraycopy (classBuffer2, 0, classBuffer, offset, length);
+		}
+		glyphCount += result.nGlyphs;
+
+		// We concatenate successive results of calls to GCP.
+		// For Arabic, it is the only good method since the number of output
+		// glyphs might be less than the number of input characters.
+		// This assumes that the whole line is built by successive adjacent
+		// segments without overlapping.
+		result.lpOrder += length * 4;
+		result.lpClass += length;
+	}
+
+	/* Free the memory that was allocated. */
+	OS.HeapFree(hHeap, 0, lpClass);
+	OS.HeapFree(hHeap, 0, lpOrder);
+}
 
 /*
  * 
