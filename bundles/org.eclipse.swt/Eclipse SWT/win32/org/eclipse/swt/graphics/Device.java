@@ -285,7 +285,6 @@ public DeviceData getDeviceData () {
  * </ul>
  *
  * @see #getBounds
- * @see #computeTrim
  */
 public Rectangle getClientArea () {
 	return getBounds ();
