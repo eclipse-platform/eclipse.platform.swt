@@ -416,7 +416,7 @@ void createHandle () {
 void createItem (MenuItem item, int index) {
 	int count = GetMenuItemCount (handle);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
-	parent.add (item);
+	display.addMenuItem (item);
 	boolean success = false;
 	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
 		if (OS.IsSP) return;
@@ -474,7 +474,7 @@ void createItem (MenuItem item, int index) {
 		}
 	}
 	if (!success) {
-		parent.remove (item);
+		display.removeMenuItem (item);
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	redraw ();
@@ -497,7 +497,7 @@ void createWidget () {
 	*/
 //	checkOrientation (parent);
 	createHandle ();
-	parent.add (this);
+	parent.addMenu (this);
 }
 
 /*
@@ -576,8 +576,8 @@ void fixMenus (Decorations newParent) {
 	for (int i=0; i<items.length; i++) {
 		items [i].fixMenus (newParent);
 	}
-	parent.remove (this);
-	newParent.add (this);
+	parent.removeMenu (this);
+	newParent.addMenu (this);
 	this.parent = newParent;
 }
 
@@ -602,7 +602,7 @@ public MenuItem getDefaultItem () {
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_ID;
 	if (OS.GetMenuItemInfo (handle, id, false, info)) {
-		return parent.findMenuItem (info.wID);
+		return display.getMenuItem (info.wID);
 	}
 	return null;
 }
@@ -665,7 +665,7 @@ public MenuItem getItem (int index) {
 		}
 		id = info.dwItemData;
 	}
-	return parent.findMenuItem (id);
+	return display.getMenuItem (id);
 }
 
 /**
@@ -704,8 +704,8 @@ public MenuItem [] getItems () {
 	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
 		if (OS.IsSP) {
 			MenuItem [] result = new MenuItem [2];
-			result[0] = parent.findMenuItem (id0);
-			result[1] = parent.findMenuItem (id1);		
+			result[0] = display.getMenuItem (id0);
+			result[1] = display.getMenuItem (id1);
 			return result;
 		}
 		int count = OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
@@ -713,7 +713,7 @@ public MenuItem [] getItems () {
 		MenuItem [] result = new MenuItem [count];
 		for (int i=0; i<count; i++) {
 			OS.SendMessage (hwndCB, OS.TB_GETBUTTON, i, lpButton);
-			result [i] = parent.findMenuItem (lpButton.idCommand);
+			result [i] = display.getMenuItem (lpButton.idCommand);
 		}
 		return result;
 	}
@@ -729,7 +729,7 @@ public MenuItem [] getItems () {
 			System.arraycopy (items, 0, newItems, 0, index);
 			items = newItems;
 		}
-		items [index++] = parent.findMenuItem (info.dwItemData);
+		items [index++] = display.getMenuItem (info.dwItemData);
 	}
 	if (index == items.length) return items;
 	MenuItem [] result = new MenuItem [index];
@@ -1062,7 +1062,7 @@ void releaseWidget () {
 		}
 	}
 	super.releaseWidget ();
-	if (parent != null) parent.remove (this);
+	if (parent != null) parent.removeMenu (this);
 	parent = null;
 	cascade = null;
 }

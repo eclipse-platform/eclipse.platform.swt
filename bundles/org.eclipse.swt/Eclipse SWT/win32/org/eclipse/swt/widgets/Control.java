@@ -3088,7 +3088,7 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 		Decorations shell = menuShell ();
 		if (shell.isEnabled ()) {
 			int id = wParam & 0xFFFF;
-			MenuItem item = shell.findMenuItem (id);
+			MenuItem item = display.getMenuItem (id);
 			if (item != null && item.isEnabled ()) {
 				return item.wmCommandChild (wParam, lParam);
 			}
@@ -3169,8 +3169,7 @@ LRESULT WM_DRAWITEM (int wParam, int lParam) {
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
 	if (struct.CtlType == OS.ODT_MENU) {
-		Decorations shell = menuShell ();
-		MenuItem item = shell.findMenuItem (struct.itemID);
+		MenuItem item = display.getMenuItem (struct.itemID);
 		if (item == null) return null;
 		return item.wmDrawChild (wParam, lParam);
 	}
@@ -3218,7 +3217,7 @@ LRESULT WM_HELP (int wParam, int lParam) {
 	Decorations shell = menuShell ();
 	if (!shell.isEnabled ()) return null;
 	if (lphi.iContextType == OS.HELPINFO_MENUITEM) {
-		MenuItem item = shell.findMenuItem (lphi.iCtrlId);
+		MenuItem item = display.getMenuItem (lphi.iCtrlId);
 		if (item != null && item.isEnabled ()) {
 			Widget widget = null;
 			if (item.hooks (SWT.Help)) {
@@ -3779,8 +3778,7 @@ LRESULT WM_MEASUREITEM (int wParam, int lParam) {
 	MEASUREITEMSTRUCT struct = new MEASUREITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, MEASUREITEMSTRUCT.sizeof);
 	if (struct.CtlType == OS.ODT_MENU) {
-		Decorations shell = menuShell ();
-		MenuItem item = shell.findMenuItem (struct.itemID);
+		MenuItem item = display.getMenuItem (struct.itemID);
 		if (item == null) return null;
 		return item.wmMeasureChild (wParam, lParam);
 	}
@@ -3859,7 +3857,7 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 			Menu newMenu = menuShell.findMenu (lParam);
 			if (newMenu != null) {
 				int id = wParam & 0xFFFF;
-				item = menuShell.findMenuItem (id);
+				item = display.getMenuItem (id);
 			}
 			Menu oldMenu = shell.activeMenu;
 			if (oldMenu != null) {
@@ -4213,7 +4211,7 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	if ((wParam & 0xF000) == 0) {
 		Decorations shell = menuShell ();
 		if (shell.isEnabled ()) {
-			MenuItem item = shell.findMenuItem (wParam & 0xFFFF);
+			MenuItem item = display.getMenuItem (wParam & 0xFFFF);
 			if (item != null) item.wmCommandChild (wParam, lParam);
 		}
 		return LRESULT.ZERO;

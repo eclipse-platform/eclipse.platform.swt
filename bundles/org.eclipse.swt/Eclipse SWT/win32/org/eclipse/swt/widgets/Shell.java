@@ -827,8 +827,8 @@ void releaseWidget () {
 	region = null;
 }
 
-void remove (Menu menu) {
-	super.remove (menu);
+void removeMenu (Menu menu) {
+	super.removeMenu (menu);
 	if (menu == activeMenu) activeMenu = null;
 }
 

@@ -117,6 +117,16 @@ public class Display extends Device {
 	
 	/* Menus */
 	Menu [] bars, popups;
+	MenuItem [] items;
+	
+	/*
+	* The start value for WM_COMMAND id's.
+	* Windows reserves the values 0..100.
+	* 
+	* The SmartPhone SWT resource file reserves
+	* the values 101..107.
+	*/
+	static final int ID_START = 108;
 	
 	/* Filter Hook */
 	Callback msgFilterCallback;
@@ -459,6 +469,22 @@ void addControl (int handle, Control control) {
 	freeSlot = indexTable [oldSlot];
 	indexTable [oldSlot] = -2;
 	controlTable [oldSlot] = control;
+}
+
+void addMenuItem (MenuItem item) {
+	if (items == null) items = new MenuItem [64];
+	for (int i=0; i<items.length; i++) {
+		if (items [i] == null) {
+			item.id = i + ID_START;
+			items [i] = item;
+			return;
+		}
+	}
+	item.id = items.length + ID_START;
+	MenuItem [] newItems = new MenuItem [items.length + 64];
+	newItems [items.length] = item;
+	System.arraycopy (items, 0, newItems, 0, items.length);
+	items = newItems;
 }
 
 void addPopup (Menu menu) {
@@ -1290,6 +1316,13 @@ ImageList getToolDisabledImageList (Point size) {
 
 int getLastEventTime () {
 	return OS.IsWinCE ? OS.GetTickCount () : OS.GetMessageTime ();
+}
+
+MenuItem getMenuItem (int id) {
+	if (items == null) return null;
+	id = id - ID_START;
+	if (0 <= id && id < items.length) return items [id];
+	return null;
 }
 
 int getMessageCount () {
@@ -2536,6 +2569,7 @@ void releaseDisplay () {
 	bars = popups = null;
 	indexTable = null;
 	controlTable = null;
+	lastHittestControl = null;
 	imageList = toolImageList = toolHotImageList = toolDisabledImageList = null;
 }
 
@@ -2693,6 +2727,12 @@ Control removeControl (int handle) {
 		OS.SetWindowLong (handle, OS.GWL_USERDATA, 0);
 	}
 	return control;
+}
+
+void removeMenuItem (MenuItem item) {
+	if (items == null) return;
+	items [item.id - ID_START] = null;
+	item.id = -1;
 }
 
 void removePopup (Menu menu) {

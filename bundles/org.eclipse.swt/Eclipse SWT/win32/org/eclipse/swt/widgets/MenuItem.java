@@ -123,8 +123,7 @@ MenuItem (Menu parent, Menu menu, int style, int index) {
 	this.parent = parent;
 	this.menu = menu;	
 	if (menu != null) menu.cascade = this;
-	Decorations shell = parent.parent;
-	shell.add (this);
+	display.addMenuItem (this);
 }
 
 /**
@@ -263,30 +262,6 @@ void fillAccel (ACCEL accel) {
 }
 
 void fixMenus (Decorations newParent) {
-	/*
-	* Ensure that the current menu item is moved into
-	* the new parent before moving the submenu so that
-	* menu id of the current item will not be assigned
-	* to an item in a submenu.
-	*/
-	int oldId = this.id;
-	parent.parent.remove (this);
-	newParent.add (this);
-	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
-		int hwndCB = this.parent.hwndCB;
-		TBBUTTONINFO info = new TBBUTTONINFO ();
-		info.cbSize = TBBUTTONINFO.sizeof;
-		info.dwMask = OS.TBIF_COMMAND;
-		info.idCommand = id;
-		OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, oldId, info);
-	} else {
-		int hMenu = parent.handle;
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_ID | OS.MIIM_DATA;
-		info.wID = info.dwItemData = id;
-		OS.SetMenuItemInfo (hMenu, oldId, false, info);
-	}
 	if (menu != null) menu.fixMenus (newParent);
 }
 
@@ -454,8 +429,7 @@ void releaseWidget () {
 		parent.destroyAccelerators ();
 	}
 	accelerator = 0;
-	Decorations shell = parent.parent;
-	shell.remove (this);
+	display.removeMenuItem (this);
 	parent = null;
 }
 

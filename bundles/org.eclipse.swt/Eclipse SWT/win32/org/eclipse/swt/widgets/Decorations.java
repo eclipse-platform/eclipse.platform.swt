@@ -98,19 +98,9 @@ public class Decorations extends Canvas {
 	Image [] images;
 	Menu menuBar;
 	Menu [] menus;
-	MenuItem [] items;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
 	int swFlags, hAccel, nAccel;
-	
-	/*
-	* The start value for WM_COMMAND id's.
-	* Windows reserves the values 0..100.
-	* 
-	* The SmartPhone SWT resource file reserves
-	* the values 101..107.
-	*/
-	static final int ID_START = 108;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -160,7 +150,7 @@ public Decorations (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-void add (Menu menu) {
+void addMenu (Menu menu) {
 	if (menus == null) menus = new Menu [4];
 	for (int i=0; i<menus.length; i++) {
 		if (menus [i] == null) {
@@ -172,22 +162,6 @@ void add (Menu menu) {
 	newMenus [menus.length] = menu;
 	System.arraycopy (menus, 0, newMenus, 0, menus.length);
 	menus = newMenus;
-}
-
-void add (MenuItem item) {
-	if (items == null) items = new MenuItem [12];
-	for (int i=0; i<items.length; i++) {
-		if (items [i] == null) {
-			item.id = i + ID_START;
-			items [i] = item;
-			return;
-		}
-	}
-	item.id = items.length + ID_START;
-	MenuItem [] newItems = new MenuItem [items.length + 12];
-	newItems [items.length] = item;
-	System.arraycopy (items, 0, newItems, 0, items.length);
-	items = newItems;
 }
 
 void bringToTop () {
@@ -298,29 +272,31 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createAccelerators () {
 	hAccel = nAccel = 0;
 	int maxAccel = 0;
+	MenuItem [] items = display.items;
 	if (menuBar == null || items == null) {
 		if (!OS.IsPPC) return;
 		maxAccel = 1;
 	} else {
 		maxAccel = OS.IsPPC ? items.length + 1 : items.length;
 	}
-	int size = ACCEL.sizeof;
 	ACCEL accel = new ACCEL ();
-	byte [] buffer1 = new byte [size];	
-	byte [] buffer2 = new byte [maxAccel * size];
+	byte [] buffer1 = new byte [ACCEL.sizeof];	
+	byte [] buffer2 = new byte [maxAccel * ACCEL.sizeof];
 	if (menuBar != null && items != null) {
 		for (int i=0; i<items.length; i++) {
 			MenuItem item = items [i];
 			if (item != null && item.accelerator != 0) {
-				Menu parent = item.parent;
-				while (parent != null && parent != menuBar) {
-					parent = parent.getParentMenu ();
-				}
-				if (parent == menuBar) {
-					item.fillAccel (accel);
-					OS.MoveMemory (buffer1, accel, size);
-					System.arraycopy (buffer1, 0, buffer2, nAccel * size, size);
-					nAccel++;
+				Menu menu = item.parent;
+				if (menu.parent == this) {
+					while (menu != null && menu != menuBar) {
+						menu = menu.getParentMenu ();
+					}
+					if (menu == menuBar) {
+						item.fillAccel (accel);
+						OS.MoveMemory (buffer1, accel, ACCEL.sizeof);
+						System.arraycopy (buffer1, 0, buffer2, nAccel * ACCEL.sizeof, ACCEL.sizeof);
+						nAccel++;
+					}
 				}
 			}
 		}
@@ -333,8 +309,8 @@ void createAccelerators () {
 		accel.fVirt = (byte) (OS.FVIRTKEY | OS.FCONTROL);
 		accel.key = (short) 'Q';
 		accel.cmd = (short) OS.IDOK;
-		OS.MoveMemory (buffer1, accel, size);
-		System.arraycopy (buffer1, 0, buffer2, nAccel * size, size);
+		OS.MoveMemory (buffer1, accel, ACCEL.sizeof);
+		System.arraycopy (buffer1, 0, buffer2, nAccel * ACCEL.sizeof, ACCEL.sizeof);
 		nAccel++;			
 	}
 	if (nAccel != 0) hAccel = OS.CreateAcceleratorTable (buffer2, nAccel);
@@ -377,13 +353,6 @@ Menu findMenu (int hMenu) {
 		Menu menu = menus [i];
 		if (menu != null && hMenu == menu.handle) return menu;
 	}
-	return null;
-}
-
-MenuItem findMenuItem (int id) {
-	if (items == null) return null;
-	id = id - ID_START;
-	if (0 <= id && id < items.length) return items [id];
 	return null;
 }
 
@@ -704,14 +673,13 @@ void releaseWidget () {
 	if (largeImage != null) largeImage.dispose ();
 	smallImage = largeImage = image = null;
 	images = null;
-	items = null;
 	savedFocus = null;
 	defaultButton = saveDefault = null;
 	if (hAccel != 0 && hAccel != -1) OS.DestroyAcceleratorTable (hAccel);
 	hAccel = -1;
 }
 
-void remove (Menu menu) {
+void removeMenu (Menu menu) {
 	if (menus == null) return;
 	for (int i=0; i<menus.length; i++) {
 		if (menus [i] == menu) {
@@ -719,12 +687,6 @@ void remove (Menu menu) {
 			return;
 		}
 	}
-}
-
-void remove (MenuItem item) {
-	if (items == null) return;
-	items [item.id - ID_START] = null;
-	item.id = -1;
 }
 
 boolean restoreFocus () {
