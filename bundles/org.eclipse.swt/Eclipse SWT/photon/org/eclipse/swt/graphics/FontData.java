@@ -8,7 +8,6 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
-import java.util.Locale;
 
 public final class FontData {
 
@@ -37,11 +36,11 @@ public final class FontData {
 	public byte[] stem;
 	
 	/**
-	 * The locale of the font
-	 * (Warning: This field is platform dependent)
+	 * The locales of the font
+	 * (Warning: These fields are platform dependent)
 	 */
-	public Locale locale;
-
+	String lang, country, variant;
+	
 FontData(byte[] stem) {
 	FontQueryInfo info = new FontQueryInfo();
 	if (OS.PfQueryFontInfo(stem, info) == 0) {
@@ -173,8 +172,41 @@ public void setName(String name) {
 	this.name = name;
 }
 
-public void setLocale(Locale locale) {
-	this.locale = locale;
+/**
+ * Sets the locale of the receiver.
+ * <p>
+ * The locale determines which platform character set this
+ * font is going to use. Widgets and graphics operations that
+ * use this font will convert UNICODE strings to the platform
+ * character set of the specified locale.
+ * </p>
+ * <p>
+ * On platforms which there are multiple character sets for a
+ * given language/country locale, the variant portion of the
+ * locale will determine the character set.
+ * </p>
+ * 
+ * @param locale the <code>String</code> representing a Locale object
+ * @see java.util.Locale#toString
+ */
+public void setLocale(String locale) {
+	lang = country = variant = null;
+	if (locale != null) {
+		char sep = '_';
+		int length = locale.length();
+		int firstSep, secondSep;
+		
+		firstSep = locale.indexOf(sep);
+		if (firstSep == -1) {
+			firstSep = secondSep = length;
+		} else {
+			secondSep = locale.indexOf(sep, firstSep + 1);
+			if (secondSep == -1) secondSep = length;
+		}
+		if (firstSep > 0) lang = locale.substring(0, firstSep);
+		if (secondSep > firstSep + 1) country = locale.substring(firstSep + 1, secondSep);
+		if (length > secondSep + 1) variant = locale.substring(secondSep + 1);
+	}	
 }
 
 public void setStyle(int style) {
