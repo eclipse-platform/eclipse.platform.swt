@@ -114,8 +114,10 @@ void createHandle (int index) {
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
 		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
 		OS.XmNprocessingDirection, ((style & SWT.H_SCROLL) != 0) ? OS.XmMAX_ON_RIGHT : OS.XmMAX_ON_BOTTOM,
+		OS.XmNancestorSensitive, 1,
 	};
-	handle = OS.XmCreateScale (parent.handle, null, argList, argList.length / 2);
+	int parentHandle = parent.handle;
+	handle = OS.XmCreateScale (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 /**

@@ -66,6 +66,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle (int index) {
 	state |= HANDLE;
 	int background = defaultBackground ();
+	int parentHandle = parent.handle;
 	int [] argList = {
 		OS.XmNshowArrows, 0,
 		OS.XmNsliderSize, 1,
@@ -77,8 +78,9 @@ void createHandle (int index) {
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
 		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
 		OS.XmNprocessingDirection, ((style & SWT.H_SCROLL) != 0) ? OS.XmMAX_ON_RIGHT : OS.XmMAX_ON_TOP,
+		OS.XmNancestorSensitive, 1,
 	};
-	handle = OS.XmCreateScrollBar (parent.handle, null, argList, argList.length / 2);
+	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 void disableButtonPress () {

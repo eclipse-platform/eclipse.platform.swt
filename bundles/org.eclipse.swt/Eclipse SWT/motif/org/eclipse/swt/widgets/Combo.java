@@ -331,7 +331,9 @@ void createHandle (int index) {
 	* is to create a parent for the list that will disallow
 	* geometry requests.
 	*/
-	formHandle = OS.XmCreateForm (parent.handle, null, null, 0);
+	int parentHandle = parent.handle;
+	int [] argList1 = {OS.XmNancestorSensitive, 1};
+	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
 	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int comboBoxType = OS.XmDROP_DOWN_COMBO_BOX;
 	if ((style & SWT.SIMPLE) != 0) {
@@ -339,7 +341,7 @@ void createHandle (int index) {
 	} else if ((style & SWT.READ_ONLY) != 0) {
 		comboBoxType = OS.XmDROP_DOWN_LIST;
 	}
-	int [] argList = {
+	int [] argList2 = {
 		OS.XmNcomboBoxType, comboBoxType,
 		OS.XmNtopAttachment, OS.XmATTACH_FORM,
 		OS.XmNbottomAttachment, OS.XmATTACH_FORM,
@@ -347,7 +349,7 @@ void createHandle (int index) {
 		OS.XmNrightAttachment, OS.XmATTACH_FORM,
 		OS.XmNresizable, 0,
 	};
-	handle = OS.XmCreateComboBox (formHandle, null, argList, argList.length / 2);
+	handle = OS.XmCreateComboBox (formHandle, null, argList2, argList2.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 /**

@@ -264,7 +264,9 @@ void createHandle (int index) {
 	* is to create a parent for the list that will disallow
 	* geometry requests.
 	*/
-	formHandle = OS.XmCreateForm (parent.handle, null, null, 0);
+	int parentHandle = parent.handle;
+	int [] argList1 = {OS.XmNancestorSensitive, 1};
+	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
 	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int selectionPolicy = OS.XmBROWSE_SELECT, listSizePolicy = OS.XmCONSTANT;
 	if ((style & SWT.MULTI) != 0) {
@@ -272,7 +274,7 @@ void createHandle (int index) {
 		if ((style & SWT.SIMPLE) != 0) selectionPolicy = OS.XmMULTIPLE_SELECT;
 	}
 	if ((style & SWT.H_SCROLL) == 0) listSizePolicy = OS.XmVARIABLE;
-	int [] argList = {
+	int [] argList2 = {
 		OS.XmNlistSizePolicy, listSizePolicy,
 		OS.XmNselectionPolicy, selectionPolicy,
 		OS.XmNtopAttachment, OS.XmATTACH_FORM,
@@ -283,10 +285,10 @@ void createHandle (int index) {
 //		OS.XmNmatchBehavior, OS.XmNONE,
 	};
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
-		handle = OS.XmCreateList (formHandle, null, argList, argList.length / 2);
+		handle = OS.XmCreateList (formHandle, null, argList2, argList2.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		handle = OS.XmCreateScrolledList (formHandle, null, argList, argList.length / 2);
+		handle = OS.XmCreateScrolledList (formHandle, null, argList2, argList2.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		scrolledHandle = OS.XtParent (handle);
 	}

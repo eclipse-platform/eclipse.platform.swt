@@ -378,12 +378,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createWidget (int index) {
 	super.createWidget (index);
+	
 	/*
 	* Feature in MOTIF.  When a widget is created before the
 	* parent has been realized, the widget is created behind
 	* all siblings in the Z-order.  When a widget is created
-	* after the parent parent has been realized, it is created
-	* in front of all siblings.  This is not incorrect but is
+	* after the parent has been realized, it is created in
+	* front of all siblings.  This is not incorrect but is
 	* unexpected.  The fix is to force all widgets to always
 	* be created behind their siblings.
 	*/
@@ -402,6 +403,7 @@ void createWidget (int index) {
 		*/
 		realizeChildren ();
 	}
+	
 	/*
 	* Bug in Motif.  Under certain circumstances, when a
 	* text widget is created as a child of another control

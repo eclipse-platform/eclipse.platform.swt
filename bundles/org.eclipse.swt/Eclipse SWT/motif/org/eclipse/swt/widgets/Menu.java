@@ -141,7 +141,8 @@ void createHandle (int index) {
 	/* BAR menu */
 	if ((style & SWT.BAR) != 0) {
 		int parentHandle = parent.scrolledHandle;
-		handle = OS.XmCreateMenuBar (parentHandle, null, null, 0);
+		int [] argList = {OS.XmNancestorSensitive, 1};
+		handle = OS.XmCreateMenuBar (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
@@ -161,7 +162,8 @@ void createHandle (int index) {
 	*/
 	if ((style & SWT.POP_UP) != 0) {
 		int parentHandle = parent.dialogHandle ();
-		handle = OS.XmCreatePopupMenu (parentHandle, new byte [1], null, 0);
+		int [] argList = {OS.XmNancestorSensitive, 1};
+		handle = OS.XmCreatePopupMenu (parentHandle, new byte [1], argList, argList.length / 2);
 	} else {
 		/*
 		* Bug in Linux.  For some reason, when the parent of the pulldown
@@ -170,7 +172,8 @@ void createHandle (int index) {
 		* that the parent is the main window.
 		*/
 		int parentHandle = parent.scrolledHandle;
-		handle = OS.XmCreatePulldownMenu (parentHandle, new byte [1], null, 0);
+		int [] argList = {OS.XmNancestorSensitive, 1};
+		handle = OS.XmCreatePulldownMenu (parentHandle, new byte [1], argList, argList.length / 2);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 

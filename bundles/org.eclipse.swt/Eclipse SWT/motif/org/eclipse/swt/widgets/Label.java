@@ -129,16 +129,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
+	int parentHandle = parent.handle;
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
 	if ((style & SWT.SEPARATOR) != 0) {
 		int separatorType = separatorType ();
 		int orientation = (style & SWT.HORIZONTAL) != 0 ? OS.XmHORIZONTAL : OS.XmVERTICAL;
 		int [] argList = {
+			OS.XmNancestorSensitive, 1,
 			OS.XmNborderWidth, borderWidth,
 			OS.XmNorientation, orientation,
 			OS.XmNseparatorType, separatorType,
 		};
-		handle = OS.XmCreateSeparator (parent.handle, null, argList, argList.length / 2);
+		handle = OS.XmCreateSeparator (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
@@ -146,11 +148,12 @@ void createHandle (int index) {
 	if ((style & SWT.CENTER) != 0) alignment = OS.XmALIGNMENT_CENTER;
 	if ((style & SWT.RIGHT) != 0) alignment = OS.XmALIGNMENT_END;
 	int [] argList = {
+		OS.XmNancestorSensitive, 1,
 		OS.XmNrecomputeSize, 0,
 		OS.XmNalignment, alignment,
 		OS.XmNborderWidth, borderWidth,
 	};
-	handle = OS.XmCreateLabel (parent.handle, null, argList, argList.length / 2);
+	handle = OS.XmCreateLabel (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 int defaultBackground () {

@@ -318,13 +318,13 @@ void createHandle (int index) {
 		OS.XmNcursorPositionVisible, (style & SWT.READ_ONLY) != 0 && (style & SWT.SINGLE) != 0 ? 0 : 1,
 //		OS.XmNmarginWidth, 3,
 //		OS.XmNmarginHeight, 1,
+		OS.XmNancestorSensitive, 1,
 	};
+	int parentHandle = parent.handle;
 	if ((style & SWT.SINGLE) != 0) {	
-		handle = OS.XmCreateTextField (parent.handle, null, argList1, argList1.length / 2);
+		handle = OS.XmCreateTextField (parentHandle, null, argList1, argList1.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-		int [] argList2 = new int [] {
-			OS.XmNcursorPositionVisible, 0,
-		};
+		int [] argList2 = new int [] {OS.XmNcursorPositionVisible, 0};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 		if ((style & SWT.BORDER) == 0) {
 			int [] argList3 = new int [] {
@@ -334,7 +334,7 @@ void createHandle (int index) {
 			OS.XtSetValues (handle, argList3, argList3.length / 2);
 		}
 	} else {
-		handle = OS.XmCreateScrolledText (parent.handle, null, argList1, argList1.length / 2);
+		handle = OS.XmCreateScrolledText (parentHandle, null, argList1, argList1.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		scrolledHandle = OS.XtParent (handle);
 	}	

@@ -148,12 +148,14 @@ public Point computeSize (int wHint, int hHint) {
 void createHandle (int index) {
 	state |= HANDLE;
 	int [] argList = {
+		OS.XmNancestorSensitive, 1,
 		OS.XmNwidth, MINIMUM_WIDTH,
 		OS.XmNheight, DEFAULT_HEIGHT,
 		OS.XmNpositionIndex, index,
 		OS.XmNtraversalOn, 0,
 	};
-	handle = OS.XmCreateDrawingArea(parent.handle, null, argList, argList.length / 2);
+	int parentHandle = parent.handle;
+	handle = OS.XmCreateDrawingArea(parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 public void dispose () {

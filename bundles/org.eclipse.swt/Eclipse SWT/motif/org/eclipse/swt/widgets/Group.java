@@ -88,8 +88,12 @@ void createHandle (int index) {
 	* the list that will disallow geometry requests.
 	*/
 	int border = (style & SWT.BORDER) != 0 ? 1 : 0;
-	int [] argList1 = {OS.XmNborderWidth, border};
-	formHandle = OS.XmCreateForm (parent.handle, null, argList1, argList1.length / 2);
+	int [] argList1 = {
+		OS.XmNancestorSensitive, 1,
+		OS.XmNborderWidth, border,
+	};
+	int parentHandle = parent.handle;
+	formHandle = OS.XmCreateForm (parentHandle, null, argList1, argList1.length / 2);
 	if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int [] argList2 = {
 		OS.XmNshadowType, shadowType (),

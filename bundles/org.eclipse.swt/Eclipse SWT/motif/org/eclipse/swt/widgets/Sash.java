@@ -119,8 +119,10 @@ void createHandle (int index) {
 		OS.XmNmarginWidth, 0,
 		OS.XmNmarginHeight, 0,
 		OS.XmNresizePolicy, OS.XmRESIZE_NONE,
+		OS.XmNancestorSensitive, 1,
 	};
-	handle = OS.XmCreateDrawingArea (parent.handle, null, argList, argList.length / 2);
+	int parentHandle = parent.handle;
+	handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
 }
 void drawBand (int x, int y, int width, int height) {
 	int display = OS.XtDisplay (parent.handle);

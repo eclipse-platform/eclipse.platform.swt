@@ -561,6 +561,7 @@ public class OS {
 //	public static final int XmNUMERIC = 0x3;
 
 	/* byte */
+	public static final int XmNancestorSensitive = malloc ("ancestorSensitive");
 	public static final int XmNanimationStyle = malloc ("animationStyle");
 	public static final int XmNalignment = malloc ("alignment");
 	public static final int XmNarrowDirection = malloc ("arrowDirection");

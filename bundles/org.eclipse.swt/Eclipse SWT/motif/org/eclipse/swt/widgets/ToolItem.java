@@ -98,6 +98,7 @@ void createHandle (int index) {
 			OS.XmNrecomputeSize, 0,
 			OS.XmNpositionIndex, index,
 			OS.XmNmappedWhenManaged, 0,
+			OS.XmNancestorSensitive, 1,
 		};
 		handle = OS.XmCreateDrawnButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -113,6 +114,7 @@ void createHandle (int index) {
 		OS.XmNtraversalOn, 0,
 		OS.XmNpositionIndex, index,
 		OS.XmNshadowType, OS.XmSHADOW_OUT,
+		OS.XmNancestorSensitive, 1,
 	};
 	handle = OS.XmCreateDrawnButton (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);

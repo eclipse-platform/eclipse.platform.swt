@@ -155,6 +155,7 @@ void createHandle (int index) {
 	}
 	if ((style & SWT.SEPARATOR) != 0) {
 		int [] argList = {
+			OS.XmNancestorSensitive, 1,
 			OS.XmNorientation, (parent.style & SWT.BAR) != 0 ? OS.XmVERTICAL : OS.XmHORIZONTAL,
 			OS.XmNpositionIndex, index,
 		};
@@ -162,7 +163,10 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
-	int [] argList = {OS.XmNpositionIndex, index};
+	int [] argList = {
+		OS.XmNancestorSensitive, 1,
+		OS.XmNpositionIndex, index,
+	};
 	if ((style & SWT.PUSH) != 0) {
 		handle = OS.XmCreatePushButtonGadget (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);

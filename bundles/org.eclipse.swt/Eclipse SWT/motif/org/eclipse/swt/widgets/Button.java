@@ -168,6 +168,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle (int index) {
 	state |= HANDLE;
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
+	int parentHandle = parent.handle;
 	
 	/* ARROW button */
 	if ((style & SWT.ARROW) != 0) {
@@ -180,8 +181,9 @@ void createHandle (int index) {
 			OS.XmNtraversalOn, 0,
 			OS.XmNarrowDirection, alignment,
 			OS.XmNborderWidth, borderWidth,
+			OS.XmNancestorSensitive, 1,
 		};
-		handle = OS.XmCreateArrowButton (parent.handle, null, argList, argList.length / 2);
+		handle = OS.XmCreateArrowButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		if ((style & SWT.FLAT) != 0) {
 			int [] argList1 = {OS.XmNshadowThickness, 1};
@@ -206,13 +208,14 @@ void createHandle (int index) {
 		Display display = getDisplay ();
 		int thickness = display.buttonShadowThickness;
 		int [] argList = {
+			OS.XmNancestorSensitive, 1,
 			OS.XmNrecomputeSize, 0,
 			OS.XmNindicatorOn, 0,
 			OS.XmNshadowThickness, (style & SWT.FLAT) != 0 ? 1 : thickness,
 			OS.XmNalignment, alignment,
 			OS.XmNborderWidth, borderWidth,
 		};
-		handle = OS.XmCreateToggleButton (parent.handle, null, argList, argList.length / 2);
+		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
@@ -228,19 +231,21 @@ void createHandle (int index) {
 		*/
 		int indicatorType = OS.XmONE_OF_MANY;
 		if ((style & SWT.CHECK) != 0) indicatorType = OS.XmN_OF_MANY;
-		int [] argList = {
+		int [] argList = {	
+			OS.XmNancestorSensitive, 1,
 			OS.XmNrecomputeSize, 0,
 			OS.XmNindicatorType, indicatorType,
 			OS.XmNalignment, alignment,
 			OS.XmNborderWidth, borderWidth,
 		};
-		handle = OS.XmCreateToggleButton (parent.handle, null, argList, argList.length / 2);
+		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
 	
 	/* PUSH button */
 	int [] argList = {
+		OS.XmNancestorSensitive, 1,
 		OS.XmNrecomputeSize, 0,
 		OS.XmNalignment, alignment,
 		OS.XmNborderWidth, borderWidth,
@@ -255,7 +260,7 @@ void createHandle (int index) {
 		*/
 //		OS.XmNnavigationType, OS.XmTAB_GROUP,
 	};
-	handle = OS.XmCreatePushButton (parent.handle, null, argList, argList.length / 2);
+	handle = OS.XmCreatePushButton (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.FLAT) != 0) {
 		int [] argList1 = {OS.XmNshadowThickness, 1};
