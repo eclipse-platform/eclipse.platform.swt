@@ -60,10 +60,10 @@ public final class GC {
 	static final int DefaultFore = 0x000000;
 	static final byte[][] DashList = {
 		{ },                   // SWT.LINE_SOLID
-		{ 10, 4 },             // SWT.LINE_DASH
-		{ 2, 2 },              // SWT.LINE_DOT
-		{ 10, 4, 2, 4 },       // SWT.LINE_DASHDOT
-		{ 10, 4, 2, 4, 2, 4 }  // SWT.LINE_DASHDOTDOT
+		{ 18, 6 },             // SWT.LINE_DASH
+		{ 3, 3 },              // SWT.LINE_DOT
+		{ 9, 6, 3, 6 },       // SWT.LINE_DASHDOT
+		{ 9, 3, 3, 3, 3, 3 }  // SWT.LINE_DASHDOTDOT
 	};
 	// Photon Draw Buffer Size for off screen drawing.
 	static int DrawBufferSize = 48 * 1024;
