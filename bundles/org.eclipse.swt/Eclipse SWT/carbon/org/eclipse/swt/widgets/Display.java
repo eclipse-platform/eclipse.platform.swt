@@ -190,26 +190,12 @@ public class Display extends Device {
 	/* Double Click */
 	int lastTime, lastButton;
 	
-	/* mouse button state */
-	int fMouseButtonState;
-	
 	/* Current caret */
 	Caret currentCaret;
 	int caretID, caretProc;
 			
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.widgets.";
-	/*
-	* This code is intentionally commented.  In order
-	* to support CLDC, .class cannot be used because
-	* it does not compile on some Java compilers when
-	* they are targeted for CLDC.
-	*/
-//	static {
-//		String name = Display.class.getName ();
-//		int index = name.lastIndexOf ('.');
-//		PACKAGE_PREFIX = name.substring (0, index + 1);
-//	}
 	
 	/* Mouse Hover */
 	int mouseHoverID, mouseHoverProc;
@@ -231,7 +217,7 @@ public class Display extends Device {
 	//int fMouseProc;
 	int fWindowProc;
 	int fMenuProc;
-	int fControlProc;
+	//int fControlProc;
 	int fControlActionProc;
 	int fUserPaneDrawProc;
 	int fUserPaneHitTestProc;
@@ -949,9 +935,11 @@ protected void init () {
 	fMenuProc= OS.NewMenuCallbackUPP(this, "handleMenuCallback");
 	if (fMenuProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
+	/*
 	fControlProc= OS.NewControlCallbackUPP(this, "handleControlCallback");
 	if (fControlProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-
+	*/
+	
 	int textInputProc= OS.NewTextCallbackUPP(this, "handleTextCallback");
 	if (textInputProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	int[] mask= new int[] {
@@ -1163,15 +1151,11 @@ public boolean readAndDispatch () {
 	
 	switch (rc) {
 	case OS.kNoErr:
-		int target= OS.GetEventDispatcherTarget();
-		int event= evt[0];
-		
-		MacEvent.trackStateMask(event);
-				
-		OS.SendEventToEventTarget(event, target);
+		int event= evt[0];		
+		OS.SendEventToEventTarget(event, OS.GetEventDispatcherTarget());
 		OS.ReleaseEvent(event);
 		repairPending();
-		runDeferredEvents ();
+		runDeferredEvents();
 		return true;
 		
 	case OS.eventLoopTimedOutErr:
@@ -1948,15 +1932,15 @@ static String convertToLf(String text) {
 		return OS.kNoErr;
 	}
 	
+	/*
 	private int handleControlCallback(int eHandle, int cHandle) {
 		Widget w= findWidget(cHandle);
 		if (w instanceof Scrollable)
 			((Scrollable)w).handleResizeScrollView(cHandle);
 		return OS.kNoErr;
 	}
-	
-	//private String fUnicodeString;
-	
+	*/
+		
 	private int handleTextCallback(int nextHandler, int eRefHandle) {
 		
 		int eventClass= OS.GetEventClass(eRefHandle);
@@ -2159,8 +2143,6 @@ static String convertToLf(String text) {
 		int eventKind= OS.GetEventKind(eRefHandle);
 		
 		if (eventKind == OS.kEventMouseDown) {
-			//System.out.println("  handleMouseCallback: kEventMouseDown " + whichWindow);	
-			//System.out.println("     frontw " + OS.FrontWindow());
 			fTrackedControl= 0;
 		}
 		
@@ -2188,6 +2170,8 @@ static String convertToLf(String text) {
 			return OS.eventNotHandledErr;
 		}
 			
+		MacEvent.trackStateMask(eRefHandle, eventKind);
+		
 		int oldPort= OS.GetPort();
 		OS.SetPortWindowPort(whichWindow);
 		OS.GlobalToLocal(where.getData());
@@ -2215,7 +2199,6 @@ static String convertToLf(String text) {
 		
 		case OS.kEventMouseDragged:
 			if (fTrackedControl != 0) {
-				me.getData()[0]= 12345;
 				windowProc(fTrackedControl, SWT.MouseMove, me);
 				return OS.kNoErr;
 			}
@@ -2230,6 +2213,8 @@ static String convertToLf(String text) {
 			break;
 			
 		case OS.kEventMouseMoved:
+		
+			fTrackedControl= 0;
 		
 			short[] cpart= new short[1];
 			int whichControl= MacUtil.findControlUnderMouse(where, whichWindow, cpart);
@@ -2494,8 +2479,8 @@ static String convertToLf(String text) {
 			return;
 			
 		if (true) {
-			MacEvent me= new MacEvent();
-			while (OS.GetNextEvent(OS.updateMask, me.getData()))
+			int[] macEvent= new int[6];
+			while (OS.GetNextEvent(OS.updateMask, macEvent))
 				;
 				//if (me.getWhat() == OS.updateEvt)
 				//	getDefault().updateWindow(me.getMessage());
