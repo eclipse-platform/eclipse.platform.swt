@@ -26,7 +26,7 @@ class TableTab extends ScrollableTab {
 	Button checkButton, fullSelectionButton, hideSelectionButton;
 
 	/* Other widgets added to the "Other" group */
-	Button headerVisibleButton, linesVisibleButton;
+	Button multipleColumns, headerVisibleButton, linesVisibleButton;
 	
 	/* Controls and resources added to the "Colors" group */
 	Button itemForegroundButton, itemBackgroundButton, itemFontButton;
@@ -39,20 +39,19 @@ class TableTab extends ScrollableTab {
 									   ControlExample.getResourceString("TableTitle_2"),
 									   ControlExample.getResourceString("TableTitle_3")};
 									   
-	static String [] stringLine0	= {ControlExample.getResourceString("TableLine0_0"),
-									   ControlExample.getResourceString("TableLine0_1"),
-									   ControlExample.getResourceString("TableLine0_2"),
-									   ControlExample.getResourceString("TableLine0_3")};
-									   
-	static String [] stringLine1	= {ControlExample.getResourceString("TableLine1_0"),
-									   ControlExample.getResourceString("TableLine1_1"),
-									   ControlExample.getResourceString("TableLine1_2"),
-									   ControlExample.getResourceString("TableLine1_3")};
-									   
-	static String [] stringLine2	= {ControlExample.getResourceString("TableLine2_0"),
-									   ControlExample.getResourceString("TableLine2_1"),
-									   ControlExample.getResourceString("TableLine2_2"),
-									   ControlExample.getResourceString("TableLine2_3")};
+	static String[][] tableData = {
+		{ ControlExample.getResourceString("TableLine0_0"),
+				ControlExample.getResourceString("TableLine0_1"),
+				ControlExample.getResourceString("TableLine0_2"),
+				ControlExample.getResourceString("TableLine0_3") },
+		{ ControlExample.getResourceString("TableLine1_0"),
+				ControlExample.getResourceString("TableLine1_1"),
+				ControlExample.getResourceString("TableLine1_2"),
+				ControlExample.getResourceString("TableLine1_3") },
+		{ ControlExample.getResourceString("TableLine2_0"),
+				ControlExample.getResourceString("TableLine2_1"),
+				ControlExample.getResourceString("TableLine2_2"),
+				ControlExample.getResourceString("TableLine2_3") } };
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -155,12 +154,20 @@ class TableTab extends ScrollableTab {
 		super.createOtherGroup ();
 	
 		/* Create display controls specific to this example */
+		multipleColumns = new Button (otherGroup, SWT.CHECK);
+		multipleColumns.setText (ControlExample.getResourceString("Multiple_Columns"));
+		multipleColumns.setSelection(true);
 		headerVisibleButton = new Button (otherGroup, SWT.CHECK);
 		headerVisibleButton.setText (ControlExample.getResourceString("Header_Visible"));
 		linesVisibleButton = new Button (otherGroup, SWT.CHECK);
 		linesVisibleButton.setText (ControlExample.getResourceString("Lines_Visible"));
 	
 		/* Add the listeners */
+		multipleColumns.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				recreateExampleWidgets ();
+			}
+		});
 		headerVisibleButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetHeaderVisible ();
@@ -205,29 +212,30 @@ class TableTab extends ScrollableTab {
 		table1 = new Table (tableGroup, style);
 	
 		/* Fill the table with data */
-		for (int i = 0; i < columnTitles.length; i++) {
-			TableColumn tableColumn = new TableColumn(table1, SWT.NONE);
-			tableColumn.setText(columnTitles[i]);
-		}	
+		if (multipleColumns.getSelection()) {
+			for (int i = 0; i < columnTitles.length; i++) {
+				TableColumn tableColumn = new TableColumn(table1, SWT.NONE);
+				tableColumn.setText(columnTitles[i]);
+			}
+		} else {
+			new TableColumn(table1, SWT.NONE);
+		}
 		for (int i=0; i<16; i++) {
 			TableItem item = new TableItem (table1, SWT.NONE);
 			item.setImage (instance.images [i % 3]);
-			switch (i % 3) {
-				case 0:
-					stringLine0 [0] = ControlExample.getResourceString("Index") + i;
-					item.setText(stringLine0);
-					break;
-				case 1:
-					stringLine1 [0] = ControlExample.getResourceString("Index") + i;
-					item.setText(stringLine1);
-					break;
-				case 2:
-					stringLine2 [0] = ControlExample.getResourceString("Index") + i;
-					item.setText(stringLine2);
-					break;
-			}
+			setItemText (item, i, ControlExample.getResourceString("Index") + i);
 		}
 		packColumns();
+	}
+	
+	void setItemText(TableItem item, int i, String node) {
+		int index = i % 3;
+		if (multipleColumns.getSelection()) {
+			tableData [index][0] = node;
+			item.setText (tableData [index]);
+		} else {
+			item.setText (node);
+		}		
 	}
 	
 	/**
@@ -338,7 +346,8 @@ class TableTab extends ScrollableTab {
 	}
 	
 	void packColumns () {
-		for (int i = 0; i < columnTitles.length; i++) {
+		int columnCount = table1.getColumnCount(); 
+		for (int i = 0; i < columnCount; i++) {
 			TableColumn tableColumn = table1.getColumn(i);
 			tableColumn.pack();
 		}
