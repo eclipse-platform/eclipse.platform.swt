@@ -9,32 +9,54 @@ package org.eclipse.swt.custom;
 /**
  * Use StyledTextPrintOptions to specify printing options for the
  * StyledText.print(Printer, StyledTextPrintOptions) API.
+ * <p>
+ * The following example prints a right aligned page number in the footer,
+ * sets the job name to "Example" and prints line background colors but no other
+ * formatting:
+ * </p>
+ * <pre>
+ * StyledTextPrintOptions options = new StyledTextPrintOptions();
+ * options.footer = "\t\t&lt;page&gt;"; 
+ * options.jobName = "Example";
+ * options.printLineBackground = true;
  * 
- * The following example prints a right aligned page number in 
- * the footer, sets the job name to "Example" and prints line 
- * background colors but no other formatting:
- * 
- * StyledTextPrintOptions options = 
- * 		new StyledTextPrintOptions(null, "\t\t<page>", "Example", ST.LINE_BACKGROUND);
- * Runnable runnable = styledText.print(new Printer(), options);
+ * Runnable runnable = styledText.print(new Printer(), options); 
  * runnable.run();
- *
- * NOTE: This class is experimental API and subject to change.
- * 
+ * </pre>
  * @since 2.1
  */
 public class StyledTextPrintOptions {
+	/**
+	 * Page number placeholder constant for use in <code>header</code>
+	 * and <code>footer</code>. Value is <code>&lt;page&gt;</code>
+	 */
 	public static final String PAGE_TAG = "<page>";
+	/**
+	 * Separator constant for use in <code>header</code> and
+	 * <code>footer</code>. Value is <code>\t</code>
+	 */
 	public static final String SEPARATOR = "\t";
 	/**
 	 * Formatted text to print in the header of each page.
-	 * "left '\t' center '\t' right"
-	 * left, center, right = <page> | #CDATA	 * Header and footer are defined as three separate regions 
-	 * for arbitrary text or the page number placeholder <page> (PAGE_TAG). 
-	 * The three regions are left aligned, centered and right aligned. 
-	 * They are separated by a tab character (SEPARATOR).
+	 * <p>"left '\t' center '\t' right"</p>
+	 * <p>left, center, right = &lt;page&gt; | #CDATA</p>
+	 * <p>Header and footer are defined as three separate regions for arbitrary
+	 * text or the page number placeholder &lt;page&gt;
+	 * (<code>StyledTextPrintOptions.PAGE_TAG</code>). The three regions are 
+	 * left aligned, centered and right aligned. They are separated by a tab
+	 * character (<code>StyledTextPrintOptions.SEPARATOR</code>).
 	 */
 	public String header = null;
+	/**
+	 * Formatted text to print in the footer of each page.
+	 * <p>"left '\t' center '\t' right"</p>
+	 * <p>left, center, right = &lt;page&gt; | #CDATA</p>
+	 * <p>Header and footer are defined as three separate regions for arbitrary
+	 * text or the page number placeholder &lt;page&gt;
+	 * (<code>StyledTextPrintOptions.PAGE_TAG</code>). The three regions are 
+	 * left aligned, centered and right aligned. They are separated by a tab
+	 * character (<code>StyledTextPrintOptions.SEPARATOR</code>).
+	 */
 	public String footer = null;
 	/**
 	 * Name of the print job.	 */
