@@ -2632,7 +2632,7 @@ void setButtonBounds() {
 		redraw(left, top, right - left, tabHeight, false);
 	}
 }
-void setFirstItem(int index) {
+void setFirstIndex(int index) {
 	if (index < 0 || index > items.length - 1) return;
 	if (index == firstIndex) return;
 	firstIndex = index;
@@ -3503,7 +3503,7 @@ public void showItem (CTabItem item) {
 	Point size = getSize();
 	int index = indexOf(item);
 	if (size.x <= borderLeft + borderRight || index < firstIndex) {
-		setFirstItem(index);
+		setFirstIndex(index);
 	} else {
 		setLastIndex(index);
 	}
