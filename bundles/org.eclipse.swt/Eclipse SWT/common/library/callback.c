@@ -12,7 +12,6 @@
 /**
  * Callback implementation.
  */
-#include "swt.h"
 #include "callback.h"
 #include <string.h>
 
@@ -302,8 +301,8 @@ SWT_PTR callback(int index, ...)
 	if (isArrayBased) {
 		int i;
 		jint argCount = (*env)->GetIntField(env, callback, argCountID);
-		jintArray javaArray = (*env)->NewSWT_PTRArray(env, argCount);
-		jint *elements = (*env)->GetSWT_PTRArrayElements(env, javaArray, NULL);
+		SWT_PTRArray javaArray = (*env)->NewSWT_PTRArray(env, argCount);
+		SWT_PTR *elements = (*env)->GetSWT_PTRArrayElements(env, javaArray, NULL);
 		for (i=0; i<argCount; i++) {
 			elements[i] = va_arg(vl, SWT_PTR); 
 		}

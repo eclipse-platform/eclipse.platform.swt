@@ -15,6 +15,8 @@
 #ifndef INC_callback_H
 #define INC_callback_H
 
+#include "swt.h"
+
 #if defined (WIN32) || defined (_WIN32_WCE)
 #include "windows.h"
 #define RETURN_TYPE LRESULT CALLBACK
@@ -22,7 +24,7 @@
 #endif
 
 #ifndef RETURN_TYPE
-#define RETURN_TYPE int
+#define RETURN_TYPE SWT_PTR
 #endif
 
 #ifndef RETURN_CAST
