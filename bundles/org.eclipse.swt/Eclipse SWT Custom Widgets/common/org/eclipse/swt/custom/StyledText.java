@@ -3929,34 +3929,33 @@ public void paste(){
 }
 /** 
  * Prints the widget's text to the default printer.
- * <p>
- * This method may be called from a non-UI thread.
- * </p>
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void print()  {
-	if (isDisposed()) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	new StyledTextPrinter(this).print();
+public void print() {
+	checkWidget();
+	StyledTextPrinter.print(this);
 }
 /** 
- * Prints the widget's text to the specified printer.
+ * Returns a runnable that will print the widget's text
+ * to the specified printer.
  * <p>
- * This method may be called from a non-UI thread.
+ * The runnable may be run in a non-UI thread.
  * </p>
  * 
  * @param printer the printer to print to
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void print(Printer printer) {
-	if (isDisposed()) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	new StyledTextPrinter(this).print(printer);
-}
-
+public Runnable print(Printer printer) {
+	checkWidget();
+	return new StyledTextPrinter(this, printer);
+}
 /** 
  * Scrolls the widget horizontally.
  */
