@@ -2386,12 +2386,16 @@ boolean translateTraversal (int gdkEvent) {
 		case OS.GDK_Tab: {
 			boolean next = (state[0] & OS.GDK_SHIFT_MASK) == 0;
 			/*
-			 * NOTE: This code emulates a bug/feature on Windows where
-			 * the default is that that Shift+Tab and Ctrl+Tab traverses
-			 * instead of going to the widget.  StyledText currently
-			 * relies on this behavior.
-			 */
-			switch (state[0]) {
+			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
+			* always attempt traversal which is not correct.
+			* The default should be the same as a plain Tab key.
+			* This behavior is currently relied on by StyledText.
+			* 
+			* The correct behavior is to give every key to any
+			* control that wants to see every key.  The default
+			* behavior for a Canvas should be to see every key.
+			*/
+			switch (state [0]) {
 				case OS.GDK_SHIFT_MASK:
 				case OS.GDK_CONTROL_MASK:
 					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
@@ -2410,7 +2414,17 @@ boolean translateTraversal (int gdkEvent) {
 		case OS.GDK_Page_Up:
 		case OS.GDK_Page_Down: {
 			all = true;
-			if ((state[0] & OS.GDK_CONTROL_MASK) == 0) return false;
+			if ((state [0] & OS.GDK_CONTROL_MASK) == 0) return false;
+			/*
+			* NOTE: This code causes Ctrl+PgUp and Ctrl+PgDn to always
+			* attempt traversal which is not correct.  This behavior is
+			* currently relied on by StyledText.
+			* 
+			* The correct behavior is to give every key to any
+			* control that wants to see every key.  The default
+			* behavior for a Canvas should be to see every key.
+			*/
+			code |= SWT.TRAVERSE_PAGE_NEXT | SWT.TRAVERSE_PAGE_PREVIOUS;
 			detail = key == OS.GDK_Page_Down ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}
