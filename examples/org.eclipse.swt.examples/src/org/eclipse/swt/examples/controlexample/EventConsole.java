@@ -11,7 +11,7 @@ public class EventConsole {
 	boolean isActive = true;
 	boolean [] eventsFilter = new boolean [35];
 	
-	final static String [] EVENT_TYPES = {
+	final static String [] EVENT_TYPES = { "",
 		"KeyDown", "KeyUp", "MouseDown", "MouseUp", "MouseMove", "MouseEnter",		
 		"MouseExit", "MouseDoubleClick", "Paint", "Move", "Resize", "Dispose",
 		"Selection", "DefaultSelection", "FocusIn", "FocusOut", "Expand", "Collapse",
