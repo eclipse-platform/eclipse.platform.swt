@@ -31,7 +31,7 @@ public XPCOMObject(int[] argCounts) {
 			Callbacks[i][argCounts[i]] = new Callback(this.getClass(), "callback"+i, argCounts[i] + 1, true); //$NON-NLS-1$
 		}
 		callbackAddresses[i] = Callbacks[i][argCounts[i]].getAddress();
-		if (callbackAddresses[i] == 0)  SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+		if (callbackAddresses[i] == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	}	
 
 	int /*long*/ pVtable = XPCOM.PR_Malloc(OS.PTR_SIZEOF * argCounts.length);
