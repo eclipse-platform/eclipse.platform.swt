@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  *
- * @see Scrollbar
+ * @see ScrollBar
  */
 
 public class Slider extends Control {
@@ -250,8 +250,6 @@ public int getSelection () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- *
- * @see Slider
  */
 public int getThumb () {
 	checkWidget ();

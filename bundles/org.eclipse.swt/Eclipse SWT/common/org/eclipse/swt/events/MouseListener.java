@@ -31,7 +31,7 @@ public interface MouseListener extends EventListener {
  *
  * @param e an event containing information about the mouse double click
  *
- * @see Display#getDoubleClickTime
+ * @see org.eclipse.swt.widgets.Display#getDoubleClickTime
  */
 public void mouseDoubleClick(MouseEvent e);
 

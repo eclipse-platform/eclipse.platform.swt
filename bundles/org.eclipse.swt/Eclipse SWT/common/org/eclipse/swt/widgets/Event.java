@@ -19,7 +19,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  * 
  * @see Listener
- * @see TypedEvent
+ * @see org.eclipse.swt.events.TypedEvent
  */
 
 public class Event {

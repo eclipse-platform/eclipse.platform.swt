@@ -663,7 +663,7 @@ public void setImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see setMinimized
+ * @see #setMinimized
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
@@ -721,7 +721,7 @@ public void setMenuBar (Menu menu) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  *
- * @see setMaximized
+ * @see #setMaximized
  */
 public void setMinimized (boolean minimized) {
 	checkWidget ();
