@@ -231,7 +231,22 @@ public Layout getLayout () {
  */
 public Control [] getTabList () {
 	checkWidget ();
-	return _getTabList ();
+	Control [] tabList = _getTabList ();
+	if (tabList == null) {
+		int count = 0;
+		Control [] list =_getChildren ();
+		for (int i=0; i<list.length; i++) {
+			if (list [i].isTabGroup ()) count++;
+		}
+		tabList = new Control [count];
+		int index = 0;
+		for (int i=0; i<list.length; i++) {
+			if (list [i].isTabGroup ()) {
+				tabList [index++] = list [i];
+			}
+		}
+	}
+	return tabList;
 }
 
 /**
