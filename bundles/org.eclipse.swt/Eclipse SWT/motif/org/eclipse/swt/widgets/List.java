@@ -909,16 +909,14 @@ public void remove (int [] indices) {
 	if (indices.length == 0) return;
 	int [] argList = {OS.XmNitemCount, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int length = 0, count = argList [1];
 	int [] newIndices = new int [indices.length];
 	for (int i=0; i<indices.length; i++) {
-		int index = indices [i];
-		if (!(0 <= index && index < count)) {
+		if (!(0 <= indices [i] && indices [i] < argList [1])) {
 			error (SWT.ERROR_INVALID_RANGE);
 		}
-		newIndices [length++] = index + 1;
+		newIndices [i] = indices [i] + 1;
 	}
-	OS.XmListDeletePositions (handle, newIndices, length);
+	OS.XmListDeletePositions (handle, newIndices, newIndices.length);
 }
 /**
  * Removes all of the items from the receiver.
