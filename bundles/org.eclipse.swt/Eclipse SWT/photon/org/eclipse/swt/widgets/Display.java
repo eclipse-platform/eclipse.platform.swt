@@ -845,6 +845,41 @@ public int getIconDepth () {
 }
 
 /**
+ * Returns an array of monitors attached to the device.
+ * 
+ * @return the array of monitors
+ * 
+ * @since 2.2
+ */
+public Monitor [] getMonitors () {
+	checkDevice ();
+	return new Monitor [] {getPrimaryMonitor ()};
+}
+
+/**
+ * Returns the primary monitor for that device.
+ * 
+ * @return the primary monitor
+ * 
+ * @since 2.2
+ */
+public Monitor getPrimaryMonitor () {
+	checkDevice ();
+	Monitor monitor = new Monitor ();
+	Rectangle rect = getBounds ();
+	monitor.x = rect.x;
+	monitor.y = rect.y;
+	monitor.width = rect.width;
+	monitor.height = rect.height;
+	rect = getClientArea ();
+	monitor.clientX = rect.x;
+	monitor.clientY = rect.y;
+	monitor.clientWidth = rect.width;
+	monitor.clientHeight = rect.height;
+	return monitor;
+}
+
+/**
  * Returns an array containing all shells which have not been
  * disposed and have the receiver as their display.
  *
