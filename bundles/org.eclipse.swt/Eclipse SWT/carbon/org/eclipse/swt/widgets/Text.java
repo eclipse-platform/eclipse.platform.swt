@@ -40,10 +40,10 @@ public class Text extends Scrollable {
 	private int fTX;
 	private int fFrameID;
 	private Rectangle fFrameBounds;
+	private boolean fVisible= true;
 	// AW
 	
 	char echoCharacter;
-	// AW int drawCount;
 
 	public static final int LIMIT;
 	public static final String DELIMITER;
@@ -220,6 +220,7 @@ static int checkStyle (int style) {
  */
 public void clearSelection () {
 	checkWidget();
+	syncBounds();
 	OS.TXNSetSelection(fTX, OS.kTXNStartOffset, OS.kTXNStartOffset);	// AW: wrong
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -429,6 +430,7 @@ ScrollBar createScrollBar (int type) {
  */
 public void cut () {
 	checkWidget();
+	syncBounds();
 	OS.TXNCut(fTX);
 }
 void destroyWidget () {
@@ -929,6 +931,7 @@ public void insert (String string) {
  */
 public void paste () {
 	checkWidget();
+	syncBounds();
 	OS.TXNPaste(fTX);
 }
 int processFocusIn () {
@@ -937,6 +940,7 @@ int processFocusIn () {
 	if (handle == 0) return 0;
 	if ((style & SWT.READ_ONLY) != 0) return 0;
 	
+	syncBounds();
 	drawFrame(null);
 	OS.TXNFocus(fTX, true);
 	
@@ -954,6 +958,7 @@ int processFocusOut () {
 	if ((style & SWT.READ_ONLY) != 0) return 0;
 	
 	//fgTextInFocus= null;
+	syncBounds();
 	OS.TXNFocus(fTX, false);
 	drawFrame(null);
 	
@@ -966,11 +971,12 @@ int processFocusOut () {
 }
 int processMouseDown (MacMouseEvent mmEvent) {
 	if (isEnabled()) {
-		EventRecord eventRecord = mmEvent.toOldMacEvent();
-		if (eventRecord != null) 
+		EventRecord eventRecord = new EventRecord();
+		if (OS.ConvertEventRefToEventRecord(mmEvent.getEventRef(), eventRecord)) {
 			OS.TXNClick(fTX, eventRecord);
+		}
 	}
-	return 0;
+	return OS.noErr;
 }
 int processPaint (Object callData) {
 	syncBounds();
@@ -1057,6 +1063,7 @@ public void removeVerifyListener (VerifyListener listener) {
  */
 public void selectAll () {
 	checkWidget();
+	syncBounds();
 	OS.TXNSelectAll(fTX);
 }
 /**
@@ -1102,6 +1109,7 @@ public void setEchoChar (char echo) {
 	checkWidget();
 	if (echoCharacter == echo) return;
 	echoCharacter = echo;
+	syncBounds();
 	OS.TXNEchoMode(fTX, echo, 0, echo != '\0');
 }
 /**
@@ -1134,6 +1142,7 @@ public void setEditable (boolean editable) {
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
+	syncBounds();
 	super.setRedraw(redraw);
 // AW
 //	if (redraw) {
@@ -1168,6 +1177,7 @@ public void setRedraw (boolean redraw) {
  */
 public void setSelection (int start) {
 	checkWidget();
+	syncBounds();
 	OS.TXNSetSelection(fTX, start, start);
 }
 /**
@@ -1196,6 +1206,7 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget();
+	syncBounds();
 	OS.TXNSetSelection(fTX, start, end);
 }
 /**
@@ -1354,6 +1365,7 @@ void setWrap (boolean wrap) {
  */
 public void showSelection () {
 	checkWidget();
+	syncBounds();
 	OS.TXNShowSelection(fTX, false);
 }
 int traversalCode () {
@@ -1405,12 +1417,14 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 ///////////////////////////////////////////
 	
 	private void replaceTXNText(int start, int end, String s) {
+		
+		// before touch anything we have to synch visibility
+		syncBounds();
+		
 		int l= s.length();
 		char[] chars= new char[l];
 		s.getChars(0, l, chars, 0); 
 		OS.TXNSetData(fTX, OS.kTXNUnicodeTextData, chars, chars.length * 2, start, end);
-		
-		//syncBounds();
 		
 		sendEvent (SWT.Modify);
 	}
@@ -1513,14 +1527,31 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	}
 	
 	/**
-	 * Synchronize the size of the MLTEtext with the underlying HIView.	 */
+	 * Synchronize the size and visibilty of the MLTEtext with the underlying HIView.	 */
 	private void syncBounds() {
 		
 		if (fTX == 0)
 			return;
-		
+					
 		Rect b= new Rect();
 		MacUtil.getControlBounds(handle, b);
+		
+		boolean isShowing= isShowing();
+		
+		if (isShowing != fVisible) {
+			fVisible= isShowing;
+			int[] tags= new int[] { OS.kTXNVisibilityTag };
+			int[] data= new int[] { fVisible ? 1 : 0 };
+			OS.TXNSetTXNObjectControls(fTX, false, tags.length, tags, data);
+			
+			if (!isShowing)
+				return;
+		}
+		
+//		if (e2 && !e1) {		
+//			System.out.println("sync: " + e1 + " "  + e2);
+//			System.out.println("  " + new Rectangle(b.left, b.top, b.right-b.left, b.bottom-b.top));
+//		}
 		
 		// this is just too hard to explain...
 		OS.HIViewSetBoundsOrigin(handle, b.left, b.top);
@@ -1536,9 +1567,11 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		fFrameBounds= new Rectangle(b.left, b.top, b.right-b.left, b.bottom-b.top);
 		if (oldRect == null || !oldRect.equals(fFrameBounds)) {
 			OS.TXNSetFrameBounds(fTX, b.top, b.left, b.bottom, b.right, fFrameID);
+			OS.HIViewSetNeedsDisplay(handle, true);
 		}
 		
-		OS.TXNDraw(fTX, 0);
+		if (isShowing)
+			OS.TXNDraw(fTX, 0);
 	}
 	
 	private void drawFrame(Object callData) {
