@@ -57,22 +57,12 @@ public class OS {
 		* here, after the platform is determined in order
 		* for the value to be correct.
 		*/
-		OSVERSIONINFO info;
-		
-		// TEMPORARY CODE
-		String MBCS = System.getProperty ("MBCS"); //$NON-NLS-1$
-		if (MBCS != null) {
+		OSVERSIONINFO info = new OSVERSIONINFOW ();
+		info.dwOSVersionInfoSize = OSVERSIONINFOW.sizeof;
+		if (!OS.GetVersionExW ((OSVERSIONINFOW)info)) {
 			info = new OSVERSIONINFOA ();
 			info.dwOSVersionInfoSize = OSVERSIONINFOA.sizeof;
 			OS.GetVersionExA ((OSVERSIONINFOA)info);
-		} else {
-			info = new OSVERSIONINFOW ();
-			info.dwOSVersionInfoSize = OSVERSIONINFOW.sizeof;
-			if (!OS.GetVersionExW ((OSVERSIONINFOW)info)) {
-				info = new OSVERSIONINFOA ();
-				info.dwOSVersionInfoSize = OSVERSIONINFOA.sizeof;
-				OS.GetVersionExA ((OSVERSIONINFOA)info);
-			}
 		}
 		OSVERSIONINFO.sizeof = info.dwOSVersionInfoSize;
 		
@@ -85,14 +75,7 @@ public class OS {
 		IsHPC = IsWinCE && !IsPPC && !IsSP;	
 		WIN32_MAJOR = info.dwMajorVersion;
 		WIN32_MINOR = info.dwMinorVersion;
-		
-		// TEMPORARY CODE
-		if (MBCS != null) {
-			IsUnicode = false;
-			System.out.println ("*** SWT - Warning: Unicode disabled"); //$NON-NLS-1$
-		} else {
-			IsUnicode = !IsWin32s && !IsWin95;
-		}
+		IsUnicode = !IsWin32s && !IsWin95;
 
 		/* Get the DBCS flag */
 		int index = 0;
