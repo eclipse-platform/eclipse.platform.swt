@@ -1347,6 +1347,8 @@ void onMouseUp(Event event) {
 			CTabFolderEvent e = new CTabFolderEvent(this);
 			e.widget = this;
 			e.time = event.time;
+			e.rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
+			
 			for (int i = 0; i < listListeners.length; i++) {
 				listListeners[i].showList(e);
 			}

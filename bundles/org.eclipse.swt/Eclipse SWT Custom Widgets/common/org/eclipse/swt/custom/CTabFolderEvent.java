@@ -11,12 +11,17 @@
 package org.eclipse.swt.custom;
 
 
-import org.eclipse.swt.events.TypedEvent;
+import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 public class CTabFolderEvent extends TypedEvent {
  	public Widget item;
  	public boolean doit;
+ 	/**
+ 	 * @since 3.0
+ 	 */
+ 	public Rectangle rect;
  	
 CTabFolderEvent(Widget w) {
 	super(w);
