@@ -8,10 +8,9 @@ package org.eclipse.swt.widgets;
  */
  
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
-import org.eclipse.swt.widgets.Item;
-import org.eclipse.swt.widgets.TypedListener;
+import org.eclipse.swt.internal.carbon.HMHelpContentRec;
+import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -238,6 +237,51 @@ public int getWidth () {
 	return rect.right - rect.left;
 }
 
+int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
+	Display display = getDisplay ();
+    switch (inRequest) {
+		case OS.kHMSupplyContent: {
+			int [] contentProvided = new int [] {OS.kHMContentNotProvided};
+			if (toolTipText != null && toolTipText.length () != 0) {
+				char [] buffer = new char [toolTipText.length ()];
+				toolTipText.getChars (0, buffer.length, buffer, 0);
+				int i=0, j=0;
+				while (i < buffer.length) {
+					if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+						if (i == buffer.length) {continue;}
+						if (buffer [i] == Mnemonic) {i++; continue;}
+						j--;
+					}
+				}
+				if (display.helpString != 0) OS.CFRelease (display.helpString);
+		    	display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+				HMHelpContentRec helpContent = new HMHelpContentRec ();
+				OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
+		        helpContent.version = OS.kMacHelpVersion;
+		        helpContent.tagSide = OS.kHMDefaultSide;
+				display.hoverControl = null;
+		        helpContent.absHotRect_left = (short) 0;
+		     	helpContent.absHotRect_top = (short) 0;
+		        helpContent.absHotRect_right = (short) 0;
+		        helpContent.absHotRect_bottom = (short) 0;
+		        helpContent.content0_contentType = OS.kHMCFStringContent;
+		        helpContent.content0_tagCFString = display.helpString;
+		        helpContent.content1_contentType = OS.kHMCFStringContent;
+		        helpContent.content1_tagCFString = display.helpString;
+				OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
+				contentProvided [0] = OS.kHMContentProvided;
+			}
+			OS.memcpy (outContentProvided, contentProvided, 4);
+			break;
+		}
+		case OS.kHMDisposeContent: {
+			if (display.helpString != 0) OS.CFRelease (display.helpString);
+			display.helpString = 0;
+			break;
+		}
+	}
+	return OS.noErr;
+}
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -248,7 +292,9 @@ void hookEvents () {
 		OS.kEventClassControl, OS.kEventControlHit,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);	
+	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
+	int helpProc = display.helpProc;
+	OS.HMInstallControlContentCallback (handle, helpProc);
 }
 
 public boolean isEnabled () {

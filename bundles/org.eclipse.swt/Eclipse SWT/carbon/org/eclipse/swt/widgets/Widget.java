@@ -351,6 +351,10 @@ public int getStyle () {
 	return style;
 }
 
+int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
+	return OS.eventNotHandledErr;
+}
+
 void hookEvents () {
 }
 

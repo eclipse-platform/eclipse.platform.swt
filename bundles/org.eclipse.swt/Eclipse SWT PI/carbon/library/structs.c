@@ -1148,6 +1148,65 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct)
 	(*env)->SetShortField(env, lpObject, HICommandFc.menu_menuItemIndex, (jshort)lpStruct->menu.menuItemIndex);
 }
 #endif /* NO_HICommand */
+
+#ifndef NO_HMHelpContentRec
+typedef struct HMHelpContentRec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, absHotRect_top, absHotRect_left, absHotRect_bottom, absHotRect_right, tagSide, content0_contentType, content0_tagCFString, content1_contentType, content1_tagCFString;
+} HMHelpContentRec_FID_CACHE;
+
+HMHelpContentRec_FID_CACHE HMHelpContentRecFc;
+
+void cacheHMHelpContentRecFids(JNIEnv *env, jobject lpObject)
+{
+	if (HMHelpContentRecFc.cached) return;
+	HMHelpContentRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HMHelpContentRecFc.version = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "version", "I");
+	HMHelpContentRecFc.absHotRect_top = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "absHotRect_top", "S");
+	HMHelpContentRecFc.absHotRect_left = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "absHotRect_left", "S");
+	HMHelpContentRecFc.absHotRect_bottom = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "absHotRect_bottom", "S");
+	HMHelpContentRecFc.absHotRect_right = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "absHotRect_right", "S");
+	HMHelpContentRecFc.tagSide = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "tagSide", "S");
+	HMHelpContentRecFc.content0_contentType = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "content0_contentType", "I");
+	HMHelpContentRecFc.content0_tagCFString = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "content0_tagCFString", "I");
+	HMHelpContentRecFc.content1_contentType = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "content1_contentType", "I");
+	HMHelpContentRecFc.content1_tagCFString = (*env)->GetFieldID(env, HMHelpContentRecFc.clazz, "content1_tagCFString", "I");
+	HMHelpContentRecFc.cached = 1;
+}
+
+HMHelpContentRec *getHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *lpStruct)
+{
+	if (!HMHelpContentRecFc.cached) cacheHMHelpContentRecFids(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, HMHelpContentRecFc.version);
+	lpStruct->absHotRect.top = (*env)->GetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_top);
+	lpStruct->absHotRect.left = (*env)->GetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_left);
+	lpStruct->absHotRect.bottom = (*env)->GetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_bottom);
+	lpStruct->absHotRect.right = (*env)->GetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_right);
+	lpStruct->tagSide = (*env)->GetShortField(env, lpObject, HMHelpContentRecFc.tagSide);
+	lpStruct->content[0].contentType = (*env)->GetIntField(env, lpObject, HMHelpContentRecFc.content0_contentType);
+	lpStruct->content[0].u.tagCFString = (CFStringRef)(*env)->GetIntField(env, lpObject, HMHelpContentRecFc.content0_tagCFString);
+	lpStruct->content[1].contentType = (*env)->GetIntField(env, lpObject, HMHelpContentRecFc.content1_contentType);
+	lpStruct->content[1].u.tagCFString = (CFStringRef)(*env)->GetIntField(env, lpObject, HMHelpContentRecFc.content1_tagCFString);
+	return lpStruct;
+}
+
+void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *lpStruct)
+{
+	if (!HMHelpContentRecFc.cached) cacheHMHelpContentRecFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HMHelpContentRecFc.version, (jint)lpStruct->version);
+	(*env)->SetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_top, (jshort)lpStruct->absHotRect.top);
+	(*env)->SetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_left, (jshort)lpStruct->absHotRect.left);
+	(*env)->SetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_bottom, (jshort)lpStruct->absHotRect.bottom);
+	(*env)->SetShortField(env, lpObject, HMHelpContentRecFc.absHotRect_right, (jshort)lpStruct->absHotRect.right);
+	(*env)->SetShortField(env, lpObject, HMHelpContentRecFc.tagSide, (jshort)lpStruct->tagSide);
+	(*env)->SetIntField(env, lpObject, HMHelpContentRecFc.content0_contentType, (jint)lpStruct->content[0].contentType);
+	(*env)->SetIntField(env, lpObject, HMHelpContentRecFc.content0_tagCFString, (jint)lpStruct->content[0].u.tagCFString);
+	(*env)->SetIntField(env, lpObject, HMHelpContentRecFc.content1_contentType, (jint)lpStruct->content[1].contentType);
+	(*env)->SetIntField(env, lpObject, HMHelpContentRecFc.content1_tagCFString, (jint)lpStruct->content[1].u.tagCFString);
+}
+#endif /* NO_HMHelpContentRec */
+
 #ifndef NO_MenuTrackingData
 typedef struct MenuTrackingData_FID_CACHE {
 	int cached;

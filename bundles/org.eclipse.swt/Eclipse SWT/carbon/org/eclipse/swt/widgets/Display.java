@@ -21,8 +21,8 @@ public class Display extends Device {
 
 	/* Windows and Events */
 	Event [] eventQueue;
-	Callback actionCallback, commandCallback, controlCallback, itemDataCallback, itemNotificationCallback, keyboardCallback, menuCallback, mouseCallback, windowCallback;
-	int actionProc, commandProc, controlProc, itemDataProc, itemNotificationProc, keyboardProc, menuProc, mouseProc, windowProc;
+	Callback actionCallback, commandCallback, controlCallback, itemDataCallback, itemNotificationCallback, helpCallback, keyboardCallback, menuCallback, mouseCallback, windowCallback;
+	int actionProc, commandProc, controlProc, itemDataProc, itemNotificationProc, helpProc, keyboardProc, menuProc, mouseProc, windowProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
 	
@@ -47,11 +47,16 @@ public class Display extends Device {
 	/* Grabs */
 	Control grabControl;
 
+	/* Hover Help */
+	int helpString;
+	Control hoverControl;
+	int lastHoverX, lastHoverY;
+	
 	/* Menus */
-	static final int ID_START = 1000;
 	Menu menuBar;
 	Menu [] menus, popups;
 	MenuItem [] items;
+	static final int ID_START = 1000;
 	
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
@@ -564,6 +569,12 @@ public Thread getThread () {
 	return thread;
 }
 
+int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
+	Widget widget = WidgetTable.get (inControl);
+	if (widget != null) return widget.helpProc (inControl, inGlobalMouse, inRequest, outContentProvided, ioHelpContent);
+	return OS.eventNotHandledErr;
+}
+
 protected void init () {
 	super.init ();
 	
@@ -586,6 +597,9 @@ protected void init () {
 	itemNotificationCallback = new Callback (this, "itemNotificationProc", 3);
 	itemNotificationProc = itemNotificationCallback.getAddress ();
 	if (itemNotificationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	helpCallback = new Callback (this, "helpProc", 5);
+	helpProc = helpCallback.getAddress ();
+	if (helpProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	keyboardCallback = new Callback (this, "keyboardProc", 3);
 	keyboardProc = keyboardCallback.getAddress ();
 	if (keyboardProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -806,15 +820,18 @@ void releaseDisplay () {
 	controlCallback.dispose ();
 	itemDataCallback.dispose ();
 	itemNotificationCallback.dispose ();
+	helpCallback.dispose ();
 	keyboardCallback.dispose ();
 	menuCallback.dispose ();
 	mouseCallback.dispose ();
 	windowCallback.dispose ();
-	actionCallback = caretCallback = commandCallback = controlCallback = itemDataCallback = itemNotificationCallback = keyboardCallback = menuCallback = mouseCallback = windowCallback = null;
-	actionProc = caretProc = commandProc = controlProc = itemDataProc = itemNotificationProc = keyboardProc = menuProc = mouseProc = windowProc = 0;
+	actionCallback = caretCallback = commandCallback = controlCallback = itemDataCallback = itemNotificationCallback = helpCallback = keyboardCallback = menuCallback = mouseCallback = windowCallback = null;
+	actionProc = caretProc = commandProc = controlProc = itemDataProc = itemNotificationProc = helpProc = keyboardProc = menuProc = mouseProc = windowProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerProc = 0;
+	if (helpString != 0) OS.CFRelease (helpString);
+	helpString = 0;
 	//NOT DONE - call terminate TXN if this is the last display 
 	//NOTE: - display create and dispose needs to be synchronized on all platforms
 //	 TXNTerminateTextension ();

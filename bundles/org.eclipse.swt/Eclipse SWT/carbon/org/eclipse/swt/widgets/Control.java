@@ -8,9 +8,10 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.HMHelpContentRec;
+import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -285,6 +286,67 @@ boolean hasFocus () {
 	return (this == getDisplay ().getFocusControl ());
 }
 
+int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
+	Display display = getDisplay ();
+    switch (inRequest) {
+		case OS.kHMSupplyContent: {
+			int [] contentProvided = new int [] {OS.kHMContentNotProvidedDontPropagate};
+			if (toolTipText != null && toolTipText.length () != 0) {
+				char [] buffer = new char [toolTipText.length ()];
+				toolTipText.getChars (0, buffer.length, buffer, 0);
+				int i=0, j=0;
+				while (i < buffer.length) {
+					if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+						if (i == buffer.length) {continue;}
+						if (buffer [i] == Mnemonic) {i++; continue;}
+						j--;
+					}
+				}
+				if (display.helpString != 0) OS.CFRelease (display.helpString);
+		    	display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+				HMHelpContentRec helpContent = new HMHelpContentRec ();
+				OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
+		        helpContent.version = OS.kMacHelpVersion;
+		        /*
+		        * Feature in the Macintosh.
+		        */
+		        helpContent.tagSide = OS.kHMAbsoluteCenterAligned;
+				int x = (short) (inGlobalMouse & 0xFFFF);
+				int y = (short) (inGlobalMouse >> 16);
+				if (display.hoverControl != this) {
+					lastX = x + 8;
+					lastY = y + 16 + 8;			
+				}
+				int deltaX = Math.abs (lastX - x) + 4;
+				int deltaY = Math.abs (lastY - y) + 4;
+				x = lastX - deltaX;
+				y = lastY - deltaY;
+				int width = deltaX * 2;
+				int height = deltaY * 2;
+				display.hoverControl = this;
+		        helpContent.absHotRect_left = (short) x;
+		     	helpContent.absHotRect_top = (short) y;
+		        helpContent.absHotRect_right = (short) (x + width);
+		        helpContent.absHotRect_bottom = (short) (y + height);
+		        helpContent.content0_contentType = OS.kHMCFStringContent;
+		        helpContent.content0_tagCFString = display.helpString;
+		        helpContent.content1_contentType = OS.kHMCFStringContent;
+		        helpContent.content1_tagCFString = display.helpString;
+				OS.memcpy (ioHelpContent, helpContent, HMHelpContentRec.sizeof);
+				contentProvided [0] = OS.kHMContentProvided;
+			}
+			OS.memcpy (outContentProvided, contentProvided, 4);
+			break;
+		}
+		case OS.kHMDisposeContent: {
+			if (display.helpString != 0) OS.CFRelease (display.helpString);
+			display.helpString = 0;
+			break;
+		}
+	}
+	return OS.noErr;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	Display display = getDisplay ();
@@ -304,6 +366,8 @@ void hookEvents () {
 	int length = mask.length - (this instanceof Shell ? 1 : 0);
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, length / 2, mask, handle, null);
+	int helpProc = display.helpProc;
+	OS.HMInstallControlContentCallback (handle, helpProc);
 }
 
 public int internal_new_GC (GCData data) {

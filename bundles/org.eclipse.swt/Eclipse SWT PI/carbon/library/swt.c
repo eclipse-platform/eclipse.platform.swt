@@ -4253,6 +4253,53 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HLock
 }
 #endif /* NO_HLock */
 
+#ifndef NO_HMGetTagDelay
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HMGetTagDelay
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("HMGetTagDelay\n")
+	
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)HMGetTagDelay((Duration *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif /* NO_HMGetTagDelay */
+
+#ifndef NO_HMHideTag
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HMHideTag
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+
+	DEBUG_CALL("HMHideTag\n")
+	
+	return (jint)HMHideTag();
+}
+#endif /* NO_HMHideTag */
+
+#ifndef NO_HMSetTagDelay
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HMSetTagDelay
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HMSetTagDelay\n")
+
+	return (jint) HMSetTagDelay((Duration)arg0);
+}
+#endif /* NO_HMSetTagDelay */
+
+#ifndef NO_HMInstallControlContentCallback
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HMInstallControlContentCallback
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("HMInstallControlContentCallback\n")
+
+	return (jint) HMInstallControlContentCallback((ControlRef)arg0, (HMControlContentUPP)arg1);
+}
+#endif /* NO_HMInstallControlContentCallback */
+
 #ifndef NO_HUnlock
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HUnlock
 	(JNIEnv *env, jclass that, jint arg0)
@@ -7003,6 +7050,34 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_ecli
 	if (arg0) lparg0 = getFontSelectionQDStyleFields(env, arg0, &_arg0);
 	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setFontSelectionQDStyleFields(env, arg0, lparg0);
+}
+#endif
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	HMHelpContentRec _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II\n")
+
+	if (arg0) lparg0 = getHMHelpContentRecFields(env, arg0, &_arg0);
+	memcpy(lparg0, arg1, arg2);
+	if (arg0) setHMHelpContentRecFields(env, arg0, lparg0);
+}
+#endif
+
+#ifndef NO_memcpy__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	HMHelpContentRec _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__ILorg_eclipse_swt_internal_carbon_HMHelpContentRec_2I\n")
+
+	if (arg1) lparg1 = getHMHelpContentRecFields(env, arg1, &_arg1);
+	memcpy(arg0, lparg1, arg2);
+	if (arg1) setHMHelpContentRecFields(env, arg1, lparg1);
 }
 #endif
 

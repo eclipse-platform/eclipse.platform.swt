@@ -179,6 +179,14 @@ void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
 #define setHICommandFields(a,b,c)
 #endif /* NO_HICommand */
 
+#ifndef NO_HMHelpContentRec
+HMHelpContentRec *getHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *lpStruct);
+void setHMHelpContentRecFields(JNIEnv *env, jobject lpObject, HMHelpContentRec *lpStruct);
+#else
+#define getHMHelpContentRecFields(a,b,c) NULL
+#define setHMHelpContentRecFields(a,b,c)
+#endif /* NO_HMHelpContentRec */
+
 #ifndef NO_MenuTrackingData
 MenuTrackingData *getMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct);
 void setMenuTrackingDataFields(JNIEnv *env, jobject lpObject, MenuTrackingData *lpStruct);
