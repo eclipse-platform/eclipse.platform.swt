@@ -1903,7 +1903,7 @@ int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
 	label.setText(text);
 	tip.setLocation(point);
 	tip.pack();
-	tip.open();
+	tip.setVisible(true);
 	return XPCOM.NS_OK;
 }
 

@@ -10,12 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import java.io.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.mozilla.*;
+import org.eclipse.swt.layout.*;
 
 /**
  * Instances of this class implement the browser user interface
@@ -51,12 +53,14 @@ public class Browser extends Composite {
 	XPCOMObject supportsWeakReference;
 	XPCOMObject contextMenuListener;	
 	XPCOMObject uriContentListener;
+	XPCOMObject tooltipListener;
 	int chromeFlags = nsIWebBrowserChrome.CHROME_DEFAULT;
 	int refCount = 0;
 	int request;
 	String html;
 	Point location;
 	Point size;
+	Shell tip = null;
 
 	/* External Listener management */
 	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
@@ -637,6 +641,14 @@ void createCOMInterfaces() {
 		public int method9(int[] args) {return GetParentContentListener(args[0]);}
 		public int method10(int[] args) {return SetParentContentListener(args[0]);}		
 	};
+	
+	tooltipListener = new XPCOMObject(new int[]{2, 0, 0, 3, 0}) {
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
+		public int method1(int[] args) {return AddRef();}
+		public int method2(int[] args) {return Release();}
+		public int method3(int[] args) {return OnShowTooltip(args[0], args[1], args[2]);}
+		public int method4(int[] args) {return OnHideTooltip();}		
+	};
 }
 
 void disposeCOMInterfaces() {
@@ -679,6 +691,10 @@ void disposeCOMInterfaces() {
 	if (uriContentListener != null) {
 		uriContentListener.dispose();
 		uriContentListener = null;
+	}
+	if (tooltipListener != null) {
+		tooltipListener.dispose();
+		tooltipListener = null;
 	}
 }
 
@@ -811,6 +827,9 @@ void onDispose() {
 	
 	Release();
 	webBrowser.Release();
+	
+	if (tip != null && !tip.isDisposed()) tip.dispose();
+	tip = null;
 	
 	GTK.gtk_widget_destroy(gtkHandle);
 	while (GTK.gtk_events_pending() != 0) {
@@ -1347,6 +1366,11 @@ int QueryInterface(int riid, int ppvObject) {
 		AddRef();
 		return XPCOM.NS_OK;
 	}
+	if (guid.Equals(nsITooltipListener.NS_ITOOLTIPLISTENER_IID)) {
+		XPCOM.memmove(ppvObject, new int[] {tooltipListener.getAddress()}, 4);
+		AddRef();
+		return XPCOM.NS_OK;
+	}
 	XPCOM.memmove(ppvObject, new int[] {0}, 4);
 	return XPCOM.NS_ERROR_NO_INTERFACE;
 }
@@ -1402,176 +1426,177 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 	} else if ((aStateFlags & nsIWebProgressListener.STATE_STOP) != 0) {
 		if (html != null) {
 			/* Convert the String containing HTML to an array of
-			 * bytes with UTF-16 data.
+			 * bytes with UTF-8 data.
 			 */
-			int length = html.length();
-			char[] src = new char[length];
-			html.getChars(0, length, src, 0);
+			byte[] data = null;
+			try {
+				data = html.getBytes("UTF-8"); //$NON-NLS-1$
+			} catch (UnsupportedEncodingException e) {
+			}
 			html = null;
-			byte[] data = new byte[length * 2];
-			XPCOM.memmove(data, src, length * 2);
-
-			/* render HTML in memory */
-			String contentType = "text/html"; //$NON-NLS-1$
-			
-			InputStream inputStream = new InputStream(data);
-			inputStream.AddRef();
-
-			int[] result = new int[1];
-			int rc = webBrowser.QueryInterface(nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+			if (data != null) {
+				/* render HTML in memory */
+				String contentType = "text/html"; //$NON-NLS-1$
+				
+				InputStream inputStream = new InputStream(data);
+				inputStream.AddRef();
 	
-			nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor(result[0]);
-			result[0] = 0;
-			rc = interfaceRequestor.GetInterface(nsIContentViewerContainer.NS_ICONTENTVIEWERCONTAINER_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-			interfaceRequestor.Release();
-	
-			nsIContentViewerContainer contentViewerContainer = new nsIContentViewerContainer(result[0]);
-			result[0] = 0;
-	
-			rc = XPCOM.NS_GetServiceManager(result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+				int[] result = new int[1];
+				int rc = webBrowser.QueryInterface(nsIInterfaceRequestor.NS_IINTERFACEREQUESTOR_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 		
-			nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
-			result[0] = 0;
-			rc = serviceManager.GetService(XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-	
-			nsIIOService ioService = new nsIIOService(result[0]);
-			result[0] = 0;
-			/*
-			* Note. Mozilla ignores LINK tags used to load CSS stylesheets
-			* when the URI protocol for the nsInputStreamChannel
-			* is about:blank. The fix is to specify the file protocol.
-			*/
-			byte[] aString = "file:".getBytes(); //$NON-NLS-1$
-			int aSpec = XPCOM.nsCString_new(aString, aString.length);
-			rc = ioService.NewURI(aSpec, null, 0, result);
-			XPCOM.nsCString_delete(aSpec);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-			ioService.Release();
-	
-			nsIURI uri = new nsIURI(result[0]);
-			result[0] = 0;
-			rc = XPCOM.NS_GetComponentManager(result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-	
-			nsIComponentManager componentManager = new nsIComponentManager(result[0]);
-			result[0] = 0;
-			rc = componentManager.CreateInstance(XPCOM.NS_LOADGROUP_CID, 0, nsILoadGroup.NS_ILOADGROUP_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-			nsILoadGroup loadGroup = new nsILoadGroup(result[0]);
-			result[0] = 0;
-			rc = componentManager.CreateInstance(XPCOM.NS_INPUTSTREAMCHANNEL_CID, 0, nsIInputStreamChannel.NS_IINPUTSTREAMCHANNEL_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);	
-			nsIInputStreamChannel inputStreamChannel = new nsIInputStreamChannel(result[0]);
-			result[0] = 0;
-			componentManager.Release();	
+				nsIInterfaceRequestor interfaceRequestor = new nsIInterfaceRequestor(result[0]);
+				result[0] = 0;
+				rc = interfaceRequestor.GetInterface(nsIContentViewerContainer.NS_ICONTENTVIEWERCONTAINER_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+				interfaceRequestor.Release();
+		
+				nsIContentViewerContainer contentViewerContainer = new nsIContentViewerContainer(result[0]);
+				result[0] = 0;
+		
+				rc = XPCOM.NS_GetServiceManager(result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 			
-			rc = inputStreamChannel.SetURI(uri.getAddress());
-			if (rc != XPCOM.NS_OK) error(rc);
-			rc = inputStreamChannel.SetContentStream(inputStream.getAddress());
-			if (rc != XPCOM.NS_OK) error(rc);
-			byte[] buffer = contentType.getBytes();
-			byte[] contentTypeBuffer = new byte[buffer.length + 1];
-			System.arraycopy(buffer, 0, contentTypeBuffer, 0, buffer.length);
-			int aContentType = XPCOM.nsCString_new(contentTypeBuffer, contentTypeBuffer.length);
-			rc = inputStreamChannel.SetContentType(aContentType);
-			XPCOM.nsCString_delete(aContentType);
-			if (rc != XPCOM.NS_OK) error(rc);
-			byte[] contentCharsetBuffer = new byte[1];
-			int aContentCharset = XPCOM.nsCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
-			rc = inputStreamChannel.SetContentCharset(aContentCharset);
-			XPCOM.nsCString_delete(aContentCharset);
-			if (rc != XPCOM.NS_OK) error(rc);
-			rc = inputStreamChannel.SetLoadGroup(loadGroup.getAddress());
-			if (rc != XPCOM.NS_OK) error(rc);
-	
-			buffer = XPCOM.NS_CATEGORYMANAGER_CONTRACTID.getBytes();
-			byte[] aContractID = new byte[buffer.length + 1];
-			System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
-			rc = serviceManager.GetServiceByContractID(aContractID, nsICategoryManager.NS_ICATEGORYMANAGER_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
-	
-			nsICategoryManager categoryManager = new nsICategoryManager(result[0]);
-			result[0] = 0;
-			buffer = "Gecko-Content-Viewers".getBytes(); //$NON-NLS-1$
-			byte[] aCategory = new byte[buffer.length + 1];
-			System.arraycopy(buffer, 0, aCategory, 0, buffer.length);
-			rc = categoryManager.GetCategoryEntry(aCategory, contentTypeBuffer, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-			categoryManager.Release();
-	
-			length = XPCOM.strlen(result[0]);
-			aContractID = new byte[length + 1];
-			XPCOM.memmove(aContractID, result[0], length);
-			rc = serviceManager.GetServiceByContractID(aContractID, nsIDocumentLoaderFactory.NS_IDOCUMENTLOADERFACTORY_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);	
-	
-			nsIDocumentLoaderFactory documentLoaderFactory = new nsIDocumentLoaderFactory(result[0]);
-			result[0] = 0;
-			buffer = "view".getBytes(); //$NON-NLS-1$
-			byte[] aCommand = new byte[buffer.length + 1];
-			System.arraycopy(buffer, 0, aCommand, 0, buffer.length);
-			int[] aDocListenerResult = new int[1];
-			rc = documentLoaderFactory.CreateInstance(aCommand, inputStreamChannel.getAddress(), loadGroup.getAddress(),
-					contentTypeBuffer, contentViewerContainer.getAddress(), 0, aDocListenerResult, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (aDocListenerResult[0] == 0) error(XPCOM.NS_NOINTERFACE);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-			documentLoaderFactory.Release();
-	
-			nsIContentViewer contentViewer = new nsIContentViewer(result[0]);
-			nsIStreamListener streamListener = new nsIStreamListener(aDocListenerResult[0]);
-			result[0] = 0;
-			rc = contentViewer.SetContainer(contentViewerContainer.getAddress());
-			if (rc != XPCOM.NS_OK) error(rc);
-			rc = contentViewerContainer.Embed(contentViewer.getAddress(), aCommand, 0);
-			if (rc != XPCOM.NS_OK) error(rc);
-			contentViewer.Release();
-	
-			rc = inputStreamChannel.QueryInterface(nsIRequest.NS_IREQUEST_IID, result);
-			if (rc != XPCOM.NS_OK) error(rc);
-			if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
-	
-			nsIRequest request = new nsIRequest(result[0]);
-			result[0] = 0;
-			rc = streamListener.OnStartRequest(request.getAddress(), 0);
-			if (rc != XPCOM.NS_OK) error(rc);
-	
-			/* append */
-			rc = streamListener.OnDataAvailable(request.getAddress(), 0, inputStream.getAddress(), 0, data.length);
-			
-			/*
-			* Note.   Mozilla returns a NS_ERROR_HTMLPARSER_UNRESOLVEDDTD if the given content
-			* cannot be rendered as HTML.  Silently ignore this error. 
-			*/
-			if (rc != XPCOM.NS_ERROR_HTMLPARSER_UNRESOLVEDDTD && rc != XPCOM.NS_OK) error(rc);
-	
-			/* close */
-			rc = streamListener.OnStopRequest(request.getAddress(), 0, XPCOM.NS_OK);
-			if (rc != XPCOM.NS_ERROR_HTMLPARSER_UNRESOLVEDDTD && rc != XPCOM.NS_OK) error(rc);
-	
-			request.Release();
-			streamListener.Release();
-			serviceManager.Release();
-			inputStreamChannel.Release();
-			loadGroup.Release();
-			uri.Release();
-			contentViewerContainer.Release();
-			inputStream.Release();
+				nsIServiceManager serviceManager = new nsIServiceManager(result[0]);
+				result[0] = 0;
+				rc = serviceManager.GetService(XPCOM.NS_IOSERVICE_CID, nsIIOService.NS_IIOSERVICE_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
+		
+				nsIIOService ioService = new nsIIOService(result[0]);
+				result[0] = 0;
+				/*
+				* Note.  Mozilla ignores LINK tags used to load CSS stylesheets
+				* when the URI protocol for the nsInputStreamChannel
+				* is about:blank.  The fix is to specify the file protocol.
+				*/
+				byte[] aString = "file:".getBytes(); //$NON-NLS-1$
+				int aSpec = XPCOM.nsCString_new(aString, aString.length);
+				rc = ioService.NewURI(aSpec, null, 0, result);
+				XPCOM.nsCString_delete(aSpec);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+				ioService.Release();
+		
+				nsIURI uri = new nsIURI(result[0]);
+				result[0] = 0;
+				rc = XPCOM.NS_GetComponentManager(result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+		
+				nsIComponentManager componentManager = new nsIComponentManager(result[0]);
+				result[0] = 0;
+				rc = componentManager.CreateInstance(XPCOM.NS_LOADGROUP_CID, 0, nsILoadGroup.NS_ILOADGROUP_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+				nsILoadGroup loadGroup = new nsILoadGroup(result[0]);
+				result[0] = 0;
+				rc = componentManager.CreateInstance(XPCOM.NS_INPUTSTREAMCHANNEL_CID, 0, nsIInputStreamChannel.NS_IINPUTSTREAMCHANNEL_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);	
+				nsIInputStreamChannel inputStreamChannel = new nsIInputStreamChannel(result[0]);
+				result[0] = 0;
+				componentManager.Release();	
+				
+				rc = inputStreamChannel.SetURI(uri.getAddress());
+				if (rc != XPCOM.NS_OK) error(rc);
+				rc = inputStreamChannel.SetContentStream(inputStream.getAddress());
+				if (rc != XPCOM.NS_OK) error(rc);
+				byte[] buffer = contentType.getBytes();
+				byte[] contentTypeBuffer = new byte[buffer.length + 1];
+				System.arraycopy(buffer, 0, contentTypeBuffer, 0, buffer.length);
+				int aContentType = XPCOM.nsCString_new(contentTypeBuffer, contentTypeBuffer.length);
+				rc = inputStreamChannel.SetContentType(aContentType);
+				XPCOM.nsCString_delete(aContentType);
+				if (rc != XPCOM.NS_OK) error(rc);
+				byte[] contentCharsetBuffer = "UTF-8".getBytes(); //$NON-NLS-1$
+				int aContentCharset = XPCOM.nsCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
+				rc = inputStreamChannel.SetContentCharset(aContentCharset);
+				XPCOM.nsCString_delete(aContentCharset);
+				if (rc != XPCOM.NS_OK) error(rc);
+				rc = inputStreamChannel.SetLoadGroup(loadGroup.getAddress());
+				if (rc != XPCOM.NS_OK) error(rc);
+		
+				buffer = XPCOM.NS_CATEGORYMANAGER_CONTRACTID.getBytes();
+				byte[] aContractID = new byte[buffer.length + 1];
+				System.arraycopy(buffer, 0, aContractID, 0, buffer.length);
+				rc = serviceManager.GetServiceByContractID(aContractID, nsICategoryManager.NS_ICATEGORYMANAGER_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);		
+		
+				nsICategoryManager categoryManager = new nsICategoryManager(result[0]);
+				result[0] = 0;
+				buffer = "Gecko-Content-Viewers".getBytes(); //$NON-NLS-1$
+				byte[] aCategory = new byte[buffer.length + 1];
+				System.arraycopy(buffer, 0, aCategory, 0, buffer.length);
+				rc = categoryManager.GetCategoryEntry(aCategory, contentTypeBuffer, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+				categoryManager.Release();
+		
+				int length = XPCOM.strlen(result[0]);
+				aContractID = new byte[length + 1];
+				XPCOM.memmove(aContractID, result[0], length);
+				rc = serviceManager.GetServiceByContractID(aContractID, nsIDocumentLoaderFactory.NS_IDOCUMENTLOADERFACTORY_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);	
+		
+				nsIDocumentLoaderFactory documentLoaderFactory = new nsIDocumentLoaderFactory(result[0]);
+				result[0] = 0;
+				buffer = "view".getBytes(); //$NON-NLS-1$
+				byte[] aCommand = new byte[buffer.length + 1];
+				System.arraycopy(buffer, 0, aCommand, 0, buffer.length);
+				int[] aDocListenerResult = new int[1];
+				rc = documentLoaderFactory.CreateInstance(aCommand, inputStreamChannel.getAddress(), loadGroup.getAddress(),
+						contentTypeBuffer, contentViewerContainer.getAddress(), 0, aDocListenerResult, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (aDocListenerResult[0] == 0) error(XPCOM.NS_NOINTERFACE);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+				documentLoaderFactory.Release();
+		
+				nsIContentViewer contentViewer = new nsIContentViewer(result[0]);
+				nsIStreamListener streamListener = new nsIStreamListener(aDocListenerResult[0]);
+				result[0] = 0;
+				rc = contentViewer.SetContainer(contentViewerContainer.getAddress());
+				if (rc != XPCOM.NS_OK) error(rc);
+				rc = contentViewerContainer.Embed(contentViewer.getAddress(), aCommand, 0);
+				if (rc != XPCOM.NS_OK) error(rc);
+				contentViewer.Release();
+		
+				rc = inputStreamChannel.QueryInterface(nsIRequest.NS_IREQUEST_IID, result);
+				if (rc != XPCOM.NS_OK) error(rc);
+				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+		
+				nsIRequest request = new nsIRequest(result[0]);
+				result[0] = 0;
+				rc = streamListener.OnStartRequest(request.getAddress(), 0);
+				if (rc != XPCOM.NS_OK) error(rc);
+		
+				/* append */
+				rc = streamListener.OnDataAvailable(request.getAddress(), 0, inputStream.getAddress(), 0, data.length);
+				
+				/*
+				* Note.   Mozilla returns a NS_ERROR_HTMLPARSER_UNRESOLVEDDTD if the given content
+				* cannot be rendered as HTML.  Silently ignore this error. 
+				*/
+				if (rc != XPCOM.NS_ERROR_HTMLPARSER_UNRESOLVEDDTD && rc != XPCOM.NS_OK) error(rc);
+		
+				/* close */
+				rc = streamListener.OnStopRequest(request.getAddress(), 0, XPCOM.NS_OK);
+				if (rc != XPCOM.NS_ERROR_HTMLPARSER_UNRESOLVEDDTD && rc != XPCOM.NS_OK) error(rc);
+		
+				request.Release();
+				streamListener.Release();
+				serviceManager.Release();
+				inputStreamChannel.Release();
+				loadGroup.Release();
+				uri.Release();
+				contentViewerContainer.Release();
+				inputStream.Release();
+			}
 		}
 
 		/*
@@ -1898,4 +1923,38 @@ int GetParentContentListener(int aParentContentListener) {
 int SetParentContentListener(int aParentContentListener) {
 	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
+
+/* nsITooltipListener */
+
+int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
+	int length = XPCOM.nsCRT_strlen_PRUnichar(aTipText);
+	char[] dest = new char[length];
+	XPCOM.memmove(dest, aTipText, length * 2);
+	String text = new String(dest);
+	if (tip != null && !tip.isDisposed()) tip.dispose();
+	Shell parent = getShell();
+	Display display = getDisplay();
+	/* Assuming cursor is 21x21 because this is the size of
+	 * the arrow cursor on Windows
+	 */ 
+	int cursorHeight = 21; 
+	Point point = display.map(this, null, aXCoords, aYCoords + cursorHeight);
+	tip = new Shell(parent, SWT.ON_TOP);
+	tip.setLayout(new FillLayout());
+	Label label = new Label(tip, SWT.CENTER);
+	label.setForeground(display.getSystemColor(SWT.COLOR_INFO_FOREGROUND));
+	label.setBackground(display.getSystemColor(SWT.COLOR_INFO_BACKGROUND));
+	label.setText(text);
+	tip.setLocation(point);
+	tip.pack();
+	tip.setVisible(true);
+	return XPCOM.NS_OK;
+}
+
+int OnHideTooltip() {
+	if (tip != null && !tip.isDisposed()) tip.dispose();
+	tip = null;
+	return XPCOM.NS_OK;
+}
+
 }
