@@ -41,21 +41,21 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1ctree_1post_1re
 
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1get_1pixtext
-  (JNIEnv *env, jclass that, jint clist, jint row, jint column, jintArray text, jintArray spacing, jintArray pixmap, jintArray mask)
+  (JNIEnv *env, jclass that, jint clist, jint row, jint column, jintArray text, jbyteArray spacing, jintArray pixmap, jintArray mask)
 {
     jint *text1 = NULL;
-    jint *spacing1 = NULL;
+    jbyte *spacing1 = NULL;
     jint *pixmap1 = NULL;
     jint *mask1 = NULL;
     int rc;
     
     if (text) text1 = (*env)->GetIntArrayElements(env, text, NULL);
-    if (spacing) spacing1 = (*env)->GetIntArrayElements(env, spacing, NULL);
+    if (spacing) spacing1 = (*env)->GetByteArrayElements(env, spacing, NULL);
     if (pixmap) pixmap1 = (*env)->GetIntArrayElements(env, pixmap, NULL);
     if (mask) mask1 = (*env)->GetIntArrayElements(env, mask, NULL);
     rc = gtk_clist_get_pixtext((GtkCList*)clist, row, column, (gchar**)text1, (guint8*)spacing1, (GdkPixmap**)pixmap1, (GdkBitmap**)mask1);
     if (text) (*env)->ReleaseIntArrayElements(env, text, text1, 0);
-    if (spacing) (*env)->ReleaseIntArrayElements(env, spacing, spacing1, 0);
+    if (spacing) (*env)->ReleaseByteArrayElements(env, spacing, spacing1, 0);
     if (pixmap) (*env)->ReleaseIntArrayElements(env, pixmap, pixmap1, 0);
     if (mask)   (*env)->ReleaseIntArrayElements(env, mask, mask1, 0);
     
@@ -609,6 +609,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1get_1tex
  * Method:	gtk_clist_set_pixmap
  * Signature:	
  */
+ /*
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1set_1pixmap
   (JNIEnv *env, jclass that, jint clist, jint row, jint column, jint pixmap, jint mask)
 {
@@ -618,6 +619,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1clist_1set_1pix
 
 	gtk_clist_set_pixmap((GtkCList*)clist, (gint)row, (gint)column, (GdkPixmap*)pixmap, (GdkBitmap*)mask);
 }
+*/
 
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS

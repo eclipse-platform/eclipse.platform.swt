@@ -335,13 +335,13 @@ public static final native void gtk_check_menu_item_set_active(int wid, boolean 
 
 /* Containers */
 
-public static final native int eclipse_fixed_new();
-public static final native void eclipse_fixed_get_location(int fixed, int child, int[] loc);
-public static final native boolean eclipse_fixed_get_size(int fixed, int child, int[] sz);
-public static final native void eclipse_fixed_set_location(int fixed, int child, int x, int y);
-public static final native void eclipse_fixed_set_size(int fixed, int child, int width, int height);
-public static final native void eclipse_fixed_move_above(int fixed, int child, int sibling);
-public static final native void eclipse_fixed_move_below(int fixed, int child, int sibling);
+//public static final native int eclipse_fixed_new();
+//public static final native void eclipse_fixed_get_location(int fixed, int child, int[] loc);
+//public static final native boolean eclipse_fixed_get_size(int fixed, int child, int[] sz);
+//public static final native void eclipse_fixed_set_location(int fixed, int child, int x, int y);
+//public static final native void eclipse_fixed_set_size(int fixed, int child, int width, int height);
+//public static final native void eclipse_fixed_move_above(int fixed, int child, int sibling);
+//public static final native void eclipse_fixed_move_below(int fixed, int child, int sibling);
 
 
 /* GDK */
@@ -510,7 +510,7 @@ public static final native void gtk_clist_column_title_passive(int clist, int co
 public static final native void gtk_clist_column_titles_show(int clist);
 public static final native void gtk_clist_column_titles_hide(int clist);
 public static final native void gtk_clist_freeze(int clist);
-public static final native void gtk_clist_get_pixtext(int clist, int row, int column, int[] text, int[] spacing, int[] pixmap, int[] mask);
+public static final native void gtk_clist_get_pixtext(int clist, int row, int column, int[] text, byte[] spacing, int[] pixmap, int[] mask);
 public static final native void gtk_check_menu_item_set_show_toggle(int menu_item, boolean always);
 public static final native void gtk_clist_column_titles_passive(int clist);
 public static final native int gtk_clist_insert(int clist, int row, int[] text);
@@ -528,7 +528,7 @@ public static final native void gtk_clist_set_column_justification(int clist, in
 public static final native void gtk_clist_set_column_resizeable(int clist, int column, boolean resizeable);
 public static final native void gtk_clist_set_column_width(int clist, int column, int width);
 public static final native void gtk_clist_set_pixtext(int clist, int row, int column, byte[] text, byte spacing, int pixmap, int mask);
-public static final native void gtk_clist_set_pixmap(int clist, int row, int column, int pixmap, int mask);
+//public static final native void gtk_clist_set_pixmap(int clist, int row, int column, int pixmap, int mask);
 public static final native void gtk_container_add(int container, int widget);
 public static final native int gtk_container_children(int container);
 public static final native int gtk_color_selection_dialog_new(byte[] title);
@@ -581,7 +581,7 @@ public static final native void gtk_file_selection_complete(int filesel, byte[] 
 public static final native int gtk_font_selection_dialog_get_font_name(int fsd);
 public static final native int gtk_font_selection_dialog_new(byte[] title);
 public static final native boolean gtk_font_selection_dialog_set_font_name(int fsd, byte[] fontname);
-public static final native void gtk_editable_set_editable(int editable, boolean is_editable);
+public static final native void gtk_text_set_editable(int editable, boolean is_editable);
 public static final native int gtk_entry_new();
 public static final native void gtk_entry_append_text(int entry, byte[] text);
 public static final native void gtk_editable_delete_selection(int editable);
@@ -863,4 +863,23 @@ public static final native void gtk_label_set_text_with_mnemonic(int label, byte
 public static final native int gtk_label_new_with_mnemonic(byte[] str);
 public static final native int gtk_frame_get_label_widget(int frame);
 
+public static final native void gtk_widget_set_size_request(int widget, int width, int height);
+public static final native void gtk_widget_get_size_request(int widget, int [] width, int [] height);
+public static final native void gtk_widget_get_child_requisition(int widget, GtkRequisition requisition);
+public static final native int GTK_WIDGET_X(int wid);
+public static final native int GTK_WIDGET_Y(int wid);
+public static final native int GTK_WIDGET_WIDTH(int wid);
+public static final native int GTK_WIDGET_HEIGHT(int wid);
+public static final native void gtk_container_resize_children(int container);
+public static final native void gtk_container_set_resize_mode(int container, int mode);
+public static final native int gtk_fixed_new();
+public static final native void gtk_fixed_move(int fixed, int widget, int x, int y);
+public static final native void gtk_fixed_set_has_window(int fixed, boolean has_window);
+public static final native void gtk_scrolled_window_add_with_viewport (int scrolled_window, int child);
+public static final native void gtk_widget_modify_bg (int widget, int state, GdkColor color);
+public static final native void GTK_BIN_SET_CHILD (int bin, int child);
+public static final native void gtk_scrolled_window_set_shadow_type(int scrolled_window, int type);
+public static final native void gtk_widget_queue_resize(int widget);
+public static final native void memmove(GtkAllocation dest, int src);
+public static final native void gtk_widget_set_redraw_on_allocate(int widget, boolean redraw);
 }

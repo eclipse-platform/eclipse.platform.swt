@@ -28,16 +28,12 @@ import org.eclipse.swt.accessibility.*;
  * </p>
  */
 public abstract class Control extends Widget implements Drawable {
-	
+	int fixedHandle;
 	Composite parent;
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
-
-/*
- *   ===  CONSTRUCTORS  ===
- */
 
 Control () {
 }
@@ -76,11 +72,10 @@ public Control (Composite parent, int style) {
 	createWidget (0);
 }
 
-/*
- *   === HANDLE CODE ===
- */
-
-abstract void createHandle(int index);
+void deregister () {
+	super.deregister ();
+	if (fixedHandle != 0) WidgetTable.remove (fixedHandle);
+}
 
 int eventHandle () {
 	return handle;
@@ -118,65 +113,45 @@ int fontHandle () {
  * </ul>
  */
 void hookEvents () {
-	signal_connect_after (handle, "expose_event", SWT.Paint, 3);
-	int mask =
-		OS.GDK_POINTER_MOTION_MASK | 
-		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
-		OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
-		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
-		OS.GDK_FOCUS_CHANGE_MASK;
-	if (!OS.GTK_WIDGET_NO_WINDOW (handle)) {
-		OS.gtk_widget_add_events (handle, mask);
+	int eventHandle = eventHandle ();
+	signal_connect_after (eventHandle, "expose_event", SWT.Paint, 3);
+	//TEMPORARY CODE - always attempt to add events
+	if (true || !OS.GTK_WIDGET_NO_WINDOW (eventHandle)) {
+		int mask =
+//			OS.GDK_EXPOSURE_MASK | 
+			OS.GDK_POINTER_MOTION_MASK | 
+			OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
+			OS.GDK_ENTER_NOTIFY_MASK | OS.GDK_LEAVE_NOTIFY_MASK | 
+			OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
+			OS.GDK_FOCUS_CHANGE_MASK;
+		OS.gtk_widget_add_events (eventHandle, mask);
 	}
-	signal_connect_after (handle, "motion_notify_event", SWT.MouseMove, 3);
-	signal_connect_after (handle, "button_press_event", SWT.MouseDown, 3);
-	signal_connect_after (handle, "button_release_event", SWT.MouseUp, 3);
-	signal_connect_after (handle, "enter_notify_event", SWT.MouseEnter, 3);
-	signal_connect_after (handle, "leave_notify_event", SWT.MouseExit, 3);
-	signal_connect_after (handle, "key_press_event", SWT.KeyDown, 3);
-	signal_connect_after (handle, "key_release_event", SWT.KeyUp, 3);
-	signal_connect_after (handle, "focus_in_event", SWT.FocusIn, 3);
-	signal_connect_after (handle, "focus_out_event", SWT.FocusOut, 3);
+	signal_connect_after (eventHandle, "event", SWT.MouseDown, 3);
+//	signal_connect_after (eventHandle, "button_press_event", SWT.MouseDown, 3);
+//	signal_connect_after (eventHandle, "button_release_event", SWT.MouseUp, 3);
+	signal_connect_after (eventHandle, "motion_notify_event", SWT.MouseMove, 3);
+	signal_connect_after (eventHandle, "enter_notify_event", SWT.MouseEnter, 3);
+	signal_connect_after (eventHandle, "leave_notify_event", SWT.MouseExit, 3);
+	signal_connect_after (eventHandle, "key_press_event", SWT.KeyDown, 3);
+	signal_connect_after (eventHandle, "key_release_event", SWT.KeyUp, 3);
+	signal_connect_after (eventHandle, "focus_in_event", SWT.FocusIn, 3);
+	signal_connect_after (eventHandle, "focus_out_event", SWT.FocusOut, 3);
 }
 
-abstract void setHandleStyle  ();
-void setInitialSize() { _setSize(5,5); }
-void configure () {
-	// Do NOT directly use fixed_put in configure():
-	// surprisingly, not all composites have Fixed as their
-	// parenting (bottom) handle.  Should investigate further.
-	parent._connectChild(topHandle());
+int topHandle() {
+	if (fixedHandle != 0) return fixedHandle;
+	return super.topHandle ();
 }
 
-/**
- * Every Control must implement this to map the gtk widgets,
- * and also realize those that have to be realized - this means
- * create the actual X window so that there are no surprizes
- * if the user calls a method expecting the X window to be there.
- * Widgets normally do it by invoking gtk_widget_show() on all
- * handles, and then doing gtk_widget_realize() on bottommost
- * handle, which will realize everything above as well.
- * An exception to this is the Shell, which we do NOT realize
- * at this point.
- */
-void showHandle() {
-	OS.gtk_widget_show (handle);
-	OS.gtk_widget_realize (handle);
+int paintHandle () {
+	return handle;
 }
-/**
- * This is the handle by which our parent holds us
- */
-int topHandle() { return handle; }
-/**
- * This is where we draw.  Every widget must guarantee
- * that its paint handle has a Gdk window associated with it.
- */
-public int paintHandle() { return handle; }  /* REALLY BROKEN, PENDING PANGO */
-boolean isMyHandle(int h) { return h==handle; }
 
-/*
- *   ===  GEOMETRY  ===
- */
+int paintWindow () {
+	int paintHandle = paintHandle ();
+	OS.gtk_widget_realize (paintHandle);
+	return OS.GTK_WIDGET_WINDOW (paintHandle);
+}
 
 /**
  * Returns the preferred size of the receiver.
@@ -202,6 +177,11 @@ boolean isMyHandle(int h) { return h==handle; }
  */
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
+}
+
+void createWidget (int index) {
+	super.createWidget (index);
+	setInitialSize ();
 }
 
 /**
@@ -282,10 +262,12 @@ public Accessible getAccessible () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	Point location = _getLocation();
-	Point size = _getSize();
-	return new Rectangle(location.x, location.y, size.x, size.y);
-
+	int topHandle = topHandle ();
+	int x = OS.GTK_WIDGET_X (topHandle);
+	int y = OS.GTK_WIDGET_Y (topHandle);
+	int width = OS.GTK_WIDGET_WIDTH (topHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	return new Rectangle (x, y, width, height);
 }
 
 /**
@@ -307,6 +289,7 @@ public Rectangle getBounds () {
  * </ul>
  */
 public void setBounds (Rectangle rect) {
+	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
@@ -334,12 +317,60 @@ public void setBounds (Rectangle rect) {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	Point old_location = _getLocation();
-	Point old_size = _getSize();
-	_setLocation (x, y);
-	_setSize (width, height);
-	if ((x!=old_location.x) || (y!=old_location.y)) sendEvent (SWT.Move);
-	if ((width!=old_size.x) || (height!=old_size.y)) sendEvent (SWT.Resize);
+	setBounds (x, y, width, height, true, true);
+}
+
+void moveHandle (int x, int y) {
+	int topHandle = topHandle ();
+	int parentHandle = parent.parentingHandle ();
+	OS.gtk_fixed_move (parentHandle, topHandle, x, y);
+}
+
+void resizeHandle (int width, int height) {
+	int topHandle = topHandle ();
+	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
+	OS.gtk_widget_set_size_request (topHandle, width, height);
+	if (topHandle != handle) {
+		OS.gtk_widget_set_size_request (handle, width, height);
+	}
+	//FIXME - causes scrollbar problems when button child of table
+	int parentHandle = parent.parentingHandle ();
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.gtk_container_resize_children (parentHandle);
+	display.setWarnings (warnings);
+
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS(topHandle, OS.GTK_VISIBLE);	
+	}
+}
+
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int topHandle = topHandle ();
+	boolean sameOrigin = true, sameExtent = true;
+	if (move) {
+		int oldX = OS.GTK_WIDGET_X (topHandle);
+		int oldY = OS.GTK_WIDGET_Y (topHandle);
+		sameOrigin = x == oldX && y == oldY;
+		if (!sameOrigin) {
+			moveHandle (x, y);
+			sendEvent(SWT.Move);
+		}
+	}
+	if (resize) {
+		width = Math.max (1, width);
+		height = Math.max (1, height);
+		int oldWidth = OS.GTK_WIDGET_WIDTH (topHandle);
+		int oldHeight = OS.GTK_WIDGET_HEIGHT (topHandle);
+		sameExtent = width == oldWidth && height == oldHeight;
+		if (!sameExtent) {
+			resizeHandle (width, height);
+			sendEvent(SWT.Resize);
+		}
+	}
+	return !sameOrigin || !sameExtent;
 }
 
 /**
@@ -355,12 +386,10 @@ public void setBounds (int x, int y, int width, int height) {
  */
 public Point getLocation () {
 	checkWidget();
-	return _getLocation();
-}
-Point _getLocation () {
-	int[] loc = new int[2];
-	OS.eclipse_fixed_get_location(parent.parentingHandle(), topHandle(), loc);
-	return new Point(loc[0], loc[1]);
+	int topHandle = topHandle ();
+	int x = OS.GTK_WIDGET_X (topHandle);
+	int y = OS.GTK_WIDGET_Y (topHandle);
+	return new Point (x, y);
 }
 
 /**
@@ -376,6 +405,7 @@ Point _getLocation () {
  * </ul>
  */
 public void setLocation (Point location) {
+	checkWidget ();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setLocation (location.x, location.y);
 }
@@ -395,13 +425,7 @@ public void setLocation (Point location) {
  */
 public void setLocation(int x, int y) {
 	checkWidget();
-	Point old_location = _getLocation();
-	if ((x==old_location.x) && (y==old_location.y)) return;
-	_setLocation(x,y);
-	sendEvent(SWT.Move);
-}
-void _setLocation(int x, int y) {
-	OS.eclipse_fixed_set_location(parent.parentingHandle(), topHandle(), x,y);
+	setBounds (x, y, 0, 0, true, false);
 }
 
 /**
@@ -419,12 +443,10 @@ void _setLocation(int x, int y) {
  */
 public Point getSize () {
 	checkWidget();
-	return _getSize();
-}
-Point _getSize() {
-	int[] sz = new int[2];
-	OS.eclipse_fixed_get_size(parent.parentingHandle(), topHandle(), sz);
-	return new Point(sz[0], sz[1]);
+	int topHandle = topHandle ();
+	int width = OS.GTK_WIDGET_WIDTH (topHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	return new Point (width, height);
 }
 
 /**
@@ -447,6 +469,7 @@ Point _getSize() {
  * </ul>
  */
 public void setSize (Point size) {
+	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
@@ -469,15 +492,7 @@ public void setSize (Point size) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	width  = Math.max(width,  0);
-	height = Math.max(height, 0);
-	Point old_size = _getSize();
-	if ( (width==old_size.x) && (height==old_size.y) ) return;
-	_setSize(width, height);
-	sendEvent(SWT.Resize);
-}
-void _setSize(int width, int height) {
-	OS.eclipse_fixed_set_size(parent.parentingHandle(), topHandle(), width, height);
+	setBounds (0, 0, width, height, false, true);
 }
 
 /**
@@ -499,9 +514,11 @@ void _setSize(int width, int height) {
  */
 public void moveAbove (Control control) {
 	checkWidget();
-	int siblingHandle = 0;
-	if (control != null) siblingHandle = control.topHandle();
-	OS.eclipse_fixed_move_above(parent.parentingHandle(), topHandle(), siblingHandle);
+//	int siblingHandle = 0;
+//	if (control != null) siblingHandle = control.topHandle();
+	int topHandle = topHandle ();
+	int window = OS.GTK_WIDGET_WINDOW (topHandle);
+	if (window != 0) OS.gdk_window_raise (window);
 }
 
 /**
@@ -523,9 +540,11 @@ public void moveAbove (Control control) {
  */
 public void moveBelow (Control control) {
 	checkWidget();
-	int siblingHandle = 0;
-	if (control != null) siblingHandle = control.topHandle();
-	OS.eclipse_fixed_move_below(parent.parentingHandle(), topHandle(), siblingHandle);
+//	int siblingHandle = 0;
+//	if (control != null) siblingHandle = control.topHandle();
+	int topHandle = topHandle ();
+	int window = OS.GTK_WIDGET_WINDOW (topHandle);
+	if (window != 0) OS.gdk_window_lower (window);
 }
 
 /**
@@ -1215,6 +1234,10 @@ public Font getFont () {
 	int font = OS.pango_context_get_font_description (context);
 	return Font.gtk_new (getDisplay (), font);
 }
+/*
+ * Subclasses should override this, passing a meaningful handle
+ */
+
 
 /**
  * Returns the foreground color that the receiver will use to draw.
@@ -1376,10 +1399,9 @@ public boolean getVisible () {
  */
 public int internal_new_GC (GCData data) {
 	if (data == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (paintHandle() == 0) error(SWT.ERROR_UNSPECIFIED);
-	int window = OS.GTK_WIDGET_WINDOW(paintHandle());
-	int gdkGC = OS.gdk_gc_new(window);
-	if (gdkGC == 0) error(SWT.ERROR_NO_HANDLES);	
+	int window = paintWindow ();
+	int gdkGC = OS.gdk_gc_new (window);
+	if (gdkGC == 0) error (SWT.ERROR_NO_HANDLES);	
 	if (data != null) {
 		data.drawable = window;
 		data.device = getDisplay ();
@@ -1504,19 +1526,18 @@ int processKeyUp (int callData, int arg1, int int2) {
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
-	OS.gtk_widget_grab_focus(handle);
-	int eventType = SWT.MouseDown;
-	if (OS.GDK_EVENT_TYPE(callData) == OS.GDK_2BUTTON_PRESS) eventType = SWT.MouseDoubleClick;
+	int type = OS.GDK_EVENT_TYPE (callData);
+	int eventType = type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
 	int[] pMod = new int[1];
 	OS.gdk_event_get_state(callData, pMod);
 	int time = OS.gdk_event_get_time(callData);
 	double[] px = new double[1];
 	double[] py = new double[1];
 	OS.gdk_event_get_coords(callData, px, py);
-	int button = OS.gdk_event_button_get_button(callData);
+	int button = OS.gdk_event_button_get_button (callData);
 	sendMouseEvent (eventType, button, pMod[0], time, (int)(px[0]), (int)(py[0]));
 	if (button == 3 && menu != null) menu.setVisible (true);
-	return 1;
+	return 0;
 }
 
 int processMouseEnter (int arg0, int arg1, int int2) {
@@ -1534,24 +1555,21 @@ int processMouseUp (int callData, int arg1, int int2) {
 	int[] pMod = new int[1];
 	OS.gdk_event_get_state(callData, pMod);
 	int time = OS.gdk_event_get_time(callData);
-	double[] px = new double[1];
-	double[] py = new double[1];
+	double[] px = new double [1], py = new double [1];
 	OS.gdk_event_get_coords(callData, px, py);
 	int button = OS.gdk_event_button_get_button(callData);
-	sendMouseEvent (SWT.MouseUp, button, pMod[0], time, (int)(px[0]), (int)(py[0]));
-	return 1;
+	sendMouseEvent (SWT.MouseUp, button, pMod[0], time, (int)(px [0]), (int)(py [0]));
+	return 0;
 }
 
 int processMouseMove (int callData, int arg1, int int2) {
-	/*
-	GdkEvent gdkEvent = new GdkEvent (callData);
-	int[] px = new int[1], py = new int[1];
-	OS.gdk_window_get_pointer(_gdkWindow(), px, py, 0);	
-	int time = OS.gdk_event_get_time(callData);
-	int[] pMods = new int[1];
-	OS.gdk_event_get_state(callData, pMods);
-	sendMouseEvent (SWT.MouseMove, 0, pMods[0], time, px[0], py[0]);*/
-	return 1;
+	double[] px = new double [1], py = new double [1];
+	OS.gdk_event_get_coords (callData, px, py);
+	int time = OS.gdk_event_get_time (callData);
+	int [] pMods = new int [1];
+	OS.gdk_event_get_state (callData, pMods);
+	sendMouseEvent (SWT.MouseMove, 0, pMods[0], time, (int) px [0], (int)py [0]);
+	return 0;
 }
 
 int processFocusIn(int int0, int int1, int int2) {
@@ -1565,7 +1583,6 @@ int processFocusOut(int int0, int int1, int int2) {
 
 int processPaint (int callData, int int2, int int3) {
 	if (!hooks (SWT.Paint)) return 1;
-	
 	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
 	Event event = new Event ();
 	event.count = gdkEvent.count;
@@ -1576,12 +1593,17 @@ int processPaint (int callData, int int2, int int3) {
 	rect.x = gdkEvent.x;  rect.y = gdkEvent.y;
 	rect.width = gdkEvent.width;  rect.height = gdkEvent.height;
 	OS.gdk_gc_set_clip_rectangle (gc.handle, rect);
-	gc.fillRectangle(rect.x, rect.y, rect.width, rect.height);
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
 	return 1;
 }
+
+void register () {
+	super.register ();
+	if (fixedHandle != 0) WidgetTable.put (fixedHandle, this);
+}
+
 
 /**
  * Causes the entire bounds of the receiver to be marked
@@ -1597,8 +1619,10 @@ int processPaint (int callData, int int2, int int3) {
  */
 public void redraw () {
 	checkWidget();
-	Point size = _getSize();
-	_redraw(0, 0, size.x, size.y, true);
+	int topHandle = topHandle ();
+	int width = OS.GTK_WIDGET_WIDTH (topHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	redraw (0, 0, width, height, true);
 }
 /**
  * Causes the rectangular area of the receiver specified by
@@ -1625,22 +1649,14 @@ public void redraw () {
  */
 public void redraw (int x, int y, int width, int height, boolean all) {
 	checkWidget();
-	_redraw(x, y, width, height, all);
+	//?? TRANSLATE COORDINATES
+	int window = paintWindow ();
+	OS.gdk_window_clear_area_e (window, x, y, width, height);
 }
-protected void _redraw(int x, int y, int width, int height, boolean all) {
-	/* FIXME */
-	/*
-	OS.gdk_window_clear_area_e (_gdkWindow(), x, y, width, height);			
-
-GdkRectangle rect = new GdkRectangle();
-rect.x = (short)x;
-rect.y = (short)y;
-rect.width = (short)width;
-rect.height =(short) height;
-OS.gtk_widget_queue_draw(handle);*/
-
+void releaseHandle () {
+	super.releaseHandle ();
+	fixedHandle = 0;
 }
-
 void releaseWidget () {
 	super.releaseWidget ();
 	toolTipText = null;
@@ -1725,64 +1741,11 @@ void sendMouseEvent (int type, int button, int mask, int time, int x, int y) {
  * </ul>
  */
 public void setBackground (Color color) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	int hDefaultStyle = OS.gtk_widget_get_default_style ();
-	int hStyle = OS.gtk_widget_get_style (handle);
-	boolean makeCopy = hStyle == hDefaultStyle;
-	hStyle = OS.gtk_style_copy (makeCopy ? hDefaultStyle : hStyle);	
-	GtkStyle style = new GtkStyle (hStyle);
-	if (color == null) {
-		GtkStyle defaultStyle = new GtkStyle (hDefaultStyle);
-		style.bg0_pixel = defaultStyle.bg0_pixel;
-		style.bg0_red = defaultStyle.bg0_red;
-		style.bg0_green = defaultStyle.bg0_green;
-		style.bg0_blue = defaultStyle.bg0_blue;
-		style.bg1_pixel = defaultStyle.bg1_pixel;
-		style.bg1_red = defaultStyle.bg1_red;
-		style.bg1_green = defaultStyle.bg1_green;
-		style.bg1_blue = defaultStyle.bg1_blue;
-		style.bg2_pixel = defaultStyle.bg2_pixel;
-		style.bg2_red = defaultStyle.bg2_red;
-		style.bg2_green = defaultStyle.bg2_green;
-		style.bg2_blue = defaultStyle.bg2_blue;
-		style.bg3_pixel = defaultStyle.bg3_pixel;
-		style.bg3_red = defaultStyle.bg3_red;
-		style.bg3_green = defaultStyle.bg3_green;
-		style.bg3_blue = defaultStyle.bg3_blue;
-		style.bg4_pixel = defaultStyle.bg4_pixel;
-		style.bg4_red = defaultStyle.bg4_red;
-		style.bg4_green = defaultStyle.bg4_green;
-		style.bg4_blue = defaultStyle.bg4_blue;
-	} else {
-		style.bg0_pixel = color.handle.pixel;
-		style.bg0_red = color.handle.red;
-		style.bg0_green = color.handle.green;
-		style.bg0_blue = color.handle.blue;
-		style.bg1_pixel = color.handle.pixel;
-		style.bg1_red = color.handle.red;
-		style.bg1_green = color.handle.green;
-		style.bg1_blue = color.handle.blue;
-		style.bg2_pixel = color.handle.pixel;
-		style.bg2_red = color.handle.red;
-		style.bg2_green = color.handle.green;
-		style.bg2_blue = color.handle.blue;
-		style.bg3_pixel = color.handle.pixel;
-		style.bg3_red = color.handle.red;
-		style.bg3_green = color.handle.green;
-		style.bg3_blue = color.handle.blue;
-		style.bg4_pixel = color.handle.pixel;
-		style.bg4_red = color.handle.red;
-		style.bg4_green = color.handle.green;
-		style.bg4_blue = color.handle.blue;
-	}
-	/* FIXME */
-	/* I believe there is now something like set_color? */
-	/*OS.memmove (hStyle, style, GtkStyle.sizeof);
-	OS.gtk_widget_set_style (handle, hStyle);*/
-	if (makeCopy) {
-		OS.gtk_style_unref (hStyle);
-	}
+	checkWidget ();
+	//TEMPORARY CODE - should fix setBackground()/setForeground() everywhere
+	//NULL CHECK
+	if (color == null) return;
+	OS.gtk_widget_modify_bg (handle, 0, color.handle);
 }
 
 /**
@@ -1902,6 +1865,7 @@ public void setFont (Font font) {
 	OS.gtk_widget_modify_font (fontHandle, font.handle);
 }
 
+
 /**
  * Sets the receiver's foreground color to the color specified
  * by the argument, or to the default system color for the control
@@ -1971,6 +1935,14 @@ public void setForeground (Color color) {
 	/* I believe there is now something like set_color? */
 	/*OS.memmove (hStyle, style, GtkStyle.sizeof);
 	OS.gtk_widget_set_style (handle, hStyle);*/
+}
+
+void setInitialSize () {
+	//FIXME - setting the size to (1,1) if already (1,1) causes sizing problems
+	int topHandle = topHandle ();
+	int width = OS.GTK_WIDGET_WIDTH (topHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	if (width != 1 && height != 1) resizeHandle (1, 1);
 }
 
 /**
