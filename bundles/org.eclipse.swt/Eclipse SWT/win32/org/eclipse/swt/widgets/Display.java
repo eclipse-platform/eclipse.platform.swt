@@ -1124,6 +1124,7 @@ int getLastEventTime () {
  * @since 2.2
  */
 public Monitor[] getMonitors() {
+	checkDevice ();
 	if (OS.IsWinCE || (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		Monitor monitor = new Monitor();
 		monitor.handle = 0;
@@ -1136,10 +1137,10 @@ public Monitor[] getMonitors() {
 		return new Monitor[] { monitor };
 	}
 	monitors = new Monitor[4];
-	/* Create the callback */
 	Callback callback = new Callback (this, "monitorEnumProc", 4);
 	int lpfnEnum = callback.getAddress ();
 	OS.EnumDisplayMonitors(0, null, lpfnEnum, 0);
+	callback.dispose();
 	Monitor[] result = new Monitor[monitorCount];
 	System.arraycopy(monitors, 0, result, 0, monitorCount);
 	monitors = null;
@@ -1155,6 +1156,7 @@ public Monitor[] getMonitors() {
  * @since 2.2
  */
 public Monitor getPrimaryMonitor() {
+	checkDevice ();
 	if (OS.IsWinCE || (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		Monitor monitor = new Monitor();
 		monitor.handle = 0;
@@ -1167,10 +1169,10 @@ public Monitor getPrimaryMonitor() {
 		return monitor;
 	}
 	monitors = new Monitor[4];
-	/* Create the callback */
 	Callback callback = new Callback (this, "monitorEnumProc", 4);
 	int lpfnEnum = callback.getAddress ();
 	OS.EnumDisplayMonitors(0, null, lpfnEnum, 0);
+	callback.dispose();
 	Monitor result = null;
 	MONITORINFO lpmi = new MONITORINFO();
 	lpmi.cbSize = MONITORINFO.sizeof;
