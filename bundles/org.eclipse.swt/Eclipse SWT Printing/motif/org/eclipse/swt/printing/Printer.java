@@ -32,9 +32,18 @@ import org.eclipse.swt.internal.motif.*;
  */
 public final class Printer extends Device {
 	PrinterData data;
-	int printContext, xScreen, xDrawable;
+	int printContext, xScreen, xDrawable, xtContext;
 	int defaultFontList;
 
+	static String APP_NAME = "SWT_Printer";
+	
+	public static String XDefaultPrintServer = ":1";
+//	static {
+//		/* Read the default print server name from
+//		 * the XPRINTER environment variable.
+//		 */
+//		XDefaultPrintServer = ":1";
+//	}
 /**
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
@@ -42,12 +51,10 @@ public final class Printer extends Device {
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
-	if (true) return new PrinterData[0]; // printing on X is currently unimplemented
-	
 	/* Connect to the default X print server */
-	//byte [] buffer = Converter.wcsToMbcs(null, XDefaultPrintServer, true);
-	//int pdpy = OS.XOpenDisplay(buffer);
-	int pdpy = xPrinter;
+	byte [] buffer = Converter.wcsToMbcs(null, XDefaultPrintServer, true);
+	int xtContext = OS.XtCreateApplicationContext ();
+	int pdpy =  OS.XtOpenDisplay (xtContext, buffer, null, null, 0, 0, new int [] {0}, 0);
 	if (pdpy == 0) {
 		/* no print server */
 		return new PrinterData[0];
@@ -72,15 +79,15 @@ public static PrinterData[] getPrinterList() {
 		int address = stringPointers[i * 2];
 		if (address != 0) {
 			int length = OS.strlen(address);
-			byte[] buffer = new byte [length];
+			buffer = new byte [length];
 			OS.memmove(buffer, address, length);
 			/* Use the character encoding for the default locale */
 			name = new String(Converter.mbcsToWcs(null, buffer));
 		}
-		printerList[i] = new PrinterData(Device.XDefaultPrintServer, name);
+		printerList[i] = new PrinterData(XDefaultPrintServer, name);
 	}
 	OS.XpFreePrinterList(plist);
-	//OS.XCloseDisplay(pdpy);
+	OS.XtDestroyApplicationContext (xtContext);
 	return printerList;
 }
 
@@ -141,13 +148,26 @@ public Printer(PrinterData data) {
 }
 
 protected void create(DeviceData deviceData) {
-	SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	data = (PrinterData)deviceData;
 
-	/* Open the display for the X print server */
-	//byte[] displayName = Converter.wcsToMbcs(null, data.driver, true);
-	//xDisplay = OS.XOpenDisplay(displayName);
-	xDisplay = xPrinter;
+	/* Open the display for the X print server */	
+	String display_name = null;
+	String application_name = APP_NAME;
+	String application_class = APP_NAME;
+	if (data != null) {
+//		if (data.display_name != null) display_name = data.display_name;
+		if (data.driver != null) display_name = data.driver;
+		if (data.application_name != null) application_name = data.application_name;
+		if (data.application_class != null) application_class = data.application_class;
+	}
+	/* Use the character encoding for the default locale */
+	byte [] displayName = null, appName = null, appClass = null;
+	if (display_name != null) displayName = Converter.wcsToMbcs (null, display_name, true);
+	if (application_name != null) appName = Converter.wcsToMbcs (null, application_name, true);
+	if (application_class != null) appClass = Converter.wcsToMbcs (null, application_class, true);
+	
+	xtContext = OS.XtCreateApplicationContext ();
+	xDisplay =  OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, new int [] {0}, 0);
 	if (xDisplay == 0) {
 		/* no print server */
 		SWT.error(SWT.ERROR_NO_HANDLES);
@@ -188,7 +208,7 @@ protected void init() {
 }
 
 protected void destroy() {
-	//if (xDisplay != 0) OS.XCloseDisplay(xDisplay);
+	if (xtContext != 0) OS.XtDestroyApplicationContext (xtContext);
 }
 
 /**	 

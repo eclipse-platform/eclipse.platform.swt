@@ -51,15 +51,6 @@ public abstract class Device implements Drawable {
 	/* Parsing Tables */
 	int tabMapping, crMapping, tabPointer, crPointer;
 	
-	public static String XDefaultPrintServer = ":1";
-	static {
-		/* Read the default print server name from
-		 * the XPRINTER environment variable.
-		 */
-		XDefaultPrintServer = ":1";
-	}
-	protected static int xPrinter;
-	
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
