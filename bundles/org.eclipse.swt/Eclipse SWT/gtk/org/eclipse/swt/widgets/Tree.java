@@ -578,6 +578,25 @@ int processCollapse (int int0, int int1, int int2) {
 	return 0;
 }
 
+int processKeyUp (int callData, int arg1, int int2) {
+	int result = super.processKeyUp (callData, arg1, int2);
+	/*
+	* Feature in GTK.  For some reason, when the selection
+	* is extended using the shift key, the notification is
+	* issued when the widget loses focus.  The fix is to force
+	* the notification to be issued by temporarily losing and
+	* gaining focus every time the shift key is released.
+	*/
+	int keyval = OS.gdk_event_key_get_keyval (callData);
+	switch (keyval) {
+		case OS.GDK_Shift_L:
+		case OS.GDK_Shift_R:
+			OS.gtk_widget_grab_focus (scrolledHandle);
+			OS.gtk_widget_grab_focus (handle);
+	}
+	return result;
+}
+
 int processExpand (int int0, int int1, int int2) {
 	int index = OS.gtk_ctree_node_get_row_data (handle, int0) - 1;
 	Event event = new Event ();

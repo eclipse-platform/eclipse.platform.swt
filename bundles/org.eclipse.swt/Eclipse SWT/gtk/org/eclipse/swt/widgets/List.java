@@ -432,7 +432,7 @@ public String [] getSelection () {
 	checkWidget();
 	GtkCList widget = new GtkCList (handle);
 	int list = widget.selection;
-	if (list==0) return new String[0];
+	if (list == 0) return new String [0];
 	int length = OS.g_list_length (list);
 	String [] items = new String [length];
 	int [] buffer = new int [1];
@@ -463,8 +463,9 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	GtkCList widget = new GtkCList (handle);
-	return OS.g_list_length (widget.selection);
+	GtkCList clist = new GtkCList (handle);
+	if (clist.selection == 0) return 0;
+	return OS.g_list_length (clist.selection);
 }
 
 /**
@@ -484,9 +485,9 @@ public int getSelectionCount () {
 public int getSelectionIndex () {
 	checkWidget();
 	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
-	if (OS.g_list_length (list) == 0) return -1;
-	return OS.g_list_nth_data (list, 0);
+	if (clist.selection == 0) return 0;
+	if (OS.g_list_length (clist.selection) == 0) return -1;
+	return OS.g_list_nth_data (clist.selection, 0);
 }
 
 /**
@@ -511,6 +512,7 @@ public int [] getSelectionIndices () {
 	checkWidget();
 	GtkCList widget = new GtkCList (handle);
 	int list = widget.selection;
+	if (list == 0) return new int [0];
 	int length = OS.g_list_length (list);
 	int [] indices = new int [length];
 	for (int i=0; i<length; i++) {
@@ -624,6 +626,25 @@ int paintWindow () {
 	return clist.clist_window;
 }
 
+int processKeyUp (int callData, int arg1, int int2) {
+	int result = super.processKeyUp (callData, arg1, int2);
+	/*
+	* Feature in GTK.  For some reason, when the selection
+	* is extended using the shift key, the notification is
+	* issued when the widget loses focus.  The fix is to force
+	* the notification to be issued by temporarily losing and
+	* gaining focus every time the shift key is released.
+	*/
+	int keyval = OS.gdk_event_key_get_keyval (callData);
+	switch (keyval) {
+		case OS.GDK_Shift_L:
+		case OS.GDK_Shift_R:
+			OS.gtk_widget_grab_focus (scrolledHandle);
+			OS.gtk_widget_grab_focus (handle);
+	}
+	return result;
+}
+
 int processMouseDown (int callData, int arg1, int int2) {
 	if ((style & SWT.MULTI) != 0) selected = true;
 	return super.processMouseDown (callData, arg1, int2);
@@ -639,8 +660,7 @@ int processMouseUp (int callData, int arg1, int int2) {
 		* no selection signal was set and issue a fake selection
 		* event.
 		*/
-		double[] px = new double[1];
-		double[] py = new double[1];
+		double[] px = new double [1], py = new double [1];
 		OS.gdk_event_get_coords(callData, px, py);
 		int x = (int) (px[0]), y = (int) (py[0]);
 		int [] row = new int [1], column = new int [1];
@@ -666,10 +686,14 @@ int processSelection (int int0, int int1, int int2) {
 	GtkCList clist = new GtkCList (handle);
 	if (int0 != clist.focus_row) return 0;
 	if ((style & SWT.MULTI) != 0) selected = false;
-	int type = SWT.Selection;
-	if (int2 != 0)
-	  if (OS.GDK_EVENT_TYPE(int2) == OS.GDK_2BUTTON_PRESS) type = SWT.DefaultSelection;
-	postEvent (type);
+	int eventType = SWT.Selection;
+	if (int2 != 0) {
+		int type = OS.GDK_EVENT_TYPE (int2);
+		if (type == OS.GDK_2BUTTON_PRESS) {
+			eventType = SWT.DefaultSelection;
+		}
+	}
+	postEvent (eventType);
 	return 0;
 }
 
@@ -1106,9 +1130,9 @@ public void setTopIndex (int index) {
 public void showSelection () {
 	checkWidget();
 	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
-	if (OS.g_list_length (list) == 0) return;
-	int index = OS.g_list_nth_data (list, 0);
+	if (clist.selection == 0) return;
+	if (OS.g_list_length (clist.selection) == 0) return;
+	int index = OS.g_list_nth_data (clist.selection, 0);
 	int visibility = OS.gtk_clist_row_is_visible (handle, index);
 	if (visibility == OS.GTK_VISIBILITY_FULL) return;
 	//BUG IN GTK - doesn't scroll correctly before shell open
