@@ -201,6 +201,9 @@ int _createColumnHandle(int index) {
 		OS.g_signal_connect(renderer, OS.toggled, getDisplay().toggleProc, columnHandle);
 	}
 	OS.gtk_tree_view_column_set_resizable(columnHandle, true);
+	WidgetTable.put (columnHandle, this);
+	OS.gtk_tree_view_column_set_clickable(columnHandle, true);
+	OS.g_signal_connect(columnHandle, OS.clicked, getDisplay().windowProc2, SWT.Activate);	
 	return columnHandle;
 }
 
@@ -218,9 +221,6 @@ void createItem (TableColumn column, int index) {
 		column.handle = _createColumnHandle(index);
 		OS.gtk_tree_view_insert_column(handle, column.handle, index);
 	}
-	WidgetTable.put (column.handle, this);
-	OS.gtk_tree_view_column_set_clickable(column.handle, true);
-	OS.g_signal_connect(column.handle, OS.clicked, getDisplay().windowProc2, SWT.Activate);
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 }
