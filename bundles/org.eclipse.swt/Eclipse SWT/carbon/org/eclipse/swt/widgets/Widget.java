@@ -460,16 +460,16 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] region = new int [1];	
 	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
 	int clipRgn = getClipping (theControl [0]);
-	int oldRgn = OS.NewRgn ();
-	OS.GetClip (oldRgn);
+	int oldClip = OS.NewRgn ();
+	OS.GetClip (oldClip);
 //	OS.SectRgn(oldRgn, clipRgn, clipRgn);
 	OS.SectRgn(region [0], clipRgn, clipRgn);
 	OS.SetClip (clipRgn);
 	drawWidget (theControl [0]);
 	int result = OS.CallNextEventHandler (nextHandler, theEvent);
-	OS.SetClip (oldRgn);
+	OS.SetClip (oldClip);
 	OS.DisposeRgn (clipRgn);
-	OS.DisposeRgn (oldRgn);
+	OS.DisposeRgn (oldClip);
 	return result;
 }
 
