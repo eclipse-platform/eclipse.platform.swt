@@ -1207,6 +1207,43 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	return null;
 }
 
+LRESULT WM_SIZE (int wParam, int lParam) {	
+	if ((style & SWT.READ_ONLY) != 0 || (style & SWT.DROP_DOWN) == 0) return super.WM_SIZE (wParam, lParam);
+	/*
+	* Bug in Windows.  When the combo widget contains text that
+	* does not correspond to an item in the list, on resize 
+	* the widget selects the closest match from the list.
+	* The fix is to remember the original text and set the
+	* original text back into the widget after the resize.
+	*/
+	int selection = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+	TCHAR buffer = null;
+	if (selection == OS.CB_ERR) {
+		int length = OS.GetWindowTextLength (handle);
+		if (length != 0) {
+			buffer = new TCHAR (getCodePage (), length + 1);
+			OS.GetWindowText (handle, buffer, length + 1);
+			setRedraw (false);
+		}
+	}
+	LRESULT result = super.WM_SIZE (wParam, lParam);
+	
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the resize
+	* event.  If this happens, end the processing of the
+	* Windows message by returning the result of the
+	* WM_SIZE message.
+	*/
+	if (isDisposed ()) return result;
+	
+	if (buffer != null) {
+		OS.SetWindowText (handle, buffer);
+		setRedraw (true);
+	}
+	return result; 
+}
+
 LRESULT wmCommandChild (int wParam, int lParam) {
 	int code = wParam >> 16;
 	switch (code) {
@@ -1234,7 +1271,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			break;
 		case OS.CBN_SELCHANGE:
 			/*
-			* Feature in Windows.  If the text in and editable combo box
+			* Feature in Windows.  If the text in an editable combo box
 			* is queried using GetWindowText () before the WM_COMMAND
 			* (with CBM_SELCHANGE) returns, GetWindowText () returns is
 			* the previous text in the combo box.  It seems that the combo
