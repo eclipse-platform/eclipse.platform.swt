@@ -590,6 +590,7 @@ public class SWT {
 	 * style constant for modeless behavior (value is 0)
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
+	 * <li><code>Dialog</code></li>
 	 * <li><code>Shell</code></li>
 	 * </ul></p>
 	 */
@@ -599,6 +600,7 @@ public class SWT {
 	 * style constant for primary modal behavior (value is 1&lt;&lt;15)
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
+	 * <li><code>Dialog</code></li>
 	 * <li><code>Shell</code></li>
 	 * </ul></p>
 	 */
@@ -608,6 +610,7 @@ public class SWT {
 	 * style constant for application modal behavior (value is 1&lt;&lt;16)
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
+	 * <li><code>Dialog</code></li>
 	 * <li><code>Shell</code></li>
 	 * </ul></p>
 	 */
@@ -617,6 +620,7 @@ public class SWT {
 	 * style constant for system modal behavior (value is 1&lt;&lt;17)
 	 * <br>Note that this is a <em>HINT</em>.
 	 * <p><b>Used By:</b><ul>
+	 * <li><code>Dialog</code></li>
 	 * <li><code>Shell</code></li>
 	 * </ul></p>
 	 */
@@ -711,6 +715,36 @@ public class SWT {
 	 * </ul></p>
 	 */
 	public static final int NO_RADIO_GROUP = 1 << 22;
+	
+	/**
+	 * style constant for left to right orientation (value is 1&lt;&lt;25)
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code></li>
+	 * <li><code>Dialog</code></li>
+	 * <li><code>Menu</code></li>
+	 * </ul></p>
+	 */
+	public static final int LEFT_TO_RIGHT = 1 << 25;
+	
+	/**
+	 * style constant for right to left orientation (value is 1&lt;&lt;26)
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code></li>
+	 * <li><code>Dialog</code></li>
+	 * <li><code>Menu</code></li>
+	 * </ul></p>
+	 */
+	public static final int RIGHT_TO_LEFT = 1 << 26;
+	
+	/**
+	 * style constant to indicate coordinate mirroring (value is 1&lt;&lt;27)
+	 * <p><b>Used By:</b><ul>
+	 * <li><code>Control</code></li>
+	 * <li><code>Dialog</code></li>
+	 * <li><code>Menu</code></li>
+	 * </ul></p>
+	 */
+	public static final int MIRRORED = 1 << 27;
 
 	/**
 	 * style constant for align up behavior (value is 1&lt;&lt;7,
