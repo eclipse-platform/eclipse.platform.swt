@@ -228,6 +228,7 @@ public class Display extends Device {
 	
 	// Callbacks
 	private ArrayList fCallbacks;
+
 	// callback procs
 	int fApplicationProc;
 	int fWindowProc;
@@ -239,6 +240,9 @@ public class Display extends Device {
 	int fDataBrowserDataProc, fDataBrowserCompareProc, fDataBrowserItemNotificationProc;
 	int fControlProc;
 	
+	// refhandlers (to be disposed)
+	private int fApplicationRefHandler, fFocusRefHandler, fToolTipRefHandler;
+
 	private boolean fMenuIsVisible;
 	private int fTrackedControl;
 	private int fFocusControl;
@@ -251,6 +255,7 @@ public class Display extends Device {
 	
 	private static boolean fgCarbonInitialized;
 	private static boolean fgInitCursorCalled;
+	private static int fgInitCount; // counts how many times Display.init has been called
 	/* end AW */
 	
 	/*
@@ -462,19 +467,14 @@ void createDisplay (DeviceData data) {
 		if (!fgCarbonInitialized) {
 			OS.RegisterAppearanceClient();
 			OS.TXNInitTextension(0, 0, 0);
-			//OS.InitCursor();
 			OS.QDSwapTextFlags(OS.kQDUseCGTextRendering + OS.kQDUseCGTextMetrics);
+			/* AW todo: not yet ready for primetime (see ContextualMenuSelect in handleMouseCallback)
 			if (OS.InitContextualMenus() != OS.noErr)
 				System.out.println("Display.createDisplay: error in OS.InitContextualMenus");
+			*/
 			int[] psn= new int[2];
 			if (OS.GetCurrentProcess(psn) == OS.noErr)
 	    		OS.SetFrontProcess(psn);
-				
-			// workaround for Register problem
-			Rect bounds= new Rect();
-			int[] ctl = new int[1];
-			OS.CreatePushButtonControl(0, bounds, 0, ctl);
-			OS.DisposeControl(ctl[0]);
 	    }
 		fgCarbonInitialized = true;
 	}
@@ -492,6 +492,21 @@ protected void destroy () {
 	destroyDisplay ();
 }
 void destroyDisplay () {
+	
+	// remove eventRefs
+	if (fApplicationRefHandler != 0) {
+		OS.RemoveEventHandler(fApplicationRefHandler);
+		fApplicationRefHandler= 0;
+	}
+	if (fFocusRefHandler != 0) {
+		OS.RemoveEventHandler(fFocusRefHandler);
+		fFocusRefHandler= 0;
+	}
+	if (fToolTipRefHandler != 0) {
+		OS.RemoveEventHandler(fToolTipRefHandler);
+		fToolTipRefHandler= 0;
+	}
+
 	// dispose Callbacks
 	Iterator iter= fCallbacks.iterator();
 	while (iter.hasNext()) {
@@ -928,7 +943,18 @@ void hideToolTip () {
 }
 protected void init () {
 	super.init ();
-				
+		
+	/*
+	 * in recent builds (> 20021023) new Displays are created on shutdown
+	 * after the 'main' Display has been disposed.
+	 * This is OK, however the Mac port does not yet release all refHandlers
+	 * on the first dispose, and if the same procs are reinstalled for another
+	 * Display the install fails.
+	 */
+	if (fgInitCount > 0)
+		System.err.println("Warning: Display.init called more than once");
+	fgInitCount++;
+		
 	/* Create the callbacks */
 	timerProc= createCallback("timerProc", 2);
 	caretProc= createCallback("caretProc", 2);
@@ -970,8 +996,11 @@ protected void init () {
 		SWT_USER_EVENT, 54321,
 		SWT_USER_EVENT, 54322,
 	};
-	if (OS.InstallEventHandler(OS.GetApplicationEventTarget(), fApplicationProc, mask.length / 2, mask, 0, null) != OS.noErr)
+	
+	int[] refHandler= new int[1];
+	if (OS.InstallEventHandler(OS.GetApplicationEventTarget(), fApplicationProc, mask.length / 2, mask, 0, refHandler) != OS.noErr)
 		error (SWT.ERROR_NO_MORE_CALLBACKS);
+	fApplicationRefHandler= refHandler[0];
 	
 	
 	int textInputProc= createCallback("handleTextCallback", 3);
@@ -981,8 +1010,9 @@ protected void init () {
 		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
 		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
 	};
-	if (OS.InstallEventHandler(OS.GetUserFocusEventTarget(), textInputProc, mask.length / 2, mask, 0, null) != OS.noErr)
+	if (OS.InstallEventHandler(OS.GetUserFocusEventTarget(), textInputProc, mask.length / 2, mask, 0, refHandler) != OS.noErr)
 		error (SWT.ERROR_NO_MORE_CALLBACKS);
+	fFocusRefHandler= refHandler[0];
 	
 	
 	buttonFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallSystemFont));
@@ -1637,8 +1667,10 @@ void showToolTip (int handle, String toolTipText) {
 		int[] mask= new int[] {
 			OS.kEventClassWindow, OS.kEventWindowDrawContent
 		};
+		int[] refHandler= new int[1];
 		OS.InstallEventHandler(OS.GetWindowEventTarget(toolTipWindowHandle), fTooltipWindowProc,
-					mask.length / 2, mask, toolTipWindowHandle, null);
+						mask.length / 2, mask, toolTipWindowHandle, refHandler);
+		fToolTipRefHandler= refHandler[0];
 		OS.ShowWindow(toolTipWindowHandle);
 		fLastHoverHandle= handle;
 	}
@@ -1658,10 +1690,7 @@ void showToolTip (int handle, String toolTipText) {
  */
 public boolean sleep () {
 	checkDevice ();
-	int rc= OS.ReceiveNextEvent(0, null, OS.kEventDurationForever, false, null);
-	if (rc != OS.noErr)
-		System.out.println("oha: " + rc);
-	return rc == OS.noErr;
+	return OS.ReceiveNextEvent(0, null, 0.1 /*OS.kEventDurationForever*/, false, null) == OS.noErr;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
@@ -2289,7 +2318,7 @@ static String convertToLf(String text) {
 					if (cm != null && me.isShowContextualMenuClick()) {
 						try {
 							fInContextMenu= true;
-							// AW: not ready for primetime
+							// AW todo: not ready for primetime (see InitContextualMenus in createDisplay)
 							// OS.ContextualMenuSelect(cm.handle, globalPos.getData(), new short[1], new short[1]);
 							org.eclipse.swt.internal.carbon.Point pos= me.getWhere();
 							OS.PopUpMenuSelect(cm.handle, pos.v, pos.h, (short)1);
@@ -2447,11 +2476,6 @@ static String convertToLf(String text) {
 		if (proc == 0)
 			error (SWT.ERROR_NO_MORE_CALLBACKS);
 		return proc;
-	}
-	
-	private int testProc (int id, int clientData) {
-		System.out.println("testProc");
-		return 0;
 	}
 	
 }
