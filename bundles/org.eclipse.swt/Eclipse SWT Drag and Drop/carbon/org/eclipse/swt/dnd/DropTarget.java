@@ -325,6 +325,8 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	updateDragOverHover(0, null);
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 
+	if (keyOperation == -1) return OS.dragNotAcceptedErr;
+
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = (int)System.currentTimeMillis();
@@ -337,7 +339,8 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	if (!setEventData(theDrag, event)) {
 		return OS.dragNotAcceptedErr;
 	}
-	
+	keyOperation = -1;
+		
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, event.dataTypes.length);
@@ -418,7 +421,6 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 		selectedOperation = DND.DROP_NONE;
 	} 
 
-	keyOperation = -1;
 	//notify source of action taken
 	int action = opToOsOp(selectedOperation);
 	OS.SetDragDropAction(theDrag, action);
@@ -431,8 +433,7 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 		updateDragOverHover(0, null);
 		effect.show(DND.FEEDBACK_NONE, 0, 0);
 		OS.SetThemeCursor(OS.kThemeArrowCursor);
-		
-		if (keyOperation == -1) return OS.noErr;
+		if (keyOperation == -1) return OS.dragNotAcceptedErr;
 		keyOperation = -1;
 		
 		DNDEvent event = new DNDEvent();
@@ -454,6 +455,7 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 	
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(theDrag, event)) {
+		keyOperation = -1;
 		OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
 		return OS.dragNotAcceptedErr;
 	}
