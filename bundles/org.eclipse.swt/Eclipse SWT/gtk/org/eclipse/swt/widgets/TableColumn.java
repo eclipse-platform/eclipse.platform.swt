@@ -412,7 +412,7 @@ public void setAlignment (int alignment) {
 	checkWidget();
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	int index = parent.indexOf (this);
-	if (index == -1 || index == 0) return;
+	if (index == -1) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	parent.createRenderers (handle, modelIndex, index == 0, style);
