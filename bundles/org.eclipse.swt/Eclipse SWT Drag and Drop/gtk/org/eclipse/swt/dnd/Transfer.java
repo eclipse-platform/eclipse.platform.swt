@@ -111,17 +111,6 @@ abstract protected void javaToNative (Object object, TransferData transferData);
 abstract protected Object nativeToJava(TransferData transferData);
 
 /**
- * Test that the object is of the correct format for this Transfer class.
- * 
- * @param object a java representation of the data to be converted
- * 
- * @return true if object is of the correct form for this transfer type
- * 
- * @since 3.1
- */
-abstract protected boolean validate(Object object);
-
-/**
  * Registers a name for a data type and returns the associated unique identifier.
  *
  * <p>You may register the same type more than once, the same unique identifier 
@@ -139,5 +128,18 @@ public static int registerType(String formatName){
 	if (formatName == null) return OS.GDK_NONE;
 	byte[] buffer = Converter.wcsToMbcs(null, formatName, true);
 	return (int)/*64*/OS.gdk_atom_intern(buffer, false);
+}
+
+/**
+ * Test that the object is of the correct format for this Transfer class.
+ * 
+ * @param object a java representation of the data to be converted
+ * 
+ * @return true if object is of the correct form for this transfer type
+ * 
+ * @since 3.1
+ */
+protected boolean validate(Object object) {
+	return true;
 }
 }
