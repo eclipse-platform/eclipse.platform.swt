@@ -111,6 +111,19 @@ public void addSelectionListener (SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	int width = OS.GTK_WIDGET_WIDTH (fixedHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	OS.gtk_widget_set_size_request (handle, wHint, hHint);
+	GtkRequisition requisition = new GtkRequisition ();
+	OS.gtk_widget_size_request (handle, requisition);
+	OS.gtk_widget_set_size_request (handle, width, height);
+	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
+	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
+	return new Point (width, height);	
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	int bits = SWT.ARROW | SWT.TOGGLE | SWT.CHECK | SWT.RADIO | SWT.PUSH;
