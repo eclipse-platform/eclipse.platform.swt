@@ -533,8 +533,21 @@ void register () {
 	display.addWidget (shellHandle, this);
 }
 
+void releaseChild () {
+	/* Do nothing */
+}
+
 int topHandle () {
 	return shellHandle;
+}
+
+void fixShell (Shell newShell, Control control) {
+	if (this == newShell) return;
+	if (control == lastActive) setActiveControl (null);
+	if (tooltipsHandle != 0) {
+		setToolTipText (control.handle, null);
+	}
+	newShell.setToolTipText (control.handle, control.toolTipText);
 }
 
 public Point getLocation () {
@@ -1102,14 +1115,17 @@ void releaseWidget () {
 	lastActive = null;
 }
 
-int tooltipsHandle() {
+void setToolTipText (int widget, String string) {
+	byte [] buffer = null;
+	if (string != null && string.length () > 0) {
+		buffer = Converter.wcsToMbcs (null, string, true);
+	}
 	if (tooltipsHandle == 0) {
 		tooltipsHandle = OS.gtk_tooltips_new ();
 		if (tooltipsHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.g_object_ref (tooltipsHandle);
 		OS.gtk_object_sink (tooltipsHandle);
 	}
-	return tooltipsHandle;
+	OS.gtk_tooltips_set_tip (tooltipsHandle, widget, buffer, null);
 }
-
 }

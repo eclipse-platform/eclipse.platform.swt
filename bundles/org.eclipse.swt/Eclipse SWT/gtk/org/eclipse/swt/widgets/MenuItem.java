@@ -251,6 +251,10 @@ void createHandle (int index) {
 	OS.gtk_widget_show (handle);
 }
 
+void fixMenus (Decorations newParent) {
+	if (menu != null) menu.fixMenus (newParent);
+}
+
 /**
  * Return the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:

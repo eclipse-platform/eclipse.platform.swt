@@ -195,6 +195,33 @@ void destroyAccelGroup () {
 	accelGroup = 0;
 }
 
+void fixAccelGroup () {
+	if (menuBar == null) return;
+	destroyAccelGroup ();
+	createAccelGroup ();
+	menuBar.addAccelerators (accelGroup);
+}
+
+void fixDecorations (Decorations newDecorations, Control control, Menu [] menus) {
+	if (this == newDecorations) return;
+	if (control == savedFocus) savedFocus = null;
+	if (control == defaultButton) defaultButton = null;
+	if (control == saveDefault) saveDefault = null;
+	if (menus == null) return;
+	Menu menu = control.menu;
+	if (menu != null) {
+		int index = 0;
+		while (index <menus.length) {
+			if (menus [index] == menu) {
+				control.setMenu (null);
+				return;
+			}
+			index++;
+		}
+		menu.fixMenus (newDecorations);
+	}
+}
+
 /**
  * Returns the receiver's default button if one had
  * previously been set, otherwise returns null.

@@ -112,6 +112,17 @@ Control [] _getChildren () {
 	return newChildren;
 }
 
+static int checkStyle (int style) {
+	/*
+	* Even though it is legal to create this widget
+	* with scroll bars, they serve no useful purpose
+	* because they do not automatically scroll the
+	* widget's client area.  The fix is to clear
+	* the SWT style.
+	*/
+	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.gtk_fixed_new ();
@@ -304,15 +315,16 @@ void releaseWidget () {
 	tooltipsHandle = 0;
 }
 
-static int checkStyle (int style) {
-	/*
-	* Even though it is legal to create this widget
-	* with scroll bars, they serve no useful purpose
-	* because they do not automatically scroll the
-	* widget's client area.  The fix is to clear
-	* the SWT style.
-	*/
-	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+void removeControl (Control control) {
+	super.removeControl (control);
+	// TEMPORARY CODE
+	ToolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null && item.control == control) {
+			item.setControl (null);
+		}
+	}
 }
 
 void setFontDescription (int font) {

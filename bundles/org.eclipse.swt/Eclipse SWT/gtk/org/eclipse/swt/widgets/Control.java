@@ -1274,6 +1274,15 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
+Menu [] findMenus (Control control) {
+	if (menu != null && this != control) return new Menu [] {menu};
+	return new Menu [0];
+}
+
+void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations, Menu [] menus) {
+	oldShell.fixShell (newShell, this);
+	oldDecorations.fixDecorations (newDecorations, this, menus);
+}
 
 /**
  * Forces the receiver to have the <em>keyboard focus</em>, causing
@@ -1908,7 +1917,7 @@ public void internal_dispose_GC (int gdkGC, GCData data) {
  */
 public boolean isReparentable () {
 	checkWidget();
-	return false;
+	return true;
 }
 boolean isShowing () {
 	/*
@@ -2078,6 +2087,10 @@ void redrawWidget (int x, int y, int width, int height, boolean all) {
 	rect.width = width;
 	rect.height = height;
 	OS.gdk_window_invalidate_rect (window, rect, all);
+}
+
+void releaseChild () {
+	parent.removeControl (this);
 }
 
 void releaseHandle () {
@@ -2446,7 +2459,7 @@ public void setMenu (Menu menu) {
 	checkWidget();
 	if (menu != null) {
 		if ((menu.style & SWT.POP_UP) == 0) {
-		error (SWT.ERROR_MENU_NOT_POP_UP);
+			error (SWT.ERROR_MENU_NOT_POP_UP);
 		}
 		if (menu.parent != menuShell ()) {
 			error (SWT.ERROR_INVALID_PARENT);
@@ -2472,9 +2485,27 @@ public void setMenu (Menu menu) {
  *	</ul>
  */
 public boolean setParent (Composite parent) {
-	checkWidget();
-	if (parent.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	return false;
+	checkWidget ();
+	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (parent.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (this.parent == parent) return true;
+	releaseChild ();
+	Shell newShell = parent.getShell (), oldShell = getShell ();
+	Decorations newDecorations = parent.menuShell (), oldDecorations = menuShell ();
+	Menu [] menus = oldShell.findMenus (this);
+	if (oldShell != newShell || oldDecorations != newDecorations) {
+		fixChildren (newShell, oldShell, newDecorations, oldDecorations, menus);
+		newDecorations.fixAccelGroup ();
+		oldDecorations.fixAccelGroup ();
+	}
+	int topHandle = topHandle ();
+	int newParent = parent.parentingHandle();
+	int x = OS.GTK_WIDGET_X (topHandle);
+	int y = OS.GTK_WIDGET_Y (topHandle);
+	OS.gtk_widget_reparent (topHandle, newParent);
+	OS.gtk_fixed_move (newParent, topHandle, x, y);
+	this.parent = parent;
+	return true;
 }
 
 boolean setRadioSelection (boolean value) {
@@ -2535,14 +2566,8 @@ boolean setTabItemFocus () {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-	toolTipText = string;
-	byte [] buffer = null;
-	if (string != null && string.length () > 0) {
-		buffer = Converter.wcsToMbcs (null, string, true);
-	}
 	Shell shell = _getShell ();
-	int tooltipsHandle = shell.tooltipsHandle ();
-	OS.gtk_tooltips_set_tip (tooltipsHandle, handle, buffer, null);
+	shell.setToolTipText (handle, toolTipText = string);
 }
 
 /**

@@ -279,6 +279,16 @@ void createWidget (int index) {
 	parent.add (this);
 }
 
+void fixMenus (Decorations newParent) {
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		items [i].fixMenus (newParent);
+	}
+	parent.remove (this);
+	newParent.add (this);
+	this.parent = newParent;
+}
+
 /**
  * Returns the default menu item or null if none has
  * been previously set.
