@@ -30,7 +30,7 @@ public class FileDialog extends GtkFileDialog {
 	String [] filterExtensions = new String [0];
 	String filterPath = "";
 	String fileName = "";
-	String[] fileNames;
+	String[] fileNames = new String[0];
 	String fullPath = "";
 	
 /**
@@ -94,8 +94,7 @@ public FileDialog (Shell parent, int style) {
 }
 /**
  * Returns the path of the first file that was
- * selected in the dialog relative to the filter path,
- * or empty string if the dialog was cancelled.
+ * selected in the dialog relative to the filter path
  * 
  * @return the relative path of the file
  */
@@ -242,8 +241,9 @@ void preset() {
 		OS.gtk_file_selection_complete (handle, extBytes);
 	}
 	
-	fileName = "";
+	fileName = null;
 	fullPath = null;
+	filterPath = null;
 }
 
 void interpretOsAnswer(String osAnswer) {

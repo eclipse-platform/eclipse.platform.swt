@@ -31,7 +31,6 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames = new String [0];
 	String filterPath = "", fileName = "";
-	String fullPath = "";
 	static final String FILTER = "*.*";
 	static int BUFFER_SIZE = 1024 * 10;
 
@@ -98,8 +97,7 @@ public FileDialog (Shell parent, int style) {
 
 /**
  * Returns the path of the first file that was
- * selected in the dialog relative to the filter path,
- * or empty string if the dialog was cancelled.
+ * selected in the dialog relative to the filter path
  * 
  * @return the relative path of the file
  */
@@ -280,7 +278,8 @@ public String open () {
 	}
 
 	/* Set the new path, file name and filter */
-	fullPath = null;
+	String fullPath = null;
+	fileNames = null;
 	if (success) {
 		
 		/* Use the character encoding for the default locale */
@@ -350,9 +349,6 @@ public String open () {
 				fileNames = newFileNames;
 			}
 		}
-	} else {
-		fileName = "";
-		fileNames = null;
 	}
 	
 	/* Free the memory that was allocated. */
