@@ -91,7 +91,7 @@ public class Decorations extends Canvas {
 	Control savedFocus;
 	Button defaultButton, saveDefault;
 	int swFlags, hAccel, nAccel;
-	int hwndCB;
+	int hwndCB, hIcon;
 	
 	/*
 	* The start value for WM_COMMAND id's.
@@ -627,10 +627,8 @@ void releaseWidget () {
 	}
 	menus = null;
 	super.releaseWidget ();
-	if (image != null) {
-		int hOld = OS.SendMessage (handle, OS.WM_GETICON, OS.ICON_BIG, 0);
-		if (hOld != 0 && image.handle != hOld) OS.DestroyIcon (hOld);
-	}
+	if (hIcon != 0) OS.DestroyIcon (hIcon);
+	hIcon = 0;
 	items = null;
 	image = null;
 	savedFocus = null;
@@ -778,15 +776,12 @@ public void setImage (Image image) {
 		this.image = image;
 		return;
 	}
-	int hIcon = 0;
+	int hImage = 0;
 	if (image != null) {
+		if (hIcon != 0) OS.DestroyIcon (hIcon);
+		hIcon = 0;
 		switch (image.type) {
 			case SWT.BITMAP:
-				int hOld = OS.SendMessage (handle, OS.WM_GETICON, OS.ICON_BIG, 0);
-				if (hOld != 0 && image != null) {
-					int hImage = this.image.handle;
-					if (hImage != hOld) OS.DestroyIcon (hOld);
-				}
 				/* Copy the bitmap in case it's a DIB */
 				int hBitmap = image.handle;
 				BITMAP bm = new BITMAP ();
@@ -804,7 +799,7 @@ public void setImage (Image image) {
 				info.fIcon = true;
 				info.hbmMask = hMask;
 				info.hbmColor = hColor;
-				hIcon = OS.CreateIconIndirect (info);
+				hImage = hIcon = OS.CreateIconIndirect (info);
 				OS.DeleteObject (hMask);
 				OS.DeleteObject(hColor);
 				OS.DeleteDC (hdcBmp);
@@ -812,14 +807,14 @@ public void setImage (Image image) {
 				OS.ReleaseDC (handle, hDC);
 				break;
 			case SWT.ICON:
-				hIcon = image.handle;
+				hImage = image.handle;
 				break;
 			default:
 				return;
 		}
 	}
 	this.image = image;
-	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_BIG, hIcon);
+	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_BIG, hImage);
 	
 	/*
 	* Bug in Windows.  When WM_SETICON is used to remove an
