@@ -1864,9 +1864,9 @@ String wrapText (String text, int fontList, int width) {
 	while (lineStart < length) {
 		lineEnd = text.indexOf (Lf, lineStart);
 		boolean noLf = lineEnd == -1;
-		if (noLf) lineEnd = length;
+		if (noLf) lineEnd = length - 1;
 		int nextStart = lineEnd + Lf.length ();
-		while (lineEnd > lineStart + 1 && Character.isWhitespace (text.charAt (lineEnd - 1))) {
+		while (lineEnd >= 0 && Character.isWhitespace (text.charAt (lineEnd))) {
 			lineEnd--;
 		}
 		int wordStart = lineStart, wordEnd = lineStart;
@@ -1899,7 +1899,7 @@ String wrapText (String text, int fontList, int width) {
 			}
 		}
 		if (lineStart < lineEnd) {
-			result.append (text.substring (lineStart, lineEnd));
+			result.append (text.substring (lineStart, lineEnd + 1));
 		}
 		if (!noLf) {
 			result.append (Lf);

@@ -256,15 +256,7 @@ public void setBackground (int color) {
 }
 
 public int size () {
-	int result = 0;
-	int count = OS.ImageList_GetImageCount (handle);
-	for (int i=0; i<count; i++) {
-		if (images [i] != null) {
-			if (images [i].isDisposed ()) images [i] = null;
-			if (images [i] == null) result++;
-		}
-	}
-	return result;
+	return OS.ImageList_GetImageCount (handle);
 }
 
 }
