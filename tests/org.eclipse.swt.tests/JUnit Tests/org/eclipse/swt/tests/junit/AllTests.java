@@ -52,6 +52,11 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_SWTException.suite());
 	addTest(Test_org_eclipse_swt_SWTError.suite());
 
+	/* NOTE: If the Display test suite is run, it must be run
+	 * before any other tests that need a display (i.e. graphics
+	 * or widget tests, etc). Otherwise, an InvalidThreadAccess
+	 * exception will be thrown for each Display test.
+	 */
 	addTest(Test_org_eclipse_swt_widgets_Display.suite());
 
 	addTest(Test_org_eclipse_swt_graphics_Image.suite());
