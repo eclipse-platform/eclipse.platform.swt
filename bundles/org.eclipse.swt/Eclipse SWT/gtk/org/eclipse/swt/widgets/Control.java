@@ -1517,7 +1517,7 @@ int processKeyDown (int callData, int arg1, int int2) {
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, callData, GdkEventKey.sizeof);
 	boolean accelResult = OS.gtk_accel_groups_activate(_getShell().topHandle, gdkEvent.keyval, gdkEvent.state);
-	sendKeyEvent (SWT.KeyDown, gdkEvent);
+	if (!accelResult) sendKeyEvent (SWT.KeyDown, gdkEvent);
 	return 1;
 }
 
