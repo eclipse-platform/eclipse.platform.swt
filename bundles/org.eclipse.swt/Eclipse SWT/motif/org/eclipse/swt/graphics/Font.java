@@ -89,6 +89,26 @@ public Font (Device device, String fontFamily, int height, int style) {
 public void dispose () {
 	if (handle == 0) return;
 	if (device.isDisposed()) return;
+	if (handle == device.systemFont) return;
+	
+	/* Free the fonts associated with the font list */
+	int [] buffer = new int [1];
+	int xDisplay = device.xDisplay;
+	if (OS.XmFontListInitFontContext (buffer, handle)) {
+		int context = buffer [0];
+		int fontListEntry;
+		while ((fontListEntry = OS.XmFontListNextEntry (context)) != 0) {
+			int fontPtr = OS.XmFontListEntryGetFont (fontListEntry, buffer);
+			if (buffer [0] == OS.XmFONT_IS_FONT) {
+				OS.XFreeFont(xDisplay, fontPtr);
+			} else {
+				OS.XFreeFontSet(xDisplay, fontPtr);
+			}
+		}
+		OS.XmFontListFreeFontContext (context);
+	}	
+	
+	/* Free the font list */
 	OS.XmFontListFree (handle);
 	device = null;
 	handle = 0;
@@ -139,7 +159,7 @@ public FontData[] getFontData() {
 	/* Go through each entry in the font list */
 	while ((fontListEntry = OS.XmFontListNextEntry(context)) != 0) {
 		int fontPtr = OS.XmFontListEntryGetFont(fontListEntry, buffer);
-		if (buffer[0] == 0) { 
+		if (buffer[0] == OS.XmFONT_IS_FONT) { 
 			/* FontList contains a single font */
 			OS.memmove(fontStruct,fontPtr,20 * 4);
 			int propPtr = fontStruct.properties;
@@ -230,15 +250,65 @@ public FontData[] getFontData() {
 public int hashCode () {
 	return handle;
 }
+int loadFont(int xDisplay, FontData fd) {
+	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
+	return OS.XLoadQueryFont(xDisplay, buffer);
+}
+int matchFont(int xDisplay, FontData fd) {	
+	int fontStruct = loadFont(xDisplay, fd);
+	if (fontStruct != 0) return fontStruct;
+	if (fd.slant != null) {
+		fd.slant = null;
+		fontStruct = loadFont(xDisplay, fd);
+		if (fontStruct != 0) return fontStruct;
+	}
+	if (fd.weight != null) {
+		fd.weight = null;
+		fontStruct = loadFont(xDisplay, fd);
+		if (fontStruct != 0) return fontStruct;
+	}
+	if (fd.points != 0) {
+		fd.points = 0;
+		fontStruct = loadFont(xDisplay, fd);
+		if (fontStruct != 0) return fontStruct;
+	}
+	return 0;
+}
 void init (Device device, FontData fd) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
-	byte[] buffer = Converter.wcsToMbcs(null, fd.getXlfd(), true);
-	boolean warnings = device.getWarnings();
-	device.setWarnings(false);
-	int fontListEntry = OS.XmFontListEntryLoad(device.xDisplay, buffer, 0, OS.XmFONTLIST_DEFAULT_TAG);
-	device.setWarnings(warnings);
+	int xDisplay = device.xDisplay;
+	int fontStruct = loadFont(xDisplay, fd);
+	if (fontStruct == 0) {
+		/*
+		* If the desired font can not be loaded, the XLFD fields are wildcard
+		* in order to preserve the font style and height. If there is no
+		* font with the desired style and height, the slant, weight and points
+		* are wildcard in that order, until a font can be loaded.
+		*/
+		FontData newFD = new FontData();
+		newFD.slant = fd.slant;
+		newFD.weight = fd.weight;
+		newFD.points = fd.points;
+		newFD.characterSetName = fd.characterSetName;
+		if (newFD.characterSetName == null) {
+			newFD.characterSetName = device.characterSetName;
+		}
+		newFD.characterSetRegistry = fd.characterSetRegistry;
+		if (newFD.characterSetRegistry == null) {
+			newFD.characterSetRegistry = device.characterSetRegistry;
+		}
+		fontStruct = matchFont(xDisplay, newFD);
+
+		/* Failed to load any font. Use the system font. */
+		if (fontStruct == 0) {
+			handle = device.systemFont;
+			if (handle != 0) return;
+		}
+	}
+	if (fontStruct == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int fontListEntry = OS.XmFontListEntryCreate(OS.XmFONTLIST_DEFAULT_TAG, OS.XmFONT_IS_FONT, fontStruct);
 	if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	handle = OS.XmFontListAppendEntry(0, fontListEntry);
 	OS.XmFontListEntryFree(new int[]{fontListEntry});

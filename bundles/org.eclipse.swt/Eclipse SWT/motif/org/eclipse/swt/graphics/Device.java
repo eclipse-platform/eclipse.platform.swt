@@ -39,6 +39,8 @@ public abstract class Device implements Drawable {
 	
 	/* System Font */
 	int systemFont;
+	String characterSetName;
+	String characterSetRegistry;
 
 	/* Warning and Error Handlers */
 	boolean warnings = true;
@@ -83,7 +85,11 @@ public Device(DeviceData data) {
 	}
 	
 	/* Initialize the system font slot */
-	systemFont = getSystemFont ().handle;
+	Font font = getSystemFont ();
+	FontData fd = font.getFontData ()[0];
+	systemFont = font.handle;
+	characterSetName = fd.characterSetName;
+	characterSetRegistry = fd.characterSetRegistry;
 }
 
 /**
