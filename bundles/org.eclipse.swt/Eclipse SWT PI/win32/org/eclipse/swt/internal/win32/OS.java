@@ -432,6 +432,7 @@ public class OS extends Platform {
 	public static final int EVENT_OBJECT_VALUECHANGE = 0x800E;
 	public static final int FALT = 0x10;
 	public static final int FCONTROL = 0x8;
+	public static final int FE_FONTSMOOTHINGCLEARTYPE = 0x0002;
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
 	public static final int FORMAT_MESSAGE_ALLOCATE_BUFFER = 0x00000100;
 	public static final int FORMAT_MESSAGE_FROM_SYSTEM = 0x00001000;
@@ -1055,6 +1056,7 @@ public class OS extends Platform {
 	public static final int SM_CYMINTRACK = 35;
 	public static final int SM_CYSCREEN = 0x1;
 	public static final int SM_CYVSCROLL = 0x14;
+	public static final int SPI_GETFONTSMOOTHINGTYPE = 0x200A;
 	public static final int SPI_GETHIGHCONTRAST = 66;
 	public static final int SPI_GETWORKAREA = 0x30;
 	public static final int SPI_GETNONCLIENTMETRICS = 41;
