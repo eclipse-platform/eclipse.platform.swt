@@ -965,6 +965,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
 				event.x = rect.left;
 				event.y = rect.bottom;
+				setInputState (event, SWT.Selection);
 				child.postEvent (SWT.Selection, event);
 				return null;
 			}

@@ -277,14 +277,7 @@ void destroyItem (TabItem item) {
 		items = new TabItem [4];
 	}
 	if (count > 0 && index == selectionIndex) {
-		setSelection (Math.max (0, selectionIndex - 1));
-		selectionIndex = getSelectionIndex ();
-		if (selectionIndex != -1) {
-			Event event = new Event ();
-			event.item = items [selectionIndex];
-			sendEvent (SWT.Selection, event);
-			// the widget could be destroyed at this point
-		}
+		setSelection (Math.max (0, selectionIndex - 1), true);
 	}
 }
 
@@ -560,19 +553,19 @@ public void setSelection (TabItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (items.length == 0) {
-		setSelection (-1);
-		return;
-	}
-	for (int i=items.length-1; i>=0; --i) {
-		int index = indexOf (items [i]);
-		if (index != -1) setSelection (index);
+		setSelection (-1, false);
+	} else {
+		for (int i=items.length-1; i>=0; --i) {
+			int index = indexOf (items [i]);
+			if (index != -1) setSelection (index, false);
+		}
 	}
 }
 
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * If the item at the index was already selected, it remains selected.
- * The current selected is first cleared, then the new items are
+ * The current selection is first cleared, then the new items are
  * selected. Indices that are out of range are ignored.
  *
  * @param index the index of the item to select
@@ -584,6 +577,8 @@ public void setSelection (TabItem [] items) {
  */
 public void setSelection (int index) {
 	checkWidget ();
+	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= index && index < count)) return;
 	setSelection (index, false);
 }
 
