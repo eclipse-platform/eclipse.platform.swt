@@ -1099,8 +1099,14 @@ void drawTabArea(Event event) {
 	r.dispose();
 	// Draw border line
 	if (borderLeft > 0) {
-		RGB inside = getBackground().getRGB();
-		if (bgImage != null || (gradientColors != null && gradientColors.length > 1)) inside = null;
+		RGB inside;
+		if (single) {
+			inside = getSelectionBackground().getRGB();
+			if (selectionBgImage != null || (selectionGradientColors != null && selectionGradientColors.length > 1)) inside = null;
+		} else {
+			inside = getBackground().getRGB();
+			if (bgImage != null || (gradientColors != null && gradientColors.length > 1)) inside = null;
+		}
 		RGB outside = getParent().getBackground().getRGB();
 		antialias(shape, borderColor.getRGB(), inside, outside, gc);
 		gc.setForeground(borderColor);
