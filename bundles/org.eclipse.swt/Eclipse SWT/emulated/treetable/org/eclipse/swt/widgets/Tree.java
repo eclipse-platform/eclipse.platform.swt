@@ -965,7 +965,6 @@ void headerOnMouseMove (Event event) {
 	resizeColumnX = event.x;
 	gc.drawLine (resizeColumnX - 1, 0, resizeColumnX - 1, lineHeight);
 	gc.dispose ();
-	
 }
 void headerOnMouseUp (Event event) {
 	if (resizeColumn == null) return;	/* not resizing a column */
@@ -1006,8 +1005,9 @@ void headerOnPaint (Event event) {
 	
 	/* paint each of the column headers */
 	if (numColumns == 0) return;	/* no headers to paint */
+	int height = getClientArea ().height;
 	for (int i = startColumn; i <= endColumn; i++) {
-		headerPaintShadow (gc, columns [i].getX (), 0, columns [i].width, getClientArea ().height, false, true);
+		headerPaintShadow (gc, columns [i].getX (), 0, columns [i].width, height, false, true);
 		columns [i].paint (gc);
 	}
 }
@@ -1284,12 +1284,12 @@ void onArrowDown (int stateMask) {
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
 			/* CTRL+Down Arrow, CTRL+Shift+Down Arrow */
-			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+			Rectangle clientArea = getClientArea ();
+			int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 			if (availableItems.length <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
 			topIndex++;
 			getVerticalBar ().setSelection (topIndex);
-			Rectangle clientArea = getClientArea ();
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1314,12 +1314,12 @@ void onArrowDown (int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
 			/* CTRL+Shift+Down Arrow */
-			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+			Rectangle clientArea = getClientArea ();
+			int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 			if (availableItems.length <= topIndex + visibleItemCount) return;	/* at bottom */
 			update ();
 			topIndex++;
 			getVerticalBar ().setSelection (topIndex);
-			Rectangle clientArea = getClientArea ();
 			GC gc = new GC (this);
 			gc.copyArea (
 				0, 0,
@@ -1400,11 +1400,11 @@ void onArrowRight (int stateMask) {
 		/* CTRL+Right Arrow, CTRL+Shift+Right Arrow */
 		ScrollBar hBar = getHorizontalBar ();
 		int maximum = hBar.getMaximum ();
-		int clientWidth = getClientArea ().width;
-		if ((horizontalOffset + getClientArea ().width) == maximum) return;
+		Rectangle clientArea = getClientArea ();
+		int clientWidth = clientArea.width;
+		if ((horizontalOffset + clientWidth) == maximum) return;
 		if (maximum <= clientWidth) return;
 		int newSelection = Math.min (horizontalOffset + SIZE_HORIZONTALSCROLL, maximum - clientWidth);
-		Rectangle clientArea = getClientArea ();
 		update ();
 		GC gc = new GC (this);
 		gc.copyArea (
@@ -2776,8 +2776,9 @@ public void setTopItem (TreeItem item) {
 
 	/* item must be available */
 	if (!item.isAvailable ()) item.parentItem.expandAncestors ();
-	
-	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
+
+	Rectangle clientArea = getClientArea ();
+	int visibleItemCount = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	int index = Math.min (item.availableIndex, availableItems.length - visibleItemCount);
 	if (topIndex == index) return;
 
@@ -2785,7 +2786,6 @@ public void setTopItem (TreeItem item) {
 	int change = topIndex - index;
 	topIndex = index;
 	getVerticalBar ().setSelection (topIndex);
-	Rectangle clientArea = getClientArea ();
 	GC gc = new GC (this);
 	gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
 	gc.dispose ();
