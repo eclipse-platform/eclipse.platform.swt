@@ -83,8 +83,12 @@ void createWidget () {
 int defaultFont () {
 	int hwnd = parent.handle;
 	int hwndIME = OS.ImmGetDefaultIMEWnd (hwnd);
-	if (hwndIME == 0) return parent.defaultFont ();
-	int hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
+	int hFont = 0;
+	if (hwndIME == 0) {
+		hFont = OS.SendMessage (hwnd, OS.WM_GETFONT, 0, 0);
+	} else {
+		hFont = OS.SendMessage (hwndIME, OS.WM_GETFONT, 0, 0);
+	}
 	if (hFont == 0) return parent.defaultFont ();
 	return hFont;
 }
@@ -281,8 +285,7 @@ void resize () {
 	resized = false;
 	int hwnd = parent.handle;
 	OS.DestroyCaret ();		
-	int hBitmap = 0;
-	if (image != null) hBitmap = image.handle;
+	int hBitmap = image != null ? image.handle : 0;
 	OS.CreateCaret (hwnd, hBitmap, width, height);
 	OS.SetCaretPos (x, y);
 	OS.ShowCaret (hwnd);

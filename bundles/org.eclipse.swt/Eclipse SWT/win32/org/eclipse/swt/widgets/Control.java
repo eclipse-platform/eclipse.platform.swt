@@ -3892,41 +3892,41 @@ LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
 }
 
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
-	if (!OS.IsWinCE) {
-		boolean mouseEnter = hooks (SWT.MouseEnter) || display.filters (SWT.MouseEnter);
-		boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
-		boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
-		if (mouseEnter || mouseExit || mouseHover) {
-			TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
-			lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
-			lpEventTrack.dwFlags = OS.TME_QUERY;
-			lpEventTrack.hwndTrack = handle;
-			OS.TrackMouseEvent (lpEventTrack);
-			if (lpEventTrack.dwFlags == 0) {
-				lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
-				lpEventTrack.hwndTrack = handle;
-				OS.TrackMouseEvent (lpEventTrack);
-				if (mouseEnter) {
-					/*
-					* Force all outstanding WM_MOUSELEAVE messages to be dispatched before
-					* issuing a mouse enter.  This causes mouse exit events to be processed
-					* before mouse enter events.
-					*/
-					MSG msg = new MSG ();
-					while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, OS.PM_REMOVE)) {
-						OS.TranslateMessage (msg);
-						OS.DispatchMessage (msg);
-					}
-					sendMouseEvent (SWT.MouseEnter, 0, OS.WM_MOUSEMOVE, wParam, lParam);
-				}
-			} else {
-				lpEventTrack.dwFlags = OS.TME_HOVER;
-				OS.TrackMouseEvent (lpEventTrack);
-			}
-		}
-	}
 	int pos = OS.GetMessagePos ();
 	if (pos != display.lastMouse) {
+		if (!OS.IsWinCE) {
+			boolean mouseEnter = hooks (SWT.MouseEnter) || display.filters (SWT.MouseEnter);
+			boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
+			boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
+			if (mouseEnter || mouseExit || mouseHover) {
+				TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
+				lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
+				lpEventTrack.dwFlags = OS.TME_QUERY;
+				lpEventTrack.hwndTrack = handle;
+				OS.TrackMouseEvent (lpEventTrack);
+				if (lpEventTrack.dwFlags == 0) {
+					lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
+					lpEventTrack.hwndTrack = handle;
+					OS.TrackMouseEvent (lpEventTrack);
+					if (mouseEnter) {
+						/*
+						* Force all outstanding WM_MOUSELEAVE messages to be dispatched before
+						* issuing a mouse enter.  This causes mouse exit events to be processed
+						* before mouse enter events.
+						*/
+						MSG msg = new MSG ();
+						while (OS.PeekMessage (msg, 0, OS.WM_MOUSELEAVE, OS.WM_MOUSELEAVE, OS.PM_REMOVE)) {
+							OS.TranslateMessage (msg);
+							OS.DispatchMessage (msg);
+						}
+						sendMouseEvent (SWT.MouseEnter, 0, OS.WM_MOUSEMOVE, wParam, lParam);
+					}
+				} else {
+					lpEventTrack.dwFlags = OS.TME_HOVER;
+					OS.TrackMouseEvent (lpEventTrack);
+				}
+			}
+		}
 		display.lastMouse = pos;
 		sendMouseEvent (SWT.MouseMove, 0, OS.WM_MOUSEMOVE, wParam, lParam);
 	}

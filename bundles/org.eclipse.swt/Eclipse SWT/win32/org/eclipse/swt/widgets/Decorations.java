@@ -90,7 +90,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Decorations extends Canvas {
 	Image image, smallImage, largeImage;
-	Image [] images = new Image [0];
+	Image [] images;
 	Menu menuBar;
 	Menu [] menus;
 	MenuItem [] items;
@@ -525,7 +525,10 @@ public Image getImage () {
  */
 public Image [] getImages () {
 	checkWidget ();
-	return images;
+	if (images == null) return new Image [0];
+	Image [] result = new Image [images.length];
+	System.arraycopy (images, 0, result, 0, images.length);
+	return result;
 }
 
 public Point getLocation () {
@@ -829,7 +832,7 @@ void setImages (Image image, Image [] images) {
 	* later free the icon, thus freeing the icon for every window.
 	* The fix is to avoid the API.
 	* 
-	* On WinCE PPC, icons in windows are not displayed anyways.
+	* On WinCE PPC, icons in windows are not displayed.
 	*/
 	if (OS.IsWinCE) return;
 	if (smallImage != null) smallImage.dispose ();
