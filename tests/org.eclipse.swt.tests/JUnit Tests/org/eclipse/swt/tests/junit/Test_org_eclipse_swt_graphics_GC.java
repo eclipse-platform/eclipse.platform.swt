@@ -44,16 +44,15 @@ protected void tearDown() {
 	gc.dispose();
 	shell.dispose();
 }
-
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
-	GC testGC = new GC(shell);
-	testGC.dispose();
+	// tested in setup
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
-	GC testGC = new GC(shell, SWT.LEFT_TO_RIGHT);
+	Canvas canvas = new Canvas(shell, SWT.NULL);
+	GC testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
 	testGC.dispose();
-	testGC = new GC(shell, SWT.RIGHT_TO_LEFT);
+	testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
 	testGC.dispose();
 }
 
@@ -66,8 +65,7 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 }
 
 public void test_dispose() {
-	GC testGC = new GC(shell);
-	testGC.dispose();
+	gc.dispose();
 }
 
 public void test_drawArcIIIIII() {
@@ -211,9 +209,10 @@ public void test_drawTextLjava_lang_StringIIZ() {
 }
 
 public void test_equalsLjava_lang_Object() {
-	GC testGC = new GC(shell);
+	assertTrue(gc.equals(gc));
+	Canvas canvas = new Canvas(shell, SWT.NULL);
+	GC testGC = new GC(canvas);
 	assertFalse(testGC.equals(gc));
-	assertTrue(testGC.equals(testGC));
 	testGC.dispose();
 }
 
@@ -301,15 +300,16 @@ public void test_getLineWidth() {
 }
 
 public void test_getStyle() {
-	GC testGC = new GC(shell, SWT.LEFT_TO_RIGHT);
+	Canvas canvas = new Canvas(shell, SWT.NULL);
+	GC testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
 	int style = testGC.getStyle();
 	assertTrue((style & SWT.LEFT_TO_RIGHT) != 0);
 	testGC.dispose();
-	testGC = new GC(shell);
+	testGC = new GC(canvas);
 	style = testGC.getStyle();
 	assertTrue((style & SWT.LEFT_TO_RIGHT) != 0);
 	testGC.dispose();
-	testGC = new GC(shell, SWT.RIGHT_TO_LEFT);
+	testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
 	style = testGC.getStyle();
 	assertTrue((style &  SWT.RIGHT_TO_LEFT) != 0);
 	testGC.dispose();
@@ -324,18 +324,15 @@ public void test_hashCode() {
 }
 
 public void test_isClipped() {
+	assertFalse(gc.isClipped());
 	gc.setClipping(5,10,15,20);
 	assertTrue(gc.isClipped());
-	GC testGC = new GC(shell);
-	assertFalse(testGC.isClipped());
-	testGC.dispose();
 }
 
 public void test_isDisposed() {
-	GC testGC = new GC(shell);
-	assertFalse(testGC.isDisposed());
-	testGC.dispose();
-	assertTrue(testGC.isDisposed());
+	assertFalse(gc.isDisposed());
+	gc.dispose();
+	assertTrue(gc.isDisposed());
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
