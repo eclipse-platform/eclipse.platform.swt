@@ -548,7 +548,18 @@ boolean mnemonicHit (char ch) {
 boolean mnemonicMatch (char ch) {
 	int key = wcsToMbcs (ch);
 	int [] id = new int [1];
-	return OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) != 0;
+	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, key, id) == 0) {
+		return false;
+	}
+	/*
+	* Feature in Windows.  TB_MAPACCELERATOR matches either the mnemonic
+	* character or the first character in a tool item.  This behavior is
+	* undocumented and unwanted.  The fix is to ensure that the tool item
+	* contains a mnemonic when TB_MAPACCELERATOR returns true.
+	*/
+	int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, id [0], 0);
+	if (index == -1) return false;
+	return items [id [0]].text.indexOf ('&') != -1;
 }
 
 void releaseWidget () {
