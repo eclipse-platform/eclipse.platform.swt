@@ -155,7 +155,13 @@ public Display getDisplay () {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	//NOT DONE
+	int barHandle;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (parent.scrolledHandle);
+	} else {
+		barHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (parent.scrolledHandle);
+	}
+	if (barHandle != 0) return OS.GTK_WIDGET_SENSITIVE (barHandle);
 	return true;
 }
 
@@ -448,7 +454,13 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	//NOT DONE
+	int barHandle;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (parent.scrolledHandle);
+	} else {
+		barHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (parent.scrolledHandle);
+	}
+	if (barHandle != 0) OS.gtk_widget_set_sensitive (barHandle, enabled);
 }
 
 /**
