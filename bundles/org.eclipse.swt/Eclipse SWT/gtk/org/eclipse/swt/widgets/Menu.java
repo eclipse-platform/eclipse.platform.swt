@@ -173,8 +173,13 @@ public void _setVisible (boolean visible) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
-			int /*long*/ address = 0;
-			if (hasLocation) address = display.menuPositionProc;
+			int /*long*/ address = hasLocation ? display.menuPositionProc: 0;
+			/*
+			* Bug in GTK.  The timestamp passed into gtk_menu_popup is used
+			* to perform an X pointer grab.  It cannot be zero, else the grab
+			* will fail.  The fix is to use the timestamp of the last event
+			* processed.
+			*/
 			OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, display.popupTime);
 		} else {
 			sendEvent (SWT.Hide);
@@ -861,7 +866,6 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
-		display.popupTime = OS.gtk_get_current_event_time();
 		display.addPopup (this);
 	} else {
 		display.removePopup (this);

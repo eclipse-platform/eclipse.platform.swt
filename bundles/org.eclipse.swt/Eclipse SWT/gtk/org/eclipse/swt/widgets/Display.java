@@ -872,6 +872,7 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		addGdkEvent (OS.gdk_event_copy (event));
 		return 0;
 	}
+	popupTime = gdkEvent.time;
 	Control control = null;
 	int /*long*/ window = 0;
 	switch (gdkEvent.type) {
