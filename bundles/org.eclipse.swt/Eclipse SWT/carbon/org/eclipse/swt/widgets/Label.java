@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -39,17 +38,32 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height = DEFAULT_HEIGHT;
 		}
 	} else {
-//		Rect saveRect = new Rect ();
-//		OS.GetControlBounds (handle, saveRect);
-		Rect rect = new Rect ();
-		//FIX ME - always returns the current width
-//		OS.SetRect (rect, (short)0, (short)0, (short) 0x1FFF, (short) 0x1FFF);
-//		OS.SetControlBounds (handle, rect);
-		short [] base = new short [1];
-		OS.GetBestControlRect (handle, rect, base);
-		width = 100;//rect.right - rect.left;
-		height = 30;//rect.bottom - rect.top;
-//		OS.SetControlBounds (handle, saveRect);
+		if (isImage && image != null) {
+			Rectangle r = image.getBounds();
+			width = r.width;
+			height = r.height;
+		} else {
+			int [] ptr = new int [1];
+			int [] actualSize = new int [1];
+			OS.GetControlData (handle, (short)0 , OS.kControlStaticTextCFStringTag, 4, ptr, actualSize);
+			if (ptr [0] != 0) {
+				org.eclipse.swt.internal.carbon.Point bounds = new org.eclipse.swt.internal.carbon.Point ();
+				short [] baseLine = new short [1];
+				boolean wrap = false;
+				if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+					wrap = true;
+					bounds.h = (short) wHint;
+				}
+				// NEEDS work - only works for default font
+				OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemeSystemFont, OS.kThemeStateActive, wrap, bounds, baseLine);
+				width = bounds.h;
+				height = bounds.v;
+				OS.CFRelease (ptr [0]);
+			} else {
+				width = DEFAULT_WIDTH;
+				height = DEFAULT_HEIGHT;
+			}
+		}
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
