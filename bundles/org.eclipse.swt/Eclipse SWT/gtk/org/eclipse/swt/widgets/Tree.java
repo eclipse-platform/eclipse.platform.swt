@@ -276,12 +276,9 @@ public void deselectAll() {
 
 void destroyItem (TreeItem item) {
 	int [] index = new int [1];
-	int itemHandle = item.handle;
-	OS.gtk_tree_model_get (modelHandle, itemHandle, 4, index, -1);
-	OS.gtk_tree_store_remove (modelHandle, itemHandle);
-	items [index [0]] = null;
-	OS.g_free (itemHandle);
-	item.handle = 0;
+	releaseItems (item.getItems (), index);
+	releaseItem (item, index);
+	OS.gtk_tree_store_remove (modelHandle, item.handle);
 }
 
 void destroyWidget () {
@@ -384,9 +381,8 @@ public int getItemHeight () {
 	// this question will only make sense given the item.
 	if (OS.gtk_tree_model_iter_n_children (modelHandle, 0) == 0) return 18;
 	GdkRectangle rect = new GdkRectangle ();
-	int path = OS.gtk_tree_path_new_from_string (Converter.wcsToMbcs (null, "0", true));
-	int column = OS.gtk_tree_view_get_column (handle, 0);
-	OS.gtk_tree_view_get_cell_area (handle, path, column, rect);
+	int path = OS.gtk_tree_path_new_first ();
+	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 	OS.gtk_tree_path_free (path);
 	return rect.height;
 }
@@ -626,6 +622,26 @@ void register () {
 	WidgetTable.put (OS.gtk_tree_view_get_selection (handle), this);
 }
 
+boolean releaseItem (TreeItem item, int [] index) {
+	if (item.isDisposed ()) return false;
+	OS.gtk_tree_model_get (modelHandle, item.handle, 4, index, -1);
+	items [index [0]] = null;
+	return true;
+}
+
+void releaseItems (TreeItem [] nodes, int [] index) {
+	for (int i=0; i<nodes.length; i++) {
+		TreeItem item = nodes [i];
+		TreeItem [] sons = item.getItems ();
+		if (sons.length != 0) {
+			releaseItems (sons, index);
+		}
+		if (releaseItem (item, index)) {
+			item.releaseResources ();
+		}
+	}
+}
+
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
@@ -787,11 +803,8 @@ public void setSelection (TreeItem [] items) {
  */
 public void showSelection () {
 	checkWidget();
-	TreeItem [] selection = getSelection ();
-	if (selection.length == 0) return;
-	int path = OS.gtk_tree_model_get_path (modelHandle, selection [0].handle);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
-	OS.gtk_tree_path_free (path);
+	TreeItem [] items = getSelection ();
+	if (items.length == 0 && items [0] != null) showItem (items [0]);
 }
 
 /**
@@ -817,7 +830,19 @@ public void showItem (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, false, 0, 0);
+	int depth = OS.gtk_tree_path_get_depth (path);
+	if (depth > 1) {
+		int [] indices = new int [depth - 1];
+		int indicesPtr = OS.gtk_tree_path_get_indices (path);
+		OS.memmove (indices, indicesPtr, indices.length * 4);
+		int tempPath = OS.gtk_tree_path_new ();
+		for (int i=0; i<indices.length; i++) {
+			OS.gtk_tree_path_append_index (tempPath, indices [i]);
+			OS.gtk_tree_view_expand_row (handle, tempPath, false);
+		}
+		OS.gtk_tree_path_free (tempPath);		
+	}
+	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.5f);
 	OS.gtk_tree_path_free (path);
 }
 

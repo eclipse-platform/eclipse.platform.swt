@@ -732,7 +732,7 @@ public int getItemHeight () {
 	int path = OS.gtk_tree_path_new_first ();
 	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
 	OS.gtk_tree_path_free (path);
-	return rect.height - rect.y;
+	return rect.height;
 }
 
 /**
