@@ -5217,44 +5217,48 @@ String getRtf(){
  * Frees resources.
  */
 void handleDispose() {
-	clipboard.dispose();
-	ibeamCursor.dispose();
-	if (renderer != null) {
-		renderer.dispose();
-		renderer = null;
-	}
-	if (content != null) {
-		content.removeTextChangeListener(textChangeListener);
-		content = null;
-	}	
-	if (leftCaretBitmap != null) {
-		leftCaretBitmap.dispose();
-		leftCaretBitmap = null;
-	}
-	if (rightCaretBitmap != null) {
-		rightCaretBitmap.dispose();
-		rightCaretBitmap = null;
-	}
-	if (defaultLineStyler != null) {
-		defaultLineStyler.release();
-		defaultLineStyler = null;
-	}
-	if (isBidi()) {
-		StyledTextBidi.removeLanguageListener(this);
-	}
-	selectionBackground = null;
-	selectionForeground = null;
-	logicalContent = null;
-	textChangeListener = null;
-	lineCache = null;
-	ibeamCursor = null;
-	selection = null;
-	doubleClickSelection = null;
-	keyActionMap = null;
-	background = null;
-	foreground = null;
-	clipboard = null;
-	caretPalette = null;
+	getDisplay().asyncExec(new Runnable() {
+		public void run() {
+			clipboard.dispose();
+			ibeamCursor.dispose();
+			if (renderer != null) {
+				renderer.dispose();
+				renderer = null;
+			}
+			if (content != null) {
+				content.removeTextChangeListener(textChangeListener);
+				content = null;
+			}	
+			if (leftCaretBitmap != null) {
+				leftCaretBitmap.dispose();
+				leftCaretBitmap = null;
+			}
+			if (rightCaretBitmap != null) {
+				rightCaretBitmap.dispose();
+				rightCaretBitmap = null;
+			}
+			if (defaultLineStyler != null) {
+				defaultLineStyler.release();
+				defaultLineStyler = null;
+			}
+			if (isBidi()) {
+				StyledTextBidi.removeLanguageListener(StyledText.this);
+			}
+			selectionBackground = null;
+			selectionForeground = null;
+			logicalContent = null;
+			textChangeListener = null;
+			lineCache = null;
+			ibeamCursor = null;
+			selection = null;
+			doubleClickSelection = null;
+			keyActionMap = null;
+			background = null;
+			foreground = null;
+			clipboard = null;
+			caretPalette = null;
+		}
+	});
 }
 /** 
  * Scrolls the widget horizontally.
