@@ -1,5 +1,6 @@
 package org.eclipse.swt.internal;
 
+import java.io.*;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
 import org.eclipse.swt.SWT;
@@ -22,15 +23,15 @@ import org.eclipse.swt.SWT;
 public final class Compatibility {
 
 /**
- * Answers the double conversion of the most negative (i.e.
- * closest to negative infinity) integer value which is
- * greater than the argument.
- *
- * @param d the value to be converted
- * @return the ceiling of the argument.
+ * Answers the most negative (i.e. closest to negative infinity)
+ * integer value which is greater than the given rational number.
+ * 
+ * @param p the numerator of the rational number
+ * @param q the denominator of the rational number (must be different from zero)
+ * @return the ceiling of the rational number.
  */
-public static double ceil (double d) {
-	return Math.ceil(d);
+public static int ceil(int p, int q) {
+	return (int)Math.ceil((float)p / q);
 }
 
 /**
@@ -74,6 +75,26 @@ public static void loadLibrary(String name) {
 }
 
 /**
+ * Open a file if such things are supported.
+ * 
+ * @param filename the name of the file to open
+ * @return a stream on the file if it could be opened.
+ */
+public static InputStream newFileInputStream(String filename) throws IOException {
+	return new FileInputStream(filename);
+}
+
+/**
+ * Open a file if such things are supported.
+ * 
+ * @param filename the name of the file to open
+ * @return a stream on the file if it could be opened.
+ */
+public static OutputStream newFileOutputStream(String filename) throws IOException {
+	return new FileOutputStream(filename);
+}
+
+/**
  * Answers whether the character is a letter.
  *
  * @param c the character
@@ -111,6 +132,42 @@ public static boolean isSpaceChar(char c) {
  */
 public static boolean isWhitespace(char c) {
 	return Character.isWhitespace(c);
+}
+
+/**
+ * Execute a program in a separate platform process if the
+ * underlying platform support this.
+ * <p>
+ * The new process inherits the environment of the caller.
+ * </p>
+ *
+ * @param program the name of the program to execute
+ *
+ * @exception IOException
+ *  if the program cannot be executed
+ * @exception SecurityException
+ *  if the current SecurityManager disallows program execution
+ */
+public static void exec(String prog) throws java.io.IOException {
+	Runtime.getRuntime().exec(prog);
+}
+
+/**
+ * Execute progArray[0] in a separate platform process if the
+ * underlying platform support this.
+ * <p>
+ * The new process inherits the environment of the caller.
+ * <p>
+ *
+ * @param progArray array containing the program to execute and its arguments
+ *
+ * @exception IOException
+ *  if the program cannot be executed
+ * @exception	SecurityException
+ *  if the current SecurityManager disallows program execution
+ */
+public static void exec(String[] progArray) throws java.io.IOException{
+	Runtime.getRuntime().exec(progArray);
 }
 
 private static ResourceBundle msgs = null;
@@ -153,6 +210,21 @@ public static String getMessage(String key) {
  */
 public static void interrupt() {
 	Thread.currentThread().interrupt();
+}
+
+/**
+ * Copies a range of characters into a new String.
+ *
+ * @param buffer the StringBuffer we want to copy from
+ * @param start the offset of the first character
+ * @param end the offset one past the last character
+ * @return a new String containing the characters from start to end - 1
+ *
+ * @exception	IndexOutOfBoundsException 
+ *   when <code>start < 0, start > end</code> or <code>end > length()</code>
+ */
+public static String substring(StringBuffer buffer, int start, int end) {
+	return buffer.substring(start, end);
 }
 
 }
