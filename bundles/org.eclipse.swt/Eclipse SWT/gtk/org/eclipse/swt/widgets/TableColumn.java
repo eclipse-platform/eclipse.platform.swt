@@ -370,6 +370,17 @@ public void setText (String string) {
 	int table = parent.handle;
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	OS.gtk_clist_set_column_title (table, index, buffer);
+	/*
+	* Bug in GTK.  When a table column is hidden and then shown,
+	* and new text is set into the column, the widget that shows the
+	* text is not resized to show the new text.  The fix is to force the
+	* table header to resize the widget.
+	*/
+	int headerHandle = OS.gtk_clist_get_column_widget (table, index);
+	if (headerHandle != 0) {
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (headerHandle, requisition);
+	}
 }
 /**
  * Sets the width of the receiver.
