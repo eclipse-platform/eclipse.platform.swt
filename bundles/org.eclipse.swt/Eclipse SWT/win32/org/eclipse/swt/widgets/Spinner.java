@@ -399,9 +399,8 @@ public int getMinimum () {
 }
 
 /**
- * Returns the amount that the receiver's value will be
- * modified by when the page increment/decrement areas
- * are selected.
+ * Returns the amount that the receiver's position will be
+ * modified by when the page up/down keys are pressed.
  *
  * @return the page increment
  *
@@ -416,7 +415,7 @@ public int getPageIncrement () {
 }
 
 /**
- * Returns the single <em>selection</em> that is the receiver's position.
+ * Returns the <em>selection</em>, which is the receiver's position.
  *
  * @return the selection 
  *
@@ -738,10 +737,9 @@ public void setMinimum (int value) {
 }
 
 /**
- * Sets the amount that the receiver's value will be
- * modified by when the page increment/decrement areas
- * are selected to the argument, which must be at least
- * one.
+ * Sets the amount that the receiver's position will be
+ * modified by when the page up/down keys are pressed
+ * to the argument, which must be at least one.
  *
  * @param pageIncrement the page increment (must be greater than zero)
  *
@@ -757,9 +755,10 @@ public void setPageIncrement (int value) {
 }
 
 /**
- * Sets the single <em>selection</em> that is the receiver's
- * value to the argument which must be greater than or equal
- * to zero.
+ * Sets the <em>selection</em>, which is the receiver's
+ * position, to the argument. If the argument is not within
+ * the range specified by minimum and maximum, it will be
+ * adjusted to fall within this range.
  *
  * @param value the new selection (must be zero or greater)
  *
