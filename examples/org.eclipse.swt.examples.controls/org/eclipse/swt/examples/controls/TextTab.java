@@ -15,8 +15,8 @@ import org.eclipse.swt.custom.*;
 class TextTab extends ScrollableTab {
 	/* Example widgets and groups that contain them */
 	Text text;
-	StyledText richText;
-	Group textGroup, richTextGroup;
+	StyledText styledText;
+	Group textGroup, styledTextGroup;
 
 	/* Style widgets added to the "Style" group */
 	Button readOnlyButton;
@@ -33,11 +33,11 @@ class TextTab extends ScrollableTab {
 		textGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		textGroup.setText (ControlPlugin.getResourceString("Text"));
 	
-		/* Create a group for the rich text widget */
-		richTextGroup = new Group (exampleGroup, SWT.NULL);
-		richTextGroup.setLayout (new GridLayout ());
-		richTextGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		richTextGroup.setText (ControlPlugin.getResourceString("RichText"));
+		/* Create a group for the styled text widget */
+		styledTextGroup = new Group (exampleGroup, SWT.NULL);
+		styledTextGroup.setLayout (new GridLayout ());
+		styledTextGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		styledTextGroup.setText (ControlPlugin.getResourceString("StyledText"));
 	}
 	
 	/**
@@ -59,10 +59,10 @@ class TextTab extends ScrollableTab {
 		text.setText (ControlPlugin.getResourceString("Example_string"));
 		text.append (text.DELIMITER);
 		text.append (ControlPlugin.getResourceString("One_Two_Three"));
-		richText = new StyledText (richTextGroup, style);
-		richText.setText (ControlPlugin.getResourceString("Example_string"));
-		richText.append ("\n");
-		richText.append (ControlPlugin.getResourceString("One_Two_Three"));
+		styledText = new StyledText (styledTextGroup, style);
+		styledText.setText (ControlPlugin.getResourceString("Example_string"));
+		styledText.append ("\n");
+		styledText.append (ControlPlugin.getResourceString("One_Two_Three"));
 	}
 	
 	/**
@@ -80,7 +80,7 @@ class TextTab extends ScrollableTab {
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {
-		return new Control [] {text, richText};
+		return new Control [] {text, styledText};
 	}
 	
 	/**
