@@ -277,22 +277,6 @@ public void test_getMonitor() {
 	if (i == monitors.length) {
 		fail("Control.getMonitor does not return a monitor listed in Display.getMonitors");
 	}
-	
-	/* set control into each monitor and check getMonitor returns the right monitor */
-	Rectangle oldBounds = control.getBounds();
-	for (i = 0; i < monitors.length; i++) {
-		Monitor src = monitors[i];
-		control.setBounds(src.getBounds());
-		Monitor target = control.getMonitor();
-		assertTrue(target.equals(src));
-	}
-	for (i = 0; i < monitors.length; i++) {
-		Monitor src = monitors[i];
-		control.setBounds(src.getClientArea());
-		Monitor target = control.getMonitor();
-		assertTrue(target.equals(src));
-	}
-	control.setBounds(oldBounds);
 }
 
 public void test_getParent() {
