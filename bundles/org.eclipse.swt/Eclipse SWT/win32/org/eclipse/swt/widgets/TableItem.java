@@ -146,10 +146,9 @@ public Color getBackground () {
 public Color getBackground (int index) {
 	checkWidget ();
 	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count -1) return getBackground ();
-	int pixel = (cellBackground != null) ? cellBackground [index] : -1;
-	if (pixel == -1) return getBackground ();
-	return Color.win32_new (display, pixel);
+	if (0 > index || index > count - 1) return getBackground ();
+	int pixel = cellBackground != null ? cellBackground [index] : -1;
+	return pixel == -1 ? getBackground () : Color.win32_new (display, pixel);
 }
 
 /**
@@ -237,7 +236,7 @@ public boolean getChecked () {
  */
 public Font getFont () {
 	checkWidget ();
-	return (font == -1) ? parent.getFont () : Font.win32_new (display, font);
+	return font == -1 ? parent.getFont () : Font.win32_new (display, font);
 }
 
 /**
@@ -259,7 +258,7 @@ public Font getFont (int index) {
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getFont ();
 	int hFont = (cellFont != null) ? cellFont [index] : font;
-	return (hFont == -1) ? getFont () : Font.win32_new (display, hFont);
+	return hFont == -1 ? getFont () : Font.win32_new (display, hFont);
 }
 
 /**
@@ -299,9 +298,8 @@ public Color getForeground (int index) {
 	checkWidget ();
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > index || index > count -1) return getForeground ();
-	int pixel = (cellForeground != null) ? cellForeground [index] : -1;
-	if (pixel == -1) return getForeground ();
-	return Color.win32_new (display, pixel);
+	int pixel = cellForeground != null ? cellForeground [index] : -1;
+	return pixel == -1 ? getForeground () : Color.win32_new (display, pixel);
 }
 
 /**
@@ -576,10 +574,8 @@ public void setBackground (int index, Color color) {
 		pixel = color.handle;
 	}
 	if (cellBackground == null) {
-		int hwndHeader = OS.SendMessage (parent.handle, OS.LVM_GETHEADER, 0, 0);
-		int itemCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		cellBackground = new int [itemCount];
-		for (int i = 0; i < itemCount; i++) {
+		cellBackground = new int [count];
+		for (int i = 0; i < count; i++) {
 			cellBackground [i] = -1;
 		}
 	}
@@ -677,17 +673,15 @@ public void setFont (int index, Font font) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count -1) return;
+	if (0 > index || index > count - 1) return;
 	int hFont = -1;
 	if (font != null) {
 		parent.customDraw = true;
 		hFont = font.handle;
 	}
 	if (cellFont == null) {
-		int hwndHeader = OS.SendMessage (parent.handle, OS.LVM_GETHEADER, 0, 0);
-		int itemCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		cellFont = new int [itemCount];
-		for (int i = 0; i < itemCount; i++) {
+		cellFont = new int [count];
+		for (int i = 0; i < count; i++) {
 			cellFont [i] = -1;
 		}
 	}
@@ -751,17 +745,15 @@ public void setForeground (int index, Color color){
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	int count = Math.max (1, parent.getColumnCount ());
-	if (0 > index || index > count -1) return;
+	if (0 > index || index > count - 1) return;
 	int pixel = -1;
 	if (color != null) {
 		parent.customDraw = true;
 		pixel = color.handle;
 	}
 	if (cellForeground == null) {
-		int hwndHeader = OS.SendMessage (parent.handle, OS.LVM_GETHEADER, 0, 0);
-		int itemCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-		cellForeground = new int [itemCount];
-		for (int i = 0; i < itemCount; i++) {
+		cellForeground = new int [count];
+		for (int i = 0; i < count; i++) {
 			cellForeground [i] = -1;
 		}
 	}

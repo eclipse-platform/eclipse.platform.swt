@@ -384,6 +384,7 @@ void paint(Event event) {
 	}
 	String text = item.getText(column);
 	if (text != "") {
+		Rectangle bounds = item.getBounds(column);
 		Point extent = gc.stringExtent(text);
 		TableColumn[] columns = table.getColumns();
 		// Temporary code - need a better way to determine table trim
@@ -399,10 +400,10 @@ void paint(Event event) {
 						x += 6;
 						break;
 					case SWT.RIGHT:
-						x = tableColumn.getWidth() - extent.x - 6;
+						x = bounds.width - extent.x - 6;
 						break;
 					case SWT.CENTER:
-						x += (tableColumn.getWidth() - x - extent.x) / 2;
+						x += (bounds.width - x - extent.x) / 2;
 						break;
 				}
 			}
@@ -410,17 +411,16 @@ void paint(Event event) {
 			if (table.getColumns().length == 0) {
 				x += 5; 
 			} else {
-				TableColumn tableColumn = columns[column];
-				int alignmnent = tableColumn.getAlignment();
+				int alignmnent = columns[column].getAlignment();
 				switch (alignmnent) {
 					case SWT.LEFT:
 						x += 5;
 						break;
 					case SWT.RIGHT:
-						x = tableColumn.getWidth() - extent.x - 3;
+						x = bounds.width- extent.x - 2;
 						break;
 					case SWT.CENTER:
-						x += (tableColumn.getWidth() - x - extent.x) / 2 + 1;
+						x += (bounds.width - x - extent.x) / 2 + 2;
 						break;
 				}
 			}
