@@ -5151,7 +5151,8 @@ public void setFont(Font font) {
 	if (isBidi()) {
 		caretDirection = SWT.NULL;
 		createCaretBitmaps();
-		createBidiCaret();		
+		createBidiCaret();
+		setBidiCaretLocation();		
 	} 
 	else {
 		Caret caret = getCaret();
