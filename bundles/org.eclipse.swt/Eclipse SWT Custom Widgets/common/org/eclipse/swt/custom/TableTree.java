@@ -54,7 +54,8 @@ public class TableTree extends Composite {
 	
 	static final TableTreeItem[] EMPTY_ITEMS = new TableTreeItem [0];	
 	static final String[] EMPTY_TEXTS = new String [0];	
-	static final Image[] EMPTY_IMAGES = new Image [0];	
+	static final Image[] EMPTY_IMAGES = new Image [0];
+	static final String ITEMID = "TableTreeItemID"; //$NON-NLS-1$
 
 /**
  * Constructs a new instance of this class given its parent
@@ -304,7 +305,7 @@ public TableTreeItem [] getSelection () {
 	TableItem[] selection = table.getSelection();
 	TableTreeItem [] result = new TableTreeItem[selection.length];
 	for (int i = 0; i < selection.length; i++){
-		result[i] = (TableTreeItem) selection[i].getData();
+		result[i] = (TableTreeItem) selection[i].getData(ITEMID);
 	}
 	return result;
 }
@@ -566,7 +567,7 @@ void onMouseDown(Event event) {
 	for (int i = 0; i < items.length; i++) {
 		Rectangle rect = items[i].getImageBounds(0);
 		if (rect.contains(event.x, event.y)) {
-			TableTreeItem item = (TableTreeItem) items[i].getData();
+			TableTreeItem item = (TableTreeItem) items[i].getData(ITEMID);
 			event = new Event();
 			event.item = item;
 			item.setExpanded(!item.getExpanded());

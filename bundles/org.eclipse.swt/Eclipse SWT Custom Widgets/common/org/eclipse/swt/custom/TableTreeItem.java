@@ -168,7 +168,7 @@ TableTreeItem(TableTree parent, TableTreeItem parentItem, int style, int index) 
 		/* Root items are visible immediately */
 		int tableIndex = parent.addItem(this, index);
 		tableItem = new TableItem(parent.getTable(), style, tableIndex);
-		tableItem.setData(this);
+		tableItem.setData(TableTree.ITEMID, this);
 		addCheck();
 		/*
 		* Feature in the Table.  The table uses the first image that
@@ -764,7 +764,7 @@ void setVisible (boolean show) {
 		int index = parentItem.expandedIndexOf(this) + parentIndex + 1;
 		if (index < 0) return;
 		tableItem = new TableItem(table, getStyle(), index);
-		tableItem.setData(this);
+		tableItem.setData(TableTree.ITEMID, this);
 		tableItem.setImageIndent(getIndent());
 		if (background != null) tableItem.setBackground(background);
 		if (foreground != null) tableItem.setForeground(foreground);

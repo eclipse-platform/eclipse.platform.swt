@@ -23,6 +23,7 @@ public class Clipboard {
 	// ole interfaces
 	private COMObject iDataObject;
 	private int refCount;
+	private Display display;
 
 	private final int MAX_RETRIES = 10;
 	private Transfer[] transferAgents = new Transfer[0];
@@ -55,8 +56,9 @@ public Clipboard(Display display) {
 	if (display.getThread() != Thread.currentThread()) {
 		SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
+	this.display = display;
 	
-	TCHAR chFormatName = new TCHAR(0, "Preferred DropEffect", true);
+	TCHAR chFormatName = new TCHAR(0, "Preferred DropEffect", true); //$NON-NLS-1$
 	CFSTR_PREFERREDDROPEFFECT = COM.RegisterClipboardFormat(chFormatName);
 	createCOMInterfaces();
 	this.AddRef();
@@ -105,7 +107,9 @@ protected void checkSubclass () {
  * has exited or the display has been disposed.</p>
  */
 public void dispose () {
+	if (display == null) return;
 	this.Release();
+	display = null;
 }
 
 /**
@@ -132,6 +136,9 @@ public void dispose () {
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
 public Object getContents(Transfer transfer) {
+	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (transfer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int[] ppv = new int[1];
 	int retries = 0;
 	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retries < MAX_RETRIES) {
@@ -194,6 +201,8 @@ public Object getContents(Transfer transfer) {
  * </ul>
  */
 public void setContents(Object[] data, Transfer[] dataTypes){
+	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
@@ -213,7 +222,10 @@ public void setContents(Object[] data, Transfer[] dataTypes){
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD, result);
 	}
 	
-	if (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) != COM.S_OK) return;
+	result = COM.OleIsCurrentClipboard(this.iDataObject.getAddress());
+	if (result != COM.S_OK) {
+		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD, result);
+	}
 	
 	retries = 0;
 	while ((COM.OleFlushClipboard() != COM.S_OK)  && (retries < MAX_RETRIES)) {
@@ -385,7 +397,9 @@ private int Release() {
  * @returns a platform specific list of the data types currently available on the 
  * system clipboard
  */
-public String[] getAvailableTypeNames() {	
+public String[] getAvailableTypeNames() {
+	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	int[] ppv = new int[1];
 	int retrys = 0;
 	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retrys < MAX_RETRIES) {
@@ -420,55 +434,55 @@ public String[] getAvailableTypeNames() {
 		} else {
 			switch (formatetc.cfFormat) {
 				case COM.CF_HDROP:
-					type = "CF_HDROP";
+					type = "CF_HDROP"; //$NON-NLS-1$
 					break;
 				case COM.CF_TEXT:
-					type = "CF_TEXT";
+					type = "CF_TEXT"; //$NON-NLS-1$
 					break;
 				case COM.CF_BITMAP:
-					type = "CF_BITMAP";
+					type = "CF_BITMAP"; //$NON-NLS-1$
 					break;
 				case COM.CF_METAFILEPICT:
-					type = "CF_METAFILEPICT";
+					type = "CF_METAFILEPICT"; //$NON-NLS-1$
 					break;
 				case COM.CF_SYLK:
-					type = "CF_SYLK";
+					type = "CF_SYLK"; //$NON-NLS-1$
 					break;
 				case COM.CF_DIF:
-					type = "CF_DIF";
+					type = "CF_DIF"; //$NON-NLS-1$
 					break;
 				case COM.CF_TIFF:
-					type = "CF_TIFF";
+					type = "CF_TIFF"; //$NON-NLS-1$
 					break;
 				case COM.CF_OEMTEXT:
-					type = "CF_OEMTEXT";
+					type = "CF_OEMTEXT"; //$NON-NLS-1$
 					break;
 				case COM.CF_DIB:
-					type = "CF_DIB";
+					type = "CF_DIB"; //$NON-NLS-1$
 					break;
 				case COM.CF_PALETTE:
-					type = "CF_PALETTE";
+					type = "CF_PALETTE"; //$NON-NLS-1$
 					break;
 				case COM.CF_PENDATA:
-					type = "CF_PENDATA";
+					type = "CF_PENDATA"; //$NON-NLS-1$
 					break;
 				case COM.CF_RIFF:
-					type = "CF_RIFF";
+					type = "CF_RIFF"; //$NON-NLS-1$
 					break;
 				case COM.CF_WAVE:
-					type = "CF_WAVE";
+					type = "CF_WAVE"; //$NON-NLS-1$
 					break;
 				case COM.CF_UNICODETEXT:
-					type = "CF_UNICODETEXT";
+					type = "CF_UNICODETEXT"; //$NON-NLS-1$
 					break;
 				case COM.CF_ENHMETAFILE:
-					type = "CF_ENHMETAFILE";
+					type = "CF_ENHMETAFILE"; //$NON-NLS-1$
 					break;
 				case COM.CF_LOCALE:
-					type = "CF_LOCALE";
+					type = "CF_LOCALE"; //$NON-NLS-1$
 					break;
 				case COM.CF_MAX:
-					type = "CF_MAX";
+					type = "CF_MAX"; //$NON-NLS-1$
 					break;
 				default:
 					continue;

@@ -132,6 +132,8 @@ public void dispose () {
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
 public Object getContents(Transfer transfer) {
+	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (transfer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	int selection_data = 0;
 	int[] typeIds = transfer.getTypeIds();
@@ -200,10 +202,11 @@ public Object getContents(Transfer transfer) {
  * </ul>
  */
 public void setContents(Object[] data, Transfer[] dataTypes){
+	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (display.isDisposed() ) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	if (dataTypes.length == 0) return;
 	ClipboardProxy proxy = ClipboardProxy._getInstance(display);
 	if (!proxy.setData(data, dataTypes)) {
@@ -223,6 +226,8 @@ public void setContents(Object[] data, Transfer[] dataTypes){
  * system clipboard
  */
 public String[] getAvailableTypeNames() {
+	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	byte[] buffer = Converter.wcsToMbcs(null, "TARGETS", true);
 	int typeId = OS.gdk_atom_intern(buffer, false);
 	// first try the primary clipboard

@@ -122,15 +122,15 @@ public static Shell new_Shell (Display display, final Canvas parent) {
 	Integer hwnd = null;
 	try {
 		Object ds = parent.getPeer ();
-		Class drawingSurfaceClass = Class.forName ("sun.awt.DrawingSurface");
-		Method method = drawingSurfaceClass.getDeclaredMethod ("getDrawingSurfaceInfo", null);
+		Class drawingSurfaceClass = Class.forName ("sun.awt.DrawingSurface");  //$NON-NLS-1$
+		Method method = drawingSurfaceClass.getDeclaredMethod ("getDrawingSurfaceInfo", null); //$NON-NLS-1$
 		Object wds = method.invoke (ds, null);
-		Class wDrawingSurfaceClass = Class.forName ("sun.awt.windows.WDrawingSurfaceInfo");
-		method = wDrawingSurfaceClass.getMethod ("lock", null);
+		Class wDrawingSurfaceClass = Class.forName ("sun.awt.windows.WDrawingSurfaceInfo"); //$NON-NLS-1$
+		method = wDrawingSurfaceClass.getMethod ("lock", null); //$NON-NLS-1$
 		method.invoke (wds, null);
-		method = wDrawingSurfaceClass.getMethod ("getHWnd", null);
+		method = wDrawingSurfaceClass.getMethod ("getHWnd", null); //$NON-NLS-1$
 		hwnd = (Integer) method.invoke (wds, null);
-		method = wDrawingSurfaceClass.getMethod ("unlock", null);
+		method = wDrawingSurfaceClass.getMethod ("unlock", null); //$NON-NLS-1$
 		method.invoke (wds, null);
 	} catch (Exception e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);

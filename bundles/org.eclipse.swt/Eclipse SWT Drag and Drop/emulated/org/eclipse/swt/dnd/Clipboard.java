@@ -120,7 +120,10 @@ public void dispose () {
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
 public Object getContents(Transfer transfer) {
-	if (display.isDisposed() || !(transfer instanceof TextTransfer)) return null;
+	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (transfer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (!transfer instanceof TextTransfer) return null;
 	return display.getData("TextTransfer");
 }
 
@@ -160,20 +163,15 @@ public Object getContents(Transfer transfer) {
  *         otherwise unavailable</li>
  * </ul>
  */
-public void setContents(Object[] data, Transfer[] transferAgents){
-	
-	if (data == null) {
+public void setContents(Object[] data, Transfer[] dataTypes){
+	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
+	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (transferAgents == null || data.length != transferAgents.length) {
-		DND.error(SWT.ERROR_INVALID_ARGUMENT);
-	}
 	
-	if (display.isDisposed() )
-		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
-	
-	for (int i = 0; i < transferAgents.length; i++) {
-		if (transferAgents[i] instanceof TextTransfer && data[i] instanceof String){
+	for (int i = 0; i < dataTypes.length; i++) {
+		if (dataTypes[i] instanceof TextTransfer && data[i] instanceof String){
 			display.setData("TextTransfer", data[i]);
 			return;
 		}
@@ -192,6 +190,8 @@ public void setContents(Object[] data, Transfer[] transferAgents){
  * system clipboard
  */
 public String[] getAvailableTypeNames() {
+	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	return null;
 }
 }
