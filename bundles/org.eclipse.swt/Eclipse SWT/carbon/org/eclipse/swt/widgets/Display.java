@@ -1493,8 +1493,8 @@ public boolean readAndDispatch () {
 		int eventKind = OS.GetEventKind (outEvent [0]);
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
-		runPopups ();
 		runDeferredEvents ();
+		runPopups ();
 		runGrabs ();
 		/*
 		* Feature in the Macintosh.  When an indeterminate progress

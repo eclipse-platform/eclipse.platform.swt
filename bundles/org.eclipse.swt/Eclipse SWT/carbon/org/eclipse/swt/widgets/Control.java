@@ -1214,7 +1214,6 @@ int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userDat
 		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
 		menu.setLocation (pt.h + rect.left, pt.v + rect.top);
 		menu.setVisible (true);
-		return OS.noErr;
 	}
 	return OS.eventNotHandledErr;
 }
