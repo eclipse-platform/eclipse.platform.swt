@@ -13,6 +13,27 @@ Eclipse Platform Build Notes<br>
 SWT</h1>
 SWT Build 2.0 031 - Monday March 18, 2002
 
+<h2> 
+<a NAME="IMPORTANT NEWS FOR GTK USERS"></a>IMPORTANT NEWS FOR GTK USERS</h2>
+<b>As of the M4 milestone build, the platform name for the GTK1.2 version 
+of Eclipse has been changed to "gtk1x". This has been done in 
+preparation for the release of the new GTK2 version of Eclipse which 
+will be called "gtk".
+
+<p>What you should do:
+
+<p>In order to run the M4 (or any subsequent) builds of Eclipse on GTK, you 
+should remove the "-ws gtk"argument from whatever scripts you use to run 
+Eclipse. The launcher has been coded to properly detect which version of 
+  Eclipse you have and use the appropriate window system.
+
+<p>Note for power users:
+
+<p>If you have a custom install where you have both the Motif and GTK 
+versions of SWT available, you will still get the Motif version by 
+default. In this case you can force GTK to be loaded by adding "-ws gtk1x".
+</b>
+
 <h2>
 <a NAME="New APIs"></a>New APIs</h2>
 <ul>
