@@ -177,8 +177,9 @@ public class MacUtil {
 			if (n > 0) {
 				//System.out.println("have children on top");
 				int[] outHandle= new int[1];
-				for (int i= n; i > 0; i--) {
-					if (OS.GetIndexedSubControl(cHandle, (short)i, outHandle) == 0) {
+				for (int i= 0; i < n; i++) {
+					int index= i; // was: n-1-i
+					if (OS.GetIndexedSubControl(cHandle, (short)(index+1), outHandle) == 0) {	// indices are 1 based
 						if (OS.IsControlVisible(outHandle[0])) {
 							getControlRegion(outHandle[0], OS.kControlStructureMetaPart, tmpRgn);
 							OS.DiffRgn(result, tmpRgn, result);
@@ -209,8 +210,9 @@ public class MacUtil {
 		int n= countSubControls(cHandle);
 		if (n > 0) {
 			int[] outHandle= new int[1];
-			for (int i= n; i > 0; i--) {
-				if (OS.GetIndexedSubControl(cHandle, (short)i, outHandle) == 0) {
+			for (int i= 0; i < n; i++) {
+				int index= (n-1-i);
+				if (OS.GetIndexedSubControl(cHandle, (short)(index+1), outHandle) == 0) {	// indices are 1 based
 					int result= find(outHandle[0], rr, tmp, where);
 					if (result != 0)
 						return result;
@@ -293,13 +295,18 @@ public class MacUtil {
 	
 	private static int countSubControls(int cHandle) {
 		short[] cnt= new short[1];
-		switch (OS.CountSubControls(cHandle, cnt)) {
+		int status= OS.CountSubControls(cHandle, cnt);
+		switch (status) {
 		case OS.kNoErr:
 			return cnt[0];			
 		case OS.errControlIsNotEmbedder:
+			//System.out.println("MacUtil.countSubControls: errControlIsNotEmbedder");
+			break;
+		case -30599: // OS.controlHandleInvalidErr
+			System.out.println("MacUtil.countSubControls: controlHandleInvalidErr");
 			break;
 		default:
-			System.out.println("MacUtil.countSubControls");
+			System.out.println("MacUtil.countSubControls: " + status);
 			break;
 		}
 		return 0;
@@ -338,6 +345,11 @@ public class MacUtil {
 
 	public static int OSType(String s) {
 		return ((s.charAt(0) & 0xff) << 24) | ((s.charAt(1) & 0xff) << 16) | ((s.charAt(2) & 0xff) << 8) | (s.charAt(3) & 0xff);
+	}
+
+	public static String getHIObjectClassID(int handle) {
+		int sh= OS.HIObjectCopyClassID(handle);
+		return getStringAndRelease(sh);
 	}
 
 	/**
