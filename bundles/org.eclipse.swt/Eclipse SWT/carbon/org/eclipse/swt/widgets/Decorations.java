@@ -10,7 +10,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
-
 public class Decorations extends Canvas {
 	Image image;
 	Menu menuBar;
@@ -82,11 +81,17 @@ public String getText () {
 	checkWidget();
 	return text;
 }
+
 boolean isTabGroup () {
 	return true;
 }
+
 boolean isTabItem () {
 	return false;
+}
+
+Decorations menuShell () {
+	return this;
 }
 
 void releaseWidget () {
@@ -114,6 +119,7 @@ public void setMaximized (boolean maximized) {
 	checkWidget();
 	this.maximized = maximized;
 }
+
 public void setMenuBar (Menu menu) {
 	checkWidget();
 	if (menuBar == menu) return;
