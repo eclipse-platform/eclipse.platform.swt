@@ -454,6 +454,7 @@ public class OS {
 	public static final int KEY_NOTIFY = 0x10;
 	public static final int KEY_QUERY_VALUE = 0x1;
 	public static final int KEY_READ = 0x20019;
+	public static final int LAYOUT_RTL = 0x1;
 	public static final int LBN_DBLCLK = 0x2;
 	public static final int LBN_SELCHANGE = 0x1;
 	public static final int LBS_EXTENDEDSEL = 0x800;
@@ -2094,6 +2095,7 @@ public static final native int GetKeyNameTextW(int lParam, char [] lpString, int
 public static final native int GetKeyNameTextA(int lParam, byte [] lpString, int nSize);
 public static final native int GetLastActivePopup (int hWnd);
 public static final native int GetLastError ();
+public static final native int GetLayout (int hdc);
 /* returns the instance handle to the swt library */
 public static final native int GetLibraryHandle ();
 public static final native int GetLocaleInfoW (int Locale, int LCType, char [] lpLCData, int cchData);

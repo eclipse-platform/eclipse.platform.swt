@@ -2331,6 +2331,29 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetLastError)
 }
 #endif /* NO_GetLastError */
 
+#ifndef NO_GetLayout
+JNIEXPORT jint JNICALL OS_NATIVE(GetLayout)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	HMODULE hm;
+	FARPROC fp;
+
+	/* SPECIAL */
+    /*
+    *  GetLayout is a Win2000 and Win98 specific call
+    *  If you link it into swt.dll a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+	DEBUG_CALL("GetLayout\n")
+    if ((hm=GetModuleHandle("gdi32.dll")) && (fp=GetProcAddress(hm, "GetLayout"))) {
+    	return (jint) (fp)((HDC)arg0);
+//		return (jint)GetLayout((HDC)arg0);
+	}
+	return 0;
+}
+#endif /* NO_GetLayout */
+
 #ifndef NO_GetLibraryHandle
 JNIEXPORT jint JNICALL OS_NATIVE(GetLibraryHandle)
 	(JNIEnv *env, jclass that)
