@@ -447,17 +447,17 @@ public void setImage (Image image) {
 }
 
 /**
- * Sets the receiver's cascade menu to the argument.
+ * Sets the receiver's pull down menu to the argument.
  * Only <code>CASCADE</code> menu items can have a
  * pull down menu. The sequence of key strokes, button presses
  * and/or button releases that are used to request a pull down
  * menu is platform specific.
  *
- * @param menu the new pop up menu
+ * @param menu the new pull down menu
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_MENU_NOT_DROP_DOWN - the menu is not a drop down menu</li>
- *	<li>ERROR_MENUITEM_NOT_CASCADE - the menu item is not a <code>CASCADE</code></li>
+ *    <li>ERROR_MENU_NOT_DROP_DOWN - if the menu is not a drop down menu</li>
+ *	<li>ERROR_MENUITEM_NOT_CASCADE - if the menu item is not a <code>CASCADE</code></li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
