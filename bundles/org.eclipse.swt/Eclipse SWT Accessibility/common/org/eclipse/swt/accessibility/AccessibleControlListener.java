@@ -50,7 +50,7 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 *
 	 * @param e an event object containing the following fields:<ul>
 	 *    <li>x, y [IN] - the specified point in display coordinates</li>
-	 *    <li>childID [OUT] - the ID of the child at point, or CHILDID_SELF, or CHILDID_NONE</li>
+	 *    <li>childID [Typical OUT] - the ID of the child at point, or CHILDID_SELF, or CHILDID_NONE</li>
 	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
 	 * </ul>
 	 */
@@ -75,7 +75,7 @@ public interface AccessibleControlListener extends SWTEventListener {
 	
 	/**
 	 * Sent when an accessibility client requests the accessible object
-	 * for the control, or the accessible object for a child of the control.
+	 * for a child of the control.
 	 * The default behavior is to do nothing.
 	 * <p>
 	 * Return an <code>Accessible</code> for the specified control or
@@ -85,11 +85,10 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
-	 *    <li>childID [IN] - an identifier specifying the control or one of its children</li>
+	 *    <li>childID [IN] - an identifier specifying a child of the control</li>
 	 *    <li>accessible [OUT] - an Accessible for the specified childID, or null if one does not exist</li>
 	 * </ul>
 	 */
-// actually, can the IN be childid-self? doesn't make much sense...
 	public void getChild(AccessibleControlEvent e);
 	
 	/**
@@ -112,7 +111,9 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * of the control, or the default action of a child of the control.
 	 * The default behavior is to do nothing.
 	 * <p>
-	 * This string is typically... ***************
+	 * This string is typically a verb describing what the user does to it.
+	 * For example, a Push Button's default action is "Press", a Check Button's
+	 * is "Check" or "UnCheck", and List items have the default action "Double Click".
 	 * </p><p>
 	 * Return a string describing the default action of the specified
 	 * control or child in the <code>result</code> field of the event object.
@@ -133,13 +134,13 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * <p>
 	 * Return the identifier of the child that has focus in the
 	 * <code>childID</code> field of the event object.
-	 * Return CHILDID_SELF if ***********
-	 * Return CHILDID_NONE if ************
+	 * Return CHILDID_SELF if the control itself has keyboard focus.
+	 * Return CHILDID_NONE if neither the control nor any of its children has focus.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
-	 *    <li>childID [OUT] - the ID of the child with focus, or CHILDID_SELF, or CHILDID_NONE</li>
-	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
+	 *    <li>childID [Typical OUT] - the ID of the child with focus, or CHILDID_SELF, or CHILDID_NONE</li>
+	 *    <li>accessible [Optional OUT] - the accessible object for a child may be returned instead of its childID</li>
 	 * </ul>
 	 */
 	public void getFocus(AccessibleControlEvent e);
@@ -168,16 +169,16 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * <p>
 	 * Return the identifier of the selected child in the
 	 * <code>childID</code> field of the event object.
-	 * Return CHILDID_SELF if ***********
-	 * Return CHILDID_NONE if ************
+	 * Return CHILDID_SELF if the control itself is selected.
+	 * Return CHILDID_MULTIPLE if multiple children are selected, and return an array of childIDs in the <code>children</code> field.
+	 * Return CHILDID_NONE if neither the control nor any of its children are selected.
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
-	 *    <li>childID [OUT] - the ID of the selected child, or CHILDID_SELF, or CHILDID_MULTIPLE, or CHILDID_NONE</li>
+	 *    <li>childID [Typical OUT] - the ID of the selected child, or CHILDID_SELF, or CHILDID_MULTIPLE, or CHILDID_NONE</li>
 	 *    <li>accessible [Optional OUT] - the accessible object for the control or child may be returned instead of the childID</li>
 	 * </ul>
 	 */
-// OUT can be IAcc also - but can it be childid-self?
 	public void getSelection(AccessibleControlEvent e);
 	
 	/**
@@ -229,7 +230,7 @@ public interface AccessibleControlListener extends SWTEventListener {
 	 * </p>
 	 *
 	 * @param e an event object containing the following fields:<ul>
-	 *    <li>children [OUT] - an array of childIDs</li>
+	 *    <li>children [Typical OUT] - an array of childIDs</li>
 	 *    <li>accessible [Optional OUT] - an array of accessible objects for the children may be returned instead of the childIDs</li>
 	 * </ul>
 	 */
