@@ -434,7 +434,9 @@ int processPaint (int damage) {
 
 int processSelection (int info) {
 	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) selectRadio ();
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
 	}
 	postEvent (SWT.Selection);
 	return OS.Pt_CONTINUE;
@@ -471,19 +473,13 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 void selectRadio () {
+	int index = 0;
 	Control [] children = parent._getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control child = children [i];
-		if (this != child && child instanceof Button) {
-			Button button = (Button) child;
-			if ((button.style & SWT.RADIO) != 0) {
-				if (button.getSelection ()) {
-					button.setSelection (false);
-					button.postEvent (SWT.Selection);
-				}
-			}
-		}
-	}
+	while (index < children.length && children [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && children [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < children.length && children [j].setRadioSelection (false)) j++;
 	setSelection (true);
 }
 
@@ -525,6 +521,15 @@ void setDefault (boolean value) {
 	if ((style & SWT.PUSH) == 0) return;
 	if (getShell ().parent == null) return;
 	OS.PtSetResource (handle, OS.Pt_ARG_BEVEL_CONTRAST, value ? 100 : 20, 0);
+}
+
+boolean setRadioSelection (boolean value) {
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
 }
 
 /**
