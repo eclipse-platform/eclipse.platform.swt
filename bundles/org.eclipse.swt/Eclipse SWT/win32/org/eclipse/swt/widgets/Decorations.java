@@ -1008,6 +1008,8 @@ void setParent () {
 	bits &= ~OS.WS_CHILD;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits | OS.WS_POPUP);
 	OS.SetWindowLong (handle, OS.GWL_ID, 0);
+	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
+	OS.SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	display.lockActiveWindow = false;
 }
 
