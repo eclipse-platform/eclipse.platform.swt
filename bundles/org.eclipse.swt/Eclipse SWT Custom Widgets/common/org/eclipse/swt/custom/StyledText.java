@@ -7132,7 +7132,7 @@ boolean showLocation(int x, int line) {
 		scrolled = true;
 	}
 	else 
-	if (x > clientAreaWidth) {
+	if (x >= clientAreaWidth) {
 		// always make 1/4 of a page visible
 		x = Math.min(lineCache.getWidth() - horizontalScrollOffset, x + horizontalIncrement);
 		scrollHorizontalBar(x - clientAreaWidth);
