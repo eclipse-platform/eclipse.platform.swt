@@ -2205,6 +2205,7 @@ void doContentStart() {
 void doCursorPrevious() {
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.x;
+		caretLine = content.getLineAtOffset(caretOffset);
 		showCaret();
 	}
 	else {
@@ -2222,6 +2223,7 @@ void doCursorPrevious() {
 void doCursorNext() {
 	if (selection.y - selection.x > 0) {
 		caretOffset = selection.y;
+		caretLine = content.getLineAtOffset(caretOffset);
 		showCaret();
 	}
 	else {
