@@ -46,7 +46,7 @@ public class CBanner extends Composite {
 	int[] curve;
 	int curveStart;
 	int rightWidth = SWT.DEFAULT;
-	Region curveRegion = new Region();
+	Rectangle curveRect = new Rectangle(0, 0, 0, 0);
 	Cursor resizeCursor;
 	boolean dragging = false;
 	int rightDragDisplacement = 0;
@@ -254,23 +254,19 @@ public void layout (boolean changed) {
 	if (curveStart > oldStart) {
 		redraw(oldStart - CURVE_TAIL, 0, curveStart + CURVE_WIDTH - oldStart + CURVE_TAIL, size.y, false);
 	}
-	curveRegion.dispose();
-	curveRegion = new Region();
-	curveRegion.add(new Rectangle(curveStart, 0, curveWidth, size.y));
+	curveRect = new Rectangle(curveStart, 0, curveWidth, size.y);
 	update();
 	if (rightRect != null) right.setBounds(rightRect);
 	if (leftRect != null) left.setBounds(leftRect);
 }
 void onDispose() {
-	resizeCursor.dispose();
-	curveRegion.dispose();
+	if (resizeCursor != null) resizeCursor.dispose();
 	resizeCursor = null;
-	curveRegion = null;
 	left = null;
 	right = null;
 }
 void onMouseDown (int x, int y) {
-	if (curveRegion.contains(x, y)) {
+	if (curveRect.contains(x, y)) {
 		dragging = true;
 		rightDragDisplacement = curveStart - x + BORDER_LEFT + CURVE_WIDTH - INDENT_RIGHT;
 	}
@@ -287,7 +283,7 @@ void onMouseMove(int x, int y) {
 		layout();
 		return;
 	}
-	if (curveRegion.contains(x, y)) {
+	if (curveRect.contains(x, y)) {
 		setCursor(resizeCursor); 
 	} else {
 		setCursor(null);
