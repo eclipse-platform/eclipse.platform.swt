@@ -13,8 +13,8 @@
 		<tstamp/>
         <property name="destdir" value="../../../../../export" />
 		<property name="plugin" value="org.eclipse.swt" />
-		<property name="maj_ver" value="20" />
-		<property name="min_ver" value="47" />
+		<property name="maj_ver" value="2" />
+		<property name="min_ver" value="101" />
         <mkdir dir="${destdir}" />
 	</target>
 
