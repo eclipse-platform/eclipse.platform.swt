@@ -2150,6 +2150,103 @@ public void test_replaceStyleRanges(){
 	text.dispose();
 	text = new StyledText(shell, SWT.NULL);
 	setWidget(text);
+
+	// insert with no styles
+	text.setText("01234567890123456789");
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(0,5,RED,YELLOW);
+	text.replaceStyleRanges(0, 10, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":1xa:", styles.length == 1);
+	assertTrue(":1xa:", styles[0].equals(getStyle(0,5,RED,YELLOW)));
+
+	// insert before 1 style
+	text.setText("01234567890123456789");
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(5,3,RED,YELLOW);
+	text.replaceStyleRanges(0, 10, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(0,3,PURPLE,PURPLE);
+	text.replaceStyleRanges(0, 3, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":1xb:", styles.length == 2);
+	assertTrue(":1xb:", styles[0].equals(getStyle(0,3,PURPLE,PURPLE)));
+	assertTrue(":1xb:", styles[1].equals(getStyle(5,3,RED,YELLOW)));
+
+	// insert after 1 style
+	text.setText("01234567890123456789");
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(5,3,RED,YELLOW);
+	text.replaceStyleRanges(0, 10, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(8,1,PURPLE,PURPLE);
+	text.replaceStyleRanges(8, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":1xc:", styles.length == 2);
+	assertTrue(":1xc:", styles[0].equals(getStyle(5,3,RED,YELLOW)));
+	assertTrue(":1xc:", styles[1].equals(getStyle(8,1,PURPLE,PURPLE)));
+
+	// insert before 2 styles
+	text.setText("01234567890123456789");
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(5,2,RED,YELLOW);
+	ranges[1] = getStyle(10,2,RED,YELLOW);
+	text.replaceStyleRanges(0, 20, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(2,1,PURPLE,PURPLE);
+	text.replaceStyleRanges(2, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":1xe:", styles.length == 3);
+	assertTrue(":1xe:", styles[0].equals(getStyle(2,1,PURPLE,PURPLE)));
+	assertTrue(":1xe:", styles[1].equals(getStyle(5,2,RED,YELLOW)));
+	assertTrue(":1xe:", styles[2].equals(getStyle(10,2,RED,YELLOW)));
+
+	// insert after 2 styles
+	text.setText("01234567890123456789");
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(5,2,RED,YELLOW);
+	ranges[1] = getStyle(10,2,RED,YELLOW);
+	text.replaceStyleRanges(0, 20, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(12,1,PURPLE,PURPLE);
+	text.replaceStyleRanges(12, 1, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":1xf:", styles.length == 3);
+	assertTrue(":1xf:", styles[0].equals(getStyle(5,2,RED,YELLOW)));
+	assertTrue(":1xf:", styles[1].equals(getStyle(10,2,RED,YELLOW)));
+	assertTrue(":1xf:", styles[2].equals(getStyle(12,1,PURPLE,PURPLE)));
+
+	// insert middle 2 styles
+	text.setText("01234567890123456789");
+	ranges = new StyleRange[2];
+	ranges[0] = getStyle(1,2,RED,YELLOW);
+	ranges[1] = getStyle(12,2,RED,YELLOW);
+	text.replaceStyleRanges(0, 20, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(5,3,PURPLE,PURPLE);
+	text.replaceStyleRanges(5, 3, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":1xg:", styles.length == 3);
+	assertTrue(":1xg:", styles[0].equals(getStyle(1,2,RED,YELLOW)));
+	assertTrue(":1xg:", styles[1].equals(getStyle(5,3,PURPLE,PURPLE)));
+	assertTrue(":1xg:", styles[2].equals(getStyle(12,2,RED,YELLOW)));
+	
+	// insert middle 3 styles
+	text.setText("01234567890123456789");
+	ranges = new StyleRange[3];
+	ranges[0] = getStyle(1,3,RED,PURPLE);
+	ranges[1] = getStyle(6,3,PURPLE,YELLOW);
+	ranges[2] = getStyle(12,3,RED,YELLOW);
+	text.replaceStyleRanges(0, 20, ranges);
+	ranges = new StyleRange[1];
+	ranges[0] = getStyle(4,2,PURPLE,PURPLE);
+	text.replaceStyleRanges(4, 2, ranges);
+	styles = text.getStyleRanges();
+	assertTrue(":1xh:", styles.length == 4);
+	assertTrue(":1xh:", styles[0].equals(getStyle(1,3,RED,PURPLE)));
+	assertTrue(":1xh:", styles[1].equals(getStyle(4,2,PURPLE,PURPLE)));
+	assertTrue(":1xh:", styles[2].equals(getStyle(6,3,PURPLE,YELLOW)));
+	assertTrue(":1xh:", styles[3].equals(getStyle(12,3,RED,YELLOW)));	
 }
 
 public void test_replaceTextRangeIILjava_lang_String(){
