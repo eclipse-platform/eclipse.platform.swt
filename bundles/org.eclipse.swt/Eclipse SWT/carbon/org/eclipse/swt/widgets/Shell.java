@@ -103,7 +103,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, drawing, reshape, update;
+	boolean resized, drawing, reshape, update, activate;
 	int invalRgn;
 	Control lastActive;
 	Region region;
@@ -556,6 +556,7 @@ Cursor findCursor () {
  */
 public void forceActive () {
 	checkWidget ();
+	if (activate) return;
 	OS.SelectWindow (shellHandle);
 	OS.SetFrontProcessWithOptions (new int [] {0, OS.kCurrentProcess}, OS.kSetFrontProcessFrontWindowOnly);
 }
@@ -781,9 +782,11 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	OS.GetWindowActivationScope (shellHandle, outScope); 
 	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
 	display.setMenuBar (menuBar);
+	activate = true;
 	sendEvent (SWT.Activate);
 	if (isDisposed ()) return result;
 	restoreFocus ();
+	activate = false;
 	return result;
 }
 
@@ -1089,6 +1092,7 @@ public void removeShellListener(ShellListener listener) {
  */
 public void setActive () {
 	checkWidget ();
+	if (activate) return;
 	OS.SelectWindow (shellHandle);
 }
 
@@ -1190,7 +1194,7 @@ public void setMinimized (boolean minimized) {
 	if (this.minimized == minimized) return;
 	super.setMinimized (minimized);
 	if (!minimized && OS.IsWindowCollapsed (shellHandle)) {
-		 OS.SelectWindow (shellHandle);
+		if (!activate) OS.SelectWindow (shellHandle);
 	}
 	OS.CollapseWindow (shellHandle, minimized);
 }
