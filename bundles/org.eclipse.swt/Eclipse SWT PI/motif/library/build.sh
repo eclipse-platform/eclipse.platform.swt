@@ -9,6 +9,7 @@
 #     IBM Corporation - initial API and implementation
 #     Kevin Cornell (Rational Software Corporation)
 #     Tom Tromey (Red Hat, Inc.)
+#     Sridhar Bidigalu (ICS)
 #*******************************************************************************
 
 #!/bin/sh
@@ -55,13 +56,33 @@ case $OS in
         ;;
 
         "HP-UX")
-	if  [ "$1" = "clean" ]; then
-            make -f make_hpux.mak clean
-        else
-            echo "Building HP-UX version of SWT and CDE DLLs."
-            make -f make_hpux.mak make_swt
-            make -f make_hpux.mak make_cde
-        fi
+        # Determine the model number system being built
+        MODEL=`uname -m`
+       
+        case $MODEL in
+
+        "ia64")
+           # ia64 based systems
+           if  [ "$1" = "clean" ]; then
+               make -f make_hpux_ia64.mak clean
+           else
+               echo "Building HP-UX ia64 version of SWT and CDE DLLs."
+               make -f make_hpux_ia64.mak make_swt
+               make -f make_hpux_ia64.mak make_cde
+           fi
+           ;;
+
+        *)
+          # PA_RISC based systems 
+	      if  [ "$1" = "clean" ]; then
+               make -f make_hpux_PA_RISC.mak clean
+          else
+               echo "Building HP-UX PA_RISC version of SWT and CDE DLLs."
+               make -f make_hpux_PA_RISC.mak make_swt
+               make -f make_hpux_PA_RISC.mak make_cde
+           fi
+           ;;
+        esac
         ;;
 
     *)
