@@ -9,7 +9,7 @@
 *     IBM Corporation - initial API and implementation
 *******************************************************************************/
 
-#include "swt_os.h"
+#include "os.h"
 
 #ifndef NO_Visual
 Visual *getVisualFields(JNIEnv *env, jobject lpObject, Visual *lpStruct);

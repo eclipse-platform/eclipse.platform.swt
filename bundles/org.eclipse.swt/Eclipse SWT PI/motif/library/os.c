@@ -10,7 +10,7 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "structs.h"
+#include "os_structs.h"
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_motif_OS_##func
 
@@ -4540,6 +4540,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(iconv_1open)
 }
 #endif
 
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XButtonEvent _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I\n")
+	if (arg1) lparg1 = getXButtonEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XExposeEvent _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I\n")
+	if (arg1) lparg1 = getXExposeEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I\n")
+}
+#endif
+
 #ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XImage_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XImage_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -4627,6 +4651,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
 }
 #endif
 
+#ifndef NO_memmove__I_3SI
+JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3SI)
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jint arg2)
+{
+	jshort *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__I_3SI\n")
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "memmove__I_3SI\n")
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_Visual_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_Visual_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -4640,6 +4677,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_Visual
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XAnyEvent _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXAnyEventFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II\n")
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -4650,18 +4700,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XButto
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXButtonEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II\n")
-}
-#endif
-
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
-{
-	XButtonEvent _arg1, *lparg1=NULL;
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I\n")
-	if (arg1) lparg1 = getXButtonEventFields(env, arg1, &_arg1);
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XButtonEvent_2I\n")
 }
 #endif
 
@@ -4756,19 +4794,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XImage
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
-{
-	XineramaScreenInfo _arg0, *lparg0=NULL;
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II\n")
-	if (arg0) lparg0 = &_arg0;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) setXineramaScreenInfoFields(env, arg0, lparg0);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II\n")
-}
-#endif
-
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XKeyEvent_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -4782,19 +4807,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XKeyEv
 }
 #endif
 
-#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II
-JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
-{
-	XAnyEvent _arg0, *lparg0=NULL;
-	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II\n")
-	if (arg0) lparg0 = &_arg0;
-	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
-	if (arg0) setXAnyEventFields(env, arg0, lparg0);
-	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II\n")
-}
-#endif
-
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
@@ -4805,6 +4817,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XMotio
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXMotionEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XMotionEvent_2II\n")
+}
+#endif
+
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	XineramaScreenInfo _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II\n")
+	if (arg0) lparg0 = &_arg0;
+	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) setXineramaScreenInfoFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II\n")
 }
 #endif
 
@@ -4922,31 +4947,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3III)
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "memmove___3III\n")
-}
-#endif
-
-#ifndef NO_memmove__I_3SI
-JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3SI)
-	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jint arg2)
-{
-	jshort *lparg1=NULL;
-	NATIVE_ENTER(env, that, "memmove__I_3SI\n")
-	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
-	NATIVE_EXIT(env, that, "memmove__I_3SI\n")
-}
-#endif
-
-#ifndef NO_memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I
-JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I)
-	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
-{
-	XExposeEvent _arg1, *lparg1=NULL;
-	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I\n")
-	if (arg1) lparg1 = getXExposeEventFields(env, arg1, &_arg1);
-	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XExposeEvent_2I\n")
 }
 #endif
 
