@@ -13,6 +13,8 @@ import org.eclipse.swt.events.*;
 
 /**
  * A control for showing progress feedback for a long running operation.
+ *
+ * @deprecated As of Eclipse 2.1, use ProgressBar with the style SWT.INDETERMINATE
  * 
  * <dl>
  * <dt><b>Styles:</b><dd>VERTICAL, HORIZONTAL, BORDER
