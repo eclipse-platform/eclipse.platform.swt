@@ -595,9 +595,20 @@ public Widget findWidget (int handle) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-	Control control = getFocusControl ();
-	if (control == null) return null;
-	return control.getShell ();
+	int [] buffer1 = new int [1], buffer2 = new int [1];
+	OS.XGetInputFocus (xDisplay, buffer1, buffer2);
+	int xWindow = buffer1 [0];
+	if (xWindow == 0) return null;
+	int handle = OS.XtWindowToWidget (xDisplay, xWindow);
+	if (handle == 0) return null;
+	do {
+		if (OS.XtIsSubclass (handle, OS.ShellWidgetClass ())) {
+			Widget widget = WidgetTable.get (handle);
+			if (widget instanceof Shell) return (Shell) widget;
+			return null;
+		}
+	} while ((handle = OS.XtParent (handle)) != 0);
+	return null;
 }
 /**
  * Returns the display which the currently running thread is
