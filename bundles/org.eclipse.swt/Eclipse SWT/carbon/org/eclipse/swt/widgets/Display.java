@@ -1817,6 +1817,11 @@ static String convertToLf(String text) {
 				windowProc(cHandle, SWT.Paint, new MacControlEvent(inEvent, region[0], gccontext[0]));
 				return OS.noErr;
 				
+			case OS.kEventControlHit:
+				short[] part= new short[1];
+				OS.GetEventParameter(inEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+				return windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, part[0], true));
+				
 			default:
 				System.out.println("Display.handleControlProc: wrong event kind: " + kind);
 				break;
