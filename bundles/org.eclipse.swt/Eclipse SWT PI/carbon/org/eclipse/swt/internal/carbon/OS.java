@@ -35,7 +35,7 @@ public class OS {
 	public static final int errUnknownControl = -30584;
 	public static final int eventLoopTimedOutErr = -9875;
 	public static final int eventNotHandledErr = -9874;
-	public static final int getstaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
+	public static final int gestaltSystemVersion = ('s'<<24) + ('y'<<16) + ('s'<<8) + 'v';
 	public static final int inContent = 3;
 	public static final int inMenuBar = 1;
 	public static final int inStructure = 15;

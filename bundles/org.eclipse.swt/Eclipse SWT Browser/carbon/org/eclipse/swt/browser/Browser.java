@@ -107,7 +107,7 @@ public Browser(Composite parent, int style) {
 	* without crashing.
 	*/
 	int[] response = new int[1];
-	int err = OS.Gestalt(OS.getstaltSystemVersion, response);
+	int err = OS.Gestalt(OS.gestaltSystemVersion, response);
 	if (err != OS.noErr || ((response[0] & 0xffff) < 0x1030)) {
 		dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
