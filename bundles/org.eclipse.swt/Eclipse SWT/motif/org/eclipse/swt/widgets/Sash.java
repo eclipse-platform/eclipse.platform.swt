@@ -281,8 +281,8 @@ int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispa
 	/* widget could be disposed here */
 	return result;
 }
-int xFocusIn () {
-	int result = super.xFocusIn ();
+int xFocusIn (XFocusChangeEvent xEvent) {
+	int result = super.xFocusIn (xEvent);
 	if (handle == 0) return result;
 	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
@@ -291,8 +291,8 @@ int xFocusIn () {
 	return result;
 }
 
-int xFocusOut () {
-	int result = super.xFocusOut ();
+int xFocusOut (XFocusChangeEvent xEvent) {
+	int result = super.xFocusOut (xEvent);
 	if (handle == 0) return result;
 	int [] argList = new int [] {OS.XmNtraversalOn, 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);

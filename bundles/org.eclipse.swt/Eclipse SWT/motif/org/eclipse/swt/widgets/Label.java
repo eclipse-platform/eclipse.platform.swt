@@ -499,8 +499,8 @@ public void setText (String string) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	if (xmString != 0) OS.XmStringFree (xmString);
 }
-int xFocusOut () {
-	int result = super.xFocusOut ();
+int xFocusOut (XFocusChangeEvent xEvent) {
+	int result = super.xFocusOut (xEvent);
 	if (handle == 0) return result;
 	int [] argList = new int [] {OS.XmNtraversalOn, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);

@@ -432,7 +432,7 @@ public Point getCaretLocation () {
 	}
 	short [] x = new short [1], y = new short [1];
 	OS.XmTextPosToXY (handle, position, x, y);
-	return new Point (x [0], y [0] - getFontAscent ());
+	return new Point (x [0], y [0] - getFontAscent (font.handle));
 }
 /**
  * Gets the position of the caret.
@@ -1396,8 +1396,8 @@ int traversalCode (int key, XKeyEvent xEvent) {
 	}
 	return bits;
 }
-int xFocusIn () {
-	super.xFocusIn ();
+int xFocusIn (XFocusChangeEvent xEvent) {
+	super.xFocusIn (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.READ_ONLY) != 0) return 0;
@@ -1406,8 +1406,8 @@ int xFocusIn () {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	return 0;
 }
-int xFocusOut () {
-	super.xFocusOut ();
+int xFocusOut (XFocusChangeEvent xEvent) {
+	super.xFocusOut (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.READ_ONLY) != 0) return 0;

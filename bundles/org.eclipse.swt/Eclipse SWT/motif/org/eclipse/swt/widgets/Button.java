@@ -354,9 +354,10 @@ public int getAlignment () {
 }
 boolean getDefault () {
 	if ((style & SWT.PUSH) == 0) return false;
-	int [] argList = {OS.XmNshowAsDefault, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	return argList [1] != 0;
+//	int [] argList = {OS.XmNshowAsDefault, 0};
+//	OS.XtGetValues (handle, argList, argList.length / 2);
+//	return argList [1] != 0;
+	return this == menuShell ().defaultButton;
 }
 /**
  * Returns the receiver's image if it has one, or null
@@ -764,8 +765,8 @@ void updateShadows () {
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
 }
-int xFocusIn () {
-	super.xFocusIn ();
+int xFocusIn (XFocusChangeEvent xEvent) {
+	super.xFocusIn (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0) {
@@ -773,8 +774,8 @@ int xFocusIn () {
 	}
 	return 0;
 }
-int xFocusOut () {
-	super.xFocusOut ();
+int xFocusOut (XFocusChangeEvent xEvent) {
+	super.xFocusOut (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0 && getDefault ()) {

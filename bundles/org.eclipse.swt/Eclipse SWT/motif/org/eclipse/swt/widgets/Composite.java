@@ -180,7 +180,8 @@ void createHandle (int index) {
 		createScrolledHandle (parentHandle);
 	}
 	if ((style & SWT.NO_FOCUS) == 0) {
-		focusHandle = OS.XmCreateDrawingArea (handle, null, null, 0);
+		int [] argList = {OS.XmNtraversalOn, 0};
+		focusHandle = OS.XmCreateDrawingArea (handle, null, argList, argList.length / 2);
 		if (focusHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
 }

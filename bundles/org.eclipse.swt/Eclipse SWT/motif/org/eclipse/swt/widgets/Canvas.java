@@ -93,12 +93,8 @@ public Caret getCaret () {
 	checkWidget();
 	return caret;
 }
-
-short [] getIMCaretPos () {
-	if (caret == null) return super.getIMCaretPos ();
-	int width = caret.width;
-	if (width <= 0) width = 2;
-	return new short[]{(short) (caret.x + width), (short) (caret.y + caret.height)};
+Caret getIMCaret () {
+	return caret;
 }
 void redrawWidget (int x, int y, int width, int height, boolean all) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
@@ -225,17 +221,6 @@ public void setFont (Font font) {
 	super.setFont (font);
 	if (caret != null) caret.setFont (font);
 }
-void updateCaret () {
-	if (caret == null) return;
-	if (!OS.IsDBLocale) return;
-	short [] point = getIMCaretPos ();
-	int ptr = OS.XtMalloc (4);
-	OS.memmove (ptr, point, 4);
-	int[] argList = {OS.XmNspotLocation, ptr};
-	int focusHandle = focusHandle ();
-	OS.XmImSetValues (focusHandle, argList, argList.length / 2);
-	if (ptr != 0) OS.XtFree (ptr);
-}
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
@@ -243,13 +228,13 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	if (isFocus) caret.setFocus ();
 	return result;
 }
-int xFocusIn () {
-	int result = super.xFocusIn ();
+int xFocusIn (XFocusChangeEvent xEvent) {
+	int result = super.xFocusIn (xEvent);
 	if (caret != null) caret.setFocus ();
 	return result;
 }
-int xFocusOut () {
-	int result = super.xFocusOut ();
+int xFocusOut (XFocusChangeEvent xEvent) {
+	int result = super.xFocusOut (xEvent);
 	if (caret != null) caret.killFocus ();
 	return result;
 }
