@@ -521,8 +521,9 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 		OS.CGContextSetFillColor(handle, data.background);
 	} else {
 		OS.CGContextBeginPath(handle);
-		OS.CGContextMoveToPoint(handle, x1+0.5f, y1+0.5f);
-		OS.CGContextAddLineToPoint(handle, x2+0.5f, y2+0.5f);
+		float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+		OS.CGContextMoveToPoint(handle, x1 + offset, y1 + offset);
+		OS.CGContextAddLineToPoint(handle, x2 + offset, y2 + offset);
 		OS.CGContextStrokePath(handle);
 	}
 	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
@@ -661,8 +662,9 @@ public void drawRectangle(int x, int y, int width, int height) {
 		height = -height;
 	}
 	CGRect rect = new CGRect();
-	rect.x = x + 0.5f;
-	rect.y = y + 0.5f;
+	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	rect.x = x + offset;
+	rect.y = y + offset;
 	rect.width = width;
 	rect.height = height;
 	OS.CGContextStrokeRect(handle, rect);
