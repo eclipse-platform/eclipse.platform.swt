@@ -7,17 +7,21 @@
 #
 # Makefile for creating the SWT dll on MacOS X
 #
+include make_common.mak
+
+SWT_PREFIX=swt
+WS_PREFIX=carbon
+SWT_VERSION=$(maj_ver)$(min_ver)
+SWT_LIB=lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 
 CLASSPATH= ../../../bin
 OSCLASS= $(CLASSPATH)/org/eclipse/swt/internal/carbon/OS.class
 OSHEADER= org_eclipse_swt_internal_carbon_OS.h
 JNI= /System/Library/Frameworks/JavaVM.framework/Headers
-LIBNAME= swt-carbon-2106
-LIB= lib$(LIBNAME).jnilib
 
 
-$(LIB):	swt.o
-	cc -bundle -o lib$(LIBNAME).jnilib -framework JavaVM -framework Carbon swt.o
+$(SWT_LIB):	swt.o
+	cc -bundle -o $(SWT_LIB) -framework JavaVM -framework Carbon swt.o
 
 swt.o: swt.c $(OSHEADER)
 	cc -I$(JNI) -c swt.c
