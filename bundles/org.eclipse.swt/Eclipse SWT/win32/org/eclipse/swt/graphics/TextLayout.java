@@ -28,9 +28,9 @@ import org.eclipse.swt.*;
 
 public class TextLayout {
 
-	final public static int MOVEMENT_CHAR = 0;
-	final public static int MOVEMENT_CLUSTER = 1;
-	final public static int MOVEMENT_WORD = 2;
+	final public static int MOVEMENT_CHAR = 1;
+	final public static int MOVEMENT_CLUSTER = 2;
+	final public static int MOVEMENT_WORD = 4;
 	
 	Device device;
 	Font font;
