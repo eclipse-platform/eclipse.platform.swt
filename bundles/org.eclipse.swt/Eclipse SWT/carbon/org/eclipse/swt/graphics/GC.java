@@ -420,10 +420,6 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  	OS.CGContextSaveGState(handle);
  	OS.CGContextScaleCTM(handle, 1, -1);
  	OS.CGContextTranslateCTM(handle, 0, -(destHeight + 2 * destY));
-	/*
-	* Feature in Quartz.  
-	*/
-	OS.CGContextTranslateCTM(handle, -0.5f, -0.5f);
  	CGRect rect = new CGRect();
  	rect.x = destX;
  	rect.y = destY;
@@ -467,8 +463,8 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	OS.CGContextBeginPath(handle);
-	OS.CGContextMoveToPoint(handle, x1, y1);
-	OS.CGContextAddLineToPoint(handle, x2, y2);
+	OS.CGContextMoveToPoint(handle, x1+0.5f, y1+0.5f);
+	OS.CGContextAddLineToPoint(handle, x2+0.5f, y2+0.5f);
 	OS.CGContextStrokePath(handle);
 }
 
