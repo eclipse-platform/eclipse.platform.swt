@@ -663,6 +663,7 @@ private void setMode(int icon) {
 	
 	if ((style & SWT.FLAT) != 0 || fImageMode) {
 		OS.SetBevelButtonContentInfo(handle, OS.kControlContentCIconHandle, icon);
+		redraw();
 		return;
 	}
 
