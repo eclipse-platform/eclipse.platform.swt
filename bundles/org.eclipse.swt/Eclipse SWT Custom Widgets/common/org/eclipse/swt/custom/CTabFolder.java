@@ -1388,7 +1388,7 @@ public int getSelectionIndex() {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public boolean getSimpleTab() {
+public boolean getSimple() {
 	checkWidget();
 	return simple;
 }
@@ -1396,7 +1396,7 @@ public boolean getSimpleTab() {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public boolean getSingleTab() {
+public boolean getSingle() {
 	checkWidget();
 	return single;
 }
@@ -3120,7 +3120,7 @@ public void setSelectionForeground (Color color) {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public void setSimpleTab(boolean simple) {
+public void setSimple(boolean simple) {
 	checkWidget();
 	if (this.simple != simple) {
 		this.simple = simple;
@@ -3143,7 +3143,7 @@ public void setSimpleTab(boolean simple) {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public void setSingleTab(boolean single) {
+public void setSingle(boolean single) {
 	checkWidget();
 	if (this.single != single) {
 		this.single = single;
