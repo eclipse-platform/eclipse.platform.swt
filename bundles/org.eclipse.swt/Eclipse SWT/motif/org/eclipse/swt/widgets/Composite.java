@@ -632,7 +632,8 @@ void setScrollbarVisible (int barHandle, boolean visible) {
 	int [] traversals = new int [children.length];
 	int [] argList = new int [] {OS.XmNtraversalOn, 0};
 	for (int i=0; i<children.length; i++) {
-		OS.XtGetValues (children [i].handle, argList, argList.length / 2);
+		int childHandle = children [i].topHandle ();
+		OS.XtGetValues (childHandle, argList, argList.length / 2);
 		if ((traversals [i] = argList [1]) != 0) {
 			argList [1] = 0;
 			display.postFocusOut = true;
@@ -644,7 +645,8 @@ void setScrollbarVisible (int barHandle, boolean visible) {
 		argList [1] = traversals [i];
 		Control control = children [i];
 		if (!control.isDisposed ()) {
-			OS.XtSetValues (control.handle, argList, argList.length / 2);
+			int childHandle = control.topHandle ();
+			OS.XtSetValues (childHandle, argList, argList.length / 2);
 			if (argList [1] != 0) control.overrideTranslations ();
 		}
 	}

@@ -1187,15 +1187,16 @@ void manageChildren () {
 	* NOTE: This code currently does not work when a
 	* sibling will take focus.
 	*/
+	int topHandle = topHandle ();
 	int [] argList1 = {OS.XmNtraversalOn, 0};
-	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	OS.XtGetValues (topHandle, argList1, argList1.length / 2);
 	if (argList1 [1] != 0) {
 		int [] argList2 = {OS.XmNtraversalOn, 0};
-		OS.XtSetValues (handle, argList2, argList2.length / 2);
+		OS.XtSetValues (topHandle, argList2, argList2.length / 2);
 	}
 	OS.XtManageChild (handle);
 	if (argList1 [1] != 0) {
-		OS.XtSetValues (handle, argList1, argList1.length / 2);
+		OS.XtSetValues (topHandle, argList1, argList1.length / 2);
 	}
 	overrideTranslations ();
 	int [] argList3 = {OS.XmNborderWidth, 0};
