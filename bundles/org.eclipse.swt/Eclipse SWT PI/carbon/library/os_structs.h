@@ -119,6 +119,30 @@ void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct);
 #define CFRange_sizeof() 0
 #endif
 
+#ifndef NO_CGFunctionCallbacks
+void cacheCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject);
+CGFunctionCallbacks *getCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject, CGFunctionCallbacks *lpStruct);
+void setCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject, CGFunctionCallbacks *lpStruct);
+#define CGFunctionCallbacks_sizeof() sizeof(CGFunctionCallbacks)
+#else
+#define cacheCGFunctionCallbacksFields(a,b)
+#define getCGFunctionCallbacksFields(a,b,c) NULL
+#define setCGFunctionCallbacksFields(a,b,c)
+#define CGFunctionCallbacks_sizeof() 0
+#endif
+
+#ifndef NO_CGPatternCallbacks
+void cacheCGPatternCallbacksFields(JNIEnv *env, jobject lpObject);
+CGPatternCallbacks *getCGPatternCallbacksFields(JNIEnv *env, jobject lpObject, CGPatternCallbacks *lpStruct);
+void setCGPatternCallbacksFields(JNIEnv *env, jobject lpObject, CGPatternCallbacks *lpStruct);
+#define CGPatternCallbacks_sizeof() sizeof(CGPatternCallbacks)
+#else
+#define cacheCGPatternCallbacksFields(a,b)
+#define getCGPatternCallbacksFields(a,b,c) NULL
+#define setCGPatternCallbacksFields(a,b,c)
+#define CGPatternCallbacks_sizeof() 0
+#endif
+
 #ifndef NO_CGPoint
 void cacheCGPointFields(JNIEnv *env, jobject lpObject);
 CGPoint *getCGPointFields(JNIEnv *env, jobject lpObject, CGPoint *lpStruct);

@@ -118,6 +118,21 @@ fail:
 }
 #endif
 
+
+#ifndef NO_CGContextGetPathBoundingBox
+JNIEXPORT void JNICALL OS_NATIVE(CGContextGetPathBoundingBox)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextGetPathBoundingBox_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	*lparg1 = CGContextGetPathBoundingBox((CGContextRef)arg0);
+fail:
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGContextGetPathBoundingBox_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextGetTextPosition
 JNIEXPORT void JNICALL OS_NATIVE(CGContextGetTextPosition)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)

@@ -393,6 +393,80 @@ void setCFRangeFields(JNIEnv *env, jobject lpObject, CFRange *lpStruct)
 }
 #endif
 
+#ifndef NO_CGFunctionCallbacks
+typedef struct CGFunctionCallbacks_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, evaluate, releaseInfo;
+} CGFunctionCallbacks_FID_CACHE;
+
+CGFunctionCallbacks_FID_CACHE CGFunctionCallbacksFc;
+
+void cacheCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject)
+{
+	if (CGFunctionCallbacksFc.cached) return;
+	CGFunctionCallbacksFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CGFunctionCallbacksFc.version = (*env)->GetFieldID(env, CGFunctionCallbacksFc.clazz, "version", "I");
+	CGFunctionCallbacksFc.evaluate = (*env)->GetFieldID(env, CGFunctionCallbacksFc.clazz, "evaluate", "I");
+	CGFunctionCallbacksFc.releaseInfo = (*env)->GetFieldID(env, CGFunctionCallbacksFc.clazz, "releaseInfo", "I");
+	CGFunctionCallbacksFc.cached = 1;
+}
+
+CGFunctionCallbacks *getCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject, CGFunctionCallbacks *lpStruct)
+{
+	if (!CGFunctionCallbacksFc.cached) cacheCGFunctionCallbacksFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, CGFunctionCallbacksFc.version);
+	lpStruct->evaluate = (CGFunctionEvaluateCallback)(*env)->GetIntField(env, lpObject, CGFunctionCallbacksFc.evaluate);
+	lpStruct->releaseInfo = (CGFunctionReleaseInfoCallback)(*env)->GetIntField(env, lpObject, CGFunctionCallbacksFc.releaseInfo);
+	return lpStruct;
+}
+
+void setCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject, CGFunctionCallbacks *lpStruct)
+{
+	if (!CGFunctionCallbacksFc.cached) cacheCGFunctionCallbacksFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CGFunctionCallbacksFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, CGFunctionCallbacksFc.evaluate, (jint)lpStruct->evaluate);
+	(*env)->SetIntField(env, lpObject, CGFunctionCallbacksFc.releaseInfo, (jint)lpStruct->releaseInfo);
+}
+#endif
+
+#ifndef NO_CGPatternCallbacks
+typedef struct CGPatternCallbacks_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, drawPattern, releaseInfo;
+} CGPatternCallbacks_FID_CACHE;
+
+CGPatternCallbacks_FID_CACHE CGPatternCallbacksFc;
+
+void cacheCGPatternCallbacksFields(JNIEnv *env, jobject lpObject)
+{
+	if (CGPatternCallbacksFc.cached) return;
+	CGPatternCallbacksFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	CGPatternCallbacksFc.version = (*env)->GetFieldID(env, CGPatternCallbacksFc.clazz, "version", "I");
+	CGPatternCallbacksFc.drawPattern = (*env)->GetFieldID(env, CGPatternCallbacksFc.clazz, "drawPattern", "I");
+	CGPatternCallbacksFc.releaseInfo = (*env)->GetFieldID(env, CGPatternCallbacksFc.clazz, "releaseInfo", "I");
+	CGPatternCallbacksFc.cached = 1;
+}
+
+CGPatternCallbacks *getCGPatternCallbacksFields(JNIEnv *env, jobject lpObject, CGPatternCallbacks *lpStruct)
+{
+	if (!CGPatternCallbacksFc.cached) cacheCGPatternCallbacksFields(env, lpObject);
+	lpStruct->version = (*env)->GetIntField(env, lpObject, CGPatternCallbacksFc.version);
+	lpStruct->drawPattern = (CGPatternDrawPatternCallback)(*env)->GetIntField(env, lpObject, CGPatternCallbacksFc.drawPattern);
+	lpStruct->releaseInfo = (CGPatternReleaseInfoCallback)(*env)->GetIntField(env, lpObject, CGPatternCallbacksFc.releaseInfo);
+	return lpStruct;
+}
+
+void setCGPatternCallbacksFields(JNIEnv *env, jobject lpObject, CGPatternCallbacks *lpStruct)
+{
+	if (!CGPatternCallbacksFc.cached) cacheCGPatternCallbacksFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, CGPatternCallbacksFc.version, (jint)lpStruct->version);
+	(*env)->SetIntField(env, lpObject, CGPatternCallbacksFc.drawPattern, (jint)lpStruct->drawPattern);
+	(*env)->SetIntField(env, lpObject, CGPatternCallbacksFc.releaseInfo, (jint)lpStruct->releaseInfo);
+}
+#endif
+
 #ifndef NO_CGPoint
 typedef struct CGPoint_FID_CACHE {
 	int cached;

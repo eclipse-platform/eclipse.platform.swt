@@ -1081,6 +1081,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(CGColorSpaceCreateDeviceRGB)
 }
 #endif
 
+#ifndef NO_CGColorSpaceCreatePattern
+JNIEXPORT jint JNICALL OS_NATIVE(CGColorSpaceCreatePattern)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGColorSpaceCreatePattern_FUNC);
+	rc = (jint)CGColorSpaceCreatePattern((CGColorSpaceRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGColorSpaceCreatePattern_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGColorSpaceRelease
 JNIEXPORT void JNICALL OS_NATIVE(CGColorSpaceRelease)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1214,6 +1226,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextDrawImage)
 fail:
 	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, CGContextDrawImage_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextDrawShading
+JNIEXPORT void JNICALL OS_NATIVE(CGContextDrawShading)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextDrawShading_FUNC);
+	CGContextDrawShading((CGContextRef)arg0, (CGShadingRef)arg1);
+	OS_NATIVE_EXIT(env, that, CGContextDrawShading_FUNC);
 }
 #endif
 
@@ -1381,6 +1403,20 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetFillColorSpace)
 }
 #endif
 
+#ifndef NO_CGContextSetFillPattern
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetFillPattern)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloatArray arg2)
+{
+	jfloat *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextSetFillPattern_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	CGContextSetFillPattern((CGContextRef)arg0, (CGPatternRef)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, CGContextSetFillPattern_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextSetFont
 JNIEXPORT void JNICALL OS_NATIVE(CGContextSetFont)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -1526,6 +1562,20 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetStrokeColorSpace)
 	OS_NATIVE_ENTER(env, that, CGContextSetStrokeColorSpace_FUNC);
 	CGContextSetStrokeColorSpace((CGContextRef)arg0, (CGColorSpaceRef)arg1);
 	OS_NATIVE_EXIT(env, that, CGContextSetStrokeColorSpace_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetStrokePattern
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetStrokePattern)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloatArray arg2)
+{
+	jfloat *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, CGContextSetStrokePattern_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	CGContextSetStrokePattern((CGContextRef)arg0, (CGPatternRef)arg1, lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, CGContextSetStrokePattern_FUNC);
 }
 #endif
 
@@ -1752,6 +1802,38 @@ JNIEXPORT void JNICALL OS_NATIVE(CGFontRelease)
 	OS_NATIVE_ENTER(env, that, CGFontRelease_FUNC);
 	CGFontRelease((CGFontRef)arg0);
 	OS_NATIVE_EXIT(env, that, CGFontRelease_FUNC);
+}
+#endif
+
+#ifndef NO_CGFunctionCreate
+JNIEXPORT jint JNICALL OS_NATIVE(CGFunctionCreate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jfloatArray arg2, jint arg3, jfloatArray arg4, jobject arg5)
+{
+	jfloat *lparg2=NULL;
+	jfloat *lparg4=NULL;
+	CGFunctionCallbacks _arg5, *lparg5=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGFunctionCreate_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg4) if ((lparg4 = (*env)->GetFloatArrayElements(env, arg4, NULL)) == NULL) goto fail;
+	if (arg5) if ((lparg5 = getCGFunctionCallbacksFields(env, arg5, &_arg5)) == NULL) goto fail;
+	rc = (jint)CGFunctionCreate((void *)arg0, (size_t)arg1, (const float *)lparg2, (size_t)arg3, (const float *)lparg4, (const CGFunctionCallbacks *)lparg5);
+fail:
+	if (arg5 && lparg5) setCGFunctionCallbacksFields(env, arg5, lparg5);
+	if (arg4 && lparg4) (*env)->ReleaseFloatArrayElements(env, arg4, lparg4, 0);
+	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, CGFunctionCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGFunctionRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGFunctionRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGFunctionRelease_FUNC);
+	CGFunctionRelease((CGFunctionRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGFunctionRelease_FUNC);
 }
 #endif
 
@@ -2032,6 +2114,38 @@ JNIEXPORT void JNICALL OS_NATIVE(CGPathRelease)
 }
 #endif
 
+#ifndef NO_CGPatternCreate
+JNIEXPORT jint JNICALL OS_NATIVE(CGPatternCreate)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jfloatArray arg2, jfloat arg3, jfloat arg4, jint arg5, jint arg6, jobject arg7)
+{
+	CGRect _arg1, *lparg1=NULL;
+	jfloat *lparg2=NULL;
+	CGPatternCallbacks _arg7, *lparg7=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGPatternCreate_FUNC);
+	if (arg1) if ((lparg1 = getCGRectFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetFloatArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	if (arg7) if ((lparg7 = getCGPatternCallbacksFields(env, arg7, &_arg7)) == NULL) goto fail;
+	rc = (jint)CGPatternCreate((void *)arg0, *lparg1, *(CGAffineTransform *)lparg2, arg3, arg4, (CGPatternTiling)arg5, arg6, (const CGPatternCallbacks *)lparg7);
+fail:
+	if (arg7 && lparg7) setCGPatternCallbacksFields(env, arg7, lparg7);
+	if (arg2 && lparg2) (*env)->ReleaseFloatArrayElements(env, arg2, lparg2, 0);
+	if (arg1 && lparg1) setCGRectFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGPatternCreate_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPatternRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGPatternRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGPatternRelease_FUNC);
+	CGPatternRelease((CGPatternRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGPatternRelease_FUNC);
+}
+#endif
+
 #ifndef NO_CGPostKeyboardEvent
 JNIEXPORT jint JNICALL OS_NATIVE(CGPostKeyboardEvent)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
@@ -2057,6 +2171,54 @@ fail:
 	if (arg0 && lparg0) setCGPointFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, CGPostMouseEvent_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_CGShadingCreateAxial
+JNIEXPORT jint JNICALL OS_NATIVE(CGShadingCreateAxial)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jobject arg2, jint arg3, jboolean arg4, jboolean arg5)
+{
+	CGPoint _arg1, *lparg1=NULL;
+	CGPoint _arg2, *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGShadingCreateAxial_FUNC);
+	if (arg1) if ((lparg1 = getCGPointFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = getCGPointFields(env, arg2, &_arg2)) == NULL) goto fail;
+	rc = (jint)CGShadingCreateAxial((CGColorSpaceRef)arg0, *lparg1, *lparg2, (CGFunctionRef)arg3, arg4, arg5);
+fail:
+	if (arg2 && lparg2) setCGPointFields(env, arg2, lparg2);
+	if (arg1 && lparg1) setCGPointFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGShadingCreateAxial_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGShadingCreateRadial
+JNIEXPORT jint JNICALL OS_NATIVE(CGShadingCreateRadial)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jfloat arg2, jobject arg3, jfloat arg4, jint arg5, jboolean arg6, jboolean arg7)
+{
+	CGPoint _arg1, *lparg1=NULL;
+	CGPoint _arg3, *lparg3=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGShadingCreateRadial_FUNC);
+	if (arg1) if ((lparg1 = getCGPointFields(env, arg1, &_arg1)) == NULL) goto fail;
+	if (arg3) if ((lparg3 = getCGPointFields(env, arg3, &_arg3)) == NULL) goto fail;
+	rc = (jint)CGShadingCreateRadial((CGColorSpaceRef)arg0, *lparg1, arg2, *lparg3, arg4, (CGFunctionRef)arg5, arg6, arg7);
+fail:
+	if (arg3 && lparg3) setCGPointFields(env, arg3, lparg3);
+	if (arg1 && lparg1) setCGPointFields(env, arg1, lparg1);
+	OS_NATIVE_EXIT(env, that, CGShadingCreateRadial_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CGShadingRelease
+JNIEXPORT void JNICALL OS_NATIVE(CGShadingRelease)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	OS_NATIVE_ENTER(env, that, CGShadingRelease_FUNC);
+	CGShadingRelease((CGShadingRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGShadingRelease_FUNC);
 }
 #endif
 
@@ -10894,6 +11056,34 @@ fail:
 		if (arg1 && lparg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, JNI_ABORT);
 	}
 	OS_NATIVE_EXIT(env, that, memcpy__I_3CI_FUNC);
+}
+#endif
+
+#ifndef NO_memcpy__I_3FI
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__I_3FI)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1, jint arg2)
+{
+	jfloat *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, memcpy__I_3FI_FUNC);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1) if ((lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL)) == NULL) goto fail;
+	} else
+#endif
+	{
+		if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	}
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+fail:
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		if (arg1 && lparg1) (*env)->ReleasePrimitiveArrayCritical(env, arg1, lparg1, JNI_ABORT);
+	} else
+#endif
+	{
+		if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, JNI_ABORT);
+	}
+	OS_NATIVE_EXIT(env, that, memcpy__I_3FI_FUNC);
 }
 #endif
 

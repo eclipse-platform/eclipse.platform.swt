@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 802;
-int OS_nativeFunctionCallCount[802];
+int OS_nativeFunctionCount = 815;
+int OS_nativeFunctionCallCount[815];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -92,6 +92,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGAffineTransformTranslate",
 	"CGBitmapContextCreate",
 	"CGColorSpaceCreateDeviceRGB",
+	"CGColorSpaceCreatePattern",
 	"CGColorSpaceRelease",
 	"CGContextAddArc",
 	"CGContextAddArcToPoint",
@@ -104,12 +105,14 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextClosePath",
 	"CGContextConcatCTM",
 	"CGContextDrawImage",
+	"CGContextDrawShading",
 	"CGContextEOClip",
 	"CGContextEOFillPath",
 	"CGContextFillPath",
 	"CGContextFillRect",
 	"CGContextFlush",
 	"CGContextGetInterpolationQuality",
+	"CGContextGetPathBoundingBox",
 	"CGContextGetTextPosition",
 	"CGContextMoveToPoint",
 	"CGContextRelease",
@@ -120,6 +123,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextSetAlpha",
 	"CGContextSetFillColor",
 	"CGContextSetFillColorSpace",
+	"CGContextSetFillPattern",
 	"CGContextSetFont",
 	"CGContextSetFontSize",
 	"CGContextSetInterpolationQuality",
@@ -134,6 +138,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextSetShouldSmoothFonts",
 	"CGContextSetStrokeColor",
 	"CGContextSetStrokeColorSpace",
+	"CGContextSetStrokePattern",
 	"CGContextSetTextDrawingMode",
 	"CGContextSetTextMatrix",
 	"CGContextSetTextPosition",
@@ -153,6 +158,8 @@ char * OS_nativeFunctionNames[] = {
 	"CGDisplayPixelsWide",
 	"CGFontCreateWithPlatformFont",
 	"CGFontRelease",
+	"CGFunctionCreate",
+	"CGFunctionRelease",
 	"CGGetDisplaysWithRect",
 	"CGImageCreate",
 	"CGImageGetAlphaInfo",
@@ -176,9 +183,14 @@ char * OS_nativeFunctionNames[] = {
 	"CGPathIsEmpty",
 	"CGPathMoveToPoint",
 	"CGPathRelease",
+	"CGPatternCreate",
+	"CGPatternRelease",
 	"CGPointApplyAffineTransform",
 	"CGPostKeyboardEvent",
 	"CGPostMouseEvent",
+	"CGShadingCreateAxial",
+	"CGShadingCreateRadial",
+	"CGShadingRelease",
 	"CGWarpMouseCursorPosition",
 	"CPSEnableForegroundOperation",
 	"CPSSetProcessName",
@@ -804,6 +816,7 @@ char * OS_nativeFunctionNames[] = {
 	"memcpy__ILorg_eclipse_swt_internal_carbon_Rect_2I",
 	"memcpy__I_3BI",
 	"memcpy__I_3CI",
+	"memcpy__I_3FI",
 	"memcpy__I_3II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II",
