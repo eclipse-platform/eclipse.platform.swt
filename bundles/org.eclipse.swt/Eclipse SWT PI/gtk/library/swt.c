@@ -990,6 +990,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1image_1get_1pix
 	return (jint)gdk_image_get_pixel((GdkImage *)arg0, (gint)arg1, (gint)arg2);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1keyval_1to_1unicode
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gdk_1keyval_1to_1unicode\n")
+
+	return (jint)gdk_keyval_to_unicode(arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pango_1context_1get
 	(JNIEnv *env, jclass that)
 {

@@ -24,6 +24,7 @@ public class OS {
 	public static final int GDK_2BUTTON_PRESS = 0x5;
 	public static final int GDK_Alt_L = 0xffe9;
 	public static final int GDK_Alt_R = 0xffea;
+	public static final int GDK_BackSpace = 0xff08;
 	public static final int GDK_BOTTOM_LEFT_CORNER = 0xc;
 	public static final int GDK_BOTTOM_RIGHT_CORNER = 0xe;
 	public static final int GDK_BOTTOM_SIDE = 0x10;
@@ -40,6 +41,7 @@ public class OS {
 	public static final int GDK_COPY = 0x0;
 	public static final int GDK_CROSS = 0x1e;
 	public static final int GDK_Cancel = 0xff69;
+	public static final int GDK_Clear = 0xff0B;
 	public static final int GDK_Control_L = 0xffe3;
 	public static final int GDK_Control_R = 0xffe4;
 	public static final int GDK_CURRENT_TIME = 0x0;
@@ -107,6 +109,7 @@ public class OS {
 	public static final int GDK_LEFT_SIDE = 0x46;
 	public static final int GDK_LINE_DOUBLE_DASH = 0x2;
 	public static final int GDK_LINE_SOLID = 0x0;
+	public static final int GDK_Linefeed = 0xff0A;
 	public static final int GDK_LSB_FIRST = 0x0;
 	public static final int GDK_Left = 0xff51;
 	public static final int GDK_MOD1_MASK = 0x8;
@@ -118,6 +121,7 @@ public class OS {
 	public static final int GDK_POINTER_MOTION_MASK = 0x4;
 	public static final int GDK_Page_Down = 0xff56;
 	public static final int GDK_Page_Up = 0xff55;
+	public static final int GDK_Pause = 0xff13;
 	public static final int GDK_QUESTION_ARROW = 0x5c;
 	public static final int GDK_RGB_DITHER_NORMAL = 0x1;
 	public static final int GDK_RIGHT_SIDE = 0x60;
@@ -359,6 +363,7 @@ public static final native void gdk_gc_set_subwindow(int gc, int mode);
 public static final native void gdk_gc_set_values(int gc, GdkGCValues values, int values_mask);
 public static final native int gdk_image_get(int window, int x, int y, int width, int height);
 public static final native int gdk_image_get_pixel(int image, int x, int y);
+public static final native int gdk_keyval_to_unicode(int keyval);
 public static final native int gdk_pango_context_get();
 public static final native int gdk_pixbuf_get_from_drawable(int dest, int src, int cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height);
 public static final native int gdk_pixbuf_get_pixels(int pixbuf);

@@ -160,7 +160,6 @@ public class Display extends Device {
 		
 		/* NOT CURRENTLY USED */
 //		{OS.GDK_Delete,		SWT.DELETE},
-		{OS.GDK_Return,		SWT.CR},
 	
 		/* Functions Keys */
 		{OS.GDK_F1,		SWT.F1},
