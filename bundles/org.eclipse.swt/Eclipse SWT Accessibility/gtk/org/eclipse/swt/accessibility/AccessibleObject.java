@@ -15,6 +15,7 @@ import java.util.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.gtk.*;
+import org.eclipse.swt.widgets.*;
 
 public class AccessibleObject {
 	int handle, index = -1, id = ACC.CHILDID_SELF;
@@ -29,6 +30,7 @@ public class AccessibleObject {
 	int textPtr = -1;
 	int valuePtr = -1;
 	static final int NO_ANSWER = -9;
+	static boolean DEBUG = Display.DEBUG;
 
 	AccessibleObject (int type, int widget, Accessible accessible) {
 		this (type, widget, accessible, false);
@@ -40,7 +42,7 @@ public class AccessibleObject {
 		OS.atk_object_initialize (handle, widget);
 		this.accessible = accessible;
 		this.isLightweight = isLightweight;
-		System.out.println("new AccessibleObject: " + handle);
+		if (DEBUG) System.out.println("new AccessibleObject: " + handle);
 	}
 
 	void addChild (AccessibleObject child) {
@@ -582,7 +584,7 @@ public class AccessibleObject {
 	}
 
 	void dispose () {
-		System.out.println("AccessibleObject.dispose: " + handle);
+		if (DEBUG) System.out.println("AccessibleObject.dispose: " + handle);
 		Enumeration elements = children.elements ();
 		while (elements.hasMoreElements ()) {
 			AccessibleObject child = (AccessibleObject) elements.nextElement ();
