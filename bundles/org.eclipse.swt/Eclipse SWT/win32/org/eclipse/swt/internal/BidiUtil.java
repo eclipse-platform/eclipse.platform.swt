@@ -392,6 +392,7 @@ public static boolean isBidiPlatform() {
 public static void removeLanguageListener (int hwnd) {
 	map.remove (new Integer (hwnd));
 	Integer proc = (Integer)oldProcMap.remove (new Integer (hwnd));
+	if (proc == null) return;
 	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, proc.intValue());
 }		
 /**
