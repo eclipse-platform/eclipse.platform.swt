@@ -31,7 +31,7 @@ CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D
 RCFLAGS = -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
 
-SWT_OBJS = gl.obj glu.obj glw.obj structs.obj
+SWT_OBJS = swt.obj gl.obj glu.obj glw.obj structs.obj
 
 all: $(SWT_LIB)
 
