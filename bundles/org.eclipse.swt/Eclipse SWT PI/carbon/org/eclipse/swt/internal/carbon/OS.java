@@ -190,12 +190,13 @@ public class OS {
 	public static final int typeMouseButton= ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int typeQDPoint= ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
 	
+	public static final int kEventParamAEEventID= ('e'<<24) + ('v'<<16) + ('t'<<8) + 'i';
+	
 	public static final int kEventParamWindowDefPart= ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
 	public static final int kEventParamControlRef= ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	public static final int kEventParamMouseButton= ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int kEventParamMouseLocation= ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
-
-	public static final int kEventTextInputUnicodeForKeyEvent = 2;
+	public static final int kEventParamMouseChord= ('c'<<24) + ('h'<<16) + ('o'<<8) + 'r';
 
 	public static final int kEventParamTextInputSendText= ('t'<<24) + ('s'<<16) + ('t'<<8) + 'x';
 
@@ -237,6 +238,8 @@ public class OS {
 		
 	public static final int kEventParamDirectObject	= ('-'<<24) + ('-'<<16) + ('-'<<8) + '-'; /* type varies depending on event*/
 	public static final int kEventParamAttributes	= ('a'<<24) + ('t'<<16) + ('t'<<8) + 'r'; /* typeUInt32*/
+
+	public static final int kEventTextInputUnicodeForKeyEvent = 2;
 
 	public static native int CallNextEventHandler(int nextHandler, int eventRefHandle); 
 	
