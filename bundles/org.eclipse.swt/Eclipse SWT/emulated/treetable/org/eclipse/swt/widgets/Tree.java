@@ -1023,7 +1023,7 @@ void mouseDown(Event event) {
 	if (hitItem == null) {
 		return;
 	}
-	if (!hasFocus()) forceFocus();
+	if (!isFocusControl()) forceFocus();
 	switch (itemAction = itemAction(hitItem, event.x, event.y)) {
 		case ActionExpandCollapse:
 			if (event.button != 1) return;
