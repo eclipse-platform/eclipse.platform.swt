@@ -3798,8 +3798,8 @@ public static final void gtk_file_chooser_add_filter(int /*long*/ chooser, int /
 		lock.unlock();
 	}
 }
-public static final native int /*long*/ _gtk_file_chooser_dialog_new(byte[] title, int /*long*/ parent, int /*long*/ action, int /*long*/ first_button_text, int /*long*/ first_button_id, int /*long*/ second_button_text, int /*long*/ second_button_id, int /*long*/ terminator);
-public static final int /*long*/ gtk_file_chooser_dialog_new(byte[] title, int /*long*/ parent, int /*long*/ action, int /*long*/ first_button_text, int /*long*/ first_button_id, int /*long*/ second_button_text, int /*long*/ second_button_id, int /*long*/ terminator) {
+public static final native int /*long*/ _gtk_file_chooser_dialog_new(byte[] title, int /*long*/ parent, int action, int /*long*/ first_button_text, int /*long*/ first_button_id, int /*long*/ second_button_text, int /*long*/ second_button_id, int /*long*/ terminator);
+public static final int /*long*/ gtk_file_chooser_dialog_new(byte[] title, int /*long*/ parent, int action, int /*long*/ first_button_text, int /*long*/ first_button_id, int /*long*/ second_button_text, int /*long*/ second_button_id, int /*long*/ terminator) {
 	lock.lock();
 	try {
 		return _gtk_file_chooser_dialog_new(title, parent, action, first_button_text, first_button_id, second_button_text, second_button_id, terminator);
