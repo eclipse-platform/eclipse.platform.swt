@@ -87,6 +87,7 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	if (isImage && image != null) {
 		GCData data = new GCData ();
 		data.paintEvent = theEvent;
+		data.visibleRgn = visibleRgn;
 		GC gc = GC.carbon_new (this, data);
 		gc.drawImage (image, 0, 0);
 		gc.dispose ();
