@@ -222,7 +222,7 @@ public ScrollBar getVerticalBar () {
 
 int hScrollBarWidth() {
 	if (horizontalBar==null) return 0;
-	int hBarHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR(scrolledHandle);
+	int /*long*/ hBarHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR(scrolledHandle);
 	if (hBarHandle==0) return 0;
 	GtkRequisition requisition = new GtkRequisition();
 	OS.gtk_widget_size_request(hBarHandle, requisition);
@@ -291,7 +291,7 @@ int /*long*/ topHandle () {
 
 int vScrollBarWidth() {
 	if (verticalBar == null) return 0;
-	int vBarHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR(scrolledHandle);
+	int /*long*/ vBarHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR(scrolledHandle);
 	if (vBarHandle == 0) return 0;
 	GtkRequisition requisition = new GtkRequisition();
 	OS.gtk_widget_size_request (vBarHandle, requisition);

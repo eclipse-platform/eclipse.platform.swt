@@ -578,7 +578,7 @@ synchronized void createDisplay (DeviceData data) {
 	}
 	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
 	OS.gdk_rgb_init ();
-	int ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
+	int /*long*/ ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
 		byte [] buffer = new byte [length];

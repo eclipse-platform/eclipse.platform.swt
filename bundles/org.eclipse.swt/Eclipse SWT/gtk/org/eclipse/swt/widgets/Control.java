@@ -2690,7 +2690,7 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 			XWindowChanges changes = new XWindowChanges ();
 			changes.sibling = OS.gdk_x11_drawable_get_xid (siblingWindow);
 			changes.stack_mode = above ? OS.Above : OS.Below;
-			int xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+			int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 			int xWindow = OS.gdk_x11_drawable_get_xid (window);
 			int xScreen = OS.XDefaultScreen (xDisplay);
 			int flags = OS.CWStackMode | OS.CWSibling;

@@ -37,7 +37,7 @@ import org.eclipse.swt.internal.gtk.*;
 public class MessageBox extends Dialog {
 
 	String message = "";
-	int handle;
+	int /*long*/ handle;
 /**
  * Constructs a new instance of this class given only its
  * parent.

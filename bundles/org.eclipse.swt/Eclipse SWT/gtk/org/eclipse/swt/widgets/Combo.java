@@ -360,7 +360,7 @@ void createHandle (int index) {
 	* to hook events.  The fix is to find the first child that is
 	* not the entry or list and assume this is the arrow handle.
 	*/
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list != 0) {
 		int i = 0, count = OS.g_list_length (list);
 		while (i<count) {
@@ -1079,7 +1079,7 @@ void setFontDescription (int font) {
 	if (entryHandle != 0) OS.gtk_widget_modify_font (entryHandle, font);
 	if (listHandle != 0) {
 		OS.gtk_widget_modify_font (listHandle, font);
-		int itemsList = OS.gtk_container_get_children (listHandle);
+		int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
 		if (itemsList != 0) {
 			int count = OS.g_list_length (itemsList);
 			for (int i=count - 1; i>=0; i--) {
@@ -1096,7 +1096,7 @@ void setForegroundColor (GdkColor color) {
 	if (entryHandle != 0) OS.gtk_widget_modify_text (entryHandle, 0, color);
 	if (listHandle != 0) {
 		OS.gtk_widget_modify_text (listHandle, 0, color);
-		int itemsList = OS.gtk_container_get_children (listHandle);
+		int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
 		if (itemsList != 0) {
 			int count = OS.g_list_length (itemsList);
 			for (int i=count - 1; i>=0; i--) {
@@ -1164,7 +1164,7 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 	int selectedIndex = keepSelection ? getSelectionIndex() : -1;
 	ignoreSelect = true;
 	if (items.length == 0) {
-		int itemsList = OS.gtk_container_get_children (listHandle);
+		int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
 		if (itemsList != 0) {
 			int count = OS.g_list_length (itemsList);
 			for (int i=count - 1; i>=0; i--) {
@@ -1192,7 +1192,7 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 			}
 			OS.g_list_free (glist);
 		}
-		int itemsList = OS.gtk_container_get_children (listHandle);
+		int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
 		if (itemsList != 0) {
 			int /*long*/ font = getFontDescription ();
 			GdkColor color = getForegroundColor ();

@@ -358,7 +358,7 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget();
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int count = OS.g_list_length (list);
 	if (imSeparator != 0) count--;
@@ -382,7 +382,7 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -409,7 +409,7 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget();
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return new MenuItem [0];
 	int count = OS.g_list_length (list);
 	if (imSeparator != 0) count--;

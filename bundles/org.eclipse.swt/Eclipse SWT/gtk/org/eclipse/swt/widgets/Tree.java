@@ -244,7 +244,7 @@ void createHandle (int index) {
 	OS.gtk_widget_show (handle);
 
 	int mode = (style & SWT.MULTI) != 0 ? OS.GTK_SELECTION_MULTIPLE : OS.GTK_SELECTION_BROWSE;
-	int selectionHandle = OS.gtk_tree_view_get_selection (handle);
+	int /*long*/ selectionHandle = OS.gtk_tree_view_get_selection (handle);
 	OS.gtk_tree_selection_set_mode (selectionHandle, mode);
 	OS.gtk_tree_view_set_headers_visible (handle, false);	
 	int hsp = (style & SWT.H_SCROLL) != 0 ? OS.GTK_POLICY_AUTOMATIC : OS.GTK_POLICY_NEVER;
@@ -306,7 +306,7 @@ void deregister () {
  */
 public void deselectAll() {
 	checkWidget();
-	int selection = OS.gtk_tree_view_get_selection (handle);
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_unselect_all (selection);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -531,14 +531,14 @@ public TreeItem[] getSelection () {
 	if ((style & SWT.MULTI) != 0) {
 		display.treeSelectionLength  = 0;
 		display.treeSelection = new int [items.length];
-		int selection = OS.gtk_tree_view_get_selection (handle);
+		int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 		OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
 		TreeItem [] result = new TreeItem [display.treeSelectionLength];
 		for (int i=0; i<result.length; i++) result [i] = items [display.treeSelection [i]];
 		return result;
 	} else {
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
-		int selection = OS.gtk_tree_view_get_selection (handle);
+		int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 		boolean hasSelection = OS.gtk_tree_selection_get_selected (selection, null, iter);
 		TreeItem [] result;
 		if (hasSelection) {
@@ -567,7 +567,7 @@ public int getSelectionCount () {
 	checkWidget();
 	display.treeSelectionLength = 0;
 	display.treeSelection = null;
-	int selection = OS.gtk_tree_view_get_selection (handle);
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.gtk_tree_selection_selected_foreach (selection, display.treeSelectionProc, handle);
 	return display.treeSelectionLength;
 }
@@ -716,7 +716,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 		int /*long*/ [] path = new int /*long*/ [1];
 		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
 			if (path [0] != 0) {
-				int selection = OS.gtk_tree_view_get_selection (handle);
+				int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 				if (OS.gtk_tree_selection_path_is_selected (selection, path [0])) result = 1;
 				OS.gtk_tree_path_free (path [0]);
 			}
@@ -734,7 +734,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 		int /*long*/ [] path = new int /*long*/ [1];
 		if (OS.gtk_tree_view_get_path_at_pos (handle, (int)gdkEvent.x, (int)gdkEvent.y, path, null, null, null)) {
 			if (path [0] != 0) {
-				int selection = OS.gtk_tree_view_get_selection (handle);
+				int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 				OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 				OS.gtk_tree_view_set_cursor (handle, path [0], 0, false);
 				OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -748,7 +748,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	
 void hookEvents () {
 	super.hookEvents ();
-	int selection = OS.gtk_tree_view_get_selection(handle);
+	int /*long*/ selection = OS.gtk_tree_view_get_selection(handle);
 	OS.g_signal_connect_after (selection, OS.changed, display.windowProc2, CHANGED);
 	OS.g_signal_connect (handle, OS.row_activated, display.windowProc4, ROW_ACTIVATED);
 	OS.g_signal_connect (handle, OS.test_expand_row, display.windowProc4, TEST_EXPAND_ROW);
@@ -926,7 +926,7 @@ public void setInsertMark (TreeItem item, boolean before) {
 public void selectAll () {
 	checkWidget();
 	if ((style & SWT.SINGLE) != 0) return;
-	int selection = OS.gtk_tree_view_get_selection (handle);
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_select_all (OS.gtk_tree_view_get_selection (handle));
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -977,7 +977,7 @@ void setForegroundColor (GdkColor color) {
 public void setSelection (TreeItem [] items) {
 	checkWidget();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int selection = OS.gtk_tree_view_get_selection (handle);
+	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_selection_unselect_all (selection);
 	boolean first = true;

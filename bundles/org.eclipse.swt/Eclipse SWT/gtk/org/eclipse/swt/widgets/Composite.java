@@ -251,11 +251,11 @@ void enableWidget (boolean enabled) {
 	//NOT DONE - take into account current enabled scroll bar state
 	if (scrolledHandle != 0) {
 		if (horizontalBar != null) {
-			int barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
+			int /*long*/ barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
 			OS.gtk_widget_set_sensitive (barHandle, enabled);
 		}
 		if (verticalBar != null) {
-			int barHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
+			int /*long*/ barHandle = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR (scrolledHandle);
 			OS.gtk_widget_set_sensitive (barHandle, enabled);
 		}
 	}
@@ -337,7 +337,7 @@ int getChildrenCount () {
 	* NOTE: The current implementation will count
 	* non-registered children.
 	*/
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int count = OS.g_list_length (list);
 	OS.g_list_free (list);

@@ -416,7 +416,7 @@ void bringToTop (boolean force) {
 	*/
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	if ((style & SWT.ON_TOP) != 0 && OS.GDK_WINDOWING_X11 ()) {
-		int xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
+		int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (window);
 		int xid = OS.gdk_x11_drawable_get_xid (window);
 		OS.gdk_error_trap_push ();
 		OS.XSetInputFocus (xDisplay, xid, OS.RevertToParent, OS.gtk_get_current_event_time ());

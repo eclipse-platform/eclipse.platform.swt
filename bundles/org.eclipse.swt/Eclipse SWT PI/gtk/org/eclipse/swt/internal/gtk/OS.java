@@ -369,8 +369,8 @@ public static final synchronized native int GTK_WIDGET_WIDTH(int /*long*/ widget
 public static final synchronized native int /*long*/ GTK_WIDGET_WINDOW(int /*long*/ widget);
 public static final synchronized native int GTK_WIDGET_X(int /*long*/ widget);
 public static final synchronized native int GTK_WIDGET_Y(int /*long*/ widget);
-public static final synchronized native int GTK_SCROLLED_WINDOW_HSCROLLBAR(int /*long*/ widget);
-public static final synchronized native int GTK_SCROLLED_WINDOW_VSCROLLBAR(int /*long*/ widget);
+public static final synchronized native int /*long*/ GTK_SCROLLED_WINDOW_HSCROLLBAR(int /*long*/ widget);
+public static final synchronized native int /*long*/ GTK_SCROLLED_WINDOW_VSCROLLBAR(int /*long*/ widget);
 public static final synchronized native int GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(int /*long*/ widget);
 public static final synchronized native void GTK_ACCEL_LABEL_SET_ACCEL_STRING(int /*long*/ acce_label, int /*long*/ string);
 public static final synchronized native int /*long*/ GTK_ACCEL_LABEL_GET_ACCEL_STRING(int /*long*/ acce_label);
@@ -387,7 +387,7 @@ public static final native boolean GDK_WINDOWING_X11();
 public static final synchronized native int XDefaultScreen(int /*long*/ display);
 public static final synchronized native int XReconfigureWMWindow(int /*long*/ display, int window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XSetInputFocus(int /*long*/ display, int window, int revert, int time);
-public static final synchronized native int gdk_x11_drawable_get_xdisplay(int /*long*/ drawable);
+public static final synchronized native int /*long*/ gdk_x11_drawable_get_xdisplay(int /*long*/ drawable);
 public static final synchronized native int gdk_x11_drawable_get_xid(int /*long*/ drawable);
 
 /** Native methods */
@@ -609,9 +609,9 @@ public static final synchronized native int /*long*/ gtk_cell_renderer_text_new(
 public static final synchronized native int /*long*/ gtk_cell_renderer_toggle_new();
 public static final synchronized native int /*long*/ gtk_check_button_new();
 public static final synchronized native boolean gtk_check_menu_item_get_active(int /*long*/ wid);
-public static final synchronized native int gtk_check_menu_item_new_with_label(byte[] label);
+public static final synchronized native int /*long*/ gtk_check_menu_item_new_with_label(byte[] label);
 public static final synchronized native void gtk_check_menu_item_set_active(int /*long*/ wid, boolean active);
-public static final synchronized native int gtk_check_version(int required_major, int required_minor, int required_micro);
+public static final synchronized native int /*long*/ gtk_check_version(int required_major, int required_minor, int required_micro);
 public static final synchronized native void gtk_clipboard_clear(int /*long*/ clipboard);
 public static final synchronized native int /*long*/ gtk_clipboard_get(int /*long*/ selection);
 public static final synchronized native boolean gtk_clipboard_set_with_data(int /*long*/ clipboard, int /*long*/ target, int n_targets, int /*long*/ get_func, int /*long*/ clear_func, int /*long*/ user_data);
@@ -625,7 +625,7 @@ public static final synchronized native void gtk_combo_set_case_sensitive(int /*
 public static final synchronized native void gtk_combo_set_popdown_strings(int /*long*/ combo, int /*long*/ strings);
 public static final synchronized native void gtk_container_add(int /*long*/ container, int /*long*/ widget);
 public static final synchronized native int gtk_container_get_border_width(int /*long*/ container);
-public static final synchronized native int gtk_container_get_children(int /*long*/ container);
+public static final synchronized native int /*long*/ gtk_container_get_children(int /*long*/ container);
 public static final synchronized native void gtk_container_remove(int /*long*/ container, int /*long*/ widget);
 public static final synchronized native void gtk_container_resize_children(int /*long*/ container);
 public static final synchronized native void gtk_container_set_border_width(int /*long*/ container, int border_width);
@@ -742,7 +742,7 @@ public static final synchronized native void gtk_menu_popup(int /*long*/ menu, i
 public static final synchronized native void gtk_menu_shell_deactivate(int /*long*/ menu_shell);
 public static final synchronized native void gtk_menu_shell_insert(int /*long*/ menu_shell, int /*long*/ child, int position);
 public static final synchronized native void gtk_menu_shell_select_item(int /*long*/ menu_shell, int /*long*/ menu_item);
-public static final synchronized native int gtk_message_dialog_new(int /*long*/ parent, int flags, int type, int buttons, String message_format);
+public static final synchronized native int /*long*/ gtk_message_dialog_new(int /*long*/ parent, int flags, int type, int buttons, String message_format);
 public static final synchronized native void gtk_misc_set_alignment(int /*long*/ misc, float xalign, float yalign);
 public static final synchronized native int gtk_notebook_get_current_page(int /*long*/ notebook);
 public static final synchronized native boolean gtk_notebook_get_scrollable(int /*long*/ notebook);
@@ -917,7 +917,7 @@ public static final synchronized native void gtk_tree_view_get_cursor(int /*long
 public static final synchronized native boolean gtk_tree_view_get_headers_visible(int /*long*/ tree_view);
 public static final synchronized native boolean gtk_tree_view_get_path_at_pos(int /*long*/ tree_view, int x, int y, int /*long*/[] path, int /*long*/[] column, int[] cell_x, int[] cell_y);
 public static final synchronized native boolean gtk_tree_view_get_rules_hint(int /*long*/ tree_view);
-public static final synchronized native int gtk_tree_view_get_selection(int /*long*/ tree_view);
+public static final synchronized native int /*long*/ gtk_tree_view_get_selection(int /*long*/ tree_view);
 public static final synchronized native void gtk_tree_view_get_visible_rect(int /*long*/ tree_view, GdkRectangle visible_rect);
 public static final synchronized native int gtk_tree_view_insert_column(int /*long*/ tree_view, int /*long*/ column, int position);
 public static final synchronized native int /*long*/ gtk_tree_view_new_with_model(int /*long*/ model);
@@ -1057,7 +1057,7 @@ public static final synchronized native void pango_font_description_set_size(int
 public static final synchronized native void pango_font_description_set_stretch(int /*long*/ desc, int stretch);
 public static final synchronized native void pango_font_description_set_style(int /*long*/ desc, int weight);
 public static final synchronized native void pango_font_description_set_weight(int /*long*/ desc, int weight);
-public static final synchronized native int pango_font_description_to_string(int /*long*/ desc);
+public static final synchronized native int /*long*/ pango_font_description_to_string(int /*long*/ desc);
 public static final synchronized native int /*long*/ pango_font_face_describe(int /*long*/ face);
 public static final synchronized native void pango_font_family_list_faces(int /*long*/ family, int /*long*/[] faces, int[] n_faces);
 public static final synchronized native int pango_font_metrics_get_approximate_char_width(int /*long*/ metrics);

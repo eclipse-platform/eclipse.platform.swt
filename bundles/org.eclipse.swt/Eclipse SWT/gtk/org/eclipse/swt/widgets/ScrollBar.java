@@ -155,7 +155,7 @@ static int checkStyle (int style) {
  */
 public boolean getEnabled () {
 	checkWidget ();
-	int barHandle;
+	int /*long*/ barHandle;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (parent.scrolledHandle);
 	} else {
@@ -284,7 +284,7 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget ();
-	int barHandle = 0;
+	int /*long*/ barHandle = 0;
 	int /*long*/ scrolledHandle = parent.scrolledHandle;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (scrolledHandle);
@@ -446,7 +446,7 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setEnabled (boolean enabled) {
 	checkWidget ();
-	int barHandle;
+	int /*long*/ barHandle;
 	if ((style & SWT.HORIZONTAL) != 0) {
 		barHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR (parent.scrolledHandle);
 	} else {

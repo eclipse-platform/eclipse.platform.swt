@@ -189,7 +189,7 @@ public FontData[] getFontData() {
 	if (pangoStyle == OS.PANGO_STYLE_ITALIC) style |= SWT.ITALIC;
 	if (pangoStyle == OS.PANGO_STYLE_OBLIQUE) style |= SWT.ROMAN;
 	if (pangoWeight >= OS.PANGO_WEIGHT_BOLD) style |= SWT.BOLD;
-	int fontString = OS.pango_font_description_to_string (handle);
+	int /*long*/ fontString = OS.pango_font_description_to_string (handle);
 	length = OS.strlen (fontString);
 	buffer = new byte [length + 1];
 	OS.memmove (buffer, fontString, length);	
