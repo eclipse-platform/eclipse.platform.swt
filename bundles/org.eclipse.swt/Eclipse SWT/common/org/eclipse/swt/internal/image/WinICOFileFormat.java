@@ -137,7 +137,8 @@ int[][] loadIconHeaders(int numIcons) {
 byte[] loadInfoHeader(int[] iconHeader) {
 	int width = iconHeader[0];
 	int height = iconHeader[1];
-	int numColors = iconHeader[2];
+	int numColors = iconHeader[2]; // the number of colors is in the low byte, but the high byte must be 0
+	if (numColors == 0) numColors = 256; // this is specified: '00' represents '256' (0x100) colors
 	if ((numColors != 2) && (numColors != 8) && (numColors != 16) &&
 		(numColors != 32) && (numColors != 256))
 		SWT.error(SWT.ERROR_INVALID_IMAGE);
