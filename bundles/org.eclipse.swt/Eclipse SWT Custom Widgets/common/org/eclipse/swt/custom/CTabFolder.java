@@ -434,8 +434,8 @@ public void addSelectionListener(SelectionListener listener) {
 }
 void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 	// Don't perform anti-aliasing on Mac because the platform
-	// already does it.
-	if ("carbon".equals(SWT.getPlatform())) return;
+	// already does it.  The simple style also does not require anti-aliasing.
+	if (simple || "carbon".equals(SWT.getPlatform())) return;
 	if (outerRGB != null) {
 		int index = 0;
 		boolean left = true;
@@ -1064,7 +1064,7 @@ void drawTabArea(Event event) {
 		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
-		shape[index++] = y+height+highlight_header+1;
+		shape[index++] = y+height+highlight_header;
 		for (int i = 0; i < left.length/2; i++) {
 			shape[index++] = x+left[2*i];
 			shape[index++] = y+left[2*i+1];
@@ -1074,7 +1074,7 @@ void drawTabArea(Event event) {
 			shape[index++] = y+right[2*i+1];
 		}
 		shape[index++] = x+width;
-		shape[index++] = y+height+highlight_header+1;
+		shape[index++] = y+height+highlight_header;
 	}
 	// Fill in background
 	drawBackground(gc, shape, single);
