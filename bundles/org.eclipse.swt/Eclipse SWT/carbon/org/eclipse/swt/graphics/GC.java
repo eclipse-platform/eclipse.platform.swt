@@ -345,15 +345,6 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
 }
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	/* AW
-	int[] width = new int[1];
-	int[] height = new int[1];
-	int[] depth = new int[1];
-	int[] unused = new int[1];
- 	OS.XGetGeometry(data.display, srcImage.pixmap, unused, unused, unused, width, height, unused, depth);
- 	int imgWidth = width[0];
- 	int imgHeight = height[0];
-	*/
 	int depth = OS.GetPixDepth(srcImage.pixmap);
 	MacRect bounds= new MacRect();
 	OS.GetPixBounds(srcImage.pixmap, bounds.getData());
@@ -510,72 +501,8 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 	System.out.println("GC.drawImageAlpha: nyi");
 }
 void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int depth) {
-	/* AW
-	int xDisplay = data.display;
-	int xDrawable = data.drawable;
-	int colorPixmap = srcImage.pixmap;
-	*/
 	/* Generate the mask if necessary. */
 	if (srcImage.transparentPixel != -1) srcImage.createMask();
-	/* AW
-	int maskPixmap = srcImage.mask;
-	int foreground = 0x00000000;
-	if (!(simple || (srcWidth == destWidth && srcHeight == destHeight))) {
-	*/
-		/* Stretch the color and mask*/
-		/* AW
-		int xImagePtr = scalePixmap(xDisplay, colorPixmap, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false, false);
-		int xMaskPtr = scalePixmap(xDisplay, maskPixmap, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false, false);
-		*/
-		
-		/* Create color scaled pixmaps */
-		/* AW
-		colorPixmap = OS.XCreatePixmap(xDisplay, xDrawable, destWidth, destHeight, depth);
-		int tempGC = OS.XCreateGC(xDisplay, colorPixmap, 0, null);
-		OS.XPutImage(xDisplay, colorPixmap, tempGC, xImagePtr, 0, 0, 0, 0, destWidth, destHeight);
-		OS.XDestroyImage(xImagePtr);
-		OS.XFreeGC(xDisplay, tempGC);
-		*/
-
-		/* Create mask scaled pixmaps */
-		/* AW
-		maskPixmap = OS.XCreatePixmap(xDisplay, xDrawable, destWidth, destHeight, 1);
-		tempGC = OS.XCreateGC(xDisplay, maskPixmap, 0, null);
-		OS.XPutImage(xDisplay, maskPixmap, tempGC, xMaskPtr, 0, 0, 0, 0, destWidth, destHeight);
-		OS.XDestroyImage(xMaskPtr);
-		OS.XFreeGC(xDisplay, tempGC);
-		*/
-		
-		/* Change the source rectangle */
-		/* AW
-		srcX = srcY = 0;
-		srcWidth = destWidth;
-		srcHeight = destHeight;
-
-		foreground = ~foreground;
-		*/
-	/* AW
-	}
-	*/
-	
-	/* Do the blts */
-	/* AW
-	XGCValues values = new XGCValues();
-	OS.XGetGCValues(xDisplay, handle, OS.GCForeground | OS. GCBackground | OS.GCFunction, values);
-	OS.XSetFunction(xDisplay, handle, OS.GXxor);
-	OS.XCopyArea(xDisplay, colorPixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY);
-	OS.XSetForeground(xDisplay, handle, foreground);
-	OS.XSetBackground(xDisplay, handle, ~foreground);
-	OS.XSetFunction(xDisplay, handle, OS.GXand);
-	OS.XCopyPlane(xDisplay, maskPixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY, 1);
-	OS.XSetFunction(xDisplay, handle, OS.GXxor);
-	OS.XCopyArea(xDisplay, colorPixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY);
-	OS.XSetForeground(xDisplay, handle, values.foreground);
-	OS.XSetBackground(xDisplay, handle, values.background);
-	OS.XSetFunction(xDisplay, handle, values.function);
-	*/
-	
-	// AW
 	try {
 		if (focus(true, null)) {
 			int srcBits= OS.getBitMapForCopyBits(srcImage.pixmap);
@@ -592,37 +519,11 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	} finally {
 		unfocus(true);
 	}
-	// AW
-
-	/* Destroy scaled pixmaps */
-	/* AW
-	if (srcImage.pixmap != colorPixmap) OS.XFreePixmap(xDisplay, colorPixmap);
-	if (srcImage.mask != maskPixmap) OS.XFreePixmap(xDisplay, maskPixmap);
-	*/
 	/* Destroy the image mask if the there is a GC created on the image */
 	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 	
 }
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight, int depth) {
-	/* AW
-	int xDisplay = data.display;
-	int xDrawable = data.drawable;
-	*/
-	/* Simple case: no stretching */
-	/* AW
-	if ((srcWidth == destWidth) && (srcHeight == destHeight)) {
-		OS.XCopyArea(xDisplay, srcImage.pixmap, xDrawable, handle, srcX, srcY, srcWidth, srcHeight, destX, destY);
-		return;
-	}
-	*/
-	/* Streching case */
-	/* AW
-	int xImagePtr = scalePixmap(xDisplay, srcImage.pixmap, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false, false);
-	OS.XPutImage(xDisplay, xDrawable, handle, xImagePtr, 0, 0, destX, destY, destWidth, destHeight);
-	OS.XDestroyImage(xImagePtr);
-	*/
-
-	// AW
 	try {
 		if (focus(true, null)) {
 			int srcBits= OS.getBitMapForCopyBits(srcImage.pixmap);
@@ -1727,7 +1628,9 @@ public FontMetrics getFontMetrics() {
 		installFont();
 		short[] fontInfo= new short[4];
 		OS.GetFontInfo(fontInfo);	// FontInfo
-		return FontMetrics.carbon_new(fontInfo[0], fontInfo[1], fontInfo[2], fontInfo[3], fontInfo[0]+fontInfo[1]);
+		String s= "abcdefghijklmnopqrstuvwxyz";
+		int width= OS.TextWidth(s, data.font.fID, data.font.fSize, data.font.fFace) / 26;
+		return FontMetrics.carbon_new(fontInfo[0], fontInfo[1], width, fontInfo[3], fontInfo[0]+fontInfo[1]);
 	} finally {
 		unfocus(false);	
 	}
