@@ -176,6 +176,7 @@ String getNameText () {
 }
 
 public Decorations getParent () {
+	checkWidget();
 	return parent;
 }
 
@@ -283,6 +284,7 @@ public void removeMenuListener (MenuListener listener) {
 
 public void setDefaultItem (MenuItem item) {
 	checkWidget();
+	if (item != null && item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	defaultItem = item;
 }
 

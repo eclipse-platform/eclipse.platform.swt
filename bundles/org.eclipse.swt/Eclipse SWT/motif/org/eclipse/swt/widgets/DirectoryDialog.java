@@ -86,7 +86,7 @@ int activate (int widget, int client, int call) {
 	return 0;
 }
 /**
- * Returns the path which the receiver will use to filter
+ * Returns the path which the dialog will use to filter
  * the directories it shows.
  *
  * @return the filter path
@@ -95,9 +95,9 @@ public String getFilterPath () {
 	return filterPath;
 }
 /**
- * Returns the receiver's message, which is a description of
+ * Returns the dialog's message, which is a description of
  * the purpose for which it was opened. This message will be
- * visible on the receiver while it is open.
+ * visible on the dialog while it is open.
  *
  * @return the message
  */
@@ -105,14 +105,15 @@ public String getMessage () {
 	return message;
 }
 /**
- * Makes the receiver visible and brings it to the front
+ * Makes the dialog visible and brings it to the front
  * of the display.
  *
- * @return a string describing the absolute path of the selected directory
+ * @return a string describing the absolute path of the selected directory,
+ *         or null if the dialog was cancelled or an error occurred
  *
  * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
  * </ul>
  */
 public String open () {
@@ -289,7 +290,7 @@ public String open () {
 	return directoryPath;
 }
 /**
- * Sets the path which the receiver will use to filter
+ * Sets the path which the dialog will use to filter
  * the directories it shows to the argument, which may be
  * null.
  *
@@ -299,9 +300,9 @@ public void setFilterPath (String string) {
 	filterPath = string;
 }
 /**
- * Sets the receiver's message, which is a description of
+ * Sets the dialog's message, which is a description of
  * the purpose for which it was opened. This message will be
- * visible on the receiver while it is open.
+ * visible on the dialog while it is open.
  *
  * @param string the message
  */

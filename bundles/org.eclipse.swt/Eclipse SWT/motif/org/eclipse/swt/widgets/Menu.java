@@ -609,6 +609,9 @@ void sendHelpEvent (int callData) {
  * 
  * @param item the default menu item or null
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu item has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -616,6 +619,7 @@ void sendHelpEvent (int callData) {
  */
 public void setDefaultItem (MenuItem item) {
 	checkWidget();
+	if (item != null && item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	defaultItem = item;
 }
 /**

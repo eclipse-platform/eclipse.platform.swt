@@ -645,7 +645,6 @@ protected boolean hasFocus () {
  * </ul>
  */
 public int indexOf (String string) {
-	checkWidget ();
 	return indexOf (string, 0);
 }
 
@@ -802,7 +801,6 @@ public void remove (int start, int end) {
  * </ul>
  */
 public void remove (String string) {
-	checkWidget ();
 	int index = indexOf (string, 0);
 	if (index == -1) error (SWT.ERROR_INVALID_ARGUMENT);
 	remove (index);

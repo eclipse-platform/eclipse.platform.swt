@@ -348,6 +348,7 @@ public void moveAbove (Control control) {
 		OS.PtWindowToFront (topHandle1);
 		return;
 	}
+	if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int topHandle2 = control.topHandle ();
 	OS.PtWidgetInsert (topHandle1, topHandle2, 0);
 }
@@ -360,13 +361,13 @@ public void moveBelow (Control control) {
 		OS.PtWindowToBack (topHandle1);
 		return;
 	}
+	if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int topHandle2 = control.topHandle ();
 	OS.PtWidgetInsert (topHandle1, topHandle2, 1);
 }
 
 public void pack () {
 	checkWidget();
-
 	pack (true);
 }
 
@@ -812,7 +813,6 @@ public void setBounds (int x, int y, int width, int height) {
 }
 
 public void setBounds (Rectangle rect) {
-	checkWidget();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
@@ -864,7 +864,6 @@ public boolean setFocus () {
 }
 
 void sendPaintEvent (int damage) {
-	
 	if (!hooks(SWT.Paint)) return;
 	
 	/* Translate the damage to widget coordinates */

@@ -634,7 +634,6 @@ public int getTopIndex () {
  * </ul>
  */
 public int indexOf (String string) {
-	checkWidget ();
 	return indexOf (string, 0);
 }
 

@@ -467,7 +467,6 @@ public boolean forceFocus () {
  */
 public Color getBackground () {
 	checkWidget();
-
 	return Color.motif_new (getDisplay (), getXColor (getBackgroundPixel ()));
 }
 int getBackgroundPixel () {
@@ -971,7 +970,6 @@ public boolean isEnabled () {
  */
 public boolean isFocusControl () {
 	checkWidget();
-
 	return hasFocus ();
 }
 /**
@@ -1036,6 +1034,9 @@ boolean mnemonicMatch (char key) {
  *
  * @param the sibling control (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1054,6 +1055,9 @@ public void moveAbove (Control control) {
  *
  * @param the sibling control (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1751,7 +1755,6 @@ void sendMouseEvent (int type, int button, int mask, XWindowEvent xEvent) {
  */
 public void setBackground (Color color) {
 	checkWidget();
-
 	if (color == null) {
 		setBackgroundPixel (defaultBackground ());
 	} else {
@@ -2315,6 +2318,7 @@ void setZOrder (Control control, boolean above) {
 		}
 		return;
 	}
+	if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int topHandle2 = control.topHandle ();
 	if (display != OS.XtDisplay (topHandle2)) return;
 	if (!OS.XtIsRealized (topHandle2)) {

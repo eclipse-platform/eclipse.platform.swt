@@ -145,7 +145,7 @@ public ImageData[] load(String filename) {
 		SWT.error(SWT.ERROR_IO, e);
 	} finally {
 		try {
-			stream.close();
+			if (stream != null) stream.close();
 		} catch (IOException e) {
 			// Ignore error
 		}

@@ -1061,6 +1061,9 @@ boolean mnemonicMatch (char key) {
  *
  * @param the sibling control (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1070,6 +1073,7 @@ public void moveAbove (Control control) {
 	checkWidget ();
 	int hwndAfter = OS.HWND_TOP;
 	if (control != null) {
+		if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		int hwnd = control.handle;
 		if ((hwnd == 0) || (hwnd == handle)) return;
 		hwndAfter = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
@@ -1088,6 +1092,9 @@ public void moveAbove (Control control) {
  *
  * @param the sibling control (or null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1096,7 +1103,10 @@ public void moveAbove (Control control) {
 public void moveBelow (Control control) {
 	checkWidget ();
 	int hwndAfter = OS.HWND_BOTTOM;
-	if (control != null) hwndAfter = control.handle;
+	if (control != null) {
+		if (control.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		hwndAfter = control.handle;
+	}
 	if (hwndAfter == 0) return;
 	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 	OS.SetWindowPos (handle, hwndAfter, 0, 0, 0, 0, flags);
@@ -1929,7 +1939,6 @@ boolean setRadioFocus () {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget ();
-	
 	/*
 	 * This code is intentionally commented.
 	 *

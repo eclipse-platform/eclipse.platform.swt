@@ -544,6 +544,7 @@ public int getAlpha(int x, int y) {
  * @param alphas the buffer in which to put the alpha values
  * @param startIndex the offset into the image to begin getting alpha values
  *
+ * @exception IndexOutOfBoundsException if getWidth is too large
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
@@ -552,7 +553,7 @@ public int getAlpha(int x, int y) {
  */
 public void getAlphas(int x, int y, int getWidth, byte[] alphas, int startIndex) {
 	if (alphas == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (getWidth < 0 || x + getWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (getWidth < 0 || x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (getWidth == 0) return;
 
 	if (alphaData == null) {
@@ -562,6 +563,7 @@ public void getAlphas(int x, int y, int getWidth, byte[] alphas, int startIndex)
 		}
 		return;
 	}
+	// may throw an IndexOutOfBoundsException
 	System.arraycopy(alphaData, y * width + x, alphas, startIndex, getWidth);
 }
 
@@ -644,6 +646,7 @@ public int getPixel(int x, int y) {
  * @param pixels the buffer in which to put the pixels
  * @param startIndex the offset into the byte array to begin storing pixels
  *
+ * @exception IndexOutOfBoundsException if getWidth is too large
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
@@ -656,7 +659,7 @@ public int getPixel(int x, int y) {
  */
 public void getPixels(int x, int y, int getWidth, byte[] pixels, int startIndex) {
 	if (pixels == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (getWidth < 0 || x + getWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (getWidth < 0 || x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (getWidth == 0) return;
 	int index;
 	int theByte;
@@ -792,6 +795,7 @@ public void getPixels(int x, int y, int getWidth, byte[] pixels, int startIndex)
  * @param pixels the buffer in which to put the pixels
  * @param startIndex the offset into the buffer to begin storing pixels
  *
+ * @exception IndexOutOfBoundsException if getWidth is too large
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
@@ -803,7 +807,7 @@ public void getPixels(int x, int y, int getWidth, byte[] pixels, int startIndex)
  */
 public void getPixels(int x, int y, int getWidth, int[] pixels, int startIndex) {
 	if (pixels == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (getWidth < 0 || x + getWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (getWidth < 0 || x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (getWidth == 0) return;
 	int index;
 	int theByte;
@@ -1121,6 +1125,7 @@ public void setAlpha(int x, int y, int alpha) {
  * @param alphas the alpha values to set
  * @param startIndex the index at which to begin setting
  *
+ * @exception IndexOutOfBoundsException if putWidth is too large
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
@@ -1129,10 +1134,11 @@ public void setAlpha(int x, int y, int alpha) {
  */
 public void setAlphas(int x, int y, int putWidth, byte[] alphas, int startIndex) {
 	if (alphas == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (putWidth < 0 || x + putWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (putWidth < 0 || x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (putWidth == 0) return;
 	
 	if (alphaData == null) alphaData = new byte[width * height];
+	// may throw an IndexOutOfBoundsException
 	System.arraycopy(alphas, startIndex, alphaData, y * width + x, putWidth);
 }
 
@@ -1225,6 +1231,7 @@ public void setPixel(int x, int y, int pixelValue) {
  * @param pixels the pixels to set
  * @param startIndex the index at which to begin setting
  *
+ * @exception IndexOutOfBoundsException if putWidth is too large
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
@@ -1237,7 +1244,7 @@ public void setPixel(int x, int y, int pixelValue) {
  */
 public void setPixels(int x, int y, int putWidth, byte[] pixels, int startIndex) {
 	if (pixels == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (putWidth < 0 || x + putWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (putWidth < 0 || x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (putWidth == 0) return;
 	int index;
 	int theByte;
@@ -1352,6 +1359,7 @@ public void setPixels(int x, int y, int putWidth, byte[] pixels, int startIndex)
  * @param pixels the pixels to set
  * @param startIndex the index at which to begin setting
  *
+ * @exception IndexOutOfBoundsException if putWidth is too large
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if pixels is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if x or y is out of bounds</li>
@@ -1363,7 +1371,7 @@ public void setPixels(int x, int y, int putWidth, byte[] pixels, int startIndex)
  */
 public void setPixels(int x, int y, int putWidth, int[] pixels, int startIndex) {
 	if (pixels == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (putWidth < 0 || x + putWidth > width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (putWidth < 0 || x >= width || y >= height || x < 0 || y < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (putWidth == 0) return;
 	int index;
 	int theByte;

@@ -605,7 +605,8 @@ public void setEnabled (boolean enabled) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_MENU_NOT_DROP_DOWN - the menu is not a drop down menu</li>
- *	<li>ERROR_MENUITEM_NOT_CASCADE - the menu item is not a <code>CASCADE</code></li>
+ *    <li>ERROR_MENUITEM_NOT_CASCADE - the menu item is not a <code>CASCADE</code></li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li>
  *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
@@ -615,12 +616,12 @@ public void setEnabled (boolean enabled) {
  */
 public void setMenu (Menu menu) {
 	checkWidget();
-
 	/* Check to make sure the new menu is valid */
 	if ((style & SWT.CASCADE) == 0) {
 		error (SWT.ERROR_MENUITEM_NOT_CASCADE);
 	}
 	if (menu != null) {
+		if (menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((menu.style & SWT.DROP_DOWN) == 0) {
 			error (SWT.ERROR_MENU_NOT_DROP_DOWN);
 		}

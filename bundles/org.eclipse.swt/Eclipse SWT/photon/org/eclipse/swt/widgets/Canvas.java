@@ -91,6 +91,7 @@ int processMouse (int info) {
 }
 
 public void redraw () {
+	checkWidget();
 	boolean isVisible = caret != null && caret.isVisible ();
 	if (isVisible) caret.hideCaret ();
 	super.redraw ();
@@ -98,6 +99,7 @@ public void redraw () {
 }
 
 public void redraw (int x, int y, int width, int height, boolean all) {
+	checkWidget();
 	boolean isVisible = caret != null && caret.isVisible ();
 	if (isVisible) caret.hideCaret ();
 	super.redraw (x, y, width, height, all);
@@ -142,7 +144,10 @@ public void setCaret (Caret caret) {
 	this.caret = newCaret;
 	if (isFocusControl ()) {
 		if (oldCaret != null) oldCaret.killFocus ();
-		if (newCaret != null) newCaret.setFocus ();
+		if (newCaret != null) {
+			if (newCaret.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+			newCaret.setFocus ();
+		}
 	}
 }
 

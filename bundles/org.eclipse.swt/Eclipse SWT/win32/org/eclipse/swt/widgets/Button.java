@@ -431,6 +431,7 @@ void setDefault (boolean value) {
 }
 
 public boolean setFocus () {
+	checkWidget();
 	if ((style & SWT.ARROW) != 0) return false;
 	if (!super.setFocus ()) return false;
 	menuShell ().setDefaultButton (this, false);
@@ -443,6 +444,9 @@ public boolean setFocus () {
  *
  * @param image the image to display on the receiver (may be null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
+ * </ul> 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -452,6 +456,7 @@ public void setImage (Image image) {
 	checkWidget ();
 	int hImage = 0, imageBits = 0, fImageType = 0;
 	if (image != null) {
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		hImage = image.handle;
 		switch (image.type) {
 			case SWT.BITMAP:

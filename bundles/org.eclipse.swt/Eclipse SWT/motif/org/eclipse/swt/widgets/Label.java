@@ -28,10 +28,10 @@ import org.eclipse.swt.graphics.*;
  * within the SWT implementation.
  * </p>
  */
-
 public /*final*/ class Label extends Control {
 	String text = "";
 	Image image, bitmap, disabled;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -307,6 +307,7 @@ void setBitmap (Image image) {
 	if (disabled != null) disabled.dispose ();
 	bitmap = disabled = null;
 	if (image != null) {
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		Display display = getDisplay ();
 		switch (image.type) {
 			case SWT.BITMAP:
@@ -351,6 +352,9 @@ public void setFont (Font font) {
  *
  * @param image the image to display on the receiver (may be null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>

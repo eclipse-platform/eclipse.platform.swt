@@ -97,7 +97,7 @@ int CCHookProc (int hdlg, int uiMsg, int lParam, int lpData) {
 /**
  * Returns the currently selected color in the receiver.
  *
- * @return the RGB value for the selected color
+ * @return the RGB value for the selected color, may be null
  *
  * @see PaletteData#getRGBs
  */
@@ -109,7 +109,9 @@ public RGB getRGB () {
  * Makes the receiver visible and brings it to the front
  * of the display.
  *
- * @return the selected color
+ * @return the selected color, or null if the dialog was
+ *         cancelled, no color was selected, or an error
+ *         occurred
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -170,7 +172,9 @@ public RGB open () {
 /**
  * Returns the receiver's selected color to be the argument.
  *
- * @param rgb the new RGB value for the selected color
+ * @param rgb the new RGB value for the selected color, may be
+ *        null to let the platform to select a default when
+ *        open() is called
  *
  * @see PaletteData#getRGBs
  */

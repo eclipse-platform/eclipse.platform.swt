@@ -218,6 +218,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 }
 
 public boolean setFocus () {
+	checkWidget();
 	return false;
 }
 
@@ -231,7 +232,10 @@ public void setImage (Image image) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	this.image = image;
 	int imageHandle = 0;
-	if (image != null) imageHandle = copyPhImage (image.handle);
+	if (image != null) {
+		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		imageHandle = copyPhImage (image.handle);
+	}
 	int [] args = {
 		OS.Pt_ARG_LABEL_IMAGE, imageHandle, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_IMAGE, 0

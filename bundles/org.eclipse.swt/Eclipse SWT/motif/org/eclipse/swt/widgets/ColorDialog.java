@@ -41,7 +41,7 @@ public /*final*/ class ColorDialog extends Dialog {
 
 	private boolean okSelected;							// true if the dialog was hidden 
 														// because the ok button was selected
-	private RGB dialogResult;													
+	private RGB rgb;
 	private int colorDepth;								// color depth of the display
 	private int colorSwatchExtent;						// the size of on square used 
 														// to display one color
@@ -221,12 +221,12 @@ int getColorSwatchExtent() {
 /**
  * Returns the currently selected color in the receiver.
  *
- * @return the RGB value for the selected color
+ * @return the RGB value for the selected color, may be null
  *
  * @see PaletteData#getRGBs
  */
 public RGB getRGB() {
-	return dialogResult;
+	return rgb;
 }
 Canvas getSampleCanvas() {
 	return sampleCanvas;
@@ -322,8 +322,6 @@ void initialize8BitColors() {
 void initializeWidgets() {
 	Display display = getDialogShell().getDisplay();
 	Color selectionColor;
-	RGB rgb = getRGB();
-	
 	if (rgb != null) {
 		selectionColor = new Color(display, rgb);
 		getSelectionCanvas().setBackground(selectionColor);
@@ -364,7 +362,9 @@ void mouseMove(Event event) {
  * Makes the receiver visible and brings it to the front
  * of the display.
  *
- * @return the selected color
+ * @return the selected color, or null if the dialog was
+ *         cancelled, no color was selected, or an error
+ *         occurred
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -373,27 +373,26 @@ void mouseMove(Event event) {
  */
 public RGB open() {
 	Color selectionColor;
-	RGB dialogResult = null;
 	Shell dialog = new Shell(getParent(), getStyle() | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
 	
 	setDialogShell(dialog);
 	createChildren();
 	installListeners();
 	openModal();
+	rgb = null;
 	if (isOkSelected() == true) {
 		selectionColor = getSelectionCanvas().getBackground();
-		dialogResult = new RGB(
+		rgb = new RGB(
 			selectionColor.getRed(), 
 			selectionColor.getGreen(), 
 			selectionColor.getBlue());
-		setRGB(dialogResult);
 	}
 	disposeColors();	
 	// Fix for 1G5NLY7
 	if (dialog.isDisposed() == false) {
 		dialog.dispose();
 	}	
-	return dialogResult;
+	return rgb;
 }
 void paint(Event event) {
 	Color colorGrid[][] = getColorGrid();
@@ -420,12 +419,14 @@ void setColorDepth(int bits) {
 /**
  * Returns the receiver's selected color to be the argument.
  *
- * @param rgb the new RGB value for the selected color
+ * @param rgb the new RGB value for the selected color, may be
+ *        null to let the platform to select a default when
+ *        open() is called
  *
  * @see PaletteData#getRGBs
  */
 public void setRGB(RGB rgb) {
-	dialogResult = rgb;
+	this.rgb = rgb;
 }
 /**
  * Create the widgets of the dialog.
@@ -505,7 +506,6 @@ void openModal() {
 	Display display = dialog.getDisplay();
 
 	initializeWidgets();
-	setRGB(null);
 	openDialog();
 	while (dialog.isDisposed() == false && dialog.getVisible() == true) {
 		if (display.readAndDispatch() == false) {

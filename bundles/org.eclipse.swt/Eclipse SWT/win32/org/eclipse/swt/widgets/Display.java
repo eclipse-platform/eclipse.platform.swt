@@ -1010,7 +1010,7 @@ public Thread getThread () {
  * @private
  */
 public int internal_new_GC (GCData data) {
-	if (isDisposed()) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	int hDC = OS.GetDC (0);
 	if (hDC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {

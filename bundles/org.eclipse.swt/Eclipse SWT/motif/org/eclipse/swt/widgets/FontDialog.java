@@ -44,24 +44,67 @@ public /*final*/ class FontDialog extends Dialog {
 												// Used to correctly clean up allocated fonts
 												// will be used to initialize the font 
 												// combo boxes when the dialog is opened												
+
 /**
- * Create a new instance of the receiver with 'parent' as 
- * its parent shell.
- * @param parent - the parent shell. May be null
+ * Constructs a new instance of this class given only its
+ * parent.
+ * <p>
+ * Note: Currently, null can be passed in for the parent.
+ * This has the effect of creating the dialog on the currently active
+ * display if there is one. If there is no current display, the 
+ * dialog is created on a "default" display. <b>Passing in null as
+ * the parent is not considered to be good coding style,
+ * and may not be supported in a future release of SWT.</b>
+ * </p>
+ *
+ * @param parent a shell which will be the parent of the new instance
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
  */
 public FontDialog(Shell parent) {
 	this(parent, SWT.NULL);
 }
+
 /**
- * Create a new instance of the receiver with 'parent' as 
- * its parent shell using 'style' as the widget style.
- * @param parent - the parent shell. May be null
- * @param style - style bits used to create the receiver.
- *	See class definition for details
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT dialog classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ * Note: Currently, null can be passed in for the parent.
+ * This has the effect of creating the dialog on the currently active
+ * display if there is one. If there is no current display, the 
+ * dialog is created on a "default" display. <b>Passing in null as
+ * the parent is not considered to be good coding style,
+ * and may not be supported in a future release of SWT.</b>
+ * </p>
+ *
+ * @param parent a shell which will be the parent of the new instance
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
  */
 public FontDialog(Shell parent, int style) {
 	super(parent, style | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
 }
+
 /**
  * Add the fonts found in 'fonts' to the list of fonts.
  * Fonts are stored by character set and face name. For each character 
@@ -242,8 +285,10 @@ Combo getFaceNameCombo() {
 	return faceName;
 }
 /**
- * Returns the FontData for the selected font.
- * Returns null if no font was selected and the dialog was cancelled.
+ * Returns a FontData object describing the font that was
+ * selected in the dialog, or null if none is available.
+ * 
+ * @return the FontData for the selected font, or null
  */
 public FontData getFontData() {
 	return dialogResult;
@@ -622,8 +667,16 @@ void installListeners() {
 	getExtStyleCombo().addListener(SWT.Selection, listener);
 }
 /**
- * Initialize the widgets of the receiver, open the dialog
- * and block the method until the dialog is closed by the user.
+ * Makes the dialog visible and brings it to the front
+ * of the display.
+ *
+ * @return a FontData object describing the font that was selected,
+ *         or null if the dialog was cancelled or an error occurred
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the dialog has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the dialog</li>
+ * </ul>
  */
 public FontData open() {
 	FontData dialogResult = null;
@@ -677,7 +730,11 @@ void setFontCombos(FontData fontData) {
 	getStyleCombo().setText(value);
 }
 /**
- * Set the preselected font of the receiver to 'fontData'.
+ * Sets a FontData object describing the font to be
+ * selected by default in the dialog, or null to let
+ * the platform choose one.
+ * 
+ * @param fontData the FontData to use initially, or null
  */
 public void setFontData(FontData fontData) {
 	dialogResult = fontData;

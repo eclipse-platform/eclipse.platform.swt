@@ -79,6 +79,9 @@ void releaseWidget () {
  *
  * @param image the image to display on the receiver (may be null)
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -86,6 +89,7 @@ void releaseWidget () {
  */
 public void setImage (Image image) {
 	checkWidget ();
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
 }
 

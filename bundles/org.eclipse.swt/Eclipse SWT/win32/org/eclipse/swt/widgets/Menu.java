@@ -609,6 +609,9 @@ public void removeMenuListener (MenuListener listener) {
  * 
  * @param item the default menu item or null
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the menu item has been disposed</li> 
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -617,7 +620,10 @@ public void removeMenuListener (MenuListener listener) {
 public void setDefaultItem (MenuItem item) {
 	checkWidget ();
 	int command = -1;
-	if (item != null) command = item.id;
+	if (item != null) {
+		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		command = item.id;
+	}
 	OS.SetMenuDefaultItem (handle, command, OS.MF_BYCOMMAND);
 	redraw ();
 }

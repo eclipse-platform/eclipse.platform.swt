@@ -1284,7 +1284,7 @@ void initializeTranslations () {
  * @private
  */
 public int internal_new_GC (GCData data) {
-	if (isDisposed()) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	int xDrawable = OS.XDefaultRootWindow (xDisplay);
 	int xGC = OS.XCreateGC (xDisplay, xDrawable, 0, null);
 	if (xGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);

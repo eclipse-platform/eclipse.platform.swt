@@ -156,6 +156,7 @@ void setDefaultButton (Button button, boolean save) {
 	if (button == null) {
 		if (defaultButton == saveDefault) return;
 	} else {
+		if (button.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		if ((button.style & SWT.PUSH) == 0) return;
 		if (button == defaultButton) return;
 	}
@@ -172,6 +173,7 @@ void setDefaultButton (Button button, boolean save) {
 
 public void setImage (Image image) {
 	checkWidget();
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
 }
 
@@ -181,6 +183,7 @@ public void setMaximized (boolean maximized) {
  
 public void setMenuBar (Menu menu) {
 	checkWidget();
+	if (menu != null && menu.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	//NOT DONE
 }
 
