@@ -19,6 +19,7 @@ public class TreeItem2 extends Item {
 	Color foreground, background;
 	Font font;
 
+	// TODO these cannot be static
 	static Color LinesColor, SelectionBackgroundColor, SelectionForegroundColor;
 	static Image ExpandedImage, CollapsedImage;
 	static Image UncheckedImage, GrayUncheckedImage, CheckmarkImage;	

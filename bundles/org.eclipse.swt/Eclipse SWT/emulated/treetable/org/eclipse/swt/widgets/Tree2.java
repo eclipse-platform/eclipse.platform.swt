@@ -25,6 +25,7 @@ public class Tree2 extends Composite {
 	int resizeColumnX = -1;
 	boolean inExpand = false;	/* enables item creation within Expand callback */
 
+	// TODO these cannot be static
 	static Color LineColor, HighlightShadowColor, NormalShadowColor;
 	static Cursor ResizeCursor;
 	
@@ -164,21 +165,17 @@ public void deselectAll() {
 	}
 }
 void doArrowDown(int stateMask) {
-	if ((stateMask & SWT.SHIFT) == 0) {
-		anchorItem = null;
-		if ((stateMask & SWT.CTRL) == 0) {
-			int newFocusIndex = focusItem.availableIndex + 1;
-			if (newFocusIndex == availableItems.length) return; 	/* at bottom */
-			selectItem(availableItems[newFocusIndex], false);
-			setFocusItem(availableItems[newFocusIndex], true);
-			Event newEvent = new Event();
-			newEvent.item = this;
-			sendEvent(SWT.Selection, newEvent);
-			if (isDisposed()) return;
-			showItem(availableItems[newFocusIndex]);
-			redrawItem(newFocusIndex);
-			return;
-		}
+	if ((stateMask & SWT.SHIFT) == 0 && (stateMask & SWT.CTRL) == 0) {
+		int newFocusIndex = focusItem.availableIndex + 1;
+		if (newFocusIndex == availableItems.length) return; 	/* at bottom */
+		selectItem(availableItems[newFocusIndex], false);
+		setFocusItem(availableItems[newFocusIndex], true);
+		redrawItem(newFocusIndex);
+		showItem(availableItems[newFocusIndex]);
+		Event newEvent = new Event();
+		newEvent.item = this;
+		sendEvent(SWT.Selection, newEvent);
+		return;
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
@@ -199,12 +196,11 @@ void doArrowDown(int stateMask) {
 		if (newFocusIndex == availableItems.length) return; 	/* at bottom */
 		selectItem(availableItems[newFocusIndex], false);
 		setFocusItem(availableItems[newFocusIndex], true);
+		redrawItem(newFocusIndex);
+		showItem(availableItems[newFocusIndex]);
 		Event newEvent = new Event();
 		newEvent.item = this;
 		sendEvent(SWT.Selection, newEvent);
-		if (isDisposed()) return;
-		showItem(availableItems[newFocusIndex]);
-		redrawItem(newFocusIndex);
 		return;
 	}
 	/* SWT.MULTI */
@@ -231,7 +227,16 @@ void doArrowDown(int stateMask) {
 		redrawItem(newFocusItem.availableIndex);
 		return;
 	}
-	// TODO implement Shift behaviour
+	int newFocusIndex = focusItem.availableIndex + 1;
+	if (newFocusIndex == availableItems.length) return; 	/* at bottom */
+	if (anchorItem == null) anchorItem = focusItem;
+	selectItem(availableItems[newFocusIndex], true);
+	setFocusItem(availableItems[newFocusIndex], true);
+	redrawItem(newFocusIndex);
+	showItem(availableItems[newFocusIndex]);
+	Event newEvent = new Event();
+	newEvent.item = this;
+	sendEvent(SWT.Selection, newEvent);
 }
 void doArrowLeft(int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
@@ -260,13 +265,11 @@ void doArrowLeft(int stateMask) {
 	
 	selectItem(parentItem, false);
 	setFocusItem(parentItem, true);
+	redrawItem(parentItem.availableIndex);
+	showItem(parentItem);
 	Event newEvent = new Event();
 	newEvent.item = this;
 	sendEvent(SWT.Selection, newEvent);
-	if (isDisposed()) return;
-	showItem(parentItem);
-	redrawItem(parentItem.availableIndex);
-	return;
 }
 void doArrowRight(int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
@@ -293,8 +296,8 @@ void doArrowRight(int stateMask) {
 		newEvent.item = focusItem;
 		inExpand = true;
 		sendEvent(SWT.Expand, newEvent);
-		if (isDisposed()) return;
 		inExpand = false;
+		if (isDisposed()) return;
 		if (focusItem.getItemCount() == 0) {
 			focusItem.expanded = false;
 		}
@@ -302,30 +305,25 @@ void doArrowRight(int stateMask) {
 	}
 	selectItem(children[0], false);
 	setFocusItem(children[0], true);
+	redrawItem(children[0].availableIndex);
+	showItem(children[0]);
 	Event newEvent = new Event();
 	newEvent.item = children[0];
 	sendEvent(SWT.Selection, newEvent);
-	if (isDisposed()) return;
-	showItem(children[0]);
-	redrawItem(children[0].availableIndex);	
 }
 void doArrowUp(int stateMask) {
-	if ((stateMask & SWT.SHIFT) == 0) {
-		anchorItem = null;
-		if ((stateMask & SWT.CTRL) == 0) {
-			int newFocusIndex = focusItem.availableIndex - 1;
-			if (newFocusIndex < 0) return; 		/* at top */
-			TreeItem2 item = availableItems[newFocusIndex];
-			selectItem(item, false);
-			setFocusItem(item, true);
-			Event newEvent = new Event();
-			newEvent.item = item;
-			sendEvent(SWT.Selection, newEvent);
-			if (isDisposed()) return;
-			showItem(item);
-			redrawItem(newFocusIndex);
-			return;
-		}
+	if ((stateMask & SWT.SHIFT) == 0 && (stateMask & SWT.CTRL) == 0) {
+		int newFocusIndex = focusItem.availableIndex - 1;
+		if (newFocusIndex < 0) return; 		/* at top */
+		TreeItem2 item = availableItems[newFocusIndex];
+		selectItem(item, false);
+		setFocusItem(item, true);
+		redrawItem(newFocusIndex);
+		showItem(item);
+		Event newEvent = new Event();
+		newEvent.item = item;
+		sendEvent(SWT.Selection, newEvent);
+		return;
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
@@ -346,12 +344,11 @@ void doArrowUp(int stateMask) {
 		TreeItem2 item = availableItems[newFocusIndex];
 		selectItem(item, false);
 		setFocusItem(item, true);
+		redrawItem(newFocusIndex);
+		showItem(item);
 		Event newEvent = new Event();
 		newEvent.item = item;
 		sendEvent(SWT.Selection, newEvent);
-		if (isDisposed()) return;
-		showItem(item);
-		redrawItem(newFocusIndex);
 		return;
 	}
 	/* SWT.MULTI */
@@ -377,7 +374,17 @@ void doArrowUp(int stateMask) {
 		redrawItem(newFocusItem.availableIndex);
 		return;
 	}
-	// TODO implement Shift behaviour
+	int newFocusIndex = focusItem.availableIndex - 1;
+	if (newFocusIndex < 0) return; 		/* at top */
+	if (anchorItem == null) anchorItem = focusItem;
+	TreeItem2 item = availableItems[newFocusIndex];
+	selectItem(item, true);
+	setFocusItem(item, true);
+	redrawItem(newFocusIndex);
+	showItem(item);
+	Event newEvent = new Event();
+	newEvent.item = item;
+	sendEvent(SWT.Selection, newEvent);
 }
 void doCR() {
 	if (focusItem == null) return;
@@ -406,12 +413,11 @@ void doEnd(int stateMask) {
 		TreeItem2 item = availableItems[lastAvailableIndex]; 
 		selectItem(item, false);
 		setFocusItem(item, true);
+		redrawItem(lastAvailableIndex);
+		showItem(item);
 		Event newEvent = new Event();
 		newEvent.item = item;
 		sendEvent(SWT.Selection, newEvent);
-		if (isDisposed()) return;
-		showItem(item);
-		redrawItem(lastAvailableIndex);
 		return;
 	}
 	if ((style & SWT.SINGLE) != 0) {
@@ -424,12 +430,11 @@ void doEnd(int stateMask) {
 		TreeItem2 item = availableItems[lastAvailableIndex]; 
 		selectItem(item, false);
 		setFocusItem(item, true);
+		redrawItem(lastAvailableIndex);
+		showItem(item);
 		Event newEvent = new Event();
 		newEvent.item = item;
 		sendEvent(SWT.Selection, newEvent);
-		if (isDisposed()) return;
-		showItem(item);
-		redrawItem(lastAvailableIndex);
 		return;
 	}
 	/* SWT.MULTI */
@@ -456,13 +461,11 @@ void doEnd(int stateMask) {
 	}
 	setSelection(newSelection);
 	setFocusItem(selectedItem, true);
+	redrawItems(anchorIndex, selectIndex);
+	showItem(selectedItem);
 	Event newEvent = new Event();
 	newEvent.item = selectedItem;
 	sendEvent(SWT.Selection, newEvent);
-	if (isDisposed()) return;
-	showItem(selectedItem);
-	redrawItems(anchorIndex, selectIndex);
-	return;
 }
 void doFocusIn() {
 	if (getItemCount() == 0) return;
@@ -470,11 +473,12 @@ void doFocusIn() {
 		TreeItem2 item = availableItems[0];
 		selectItem(item, false);
 		setFocusItem(item, false);
+		redrawItem(focusItem.availableIndex);
+		showItem(item);
 		Event newEvent = new Event();
 		newEvent.item = item;
 		sendEvent(SWT.Selection, newEvent);
-		if (isDisposed()) return;
-		showItem(item);
+		return;
 	}
 	redrawItem(focusItem.availableIndex);
 }
@@ -489,12 +493,11 @@ void doHome(int stateMask) {
 		TreeItem2 item = availableItems[0];
 		selectItem(item, false);
 		setFocusItem(item, true);
+		redrawItem(0);
+		showItem(item);
 		Event newEvent = new Event();
 		newEvent.item = item;
 		sendEvent(SWT.Selection, newEvent);
-		if (isDisposed()) return;
-		showItem(item);
-		redrawItem(0);
 		return;
 	}
 	if ((style & SWT.SINGLE) != 0) {
@@ -506,12 +509,11 @@ void doHome(int stateMask) {
 		TreeItem2 item = availableItems[0];
 		selectItem(item, false);
 		setFocusItem(item, true);
+		redrawItem(0);
+		showItem(item);
 		Event newEvent = new Event();
 		newEvent.item = item;
 		sendEvent(SWT.Selection, newEvent);
-		if (isDisposed()) return;
-		showItem(item);
-		redrawItem(0);
 		return;
 	}
 	/* SWT.MULTI */
@@ -538,16 +540,17 @@ void doHome(int stateMask) {
 	}
 	setSelection(newSelection);
 	setFocusItem(selectedItem, true);
+	redrawItems(anchorIndex, selectIndex);
+	showItem(selectedItem);
 	Event newEvent = new Event();
 	newEvent.item = selectedItem;
 	sendEvent(SWT.Selection, newEvent);
-	if (isDisposed()) return;
-	showItem(selectedItem);
-	redrawItems(anchorIndex, selectIndex);
-	return;
 }
 void doKeyDown(Event event) {
 	if (focusItem == null) return;
+	if ((event.stateMask & SWT.SHIFT) == 0 && event.keyCode != SWT.SHIFT) {
+		anchorItem = null;
+	}
 	switch (event.keyCode) {
 		case SWT.ARROW_UP:
 			doArrowUp(event.stateMask);
@@ -616,8 +619,8 @@ void doMouseDown(Event event) {
 		if (expand) {
 			inExpand = true;
 			sendEvent(SWT.Expand, newEvent);
-			if (isDisposed()) return;
 			inExpand = false;
+			if (isDisposed()) return;
 			if (focusItem != null && focusItem.getItemCount() == 0) {
 				focusItem.expanded = false;
 			}
@@ -639,28 +642,26 @@ void doMouseDown(Event event) {
 	
 	if (!selectedItem.getHitBounds().contains(event.x, event.y)) return;
 	
-	if ((event.stateMask & SWT.SHIFT) == 0) anchorItem = null;
+	if ((event.stateMask & SWT.SHIFT) == 0 && event.keyCode != SWT.SHIFT) anchorItem = null;
 
 	if ((style & SWT.SINGLE) != 0) {
 		if (!selectedItem.selected) {
 			if (event.button == 1) {
 				selectItem(selectedItem, false);
 				setFocusItem(selectedItem, true);
+				redrawItem(selectedItem.availableIndex);
 				Event newEvent = new Event();
 				newEvent.item = selectedItem;
 				sendEvent(SWT.Selection, newEvent);
-				if (isDisposed()) return;
-				redrawItem(selectedItem.availableIndex);
 				return;
 			}
 			if ((event.stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
 				selectItem(selectedItem, false);
 				setFocusItem(selectedItem, true);
+				redrawItem(selectedItem.availableIndex);
 				Event newEvent = new Event();
 				newEvent.item = selectedItem;
 				sendEvent(SWT.Selection, newEvent);
-				if (isDisposed()) return;
-				redrawItem(selectedItem.availableIndex);
 				return;
 			}
 		}
@@ -689,31 +690,28 @@ void doMouseDown(Event event) {
 				newSelection[writeIndex] = availableItems[selectIndex];
 				setSelection(newSelection);
 				setFocusItem(selectedItem, true);
+				redrawItems(Math.min(anchorIndex, selectIndex), Math.max(anchorIndex, selectIndex));
 				Event newEvent = new Event();
 				newEvent.item = selectedItem;
 				sendEvent(SWT.Selection, newEvent);
-				if (isDisposed()) return;
-				redrawItems(Math.min(anchorIndex, selectIndex), Math.max(anchorIndex, selectIndex));
 				return;
 			}
 			selectItem(selectedItem, (event.stateMask & SWT.CTRL) != 0);
 			setFocusItem(selectedItem, true);
+			redrawItem(selectedItem.availableIndex);
 			Event newEvent = new Event();
 			newEvent.item = selectedItem;
 			sendEvent(SWT.Selection, newEvent);
-			if (isDisposed()) return;
-			redrawItem(selectedItem.availableIndex);
 			return;
 		}
 		/* button 3 */
 		if ((event.stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
 			selectItem(selectedItem, false);
 			setFocusItem(selectedItem, true);
+			redrawItem(selectedItem.availableIndex);
 			Event newEvent = new Event();
 			newEvent.item = selectedItem;
 			sendEvent(SWT.Selection, newEvent);
-			if (isDisposed()) return;
-			redrawItem(selectedItem.availableIndex);
 			return;
 		}
 	}
@@ -741,21 +739,18 @@ void doMouseDown(Event event) {
 		newSelection[writeIndex] = availableItems[selectIndex];
 		setSelection(newSelection);
 		setFocusItem(selectedItem, true);
+		redrawItems(Math.min(anchorIndex, selectIndex), Math.max(anchorIndex, selectIndex));
 		Event newEvent = new Event();
 		newEvent.item = selectedItem;
 		sendEvent(SWT.Selection, newEvent);
-		if (isDisposed()) return;
-		redrawItems(Math.min(anchorIndex, selectIndex), Math.max(anchorIndex, selectIndex));
 		return;
 	}
 	selectItem(selectedItem, false);
 	setFocusItem(selectedItem, true);
+	redrawItem(selectedItem.availableIndex);
 	Event newEvent = new Event();
 	newEvent.item = selectedItem;
 	sendEvent(SWT.Selection, newEvent);
-	if (isDisposed()) return;
-	redrawItem(selectedItem.availableIndex);
-	return;
 }
 void doMouseUp(Event event) {
 	int index = (event.y - getHeaderHeight()) / itemHeight + topIndex;
@@ -763,8 +758,8 @@ void doMouseUp(Event event) {
 	lastClickedItem = availableItems[index];
 }
 void doPageDown(int stateMask) {
+	int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
-		int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
 		int newFocusIndex = focusItem.availableIndex + visibleItemCount - 1;
 		newFocusIndex = Math.min(newFocusIndex, availableItems.length - 1);
 		TreeItem2 item = availableItems[newFocusIndex];
@@ -774,11 +769,66 @@ void doPageDown(int stateMask) {
 		redrawItem(item.availableIndex);
 		return;
 	}
-	// TODO handle modifier key cases
+	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == (SWT.CTRL | SWT.SHIFT)) {
+		int newTopIndex = topIndex + visibleItemCount;
+		newTopIndex = Math.min (newTopIndex, availableItems.length - visibleItemCount);
+		if (newTopIndex == topIndex) return;
+		setTopItem(availableItems[newTopIndex]);
+		return;
+	}
+	if ((style & SWT.SINGLE) != 0) {
+		if ((stateMask & SWT.SHIFT) != 0) {
+			int newFocusIndex = focusItem.availableIndex + visibleItemCount - 1;
+			newFocusIndex = Math.min(newFocusIndex, availableItems.length - 1);
+			TreeItem2 item = availableItems[newFocusIndex];
+			selectItem(item, false);
+			setFocusItem(item, true);
+			showItem(item);
+			redrawItem(item.availableIndex);
+			return;
+		}
+		int newTopIndex = topIndex + visibleItemCount;
+		newTopIndex = Math.min (newTopIndex, availableItems.length - visibleItemCount);
+		if (newTopIndex == topIndex) return;
+		setTopItem(availableItems[newTopIndex]);
+		return;
+	}
+	if ((stateMask & SWT.CTRL) != 0) {
+		int bottomIndex = Math.min(topIndex + visibleItemCount - 1, availableItems.length - 1);
+		if (focusItem.availableIndex != bottomIndex) {
+			setFocusItem(availableItems[bottomIndex], true);
+			redrawItem(bottomIndex);
+			return;
+		}
+		if (focusItem.availableIndex == availableItems.length - 1) return;	/* at bottom */
+		bottomIndex = Math.min(bottomIndex + visibleItemCount - 1, availableItems.length - 1);
+		setFocusItem(availableItems[bottomIndex], false);
+		showItem(availableItems[bottomIndex]);
+		return;
+	}
+	/* SWT.SHIFT */
+	if (anchorItem == null) anchorItem = focusItem;
+	int anchorIndex = anchorItem.availableIndex;
+	int selectIndex = focusItem.availableIndex + visibleItemCount - 1;
+	selectIndex = Math.min (selectIndex, availableItems.length - 1);
+	TreeItem2 selectedItem = availableItems[selectIndex];
+	TreeItem2[] newSelection = new TreeItem2 [Math.abs(anchorIndex - selectIndex) + 1];
+	int step = anchorIndex < selectIndex ? 1 : -1;
+	int writeIndex = 0;
+	for (int i = anchorIndex; i != selectIndex; i += step) {
+		newSelection[writeIndex++] = availableItems[i];
+	}
+	newSelection[writeIndex] = availableItems[selectIndex];
+	setSelection(newSelection);
+	setFocusItem(selectedItem, true);
+	showItem(selectedItem);
+	Event newEvent = new Event();
+	newEvent.item = selectedItem;
+	sendEvent(SWT.Selection, newEvent);
 }
 void doPageUp(int stateMask) {
+	int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
 	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
-		int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
 		int newFocusIndex = focusItem.availableIndex - visibleItemCount + 1;
 		newFocusIndex = Math.max(newFocusIndex, 0);
 		TreeItem2 item = availableItems[newFocusIndex];
@@ -788,7 +838,58 @@ void doPageUp(int stateMask) {
 		redrawItem(item.availableIndex);
 		return;
 	}
-	// TODO handle modifier key cases
+	if ((stateMask & (SWT.CTRL | SWT.SHIFT)) == (SWT.CTRL | SWT.SHIFT)) {
+		int newTopIndex = Math.max (0, topIndex - visibleItemCount);
+		if (newTopIndex == topIndex) return;
+		setTopItem(availableItems[newTopIndex]);
+		return;
+	}
+	if ((style & SWT.SINGLE) != 0) {
+		if ((stateMask & SWT.SHIFT) != 0) {
+			int newFocusIndex = focusItem.availableIndex - visibleItemCount + 1;
+			newFocusIndex = Math.max(newFocusIndex, 0);
+			TreeItem2 item = availableItems[newFocusIndex];
+			selectItem(item, false);
+			setFocusItem(item, true);
+			showItem(item);
+			redrawItem(item.availableIndex);
+			return;
+		}
+		int newTopIndex = Math.max (0, topIndex - visibleItemCount);
+		if (newTopIndex == topIndex) return;
+		setTopItem(availableItems[newTopIndex]);
+		return;
+	}
+	if ((stateMask & SWT.CTRL) != 0) {
+		if (focusItem.availableIndex != topIndex) {
+			setFocusItem(availableItems[topIndex], true);
+			redrawItem(topIndex);
+			return;
+		}
+		if (focusItem.availableIndex == 0) return;		/* at top */
+		int newTopIndex = Math.max(0, topIndex - visibleItemCount + 1);
+		setFocusItem(availableItems[newTopIndex], false);
+		setTopItem(availableItems[newTopIndex]);
+		return;
+	}
+	/* SWT.SHIFT */
+	if (anchorItem == null) anchorItem = focusItem;
+	int anchorIndex = anchorItem.availableIndex;
+	int selectIndex = Math.max(0,focusItem.availableIndex - visibleItemCount + 1);
+	TreeItem2 selectedItem = availableItems[selectIndex];
+	TreeItem2[] newSelection = new TreeItem2 [Math.abs(anchorIndex - selectIndex) + 1];
+	int step = anchorIndex < selectIndex ? 1 : -1;
+	int writeIndex = 0;
+	for (int i = anchorIndex; i != selectIndex; i += step) {
+		newSelection[writeIndex++] = availableItems[i];
+	}
+	newSelection[writeIndex] = availableItems[selectIndex];
+	setSelection(newSelection);
+	setFocusItem(selectedItem, true);
+	showItem(selectedItem);
+	Event newEvent = new Event();
+	newEvent.item = selectedItem;
+	sendEvent(SWT.Selection, newEvent);
 }
 void doPaint (Event event) {
 	GC gc = event.gc;
@@ -913,13 +1014,27 @@ void doScrollVertical(Event event) {
 }
 void doSpace() {
 	if (focusItem == null) return;
+	boolean redrawItem = false;
 	if (!focusItem.selected) {
 		selectItem(focusItem, (style & SWT.MULTI) != 0);
-		showItem(focusItem);
-		redrawItem(focusItem.availableIndex);
+		redrawItem = true;
 	}
+	if ((style & SWT.CHECK) != 0) {
+		focusItem.checked = !focusItem.checked;
+		redrawItem = true;
+	}
+	if (redrawItem) redrawItem(focusItem.availableIndex);	
+	showItem(focusItem);
 	Event event = new Event();
 	event.item = focusItem;
+	sendEvent(SWT.Selection, event);
+	if (isDisposed()) return;
+	if ((style & SWT.CHECK) == 0) return;
+	
+	/* SWT.CHECK */
+	event = new Event();
+	event.item = focusItem;
+	event.detail = SWT.CHECK;
 	sendEvent(SWT.Selection, event);
 }
 int getCellPadding() {
@@ -1414,14 +1529,12 @@ void reassignFocus() {
 	if (!focusItem.isRoot()) {
 		TreeItem2 item = focusItem.getParentItem();
 		setFocusItem(item, false);
-		if ((style & SWT.SINGLE) != 0) {
-			setSelection(new TreeItem2[] {item});
-			Event event = new Event();
-			event.item = item;
-			sendEvent(SWT.Selection, event);
-			if (isDisposed()) return;
-		}
 		showItem(item);
+		if ((style & SWT.MULTI) != 0) return;
+		setSelection(new TreeItem2[] {item});
+		Event event = new Event();
+		event.item = item;
+		sendEvent(SWT.Selection, event);
 		return;
 	}
 	
@@ -1438,14 +1551,13 @@ void reassignFocus() {
 	if (index < items.length) {
 		TreeItem2 item = items[index];
 		setFocusItem(item, false);
+		showItem(item);
 		if ((style & SWT.SINGLE) != 0) {
 			setSelection(new TreeItem2[] {item});
 			Event event = new Event();
 			event.item = item;
 			sendEvent(SWT.Selection, event);
-			if (isDisposed()) return;
 		}
-		showItem(item);
 	} else {
 		setFocusItem(null, false);		/* no items left */
 	}
