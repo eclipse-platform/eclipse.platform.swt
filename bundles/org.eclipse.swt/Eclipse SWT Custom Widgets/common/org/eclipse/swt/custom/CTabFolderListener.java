@@ -10,7 +10,17 @@
  *******************************************************************************/
 package org.eclipse.swt.custom;
 
+import org.eclipse.swt.internal.*;
 
-public interface CTabFolderListener {
-	public void itemClosed(CTabFolderEvent event);
+public interface CTabFolderListener extends SWTEventListener {
+	
+/**
+ * Sent when the user clicks on the close button of an item in the CTabFolder.  The item being closed is specified
+ * in the event.item field. Setting the event.doit field to false will stop  the CTabItem from closing. 
+ * When the CTabItem is closed, it is disposed.  The contents of the CTabItem (see CTabItem#setControl) will be 
+ * made not visible when the CTabItem is closed.
+ * 
+ * @param e an event indicating the item being closed
+ */
+public void itemClosed(CTabFolderEvent event);
 }
