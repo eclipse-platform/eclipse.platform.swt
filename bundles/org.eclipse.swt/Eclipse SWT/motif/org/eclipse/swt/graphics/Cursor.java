@@ -197,6 +197,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 			((s & 0x04) << 3) |
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
+		sourceData[i] = (byte) ~sourceData[i];
 	}
 	data = mask.data;
 	for (int i = 0; i < data.length; i++) {
@@ -209,6 +210,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 			((s & 0x04) << 3) |
 			((s & 0x02) << 5) |
 			((s & 0x01) << 7));
+		maskData[i] = (byte) ~maskData[i];
 	}
 	int xDisplay = device.xDisplay;
 	int drawable = OS.XDefaultRootWindow(xDisplay);
@@ -223,7 +225,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 	background.pixel = OS.XWhitePixel(xDisplay, screenNum);
 	background.red = background.green = background.blue = (short)0xFFFF;
 	/* Create the cursor */
-	handle = OS.XCreatePixmapCursor(xDisplay, sourcePixmap, maskPixmap, foreground, background, hotspotX, hotspotY);
+	handle = OS.XCreatePixmapCursor(xDisplay, maskPixmap, sourcePixmap, foreground, background, hotspotX, hotspotY);
 	/* Dispose the pixmaps */
 	OS.XFreePixmap(xDisplay, sourcePixmap);
 	OS.XFreePixmap(xDisplay, maskPixmap);
