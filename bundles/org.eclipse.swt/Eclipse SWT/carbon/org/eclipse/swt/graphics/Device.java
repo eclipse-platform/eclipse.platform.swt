@@ -432,14 +432,8 @@ public boolean getWarnings () {
 
 protected void init () {
 
-	if (fGDeviceHandle != 0) {
-		int pm= OS.getgdPMap(fGDeviceHandle);
-		if (pm != 0)
-			fScreenDepth= OS.GetPixDepth(pm);
-	}
-	if (fScreenDepth == 0)
-		fScreenDepth= 32;	// a guess
-	
+	fScreenDepth= getDeviceDepth(fGDeviceHandle);
+
 	/*
 	* The following colors are listed in the Windows
 	* Programmer's Reference as the colors in the default
@@ -552,4 +546,17 @@ public void setWarnings (boolean warnings) {
 	this.warnings = warnings;
 	if (debug) return;
 }
+
+////////////////////////////////////////////////////////
+// Mac stuff
+////////////////////////////////////////////////////////
+
+	static int getDeviceDepth(int gd) {
+		if (gd != 0) {
+			int pm= OS.getgdPMap(gd);
+			if (pm != 0)
+				return OS.GetPixDepth(pm);
+		}
+		return 32;
+	}
 }
