@@ -71,7 +71,8 @@ static int checkStyle (int style) {
 }
 
 void configureBar (int selection, int minimum, int maximum) {
-	OS.gtk_progress_configure (handle, selection, minimum, maximum);
+	double fraction = minimum == maximum ? 1 : (double)(selection - minimum) / (maximum - minimum);
+	OS.gtk_progress_bar_set_fraction (handle, fraction);
 	/*
 	* Feature in GTK.  The progress bar does
 	* not redraw right away when a value is
@@ -88,7 +89,6 @@ void createHandle (int index) {
 	state |= HANDLE;
 	handle = OS.gtk_progress_bar_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_progress_configure (handle, value, min, max);
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_add (parentHandle, handle);
 	OS.gtk_widget_show (handle);
@@ -158,6 +158,7 @@ public int getSelection () {
 public void setMaximum (int maximum) {
 	checkWidget ();
 	if (maximum < 0) return;
+	if (maximum < min) maximum = min;
 	max = maximum;
 	if (value > maximum) value = maximum;
 	configureBar (value, min, max);
@@ -178,6 +179,7 @@ public void setMaximum (int maximum) {
 public void setMinimum (int minimum) {
 	checkWidget ();
 	if (minimum < 0) return;
+	if (minimum > max) minimum = max;
 	if (value < minimum) value = minimum;
 	min = minimum;
 	configureBar (value, min, max);
@@ -198,6 +200,8 @@ public void setMinimum (int minimum) {
 public void setSelection (int x) {
 	checkWidget ();
 	if (x < 0) return;
+	if (x < min) x = min;
+	if (x > max) x = max;
 	value = x;
 	configureBar (value, min, max);
 }

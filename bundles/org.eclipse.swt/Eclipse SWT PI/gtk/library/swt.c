@@ -3193,6 +3193,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1
 	return (jint)gtk_progress_bar_new();
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1set_1fraction
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	DEBUG_CALL("gtk_1progress_1bar_1set_1fraction\n")
+
+	gtk_progress_bar_set_fraction((GtkProgressBar *)arg0, (gdouble)arg1);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1set_1bar_1style
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
@@ -3207,14 +3215,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1
 	DEBUG_CALL("gtk_1progress_1bar_1set_1orientation\n")
 
 	gtk_progress_bar_set_orientation((GtkProgressBar *)arg0, (GtkProgressBarOrientation)arg1);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1configure
-	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jdouble arg3)
-{
-	DEBUG_CALL("gtk_1progress_1configure\n")
-
-	gtk_progress_configure((GtkProgress *)arg0, (gdouble)arg1, (gdouble)arg2, (gdouble)arg3);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1radio_1button_1group
