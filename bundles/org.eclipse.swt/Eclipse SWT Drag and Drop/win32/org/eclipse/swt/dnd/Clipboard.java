@@ -19,6 +19,8 @@ public class Clipboard {
 	private COMObject iUnknown;
 	private COMObject iDataObject;
 	private int refCount;
+	
+	private Display display;
 
 	private final int MAX_RETRIES = 10;
 	private Transfer[] transferAgents = new Transfer[0];
@@ -36,6 +38,8 @@ public Clipboard(Display display) {
 		SWT.error(SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
 
+	this.display = display;
+	
 	createCOMInterfaces();
 	this.AddRef();
 }
@@ -51,11 +55,14 @@ public void dispose () {
 }
 public Object getContents(Transfer transfer) {
 	int[] ppv = new int[1];
-	int retrys = 0;
-	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retrys < MAX_RETRIES) {
-		retrys++;
+	int retries = 0;
+	while ((COM.OleGetClipboard(ppv) != COM.S_OK) && retries < MAX_RETRIES) {
+		// Clipboard may be in use by some other application.
+		// Wait for 10 milliseconds before trying again.
+		try {display.wait(10);} catch (InterruptedException e) {}
+		retries++;
 	}
-	if (retrys == MAX_RETRIES) return null;
+	if (retries == MAX_RETRIES) return null;
 	
 	IDataObject dataObject = new IDataObject(ppv[0]);
 	
@@ -73,8 +80,6 @@ public Object getContents(Transfer transfer) {
 	return transfer.nativeToJava(match);
 }
 public void setContents(Object[] data, Transfer[] dataTypes){
-	
-	boolean current = (COM.OleIsCurrentClipboard(this.iDataObject.getAddress()) == COM.S_OK);
 		
 	if (data == null || dataTypes == null || data.length != dataTypes.length) {
 		DND.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -86,6 +91,9 @@ public void setContents(Object[] data, Transfer[] dataTypes){
 	int retries = 0;
 	int result = 0;
 	while ((result = COM.OleSetClipboard(this.iDataObject.getAddress())) != COM.S_OK && retries < MAX_RETRIES){
+		// Clipboard may be in use by some other application.
+		// Wait for 10 milliseconds before trying again.
+		try {display.wait(10);} catch (InterruptedException e) {}
 		retries++;
 	}
 	if (retries == MAX_RETRIES) {
