@@ -2809,7 +2809,9 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 		postEvent (SWT.DragDetect, event);
 	}
 	if (xEvent.button == 3) {
-		setFocus ();
+		if (menu != null || hooks (SWT.MenuDetect)) {
+			if (!isFocusControl ()) setFocus ();
+		}
 		showMenu (xEvent.x_root, xEvent.y_root);
 	}
 	int clickTime = display.getDoubleClickTime ();
