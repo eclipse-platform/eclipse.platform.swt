@@ -1047,7 +1047,10 @@ public void setMenuBar (Menu menu) {
 			if (resize) {
 				sendEvent (SWT.Resize);
 				if (isDisposed ()) return;
-				if (layout != null) layout.layout (this, false);
+				if (layout != null) {
+					markLayout (false, false);
+					updateLayout (true, false);
+				}
 			}
 		} else {
 			if (OS.IsPPC) {
@@ -1181,7 +1184,10 @@ void setPlacement (int x, int y, int width, int height, int flags) {
 			oldHeight = rect.height;
 			sendEvent (SWT.Resize);
 			if (isDisposed ()) return;
-			if (layout != null) layout.layout (this, false);
+			if (layout != null) {
+				markLayout (false, false);
+				updateLayout (true, false);
+			}
 		}
 	}
 }
