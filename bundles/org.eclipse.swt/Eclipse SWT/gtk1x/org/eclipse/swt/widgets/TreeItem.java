@@ -461,15 +461,15 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	if ((parent.style & SWT.CHECK) != 0) return;
 	this.image = image;
-	realSetImage(image);
-}
-
-void realSetImage (Image image) {
 	int pixmap = 0, mask = 0;
 	if (image != null) {
 		pixmap = image.pixmap;
 		mask = image.mask;
 	}
+	realSetImage(pixmap, mask);
+}
+
+void realSetImage (int pixmap, int mask) {
 	int ctree = parent.handle;
 	byte [] spacing = new byte [1];
 	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
