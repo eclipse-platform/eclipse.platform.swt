@@ -508,7 +508,10 @@ Control getCursorControl (boolean includeTrim) {
 			Widget widget = WidgetTable.get (theControl [0]);
 			if (widget != null) {
 				if (!includeTrim && widget.isTrimHandle (theControl [0])) return null;
-				if (widget instanceof Control) return (Control) widget;
+				if (widget instanceof Control) {
+					Control control = (Control) widget;
+					return control.isEnabledModal () ? control : null;
+				}
 			}
 			OS.GetSuperControl (theControl [0], theControl);
 		} while (theControl [0] != 0);
@@ -931,31 +934,6 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			}
 			if (theControl [0] == 0) theControl [0] = theRoot [0];
 			Widget widget = WidgetTable.get (theControl [0]);
-			switch (eventKind) {
-				case OS.kEventMouseDragged:
-				case OS.kEventMouseMoved: {
-					org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
-					OS.SetPt (localPoint, (short) inPoint.x, (short) inPoint.y);
-					int [] modifiers = new int [1];
-					OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
-					boolean [] cursorWasSet = new boolean [1];
-					OS.HandleControlSetCursor (theControl [0], localPoint, (short) modifiers [0], cursorWasSet);
-					if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
-					if (widget != null) {
-						int [] outDelay = new int [1];
-						OS.HMGetTagDelay (outDelay);
-						if (widget == currentControl && mouseHoverID != 0) {
-							OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
-						} else {
-							if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
-							int [] id = new int [1];
-							int eventLoop = OS.GetCurrentEventLoop ();
-							OS.InstallEventLoopTimer (eventLoop, outDelay [0] / 1000.0, 0.0, mouseHoverProc, 0, id);
-							mouseHoverID = id [0];
-						}
-					}
-				}
-			}
 			if (widget != null) {
 				return userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
 			}
@@ -1125,7 +1103,7 @@ boolean runAsyncMessages () {
 }
 
 boolean runEnterExit () {
-	//OPTIMIZE - use OS calls, no garbage, widget already hit tested in mouse move
+	//OPTIMIZE - use OS calls, no garbage, widget hit tested again in mouse move
 	boolean eventSent = false;
 	Control control = getCursorControl (false);
 	if (control != currentControl) {
@@ -1152,6 +1130,12 @@ boolean runEnterExit () {
 			int eventLoop = OS.GetCurrentEventLoop ();
 			OS.InstallEventLoopTimer (eventLoop, outDelay [0] / 1000.0, 0.0, mouseHoverProc, 0, id);
 			mouseHoverID = id [0];
+		}
+	} else {
+		if (control != null && mouseHoverID != 0) {
+			int [] outDelay = new int [1];
+			OS.HMGetTagDelay (outDelay);
+			OS.SetEventLoopTimerNextFireTime (mouseHoverID, outDelay [0] / 1000.0);
 		}
 	}
 	if (control != null) {
