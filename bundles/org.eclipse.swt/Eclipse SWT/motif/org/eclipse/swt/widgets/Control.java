@@ -1661,6 +1661,15 @@ boolean sendIMKeyEvent (int type, XKeyEvent xEvent, int textHandle) {
 		event.character = chars [index];
 		setInputState (event, xEvent);
 		sendEvent (type, event);
+		// widget could be disposed at this point
+	
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the key
+		* events.  If this happens, end the processing of
+		* the key by returning false.
+		*/
+		if (isDisposed ()) return false;
 		if (event.doit) chars [count++] = chars [index];
 		index++;
 	}
@@ -1707,6 +1716,15 @@ boolean sendKeyEvent (int type, XKeyEvent xEvent) {
 	}
 	if (control != null) {
 		control.sendEvent (type, event);
+		// widget could be disposed at this point
+	
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the key
+		* events.  If this happens, end the processing of
+		* the key by returning false.
+		*/
+		if (isDisposed ()) return false;
 	}
 	return event.doit;
 }
