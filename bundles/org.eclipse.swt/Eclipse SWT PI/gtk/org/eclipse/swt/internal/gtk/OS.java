@@ -194,6 +194,9 @@ public class OS {
 	public static final int GTK_TOOLBAR_CHILD_BUTTON = 0x1;
 	public static final int GTK_TOOLBAR_CHILD_RADIOBUTTON = 0x3;
 	public static final int GTK_TOOLBAR_CHILD_TOGGLEBUTTON = 0x2;
+	public static final int GTK_TREE_VIEW_COLUMN_GROW_ONLY = 0;
+	public static final int GTK_TREE_VIEW_COLUMN_AUTOSIZE = 1;
+	public static final int GTK_TREE_VIEW_COLUMN_FIXED = 2;
 	public static final int GTK_VISIBILITY_FULL = 0x2;
 	public static final int GTK_VISIBILITY_NONE = 0x0;
 	public static final int GTK_VISIBLE = 0x100;
@@ -247,6 +250,7 @@ public class OS {
 	public static final byte[] show_help = signal("show_help");
 	public static final byte[] size_allocate = signal("size_allocate");
 	public static final byte[] switch_page = signal("switch_page");
+	public static final byte[] toggled = signal("toggled");
 	public static final byte[] tree_collapse = signal("tree_collapse");
 	public static final byte[] tree_expand = signal("tree_expand");
 	public static final byte[] tree_select_row = signal("tree_select_row");
@@ -838,4 +842,71 @@ public static final native int pango_tab_array_new(int initial_size, boolean pos
 public static final native void pango_tab_array_free(int tab_array);
 public static final native void pango_tab_array_set_tab(int tab_array, int tab_index, int alignment, int location);
 public static final native int strlen(int str);
+
+
+
+
+
+
+
+
+
+
+
+
+public static final native int malloc(int size);
+public static final native void free(int ptr);
+public static final native int  g_object_get_data(int object, String key);
+public static final native void g_object_set_data(int object, String key, int data);
+public static final native boolean g_value_get_boolean(int value);
+public static final native int gdk_pixbuf_get_type();
+public static final native int gtk_cell_renderer_text_new();
+public static final native int gtk_cell_renderer_pixbuf_new();
+public static final native int gtk_cell_renderer_toggle_new();
+public static final native void gtk_list_store_clear(int store);
+public static final native int  gtk_list_store_newv(int numColumns, int[] types);
+public static final native void gtk_list_store_remove(int list_store, int iter);
+public static final native void gtk_list_store_set(int store, int iter, int column, String value, int terminator);
+public static final native void gtk_list_store_set(int store, int iter, int column, int value, int terminator);
+public static final native void gtk_list_store_set(int store, int iter, int column, GdkColor value, int terminator);
+public static final native void gtk_list_store_set(int store, int iter, int column, boolean value, int terminator);
+public static final native void gtk_list_store_insert (int list_store, int iter, int position);
+public static final native int  gtk_tree_model_get_path(int tree_model, int iter);
+public static final native void gtk_tree_model_get(int tree_model, int iter, int column, int[] ptr, int terminator);
+public static final native void gtk_tree_path_free(int path);
+public static final native String gtk_tree_path_to_string(int path);
+public static final native int gtk_tree_path_new_from_string(String path);
+public static final native void    gtk_tree_selection_set_mode(int selection, int mode);
+public static final native void    gtk_tree_selection_select_iter(int selection, int iter);
+public static final native void    gtk_tree_selection_unselect_iter(int selection, int iter);
+public static final native void    gtk_tree_selection_select_all(int selection);
+public static final native void    gtk_tree_selection_unselect_all(int selection);
+public static final native void    gtk_tree_selection_selected_foreach(int selection, int func, int data);
+public static final native boolean gtk_tree_selection_path_is_selected(int selection, int path);
+public static final native int     gtk_tree_view_column_new();
+public static final native void    gtk_tree_view_column_set_title(int tree_column, String title);
+public static final native boolean gtk_tree_view_column_get_resizable(int column);
+public static final native int     gtk_tree_view_column_get_width(int column);
+public static final native void    gtk_tree_view_column_set_resizable(int column, boolean resizable);
+public static final native void    gtk_tree_view_column_set_sizing(int column, int type);
+public static final native void    gtk_tree_view_column_set_fixed_width(int column, int fixed_width);
+public static final native void    gtk_tree_view_column_pack_end(int tree_column, int cell_renderer, boolean expand);
+public static final native void    gtk_tree_view_column_add_attribute (int treeColumn, int cellRenderer, String attribute, int column);
+public static final native void    gtk_tree_view_columns_autosize(int tree_view);
+public static final native int     gtk_tree_view_get_bin_window(int tree_view);
+public static final native int     gtk_tree_view_get_model(int view);
+public static final native boolean gtk_tree_view_get_path_at_pos (int tree_view, int x, int y, int[] path, int[] column, int[] cell_x, int[] cell_y);
+public static final native boolean gtk_tree_view_get_headers_visible(int tree_view);
+public static final native int     gtk_tree_view_insert_column(int tree_view, int column, int position);
+public static final native int     gtk_tree_view_new_with_model(int model);
+public static final native void    gtk_tree_view_scroll_to_cell(int tree_view, int path, int column, boolean use_align, float row_aligh, float column_align);
+public static final native void    gtk_tree_view_set_headers_visible(int tree_view, boolean visible);
+public static final native void    gtk_tree_view_get_cell_area(int tree_view, int path, int column, GdkRectangle rect);
+public static final native int     gtk_tree_view_get_selection(int tree_view);
+static final native int GtkTreeIter_sizeof();
+static final native int GValue_sizeof();
+// public static final native int TREE_VIEW_HEADER_HEIGHT();
+public static final native int G_TYPE_BOOLEAN();
+public static final native int G_TYPE_STRING();
+public static final native int GDK_TYPE_COLOR();
 }
