@@ -74,6 +74,10 @@ int getMessageCount () {
 	return messageCount;
 }
 
+Object getMessageLock () {
+	return messageLock;
+}
+
 void releaseSynchronizer () {
 	display = null;
 	messages = null;
