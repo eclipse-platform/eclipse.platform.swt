@@ -607,7 +607,7 @@ public StyledText(Composite parent, int style) {
 				setBidiCaretLocation();
 			}
 		};
-		StyledTextBidi.addLanguageListener(this.handle, runnable);
+		StyledTextBidi.addLanguageListener(this, runnable);
 	}
 	// set the caret width, the height of the caret will default to the line height
 	calculateScrollBars();
@@ -4078,7 +4078,7 @@ void handleDispose() {
 		rightCaretBitmap.dispose();
 	}
 	if (isBidi()) {
-		StyledTextBidi.removeLanguageListener(this.handle);
+		StyledTextBidi.removeLanguageListener(this);
 	}
 }
 /** 
