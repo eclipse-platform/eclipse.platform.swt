@@ -542,7 +542,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createFocusProxy () {
 	if (focusProxy != 0) return;
 	int [] argList = {OS.XmNx, -1, OS.XmNy, -1, OS.XmNwidth, 1, OS.XmNheight, 1};
-	focusProxy = OS.XmCreateDrawingArea (shellHandle, null, argList, argList.length / 2);
+	focusProxy = OS.XmCreateDrawingArea (scrolledHandle, null, argList, argList.length / 2);
 	if (focusProxy == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.XtSetMappedWhenManaged (focusProxy, false);
 	OS.XtManageChild (focusProxy);

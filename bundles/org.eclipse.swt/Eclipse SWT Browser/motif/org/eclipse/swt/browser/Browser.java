@@ -75,6 +75,7 @@ public Browser(Composite parent, int style) {
 			}
 		});
 	}
+	parent.getShell().setFocus();
 	gtkHandle = GTK.gtk_plug_new(embeddedHandle);
 	
 	int[] result = new int[1];
