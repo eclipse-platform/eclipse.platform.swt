@@ -86,6 +86,10 @@ int eventHandle () {
 	return handle;
 }
 
+int fontHandle () {
+	return handle;
+}
+
 /**
  * Connect the appropriate signal handlers.
  * 
@@ -1206,13 +1210,10 @@ public boolean getEnabled () {
  */
 public Font getFont () {
 	checkWidget();
-	return Font.gtk_new(_getFontHandle());
-}
-/*
- * Subclasses should override this, passing a meaningful handle
- */
-int _getFontHandle () {
-	return UtilFuncs.getFont(handle);
+	int fontHandle = fontHandle ();
+	int context = OS.gtk_widget_get_pango_context (fontHandle);
+	int font = OS.pango_context_get_font_description (context);
+	return Font.gtk_new (getDisplay (), font);
 }
 
 /**
@@ -1384,7 +1385,7 @@ public int internal_new_GC (GCData data) {
 		data.device = getDisplay ();
 		data.background = _getBackgroundGdkColor ();
 		data.foreground = _getForegroundGdkColor ();
-//		OS.gdk_gc_set_font(gc, _getFontHandle ());
+		data.font = getFont().handle;
 	}	
 	return gdkGC;
 }
@@ -1897,24 +1898,8 @@ public boolean setFocus () {
 public void setFont (Font font) {
 	checkWidget();
 	
-	/* The non-null font case */
-	if (font != null) {
-		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		int fontHandle = OS.gdk_font_ref(font.handle);
-		_setFontHandle(fontHandle);
-		return;
-	}
-	
-	/* The font argument is null, revert to default font */
-	/* FIXME */
-/*	GtkStyle style = new GtkStyle();
-	OS.memmove (style, OS.gtk_widget_get_default_style(), GtkStyle.sizeof);
-	int fontHandle = OS.gdk_font_ref(style.font);
-	if (fontHandle==0) error(SWT.ERROR_NO_HANDLES);
-	_setFontHandle(fontHandle);*/
-}
-void _setFontHandle (int f) {
-	UtilFuncs.setFont(handle, f);
+	int fontHandle = fontHandle ();
+	OS.gtk_widget_modify_font (fontHandle, font.handle);
 }
 
 /**

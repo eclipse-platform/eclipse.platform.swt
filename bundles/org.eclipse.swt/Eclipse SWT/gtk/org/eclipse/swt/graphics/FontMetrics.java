@@ -5,8 +5,6 @@ package org.eclipse.swt.graphics;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.gtk.*;
-
 /**
  * Instances of this class provide measurement information
  * about fonts including ascent, descent, height, leading
@@ -19,8 +17,10 @@ import org.eclipse.swt.internal.gtk.*;
 
 public final class FontMetrics {
 	int ascent, descent, averageCharWidth, leading, height;
+
 FontMetrics() {
 }
+
 /**
  * Compares the argument to the receiver, and returns true
  * if they represent the <em>same</em> object using a class
@@ -39,6 +39,7 @@ public boolean equals (Object object) {
 		averageCharWidth == metrics.averageCharWidth && leading == metrics.leading &&
 		height == metrics.height;
 }
+
 /**
  * Returns the ascent of the font described by the receiver. A
  * font's <em>ascent</em> is the distance from the baseline to the 
@@ -50,6 +51,7 @@ public boolean equals (Object object) {
 public int getAscent() {
 	return ascent;
 }
+
 /**
  * Returns the average character width, measured in pixels,
  * of the font described by the receiver.
@@ -59,6 +61,7 @@ public int getAscent() {
 public int getAverageCharWidth() {
 	return averageCharWidth;
 }
+
 /**
  * Returns the descent of the font described by the receiver. A
  * font's <em>descent</em> is the distance from the baseline to the
@@ -70,6 +73,7 @@ public int getAverageCharWidth() {
 public int getDescent() {
 	return descent;
 }
+
 /**
  * Returns the height of the font described by the receiver, 
  * measured in pixels. A font's <em>height</em> is the sum of
@@ -84,6 +88,7 @@ public int getDescent() {
 public int getHeight() {
 	return height;
 }
+
 /**
  * Returns the leading area of the font described by the
  * receiver. A font's <em>leading area</em> is the space
@@ -94,15 +99,7 @@ public int getHeight() {
 public int getLeading() {
 	return leading;
 }
-public static FontMetrics gtk_new(int gdk_font) {
-	FontMetrics fontMetrics = new FontMetrics();
-	fontMetrics.ascent = OS.GDK_FONT_ASCENT(gdk_font);
-	fontMetrics.descent = OS.GDK_FONT_DESCENT(gdk_font);
-	fontMetrics.averageCharWidth = OS.gdk_char_width(gdk_font, (byte)'a');
-	fontMetrics.leading = 3;
-	fontMetrics.height = fontMetrics.ascent+fontMetrics.descent+3;
-	return fontMetrics;
-}
+
 /**
  * Returns an integer hash code for the receiver. Any two 
  * objects which return <code>true</code> when passed to 
@@ -116,4 +113,5 @@ public static FontMetrics gtk_new(int gdk_font) {
 public int hashCode() {
 	return ascent ^ descent ^ averageCharWidth ^ leading ^ height;
 }
+
 }

@@ -217,3 +217,63 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1metrics
    return (jint)pango_font_metrics_get_approximate_char_width((PangoFontMetrics*)metrics);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1new
+  (JNIEnv *env, jclass that, jint context)
+{
+   return (jint)pango_layout_new((PangoContext*)context);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1set_1text
+  (JNIEnv *env, jclass that, jint layout, jbyteArray text, jint length)
+{
+   jbyte *text1 = NULL;
+   
+   if (text != NULL) text1 = (*env)->GetByteArrayElements(env, text, NULL);
+   pango_layout_set_text((PangoLayout*)layout, (const char *)text1, length);
+   if (text != NULL) (*env)->ReleaseByteArrayElements(env, text, text1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1get_1size
+  (JNIEnv *env, jclass that, jint layout, jintArray width, jintArray height)
+{
+   jint *width1 = NULL;
+   jint *height1 = NULL;
+
+   if (width != NULL) width1 = (*env)->GetIntArrayElements(env, width, NULL);
+   if (height != NULL) height1 = (*env)->GetIntArrayElements(env, height, NULL);
+   pango_layout_get_size((PangoLayout*)layout, (int *)width1, (int *)height1);
+   if (width != NULL) (*env)->ReleaseIntArrayElements(env, width, width1, 0);
+   if (height != NULL) (*env)->ReleaseIntArrayElements(env, height, height1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1context_1list_1families
+  (JNIEnv *env, jclass that, jint context, jintArray families, jintArray n_families)
+{
+   jint *families1 = NULL;
+   jint *n_families1 = NULL;
+
+   if (families != NULL) families1 = (*env)->GetIntArrayElements(env, families, NULL);
+   if (n_families != NULL) n_families1 = (*env)->GetIntArrayElements(env, n_families, NULL);
+   pango_context_list_families((PangoContext*)context, (PangoFontFamily***)families1, (int *)n_families1);
+   if (families != NULL) (*env)->ReleaseIntArrayElements(env, families, families1, 0);
+   if (n_families != NULL) (*env)->ReleaseIntArrayElements(env, n_families, n_families1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1family_1list_1faces
+  (JNIEnv *env, jclass that, jint family, jintArray faces, jintArray n_faces)
+{
+   jint *faces1 = NULL;
+   jint *n_faces1 = NULL;
+
+   if (faces != NULL) faces1 = (*env)->GetIntArrayElements(env, faces, NULL);
+   if (n_faces != NULL) n_faces1 = (*env)->GetIntArrayElements(env, n_faces, NULL);
+   pango_font_family_list_faces((PangoFontFamily*)family, (PangoFontFace***)faces1, (int *)n_faces1);
+   if (faces != NULL) (*env)->ReleaseIntArrayElements(env, faces, faces1, 0);
+   if (n_faces != NULL) (*env)->ReleaseIntArrayElements(env, n_faces, n_faces1, 0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1face_1describe	
+  (JNIEnv *env, jclass that, jint face)
+{   
+   return (jint)pango_font_face_describe((PangoFontFace*)face);
+}

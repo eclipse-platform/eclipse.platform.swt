@@ -464,6 +464,15 @@ void deregister () {
 	WidgetTable.remove (boxHandle);
 }
 
+int fontHandle() {
+	int list = OS.gtk_container_children (handle);
+	if (list != 0) {
+		int widget = OS.g_list_nth_data (list, 0);
+		if (widget != 0) return widget;
+	}
+	return super.fontHandle ();
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	image = null;

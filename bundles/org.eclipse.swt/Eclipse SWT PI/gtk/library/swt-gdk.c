@@ -380,6 +380,35 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1drawable
 	gdk_draw_drawable((GdkDrawable*)drawable, (GdkGC*)gc, (GdkDrawable*)src, xsrc, ysrc, xdest, ydest, width, height);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1layout
+  (JNIEnv *env, jclass that, jint drawable, jint gc, jint x, jint y, jint layout)
+{
+	gdk_draw_layout((GdkDrawable*)drawable, (GdkGC*)gc, x, y, (PangoLayout*)layout);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1layout_1with_1colors
+  (JNIEnv *env, jclass that, jint drawable, jint gc, jint x, jint y, jint layout, jobject foreground, jobject background)
+{
+	GdkColor foreground_struct, *foreground1 = NULL;
+	GdkColor background_struct, *background1 = NULL;
+	if (foreground) {
+		foreground1 = &foreground_struct;
+		cacheGdkColorFids(env, foreground, &PGLOB(GdkColorFc));
+		getGdkColorFields(env, foreground, foreground1, &PGLOB(GdkColorFc));
+	}
+	if (background) {
+		background1 = &background_struct;
+		cacheGdkColorFids(env, background, &PGLOB(GdkColorFc));
+		getGdkColorFields(env, background, background1, &PGLOB(GdkColorFc));
+	}
+	gdk_draw_layout_with_colors((GdkDrawable*)drawable, (GdkGC*)gc, x, y, (PangoLayout*)layout, foreground1, background1);
+	if (foreground) {
+		setGdkColorFields(env, foreground, foreground1, &PGLOB(GdkColorFc));
+	}
+	if (background) {
+		setGdkColorFields(env, background, background1, &PGLOB(GdkColorFc));
+	}
+}
 
 /*  ***** Bitmaps and Pixmaps *****  */
 
@@ -1140,4 +1169,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1process
   (JNIEnv *env, jclass that, jint window, jboolean update_children)
 {
   gdk_window_process_updates((GdkWindow*)window, (gboolean)update_children);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pango_1context_1get
+  (JNIEnv *env, jclass that)
+{
+	return (jint)gdk_pango_context_get();
 }

@@ -805,6 +805,7 @@ public int internal_new_GC (GCData data) {
 	if (data != null) {
 		data.device = device;
 		data.drawable = pixmap;
+		data.font = device.systemFont.handle;
 		data.image = this;
 	}
 	return gdkGC;

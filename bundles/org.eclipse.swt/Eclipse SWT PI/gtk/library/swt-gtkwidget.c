@@ -281,3 +281,8 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1get_1de
 	return (jint)gtk_widget_get_default_style();
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1get_1pango_1context
+  (JNIEnv *env, jclass that, jint widget)
+{
+	return (jint)gtk_widget_get_pango_context((GtkWidget *)widget);
+}

@@ -411,6 +411,8 @@ public static final native void gdk_gc_set_function(int gc, int function);
 public static final native void gdk_draw_line(int drawable, int gc, int x1, int y1, int x2, int y2);
 public static final native void gdk_draw_arc(int drawable, int gc, int filled, int x, int y, int width, int height, int angle1, int angle2);
 public static final native void gdk_draw_drawable(int drawable, int gc, int src, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
+public static final native void gdk_draw_layout(int drawable, int gc, int x, int y, int layout);
+public static final native void gdk_draw_layout_with_colors(int drawable, int gc, int x, int y, int layout, GdkColor foreground, GdkColor background);
 public static final native void gdk_draw_rectangle(int drawable, int gc, int filled, int x, int y, int width, int height);
 public static final native void gdk_draw_lines(int drawable, int gc, int[] points, int npoints);
 public static final native void gdk_draw_polygon(int drawable, int gc, int filled, int[] points, int npoints);
@@ -676,6 +678,7 @@ public static final native int gtk_vbox_new(boolean homogeneous, int spacing);
 public static final native int gtk_vscale_new(int adjustment);
 public static final native int gtk_vscrollbar_new(int adjustment);
 public static final native void gtk_tooltips_set_tip(int tooltips, int widget, byte[] tip_text, byte[] tip_private);
+public static final native int gtk_widget_get_pango_context(int widget);
 public static final native int gtk_widget_get_default_style();
 public static final native void gtk_widget_add_events(int widget, int events);
 public static final native void gtk_widget_destroy(int widget);
@@ -739,11 +742,18 @@ public static final native int PANGO_STRETCH_NORMAL();
 
 public static final native int PANGO_PIXELS(int dimension);
 
-public static final native int  pango_context_new();
-public static final native int  pango_context_get_font_description(int context);
+public static final native int gdk_pango_context_get();
+public static final native int pango_context_new();
+public static final native int pango_context_get_font_description(int context);
 public static final native void pango_context_set_font_description(int context, int descr);
-public static final native int  pango_context_get_metrics(int context, int desc, String language);
+public static final native int pango_context_get_metrics(int context, int desc, String language);
+public static final native void pango_context_list_families(int context, int[] families, int[] n_families);
+public static final native void pango_font_family_list_faces(int family, int[] faces, int[] n_faces);
+public static final native int pango_font_face_describe(int face);
 
+public static final native int  pango_layout_new(int context);
+public static final native void pango_layout_set_text(int layout, byte[] text, int length);
+public static final native void pango_layout_get_size(int layout, int[] width, int[] height);
 
 public static final native int pango_font_description_new();
 public static final native int pango_font_description_from_string(String str);
@@ -852,4 +862,5 @@ public static final native void gdk_window_process_updates(int window, boolean u
 public static final native void gtk_label_set_text_with_mnemonic(int label, byte[] str);
 public static final native int gtk_label_new_with_mnemonic(byte[] str);
 public static final native int gtk_frame_get_label_widget(int frame);
+
 }

@@ -9,7 +9,6 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
 
-
 /**
  * Class <code>GC</code> is where all of the drawing capabilities that are 
  * supported by SWT are located. Instances are used to draw on either an 
@@ -160,11 +159,16 @@ public void dispose() {
 	if (clipRgn != 0) OS.gdk_region_destroy(clipRgn);
 	Image image = data.image;
 	if (image != null) image.memGC = null;
+	
+	int context = data.context;
+	if (context != 0) OS.g_object_unref(context);
+	int layout = data.layout;
+	if (layout != 0) OS.g_object_unref(layout);
 
 	/* Dispose the GC */
 	drawable.internal_dispose_GC(handle, data);
 
-	data.drawable =	data.clipRgn = 0;
+	data.layout = data.context = data.drawable = data.clipRgn = 0;
 	drawable = null;
 	data.image = null;
 	data = null;
@@ -719,34 +723,11 @@ public void drawString (String string, int x, int y) {
 public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	//FIXME - need to avoid delimiter and tabs
+	int layout = data.layout;
 	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	byte[] buffer1 = Converter.wcsToMbcs(null, "Y", true);
-	int[] unused = new int[1];
-	int[] width = new int[1];
-	int[] ascent = new int[1];
-	int[] average_ascent = new int [1];
-	int fontHandle = _getGCFont();
-	OS.gdk_string_extents(fontHandle, buffer, unused, unused, width, ascent, unused);
-	OS.gdk_string_extents(fontHandle, buffer1, unused, unused, unused, average_ascent, unused);
-	if (ascent[0]<average_ascent[0]) ascent[0] = average_ascent[0];
-	if (!isTransparent) {
-		int height = OS.gdk_string_height(fontHandle, buffer);
-		GdkGCValues values = new GdkGCValues();
-		OS.gdk_gc_get_values(handle, values);
-		GdkColor color = new GdkColor();
-		color.pixel = values.background_pixel;
-		color.red = values.background_red;
-		color.green = values.background_green;
-		color.blue = values.background_blue;
-		OS.gdk_gc_set_foreground(handle, color);
-		OS.gdk_draw_rectangle(data.drawable, handle, 1, x, y, width[0], height);
-		color.pixel = values.foreground_pixel;
-		color.red = values.foreground_red;
-		color.green = values.foreground_green;
-		color.blue = values.foreground_blue;
-		OS.gdk_gc_set_foreground(handle, color);
-	}
-	OS.gdk_draw_string(data.drawable, fontHandle, handle, x, y + ascent[0], buffer);
+	OS.pango_layout_set_text(layout, buffer, buffer.length - 1);
+	OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
 }
 
 /** 
@@ -768,7 +749,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText(String string, int x, int y) {
-	drawText(string, x, y, false);
+	drawText(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
 /** 
@@ -792,36 +773,9 @@ public void drawText(String string, int x, int y) {
  * </ul>
  */
 public void drawText(String string, int x, int y, boolean isTransparent) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	byte[] buffer1 = Converter.wcsToMbcs(null, "Y", true);
-	int fontHandle = _getGCFont();
-	int[] unused = new int[1];
-	int[] width = new int[1];
-	int[] ascent = new int[1];
-	int[] average_ascent = new int [1];
-	OS.gdk_string_extents(fontHandle, buffer, unused, unused, width, ascent, unused);
-	OS.gdk_string_extents(fontHandle, buffer1, unused, unused, unused, average_ascent, unused);
-	if (ascent[0]<average_ascent[0]) ascent[0] = average_ascent[0];
-	if (!isTransparent) {
-		int height = OS.gdk_string_height(fontHandle, buffer);
-		GdkGCValues values = new GdkGCValues();
-		OS.gdk_gc_get_values(handle, values);
-		GdkColor color = new GdkColor();
-		color.pixel = values.background_pixel;
-		color.red = values.background_red;
-		color.green = values.background_green;
-		color.blue = values.background_blue;
-		OS.gdk_gc_set_foreground(handle, color);
-		OS.gdk_draw_rectangle(data.drawable, handle, 1, x, y, width[0], height);
-		color.pixel = values.foreground_pixel;
-		color.red = values.foreground_red;
-		color.green = values.foreground_green;
-		color.blue = values.foreground_blue;
-		OS.gdk_gc_set_foreground(handle, color);
-	}
-	OS.gdk_draw_string(data.drawable, fontHandle, handle, x, y + ascent[0], buffer);
+	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
+	if (isTransparent) flags |= SWT.DRAW_TRANSPARENT;
+	drawText(string, x, y, flags);
 }
 
 /** 
@@ -859,8 +813,13 @@ public void drawText(String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y, int flags) {
-	// NOT IMPLEMENTED
-	drawText(string, x, y, (flags & SWT.DRAW_TRANSPARENT) != 0);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	//FIXME - check flags
+	int layout = data.layout;
+	byte[] buffer = Converter.wcsToMbcs(null, string, true);
+	OS.pango_layout_set_text(layout, buffer, buffer.length - 1);
+	OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
 }
 
 /**
@@ -1243,9 +1202,8 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
  */
 public int getAdvanceWidth(char ch) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-//	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch });
-//	return OS.gdk_char_width(_getGCFont(), charBuffer[0]);
-	return 0;
+	//BOGUS
+	return stringExtent(new String(new char[]{ch})).x;
 }
 
 /** 
@@ -1287,13 +1245,8 @@ public Color getBackground() {
  */
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-//	byte[] charBuffer = Converter.wcsToMbcs(null, new char[] { ch });
-//	int[] lbearing = new int[1];
-//	int[] rbearing = new int[1];
-//	int[] unused = new int[1];
-//	OS.gdk_string_extents(_getGCFont(), charBuffer, lbearing, rbearing, unused, unused, unused);
-//	return rbearing[0] - lbearing[0];
-	return 0;
+	//BOGUS
+	return stringExtent(new String(new char[]{ch})).x;
 }
 
 /** 
@@ -1363,8 +1316,8 @@ public void getClipping(Region region) {
  */
 public Font getFont() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-//	return Font.gtk_new(_getGCFont());
-	return null;
+	int font = OS.pango_context_get_font_description(data.context);
+	return Font.gtk_new(data.device, font);
 }
 
 /**
@@ -1380,12 +1333,15 @@ public Font getFont() {
  */
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-//	int fontHandle = _getGCFont();
-//	if (fontHandle==0) {
-//		SWT.error(SWT.ERROR_UNSPECIFIED);
-//	}
-//	return FontMetrics.gtk_new(fontHandle);
-	return null;
+	int context = data.context;
+	int font = OS.pango_context_get_font_description(context);
+	int metrics = OS.pango_context_get_metrics(context, font, null);
+	FontMetrics fm = new FontMetrics();
+	fm.ascent = OS.pango_font_metrics_get_ascent(metrics);
+	fm.descent = OS.pango_font_metrics_get_descent(metrics);
+	fm.averageCharWidth = OS.pango_font_metrics_get_approximate_char_width(metrics);
+	fm.height = fm.ascent + fm.descent;
+	return fm;
 }
 
 /** 
@@ -1485,10 +1441,20 @@ public int hashCode() {
 }
 
 void init(Drawable drawable, GCData data, int gdkGC) {
+	int context = OS.gdk_pango_context_get();
+	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.context = context;	
+	int layout = OS.pango_layout_new(context);
+	if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	data.layout = layout;
+
 	GdkColor foreground = data.foreground;
 	if (foreground != null) OS.gdk_gc_set_foreground(gdkGC, foreground);
 	GdkColor background = data.background;
-	if (background != null) OS.gdk_gc_set_background (gdkGC, background);
+	if (background != null) OS.gdk_gc_set_background (gdkGC, background);	
+	int font = data.font;
+	if (font != 0) OS.pango_context_set_font_description(context, font);
+
 	Image image = data.image;
 	if (image != null) {
 		image.memGC = this;
@@ -1659,16 +1625,9 @@ public void setClipping(Region region) {
  */
 public void setFont(Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-/*	int fontHandle = 0;
-	if (font == null) {
-		GtkStyle gtkStyle = new GtkStyle();
-		int style = OS.gtk_widget_get_default_style();
-		OS.memmove(gtkStyle, style, GtkStyle.sizeof);
-		fontHandle = gtkStyle.font;
-	} else {
-		fontHandle = font.handle;
-	}
-	OS.gdk_gc_set_font(handle, fontHandle);*/
+	if (font == null) font = data.device.systemFont;
+	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.pango_context_set_font_description(data.context, font.handle);
 }
 
 /**
@@ -1792,10 +1751,14 @@ public void setXORMode(boolean val) {
 public Point stringExtent(String string) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	//FIXME - need to avoid delimiter and tabs
+	int layout = data.layout;
 	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	int width = OS.gdk_string_width(_getGCFont(), buffer);
-	int height = OS.gdk_string_height(_getGCFont(), buffer);
-	return new Point(width, height);
+	OS.pango_layout_set_text(layout, buffer, buffer.length - 1);
+	int[] width = new int[1];
+	int[] height = new int[1];
+	OS.pango_layout_get_size(layout, width, height);
+	return new Point(width[0] / OS.PANGO_SCALE(), height[0] / OS.PANGO_SCALE());
 }
 
 /**
@@ -1818,12 +1781,7 @@ public Point stringExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);	
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	int width = OS.gdk_string_width(_getGCFont(), buffer);
-	int height = OS.gdk_string_height(_getGCFont(), buffer);
-	return new Point(width, height);
+	return textExtent(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
 /**
@@ -1858,8 +1816,16 @@ public Point textExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string, int flags) {
-	//NOT IMPLEMENTED
-	return textExtent(string);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	//FIXME - check flags
+	int layout = data.layout;
+	byte[] buffer = Converter.wcsToMbcs(null, string, true);
+	OS.pango_layout_set_text(layout, buffer, buffer.length - 1);
+	int[] width = new int[1];
+	int[] height = new int[1];
+	OS.pango_layout_get_size(layout, width, height);
+	return new Point(width[0] / OS.PANGO_SCALE(), height[0] / OS.PANGO_SCALE());
 }
 
 /**
