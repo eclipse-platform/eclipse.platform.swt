@@ -1372,11 +1372,16 @@ void subclass () {
 }
 
 boolean translateTraversal (MSG msg) {
+	/*
+	* When the combo box is dropped down, allow return
+	* to select an item in the list and escape to close
+	* the combo box.
+	*/
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0 && msg.hwnd == hwndText) {
 		switch (msg.wParam) {
+			case OS.VK_RETURN:
 			case OS.VK_ESCAPE:
-				/* Allow the escape key to close the combo box */
 				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
 					return false;
 				}
