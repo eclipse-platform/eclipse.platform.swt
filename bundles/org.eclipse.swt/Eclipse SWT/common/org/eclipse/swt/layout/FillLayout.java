@@ -20,13 +20,13 @@ import org.eclipse.swt.widgets.*;
  * <p>
  * Initially, the controls will all be as tall as the tallest control, 
  * and as wide as the widest. <code>FillLayout</code> does not wrap, 
- * and you cannot specify margins or spacing. You might use it to 
+ * but you can specify margins and spacing. You might use it to 
  * lay out buttons in a task bar or tool bar, or to stack checkboxes 
  * in a <code>Group</code>. <code>FillLayout</code> can also be used 
  * when a <code>Composite</code> only has one child. For example, 
  * if a <code>Shell</code> has a single <code>Group</code> child, 
  * <code>FillLayout</code> will cause the <code>Group</code> to 
- * completely fill the <code>Shell</code>.
+ * completely fill the <code>Shell</code> (if margins are 0).
  * </p>
  * <p>
  * Example code: first a <code>FillLayout</code> is created and
