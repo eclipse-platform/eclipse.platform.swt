@@ -1206,6 +1206,24 @@ public void setImeInputMode (int mode) {
 	checkWidget();
 }
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	/*
+	* Bug in Motif.  When a shell that is maximized is resized to
+	* the same size, when the shell is unmaximized, the origin of
+	* the shell is moved to (0, 0).  The fix is to detect this case
+	* and avoid resizing the shell.
+	* 
+	* NOTE: When only the size is changed, the shell moves to (0, 0).
+	* When only the location is changed, the shell is not moved.  There
+	* is no fix for these problems at this time.
+	*/
+	if (getMaximized ()) {
+		Rectangle rect = getBounds ();
+		if (!move || (rect.x == x && rect.y == y)) {
+			if (!resize || (rect.width == width && rect.height == height)) {
+				return false;
+			}
+		}
+	}
 	if (resize) {
 		int [] argList = {OS.XmNminWidth, 0, OS.XmNminHeight, 0};
 		OS.XtGetValues (shellHandle, argList, argList.length / 2);

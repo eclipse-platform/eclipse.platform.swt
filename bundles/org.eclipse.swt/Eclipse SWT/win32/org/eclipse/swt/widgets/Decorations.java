@@ -744,7 +744,7 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	if (OS.IsWinCE) {
 		swFlags = OS.SW_RESTORE;
 	} else {
-		if (OS.IsIconic (handle) || OS.IsZoomed (handle)) {
+		if (OS.IsIconic (handle)) {
 			setPlacement (x, y, width, height, flags);
 			return;
 		}
@@ -752,14 +752,22 @@ void setBounds (int x, int y, int width, int height, int flags, boolean defer) {
 	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
+	boolean sameOrigin = true;
 	if ((OS.SWP_NOMOVE & flags) == 0) {
-		if (rect.left != x || rect.top != y) {
-			moved = true;
-		}
+		sameOrigin = rect.left == x && rect.top == y;
+		if (!sameOrigin) moved = true;
 	}
+	boolean sameExtent = true;
 	if ((OS.SWP_NOSIZE & flags) == 0) {
-		if (rect.right - rect.left != width || rect.bottom - rect.top != height) {
-			resized = true;
+		sameExtent = rect.right - rect.left == width && rect.bottom - rect.top == height;
+		if (!sameExtent) resized = true;
+	}
+	if (!OS.IsWinCE) {
+		if (OS.IsZoomed (handle)) {
+			if (sameOrigin && sameExtent) return;
+			setPlacement (x, y, width, height, flags);
+			setMaximized (false);
+			return;
 		}
 	}
 	super.setBounds (x, y, width, height, flags, defer);
@@ -1142,37 +1150,39 @@ void setPlacement (int x, int y, int width, int height, int flags) {
 			lpwndpl.showCmd = OS.SW_SHOWMAXIMIZED;
 		}
 	}
-	boolean move = false;
+	boolean sameOrigin = true;
 	if ((flags & OS.SWP_NOMOVE) == 0) {
-		move = lpwndpl.left != x || lpwndpl.top != y;
+		sameOrigin = lpwndpl.left != x || lpwndpl.top != y;
 		lpwndpl.right = x + (lpwndpl.right - lpwndpl.left);
 		lpwndpl.bottom = y + (lpwndpl.bottom - lpwndpl.top);
 		lpwndpl.left = x;
 		lpwndpl.top = y;
 	}
-	boolean resize = false;
+	boolean sameExtent = true;
 	if ((flags & OS.SWP_NOSIZE) == 0) {
-		resize = lpwndpl.right - lpwndpl.left != width || lpwndpl.bottom - lpwndpl.top != height;
+		sameExtent = lpwndpl.right - lpwndpl.left != width || lpwndpl.bottom - lpwndpl.top != height;
 		lpwndpl.right = lpwndpl.left + width;
 		lpwndpl.bottom = lpwndpl.top + height;
 	}
 	OS.SetWindowPlacement (handle, lpwndpl);
-	if (move) {
-		moved = true;
-		Point location = getLocation ();
-		oldX = location.x;
-		oldY = location.y;
-		sendEvent (SWT.Move);
-		if (isDisposed ()) return;
-	}
-	if (resize) {
-		resized = true;
-		Rectangle rect = getClientArea ();
-		oldWidth = rect.width;
-		oldHeight = rect.height;
-		sendEvent (SWT.Resize);
-		if (isDisposed ()) return;
-		if (layout != null) layout.layout (this, false);
+	if (OS.IsIconic (handle)) {
+		if (sameOrigin) {
+			moved = true;
+			Point location = getLocation ();
+			oldX = location.x;
+			oldY = location.y;
+			sendEvent (SWT.Move);
+			if (isDisposed ()) return;
+		}
+		if (sameExtent) {
+			resized = true;
+			Rectangle rect = getClientArea ();
+			oldWidth = rect.width;
+			oldHeight = rect.height;
+			sendEvent (SWT.Resize);
+			if (isDisposed ()) return;
+			if (layout != null) layout.layout (this, false);
+		}
 	}
 }
 

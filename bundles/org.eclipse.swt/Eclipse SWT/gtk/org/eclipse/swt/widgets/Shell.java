@@ -993,6 +993,22 @@ void resizeBounds (int width, int height, boolean notify) {
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	/*
+	* Bug in GTK.  When either of the location or size of
+	* a shell is changed while the shell is maximized, the
+	* shell is moved to (0, 0).  The fix is to explicitly
+	* unmaximize the shell before setting the bounds to
+	* anything different from the current bounds.
+	*/
+	if (getMaximized ()) {
+		Rectangle rect = getBounds ();
+		if (!move || (rect.x == x && rect.y == y)) {
+			if (!resize || (rect.width == width && rect.height == height)) {
+				return 0;
+			}
+		}
+		setMaximized (false);
+	}
 	int result = 0;
 	if (move) {
 		int [] x_pos = new int [1], y_pos = new int [1];
