@@ -1788,7 +1788,7 @@ public void setCursorLocation (int x, int y) {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	OS.SetCursorPos (point.x, point.y);
+	setCursorLocation (point.x, point.y);
 }
 
 /**
