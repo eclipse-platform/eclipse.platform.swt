@@ -983,10 +983,18 @@ public boolean isVisible () {
 void manageChildren () {
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	super.manageChildren ();
-	int xDisplay = OS.XtDisplay (shellHandle);
-	if (xDisplay == 0) return;
-	int width = OS.XDisplayWidth (xDisplay, OS.XDefaultScreen (xDisplay)) * 5 / 8;
-	int height = OS.XDisplayHeight (xDisplay, OS.XDefaultScreen (xDisplay)) * 5 / 8;
+	int width = 0, height = 0;
+	if (OS.IsLinux) {
+		Monitor monitor = getMonitor ();
+		Rectangle rect = monitor.getClientArea ();
+		width = rect.width * 5 / 8;
+		height = rect.height * 5 / 8;
+	} else {
+		int xDisplay = OS.XtDisplay (shellHandle);
+		if (xDisplay == 0) return;
+		width = OS.XDisplayWidth (xDisplay, OS.XDefaultScreen (xDisplay)) * 5 / 8;
+		height = OS.XDisplayHeight (xDisplay, OS.XDefaultScreen (xDisplay)) * 5 / 8;
+	}
 	OS.XtResizeWidget (shellHandle, width, height, 0);
 }
 /**
