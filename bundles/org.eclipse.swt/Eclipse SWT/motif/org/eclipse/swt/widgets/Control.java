@@ -464,7 +464,7 @@ void createWidget (int index) {
 	* the programmer queries the font, not only will the handle be
 	* different but the font will be unexpectedly disposed when
 	* the widget is disposed.  This can cause GP's when the font
-	* is set in another widget.  The fix is to cache the font the
+	* is set in another widget.  The fix is to cache the font that
 	* the programmer provides.  The initial value of the cache is
 	* the default font for the widget.
 	*/
