@@ -32,8 +32,8 @@ public class CustomControlExample extends ControlExample {
 	Tab[] createTabs() {
 		return new Tab [] {
 			new CComboTab (this),
-			new CTabFolderTab (this),
 			new CLabelTab (this),
+			new CTabFolderTab (this),
 			new SashFormTab (this),
 			new StyledTextTab (this),
 			new TableTreeTab (this),
