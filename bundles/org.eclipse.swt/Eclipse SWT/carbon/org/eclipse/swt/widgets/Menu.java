@@ -161,7 +161,6 @@ public Menu (MenuItem parentItem) {
  * @see HelpListener
  * @see #removeHelpListener
  */
-
 public void addHelpListener (HelpListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -188,7 +187,6 @@ public void addHelpListener (HelpListener listener) {
  * @see MenuListener
  * @see #removeMenuListener
  */
-
 public void addMenuListener (MenuListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -442,7 +440,9 @@ public MenuItem [] getItems () {
 			System.arraycopy (newItems, 0, items, 0, index);
 			items = newItems;
 		}
-		items [index++] = parent.findMenuItem (commandID [0]);
+		items [index] = parent.findMenuItem (commandID [0]);
+		if (items [index] != null)
+			index++;
 	}
 	if (index == items.length) return items;
 	MenuItem [] result = new MenuItem [index];
