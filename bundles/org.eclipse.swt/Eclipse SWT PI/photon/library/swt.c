@@ -4173,7 +4173,33 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhInputGroup
 	
 	return (jint) PhInputGroup ((PhEvent_t *) event);
 }
- 
+
+#ifndef NO_PhQueryRids
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PhQueryRids
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jobject arg6, jintArray arg7, jint arg8)
+{
+	DECL_GLOB(pGlob)
+	PhRect_t _arg6, *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint rc;
+
+	DEBUG_CALL("PhQueryRids\n")
+
+	if (arg6) {
+		lparg6 = &_arg6;
+		cachePhRect_tFids(env, arg6, &PGLOB(PhRect_tFc));
+		getPhRect_tFields(env, arg6, lparg6, &PGLOB(PhRect_tFc));
+	}
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	rc = (jint)PhQueryRids(arg0, arg1, arg2, arg3, arg4, (PhRid_t)arg5, (PhRect_t*)lparg6, (PhRid_t *)lparg7, arg8);
+	if (arg6) {
+		setPhRect_tFields(env, arg6, lparg6, &PGLOB(PhRect_tFc));
+	}
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	return rc;
+}
+#endif
+
 /*
  * Class:     org_eclipse_swt_internal_photon_OS
  * Method:    PtContainer
