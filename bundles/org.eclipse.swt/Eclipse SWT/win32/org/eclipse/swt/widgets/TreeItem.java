@@ -574,6 +574,7 @@ public void setExpanded (boolean expanded) {
 			if (OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem) != 0) {
 				event.item = parent.items [tvItem.lParam];	
 			}
+			parent.hAnchor = hNewItem;
 		}
 		parent.sendEvent (SWT.Selection, event);
 	}
