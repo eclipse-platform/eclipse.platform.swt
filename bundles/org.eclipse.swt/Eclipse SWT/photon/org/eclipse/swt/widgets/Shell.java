@@ -14,7 +14,7 @@ import org.eclipse.swt.events.*;
 public class Shell extends Decorations {
 	int shellHandle;
 	Display display;
-	int modal, blockedList;
+	int blockedList;
 	Control lastFocus;
 
 public Shell () {
@@ -73,6 +73,16 @@ public void addShellListener (ShellListener listener) {
 
 void bringToTop () {
 	OS.PtWidgetToFront (shellHandle);
+}
+
+static int checkStyle (int style) {
+	style = Decorations.checkStyle (style);
+	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
+	int bits = style & ~mask;
+	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
+	if ((style & SWT.APPLICATION_MODAL) != 0) return bits | SWT.APPLICATION_MODAL;
+	if ((style & SWT.PRIMARY_MODAL) != 0) return bits | SWT.PRIMARY_MODAL;
+	return bits;
 }
 
 void closeWidget () {
@@ -539,19 +549,6 @@ public void setMinimized (boolean minimized) {
 	}
 }
 
-public void setModal (int modal) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	switch (modal) {
-		case SWT.MODELESS:
-		case SWT.PRIMARY_MODAL:
-		case SWT.APPLICATION_MODAL:
-		case SWT.SYSTEM_MODAL:
-			this.modal = modal;
-			break;
-	}
-}
-
 public void setText (String string) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -585,7 +582,8 @@ public void setVisible (boolean visible) {
 	}
 	
 	if (visible) {
-		switch (modal) {
+		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+		switch (style & mask) {
 			case SWT.PRIMARY_MODAL:
 				if (parent != null) {
 					int parentHandle = parent.getShell ().shellHandle;
