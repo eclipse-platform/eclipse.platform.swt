@@ -1675,7 +1675,7 @@ public void select (int index) {
 	checkItems (false);
 	if (0 <= index && index < itemCount) {
 		int [] ids = new int [] {index + 1};
-		select (ids, ids.length, false, false);
+		select (ids, ids.length, false);
 	}
 }
 
@@ -1707,7 +1707,7 @@ public void select (int start, int end) {
 		int length = end - start + 1;
 		int [] ids = new int [length];
 		for (int i=0; i<length; i++) ids [i] = end - i + 1;
-		select (ids, length, false, false);
+		select (ids, length, false);
 	}
 }
 
@@ -1742,11 +1742,11 @@ public void select (int [] indices) {
 			ids [count++] = index + 1;
 		}
 	}
-	if (count > 0) select (ids, count, false, false);
+	if (count > 0) select (ids, count, false);
 }
 
-void select (int [] ids, int count, boolean clear, boolean notify) {
-	if (!notify) ignoreSelect = true;
+void select (int [] ids, int count, boolean clear) {
+	ignoreSelect = true;
 	/*
 	* Bug in the Macintosh.  When the DataBroswer selection flags includes
 	* both kDataBrowserNeverEmptySelectionSet and kDataBrowserSelectOnlyOne,
@@ -1768,7 +1768,7 @@ void select (int [] ids, int count, boolean clear, boolean notify) {
 	if ((style & SWT.SINGLE) != 0) {
 		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
 	}
-	if (!notify) ignoreSelect = false;
+	ignoreSelect = false;
 }
 
 /**
@@ -1783,7 +1783,7 @@ public void selectAll () {
 	checkWidget ();
 	checkItems (false);
 	if ((style & SWT.SINGLE) != 0) return;
-	select (null, 0, false, false);
+	select (null, 0, false);
 }
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -1964,8 +1964,13 @@ void setSelection (int index, boolean notify) {
 //	checkWidget();
 	if (0 <= index && index < itemCount) {
 		int [] ids = new int [] {index + 1};
-		select (ids, ids.length, true, notify);
+		select (ids, ids.length, true);
 		showIndex (index);
+		if (notify) {
+			Event event = new Event ();
+			event.item = _getItem (index);
+			postEvent (SWT.Selection, event);
+		}
 	}
 }
 
@@ -1997,7 +2002,7 @@ public void setSelection (int start, int end) {
 	int length = end - start + 1;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = end - i + 1;
-	select (ids, length, true, false);
+	select (ids, length, true);
 	showIndex (ids [0] - 1);
 }
 
@@ -2034,7 +2039,7 @@ public void setSelection (int [] indices) {
 		}
 	}
 	if (count > 0) {
-		select (ids, count, true, false);
+		select (ids, count, true);
 		showIndex (ids [0] - 1);
 	}
 }
@@ -2074,7 +2079,7 @@ public void setSelection (TableItem [] items) {
 		}
 	}
 	if (count > 0) {
-		select (ids, count, true, false);
+		select (ids, count, true);
 		showIndex (ids [0] - 1);
 	}
 }
