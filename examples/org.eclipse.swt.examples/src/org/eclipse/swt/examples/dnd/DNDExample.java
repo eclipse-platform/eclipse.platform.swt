@@ -12,6 +12,7 @@ package org.eclipse.swt.examples.dnd;
 
  
 import org.eclipse.swt.*;
+import org.eclipse.swt.custom.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
@@ -984,24 +985,29 @@ private Control createWidget(int type, Composite parent, String prefix){
 public void open(Display display) {
 	Shell shell = new Shell(display);
 	shell.setText("Drag and Drop Example");
-	shell.setLayout(new FormLayout());
+	shell.setLayout(new FillLayout());
 	
-	Label dragLabel = new Label(shell, SWT.LEFT);
+	ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
+	Composite parent = new Composite(sc, SWT.NONE);
+	sc.setContent(parent);
+	parent.setLayout(new FormLayout());
+	
+	Label dragLabel = new Label(parent, SWT.LEFT);
 	dragLabel.setText("Drag Source:");
 	
-	Group dragWidgetGroup = new Group(shell, SWT.NONE);
+	Group dragWidgetGroup = new Group(parent, SWT.NONE);
 	dragWidgetGroup.setText("Widget");
 	createDragWidget(dragWidgetGroup);
 	
-	Group dragOperationsGroup = new Group(shell, SWT.NONE);
+	Group dragOperationsGroup = new Group(parent, SWT.NONE);
 	dragOperationsGroup.setText("Allowed Operation(s):");
 	createDragOperations(dragOperationsGroup);
 	
-	Group dragTypesGroup = new Group(shell, SWT.NONE);
+	Group dragTypesGroup = new Group(parent, SWT.NONE);
 	dragTypesGroup.setText("Transfer Type(s):");
 	createDragTypes(dragTypesGroup);
 	
-	dragConsole = new Text(shell, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+	dragConsole = new Text(parent, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
 	Menu menu = new Menu (shell, SWT.POP_UP);
 	MenuItem item = new MenuItem (menu, SWT.PUSH);
 	item.setText ("Clear");
@@ -1020,22 +1026,22 @@ public void open(Display display) {
 	});
 	dragConsole.setMenu(menu);
 	
-	Label dropLabel = new Label(shell, SWT.LEFT);
+	Label dropLabel = new Label(parent, SWT.LEFT);
 	dropLabel.setText("Drop Target:");
 	
-	Group dropWidgetGroup = new Group(shell, SWT.NONE);
+	Group dropWidgetGroup = new Group(parent, SWT.NONE);
 	dropWidgetGroup.setText("Widget");
 	createDropWidget(dropWidgetGroup);
 	
-	Group dropOperationsGroup = new Group(shell, SWT.NONE);
+	Group dropOperationsGroup = new Group(parent, SWT.NONE);
 	dropOperationsGroup.setText("Allowed Operation(s):");
 	createDropOperations(dropOperationsGroup);
 	
-	Group dropTypesGroup = new Group(shell, SWT.NONE);
+	Group dropTypesGroup = new Group(parent, SWT.NONE);
 	dropTypesGroup.setText("Transfer Type(s):");
 	createDropTypes(dropTypesGroup);
 	
-	dropConsole = new Text(shell, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
+	dropConsole = new Text(parent, SWT.READ_ONLY | SWT.BORDER |SWT.V_SCROLL | SWT.H_SCROLL | SWT.MULTI);
 	menu = new Menu (shell, SWT.POP_UP);
 	item = new MenuItem (menu, SWT.PUSH);
 	item.setText ("Clear");
@@ -1119,7 +1125,13 @@ public void open(Display display) {
 	data.right = new FormAttachment(100, -10);
 	dropConsole.setLayoutData(data);
 		
-	shell.setSize(1000, 900);
+	sc.setMinSize(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+	sc.setExpandHorizontal(true);
+	sc.setExpandVertical(true);
+	
+	Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	Rectangle monitorArea = shell.getMonitor().getClientArea();
+	shell.setSize(Math.min(size.x, monitorArea.width - 20), Math.min(size.y, monitorArea.height - 20));
 	shell.open();
 		
 	while (!shell.isDisposed()) {
