@@ -850,8 +850,10 @@ boolean updateOutputDir() {
 		dialog.open();
 		return false;
 	}
-	if (outputDirStr.length() > 0 && !outputDirStr.equals(app.getOutputDir())) {
-		app.setOutputDir(outputDirStr);
+	if (outputDirStr.length() > 0) {
+		if (!outputDirStr.equals(app.getOutputDir())) {
+			app.setOutputDir(outputDirStr);
+		}
 		if (outputDirCb.indexOf(outputDirStr) == -1) {
 			outputDirCb.add(outputDirStr);
 		}
@@ -861,8 +863,10 @@ boolean updateOutputDir() {
 
 void updateMainClass() {
 	String mainClassStr = mainClassCb.getText();
-	if (mainClassStr.length() > 0 && !mainClassStr.equals(app.getMainClass())) {
-		app.setMainClass(mainClassStr);
+	if (mainClassStr.length() > 0) {
+		if (!mainClassStr.equals(app.getMainClass())) {
+			app.setMainClass(mainClassStr);
+		}
 		if (mainClassCb.indexOf(mainClassStr) == -1) {
 			mainClassCb.add(mainClassStr);
 		}
