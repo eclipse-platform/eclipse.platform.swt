@@ -507,17 +507,22 @@ public Image(Device device, String filename) {
  */
 void createMask() {
 	if (mask != 0) return;
-	ImageData maskImage = getImageData().getTransparencyMask();
-	byte[] maskData = maskImage.data;
+	mask = createMask(getImageData(), false);
+	if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+}
+
+int createMask(ImageData image, boolean copy) {
+	ImageData mask = image.getTransparencyMask();
+	byte[] data = mask.data;
+	byte[] maskData = copy ? new byte[data.length] : data;
 	for (int i = 0; i < maskData.length; i++) {
-		byte s = maskData[i];
+		byte s = data[i];
 		maskData[i] = (byte)(((s & 0x80) >> 7) | ((s & 0x40) >> 5) |
 			((s & 0x20) >> 3) | ((s & 0x10) >> 1) | ((s & 0x08) << 1) |
 			((s & 0x04) << 3) | ((s & 0x02) << 5) |	((s & 0x01) << 7));
 	}
-	int /*long*/ mask = OS.gdk_bitmap_create_from_data(0, maskData, maskImage.bytesPerLine * 8, maskImage.height);
-	if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-	this.mask = mask;
+	maskData = ImageData.convertPad(maskData, mask.width, mask.height, mask.depth, mask.scanlinePad, 2);
+	return OS.gdk_bitmap_create_from_data(0, maskData, mask.width, mask.height);
 }
 
 /**
@@ -648,10 +653,17 @@ public ImageData getImageData() {
 		if (gdkImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		GdkImage gdkImage = new GdkImage();
 		OS.memmove(gdkImage, gdkImagePtr);
-		byte[] maskData = data.maskData = new byte[gdkImage.bpl * gdkImage.height];
-		data.maskPad = 4;
+		byte[] maskData = new byte[gdkImage.bpl * gdkImage.height];
 		OS.memmove(maskData, gdkImage.mem, maskData.length);
 		OS.g_object_unref(gdkImagePtr);
+		int maskPad;
+		for (maskPad = 1; maskPad < 128; maskPad++) {
+			int bpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
+			if (gdkImage.bpl == bpl) break;
+		}
+		/* Make mask scanline pad equals to 2 */
+		data.maskPad = 2;
+		maskData = ImageData.convertPad(maskData, width, height, 1, maskPad, data.maskPad);
 		/* Bit swap the mask data if necessary */
 		if (gdkImage.byte_order == OS.GDK_LSB_FIRST) {
 			for (int i = 0; i < maskData.length; i++) {
@@ -661,6 +673,7 @@ public ImageData getImageData() {
 					((b & 0x20) >> 3) |	((b & 0x40) >> 5) | ((b & 0x80) >> 7));
 			}
 		}
+		data.maskData = maskData;
 	}
 	data.transparentPixel = transparentPixel;
 	data.alpha = alpha;
@@ -742,6 +755,9 @@ void init(Device device, ImageData image) {
 	int width = image.width;
 	int height = image.height;
 	PaletteData palette = image.palette;
+	if (!(((image.depth == 1 || image.depth == 2 || image.depth == 4 || image.depth == 8) && !palette.isDirect) ||
+		((image.depth == 8) || (image.depth == 16 || image.depth == 24 || image.depth == 32) && palette.isDirect)))
+			SWT.error (SWT.ERROR_UNSUPPORTED_DEPTH);
 	int /*long*/ pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
@@ -801,7 +817,8 @@ void init(Device device, ImageData image) {
 	OS.g_object_unref(gdkGC);
 	OS.g_object_unref(pixbuf);
 	
-	if (image.getTransparencyType() == SWT.TRANSPARENCY_MASK || image.transparentPixel != -1) {
+	boolean isIcon = image.getTransparencyType() == SWT.TRANSPARENCY_MASK;
+	if (isIcon || image.transparentPixel != -1) {
 		if (image.transparentPixel != -1) {
 			RGB rgb = null;
 			if (palette.isDirect) {
@@ -815,18 +832,10 @@ void init(Device device, ImageData image) {
 				transparentPixel = rgb.red << 16 | rgb.green << 8 | rgb.blue;
 			}
 		}
-		ImageData maskImage = image.getTransparencyMask();
-		byte[] maskData = maskImage.data;
-		for (int i = 0; i < maskData.length; i++) {
-			byte s = maskData[i];
-			maskData[i] = (byte)(((s & 0x80) >> 7) | ((s & 0x40) >> 5) |
-				((s & 0x20) >> 3) | ((s & 0x10) >> 1) | ((s & 0x08) << 1) |
-				((s & 0x04) << 3) | ((s & 0x02) << 5) |	((s & 0x01) << 7));
-		}
-		int /*long*/ mask = OS.gdk_bitmap_create_from_data(0, maskData, maskImage.bytesPerLine * 8, height);
+		int /*long*/ mask = createMask(image, isIcon);
 		if (mask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		this.mask = mask;
-		if (image.getTransparencyType() == SWT.TRANSPARENCY_MASK) {
+		if (isIcon) {
 			this.type = SWT.ICON;
 		} else {
 			this.type = SWT.BITMAP;
