@@ -697,7 +697,7 @@ void init(Device device, ImageData i) {
 		ImageData img = new ImageData(i.width, i.height, 8, i.palette);
 		ImageData.blit(ImageData.BLIT_SRC, 
 			i.data, i.depth, i.bytesPerLine, img.getByteOrder(), 0, 0, i.width, i.height, null, null, null,
-			ImageData.ALPHA_OPAQUE, null, 0,
+			ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 			img.data, img.depth, img.bytesPerLine, img.getByteOrder(), 0, 0, img.width, img.height, null, null, null, 
 			false, false);
 		img.transparentPixel = i.transparentPixel;
@@ -774,7 +774,7 @@ void init(Device device, ImageData i) {
 			ImageData img = new ImageData(i.width, i.height, newDepth, newPalette);
 			ImageData.blit(ImageData.BLIT_SRC, 
 					i.data, i.depth, i.bytesPerLine, i.getByteOrder(), 0, 0, i.width, i.height, redMask, greenMask, blueMask,
-					ImageData.ALPHA_OPAQUE, null, 0,
+					ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 					img.data, img.depth, img.bytesPerLine, newOrder, 0, 0, img.width, img.height, newPalette.redMask, newPalette.greenMask, newPalette.blueMask,
 					false, false);
 			if (i.transparentPixel != -1) {

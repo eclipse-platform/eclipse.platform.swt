@@ -1088,12 +1088,12 @@ public ImageData scaledTo(int width, int height) {
 	/* Scale the image contents */
 	if (palette.isDirect) blit(BLIT_SRC,
 		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, 0, 0, 0,
-		ALPHA_OPAQUE, null, 0,
+		ALPHA_OPAQUE, null, 0, 0, 0,
 		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, 0, 0, 0,
 		flipX, flipY);
 	else blit(BLIT_SRC,
 		this.data, this.depth, this.bytesPerLine, this.getByteOrder(), 0, 0, this.width, this.height, null, null, null,
-		ALPHA_OPAQUE, null, 0,
+		ALPHA_OPAQUE, null, 0, 0, 0,
 		dest.data, dest.depth, dest.bytesPerLine, dest.getByteOrder(), 0, 0, dest.width, dest.height, null, null, null,
 		flipX, flipY);
 	
@@ -1107,7 +1107,7 @@ public ImageData scaledTo(int width, int height) {
 		srcBpl = (srcBpl + (this.maskPad - 1)) / this.maskPad * this.maskPad;
 		blit(BLIT_SRC,
 			this.maskData, 1, srcBpl, MSB_FIRST, 0, 0, this.width, this.height, null, null, null,
-			ALPHA_OPAQUE, null, 0,
+			ALPHA_OPAQUE, null, 0, 0, 0,
 			dest.maskData, 1, destBpl, MSB_FIRST, 0, 0, dest.width, dest.height, null, null, null,
 			flipX, flipY);
 	} else if (alpha != -1) {
@@ -1116,7 +1116,7 @@ public ImageData scaledTo(int width, int height) {
 		dest.alphaData = new byte[dest.width * dest.height];
 		blit(BLIT_SRC,
 			this.alphaData, 8, this.width, MSB_FIRST, 0, 0, this.width, this.height, null, null, null,
-			ALPHA_OPAQUE, null, 0,
+			ALPHA_OPAQUE, null, 0, 0, 0,
 			dest.alphaData, 8, dest.width, MSB_FIRST, 0, 0, dest.width, dest.height, null, null, null,
 			flipX, flipY);
 	}
@@ -1685,6 +1685,8 @@ private static final int
  * @param alphaData the alpha blending or mask data, varies depending
  *        on the value of alphaMode and sometimes ignored
  * @param alphaStride the alpha data number of bytes per line
+ * @param alphaX the top-left x-coord of the alpha blit region
+ * @param alphaY the top-left y-coord of the alpha blit region
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 8, 16, 24, 32
  * @param destStride the destination number of bytes per line
@@ -1704,7 +1706,7 @@ static void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
-	int alphaMode, byte[] alphaData, int alphaStride,
+	int alphaMode, byte[] alphaData, int alphaStride, int alphaX, int alphaY,
 	byte[] destData, int destDepth, int destStride, int destOrder,
 	int destX, int destY, int destWidth, int destHeight,
 	int destRedMask, int destGreenMask, int destBlueMask,
@@ -1779,12 +1781,12 @@ static void blit(int op,
 			case ALPHA_MASK_UNPACKED:
 			case ALPHA_CHANNEL_SEPARATE:
 				if (alphaData == null) alphaMode = 0x10000;
-				apr = srcY * alphaStride + srcX;
+				apr = alphaY * alphaStride + alphaX;
 				break;
 			case ALPHA_MASK_PACKED:
 				if (alphaData == null) alphaMode = 0x10000;
 				alphaStride <<= 3;
-				apr = srcY * alphaStride + srcX;
+				apr = alphaY * alphaStride + alphaX;
 				break;
 			case ALPHA_MASK_INDEX:
 				//throw new IllegalArgumentException("Invalid alpha type");
@@ -2108,6 +2110,8 @@ static void blit(int op,
  * @param alphaData the alpha blending or mask data, varies depending
  *        on the value of alphaMode and sometimes ignored
  * @param alphaStride the alpha data number of bytes per line
+ * @param alphaX the top-left x-coord of the alpha blit region
+ * @param alphaY the top-left y-coord of the alpha blit region
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 1, 2, 4, 8
  * @param destStride the destination number of bytes per line
@@ -2127,7 +2131,7 @@ static void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
-	int alphaMode, byte[] alphaData, int alphaStride,
+	int alphaMode, byte[] alphaData, int alphaStride, int alphaX, int alphaY,
 	byte[] destData, int destDepth, int destStride, int destOrder,
 	int destX, int destY, int destWidth, int destHeight,
 	byte[] destReds, byte[] destGreens, byte[] destBlues,
@@ -2197,12 +2201,12 @@ static void blit(int op,
 			case ALPHA_MASK_UNPACKED:
 			case ALPHA_CHANNEL_SEPARATE:
 				if (alphaData == null) alphaMode = 0x10000;
-				apr = srcY * alphaStride + srcX;
+				apr = alphaY * alphaStride + alphaX;
 				break;
 			case ALPHA_MASK_PACKED:
 				if (alphaData == null) alphaMode = 0x10000;
 				alphaStride <<= 3;
-				apr = srcY * alphaStride + srcX;
+				apr = alphaY * alphaStride + alphaX;
 				break;
 			case ALPHA_MASK_INDEX:
 			case ALPHA_MASK_RGB:
@@ -2633,6 +2637,8 @@ static void blit(int op,
  * @param alphaData the alpha blending or mask data, varies depending
  *        on the value of alphaMode and sometimes ignored
  * @param alphaStride the alpha data number of bytes per line
+ * @param alphaX the top-left x-coord of the alpha blit region
+ * @param alphaY the top-left y-coord of the alpha blit region
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 8, 16, 24, 32
  * @param destStride the destination number of bytes per line
@@ -2652,7 +2658,7 @@ static void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	byte[] srcReds, byte[] srcGreens, byte[] srcBlues,
-	int alphaMode, byte[] alphaData, int alphaStride,
+	int alphaMode, byte[] alphaData, int alphaStride, int alphaX, int alphaY,
 	byte[] destData, int destDepth, int destStride, int destOrder,
 	int destX, int destY, int destWidth, int destHeight,
 	int destRedMask, int destGreenMask, int destBlueMask,
@@ -2726,12 +2732,12 @@ static void blit(int op,
 			case ALPHA_MASK_UNPACKED:
 			case ALPHA_CHANNEL_SEPARATE:
 				if (alphaData == null) alphaMode = 0x10000;
-				apr = srcY * alphaStride + srcX;
+				apr = alphaY * alphaStride + alphaX;
 				break;
 			case ALPHA_MASK_PACKED:
 				if (alphaData == null) alphaMode = 0x10000;
 				alphaStride <<= 3;
-				apr = srcY * alphaStride + srcX;
+				apr = alphaY * alphaStride + alphaX;
 				break;
 			case ALPHA_MASK_INDEX:
 			case ALPHA_MASK_RGB:
@@ -2970,6 +2976,8 @@ static void blit(int op,
  * @param alphaData the alpha blending or mask data, varies depending
  *        on the value of alphaMode and sometimes ignored
  * @param alphaStride the alpha data number of bytes per line
+ * @param alphaX the top-left x-coord of the alpha blit region
+ * @param alphaY the top-left y-coord of the alpha blit region
  * @param destData the destination byte array containing image data
  * @param destDepth the destination depth: one of 1, 2, 4, 8
  * @param destStride the destination number of bytes per line
@@ -2989,7 +2997,7 @@ static void blit(int op,
 	byte[] srcData, int srcDepth, int srcStride, int srcOrder,
 	int srcX, int srcY, int srcWidth, int srcHeight,
 	int srcRedMask, int srcGreenMask, int srcBlueMask,
-	int alphaMode, byte[] alphaData, int alphaStride,
+	int alphaMode, byte[] alphaData, int alphaStride, int alphaX, int alphaY,
 	byte[] destData, int destDepth, int destStride, int destOrder,
 	int destX, int destY, int destWidth, int destHeight,
 	byte[] destReds, byte[] destGreens, byte[] destBlues,
@@ -3063,12 +3071,12 @@ static void blit(int op,
 			case ALPHA_MASK_UNPACKED:
 			case ALPHA_CHANNEL_SEPARATE:
 				if (alphaData == null) alphaMode = 0x10000;
-				apr = srcY * alphaStride + srcX;
+				apr = alphaY * alphaStride + alphaX;
 				break;
 			case ALPHA_MASK_PACKED:
 				if (alphaData == null) alphaMode = 0x10000;
 				alphaStride <<= 3;
-				apr = srcY * alphaStride + srcX;
+				apr = alphaY * alphaStride + alphaX;
 				break;
 			case ALPHA_MASK_INDEX:
 				//throw new IllegalArgumentException("Invalid alpha type");

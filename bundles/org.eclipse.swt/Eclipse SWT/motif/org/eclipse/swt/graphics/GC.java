@@ -424,7 +424,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 			}
 			ImageData.blit(ImageData.BLIT_ALPHA,
 				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, reds, greens, blues,
-				srcImage.alpha, srcImage.alphaData, imgWidth,
+				srcImage.alpha, srcImage.alphaData, imgWidth, srcX, srcY,
 				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, reds, greens, blues,
 				false, false);
 		} else {
@@ -459,7 +459,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 			
 			ImageData.blit(ImageData.BLIT_ALPHA,
 				srcData, xSrcImage.bits_per_pixel, xSrcImage.bytes_per_line, srcOrder, 0, 0, srcWidth, srcHeight, srcRedMask, srcGreenMask, srcBlueMask,
-				srcImage.alpha, srcImage.alphaData, imgWidth,
+				srcImage.alpha, srcImage.alphaData, imgWidth, srcX, srcY,
 				destData, xDestImage.bits_per_pixel, xDestImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destRedMask, destGreenMask, destBlueMask,
 				false, false);
 		}
@@ -559,7 +559,7 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			byte[] buf = new byte[bufSize];
 			ImageData.blit(ImageData.BLIT_SRC,
 				srcData, 1, xSrcImage.bytes_per_line, bitOrder, 0, 0, srcWidth, srcHeight, null, null, null,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				buf, 1, bplX, bitOrder, 0, 0, destWidth, destHeight, null, null, null,
 				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
@@ -581,7 +581,7 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			byte[] buf = new byte[bufSize];
 			ImageData.blit(ImageData.BLIT_SRC,
 				srcData, 4, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, null, null, null,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				buf, 4, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, null, null, null,
 				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
@@ -595,7 +595,7 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			byte[] buf = new byte[bufSize];
 			ImageData.blit(ImageData.BLIT_SRC,
 				srcData, 8, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, null, null, null,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				buf, 8, bplX, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, null, null, null,
 				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
@@ -612,7 +612,7 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			byte[] buf = new byte[bufSize];
 			ImageData.blit(ImageData.BLIT_SRC,
 				srcData, 16, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				buf, 16, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
 				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
@@ -630,7 +630,7 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			byte[] buf = new byte[bufSize];
 			ImageData.blit(ImageData.BLIT_SRC,
 				srcData, 24, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				buf, 24, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
 				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);
@@ -648,7 +648,7 @@ static int scalePixmap(int display, int pixmap, int srcX, int srcY, int srcWidth
 			byte[] buf = new byte[bufSize];
 			ImageData.blit(ImageData.BLIT_SRC,
 				srcData, 32, xSrcImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, srcWidth, srcHeight, 0, 0, 0,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
 				buf, 32, xImage.bytes_per_line, ImageData.MSB_FIRST, 0, 0, destWidth, destHeight, 0, 0, 0,
 				flipX, flipY);
 			int bufPtr = OS.XtMalloc(bufSize);

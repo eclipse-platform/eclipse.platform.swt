@@ -1199,7 +1199,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		int destOrder = ImageData.MSB_FIRST;
 		ImageData.blit(ImageData.BLIT_SRC,
 			image.data, 1, image.bytesPerLine, image.getByteOrder(), srcX, srcY, srcWidth, srcHeight, null, null, null,
-			ImageData.ALPHA_OPAQUE, null, 0,
+			ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 			buf, 1, bplX, destOrder, 0, 0, destWidth, destHeight, null, null, null,
 			flipX, flipY);
 		
@@ -1231,13 +1231,13 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		if (screenDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, palette.redMask, palette.greenMask, palette.blueMask,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
 		}
@@ -1245,13 +1245,13 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		if (screenDirect) {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, xImage.red_mask, xImage.green_mask, xImage.blue_mask,
 				flipX, flipY);
 		} else {
 			ImageData.blit(ImageData.BLIT_SRC,
 				image.data, image.depth, image.bytesPerLine, srcOrder, srcX, srcY, srcWidth, srcHeight, srcReds, srcGreens, srcBlues,
-				ImageData.ALPHA_OPAQUE, null, 0,
+				ImageData.ALPHA_OPAQUE, null, 0, srcX, srcY,
 				buf, xImage.bits_per_pixel, xImage.bytes_per_line, destOrder, 0, 0, destWidth, destHeight, destReds, destGreens, destBlues,
 				flipX, flipY);
 		}
