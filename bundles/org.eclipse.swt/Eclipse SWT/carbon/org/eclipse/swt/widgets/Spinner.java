@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-class Spinner extends Composite {	
+public class Spinner extends Composite {
 	int textHandle, buttonHandle;
 	int textVisibleRgn, buttonVisibleRgn;
 	int increment = 1;
