@@ -6,6 +6,7 @@
     <classpathentry kind="src" path="Eclipse SWT/common_j2se"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/bidi"/>
     <classpathentry kind="src" path="Eclipse SWT/emulated/coolbar"/>
+    <classpathentry kind="src" path="Eclipse SWT/emulated/trayicon"/>
     <classpathentry kind="src" path="Eclipse SWT PI/carbon"/>
     <classpathentry kind="src" path="Eclipse SWT PI/common_j2se"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
