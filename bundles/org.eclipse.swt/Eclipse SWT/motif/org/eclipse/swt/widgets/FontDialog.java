@@ -884,26 +884,29 @@ boolean isOkSelected() {
  */
 void openDialog() {
 	Shell dialog = getDialogShell();
-	Point pt;
-	Rectangle displayRect;
-	int widthLimit;
 		
 	// Start everything off by setting the shell size to its computed size.
-	pt = dialog.computeSize(-1, -1, false);
+	Point pt = dialog.computeSize(-1, -1, false);
 	
 	// Ensure that the width of the shell fits the display.
-	displayRect = dialog.getDisplay().getBounds();
-	widthLimit = displayRect.width * 7 / 8;
+	Rectangle displayRect = dialog.getDisplay().getBounds();
+	int widthLimit = displayRect.width * 7 / 8;
+	int heightLimit = displayRect.height * 7 / 8;
 	if (pt.x > widthLimit) {
 		pt = dialog.computeSize (widthLimit, -1, false);
 	}
+	
+	// centre the dialog on its parent, and ensure that the
+	// whole dialog appears within the screen bounds
 	Rectangle parentBounds = getParent ().getBounds ();
 	int originX = (parentBounds.width - pt.x) / 2 + parentBounds.x;
-	originX = Math.max (0, originX);
+	originX = Math.max (originX, 0);
+	originX = Math.min (originX, widthLimit - pt.x);
 	int originY = (parentBounds.height - pt.y) / 2 + parentBounds.y;
-	originY = Math.max (0, originY);
-	
+	originY = Math.max (originY, 0);
+	originY = Math.min (originY, heightLimit - pt.y);
 	dialog.setBounds (originX, originY, pt.x, pt.y);
+	
 	dialog.setText(getText());
 	// Open the window.
 	dialog.open();
