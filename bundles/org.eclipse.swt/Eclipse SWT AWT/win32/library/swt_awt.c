@@ -11,7 +11,7 @@
 
 #include "jawt_md.h"
 
-#define SWT_AWT_NATIVE(func) Java_org_eclipse_swt_internal_awt_SWT_1AWT_##func
+#define SWT_AWT_NATIVE(func) Java_org_eclipse_swt_awt_SWT_1AWT_##func
 
 #ifndef NO_getAWTHandle
 JNIEXPORT jint JNICALL SWT_AWT_NATIVE(getAWTHandle)
