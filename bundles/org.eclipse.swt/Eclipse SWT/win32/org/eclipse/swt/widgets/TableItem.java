@@ -172,8 +172,7 @@ public Rectangle getBounds (int index) {
 	int hwndHeader =  OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) return new Rectangle (0, 0, 0, 0); 
-	int gridWidth = 0;
-	if (parent.getLinesVisible ()) gridWidth = parent.getGridLineWidth ();
+	int gridWidth = parent.getLinesVisible () ? parent.getGridLineWidth () : 0;
 	RECT rect = new RECT ();
 	rect.top = index;
 	rect.left = OS.LVIR_LABEL;
@@ -819,6 +818,13 @@ public void setText (int index, String string) {
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
 	if (index == 0) {
+		/*
+		* Feature in Windows.  When LVM_SETITEM is used to set
+		* a string for an item that is equal to the string that
+		* is already there, the item redraws.  The fix is to check
+		* for this case and do nothing.
+		*/
+		if (string.equals (text)) return;
 		super.setText (string);
 	}
 	int hwnd = parent.handle;
