@@ -635,6 +635,9 @@ public StyledText(Composite parent, int style) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * <p>
+ * IMPORTANT: This API is in-progress and may change in the future.
+ * </p>
  */
 public void setBidiColoring(boolean mode) {
 	checkWidget();
@@ -651,6 +654,9 @@ public void setBidiColoring(boolean mode) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * <p>
+ * IMPORTANT: This API is in-progress and may change in the future.
+ * </p>
  */
 public boolean getBidiColoring() {
 	checkWidget();
@@ -5807,6 +5813,10 @@ public void setStyleRange(StyleRange range) {
 				redrawLastLine = true;
 			}				
 		}
+	}
+	if (isBidi()) {
+		redrawFirstLine = true;
+		redrawLastLine = true;
 	}
 	defaultLineStyler.setStyleRange(range);
 	if (range != null) {
