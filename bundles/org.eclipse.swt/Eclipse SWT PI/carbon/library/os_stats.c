@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 822;
-int OS_nativeFunctionCallCount[822];
+int OS_nativeFunctionCount = 824;
+int OS_nativeFunctionCallCount[824];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -179,6 +179,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGPathAddPath",
 	"CGPathAddQuadCurveToPoint",
 	"CGPathAddRect",
+	"CGPathApply",
 	"CGPathCloseSubpath",
 	"CGPathCreateMutable",
 	"CGPathGetBoundingBox",
@@ -827,6 +828,7 @@ char * OS_nativeFunctionNames[] = {
 	"memcpy__I_3II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_ATSLayoutRecord_2II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II",
+	"memcpy__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_FontSelectionQDStyle_2II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_GDevice_2II",
 	"memcpy__Lorg_eclipse_swt_internal_carbon_HMHelpContentRec_2II",

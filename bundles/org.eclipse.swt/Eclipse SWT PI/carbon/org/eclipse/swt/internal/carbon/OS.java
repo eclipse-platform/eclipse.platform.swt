@@ -106,6 +106,11 @@ public class OS extends Platform {
 	public static final int kCGLineJoinMiter = 0;
 	public static final int kCGLineJoinRound = 1;
 	public static final int kCGLineJoinBevel = 2;
+	public static final int kCGPathElementMoveToPoint = 0;
+	public static final int kCGPathElementAddLineToPoint = 1;
+	public static final int kCGPathElementAddQuadCurveToPoint = 2;
+	public static final int kCGPathElementAddCurveToPoint = 3;
+	public static final int kCGPathElementCloseSubpath = 4; 
 	public static final int kCGPatternTilingNoDistortion = 0;
 	public static final int kCGPatternTilingConstantSpacingMinimalDistortion = 1;
 	public static final int kCGPatternTilingConstantSpacing = 2;
@@ -872,6 +877,7 @@ public static final native void CGPathAddLineToPoint (int path, float[] m, float
 public static final native void CGPathAddPath (int path1, float[] m, int path2);
 public static final native void CGPathAddQuadCurveToPoint (int path, float[] m, float cx, float cy, float x, float y);
 public static final native void CGPathAddRect (int path, float[] m, CGRect rect);
+public static final native void CGPathApply (int path, int info, int function);
 public static final native void CGPathCloseSubpath (int path);
 public static final native int CGPathCreateMutable ();
 public static final native void CGPathGetBoundingBox (int path, CGRect rect);
@@ -1502,6 +1508,7 @@ public static final native int X2Fix(double x);
 public static final native int ZoomWindowIdeal(int inWindow, short inPartCode, Point ioIdealSize);
 public static final native int kCFNumberFormatterDecimalSeparator();
 public static final native void memcpy(ATSTrapezoid dest, int src, int n);
+public static final native void memcpy(CGPathElement dest, int src, int n);
 public static final native void memcpy(byte[] dest, int src, int n);
 public static final native void memcpy(char[] dest, int src, int n);
 public static final native void memcpy(int[] dest, int src, int n);

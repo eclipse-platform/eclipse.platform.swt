@@ -2092,6 +2092,16 @@ fail:
 }
 #endif
 
+#ifndef NO_CGPathApply
+JNIEXPORT void JNICALL OS_NATIVE(CGPathApply)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, CGPathApply_FUNC);
+	CGPathApply((CGPathRef)arg0, (void *)arg1, (CGPathApplierFunction)arg2);
+	OS_NATIVE_EXIT(env, that, CGPathApply_FUNC);
+}
+#endif
+
 #ifndef NO_CGPathCloseSubpath
 JNIEXPORT void JNICALL OS_NATIVE(CGPathCloseSubpath)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -11232,6 +11242,20 @@ JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_ATSTra
 fail:
 	if (arg0 && lparg0) setATSTrapezoidFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_ATSTrapezoid_2II_FUNC);
+}
+#endif
+
+#ifndef NO_memcpy__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II
+JNIEXPORT void JNICALL OS_NATIVE(memcpy__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	CGPathElement _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II_FUNC);
+	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+fail:
+	if (arg0 && lparg0) setCGPathElementFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, memcpy__Lorg_eclipse_swt_internal_carbon_CGPathElement_2II_FUNC);
 }
 #endif
 

@@ -131,6 +131,18 @@ void setCGFunctionCallbacksFields(JNIEnv *env, jobject lpObject, CGFunctionCallb
 #define CGFunctionCallbacks_sizeof() 0
 #endif
 
+#ifndef NO_CGPathElement
+void cacheCGPathElementFields(JNIEnv *env, jobject lpObject);
+CGPathElement *getCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathElement *lpStruct);
+void setCGPathElementFields(JNIEnv *env, jobject lpObject, CGPathElement *lpStruct);
+#define CGPathElement_sizeof() sizeof(CGPathElement)
+#else
+#define cacheCGPathElementFields(a,b)
+#define getCGPathElementFields(a,b,c) NULL
+#define setCGPathElementFields(a,b,c)
+#define CGPathElement_sizeof() 0
+#endif
+
 #ifndef NO_CGPatternCallbacks
 void cacheCGPatternCallbacksFields(JNIEnv *env, jobject lpObject);
 CGPatternCallbacks *getCGPatternCallbacksFields(JNIEnv *env, jobject lpObject, CGPatternCallbacks *lpStruct);
