@@ -949,7 +949,6 @@ public void setSelection (TreeItem [] items) {
 	for (int i=0; i<this.items.length; i++) {
 		TreeItem item = this.items [i];
 		if (item != null) {
-			if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 			int index = 0;
 			while (index < items.length) {
 				if (items [index] == item) break;
