@@ -8,36 +8,44 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 
 /**
- * Instances of this class are used to define the sides of 
- * controls which are being layed out using a <code>FormLayout</code>. 
+ * Instances of this class are used to define where to attach 
+ * the sides of controls in a <code>FormLayout</code>. 
  * <p>
- * A <code>FormAttachment</code> defines the side of the control by using 
- * an equation, y = ax + b. There are two ways to define the attachment.
- * The first way is to set the equation directly. The "a" term represents 
- * a fraction of the parent composite widget. It can be defined using a 
- * numerator and denominator, or just a percentage value. If a percentage is
- * used, the denominator is set to 100. The "b" term represents an
- * offset. For example,
+ * <code>FormAttachments</code> are set into the top, bottom, left,
+ * and right fields of the <code>FormData</code> for a control.
+ * For example:
  * <pre>
- * 		FormAttachment attach = new FormAttachment (20, 5);
+ * 		FormData formData = new FormData();
+ * 		formData.top = new FormAttachment(0,5);
+ * 		formData.bottom = new FormAttachment(100,-5);
+ * 		formData.left = new FormAttachment(0,5);
+ * 		formData.right = new FormAttachment(100,-5);
+ * 		button.setLayoutData(formData);
  * </pre>
- * This means that the side to which the <code>FormAttachment</code>
- * object belongs will lie at 20% of its parent composite, plus 5 pixels.
  * </p>
  * <p>
- * The second way is to set the control to which the side is attached.
- * For example,
+ * A <code>FormAttachment</code> defines where to attach the side of
+ * a control by using the equation, y = ax + b. The "a" term represents 
+ * a fraction of the parent composite's width (from the left) or height
+ * (from the top). It can be defined using a numerator and denominator,
+ * or just a percentage value. If a percentage is used, the denominator 
+ * is set to 100. The "b" term in the equation represents an offset, in
+ * pixels, from the attachment position. For example:
  * <pre>
- * 		FormAttachment attach = new FormAttachment (button, -10);
+ * 		FormAttachment attach = new FormAttachment (20, -5);
  * </pre>
- * This means that the side to which the <code>FormAttachment</code>
+ * specifies that the side to which the <code>FormAttachment</code>
+ * object belongs will lie at 20% of the parent composite, minus 5 pixels.
+ * </p>
+ * <p>
+ * Control sides can also be attached to the adjacent side of another control.
+ * For example:
+ * <pre>
+ * 		FormAttachment attach = new FormAttachment (button, 10);
+ * </pre>
+ * specifies that the side to which the <code>FormAttachment</code>
  * object belongs will lie in the same position as the adjacent side of 
- * the control <code>button</code>, minus 10 pixels.
- * </p>
- * <p>
- * The attachments are used by the <code>FormData</code> that belongs to
- * each side of the control. It computes the equations from the given
- * information.
+ * the <code>button</code> control, plus 10 pixels.
  * </p>
  * 
  * @see FormLayout
@@ -57,14 +65,19 @@ public final class FormAttachment {
 	 */
 	public int denominator = 100;
 	/**
-	 * offset specifies the offset of the equation which defines the
-	 * attachment. 
+	 * offset specifies the offset, in pixels, of the control side
+	 * from the attachment position.
+	 * If the offset is positive, then the control side is offset
+	 * to the right of or below the attachment position. If it is
+	 * negative, then the control side is offset to the left of or
+	 * above the attachment position.
 	 * 
 	 * This is equivalent to the "b" term in the equation y = ax + b.
+	 * The default value is 0.
 	 */
 	public int offset;
 	/**
-	 * control specifies the control to which the given control is
+	 * control specifies the control to which the control side is
 	 * attached.
 	 */
 	public Control control;

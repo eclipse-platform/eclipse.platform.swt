@@ -8,9 +8,9 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
- * Each widget controlled by a <code>RowLayout</code> can have its initial 
+ * Each control controlled by a <code>RowLayout</code> can have its initial 
  * width and height specified by setting a <code>RowData</code> object 
- * into the widget.
+ * into the control.
  * <p>
  * The following code uses a <code>RowData</code> object to change the initial
  * size of a <code>Button</code> in a <code>Shell</code>:

@@ -10,8 +10,8 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class control the position and size of the 
- * children of a composite widget by defining <code>FormAttachments</code>
- * on the sides of the controls.
+ * children of a composite control by using <code>FormAttachments</code>
+ * that have been set on the sides of the controls.
  * <p>
  * The following example code creates a <code>FormLayout</code> and then sets
  * it into a <code>Shell</code>:
@@ -25,26 +25,18 @@ import org.eclipse.swt.widgets.*;
  * </pre>
  * </p>
  * <p>
- * Layout data is not optional for widgets defined in a 
- * <code>FormLayout</code>. It is necessary to define layout data for each 
- * child widget within the parent <code>Composite</code>. 
- * <code>FormLayout</code> works by creating <code>FormAttachments</code> 
- * for each side of the widget, and storing them in the layout data. An 
- * attachment ‘attaches’ a specific side of the widget either to a position 
- * in the parent <code>Composite</code> or to another widget within the 
- * layout.
- * </p>
- * <p>
- * If a side is not given an attachment, it is not defined as being attached
- * to anything. Each side can be attached to a position in the parent 
- * composite, or to other controls within the layout using an instance 
- * of <code>FormAttachment</code>. Using the <code>FormData</code>, equations
- * are computed for each side. These equations are used to determine the 
- * size and position of each control within the layout.
+ * To use a <code>FormLayout</code>, define a <code>FormData</code>
+ * for each child control within the parent <code>Composite</code>. 
+ * Each side of a child control can be attached to a position in the parent 
+ * composite, or to other controls within the layout, by creating instances
+ * of <code>FormAttachment</code> and setting them into the top, bottom,
+ * left, and right fields of the child control's <code>FormData</code>.
+ * If a side is not given an attachment, it is defined as not being attached
+ * to anything.
  * </p>
  * 
- * @see FormAttachment
  * @see FormData
+ * @see FormAttachment
  */
 public final class FormLayout extends Layout {
 	/**

@@ -11,7 +11,7 @@ import org.eclipse.swt.widgets.*;
 /**
  * <code>GridData</code> is the layout data object associated with 
  * <code>GridLayout</code>. To set a <code>GridData</code> object into a 
- * widget, you use the <code>setLayoutData ()</code> method. 
+ * control, you use the <code>setLayoutData ()</code> method. 
  * <p>
  * There are two ways to create a <code>GridData</code> object with certain 
  * fields set. The first is to set the fields directly, like this:
@@ -28,10 +28,10 @@ import org.eclipse.swt.widgets.*;
  * </pre>
  * </p>
  * <p>
- * NOTE: Do not reuse <code>GridData</code> objects. Every widget in a 
+ * NOTE: Do not reuse <code>GridData</code> objects. Every control in a 
  * <code>Composite</code> that is managed by a <code>GridLayout</code>
  * must have a unique <code>GridData</code> object. If the layout data 
- * for a widget in a <code>GridLayout</code> is null at layout time, 
+ * for a control in a <code>GridLayout</code> is null at layout time, 
  * a unique <code>GridData</code> object is created for it.
  * </p>
  * 

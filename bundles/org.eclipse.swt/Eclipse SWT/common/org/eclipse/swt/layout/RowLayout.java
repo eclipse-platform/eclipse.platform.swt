@@ -17,9 +17,9 @@ import org.eclipse.swt.widgets.*;
  * <code>type</code> is set to horizontal, and one column if it is
  * set to vertical. It has the ability to wrap, and provides configurable 
  * margins and spacing. <code>RowLayout</code> has a number of configuration 
- * fields. In addition, the height and width of each widget in a 
+ * fields. In addition, the height and width of each control in a 
  * <code>RowLayout</code> can be specified by setting a <code>RowData</code>
- * object into the widget using <code>setLayoutData ()</code>.
+ * object into the control using <code>setLayoutData ()</code>.
  * </p>
  * <p>
  * The following example code creates a <code>RowLayout</code>, sets all 

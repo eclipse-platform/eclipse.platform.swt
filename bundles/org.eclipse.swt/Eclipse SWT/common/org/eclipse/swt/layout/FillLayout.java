@@ -10,9 +10,9 @@ import org.eclipse.swt.widgets.*;
 
 /**
  * <code>FillLayout</code> is the simplest layout class. It lays out 
- * widgets in a single row or column, forcing them to be the same size. 
+ * controls in a single row or column, forcing them to be the same size. 
  * <p>
- * Initially, the widgets will all be as tall as the tallest widget, 
+ * Initially, the controls will all be as tall as the tallest control, 
  * and as wide as the widest. <code>FillLayout</code> does not wrap, 
  * and you cannot specify margins or spacing. You might use it to 
  * lay out buttons in a task bar or tool bar, or to stack checkboxes 

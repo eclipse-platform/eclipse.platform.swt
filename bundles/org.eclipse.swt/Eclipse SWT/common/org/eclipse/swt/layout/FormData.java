@@ -10,29 +10,22 @@ import org.eclipse.swt.*;
  * Instances of this class are used to set the attachments 
  * of a control in a <code>FormLayout</code>. 
  * <p>
- * To set a <code>FormData</code> object into a widget, you use the 
+ * To set a <code>FormData</code> object into a control, you use the 
  * <code>setLayoutData ()</code> method. To define attachments for the 
- * <code>FormData</code> objects, you set the fields directly, like this:
+ * <code>FormData</code>, you set the fields directly, like this:
  * <pre>
  * 		FormData formData = new FormData();
  * 		formData.left = new FormAttachment(0,5);
- * 		button1.setLayoutData(formData);
+ * 		formData.right = new FormAttachment(100,-5);
+ * 		button.setLayoutData(formData);
  * </pre>
- * 
+ * </p>
+ * <p>
  * <code>FormData</code> takes the <code>FormAttachments</code> defined for 
  * each side of the control and computes an equation for them. These 
  * equations are used to determine the size and position of the control
  * within the parent composite. <code>FormData</code> objects also allow you 
- * to set the width and height of widgets. 
- * </p>
- * <p>
- * The equation for the side of the widget can be explicitly defined in the 
- * <code>FormAttachment</code>. If the equation has not been explicitly 
- * defined but given a control to which the side has been attached, it is 
- * computed based on the equations of other controls in the layout. If there 
- * is no attachment defined for a specific side, an equation is 
- * defined based on the height or width of the control, and the other sides
- * of the control.
+ * to set the width and height of controls within a <code>FormLayout</code>. 
  * </p>
  * 
  * @see FormLayout

@@ -12,14 +12,13 @@ import java.util.Hashtable;
 import java.util.Vector;
 
 /**
- * Instances of this class lay out the widget children of a 
+ * Instances of this class lay out the control children of a 
  * <code>Composite</code> in a grid. 
  * <p>
  * <code>GridLayout</code> has a number of configuration fields, and the 
- * widgets it lays out can have an associated layout data object, called 
+ * controls it lays out can have an associated layout data object, called 
  * <code>GridData</code>. The power of <code>GridLayout</code> lies in the 
- * ability to configure <code>GridData</code> for each widget controlled by 
- * the layout.
+ * ability to configure <code>GridData</code> for each control in the layout. 
  * </p>
  * <p>
  * The following code creates a shell managed by a <code>GridLayout</code>
@@ -34,7 +33,7 @@ import java.util.Vector;
  * The <code>numColumns</code> field is the most important field in a 
  * <code>GridLayout</code>. Widgets are laid out in columns from left 
  * to right, and a new row is created when <code>numColumns</code> + 1 
- * widgets are added to the <code>Composite<code>.
+ * controls are added to the <code>Composite<code>.
  * </p>
  * 
  * @see GridData
@@ -93,7 +92,7 @@ public GridLayout() {
 	super();
 }
 void adjustGridDimensions(Composite composite, boolean flushCache) {
-	// Ensure that widgets that span more than one row or column have enough space.
+	// Ensure that controls that span more than one row or column have enough space.
 	for (int row = 0; row < grid.size(); row++) {
 		for (int column = 0; column < numColumns; column++) {
 			GridData spec = ((GridData[]) grid.elementAt(row))[column];
@@ -103,7 +102,7 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 					Control child = composite.getChildren()[spec.childIndex];
 					Point extent = child.computeSize(spec.widthHint, spec.heightHint, flushCache);
 
-					// Calculate the size of the widget's spanned columns.
+					// Calculate the size of the control's spanned columns.
 					int lastSpanIndex = column + spec.hSpan;
 					int spannedSize = 0;
 					for (int c = column; c < lastSpanIndex; c++) {
@@ -111,7 +110,7 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 					}
 					spannedSize = spannedSize - horizontalSpacing;
 
-					// If the spanned columns are not large enough to display the widget, adjust the column
+					// If the spanned columns are not large enough to display the control, adjust the column
 					// sizes to account for the extra space that is needed.
 					if (extent.x + spec.horizontalIndent > spannedSize) {
 						int extraSpaceNeeded = extent.x + spec.horizontalIndent - spannedSize;
@@ -137,7 +136,7 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 								}
 							}
 							if (localExpandableColumns.size() > 0) {
-								// If any of the widget's columns grab excess space, allocate the space amongst those columns.
+								// If any of the control's columns grab excess space, allocate the space amongst those columns.
 								int columnExtra = extraSpaceNeeded / localExpandableColumns.size();
 								int columnRemainder = extraSpaceNeeded % localExpandableColumns.size();
 								for (int i = 0; i < localExpandableColumns.size(); i++) {
@@ -148,7 +147,7 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 								colWidth = pixelColumnWidths[lastColumn] + columnRemainder;
 								pixelColumnWidths[lastColumn] = colWidth;
 							} else {
-								// Add the extra space to the widget's last column if none of its columns grab excess space.
+								// Add the extra space to the control's last column if none of its columns grab excess space.
 								colWidth = pixelColumnWidths[lastColumn] + extraSpaceNeeded;
 								pixelColumnWidths[lastColumn] = colWidth;
 							}
@@ -161,14 +160,14 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 					Control child = composite.getChildren()[spec.childIndex];
 					Point extent = child.computeSize(spec.widthHint, spec.heightHint, flushCache);
 
-					// Calculate the size of the widget's spanned rows.
+					// Calculate the size of the control's spanned rows.
 					int lastSpanIndex = row + spec.verticalSpan;
 					int spannedSize = 0;
 					for (int r = row; r < lastSpanIndex; r++) {
 						spannedSize = spannedSize + pixelRowHeights[r] + verticalSpacing;
 					}
 					spannedSize = spannedSize - verticalSpacing;
-					// If the spanned rows are not large enough to display the widget, adjust the row
+					// If the spanned rows are not large enough to display the control, adjust the row
 					// sizes to account for the extra space that is needed.
 					if (extent.y > spannedSize) {
 						int extraSpaceNeeded = extent.y - spannedSize;
@@ -183,7 +182,7 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 							}
 						}
 						if (localExpandableRows.size() > 0) {
-							// If any of the widget's rows grab excess space, allocate the space amongst those rows.
+							// If any of the control's rows grab excess space, allocate the space amongst those rows.
 							int rowExtra = extraSpaceNeeded / localExpandableRows.size();
 							int rowRemainder = extraSpaceNeeded % localExpandableRows.size();
 							for (int i = 0; i < localExpandableRows.size(); i++) {
@@ -194,7 +193,7 @@ void adjustGridDimensions(Composite composite, boolean flushCache) {
 							rowHeight = pixelRowHeights[lastRow] + rowRemainder;
 							pixelRowHeights[lastRow] = rowHeight;
 						} else {
-							// Add the extra space to the widget's last row if no rows grab excess space.
+							// Add the extra space to the control's last row if no rows grab excess space.
 							rowHeight = pixelRowHeights[lastRow] + extraSpaceNeeded;
 							pixelRowHeights[lastRow] = rowHeight;
 						}
@@ -214,7 +213,7 @@ void calculateGridDimensions(Composite composite, boolean flushCache) {
 	pixelRowHeights = new int[grid.size()];
 	
 	// Loop through the grid by column to get the width that each column needs to be.
-	// Each column will be as wide as its widest widget.
+	// Each column will be as wide as its widest control.
 	for (int column = 0; column < numColumns; column++) {
 		maxWidth = 0;
 		for (int row = 0; row < grid.size(); row++) {
@@ -245,7 +244,7 @@ void calculateGridDimensions(Composite composite, boolean flushCache) {
 	}
 
 	// Loop through the grid by row to get the height that each row needs to be.
-	// Each row will be as high as its tallest widget.
+	// Each row will be as high as its tallest control.
 	for (int row = 0; row < grid.size(); row++) {
 		maxHeight = 0;
 		for (int column = 0; column < numColumns; column++) {
@@ -262,9 +261,9 @@ void calculateGridDimensions(Composite composite, boolean flushCache) {
 	}
 }
 void computeExpandableCells() {
-	// If a widget grabs excess horizontal space, the last column that the widget spans
-	// will be expandable.  Similarly, if a widget grabs excess vertical space, the 
-	// last row that the widget spans will be expandable.
+	// If a control grabs excess horizontal space, the last column that the control spans
+	// will be expandable.  Similarly, if a control grabs excess vertical space, the 
+	// last row that the control spans will be expandable.
 	Hashtable growColumns = new Hashtable();
 	Hashtable growRows = new Hashtable();
 	for (int col = 0; col < numColumns; col++) {
@@ -336,7 +335,7 @@ Point computeLayoutSize(Composite composite, int wHint, int hHint, boolean flush
 		totalWidth = wHint;};
 	if (hHint != SWT.DEFAULT) {
 		totalHeight = hHint;};
-	// The preferred extent is the width and height that will accomodate the grid's widgets.
+	// The preferred extent is the width and height that will accomodate the grid's controls.
 	return new Point(totalWidth, totalHeight);
 }
 protected Point computeSize(Composite composite, int wHint, int hHint, boolean flushCache) {
@@ -500,7 +499,7 @@ protected void layout(Composite composite, boolean flushCache) {
 
 	// Calculate whether or not there is any extra space or not enough space due to a resize 
 	// operation.  Then allocate/deallocate the space to columns and rows that are expandable.  
-	// If a widget grabs excess space, its last column or row will be expandable.
+	// If a control grabs excess space, its last column or row will be expandable.
 	excessHorizontal = composite.getClientArea().width - compositeWidth;
 	excessVertical = composite.getClientArea().height - compositeHeight;
 
@@ -576,7 +575,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	columnX = marginWidth + composite.getClientArea().x;
 	rowY = marginHeight + composite.getClientArea().y;
 
-	// Layout the widget left to right, top to bottom.
+	// Layout the control left to right, top to bottom.
 	for (int r = 0; r < rowSize; r++) {
 		int rowHeight = rowHeights[r];
 		GridData[] row = (GridData[]) grid.elementAt(r);
@@ -626,7 +625,7 @@ protected void layout(Composite composite, boolean flushCache) {
 				hAlign = spec.horizontalAlignment;
 				widgetX = columnX;
 
-				// Calculate the x and width values for the widget.
+				// Calculate the x and width values for the control.
 				if (hAlign == spec.CENTER) {
 					widgetX = widgetX + (spannedWidth / 2) - (childExtent.x / 2);
 				} else
@@ -642,7 +641,7 @@ protected void layout(Composite composite, boolean flushCache) {
 					widgetW = childExtent.x;
 				}
 
-				// Calculate the y and height values for the widget.
+				// Calculate the y and height values for the control.
 				vAlign = spec.verticalAlignment;
 				widgetY = rowY;
 				if (vAlign == spec.CENTER) {
@@ -659,7 +658,7 @@ protected void layout(Composite composite, boolean flushCache) {
 				} else {
 					widgetH = childExtent.y;
 				}
-				// Place the widget.
+				// Place the control.
 				child.setBounds(widgetX, widgetY, widgetW, widgetH);
 			}
 			// Update the starting x value.
