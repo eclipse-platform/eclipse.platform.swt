@@ -1713,7 +1713,7 @@ public Image getSystemImage (int id) {
 /**
  * Returns the single instance of the system tray.
  *
- * @return the receiver's user-interface thread
+ * @return the system tray
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
