@@ -124,6 +124,8 @@ class AccessibleFactory {
 
 	private AccessibleFactory (int widgetType) {
 		super ();
+		/* If DefaultParentType is 0 then OS accessibility is not active */
+		if (DefaultParentType == 0) return;
 		int widgetTypeName = ATK.g_type_name (widgetType);
 		int widgetTypeNameLength = OS.strlen (widgetTypeName) + 1;
 		byte[] buffer = new byte [widgetTypeNameLength];
