@@ -228,6 +228,10 @@ static int checkStyle (int style) {
 	return style;
 }
 
+void checkBorder () {
+	/* Do nothing */
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
