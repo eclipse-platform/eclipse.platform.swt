@@ -44,8 +44,6 @@ public class Browser extends Composite {
 	static AppFileLocProvider locProvider; 
 	static int browserCount;
 	static boolean isLinux;
-
-	static final byte[] size_allocate = signal("size_allocate"); //$NON-NLS-1$
 	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
@@ -174,17 +172,6 @@ public Browser(Composite parent, int style) {
 	}
 
 	GTK.gtk_widget_show(gtkHandle);
-}
-
-static byte [] signal(String name) {
-	int length = name.length();
-	char[] chars = new char[length];
-	name.getChars(0, length, chars, 0);
-	byte[] buffer = new byte[length + 1];
-	for (int i=0; i<length; i++) {
-		buffer [i] = (byte)chars[i];
-	}
-	return buffer;
 }
 
 /**	 
