@@ -1057,6 +1057,37 @@ public void select (int index) {
 		ignoreSelect = false;
 	}
 }
+byte [] sendIMEKeyEvent (int type, XKeyEvent xEvent) {
+	/*
+	* Bug in Motif. On Solaris and Linux, XmImMbLookupString() clears
+	* the characters from the IME. This causes the characters to be
+	* stolen from the text widget. The fix is to detect that the IME
+	* has been cleared and use XmTextInsert() to insert the stolen
+	* characters. This problem does not happen on AIX.
+	*/
+	byte [] mbcs = super.sendIMEKeyEvent (type, xEvent);
+	if (mbcs == null || xEvent.keycode != 0) return null;
+	int [] argList = {OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int textHandle = argList[1];
+	int [] unused = new int [1];
+	byte [] buffer = new byte [2];
+	int length = OS.XmImMbLookupString (textHandle, xEvent, buffer, buffer.length, unused, unused);
+	if (length != 0) return null;
+	int [] start = new int [1], end = new int [1];
+	OS.XmTextGetSelectionPosition (textHandle, start, end);
+	if (start [0] == end [0]) {
+		start [0] = end [0] = OS.XmTextGetInsertionPosition (textHandle);
+	}
+	Display display = getDisplay ();
+	boolean warnings = display.getWarnings ();
+	display.setWarnings (false);
+	OS.XmTextReplace (textHandle, start [0], end [0], mbcs);
+	int position = start [0] + mbcs.length - 1;
+	OS.XmTextSetInsertionPosition (textHandle, position);
+	display.setWarnings (warnings);
+	return mbcs;
+}
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
 	int [] argList1 = {OS.XmNtextField, 0, OS.XmNlist, 0};
