@@ -92,60 +92,19 @@ public static String [] getExtensions () {
 	return extensions;
 }
 
-static Program [] getFileClassPrograms () {
-	Program [] programs = new Program [128];
-	/* Use the character encoding for the default locale */
-	TCHAR lpName = new TCHAR (0, 1024);
-	int [] lpcName = new int [] {lpName.length ()};
-	FILETIME ft = new FILETIME ();
-	int dwIndex = 0, count = 0;
-	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {	
-		String path = lpName.toString (0, lpcName [0]);
-		lpcName [0] = lpName.length ();
-		Program program = getProgram (path);
-		if (program != null) {
-			/* Make sure the name is unique */
-			boolean isDuplicate = false;
-			for (int i = 0; i < count; i++) {
-				String value = programs [i].name;
-				if (value.equalsIgnoreCase (program.name)) {
-					isDuplicate = true;
-					break;
-				}
-			}
-			if (!isDuplicate) {
-				if (count == programs.length) {
-					Program [] newPrograms = new Program [programs.length + 128];
-					System.arraycopy (programs, 0, newPrograms, 0, programs.length);
-					programs = newPrograms;
-				}
-				programs [count++] = program;
-			}
-		}
-		dwIndex++;
-	}
-	if (count != programs.length) {
-		Program [] newPrograms = new Program [count];
-		System.arraycopy (programs, 0, newPrograms, 0, count);
-		programs = newPrograms;
-	}
-	return programs;
-}
-
-static String getKeyValue (String string, String value, boolean expand) {
+static String getKeyValue (String string, boolean expand) {
 	/* Use the character encoding for the default locale */
 	TCHAR key = new TCHAR (0, string, true);
 	int [] phkResult = new int [1];
 	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return null;
 	}
-	TCHAR lpValueName = value == null ? null : new TCHAR (0, value, true);
 	String result = null;
 	int [] lpcbData = new int [1];
-	if (OS.RegQueryValueEx (phkResult [0], lpValueName, 0, null, null, lpcbData) == 0) {
+	if (OS.RegQueryValueEx (phkResult [0], (TCHAR) null, 0, null, null, lpcbData) == 0) {
 		/* Use the character encoding for the default locale */
 		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
-		if (OS.RegQueryValueEx (phkResult [0], lpValueName, 0, null, lpData, lpcbData) == 0) {
+		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
 			if (!OS.IsWinCE && expand) {
 				int nSize = OS.ExpandEnvironmentStrings (lpData, null, 0);
 				TCHAR lpDst = new TCHAR (0, nSize);
@@ -162,18 +121,19 @@ static String getKeyValue (String string, String value, boolean expand) {
 }
 
 static Program getProgram (String key) {
+	
+	/* Name */
+	String name = getKeyValue (key, false);
+	if (name == null || name.length () == 0) return null;
 
 	/* Command */
 	String COMMAND = "\\shell\\open\\command";
-	String command = getKeyValue (key + COMMAND, null, true);
+	String command = getKeyValue (key + COMMAND, true);
 	if (command == null || command.length () == 0) return null;
 	
-	/* Name */
-	String name = getProgramName(key, command);
-	if (name == null || name.length () == 0) return null;
-
 	/* Icon */
-	String iconName = getProgramPath(command);
+	String DEFAULT_ICON = "\\DefaultIcon";
+	String iconName = getKeyValue (key + DEFAULT_ICON, true);
 	if (iconName == null || iconName.length () == 0) return null;
 	
 	Program program = new Program ();
@@ -189,39 +149,19 @@ static Program getProgram (String key) {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	/* 
-	* The Windows registry maintains a list of file extensions and their related
-	* editors. In addition, W2K and XP maintain a list of applications which can
-	* be used to populate the 'Open As' dialog. 2 articles in MSDN describe this
-	* mechanism: 'File Associations: Arbitrary File Types' and 'Creating a File
-	* Association'.
-	* There does not seem to be an API to retrieve the list of programs in the
-	* 'Open As' dialog. As a result, on W2K machines and above, we look up the
-	* registry as described in the articles above. On Win95 and NT machines, we use
-	* the list of applications registered to one or more file classes.
-	*/
-	if (OS.IsWin95) return getFileClassPrograms ();
-	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return getFileClassPrograms ();
-	String KEY = "Applications";
-	/* Use the character encoding for the default locale */
-	TCHAR key = new TCHAR (0, KEY, true);
-	int [] phkResult = new int [1];
-	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
-		return  new Program [0];
-	}
-	Program [] programs = new Program [128];
+	Program [] programs = new Program [1024];
 	/* Use the character encoding for the default locale */
 	TCHAR lpName = new TCHAR (0, 1024);
 	int [] lpcName = new int [] {lpName.length ()};
 	FILETIME ft = new FILETIME ();
 	int dwIndex = 0, count = 0;
-	while (OS.RegEnumKeyEx (phkResult[0], dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {	
-		String path = KEY + "\\" + lpName.toString (0, lpcName [0]);
+	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {	
+		String path = lpName.toString (0, lpcName [0]);
 		lpcName [0] = lpName.length ();
 		Program program = getProgram (path);
 		if (program != null) {
 			if (count == programs.length) {
-				Program [] newPrograms = new Program [programs.length + 128];
+				Program [] newPrograms = new Program [programs.length + 1024];
 				System.arraycopy (programs, 0, newPrograms, 0, programs.length);
 				programs = newPrograms;
 			}
@@ -235,98 +175,6 @@ public static Program [] getPrograms () {
 		programs = newPrograms;
 	}
 	return programs;
-}
-
-static String getProgramName (String key, String command) {
-	String FRIENDLYAPPNAME = "FriendlyAppName";
-	/* The FriendlyAppName registry key contains the application name 
-	 * and must be searched first. It can be missing.	 */
-	String name = getKeyValue (key, FRIENDLYAPPNAME, true);
-	if (name != null) {
-		/* The value is either a string or a reference to a resource
-		 * string located in an exe or dll.		 */
-		if (name.charAt (0) == '@') {
-			int nResourceIndex = 0;
-			String fileName = name;
-			int index = name.indexOf (',');
-			if (index != -1) {
-				fileName = name.substring (1, index);
-				String resourceIndex = name.substring (index + 1, name.length ()).trim ();
-				try {
-					nResourceIndex = Integer.parseInt (resourceIndex);
-				} catch (NumberFormatException e) {};
-			}
-			name = null;
-			/* Use the character encoding for the default locale */
-			TCHAR lpFileName = new TCHAR (0, fileName, true);
-			int hInstance = OS.LoadLibraryEx (lpFileName, 0, OS.LOAD_LIBRARY_AS_DATAFILE);
-			if (hInstance != 0) {
-				if (nResourceIndex < 0) nResourceIndex = -nResourceIndex;
-				int nBufferMax = 1024;
-				TCHAR lpBuffer = new TCHAR (0, nBufferMax);
-				int nbr = OS.LoadString (hInstance, nResourceIndex, lpBuffer, nBufferMax);
-				if (nbr != 0) name = lpBuffer.toString (0, nbr);
-				OS.FreeLibrary (hInstance);
-			}
-		}
-		if (name != null && name.length () != 0) return name;
-	}
-	/* Get the friendly name in the version information of the executable */
-	String path = getProgramPath (command);
-	if (path == null) return null;
-	TCHAR lptstrFileName = new TCHAR (0, path, true);
-	int [] lpdwHandle = new int [1];
-	int size = OS.GetFileVersionInfoSize (lptstrFileName, lpdwHandle);
-	if (size != 0) {
-		String langCodepage = null;
-		int hHeap = OS.GetProcessHeap ();
-		int lpData = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, size);
-		if (OS.GetFileVersionInfo(lptstrFileName, 0, size, lpData) != 0) {
-			int[] lplpBuffer = new int [1];
-			int[] puLen = new int [1];
-			short[] codes = new short [2]; 
-			/* Get the hexadecimal string representing the language and codepage
-			 * used by the String table 
-			 */
-			if (OS.VerQueryValue(lpData, new TCHAR(0, "\\VarFileInfo\\Translation", true), lplpBuffer, puLen)) {
-				if (puLen [0] == 4 && lplpBuffer [0] != 0) {
-					OS.MoveMemory(codes, lplpBuffer [0], 4);
-					String data = Integer.toHexString(codes [0] & 0xffff);
-					while (data.length () < 4) data = "0" + data;
-					langCodepage = data;
-					data = Integer.toHexString (codes [1] & 0xffff);
-					while (data.length () < 4) data = "0" + data;
-					langCodepage += data;					
-				}	
-			}
-			if (langCodepage != null) {
-				TCHAR lpSubBlock = new TCHAR (0, "\\StringFileInfo\\" + langCodepage + "\\FileDescription", true);
-				if (OS.VerQueryValue(lpData, lpSubBlock, lplpBuffer, puLen)) {
-					if (lplpBuffer [0] != 0 && puLen [0] != 0) {
-						TCHAR description = new TCHAR(0, puLen [0]);
-						OS.MoveMemory(description, lplpBuffer [0], puLen [0] * TCHAR.sizeof);
-						name = description.toString (0, description.strlen());
-					}
-				}
-			}
-		}
-		if (lpData != 0) OS.HeapFree (hHeap, 0, lpData);
-	}
-	return name;
-}
-
-static String getProgramPath (String command) {
-	String path = null;
-	/*
-	 * Parse the command which may contain quotes and parameters.
-	 * Remove the leading quote if any, and ignore everything
-	 * following the executable extension. If the command does not
-	 * refer to an executable (.exe file only), return null.	 */	
-	int start = command.charAt (0) != '"' ? 0 : 1;
-	String extension = ".exe";
-	int index = command.toLowerCase ().indexOf (extension);
-	if (index > start) path = command.substring (start, index + extension.length ());
-	return path;
 }
 
 /**

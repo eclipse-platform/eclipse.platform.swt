@@ -64,10 +64,6 @@
 #define NO_GetDIBits
 #define NO_GetFileTitleA
 #define NO_GetFileTitleW
-#define NO_GetFileVersionInfoA
-#define NO_GetFileVersionInfoW
-#define NO_GetFileVersionInfoSizeA
-#define NO_GetFileVersionInfoSizeW
 #define NO_GetFontLanguageInfo
 #define NO_GetIconInfo
 #define NO_GetKeyboardLayout
@@ -119,8 +115,6 @@
 #define NO_LoadIconA
 #define NO_LoadImageA
 #define NO_LoadLibraryA
-#define NO_LoadLibraryExA
-#define NO_LoadStringA
 #define NO_MapVirtualKeyA
 #define NO_MessageBoxA
 #define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_DROPFILES_2I
@@ -201,8 +195,6 @@
 #define NO_TranslateAcceleratorA
 #define NO_UnhookWindowsHookEx
 #define NO_UnregisterClassA
-#define NO_VerQueryValueA
-#define NO_VerQueryValueW
 #define NO_VkKeyScanA
 #define NO_VkKeyScanW
 #define NO_WaitMessage
@@ -2200,76 +2192,6 @@ JNIEXPORT jshort JNICALL OS_NATIVE(GetFileTitleW)
 }
 #endif /* NO_GetFileTitleW */
 
-#ifndef NO_GetFileVersionInfoA
-JNIEXPORT jint JNICALL OS_NATIVE(GetFileVersionInfoA)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jint arg3)
-{
-	jbyte *lparg0=NULL;
-	jint rc;
-
-	DEBUG_CALL("GetFileVersionInfoA\n")
-
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	rc = (jint)GetFileVersionInfoA((LPSTR)lparg0, arg1, arg2, (LPVOID)arg3);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	return rc;
-}
-#endif /* NO_GetFileVersionInfoA */
-
-#ifndef NO_GetFileVersionInfoSizeA
-JNIEXPORT jint JNICALL OS_NATIVE(GetFileVersionInfoSizeA)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jintArray arg1)
-{
-	jbyte *lparg0=NULL;
-	jint *lparg1=NULL;
-	jint rc;
-
-	DEBUG_CALL("GetFileVersionInfoSizeA\n")
-
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	rc = (jint)GetFileVersionInfoSizeA((LPSTR)lparg0, lparg1);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	return rc;
-}
-#endif /* NO_GetFileVersionInfoSizeA */
-
-#ifndef NO_GetFileVersionInfoSizeW
-JNIEXPORT jint JNICALL OS_NATIVE(GetFileVersionInfoSizeW)
-	(JNIEnv *env, jclass that, jcharArray arg0, jintArray arg1)
-{
-	jchar *lparg0=NULL;
-	jint *lparg1=NULL;
-	jint rc;
-
-	DEBUG_CALL("GetFileVersionInfoSizeW\n")
-
-	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	rc = (jint)GetFileVersionInfoSizeW((LPWSTR)lparg0, lparg1);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
-	return rc;
-}
-#endif /* NO_GetFileVersionInfoSizeW */
-
-#ifndef NO_GetFileVersionInfoW
-JNIEXPORT jint JNICALL OS_NATIVE(GetFileVersionInfoW)
-	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2, jint arg3)
-{
-	jchar *lparg0=NULL;
-	jint rc;
-
-	DEBUG_CALL("GetFileVersionInfoW\n")
-
-	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
-	rc = (jint)GetFileVersionInfoW((LPWSTR)lparg0, arg1, arg2, (LPVOID)arg3);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	return rc;
-}
-#endif /* NO_GetFileVersionInfoW */
-
 #ifndef NO_GetFocus
 JNIEXPORT jint JNICALL OS_NATIVE(GetFocus)
 	(JNIEnv *env, jclass that)
@@ -4164,70 +4086,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(LoadLibraryW)
 	return rc;
 }
 #endif /* NO_LoadLibraryW */
-
-#ifndef NO_LoadLibraryExA
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadLibraryExA
-	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
-{
-	jbyte *lparg0=NULL;
-	jint rc;
-
-	DEBUG_CALL("LoadLibraryExA\n")
-
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	rc = (jint)LoadLibraryExA((LPSTR)lparg0, (HANDLE)arg1, arg2);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	return rc;
-}
-#endif /* NO_LoadLibraryExA */
-
-#ifndef NO_LoadLibraryExW
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadLibraryExW
-	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
-{
-	jchar *lparg0=NULL;
-	jint rc;
-
-	DEBUG_CALL("LoadLibraryExW\n")
-
-	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
-	rc = (jint)LoadLibraryExW((LPWSTR)lparg0, (HANDLE)arg1, arg2);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	return rc;
-}
-#endif /* NO_LoadLibraryExW */
-
-#ifndef NO_LoadStringA
-JNIEXPORT jint JNICALL OS_NATIVE(LoadStringA)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
-{
-	jbyte *lparg2=NULL;
-	jint rc;
-
-	DEBUG_CALL("LoadStringA\n")
-
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
-	rc = (jint)LoadStringA((HINSTANCE)arg0, arg1, (LPTSTR)lparg2, arg3);
-	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
-	return rc;
-}
-#endif /* NO_LoadStringA */
-
-#ifndef NO_LoadStringW
-JNIEXPORT jint JNICALL OS_NATIVE(LoadStringW)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3)
-{
-	jchar *lparg2=NULL;
-	jint rc;
-
-	DEBUG_CALL("LoadStringW\n")
-
-	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
-	rc = (jint)LoadStringW((HINSTANCE)arg0, arg1, (LPWSTR)lparg2, arg3);
-	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
-	return rc;
-}
-#endif /* NO_LoadStringW */
 
 #ifndef NO_MapVirtualKeyA
 JNIEXPORT jint JNICALL OS_NATIVE(MapVirtualKeyA)
@@ -7340,50 +7198,6 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ValidateRect)
 	return rc;
 }
 #endif /* NO_ValidateRect */
-
-#ifndef NO_VerQueryValueA
-JNIEXPORT jboolean JNICALL OS_NATIVE(VerQueryValueA)
-	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jintArray arg2, jintArray arg3)
-{
-	jbyte *lparg1=NULL;
-	jint *lparg2=NULL;
-	jint *lparg3=NULL;
-	jboolean rc;
-
-	DEBUG_CALL("VerQueryValueA\n")
-
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	rc = (jboolean)VerQueryValueA((LPVOID)arg0, (LPTSTR)lparg1, (LPVOID *)lparg2, (PUINT)lparg3);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	return rc;
-}
-#endif /* NO_VerQueryValueA */
-
-#ifndef NO_VerQueryValueW
-JNIEXPORT jboolean JNICALL OS_NATIVE(VerQueryValueW)
-	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jintArray arg2, jintArray arg3)
-{
-	jchar *lparg1=NULL;
-	jint *lparg2=NULL;
-	jint *lparg3=NULL;
-	jboolean rc;
-
-	DEBUG_CALL("VerQueryValueW\n")
-
-	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	rc = (jboolean)VerQueryValueW((LPVOID)arg0, (LPWSTR)lparg1, (LPVOID *)lparg2, (PUINT)lparg3);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	return rc;
-}
-#endif /* NO_VerQueryValueW */
 
 #ifndef NO_VkKeyScanA
 JNIEXPORT jshort JNICALL OS_NATIVE(VkKeyScanA)
