@@ -1741,9 +1741,9 @@ public void setLineWidth(int width) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setXORMode(boolean val) {
+public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	OS.gdk_gc_set_function(handle, val ? OS.GDK_XOR : OS.GDK_COPY);
+	OS.gdk_gc_set_function(handle, xor ? OS.GDK_XOR : OS.GDK_COPY);
 }
 
 /**
