@@ -1392,8 +1392,6 @@ void initializeInsets () {
  *
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
- *
- * @private
  * 
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
@@ -1432,8 +1430,6 @@ public int internal_new_GC (GCData data) {
  *
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
- *
- * @private
  */
 public void internal_dispose_GC (int context, GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
