@@ -716,7 +716,7 @@ synchronized void createDisplay (DeviceData data) {
 	}
 	OS.gtk_set_locale();
 	if (!OS.gtk_init_check (new int /*long*/ [] {0}, null)) {
-		SWT.error (SWT.ERROR_NO_HANDLES);
+		SWT.error (SWT.ERROR_NO_HANDLES, null, " [gtk_init_check() failed]");
 	}
 	int /*long*/ ptr = OS.gtk_check_version (MAJOR, MINOR, MICRO);
 	if (ptr != 0) {
