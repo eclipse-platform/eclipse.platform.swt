@@ -994,7 +994,7 @@ void mouseDoubleClick(Event event) {
 	if (hitItem == null || itemAction(hitItem, event.x, event.y) != ActionSelect) {
 		return;
 	}
-	if (hooks(SWT.DefaultSelection) == true) {
+	if (isListening(SWT.DefaultSelection) == true) {
 		newEvent = new Event();
 		newEvent.item = hitItem;
 		notifyListeners(SWT.DefaultSelection, newEvent);
