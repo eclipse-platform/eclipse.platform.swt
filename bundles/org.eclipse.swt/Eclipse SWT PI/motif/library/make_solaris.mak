@@ -33,7 +33,7 @@ PATH = /bin:/usr/ccs/bin/:/usr/ucb/:/usr/local/bin
 SWT_PREFIX   = swt
 WS_PREFIX    = motif
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-SWT_OBJ      = callback.o os.o os_structs.o os_custom.o
+SWT_OBJ      = callback.o os.o os_structs.o os_custom.o os_stats.o
 SWT_LIB      = -L$(MOTIF_HOME)/lib -L/usr/lib -R/usr/openwin/lib  \
 	       -G -lXm -lXt -lX11 -lm -lXp -lXtst
 
