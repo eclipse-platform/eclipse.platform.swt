@@ -14,6 +14,8 @@ public final class RowLayout extends Layout {
 	 * columns.
 	 * 
 	 * The default value is horizontal.
+	 * 
+	 * @since 2.0
 	 */
 	public int type = SWT.HORIZONTAL;	
 	/**
@@ -72,18 +74,22 @@ public final class RowLayout extends Layout {
 	 * The default value is 3.
 	 */
 	public int marginBottom = 3;
+
 public RowLayout () {
 }
+
 protected Point computeSize (Composite composite, int wHint, int hHint, boolean flushCache) {
 	Point extent;
-	if (type == SWT.HORIZONTAL)
+	if (type == SWT.HORIZONTAL) {
 		extent = layoutHorizontal (composite, false, (wHint != SWT.DEFAULT) && wrap, wHint, flushCache);
-	else
+	} else {
 		extent = layoutVertical (composite, false, (hHint != SWT.DEFAULT) && wrap, wHint, flushCache);
+	}
 	if (wHint != SWT.DEFAULT) extent.x = wHint;
 	if (hHint != SWT.DEFAULT) extent.y = hHint;
 	return extent;
 }
+
 Point getSize (Control control, boolean flushCache) {
 	int wHint = SWT.DEFAULT, hHint = SWT.DEFAULT;
 	RowData data = (RowData) control.getLayoutData ();
@@ -93,13 +99,16 @@ Point getSize (Control control, boolean flushCache) {
 	}
 	return control.computeSize (wHint, hHint, flushCache);
 }
+
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle clientArea = composite.getClientArea ();
-	if (type == SWT.HORIZONTAL)
+	if (type == SWT.HORIZONTAL) {
 		layoutHorizontal (composite, true, wrap, clientArea.width, flushCache);
-	else	
+	} else {
 		layoutVertical (composite, true, wrap, clientArea.height, flushCache);
+	}
 }
+
 Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int width, boolean flushCache) {
 	Control [] children = composite.getChildren ();
 	int count = children.length;
