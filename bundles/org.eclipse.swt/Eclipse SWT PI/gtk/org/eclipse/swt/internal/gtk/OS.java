@@ -272,6 +272,7 @@ public class OS {
 	public static final int GTK_PROGRESS_RIGHT_TO_LEFT = 1;
 	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 2;
 	public static final int GTK_PROGRESS_TOP_TO_BOTTOM = 3;
+	public static final int GTK_RECEIVES_DEFAULT = 1<<20;
 	
 	/* The values for the GdkGrabStatus constants are specified in
 	 * the documentation, therefore there is no need to get them from the OS.
@@ -932,4 +933,6 @@ public static final native int g_signal_connect_swapped(int instance, byte[] det
 public static final native void gtk_window_set_default(int window, int widget);
 public static final native int gtk_window_get_default(int window);
 public static final native boolean gtk_window_activate_default(int window);
+public static final native void gtk_widget_activate(int widget);
+public static final native void gtk_clist_set_row_height(int clist, int height);
 }
