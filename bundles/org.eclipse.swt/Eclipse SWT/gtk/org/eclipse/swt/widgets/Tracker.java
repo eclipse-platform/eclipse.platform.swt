@@ -382,7 +382,6 @@ private int waitEvent() {
  */
 private int calculateWindow() {
 	int answer;
-System.out.println("Parent: "+parent);
 	if (parent == null) answer = OS.GDK_ROOT_PARENT();
 		else answer = OS.GTK_WIDGET_WINDOW(parent.paintHandle());
 	if (answer==0) error(SWT.ERROR_UNSPECIFIED);
