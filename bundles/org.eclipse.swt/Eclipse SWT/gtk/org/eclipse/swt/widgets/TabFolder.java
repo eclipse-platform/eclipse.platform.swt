@@ -204,7 +204,7 @@ void createWidget (int index) {
 }
 
 void createItem (TabItem item, int index) {
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	int itemCount = 0;
 	if (list != 0) {
 		itemCount = OS.g_list_length (list);
@@ -330,7 +330,7 @@ int /*long*/ eventHandle () {
 public TabItem getItem (int index) {
 	checkWidget();
 	if (!(0 <= index && index < getItemCount())) error (SWT.ERROR_INVALID_RANGE);	
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int itemCount = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -350,7 +350,7 @@ public TabItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int itemCount = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -469,7 +469,7 @@ void hookEvents () {
 public int indexOf (TabItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return -1;
 	int count = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -486,7 +486,7 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 		Control child = children [i];
 		int index = 0;
 		int count = 0;
-		int list = OS.gtk_container_get_children (handle);
+		int /*long*/ list = OS.gtk_container_get_children (handle);
 		if (list != 0) {
 			count = OS.g_list_length (list);
 			OS.g_list_free (list);

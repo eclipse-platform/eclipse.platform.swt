@@ -217,7 +217,7 @@ public ToolItem getItem (Point point) {
  */
 public int getItemCount () {
 	checkWidget();
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return 0;
 	int itemCount = OS.g_list_length (list);
 	OS.g_list_free (list);
@@ -242,7 +242,7 @@ public int getItemCount () {
  */
 public ToolItem [] getItems () {
 	checkWidget();
-	int list = OS.gtk_container_get_children (handle);
+	int /*long*/ list = OS.gtk_container_get_children (handle);
 	if (list == 0) return new ToolItem [0];
 	int count = OS.g_list_length (list);
 	ToolItem [] result = new ToolItem [count];
