@@ -350,10 +350,11 @@ public int getCaretPosition () {
 public int getCharCount () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) {
-		int address = OS.gtk_editable_get_chars (handle, 0, -1);
-		int length = OS.strlen (address);
-		OS.g_free (address);
-		return length;
+		int address = OS.gtk_entry_get_text (handle);
+		/*
+		 * FIXME - confusing size and length
+		 */
+		return OS.strlen (address);
 	}
 	return OS.gtk_text_get_length (handle);
 }
@@ -417,7 +418,7 @@ public char getEchoChar () {
  */
 public boolean getEditable () {
 	checkWidget ();
-	return OS.gtk_editable_get_editable(handle) != 0;
+	return OS.gtk_editable_get_editable(handle);
 }
 
 /**
