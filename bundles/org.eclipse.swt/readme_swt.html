@@ -105,11 +105,16 @@ not available for TabFolders. On other platforms, the "&" character will be disp
 for portability reasons, it should be avoided.
 
 <h4>
-99.1.10  ToolBar on Windows</h4>
+99.1.10 Font locales on Windows NT</h4>
 
-On Windows, you must create all tool bars with the FLAT style bit set. If you do not do this,
-the "hot" (rollover) images of <em>all</em> toolbars may display incorrectly.
-This will be fixed in a future release.
+On Windows NT <em>only</em>, some (windows) fonts have their default locale set to english even when they
+are used on other locales. When this happens it is possible for a FontData created without setting its
+locale (i.e. via the <code>FontData(String,int,int)</code> constructor) to not be correctly localized.
+One workaround for this is to explicitely set the FontData's locale to the correct default with code
+of the form:<pre>
+    FontData fd = FontData("Fontname", height, style);
+    fd.setLocale(Locale.getDefault());
+</pre>
 
 <p><a href="hglegal.htm"><img SRC="ngibmcpy.gif" BORDER=0 height=12 width=195></a>
 </body>
