@@ -317,9 +317,7 @@ void releaseWidget () {
 
 public boolean setFocus () {
 	checkWidget ();
-	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_FOCUS) != 0) return false;
-	}
+	if ((style & SWT.NO_FOCUS) != 0) return false;
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
@@ -414,11 +412,7 @@ boolean setTabGroupFocus () {
 }
 
 boolean setTabItemFocus () {
-	Control [] path = getPath ();
-	for (int i=0; i<path.length; i++) {
-		Point size = path [i].getSize ();
-		if (size.x == 0 || size.y == 0) return false;
-	}
+	if (!isShowing ()) return false;
 	if ((state & CANVAS) != 0) {
 		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
 			return forceFocus ();

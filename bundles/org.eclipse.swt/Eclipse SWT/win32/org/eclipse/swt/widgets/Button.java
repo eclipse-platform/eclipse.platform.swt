@@ -483,7 +483,7 @@ public void setImage (Image image) {
 }
 boolean setRadioFocus () {
 	if ((style & SWT.RADIO) == 0 || !getSelection ()) return false;
-	return setFocus () || !isVisible ();
+	return setFocus ();
 }
 
 /**
