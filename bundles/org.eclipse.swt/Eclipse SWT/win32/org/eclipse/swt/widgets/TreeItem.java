@@ -121,7 +121,7 @@ public TreeItem (Tree parent, int style, int index) {
 			count++;
 		}
 		if (hItem == 0) error (SWT.ERROR_INVALID_RANGE);
-	};
+	}
 	parent.createItem (this, 0, hItem);
 }
 

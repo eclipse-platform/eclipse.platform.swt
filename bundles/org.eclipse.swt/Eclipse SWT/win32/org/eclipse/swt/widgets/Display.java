@@ -1113,7 +1113,7 @@ public int getIconDepth () {
 	if (result == 0) {
 		try {
 			depth = Integer.parseInt (lpData.toString (0, lpData.strlen ()));
-		} catch (NumberFormatException e) {};
+		} catch (NumberFormatException e) {}
 	}
 	OS.RegCloseKey (phkResult [0]);
 	return depth;
@@ -2095,7 +2095,7 @@ protected void release () {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) shell.dispose ();
 	}
-	while (readAndDispatch ()) {};
+	while (readAndDispatch ()) {}
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {
 			if (disposeList [i] != null) disposeList [i].run ();
