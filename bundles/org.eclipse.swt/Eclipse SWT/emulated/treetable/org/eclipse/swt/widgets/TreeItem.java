@@ -572,7 +572,7 @@ Rectangle getFocusBounds () {
 	if (columns.length == 0) {
 		width = textWidths [0] + 2 * MARGIN_TEXT;
 	} else {
-		width = columns [0].width - parent.horizontalOffset - x - 2;
+		width = columns [0].width - parent.horizontalOffset - x - 1;
 	}
 	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
 }
@@ -826,9 +826,10 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	Rectangle cellBounds = getCellBounds (columnIndex);
 	int cellRightX = 0;
 	if (column != null) {
-		cellRightX = column.getX () + column.width - 1;
+		cellRightX = column.getX () + column.width;
+		if (parent.linesVisible) cellRightX--;
 	} else {
-		cellRightX = cellBounds.x + cellBounds.width - 1;
+		cellRightX = cellBounds.x + cellBounds.width;
 	}
 
 	/* if this cell is completely to the left of the client area then there's no need to paint it */
@@ -847,10 +848,14 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		Color oldBackground = gc.getBackground ();
 		gc.setBackground (background);
 		if (columnIndex == 0) {
-			int focusX = getFocusX ();
-			gc.fillRectangle (focusX, y + 1, cellRightX - focusX, itemHeight - 1);
+			Rectangle focusBounds = getFocusBounds ();
+			int fillWidth = focusBounds.width;
+			if (parent.columns.length > 0 && !parent.linesVisible) fillWidth++;
+			gc.fillRectangle (focusBounds.x, focusBounds.y, fillWidth, focusBounds.height);
 		} else {
-			gc.fillRectangle (cellBounds.x, cellBounds.y + 1, cellBounds.width - 1, cellBounds.height - 1);
+			int fillWidth = cellBounds.width;
+			if (!parent.linesVisible) fillWidth++;
+			gc.fillRectangle (cellBounds.x, cellBounds.y + 1, fillWidth, cellBounds.height - 1);
 		}
 		gc.setBackground (oldBackground);
 	}
