@@ -31,5 +31,4 @@ typedef enum {
 	_1DtDtsFreeAttributeValue_FUNC,
 	_1DtDtsFreeDataType_FUNC,
 	_1DtDtsFreeDataTypeNames_FUNC,
-	_1DtInitialize_FUNC,
 } CDE_FUNCS;
