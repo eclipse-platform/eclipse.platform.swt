@@ -2630,18 +2630,7 @@ public boolean readAndDispatch () {
 	checkDevice ();
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	int status = OS.XtAppPending (xtContext);
-	if (status == 0) {
-		if (getMessageCount () == 0) {
-			/*
-			* Force Xt work procs that were added by native
-			* widgets to run by calling XtAppProcessEvent().
-			* Ensure that XtAppProcessEvent() does not block
-			* by adding a time out.
-			*/
-			OS.XtAppAddTimeOut (xtContext, 1, 0, 0);
-			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
-		}
-	} else {
+	if (status != 0) {
 		if ((status & OS.XtIMTimer) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
 			status = OS.XtAppPending (xtContext);
@@ -3277,21 +3266,26 @@ public boolean sleep () {
 	/*
 	* This code is intentionally commented.
 	*/
+//	boolean result;
 //	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-//	/*
-//	* Bug in Xt.  Under certain circumstances Xt waits
-//	* forever looking for X events, ignoring alternate
-//	* inputs.  The fix is to never sleep forever.
-//	*/
-//	int sleepID = OS.XtAppAddTimeOut (xtContext, 100, 0, 0);
-//	boolean result = OS.XtAppPeekEvent (xtContext, xEvent);
-//	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
+//	do {
+//		/*
+//		* Bug in Xt.  Under certain circumstances Xt waits
+//		* forever looking for X events, ignoring alternate
+//		* inputs.  The fix is to never sleep forever.
+//		*/
+//		//int sleepID = OS.XtAppAddTimeOut (xtContext, 50, 0, 0);
+//		result = OS.XtAppPeekEvent (xtContext, xEvent);
+//		//if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
+//	} while (!result && getMessageCount () == 0 && OS.XtAppPending (xtContext) == 0);
 //	return result;
-	
-	int result;
+
+	/* Wait for input */
+	int result, status;
+	boolean workProc = true;
 	int display_fd = OS.ConnectionNumber (xDisplay);
-	int max_fd = display_fd > read_fd ? display_fd : read_fd;
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+	int max_fd = display_fd > read_fd ? display_fd : read_fd;
 	do {
 		OS.FD_ZERO (fd_set);
 		OS.FD_SET (display_fd, fd_set);
@@ -3314,7 +3308,19 @@ public boolean sleep () {
 				}
 			}
 		}
-	} while (result == 0 && OS.XtAppPending (xtContext) == 0 && getMessageCount () == 0);
+		/*
+		* Force Xt work procs that were added by native
+		* widgets to run by calling XtAppProcessEvent().
+		* Ensure that XtAppProcessEvent() does not block
+		* by adding a time out.
+		*/
+		status = OS.XtAppPending (xtContext);
+		if (workProc && status == 0) {
+			workProc = false;
+			OS.XtAppAddTimeOut (xtContext, 1, 0, 0);
+			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
+		}
+	} while (result == 0 && getMessageCount () == 0 && status == 0);
 	return OS.FD_ISSET (display_fd, fd_set);
 }
 /**

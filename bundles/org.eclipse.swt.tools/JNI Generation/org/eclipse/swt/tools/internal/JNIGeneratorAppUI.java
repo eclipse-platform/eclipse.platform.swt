@@ -155,7 +155,7 @@ void generateAll() {
 		Control child = children[i];
 		if (child instanceof Button) child.setEnabled(false);				
 	}
-	final boolean showProgress = false;
+	final boolean showProgress = true;
 	if (showProgress) {
 		progressLabel.setText("");
 		progressBar.setSelection(0);
