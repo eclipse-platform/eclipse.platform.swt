@@ -68,7 +68,7 @@ public final class Printer extends Device {
  */
 public static PrinterData[] getPrinterList() {
 	byte[] buf = new byte[1024];
-	int n = OS.GetProfileString(profile, null, new byte[] {0}, buf, buf.length);
+	int n = OS.GetProfileStringA(profile, null, new byte[] {0}, buf, buf.length);
 	if (n == 0) return new PrinterData[0];
 	byte[][] deviceNames = new byte[5][];
 	int nameCount = 0;
@@ -90,7 +90,7 @@ public static PrinterData[] getPrinterList() {
 	for (int p = 0; p < nameCount; p++) {
 		String device = new String(deviceNames[p], 0, deviceNames[p].length - 1);
 		String driver = "";
-		if (OS.GetProfileString(profile, deviceNames[p], new byte [] {0}, buf, buf.length) > 0) {
+		if (OS.GetProfileStringA(profile, deviceNames[p], new byte [] {0}, buf, buf.length) > 0) {
 			int commaIndex = 0;
 			while (buf[commaIndex] != ',' && commaIndex < buf.length) commaIndex++;
 			if (commaIndex < buf.length) {
@@ -117,7 +117,7 @@ public static PrinterData[] getPrinterList() {
 static PrinterData getDefaultPrinterData() {
 	byte [] deviceName = null;
 	byte[] buf = new byte[1024];
-	int n = OS.GetProfileString(appName, keyName, new byte[] {0}, buf, buf.length);
+	int n = OS.GetProfileStringA(appName, keyName, new byte[] {0}, buf, buf.length);
 	if (n == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int commaIndex = 0;
 	while(buf[commaIndex] != ',' && commaIndex < buf.length) commaIndex++;
@@ -127,7 +127,7 @@ static PrinterData getDefaultPrinterData() {
 	}
 	String device = new String(deviceName, 0, deviceName.length - 1);
 	String driver = "";
-	if (OS.GetProfileString(profile, deviceName, new byte [] {0}, buf, buf.length) > 0) {
+	if (OS.GetProfileStringA(profile, deviceName, new byte [] {0}, buf, buf.length) > 0) {
 		commaIndex = 0;
 		while (buf[commaIndex] != ',' && commaIndex < buf.length) commaIndex++;
 		if (commaIndex < buf.length) {
@@ -192,7 +192,7 @@ protected void create(DeviceData deviceData) {
 		lpInitData = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
 		OS.MoveMemory(lpInitData, buffer, buffer.length);
 	}
-	handle = OS.CreateDC(driver, device, 0, lpInitData);
+	handle = OS.CreateDCA(driver, device, 0, lpInitData);
 	if (lpInitData != 0) OS.HeapFree(hHeap, 0, lpInitData);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
@@ -283,7 +283,7 @@ public boolean startJob(String jobName) {
 		OS.MoveMemory(lpszOutput, buffer, buffer.length);
 		di.lpszOutput = lpszOutput;
 	}
-	int rc = OS.StartDoc(handle, di);
+	int rc = OS.StartDocA(handle, di);
 	if (lpszDocName != 0) OS.HeapFree(hHeap, 0, lpszDocName);
 	if (lpszOutput != 0) OS.HeapFree(hHeap, 0, lpszOutput);
 	return rc > 0;

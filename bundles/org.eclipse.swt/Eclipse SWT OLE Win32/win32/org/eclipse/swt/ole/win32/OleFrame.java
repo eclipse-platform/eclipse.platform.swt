@@ -318,7 +318,7 @@ private int getMenuItemID(int hMenu, int index) {
 	MENUITEMINFO lpmii = new MENUITEMINFO();
 	lpmii.cbSize = MENUITEMINFO.sizeof;
 	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_SUBMENU | OS.MIIM_ID;
-	OS.GetMenuItemInfo(hMenu, index, true, lpmii);
+	OS.GetMenuItemInfoA(hMenu, index, true, lpmii);
 	if ((lpmii.fState & OS.MF_POPUP) == OS.MF_POPUP) {
 		id = lpmii.hSubMenu;
 	} else {
@@ -381,8 +381,8 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 				lpmii.cch = maxTextLength; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
 				                           // exact nuber of characters in name.  Reset it to our max size 
 				                           // before each call.
-				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
-					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
+				if (OS.GetMenuItemInfoA(hMenu, index, true, lpmii)) {
+					if (OS.InsertMenuItemA(hmenuShared, newindex, true, lpmii)) {
 						// keep track of the number of items
 						fileMenuCount++;
 						newindex++;
@@ -406,8 +406,8 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 				lpmii.cch = maxTextLength; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
 				                           // exact nuber of characters in name.  Reset it to a large number 
 				                           // before each call.
-				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
-					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
+				if (OS.GetMenuItemInfoA(hMenu, index, true, lpmii)) {
+					if (OS.InsertMenuItemA(hmenuShared, newindex, true, lpmii)) {
 						// keep track of the number of items
 						containerMenuCount++;
 						newindex++;
@@ -431,8 +431,8 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 				lpmii.cch = maxTextLength; // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
 				                           // exact nuber of characters in name.  Reset it to a large number 
 				                           // before each call.
-				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
-					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
+				if (OS.GetMenuItemInfoA(hMenu, index, true, lpmii)) {
+					if (OS.InsertMenuItemA(hmenuShared, newindex, true, lpmii)) {
 						// keep track of the number of items
 						windowMenuCount++;
 						newindex++;

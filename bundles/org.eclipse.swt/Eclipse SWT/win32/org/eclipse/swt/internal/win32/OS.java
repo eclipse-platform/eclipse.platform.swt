@@ -74,743 +74,6 @@ public class OS {
 		IsDBLocale = index <= 0xFF;
 	}
 
-/*+++++++++FIX LATER+++++++++++ */
-public static final int GetProfileString (byte [] lpAppName, byte [] lpKeyName, byte [] lpDefault, byte [] lpReturnedString, int nSize) {
-	return GetProfileStringA (lpAppName, lpKeyName, lpDefault, lpReturnedString, nSize);
-}
-public static final int CreateDC (byte [] lpszDriver, byte [] lpszDevice, int lpszOutput, int lpInitData) {
-	return CreateDCA (lpszDriver, lpszDevice, lpszOutput, lpInitData);
-}
-public static final int RegOpenKeyEx (int hKey, byte [] lpSubKey, int ulOptions, int samDesired, int[] phkResult) {
-	return RegOpenKeyExA (hKey, lpSubKey, ulOptions, samDesired, phkResult);
-}
-public static final int RegQueryValueEx (int hKey, byte [] lpValueName, int lpReserved, int[] lpType, byte [] lpData, int[] lpcbData) {
-	return RegQueryValueExA (hKey, lpValueName, lpReserved, lpType, lpData, lpcbData);
-}
-/*+++++++++END FIX LATER+++++++++++ */
-
-/*+++++++++FIX NOW+++++++++++ */
-public static final int GetWindowText (int hWnd, TCHAR lpString, int nMaxCount) {
-	if (lpString != null) {
-		if (IsUnicode) return GetWindowTextW (hWnd, lpString.chars, nMaxCount);
-		return GetWindowTextA (hWnd, lpString.bytes, nMaxCount);
-	}
-	return IsUnicode ? GetWindowTextW (hWnd, null, nMaxCount) : GetWindowTextA (hWnd, null, nMaxCount);
-}
-
-public static final int GetWindowTextLength (int hWnd) {
-	if (IsUnicode) return GetWindowTextLengthW (hWnd);
-	return GetWindowTextLengthA (hWnd);
-}
-
-public static final boolean SetWindowText (int hWnd, TCHAR lpString) {
-	if (lpString != null) {
-		if (IsUnicode) return SetWindowTextW (hWnd, lpString.chars);
-		return SetWindowTextA (hWnd, lpString.bytes);
-	}
-	return IsUnicode ? SetWindowTextW (hWnd, null) : SetWindowTextA (hWnd, null);
-}
-
-public static final boolean ImmGetCompositionFont (int hIMC, LOGFONT lplf) {
-	if (IsUnicode) return ImmGetCompositionFontW (hIMC, lplf);
-	return ImmGetCompositionFontA (hIMC, lplf);
-}
-	
-public static final int ImmGetCompositionString (int hIMC, int dwIndex, TCHAR lpBuf, int dwBufLen) {
-	if (lpBuf != null) {
-		if (IsUnicode) return ImmGetCompositionStringW (hIMC, dwIndex, lpBuf.chars, dwBufLen);
-		return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf.bytes, dwBufLen);
-	}
-	return IsUnicode ? ImmGetCompositionStringW (hIMC, dwIndex, null, dwBufLen) : ImmGetCompositionStringA (hIMC, dwIndex, null, dwBufLen);
-}
-/*++++++++END FIX NOW++++++++++ */
-
-public static final int ExtractIconEx (TCHAR lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons) {
-	if (IsUnicode) {
-		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
-		return ExtractIconExW (lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons);
-	}
-	byte [] lpszFile1 = lpszFile == null ? null : lpszFile.bytes;
-	return ExtractIconExA (lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons);
-}
-
-public static final boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo) {
-	if (IsUnicode) return ShellExecuteExW (lpExecInfo);
-	return ShellExecuteExA (lpExecInfo);
-}
-
-public static final int CreateDC (TCHAR lpszDriver, TCHAR lpszDevice, int lpszOutput, int lpInitData) {
-	if (IsUnicode) {
-		char [] lpszDriver1 = lpszDriver == null ? null : lpszDriver.chars;
-		char [] lpszDevice1 = lpszDevice == null ? null : lpszDevice.chars;
-		return CreateDCW (lpszDriver1, lpszDevice1, lpszOutput, lpInitData);
-	}
-	byte [] lpszDriver1 = lpszDriver == null ? null : lpszDriver.bytes;
-	byte [] lpszDevice1 = lpszDevice == null ? null : lpszDevice.bytes;
-	return CreateDCA (lpszDriver1, lpszDevice1, lpszOutput, lpInitData);
-}
-
-public static final int CreateFontIndirect (int lplf) {
-	if (IsUnicode) return CreateFontIndirectW (lplf);
-	return CreateFontIndirectA (lplf);
-}
-
-public static final int CreateFontIndirect (LOGFONT lplf) {
-	if (IsUnicode) return CreateFontIndirectW (lplf);
-	return CreateFontIndirectA (lplf);
-}
-
-public static final int EnumFontFamilies (int hdc, TCHAR lpszFamily, int lpEnumFontFamProc, int lParam) {
-	if (IsUnicode) {
-		char [] lpszFamily1 = lpszFamily == null ? null : lpszFamily.chars;
-		return EnumFontFamiliesW (hdc, lpszFamily1, lpEnumFontFamProc, lParam);
-	}
-	byte [] lpszFamily1 = lpszFamily == null ? null : lpszFamily.bytes;
-	return EnumFontFamiliesA (hdc, lpszFamily1, lpEnumFontFamProc, lParam);
-}
-
-public static final boolean ExtTextOut(int hdc, int X, int Y, int fuOptions, RECT lprc, TCHAR lpString, int cbCount, int[] lpDx) {
-	if (IsUnicode) {
-		char [] lpString1 = lpString == null ? null : lpString.chars;
-		return ExtTextOutW (hdc, X, Y, fuOptions, lprc, lpString1, cbCount, lpDx);
-	}
-	byte [] lpString1 = lpString == null ? null : lpString.bytes;
-	return ExtTextOutA (hdc, X, Y, fuOptions, lprc, lpString1, cbCount, lpDx);
-}
-
-public static final boolean GetCharABCWidths (int hdc, int iFirstChar, int iLastChar, int [] lpabc) {
-	if (IsUnicode) return GetCharABCWidthsW (hdc,iFirstChar, iLastChar, lpabc);
-	return GetCharABCWidthsA (hdc,iFirstChar, iLastChar, lpabc);
-}
-
-public static final boolean GetCharWidth (int hdc, int iFirstChar, int iLastChar, int [] lpabc) {
-	if (IsUnicode) return GetCharWidthW (hdc,iFirstChar, iLastChar, lpabc);
-	return GetCharWidthA (hdc,iFirstChar, iLastChar, lpabc);
-}
-
-public static final int GetCharacterPlacement (int hdc, TCHAR lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags) {
-	if (IsUnicode) {
-		char [] lpString1 = lpString == null ? null : lpString.chars;
-		return GetCharacterPlacementW (hdc, lpString1, nCount, nMaxExtent, lpResults, dwFlags);
-	}
-	byte [] lpString1 = lpString == null ? null : lpString.bytes;
-	return GetCharacterPlacementA (hdc, lpString1, nCount, nMaxExtent, lpResults, dwFlags);	
-}
-
-public static final int GetObject (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  BITMAP lpvObject  // pointer to buffer for object information
-) {
-	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
-	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
-}
-
-public static final int GetObject (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  DIBSECTION lpvObject  // pointer to buffer for object information
-) {
-	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
-	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
-}
-
-public static final int GetObject (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  LOGBRUSH lpvObject  // pointer to buffer for object information
-) {
-	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
-	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
-}
-
-public static final int GetObject (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  LOGFONT lpvObject  // pointer to buffer for object information
-) {
-	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
-	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
-}
-
-public static final int GetObject (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  LOGPEN lpvObject  // pointer to buffer for object information
-) {
-	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
-	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
-}
-
-public static final boolean GetTextExtentPoint32 (int hdc, TCHAR lpString, int cbString, SIZE lpSize) {
-	if (IsUnicode) {
-		char [] lpString1 = lpString == null ? null : lpString.chars;
-		return GetTextExtentPoint32W (hdc, lpString1, cbString, lpSize);
-	}
-	byte [] lpString1 = lpString == null ? null : lpString.bytes;
-	return GetTextExtentPoint32A (hdc, lpString1, cbString, lpSize);	
-}
-
-public static final boolean GetTextMetrics (int hdc, TEXTMETRIC lptm) {
-	if (IsUnicode) return GetTextMetricsW (hdc, lptm);
-	return GetTextMetricsA (hdc, lptm);
-}
-
-public static final int StartDoc (int hdc, DOCINFO lpdi) {
-	if (IsUnicode) return StartDocW (hdc, lpdi);
-	return StartDocA (hdc, lpdi);
-}
-
-public static final int MessageBox (
-  int hWnd,          // handle of owner window
-  TCHAR lpText,     // address of text in message box
-  TCHAR lpCaption,  // address of title of message box
-  int uType          // style of message box
-) {
-	if (IsUnicode) {
-		char [] lpText1 = lpText == null ? null : lpText.chars;
-		char [] lpCaption1 = lpCaption == null ? null : lpCaption.chars;
-		return MessageBoxW (hWnd, lpText1, lpCaption1, uType);
-	}
-	byte [] lpText1 = lpText == null ? null : lpText.bytes;
-	byte [] lpCaption1 = lpCaption == null ? null : lpCaption.bytes;
-	return MessageBoxA (hWnd, lpText1, lpCaption1, uType);
-}
-
-public static final int CallWindowProc (int lpPrevWndFunc, int hWnd, int Msg, int wParam, int lParam) {
-	if (IsUnicode) return CallWindowProcW (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
-	return CallWindowProcA (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
-}
-
-public static final short CharUpper (short ch) {
-	if (IsUnicode) return CharUpperW (ch);
-	return CharUpperA (ch);
-}
-
-public static final short CharLower (short ch) {
-	if (IsUnicode) return CharLowerW (ch);
-	return CharLowerA (ch);
-}
-
-public static final int CreateAcceleratorTable (
-  byte [] lpaccl,  // pointer to structure array with accelerator data
-  int cEntries     // number of structures in the array
-) {
-	if (IsUnicode) return CreateAcceleratorTableW (lpaccl, cEntries);
-	return CreateAcceleratorTableA (lpaccl, cEntries);
-}
-
-public static final int DefWindowProc (int hWnd, int Msg, int wParam, int lParam) {
-	if (IsUnicode) return DefWindowProcW (hWnd, Msg, wParam, lParam);
-	return DefWindowProcA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int CreateWindowEx (int dwExStyle, TCHAR lpClassName, TCHAR lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam) {
-	if (IsUnicode) {
-		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
-		char [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.chars;
-		return CreateWindowExW (dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-	}
-	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
-	byte [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.bytes;
-	return CreateWindowExA (dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
-}
-
-public static final int DispatchMessage (MSG lpmsg) {
-	if (IsUnicode) return DispatchMessageW (lpmsg);
-	return DispatchMessageA (lpmsg);
-}
-
-public static final boolean DrawState (int hdc, int hbr, int lpOutputFunc, int lData, int wData, int x, int y, int cx, int cy, int fuFlags) {
-	if (IsUnicode) return DrawStateW (hdc, hbr, lpOutputFunc, lData, wData, x, y, cx, cy, fuFlags);
-	return DrawStateA (hdc, hbr, lpOutputFunc, lData, wData, x, y, cx, cy, fuFlags);
-}
-
-public static final int DrawText (int hDC, TCHAR lpString, int nCount, RECT lpRect, int uFormat) {
-	if (IsUnicode) {
-		char [] lpString1 = lpString == null ? null : lpString.chars;
-		return DrawTextW (hDC, lpString1, nCount, lpRect, uFormat);
-	}
-	byte [] lpString1 = lpString == null ? null : lpString.bytes;
-	return DrawTextA (hDC, lpString1, nCount, lpRect, uFormat);
-}
-
-public static final boolean GetClassInfo (int hInstance, TCHAR lpClassName, WNDCLASS lpWndClass) {
-	if (IsUnicode) {
-		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
-		return GetClassInfoW (hInstance, lpClassName1, lpWndClass);
-	}
-	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
-	return GetClassInfoA (hInstance, lpClassName1, lpWndClass);
-}
-
-public static final boolean GetMenuItemInfo (
-  int hMenu,          
-  int uItem,           
-  boolean fByPosition,     
-  MENUITEMINFO lpmii  
-) {
-	if (IsUnicode) return GetMenuItemInfoW (hMenu, uItem, fByPosition, lpmii);
-	return GetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
-}
-
-public static final boolean GetMessage (MSG lpMsg, int hWnd, int wMsgFilterMin, int wMsgFilterMax) {	
-	if (IsUnicode) return GetMessageW (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
-	return GetMessageA (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
-}
-
-public static final int GetWindowLong (int hWnd, int nIndex) {
-	if (IsUnicode) return GetWindowLongW (hWnd, nIndex);
-	return GetWindowLongA (hWnd, nIndex);
-}
-
-public static final boolean InsertMenuItem (
-  int hMenu,
-  int uItem,
-  boolean fByPosition,
-  MENUITEMINFO lpmii
-) {
-	if (IsUnicode) return InsertMenuItemW (hMenu, uItem, fByPosition, lpmii);
-	return InsertMenuItemA (hMenu, uItem, fByPosition, lpmii);
-}
-
-public static final int LoadBitmap (int hInstance, int lpBitmapName) {
-	if (IsUnicode) return LoadBitmapW (hInstance, lpBitmapName);
-	return LoadBitmapA (hInstance, lpBitmapName);
-}
-
-public static final int LoadCursor (int hInstance, int lpCursorName) {
-	if (IsUnicode) return LoadCursorW (hInstance, lpCursorName);
-	return LoadCursorA (hInstance, lpCursorName);
-}
-
-public static final int LoadIcon (int hInstance, int lpIconName) {
-	if (IsUnicode) return LoadIconW (hInstance, lpIconName);
-	return LoadIconA (hInstance, lpIconName);
-}
-
-public static final int LoadImage (int hinst, TCHAR lpszName, int uType, int cxDesired, int cyDesired, int fuLoad) {
-	if (IsUnicode) {
-		char [] lpszName1 = lpszName == null ? null : lpszName.chars;
-		return LoadImageW (hinst, lpszName1, uType, cxDesired, cyDesired, fuLoad);
-	}
-	byte [] lpszName1 = lpszName == null ? null : lpszName.bytes;
-	return LoadImageA (hinst, lpszName1, uType, cxDesired, cyDesired, fuLoad);
-}
-
-public static final int MapVirtualKey (int uCode, int uMapType) {
-	if (IsUnicode) return MapVirtualKeyW (uCode, uMapType);
-	return MapVirtualKeyA (uCode, uMapType);
-}
-
-public static final boolean PeekMessage (
-  MSG lpMsg,         // pointer to structure for message
-  int hWnd,           // handle to window
-  int wMsgFilterMin,  // first message
-  int wMsgFilterMax,  // last message
-  int wRemoveMsg      // removal flags
-) {
-	if (IsUnicode) return PeekMessageW (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
-	return PeekMessageA (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
-}
-
-public static final boolean PostMessage (int hWnd, int Msg, int wParam, int lParam) {
-	if (IsUnicode) return PostMessageW (hWnd, Msg, wParam, lParam);
-	return PostMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final boolean PostThreadMessage (int idThread, int Msg, int wParam, int lParam) {
-	if (IsUnicode) return PostThreadMessageW (idThread, Msg, wParam, lParam);
-	return PostThreadMessageA (idThread, Msg, wParam, lParam);
-}
-
-public static final int RegisterClass (WNDCLASS lpWndClass) {
-	if (IsUnicode) return RegisterClassW (lpWndClass);
-	return RegisterClassA (lpWndClass);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, TCHAR lParam) {
-	if (IsUnicode) {
-		char [] lParam1 = lParam == null ? null : lParam.chars;
-		return SendMessageW (hWnd, Msg, wParam, lParam1);
-	}
-	byte [] lParam1 = lParam == null ? null : lParam.bytes;
-	return SendMessageA (hWnd, Msg, wParam, lParam1);
-}
-
-//public static final int SendMessage (int hWnd, int Msg, int wParam, char [] lParam) {
-//	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-//	return SendMessageA (hWnd, Msg, wParam, lParam);
-//}
-
-public static final int SendMessage (int hWnd, int Msg, int [] wParam, int [] lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int [] wParam, int lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, int [] lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, short [] lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, int lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, LVCOLUMN lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, LVHITTESTINFO lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, LVITEM lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, REBARBANDINFO lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, RECT lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, TBBUTTON lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, TBBUTTONINFO lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, TCITEM lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, TOOLINFO lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, TVHITTESTINFO lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, TVINSERTSTRUCT lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final int SendMessage (int hWnd, int Msg, int wParam, TVITEM lParam) {
-	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
-	return SendMessageA (hWnd, Msg, wParam, lParam);
-}
-
-public static final boolean SetMenuItemInfo (
-  int hMenu,          
-  int uItem,           
-  boolean fByPosition,     
-  MENUITEMINFO lpmii  
-) {
-	if (IsUnicode) return SetMenuItemInfoW (hMenu, uItem, fByPosition, lpmii);
-	return SetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
-}
-
-public static final int SetWindowLong (int hWnd, int nIndex, int dwNewLong) {
-	if (IsUnicode) return SetWindowLongW (hWnd, nIndex, dwNewLong);
-	return SetWindowLongA (hWnd, nIndex, dwNewLong);
-}
-
-public static final int SetWindowsHookEx (int idHook, int lpfn, int hMod, int dwThreadId) {
-	if (IsUnicode) return SetWindowsHookExW (idHook, lpfn, hMod, dwThreadId);
-	return SetWindowsHookExA (idHook, lpfn, hMod, dwThreadId);
-}
-
-public static final boolean SystemParametersInfo (
-	int uiAction,  // system parameter to retrieve or set
-	int uiParam,   // depends on action to be taken
-	RECT pvParam,  // depends on action to be taken
-	int fWinIni    // user profile update option
-) {
-	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, pvParam, fWinIni);
-	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
-}
-
-public static final int TranslateAccelerator (
-	int hWnd,         // handle of destination window
-  	int hAccTable,  // handle of accelerator table
-  	MSG lpMsg        // address of structure with message
-) {
-	if (IsUnicode) return TranslateAcceleratorW (hWnd, hAccTable, lpMsg);
-	return TranslateAcceleratorA (hWnd, hAccTable, lpMsg);
-}
-
-public static final boolean UnregisterClass (TCHAR lpClassName, int hInstance) {
-	if (IsUnicode) {
-		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
-		return UnregisterClassW (lpClassName1, hInstance);
-	}
-	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
-	return UnregisterClassA (lpClassName1, hInstance);
-}
-
-public static final short VkKeyScan (short ch) {
-	if (IsUnicode) return VkKeyScanW (ch);
-	return VkKeyScanA (ch);
-}
-
-public static final boolean ChooseColor (CHOOSECOLOR lpcc) {
-	if (IsUnicode) return ChooseColorW (lpcc);
-	return ChooseColorA (lpcc);
-}
-
-public static final boolean ChooseFont (CHOOSEFONT chooseFont) {
-	if (IsUnicode) return ChooseFontW (chooseFont);
-	return ChooseFontA (chooseFont);
-}
-
-public static final short GetFileTitle (
-  TCHAR lpszFile,   // pointer to full path and filename for file
-  TCHAR lpszTitle,  // pointer to buffer that receives filename
-  short cbBuf     // length of buffer
-) {
-	if (IsUnicode) {
-		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
-		char [] lpszTitle1 = lpszTitle == null ? null : lpszTitle.chars;
-		return GetFileTitleW (lpszFile1, lpszTitle1, cbBuf);
-	}
-	byte [] lpszFile1 = lpszFile == null ? null : lpszFile.bytes;
-	byte [] lpszTitle1 = lpszTitle == null ? null : lpszTitle.bytes;
-	return GetFileTitleA (lpszFile1, lpszTitle1, cbBuf);
-}
-
-public static final boolean GetOpenFileName (OPENFILENAME lpofn) {
-	if (IsUnicode) return GetOpenFileNameW (lpofn);
-	return GetOpenFileNameA (lpofn);
-}
-
-public static final boolean GetSaveFileName (OPENFILENAME lpofn) {
-	if (IsUnicode) return GetSaveFileNameW (lpofn);
-	return GetSaveFileNameA (lpofn);
-}
-
-public static final boolean PrintDlg (PRINTDLG lppd) {
-	if (IsUnicode) return PrintDlgW (lppd);
-	return PrintDlgA (lppd);
-}
-
-public static final boolean EnumSystemLocales (int lpLocaleEnumProc, int dwFlags) {
-	if (IsUnicode) return EnumSystemLocalesW (lpLocaleEnumProc, dwFlags);
-	return EnumSystemLocalesA (lpLocaleEnumProc, dwFlags);
-}
-
-public static final int GetLocaleInfo (int Locale, int LCType, TCHAR lpLCData, int cchData) {
-	if (IsUnicode) {
-		char [] lpLCData1 = lpLCData == null ? null : lpLCData.chars;
-		return GetLocaleInfoW (Locale, LCType, lpLCData1, cchData);
-	}
-	byte [] lpLCData1 = lpLCData == null ? null : lpLCData.bytes;
-	return GetLocaleInfoA (Locale, LCType, lpLCData1, cchData);
-}
-
-public static final int RegEnumKeyEx (int hKey, int dwIndex, TCHAR lpName, int [] lpcName, int [] lpReserved, TCHAR lpClass, int [] lpcClass, FILETIME lpftLastWriteTime) {
-	if (IsUnicode) {
-		char [] lpName1 = lpName == null ? null : lpName.chars;
-		char [] lpClass1 = lpClass == null ? null : lpClass.chars;
-		return RegEnumKeyExW (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
-	}
-	byte [] lpName1 = lpName == null ? null : lpName.bytes;
-	byte [] lpClass1 = lpClass == null ? null : lpClass.bytes;
-	return RegEnumKeyExA (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
-}
-
-public static final int RegOpenKeyEx (int hKey, TCHAR lpSubKey, int ulOptions, int samDesired, int[] phkResult) {
-	if (IsUnicode) {
-		char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
-		return RegOpenKeyExW (hKey, lpSubKey1, ulOptions, samDesired, phkResult);
-	}
-	byte [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.bytes;
-	return RegOpenKeyExA (hKey, lpSubKey1, ulOptions, samDesired, phkResult);
-}
-
-public static final int RegQueryInfoKey (int hKey, int lpClass, int[] lpcbClass, int lpReserved, int[] lpSubKeys, int[] lpcbMaxSubKeyLen, int[] lpcbMaxClassLen, int[] lpcValues, int[] lpcbMaxValueNameLen, int[] lpcbMaxValueLen, int[] lpcbSecurityDescriptor, int lpftLastWriteTime){
-	if (IsUnicode) return RegQueryInfoKeyW (hKey, lpClass, lpcbClass, lpReserved, lpSubKeys, lpcbMaxSubKeyLen, lpcbMaxClassLen, lpcValues, lpcbMaxValueNameLen, lpcbMaxValueLen, lpcbSecurityDescriptor, lpftLastWriteTime);
-	return RegQueryInfoKeyA (hKey, lpClass, lpcbClass, lpReserved, lpSubKeys, lpcbMaxSubKeyLen, lpcbMaxClassLen, lpcValues, lpcbMaxValueNameLen, lpcbMaxValueLen, lpcbSecurityDescriptor, lpftLastWriteTime);
-}
-
-public static final int RegQueryValueEx (int hKey, TCHAR lpValueName, int lpReserved, int[] lpType, TCHAR lpData, int[] lpcbData) {
-	if (IsUnicode) {
-		char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
-		char [] lpData1 = lpData == null ? null : lpData.chars;
-		return RegQueryValueExW (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
-	}
-	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
-	byte [] lpData1 = lpData == null ? null : lpData.bytes;
-	return RegQueryValueExA (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
-}
-
-public static final int SHBrowseForFolder (BROWSEINFO lpbi) {
-	if (IsUnicode) return SHBrowseForFolderW (lpbi);
-	return SHBrowseForFolderA (lpbi);
-}
-
-public static final boolean SHGetPathFromIDList (int pidl, TCHAR pszPath) {
-	if (IsUnicode) {
-		char [] pszPath1 = pszPath == null ? null : pszPath.chars;
-		return SHGetPathFromIDListW (pidl, pszPath1);
-	}
-	byte [] pszPath1 = pszPath == null ? null : pszPath.bytes;
-	return SHGetPathFromIDListA (pidl, pszPath1);
-}
-
-//public static final int ExpandEnvironmentStrings (TCHAR lpSrc, TCHAR lpDest, int nSize) {
-//	if (IsUnicode) {
-//		char [] lpSrc1 = lpSrc == null ? null : lpSrc.chars;
-//		char [] lpDest1 = lpDest == null ? null : lpDest.chars;
-//		return ExpandEnvironmentStringsW (lpSrc1, lpDest1, nSize);
-//	}
-//	byte [] lpSrc1 = lpSrc == null ? null : lpSrc.bytes;
-//	byte [] lpDest1 = lpDest == null ? null : lpDest.bytes;
-//	return ExpandEnvironmentStringsA (lpSrc1, lpDest1, nSize);
-//}
-
-public static final int GetModuleHandle (TCHAR lpModuleName) {
-	if (IsUnicode) {
-		char [] lpModuleName1 = lpModuleName == null ? null : lpModuleName.chars;
-		return GetModuleHandleW (lpModuleName1);
-	}
-	byte [] lpModuleName1 = lpModuleName == null ? null : lpModuleName.bytes;
-	return GetModuleHandleA (lpModuleName1);
-}
-
-public static final int GetProfileString (TCHAR lpAppName, TCHAR lpKeyName, TCHAR lpDefault, TCHAR lpReturnedString, int nSize) {
-	if (IsUnicode) {
-		char [] lpAppName1 = lpAppName == null ? null : lpAppName.chars;
-		char [] lpKeyName1 = lpKeyName == null ? null : lpKeyName.chars;
-		char [] lpDefault1 = lpDefault == null ? null : lpDefault.chars;
-		char [] lpReturnedString1 = lpReturnedString == null ? null : lpReturnedString.chars;
-		return GetProfileStringW (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
-	}
-	byte [] lpAppName1 = lpAppName == null ? null : lpAppName.bytes;
-	byte [] lpKeyName1 = lpKeyName == null ? null : lpKeyName.bytes;
-	byte [] lpDefault1 = lpDefault == null ? null : lpDefault.bytes;
-	byte [] lpReturnedString1 = lpReturnedString == null ? null : lpReturnedString.bytes;
-	return GetProfileStringA (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
-}
-
-public static final int LoadLibrary (TCHAR lpLibFileName) {
-	if (IsUnicode) {
-		char [] lpLibFileName1 = lpLibFileName == null ? null : lpLibFileName.chars;
-		return LoadLibraryW (lpLibFileName1);
-	}
-	byte [] lpLibFileName1 = lpLibFileName == null ? null : lpLibFileName.bytes;
-	return LoadLibraryA (lpLibFileName1);
-}
-
-public static final void MoveMemory (int Destination, TCHAR Source, int Length) {
-	if (IsUnicode) {
-		char [] Source1 = Source == null ? null : Source.chars;
-		MoveMemory (Destination, Source1, Length);
-	} else {
-		byte [] Source1 = Source == null ? null : Source.bytes;
-		MoveMemory (Destination, Source1, Length);
-	}
-}
-
-public static final void MoveMemory (TCHAR Destination, int Source, int Length) {
-	if (IsUnicode) {
-		char [] Destination1 = Destination == null ? null : Destination.chars;
-		MoveMemory (Destination1, Source, Length);
-	} else {
-		byte [] Destination1 = Destination == null ? null : Destination.bytes;
-		MoveMemory (Destination1, Source, Length);
-	}
-}
-
-public static final void MoveMemory (
-  int Destination,				// address of move destination
-  LOGFONT Source, 				// address of block to move
-  int Length        			// size, in bytes, of block to move
-) {
-	if (IsUnicode) {
-		MoveMemoryW (Destination, Source, Length);
-	} else {
-		MoveMemoryA (Destination, Source, Length);
-	}
-}
-
-public static final void MoveMemory (
-  LOGFONT Destination,		// address of move destination
-  int Source, 				// address of block to move
-  int Length        		// size, in bytes, of block to move
-) {
-	if (IsUnicode) {
-		MoveMemoryW (Destination, Source, Length);
-	} else {
-		MoveMemoryA (Destination, Source, Length);
-	}
-}
-
-public static final void MoveMemory (
-  int Destination,				// address of move destination
-  NMTTDISPINFO Source, 				// address of block to move
-  int Length        			// size, in bytes, of block to move
-) {
-	if (IsUnicode) {
-		MoveMemoryW (Destination, Source, Length);
-	} else {
-		MoveMemoryA (Destination, Source, Length);
-	}
-}
-
-public static final void MoveMemory (
-  NMTTDISPINFO Destination,		// address of move destination
-  int Source, 				// address of block to move
-  int Length        		// size, in bytes, of block to move
-) {
-	if (IsUnicode) {
-		MoveMemoryW (Destination, Source, Length);
-	} else {
-		MoveMemoryA (Destination, Source, Length);
-	}
-}
-
-public static final boolean GetVersionEx (OSVERSIONINFO lpVersionInfo) {
-	if (IsUnicode) return GetVersionExW (lpVersionInfo);
-	return GetVersionExA (lpVersionInfo);
-}
-
-public static final boolean InsertMenu (int hMenu, int uPosition, int uFlags, int uIDNewItem, TCHAR lpNewItem) {
-	if (IsUnicode) {
-		char [] lpNewItem1 = lpNewItem == null ? null : lpNewItem.chars;
-		return InsertMenuW (hMenu, uPosition, uFlags, uIDNewItem, lpNewItem1);
-	}
-	byte [] lpNewItem1 = lpNewItem == null ? null : lpNewItem.bytes;
-	return InsertMenuA (hMenu, uPosition, uFlags, uIDNewItem, lpNewItem1);	
-}
-
 	/*
 	* NOTE:  There is a bug in JVM 1.2 where loading 
 	* a class with a large number of constants causes
@@ -1799,81 +1062,646 @@ public static final boolean InsertMenu (int hMenu, int uPosition, int uFlags, in
 	public static final int WS_THICKFRAME = 0x40000;
 	public static final int WS_VISIBLE = 0x10000000;
 	public static final int WS_VSCROLL = 0x200000;
+	
+/** Ansi/Unicode wrappers */
 
+public static final int CallWindowProc (int lpPrevWndFunc, int hWnd, int Msg, int wParam, int lParam) {
+	if (IsUnicode) return CallWindowProcW (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+	return CallWindowProcA (lpPrevWndFunc, hWnd, Msg, wParam, lParam);
+}
 
-	/* Unused Structs */
-	/*
-	public class CHARFORMAT2 extends CHARFORMAT {
-		public short wWeight;
-		public short sSpacing;
-		public int crBackColor;
-		public int lcid;
-		public int dwReserved;
-		public short sStyle;
-		public short wKerning;
-		public byte bUnderlineType;
-		public byte bAnimation;
-		public byte bRevAuthor;
-	//	public byte bReserved1;
-		public static final int sizeof = 84;
+public static final short CharUpper (short ch) {
+	if (IsUnicode) return CharUpperW (ch);
+	return CharUpperA (ch);
+}
+
+public static final short CharLower (short ch) {
+	if (IsUnicode) return CharLowerW (ch);
+	return CharLowerA (ch);
+}
+
+public static final boolean ChooseColor (CHOOSECOLOR lpcc) {
+	if (IsUnicode) return ChooseColorW (lpcc);
+	return ChooseColorA (lpcc);
+}
+
+public static final boolean ChooseFont (CHOOSEFONT chooseFont) {
+	if (IsUnicode) return ChooseFontW (chooseFont);
+	return ChooseFontA (chooseFont);
+}
+
+public static final int CreateAcceleratorTable (byte [] lpaccl, int cEntries) {
+	if (IsUnicode) return CreateAcceleratorTableW (lpaccl, cEntries);
+	return CreateAcceleratorTableA (lpaccl, cEntries);
+}
+
+public static final int CreateDC (TCHAR lpszDriver, TCHAR lpszDevice, int lpszOutput, int lpInitData) {
+	if (IsUnicode) {
+		char [] lpszDriver1 = lpszDriver == null ? null : lpszDriver.chars;
+		char [] lpszDevice1 = lpszDevice == null ? null : lpszDevice.chars;
+		return CreateDCW (lpszDriver1, lpszDevice1, lpszOutput, lpInitData);
 	}
+	byte [] lpszDriver1 = lpszDriver == null ? null : lpszDriver.bytes;
+	byte [] lpszDevice1 = lpszDevice == null ? null : lpszDevice.bytes;
+	return CreateDCA (lpszDriver1, lpszDevice1, lpszOutput, lpInitData);
+}
 
-	public class NMTVCUSTOMDRAW extends NMCUSTOMDRAW {
-		public int clrText;
-		public int clrTextBk;
-		public int iLevel;
-		public static final int sizeof = 60;
+public static final int CreateFontIndirect (int lplf) {
+	if (IsUnicode) return CreateFontIndirectW (lplf);
+	return CreateFontIndirectA (lplf);
+}
+
+public static final int CreateFontIndirect (LOGFONT lplf) {
+	if (IsUnicode) return CreateFontIndirectW (lplf);
+	return CreateFontIndirectA (lplf);
+}
+
+public static final int CreateWindowEx (int dwExStyle, TCHAR lpClassName, TCHAR lpWindowName, int dwStyle, int X, int Y, int nWidth, int nHeight, int hWndParent, int hMenu, int hInstance, CREATESTRUCT lpParam) {
+	if (IsUnicode) {
+		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
+		char [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.chars;
+		return CreateWindowExW (dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
 	}
+	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+	byte [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.bytes;
+	return CreateWindowExA (dwExStyle, lpClassName1, lpWindowName1, dwStyle, X, Y, nWidth, nHeight, hWndParent, hMenu, hInstance, lpParam);
+}
 
-	public class NMCUSTOMDRAW extends NMHDR {
-		public int dwDrawStage;
-		public int hdc;
-	//	public RECT rc;
-		public int left, top, right, bottom;
-		public int dwItemSpec;
-		public int uItemState;
-		public int lItemlParam;
-		public static final int sizeof = 48;
+public static final int DefWindowProc (int hWnd, int Msg, int wParam, int lParam) {
+	if (IsUnicode) return DefWindowProcW (hWnd, Msg, wParam, lParam);
+	return DefWindowProcA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int DispatchMessage (MSG lpmsg) {
+	if (IsUnicode) return DispatchMessageW (lpmsg);
+	return DispatchMessageA (lpmsg);
+}
+
+public static final boolean DrawState (int hdc, int hbr, int lpOutputFunc, int lData, int wData, int x, int y, int cx, int cy, int fuFlags) {
+	if (IsUnicode) return DrawStateW (hdc, hbr, lpOutputFunc, lData, wData, x, y, cx, cy, fuFlags);
+	return DrawStateA (hdc, hbr, lpOutputFunc, lData, wData, x, y, cx, cy, fuFlags);
+}
+
+public static final int DrawText (int hDC, TCHAR lpString, int nCount, RECT lpRect, int uFormat) {
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return DrawTextW (hDC, lpString1, nCount, lpRect, uFormat);
 	}
-	public class MSGFILTER extends NMHDR {
-		public int msg;
-		public int wParam; 
-		public int lParam;
-		public static final int sizeof = 24;
-	}	
-	*/
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return DrawTextA (hDC, lpString1, nCount, lpRect, uFormat);
+}
 
-	/* Unused Natives */
-	/*
-	public static final native int CopyAcceleratorTable (int hAccelSrc byte [] lpAccelDst, int cAccelEntries);
-	public static final native int ChildWindowFromPoint (int hwndParent, POINT lpPoint);
-	public static final native boolean EnumPrinters(int Flags, byte Name[], int Level, byte pPrinterEnum[], int cbBuf, int pcbNeeded[], int pcReturned[]);
-	public static final native boolean EqualRect (RECT lprc1, RECT lprc2);
-	public static final native int ExtractIcon(int hInst, byte[] lpszFile, int nIconIndex);	
-	public static final native int GetCaretBlinkTime ();
-	public static final native int GetCaretBlinkTime ();
-	public static final native int GetClassLong (int hWnd, int nIndex);
-	public static final native int GetDIBits (int hdc, int hbmp, int uStartScan, int cScanLines, byte[] lpvBits, byte[] lpbi, int uUsage);
-	public static final native int GetDlgCtrlID (int hWnd);
-	public static final native boolean IntersectRect (RECT lprcDst, RECT lprcSrc1, RECT lprcSrc2);
-	public static final native boolean IsMenu (int hMenu);
-	public static final native boolean IsWindow (int hwnd);
-	public static final native int LoadBitmap (int hInstance, byte [] lpBitmapName);
-	public static final native int LoadCursor (int hInstance, byte [] lpCursorName);
-	public static final native int LoadIcon (int hInstance, byte [] lpIconName);
-	public static final native int LoadImage (int hinst, int lpszName, int uType, int cxDesired, int cyDesired, int fuLoad);
-	public static final native void MoveMemory (ACCEL Destination, byte [] Source, int Length);
-	public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int Source, int Length);
-	public static final native void MoveMemory (RECT Destination, int Source, int Length);
-	public static final native boolean PageSetupDlg (PAGESETUPDLG lppsd);
-	public static final native void PostQuitMessage (int nExitCode);
-	public static final native boolean Rectangle (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
-	public static final native int SendMessage (int hWnd, int Msg, int wParam, CHARFORMAT2 lParam);
-	public static final native int SendMessage (int hWnd, int Msg, int wParam, MSG lParam);  
-	public static final native boolean SetCaretBlinkTime (int uMSeconds);
-	public static final native boolean TextOut (int hdc, int nXStart, int nYStart, byte[] lpString, int cbString);
-	*/
+public static final int EnumFontFamilies (int hdc, TCHAR lpszFamily, int lpEnumFontFamProc, int lParam) {
+	if (IsUnicode) {
+		char [] lpszFamily1 = lpszFamily == null ? null : lpszFamily.chars;
+		return EnumFontFamiliesW (hdc, lpszFamily1, lpEnumFontFamProc, lParam);
+	}
+	byte [] lpszFamily1 = lpszFamily == null ? null : lpszFamily.bytes;
+	return EnumFontFamiliesA (hdc, lpszFamily1, lpEnumFontFamProc, lParam);
+}
+
+public static final boolean EnumSystemLocales (int lpLocaleEnumProc, int dwFlags) {
+	if (IsUnicode) return EnumSystemLocalesW (lpLocaleEnumProc, dwFlags);
+	return EnumSystemLocalesA (lpLocaleEnumProc, dwFlags);
+}
+
+public static final int ExtractIconEx (TCHAR lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons) {
+	if (IsUnicode) {
+		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
+		return ExtractIconExW (lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons);
+	}
+	byte [] lpszFile1 = lpszFile == null ? null : lpszFile.bytes;
+	return ExtractIconExA (lpszFile1, nIconIndex, phiconLarge, phiconSmall, nIcons);
+}
+
+public static final boolean ExtTextOut(int hdc, int X, int Y, int fuOptions, RECT lprc, TCHAR lpString, int cbCount, int[] lpDx) {
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return ExtTextOutW (hdc, X, Y, fuOptions, lprc, lpString1, cbCount, lpDx);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return ExtTextOutA (hdc, X, Y, fuOptions, lprc, lpString1, cbCount, lpDx);
+}
+
+public static final boolean GetCharABCWidths (int hdc, int iFirstChar, int iLastChar, int [] lpabc) {
+	if (IsUnicode) return GetCharABCWidthsW (hdc,iFirstChar, iLastChar, lpabc);
+	return GetCharABCWidthsA (hdc,iFirstChar, iLastChar, lpabc);
+}
+
+public static final int GetCharacterPlacement (int hdc, TCHAR lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags) {
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return GetCharacterPlacementW (hdc, lpString1, nCount, nMaxExtent, lpResults, dwFlags);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return GetCharacterPlacementA (hdc, lpString1, nCount, nMaxExtent, lpResults, dwFlags);	
+}
+
+public static final boolean GetCharWidth (int hdc, int iFirstChar, int iLastChar, int [] lpabc) {
+	if (IsUnicode) return GetCharWidthW (hdc,iFirstChar, iLastChar, lpabc);
+	return GetCharWidthA (hdc,iFirstChar, iLastChar, lpabc);
+}
+
+public static final boolean GetClassInfo (int hInstance, TCHAR lpClassName, WNDCLASS lpWndClass) {
+	if (IsUnicode) {
+		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
+		return GetClassInfoW (hInstance, lpClassName1, lpWndClass);
+	}
+	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+	return GetClassInfoA (hInstance, lpClassName1, lpWndClass);
+}
+
+public static final short GetFileTitle (TCHAR lpszFile, TCHAR lpszTitle, short cbBuf) {
+	if (IsUnicode) {
+		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
+		char [] lpszTitle1 = lpszTitle == null ? null : lpszTitle.chars;
+		return GetFileTitleW (lpszFile1, lpszTitle1, cbBuf);
+	}
+	byte [] lpszFile1 = lpszFile == null ? null : lpszFile.bytes;
+	byte [] lpszTitle1 = lpszTitle == null ? null : lpszTitle.bytes;
+	return GetFileTitleA (lpszFile1, lpszTitle1, cbBuf);
+}
+
+public static final int GetLocaleInfo (int Locale, int LCType, TCHAR lpLCData, int cchData) {
+	if (IsUnicode) {
+		char [] lpLCData1 = lpLCData == null ? null : lpLCData.chars;
+		return GetLocaleInfoW (Locale, LCType, lpLCData1, cchData);
+	}
+	byte [] lpLCData1 = lpLCData == null ? null : lpLCData.bytes;
+	return GetLocaleInfoA (Locale, LCType, lpLCData1, cchData);
+}
+
+public static final boolean GetMenuItemInfo (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii) {
+	if (IsUnicode) return GetMenuItemInfoW (hMenu, uItem, fByPosition, lpmii);
+	return GetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
+}
+
+public static final boolean GetMessage (MSG lpMsg, int hWnd, int wMsgFilterMin, int wMsgFilterMax) {	
+	if (IsUnicode) return GetMessageW (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
+	return GetMessageA (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax);
+}
+
+public static final int GetModuleHandle (TCHAR lpModuleName) {
+	if (IsUnicode) {
+		char [] lpModuleName1 = lpModuleName == null ? null : lpModuleName.chars;
+		return GetModuleHandleW (lpModuleName1);
+	}
+	byte [] lpModuleName1 = lpModuleName == null ? null : lpModuleName.bytes;
+	return GetModuleHandleA (lpModuleName1);
+}
+
+public static final int GetObject (int hgdiobj, int cbBuffer, BITMAP lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
+public static final int GetObject (int hgdiobj, int cbBuffer, DIBSECTION lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
+public static final int GetObject (int hgdiobj, int cbBuffer, LOGBRUSH lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
+public static final int GetObject (int hgdiobj, int cbBuffer, LOGFONT lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
+public static final int GetObject (int hgdiobj, int cbBuffer, LOGPEN lpvObject) {
+	if (IsUnicode) return GetObjectW (hgdiobj, cbBuffer, lpvObject);
+	return GetObjectA (hgdiobj, cbBuffer, lpvObject);
+}
+
+public static final boolean GetOpenFileName (OPENFILENAME lpofn) {
+	if (IsUnicode) return GetOpenFileNameW (lpofn);
+	return GetOpenFileNameA (lpofn);
+}
+
+public static final int GetProfileString (TCHAR lpAppName, TCHAR lpKeyName, TCHAR lpDefault, TCHAR lpReturnedString, int nSize) {
+	if (IsUnicode) {
+		char [] lpAppName1 = lpAppName == null ? null : lpAppName.chars;
+		char [] lpKeyName1 = lpKeyName == null ? null : lpKeyName.chars;
+		char [] lpDefault1 = lpDefault == null ? null : lpDefault.chars;
+		char [] lpReturnedString1 = lpReturnedString == null ? null : lpReturnedString.chars;
+		return GetProfileStringW (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
+	}
+	byte [] lpAppName1 = lpAppName == null ? null : lpAppName.bytes;
+	byte [] lpKeyName1 = lpKeyName == null ? null : lpKeyName.bytes;
+	byte [] lpDefault1 = lpDefault == null ? null : lpDefault.bytes;
+	byte [] lpReturnedString1 = lpReturnedString == null ? null : lpReturnedString.bytes;
+	return GetProfileStringA (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
+}
+
+public static final boolean GetSaveFileName (OPENFILENAME lpofn) {
+	if (IsUnicode) return GetSaveFileNameW (lpofn);
+	return GetSaveFileNameA (lpofn);
+}
+
+public static final boolean GetTextExtentPoint32 (int hdc, TCHAR lpString, int cbString, SIZE lpSize) {
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return GetTextExtentPoint32W (hdc, lpString1, cbString, lpSize);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return GetTextExtentPoint32A (hdc, lpString1, cbString, lpSize);	
+}
+
+public static final boolean GetTextMetrics (int hdc, TEXTMETRIC lptm) {
+	if (IsUnicode) return GetTextMetricsW (hdc, lptm);
+	return GetTextMetricsA (hdc, lptm);
+}
+
+public static final boolean GetVersionEx (OSVERSIONINFO lpVersionInfo) {
+	if (IsUnicode) return GetVersionExW (lpVersionInfo);
+	return GetVersionExA (lpVersionInfo);
+}
+
+public static final int GetWindowLong (int hWnd, int nIndex) {
+	if (IsUnicode) return GetWindowLongW (hWnd, nIndex);
+	return GetWindowLongA (hWnd, nIndex);
+}
+
+public static final int GetWindowText (int hWnd, TCHAR lpString, int nMaxCount) {
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return GetWindowTextW (hWnd, lpString1, nMaxCount);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return GetWindowTextA (hWnd, lpString1, nMaxCount);
+}
+
+public static final int GetWindowTextLength (int hWnd) {
+	if (IsUnicode) return GetWindowTextLengthW (hWnd);
+	return GetWindowTextLengthA (hWnd);
+}
+
+public static final boolean ImmGetCompositionFont (int hIMC, LOGFONT lplf) {
+	if (IsUnicode) return ImmGetCompositionFontW (hIMC, lplf);
+	return ImmGetCompositionFontA (hIMC, lplf);
+}
+
+public static final boolean ImmSetCompositionFont (int hIMC, LOGFONT lplf) {
+	if (IsUnicode) return ImmSetCompositionFontW (hIMC, lplf);
+	return ImmSetCompositionFontA (hIMC, lplf);
+}
+
+public static final int ImmGetCompositionString (int hIMC, int dwIndex, TCHAR lpBuf, int dwBufLen) {
+	if (IsUnicode) {
+		char [] lpBuf1 = lpBuf == null ? null : lpBuf.chars;
+		return ImmGetCompositionStringW (hIMC, dwIndex, lpBuf1, dwBufLen);
+	}
+	byte [] lpBuf1 = lpBuf == null ? null : lpBuf.bytes;
+	return ImmGetCompositionStringA (hIMC, dwIndex, lpBuf1, dwBufLen);
+}
+
+public static final boolean InsertMenu (int hMenu, int uPosition, int uFlags, int uIDNewItem, TCHAR lpNewItem) {
+	if (IsUnicode) {
+		char [] lpNewItem1 = lpNewItem == null ? null : lpNewItem.chars;
+		return InsertMenuW (hMenu, uPosition, uFlags, uIDNewItem, lpNewItem1);
+	}
+	byte [] lpNewItem1 = lpNewItem == null ? null : lpNewItem.bytes;
+	return InsertMenuA (hMenu, uPosition, uFlags, uIDNewItem, lpNewItem1);	
+}
+
+public static final boolean InsertMenuItem (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii) {
+	if (IsUnicode) return InsertMenuItemW (hMenu, uItem, fByPosition, lpmii);
+	return InsertMenuItemA (hMenu, uItem, fByPosition, lpmii);
+}
+
+public static final int LoadBitmap (int hInstance, int lpBitmapName) {
+	if (IsUnicode) return LoadBitmapW (hInstance, lpBitmapName);
+	return LoadBitmapA (hInstance, lpBitmapName);
+}
+
+public static final int LoadCursor (int hInstance, int lpCursorName) {
+	if (IsUnicode) return LoadCursorW (hInstance, lpCursorName);
+	return LoadCursorA (hInstance, lpCursorName);
+}
+
+public static final int LoadIcon (int hInstance, int lpIconName) {
+	if (IsUnicode) return LoadIconW (hInstance, lpIconName);
+	return LoadIconA (hInstance, lpIconName);
+}
+
+public static final int LoadImage (int hinst, TCHAR lpszName, int uType, int cxDesired, int cyDesired, int fuLoad) {
+	if (IsUnicode) {
+		char [] lpszName1 = lpszName == null ? null : lpszName.chars;
+		return LoadImageW (hinst, lpszName1, uType, cxDesired, cyDesired, fuLoad);
+	}
+	byte [] lpszName1 = lpszName == null ? null : lpszName.bytes;
+	return LoadImageA (hinst, lpszName1, uType, cxDesired, cyDesired, fuLoad);
+}
+
+public static final int LoadLibrary (TCHAR lpLibFileName) {
+	if (IsUnicode) {
+		char [] lpLibFileName1 = lpLibFileName == null ? null : lpLibFileName.chars;
+		return LoadLibraryW (lpLibFileName1);
+	}
+	byte [] lpLibFileName1 = lpLibFileName == null ? null : lpLibFileName.bytes;
+	return LoadLibraryA (lpLibFileName1);
+}
+
+public static final int MapVirtualKey (int uCode, int uMapType) {
+	if (IsUnicode) return MapVirtualKeyW (uCode, uMapType);
+	return MapVirtualKeyA (uCode, uMapType);
+}
+
+public static final int MessageBox (int hWnd, TCHAR lpText, TCHAR lpCaption, int uType) {
+	if (IsUnicode) {
+		char [] lpText1 = lpText == null ? null : lpText.chars;
+		char [] lpCaption1 = lpCaption == null ? null : lpCaption.chars;
+		return MessageBoxW (hWnd, lpText1, lpCaption1, uType);
+	}
+	byte [] lpText1 = lpText == null ? null : lpText.bytes;
+	byte [] lpCaption1 = lpCaption == null ? null : lpCaption.bytes;
+	return MessageBoxA (hWnd, lpText1, lpCaption1, uType);
+}
+
+public static final void MoveMemory (int Destination, TCHAR Source, int Length) {
+	if (IsUnicode) {
+		char [] Source1 = Source == null ? null : Source.chars;
+		MoveMemory (Destination, Source1, Length);
+	} else {
+		byte [] Source1 = Source == null ? null : Source.bytes;
+		MoveMemory (Destination, Source1, Length);
+	}
+}
+
+public static final void MoveMemory (TCHAR Destination, int Source, int Length) {
+	if (IsUnicode) {
+		char [] Destination1 = Destination == null ? null : Destination.chars;
+		MoveMemory (Destination1, Source, Length);
+	} else {
+		byte [] Destination1 = Destination == null ? null : Destination.bytes;
+		MoveMemory (Destination1, Source, Length);
+	}
+}
+
+public static final void MoveMemory (int Destination, LOGFONT Source, int Length) {
+	if (IsUnicode) {
+		MoveMemoryW (Destination, Source, Length);
+	} else {
+		MoveMemoryA (Destination, Source, Length);
+	}
+}
+
+public static final void MoveMemory (LOGFONT Destination, int Source, int Length) {
+	if (IsUnicode) {
+		MoveMemoryW (Destination, Source, Length);
+	} else {
+		MoveMemoryA (Destination, Source, Length);
+	}
+}
+
+public static final void MoveMemory (int Destination, NMTTDISPINFO Source, int Length) {
+	if (IsUnicode) {
+		MoveMemoryW (Destination, Source, Length);
+	} else {
+		MoveMemoryA (Destination, Source, Length);
+	}
+}
+
+public static final void MoveMemory (NMTTDISPINFO Destination, int Source, int Length) {
+	if (IsUnicode) {
+		MoveMemoryW (Destination, Source, Length);
+	} else {
+		MoveMemoryA (Destination, Source, Length);
+	}
+}
+
+public static final boolean PeekMessage (MSG lpMsg, int hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg) {
+	if (IsUnicode) return PeekMessageW (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
+	return PeekMessageA (lpMsg, hWnd, wMsgFilterMin, wMsgFilterMax, wRemoveMsg);
+}
+
+public static final boolean PostMessage (int hWnd, int Msg, int wParam, int lParam) {
+	if (IsUnicode) return PostMessageW (hWnd, Msg, wParam, lParam);
+	return PostMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final boolean PostThreadMessage (int idThread, int Msg, int wParam, int lParam) {
+	if (IsUnicode) return PostThreadMessageW (idThread, Msg, wParam, lParam);
+	return PostThreadMessageA (idThread, Msg, wParam, lParam);
+}
+
+public static final boolean PrintDlg (PRINTDLG lppd) {
+	if (IsUnicode) return PrintDlgW (lppd);
+	return PrintDlgA (lppd);
+}
+
+public static final int RegEnumKeyEx (int hKey, int dwIndex, TCHAR lpName, int [] lpcName, int [] lpReserved, TCHAR lpClass, int [] lpcClass, FILETIME lpftLastWriteTime) {
+	if (IsUnicode) {
+		char [] lpName1 = lpName == null ? null : lpName.chars;
+		char [] lpClass1 = lpClass == null ? null : lpClass.chars;
+		return RegEnumKeyExW (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
+	}
+	byte [] lpName1 = lpName == null ? null : lpName.bytes;
+	byte [] lpClass1 = lpClass == null ? null : lpClass.bytes;
+	return RegEnumKeyExA (hKey, dwIndex, lpName1, lpcName, lpReserved, lpClass1, lpcClass, lpftLastWriteTime);
+}
+
+public static final int RegisterClass (WNDCLASS lpWndClass) {
+	if (IsUnicode) return RegisterClassW (lpWndClass);
+	return RegisterClassA (lpWndClass);
+}
+
+public static final int RegOpenKeyEx (int hKey, TCHAR lpSubKey, int ulOptions, int samDesired, int[] phkResult) {
+	if (IsUnicode) {
+		char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
+		return RegOpenKeyExW (hKey, lpSubKey1, ulOptions, samDesired, phkResult);
+	}
+	byte [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.bytes;
+	return RegOpenKeyExA (hKey, lpSubKey1, ulOptions, samDesired, phkResult);
+}
+
+public static final int RegQueryInfoKey (int hKey, int lpClass, int[] lpcbClass, int lpReserved, int[] lpSubKeys, int[] lpcbMaxSubKeyLen, int[] lpcbMaxClassLen, int[] lpcValues, int[] lpcbMaxValueNameLen, int[] lpcbMaxValueLen, int[] lpcbSecurityDescriptor, int lpftLastWriteTime){
+	if (IsUnicode) return RegQueryInfoKeyW (hKey, lpClass, lpcbClass, lpReserved, lpSubKeys, lpcbMaxSubKeyLen, lpcbMaxClassLen, lpcValues, lpcbMaxValueNameLen, lpcbMaxValueLen, lpcbSecurityDescriptor, lpftLastWriteTime);
+	return RegQueryInfoKeyA (hKey, lpClass, lpcbClass, lpReserved, lpSubKeys, lpcbMaxSubKeyLen, lpcbMaxClassLen, lpcValues, lpcbMaxValueNameLen, lpcbMaxValueLen, lpcbSecurityDescriptor, lpftLastWriteTime);
+}
+
+public static final int RegQueryValueEx (int hKey, TCHAR lpValueName, int lpReserved, int[] lpType, TCHAR lpData, int[] lpcbData) {
+	if (IsUnicode) {
+		char [] lpValueName1 = lpValueName == null ? null : lpValueName.chars;
+		char [] lpData1 = lpData == null ? null : lpData.chars;
+		return RegQueryValueExW (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
+	}
+	byte [] lpValueName1 = lpValueName == null ? null : lpValueName.bytes;
+	byte [] lpData1 = lpData == null ? null : lpData.bytes;
+	return RegQueryValueExA (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, TCHAR lParam) {
+	if (IsUnicode) {
+		char [] lParam1 = lParam == null ? null : lParam.chars;
+		return SendMessageW (hWnd, Msg, wParam, lParam1);
+	}
+	byte [] lParam1 = lParam == null ? null : lParam.bytes;
+	return SendMessageA (hWnd, Msg, wParam, lParam1);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int [] wParam, int [] lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int [] wParam, int lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, int [] lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, short [] lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, int lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, LVCOLUMN lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, LVHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, LVITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, REBARBANDINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, RECT lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, TBBUTTON lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, TBBUTTONINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, TCITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, TOOLINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, TVHITTESTINFO lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, TVINSERTSTRUCT lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final int SendMessage (int hWnd, int Msg, int wParam, TVITEM lParam) {
+	if (IsUnicode) return SendMessageW (hWnd, Msg, wParam, lParam);
+	return SendMessageA (hWnd, Msg, wParam, lParam);
+}
+
+public static final boolean SetMenuItemInfo (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii) {
+	if (IsUnicode) return SetMenuItemInfoW (hMenu, uItem, fByPosition, lpmii);
+	return SetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
+}
+
+public static final int SetWindowLong (int hWnd, int nIndex, int dwNewLong) {
+	if (IsUnicode) return SetWindowLongW (hWnd, nIndex, dwNewLong);
+	return SetWindowLongA (hWnd, nIndex, dwNewLong);
+}
+
+public static final int SetWindowsHookEx (int idHook, int lpfn, int hMod, int dwThreadId) {
+	if (IsUnicode) return SetWindowsHookExW (idHook, lpfn, hMod, dwThreadId);
+	return SetWindowsHookExA (idHook, lpfn, hMod, dwThreadId);
+}
+
+public static final boolean SetWindowText (int hWnd, TCHAR lpString) {
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return SetWindowTextW (hWnd, lpString1);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return SetWindowTextA (hWnd, lpString1);
+}
+
+public static final int SHBrowseForFolder (BROWSEINFO lpbi) {
+	if (IsUnicode) return SHBrowseForFolderW (lpbi);
+	return SHBrowseForFolderA (lpbi);
+}
+
+public static final boolean ShellExecuteEx (SHELLEXECUTEINFO lpExecInfo) {
+	if (IsUnicode) return ShellExecuteExW (lpExecInfo);
+	return ShellExecuteExA (lpExecInfo);
+}
+
+public static final boolean SHGetPathFromIDList (int pidl, TCHAR pszPath) {
+	if (IsUnicode) {
+		char [] pszPath1 = pszPath == null ? null : pszPath.chars;
+		return SHGetPathFromIDListW (pidl, pszPath1);
+	}
+	byte [] pszPath1 = pszPath == null ? null : pszPath.bytes;
+	return SHGetPathFromIDListA (pidl, pszPath1);
+}
+
+public static final int StartDoc (int hdc, DOCINFO lpdi) {
+	if (IsUnicode) return StartDocW (hdc, lpdi);
+	return StartDocA (hdc, lpdi);
+}
+
+public static final boolean SystemParametersInfo (int uiAction, int uiParam, RECT pvParam, int fWinIni) {
+	if (IsUnicode) return SystemParametersInfoW (uiAction, uiParam, pvParam, fWinIni);
+	return SystemParametersInfoA (uiAction, uiParam, pvParam, fWinIni);
+}
+
+public static final int TranslateAccelerator (int hWnd, int hAccTable, MSG lpMsg) {
+	if (IsUnicode) return TranslateAcceleratorW (hWnd, hAccTable, lpMsg);
+	return TranslateAcceleratorA (hWnd, hAccTable, lpMsg);
+}
+
+public static final boolean UnregisterClass (TCHAR lpClassName, int hInstance) {
+	if (IsUnicode) {
+		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
+		return UnregisterClassW (lpClassName1, hInstance);
+	}
+	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+	return UnregisterClassA (lpClassName1, hInstance);
+}
+
+public static final short VkKeyScan (short ch) {
+	if (IsUnicode) return VkKeyScanW (ch);
+	return VkKeyScanA (ch);
+}
+
+/** Natives */
 public static final native int AbortDoc (int hdc);
+public static final native int ActivateKeyboardLayout(int hkl, int Flags);
 public static final native boolean AdjustWindowRectEx (RECT lpRect, int dwStyle, boolean bMenu, int dwExStyle);
 public static final native boolean Arc (int hdc,int nLeftRect,int nTopRect,int nRightRect,int nBottomRect,int nXStartArc,int nYStartArc,int nXEndArc,int nYEndArc);
 public static final native int BeginDeferWindowPos (int nNumWindows);
@@ -1894,42 +1722,14 @@ public static final native boolean ChooseFontW (CHOOSEFONT chooseFont);
 public static final native boolean ChooseFontA (CHOOSEFONT chooseFont);
 public static final native boolean ClientToScreen (int hWnd, POINT lpPoint);
 public static final native boolean CloseClipboard ();
-public static final native int CombineRgn (
-  int hrgnDest,      // handle to destination region
-  int hrgnSrc1,      // handle to source region
-  int hrgnSrc2,      // handle to source region
-  int fnCombineMode   // region combining mode
-);
+public static final native int CombineRgn (int hrgnDest, int hrgnSrc1, int hrgnSrc2, int fnCombineMode);
 public static final native int CommDlgExtendedError ();
-public static final native int CopyImage (
-	int hImage,  // handle to the image to copy
-	int uType,     // type of image to copy
-	int cxDesired,  // desired width of new image
-  	int cyDesired,  // desired height of new image
-  	int fuFlags    // copy flags
-);
-public static final native int CreateAcceleratorTableW (
-  byte [] lpaccl,  // pointer to structure array with accelerator data
-  int cEntries     // number of structures in the array
-); 
-public static final native int CreateAcceleratorTableA (
-  byte [] lpaccl,  // pointer to structure array with accelerator data
-  int cEntries     // number of structures in the array
-);
-public static final native int CreateBitmap (
-	int nWidth,         // bitmap width, in pixels
-	int nHeight,        // bitmap height, in pixels
-	int cPlanes,       // number of color planes used by device
-	int cBitsPerPel,   // number of bits required to identify a color
-	byte [] lpvBits 	// pointer to array containing color data);
-);
-//public static final native int CreateBitmapIndirect (BITMAP lpbm);
+public static final native int CopyImage (int hImage, int uType, int cxDesired, int cyDesired, int fuFlags);
+public static final native int CreateAcceleratorTableW (byte [] lpaccl, int cEntries); 
+public static final native int CreateAcceleratorTableA (byte [] lpaccl, int cEntries);
+public static final native int CreateBitmap (int nWidth, int nHeight, int cPlanes, int cBitsPerPel, byte [] lpvBits);
 public static final native boolean CreateCaret (int hWnd, int hBitmap, int nWidth, int nHeight);
-public static final native int CreateCompatibleBitmap (
-	int hdc,        // handle to device context
-	int nWidth,     // width of bitmap, in pixels
-	int nHeight     // height of bitmap, in pixels
-	);
+public static final native int CreateCompatibleBitmap (int hdc, int nWidth, int nHeight);
 public static final native int CreateCompatibleDC (int hdc);
 public static final native int CreateCursor (int hInst, int xHotSpot, int yHotSpot, int nWidth, int nHeight, byte [] pvANDPlane, byte [] pvXORPlane);
 public static final native int CreateDCW (char [] lpszDriver, char [] lpszDevice, int lpszOutput, int lpInitData);  
@@ -1943,7 +1743,7 @@ public static final native int CreateIconIndirect (ICONINFO lplf);
 public static final native int CreateMenu ();
 public static final native int CreatePalette (byte[] logPalette);
 public static final native int CreatePatternBrush (int colorRef);
-//public static final native int ExtCreatePen (int fnPenStyle, int nWidth, LOGBRUSH lplb, int dwStyleCount, int lpStyle);
+public static final native int CreatePen (int fnPenStyle, int nWidth, int crColor);
 public static final native int CreatePopupMenu ();
 public static final native int CreateRectRgn (int left, int top, int right, int bottom);
 public static final native int CreateSolidBrush (int colorRef);
@@ -1964,44 +1764,30 @@ public static final native boolean DestroyWindow (int hWnd);
 public static final native int DispatchMessageW (MSG lpmsg);
 public static final native int DispatchMessageA (MSG lpmsg);
 public static final native boolean DragDetect (int hwnd, POINT pt);
-public static final native boolean DrawEdge (
-	int hdc, // handle to device context
- 	RECT qrc,    // pointer to rectangle coordinates
-  	int edge,     // type of inner and outer edge to draw
-  	int grfFlags  // type of border
-);
+public static final native boolean DrawEdge (int hdc, RECT qrc, int edge, int grfFlags);
 public static final native boolean DrawFocusRect (int hDC, RECT lpRect);
 public static final native boolean DrawFrameControl (int hdc, RECT lprc, int uType, int uState);
-public static final native boolean DrawIconEx (
-  int hdc,                    // handle to device context
-  int xLeft,                  // x-coordinate of upper left corner
-  int yTop,                   // y-coordinate of upper left corner
-  int hIcon,                // handle to icon to draw
-  int cxWidth,                // width of the icon
-  int cyWidth,                // height of the icon
-  int istepIfAniCur,         // index of frame in animated cursor
-  int hbrFlickerFreeDraw,  // handle to background brush
-  int diFlags                // icon-drawing flags
-);
+public static final native boolean DrawIconEx (int hdc, int xLeft, int yTop, int hIcon, int cxWidth, int cyWidth, int istepIfAniCur, int hbrFlickerFreeDraw, int diFlags);
 public static final native boolean DrawMenuBar (int hWnd);
+public static final native boolean DrawStateW (int hdc, int hbr, int lpOutputFunc, int lData, int wData, int x, int y, int cx, int cy, int fuFlags);
+public static final native boolean DrawStateA (int hdc, int hbr, int lpOutputFunc, int lData, int wData, int x, int y, int cx, int cy, int fuFlags);
 public static final native int DrawTextW (int hDC, char [] lpString, int nCount, RECT lpRect, int uFormat);
 public static final native int DrawTextA (int hDC, byte [] lpString, int nCount, RECT lpRect, int uFormat);
 public static final native boolean Ellipse (int hdc,int nLeftRect,int nTopRect,int nRightRect,int nBottomRect);
 public static final native boolean EnableMenuItem (int hMenu, int uIDEnableItem, int uEnable);
 public static final native boolean EnableScrollBar (int hWnd, int wSBflags, int wArrows);
 public static final native boolean EnableWindow (int hWnd, boolean bEnable);
+public static final native boolean EnumSystemLocalesW (int lpLocaleEnumProc, int dwFlags);
+public static final native boolean EnumSystemLocalesA (int lpLocaleEnumProc, int dwFlags);
 public static final native boolean EndDeferWindowPos (int hWinPosInfo);
 public static final native int EndDoc (int hdc);
 public static final native int EndPage (int hdc);
 public static final native int EndPaint (int hWnd, PAINTSTRUCT lpPaint);
 public static final native int EnumFontFamiliesW (int hdc, char [] lpszFamily, int lpEnumFontFamProc, int lParam);
 public static final native int EnumFontFamiliesA (int hdc, byte [] lpszFamily, int lpEnumFontFamProc, int lParam);
-public static final native boolean EqualRgn (
-  int hSrcRgn1,  // handle to first region
-  int hSrcRgn2   // handle to second region
-);
-//public static final native int ExpandEnvironmentStringsW (char [] lpSrc, char [] lpDest, int nSize);
-//public static final native int ExpandEnvironmentStringsA (byte [] lpSrc, byte [] lpDest, int nSize);
+public static final native boolean EqualRgn (int hSrcRgn1, int hSrcRgn2);
+public static final native boolean ExtTextOutW(int hdc, int X, int Y, int fuOptions, RECT lprc, char[] lpString, int cbCount, int[] lpDx);
+public static final native boolean ExtTextOutA(int hdc, int X, int Y, int fuOptions, RECT lprc, byte[] lpString, int cbCount, int[] lpDx);
 public static final native int ExtractIconExW (char [] lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons);
 public static final native int ExtractIconExA (byte [] lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons);
 public static final native int FillRect(int hDC, RECT lprc, int hbr);
@@ -2013,6 +1799,8 @@ public static final native int GetCapture ();
 public static final native boolean GetCaretPos (POINT lpPoint);
 public static final native boolean GetCharABCWidthsA (int hdc, int iFirstChar, int iLastChar, int [] lpabc);
 public static final native boolean GetCharABCWidthsW (int hdc, int iFirstChar, int iLastChar, int [] lpabc);
+public static final native int GetCharacterPlacementW(int hdc, char[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
+public static final native int GetCharacterPlacementA(int hdc, byte[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
 public static final native boolean GetCharWidthA (int hdc, int iFirstChar, int iLastChar, int [] lpBuffer);
 public static final native boolean GetCharWidthW (int hdc, int iFirstChar, int iLastChar, int [] lpBuffer);
 public static final native boolean GetClassInfoW (int hInstance, char [] lpClassName, WNDCLASS lpWndClass);
@@ -2033,106 +1821,45 @@ public static final native int GetDeviceCaps (int hdc, int nIndex);
 public static final native int GetDialogBaseUnits ();
 public static final native int GetDIBColorTable (int hdc, int uStartIndex, int cEntries, byte[] pColors);
 public static final native int GetDIBits (int hdc, int hbmp, int uStartScan, int cScanLines, int lpvBits, byte[] lpbi, int uUsage);
-public static final native int GetDlgItem (
-  int hDlg,       // handle of dialog box
-  int nIDDlgItem   // identifier of control
-);
+public static final native int GetDlgItem (int hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
-public static final native short GetFileTitleW (
-  char [] lpszFile,   // pointer to full path and filename for file
-  char [] lpszTitle,  // pointer to buffer that receives filename
-  short cbBuf     // length of buffer
-);
-public static final native short GetFileTitleA (
-  byte [] lpszFile,   // pointer to full path and filename for file
-  byte [] lpszTitle,  // pointer to buffer that receives filename
-  short cbBuf     // length of buffer
-);
+public static final native short GetFileTitleW (char [] lpszFile, char [] lpszTitle, short cbBuf);
+public static final native short GetFileTitleA (byte [] lpszFile, byte [] lpszTitle, short cbBuf);
 public static final native int GetFocus ();
+public static final native int GetFontLanguageInfo(int hdc);
 public static final native boolean GetIconInfo (int hIcon, ICONINFO piconinfo);
+public static final native int GetKeyboardLayoutList(int nBuff, int[] lpList);
+public static final native int GetKeyboardLayout(int idThread);public static final native short GetKeyState (int nVirtKey);
 public static final native boolean GetKeyboardState (byte [] lpKeyState);
-public static final native short GetKeyState (int nVirtKey);
 public static final native int GetLastActivePopup (int hWnd);
 public static final native int GetLastError ();
+public static final native int GetLocaleInfoW (int Locale, int LCType, char [] lpLCData, int cchData);
+public static final native int GetLocaleInfoA (int Locale, int LCType, byte [] lpLCData, int cchData);
 public static final native int GetMenu (int hWnd);
 public static final native int GetMenuDefaultItem (int hMenu, int fByPos, int gmdiFlags);
 public static final native boolean GetMenuInfo (int hmenu, MENUINFO lpcmi);
 public static final native int GetMenuItemCount (int hMenu);
-public static final native boolean GetMenuItemInfoW (
-  int hMenu,          
-  int uItem,           
-  boolean fByPosition,     
-  MENUITEMINFO lpmii  
-);
-public static final native boolean GetMenuItemInfoA (
-  int hMenu,          
-  int uItem,           
-  boolean fByPosition,     
-  MENUITEMINFO lpmii  
-);
+public static final native boolean GetMenuItemInfoW (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean GetMenuItemInfoA (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 public static final native boolean GetMessageW (MSG lpMsg, int hWnd, int wMsgFilterMin, int wMsgFilterMax);
 public static final native boolean GetMessageA (MSG lpMsg, int hWnd, int wMsgFilterMin, int wMsgFilterMax);
 public static final native int GetMessagePos ();
 public static final native int GetMessageTime ();
+public static final native int GetTextCharset(int hdc);
 public static final native int GetTickCount ();
 public static final native int GetModuleHandleW (char [] lpModuleName);
 public static final native int GetModuleHandleA (byte [] lpModuleName);
 public static final native int GetNearestPaletteIndex(int hPal, int crColor);
-public static final native int GetObjectA (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  BITMAP lpvObject  // pointer to buffer for object information
-);
-public static final native int GetObjectW (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  BITMAP lpvObject  // pointer to buffer for object information
-);
-public static final native int GetObjectA (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  DIBSECTION lpvObject	// pointer to buffer for object information
-);
-public static final native int GetObjectW (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  DIBSECTION lpvObject	// pointer to buffer for object information
-);
-public static final native int GetObjectA (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  LOGBRUSH lpvObject  // pointer to buffer for object information
-);
-public static final native int GetObjectW (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  LOGBRUSH lpvObject  // pointer to buffer for object information
-);
-public static final native int GetObjectA (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  LOGFONT lpvObject	// pointer to buffer for object information
-);
-public static final native int GetObjectW (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  LOGFONT lpvObject	// pointer to buffer for object information
-);
-public static final native int GetObjectA (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  LOGPEN lpvObject  // pointer to buffer for object information
-);
-public static final native int GetObjectW (
-  int hgdiobj,  	// handle to graphics object of interest
-  int cbBuffer,     // size of buffer for object information
-  LOGPEN lpvObject  // pointer to buffer for object information
-);
-//public static final native int GetObject (
-//  int hgdiobj,  	// handle to graphics object of interest
-//  int cbBuffer,     // size of buffer for object information
-//  EXTLOGPEN lpvObject  // pointer to buffer for object information
-//);
+public static final native int GetObjectA (int hgdiobj, int cbBuffer, BITMAP lpvObject);
+public static final native int GetObjectW (int hgdiobj, int cbBuffer, BITMAP lpvObject);
+public static final native int GetObjectA (int hgdiobj, int cbBuffer, DIBSECTION lpvObject);
+public static final native int GetObjectW (int hgdiobj, int cbBuffer, DIBSECTION lpvObject);
+public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
+public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGBRUSH lpvObject);
+public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGFONT lpvObject);
+public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGFONT lpvObject);
+public static final native int GetObjectA (int hgdiobj, int cbBuffer, LOGPEN lpvObject);
+public static final native int GetObjectW (int hgdiobj, int cbBuffer, LOGPEN lpvObject);
 public static final native boolean GetOpenFileNameW (OPENFILENAME lpofn);
 public static final native boolean GetOpenFileNameA (OPENFILENAME lpofn);
 public static final native int GetPaletteEntries (int hPalette, int iStartIndex, int nEntries, byte[] logPalette);
@@ -2141,15 +1868,8 @@ public static final native int GetProcAddress (int hModule, byte [] lpProcName);
 public static final native int GetProcessHeap ();
 public static final native int GetProfileStringW (char [] lpAppName, char [] lpKeyName, char [] lpDefault, char [] lpReturnedString, int nSize);
 public static final native int GetProfileStringA (byte [] lpAppName, byte [] lpKeyName, byte [] lpDefault, byte [] lpReturnedString, int nSize);
-public static final native int GetRegionData (
-  int hRgn,            // handle to region
-  int dwCount,        // size of buffer containing region data
-  int [] lpRgnData   // address of buffer containing region data
-);
-public static final native int GetRgnBox (
-  int hrgn,  // handle to a region
-  RECT lprc // address of structure that receives bounding rect.
-);
+public static final native int GetRegionData (int hRgn, int dwCount, int [] lpRgnData);
+public static final native int GetRgnBox (int hrgn, RECT lprc);
 public static final native int GetROP2 (int hdc);
 public static final native boolean GetSaveFileNameW (OPENFILENAME lpofn);
 public static final native boolean GetSaveFileNameA (OPENFILENAME lpofn);
@@ -2183,48 +1903,19 @@ public static final native int GlobalLock (int hMem);
 public static final native int GlobalSize (int hMem);
 public static final native boolean GlobalUnlock (int hMem);
 public static final native boolean GradientFill(int hdc, int pVertex, int dwNumVertex, int pMesh, int dwNumMesh, int dwMode);
-public static final native int HeapAlloc (
-  int hHeap,  // handle to the private heap block
-  int dwFlags, // heap allocation control flags
-  int dwBytes  // number of bytes to allocate
-);
-public static final native boolean HeapFree (
-  int hHeap,  // handle to the heap
-  int dwFlags, // heap freeing flags
-  int lpMem   // pointer to the memory to free
-);
+public static final native int HeapAlloc (int hHeap, int dwFlags, int dwBytes);
+public static final native boolean HeapFree (int hHeap, int dwFlags, int lpMem);
 public static final native boolean HideCaret (int hWnd);
-public static final native int ImageList_AddMasked (
-	int himl,
-	int hbmImage,
-	int crMask);
-public static final native int ImageList_Create (
-	int cx, 	
-	int cy, 	
-	int flags, 	
-	int cInitial, 	
-	int cGrow	
-   );	
-
+public static final native int ImageList_AddMasked (int himl, int hbmImage, int crMask);
+public static final native int ImageList_Create (int cx, int cy, int flags, int cInitial, int cGrow);
 public static final native boolean ImageList_Destroy (int himl);
-
 public static final native int ImageList_GetIcon (int himl, int i, int flags);
-public static final native boolean ImageList_GetIconSize (
-	int himl, 	
-	int [] cx, 	
-	int [] cy 	
-   );   
+public static final native boolean ImageList_GetIconSize (int himl, int [] cx, int [] cy);   
 public static final native int ImageList_GetImageCount (int himl);
 public static final native boolean ImageList_Remove (int himl, int i);
 public static final native boolean ImageList_Replace (int himl, int i, int hbmImage, int hbmMask);
-public static final native int ImageList_ReplaceIcon (
-	int himl,
-	int i,
-	int hicon);	
-public static final native boolean ImageList_SetIconSize (
-	int himl,
-	int cx,
-	int cy);
+public static final native int ImageList_ReplaceIcon (int himl, int i, int hicon);
+public static final native boolean ImageList_SetIconSize (int himl, int cx, int cy);
 public static final native int ImmAssociateContext (int hWnd, int hIMC);
 public static final native int ImmCreateContext ();
 public static final native boolean ImmDestroyContext (int hIMC);
@@ -2237,24 +1928,17 @@ public static final native boolean ImmGetConversionStatus (int hIMC, int [] lpfd
 public static final native int ImmGetDefaultIMEWnd (int hWnd);
 public static final native boolean ImmGetOpenStatus (int hIMC);
 public static final native boolean ImmReleaseContext (int hWnd, int hIMC);
-public static final native boolean ImmSetCompositionFont (int hIMC, LOGFONT lplf);
+public static final native boolean ImmSetCompositionFontW (int hIMC, LOGFONT lplf);
+public static final native boolean ImmSetCompositionFontA (int hIMC, LOGFONT lplf);
 public static final native boolean ImmSetCompositionWindow (int hIMC, COMPOSITIONFORM lpCompForm);
 public static final native boolean ImmSetConversionStatus (int hIMC, int fdwConversion, int dwSentence);
 public static final native boolean ImmSetOpenStatus (int hIMC, boolean fOpen);
 public static final native void InitCommonControls ();
 public static final native boolean InitCommonControlsEx (INITCOMMONCONTROLSEX lpInitCtrls);
-public static final native boolean InsertMenuItemW (
-  int hMenu,
-  int uItem,
-  boolean fByPosition,
-  MENUITEMINFO lpmii
-);
-public static final native boolean InsertMenuItemA (
-  int hMenu,
-  int uItem,
-  boolean fByPosition,
-  MENUITEMINFO lpmii
-);
+public static final native boolean InsertMenuW (int hMenu, int uPosition, int uFlags, int uIDNewItem, char [] lpNewItem);
+public static final native boolean InsertMenuA (int hMenu, int uPosition, int uFlags, int uIDNewItem, byte [] lpNewItem);
+public static final native boolean InsertMenuItemW (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean InsertMenuItemA (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 public static final native boolean InvalidateRect(int hWnd, RECT lpRect, boolean bErase);
 public static final native boolean InvalidateRgn (int hWnd, int hRgn, boolean bErase);
 public static final native boolean IsDBCSLeadByte (byte TestChar);
@@ -2262,6 +1946,7 @@ public static final native boolean IsIconic (int hWnd);
 public static final native boolean IsWindowEnabled (int hWnd);
 public static final native boolean IsWindowVisible (int hWnd);
 public static final native boolean IsZoomed (int hWnd);
+public static final native boolean KillTimer (int hWnd, int uIDEvent);
 public static final native boolean LineTo (int hdc,int x1, int x2);
 public static final native int LoadBitmapW (int hInstance, int lpBitmapName);
 public static final native int LoadBitmapA (int hInstance, int lpBitmapName);
@@ -2278,185 +1963,46 @@ public static final native int MapVirtualKeyA (int uCode, int uMapType);
 public static final native int MapWindowPoints (int hWndFrom, int hWndTo, POINT lpPoints, int cPoints);
 public static final native int MapWindowPoints (int hWndFrom, int hWndTo, RECT lpPoints, int cPoints);
 public static final native boolean MessageBeep (int uType);
-public static final native int MessageBoxW (
-  int hWnd,          // handle of owner window
-  char [] lpText,     // address of text in message box
-  char [] lpCaption,  // address of title of message box
-  int uType          // style of message box
-);
-public static final native int MessageBoxA (
-  int hWnd,          // handle of owner window
-  byte [] lpText,     // address of text in message box
-  byte [] lpCaption,  // address of title of message box
-  int uType          // style of message box
-);
+public static final native int MessageBoxW (int hWnd, char [] lpText, char [] lpCaption, int uType);
+public static final native int MessageBoxA (int hWnd, byte [] lpText, byte [] lpCaption, int uType);
 public static final native void MoveMemory (char[] Destination, int SourcePtr, int Length);
-public static final native void MoveMemory (
-  byte [] Destination,  // address of move destination
-  int Source, 			// address of block to move
-  int Length        	// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  byte [] Destination,  // address of move destination
-  ACCEL Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  int [] Destination,  // address of move destination
-  int Source, 			// address of block to move
-  int Length        	// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  int Destination,  // address of move destination
-  byte [] Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  int Destination,  // address of move destination
-  char [] Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  int Destination,  // address of move destination
-  int [] Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  int Destination,  // address of move destination
-  GRADIENT_RECT Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
-);
-public static final native void MoveMemoryW (
-  int Destination,				// address of move destination
-  LOGFONT Source, 				// address of block to move
-  int Length        			// size, in bytes, of block to move
-);
-public static final native void MoveMemoryA (
-  int Destination,				// address of move destination
-  LOGFONT Source, 				// address of block to move
-  int Length        			// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  int Destination,	// address of move destination
-  MEASUREITEMSTRUCT Source, // address of block to move
-  int Length        			// size, in bytes, of block to move
-);
-public static final native void MoveMemoryW (
-  int Destination,  // address of move destination
-  NMTTDISPINFO Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
-);
-public static final native void MoveMemoryA (
-  int Destination,  // address of move destination
-  NMTTDISPINFO Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  int Destination,  // address of move destination
-  RECT Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  int Destination,  // address of move destination
-  TRIVERTEX Source, 	// address of block to move
-  int Length        // size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  DRAWITEMSTRUCT Destination,	// address of move destination
-  int Source, 					// address of block to move
-  int Length        			// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  HDITEM Destination,			// address of move destination
-  int Source, 					// address of block to move
-  int Length        			// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  HELPINFO Destination,	// address of move destination
-  int Source, 			// address of block to move
-  int Length        	// size, in bytes, of block to move
-);
-public static final native void MoveMemoryW (
-  LOGFONT Destination,			// address of move destination
-  int Source, 					// address of block to move
-  int Length        			// size, in bytes, of block to move
-);
-public static final native void MoveMemoryA (
-  LOGFONT Destination,			// address of move destination
-  int Source, 					// address of block to move
-  int Length        			// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  MEASUREITEMSTRUCT Destination,	// address of move destination
-  int Source, 					// address of block to move
-  int Length        			// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  NMHDR Destination,	// address of move destination
-  int Source, 			// address of block to move
-  int Length        	// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  NMHEADER Destination,	// address of move destination
-  int Source, 			// address of block to move
-  int Length        	// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  NMLISTVIEW Destination,	// address of move destination
-  int Source,				// address of block to move
-  int Length				// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  NMTOOLBAR Destination,	// address of move destination
-  int Source,				// address of block to move
-  int Length				// size, in bytes, of block to move
-);
-public static final native void MoveMemoryW (
-  NMTTDISPINFO Destination,	// address of move destination
-  int Source,				// address of block to move
-  int Length				// size, in bytes, of block to move
-);
-public static final native void MoveMemoryA (
-  NMTTDISPINFO Destination,	// address of move destination
-  int Source,				// address of block to move
-  int Length				// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  TVITEM Destination,	// address of move destination
-  int Source,			// address of block to move
-  int Length			// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  WINDOWPOS Destination,	// address of move destination
-  int Source,				// address of block to move
-  int Length				// size, in bytes, of block to move
-);
-public static final native void MoveMemory (
-  MSG Destination,	// address of move destination
-  int Source,		// address of block to move
-  int Length		// size, in bytes, of block to move
-);
+public static final native void MoveMemory (byte [] Destination, int Source, int Length);
+public static final native void MoveMemory (byte [] Destination, ACCEL Source, int Length);
+public static final native void MoveMemory (int [] Destination, int Source, int Length);
+public static final native void MoveMemory (int Destination, byte [] Source, int Length);
+public static final native void MoveMemory (int Destination, char [] Source, int Length);
+public static final native void MoveMemory (int Destination, int [] Source, int Length);
+public static final native void MoveMemory (int Destination, GRADIENT_RECT Source, int Length);
+public static final native void MoveMemoryW (int Destination, LOGFONT Source, int Length);
+public static final native void MoveMemoryA (int Destination, LOGFONT Source, int Length);
+public static final native void MoveMemory (int Destination, MEASUREITEMSTRUCT Source, int Length);
+public static final native void MoveMemoryW (int Destination, NMTTDISPINFO Source, int Length);
+public static final native void MoveMemoryA (int Destination, NMTTDISPINFO Source, int Length);
+public static final native void MoveMemory (int Destination, RECT Source, int Length);
+public static final native void MoveMemory (int Destination, TRIVERTEX Source, int Length);
+public static final native void MoveMemory (DRAWITEMSTRUCT Destination, int Source, int Length);
+public static final native void MoveMemory (HDITEM Destination, int Source, int Length);
+public static final native void MoveMemory (HELPINFO Destination, int Source, int Length);
+public static final native void MoveMemoryW (LOGFONT Destination, int Source, int Length);
+public static final native void MoveMemoryA (LOGFONT Destination, int Source, int Length);
+public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, int Source, int Length);
+public static final native void MoveMemory (NMHDR Destination, int Source, int Length);
+public static final native void MoveMemory (NMHEADER Destination, int Source, int Length);
+public static final native void MoveMemory (NMLISTVIEW Destination, int Source, int Length);
+public static final native void MoveMemory (NMTOOLBAR Destination, int Source, int Length);
+public static final native void MoveMemoryW (NMTTDISPINFO Destination, int Source, int Length);
+public static final native void MoveMemoryA (NMTTDISPINFO Destination, int Source, int Length);
+public static final native void MoveMemory (TVITEM Destination, int Source, int Length);
+public static final native void MoveMemory (WINDOWPOS Destination, int Source, int Length);
+public static final native void MoveMemory (MSG Destination, int Source, int Length);
 public static final native boolean MoveToEx (int hdc,int x1, int x2, int lPoint);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
-//public static final native int MultiByteToWideChar (int CodePage, int dwFlags, int lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int OleInitialize (int pvReserved);
 public static final native void OleUninitialize ();
 public static final native boolean OpenClipboard (int hWndNewOwner);
 public static final native boolean PatBlt (int hdc,int x1, int x2,int w, int h, int rop);
-public static final native boolean PeekMessageW (
-  MSG lpMsg,         // pointer to structure for message
-  int hWnd,           // handle to window
-  int wMsgFilterMin,  // first message
-  int wMsgFilterMax,  // last message
-  int wRemoveMsg      // removal flags
-);
-public static final native boolean PeekMessageA (
-  MSG lpMsg,         // pointer to structure for message
-  int hWnd,           // handle to window
-  int wMsgFilterMin,  // first message
-  int wMsgFilterMax,  // last message
-  int wRemoveMsg      // removal flags
-);
+public static final native boolean PeekMessageW (MSG lpMsg, int hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
+public static final native boolean PeekMessageA (MSG lpMsg, int hWnd, int wMsgFilterMin, int wMsgFilterMax, int wRemoveMsg);
 public static final native boolean Pie (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nXStartArc, int nYStartArc, int nXEndArc, int nYEndArc);
 public static final native boolean Polygon (int hdc, int [] points, int nPoints);
 public static final native boolean Polyline (int hdc,int[] points, int nPoints);
@@ -2467,18 +2013,10 @@ public static final native boolean PostThreadMessageA (int idThread, int Msg, in
 public static final native boolean PrintDlgW (PRINTDLG lppd);
 public static final native boolean PrintDlgA (PRINTDLG lppd);
 public static final native boolean PtInRect (RECT rect, POINT pt);
-public static final native boolean PtInRegion (
-  int hrgn,  // handle to region
-  int X,      // x-coordinate of point
-  int Y       // y-coordinate of point
-);
+public static final native boolean PtInRegion (int hrgn, int X, int Y);
 public static final native int RealizePalette(int hDC);
 public static final native boolean Rectangle (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
-public static final native boolean RectInRegion (
-  int hrgn,   // handle to region
-  RECT lprc   // address of structure with rectangle
-);
- 
+public static final native boolean RectInRegion (int hrgn, RECT lprc);
 public static final native boolean RedrawWindow (int hWnd, RECT lprcUpdate, int hrgnUpdate, int flags);
 public static final native int RegCloseKey (int hKey);
 public static final native int RegisterClassW (WNDCLASS lpWndClass);
@@ -2502,7 +2040,6 @@ public static final native int SelectObject(int hDC, int HGDIObj);
 public static final native int SelectPalette(int hDC, int hpal, boolean bForceBackground);
 public static final native int SendMessageW (int hWnd, int Msg, int [] wParam, int [] lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int [] wParam, int lParam);
-//public static final native int SendMessageW (int hWnd, int Msg, int wParam, byte [] lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, char [] lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, int [] lParam);
 public static final native int SendMessageW (int hWnd, int Msg, int wParam, short [] lParam);
@@ -2522,7 +2059,6 @@ public static final native int SendMessageW (int hWnd, int Msg, int wParam, TVIT
 public static final native int SendMessageA (int hWnd, int Msg, int [] wParam, int [] lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int [] wParam, int lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, byte [] lParam);
-//public static final native int SendMessageA (int hWnd, int Msg, int wParam, char [] lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, int [] lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, short [] lParam);
 public static final native int SendMessageA (int hWnd, int Msg, int wParam, int lParam);
@@ -2547,22 +2083,11 @@ public static final native int SetClipboardData (int uFormat, int hMem);
 public static final native int SetCursor (int hCursor);
 public static final native int SetDIBColorTable (int hdc, int uStartIndex, int cEntries, byte[] pColors);
 public static final native int SetFocus (int hWnd);
-//public static final native int SetMapMode (int hdc, int fnMapMode);
 public static final native boolean SetMenu (int hWnd, int hMenu);
 public static final native boolean SetMenuDefaultItem (int hMenu, int uItem, int fByPos);
 public static final native boolean SetMenuInfo (int hmenu, MENUINFO lpcmi);
-public static final native boolean SetMenuItemInfoW (
-  int hMenu,          
-  int uItem,           
-  boolean fByPosition,     
-  MENUITEMINFO lpmii  
-);
-public static final native boolean SetMenuItemInfoA (
-  int hMenu,          
-  int uItem,           
-  boolean fByPosition,     
-  MENUITEMINFO lpmii  
-);
+public static final native boolean SetMenuItemInfoW (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean SetMenuItemInfoA (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 public static final native int SetPaletteEntries (int hPal, int iStart, int cEntries, byte[] lppe);
 public static final native int SetParent (int hWndChild, int hWndNewParent);
 public static final native int SetPixel (int hdc, int X, int Y, int crColor);
@@ -2570,7 +2095,10 @@ public static final native boolean SetRect(RECT lprc, int xLeft, int yTop, int x
 public static final native boolean SetRectRgn (int hrgn, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 public static final native int SetROP2 (int hdc, int fnDrawMode);
 public static final native boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw);
+public static final native int SetStretchBltMode(int hdc, int iStretchMode);
+public static final native int SetTextAlign(int hdc, int fMode);
 public static final native int SetTextColor (int hdc, int colorRef);
+public static final native int SetTimer (int hWnd, int nIDEvent, int Elapse, int lpTimerFunc);
 public static final native int SetWindowLongW (int hWnd, int nIndex, int dwNewLong);
 public static final native int SetWindowLongA (int hWnd, int nIndex, int dwNewLong);
 public static final native boolean SetWindowPlacement (int hWnd, WINDOWPLACEMENT lpwndpl);
@@ -2593,60 +2121,16 @@ public static final native boolean ShowWindow (int hWnd, int nCmdShow);
 public static final native int StartDocW (int hdc, DOCINFO lpdi);
 public static final native int StartDocA (int hdc, DOCINFO lpdi);
 public static final native int StartPage (int hdc);
-public static final native boolean StretchBlt (
-  int hdcDest,      // handle to destination device context
-  int nXOriginDest, // x-coordinate of upper-left corner of dest. 
-					// rect.
-  int nYOriginDest, // y-coordinate of upper-left corner of dest.
-					// rect.
-  int nWidthDest,   // width of destination rectangle
-  int nHeightDest,  // height of destination rectangle
-  int hdcSrc,       // handle to source device context
-  int nXOriginSrc,  // x-coordinate of upper-left corner of source 
-					// rectangle
-  int nYOriginSrc,  // y-coordinate of upper-left corner of source 
-					// rectangle
-  int nWidthSrc,    // width of source rectangle
-  int nHeightSrc,   // height of source rectangle
-  int dwRop       	// raster operation code
-);
-//public static final native boolean TextOut (int hdc, int nXStart, int nYStart, byte [] lpString, int cbString);
-public static final native int ToAscii (
-  int uVirtKey, 
-  int uScanCode, 
-  byte [] lpKeyState, 
-  short [] lpChar, 
-  int uFlags 
-);
-public static final native int ToUnicode(
-  int wVirtKey,
-  int wScanCode,
-  byte [] lpKeyState,
-  char [] pwszBuff,
-  int cchBuff,
-  int wFlags
-);
-
+public static final native boolean StretchBlt (int hdcDest, int nXOriginDest, int nYOriginDest, int nWidthDest, int nHeightDest, int hdcSrc, int nXOriginSrc, int nYOriginSrc, int nWidthSrc, int nHeightSrc, int dwRop);
+public static final native boolean SystemParametersInfoW (int uiAction, int uiParam, RECT pvParam, int fWinIni);
+public static final native boolean SystemParametersInfoA (int uiAction, int uiParam, RECT pvParam, int fWinIni);
+public static final native int ToAscii (int uVirtKey, int uScanCode, byte [] lpKeyState, short [] lpChar, int uFlags);
+public static final native int ToUnicode(int wVirtKey, int wScanCode, byte [] lpKeyState, char [] pwszBuff, int cchBuff, int wFlags);
 public static final native boolean TrackMouseEvent(TRACKMOUSEEVENT lpEventTrack);
-public static final native boolean TrackPopupMenu (
-  int hMenu,  // handle to shortcut menu
-  int uFlags,  // screen-position and mouse-button flags
-  int x,        // horizontal position, in screen coordinates
-  int y,        // vertical position, in screen coordinates
-  int nReserved, // reserved, must be zero
-  int hWnd,    // handle to owner window
-  RECT prcRect // pointer to RECT that specifies no-dismissal area
-);
-public static final native int TranslateAcceleratorW (
-	int hWnd,         // handle of destination window
-  	int hAccTable,  // handle of accelerator table
-  	MSG lpMsg        // address of structure with message
-);
-public static final native int TranslateAcceleratorA (
-	int hWnd,         // handle of destination window
-  	int hAccTable,  // handle of accelerator table
-  	MSG lpMsg        // address of structure with message
-);
+public static final native boolean TrackPopupMenu (int hMenu, int uFlags, int x, int y, int nReserved, int hWnd, RECT prcRect);
+public static final native int TranslateAcceleratorW (int hWnd, int hAccTable, MSG lpMsg);
+public static final native int TranslateAcceleratorA (int hWnd, int hAccTable, MSG lpMsg);
+public static final native boolean TranslateCharsetInfo(int lpSrc, int [] lpCs, int dwFlags);
 public static final native boolean TranslateMessage (MSG lpmsg);
 public static final native boolean UnhookWindowsHookEx(int hhk);
 public static final native boolean UnregisterClassW (char [] lpClassName, int hInstance);
@@ -2660,46 +2144,5 @@ public static final native boolean WaitMessage ();
 public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, byte [] lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
 public static final native int WindowFromDC (int lpPoint);
 public static final native int WindowFromPoint (POINT lpPoint);
-
-public static final native int SetTimer (int hWnd, int nIDEvent, int Elapse, int lpTimerFunc);
-public static final native boolean KillTimer (int hWnd, int uIDEvent);
-
-public static final native boolean DrawStateW (int hdc, int hbr, int lpOutputFunc, int lData, int wData, int x, int y, int cx, int cy, int fuFlags);
-public static final native boolean DrawStateA (int hdc, int hbr, int lpOutputFunc, int lData, int wData, int x, int y, int cx, int cy, int fuFlags);
-
-public static final native int CreatePen (int fnPenStyle, int nWidth, int crColor);
-public static final native int SetStretchBltMode(int hdc, int iStretchMode);
-
-public static final native int GetCharacterPlacementW(int hdc, char[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
-public static final native int GetCharacterPlacementA(int hdc, byte[] lpString, int nCount, int nMaxExtent, GCP_RESULTS lpResults, int dwFlags);
-public static final native boolean ExtTextOutW(int hdc, int X, int Y, int fuOptions, RECT lprc, char[] lpString, int cbCount, int[] lpDx);
-public static final native boolean ExtTextOutA(int hdc, int X, int Y, int fuOptions, RECT lprc, byte[] lpString, int cbCount, int[] lpDx);
-public static final native int GetFontLanguageInfo(int hdc);
-public static final native int GetKeyboardLayoutList(int nBuff, int[] lpList);
-public static final native int GetKeyboardLayout(int idThread);
-public static final native int ActivateKeyboardLayout(int hkl, int Flags);
-public static final native int SetTextAlign(int hdc, int fMode);
-
-public static final native boolean TranslateCharsetInfo(int lpSrc, int [] lpCs, int dwFlags);
-public static final native int GetTextCharset(int hdc);
-public static final native int GetLocaleInfoW (int Locale, int LCType, char [] lpLCData, int cchData);
-public static final native int GetLocaleInfoA (int Locale, int LCType, byte [] lpLCData, int cchData);
-public static final native boolean EnumSystemLocalesW (int lpLocaleEnumProc, int dwFlags);
-public static final native boolean EnumSystemLocalesA (int lpLocaleEnumProc, int dwFlags);
-
-public static final native boolean SystemParametersInfoW (
-	int uiAction,  // system parameter to retrieve or set
-	int uiParam,   // depends on action to be taken
-	RECT pvParam,  // depends on action to be taken
-	int fWinIni    // user profile update option
-);
-public static final native boolean SystemParametersInfoA (
-	int uiAction,  // system parameter to retrieve or set
-	int uiParam,   // depends on action to be taken
-	RECT pvParam,  // depends on action to be taken
-	int fWinIni    // user profile update option
-);
-public static final native boolean InsertMenuW (int hMenu, int uPosition, int uFlags, int uIDNewItem, char [] lpNewItem);
-public static final native boolean InsertMenuA (int hMenu, int uPosition, int uFlags, int uIDNewItem, byte [] lpNewItem);
 
 }

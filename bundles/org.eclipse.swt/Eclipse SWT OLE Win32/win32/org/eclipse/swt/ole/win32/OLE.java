@@ -378,14 +378,14 @@ public static String findProgramID (String extension) {
 }
 private static String getKeyValue (byte [] key) {
 	int [] phkResult = new int [1];
-	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
+	if (OS.RegOpenKeyExA (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return null;
 	}
 	String result = null;
 	int [] lpcbData = new int [1];
-	if (OS.RegQueryValueEx (phkResult [0], null, 0, null, null, lpcbData) == 0) {
+	if (OS.RegQueryValueExA (phkResult [0], null, 0, null, null, lpcbData) == 0) {
 		byte [] lpData = new byte [lpcbData [0]];
-		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
+		if (OS.RegQueryValueExA (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
 			/* Use the character encoding for the default locale */
 			char[] charArray  = Converter.mbcsToWcs (0, lpData);
 			result =  new String(charArray, 0, charArray.length - 1);
@@ -396,7 +396,7 @@ private static String getKeyValue (byte [] key) {
 }
 private static boolean getKeyExists (byte [] key) {
 	int [] phkResult = new int [1];
-	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
+	if (OS.RegOpenKeyExA (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
 		return false;
 	}
 	if (phkResult [0] != 0) OS.RegCloseKey (phkResult [0]);

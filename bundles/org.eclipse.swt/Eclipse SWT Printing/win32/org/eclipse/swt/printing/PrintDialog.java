@@ -210,7 +210,7 @@ public PrinterData open() {
 	pd.nMaxPage = -1;
 	pd.nFromPage = (short) startPage;
 	pd.nToPage = (short) endPage;
-	if (OS.PrintDlg(pd)) {
+	if (OS.PrintDlgA(pd)) {
 		/* Get driver and device from the DEVNAMES struct */
 		int size = OS.GlobalSize(pd.hDevNames);
 		int ptr = OS.GlobalLock(pd.hDevNames);
