@@ -1076,7 +1076,7 @@ public TableColumn getColumn (int index) {
  * Returns the number of columns contained in the receiver.
  * If no <code>TableColumn</code>s were created by the programmer,
  * this value is zero, despite the fact that visually, one column
- * of items is may be visible. This occurs when the programmer uses
+ * of items may be visible. This occurs when the programmer uses
  * the table like a list, adding items but never creating a column.
  *
  * @return the number of columns
