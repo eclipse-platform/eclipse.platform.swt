@@ -267,18 +267,15 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeDrawingSt
 
 //---- tabs
 
+/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateTabFolderControl(JNIEnv *env, jclass zz,
 				jint wHandle, jintArray outControl) {
-
-    jint *sa= NULL;
-	OSStatus status;
-	if (outControl != 0)
-		sa= (*env)->GetIntArrayElements(env, outControl, 0);
-	status= RC(CreateTabsControl((WindowRef) wHandle, &NULL_RECT, kControlTabSizeSmall, kControlTabDirectionNorth,  0, NULL, (ControlRef*)sa));
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, outControl, sa, 0);
-	return (jint)status;
+	jint *sa= (*env)->GetIntArrayElements(env, outControl, 0);
+	jint status= (jint) RC(CreateTabsControl((WindowRef) wHandle, &NULL_RECT, kControlTabSizeSmall, kControlTabDirectionNorth,  0, NULL, (ControlRef*)sa));
+	(*env)->ReleaseIntArrayElements(env, outControl, sa, 0);
+	return status;
 }
+*/
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTabText(JNIEnv *env, jclass zz,
 				jint cHandle, jint index, jint sHandle) {
@@ -293,10 +290,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTabText(JNIEnv
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTabIcon(JNIEnv *env, jclass zz,
 				jint cHandle, jint index, jint iconHandle) {
 	ControlButtonContentInfo tab;
+	CIconHandle ih= (CIconHandle) iconHandle;
 			
 	tab.contentType= kControlContentCIconHandle;
-	tab.u.cIconHandle= (CIconHandle) iconHandle;
-
+	tab.u.cIconHandle= ih;
+	
 	return RC(SetControlData((ControlRef)cHandle, index, kControlTabImageContentTag, sizeof(ControlButtonContentInfo), &tab));
 }
 
@@ -902,6 +900,23 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PostEventToQueue(
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMainEventQueue(JNIEnv *env, jclass zz) {
 	return (jint) GetMainEventQueue();
+}
+
+//---- Cursors
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCCursor(JNIEnv *env, jclass zz,
+			jshort id) {
+	return (jint) GetCCursor((SInt16)id);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetCCursor(JNIEnv *env, jclass zz,
+			jint cursorHandle) {
+	SetCCursor((CCrsrHandle)cursorHandle);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeCCursor(JNIEnv *env, jclass zz,
+			jint cursorHandle) {
+	DisposeCCursor((CCrsrHandle)cursorHandle);
 }
 
 //---- GrafPort
@@ -1655,11 +1670,9 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGWorld(JNIEnv 
 	(*env)->ReleaseIntArrayElements(env, gdHandle, sb, 0);
 }
 
-/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGDevice(JNIEnv *env, jclass zz) {
 	return (jint) GetGDevice();
 }
-*/
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMainDevice(JNIEnv *env, jclass zz) {
 	return (jint) GetMainDevice();
