@@ -189,7 +189,7 @@ public Rectangle getBounds (int index) {
 	OS.gtk_tree_view_tree_to_widget_coords(parentHandle, rect.x, 0, wx, null);
 	rect.x = wx[0];
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
-		if (OS.gtk_major_version () * 100 + OS.gtk_minor_version ()  * 10 + OS.gtk_micro_version () >= 213) {
+		if (OS.gtk_major_version () * 100 + OS.gtk_minor_version () * 10 + OS.gtk_micro_version () >= 213) {
 			int [] x = new int [1], w = new int [1];
 			OS.gtk_tree_view_column_cell_get_position (column, parent.checkRenderer, x, w);
 			rect.x += x [0] + w [0];
