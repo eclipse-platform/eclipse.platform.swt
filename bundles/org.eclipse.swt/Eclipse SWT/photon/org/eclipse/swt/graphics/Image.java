@@ -633,11 +633,11 @@ public ImageData getImageData() {
 			SWT.error(SWT.ERROR_UNSUPPORTED_DEPTH);
 	}
 
-	int calcBpl, scanLinePad, bpl = phImage.bpl;
+	int scanLinePad, bpl = phImage.bpl;
 	int width = phImage.size_w, height = phImage.size_h;
 	int dataBytesPerLine = (width * depth + 7) / 8;
 	for (scanLinePad = 1; scanLinePad < 128; scanLinePad++) {
-		calcBpl = (dataBytesPerLine + (scanLinePad - 1)) / scanLinePad * scanLinePad;
+		int calcBpl = (dataBytesPerLine + (scanLinePad - 1)) / scanLinePad * scanLinePad;
 		if (bpl == calcBpl) break;
 	}	
 	byte[] data = new byte[height * bpl];
@@ -650,7 +650,7 @@ public ImageData getImageData() {
 	} else if (phImage.mask_bm != 0) {
 		imageData.maskData = new byte[height * phImage.mask_bpl];
 		OS.memmove(imageData.maskData, phImage.mask_bm, imageData.maskData.length);
-		imageData.maskPad = 4;
+		imageData.maskPad = 2;
 	} else if (phImage.alpha != 0) {
 		PgAlpha_t alpha = new PgAlpha_t();
 		OS.memmove(alpha, phImage.alpha, PgAlpha_t.sizeof);

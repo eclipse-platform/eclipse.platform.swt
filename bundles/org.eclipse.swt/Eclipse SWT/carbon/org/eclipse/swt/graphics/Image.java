@@ -590,7 +590,8 @@ public ImageData getImageData() {
 	data.transparentPixel = transparentPixel;
 	if (transparentPixel == -1 && type == SWT.ICON) {
 		/* Get the icon mask data */
-		int maskBpl = (((width + 7) / 8) + 3) / 4 * 4;
+		int maskPad = 2;
+		int maskBpl = (((width + 7) / 8) + (maskPad - 1)) / maskPad * maskPad;
 		byte[] maskData = new byte[height * maskBpl];
 		int offset = 0, maskOffset = 0;
 		for (int y = 0; y<height; y++) {
@@ -605,7 +606,7 @@ public ImageData getImageData() {
 			maskOffset += maskBpl;
 		}
 		data.maskData = maskData;
-		data.maskPad = 4;
+		data.maskPad = maskPad;
 	}
 	data.alpha = alpha;
 	if (alpha == -1 && alphaData != null) {
