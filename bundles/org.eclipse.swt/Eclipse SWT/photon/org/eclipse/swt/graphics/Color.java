@@ -106,6 +106,7 @@ public Color (Device device, RGB rgb) {
  */
 public void dispose() {
 	if (handle == -1) return;
+	if (device.isDisposed()) return;
 
 	handle = -1;
 	if (device.tracking) device.dispose_Object(this);

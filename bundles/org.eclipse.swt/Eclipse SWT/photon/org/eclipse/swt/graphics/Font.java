@@ -111,6 +111,7 @@ public Font(Device device, String name, int height, int style) {
  */
 public void dispose() {
 	if (handle == null) return;
+	if (device.isDisposed()) return;
 		
 	handle = null;
 	if (device.tracking) device.dispose_Object(this);

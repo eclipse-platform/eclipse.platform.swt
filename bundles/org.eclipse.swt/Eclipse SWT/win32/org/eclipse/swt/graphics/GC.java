@@ -238,6 +238,7 @@ int createDIB(int width, int height) {
  */
 public void dispose() {
 	if (handle == 0) return;
+	if (data.device.isDisposed()) return;
 	
 	/*
 	* The only way for pens and brushes to get

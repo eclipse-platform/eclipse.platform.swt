@@ -253,6 +253,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  */
 public void dispose () {
 	if (type == 0) return;
+	if (device.isDisposed()) return;
 	if (type == OS.Ph_CURSOR_BITMAP && bitmap != 0) {
 		OS.free(bitmap);
 	}

@@ -105,6 +105,7 @@ public Font(Device device, String name, int height, int style) {
  */
 public void dispose() {
 	if (handle == 0) return;
+	if (device.isDisposed()) return;
 	OS.DeleteObject(handle);
 	handle = 0;
 	if (device.tracking) device.dispose_Object(this);

@@ -402,6 +402,7 @@ public void dispose() {
 	int flags = OS.PtEnter(0);
 	try {
 		if (handle == 0) return;
+		if (data.device.isDisposed()) return;
 		
 		int clipRects = data.clipRects;
 		if (clipRects != 0) {

@@ -468,6 +468,7 @@ public Image (Device device, String filename) {
  */
 public void dispose () {
 	if (handle == 0) return;
+	if (device.isDisposed()) return;
 	destroyImage(handle);
 	handle = 0;
 	memGC = null;

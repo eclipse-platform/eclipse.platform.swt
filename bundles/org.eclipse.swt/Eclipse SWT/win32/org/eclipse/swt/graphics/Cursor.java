@@ -293,6 +293,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
  */
 public void dispose () {
 	if (handle == 0) return;
+	if (device.isDisposed()) return;
 	
 	/*
 	* It is an error in Windows to destroy the current

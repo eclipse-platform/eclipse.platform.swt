@@ -112,6 +112,8 @@ public Color (Device device, RGB rgb) {
  */
 public void dispose() {
 	if (handle == -1) return;
+	if (device.isDisposed()) return;
+
 	/*
 	 * If this is a palette-based device,
 	 * Decrease the reference count for this color.
