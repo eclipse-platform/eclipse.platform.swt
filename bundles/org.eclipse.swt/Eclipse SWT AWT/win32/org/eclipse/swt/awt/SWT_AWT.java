@@ -96,7 +96,7 @@ public static Frame new_Frame (final Composite parent) {
 	Class clazz = null;
 	try {
 		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
-		clazz = Class.forName(embeddedFrameClass);
+		clazz = Class.forName(className);
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
 	}
