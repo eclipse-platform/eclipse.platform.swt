@@ -2741,6 +2741,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	int lineCount = content.getLineCount();
 	int newCaretOffset;
 	int newCaretLine;
+	boolean oldAdvancing = advancing;
 
 	updateCaretDirection = true;
 	if (line > lineCount - 1) {
@@ -2764,7 +2765,7 @@ void doMouseLocationChange(int x, int y, boolean select) {
 	if (y >= 0 && y < getClientArea().height && 
 		(x >= 0 && x < getClientArea().width || 
 		newCaretLine != content.getLineAtOffset(caretOffset))) {
-		if (newCaretOffset != caretOffset) {
+		if (newCaretOffset != caretOffset || advancing != oldAdvancing) {
 			caretOffset = newCaretOffset;
 			if (select) {
 				doMouseSelection();
@@ -3369,29 +3370,32 @@ public int getCaretOffset() {
  * @return caret offset at the x location relative to the start of the line.
  */
 int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
-	int offset;
-	int[] trailing;
-	TextLayout layout;
 	int x = lineXOffset - leftMargin + horizontalScrollOffset;
-	layout = renderer.getTextLayout(line, lineOffset);
-	Rectangle rect = layout.getLineBounds(0);
-	if (x < rect.x) {
-		offset = 0;
-	} else if (x > rect.x + rect.width) {
-		offset = line.length();
-	} else {
-		trailing = new int[1];
-		offset = layout.getOffset(x, 0, trailing);
-		advancing = false;
-		if (trailing[0] != 0) {
-			int level = layout.getLevel(offset) & 0x1;
-			offset = Math.min(line.length(), offset + trailing[0]);
-			int trailingLevel = layout.getLevel(offset) & 0x1;
+	TextLayout layout = renderer.getTextLayout(line, lineOffset);
+	int[] trailing = new int[1];
+	int offsetInLine = layout.getOffset(x, 0, trailing);
+	advancing = false;
+	if (trailing[0] != 0) {
+		int lineLength = line.length();
+		if (offsetInLine + trailing[0] >= lineLength) {
+			offsetInLine = lineLength;
+			advancing = true;
+		} else {
+			int level;
+			int offset = offsetInLine;
+			while (offset > 0 && Character.isDigit(line.charAt(offset))) offset--;
+			if (offset == 0 && Character.isDigit(line.charAt(offset))) {
+				level = isMirrored() ? 1 : 0;
+			} else {
+				level = layout.getLevel(offset) & 0x1;
+			}
+			offsetInLine += trailing[0];
+			int trailingLevel = layout.getLevel(offsetInLine) & 0x1;
 			advancing  = (level ^ trailingLevel) != 0;
 		}
 	}
 	renderer.disposeTextLayout(layout);
-	return offset;
+	return offsetInLine;
 }
 /**
  * Returns the caret width.
@@ -4472,18 +4476,16 @@ int getCaretDirection() {
 	int offset = caretOffset - lineOffset;
 	int lineLength = line.length();
 	if (lineLength == 0) return isMirrored() ? SWT.RIGHT : SWT.LEFT;
-	TextLayout layout = renderer.getTextLayout(line, lineOffset);
 	if (advancing && offset > 0) offset--;
-	int level = layout.getLevel(offset);
-	while (offset > 0 && level > 1) level = layout.getLevel(--offset);
-	renderer.disposeTextLayout(layout);
-	if (offset == 0 && level > 1) return isMirrored() ? SWT.RIGHT : SWT.LEFT;
-	int direction = SWT.LEFT;
-	if ((level & 1) != 0) direction = SWT.RIGHT;
-	if (isMirrored()) {
-		direction = direction == SWT.LEFT ? SWT.RIGHT : SWT.LEFT;
+	if (offset == lineLength && offset > 0) offset--;
+	while (offset > 0 && Character.isDigit(line.charAt(offset))) offset--;
+	if (offset == 0 && Character.isDigit(line.charAt(offset))) {
+		return isMirrored() ? SWT.RIGHT : SWT.LEFT;
 	}
-	return direction;
+	TextLayout layout = renderer.getTextLayout(line, lineOffset);
+	int level = layout.getLevel(offset);
+	renderer.disposeTextLayout(layout);
+	return ((level & 1) != 0) ? SWT.RIGHT : SWT.LEFT;
 }
 /**
  * Returns the index of the line the caret is on.
@@ -6513,7 +6515,15 @@ void setCaretLocation(int newCaretX, int line, int direction) {
 	Caret caret = getCaret();
 	if (caret != null) {
 		boolean updateImage = caret == defaultCaret;
-		if (updateImage && direction == SWT.RIGHT) {
+		int imageDirection = direction;
+		if (isMirrored()) {
+			if (imageDirection == SWT.LEFT) {
+				imageDirection = SWT.RIGHT;
+			} else if (imageDirection == SWT.RIGHT) {
+				imageDirection = SWT.LEFT;
+			}
+		}
+		if (updateImage && imageDirection == SWT.RIGHT) {
 			newCaretX -= (caret.getSize().x - 1);
 		}
 		int newCaretY = line * lineHeight - verticalScrollOffset + topMargin;
@@ -6522,11 +6532,11 @@ void setCaretLocation(int newCaretX, int line, int direction) {
 		if (direction != caretDirection) {
 			caretDirection = direction;
 			if (updateImage) {
-				if (caretDirection == SWT.DEFAULT) {
+				if (imageDirection == SWT.DEFAULT) {
 					defaultCaret.setImage(null);
-				} else if (caretDirection == SWT.LEFT) {
+				} else if (imageDirection == SWT.LEFT) {
 					defaultCaret.setImage(leftCaretBitmap);
-				} else if (caretDirection == SWT.RIGHT) {
+				} else if (imageDirection == SWT.RIGHT) {
 					defaultCaret.setImage(rightCaretBitmap);
 				}
 			}
