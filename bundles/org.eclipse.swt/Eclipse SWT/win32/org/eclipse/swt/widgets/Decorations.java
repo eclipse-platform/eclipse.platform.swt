@@ -92,6 +92,12 @@ public class Decorations extends Canvas {
 	Button defaultButton, saveDefault;
 	int swFlags, hAccel, nAccel;
 	int hwndCB;
+	
+	/*
+	* The start value for WM_COMMAND id's.
+	* Windows reserves the values 0..100.
+	*/
+	static final int ID_START = 100;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -149,12 +155,14 @@ void add (MenuItem item) {
 	if (items == null) items = new MenuItem [12];
 	for (int i=0; i<items.length; i++) {
 		if (items [i] == null) {
-			items [item.id = i] = item;
+			item.id = i + ID_START;
+			items [i] = item;
 			return;
 		}
 	}
+	item.id = items.length + ID_START;
 	MenuItem [] newItems = new MenuItem [items.length + 12];
-	newItems [item.id = items.length] = item;
+	newItems [items.length] = item;
 	System.arraycopy (items, 0, newItems, 0, items.length);
 	items = newItems;
 }
@@ -283,6 +291,7 @@ Menu findMenu (int hMenu) {
 
 MenuItem findMenuItem (int id) {
 	if (items == null) return null;
+	id = id - ID_START;
 	if (0 <= id && id < items.length) return items [id];
 	return null;
 }
@@ -578,7 +587,7 @@ void remove (Menu menu) {
 
 void remove (MenuItem item) {
 	if (items == null) return;
-	items [item.id] = null;
+	items [item.id - ID_START] = null;
 	item.id = -1;
 }
 

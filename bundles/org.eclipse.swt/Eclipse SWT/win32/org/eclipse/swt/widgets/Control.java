@@ -2322,6 +2322,11 @@ boolean translateTraversal (MSG msg) {
 			break;
 		}
 		case OS.VK_TAB: {
+			/*
+			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
+			* always attempt traversal which is not the correct.
+			* This behavior is currently relied on by StyledText.
+			*/
 			lastAscii = '\t';
 			boolean next = OS.GetKeyState (OS.VK_SHIFT) >= 0;
 			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
@@ -2723,7 +2728,8 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	if (lParam == 0) {
 		Decorations shell = menuShell ();
 		if (shell.isEnabled ()) {
-			MenuItem item = shell.findMenuItem (wParam & 0xFFFF);
+			int id = wParam & 0xFFFF;
+			MenuItem item = shell.findMenuItem (id);
 			if (item != null && item.isEnabled ()) {
 				return item.wmCommandChild (wParam, lParam);
 			}
