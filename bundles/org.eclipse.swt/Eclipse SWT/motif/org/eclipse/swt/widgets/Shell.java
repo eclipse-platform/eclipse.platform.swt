@@ -1375,16 +1375,18 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 		return super.XFocusChange (w, client_data, call_data, continue_to_dispatch);
 	}
 	if (xEvent.mode != OS.NotifyNormal) return 0;
+	if (xEvent.type == OS.FocusIn && xEvent.detail == OS.NotifyInferior) {
+		if (focusProxy != 0) {
+			int xWindow = OS.XtWindow (focusProxy);
+			int xDisplay = OS.XtDisplay (focusProxy);
+			OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
+		}
+	}
 	switch (xEvent.detail) {
 		case OS.NotifyNonlinear:
 		case OS.NotifyNonlinearVirtual: {
 			switch (xEvent.type) {
 				case OS.FocusIn:
-					if (focusProxy != 0) {
-						int xWindow = OS.XtWindow (focusProxy);
-						int xDisplay = OS.XtDisplay (focusProxy);
-						OS.XSetInputFocus (xDisplay, xWindow, OS.RevertToParent, OS.CurrentTime);
-					}
 					postEvent (SWT.Activate);
 					break;
 				case OS.FocusOut:
