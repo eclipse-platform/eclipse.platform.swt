@@ -12,5 +12,5 @@ package org.eclipse.swt.internal.motif;
 
  
 public abstract class XInputEvent extends XWindowEvent {
-	public int state;	/* key or button mask */
+	public int state;
 }

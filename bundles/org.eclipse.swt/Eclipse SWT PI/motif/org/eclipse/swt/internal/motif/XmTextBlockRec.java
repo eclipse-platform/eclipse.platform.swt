@@ -12,8 +12,8 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XmTextBlockRec {
-	public int ptr;			// 0
-	public int length;		// 4
-	public int format;		// 8
+	public int ptr;
+	public int length;
+	public int format;
 	public static final int sizeof = 12;
 }

@@ -12,11 +12,11 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XmTextVerifyCallbackStruct extends XmAnyCallbackStruct {
-	public byte doit;		// 8
-	public int currInsert;	// 12
-	public int newInsert;	// 16
-	public int startPos;	// 20
-	public int endPos;		// 24
-	public int text;		// 28
+	public byte doit;
+	public int currInsert;
+	public int newInsert;
+	public int startPos;
+	public int endPos;
+	public int text;
 	public static final int sizeof = 32;
 }

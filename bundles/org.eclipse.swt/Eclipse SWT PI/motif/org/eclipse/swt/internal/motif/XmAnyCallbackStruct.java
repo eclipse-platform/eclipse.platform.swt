@@ -12,7 +12,7 @@ package org.eclipse.swt.internal.motif;
 
  
 public class XmAnyCallbackStruct {
-	public int reason;		// 0
-	public int event;		// 4
+	public int reason;
+	public int event;
 	public static final int sizeof = 8;
 }
