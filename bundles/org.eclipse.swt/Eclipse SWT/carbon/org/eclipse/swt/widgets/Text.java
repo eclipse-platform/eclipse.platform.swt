@@ -369,6 +369,7 @@ ScrollBar createScrollBar (int type) {
  */
 public void cut () {
 	checkWidget();
+	if ((style & SWT.READ_ONLY) != 0) return;
 	boolean cut = true;
 	Point oldSelection = getSelection ();
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
@@ -953,6 +954,7 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
  */
 public void paste () {
 	checkWidget();
+	if ((style & SWT.READ_ONLY) != 0) return;
 	boolean paste = true;
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		String oldText = getClipboardText ();
