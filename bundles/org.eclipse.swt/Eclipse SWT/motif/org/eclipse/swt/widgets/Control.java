@@ -5,28 +5,6 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
 
-/**
-*	The widget class is the abstract superclass of all
-* user interface objects.  All widgets can be created,
-* disposed and support events.
-*
-* Styles
-*
-*	BORDER
-*	CLIP_CHILDREN, CLIP_SIBLINGS
-*
-* Events
-*
-*	KeyDown, KeyUp,
-* 	MouseDown, MouseUp, MouseMove,
-*	DoubleClick,
-*	Paint,
-*	Move, Resize,
-*	FocusIn, FocusOut,
-*
-**/
-
-/* Imports */
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.graphics.*;
@@ -48,7 +26,6 @@ import org.eclipse.swt.events.*;
  * within the SWT implementation.
  * </p>
  */
-/* Class Definition */
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
 	int fontList;
