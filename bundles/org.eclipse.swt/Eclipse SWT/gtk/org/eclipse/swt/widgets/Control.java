@@ -40,7 +40,9 @@ import org.eclipse.swt.accessibility.*;
  */
 public abstract class Control extends Widget implements Drawable {
 	int fixedHandle;
+	int drawCount;
 	Composite parent;
+	Cursor cursor;
 	Menu menu;
 	Font font;
 	String toolTipText;
@@ -145,6 +147,7 @@ void hookEvents () {
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	OS.g_signal_connect (eventHandle, OS.popup_menu, windowProc2, POPUP_MENU);
+	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
 	OS.g_signal_connect (eventHandle, OS.show_help, windowProc3, SHOW_HELP);
 	OS.g_signal_connect (eventHandle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
 	OS.g_signal_connect (eventHandle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
@@ -1817,6 +1820,14 @@ int gtk_preedit_changed (int imcontext) {
 	return 0;
 }
 
+int gtk_realize (int widget) {
+	if (cursor != null && cursor.isDisposed()) return 0;
+	int window = OS.GTK_WIDGET_WINDOW (paintHandle());
+	int gdkCursor = cursor != null ? cursor.handle : 0;
+	OS.gdk_window_set_cursor (window, gdkCursor);
+	return 0;
+}
+
 int gtk_show_help (int widget, int helpType) {
 	sendHelpEvent (helpType);
 	return 0;
@@ -2087,6 +2098,7 @@ void releaseWidget () {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeout (handle);
 	super.releaseWidget ();
+	cursor = null;
 	toolTipText = null;
 	parent = null;
 	menu = null;
@@ -2221,12 +2233,10 @@ public void setCapture (boolean capture) {
  */
 public void setCursor (Cursor cursor) {
 	checkWidget();
-	int gdkCursor = 0;
-	if (cursor != null) {
-		if (cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		gdkCursor = cursor.handle;
-	}
-	int window = paintWindow ();
+	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	this.cursor = cursor;
+	int gdkCursor = cursor != null ? cursor.handle : 0;
+	int window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 	if (window != 0) OS.gdk_window_set_cursor (window, gdkCursor);
 }
 
@@ -2426,6 +2436,13 @@ public boolean setParent (Composite parent) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
+	if (redraw) {
+		if (--drawCount == 0) {
+//			redrawWidget (handle, true);
+		}
+	} else {
+		drawCount++;
+	}
 }
 
 boolean setTabGroupFocus () {

@@ -186,7 +186,6 @@ int gtk_button_press_event (int widget, int eventPtr) {
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		dragging = true;
-//		OS.XmUpdateDisplay (handle);
 		drawBand (lastX = event.x, lastY = event.y, width, height);
 	}
 	return result;	
@@ -264,13 +263,6 @@ int gtk_realize (int widget) {
 	OS.gdk_window_set_cursor (window, cursor);
 	return 0;	
 }
-
-void hookEvents () {
-	super.hookEvents ();
-	Display display = getDisplay ();
-	int windowProc2 = display.windowProc2;
-	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
-}	
 
 void releaseWidget () {
 	super.releaseWidget ();
