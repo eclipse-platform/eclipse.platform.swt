@@ -757,6 +757,8 @@ public static final synchronized native int /*long*/ gtk_hbox_new(boolean homoge
 public static final synchronized native int /*long*/ gtk_hscale_new(int /*long*/ adjustment);
 public static final synchronized native int /*long*/ gtk_hscrollbar_new(int /*long*/ adjustment);
 public static final synchronized native int /*long*/ gtk_hseparator_new();
+public static final synchronized native int /*long*/ gtk_icon_factory_lookup_default(byte[] stock_id);
+public static final synchronized native int /*long*/ gtk_icon_set_render_icon(int /*long*/ icon_set, int /*long*/ style, int direction, int state, int size, int /*long*/ widget, int /*long*/ detail);
 public static final synchronized native boolean gtk_im_context_filter_keypress(int /*long*/ context, int /*long*/ event);
 public static final synchronized native void gtk_im_context_focus_in(int /*long*/ context);
 public static final synchronized native void gtk_im_context_focus_out(int /*long*/ context);

@@ -175,6 +175,9 @@ public class Display extends Device {
 	
 	/* Fonts */
 	int /*long*/ defaultFont;
+
+	/* System Images */
+	int /*long*/ errorImage, infoImage, questionImage, warningImage;
 	
 	/* Colors */
 	GdkColor COLOR_WIDGET_DARK_SHADOW, COLOR_WIDGET_NORMAL_SHADOW, COLOR_WIDGET_LIGHT_SHADOW;
@@ -613,6 +616,25 @@ synchronized void createDisplay (DeviceData data) {
 	eventProc = eventCallback.getAddress ();
 	if (eventProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
 	OS.gdk_event_handler_set (eventProc, 0, 0);
+}
+
+int createImage (String name) {
+	/*
+	* Bug in gtk.  gtk_icon_set_render_icon is spec'd to accept a NULL style,
+	* but this does not work.  The workaround is to create a temporary shell,
+	* use its style, and then destroy it.  This problem has been logged:
+	* http://bugs.gnome.org/show_bug.cgi?id=142014
+	*/
+	int /*long*/ shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
+	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	int /*long*/ style = OS.gtk_widget_get_style (shellHandle);
+	byte[] buffer = Converter.wcsToMbcs (null, name, true);
+	int /*long*/ image = OS.gtk_icon_set_render_icon (
+		OS.gtk_icon_factory_lookup_default (buffer), style,
+		OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, -1, 0, 0);
+	OS.gtk_widget_destroy (shellHandle);
+	if (image == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	return image;
 }
 
 synchronized void deregister () {
@@ -1306,6 +1328,46 @@ public Color getSystemColor (int id) {
 	return Color.gtk_new (this, gdkColor);
 }
 
+public Image getSystemImage (int id) {
+	int /*long*/ image = 0;
+	switch (id) {
+		case SWT.ICON_ERROR: {
+			if (errorImage == 0) {
+				errorImage = createImage ("gtk-dialog-error");
+			}
+			image = errorImage;
+			break;
+		}
+		case SWT.ICON_INFORMATION:
+		case SWT.ICON_WORKING: {
+			if (infoImage == 0) {
+				infoImage = createImage ("gtk-dialog-info");
+			}
+			image = infoImage;
+			break;
+		}
+		case SWT.ICON_QUESTION: {
+			if (questionImage == 0) {
+				questionImage = createImage ("gtk-dialog-question");
+			}
+			image = questionImage;
+			break;
+		}
+		case SWT.ICON_WARNING: {
+			if (warningImage == 0) {
+				warningImage = createImage ("gtk-dialog-warning");
+			}
+			image = warningImage;
+			break;
+		}
+		default: return null;
+	}
+	int /*long*/[] pixmap_return = new int /*long*/[1];
+	int /*long*/[] mask_return = new int /*long*/[1];
+	OS.gdk_pixbuf_render_pixmap_and_mask (image, pixmap_return, mask_return, 128);
+	return Image.gtk_new (this, SWT.ICON, pixmap_return [0], mask_return [0]);
+}
+
 void initializeSystemResources () {
 	int /*long*/ shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
@@ -1913,6 +1975,12 @@ void releaseDisplay () {
 	/* Dispose the default font */
 	if (defaultFont != 0) OS.pango_font_description_free (defaultFont);
 	defaultFont = 0;
+	
+	/* Dispose the System Images */
+	if (errorImage != 0) OS.g_object_unref (errorImage);
+	if (infoImage != 0) OS.g_object_unref (infoImage);
+	if (questionImage != 0) OS.g_object_unref (questionImage);
+	if (warningImage != 0) OS.g_object_unref (warningImage);
 	
 	COLOR_WIDGET_DARK_SHADOW = COLOR_WIDGET_NORMAL_SHADOW = COLOR_WIDGET_LIGHT_SHADOW =
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = COLOR_WIDGET_BACKGROUND = COLOR_WIDGET_BORDER =
