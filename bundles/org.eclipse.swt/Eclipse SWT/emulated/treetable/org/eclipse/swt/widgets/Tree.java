@@ -511,18 +511,19 @@ void expand(TreeItem item, boolean notifyListeners) {
 	int indexFromTop;
 	boolean nestedExpand = expandingItem != null;
 
-	if (item.getExpanded() == true) {
+	if (item.getExpanded() == true || item.getExpanding() == true) {
 		return;
 	}
+	item.setExpanding(true);
 	if (nestedExpand == false) {
 		setExpandingItem(item);
 	}
-	scrollForExpand(item);
-	item.internalSetExpanded(true);
 	if (notifyListeners == true) {
 		event.item = item;
 		notifyListeners(SWT.Expand, event);
 	}
+	scrollForExpand(item);
+	item.internalSetExpanded(true);
 	// redraw hierarchy image
 	item.redrawExpanded(item.getVisibleIndex() - getTopIndex());
 	calculateVerticalScrollbar();
@@ -536,6 +537,7 @@ void expand(TreeItem item, boolean notifyListeners) {
 	if (nestedExpand == false) {
 		setExpandingItem(null);
 	}
+	item.setExpanding(false);
 }
 /**
  * Expand 'item' and all its children.

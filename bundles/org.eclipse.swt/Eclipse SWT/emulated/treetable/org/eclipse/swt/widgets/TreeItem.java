@@ -87,6 +87,10 @@ public class TreeItem extends AbstractTreeItem {
 	private Point imageExtent;								// original size of the item image	
 	private int textYPosition = -1;							// Centered y position of the item text	
 
+
+	//Determine whether the item is being expanded
+	private boolean isExpanding = false;
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Tree</code> or a <code>TreeItem</code>)
@@ -1229,6 +1233,9 @@ public boolean getChecked() {
 public Display getDisplay() {
 	return super.getDisplay();
 }
+boolean getExpanding(){
+	return isExpanding;
+}
 /**
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
@@ -1260,6 +1267,9 @@ public boolean getGrayed() {
 public void setChecked(boolean checked) {
 	checkWidget();
 	super.setChecked(checked);
+}
+void setExpanding(boolean expanding){
+	isExpanding = expanding;
 }
 /**
  * Sets the grayed state of the receiver.
