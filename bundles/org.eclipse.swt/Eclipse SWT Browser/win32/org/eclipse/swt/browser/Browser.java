@@ -45,7 +45,7 @@ public class Browser extends Composite {
 	boolean forward;
 	Point location;
 	Point size;
-
+	int globalDispatch;
 	String html;
 
 	/* External Listener management */
@@ -60,6 +60,7 @@ public class Browser extends Composite {
 	static final int BeforeNavigate2 = 0xfa;
 	static final int CommandStateChange = 0x69;
 	static final int DocumentComplete = 0x103;
+	static final int NavigateComplete2 = 0xfc;
 	static final int NewWindow2 = 0xfb;
 	static final int OnVisible = 0xfe;
 	static final int ProgressChange = 0x6c;
@@ -188,9 +189,14 @@ public Browser(Composite parent, int style) {
 				case DocumentComplete: {
 					Variant varResult = event.arguments[0];
 					IDispatch dispatch = varResult.getDispatch();
-					Variant variant = new Variant(auto);
-					IDispatch top = variant.getDispatch();
-					if (top.getAddress() == dispatch.getAddress()) {
+					/*
+					* Note.  The completion of the page loading is detected as
+					* described in the MSDN article "Determine when a page is
+					* done loading in WebBrowser Control". 
+					*/
+					if (globalDispatch != 0 && dispatch.getAddress() == globalDispatch) {
+						/* final document complete */
+						globalDispatch = 0;
 						if (html != null) {
 							TCHAR buffer = new TCHAR(0, html, true);
 							html = null;
@@ -258,6 +264,12 @@ public Browser(Composite parent, int style) {
 					* the other arguments.  
 					*/
 					//dispatch.Release();
+					break;
+				}
+				case NavigateComplete2: {
+					Variant varResult = event.arguments[0];
+					IDispatch dispatch = varResult.getDispatch();
+					if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
 					break;
 				}
 				case NewWindow2 : {
@@ -400,6 +412,7 @@ public Browser(Composite parent, int style) {
 	site.addEventListener(BeforeNavigate2, listener);
 	site.addEventListener(CommandStateChange, listener);
 	site.addEventListener(DocumentComplete, listener);
+	site.addEventListener(NavigateComplete2, listener);
 	site.addEventListener(NewWindow2, listener);
 	site.addEventListener(OnVisible, listener);
 	site.addEventListener(ProgressChange, listener);
