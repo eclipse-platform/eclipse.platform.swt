@@ -1,32 +1,34 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
 package org.eclipse.swt.widgets;
+
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
-public class TrayIcon extends Widget {
-	Image image;
+public class TrayItem extends Item {
+	Tray parent;
 	String toolTipText;
-	boolean visible;
-
-public TrayIcon (Display display) {
-	checkSubclass ();
-	if (display == null) display = Display.getCurrent ();
-	if (display == null) display = Display.getDefault ();
-	if (!display.isValidThread ()) {
-		error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	}
-	this.visible = true;
+	boolean visible = true;
+	
+public TrayItem (Tray parent, int style) {
+	super (parent, style);
+	this.parent = parent;
+	parent.createItem (this, parent.getItemCount ());
 }
 
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-}
-
-Image getImage () {
-	checkWidget ();
-	return image;
 }
 
 public String getToolTipText () {
@@ -39,6 +41,11 @@ public boolean getVisible () {
 	return visible;
 }
 
+void releaseChild () {
+	super.releaseChild ();
+	parent.destroyItem (this);
+}
+
 public void removeSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -47,7 +54,7 @@ public void removeSelectionListener (SelectionListener listener) {
 public void setImage (Image image) {
 	checkWidget ();
 	if (image != null && image.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	this.image = image;
+	super.setImage (image);
 }
 
 public void setToolTipText (String string) {

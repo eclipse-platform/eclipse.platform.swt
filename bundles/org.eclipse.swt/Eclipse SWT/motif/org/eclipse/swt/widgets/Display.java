@@ -152,6 +152,9 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* System Tray */
+	Tray tray;
+	
 	/* Timers */
 	int [] timerIds;
 	Runnable [] timerList;
@@ -1265,6 +1268,10 @@ public Control getFocusControl () {
 	} while ((handle = OS.XtParent (handle)) != 0);
 	return null;
 }
+public boolean getHighContrast () {
+	checkDevice ();
+	return false;
+}
 /**
  * Returns the maximum allowed depth of icons on this display.
  * On some platforms, this may be different than the actual
@@ -1525,6 +1532,10 @@ public Color getSystemColor (int id) {
 public Font getSystemFont () {
 	checkDevice ();
 	return defaultFont;
+}
+public Tray getSystemTray () {
+	if (tray != null) return tray;
+	return tray = new Tray (this, SWT.NULL);
 }
 /**
  * Returns the user-interface thread for the receiver.
