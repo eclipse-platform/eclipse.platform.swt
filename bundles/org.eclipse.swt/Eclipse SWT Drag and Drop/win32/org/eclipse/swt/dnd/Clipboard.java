@@ -154,7 +154,7 @@ public void dispose () {
 
 /**
  * Retrieve the data of the specified type currently available on the system clipboard.  Refer to the 
- * specific subclass of <code>Tramsfer</code> to determine the type of object returned.
+ * specific subclass of <code>Transfer</code> to determine the type of object returned.
  * 
  * <p>The following snippet shows text and RTF text being retrieved from the clipboard:</p>
  * 
