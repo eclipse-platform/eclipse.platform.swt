@@ -784,14 +784,16 @@ void mouseDown(Event event) {
 void mouseHover(Event event) {
 	String current = super.getToolTipText();
 	if (toolTipText == null) {
-		Point point = new Point(event.x, event.y);
-		for (int i=0; i<items.length; i++) {
-			if (items[i].getBounds().contains(point)) {
-				String string = items[i].getToolTipText();
-				if (string != null && !string.equals(current)) {
-					super.setToolTipText(string);
+		if (items != null) {
+			Point point = new Point(event.x, event.y);
+			for (int i=0; i<items.length; i++) {
+				if (items[i].getBounds().contains(point)) {
+					String string = items[i].getToolTipText();
+					if (string != null && !string.equals(current)) {
+						super.setToolTipText(string);
+					}
+					return;
 				}
-				return;
 			}
 		}
 		if (current != null) super.setToolTipText(null);
