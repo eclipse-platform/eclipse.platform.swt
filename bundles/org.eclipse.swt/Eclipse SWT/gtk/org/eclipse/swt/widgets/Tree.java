@@ -858,6 +858,19 @@ public boolean getHeaderVisible () {
 	return OS.gtk_tree_view_get_headers_visible (handle);
 }
 
+public TreeItem getItem (int index) {
+	checkWidget();
+	int length = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (!(0 <= index && index < length)) error (SWT.ERROR_INVALID_RANGE);
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	OS.gtk_tree_model_iter_nth_child(modelHandle, iter, 0, index);
+	int[] value = new int[1];
+	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, value, -1);
+	TreeItem item = items [value [0]];
+	OS.g_free (iter);
+	return item;
+}
+
 /**
  * Returns the item at the given point in the receiver
  * or null if no such item exists. The point is in the
@@ -1405,7 +1418,7 @@ void hookEvents () {
  * </ul>
  * @since 3.1
  */
-/*public*/ int indexOf (TreeColumn column) {
+public int indexOf (TreeColumn column) {
 	checkWidget();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	for (int i=0; i<columnCount; i++) {
@@ -1414,7 +1427,7 @@ void hookEvents () {
 	return -1;
 }
 
-/*public*/ int indexOf (TreeItem item) {
+public int indexOf (TreeItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);

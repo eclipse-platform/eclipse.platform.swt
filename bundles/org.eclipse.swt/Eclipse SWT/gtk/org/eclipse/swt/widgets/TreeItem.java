@@ -681,6 +681,19 @@ public int getItemCount () {
 	return OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
 }
 
+public TreeItem getItem (int index) {
+	checkWidget();
+	int length = OS.gtk_tree_model_iter_n_children (parent.modelHandle, handle);
+	if (!(0 <= index && index < length)) error (SWT.ERROR_INVALID_RANGE);
+	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
+	OS.gtk_tree_model_iter_nth_child (parent.modelHandle, iter, handle, index);
+	int [] value = new int [1];
+	OS.gtk_tree_model_get (parent.modelHandle, iter, Tree.ID_COLUMN, value, -1);
+	TreeItem item = parent.items [value [0]];
+	OS.g_free (iter);
+	return item;
+}
+
 /**
  * Returns an array of <code>TreeItem</code>s which are the
  * direct item children of the receiver.
@@ -770,14 +783,14 @@ public String getText () {
 public String getText (int index) {
 	checkWidget ();
 	if (!parent.checkData (this)) error (SWT.ERROR_WIDGET_DISPOSED);
-	if (!(0 <= index && index <= parent.columnCount )) return "";
+	if (!(0 <= index && index <= parent.columnCount )) return ""; //$NON-NLS-1$
 	int /*long*/ parentHandle = parent.handle;
 	int /*long*/ column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) error(SWT.ERROR_CANNOT_GET_TEXT);
 	int /*long*/ [] ptr = new int /*long*/ [1];
 	int modelIndex = parent.columnCount == 0 ? Tree.FIRST_COLUMN : parent.columns [index].modelIndex;
 	OS.gtk_tree_model_get (parent.modelHandle, handle, modelIndex + Tree.CELL_TEXT, ptr, -1);
-	if (ptr [0] == 0) return "";
+	if (ptr [0] == 0) return ""; //$NON-NLS-1$
 	int length = OS.strlen (ptr [0]);
 	byte[] buffer = new byte [length];
 	OS.memmove (buffer, ptr [0], length);
@@ -785,7 +798,7 @@ public String getText (int index) {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
-/*public*/ int indexOf (TreeItem item) {
+public int indexOf (TreeItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
