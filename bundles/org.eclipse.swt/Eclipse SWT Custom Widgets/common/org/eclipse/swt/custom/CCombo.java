@@ -707,11 +707,6 @@ void listEvent (Event event) {
 		}
 		case SWT.Traverse: {
 			switch (event.detail) {
-				case SWT.TRAVERSE_TAB_NEXT:
-				case SWT.TRAVERSE_TAB_PREVIOUS:
-					// No tab traversal when pop up list open
-					// Do not forward on as a CCombo event
-					return;
 				case SWT.TRAVERSE_RETURN:
 				case SWT.TRAVERSE_ESCAPE:
 				case SWT.TRAVERSE_ARROW_PREVIOUS:
@@ -727,6 +722,7 @@ void listEvent (Event event) {
 			e.keyCode = event.keyCode;
 			notifyListeners(SWT.Traverse, e);
 			event.doit = e.doit;
+			event.detail = e.detail;
 			break;
 		}
 		case SWT.KeyUp: {		
@@ -1133,10 +1129,6 @@ void textEvent (Event event) {
 			break;
 		}
 		case SWT.KeyDown: {
-			
-			if (event.character == SWT.ESC) { // escape key cancels popup list
-				dropDown (false);
-			}
 			if (event.character == SWT.CR) {
 				dropDown (false);
 				Event e = new Event();
@@ -1237,6 +1229,7 @@ void textEvent (Event event) {
 			e.keyCode = event.keyCode;
 			notifyListeners(SWT.Traverse, e);
 			event.doit = e.doit;
+			event.detail = e.detail;
 			break;
 		}
 	}
