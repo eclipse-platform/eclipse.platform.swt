@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- File written by PDE 1.0 -->
+<plugin
+   id="org.eclipse.swt.examples"
+   name="Eclipse SWT Examples"
+   version="0.9"
+   provider-name="OTI">
+
+<!-- Runtime -->
+
+<runtime>
+</runtime>
+
+<!-- Extension points -->
+
+
+<!-- Extensions -->
+</plugin>
