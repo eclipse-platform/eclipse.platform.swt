@@ -804,7 +804,7 @@ public static final synchronized native void gtk_notebook_set_scrollable(int /*l
 public static final synchronized native void gtk_notebook_set_show_tabs(int /*long*/ notebook, boolean show_tabs);
 public static final synchronized native void gtk_notebook_set_tab_pos(int /*long*/ notebook, int pos);
 public static final synchronized native void gtk_object_sink(int /*long*/ object);
-public static final synchronized native void gtk_paint_handle(int style, int window, int state_type, int shadow_type, GdkRectangle area, int widget, byte[] detail, int x , int y, int width, int height, int orientation);
+public static final synchronized native void gtk_paint_handle(int /*long*/ style, int /*long*/ window, int state_type, int shadow_type, GdkRectangle area, int /*long*/ widget, byte[] detail, int x , int y, int width, int height, int orientation);
 public static final synchronized native int /*long*/ gtk_plug_get_id(int /*long*/ plug);
 public static final synchronized native int /*long*/ gtk_plug_new(int /*long*/ socket_id);
 public static final synchronized native int /*long*/ gtk_progress_bar_new();
