@@ -412,6 +412,17 @@ public static boolean isBidiPlatform() {
 	if (isBidiPlatform != -1) return isBidiPlatform == 1; // already set
 
 	isBidiPlatform = 0;
+	
+	// The following test is a workaround for bug report 27629. On WinXP,
+	// both bidi and complex script (e.g., Thai) languages must be installed
+	// at the same time.  Since the bidi platform calls do not support
+	// double byte characters, there is no way to run Eclipse using the
+	// complex script languages on XP, so constrain this test to answer true
+	// only if a bidi input language is defined.  Doing so will allow complex
+	// script languages to work (e.g., one can install bidi and complex script 
+	// languages, but only install the Thai keyboard).
+	if (!isKeyboardBidi()) return false;
+	
 	Callback callback = null;
 	try {
 		callback = new Callback (Class.forName (CLASS_NAME), "EnumSystemLanguageGroupsProc", 5);
