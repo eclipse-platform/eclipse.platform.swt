@@ -185,8 +185,9 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		int invalRgn = OS.NewRgn();
 		OS.DiffRgn(srcRgn, data.visibleRgn, invalRgn);
 		OS.OffsetRgn(invalRgn, (short)deltaX, (short)deltaY);
-		OS.InvalWindowRgn(window, invalRgn);
-		OS.DiffRgn(srcRgn, destRgn, invalRgn);
+		OS.DiffRgn(srcRgn, destRgn, srcRgn);
+		OS.UnionRgn(srcRgn, invalRgn, invalRgn);
+		OS.SectRgn(data.visibleRgn, invalRgn, invalRgn);
 		OS.InvalWindowRgn(window, invalRgn);
 		OS.DisposeRgn(invalRgn);
 		
