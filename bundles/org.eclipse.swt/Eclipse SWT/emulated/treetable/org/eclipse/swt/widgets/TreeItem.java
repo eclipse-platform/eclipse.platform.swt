@@ -7,7 +7,7 @@ import org.eclipse.swt.internal.Compatibility;
 public class TreeItem extends Item {
 	Tree parent;
 	TreeItem parentItem;
-	TreeItem[] items = new TreeItem [0];
+	TreeItem[] items = NO_ITEMS;
 	int availableIndex = -1;	/* index in parent's flat list of available (though not necessarily within viewport) items */
 	int depth = 0;				/* cached for performance, does not change after instantiation */
 	boolean checked, grayed, expanded;
@@ -25,6 +25,7 @@ public class TreeItem extends Item {
 	
 	static final int INDENT_HIERARCHY = 6;	/* the margin between an item's expander and its checkbox or content */
 	static final int MARGIN_TEXT = 3;			/* the left and right margins within the text's space */
+	static final TreeItem[] NO_ITEMS = new TreeItem [0];
 
 public TreeItem (Tree parent, int style) {
 	this (parent, style, checkNull (parent).items.length);
@@ -1051,17 +1052,21 @@ void removeColumn (TreeColumn column, int index) {
  */
 void removeItem (TreeItem item, int index) {
 	if (isDisposed ()) return;
+	if (items.length == 0) {
+		items = NO_ITEMS;
+		/* condition below handles creation of item within Expand callback */
+		if (!parent.inExpand) {
+			expanded = false;
+			if (availableIndex == -1) return;
+			Rectangle bounds = getExpanderBounds ();	/* expander box no longer needed */
+			parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+		}
+		return;
+	}
 	TreeItem[] newItems = new TreeItem [items.length - 1];
 	System.arraycopy (items, 0, newItems, 0, index);
 	System.arraycopy (items, index + 1, newItems, index, newItems.length - index);
 	items = newItems;
-	/* second condition below handles creation of item within Expand callback */
-	if (items.length == 0 && !parent.inExpand) {
-		expanded = false;
-		if (availableIndex == -1) return;
-		Rectangle bounds = getExpanderBounds ();	/* expander box no longer needed */
-		parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
-	}
 }
 public void setBackground (Color value) {
 	checkWidget ();
