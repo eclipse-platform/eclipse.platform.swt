@@ -148,8 +148,8 @@ public class Display extends Device {
 	int caretID, caretProc;
 	
 	/* Grabs */
-	Control grabControl;
-	boolean grabbing, ignoreMouseUp;
+	Control grabControl, mouseUpControl;
+	boolean grabbing;
 
 	/* Hover Help */
 	int helpString;
@@ -1806,24 +1806,27 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 				OS.GetSuperControl (theControl [0], theControl);
 			}
 			Widget widget = null;
-			boolean forward = false;
+			boolean consume = false;
 			if (theControl [0] == 0) theControl [0] = theRoot [0];
 			do {
 				widget = getWidget (theControl [0]);
 				if (widget != null) {
 					if (widget.isEnabled ()) break;
-					forward = true;
+					consume = true;
 				}
 				OS.GetSuperControl (theControl [0], theControl);
 			} while (theControl [0] != 0);
 			if (theControl [0] == 0) widget = getWidget (theRoot [0]);
 			if (widget != null) {
-				if (ignoreMouseUp && OS.GetEventKind(theEvent) == OS.kEventMouseUp) {
-					ignoreMouseUp = false;
-					return OS.noErr;
+				if (mouseUpControl != null && OS.GetEventKind(theEvent) == OS.kEventMouseUp) {
+					if (!mouseUpControl.isDisposed ()) {
+						widget = mouseUpControl;
+						consume = true;
+					}
+					mouseUpControl = null;
 				}
 				int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
-				return forward ? OS.noErr : result;
+				return consume ? OS.noErr : result;
 			}
 			break;
 		}
@@ -1874,6 +1877,7 @@ public boolean readAndDispatch () {
 	checkDevice ();
 	runTimers ();
 	runEnterExit ();
+	runPopups ();
 	int [] outEvent  = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
 	if (status == OS.noErr) {
@@ -2262,7 +2266,7 @@ void runGrabs () {
 	short [] outResult = new short [1];
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	grabbing = true;
-	ignoreMouseUp = false;
+	mouseUpControl = null;
 	try {
 		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
 			lastModifiers = OS.GetCurrentEventKeyModifiers ();
@@ -2307,8 +2311,11 @@ void runGrabs () {
 				int y = outPt.v - rect.top;
 				int chord = OS.GetCurrentEventButtonState ();
 				if (grabControl != null && !grabControl.isDisposed ()) {
-					grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
-					if (type == SWT.MouseUp) ignoreMouseUp = true;
+					if (type == SWT.MouseUp) {
+						mouseUpControl = grabControl;
+					} else {
+						grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
+					}
 				}
 				//TEMPORARY CODE
 				if (grabControl != null && !grabControl.isDisposed ()) grabControl.update (true);
@@ -2738,7 +2745,7 @@ int timerProc (int id, int index) {
 			if (runnable != null) runnable.run ();
 		} else {
 			timerIds [index] = -1;
-			wakeUp ();
+			wakeThread ();
 		}
 	}
 	return 0;
@@ -2822,10 +2829,10 @@ void updateQuitMenu () {
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
-	wakeUp ();
+	wakeThread ();
 }
 
-void wakeUp () {
+void wakeThread () {
 	int [] wakeEvent = new int [1];
 	OS.CreateEvent (0, WAKE_CLASS, WAKE_KIND, 0.0, OS.kEventAttributeUserEvent, wakeEvent);
 	OS.PostEventToQueue (queue, wakeEvent [0], (short) OS.kEventPriorityStandard);
