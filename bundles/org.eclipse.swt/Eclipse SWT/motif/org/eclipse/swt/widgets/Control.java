@@ -1663,8 +1663,8 @@ boolean sendIMKeyEvent (int type, XKeyEvent xEvent, int textHandle) {
 			int position = start [0] + count;
 			OS.XmTextSetInsertionPosition (textHandle, position);
 			display.setWarnings (warnings);
+			return false;
 		}
-		return false;
 	}
 	return true;
 }
