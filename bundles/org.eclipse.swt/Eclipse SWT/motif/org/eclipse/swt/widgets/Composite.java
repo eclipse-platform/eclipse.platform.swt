@@ -459,7 +459,8 @@ void hookEvents () {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		int focusProc = display.focusProc;
 		int windowProc = display.windowProc;
-		OS.XtInsertEventHandler (handle, OS.StructureNotifyMask | OS.SubstructureNotifyMask, false, windowProc, STRUCTURE_NOTIFY, OS.XtListTail);		OS.XtInsertEventHandler (handle, OS.PropertyChangeMask, false, windowProc, PROPERTY_CHANGE, OS.XtListTail);
+		OS.XtInsertEventHandler (handle, OS.StructureNotifyMask | OS.SubstructureNotifyMask, false, windowProc, STRUCTURE_NOTIFY, OS.XtListTail);
+		OS.XtInsertEventHandler (handle, OS.PropertyChangeMask, false, windowProc, PROPERTY_CHANGE, OS.XtListTail);
 		OS.XtInsertEventHandler (handle, 0, true, windowProc, NON_MASKABLE, OS.XtListTail);
 		Shell shell = getShell ();
 		OS.XtInsertEventHandler (shell.shellHandle, OS.FocusChangeMask, false, focusProc, handle, OS.XtListTail);
