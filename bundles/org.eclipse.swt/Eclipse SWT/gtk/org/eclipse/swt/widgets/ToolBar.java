@@ -74,7 +74,11 @@ public ToolBar (Composite parent, int style) {
 	* the bits using the original style supplied by the
 	* programmer.
 	*/
-	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
+	if ((style & SWT.VERTICAL) != 0) {
+		this.style |= SWT.VERTICAL;
+	} else {
+		this.style |= SWT.HORIZONTAL;
+	}
 	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_ORIENTATION_VERTICAL : OS.GTK_ORIENTATION_HORIZONTAL;
 	OS.gtk_toolbar_set_orientation (handle, orientation);
 }

@@ -75,7 +75,11 @@ public ToolBar (Composite parent, int style) {
 	* the bits using the original style supplied by the
 	* programmer.
 	*/
-	this.style = checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
+	if ((style & SWT.VERTICAL) != 0) {
+		this.style |= SWT.VERTICAL;
+	} else {
+		this.style |= SWT.HORIZONTAL;
+	}
 	int orientation = (style & SWT.VERTICAL) == 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL;
 	OS.PtSetResource (handle, OS.Pt_ARG_ORIENTATION, orientation, 0);
 }
