@@ -17,6 +17,8 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
+import org.eclipse.test.performance.Dimension;
+import org.eclipse.test.performance.Performance;
 import org.eclipse.test.performance.PerformanceMeter;
 
 /**
@@ -57,6 +59,9 @@ protected void setUp() throws Exception {
 public void test_createComposites() {
 	PerformanceMeter meter = createMeter("Create 1000 composites");
 	int samples;
+
+    Performance performance = Performance.getDefault();
+    performance.tagAsGlobalSummary(meter, "Create 1000 composites", Dimension.CPU_TIME);
 	
 	// Warm up.
 	for(samples = 0; samples < 2; samples++) {
@@ -322,7 +327,10 @@ public void test_stringDrawing() {
 public void test_fastStringDrawing() {
 	PerformanceMeter meter = createMeter("2000 strings by GC.drawString()");
 	int samples;
-	
+
+    Performance performance = Performance.getDefault();
+    performance.tagAsGlobalSummary(meter, "2000 strings by GC.drawString()", Dimension.CPU_TIME);
+
 	for(samples = 0; samples < 10; samples++) {
 		int width = 640;
 		int height = 480;
