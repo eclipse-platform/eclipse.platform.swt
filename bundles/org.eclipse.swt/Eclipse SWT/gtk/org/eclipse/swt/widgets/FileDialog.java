@@ -30,7 +30,7 @@ public class FileDialog extends GtkFileDialog {
 	String [] filterExtensions = new String [0];
 	String filterPath = "";
 	String fileName = "";
-	String[] fileNames = new String[0];
+	String[] fileNames;
 	String fullPath = "";
 	
 /**
@@ -241,9 +241,7 @@ void preset() {
 		OS.gtk_file_selection_complete (handle, extBytes);
 	}
 	
-	fileName = null;
 	fullPath = null;
-	filterPath = null;
 }
 
 void interpretOsAnswer(String osAnswer) {
