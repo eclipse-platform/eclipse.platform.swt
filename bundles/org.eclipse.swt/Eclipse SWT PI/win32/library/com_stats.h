@@ -32,7 +32,7 @@ typedef enum {
 	CreateStdAccessibleObject_FUNC,
 	DoDragDrop_FUNC,
 	GetClassFile_FUNC,
-	IIDFromString___3CLorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC,
+	IIDFromString_FUNC,
 	IsEqualGUID_FUNC,
 	LresultFromObject_FUNC,
 	MoveMemory__ILorg_eclipse_swt_internal_ole_win32_FORMATETC_2I_FUNC,

@@ -204,20 +204,20 @@ JNIEXPORT jint JNICALL COM_NATIVE(GetClassFile)
 }
 #endif
 
-#ifndef NO_IIDFromString___3CLorg_eclipse_swt_internal_ole_win32_GUID_2
-JNIEXPORT jint JNICALL COM_NATIVE(IIDFromString___3CLorg_eclipse_swt_internal_ole_win32_GUID_2)
+#ifndef NO_IIDFromString
+JNIEXPORT jint JNICALL COM_NATIVE(IIDFromString)
 	(JNIEnv *env, jclass that, jcharArray arg0, jobject arg1)
 {
 	jchar *lparg0=NULL;
 	GUID _arg1, *lparg1=NULL;
 	jint rc;
-	COM_NATIVE_ENTER(env, that, IIDFromString___3CLorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
+	COM_NATIVE_ENTER(env, that, IIDFromString_FUNC);
 	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
 	if (arg1) lparg1 = getGUIDFields(env, arg1, &_arg1);
 	rc = (jint)IIDFromString((LPOLESTR)lparg0, lparg1);
 	if (arg1) setGUIDFields(env, arg1, lparg1);
 	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	COM_NATIVE_EXIT(env, that, IIDFromString___3CLorg_eclipse_swt_internal_ole_win32_GUID_2_FUNC);
+	COM_NATIVE_EXIT(env, that, IIDFromString_FUNC);
 	return rc;
 }
 #endif
