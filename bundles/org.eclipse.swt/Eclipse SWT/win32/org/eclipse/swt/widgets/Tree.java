@@ -3275,23 +3275,24 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 								* all text drawing for empty rectangles.
 								*/
 								if (rect.left < rect.right) {
-									String string = item.strings != null ? item.strings [i] : "";		
-									int hFont = item.cellFont != null ? item.cellFont [i] : item.font;
-									hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
-									int clrText = -1;
-									if (OS.IsWindowEnabled (handle)) {
-										clrText = item.cellForeground != null ? item.cellForeground [i] : item.foreground;
-										clrText = clrText != -1? OS.SetTextColor (hDC, clrText) : -1;
+									if (item.strings != null && item.strings [i] != null) {
+										int hFont = item.cellFont != null ? item.cellFont [i] : item.font;
+										hFont = hFont != -1 ? OS.SelectObject (hDC, hFont) : -1;
+										int clrText = -1;
+										if (OS.IsWindowEnabled (handle)) {
+											clrText = item.cellForeground != null ? item.cellForeground [i] : item.foreground;
+											clrText = clrText != -1? OS.SetTextColor (hDC, clrText) : -1;
+										}
+										int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_ENDELLIPSIS;
+										TreeColumn column = columns [i];
+										if ((column.style & SWT.LEFT) != 0) flags |= OS.DT_LEFT;
+										if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
+										if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
+										TCHAR buffer = new TCHAR (getCodePage (), item.strings [i], false);
+										OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
+										if (hFont != -1) OS.SelectObject (hDC, hFont);
+										if (clrText != -1) OS.SetTextColor (hDC, clrText);
 									}
-									int flags = OS.DT_NOPREFIX | OS.DT_SINGLELINE | OS.DT_VCENTER | OS.DT_ENDELLIPSIS;
-									TreeColumn column = columns [i];
-									if ((column.style & SWT.LEFT) != 0) flags |= OS.DT_LEFT;
-									if ((column.style & SWT.CENTER) != 0) flags |= OS.DT_CENTER;
-									if ((column.style & SWT.RIGHT) != 0) flags |= OS.DT_RIGHT;
-									TCHAR buffer = new TCHAR (getCodePage (), string, false);
-									OS.DrawText (hDC, buffer, buffer.length (), rect, flags);
-									if (hFont != -1) OS.SelectObject (hDC, hFont);
-									if (clrText != -1) OS.SetTextColor (hDC, clrText);
 								}
 							}
 							x += hdItem.cxy;
