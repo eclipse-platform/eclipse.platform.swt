@@ -144,9 +144,9 @@ void createScrolledHandle (int parentHandle) {
 void drawWidget (int control) {
 	if ((state & CANVAS) != 0) {
 		if (control == scrolledHandle) {
+			drawBackground (control, null);
 			Rect rect = new Rect ();
-			OS.GetControlBounds (scrolledHandle, rect);
-			OS.EraseRect (rect);
+			OS.GetControlBounds (control, rect);
 			Rect inset = inset ();
 			rect.left += inset.left;
 			rect.top += inset.top;

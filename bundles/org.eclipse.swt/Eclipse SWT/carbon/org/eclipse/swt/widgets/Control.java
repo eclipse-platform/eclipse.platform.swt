@@ -11,6 +11,7 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
+import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
@@ -112,6 +113,26 @@ public void addTraverseListener (TraverseListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Traverse,typedListener);
+}
+
+int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor) {
+	switch (inMessage) {
+		case OS.kControlMsgApplyTextColor: {
+			if (foreground != null) {
+				OS.RGBForeColor (toRGBColor (foreground));
+			} 
+			return OS.noErr;
+		}
+		case OS.kControlMsgSetUpBackground: {
+			if (background != null) {
+				OS.RGBBackColor (toRGBColor (background));
+			} else {
+				OS.SetThemeBackground ((short) OS.kThemeBrushDialogBackgroundActive, (short) inDrawDepth, inDrawInColor != 0);
+			}
+			return OS.noErr;
+		}
+	}
+	return OS.eventNotHandledErr;
 }
 
 public Point computeSize (int wHint, int hHint) {
@@ -424,6 +445,7 @@ void hookEvents () {
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlActivate,
+		OS.kEventClassControl, OS.kEventControlApplyBackground,
 		OS.kEventClassControl, OS.kEventControlBoundsChanged,
 		OS.kEventClassControl, OS.kEventControlClick,
 		OS.kEventClassControl, OS.kEventControlContextualMenuClick,
@@ -438,6 +460,8 @@ void hookEvents () {
 	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
+	int colorProc = display.colorProc;
+	OS.SetControlColorProc (handle, colorProc);
 }
 
 public int internal_new_GC (GCData data) {

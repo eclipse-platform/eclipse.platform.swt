@@ -31,11 +31,11 @@ public class Display extends Device {
 	Callback actionCallback, appleEventCallback, commandCallback, controlCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, helpCallback;
 	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback;
-	Callback mouseCallback, trackingCallback, windowCallback;
+	Callback mouseCallback, trackingCallback, windowCallback, colorCallback;
 	int actionProc, appleEventProc, commandProc, controlProc;
 	int drawItemProc, itemDataProc, itemNotificationProc, helpProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
-	int mouseProc, trackingProc, windowProc;
+	int mouseProc, trackingProc, windowProc, colorProc;
 	EventTable eventTable, filterTable;
 	int queue, lastModifiers;
 	
@@ -328,6 +328,12 @@ static synchronized void checkDisplay (Thread thread) {
 			SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		}
 	}
+}
+
+int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor) {
+	Widget widget = WidgetTable.get (inControl);
+	if (widget != null) return widget.colorProc (inControl, inMessage, inDrawDepth, inDrawInColor);
+	return OS.eventNotHandledErr;
 }
 
 int commandProc (int nextHandler, int theEvent, int userData) {
@@ -796,6 +802,9 @@ void initializeCallbacks () {
 	windowCallback = new Callback (this, "windowProc", 3);
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	colorCallback = new Callback (this, "colorProc", 4);
+	colorProc = colorCallback.getAddress ();
+	if (colorProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 		
 	/* Install Event Handlers */
 	int[] mask1 = new int[] {
@@ -1104,14 +1113,15 @@ void releaseDisplay () {
 	mouseCallback.dispose ();
 	trackingCallback.dispose ();
 	windowCallback.dispose ();
+	colorCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = null;
 	controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
 	helpCallback = hitTestCallback = keyboardCallback = menuCallback = null;
-	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = null;
+	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = 0;
 	controlProc = drawItemProc = itemDataProc = itemNotificationProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = 0;
-	mouseHoverProc = mouseProc = trackingProc = windowProc = 0;
+	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
 	timerProc = 0;

@@ -137,7 +137,7 @@ void createHandle () {
 		OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
 	}
 	OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
-	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
+//	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
 	int [] theRoot = new int [1];
 	OS.CreateRootControl (shellHandle, theRoot);
 	OS.GetRootControl (shellHandle, theRoot);

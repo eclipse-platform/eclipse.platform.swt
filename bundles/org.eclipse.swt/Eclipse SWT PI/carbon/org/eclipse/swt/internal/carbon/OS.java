@@ -94,6 +94,8 @@ public class OS {
 	public static final int kControlHandlesTracking = 1 << 5;
 	public static final int kControlIconTransformTag = ('t'<<24) + ('r'<<16) + ('f'<<8) + 'm';
 	public static final int kControlIndicatorPart = 129;
+	public static final int kControlMsgApplyTextColor = 30;
+	public static final int kControlMsgSetUpBackground = 23;
 	public static final int kControlPageDownPart = 23;
 	public static final int kControlPageUpPart = 22;
 	public static final int kControlPopupArrowEastProc = 192;
@@ -191,7 +193,8 @@ public class OS {
 	public static final int kEventClassMouse = ('m'<<24) + ('o'<<16) + ('u'<<8) + 's';
 	public static final int kEventClassTextInput = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kEventClassWindow = ('w'<<24) + ('i'<<16) + ('n'<<8) + 'd';
-  	public static final int kEventControlActivate = 9;
+	public static final int kEventControlApplyBackground = 5;
+	public static final int kEventControlActivate = 9;
   	public static final int kEventControlAddedSubControl = 152;
 	public static final int kEventControlBoundsChanged = 154;
 	public static final int kEventControlClick = 13;
@@ -959,6 +962,7 @@ public static final native void SetControl32BitMinimum(int cHandle, int minimum)
 public static final native void SetControl32BitValue(int cHandle, int value);
 public static final native void SetControlAction(int cHandle, int actionProc);
 public static final native void SetControlBounds(int cHandle, Rect bounds);
+public static final native int SetControlColorProc(int inControl, int inProc);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, ControlButtonContentInfo inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, ControlTabInfoRecV1 inData);
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, Rect inData);

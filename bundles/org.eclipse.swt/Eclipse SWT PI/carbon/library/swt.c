@@ -5924,6 +5924,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlBounds
 }
 #endif /* NO_SetControlBounds */
 
+#ifndef NO_SetControlColorProc
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlColorProc
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetControlColorProc\n")
+
+	return (jint)SetControlColorProc((ControlRef)arg0, (ControlColorUPP)arg1);
+}
+#endif
+
 #ifndef NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_Rect_2
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__IIIILorg_eclipse_swt_internal_carbon_Rect_2
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)

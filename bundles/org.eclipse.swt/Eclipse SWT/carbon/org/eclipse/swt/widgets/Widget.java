@@ -114,10 +114,15 @@ protected void checkWidget () {
 	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
+int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor) {
+	return OS.eventNotHandledErr;
+}
+
 int controlProc (int nextHandler, int theEvent, int userData) {
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
 		case OS.kEventControlActivate:				return kEventControlActivate (nextHandler, theEvent, userData);
+		case OS.kEventControlApplyBackground:		return kEventControlApplyBackground (nextHandler, theEvent, userData);
 		case OS.kEventControlBoundsChanged:			return kEventControlBoundsChanged (nextHandler, theEvent, userData);
 		case OS.kEventControlClick:					return kEventControlClick (nextHandler, theEvent, userData);
 		case OS.kEventControlContextualMenuClick:	return kEventControlContextualMenuClick (nextHandler, theEvent, userData);
@@ -274,16 +279,10 @@ void drawBackground (int control, float [] background) {
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
 	if (background != null) {
-		int red = (short) (background [0] * 255);
-		int green = (short) (background [1] * 255);
-		int blue = (short) (background [2] * 255);
-		RGBColor color = new RGBColor ();
-		color.red = (short) (red << 8 | red);
-		color.green = (short) (green << 8 | green);
-		color.blue = (short) (blue << 8 | blue);
-		OS.RGBForeColor (color);
+		OS.RGBForeColor (toRGBColor (background));
 		OS.PaintRect (rect);
 	} else {
+		OS.SetThemeBackground((short) OS.kThemeBrushDialogBackgroundActive, (short) (short) 0, true);
 		OS.EraseRect (rect);
 	}
 }
@@ -462,6 +461,10 @@ int itemNotificationProc (int browser, int item, int message) {
 }
 
 int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventControlApplyBackground (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 	
@@ -979,6 +982,17 @@ void setKeyState (Event event, int theEvent) {
 			break;
 	}
 	setInputState (event, theEvent);
+}
+
+RGBColor toRGBColor (float [] color) {
+	int red = (short) (color [0] * 255);
+	int green = (short) (color [1] * 255);
+	int blue = (short) (color [2] * 255);
+	RGBColor rgb = new RGBColor ();
+	rgb.red = (short) (red << 8 | red);
+	rgb.green = (short) (green << 8 | green);
+	rgb.blue = (short) (blue << 8 | blue);
+	return rgb;
 }
 
 public String toString () {

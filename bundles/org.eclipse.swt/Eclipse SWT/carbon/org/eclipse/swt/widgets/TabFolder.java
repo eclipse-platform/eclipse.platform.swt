@@ -396,6 +396,13 @@ Rect getInset () {
 	return display.tabFolderInset;
 }
 
+int kEventControlApplyBackground (int nextHandler, int theEvent, int userData) {
+	/*
+	* Feature in the Macintosh.  
+	*/
+	return OS.noErr;
+}
+
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;

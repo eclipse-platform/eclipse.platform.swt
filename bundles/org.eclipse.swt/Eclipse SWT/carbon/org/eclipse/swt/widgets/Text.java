@@ -203,6 +203,7 @@ public void cut () {
 }
 
 void drawWidget (int control) {
+	drawBackground (handle, background);
 	OS.TXNDraw (txnObject, 0);
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
