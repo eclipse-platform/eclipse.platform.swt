@@ -332,28 +332,28 @@ public void addCTabFolderCloseListener(CTabFolderCloseListener listener) {
 public void addCTabFolderExpandListener(CTabFolderExpandListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (expandListeners.length == 0) {
+		// display expand button
+		showExpand = true;
+		if (onBottom) {
+			expandRect.x = border;
+			expandRect.y = getSize().y - border - tabHeight + CTabItem.SELECTION_BORDER;
+			expandRect.width = decoratorWidth;
+			expandRect.height = tabHeight - CTabItem.SELECTION_BORDER;
+		} else {
+			expandRect.x = expandRect.y = border;
+			expandRect.width = decoratorWidth;
+			expandRect.height = tabHeight - CTabItem.SELECTION_BORDER;
+		}
+		updateItems();
+		redrawTabArea();
+	}
+
 	// add to array
 	CTabFolderExpandListener[] newListeners = new CTabFolderExpandListener[expandListeners.length + 1];
 	System.arraycopy(expandListeners, 0, newListeners, 0, expandListeners.length);
 	expandListeners = newListeners;
 	expandListeners[expandListeners.length - 1] = listener;
-	
-	// display expand button
-	showExpand = true;
-	if (onBottom) {
-		expandRect.x = border;
-		expandRect.y = getSize().y - border - tabHeight + CTabItem.SELECTION_BORDER;
-		expandRect.width = decoratorWidth;
-		expandRect.height = tabHeight - CTabItem.SELECTION_BORDER;
-	} else {
-		expandRect.x = expandRect.y = border;
-		expandRect.width = decoratorWidth;
-		expandRect.height = tabHeight - CTabItem.SELECTION_BORDER;
-	}
-	setItemSize();
-	setItemLocation();
-	setButtonBounds();
-	redrawTabArea();
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -501,18 +501,15 @@ void createItem (CTabItem item, int index) {
 	}
 	if (items.length == 1) {
 		topTabIndex = 0;
-		resetTabSize(true);
-	} else {
-		setItemSize();
-		setItemLocation();
-		showItem(item);
-		setButtonBounds();
-	}
-	
-	if (items.length == 1) {
+		if (!updateTabHeight(tabHeight)) updateItems();
 		redraw();
 	} else {
-		redrawTabArea();
+		updateItems();
+		// redraw tabs if new item visible
+		if (index >= topTabIndex && 
+		    item.x+item.width <= getSize().x-border-closeRect.width-chevronRect.width){
+			redrawTabArea();
+		}
 	}
 }
 void destroyItem (CTabItem item) {
@@ -557,10 +554,7 @@ void destroyItem (CTabItem item) {
 		selectedIndex --;
 	}
 	
-	setItemSize();
-	setItemLocation();
-	setButtonBounds();
-	redrawTabArea();
+	if (updateItems()) redrawTabArea();
 }
 void drawBorder(GC gc) {
 	if (border == 0) return;
@@ -930,10 +924,8 @@ public CTabItem getItem (Point pt) {
 	if (items.length == 0) return null;
 	Point size = getSize();
 	if (size.x <= 2*border) return null;
-	int edge = size.x - border - closeRect.width - chevronRect.width;
 	for (int index = topTabIndex; index < items.length; index++) {
 		CTabItem item = items[index];
-		if (item.x+item.width > edge) return null;
 		Rectangle rect = item.getBounds();
 		if (rect.contains(pt)) return item;
 	}
@@ -1396,8 +1388,12 @@ boolean onPageTraversal(Event event) {
 void onPaint(Event event) {
 	Font font = getFont();
 	if (oldFont == null || !oldFont.equals(font)) {
+		// handle case where  default font changes
 		oldFont = font;
-		resetTabSize(true);
+		if (!updateTabHeight(tabHeight)) {
+			updateItems();
+			redrawTabArea();
+		}
 	}
 	
 	GC gc = event.gc;
@@ -1508,13 +1504,8 @@ void onResize() {
 		redraw();
 		return;
 	}
-	boolean changed = false;
-	if (setItemSize()) changed = true;
-	if (setItemLocation()) changed = true;
-	if (setButtonBounds()) changed = true;
-	if (changed) {
-		redrawTabArea();
-	}
+	if (updateItems()) redrawTabArea();
+	
 	Point size = getSize();
 	if (oldSize == null) {
 		redraw();
@@ -1640,9 +1631,7 @@ public void removeCTabFolderExpandListener(CTabFolderExpandListener listener) {
 		expandListeners = new CTabFolderExpandListener[0];
 		showExpand = false;
 		expandRect.x = expandRect.y = expandRect.width = expandRect.height = 0;
-		setItemSize();
-		setItemLocation();
-		setButtonBounds();
+		updateItems();
 		redrawTabArea();
 		return;
 	}
@@ -1724,42 +1713,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	}
 	removeListener(SWT.Selection, listener);
 	removeListener(SWT.DefaultSelection, listener);	
-}
-void resetTabSize(boolean checkHeight){
-	int oldHeight = tabHeight;
-	if (!fixedTabHeight && checkHeight) {
-		int tempHeight = 0;
-		GC gc = new GC(this);
-		for (int i=0; i < items.length; i++) {
-			tempHeight = Math.max(tempHeight, items[i].preferredHeight(gc));
-		}
-		gc.dispose();
-		tabHeight =  tempHeight;
-	}
-	
-	if (tabHeight != oldHeight){
-		oldSize = null;
-		if (onBottom) {
-			curve = bezier(0, tabHeight+1,
-			               curveS, tabHeight+1,
-					       curveWidth-curveS, CTabItem.SELECTION_BORDER,
-			               curveWidth, CTabItem.SELECTION_BORDER,
-			               curveWidth);
-		} else {
-			curve = bezier(0, 0,
-			               curveS, 0, 
-			               curveWidth-curveS, tabHeight-CTabItem.SELECTION_BORDER+1,
-			               curveWidth, tabHeight-CTabItem.SELECTION_BORDER+1,
-			               curveWidth);
-		}
-		
-		notifyListeners(SWT.Resize, new Event());
-	} else {
-		setItemSize();
-		setItemLocation();
-		setButtonBounds();
-		redrawTabArea();
-	}
 }
 public void setBackground (Color color) {
 	if (color == null) color = getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_BACKGROUND);
@@ -1845,7 +1798,6 @@ void setFirstItem(int index) {
 	if (index == topTabIndex) return;
 	topTabIndex = index;
 	setItemLocation();
-//	setButtonBounds();
 	redrawTabArea();
 }
 public void setFont(Font font) {
@@ -1853,7 +1805,10 @@ public void setFont(Font font) {
 	if (font != null && font.equals(getFont())) return;
 	super.setFont(font);
 	oldFont = getFont();
-	resetTabSize(true);
+	if (!updateTabHeight(tabHeight)) {
+		updateItems();
+		redrawTabArea();
+	}
 }
 public void setForeground (Color color) {
 	if (color == null) color = getDisplay().getSystemColor(SWT.COLOR_TITLE_INACTIVE_FOREGROUND);
@@ -2044,7 +1999,6 @@ void setLastItem(int index) {
 	if (topTabIndex == index) return;
 	topTabIndex = index;
 	setItemLocation();
-//	setButtonBounds();
 	redrawTabArea();
 }
 /**
@@ -2268,14 +2222,9 @@ public void setTabHeight(int height) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	fixedTabHeight = height > 0;
-	if (!fixedTabHeight) {
-		resetTabSize(true);
-		return;
-	}
-	if (tabHeight == height) return;
+	int oldHeight = tabHeight;
 	tabHeight = height;
-	oldSize = null;
-	notifyListeners(SWT.Resize, new Event());
+	updateTabHeight(oldHeight);
 }
 /**
  * Set the control that appears in the top right corner of the tab folder.
@@ -2439,6 +2388,43 @@ void showToolTip (int x, int y) {
 	tipShowing = true;
 	tip.setVisible(true);
 }
+boolean updateItems() {
+	boolean changed = false;
+	if (setItemSize()) changed = true;
+	if (setItemLocation()) changed = true;
+	if (setButtonBounds()) changed = true;
+	return changed;
+}
+boolean updateTabHeight(int oldHeight){
+	if (!fixedTabHeight) {
+		int tempHeight = 0;
+		GC gc = new GC(this);
+		for (int i=0; i < items.length; i++) {
+			tempHeight = Math.max(tempHeight, items[i].preferredHeight(gc));
+		}
+		gc.dispose();
+		tabHeight =  tempHeight;
+	}
+	if (tabHeight == oldHeight) return false;
+	
+	oldSize = null;
+	if (onBottom) {
+		curve = bezier(0, tabHeight+1,
+		               curveS, tabHeight+1,
+				       curveWidth-curveS, CTabItem.SELECTION_BORDER,
+		               curveWidth, CTabItem.SELECTION_BORDER,
+		               curveWidth);
+	} else {
+		curve = bezier(0, 0,
+		               curveS, 0, 
+		               curveWidth-curveS, tabHeight-CTabItem.SELECTION_BORDER+1,
+		               curveWidth, tabHeight-CTabItem.SELECTION_BORDER+1,
+		               curveWidth);
+	}
+	
+	notifyListeners(SWT.Resize, new Event());
+	return true;
+}
 boolean updateToolTip (int x, int y, Label label) {
 	CTabItem item = getItem(new Point (x, y));
 	if (item == null) return false;
@@ -2465,9 +2451,12 @@ boolean updateToolTip (int x, int y, Label label) {
 	 */
 	Point pt = new Point(item.x + item.width / 4, item.y + item.height + 2);
 	pt = toDisplay(pt);
-	Rectangle rect = tip.getDisplay().getBounds();
-	Point tipSize = tip.getSize();
-	pt.y = Math.max (0, Math.min (pt.y, rect.height - tipSize.y));
+	Rectangle rect = tip.getMonitor().getBounds();
+	Point size = tip.getSize();
+	pt.x = Math.max(pt.x, rect.x);
+	pt.y = Math.max(pt.y, rect.y);
+	if (pt.x + size.x > rect.x + rect.width) pt.x = rect.x + rect.width - size.x;
+	if (pt.y + size.y > rect.y + rect.height) pt.y = toDisplay(0, item.y - size.y - 2).y;
 	tip.setLocation(pt);
 	return true;
 }

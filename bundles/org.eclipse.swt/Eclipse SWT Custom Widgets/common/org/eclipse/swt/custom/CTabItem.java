@@ -438,7 +438,10 @@ public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.equals(getImage())) return;
 	super.setImage(image);
-	parent.resetTabSize(true);
+	if (!parent.updateTabHeight(parent.tabHeight)) {
+		parent.updateItems();
+	}
+	parent.redrawTabArea();
 }
 /**
  * Set the widget text.
@@ -462,7 +465,8 @@ public void setText (String string) {
 	super.setText(string);
 	shortenedText = null;
 	shortenedTextWidth = 0;
-	parent.resetTabSize(false);	
+	parent.updateItems();
+	parent.redrawTabArea();
 }
 /**
  * Sets the receiver's tool tip text to the argument, which
