@@ -782,13 +782,16 @@ public String getText (int start, int end) {
 	}
 	int textLength = OS.XmTextGetLastPosition (handle);
 	if (textLength <= end) error (SWT.ERROR_INVALID_RANGE);
-	int ptr = OS.XmTextGetString (handle);
-	if (ptr == 0) return "";
-	int length = OS.strlen (ptr);
+	int numChars = end - start + 1;
+	int length = (numChars * 4 /* MB_CUR_MAX */) + 1;
 	byte [] buffer = new byte [length];
-	OS.memmove (buffer, ptr, length);
-	OS.XtFree (ptr);
-	return new String (Converter.mbcsToWcs (getCodePage (), buffer));
+	int code = OS.XmTextGetSubstring (handle, start, numChars, length, buffer);
+	if (code == OS.XmCOPY_FAILED) return "";
+	char [] unicode = Converter.mbcsToWcs (getCodePage (), buffer);
+	if (code == OS.XmCOPY_TRUNCATED) {
+		numChars = OS.XmTextGetLastPosition (handle) - start;
+	}
+	return new String (unicode, 0, numChars);
 }
 /**
  * Returns the maximum number of characters that the receiver is capable of holding. 
