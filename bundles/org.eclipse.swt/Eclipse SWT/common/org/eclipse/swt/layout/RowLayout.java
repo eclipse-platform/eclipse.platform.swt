@@ -70,6 +70,34 @@ public final class RowLayout extends Layout {
 	public int type = SWT.HORIZONTAL;
 	
 	/**
+	 * marginWidth specifies the number of pixels of horizontal margin
+	 * that will be placed along the left and right edges of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.0
+	 */
+ 	public int marginWidth = 0;
+ 	
+	/**
+	 * marginHeight specifies the number of pixels of vertical margin
+	 * that will be placed along the top and bottom edges of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.0
+	 */
+ 	public int marginHeight = 0;
+
+	/**
+	 * spacing specifies the number of pixels between the edge of one cell
+	 * and the edge of its neighbouring cell.
+	 *
+	 * The default value is 3.
+	 */
+	public int spacing = 3;
+	 		
+	/**
 	 * wrap specifies whether a control will be wrapped to the next
 	 * row if there is insufficient space on the current row.
 	 *
@@ -107,14 +135,6 @@ public final class RowLayout extends Layout {
 	public boolean justify = false;
 
 	/**
-	 * spacing specifies the number of pixels between the edge of one cell
-	 * and the edge of its neighbouring cell.
-	 *
-	 * The default value is 3.
-	 */
-	public int spacing = 3;
-
-	/**
 	 * marginLeft specifies the number of pixels of horizontal margin
 	 * that will be placed along the left edge of the layout.
 	 *
@@ -145,26 +165,6 @@ public final class RowLayout extends Layout {
 	 * The default value is 3.
 	 */
 	public int marginBottom = 3;
-	
-		/**
-	 * marginWidth specifies the number of pixels of horizontal margin
-	 * that will be placed along the left and right edges of the layout.
-	 *
-	 * The default value is 0.
-	 * 
-	 * @since 3.0
-	 */
- 	public int marginWidth = 0;
- 	
-	/**
-	 * marginHeight specifies the number of pixels of vertical margin
-	 * that will be placed along the top and bottom edges of the layout.
-	 *
-	 * The default value is 0.
-	 * 
-	 * @since 3.0
-	 */
- 	public int marginHeight = 0;
 
 /**
  * Constructs a new instance of this class.
