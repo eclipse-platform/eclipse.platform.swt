@@ -956,7 +956,7 @@ public static final synchronized native int /*long*/ gtk_tree_path_new_from_stri
 public static final synchronized native int /*long*/ gtk_tree_path_new_from_string(int /*long*/ path);
 public static final synchronized native boolean gtk_tree_path_up(int /*long*/ path);
 public static final synchronized native boolean gtk_tree_selection_get_selected(int /*long*/ selection, int /*long*/[] model, int /*long*/ iter);
-public static final synchronized native int gtk_tree_selection_get_selected_rows(int /*long*/ selection, int /*long*/[] model);
+public static final synchronized native int /*long*/ gtk_tree_selection_get_selected_rows(int /*long*/ selection, int /*long*/[] model);
 public static final synchronized native boolean gtk_tree_selection_path_is_selected(int /*long*/ selection, int /*long*/ path);
 public static final synchronized native void gtk_tree_selection_select_all(int /*long*/ selection);
 public static final synchronized native void gtk_tree_selection_select_iter(int /*long*/ selection, int /*long*/ iter);
