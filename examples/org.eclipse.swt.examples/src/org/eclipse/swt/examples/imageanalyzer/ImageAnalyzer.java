@@ -623,7 +623,7 @@ public class ImageAnalyzer {
 		item.setMenu(fileMenu);
 
 		// File -> Open File...
-		item = new MenuItem(fileMenu, SWT.NULL);
+		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("OpenFile"));
 		item.setAccelerator(SWT.MOD1 + 'O');
 		item.addSelectionListener(new SelectionAdapter() {
@@ -633,7 +633,7 @@ public class ImageAnalyzer {
 		});
 		
 		// File -> Open URL...
-		item = new MenuItem(fileMenu, SWT.NULL);
+		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("OpenURL"));
 		item.setAccelerator(SWT.MOD1 + 'U');
 		item.addSelectionListener(new SelectionAdapter() {
@@ -643,7 +643,7 @@ public class ImageAnalyzer {
 		});
 		
 		// File -> Reopen
-		item = new MenuItem(fileMenu, SWT.NULL);
+		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Reopen"));
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -654,7 +654,7 @@ public class ImageAnalyzer {
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 		
 		// File -> Save
-		item = new MenuItem(fileMenu, SWT.NULL);
+		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Save"));
 		item.setAccelerator(SWT.MOD1 + 'S');
 		item.addSelectionListener(new SelectionAdapter() {
@@ -664,7 +664,7 @@ public class ImageAnalyzer {
 		});
 		
 		// File -> Save As...
-		item = new MenuItem(fileMenu, SWT.NULL);
+		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Save_as"));
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -673,7 +673,7 @@ public class ImageAnalyzer {
 		});
 		
 		// File -> Save Mask As...
-		item = new MenuItem(fileMenu, SWT.NULL);
+		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Save_mask_as"));
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -684,7 +684,7 @@ public class ImageAnalyzer {
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 		
 		// File -> Print
-		item = new MenuItem(fileMenu, SWT.NULL);
+		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Print"));
 		item.setAccelerator(SWT.MOD1 + 'P');
 		item.addSelectionListener(new SelectionAdapter() {
@@ -696,7 +696,7 @@ public class ImageAnalyzer {
 		new MenuItem(fileMenu, SWT.SEPARATOR);
 
 		// File -> Exit
-		item = new MenuItem(fileMenu, SWT.NULL);
+		item = new MenuItem(fileMenu, SWT.PUSH);
 		item.setText(bundle.getString("Exit"));
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -714,7 +714,7 @@ public class ImageAnalyzer {
 		item.setMenu(alphaMenu);
 
 		// Alpha -> K
-		item = new MenuItem(alphaMenu, SWT.NULL);
+		item = new MenuItem(alphaMenu, SWT.PUSH);
 		item.setText("K");
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -723,7 +723,7 @@ public class ImageAnalyzer {
 		});
 
 		// Alpha -> (K + x) % 256
-		item = new MenuItem(alphaMenu, SWT.NULL);
+		item = new MenuItem(alphaMenu, SWT.PUSH);
 		item.setText("(K + x) % 256");
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
@@ -732,7 +732,7 @@ public class ImageAnalyzer {
 		});
 
 		// Alpha -> (K + y) % 256
-		item = new MenuItem(alphaMenu, SWT.NULL);
+		item = new MenuItem(alphaMenu, SWT.PUSH);
 		item.setText("(K + y) % 256");
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
