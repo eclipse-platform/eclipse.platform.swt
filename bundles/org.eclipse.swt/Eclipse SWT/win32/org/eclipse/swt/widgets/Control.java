@@ -4149,6 +4149,7 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 	}
 	
 	/* Call the window proc to determine whether it is a system key or mnemonic */
+	boolean oldKeyHit = display.mnemonicKeyHit;
 	display.mnemonicKeyHit = true;
 	int result = callWindowProc (OS.WM_SYSCHAR, wParam, lParam);
 	boolean consumed = false;
@@ -4157,7 +4158,7 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 		// widget could be disposed at this point
 	}
 	consumed |= display.mnemonicKeyHit;
-	display.mnemonicKeyHit = false;
+	display.mnemonicKeyHit = oldKeyHit;
 	return consumed ? LRESULT.ONE : new LRESULT (result);
 }
 
