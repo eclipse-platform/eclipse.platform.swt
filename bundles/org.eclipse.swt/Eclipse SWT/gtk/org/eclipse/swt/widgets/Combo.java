@@ -55,9 +55,11 @@ import org.eclipse.swt.events.*;
  */
 public class Combo extends Composite {
 	int arrowHandle, entryHandle, listHandle;
-	int lastEventTime = 0;
+	int lastEventTime, lastSelectedItem;
 	String [] items = new String [0];
+
 	static final int INNER_BORDER = 2;
+
 	/**
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
@@ -738,6 +740,7 @@ int gtk_changed (int widget) {
 
 int gtk_commit (int imContext, int text) {
 	if (text == 0) return 0;
+	if (!OS.gtk_editable_get_editable (entryHandle)) return 0;
 	int length = OS.strlen (text);
 	if (length == 0) return 0;
 	byte [] buffer = new byte [length];
@@ -777,7 +780,20 @@ int gtk_key_press_event (int widget, int event) {
 }
 
 int gtk_select_child (int list, int widget) {
-	postEvent (SWT.Selection);
+	if (lastSelectedItem == widget) return 0;
+	int event = OS.gtk_get_current_event ();	
+	if (event != 0) {
+			GdkEvent gdkEvent = new GdkEvent ();
+			OS.memmove (gdkEvent, event, GdkEvent.sizeof);
+			switch (gdkEvent.type) {
+				case OS.GDK_KEY_PRESS:
+				case OS.GDK_BUTTON_RELEASE: 
+					postEvent (SWT.Selection);
+					lastSelectedItem = widget;
+					break;
+			}	
+			OS.gdk_event_free (event);
+	}
 	return 0;
 }
 
@@ -1107,10 +1123,11 @@ public void setItems (String [] items) {
 }
 	
 void setItems (String [] items, boolean keepText, boolean keepSelection) {
-	String[] oldItems = this.items;
 	this.items = items;
-	int selectedIndex = -1;
-	if (keepSelection) selectedIndex = getSelectionIndex ();
+	String text = keepText ? getText() : "";
+	int selectedIndex = keepSelection ? getSelectionIndex() : -1;
+	OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_block_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 	if (items.length == 0) {
 		int itemsList = OS.gtk_container_get_children (listHandle);
 		if (itemsList != 0) {
@@ -1131,25 +1148,7 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 			OS.memmove (data, buffer, buffer.length);
 			glist = OS.g_list_append (glist, data);
 		}
-		/*
-		* Feature in GTK.  A call to gtk_combo_set_popdown_strings will result in the top item
-		* being selected and a SELECT_CHILD and CHANGED event will be sent.  In the case
-		* where there are no entires in the widget and the first item has been added, inform the
-		* application that a selection has occurred.  However, in all other cases, the previous
-		* selection is maintained and the application should not be notified of a selection change.
-		* The fix is to allow the SELECT_CHILD and CHANGED to be sent when the first item
-		* is added.
-		*/
-		boolean block = oldItems != null && oldItems.length > 0;
-		if (block) {
-			OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			OS.g_signal_handlers_block_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
-		}
 		OS.gtk_combo_set_popdown_strings (handle, glist);
-		if (block) {
-			OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			OS.g_signal_handlers_unblock_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
-		}
 		if (glist != 0) {
 			int count = OS.g_list_length (glist);
 			for (int i=0; i<count; i++) {
@@ -1159,8 +1158,9 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 			OS.g_list_free (glist);
 		}
 	}
-	if (keepSelection) select (selectedIndex);
-	if (!keepText) OS.gtk_editable_delete_text (entryHandle, 0, -1);
+	OS.gtk_entry_set_text (entryHandle, Converter.wcsToMbcs (null, selectedIndex != -1 ? items [selectedIndex] : text, true));
+	OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+	OS.g_signal_handlers_unblock_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 }
 
 /**
