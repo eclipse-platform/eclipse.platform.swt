@@ -1529,7 +1529,7 @@ void onArrowLeft (int stateMask) {
 		clientArea.width, clientArea.height,
 		horizontalOffset - newSelection, 0);
 	gc.dispose ();
-	if (getHeaderVisible ()) {
+	if (header.getVisible ()) {
 		header.update ();
 		clientArea = header.getClientArea ();
 		gc = new GC (header);
@@ -1557,7 +1557,7 @@ void onArrowRight (int stateMask) {
 		clientArea.width, clientArea.height,
 		horizontalOffset - newSelection, 0);
 	gc.dispose ();
-	if (getHeaderVisible ()) {
+	if (header.getVisible ()) {
 		clientArea = header.getClientArea ();
 		header.update ();
 		gc = new GC (header);
@@ -2848,7 +2848,7 @@ public void setColumnOrder (int [] order) {
 	}
 
 	redraw ();
-	if (header.isVisible ()) header.redraw ();
+	if (drawCount == 0 && header.isVisible ()) header.redraw ();
 }
 void setFocusItem (TableItem item, boolean redrawOldFocus) {
 	if (item == focusItem) return;
@@ -2890,7 +2890,7 @@ public void setFont (Font value) {
 	
 	gc.dispose ();
 	
-	if (header.isVisible ()) header.redraw ();
+	if (drawCount == 0 && header.isVisible ()) header.redraw ();
 	
 	/* update scrollbars */
 	updateHorizontalBar ();
@@ -3265,7 +3265,7 @@ public void showColumn (TableColumn column) {
 	}
 	getHorizontalBar ().setSelection (horizontalOffset);
 	redraw ();
-	if (header.isVisible ()) header.redraw ();
+	if (drawCount == 0 && header.isVisible ()) header.redraw ();
 }
 /**
  * Shows the item.  If the item is already showing in the receiver,
@@ -3371,7 +3371,7 @@ void updateColumnWidth (TableColumn column, int width) {
 	int x = 0;
 	if (!offsetChanged) x = column.getX ();
 	redraw (x, 0, bounds.width - x, bounds.height, false);
-	if (getHeaderVisible ()) {
+	if (drawCount == 0 && header.getVisible ()) {
 		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
 	}
 

@@ -252,7 +252,7 @@ public void dispose () {
 			}
 		}
 	}
-	if (parent.getHeaderVisible ()) {
+	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);
 	}
 }
@@ -525,7 +525,7 @@ public void setAlignment (int alignment) {
 	style |= alignment;
 	int x = getX ();
 	parent.redraw (x, 0, width, parent.getClientArea ().height, false);
-	if (parent.getHeaderVisible ()) {
+	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
 		parent.header.redraw (x, 0, width, parent.getHeaderHeight (), false);		
 	}
 }
@@ -549,13 +549,17 @@ public void setImage (Image value) {
 		parent.setHeaderImageHeight (value.getBounds ().height);
 		if (oldHeaderHeight != parent.getHeaderHeight ()) {
 			/* parent header height changed */
-			parent.header.redraw ();
+			if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+				parent.header.redraw ();
+			}
 			parent.redraw ();
 			return;
 		}
 	}
 	
-	parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
+	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
+	}
 }
 /**
  * Sets the moveable attribute.  A column that is
@@ -608,7 +612,9 @@ public void setText (String value) {
 	GC gc = new GC (parent);
 	computeDisplayText (gc);
 	gc.dispose ();
-	parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
+	if (parent.drawCount == 0 && parent.getHeaderVisible ()) {
+		parent.header.redraw (getX (), 0, width, parent.getHeaderHeight (), false);
+	}
 }
 /**
  * Sets the width of the receiver.

@@ -1367,7 +1367,7 @@ void onArrowLeft (int stateMask) {
 			clientArea.width, clientArea.height,
 			horizontalOffset - newSelection, 0);
 		gc.dispose ();
-		if (getHeaderVisible ()) {
+		if (header.getVisible ()) {
 			header.update ();
 			clientArea = header.getClientArea ();
 			gc = new GC (header);
@@ -1417,7 +1417,7 @@ void onArrowRight (int stateMask) {
 			clientArea.width, clientArea.height,
 			horizontalOffset - newSelection, 0);
 		gc.dispose ();
-		if (getHeaderVisible ()) {
+		if (header.getVisible ()) {
 			clientArea = header.getClientArea ();
 			header.update ();
 			gc = new GC (header);
@@ -2601,7 +2601,7 @@ public void setFont (Font value) {
 	
 	gc.dispose ();
 	
-	if (header.isVisible ()) header.redraw ();
+	if (drawCount == 0 && header.isVisible ()) header.redraw ();
 	
 	/* update scrollbars */
 	updateHorizontalBar ();
@@ -2725,6 +2725,7 @@ public void setRedraw (boolean value) {
 		drawCount++;
 	}
 	super.setRedraw (value);
+	header.setRedraw (value);
 }
 /**
  * Sets the receiver's selection to be the given array of items.
@@ -2973,7 +2974,7 @@ void updateColumnWidth (TreeColumn column, int width) {
 	int x = 0;
 	if (!offsetChanged) x = column.getX ();
 	redraw (x, 0, bounds.width - x, bounds.height, false);
-	if (getHeaderVisible ()) {
+	if (drawCount == 0 && header.getVisible ()) {
 		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
 	}
 
