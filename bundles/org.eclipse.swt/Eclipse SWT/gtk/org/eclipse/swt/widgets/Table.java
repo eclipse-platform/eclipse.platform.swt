@@ -46,7 +46,7 @@ public class Table extends Composite {
 	public static int MAX_COLUMNS = 32;
 	static int INTERNAL_COLUMNS = 2*MAX_COLUMNS + 1  // check
 	                                     + 2; // fg, bg
-	int selSize; int[] selIndexes;
+	int selSize; int[] selIndices;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -651,11 +651,11 @@ public TableItem [] getItems () {
 public TableItem [] getSelection () {
 	checkWidget();
 	selSize = 0;
-	selIndexes = new int[itemCount];
+	selIndices = new int[itemCount];
 	int selection = OS.gtk_tree_view_get_selection(handle);
 	OS.gtk_tree_selection_selected_foreach(selection, getDisplay().selectionIterProc, handle);
 	TableItem[] answer = new TableItem[selSize];
-	for (int i=0; i<selSize; i++) answer[i] = items[selIndexes[i]];
+	for (int i=0; i<selSize; i++) answer[i] = items[selIndices[i]];
 	return answer;
 }
 
@@ -672,7 +672,7 @@ public TableItem [] getSelection () {
 public int getSelectionCount () {
 	checkWidget();
 	selSize = 0;
-	selIndexes = new int[itemCount];
+	selIndices = new int[itemCount];
 	int selection = OS.gtk_tree_view_get_selection(handle);
 	OS.gtk_tree_selection_selected_foreach(selection, getDisplay().selectionIterProc, handle);
 	return selSize;
@@ -692,11 +692,11 @@ public int getSelectionCount () {
 public int getSelectionIndex () {
 	checkWidget();
 	selSize = 0;
-	selIndexes = new int[itemCount];
+	selIndices = new int[itemCount];
 	int selection = OS.gtk_tree_view_get_selection(handle);
 	OS.gtk_tree_selection_selected_foreach(selection, getDisplay().selectionIterProc, handle);
 	if (selSize==0) return -1;
-	return selIndexes[0];
+	return selIndices[0];
 }
 
 /**
@@ -717,11 +717,11 @@ public int getSelectionIndex () {
 public int [] getSelectionIndices () {
 	checkWidget();
 	selSize = 0;
-	selIndexes = new int[itemCount];
+	selIndices = new int[itemCount];
 	int selection = OS.gtk_tree_view_get_selection(handle);
 	OS.gtk_tree_selection_selected_foreach(selection, getDisplay().selectionIterProc, handle);
 	int[] answer = new int[selSize];
-	for (int i=0; i<selSize; i++) answer[i] = selIndexes[i];
+	for (int i=0; i<selSize; i++) answer[i] = selIndices[i];
 	return answer;
 }
 
@@ -1166,7 +1166,7 @@ int processSelectionIter(int path, int iter, int data) {
 	if (indexPtr!=0) {
 		int[] indices = new int[1];
 		OS.memmove(indices, indexPtr, 4);
-		selIndexes[selSize++] = indices[0];
+		selIndices[selSize++] = indices[0];
 	}
 	return 0;
 }
