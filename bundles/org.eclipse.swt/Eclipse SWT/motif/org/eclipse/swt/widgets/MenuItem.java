@@ -636,16 +636,16 @@ public void setAccelerator (int accelerator) {
 		} else {
 			keysym = wcsToMbcs ((char) keysym);
 		}
+		/*
+		* Feature in Motif.  Motif does not activate an accelerator
+		* when the CapsLoc, NumLoc and NumLock+CapsLoc keys are pressed.
+		* In order to activate accelerators when these keys are pressed,
+		* it is necessary to look for all of these key sequences.
+		*/
 		String key = ctrl + alt + shift + "<Key>" + keysymName (keysym);
-		StringBuffer allKeys = new StringBuffer (key);
-		allKeys.append (",Lock ");
-		allKeys.append (key);
-		allKeys.append (",Mod2 ");
-		allKeys.append (key);
-		allKeys.append (",Lock Mod2 ");
-		allKeys.append (key);
+		String allKeys = key + ",Lock " + key + ",Mod2 " + key + ",Lock Mod2 " + key;
 		/* Use the character encoding for the default locale */
-		byte [] buffer = Converter.wcsToMbcs (null, allKeys.toString (), true);		
+		byte [] buffer = Converter.wcsToMbcs (null, allKeys, true);		
 		ptr = OS.XtMalloc (buffer.length);
 		if (ptr != 0) OS.memmove (ptr, buffer, buffer.length);
 	}
