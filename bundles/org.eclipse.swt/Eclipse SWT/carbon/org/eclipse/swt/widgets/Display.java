@@ -265,6 +265,7 @@ public class Display extends Device {
 	};
 
 	static String APP_NAME = "SWT";
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget";
 
 	/* Multiple Displays. */
 	static Display Default;
@@ -3213,6 +3214,14 @@ public void setCursorLocation (Point point) {
 public void setData (String key, Object value) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+	
+	if (key.equals(ADD_WIDGET_KEY)) {
+		Object [] data = (Object [])value;
+		int handle = ((Integer)data [0]).intValue ();
+		Widget widget = (Widget)data [1];
+		if (widget == null) removeWidget (handle);
+		else addWidget (handle, widget);
+	}
 	
 	/* Remove the key/value pair */
 	if (value == null) {

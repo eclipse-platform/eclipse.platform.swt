@@ -36,7 +36,7 @@ public class Browser extends Composite {
 	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
-	
+	static final String ADD_WIDGET_KEY = "org.eclipse.swt.internal.addWidget"; //$NON-NLS-1$
 	static final int MAX_PROGRESS = 100;
 	
 	/* External Listener management */
@@ -52,7 +52,7 @@ public class Browser extends Composite {
 	static int Delegate;
 	
 	static Hashtable Map = new Hashtable();
-	static Callback callback;
+	static Callback Callback3, Callback6;
 
 	/* Carbon HIView handle */
 	int webViewHandle;
@@ -177,6 +177,7 @@ public Browser(Composite parent, int style) {
 						c = c.getParent();
 					} while (c != shell);
 
+					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
 					Map.remove(new Integer(webView));
 					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver_name_object, Delegate, 0, webView);
 					break;
@@ -292,15 +293,24 @@ public Browser(Composite parent, int style) {
 		c = c.getParent();
 	} while (c != shell);
 	
-	if (callback == null) {
-		callback = new Callback(this.getClass(), "eventProc", 6); //$NON-NLS-1$
-		int eventProc = callback.getAddress();
+	Map.put(new Integer(webView), this);
+
+	if (Callback3 == null) {
+		Callback3 = new Callback(this.getClass(), "eventProc3", 3); //$NON-NLS-1$
+		int[] keyboardMask = new int[] {OS.kEventClassKeyboard, OS.kEventRawKeyDown};
+		int controlTarget = OS.GetControlEventTarget(webViewHandle);
+		OS.InstallEventHandler(controlTarget, Callback3.getAddress(), keyboardMask.length / 2, keyboardMask, webView, null);
+	}
+	getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), this});
+
+	
+	if (Callback6 == null) {
+		Callback6 = new Callback(this.getClass(), "eventProc6", 6); //$NON-NLS-1$
+		int eventProc = Callback6.getAddress();
 		// Delegate = [[WebResourceLoadDelegate alloc] init eventProc];
 		Delegate = WebKit.objc_msgSend(WebKit.C_WebKitDelegate, WebKit.S_alloc);
 		Delegate = WebKit.objc_msgSend(Delegate, WebKit.S_initWithProc, eventProc);
 	}
-
-	Map.put(new Integer(webView), this);
 				
 	// [webView setFrameLoadDelegate:delegate];
 	WebKit.objc_msgSend(webView, WebKit.S_setFrameLoadDelegate, Delegate);
@@ -318,7 +328,14 @@ public Browser(Composite parent, int style) {
 	WebKit.objc_msgSend(webView, WebKit.S_setPolicyDelegate, Delegate);
 }
 
-static int eventProc(int webview, int selector, int arg0, int arg1, int arg2, int arg3) {
+static int eventProc3(int nextHandler, int theEvent, int userData) {
+	Object o = Map.get(new Integer(userData));
+	if (o instanceof Browser)
+		return ((Browser)o).handleCallback(nextHandler, theEvent);
+	return OS.eventNotHandledErr;
+}
+
+static int eventProc6(int webview, int selector, int arg0, int arg1, int arg2, int arg3) {
 	Object o = Map.get(new Integer(webview));
 	if (o instanceof Browser)
 		return ((Browser)o).handleCallback(selector, arg0, arg1, arg2, arg3);
@@ -629,6 +646,28 @@ public boolean forward() {
 public String getUrl() {
 	checkWidget();
 	return url;
+}
+
+int handleCallback(int nextHandler, int theEvent) {
+	/*
+	* Bug in Safari. The WebView blocks the propagation of certain Carbon events
+	* such as kEventRawKeyDown. On the Mac, Carbon events propagate from the
+	* Focus Target Handler to the Control Target Handler, Window Target and finally
+	* the Application Target Handler. It is assumed that WebView hooks its events
+	* on the Window Target and does not pass kEventRawKeyDown to the next handler.
+	* Since kEventRawKeyDown events never make it to the Application Target Handler,
+	* the Application Target Handler never gets to emit kEventTextInputUnicodeForKeyEvent
+	* used by SWT to send a SWT.KeyDown event.
+	* The workaround is to hook kEventRawKeyDown on the Control Target Handler which gets
+	* called before the WebView hook on the Window Target Handler. Then, forward this event
+	* directly to the Application Target Handler. Note that if in certain conditions Safari
+	* does not block the kEventRawKeyDown, then multiple kEventTextInputUnicodeForKeyEvent
+	* events might be generated as a result of this workaround.
+	*/
+	if (OS.GetEventKind(theEvent) == OS.kEventRawKeyDown) {
+		OS.SendEventToEventTarget(theEvent, OS.GetApplicationEventTarget());
+	}
+	return OS.eventNotHandledErr;
 }
 
 /* Here we dispatch all WebView upcalls. */
