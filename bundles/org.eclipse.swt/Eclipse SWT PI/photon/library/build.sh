@@ -12,6 +12,9 @@
 
 cd `dirname $0`
 
-export IVE_HOME=~/ive/bin
+OUTPUT_DIR=../../../org.eclipse.swt.photon/os/qnx/x86
+IVE_HOME=~/ive/bin
+
+export IVE_HOME OUTPUT_DIR
 
 make -f make_qnx.mak $1 $2 $3 $4

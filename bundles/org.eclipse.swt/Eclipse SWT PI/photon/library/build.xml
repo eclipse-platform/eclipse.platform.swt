@@ -1,27 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project default="build_lib" basedir="../../..">
+<project default="build_photon_lib" basedir="../../..">
 
-<target name="init">
-	<tstamp/>
-    <property name="lib_destdir" value="${basedir}/../org.eclipse.swt.photon/os/qnx/x86" />
-</target>
-
-<!-- Build swt.so for QNX -->
-<!-- Output .so for this platform into the org.eclipse.swt.photon/os directory -->
-<target name="build_lib" depends="init">
-	<mkdir dir="${lib_destdir}" />
+<target name="build_photon_lib">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
+		<arg line="install"/>
 	</exec>
-	<copy todir="${lib_destdir}">
-		<fileset dir="${basedir}/bin/library/" includes="*.so"/>
-	</copy>
-	<eclipse.refreshLocal resource="org.eclipse.swt.photon" depth="infinite" />	
+	<eclipse.refreshLocal resource="org.eclipse.swt.photon" depth="infinite" />
 </target>
 
-<target name="clean"  depends="init">
-	<tstamp/>
+<target name="clean">
 	<exec dir="./bin/library" executable="sh">
 		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="clean"/>

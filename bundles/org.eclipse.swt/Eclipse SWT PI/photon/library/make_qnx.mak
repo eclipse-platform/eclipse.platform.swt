@@ -34,5 +34,8 @@ all: $(SWT_LIB)
 $(SWT_LIB): $(SWT_OBJS)
 	cc -o $(SWT_LIB)  $(LFLAGS) $(SWT_OBJS)
 
+install: all
+	cp *.so $(OUTPUT_DIR)
+
 clean:
 	rm -f *.so *.o
