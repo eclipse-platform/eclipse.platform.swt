@@ -2564,7 +2564,7 @@ public void setLineStyle(int lineStyle) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	OS.SetBkMode (handle, style == OS.PS_SOLID ? OS.OPAQUE : OS.TRANSPARENT);
-	setPen(-1, -1, lineStyle, -1, -1);
+	setPen(-1, -1, style, -1, -1);
 }
 
 /** 
