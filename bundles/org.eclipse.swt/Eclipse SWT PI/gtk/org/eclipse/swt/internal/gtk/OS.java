@@ -730,7 +730,7 @@ public static final native int gtk_text_new(int hadj, int vadj);
 public static final native void gtk_text_set_word_wrap(int text, int word_wrap);
 public static final native int gtk_text_get_length(int text);
 public static final native int gtk_toolbar_new();
-public static final native void gtk_toolbar_set_button_relief(int toolbar, int relief);
+//public static final native void gtk_toolbar_set_button_relief(int toolbar, int relief);
 public static final native void gtk_toolbar_insert_widget(int toolbar, int widget, byte[] tooltip_text, byte[] tooltip_private_text, int position);
 public static final native void gtk_toolbar_set_orientation(int toolbar, int orientation);
 public static final native int gtk_toolbar_insert_element(int toolbar, int type, int widget, byte[] text, byte[] tooltip_text, byte[] tooltip_private_text, int icon, int callback, int user_data, int position);

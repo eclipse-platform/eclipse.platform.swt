@@ -1767,7 +1767,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1signal_1connect_1
 	jbyte *detailed_signal1 = NULL;
 	if (detailed_signal) detailed_signal1 = (*env)->GetByteArrayElements(env, detailed_signal, NULL);
 
-	rc = (jint)gtk_signal_connect_swapped((gpointer)instance, (const char*)detailed_signal1, (GCallback)c_handler, (gpointer)data);
+	rc = (jint)g_signal_connect_swapped((gpointer)instance, (const char*)detailed_signal1, (GCallback)c_handler, (gpointer)data);
 
 	if (detailed_signal) (*env)->ReleaseByteArrayElements(env, detailed_signal, detailed_signal1, 0);
 	return rc;

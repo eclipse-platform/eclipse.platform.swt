@@ -537,10 +537,10 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1frame_1set_1lab
 
 	gtk_frame_set_label_widget((GtkFrame*)frame, (GtkWidget*)label);
 }
-
+/*
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1button_1set_1relief
   (JNIEnv *env, jclass that, jint button, jint newstyle)
 {
   gtk_button_set_relief((GtkButton*)button, (GtkReliefStyle)newstyle);
 }
-
+*/
