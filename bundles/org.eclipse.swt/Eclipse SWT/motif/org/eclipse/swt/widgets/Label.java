@@ -82,57 +82,48 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 		return new Point (width, height);
 	}
-	XtWidgetGeometry result = new XtWidgetGeometry ();
-	result.request_mode = OS.CWWidth | OS.CWHeight;
-	int [] argList2 = {OS.XmNrecomputeSize, 1};
-	OS.XtSetValues(handle, argList2, argList2.length / 2);
-	OS.XtQueryGeometry (handle, null, result);
-	int [] argList3 = {OS.XmNrecomputeSize, 0};
-	OS.XtSetValues(handle, argList3, argList3.length / 2);
-	width += result.width;
-	height += result.height;
+	int [] argList = {OS.XmNlabelType, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	int labelType = argList [1];
+	if (labelType == OS.XmSTRING && (style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+		/* If we are wrapping text, calculate the height based on wHint. */
+		int [] argList4 = {
+			OS.XmNfontList, 0,      /* 1 */
+			OS.XmNmarginTop, 0,     /* 3 */
+			OS.XmNmarginBottom, 0,  /* 5 */
+			OS.XmNmarginHeight, 0,  /* 7 */
+		};
+		OS.XtGetValues (handle, argList4, argList4.length / 2);
+		Display display = getDisplay ();
+		String string = display.wrapText (text, argList4 [1], wHint);
+		GC gc = new GC(this);
+		Point extent = gc.textExtent(string);
+		gc.dispose();
+		height = extent.y + argList4 [3] + argList4 [5] + argList4 [7] * 2 + border * 2;
+	} else {
+		/* If we are not wrapping, ask the widget for its geometry. */
+		XtWidgetGeometry result = new XtWidgetGeometry ();
+		result.request_mode = OS.CWWidth | OS.CWHeight;
+		int [] argList2 = {OS.XmNrecomputeSize, 1};
+		OS.XtSetValues(handle, argList2, argList2.length / 2);
+		OS.XtQueryGeometry (handle, null, result);
+		int [] argList3 = {OS.XmNrecomputeSize, 0};
+		OS.XtSetValues(handle, argList3, argList3.length / 2);
+		width += result.width;
+		height += result.height;
+	}
 
 	/**
-	 * Feature in Motif. If a button's labelType is XmSTRING but it
+	 * Feature in Motif. If a label's labelType is XmSTRING but it
 	 * has no label set into it yet, recomputing the size will
 	 * not take into account the height of the font, as we would
 	 * like it to. Take care of this case.
 	 */
-	int [] argList = {OS.XmNlabelType, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int labelType = argList [1];
-	if (labelType == OS.XmSTRING) {
-		int [] argList1 = {OS.XmNlabelString, 0};
-		OS.XtGetValues (handle, argList1, argList1.length / 2);
-		int xmString = argList1 [1];
-		if (OS.XmStringEmpty (xmString)) {
-			height += getFontHeight ();
-			width = 0;
-		}
+	if (labelType == OS.XmSTRING && text.length () == 0) {
+		height += getFontHeight ();
+		width = 0;
 	}
-	if (wHint != SWT.DEFAULT) {
-		width = wHint + (border * 2);
-
-		/**
-		 * If we are wrapping text and there is a wHint,
-		 * recalculate the height based on the wHint.
-		 */
-		if (labelType == OS.XmSTRING && (style & SWT.WRAP) != 0 && text.length () > 0) {
-			int [] argList4 = {
-				OS.XmNfontList, 0,      /* 1 */
-				OS.XmNmarginTop, 0,     /* 3 */
-				OS.XmNmarginBottom, 0,  /* 5 */
-				OS.XmNmarginHeight, 0,  /* 7 */
-			};
-			OS.XtGetValues (handle, argList4, argList4.length / 2);
-			Display display = getDisplay ();
-			String string = display.wrapText (text, argList4 [1], wHint);
-			GC gc = new GC(this);
-			Point extent = gc.textExtent(string);
-			gc.dispose();
-			height = extent.y + argList4 [3] + argList4 [5] + argList4 [7] * 2 + border * 2;
-		}
-	}
+	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
 	return new Point (width, height);
 }
