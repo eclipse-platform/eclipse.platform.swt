@@ -89,19 +89,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = 0;
 	boolean vertical = (orientation == SWT.VERTICAL);
 	if (vertical) {
-		width = wHint;
 		height += (controls.length - 1) * SASH_WIDTH;
 	} else {
-		height = hHint;
-		width += controls.length *SASH_WIDTH;
+		width += (controls.length - 1) * SASH_WIDTH;
 	}
 	for (int i = 0; i < controls.length; i++) {
 		if (vertical) {
 			Point size = controls[i].computeSize(wHint, SWT.DEFAULT);
 			height += size.y;	
+			width = Math.max(width, size.x);
 		} else {
 			Point size = controls[i].computeSize(SWT.DEFAULT, hHint);
 			width += size.x;
+			height = Math.max(height, size.y);
 		}
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
