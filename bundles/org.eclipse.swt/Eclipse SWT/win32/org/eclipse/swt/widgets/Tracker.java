@@ -489,6 +489,10 @@ public boolean open () {
 				}
 				tracking = msg.message != OS.WM_LBUTTONUP;
 				break;
+			case OS.WM_SYSKEYDOWN:
+				cancelled = true;			
+				tracking = false;
+				break;
 			case OS.WM_KEYDOWN:
 				int stepSize = OS.GetKeyState (OS.VK_CONTROL) < 0 ? STEPSIZE_SMALL : STEPSIZE_LARGE;
 				int xChange = 0, yChange = 0;
