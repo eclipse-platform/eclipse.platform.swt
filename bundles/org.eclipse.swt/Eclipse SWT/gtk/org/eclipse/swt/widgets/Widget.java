@@ -665,15 +665,16 @@ char [] fixMnemonic (String string) {
 	char [] result = new char [length * 2 + 1];
 	while (i < length) {
 		switch (text [i]) {
-			case '&': {
-				if (i + 1 < length && text[i + 1] == '&') {
+			case '&':
+				if (i + 1 < length && text [i + 1] == '&') {
 					i++; 
-					break;
+				} else {
+					text [i] = '_';
 				}
-				text [i] = '_';
 				break;
-			}
-			case '_': result [j++] = '_'; break;
+			case '_':
+				result [j++] = '_';
+				break;
 		}
 		result [j++] = text [i++];
 	}
