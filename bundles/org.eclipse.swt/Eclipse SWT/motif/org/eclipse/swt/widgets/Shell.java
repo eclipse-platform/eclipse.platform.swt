@@ -460,6 +460,7 @@ void bringToTop (boolean force) {
 	* The fix is to call XSetInputFocus() when the widget
 	* is viewable.
 	*/
+	if ((style & SWT.ON_TOP) != 0) return;
 	if (minimized) return;
 	if (!isVisible ()) return;
 	int xDisplay = OS.XtDisplay (shellHandle);
