@@ -146,7 +146,8 @@ void createWidget () {
 	itemCount = 0;
 }
 
-int defaultThemeFont () {	
+int defaultThemeFont () {
+	if (display.smallFonts) return OS.kThemeSmallSystemFont;
 	return OS.kThemeToolbarFont;
 }
 
@@ -410,6 +411,7 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 
 void setFontStyle (Font font) {
 	super.setFontStyle (font);
+	if (items == null) return;
 	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
 		item.setFontStyle (font);

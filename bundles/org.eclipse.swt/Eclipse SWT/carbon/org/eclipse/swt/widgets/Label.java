@@ -168,7 +168,8 @@ void createHandle () {
 	handle = outControl [0];
 }
 
-int defaultThemeFont () {	
+int defaultThemeFont () {
+	if (display.smallFonts) return OS.kThemeSmallSystemFont;
 	return OS.kThemePushButtonFont;
 }
 

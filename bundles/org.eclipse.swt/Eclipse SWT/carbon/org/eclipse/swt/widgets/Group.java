@@ -115,10 +115,6 @@ void createHandle () {
 	handle = outControl [0];
 }
 
-int defaultThemeFont () {	
-	return OS.kThemeEmphasizedSystemFont;
-}
-
 void drawBackground (int control) {
 	drawBackground (control, background);
 }
