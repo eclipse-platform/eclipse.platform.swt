@@ -2490,11 +2490,11 @@ public void setEnabled (boolean enabled) {
 		attributes.window_type = OS.GDK_WINDOW_CHILD;
 		enableWindow = OS.gdk_window_new (window, attributes, OS.GDK_WA_X | OS.GDK_WA_Y);
 		if (enableWindow != 0) {
+			int /*long*/ topHandle = topHandle ();
 			OS.gdk_window_set_user_data (enableWindow, parentHandle);
 			if (!OS.GDK_WINDOWING_X11 ()) {
 				OS.gdk_window_raise (enableWindow);
 			} else {
-				int /*long*/ topHandle = topHandle ();
 				int /*long*/ topWindow = OS.GTK_WIDGET_WINDOW (topHandle);			
 				int /*long*/ xDisplay = OS.gdk_x11_drawable_get_xdisplay (topWindow);
 				int /*long*/ xWindow = OS.gdk_x11_drawable_get_xid (enableWindow);
@@ -2505,7 +2505,7 @@ public void setEnabled (boolean enabled) {
 				changes.stack_mode = OS.Above;
 				OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
 			}
-			if (isVisible ()) OS.gdk_window_show (enableWindow);
+			if (OS.GTK_WIDGET_VISIBLE (topHandle)) OS.gdk_window_show (enableWindow);
 		}
 	}
 	if (fixFocus) fixFocus ();
