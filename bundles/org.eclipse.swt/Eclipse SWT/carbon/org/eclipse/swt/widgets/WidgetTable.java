@@ -71,19 +71,28 @@ public static synchronized Widget remove (int handle) {
 }
 
 public static synchronized Shell [] shells () {
-      int count = 0;
-      for (int i= 0; i < WidgetTable.length; i++) {
-            if (WidgetTable[i] instanceof Shell) count++;
-      }
-      int index= 0;
-      Shell [] result = new Shell [count];
-      for (int i= 0; i < WidgetTable.length; i++) {
-            Widget widget = WidgetTable [i];
-            if (widget != null && widget instanceof Shell) {
-                  result [index++]= (Shell) widget;
-            }
-      }
-      return result;
+	int length = 0;
+	for (int i=0; i<WidgetTable.length; i++) {
+		Widget widget = WidgetTable [i];
+		if (widget != null && widget instanceof Shell) length++;
+	}
+	int index = 0;
+	Shell [] result = new Shell [length];
+	for (int i=0; i<WidgetTable.length; i++) {
+		Widget widget = WidgetTable [i];
+		if (widget != null && widget instanceof Shell) {
+			int j = 0;
+			while (j < index) {
+				if (result [j] == widget) break;
+				j++;
+			}
+			if (j == index) result [index++] = (Shell) widget;
+		}
+	}
+	if (index == length) return result;
+	Shell [] newResult = new Shell [index];
+	System.arraycopy (result, 0, newResult, 0, index);
+	return newResult;
 }
 
 public static synchronized int size () {
