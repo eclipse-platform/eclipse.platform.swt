@@ -402,33 +402,30 @@ public class OS {
 	public static native void PaintPoly(int polyHandle);
 	public static native void KillPoly(int polyHandle);
 	
-	// BitMaps
-	public static native int NewBitMap(short w, short h, short rowBytes);
-	public static native int duplicateBitMap(int srcBitMap);
-	
-	public static native int getRowBytes(int bmHandle);
-	public static native int getBaseAddr(int bmHandle);
 
-    // PixMaps
+    // BitMaps & PixMaps
 	public static final short Indexed= 0;
 	public static final short RGBDirect= 16;
 	
 	public static native int NewPixMap(short w, short h, short rowBytes,
 			short pixelType, short pixelSize, short cmpSize, short cmpCount, short pixelFormat);
 	public static native void DisposePixMap(int pHandle);
-	
-	public static native int GetPixRowBytes(int pixmapHandle);
-
-	public static native void initBitMapData(int pixMapHandle, int dataSize, byte value);
-	public static native void setBitMapData(int pixMapHandle, byte[] data);
-	public static native void setColorTable(int pixMapHandle, short[] colorSpec);
-
 	public static native int duplicatePixMap(int srcPixmap);
-	public static native int copyPixmapData(int pixmap, byte[] srcData);
-	public static native int getRGB(int pixmap, int srcPixel);
-
+	
+	public static native int getRowBytes(int pHandle);
+	public static native void setRowBytes(int pHandle, short rowBytes);
+	public static native int GetPixRowBytes(int pHandle);
 	public static native void GetPixBounds(int pHandle, short[] bounds);
+	public static native void setPixBounds(int pHandle, short top, short left, short bottom, short right);
 	public static native short GetPixDepth(int pHandle);
+	public static native int getPixHRes(int pHandle);
+	public static native int getPixVRes(int pHandle);
+	public static native int getBaseAddr(int pHandle);
+	public static native void setBaseAddr(int pHandle, int data);
+	public static native int getColorTableSize(int pHandle);	// returns number of slots
+	public static native void getColorTable(int pHandle, short[] colorSpec);
+	public static native void setColorTable(int pHandle, short[] colorSpec);
+
 	public static native void CopyBits(int srcPixMapHandle, int dstPixMapHandle, short[] srcRect, short[] dstRect,
 											short mode, int maskRgn);
 	public static native void CopyMask(int srcPixMapHandle, int maskPixMapHandle, int dstPixMapHandle,
@@ -437,7 +434,6 @@ public class OS {
 											short[] srcRect, short[] maskRect, short[] dstRect, short mode, int maskRgn);
 
 	public static native int GetPortBitMapForCopyBits(int portHandle);
-	public static native int getBitMapForCopyBits(int pixMapHandle);
 	
 	// CIcon
 	public static native int NewCIcon(int pixmapHandle, int maskHandle);
@@ -449,7 +445,9 @@ public class OS {
 	public static native void DisposeGWorld(int offscreenGWorld);
 	public static native void SetGWorld(int portHandle, int gdHandle);
 	public static native void GetGWorld(int[] portHandle, int[] gdHandle);
-	public static native int GetGDevice();
+	//public static native int GetGDevice();
+	public static native int GetMainDevice();
+	public static native int getgdPMap(int gdHandle);
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Window Manager
@@ -554,19 +552,19 @@ public class OS {
     public static final int kScrollWindowEraseToPortBackground= 2;
 	
 	// Region values to pass into GetWindowRegion & GetWindowBounds
-	public static final short kWindowTitleBarRgn            = 0;
-	public static final short kWindowTitleTextRgn           = 1;
-	public static final short kWindowCloseBoxRgn            = 2;
-	public static final short kWindowZoomBoxRgn             = 3;
-	public static final short kWindowDragRgn                = 5;
-	public static final short kWindowGrowRgn                = 6;
-	public static final short kWindowCollapseBoxRgn         = 7;
-	public static final short kWindowTitleProxyIconRgn      = 8;    /* Mac OS 8.5 forward*/
+	//public static final short kWindowTitleBarRgn            = 0;
+	//public static final short kWindowTitleTextRgn           = 1;
+	//public static final short kWindowCloseBoxRgn            = 2;
+	//public static final short kWindowZoomBoxRgn             = 3;
+	//public static final short kWindowDragRgn                = 5;
+	//public static final short kWindowGrowRgn                = 6;
+	//public static final short kWindowCollapseBoxRgn         = 7;
+	//public static final short kWindowTitleProxyIconRgn      = 8;
 	public static final short kWindowStructureRgn           = 32;
 	public static final short kWindowContentRgn             = 33;   /* Content area of the window; empty when the window is collapsed*/
-	public static final short kWindowUpdateRgn              = 34;   /* Carbon forward*/
-	public static final short kWindowOpaqueRgn              = 35;   /* Mac OS X: Area of window considered to be opaque. Only valid for windows with alpha channels.*/
-	public static final short kWindowGlobalPortRgn          = 40;    /* Carbon forward - bounds of the window’s port in global coordinates; not affected by CollapseWindow*/
+	//public static final short kWindowUpdateRgn              = 34;   /* Carbon forward*/
+	//public static final short kWindowOpaqueRgn              = 35;   /* Mac OS X: Area of window considered to be opaque. Only valid for windows with alpha channels.*/
+	//public static final short kWindowGlobalPortRgn          = 40;    /* Carbon forward - bounds of the window’s port in global coordinates; not affected by CollapseWindow*/
 
 		
 	public static native int CreateNewWindow(int windowClass, int attributes, short[] bounds, int[] wHandle);
@@ -575,7 +573,7 @@ public class OS {
 	public static native void EndUpdate(int wHandle);
 	public static native void DrawControls(int wHandle);
 	public static native void UpdateControls(int wHandle, int rgnHandle);
-	public static native void DrawGrowIcon(int wHandle);
+	//public static native void DrawGrowIcon(int wHandle);
 	public static native void SetPortWindowPort(int wHandle);
 	public static native int FrontWindow();
 	public static native int FrontNonFloatingWindow();
@@ -866,7 +864,7 @@ public class OS {
 	public static native int GetControlReference(int cHandle);
 	public static native int SetControlTitleWithCFString(int cHandle, int sHandle);
 	public static native int GetControlTitleAsCFString(int cHandle, int[] sHandle);
-	public static native int setControlToolTipText(int cHandle, short[] bounds, int sHandle);
+	//public static native int setControlToolTipText(int cHandle, short[] bounds, int sHandle);
 	public static native void GetControlBounds(int cHandle, short[] bounds);
 	public static native void SetControlBounds(int cHandle, short[] bounds);
 	public static native int CreateUserPaneControl(int windowHandle, short[] bounds, int features, int[] cHandle);
@@ -886,7 +884,7 @@ public class OS {
 	public static native void SetControl32BitValue(int cHandle, int value);
 	public static native int GetControlViewSize(int cHandle);
 	public static native void SetControlViewSize(int cHandle, int viewSize);
-	public static native void IdleControls(int wHandle);
+	//public static native void IdleControls(int wHandle);
 	public static native int GetBestControlRect(int cHandle, short[] outRect, short[] outBaseLineOffset);
 	public static native int GetControlKind(int cHandle, int[] outControlKind);
 	public static native int GetControlData(int cHandle, short part, int tag, short[] data);
@@ -1079,6 +1077,7 @@ public class OS {
 
 	public static native int CreateTabFolderControl(int wHandle, int[] cHandle);
 	public static native int setTabText(int cHandle, int index, int sHandle);
+	public static native int setTabIcon(int cHandle, int index, int iconHandle);
 	
 	// Popup menus
 	/* 
@@ -1146,7 +1145,6 @@ public class OS {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// CFStrings
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-			
 	public static native int CFStringCreateWithCharacters(String s);
 	public static native void CFRelease(int sHandle);
 	public static native int CFStringGetLength(int sHandle);
@@ -1155,16 +1153,29 @@ public class OS {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Handles
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-			
-	public static native int GetHandleSize(int handle);
+	public static native int NewHandle(int size);
+	public static native int NewHandleClear(int size);
 	public static native void DisposeHandle(int handle);
+	public static native int GetHandleSize(int handle);
 	public static native void getHandleData(int handle, char[] data);
 	public static native int DerefHandle(int handle);
 	
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Ptrs
 	//////////////////////////////////////////////////////////////////////////////////////////////////	
+	public static native int NewPtr(int size);
+	public static native int NewPtrClear(int size);
 	public static native void DisposePtr(int ptr);
+	public static native int GetPtrSize(int ptr);
+	//public static native int MemError();
+
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// Unix memory utilities
+	//////////////////////////////////////////////////////////////////////////////////////////////////	
+	public static native void memcpy(int dest, int src, int n);
+	public static native void memcpy(int dest, byte[] src, int n);
+	public static native void memcpy(byte[] dest, int src, int n);
+	public static native void memset(int dest, int value, int size);
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Scrap
@@ -1181,7 +1192,6 @@ public class OS {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Misc
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-
 	public static native void Init();
 	//public static native void ExitToShell();
     public static native void InitCursor();
@@ -1191,7 +1201,6 @@ public class OS {
 	public static native void SysBeep(short duration);
 	public static native int GetDblTime();
 	public static native int GetCaretTime();
-	public static native int GetMainDevice();
-	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);
-	public static native short HasDepth(int gdHandle, short depth, short whichFlags, short flags);
+	public static native int GetAvailableWindowPositioningBounds(int gHandle, short[] mainScreenRect);	
+
 }
