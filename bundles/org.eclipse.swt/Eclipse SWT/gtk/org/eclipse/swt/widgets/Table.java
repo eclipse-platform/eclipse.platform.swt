@@ -232,19 +232,7 @@ int /*long*/ pixbufCellDataProc (int /*long*/ tree_column, int /*long*/ cell, in
 }
 
 int calculateWidth (int /*long*/ column, int /*long*/ iter) {
-	int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (column);
-	int width = calculateWidth (column, iter, renderers);
-	if (renderers != 0) OS.g_list_free (renderers);
-	return width;
-}
-
-int calculateWidth (int /*long*/ column, int /*long*/ iter, int /*long*/ renderers) {
-	int /*long*/ list = renderers;
-	while (list != 0) {
-		int /*long*/ renderer = OS.g_list_data (list);
-		OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
-		list = OS.g_list_next (list);
-	}	
+	OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 	int [] width = new int [1];
 	OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
 	return width [0];
@@ -1042,14 +1030,7 @@ public int getItemHeight () {
 		int columnCount = Math.max (1, this.columnCount);
 		for (int i=0; i<columnCount; i++) {
 			int /*long*/ column = OS.gtk_tree_view_get_column (handle, i);
-			int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (column);
-			int /*long*/ list = renderers;
-			while (list != 0) {
-				int /*long*/ renderer = OS.g_list_data (list);
-				OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
-				list = OS.g_list_next (list);
-			}
-			if (renderers != 0) OS.g_list_free (renderers);
+			OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 			int [] w = new int [1], h = new int [1];
 			OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
 			height = Math.max (height, h [0]);

@@ -341,11 +341,9 @@ public void pack () {
 	} else {
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		if (OS.gtk_tree_model_get_iter_first (parent.modelHandle, iter)) {
-			int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (handle);
 			do {
-				width = Math.max (width, parent.calculateWidth (handle, iter, renderers));
+				width = Math.max (width, parent.calculateWidth (handle, iter));
 			} while (OS.gtk_tree_model_iter_next(parent.modelHandle, iter));
-			if (renderers != 0) OS.g_list_free (renderers);
 		}
 		OS.g_free (iter);
 	}

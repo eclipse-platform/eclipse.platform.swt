@@ -462,14 +462,7 @@ public int getItemHeight () {
 		int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 		OS.gtk_tree_model_get_iter_first (modelHandle, iter);
 		int /*long*/ column = OS.gtk_tree_view_get_column (handle, 0);
-		int /*long*/ renderers = OS.gtk_tree_view_column_get_cell_renderers (column);
-		int /*long*/ list = renderers;
-		while (list != 0) {
-			int /*long*/ renderer = OS.g_list_data (list);
-			OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
-			list = OS.g_list_next (list);
-		}
-		if (renderers != 0) OS.g_list_free (renderers);
+		OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
 		int [] w = new int [1], h = new int [1];
 		OS.gtk_tree_view_column_cell_get_size (column, null, null, null, w, h);
 		OS.g_free (iter);
