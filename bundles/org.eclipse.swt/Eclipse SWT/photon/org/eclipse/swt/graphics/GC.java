@@ -348,15 +348,22 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 				damage_tiles = OS.PhAddMergeTiles(src_damage_tiles, widget_damage_tiles, null);
 			}
 			
-//			NOT SURE			
-//			src = OS.PhGetTile();
-//			OS.memmove(src, rect, PhRect_t.sizeof);
-//			int widget_tile = OS.PhGetTile();
-//			OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
-//			OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
-//			src = OS.PhClipTilings(src, widget_tile, null);
-//			OS.PhTranslateTiles(src, delta);
-//			damage_tiles = OS.PhAddMergeTiles(damage_tiles, src, null);
+			/*
+			* TEMPORARY CODE
+			* 
+			* Damage areas that were obscure and became visible. Photon
+			* post expose events for those areas, but these events can not
+			* be flushed with PtFlush().
+			*/
+			src = OS.PhGetTile();
+			OS.memmove(src, rect, PhRect_t.sizeof);
+			int widget_tile = OS.PhGetTile();
+			OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
+			OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
+			int obscured_tiles = OS.PhClipTilings(src, widget_tile, null);
+			OS.PhFreeTiles(widget_tile);
+			OS.PhTranslateTiles(obscured_tiles, delta);
+			damage_tiles = OS.PhAddMergeTiles(damage_tiles, obscured_tiles, null);
 
 			/* Exclude damage rectangles obscured by widgets. */
 			damage_tiles = OS.PhClipTilings(damage_tiles, child_tiles, null);
