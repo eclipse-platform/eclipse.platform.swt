@@ -1389,7 +1389,12 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 	
 			nsIIOService ioService = new nsIIOService(result[0]);
 			result[0] = 0;
-			byte[] aString = "about:blank".getBytes(); //$NON-NLS-1$
+			/*
+			* Note. Mozilla ignores LINK tags used to load CSS stylesheets
+			* when the URI protocol for the nsInputStreamChannel
+			* is about:blank. The fix is to specify the file protocol.
+			*/
+			byte[] aString = "file:".getBytes(); //$NON-NLS-1$
 			int aSpec = XPCOM.nsCString_new(aString, aString.length);
 			rc = ioService.NewURI(aSpec, null, 0, result);
 			XPCOM.nsCString_delete(aSpec);
