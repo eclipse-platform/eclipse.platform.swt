@@ -176,6 +176,18 @@ public Rectangle getBounds (int index) {
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+	/* 
+	 * In the horizontal direction, the origin of the bin window is 
+	 * not the same as the origin of the scrolled handle.
+	 * The method gtk_tree_view_get_cell_area returns the 
+	 * x coordinate relative to the bin window.  In order to
+	 * get the coordinates relative to the top left corner
+	 * of the client area,  we need to account for the
+	 * horizontal scroll adjustment.
+	 */
+	int[] wx = new int[1];
+	OS.gtk_tree_view_tree_to_widget_coords(parentHandle, rect.x, 0, wx, null);
+	rect.x = wx[0];
 	if (index == 0 && (parent.style & SWT.CHECK) != 0) {
 		if (OS.gtk_major_version () * 100 + OS.gtk_minor_version ()  * 10 + OS.gtk_micro_version () >= 213) {
 			int [] x = new int [1], w = new int [1];
@@ -395,6 +407,18 @@ public Rectangle getImageBounds (int index) {
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+	/* 
+	 * In the horizontal direction, the origin of the bin window is 
+	 * not the same as the origin of the scrolled handle.
+	 * The method gtk_tree_view_get_cell_area returns the 
+	 * x coordinate relative to the bin window.  In order to
+	 * get the coordinates relative to the top left corner
+	 * of the client area,  we need to account for the
+	 * horizontal scroll adjustment.
+	 */
+	int[] wx = new int[1];
+	OS.gtk_tree_view_tree_to_widget_coords(parentHandle, rect.x, 0, wx, null);
+	rect.x = wx[0];
 	/*
 	* The OS call gtk_cell_renderer_get_size() provides the width of image to be drawn
 	* by the cell renderer.  If there is no image in the cell, the width is zero.  If the table contains

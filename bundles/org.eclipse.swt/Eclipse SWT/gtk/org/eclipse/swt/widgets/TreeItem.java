@@ -229,6 +229,18 @@ public Rectangle getBounds () {
 	OS.gtk_widget_realize (parentHandle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
+	/* 
+	 * In the horizontal direction, the origin of the bin window is 
+	 * not the same as the origin of the scrolled handle.
+	 * The method gtk_tree_view_get_cell_area returns the 
+	 * x coordinate relative to the bin window.  In order to
+	 * get the coordinates relative to the top left corner
+	 * of the client area,  we need to account for the
+	 * horizontal scroll adjustment.
+	 */
+	int[] wx = new int[1];
+	OS.gtk_tree_view_tree_to_widget_coords(parentHandle, rect.x, 0, wx, null);
+	rect.x = wx[0];
 	return new Rectangle (rect.x, rect.y, rect.width, rect.height);
 }	
 
