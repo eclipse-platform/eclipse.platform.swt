@@ -1066,6 +1066,7 @@ public class OS {
 	public static final int WM_WINDOWPOSCHANGING = 0x46;
 	public static final int WS_BORDER = 0x800000;
 	public static final int WS_CAPTION = 0xc00000;
+	public static final int WS_EX_CAPTIONOKBTN = 0x80000000;
 	public static final int WS_CHILD = 0x40000000;
 	public static final int WS_CLIPCHILDREN = 0x2000000;
 	public static final int WS_CLIPSIBLINGS = 0x4000000;
@@ -1214,6 +1215,17 @@ public static final boolean ExtTextOut(int hdc, int X, int Y, int fuOptions, REC
 	}
 	byte [] lpString1 = lpString == null ? null : lpString.bytes;
 	return ExtTextOutA (hdc, X, Y, fuOptions, lprc, lpString1, cbCount, lpDx);
+}
+
+public static final int FindWindow (TCHAR lpClassName, TCHAR lpWindowName) {
+	if (IsUnicode) {
+		char [] lpClassName1 = lpClassName == null ? null : lpClassName.chars;
+		char [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.chars;
+		return FindWindowW (lpClassName1, lpWindowName1); 
+	}
+	byte [] lpClassName1 = lpClassName == null ? null : lpClassName.bytes;
+	byte [] lpWindowName1 = lpWindowName == null ? null : lpWindowName.bytes;
+	return FindWindowA (lpClassName1, lpWindowName1);
 }
 
 public static final boolean GetCharABCWidths (int hdc, int iFirstChar, int iLastChar, int [] lpabc) {
@@ -1858,6 +1870,8 @@ public static final native boolean ExtTextOutA(int hdc, int X, int Y, int fuOpti
 public static final native int ExtractIconExW (char [] lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons);
 public static final native int ExtractIconExA (byte [] lpszFile, int nIconIndex, int [] phiconLarge, int [] phiconSmall, int nIcons);
 public static final native int FillRect(int hDC, RECT lprc, int hbr);
+public static final native int FindWindowA (byte [] lpClassName, byte [] lpWindowName);
+public static final native int FindWindowW (char [] lpClassName, char [] lpWindowName); 
 public static final native boolean FreeLibrary (int hLibModule);
 public static final native int GetACP ();
 public static final native int GetActiveWindow ();
@@ -2164,6 +2178,7 @@ public static final native int SetCursor (int hCursor);
 public static final native boolean SetCursorPos (int X, int Y);
 public static final native int SetDIBColorTable (int hdc, int uStartIndex, int cEntries, byte[] pColors);
 public static final native int SetFocus (int hWnd);
+public static final native boolean SetForegroundWindow (int hWnd);
 public static final native boolean SetMenu (int hWnd, int hMenu);
 public static final native boolean SetMenuDefaultItem (int hMenu, int uItem, int fByPos);
 public static final native boolean SetMenuInfo (int hmenu, MENUINFO lpcmi);

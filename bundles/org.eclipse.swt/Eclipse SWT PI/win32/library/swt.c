@@ -1331,6 +1331,48 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_FillRect
 	return rc;
 }
 
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_FindWindowA
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("FindWindowA\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	rc = (jint)FindWindowA((LPSTR)lparg0, (LPSTR)lparg1);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_FindWindowW
+	(JNIEnv *env, jclass that, jcharArray arg0, jcharArray arg1)
+{
+	jchar *lparg0=NULL;
+	jchar *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("FindWindowW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	rc = (jint)FindWindowW((LPWSTR)lparg0, (LPWSTR)lparg1);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_FreeLibrary
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -5883,6 +5925,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetFocus
 	DEBUG_CALL("SetFocus\n")
 
 	return (jint)SetFocus((HWND)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetForegroundWindow
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetForegroundWindow\n")
+
+	return (jboolean)SetForegroundWindow((HWND)arg0);
 }
 
 #ifndef _WIN32_WCE
