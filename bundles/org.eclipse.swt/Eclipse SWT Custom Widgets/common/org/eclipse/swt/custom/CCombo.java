@@ -344,11 +344,28 @@ void dropDown (boolean drop) {
 	}
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
+	Display display = getDisplay ();
 	Rectangle listRect = list.getBounds ();
-	Rectangle rect = getDisplay ().map (getParent (), null, getBounds());
-	Point comboSize = getSize();
+	Rectangle parentRect = display.map (getParent (), null, getBounds());
+	Point comboSize = getSize ();
+	Rectangle displayRect = display.getClientArea();
+	// Get Monitor for CCombo widget
+	Monitor[] monitors = display.getMonitors ();
+	if (monitors.length > 1) {
+		for (int i = 0; i < monitors.length; i++) {
+			Rectangle monitorRect = monitors[i].getClientArea();
+			if (monitorRect.contains(parentRect.x, parentRect.y)) {
+				displayRect = monitorRect;
+				break;
+			}
+		}
+	}
 	int width = Math.max (comboSize.x, listRect.width + 2);
-	popup.setBounds (rect.x, rect.y + comboSize.y, width, listRect.height + 2);
+	int height = listRect.height + 2;
+	int x = parentRect.x;
+	int y = parentRect.y + comboSize.y;
+	if (y + height > displayRect.y + displayRect.height) y = parentRect.y - height;
+	popup.setBounds (x, y, width, height);
 	popup.setVisible (true);
 	list.setFocus();
 }
