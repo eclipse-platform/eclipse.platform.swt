@@ -534,7 +534,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int clip = OS.NewRgn ();
 	OS.GetClip (clip);
 	OS.OffsetRgn (clip, (short)-controlRect.left, (short)-controlRect.top);
-	gc.setClipping (Region.carbon_new (clip));
+	gc.setClipping (Region.carbon_new (display, clip));
 	Rect itemRect = new Rect();
 	OS.GetDataBrowserItemPartBounds (handle, id, property, OS.kDataBrowserPropertyEnclosingPart, itemRect);
 	OS.OffsetRect (itemRect, (short) -controlRect.left, (short) -controlRect.top);
@@ -550,7 +550,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.OffsetRgn (rectRgn, (short)-controlRect.left, (short)-controlRect.top);
 	OS.SectRgn (rectRgn, clip, clip);
 	OS.DisposeRgn (rectRgn);
-	gc.setClipping (Region.carbon_new (clip));
+	gc.setClipping (Region.carbon_new (display, clip));
 	OS.DisposeRgn (clip);
 	Image image = item.getImage (columnIndex);
 	if (image != null) {

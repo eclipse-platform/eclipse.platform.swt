@@ -30,6 +30,11 @@ public final class Region {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
+	
+	/**
+	 * the device where this region was created
+	 */
+	Device device;
 
 /**
  * Constructs a new empty region.
@@ -39,10 +44,19 @@ public final class Region {
  * </ul>
  */
 public Region() {
-	handle = OS.NewRgn();
+	this(null);
 }
 
-Region(int handle) {
+public Region(Device device) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	handle = OS.NewRgn();
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+}
+
+Region(Device device, int handle) {
+	this.device = device;
 	this.handle = handle;
 }
 
@@ -68,7 +82,7 @@ public void add(Rectangle rect) {
 	Rect r = new Rect();
 	OS.SetRect(r, (short)rect.x, (short)rect.y, (short)(rect.x + rect.width),(short)(rect.y + rect.height));
 	OS.RectRgn(rectRgn, r);
-	OS.UnionRgn(rectRgn, handle, handle);
+	OS.UnionRgn(handle, rectRgn, handle);
 	OS.DisposeRgn(rectRgn);
 }
 
@@ -91,7 +105,7 @@ public void add(Region region) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.UnionRgn(region.handle, handle, handle);
+	OS.UnionRgn(handle, region.handle, handle);
 }
 
 /**
@@ -139,8 +153,10 @@ public boolean contains(Point pt) {
  * they allocate.
  */
 public void dispose() {
-	if (handle != 0) OS.DisposeRgn(handle);
+	if (handle == 0) return;
+	OS.DisposeRgn(handle);
 	handle = 0;
+	device = null;
 }
 
 /**
@@ -182,8 +198,8 @@ public Rectangle getBounds() {
 	return new Rectangle(bounds.left, bounds.top, width, height);
 }
 
-public static Region carbon_new(int handle) {
-	return new Region(handle);
+public static Region carbon_new(Device device, int handle) {
+	return new Region(device, handle);
 }
 
 /**
@@ -198,6 +214,26 @@ public static Region carbon_new(int handle) {
  */
 public int hashCode() {
 	return handle;
+}
+
+
+public void intersect(Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int rectRgn = OS.NewRgn();
+	Rect r = new Rect();
+	OS.SetRect(r, (short)rect.x, (short)rect.y, (short)(rect.x + rect.width),(short)(rect.y + rect.height));
+	OS.RectRgn(rectRgn, r);
+	OS.SectRgn(handle, rectRgn, handle);
+	OS.DisposeRgn(rectRgn);
+}
+
+public void intersect(Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.SectRgn(handle, region.handle, handle);
 }
 
 /**
@@ -274,6 +310,25 @@ public boolean isDisposed() {
 public boolean isEmpty() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.EmptyRgn(handle);
+}
+
+public void subtract(Rectangle rect) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	int rectRgn = OS.NewRgn();
+	Rect r = new Rect();
+	OS.SetRect(r, (short)rect.x, (short)rect.y, (short)(rect.x + rect.width),(short)(rect.y + rect.height));
+	OS.RectRgn(rectRgn, r);
+	OS.DiffRgn(handle, rectRgn, handle);
+	OS.DisposeRgn(rectRgn);
+}
+
+public void subtract(Region region) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.DiffRgn(handle, region.handle, handle);
 }
 
 /**

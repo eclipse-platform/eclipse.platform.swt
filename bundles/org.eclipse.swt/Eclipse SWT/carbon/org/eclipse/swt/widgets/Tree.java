@@ -398,7 +398,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	int clip = OS.NewRgn ();
 	OS.GetClip (clip);
 	OS.OffsetRgn (clip, (short)-controlRect.left, (short)-controlRect.top);
-	gc.setClipping (Region.carbon_new (clip));
+	gc.setClipping (Region.carbon_new (display, clip));
 	OS.DisposeRgn (clip);
 	Color background = item.getBackground ();
 	gc.setBackground (background);
