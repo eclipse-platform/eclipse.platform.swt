@@ -95,6 +95,7 @@ void addingItem(SelectableItem item, int index) {
  * has changed.
  */
 void calculateHorizontalScrollbar() {
+	if (drawCount != 0) return;
 	int newMaximum = getContentWidth();
 	ScrollBar horizontalBar = getHorizontalBar();
 
@@ -188,6 +189,7 @@ int [] calculateShiftSelectionRange(int hitItemIndex) {
  * has changed.
  */
 void calculateVerticalScrollbar() {
+	if (drawCount != 0) return;
 	int newMaximum = getVisibleItemCount();
 	ScrollBar verticalBar = getVerticalBar();
 
@@ -1500,6 +1502,9 @@ void resetItemData() {
  * make sure that new space is being occupied by items.
  */
 void resize(Event event) {
+	resize();
+}
+void resize() {
 	int horizontalPageSize = getHorizontalBar().getPageIncrement();
 
 	resizeHorizontalScrollbar();
@@ -1851,7 +1856,12 @@ void setLastSelection(SelectableItem selectedItem, boolean showItem) {
 public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
-		if (--drawCount == 0) redraw();
+		if (--drawCount == 0) {
+			calculateVerticalScrollbar();
+			calculateHorizontalScrollbar();
+			resize();
+			redraw();
+		}
 	} else {
 		drawCount++;
 	}
