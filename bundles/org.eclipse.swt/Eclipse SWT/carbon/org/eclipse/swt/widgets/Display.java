@@ -329,7 +329,9 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 						short menuIndex = command.menu_menuItemIndex;
 						OS.GetMenuItemCommandID (menuRef, menuIndex, outCommandID);
 						MenuItem item = findMenuItem (outCommandID [0]);
-						return item.kEventProcessCommand (nextHandler, theEvent, userData);
+						if (item != null) {
+							return item.kEventProcessCommand (nextHandler, theEvent, userData);
+						} 
 					}
 					OS.HiliteMenu ((short) 0);
 				}
@@ -918,8 +920,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 				case OS.kEventMouseDragged:
 				case OS.kEventMouseMoved: {
 					org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
-					localPoint.h = (short) inPoint.x;
-					localPoint.v = (short) inPoint.y;
+					OS.SetPt (localPoint, (short) inPoint.x, (short) inPoint.y);
 					int [] modifiers = new int [1];
 					OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
 					boolean [] cursorWasSet = new boolean [1];
@@ -1093,28 +1094,89 @@ boolean runAsyncMessages () {
 }
 
 boolean runEnterExit () {
-	//OPTIMIZE - use OS calls, no garbage, widget already hit tested in mouse move
-	Point point = null;
-	int chord = 0, modifiers = 0;
-	Control control = getCursorControl ();
+	//OPTIMIZE - get rid of garbage, use hittest from mouse proc
+	Control control = null;
+	CGPoint inPoint = null;
+	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
+	OS.GetGlobalMouse (where);
+	int [] theWindow = new int [1];
+	if (OS.FindWindow (where, theWindow) == OS.inContent) {
+		if (theWindow [0] != 0) {
+			Rect windowRect = new Rect ();
+			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, windowRect);
+			inPoint = new CGPoint ();
+			inPoint.x = where.h - windowRect.left;
+			inPoint.y = where.v - windowRect.top;
+			int [] theRoot = new int [1];
+			OS.GetRootControl (theWindow [0], theRoot);
+			int [] theControl = new int [1];
+			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
+			Widget widget = null;
+			if (theControl [0] != 0) {
+				do {
+					widget = WidgetTable.get (theControl [0]);
+					if (widget != null && widget instanceof Control) {
+						if (((Control) widget).getEnabled ()) break;
+					}
+					OS.GetSuperControl (theControl [0], theControl);
+				} while (theControl [0] != 0);
+			}
+			if (widget == null) widget = WidgetTable.get (theRoot [0]);
+			if (widget != null && widget instanceof Control) {
+				control = (Control) widget;
+			}
+		}
+	}
+	boolean eventSent = false;
 	if (control != currentControl) {
+		int x = 0, y = 0, chord = 0, modifiers = 0;
 		if (currentControl != null && !currentControl.isDisposed ()) {
-			point = getCursorLocation ();
+			eventSent = true;
 			chord = OS.GetCurrentEventButtonState ();
 			modifiers = OS.GetCurrentEventKeyModifiers ();
-			Point pt = currentControl.toControl (point);
-			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+			int controlHandle = currentControl.handle;
+			if (inPoint == null) {
+				inPoint = new CGPoint ();
+				Rect windowRect = new Rect ();
+				int window = OS.GetControlOwner (controlHandle);
+				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, windowRect);
+				inPoint.x = where.h - windowRect.left;
+				inPoint.y = where.v - windowRect.top;
+			}
+			Rect controlRect = new Rect ();
+			OS.GetControlBounds (controlHandle, controlRect);
+			x = (int) inPoint.x - controlRect.left;
+			y = (int) inPoint.y - controlRect.top;
+			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)x, (short)y, modifiers);
 			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 			mouseHoverID = 0;
 		}
 		if ((currentControl = control) != null) {
-			if (point == null) {
-				point = getCursorLocation ();
+			if (!eventSent) {
+				eventSent = true;
 				chord = OS.GetCurrentEventButtonState ();
 				modifiers = OS.GetCurrentEventKeyModifiers ();
+				int controlHandle = currentControl.handle;
+				if (inPoint == null) {
+					inPoint = new CGPoint ();
+					Rect windowRect = new Rect ();
+					int window = OS.GetControlOwner (controlHandle);
+					OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, windowRect);
+					inPoint.x = where.h - windowRect.left;
+					inPoint.y = where.v - windowRect.top;
+				}
+				Rect controlRect = new Rect ();
+				OS.GetControlBounds (controlHandle, controlRect);
+				x = (int) inPoint.x - controlRect.left;
+				y = (int) inPoint.y - controlRect.top;
+
 			}
-			Point pt = currentControl.toControl (point);
-			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
+			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)x, (short)y, modifiers);
+			org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
+			OS.SetPt (localPoint, (short) inPoint.x, (short) inPoint.y);
+			boolean [] cursorWasSet = new boolean [1];
+			OS.HandleControlSetCursor (currentControl.handle, localPoint, (short) modifiers, cursorWasSet);
+			if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 			int [] id = new int [1], outDelay = new int [1];
 			OS.HMGetTagDelay (outDelay);
@@ -1123,7 +1185,7 @@ boolean runEnterExit () {
 			mouseHoverID = id [0];
 		}
 	}
-	return point != null;
+	return eventSent;
 }
 
 boolean runDeferredEvents () {

@@ -249,20 +249,37 @@ void hookEvents () {
 	Display display = getDisplay ();
 	int menuProc = display.menuProc;
 	int [] mask = new int [] {
-		OS.kEventClassMenu, OS.kEventMenuOpening,
 		OS.kEventClassMenu, OS.kEventMenuClosed,
+		OS.kEventClassMenu, OS.kEventMenuOpening,
+		OS.kEventClassMenu, OS.kEventMenuTargetItem,
 	};
 	int menuTarget = OS.GetMenuEventTarget (handle);
 	OS.InstallEventHandler (menuTarget, menuProc, mask.length / 2, mask, 0, null);
 }
 
 int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMenuClosed (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	sendEvent (SWT.Hide);
 	return OS.eventNotHandledErr;
 }
 
 int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMenuOpening (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
 	sendEvent (SWT.Show);
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMenuTargetItem (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int [] commandID = new int [1];
+	if (OS.GetEventParameter (theEvent, OS.kEventParamMenuCommand, OS.typeMenuCommand, null, 4, null, commandID) == OS.noErr) {
+		Display display = getDisplay ();
+		MenuItem item = display.findMenuItem (commandID [0]);
+		if (item != null) item.sendEvent (SWT.Arm);
+	}
 	return OS.eventNotHandledErr;
 }
 
@@ -295,6 +312,11 @@ void releaseChild () {
 	if ((style & SWT.BAR) != 0 && this == parent.menuBar) {
 		parent.setMenuBar (null);
 	}
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	handle = 0;
 }
 
 void releaseWidget () {

@@ -498,6 +498,10 @@ int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventMenuTargetItem (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -580,8 +584,9 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 int menuProc (int nextHandler, int theEvent, int userData) {	
 	int eventKind = OS.GetEventKind (theEvent);
 	switch (eventKind) {
-		case OS.kEventMenuOpening:	return kEventMenuOpening (nextHandler, theEvent, userData);
-		case OS.kEventMenuClosed:	return kEventMenuClosed (nextHandler, theEvent, userData);
+		case OS.kEventMenuClosed:		return kEventMenuClosed (nextHandler, theEvent, userData);
+		case OS.kEventMenuOpening:		return kEventMenuOpening (nextHandler, theEvent, userData);
+		case OS.kEventMenuTargetItem:	return kEventMenuTargetItem (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }
