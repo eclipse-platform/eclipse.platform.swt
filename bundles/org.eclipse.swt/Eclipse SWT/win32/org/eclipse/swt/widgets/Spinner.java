@@ -140,7 +140,7 @@ void createHandle () {
         null);
 	if (hwndUpDown == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.SendMessage (hwndUpDown, OS.UDM_SETRANGE32, 0, 100);
-	OS.SendMessage (hwndUpDown, OS.UDM_SETPOS32, 0, 0);
+	OS.SendMessage (hwndUpDown, OS.IsWinCE? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, 0);
 	increment = 1;
 	pageIncrement = 10;
 	TCHAR buffer = new TCHAR (getCodePage (), "0", true);
@@ -432,8 +432,14 @@ public int getPageIncrement () {
  * </ul>
  */
 public int getSelection () {
-	checkWidget ();	
-	return OS.SendMessage (hwndUpDown , OS.UDM_GETPOS32, 0, 0);
+	checkWidget ();
+	int pos;
+	if (OS.IsWinCE) {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+	} else {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+	}
+	return pos;
 }
 
 int mbcsToWcsPos (int mbcsPos) {
@@ -682,7 +688,12 @@ public void setMaximum (int value) {
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
 	if (value <= min [0]) return;
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);	
-	int pos = OS.SendMessage (hwndUpDown , OS.UDM_GETPOS32, 0, 0);
+	int pos;
+	if (OS.IsWinCE) {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+	} else {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+	}
 	update (pos, false, false);
 }
 
@@ -705,7 +716,12 @@ public void setMinimum (int value) {
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
 	if (value >= max [0]) return;
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, value, max [0]);
-	int pos = OS.SendMessage (hwndUpDown , OS.UDM_GETPOS32, 0, 0);
+	int pos;
+	if (OS.IsWinCE) {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+	} else {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+	}
 	update (pos, false, false);
 }
 
@@ -767,9 +783,14 @@ int update (int value, boolean notify, boolean force) {
 	if (value > max [0]) {
 		value = (style & SWT.WRAP) != 0 ? min [0] : max [0];
 	}
-	int pos = OS.SendMessage (hwndUpDown , OS.UDM_GETPOS32, 0, 0);
+	int pos;
+	if (OS.IsWinCE) {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+	} else {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+	}
 	if (pos != value || force) {
-		OS.SendMessage (hwndUpDown , OS.UDM_SETPOS32, 0, value);
+		OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
 		String string = String.valueOf (value);
 		int length = OS.GetWindowTextLength (hwndText);
 		string = verifyText (string, 0, length, null);
@@ -878,7 +899,12 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	int pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+	int pos;
+	if (OS.IsWinCE) {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+	} else {
+		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+	}
 	switch (wParam) {
 		case OS.VK_UP:
 			update (pos + increment, true, false);
@@ -1033,7 +1059,12 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 	int code = wParam & 0xFFFF;
 	switch (code) {
 		case OS.SB_THUMBPOSITION:
-			int pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+			int pos;
+			if (OS.IsWinCE) {
+				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS, 0, 0) & 0xffff;
+			} else {
+				pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
+			}
 			update (pos, true, true);
 			break;
 	}
