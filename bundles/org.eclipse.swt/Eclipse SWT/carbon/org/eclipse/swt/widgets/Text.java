@@ -459,6 +459,10 @@ boolean sendKeyEvent (int type, Event event) {
 	return newText == oldText;
 }
 
+void setDefaultCursor () {
+	OS.TXNAdjustCursor (txnObject, 0);
+}
+
 public void setDoubleClickEnabled (boolean doubleClick) {
 	checkWidget();
 	//NOT DONE
@@ -555,14 +559,6 @@ public void setVisible (boolean visible) {
 public void showSelection () {
 	checkWidget();
 	OS.TXNShowSelection (txnObject, false);
-}
-
-void updateCursor (Cursor cursor) {
-	if (cursor != null) {
-		super.updateCursor (cursor);
-	} else {
-		OS.TXNAdjustCursor (txnObject, 0);
-	}
 }
 
 String verifyText (String string, int start, int end) {
