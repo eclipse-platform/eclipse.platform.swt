@@ -27,7 +27,8 @@ import org.eclipse.swt.accessibility.*;
  * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
  * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
- *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse</dd>
+ *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize, Traverse,
+ *     DragDetect, MenuDetect</dd>
  * </dl>
  * <p>
  * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
