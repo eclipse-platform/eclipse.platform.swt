@@ -48,7 +48,6 @@ public void add (String string) {
 	int result;
 	if ((style & SWT.READ_ONLY) != 0) {
 		result = OS.AppendMenuItemTextWithCFString (menuHandle, ptr, 0, 0, null);
-		OS.SetControl32BitMaximum (handle, OS.CountMenuItems(menuHandle));
 	} else {
 		result = OS.HIComboBoxAppendTextItem (handle, ptr, null);
 	}
@@ -69,7 +68,6 @@ public void add (String string, int index) {
 	int result;
 	if ((style & SWT.READ_ONLY) != 0) {
 		result = OS.InsertMenuItemTextWithCFString (menuHandle, ptr, (short)index, 0, 0);
-		OS.SetControl32BitMaximum(handle, OS.CountMenuItems (menuHandle));	
 	} else {
 		result = OS.HIComboBoxInsertTextItemAtIndex (handle, index, ptr);
 	}
@@ -331,7 +329,6 @@ public void remove (int index) {
 	if (0 > index || index >= count) error (SWT.ERROR_INVALID_RANGE);
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.DeleteMenuItems (menuHandle, (short)(index+1), 1);
-		OS.SetControl32BitMaximum (handle, OS.CountMenuItems (menuHandle));
 	} else {
 		OS.HIComboBoxRemoveItemAtIndex (handle, index);
 	}
@@ -374,7 +371,6 @@ public void removeAll () {
 	int count = getItemCount ();
 	if ((style & SWT.READ_ONLY) != 0) {
 		OS.DeleteMenuItems (menuHandle, (short)1, count);
-		OS.SetControl32BitMaximum (handle, OS.CountMenuItems (menuHandle));
 	} else {
 		// NEEDS WORK
 		if (count > 0) {
@@ -449,7 +445,6 @@ public void setItems (String [] items) {
 		int result;
 		if ((style & SWT.READ_ONLY) != 0) {
 			result = OS.AppendMenuItemTextWithCFString (menuHandle, ptr, 0, 0, null);
-			OS.SetControl32BitMaximum(handle, OS.CountMenuItems (menuHandle));
 		} else {
 			int [] outIndex = new int[1];
 			result = OS.HIComboBoxAppendTextItem (handle, ptr, outIndex);
