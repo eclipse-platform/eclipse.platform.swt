@@ -556,6 +556,35 @@ void drawSelectionFocus(TableItem item, GC gc) {
 }
 
 /**
+ * Returns an array containing the receiver's children.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of children, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return an array of children
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Control [] getChildren() {
+	checkWidget();
+	Control[] controls = _getChildren();
+	Control[] result = new Control[controls.length - 1];
+	// remove the Header from the returned set of children
+	int index = 0;
+	for (int i = 0; i < controls.length; i++) {
+		 if (!(controls[i] instanceof Header)) {
+		 	result[index++] = controls[i];
+		 }
+	}
+	return result;
+}
+
+/**
  * Returns the column at the given, zero-relative index in the
  * receiver. Throws an exception if the index is out of range.
  * If no <code>TableColumn</code>s were created by the programmer,
