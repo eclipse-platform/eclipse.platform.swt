@@ -506,6 +506,13 @@ public Shell getShell () {
 	return parent.getShell ();
 }
 
+public Point getSize () {
+	checkWidget();
+	int width = OS.GTK_WIDGET_WIDTH (handle);
+	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	return new Point (width, height);
+}
+
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.

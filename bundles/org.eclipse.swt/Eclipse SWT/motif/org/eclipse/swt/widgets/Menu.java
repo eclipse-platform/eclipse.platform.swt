@@ -494,6 +494,12 @@ public Shell getShell () {
 	checkWidget();
 	return parent.getShell ();
 }
+public Point getSize () {
+	checkWidget();
+	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	return new Point (argList [1], argList [3]);
+}
 /**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
