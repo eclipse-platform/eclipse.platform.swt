@@ -1939,7 +1939,7 @@ LRESULT wmClipboard (int msg, int wParam, int lParam) {
 	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
 	boolean call = false;
 	int [] start = new int [1], end = new int [1];
-	String oldText = null, newText = null;
+	String newText = null;
 	switch (msg) {
 		case OS.WM_CLEAR:
 		case OS.WM_CUT:
@@ -1966,7 +1966,7 @@ LRESULT wmClipboard (int msg, int wParam, int lParam) {
 			break;
 	}
 	if (newText != null) {
-		oldText = newText;
+		String oldText = newText;
 		newText = verifyText (newText, start [0], end [0], null);
 		if (newText == null) return LRESULT.ZERO;
 		if (!newText.equals (oldText)) {
