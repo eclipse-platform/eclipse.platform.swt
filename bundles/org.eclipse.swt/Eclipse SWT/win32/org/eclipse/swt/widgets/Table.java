@@ -2919,7 +2919,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (clrText == -1) clrText = item.foreground;
 					int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
-					if (hFont == -1 && clrText == -1 && clrTextBk == -1 && item.cellForeground == null && item.cellBackground == null && item.cellFont == null) break;
+					if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
+						if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
+							break;
+						}
+					}
 					if (hFont != -1) OS.SelectObject(nmcd.hdc, hFont);
 					nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 					nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
