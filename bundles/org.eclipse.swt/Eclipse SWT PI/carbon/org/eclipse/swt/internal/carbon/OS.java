@@ -522,6 +522,7 @@ public class OS {
 	public static final int kTextEncodingMacRoman = 0;
 	public static final int kTextLanguageDontCare = -128;
 	public static final int kTextRegionDontCare = -128;
+	public static final int kThemeAdornmentDefault = 1 << 0;
 	public static final int kThemeAliasArrowCursor = 2;
 	public static final int kThemeArrowButton = 4;
 	public static final int kThemeArrowCursor = 0;
@@ -1031,6 +1032,7 @@ public static final native int GetScriptManagerVariable(short selector);
 public static final native int GetSuperControl(int cHandle, int[] parentHandle);
 public static final native int GetTabContentRect(int theControl, Rect rect);
 public static final native int GetThemeBrushAsColor(short inBrush, short inDepth, boolean inColorDev, RGBColor outColor);
+public static final native int GetThemeButtonContentBounds(Rect inBounds, int inKind, ThemeButtonDrawInfo inDrawInfo, Rect outBounds);
 public static final native int GetThemeDrawingState(int[] state);
 public static final native int GetThemeFont(short themeFontId, short scriptCode, byte[] fontName, short[] fontSize, byte[] style);
 public static final native int GetThemeMenuItemExtra(short inItemType, short[] outHeight, short[] outWidth); 

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 746;
-int OS_nativeFunctionCallCount[746];
+int OS_nativeFunctionCount = 747;
+int OS_nativeFunctionCallCount[747];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -377,6 +377,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetSuperControl", 
 	"GetTabContentRect", 
 	"GetThemeBrushAsColor", 
+	"GetThemeButtonContentBounds", 
 	"GetThemeDrawingState", 
 	"GetThemeFont", 
 	"GetThemeMenuItemExtra", 

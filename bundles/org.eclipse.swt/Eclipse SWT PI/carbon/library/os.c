@@ -5044,6 +5044,27 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetThemeBrushAsColor)
 }
 #endif
 
+#ifndef NO_GetThemeButtonContentBounds
+JNIEXPORT jint JNICALL OS_NATIVE(GetThemeButtonContentBounds)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jobject arg2, jobject arg3)
+{
+	Rect _arg0, *lparg0=NULL;
+	ThemeButtonDrawInfo _arg2, *lparg2=NULL;
+	Rect _arg3, *lparg3=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GetThemeButtonContentBounds_FUNC);
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	if (arg2) lparg2 = getThemeButtonDrawInfoFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = getRectFields(env, arg3, &_arg3);
+	rc = (jint)GetThemeButtonContentBounds(lparg0, arg1, lparg2, lparg3);
+	if (arg3) setRectFields(env, arg3, lparg3);
+	if (arg2) setThemeButtonDrawInfoFields(env, arg2, lparg2);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, GetThemeButtonContentBounds_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetThemeDrawingState
 JNIEXPORT jint JNICALL OS_NATIVE(GetThemeDrawingState)
 	(JNIEnv *env, jclass that, jintArray arg0)

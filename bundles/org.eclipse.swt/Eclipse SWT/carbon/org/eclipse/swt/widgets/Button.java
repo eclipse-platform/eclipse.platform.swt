@@ -15,6 +15,7 @@ import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlFontStyleRec;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.ThemeButtonDrawInfo;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -308,12 +309,16 @@ int defaultThemeFont () {
 
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	if (isImage && image != null && (style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
-		Rect rect = new Rect();
-		OS.GetControlBounds (handle, rect);
-		int width = OS.CGImageGetWidth (image.handle);
-		int height = OS.CGImageGetHeight (image.handle);
-		int x = Math.max (0, (rect.right - rect.left - width) / 2);
-		int y = Math.max (0, (rect.bottom - rect.top - height) / 2);
+		Rect bounds = new Rect(), content = new Rect();
+		OS.GetControlBounds (handle, bounds);
+		ThemeButtonDrawInfo drawInfo = new ThemeButtonDrawInfo();
+		drawInfo.state = OS.IsControlActive (handle) ? OS.kThemeStateActive : OS.kThemeStateInactive;
+		drawInfo.adornment = OS.kThemeAdornmentDefault;
+		OS.GetThemeButtonContentBounds (bounds, OS.kThemePushButton, drawInfo, content);
+		int width = image == null ? 0 : OS.CGImageGetWidth (image.handle);
+		int height = image == null ? 0 : OS.CGImageGetHeight (image.handle);
+		int x = (bounds.right - bounds.left - width) / 2;
+		int y = (content.bottom - content.top - height) / 2;
 		GCData data = new GCData ();
 		data.paintEvent = theEvent;
 		data.visibleRgn = visibleRgn;
