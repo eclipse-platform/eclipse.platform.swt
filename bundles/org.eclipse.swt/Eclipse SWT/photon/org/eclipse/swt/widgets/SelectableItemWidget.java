@@ -701,6 +701,7 @@ void doPageUp(int keyMask) {
 
 void doSpace(int keyMask) {
 	SelectableItem item = getLastFocus();
+	if (item == null) return;
 	int itemIndex = getVisibleIndex(item);
 
 	if (keyMask == SWT.NULL && item.isSelected() == false) {	// do simple space select in SINGLE and MULTI mode
@@ -708,7 +709,7 @@ void doSpace(int keyMask) {
 		selectNotify(item);
 		return;
 	}
-	if (isMultiSelect() == false || item == null) {
+	if (isMultiSelect() == false) {
 		return;
 	}
 	if (keyMask == SWT.CTRL) {
