@@ -349,6 +349,7 @@ public class OS {
 	public static final int ESB_DISABLE_BOTH = 0x3;
 	public static final int ESB_ENABLE_BOTH = 0x0;
 	public static final int ES_AUTOHSCROLL = 0x80;
+	public static final int ES_AUTOVSCROLL = 0x40;
 	public static final int ES_CENTER = 0x1;
 	public static final int ES_MULTILINE = 0x4;
 	public static final int ES_NOHIDESEL = 0x100;
