@@ -400,6 +400,7 @@ void createWidget () {
  */
 public void cut () {
 	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) return;
 	OS.SendMessage (handle, OS.WM_CUT, 0, 0);
 }
 
@@ -588,27 +589,6 @@ public int getCharCount () {
 	int length = OS.GetWindowTextLength (handle);
 	if (OS.IsDBLocale) length = mbcsToWcsPos (length);
 	return length;
-}
-
-String getClipboardText () {
-	String string = "";
-	if (OS.OpenClipboard (0)) {
-		int hMem = OS.GetClipboardData (OS.IsUnicode ? OS.CF_UNICODETEXT : OS.CF_TEXT);
-		if (hMem != 0) {
-			/* Ensure byteCount is a multiple of 2 bytes on UNICODE platforms */
-			int byteCount = OS.GlobalSize (hMem) / TCHAR.sizeof * TCHAR.sizeof;
-			int ptr = OS.GlobalLock (hMem);
-			if (ptr != 0) {
-				/* Use the character encoding for the default locale */
-				TCHAR buffer = new TCHAR (0, byteCount / TCHAR.sizeof);
-				OS.MoveMemory (buffer, ptr, byteCount);
-				string = buffer.toString (0, buffer.strlen ());
-				OS.GlobalUnlock (hMem);
-			}
-		}
-		OS.CloseClipboard ();
-	}
-	return string;
 }
 
 /**
@@ -1004,7 +984,7 @@ public void insert (String string) {
 }
 
 int mbcsToWcsPos (int mbcsPos) {
-	if (mbcsPos == 0) return 0;
+	if (mbcsPos <= 0) return 0;
 	if (OS.IsUnicode) return mbcsPos;
 	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
@@ -1057,6 +1037,7 @@ int mbcsToWcsPos (int mbcsPos) {
  */
 public void paste () {
 	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) return;
 	OS.SendMessage (handle, OS.WM_PASTE, 0, 0);
 }
 
@@ -1150,6 +1131,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 	if (!super.sendKeyEvent (type, msg, wParam, lParam, event)) {
 		return false;
 	}
+	if ((style & SWT.READ_ONLY) != 0) return true;
 	if (ignoreVerify) return true;
 	if (type != SWT.KeyDown) return true;
 	if (msg != OS.WM_CHAR && msg != OS.WM_KEYDOWN && msg != OS.WM_IME_CHAR) {
@@ -1680,7 +1662,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 }
 
 int wcsToMbcsPos (int wcsPos) {
-	if (wcsPos == 0) return 0;
+	if (wcsPos <= 0) return 0;
 	if (OS.IsUnicode) return wcsPos;
 	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
@@ -1746,6 +1728,16 @@ int windowProc () {
 	return EditProc;
 }
 
+int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	if (msg == OS.EM_UNDO) {
+		if ((style & SWT.SINGLE) != 0) {
+			LRESULT result = wmClipboard (OS.EM_UNDO, wParam, lParam);
+			if (result != null) return result.value;
+		}
+	}
+	return super.windowProc (hwnd, msg, wParam, lParam);
+}
+
 LRESULT WM_CHAR (int wParam, int lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.WM_CHAR (wParam, lParam);
@@ -1787,65 +1779,13 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 LRESULT WM_CLEAR (int wParam, int lParam) {
 	LRESULT result = super.WM_CLEAR (wParam, lParam);
 	if (result != null) return result;
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
-	if ((style & SWT.READ_ONLY) != 0) return result;
-	int [] start = new int [1], end = new int [1];
-	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	if (start [0] == end [0]) return result;
-	String newText = verifyText ("", start [0], end [0], null);
-	if (newText == null) return LRESULT.ZERO;
-	if (newText.length () != 0) {
-		result = new LRESULT (callWindowProc (OS.WM_CLEAR, 0, 0));	
-		newText = Display.withCrLf (newText);
-		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
-		/*
-		* Feature in Windows.  When an edit control with ES_MULTILINE
-		* style that does not have the WS_VSCROLL style is full (i.e.
-		* there is no space at the end to draw any more characters),
-		* EM_REPLACESEL sends a WM_CHAR with a backspace character
-		* to remove any further text that is added.  This is an
-		* implementation detail of the edit control that is unexpected
-		* and can cause endless recursion when EM_REPLACESEL is sent
-		* from a WM_CHAR handler.  The fix is to ignore calling the
-		* handler from WM_CHAR.
-		*/
-		ignoreCharacter = true;
-		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
-		ignoreCharacter = false;
-	}
-	return result;
+	return wmClipboard (OS.WM_CLEAR, wParam, lParam);
 }
 
 LRESULT WM_CUT (int wParam, int lParam) {
 	LRESULT result = super.WM_CUT (wParam, lParam);
 	if (result != null) return result;
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
-	if ((style & SWT.READ_ONLY) != 0) return result;
-	int [] start = new int [1], end = new int [1];
-	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	if (start [0] == end [0]) return result;
-	String newText = verifyText ("", start [0], end [0], null);
-	if (newText == null) return LRESULT.ZERO;
-	if (newText.length () != 0) {
-		result = new LRESULT (callWindowProc (OS.WM_CUT, 0, 0));	
-		newText = Display.withCrLf (newText);
-		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
-		/*
-		* Feature in Windows.  When an edit control with ES_MULTILINE
-		* style that does not have the WS_VSCROLL style is full (i.e.
-		* there is no space at the end to draw any more characters),
-		* EM_REPLACESEL sends a WM_CHAR with a backspace character
-		* to remove any further text that is added.  This is an
-		* implementation detail of the edit control that is unexpected
-		* and can cause endless recursion when EM_REPLACESEL is sent
-		* from a WM_CHAR handler.  The fix is to ignore calling the
-		* handler from WM_CHAR.
-		*/
-		ignoreCharacter = true;
-		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
-		ignoreCharacter = false;
-	}
-	return result;
+	return wmClipboard (OS.WM_CUT, wParam, lParam);
 }
 
 LRESULT WM_GETDLGCODE (int wParam, int lParam) {
@@ -1951,83 +1891,80 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 LRESULT WM_PASTE (int wParam, int lParam) {
 	LRESULT result = super.WM_PASTE (wParam, lParam);
 	if (result != null) return result;
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return result;
-	if ((style & SWT.READ_ONLY) != 0) return result;
-	String oldText = getClipboardText ();
-	if (oldText == null) return result;
-	int [] start = new int [1], end = new int [1];
-	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	String newText = verifyText (oldText, start [0], end [0], null);
-	if (newText == null) return LRESULT.ZERO;
-	if (newText != oldText) {
-		newText = Display.withCrLf (newText);
-		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
-		/*
-		* Feature in Windows.  When an edit control with ES_MULTILINE
-		* style that does not have the WS_VSCROLL style is full (i.e.
-		* there is no space at the end to draw any more characters),
-		* EM_REPLACESEL sends a WM_CHAR with a backspace character
-		* to remove any further text that is added.  This is an
-		* implementation detail of the edit control that is unexpected
-		* and can cause endless recursion when EM_REPLACESEL is sent
-		* from a WM_CHAR handler.  The fix is to ignore calling the
-		* handler from WM_CHAR.
-		*/
-		ignoreCharacter = true;
-		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
-		ignoreCharacter = false;
-		return LRESULT.ZERO;
-	}
-	return result;
+	return wmClipboard (OS.WM_PASTE, wParam, lParam);
 }
 
 LRESULT WM_UNDO (int wParam, int lParam) {
 	LRESULT result = super.WM_UNDO (wParam, lParam);
 	if (result != null) return result;
-	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) {
-		return result;
-	}
+	return wmClipboard (OS.WM_UNDO, wParam, lParam);
+}
 
-	/* Undo and then Redo to get the Undo text */
-	if (OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0) == 0) {
-		return result;
-	}
-	ignoreVerify = true;
-	callWindowProc (OS.WM_UNDO, wParam, lParam);
-	String oldText = getSelectionText ();
-	callWindowProc (OS.WM_UNDO, wParam, lParam);
-	ignoreVerify = false;
-
-	/* Verify the Undo operation */
+LRESULT wmClipboard (int msg, int wParam, int lParam) {
+	if ((style & SWT.READ_ONLY) != 0) return null;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
+	boolean call = false;
 	int [] start = new int [1], end = new int [1];
-	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	String newText = verifyText (oldText, start [0], end [0], null);
-	if (newText == null) return LRESULT.ZERO;
-	if (newText != oldText) {
-		newText = Display.withCrLf (newText);
-		TCHAR buffer = new TCHAR (getCodePage (), newText, true);
-		/*
-		* Feature in Windows.  When an edit control with ES_MULTILINE
-		* style that does not have the WS_VSCROLL style is full (i.e.
-		* there is no space at the end to draw any more characters),
-		* EM_REPLACESEL sends a WM_CHAR with a backspace character
-		* to remove any further text that is added.  This is an
-		* implementation detail of the edit control that is unexpected
-		* and can cause endless recursion when EM_REPLACESEL is sent
-		* from a WM_CHAR handler.  The fix is to ignore calling the
-		* handler from WM_CHAR.
-		*/
-		ignoreCharacter = true;
-		OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
-		ignoreCharacter = false;
-		return LRESULT.ZERO;
+	String oldText = null, newText = null;
+	switch (msg) {
+		case OS.WM_CLEAR:
+		case OS.WM_CUT:
+			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+			if (start [0] != end [0]) {
+				newText = "";
+				call = true;
+			}
+			break;
+		case OS.WM_PASTE:
+			OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+			newText = getClipboardText ();
+			break;
+		case OS.EM_UNDO:
+		case OS.WM_UNDO:
+			if (OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0) != 0) {
+				OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+				ignoreModify = ignoreCharacter = true;
+				callWindowProc (msg, wParam, lParam);
+				newText = getSelectionText ();
+				callWindowProc (msg, wParam, lParam);
+				ignoreModify = ignoreCharacter = false;
+			}
+			break;
 	}
-	
-	/* Do the original Undo */
-	ignoreVerify = true;
-	callWindowProc (OS.WM_UNDO, wParam, lParam);
-	ignoreVerify = false;
-	return LRESULT.ONE;
+	if (newText != null && !newText.equals (oldText)) {
+		oldText = newText;
+		newText = verifyText (newText, start [0], end [0], null);
+		if (newText == null) return LRESULT.ZERO;
+		if (!newText.equals (oldText)) {
+			if (call) {
+				callWindowProc (msg, wParam, lParam);
+			}
+			newText = Display.withCrLf (newText);
+			TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+			/*
+			* Feature in Windows.  When an edit control with ES_MULTILINE
+			* style that does not have the WS_VSCROLL style is full (i.e.
+			* there is no space at the end to draw any more characters),
+			* EM_REPLACESEL sends a WM_CHAR with a backspace character
+			* to remove any further text that is added.  This is an
+			* implementation detail of the edit control that is unexpected
+			* and can cause endless recursion when EM_REPLACESEL is sent
+			* from a WM_CHAR handler.  The fix is to ignore calling the
+			* handler from WM_CHAR.
+			*/
+			ignoreCharacter = true;
+			OS.SendMessage (handle, OS.EM_REPLACESEL, 0, buffer);
+			ignoreCharacter = false;
+			return LRESULT.ZERO;
+		}
+	}
+	if (msg == OS.WM_UNDO) {
+		ignoreVerify = ignoreCharacter = true;
+		callWindowProc (OS.WM_UNDO, wParam, lParam);
+		ignoreVerify = ignoreCharacter = false;
+		return LRESULT.ONE;
+	}
+	return null;
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {
