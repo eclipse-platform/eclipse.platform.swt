@@ -549,8 +549,8 @@ void createItem (TableItem item, int index) {
 	}
 	if (itemCount == items.length) {
 		/* Grow the array faster when redraw is off */
-		int newLength = drawCount == 0 ? items.length + 4 : items.length * 3 / 2;
-		TableItem [] newItems = new TableItem [newLength];
+		int length = drawCount == 0 ? items.length + 4 : Math.max (4, items.length * 3 / 2);
+		TableItem [] newItems = new TableItem [length];
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
@@ -1990,7 +1990,8 @@ public void setItemCount (int count) {
 		}
 		if (index < itemCount) error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
-	TableItem [] newItems = new TableItem [(count + 3) / 4 * 4];
+	int length = Math.max (4, (count + 3) / 4 * 4);
+	TableItem [] newItems = new TableItem [length];
 	System.arraycopy (items, 0, newItems, 0, Math.min (count, itemCount));
 	items = newItems;
 	if ((style & SWT.VIRTUAL) == 0) {
@@ -2031,7 +2032,8 @@ public void setRedraw (boolean redraw) {
 	if (redraw && drawCount == 0) {
 	 	/* Resize the item array to match the item count */
 		if (items.length > 4 && items.length - itemCount > 3) {
-			TableItem [] newItems = new TableItem [(itemCount + 3) / 4 * 4];
+			int length = Math.max (4, (itemCount + 3) / 4 * 4);
+			TableItem [] newItems = new TableItem [length];
 			System.arraycopy (items, 0, newItems, 0, itemCount);
 			items = newItems;
 		}		
