@@ -1164,14 +1164,6 @@ public boolean getBorderVisible() {
 	checkWidget();
 	return borderLeft == 1;
 }
-/**
- * UNDER CONSTRUCTION
- * @deprecated - added in 3.0 and will be removed for M9
- */
-public Rectangle getChevronBounds() {
-	checkWidget();
-	return new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
-}
 public Rectangle getClientArea() {
 	checkWidget();
 	if (minimized) return new Rectangle(xClient, yClient, 0, 0);
@@ -1280,14 +1272,6 @@ char getMnemonic (String string) {
  	return '\0';
 }
 /**
- * UNDER CONSTRUCTION
- * @deprecated - added in 3.0 and will be removed for M9
- */
-public Rectangle getMinimizeBounds() {
-	checkWidget();
-	return new Rectangle(minRect.x, minRect.y, minRect.width, minRect.height);
-}
-/**
  * Returns <code>true</code> if the receiver is minimized,
  * and false otherwise.
  * <p>
@@ -1313,14 +1297,6 @@ public boolean getMinimized() {
 public boolean getMinimizeVisible() {
 	checkWidget();
 	return showMin;
-}
-/**
- * UNDER CONSTRUCTION
- * @deprecated - added in 3.0 and will be removed for M9
- */
-public Rectangle getMaximizeBounds() {
-	checkWidget();
-	return new Rectangle(maxRect.x, maxRect.y, maxRect.width, maxRect.height);
 }
 /**
  * Returns <code>true</code> if the receiver is maximized,
