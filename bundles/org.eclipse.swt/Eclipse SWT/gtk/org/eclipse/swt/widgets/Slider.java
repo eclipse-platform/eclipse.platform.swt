@@ -184,23 +184,14 @@ void deregister () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	// We are interested in the preferred size.
-	// The native widget gives us what it thinks the minimum reasonable
-	// size; we'll say we prefer to be twice that long, and exactly
-	// that wide.
-	int x,y;
-	Point size = super.computeSize (wHint, hHint, changed);
-	if (hHint==SWT.DEFAULT) {
-		x = size.x;
-		if ((style & SWT.HORIZONTAL) != 0) x = 2*x;
-	} else x = hHint;
-	if (wHint==SWT.DEFAULT) {
-		y = size.y;
-		if ((style & SWT.VERTICAL) != 0) y = 2*y;
-	} else y = wHint;
-	
-	return new Point(x,y);
+	checkWidget();
+	Point size = computeNativeSize(handle, wHint, hHint, changed);
+	if ((style & SWT.HORIZONTAL) != 0) {
+		if (wHint == SWT.DEFAULT) size.x = 2 * size.x;
+	} else {
+		if (hHint == SWT.DEFAULT) size.y = 2 * size.y;
+	}
+	return size;
 }
 
 /**

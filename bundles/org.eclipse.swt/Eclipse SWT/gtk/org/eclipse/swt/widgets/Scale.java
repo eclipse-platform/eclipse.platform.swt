@@ -94,6 +94,17 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget();
+	Point size = computeNativeSize(handle, wHint, hHint, changed);
+	if ((style & SWT.HORIZONTAL) != 0) {
+		if (wHint == SWT.DEFAULT) size.x = 2 * size.x;
+	} else {
+		if (hHint == SWT.DEFAULT) size.y = 2 * size.y;
+	}
+	return size;
+}
+
 void createHandle (int index) {
 	state |= HANDLE;
 	fixedHandle = OS.gtk_fixed_new ();
