@@ -660,13 +660,13 @@ void internalGetControlBounds(int hndl, Rect bounds) {
  * x and y are relative to window!
  */
 void handleResize(int hndl, Rect bounds) {
-
-	bounds.left+= MARGIN;
-	bounds.right-= MARGIN;
-	bounds.top+= TOP_MARGIN;
-	bounds.bottom-= MARGIN;
-	super.handleResize(hndl, bounds);
 	
+	bounds.left += MARGIN;
+	bounds.top += TOP_MARGIN;
+	bounds.right -= MARGIN;
+	bounds.bottom -= MARGIN;
+	OS.SetControlBounds(handle, bounds);
+
 	if (handle != 0) {
 		int selectedIndex= OS.GetControl32BitValue(handle)-1;
 		if (selectedIndex != -1) {
@@ -675,8 +675,19 @@ void handleResize(int hndl, Rect bounds) {
 				control.setBounds(getClientArea());
 			}
 		}
-		redraw();
+		// redraw(); 	// only required if the workaround from below is not in place
 	}
+	
+	/*
+	 * There seems to be a layout/clipping bug with Tab control in compositing
+	 * mode (HIViews): on resize if the old size is more than a few pixel
+	 * different from the new size, a rectangular area to the right or left of
+	 * the tabs isn't repaired. The fix is to make the tab control temporarily
+	 * one pixel larger.
+	 */
+	bounds.right--;
+	OS.SetControlBounds(handle, bounds);
+	bounds.right++;
+	OS.SetControlBounds(handle, bounds);
 }
-
 }
