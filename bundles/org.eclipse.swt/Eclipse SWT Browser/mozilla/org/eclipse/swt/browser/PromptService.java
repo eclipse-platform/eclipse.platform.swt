@@ -143,7 +143,7 @@ String getLabel(int buttonFlag, int index, int buttonTitle) {
 		case nsIPromptService.BUTTON_TITLE_SAVE : label = SWT.getMessage("SWT_Save"); break; //$NON-NLS-1$
 		case nsIPromptService.BUTTON_TITLE_YES : label = SWT.getMessage("SWT_Yes"); break; //$NON-NLS-1$
 		case nsIPromptService.BUTTON_TITLE_IS_STRING : {
-			int length = XPCOM.nsCRT_strlen_PRUnichar(buttonTitle);
+			int length = XPCOM.strlen_PRUnichar(buttonTitle);
 			char[] dest = new char[length];
 			XPCOM.memmove(dest, buttonTitle, length * 2);
 			label = new String(dest);
@@ -157,12 +157,12 @@ String getLabel(int buttonFlag, int index, int buttonTitle) {
 public int Alert(int parent, int dialogTitle, int text) {
 	Browser browser = getBrowser(parent);
 	
-	int length = XPCOM.nsCRT_strlen_PRUnichar(dialogTitle);
+	int length = XPCOM.strlen_PRUnichar(dialogTitle);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, dialogTitle, length * 2);
 	String titleLabel = new String(dest);
 
-	length = XPCOM.nsCRT_strlen_PRUnichar(text);
+	length = XPCOM.strlen_PRUnichar(text);
 	dest = new char[length];
 	XPCOM.memmove(dest, text, length * 2);
 	String textLabel = new String(dest);
@@ -189,19 +189,19 @@ public int ConfirmCheck(int parent, int dialogTitle, int text, int checkMsg, int
 public int ConfirmEx(int parent, int dialogTitle, int text, int buttonFlags, int button0Title, int button1Title, int button2Title, int checkMsg, int checkValue, int _retval) {
 	Browser browser = getBrowser(parent);
 	
-	int length = XPCOM.nsCRT_strlen_PRUnichar(dialogTitle);
+	int length = XPCOM.strlen_PRUnichar(dialogTitle);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, dialogTitle, length * 2);
 	String titleLabel = new String(dest);
 	
-	length = XPCOM.nsCRT_strlen_PRUnichar(text);
+	length = XPCOM.strlen_PRUnichar(text);
 	dest = new char[length];
 	XPCOM.memmove(dest, text, length * 2);
 	String textLabel = new String(dest);
 	
 	String checkLabel = null;
 	if (checkMsg != 0) {
-		length = XPCOM.nsCRT_strlen_PRUnichar(checkMsg);
+		length = XPCOM.strlen_PRUnichar(checkMsg);
 		dest = new char[length];
 		XPCOM.memmove(dest, checkMsg, length * 2);
 		checkLabel = new String(dest);
@@ -231,7 +231,7 @@ public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int 
 	char[] dest;
 	int length;
 	if (dialogTitle != 0) {
-		length = XPCOM.nsCRT_strlen_PRUnichar(dialogTitle);
+		length = XPCOM.strlen_PRUnichar(dialogTitle);
 		dest = new char[length];
 		XPCOM.memmove(dest, dialogTitle, length * 2);
 		titleLabel = new String(dest);
@@ -239,7 +239,7 @@ public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int 
 		titleLabel = SWT.getMessage("SWT_Prompt"); //$NON-NLS-1$
 	}
 	
-	length = XPCOM.nsCRT_strlen_PRUnichar(text);
+	length = XPCOM.strlen_PRUnichar(text);
 	dest = new char[length];
 	XPCOM.memmove(dest, text, length * 2);
 	textLabel = new String(dest);
@@ -247,7 +247,7 @@ public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int 
 	int[] userAddr = new int[1];
 	XPCOM.memmove(userAddr, username, 4);
 	if (userAddr[0] != 0) {
-		length = XPCOM.nsCRT_strlen_PRUnichar(userAddr[0]);
+		length = XPCOM.strlen_PRUnichar(userAddr[0]);
 		dest = new char[length];
 		XPCOM.memmove(dest, userAddr[0], length * 2);
 		userLabel[0] = new String(dest);		
@@ -256,14 +256,14 @@ public int PromptUsernameAndPassword(int parent, int dialogTitle, int text, int 
 	int[] passAddr = new int[1];
 	XPCOM.memmove(passAddr, password, 4);
 	if (passAddr[0] != 0) {
-		length = XPCOM.nsCRT_strlen_PRUnichar(passAddr[0]);
+		length = XPCOM.strlen_PRUnichar(passAddr[0]);
 		dest = new char[length];
 		XPCOM.memmove(dest, passAddr[0], length * 2);
 		passLabel[0] = new String(dest);		
 	}
 	
 	if (checkMsg != 0) {
-		length = XPCOM.nsCRT_strlen_PRUnichar(checkMsg);
+		length = XPCOM.strlen_PRUnichar(checkMsg);
 		dest = new char[length];
 		XPCOM.memmove(dest, checkMsg, length * 2);
 		checkLabel = new String(dest);

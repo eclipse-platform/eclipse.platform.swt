@@ -67,7 +67,6 @@ public class Browser extends Composite {
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 
 	static nsIAppShell AppShell;
-	static AppFileLocProvider LocProvider; 
 	static PromptService PromptService;
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
@@ -144,26 +143,11 @@ public Browser(Composite parent, int style) {
 		path.dispose();
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
-
-		/*
-		* Feature on Mozilla.  On Windows, the mozilla libraries are split
-		* up into 2 locations indicated by the GRE and Mozilla paths.  The
-		* default nsIDirectoryServiceProvider only works when the libraries
-		* are in the same folder.  The workaround is to provide a custom
-		* nsIDirectoryServiceProvider on this platform.  It provides the 
-		* 2 locations set by Mozilla in the Windows registry.
-		*/
-		if (IsWindows) {
-			LocProvider = new AppFileLocProvider();
-			LocProvider.AddRef();
-		}
 		
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
-		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), IsWindows ? LocProvider.getAddress() : 0);
+		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), 0);
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
-			if (LocProvider != null) LocProvider.Release();
-			LocProvider = null;
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES, null, " [NS_InitEmbedding "+mozillaPath+" error "+rc+"]");
 		}
@@ -1715,7 +1699,7 @@ int OnStatusChange(int aWebProgress, int aRequest, int aStatus, int aMessage) {
 	StatusTextEvent event = new StatusTextEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	int length = XPCOM.nsCRT_strlen_PRUnichar(aMessage);
+	int length = XPCOM.strlen_PRUnichar(aMessage);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aMessage, length * 2);
 	event.text = new String(dest);
@@ -1735,7 +1719,7 @@ int SetStatus(int statusType, int status) {
 	StatusTextEvent event = new StatusTextEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	int length = XPCOM.nsCRT_strlen_PRUnichar(status);
+	int length = XPCOM.strlen_PRUnichar(status);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, status, length * 2);
 	String string = new String(dest);
@@ -1855,7 +1839,7 @@ int SetTitle(int aTitle) {
 	TitleEvent event = new TitleEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	int length = XPCOM.nsCRT_strlen_PRUnichar(aTitle);
+	int length = XPCOM.strlen_PRUnichar(aTitle);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aTitle, length * 2);
 	event.title = new String(dest);
@@ -1982,7 +1966,7 @@ int SetParentContentListener(int aParentContentListener) {
 /* nsITooltipListener */
 
 int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
-	int length = XPCOM.nsCRT_strlen_PRUnichar(aTipText);
+	int length = XPCOM.strlen_PRUnichar(aTipText);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aTipText, length * 2);
 	String text = new String(dest);

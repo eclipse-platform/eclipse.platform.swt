@@ -21,7 +21,6 @@ SWT_PREFIX = swt
 AWT_PREFIX = swt-awt
 SWTPI_PREFIX = swt-pi
 ATK_PREFIX = swt-atk
-KDE_PREFIX = swt-kde
 GNOME_PREFIX = swt-gnome
 MOZILLA_PREFIX = swt-mozilla
 SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
@@ -29,7 +28,6 @@ AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_LIB = lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 ATK_LIB = lib$(ATK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-KDE_LIB = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB = lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 # Do not use pkg-config to get libs because it includes unnecessary dependencies (i.e. pangoxft-1.0)
@@ -43,9 +41,6 @@ ATKLIBS = `pkg-config --libs-only-L atk gtk+-2.0`-latk-1.0 -lgtk-x11-2.0
 
 GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOMELIBS = `pkg-config --libs-only-L gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0` -lgnomevfs-2 -lgnome-2 -lgnomeui-2
-
-KDE_LIBS = -L/usr/lib  -L$(QT_HOME)/lib -shared  -lkdecore -lqt -lkparts
-KDE_CFLAGS = -fno-rtti -c -O -I/usr/include/kde -I$(QT_HOME)/include -I$(JAVA_HOME)/include
 
 # Uncomment for Native Stats tool
 #NATIVE_STATS = -DNATIVE_STATS
@@ -78,8 +73,7 @@ AWT_OBJECTS = swt_awt.o
 SWTPI_OBJECTS = swt.o os.o os_structs.o os_custom.o os_stats.o
 ATK_OBJECTS = swt.o atk.o atk_structs.o atk_custom.o atk_stats.o
 GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
-KDE_OBJS = swt.o kde.o kde_stats.o
-MOZILLA_OBJECTS = swt.o xpcom.o xpcom_custom.o xpcom_structs.o xpcom_stats.o
+MOZILLA_OBJECTS = swt.o xpcom.o
  
 CFLAGS = -O -Wall \
 		-DSWT_VERSION=$(SWT_VERSION) \
@@ -91,7 +85,7 @@ CFLAGS = -O -Wall \
 LIBS = -shared -fpic
 
 
-all: make_swt make_atk make_gnome make_awt make_kde
+all: make_swt make_atk make_gnome make_awt
 
 #
 # SWT libs
@@ -161,20 +155,6 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome_stats.c
 
 #
-# KDE lib
-#
-make_kde: $(KDE_LIB)
-
-$(KDE_LIB): $(KDE_OBJS)
-	$(LD) -o $@ $(KDE_OBJS) $(KDE_LIBS)
-
-kde.o: kde.cpp
-	$(CXX) $(CFLAGS) $(KDE_CFLAGS) -o kde.o kde.cpp
-
-kde_stats.o: kde_stats.cpp
-	$(CXX) $(CFLAGS) $(KDE_CFLAGS) -o kde_stats.o kde_stats.cpp
-	
-#
 # Mozilla lib
 #
 make_mozilla:$(MOZILLA_LIB)
@@ -184,15 +164,6 @@ $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
 
 xpcom.o: xpcom.cpp
 	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp
-
-xpcom_structs.o: xpcom_structs.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_structs.cpp
-	
-xpcom_custom.o: xpcom_custom.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_custom.cpp
-
-xpcom_stats.o: xpcom_stats.cpp
-	$(CXX) $(MOZILLACFLAGS) -c xpcom_stats.cpp	
 
 #
 # Install

@@ -29,14 +29,13 @@
 
 /* Defines the entry point for the DLL application. */
 
-#include "nsCRT.h"
+#include "nsXPCOM.h"
 #include "nsEmbedAPI.h"	
+#include "nsEmbedString.h"
+#include "nsIInputStream.h"
+#include "nsISupportsUtils.h"
 #include "prmem.h"
 #include "prenv.h"
-#include "nsString.h"
-#include "nsEnumeratorUtils.h"
-#include "nsIInputStream.h"
-#include "nsRect.h"
 #include "jni.h"
 
 extern "C" {
@@ -136,10 +135,8 @@ JNIEXPORT jboolean JNICALL XPCOM_NATIVE(nsID_1Equals)
 {
 	nsID *lparg0 = NULL;
 	nsID *lparg1 = NULL;
-	if (arg0 != 0)
-		lparg0 = (nsID*)arg0;
-	if (arg1 != 0)
-		lparg1 = (nsID*)arg1;
+	if (arg0 != 0) lparg0 = (nsID*)arg0;
+	if (arg1 != 0) lparg1 = (nsID*)arg1;
 	return lparg0->Equals((nsID&)(*lparg1));	
 }
 
@@ -154,41 +151,37 @@ JNIEXPORT jboolean JNICALL XPCOM_NATIVE(nsID_1Parse)
 {
 	nsID *lparg0 = NULL;
 	const char *lparg1 = NULL;
-	if (arg0 != 0)
-		lparg0 = (nsID*)arg0;
-	if (arg1 != 0)
-		lparg1 = (const char *)env->GetStringUTFChars(arg1, NULL);
-	return lparg0->Parse(lparg1);	
+	if (arg0 != 0) lparg0 = (nsID*)arg0;
+	if (arg1 != 0) lparg1 = (const char *)env->GetStringUTFChars(arg1, NULL);
+	return lparg0->Parse(lparg1);
 }
 
 JNIEXPORT void JNICALL XPCOM_NATIVE(nsCString_1delete)
 	(JNIEnv *, jclass, jint arg0)
 {
-	delete (nsCString *)arg0;
+	delete (nsEmbedCString *)arg0;
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1get)
 	(JNIEnv *env, jclass, jint arg0)
 {
-	nsCString *lparg0 = NULL;
-	if (arg0 != 0)
-		lparg0 = (nsCString *)arg0;
+	nsEmbedCString *lparg0 = NULL;
+	if (arg0 != 0) lparg0 = (nsEmbedCString *)arg0;
 	return (jint)lparg0->get();
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1Length)
 	(JNIEnv *env, jclass, jint arg0)
 {
-	nsCString *lparg0 = NULL;
-	if (arg0 != 0)
-		lparg0 = (nsCString *)arg0;
+	nsEmbedCString *lparg0 = NULL;
+	if (arg0 != 0) lparg0 = (nsEmbedCString *)arg0;
 	return (jint)lparg0->Length();
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1new__)
 	(JNIEnv *env, jclass)
 {
-	return (jint)new nsCString();
+	return (jint)new nsEmbedCString();
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1new___3BI)
@@ -197,51 +190,37 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCString_1new___3BI)
 	jbyte *lparg0=NULL;
 	jint rc;
 	if (arg0) lparg0 = env->GetByteArrayElements(arg0, NULL);
-	rc = (jint)new nsCString((const char *)lparg0, length);
+	rc = (jint)new nsEmbedCString((const char *)lparg0, length);
 	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
 	return rc;
-}
-
-JNIEXPORT void JNICALL XPCOM_NATIVE(nsRect_1delete)
-	(JNIEnv *, jclass, jint arg0)
-{
-	delete (nsRect*)arg0;
-}
-
-JNIEXPORT jint JNICALL XPCOM_NATIVE(nsRect_1new)
-	(JNIEnv *env, jclass, int arg0, int arg1, int arg2, int arg3)
-{
-	return (jint)new nsRect(arg0, arg1, arg2, arg3);
 }
 
 JNIEXPORT void JNICALL XPCOM_NATIVE(nsString_1delete)
 	(JNIEnv *, jclass, jint arg0)
 {
-	delete (nsString *)arg0;
+	delete (nsEmbedString *)arg0;
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsString_1get)
 	(JNIEnv *env, jclass, jint arg0)
 {
-	nsString *lparg0 = NULL;
-	if (arg0 != 0)
-		lparg0 = (nsString *)arg0;
+	nsEmbedString *lparg0 = NULL;
+	if (arg0 != 0) lparg0 = (nsEmbedString *)arg0;
 	return (jint)lparg0->get();
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsString_1Length)
 	(JNIEnv *env, jclass, jint arg0)
 {
-	nsString *lparg0 = NULL;
-	if (arg0 != 0)
-		lparg0 = (nsString *)arg0;
+	nsEmbedString *lparg0 = NULL;
+	if (arg0 != 0) lparg0 = (nsEmbedString *)arg0;
 	return (jint)lparg0->Length();
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsString_1new__)
 	(JNIEnv *env, jclass)
 {
-	return (jint)new nsString();
+	return (jint)new nsEmbedString();
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(nsString_1new___3C)
@@ -250,7 +229,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsString_1new___3C)
 	jchar *lparg0=NULL;
 	jint rc;
 	if (arg0) lparg0 = env->GetCharArrayElements(arg0, NULL);
-	rc = (jint)new nsString(lparg0);
+	rc = (jint)new nsEmbedString(lparg0);
 	if (arg0) env->ReleaseCharArrayElements(arg0, lparg0, 0);
 	return rc;
 }
@@ -258,24 +237,11 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(nsString_1new___3C)
 JNIEXPORT jboolean JNICALL XPCOM_NATIVE(nsString_1Equals)
 	(JNIEnv *env, jclass, jint arg0, jint arg1)
 {
-	nsString *lparg0 = NULL;
-	nsString *lparg1 = NULL;
-	if (arg0 != 0)
-		lparg0 = (nsString*)arg0;
-	if (arg1 != 0)
-		lparg1 = (nsString*)arg1;
+	nsEmbedString *lparg0 = NULL;
+	nsEmbedString *lparg1 = NULL;
+	if (arg0 != 0) lparg0 = (nsEmbedString*)arg0;
+	if (arg1 != 0) lparg1 = (nsEmbedString*)arg1;
 	return lparg0->Equals(*lparg1);
-}
-
-JNIEXPORT void JNICALL XPCOM_NATIVE(nsString_1AssignWithConversion)
-	(JNIEnv *env, jclass, jint arg0, jbyteArray arg1)
-{
-	nsString *lparg0 = NULL;
-	jbyte *lparg1 = NULL;
-	if (arg0) lparg0 = (nsString*)arg0;
-	if (arg1) lparg1 = env->GetByteArrayElements(arg1, NULL);
-	lparg0->AssignWithConversion((const char *)lparg1);
-	if (arg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
 }
 
 JNIEXPORT jstring JNICALL XPCOM_NATIVE(PR_1GetEnv)
@@ -284,9 +250,7 @@ JNIEXPORT jstring JNICALL XPCOM_NATIVE(PR_1GetEnv)
 	const char* name = (const char *)env->GetStringUTFChars(arg0,NULL);
 	char* var = PR_GetEnv(name);
 	env->ReleaseStringUTFChars(arg0, name);
-	if (NULL == var)
-		return NULL;
-
+	if (var == NULL) return NULL;
 	return env->NewStringUTF(var);
 }
 
@@ -298,26 +262,6 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1NewLocalFile)
 	if (arg2) lparg2 = env->GetIntArrayElements(arg2, NULL);
     rc = NS_NewLocalFile((nsAString &)(*(nsAString *)arg0), arg1, (nsILocalFile**)lparg2);
 	if (arg2) env->ReleaseIntArrayElements(arg2, lparg2, 0);
-	return rc;
-}
-
-JNIEXPORT jint JNICALL XPCOM_NATIVE(NS_1NewSingletonEnumerator)
-  (JNIEnv *env, jclass, jint nsFile, jintArray arg1)
-{
-	nsISimpleEnumerator *pEnum = NULL;
-	nsresult rc = NS_NewSingletonEnumerator(&pEnum,(nsISupports *)nsFile);
-  
-	if (NS_SUCCEEDED(rc)) {
-		jint *arg11 = NULL; 
-		if (arg1)
-			arg11 = env->GetIntArrayElements(arg1, NULL);
-
-		arg11[0] = (jint)pEnum; 
-
-		if (arg1)
-			env->ReleaseIntArrayElements(arg1, arg11, 0);
-	}
-
 	return rc;
 }
 
@@ -2932,13 +2876,16 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__II_3B_3B_3I)
 	return rc;
 }
 
-JNIEXPORT jint JNICALL XPCOM_NATIVE(nsCRT_1strlen_1PRUnichar)
+JNIEXPORT jint JNICALL XPCOM_NATIVE(strlen_1PRUnichar)
 	(JNIEnv *env, jclass, jint arg0)
 {
-	PRUnichar* lparg0 = NULL;
-	if (arg0) lparg0 = (PRUnichar *)arg0;
+	const PRUnichar* lparg0 = NULL;
+	if (arg0) lparg0 = (const PRUnichar *)arg0;
 
-	return nsCRT::strlen(lparg0);
+	/* custom */
+	PRUint32 len = 0;
+	if (lparg0 != NULL)	while (*lparg0++ != 0) len++;
+	return len;
 }
 
 JNIEXPORT jint JNICALL XPCOM_NATIVE(strlen)

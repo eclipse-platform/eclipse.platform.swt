@@ -49,12 +49,16 @@ public class XPCOM {
 
 	/* CID constants */
 	public static final nsID NS_APPSHELL_CID =	new nsID("2d96b3df-c051-11d1-a827-0040959a28c9"); //$NON-NLS-1$
+	public static final nsID NS_DOWNLOAD_CID = new nsID("e3fa9D0a-1dd1-11b2-bdef-8c720b597445"); //$NON-NLS-1$
+	public static final nsID NS_HELPERAPPLAUNCHERDIALOG_CID = new nsID("f68578eb-6ec2-4169-ae19-8c6243f0abe1"); //$NON-NLS-1$
 	public static final nsID NS_IOSERVICE_CID =	new nsID("9ac9e770-18bc-11d3-9337-00104ba0fd40"); //$NON-NLS-1$
 	public static final nsID NS_INPUTSTREAMCHANNEL_CID = new nsID("6ddb050c-0d04-11d4-986e-00c04fa0cf4a"); //$NON-NLS-1$
 	public static final nsID NS_LOADGROUP_CID = new nsID("e1c61582-2a84-11d3-8cce-0060b0fc14a3"); //$NON-NLS-1$
 	public static final nsID NS_PROMPTSERVICE_CID = new nsID("a2112d6a-0e28-421f-b46a-25c0b308cbd0"); //$NON-NLS-1$
 	
 	public static final String NS_CATEGORYMANAGER_CONTRACTID = "@mozilla.org/categorymanager;1"; //$NON-NLS-1$
+	public static final String NS_DOWNLOAD_CONTRACTID = "@mozilla.org/download;1"; //$NON-NLS-1$
+	public static final String NS_HELPERAPPLAUNCHERDIALOG_CONTRACTID = "@mozilla.org/helperapplauncherdialog;1"; //$NON-NLS-1$
 	public static final String NS_MEMORY_CONTRACTID = "@mozilla.org/xpcom/memory-service;1"; //$NON-NLS-1$
 	public static final String NS_PROMPTSERVICE_CONTRACTID = "@mozilla.org/embedcomp/prompt-service;1"; //$NON-NLS-1$
 	public static final String NS_WINDOWWATCHER_CONTRACTID = "@mozilla.org/embedcomp/window-watcher;1"; //$NON-NLS-1$
@@ -98,9 +102,8 @@ public static final native int NS_GetComponentManager(int[] result);
 public static final native int NS_GetServiceManager(int[] result);
 public static final native int NS_InitEmbedding(int aMozBinDirectory, int aAppFileLocProvider);
 public static final native int NS_NewLocalFile(int path, boolean followLinks, int[] result);
-public static final native int NS_NewSingletonEnumerator(int localFile,int[] enum);
 public static final native int NS_TermEmbedding();
-public static final native int nsCRT_strlen_PRUnichar(int s);
+public static final native int strlen_PRUnichar(int s);
 public static final native int nsCString_new();
 public static final native int nsCString_new(byte[] aString, int length);
 public static final native void nsCString_delete(int ptr);
@@ -110,15 +113,12 @@ public static final native void nsID_delete(int ptr);
 public static final native int nsID_new();
 public static final native boolean nsID_Parse(int ptr, String aIDStr);
 public static final native boolean nsID_Equals(int ptr, int other);
-public static final native int nsRect_new(int aX, int aY, int aWidth, int aHeight);
-public static final native void nsRect_delete(int ptr);
 public static final native int nsString_new();
 public static final native int nsString_new(char[] aString);
 public static final native void nsString_delete(int ptr);
 public static final native int nsString_Length(int ptr);
 public static final native int nsString_get(int ptr);
 public static final native boolean nsString_Equals(int ptr, int other);
-public static final native void nsString_AssignWithConversion(int ptr, byte[] aString);
 public static final native void PR_Free(int ptr);
 public static final native String PR_GetEnv(String name); 
 public static final native int PR_Malloc(int Length);
