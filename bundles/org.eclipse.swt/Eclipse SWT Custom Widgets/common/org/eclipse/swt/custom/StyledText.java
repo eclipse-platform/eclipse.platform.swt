@@ -1056,9 +1056,16 @@ public void copy(){
 		String rtfText = getPlatformDelimitedText(rtfWriter);
 		String plainText = getPlatformDelimitedText(plainTextWriter);
 
-		clipboard.setContents(
-			new String[]{rtfText, plainText}, 
-			new Transfer[]{rtfTransfer, plainTextTransfer});
+		try {
+			clipboard.setContents(
+				new String[]{rtfText, plainText}, 
+				new Transfer[]{rtfTransfer, plainTextTransfer});
+		}
+		catch (SWTError error) {
+			// Copy to clipboard failed. This happens when another application 
+			// is accessing the clipboard while we copy. Ignore the error.
+			// Fixes 1GDQAVN
+		}
 	}
 }
 
