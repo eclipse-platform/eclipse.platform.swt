@@ -552,12 +552,12 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	}
 	return super.setBounds (x, y, width, height, move, resize);
 }
-public void setDigits (int digits) {
+public void setDigits (int value) {
 	checkWidget ();
-	if (digits < 0) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
 	int [] argList1 = {OS.XmNposition, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
-	int [] argList2 = {OS.XmNdecimalPoints, digits, OS.XmNposition, argList1 [1]};
+	int [] argList2 = {OS.XmNdecimalPoints, value, OS.XmNposition, argList1 [1]};
 	OS.XtSetValues (handle, argList2, argList2.length / 2);
 }
 void setForegroundPixel (int pixel) {

@@ -825,18 +825,18 @@ public void setSelection (int value) {
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 }
 
-public void setDigits (int digits) {
+public void setDigits (int value) {
 	checkWidget ();
-	if (digits < 0) error (SWT.ERROR_INVALID_ARGUMENT);
-	int oldDigits = OS.gtk_spin_button_get_digits (handle);
-	if (digits == oldDigits) return;
+	if (value < 0) error (SWT.ERROR_INVALID_ARGUMENT);
+	int digits = OS.gtk_spin_button_get_digits (handle);
+	if (value == digits) return;
 	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, hAdjustment);
-	int diff = Math.abs (digits - oldDigits);
+	int diff = Math.abs (value - digits);
 	int factor = 1;
 	for (int i = 0; i < diff; i++) factor *= 10;
-	if (oldDigits > digits) {
+	if (digits > value) {
 		adjustment.value *= factor;
 		adjustment.upper *= factor;
 		adjustment.lower *= factor;
@@ -850,7 +850,7 @@ public void setDigits (int digits) {
 		adjustment.page_increment /= factor;
 	}
 	OS.memmove (hAdjustment, adjustment);
-	OS.gtk_spin_button_set_digits (handle, digits);
+	OS.gtk_spin_button_set_digits (handle, value);
 }
 
 boolean translateTraversal (GdkEventKey keyEvent) {
