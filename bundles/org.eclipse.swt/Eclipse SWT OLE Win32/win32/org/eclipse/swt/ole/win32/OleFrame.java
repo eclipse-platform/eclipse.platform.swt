@@ -157,6 +157,7 @@ private static void initMsgHook(Display display) {
 	if (display.getData(HHOOK) != null) return;
 	final Callback callback = new Callback(OleFrame.class, "getMsgProc", 3); //$NON-NLS-1$
 	int address = callback.getAddress();
+	if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 	int threadId = OS.GetCurrentThreadId();
 	final int hHook = OS.SetWindowsHookEx(OS.WH_GETMESSAGE, address, 0, threadId);
 	if (hHook == 0) {
@@ -216,10 +217,10 @@ static int getMsgProc(int code, int wParam, int lParam) {
 							return 0;
 						}
 					}
+					}
 				}
 			}
 		}
-	}
 	return OS.CallNextHookEx(hHook.intValue(), code, wParam, lParam);
 }
 /**
