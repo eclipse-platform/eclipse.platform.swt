@@ -196,14 +196,14 @@ void createHandle (int index, int parentHandle, boolean scrolled) {
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
+			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		int border = hasBorder () ? 1 : 0;
 		int [] argList = {
 			OS.XmNancestorSensitive, 1,
-			OS.XmNborderWidth, border,
+			OS.XmNborderWidth, hasBorder () ? 1 : 0,
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
