@@ -46,7 +46,7 @@ public class Table extends Composite {
 	TableColumn [] columns;
 	ImageList imageList;
 	int lastIndexOf, lastWidth;
-	boolean customDraw, dragStarted, fixScrollWidth, mouseDown;
+	boolean customDraw, dragStarted, fixScrollWidth, mouseDown, tipRequested;
 	boolean ignoreActivate, ignoreSelect, ignoreShrink, ignoreRedraw, ignoreResize;
 	static final int INSET = 4;
 	static final int GRID_WIDTH = 1;
@@ -629,7 +629,7 @@ void createItem (TableColumn column, int index) {
 						item.strings = new String [columnCount];
 						item.strings [1] = item.text;
 					}
-					item.text = "";
+					item.text = ""; //$NON-NLS-1$
 					if (images == null) {
 						item.images = new Image [columnCount];
 						item.images [1] = item.image;
@@ -956,14 +956,14 @@ void destroyItem (TableColumn column) {
 				if (item.strings != null) {
 					String [] strings = item.strings;
 					if (index == 0) {
-						item.text = strings [1] != null ? strings [1] : "";
+						item.text = strings [1] != null ? strings [1] : ""; //$NON-NLS-1$
 					}
 					String [] temp = new String [columnCount];
 					System.arraycopy (strings, 0, temp, 0, index);
 					System.arraycopy (strings, index + 1, temp, index, columnCount - index);
 					item.strings = temp;
 				} else {
-					if (index == 0) item.text = "";
+					if (index == 0) item.text = ""; //$NON-NLS-1$
 				}
 				if (item.images != null) {
 					Image [] images = item.images;
@@ -3218,7 +3218,18 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			}
 		}
 	}
-	return super.WM_NOTIFY (wParam, lParam);
+	LRESULT result = super.WM_NOTIFY (wParam, lParam);
+	if (result != null) return result;
+	switch (hdr.code) {
+		case OS.TTN_GETDISPINFOA:
+		case OS.TTN_GETDISPINFOW: {
+			tipRequested = true;
+			int code = callWindowProc (handle, OS.WM_NOTIFY, wParam, lParam);
+			tipRequested = false;
+			return new LRESULT (code);
+		}
+	}
+	return result;
 }
 
 LRESULT WM_RBUTTONDBLCLK (int wParam, int lParam) {
@@ -3419,24 +3430,23 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					* is not reset.  This means that when the text for the
 					* item is set and then reset to an empty string, the
 					* selection draws using the bounds of the previous text.
-					* The fix is to assign a NULL pointer to pszText rather
-					* than a pointer to a zero length string.
+					* The fix is to use a space rather than an empty string
+					* when anything but a tool tip is requested (to avoid
+					* a tool tip that is a single space).
 					* 
 					* NOTE: This is only a problem for items in the first
 					* column.  Assigning NULL to other columns stops Windows
 					* from drawing the selection when LVS_EX_FULLROWSELECT
 					* is set.
 					*/
-					if (string.length () == 0 && plvfi.iSubItem == 0) {
-						plvfi.pszText = 0;
-						plvfi.cchTextMax = 0;
-					} else {
-						TCHAR buffer = new TCHAR (getCodePage (), string, false);
-						int byteCount = Math.min (buffer.length (), plvfi.cchTextMax - 1) * TCHAR.sizeof;
-						OS.MoveMemory (plvfi.pszText, buffer, byteCount);
-						OS.MoveMemory (plvfi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
-						plvfi.cchTextMax = Math.min (plvfi.cchTextMax, string.length () + 1);
+					if (!tipRequested && string.length () == 0 && plvfi.iSubItem == 0) {
+						string = " "; //$NON-NLS-1$
 					}
+					TCHAR buffer = new TCHAR (getCodePage (), string, false);
+					int byteCount = Math.min (buffer.length (), plvfi.cchTextMax - 1) * TCHAR.sizeof;
+					OS.MoveMemory (plvfi.pszText, buffer, byteCount);
+					OS.MoveMemory (plvfi.pszText + byteCount, new byte [TCHAR.sizeof], TCHAR.sizeof);
+					plvfi.cchTextMax = Math.min (plvfi.cchTextMax, string.length () + 1);
 				}
 			}
 			if ((plvfi.mask & OS.LVIF_IMAGE) != 0) {
