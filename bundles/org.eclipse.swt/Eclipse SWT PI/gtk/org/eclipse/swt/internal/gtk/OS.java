@@ -287,6 +287,21 @@ public class OS {
 	public static final int GDK_GRAB_NOT_VIEWABLE = 3;
 	public static final int GDK_GRAB_FROZEN = 4;
 	
+	/* The values for the GtkResponseType constants are specified in
+	 * the documentation, therefore there is no need to get them from the OS.
+	 */
+	public static final int GTK_RESPONSE_NONE   = -1;
+	public static final int GTK_RESPONSE_REJECT = -2;
+	public static final int GTK_RESPONSE_ACCEPT = -3;
+	public static final int GTK_RESPONSE_DELETE_EVENT = -4;
+	public static final int GTK_RESPONSE_OK     = -5;
+	public static final int GTK_RESPONSE_CANCEL = -6;
+	public static final int GTK_RESPONSE_CLOSE  = -7;
+	public static final int GTK_RESPONSE_YES    = -8;
+	public static final int GTK_RESPONSE_NO     = -9;
+	public static final int GTK_RESPONSE_APPLY  = -10;
+	public static final int GTK_RESPONSE_HELP   = -11;
+	
 
 public static final native int GTK_TOOLBAR_CHILD_SPACE();
 public static final native int GTK_TOOLBAR_CHILD_BUTTON();
@@ -978,6 +993,7 @@ public static final native void  gtk_style_set_xthickness(int style, int xthickn
 public static final native void  gtk_style_set_ythickness(int style, int ythickness);
 
 public static final native void  gtk_window_set_destroy_with_parent (int window, boolean setting);
-
 public static final native void gdk_window_get_internal_paint_info(int window, int[] drawable, int[] x_offset, int[] y_offset);
+public static final native int gtk_dialog_run(int dialog);
+
 }
