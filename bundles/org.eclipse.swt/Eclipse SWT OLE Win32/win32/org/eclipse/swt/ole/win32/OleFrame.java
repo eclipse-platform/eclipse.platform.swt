@@ -48,28 +48,12 @@ final public class OleFrame extends Composite
 	private MenuItem[] fileMenuItems;
 	private MenuItem[] containerMenuItems;
 	private MenuItem[] windowMenuItems;
-	private Menu menubar;
 
-	private InternalListener listener;
-	private class InternalListener implements Listener {
-		public void handleEvent(Event e) {
-			switch (e.type) {
-			case SWT.Dispose :
-				onDispose(e);
-				break;
-			case SWT.Resize :
-			case SWT.Move :
-				onResize(e);
-				break;
-			default :
-				OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
-			}
-		}
-	}
+	private Listener listener;
 	
 	private static String CHECK_FOCUS = "OLE_CHECK_FOCUS";
 	private static String HHOOK = "OLE_HHOOK";
-	private static String CALLBACK = "OLE_CALLBACK";
+	private static String HHOOKMSG = "OLE_HHOOK_MSG";
 	
 /**
  * Create an OleFrame child widget using style bits
@@ -91,7 +75,22 @@ public OleFrame(Composite parent, int style) {
 	createCOMInterfaces();
 
 	// setup cleanup proc
-	listener = new InternalListener();
+	listener = new Listener()  {
+		public void handleEvent(Event e) {
+			switch (e.type) {
+			case SWT.Dispose :
+				onDispose(e);
+				break;
+			case SWT.Resize :
+			case SWT.Move :
+				onResize(e);
+				break;
+			default :
+				OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
+			}
+		}
+	};
+	
 	addListener(SWT.Dispose, listener);
 
 	// inform inplaceactiveobject whenever frame resizes
@@ -99,9 +98,6 @@ public OleFrame(Composite parent, int style) {
 	
 	// inform inplaceactiveobject whenever frame moves
 	addListener(SWT.Move, listener);
-
-	// By default, set the menubar to the current frame's menubar
-	menubar = getShell().getMenuBar();
 
 	// Maintain a reference to yourself so that when
 	// ClientSites close, they don't take the frame away
@@ -166,7 +162,7 @@ private static void initMsgHook(Display display) {
 		return;
 	}
 	display.setData(HHOOK, new Integer(hHook));
-	display.setData(CALLBACK, callback);
+	display.setData(HHOOKMSG, new MSG());
 	display.disposeExec(new Runnable() {
 		public void run() {
 			if (hHook != 0) OS.UnhookWindowsHookEx(hHook);
@@ -182,7 +178,7 @@ static int getMsgProc(int code, int wParam, int lParam) {
 	if (code < 0) {
 		return OS.CallNextHookEx(hHook.intValue(), code, wParam, lParam);
 	}
-	MSG msg = new MSG();
+	MSG msg = (MSG)display.getData(HHOOKMSG);
 	OS.MoveMemory(msg, lParam, MSG.sizeof);
 	int message = msg.message;
 	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {		
@@ -310,9 +306,6 @@ public MenuItem[] getFileMenus(){
 int getIOleInPlaceFrame() {
 	return iOleInPlaceFrame.getAddress();
 }
-Menu getMenubar(){
-	return menubar;
-}
 private int getMenuItemID(int hMenu, int index) {
 	int id = 0;
 	MENUITEMINFO lpmii = new MENUITEMINFO();
@@ -352,6 +345,7 @@ public MenuItem[] getWindowMenus(){
 }
 private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 	// locate menu bar
+	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed()) {
 		COM.MoveMemory(lpMenuWidths, new int[] {0}, 4);
 		return COM.S_OK;
@@ -501,6 +495,7 @@ private void releaseObjectInterfaces() {
 }
 private int RemoveMenus(int hmenuShared) {
 
+	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed()) return COM.S_FALSE;
 
 	int hMenu = menubar.handle;
@@ -629,16 +624,13 @@ void setCurrentDocument(OleClientSite doc) {
 public void setFileMenus(MenuItem[] fileMenus){
 	fileMenuItems = fileMenus;
 }
-public boolean forceFocus () {
-	if (currentdoc == null)	return super.forceFocus();
-	return currentdoc.forceFocus();
-}
 private int SetMenu(int hmenuShared, int holemenu, int hwndActiveObject) {
 
 	int inPlaceActiveObject = 0;
 	if (objIOleInPlaceActiveObject != null)
 		inPlaceActiveObject = objIOleInPlaceActiveObject.getAddress();		
 	
+	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed()){
 		return COM.OleSetMenuDescriptor(0, getShell().handle, hwndActiveObject, iOleInPlaceFrame.getAddress(), inPlaceActiveObject);
 	}
@@ -655,9 +647,6 @@ private int SetMenu(int hmenuShared, int holemenu, int hwndActiveObject) {
 	OS.DrawMenuBar(handle);
 	
 	return COM.OleSetMenuDescriptor(holemenu, handle, hwndActiveObject, iOleInPlaceFrame.getAddress(), inPlaceActiveObject);
-}
-private void setMenubar(Menu bar){
-	menubar = bar;
 }
 /**
  *
@@ -684,6 +673,7 @@ private boolean translateOleAccelerator(MSG msg) {
 	return objIOleInPlaceActiveObject.TranslateAccelerator(msg) != OLE.S_FALSE;
 }
 private int TranslateAccelerator(int lpmsg, int wID){
+	Menu menubar = getShell().getMenuBar();
 	if (menubar == null || menubar.isDisposed() || !menubar.isEnabled()) return COM.S_FALSE;
 	if (wID < 0) return COM.S_FALSE;
 	

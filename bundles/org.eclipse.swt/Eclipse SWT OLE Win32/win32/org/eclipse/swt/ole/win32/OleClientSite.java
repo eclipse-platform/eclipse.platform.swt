@@ -116,20 +116,29 @@ protected OleClientSite(Composite parent, int style) {
 				onDispose(e);
 				break;
 			case SWT.FocusIn:
-				onFocusIn();
+				onFocusIn(e);
 				break;
 			case SWT.Paint:
 				onPaint(e);
+				break;
+			case SWT.Traverse:
+				onTraverse(e);
+				break;
+			case SWT.KeyDown:
 				break;
 			default :
 				OLE.error(SWT.ERROR_NOT_IMPLEMENTED);
 			}
 		}
 	};
-	this.addListener(SWT.Dispose, listener);
-	this.addListener(SWT.FocusIn, listener);
-	this.addListener(SWT.Paint, listener);
+
 	frame.addListener(SWT.Resize, listener);
+	frame.addListener(SWT.Move, listener);
+	addListener(SWT.Dispose, listener);
+	addListener(SWT.FocusIn, listener);
+	addListener(SWT.Paint, listener);
+	addListener(SWT.Traverse, listener);
+	addListener(SWT.KeyDown, listener);
 }
 /**
  * Create an OleClientSite child widget using the OLE Document type associated with the
@@ -357,10 +366,7 @@ private void activateInPlaceClient() {
 	if (objIOleInPlaceObject.GetWindow(phwnd) == COM.S_OK) {
 		OS.SetWindowPos(phwnd[0], OS.HWND_TOP, 0, 0, 0, 0, OS.SWP_NOSIZE | OS.SWP_NOMOVE);
 	}
-
 	frame.setCurrentDocument(this);
-	
-	setFocus();
 }
 protected void addObjectReferences() {
 	
@@ -734,9 +740,9 @@ private int GetWindowContext(int ppFrame, int ppDoc, int lprcPosRect, int lprcCl
 	frameInfo.cb = OLEINPLACEFRAMEINFO.sizeof;
 	frameInfo.fMDIApp = 0;
 	frameInfo.hwndFrame = frame.handle;
-	Menu menubar = frame.getMenubar();
+	Shell shell = getShell();
+	Menu menubar = shell.getMenuBar();
 	if (menubar != null && !menubar.isDisposed()) {
-		Shell shell = menubar.getShell();
 		int hwnd = shell.handle;
 		int cAccel = OS.SendMessage(hwnd, OS.WM_APP, 0, 0);
 		if (cAccel != 0) {
@@ -768,10 +774,15 @@ public boolean isDirty() {
 	return true;
 }
 public boolean isFocusControl () {
-	Control focus = getDisplay().getFocusControl();
-	if (focus == frame) {
-		return frame.getCurrentDocument() == this;
-	}
+	checkWidget ();
+	if (objIOleInPlaceObject == null) return false;
+	int[] phwnd = new int[1];
+	objIOleInPlaceObject.GetWindow(phwnd);
+	if (phwnd[0] == 0) return false;
+	int handle = OS.GetFocus();
+	do {
+		if (phwnd[0] == handle) return true;
+	} while ((handle = OS.GetParent (handle)) != 0);
 	return false;
 }
 private int OnClose() {
@@ -795,8 +806,13 @@ private void onDispose(Event e) {
 	frame.Release();
 	frame = null;
 }
-private void onFocusIn() {
-	setInplaceFocus();
+private void onFocusIn(Event e) {
+	if (objIOleInPlaceObject == null) return;
+	if (isFocusControl()) return;
+	int[] phwnd = new int[1];
+	objIOleInPlaceObject.GetWindow(phwnd);
+	if (phwnd[0] == 0) return;
+	OS.SetFocus(phwnd[0]);
 }
 private int OnInPlaceActivate() {
 	active = true;
@@ -867,16 +883,29 @@ private int OnUIDeactivate(int fUndoable) {
 
 	frame.SetActiveObject(0,0);
 
-	Menu menubar = frame.getMenubar();
+	Shell shell = getShell();
+	Menu menubar = shell.getMenuBar();
 	if (menubar == null || menubar.isDisposed())
 		return COM.S_OK;
 		
-	int shellHandle = menubar.getShell().handle;
+	int shellHandle = shell.handle;
 	OS.SetMenu(shellHandle, menubar.handle);
 	return COM.OleSetMenuDescriptor(0, shellHandle, 0, 0, 0);
 }
+private void onTraverse(Event event) {
+	switch (event.detail) {
+		case SWT.TRAVERSE_ESCAPE:
+		case SWT.TRAVERSE_RETURN:
+		case SWT.TRAVERSE_TAB_NEXT:
+		case SWT.TRAVERSE_TAB_PREVIOUS:
+		case SWT.TRAVERSE_PAGE_NEXT:
+		case SWT.TRAVERSE_PAGE_PREVIOUS:
+		case SWT.TRAVERSE_MNEMONIC:
+			event.doit = true;
+			break;
+	}
+}
 private int OnViewChange(int dwAspect, int lindex) {
-	setObjectRects();
 	return COM.S_OK;
 }
 private IStorage openStorage(IStorage storage, String name) {
@@ -1191,19 +1220,6 @@ public void setIndent(Rectangle newIndent) {
 	indent.right = newIndent.width;
 	indent.top = newIndent.y;
 	indent.bottom = newIndent.height;
-}
-private boolean setInplaceFocus() {
-	if (objIOleInPlaceObject == null) return false;
-	int[] phwnd = new int[1];
-	objIOleInPlaceObject.GetWindow(phwnd);
-	if (phwnd[0] == 0) return false;
-	return (OS.SetFocus(phwnd[0]) != 0);
-}
-public boolean forceFocus () {
-	if (!setInplaceFocus()) {
-		return super.forceFocus();
-	}
-	return true;
 }
 private void setObjectRects() {
 
