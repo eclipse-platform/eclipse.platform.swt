@@ -28,9 +28,4 @@ public class GdkVisual {
 	public int blue_mask;
 	public int blue_shift;
 	public int blue_prec;
-	
-	private GdkVisual () {}
-	public GdkVisual (int ptr) {
-		OS.memmove(this, ptr);
-	}
 }

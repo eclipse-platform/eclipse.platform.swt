@@ -15,10 +15,10 @@ package org.eclipse.swt.internal.gtk;
 
 public class GtkCListColumn {
 	public int title;
-	public short area_x;
-	public short area_y;
-	public short area_width;
-	public short area_height;
+	public int area_x;
+	public int area_y;
+	public int area_width;
+	public int area_height;
 	public int button;
 	public int window;
 	public int width;
@@ -30,10 +30,5 @@ public class GtkCListColumn {
 	public int resizeable;
 	public int auto_resize;
 	public int button_passive;
-	public static final int sizeof = 40;
-	
-	private GtkCListColumn() {}
-	public GtkCListColumn(int ptr) {
-		OS.memmove(this, ptr);
-	}
+	public static final int sizeof = 48;
 }

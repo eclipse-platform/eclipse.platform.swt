@@ -13,7 +13,15 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkCombo {
-	public int entry;
-	public int list;
+public class GdkEventKey extends GdkEvent {
+	public int window;
+	public byte send_event;
+	public int time;
+	public int state;
+	public int keyval;
+	public int length;
+	public int string;
+	public short hardware_keycode;
+    public byte group;
+   	public static final int sizeof = 36;
 }

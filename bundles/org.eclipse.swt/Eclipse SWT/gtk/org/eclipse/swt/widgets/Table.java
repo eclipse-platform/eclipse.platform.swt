@@ -130,11 +130,11 @@ int createCheckPixmap(boolean checked) {
 	/*
 	 * The box will occupy the whole item width.
 	 */
-	GtkCList clist = new GtkCList (handle);
-	int check_height = clist.row_height-2;
+	int check_height = OS.GTK_CLIST_ROW_HEIGHT (handle) - 2;
 	int check_width = check_height;
 
-	GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
+	GdkVisual visual = new GdkVisual();
+	OS.memmove(visual, OS.gdk_visual_get_system());
 	int pixmap = OS.gdk_pixmap_new(0, check_width, check_height, visual.depth);
 	
 	int gc = OS.gdk_gc_new(pixmap);
@@ -493,9 +493,8 @@ public TableItem getItem (int index) {
  */
 public TableItem getItem (Point pt) {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
 	int clientX = pt.x;
-	int clientY = pt.y - clist.column_title_area_height;
+	int clientY = pt.y - OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (handle);
 	if (clientY <= 0) return null;
 	int [] row = new int [1], column = new int [1];
 	if (OS.gtk_clist_get_selection_info (handle, clientX, clientY, row, column) == 0) {
@@ -532,8 +531,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	return clist.row_height;
+	return OS.GTK_CLIST_ROW_HEIGHT (handle);
 }
 
 /**
@@ -577,8 +575,7 @@ public TableItem [] getItems () {
  */
 public TableItem [] getSelection () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
+	int list = OS.GTK_CLIST_SELECTION (handle);
 	if (list == 0) return new TableItem [0];
 	int length = OS.g_list_length (list);
 	TableItem [] result = new TableItem [length];
@@ -602,9 +599,9 @@ public TableItem [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	if (clist.selection == 0) return 0;
-	return OS.g_list_length (clist.selection);
+	int selection = OS.GTK_CLIST_SELECTION (handle);
+	if (selection == 0) return 0;
+	return OS.g_list_length (selection);
 }
 
 /**
@@ -620,8 +617,7 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
+	int list = OS.GTK_CLIST_SELECTION (handle);
 	if (OS.g_list_length (list) == 0) return -1;
 	return OS.g_list_nth_data (list, 0);
 }
@@ -643,8 +639,7 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
+	int list = OS.GTK_CLIST_SELECTION (handle);
 	int length = OS.g_list_length (list);
 	int [] indices = new int [length];
 	for (int i=0; i<length; i++) {
@@ -668,8 +663,7 @@ public int [] getSelectionIndices () {
  */
 public boolean isSelected (int index) {
 	checkWidget();
-	GtkCList widget = new GtkCList (handle);
-	int list = widget.selection;
+	int list = OS.GTK_CLIST_SELECTION (handle);
 	int length = OS.g_list_length (list);
 	for (int i=0; i<length; i++) {
 		if (index == OS.g_list_nth_data (list, i)) return true;
@@ -678,13 +672,14 @@ public boolean isSelected (int index) {
 }
 
 int processSelection (int int0, int int1, int int2) {
-	GtkCList clist = new GtkCList (handle);
-	if (int0 != clist.focus_row) return 0;
+	int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
+	if (int0 != focus_row) return 0;
 	if ((style & SWT.MULTI) != 0) selected = false;
 	int eventType = SWT.Selection;
 	if (int2 != 0) {
-		int type = OS.GDK_EVENT_TYPE (int2);
-		if (type == OS.GDK_2BUTTON_PRESS) {
+		GdkEvent gdkEvent = new GdkEvent ();
+		OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
+		if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
 			eventType = SWT.DefaultSelection;
 		}
 	}
@@ -694,27 +689,27 @@ int processSelection (int int0, int int1, int int2) {
 
 int paintWindow () {
 	OS.gtk_widget_realize (handle);
-	GtkCList clist = new GtkCList (handle);
-	return clist.clist_window;
+	return OS.GTK_CLIST_CLIST_WINDOW (handle);
 }
 
 int processEvent (int eventNumber, int int0, int int1, int int2) {
 	if (eventNumber == 0) {
-		switch (OS.GDK_EVENT_TYPE (int0)) {
+		GdkEvent gdkEvent = new GdkEvent ();
+		OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
+		switch (gdkEvent.type) {
 			case OS.GDK_BUTTON_PRESS:
 			case OS.GDK_2BUTTON_PRESS: {
 				if ((style & SWT.MULTI) != 0) selected = true;
 				if ((style & SWT.CHECK) != 0) {
 					double [] px = new double [1], py = new double [1];
 					OS.gdk_event_get_coords (int0, px, py);
-					GtkCList clist = new GtkCList (handle);
 					int x = (int) (px [0]);
-					int y = (int) (py [0]) - clist.column_title_area_height;
+					int y = (int) (py [0]) - OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT (handle);
 					if (y > 0) {
 						int [] row = new int [1], column = new int [1];
 						if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {	
-							int nX = clist.hoffset + 4;
-							int nY = clist.voffset + (clist.row_height + 1) * row [0] + 2;
+							int nX = OS.GTK_CLIST_HOFFSET (handle) + 4;
+							int nY = OS.GTK_CLIST_VOFFSET (handle) + (OS.GTK_CLIST_ROW_HEIGHT (handle) + 1) * row [0] + 2;
 							int [] check_width = new int [1], check_height = new int [1];
 							OS.gdk_drawable_get_size (check, check_width, check_height);
 							if (nX <= x && x <= nX + check_width [0]) {
@@ -751,9 +746,8 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 					int x = (int) (px[0]), y = (int) (py[0]);
 					int [] row = new int [1], column = new int [1];
 					if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
-						GtkCList clist = new GtkCList (handle);
-						if (selected && clist.selection != 0) {
-							int list = clist.selection;
+						int list = OS.GTK_CLIST_SELECTION (handle);
+						if (selected && list != 0) {
 							int length = OS.g_list_length (list);
 							for (int i=0; i<length; i++) {
 								if (row [0] == OS.g_list_nth_data (list, i)) {
@@ -780,18 +774,20 @@ int processKeyDown (int callData, int arg1, int int2) {
 	* The fix is to ignore the notification that is sent
 	* by GTK and look for the space key.
 	*/
-	int length = OS.gdk_event_key_get_length (callData);
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, callData, GdkEventKey.sizeof);
+	int length = keyEvent.length;
 	if (length == 1) {
-		int string = OS.gdk_event_key_get_string (callData);
+		int string = keyEvent.string;
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, string, length);
 		char [] unicode = Converter.mbcsToWcs (null, buffer);
 		switch (unicode [0]) {
 			case ' ':
-				GtkCList clist = new GtkCList (handle);
-				if (clist.focus_row != -1) {
+				int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
+				if (focus_row != -1) {
 					Event event = new Event ();
-					event.item = items [clist.focus_row];
+					event.item = items [focus_row];
 					postEvent (SWT.Selection, event);
 				}
 				break;
@@ -809,8 +805,9 @@ int processKeyUp (int callData, int arg1, int int2) {
 	* the notification to be issued by temporarily losing and
 	* gaining focus every time the shift key is released.
 	*/
-	int keyval = OS.gdk_event_key_get_keyval (callData);
-	switch (keyval) {
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, callData, GdkEventKey.sizeof);
+	switch (keyEvent.keyval) {
 		case OS.GDK_Shift_L:
 		case OS.GDK_Shift_R:
 			OS.gtk_widget_grab_focus (scrolledHandle);
@@ -833,8 +830,9 @@ int processKeyUp (int callData, int arg1, int int2) {
  */
 public int getTopIndex () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	return -clist.voffset / (clist.row_height + 1);
+	int voffset = OS.GTK_CLIST_VOFFSET (handle);
+	int row_height = OS.GTK_CLIST_ROW_HEIGHT (handle);
+	return -voffset / (row_height + 1);
 }
 
 void hookEvents () {
@@ -1163,14 +1161,12 @@ public boolean getHeaderVisible () {
 	return (OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_CLIST_SHOW_TITLES) != 0;
 }
 
-public void setFont (Font font) {
-	checkWidget ();
-	super.setFont (font);
+void setFontDescription (int font) {
+	super.setFontDescription (font);
 	if (imageHeight != 0) {
 		OS.gtk_widget_realize (handle);
 		OS.gtk_clist_set_row_height (handle, 0);
-		GtkCList clist = new GtkCList (handle);
-		if (imageHeight > clist.row_height) {
+		if (imageHeight > OS.GTK_CLIST_ROW_HEIGHT (handle)) {
 			OS.gtk_clist_set_row_height (handle, imageHeight);
 		}
 	}

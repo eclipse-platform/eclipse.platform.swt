@@ -212,7 +212,6 @@ static TreeItem checkNull (TreeItem item) {
  */
 public Rectangle getBounds () {
 	int ctree = parent.handle;
-	GtkCTree tree = new GtkCTree(ctree);
 /*
 	double haj = OS.gtk_adjustment_get_value(tree.hadjustment);
 	double vaj = OS.gtk_adjustment_get_value(tree.vadjustment);
@@ -407,7 +406,8 @@ public Tree getParent () {
 public TreeItem getParentItem () {
 	checkWidget();
 	int data = OS.g_list_nth_data (handle, 0);
-	GtkCTreeRow row = new GtkCTreeRow (data);
+	GtkCTreeRow row = new GtkCTreeRow ();
+	OS.memmove (row, data, GtkCTreeRow.sizeof);
 	if (row.parent == 0) return null;
 	int ctree = parent.handle;
 	int index = OS.gtk_ctree_node_get_row_data (ctree, row.parent) - 1;
@@ -562,8 +562,7 @@ public void setImage (Image image) {
 		if (parent.imageHeight == 0) {		
 			int [] width = new int [1], height = new int [1];
 			OS.gdk_drawable_get_size (pixmap, width, height);
-			GtkCList widget = new GtkCList (ctree);
-			if (height [0] > widget.row_height) {
+			if (height [0] > OS.GTK_CLIST_ROW_HEIGHT (parent.handle)) {
 				parent.imageHeight = height [0];
 				OS.gtk_clist_set_row_height (ctree, height [0]);
 			}

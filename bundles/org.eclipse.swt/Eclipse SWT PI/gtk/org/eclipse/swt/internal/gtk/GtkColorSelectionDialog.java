@@ -13,7 +13,9 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkCombo {
-	public int entry;
-	public int list;
+public class GtkColorSelectionDialog {
+	public int colorsel;
+	public int ok_button;
+	public int cancel_button;
+	public int help_button;
 }

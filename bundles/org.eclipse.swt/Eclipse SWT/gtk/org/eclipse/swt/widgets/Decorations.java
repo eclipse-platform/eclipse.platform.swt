@@ -173,11 +173,12 @@ void createWidget (int index) {
  */
 public Button getDefaultButton () {
 	checkWidget();
-	int buttonHandle = OS.gtk_window_get_default(topHandle());
-	if (buttonHandle==0) return null;
-	Widget button = WidgetTable.get(buttonHandle);
-	if (!(button instanceof Button)) return null;
-	return (Button)button;
+//	int buttonHandle = OS.gtk_window_get_default(topHandle());
+//	if (buttonHandle==0) return null;
+//	Widget button = WidgetTable.get(buttonHandle);
+//	if (!(button instanceof Button)) return null;
+//	return (Button)button;
+	return null;
 }
 /**
  * Returns the receiver's image if it had previously been 

@@ -362,7 +362,7 @@ public void close () {
 }
 void closeWidget () {
 	Event event = new Event ();
-	event.time = OS.GDK_CURRENT_TIME();
+	event.time = OS.GDK_CURRENT_TIME;
 	sendEvent (SWT.Close, event);
 	if (event.doit && !isDisposed ()) dispose ();
 }
@@ -573,8 +573,12 @@ int processDispose (int int0, int int1, int int2) {
 }
 
 int processActivate (int int0, int int1, int int2) {
-	if (OS.GDK_EVENT_TYPE (int0) == OS.GDK_FOCUS_CHANGE) {
-		hasFocus = OS.gdk_event_focus_get_in (int0);
+	GdkEvent gdkEvent = new GdkEvent ();
+	OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
+	if (gdkEvent.type == OS.GDK_FOCUS_CHANGE) {
+		GdkEventFocus focusEvent = new GdkEventFocus ();
+		OS.memmove (focusEvent, int0, GdkEventFocus.sizeof);
+		hasFocus = focusEvent.in != 0;
 		postEvent (hasFocus ? SWT.Activate : SWT.Deactivate);
 	}
 	return 0;

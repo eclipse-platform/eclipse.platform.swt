@@ -13,7 +13,9 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkCombo {
-	public int entry;
-	public int list;
+public class GdkEventFocus extends GdkEvent {
+	public int window;
+	public byte send_event;
+	public short in;
+	public static final int sizeof = 12;
 }

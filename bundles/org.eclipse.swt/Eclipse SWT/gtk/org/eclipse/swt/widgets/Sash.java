@@ -151,7 +151,9 @@ void drawBand (int x, int y, int width, int height) {
 
 int processMouseDown (int callData, int int1, int int2) {
 	super.processMouseDown (callData, int1, int2);
-	int button = OS.gdk_event_button_get_button (callData);
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
+	int button = gdkEvent.button;
 	if (button != 1) return 0;
 	double[] px = new double [1], py = new double [1];
 	OS.gdk_event_get_coords (callData, px, py);
@@ -228,7 +230,9 @@ int processMouseMove (int callData, int int1, int int2) {
 
 int processMouseUp (int callData, int int1, int int2) {
 	super.processMouseUp (callData, int1, int2);
-	int button = OS.gdk_event_button_get_button(callData);
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
+	int button = gdkEvent.button;
 	if (button != 1) return 0;
 	if (!dragging) return 0;
 	dragging = false;

@@ -136,10 +136,10 @@ public int open () {
 	if ((style & (SWT.PRIMARY_MODAL|SWT.APPLICATION_MODAL|SWT.SYSTEM_MODAL)) != 0) {
 		dialogFlags |= OS.GTK_DIALOG_MODAL;
 	}
-	int messageType = OS.GTK_MESSAGE_INFO();
-	if ((style & (SWT.ICON_WARNING)) != 0)  messageType = OS.GTK_MESSAGE_WARNING();
-	if ((style & (SWT.ICON_QUESTION)) != 0) messageType = OS.GTK_MESSAGE_QUESTION();
-	if ((style & (SWT.ICON_ERROR)) != 0)    messageType = OS.GTK_MESSAGE_ERROR();
+	int messageType = OS.GTK_MESSAGE_INFO;
+	if ((style & (SWT.ICON_WARNING)) != 0)  messageType = OS.GTK_MESSAGE_WARNING;
+	if ((style & (SWT.ICON_QUESTION)) != 0) messageType = OS.GTK_MESSAGE_QUESTION;
+	if ((style & (SWT.ICON_ERROR)) != 0)    messageType = OS.GTK_MESSAGE_ERROR;
 	
 	handle = OS.gtk_message_dialog_new(parentHandle, dialogFlags, messageType, 0, message);
 	if (handle==0) SWT.error(SWT.ERROR_NO_HANDLES);

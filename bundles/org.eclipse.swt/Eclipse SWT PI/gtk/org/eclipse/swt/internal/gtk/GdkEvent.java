@@ -13,12 +13,7 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkCTree {
-	public int tree_indent;
-	public int tree_column;
-	
-	private GtkCTree() {}
-	public GtkCTree(int ptr) {
-		OS.memmove(this, ptr);
-	}
+public class GdkEvent {
+	public int type;
+	public static final int sizeof = 4;
 }

@@ -237,7 +237,7 @@ public Image(Device device, Image srcImage, int flag) {
 	}
 	
 	/* Retrieve the source pixmap data */
-	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB(), false, 8, width, height);
+	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int colormap = OS.gdk_colormap_get_system();
 	OS.gdk_pixbuf_get_from_drawable(pixbuf, srcImage.pixmap, colormap, 0, 0, 0, 0, width, height);
@@ -581,7 +581,7 @@ public ImageData getImageData() {
 	int[] w = new int[1], h = new int[1];
  	OS.gdk_drawable_get_size(pixmap, w, h);
  	int width = w[0], height = h[0]; 	
-	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB(), false, 8, width, height);
+	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int colormap = OS.gdk_colormap_get_system();
 	OS.gdk_pixbuf_get_from_drawable(pixbuf, pixmap, colormap, 0, 0, 0, 0, width, height);
@@ -600,7 +600,8 @@ public ImageData getImageData() {
 		/* Get the icon mask data */
 		int gdkImagePtr = OS.gdk_drawable_get_image(mask, 0, 0, width, height);
 		if (gdkImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		GdkImage gdkImage = new GdkImage(gdkImagePtr);
+		GdkImage gdkImage = new GdkImage();
+		OS.memmove(gdkImage, gdkImagePtr);
 		byte[] maskData = new byte[gdkImage.bpl * height];
 		OS.memmove(maskData, gdkImage.mem, maskData.length);
 		OS.g_object_unref(gdkImagePtr);
@@ -697,7 +698,7 @@ void init(Device device, ImageData image) {
 	int width = image.width;
 	int height = image.height;
 	PaletteData palette = image.palette;
-	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB(), false, 8, width, height);
+	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, width, height);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 	int data = OS.gdk_pixbuf_get_pixels(pixbuf);

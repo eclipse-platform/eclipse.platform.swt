@@ -399,12 +399,12 @@ void grab() {
 	                                    OS.GDK_POINTER_MOTION_MASK | OS.GDK_BUTTON_RELEASE_MASK,
 	                                    xWindow,
 	                                    cursor,
-	                                    OS.GDK_CURRENT_TIME());
+	                                    OS.GDK_CURRENT_TIME);
 	lastCursor = cursor;
 }
 void ungrab() {
 	if (ptrGrabResult == OS.GDK_GRAB_SUCCESS)
-		OS.gdk_pointer_ungrab(OS.GDK_CURRENT_TIME());
+		OS.gdk_pointer_ungrab(OS.GDK_CURRENT_TIME);
 
 }
 static int checkStyle (int style) {

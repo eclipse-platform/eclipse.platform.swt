@@ -108,18 +108,20 @@ public RGB open () {
 	if (parent!=null) {
 		OS.gtk_window_set_transient_for(handle, parent.topHandle());
 	}
+	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
+	OS.memmove(dialog, handle);
 	if (rgb != null) {
 		double [] color = new double [4];
 		color [0] = (double)rgb.red / 256;
 		color [1] = (double)rgb.green / 256;
 		color [2] = (double)rgb.blue / 256;
-		OS.gtk_color_selection_set_color (OS.GTK_COLOR_SELECTION_DIALOG_COLORSEL(handle), color);
+		OS.gtk_color_selection_set_color (dialog.colorsel, color);
 	}
 	rgb = null;
 	int response = OS.gtk_dialog_run(handle);
 	if (response == OS.GTK_RESPONSE_OK) {
 		double [] color = new double [4];
-		OS.gtk_color_selection_get_color (OS.GTK_COLOR_SELECTION_DIALOG_COLORSEL(handle), color);
+		OS.gtk_color_selection_get_color (dialog.colorsel, color);
 		rgb = new RGB ((int)(color [0] * 256), (int)(color [1] * 256), (int)(color [2] * 256));
 	}
 	OS.gtk_widget_destroy(handle);

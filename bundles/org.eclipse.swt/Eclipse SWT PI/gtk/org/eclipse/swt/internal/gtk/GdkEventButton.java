@@ -13,19 +13,17 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkEditable {
-	public int current_pos;
-	public int selection_start_pos;
-	public int selection_end_pos;
-	public int has_selection; // bitfield : 1
-	public int editable; // bitfield : 1
-	public int visible; // bitfield : 1
-	public int ic;
-	public int ic_attr;
-	public int clipboard_text;
-	
-	private GtkEditable() {}
-	public GtkEditable(int ptr) {
-		OS.memmove(this, ptr);
-	}
+public class GdkEventButton extends GdkEvent {
+	public int window;
+	public byte send_event;
+	public int time;
+	public double x;
+	public double y;
+	public int axes;
+	public int state;
+	public int button;
+	public int device;
+	public double x_root;
+	public double y_root;
+	public static final int sizeof = 64;
 }

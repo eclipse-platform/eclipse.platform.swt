@@ -118,11 +118,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  * @see #getClientArea
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
-	int[] trims = new int[4];
-	//FIXME - custom C code and wrong X,Y
-	OS.swt_frame_get_trim(handle, trims);	
-	return new Rectangle (x-trims[1], y-trims[0], width+trims[1]+trims[2], height+trims[0]+trims[3]);
+	checkWidget();	
+	int fixedWidth = OS.GTK_WIDGET_WIDTH (fixedHandle);
+	int fixedHeight = OS.GTK_WIDGET_HEIGHT (fixedHandle);
+	int clientX = OS.GTK_WIDGET_X (clientHandle);
+	int clientY = OS.GTK_WIDGET_Y (clientHandle);
+	int clientWidth = OS.GTK_WIDGET_WIDTH (clientHandle);
+	int clientHeight = OS.GTK_WIDGET_HEIGHT (clientHandle);	
+	x -= clientX;
+	y -= clientY;
+	//FIXME - why we have to add extra space
+	width += 15 + fixedWidth - clientWidth;
+	height += 15 + fixedHeight - clientHeight;
+	return new Rectangle (x, y, width, height);
 }
 
 void createHandle(int index) {

@@ -14,10 +14,6 @@ package org.eclipse.swt.internal.gtk;
  */
 
 public class GdkImage {
-//	GObject parent_instance;
-    //public int parent_instance_g_type_instance;
-    //public int parent_instance_ref_count;
-    //public int parent_instance_qdata; 
 	public int type;
 	public int visual;
 	public int byte_order;
@@ -30,10 +26,4 @@ public class GdkImage {
 	public int mem;
 	public int colormap;
 	public int windowing_data;
-	public static final int sizeof = 52;
-	
-	private GdkImage () {}
-	public GdkImage (int ptr) {
-		OS.memmove(this, ptr);
-	}
 }

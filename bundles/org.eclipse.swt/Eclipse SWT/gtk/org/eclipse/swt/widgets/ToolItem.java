@@ -154,21 +154,21 @@ void createHandle (int index) {
 		case SWT.PUSH:
 		case 0:
 			handle = OS.gtk_toolbar_insert_element (parent.handle,
-			OS.GTK_TOOLBAR_CHILD_BUTTON(),
+			OS.GTK_TOOLBAR_CHILD_BUTTON,
 			0, new byte[1], null, null,
 			0, 0, 0,
 			index);
 			return;
 		case SWT.RADIO:
 			handle = OS.gtk_toolbar_insert_element (parent.handle,
-				OS.GTK_TOOLBAR_CHILD_RADIOBUTTON(),
+				OS.GTK_TOOLBAR_CHILD_RADIOBUTTON,
 				0, new byte[1], null, null,
 				0, 0, 0,
 				index);
 			return;
 		case SWT.CHECK:
 			handle = OS.gtk_toolbar_insert_element (parent.handle,
-				OS.GTK_TOOLBAR_CHILD_TOGGLEBUTTON(),
+				OS.GTK_TOOLBAR_CHILD_TOGGLEBUTTON,
 				0, new byte[1], null, null,
 				0, 0, 0,
 				index);
@@ -204,8 +204,12 @@ void createHandle (int index) {
 			if (arrowButtonHandle==0) error(SWT.ERROR_NO_HANDLES);
 			OS.gtk_button_set_relief(arrowButtonHandle, OS.GTK_RELIEF_NONE);
 			OS.gtk_container_set_border_width(arrowButtonHandle,0);
+			//?? LEAK
 			int style = OS.gtk_style_copy(OS.gtk_widget_get_style(arrowButtonHandle));
-			OS.gtk_style_set_xthickness(style, 0);
+			GtkStyle gtkStyle = new GtkStyle ();
+			OS.memmove(gtkStyle, style);
+			gtkStyle.xthickness = 0;
+			OS.memmove(style, gtkStyle);
 			OS.gtk_widget_set_style(arrowButtonHandle, style);
 			// when the arrow gets destroyed, it will dereference the clone
 			
@@ -428,7 +432,7 @@ void hookEvents () {
 	 * are done their own processing.  However, in contrast to other widgets,
 	 * the buttons that make up the tool items, do not propagate the mouse
 	 * up/down events.
-	 * (It it interesting to note that they DO propagate mouse motion events.)
+	 * (It is interesting to note that they DO propagate mouse motion events.)
 	 */
 	int mask =
 		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
@@ -461,15 +465,6 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-int processMouseDown (int callData, int arg1, int int2) {
-	/*
-	 * FIXME.  The following line of code is wrong:
-	 * the pointer position is relative to item, not the toolbar.
-	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
-	 */
-	parent.processMouseDown (callData, arg1, int2);
-	return 0;
-}
 int processMouseUp (int callData, int arg1, int int2) {
 	/*
 	 * FIXME.  The following line of code is wrong:
@@ -478,8 +473,15 @@ int processMouseUp (int callData, int arg1, int int2) {
 	 */
 	parent.processMouseUp (callData, arg1, int2);
 	return 0;
-}
-int processMouseEnter (int int0, int int1, int int2) {
+}int processMouseDown (int callData, int arg1, int int2) {
+	/*
+	 * FIXME.  The following line of code is wrong:
+	 * the pointer position is relative to item, not the toolbar.
+	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
+	 */
+	parent.processMouseDown (callData, arg1, int2);
+	return 0;
+}int processMouseEnter (int int0, int int1, int int2) {
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
 	if ( drawHotImage && (currentpixmap != 0) ) { 
 		OS.gtk_pixmap_set (currentpixmap, hotImage.pixmap, hotImage.mask);
@@ -800,4 +802,12 @@ public void setWidth (int width) {
 static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.DROP_DOWN, 0);
 }
-}
+int processMouseUp (int callData, int arg1, int int2) {
+	/*
+	 * FIXME.  The following line of code is wrong:
+	 * the pointer position is relative to item, not the toolbar.
+	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
+	 */
+	parent.processMouseUp (callData, arg1, int2);
+	return 0;
+}}

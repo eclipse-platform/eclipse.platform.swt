@@ -104,9 +104,4 @@ public class GtkStyle {
 	public int black_gc;
 	public int white_gc;
 	public int bg_pixmap0, bg_pixmap1, bg_pixmap2, bg_pixmap3, bg_pixmap4, bg_pixmap5;
-	
-	private GtkStyle() {}
-	public GtkStyle(int ptr) {
-		OS.memmove(this, ptr);
-	}
 }

@@ -87,8 +87,8 @@ boolean drawCaret () {
 	int window = parent.paintWindow ();
 	int gc = OS.gdk_gc_new (window);
 	int fontHandle = parent.fontHandle ();
-	int hStyle = OS.gtk_widget_get_style (fontHandle);
-	GtkStyle style = new GtkStyle (hStyle);
+	GtkStyle style = new GtkStyle ();
+	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
 	GdkColor color = new GdkColor ();
 	color.red = (short) (style.fg0_red ^ style.bg0_red);
 	color.green = (short) (style.fg0_green ^ style.bg0_green);

@@ -1182,8 +1182,8 @@ public Color getBackground () {
 
 GdkColor getBackgroundColor () {
 	int fontHandle = fontHandle ();
-	int hStyle = OS.gtk_widget_get_style (fontHandle);
-	GtkStyle style = new GtkStyle (hStyle);
+	GtkStyle style = new GtkStyle ();
+	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
 	GdkColor color = new GdkColor ();
 	color.pixel = style.bg0_pixel;
 	color.red = style.bg0_red;
@@ -1258,8 +1258,8 @@ public Font getFont () {
 	
 int getFontDescription () {
 	int fontHandle = fontHandle ();
-	int hStyle = OS.gtk_widget_get_style (fontHandle);
-	GtkStyle style = new GtkStyle (hStyle);
+	GtkStyle style = new GtkStyle ();
+	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
 	return style.font_desc;
 }
 
@@ -1280,8 +1280,8 @@ public Color getForeground () {
 
 GdkColor getForegroundColor () {
 	int fontHandle = fontHandle ();
-	int hStyle = OS.gtk_widget_get_style (fontHandle);
-	GtkStyle style = new GtkStyle (hStyle);
+	GtkStyle style = new GtkStyle ();
+	OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
 	GdkColor color = new GdkColor ();
 	color.pixel = style.fg0_pixel;
 	color.red = style.fg0_red;
@@ -1440,8 +1440,8 @@ public int internal_new_GC (GCData data) {
 	if (gdkGC == 0) error (SWT.ERROR_NO_HANDLES);	
 	if (data != null) {
 		int fontHandle = fontHandle ();
-		int hStyle = OS.gtk_widget_get_style (fontHandle);
-		GtkStyle style = new GtkStyle (hStyle);
+		GtkStyle style = new GtkStyle ();
+		OS.memmove(style, OS.gtk_widget_get_style (fontHandle));
 		GdkColor foreground = new GdkColor ();
 		foreground.pixel = style.fg0_pixel;
 		foreground.red = style.fg0_red;
@@ -1596,10 +1596,10 @@ Decorations menuShell () {
 }
 
 int processKeyDown (int callData, int arg1, int int2) {
-	int keyval = OS.gdk_event_key_get_keyval (callData);
-	int [] state = new int [1];
-	OS.gdk_event_get_state (callData, state);
-	int shellHandle = _getShell ().topHandle ();
+//	int keyval = OS.gdk_event_key_get_keyval (callData);
+//	int [] state = new int [1];
+//	OS.gdk_event_get_state (callData, state);
+//	int shellHandle = _getShell ().topHandle ();
 //	if (keyval==OS.GDK_Return && (state[0]&(OS.GDK_SHIFT_MASK|OS.GDK_CONTROL_MASK))==0)
 //		if (OS.gtk_window_activate_default(shellHandle)) return 0;
 	sendKeyEvent (SWT.KeyDown, callData);
@@ -1613,10 +1613,10 @@ int processKeyUp (int callData, int arg1, int int2) {
 
 int processMouseDown (int callData, int arg1, int int2) {
 	Shell shell = _getShell ();
-	int type = OS.GDK_EVENT_TYPE (callData);
-	int eventType = type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
-	int button = OS.gdk_event_button_get_button (callData);
-	sendMouseEvent (eventType, button, callData);
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
+	int eventType = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
+	sendMouseEvent (eventType, gdkEvent.button, callData);
 
 	/*
 	* It is possible that the shell may be
@@ -1640,8 +1640,10 @@ int processMouseExit (int callData, int arg1, int int2) {
 }
 
 int processMouseUp (int callData, int arg1, int int2) {
-	int button = OS.gdk_event_button_get_button (callData);
-	sendMouseEvent (SWT.MouseUp, button, callData);
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, callData, GdkEventButton.sizeof);
+	int button = gdkEvent.button;
+	sendMouseEvent (SWT.MouseUp, gdkEvent.button, callData);
 	if (button == 3 && menu != null) menu.setVisible (true);
 	return 0;
 }
@@ -1689,13 +1691,14 @@ int processFocusOut(int int0, int int1, int int2) {
 
 int processPaint (int callData, int int2, int int3) {
 	if (!hooks (SWT.Paint)) return 0;
-	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
+	GdkEventExpose gdkEvent = new GdkEventExpose ();
+	OS.memmove(gdkEvent, callData, GdkEventExpose.sizeof);
 	Event event = new Event ();
 	event.count = gdkEvent.count;
-	event.x = gdkEvent.x;
-	event.y = gdkEvent.y;
-	event.width = gdkEvent.width;
-	event.height = gdkEvent.height;
+	event.x = gdkEvent.area_x;
+	event.y = gdkEvent.area_y;
+	event.width = gdkEvent.area_width;
+	event.height = gdkEvent.area_height;
 	GC gc = event.gc = new GC (this);
 	Region region = Region.gtk_new (gdkEvent.region);
 	gc.setClipping (region);
@@ -1783,17 +1786,18 @@ void releaseWidget () {
 }
 
 void sendKeyEvent (int type, int gdkEvent) {
-	int time = OS.gdk_event_get_time (gdkEvent);
-	int length = OS.gdk_event_key_get_length (gdkEvent);
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, gdkEvent, GdkEventKey.sizeof);
+	int time = keyEvent.time;
+	int length = keyEvent.length;
 	if (length == 0) {
 		Event event = new Event ();
 		event.time = time;
 		setInputState (event, gdkEvent);
-		int keyval = OS.gdk_event_key_get_keyval (gdkEvent);
-		event.keyCode = Display.translateKey (keyval);
+		event.keyCode = Display.translateKey (keyEvent.keyval);
 		postEvent (type, event);
 	} else {
-		int string = OS.gdk_event_key_get_string (gdkEvent);
+		int string = keyEvent.string;
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, string, length);
 		char [] result = Converter.mbcsToWcs (null, buffer);
@@ -2203,7 +2207,9 @@ public boolean traverse (int traversal) {
 }
 boolean translateTraversal (int event) {
 	int detail = SWT.TRAVERSE_NONE;
-	int key = OS.gdk_event_key_get_keyval (event);
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, event, GdkEventKey.sizeof);
+	int key = keyEvent.keyval;
 	int code = traversalCode (key, event);
 	int [] state = new int [1];
 	OS.gdk_event_get_state (event, state);

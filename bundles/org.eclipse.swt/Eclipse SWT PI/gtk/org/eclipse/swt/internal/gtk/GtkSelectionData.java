@@ -20,10 +20,5 @@ public class GtkSelectionData {
 	public int  format;
 	public int  data;  
 	public int  length;
-
-	private GtkSelectionData(){
-	}
-	public GtkSelectionData(int ptr){
-		OS.memmove(this, ptr);
-	}
+	public static final int sizeof = 24;
 }

@@ -505,11 +505,11 @@ int getLineNumberInString( String string,char delimiter) {
  */
 public Point getSelection () {
 	checkWidget ();
-	/*GtkEditable widget = new GtkEditable ();
-	OS.memmove (widget, handle, GtkEditable.sizeof);
-	return new Point (widget.selection_start_pos, widget.selection_end_pos);*/
-	return new Point (OS.gtk_editable_get_selection_start(handle),
-	                  OS.gtk_editable_get_selection_end(handle));
+	checkWidget ();
+	int [] start = new int [1];
+	int [] end = new int [1];
+	OS.gtk_editable_get_selection_bounds (handle, start, end);
+	return new Point(start [0], end [0]);
 }
 
 /**
@@ -1152,7 +1152,8 @@ public void setTopIndex (int index) {
 	if ((style & SWT.SINGLE) != 0) return;
 	if (index > getLineCount()) return;
 	int adjustmentHandle = OS.gtk_scrolled_window_get_vadjustment(scrolledHandle);
-	GtkAdjustment adjustment = new GtkAdjustment(adjustmentHandle);
+	GtkAdjustment adjustment = new GtkAdjustment();
+	OS.memmove(adjustment, adjustmentHandle);
 	int adjust = (int)(index*adjustment.upper/getLineCount());
 	if (adjust <= 0) {
 		adjust = 0;

@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GtkCTreeRow {
+public class GtkCTreeRow extends GtkCListRow {
 	public int parent;
 	public int sibling;
 	public int children;
@@ -24,10 +24,5 @@ public class GtkCTreeRow {
 	public short level;
 	public int is_leaf; // bitfield: 1
 	public int expanded; // bitfield: 1
-
-	
-	private GtkCTreeRow() {}
-	public GtkCTreeRow(int ptr) {
-		OS.memmove(this, ptr);
-	}
+	public static final int sizeof = 80;
 }

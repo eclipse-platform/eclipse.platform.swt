@@ -111,7 +111,7 @@ public void dispose() {
 public boolean equals(Object object) {
 	if (object == this) return true;
 	if (!(object instanceof Font)) return false;
-	return OS.gdk_font_equal(handle, ((Font)object).handle);
+	return handle == ((Font)object).handle;
 }
 
 /**
@@ -134,14 +134,14 @@ public FontData[] getFontData() {
 	byte[] buffer = new byte[length];
 	OS.memmove(buffer, family, length);
 	String name = new String(Converter.mbcsToWcs(null, buffer));
-	int height = OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE();
+	int height = OS.pango_font_description_get_size(handle) / OS.PANGO_SCALE;
 	int pangoStyle = OS.pango_font_description_get_style(handle);
 	int pangoWeight = OS.pango_font_description_get_weight(handle);
 	int style = SWT.NORMAL;
-	if (pangoStyle == OS.PANGO_STYLE_ITALIC()) style |= SWT.ITALIC;
-	if (pangoStyle == OS.PANGO_STYLE_OBLIQUE()) style |= SWT.ROMAN;
+	if (pangoStyle == OS.PANGO_STYLE_ITALIC) style |= SWT.ITALIC;
+	if (pangoStyle == OS.PANGO_STYLE_OBLIQUE) style |= SWT.ROMAN;
 	/* Anything bolder than NORMAL, is BOLD */
-	if (pangoWeight > OS.PANGO_WEIGHT_NORMAL()) style |= SWT.BOLD;
+	if (pangoWeight > OS.PANGO_WEIGHT_NORMAL) style |= SWT.BOLD;
 	return new FontData[]{new FontData(name, height, style)};
 }
 
@@ -190,13 +190,13 @@ void init(Device device, String name, int height, int style) {
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	byte[] buffer = Converter.wcsToMbcs(null, name, true);
 	OS.pango_font_description_set_family(handle, buffer);
-	OS.pango_font_description_set_size(handle, height * OS.PANGO_SCALE());
-	OS.pango_font_description_set_stretch(handle, OS.PANGO_STRETCH_NORMAL());
-	int pangoStyle = OS.PANGO_STYLE_NORMAL();
-	int pangoWeight = OS.PANGO_WEIGHT_NORMAL();
-	if ((style & SWT.ITALIC) != 0) pangoStyle = OS.PANGO_STYLE_ITALIC();
-	if ((style & SWT.ROMAN) != 0) pangoStyle = OS.PANGO_STYLE_OBLIQUE();
-	if ((style & SWT.BOLD) != 0) pangoWeight = OS.PANGO_WEIGHT_BOLD();
+	OS.pango_font_description_set_size(handle, height * OS.PANGO_SCALE);
+	OS.pango_font_description_set_stretch(handle, OS.PANGO_STRETCH_NORMAL);
+	int pangoStyle = OS.PANGO_STYLE_NORMAL;
+	int pangoWeight = OS.PANGO_WEIGHT_NORMAL;
+	if ((style & SWT.ITALIC) != 0) pangoStyle = OS.PANGO_STYLE_ITALIC;
+	if ((style & SWT.ROMAN) != 0) pangoStyle = OS.PANGO_STYLE_OBLIQUE;
+	if ((style & SWT.BOLD) != 0) pangoWeight = OS.PANGO_WEIGHT_BOLD;
 	OS.pango_font_description_set_style(handle, pangoStyle);
 	OS.pango_font_description_set_weight(handle, pangoWeight);
 }

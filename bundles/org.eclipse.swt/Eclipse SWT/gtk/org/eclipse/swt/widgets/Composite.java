@@ -205,7 +205,7 @@ void createScrolledHandle (int parentHandle) {
 	}
 	OS.gtk_widget_show (handle);
 	
-	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_WIDGET_DOUBLE_BUFFERED);
+	OS.gtk_widget_set_double_buffered(handle, false);
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		setBackgroundPixmap ();
 	}
@@ -366,9 +366,10 @@ int processPaint (int callData, int int1, int int2) {
 		int window = paintWindow ();
 		int gc = OS.gdk_gc_new (window);
 		OS.gdk_gc_set_foreground (gc, getBackgroundColor ());
-		GdkEventExpose gdkEvent = new GdkEventExpose (callData);
-		int x = gdkEvent.x, y = gdkEvent.y;
-		int width = gdkEvent.width, height = gdkEvent.height;
+		GdkEventExpose gdkEvent = new GdkEventExpose ();
+		OS.memmove(gdkEvent, callData, GdkEventExpose.sizeof);
+		int x = gdkEvent.area_x, y = gdkEvent.area_y;
+		int width = gdkEvent.area_width, height = gdkEvent.area_height;
 		OS.gdk_gc_set_clip_region (gc, gdkEvent.region);
 		OS.gdk_draw_rectangle (window, gc, 1, x, y, width, height);
 		OS.g_object_unref (gc);
@@ -377,7 +378,8 @@ int processPaint (int callData, int int1, int int2) {
 		return super.processPaint (callData, int1, int2);
 	}
 	if (!hooks (SWT.Paint)) return 0;
-	GdkEventExpose gdkEvent = new GdkEventExpose (callData);
+	GdkEventExpose gdkEvent = new GdkEventExpose ();
+	OS.memmove(gdkEvent, callData, GdkEventExpose.sizeof);
 	int [] rectangles = new int [1];
 	int [] n_rectangles = new int [1];
 	OS.gdk_region_get_rectangles (gdkEvent.region, rectangles, n_rectangles);

@@ -20,9 +20,4 @@ public class GtkAdjustment {
 	public double step_increment;
 	public double page_increment;
 	public double page_size;
-	
-	private GtkAdjustment() {}
-	public GtkAdjustment (int ptr) {
-		OS.memmove(this, ptr);
-	}
 }

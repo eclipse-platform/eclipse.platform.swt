@@ -18,7 +18,4 @@ public class GtkTargetEntry {
 	public int flags;
 	public int info;
 	public static final int sizeof = 12;
-	
-	public GtkTargetEntry(){
-	}
 }

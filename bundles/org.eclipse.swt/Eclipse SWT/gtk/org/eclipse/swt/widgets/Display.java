@@ -524,7 +524,7 @@ Control findControl(int h) {
 	if (w instanceof Control) return (Control)w;
 
 	/* w is something like an Item.  Go for the parent */
-	return findControl(OS.GTK_WIDGET_PARENT(h));
+	return findControl(OS.gtk_widget_get_parent (h));
 }
 
 /**
@@ -680,7 +680,8 @@ public Control getFocusControl () {
 
 public int getDepth () {
 	checkDevice ();
-	GdkVisual visual = new GdkVisual (OS.gdk_visual_get_system());
+	GdkVisual visual = new GdkVisual ();
+	OS.memmove (visual, OS.gdk_visual_get_system());
 	return visual.depth;
 }
 
@@ -801,7 +802,8 @@ final void initializeSystemColors() {
 	OS.gtk_widget_realize (shellHandle);
 
 	GdkColor gdkColor;
-	GtkStyle style = new GtkStyle(OS.gtk_widget_get_style (shellHandle));
+	GtkStyle style = new GtkStyle();
+	OS.memmove (style, OS.gtk_widget_get_style (shellHandle));
 
 	gdkColor = new GdkColor();
 	gdkColor.pixel = style.black_pixel;

@@ -259,7 +259,9 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
  */
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	GtkStyle style = new GtkStyle(OS.gtk_widget_get_default_style());
+	GtkStyle style = new GtkStyle();
+	//CHECK - default style might not be attached to any window
+	OS.memmove(style, OS.gtk_widget_get_default_style());
 	GdkColor color = new GdkColor();
 	color.pixel = style.fg0_pixel;
 	color.red = style.fg0_red;
@@ -385,7 +387,7 @@ void drawImageAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHei
 		drawImage(srcImage, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 		return;
 	}
-	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB(), true, 8, srcWidth, srcHeight);
+	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int colormap = OS.gdk_colormap_get_system();
 	OS.gdk_pixbuf_get_from_drawable(pixbuf, srcImage.pixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
@@ -422,7 +424,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	int maskPixmap = srcImage.mask;
 	if (srcWidth != destWidth || srcHeight != destHeight) {
 		//NOT DONE - there must be a better way of scaling a GdkBitmap
-		int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB(), true, 8, srcWidth, srcHeight);
+		int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, true, 8, srcWidth, srcHeight);
 		if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		int colormap = OS.gdk_colormap_get_system();
 		OS.gdk_pixbuf_get_from_drawable(pixbuf, colorPixmap, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
@@ -469,7 +471,7 @@ void drawImageMask(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeig
 	if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 }
 int scale(int src, int srcX, int srcY, int srcWidth, int srcHeight, int destWidth, int destHeight) {
-	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB(), false, 8, srcWidth, srcHeight);
+	int pixbuf = OS.gdk_pixbuf_new(OS.GDK_COLORSPACE_RGB, false, 8, srcWidth, srcHeight);
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int colormap = OS.gdk_colormap_get_system();
 	OS.gdk_pixbuf_get_from_drawable(pixbuf, src, colormap, srcX, srcY, 0, 0, srcWidth, srcHeight);
@@ -1746,7 +1748,7 @@ public Point stringExtent(String string) {
 	int[] width = new int[1];
 	int[] height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
-	return new Point(width[0] / OS.PANGO_SCALE(), height[0] / OS.PANGO_SCALE());
+	return new Point(width[0] / OS.PANGO_SCALE, height[0] / OS.PANGO_SCALE);
 }
 
 /**
@@ -1813,7 +1815,7 @@ public Point textExtent(String string, int flags) {
 	int[] width = new int[1];
 	int[] height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
-	return new Point(width[0] / OS.PANGO_SCALE(), height[0] / OS.PANGO_SCALE());
+	return new Point(width[0] / OS.PANGO_SCALE, height[0] / OS.PANGO_SCALE);
 }
 
 /**

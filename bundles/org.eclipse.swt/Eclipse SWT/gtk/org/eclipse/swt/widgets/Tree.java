@@ -208,11 +208,11 @@ int createCheckPixmap(boolean checked) {
 	/*
 	 * The box will occupy the whole item width.
 	 */
-	GtkCList clist = new GtkCList (handle);
-	int check_height = clist.row_height-2;
+	int check_height = OS.GTK_CLIST_ROW_HEIGHT (handle) - 2;
 	int check_width = check_height;
 
-	GdkVisual visual = new GdkVisual(OS.gdk_visual_get_system());
+	GdkVisual visual = new GdkVisual();
+	OS.memmove(visual, OS.gdk_visual_get_system());
 	int pixmap = OS.gdk_pixmap_new(0, check_width, check_height, visual.depth);
 	
 	int gc = OS.gdk_gc_new(pixmap);
@@ -304,7 +304,8 @@ int findSibling (int node, int index) {
 	int depth = 1;
 	if (node != 0) {
 		int data = OS.g_list_nth_data (node, 0);
-		GtkCTreeRow row = new GtkCTreeRow (data);
+		GtkCTreeRow row = new GtkCTreeRow ();
+		OS.memmove (row, data, GtkCTreeRow.sizeof);
 		depth = row.level + 1;
 	}
 	Index = 0;
@@ -366,7 +367,8 @@ int getItemCount (int node) {
 	int depth = 1;
 	if (node != 0) {
 		int data = OS.g_list_nth_data (node, 0);
-		GtkCTreeRow row = new GtkCTreeRow (data);
+		GtkCTreeRow row = new GtkCTreeRow ();
+		OS.memmove (row, data, GtkCTreeRow.sizeof);
 		depth = row.level + 1;
 	}
 	Count = 0;
@@ -390,8 +392,7 @@ int getItemCount (int node) {
  */
 public int getItemHeight () {
 	checkWidget ();
-	GtkCList clist = new GtkCList (handle);
-	return clist.row_height + CELL_SPACING;
+	return OS.GTK_CLIST_ROW_HEIGHT (handle) + CELL_SPACING;
 }
 
 /**
@@ -420,7 +421,8 @@ TreeItem [] getItems (int node) {
 	int depth = 1;
 	if (node != 0) {
 		int data = OS.g_list_nth_data (node, 0);
-		GtkCTreeRow row = new GtkCTreeRow (data);
+		GtkCTreeRow row = new GtkCTreeRow ();
+		OS.memmove (row, data, GtkCTreeRow.sizeof);
 		depth = row.level + 1;
 	}
 	Count = 0;
@@ -474,12 +476,12 @@ public TreeItem getParentItem () {
  */
 public TreeItem[] getSelection () {
 	checkWidget();
-	GtkCList clist = new GtkCList(handle);
-	if (clist.selection == 0) return new TreeItem [0];
-	int length = OS.g_list_length (clist.selection);
+	int selection = OS.GTK_CLIST_SELECTION (handle);
+	if (selection == 0) return new TreeItem [0];
+	int length = OS.g_list_length (selection);
 	TreeItem [] result = new TreeItem [length];
 	for (int i=0; i<length; i++) {
-		int node = OS.g_list_nth_data (clist.selection, i);
+		int node = OS.g_list_nth_data (selection, i);
 		int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
 		result [i] = items [index];
 	}
@@ -498,9 +500,9 @@ public TreeItem[] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	if (clist.selection == 0) return 0;
-	return OS.g_list_length (clist.selection);
+	int selection = OS.GTK_CLIST_SELECTION (handle);
+	if (selection == 0) return 0;
+	return OS.g_list_length (selection);
 }
 
 int GtkCTreeCountItems (int ctree, int node, int data) {
@@ -535,8 +537,7 @@ int GtkCTreeDispose (int ctree, int node, int data) {
 
 int paintWindow () {
 	OS.gtk_widget_realize (handle);
-	GtkCList clist = new GtkCList (handle);
-	return clist.clist_window;
+	return OS.GTK_CLIST_CLIST_WINDOW (handle);
 }
 
 int processCollapse (int int0, int int1, int int2) {
@@ -562,18 +563,20 @@ int processKeyDown (int callData, int arg1, int int2) {
 	* The fix is to ignore the notification that is sent
 	* by GTK and look for the space key.
 	*/
-	int length = OS.gdk_event_key_get_length (callData);
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, callData, GdkEventKey.sizeof);
+	int length = keyEvent.length;
 	if (length == 1) {
-		int string = OS.gdk_event_key_get_string (callData);
+		int string = keyEvent.string;
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, string, length);
 		char [] unicode = Converter.mbcsToWcs (null, buffer);
 		switch (unicode [0]) {
 			case ' ':
-				GtkCList clist = new GtkCList (handle);
-				if (clist.focus_row != -1) {
+				int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
+				if (focus_row != -1) {
 					Event event = new Event ();
-					int focus = OS.gtk_ctree_node_nth (handle, clist.focus_row);
+					int focus = OS.gtk_ctree_node_nth (handle, focus_row);
 					if (focus != 0) {
 						int index = OS.gtk_ctree_node_get_row_data (handle, focus) - 1;
 						event.item = items [index];
@@ -595,8 +598,9 @@ int processKeyUp (int callData, int arg1, int int2) {
 	* the notification to be issued by temporarily losing and
 	* gaining focus every time the shift key is released.
 	*/
-	int keyval = OS.gdk_event_key_get_keyval (callData);
-	switch (keyval) {
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, callData, GdkEventKey.sizeof);
+	switch (keyEvent.keyval) {
 		case OS.GDK_Shift_L:
 		case OS.GDK_Shift_R:
 			OS.gtk_widget_grab_focus (scrolledHandle);
@@ -607,7 +611,10 @@ int processKeyUp (int callData, int arg1, int int2) {
 
 int processEvent (int eventNumber, int int0, int int1, int int2) {
 	if (eventNumber == 0) {
-		switch (OS.GDK_EVENT_TYPE (int0)) {
+		GdkEvent gdkEvent = new GdkEvent ();
+		OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
+		int type = gdkEvent.type;
+		switch (type) {
 			case OS.GDK_BUTTON_PRESS:
 			case OS.GDK_2BUTTON_PRESS: {
 				doubleSelected = false;
@@ -621,11 +628,10 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 						if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
 							int node = OS.gtk_ctree_node_nth (handle, row [0]);
 							int crow = OS.g_list_nth_data (node, 0);
-							GtkCTreeRow row_data = new GtkCTreeRow (crow);
-							GtkCTree ctree = new GtkCTree (handle);
-							GtkCList clist = new GtkCList (handle);
-							int nX = clist.hoffset + ctree.tree_indent * row_data.level - 2;
-							int nY = clist.voffset + (clist.row_height + 1) * row [0] + 2;
+							GtkCTreeRow row_data = new GtkCTreeRow ();
+							OS.memmove (row_data, crow, GtkCTreeRow.sizeof);
+							int nX = OS.GTK_CLIST_HOFFSET (handle) + OS.GTK_CTREE_TREE_INDENT (handle) * row_data.level - 2;
+							int nY = OS.GTK_CLIST_VOFFSET (handle) + (OS.GTK_CLIST_ROW_HEIGHT (handle) + 1) * row [0] + 2;
 							int [] check_width = new int [1], check_height = new int [1];
 							OS.gdk_drawable_get_size (check, check_width, check_height);
 							if (nX <= x && x <= nX + check_width [0]) {
@@ -647,7 +653,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 						}
 					}
 				}
-				if (OS.GDK_EVENT_TYPE (int0) == OS.GDK_2BUTTON_PRESS) {
+				if (type == OS.GDK_2BUTTON_PRESS) {
 					if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
 						int [] row = new int [1], column = new int [1];
 						if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
@@ -675,8 +681,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 				int x = (int)(px[0]), y = (int)(py[0]);	
 				if (!OS.gtk_ctree_is_hot_spot (handle, x, y)) {
 					if ((style & SWT.SINGLE) != 0) {
-						GtkCList clist = new GtkCList (handle);
-						int list = clist.selection;
+						int list = OS.GTK_CLIST_SELECTION (handle);
 						if (list != 0 && OS.g_list_length (list) != 0) {
 							int node = OS.g_list_nth_data (list, 0);
 							int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
@@ -695,11 +700,11 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 						int code = OS.gtk_clist_get_selection_info (handle, x, y, row, column);
 						if (code != 0) {
 							int focus = OS.gtk_ctree_node_nth (handle, row [0]);
-							GtkCList clist = new GtkCList (handle);
-							if (selected && clist.selection != 0) {
-								int length = OS.g_list_length (clist.selection);
+							int selection = OS.GTK_CLIST_SELECTION (handle);
+							if (selected && selection != 0) {
+								int length = OS.g_list_length (selection);
 								for (int i=0; i<length; i++) {
-									int node = OS.g_list_nth_data (clist.selection, i);
+									int node = OS.g_list_nth_data (selection, i);
 									if (node == focus) {
 										int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
 										Event event = new Event ();
@@ -747,8 +752,8 @@ int processSelection (int int0, int int1, int int2) {
 		selected = true;
 		return 0;
 	}
-	GtkCList clist = new GtkCList (handle);
-	int focus = OS.gtk_ctree_node_nth (handle, clist.focus_row);
+	int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
+	int focus = OS.gtk_ctree_node_nth (handle, focus_row);
 	if (focus != int0) return 0;
 	if ((style & SWT.MULTI) != 0) selected = false;
 	int index = OS.gtk_ctree_node_get_row_data (handle, int0) - 1;
@@ -855,8 +860,7 @@ void setFontDescription (int font) {
 	if (imageHeight != 0) {
 		OS.gtk_widget_realize (handle);
 		OS.gtk_clist_set_row_height (handle, 0);
-		GtkCList clist = new GtkCList (handle);
-		if (imageHeight > clist.row_height) {
+		if (imageHeight > OS.GTK_CLIST_ROW_HEIGHT (handle)) {
 			OS.gtk_clist_set_row_height (handle, imageHeight);
 		}
 	}
@@ -947,10 +951,10 @@ public void setSelection (TreeItem [] items) {
  */
 public void showSelection () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	if (clist.selection == 0) return;
-	if (OS.g_list_length (clist.selection) == 0) return;
-	int node = OS.g_list_nth_data (clist.selection, 0);
+	int selection = OS.GTK_CLIST_SELECTION (handle);
+	if (selection == 0) return;
+	if (OS.g_list_length (selection) == 0) return;
+	int node = OS.g_list_nth_data (selection, 0);
 	int index = OS.gtk_ctree_node_get_row_data (handle, node) - 1;
 	showItem (items [index]);
 }
@@ -986,7 +990,8 @@ public void showItem (TreeItem item) {
 		OS.gtk_signal_handler_block_by_data (handle, SWT.Expand);
 		do {
 			int data = OS.g_list_nth_data (parent, 0);
-			row = new GtkCTreeRow(data);
+			row = new GtkCTreeRow ();
+			OS.memmove (row, data, GtkCTreeRow.sizeof);
 			if ((parent = row.parent) == 0) break;
 			OS.gtk_ctree_expand (handle, parent);
 		} while (true);

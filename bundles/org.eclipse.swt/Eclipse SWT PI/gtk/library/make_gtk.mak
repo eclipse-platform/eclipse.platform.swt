@@ -68,10 +68,7 @@ make_swt: $(SWT_DLL) $(SWTPI_DLL)
 
 # All about Linking
 
-PI_OBJECTS = swt.o swt-gdk.o swt-gdkpixbuf.o \
-             swt-gtkcontainers.o swt-gtkcontrols.o swt-gtklists.o swt-gtkmenu.o \
-	     swt-gtkwidget.o swt-gtkwindow.o swt-pango.o swt-memmove.o \
-	     eclipsefixed.o
+PI_OBJECTS = swt.o structs.o
 
 $(SWT_DLL): callback.o
 	$(LD) -x -shared \
@@ -80,7 +77,7 @@ $(SWT_DLL): callback.o
 $(SWTPI_DLL): $(PI_OBJECTS) structs.o
 	$(LD) -x -shared \
 	    $(GTKLIBS) \
-	    -o $(SWTPI_DLL) $(PI_OBJECTS) structs.o
+	    -o $(SWTPI_DLL) $(PI_OBJECTS)
 
 #$(GNOME_DLL): gnome.o
 #	$(LD) -o $@ gnome.o $(GNOME_LIB)
@@ -98,47 +95,11 @@ CFLAGS = -c -O -s \
 callback.o: callback.c
 	$(CC) $(CFLAGS) callback.c
 
-library.o: library.c
-	$(CC) $(CFLAGS) library.c
-
 swt.o: swt.c swt.h
 	$(CC) $(CFLAGS) $(GTKCFLAGS) swt.c
 
-swt-gdk.o: swt-gdk.c swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gdk.c
-
-swt-gdkpixbuf.o: swt-gdkpixbuf.c swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gdkpixbuf.c
-
-swt-gtkcontainers.o: swt-gtkcontainers.c swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkcontainers.c
-
-swt-gtkcontrols.o: swt-gtkcontrols.c swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkcontrols.c
-
-swt-gtklists.o: swt-gtklists.c swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtklists.c
-
-swt-gtkmenu.o: swt-gtkmenu.c swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkmenu.c
-
-swt-gtkwidget.o: swt-gtkwidget.c swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkwidget.c
-
-swt-gtkwindow.o: swt-gtkwindow.c swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-gtkwindow.c
-
-swt-memmove.o: swt-memmove.c swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) swt-memmove.c
-
-eclipsefixed.o: eclipsefixed.c eclipsefixed.h swt.h
-	$(CC) $(CFLAGS) $(GTKCFLAGS) eclipsefixed.c
-
 structs.o: structs.c
 	$(CC) $(CFLAGS) $(GTKCFLAGS) structs.c
-
-globals.o: globals.c
-	g$(CC)cc $(CFLAGS) $(GTKCFLAGS) globals.c
 
 clean:
 	rm -f *.o *.so

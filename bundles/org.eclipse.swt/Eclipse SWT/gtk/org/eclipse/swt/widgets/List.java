@@ -315,8 +315,7 @@ public void deselectAll () {
  */
 public int getFocusIndex () {
 	checkWidget();
-	GtkCList clist = new GtkCList(handle);
-	return clist.focus_row;
+	return OS.GTK_CLIST_FOCUS_ROW (handle);
 }
 
 /**
@@ -363,8 +362,7 @@ public String getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget();
-	GtkCList widget = new GtkCList (handle);
-	return widget.rows;
+	return OS.GTK_CLIST_ROWS (handle);
 }
 
 /**
@@ -383,8 +381,7 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	return clist.row_height;
+	return OS.GTK_CLIST_ROW_HEIGHT (handle);
 }
 
 /**
@@ -437,8 +434,7 @@ public String [] getItems () {
  */
 public String [] getSelection () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
+	int list = OS.GTK_CLIST_SELECTION (handle);
 	if (list == 0) return new String [0];
 	int length = OS.g_list_length (list);
 	String [] items = new String [length];
@@ -470,9 +466,9 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	if (clist.selection == 0) return 0;
-	return OS.g_list_length (clist.selection);
+	int selection = OS.GTK_CLIST_SELECTION (handle);
+	if (selection == 0) return 0;
+	return OS.g_list_length (selection);
 }
 
 /**
@@ -491,10 +487,10 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	if (clist.selection == 0) return 0;
-	if (OS.g_list_length (clist.selection) == 0) return -1;
-	return OS.g_list_nth_data (clist.selection, 0);
+	int selection = OS.GTK_CLIST_SELECTION (handle);
+	if (selection == 0) return 0;
+	if (OS.g_list_length (selection) == 0) return -1;
+	return OS.g_list_nth_data (selection, 0);
 }
 
 /**
@@ -517,8 +513,7 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
+	int list = OS.GTK_CLIST_SELECTION (handle);
 	if (list == 0) return new int [0];
 	int length = OS.g_list_length (list);
 	int [] indices = new int [length];
@@ -542,8 +537,9 @@ public int [] getSelectionIndices () {
  */
 public int getTopIndex () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	return -clist.voffset / (clist.row_height + 1);
+	int voffset = OS.GTK_CLIST_VOFFSET (handle);
+	int row_height = OS.GTK_CLIST_ROW_HEIGHT (handle);
+	return -voffset / (row_height + 1);
 }
 
 /**
@@ -617,8 +613,7 @@ public int indexOf (String string, int start) {
  */
 public boolean isSelected (int index) {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	int list = clist.selection;
+	int list = OS.GTK_CLIST_SELECTION (handle);
 	if (list == 0) return false;
 	int length = OS.g_list_length (list);
 	for (int i=0; i<length; i++) {
@@ -629,13 +624,14 @@ public boolean isSelected (int index) {
 
 int paintWindow () {
 	OS.gtk_widget_realize (handle);
-	GtkCList clist = new GtkCList (handle);
-	return clist.clist_window;
+	return OS.GTK_CLIST_CLIST_WINDOW (handle);
 }
 
 int processEvent (int eventNumber, int int0, int int1, int int2) {
 	if (eventNumber == 0) {
-		switch (OS.GDK_EVENT_TYPE (int0)) {
+		GdkEvent gdkEvent = new GdkEvent ();
+		OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
+		switch (gdkEvent.type) {
 			case OS.GDK_BUTTON_PRESS:
 			case OS.GDK_2BUTTON_PRESS: {
 				if ((style & SWT.MULTI) != 0) selected = true;
@@ -655,9 +651,8 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 					int x = (int) (px[0]), y = (int) (py[0]);
 					int [] row = new int [1], column = new int [1];
 					if (OS.gtk_clist_get_selection_info (handle, x, y, row, column) != 0) {
-						GtkCList clist = new GtkCList (handle);
-						if (selected && clist.selection != 0) {
-							int list = clist.selection;
+						int list = OS.GTK_CLIST_SELECTION (handle);
+						if (selected && list != 0) {
 							int length = OS.g_list_length (list);
 							for (int i=0; i<length; i++) {
 								if (row [0] == OS.g_list_nth_data (list, i)) {
@@ -684,16 +679,17 @@ int processKeyDown (int callData, int arg1, int int2) {
 	* The fix is to ignore the notification that is sent
 	* by GTK and look for the space key.
 	*/
-	int length = OS.gdk_event_key_get_length (callData);
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, callData, GdkEventKey.sizeof);
+	int length = keyEvent.length;
 	if (length == 1) {
-		int string = OS.gdk_event_key_get_string (callData);
+		int string = keyEvent.string;
 		byte [] buffer = new byte [length];
 		OS.memmove (buffer, string, length);
 		char [] unicode = Converter.mbcsToWcs (null, buffer);
 		switch (unicode [0]) {
 			case ' ':
-				GtkCList clist = new GtkCList (handle);
-				if (clist.focus_row != -1) {
+				if (OS.GTK_CLIST_FOCUS_ROW (handle) != -1) {
 					postEvent (SWT.Selection);
 				}
 				break;
@@ -711,8 +707,9 @@ int processKeyUp (int callData, int arg1, int int2) {
 	* the notification to be issued by temporarily losing and
 	* gaining focus every time the shift key is released.
 	*/
-	int keyval = OS.gdk_event_key_get_keyval (callData);
-	switch (keyval) {
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, callData, GdkEventKey.sizeof);
+	switch (keyEvent.keyval) {
 		case OS.GDK_Shift_L:
 		case OS.GDK_Shift_R:
 			OS.gtk_widget_grab_focus (scrolledHandle);
@@ -723,13 +720,13 @@ int processKeyUp (int callData, int arg1, int int2) {
 
 
 int processSelection (int int0, int int1, int int2) {
-	GtkCList clist = new GtkCList (handle);
-	if (int0 != clist.focus_row) return 0;
+	if (int0 != OS.GTK_CLIST_FOCUS_ROW (handle)) return 0;
 	if ((style & SWT.MULTI) != 0) selected = false;
 	int eventType = SWT.Selection;
 	if (int2 != 0) {
-		int type = OS.GDK_EVENT_TYPE (int2);
-		if (type == OS.GDK_2BUTTON_PRESS) {
+		GdkEvent gdkEvent = new GdkEvent ();
+		OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
+		if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
 			eventType = SWT.DefaultSelection;
 		}
 	}
@@ -1183,10 +1180,10 @@ public void setTopIndex (int index) {
  */
 public void showSelection () {
 	checkWidget();
-	GtkCList clist = new GtkCList (handle);
-	if (clist.selection == 0) return;
-	if (OS.g_list_length (clist.selection) == 0) return;
-	int index = OS.g_list_nth_data (clist.selection, 0);
+	int selection = OS.GTK_CLIST_SELECTION (handle);
+	if (selection == 0) return;
+	if (OS.g_list_length (selection) == 0) return;
+	int index = OS.g_list_nth_data (selection, 0);
 	int visibility = OS.gtk_clist_row_is_visible (handle, index);
 	if (visibility == OS.GTK_VISIBILITY_FULL) return;
 	//BUG IN GTK - doesn't scroll correctly before shell open

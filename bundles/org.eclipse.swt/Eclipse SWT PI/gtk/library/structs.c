@@ -11,1504 +11,1004 @@
  * this distribution shall govern.
  */
 
-/**
- * JNI SWT object field getters and setters declarations for Windows structs
- */
-
 #include "swt.h"
 #include "structs.h"
 
-/* Globals */
+typedef struct GdkColor_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID pixel, red, green, blue;
+} GdkColor_FID_CACHE;
+typedef GdkColor_FID_CACHE *PGdkColor_FID_CACHE;
+
 GdkColor_FID_CACHE GdkColorFc;
+
+void cacheGdkColorFids(JNIEnv *env, jobject lpObject, PGdkColor_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->pixel = (*env)->GetFieldID(env, lpCache->clazz, "pixel", "I");
+	lpCache->red = (*env)->GetFieldID(env, lpCache->clazz, "red", "S");
+	lpCache->green = (*env)->GetFieldID(env, lpCache->clazz, "green", "S");
+	lpCache->blue = (*env)->GetFieldID(env, lpCache->clazz, "blue", "S");
+	lpCache->cached = 1;
+}
+
+GdkColor *getGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct)
+{
+	PGdkColor_FID_CACHE lpCache = &GdkColorFc;
+	if (!lpCache->cached) cacheGdkColorFids(env, lpObject, lpCache);
+	lpStruct->pixel = (guint32)(*env)->GetIntField(env, lpObject, lpCache->pixel);
+	lpStruct->red = (guint16)(*env)->GetShortField(env, lpObject, lpCache->red);
+	lpStruct->green = (guint16)(*env)->GetShortField(env, lpObject, lpCache->green);
+	lpStruct->blue = (guint16)(*env)->GetShortField(env, lpObject, lpCache->blue);
+	return lpStruct;
+}
+
+void setGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct)
+{
+	PGdkColor_FID_CACHE lpCache = &GdkColorFc;
+	if (!lpCache->cached) cacheGdkColorFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->pixel, (jint)lpStruct->pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->red, (jshort)lpStruct->red);
+	(*env)->SetShortField(env, lpObject, lpCache->green, (jshort)lpStruct->green);
+	(*env)->SetShortField(env, lpObject, lpCache->blue, (jshort)lpStruct->blue);
+}
+
+typedef struct GtkColorSelectionDialog_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID colorsel, ok_button, cancel_button, help_button;
+} GtkColorSelectionDialog_FID_CACHE;
+typedef GtkColorSelectionDialog_FID_CACHE *PGtkColorSelectionDialog_FID_CACHE;
+
+GtkColorSelectionDialog_FID_CACHE GtkColorSelectionDialogFc;
+
+void cacheGtkColorSelectionDialogFids(JNIEnv *env, jobject lpObject, PGtkColorSelectionDialog_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->colorsel = (*env)->GetFieldID(env, lpCache->clazz, "colorsel", "I");
+	lpCache->ok_button = (*env)->GetFieldID(env, lpCache->clazz, "ok_button", "I");
+	lpCache->cancel_button = (*env)->GetFieldID(env, lpCache->clazz, "cancel_button", "I");
+	lpCache->help_button = (*env)->GetFieldID(env, lpCache->clazz, "help_button", "I");
+	lpCache->cached = 1;
+}
+
+GtkColorSelectionDialog *getGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct)
+{
+	PGtkColorSelectionDialog_FID_CACHE lpCache = &GtkColorSelectionDialogFc;
+	if (!lpCache->cached) cacheGtkColorSelectionDialogFids(env, lpObject, lpCache);
+	lpStruct->colorsel = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->colorsel);
+	lpStruct->ok_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->ok_button);
+	lpStruct->cancel_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->cancel_button);
+	lpStruct->help_button = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->help_button);
+	return lpStruct;
+}
+
+void setGtkColorSelectionDialogFields(JNIEnv *env, jobject lpObject, GtkColorSelectionDialog *lpStruct)
+{
+	PGtkColorSelectionDialog_FID_CACHE lpCache = &GtkColorSelectionDialogFc;
+	if (!lpCache->cached) cacheGtkColorSelectionDialogFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->colorsel, (jint)lpStruct->colorsel);
+	(*env)->SetIntField(env, lpObject, lpCache->ok_button, (jint)lpStruct->ok_button);
+	(*env)->SetIntField(env, lpObject, lpCache->cancel_button, (jint)lpStruct->cancel_button);
+	(*env)->SetIntField(env, lpObject, lpCache->help_button, (jint)lpStruct->help_button);
+}
+
+typedef struct GdkEvent_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type;
+} GdkEvent_FID_CACHE;
+typedef GdkEvent_FID_CACHE *PGdkEvent_FID_CACHE;
+
+GdkEvent_FID_CACHE GdkEventFc;
+
+void cacheGdkEventFids(JNIEnv *env, jobject lpObject, PGdkEvent_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->type = (*env)->GetFieldID(env, lpCache->clazz, "type", "I");
+	lpCache->cached = 1;
+}
+
+GdkEvent *getGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct)
+{
+	PGdkEvent_FID_CACHE lpCache = &GdkEventFc;
+	if (!lpCache->cached) cacheGdkEventFids(env, lpObject, lpCache);
+	lpStruct->type = (GdkEventType)(*env)->GetIntField(env, lpObject, lpCache->type);
+	return lpStruct;
+}
+
+void setGdkEventFields(JNIEnv *env, jobject lpObject, GdkEvent *lpStruct)
+{
+	PGdkEvent_FID_CACHE lpCache = &GdkEventFc;
+	if (!lpCache->cached) cacheGdkEventFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->type, (jint)lpStruct->type);
+}
+
+typedef struct GdkEventButton_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event, time, x, y, axes, state, button, device, x_root, y_root;
+} GdkEventButton_FID_CACHE;
+typedef GdkEventButton_FID_CACHE *PGdkEventButton_FID_CACHE;
+
+GdkEventButton_FID_CACHE GdkEventButtonFc;
+
+void cacheGdkEventButtonFids(JNIEnv *env, jobject lpObject, PGdkEventButton_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	cacheGdkEventFids(env, lpObject, &GdkEventFc);
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->window = (*env)->GetFieldID(env, lpCache->clazz, "window", "I");
+	lpCache->send_event = (*env)->GetFieldID(env, lpCache->clazz, "send_event", "B");
+	lpCache->time = (*env)->GetFieldID(env, lpCache->clazz, "time", "I");
+	lpCache->x = (*env)->GetFieldID(env, lpCache->clazz, "x", "D");
+	lpCache->y = (*env)->GetFieldID(env, lpCache->clazz, "y", "D");
+	lpCache->axes = (*env)->GetFieldID(env, lpCache->clazz, "axes", "I");
+	lpCache->state = (*env)->GetFieldID(env, lpCache->clazz, "state", "I");
+	lpCache->button = (*env)->GetFieldID(env, lpCache->clazz, "button", "I");
+	lpCache->device = (*env)->GetFieldID(env, lpCache->clazz, "device", "I");
+	lpCache->x_root = (*env)->GetFieldID(env, lpCache->clazz, "x_root", "D");
+	lpCache->y_root = (*env)->GetFieldID(env, lpCache->clazz, "y_root", "D");
+	lpCache->cached = 1;
+}
+
+GdkEventButton *getGdkEventButtonFields(JNIEnv *env, jobject lpObject, GdkEventButton *lpStruct)
+{
+	PGdkEventButton_FID_CACHE lpCache = &GdkEventButtonFc;
+	if (!lpCache->cached) cacheGdkEventButtonFids(env, lpObject, lpCache);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, lpCache->window);
+	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, lpCache->send_event);
+	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, lpCache->time);
+	lpStruct->x = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->x);
+	lpStruct->y = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->y);
+	lpStruct->axes = (gdouble *)(*env)->GetIntField(env, lpObject, lpCache->axes);
+	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, lpCache->state);
+	lpStruct->button = (guint)(*env)->GetIntField(env, lpObject, lpCache->button);
+	lpStruct->device = (GdkDevice *)(*env)->GetIntField(env, lpObject, lpCache->device);
+	lpStruct->x_root = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->x_root);
+	lpStruct->y_root = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->y_root);
+	return lpStruct;
+}
+
+void setGdkEventButtonFields(JNIEnv *env, jobject lpObject, GdkEventButton *lpStruct)
+{
+	PGdkEventButton_FID_CACHE lpCache = &GdkEventButtonFc;
+	if (!lpCache->cached) cacheGdkEventButtonFids(env, lpObject, lpCache);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, lpCache->window, (jint)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, lpCache->send_event, (jbyte)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, lpCache->time, (jint)lpStruct->time);
+	(*env)->SetDoubleField(env, lpObject, lpCache->x, (jdouble)lpStruct->x);
+	(*env)->SetDoubleField(env, lpObject, lpCache->y, (jdouble)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, lpCache->axes, (jint)lpStruct->axes);
+	(*env)->SetIntField(env, lpObject, lpCache->state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, lpCache->button, (jint)lpStruct->button);
+	(*env)->SetIntField(env, lpObject, lpCache->device, (jint)lpStruct->device);
+	(*env)->SetDoubleField(env, lpObject, lpCache->x_root, (jdouble)lpStruct->x_root);
+	(*env)->SetDoubleField(env, lpObject, lpCache->y_root, (jdouble)lpStruct->y_root);
+}
+
+typedef struct GdkEventExpose_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event, area_x, area_y, area_width, area_height, region, count;
+} GdkEventExpose_FID_CACHE;
+typedef GdkEventExpose_FID_CACHE *PGdkEventExpose_FID_CACHE;
+
 GdkEventExpose_FID_CACHE GdkEventExposeFc;
-GdkFont_FID_CACHE GdkFontFc;
+
+void cacheGdkEventExposeFids(JNIEnv *env, jobject lpObject, PGdkEventExpose_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	cacheGdkEventFids(env, lpObject, &GdkEventFc);
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->window = (*env)->GetFieldID(env, lpCache->clazz, "window", "I");
+	lpCache->send_event = (*env)->GetFieldID(env, lpCache->clazz, "send_event", "B");
+	lpCache->area_x = (*env)->GetFieldID(env, lpCache->clazz, "area_x", "I");
+	lpCache->area_y = (*env)->GetFieldID(env, lpCache->clazz, "area_y", "I");
+	lpCache->area_width = (*env)->GetFieldID(env, lpCache->clazz, "area_width", "I");
+	lpCache->area_height = (*env)->GetFieldID(env, lpCache->clazz, "area_height", "I");
+	lpCache->region = (*env)->GetFieldID(env, lpCache->clazz, "region", "I");
+	lpCache->count = (*env)->GetFieldID(env, lpCache->clazz, "count", "I");
+	lpCache->cached = 1;
+}
+
+GdkEventExpose *getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEventExpose *lpStruct)
+{
+	PGdkEventExpose_FID_CACHE lpCache = &GdkEventExposeFc;
+	if (!lpCache->cached) cacheGdkEventExposeFids(env, lpObject, lpCache);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, lpCache->window);
+	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, lpCache->send_event);
+	lpStruct->area.x = (*env)->GetIntField(env, lpObject, lpCache->area_x);
+	lpStruct->area.y = (*env)->GetIntField(env, lpObject, lpCache->area_y);
+	lpStruct->area.width = (*env)->GetIntField(env, lpObject, lpCache->area_width);
+	lpStruct->area.height = (*env)->GetIntField(env, lpObject, lpCache->area_height);
+	lpStruct->region = (GdkRegion *)(*env)->GetIntField(env, lpObject, lpCache->region);
+	lpStruct->count = (gint)(*env)->GetIntField(env, lpObject, lpCache->count);
+	return lpStruct;
+}
+
+void setGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEventExpose *lpStruct)
+{
+	PGdkEventExpose_FID_CACHE lpCache = &GdkEventExposeFc;
+	if (!lpCache->cached) cacheGdkEventExposeFids(env, lpObject, lpCache);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, lpCache->window, (jint)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, lpCache->send_event, (jbyte)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, lpCache->area_x, (jint)lpStruct->area.x);
+	(*env)->SetIntField(env, lpObject, lpCache->area_y, (jint)lpStruct->area.y);
+	(*env)->SetIntField(env, lpObject, lpCache->area_width, (jint)lpStruct->area.width);
+	(*env)->SetIntField(env, lpObject, lpCache->area_height, (jint)lpStruct->area.height);
+	(*env)->SetIntField(env, lpObject, lpCache->region, (jint)lpStruct->region);
+	(*env)->SetIntField(env, lpObject, lpCache->count, (jint)lpStruct->count);
+}
+
+typedef struct GdkEventFocus_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event, in;
+} GdkEventFocus_FID_CACHE;
+typedef GdkEventFocus_FID_CACHE *PGdkEventFocus_FID_CACHE;
+
+GdkEventFocus_FID_CACHE GdkEventFocusFc;
+
+void cacheGdkEventFocusFids(JNIEnv *env, jobject lpObject, PGdkEventFocus_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	cacheGdkEventFids(env, lpObject, &GdkEventFc);
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->window = (*env)->GetFieldID(env, lpCache->clazz, "window", "I");
+	lpCache->send_event = (*env)->GetFieldID(env, lpCache->clazz, "send_event", "B");
+	lpCache->in = (*env)->GetFieldID(env, lpCache->clazz, "in", "S");
+	lpCache->cached = 1;
+}
+
+GdkEventFocus *getGdkEventFocusFields(JNIEnv *env, jobject lpObject, GdkEventFocus *lpStruct)
+{
+	PGdkEventFocus_FID_CACHE lpCache = &GdkEventFocusFc;
+	if (!lpCache->cached) cacheGdkEventFocusFids(env, lpObject, lpCache);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, lpCache->window);
+	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, lpCache->send_event);
+	lpStruct->in = (gint16)(*env)->GetShortField(env, lpObject, lpCache->in);
+	return lpStruct;
+}
+
+void setGdkEventFocusFields(JNIEnv *env, jobject lpObject, GdkEventFocus *lpStruct)
+{
+	PGdkEventFocus_FID_CACHE lpCache = &GdkEventFocusFc;
+	if (!lpCache->cached) cacheGdkEventFocusFids(env, lpObject, lpCache);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, lpCache->window, (jint)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, lpCache->send_event, (jbyte)lpStruct->send_event);
+	(*env)->SetShortField(env, lpObject, lpCache->in, (jshort)lpStruct->in);
+}
+
+typedef struct GdkEventKey_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID window, send_event, time, state, keyval, length, string, hardware_keycode, group;
+} GdkEventKey_FID_CACHE;
+typedef GdkEventKey_FID_CACHE *PGdkEventKey_FID_CACHE;
+
+GdkEventKey_FID_CACHE GdkEventKeyFc;
+
+void cacheGdkEventKeyFids(JNIEnv *env, jobject lpObject, PGdkEventKey_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	cacheGdkEventFids(env, lpObject, &GdkEventFc);
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->window = (*env)->GetFieldID(env, lpCache->clazz, "window", "I");
+	lpCache->send_event = (*env)->GetFieldID(env, lpCache->clazz, "send_event", "B");
+	lpCache->time = (*env)->GetFieldID(env, lpCache->clazz, "time", "I");
+	lpCache->state = (*env)->GetFieldID(env, lpCache->clazz, "state", "I");
+	lpCache->keyval = (*env)->GetFieldID(env, lpCache->clazz, "keyval", "I");
+	lpCache->length = (*env)->GetFieldID(env, lpCache->clazz, "length", "I");
+	lpCache->string = (*env)->GetFieldID(env, lpCache->clazz, "string", "I");
+	lpCache->hardware_keycode = (*env)->GetFieldID(env, lpCache->clazz, "hardware_keycode", "S");
+	lpCache->group = (*env)->GetFieldID(env, lpCache->clazz, "group", "B");
+	lpCache->cached = 1;
+}
+
+GdkEventKey *getGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lpStruct)
+{
+	PGdkEventKey_FID_CACHE lpCache = &GdkEventKeyFc;
+	if (!lpCache->cached) cacheGdkEventKeyFids(env, lpObject, lpCache);
+	getGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, lpCache->window);
+	lpStruct->send_event = (gint8)(*env)->GetByteField(env, lpObject, lpCache->send_event);
+	lpStruct->time = (guint32)(*env)->GetIntField(env, lpObject, lpCache->time);
+	lpStruct->state = (guint)(*env)->GetIntField(env, lpObject, lpCache->state);
+	lpStruct->keyval = (guint)(*env)->GetIntField(env, lpObject, lpCache->keyval);
+	lpStruct->length = (gint)(*env)->GetIntField(env, lpObject, lpCache->length);
+	lpStruct->string = (gchar *)(*env)->GetIntField(env, lpObject, lpCache->string);
+	lpStruct->hardware_keycode = (guint16)(*env)->GetShortField(env, lpObject, lpCache->hardware_keycode);
+	lpStruct->group = (guint8)(*env)->GetByteField(env, lpObject, lpCache->group);
+	return lpStruct;
+}
+
+void setGdkEventKeyFields(JNIEnv *env, jobject lpObject, GdkEventKey *lpStruct)
+{
+	PGdkEventKey_FID_CACHE lpCache = &GdkEventKeyFc;
+	if (!lpCache->cached) cacheGdkEventKeyFids(env, lpObject, lpCache);
+	setGdkEventFields(env, lpObject, (GdkEvent *)lpStruct);
+	(*env)->SetIntField(env, lpObject, lpCache->window, (jint)lpStruct->window);
+	(*env)->SetByteField(env, lpObject, lpCache->send_event, (jbyte)lpStruct->send_event);
+	(*env)->SetIntField(env, lpObject, lpCache->time, (jint)lpStruct->time);
+	(*env)->SetIntField(env, lpObject, lpCache->state, (jint)lpStruct->state);
+	(*env)->SetIntField(env, lpObject, lpCache->keyval, (jint)lpStruct->keyval);
+	(*env)->SetIntField(env, lpObject, lpCache->length, (jint)lpStruct->length);
+	(*env)->SetIntField(env, lpObject, lpCache->string, (jint)lpStruct->string);
+	(*env)->SetShortField(env, lpObject, lpCache->hardware_keycode, (jshort)lpStruct->hardware_keycode);
+	(*env)->SetByteField(env, lpObject, lpCache->group, (jbyte)lpStruct->group);
+}
+
+typedef struct GdkGCValues_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID foreground_pixel, foreground_red, foreground_green, foreground_blue, background_pixel, background_red, background_green, background_blue, font, function, fill, tile, stipple, clip_mask, subwindow_mode, ts_x_origin, ts_y_origin, clip_x_origin, clip_y_origin, graphics_exposures, line_width, line_style, cap_style, join_style;
+} GdkGCValues_FID_CACHE;
+typedef GdkGCValues_FID_CACHE *PGdkGCValues_FID_CACHE;
+
 GdkGCValues_FID_CACHE GdkGCValuesFc;
-GdkRectangle_FID_CACHE GdkRectangleFc;
-GdkVisual_FID_CACHE GdkVisualFc;
+
+void cacheGdkGCValuesFids(JNIEnv *env, jobject lpObject, PGdkGCValues_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->foreground_pixel = (*env)->GetFieldID(env, lpCache->clazz, "foreground_pixel", "I");
+	lpCache->foreground_red = (*env)->GetFieldID(env, lpCache->clazz, "foreground_red", "S");
+	lpCache->foreground_green = (*env)->GetFieldID(env, lpCache->clazz, "foreground_green", "S");
+	lpCache->foreground_blue = (*env)->GetFieldID(env, lpCache->clazz, "foreground_blue", "S");
+	lpCache->background_pixel = (*env)->GetFieldID(env, lpCache->clazz, "background_pixel", "I");
+	lpCache->background_red = (*env)->GetFieldID(env, lpCache->clazz, "background_red", "S");
+	lpCache->background_green = (*env)->GetFieldID(env, lpCache->clazz, "background_green", "S");
+	lpCache->background_blue = (*env)->GetFieldID(env, lpCache->clazz, "background_blue", "S");
+	lpCache->font = (*env)->GetFieldID(env, lpCache->clazz, "font", "I");
+	lpCache->function = (*env)->GetFieldID(env, lpCache->clazz, "function", "I");
+	lpCache->fill = (*env)->GetFieldID(env, lpCache->clazz, "fill", "I");
+	lpCache->tile = (*env)->GetFieldID(env, lpCache->clazz, "tile", "I");
+	lpCache->stipple = (*env)->GetFieldID(env, lpCache->clazz, "stipple", "I");
+	lpCache->clip_mask = (*env)->GetFieldID(env, lpCache->clazz, "clip_mask", "I");
+	lpCache->subwindow_mode = (*env)->GetFieldID(env, lpCache->clazz, "subwindow_mode", "I");
+	lpCache->ts_x_origin = (*env)->GetFieldID(env, lpCache->clazz, "ts_x_origin", "I");
+	lpCache->ts_y_origin = (*env)->GetFieldID(env, lpCache->clazz, "ts_y_origin", "I");
+	lpCache->clip_x_origin = (*env)->GetFieldID(env, lpCache->clazz, "clip_x_origin", "I");
+	lpCache->clip_y_origin = (*env)->GetFieldID(env, lpCache->clazz, "clip_y_origin", "I");
+	lpCache->graphics_exposures = (*env)->GetFieldID(env, lpCache->clazz, "graphics_exposures", "I");
+	lpCache->line_width = (*env)->GetFieldID(env, lpCache->clazz, "line_width", "I");
+	lpCache->line_style = (*env)->GetFieldID(env, lpCache->clazz, "line_style", "I");
+	lpCache->cap_style = (*env)->GetFieldID(env, lpCache->clazz, "cap_style", "I");
+	lpCache->join_style = (*env)->GetFieldID(env, lpCache->clazz, "join_style", "I");
+	lpCache->cached = 1;
+}
+
+GdkGCValues *getGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpStruct)
+{
+	PGdkGCValues_FID_CACHE lpCache = &GdkGCValuesFc;
+	if (!lpCache->cached) cacheGdkGCValuesFids(env, lpObject, lpCache);
+	lpStruct->foreground.pixel = (guint32)(*env)->GetIntField(env, lpObject, lpCache->foreground_pixel);
+	lpStruct->foreground.red = (guint16)(*env)->GetShortField(env, lpObject, lpCache->foreground_red);
+	lpStruct->foreground.green = (guint16)(*env)->GetShortField(env, lpObject, lpCache->foreground_green);
+	lpStruct->foreground.blue = (guint16)(*env)->GetShortField(env, lpObject, lpCache->foreground_blue);
+	lpStruct->background.pixel = (guint32)(*env)->GetIntField(env, lpObject, lpCache->background_pixel);
+	lpStruct->background.red = (guint16)(*env)->GetShortField(env, lpObject, lpCache->background_red);
+	lpStruct->background.green = (guint16)(*env)->GetShortField(env, lpObject, lpCache->background_green);
+	lpStruct->background.blue = (guint16)(*env)->GetShortField(env, lpObject, lpCache->background_blue);
+	lpStruct->font = (GdkFont *)(*env)->GetIntField(env, lpObject, lpCache->font);
+	lpStruct->function = (GdkFunction)(*env)->GetIntField(env, lpObject, lpCache->function);
+	lpStruct->fill = (GdkFill)(*env)->GetIntField(env, lpObject, lpCache->fill);
+	lpStruct->tile = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->tile);
+	lpStruct->stipple = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->stipple);
+	lpStruct->clip_mask = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->clip_mask);
+	lpStruct->subwindow_mode = (GdkSubwindowMode)(*env)->GetIntField(env, lpObject, lpCache->subwindow_mode);
+	lpStruct->ts_x_origin = (gint)(*env)->GetIntField(env, lpObject, lpCache->ts_x_origin);
+	lpStruct->ts_y_origin = (gint)(*env)->GetIntField(env, lpObject, lpCache->ts_y_origin);
+	lpStruct->clip_x_origin = (gint)(*env)->GetIntField(env, lpObject, lpCache->clip_x_origin);
+	lpStruct->clip_y_origin = (gint)(*env)->GetIntField(env, lpObject, lpCache->clip_y_origin);
+	lpStruct->graphics_exposures = (gint)(*env)->GetIntField(env, lpObject, lpCache->graphics_exposures);
+	lpStruct->line_width = (gint)(*env)->GetIntField(env, lpObject, lpCache->line_width);
+	lpStruct->line_style = (GdkLineStyle)(*env)->GetIntField(env, lpObject, lpCache->line_style);
+	lpStruct->cap_style = (GdkCapStyle)(*env)->GetIntField(env, lpObject, lpCache->cap_style);
+	lpStruct->join_style = (GdkJoinStyle)(*env)->GetIntField(env, lpObject, lpCache->join_style);
+	return lpStruct;
+}
+
+void setGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpStruct)
+{
+	PGdkGCValues_FID_CACHE lpCache = &GdkGCValuesFc;
+	if (!lpCache->cached) cacheGdkGCValuesFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->foreground_pixel, (jint)lpStruct->foreground.pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->foreground_red, (jshort)lpStruct->foreground.red);
+	(*env)->SetShortField(env, lpObject, lpCache->foreground_green, (jshort)lpStruct->foreground.green);
+	(*env)->SetShortField(env, lpObject, lpCache->foreground_blue, (jshort)lpStruct->foreground.blue);
+	(*env)->SetIntField(env, lpObject, lpCache->background_pixel, (jint)lpStruct->background.pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->background_red, (jshort)lpStruct->background.red);
+	(*env)->SetShortField(env, lpObject, lpCache->background_green, (jshort)lpStruct->background.green);
+	(*env)->SetShortField(env, lpObject, lpCache->background_blue, (jshort)lpStruct->background.blue);
+	(*env)->SetIntField(env, lpObject, lpCache->font, (jint)lpStruct->font);
+	(*env)->SetIntField(env, lpObject, lpCache->function, (jint)lpStruct->function);
+	(*env)->SetIntField(env, lpObject, lpCache->fill, (jint)lpStruct->fill);
+	(*env)->SetIntField(env, lpObject, lpCache->tile, (jint)lpStruct->tile);
+	(*env)->SetIntField(env, lpObject, lpCache->stipple, (jint)lpStruct->stipple);
+	(*env)->SetIntField(env, lpObject, lpCache->clip_mask, (jint)lpStruct->clip_mask);
+	(*env)->SetIntField(env, lpObject, lpCache->subwindow_mode, (jint)lpStruct->subwindow_mode);
+	(*env)->SetIntField(env, lpObject, lpCache->ts_x_origin, (jint)lpStruct->ts_x_origin);
+	(*env)->SetIntField(env, lpObject, lpCache->ts_y_origin, (jint)lpStruct->ts_y_origin);
+	(*env)->SetIntField(env, lpObject, lpCache->clip_x_origin, (jint)lpStruct->clip_x_origin);
+	(*env)->SetIntField(env, lpObject, lpCache->clip_y_origin, (jint)lpStruct->clip_y_origin);
+	(*env)->SetIntField(env, lpObject, lpCache->graphics_exposures, (jint)lpStruct->graphics_exposures);
+	(*env)->SetIntField(env, lpObject, lpCache->line_width, (jint)lpStruct->line_width);
+	(*env)->SetIntField(env, lpObject, lpCache->line_style, (jint)lpStruct->line_style);
+	(*env)->SetIntField(env, lpObject, lpCache->cap_style, (jint)lpStruct->cap_style);
+	(*env)->SetIntField(env, lpObject, lpCache->join_style, (jint)lpStruct->join_style);
+}
+
+typedef struct GdkImage_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type, visual, byte_order, width, height, depth, bpp, bpl, bits_per_pixel, mem, colormap, windowing_data;
+} GdkImage_FID_CACHE;
+typedef GdkImage_FID_CACHE *PGdkImage_FID_CACHE;
+
 GdkImage_FID_CACHE GdkImageFc;
 
+void cacheGdkImageFids(JNIEnv *env, jobject lpObject, PGdkImage_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->type = (*env)->GetFieldID(env, lpCache->clazz, "type", "I");
+	lpCache->visual = (*env)->GetFieldID(env, lpCache->clazz, "visual", "I");
+	lpCache->byte_order = (*env)->GetFieldID(env, lpCache->clazz, "byte_order", "I");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "I");
+	lpCache->height = (*env)->GetFieldID(env, lpCache->clazz, "height", "I");
+	lpCache->depth = (*env)->GetFieldID(env, lpCache->clazz, "depth", "S");
+	lpCache->bpp = (*env)->GetFieldID(env, lpCache->clazz, "bpp", "S");
+	lpCache->bpl = (*env)->GetFieldID(env, lpCache->clazz, "bpl", "S");
+	lpCache->bits_per_pixel = (*env)->GetFieldID(env, lpCache->clazz, "bits_per_pixel", "S");
+	lpCache->mem = (*env)->GetFieldID(env, lpCache->clazz, "mem", "I");
+	lpCache->colormap = (*env)->GetFieldID(env, lpCache->clazz, "colormap", "I");
+	lpCache->windowing_data = (*env)->GetFieldID(env, lpCache->clazz, "windowing_data", "I");
+	lpCache->cached = 1;
+}
+
+GdkImage *getGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct)
+{
+	PGdkImage_FID_CACHE lpCache = &GdkImageFc;
+	if (!lpCache->cached) cacheGdkImageFids(env, lpObject, lpCache);
+	lpStruct->type = (GdkImageType)(*env)->GetIntField(env, lpObject, lpCache->type);
+	lpStruct->visual = (GdkVisual *)(*env)->GetIntField(env, lpObject, lpCache->visual);
+	lpStruct->byte_order = (GdkByteOrder)(*env)->GetIntField(env, lpObject, lpCache->byte_order);
+	lpStruct->width = (gint)(*env)->GetIntField(env, lpObject, lpCache->width);
+	lpStruct->height = (gint)(*env)->GetIntField(env, lpObject, lpCache->height);
+	lpStruct->depth = (guint16)(*env)->GetShortField(env, lpObject, lpCache->depth);
+	lpStruct->bpp = (guint16)(*env)->GetShortField(env, lpObject, lpCache->bpp);
+	lpStruct->bpl = (guint16)(*env)->GetShortField(env, lpObject, lpCache->bpl);
+	lpStruct->bits_per_pixel = (guint16)(*env)->GetShortField(env, lpObject, lpCache->bits_per_pixel);
+	lpStruct->mem = (gpointer)(*env)->GetIntField(env, lpObject, lpCache->mem);
+	lpStruct->colormap = (GdkColormap *)(*env)->GetIntField(env, lpObject, lpCache->colormap);
+	lpStruct->windowing_data = (gpointer)(*env)->GetIntField(env, lpObject, lpCache->windowing_data);
+	return lpStruct;
+}
+
+void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct)
+{
+	PGdkImage_FID_CACHE lpCache = &GdkImageFc;
+	if (!lpCache->cached) cacheGdkImageFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->type, (jint)lpStruct->type);
+	(*env)->SetIntField(env, lpObject, lpCache->visual, (jint)lpStruct->visual);
+	(*env)->SetIntField(env, lpObject, lpCache->byte_order, (jint)lpStruct->byte_order);
+	(*env)->SetIntField(env, lpObject, lpCache->width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, lpCache->height, (jint)lpStruct->height);
+	(*env)->SetShortField(env, lpObject, lpCache->depth, (jshort)lpStruct->depth);
+	(*env)->SetShortField(env, lpObject, lpCache->bpp, (jshort)lpStruct->bpp);
+	(*env)->SetShortField(env, lpObject, lpCache->bpl, (jshort)lpStruct->bpl);
+	(*env)->SetShortField(env, lpObject, lpCache->bits_per_pixel, (jshort)lpStruct->bits_per_pixel);
+	(*env)->SetIntField(env, lpObject, lpCache->mem, (jint)lpStruct->mem);
+	(*env)->SetIntField(env, lpObject, lpCache->colormap, (jint)lpStruct->colormap);
+	(*env)->SetIntField(env, lpObject, lpCache->windowing_data, (jint)lpStruct->windowing_data);
+}
+
+typedef struct GdkRectangle_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height;
+} GdkRectangle_FID_CACHE;
+typedef GdkRectangle_FID_CACHE *PGdkRectangle_FID_CACHE;
+
+GdkRectangle_FID_CACHE GdkRectangleFc;
+
+void cacheGdkRectangleFids(JNIEnv *env, jobject lpObject, PGdkRectangle_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->x = (*env)->GetFieldID(env, lpCache->clazz, "x", "I");
+	lpCache->y = (*env)->GetFieldID(env, lpCache->clazz, "y", "I");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "I");
+	lpCache->height = (*env)->GetFieldID(env, lpCache->clazz, "height", "I");
+	lpCache->cached = 1;
+}
+
+GdkRectangle *getGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct)
+{
+	PGdkRectangle_FID_CACHE lpCache = &GdkRectangleFc;
+	if (!lpCache->cached) cacheGdkRectangleFids(env, lpObject, lpCache);
+	lpStruct->x = (gint)(*env)->GetIntField(env, lpObject, lpCache->x);
+	lpStruct->y = (gint)(*env)->GetIntField(env, lpObject, lpCache->y);
+	lpStruct->width = (gint)(*env)->GetIntField(env, lpObject, lpCache->width);
+	lpStruct->height = (gint)(*env)->GetIntField(env, lpObject, lpCache->height);
+	return lpStruct;
+}
+
+void setGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpStruct)
+{
+	PGdkRectangle_FID_CACHE lpCache = &GdkRectangleFc;
+	if (!lpCache->cached) cacheGdkRectangleFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, lpCache->y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, lpCache->width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, lpCache->height, (jint)lpStruct->height);
+}
+
+typedef struct GdkVisual_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID type, depth, byte_order, colormap_size, bits_per_rgb, red_mask, red_shift, red_prec, green_mask, green_shift, green_prec, blue_mask, blue_shift, blue_prec;
+} GdkVisual_FID_CACHE;
+typedef GdkVisual_FID_CACHE *PGdkVisual_FID_CACHE;
+
+GdkVisual_FID_CACHE GdkVisualFc;
+
+void cacheGdkVisualFids(JNIEnv *env, jobject lpObject, PGdkVisual_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->type = (*env)->GetFieldID(env, lpCache->clazz, "type", "I");
+	lpCache->depth = (*env)->GetFieldID(env, lpCache->clazz, "depth", "I");
+	lpCache->byte_order = (*env)->GetFieldID(env, lpCache->clazz, "byte_order", "I");
+	lpCache->colormap_size = (*env)->GetFieldID(env, lpCache->clazz, "colormap_size", "I");
+	lpCache->bits_per_rgb = (*env)->GetFieldID(env, lpCache->clazz, "bits_per_rgb", "I");
+	lpCache->red_mask = (*env)->GetFieldID(env, lpCache->clazz, "red_mask", "I");
+	lpCache->red_shift = (*env)->GetFieldID(env, lpCache->clazz, "red_shift", "I");
+	lpCache->red_prec = (*env)->GetFieldID(env, lpCache->clazz, "red_prec", "I");
+	lpCache->green_mask = (*env)->GetFieldID(env, lpCache->clazz, "green_mask", "I");
+	lpCache->green_shift = (*env)->GetFieldID(env, lpCache->clazz, "green_shift", "I");
+	lpCache->green_prec = (*env)->GetFieldID(env, lpCache->clazz, "green_prec", "I");
+	lpCache->blue_mask = (*env)->GetFieldID(env, lpCache->clazz, "blue_mask", "I");
+	lpCache->blue_shift = (*env)->GetFieldID(env, lpCache->clazz, "blue_shift", "I");
+	lpCache->blue_prec = (*env)->GetFieldID(env, lpCache->clazz, "blue_prec", "I");
+	lpCache->cached = 1;
+}
+
+GdkVisual *getGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpStruct)
+{
+	PGdkVisual_FID_CACHE lpCache = &GdkVisualFc;
+	if (!lpCache->cached) cacheGdkVisualFids(env, lpObject, lpCache);
+	lpStruct->type = (GdkVisualType)(*env)->GetIntField(env, lpObject, lpCache->type);
+	lpStruct->depth = (gint)(*env)->GetIntField(env, lpObject, lpCache->depth);
+	lpStruct->byte_order = (GdkByteOrder)(*env)->GetIntField(env, lpObject, lpCache->byte_order);
+	lpStruct->colormap_size = (gint)(*env)->GetIntField(env, lpObject, lpCache->colormap_size);
+	lpStruct->bits_per_rgb = (gint)(*env)->GetIntField(env, lpObject, lpCache->bits_per_rgb);
+	lpStruct->red_mask = (guint32)(*env)->GetIntField(env, lpObject, lpCache->red_mask);
+	lpStruct->red_shift = (gint)(*env)->GetIntField(env, lpObject, lpCache->red_shift);
+	lpStruct->red_prec = (gint)(*env)->GetIntField(env, lpObject, lpCache->red_prec);
+	lpStruct->green_mask = (guint32)(*env)->GetIntField(env, lpObject, lpCache->green_mask);
+	lpStruct->green_shift = (gint)(*env)->GetIntField(env, lpObject, lpCache->green_shift);
+	lpStruct->green_prec = (gint)(*env)->GetIntField(env, lpObject, lpCache->green_prec);
+	lpStruct->blue_mask = (guint32)(*env)->GetIntField(env, lpObject, lpCache->blue_mask);
+	lpStruct->blue_shift = (gint)(*env)->GetIntField(env, lpObject, lpCache->blue_shift);
+	lpStruct->blue_prec = (gint)(*env)->GetIntField(env, lpObject, lpCache->blue_prec);
+	return lpStruct;
+}
+
+void setGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpStruct)
+{
+	PGdkVisual_FID_CACHE lpCache = &GdkVisualFc;
+	if (!lpCache->cached) cacheGdkVisualFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->type, (jint)lpStruct->type);
+	(*env)->SetIntField(env, lpObject, lpCache->depth, (jint)lpStruct->depth);
+	(*env)->SetIntField(env, lpObject, lpCache->byte_order, (jint)lpStruct->byte_order);
+	(*env)->SetIntField(env, lpObject, lpCache->colormap_size, (jint)lpStruct->colormap_size);
+	(*env)->SetIntField(env, lpObject, lpCache->bits_per_rgb, (jint)lpStruct->bits_per_rgb);
+	(*env)->SetIntField(env, lpObject, lpCache->red_mask, (jint)lpStruct->red_mask);
+	(*env)->SetIntField(env, lpObject, lpCache->red_shift, (jint)lpStruct->red_shift);
+	(*env)->SetIntField(env, lpObject, lpCache->red_prec, (jint)lpStruct->red_prec);
+	(*env)->SetIntField(env, lpObject, lpCache->green_mask, (jint)lpStruct->green_mask);
+	(*env)->SetIntField(env, lpObject, lpCache->green_shift, (jint)lpStruct->green_shift);
+	(*env)->SetIntField(env, lpObject, lpCache->green_prec, (jint)lpStruct->green_prec);
+	(*env)->SetIntField(env, lpObject, lpCache->blue_mask, (jint)lpStruct->blue_mask);
+	(*env)->SetIntField(env, lpObject, lpCache->blue_shift, (jint)lpStruct->blue_shift);
+	(*env)->SetIntField(env, lpObject, lpCache->blue_prec, (jint)lpStruct->blue_prec);
+}
+
+typedef struct GtkAdjustment_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID lower, upper, value, step_increment, page_increment, page_size;
+} GtkAdjustment_FID_CACHE;
+typedef GtkAdjustment_FID_CACHE *PGtkAdjustment_FID_CACHE;
+
 GtkAdjustment_FID_CACHE GtkAdjustmentFc;
+
+void cacheGtkAdjustmentFids(JNIEnv *env, jobject lpObject, PGtkAdjustment_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->lower = (*env)->GetFieldID(env, lpCache->clazz, "lower", "D");
+	lpCache->upper = (*env)->GetFieldID(env, lpCache->clazz, "upper", "D");
+	lpCache->value = (*env)->GetFieldID(env, lpCache->clazz, "value", "D");
+	lpCache->step_increment = (*env)->GetFieldID(env, lpCache->clazz, "step_increment", "D");
+	lpCache->page_increment = (*env)->GetFieldID(env, lpCache->clazz, "page_increment", "D");
+	lpCache->page_size = (*env)->GetFieldID(env, lpCache->clazz, "page_size", "D");
+	lpCache->cached = 1;
+}
+
+GtkAdjustment *getGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpStruct)
+{
+	PGtkAdjustment_FID_CACHE lpCache = &GtkAdjustmentFc;
+	if (!lpCache->cached) cacheGtkAdjustmentFids(env, lpObject, lpCache);
+	lpStruct->lower = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->lower);
+	lpStruct->upper = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->upper);
+	lpStruct->value = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->value);
+	lpStruct->step_increment = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->step_increment);
+	lpStruct->page_increment = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->page_increment);
+	lpStruct->page_size = (gdouble)(*env)->GetDoubleField(env, lpObject, lpCache->page_size);
+	return lpStruct;
+}
+
+void setGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpStruct)
+{
+	PGtkAdjustment_FID_CACHE lpCache = &GtkAdjustmentFc;
+	if (!lpCache->cached) cacheGtkAdjustmentFids(env, lpObject, lpCache);
+	(*env)->SetDoubleField(env, lpObject, lpCache->lower, (jdouble)lpStruct->lower);
+	(*env)->SetDoubleField(env, lpObject, lpCache->upper, (jdouble)lpStruct->upper);
+	(*env)->SetDoubleField(env, lpObject, lpCache->value, (jdouble)lpStruct->value);
+	(*env)->SetDoubleField(env, lpObject, lpCache->step_increment, (jdouble)lpStruct->step_increment);
+	(*env)->SetDoubleField(env, lpObject, lpCache->page_increment, (jdouble)lpStruct->page_increment);
+	(*env)->SetDoubleField(env, lpObject, lpCache->page_size, (jdouble)lpStruct->page_size);
+}
+
+typedef struct GtkAllocation_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID x, y, width, height;
+} GtkAllocation_FID_CACHE;
+typedef GtkAllocation_FID_CACHE *PGtkAllocation_FID_CACHE;
+
 GtkAllocation_FID_CACHE GtkAllocationFc;
-GtkCombo_FID_CACHE GtkComboFc;
-GtkCList_FID_CACHE GtkCListFc;
-GtkRequisition_FID_CACHE GtkRequisitionFc;
-GtkStyle_FID_CACHE GtkStyleFc;
-GtkStyleClass_FID_CACHE GtkStyleClassFc;
-GtkCListRow_FID_CACHE GtkCListRowFc;
+
+void cacheGtkAllocationFids(JNIEnv *env, jobject lpObject, PGtkAllocation_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->x = (*env)->GetFieldID(env, lpCache->clazz, "x", "I");
+	lpCache->y = (*env)->GetFieldID(env, lpCache->clazz, "y", "I");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "I");
+	lpCache->height = (*env)->GetFieldID(env, lpCache->clazz, "height", "I");
+	lpCache->cached = 1;
+}
+
+GtkAllocation *getGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpStruct)
+{
+	PGtkAllocation_FID_CACHE lpCache = &GtkAllocationFc;
+	if (!lpCache->cached) cacheGtkAllocationFids(env, lpObject, lpCache);
+	lpStruct->x = (*env)->GetIntField(env, lpObject, lpCache->x);
+	lpStruct->y = (*env)->GetIntField(env, lpObject, lpCache->y);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, lpCache->width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, lpCache->height);
+	return lpStruct;
+}
+
+void setGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpStruct)
+{
+	PGtkAllocation_FID_CACHE lpCache = &GtkAllocationFc;
+	if (!lpCache->cached) cacheGtkAllocationFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->x, (jint)lpStruct->x);
+	(*env)->SetIntField(env, lpObject, lpCache->y, (jint)lpStruct->y);
+	(*env)->SetIntField(env, lpObject, lpCache->width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, lpCache->height, (jint)lpStruct->height);
+}
+
+typedef struct GtkCListColumn_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID title, area_x, area_y, area_width, area_height, button, window, width, min_width, max_width, justification, visible, width_set, resizeable, auto_resize, button_passive;
+} GtkCListColumn_FID_CACHE;
+typedef GtkCListColumn_FID_CACHE *PGtkCListColumn_FID_CACHE;
+
 GtkCListColumn_FID_CACHE GtkCListColumnFc;
+
+void cacheGtkCListColumnFids(JNIEnv *env, jobject lpObject, PGtkCListColumn_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->title = (*env)->GetFieldID(env, lpCache->clazz, "title", "I");
+	lpCache->area_x = (*env)->GetFieldID(env, lpCache->clazz, "area_x", "I");
+	lpCache->area_y = (*env)->GetFieldID(env, lpCache->clazz, "area_y", "I");
+	lpCache->area_width = (*env)->GetFieldID(env, lpCache->clazz, "area_width", "I");
+	lpCache->area_height = (*env)->GetFieldID(env, lpCache->clazz, "area_height", "I");
+	lpCache->button = (*env)->GetFieldID(env, lpCache->clazz, "button", "I");
+	lpCache->window = (*env)->GetFieldID(env, lpCache->clazz, "window", "I");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "I");
+	lpCache->min_width = (*env)->GetFieldID(env, lpCache->clazz, "min_width", "I");
+	lpCache->max_width = (*env)->GetFieldID(env, lpCache->clazz, "max_width", "I");
+	lpCache->justification = (*env)->GetFieldID(env, lpCache->clazz, "justification", "I");
+	lpCache->visible = (*env)->GetFieldID(env, lpCache->clazz, "visible", "I");
+	lpCache->width_set = (*env)->GetFieldID(env, lpCache->clazz, "width_set", "I");
+	lpCache->resizeable = (*env)->GetFieldID(env, lpCache->clazz, "resizeable", "I");
+	lpCache->auto_resize = (*env)->GetFieldID(env, lpCache->clazz, "auto_resize", "I");
+	lpCache->button_passive = (*env)->GetFieldID(env, lpCache->clazz, "button_passive", "I");
+	lpCache->cached = 1;
+}
+
+GtkCListColumn *getGtkCListColumnFields(JNIEnv *env, jobject lpObject, GtkCListColumn *lpStruct)
+{
+	PGtkCListColumn_FID_CACHE lpCache = &GtkCListColumnFc;
+	if (!lpCache->cached) cacheGtkCListColumnFids(env, lpObject, lpCache);
+	lpStruct->title = (gchar *)(*env)->GetIntField(env, lpObject, lpCache->title);
+	lpStruct->area.x = (gint)(*env)->GetIntField(env, lpObject, lpCache->area_x);
+	lpStruct->area.y = (gint)(*env)->GetIntField(env, lpObject, lpCache->area_y);
+	lpStruct->area.width = (gint)(*env)->GetIntField(env, lpObject, lpCache->area_width);
+	lpStruct->area.height = (gint)(*env)->GetIntField(env, lpObject, lpCache->area_height);
+	lpStruct->button = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->button);
+	lpStruct->window = (GdkWindow *)(*env)->GetIntField(env, lpObject, lpCache->window);
+	lpStruct->width = (gint)(*env)->GetIntField(env, lpObject, lpCache->width);
+	lpStruct->min_width = (gint)(*env)->GetIntField(env, lpObject, lpCache->min_width);
+	lpStruct->max_width = (gint)(*env)->GetIntField(env, lpObject, lpCache->max_width);
+	lpStruct->justification = (GtkJustification)(*env)->GetIntField(env, lpObject, lpCache->justification);
+	lpStruct->visible = (guint)(*env)->GetIntField(env, lpObject, lpCache->visible);
+	lpStruct->width_set = (*env)->GetIntField(env, lpObject, lpCache->width_set);
+	lpStruct->resizeable = (guint)(*env)->GetIntField(env, lpObject, lpCache->resizeable);
+	lpStruct->auto_resize = (guint)(*env)->GetIntField(env, lpObject, lpCache->auto_resize);
+	lpStruct->button_passive = (guint)(*env)->GetIntField(env, lpObject, lpCache->button_passive);
+	return lpStruct;
+}
+
+void setGtkCListColumnFields(JNIEnv *env, jobject lpObject, GtkCListColumn *lpStruct)
+{
+	PGtkCListColumn_FID_CACHE lpCache = &GtkCListColumnFc;
+	if (!lpCache->cached) cacheGtkCListColumnFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->title, (jint)lpStruct->title);
+	(*env)->SetIntField(env, lpObject, lpCache->area_x, (jint)lpStruct->area.x);
+	(*env)->SetIntField(env, lpObject, lpCache->area_y, (jint)lpStruct->area.y);
+	(*env)->SetIntField(env, lpObject, lpCache->area_width, (jint)lpStruct->area.width);
+	(*env)->SetIntField(env, lpObject, lpCache->area_height, (jint)lpStruct->area.height);
+	(*env)->SetIntField(env, lpObject, lpCache->button, (jint)lpStruct->button);
+	(*env)->SetIntField(env, lpObject, lpCache->window, (jint)lpStruct->window);
+	(*env)->SetIntField(env, lpObject, lpCache->width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, lpCache->min_width, (jint)lpStruct->min_width);
+	(*env)->SetIntField(env, lpObject, lpCache->max_width, (jint)lpStruct->max_width);
+	(*env)->SetIntField(env, lpObject, lpCache->justification, (jint)lpStruct->justification);
+	(*env)->SetIntField(env, lpObject, lpCache->visible, (jint)lpStruct->visible);
+	(*env)->SetIntField(env, lpObject, lpCache->width_set, (jint)lpStruct->width_set);
+	(*env)->SetIntField(env, lpObject, lpCache->resizeable, (jint)lpStruct->resizeable);
+	(*env)->SetIntField(env, lpObject, lpCache->auto_resize, (jint)lpStruct->auto_resize);
+	(*env)->SetIntField(env, lpObject, lpCache->button_passive, (jint)lpStruct->button_passive);
+}
+
+typedef struct GtkCListRow_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID cell, state, foreground_red, foreground_green, foreground_blue, foreground_pixel, background_red, background_green, background_blue, background_pixel, style, data, destroy, fg_set, bg_set, selectable;
+} GtkCListRow_FID_CACHE;
+typedef GtkCListRow_FID_CACHE *PGtkCListRow_FID_CACHE;
+
+GtkCListRow_FID_CACHE GtkCListRowFc;
+
+void cacheGtkCListRowFids(JNIEnv *env, jobject lpObject, PGtkCListRow_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->cell = (*env)->GetFieldID(env, lpCache->clazz, "cell", "I");
+	lpCache->state = (*env)->GetFieldID(env, lpCache->clazz, "state", "I");
+	lpCache->foreground_red = (*env)->GetFieldID(env, lpCache->clazz, "foreground_red", "S");
+	lpCache->foreground_green = (*env)->GetFieldID(env, lpCache->clazz, "foreground_green", "S");
+	lpCache->foreground_blue = (*env)->GetFieldID(env, lpCache->clazz, "foreground_blue", "S");
+	lpCache->foreground_pixel = (*env)->GetFieldID(env, lpCache->clazz, "foreground_pixel", "I");
+	lpCache->background_red = (*env)->GetFieldID(env, lpCache->clazz, "background_red", "S");
+	lpCache->background_green = (*env)->GetFieldID(env, lpCache->clazz, "background_green", "S");
+	lpCache->background_blue = (*env)->GetFieldID(env, lpCache->clazz, "background_blue", "S");
+	lpCache->background_pixel = (*env)->GetFieldID(env, lpCache->clazz, "background_pixel", "I");
+	lpCache->style = (*env)->GetFieldID(env, lpCache->clazz, "style", "I");
+	lpCache->data = (*env)->GetFieldID(env, lpCache->clazz, "data", "I");
+	lpCache->destroy = (*env)->GetFieldID(env, lpCache->clazz, "destroy", "I");
+	lpCache->fg_set = (*env)->GetFieldID(env, lpCache->clazz, "fg_set", "I");
+	lpCache->bg_set = (*env)->GetFieldID(env, lpCache->clazz, "bg_set", "I");
+	lpCache->selectable = (*env)->GetFieldID(env, lpCache->clazz, "selectable", "I");
+	lpCache->cached = 1;
+}
+
+GtkCListRow *getGtkCListRowFields(JNIEnv *env, jobject lpObject, GtkCListRow *lpStruct)
+{
+	PGtkCListRow_FID_CACHE lpCache = &GtkCListRowFc;
+	if (!lpCache->cached) cacheGtkCListRowFids(env, lpObject, lpCache);
+	lpStruct->cell = (GtkCell *)(*env)->GetIntField(env, lpObject, lpCache->cell);
+	lpStruct->state = (GtkStateType)(*env)->GetIntField(env, lpObject, lpCache->state);
+	lpStruct->foreground.red = (guint16)(*env)->GetShortField(env, lpObject, lpCache->foreground_red);
+	lpStruct->foreground.green = (guint16)(*env)->GetShortField(env, lpObject, lpCache->foreground_green);
+	lpStruct->foreground.blue = (guint16)(*env)->GetShortField(env, lpObject, lpCache->foreground_blue);
+	lpStruct->foreground.pixel = (guint32)(*env)->GetIntField(env, lpObject, lpCache->foreground_pixel);
+	lpStruct->background.red = (guint16)(*env)->GetShortField(env, lpObject, lpCache->background_red);
+	lpStruct->background.green = (guint16)(*env)->GetShortField(env, lpObject, lpCache->background_green);
+	lpStruct->background.blue = (guint16)(*env)->GetShortField(env, lpObject, lpCache->background_blue);
+	lpStruct->background.pixel = (guint32)(*env)->GetIntField(env, lpObject, lpCache->background_pixel);
+	lpStruct->style = (GtkStyle *)(*env)->GetIntField(env, lpObject, lpCache->style);
+	lpStruct->data = (gpointer)(*env)->GetIntField(env, lpObject, lpCache->data);
+	lpStruct->destroy = (GtkDestroyNotify)(*env)->GetIntField(env, lpObject, lpCache->destroy);
+	lpStruct->fg_set = (guint)(*env)->GetIntField(env, lpObject, lpCache->fg_set);
+	lpStruct->bg_set = (guint)(*env)->GetIntField(env, lpObject, lpCache->bg_set);
+	lpStruct->selectable = (guint)(*env)->GetIntField(env, lpObject, lpCache->selectable);
+	return lpStruct;
+}
+
+void setGtkCListRowFields(JNIEnv *env, jobject lpObject, GtkCListRow *lpStruct)
+{
+	PGtkCListRow_FID_CACHE lpCache = &GtkCListRowFc;
+	if (!lpCache->cached) cacheGtkCListRowFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->cell, (jint)lpStruct->cell);
+	(*env)->SetIntField(env, lpObject, lpCache->state, (jint)lpStruct->state);
+	(*env)->SetShortField(env, lpObject, lpCache->foreground_red, (jshort)lpStruct->foreground.red);
+	(*env)->SetShortField(env, lpObject, lpCache->foreground_green, (jshort)lpStruct->foreground.green);
+	(*env)->SetShortField(env, lpObject, lpCache->foreground_blue, (jshort)lpStruct->foreground.blue);
+	(*env)->SetIntField(env, lpObject, lpCache->foreground_pixel, (jint)lpStruct->foreground.pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->background_red, (jshort)lpStruct->background.red);
+	(*env)->SetShortField(env, lpObject, lpCache->background_green, (jshort)lpStruct->background.green);
+	(*env)->SetShortField(env, lpObject, lpCache->background_blue, (jshort)lpStruct->background.blue);
+	(*env)->SetIntField(env, lpObject, lpCache->background_pixel, (jint)lpStruct->background.pixel);
+	(*env)->SetIntField(env, lpObject, lpCache->style, (jint)lpStruct->style);
+	(*env)->SetIntField(env, lpObject, lpCache->data, (jint)lpStruct->data);
+	(*env)->SetIntField(env, lpObject, lpCache->destroy, (jint)lpStruct->destroy);
+	(*env)->SetIntField(env, lpObject, lpCache->fg_set, (jint)lpStruct->fg_set);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_set, (jint)lpStruct->bg_set);
+	(*env)->SetIntField(env, lpObject, lpCache->selectable, (jint)lpStruct->selectable);
+}
+
+typedef struct GtkCTreeRow_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID parent, sibling, children, pixmap_closed, mask_closed, pixmap_opened, mask_opened, level, is_leaf, expanded;
+} GtkCTreeRow_FID_CACHE;
+typedef GtkCTreeRow_FID_CACHE *PGtkCTreeRow_FID_CACHE;
+
 GtkCTreeRow_FID_CACHE GtkCTreeRowFc;
-GtkCTree_FID_CACHE GtkCTreeFc;
 
-GtkTargetEntry_FID_CACHE GtkTargetEntryFc;
+void cacheGtkCTreeRowFids(JNIEnv *env, jobject lpObject, PGtkCTreeRow_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	cacheGtkCListRowFids(env, lpObject, &GtkCListRowFc);
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->parent = (*env)->GetFieldID(env, lpCache->clazz, "parent", "I");
+	lpCache->sibling = (*env)->GetFieldID(env, lpCache->clazz, "sibling", "I");
+	lpCache->children = (*env)->GetFieldID(env, lpCache->clazz, "children", "I");
+	lpCache->pixmap_closed = (*env)->GetFieldID(env, lpCache->clazz, "pixmap_closed", "I");
+	lpCache->mask_closed = (*env)->GetFieldID(env, lpCache->clazz, "mask_closed", "I");
+	lpCache->pixmap_opened = (*env)->GetFieldID(env, lpCache->clazz, "pixmap_opened", "I");
+	lpCache->mask_opened = (*env)->GetFieldID(env, lpCache->clazz, "mask_opened", "I");
+	lpCache->level = (*env)->GetFieldID(env, lpCache->clazz, "level", "S");
+	lpCache->is_leaf = (*env)->GetFieldID(env, lpCache->clazz, "is_leaf", "I");
+	lpCache->expanded = (*env)->GetFieldID(env, lpCache->clazz, "expanded", "I");
+	lpCache->cached = 1;
+}
+
+GtkCTreeRow *getGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpStruct)
+{
+	PGtkCTreeRow_FID_CACHE lpCache = &GtkCTreeRowFc;
+	if (!lpCache->cached) cacheGtkCTreeRowFids(env, lpObject, lpCache);
+	getGtkCListRowFields(env, lpObject, (GtkCListRow *)lpStruct);
+	lpStruct->parent = (GtkCTreeNode *)(*env)->GetIntField(env, lpObject, lpCache->parent);
+	lpStruct->sibling = (GtkCTreeNode *)(*env)->GetIntField(env, lpObject, lpCache->sibling);
+	lpStruct->children = (GtkCTreeNode *)(*env)->GetIntField(env, lpObject, lpCache->children);
+	lpStruct->pixmap_closed = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->pixmap_closed);
+	lpStruct->mask_closed = (GdkBitmap *)(*env)->GetIntField(env, lpObject, lpCache->mask_closed);
+	lpStruct->pixmap_opened = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->pixmap_opened);
+	lpStruct->mask_opened = (GdkBitmap *)(*env)->GetIntField(env, lpObject, lpCache->mask_opened);
+	lpStruct->level = (guint16)(*env)->GetShortField(env, lpObject, lpCache->level);
+	lpStruct->is_leaf = (guint)(*env)->GetIntField(env, lpObject, lpCache->is_leaf);
+	lpStruct->expanded = (guint)(*env)->GetIntField(env, lpObject, lpCache->expanded);
+	return lpStruct;
+}
+
+void setGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpStruct)
+{
+	PGtkCTreeRow_FID_CACHE lpCache = &GtkCTreeRowFc;
+	if (!lpCache->cached) cacheGtkCTreeRowFids(env, lpObject, lpCache);
+	setGtkCListRowFields(env, lpObject, (GtkCListRow *)lpStruct);
+	(*env)->SetIntField(env, lpObject, lpCache->parent, (jint)lpStruct->parent);
+	(*env)->SetIntField(env, lpObject, lpCache->sibling, (jint)lpStruct->sibling);
+	(*env)->SetIntField(env, lpObject, lpCache->children, (jint)lpStruct->children);
+	(*env)->SetIntField(env, lpObject, lpCache->pixmap_closed, (jint)lpStruct->pixmap_closed);
+	(*env)->SetIntField(env, lpObject, lpCache->mask_closed, (jint)lpStruct->mask_closed);
+	(*env)->SetIntField(env, lpObject, lpCache->pixmap_opened, (jint)lpStruct->pixmap_opened);
+	(*env)->SetIntField(env, lpObject, lpCache->mask_opened, (jint)lpStruct->mask_opened);
+	(*env)->SetShortField(env, lpObject, lpCache->level, (jshort)lpStruct->level);
+	(*env)->SetIntField(env, lpObject, lpCache->is_leaf, (jint)lpStruct->is_leaf);
+	(*env)->SetIntField(env, lpObject, lpCache->expanded, (jint)lpStruct->expanded);
+}
+
+typedef struct GtkCombo_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID entry, list;
+} GtkCombo_FID_CACHE;
+typedef GtkCombo_FID_CACHE *PGtkCombo_FID_CACHE;
+
+GtkCombo_FID_CACHE GtkComboFc;
+
+void cacheGtkComboFids(JNIEnv *env, jobject lpObject, PGtkCombo_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->entry = (*env)->GetFieldID(env, lpCache->clazz, "entry", "I");
+	lpCache->list = (*env)->GetFieldID(env, lpCache->clazz, "list", "I");
+	lpCache->cached = 1;
+}
+
+GtkCombo *getGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct)
+{
+	PGtkCombo_FID_CACHE lpCache = &GtkComboFc;
+	if (!lpCache->cached) cacheGtkComboFids(env, lpObject, lpCache);
+	lpStruct->entry = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->entry);
+	lpStruct->list = (GtkWidget *)(*env)->GetIntField(env, lpObject, lpCache->list);
+	return lpStruct;
+}
+
+void setGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpStruct)
+{
+	PGtkCombo_FID_CACHE lpCache = &GtkComboFc;
+	if (!lpCache->cached) cacheGtkComboFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->entry, (jint)lpStruct->entry);
+	(*env)->SetIntField(env, lpObject, lpCache->list, (jint)lpStruct->list);
+}
+
+typedef struct GtkRequisition_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID width, height;
+} GtkRequisition_FID_CACHE;
+typedef GtkRequisition_FID_CACHE *PGtkRequisition_FID_CACHE;
+
+GtkRequisition_FID_CACHE GtkRequisitionFc;
+
+void cacheGtkRequisitionFids(JNIEnv *env, jobject lpObject, PGtkRequisition_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "I");
+	lpCache->height = (*env)->GetFieldID(env, lpCache->clazz, "height", "I");
+	lpCache->cached = 1;
+}
+
+GtkRequisition *getGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpStruct)
+{
+	PGtkRequisition_FID_CACHE lpCache = &GtkRequisitionFc;
+	if (!lpCache->cached) cacheGtkRequisitionFids(env, lpObject, lpCache);
+	lpStruct->width = (*env)->GetIntField(env, lpObject, lpCache->width);
+	lpStruct->height = (*env)->GetIntField(env, lpObject, lpCache->height);
+	return lpStruct;
+}
+
+void setGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpStruct)
+{
+	PGtkRequisition_FID_CACHE lpCache = &GtkRequisitionFc;
+	if (!lpCache->cached) cacheGtkRequisitionFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->width, (jint)lpStruct->width);
+	(*env)->SetIntField(env, lpObject, lpCache->height, (jint)lpStruct->height);
+}
+
+typedef struct GtkSelectionData_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID selection, target, type, format, data, length;
+} GtkSelectionData_FID_CACHE;
+typedef GtkSelectionData_FID_CACHE *PGtkSelectionData_FID_CACHE;
+
 GtkSelectionData_FID_CACHE GtkSelectionDataFc;
-
-/* ----------- fid and class caches  ----------- */
-/*
- * Used for Java objects passed into JNI that are
- * declared like:
- *
- * 	nativeFunction (Rectangle p1, Rectangle p2, Rectangle p3)
- *
- * and not like this
- *
- * 	nativeFunction (Object p1, Object p2, Object p3)
- *
- *
- */
-void cacheGdkColorFids(JNIEnv *env, jobject lpGdkColor, PGdkColor_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkColorClass = (*env)->GetObjectClass(env, lpGdkColor);
-
-	lpCache->pixel = (*env)->GetFieldID(env, lpCache->GdkColorClass, "pixel", "I");
-	lpCache->red = (*env)->GetFieldID(env, lpCache->GdkColorClass, "red", "S");
-	lpCache->green = (*env)->GetFieldID(env, lpCache->GdkColorClass, "green", "S");
-	lpCache->blue = (*env)->GetFieldID(env, lpCache->GdkColorClass, "blue", "S");
-	lpCache->cached = 1;
-};
-
-void cacheGdkEventExposeFids(JNIEnv *env, jobject lpGdkEventExpose, PGdkEventExpose_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkEventExposeClass = (*env)->GetObjectClass(env, lpGdkEventExpose);
-	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "x", "I");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "y", "I");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "width", "I");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "height", "I");
-	lpCache->region = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "region", "I");
-	lpCache->count = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "count", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGdkFontFids(JNIEnv *env, jobject lpGdkFont, PGdkFont_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkFontClass = (*env)->GetObjectClass(env, lpGdkFont);
-	lpCache->type = (*env)->GetFieldID(env, lpCache->GdkFontClass, "type", "I");
-	lpCache->ascent = (*env)->GetFieldID(env, lpCache->GdkFontClass, "ascent", "I");
-	lpCache->descent = (*env)->GetFieldID(env, lpCache->GdkFontClass, "descent", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGdkGCValuesFids(JNIEnv *env, jobject lpGdkGCValues, PGdkGCValues_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkGCValuesClass = (*env)->GetObjectClass(env, lpGdkGCValues);
-
-	lpCache->foreground_pixel = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "foreground_pixel", "I");
-	lpCache->foreground_red = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "foreground_red", "S");
-	lpCache->foreground_green = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "foreground_green", "S");
-	lpCache->foreground_blue = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "foreground_blue", "S");
-	lpCache->background_pixel = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "background_pixel", "I");
-	lpCache->background_red = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "background_red", "S");
-	lpCache->background_green = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "background_green", "S");
-	lpCache->background_blue = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "background_blue", "S");
-	lpCache->font = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "font", "I");
-	lpCache->function = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "function", "I");
-	lpCache->fill = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "fill", "I");
-	lpCache->tile = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "tile", "I");
-	lpCache->stipple = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "stipple", "I");
-	lpCache->clip_mask = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "clip_mask", "I");
-	lpCache->subwindow_mode = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "subwindow_mode", "I");
-	lpCache->ts_x_origin = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "ts_x_origin", "I");
-	lpCache->ts_y_origin = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "ts_y_origin", "I");
-	lpCache->clip_x_origin = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "clip_x_origin", "I");
-	lpCache->clip_y_origin = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "clip_y_origin", "I");
-	lpCache->graphics_exposures = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "graphics_exposures", "I");
-	lpCache->line_width = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "line_width", "I");
-	lpCache->line_style = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "line_style", "I");
-	lpCache->cap_style = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "cap_style", "I");
-	lpCache->join_style = (*env)->GetFieldID(env, lpCache->GdkGCValuesClass, "join_style", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGdkRectangleFids(JNIEnv *env, jobject lpGdkRectangle, PGdkRectangle_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkRectangleClass = (*env)->GetObjectClass(env, lpGdkRectangle);
-	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "x", "I");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "y", "I");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "width", "I");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "height", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGdkVisualFids(JNIEnv *env, jobject lpGdkVisual, PGdkVisual_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GdkVisualClass = (*env)->GetObjectClass(env, lpGdkVisual);
-	lpCache->type = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "type", "I");
-	lpCache->depth = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "depth", "I");
-	lpCache->byte_order = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "byte_order", "I");
-	lpCache->colormap_size = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "colormap_size", "I");
-	lpCache->bits_per_rgb = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "bits_per_rgb", "I");
-	lpCache->red_mask = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "red_mask", "I");
-	lpCache->red_shift = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "red_shift", "I");
-	lpCache->red_prec = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "red_prec", "I");
-	lpCache->green_mask = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "green_mask", "I");
-	lpCache->green_shift = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "green_shift", "I");
-	lpCache->green_prec = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "green_prec", "I");
-	lpCache->blue_mask = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "blue_mask", "I");
-	lpCache->blue_shift = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "blue_shift", "I");
-	lpCache->blue_prec = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "blue_prec", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGdkImageFids(JNIEnv *env, jobject lpGdkImage, PGdkImage_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	
-	lpCache->GdkImageClass = (*env)->GetObjectClass(env, lpGdkImage);
-	lpCache->type = (*env)->GetFieldID(env, lpCache->GdkImageClass, "type", "I");
-	lpCache->visual = (*env)->GetFieldID(env, lpCache->GdkImageClass, "visual", "I");
-	lpCache->byte_order = (*env)->GetFieldID(env, lpCache->GdkImageClass, "byte_order", "I");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkImageClass, "width", "I");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkImageClass, "height", "I");
-	lpCache->depth = (*env)->GetFieldID(env, lpCache->GdkImageClass, "depth", "S");
-	lpCache->bpp = (*env)->GetFieldID(env, lpCache->GdkImageClass, "bpp", "S");
-	lpCache->bpl = (*env)->GetFieldID(env, lpCache->GdkImageClass, "bpl", "S");
-	lpCache->bits_per_pixel = (*env)->GetFieldID(env, lpCache->GdkImageClass, "bits_per_pixel", "S");
-	lpCache->mem = (*env)->GetFieldID(env, lpCache->GdkImageClass, "mem", "I");
-	lpCache->colormap = (*env)->GetFieldID(env, lpCache->GdkImageClass, "colormap", "I");
-	lpCache->windowing_data = (*env)->GetFieldID(env, lpCache->GdkImageClass, "windowing_data", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkAllocationFids(JNIEnv *env, jobject lpGtkAllocation, PGtkAllocation_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GtkAllocationClass = (*env)->GetObjectClass(env, lpGtkAllocation);
-	lpCache->x = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "x", "I");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "y", "I");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "width", "I");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->GtkAllocationClass, "height", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkCListFids(JNIEnv *env, jobject lpGtkCList, PGtkCList_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkCListClass = (*env)->GetObjectClass(env, lpGtkCList);
-	lpCache->clist_flags = (*env)->GetFieldID(env, lpCache->GtkCListClass, "clist_flags", "S");
-	lpCache->row_mem_chunk = (*env)->GetFieldID(env, lpCache->GtkCListClass, "row_mem_chunk", "I");
-	lpCache->cell_mem_chunk = (*env)->GetFieldID(env, lpCache->GtkCListClass, "cell_mem_chunk", "I");
-	lpCache->freeze_count = (*env)->GetFieldID(env, lpCache->GtkCListClass, "freeze_count", "I");
-	lpCache->internal_allocation_x = (*env)->GetFieldID(env, lpCache->GtkCListClass, "internal_allocation_x", "S");
-	lpCache->internal_allocation_y = (*env)->GetFieldID(env, lpCache->GtkCListClass, "internal_allocation_y", "S");
-	lpCache->internal_allocation_width = (*env)->GetFieldID(env, lpCache->GtkCListClass, "internal_allocation_width", "S");
-	lpCache->internal_allocation_height = (*env)->GetFieldID(env, lpCache->GtkCListClass, "internal_allocation_height", "S");
-	lpCache->rows = (*env)->GetFieldID(env, lpCache->GtkCListClass, "rows", "I");
-	lpCache->row_height = (*env)->GetFieldID(env, lpCache->GtkCListClass, "row_height", "I");
-	lpCache->row_list = (*env)->GetFieldID(env, lpCache->GtkCListClass, "row_list", "I");
-	lpCache->row_list_end = (*env)->GetFieldID(env, lpCache->GtkCListClass, "row_list_end", "I");
-	lpCache->columns = (*env)->GetFieldID(env, lpCache->GtkCListClass, "columns", "I");
-	lpCache->column_title_area_x = (*env)->GetFieldID(env, lpCache->GtkCListClass, "column_title_area_x", "S");
-	lpCache->column_title_area_y = (*env)->GetFieldID(env, lpCache->GtkCListClass, "column_title_area_y", "S");
-	lpCache->column_title_area_width = (*env)->GetFieldID(env, lpCache->GtkCListClass, "column_title_area_width", "S");
-	lpCache->column_title_area_height = (*env)->GetFieldID(env, lpCache->GtkCListClass, "column_title_area_height", "S");
-	lpCache->title_window = (*env)->GetFieldID(env, lpCache->GtkCListClass, "title_window", "I");
-	lpCache->column = (*env)->GetFieldID(env, lpCache->GtkCListClass, "column", "I");
-	lpCache->clist_window = (*env)->GetFieldID(env, lpCache->GtkCListClass, "clist_window", "I");
-	lpCache->clist_window_width = (*env)->GetFieldID(env, lpCache->GtkCListClass, "clist_window_width", "I");
-	lpCache->clist_window_height = (*env)->GetFieldID(env, lpCache->GtkCListClass, "clist_window_height", "I");
-	lpCache->hoffset = (*env)->GetFieldID(env, lpCache->GtkCListClass, "hoffset", "I");
-	lpCache->voffset = (*env)->GetFieldID(env, lpCache->GtkCListClass, "voffset", "I");
-	lpCache->shadow_type = (*env)->GetFieldID(env, lpCache->GtkCListClass, "shadow_type", "I");
-	lpCache->selection_mode = (*env)->GetFieldID(env, lpCache->GtkCListClass, "selection_mode", "I");
-	lpCache->selection = (*env)->GetFieldID(env, lpCache->GtkCListClass, "selection", "I");
-	lpCache->selection_end = (*env)->GetFieldID(env, lpCache->GtkCListClass, "selection_end", "I");
-	lpCache->undo_selection = (*env)->GetFieldID(env, lpCache->GtkCListClass, "undo_selection", "I");
-	lpCache->undo_unselection = (*env)->GetFieldID(env, lpCache->GtkCListClass, "undo_unselection", "I");
-	lpCache->undo_anchor = (*env)->GetFieldID(env, lpCache->GtkCListClass, "undo_anchor", "I");
-	lpCache->button_actions0 = (*env)->GetFieldID(env, lpCache->GtkCListClass, "button_actions0", "B");
-	lpCache->button_actions1 = (*env)->GetFieldID(env, lpCache->GtkCListClass, "button_actions1", "B");
-	lpCache->button_actions2 = (*env)->GetFieldID(env, lpCache->GtkCListClass, "button_actions2", "B");
-	lpCache->button_actions3 = (*env)->GetFieldID(env, lpCache->GtkCListClass, "button_actions3", "B");
-	lpCache->button_actions4 = (*env)->GetFieldID(env, lpCache->GtkCListClass, "button_actions4", "B");
-	lpCache->drag_button = (*env)->GetFieldID(env, lpCache->GtkCListClass, "drag_button", "B");
-	lpCache->click_cell_row = (*env)->GetFieldID(env, lpCache->GtkCListClass, "click_cell_row", "I");
-	lpCache->click_cell_column = (*env)->GetFieldID(env, lpCache->GtkCListClass, "click_cell_column", "I");
-	lpCache->hadjustment = (*env)->GetFieldID(env, lpCache->GtkCListClass, "hadjustment", "I");
-	lpCache->vadjustment = (*env)->GetFieldID(env, lpCache->GtkCListClass, "vadjustment", "I");
-	lpCache->xor_gc = (*env)->GetFieldID(env, lpCache->GtkCListClass, "xor_gc", "I");
-	lpCache->fg_gc = (*env)->GetFieldID(env, lpCache->GtkCListClass, "fg_gc", "I");
-	lpCache->bg_gc = (*env)->GetFieldID(env, lpCache->GtkCListClass, "bg_gc", "I");
-	lpCache->cursor_drag = (*env)->GetFieldID(env, lpCache->GtkCListClass, "cursor_drag", "I");
-	lpCache->x_drag = (*env)->GetFieldID(env, lpCache->GtkCListClass, "x_drag", "I");
-	lpCache->focus_row = (*env)->GetFieldID(env, lpCache->GtkCListClass, "focus_row", "I");
-	lpCache->anchor = (*env)->GetFieldID(env, lpCache->GtkCListClass, "anchor", "I");
-	lpCache->anchor_state = (*env)->GetFieldID(env, lpCache->GtkCListClass, "anchor_state", "I");
-	lpCache->drag_pos = (*env)->GetFieldID(env, lpCache->GtkCListClass, "drag_pos", "I");
-	lpCache->htimer = (*env)->GetFieldID(env, lpCache->GtkCListClass, "htimer", "I");
-	lpCache->vtimer = (*env)->GetFieldID(env, lpCache->GtkCListClass, "vtimer", "I");
-	lpCache->sort_type = (*env)->GetFieldID(env, lpCache->GtkCListClass, "sort_type", "I");
-	lpCache->compare = (*env)->GetFieldID(env, lpCache->GtkCListClass, "compare", "I");
-	lpCache->sort_column = (*env)->GetFieldID(env, lpCache->GtkCListClass, "sort_column", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkComboFids(JNIEnv *env, jobject lpGtkCombo, PGtkCombo_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkComboClass = (*env)->GetObjectClass(env, lpGtkCombo);
-	lpCache->entry = (*env)->GetFieldID(env, lpCache->GtkComboClass, "entry", "I");
-	lpCache->list = (*env)->GetFieldID(env, lpCache->GtkComboClass, "list", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkRequisitionFids(JNIEnv *env, jobject lpGtkRequisition, PGtkRequisition_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GtkRequisitionClass = (*env)->GetObjectClass(env, lpGtkRequisition);
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GtkRequisitionClass, "width", "S");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->GtkRequisitionClass, "height", "S");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkStyleFids(JNIEnv *env, jobject lpGtkStyle, PGtkStyle_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GtkStyleClazz = (*env)->GetObjectClass(env, lpGtkStyle);
-	lpCache->fg0_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg0_pixel", "I");
-	lpCache->fg0_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg0_red", "S");
-	lpCache->fg0_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg0_green", "S");
-	lpCache->fg0_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "fg0_blue", "S");
-	lpCache->fg1_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg1_pixel", "I");
-	lpCache->fg1_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "fg1_red", "S");
-	lpCache->fg1_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg1_green", "S");
-	lpCache->fg1_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "fg1_blue", "S");
-	lpCache->fg2_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg2_pixel", "I");
-	lpCache->fg2_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "fg2_red", "S");
-	lpCache->fg2_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg2_green", "S");
-	lpCache->fg2_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "fg2_blue", "S");
-	lpCache->fg3_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg3_pixel", "I");
-	lpCache->fg3_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "fg3_red", "S");
-	lpCache->fg3_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg3_green", "S");
-	lpCache->fg3_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "fg3_blue", "S");
-	lpCache->fg4_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg4_pixel", "I");
-	lpCache->fg4_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "fg4_red", "S");
-	lpCache->fg4_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg4_green", "S");
-	lpCache->fg4_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "fg4_blue", "S");
-	lpCache->bg0_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg0_pixel", "I");
-	lpCache->bg0_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "bg0_red", "S");
-	lpCache->bg0_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg0_green", "S");
-	lpCache->bg0_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "bg0_blue", "S");
-	lpCache->bg1_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg1_pixel", "I");
-	lpCache->bg1_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "bg1_red", "S");
-	lpCache->bg1_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg1_green", "S");
-	lpCache->bg1_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "bg1_blue", "S");
-	lpCache->bg2_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg2_pixel", "I");
-	lpCache->bg2_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "bg2_red", "S");
-	lpCache->bg2_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg2_green", "S");
-	lpCache->bg2_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "bg2_blue", "S");
-	lpCache->bg3_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg3_pixel", "I");
-	lpCache->bg3_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "bg3_red", "S");
-	lpCache->bg3_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg3_green", "S");
-	lpCache->bg3_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "bg3_blue", "S");
-	lpCache->bg4_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg4_pixel", "I");
-	lpCache->bg4_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "bg4_red", "S");
-	lpCache->bg4_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg4_green", "S");
-	lpCache->bg4_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "bg4_blue", "S");
-	lpCache->light0_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light0_pixel", "I");
-	lpCache->light0_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "light0_red", "S");
-	lpCache->light0_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light0_green", "S");
-	lpCache->light0_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "light0_blue", "S");
-	lpCache->light1_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light1_pixel", "I");
-	lpCache->light1_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "light1_red", "S");
-	lpCache->light1_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light1_green", "S");
-	lpCache->light1_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "light1_blue", "S");
-	lpCache->light2_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light2_pixel", "I");
-	lpCache->light2_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "light2_red", "S");
-	lpCache->light2_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light2_green", "S");
-	lpCache->light2_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "light2_blue", "S");
-	lpCache->light3_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light3_pixel", "I");
-	lpCache->light3_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "light3_red", "S");
-	lpCache->light3_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light3_green", "S");
-	lpCache->light3_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "light3_blue", "S");
-	lpCache->light4_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light4_pixel", "I");
-	lpCache->light4_red = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "light4_red", "S");
-	lpCache->light4_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light4_green", "S");
-	lpCache->light4_blue = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "light4_blue", "S");
-	lpCache->dark0_pixel = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "dark0_pixel", "I");
-	lpCache->dark0_red = (*env)->GetFieldID(env,    lpCache->GtkStyleClazz, "dark0_red", "S");
-	lpCache->dark0_green = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "dark0_green", "S");
-	lpCache->dark0_blue = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "dark0_blue", "S");
-	lpCache->dark1_pixel = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "dark1_pixel", "I");
-	lpCache->dark1_red = (*env)->GetFieldID(env,    lpCache->GtkStyleClazz, "dark1_red", "S");
-	lpCache->dark1_green = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "dark1_green", "S");
-	lpCache->dark1_blue = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "dark1_blue", "S");
-	lpCache->dark2_pixel = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "dark2_pixel", "I");
-	lpCache->dark2_red = (*env)->GetFieldID(env,    lpCache->GtkStyleClazz, "dark2_red", "S");
-	lpCache->dark2_green = (*env)->GetFieldID(env,  lpCache->GtkStyleClazz, "dark2_green", "S");
-	lpCache->dark2_blue = (*env)->GetFieldID(env,   lpCache->GtkStyleClazz, "dark2_blue", "S");
-	lpCache->dark3_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark3_pixel", "I");
-	lpCache->dark3_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark3_red", "S");
-	lpCache->dark3_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark3_green", "S");
-	lpCache->dark3_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark3_blue", "S");
-	lpCache->dark4_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark4_pixel", "I");
-	lpCache->dark4_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark4_red", "S");
-	lpCache->dark4_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark4_green", "S");
-	lpCache->dark4_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark4_blue", "S");
-	lpCache->mid0_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid0_pixel", "I");
-	lpCache->mid0_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid0_red", "S");
-	lpCache->mid0_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid0_green", "S");
-	lpCache->mid0_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid0_blue", "S");
-	lpCache->mid1_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid1_pixel", "I");
-	lpCache->mid1_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid1_red", "S");
-	lpCache->mid1_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid1_green", "S");
-	lpCache->mid1_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid1_blue", "S");
-	lpCache->mid2_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid2_pixel", "I");
-	lpCache->mid2_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid2_red", "S");
-	lpCache->mid2_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid2_green", "S");
-	lpCache->mid2_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid2_blue", "S");
-	lpCache->mid3_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid3_pixel", "I");
-	lpCache->mid3_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid3_red", "S");
-	lpCache->mid3_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid3_green", "S");
-	lpCache->mid3_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid3_blue", "S");
-	lpCache->mid4_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid4_pixel", "I");
-	lpCache->mid4_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid4_red", "S");
-	lpCache->mid4_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid4_green", "S");
-	lpCache->mid4_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid4_blue", "S");
-	lpCache->text0_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text0_pixel", "I");
-	lpCache->text0_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text0_red", "S");
-	lpCache->text0_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text0_green", "S");
-	lpCache->text0_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text0_blue", "S");
-	lpCache->text1_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text1_pixel", "I");
-	lpCache->text1_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text1_red", "S");
-	lpCache->text1_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text1_green", "S");
-	lpCache->text1_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text1_blue", "S");
-	lpCache->text2_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text2_pixel", "I");
-	lpCache->text2_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text2_red", "S");
-	lpCache->text2_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text2_green", "S");
-	lpCache->text2_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text2_blue", "S");
-	lpCache->text3_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text3_pixel", "I");
-	lpCache->text3_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text3_red", "S");
-	lpCache->text3_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text3_green", "S");
-	lpCache->text3_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text3_blue", "S");
-	lpCache->text4_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text4_pixel", "I");
-	lpCache->text4_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text4_red", "S");
-	lpCache->text4_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text4_green", "S");
-	lpCache->text4_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text4_blue", "S");
-	lpCache->base0_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base0_pixel", "I");
-	lpCache->base0_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base0_red", "S");
-	lpCache->base0_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base0_green", "S");
-	lpCache->base0_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base0_blue", "S");
-	lpCache->base1_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base1_pixel", "I");
-	lpCache->base1_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base1_red", "S");
-	lpCache->base1_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base1_green", "S");
-	lpCache->base1_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base1_blue", "S");
-	lpCache->base2_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base2_pixel", "I");
-	lpCache->base2_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base2_red", "S");
-	lpCache->base2_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base2_green", "S");
-	lpCache->base2_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base2_blue", "S");
-	lpCache->base3_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base3_pixel", "I");
-	lpCache->base3_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base3_red", "S");
-	lpCache->base3_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base3_green", "S");
-	lpCache->base3_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base3_blue", "S");
-	lpCache->base4_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base4_pixel", "I");
-	lpCache->base4_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base4_red", "S");
-	lpCache->base4_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base4_green", "S");
-	lpCache->base4_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base4_blue", "S");
-
-	lpCache->black_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "black_pixel", "I");
-	lpCache->black_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "black_red", "S");
-	lpCache->black_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "black_green", "S");
-	lpCache->black_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "black_blue", "S");
-	lpCache->white_pixel = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "white_pixel", "I");
-	lpCache->white_red = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "white_red", "S");
-	lpCache->white_green = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "white_green", "S");
-	lpCache->white_blue = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "white_blue", "S");
-
-	lpCache->font_desc = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "font_desc", "I");
-
-	lpCache->fg_gc0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg_gc0", "I");
-	lpCache->fg_gc1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg_gc1", "I");
-	lpCache->fg_gc2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg_gc2", "I");
-	lpCache->fg_gc3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg_gc3", "I");
-	lpCache->fg_gc4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "fg_gc4", "I");
-	lpCache->bg_gc0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_gc0", "I");
-	lpCache->bg_gc1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_gc1", "I");
-	lpCache->bg_gc2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_gc2", "I");
-	lpCache->bg_gc3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_gc3", "I");
-	lpCache->bg_gc4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_gc4", "I");
-	lpCache->light_gc0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light_gc0", "I");
-	lpCache->light_gc1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light_gc1", "I");
-	lpCache->light_gc2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light_gc2", "I");
-	lpCache->light_gc3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light_gc3", "I");
-	lpCache->light_gc4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "light_gc4", "I");
-	lpCache->dark_gc0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark_gc0", "I");
-	lpCache->dark_gc1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark_gc1", "I");
-	lpCache->dark_gc2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark_gc2", "I");
-	lpCache->dark_gc3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark_gc3", "I");
-	lpCache->dark_gc4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "dark_gc4", "I");
-	lpCache->mid_gc0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid_gc0", "I");
-	lpCache->mid_gc1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid_gc1", "I");
-	lpCache->mid_gc2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid_gc2", "I");
-	lpCache->mid_gc3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid_gc3", "I");
-	lpCache->mid_gc4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "mid_gc4", "I");
-	lpCache->text_gc0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text_gc0", "I");
-	lpCache->text_gc1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text_gc1", "I");
-	lpCache->text_gc2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text_gc2", "I");
-	lpCache->text_gc3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text_gc3", "I");
-	lpCache->text_gc4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "text_gc4", "I");
-	lpCache->base_gc0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base_gc0", "I");
-	lpCache->base_gc1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base_gc1", "I");
-	lpCache->base_gc2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base_gc2", "I");
-	lpCache->base_gc3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base_gc3", "I");
-	lpCache->base_gc4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "base_gc4", "I");
-
-	lpCache->black_gc = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "black_gc", "I");
-	lpCache->white_gc = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "white_gc", "I");
-
-	lpCache->bg_pixmap0 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap0", "I");
-	lpCache->bg_pixmap1 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap1", "I");
-	lpCache->bg_pixmap2 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap2", "I");
-	lpCache->bg_pixmap3 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap3", "I");
-	lpCache->bg_pixmap4 = (*env)->GetFieldID(env, lpCache->GtkStyleClazz, "bg_pixmap4", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkStyleClassFids(JNIEnv *env, jobject lpGtkStyleClass, PGtkStyleClass_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GtkStyleClassClazz = (*env)->GetObjectClass(env, lpGtkStyleClass);
-	lpCache->xthickness = (*env)->GetFieldID(env, lpCache->GtkStyleClassClazz, "xthickness", "I");
-	lpCache->ythickness = (*env)->GetFieldID(env, lpCache->GtkStyleClassClazz, "ythickness", "I");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkAdjustmentFids(JNIEnv *env, jobject lpGtkAdjustment, PGtkAdjustment_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkAdjustmentClass = (*env)->GetObjectClass(env, lpGtkAdjustment);
-	lpCache->lower = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "lower", "D");
-	lpCache->upper = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "upper", "D");
-	lpCache->value = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "value", "D");
-	lpCache->step_increment = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "step_increment", "D");
-	lpCache->page_increment = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "page_increment", "D");
-	lpCache->page_size = (*env)->GetFieldID(env, lpCache->GtkAdjustmentClass, "page_size", "D");
-
-	lpCache->cached = 1;
-};
-
-void cacheGtkCListRowFids(JNIEnv *env, jobject lpGtkCListRow, PGtkCListRow_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GtkCListRowClass = (*env)->GetObjectClass(env, lpGtkCListRow);
-	lpCache->cell = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "cell", "I");
-	lpCache->state = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "state", "I");
-	lpCache->foreground_red = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "foreground_red", "S");
-	lpCache->foreground_green = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "foreground_green", "S");
-	lpCache->foreground_blue = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "foreground_blue", "S");
-	lpCache->foreground_pixel = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "foreground_pixel", "I");
-	lpCache->background_red = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "background_red", "S");
-	lpCache->background_green = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "background_green", "S");
-	lpCache->background_blue = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "background_blue", "S");
-	lpCache->background_pixel = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "background_pixel", "I");
-	lpCache->style = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "style", "I");
-	lpCache->data = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "data", "I");
-	lpCache->destroy = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "destroy", "I");
-	lpCache->fg_set = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "fg_set", "I");
-	lpCache->bg_set = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "bg_set", "I");
-	lpCache->selectable = (*env)->GetFieldID(env, lpCache->GtkCListRowClass, "selectable", "I");
-
-	lpCache->cached = 1;
-}
-
-void cacheGtkCListColumnFids(JNIEnv *env, jobject lpGtkCListColumn, PGtkCListColumn_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-
-	lpCache->GtkCListColumnClass = (*env)->GetObjectClass(env, lpGtkCListColumn);
-	lpCache->title = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "title", "I");
-	lpCache->area_x = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "area_x", "S");
-	lpCache->area_y = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "area_y", "S");
-	lpCache->area_width = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "area_width", "S");
-	lpCache->area_height = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "area_height", "S");
-	lpCache->button = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "button", "I");
-	lpCache->window = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "window", "I");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "width", "I");
-	lpCache->min_width = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "min_width", "I");
-	lpCache->max_width = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "max_width", "I");
-	lpCache->justification = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "justification", "I");
-	lpCache->visible = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "visible", "I");
-	lpCache->width_set = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "width_set", "I");
-	lpCache->resizeable = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "resizeable", "I");
-	lpCache->auto_resize = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "auto_resize", "I");
-	lpCache->button_passive = (*env)->GetFieldID(env, lpCache->GtkCListColumnClass, "button_passive", "I");
-
-	lpCache->cached = 1;
-}
-
-void cacheGtkCTreeFids(JNIEnv *env, jobject lpGtkCTree, PGtkCTree_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkCTreeClass = (*env)->GetObjectClass(env, lpGtkCTree);
-	lpCache->tree_indent = (*env)->GetFieldID(env, lpCache->GtkCTreeClass, "tree_indent", "I");
-	lpCache->tree_column = (*env)->GetFieldID(env, lpCache->GtkCTreeClass, "tree_column", "I");
-
-	lpCache->cached = 1;
-}
-
-void cacheGtkCTreeRowFids(JNIEnv *env, jobject lpGtkCTreeRow, PGtkCTreeRow_FID_CACHE lpCache)
-{
-	DECL_GLOB(pGlob)
-	if (lpCache->cached) return;
-
-	lpCache->GtkCTreeRowClass = (*env)->GetObjectClass(env, lpGtkCTreeRow);
-	lpCache->parent = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "parent", "I");
-	lpCache->sibling = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "sibling", "I");
-	lpCache->children = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "children", "I");
-	lpCache->pixmap_closed = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "pixmap_closed", "I");
-	lpCache->mask_closed = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "mask_closed", "I");
-	lpCache->pixmap_opened = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "pixmap_opened", "I");
-	lpCache->mask_opened = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "mask_opened", "I");
-	lpCache->level = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "level", "S");
-	lpCache->is_leaf = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "is_leaf", "I");
-	lpCache->expanded = (*env)->GetFieldID(env, lpCache->GtkCTreeRowClass, "expanded", "I");
-
-	lpCache->cached = 1;
-}
-
-/* ----------- swt getters and setters  ----------- */
-/**
- * These functions get or set object field ids assuming that the
- * fids for these objects have already been cached.
- *
- */
-void getGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpGdkColor, GdkColor_FID_CACHE *lpGdkColorFc)
-{
-	lpGdkColor->pixel = (*env)->GetIntField(env, lpObject, lpGdkColorFc->pixel);
-	lpGdkColor->red = (*env)->GetShortField(env, lpObject, lpGdkColorFc->red);
-	lpGdkColor->green = (*env)->GetShortField(env, lpObject, lpGdkColorFc->green);
-	lpGdkColor->blue = (*env)->GetShortField(env, lpObject, lpGdkColorFc->blue);
-}
-
-void setGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpGdkColor, GdkColor_FID_CACHE *lpGdkColorFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGdkColorFc->pixel, (jint)lpGdkColor->pixel);
-	(*env)->SetShortField(env, lpObject, lpGdkColorFc->red, (jshort)lpGdkColor->red);
-	(*env)->SetShortField(env, lpObject, lpGdkColorFc->green, (jshort)lpGdkColor->green);
-	(*env)->SetShortField(env, lpObject, lpGdkColorFc->blue, (jshort)lpGdkColor->blue);
-}
-
-void getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventExpose_FID_CACHE *lpGdkEventExposeFc)
-{
-	GdkEventExpose *lpGdkEventExpose = (GdkEventExpose*)lpGdkEvent;
-	lpGdkEventExpose->area.x = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->x);
-	lpGdkEventExpose->area.y = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->y);
-	lpGdkEventExpose->area.width = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->width);
-	lpGdkEventExpose->area.height = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->height);
-	lpGdkEventExpose->region = (GdkRegion *)(*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->region);
-	lpGdkEventExpose->count = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->count);
-}
-
-void setGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventExpose_FID_CACHE *lpGdkEventExposeFc)
-{
-	GdkEventExpose *lpGdkEventExpose = (GdkEventExpose*)lpGdkEvent;
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->x, (jint)lpGdkEventExpose->area.x);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->y, (jint)lpGdkEventExpose->area.y);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->width, (jint)lpGdkEventExpose->area.width);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->height, (jint)lpGdkEventExpose->area.height);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->region, (jint)lpGdkEventExpose->region);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->count, (jint)lpGdkEventExpose->count);
-}
-
-void getGdkFontFields(JNIEnv *env, jobject lpObject, GdkFont *lpGdkFont, GdkFont_FID_CACHE *lpGdkFontFc)
-{
-	lpGdkFont->type = (*env)->GetIntField(env, lpObject, lpGdkFontFc->type);
-	lpGdkFont->ascent = (*env)->GetIntField(env, lpObject, lpGdkFontFc->ascent);
-	lpGdkFont->descent = (*env)->GetIntField(env, lpObject, lpGdkFontFc->descent);
-}
-
-void setGdkFontFields(JNIEnv *env, jobject lpObject, GdkFont *lpGdkFont, GdkFont_FID_CACHE *lpGdkFontFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGdkFontFc->type, (jint)lpGdkFont->type);
-	(*env)->SetIntField(env, lpObject, lpGdkFontFc->ascent, (jint)lpGdkFont->ascent);
-	(*env)->SetIntField(env, lpObject, lpGdkFontFc->descent, (jint)lpGdkFont->descent);
-}
-
-void getGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpGdkGCValues, GdkGCValues_FID_CACHE *lpGdkGCValuesFc)
-{
-	lpGdkGCValues->foreground.pixel = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->foreground_pixel);
-	lpGdkGCValues->foreground.red = (*env)->GetShortField(env, lpObject, lpGdkGCValuesFc->foreground_red);
-	lpGdkGCValues->foreground.green = (*env)->GetShortField(env, lpObject, lpGdkGCValuesFc->foreground_green);
-	lpGdkGCValues->foreground.blue = (*env)->GetShortField(env, lpObject, lpGdkGCValuesFc->foreground_blue);
-	lpGdkGCValues->background.pixel = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->background_pixel);
-	lpGdkGCValues->background.red = (*env)->GetShortField(env, lpObject, lpGdkGCValuesFc->background_red);
-	lpGdkGCValues->background.green = (*env)->GetShortField(env, lpObject, lpGdkGCValuesFc->background_green);
-	lpGdkGCValues->background.blue = (*env)->GetShortField(env, lpObject, lpGdkGCValuesFc->background_blue);
-	lpGdkGCValues->font = (GdkFont*)(*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->font);
-	lpGdkGCValues->function = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->function);
-	lpGdkGCValues->fill = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->fill);
-	lpGdkGCValues->tile = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->tile);
-	lpGdkGCValues->stipple = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->stipple);
-	lpGdkGCValues->clip_mask = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->clip_mask);
-	lpGdkGCValues->subwindow_mode = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->subwindow_mode);
-	lpGdkGCValues->ts_x_origin = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->ts_x_origin);
-	lpGdkGCValues->ts_y_origin = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->ts_y_origin);
-	lpGdkGCValues->clip_x_origin = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->clip_x_origin);
-	lpGdkGCValues->clip_y_origin = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->clip_y_origin);
-	lpGdkGCValues->graphics_exposures = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->graphics_exposures);
-	lpGdkGCValues->line_width = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->line_width);
-	lpGdkGCValues->line_style = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->line_style);
-	lpGdkGCValues->cap_style = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->cap_style);
-	lpGdkGCValues->join_style = (*env)->GetIntField(env, lpObject, lpGdkGCValuesFc->join_style);
-}
-
-void setGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpGdkGCValues, GdkGCValues_FID_CACHE *lpGdkGCValuesFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->foreground_pixel, (jint)lpGdkGCValues->foreground.pixel);
-	(*env)->SetShortField(env, lpObject, lpGdkGCValuesFc->foreground_red, (jshort)lpGdkGCValues->foreground.red);
-	(*env)->SetShortField(env, lpObject, lpGdkGCValuesFc->foreground_green, (jshort)lpGdkGCValues->foreground.green);
-	(*env)->SetShortField(env, lpObject, lpGdkGCValuesFc->foreground_blue, (jshort)lpGdkGCValues->foreground.blue);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->background_pixel, (jint)lpGdkGCValues->background.pixel);
-	(*env)->SetShortField(env, lpObject, lpGdkGCValuesFc->background_red, (jshort)lpGdkGCValues->background.red);
-	(*env)->SetShortField(env, lpObject, lpGdkGCValuesFc->background_green, (jshort)lpGdkGCValues->background.green);
-	(*env)->SetShortField(env, lpObject, lpGdkGCValuesFc->background_blue, (jshort)lpGdkGCValues->background.blue);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->font, (jint)lpGdkGCValues->font);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->function, (jint)lpGdkGCValues->function);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->fill, (jint)lpGdkGCValues->fill);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->tile, (jint)lpGdkGCValues->tile);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->stipple, (jint)lpGdkGCValues->stipple);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->clip_mask, (jint)lpGdkGCValues->clip_mask);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->subwindow_mode, (jint)lpGdkGCValues->subwindow_mode);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->ts_x_origin, (jint)lpGdkGCValues->ts_x_origin);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->ts_y_origin, (jint)lpGdkGCValues->ts_y_origin);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->clip_x_origin, (jint)lpGdkGCValues->clip_x_origin);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->clip_y_origin, (jint)lpGdkGCValues->clip_y_origin);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->graphics_exposures, (jint)lpGdkGCValues->graphics_exposures);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->line_width, (jint)lpGdkGCValues->line_width);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->line_style, (jint)lpGdkGCValues->line_style);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->cap_style, (jint)lpGdkGCValues->cap_style);
-	(*env)->SetIntField(env, lpObject, lpGdkGCValuesFc->join_style, (jint)lpGdkGCValues->join_style);
-}
-
-void getGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpGdkRectangle, GdkRectangle_FID_CACHE *lpGdkRectangleFc)
-{
-	lpGdkRectangle->x = (*env)->GetIntField(env, lpObject, lpGdkRectangleFc->x);
-	lpGdkRectangle->y = (*env)->GetIntField(env, lpObject, lpGdkRectangleFc->y);
-	lpGdkRectangle->width = (*env)->GetIntField(env, lpObject, lpGdkRectangleFc->width);
-	lpGdkRectangle->height = (*env)->GetIntField(env, lpObject, lpGdkRectangleFc->height);
-}
-
-void setGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpGdkRectangle, GdkRectangle_FID_CACHE *lpGdkRectangleFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGdkRectangleFc->x, (jshort)lpGdkRectangle->x);
-	(*env)->SetIntField(env, lpObject, lpGdkRectangleFc->y, (jshort)lpGdkRectangle->y);
-	(*env)->SetIntField(env, lpObject, lpGdkRectangleFc->width, (jshort)lpGdkRectangle->width);
-	(*env)->SetIntField(env, lpObject, lpGdkRectangleFc->height, (jshort)lpGdkRectangle->height);
-}
-
-void getGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpGdkVisual, GdkVisual_FID_CACHE *lpGdkVisualFc)
-{
-	lpGdkVisual->type = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->type);
-	lpGdkVisual->depth = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->depth);
-	lpGdkVisual->byte_order = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->byte_order);
-	lpGdkVisual->colormap_size = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->colormap_size);
-	lpGdkVisual->bits_per_rgb = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->bits_per_rgb);
-	lpGdkVisual->red_mask = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->red_mask);
-	lpGdkVisual->red_shift = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->red_shift);
-	lpGdkVisual->red_prec = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->red_prec);
-	lpGdkVisual->green_mask = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->green_mask);
-	lpGdkVisual->green_shift = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->green_shift);
-	lpGdkVisual->green_prec = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->green_prec);
-	lpGdkVisual->blue_mask = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->blue_mask);
-	lpGdkVisual->blue_shift = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->blue_shift);
-	lpGdkVisual->blue_prec = (*env)->GetIntField(env, lpObject, lpGdkVisualFc->blue_prec);
-}
-
-void setGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpGdkVisual, GdkVisual_FID_CACHE *lpGdkVisualFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->type, (jint)lpGdkVisual->type);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->depth, (jint)lpGdkVisual->depth);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->byte_order, (jint)lpGdkVisual->byte_order);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->colormap_size, (jint)lpGdkVisual->colormap_size);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->bits_per_rgb, (jint)lpGdkVisual->bits_per_rgb);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->red_mask, (jint)lpGdkVisual->red_mask);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->red_shift, (jint)lpGdkVisual->red_shift);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->red_prec, (jint)lpGdkVisual->red_prec);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->green_mask, (jint)lpGdkVisual->green_mask);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->green_shift, (jint)lpGdkVisual->green_shift);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->green_prec, (jint)lpGdkVisual->green_prec);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->blue_mask, (jint)lpGdkVisual->blue_mask);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->blue_shift, (jint)lpGdkVisual->blue_shift);
-	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->blue_prec, (jint)lpGdkVisual->blue_prec);
-}
-
-void getGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpGdkImage, GdkImage_FID_CACHE *lpGdkImageFc)
-{
-	lpGdkImage->type = (*env)->GetIntField(env, lpObject, lpGdkImageFc->type);
-	lpGdkImage->visual = (GdkVisual *)(*env)->GetIntField(env, lpObject, lpGdkImageFc->visual);
-	lpGdkImage->byte_order = (*env)->GetIntField(env, lpObject, lpGdkImageFc->byte_order);
-	lpGdkImage->width = (*env)->GetIntField(env, lpObject, lpGdkImageFc->width);
-	lpGdkImage->height = (*env)->GetIntField(env, lpObject, lpGdkImageFc->height);
-	lpGdkImage->depth = (*env)->GetShortField(env, lpObject, lpGdkImageFc->depth);
-	lpGdkImage->bpp = (*env)->GetShortField(env, lpObject, lpGdkImageFc->bpp);
-	lpGdkImage->bpl = (*env)->GetShortField(env, lpObject, lpGdkImageFc->bpl);
-	lpGdkImage->bits_per_pixel = (*env)->GetShortField(env, lpObject, lpGdkImageFc->bits_per_pixel);
-	lpGdkImage->mem = (gpointer)(*env)->GetIntField(env, lpObject, lpGdkImageFc->mem);
-	lpGdkImage->colormap = (GdkColormap *)(*env)->GetIntField(env, lpObject, lpGdkImageFc->colormap);
-	lpGdkImage->windowing_data = (gpointer)(*env)->GetIntField(env, lpObject, lpGdkImageFc->windowing_data);
-}
-
-void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpGdkImage, GdkImage_FID_CACHE *lpGdkImageFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->type, (jint)lpGdkImage->type);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->visual, (jint)lpGdkImage->visual);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->byte_order, (jint)lpGdkImage->byte_order);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->width, (jint)lpGdkImage->width);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->height, (jint)lpGdkImage->height);
-	(*env)->SetShortField(env, lpObject, lpGdkImageFc->depth, (jshort)lpGdkImage->depth);
-	(*env)->SetShortField(env, lpObject, lpGdkImageFc->bpp, (jshort)lpGdkImage->bpp);
-	(*env)->SetShortField(env, lpObject, lpGdkImageFc->bpl, (jshort)lpGdkImage->bpl);
-	(*env)->SetShortField(env, lpObject, lpGdkImageFc->bits_per_pixel, (jshort)lpGdkImage->bits_per_pixel);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->mem, (jint)lpGdkImage->mem);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->colormap, (jint)lpGdkImage->colormap);
-	(*env)->SetIntField(env, lpObject, lpGdkImageFc->windowing_data, (jint)lpGdkImage->windowing_data);
-}
-
-void getGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpGtkAllocation, GtkAllocation_FID_CACHE *lpGtkAllocationFc)
-{
-	lpGtkAllocation->x = (*env)->GetIntField(env, lpObject, lpGtkAllocationFc->x);
-	lpGtkAllocation->y = (*env)->GetIntField(env, lpObject, lpGtkAllocationFc->y);
-	lpGtkAllocation->width = (*env)->GetIntField(env, lpObject, lpGtkAllocationFc->width);
-	lpGtkAllocation->height = (*env)->GetIntField(env, lpObject, lpGtkAllocationFc->height);
-}
-
-void setGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpGtkAllocation, GtkAllocation_FID_CACHE *lpGtkAllocationFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGtkAllocationFc->x, lpGtkAllocation->x);
-	(*env)->SetIntField(env, lpObject, lpGtkAllocationFc->y, lpGtkAllocation->y);
-	(*env)->SetIntField(env, lpObject, lpGtkAllocationFc->width, lpGtkAllocation->width);
-	(*env)->SetIntField(env, lpObject, lpGtkAllocationFc->height, lpGtkAllocation->height);
-}
-
-void getGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkCList_FID_CACHE *lpGtkCListFc)
-{
-	DECL_GLOB(pGlob)
-	lpGtkCList->flags = (*env)->GetShortField(env, lpObject, lpGtkCListFc->clist_flags);
-	lpGtkCList->row_mem_chunk = (GMemChunk*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->row_mem_chunk);
-	lpGtkCList->cell_mem_chunk = (GMemChunk*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->cell_mem_chunk);
-	lpGtkCList->freeze_count = (*env)->GetIntField(env, lpObject, lpGtkCListFc->freeze_count);
-	lpGtkCList->internal_allocation.x = (*env)->GetShortField(env, lpObject, lpGtkCListFc->internal_allocation_x);
-	lpGtkCList->internal_allocation.y = (*env)->GetShortField(env, lpObject, lpGtkCListFc->internal_allocation_y);
-	lpGtkCList->internal_allocation.width = (*env)->GetShortField(env, lpObject, lpGtkCListFc->internal_allocation_width);
-	lpGtkCList->internal_allocation.height = (*env)->GetShortField(env, lpObject, lpGtkCListFc->internal_allocation_height);
-	lpGtkCList->rows = (*env)->GetIntField(env, lpObject, lpGtkCListFc->rows);
-	lpGtkCList->row_height = (*env)->GetIntField(env, lpObject, lpGtkCListFc->row_height);
-	lpGtkCList->row_list = (GList*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->row_list);
-	lpGtkCList->row_list_end = (GList*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->row_list_end);
-	lpGtkCList->columns = (*env)->GetIntField(env, lpObject, lpGtkCListFc->columns);
-	lpGtkCList->column_title_area.x = (*env)->GetShortField(env, lpObject, lpGtkCListFc->column_title_area_x);
-	lpGtkCList->column_title_area.y = (*env)->GetShortField(env, lpObject, lpGtkCListFc->column_title_area_y);
-	lpGtkCList->column_title_area.width = (*env)->GetShortField(env, lpObject, lpGtkCListFc->column_title_area_width);
-	lpGtkCList->column_title_area.height = (*env)->GetShortField(env, lpObject, lpGtkCListFc->column_title_area_height);
-	lpGtkCList->title_window = (GdkWindow*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->title_window);
-	lpGtkCList->column = (GtkCListColumn*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->column);
-	lpGtkCList->clist_window = (GdkWindow*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->clist_window);
-	lpGtkCList->clist_window_width = (*env)->GetIntField(env, lpObject, lpGtkCListFc->clist_window_width);
-	lpGtkCList->clist_window_height = (*env)->GetIntField(env, lpObject, lpGtkCListFc->clist_window_height);
-	lpGtkCList->hoffset = (*env)->GetIntField(env, lpObject, lpGtkCListFc->hoffset);
-	lpGtkCList->voffset = (*env)->GetIntField(env, lpObject, lpGtkCListFc->voffset);
-	lpGtkCList->shadow_type = (*env)->GetIntField(env, lpObject, lpGtkCListFc->shadow_type);
-	lpGtkCList->selection_mode = (*env)->GetIntField(env, lpObject, lpGtkCListFc->selection_mode);
-	lpGtkCList->selection = (GList*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->selection);
-	lpGtkCList->selection_end = (GList*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->selection_end);
-	lpGtkCList->undo_selection = (GList*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->undo_selection);
-	lpGtkCList->undo_unselection = (GList*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->undo_unselection);
-	lpGtkCList->undo_anchor = (*env)->GetIntField(env, lpObject, lpGtkCListFc->undo_anchor);
-	lpGtkCList->button_actions[0] = (*env)->GetByteField(env, lpObject, lpGtkCListFc->button_actions0);
-	lpGtkCList->button_actions[1] = (*env)->GetByteField(env, lpObject, lpGtkCListFc->button_actions1);
-	lpGtkCList->button_actions[2] = (*env)->GetByteField(env, lpObject, lpGtkCListFc->button_actions2);
-	lpGtkCList->button_actions[3] = (*env)->GetByteField(env, lpObject, lpGtkCListFc->button_actions3);
-	lpGtkCList->button_actions[4] = (*env)->GetByteField(env, lpObject, lpGtkCListFc->button_actions4);
-	lpGtkCList->drag_button = (*env)->GetByteField(env, lpObject, lpGtkCListFc->drag_button);
-	lpGtkCList->click_cell.row = (*env)->GetIntField(env, lpObject, lpGtkCListFc->click_cell_row);
-	lpGtkCList->click_cell.column = (*env)->GetIntField(env, lpObject, lpGtkCListFc->click_cell_column);
-	lpGtkCList->hadjustment = (GtkAdjustment*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->hadjustment);
-	lpGtkCList->vadjustment = (GtkAdjustment*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->vadjustment);
-	lpGtkCList->xor_gc = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->xor_gc);
-	lpGtkCList->bg_gc = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->bg_gc);
-	lpGtkCList->bg_gc = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->bg_gc);
-	lpGtkCList->cursor_drag = (GdkCursor*)(*env)->GetIntField(env, lpObject, lpGtkCListFc->cursor_drag);
-	lpGtkCList->x_drag = (*env)->GetIntField(env, lpObject, lpGtkCListFc->x_drag);
-	lpGtkCList->focus_row = (*env)->GetIntField(env, lpObject, lpGtkCListFc->focus_row);
-	lpGtkCList->anchor = (*env)->GetIntField(env, lpObject, lpGtkCListFc->anchor);
-	lpGtkCList->anchor_state = (*env)->GetIntField(env, lpObject, lpGtkCListFc->anchor_state);
-	lpGtkCList->drag_pos = (*env)->GetIntField(env, lpObject, lpGtkCListFc->drag_pos);
-	lpGtkCList->htimer = (*env)->GetIntField(env, lpObject, lpGtkCListFc->htimer);
-	lpGtkCList->vtimer = (*env)->GetIntField(env, lpObject, lpGtkCListFc->vtimer);
-	lpGtkCList->sort_type = (*env)->GetIntField(env, lpObject, lpGtkCListFc->sort_type);
-	lpGtkCList->compare = (GtkCListCompareFunc)(*env)->GetIntField(env, lpObject, lpGtkCListFc->compare);
-	lpGtkCList->sort_column = (*env)->GetIntField(env, lpObject, lpGtkCListFc->sort_column);
-}
-
-void setGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkCList_FID_CACHE *lpGtkCListFc)
-{
-	DECL_GLOB(pGlob)
-	(*env)->SetShortField(env, lpObject, lpGtkCListFc->clist_flags, (jshort)lpGtkCList->flags);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->row_mem_chunk, (jint)lpGtkCList->row_mem_chunk);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->cell_mem_chunk, (jint)lpGtkCList->cell_mem_chunk);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->freeze_count, (jint)lpGtkCList->freeze_count);
-	(*env)->SetShortField(env, lpObject, lpGtkCListFc->internal_allocation_x, (jshort)lpGtkCList->internal_allocation.x);
-	(*env)->SetShortField(env, lpObject, lpGtkCListFc->internal_allocation_y, (jshort)lpGtkCList->internal_allocation.y);
-	(*env)->SetShortField(env, lpObject, lpGtkCListFc->internal_allocation_width, (jshort)lpGtkCList->internal_allocation.width);
-	(*env)->SetShortField(env, lpObject, lpGtkCListFc->internal_allocation_height, (jshort)lpGtkCList->internal_allocation.height);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->rows, (jint)lpGtkCList->rows);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->row_height, (jint)lpGtkCList->row_height);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->row_list, (jint)lpGtkCList->row_list);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->row_list_end, (jint)lpGtkCList->row_list_end);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->columns, (jint)lpGtkCList->columns);
-	(*env)->SetShortField(env, lpObject, lpGtkCListFc->column_title_area_x, (jshort)lpGtkCList->column_title_area.x);
-	(*env)->SetShortField(env, lpObject, lpGtkCListFc->column_title_area_y, (jshort)lpGtkCList->column_title_area.y);
-	(*env)->SetShortField(env, lpObject, lpGtkCListFc->column_title_area_width, (jshort)lpGtkCList->column_title_area.width);
-	(*env)->SetShortField(env, lpObject, lpGtkCListFc->column_title_area_height, (jshort)lpGtkCList->column_title_area.height);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->title_window, (jint)lpGtkCList->title_window);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->column, (jint)lpGtkCList->column);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->clist_window, (jint)lpGtkCList->clist_window);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->clist_window_width, (jint)lpGtkCList->clist_window_width);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->clist_window_height, (jint)lpGtkCList->clist_window_height);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->hoffset, (jint)lpGtkCList->hoffset);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->voffset, (jint)lpGtkCList->voffset);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->shadow_type, (jint)lpGtkCList->shadow_type);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->selection_mode, (jint)lpGtkCList->selection_mode);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->selection, (jint)lpGtkCList->selection);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->selection_end, (jint)lpGtkCList->selection_end);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->undo_selection, (jint)lpGtkCList->undo_selection);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->undo_unselection, (jint)lpGtkCList->undo_unselection);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->undo_anchor, (jint)lpGtkCList->undo_anchor);
-	(*env)->SetByteField(env, lpObject, lpGtkCListFc->button_actions0, (jbyte)lpGtkCList->button_actions[0]);
-	(*env)->SetByteField(env, lpObject, lpGtkCListFc->button_actions1, (jbyte)lpGtkCList->button_actions[1]);
-	(*env)->SetByteField(env, lpObject, lpGtkCListFc->button_actions2, (jbyte)lpGtkCList->button_actions[2]);
-	(*env)->SetByteField(env, lpObject, lpGtkCListFc->button_actions3, (jbyte)lpGtkCList->button_actions[3]);
-	(*env)->SetByteField(env, lpObject, lpGtkCListFc->button_actions4, (jbyte)lpGtkCList->button_actions[4]);
-	(*env)->SetByteField(env, lpObject, lpGtkCListFc->drag_button, (jbyte)lpGtkCList->drag_button);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->click_cell_row, (jint)lpGtkCList->click_cell.row);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->click_cell_column, (jint)lpGtkCList->click_cell.column);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->hadjustment, (jint)lpGtkCList->hadjustment);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->vadjustment, (jint)lpGtkCList->vadjustment);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->xor_gc, (jint)lpGtkCList->xor_gc);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->bg_gc, (jint)lpGtkCList->bg_gc);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->bg_gc, (jint)lpGtkCList->bg_gc);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->cursor_drag, (jint)lpGtkCList->cursor_drag);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->x_drag, (jint)lpGtkCList->x_drag);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->focus_row, (jint)lpGtkCList->focus_row);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->anchor, (jint)lpGtkCList->anchor);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->anchor_state, (jint)lpGtkCList->anchor_state);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->drag_pos, (jint)lpGtkCList->drag_pos);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->htimer, (jint)lpGtkCList->htimer);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->vtimer, (jint)lpGtkCList->vtimer);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->sort_type, (jint)lpGtkCList->sort_type);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->compare, (jint)lpGtkCList->compare);
-	(*env)->SetIntField(env, lpObject, lpGtkCListFc->sort_column, (jint)lpGtkCList->sort_column);
-}
-
-void getGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpGtkCombo, GtkCombo_FID_CACHE *lpGtkComboFc)
-{
-	DECL_GLOB(pGlob)
-	lpGtkCombo->entry = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkComboFc->entry);
-	lpGtkCombo->list = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkComboFc->list);
-}
-
-void setGtkComboFields(JNIEnv *env, jobject lpObject, GtkCombo *lpGtkCombo, GtkCombo_FID_CACHE *lpGtkComboFc)
-{
-	DECL_GLOB(pGlob)
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->entry, (jint)lpGtkCombo->entry);
-	(*env)->SetIntField(env, lpObject, lpGtkComboFc->list, (jint)lpGtkCombo->list);
-}
-
-void getGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpGtkRequisition, GtkRequisition_FID_CACHE *lpGtkRequisitionFc)
-{
-	lpGtkRequisition->width = (*env)->GetShortField(env, lpObject, lpGtkRequisitionFc->width);
-	lpGtkRequisition->height = (*env)->GetShortField(env, lpObject, lpGtkRequisitionFc->height);
-}
-
-void setGtkRequisitionFields(JNIEnv *env, jobject lpObject, GtkRequisition *lpGtkRequisition, GtkRequisition_FID_CACHE *lpGtkRequisitionFc)
-{
-	(*env)->SetShortField(env, lpObject, lpGtkRequisitionFc->width, lpGtkRequisition->width);
-	(*env)->SetShortField(env, lpObject, lpGtkRequisitionFc->height, lpGtkRequisition->height);
-}
-
-void getGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkStyle_FID_CACHE *lpGtkStyleFc)
-{
-	lpGtkStyle->fg[0].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg0_pixel);
-	lpGtkStyle->fg[0].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg0_red);
-	lpGtkStyle->fg[0].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg0_green);
-	lpGtkStyle->fg[0].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg0_blue);
-	lpGtkStyle->fg[1].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg1_pixel);
-	lpGtkStyle->fg[1].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg1_red);
-	lpGtkStyle->fg[1].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg1_green);
-	lpGtkStyle->fg[1].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg1_blue);
-	lpGtkStyle->fg[2].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg2_pixel);
-	lpGtkStyle->fg[2].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg2_red);
-	lpGtkStyle->fg[2].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg2_green);
-	lpGtkStyle->fg[2].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg2_blue);
-	lpGtkStyle->fg[3].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg3_pixel);
-	lpGtkStyle->fg[3].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg3_red);
-	lpGtkStyle->fg[3].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg3_green);
-	lpGtkStyle->fg[3].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg3_blue);
-	lpGtkStyle->fg[4].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg4_pixel);
-	lpGtkStyle->fg[4].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg4_red);
-	lpGtkStyle->fg[4].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg4_green);
-	lpGtkStyle->fg[4].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->fg4_blue);
-	lpGtkStyle->bg[0].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg0_pixel);
-	lpGtkStyle->bg[0].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg0_red);
-	lpGtkStyle->bg[0].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg0_green);
-	lpGtkStyle->bg[0].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg0_blue);
-	lpGtkStyle->bg[1].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg1_pixel);
-	lpGtkStyle->bg[1].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg1_red);
-	lpGtkStyle->bg[1].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg1_green);
-	lpGtkStyle->bg[1].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg1_blue);
-	lpGtkStyle->bg[2].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg2_pixel);
-	lpGtkStyle->bg[2].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg2_red);
-	lpGtkStyle->bg[2].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg2_green);
-	lpGtkStyle->bg[2].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg2_blue);
-	lpGtkStyle->bg[3].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg3_pixel);
-	lpGtkStyle->bg[3].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg3_red);
-	lpGtkStyle->bg[3].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg3_green);
-	lpGtkStyle->bg[3].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg3_blue);
-	lpGtkStyle->bg[4].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg4_pixel);
-	lpGtkStyle->bg[4].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg4_red);
-	lpGtkStyle->bg[4].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg4_green);
-	lpGtkStyle->bg[4].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->bg4_blue);
-	lpGtkStyle->light[0].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->light0_pixel);
-	lpGtkStyle->light[0].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light0_red);
-	lpGtkStyle->light[0].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light0_green);
-	lpGtkStyle->light[0].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light0_blue);
-	lpGtkStyle->light[1].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->light1_pixel);
-	lpGtkStyle->light[1].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light1_red);
-	lpGtkStyle->light[1].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light1_green);
-	lpGtkStyle->light[1].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light1_blue);
-	lpGtkStyle->light[2].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->light2_pixel);
-	lpGtkStyle->light[2].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light2_red);
-	lpGtkStyle->light[2].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light2_green);
-	lpGtkStyle->light[2].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light2_blue);
-	lpGtkStyle->light[3].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->light3_pixel);
-	lpGtkStyle->light[3].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light3_red);
-	lpGtkStyle->light[3].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light3_green);
-	lpGtkStyle->light[3].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light3_blue);
-	lpGtkStyle->light[4].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->light4_pixel);
-	lpGtkStyle->light[4].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light4_red);
-	lpGtkStyle->light[4].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light4_green);
-	lpGtkStyle->light[4].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->light4_blue);
-	lpGtkStyle->dark[0].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark0_pixel);
-	lpGtkStyle->dark[0].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark0_red);
-	lpGtkStyle->dark[0].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark0_green);
-	lpGtkStyle->dark[0].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark0_blue);
-	lpGtkStyle->dark[1].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark1_pixel);
-	lpGtkStyle->dark[1].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark1_red);
-	lpGtkStyle->dark[1].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark1_green);
-	lpGtkStyle->dark[1].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark1_blue);
-	lpGtkStyle->dark[2].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark2_pixel);
-	lpGtkStyle->dark[2].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark2_red);
-	lpGtkStyle->dark[2].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark2_green);
-	lpGtkStyle->dark[2].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark2_blue);
-	lpGtkStyle->dark[3].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark3_pixel);
-	lpGtkStyle->dark[3].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark3_red);
-	lpGtkStyle->dark[3].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark3_green);
-	lpGtkStyle->dark[3].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark3_blue);
-	lpGtkStyle->dark[4].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark4_pixel);
-	lpGtkStyle->dark[4].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark4_red);
-	lpGtkStyle->dark[4].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark4_green);
-	lpGtkStyle->dark[4].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->dark4_blue);
-	lpGtkStyle->mid[0].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid0_pixel);
-	lpGtkStyle->mid[0].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid0_red);
-	lpGtkStyle->mid[0].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid0_green);
-	lpGtkStyle->mid[0].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid0_blue);
-	lpGtkStyle->mid[1].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid1_pixel);
-	lpGtkStyle->mid[1].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid1_red);
-	lpGtkStyle->mid[1].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid1_green);
-	lpGtkStyle->mid[1].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid1_blue);
-	lpGtkStyle->mid[2].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid2_pixel);
-	lpGtkStyle->mid[2].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid2_red);
-	lpGtkStyle->mid[2].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid2_green);
-	lpGtkStyle->mid[2].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid2_blue);
-	lpGtkStyle->mid[3].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid3_pixel);
-	lpGtkStyle->mid[3].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid3_red);
-	lpGtkStyle->mid[3].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid3_green);
-	lpGtkStyle->mid[3].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid3_blue);
-	lpGtkStyle->mid[4].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid4_pixel);
-	lpGtkStyle->mid[4].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid4_red);
-	lpGtkStyle->mid[4].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid4_green);
-	lpGtkStyle->mid[4].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->mid4_blue);
-	lpGtkStyle->text[0].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->text0_pixel);
-	lpGtkStyle->text[0].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text0_red);
-	lpGtkStyle->text[0].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text0_green);
-	lpGtkStyle->text[0].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text0_blue);
-	lpGtkStyle->text[1].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->text1_pixel);
-	lpGtkStyle->text[1].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text1_red);
-	lpGtkStyle->text[1].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text1_green);
-	lpGtkStyle->text[1].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text1_blue);
-	lpGtkStyle->text[2].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->text2_pixel);
-	lpGtkStyle->text[2].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text2_red);
-	lpGtkStyle->text[2].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text2_green);
-	lpGtkStyle->text[2].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text2_blue);
-	lpGtkStyle->text[3].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->text3_pixel);
-	lpGtkStyle->text[3].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text3_red);
-	lpGtkStyle->text[3].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text3_green);
-	lpGtkStyle->text[3].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text3_blue);
-	lpGtkStyle->text[4].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->text4_pixel);
-	lpGtkStyle->text[4].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text4_red);
-	lpGtkStyle->text[4].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text4_green);
-	lpGtkStyle->text[4].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->text4_blue);
-	lpGtkStyle->base[0].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->base0_pixel);
-	lpGtkStyle->base[0].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base0_red);
-	lpGtkStyle->base[0].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base0_green);
-	lpGtkStyle->base[0].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base0_blue);
-	lpGtkStyle->base[1].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->base1_pixel);
-	lpGtkStyle->base[1].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base1_red);
-	lpGtkStyle->base[1].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base1_green);
-	lpGtkStyle->base[1].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base1_blue);
-	lpGtkStyle->base[2].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->base2_pixel);
-	lpGtkStyle->base[2].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base2_red);
-	lpGtkStyle->base[2].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base2_green);
-	lpGtkStyle->base[2].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base2_blue);
-	lpGtkStyle->base[3].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->base3_pixel);
-	lpGtkStyle->base[3].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base3_red);
-	lpGtkStyle->base[3].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base3_green);
-	lpGtkStyle->base[3].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base3_blue);
-	lpGtkStyle->base[4].pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->base4_pixel);
-	lpGtkStyle->base[4].red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base4_red);
-	lpGtkStyle->base[4].green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base4_green);
-	lpGtkStyle->base[4].blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->base4_blue);
-	lpGtkStyle->black.pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->black_pixel);
-	lpGtkStyle->black.red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->black_red);
-	lpGtkStyle->black.green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->black_green);
-	lpGtkStyle->black.blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->black_blue);
-	lpGtkStyle->white.pixel = (*env)->GetIntField(env, lpObject, lpGtkStyleFc->white_pixel);
-	lpGtkStyle->white.red = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_red);
-	lpGtkStyle->white.green = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_green);
-	lpGtkStyle->white.blue = (*env)->GetShortField(env, lpObject, lpGtkStyleFc->white_blue);
-	lpGtkStyle->font_desc = (PangoFontDescription*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->font_desc);
-	lpGtkStyle->fg_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc0);
-	lpGtkStyle->fg_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc1);
-	lpGtkStyle->fg_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc2);
-	lpGtkStyle->fg_gc[3] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc3);
-	lpGtkStyle->fg_gc[4] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->fg_gc4);
-	lpGtkStyle->bg_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_gc0);
-	lpGtkStyle->bg_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_gc1);
-	lpGtkStyle->bg_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_gc2);
-	lpGtkStyle->bg_gc[3] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_gc3);
-	lpGtkStyle->bg_gc[4] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_gc4);
-	lpGtkStyle->light_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->light_gc0);
-	lpGtkStyle->light_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->light_gc1);
-	lpGtkStyle->light_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->light_gc2);
-	lpGtkStyle->light_gc[3] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->light_gc3);
-	lpGtkStyle->light_gc[4] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->light_gc4);
-	lpGtkStyle->dark_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark_gc0);
-	lpGtkStyle->dark_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark_gc1);
-	lpGtkStyle->dark_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark_gc2);
-	lpGtkStyle->dark_gc[3] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark_gc3);
-	lpGtkStyle->dark_gc[4] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->dark_gc4);
-	lpGtkStyle->mid_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid_gc0);
-	lpGtkStyle->mid_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid_gc1);
-	lpGtkStyle->mid_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid_gc2);
-	lpGtkStyle->mid_gc[3] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid_gc3);
-	lpGtkStyle->mid_gc[4] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->mid_gc4);
-	lpGtkStyle->text_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->text_gc0);
-	lpGtkStyle->text_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->text_gc1);
-	lpGtkStyle->text_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->text_gc2);
-	lpGtkStyle->text_gc[3] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->text_gc3);
-	lpGtkStyle->text_gc[4] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->text_gc4);
-	lpGtkStyle->base_gc[0] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->base_gc0);
-	lpGtkStyle->base_gc[1] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->base_gc1);
-	lpGtkStyle->base_gc[2] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->base_gc2);
-	lpGtkStyle->base_gc[3] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->base_gc3);
-	lpGtkStyle->base_gc[4] = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->base_gc4);
-	lpGtkStyle->black_gc = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->black_gc);
-	lpGtkStyle->white_gc = (GdkGC*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->white_gc);
-	lpGtkStyle->bg_pixmap[0] = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap0);
-	lpGtkStyle->bg_pixmap[1] = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap1);
-	lpGtkStyle->bg_pixmap[2] = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap2);
-	lpGtkStyle->bg_pixmap[3] = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap3);
-	lpGtkStyle->bg_pixmap[4] = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap4);
-}
-
-void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpGtkStyle, GtkStyle_FID_CACHE *lpGtkStyleFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg0_pixel, (jint)lpGtkStyle->fg[0].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg0_red, (jshort)lpGtkStyle->fg[0].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg0_green, (jshort)lpGtkStyle->fg[0].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg0_blue, (jshort)lpGtkStyle->fg[0].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg1_pixel, (jint)lpGtkStyle->fg[1].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg1_red, (jshort)lpGtkStyle->fg[1].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg1_green, (jshort)lpGtkStyle->fg[1].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg1_blue, (jshort)lpGtkStyle->fg[1].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg2_pixel, (jint)lpGtkStyle->fg[2].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg2_red, (jshort)lpGtkStyle->fg[2].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg2_green, (jshort)lpGtkStyle->fg[2].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg2_blue, (jshort)lpGtkStyle->fg[2].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg3_pixel, (jint)lpGtkStyle->fg[3].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg3_red, (jshort)lpGtkStyle->fg[3].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg3_green, (jshort)lpGtkStyle->fg[3].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg3_blue, (jshort)lpGtkStyle->fg[3].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg4_pixel, (jint)lpGtkStyle->fg[4].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg4_red, (jshort)lpGtkStyle->fg[4].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg4_green, (jshort)lpGtkStyle->fg[4].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->fg4_blue, (jshort)lpGtkStyle->fg[4].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg0_pixel, (jint)lpGtkStyle->bg[0].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg0_red, (jshort)lpGtkStyle->bg[0].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg0_green, (jshort)lpGtkStyle->bg[0].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg0_blue, (jshort)lpGtkStyle->bg[0].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg1_pixel, (jint)lpGtkStyle->bg[1].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg1_red, (jshort)lpGtkStyle->bg[1].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg1_green, (jshort)lpGtkStyle->bg[1].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg1_blue, (jshort)lpGtkStyle->bg[1].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg2_pixel, (jint)lpGtkStyle->bg[2].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg2_red, (jshort)lpGtkStyle->bg[2].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg2_green, (jshort)lpGtkStyle->bg[2].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg2_blue, (jshort)lpGtkStyle->bg[2].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg3_pixel, (jint)lpGtkStyle->bg[3].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg3_red, (jshort)lpGtkStyle->bg[3].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg3_green, (jshort)lpGtkStyle->bg[3].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg3_blue, (jshort)lpGtkStyle->bg[3].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg4_pixel, (jint)lpGtkStyle->bg[4].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg4_red, (jshort)lpGtkStyle->bg[4].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg4_green, (jshort)lpGtkStyle->bg[4].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->bg4_blue, (jshort)lpGtkStyle->bg[4].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light0_pixel, (jint)lpGtkStyle->light[0].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light0_red, (jshort)lpGtkStyle->light[0].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light0_green, (jshort)lpGtkStyle->light[0].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light0_blue, (jshort)lpGtkStyle->light[0].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light1_pixel, (jint)lpGtkStyle->light[1].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light1_red, (jshort)lpGtkStyle->light[1].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light1_green, (jshort)lpGtkStyle->light[1].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light1_blue, (jshort)lpGtkStyle->light[1].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light2_pixel, (jint)lpGtkStyle->light[2].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light2_red, (jshort)lpGtkStyle->light[2].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light2_green, (jshort)lpGtkStyle->light[2].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light2_blue, (jshort)lpGtkStyle->light[2].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light3_pixel, (jint)lpGtkStyle->light[3].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light3_red, (jshort)lpGtkStyle->light[3].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light3_green, (jshort)lpGtkStyle->light[3].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light3_blue, (jshort)lpGtkStyle->light[3].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light4_pixel, (jint)lpGtkStyle->light[4].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light4_red, (jshort)lpGtkStyle->light[4].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light4_green, (jshort)lpGtkStyle->light[4].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->light4_blue, (jshort)lpGtkStyle->light[4].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark0_pixel, (jint)lpGtkStyle->dark[0].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark0_red, (jshort)lpGtkStyle->dark[0].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark0_green, (jshort)lpGtkStyle->dark[0].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark0_blue, (jshort)lpGtkStyle->dark[0].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark1_pixel, (jint)lpGtkStyle->dark[1].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark1_red, (jshort)lpGtkStyle->dark[1].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark1_green, (jshort)lpGtkStyle->dark[1].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark1_blue, (jshort)lpGtkStyle->dark[1].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark2_pixel, (jint)lpGtkStyle->dark[2].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark2_red, (jshort)lpGtkStyle->dark[2].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark2_green, (jshort)lpGtkStyle->dark[2].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark2_blue, (jshort)lpGtkStyle->dark[2].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark3_pixel, (jint)lpGtkStyle->dark[3].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark3_red, (jshort)lpGtkStyle->dark[3].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark3_green, (jshort)lpGtkStyle->dark[3].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark3_blue, (jshort)lpGtkStyle->dark[3].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark4_pixel, (jint)lpGtkStyle->dark[4].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark4_red, (jshort)lpGtkStyle->dark[4].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark4_green, (jshort)lpGtkStyle->dark[4].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->dark4_blue, (jshort)lpGtkStyle->dark[4].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid0_pixel, (jint)lpGtkStyle->mid[0].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid0_red, (jshort)lpGtkStyle->mid[0].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid0_green, (jshort)lpGtkStyle->mid[0].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid0_blue, (jshort)lpGtkStyle->mid[0].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid1_pixel, (jint)lpGtkStyle->mid[1].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid1_red, (jshort)lpGtkStyle->mid[1].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid1_green, (jshort)lpGtkStyle->mid[1].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid1_blue, (jshort)lpGtkStyle->mid[1].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid2_pixel, (jint)lpGtkStyle->mid[2].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid2_red, (jshort)lpGtkStyle->mid[2].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid2_green, (jshort)lpGtkStyle->mid[2].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid2_blue, (jshort)lpGtkStyle->mid[2].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid3_pixel, (jint)lpGtkStyle->mid[3].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid3_red, (jshort)lpGtkStyle->mid[3].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid3_green, (jshort)lpGtkStyle->mid[3].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid3_blue, (jshort)lpGtkStyle->mid[3].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid4_pixel, (jint)lpGtkStyle->mid[4].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid4_red, (jshort)lpGtkStyle->mid[4].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid4_green, (jshort)lpGtkStyle->mid[4].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->mid4_blue, (jshort)lpGtkStyle->mid[4].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text0_pixel, (jint)lpGtkStyle->text[0].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text0_red, (jshort)lpGtkStyle->text[0].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text0_green, (jshort)lpGtkStyle->text[0].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text0_blue, (jshort)lpGtkStyle->text[0].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text1_pixel, (jint)lpGtkStyle->text[1].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text1_red, (jshort)lpGtkStyle->text[1].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text1_green, (jshort)lpGtkStyle->text[1].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text1_blue, (jshort)lpGtkStyle->text[1].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text2_pixel, (jint)lpGtkStyle->text[2].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text2_red, (jshort)lpGtkStyle->text[2].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text2_green, (jshort)lpGtkStyle->text[2].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text2_blue, (jshort)lpGtkStyle->text[2].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text3_pixel, (jint)lpGtkStyle->text[3].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text3_red, (jshort)lpGtkStyle->text[3].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text3_green, (jshort)lpGtkStyle->text[3].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text3_blue, (jshort)lpGtkStyle->text[3].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text4_pixel, (jint)lpGtkStyle->text[4].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text4_red, (jshort)lpGtkStyle->text[4].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text4_green, (jshort)lpGtkStyle->text[4].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->text4_blue, (jshort)lpGtkStyle->text[4].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base0_pixel, (jint)lpGtkStyle->base[0].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base0_red, (jshort)lpGtkStyle->base[0].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base0_green, (jshort)lpGtkStyle->base[0].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base0_blue, (jshort)lpGtkStyle->base[0].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base1_pixel, (jint)lpGtkStyle->base[1].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base1_red, (jshort)lpGtkStyle->base[1].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base1_green, (jshort)lpGtkStyle->base[1].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base1_blue, (jshort)lpGtkStyle->base[1].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base2_pixel, (jint)lpGtkStyle->base[2].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base2_red, (jshort)lpGtkStyle->base[2].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base2_green, (jshort)lpGtkStyle->base[2].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base2_blue, (jshort)lpGtkStyle->base[2].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base3_pixel, (jint)lpGtkStyle->base[3].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base3_red, (jshort)lpGtkStyle->base[3].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base3_green, (jshort)lpGtkStyle->base[3].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base3_blue, (jshort)lpGtkStyle->base[3].blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base4_pixel, (jint)lpGtkStyle->base[4].pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base4_red, (jshort)lpGtkStyle->base[4].red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base4_green, (jshort)lpGtkStyle->base[4].green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->base4_blue, (jshort)lpGtkStyle->base[4].blue);
-
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->black_pixel, (jint)lpGtkStyle->black.pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->black_red, (jshort)lpGtkStyle->black.red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->black_green, (jshort)lpGtkStyle->black.green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->black_blue, (jshort)lpGtkStyle->black.blue);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->white_pixel, (jint)lpGtkStyle->white.pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->white_red, (jshort)lpGtkStyle->white.red);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->white_green, (jshort)lpGtkStyle->white.green);
-	(*env)->SetShortField(env, lpObject, lpGtkStyleFc->white_blue, (jshort)lpGtkStyle->white.blue);
-
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->font_desc, (jint)lpGtkStyle->font_desc);
-
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc0, (jint)lpGtkStyle->fg_gc[0]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc1, (jint)lpGtkStyle->fg_gc[1]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc2, (jint)lpGtkStyle->fg_gc[2]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc3, (jint)lpGtkStyle->fg_gc[3]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->fg_gc4, (jint)lpGtkStyle->fg_gc[4]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_gc0, (jint)lpGtkStyle->bg_gc[0]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_gc1, (jint)lpGtkStyle->bg_gc[1]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_gc2, (jint)lpGtkStyle->bg_gc[2]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_gc3, (jint)lpGtkStyle->bg_gc[3]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_gc4, (jint)lpGtkStyle->bg_gc[4]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light_gc0, (jint)lpGtkStyle->light_gc[0]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light_gc1, (jint)lpGtkStyle->light_gc[1]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light_gc2, (jint)lpGtkStyle->light_gc[2]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light_gc3, (jint)lpGtkStyle->light_gc[3]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->light_gc4, (jint)lpGtkStyle->light_gc[4]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark_gc0, (jint)lpGtkStyle->dark_gc[0]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark_gc1, (jint)lpGtkStyle->dark_gc[1]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark_gc2, (jint)lpGtkStyle->dark_gc[2]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark_gc3, (jint)lpGtkStyle->dark_gc[3]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->dark_gc4, (jint)lpGtkStyle->dark_gc[4]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid_gc0, (jint)lpGtkStyle->mid_gc[0]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid_gc1, (jint)lpGtkStyle->mid_gc[1]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid_gc2, (jint)lpGtkStyle->mid_gc[2]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid_gc3, (jint)lpGtkStyle->mid_gc[3]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->mid_gc4, (jint)lpGtkStyle->mid_gc[4]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text_gc0, (jint)lpGtkStyle->text_gc[0]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text_gc1, (jint)lpGtkStyle->text_gc[1]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text_gc2, (jint)lpGtkStyle->text_gc[2]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text_gc3, (jint)lpGtkStyle->text_gc[3]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->text_gc4, (jint)lpGtkStyle->text_gc[4]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base_gc0, (jint)lpGtkStyle->base_gc[0]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base_gc1, (jint)lpGtkStyle->base_gc[1]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base_gc2, (jint)lpGtkStyle->base_gc[2]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base_gc3, (jint)lpGtkStyle->base_gc[3]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->base_gc4, (jint)lpGtkStyle->base_gc[4]);
-	
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->black_gc, (jint)lpGtkStyle->black_gc);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->white_gc, (jint)lpGtkStyle->white_gc);
-	
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap0, (jint)lpGtkStyle->bg_pixmap[0]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap1, (jint)lpGtkStyle->bg_pixmap[1]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap2, (jint)lpGtkStyle->bg_pixmap[2]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap3, (jint)lpGtkStyle->bg_pixmap[3]);
-	(*env)->SetIntField(env, lpObject, lpGtkStyleFc->bg_pixmap4, (jint)lpGtkStyle->bg_pixmap[4]);
-}
-
-void getGtkStyleClassFields(JNIEnv *env, jobject lpObject, GtkStyleClass *lpGtkStyleClass, GtkStyleClass_FID_CACHE *lpGtkStyleClassFc)
-{
-}
-
-void setGtkStyleClassFields(JNIEnv *env, jobject lpObject, GtkStyleClass *lpGtkStyleClass, GtkStyleClass_FID_CACHE *lpGtkStyleClassFc)
-{
-}
-
-void getGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpGtkAdjustment, GtkAdjustment_FID_CACHE *lpGtkAdjustmentFc)
-{
-	DECL_GLOB(pGlob)
-	lpGtkAdjustment->lower = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->lower);
-	lpGtkAdjustment->upper = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->upper);
-	lpGtkAdjustment->value = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->value);
-	lpGtkAdjustment->step_increment = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->step_increment);
-	lpGtkAdjustment->page_increment = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->page_increment);
-	lpGtkAdjustment->page_size = (gdouble)(*env)->GetDoubleField(env, lpObject, lpGtkAdjustmentFc->page_size);
-}
-
-void setGtkAdjustmentFields(JNIEnv *env, jobject lpObject, GtkAdjustment *lpGtkAdjustment, GtkAdjustment_FID_CACHE *lpGtkAdjustmentFc)
-{
-	DECL_GLOB(pGlob)
-	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->lower, (jdouble)lpGtkAdjustment->lower);
-	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->upper, (jdouble)lpGtkAdjustment->upper);
-	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->value, (jdouble)lpGtkAdjustment->value);
-	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->step_increment, (jdouble)lpGtkAdjustment->step_increment);
-	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->page_increment, (jdouble)lpGtkAdjustment->page_increment);
-	(*env)->SetDoubleField(env, lpObject, lpGtkAdjustmentFc->page_size, (jdouble)lpGtkAdjustment->page_size);
-}
-
-void getGtkCListRowFields(JNIEnv *env, jobject lpObject, GtkCListRow *lpGtkCListRow, GtkCListRow_FID_CACHE *lpGtkCListRowFc)
-{
-	lpGtkCListRow->cell = (GtkCell*)(*env)->GetIntField(env, lpObject, lpGtkCListRowFc->cell);
-	lpGtkCListRow->state = (*env)->GetIntField(env, lpObject, lpGtkCListRowFc->state);
-	lpGtkCListRow->foreground.red = (*env)->GetShortField(env, lpObject, lpGtkCListRowFc->foreground_red);
-	lpGtkCListRow->foreground.green = (*env)->GetShortField(env, lpObject, lpGtkCListRowFc->foreground_green);
-	lpGtkCListRow->foreground.blue = (*env)->GetShortField(env, lpObject, lpGtkCListRowFc->foreground_blue);
-	lpGtkCListRow->foreground.pixel = (*env)->GetIntField(env, lpObject, lpGtkCListRowFc->foreground_pixel);
-	lpGtkCListRow->background.red = (*env)->GetShortField(env, lpObject, lpGtkCListRowFc->background_red);
-	lpGtkCListRow->background.green = (*env)->GetShortField(env, lpObject, lpGtkCListRowFc->background_green);
-	lpGtkCListRow->background.blue = (*env)->GetShortField(env, lpObject, lpGtkCListRowFc->background_blue);
-	lpGtkCListRow->background.pixel = (*env)->GetIntField(env, lpObject, lpGtkCListRowFc->background_pixel);
-	lpGtkCListRow->style = (GtkStyle*)(*env)->GetIntField(env, lpObject, lpGtkCListRowFc->style);
-	lpGtkCListRow->data = (gpointer)(*env)->GetIntField(env, lpObject, lpGtkCListRowFc->data);
-	lpGtkCListRow->destroy = (GtkDestroyNotify)(*env)->GetIntField(env, lpObject, lpGtkCListRowFc->destroy);
-	lpGtkCListRow->fg_set = (*env)->GetIntField(env, lpObject, lpGtkCListRowFc->fg_set);
-	lpGtkCListRow->bg_set = (*env)->GetIntField(env, lpObject, lpGtkCListRowFc->bg_set);
-	lpGtkCListRow->selectable = (*env)->GetIntField(env, lpObject, lpGtkCListRowFc->selectable);
-}
-
-void getGtkCListColumnFields(JNIEnv *env, jobject lpObject, GtkCListColumn *lpGtkCListColumn, GtkCListColumn_FID_CACHE *lpGtkCListColumnFc)
-{
-	lpGtkCListColumn->title = (gchar*)(*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->title);
-	lpGtkCListColumn->area.x = (*env)->GetShortField(env, lpObject, lpGtkCListColumnFc->area_x);
-	lpGtkCListColumn->area.y = (*env)->GetShortField(env, lpObject, lpGtkCListColumnFc->area_y);
-	lpGtkCListColumn->area.width = (*env)->GetShortField(env, lpObject, lpGtkCListColumnFc->area_width);
-	lpGtkCListColumn->area.height = (*env)->GetShortField(env, lpObject, lpGtkCListColumnFc->area_height);
-	lpGtkCListColumn->button = (GtkWidget*)(*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->button);
-	lpGtkCListColumn->window = (GdkWindow*)(*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->window);
-	lpGtkCListColumn->width = (*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->width);
-	lpGtkCListColumn->min_width = (*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->min_width);
-	lpGtkCListColumn->max_width = (*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->max_width);
-	lpGtkCListColumn->justification = (GtkJustification)(*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->justification);
-	lpGtkCListColumn->visible = (*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->visible);
-	lpGtkCListColumn->width_set = (*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->width_set);
-	lpGtkCListColumn->resizeable = (*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->resizeable);
-	lpGtkCListColumn->auto_resize = (*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->auto_resize);
-	lpGtkCListColumn->button_passive = (*env)->GetIntField(env, lpObject, lpGtkCListColumnFc->button_passive);
-}
-
-void setGtkCListRowFields(JNIEnv *env, jobject lpObject, GtkCListRow *lpGtkCListRow, GtkCListRow_FID_CACHE *lpGtkCListRowFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->cell, (jint)lpGtkCListRow->cell);
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->state, (jint)lpGtkCListRow->state);
-	(*env)->SetShortField(env, lpObject, lpGtkCListRowFc->foreground_red, (jshort)lpGtkCListRow->foreground.red);
-	(*env)->SetShortField(env, lpObject, lpGtkCListRowFc->foreground_green, (jshort)lpGtkCListRow->foreground.green);
-	(*env)->SetShortField(env, lpObject, lpGtkCListRowFc->foreground_blue, (jshort)lpGtkCListRow->foreground.blue);
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->foreground_pixel, (jint)lpGtkCListRow->foreground.pixel);
-	(*env)->SetShortField(env, lpObject, lpGtkCListRowFc->background_red, (jshort)lpGtkCListRow->background.red);
-	(*env)->SetShortField(env, lpObject, lpGtkCListRowFc->background_green, (jshort)lpGtkCListRow->background.green);
-	(*env)->SetShortField(env, lpObject, lpGtkCListRowFc->background_blue, (jshort)lpGtkCListRow->background.blue);
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->background_pixel, (jint)lpGtkCListRow->background.pixel);
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->style, (jint)lpGtkCListRow->style);
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->data, (jint)lpGtkCListRow->data);
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->destroy, (jint)lpGtkCListRow->destroy);
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->fg_set, (jint)lpGtkCListRow->fg_set);
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->bg_set, (jint)lpGtkCListRow->bg_set);
-	(*env)->SetIntField(env, lpObject, lpGtkCListRowFc->selectable, (jint)lpGtkCListRow->selectable);
-}
-
-void setGtkCListColumnFields(JNIEnv *env, jobject lpObject, GtkCListColumn *lpGtkCListColumn, GtkCListColumn_FID_CACHE *lpGtkCListColumnFc)
-{
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->title, (jint)lpGtkCListColumn->title);
-	(*env)->SetShortField(env, lpObject, lpGtkCListColumnFc->area_x, (jshort)lpGtkCListColumn->area.x);
-	(*env)->SetShortField(env, lpObject, lpGtkCListColumnFc->area_y, (jshort)lpGtkCListColumn->area.y);
-	(*env)->SetShortField(env, lpObject, lpGtkCListColumnFc->area_width, (jshort)lpGtkCListColumn->area.width);
-	(*env)->SetShortField(env, lpObject, lpGtkCListColumnFc->area_height, (jshort)lpGtkCListColumn->area.height);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->button, (jint)lpGtkCListColumn->button);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->window, (jint)lpGtkCListColumn->window);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->width, (jshort)lpGtkCListColumn->width);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->min_width, (jint)lpGtkCListColumn->min_width);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->max_width, (jint)lpGtkCListColumn->max_width);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->justification, (jint)lpGtkCListColumn->justification);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->visible, (jint)lpGtkCListColumn->visible);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->width_set, (jint)lpGtkCListColumn->width_set);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->resizeable, (jint)lpGtkCListColumn->resizeable);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->auto_resize, (jint)lpGtkCListColumn->auto_resize);
-	(*env)->SetIntField(env, lpObject, lpGtkCListColumnFc->button_passive, (jint)lpGtkCListColumn->button_passive);
-}
-
-void getGtkCTreeFields(JNIEnv *env, jobject lpObject, GtkCTree *lpGtkCTree, GtkCTree_FID_CACHE *lpGtkCTreeFc)
-{
-	DECL_GLOB(pGlob)
-	lpGtkCTree->tree_indent = (*env)->GetIntField(env, lpObject, lpGtkCTreeFc->tree_indent);
-	lpGtkCTree->tree_column = (*env)->GetIntField(env, lpObject, lpGtkCTreeFc->tree_column);	
-}
-
-void setGtkCTreeFields(JNIEnv *env, jobject lpObject, GtkCTree *lpGtkCTree, GtkCTree_FID_CACHE *lpGtkCTreeFc)
-{
-	DECL_GLOB(pGlob)
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeFc->tree_indent, (jint)lpGtkCTree->tree_indent);
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeFc->tree_column, (jint)lpGtkCTree->tree_column);	
-}
-
-void getGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpGtkCTreeRow, GtkCTreeRow_FID_CACHE *lpGtkCTreeRowFc)
-{
-	DECL_GLOB(pGlob)
-	lpGtkCTreeRow->parent = (GtkCTreeNode*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->parent);
-	lpGtkCTreeRow->sibling = (GtkCTreeNode*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->sibling);
-	lpGtkCTreeRow->children = (GtkCTreeNode*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->children);
-	lpGtkCTreeRow->pixmap_closed = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->pixmap_closed);
-	lpGtkCTreeRow->mask_closed = (GdkBitmap*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->mask_closed);
-	lpGtkCTreeRow->pixmap_opened = (GdkPixmap*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->pixmap_opened);
-	lpGtkCTreeRow->mask_opened = (GdkBitmap*)(*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->mask_opened);
-	lpGtkCTreeRow->level = (*env)->GetShortField(env, lpObject, lpGtkCTreeRowFc->level);
-	lpGtkCTreeRow->is_leaf = (*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->is_leaf);
-	lpGtkCTreeRow->expanded = (*env)->GetIntField(env, lpObject, lpGtkCTreeRowFc->expanded);
-}
-
-void setGtkCTreeRowFields(JNIEnv *env, jobject lpObject, GtkCTreeRow *lpGtkCTreeRow, GtkCTreeRow_FID_CACHE *lpGtkCTreeRowFc)
-{
-	DECL_GLOB(pGlob)
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->parent, (jint)lpGtkCTreeRow->parent);
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->sibling, (jint)lpGtkCTreeRow->sibling);
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->children, (jint)lpGtkCTreeRow->children);
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->pixmap_closed, (jint)lpGtkCTreeRow->pixmap_closed);
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->mask_closed, (jint)lpGtkCTreeRow->mask_closed);
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->pixmap_opened, (jint)lpGtkCTreeRow->pixmap_opened);
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->mask_opened, (jint)lpGtkCTreeRow->mask_opened);
-	(*env)->SetShortField(env, lpObject, lpGtkCTreeRowFc->level, (jshort)lpGtkCTreeRow->level);
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->is_leaf, (jint)lpGtkCTreeRow->is_leaf);
-	(*env)->SetIntField(env, lpObject, lpGtkCTreeRowFc->expanded, (jint)lpGtkCTreeRow->expanded);
-}
 
 void cacheGtkSelectionDataFids(JNIEnv *env, jobject lpObject, PGtkSelectionData_FID_CACHE lpCache)
 {
@@ -1523,28 +1023,650 @@ void cacheGtkSelectionDataFids(JNIEnv *env, jobject lpObject, PGtkSelectionData_
 	lpCache->cached = 1;
 }
 
-GtkSelectionData* getGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct, PGtkSelectionData_FID_CACHE lpCache)
+GtkSelectionData *getGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct)
 {
+	PGtkSelectionData_FID_CACHE lpCache = &GtkSelectionDataFc;
 	if (!lpCache->cached) cacheGtkSelectionDataFids(env, lpObject, lpCache);
 	lpStruct->selection = (GdkAtom)(*env)->GetIntField(env, lpObject, lpCache->selection);
 	lpStruct->target = (GdkAtom)(*env)->GetIntField(env, lpObject, lpCache->target);
 	lpStruct->type = (GdkAtom)(*env)->GetIntField(env, lpObject, lpCache->type);
-	lpStruct->format = (*env)->GetIntField(env, lpObject, lpCache->format);
-	lpStruct->data = (guchar*)(*env)->GetIntField(env, lpObject, lpCache->data);
-	lpStruct->length = (*env)->GetIntField(env, lpObject, lpCache->length);
+	lpStruct->format = (gint)(*env)->GetIntField(env, lpObject, lpCache->format);
+	lpStruct->data = (guchar *)(*env)->GetIntField(env, lpObject, lpCache->data);
+	lpStruct->length = (gint)(*env)->GetIntField(env, lpObject, lpCache->length);
 	return lpStruct;
 }
 
-void setGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct, PGtkSelectionData_FID_CACHE lpCache)
+void setGtkSelectionDataFields(JNIEnv *env, jobject lpObject, GtkSelectionData *lpStruct)
 {
+	PGtkSelectionData_FID_CACHE lpCache = &GtkSelectionDataFc;
 	if (!lpCache->cached) cacheGtkSelectionDataFids(env, lpObject, lpCache);
-	(*env)->SetIntField(env, lpObject, lpCache->selection, (jint) lpStruct->selection);
+	(*env)->SetIntField(env, lpObject, lpCache->selection, (jint)lpStruct->selection);
 	(*env)->SetIntField(env, lpObject, lpCache->target, (jint)lpStruct->target);
 	(*env)->SetIntField(env, lpObject, lpCache->type, (jint)lpStruct->type);
-	(*env)->SetIntField(env, lpObject, lpCache->format, lpStruct->format);
+	(*env)->SetIntField(env, lpObject, lpCache->format, (jint)lpStruct->format);
 	(*env)->SetIntField(env, lpObject, lpCache->data, (jint)lpStruct->data);
-	(*env)->SetIntField(env, lpObject, lpCache->length, lpStruct->length);
+	(*env)->SetIntField(env, lpObject, lpCache->length, (jint)lpStruct->length);
 }
+
+typedef struct GtkStyle_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID fg0_pixel, fg0_red, fg0_green, fg0_blue, fg1_pixel, fg1_red, fg1_green, fg1_blue, fg2_pixel, fg2_red, fg2_green, fg2_blue, fg3_pixel, fg3_red, fg3_green, fg3_blue, fg4_pixel, fg4_red, fg4_green, fg4_blue, bg0_pixel, bg0_red, bg0_green, bg0_blue, bg1_pixel, bg1_red, bg1_green, bg1_blue, bg2_pixel, bg2_red, bg2_green, bg2_blue, bg3_pixel, bg3_red, bg3_green, bg3_blue, bg4_pixel, bg4_red, bg4_green, bg4_blue, light0_pixel, light0_red, light0_green, light0_blue, light1_pixel, light1_red, light1_green, light1_blue, light2_pixel, light2_red, light2_green, light2_blue, light3_pixel, light3_red, light3_green, light3_blue, light4_pixel, light4_red, light4_green, light4_blue, dark0_pixel, dark0_red, dark0_green, dark0_blue, dark1_pixel, dark1_red, dark1_green, dark1_blue, dark2_pixel, dark2_red, dark2_green, dark2_blue, dark3_pixel, dark3_red, dark3_green, dark3_blue, dark4_pixel, dark4_red, dark4_green, dark4_blue, mid0_pixel, mid0_red, mid0_green, mid0_blue, mid1_pixel, mid1_red, mid1_green, mid1_blue, mid2_pixel, mid2_red, mid2_green, mid2_blue, mid3_pixel, mid3_red, mid3_green, mid3_blue, mid4_pixel, mid4_red, mid4_green, mid4_blue, text0_pixel, text0_red, text0_green, text0_blue, text1_pixel, text1_red, text1_green, text1_blue, text2_pixel, text2_red, text2_green, text2_blue, text3_pixel, text3_red, text3_green, text3_blue, text4_pixel, text4_red, text4_green, text4_blue, base0_pixel, base0_red, base0_green, base0_blue, base1_pixel, base1_red, base1_green, base1_blue, base2_pixel, base2_red, base2_green, base2_blue, base3_pixel, base3_red, base3_green, base3_blue, base4_pixel, base4_red, base4_green, base4_blue, black_pixel, black_red, black_green, black_blue, white_pixel, white_red, white_green, white_blue, font_desc, xthickness, ythickness, fg_gc0, fg_gc1, fg_gc2, fg_gc3, fg_gc4, bg_gc0, bg_gc1, bg_gc2, bg_gc3, bg_gc4, light_gc0, light_gc1, light_gc2, light_gc3, light_gc4, dark_gc0, dark_gc1, dark_gc2, dark_gc3, dark_gc4, mid_gc0, mid_gc1, mid_gc2, mid_gc3, mid_gc4, text_gc0, text_gc1, text_gc2, text_gc3, text_gc4, base_gc0, base_gc1, base_gc2, base_gc3, base_gc4, black_gc, white_gc, bg_pixmap0, bg_pixmap1, bg_pixmap2, bg_pixmap3, bg_pixmap4, bg_pixmap5;
+} GtkStyle_FID_CACHE;
+typedef GtkStyle_FID_CACHE *PGtkStyle_FID_CACHE;
+
+GtkStyle_FID_CACHE GtkStyleFc;
+
+void cacheGtkStyleFids(JNIEnv *env, jobject lpObject, PGtkStyle_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->fg0_pixel = (*env)->GetFieldID(env, lpCache->clazz, "fg0_pixel", "I");
+	lpCache->fg0_red = (*env)->GetFieldID(env, lpCache->clazz, "fg0_red", "S");
+	lpCache->fg0_green = (*env)->GetFieldID(env, lpCache->clazz, "fg0_green", "S");
+	lpCache->fg0_blue = (*env)->GetFieldID(env, lpCache->clazz, "fg0_blue", "S");
+	lpCache->fg1_pixel = (*env)->GetFieldID(env, lpCache->clazz, "fg1_pixel", "I");
+	lpCache->fg1_red = (*env)->GetFieldID(env, lpCache->clazz, "fg1_red", "S");
+	lpCache->fg1_green = (*env)->GetFieldID(env, lpCache->clazz, "fg1_green", "S");
+	lpCache->fg1_blue = (*env)->GetFieldID(env, lpCache->clazz, "fg1_blue", "S");
+	lpCache->fg2_pixel = (*env)->GetFieldID(env, lpCache->clazz, "fg2_pixel", "I");
+	lpCache->fg2_red = (*env)->GetFieldID(env, lpCache->clazz, "fg2_red", "S");
+	lpCache->fg2_green = (*env)->GetFieldID(env, lpCache->clazz, "fg2_green", "S");
+	lpCache->fg2_blue = (*env)->GetFieldID(env, lpCache->clazz, "fg2_blue", "S");
+	lpCache->fg3_pixel = (*env)->GetFieldID(env, lpCache->clazz, "fg3_pixel", "I");
+	lpCache->fg3_red = (*env)->GetFieldID(env, lpCache->clazz, "fg3_red", "S");
+	lpCache->fg3_green = (*env)->GetFieldID(env, lpCache->clazz, "fg3_green", "S");
+	lpCache->fg3_blue = (*env)->GetFieldID(env, lpCache->clazz, "fg3_blue", "S");
+	lpCache->fg4_pixel = (*env)->GetFieldID(env, lpCache->clazz, "fg4_pixel", "I");
+	lpCache->fg4_red = (*env)->GetFieldID(env, lpCache->clazz, "fg4_red", "S");
+	lpCache->fg4_green = (*env)->GetFieldID(env, lpCache->clazz, "fg4_green", "S");
+	lpCache->fg4_blue = (*env)->GetFieldID(env, lpCache->clazz, "fg4_blue", "S");
+	lpCache->bg0_pixel = (*env)->GetFieldID(env, lpCache->clazz, "bg0_pixel", "I");
+	lpCache->bg0_red = (*env)->GetFieldID(env, lpCache->clazz, "bg0_red", "S");
+	lpCache->bg0_green = (*env)->GetFieldID(env, lpCache->clazz, "bg0_green", "S");
+	lpCache->bg0_blue = (*env)->GetFieldID(env, lpCache->clazz, "bg0_blue", "S");
+	lpCache->bg1_pixel = (*env)->GetFieldID(env, lpCache->clazz, "bg1_pixel", "I");
+	lpCache->bg1_red = (*env)->GetFieldID(env, lpCache->clazz, "bg1_red", "S");
+	lpCache->bg1_green = (*env)->GetFieldID(env, lpCache->clazz, "bg1_green", "S");
+	lpCache->bg1_blue = (*env)->GetFieldID(env, lpCache->clazz, "bg1_blue", "S");
+	lpCache->bg2_pixel = (*env)->GetFieldID(env, lpCache->clazz, "bg2_pixel", "I");
+	lpCache->bg2_red = (*env)->GetFieldID(env, lpCache->clazz, "bg2_red", "S");
+	lpCache->bg2_green = (*env)->GetFieldID(env, lpCache->clazz, "bg2_green", "S");
+	lpCache->bg2_blue = (*env)->GetFieldID(env, lpCache->clazz, "bg2_blue", "S");
+	lpCache->bg3_pixel = (*env)->GetFieldID(env, lpCache->clazz, "bg3_pixel", "I");
+	lpCache->bg3_red = (*env)->GetFieldID(env, lpCache->clazz, "bg3_red", "S");
+	lpCache->bg3_green = (*env)->GetFieldID(env, lpCache->clazz, "bg3_green", "S");
+	lpCache->bg3_blue = (*env)->GetFieldID(env, lpCache->clazz, "bg3_blue", "S");
+	lpCache->bg4_pixel = (*env)->GetFieldID(env, lpCache->clazz, "bg4_pixel", "I");
+	lpCache->bg4_red = (*env)->GetFieldID(env, lpCache->clazz, "bg4_red", "S");
+	lpCache->bg4_green = (*env)->GetFieldID(env, lpCache->clazz, "bg4_green", "S");
+	lpCache->bg4_blue = (*env)->GetFieldID(env, lpCache->clazz, "bg4_blue", "S");
+	lpCache->light0_pixel = (*env)->GetFieldID(env, lpCache->clazz, "light0_pixel", "I");
+	lpCache->light0_red = (*env)->GetFieldID(env, lpCache->clazz, "light0_red", "S");
+	lpCache->light0_green = (*env)->GetFieldID(env, lpCache->clazz, "light0_green", "S");
+	lpCache->light0_blue = (*env)->GetFieldID(env, lpCache->clazz, "light0_blue", "S");
+	lpCache->light1_pixel = (*env)->GetFieldID(env, lpCache->clazz, "light1_pixel", "I");
+	lpCache->light1_red = (*env)->GetFieldID(env, lpCache->clazz, "light1_red", "S");
+	lpCache->light1_green = (*env)->GetFieldID(env, lpCache->clazz, "light1_green", "S");
+	lpCache->light1_blue = (*env)->GetFieldID(env, lpCache->clazz, "light1_blue", "S");
+	lpCache->light2_pixel = (*env)->GetFieldID(env, lpCache->clazz, "light2_pixel", "I");
+	lpCache->light2_red = (*env)->GetFieldID(env, lpCache->clazz, "light2_red", "S");
+	lpCache->light2_green = (*env)->GetFieldID(env, lpCache->clazz, "light2_green", "S");
+	lpCache->light2_blue = (*env)->GetFieldID(env, lpCache->clazz, "light2_blue", "S");
+	lpCache->light3_pixel = (*env)->GetFieldID(env, lpCache->clazz, "light3_pixel", "I");
+	lpCache->light3_red = (*env)->GetFieldID(env, lpCache->clazz, "light3_red", "S");
+	lpCache->light3_green = (*env)->GetFieldID(env, lpCache->clazz, "light3_green", "S");
+	lpCache->light3_blue = (*env)->GetFieldID(env, lpCache->clazz, "light3_blue", "S");
+	lpCache->light4_pixel = (*env)->GetFieldID(env, lpCache->clazz, "light4_pixel", "I");
+	lpCache->light4_red = (*env)->GetFieldID(env, lpCache->clazz, "light4_red", "S");
+	lpCache->light4_green = (*env)->GetFieldID(env, lpCache->clazz, "light4_green", "S");
+	lpCache->light4_blue = (*env)->GetFieldID(env, lpCache->clazz, "light4_blue", "S");
+	lpCache->dark0_pixel = (*env)->GetFieldID(env, lpCache->clazz, "dark0_pixel", "I");
+	lpCache->dark0_red = (*env)->GetFieldID(env, lpCache->clazz, "dark0_red", "S");
+	lpCache->dark0_green = (*env)->GetFieldID(env, lpCache->clazz, "dark0_green", "S");
+	lpCache->dark0_blue = (*env)->GetFieldID(env, lpCache->clazz, "dark0_blue", "S");
+	lpCache->dark1_pixel = (*env)->GetFieldID(env, lpCache->clazz, "dark1_pixel", "I");
+	lpCache->dark1_red = (*env)->GetFieldID(env, lpCache->clazz, "dark1_red", "S");
+	lpCache->dark1_green = (*env)->GetFieldID(env, lpCache->clazz, "dark1_green", "S");
+	lpCache->dark1_blue = (*env)->GetFieldID(env, lpCache->clazz, "dark1_blue", "S");
+	lpCache->dark2_pixel = (*env)->GetFieldID(env, lpCache->clazz, "dark2_pixel", "I");
+	lpCache->dark2_red = (*env)->GetFieldID(env, lpCache->clazz, "dark2_red", "S");
+	lpCache->dark2_green = (*env)->GetFieldID(env, lpCache->clazz, "dark2_green", "S");
+	lpCache->dark2_blue = (*env)->GetFieldID(env, lpCache->clazz, "dark2_blue", "S");
+	lpCache->dark3_pixel = (*env)->GetFieldID(env, lpCache->clazz, "dark3_pixel", "I");
+	lpCache->dark3_red = (*env)->GetFieldID(env, lpCache->clazz, "dark3_red", "S");
+	lpCache->dark3_green = (*env)->GetFieldID(env, lpCache->clazz, "dark3_green", "S");
+	lpCache->dark3_blue = (*env)->GetFieldID(env, lpCache->clazz, "dark3_blue", "S");
+	lpCache->dark4_pixel = (*env)->GetFieldID(env, lpCache->clazz, "dark4_pixel", "I");
+	lpCache->dark4_red = (*env)->GetFieldID(env, lpCache->clazz, "dark4_red", "S");
+	lpCache->dark4_green = (*env)->GetFieldID(env, lpCache->clazz, "dark4_green", "S");
+	lpCache->dark4_blue = (*env)->GetFieldID(env, lpCache->clazz, "dark4_blue", "S");
+	lpCache->mid0_pixel = (*env)->GetFieldID(env, lpCache->clazz, "mid0_pixel", "I");
+	lpCache->mid0_red = (*env)->GetFieldID(env, lpCache->clazz, "mid0_red", "S");
+	lpCache->mid0_green = (*env)->GetFieldID(env, lpCache->clazz, "mid0_green", "S");
+	lpCache->mid0_blue = (*env)->GetFieldID(env, lpCache->clazz, "mid0_blue", "S");
+	lpCache->mid1_pixel = (*env)->GetFieldID(env, lpCache->clazz, "mid1_pixel", "I");
+	lpCache->mid1_red = (*env)->GetFieldID(env, lpCache->clazz, "mid1_red", "S");
+	lpCache->mid1_green = (*env)->GetFieldID(env, lpCache->clazz, "mid1_green", "S");
+	lpCache->mid1_blue = (*env)->GetFieldID(env, lpCache->clazz, "mid1_blue", "S");
+	lpCache->mid2_pixel = (*env)->GetFieldID(env, lpCache->clazz, "mid2_pixel", "I");
+	lpCache->mid2_red = (*env)->GetFieldID(env, lpCache->clazz, "mid2_red", "S");
+	lpCache->mid2_green = (*env)->GetFieldID(env, lpCache->clazz, "mid2_green", "S");
+	lpCache->mid2_blue = (*env)->GetFieldID(env, lpCache->clazz, "mid2_blue", "S");
+	lpCache->mid3_pixel = (*env)->GetFieldID(env, lpCache->clazz, "mid3_pixel", "I");
+	lpCache->mid3_red = (*env)->GetFieldID(env, lpCache->clazz, "mid3_red", "S");
+	lpCache->mid3_green = (*env)->GetFieldID(env, lpCache->clazz, "mid3_green", "S");
+	lpCache->mid3_blue = (*env)->GetFieldID(env, lpCache->clazz, "mid3_blue", "S");
+	lpCache->mid4_pixel = (*env)->GetFieldID(env, lpCache->clazz, "mid4_pixel", "I");
+	lpCache->mid4_red = (*env)->GetFieldID(env, lpCache->clazz, "mid4_red", "S");
+	lpCache->mid4_green = (*env)->GetFieldID(env, lpCache->clazz, "mid4_green", "S");
+	lpCache->mid4_blue = (*env)->GetFieldID(env, lpCache->clazz, "mid4_blue", "S");
+	lpCache->text0_pixel = (*env)->GetFieldID(env, lpCache->clazz, "text0_pixel", "I");
+	lpCache->text0_red = (*env)->GetFieldID(env, lpCache->clazz, "text0_red", "S");
+	lpCache->text0_green = (*env)->GetFieldID(env, lpCache->clazz, "text0_green", "S");
+	lpCache->text0_blue = (*env)->GetFieldID(env, lpCache->clazz, "text0_blue", "S");
+	lpCache->text1_pixel = (*env)->GetFieldID(env, lpCache->clazz, "text1_pixel", "I");
+	lpCache->text1_red = (*env)->GetFieldID(env, lpCache->clazz, "text1_red", "S");
+	lpCache->text1_green = (*env)->GetFieldID(env, lpCache->clazz, "text1_green", "S");
+	lpCache->text1_blue = (*env)->GetFieldID(env, lpCache->clazz, "text1_blue", "S");
+	lpCache->text2_pixel = (*env)->GetFieldID(env, lpCache->clazz, "text2_pixel", "I");
+	lpCache->text2_red = (*env)->GetFieldID(env, lpCache->clazz, "text2_red", "S");
+	lpCache->text2_green = (*env)->GetFieldID(env, lpCache->clazz, "text2_green", "S");
+	lpCache->text2_blue = (*env)->GetFieldID(env, lpCache->clazz, "text2_blue", "S");
+	lpCache->text3_pixel = (*env)->GetFieldID(env, lpCache->clazz, "text3_pixel", "I");
+	lpCache->text3_red = (*env)->GetFieldID(env, lpCache->clazz, "text3_red", "S");
+	lpCache->text3_green = (*env)->GetFieldID(env, lpCache->clazz, "text3_green", "S");
+	lpCache->text3_blue = (*env)->GetFieldID(env, lpCache->clazz, "text3_blue", "S");
+	lpCache->text4_pixel = (*env)->GetFieldID(env, lpCache->clazz, "text4_pixel", "I");
+	lpCache->text4_red = (*env)->GetFieldID(env, lpCache->clazz, "text4_red", "S");
+	lpCache->text4_green = (*env)->GetFieldID(env, lpCache->clazz, "text4_green", "S");
+	lpCache->text4_blue = (*env)->GetFieldID(env, lpCache->clazz, "text4_blue", "S");
+	lpCache->base0_pixel = (*env)->GetFieldID(env, lpCache->clazz, "base0_pixel", "I");
+	lpCache->base0_red = (*env)->GetFieldID(env, lpCache->clazz, "base0_red", "S");
+	lpCache->base0_green = (*env)->GetFieldID(env, lpCache->clazz, "base0_green", "S");
+	lpCache->base0_blue = (*env)->GetFieldID(env, lpCache->clazz, "base0_blue", "S");
+	lpCache->base1_pixel = (*env)->GetFieldID(env, lpCache->clazz, "base1_pixel", "I");
+	lpCache->base1_red = (*env)->GetFieldID(env, lpCache->clazz, "base1_red", "S");
+	lpCache->base1_green = (*env)->GetFieldID(env, lpCache->clazz, "base1_green", "S");
+	lpCache->base1_blue = (*env)->GetFieldID(env, lpCache->clazz, "base1_blue", "S");
+	lpCache->base2_pixel = (*env)->GetFieldID(env, lpCache->clazz, "base2_pixel", "I");
+	lpCache->base2_red = (*env)->GetFieldID(env, lpCache->clazz, "base2_red", "S");
+	lpCache->base2_green = (*env)->GetFieldID(env, lpCache->clazz, "base2_green", "S");
+	lpCache->base2_blue = (*env)->GetFieldID(env, lpCache->clazz, "base2_blue", "S");
+	lpCache->base3_pixel = (*env)->GetFieldID(env, lpCache->clazz, "base3_pixel", "I");
+	lpCache->base3_red = (*env)->GetFieldID(env, lpCache->clazz, "base3_red", "S");
+	lpCache->base3_green = (*env)->GetFieldID(env, lpCache->clazz, "base3_green", "S");
+	lpCache->base3_blue = (*env)->GetFieldID(env, lpCache->clazz, "base3_blue", "S");
+	lpCache->base4_pixel = (*env)->GetFieldID(env, lpCache->clazz, "base4_pixel", "I");
+	lpCache->base4_red = (*env)->GetFieldID(env, lpCache->clazz, "base4_red", "S");
+	lpCache->base4_green = (*env)->GetFieldID(env, lpCache->clazz, "base4_green", "S");
+	lpCache->base4_blue = (*env)->GetFieldID(env, lpCache->clazz, "base4_blue", "S");
+	lpCache->black_pixel = (*env)->GetFieldID(env, lpCache->clazz, "black_pixel", "I");
+	lpCache->black_red = (*env)->GetFieldID(env, lpCache->clazz, "black_red", "S");
+	lpCache->black_green = (*env)->GetFieldID(env, lpCache->clazz, "black_green", "S");
+	lpCache->black_blue = (*env)->GetFieldID(env, lpCache->clazz, "black_blue", "S");
+	lpCache->white_pixel = (*env)->GetFieldID(env, lpCache->clazz, "white_pixel", "I");
+	lpCache->white_red = (*env)->GetFieldID(env, lpCache->clazz, "white_red", "S");
+	lpCache->white_green = (*env)->GetFieldID(env, lpCache->clazz, "white_green", "S");
+	lpCache->white_blue = (*env)->GetFieldID(env, lpCache->clazz, "white_blue", "S");
+	lpCache->font_desc = (*env)->GetFieldID(env, lpCache->clazz, "font_desc", "I");
+	lpCache->xthickness = (*env)->GetFieldID(env, lpCache->clazz, "xthickness", "I");
+	lpCache->ythickness = (*env)->GetFieldID(env, lpCache->clazz, "ythickness", "I");
+	lpCache->fg_gc0 = (*env)->GetFieldID(env, lpCache->clazz, "fg_gc0", "I");
+	lpCache->fg_gc1 = (*env)->GetFieldID(env, lpCache->clazz, "fg_gc1", "I");
+	lpCache->fg_gc2 = (*env)->GetFieldID(env, lpCache->clazz, "fg_gc2", "I");
+	lpCache->fg_gc3 = (*env)->GetFieldID(env, lpCache->clazz, "fg_gc3", "I");
+	lpCache->fg_gc4 = (*env)->GetFieldID(env, lpCache->clazz, "fg_gc4", "I");
+	lpCache->bg_gc0 = (*env)->GetFieldID(env, lpCache->clazz, "bg_gc0", "I");
+	lpCache->bg_gc1 = (*env)->GetFieldID(env, lpCache->clazz, "bg_gc1", "I");
+	lpCache->bg_gc2 = (*env)->GetFieldID(env, lpCache->clazz, "bg_gc2", "I");
+	lpCache->bg_gc3 = (*env)->GetFieldID(env, lpCache->clazz, "bg_gc3", "I");
+	lpCache->bg_gc4 = (*env)->GetFieldID(env, lpCache->clazz, "bg_gc4", "I");
+	lpCache->light_gc0 = (*env)->GetFieldID(env, lpCache->clazz, "light_gc0", "I");
+	lpCache->light_gc1 = (*env)->GetFieldID(env, lpCache->clazz, "light_gc1", "I");
+	lpCache->light_gc2 = (*env)->GetFieldID(env, lpCache->clazz, "light_gc2", "I");
+	lpCache->light_gc3 = (*env)->GetFieldID(env, lpCache->clazz, "light_gc3", "I");
+	lpCache->light_gc4 = (*env)->GetFieldID(env, lpCache->clazz, "light_gc4", "I");
+	lpCache->dark_gc0 = (*env)->GetFieldID(env, lpCache->clazz, "dark_gc0", "I");
+	lpCache->dark_gc1 = (*env)->GetFieldID(env, lpCache->clazz, "dark_gc1", "I");
+	lpCache->dark_gc2 = (*env)->GetFieldID(env, lpCache->clazz, "dark_gc2", "I");
+	lpCache->dark_gc3 = (*env)->GetFieldID(env, lpCache->clazz, "dark_gc3", "I");
+	lpCache->dark_gc4 = (*env)->GetFieldID(env, lpCache->clazz, "dark_gc4", "I");
+	lpCache->mid_gc0 = (*env)->GetFieldID(env, lpCache->clazz, "mid_gc0", "I");
+	lpCache->mid_gc1 = (*env)->GetFieldID(env, lpCache->clazz, "mid_gc1", "I");
+	lpCache->mid_gc2 = (*env)->GetFieldID(env, lpCache->clazz, "mid_gc2", "I");
+	lpCache->mid_gc3 = (*env)->GetFieldID(env, lpCache->clazz, "mid_gc3", "I");
+	lpCache->mid_gc4 = (*env)->GetFieldID(env, lpCache->clazz, "mid_gc4", "I");
+	lpCache->text_gc0 = (*env)->GetFieldID(env, lpCache->clazz, "text_gc0", "I");
+	lpCache->text_gc1 = (*env)->GetFieldID(env, lpCache->clazz, "text_gc1", "I");
+	lpCache->text_gc2 = (*env)->GetFieldID(env, lpCache->clazz, "text_gc2", "I");
+	lpCache->text_gc3 = (*env)->GetFieldID(env, lpCache->clazz, "text_gc3", "I");
+	lpCache->text_gc4 = (*env)->GetFieldID(env, lpCache->clazz, "text_gc4", "I");
+	lpCache->base_gc0 = (*env)->GetFieldID(env, lpCache->clazz, "base_gc0", "I");
+	lpCache->base_gc1 = (*env)->GetFieldID(env, lpCache->clazz, "base_gc1", "I");
+	lpCache->base_gc2 = (*env)->GetFieldID(env, lpCache->clazz, "base_gc2", "I");
+	lpCache->base_gc3 = (*env)->GetFieldID(env, lpCache->clazz, "base_gc3", "I");
+	lpCache->base_gc4 = (*env)->GetFieldID(env, lpCache->clazz, "base_gc4", "I");
+	lpCache->black_gc = (*env)->GetFieldID(env, lpCache->clazz, "black_gc", "I");
+	lpCache->white_gc = (*env)->GetFieldID(env, lpCache->clazz, "white_gc", "I");
+	lpCache->bg_pixmap0 = (*env)->GetFieldID(env, lpCache->clazz, "bg_pixmap0", "I");
+	lpCache->bg_pixmap1 = (*env)->GetFieldID(env, lpCache->clazz, "bg_pixmap1", "I");
+	lpCache->bg_pixmap2 = (*env)->GetFieldID(env, lpCache->clazz, "bg_pixmap2", "I");
+	lpCache->bg_pixmap3 = (*env)->GetFieldID(env, lpCache->clazz, "bg_pixmap3", "I");
+	lpCache->bg_pixmap4 = (*env)->GetFieldID(env, lpCache->clazz, "bg_pixmap4", "I");
+	lpCache->bg_pixmap5 = (*env)->GetFieldID(env, lpCache->clazz, "bg_pixmap5", "I");
+	lpCache->cached = 1;
+}
+
+GtkStyle *getGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpStruct)
+{
+	PGtkStyle_FID_CACHE lpCache = &GtkStyleFc;
+	if (!lpCache->cached) cacheGtkStyleFids(env, lpObject, lpCache);
+	lpStruct->fg[0].pixel = (*env)->GetIntField(env, lpObject, lpCache->fg0_pixel);
+	lpStruct->fg[0].red = (*env)->GetShortField(env, lpObject, lpCache->fg0_red);
+	lpStruct->fg[0].green = (*env)->GetShortField(env, lpObject, lpCache->fg0_green);
+	lpStruct->fg[0].blue = (*env)->GetShortField(env, lpObject, lpCache->fg0_blue);
+	lpStruct->fg[1].pixel = (*env)->GetIntField(env, lpObject, lpCache->fg1_pixel);
+	lpStruct->fg[1].red = (*env)->GetShortField(env, lpObject, lpCache->fg1_red);
+	lpStruct->fg[1].green = (*env)->GetShortField(env, lpObject, lpCache->fg1_green);
+	lpStruct->fg[1].blue = (*env)->GetShortField(env, lpObject, lpCache->fg1_blue);
+	lpStruct->fg[2].pixel = (*env)->GetIntField(env, lpObject, lpCache->fg2_pixel);
+	lpStruct->fg[2].red = (*env)->GetShortField(env, lpObject, lpCache->fg2_red);
+	lpStruct->fg[2].green = (*env)->GetShortField(env, lpObject, lpCache->fg2_green);
+	lpStruct->fg[2].blue = (*env)->GetShortField(env, lpObject, lpCache->fg2_blue);
+	lpStruct->fg[3].pixel = (*env)->GetIntField(env, lpObject, lpCache->fg3_pixel);
+	lpStruct->fg[3].red = (*env)->GetShortField(env, lpObject, lpCache->fg3_red);
+	lpStruct->fg[3].green = (*env)->GetShortField(env, lpObject, lpCache->fg3_green);
+	lpStruct->fg[3].blue = (*env)->GetShortField(env, lpObject, lpCache->fg3_blue);
+	lpStruct->fg[4].pixel = (*env)->GetIntField(env, lpObject, lpCache->fg4_pixel);
+	lpStruct->fg[4].red = (*env)->GetShortField(env, lpObject, lpCache->fg4_red);
+	lpStruct->fg[4].green = (*env)->GetShortField(env, lpObject, lpCache->fg4_green);
+	lpStruct->fg[4].blue = (*env)->GetShortField(env, lpObject, lpCache->fg4_blue);
+	lpStruct->bg[0].pixel = (*env)->GetIntField(env, lpObject, lpCache->bg0_pixel);
+	lpStruct->bg[0].red = (*env)->GetShortField(env, lpObject, lpCache->bg0_red);
+	lpStruct->bg[0].green = (*env)->GetShortField(env, lpObject, lpCache->bg0_green);
+	lpStruct->bg[0].blue = (*env)->GetShortField(env, lpObject, lpCache->bg0_blue);
+	lpStruct->bg[1].pixel = (*env)->GetIntField(env, lpObject, lpCache->bg1_pixel);
+	lpStruct->bg[1].red = (*env)->GetShortField(env, lpObject, lpCache->bg1_red);
+	lpStruct->bg[1].green = (*env)->GetShortField(env, lpObject, lpCache->bg1_green);
+	lpStruct->bg[1].blue = (*env)->GetShortField(env, lpObject, lpCache->bg1_blue);
+	lpStruct->bg[2].pixel = (*env)->GetIntField(env, lpObject, lpCache->bg2_pixel);
+	lpStruct->bg[2].red = (*env)->GetShortField(env, lpObject, lpCache->bg2_red);
+	lpStruct->bg[2].green = (*env)->GetShortField(env, lpObject, lpCache->bg2_green);
+	lpStruct->bg[2].blue = (*env)->GetShortField(env, lpObject, lpCache->bg2_blue);
+	lpStruct->bg[3].pixel = (*env)->GetIntField(env, lpObject, lpCache->bg3_pixel);
+	lpStruct->bg[3].red = (*env)->GetShortField(env, lpObject, lpCache->bg3_red);
+	lpStruct->bg[3].green = (*env)->GetShortField(env, lpObject, lpCache->bg3_green);
+	lpStruct->bg[3].blue = (*env)->GetShortField(env, lpObject, lpCache->bg3_blue);
+	lpStruct->bg[4].pixel = (*env)->GetIntField(env, lpObject, lpCache->bg4_pixel);
+	lpStruct->bg[4].red = (*env)->GetShortField(env, lpObject, lpCache->bg4_red);
+	lpStruct->bg[4].green = (*env)->GetShortField(env, lpObject, lpCache->bg4_green);
+	lpStruct->bg[4].blue = (*env)->GetShortField(env, lpObject, lpCache->bg4_blue);
+	lpStruct->light[0].pixel = (*env)->GetIntField(env, lpObject, lpCache->light0_pixel);
+	lpStruct->light[0].red = (*env)->GetShortField(env, lpObject, lpCache->light0_red);
+	lpStruct->light[0].green = (*env)->GetShortField(env, lpObject, lpCache->light0_green);
+	lpStruct->light[0].blue = (*env)->GetShortField(env, lpObject, lpCache->light0_blue);
+	lpStruct->light[1].pixel = (*env)->GetIntField(env, lpObject, lpCache->light1_pixel);
+	lpStruct->light[1].red = (*env)->GetShortField(env, lpObject, lpCache->light1_red);
+	lpStruct->light[1].green = (*env)->GetShortField(env, lpObject, lpCache->light1_green);
+	lpStruct->light[1].blue = (*env)->GetShortField(env, lpObject, lpCache->light1_blue);
+	lpStruct->light[2].pixel = (*env)->GetIntField(env, lpObject, lpCache->light2_pixel);
+	lpStruct->light[2].red = (*env)->GetShortField(env, lpObject, lpCache->light2_red);
+	lpStruct->light[2].green = (*env)->GetShortField(env, lpObject, lpCache->light2_green);
+	lpStruct->light[2].blue = (*env)->GetShortField(env, lpObject, lpCache->light2_blue);
+	lpStruct->light[3].pixel = (*env)->GetIntField(env, lpObject, lpCache->light3_pixel);
+	lpStruct->light[3].red = (*env)->GetShortField(env, lpObject, lpCache->light3_red);
+	lpStruct->light[3].green = (*env)->GetShortField(env, lpObject, lpCache->light3_green);
+	lpStruct->light[3].blue = (*env)->GetShortField(env, lpObject, lpCache->light3_blue);
+	lpStruct->light[4].pixel = (*env)->GetIntField(env, lpObject, lpCache->light4_pixel);
+	lpStruct->light[4].red = (*env)->GetShortField(env, lpObject, lpCache->light4_red);
+	lpStruct->light[4].green = (*env)->GetShortField(env, lpObject, lpCache->light4_green);
+	lpStruct->light[4].blue = (*env)->GetShortField(env, lpObject, lpCache->light4_blue);
+	lpStruct->dark[0].pixel = (*env)->GetIntField(env, lpObject, lpCache->dark0_pixel);
+	lpStruct->dark[0].red = (*env)->GetShortField(env, lpObject, lpCache->dark0_red);
+	lpStruct->dark[0].green = (*env)->GetShortField(env, lpObject, lpCache->dark0_green);
+	lpStruct->dark[0].blue = (*env)->GetShortField(env, lpObject, lpCache->dark0_blue);
+	lpStruct->dark[1].pixel = (*env)->GetIntField(env, lpObject, lpCache->dark1_pixel);
+	lpStruct->dark[1].red = (*env)->GetShortField(env, lpObject, lpCache->dark1_red);
+	lpStruct->dark[1].green = (*env)->GetShortField(env, lpObject, lpCache->dark1_green);
+	lpStruct->dark[1].blue = (*env)->GetShortField(env, lpObject, lpCache->dark1_blue);
+	lpStruct->dark[2].pixel = (*env)->GetIntField(env, lpObject, lpCache->dark2_pixel);
+	lpStruct->dark[2].red = (*env)->GetShortField(env, lpObject, lpCache->dark2_red);
+	lpStruct->dark[2].green = (*env)->GetShortField(env, lpObject, lpCache->dark2_green);
+	lpStruct->dark[2].blue = (*env)->GetShortField(env, lpObject, lpCache->dark2_blue);
+	lpStruct->dark[3].pixel = (*env)->GetIntField(env, lpObject, lpCache->dark3_pixel);
+	lpStruct->dark[3].red = (*env)->GetShortField(env, lpObject, lpCache->dark3_red);
+	lpStruct->dark[3].green = (*env)->GetShortField(env, lpObject, lpCache->dark3_green);
+	lpStruct->dark[3].blue = (*env)->GetShortField(env, lpObject, lpCache->dark3_blue);
+	lpStruct->dark[4].pixel = (*env)->GetIntField(env, lpObject, lpCache->dark4_pixel);
+	lpStruct->dark[4].red = (*env)->GetShortField(env, lpObject, lpCache->dark4_red);
+	lpStruct->dark[4].green = (*env)->GetShortField(env, lpObject, lpCache->dark4_green);
+	lpStruct->dark[4].blue = (*env)->GetShortField(env, lpObject, lpCache->dark4_blue);
+	lpStruct->mid[0].pixel = (*env)->GetIntField(env, lpObject, lpCache->mid0_pixel);
+	lpStruct->mid[0].red = (*env)->GetShortField(env, lpObject, lpCache->mid0_red);
+	lpStruct->mid[0].green = (*env)->GetShortField(env, lpObject, lpCache->mid0_green);
+	lpStruct->mid[0].blue = (*env)->GetShortField(env, lpObject, lpCache->mid0_blue);
+	lpStruct->mid[1].pixel = (*env)->GetIntField(env, lpObject, lpCache->mid1_pixel);
+	lpStruct->mid[1].red = (*env)->GetShortField(env, lpObject, lpCache->mid1_red);
+	lpStruct->mid[1].green = (*env)->GetShortField(env, lpObject, lpCache->mid1_green);
+	lpStruct->mid[1].blue = (*env)->GetShortField(env, lpObject, lpCache->mid1_blue);
+	lpStruct->mid[2].pixel = (*env)->GetIntField(env, lpObject, lpCache->mid2_pixel);
+	lpStruct->mid[2].red = (*env)->GetShortField(env, lpObject, lpCache->mid2_red);
+	lpStruct->mid[2].green = (*env)->GetShortField(env, lpObject, lpCache->mid2_green);
+	lpStruct->mid[2].blue = (*env)->GetShortField(env, lpObject, lpCache->mid2_blue);
+	lpStruct->mid[3].pixel = (*env)->GetIntField(env, lpObject, lpCache->mid3_pixel);
+	lpStruct->mid[3].red = (*env)->GetShortField(env, lpObject, lpCache->mid3_red);
+	lpStruct->mid[3].green = (*env)->GetShortField(env, lpObject, lpCache->mid3_green);
+	lpStruct->mid[3].blue = (*env)->GetShortField(env, lpObject, lpCache->mid3_blue);
+	lpStruct->mid[4].pixel = (*env)->GetIntField(env, lpObject, lpCache->mid4_pixel);
+	lpStruct->mid[4].red = (*env)->GetShortField(env, lpObject, lpCache->mid4_red);
+	lpStruct->mid[4].green = (*env)->GetShortField(env, lpObject, lpCache->mid4_green);
+	lpStruct->mid[4].blue = (*env)->GetShortField(env, lpObject, lpCache->mid4_blue);
+	lpStruct->text[0].pixel = (*env)->GetIntField(env, lpObject, lpCache->text0_pixel);
+	lpStruct->text[0].red = (*env)->GetShortField(env, lpObject, lpCache->text0_red);
+	lpStruct->text[0].green = (*env)->GetShortField(env, lpObject, lpCache->text0_green);
+	lpStruct->text[0].blue = (*env)->GetShortField(env, lpObject, lpCache->text0_blue);
+	lpStruct->text[1].pixel = (*env)->GetIntField(env, lpObject, lpCache->text1_pixel);
+	lpStruct->text[1].red = (*env)->GetShortField(env, lpObject, lpCache->text1_red);
+	lpStruct->text[1].green = (*env)->GetShortField(env, lpObject, lpCache->text1_green);
+	lpStruct->text[1].blue = (*env)->GetShortField(env, lpObject, lpCache->text1_blue);
+	lpStruct->text[2].pixel = (*env)->GetIntField(env, lpObject, lpCache->text2_pixel);
+	lpStruct->text[2].red = (*env)->GetShortField(env, lpObject, lpCache->text2_red);
+	lpStruct->text[2].green = (*env)->GetShortField(env, lpObject, lpCache->text2_green);
+	lpStruct->text[2].blue = (*env)->GetShortField(env, lpObject, lpCache->text2_blue);
+	lpStruct->text[3].pixel = (*env)->GetIntField(env, lpObject, lpCache->text3_pixel);
+	lpStruct->text[3].red = (*env)->GetShortField(env, lpObject, lpCache->text3_red);
+	lpStruct->text[3].green = (*env)->GetShortField(env, lpObject, lpCache->text3_green);
+	lpStruct->text[3].blue = (*env)->GetShortField(env, lpObject, lpCache->text3_blue);
+	lpStruct->text[4].pixel = (*env)->GetIntField(env, lpObject, lpCache->text4_pixel);
+	lpStruct->text[4].red = (*env)->GetShortField(env, lpObject, lpCache->text4_red);
+	lpStruct->text[4].green = (*env)->GetShortField(env, lpObject, lpCache->text4_green);
+	lpStruct->text[4].blue = (*env)->GetShortField(env, lpObject, lpCache->text4_blue);
+	lpStruct->base[0].pixel = (*env)->GetIntField(env, lpObject, lpCache->base0_pixel);
+	lpStruct->base[0].red = (*env)->GetShortField(env, lpObject, lpCache->base0_red);
+	lpStruct->base[0].green = (*env)->GetShortField(env, lpObject, lpCache->base0_green);
+	lpStruct->base[0].blue = (*env)->GetShortField(env, lpObject, lpCache->base0_blue);
+	lpStruct->base[1].pixel = (*env)->GetIntField(env, lpObject, lpCache->base1_pixel);
+	lpStruct->base[1].red = (*env)->GetShortField(env, lpObject, lpCache->base1_red);
+	lpStruct->base[1].green = (*env)->GetShortField(env, lpObject, lpCache->base1_green);
+	lpStruct->base[1].blue = (*env)->GetShortField(env, lpObject, lpCache->base1_blue);
+	lpStruct->base[2].pixel = (*env)->GetIntField(env, lpObject, lpCache->base2_pixel);
+	lpStruct->base[2].red = (*env)->GetShortField(env, lpObject, lpCache->base2_red);
+	lpStruct->base[2].green = (*env)->GetShortField(env, lpObject, lpCache->base2_green);
+	lpStruct->base[2].blue = (*env)->GetShortField(env, lpObject, lpCache->base2_blue);
+	lpStruct->base[3].pixel = (*env)->GetIntField(env, lpObject, lpCache->base3_pixel);
+	lpStruct->base[3].red = (*env)->GetShortField(env, lpObject, lpCache->base3_red);
+	lpStruct->base[3].green = (*env)->GetShortField(env, lpObject, lpCache->base3_green);
+	lpStruct->base[3].blue = (*env)->GetShortField(env, lpObject, lpCache->base3_blue);
+	lpStruct->base[4].pixel = (*env)->GetIntField(env, lpObject, lpCache->base4_pixel);
+	lpStruct->base[4].red = (*env)->GetShortField(env, lpObject, lpCache->base4_red);
+	lpStruct->base[4].green = (*env)->GetShortField(env, lpObject, lpCache->base4_green);
+	lpStruct->base[4].blue = (*env)->GetShortField(env, lpObject, lpCache->base4_blue);
+	lpStruct->black.pixel = (*env)->GetIntField(env, lpObject, lpCache->black_pixel);
+	lpStruct->black.red = (*env)->GetShortField(env, lpObject, lpCache->black_red);
+	lpStruct->black.green = (*env)->GetShortField(env, lpObject, lpCache->black_green);
+	lpStruct->black.blue = (*env)->GetShortField(env, lpObject, lpCache->black_blue);
+	lpStruct->white.pixel = (*env)->GetIntField(env, lpObject, lpCache->white_pixel);
+	lpStruct->white.red = (*env)->GetShortField(env, lpObject, lpCache->white_red);
+	lpStruct->white.green = (*env)->GetShortField(env, lpObject, lpCache->white_green);
+	lpStruct->white.blue = (*env)->GetShortField(env, lpObject, lpCache->white_blue);
+	lpStruct->font_desc = (PangoFontDescription *)(*env)->GetIntField(env, lpObject, lpCache->font_desc);
+	lpStruct->xthickness = (*env)->GetIntField(env, lpObject, lpCache->xthickness);
+	lpStruct->ythickness = (*env)->GetIntField(env, lpObject, lpCache->ythickness);
+	lpStruct->fg_gc[0] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->fg_gc0);
+	lpStruct->fg_gc[1] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->fg_gc1);
+	lpStruct->fg_gc[2] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->fg_gc2);
+	lpStruct->fg_gc[3] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->fg_gc3);
+	lpStruct->fg_gc[4] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->fg_gc4);
+	lpStruct->bg_gc[0] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->bg_gc0);
+	lpStruct->bg_gc[1] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->bg_gc1);
+	lpStruct->bg_gc[2] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->bg_gc2);
+	lpStruct->bg_gc[3] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->bg_gc3);
+	lpStruct->bg_gc[4] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->bg_gc4);
+	lpStruct->light_gc[0] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->light_gc0);
+	lpStruct->light_gc[1] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->light_gc1);
+	lpStruct->light_gc[2] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->light_gc2);
+	lpStruct->light_gc[3] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->light_gc3);
+	lpStruct->light_gc[4] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->light_gc4);
+	lpStruct->dark_gc[0] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->dark_gc0);
+	lpStruct->dark_gc[1] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->dark_gc1);
+	lpStruct->dark_gc[2] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->dark_gc2);
+	lpStruct->dark_gc[3] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->dark_gc3);
+	lpStruct->dark_gc[4] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->dark_gc4);
+	lpStruct->mid_gc[0] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->mid_gc0);
+	lpStruct->mid_gc[1] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->mid_gc1);
+	lpStruct->mid_gc[2] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->mid_gc2);
+	lpStruct->mid_gc[3] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->mid_gc3);
+	lpStruct->mid_gc[4] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->mid_gc4);
+	lpStruct->text_gc[0] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->text_gc0);
+	lpStruct->text_gc[1] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->text_gc1);
+	lpStruct->text_gc[2] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->text_gc2);
+	lpStruct->text_gc[3] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->text_gc3);
+	lpStruct->text_gc[4] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->text_gc4);
+	lpStruct->base_gc[0] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->base_gc0);
+	lpStruct->base_gc[1] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->base_gc1);
+	lpStruct->base_gc[2] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->base_gc2);
+	lpStruct->base_gc[3] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->base_gc3);
+	lpStruct->base_gc[4] = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->base_gc4);
+	lpStruct->black_gc = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->black_gc);
+	lpStruct->white_gc = (GdkGC *)(*env)->GetIntField(env, lpObject, lpCache->white_gc);
+	lpStruct->bg_pixmap[0] = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->bg_pixmap0);
+	lpStruct->bg_pixmap[1] = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->bg_pixmap1);
+	lpStruct->bg_pixmap[2] = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->bg_pixmap2);
+	lpStruct->bg_pixmap[3] = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->bg_pixmap3);
+	lpStruct->bg_pixmap[4] = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->bg_pixmap4);
+	lpStruct->bg_pixmap[5] = (GdkPixmap *)(*env)->GetIntField(env, lpObject, lpCache->bg_pixmap5);
+	return lpStruct;
+}
+
+void setGtkStyleFields(JNIEnv *env, jobject lpObject, GtkStyle *lpStruct)
+{
+	PGtkStyle_FID_CACHE lpCache = &GtkStyleFc;
+	if (!lpCache->cached) cacheGtkStyleFids(env, lpObject, lpCache);
+	(*env)->SetIntField(env, lpObject, lpCache->fg0_pixel, (jint)lpStruct->fg[0].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->fg0_red, (jshort)lpStruct->fg[0].red);
+	(*env)->SetShortField(env, lpObject, lpCache->fg0_green, (jshort)lpStruct->fg[0].green);
+	(*env)->SetShortField(env, lpObject, lpCache->fg0_blue, (jshort)lpStruct->fg[0].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->fg1_pixel, (jint)lpStruct->fg[1].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->fg1_red, (jshort)lpStruct->fg[1].red);
+	(*env)->SetShortField(env, lpObject, lpCache->fg1_green, (jshort)lpStruct->fg[1].green);
+	(*env)->SetShortField(env, lpObject, lpCache->fg1_blue, (jshort)lpStruct->fg[1].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->fg2_pixel, (jint)lpStruct->fg[2].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->fg2_red, (jshort)lpStruct->fg[2].red);
+	(*env)->SetShortField(env, lpObject, lpCache->fg2_green, (jshort)lpStruct->fg[2].green);
+	(*env)->SetShortField(env, lpObject, lpCache->fg2_blue, (jshort)lpStruct->fg[2].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->fg3_pixel, (jint)lpStruct->fg[3].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->fg3_red, (jshort)lpStruct->fg[3].red);
+	(*env)->SetShortField(env, lpObject, lpCache->fg3_green, (jshort)lpStruct->fg[3].green);
+	(*env)->SetShortField(env, lpObject, lpCache->fg3_blue, (jshort)lpStruct->fg[3].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->fg4_pixel, (jint)lpStruct->fg[4].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->fg4_red, (jshort)lpStruct->fg[4].red);
+	(*env)->SetShortField(env, lpObject, lpCache->fg4_green, (jshort)lpStruct->fg[4].green);
+	(*env)->SetShortField(env, lpObject, lpCache->fg4_blue, (jshort)lpStruct->fg[4].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->bg0_pixel, (jint)lpStruct->bg[0].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->bg0_red, (jshort)lpStruct->bg[0].red);
+	(*env)->SetShortField(env, lpObject, lpCache->bg0_green, (jshort)lpStruct->bg[0].green);
+	(*env)->SetShortField(env, lpObject, lpCache->bg0_blue, (jshort)lpStruct->bg[0].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->bg1_pixel, (jint)lpStruct->bg[1].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->bg1_red, (jshort)lpStruct->bg[1].red);
+	(*env)->SetShortField(env, lpObject, lpCache->bg1_green, (jshort)lpStruct->bg[1].green);
+	(*env)->SetShortField(env, lpObject, lpCache->bg1_blue, (jshort)lpStruct->bg[1].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->bg2_pixel, (jint)lpStruct->bg[2].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->bg2_red, (jshort)lpStruct->bg[2].red);
+	(*env)->SetShortField(env, lpObject, lpCache->bg2_green, (jshort)lpStruct->bg[2].green);
+	(*env)->SetShortField(env, lpObject, lpCache->bg2_blue, (jshort)lpStruct->bg[2].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->bg3_pixel, (jint)lpStruct->bg[3].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->bg3_red, (jshort)lpStruct->bg[3].red);
+	(*env)->SetShortField(env, lpObject, lpCache->bg3_green, (jshort)lpStruct->bg[3].green);
+	(*env)->SetShortField(env, lpObject, lpCache->bg3_blue, (jshort)lpStruct->bg[3].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->bg4_pixel, (jint)lpStruct->bg[4].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->bg4_red, (jshort)lpStruct->bg[4].red);
+	(*env)->SetShortField(env, lpObject, lpCache->bg4_green, (jshort)lpStruct->bg[4].green);
+	(*env)->SetShortField(env, lpObject, lpCache->bg4_blue, (jshort)lpStruct->bg[4].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->light0_pixel, (jint)lpStruct->light[0].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->light0_red, (jshort)lpStruct->light[0].red);
+	(*env)->SetShortField(env, lpObject, lpCache->light0_green, (jshort)lpStruct->light[0].green);
+	(*env)->SetShortField(env, lpObject, lpCache->light0_blue, (jshort)lpStruct->light[0].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->light1_pixel, (jint)lpStruct->light[1].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->light1_red, (jshort)lpStruct->light[1].red);
+	(*env)->SetShortField(env, lpObject, lpCache->light1_green, (jshort)lpStruct->light[1].green);
+	(*env)->SetShortField(env, lpObject, lpCache->light1_blue, (jshort)lpStruct->light[1].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->light2_pixel, (jint)lpStruct->light[2].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->light2_red, (jshort)lpStruct->light[2].red);
+	(*env)->SetShortField(env, lpObject, lpCache->light2_green, (jshort)lpStruct->light[2].green);
+	(*env)->SetShortField(env, lpObject, lpCache->light2_blue, (jshort)lpStruct->light[2].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->light3_pixel, (jint)lpStruct->light[3].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->light3_red, (jshort)lpStruct->light[3].red);
+	(*env)->SetShortField(env, lpObject, lpCache->light3_green, (jshort)lpStruct->light[3].green);
+	(*env)->SetShortField(env, lpObject, lpCache->light3_blue, (jshort)lpStruct->light[3].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->light4_pixel, (jint)lpStruct->light[4].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->light4_red, (jshort)lpStruct->light[4].red);
+	(*env)->SetShortField(env, lpObject, lpCache->light4_green, (jshort)lpStruct->light[4].green);
+	(*env)->SetShortField(env, lpObject, lpCache->light4_blue, (jshort)lpStruct->light[4].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->dark0_pixel, (jint)lpStruct->dark[0].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->dark0_red, (jshort)lpStruct->dark[0].red);
+	(*env)->SetShortField(env, lpObject, lpCache->dark0_green, (jshort)lpStruct->dark[0].green);
+	(*env)->SetShortField(env, lpObject, lpCache->dark0_blue, (jshort)lpStruct->dark[0].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->dark1_pixel, (jint)lpStruct->dark[1].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->dark1_red, (jshort)lpStruct->dark[1].red);
+	(*env)->SetShortField(env, lpObject, lpCache->dark1_green, (jshort)lpStruct->dark[1].green);
+	(*env)->SetShortField(env, lpObject, lpCache->dark1_blue, (jshort)lpStruct->dark[1].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->dark2_pixel, (jint)lpStruct->dark[2].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->dark2_red, (jshort)lpStruct->dark[2].red);
+	(*env)->SetShortField(env, lpObject, lpCache->dark2_green, (jshort)lpStruct->dark[2].green);
+	(*env)->SetShortField(env, lpObject, lpCache->dark2_blue, (jshort)lpStruct->dark[2].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->dark3_pixel, (jint)lpStruct->dark[3].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->dark3_red, (jshort)lpStruct->dark[3].red);
+	(*env)->SetShortField(env, lpObject, lpCache->dark3_green, (jshort)lpStruct->dark[3].green);
+	(*env)->SetShortField(env, lpObject, lpCache->dark3_blue, (jshort)lpStruct->dark[3].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->dark4_pixel, (jint)lpStruct->dark[4].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->dark4_red, (jshort)lpStruct->dark[4].red);
+	(*env)->SetShortField(env, lpObject, lpCache->dark4_green, (jshort)lpStruct->dark[4].green);
+	(*env)->SetShortField(env, lpObject, lpCache->dark4_blue, (jshort)lpStruct->dark[4].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->mid0_pixel, (jint)lpStruct->mid[0].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->mid0_red, (jshort)lpStruct->mid[0].red);
+	(*env)->SetShortField(env, lpObject, lpCache->mid0_green, (jshort)lpStruct->mid[0].green);
+	(*env)->SetShortField(env, lpObject, lpCache->mid0_blue, (jshort)lpStruct->mid[0].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->mid1_pixel, (jint)lpStruct->mid[1].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->mid1_red, (jshort)lpStruct->mid[1].red);
+	(*env)->SetShortField(env, lpObject, lpCache->mid1_green, (jshort)lpStruct->mid[1].green);
+	(*env)->SetShortField(env, lpObject, lpCache->mid1_blue, (jshort)lpStruct->mid[1].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->mid2_pixel, (jint)lpStruct->mid[2].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->mid2_red, (jshort)lpStruct->mid[2].red);
+	(*env)->SetShortField(env, lpObject, lpCache->mid2_green, (jshort)lpStruct->mid[2].green);
+	(*env)->SetShortField(env, lpObject, lpCache->mid2_blue, (jshort)lpStruct->mid[2].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->mid3_pixel, (jint)lpStruct->mid[3].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->mid3_red, (jshort)lpStruct->mid[3].red);
+	(*env)->SetShortField(env, lpObject, lpCache->mid3_green, (jshort)lpStruct->mid[3].green);
+	(*env)->SetShortField(env, lpObject, lpCache->mid3_blue, (jshort)lpStruct->mid[3].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->mid4_pixel, (jint)lpStruct->mid[4].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->mid4_red, (jshort)lpStruct->mid[4].red);
+	(*env)->SetShortField(env, lpObject, lpCache->mid4_green, (jshort)lpStruct->mid[4].green);
+	(*env)->SetShortField(env, lpObject, lpCache->mid4_blue, (jshort)lpStruct->mid[4].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->text0_pixel, (jint)lpStruct->text[0].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->text0_red, (jshort)lpStruct->text[0].red);
+	(*env)->SetShortField(env, lpObject, lpCache->text0_green, (jshort)lpStruct->text[0].green);
+	(*env)->SetShortField(env, lpObject, lpCache->text0_blue, (jshort)lpStruct->text[0].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->text1_pixel, (jint)lpStruct->text[1].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->text1_red, (jshort)lpStruct->text[1].red);
+	(*env)->SetShortField(env, lpObject, lpCache->text1_green, (jshort)lpStruct->text[1].green);
+	(*env)->SetShortField(env, lpObject, lpCache->text1_blue, (jshort)lpStruct->text[1].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->text2_pixel, (jint)lpStruct->text[2].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->text2_red, (jshort)lpStruct->text[2].red);
+	(*env)->SetShortField(env, lpObject, lpCache->text2_green, (jshort)lpStruct->text[2].green);
+	(*env)->SetShortField(env, lpObject, lpCache->text2_blue, (jshort)lpStruct->text[2].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->text3_pixel, (jint)lpStruct->text[3].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->text3_red, (jshort)lpStruct->text[3].red);
+	(*env)->SetShortField(env, lpObject, lpCache->text3_green, (jshort)lpStruct->text[3].green);
+	(*env)->SetShortField(env, lpObject, lpCache->text3_blue, (jshort)lpStruct->text[3].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->text4_pixel, (jint)lpStruct->text[4].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->text4_red, (jshort)lpStruct->text[4].red);
+	(*env)->SetShortField(env, lpObject, lpCache->text4_green, (jshort)lpStruct->text[4].green);
+	(*env)->SetShortField(env, lpObject, lpCache->text4_blue, (jshort)lpStruct->text[4].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->base0_pixel, (jint)lpStruct->base[0].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->base0_red, (jshort)lpStruct->base[0].red);
+	(*env)->SetShortField(env, lpObject, lpCache->base0_green, (jshort)lpStruct->base[0].green);
+	(*env)->SetShortField(env, lpObject, lpCache->base0_blue, (jshort)lpStruct->base[0].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->base1_pixel, (jint)lpStruct->base[1].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->base1_red, (jshort)lpStruct->base[1].red);
+	(*env)->SetShortField(env, lpObject, lpCache->base1_green, (jshort)lpStruct->base[1].green);
+	(*env)->SetShortField(env, lpObject, lpCache->base1_blue, (jshort)lpStruct->base[1].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->base2_pixel, (jint)lpStruct->base[2].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->base2_red, (jshort)lpStruct->base[2].red);
+	(*env)->SetShortField(env, lpObject, lpCache->base2_green, (jshort)lpStruct->base[2].green);
+	(*env)->SetShortField(env, lpObject, lpCache->base2_blue, (jshort)lpStruct->base[2].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->base3_pixel, (jint)lpStruct->base[3].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->base3_red, (jshort)lpStruct->base[3].red);
+	(*env)->SetShortField(env, lpObject, lpCache->base3_green, (jshort)lpStruct->base[3].green);
+	(*env)->SetShortField(env, lpObject, lpCache->base3_blue, (jshort)lpStruct->base[3].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->base4_pixel, (jint)lpStruct->base[4].pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->base4_red, (jshort)lpStruct->base[4].red);
+	(*env)->SetShortField(env, lpObject, lpCache->base4_green, (jshort)lpStruct->base[4].green);
+	(*env)->SetShortField(env, lpObject, lpCache->base4_blue, (jshort)lpStruct->base[4].blue);
+	(*env)->SetIntField(env, lpObject, lpCache->black_pixel, (jint)lpStruct->black.pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->black_red, (jshort)lpStruct->black.red);
+	(*env)->SetShortField(env, lpObject, lpCache->black_green, (jshort)lpStruct->black.green);
+	(*env)->SetShortField(env, lpObject, lpCache->black_blue, (jshort)lpStruct->black.blue);
+	(*env)->SetIntField(env, lpObject, lpCache->white_pixel, (jint)lpStruct->white.pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->white_red, (jshort)lpStruct->white.red);
+	(*env)->SetShortField(env, lpObject, lpCache->white_green, (jshort)lpStruct->white.green);
+	(*env)->SetShortField(env, lpObject, lpCache->white_blue, (jshort)lpStruct->white.blue);
+	(*env)->SetIntField(env, lpObject, lpCache->font_desc, (jint)lpStruct->font_desc);
+	(*env)->SetIntField(env, lpObject, lpCache->xthickness, (jint)lpStruct->xthickness);
+	(*env)->SetIntField(env, lpObject, lpCache->ythickness, (jint)lpStruct->ythickness);
+	(*env)->SetIntField(env, lpObject, lpCache->fg_gc0, (jint)lpStruct->fg_gc[0]);
+	(*env)->SetIntField(env, lpObject, lpCache->fg_gc1, (jint)lpStruct->fg_gc[1]);
+	(*env)->SetIntField(env, lpObject, lpCache->fg_gc2, (jint)lpStruct->fg_gc[2]);
+	(*env)->SetIntField(env, lpObject, lpCache->fg_gc3, (jint)lpStruct->fg_gc[3]);
+	(*env)->SetIntField(env, lpObject, lpCache->fg_gc4, (jint)lpStruct->fg_gc[4]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_gc0, (jint)lpStruct->bg_gc[0]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_gc1, (jint)lpStruct->bg_gc[1]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_gc2, (jint)lpStruct->bg_gc[2]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_gc3, (jint)lpStruct->bg_gc[3]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_gc4, (jint)lpStruct->bg_gc[4]);
+	(*env)->SetIntField(env, lpObject, lpCache->light_gc0, (jint)lpStruct->light_gc[0]);
+	(*env)->SetIntField(env, lpObject, lpCache->light_gc1, (jint)lpStruct->light_gc[1]);
+	(*env)->SetIntField(env, lpObject, lpCache->light_gc2, (jint)lpStruct->light_gc[2]);
+	(*env)->SetIntField(env, lpObject, lpCache->light_gc3, (jint)lpStruct->light_gc[3]);
+	(*env)->SetIntField(env, lpObject, lpCache->light_gc4, (jint)lpStruct->light_gc[4]);
+	(*env)->SetIntField(env, lpObject, lpCache->dark_gc0, (jint)lpStruct->dark_gc[0]);
+	(*env)->SetIntField(env, lpObject, lpCache->dark_gc1, (jint)lpStruct->dark_gc[1]);
+	(*env)->SetIntField(env, lpObject, lpCache->dark_gc2, (jint)lpStruct->dark_gc[2]);
+	(*env)->SetIntField(env, lpObject, lpCache->dark_gc3, (jint)lpStruct->dark_gc[3]);
+	(*env)->SetIntField(env, lpObject, lpCache->dark_gc4, (jint)lpStruct->dark_gc[4]);
+	(*env)->SetIntField(env, lpObject, lpCache->mid_gc0, (jint)lpStruct->mid_gc[0]);
+	(*env)->SetIntField(env, lpObject, lpCache->mid_gc1, (jint)lpStruct->mid_gc[1]);
+	(*env)->SetIntField(env, lpObject, lpCache->mid_gc2, (jint)lpStruct->mid_gc[2]);
+	(*env)->SetIntField(env, lpObject, lpCache->mid_gc3, (jint)lpStruct->mid_gc[3]);
+	(*env)->SetIntField(env, lpObject, lpCache->mid_gc4, (jint)lpStruct->mid_gc[4]);
+	(*env)->SetIntField(env, lpObject, lpCache->text_gc0, (jint)lpStruct->text_gc[0]);
+	(*env)->SetIntField(env, lpObject, lpCache->text_gc1, (jint)lpStruct->text_gc[1]);
+	(*env)->SetIntField(env, lpObject, lpCache->text_gc2, (jint)lpStruct->text_gc[2]);
+	(*env)->SetIntField(env, lpObject, lpCache->text_gc3, (jint)lpStruct->text_gc[3]);
+	(*env)->SetIntField(env, lpObject, lpCache->text_gc4, (jint)lpStruct->text_gc[4]);
+	(*env)->SetIntField(env, lpObject, lpCache->base_gc0, (jint)lpStruct->base_gc[0]);
+	(*env)->SetIntField(env, lpObject, lpCache->base_gc1, (jint)lpStruct->base_gc[1]);
+	(*env)->SetIntField(env, lpObject, lpCache->base_gc2, (jint)lpStruct->base_gc[2]);
+	(*env)->SetIntField(env, lpObject, lpCache->base_gc3, (jint)lpStruct->base_gc[3]);
+	(*env)->SetIntField(env, lpObject, lpCache->base_gc4, (jint)lpStruct->base_gc[4]);
+	(*env)->SetIntField(env, lpObject, lpCache->black_gc, (jint)lpStruct->black_gc);
+	(*env)->SetIntField(env, lpObject, lpCache->white_gc, (jint)lpStruct->white_gc);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_pixmap0, (jint)lpStruct->bg_pixmap[0]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_pixmap1, (jint)lpStruct->bg_pixmap[1]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_pixmap2, (jint)lpStruct->bg_pixmap[2]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_pixmap3, (jint)lpStruct->bg_pixmap[3]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_pixmap4, (jint)lpStruct->bg_pixmap[4]);
+	(*env)->SetIntField(env, lpObject, lpCache->bg_pixmap5, (jint)lpStruct->bg_pixmap[5]);
+}
+
+typedef struct GtkTargetEntry_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID target, flags, info;
+} GtkTargetEntry_FID_CACHE;
+typedef GtkTargetEntry_FID_CACHE *PGtkTargetEntry_FID_CACHE;
+
+GtkTargetEntry_FID_CACHE GtkTargetEntryFc;
 
 void cacheGtkTargetEntryFids(JNIEnv *env, jobject lpObject, PGtkTargetEntry_FID_CACHE lpCache)
 {
@@ -1556,19 +1678,22 @@ void cacheGtkTargetEntryFids(JNIEnv *env, jobject lpObject, PGtkTargetEntry_FID_
 	lpCache->cached = 1;
 }
 
-GtkTargetEntry* getGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct, PGtkTargetEntry_FID_CACHE lpCache)
+GtkTargetEntry *getGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct)
 {
+	PGtkTargetEntry_FID_CACHE lpCache = &GtkTargetEntryFc;
 	if (!lpCache->cached) cacheGtkTargetEntryFids(env, lpObject, lpCache);
-	lpStruct->target = (gchar*)(*env)->GetIntField(env, lpObject, lpCache->target);
-	lpStruct->flags = (*env)->GetIntField(env, lpObject, lpCache->flags);
-	lpStruct->info = (*env)->GetIntField(env, lpObject, lpCache->info);
+	lpStruct->target = (gchar *)(*env)->GetIntField(env, lpObject, lpCache->target);
+	lpStruct->flags = (guint)(*env)->GetIntField(env, lpObject, lpCache->flags);
+	lpStruct->info = (guint)(*env)->GetIntField(env, lpObject, lpCache->info);
 	return lpStruct;
 }
 
-void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct, PGtkTargetEntry_FID_CACHE lpCache)
+void setGtkTargetEntryFields(JNIEnv *env, jobject lpObject, GtkTargetEntry *lpStruct)
 {
+	PGtkTargetEntry_FID_CACHE lpCache = &GtkTargetEntryFc;
 	if (!lpCache->cached) cacheGtkTargetEntryFids(env, lpObject, lpCache);
 	(*env)->SetIntField(env, lpObject, lpCache->target, (jint)lpStruct->target);
 	(*env)->SetIntField(env, lpObject, lpCache->flags, (jint)lpStruct->flags);
 	(*env)->SetIntField(env, lpObject, lpCache->info, (jint)lpStruct->info);
 }
+

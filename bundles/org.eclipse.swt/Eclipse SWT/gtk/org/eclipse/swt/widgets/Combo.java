@@ -278,7 +278,8 @@ void createHandle (int index) {
 	OS.gtk_fixed_set_has_window (fixedHandle, true);
 	handle = OS.gtk_combo_new ();
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	GtkCombo combo = new GtkCombo (handle);
+	GtkCombo combo = new GtkCombo ();
+	OS.memmove (combo, handle);
 	entryHandle = combo.entry;
 	listHandle = combo.list;
 	boolean editable = (style & SWT.READ_ONLY) == 0;
@@ -485,10 +486,10 @@ public String [] getItems () {
  */
 public Point getSelection () {
 	checkWidget ();
-/*	GtkEditable editable = new GtkEditable();
-	OS.memmove (editable, entryHandle, GtkEditable.sizeof);*/
-	/* FIXME */
-	return new Point (0,0);
+	int [] start = new int [1];
+	int [] end = new int [1];
+	OS.gtk_editable_get_selection_bounds (entryHandle, start, end);
+	return new Point(start [0], end [0]);
 }
 
 /**

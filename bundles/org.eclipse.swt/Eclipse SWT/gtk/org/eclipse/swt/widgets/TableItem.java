@@ -135,17 +135,18 @@ public Color getBackground () {
 public Rectangle getBounds (int index) {
 	checkWidget();
 	int CELL_SPACING=1;
-	GtkCList table = new GtkCList(parent.handle);
-	int columnHandle = table.column;
+	int clist = parent.handle;
+	int columnHandle = OS.GTK_CLIST_COLUMN (clist);
 	columnHandle= columnHandle+index*GtkCListColumn.sizeof;
-	GtkCListColumn column=new GtkCListColumn(columnHandle);
-	double haj = OS.gtk_adjustment_get_value(table.hadjustment);
-	double vaj = OS.gtk_adjustment_get_value(table.vadjustment);
-	int x=(short)column.area_x+table.hoffset;
+	GtkCListColumn column=new GtkCListColumn();
+	OS.memmove(column, columnHandle, GtkCListColumn.sizeof);
+	double haj = OS.gtk_adjustment_get_value(OS.GTK_CLIST_HADJUSTMENT (clist));
+	double vaj = OS.gtk_adjustment_get_value(OS.GTK_CLIST_VADJUSTMENT (clist));
+	int x=(short)column.area_x+OS.GTK_CLIST_HOFFSET(clist);
 	int width=(short)column.area_width;
 	int height=parent.getItemHeight();
 	int row=parent.indexOf(this);
-	int y=table.column_title_area_height+height*row+(row+2)*CELL_SPACING-(int)vaj;
+	int y=OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT(clist)+height*row+(row+2)*CELL_SPACING-(int)vaj;
 	return new Rectangle (x, y, width, height);
 }
 
@@ -461,11 +462,10 @@ public void setImage (int index, Image image) {
 		byte [] spacing = new byte [] {2};
 //		OS.gtk_clist_get_pixtext (clist, row, index, null, spacing, null, null);
 		OS.gtk_clist_set_pixtext (clist, row, index, buffer, spacing [0], pixmap, mask);
-		if (parent.imageHeight == 0) {		
+		if (parent.imageHeight == 0) {	
 			int [] width = new int [1], height = new int [1];
 			OS.gdk_drawable_get_size (pixmap, width, height);
-			GtkCList widget = new GtkCList (clist);
-			if (height [0] > widget.row_height) {
+			if (height [0] > OS.GTK_CLIST_ROW_HEIGHT (parent.handle)) {
 				parent.imageHeight = height [0];
 				OS.gtk_widget_realize (clist);
 				OS.gtk_clist_set_row_height (clist, height [0]);

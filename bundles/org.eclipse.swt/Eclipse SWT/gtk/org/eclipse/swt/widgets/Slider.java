@@ -216,7 +216,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public int getIncrement () {
 	checkWidget ();
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.step_increment;
 }
 
@@ -233,7 +234,8 @@ public int getIncrement () {
 public int getMaximum () {
 	checkWidget ();
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.upper;
 }
 
@@ -250,7 +252,8 @@ public int getMaximum () {
 public int getMinimum () {
 	checkWidget ();
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.lower;
 }
 
@@ -269,7 +272,8 @@ public int getMinimum () {
 public int getPageIncrement () {
 	checkWidget ();
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.page_increment;
 }
 
@@ -286,7 +290,8 @@ public int getPageIncrement () {
 public int getSelection () {
 	checkWidget ();
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.value;
 }
 
@@ -304,7 +309,8 @@ public int getSelection () {
 public int getThumb () {
 	checkWidget ();
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	return (int) adjustment.page_size;
 }
 
@@ -355,7 +361,8 @@ public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	adjustment.step_increment = (double) value;
 	OS.memmove (hAdjustment, adjustment);
 	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
@@ -379,7 +386,8 @@ public void setMaximum (int value) {
 	checkWidget ();
 	if (value < 0) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	adjustment.upper = (double) value;
 	OS.memmove (hAdjustment, adjustment);
 	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
@@ -403,7 +411,8 @@ public void setMinimum (int value) {
 	checkWidget ();
 	if (value < 0) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	adjustment.lower = (double) value;
 	OS.memmove (hAdjustment, adjustment);
 	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
@@ -428,7 +437,8 @@ public void setPageIncrement (int value) {
 	checkWidget ();
 	if (value < 1) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	adjustment.page_increment = (double) value;
 	OS.memmove (hAdjustment, adjustment);
 	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
@@ -475,7 +485,8 @@ public void setThumb (int value) {
 	checkWidget ();
 	if (value < 1) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	adjustment.page_size = (double) value;
 	OS.memmove (hAdjustment, adjustment);
 	OS.gtk_signal_handler_block_by_data (hAdjustment, SWT.Selection);
@@ -514,7 +525,8 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
-	GtkAdjustment adjustment = new GtkAdjustment (hAdjustment);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
 	adjustment.value = (double) selection;
 	adjustment.lower = (double) minimum;
 	adjustment.upper = (double) maximum;
