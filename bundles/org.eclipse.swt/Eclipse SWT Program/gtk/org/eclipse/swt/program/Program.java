@@ -86,7 +86,6 @@ static Program findProgram(Display display, String extension) {
 	if (extension == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length() == 0) return null;
 	if (extension.charAt(0) != '.') extension = "." + extension;
-	String command = null;
 	String name = null;
 	int desktop = getDesktop(display);
 	Hashtable mimeInfo = null;
@@ -176,14 +175,9 @@ static Program[] getPrograms(Display display) {
 			
 	/* Create a list of programs with commands. */
 	Vector programs = new Vector();
-	boolean[] gnomeExpectUri = null;
-	if (desktop == DESKTOP_GNOME) gnomeExpectUri = new boolean[1];
 	Enumeration keys = mimeInfo.keys();
 	while (keys.hasMoreElements()) {
 		String mimeType = (String)keys.nextElement();
-		Vector mimeExts = (Vector)mimeInfo.get(mimeType);
-		String extension = "";
-		if (mimeExts.size() > 0) extension = (String)mimeExts.elementAt(0);
 		Program program = null;
 		if (desktop == DESKTOP_GNOME) program = gnome_getProgram(display, mimeType);
 		if (program != null) programs.addElement(program);
