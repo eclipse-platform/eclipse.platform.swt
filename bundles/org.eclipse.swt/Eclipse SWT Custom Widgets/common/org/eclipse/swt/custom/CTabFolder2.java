@@ -60,14 +60,14 @@ public class CTabFolder2 extends Composite {
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginWidth = 3;
+ 	public int marginWidth = 0;
 	/**
 	 * marginHeight specifies the number of pixels of vertical margin
 	 * that will be placed along the top and bottom edges of the form.
 	 *
 	 * The default value is 0.
 	 */
- 	public int marginHeight = 3;
+ 	public int marginHeight = 0;
 	
  	/**
 	 * A multiple of the tab height that specifies the minimum width to which a tab 
@@ -120,18 +120,23 @@ public class CTabFolder2 extends Composite {
 	static Color border2Color;
 	static Color border3Color;
 	
-	// close and chevron buttons
+	// close, expand and chevron buttons
 	boolean showClose = false;
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
+	int closeImageState = NORMAL;
+	
 	Rectangle chevronRect = new Rectangle(0, 0, 0, 0);
+	int chevronImageState = NORMAL;
+	
 	boolean showExpand = false;
 	Rectangle expandRect = new Rectangle(0, 0, 0, 0);
 	boolean expanded = true;
+	int expandImageState = NORMAL;
 	
 	boolean tipShowing;
 	
 	// borders and shapes
-	boolean showBorder =  true;
+	boolean showHighlight =  false;
 	int borderLeft = 0;
 	int borderRight = 0;
 	int borderTop = 0;
@@ -154,7 +159,8 @@ public class CTabFolder2 extends Composite {
 	// internal constants
 	static final int DEFAULT_WIDTH = 64;
 	static final int DEFAULT_HEIGHT = 64;
-	static final int SELECTION_BORDER = 2;
+	static final int HIGHLIGHT_HEADER = 5;
+	static final int HIGHLIGHT_MARGIN = 3;
 	static final int CURVE_WIDTH = 50;
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
@@ -174,6 +180,17 @@ public class CTabFolder2 extends Composite {
 	static final int BORDER3_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
 	static final int FOREGROUND = SWT.COLOR_TITLE_INACTIVE_FOREGROUND;
 	static final int BACKGROUND = SWT.COLOR_TITLE_INACTIVE_BACKGROUND;
+	
+	static final int NORMAL = 1;
+	static final int HOT = 2;
+	static final int SELECTED = 3;
+	static final RGB CLOSE_BORDER = new RGB(221, 106, 106);
+	static final RGB CLOSE_FILL = new RGB(214, 195, 195);
+	static final RGB EXPAND_BORDER = new RGB(114, 106, 221);
+	static final RGB EXPAND_FILL = new RGB(199, 196, 242);
+	static final RGB CHEVRON_BORDER = new RGB(111, 220, 106);
+	static final RGB CHEVRON_FILL = new RGB(199, 242, 196);
+	
 
 /**
  * Constructs a new instance of this class given its parent
@@ -210,15 +227,10 @@ public CTabFolder2(Composite parent, int style) {
 	super(parent, checkStyle (style));
 	onBottom = (getStyle() & SWT.BOTTOM) != 0;
 	single = (style & SWT.SINGLE) != 0;
-	if (onBottom) {
-		borderRight = borderTop = (style & SWT.BORDER) != 0 ? ((style & SWT.FLAT) != 0 ? 1 : 3) : 0;
-		borderLeft = (style & SWT.BORDER) != 0 ? 1 : 0;
-		borderBottom = 0;
-	} else {
-		borderRight = borderBottom = (style & SWT.BORDER) != 0 ? ((style & SWT.FLAT) != 0 ? 1 : 3) : 0;
-		borderLeft = (style & SWT.BORDER) != 0 ? 1 : 0;
-		borderTop = 0;
-	}
+	borderLeft = (style & SWT.BORDER) != 0 ? ((style & SWT.FLAT) != 0 ? 1 : 1 + HIGHLIGHT_MARGIN) : 0;
+	borderRight = (style & SWT.BORDER) != 0 ? ((style & SWT.FLAT) != 0 ? 1 : 3 + HIGHLIGHT_MARGIN) : 0;
+	borderTop = onBottom ? borderLeft : 0;
+	borderBottom = onBottom ? 0 : borderRight;
 	
 	//set up default colors
 	Display display = getDisplay();
@@ -236,16 +248,17 @@ public CTabFolder2(Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose:                onDispose(); break;
-				case SWT.Paint:                     onPaint(event);	break;
-				case SWT.Resize:                   onResize();	break;
+				case SWT.Dispose:          onDispose(); break;
+				case SWT.Paint:            onPaint(event);	break;
+				case SWT.Resize:           onResize();	break;
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
-				case SWT.MouseDown:          onMouseDown(event);	break;
-				case SWT.MouseHover:	       onMouseHover(event); break;
-				case SWT.MouseUp:               onMouseUp(event); break;
-				case SWT.FocusIn:                 onFocus(event);	break;
-				case SWT.FocusOut:              onFocus(event);	break;
-				case SWT.Traverse:                onTraverse(event); break;
+				case SWT.MouseDown:        onMouseDown(event);	break;
+				case SWT.MouseHover:       onMouseHover(event); break;
+				case SWT.MouseMove:        onMouseMove(event); break;
+				case SWT.MouseUp:          onMouseUp(event); break;
+				case SWT.FocusIn:          onFocus(event);	break;
+				case SWT.FocusOut:         onFocus(event);	break;
+				case SWT.Traverse:         onTraverse(event); break;
 			}
 		}
 	};
@@ -257,6 +270,7 @@ public CTabFolder2(Composite parent, int style) {
 		SWT.MouseDoubleClick, 
 		SWT.MouseDown, 
 		SWT.MouseHover, 
+		SWT.MouseMove,
 		SWT.MouseUp,
 		SWT.FocusIn, 
 		SWT.FocusOut, 
@@ -367,7 +381,6 @@ public void addCTabFolderExpandListener(CTabFolderExpandListener listener) {
 	if (expandListeners.length == 0) {
 		// display expand button
 		showExpand = true;
-		setButtonBounds();
 		updateItems();
 		redraw();
 	}
@@ -497,14 +510,19 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	int trimX = x - marginWidth - borderLeft;
-	int trimY = y - marginHeight - tabHeight - borderTop;
-	if (onBottom) {
-		trimY = y - marginHeight - borderTop;
+	if (!expanded) {
+		int trimX = x - borderLeft;
+		int trimY = onBottom ? y - borderTop : y - HIGHLIGHT_HEADER - tabHeight - borderTop;
+		int trimWidth = width + borderLeft + borderRight;
+		int trimHeight = borderTop + borderBottom + tabHeight + HIGHLIGHT_HEADER;
+		return new Rectangle (trimX, trimY, trimWidth, trimHeight);
+	} else {
+		int trimX = x - marginWidth - borderLeft;
+		int trimY = onBottom ? y - marginHeight - borderTop : y - marginHeight - HIGHLIGHT_HEADER - tabHeight - borderTop;
+		int trimWidth = width + borderLeft + borderRight + 2*marginWidth;
+		int trimHeight = height + borderTop + borderBottom + 2*marginHeight + tabHeight + HIGHLIGHT_HEADER;
+		return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 	}
-	int trimWidth = width + borderLeft + borderRight + 2*marginWidth;
-	int trimHeight = height + borderTop + borderBottom + 2*marginHeight + tabHeight;
-	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
 void createItem (CTabItem2 item, int index) {
 	if (0 > index || index > getItemCount ()){ 
@@ -530,7 +548,7 @@ void createItem (CTabItem2 item, int index) {
 		updateItems();
 		// redraw tabs if new item visible
 		if (index >= topTabIndex && 
-		    item.x+item.width <= getSize().x-borderRight-closeRect.width-chevronRect.width){
+		    item.x+item.width <= getSize().x - borderRight - closeRect.width - expandRect.width - chevronRect.width){
 			redraw();
 		}
 	}
@@ -584,22 +602,22 @@ void drawBorder(GC gc) {
 	// Draw selection border across all tabs
 	if (selectedIndex == -1) { // no selected item
 		int x = borderLeft;
-		int y = onBottom ? size.y - borderBottom - tabHeight : tabHeight - SELECTION_BORDER + 1;
+		int y = onBottom ? size.y - borderBottom - tabHeight - HIGHLIGHT_HEADER : borderTop + tabHeight + 1;
 		int width = size.x - borderLeft - borderRight;
-		int height = SELECTION_BORDER - 1;
+		int height = HIGHLIGHT_HEADER - 1;
 		gc.setBackground(getBackground());
 		gc.fillRectangle(x, y, width, height);
 		x = borderLeft;
-		y = (onBottom) ? size.y - borderBottom - tabHeight + SELECTION_BORDER - 1 : borderTop + tabHeight - SELECTION_BORDER;
+		y = (onBottom) ? size.y - borderBottom - tabHeight - 1 : borderTop + tabHeight;
 		gc.setForeground(border1Color);
 		gc.drawLine(x, y, x + width, y);
 	} else { //selected item
 		int x = borderLeft;
-		int y = onBottom ? size.y - borderBottom - tabHeight : borderTop + tabHeight - SELECTION_BORDER + 1;
+		int y = onBottom ? size.y - borderBottom - tabHeight - HIGHLIGHT_HEADER : borderTop + tabHeight + 1;
 		int width = size.x - borderLeft - borderRight;
-		int height = SELECTION_BORDER - 1;
+		int height = HIGHLIGHT_HEADER - 1;
 		int[] shape = new int[] {x,y, x+width,y, x+width,y+height, x,y+height};
-		drawSelectionBackground(gc, y, shape);
+		drawSelectionBackground(gc, shape);
 
 		CTabItem2 item = items[selectedIndex];
 		int itemX = item.x;
@@ -612,37 +630,35 @@ void drawBorder(GC gc) {
 			int[] right = curve;
 			shape = new int[left.length + right.length + 8];
 			int index = 0;
-			
 			shape[index++] = Math.max(0, borderLeft - 1);
-			shape[index++] = itemY + SELECTION_BORDER - 1;
+			shape[index++] = itemY - 1;
 			shape[index++] = itemX;
-			shape[index++] = itemY + SELECTION_BORDER - 1;
-			
+			shape[index++] = itemY - 1;
 			for (int i = 0; i < left.length/2; i++) {
-				shape[index++]=itemX + left[2*i];
-				shape[index++]=itemY + itemH + left[2*i+1]-1;
+				shape[index++] = itemX + left[2*i];
+				shape[index++] = itemY + itemH + left[2*i+1]-1;
 			}
 			for (int i = 0; i < right.length/2; i++) {
-				shape[index++]=itemX + itemW - extra + right[2*i];
-				shape[index++]=itemY + right[2*i+1] - 2;
-			}	
+				shape[index++] = itemX + itemW - extra + right[2*i];
+				shape[index++] = itemY + right[2*i+1] - 2;
+			}
 			int temp = 0;
-			int rightTabEdge = size.x - borderRight - chevronRect.width - closeRect.width - 1;
+			int rightTabEdge = size.x - borderRight - chevronRect.width - expandRect.width - closeRect.width - 1;
 			for (int i = 0; i < shape.length/2; i++) {
 				if (shape[2*i] > rightTabEdge) {
 					if (temp == 0 && i > 0) {
 						temp = shape[2*i-1];
 					} else {
-						temp = itemY + SELECTION_BORDER - 1;
+						temp = itemY - 1;
 					}
 					shape[2*i] = rightTabEdge;
 					shape[2*i+1] = temp;
 				}
 			}
 			shape[index++] = rightTabEdge;
-			shape[index++] = itemY + SELECTION_BORDER - 1;
+			shape[index++] = itemY - 1;
 			shape[index++] = size.x - borderRight;
-			shape[index++] = itemY + SELECTION_BORDER - 1;
+			shape[index++] = itemY - 1;
 			
 		} else {
 			int[] left = TOP_LEFT_CORNER;
@@ -651,54 +667,66 @@ void drawBorder(GC gc) {
 			int index = 0;
 			
 			shape[index++] = Math.max(0, borderLeft - 1);
-			shape[index++] = itemY + itemH - SELECTION_BORDER;
+			shape[index++] = itemY + itemH;
 			shape[index++] = itemX;
-			shape[index++] = itemY + itemH - SELECTION_BORDER;
+			shape[index++] = itemY + itemH;
 			
 			for (int i = 0; i < left.length/2; i++) {
-				shape[index++]=itemX + left[2*i];
-				shape[index++]=itemY + left[2*i+1];
+				shape[index++] = itemX + left[2*i];
+				shape[index++] = itemY + left[2*i+1];
 			}
 			for (int i = 0; i < right.length/2; i++) {
-				shape[index++]=itemX + itemW - extra + right[2*i];
-				shape[index++]=itemY + right[2*i+1];
+				shape[index++] = itemX + itemW - extra + right[2*i];
+				shape[index++] = itemY + right[2*i+1];
 			}
 				
 			int temp = 0;
-			int rightTabEdge = size.x - borderRight - chevronRect.width - closeRect.width - 1;
+			int rightTabEdge = size.x - borderRight - chevronRect.width - expandRect.width - closeRect.width - 1;
 			for (int i = 0; i < shape.length/2; i++) {
 				if (shape[2*i] > rightTabEdge) {
 					if (temp == 0 && i > 0) {
 						temp = shape[2*i-1];
 					} else {
-						temp = itemY + itemH - SELECTION_BORDER;
+						temp = itemY + itemH;
 					}
 					shape[2*i] = rightTabEdge;
 					shape[2*i+1] = temp;
 				}
 			}
 			shape[index++] = rightTabEdge;
-			shape[index++] = itemY + item.height - SELECTION_BORDER;
+			shape[index++] = itemY + itemH;
 			shape[index++] = size.x - borderRight;
-			shape[index++] = itemY + item.height - SELECTION_BORDER;
+			shape[index++] = itemY + itemH;
 		}
 		gc.setForeground(border1Color);
 		gc.drawPolyline(shape);
 	}
 	if (borderLeft == 0) return;
 			
-	//draw border around outside
+	//draw 1 pixel border around outside for flat look
+	if (borderLeft == 1) {
+		drawFlatBorder(gc);
+	} else {
+		draw3DBorder(gc);
+	}
+}
+void drawFlatBorder(GC gc) {
+	Point size = getSize();
 	Color color = border1Color;
 	gc.setForeground(color);
 	if (onBottom) {
-		gc.drawLine(0, borderTop - 1, 0, size.y - tabHeight - borderBottom + SELECTION_BORDER - 1); // left
-		gc.drawLine(size.x - borderRight, borderTop - 1, size.x - borderRight, size.y - tabHeight - borderBottom + SELECTION_BORDER - 1); // right
-		gc.drawLine(0, borderTop - 1, size.x - borderRight, borderTop - 1); // top
+		int x1 = 0;
+		int x2 = size.x - borderRight;
+		int y1 = borderTop - 1;
+		int y2 = size.y - tabHeight - borderBottom - 1;
+		gc.drawLine(x1, y1, x1, y2); // left
+		gc.drawLine(x2, y1, x2, y2); // right
+		gc.drawLine(x1, y1, x2, y1); // top
 		if (single) {
-			int x = 0;
-			int y = size.y - borderBottom - tabHeight + SELECTION_BORDER;
+			int x = Math.max(0, borderLeft - 1);
+			int y = size.y - borderBottom - tabHeight;
 			int width = size.x - borderLeft - borderRight + 1;
-			int height = tabHeight - SELECTION_BORDER - 1;
+			int height = tabHeight - 1;
 			int[] shape = new int[BOTTOM_LEFT_OUTSIDE_CORNER.length + BOTTOM_RIGHT_OUTSIDE_CORNER.length + 4];
 			int index = 0;
 			shape[index++] = x;
@@ -718,14 +746,18 @@ void drawBorder(GC gc) {
 			gc.drawPolyline(shape);
 		}
 	} else {
-		gc.drawLine(borderLeft - 1, borderTop + tabHeight - SELECTION_BORDER, borderLeft - 1, size.y - borderBottom); // left
-		gc.drawLine(size.x - borderRight, borderTop + tabHeight - SELECTION_BORDER, size.x - borderRight, size.y - borderBottom); // right
-		gc.drawLine(borderLeft - 1, size.y - borderBottom, size.x - borderRight, size.y - borderBottom); //bottom
+		int x1 = borderLeft - 1;
+		int x2 = size.x - borderRight;
+		int y1 = borderTop + tabHeight;
+		int y2 = size.y - borderBottom;
+		gc.drawLine(x1, y1, x1, y2); // left
+		gc.drawLine(x2, y1, x2, y2); // right
+		gc.drawLine(x1, y2, x2, y2); //bottom
 		if (single) {
-			int x = 0;
+			int x = Math.max(0, borderLeft - 1);
 			int y = borderTop;
 			int width = size.x - borderLeft - borderRight + 1;
-			int height = tabHeight - SELECTION_BORDER - 1;
+			int height = tabHeight - 1;
 			int[] shape = new int[TOP_LEFT_OUTSIDE_CORNER.length + TOP_RIGHT_OUTSIDE_CORNER.length + 4];
 			int index = 0;
 			shape[index++] = x;
@@ -745,120 +777,383 @@ void drawBorder(GC gc) {
 			gc.drawPolyline(shape);
 		}
 	}
-	
-	if (borderRight == 1) return;
-	
-	// Draw drop shadow
-	if (onBottom) {
-		color = getParent().getBackground();
-		gc.setForeground(color);
-		
-		gc.drawLine(0, 0, 1, 0);//top left
-		gc.drawPoint(0, 1);//top left
-		gc.drawLine(size.x - borderRight + 1, size.y - tabHeight - borderBottom + SELECTION_BORDER - 2, size.x - borderRight + 1, size.y); //bottom right
-		gc.drawLine(size.x - borderRight + 2, size.y - tabHeight - borderBottom + SELECTION_BORDER - 2, size.x - borderRight + 2, size.y);//bottom right
-		
-		color = showBorder ? border2Color : getParent().getBackground();
-		gc.setForeground(color);
-		
-		gc.drawLine(size.x - borderRight + 1, borderTop - 1, size.x - borderRight + 1, size.y - tabHeight - borderBottom + SELECTION_BORDER - 2); // right 1
-		gc.drawLine(1, borderTop - 2, size.x - borderRight + 1, borderTop - 2); // top 1
-		
-		color = showBorder ? border3Color : getParent().getBackground();
-		gc.setForeground(color);
-		
-		gc.drawLine(size.x - borderRight + 2, borderTop - 2, size.x - borderRight + 2, size.y - tabHeight - borderBottom + SELECTION_BORDER - 3); // right 2
-		gc.drawLine(2, borderTop - 3, size.x - borderRight + 2, borderTop - 3); // top 2
+}
+void draw3DBorder(GC gc) {
+	Point size = getSize();
+	Color parentBackground = getParent().getBackground();
+	if (single) {
+		if (onBottom) { // single bottom border
+			int x = Math.max(0, borderLeft - 1);
+			int y = size.y - borderBottom - tabHeight;
+			int width = size.x - borderLeft - borderRight + 1;
+			int height = tabHeight - 1;
+			int[] shape = new int[BOTTOM_LEFT_OUTSIDE_CORNER.length + BOTTOM_RIGHT_OUTSIDE_CORNER.length + 4];
+			int index = 0;
+			shape[index++] = x;
+			shape[index++] = y;
+			for (int i = 0; i < BOTTOM_LEFT_OUTSIDE_CORNER.length/2; i++) {
+				shape[index++] = x+BOTTOM_LEFT_OUTSIDE_CORNER[2*i];
+				shape[index++] = y+height+BOTTOM_LEFT_OUTSIDE_CORNER[2*i+1];
+			}
+			for (int i = 0; i < BOTTOM_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+				shape[index++] = x+width+BOTTOM_RIGHT_OUTSIDE_CORNER[2*i];
+				shape[index++] = y+height+BOTTOM_RIGHT_OUTSIDE_CORNER[2*i+1];
+			}
+			shape[index++] = x+width;
+			shape[index++] = y-1;
+			
+			gc.setForeground(border1Color);
+			gc.drawPolyline(shape);
+		} else { // single top border
+			int x = borderLeft - 1;
+			int y = borderTop;
+			int width = size.x - borderLeft - borderRight + 1;
+			int height = tabHeight - 1;
+			int[] shape = new int[TOP_LEFT_OUTSIDE_CORNER.length + TOP_RIGHT_OUTSIDE_CORNER.length + 4];
+			int index = 0;
+			shape[index++] = x;
+			shape[index++] = y+height;
+			for (int i = 0; i < TOP_LEFT_OUTSIDE_CORNER.length/2; i++) {
+				shape[index++] = x+TOP_LEFT_OUTSIDE_CORNER[2*i];
+				shape[index++] = y+TOP_LEFT_OUTSIDE_CORNER[2*i+1];
+			}
+			for (int i = 0; i < TOP_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+				shape[index++] = x+width+TOP_RIGHT_OUTSIDE_CORNER[2*i];
+				shape[index++] = y+TOP_RIGHT_OUTSIDE_CORNER[2*i+1];
+			}
+			shape[index++] = x+width;
+			shape[index++] = y+height+1;
+			gc.setForeground(border1Color);
+			gc.drawPolyline(shape);
+		}
+	}
+	if (!showHighlight) {
+		if (onBottom) { // on bottom no border showing
+			int x1 = HIGHLIGHT_MARGIN;
+			int x2 = size.x - borderRight;
+			int y1 = HIGHLIGHT_MARGIN;
+			int y2 = size.y - borderBottom - tabHeight;
+			
+			gc.setBackground(parentBackground);
+			gc.fillRectangle(0, 0, HIGHLIGHT_MARGIN, size.y); //left
+			gc.fillRectangle(x2 + 1, 0, borderRight, size.y); //right
+			gc.fillRectangle(0, 0, size.x, HIGHLIGHT_MARGIN); //top
+			
+			gc.setForeground(border1Color);
+			gc.drawLine(x1, y1, x1, y2); // left
+			gc.drawLine(x2, y1, x2, y2); // right
+			gc.drawLine(x1, y1, x2, y1); //bottom
+			
+		} else { //on top no border showing
+			int x1 = HIGHLIGHT_MARGIN;
+			int x2 = size.x - borderRight;
+			int y1 = borderTop + tabHeight;
+			int y2 = size.y - borderBottom;
+			
+			gc.setBackground(parentBackground);
+			gc.fillRectangle(0, 0, HIGHLIGHT_MARGIN, size.y); //left
+			gc.fillRectangle(x2 + 1, 0, borderRight, size.y); //right
+			gc.fillRectangle(0, y2, size.x, borderBottom); //bottom
+			
+			gc.setForeground(border1Color);
+			gc.drawLine(x1, y1, x1, y2); // left
+			gc.drawLine(x2, y1, x2, y2); // right
+			gc.drawLine(x1, y2, x2, y2); //bottom
+		}
 	} else {
-		color = getParent().getBackground();
-		gc.setForeground(color);
-		
-		gc.drawLine(size.x - 1, 0, size.x - 1, borderTop + tabHeight - SELECTION_BORDER + 1);//top right
-		gc.drawLine(size.x - 2, 0, size.x - 2, borderTop + tabHeight - SELECTION_BORDER);//top right
-		gc.drawPoint(0, size.y - borderBottom + 1); //bottom left
-		gc.drawLine(0, size.y - borderBottom + 2, 1, size.y - borderBottom + 2);//bottom left
-		
-		color = showBorder ? border2Color : getParent().getBackground();
-		gc.setForeground(color);
-		
-		gc.drawLine(size.x - borderRight + 1, borderTop + tabHeight - SELECTION_BORDER + 1, size.x - borderRight + 1, size.y - borderBottom + 1); // right 1
-		gc.drawLine(1, size.y - borderBottom + 1, size.x - borderRight + 1, size.y - borderBottom + 1); //bottom 1
-		
-		color = showBorder ? border3Color : getParent().getBackground();
-		gc.setForeground(color);
-		
-		gc.drawLine(size.x - borderRight + 2, borderTop + tabHeight - SELECTION_BORDER + 2, size.x - borderRight + 2, size.y - borderBottom + 2); // right 2
-		gc.drawLine(2, size.y - borderBottom + 2, size.x - borderRight + 2, size.y - borderBottom + 2); //bottom 2
+		if (onBottom) { // on bottom border showing
+			gc.setBackground(parentBackground);
+			gc.fillRectangle(0, size.y - borderBottom - tabHeight + 1, HIGHLIGHT_MARGIN, borderBottom + tabHeight);
+			gc.fillRectangle(size.x - borderRight + 1, size.y - borderBottom - tabHeight + 1, borderRight, borderTop + tabHeight);	
+			
+			int x1 = 0;
+			int x2 = size.x - 3;
+			int y1 = 0;
+			int y2 = size.y - borderBottom - tabHeight - 1;
+			gc.setForeground(border1Color);
+			gc.drawLine(x1, y2, borderLeft-1, y2); // indent on left
+			gc.drawLine(x1, y1, x1, y2); // left
+			gc.drawLine(size.x - borderRight, y2, x2, y2); // indent on right
+			gc.drawLine(x2, y1, x2, y2); // right
+			gc.drawLine(x1, y1, x2, y1); //top
+			
+			int gapStart = size.x/2;
+			int gapEnd = gapStart;
+			if (selectedIndex != -1 && selectedIndex >= topTabIndex) {
+				CTabItem2 item =  items[selectedIndex];
+				Rectangle r = item.getBounds();
+				int rightTabEdge = size.x - borderRight - chevronRect.width - expandRect.width - closeRect.width - 1;
+				if (r.x < rightTabEdge) {
+					gapStart = r.x - 1;
+					int extra = CURVE_WIDTH / 2;
+					int[] left = BOTTOM_LEFT_CORNER;
+					int[] right = curve;
+					int[] shape = new int[left.length + right.length + 8];
+					int index = 0;
+					shape[index++] = Math.max(0, borderLeft - 1);
+					shape[index++] = r.y - 1;
+					shape[index++] = r.x;
+					shape[index++] = r.y - 1;
+					for (int i = 0; i < left.length/2; i++) {
+						shape[index++] = r.x + left[2*i];
+						shape[index++] = r.y + r.height + left[2*i+1]-1;
+					}
+					for (int i = 0; i < right.length/2; i++) {
+						shape[index++] = r.x+r.width - extra + right[2*i];
+						shape[index++] = r.y + right[2*i+1] - 2;
+					}
+					for (int i = 0; i < shape.length/2; i++) {
+						if (shape[2*i] > rightTabEdge) {
+							gapEnd = rightTabEdge + 1;
+							break;
+						}
+						if (shape[2*i+1] > r.y) {
+							gapEnd = shape[2*i];
+						}
+					}
+				}
+			}
+			
+			x1 = 1;
+			x2 = size.x - 2;
+			y1 = 1;
+			y2 =  size.y - borderBottom - tabHeight;
+			gc.setForeground(border2Color);
+			gc.drawLine(x2, y1, x2, y2); // right 1
+			gc.drawLine(x1, y2, gapStart, y2); //bottom 1 left
+			gc.drawLine(gapEnd, y2, x2, y2); //bottom 1 right
+			gc.setForeground(parentBackground);
+			gc.drawPoint(0, y2); // bottom left
+			gc.drawPoint(x2, 0); // top right
+
+			x1 = 2;
+			x2 = size.x - 1;
+			y1 = 2;
+			y2 = size.y - borderBottom - tabHeight + 1;
+			gc.setForeground(border3Color);
+			gc.drawLine(x2, y1, x2, y2); // right 2
+			gc.drawLine(x1, y2, gapStart, y2); //bottom 2 left
+			gc.drawLine(gapEnd, y2, x2, y2); //bottom 2 right
+			gc.setForeground(parentBackground);
+			gc.drawLine(0, y2, 1, y2); // bottom left
+			gc.drawLine(x2, 0, x2, 1); // top right
+			
+			x1 = 1;
+			x2 = size.x - 3;
+			y1 = 1;
+			y2 = size.y - borderBottom - tabHeight - 1;
+			int[] shape = new int[] {x1,y1, x2,y1, x2,y2, x1,y2};
+			drawSelectionBackground(gc, shape);
+			
+		} else { // on top and border showing
+			gc.setBackground(parentBackground);
+			gc.fillRectangle(0, 0, HIGHLIGHT_MARGIN, borderTop + tabHeight); //left
+			gc.fillRectangle(size.x - borderRight + 1, 0, borderRight, borderTop + tabHeight);//right
+			
+			int x1 = 0;
+			int x2 = size.x - 3;
+			int y1 = borderTop + tabHeight;
+			int y2 = size.y - 3;
+			gc.setForeground(border1Color);
+			gc.drawLine(x1, y1, borderLeft-1, y1); // indent on left
+			gc.drawLine(x1, y1, x1, y2); // left
+			gc.drawLine(size.x - borderRight, y1, x2, y1); // indent on right
+			gc.drawLine(x2, y1, x2, y2); // right
+			gc.drawLine(x1, y2, x2, y2); //bottom
+			
+			x1 = 1;
+			x2 = size.x - 2;
+			y1 = borderTop + tabHeight + 1;
+			y2 =  size.y - 2;
+			gc.setForeground(border2Color);
+			gc.drawLine(x2, y1, x2, y2); // right 1
+			gc.drawLine(x1, y2, x2, y2); //bottom 1
+			gc.setForeground(parentBackground);
+			gc.drawPoint(0, y2); // bottom left
+			gc.drawPoint(x2, 0); // top right
+			
+			x1 = 2;
+			x2 = size.x - 1;
+			y1 = borderTop + tabHeight + 2;
+			y2 = size.y - 1;
+			gc.setForeground(border3Color);
+			gc.drawLine(x2, y1, x2, y2); // right 2
+			gc.drawLine(x1, y2, x2, y2); //bottom 2
+			gc.setForeground(parentBackground);
+			gc.drawLine(0, y2, 1, y2); // bottom left
+			gc.drawLine(x2, 0, x2, y1-1); // top right
+			
+			x1 = 1;
+			x2 = size.x - 3;
+			y1 = borderTop + tabHeight + 1;
+			y2 = size.y - 3;
+			int[] shape = new int[] {x1,y1, x2,y1, x2,y2, x1,y2};
+			drawSelectionBackground(gc, shape);
+		}
 	}
 }
 void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
-	int x = chevronRect.x, y = chevronRect.y, width = chevronRect.width, height = chevronRect.height;
-	
+	Display display = getDisplay();
 	if (!single) {
 		gc.setBackground(getParent().getBackground());
 		gc.fillRectangle(chevronRect);
 	}
-	
 	// draw chevron (6x5)
-	int indent = (tabHeight - 5)/2;
-	Color color = single ? selectionForeground : getParent().getForeground();
-	gc.setForeground(color);
-	gc.drawLine(x+7,  y+indent,   x+9,  y+indent+2);
-	gc.drawLine(x+8,  y+indent+3, x+7,  y+indent+4);
-	gc.drawLine(x+8,  y+indent+2, x+8,  y+indent+2);
-	gc.drawLine(x+10, y+indent,   x+12, y+indent+2);
-	gc.drawLine(x+11, y+indent+3, x+10, y+indent+4);
-	gc.drawLine(x+11, y+indent+2, x+11, y+indent+2);
+	int indent = Math.max(1, (tabHeight-11)/2);
+	int x = chevronRect.x + indent - 1;
+	int y = chevronRect.y + indent;
+	switch (chevronImageState) {
+		case NORMAL: {
+			int[] shape = new int[] {x,y, x+2,y, x+6,y+4, x+6,y+5, x+2,y+9, x,y+9, x,y+7, x+2,y+5, x+2,y+4, x,y+2};
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillPolygon(shape);
+			gc.setForeground(border1Color);
+			gc.drawPolygon(shape);
+			break;
+		}
+		case HOT: {
+			int[] shape = new int[] {x,y, x+2,y, x+6,y+4, x+6,y+5, x+2,y+9, x,y+9, x,y+7, x+2,y+5, x+2,y+4, x,y+2};
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillPolygon(shape);
+			Color border = new Color(display, CHEVRON_BORDER);
+			gc.setForeground(border);
+			gc.drawPolygon(shape);
+			border.dispose();
+			break;
+		}
+		case SELECTED: {
+			int[] shape = new int[] {x+1,y+1, x+3,y+1, x+7,y+5, x+7,y+6, x+3,y+10, x+1,y+10, x+1,y+8, x+3,y+6, x+3,y+5, x+1,y+3};
+			Color fill = new Color(display, CHEVRON_FILL);
+			gc.setBackground(fill);
+			gc.fillPolygon(shape);
+			fill.dispose();
+			Color border = new Color(display, CHEVRON_BORDER);
+			gc.setForeground(border);
+			gc.drawPolygon(shape);
+			border.dispose();
+			break;
+		}
+	}
 }
 void drawClose(GC gc) {
 	if (closeRect.width == 0 || closeRect.height == 0) return;
-	int x = closeRect.x, y = closeRect.y, width = closeRect.width, height = closeRect.height;
-	
+	Display display = getDisplay();
 	if (!single) {
 		gc.setBackground(getParent().getBackground());
 		gc.fillRectangle(closeRect);
 	}
-	
-	// draw X (6x5)
-	int indent = (tabHeight - 5)/2;
-	Color color = single ? selectionForeground : getParent().getForeground();
-	gc.setForeground(color);
-	gc.drawLine(x+6, y+indent,   x+10, y+indent+5);
-	gc.drawLine(x+7, y+indent,   x+11, y+indent+5);
-	gc.drawLine(x+6, y+indent+5, x+10, y+indent);
-	gc.drawLine(x+7, y+indent+5, x+11, y+indent);
+	// draw X (10x10 or 11x11)
+	int indent = Math.max(1, (tabHeight-11)/2);
+	int x = closeRect.x + indent - 1;
+	int y = closeRect.y + indent;
+	switch (closeImageState) {
+		case NORMAL: {
+			int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y, 
+					                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
+			                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
+			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillPolygon(shape);
+			gc.setForeground(border1Color);
+			gc.drawPolygon(shape);
+			break;
+		}
+		case HOT: {
+			int[] shape = new int[] {x,y, x+2,y, x+4,y+2, x+5,y+2, x+7,y, x+9,y, 
+					                 x+9,y+2, x+7,y+4, x+7,y+5, x+9,y+7, x+9,y+9,
+			                         x+7,y+9, x+5,y+7, x+4,y+7, x+2,y+9, x,y+9,
+			                         x,y+7, x+2,y+5, x+2,y+4, x,y+2};
+			gc.setBackground(display.getSystemColor(SWT.COLOR_WHITE));
+			gc.fillPolygon(shape);
+			Color border = new Color(display, CLOSE_BORDER);
+			gc.setForeground(border);
+			gc.drawPolygon(shape);
+			border.dispose();
+			break;
+		}
+		case SELECTED:
+			int[] shape = new int[] {x+1,y+1, x+3,y+1, x+5,y+3, x+6,y+3, x+8,y+1, x+10,y+1, 
+					                 x+10,y+3, x+8,y+5, x+8,y+6, x+10,y+8, x+10,y+10,
+			                         x+8,y+10, x+6,y+8, x+5,y+8, x+3,y+10, x+1,y+10,
+			                         x+1,y+8, x+3,y+6, x+3,y+5, x+1,y+3};
+			Color fill = new Color(display, CLOSE_FILL);
+			gc.setBackground(fill);
+			gc.fillPolygon(shape);
+			fill.dispose();
+			Color border = new Color(display, CLOSE_BORDER);
+			gc.setForeground(border);
+			gc.drawPolygon(shape);
+			border.dispose();
+			break;
+	}
 }
 void drawExpand(GC gc) {
 	if (expandRect.width == 0 || expandRect.height == 0) return;
-	int x = expandRect.x, y = expandRect.y, width = expandRect.width, height = expandRect.height;
-	
+	Display display = getDisplay();
 	if (!single) {
 		gc.setBackground(getParent().getBackground());
 		gc.fillRectangle(expandRect);
 	}
-	
 	// draw triangle (7x4 or 4x7)
-	int indent = (tabHeight - 7)/2;
-	int[] points = null;
-	if (expanded && onBottom) {
-		points = new int[] {x+3,y+height-tabHeight+indent+6, x+12,y+height-tabHeight+indent+6, x+7,y+height-tabHeight+indent+1};
+	int indent = Math.max(1, (tabHeight-11)/2);
+	int x = expandRect.x + indent - 1;
+	int y = expandRect.y + indent;
+	switch (expandImageState) {
+		case NORMAL: {
+			if (expanded) {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y, 9, 3);
+				gc.setForeground(border1Color);
+				gc.drawRectangle(x, y, 9, 3);
+			} else {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y, 7, 9);
+				gc.setForeground(border1Color);
+				gc.drawRectangle(x, y, 7, 9);
+				gc.drawLine(x+1, y+2, x+6, y+2);
+			}
+			break;
+		}
+		case HOT: {
+			Color border = new Color(display, EXPAND_BORDER);
+			if (expanded) {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y, 9, 3);
+				gc.setForeground(border);
+				gc.drawRectangle(x, y, 9, 3);
+			} else {
+				gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_WHITE));
+				gc.fillRectangle(x, y, 7, 9);
+				gc.setForeground(border);
+				gc.drawRectangle(x, y, 7, 9);
+				gc.drawLine(x+1, y+2, x+6, y+2);
+			}
+			border.dispose();
+			break;
+		}
+		case SELECTED: {
+			Color fill = new Color(display, EXPAND_FILL);
+			Color border = new Color(display, EXPAND_BORDER);
+			if (expanded) {
+				gc.setBackground(fill);
+				gc.fillRectangle(x+1, y+1, 9, 3);
+				gc.setForeground(border);
+				gc.drawRectangle(x+1, y+1, 9, 3);
+			} else {
+				gc.setBackground(fill);
+				gc.fillRectangle(x+1, y+1, 7, 9);
+				gc.setForeground(border);
+				gc.drawRectangle(x+1, y+1, 7, 9);
+				gc.drawLine(x+2, y+3, x+7, y+3);
+			}
+			fill.dispose();
+			border.dispose();
+			break;
+		}
 	}
-	if (expanded && !onBottom) {
-		points = new int[] {x+4,y+indent+2, x+11,y+indent+2, x+7,y+indent+6};
-	}
-	if (!expanded && onBottom) {
-		points = new int[] {x+7,y+height-tabHeight+indent+1, x+11,y+height-tabHeight+indent+5, x+7,y+height-tabHeight+indent+9};
-	}
-	if (!expanded && !onBottom) {
-		points = new int[] {x+7,y+indent-2, x+11,y+indent+2, x+7,y+indent+6};
-	}
-	
-	Color color = single ? selectionForeground : getParent().getForeground();
-	gc.setBackground(color);
-	gc.fillPolygon(points);
 }
-void drawSelectionBackground(GC gc, int y, int[] shape) {
+void drawSelectionBackground(GC gc, int[] shape) {
 	if (backgroundImage != null) {
 		// draw the background image in shape
 		Region clipping = new Region();
@@ -916,7 +1211,7 @@ public Rectangle getClientArea() {
 	if (items.length == 0) {		
 		return new Rectangle(borderLeft + marginWidth, borderTop + marginHeight, width, height);	
 	}
-	height -= tabHeight;
+	height -= tabHeight+HIGHLIGHT_HEADER;
 	return new Rectangle(xClient, yClient, width, height);
 }
 
@@ -1353,9 +1648,22 @@ void onMouseDoubleClick(Event event) {
 }
 void onMouseDown(Event event) {
 	int x = event.x, y = event.y;
-	if (closeRect.contains(x, y) || 
-	    chevronRect.contains(x, y) ||
-	    expandRect.contains(x, y)) {
+	if (closeRect.contains(x, y)) {
+		closeImageState = SELECTED;
+		redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+		update();
+		return;
+	} 
+	if (expandRect.contains(x, y)) {
+		expandImageState = SELECTED;
+		redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+		update();
+		return;
+	}
+	if (chevronRect.contains(x, y)) {
+		chevronImageState = SELECTED;
+		redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+		update();
 		return;
 	}
 	for (int i=0; i<items.length; i++) {
@@ -1370,7 +1678,43 @@ void onMouseDown(Event event) {
 		}
 	}
 }
-
+void onMouseMove(Event event) {
+	int x = event.x, y = event.y;
+	boolean close = false, expand = false, chevron = false;
+	if (closeRect.contains(x, y)) {
+		close = true;
+		if (closeImageState != HOT) {
+			closeImageState = HOT;
+			redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+		}
+	} 
+	if (expandRect.contains(x, y)) {
+		expand = true;
+		if (expandImageState != HOT) {
+			expandImageState = HOT;
+			redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+		}
+	}
+	if (chevronRect.contains(x, y)) {
+		chevron = true;
+		if (chevronImageState != HOT) {
+			chevronImageState = HOT;
+			redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+		}
+	}
+	if (closeImageState == HOT && !close) {
+		closeImageState = NORMAL;
+		redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
+	}
+	if (expandImageState == HOT && !expand) {
+		expandImageState = NORMAL;
+		redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
+	}
+	if (chevronImageState == HOT && !chevron) {
+		chevronImageState = NORMAL;
+		redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
+	}
+}
 void onMouseHover(Event event) {
 	if (tipShowing) return;
 	showToolTip(event.x, event.y);
@@ -1379,6 +1723,8 @@ void onMouseUp(Event event) {
 	if (event.button != 1) return;
 	int x = event.x, y = event.y;
 	if (closeRect.contains(x, y)) {
+		closeImageState = HOT;
+		redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
 		if (selectedIndex == -1) return;
 		CTabItem2 item = items[selectedIndex];
 		CTabFolderEvent e = new CTabFolderEvent(this);
@@ -1393,6 +1739,8 @@ void onMouseUp(Event event) {
 		return;
 	}
 	if (chevronRect.contains(x, y)) {
+		chevronImageState = HOT;
+		redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 		Rectangle rect = new Rectangle(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height);
 		if (listListeners.length == 0) {
 			showList(rect, SWT.LEFT);
@@ -1409,6 +1757,7 @@ void onMouseUp(Event event) {
 		return;
 	}
 	if (expandRect.contains(x, y)) {
+		expandImageState = HOT;
 		CTabFolderEvent e = new CTabFolderEvent(this);
 		e.widget = this;
 		e.time = event.time;
@@ -1422,8 +1771,8 @@ void onMouseUp(Event event) {
 		}
 		if (e.doit) {
 			expanded = !expanded;
-			redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
 		}
+		redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
 		return;
 	}
 	if (single && items.length > 1) {
@@ -1491,10 +1840,10 @@ void onPaint(Event event) {
 			int[] shapeLeft = null;
 			int[] shapeRight = null;
 			if (onBottom) {
-				int x = 0;
-				int y = size.y-borderBottom-tabHeight+SELECTION_BORDER;
-				int width = item.x;
-				int height = tabHeight-SELECTION_BORDER;
+				int x = Math.max(0, borderLeft - 1);
+				int y = size.y - borderBottom - tabHeight;
+				int width = item.x - x;
+				int height = tabHeight;
 				if (borderRight > 0) height -= 1; // fill in behind border
 				shapeLeft = new int[BOTTOM_LEFT_OUTSIDE_CORNER.length+6];
 				int index = 0;
@@ -1525,10 +1874,10 @@ void onPaint(Event event) {
 				shapeRight[index++] = x+width;
 				shapeRight[index++] = y;
 			} else { // tabs on top
-				int x = 0;
+				int x = Math.max(0, borderLeft - 1);
 				int y = borderTop;
-				int width = item.x;
-				int height = tabHeight-SELECTION_BORDER;
+				int width = item.x - x;
+				int height = tabHeight;
 				shapeLeft = new int[TOP_LEFT_OUTSIDE_CORNER.length+6];
 				int index = 0;
 				shapeLeft[index++] = x;
@@ -1560,26 +1909,30 @@ void onPaint(Event event) {
 			}
 			// Shape is non-rectangular, fill in gaps with parent colours	
 			Region r = new Region();
-			int x = 0;
-			int y = onBottom ? size.y-borderBottom-tabHeight+SELECTION_BORDER: borderTop;
-			int width = item.x;
-			int height = tabHeight-SELECTION_BORDER;
+			int x = Math.max(0, borderLeft - 1);
+			int y = onBottom ? size.y - borderBottom - tabHeight : borderTop;
+			int width = item.x - x;
+			int height = tabHeight;
 			r.add(new Rectangle(x, y, width, height));
 			r.subtract(shapeLeft);
 			gc.setBackground(getParent().getBackground());
 			fillRegion(gc, r);
-			r.subtract(r); // clear region
-			x = item.x + item.width;
-			width = size.x - borderRight - x;
-			if (borderRight > 0) width += 1; // +1 overlap with border
-			r.add(new Rectangle(x, y, width, height));
-			r.subtract(shapeRight);
-			gc.setBackground(getParent().getBackground());
-			fillRegion(gc, r);
-			r.dispose();
 			gc.setBackground(background);
 			gc.fillPolygon(shapeLeft);
-			gc.fillPolygon(shapeRight);
+			
+			x = item.x + item.width;
+			width = size.x - borderRight - x;
+			if (width > 0) {
+				if (borderRight > 0) width += 1; // +1 overlap with border
+				r.subtract(r); // clear region
+				r.add(new Rectangle(x, y, width, height));
+				r.subtract(shapeRight);
+				gc.setBackground(getParent().getBackground());
+				fillRegion(gc, r);
+				gc.setBackground(background);
+				gc.fillPolygon(shapeRight);
+			}
+			r.dispose();
 		}
 	} else {
 		// Fill in the empty space to the right of the last tab
@@ -1588,14 +1941,16 @@ void onPaint(Event event) {
 		int edge = lastItem.x+lastItem.width;
 		if (edge < size.x) {
 			int x = edge;
-			int y = onBottom ? size.y-borderBottom-tabHeight+SELECTION_BORDER-1 : borderTop;
-			int width = size.x-edge-borderRight+1;
-			int height = tabHeight-SELECTION_BORDER+1;
+			int y = onBottom ? size.y - borderBottom - tabHeight - 1 : borderTop;
+			int width = size.x - edge - borderRight + 1;
+			int height = tabHeight + 1;
 			gc.setBackground(parentBackground);
 			gc.fillRectangle(x, y, width, height);
 		}
-
-		// Draw the unselected tabs first.
+	}
+	
+	// Draw the unselected tabs.
+	if (!single) {
 		for (int i=0; i < items.length; i++) {
 			if (i != selectedIndex && event.getBounds().intersects(items[i].getBounds())) {
 				items[i].onPaint(gc, false);
@@ -1615,6 +1970,7 @@ void onPaint(Event event) {
 	drawClose(gc);
 	drawChevron(gc);
 	drawExpand(gc);
+	
 	drawBorder(gc);
 	
 	
@@ -1641,10 +1997,10 @@ void onPaint(Event event) {
 	
 	// fill in client area
 	int width = size.x  - borderLeft - borderRight;
-	int height = size.y - borderTop - borderBottom - tabHeight;
+	int height = size.y - borderTop - borderBottom - tabHeight - HIGHLIGHT_HEADER;
 	int x = xClient - marginWidth;
 	int y = yClient - marginHeight;
-	drawSelectionBackground(gc, y, new int[] {x,y, x,y+height, x+width,y+height, x+width,y});
+	drawSelectionBackground(gc, new int[] {x,y, x,y+height, x+width,y+height, x+width,y});
 	
 	gc.setForeground(getForeground());
 	gc.setBackground(getBackground());	
@@ -1772,7 +2128,6 @@ public void removeCTabFolderExpandListener(CTabFolderExpandListener listener) {
 		// hide expand button
 		expandListeners = new CTabFolderExpandListener[0];
 		showExpand = false;
-		setButtonBounds();
 		updateItems();
 		redraw();
 		return;
@@ -1885,12 +2240,13 @@ public void setBorderColor(Color color) {
  */
 public void setBorderVisible(boolean show) {
 	checkWidget();
-	if (showBorder == show) return;
-	showBorder = show;
+	if (showHighlight == show) return;
+	showHighlight = show;
 	redraw();
 }
 boolean setButtonBounds() {
 	int decoratorWidth = 16;
+
 	boolean changed = false;
 	Point size = getSize();
 	
@@ -1902,12 +2258,26 @@ boolean setButtonBounds() {
 	if (showClose && selectedIndex != -1) {
 		closeRect.x = size.x - borderRight - decoratorWidth;
 		if (borderRight > 0) closeRect.x += 1; // align with first line of trim
-		closeRect.y = onBottom ? size.y - borderBottom - tabHeight + SELECTION_BORDER : borderTop;
+		closeRect.y = onBottom ? size.y - borderBottom - tabHeight : borderTop;
 		closeRect.width = decoratorWidth;
-		closeRect.height = tabHeight - SELECTION_BORDER;
+		closeRect.height = tabHeight;
 	}
 	if (oldX != closeRect.x || oldWidth != closeRect.width ||
 	    oldY != closeRect.y || oldHeight != closeRect.height) changed = true;
+	
+	oldX = expandRect.x;
+	oldY = expandRect.y;
+	oldWidth = expandRect.width;
+	oldHeight = expandRect.height;
+	if (showExpand) {
+		expandRect.x = size.x - borderRight - closeRect.width - decoratorWidth;
+		if (borderRight > 0) expandRect.x += 1;
+		expandRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop;
+		expandRect.width = decoratorWidth;
+		expandRect.height = tabHeight;
+	}
+	if (oldX != expandRect.x || oldWidth != expandRect.width ||
+	    oldY != expandRect.y || oldHeight != expandRect.height) changed = true;
 	
 	oldX = chevronRect.x;
 	oldY = chevronRect.y;
@@ -1916,31 +2286,18 @@ boolean setButtonBounds() {
 	chevronRect.x = chevronRect.y = chevronRect.height = chevronRect.width = 0;
 	if (items.length > 1) {
 		CTabItem2 item = items[items.length-1];
-		int rightEdge = size.x - borderRight - closeRect.width;
+		int rightEdge = size.x - borderRight - closeRect.width - expandRect.width;
 		if (single || topTabIndex > 0 || item.x + item.width > rightEdge) {
-			chevronRect.x = size.x - borderRight - closeRect.width - decoratorWidth;
+			chevronRect.x = size.x - borderRight - closeRect.width - expandRect.width - decoratorWidth;
 			if (borderRight > 0) chevronRect.x += 1;
-			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight + SELECTION_BORDER: borderTop;
+			chevronRect.y = onBottom ? size.y - borderBottom - tabHeight: borderTop;
 			chevronRect.width = decoratorWidth;
-			chevronRect.height = tabHeight - SELECTION_BORDER;
+			chevronRect.height = tabHeight;
 		}
 	}
 	if (oldX != chevronRect.x || oldWidth != chevronRect.width ||
 	    oldY != chevronRect.y || oldHeight != chevronRect.height) changed = true;
-
-	oldX = expandRect.x;
-	oldY = expandRect.y;
-	oldWidth = expandRect.width;
-	oldHeight = expandRect.height;
-	if (showExpand) {
-		expandRect.x = borderLeft;
-		if (borderLeft > 0) expandRect.x -= 1;
-		expandRect.y = onBottom ? size.y - borderBottom - tabHeight + SELECTION_BORDER : borderTop;
-		expandRect.width = decoratorWidth;
-		expandRect.height = tabHeight - SELECTION_BORDER;
-	}
-	if (oldX != expandRect.x || oldWidth != expandRect.width ||
-	    oldY != expandRect.y || oldHeight != expandRect.height) changed = true;
+	
 	return changed;
 }
 /**
@@ -2042,7 +2399,7 @@ public void setInsertMark(int index, boolean after) {
 boolean setItemLocation() {
 	if (items.length == 0) return false;
 	Point size = getSize();
-	int y = onBottom ? Math.max(0, size.y - borderBottom - tabHeight) : borderTop;
+	int y = onBottom ? Math.max(borderBottom, size.y - borderBottom - tabHeight) : borderTop;
 	boolean changed = false;
 	if (single) {
 		int defaultX = size.x + 10; // off screen
@@ -2053,16 +2410,15 @@ boolean setItemLocation() {
 		if (selectedIndex > -1) {
 			CTabItem2 item = items[selectedIndex];
 			int oldX = item.x, oldY = item.y;
-			int tabWidth = size.x - borderLeft - borderRight - expandRect.width - closeRect.width;
+			int tabWidth = size.x - borderLeft - borderRight - closeRect.width - expandRect.width - chevronRect.width;
 			int indent = Math.max(0, (tabWidth-item.width)/2);
-			item.x = borderLeft + expandRect.width+indent; 
+			item.x = borderLeft + indent; 
 			item.y = y;
 			if (item.x != oldX || item.y != oldY) changed = true;
 		}
 	} else {
-		int x = (expandRect.width == 0) ?  0 : borderLeft + expandRect.width;
-		if (expandRect.width != 0 && borderLeft > 0) x -= 1;
-		for (int i = topTabIndex - 1; i>=0; i--) { 
+		int x = -1;
+		for (int i = topTabIndex - 1; i >= 0; i--) { 
 			// if the first visible tab is not the first tab
 			CTabItem2 tab = items[i];
 			x -= tab.width; 
@@ -2072,8 +2428,7 @@ boolean setItemLocation() {
 			tab.y = y;
 		}
 		
-		x = (expandRect.width == 0) ? 0 : borderLeft + expandRect.width;
-		if (expandRect.width != 0 && borderLeft > 0) x -= 1;
+		x = borderLeft <= 1 ? 0 : HIGHLIGHT_MARGIN;
 		for (int i = topTabIndex; i < items.length; i++) {
 			// continue laying out remaining, visible items left to right 
 			CTabItem2 tab = items[i];
@@ -2082,7 +2437,7 @@ boolean setItemLocation() {
 			x = x + tab.width;
 		}
 
-		int rightEdge = size.x - borderRight - closeRect.width - chevronRect.width;
+		int rightEdge = size.x - borderRight - closeRect.width - expandRect.width - chevronRect.width;
 		if (rightEdge > 0) {
 			CTabItem2 item = items[items.length - 1];
 			if (item.x + item.width < rightEdge) {
@@ -2103,7 +2458,7 @@ boolean setItemSize() {
 	if (onBottom) {
 		yClient = borderTop + marginHeight; 
 	} else {
-		yClient = borderTop + tabHeight + marginHeight; 
+		yClient = borderTop + tabHeight + HIGHLIGHT_HEADER + marginHeight; 
 	}
 	
 	int[] widths = new int[items.length];
@@ -2112,7 +2467,7 @@ boolean setItemSize() {
 		widths[i] = items[i].preferredWidth(gc, i == selectedIndex);
 	}
 	gc.dispose();
-	int tabAreaWidth = size.x - borderLeft - borderRight - expandRect.width - closeRect.width;
+	int tabAreaWidth = size.x - borderLeft - borderRight - closeRect.width - expandRect.width - chevronRect.width;
 	if (items.length > 1) {
 		int selectedWidth = selectedIndex == -1 ? 0 : widths[selectedIndex];
 		int count = selectedIndex == -1 ? items.length : items.length - 1;
@@ -2157,7 +2512,7 @@ void setLastItem(int index) {
 	if (index < 0 || index > items.length - 1) return;
 	Rectangle area = getClientArea();
 	if (area.width <= 0) return;
-	int maxWidth = area.width - closeRect.width - chevronRect.width;
+	int maxWidth = area.width - closeRect.width - expandRect.width - chevronRect.width;
 	int tabWidth = items[index].width;
 	while (index > 0) {
 		tabWidth += items[index - 1].width;
@@ -2445,7 +2800,7 @@ public void showItem (CTabItem2 item) {
 		setFirstItem(index);
 		return;
 	}
-	int rightEdge = size.x - borderRight - closeRect.width - chevronRect.width;
+	int rightEdge = size.x - borderRight - closeRect.width - expandRect.width - chevronRect.width;
 	if (item.x + item.width < rightEdge) return;
 	setLastItem(index);
 }
@@ -2453,8 +2808,8 @@ void showList (Rectangle rect, int alignment) {
 	final Shell shell = new Shell(getShell(), SWT.BORDER | SWT.ON_TOP);
 	shell.setLayout(new FillLayout());
 	final Table table = new Table(shell, SWT.NONE);
-	table.setBackground(selectionBackground);
-	table.setForeground(selectionForeground);
+//	table.setBackground(selectionBackground);
+//	table.setForeground(selectionForeground);
 	for (int i = 0; i < items.length; i++) {
 		CTabItem2 tab = items[i];
 		TableItem item = new TableItem(table, SWT.NONE);
@@ -2493,8 +2848,7 @@ void showList (Rectangle rect, int alignment) {
 	Point p1 = getDisplay().map(this, null, clientArea.x, clientArea.y);
 	Point p2 = getDisplay().map(this, null, rect.x, rect.y);
 	int x = 0, y = 0;
-	//x = p.x+rect.width - size.x;
-	if (alignment == SWT.RIGHT) {
+	if (alignment == SWT.LEFT) {
 		x = p2.x;
 	} else { // Left
 		x = p2.x + rect.width - size.x;
@@ -2593,8 +2947,8 @@ boolean updateTabHeight(int oldHeight){
 	if (onBottom) {
 		curve = bezier(0, tabHeight+2,
 		               CURVE_LEFT, tabHeight+2,
-				       CURVE_WIDTH-CURVE_RIGHT, SELECTION_BORDER+1,
-		               CURVE_WIDTH, SELECTION_BORDER+1,
+				       CURVE_WIDTH - CURVE_RIGHT, 1,
+		               CURVE_WIDTH, 1,
 		               CURVE_WIDTH);
 		// workaround to get rid of blip at end of bezier
 		int index = -1;
@@ -2613,13 +2967,13 @@ boolean updateTabHeight(int oldHeight){
 	} else {
 		curve = bezier(0, 0,
 		               CURVE_LEFT, 0, 
-		               CURVE_WIDTH-CURVE_RIGHT, tabHeight-SELECTION_BORDER + 2,
-		               CURVE_WIDTH, tabHeight-SELECTION_BORDER + 2,
+		               CURVE_WIDTH - CURVE_RIGHT, tabHeight + 2,
+		               CURVE_WIDTH, tabHeight + 2,
 		               CURVE_WIDTH);
 		// workaround to get rid of blip at end of bezier
 		int index = -1;
 		for (int i = 0; i < curve.length/2; i++) {
-			if (curve[2*i+1] > tabHeight-SELECTION_BORDER) {
+			if (curve[2*i+1] > tabHeight) {
 				index = i;
 				break;
 			}

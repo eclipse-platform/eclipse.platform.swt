@@ -57,6 +57,7 @@ public class CBanner extends Composite {
 	static final int BORDER_LEFT = 2;
 	static final int BORDER_RIGHT = 2;
 	static final int BORDER_STRIPE = 2;
+	static final int INDENT = 10;
 	
 	static RGB BORDER1 = null;
 	static RGB BORDER2 = null;
@@ -129,20 +130,20 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	}
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
-		int width = wHint - rightSize.x - middleSize.x - CURVE_WIDTH/2 - BORDER_LEFT - BORDER_RIGHT;
+		int width = wHint - rightSize.x - middleSize.x - CURVE_WIDTH - 2*INDENT - BORDER_LEFT - BORDER_RIGHT;
 		if (middle != null) width -= LEFT_MIDDLE_GAP;
 		leftSize = left.computeSize((wHint != SWT.DEFAULT) ? width : SWT.DEFAULT, SWT.DEFAULT);
 	}
 	Point size = new Point(0, 0);
-	size.x = leftSize.x + middleSize.x + CURVE_WIDTH/2 + rightSize.x;
+	size.x = leftSize.x + middleSize.x + CURVE_WIDTH -2*INDENT + rightSize.x;
 	if (left != null && middle != null) size.x += + LEFT_MIDDLE_GAP;
-	size.y = Math.max(Math.max(leftSize.y + BORDER_STRIPE, middleSize.y), rightSize.y);
+	size.y = Math.max(Math.max(leftSize.y, middleSize.y), rightSize.y);
 	
 	if (wHint != SWT.DEFAULT) size.x  = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
 	
 	Rectangle trim = computeTrim(0, 0, size.x, size.y);
-	return new Point (trim.width, trim.height);
+	return new Point(trim.width, trim.height);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
@@ -177,7 +178,7 @@ public void layout (boolean changed) {
 	
 	Point rightSize = (right == null) ? new Point (0, 0) : right.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	Point middleSize = (middle == null) ? new Point (0, 0) : middle.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	int width = size.x - rightSize.x - middleSize.x - CURVE_WIDTH/2 - BORDER_LEFT - BORDER_RIGHT;
+	int width = size.x - rightSize.x - middleSize.x - CURVE_WIDTH + 2*INDENT - BORDER_LEFT - BORDER_RIGHT; 
 	if (middle != null) width -= LEFT_MIDDLE_GAP;
 	Point leftSize = (left == null) ? new Point (0, 0) : left.computeSize(width, SWT.DEFAULT);
 
@@ -199,8 +200,8 @@ public void layout (boolean changed) {
 		middleRect = new Rectangle(x, y, middleSize.x, Math.min(size.y, middleSize.y));
 		x += middleSize.x;
 	}
-	curveStart = x - CURVE_WIDTH/4;
-	x += CURVE_WIDTH - CURVE_WIDTH/2;
+	curveStart = x - INDENT;
+	x += CURVE_WIDTH - 2*INDENT;
 	if (right != null) {
 		int height = size.y - BORDER_TOP - BORDER_BOTTOM;
 		int y = (rightSize.y > height) ? BORDER_TOP : BORDER_TOP + (height - rightSize.y) / 2;
