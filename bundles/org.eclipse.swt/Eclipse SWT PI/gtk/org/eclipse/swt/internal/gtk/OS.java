@@ -733,6 +733,15 @@ public static final int /*long*/ gdk_x11_atom_to_xatom(int /*long*/ atom) {
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gdk_x11_colormap_get_xcolormap(int /*long*/ colormap);
+public static final int /*long*/ gdk_x11_colormap_get_xcolormap(int /*long*/ colormap) {
+	lock.lock();
+	try {
+		return _gdk_x11_colormap_get_xcolormap(colormap);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gdk_x11_drawable_get_xdisplay(int /*long*/ drawable);
 public static final int /*long*/ gdk_x11_drawable_get_xdisplay(int /*long*/ drawable) {
 	lock.lock();
@@ -747,6 +756,15 @@ public static final int /*long*/ gdk_x11_drawable_get_xid(int /*long*/ drawable)
 	lock.lock();
 	try {
 		return _gdk_x11_drawable_get_xid(drawable);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native int /*long*/ _gdk_x11_visual_get_xvisual(int /*long*/ visual);
+public static final int /*long*/ gdk_x11_visual_get_xvisual(int /*long*/ visual) {
+	lock.lock();
+	try {
+		return _gdk_x11_visual_get_xvisual(visual);
 	} finally {
 		lock.unlock();
 	}

@@ -4624,6 +4624,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1x11_1atom_1to_1xatom)
 }
 #endif
 
+#ifndef NO__1gdk_1x11_1colormap_1get_1xcolormap
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1x11_1colormap_1get_1xcolormap)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1colormap_1get_1xcolormap_FUNC);
+	rc = (jint)gdk_x11_colormap_get_xcolormap((GdkColormap *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1colormap_1get_1xcolormap_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gdk_1x11_1drawable_1get_1xdisplay
 JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1x11_1drawable_1get_1xdisplay)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4644,6 +4656,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1x11_1drawable_1get_1xid)
 	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1drawable_1get_1xid_FUNC);
 	rc = (jint)gdk_x11_drawable_get_xid((GdkDrawable *)arg0);
 	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1drawable_1get_1xid_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO__1gdk_1x11_1visual_1get_1xvisual
+JNIEXPORT jint JNICALL OS_NATIVE(_1gdk_1x11_1visual_1get_1xvisual)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gdk_1x11_1visual_1get_1xvisual_FUNC);
+	rc = (jint)gdk_x11_visual_get_xvisual((GdkVisual *)arg0);
+	OS_NATIVE_EXIT(env, that, _1gdk_1x11_1visual_1get_1xvisual_FUNC);
 	return rc;
 }
 #endif
