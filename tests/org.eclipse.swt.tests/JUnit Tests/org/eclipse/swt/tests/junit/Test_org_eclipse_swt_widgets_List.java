@@ -1384,7 +1384,22 @@ public void test_selectI() {
 		"select(5):",
 		list.getSelectionIndices(), new int[] { 1, 2, 3 });
 
+	list.deselectAll();
+	list.select(0);
+	assertEquals("select(0):", list.getSelectionIndices(), new int[] { 0 });
 	
+	list.deselectAll();
+	list.select(-1);
+	assertEquals("select(-1):", list.getSelectionIndices(), new int[] {});
+
+	list.deselectAll();
+	list.select(-2);
+	assertEquals("select(-2):", list.getSelectionIndices(), new int[] {});
+
+	list.deselectAll();
+	list.select(4);
+	assertEquals("select(4):", list.getSelectionIndices(), new int[] {});
+
 	setSingleList();
 	list.setItems(items);
 
@@ -1400,9 +1415,33 @@ public void test_selectI() {
 	list.select(5);
 	assertEquals(list.getSelectionIndices(), new int[] { 3 });
 
+	list.deselectAll();
+	list.select(0);
+	assertEquals("select(0):", list.getSelectionIndices(), new int[] { 0 });
+	
+	list.deselectAll();
+	list.select(-1);
+	assertEquals("select(-1):", list.getSelectionIndices(), new int[] {});
+
+	list.deselectAll();
+	list.select(-2);
+	assertEquals("select(-2):", list.getSelectionIndices(), new int[] {});
+
+	list.deselectAll();
+	list.select(4);
+	assertEquals("select(4):", list.getSelectionIndices(), new int[] {});
 }
 
 public void test_selectII() {
+	list.select(0, 0);
+	assertEquals("empty list", list.getSelectionIndices(), new int[] {});
+
+	list.select(0, 1);
+	assertEquals("empty list", list.getSelectionIndices(), new int[] {});
+
+	list.select(-1, 0);
+	assertEquals("empty list", list.getSelectionIndices(), new int[] {});
+
 	int number = 5;
 
 	String[] items = new String[number];
@@ -1414,6 +1453,9 @@ public void test_selectII() {
 	selectII_helper(items, 10, 1, empty);
 	selectII_helper(items, 3, 1, empty);
 	selectII_helper(items, -1, -1, empty);
+	selectII_helper(items, 5, 5, empty);
+	selectII_helper(items, 4, 5, new int[] { 4 });
+	selectII_helper(items, -1, 0, new int[] { 0 });
 	selectII_helper(items, 2, 4, new int[] { 2, 3, 4 });
 	selectII_helper(items, 0, 3, new int[] { 0, 1, 2, 3 });
 	selectII_helper(items, 1, 1, new int[] { 1 });
