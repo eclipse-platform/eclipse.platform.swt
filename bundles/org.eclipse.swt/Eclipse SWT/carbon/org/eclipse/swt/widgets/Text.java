@@ -351,9 +351,14 @@ void createHandle (int index) {
 	int[] tnxObject= new int[1];
 	int[] frameID= new int[1];
 	
-	// AW: HACK ALERT!
-	// count number of controls under root before we create the MLTE so that we know later
-	// how many controls were created by TXNNewObject
+	/*
+	 * Since MLTE is no real control it must embed its scrollbars in the root control.
+	 * However, this breaks SWT assumption that everything is a nice and clean hierarchy.
+	 * To work around this problem we try to move the scrollbars from the root control
+	 * to the real parent of the Text widget.
+	 * This is done in two steps: before creating the MLTE object with TXNNewObject
+	 * we count the number of controls under the root control. Second step: see below.
+	 */
 	int[] rootHandle= new int[1];
 	OS.GetRootControl(wHandle, rootHandle);
 	int root= rootHandle[0];
@@ -361,15 +366,18 @@ void createHandle (int index) {
 	OS.CountSubControls(root, cnt);
 	short oldCount= cnt[0];
 	
+	/*
+	 * Create the MLTE object (and possibly 0-2 scrollbars)
+	 */
 	int status= OS.TXNNewObject(0, wHandle, bounds.getData(), frameOptions, frameType, iFileType, iPermanentEncoding,
 						tnxObject, frameID, handle);
 	if (status != OS.kNoErr)
 		error(SWT.ERROR_NO_HANDLES);
 	
-	// AW: HACK ALERT!
-	// determine how many controls were created by TXNNewObject under the root control;
-	// remove all controls created by MLTE from the root control and embed them
-	// in the user pane
+	/*
+	 * Second step: count the controls under root again to find out how many
+	 * scrollbars had been added. Then move these new controls under the user pane
+	 */
 	short[] newCnt= new short[1];
 	OS.CountSubControls(root, newCnt);
 	short newCount= newCnt[0];
