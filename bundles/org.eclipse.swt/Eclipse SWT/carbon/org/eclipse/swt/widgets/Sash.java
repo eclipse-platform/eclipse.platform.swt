@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
-public  class Sash extends Control {
+public class Sash extends Control {
 
 public Sash (Composite parent, int style) {
 	super (parent, checkStyle (style));
@@ -58,18 +58,22 @@ void createHandle () {
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
-	int startX = rect.left, startY = rect.top;
+	int startX = rect.left;
+	int startY = rect.top;			
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
+	OS.GetControlBounds (parent.handle, rect);
 	Event event = new Event ();
-	event.x = startX;
-	event.y = startY;
-	event.width = rect.right - rect.left;
-	event.height = rect.bottom - rect.top;
+	event.x = startX -= rect.left;
+	event.y = startY -= rect.top;
+	event.width = width;
+	event.height = height;
 	sendEvent (SWT.Selection, event);
 	if (!event.doit) return result;
+	
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.sizeof, null, pt);
 	int window = OS.GetControlOwner (handle);
@@ -79,21 +83,20 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	OS.GetControlBounds (handle, rect);
 	offsetX -= rect.left;
 	offsetY -= rect.top;
+	
+	int port = OS.GetWindowPort (window);
 	int [] outModifiers = new int [1];
 	short [] outResult = new short [1];
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	while (outResult [0] != OS.kMouseTrackingMouseUp) {
-		OS.TrackMouseLocationWithOptions (0, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
+		OS.TrackMouseLocationWithOptions (port, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
 		switch (outResult [0]) {
 			case OS.kMouseTrackingMouseDown:
 			case OS.kMouseTrackingMouseUp:
 			case OS.kMouseTrackingMouseDragged: {
-				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
-				int x = outPt.h - rect.left;
-				int y = outPt.v - rect.top;
 				OS.GetControlBounds (parent.handle, rect);
-				x -= rect.left;
-				y -= rect.top;				
+				int x = outPt.h - rect.left;
+				int y = outPt.v - rect.top;				
 				int newX = startX, newY = startY;
 				if ((style & SWT.VERTICAL) != 0) {
 					int clientWidth = rect.right - rect.left;
@@ -107,7 +110,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 				event.y = newY;
 				event.width = width;
 				event.height = height;
-				event.detail = outResult [0] == OS.kMouseTrackingMouseDragged ? SWT.DRAG : 0;
+				event.detail = 0; //outResult [0] == OS.kMouseTrackingMouseDragged ? SWT.DRAG : 0;
 				sendEvent (SWT.Selection, event);
 				if (event.doit) setBounds (handle, newX, newY, width, height, true, true);
 				break;
