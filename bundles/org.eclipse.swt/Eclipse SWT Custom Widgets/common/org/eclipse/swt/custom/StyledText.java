@@ -4168,7 +4168,7 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 /**
  * Return the orientation of the receiver.
  *
- * @return the orientation bit.
+ * @return the orientation style
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -7565,7 +7565,7 @@ void setMouseWordSelectionAnchor() {
  * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.LEFT_TO_RIGHT</code>.
  * <p>
  *
- * @param orientation new orientation bit
+ * @param orientation new orientation style
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
