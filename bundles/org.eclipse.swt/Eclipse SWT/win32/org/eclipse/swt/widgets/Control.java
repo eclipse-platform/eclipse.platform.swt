@@ -736,6 +736,27 @@ int getCodePage () {
 	return OS.GetACP ();
 }
 
+String getClipboardText () {
+	String string = "";
+	if (OS.OpenClipboard (0)) {
+		int hMem = OS.GetClipboardData (OS.IsUnicode ? OS.CF_UNICODETEXT : OS.CF_TEXT);
+		if (hMem != 0) {
+			/* Ensure byteCount is a multiple of 2 bytes on UNICODE platforms */
+			int byteCount = OS.GlobalSize (hMem) / TCHAR.sizeof * TCHAR.sizeof;
+			int ptr = OS.GlobalLock (hMem);
+			if (ptr != 0) {
+				/* Use the character encoding for the default locale */
+				TCHAR buffer = new TCHAR (0, byteCount / TCHAR.sizeof);
+				OS.MoveMemory (buffer, ptr, byteCount);
+				string = buffer.toString (0, buffer.strlen ());
+				OS.GlobalUnlock (hMem);
+			}
+		}
+		OS.CloseClipboard ();
+	}
+	return string;
+}
+
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically

@@ -1733,6 +1733,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		if ((style & SWT.SINGLE) != 0) {
 			LRESULT result = wmClipboard (OS.EM_UNDO, wParam, lParam);
 			if (result != null) return result.value;
+			return callWindowProc (OS.EM_UNDO, wParam, lParam);
 		}
 	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
