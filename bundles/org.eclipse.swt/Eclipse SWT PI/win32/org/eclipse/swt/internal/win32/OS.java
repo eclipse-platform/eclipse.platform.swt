@@ -589,6 +589,7 @@ public class OS {
 	public static final int MB_OKCANCEL = 0x1;
 	public static final int MB_PRECOMPOSED = 0x1;
 	public static final int MB_RETRYCANCEL = 0x5;
+	public static final int MB_RTLREADING = 0x100000;
 	public static final int MB_SYSTEMMODAL = 0x1000;
 	public static final int MB_TASKMODAL = 0x2000;
 	public static final int MB_YESNO = 0x4;
@@ -597,6 +598,8 @@ public class OS {
 	public static final int MFS_DISABLED = 0x3;
 	public static final int MFS_GRAYED = 0x3;
 	public static final int MFT_RADIOCHECK = 0x200;
+	public static final int MFT_RIGHTJUSTIFY = 0x4000;
+	public static final int MFT_RIGHTORDER = 0x2000; 
 	public static final int MFT_SEPARATOR = 0x800;
 	public static final int MFT_STRING = 0x0;
 	public static final int MF_BYCOMMAND = 0x0;
@@ -945,6 +948,7 @@ public class OS {
 	public static final int TPM_LEFTALIGN = 0x0;
 	public static final int TPM_LEFTBUTTON = 0x0;
 	public static final int TPM_RIGHTBUTTON = 0x2;
+	public static final int TPM_RIGHTALIGN = 0x8;
 	public static final String TRACKBAR_CLASS = "msctls_trackbar32";
 	public static final int TRANSPARENT = 0x1;
 	public static final int TTF_IDISHWND = 0x1;
@@ -1197,6 +1201,8 @@ public class OS {
 	public static final int WS_EX_CAPTIONOKBTN = 0x80000000;
 	public static final int WS_EX_CLIENTEDGE = 0x200;
 	public static final int WS_EX_DLGMODALFRAME = 0x1;
+	public static final int WS_EX_LAYOUTRTL = 0x00400000;
+	public static final int WS_EX_NOINHERITLAYOUT = 0x00100000;
 	public static final int WS_EX_STATICEDGE = 0x20000;
 	public static final int WS_EX_TOOLWINDOW = 0x80;
 	public static final int WS_EX_TOPMOST = 0x8;
