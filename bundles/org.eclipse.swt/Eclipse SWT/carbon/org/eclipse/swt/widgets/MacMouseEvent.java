@@ -10,7 +10,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.internal.carbon.EventRecord;
 import org.eclipse.swt.internal.carbon.OS;
 
 class MacMouseEvent {

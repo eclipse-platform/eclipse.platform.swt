@@ -10,10 +10,9 @@ package org.eclipse.swt.widgets;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent a selectable user interface object
