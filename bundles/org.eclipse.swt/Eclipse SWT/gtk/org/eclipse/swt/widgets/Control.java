@@ -2406,7 +2406,7 @@ void setZOrder (Control sibling, boolean above, boolean fixChildren) {
 		if (window != 0) OS.gdk_window_lower (window);
 		if (fixChildren) parent.moveBelow (topHandle, siblingHandle);
 	}
-	if (fixChildren && parent.parentingHandle () == parent.fixedHandle) {
+	if (!above && fixChildren && parent.parentingHandle () == parent.fixedHandle) {
 		window = OS.GTK_WIDGET_WINDOW (parent.handle);
 		if (window != 0) OS.gdk_window_lower (window);
 	}
