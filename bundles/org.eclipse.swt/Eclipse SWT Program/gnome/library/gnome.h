@@ -8,17 +8,20 @@
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.gtk;
-
  
-public class GnomeVFSMimeApplication {
-	public int /*long*/ id;
-	public int /*long*/ name;
-	public int /*long*/ command;
-	public boolean can_open_multiple_files;
-	public int expects_uris;
-	public int /*long*/ supported_uri_schemes;
-	public boolean requires_terminal;
-	public static final int sizeof = GNOME.GnomeVFSMimeApplication_sizeof();
-}
+#include <string.h>
+#include <stdio.h>
+#include <assert.h>
+#include <libgnome/libgnome.h>
+#include <libgnome/gnome-program.h>
+#include <libgnomeui/libgnomeui.h>
+#include <libgnomevfs/gnome-vfs.h>
+#include <libgnomevfs/gnome-vfs-mime-handlers.h>
+#include <libgnomevfs/gnome-vfs-mime-info.h>
+
+#define NATIVE_ENTER(env,clazz,func)
+#define NATIVE_EXIT(env,clazz,func)

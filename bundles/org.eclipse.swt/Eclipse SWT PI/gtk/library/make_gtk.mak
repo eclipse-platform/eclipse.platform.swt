@@ -72,7 +72,7 @@ SWT_OBJECTS		= callback.o
 AWT_OBJECTS		= swt_awt.o
 SWTPI_OBJECTS	= os.o os_structs.o os_custom.o
 ATK_OBJECTS			= atk.o atk_structs.o atk_custom.o
-GNOME_OBJECTS	= gnome.o
+GNOME_OBJECTS	= gnome.o gnome_structs.o
 MOZILLA_OBJECTS = xpcom.o
  
 CFLAGS = -O -Wall \
@@ -145,6 +145,9 @@ $(GNOME_LIB): $(GNOME_OBJECTS)
 gnome.o: gnome.c 
 	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome.c
 
+gnome_structs.o: gnome_structs.c 
+	$(CC) $(CFLAGS) $(GNOMECFLAGS) -c gnome_structs.c
+	
 #
 # Mozilla lib
 #

@@ -37,7 +37,7 @@ SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 
 GNOME_PREFIX = swt-gnome
 GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-GNOME_OBJ    = gnome.o 
+GNOME_OBJECTS= gnome.o gnome_structs.o 
 GNOME_CFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOME_LIB = -shared -fpic -fPIC `pkg-config --libs gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 
@@ -82,11 +82,14 @@ $(SWT_DLL): $(SWT_OBJ)
 
 make_gnome: $(GNOME_DLL)
 
-$(GNOME_DLL): $(GNOME_OBJ)
-	gcc -o $@ $(GNOME_OBJ) $(GNOME_LIB)
+$(GNOME_DLL): $(GNOME_OBJECTS)
+	gcc -o $@ $(GNOME_OBJECTS) $(GNOME_LIB)
 
-$(GNOME_OBJ): gnome.c 
+gnome.o: gnome.c
 	gcc -O -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DGTK -I$(JAVA_HOME)/include $(GNOME_CFLAGS) -c -o gnome.o gnome.c
+
+gnome_structs.o: gnome_structs.c
+	gcc -O -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DGTK -I$(JAVA_HOME)/include $(GNOME_CFLAGS) -c -o gnome_structs.o gnome_structs.c
 
 make_kde: $(KDE_DLL)
 
