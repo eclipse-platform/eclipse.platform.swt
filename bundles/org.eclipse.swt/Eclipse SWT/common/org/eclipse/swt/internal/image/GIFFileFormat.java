@@ -157,7 +157,7 @@ final class GIFFileFormat extends FileFormat {
 			}
 			id = readID();
 		}
-		if (id == GIF_IMAGE_BLOCK_ID) {
+		if (id == GIF_IMAGE_BLOCK_ID || id == GIF_TRAILER_ID) {
 			try {
 				inputStream.unread(new byte[] {(byte)id});
 			} catch (IOException e) {
