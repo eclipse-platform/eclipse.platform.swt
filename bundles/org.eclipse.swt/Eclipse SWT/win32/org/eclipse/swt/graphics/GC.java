@@ -1729,7 +1729,7 @@ public void getClipping (Region region) {
 }
 
 int getCodePage () {
-	if (OS.IsWinCE) return OS.GetACP();
+	if (OS.IsUnicode) return OS.CP_ACP;
 	int[] lpCs = new int[8];
 	int cs = OS.GetTextCharset(handle);
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
