@@ -315,9 +315,24 @@ int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ eventPtr) {
 
 int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr) {
 	int /*long*/ result = super.gtk_motion_notify_event (widget, eventPtr);
+	if (!dragging) return 0;
 	GdkEventMotion gdkEvent = new GdkEventMotion ();
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
-	if (!dragging || (gdkEvent.state & OS.GDK_BUTTON1_MASK) == 0) return 0;
+	int eventX, eventY, eventState;
+	if (gdkEvent.is_hint != 0) {
+		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
+		OS.gdk_window_get_pointer (gdkEvent.window, pointer_x, pointer_y, mask);
+		eventX = pointer_x [0];
+		eventY = pointer_y [0];
+		eventState = mask [0];
+	} else {
+		int [] origin_x = new int [1], origin_y = new int [1];
+		OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);	
+		eventX = (int) (gdkEvent.x_root - origin_x [0]);
+		eventY = (int) (gdkEvent.y_root - origin_y [0]);
+		eventState = gdkEvent.state;
+	}
+	if ((eventState & OS.GDK_BUTTON1_MASK) == 0) return 0;
 	int x = OS.GTK_WIDGET_X (handle);
 	int y = OS.GTK_WIDGET_Y (handle);
 	int width = OS.GTK_WIDGET_WIDTH (handle);
@@ -325,18 +340,6 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ eventPtr
 	int parentBorder = 0;
 	int parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
 	int parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
-	int eventX, eventY;
-	if (gdkEvent.is_hint != 0) {
-		int [] pointer_x = new int [1], pointer_y = new int [1];
-		OS.gdk_window_get_pointer (gdkEvent.window, pointer_x, pointer_y, null);
-		eventX = pointer_x [0];
-		eventY = pointer_y [0];
-	} else {
-		int [] origin_x = new int [1], origin_y = new int [1];
-		OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);	
-		eventX = (int) (gdkEvent.x_root - origin_x [0]);
-		eventY = (int) (gdkEvent.y_root - origin_y [0]);
-	}
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
 		newX = Math.min (Math.max (0, eventX + x - startX - parentBorder), parentWidth - width);

@@ -2006,13 +2006,15 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 		display.addMouseHoverTimeout (handle);
 	}
 	double x_root = gdkEvent.x_root, y_root = gdkEvent.y_root;
+	int state = gdkEvent.state;
 	if (gdkEvent.is_hint != 0) {
-		int [] pointer_x = new int [1], pointer_y = new int [1];
-		OS.gdk_window_get_pointer (0, pointer_x, pointer_y, null);
+		int [] pointer_x = new int [1], pointer_y = new int [1], mask = new int [1];
+		OS.gdk_window_get_pointer (0, pointer_x, pointer_y, mask);
 		x_root = pointer_x [0];
 		y_root = pointer_y [0];
+		state = mask [0];
 	}
-	sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x_root, y_root, gdkEvent.state, event);
+	sendMouseEvent (SWT.MouseMove, 0, gdkEvent.time, x_root, y_root, state, event);
 	return 0;
 }
 
