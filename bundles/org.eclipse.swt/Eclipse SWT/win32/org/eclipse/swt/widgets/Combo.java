@@ -54,7 +54,7 @@ import org.eclipse.swt.events.*;
  */
 
 public class Combo extends Composite {
-	boolean noSelection, ignoreCharacter;
+	boolean noSelection, ignoreModify, ignoreCharacter;
 	int visibleCount = 5;
 	
 	/**
@@ -241,6 +241,34 @@ public void addSelectionListener(SelectionListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's text is verified, by sending
+ * it one of the messages defined in the <code>VerifyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #removeVerifyListener
+ * 
+ * @since 3.1
+ */
+void addVerifyListener (VerifyListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Verify, typedListener);
 }
 
 int callWindowProc (int msg, int wParam, int lParam) {
@@ -439,6 +467,7 @@ void createHandle () {
  */
 public void cut () {
 	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) return;
 	OS.SendMessage (handle, OS.WM_CUT, 0, 0);
 }
 
@@ -523,7 +552,7 @@ public String getItem (int index) {
 	int count = OS.SendMessage (handle, OS.CB_GETCOUNT, 0, 0);
 	if (0 <= index && index < count) error (SWT.ERROR_CANNOT_GET_ITEM);
 	error (SWT.ERROR_INVALID_RANGE);
-	return null;
+	return "";
 }
 
 /**
@@ -627,6 +656,10 @@ public Point getSelection () {
 	}
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
+	if (OS.IsDBLocale) {
+		start [0] = mbcsToWcsPos (start [0]);
+		end [0] = mbcsToWcsPos (end [0]);
+	}
 	return new Point (start [0], end [0]);
 }
 
@@ -645,6 +678,17 @@ public int getSelectionIndex () {
 	checkWidget ();
 	if (noSelection) return -1;
 	return OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
+}
+
+String getSelectionText () {
+//	checkWidget ();
+	/*
+	* NOTE: The current implementation uses substring ()
+	* which can reference a potentially large character
+	* array.
+	*/
+	Point selection = getSelection ();
+	return getText ().substring (selection.x, selection.y);
 }
 
 /**
@@ -808,6 +852,19 @@ public int indexOf (String string, int start) {
 	return index;
 }
 
+int mbcsToWcsPos (int mbcsPos) {
+	if (mbcsPos <= 0) return 0;
+	if (OS.IsUnicode) return mbcsPos;
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText == 0) return mbcsPos;
+	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
+	if (mbcsSize == 0) return 0;
+	if (mbcsPos >= mbcsSize) return mbcsSize;
+	byte [] buffer = new byte [mbcsSize + 1];
+	OS.GetWindowTextA (hwndText, buffer, mbcsSize + 1);
+	return OS.MultiByteToWideChar (getCodePage (), OS.MB_PRECOMPOSED, buffer, mbcsPos, null, 0);
+}
+
 /**
  * Pastes text from clipboard.
  * <p>
@@ -824,6 +881,7 @@ public int indexOf (String string, int start) {
  */
 public void paste () {
 	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) return;
 	OS.SendMessage (handle, OS.WM_PASTE, 0, 0);
 }
 
@@ -947,6 +1005,8 @@ public void remove (int start, int end) {
  * </ul>
  */
 public void remove (String string) {
+	checkWidget ();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int index = indexOf (string, 0);
 	if (index == -1) error (SWT.ERROR_INVALID_ARGUMENT);
 	remove (index);
@@ -1014,6 +1074,117 @@ public void removeSelectionListener (SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is verified.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #addVerifyListener
+ * 
+ * @since 3.1
+ */
+void removeVerifyListener (VerifyListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Verify, listener);	
+}
+
+boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
+	if (!super.sendKeyEvent (type, msg, wParam, lParam, event)) {
+		return false;
+	}
+	if ((style & SWT.READ_ONLY) != 0) return true;
+	if (type != SWT.KeyDown) return true;
+	if (msg != OS.WM_CHAR && msg != OS.WM_KEYDOWN && msg != OS.WM_IME_CHAR) {
+		return true;
+	}
+	if (event.character == 0) return true;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return true;
+	char key = event.character;
+	int stateMask = event.stateMask;
+	
+	/*
+	* Disable all magic keys that could modify the text
+	* and don't send events when Alt, Shift or Ctrl is
+	* pressed.
+	*/
+	switch (msg) {
+		case OS.WM_CHAR:
+			if (key != 0x08 && key != 0x7F && key != '\r' && key != '\t' && key != '\n') break;
+			// FALL THROUGH
+		case OS.WM_KEYDOWN:
+			if ((stateMask & (SWT.ALT | SWT.SHIFT | SWT.CONTROL)) != 0) return false;
+			break;
+	}
+
+	/*
+	* If the left button is down, the text widget refuses the character.
+	*/
+	if (OS.GetKeyState (OS.VK_LBUTTON) < 0) {
+		return true;
+	}
+
+	/* Verify the character */
+	String oldText = "";
+	int [] start = new int [1], end = new int [1];
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText == 0) return true;
+	OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+	switch (key) {
+		case 0x08:	/* Bs */
+			if (start [0] == end [0]) {
+				if (start [0] == 0) return true;
+				start [0] = start [0] - 1;
+				if (OS.IsDBLocale) {
+					int [] newStart = new int [1], newEnd = new int [1];
+					OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
+					OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
+					if (start [0] != newStart [0]) start [0] = start [0] - 1;
+				}
+				start [0] = Math.max (start [0], 0);
+			}
+			break;
+		case 0x7F:	/* Del */
+			if (start [0] == end [0]) {
+				int length = OS.GetWindowTextLength (hwndText);
+				if (start [0] == length) return true;
+				end [0] = end [0] + 1;
+				if (OS.IsDBLocale) {
+					int [] newStart = new int [1], newEnd = new int [1];
+					OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
+					OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
+					if (end [0] != newEnd [0]) end [0] = end [0] + 1;
+				}
+				end [0] = Math.min (end [0], length);
+			}
+			break;
+		case '\r':	/* Return */
+			return true;
+		default:	/* Tab and other characters */
+			if (key != '\t' && key < 0x20) return true;
+			oldText = new String (new char [] {key});
+			break;
+	}
+	String newText = verifyText (oldText, start [0], end [0], event);
+	if (newText == null) return false;
+	if (newText == oldText) return true;
+	TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+	OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
+	OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, buffer);
+	return false;
 }
 
 /**
@@ -1291,7 +1462,12 @@ public void setOrientation (int orientation) {
 public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int bits = selection.x | (selection.y << 16);
+	int start = selection.x, end = selection.y;
+	if (OS.IsDBLocale) {
+		start = wcsToMbcsPos (start);
+		end = wcsToMbcsPos (end);
+	}
+	int bits = start | (end << 16);
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
 }
 
@@ -1426,6 +1602,49 @@ void unsubclass () {
 	}
 }
 
+String verifyText (String string, int start, int end, Event keyEvent) {
+	Event event = new Event ();
+	event.text = string;
+	event.start = start;
+	event.end = end;
+	if (keyEvent != null) {
+		event.character = keyEvent.character;
+		event.keyCode = keyEvent.keyCode;
+		event.stateMask = keyEvent.stateMask;
+	}
+	if (OS.IsDBLocale) {
+		event.start = mbcsToWcsPos (start);
+		event.end = mbcsToWcsPos (end);
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the verify
+	* event.  If this happens, answer null to cancel
+	* the operation.
+	*/
+	sendEvent (SWT.Verify, event);
+	if (!event.doit || isDisposed ()) return null;
+	return event.text;
+}
+
+int wcsToMbcsPos (int wcsPos) {
+	if (wcsPos <= 0) return 0;
+	if (OS.IsUnicode) return wcsPos;
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText == 0) return wcsPos;
+	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
+	if (mbcsSize == 0) return 0;
+	byte [] buffer = new byte [mbcsSize + 1];
+	OS.GetWindowTextA (hwndText, buffer, mbcsSize + 1);
+	int mbcsPos = 0, wcsCount = 0;
+	while (mbcsPos < mbcsSize) {
+		if (wcsPos == wcsCount) break;
+		if (OS.IsDBCSLeadByte (buffer [mbcsPos++])) mbcsPos++;
+		wcsCount++;
+	}
+	return mbcsPos;
+}
+
 int widgetExtStyle () {
 	return super.widgetExtStyle () & ~OS.WS_EX_NOINHERITLAYOUT;
 }
@@ -1453,6 +1672,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 		if ((hwndText != 0 && hwnd == hwndText) || (hwndList != 0 && hwnd == hwndList)) {
 			LRESULT result = null;
 			switch (msg) {
+				/* Keyboard messages */
 				case OS.WM_CHAR:		result = WM_CHAR (wParam, lParam); break;
 				case OS.WM_IME_CHAR:	result = WM_IME_CHAR (wParam, lParam); break;
 				case OS.WM_KEYDOWN:		result = WM_KEYDOWN (wParam, lParam); break;
@@ -1460,15 +1680,56 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				case OS.WM_SYSCHAR:		result = WM_SYSCHAR (wParam, lParam); break;
 				case OS.WM_SYSKEYDOWN:	result = WM_SYSKEYDOWN (wParam, lParam); break;
 				case OS.WM_SYSKEYUP:	result = WM_SYSKEYUP (wParam, lParam); break;
+
+				/* Context menu messages */
 				case OS.WM_CONTEXTMENU:
 					/* Pretend the WM_CONTEXTMENU was sent to the combo box */
-					result = WM_CONTEXTMENU (handle, lParam); break;
+					result = WM_CONTEXTMENU (handle, lParam);
+					break;
+					
+				/* Clipboard messages */
+				case OS.WM_CLEAR:
+				case OS.WM_CUT:
+				case OS.WM_PASTE:
+				case OS.WM_UNDO:
+				case OS.EM_UNDO:
+				case OS.WM_SETTEXT:
+					if (hwnd == hwndText) {
+						result = wmClipboard (hwndText, msg, wParam, lParam);
+					}
+					break;
 			}
 			if (result != null) return result.value;
 			int windowProc = hwnd == hwndText ? EditProc : ListProc;
 			return OS.CallWindowProc (windowProc, hwnd, msg, wParam, lParam);
 		}
-	}	
+	}
+	if (msg == OS.CB_SETCURSEL) {
+		if ((style & SWT.READ_ONLY) != 0) {
+			if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+				String oldText = getText (), newText = null;
+				if (wParam == -1) {
+					newText = "";
+				} else {
+					if (0 <= wParam && wParam < getItemCount ()) {
+						newText = getItem (wParam);
+					}
+				}
+				if (newText != null && !newText.equals (oldText)) {
+					int length = OS.GetWindowTextLength (handle);
+					oldText = newText;
+					newText = verifyText (newText, 0, length, null);
+					if (newText == null) return 0;
+					if (!newText.equals (oldText)) {
+						int index = indexOf (newText);
+						if (index != -1 && index != wParam) {
+							return callWindowProc (OS.CB_SETCURSEL, index, lParam);
+						}
+					}
+				}
+			}
+		}
+	}
 	return super.windowProc (hwnd, msg, wParam, lParam);
 }
 
@@ -1602,10 +1863,71 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	return result; 
 }
 
+LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
+	if ((style & SWT.READ_ONLY) != 0) return null;
+	if (!hooks (SWT.Verify) && !filters (SWT.Verify)) return null;
+	boolean call = false, select = false;
+	int [] start = new int [1], end = new int [1];
+	String oldText = null, newText = null;
+	switch (msg) {
+		case OS.WM_CLEAR:
+		case OS.WM_CUT:
+			OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+			if (start [0] != end [0]) {
+				newText = "";
+				call = true;
+			}
+			break;
+		case OS.WM_PASTE:
+			OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+			newText = getClipboardText ();
+			break;
+		case OS.EM_UNDO:
+		case OS.WM_UNDO:
+			if (OS.SendMessage (hwndText, OS.EM_CANUNDO, 0, 0) != 0) {
+				ignoreModify = true;
+				OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
+				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
+				newText = getSelectionText ();
+				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
+				ignoreModify = false;
+			}
+			break;
+		case OS.WM_SETTEXT:
+			select = true;
+			end [0] = OS.GetWindowTextLength (hwndText);
+			oldText = getText ();
+			int length = OS.IsUnicode ? OS.wcslen (lParam) : OS.strlen (lParam);
+			TCHAR buffer = new TCHAR (getCodePage (), length);
+			int byteCount = buffer.length () * TCHAR.sizeof;
+			OS.MoveMemory (buffer, lParam, byteCount);
+			newText = buffer.toString (0, length);
+			break;
+	}
+	if (newText != null && !newText.equals (oldText)) {
+		oldText = newText;
+		newText = verifyText (newText, start [0], end [0], null);
+		if (newText == null) return LRESULT.ZERO;
+		if (!newText.equals (oldText)) {
+			if (call) {
+				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
+			}
+			if (select) {
+				OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
+			}
+			TCHAR buffer = new TCHAR (getCodePage (), newText, true);
+			OS.SendMessage (hwndText, OS.EM_REPLACESEL, 0, buffer);
+			return LRESULT.ZERO;
+		}
+	}
+	return null;
+}
+
 LRESULT wmCommandChild (int wParam, int lParam) {
 	int code = wParam >> 16;
 	switch (code) {
 		case OS.CBN_EDITCHANGE:
+			if (ignoreModify) break;
 			/*
 			* Feature in Windows.  If the combo box list selection is
 			* queried using CB_GETCURSEL before the WM_COMMAND (with
@@ -1638,7 +1960,9 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			* to match the list selection by re-selecting the list item.
 			*/
 			int index = OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
-			if (index != OS.CB_ERR) OS.SendMessage (handle, OS.CB_SETCURSEL, index, 0);
+			if (index != OS.CB_ERR) {
+				OS.SendMessage (handle, OS.CB_SETCURSEL, index, 0);
+			}
 			/*
 			* It is possible (but unlikely), that application
 			* code could have disposed the widget in the modify
