@@ -2452,6 +2452,7 @@ boolean setButtonBounds() {
 						}
 					}
 					topRightRect.x = lastItem.x + lastItem.width;
+					if (single) topRightRect.x += 4 + 3*BUTTON_SIZE/2; // in single mode, always allow space for chevron button
 					topRightRect.width = rightEdge - topRightRect.x;
 				}
 				break;
