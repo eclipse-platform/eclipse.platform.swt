@@ -390,9 +390,6 @@ private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispP
 			return COM.DISP_E_MEMBERNOTFOUND;
 	}
 }
-public boolean isFocusControl () {
-	return getDisplay().getFocusControl() == this;
-}
 private int OnControlInfoChanged() {
 	int[] ppvObject = new int[1];
 	if (objIUnknown.QueryInterface(COM.IIDIOleControl, ppvObject) == COM.S_OK) {
@@ -406,15 +403,7 @@ private int OnControlInfoChanged() {
 	return COM.S_OK;
 }
 private int OnFocus(int fGotFocus) {
-	//if (frame == null) return COM.S_OK;
-	
-	//if (fGotFocus != 0) {
-	//	frame.setCurrentDocument(this);
-	//} else {
-	//	frame.setCurrentDocument(null);
-	//}
 	return COM.S_OK;
-	//return COM.E_NOTIMPL;
 }
 protected int OnUIDeactivate(int fUndoable) {
 	// controls don't need to do anything for

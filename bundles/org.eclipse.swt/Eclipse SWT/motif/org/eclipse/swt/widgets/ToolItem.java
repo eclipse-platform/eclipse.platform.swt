@@ -963,7 +963,7 @@ int processPaint (int callData) {
 		XExposeEvent xEvent = new XExposeEvent ();
 		OS.memmove (xEvent, cb.event, XExposeEvent.sizeof);
 		Rectangle rect = new Rectangle (xEvent.x, xEvent.y, xEvent.width, xEvent.height);
-//		gc.setClipping (rect);
+		gc.setClipping (rect);
 	}
 	
 	if (!enabled) {

@@ -775,14 +775,15 @@ public boolean isDirty() {
 }
 public boolean isFocusControl () {
 	checkWidget ();
+	int focusHwnd = OS.GetFocus();
+	if (focusHwnd == handle) return true;
 	if (objIOleInPlaceObject == null) return false;
 	int[] phwnd = new int[1];
 	objIOleInPlaceObject.GetWindow(phwnd);
 	if (phwnd[0] == 0) return false;
-	int handle = OS.GetFocus();
 	do {
-		if (phwnd[0] == handle) return true;
-	} while ((handle = OS.GetParent (handle)) != 0);
+		if (phwnd[0] == focusHwnd) return true;
+	} while ((focusHwnd = OS.GetParent (focusHwnd)) != 0);
 	return false;
 }
 private int OnClose() {
@@ -841,9 +842,16 @@ private int OnPosRectChange(int lprcPosRect) {
 private void onPaint(Event e) {
 	if (!active && objIUnknown != null) {
 		SIZE size = getExtent();
+		Rectangle area = getClientArea();
 		RECT rect = new RECT();
-		rect.left = 0; rect.top = 0;
-		rect.right = size.cx; rect.bottom = size.cy;
+		if (getProgramID().startsWith("Excel.Sheet")) {
+			rect.left = area.x; rect.right = area.x + (area.height * size.cx / size.cy);
+			rect.top = area.y; rect.bottom = area.y + area.height;
+		} else {
+			rect.left = area.x; rect.right = area.x + size.cx;
+			rect.top = area.y; rect.bottom = area.y + size.cy;
+		}
+		
 		int pArea = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, RECT.sizeof);
 		OS.MoveMemory(pArea, rect, RECT.sizeof);
 		COM.OleDraw(objIUnknown.getAddress(), aspect, e.gc.handle, pArea);
