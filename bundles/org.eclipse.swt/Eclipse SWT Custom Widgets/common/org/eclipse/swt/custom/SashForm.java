@@ -23,14 +23,14 @@ import org.eclipse.swt.graphics.*;
  *
  * <p>
  * <dl>
- * <dt><b>Styles:</b><dd>HORIZONTAL, VERTICAL
+ * <dt><b>Styles:</b><dd>HORIZONTAL, VERTICAL, SMOOTH
  * </dl>
  */
 public class SashForm extends Composite {
 
 	public int SASH_WIDTH = 3;
-	
-	int orientation = SWT.HORIZONTAL;
+
+	int sashStyle;
 	Sash[] sashes = new Sash[0];
 	// Remember background and foreground
 	// colors to determine whether to set
@@ -74,10 +74,9 @@ public class SashForm extends Composite {
 public SashForm(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	super.setLayout(new SashFormLayout());
-	if ((style & SWT.VERTICAL) != 0){
-		orientation = SWT.VERTICAL;
-	}
-	
+	sashStyle = ((style & SWT.VERTICAL) != 0) ? SWT.HORIZONTAL : SWT.VERTICAL;
+	if ((style & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
+	if ((style & SWT.SMOOTH) != 0) sashStyle |= SWT.SMOOTH;
 	sashListener = new Listener() {
 		public void handleEvent(Event e) {
 			onDragSash(e);
@@ -96,12 +95,12 @@ static int checkStyle (int style) {
  */
 public int getOrientation() {
 	//checkWidget();
-	return orientation;
+	return (sashStyle & SWT.VERTICAL) != 0 ? SWT.HORIZONTAL : SWT.VERTICAL;
 }
 public int getStyle() {
 	int style = super.getStyle();
-	if (orientation == SWT.HORIZONTAL) style |= SWT.HORIZONTAL;
-	if (orientation == SWT.VERTICAL) style |= SWT.VERTICAL;
+	style |= getOrientation() == SWT.VERTICAL ? SWT.VERTICAL : SWT.HORIZONTAL;
+	if ((sashStyle & SWT.SMOOTH) != 0) style |= SWT.SMOOTH;
 	return style;
 }
 /**
@@ -161,7 +160,7 @@ void onDragSash(Event event) {
   if (event.detail == SWT.DRAG) {
     // constrain feedback
     Rectangle area = getClientArea();
-    if (orientation == SWT.HORIZONTAL) {
+    if (getOrientation() == SWT.HORIZONTAL) {
 			event.x = Math.min(Math.max(DRAG_MINIMUM, event.x), area.width - DRAG_MINIMUM - SASH_WIDTH);
     } else {
 			event.y = Math.min(Math.max(DRAG_MINIMUM, event.y), area.height - DRAG_MINIMUM - SASH_WIDTH);
@@ -186,7 +185,7 @@ void onDragSash(Event event) {
 	
 	Rectangle sashBounds = sash.getBounds();
 	Rectangle area = getClientArea();
-	if (orientation == SWT.HORIZONTAL) {
+	if (getOrientation() == SWT.HORIZONTAL) {
 		int shift = event.x - sashBounds.x;
 		b1.width += shift;
 		b2.x += shift;
@@ -227,14 +226,12 @@ void onDragSash(Event event) {
  */
 public void setOrientation(int orientation) {
 	checkWidget();
-	if (this.orientation == orientation) return;
+	if (getOrientation() == orientation) return;
 	if (orientation != SWT.HORIZONTAL && orientation != SWT.VERTICAL) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	this.orientation = orientation;
-	
-	int sashStyle = (orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
-	if ((getStyle() & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
+	sashStyle &= ~(SWT.HORIZONTAL | SWT.VERTICAL);
+	sashStyle |= orientation == SWT.VERTICAL ? SWT.HORIZONTAL : SWT.VERTICAL;
 	for (int i = 0; i < sashes.length; i++) {
 		sashes[i].dispose();
 		sashes[i] = new Sash(this, sashStyle);

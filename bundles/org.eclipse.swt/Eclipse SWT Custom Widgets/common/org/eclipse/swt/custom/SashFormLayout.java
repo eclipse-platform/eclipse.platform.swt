@@ -31,7 +31,7 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 		return new Point(width, height);
 	}
 	// determine control sizes
-	boolean vertical = (sashForm.orientation == SWT.VERTICAL);
+	boolean vertical = sashForm.getOrientation() == SWT.VERTICAL;
 	int maxIndex = 0;
 	int maxValue = 0;
 	for (int i = 0; i < cArray.length; i++) {
@@ -106,10 +106,8 @@ protected void layout(Composite composite, boolean flushCache) {
 	if (sashForm.sashes.length < controls.length - 1) {
 		Sash[] newSashes = new Sash[controls.length - 1];
 		System.arraycopy(sashForm.sashes, 0, newSashes, 0, sashForm.sashes.length);
-		int sashStyle = (sashForm.orientation == SWT.HORIZONTAL) ? SWT.VERTICAL : SWT.HORIZONTAL;
-		if ((sashForm.getStyle() & SWT.BORDER) != 0) sashStyle |= SWT.BORDER;
 		for (int i = sashForm.sashes.length; i < newSashes.length; i++) {
-			newSashes[i] = new Sash(sashForm, sashStyle);
+			newSashes[i] = new Sash(sashForm, sashForm.sashStyle);
 			newSashes[i].setBackground(sashForm.background);
 			newSashes[i].setForeground(sashForm.foreground);
 			newSashes[i].addListener(SWT.Selection, sashForm.sashListener);
@@ -147,7 +145,7 @@ protected void layout(Composite composite, boolean flushCache) {
 	}
 	
 	int sashwidth = sashes.length > 0 ? sashForm.SASH_WIDTH + sashes [0].getBorderWidth() * 2 : sashForm.SASH_WIDTH;
-	if (sashForm.orientation == SWT.HORIZONTAL) {
+	if (sashForm.getOrientation() == SWT.HORIZONTAL) {
 		int width = (int)(ratios[0] * (area.width - sashes.length * sashwidth) / total);
 		int x = area.x;
 		controls[0].setBounds(x, area.y, width, area.height);
