@@ -29,6 +29,8 @@ package org.eclipse.swt.graphics;
  *
  * @see #dispose
  * @see #isDisposed
+ * 
+ * @since 3.1
  */
 public abstract class Resource {
     
