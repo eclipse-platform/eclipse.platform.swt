@@ -808,7 +808,10 @@ void updateFont (Font oldFont, Font newFont) {
 		}
 	}
 	super.updateFont (oldFont, newFont);
-	layout (true);
+	if (layout != null) {
+		markLayout (true, false);
+		updateLayout (true, false);
+	}
 }
 
 void updateLayout (boolean resize, boolean all) {
