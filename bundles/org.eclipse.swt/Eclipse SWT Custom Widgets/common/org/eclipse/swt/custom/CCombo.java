@@ -40,6 +40,9 @@ public final class CCombo extends Composite {
 	Shell popup;
 	Button arrow;
 	boolean hasFocus;
+	Listener listener;
+	Color foreground, background;
+	Font font;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -76,17 +79,11 @@ public CCombo (Composite parent, int style) {
 	if ((style & SWT.READ_ONLY) != 0) textStyle |= SWT.READ_ONLY;
 	if ((style & SWT.FLAT) != 0) textStyle |= SWT.FLAT;
 	text = new Text (this, textStyle);
-	popup = new Shell (getDisplay(), SWT.NO_TRIM | SWT.ON_TOP);
-	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
-	if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
-	if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
-	list = new List (popup, listStyle);
 	int arrowStyle = SWT.ARROW | SWT.DOWN;
 	if ((style & SWT.FLAT) != 0) arrowStyle |= SWT.FLAT;
 	arrow = new Button (this, arrowStyle);
 
-	Listener listener = new Listener () {
+	listener = new Listener () {
 		public void handleEvent (Event event) {
 			if (popup == event.widget) {
 				popupEvent (event);
@@ -115,18 +112,13 @@ public CCombo (Composite parent, int style) {
 	int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
-	for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
-	
 	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn, SWT.FocusOut};
 	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
-	
-	int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.FocusOut};
-	for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
 	
 	int [] arrowEvents = {SWT.Selection, SWT.FocusIn, SWT.FocusOut};
 	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
 	
+	createPopup(null, -1);
 	initAccessible();
 }
 static int checkStyle (int style) {
@@ -267,7 +259,10 @@ public void clearSelection () {
 void comboEvent (Event event) {
 	switch (event.type) {
 		case SWT.Dispose:
-			if (popup != null && !popup.isDisposed ()) popup.dispose ();
+			if (popup != null && !popup.isDisposed ()) {
+				list.removeListener(SWT.Dispose, listener);
+				popup.dispose ();
+			}
 			popup = null;  
 			text = null;  
 			list = null;  
@@ -293,6 +288,27 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	height = Math.max (hHint, Math.max(textSize.y, arrowSize.y)  + 2*borderWidth);
 	width = Math.max (wHint, Math.max(textSize.x + arrowSize.x + 2*borderWidth, listSize.x + 2)  );
 	return new Point (width, height);
+}
+void createPopup(String[] items, int selectionIndex) {		
+		// create shell and list
+		popup = new Shell (getShell(), SWT.NO_TRIM | SWT.ON_TOP);
+		int style = getStyle();
+		int listStyle = SWT.SINGLE | SWT.V_SCROLL;
+		if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
+		if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
+		if ((style & SWT.LEFT_TO_RIGHT) != 0) listStyle |= SWT.LEFT_TO_RIGHT;
+		list = new List (popup, listStyle);
+		if (font != null) list.setFont(font);
+		if (foreground != null) list.setForeground(foreground);
+		if (background != null) list.setBackground(background);
+		
+		int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
+		for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
+		int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.FocusOut, SWT.Dispose};
+		for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
+		
+		if (items != null) list.setItems(items);
+		if (selectionIndex != -1) list.setSelection(selectionIndex);
 }
 /**
 * Deselects an item.
@@ -338,6 +354,23 @@ void dropDown (boolean drop) {
 		return;
 	}
 
+	if (getShell() != popup.getParent()) {
+		String[] items = list.getItems();
+		int selectionIndex = list.getSelectionIndex();
+		list.removeListener(SWT.Dispose, listener);
+		popup.dispose();
+		popup = null;
+		list = null;
+		createPopup(items, selectionIndex);
+	}
+	
+	Point size = getSize();
+	int itemCount = list.getItemCount();
+	itemCount = (itemCount == 0) ? visibleItemCount : Math.min(visibleItemCount, itemCount);
+	int itemHeight = list.getItemHeight () * itemCount;
+	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight);
+	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
+	
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
 	Display display = getDisplay ();
@@ -360,6 +393,8 @@ public Control [] getChildren () {
 }
 /**
  * Gets the editable state.
+ * 
+ * @return true if the contents can be edited
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -658,9 +693,8 @@ public boolean isFocusControl () {
 	checkWidget();
 	if (text.isFocusControl() || arrow.isFocusControl() || list.isFocusControl() || popup.isFocusControl()) {
 		return true;
-	} else {
-		return super.isFocusControl();
-	}
+	} 
+	return super.isFocusControl();
 }
 void internalLayout () {
 	if (isDropped ()) dropDown (false);
@@ -671,16 +705,18 @@ void internalLayout () {
 	Point arrowSize = arrow.computeSize(SWT.DEFAULT, height);
 	text.setBounds (0, 0, width - arrowSize.x, height);
 	arrow.setBounds (width - arrowSize.x, 0, arrowSize.x, arrowSize.y);
-	
-	Point size = getSize();
-	int itemCount = list.getItemCount();
-	itemCount = (itemCount == 0) ? visibleItemCount : Math.min(visibleItemCount, itemCount);
-	int itemHeight = list.getItemHeight () * itemCount;
-	Point listSize = list.computeSize (SWT.DEFAULT, itemHeight);
-	list.setBounds (1, 1, Math.max (size.x - 2, listSize.x), listSize.y);
 }
 void listEvent (Event event) {
 	switch (event.type) {
+		case SWT.Dispose:
+			if (getShell() != popup.getParent()) {
+				String[] items = list.getItems();
+				int selectionIndex = list.getSelectionIndex();
+				popup = null;
+				list = null;
+				createPopup(items, selectionIndex);
+			}
+			break;
 		case SWT.FocusIn: {
 			if (hasFocus) return;
 			hasFocus = true;
@@ -960,6 +996,7 @@ public void select (int index) {
 }
 public void setBackground (Color color) {
 	super.setBackground(color);
+	background = color;
 	if (text != null) text.setBackground(color);
 	if (list != null) list.setBackground(color);
 	if (arrow != null) arrow.setBackground(color);
@@ -993,12 +1030,14 @@ public boolean setFocus () {
 }
 public void setFont (Font font) {
 	super.setFont (font);
+	this.font = font;
 	text.setFont (font);
 	list.setFont (font);
 	internalLayout ();
 }
 public void setForeground (Color color) {
 	super.setForeground(color);
+	foreground = color;
 	if (text != null) text.setForeground(color);
 	if (list != null) list.setForeground(color);
 	if (arrow != null) arrow.setForeground(color);
