@@ -27,7 +27,6 @@ public class AccessibleObject {
 	int descriptionPtr = -1;
 	int keybindingPtr = -1;
 	int namePtr = -1;
-	int textPtr = -1;
 	static boolean DEBUG = Display.DEBUG;
 
 	AccessibleObject (int type, int widget, Accessible accessible, int parentType, boolean isLightweight) {
@@ -576,11 +575,9 @@ public class AccessibleObject {
 			start_offset = Math.min (start_offset, end_offset);
 			text = text.substring (start_offset, end_offset);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-//			TODO gnopernicus bug? freeing previous string can cause gp
-//			if (textPtr != -1) OS.g_free (textPtr);
-			textPtr = OS.g_malloc (bytes.length);
-			OS.memmove (textPtr, bytes, bytes.length);
-			return textPtr;
+			int result = OS.g_malloc (bytes.length);
+			OS.memmove (result, bytes, bytes.length);
+			return result;
 		}
 		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
 			int superType = ATK.g_type_class_peek (parentType);
@@ -755,11 +752,9 @@ public class AccessibleObject {
 			OS.memmove (end_offset, new int[] {endBounds}, 4);
 			text = text.substring (startBounds, endBounds);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-//			TODO gnopernicus bug? freeing previous string can cause gp
-//			if (textPtr != -1) OS.g_free (textPtr);
-			textPtr = OS.g_malloc (bytes.length);
-			OS.memmove (textPtr, bytes, bytes.length);
-			return textPtr;
+			int result = OS.g_malloc (bytes.length);
+			OS.memmove (result, bytes, bytes.length);
+			return result;
 		} 
 		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
 			int superType = ATK.g_type_class_peek (parentType);
@@ -877,11 +872,9 @@ public class AccessibleObject {
 			OS.memmove (end_offset, new int[] {endBounds}, 4);
 			text = text.substring (startBounds, endBounds);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-//			TODO gnopernicus bug? freeing previous string can cause gp
-//			if (textPtr != -1) OS.g_free (textPtr);
-			textPtr = OS.g_malloc (bytes.length);
-			OS.memmove (textPtr, bytes, bytes.length);
-			return textPtr;
+			int result = OS.g_malloc (bytes.length);
+			OS.memmove (result, bytes, bytes.length);
+			return result;
 		} 
 		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
 			int superType = ATK.g_type_class_peek (parentType);
@@ -1004,11 +997,9 @@ public class AccessibleObject {
 			OS.memmove (end_offset, new int[] {endBounds}, 4);
 			text = text.substring (startBounds, endBounds);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-//			TODO gnopernicus bug? freeing previous string can cause gp
-//			if (textPtr != -1) OS.g_free (textPtr);
-			textPtr = OS.g_malloc (bytes.length);
-			OS.memmove (textPtr, bytes, bytes.length);
-			return textPtr;
+			int result = OS.g_malloc (bytes.length);
+			OS.memmove (result, bytes, bytes.length);
+			return result;
 		} 
 		if (ATK.g_type_is_a (parentType, AccessibleType.ATK_TEXT_TYPE)) {
 			int superType = ATK.g_type_class_peek (parentType);
@@ -1037,8 +1028,6 @@ public class AccessibleObject {
 		keybindingPtr = -1;
 		if (actionNamePtr != -1) OS.g_free (actionNamePtr);
 		actionNamePtr = -1;
-		if (textPtr != -1) OS.g_free (textPtr);
-		textPtr = -1;
 	}
 
 	AccessibleObject getChildByHandle (int handle) {
