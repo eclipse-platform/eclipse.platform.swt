@@ -1898,16 +1898,13 @@ void onMouse(Event event) {
 				CTabFolderEvent e = new CTabFolderEvent(this);
 				e.widget = this;
 				e.time = event.time;
-				e.doit = true;
-				boolean restore = minimized;
 				for (int i = 0; i < folderListeners.length; i++) {
-					if (restore) {
+					if (minimized) {
 						folderListeners[i].restore(e);
 					} else {
 						folderListeners[i].minimize(e);
 					}
 				}
-				if (e.doit && !isDisposed()) setMinimized(!restore);
 				return;
 			}
 			if (maxRect.contains(x, y)) {
@@ -1918,16 +1915,13 @@ void onMouse(Event event) {
 				CTabFolderEvent e = new CTabFolderEvent(this);
 				e.widget = this;
 				e.time = event.time;
-				e.doit = true;
-				boolean restore = maximized;
 				for (int i = 0; i < folderListeners.length; i++) {
-					if (restore) {
+					if (maximized) {
 						folderListeners[i].restore(e);
 					} else {
 						folderListeners[i].maximize(e);
 					}
 				}
-				if (e.doit && !isDisposed()) setMaximized(!restore);
 				return;
 			}
 			CTabItem item = null;
