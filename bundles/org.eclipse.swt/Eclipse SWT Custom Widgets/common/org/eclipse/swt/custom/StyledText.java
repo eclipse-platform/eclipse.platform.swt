@@ -104,6 +104,7 @@ public class StyledText extends Canvas {
 	int lastTextChangeReplaceCharCount;	
 
 	static final int BIDI_CARET_WIDTH = 4;		
+	static int xInset = 0;
 	Image leftCaretBitmap = null;
 	Image rightCaretBitmap = null;
 	int caretDirection = SWT.NULL;
@@ -593,6 +594,7 @@ public StyledText(Composite parent, int style) {
 	else {
 		createCaretBitmaps();
 		createBidiCaret();
+		xInset = BIDI_CARET_WIDTH - 1;
 		Runnable runnable = new Runnable() {
 			public void run() {
 				createBidiCaret();
@@ -1431,7 +1433,7 @@ void doColumnLeft() {
 				}
 			}
 			else
-			if (offsetInLine == lineLength && bidi.getCaretPosition(lineLength) != 0) {
+			if (offsetInLine == lineLength && bidi.getCaretPosition(lineLength) != xInset) {
 				// at logical line end in R2L segment but there's more text (a L2R segment)
 				// go to end of R2L segment (visually left of next L2R segment)/end of line
 				caretOffset--;
