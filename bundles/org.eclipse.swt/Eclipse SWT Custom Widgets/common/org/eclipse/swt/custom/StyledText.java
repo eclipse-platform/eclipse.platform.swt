@@ -1128,7 +1128,6 @@ public void append(String string) {
  * <p>
  *
  * @param text text to be measured.
- * @param lineOffset offset of the first character in the line. 
  * @param startOffset offset of the character to start measuring and 
  * 	expand tabs.
  * @param length number of characters to measure. Tabs are counted 
@@ -1139,7 +1138,7 @@ public void append(String string) {
  * @return width of the text with tabs expanded to tab stops or 0 if the 
  * 	startOffset or length is outside the specified text.
  */
-int bidiTextWidth(String text, int lineOffset, int startOffset, int length, int startXOffset, StyledTextBidi bidi) {
+int bidiTextWidth(String text, int startOffset, int length, int startXOffset, StyledTextBidi bidi) {
 	int endOffset = startOffset + length;
 	int textLength = text.length();
 	
@@ -1285,7 +1284,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		// Only calculate what can actually be displayed.
 		// Do this because measuring each text line is a 
 		// time-consuming process.
-		int visibleCount = Math.min (count, getDisplay().getBounds().width / lineHeight);
+		int visibleCount = Math.min (count, getDisplay().getBounds().height / lineHeight);
 		contentWidth.calculate(0, visibleCount);
 		width = contentWidth.getWidth();
 	}
@@ -2505,7 +2504,7 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 		styles = getSelectionLineStyles(styles);
 	}
 	if (isBidi()) {
-		int paintX = bidiTextWidth(line, lineOffset, 0, 0, 0, bidi);
+		int paintX = bidiTextWidth(line, 0, 0, 0, bidi);
 		drawStyledLine(line, lineOffset, 0, styles, paintX, paintY, gc, lineBackground, widgetForeground, currentFont, bidi);
 	}
 	else {
@@ -2538,7 +2537,7 @@ void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] style
 		return;
 	}
 	if (bidi != null) {
-		paintX = bidiTextWidth(line, lineOffset, 0, selectionStart, 0, bidi);	
+		paintX = bidiTextWidth(line, 0, selectionStart, 0, bidi);	
 	}
 	else {
 		paintX = textWidth(line, lineOffset, 0, selectionStart, filterLineStyles(styles), 0, gc, currentFont);	
@@ -2558,7 +2557,7 @@ void drawLineSelectionBackground(String line, int lineOffset, StyleRange[] style
 	gc.setForeground(getSelectionForeground());
 	if (selectionBackgroundWidth == -1) {
 		if (bidi != null) {
-			selectionBackgroundWidth = bidiTextWidth(line, lineOffset, selectionStart, selectionLength, paintX, bidi);
+			selectionBackgroundWidth = bidiTextWidth(line, selectionStart, selectionLength, paintX, bidi);
 		}
 		else {
 			selectionBackgroundWidth = textWidth(line, lineOffset, selectionStart, selectionLength, styles, paintX, gc, currentFont);
@@ -4259,7 +4258,7 @@ int getWordStart(int offset) {
  * <b>NOTE:</b> Does not return correct values for true italic fonts (vs. slanted fonts).
  * <p>
  *
- * @return x location of the character at the give offset in the line.
+ * @return x location of the character at the given offset in the line.
  */
 int getXAtOffset(String line, int lineIndex, int lineOffset) {
 	int x;
@@ -5740,7 +5739,7 @@ void showBidiCaret() {
 	StyledTextBidi bidi = getStyledTextBidi(lineText, lineOffset, gc);
 
 	// getXAtOffset, inlined for better performance
-	xAtOffset = bidiTextWidth(lineText, lineOffset, 0, offsetInLine, 0, bidi);
+	xAtOffset = bidiTextWidth(lineText, 0, offsetInLine, 0, bidi);
 	if (offsetInLine > lineText.length()) {
 		// offset is not on the line. return an x location one character 
 		// after the line to indicate the line delimiter.
@@ -6905,7 +6904,7 @@ int textWidth(String line, int lineIndex, int length, GC gc) {
 	}	
 	if (isBidi()) {
 		StyledTextBidi bidi = getStyledTextBidi(line, lineOffset, gc);
-		width = bidiTextWidth(line, lineOffset, 0, length, 0, bidi);
+		width = bidiTextWidth(line, 0, length, 0, bidi);
 	}
 	else {
 		StyledTextEvent event = getLineStyleData(lineOffset, line);
