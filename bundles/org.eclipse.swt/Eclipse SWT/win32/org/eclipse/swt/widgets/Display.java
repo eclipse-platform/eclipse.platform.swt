@@ -1608,7 +1608,7 @@ public Image getSystemImage (int id) {
 		}
 		default: return null;
 	}
-	if (image == 0) error (SWT.ERROR_NO_HANDLES);
+	if (image == 0) return null;
 	return Image.win32_new (this, SWT.ICON, image);
 }
 

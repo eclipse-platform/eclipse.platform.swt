@@ -648,7 +648,6 @@ int createImage (String name) {
 		OS.gtk_icon_factory_lookup_default (buffer), style,
 		OS.GTK_TEXT_DIR_NONE, OS.GTK_STATE_NORMAL, -1, 0, 0);
 	OS.gtk_widget_destroy (shellHandle);
-	if (image == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	return image;
 }
 
@@ -1401,6 +1400,7 @@ public Image getSystemImage (int id) {
 		}
 		default: return null;
 	}
+	if (image == 0) return null;
 	int /*long*/[] pixmap_return = new int /*long*/[1];
 	int /*long*/[] mask_return = new int /*long*/[1];
 	OS.gdk_pixbuf_render_pixmap_and_mask (image, pixmap_return, mask_return, 128);

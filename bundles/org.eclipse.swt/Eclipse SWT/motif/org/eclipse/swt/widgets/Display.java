@@ -702,11 +702,12 @@ int createImage (String name) {
 	if (pixmap == OS.XmUNSPECIFIED_PIXMAP) {
 		buffer = Converter.wcsToMbcs (null, "default_" + name, true);
 		pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
-		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) error (SWT.ERROR_NO_HANDLES);
+		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) pixmap = 0;
 	}
 	return pixmap;
 }
 int createMask (int pixbuf) {
+	if (pixbuf == 0) return 0;
 	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
  	OS.XGetGeometry (xDisplay, pixbuf, unused, unused, unused, width, height, unused, unused);
 	int mask = OS.XCreatePixmap (xDisplay, pixbuf, width [0], height [0], 1);
@@ -1611,6 +1612,7 @@ public Image getSystemImage (int style) {
 		}
 		default: return null;
 	}
+	if (image == 0) return null;
 	return Image.motif_new (this, SWT.ICON, image, mask);
 }
 public Tray getSystemTray () {
