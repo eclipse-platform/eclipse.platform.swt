@@ -55,7 +55,6 @@ public static void main (String [] args) {
 				item.setData (files [i]);
 				if (files [i].isDirectory()) {
 					new TreeItem (item, 0);
-					root.setExpanded (false);
 				}
 			}
 		}
