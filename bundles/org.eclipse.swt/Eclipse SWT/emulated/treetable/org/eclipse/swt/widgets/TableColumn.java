@@ -353,7 +353,6 @@ public void pack() {
  * @param yPosition - y position to draw at in the column.
  */
 void paint(TableItem item, GC gc, int yPosition) {
-	Rectangle bounds = getBounds();
 	Point paintPosition = new Point(bounds.x, bounds.y + yPosition);
 
 	item.paint(gc, paintPosition, this);
@@ -460,6 +459,10 @@ void setBounds(Rectangle newBounds) {
 void setDefaultWidth(boolean isDefaultWidth) {
 	this.isDefaultWidth = isDefaultWidth;
 }
+public void setImage(Image image) {
+	super.setImage(image);
+	parent.getHeader().setHeaderHeight();
+}
 /**
  * Set the index of the receiver to 'newIndex'. The index specifies the
  * position of the receiver relative to other columns in the parent.
@@ -507,7 +510,6 @@ public void setText(String newText) {
  */
 public void setWidth(int width) {
 	checkWidget();
-	Table parent = getParent();
 	Rectangle bounds = getBounds();
 	int oldWidth = bounds.width;
 	int redrawX;

@@ -16,18 +16,19 @@ import org.eclipse.swt.graphics.*;
 class Header extends Canvas {
 	private static final int DEFAULT_WIDTH = 64;		// used in computeSize if width could not be calculated
 	private static final int DEFAULT_HEIGHT = 64;		// used in computeSize if height could not be calculated	
-	private static final int VERTICAL_MARGIN = 4;		// space added to the height of the header label		
-	private static final int TEXT_Y_OFFSET = 2;			// space between the header label and the lower header boundary
+	private static final int VERTICAL_MARGIN = 6;		// space added to the height of the header label		
 	private static final int DEFAULT_ITEM_WIDTH = 9;	// default width of a header item
-	private static final int TEXT_MARGIN = 6;			// space in front and behind header text
+	private static final int HORIZONTAL_MARGIN = 6;		// space in front and behind header text
 	private static final int SHADOW_WIDTH = 2;			// width of the right side header shadow
+	
+	Table parent;
 /**
  * Create a Header widget as a child of 'parent'.
  * @param parent - the parent of the new instance
  */
 Header(Table parent) {
 	super(parent, SWT.NO_REDRAW_RESIZE | SWT.NO_FOCUS);
-	
+	this.parent = parent;
 	addListener(SWT.Paint, new Listener() {
 		public void handleEvent(Event event) {paint(event);}
 	});
@@ -123,36 +124,6 @@ void drawLowlightShadows(GC gc, int itemIndex) {
 	gc.setForeground(oldForeground);
 }
 /**
- * Draw the item text of the item identified by 'itemIndex'.
- * @param gc - GC to draw on
- * @param itemIndex - specifies the item to draw
- */
-void drawText(GC gc, int itemIndex) {
-	String label = getText(gc, itemIndex);
-	Point textExtent;
-	Rectangle bounds = getBounds(itemIndex);
-	int yPosition;
-	int xPosition = 0;
-	int alignment;
-
-	if (label != null) {
-		alignment = ((Table) getParent()).internalGetColumn(itemIndex).getAlignment();
-		textExtent = gc.stringExtent(label);
-		yPosition = bounds.height - textExtent.y - TEXT_Y_OFFSET;
-
-		if ((alignment & SWT.CENTER) != 0) {
-			xPosition = (bounds.width - textExtent.x) / 2;
-		}
-		else
-		if ((alignment & SWT.RIGHT) != 0) {
-			xPosition = bounds.width - textExtent.x - TEXT_MARGIN;
-		}
-		xPosition = Math.max(TEXT_MARGIN, xPosition);
-		xPosition += bounds.x;
-		gc.drawString(label, xPosition, yPosition);
-	}	
-}
-/**
  * Answer the bounding rectangle of the item identified by 'itemIndex'.
  * @param itemIndex - specifies the item whose bounding rectangle 
  *	should be returned.
@@ -161,7 +132,6 @@ void drawText(GC gc, int itemIndex) {
 Rectangle getBounds(int itemIndex) {
 	Rectangle bounds = null;
 	int itemCount = getItemCount();
-	Table parent = (Table) getParent();
 
 	if (itemIndex >= 0 && itemIndex < itemCount) {
 		bounds = parent.internalGetColumn(itemIndex).getBounds();
@@ -184,17 +154,36 @@ Rectangle getBounds(int itemIndex) {
 	return bounds;
 }
 /**
+ * Answer the image that is going to be drawn in the header item 
+ * identified by 'itemIndex'. 
+ * @param gc - GC to use for measuring the label width.
+ * @param itemIndex - specifies the item whose label should be returned.
+ */
+Image getImage(int itemIndex) {
+	if (itemIndex >= 0 && itemIndex < getItemCount()) {
+		return parent.internalGetColumn(itemIndex).getImage();
+	}
+	return null;
+}
+/**
+ * Answer the size of item images. 
+ */
+Point getImageExtent(){
+	Image image = null;
+	int labelCount = getItemCount();
+	for (int i = 0; i < labelCount && image==null; i++) {
+		image = getImage(i);
+	}
+	if (image!= null){
+		return new Point(image.getBounds().width,image.getBounds().height);
+	}
+	return 	new Point(0, 0);
+}
+/**
  * Answer the number of items in the receiver.
  */
 int getItemCount() {
-	return ((Table) getParent()).internalGetColumnCount();
-}
-/**
- * Answer the maximum label width that fits into the item identified by
- * 'itemIndex'.
- */
-int getMaxLabelWidth(int itemIndex) {
-	return getBounds(itemIndex).width - 2 * TEXT_MARGIN;	
+	return parent.internalGetColumnCount();
 }
 /**
  * Answer the width required to display the complete label of the header 
@@ -203,12 +192,16 @@ int getMaxLabelWidth(int itemIndex) {
  *	be returned.
  */
 int getPreferredWidth(int index) {
-	Table parent = (Table) getParent();
+	Image image = getImage(index);
 	String text = getText(index);
-	int headerWidth = 0;
+	
+	int headerWidth = HORIZONTAL_MARGIN;
 
+	if (image != null){
+		headerWidth += getImageExtent().x + HORIZONTAL_MARGIN;
+	}
 	if (text != null) {
-		headerWidth = parent.getTextWidth(text) + 2 * TEXT_MARGIN + 1;
+		headerWidth += parent.getTextWidth(text) + HORIZONTAL_MARGIN;
 	}	
 	return headerWidth;
 }
@@ -219,26 +212,9 @@ String getText(int itemIndex) {
 	String itemLabel = null;
 	
 	if (itemIndex >= 0 && itemIndex < getItemCount()) {
-		itemLabel = ((Table) getParent()).internalGetColumn(itemIndex).getText();
+		itemLabel = parent.internalGetColumn(itemIndex).getText();
 	}
 	return itemLabel;
-}
-/**
- * Answer the text that is going to be drawn in the header item 
- * identified by 'itemIndex'. This may be truncated to fit the item
- * width.
- * @param gc - GC to use for measuring the label width.
- * @param itemIndex - specifies the item whose label should be returned.
- */
-String getText(GC gc, int itemIndex) {
-	String label = getText(itemIndex);
-	int maxWidth;
-
-	if (label != null) {
-		maxWidth = getMaxLabelWidth(itemIndex);
-		label = ((Table) getParent()).trimItemText(label, maxWidth, gc);
-	}
-	return label;
 }
 /**
  * Draw the header item identified by 'itemIndex'.
@@ -247,12 +223,42 @@ String getText(GC gc, int itemIndex) {
  */
 void paint(GC gc, int itemIndex) {
 	Rectangle bounds = getBounds(itemIndex);
-
 	// draw header background
 	gc.fillRectangle(bounds.x, bounds.y + 1, bounds.width, bounds.height - 3);
+	
 	if (itemIndex != TableColumn.FILL) {
-		drawText(gc, itemIndex);
+		int extent = Math.min(bounds.width - 2*HORIZONTAL_MARGIN, getPreferredWidth(itemIndex));
+			
+		int x = bounds.x;
+		int alignment = parent.internalGetColumn(itemIndex).getAlignment();	
+		if ((alignment & SWT.CENTER) != 0) {
+			x += (bounds.width - extent) / 2;
+		}
+		else if ((alignment & SWT.RIGHT) != 0) {
+			x += bounds.width - extent - HORIZONTAL_MARGIN;
+		} else {
+			x += HORIZONTAL_MARGIN;
+		}
+		
+		Image image = getImage(itemIndex);
+		if (image != null) {
+			Rectangle imageBounds = image.getBounds();
+			Point imageExtent = getImageExtent();
+			int y = bounds.y + (bounds.height - imageExtent.y) / 2;
+			gc.drawImage(image, 0, 0, imageBounds.width, imageBounds.height, 
+			                    x, y, imageExtent.x, imageExtent.y);
+			x += imageExtent.x + HORIZONTAL_MARGIN;
+		}
+		String label = getText(itemIndex);
+		if (label != null) {
+			int maxWidth = bounds.x + bounds.width - x - HORIZONTAL_MARGIN;
+			String trimLabel = parent.trimItemText(label, maxWidth, gc);
+			Point textExtent = gc.stringExtent(trimLabel);
+			int y = bounds.y + (bounds.height - textExtent.y) / 2;
+			gc.drawString(trimLabel, x, y);
+		}
 	}
+	
 	drawHighlightShadow(gc, itemIndex);
 	drawLowlightShadows(gc, itemIndex);	
 }
@@ -298,11 +304,12 @@ public void setFont(Font font) {
  */
 void setHeaderHeight() {
 	GC gc = new GC(this);
+	int textHeight = gc.stringExtent("").y + VERTICAL_MARGIN; 
+	gc.dispose();	
+	int imageHeight = getImageExtent().y + VERTICAL_MARGIN;		
 	Rectangle bounds = getBounds();
-
-	bounds.height = gc.stringExtent("aString").y + VERTICAL_MARGIN;
-	setBounds(bounds);
-	gc.dispose();
+	bounds.height = Math.max(textHeight,imageHeight);
+	setBounds(bounds);	
 }
 /**
  * The width of the header item at position 'itemIndex' is about to change.
