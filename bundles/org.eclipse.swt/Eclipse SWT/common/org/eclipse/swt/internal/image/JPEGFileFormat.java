@@ -19,6 +19,7 @@ final class JPEGFileFormat extends FileFormat {
 	int samplePrecision;
 	int nComponents;
 	int[][] frameComponents;
+	int[] componentIds;
 	byte[][] imageComponents;
 	int[] dataUnit;
 	int[][][] dataUnits;
@@ -101,6 +102,10 @@ final class JPEGFileFormat extends FileFormat {
 	/* JPEGScanComponentParameterConstants */
 	public static final int DC	= 0;
 	public static final int AC	= 1;
+	/* JFIF Component Constants */
+	public static final int ID_Y		= 1 - 1;
+	public static final int ID_CB	= 2 - 1;
+	public static final int ID_CR	= 3 - 1;
 
 	public static final int[] ExtendTest = {
 		0, 1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 
@@ -133,16 +138,16 @@ void compress(ImageData image, byte[] dataYComp, byte[] dataCbComp, byte[] dataC
 	int[] frameComponent;
 	imageComponents = new byte[nComponents][];
 	for (int i = 0; i < nComponents; i++) {
-		frameComponent = frameComponents[i];
+		frameComponent = frameComponents[componentIds[i]];
 		imageComponents[i] = new byte[frameComponent[CW] * frameComponent[CH]];
 	}
-	frameComponent = frameComponents[0];
+	frameComponent = frameComponents[componentIds[ID_Y]];
 	for (int yPos = 0; yPos < srcHeight; yPos++) {
 		int srcOfs = yPos * srcWidth;
 		int dstOfs = yPos * frameComponent[CW];
-		System.arraycopy(dataYComp, srcOfs, imageComponents[0], dstOfs, srcWidth);
+		System.arraycopy(dataYComp, srcOfs, imageComponents[ID_Y], dstOfs, srcWidth);
 	}
-	frameComponent = frameComponents[1];
+	frameComponent = frameComponents[componentIds[ID_CB]];
 	for (int yPos = 0; yPos < srcHeight / maxV; yPos++) {
 		int destRowIndex = yPos * frameComponent[CW];
 		for (int xPos = 0; xPos < srcWidth / maxH; xPos++) {
@@ -153,10 +158,10 @@ void compress(ImageData image, byte[] dataYComp, byte[] dataCbComp, byte[] dataC
 					sum += dataCbComp[srcIndex + ih] & 0xFF;
 				}
 			}
-			imageComponents[1][destRowIndex + xPos] = (byte)(sum / vhFactor);
+			imageComponents[ID_CB][destRowIndex + xPos] = (byte)(sum / vhFactor);
 		}
 	}
-	frameComponent = frameComponents[2];
+	frameComponent = frameComponents[componentIds[ID_CR]];
 	for (int yPos = 0; yPos < srcHeight / maxV; yPos++) {
 		int destRowIndex = yPos * frameComponent[CW];
 		for (int xPos = 0; xPos < srcWidth / maxH; xPos++) {
@@ -167,12 +172,12 @@ void compress(ImageData image, byte[] dataYComp, byte[] dataCbComp, byte[] dataC
 					sum += dataCrComp[srcIndex + ih] & 0xFF;
 				}
 			}
-			imageComponents[2][destRowIndex + xPos] = (byte)(sum / vhFactor);
+			imageComponents[ID_CR][destRowIndex + xPos] = (byte)(sum / vhFactor);
 		}
 	}
 	for (int iComp = 0; iComp < nComponents; iComp++) {
 		byte[] imageComponent = imageComponents[iComp];
-		frameComponent = frameComponents[iComp];
+		frameComponent = frameComponents[componentIds[iComp]];
 		int hFactor = frameComponent[HI];
 		int vFactor = frameComponent[VI];
 		int componentWidth = frameComponent[CW];
@@ -363,10 +368,10 @@ void convertMultiRGBToYCbCr(ImageData image) {
 	compress(image, dataYComp, dataCbComp, dataCrComp);
 }
 byte[] convertYToRGB() {
-	int compWidth = frameHeader.componentParameters[0][3];
+	int compWidth = frameComponents[componentIds[ID_Y]][CW];
 	int bytesPerLine = (((imageWidth * 8 + 7) / 8) + 3) / 4 * 4;
 	byte[] data = new byte[bytesPerLine * imageHeight];
-	byte[] yComp = imageComponents[0];
+	byte[] yComp = imageComponents[ID_Y];
 	int destIndex = 0;
 	for (int i = 0; i < imageHeight; i++) {
 		int srcIndex = i * compWidth;
@@ -419,10 +424,10 @@ byte[] convertYCbCrToRGB() {
 	byte[] rgbData = new byte[bSize];
 	int destIndex = 0;
 	expandImageComponents();
-	byte[] yComp = imageComponents[0];
-	byte[] cbComp = imageComponents[1];
-	byte[] crComp = imageComponents[2];
-	int compWidth = frameHeader.componentParameters[0][3];
+	byte[] yComp = imageComponents[ID_Y];
+	byte[] cbComp = imageComponents[ID_CB];
+	byte[] crComp = imageComponents[ID_CR];
+	int compWidth = frameComponents[componentIds[ID_Y]][CW];
 	for (int v = 0; v < imageHeight; v++) {
 		int srcIndex = v * compWidth;
 		for (int i = 0; i < imageWidth; i++) {
@@ -461,7 +466,7 @@ byte[] convertYIQToRGB() {
 	return new byte[0];
 }
 void decodeACCoefficients(int[] dataUnit, int iComp) {
-	int[] sParams = scanHeader.componentParameters[iComp];
+	int[] sParams = scanHeader.componentParameters[componentIds[iComp]];
 	JPEGHuffmanTable acTable = acHuffmanTables[sParams[AC]];
 	int k = 1;
 	while (k < 64) {
@@ -487,7 +492,7 @@ void decodeACFirstCoefficients(int[] dataUnit, int iComp, int start, int end, in
 		eobrun--;
 		return;
 	}
-	int[] sParams = scanHeader.componentParameters[iComp];
+	int[] sParams = scanHeader.componentParameters[componentIds[iComp]];
 	JPEGHuffmanTable acTable = acHuffmanTables[sParams[AC]];
 	int k = start;
 	while (k <= end) {
@@ -510,7 +515,7 @@ void decodeACFirstCoefficients(int[] dataUnit, int iComp, int start, int end, in
 	}
 }
 void decodeACRefineCoefficients(int[] dataUnit, int iComp, int start, int end, int approxBit) {
-	int[] sParams = scanHeader.componentParameters[iComp];
+	int[] sParams = scanHeader.componentParameters[componentIds[iComp]];
 	JPEGHuffmanTable acTable = acHuffmanTables[sParams[AC]];
 	int k = start;
 	while (k <= end) {
@@ -580,7 +585,7 @@ int refineAC(int ac, int approxBit) {
 	return ac;
 }
 void decodeDCCoefficient(int[] dataUnit, int iComp, boolean first, int approxBit) {
-	int[] sParams = scanHeader.componentParameters[iComp];
+	int[] sParams = scanHeader.componentParameters[componentIds[iComp]];
 	JPEGHuffmanTable dcTable = dcHuffmanTables[sParams[DC]];
 	int lastDC = 0;
 	if (progressive && !first) {
@@ -602,7 +607,7 @@ void decodeDCCoefficient(int[] dataUnit, int iComp, boolean first, int approxBit
 	dataUnit[0] = lastDC;
 }
 void dequantize(int[] dataUnit, int iComp) {
-	int[] qTable = quantizationTables[frameComponents[iComp][TQI]];
+	int[] qTable = quantizationTables[frameComponents[componentIds[iComp]][TQI]];
 	for (int i = 0; i < dataUnit.length; i++) {
 		int zzIndex = ZigZag8x8[i];
 		dataUnit[zzIndex] = dataUnit[zzIndex] * qTable[i];
@@ -635,10 +640,10 @@ byte[] decodeImageComponents() {
 void decodeMCUAtXAndY(int xmcu, int ymcu, int nComponentsInScan, boolean first, int start, int end, int approxBit) {
 	for (int iComp = 0; iComp < nComponentsInScan; iComp++) {
 		int scanComponent = iComp;
-		while (scanHeader.componentParameters[scanComponent] == null) {
+		while (scanHeader.componentParameters[componentIds[scanComponent]] == null) {
 			scanComponent++;
 		}
-		int[] frameComponent = frameComponents[scanComponent];
+		int[] frameComponent = frameComponents[componentIds[scanComponent]];
 		int hi = frameComponent[HI];
 		int vi = frameComponent[VI];
 		if (nComponentsInScan == 1) {
@@ -703,11 +708,11 @@ void decodeScan() {
 	int mcusPerRow = interleavedMcuCols;
 	if (nComponentsInScan == 1) {
 		// Non-interleaved.
-		int iComp = 0;
-		while (scanHeader.componentParameters[iComp] == null) {
-			iComp++;
+		int scanComponent = 0;
+		while (scanHeader.componentParameters[componentIds[scanComponent]] == null) {
+			scanComponent++;
 		}
-		int[] frameComponent = frameComponents[iComp];
+		int[] frameComponent = frameComponents[componentIds[scanComponent]];
 		int hi = frameComponent[HI];
 		int vi = frameComponent[VI];
 		int mcuWidth = DCTSIZE * maxH / hi;
@@ -852,7 +857,7 @@ void encodeMCUAtXAndY(int xmcu, int ymcu) {
 	int nComponentsInScan = scanHeader.getNumberOfImageComponents();
 	dataUnit = new int[64];
 	for (int iComp = 0; iComp < nComponentsInScan; iComp++) {
-		int[] frameComponent = frameComponents[iComp];
+		int[] frameComponent = frameComponents[componentIds[iComp]];
 		int hi = frameComponent[HI];
 		int vi = frameComponent[VI];
 		for (int ivi = 0; ivi < vi; ivi++) {
@@ -879,7 +884,7 @@ void encodeScan() {
 }
 void expandImageComponents() {
 	for (int iComp = 0; iComp < nComponents; iComp++) {
-		int[] frameComponent = frameComponents[iComp];
+		int[] frameComponent = frameComponents[componentIds[iComp]];
 		int hi = frameComponent[HI];
 		int vi = frameComponent[VI];
 		int upH = maxH / hi;
@@ -923,7 +928,7 @@ int extendBy(int diff, int t) {
 }
 void extractData(int[] dataUnit, int iComp, int xmcu, int ymcu, int ihi, int ivi) {
 	byte[] compImage = imageComponents[iComp];
-	int[] frameComponent = frameComponents[iComp];
+	int[] frameComponent = frameComponents[componentIds[iComp]];
 	int hi = frameComponent[HI];
 	int vi = frameComponent[VI];
 	int compWidth = frameComponent[CW];
@@ -1411,6 +1416,7 @@ ImageData[] loadFromByteStream() {
 	samplePrecision = frameHeader.getSamplePrecision();
 	nComponents = frameHeader.getNumberOfImageComponents();
 	frameComponents = frameHeader.componentParameters;
+	componentIds = frameHeader.componentIdentifiers;
 	imageComponents = new byte[nComponents][];
 	if (progressive) {
 		// Progressive jpeg: need to keep all of the data units.
@@ -1420,7 +1426,7 @@ ImageData[] loadFromByteStream() {
 		dataUnit = new int[8 * 8];
 	}
 	for (int i = 0; i < nComponents; i++) {
-		int[] frameComponent = frameComponents[i];
+		int[] frameComponent = frameComponents[componentIds[i]];
 		int bufferSize = frameComponent[CW] * frameComponent[CH];
 		imageComponents[i] = new byte[bufferSize];
 		if (progressive) {
@@ -1474,7 +1480,7 @@ ImageData[] loadFromByteStream() {
 		for (int ymcu = 0; ymcu < interleavedMcuRows; ymcu++) {
 			for (int xmcu = 0; xmcu < interleavedMcuCols; xmcu++) {
 				for (int iComp = 0; iComp < nComponents; iComp++) {
-					int[] frameComponent = frameComponents[iComp];
+					int[] frameComponent = frameComponents[componentIds[iComp]];
 					int hi = frameComponent[HI];
 					int vi = frameComponent[VI];
 					int compWidth = frameComponent[CW];
@@ -1646,7 +1652,7 @@ JPEGSegment processTables() {
 	}
 }
 void quantizeData(int[] dataUnit, int iComp) {
-	int[] qTable = quantizationTables[frameComponents[iComp][TQI]];
+	int[] qTable = quantizationTables[frameComponents[componentIds[iComp]][TQI]];
 	for (int i = 0; i < dataUnit.length; i++) {
 		int zzIndex = ZigZag8x8[i];
 		int data = dataUnit[zzIndex];
@@ -1744,7 +1750,7 @@ static void skipSegmentFrom(LEDataInputStream byteStream) {
 }
 void storeData(int[] dataUnit, int iComp, int xmcu, int ymcu, int hi, int ihi, int vi, int ivi) {
 	byte[] compImage = imageComponents[iComp];
-	int[] frameComponent = frameComponents[iComp];
+	int[] frameComponent = frameComponents[componentIds[iComp]];
 	int compWidth = frameComponent[CW];
 	int destIndex = ((ymcu * vi + ivi) * compWidth * DCTSIZE) + ((xmcu * hi + ihi) * DCTSIZE);
 	int srcIndex = 0;
@@ -1826,11 +1832,13 @@ void unloadIntoByteStream(ImageData image) {
 	frameHeader.setNumberOfLines(imageHeight);
 	frameHeader.setNumberOfImageComponents(nComponents);
 	frameHeader.componentParameters = frameParams;
+	frameHeader.componentIdentifiers = new int[] {0, 1, 2};
 	frameHeader.initializeContents();
 	if (!frameHeader.writeToStream(outputStream)) {
 		SWT.error(SWT.ERROR_IO);
 	}
 	frameComponents = frameParams;
+	componentIds = frameHeader.componentIdentifiers;
 	maxH = frameHeader.getMaxHFactor();
 	maxV = frameHeader.getMaxVFactor();
 	int mcuWidth = maxH * DCTSIZE;
