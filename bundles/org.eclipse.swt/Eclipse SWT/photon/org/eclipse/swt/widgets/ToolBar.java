@@ -108,6 +108,23 @@ static int checkStyle (int style) {
 	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
 }
 
+Control [] _getChildren () {
+	Control [] children = super._getChildren ();
+	int count = 0;
+	for (int i=0; i<itemCount; i++) {
+		if (items [i].control != null) count++;
+	}
+	if (count == 0) return children;
+	Control [] newChildren = new Control [children.length + count];
+	System.arraycopy (children, 0, newChildren, 0, children.length);
+	int index = children.length;
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item.control != null) newChildren [index++] = item.control;
+	}
+	return newChildren;
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }

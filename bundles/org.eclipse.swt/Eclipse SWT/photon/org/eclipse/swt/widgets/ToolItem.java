@@ -549,6 +549,8 @@ void releaseHandle () {
 }
 
 void releaseWidget () {
+	// reparent the control back to the toolbar
+	if (control != null) setControl (null);
 	super.releaseWidget ();
 	if (toolTipHandle != 0) destroyToolTip (toolTipHandle);
 	if (parent.lastFocus == this) parent.lastFocus = null;
