@@ -266,17 +266,17 @@ void createItem (TreeItem item, int hParent, int hInsertAfter) {
 	* Bug in Windows.  When a child item is added to a parent item
 	* that has no children outside of WM_NOTIFY with control code
 	* TVN_ITEMEXPANDED, the tree widget does not redraw the +/-
-	* indicator.  The fix is to detect this case and force a redraw.
+	* indicator.  The fix is to detect the case when the first
+	* child is added to a visible parent item and redraw the parent.
 	*/
 	if (!OS.IsWindowVisible (handle) || drawCount > 0) return;
 	int hChild = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent);
-	if (hChild == 0 || OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) != 0) {
-		return;
-	}
-	RECT rect = new RECT ();
-	rect.left = hParent;
-	if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
-		OS.InvalidateRect (handle, rect, false);
+	if (hChild != 0 && OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hChild) == 0) {
+		RECT rect = new RECT ();
+		rect.left = hParent;
+		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+			OS.InvalidateRect (handle, rect, true);
+		}
 	}
 }
 
@@ -332,7 +332,7 @@ void destroyItem (TreeItem item) {
 	* the item and validate the damage caused by the removing of
 	* the item.
 	*/
-	int hItem = item.handle;
+	int hItem = item.handle, hParent = 0;
 	boolean fixRedraw = false;
 	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 		RECT rect = new RECT ();
@@ -340,6 +340,7 @@ void destroyItem (TreeItem item) {
 		fixRedraw = OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) == 0;
 	}
 	if (fixRedraw) {
+		hParent = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PARENT, hItem);
 		OS.UpdateWindow (handle);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
@@ -351,6 +352,17 @@ void destroyItem (TreeItem item) {
 	if (fixRedraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.ValidateRect (handle, null);
+		/*
+		* If the item that was deleted was the last child of a tree item that
+		* is visible, redraw the parent item to force the +/- to be updated.
+		*/
+		if (OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CHILD, hParent) == 0) {
+			RECT rect = new RECT ();
+			rect.left = hParent;
+			if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 0, rect) != 0) {
+				OS.InvalidateRect (handle, rect, true);
+			}
+		}
 	}
 	int count = OS.SendMessage (handle, OS.TVM_GETCOUNT, 0, 0);
 	if (count == 0) {
