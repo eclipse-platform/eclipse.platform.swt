@@ -11,15 +11,22 @@
 #
 # Makefile for creating SWT libraries on Linux
 
-# User configuration
+include make_common.mak
+
+SWT_VERSION=$(maj_ver)$(min_ver)
 
 # Define the installation directories for various products.
 # Your system may have these in a different place.
 
-# JAVA_JNI - Depending on your version of JDK, and where
-# it is installed, your jni.h may be located differently.
-#JAVA_JNI = /bluebird/teamswt/swt-builddir/ive/bin/include
-JAVA_JNI = /opt/IBMvame1.4/ive/bin/include
+# Define the installation directories for various products.
+# Your system may have these in a different place.
+#    IVE_HOME   - IBM's version of Java (J9)
+IVE_HOME   = /bluebird/teamswt/swt-builddir/ive
+#IVE_HOME   = /opt/IBMvame1.4/ive
+
+JAVA_JNI=$(IVE_HOME)/bin/include
+JAVAH=$(IVE_HOME)/bin/javah
+LD_LIBRARY_PATH=$(IVE_HOME)/bin
 
 # Whether we want GTK over X or FB
 GTKTARGET = gtk+-2.0
@@ -28,19 +35,15 @@ GTKTARGET = gtk+-2.0
 CC = gcc
 LD = ld
 
-include make_common.mak
-
-SWT_VERSION=$(maj_ver)$(min_ver)
-
 # Define the various DLL (shared) libraries to be made.
 
 SWT_PREFIX   = swt
-OS_PREFIX    = linux
-SWT_DLL      = lib$(SWT_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
-SWTPI_DLL    = lib$(SWT_PREFIX)-pi-$(OS_PREFIX)-$(SWT_VERSION).so
+WS_PREFIX    = gtk
+SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+SWTPI_DLL    = lib$(SWT_PREFIX)-pi-$(WS_PREFIX)-$(SWT_VERSION).so
 
 #GNOME_PREFIX = swt-gnome
-#GNOME_DLL    = lib$(GNOME_PREFIX)-$(OS_PREFIX)-$(SWT_VERSION).so
+#GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 #GNOME_LIB    = -x -shared \
 #    -L/usr/lib \
 #    -lgnome -lglib \
@@ -136,8 +139,6 @@ structs.o: structs.c
 
 globals.o: globals.c
 	g$(CC)cc $(CFLAGS) $(GTKCFLAGS) globals.c
-
-
 
 clean:
 	rm -f *.o *.so
