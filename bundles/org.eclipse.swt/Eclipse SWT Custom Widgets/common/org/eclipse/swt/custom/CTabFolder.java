@@ -1832,11 +1832,20 @@ private void showToolTip (int x, int y) {
 			labelSize.x += 2; labelSize.y += 2;
 			label.setSize(labelSize);
 			tip.pack();
+			/*
+			 * On some platforms, there is a minimum size for a shell  
+			 * which may be greater than the label size.
+			 * To avoid having the background of the tip shell showing
+			 * around the label, force the label to fill the entire client area.
+			 */
+			Rectangle area = tip.getClientArea();
+			label.setSize(area.width, area.height);
+			/*
+			 * Position the tooltip and ensure that it is not located off
+			 * the screen.
+			 */
 			Point pt = new Point(item.x + item.width / 4, item.y + item.height + 2);
 			pt = toDisplay(pt);
-			/*
-			* Ensure that the tooltip is on the screen.
-			*/
 			Rectangle rect = display.getBounds();
 			Point tipSize = tip.getSize();
 			pt.x = Math.max (0, Math.min (pt.x, rect.width - tipSize.x));
