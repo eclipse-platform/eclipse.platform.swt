@@ -15,6 +15,7 @@ import org.eclipse.swt.accessibility.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import java.text.MessageFormat;
 
 /**
  * WARNING 3.0 API STILL UNDER CONSTRUCTION
@@ -3427,10 +3428,20 @@ boolean updateTabHeight(boolean force){
 	notifyListeners(SWT.Resize, new Event());
 	return true;
 }
-boolean updateToolTip (int x, int y) {
+String _getToolTip(int x, int y) {
+	if (showMin && minRect.contains(x, y)) return minimized ? SWT.getMessage("SWT_Restore") : SWT.getMessage("SWT_Minimize"); //$NON-NLS-1$ //$NON-NLS-2$
+	if (showMax && maxRect.contains(x, y)) return maximized ? SWT.getMessage("SWT_Restore") : SWT.getMessage("SWT_Maximize"); //$NON-NLS-1$ //$NON-NLS-2$
+	if (showChevron && chevronRect.contains(x, y)) return SWT.getMessage("SWT_ShowList"); //$NON-NLS-1$
 	CTabItem item = getItem(new Point (x, y));
-	if (item == null) return false;
-	String tooltip = item.getToolTipText();
+	if (item == null) return null;
+	if (!item.isShowing()) return null;
+	if ((showClose || item.showClose) && item.closeRect.contains(x, y)) {
+		return MessageFormat.format(SWT.getMessage("SWT_Close"), new Object[] {item.getToolTipText()}); //$NON-NLS-1$
+	}
+	return item.getToolTipText();
+}
+boolean updateToolTip (int x, int y) {
+	String tooltip = _getToolTip(x, y);
 	if (tooltip == null) return false;
 	if (tooltip.equals(toolTipLabel.getText())) return true;
 	
