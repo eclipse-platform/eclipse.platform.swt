@@ -483,8 +483,8 @@ boolean filterEvent (XAnyEvent event) {
 	if (handle == 0) return false;
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return false;
-//	if (!(widget instanceof Control)) return false;
-//	Control control = (Control) widget;
+	if (!(widget instanceof Control)) return false;
+	Control control = (Control) widget;
 	
 	/* Get the unaffected character and keysym */
 	int oldState = keyEvent.state;
@@ -500,7 +500,7 @@ boolean filterEvent (XAnyEvent event) {
 	
 	/* Check for a mnemonic key */
 	if (key != 0) {
-		if (widget.translateMnemonic (key, keyEvent)) return true;
+		if (control.translateMnemonic (key, keyEvent)) return true;
 	}
 	
 	/* Check for a traversal key */
@@ -516,7 +516,7 @@ boolean filterEvent (XAnyEvent event) {
 		case OS.XK_Right:
 		case OS.XK_Page_Up:
 		case OS.XK_Page_Down:
-			if (widget.translateTraversal (keysym, keyEvent)) return true;
+			if (control.translateTraversal (keysym, keyEvent)) return true;
 	}
 
 	/* Answer false because the event was not processed */
