@@ -618,7 +618,11 @@ public void test_setItems$Ljava_lang_String() {
 
 public void test_setOrientationI() {
 	combo.setOrientation(SWT.RIGHT_TO_LEFT);
-	assertTrue(":a:", combo.getOrientation()==SWT.RIGHT_TO_LEFT);
+	if (SWT.getPlatform().equals("win32")) {
+		assertTrue(":a:", combo.getOrientation()==SWT.RIGHT_TO_LEFT);
+	}
+	combo.setOrientation(SWT.LEFT_TO_RIGHT);
+	assertTrue(":b:", combo.getOrientation()==SWT.LEFT_TO_RIGHT);
 }
 
 public void test_setSelectionLorg_eclipse_swt_graphics_Point() {

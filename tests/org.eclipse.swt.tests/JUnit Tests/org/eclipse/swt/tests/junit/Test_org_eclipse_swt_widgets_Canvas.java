@@ -90,6 +90,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	Font font = new Font(canvas.getDisplay(), fontData.getName(), 8, fontData.getStyle());
 	canvas.setFont(font);
 	assertTrue(":a:", canvas.getFont().equals(font));
+	canvas.setFont(null);
 	font.dispose();
 }
 

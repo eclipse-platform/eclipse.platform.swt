@@ -2703,11 +2703,13 @@ public void test_setFontLorg_eclipse_swt_graphics_Font(){
 	
 	font = new Font(text.getDisplay(), fontData.getName(), 8, fontData.getStyle());
 	text.setFont(font);
-	font.dispose();
 	lineHeight = text.getLineHeight();
+	text.setFont(null);
+	font.dispose();
 	font = new Font(text.getDisplay(), fontData.getName(), 12, fontData.getStyle());
 	text.setFont(font);
 	assertTrue(":a:", text.getLineHeight() > lineHeight && font.equals(text.getFont()));
+	text.setFont(null);
 	font.dispose();
 }
 

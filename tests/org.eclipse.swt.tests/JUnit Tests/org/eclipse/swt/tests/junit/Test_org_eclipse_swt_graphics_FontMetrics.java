@@ -32,7 +32,7 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
-	display = new Display();
+	display = Display.getDefault();
 	shell = new Shell(display);
 	gc = new GC(shell);
 }
@@ -40,7 +40,6 @@ protected void setUp() {
 protected void tearDown() {
 	gc.dispose();
 	shell.dispose();
-	display.dispose();
 }
 
 public void test_equalsLjava_lang_Object() {

@@ -33,7 +33,7 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
-	display = new Display();
+	display = Display.getDefault();
 	shell = new Shell(display);
 	shell.setBounds(0,30,240,290);
 	shell.open();
@@ -43,7 +43,6 @@ protected void setUp() {
 protected void tearDown() {
 	gc.dispose();
 	shell.dispose();
-	display.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
@@ -329,6 +328,7 @@ public void test_isClipped() {
 	assertTrue(gc.isClipped());
 	GC testGC = new GC(shell);
 	assertFalse(testGC.isClipped());
+	testGC.dispose();
 }
 
 public void test_isDisposed() {

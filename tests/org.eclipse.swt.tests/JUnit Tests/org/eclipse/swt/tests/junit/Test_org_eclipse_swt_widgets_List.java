@@ -393,12 +393,14 @@ public void test_getItemHeight() {
 	
 	font = new Font(list.getDisplay(), fontData.getName(), 8, fontData.getStyle());
 	list.setFont(font);
-	font.dispose();
 	lineHeight = list.getItemHeight();
+	list.setFont(null);
+	font.dispose();
 	font = new Font(list.getDisplay(), fontData.getName(), 12, fontData.getStyle());
 	list.setFont(font);
 	int newLineHeight = list.getItemHeight();
 	assertTrue(":a:", newLineHeight > lineHeight);
+	list.setFont(null);
 	font.dispose();
 }
 
@@ -1309,11 +1311,13 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	
 	font = new Font(list.getDisplay(), fontData.getName(), 8, fontData.getStyle());
 	list.setFont(font);
-	font.dispose();
 	lineHeight = list.getItemHeight();
+	list.setFont(null);
+	font.dispose();
 	font = new Font(list.getDisplay(), fontData.getName(), 12, fontData.getStyle());
 	list.setFont(font);
 	assertTrue(":a:", list.getItemHeight() > lineHeight && font.equals(list.getFont()));
+	list.setFont(null);
 	font.dispose();
 }
 

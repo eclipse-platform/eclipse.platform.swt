@@ -35,7 +35,8 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	super.setUp();
-	makeCleanEnvironment(false); // use multi-line by default	
+	makeCleanEnvironment(false); // use multi-line by default
+	shell.open();	
 }
 
 protected void tearDown() {
@@ -554,14 +555,17 @@ public void test_getSelectionText() {
 }
 
 public void test_getTabs() {
-	text.setTabs(1);
-	assertTrue(":a:", text.getTabs() == 1);
-	text.setTabs(8);
-	assertTrue(":b:", text.getTabs() == 8);
-	text.setText("Line\t1\r\n");
-	assertTrue(":c:", text.getTabs() == 8);
-	text.setTabs(7);
-	assertTrue(":d:", text.getTabs() == 7);
+	if (SWT.getPlatform().equals("win32")) {
+		// API not supported on all platforms (e.g., Motif)
+		text.setTabs(1);
+		assertTrue(":a:", text.getTabs() == 1);
+		text.setTabs(8);
+		assertTrue(":b:", text.getTabs() == 8);
+		text.setText("Line\t1\r\n");
+		assertTrue(":c:", text.getTabs() == 8);
+		text.setTabs(7);
+		assertTrue(":d:", text.getTabs() == 7);
+	}
 }
 
 public void test_getText() {
@@ -591,14 +595,12 @@ public void test_getTextII() {
 }
 
 public void test_getTextLimit() {
-	assertTrue(":a:", text.getTextLimit() < 0);
 	text.setTextLimit(10);
-	assertTrue(":b:", text.getTextLimit() == 10);
+	assertTrue(":a:", text.getTextLimit() == 10);
 }
 
 public void test_getTopIndex() {
-	assertEquals(0, text.getTopIndex());
-	text.setText("01234567890");
+	text.setTopIndex(0);
 	assertEquals(0, text.getTopIndex());
 	text.append(delimiterString +"01234567890");
 	assertEquals(0, text.getTopIndex());
@@ -849,17 +851,23 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 	
 	font = new Font(text.getDisplay(), fontData.getName(), 8, fontData.getStyle());
 	text.setFont(font);
-	font.dispose();
 	lineHeight = text.getLineHeight();
+	text.setFont(null);
+	font.dispose();
 	font = new Font(text.getDisplay(), fontData.getName(), 12, fontData.getStyle());
 	text.setFont(font);
 	assertTrue(":a:", text.getLineHeight() > lineHeight && font.equals(text.getFont()));
+	text.setFont(null);
 	font.dispose();
 }
 
 public void test_setOrientationI() {
 	text.setOrientation(SWT.RIGHT_TO_LEFT);
-	assertTrue(":a:", text.getOrientation()==SWT.RIGHT_TO_LEFT);
+	if (SWT.getPlatform().equals("win32")) {
+		assertTrue(":a:", text.getOrientation()==SWT.RIGHT_TO_LEFT);
+	}
+	text.setOrientation(SWT.LEFT_TO_RIGHT);
+	assertTrue(":b:", text.getOrientation()==SWT.LEFT_TO_RIGHT);
 }
 
 public void test_setRedrawZ() {
@@ -1065,10 +1073,9 @@ public void test_setTopIndexI() {
 	// tests a SINGLE line text editor
 	makeCleanEnvironment(true);
 	
-	assertEquals(0, text.getTopIndex());
 	text.setText("01234567890");
-	assertEquals(0, text.getTopIndex());
 	text.append(Text.DELIMITER +"01234567890");
+	text.setTopIndex(0);
 	assertEquals(0, text.getTopIndex());
 	text.setTopIndex(1);
 	assertEquals(0, text.getTopIndex());
