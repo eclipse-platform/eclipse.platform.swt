@@ -13,7 +13,7 @@
 
 include make_common.mak
 
-#assumes IVE_HOME is set in the environment
+# This makefile assumes IVE_HOME is set in the environment
 
 SWT_PREFIX=swt
 WS_PREFIX=photon

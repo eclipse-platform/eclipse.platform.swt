@@ -24,17 +24,16 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 
 # Define the various DLL (shared) libraries to be made.
 
-SWT_PREFIX   = swt
-WS_PREFIX    = motif
-SWT_LIB      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).sl
-SWT_OBJS      = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
-SWT_LIBS      = -L$(MOTIF_HOME)/lib -L/usr/lib  \
-	       -G -lXm -lXt -lX11 -lc -ldld -lm -lXp -lXtst
+SWT_PREFIX = swt
+WS_PREFIX = motif
+SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).sl
+SWT_OBJS = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
+SWT_LIBS = -L$(MOTIF_HOME)/lib -L/usr/lib -G -lXm -lXt -lX11 -lc -ldld -lm -lXp -lXtst
 
-CDE_PREFIX   = swt-cde
-CDE_LIB      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).sl
-CDE_OBJS      = cde.o
-CDE_LIBS      = -G -L$(CDE_HOME)/lib -lDtSvc
+CDE_PREFIX = swt-cde
+CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).sl
+CDE_OBJS = cde.o
+CDE_LIBS = -G -L$(CDE_HOME)/lib -lDtSvc
 
 #
 # The following CFLAGS are for compiling both the SWT library and the CDE
@@ -64,4 +63,3 @@ $(CDE_LIB): $(CDE_OBJS)
 
 clean:
 	rm -f *.sl *.o
-

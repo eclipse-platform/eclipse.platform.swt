@@ -25,16 +25,16 @@ CC=cc_r
 
 # Define the various DLL (shared) libraries to be made.
 
-SWT_PREFIX   = swt
-WS_PREFIX    = motif
-SWT_LIB      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
-SWT_OBJS      = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
-SWT_LIBS      = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext -liconv -lXtst
+SWT_PREFIX = swt
+WS_PREFIX = motif
+SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
+SWT_OBJS = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
+SWT_LIBS = -L$(MOTIF_HOME) -G -bnoentry -lc_r -lC_r -lm -bexpall -lXm -lMrm -lXt -lX11 -lXext -liconv -lXtst
 
-CDE_PREFIX   = swt-cde
-CDE_LIB      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
-CDE_OBJS      = cde.o
-CDE_LIBS      = -L$(CDE_HOME)/lib -bnoentry -bexpall -lDtSvc -lc
+CDE_PREFIX = swt-cde
+CDE_LIB = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).a
+CDE_OBJS = cde.o
+CDE_LIBS = -L$(CDE_HOME)/lib -bnoentry -bexpall -lDtSvc -lc
 
 #
 # The following CFLAGS are for compiling both the SWT library and the CDE

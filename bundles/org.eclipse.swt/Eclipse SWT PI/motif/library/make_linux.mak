@@ -22,37 +22,37 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 
 # Define the various DLL (shared) libraries to be made.
 
-SWT_PREFIX   = swt
-WS_PREFIX    = motif
-SWT_LIB      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-SWT_OBJS      = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
-SWT_LIBS      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
+SWT_PREFIX = swt
+WS_PREFIX = motif
+SWT_LIB = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+SWT_OBJS = swt.o callback.o os.o os_structs.o os_custom.o os_stats.o
+SWT_LIBS = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 	           -rpath . -x -shared -lX11 -lm -lXext -lXt -lXp -ldl -lXinerama -lXtst
 CFLAGS = -O -s -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DMOTIF  -fpic -I./ \
 	-I$(JAVA_HOME)/include -I$(MOTIF_HOME)/include -I/usr/X11R6/include 
 
 GNOME_PREFIX = swt-gnome
-GNOME_LIB    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-GNOME_OBJECTS= swt.o gnome.o gnome_structs.o gnome_stats.o
-GNOME_CFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
+GNOME_LIB = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+GNOME_OBJECTS = swt.o gnome.o gnome_structs.o gnome_stats.o
+GNOME_CFLAGS = -O -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DGTK -I$(JAVA_HOME)/include `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 GNOME_LIBS = -shared -fpic -fPIC `pkg-config --libs gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 
-KDE_PREFIX   = swt-kde
-KDE_LIB      = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-KDE_OBJS      = kde.o
-KDE_LIBS      = -L/usr/lib  -L$(QT_HOME)/lib -shared  -lkdecore -lqt
-KDE_CFLAGS   = -fno-rtti -c -O -I/usr/include/kde -I$(QT_HOME)/include -I$(JAVA_HOME)/include
+KDE_PREFIX = swt-kde
+KDE_LIB = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+KDE_OBJS = kde.o
+KDE_LIBS = -L/usr/lib  -L$(QT_HOME)/lib -shared  -lkdecore -lqt
+KDE_CFLAGS = -fno-rtti -c -O -I/usr/include/kde -I$(QT_HOME)/include -I$(JAVA_HOME)/include
 
-AWT_PREFIX   = swt-awt
-AWT_LIB      = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-AWT_OBJS      = swt_awt.o
-AWT_LIBS      = -L$(JAVA_HOME)/jre/bin -ljawt -shared
+AWT_PREFIX = swt-awt
+AWT_LIB = lib$(AWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+AWT_OBJS = swt_awt.o
+AWT_LIBS = -L$(JAVA_HOME)/jre/bin -ljawt -shared
 
-GTK_PREFIX  = swt-gtk
-GTK_LIB     = lib$(GTK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-GTK_OBJS     = swt.o gtk.o
-GTK_CFLAGS  = `pkg-config --cflags gtk+-2.0`
-GTK_LIBS     = -x -shared `pkg-config --libs-only-l --libs-only-L gtk+-2.0`
+GTK_PREFIX = swt-gtk
+GTK_LIB = lib$(GTK_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+GTK_OBJS = swt.o gtk.o
+GTK_CFLAGS = `pkg-config --cflags gtk+-2.0`
+GTK_LIBS = -x -shared `pkg-config --libs-only-l --libs-only-L gtk+-2.0`
 	
 all: make_swt make_awt make_gnome make_gtk make_kde
 
@@ -78,13 +78,13 @@ $(GNOME_LIB): $(GNOME_OBJECTS)
 	gcc -o $@ $(GNOME_OBJECTS) $(GNOME_LIBS)
 
 gnome.o: gnome.c
-	gcc -O -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DGTK -I$(JAVA_HOME)/include $(GNOME_CFLAGS) -c -o gnome.o gnome.c
+	gcc $(GNOME_CFLAGS) -c -o gnome.o gnome.c
 
 gnome_structs.o: gnome_structs.c
-	gcc -O -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DGTK -I$(JAVA_HOME)/include $(GNOME_CFLAGS) -c -o gnome_structs.o gnome_structs.c
+	gcc $(GNOME_CFLAGS) -c -o gnome_structs.o gnome_structs.c
 
 gnome_stats.o: gnome_stats.c
-	gcc -O -Wall -DSWT_VERSION=$(SWT_VERSION) -DLINUX -DGTK -I$(JAVA_HOME)/include $(GNOME_CFLAGS) -c -o gnome_stats.o gnome_stats.c
+	gcc $(GNOME_CFLAGS) -c -o gnome_stats.o gnome_stats.c
 
 make_kde: $(KDE_LIB)
 
