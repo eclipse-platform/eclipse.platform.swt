@@ -71,7 +71,7 @@ public class CTabFolder extends Composite {
 	 * NOTE This field is badly named and can not be fixed for backwards compatability.
 	 * It should not be capitalized.
 	 */
-	public int MIN_TAB_WIDTH = 8;
+	public int MIN_TAB_WIDTH = 4;
 	
 	/**
 	 * Color of innermost line of drop shadow border.
