@@ -156,13 +156,13 @@ int createStyle () {
 	* This code is intentionaly commented, since it forces ATSUI to
 	* syntesize fonts.
 	*/ 
-//	int ptr = OS.NewPtr(10);
+//	int ptr = OS.NewPtr(16);
 //	OS.memcpy(ptr + 8, new byte[]{(style & OS.bold) != 0 ? (byte)1 : 0}, 1); 
 //	OS.memcpy(ptr + 9, new byte[]{(style & OS.italic) != 0 ? (byte)1 : 0}, 1); 
 //	int[] tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag, OS.kATSUQDBoldfaceTag, OS.kATSUQDItalicTag};
 //	int[] sizes = new int[]{4, 4, 1, 1};
 //	int[] values = new int[]{ptr, ptr + 4, ptr + 8, ptr + 9};
-	int ptr = OS.NewPtr(8);
+	int ptr = OS.NewPtr(16);
 	OS.memcpy(ptr, new int[]{handle}, 4); 
 	OS.memcpy(ptr + 4, new int[]{OS.X2Fix(size)}, 4);
 	int[] tags = new int[]{OS.kATSUFontTag, OS.kATSUSizeTag};
