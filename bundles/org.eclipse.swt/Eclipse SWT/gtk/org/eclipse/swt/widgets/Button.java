@@ -719,8 +719,8 @@ public void setText (String string) {
 
 int traversalCode (int key, GdkEventKey event) {
 	int code = super.traversalCode (key, event);
-	if ((style & SWT.PUSH) != 0) return code;
-	return code | SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
+	if ((style & SWT.RADIO) != 0) code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
+	return code;
 }
 
 }
