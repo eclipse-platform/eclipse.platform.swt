@@ -35,6 +35,7 @@ import org.eclipse.swt.events.*;
  */
 public class Text extends Scrollable {
 	int bufferHandle, tabs = 8, lastEventTime = 0;
+	boolean doubleClick;
 	
 	static final int INNER_BORDER = 2;
 	static final int ITER_SIZEOF = 56;
@@ -137,6 +138,11 @@ void createHandle (int index) {
 		OS.gtk_text_view_set_justification (handle, just);
 	}
 	OS.gtk_widget_show (handle);
+}
+
+void createWidget (int index) {
+	super.createWidget (index);
+	doubleClick = true;
 }
 
 /**
@@ -492,7 +498,7 @@ public int getCharCount () {
  */
 public boolean getDoubleClickEnabled () {
 	checkWidget ();
-	return true;
+	return doubleClick;
 }
 
 /**
@@ -842,6 +848,21 @@ int gtk_activate (int widget) {
 	return 0;
 }
 
+int gtk_button_press_event (int widget, int event) {
+	int result =  super.gtk_button_press_event (widget, event);
+	if (result != 0) return result;
+	GdkEventButton gdkEvent = new GdkEventButton ();
+	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	if (!doubleClick) {
+		switch (gdkEvent.type) {
+			case OS.GDK_2BUTTON_PRESS:
+			case OS.GDK_3BUTTON_PRESS:
+				return 1;
+		}
+	}
+	return result;
+}
+
 int gtk_changed (int widget) {
 	sendEvent (SWT.Modify);
 	return 0;
@@ -1183,6 +1204,7 @@ void setBackgroundColor (GdkColor color) {
  */
 public void setDoubleClickEnabled (boolean doubleClick) {
 	checkWidget ();
+	this.doubleClick = doubleClick;
 }
 
 /**
