@@ -42,6 +42,7 @@ import org.eclipse.swt.events.*;
 
 public class Button extends Control {
 	Image image;
+	boolean ignoreMouse;
 	static final int ButtonProc;
 	static final TCHAR ButtonClass = new TCHAR (0,"BUTTON", true);
 	static final int CheckWidth, CheckHeight;
@@ -156,9 +157,14 @@ static int checkStyle (int style) {
 
 void click () {
 	/*
-	* Note: BM_CLICK sends WM_LBUTTONDOWN and WM_LBUTTONUP.
+	* Feature in Windows.  BM_CLICK sends a fake WM_LBUTTONDOWN and
+	* WM_LBUTTONUP in order to click the button.  This causes the
+	* application to get unexpected mouse events.  The fix is to
+	* ignore mouse events when they are caused by BM_CLICK.
 	*/
+	ignoreMouse = true;
 	OS.SendMessage (handle, OS.BM_CLICK, 0, 0);
+	ignoreMouse = false;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -649,6 +655,16 @@ LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 		menuShell ().setDefaultButton (null, false);
 	}
 	return result;
+}
+
+LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+	if (ignoreMouse) return null;
+	return super.WM_LBUTTONDOWN (wParam, lParam);
+}
+
+LRESULT WM_LBUTTONUP (int wParam, int lParam) {
+	if (ignoreMouse) return null;
+	return super.WM_LBUTTONUP (wParam, lParam);
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
