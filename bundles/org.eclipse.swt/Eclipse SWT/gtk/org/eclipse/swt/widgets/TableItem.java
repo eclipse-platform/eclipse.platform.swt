@@ -142,8 +142,8 @@ public Rectangle getBounds (int index) {
 	int parentHandle = parent.handle;
 	int column = OS.gtk_tree_view_get_column (parentHandle, index);
 	if (column == 0) return new Rectangle (0, 0, 0, 0);
-	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	GdkRectangle rect = new GdkRectangle ();
+	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
 	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
 	OS.gtk_tree_path_free (path);
 	int headerHeight = parent.getHeaderHeight ();

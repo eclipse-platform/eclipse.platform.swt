@@ -219,9 +219,12 @@ public Color getBackground () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
+	int parentHandle = parent.handle;
 	GdkRectangle rect = new GdkRectangle ();
-	int column = OS.gtk_tree_view_get_column (handle, 0);
-	OS.gtk_tree_view_get_cell_area (parent.handle, handle, column, rect);
+	int column = OS.gtk_tree_view_get_column (parentHandle, 0);
+	int path = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	OS.gtk_tree_view_get_cell_area (parentHandle, path, column, rect);
+	OS.gtk_tree_path_free (path);
 	return new Rectangle (rect.x, rect.y, rect.width, rect.height);
 }	
 
