@@ -548,7 +548,7 @@ Rectangle getFocusBounds () {
 		if (col0index == 0) {
 			x = getTextX (0);
 		} else {
-			x = 0;
+			x = -parent.horizontalOffset;
 		}
 	} else {
 		x = getTextX (0);
@@ -932,20 +932,35 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 			if (columnIndex == 0) {
 				Rectangle focusBounds = getFocusBounds ();
-				int fillWidth = focusBounds.width;
-				if (parent.columns.length < 2 || (parent.style & SWT.FULL_SELECTION) == 0) {
-					fillWidth -= 2;	/* space for right bound of focus rect */
+				int startX, fillWidth;
+				if (column == null || column.getOrderIndex () == 0 || (parent.style & SWT.FULL_SELECTION) == 0) {
+					startX = focusBounds.x + 1;		/* space for left bound of focus rect */
+				} else {
+					startX = column.getX ();
+				}
+				if (column == null) {
+					fillWidth = focusBounds.width - 2;
+				} else {
+					fillWidth = column.getX () + column.width - startX;
+					if (column.getOrderIndex () == parent.columns.length - 1 || (parent.style & SWT.FULL_SELECTION) == 0) {
+						fillWidth -= 2;	/* space for right bound of focus rect */
+					}
 				}
 				if (fillWidth > 0) {
-					gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, fillWidth, focusBounds.height - 2);
+					gc.fillRectangle (startX, focusBounds.y + 1, fillWidth, focusBounds.height - 2);
 				}
 			} else {
+				int startX = column.getX ();
 				int fillWidth = column.width;
-				if (columnIndex == parent.columns.length - 1) {
+				if (column.getOrderIndex () == 0) {
+					startX += 1;	/* space for left bound of focus rect */
+					fillWidth -= 1;
+				}
+				if (column.getOrderIndex () == parent.columns.length - 1) {
 					fillWidth -= 2;		/* space for right bound of focus rect */
 				}
 				if (fillWidth > 0) {
-					gc.fillRectangle (column.getX (), y + 2, fillWidth, itemHeight - 3);
+					gc.fillRectangle (startX, y + 2, fillWidth, itemHeight - 3);
 				}
 			}
 			gc.setBackground (oldBackground);
