@@ -64,7 +64,7 @@ public class Browser extends Composite {
 	OpenWindowListener[] openWindowListeners = new OpenWindowListener[0];
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
-	VisibilityListener[] visibilityListeners = new VisibilityListener[0];
+	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 
 	static nsIAppShell AppShell;
 	static AppFileLocProvider LocProvider; 
@@ -439,13 +439,13 @@ public void addStatusTextListener(StatusTextListener listener) {
  *
  * @since 3.0
  */
-public void addVisibilityListener(VisibilityListener listener) {
+public void addVisibilityWindowListener(VisibilityWindowListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	VisibilityListener[] newVisibilityListeners = new VisibilityListener[visibilityListeners.length + 1];
-	System.arraycopy(visibilityListeners, 0, newVisibilityListeners, 0, visibilityListeners.length);
-	visibilityListeners = newVisibilityListeners;
-	visibilityListeners[visibilityListeners.length - 1] = listener;
+	VisibilityWindowListener[] newVisibilityWindowListeners = new VisibilityWindowListener[visibilityWindowListeners.length + 1];
+	System.arraycopy(visibilityWindowListeners, 0, newVisibilityWindowListeners, 0, visibilityWindowListeners.length);
+	visibilityWindowListeners = newVisibilityWindowListeners;
+	visibilityWindowListeners[visibilityWindowListeners.length - 1] = listener;
 }
 
 /**
@@ -1033,26 +1033,26 @@ public void removeStatusTextListener(StatusTextListener listener) {
  * 
  * @since 3.0
  */
-public void removeVisibilityListener(VisibilityListener listener) {
+public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (visibilityListeners.length == 0) return;
+	if (visibilityWindowListeners.length == 0) return;
 	int index = -1;
-	for (int i = 0; i < visibilityListeners.length; i++) {
-		if (listener == visibilityListeners[i]){
+	for (int i = 0; i < visibilityWindowListeners.length; i++) {
+		if (listener == visibilityWindowListeners[i]){
 			index = i;
 			break;
 		}
 	}
 	if (index == -1) return;
-	if (visibilityListeners.length == 1) {
-		visibilityListeners = new VisibilityListener[0];
+	if (visibilityWindowListeners.length == 1) {
+		visibilityWindowListeners = new VisibilityWindowListener[0];
 		return;
 	}
-	VisibilityListener[] newVisibilityListeners = new VisibilityListener[visibilityListeners.length - 1];
-	System.arraycopy(visibilityListeners, 0, newVisibilityListeners, 0, index);
-	System.arraycopy(visibilityListeners, index + 1, newVisibilityListeners, index, visibilityListeners.length - index - 1);
-	visibilityListeners = newVisibilityListeners;
+	VisibilityWindowListener[] newVisibilityWindowListeners = new VisibilityWindowListener[visibilityWindowListeners.length - 1];
+	System.arraycopy(visibilityWindowListeners, 0, newVisibilityWindowListeners, 0, index);
+	System.arraycopy(visibilityWindowListeners, index + 1, newVisibilityWindowListeners, index, visibilityWindowListeners.length - index - 1);
+	visibilityWindowListeners = newVisibilityWindowListeners;
 }
 
 /**
@@ -1609,8 +1609,8 @@ int SetChromeFlags(int aChromeFlags) {
 }
    
 int DestroyBrowserWindow() {
-	CloseWindowEvent newEvent = new CloseWindowEvent(this);
-	newEvent.data = getDisplay();
+	WindowEvent newEvent = new WindowEvent(this);
+	newEvent.display = getDisplay();
 	newEvent.widget = this;
 	for (int i = 0; i < closeWindowListeners.length; i++)
 		closeWindowListeners[i].close(newEvent);
@@ -1663,19 +1663,19 @@ int GetVisibility(int value) {
 }
    
 int SetVisibility(int value) {
-	VisibilityEvent event = new VisibilityEvent(this);
+	WindowEvent event = new WindowEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
 	if (value == 1) {
 		event.location = location;
 		event.size = size;
-		for (int i = 0; i < visibilityListeners.length; i++)
-			visibilityListeners[i].show(event);
+		for (int i = 0; i < visibilityWindowListeners.length; i++)
+			visibilityWindowListeners[i].show(event);
 		location = null;
 		size = null;
 	} else {
-		for (int i = 0; i < visibilityListeners.length; i++)
-			visibilityListeners[i].hide(event);
+		for (int i = 0; i < visibilityWindowListeners.length; i++)
+			visibilityWindowListeners[i].hide(event);
 	}
 	return XPCOM.NS_OK;     	
 }
