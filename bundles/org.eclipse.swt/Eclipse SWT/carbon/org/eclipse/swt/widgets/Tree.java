@@ -83,8 +83,8 @@ void createHandle () {
 		checkColumn.propertyDesc_propertyType = OS.kDataBrowserCheckboxType;
 		checkColumn.propertyDesc_propertyFlags = OS.kDataBrowserPropertyIsMutable;
 		//NOT DONE
-		checkColumn.headerBtnDesc_minimumWidth = 20;
-		checkColumn.headerBtnDesc_maximumWidth = 20;
+		checkColumn.headerBtnDesc_minimumWidth = 40;
+		checkColumn.headerBtnDesc_maximumWidth = 40;
 		checkColumn.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
 		OS.AddDataBrowserListViewColumn (handle, checkColumn, 0);
 	}
