@@ -199,8 +199,7 @@ void drawClose(GC gc) {
 }
 void drawSelected(GC gc ) {
 	Point size = parent.getSize();
-	int deadspace = parent.simple || parent.single ? 0 : parent.curveWidth - parent.curveIndent;
-	int rightEdge = Math.min (x + width - deadspace, parent.getRightItemEdge());
+	int rightEdge = Math.min (x + width, parent.getRightItemEdge());
 	
 	//	 Draw selection border across all tabs
 	int xx = parent.borderLeft;
@@ -505,7 +504,8 @@ public boolean isShowing () {
 	if (parent.firstIndex == index) {
 		return x <= rightEdge;
 	}
-	return x + width < rightEdge;
+	int extra = parent.simple || index != parent.selectedIndex ? 0 : parent.curveWidth - 2*parent.curveIndent;
+	return x + width + extra < rightEdge;
 }
 void onPaint(GC gc, boolean isSelected) {
 	if (width == 0 || height == 0) return;
