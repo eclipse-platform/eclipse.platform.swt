@@ -223,6 +223,7 @@ public class OS {
 	public static final int kEventParamClickCount = ('c'<<24) + ('c'<<16) + ('n'<<8) + 't';
 	public static final int kEventParamControlPart= ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
 	public static final int kEventParamControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
+	public static final int kEventParamCurrentBounds = ('c'<<24) + ('r'<<16) + ('c'<<8) + 't';
 	public static final int kEventParamDirectObject = ('-'<<24) + ('-'<<16) + ('-'<<8) + '-';
 	public static final int kEventParamFMFontFamily = ('f'<<24) + ('m'<<16) + ('f'<<8) + 'm';
 	public static final int kEventParamFMFontStyle = ('f'<<24) + ('m'<<16) + ('s'<<8) + 't';
@@ -236,6 +237,7 @@ public class OS {
 	public static final int kEventParamMouseLocation = ('m'<<24) + ('l'<<16) + ('o'<<8) + 'c';
 	public static final int kEventParamMouseWheelDelta = ('m'<<24) + ('w'<<16) + ('d'<<8) + 'l';
 	public static final int kEventParamPreviousBounds = ('p'<<24) + ('r'<<16) + ('c'<<8) + 't';
+	public static final int kEventParamOriginalBounds = ('o'<<24) + ('r'<<16) + ('c'<<8) + 't';
 	public static final int kEventParamRgnHandle =  ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
 	public static final int kEventParamTextInputSendText = ('t'<<24) + ('s'<<16) + ('t'<<8) + 'x';
 	public static final int kEventParamWindowDefPart = ('w'<<24) + ('d'<<16) + ('p'<<8) + 'c';
@@ -439,6 +441,7 @@ public class OS {
 	public static final int typeMenuRef = ('m'<<24) + ('e'<<16) + ('n'<<8) + 'u';
 	public static final int typeMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int typeQDPoint = ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
+	public static final int typeQDRectangle = ('q'<<24) + ('d'<<16) + ('r'<<8) + 't';
 	public static final int typeQDRgnHandle = ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
 	public static final int typeRGBColor = ('c'<<24) + ('R'<<16) + ('G'<<8) + 'B';
 	public static final int typeSInt16 = ('s'<<24) + ('h'<<16) + ('o'<<8) + 'r';
@@ -599,6 +602,7 @@ public static final native int EnableControl(int cHandle);
 public static final native void EnableMenuCommand(int mHandle, int commandId);
 public static final native void EnableMenuItem(int mHandle, short index);
 public static final native void EndUpdate(int wHandle);
+public static final native boolean EqualRect(Rect rect1, Rect rect2);
 public static final native void EraseRect(Rect bounds);
 public static final native void EraseRgn(int rgnHandle);
 public static final native int FetchFontInfo(short fontID, short fontSize, short fontStyle, FontInfo info); 

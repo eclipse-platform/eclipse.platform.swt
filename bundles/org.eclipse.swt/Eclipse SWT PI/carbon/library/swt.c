@@ -1940,6 +1940,25 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EndUpdate
 }
 #endif /* NO_EndUpdate */
 
+#ifndef NO_EqualRect
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_EqualRect
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	Rect _arg0, *lparg0=NULL;
+	Rect _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("EqualRect\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	rc = (jboolean)EqualRect((const Rect *)lparg0, (const Rect *)lparg1);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_EqualRect */
+
 #ifndef NO_EraseRect
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EraseRect
 	(JNIEnv *env, jclass that, jobject arg0)

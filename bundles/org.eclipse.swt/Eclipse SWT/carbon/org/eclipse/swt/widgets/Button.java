@@ -17,7 +17,7 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 public class Button extends Control {
-	String text;
+	String text = "";
 	Image image;
 	int cIcon;
 	boolean isImage;
