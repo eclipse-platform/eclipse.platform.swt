@@ -753,6 +753,7 @@ public class OS {
 	public static final int SC_TASKLIST = 0xf130;
 	public static final int SC_VSCROLL = 0xf070;
 	public static final int SF_RTF = 0x2;
+	public static final int SHCMBF_HIDDEN = 0x2;
 	public static final int SHCMBM_SETSUBMENU = 0x590;
 	public static final int SHCMBM_GETSUBMENU = 0x591;
 	public static final int SIF_ALL = 0x17;
@@ -1905,6 +1906,7 @@ public static final native void CommandBar_Destroy (int hwndCB);
 public static final native boolean CommandBar_DrawMenuBar (int hwndCB, int iButton);
 public static final native int CommandBar_Height (int hdnwCB);
 public static final native boolean CommandBar_InsertMenubarEx (int hwndCB, int hInst, int pszMenu, int iButton);
+public static final native boolean CommandBar_Show (int hwndCB, boolean fShow);
 public static final native int CommDlgExtendedError ();
 public static final native int CopyImage (int hImage, int uType, int cxDesired, int cyDesired, int fuFlags);
 public static final native int CreateAcceleratorTableW (byte [] lpaccl, int cEntries); 

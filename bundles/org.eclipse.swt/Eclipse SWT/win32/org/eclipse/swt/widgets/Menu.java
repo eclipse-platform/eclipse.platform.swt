@@ -28,11 +28,12 @@ import org.eclipse.swt.events.*;
  */
 
 public class Menu extends Widget {
-	public int handle;
+	public int handle, hwndCB;
 	int x, y;
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
+	static final int ID_PPCBAR = 100;
 
 /**
  * Constructs a new instance of this class given its parent,
@@ -249,15 +250,41 @@ static int checkStyle (int style) {
 
 void createHandle () {
 	if ((style & SWT.BAR) != 0) {
-		/*
-		* Note in WinCE PPC.  CreateMenu cannot insert items of type 
-		* separator.  The workaround is to always use CreatePopupMenu.
-		*/
-		handle = OS.IsPPC ? OS.CreatePopupMenu () : OS.CreateMenu();
+		if (OS.IsPPC) {
+			int hwndShell = parent.handle;
+			SHMENUBARINFO mbi = new SHMENUBARINFO ();
+			mbi.cbSize = mbi.sizeof;
+			mbi.hwndParent = hwndShell;
+			mbi.dwFlags = OS.SHCMBF_HIDDEN;
+			mbi.nToolBarId = ID_PPCBAR;
+			mbi.hInstRes = OS.GetLibraryHandle ();
+			boolean success = OS.SHCreateMenuBar (mbi);
+			hwndCB = mbi.hwndMB;
+			if (!success) error (SWT.ERROR_NO_HANDLES);
+			/* Remove the item from the resource file */
+			OS.SendMessage (hwndCB, OS.TB_DELETEBUTTON, 0, 0);
+			return;
+		}
+		handle = OS.CreateMenu ();
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+		if (OS.IsHPC) {
+			int hwndShell = parent.handle;
+			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), hwndShell, 1);
+			if (hwndCB == 0) error (SWT.ERROR_NO_HANDLES);
+			OS.CommandBar_Show (hwndCB, false);
+			OS.CommandBar_InsertMenubarEx (hwndCB, 0, handle, 0);
+			/*
+			* The command bar hosts the 'close' button when the window does not
+			* have a caption.
+			*/
+			if ((parent.style & SWT.CLOSE) != 0 && (parent.style & SWT.TITLE) == 0) {
+				OS.CommandBar_AddAdornments (hwndCB, 0, 0);
+			}
+		}
 	} else {
 		handle = OS.CreatePopupMenu ();
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
 void createItem (MenuItem item, int index) {
@@ -265,54 +292,49 @@ void createItem (MenuItem item, int index) {
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	parent.add (item);
 	boolean success = false;
-	if (OS.IsWinCE) {
-		int uFlags = OS.MF_BYPOSITION;
-		TCHAR lpNewItem = null;
-		if ((item.style & SWT.SEPARATOR) != 0) {
-			uFlags |= OS.MF_SEPARATOR;
+	if (OS.IsPPC && hwndCB != 0) {
+		TBBUTTON lpButton = new TBBUTTON ();
+		lpButton.idCommand = item.id;
+		lpButton.fsStyle = (byte) (OS.TBSTYLE_DROPDOWN | OS.TBSTYLE_AUTOSIZE | 0x80);
+		lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
+		lpButton.iBitmap = OS.I_IMAGENONE;
+		if ((item.style & SWT.SEPARATOR) != 0) lpButton.fsStyle = (byte) OS.BTNS_SEP;
+		success = OS.SendMessage (hwndCB, OS.TB_INSERTBUTTON, index, lpButton) != 0;
+	} else {
+		if (OS.IsWinCE) {
+			int uFlags = OS.MF_BYPOSITION;
+			TCHAR lpNewItem = null;
+			if ((item.style & SWT.SEPARATOR) != 0) {
+				uFlags |= OS.MF_SEPARATOR;
+			} else {
+				lpNewItem = new TCHAR (0, "", true);
+			}
+			success = OS.InsertMenu (handle, index, uFlags, item.id, lpNewItem);
+			if (success) {
+				MENUITEMINFO info = new MENUITEMINFO ();
+				info.cbSize = MENUITEMINFO.sizeof;
+				info.fMask = OS.MIIM_DATA;
+				info.dwItemData = item.id;
+				success = OS.SetMenuItemInfo (handle, index, true, info);
+			}
 		} else {
-			lpNewItem = new TCHAR (0, "", true);
-		}
-		success = OS.InsertMenu (handle, index, uFlags, item.id, lpNewItem);
-		if (success) {
+			/*
+			* Bug in Windows.  For some reason, when InsertMenuItem ()
+			* is used to insert an item without text, it is not possible
+			* to use SetMenuItemInfo () to set the text at a later time.
+			* The fix is to insert the item with an empty string.
+			*/
+			int hHeap = OS.GetProcessHeap ();
+			int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 			MENUITEMINFO info = new MENUITEMINFO ();
 			info.cbSize = MENUITEMINFO.sizeof;
-			info.fMask = OS.MIIM_DATA;
-			info.dwItemData = item.id;
-			success = OS.SetMenuItemInfo (handle, index, true, info);
-			
-			if (OS.IsPPC) {
-				/* if it is a top level menu item, display it on the toolbar */
-				if (item.parent == parent.menuBar) {
-					TBBUTTON lpButton = new TBBUTTON ();
-					lpButton.idCommand = item.id;
-					lpButton.fsStyle = (byte) (OS.TBSTYLE_DROPDOWN | OS.TBSTYLE_AUTOSIZE | 0x80);
-					lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
-					lpButton.iBitmap = OS.I_IMAGENONE;
-					if ((item.style & SWT.SEPARATOR) != 0) {
-						lpButton.fsStyle = (byte) OS.BTNS_SEP;
-					} 
-					success = OS.SendMessage (parent.hwndTB, OS.TB_INSERTBUTTON, index, lpButton) != 0;
-				}
-			}
+			info.fMask = OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
+			info.wID = info.dwItemData = item.id;
+			info.fType = item.widgetStyle ();
+			info.dwTypeData = pszText;
+			success = OS.InsertMenuItem (handle, index, true, info);
+			if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 		}
-	} else {
-		/*
-		* Bug in Windows.  For some reason, when InsertMenuItem ()
-		* is used to insert an item without text, it is not possible
-		* to use SetMenuItemInfo () to set the text at a later time.
-		* The fix is to insert the item with an empty string.
-		*/
-		int hHeap = OS.GetProcessHeap ();
-		int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA;
-		info.wID = info.dwItemData = item.id;
-		info.fType = item.widgetStyle ();
-		info.dwTypeData = pszText;
-		success = OS.InsertMenuItem (handle, index, true, info);
-		if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	}
 	if (!success) {
 		parent.remove (item);
@@ -346,26 +368,26 @@ void destroyAcceleratorTable () {
 
 void destroyItem (MenuItem item) {
 	if (OS.IsWinCE) {
-		int index = 0;
-		MENUITEMINFO info = new MENUITEMINFO ();
-		info.cbSize = MENUITEMINFO.sizeof;
-		info.fMask = OS.MIIM_DATA;
-		while (OS.GetMenuItemInfo (handle, index, true, info)) {
-			if (info.dwItemData == item.id) break;
-			index++;
-		}
-		if (info.dwItemData != item.id) {
-			error (SWT.ERROR_ITEM_NOT_REMOVED);
-		}	
-		if (!OS.RemoveMenu (handle, index, OS.MF_BYPOSITION)) {
-			error (SWT.ERROR_ITEM_NOT_REMOVED);
-		}
-		/* 
-		* if it is a top level menu item, remove the corresponding
-		* tool item.
-		*/
-		if (parent.menuBar == this) {
-			OS.SendMessage (parent.hwndTB, OS.TB_DELETEBUTTON, index, 0);
+		if (OS.IsPPC && hwndCB != 0) {
+			int index = OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
+			if (OS.SendMessage (hwndCB, OS.TB_DELETEBUTTON, index, 0) == 0) {
+				error (SWT.ERROR_ITEM_NOT_REMOVED);
+			}
+		} else {
+			int index = 0;
+			MENUITEMINFO info = new MENUITEMINFO ();
+			info.cbSize = MENUITEMINFO.sizeof;
+			info.fMask = OS.MIIM_DATA;
+			while (OS.GetMenuItemInfo (handle, index, true, info)) {
+				if (info.dwItemData == item.id) break;
+				index++;
+			}
+			if (info.dwItemData != item.id) {
+				error (SWT.ERROR_ITEM_NOT_REMOVED);
+			}	
+			if (!OS.RemoveMenu (handle, index, OS.MF_BYPOSITION)) {
+				error (SWT.ERROR_ITEM_NOT_REMOVED);
+			}
 		}
 	} else {
 		if (!OS.RemoveMenu (handle, item.id, OS.MF_BYCOMMAND)) {
@@ -376,10 +398,12 @@ void destroyItem (MenuItem item) {
 }
 
 void destroyWidget () {
-	int hMenu = handle;
+	int hMenu = handle, hCB = hwndCB;
 	releaseHandle ();
-	if (hMenu != 0) {
-		OS.DestroyMenu (hMenu);
+	if (OS.IsWinCE) {
+		if (hCB != 0) OS.CommandBar_Destroy (hCB);
+	} else {
+		if (hMenu != 0) OS.DestroyMenu (hMenu);
 	}
 }
 
@@ -452,13 +476,22 @@ public boolean getEnabled () {
  */
 public MenuItem getItem (int index) {
 	checkWidget ();
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_DATA;
-	if (!OS.GetMenuItemInfo (handle, index, true, info)) {
-		error (SWT.ERROR_INVALID_RANGE);
+	int id = 0;
+	if (OS.IsPPC && hwndCB != 0) {
+		TBBUTTON lpButton = new TBBUTTON ();
+		int result = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, index, lpButton);
+		if (result == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+		id = lpButton.idCommand;
+	} else {
+		MENUITEMINFO info = new MENUITEMINFO ();
+		info.cbSize = MENUITEMINFO.sizeof;
+		info.fMask = OS.MIIM_DATA;
+		if (!OS.GetMenuItemInfo (handle, index, true, info)) {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+		id = info.dwItemData;
 	}
-	return parent.findMenuItem (info.dwItemData);
+	return parent.findMenuItem (id);
 }
 
 /**
@@ -473,7 +506,6 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-//	return OS.GetMenuItemCount (handle);
 	return GetMenuItemCount (handle);
 }
 
@@ -495,6 +527,16 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget ();
+	if (OS.IsPPC && hwndCB != 0) {
+		int count = OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
+		TBBUTTON lpButton = new TBBUTTON ();
+		MenuItem [] result = new MenuItem [count];
+		for (int i=0; i<count; i++) {
+			int code = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, i, lpButton);
+			result [i] = parent.findMenuItem (lpButton.idCommand);
+		}
+		return result;
+	}
 	int index = 0;
 	int length = OS.IsWinCE ? 4 : OS.GetMenuItemCount (handle);
 	MenuItem [] items = new MenuItem [length];
@@ -518,6 +560,9 @@ public MenuItem [] getItems () {
 int GetMenuItemCount (int handle) {
 	checkWidget ();
 	if (OS.IsWinCE) {
+		if (OS.IsPPC && hwndCB != 0) {
+			return OS.SendMessage (hwndCB, OS.TB_BUTTONCOUNT, 0, 0);
+		}
 		int count = 0;
 		MENUITEMINFO info = new MENUITEMINFO ();
 		info.cbSize = MENUITEMINFO.sizeof;
@@ -662,6 +707,10 @@ public boolean getVisible () {
 public int indexOf (MenuItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (OS.IsPPC && hwndCB != 0) {
+		return OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
+	}
 	int index = 0;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
@@ -718,10 +767,21 @@ void redraw () {
 	if (OS.IsPPC) return;
 	if (OS.IsHPC) {
 		/*
-		* Each time a menu has been modified, we need
-		* to redraw the command bar.
+		* Each time a menu has been modified, the command menu bar
+		* must be redrawn or it won't update properly.  For example,
+		* a submenu will not drop down.
 		*/
-		OS.CommandBar_DrawMenuBar (parent.hwndCB, 0);
+		Menu menuBar = parent.menuBar;
+		if (menuBar != null) {
+			Menu menu = this;
+			while (menu != null && menu != menuBar) {
+				menu = menu.getParentMenu ();
+			}
+			if (menu == menuBar) {
+				OS.CommandBar_DrawMenuBar (menuBar.hwndCB, 0);
+				OS.CommandBar_Show (menuBar.hwndCB, true);
+			}
+		}
 		return;
 	}
 	if ((style & SWT.BAR) != 0) {
@@ -771,14 +831,20 @@ void releaseChild () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	handle = 0;
+	handle = hwndCB = 0;
 }
 
 void releaseWidget () {
 	MenuItem [] items = getItems ();
 	for (int i=0; i<items.length; i++) {
 		MenuItem item = items [i];
-		if (!item.isDisposed ()) item.releaseResources ();
+		if (!item.isDisposed ()) {
+			if (OS.IsPPC && hwndCB != 0) {
+				item.dispose ();
+			} else {
+				item.releaseResources ();
+			}
+		}
 	}
 	super.releaseWidget ();
 	if (parent != null) parent.remove (this);

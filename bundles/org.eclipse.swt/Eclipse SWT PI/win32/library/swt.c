@@ -378,7 +378,7 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Dr
 #endif // WIN32_PLATFORM_HPC2000
 
 #ifdef WIN32_PLATFORM_HPC2000 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Height
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Height
 	(JNIEnv *env, jclass that, jint arg0)
 {
 	DEBUG_CALL("CommandBar_Height\n")
@@ -394,6 +394,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1In
 	DEBUG_CALL("CommandBar_InsertMenubarEx\n")
 
 	return (jboolean)CommandBar_InsertMenubarEx((HWND)arg0, (HINSTANCE)arg1, (LPTSTR)arg2, (WORD)arg3);
+}
+#endif // WIN32_PLATFORM_HPC2000
+
+#ifdef WIN32_PLATFORM_HPC2000 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Show
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("CommandBar_Show\n")
+
+	return (jboolean)CommandBar_Show((HWND)arg0, (BOOL)arg1);
 }
 #endif // WIN32_PLATFORM_HPC2000
 

@@ -1145,8 +1145,11 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 		/* 
 		* Note in WinCE PPC.  Menu events originate from the command bar.
 		*/
-		if (hwndCB != 0 && lParam == hwndCB) {
-			return super.WM_COMMAND (wParam, 0);
+		if (menuBar != null) {
+			int hwndCB = menuBar.hwndCB;
+			if (hwndCB != 0 && lParam == hwndCB) {
+				return super.WM_COMMAND (wParam, 0);
+			}
 		}
 	}
 	return super.WM_COMMAND (wParam, lParam);
