@@ -311,9 +311,6 @@ public void dispose() {
  */
 public void drawArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	int x1, y1, x2, y2,tmp;
-	boolean isNegative;
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -325,29 +322,54 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (endAngle >= 360 || endAngle <= -360) {
-		x1 = x2 = x + width;
-		y1 = y2 = y + height / 2;
-	} else {
-		isNegative = endAngle < 0;
-
-		endAngle = endAngle + startAngle;
-		if (isNegative) {
-			// swap angles
-		   	tmp = startAngle;
-			startAngle = endAngle;
-			endAngle = tmp;
+	/*
+	* Feature in WinCE.  The function Arc is not present in the
+	* WinCE SDK.  The fix is to emulate arc drawing by using
+	* Polyline.
+	*/
+	if (OS.IsWinCE) {
+		/* compute arc with a simple linear interpolation */
+		if (endAngle < 0) {
+			startAngle += endAngle;
+			endAngle = -endAngle;
 		}
-		x1 = Compatibility.cos(startAngle, width) + x + width/2;
-		y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
-		
-		x2 = Compatibility.cos(endAngle, width) + x + width/2;
-		y2 = -1 * Compatibility.sin(endAngle, height) + y + height/2; 		
+		if (endAngle > 360) endAngle = 360;
+		int[] points = new int[(endAngle + 1) * 2];		
+		int cteX = 2 * x + width;
+		int cteY = 2 * y + height;
+		int index = 0;
+		for (int i = 0; i <= endAngle; i++) {
+			points[index++] = (Compatibility.cos(startAngle + i, width) + cteX) >> 1;
+			points[index++] = (cteY - Compatibility.sin(startAngle + i, height)) >> 1;
+		} 
+		OS.Polyline(handle, points, points.length / 2);
+	} else {	
+		int x1, y1, x2, y2,tmp;
+		boolean isNegative;
+		if (endAngle >= 360 || endAngle <= -360) {
+			x1 = x2 = x + width;
+			y1 = y2 = y + height / 2;
+		} else {
+			isNegative = endAngle < 0;
+	
+			endAngle = endAngle + startAngle;
+			if (isNegative) {
+				// swap angles
+			   	tmp = startAngle;
+				startAngle = endAngle;
+				endAngle = tmp;
+			}
+			x1 = Compatibility.cos(startAngle, width) + x + width/2;
+			y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
+			
+			x2 = Compatibility.cos(endAngle, width) + x + width/2;
+			y2 = -1 * Compatibility.sin(endAngle, height) + y + height/2; 		
+		}
+		int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
+		int oldBrush = OS.SelectObject(handle, nullBrush);
+		OS.Arc(handle, x,y,x+width+1,y+height+1,x1,y1,x2,y2 );
+		OS.SelectObject(handle,oldBrush);
 	}
-	int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
-	int oldBrush = OS.SelectObject(handle, nullBrush);
-	OS.Arc(handle, x,y,x+width+1,y+height+1,x1,y1,x2,y2 );
-	OS.SelectObject(handle,oldBrush);
 }
 
 /** 
@@ -1220,10 +1242,7 @@ public boolean equals (Object object) {
  */
 public void fillArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
-	int x1, y1, x2, y2,tmp;
-	boolean isNegative;
-
+		
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1236,32 +1255,66 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 	if (width == 0 || height == 0 || endAngle == 0) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-
-	if (endAngle >= 360 || endAngle <= -360) {
-		x1 = x2 = x + width;
-		y1 = y2 = y + height / 2;
-	} else {
-		isNegative = endAngle < 0;
-
-		endAngle = endAngle + startAngle;
-		if (isNegative) {
-			// swap angles
-		   	tmp = startAngle;
-			startAngle = endAngle;
-			endAngle = tmp;
-		}
-		x1 = Compatibility.cos(startAngle, width) + x + width/2;
-		y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
-		
-		x2 = Compatibility.cos(endAngle, width) + x + width/2;
-		y2 = -1 * Compatibility.sin(endAngle, height) + y + height/2; 				
-	}
-
-	int nullPen = OS.GetStockObject(OS.NULL_PEN);
-	int oldPen = OS.SelectObject(handle, nullPen);
-	OS.Pie(handle, x,y,x+width+1,y+height+1,x1,y1,x2,y2 );
-	OS.SelectObject(handle,oldPen);
 	
+	/*
+	* Feature in WinCE.  The function Pie is not present in the
+	* WinCE SDK.  The fix is to emulate it by using Polygon.
+	*/
+	if (OS.IsWinCE) {
+		/* compute arc with a simple linear interpolation */
+		if (endAngle < 0) {
+			startAngle += endAngle;
+			endAngle = -endAngle;
+		}
+		boolean drawSegments = true;
+		if (endAngle >= 360) {
+			endAngle = 360;
+			drawSegments = false;
+		}
+		int[] points = new int[(endAngle + 1) * 2 + (drawSegments ? 4 : 0)];		
+		int cteX = 2 * x + width;
+		int cteY = 2 * y + height;
+		int index = (drawSegments ? 2 : 0);
+		for (int i = 0; i <= endAngle; i++) {
+			points[index++] = (Compatibility.cos(startAngle + i, width) + cteX) >> 1;
+			points[index++] = (cteY - Compatibility.sin(startAngle + i, height)) >> 1;
+		} 
+		if (drawSegments) {
+			points[0] = points[points.length - 2] = cteX >> 1;
+			points[1] = points[points.length - 1] = cteY >> 1;
+		}
+		int nullPen = OS.GetStockObject(OS.NULL_PEN);
+		int oldPen = OS.SelectObject(handle, nullPen);
+		OS.Polygon(handle, points, points.length / 2);
+		OS.SelectObject(handle, oldPen);	
+	} else {
+	 	int x1, y1, x2, y2,tmp;
+		boolean isNegative;
+		if (endAngle >= 360 || endAngle <= -360) {
+			x1 = x2 = x + width;
+			y1 = y2 = y + height / 2;
+		} else {
+			isNegative = endAngle < 0;
+	
+			endAngle = endAngle + startAngle;
+			if (isNegative) {
+				// swap angles
+			   	tmp = startAngle;
+				startAngle = endAngle;
+				endAngle = tmp;
+			}
+			x1 = Compatibility.cos(startAngle, width) + x + width/2;
+			y1 = -1 * Compatibility.sin(startAngle, height) + y + height/2;
+			
+			x2 = Compatibility.cos(endAngle, width) + x + width/2;
+			y2 = -1 * Compatibility.sin(endAngle, height) + y + height/2; 				
+		}
+	
+		int nullPen = OS.GetStockObject(OS.NULL_PEN);
+		int oldPen = OS.SelectObject(handle, nullPen);
+		OS.Pie(handle, x,y,x+width+1,y+height+1,x1,y1,x2,y2 );
+		OS.SelectObject(handle,oldPen);
+	}
 }
 
 /**
