@@ -37,6 +37,7 @@
 #define NO_gdk_1x11_1drawable_1get_1xid
 #else
 #include <gdk/gdkx.h>
+#include <X11/extensions/XTest.h>
 #endif
 
 /*
