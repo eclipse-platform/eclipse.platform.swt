@@ -2382,55 +2382,45 @@ boolean setScrollWidth (TableItem item, boolean force) {
 	fixScrollWidth = false;
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+	/*
+	* NOTE: It is much faster to measure the strings and compute the
+	* width of the scroll bar in non-virtual table rather than using
+	* LVM_SETCOUMNWIDTH with LVSCW_AUTOSIZE.
+	*/
 	if (count == 1 && columns [0] == null) {
-		if ((style & SWT.VIRTUAL) != 0) {
-			int newWidth = 0;
-			count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-			int index = 0;
-			while (index < count) {
-				String string = null;
-				if (item != null) {
-					string = item.text;
-				} else {
-					if (items [index] != null) string = items [index].text;
-				}
-				if (string != null && string.length () != 0) {
-					TCHAR buffer = new TCHAR (getCodePage (), string, true);
-					newWidth = Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
-				}
-				if (item != null) break;
-				index++;
+		int newWidth = 0;
+		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+		int index = 0;
+		while (index < count) {
+			String string = null;
+			if (item != null) {
+				string = item.text;
+			} else {
+				if (items [index] != null) string = items [index].text;
 			}
-			int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
-			if (hStateList != 0) {
-				int [] cx = new int [1], cy = new int [1];
-				OS.ImageList_GetIconSize (hStateList, cx, cy);
-				newWidth += cx [0] + 4;
+			if (string != null && string.length () != 0) {
+				TCHAR buffer = new TCHAR (getCodePage (), string, true);
+				newWidth = Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
 			}
-			int hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
-			if (hImageList != 0) {
-				int [] cx = new int [1], cy = new int [1];
-				OS.ImageList_GetIconSize (hImageList, cx, cy);
-				newWidth += cx [0];
-			}
-			newWidth += 8;
-			int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-			if (newWidth > oldWidth) {
-				OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, newWidth);
-				return true;
-			}
-		} else {
-			/*
-			* Bug in Windows.  When the table has no icons, the width that is
-			* computed by LVM_SETCOLUMNWIDTH with LVSCW_AUTOSIZE is too small,
-			* causing the long items to be truncated with '...'.  The fix is
-			* to increase the size by a small amount.
-			*/
-			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
-			if (imageList == null) {
-				int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
-				OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, width + 2);
-			}
+			if (item != null) break;
+			index++;
+		}
+		int hStateList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_STATE, 0);
+		if (hStateList != 0) {
+			int [] cx = new int [1], cy = new int [1];
+			OS.ImageList_GetIconSize (hStateList, cx, cy);
+			newWidth += cx [0] + 4;
+		}
+		int hImageList = OS.SendMessage (handle, OS.LVM_GETIMAGELIST, OS.LVSIL_SMALL, 0);
+		if (hImageList != 0) {
+			int [] cx = new int [1], cy = new int [1];
+			OS.ImageList_GetIconSize (hImageList, cx, cy);
+			newWidth += cx [0];
+		}
+		newWidth += 8;
+		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
+		if (newWidth > oldWidth) {
+			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, newWidth);
 			return true;
 		}
 	}
