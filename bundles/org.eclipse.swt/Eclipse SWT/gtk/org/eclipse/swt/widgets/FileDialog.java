@@ -32,7 +32,6 @@ public class FileDialog extends Dialog {
 	String fileName = "";
 	String[] fileNames;
 	String fullPath = "";
-	String answer;
 	int handle;
 	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 	
@@ -162,7 +161,7 @@ public String open () {
 	if (parent!=null) {
 		OS.gtk_window_set_transient_for(handle, parent.topHandle());
 	}
-	answer = null;
+	String answer = null;
 	preset();
 	int response = OS.gtk_dialog_run(handle);
 	if (response == OS.GTK_RESPONSE_OK) {
@@ -171,7 +170,7 @@ public String open () {
 		byte [] filenameBytes = new byte [filenameLength];
 		OS.memmove (filenameBytes, lpFilename, filenameLength);
 		String osAnswer = new String( Converter.mbcsToWcs (null, filenameBytes) );
-		interpretOsAnswer(osAnswer);
+		answer = interpretOsAnswer(osAnswer);
 	}
 	OS.gtk_widget_destroy(handle);
 	return answer;
@@ -258,17 +257,16 @@ void preset() {
 	
 	fullPath = null;
 }
-void interpretOsAnswer(String osAnswer) {
-	if (osAnswer==null) return;
+String interpretOsAnswer(String osAnswer) {
+	if (osAnswer==null) return null;
 	int separatorIndex = osAnswer.lastIndexOf(SEPARATOR);
 	if (separatorIndex+1 == osAnswer.length()) {
 		/*
 		 * the selected thing is a directory
 		 */
-		answer = null;
-		return;
+		return null;
 	}
-	answer = fullPath = osAnswer;
+	String answer = fullPath = osAnswer;
 	fileName = fullPath.substring(separatorIndex+1);
 	filterPath = fullPath.substring(0, separatorIndex);
 	if ((style&SWT.MULTI) == 0) {
@@ -310,6 +308,7 @@ void interpretOsAnswer(String osAnswer) {
 		}
 		OS.g_strfreev(namesPtr);
 	}
+	return answer;
 }
 
 }

@@ -21,9 +21,7 @@ import org.eclipse.swt.widgets.*;
  * </p>
  */
 public class DirectoryDialog extends Dialog {
-	String message = "", filterPath = "", answer;
-	int handle;
-	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
+	String message = "", filterPath = "";
 
 /**
  * Constructs a new instance of this class given only its
@@ -117,11 +115,11 @@ public String getMessage () {
  */
 public String open () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
-	handle = OS.gtk_file_selection_new (titleBytes);
+	int handle = OS.gtk_file_selection_new (titleBytes);
 	if (parent!=null) {
 		OS.gtk_window_set_transient_for(handle, parent.topHandle());
 	}
-	answer = null;
+	String answer = null;
 	if (filterPath != null) {
 		byte [] filterBytes = Converter.wcsToMbcs (null, filterPath, true);
 		OS.gtk_file_selection_set_filename (handle, filterBytes);
@@ -142,8 +140,9 @@ public String open () {
 		if (osAnswer!=null) {
 			answer = osAnswer;
 			// add trailing separator if not already present
-			int separatorIndex = answer.lastIndexOf(SEPARATOR);
-			if (separatorIndex != answer.length() - 1) answer += SEPARATOR;
+			char separator = System.getProperty ("file.separator").charAt (0);
+			int separatorIndex = answer.lastIndexOf(separator);
+			if (separatorIndex != answer.length() - 1) answer += separator;
 		}
 	}
 	OS.gtk_widget_destroy(handle);
