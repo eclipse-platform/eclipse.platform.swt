@@ -56,6 +56,11 @@ public void Browser4() {
 	assertTrue(result);
 }
 
+public void Browser5() {
+	boolean result = Browser5.test();
+	assertTrue(result);
+}
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -72,6 +77,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("Browser2");
 	methodNames.addElement("Browser3");
 	methodNames.addElement("Browser4");
+	methodNames.addElement("Browser5");
 	return methodNames;
 }
 
@@ -89,6 +95,7 @@ protected void runTest() throws Throwable {
 	if (getName().equals("Browser2")) Browser2();
 	if (getName().equals("Browser3")) Browser3();
 	if (getName().equals("Browser4")) Browser4();
+	if (getName().equals("Browser5")) Browser5();
 
 	/*
 	 * Ensure we don't leave a Display from the tests we run.
