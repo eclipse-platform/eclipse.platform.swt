@@ -289,10 +289,6 @@ void columnMouseMove(Event event) {
 		setColumnResizeCursor(false);
 	}
 }
-/**
- * Answer the size of the receiver needed to display all or 
- * the first 50 items whichever is less.
- */
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -1338,9 +1334,6 @@ void handleEvents(Event event) {
 boolean hasFirstColumnImage() {
 	return firstColumnImage;
 }
-/**
- * Answer whether the receiver has the input focus.
- */
 public boolean isFocusControl() {
 	return hasColumnFocus;
 }
@@ -2413,10 +2406,6 @@ void setFirstColumnWidth(TableItem item) {
 		}
 	}
 }
-/**
- * The font is changing. Trigger a recalculation of the item 
- * height using all items of the receiver.
- */
 public void setFont(Font font) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -2499,13 +2488,6 @@ public void setLinesVisible(boolean drawGridLines) {
 		redraw();
 	}
 }
-/**
- * Set whether the receiver and it's children should be
- * drawn or not.
- * @param redraw -
- *	true = redraw the receiver and its children
- *	false = do not draw the receiver or its children
- */
 public void setRedraw(boolean redraw) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);

@@ -14,13 +14,14 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a button in a tool bar.
- * dl>
+ * <p>
+ * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>PUSH, CHECK, RADIO, SEPARATOR, DROP_DOWN</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
- * <p>
+ * </p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  */
 public /*final*/ class ToolItem extends Item {
@@ -196,7 +197,7 @@ public Rectangle getBounds () {
 /**
  * Returns the control that is used to fill the bounds of
  * the item when the items is a <code>SEPARATOR</code>.
- * <p>
+ *
  * @return the control
  *
  * @exception SWTException <ul>
@@ -226,9 +227,11 @@ public Image getDisabledmage () {
 }
 /**
  * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise. A disabled control is typically
- * not selectable from the user interface and draws with an
- * inactive or "grayed" look.
+ * <code>false</code> otherwise.
+ * <p>
+ * A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
+ * </p>
  *
  * @return the receiver's enabled state
  *
@@ -251,8 +254,10 @@ public Display getDisplay () {
 }
 /**
  * Returns the receiver's hot image if it has one, or null
- * if it does not. The hot image is displayed when the mouse
- * enters the receiver.
+ * if it does not.
+ * <p>
+ * The hot image is displayed when the mouse enters the receiver.
+ * </p>
  *
  * @return the receiver's hot image
  *
@@ -288,6 +293,7 @@ public ToolBar getParent () {
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
  * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
  * it is selected when it is pushed.
+ * </p>
  *
  * @return the selection state
  *
@@ -303,8 +309,7 @@ public boolean getSelection () {
 	return set;
 }
 /**
- * Returns the receiver's tool tip text, or null if it has
- * not been set.
+ * Returns the receiver's tool tip text, or null if it has not been set.
  *
  * @return the receiver's tool tip text
  *
@@ -320,7 +325,7 @@ public String getToolTipText () {
 }
 /**
  * Gets the width of the receiver.
- * <p>
+ *
  * @return the width
  *
  * @exception SWTException <ul>
@@ -348,9 +353,11 @@ void hookEvents () {
 }
 /**
  * Returns <code>true</code> if the receiver is enabled, and
- * <code>false</code> otherwise. A disabled control is typically
- * not selectable from the user interface and draws with an
- * inactive or "grayed" look.
+ * <code>false</code> otherwise.
+ * <p>
+ * A disabled control is typically not selectable from the
+ * user interface and draws with an inactive or "grayed" look.
+ * </p>
  *
  * @return the receiver's enabled state
  *
@@ -433,7 +440,7 @@ void setBounds (int x, int y, int width, int height) {
 /**
  * Sets the control that is used to fill the bounds of
  * the item when the items is a <code>SEPARATOR</code>.
- * <p>
+ *
  * @param control the new control
  *
  * @exception SWTException <ul>
@@ -455,9 +462,12 @@ public void setControl (Control control) {
 }
 /**
  * Enables the receiver if the argument is <code>true</code>,
- * and disables it otherwise. A disabled control is typically
+ * and disables it otherwise.
+ * <p>
+ * A disabled control is typically
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
+ * </p>
  *
  * @param enabled the new enabled state
  *
@@ -474,8 +484,10 @@ public void setEnabled (boolean enabled) {
 }
 /**
  * Sets the receiver's disabled image to the argument, which may be
- * null indicating that no disabled image should be displayed.  The
- * disbled image is displayed when the receiver is disabled.
+ * null indicating that no disabled image should be displayed.
+ * <p>
+ * The disbled image is displayed when the receiver is disabled.
+ * </p>
  *
  * @param image the hot image to display on the receiver (may be null)
  *
@@ -492,8 +504,10 @@ public void setDisabledImage (Image image) {
 }
 /**
  * Sets the receiver's hot image to the argument, which may be
- * null indicating that no hot image should be displayed.  The
- * hot image is displayed when the mouse enters the receiver.
+ * null indicating that no hot image should be displayed.
+ * <p>
+ * The hot image is displayed when the mouse enters the receiver.
+ * </p>
  *
  * @param image the hot image to display on the receiver (may be null)
  *
@@ -529,6 +543,7 @@ public void setImage (Image image) {
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
  * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
  * it is selected when it is pushed.
+ * </p>
  *
  * @param selected the new selection state
  *
@@ -586,7 +601,7 @@ public void setToolTipText (String string) {
 }
 /**
  * Sets the width of the receiver.
- * <p>
+ *
  * @param width the new width
  *
  * @exception SWTException <ul>

@@ -229,7 +229,6 @@ public Rectangle getBounds(int index) {
  * Returns <code>true</code> if the receiver is checked,
  * and false otherwise.  When the parent does not have
  * the <code>CHECK style, return false.
- * <p>
  *
  * @return the checked state
  *
@@ -297,7 +296,6 @@ int getDotStartX(int columnIndex, int columnWidth) {
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
  * the <code>CHECK style, return false.
- * <p>
  *
  * @return the grayed state
  *
@@ -926,7 +924,7 @@ public void setImage(Image image) {
 }
 /**
  * Sets the image indent.
- * <p>
+ *
  * @param indent the new indent
  *
  * </ul>

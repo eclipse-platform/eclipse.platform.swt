@@ -387,7 +387,11 @@ public void setImage (Image image) {
 }
 /**
  * Sets the receiver's text.
- *
+ * <p>
+ * This method sets the widget label.  The label may include
+ * the mnemonic characters and line delimiters.
+ * </p>
+ * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>

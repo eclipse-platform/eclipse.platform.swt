@@ -210,7 +210,7 @@ void releaseHandle () {
 }
 /**
  * Sets the receiver's text, which is the string that will
- * be display as the receiver's <em>title</em>, to the argument,
+ * be displayed as the receiver's <em>title</em>, to the argument,
  * which may not be null. 
  *
  * @param text the new text

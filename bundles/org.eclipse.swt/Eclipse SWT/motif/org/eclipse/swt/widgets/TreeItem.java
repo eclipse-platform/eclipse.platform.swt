@@ -11,7 +11,8 @@ import java.util.*;
  
 /**
  * Instances of this class represent a selectable user interface object
- * that represents a heirarchy of tree items in a tree widget.
+ * that represents a hierarchy of tree items in a tree widget.
+ * 
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>

@@ -367,6 +367,7 @@ public Object getData (String key) {
  * A widget's display is either provided when it is created
  * (for example, top level <code>Shell</code>s) or is the
  * same as its parent's display.
+ * </p>
  *
  * @return the receiver's display
  *
@@ -424,6 +425,7 @@ boolean hooks (int eventType) {
  * This method gets the dispose state for the widget.
  * When a widget has been disposed, it is an error to
  * invoke any other method using the widget.
+ * </p>
  *
  * @return <code>true</code> when the widget is disposed and <code>false</code> otherwise
  */

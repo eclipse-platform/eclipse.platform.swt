@@ -617,7 +617,11 @@ public void setSelection (boolean selected) {
 }
 /**
  * Sets the receiver's text.
- *
+ * <p>
+ * This method sets the button label.  The label may include
+ * the mnemonic character but must not contain line delimiters.
+ * </p>
+ * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
