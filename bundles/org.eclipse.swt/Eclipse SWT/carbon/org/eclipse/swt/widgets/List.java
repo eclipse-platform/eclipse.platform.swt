@@ -1295,17 +1295,11 @@ void setSelection (int index, boolean notify) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
-		deselectAll ();
-		return;
-	}
-	if (itemCount == 0 || start >= itemCount) {
-		deselectAll ();
-		return;
-	}
+	deselectAll ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	if (itemCount == 0 || start >= itemCount) return;
 	start = Math.max (0, start);
 	end = Math.min (end, itemCount - 1);
-	if ((style & SWT.MULTI) != 0) deselectAll ();
 	int length = end - start + 1;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = end - i + 1;
@@ -1344,8 +1338,10 @@ public void setSelection (int [] indices) {
 			ids [count++] = index + 1;
 		}
 	}
-	select (ids, count, true, false);
-	if (count > 0) showIndex (ids [0] - 1);
+	if (count > 0) {
+		select (ids, count, true, false);
+		showIndex (ids [0] - 1);
+	}
 }
 
 /**
@@ -1369,12 +1365,9 @@ public void setSelection (int [] indices) {
 public void setSelection (String [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	deselectAll ();
 	int length = items.length;
-	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
-		deselectAll ();
-		return;
-	}
-	if ((style & SWT.MULTI) != 0) deselectAll ();
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int count = 0;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) {
@@ -1384,7 +1377,6 @@ public void setSelection (String [] items) {
 			if (index != -1) {
 				count = 1;
 				ids = new int [] {index + 1};
-				break;
 			}
 		} else {
 			int index = 0;
@@ -1399,8 +1391,10 @@ public void setSelection (String [] items) {
 			}
 		}
 	}
-	select (ids, count, true, false);
-	if (count > 0) showIndex (ids [0] - 1);
+	if (count > 0) {
+		select (ids, count, true, false);
+		showIndex (ids [0] - 1);
+	}
 }
 
 /**

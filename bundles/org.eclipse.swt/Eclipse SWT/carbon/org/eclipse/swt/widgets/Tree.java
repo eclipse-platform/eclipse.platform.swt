@@ -1164,11 +1164,9 @@ void setScrollWidth (TreeItem [] items, boolean set) {
 public void setSelection (TreeItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	deselectAll ();
 	int length = items.length;
-	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
-		deselectAll ();
-		return;
-	}
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int[] ids = new int [length];
 	for (int i=0; i<length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
