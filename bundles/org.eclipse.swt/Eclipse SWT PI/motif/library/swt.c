@@ -7790,7 +7790,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_memmove__Lorg_ecli
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_motif_XineramaScreenInfo_2II\n");
 #endif
-	memmove(lparg0, (void *)arg1, arg2);
+	memmove(&_arg0, (void *)arg1, arg2);
 	if (arg0) {
 		lparg0 = &_arg0;
 		cacheXineramascreeninfoFids(env, arg0, &XineramascreeninfoFc);
