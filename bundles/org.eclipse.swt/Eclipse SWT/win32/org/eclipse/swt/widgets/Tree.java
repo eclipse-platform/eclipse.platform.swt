@@ -48,7 +48,7 @@ public class Tree extends Composite {
 	boolean dragStarted, gestureCompleted;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected;
-	boolean linesVisible, customDraw;
+	boolean linesVisible, customDraw, printClient;
 	static final int INSET = 3;
 	static final int GRID_WIDTH = 1;
 	static final int HEADER_MARGIN = 10;
@@ -3159,6 +3159,25 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
+LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
+	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Feature in Windows.  For some reason, when WM_PRINT is used
+	* to capture an image of a hierarchy that contains a tree with
+	* columns, the clipping that is used to stop the first column
+	* from drawing on top of subsequent columns stops the first
+	* column and the tree lines from drawing.  This does not happen
+	* during WM_PAINT.  The fix is to draw without clipping and
+	* then draw the rest of the columns on top.  Since the drawing
+	* is happening in WM_PRINTCLIENT, the redrawing is not visible.
+	*/
+	printClient = true;
+	int code = callWindowProc (handle, OS.WM_PRINTCLIENT, wParam, lParam);
+	printClient = false;
+	return new LRESULT (code);
+}
+
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
 	if ((style & SWT.SINGLE) != 0) return result;
@@ -3296,15 +3315,17 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
 					}
-					if (hwndHeader != 0) {
-						int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-						if (count != 0) {
-							HDITEM hdItem = new HDITEM ();
-							hdItem.mask = OS.HDI_WIDTH;
-							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
-							int hRgn = OS.CreateRectRgn (nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
-							OS.SelectClipRgn (hDC, hRgn);
-							OS.DeleteObject (hRgn);
+					if (!printClient) {
+						if (hwndHeader != 0) {
+							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+							if (count != 0) {
+								HDITEM hdItem = new HDITEM ();
+								hdItem.mask = OS.HDI_WIDTH;
+								OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
+								int hRgn = OS.CreateRectRgn (nmcd.left, nmcd.top, nmcd.left + hdItem.cxy, nmcd.bottom);
+								OS.SelectClipRgn (hDC, hRgn);
+								OS.DeleteObject (hRgn);
+							}
 						}
 					}
 					if (item.font == -1 && item.foreground == -1 && item.background == -1) {
@@ -3366,6 +3387,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							OS.SendMessage (hwndHeader, OS.HDM_GETITEM, i, hdItem);
 							if (i > 0) {
 								OS.SetRect (rect, x, nmcd.top, x + hdItem.cxy, nmcd.bottom - GRID_WIDTH);
+								if (printClient) {
+									/* Assume that the disabled color is COLOR_BTN_FACE */
+									int clrBackground = OS.IsWindowEnabled (handle) ? getBackgroundPixel () : OS.GetSysColor (OS.COLOR_BTNFACE);
+									drawBackground (hDC, clrBackground, rect);
+								}
 								if (OS.IsWindowEnabled (handle)) {
 									int clrTextBk = item.cellBackground != null ? item.cellBackground [i] : item.background;
 									if (clrTextBk != -1) drawBackground (hDC, clrTextBk, rect);
@@ -3412,6 +3438,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					}
 					if (linesVisible) {
 						RECT rect = new RECT ();
+						if (printClient) {
+							if (hwndHeader != 0) {
+								int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+								if (count != 0 && printClient) {
+									HDITEM hdItem = new HDITEM ();
+									hdItem.mask = OS.HDI_WIDTH;
+									OS.SendMessage (hwndHeader, OS.HDM_GETITEM, 0, hdItem);
+									OS.SetRect (rect, nmcd.left + hdItem.cxy, nmcd.top, nmcd.right, nmcd.bottom);
+									OS.DrawEdge (hDC, rect, OS.BDR_SUNKENINNER, OS.BF_BOTTOM);
+								}
+							}
+						}
 						if (OS.COMCTL32_MAJOR < 6) {
 							OS.SetRect (rect, nmcd.left, nmcd.top, nmcd.right, nmcd.bottom);
 						} else {
