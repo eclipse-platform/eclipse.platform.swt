@@ -121,7 +121,8 @@ void generateSTRUCTS_C() {
 		gen.setOutput(print);
 		gen.generateSourceFile(getStructureClasses());
 		print.flush();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_structs.c");
+		String extension = gen.getCPP() ? ".cpp" : ".c";
+		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_structs" + extension);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -143,11 +144,8 @@ void generateSWT_C() {
 		gen.setOutput(print);
 		gen.generate(getNativesClasses());
 		print.flush();
-		String extention = ".c";
-		if (metaData.getMetaData(Class.forName(mainClass, false, getClass().getClassLoader())).getFlag("cpp")) {
-			extention = ".cpp";
-		}
-		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + extention);
+		String extension = gen.getCPP() ? ".cpp" : ".c";
+		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + extension);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);
@@ -328,6 +326,17 @@ public Class[] getStructureClasses() {
 			int mods = method.getModifiers();
 			if ((mods & Modifier.NATIVE) != 0) continue outer;
 		}
+		Field[] fields = clazz.getFields();
+		boolean hasPublicFields = false;
+		for (int j = 0; j < fields.length; j++) {
+			Field field = fields[j];
+			int mods = field.getModifiers();
+			if ((mods & Modifier.PUBLIC) != 0 && (mods & Modifier.STATIC) == 0) {
+				hasPublicFields = true;
+				break;
+			}
+		}
+		if (!hasPublicFields) continue;
 		result.add(clazz);
 	}
 	return (Class[])result.toArray(new Class[result.size()]);

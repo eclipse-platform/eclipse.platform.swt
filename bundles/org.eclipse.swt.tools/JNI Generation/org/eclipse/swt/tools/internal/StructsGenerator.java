@@ -15,6 +15,12 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 public class StructsGenerator extends JNIGenerator {
+	
+	boolean isCPP;
+	
+public boolean getCPP() {
+	return isCPP;
+}
 
 public void generate(Class clazz) {
 	generateHeaderFile(clazz);
@@ -88,6 +94,15 @@ public void generateSourceFile(Class[] classes) {
 	sort(classes);
 	generateMetaData("swt_copyright");
 	generateMetaData("swt_includes");
+	for (int i = 0; i < classes.length; i++) {
+		Class clazz = classes[i];
+		ClassData classData = getMetaData().getMetaData(clazz);
+		if (classData.getFlag("no_gen")) continue;
+		if (classData.getFlag("cpp")) {
+			isCPP = true;
+			break;
+		}
+	}
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
 		ClassData classData = getMetaData().getMetaData(clazz);
@@ -216,7 +231,11 @@ void generateCacheFunction(Class clazz) {
 	}
 	output("\t");
 	output(clazzName);
-	output("Fc.clazz = (*env)->GetObjectClass(env, lpObject);");
+	if (isCPP) {
+		output("Fc.clazz = env->GetObjectClass(lpObject);");
+	} else {
+		output("Fc.clazz = (*env)->GetObjectClass(env, lpObject);");
+	}
 	outputDelimiter();
 	Field[] fields = clazz.getDeclaredFields();
 	for (int i = 0; i < fields.length; i++) {
@@ -226,7 +245,11 @@ void generateCacheFunction(Class clazz) {
 		output(clazzName);
 		output("Fc.");
 		output(field.getName());
-		output(" = (*env)->GetFieldID(env, ");
+		if (isCPP) {
+			output(" = env->GetFieldID(");
+		} else {
+			output(" = (*env)->GetFieldID(env, ");
+		}
 		output(clazzName);
 		output("Fc.clazz, \"");
 		output(field.getName());
@@ -284,9 +307,17 @@ void generateGetFields(Class clazz) {
 			output(accessor);
 			output(" = ");
 			output(fieldData.getCast());
-			output("(*env)->Get");
+			if (isCPP) {
+				output("env->Get");
+			} else {
+				output("(*env)->Get");
+			}
 			output(getTypeSignature1(field));
-			output("Field(env, lpObject, ");
+			if (isCPP) {
+				output("Field(lpObject, ");
+			} else {
+				output("Field(env, lpObject, ");
+			}
 			output(getClassName(field.getDeclaringClass()));
 			output("Fc.");
 			output(field.getName());
@@ -298,15 +329,29 @@ void generateGetFields(Class clazz) {
 				outputDelimiter();
 				output("\t");				
 				output(getTypeSignature2(field));
-				output(" lpObject1 = (*env)->GetObjectField(env, lpObject, ");
+				output(" lpObject1 = (");
+				output(getTypeSignature2(field));
+				if (isCPP) {
+					output(")env->GetObjectField(lpObject, ");
+				} else {
+					output(")(*env)->GetObjectField(env, lpObject, ");
+				}
 				output(getClassName(field.getDeclaringClass()));
 				output("Fc.");
 				output(field.getName());
 				output(");");
 				outputDelimiter();
-				output("\t(*env)->Get");
+				if (isCPP) {
+					output("\tenv->Get");
+				} else {
+					output("\t(*env)->Get");
+				}
 				output(getTypeSignature1(componentType));
-				output("ArrayRegion(env, lpObject1, 0, sizeof(lpStruct->");
+				if (isCPP) {
+					output("ArrayRegion(lpObject1, 0, sizeof(lpStruct->");
+				} else {
+					output("ArrayRegion(env, lpObject1, 0, sizeof(lpStruct->");
+				}
 				output(accessor);
 				output(")");
 				int byteCount = getByteCount(componentType);
@@ -314,7 +359,9 @@ void generateGetFields(Class clazz) {
 					output(" / ");
 					output(String.valueOf(byteCount));
 				}
-				output(", (void *)lpStruct->");
+				output(", (");
+				output(getTypeSignature4(type));				
+				output(")lpStruct->");
 				output(accessor);
 				output(");");
 				outputDelimiter();
@@ -325,7 +372,11 @@ void generateGetFields(Class clazz) {
 		} else {
 			output("\t{");
 			outputDelimiter();
-			output("\tjobject lpObject1 = (*env)->GetObjectField(env, lpObject, ");
+			if (isCPP) {
+				output("\tjobject lpObject1 = env->GetObjectField(lpObject, ");
+			} else {
+				output("\tjobject lpObject1 = (*env)->GetObjectField(env, lpObject, ");
+			}
 			output(getClassName(field.getDeclaringClass()));
 			output("Fc.");
 			output(field.getName());
@@ -411,9 +462,17 @@ void generateSetFields(Class clazz) {
 		String accessor = fieldData.getAccessor();
 		if (accessor == null || accessor.length() == 0) accessor = field.getName();
 		if (type.isPrimitive()) {
-			output("\t(*env)->Set");
+			if (isCPP) {
+				output("\tenv->Set");
+			} else {
+				output("\t(*env)->Set");
+			}
 			output(getTypeSignature1(field));
-			output("Field(env, lpObject, ");
+			if (isCPP) {
+				output("Field(lpObject, ");
+			} else {
+				output("Field(env, lpObject, ");
+			}
 			output(getClassName(field.getDeclaringClass()));
 			output("Fc.");
 			output(field.getName());
@@ -429,15 +488,29 @@ void generateSetFields(Class clazz) {
 				outputDelimiter();
 				output("\t");				
 				output(getTypeSignature2(field));
-				output(" lpObject1 = (*env)->GetObjectField(env, lpObject, ");
+				output(" lpObject1 = (");
+				output(getTypeSignature2(field));
+				if (isCPP) {
+					output(")env->GetObjectField(lpObject, ");
+				} else {
+					output(")(*env)->GetObjectField(env, lpObject, ");
+				}
 				output(getClassName(field.getDeclaringClass()));
 				output("Fc.");
 				output(field.getName());
 				output(");");
 				outputDelimiter();
-				output("\t(*env)->Set");
+				if (isCPP) {
+					output("\tenv->Set");
+				} else {
+					output("\t(*env)->Set");
+				}
 				output(getTypeSignature1(componentType));
-				output("ArrayRegion(env, lpObject1, 0, sizeof(lpStruct->");
+				if (isCPP) {
+					output("ArrayRegion(lpObject1, 0, sizeof(lpStruct->");
+				} else {
+					output("ArrayRegion(env, lpObject1, 0, sizeof(lpStruct->");
+				}
 				output(accessor);
 				output(")");
 				int byteCount = getByteCount(componentType);
@@ -445,7 +518,9 @@ void generateSetFields(Class clazz) {
 					output(" / ");
 					output(String.valueOf(byteCount));
 				}
-				output(", (void *)lpStruct->");
+				output(", (");
+				output(getTypeSignature4(type));				
+				output(")lpStruct->");
 				output(accessor);
 				output(");");
 				outputDelimiter();

@@ -135,6 +135,7 @@ static String getTypeSignature2(Class clazz) {
 	if (clazz == Byte.TYPE) return "jbyte";
 	if (clazz == Float.TYPE) return "jfloat";
 	if (clazz == Double.TYPE) return "jdouble";
+	if (clazz == String.class) return "jstring";
 	if (clazz.isArray()) {
 		Class componentType = clazz.getComponentType();
 		return getTypeSignature2(componentType) + "Array";

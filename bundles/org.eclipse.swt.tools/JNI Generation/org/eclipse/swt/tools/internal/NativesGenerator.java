@@ -23,6 +23,10 @@ public NativesGenerator() {
 	nativeMacro = true;
 }
 
+public boolean getCPP() {
+	return isCPP;
+}
+
 public void generate(Class clazz, String methodName) {
 	Method[] methods = clazz.getDeclaredMethods();
 	int count = 0;
@@ -108,7 +112,7 @@ public void generate(Method method) {
 	String function = getFunctionName(method);
 	
 	if (!(returnType == Void.TYPE || returnType.isPrimitive())) {
-		output("Warnning: bad return type. :" + method);
+		output("Warning: bad return type. :" + method);
 		outputDelimiter();
 		return;
 	}
@@ -333,7 +337,7 @@ boolean generateLocalVars(Method method, Class[] paramTypes, Class returnType) {
 			if (paramData.getFlag("unicode")) {
 				output("const jchar *lparg" + i);				
 			} else {
-				output("const jbyte *lparg" + i);
+				output("const char *lparg" + i);
 			}
 			output("= NULL;");
 		} else {
@@ -611,10 +615,16 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		}
 		output("arg0)");
 		paramStart = 1;
-	} else if (method.getName().equals("VtblCall")) {
+	} else if (method.getName().startsWith("VtblCall")) {
 		output("((");
 		output(getTypeSignature2(returnType));
-		output(" (STDMETHODCALLTYPE *)())(*(int **)arg1)[arg0])");
+		output(" (STDMETHODCALLTYPE *)(");
+		for (int i = 1; i < paramTypes.length; i++) {
+			if (i != 1) output(", ");
+			Class paramType = paramTypes[i];
+			output(getTypeSignature4(paramType));
+		}
+		output("))(*(int **)arg1)[arg0])");
 		paramStart = 1;
 	} else if (methodData.getFlag("cpp")) {
 		output("(");
