@@ -57,6 +57,7 @@ public class SwtTestCase extends TestCase {
 	public static String[] imageFormats = new String[] {"bmp", "jpg", "gif", "png"};
 	public static String[] imageFilenames = new String[] {"folder", "folderOpen", "target"};
 	public static String[] invalidImageFilenames = new String[] {"corrupt", "corruptBadBitDepth.png"};
+	public static String[] transparentImageFilenames = new String[] {"transparent.png"};
 	
 	// specify reparentable platforms
 	public static String[] reparentablePlatforms = new String[] {"win32", "gtk"};
