@@ -592,9 +592,11 @@ public boolean execute (String fileName) {
 	int       fileArg = -1;
 	int       index;
 	for (index=0; index < args.length; index++) {
-		if (args[ index ].equals( "%f" )) {
+		int j = args[ index ].indexOf( "%f" );
+		if (j != -1) {
+			String value = args[ index ];
 			fileArg = index;
-			args[ index ] = fileName;
+			args[ index ] = value.substring(0,j) + fileName + value.substring(j+2);
 		}
 	}
 	
