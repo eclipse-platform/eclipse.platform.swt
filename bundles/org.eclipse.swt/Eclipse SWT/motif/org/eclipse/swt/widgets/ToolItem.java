@@ -30,6 +30,7 @@ public /*final*/ class ToolItem extends Item {
 	String toolTipText;
 	Control control;
 	boolean set;
+	int mnemonicPos = -1;
 
 /**
 * Creates a new instance of the widget.
@@ -605,9 +606,27 @@ public void setText (String string) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	// Strip out mnemonics
+	char [] text = new char [string.length ()];
+	string.getChars (0, text.length, text, 0);
+	int i=0, j=0;
+	mnemonicPos = -1;
+	while (i < text.length) {
+		if ((text [j++] = text [i++]) == Mnemonic) {
+			if (i == text.length) {continue;}
+			if (text [i] == Mnemonic) {i++; continue;}
+			j--;
+			if (mnemonicPos == -1) mnemonicPos = j;
+		}
+	}
+	string = new String(text, 0, j);
 	super.setText (string);
 	Point size = computeSize ();
 	setSize (size.x, size.y);
+	int [] argList = {
+		OS.XmNmnemonic, (mnemonicPos == -1) ? OS.XK_VoidSymbol : string.charAt(mnemonicPos),
+	};
+	OS.XtSetValues (handle, argList, argList.length / 2);
 	redraw ();
 }
 
@@ -847,10 +866,19 @@ int processPaint (int callData) {
 	gc.setBackground (parent.getBackground ());
 		
 	int textX = 0, textY = 0, textWidth = 0, textHeight = 0;
+	int preMnemonicWidth = 0, mnemonicWidth = 0;
 	if (text.length () != 0) {
-		Point textExtent = gc.textExtent (text);
-		textWidth = textExtent.x;
-		textHeight = textExtent.y;
+		if (mnemonicPos != -1) {
+			preMnemonicWidth = gc.textExtent(text.substring(0, mnemonicPos)).x;
+			mnemonicWidth = gc.getAdvanceWidth(text.charAt(mnemonicPos));
+			int postMnemonicWidth = gc.textExtent(text.substring(mnemonicPos + 1)).x;
+			textWidth = preMnemonicWidth + mnemonicWidth + postMnemonicWidth;
+			textHeight = gc.textExtent(text).y;
+		} else {
+			Point textExtent = gc.textExtent (text);
+			textWidth = textExtent.x;
+			textHeight = textExtent.y;
+		}
 	}	
 	int imageX = 0, imageY = 0, imageWidth = 0, imageHeight = 0;
 	if (currentImage != null) {
@@ -876,7 +904,27 @@ int processPaint (int callData) {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		textX -= 6;  imageX -=6;
 	}
-	if (textWidth > 0) gc.drawText(text, textX, textY, false);
+	if (textWidth > 0) {
+		if (mnemonicPos != -1) {
+			int x = textX;
+			if (preMnemonicWidth > 0) {
+				gc.drawText(text.substring(0, mnemonicPos), x, textY, false);
+				x += preMnemonicWidth;
+			}
+			if (mnemonicWidth > 0) {
+				gc.drawText(text.substring(mnemonicPos, mnemonicPos + 1), x, textY, false);
+				// draw an underscore just like the one Motif uses
+				FontMetrics fontMetrics = gc.getFontMetrics();
+				int underlineY = textY + fontMetrics.getHeight();
+				gc.drawLine(x, underlineY, x + mnemonicWidth, underlineY);
+				x += mnemonicWidth;
+			}
+			if (mnemonicPos < text.length()) gc.drawText(text.substring(mnemonicPos + 1),
+				x, textY, false);
+		} else {
+			gc.drawText(text, textX, textY, false);
+		}
+	}
 	if (imageWidth > 0) gc.drawImage(currentImage, imageX, imageY);
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int startX = width - 12, startY = (height - 2) / 2;
