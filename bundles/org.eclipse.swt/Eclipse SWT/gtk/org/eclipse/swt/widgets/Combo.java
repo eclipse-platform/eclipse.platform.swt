@@ -487,10 +487,10 @@ GdkColor getForegroundColor () {
  */
 public String getItem (int index) {
 	checkWidget();
-	String [] items = getItems ();
-	if (!(0 <= index && index < items.length)) {
-		error (SWT.ERROR_CANNOT_GET_ITEM);
+	if (!(0 <= index && index < getItemCount ())) {
+		error (SWT.ERROR_INVALID_RANGE);
 	}
+	String [] items = getItems ();
 	return items [index];
 }
 
@@ -823,7 +823,7 @@ void releaseWidget () {
 public void remove (int index) {
 	checkWidget();
 	if (!(0 <= index && index < getItemCount ())) {
-		error (SWT.ERROR_ITEM_NOT_REMOVED);
+		error (SWT.ERROR_INVALID_RANGE);
 	}
 	String [] oldItems = getItems ();
 	String [] newItems = new String [oldItems.length - 1];
@@ -854,7 +854,7 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (!(0 <= start && start <= end && end < getItemCount ())) {
-		error (SWT.ERROR_ITEM_NOT_REMOVED);
+		error (SWT.ERROR_INVALID_RANGE);
 	}
 	String [] oldItems = getItems ();
 	String [] newItems = new String [oldItems.length - (end - start + 1)];
@@ -964,8 +964,8 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void select (int index) {
 	checkWidget();
+	if (index >= getItemCount ()) return;
 	String [] items = getItems ();
-	if (index >= items.length) return;
 	String selectedText = items [index];
 	OS.gtk_signal_handler_block_by_data (listHandle, SWT.Selection);
 	OS.gtk_list_select_item (listHandle, index);
