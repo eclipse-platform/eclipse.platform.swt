@@ -201,12 +201,15 @@ public void deselectAll () {
 
 /* Expand upward from the specified leaf item. */
 void expandItem (TableTreeItem item) {
-	if (item == null || item.getExpanded()) return;
+	if (item == null) return;
 	expandItem(item.parentItem);
-	item.setExpanded(true);
-	Event event = new Event();
-	event.item = item;
-	notifyListeners(SWT.Expand, event);
+	if (!item.getVisible()) item.setVisible(true);
+	if ( !item.expanded && item.items.length > 0) {
+		item.setExpanded(true);
+		Event event = new Event();
+		event.item = item;
+		notifyListeners(SWT.Expand, event);
+	}
 }
 public Color getBackground () {
 	// This method must be overriden otherwise, in a TableTree in which the first
