@@ -167,6 +167,10 @@ void createHandle (int index) {
 		OS.free (titlePtr);
 		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		int [] args = new int [] {OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0};
+		OS.PtSetResources(shellHandle, args.length / 3, args);
+	}
 	createScrolledHandle (shellHandle);
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {
 		int [] args = {

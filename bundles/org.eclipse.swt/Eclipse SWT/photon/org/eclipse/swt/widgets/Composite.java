@@ -96,6 +96,10 @@ void createScrolledHandle (int parentHandle) {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	scrolledHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		args = new int [] {OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0};
+		OS.PtSetResources(scrolledHandle, args.length / 3, args);
+	}
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	Display display = getDisplay ();
 	int clazz = display.PtContainer;
@@ -208,7 +212,9 @@ int processMouse (int info) {
 
 int processPaint (int damage) {
 	if ((state & CANVAS) != 0) {
-		OS.PtSuperClassDraw (OS.PtContainer (), handle, damage);
+		if ((style & SWT.NO_BACKGROUND) == 0) {
+			OS.PtSuperClassDraw (OS.PtContainer (), handle, damage);
+		}
 	}
 	return super.processPaint (damage);
 }
