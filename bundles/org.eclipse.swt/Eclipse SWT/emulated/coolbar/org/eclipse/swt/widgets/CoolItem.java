@@ -488,6 +488,7 @@ public void setSize (int width, int height) {
 		control.setSize(controlWidth, controlHeight);
 	}
 	parent.relayout();
+	updateChevron();
 }
 public void setSize (Point size) {
 	checkWidget();
