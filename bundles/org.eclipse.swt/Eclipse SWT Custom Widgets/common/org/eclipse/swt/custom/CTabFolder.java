@@ -146,6 +146,7 @@ public class CTabFolder extends Composite {
 	Rectangle chevronRect = new Rectangle(0, 0, 0, 0);
 	int chevronImageState = NORMAL;
 	boolean showChevron = false;
+	Menu showMenu;
 	
 	boolean showMin = false;
 	Rectangle minRect = new Rectangle(0, 0, 0, 0);
@@ -277,10 +278,10 @@ public CTabFolder(Composite parent, int style) {
 		public void handleEvent(Event event) {
 			switch (event.type) {
 				case SWT.Dispose:          onDispose(); break;
-				case SWT.DragDetect:		onDragDetect(event); break;
+				case SWT.DragDetect:       onDragDetect(event); break;
 				case SWT.FocusIn:          onFocus(event);	break;
 				case SWT.FocusOut:         onFocus(event);	break;
-				case SWT.KeyDown:			onKeyDown(event); break;
+				case SWT.KeyDown:          onKeyDown(event); break;
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
 				case SWT.MouseDown:        onMouse(event);	break;
 				case SWT.MouseExit:        onMouse(event);	break;
@@ -1808,8 +1809,12 @@ void onDispose() {
 	 */
 	inDispose = true;
 	
+	if (showMenu != null && !showMenu.isDisposed()) {
+		showMenu.dispose();
+		showMenu = null;
+	}
 	int length = items.length;
-	for (int i = 0; i < length; i++) {						
+	for (int i = 0; i < length; i++) {				
 		if (items[i] != null) {
 			items[i].dispose();
 		}
@@ -2045,11 +2050,6 @@ void onMouse(Event event) {
 				if (e.doit && !isDisposed()) {
 					showList(chevronRect);
 				}
-				Display display = getDisplay();
-				Point cursorLocation = display.getCursorLocation();
-				cursorLocation = display.map(null, this, cursorLocation);
-				chevronImageState = chevronRect.contains(cursorLocation) ? HOT : NORMAL;
-				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				return;
 			}
 			if (minRect.contains(x, y)) {
@@ -3629,12 +3629,19 @@ public void showItem (CTabItem item) {
 }
 void showList (Rectangle rect) {
 	if (items.length == 0 || !showChevron) return;
-	Menu menu = new Menu(this);
+	if (showMenu == null || showMenu.isDisposed()) {
+		showMenu = new Menu(this);
+	} else {
+		MenuItem[] items = showMenu.getItems();
+		for (int i = 0; i < items.length; i++) {
+			items[i].dispose();
+		}
+	}
 	final String id = "CTabFolder_showList_Index"; //$NON-NLS-1$
 	for (int i = 0; i < items.length; i++) {
 		CTabItem tab = items[i];
 		if (tab.showing) continue;
-		MenuItem item = new MenuItem(menu, SWT.NONE);
+		MenuItem item = new MenuItem(showMenu, SWT.NONE);
 		item.setText(tab.getText());
 		item.setImage(tab.getImage());
 		item.setData(id, tab);
@@ -3649,14 +3656,8 @@ void showList (Rectangle rect) {
 	int x = rect.x;
 	int y = rect.y + rect.height;
 	Point location = getDisplay().map(this, null, x, y);
-	menu.setLocation(location.x, location.y);
-	menu.setVisible(true);
-	Display display = getDisplay();
-	while (!menu.isDisposed() && menu.isVisible()) {
-		if (!display.readAndDispatch())
-			display.sleep();
-	}
-	menu.dispose();
+	showMenu.setLocation(location.x, location.y);
+	showMenu.setVisible(true);
 }
 /**
  * Shows the selection.  If the selection is already showing in the receiver,
