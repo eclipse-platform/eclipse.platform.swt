@@ -85,8 +85,11 @@ public void test_setMessageLjava_lang_String() {
 	assertTrue(":2:", dirDialog.getMessage().equals(testStr));
 	dirDialog.setMessage("");
 	assertTrue(":3:", dirDialog.getMessage().equals(""));
-	dirDialog.setMessage(null);
-	assertTrue(":4:", dirDialog.getMessage() == null);
+	try {
+		dirDialog.setMessage(null);
+		fail ("null argument did not throw IllegalArgumentException");
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public static Test suite() {

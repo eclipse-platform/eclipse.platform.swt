@@ -160,8 +160,13 @@ public void setFilterPath (String string) {
  * visible on the dialog while it is open.
  *
  * @param string the message
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
  */
 public void setMessage (String string) {
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	message = string;
 }
 

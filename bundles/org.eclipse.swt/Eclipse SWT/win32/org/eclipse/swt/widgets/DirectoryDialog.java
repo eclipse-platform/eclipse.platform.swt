@@ -152,7 +152,7 @@ public String open () {
 
 	/* Copy the message to OS memory */
 	int lpszTitle = 0;
-	if (message != null && message.length () != 0) {
+	if (message.length () != 0) {
 		String string = message;
 		if (string.indexOf ('&') != -1) {
 			int length = string.length ();
@@ -254,12 +254,18 @@ public void setFilterPath (String string) {
 }
 
 /**
- * Sets the dialog's description message, which may be
- * null.  This message will be visible on the dialog while it is open.
+ * Sets the dialog's message, which is a description of
+ * the purpose for which it was opened. This message will be
+ * visible on the dialog while it is open.
  *
  * @param string the message
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
  */
 public void setMessage (String string) {
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	message = string;
 }
 
