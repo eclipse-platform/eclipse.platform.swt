@@ -69,40 +69,51 @@ import org.eclipse.swt.internal.motif.*;
  * </dl>
  */
 public class DropTarget extends Widget {
-
-	// info for registering as a droptarget	
+	
 	private Control control;
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
 	private DragUnderEffect effect;
-
-	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 	
-	static private Callback DropProc;
-	static private Callback DragProc;
-	static private Callback TransferProc;
-	static {
-		DropProc = new Callback(DropTarget.class, "DropProcCallback", 3);
-		DragProc = new Callback(DropTarget.class, "DragProcCallback", 3);
-		TransferProc = new Callback(DropTarget.class, "TransferProcCallback", 7);
-	}
-	static int DELETE_TYPE = Transfer.registerType("DELETE\0");
-	
-	// info about data being dragged over site
+	// Track application selections
 	private TransferData selectedDataType;
-	private TransferData[] dataTypes;
-	private int dropTransferObject;
-	private XmDropProcCallback droppedEventData;
+	private int selectedOperation;
 	
-	private static final int DRAGOVER_HYSTERESIS = 50;
+	// workaround - Simulate events when the mouse is not moving
 	private long dragOverStart;
 	private Runnable dragOverHeartbeat;
 	private DNDEvent dragOverEvent;
 	
-	private int lastOperation;
+	// workaround - The data required in the transferProc callback is not available 
+	// so store it from the dropProc callback 
+	private XmDropProcCallback droppedEventData;
+	private int dropTransferObject;
+	
+	// workaround - The DND operation can time out so temporarily set the
+	// time out to be very long while the application processes the data and
+	// restore it to the previous value when done.
 	private int selectionTimeout;
 	
+	// workaround - A drop target is still active even when it is not visible.
+	// This causes problems when the widget is not visible but
+	// overlaps with a visible widget.  Deregister drop target when it is
+	// not visible.
 	private boolean registered = false;
+	
+	private static int DELETE_TYPE = Transfer.registerType("DELETE\0"); //$NON-NLS-1$
+	private static int NULL_TYPE = Transfer.registerType("NULL\0"); //$NON-NLS-1$
+	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	private static final int DRAGOVER_HYSTERESIS = 50;
+	
+	private static Callback DropProc;
+	private static Callback DragProc;
+	private static Callback TransferProc;
+	
+	static {
+		DropProc = new Callback(DropTarget.class, "DropProcCallback", 3); //$NON-NLS-1$
+		DragProc = new Callback(DropTarget.class, "DragProcCallback", 3); //$NON-NLS-1$
+		TransferProc = new Callback(DropTarget.class, "TransferProcCallback", 7); //$NON-NLS-1$
+	}
 	
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
@@ -133,11 +144,13 @@ public class DropTarget extends Widget {
  */
 public DropTarget(Control control, int style) {
 	super (control, checkStyle(style));
-	if (DropProc == null || DragProc == null || TransferProc == null)
-		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	this.control = control;
-	if (control.getData(DROPTARGETID) != null)
+	if (DropProc == null || DragProc == null || TransferProc == null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	}
+	if (control.getData(DROPTARGETID) != null) {
+		DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	}
 	control.setData(DROPTARGETID, this);
 
 	controlListener = new Listener () {
@@ -196,6 +209,7 @@ public DropTarget(Control control, int style) {
 		}
 	});
 
+	// Drag under effect
 	if (control instanceof Tree) {
 		effect = new TreeDragUnderEffect((Tree)control);
 	} else if (control instanceof Table) {
@@ -205,29 +219,96 @@ public DropTarget(Control control, int style) {
 	}
 
 	if (control.isVisible()) registerDropTarget();
+	
+	dragOverHeartbeat = new Runnable() {
+		public void run() {
+			if (DropTarget.this.control.isDisposed() || dragOverStart == 0) return;
+			long time = System.currentTimeMillis();
+			int delay = DRAGOVER_HYSTERESIS;
+			if (time < dragOverStart) {
+				delay = (int)(dragOverStart - time);
+			} else {	
+				int allowedOperations = dragOverEvent.operations;
+				TransferData[] allowedTypes = dragOverEvent.dataTypes;
+				//pass a copy of data types in to listeners in case application modifies it
+				TransferData[] dataTypes = new TransferData[allowedTypes.length];
+				System.arraycopy(allowedTypes, 0, dataTypes, 0, dataTypes.length);
+	
+				DNDEvent event = new DNDEvent();
+				event.widget = dragOverEvent.widget;
+				event.x = dragOverEvent.x;
+				event.y = dragOverEvent.y;
+				event.time = (int)time;
+				event.feedback = DND.FEEDBACK_SELECT;
+				event.dataTypes = dataTypes;
+				event.dataType = selectedDataType;
+				event.operations = dragOverEvent.operations;
+				event.detail  = selectedOperation;
+				
+				try {
+					notifyListeners(DND.DragOver, event);
+				} catch (Throwable e) {
+					event.dataType = null;
+					event.detail  = DND.DROP_NONE;
+				}
+				
+				effect.show(event.feedback, event.x, event.y);
+				
+				selectedDataType = null;
+				if (event.dataType != null) {
+					for (int i = 0; i < allowedTypes.length; i++) {
+						if (allowedTypes[i].type == event.dataType.type) {
+							selectedDataType = event.dataType;
+							break;
+						}
+					}
+				}
+
+				selectedOperation = DND.DROP_NONE;
+				if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
+					selectedOperation = event.detail;
+				}
+			}
+			DropTarget.this.control.getDisplay().timerExec(delay, dragOverHeartbeat);
+		}
+	};
 }
 
-static DropTarget FindDropTarget(int handle) {
+static int checkStyle (int style) {
+	if (style == SWT.NONE) return DND.DROP_MOVE;
+	return style;
+}
+
+private static int DragProcCallback(int widget, int client_data, int call_data) {
+	DropTarget target = FindDropTarget(widget);
+	if (target != null) {
+		target.dragProcCallback(widget, client_data, call_data);
+	}
+	return 0;
+}
+
+private static int DropProcCallback(int widget, int client_data, int call_data) {
+	DropTarget target = FindDropTarget(widget);
+	if (target != null) {
+		target.dropProcCallback(widget, client_data, call_data);
+	}
+	return 0;
+}
+
+private static DropTarget FindDropTarget(int handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
 	if (widget == null) return null;
 	return (DropTarget)widget.getData(DROPTARGETID);
 }
-private static int DragProcCallback(int widget, int client_data, int call_data) {
-	DropTarget target = FindDropTarget(widget);
-	if (target == null) return 0;
-	return target.dragProcCallback(widget, client_data, call_data);
-}
-private static int DropProcCallback(int widget, int client_data, int call_data) {
-	DropTarget target = FindDropTarget(widget);
-	if (target == null) return 0;
-	return target.dropProcCallback(widget, client_data, call_data);
-}
+
 private static int TransferProcCallback(int widget, int client_data, int pSelection, int pType, int pValue, int pLength, int pFormat) {
 	DropTarget target = FindDropTarget(client_data);
-	if (target == null) return 0;
-	return target.transferProcCallback(widget, client_data, pSelection, pType, pValue, pLength, pFormat);
+	if (target != null) {
+		target.transferProcCallback(widget, client_data, pSelection, pType, pValue, pLength, pFormat);
+	}
+	return 0;
 }
 /**
  * Adds the listener to the collection of listeners who will
@@ -272,11 +353,6 @@ public void addDropListener(DropTargetListener listener) {
 	addListener (DND.DropAccept, typedListener);
 }
 
-static int checkStyle (int style) {
-	if (style == SWT.NONE) return DND.DROP_MOVE;
-	return style;
-}
-
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DropTarget.class.getName();
@@ -285,212 +361,126 @@ protected void checkSubclass () {
 	}
 }
 
-private int dragProcCallback(int widget, int client_data, int call_data) {
+private void dragProcCallback(int widget, int client_data, int call_data) {
+	if (call_data == 0) return;
 	XmDragProcCallback callbackData = new XmDragProcCallback();
 	OS.memmove(callbackData, call_data, XmDragProcCallback.sizeof);
-
-	if (callbackData.reason == OS.XmCR_DROP_SITE_ENTER_MESSAGE){
-		releaseDropInfo();
-		
-		// get the export targets
-		int ppExportTargets = OS.XtMalloc(4);
-		int pNumExportTargets = OS.XtMalloc(4);
-		int[] args = new int[]{
-			OS.XmNexportTargets,          ppExportTargets,
-			OS.XmNnumExportTargets,       pNumExportTargets
-		};
-
-		OS.XtGetValues(callbackData.dragContext, args, args.length / 2);
-		int[] numExportTargets = new int[1];
-		OS.memmove(numExportTargets, pNumExportTargets, 4);
-		OS.XtFree(pNumExportTargets);
-		int[] pExportTargets = new int[1];
-		OS.memmove(pExportTargets, ppExportTargets, 4);
-		OS.XtFree(ppExportTargets);
-		int[] exportTargets = new int[numExportTargets[0]];
-		OS.memmove(exportTargets, pExportTargets[0], 4*numExportTargets[0]);
-		//?OS.XtFree(pExportTargets[0]);
-
-		for (int i = 0, length = exportTargets.length; i < length; i++){
-			for (int j = 0, length2 = transferAgents.length; j < length2; j++){
-				TransferData transferData = new TransferData();
-				transferData.type = exportTargets[i];
-				if (transferAgents[j].isSupportedType(transferData)) {
-					TransferData[] newDataTypes = new TransferData[dataTypes.length + 1];
-					System.arraycopy(dataTypes, 0, newDataTypes, 0, dataTypes.length);
-					newDataTypes[dataTypes.length] = transferData;
-					dataTypes = newDataTypes;
-					break;
-				}
-			}
-		}
-	}
 	
-	if (dataTypes == null || dataTypes.length == 0) {
-		callbackData.dropSiteStatus = OS.XmDROP_SITE_INVALID;
-		callbackData.operation = opToOsOp(DND.DROP_NONE);
-		OS.memmove(call_data, callbackData, XmDragProcCallback.sizeof);
-		return 0;
-	}
+	if (callbackData.reason == OS.XmCR_DROP_SITE_LEAVE_MESSAGE) {
+		updateDragOverHover(0, null);
+		effect.show(DND.FEEDBACK_NONE, 0, 0);
+		
+		if (callbackData.dropSiteStatus == OS.XmDROP_SITE_INVALID) {
+			return;
+		}
 
-	if (selectedDataType == null) {
-		selectedDataType = dataTypes[0];
+		DNDEvent event = new DNDEvent();
+		event.widget = this;
+		event.time = callbackData.timeStamp;
+		event.detail = DND.DROP_NONE;
+		try {
+			notifyListeners(DND.DragLeave, event);
+		} catch (Throwable e) {}
+		return;
 	}
 	
 	DNDEvent event = new DNDEvent();
-	event.widget     = this.control;
-	event.time       = callbackData.timeStamp;
-	short [] root_x = new short [1];
-	short [] root_y = new short [1];
-	OS.XtTranslateCoords (this.control.handle, (short) callbackData.x, (short) callbackData.y, root_x, root_y);
-	event.x          = root_x[0];
-	event.y          = root_y[0];
-	event.dataTypes  = dataTypes;
-	event.feedback = DND.FEEDBACK_SELECT;
-	int allowedOperations = osOpToOp(callbackData.operations);
-	event.operations = allowedOperations;
-	event.dataType  = selectedDataType;
+	if (!setEventData(callbackData.operations, callbackData.operation, callbackData.dragContext, callbackData.x, callbackData.y, callbackData.timeStamp, event)) {
+		callbackData.dropSiteStatus = OS.XmDROP_SITE_INVALID;
+		callbackData.operation = opToOsOp(DND.DROP_NONE);
+		OS.memmove(call_data, callbackData, XmDragProcCallback.sizeof);
+		return;
+	}
+	
+	int allowedOperations = event.operations;
+	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
+	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
+	
+	switch (callbackData.reason) {
+		case OS.XmCR_DROP_SITE_ENTER_MESSAGE :
+			event.type = DND.DragEnter;
+			selectedDataType = null;
+			selectedOperation = DND.DROP_NONE;
+			droppedEventData = null;
+			dropTransferObject = 0;
+			break;
+		case OS.XmCR_DROP_SITE_MOTION_MESSAGE :
+			event.type = DND.DragOver;
+			event.dataType = selectedDataType;
+			event.detail = selectedOperation;
+			break;
+		case OS.XmCR_OPERATION_CHANGED :
+			event.type = DND.DragOperationChanged;
+			event.dataType = selectedDataType;
+			break;
+	}
+	
+	updateDragOverHover(DRAGOVER_HYSTERESIS, event);
 	
 	try {
-		switch (callbackData.reason) {
-			case OS.XmCR_DROP_SITE_ENTER_MESSAGE :
-				event.detail = osOpToOp(callbackData.operation);
-				if ((getStyle() & DND.DROP_DEFAULT) != 0) {
-					int xDisplay = getDisplay().xDisplay;
-					int xWindow = OS.XDefaultRootWindow (xDisplay);
-					int [] unused = new int [1];
-					int[] mask_return = new int[1];
-					OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, unused, unused, mask_return);
-					int mask = mask_return[0];
-					if ((mask & OS.ShiftMask) == 0 && (mask & OS.ControlMask) == 0) {
-						event.detail = DND.DROP_DEFAULT;
-					}
-				}
-				updateDragOverHover(DRAGOVER_HYSTERESIS, event);
-				notifyListeners(DND.DragEnter, event);
-				effect.show(event.feedback, event.x, event.y);
-				break;
-			case OS.XmCR_DROP_SITE_MOTION_MESSAGE :
-				event.detail = lastOperation;
-				updateDragOverHover(DRAGOVER_HYSTERESIS, event);
-				notifyListeners(DND.DragOver, event);
-				effect.show(event.feedback, event.x, event.y);
-				break;
-			case OS.XmCR_OPERATION_CHANGED :
-				event.detail = osOpToOp(callbackData.operation);
-				if ((getStyle() & DND.DROP_DEFAULT) != 0) {
-					int xDisplay = getDisplay().xDisplay;
-					int xWindow = OS.XDefaultRootWindow (xDisplay);
-					int [] unused = new int [1];
-					int[] mask_return = new int[1];
-					OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, unused, unused, mask_return);
-					int mask = mask_return[0];
-					if ((mask & OS.ShiftMask) == 0 && (mask & OS.ControlMask) == 0) {
-						event.detail = DND.DROP_DEFAULT;
-					}
-				}
-				updateDragOverHover(DRAGOVER_HYSTERESIS, event);
-				notifyListeners(DND.DragOperationChanged, event);
-				effect.show(event.feedback, event.x, event.y);
-				break;
-			case OS.XmCR_DROP_SITE_LEAVE_MESSAGE :
-				event.detail  = DND.DROP_NONE;
-				updateDragOverHover(0, null);
-				notifyListeners(DND.DragLeave, event);
-				effect.show(DND.FEEDBACK_NONE, 0, 0);
-				return 0;
-		}
+		notifyListeners(event.type, event);
 	} catch (Throwable err) {
 		callbackData.dropSiteStatus = OS.XmDROP_SITE_INVALID;
 		callbackData.operation = opToOsOp(DND.DROP_NONE);
 		OS.memmove(call_data, callbackData, XmDragProcCallback.sizeof);
-		return 0;
+		return;
+	}
+
+	if (event.detail == DND.DROP_DEFAULT) {
+		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
 	
-	if (event.detail == DND.DROP_DEFAULT) {
-		event.detail = DND.DROP_MOVE;
-	}
 	selectedDataType = null;
-	for (int i = 0; i < dataTypes.length; i++) {
-		if (dataTypes[i].equals(event.dataType)) {
-			selectedDataType = event.dataType;
-			break;
+	if (event.dataType != null) {
+		for (int i = 0; i < allowedDataTypes.length; i++) {
+			if (allowedDataTypes[i].type == event.dataType.type) {
+				selectedDataType = event.dataType;
+				break;
+			}
 		}
 	}
-	lastOperation = DND.DROP_NONE;
-	if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
-		lastOperation = event.detail;
+
+	selectedOperation = DND.DROP_NONE;
+	if (selectedDataType != null && (allowedOperations & event.detail) != 0) {
+		selectedOperation = event.detail;
 	}
+	
+	effect.show(event.feedback, event.x, event.y);
+
 	callbackData.dropSiteStatus = OS.XmDROP_SITE_VALID;
-	callbackData.operation = opToOsOp(lastOperation);
+	callbackData.operation = opToOsOp(selectedOperation);
 	OS.memmove(call_data, callbackData, XmDragProcCallback.sizeof);
 	
-	if (dragOverHeartbeat == null) {
-		dragOverHeartbeat = new Runnable() {
-					public void run() {
-						if (control.isDisposed() || dragOverStart == 0) return;
-						long time = System.currentTimeMillis();
-						int delay = DRAGOVER_HYSTERESIS;
-						if (time >= dragOverStart) {
-							if (selectedDataType == null) {
-								selectedDataType = dragOverEvent.dataTypes[0];
-							}
-							DNDEvent event = new DNDEvent();
-							event.widget = control;
-							event.time = (int)time;
-							event.x = dragOverEvent.x;
-							event.y = dragOverEvent.y;
-							event.dataTypes  = dragOverEvent.dataTypes;
-							event.feedback = DND.FEEDBACK_SELECT;
-							int allowedOperations = dragOverEvent.operations;
-							event.operations = allowedOperations;
-							event.dataType  = selectedDataType;
-							event.detail  = lastOperation;
-							notifyListeners(DND.DragOver, event);
-							effect.show(event.feedback, event.x, event.y);
-							selectedDataType = null;
-							for (int i = 0; i < dataTypes.length; i++) {
-								if (dataTypes[i].equals(event.dataType)) {
-									selectedDataType = event.dataType;
-									break;
-								}
-							}
-							lastOperation = DND.DROP_NONE;
-							if (selectedDataType != null && ((event.detail & allowedOperations) == event.detail)) {
-								lastOperation = event.detail;
-							}
-						} else {
-							delay = (int)(dragOverStart - time);
-						}
-						control.getDisplay().timerExec(delay, dragOverHeartbeat);
-					}
-				};
-				dragOverHeartbeat.run();
+	if (callbackData.reason == OS.XmCR_DROP_SITE_ENTER_MESSAGE) {
+		dragOverHeartbeat.run();
 	}
-	
-	return 0;
 }
-private int dropProcCallback(int widget, int client_data, int call_data) {
+
+private void dropProcCallback(int widget, int client_data, int call_data) {
 	updateDragOverHover(0, null);
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 	
+	if (call_data == 0) return;
 	droppedEventData = new XmDropProcCallback();
 	OS.memmove(droppedEventData, call_data, XmDropProcCallback.sizeof);	
 	
+	if (droppedEventData.dropSiteStatus == OS.XmDROP_SITE_INVALID) {
+		int[] args = new int[] {OS.XmNtransferStatus, OS.XmTRANSFER_FAILURE, OS.XmNnumDropTransfers, 0};
+		dropTransferObject = OS.XmDropTransferStart(droppedEventData.dragContext, args, args.length / 2);
+		return;
+	}
+	
 	DNDEvent event = new DNDEvent();
-	event.widget     = this.control;
-	event.time       = droppedEventData.timeStamp;
-	short [] root_x = new short [1];
-	short [] root_y = new short [1];
-	OS.XtTranslateCoords (this.control.handle, (short) droppedEventData.x, (short) droppedEventData.y, root_x, root_y);
-	event.x          = root_x[0];
-	event.y          = root_y[0];
-	event.dataTypes  = dataTypes;
-	int allowedOperations = osOpToOp(droppedEventData.operations);
-	event.operations = allowedOperations;
-	event.dataType   = selectedDataType;
-	event.detail = lastOperation;
-
+	if (!setEventData(droppedEventData.operations, droppedEventData.operation, droppedEventData.dragContext, droppedEventData.x, droppedEventData.y, droppedEventData.timeStamp, event)){
+		return;
+	}
+	
+	int allowedOperations = event.operations;
+	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
+	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
+	
+	event.dataType = selectedDataType;
+	event.detail = selectedOperation;
 	try {
 		notifyListeners(DND.DropAccept,event);
 	} catch (Throwable err) {
@@ -499,22 +489,25 @@ private int dropProcCallback(int widget, int client_data, int call_data) {
 	}
 	
 	selectedDataType = null;
-	for (int i = 0; i < dataTypes.length; i++) {
-		if (dataTypes[i].equals(event.dataType)) {
-			selectedDataType = event.dataType;
-			break;
+	if (event.dataType != null) {
+		for (int i = 0; i < allowedDataTypes.length; i++) {
+			if (allowedDataTypes[i].type == event.dataType.type) {
+				selectedDataType = event.dataType;
+				break;
+			}
 		}
 	}
-	lastOperation = DND.DROP_NONE;
-	if (selectedDataType != null && ((event.detail & allowedOperations) == event.detail)) {
-		lastOperation = event.detail;
-	}
 	
-	if (lastOperation == DND.DROP_NONE) {
+	selectedOperation = DND.DROP_NONE;
+	if (selectedDataType != null && ((event.detail & allowedOperations) == event.detail)) {
+		selectedOperation = event.detail;
+	}
+
+	if (selectedOperation == DND.DROP_NONE) {
 		// this was not a successful drop
 		int[] args = new int[] {OS.XmNtransferStatus, OS.XmTRANSFER_FAILURE, OS.XmNnumDropTransfers, 0};
 		dropTransferObject = OS.XmDropTransferStart(droppedEventData.dragContext, args, args.length / 2);
-		return 0;
+		return;
 	}
 
 	// ask drag source for dropped data
@@ -530,13 +523,13 @@ private int dropProcCallback(int widget, int client_data, int call_data) {
 	OS.XtAppSetSelectionTimeout(xtContext, 0x7fffffff);
 		
 	int[] args = new int[] {OS.XmNdropTransfers, pTransferEntries,
-				OS.XmNnumDropTransfers, transferEntries.length / 2,
-				OS.XmNtransferProc, TransferProc.getAddress()};
+				            OS.XmNnumDropTransfers, transferEntries.length / 2,
+				            OS.XmNtransferProc, TransferProc.getAddress()};
 
 	dropTransferObject = OS.XmDropTransferStart(droppedEventData.dragContext, args, args.length / 2);
 	OS.XtFree(pTransferEntries);
-	return 0;
 }
+
 /**
  * Returns the Control which is registered for this DropTarget.  This is the control over which the 
  * user positions the cursor to drop the data.
@@ -654,34 +647,6 @@ private void registerDropTarget() {
 	registered = true;
 }
 
-private void releaseDropInfo(){
-	selectedDataType = null;
-	dataTypes = new TransferData[0];
-	droppedEventData = null;
-	dropTransferObject = 0;
-}
-
-private void unregisterDropTarget() {
-	if (control == null || control.isDisposed() || !registered) return;
-	OS.XmDropSiteUnregister(control.handle);
-	registered = false;
-}
-private void updateDragOverHover(long delay, DNDEvent event) {
-	if (delay == 0) {
-		dragOverStart = 0;
-		dragOverEvent = null;
-		dragOverHeartbeat = null;
-		return;
-	}
-	dragOverStart = System.currentTimeMillis() + delay;
-	if (dragOverEvent == null) dragOverEvent = new DNDEvent();
-	dragOverEvent.x = event.x;
-	dragOverEvent.y = event.y;
-	dragOverEvent.dataTypes  = event.dataTypes;
-	dragOverEvent.operations = event.operations;
-	dragOverEvent.dataType  = event.dataType;
-	dragOverEvent.detail  = event.detail;
-}
 
 /**
  * Removes the listener from the collection of listeners who will
@@ -708,6 +673,79 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DragOperationChanged, listener);
 	removeListener (DND.Drop, listener);
 	removeListener (DND.DropAccept, listener);
+}
+
+private boolean setEventData(byte ops, byte op, int dragContext, short x, short y, int timestamp, DNDEvent event) {
+	//get allowed operations
+	int style = getStyle();
+	int operations = osOpToOp(ops) & style;
+	if (operations == DND.DROP_NONE) return false;
+	
+	//get current operation
+	int operation = osOpToOp(op);
+	if ((operation & operations) == 0) operation = DND.DROP_NONE;
+	if ((style & DND.DROP_DEFAULT) != 0) {
+		int xDisplay = getDisplay().xDisplay;
+		int xWindow = OS.XDefaultRootWindow (xDisplay);
+		int [] unused = new int [1];
+		int[] mask_return = new int[1];
+		OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, unused, unused, mask_return);
+		int mask = mask_return[0];
+		if ((mask & OS.ShiftMask) == 0 && (mask & OS.ControlMask) == 0) {
+			operation = DND.DROP_DEFAULT;
+		}
+	}
+	
+	//Get allowed transfer types
+	int ppExportTargets = OS.XtMalloc(4);
+	int pNumExportTargets = OS.XtMalloc(4);
+	int[] args = new int[]{
+		OS.XmNexportTargets,          ppExportTargets,
+		OS.XmNnumExportTargets,       pNumExportTargets
+	};
+
+	OS.XtGetValues(dragContext, args, args.length / 2);
+	int[] numExportTargets = new int[1];
+	OS.memmove(numExportTargets, pNumExportTargets, 4);
+	OS.XtFree(pNumExportTargets);
+	int[] pExportTargets = new int[1];
+	OS.memmove(pExportTargets, ppExportTargets, 4);
+	OS.XtFree(ppExportTargets);
+	int[] exportTargets = new int[numExportTargets[0]];
+	OS.memmove(exportTargets, pExportTargets[0], 4*numExportTargets[0]);
+	//?OS.XtFree(pExportTargets[0]);
+
+	TransferData[] dataTypes = new TransferData[0];
+	for (int i = 0; i < exportTargets.length; i++){
+		for (int j = 0; j < transferAgents.length; j++){
+			TransferData transferData = new TransferData();
+			transferData.type = exportTargets[i];
+			if (transferAgents[j].isSupportedType(transferData)) {
+				TransferData[] newDataTypes = new TransferData[dataTypes.length + 1];
+				System.arraycopy(dataTypes, 0, newDataTypes, 0, dataTypes.length);
+				newDataTypes[dataTypes.length] = transferData;
+				dataTypes = newDataTypes;
+				break;
+			}
+		}
+	}
+	if (dataTypes.length == 0) return false;
+
+	short [] root_x = new short [1];
+	short [] root_y = new short [1];	
+	OS.XtTranslateCoords (this.control.handle, (short) x, (short) y, root_x, root_y);
+	
+	event.widget = this;
+	event.x = root_x[0];
+	event.y = root_y[0];
+	event.time = timestamp;
+	event.feedback = DND.FEEDBACK_SELECT;
+	event.dataTypes = dataTypes;
+	event.dataType = dataTypes[0];
+	event.operations = operations;
+	event.detail = operation;
+	
+	return true;
 }
 
 /**
@@ -758,62 +796,82 @@ public void setTransfer(Transfer[] transferAgents){
 	OS.XtFree(pImportTargets);
 	
 }
-private int transferProcCallback(int widget, int client_data, int pSelection, int pType, int pValue, int pLength, int pFormat) {
+private void transferProcCallback(int widget, int client_data, int pSelection, int pType, int pValue, int pLength, int pFormat) {
+	if (pType == 0 || pValue == 0 || pLength == 0 || pFormat == 0) return;
+	
 	int[] type = new int[1];
 	OS.memmove(type, pType, 4);
-
-	// get dropped data object
-	Transfer transferAgent = null;
+	if (type[0] == NULL_TYPE) {
+		return;
+	}
+	
+	DNDEvent event = new DNDEvent();
+	if (!setEventData(droppedEventData.operations, droppedEventData.operation, droppedEventData.dragContext, droppedEventData.x, droppedEventData.y, droppedEventData.timeStamp, event)){
+		return;
+	}
+	
+	int allowedOperations = event.operations;
+	
+	// Get Data in a Java format
+	Object object = null;
 	TransferData transferData = new TransferData();
+	int[] length = new int[1];
+	OS.memmove(length, pLength, 4);
+	int[] format = new int[1];
+	OS.memmove(format, pFormat, 4);
 	transferData.type = type[0];
+	transferData.length = length[0];
+	transferData.pValue = pValue;
+	transferData.format = format[0];
 	for (int i = 0; i < transferAgents.length; i++){
 		if (transferAgents[i].isSupportedType(transferData)){
-			transferAgent = transferAgents[i];
+			object = transferAgents[i].nativeToJava(transferData);
 			break;
 		}
 	}
-	if (transferAgent != null) {
-		transferData.pValue = pValue;
-		int[] length = new int[1];
-		OS.memmove(length, pLength, 4);
-		transferData.length = length[0];
-		int[] format = new int[1];
-		OS.memmove(format, pFormat, 4);
-		transferData.format = format[0];
-		Object data = transferAgent.nativeToJava(transferData);
-		
-		OS.XtFree(transferData.pValue); //?? Should we be freeing this, and what about the other memory?
+	OS.XtFree(pValue);
 	
-		// notify listeners of drop
-		DNDEvent event = new DNDEvent();
-		event.widget     = this.control;
-		event.time       = droppedEventData.timeStamp;
-		short [] root_x = new short [1];
-		short [] root_y = new short [1];
-		OS.XtTranslateCoords (this.control.handle, (short) droppedEventData.x, (short) droppedEventData.y, root_x, root_y);
-		event.x          = root_x[0];
-		event.y          = root_y[0];
-		event.dataTypes  = dataTypes;
-		event.operations = osOpToOp(droppedEventData.operations);
-		event.dataType = transferData;
-		event.detail = lastOperation;
-		event.data       = data;
-	
-		try {
-			notifyListeners(DND.Drop,event);
-		} catch (Throwable err) {
-			event.detail = DND.DROP_NONE;
+	event.detail = selectedOperation;
+	event.dataType = transferData;
+	event.data = object;
+	try {
+		notifyListeners(DND.Drop, event);
+		selectedOperation = DND.DROP_NONE;
+		if ((allowedOperations & event.detail) == event.detail) {
+			selectedOperation = event.detail;
 		}
-
-		int xtContext = OS.XtDisplayToApplicationContext (getDisplay().xDisplay);
-		OS.XtAppSetSelectionTimeout (xtContext, selectionTimeout);
-		
-		if ((event.detail & DND.DROP_MOVE) == DND.DROP_MOVE) {
-			int[] args = new int[]{control.handle, DELETE_TYPE};
-			OS.XmDropTransferAdd(dropTransferObject, args, args.length / 2);
-		}
+	} catch (Throwable e) {
+		selectedOperation = DND.DROP_NONE;
 	}
-	return 0;
+	
+	int xtContext = OS.XtDisplayToApplicationContext (getDisplay().xDisplay);
+	OS.XtAppSetSelectionTimeout (xtContext, selectionTimeout);
+		
+	if ((selectedOperation & DND.DROP_MOVE) == DND.DROP_MOVE) {
+		int[] args = new int[]{control.handle, DELETE_TYPE};
+		OS.XmDropTransferAdd(dropTransferObject, args, args.length / 2);
+	}
 }
 
+private void unregisterDropTarget() {
+	if (control == null || control.isDisposed() || !registered) return;
+	OS.XmDropSiteUnregister(control.handle);
+	registered = false;
+}
+
+private void updateDragOverHover(long delay, DNDEvent event) {
+	if (delay == 0) {
+		dragOverStart = 0;
+		dragOverEvent = null;
+		return;
+	}
+	dragOverStart = System.currentTimeMillis() + delay;
+	if (dragOverEvent == null) dragOverEvent = new DNDEvent();
+	dragOverEvent.x = event.x;
+	dragOverEvent.y = event.y;
+	TransferData[] dataTypes = new TransferData[ event.dataTypes.length];
+	System.arraycopy( event.dataTypes, 0, dataTypes, 0, dataTypes.length);
+	dragOverEvent.dataTypes  = dataTypes;
+	dragOverEvent.operations = event.operations;
+}
 }
