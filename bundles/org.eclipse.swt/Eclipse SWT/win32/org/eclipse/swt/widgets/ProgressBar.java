@@ -38,9 +38,37 @@ public class ProgressBar extends Control {
 	static final int ProgressBarProc;
 	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
 	static {
+		/*
+		* Feature in Windows.  The progres bar window class
+		* does not include CS_DBLCLKS.  This mean that progress
+		* bars will not get double click messages such as
+		* WM_LBUTTONDBLCLK.  The fix is to register a new 
+		* window class with these bits.
+		* 
+		* NOTE:  Screen readers look for the exact class name
+		* of the control in order to provide the correct kind
+		* of assistance.  Therefore, it is critical that the
+		* new window class have the same name.  It is possible
+		* to register a local window class with the same name
+		* as a global class.  Since bits that affect the class
+		* are being changed, it is possible that other native
+		* code, other than SWT, could create a control with
+		* this class name, and fail unexpectedly.
+		*/
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ProgressBarClass, lpWndClass);
 		ProgressBarProc = lpWndClass.lpfnWndProc;
+		int hInstance = OS.GetModuleHandle (null);
+		int hHeap = OS.GetProcessHeap ();
+		lpWndClass.hInstance = hInstance;
+		lpWndClass.style &= ~OS.CS_GLOBALCLASS;
+		lpWndClass.style |= OS.CS_DBLCLKS;
+		int byteCount = ProgressBarClass.length () * TCHAR.sizeof;
+		int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpszClassName, ProgressBarClass, byteCount);
+		lpWndClass.lpszClassName = lpszClassName;
+		OS.RegisterClass (lpWndClass);
+//		OS.HeapFree (hHeap, 0, lpszClassName);	
 	}
 
 /**
