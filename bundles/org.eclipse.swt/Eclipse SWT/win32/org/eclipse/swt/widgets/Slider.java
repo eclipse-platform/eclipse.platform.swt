@@ -708,7 +708,11 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 
 	/* Do nothing when scrolling is ending */
 	int code = wParam & 0xFFFF;
-	if (code == OS.SB_ENDSCROLL) return null;
+	switch (code) {
+		case OS.SB_THUMBPOSITION:
+		case OS.SB_ENDSCROLL:
+			return null;
+	}
 
 	/* Move the thumb */
 	Event event = new Event ();
@@ -718,13 +722,6 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 	OS.GetScrollInfo (handle, OS.SB_CTL, info);
 	info.fMask = OS.SIF_POS;
 	switch (code) {
-		case OS.SB_THUMBPOSITION:
-			/*
-			* Do not set the detail field to DRAG to
-			* indicate that the dragging has ended.
-			*/
-			info.nPos = info.nTrackPos;
-			break;
 		case OS.SB_THUMBTRACK:
 			event.detail = SWT.DRAG;
 			info.nPos = info.nTrackPos;
