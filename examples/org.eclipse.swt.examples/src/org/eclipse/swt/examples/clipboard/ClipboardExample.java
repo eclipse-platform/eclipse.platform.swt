@@ -98,7 +98,7 @@ public void open(Display display) {
 	
 	Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	Rectangle monitorArea = shell.getMonitor().getClientArea();
-	shell.setSize(Math.min(size.x, monitorArea.width), Math.min(size.y, monitorArea.height));
+	shell.setSize(Math.min(size.x, monitorArea.width - 20), Math.min(size.y, monitorArea.height - 20));
 	shell.open();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
