@@ -145,6 +145,26 @@ public final class RowLayout extends Layout {
 	 * The default value is 3.
 	 */
 	public int marginBottom = 3;
+	
+		/**
+	 * marginWidth specifies the number of pixels of horizontal margin
+	 * that will be placed along the left and right edges of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.0
+	 */
+ 	public int marginWidth = 0;
+ 	
+	/**
+	 * marginHeight specifies the number of pixels of vertical margin
+	 * that will be placed along the top and bottom edges of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.0
+	 */
+ 	public int marginHeight = 0;
 
 /**
  * Constructs a new instance of this class.
@@ -220,7 +240,7 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		bounds = new Rectangle [count];
 		wraps = new int [count];
 	}
-	int maxX = 0, x = marginLeft, y = marginTop;
+	int maxX = 0, x = marginLeft + marginWidth, y = marginTop + marginHeight;
 	for (int i=0; i<count; i++) {
 		Control child = children [i];
 		if (pack) {
@@ -231,7 +251,7 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		if (wrap && (i != 0) && (x + childWidth > width)) {
 			wrapped = true;
 			if (move && (justify || fill)) wraps [i - 1] = maxHeight;
-			x = marginLeft;
+			x = marginLeft + marginWidth;
 			y += spacing + maxHeight;
 			if (pack) maxHeight = 0;
 		}
@@ -249,8 +269,8 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 		x += spacing + childWidth;
 		maxX = Math.max (maxX, x);
 	}
-	maxX = Math.max (clientX, maxX - spacing);
-	if (!wrapped) maxX += marginRight;
+	maxX = Math.max (clientX + marginLeft + marginWidth, maxX - spacing);
+	if (!wrapped) maxX += marginRight + marginWidth;
 	if (move && (justify || fill)) {
 		int space = 0, margin = 0;
 		if (!wrapped) {
@@ -288,7 +308,7 @@ Point layoutHorizontal (Composite composite, boolean move, boolean wrap, int wid
 			children [i].setBounds (bounds [i]);
 		}
 	}
-	return new Point (maxX, y + maxHeight + marginBottom);
+	return new Point (maxX, y + maxHeight + marginBottom + marginHeight);
 }
 
 Point layoutVertical (Composite composite, boolean move, boolean wrap, int height, boolean flushCache) {
@@ -317,7 +337,7 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 		bounds = new Rectangle [count];
 		wraps = new int [count];
 	}
-	int maxY = 0, x = marginLeft, y = marginTop;
+	int maxY = 0, x = marginLeft + marginWidth, y = marginTop + marginHeight;
 	for (int i=0; i<count; i++) {
 		Control child = children [i];
 		if (pack) {
@@ -329,7 +349,7 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 			wrapped = true;
 			if (move && (justify || fill)) wraps [i - 1] = maxWidth;
 			x += spacing + maxWidth;
-			y = marginTop;
+			y = marginTop + marginHeight;
 			if (pack) maxWidth = 0;
 		}
 		if (pack || fill) {
@@ -346,8 +366,8 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 		y += spacing + childHeight;
 		maxY = Math.max (maxY, y);
 	}
-	maxY = Math.max (clientY, maxY - spacing);
-	if (!wrapped) maxY += marginBottom;
+	maxY = Math.max (clientY + marginTop + marginHeight, maxY - spacing);
+	if (!wrapped) maxY += marginBottom + marginHeight;
 	if (move && (justify || fill)) {
 		int space = 0, margin = 0;
 		if (!wrapped) {
@@ -385,6 +405,6 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 			children [i].setBounds (bounds [i]);
 		}
 	}
-	return new Point (x + maxWidth + marginRight, maxY);
+	return new Point (x + maxWidth + marginRight + marginWidth, maxY);
 }
 }
