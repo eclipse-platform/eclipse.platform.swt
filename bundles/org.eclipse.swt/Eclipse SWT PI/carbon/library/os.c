@@ -1271,6 +1271,18 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextFlush)
 }
 #endif
 
+#ifndef NO_CGContextGetInterpolationQuality
+JNIEXPORT jint JNICALL OS_NATIVE(CGContextGetInterpolationQuality)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CGContextGetInterpolationQuality_FUNC);
+	rc = (jint)CGContextGetInterpolationQuality((CGContextRef)arg0);
+	OS_NATIVE_EXIT(env, that, CGContextGetInterpolationQuality_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CGContextMoveToPoint
 JNIEXPORT void JNICALL OS_NATIVE(CGContextMoveToPoint)
 	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
@@ -1389,6 +1401,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetFontSize)
 }
 #endif
 
+#ifndef NO_CGContextSetInterpolationQuality
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetInterpolationQuality)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetInterpolationQuality_FUNC);
+	CGContextSetInterpolationQuality((CGContextRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetInterpolationQuality_FUNC);
+}
+#endif
+
 #ifndef NO_CGContextSetLineCap
 JNIEXPORT void JNICALL OS_NATIVE(CGContextSetLineCap)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -1450,6 +1472,16 @@ JNIEXPORT void JNICALL OS_NATIVE(CGContextSetRGBStrokeColor)
 	OS_NATIVE_ENTER(env, that, CGContextSetRGBStrokeColor_FUNC);
 	CGContextSetRGBStrokeColor((CGContextRef)arg0, (float)arg1, (float)arg2, (float)arg3, (float)arg4);
 	OS_NATIVE_EXIT(env, that, CGContextSetRGBStrokeColor_FUNC);
+}
+#endif
+
+#ifndef NO_CGContextSetRenderingIntent
+JNIEXPORT void JNICALL OS_NATIVE(CGContextSetRenderingIntent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, CGContextSetRenderingIntent_FUNC);
+	CGContextSetRenderingIntent((CGContextRef)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, CGContextSetRenderingIntent_FUNC);
 }
 #endif
 

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 793;
-int OS_nativeFunctionCallCount[793];
+int OS_nativeFunctionCount = 796;
+int OS_nativeFunctionCallCount[796];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -109,6 +109,7 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextFillPath",
 	"CGContextFillRect",
 	"CGContextFlush",
+	"CGContextGetInterpolationQuality",
 	"CGContextGetTextPosition",
 	"CGContextMoveToPoint",
 	"CGContextRelease",
@@ -121,12 +122,14 @@ char * OS_nativeFunctionNames[] = {
 	"CGContextSetFillColorSpace",
 	"CGContextSetFont",
 	"CGContextSetFontSize",
+	"CGContextSetInterpolationQuality",
 	"CGContextSetLineCap",
 	"CGContextSetLineDash",
 	"CGContextSetLineJoin",
 	"CGContextSetLineWidth",
 	"CGContextSetRGBFillColor",
 	"CGContextSetRGBStrokeColor",
+	"CGContextSetRenderingIntent",
 	"CGContextSetShouldAntialias",
 	"CGContextSetShouldSmoothFonts",
 	"CGContextSetStrokeColor",
