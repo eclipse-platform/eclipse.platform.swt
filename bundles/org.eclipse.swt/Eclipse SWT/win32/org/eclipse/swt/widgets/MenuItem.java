@@ -263,7 +263,6 @@ void fillAccel (ACCEL accel) {
 }
 
 void fixMenus (Decorations newParent) {
-	if (menu != null) menu.fixMenus (newParent);
 	int oldId = this.id;
 	parent.parent.remove (this);
 	newParent.add (this);
@@ -282,6 +281,7 @@ void fixMenus (Decorations newParent) {
 		info.wID = info.dwItemData = id;
 		OS.SetMenuItemInfo (hMenu, oldId, false, info);
 	}
+	if (menu != null) menu.fixMenus (newParent);
 }
 
 /**
