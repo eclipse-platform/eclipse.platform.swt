@@ -511,7 +511,7 @@ public Browser(Composite parent, int style) {
 	
 	variant = new Variant(false);
 	int[] rgdispid = auto.getIDsOfNames(new String[] {"RegisterAsDropTarget"}); //$NON-NLS-1$
-	auto.setProperty(rgdispid[0], variant);
+	if (rgdispid != null) auto.setProperty(rgdispid[0], variant);
 	variant.dispose();
 }
 
