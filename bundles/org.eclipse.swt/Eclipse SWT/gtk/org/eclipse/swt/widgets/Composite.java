@@ -229,9 +229,7 @@ public Control [] getTabList () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_MERGE_MOUSE) == 0) {
-			OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
-		}
+		OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
 	}
 }
 

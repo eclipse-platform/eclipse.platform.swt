@@ -516,12 +516,6 @@ public class SWT {
 	 * behavior (value is 1&lt;&lt;22)
 	 */
 	public static final int NO_RADIO_GROUP = 1 << 22;
-	
-	/**
-	 * <code>Canvas</code> style constant for no mouse event merging
-	 * behavior (value is 1&lt;&lt;23)
-	 */
-	public static final int NO_MERGE_MOUSE = 1 << 24;
 
 	/**
 	 * various <code>Widget</code> and <code>Layout</code>

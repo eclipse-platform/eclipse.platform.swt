@@ -1216,7 +1216,9 @@ boolean runDeferredEvents () {
 			Widget item = event.item;
 			if (item == null || !item.isDisposed ()) {
 				widget.notifyListeners (event.type, event);
-				if (event.type == SWT.MouseMove && (widget.style & SWT.NO_MERGE_MOUSE) == 0) {
+				
+				/* Ask for the next mouse event */
+				if (event.type == SWT.MouseMove) {
 					OS.gdk_window_get_pointer (0, null, null, null);
 				}
 			}
