@@ -13,8 +13,8 @@ import org.eclipse.swt.widgets.Widget;
  * <p>When in dragEnter(), dragOver(), dragLeave(), dragOperationChanged(), dropAccept(), 
  * the following fields apply:
  * <ul>
- * <li>(in)widget        - the object on which the data will be dropped if the mouse is released
- * <li>(in)time          - the time the drop occurred
+ * <li>(in)widget        - the DropTarget on which the data will be dropped if the mouse is released
+ * <li>(in)time          - the time of the event
  * <li>(in)x             - the x-cordinate of the cursor relative to the DropTarget <code>Control</code>
  * <li>(in)y             - the y-cordinate of the cursor relative to the DropTarget <code>Control</code>
  * <li>(in)dataTypes     - a list of the types of data that the DragSource can support
@@ -29,13 +29,13 @@ import org.eclipse.swt.widgets.Widget;
  *
  * <p>When in drop(), the following fields apply:
  * <ul>
- * <li>(in)widget - the object on which the data was dropped
- * <li>(in)time    - the time the drop occurred
- * <li>(in)x        - the x-cordinate of the cursor relative to the <code>Display</code>
- * <li>(in)y        - the y-cordinate of the cursor relative to the <code>Display</code>
+ * <li>(in)widget     - the DropTarget on which the data was dropped
+ * <li>(in)time       - the time of the event
+ * <li>(in)x          - the x-cordinate of the cursor relative to the <code>Display</code>
+ * <li>(in)y          - the y-cordinate of the cursor relative to the <code>Display</code>
  * <li>(in,out)detail - the operation being performed (one of DND.DROP_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
  * <li>(in)currentDataType - the specific type of data that is be contained in the <code>data</code> field
- * <li>(in)data     - the data (which is of type currentDataType); the type Java Object contained in this field is
+ * <li>(in)data       - the data (which is of type currentDataType); the type of Java Object contained in this field is
  *						dependant on the Transfer subclass.  For example, the TextTransfer subclass provides a
  *						String with the text in the String.  The FileTransfer object provides an array of String with
  *						each String in the array containing the full path of the file.

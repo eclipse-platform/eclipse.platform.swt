@@ -26,8 +26,8 @@ public interface DragSourceListener extends SWTEventListener {
  * <p>The following fields in the DragSourceEvent apply:
  * <ul>
  * <li>widget   - (in) the DragSource object that initiated the drag
- * <li>time     - (in) the time the drop occurred
- * <li>doit     - (out) set to fase by default.  To cause a drag to begin, set this to true.
+ * <li>time     - (in) the time of the event
+ * <li>doit     - (out) set to false by default.  To cause a drag to begin, set this to true.
  * </ul></p>
  *
  * @param event the information associated with the drag finished event
@@ -41,7 +41,7 @@ public void dragStart(DragSourceEvent event);
  * <p>The following fields in the DragSourceEvent apply:
  * <ul>
  * <li>widget   - (in) the DragSource object that initiated the drag
- * <li>time     - (in) the time the drop occurred
+ * <li>time     - (in) the time of the event
  * <li>dataType - (in) the type of data requested.  This is a TransferData object and can be used with the Transfer subclasses.
  * <li>data     - (out) the application inserts the actual data here (must match the dataType)
  * </ul></p>
@@ -57,9 +57,9 @@ public void dragSetData(DragSourceEvent event);
  * <p>The following fields in the DragSourceEvent apply:
  * <ul>
  * <li>widget   - (in) the DragSource object that initiated the drag
- * <li>time     - (in) the time the drop occurred
+ * <li>time     - (in) the time of the event
  * <li>doit     - (in) true if the operation performed successfully
- * <li>detail   - (in) the operation that was performed (DND.DROP_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
+ * <li>detail   - (in) the operation that was performed (DND.DROP_MOVE, DND.DROP_TARGET_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
  * </ul></p>
  *
  * @param event the information associated with the drag finished event

@@ -27,8 +27,8 @@ public interface DropTargetListener extends SWTEventListener {
  *
  * <p>The following fields in the DropTargetEvent apply:
  * <ul>
- * <li>(in)widget        - the DragSource object that initiated the drag
- * <li>(in)time          - the time the drop occurred
+ * <li>(in)widget        - the DropTarget on which the data will be dropped if the mouse is released
+ * <li>(in)time          - the time of the event
  * <li>(in)x             - the x-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)y             - the y-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)dataTypes     - a list of the types of data that the <code>DragSource</code> can support
@@ -51,8 +51,8 @@ public void dragEnter(DropTargetEvent event);
  *
  * <p>The following fields in the DropTargetEvent apply:
  * <ul>
- * <li>(in)widget        - the DragSource object that initiated the drag
- * <li>(in)time          - the time the drop occurred
+ * <li>(in)widget        - the DropTarget that the mouse has just left
+ * <li>(in)time          - the time of the event
  * <li>(in)x             - the x-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)y             - the y-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)dataTypes     - a list of the types of data that the <code>DragSource</code> can support
@@ -76,8 +76,8 @@ public void dragLeave(DropTargetEvent event);
  *
  * <p>The following fields in the DropTargetEvent apply:
  * <ul>
- * <li>(in)widget        - the DragSource object that initiated the drag
- * <li>(in)time          - the time the drop occurred
+ * <li>(in)widget        - the DropTarget on which the data will be dropped if the mouse is released
+ * <li>(in)time          - the time of the event
  * <li>(in)x             - the x-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)y             - the y-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)dataTypes     - a list of the types of data that the <code>DragSource</code> can support
@@ -100,8 +100,8 @@ public void dragOperationChanged(DropTargetEvent event);
  *
  * <p>The following fields in the DropTargetEvent apply:
  * <ul>
- * <li>(in)widget        - the DragSource object that initiated the drag
- * <li>(in)time          - the time the drop occurred
+ * <li>(in)widget        - the DropTarget on which the data will be dropped if the mouse is released
+ * <li>(in)time          - the time of the event
  * <li>(in)x             - the x-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)y             - the y-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)dataTypes     - a list of the types of data that the <code>DragSource</code> can support
@@ -125,8 +125,8 @@ public void dragOver(DropTargetEvent event);
  *
  * <p>The following fields in DropTargetEvent apply:
  * <ul>
- * <li>(in)widget   - the DragSource object that initiated the drag
- * <li>(in)time     - the time the drop occurred
+ * <li>(in)widget   - the DropTarget on which the data was dropped
+ * <li>(in)time     - the time of the event
  * <li>(in)x        - the x-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)y        - the y-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in,out)detail - the operation being performed (one of DND.DROP_MOVE, DND.DROP_COPY, DND.DROP_LINK, DND.DROP_NONE)
@@ -149,8 +149,8 @@ public void drop(DropTargetEvent event);
  *
  * <p>The following fields in the DropTargetEvent apply:
  * <ul>
- * <li>(in)widget        - the DragSource object that initiated the drag
- * <li>(in)time          - the time the drop occurred
+ * <li>(in)widget        - the DropTarget on which the data was dropped
+ * <li>(in)time          - the time of the event
  * <li>(in)x             - the x-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)y             - the y-cordinate of the cursor relative to the <code>DropTarget Control</code>
  * <li>(in)dataTypes     - a list of the types of data that the <code>DragSource</code> can support
