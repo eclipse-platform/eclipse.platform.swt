@@ -129,6 +129,8 @@ public final class Cursor {
 		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00,
 		(byte)0x00,(byte)0x00,(byte)0x00,(byte)0x00
 	};
+	
+	boolean isIcon;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -230,7 +232,7 @@ public Cursor(Device device, int style) {
 /**	 
  * Constructs a new cursor given a device, image and mask
  * data describing the desired cursor appearance, and the x
- * and y co-ordinates of the <em>hotspot</em> (that is, the point
+ * and y coordinates of the <em>hotspot</em> (that is, the point
  * within the area covered by the cursor which is considered
  * to be where the on-screen pointer is "pointing").
  * <p>
@@ -290,6 +292,68 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	if (device.tracking) device.new_Object(this);
 }
 
+/**	 
+ * Constructs a new cursor given a device, image data describing
+ * the desired cursor appearance, and the x and y coordinates of
+ * the <em>hotspot</em> (that is, the point within the area
+ * covered by the cursor which is considered to be where the
+ * on-screen pointer is "pointing").
+ * <p>
+ * You must dispose the cursor when it is no longer required. 
+ * </p>
+ *
+ * @param device the device on which to allocate the cursor
+ * @param image the color data for the cursor
+ * @param hotspotX the x coordinate of the cursor's hotspot
+ * @param hotspotY the y coordinate of the cursor's hotspot
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the hotspot is outside the bounds of the
+ * 		 image</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	this.device = device;
+	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	/* Check the hotspots */
+	if (hotspotX >= source.width || hotspotX < 0 ||
+		hotspotY >= source.height || hotspotY < 0) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	boolean hasTransparencyPixel = source.getTransparencyType() == SWT.TRANSPARENCY_PIXEL;
+	if (hasTransparencyPixel) {
+		ImageData mask = source.getTransparencyMask();
+		source.maskData = mask.data;
+		source.maskPad = mask.scanlinePad;
+	}	
+	int[] result = Image.init(device, null, source);
+	int hBitmap = result[0];
+	int hMask = result[1];
+	if (hasTransparencyPixel) {
+		source.maskData = null;
+		source.maskPad = -1;
+	}
+	/* Create the icon */
+	ICONINFO info = new ICONINFO();
+	info.fIcon = true;
+	info.hbmColor = hBitmap;
+	info.hbmMask = hMask;
+	handle = OS.CreateIconIndirect(info);
+	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	OS.DeleteObject(hBitmap);
+	OS.DeleteObject(hMask);
+	isIcon = true;
+}
+
 /**
  * Disposes of the operating system resources associated with
  * the cursor. Applications must dispose of all cursors which
@@ -312,15 +376,19 @@ public void dispose () {
 //		OS.SetCursor(OS.LoadCursor(0, OS.IDC_ARROW));
 //	}
 	
-	/*
-	 * The MSDN states that one should not destroy a shared
-	 * cursor, that is, one obtained from LoadCursor.
-	 * However, it does not appear to do any harm, so rather
-	 * than keep track of how a cursor was created, we just
-	 * destroy them all. If this causes problems in the future,
-	 * put the flag back in.
-	 */
-	if (!OS.IsWinCE) OS.DestroyCursor(handle);
+	if (isIcon) {
+		OS.DestroyIcon(handle);
+	} else {
+		/*
+	 	* The MSDN states that one should not destroy a shared
+	 	* cursor, that is, one obtained from LoadCursor.
+	 	* However, it does not appear to do any harm, so rather
+	 	* than keep track of how a cursor was created, we just
+	 	* destroy them all. If this causes problems in the future,
+	 	* put the flag back in.
+		*/
+		if (!OS.IsWinCE) OS.DestroyCursor(handle);
+	}
 	handle = 0;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;
