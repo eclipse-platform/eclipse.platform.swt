@@ -4438,6 +4438,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1model
 }
 #endif
 
+#ifndef NO_gtk_1tree_1path_1append_1index
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1append_1index
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1tree_1path_1append_1index\n")
+
+	gtk_tree_path_append_index((GtkTreePath *)arg0, arg1);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1path_1free
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1free
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4465,6 +4475,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1get
 	DEBUG_CALL("gtk_1tree_1path_1get_1indices\n")
 
 	return (jint)gtk_tree_path_get_indices((GtkTreePath *)arg0);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1path_1new
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1tree_1path_1new\n")
+
+	return (jint)gtk_tree_path_new();
+}
+#endif
+
+#ifndef NO_gtk_1tree_1path_1new_1first
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new_1first
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1tree_1path_1new_1first\n")
+
+	return (jint)gtk_tree_path_new_first();
 }
 #endif
 

@@ -663,9 +663,12 @@ public static final native boolean gtk_tree_model_iter_children(int model, int i
 public static final native int gtk_tree_model_iter_n_children(int model, int iter);
 public static final native boolean gtk_tree_model_iter_next(int model, int iter);
 public static final native boolean gtk_tree_model_iter_nth_child(int tree_model, int iter, int parent, int n);
+public static final native void gtk_tree_path_append_index(int path, int index);
 public static final native void gtk_tree_path_free(int path);
 public static final native int gtk_tree_path_get_depth(int path);
 public static final native int gtk_tree_path_get_indices(int path);
+public static final native int gtk_tree_path_new();
+public static final native int gtk_tree_path_new_first();
 public static final native int gtk_tree_path_new_from_string(byte[] path);
 public static final native int gtk_tree_path_new_from_string(int path);
 public static final native boolean gtk_tree_path_up(int path);
