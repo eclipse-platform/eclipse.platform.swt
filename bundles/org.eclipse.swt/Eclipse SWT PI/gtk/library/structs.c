@@ -637,10 +637,11 @@ void getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent
 void setGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventExpose_FID_CACHE *lpGdkEventExposeFc)
 {
 	GdkEventExpose *lpGdkEventExpose = (GdkEventExpose*)lpGdkEvent;
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->x, (jshort)lpGdkEventExpose->area.x);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->y, (jshort)lpGdkEventExpose->area.y);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->width, (jshort)lpGdkEventExpose->area.width);
-	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->height, (jshort)lpGdkEventExpose->area.height);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->x, (jint)lpGdkEventExpose->area.x);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->y, (jint)lpGdkEventExpose->area.y);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->width, (jint)lpGdkEventExpose->area.width);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->height, (jint)lpGdkEventExpose->area.height);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->region, (jint)lpGdkEventExpose->region);
 	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->count, (jint)lpGdkEventExpose->count);
 }
 
