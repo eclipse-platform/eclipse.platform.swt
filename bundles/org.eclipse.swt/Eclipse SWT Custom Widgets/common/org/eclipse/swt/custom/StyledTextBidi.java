@@ -215,63 +215,106 @@ public void fillBackground(int logicalStart, int length, int xOffset, int yOffse
 		gc.fillRectangle(xOffset + startX, yOffset, run.getRenderStopX() - startX, height);	
 	}				
 }
-public int getCaretOffsetAtX(int x) {
+public int[] getCaretOffsetAndDirectionAtX(int x) {
 	int lineLength = getTextLength();
 	int low = -1;
 	int high = lineLength;
 	int offset;
-	int logicalHigh;
 
 	if (lineLength == 0) {
-		return 0;
+		return new int[] {0,0};
 	}
-	if (x > renderPositions[renderPositions.length - 1] + dx[dx.length - 1]) {
-		return lineLength;
+	
+	int eol = renderPositions[renderPositions.length - 1] + dx[dx.length - 1];
+	if (x > eol) {
+		return new int[] {lineLength,ST.COLUMN_NEXT};
 	}
-	while (high - low > 1) {
-		offset = (high + low) / 2;
-		int visualX = renderPositions[offset];
-		if (x <= visualX + dx[offset] / 2) {
-			high = offset;			
+	
+	// get the index visually clicked character
+	int visualIndex = 0;
+	int visualX = renderPositions[visualIndex];
+	while ((x > visualX) && (visualIndex < renderPositions.length)) {
+		visualIndex++;
+		if (visualIndex < renderPositions.length) visualX = renderPositions[visualIndex];
+	}
+	visualIndex = Math.max(0,visualIndex-1);
+	// figure out if the character was clicked on the right or left
+	int halfway = renderPositions[visualIndex] + (dx[visualIndex] / 2);
+	boolean visualLeft = (x <= halfway);
+	int direction;
+	// handle visual beginning
+	if (visualIndex == 0) {
+		offset = order[0];
+		if (isRightToLeft(offset)) {
+			if (visualLeft) {
+				offset = order[0] + 1;
+				direction = ST.COLUMN_NEXT;
+			}
+			else {
+				offset = order[0];
+				direction = ST.COLUMN_PREVIOUS;
+			}
 		}
 		else {
-			low = offset;
-		}
-	}
-	logicalHigh = getLogicalOffset(high);
-	offset = logicalHigh;
-	// is x on first glyph?
-	if (low == -1) {
-		int logicalLow = getLogicalOffset(0);
-		// if in R2L segment find the offset behind the glyph (which may be a ligature)
-		if (isRightToLeft(logicalLow)) {
-			int i = logicalLow + 1;
-			while (i < order.length && order[i] == order[logicalLow]) {
-				i++;
+			if (visualLeft) {
+				offset = order[0];
+				direction = ST.COLUMN_PREVIOUS;
 			}
-			offset = i;
+			else {
+				offset = order[0] + 1;
+				direction = ST.COLUMN_NEXT;
+			}
+		}			
+		return new int[] {offset, direction};
+	}	
+
+	offset = getLogicalOffset(visualIndex);
+	// handle visual end
+	if (visualIndex == renderPositions.length - 1) {
+		if (isRightToLeft(offset)) {
+			if (visualLeft) {
+				offset = offset + 1;
+				direction = ST.COLUMN_NEXT;
+			}
+			else {
+				offset = offset;
+				direction = ST.COLUMN_PREVIOUS;
+			}
+		}
+		else {
+			if (visualLeft) {
+				offset = offset;
+				direction = ST.COLUMN_PREVIOUS;
+			}
+			else {
+				offset = offset + 1;
+				direction = ST.COLUMN_NEXT;
+			}
+		}
+		return new int[] {offset, direction};
+	}	
+
+	if (isRightToLeft(offset)) {
+		if (visualLeft) {
+			offset = offset + 1;
+			direction = ST.COLUMN_NEXT;
+		}
+		else {
+			offset = offset;
+			direction = ST.COLUMN_PREVIOUS;
 		}
 	}
 	else {
-		int logicalLow = getLogicalOffset(low);
-		// if x is in R2L segment
-		if (isRightToLeft(logicalLow)) {
-			offset = logicalLow;
+		if (visualLeft) {
+			offset = offset;
+			direction = ST.COLUMN_PREVIOUS;
 		}
-		else
-		if (isRightToLeft(logicalLow) == false && isRightToLeft(logicalHigh)) {
-			// if x is between L2R and R2L segment, place offset either logically at
-			// first character of R2L segment or in front of next L2R segment.
-			// This reflects the possible keyboard cursor movement.
-			if (x <= renderPositions[low] + dx[low]) {
-				offset = logicalLow + 1;
-			}
-			if (x > renderPositions[high]) {
-				offset = logicalHigh + 1;
-			}
+		else {
+			offset = offset + 1;
+			direction = ST.COLUMN_NEXT;
 		}
 	}
-	return offset;
+	return new int[] {offset, direction};		
 }
 public int getCaretPosition(int logicalOffset) {
 	int caretX;
@@ -326,7 +369,6 @@ public int getCaretPosition(int logicalOffset, int direction) {
 		return StyledText.xInset;
 	}
 	int caretX;
-	
 	// at or past end of line?
 	if (logicalOffset >= order.length) {
 		logicalOffset = Math.min(logicalOffset, order.length - 1);

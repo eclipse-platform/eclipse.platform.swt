@@ -1215,6 +1215,7 @@ void createBidiCaret() {
 	if (caret == null) {
 		caret = new Caret(this, SWT.NULL);			
 	}
+
 	int direction = StyledTextBidi.getKeyboardLanguageDirection();
 	if (direction == caretDirection) {
 		return;
@@ -1404,6 +1405,54 @@ void doBidiCursorPrevious() {
 	}
 	else {
 		doBidiSelectionCursorPrevious();
+	}
+}
+void doBidiMouseLocationChange(int x, int y, boolean select) {
+	int line = (y + verticalScrollOffset) / lineHeight;
+	int lineCount = content.getLineCount();
+	
+	if (line > lineCount - 1) {
+		line = lineCount - 1;
+	}	
+	if (line >= 0) {
+		String lineText = content.getLine(line);
+		int lineOffset = content.getOffsetAtLine(line);
+
+
+		GC gc = new GC(this);
+		StyleRange[] styles = null;
+		StyledTextEvent event = getLineStyleData(lineOffset, lineText);
+	
+		x += horizontalScrollOffset;
+		if (event != null) {
+			styles = filterLineStyles(event.styles);
+		}
+		lastCaretDirection = SWT.NULL;
+		int[] boldStyles = getBoldRanges(styles, lineOffset, lineText.length());
+		StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont);
+		int[] values = bidi.getCaretOffsetAndDirectionAtX(x);
+		int offsetInLine = values[0];
+		lastCaretDirection = values[1];
+		int newCaretOffset = lineOffset + offsetInLine;
+//		if (newCaretOffset != caretOffset) {
+			caretOffset = newCaretOffset;
+			if (select) {
+				doMouseSelection();
+			}
+			Caret caret = getCaret();
+			if (caret != null) {
+				int caretX = bidi.getCaretPosition(offsetInLine, lastCaretDirection);
+				caretX = caretX - horizontalScrollOffset;
+				if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
+					caretX -= (getCaretWidth() - 1);
+				}
+				createBidiCaret();
+				caret.setLocation(caretX, line * lineHeight - verticalScrollOffset);
+			}
+//		}
+		if (select == false) {
+			clearSelection(true);
+		}
 	}
 }
 void doBidiSelectionCursorNext() {
@@ -1830,6 +1879,10 @@ void doLineUp() {
  * 	include the line delimiter in the selection
  */
 void doMouseLocationChange(int x, int y, boolean select) {
+	if (isBidi()) {
+		doBidiMouseLocationChange(x, y, select);
+		return;
+	}
 	int line = (y + verticalScrollOffset) / lineHeight;
 	int lineCount = content.getLineCount();
 	
@@ -2556,30 +2609,24 @@ int getCaretOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	if (event != null) {
 		styles = filterLineStyles(event.styles);
 	}
-	if (isBidi()) {
-		int[] boldStyles = getBoldRanges(styles, lineOffset, line.length());
-		StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, boldStyles, boldFont);
-		offset = bidi.getCaretOffsetAtX(lineXOffset);
-	}
-	else {	
-		int low = -1;
-		int high = line.length();
-		while (high - low > 1) {
-			offset = (high + low) / 2;
-			int x = textWidth(line, lineOffset, 0, offset, styles, 0, gc, null);
-			int charWidth = textWidth(line, lineOffset, 0, offset + 1, styles, 0, gc, null) - x;
-			if (lineXOffset <= x + charWidth / 2) {
-				high = offset;			
-			}
-			else {
-				low = offset;
-			}
+	int low = -1;
+	int high = line.length();
+	while (high - low > 1) {
+		offset = (high + low) / 2;
+		int x = textWidth(line, lineOffset, 0, offset, styles, 0, gc, null);
+		int charWidth = textWidth(line, lineOffset, 0, offset + 1, styles, 0, gc, null) - x;
+		if (lineXOffset <= x + charWidth / 2) {
+			high = offset;			
 		}
-		offset = high;
+		else {
+			low = offset;
+		}
 	}
+	offset = high;
 	gc.dispose();
 	return offset;	
 }
+
 /**
  * Returns the caret width.
  * <p>
