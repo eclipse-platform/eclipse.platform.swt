@@ -286,10 +286,9 @@ int dragDataReceived ( int widget, int context, int x, int y, int data, int info
 }
 
 int dragLeave ( int widget, int context, int time){
+	updateDragOverHover(0, null);
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 	lastOperation = -1;
-	
-	updateDragOverHover(0, null);
 					
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
@@ -304,6 +303,7 @@ int dragLeave ( int widget, int context, int time){
 }
 
 int dragDrop(int widget, int context, int x, int y, int time) {
+	updateDragOverHover(0, null);
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(context, x, y, time, event)) return 0;
 	int allowedOperations = event.operations;
