@@ -407,6 +407,10 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateComboBox (formHandle, null, argList2, argList2.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int [] argList3 = {OS.XmNtextField, 0};
+	OS.XtGetValues (handle, argList3, argList3.length / 2);
+	int [] argList4 = {OS.XmNverifyBell, 0};
+	OS.XtSetValues (argList3 [1], argList4, argList4.length / 2);
 }
 /**
  * Cuts the selected text.
