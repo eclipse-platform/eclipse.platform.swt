@@ -92,7 +92,7 @@ void createHandle () {
 	int actionProc = display.actionProc;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
-	OS.CreateScrollBarControl (window, null, 0, 0, 100, 10, true, actionProc, outControl);
+	OS.CreateScrollBarControl (window, null, 0, 0, 90, 10, true, actionProc, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
 }
