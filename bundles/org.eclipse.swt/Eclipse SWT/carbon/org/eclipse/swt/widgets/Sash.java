@@ -17,8 +17,12 @@ import org.eclipse.swt.events.*;
 
 public class Sash extends Control {
 
+	Cursor sizeCursor;
+
 public Sash (Composite parent, int style) {
 	super (parent, checkStyle (style));
+	int cursorStyle = (style & SWT.VERTICAL) != 0 ? SWT.CURSOR_SIZEWE : SWT.CURSOR_SIZENS;
+	sizeCursor = new Cursor (getDisplay (), cursorStyle);
 }
 
 public void addSelectionListener(SelectionListener listener) {
@@ -123,11 +127,21 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+void releaseWidget () {
+	super.releaseWidget ();
+	if (sizeCursor != null) sizeCursor.dispose ();
+	sizeCursor = null;
+}
+
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
+}
+
+void setDefaultCursor () {
+	setCursor (sizeCursor.handle);
 }
 }
