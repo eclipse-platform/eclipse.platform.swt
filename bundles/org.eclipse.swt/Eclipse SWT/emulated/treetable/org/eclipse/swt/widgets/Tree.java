@@ -630,6 +630,7 @@ public boolean getHeaderVisible () {
  */
 public TreeItem getItem (Point point) {
 	checkWidget ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int index = (point.y - getHeaderHeight ()) / itemHeight - topIndex;
 	if (!(0 <= index && index < availableItems.length)) return null;		/* below the last item */
 	TreeItem result = availableItems [index];
@@ -2758,6 +2759,10 @@ public void setTopItem (TreeItem item) {
  */
 public void showColumn (TreeColumn column) {
 	checkWidget ();
+	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (column.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (column.parent != this) return;
+
 	int x = column.getX ();
 	int rightX = x + column.width;
 	Rectangle bounds = getClientArea ();
