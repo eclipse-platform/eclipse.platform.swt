@@ -30,7 +30,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION</dd>
+ * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION, VIRTUAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection, DefaultSelection</dd>
  * </dl>
