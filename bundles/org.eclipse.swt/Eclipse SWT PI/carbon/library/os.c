@@ -1552,6 +1552,33 @@ JNIEXPORT void JNICALL OS_NATIVE(CGImageRelease)
 }
 #endif
 
+#ifndef NO_CGPostKeyboardEvent
+JNIEXPORT jint JNICALL OS_NATIVE(CGPostKeyboardEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "CGPostKeyboardEvent\n")
+	rc = (jint)CGPostKeyboardEvent((CGCharCode)arg0, (CGKeyCode)arg1, (boolean_t)arg2);
+	NATIVE_EXIT(env, that, "CGPostKeyboardEvent\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_CGPostMouseEvent
+JNIEXPORT jint JNICALL OS_NATIVE(CGPostMouseEvent)
+	(JNIEnv *env, jclass that, jobject arg0, jboolean arg1, jint arg2, jboolean arg3)
+{
+	CGPoint _arg0, *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "CGPostMouseEvent\n")
+	if (arg0) lparg0 = getCGPointFields(env, arg0, &_arg0);
+	rc = (jint)CGPostMouseEvent(*lparg0, (boolean_t)arg1, (CGButtonCount)arg2, (boolean_t)arg3);
+	if (arg0) setCGPointFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "CGPostMouseEvent\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CGWarpMouseCursorPosition
 JNIEXPORT jint JNICALL OS_NATIVE(CGWarpMouseCursorPosition)
 	(JNIEnv *env, jclass that, jobject arg0)

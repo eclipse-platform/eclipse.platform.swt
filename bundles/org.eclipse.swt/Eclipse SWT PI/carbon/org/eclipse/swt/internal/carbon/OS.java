@@ -772,6 +772,8 @@ public static final native int CGImageGetColorSpace (int image);
 public static final native int CGImageGetHeight (int image);
 public static final native int CGImageGetWidth (int image);
 public static final native void CGImageRelease (int image);
+public static final native int CGPostMouseEvent(CGPoint mouseCursorPosition, boolean updateMouseCursorPosition, int buttonCount, boolean mouseButtonDown);
+public static final native int CGPostKeyboardEvent(int keyChar, int virtualKey, boolean keyDown);
 public static final native int CGWarpMouseCursorPosition (CGPoint newCursorPosition);
 public static final native int CallNextEventHandler(int nextHandler, int eventRefHandle);
 public static final native short CharWidth(short c);

@@ -179,10 +179,10 @@ public class Display extends Device {
 	static int [] [] KeyTable = {
 
 		/* Keyboard and Mouse Masks */
-//		{??,	SWT.ALT},
-//		{??,	SWT.SHIFT},
-//		{??,	SWT.CONTROL},
-//		{??,	SWT.COMMAND},
+		{58,	SWT.ALT},
+		{56,	SWT.SHIFT},
+		{59,	SWT.CONTROL},
+		{55,	SWT.COMMAND},
 
 		/* Non-Numeric Keypad Keys */
 		{126,	SWT.ARROW_UP},
@@ -1697,9 +1697,75 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-public boolean post (Event event) {
+public boolean post(Event event) {
 	checkDevice ();
 	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	int type = event.type;
+	switch (type) {
+		case SWT.KeyDown :
+		case SWT.KeyUp : {
+			int vKey = Display.untranslateKey (event.keyCode);
+			if (vKey != 0) {
+				return OS.CGPostKeyboardEvent (0, vKey, type == SWT.KeyDown) == 0;
+			} else {
+				vKey = -1;
+				int code = -1, kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
+				char key = event.character;
+				int [] state = new int [1];
+				for (int i = 0 ; i <= 0x7F ; i++) {
+					int result = OS.KeyTranslate (kchrPtr, (short) i, state);
+					if (result <= 0x7f) {
+						code = result & 0x7f;
+					} else {
+						int [] encoding = new int [1];
+						short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
+						short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
+						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
+							if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
+								encoding [0] = OS.kTextEncodingMacRoman;
+							}
+						}
+						int [] encodingInfo = new int [1];
+						OS.CreateTextToUnicodeInfoByEncoding (encoding [0], encodingInfo);
+						if (encodingInfo [0] != 0) {
+							char [] chars = new char [1];
+							int [] nchars = new int [1];
+							byte [] buffer = new byte [2];
+							buffer [0] = 1;
+							buffer [1] = (byte) (result & 0xFF);
+							OS.ConvertFromPStringToUnicode (encodingInfo [0], buffer, chars.length * 2, nchars, chars);
+							OS.DisposeTextToUnicodeInfo (encodingInfo);
+							code = chars [0];
+						}
+					}
+					if (code == key) {
+						vKey = i;
+						break;
+					}
+				}
+				if (vKey == -1) return false;
+				return OS.CGPostKeyboardEvent (key, vKey, type == SWT.KeyDown) == 0;
+			}
+		}
+		case SWT.MouseDown :
+		case SWT.MouseMove : 
+		case SWT.MouseUp : {
+			CGPoint mouseCursorPosition = new CGPoint ();
+			if (type == SWT.MouseMove) {
+				mouseCursorPosition.x = event.x;
+				mouseCursorPosition.y = event.y;
+				int chord = OS.GetCurrentEventButtonState ();
+				return OS.CGPostMouseEvent (mouseCursorPosition, true, 1, ((chord & 0x1) != 0)) == 0;
+			} else {
+				if (event.button != 1) return false;
+				org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+				OS.GetGlobalMouse (pt);
+				mouseCursorPosition.x = pt.h;
+				mouseCursorPosition.y = pt.v;
+				return OS.CGPostMouseEvent (mouseCursorPosition, true, 1, type == SWT.MouseDown) == 0;
+			}
+		}
+	} 
 	return false;
 }
 
