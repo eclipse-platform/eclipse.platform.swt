@@ -23,7 +23,7 @@ import org.eclipse.swt.widgets.*;
 
 public class Snippet151 {
 
-static int[] values = new int[0];
+static int[] data = new int[0];
 
 public static void main (String [] args) {
 	final Display display = new Display ();
@@ -34,7 +34,7 @@ public static void main (String [] args) {
 		public void handleEvent(Event e) {
 			TableItem item = (TableItem)e.item;
 			int index = table.indexOf(item);
-			item.setText("item "+values[index]);
+			item.setText("Item "+data[index]);
 		}
 	});
 	Thread thread = new Thread() {
@@ -45,18 +45,18 @@ public static void main (String [] args) {
 				if (table.isDisposed()) return;
 				// add 10 random numbers to array and sort
 				int grow = 10;
-				int[] newValues = new int[values.length + grow];
-				System.arraycopy(values, 0, newValues, 0, values.length);
-				int index = values.length;
-				values = newValues;
+				int[] newData = new int[data.length + grow];
+				System.arraycopy(data, 0, newData, 0, data.length);
+				int index = data.length;
+				data = newData;
 				for (int j = 0; j < grow; j++) {
-					values[index++] = random.nextInt();
+					data[index++] = random.nextInt();
 				}
-				Arrays.sort(values);
+				Arrays.sort(data);
 				display.syncExec(new Runnable() {
 					public void run() {
 						if (table.isDisposed()) return;
-						table.setItemCount(values.length);
+						table.setItemCount(data.length);
 						table.clearAll();
 					}
 				});
