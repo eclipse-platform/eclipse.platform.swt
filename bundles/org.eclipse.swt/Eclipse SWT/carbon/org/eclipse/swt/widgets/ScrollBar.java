@@ -427,7 +427,7 @@ boolean isDrawing (int control) {
 	* Note: During resize IsControlVisible() returns true allowing the
 	* clipping to be properly calculated.
 	*/
-	return getVisible () && getDrawCount (control) == 0;
+	return isVisible () && getDrawCount (control) == 0;
 }
 
 /**
