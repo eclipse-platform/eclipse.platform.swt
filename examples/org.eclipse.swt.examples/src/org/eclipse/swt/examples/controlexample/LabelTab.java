@@ -18,7 +18,7 @@ class LabelTab extends AlignableTab {
 	Group textLabelGroup, imageLabelGroup;
 
 	/* Style widgets added to the "Style" group */
-	Button separatorButton, wrapButton, horizontalButton, verticalButton, shadowInButton, shadowOutButton;
+	Button wrapButton, separatorButton, horizontalButton, verticalButton, shadowInButton, shadowOutButton, shadowNoneButton;
 	
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -57,12 +57,13 @@ class LabelTab extends AlignableTab {
 		
 		/* Compute the widget style */
 		int style = SWT.NONE;
-		if (separatorButton.getSelection ()) style |= SWT.SEPARATOR;
 		if (wrapButton.getSelection ()) style |= SWT.WRAP;
+		if (separatorButton.getSelection ()) style |= SWT.SEPARATOR;
 		if (horizontalButton.getSelection ()) style |= SWT.HORIZONTAL;
 		if (verticalButton.getSelection ()) style |= SWT.VERTICAL;
 		if (shadowInButton.getSelection ()) style |= SWT.SHADOW_IN;
 		if (shadowOutButton.getSelection ()) style |= SWT.SHADOW_OUT;
+		if (shadowNoneButton.getSelection ()) style |= SWT.SHADOW_NONE;
 		if (borderButton.getSelection ()) style |= SWT.BORDER;
 		if (leftButton.getSelection ()) style |= SWT.LEFT;
 		if (centerButton.getSelection ()) style |= SWT.CENTER;
@@ -94,10 +95,10 @@ class LabelTab extends AlignableTab {
 		super.createStyleGroup ();
 		
 		/* Create the extra widgets */
-		separatorButton = new Button (styleGroup, SWT.CHECK);
-		separatorButton.setText ("SWT.SEPARATOR");
 		wrapButton = new Button (styleGroup, SWT.CHECK);
 		wrapButton.setText ("SWT.WRAP");
+		separatorButton = new Button (styleGroup, SWT.CHECK);
+		separatorButton.setText ("SWT.SEPARATOR");
 		horizontalButton = new Button (styleGroup, SWT.RADIO);
 		horizontalButton.setText ("SWT.HORIZONTAL");
 		verticalButton = new Button (styleGroup, SWT.RADIO);
@@ -108,6 +109,8 @@ class LabelTab extends AlignableTab {
 		shadowInButton.setText ("SWT.SHADOW_IN");
 		shadowOutButton = new Button (styleSubGroup, SWT.RADIO);
 		shadowOutButton.setText ("SWT.SHADOW_OUT");
+		shadowNoneButton = new Button (styleSubGroup, SWT.RADIO);
+		shadowNoneButton.setText ("SWT.SHADOW_NONE");
 		borderButton = new Button(styleGroup, SWT.CHECK);
 		borderButton.setText("SWT.BORDER");
 	
@@ -122,6 +125,7 @@ class LabelTab extends AlignableTab {
 		};
 		shadowInButton.addSelectionListener (selectionListener);
 		shadowOutButton.addSelectionListener (selectionListener);
+		shadowNoneButton.addSelectionListener (selectionListener);
 	}
 	
 	/**
@@ -165,13 +169,17 @@ class LabelTab extends AlignableTab {
 		centerButton.setSelection (!isSeparator && (label1.getStyle () & SWT.CENTER) != 0);
 		rightButton.setSelection (!isSeparator && (label1.getStyle () & SWT.RIGHT) != 0);
 		shadowInButton.setSelection (isSeparator && (label1.getStyle () & SWT.SHADOW_IN) != 0);
-		shadowOutButton.setSelection (!shadowInButton.getSelection ());
+		shadowOutButton.setSelection (isSeparator && (label1.getStyle () & SWT.SHADOW_OUT) != 0);
+		shadowNoneButton.setSelection (isSeparator && (label1.getStyle () & SWT.SHADOW_NONE) != 0);
+		horizontalButton.setSelection (isSeparator && (label1.getStyle () & SWT.HORIZONTAL) != 0);
+		verticalButton.setSelection (isSeparator && (label1.getStyle () & SWT.VERTICAL) != 0);		
 		wrapButton.setEnabled (!isSeparator);
 		leftButton.setEnabled (!isSeparator);
 		centerButton.setEnabled (!isSeparator);
 		rightButton.setEnabled (!isSeparator);
 		shadowInButton.setEnabled (isSeparator);
 		shadowOutButton.setEnabled (isSeparator);
+		shadowNoneButton.setEnabled (isSeparator);
 		horizontalButton.setEnabled (isSeparator);
 		verticalButton.setEnabled (isSeparator);
 	}
