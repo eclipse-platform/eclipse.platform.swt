@@ -585,7 +585,6 @@ public boolean forceFocus () {
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible () || !isActive ()) return false;
 	if (isFocusControl ()) return true;
-	shell.bringToTop ();
 	/*
 	* This code is intentionally commented.
 	*
