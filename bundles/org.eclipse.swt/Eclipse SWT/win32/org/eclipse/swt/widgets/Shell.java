@@ -1574,6 +1574,12 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 					OS.GetClientRect (handle, rect);
 					if (OS.PtInRect (rect, pt)) {
 						OS.SetCursor (cursor.handle);
+						switch (msg) {
+							case OS.WM_LBUTTONDOWN:
+							case OS.WM_RBUTTONDOWN:
+							case OS.WM_MBUTTONDOWN:
+								OS.MessageBeep (OS.MB_OK);
+						}
 						return LRESULT.ONE;
 					}
 				}
