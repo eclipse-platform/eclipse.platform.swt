@@ -458,14 +458,20 @@ public void removeSelectionListener(SelectionListener listener) {
 
 void resizeControl () {
 	if (control != null && !control.isDisposed ()) {
+		/*
+		* Set the size and location of the control
+		* separately to minimize flashing in the
+		* case where the control does not resize
+		* to the size that was requested.  This
+		* case can occur when the control is a
+		* combo box.
+		*/
 		Rectangle itemRect = getBounds ();
-		control.setBounds (itemRect);
+		control.setSize (itemRect.width, itemRect.height);
 		Rectangle rect = control.getBounds ();
-		if (!rect.equals (itemRect)) {
-			rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
-			rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
-			control.setBounds (rect);
-		}
+		rect.x = itemRect.x + (itemRect.width - rect.width) / 2;
+		rect.y = itemRect.y + (itemRect.height - rect.height) / 2;
+		control.setLocation (rect.x, rect.y);
 	}
 }
 
