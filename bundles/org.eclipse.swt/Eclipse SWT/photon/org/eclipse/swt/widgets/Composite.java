@@ -171,6 +171,7 @@ void createScrollBars () {
 
 public boolean forceFocus () {
 	checkWidget();
+	if ((state & CANVAS) == 0) return super.forceFocus ();
 	/*
 	* Bug in Photon. PtContainerGiveFocus() is supposed to give
 	* focus to the widget even if the widget's Pt_GET_FOCUS flag
