@@ -1,6 +1,6 @@
 /*******************************************************************************
  * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
+ * All rights reserved. This program and the accompanying materials 
  * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
@@ -362,9 +362,15 @@ public void setAlignment (int alignment) {
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
-	int [] argList = {OS.XmNlabelType, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmPIXMAP) setBitmap (image);
+	if (formHandle != 0) {
+		int [] argList1 = {OS.XmNforeground, 0, OS.XmNhighlightColor, 0};
+		OS.XtGetValues (formHandle, argList1, argList1.length / 2);
+		OS.XmChangeColor (formHandle, pixel);
+		OS.XtSetValues (formHandle, argList1, argList1.length / 2);
+	}
+	int [] argList2 = {OS.XmNlabelType, 0};
+	OS.XtGetValues (handle, argList2, argList2.length / 2);
+	if (argList2 [1] == OS.XmPIXMAP) setBitmap (image);
 }
 void setBitmap (Image image) {
 	int labelPixmap = OS.XmUNSPECIFIED_PIXMAP;
@@ -493,7 +499,6 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
-
 	/*
 	* Bug in Motif.  The widget will not receive mouse events, if the
 	* label string is empty.  The fix is to detect that and set a single
