@@ -340,7 +340,7 @@ abstract int callWindowProc (int msg, int wParam, int lParam);
 void checkMirrored () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
-		if ((bits & OS.LAYOUT_RTL) != 0) style |= SWT.MIRRORED;
+		if ((bits & OS.WS_EX_LAYOUTRTL) != 0) style |= SWT.MIRRORED;
 	}
 }
 
