@@ -27,64 +27,14 @@ public class CTabItem extends Item {
 	private static final String ellipsis = "...";
 	
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Table</code>) and a style value
- * describing its behavior and appearance. The item is added
- * to the end of the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a CTabFolder which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#getStyle
+ * Construct a CTabItem with the specified parent and style.
  */
 public CTabItem (CTabFolder parent, int style) {
 	this(parent, style, parent.getItemCount());
 }
 /**
- * Constructs a new instance of this class given its parent
- * (which must be a <code>Table</code>), a style value
- * describing its behavior and appearance, and the index
- * at which to place it in the items maintained by its parent.
- * <p>
- * The style value is either one of the style constants defined in
- * class <code>SWT</code> which is applicable to instances of this
- * class, or must be built by <em>bitwise OR</em>'ing together 
- * (that is, using the <code>int</code> "|" operator) two or more
- * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
- * </p>
- *
- * @param parent a CTabFolder which will be the parent of the new instance (cannot be null)
- * @param style the style of control to construct
- * @param index the index to store the receiver in its parent
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- * </ul>
- *
- * @see SWT
- * @see Widget#getStyle
+ * Construct a CTabItem with the specified parent and style, inserted at
+ * the specified index.
  */
 public CTabItem (CTabFolder parent, int style, int index) {
 	super (parent, checkStyle(style));
@@ -95,8 +45,8 @@ private static int checkStyle(int style) {
 }
 
 public void dispose () {
-	super.dispose();
 	if (isDisposed()) return;
+	super.dispose();
 	parent.destroyItem(this);
 	parent = null;
 	control = null;
@@ -104,24 +54,14 @@ public void dispose () {
 }
 
 /**
- * Returns a rectangle describing the receiver's size and location
- * relative to its parent.
- *
- * @param index the index that specifies the column
- * @return the receiver's bounding column rectangle
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
+ * Return the bounds of the CTabItem.
  */
 public Rectangle getBounds () {
-	checkWidget();
 	return new Rectangle(x, y, width, height);
 }
 /**
-* Gets the control that is displayed in the content are of the tab item.
-*
+* Gets the control.
+* <p>
 * @return the control
 *
 * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
@@ -130,54 +70,35 @@ public Rectangle getBounds () {
 *	when the widget has been disposed
 */
 public Control getControl () {
-	checkWidget();
 	return control;
 }
+/**
+ * Answer the display of the receiver's parent widget.
+ */
 public Display getDisplay() {
 	if (parent == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay();
 }
-/**
- * Get the image displayed in the tab if the tab is disabled.
- * 
- * @return the disabled image or null
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
 public Image getDisabledImage(){
-	checkWidget();
 	return disabledImage;
 }
 /**
- * Returns the receiver's parent, which must be a <code>CTabFolder</code>.
- *
- * @return the receiver's parent
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
+ * Return the parent of the CTabItem.
  */
 public CTabFolder getParent () {
-	checkWidget();
 	return parent;
 }
 /**
- * Returns the receiver's tool tip text, or null if it has
- * not been set.
+ * Gets the tool tip text.
+ * <p>
+ * @return the tool tip text.
  *
- * @return the receiver's tool tip text
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
+ * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
+ *	when called from the wrong thread
+ * @exception SWTError(ERROR_WIDGET_DISPOSED)
+ *	when the widget has been disposed
  */
 public String getToolTipText () {
-	checkWidget();
 	return toolTipText;
 }
 /**
@@ -434,7 +355,6 @@ int preferredWidth(GC gc) {
  * </ul>
  */
 public void setControl (Control control) {
-	checkWidget();
 	if (control != null) {
 		if (control.isDisposed()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.getParent() != parent) SWT.error (SWT.ERROR_INVALID_PARENT);
@@ -454,7 +374,6 @@ public void setControl (Control control) {
 	}
 }	
 public void setImage (Image image) {
-	checkWidget();
 	if (image != null && image.equals(getImage())) return;
 	int oldHeight = parent.getTabHeight();
 	super.setImage(image);
@@ -465,19 +384,7 @@ public void setImage (Image image) {
 		parent.redraw();
 	}
 }
-/**
- * Sets the image that is displayed if the tab item is disabled.
- * Null will clear the image.
- * 
- * @param image the image to be displayed when the item is disabled or null
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
 public void setDisabledImage (Image image) {
-	checkWidget();
 	if (image != null && image.equals(getDisabledImage())) return;
 	disabledImage = image;
 	parent.redraw();
@@ -500,25 +407,25 @@ public void setDisabledImage (Image image) {
  * </ul>
  */
 public void setText (String string) {
-	checkWidget();
 	if (string.equals(getText())) return;
 	super.setText(string);
 	parent.layoutItems();
 	parent.redraw();	
 }
+
 /**
- * Sets the receiver's tool tip text to the argument, which
- * may be null indicating that no tool tip text should be shown.
- *
+ * Sets the tool tip text.
+ * <p>
  * @param string the new tool tip text (or null)
  *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
+ * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
+ *	when called from the wrong thread
+ * @exception SWTError(ERROR_WIDGET_DISPOSED)
+ *	when the widget has been disposed
  */
 public void setToolTipText (String string) {
-	checkWidget();
 	toolTipText = string;
 }
+
+
 }
