@@ -6,7 +6,6 @@ package org.eclipse.swt.graphics;
  */
 
 import org.eclipse.swt.*;
-import java.util.Locale;
  
 /**
  * Instances of this class describe operating system fonts.
