@@ -301,14 +301,15 @@ public class OS {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Cursors
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
-	public static final short iBeamCursor= 1;
-	public static final short crossCursor= 2;
-	public static final short plusCursor= 3;
-	public static final short watchCursor= 4;
-	
-	public static native int GetCCursor(short id);
-	public static native void SetCCursor(int cursorHandle);
-	public static native void DisposeCCursor(int cursorHandle);
+    public static final short iBeamCursor = 1;
+    public static final short crossCursor = 2;
+    public static final short plusCursor = 3;
+    public static final short watchCursor = 4;
+
+	public static native void InitCursor();
+	public static native int NewCursor(short hotX, short hotY, short[] data, short[] mask);
+	public static native int GetCursor(short id);
+	public static native void SetCursor(int cursor);
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// QuickDraw
@@ -1205,10 +1206,8 @@ public class OS {
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Misc
 	//////////////////////////////////////////////////////////////////////////////////////////////////
-	public static native void Init();
 	//public static native void ExitToShell();
-    public static native void InitCursor();
-	public static native short HiWord(int doubleWord);
+ 	public static native short HiWord(int doubleWord);
 	public static native short LoWord(int doubleWord);
 	public static native void installQuitHandler(Object target, String method);
 	public static native void SysBeep(short duration);

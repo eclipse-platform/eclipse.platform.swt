@@ -32,7 +32,51 @@ import org.eclipse.swt.events.*;
 public /*final*/ class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
-	int cursor;
+
+	private static int H_ARROW;
+	private static int V_ARROW;
+	
+	static {
+		short[] h= new short[] {
+				(short) 0x0300,
+			 	(short) 0x0300,
+				(short) 0x0300,
+			 	(short) 0x0300,
+			 	(short) 0x0300,
+			 	(short) 0x2310,
+			 	(short) 0x6318,
+			 	(short) 0xFB7C,
+			 	(short) 0x6318,
+			 	(short) 0x2310,
+			 	(short) 0x0300,
+			 	(short) 0x0300,
+			 	(short) 0x0300,
+			 	(short) 0x0300,
+			 	(short) 0x0300,
+			 	(short) 0x0000
+			};
+		H_ARROW= OS.NewCursor((short)6, (short)7, h, h);
+		
+		h= new short[] {
+				(short) 0x0100,
+			 	(short) 0x0380,
+				(short) 0x07C0,
+			 	(short) 0x0100,
+			 	(short) 0x0100,
+			 	(short) 0x0000,
+			 	(short) 0xFFFE,
+			 	(short) 0xFFFE,
+			 	(short) 0x0000,
+			 	(short) 0x0100,
+			 	(short) 0x0100,
+			 	(short) 0x07C0,
+			 	(short) 0x0380,
+			 	(short) 0x0100,
+			 	(short) 0x0000,
+			 	(short) 0x0000
+			};
+		V_ARROW= OS.NewCursor((short)7, (short)6, h, h);
+	}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -130,7 +174,9 @@ void createHandle (int index) {
 	handle = MacUtil.createDrawingArea(parent.handle, 0, 0, border);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
-
+int defaultBackground () {
+	return getDisplay ().labelBackground;
+}
 void drawBand (int x, int y, int width, int height) {
 
 	MacRect bounds= new MacRect();
@@ -143,7 +189,6 @@ void drawBand (int x, int y, int width, int height) {
 	OS.InvertRect((short)x, (short)y, (short)width, (short)height);
 	OS.SetPort(port);
 }
-
 void hookEvents () {
 	super.hookEvents ();
 	Display display= getDisplay();		
@@ -182,6 +227,8 @@ int processMouseDown (Object callData) {
 }
 int processMouseMove (Object callData) {
 	super.processMouseMove (callData);
+	
+	OS.SetCursor((style & SWT.VERTICAL) != 0 ? H_ARROW : V_ARROW);
 
 	MacEvent mEvent= (MacEvent) callData;
 
@@ -239,46 +286,29 @@ int processMouseUp (Object callData) {
 	return 0;
 }
 int processPaint (Object callData) {
-	Point e= getSize();
+	
 	GC gc= new GC(this);
-	gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
-	if (e.x < e.y) {	// vertical
-		gc.fillRectangle ((e.x-1)/2, (e.y-20)/2, 1, 20);
-	} else {	// horizontal
-		gc.fillRectangle ((e.x-20)/2, (e.y-1)/2, 20, 1);
+	MacControlEvent me= (MacControlEvent) callData;
+	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
+	
+	if (! r.isEmpty()) {
+		Point e= getSize();
+		
+		// erase background
+		gc.fillRectangle(0, 0, e.x, e.y);
+		
+		gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_GRAY));
+		if (e.x < e.y) {	// vertical
+			gc.fillRectangle ((e.x-1)/2, (e.y-20)/2, 1, 20);
+		} else {			// horizontal
+			gc.fillRectangle ((e.x-20)/2, (e.y-1)/2, 20, 1);
+		}
 	}
+	
+	gc.carbon_unfocus();
 	gc.dispose();
-	/*
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	OS.DrawThemeSeparator(bounds.getData(), OS.kThemeStateActive);
-	*/
+	
 	return 0;
-}
-/* AW
-void realizeChildren () {
-	super.realizeChildren ();
-	int window = OS.XtWindow (handle);
-	if (window == 0) return;
-	int display = OS.XtDisplay (handle);
-	if (display == 0) return;
-	if ((style & SWT.HORIZONTAL) != 0) {
-		cursor = OS.XCreateFontCursor (display, OS.XC_sb_v_double_arrow);
-	} else {
-		cursor = OS.XCreateFontCursor (display, OS.XC_sb_h_double_arrow);
-	}
-	OS.XDefineCursor (display, window, cursor);
-}
-*/
-void releaseWidget () {
-	super.releaseWidget ();
-    /* AW
-	if (cursor != 0) {
-		int display = OS.XtDisplay (handle);
-		if (display != 0) OS.XFreeCursor (display, cursor);
-	}
-    */
-	cursor = 0;
 }
 /**
  * Removes the listener from the collection of listeners who will

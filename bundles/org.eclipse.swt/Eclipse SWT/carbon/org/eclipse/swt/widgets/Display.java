@@ -233,6 +233,7 @@ public class Display extends Device {
 	private boolean fInContextMenu;	// true while tracking context menu
 	
 	private static boolean fgCarbonInitialized;
+	private static boolean fgInitCursorCalled;
 	/* end AW */
 	
 	/*
@@ -415,7 +416,7 @@ void createDisplay (DeviceData data) {
 		if (!fgCarbonInitialized) {
 			OS.RegisterAppearanceClient();
 			OS.TXNInitTextension();
-			OS.InitCursor();
+			//OS.InitCursor();
 			OS.QDSwapTextFlags(OS.kQDUseCGTextRendering + OS.kQDUseCGTextMetrics);
 			if (OS.InitContextualMenus() != OS.kNoErr)
 				System.out.println("Display.createDisplay: error in OS.InitContextualMenus");
@@ -1117,6 +1118,12 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	
+	if (!fgInitCursorCalled) {
+		OS.InitCursor();
+		fgInitCursorCalled= true;
+	}
+	
 	int[] evt= new int[1];
 	int rc= OS.ReceiveNextEvent(null, OS.kEventDurationNoWait, true, evt);
 	
@@ -2098,6 +2105,19 @@ static String convertToLf(String text) {
 				}
 				
 				fCurrentControl= whichControl;
+				
+				int cursor= 0;
+				Widget w= findWidget(fCurrentControl);
+				if (w instanceof Control) {
+					Control c= (Control) w;
+					if (c.fCursor != null && c.fCursor.handle != -1)
+						cursor= c.fCursor.handle;
+				}
+				if (cursor == 0)
+					OS.InitCursor();
+				else
+					OS.SetCursor(cursor);
+				
 				windowProc(fCurrentControl, SWT.MouseMove, me);
 				
 				if (fCurrentControl != 0) {

@@ -904,19 +904,32 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMainEventQueue
 
 //---- Cursors
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCCursor(JNIEnv *env, jclass zz,
-			jshort id) {
-	return (jint) GetCCursor((SInt16)id);
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCursor(JNIEnv *env, jclass zz,
+		jshort id) {
+	return (jint) GetCursor(id);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetCCursor(JNIEnv *env, jclass zz,
-			jint cursorHandle) {
-	SetCCursor((CCrsrHandle)cursorHandle);
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewCursor(JNIEnv *env, jclass zz,
+		jshort hotX, jshort hotY, jshortArray data, jshortArray mask) {
+	
+	jshort *sa= (*env)->GetShortArrayElements(env, data, 0);
+	jshort *sb= (*env)->GetShortArrayElements(env, mask, 0);
+
+	Cursor *c= (Cursor*) NewPtrClear(sizeof(Cursor));
+	memcpy(&c->data, sa, sizeof (Bits16));
+	memcpy(&c->mask, sb, sizeof (Bits16));
+	c->hotSpot.h= hotX;
+	c->hotSpot.v= hotY;
+
+	(*env)->ReleaseShortArrayElements(env, data, sa, 0);
+	(*env)->ReleaseShortArrayElements(env, mask, sb, 0);
+	
+	return (jint) c;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeCCursor(JNIEnv *env, jclass zz,
-			jint cursorHandle) {
-	DisposeCCursor((CCrsrHandle)cursorHandle);
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetCursor(JNIEnv *env, jclass zz,
+			jint cursor) {
+	SetCursor((const Cursor*)cursor);
 }
 
 //---- GrafPort
@@ -945,19 +958,19 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPortWindowPort
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EraseRect(JNIEnv *env, jclass zz, jshortArray bounds) {
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
+	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
 	EraseRect((Rect*) sa);
 	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrameRect(JNIEnv *env, jclass zz, jshortArray bounds) {
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
+	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
 	FrameRect((Rect*) sa);
 	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PaintRect(JNIEnv *env, jclass zz, jshortArray bounds) {
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
+	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
 	PaintRect((Rect*) sa);
 	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
 }

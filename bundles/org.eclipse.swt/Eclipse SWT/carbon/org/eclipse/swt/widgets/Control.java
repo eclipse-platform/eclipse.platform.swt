@@ -36,9 +36,11 @@ public abstract class Control extends Widget implements Drawable {
 	String toolTipText;
 	Object layoutData;
 	Accessible accessible;
+	
 	// AW
 	int fDrawCount= 0;
 	boolean fVisible= true;
+	Cursor fCursor;
 	// AW
 
 Control () {
@@ -1952,15 +1954,22 @@ public void setCursor (Cursor cursor) {
 		window = OS.XtWindow (handle);
 		if (window == 0) return;
 	}
+	*/
+	System.out.println("Control.setCursor: " + cursor);
 	if (cursor == null) {
+		/*
 		OS.XUndefineCursor (display, window);
+		*/
+		fCursor= null;
 	} else {
 		if (cursor.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		fCursor= cursor;
+		/*
 		int xCursor = cursor.handle;
 		OS.XDefineCursor (display, window, xCursor);
 		OS.XFlush (display);
+		*/
 	}
-    */
 }
 /**
  * Enables the receiver if the argument is <code>true</code>,
