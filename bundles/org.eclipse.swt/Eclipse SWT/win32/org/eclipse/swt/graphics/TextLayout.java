@@ -854,7 +854,9 @@ public int[] getLineOffsets () {
 	checkLayout();
 	computeRuns(null);
 	int[] offsets = new int[lineOffset.length];
-	System.arraycopy(lineOffset, 0, offsets, 0, offsets.length);
+	for (int i = 0; i < offsets.length; i++) {
+		offsets[i] = untranslateOffset(lineOffset[i]);
+	}
 	return offsets;
 }
 
