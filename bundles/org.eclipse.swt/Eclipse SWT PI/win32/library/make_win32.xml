@@ -18,9 +18,6 @@
 <!-- Build swt.dll for Windows -->
 <target name="build_win32_dll" depends="init">
 	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat" output="${log_dir}/build_log.txt">
-	<arg line="clean"/>
-	</exec>
-	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat" output="${log_dir}/build_log.txt">
 	</exec>
 	<copy todir="${dll_destdir}">
 		<fileset dir="${basedir}\bin\library\" includes="*.dll"/>
@@ -43,6 +40,12 @@
 <!-- Output .dlls for these platforms into the org.eclipse.swt.win32/os directory -->
 <!--        .log files from the compilers in the org.eclipse.swt/ directory       -->  
 <target name="build_dll" depends="build_win32_dll,build_win32_ce_dll">
+</target>
+
+<target name="clean" depends="init">
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build.bat" output="${log_dir}/build_log.txt">
+	<arg line="clean"/>
+	</exec>
 </target>
 	
 </project>
