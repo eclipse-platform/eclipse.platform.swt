@@ -6861,7 +6861,7 @@ JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTabListInsertTabs
  * Method:    XChangeActivePointerGrab
  * Signature: (IIII)V
  */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XChangeActivePointerGrab
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XChangeActivePointerGrab
   (JNIEnv *env, jclass that, jint display, jint eventMask, jint cursor, jint time)
 {
 #ifdef DEBUG_CALL_PRINTS
@@ -6869,7 +6869,7 @@ JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_motif_OS_XmTabListInsertTabs
 #endif
     XChangeActivePointerGrab((Display *)display, eventMask, (Cursor)cursor, (Time)time);
 }
-*/
+
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
