@@ -187,7 +187,10 @@ public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
 	};
 	control.addPaintListener(listener);
 	eventOccurred = false;
-	control.notifyListeners(SWT.Paint, new Event());
+	Event event = new Event();
+	GC gc = event.gc = new GC(control);	
+	control.notifyListeners(SWT.Paint, event);
+	gc.dispose();
 	assertTrue(eventOccurred);
 	control.removePaintListener(listener);
 }

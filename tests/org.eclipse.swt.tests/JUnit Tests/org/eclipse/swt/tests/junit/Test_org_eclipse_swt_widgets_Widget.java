@@ -15,6 +15,7 @@ import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.GC;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Widget
@@ -111,7 +112,13 @@ public void test_notifyListenersILorg_eclipse_swt_widgets_Event() {
 	catch (IllegalArgumentException e) {
 	}
 
-	widget.notifyListeners(SWT.Paint, new Event());
+	Event event = new Event();
+	GC gc = null;
+	if (widget instanceof Control) {
+		gc = event.gc = new GC((Control)widget);
+	}
+	widget.notifyListeners(SWT.Paint, event);
+	if (gc != null) gc.dispose();
 }
 
 public void test_removeDisposeListenerLorg_eclipse_swt_events_DisposeListener() {
