@@ -19,13 +19,18 @@ final class LZWCodec {
 		codeSize, clearCode, endCode, newCodes, topSlot, currentSlot,
 		imageWidth, imageHeight, imageX, imageY, pass, line, codeMask, buffer;
 	byte[] block, lineArray;
-	int[] maskTable, stack, suffix, prefix;
+	int[] stack, suffix, prefix;
 	LZWNode[] nodeStack;
 	LEDataInputStream inputStream;
 	LEDataOutputStream outputStream;
 	ImageData image;
 	ImageLoader loader;
 	boolean interlaced;
+	static final int[] maskTable = new int[] {
+		0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F,
+		0xFF, 0x1FF, 0x3FF, 0x7FF, 0xFFF
+	};
+
 /**
  * Decode the input.
  */
@@ -227,10 +232,6 @@ void initializeForDecoding() {
 	currentByte = -1;
 	blockSize = bitsLeft = 0;
 	blockIndex = 0;
-	maskTable = new int[] {
-		0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F,
-		0xFF, 0x1FF, 0x3FF, 0x7FF, 0xFFF
-	};
 	codeMask = maskTable[codeSize - 1];
 	stack = new int[4096];
 	suffix = new int[4096];
@@ -257,10 +258,6 @@ void initializeForEncoding() {
 	blockSize = 255;
 	block = new byte[blockSize];
 	block[0] = (byte)(blockSize - 1);
-	maskTable = new int[] {
-		0x1, 0x3, 0x7, 0xF, 0x1F, 0x3F, 0x7F,
-		0xFF, 0x1FF, 0x3FF, 0x7FF, 0xFFF
-	};
 	nodeStack = new LZWNode[1 << bitsPerPixel];
 	for (int i = 0; i < nodeStack.length; i++) {
 		LZWNode node = new LZWNode();
