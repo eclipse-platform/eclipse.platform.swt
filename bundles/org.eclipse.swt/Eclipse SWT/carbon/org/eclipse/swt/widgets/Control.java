@@ -2220,6 +2220,7 @@ public void setEnabled (boolean enabled) {
  */
 public boolean setFocus () {
 	checkWidget();
+	if ((style & SWT.NO_FOCUS) != 0) return false;
 	return forceFocus ();
 }
 
@@ -2500,7 +2501,7 @@ boolean setTabGroupFocus () {
 
 boolean setTabItemFocus () {
 	if (!isShowing ()) return false;
-	return setFocus ();
+	return forceFocus ();
 }
 
 /**

@@ -54,22 +54,11 @@ public abstract class Widget {
 	Object data;
 	
 	/* Global state flags */
-//	static final int AUTOMATIC		= 1<<0;
-//	static final int ACTIVE			= 1<<1;
-//	static final int GRAB			= 1<<2;
-//	static final int MULTIEXPOSE	= 1<<3;
-//	static final int RESIZEREDRAW	= 1<<4;
-//	static final int WRAP			= 1<<5;
-//	static final int DISABLED		= 1<<6;
-//	static final int HIDDEN			= 1<<7;
-//	static final int FOREGROUND		= 1<<8;
-//	static final int BACKGROUND		= 1<<9;
-	static final int DISPOSED		= 1<<10;
-	static final int HANDLE			= 1<<11;
-	static final int CANVAS			= 1<<12;
-//	static final int MOVED			= 1<<13;
-//	static final int RESIZED		= 1<<14;
-	static final int KEYED_DATA		= 1<<15;
+	static final int DISPOSED		= 1<<0;
+	static final int CANVAS			= 1<<1;
+	static final int KEYED_DATA		= 1<<2;
+	static final int HANDLE			= 1<<3;
+	static final int FOCUS_FORCED	= 1<<4;
 	
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;

@@ -704,7 +704,6 @@ public boolean setFocus () {
 		Control child = children [i];
 		if (child.setFocus ()) return true;
 	}
-	if ((style & SWT.NO_FOCUS) != 0) return false;
 	return super.setFocus ();
 }
 /**
@@ -744,16 +743,6 @@ public void setTabList (Control [] tabList) {
 			Control control = tabList [i];
 			if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
 			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-			/*
-			* This code is intentionally commented.
-			* Tab lists are currently only supported
-			* for the direct children of a composite.
-			*/
-//			Shell shell = control.getShell ();
-//			while (control != shell && control != this) {
-//				control = control.parent;
-//			}
-//			if (control != this) error (SWT.ERROR_INVALID_PARENT);
 			if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
 		}
 		Control [] newList = new Control [tabList.length];
@@ -764,30 +753,18 @@ public void setTabList (Control [] tabList) {
 }
 boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();
-	if ((style & SWT.NO_FOCUS) == 0) {
-		boolean takeFocus = true;
-		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
-		if ((takeFocus || ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0)) && setTabItemFocus ()) {
-			return true;
-		}
+	boolean takeFocus = (style & SWT.NO_FOCUS) == 0;
+	if ((state & CANVAS) != 0) {
+		takeFocus = hooksKeys ();
+		if ((style & SWT.EMBEDDED) != 0) takeFocus = true;
 	}
+	if (takeFocus && setTabItemFocus ()) return true;
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
 		if (child.isTabItem () && child.setTabItemFocus ()) return true;
 	}
 	return false;
-}
-boolean setTabItemFocus () {
-	if ((style & SWT.NO_FOCUS) == 0) {
-		boolean takeFocus = true;
-		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
-		if (takeFocus || (style & SWT.EMBEDDED) != 0) {
-			if (!isShowing ()) return false;
-			if (forceFocus ()) return true;
-		}
-	}
-	return super.setTabItemFocus ();
 }
 int traversalCode (int key, XKeyEvent xEvent) {
 	if ((state & CANVAS) != 0) {

@@ -85,6 +85,7 @@ public Label (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 static int checkStyle (int style) {
+	style |= SWT.NO_FOCUS;
 	if ((style & SWT.SEPARATOR) != 0) {
 		style = checkBits (style, SWT.VERTICAL, SWT.HORIZONTAL, 0, 0, 0, 0);
 		return checkBits (style, SWT.SHADOW_OUT, SWT.SHADOW_IN, SWT.SHADOW_NONE, 0, 0, 0);
@@ -200,16 +201,6 @@ void deregister () {
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	if (formHandle != 0) enableHandle (enabled, formHandle);
-}
-public boolean forceFocus () {
-	checkWidget();
-	int [] argList = new int [] {OS.XmNtraversalOn, 1};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	overrideTranslations ();
-	if (super.forceFocus ()) return true;
-	argList [1] = 0;
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	return false;
 }
 /**
  * Returns a value which describes the position of the
@@ -540,16 +531,5 @@ public void setText (String string) {
 int topHandle () {
 	if (formHandle != 0) return formHandle;
 	return handle;
-}
-int xFocusOut (XFocusChangeEvent xEvent) {
-	int result = super.xFocusOut (xEvent);
-	if (handle == 0) return result;
-	int [] argList = new int [] {OS.XmNtraversalOn, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] != 0) {
-		argList [1] = 0;
-		OS.XtSetValues (handle, argList, argList.length / 2);
-	}
-	return result;
 }
 }

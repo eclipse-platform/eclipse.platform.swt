@@ -80,6 +80,7 @@ public ProgressBar (Composite parent, int style) {
 	super (parent, checkStyle (style | SWT.BORDER));
 }
 static int checkStyle (int style) {
+	style |= SWT.NO_FOCUS;
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {

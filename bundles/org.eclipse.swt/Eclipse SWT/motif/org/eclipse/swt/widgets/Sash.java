@@ -220,13 +220,7 @@ public void setCursor (Cursor cursor) {
 }
 public boolean setFocus () {
 	checkWidget();
-	int [] argList = new int [] {OS.XmNtraversalOn, 1};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	overrideTranslations ();
-	if (super.setFocus ()) return true;
-	argList [1] = 0;
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	return false;
+	return forceFocus ();
 }
 int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatch) {
 	int result = super.XButtonPress (w, client_data, call_data, continue_to_dispatch);
@@ -295,13 +289,6 @@ int xFocusIn (XFocusChangeEvent xEvent) {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	lastX = argList [1];
 	lastY = argList [3];
-	return result;
-}
-int xFocusOut (XFocusChangeEvent xEvent) {
-	int result = super.xFocusOut (xEvent);
-	if (handle == 0) return result;
-	int [] argList = new int [] {OS.XmNtraversalOn, 0};
-	OS.XtSetValues (handle, argList, argList.length / 2);
 	return result;
 }
 int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) {	

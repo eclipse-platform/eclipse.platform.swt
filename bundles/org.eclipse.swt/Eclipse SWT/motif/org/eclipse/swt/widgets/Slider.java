@@ -163,6 +163,7 @@ void createHandle (int index) {
 		OS.XmNhighlightThickness, display.textHighlightThickness,
 		OS.XmNborderWidth, (style & SWT.BORDER) != 0 ? 1 : 0,
 		OS.XmNorientation, ((style & SWT.H_SCROLL) != 0) ? OS.XmHORIZONTAL : OS.XmVERTICAL,
+		OS.XmNtraversalOn, 1,
 	};
 	int parentHandle = parent.handle;
 	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
