@@ -194,7 +194,7 @@ public class Display extends Device {
 		{OS.XK_KP_Home,		SWT.HOME},
 		{OS.XK_End,			SWT.END},
 		{OS.XK_KP_End,		SWT.END},
-		{OS.XK_KP_Insert,	SWT.INSERT},
+		{OS.XK_Insert,		SWT.INSERT},
 		{OS.XK_KP_Insert,	SWT.INSERT},
 		
 		/* Virtual and Ascii Keys */
