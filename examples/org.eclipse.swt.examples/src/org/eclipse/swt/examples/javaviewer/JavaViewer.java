@@ -101,7 +101,7 @@ void displayError(String msg) {
 
 public static void main (String [] args) {
 	Display display = new Display();
-	JavaViewer example = new JavaViewer ();
+	final JavaViewer example = new JavaViewer ();
 	Shell shell = example.open (display);
 	while (!shell.isDisposed ())
 		if (!display.readAndDispatch ()) display.sleep ();
@@ -118,18 +118,22 @@ public Shell open (Display display) {
 }
 
 void openFile() {	
-	final String textString;
 	if (fileDialog == null) {
 		fileDialog = new FileDialog(shell, SWT.OPEN);
 	}
 
 	fileDialog.setFilterExtensions(new String[] {"*.java", "*.*"});
-	fileDialog.open();
-	String name = fileDialog.getFileName();
+	String name = fileDialog.open();
+	
+	open(name);
+}
+
+void open(String name) {
+	final String textString;
 	
 	if ((name == null) || (name.length() == 0)) return;
 
-	File file = new File(fileDialog.getFilterPath(), name);
+	File file = new File(name);
 	if (!file.exists()) {
 		String message = MessageFormat.format(resources.getString("Err_file_no_exist"), new String[] {file.getName()});
 		displayError(message);
