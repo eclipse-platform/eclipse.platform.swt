@@ -6,7 +6,7 @@
 </head>
 <body>
 
-<h2>Standard Widget Toolkit (SWT) Standalone Example - Image Analyzer</h2>
+<h2>SWT Standalone Example - Image Analyzer</h2>
 
 <p>
 The ImageAnalyzer opens image files and displays the visual contents of the file along with a
@@ -16,7 +16,7 @@ blending and can save these changes to a file.
 </p>
 <p>
 The ImageAnalyzer will load and display image files of type GIF, JPEG, BMP, ICO, and PNG.
-To open a file, use the File->Open... menu item, and select the image file in the FileDialog.
+To open a file, use the File &rarr; Open... menu item, and select the image file in the FileDialog.
 If the file is an interlaced GIF or PNG or a progressive JPEG, and Incremental Display is selected,
 then the ImageAnalyzer displays the image increments as they are being loaded.
 If the file contains an animated GIF, then the Next, Previous, and Animate buttons become enabled,
@@ -26,9 +26,9 @@ If the image has transparency (possible with GIF, PNG, or ICO), then selecting D
 mask to the right of the image. You can change the background color of the ImageAnalyzer to see the transparency work.
 To turn off the transparency, deselect Display Transparency.
 After an image is loaded, it can be scaled or have alpha transparency applied, using the Scale and Alpha-K combos,
-and the Alpha menu. File->Reopen restores scaling and Alpha to their default values and reloads the current image file.
-File->Save As... can be used to save the currently loaded image to another type of image file. If the image has transparency,
-File->Save Mask As... saves the image's transparency mask.
+and the Alpha menu. File &rarr; Reopen restores scaling and Alpha to their default values and reloads the current image file.
+File &rarr; Save As... can be used to save the currently loaded image to another type of image file. If the image has transparency,
+File &rarr; Save Mask As... saves the image's transparency mask.
 </p>
 <p>
 When SWT loads an image file, an instance of org.eclipse.swt.graphics.ImageData is created. (In the case of an ICO file or
