@@ -23,25 +23,25 @@ public class TreeColumn extends Item {
 public TreeColumn (Tree2 parent, int style) {
 	this (parent, style, checkNull (parent).getColumnCount ());
 }
-public TreeColumn(Tree2 parent, int style, int index) {
+public TreeColumn (Tree2 parent, int style, int index) {
 	super (parent, checkStyle (style), index);
-	if (!(0 <= index && index <= parent.getColumnCount ())) error(SWT.ERROR_INVALID_RANGE);
+	if (!(0 <= index && index <= parent.getColumnCount ())) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
 	parent.addColumn (this, index);
 }
-public void addControlListener(ControlListener listener) {
-	checkWidget();
+public void addControlListener (ControlListener listener) {
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Resize,typedListener);
-	addListener (SWT.Move,typedListener);
+	addListener (SWT.Resize, typedListener);
+	addListener (SWT.Move, typedListener);
 }
 public void addSelectionListener (SelectionListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
-	addListener (SWT.Selection,typedListener);
-	addListener (SWT.DefaultSelection,typedListener);
+	addListener (SWT.Selection, typedListener);
+	addListener (SWT.DefaultSelection, typedListener);
 }
 static Tree2 checkNull (Tree2 tree) {
 	if (tree == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -53,69 +53,69 @@ static int checkStyle (int style) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
-public void dispose() {
-	if (isDisposed()) return;
-	dispose(true);
-	Rectangle bounds = parent.getClientArea();
-	int x = getX();
-	parent.redraw(x, 0, bounds.width - x, bounds.height, true);
+public void dispose () {
+	if (isDisposed ()) return;
+	dispose (true);
+	Rectangle bounds = parent.getClientArea ();
+	int x = getX ();
+	parent.redraw (x, 0, bounds.width - x, bounds.height, true);
 }
-void dispose(boolean notifyParent) {
-	super.dispose();	/* the use of super is intentional here */
-	if (notifyParent) parent.removeColumn(this);
+void dispose (boolean notifyParent) {
+	super.dispose ();	/* the use of super is intentional here */
+	if (notifyParent) parent.removeColumn (this);
 	parent = null;
 }
 public int getAlignment () {
-	checkWidget();
+	checkWidget ();
 	if ((style & SWT.CENTER) != 0) return SWT.CENTER;
 	if ((style & SWT.RIGHT) != 0) return SWT.RIGHT;
 	return SWT.LEFT;
 }
-Rectangle getBounds() {
-	return new Rectangle(getX(), 0, width, parent.getClientArea().height);
+Rectangle getBounds () {
+	return new Rectangle(getX (), 0, width, parent.getClientArea ().height);
 }
-int getIndex() {
-	TreeColumn[] columns = parent.getColumns();
+int getIndex () {
+	TreeColumn[] columns = parent.getColumns ();
 	for (int i = 0; i < columns.length; i++) {
 		if (columns[i] == this) return i;
 	}
 	return -1;
 }
-public Tree2 getParent() {
-	checkWidget();
+public Tree2 getParent () {
+	checkWidget ();
 	return parent;
 }
-public boolean getResizable() {
-	checkWidget();
+public boolean getResizable () {
+	checkWidget ();
 	return resizable;
 }
 /*
  * Returns the rightmost point that belongs to the receiver.
  */
-int getRightmostX() {
-	return getX() + width;
+int getRightmostX () {
+	return getX () + width;
 }
 public int getWidth () {
-	checkWidget();
+	checkWidget ();
 	return width;
 }
-int getX() {
-	int index = getIndex();
+int getX () {
+	int index = getIndex ();
 	if (index == 0) return 0;
-	TreeColumn previousColumn = parent.getColumns()[index - 1];
-	return previousColumn.getX() + previousColumn.width;
+	TreeColumn previousColumn = parent.getColumns ()[index - 1];
+	return previousColumn.getX () + previousColumn.width;
 }
-void paint(GC gc) {
-	int padding = parent.getHeaderPadding();
+void paint (GC gc) {
+	int padding = parent.getHeaderPadding ();
 	
 	int startX;
-	int x = getX();
+	int x = getX ();
 	if ((style & SWT.LEFT) != 0) {
 		startX = x + padding;
 	} else {
 		int contentWidth = textWidth;
 		if (image != null) {
-			contentWidth += image.getBounds().width + Tree2.MARGIN_IMAGE;
+			contentWidth += image.getBounds ().width + Tree2.MARGIN_IMAGE;
 		}
 		if ((style & SWT.RIGHT) != 0) {
 			startX = x + width - padding - contentWidth;	
@@ -124,20 +124,20 @@ void paint(GC gc) {
 		}
 	}
 	startX = Math.max (startX, padding);
-	int headerHeight = parent.getHeaderHeight();
+	int headerHeight = parent.getHeaderHeight ();
 
 	/* while painting the header's contents restrict the clipping region */
-	Rectangle oldClipping = gc.getClipping();
-	gc.setClipping(
+	Rectangle oldClipping = gc.getClipping ();
+	gc.setClipping (
 		x + padding,
 		padding,
 		Math.max (0, width - 2 * padding),
 		Math.max (0, headerHeight - 2 * padding));
 	
 	if (image != null) {
-		Rectangle imageBounds = image.getBounds();
+		Rectangle imageBounds = image.getBounds ();
 		int drawHeight = Math.min (imageBounds.height, headerHeight - 2 * padding);
-		gc.drawImage(
+		gc.drawImage (
 			image,
 			0, 0,
 			imageBounds.width, imageBounds.height,
@@ -145,38 +145,38 @@ void paint(GC gc) {
 			imageBounds.width, drawHeight); 
 		startX += imageBounds.width + Tree2.MARGIN_IMAGE; 
 	}
-	if (text.length() > 0) {
+	if (text.length () > 0) {
 		int fontHeight = parent.fontHeight;
-		gc.drawText(text, startX, (headerHeight - fontHeight) / 2);
+		gc.drawText (text, startX, (headerHeight - fontHeight) / 2);
 	}
 	
 	/* restore the original clipping */
-	gc.setClipping(oldClipping);
+	gc.setClipping (oldClipping);
 }
 public void removeControlListener (ControlListener listener) {
-	checkWidget();
+	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
 	eventTable.unhook (SWT.Resize, listener);
 }
-public void removeSelectionListener(SelectionListener listener) {
-	checkWidget();
-	if (listener == null) error(SWT.ERROR_NULL_ARGUMENT);
-	removeListener(SWT.Selection, listener);
-	removeListener(SWT.DefaultSelection, listener);
+public void removeSelectionListener (SelectionListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	removeListener (SWT.Selection, listener);
+	removeListener (SWT.DefaultSelection, listener);
 }
 public void setAlignment (int alignment) {
-	checkWidget();
+	checkWidget ();
 	if ((style & alignment) != 0) return;				/* same value */
 	style &= ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 	style |= alignment;
-	parent.redraw(getX(), 0, width, parent.getClientArea().height, true);
+	parent.redraw(getX (), 0, width, parent.getClientArea ().height, true);
 }
 public void setImage (Image value) {
-	checkWidget();
+	checkWidget ();
 	if (value == image) return;
-	if (value != null && value.equals(image)) return;	/* same value */
+	if (value != null && value.equals (image)) return;	/* same value */
 	super.setImage (value);
 	
 	/*
@@ -184,11 +184,11 @@ public void setImage (Image value) {
 	 * height may be adjusted, in which case a full redraw is needed.
 	 */
 	if (parent.headerImageHeight == 0) {
-		int oldHeaderHeight = parent.getHeaderHeight();
-		parent.setHeaderImageHeight(value.getBounds().height);
-		if (oldHeaderHeight != parent.getHeaderHeight()) {
-			parent.redrawHeader();
-			parent.redraw();
+		int oldHeaderHeight = parent.getHeaderHeight ();
+		parent.setHeaderImageHeight (value.getBounds ().height);
+		if (oldHeaderHeight != parent.getHeaderHeight ()) {
+			parent.redrawHeader ();
+			parent.redraw ();
 			return;
 		}
 	}
@@ -196,21 +196,21 @@ public void setImage (Image value) {
 	parent.redraw(getX(), 0, width, parent.getHeaderHeight(), true);
 }
 public void setResizable (boolean value) {
-	checkWidget();
+	checkWidget ();
 	resizable = value;
 }
 public void setText (String value) {
-	checkWidget();
-	if (value == null) error(SWT.ERROR_NULL_ARGUMENT);
-	if (value.equals(text)) return;						/* same value */
+	checkWidget ();
+	if (value == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (value.equals (text)) return;						/* same value */
 	super.setText (value);
 	GC gc = new GC (parent);
-	textWidth = gc.textExtent(value).x;
-	gc.dispose();
-	parent.redraw(getX(), 0, width, parent.getHeaderHeight(), true);
+	textWidth = gc.textExtent (value).x;
+	gc.dispose ();
+	parent.redraw(getX (), 0, width, parent.getHeaderHeight (), true);
 }
 public void setWidth (int value) {
-	checkWidget();
+	checkWidget ();
 	if (width == value) return;							/* same value */
 	parent.updateColumnWidth (this, value);
 }
@@ -219,9 +219,9 @@ public void setWidth (int value) {
  * the gc argument. 
  */
 void updateFont (GC gc) {
-	String text = getText();
-	if (text.length() > 0) {
-		textWidth = gc.textExtent(text).x;
+	String text = getText ();
+	if (text.length () > 0) {
+		textWidth = gc.textExtent (text).x;
 	}
 }
 }
