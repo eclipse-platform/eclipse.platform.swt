@@ -1514,11 +1514,11 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* is not visible.
 	*/
 	switch (wParam) {
-		case OS.VK_TAB: return LRESULT.ZERO;
-		case OS.VK_RETURN:
+		case SWT.TAB: return LRESULT.ZERO;
+		case SWT.CR:
 			postEvent (SWT.DefaultSelection);
 			// FALL THROUGH
-		case OS.VK_ESCAPE: 
+		case SWT.ESC: 
 			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
 				return LRESULT.ZERO;
 			}

@@ -1747,6 +1747,21 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	if (ignoreCharacter) return null;
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
+	
+	/*
+	* Bug in Windows.  When the user types CTRL and BS
+	* in an edit control, a DEL character is generated.
+	* Rather than deleting the text, the DEL character
+	* is inserted into the control.  The fix is to detect
+	* this case and not call the window proc.
+	*/
+	switch (wParam) {
+		case SWT.DEL:
+			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+				return LRESULT.ZERO;
+			}
+	}
+	
 	/*
 	* Feature in Windows.  For some reason, when the
 	* widget is a single line text widget, when the
@@ -1756,11 +1771,11 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	*/
 	if ((style & SWT.SINGLE) != 0) {
 		switch (wParam) {
-			case OS.VK_RETURN:
+			case SWT.CR:
 				postEvent (SWT.DefaultSelection);
 				// FALL THROUGH
-			case OS.VK_TAB:
-			case OS.VK_ESCAPE: return LRESULT.ZERO;
+			case SWT.TAB:
+			case SWT.ESC: return LRESULT.ZERO;
 		}
 	}
 	return result;

@@ -1381,7 +1381,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* proc in these cases.
 	*/
 	switch (wParam) {
-		case OS.VK_RETURN:
+		case SWT.CR:
 			/*
 			* Feature in Windows.  Windows sends NM_RETURN from WM_KEYDOWN
 			* instead of using WM_CHAR.  This means that application code
@@ -1401,8 +1401,8 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 			}
 			postEvent (SWT.DefaultSelection, event);
 			//FALL THROUGH
-		case OS.VK_ESCAPE:
-		case OS.VK_SPACE: return LRESULT.ZERO;
+		case SWT.ESC:
+		case ' ': return LRESULT.ZERO;
 	}
 	return result;
 }
