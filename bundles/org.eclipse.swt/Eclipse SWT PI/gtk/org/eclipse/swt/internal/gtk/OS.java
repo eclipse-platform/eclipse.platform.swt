@@ -42,6 +42,7 @@ public class OS {
 	public static final int GDK_BUTTON_RELEASE = 0x7;
 	public static final int GDK_BUTTON_RELEASE_MASK = 0x200;
 	public static final int GDK_CAP_BUTT = 0x1;
+	public static final int GDK_CAP_ROUND = 0x2;
 	public static final int GDK_COLORSPACE_RGB = 0;
 	public static final int GDK_CONTROL_MASK = 0x4;
 	public static final int GDK_COPY = 0x0;

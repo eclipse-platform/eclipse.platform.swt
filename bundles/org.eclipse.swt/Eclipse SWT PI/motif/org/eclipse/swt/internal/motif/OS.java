@@ -67,6 +67,7 @@ public class OS {
 	public static final int CWStackMode = 0x40;
 	public static final int CWWidth = 0x4;
 	public static final int CapButt = 0x1;
+	public static final int CapRound = 0x2;
 	public static final int ClientMessage = 33;
 	public static final int Complex = 0;
 	public static final int ConfigureNotify = 22;
