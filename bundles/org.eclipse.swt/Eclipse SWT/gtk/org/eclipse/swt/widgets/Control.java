@@ -1898,6 +1898,7 @@ void sendKeyEvent (int type, int gdkEvent) {
 				default:
 					event.character = (char) OS.gdk_keyval_to_unicode (keyEvent.keyval);
 			}
+			if (event.character == 0) return;
 		}
 		postEvent (type, event);
 	} else {
