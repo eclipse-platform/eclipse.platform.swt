@@ -224,6 +224,7 @@ public class OS {
 	public static final byte[] select_child = signal("select_child");
 	public static final byte[] select_row = signal("select_row");
 	public static final byte[] show = signal("show");
+	public static final byte[] show_help = signal("show_help");
 	public static final byte[] size_allocate = signal("size_allocate");
 	public static final byte[] switch_page = signal("switch_page");
 	public static final byte[] tree_collapse = signal("tree_collapse");
@@ -716,6 +717,7 @@ public static final native void pango_font_metrics_unref(int metrics);
 public static final native int pango_language_from_string(byte[] language);
 public static final native void pango_layout_get_size(int layout, int[] width, int[] height);
 public static final native int pango_layout_new(int context);
+public static final native void pango_layout_set_font_description(int context, int descr);
 public static final native void pango_layout_set_text(int layout, byte[] text, int length);
 public static final native int strlen(int str);
 }

@@ -489,9 +489,9 @@ public String getLineDelimiter () {
  */
 public int getLineHeight () {
 	checkWidget ();
+	int font = getFontDescription ();
 	int context = OS.gtk_widget_get_pango_context (handle);
 	int lang = OS.pango_context_get_language (context);
-	int font = OS.pango_context_get_font_description (context);
 	int metrics = OS.pango_context_get_metrics (context, font, lang);
 	int ascent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_ascent (metrics));
 	int descent = OS.PANGO_PIXELS (OS.pango_font_metrics_get_descent (metrics));

@@ -4381,6 +4381,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1new
 	return (jint)pango_layout_new((PangoContext *)arg0);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1set_1font_1description
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("pango_1layout_1set_1font_1description\n")
+
+	pango_layout_set_font_description((PangoLayout *)arg0, (PangoFontDescription *)arg1);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1layout_1set_1text
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
 {

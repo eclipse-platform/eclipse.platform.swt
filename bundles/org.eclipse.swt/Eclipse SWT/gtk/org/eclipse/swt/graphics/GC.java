@@ -1307,8 +1307,7 @@ public void getClipping(Region region) {
  */
 public Font getFont() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int font = OS.pango_context_get_font_description(data.context);
-	return Font.gtk_new(data.device, font);
+	return Font.gtk_new(data.device, data.font);
 }
 
 /**
@@ -1325,12 +1324,11 @@ public Font getFont() {
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int context = data.context;
-	int font = OS.pango_context_get_font_description(context);
 	//FIXME - figure out correct language
 	byte[] buffer = Converter.wcsToMbcs(null, "en_US");
 	int lang = OS.pango_language_from_string(buffer);
 //	int lang = OS.pango_context_get_language(context);
-	int metrics = OS.pango_context_get_metrics(context, font, lang);
+	int metrics = OS.pango_context_get_metrics(context, data.font, lang);
 	FontMetrics fm = new FontMetrics();
 	fm.ascent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_ascent(metrics));
 	fm.descent = OS.PANGO_PIXELS(OS.pango_font_metrics_get_descent(metrics));
@@ -1447,7 +1445,7 @@ void init(Drawable drawable, GCData data, int gdkGC) {
 	GdkColor background = data.background;
 	if (background != null) OS.gdk_gc_set_background (gdkGC, background);	
 	int font = data.font;
-	if (font != 0) OS.pango_context_set_font_description(context, font);
+	if (font != 0) OS.pango_layout_set_font_description(layout, font);
 
 	Image image = data.image;
 	if (image != null) {
@@ -1621,7 +1619,8 @@ public void setFont(Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) font = data.device.systemFont;
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	OS.pango_context_set_font_description(data.context, font.handle);
+	int fontHandle = data.font = font.handle;
+	OS.pango_layout_set_font_description(data.layout, fontHandle);
 }
 
 /**
