@@ -119,24 +119,30 @@ class ShellTab extends Tab {
 		 * style group, the 'other' group and the size group.
 		 */		
 		controlGroup = new Group (tabFolderPage, SWT.NONE);
-		GridLayout gridLayout= new GridLayout ();
-		controlGroup.setLayout (gridLayout);
-		gridLayout.numColumns = 1;
-		gridLayout.makeColumnsEqualWidth = true;
+		controlGroup.setLayout (new GridLayout (2, true));
 		controlGroup.setLayoutData (new GridData (GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		controlGroup.setText (ControlExample.getResourceString("Parameters"));
 	
-		/* Create individual groups inside the "Control" group */
+		/* Create a group for the decoration style controls */
 		styleGroup = new Group (controlGroup, SWT.NONE);
-		gridLayout = new GridLayout ();
-		styleGroup.setLayout (gridLayout);
-		gridLayout.numColumns = 2;
-		gridLayout.makeColumnsEqualWidth = true;
-		styleGroup.setLayoutData (new GridData(GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
-		styleGroup.setText (ControlExample.getResourceString("Styles"));
+		styleGroup.setLayout (new GridLayout ());
+		styleGroup.setLayoutData (new GridData (SWT.FILL, SWT.FILL, false, false, 1, 3));
+		styleGroup.setText (ControlExample.getResourceString("Decoration_Styles"));
 	
+		/* Create a group for the modal style controls */
+		modalStyleGroup = new Group (controlGroup, SWT.NONE);
+		modalStyleGroup.setLayout (new GridLayout ());
+		modalStyleGroup.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		modalStyleGroup.setText (ControlExample.getResourceString("Modal_Styles"));		
+
+		/* Create a group for the 'other' controls */
+		otherGroup = new Group (controlGroup, SWT.NONE);
+		otherGroup.setLayout (new GridLayout ());
+		otherGroup.setLayoutData (new GridData(SWT.FILL, SWT.FILL, false, false));
+		otherGroup.setText (ControlExample.getResourceString("Other"));
+
 		/* Create a group for the parent style controls */
-		parentStyleGroup = new Group (styleGroup, SWT.NONE);
+		parentStyleGroup = new Group (controlGroup, SWT.NONE);
 		parentStyleGroup.setLayout (new GridLayout ());
 		GridData gridData = new GridData(GridData.HORIZONTAL_ALIGN_FILL);
 		parentStyleGroup.setLayoutData (gridData);
@@ -154,42 +160,26 @@ class ShellTab extends Tab {
 		parentButton = new Button (parentStyleGroup, SWT.RADIO);
 		parentButton.setText (ControlExample.getResourceString("Parent"));
 	
-		/* Create a group for the decoration style controls */
-		Group decorationStyleGroup = new Group(styleGroup, SWT.NONE);
-		decorationStyleGroup.setLayout (new GridLayout ());
-		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_FILL);
-		gridData.verticalSpan = 2;
-		decorationStyleGroup.setLayoutData (gridData);
-		decorationStyleGroup.setText (ControlExample.getResourceString("Decoration_Styles"));
-	
 		/* Create the decoration style buttons */
-		noTrimButton = new Button (decorationStyleGroup, SWT.CHECK);
+		noTrimButton = new Button (styleGroup, SWT.CHECK);
 		noTrimButton.setText ("SWT.NO_TRIM");
-		closeButton = new Button (decorationStyleGroup, SWT.CHECK);
+		closeButton = new Button (styleGroup, SWT.CHECK);
 		closeButton.setText ("SWT.CLOSE");
-		titleButton = new Button (decorationStyleGroup, SWT.CHECK);
+		titleButton = new Button (styleGroup, SWT.CHECK);
 		titleButton.setText ("SWT.TITLE");
-		minButton = new Button (decorationStyleGroup, SWT.CHECK);
+		minButton = new Button (styleGroup, SWT.CHECK);
 		minButton.setText ("SWT.MIN");
-		maxButton = new Button (decorationStyleGroup, SWT.CHECK);
+		maxButton = new Button (styleGroup, SWT.CHECK);
 		maxButton.setText ("SWT.MAX");
-		borderButton = new Button (decorationStyleGroup, SWT.CHECK);
+		borderButton = new Button (styleGroup, SWT.CHECK);
 		borderButton.setText ("SWT.BORDER");
-		resizeButton = new Button (decorationStyleGroup, SWT.CHECK);
+		resizeButton = new Button (styleGroup, SWT.CHECK);
 		resizeButton.setText ("SWT.RESIZE");
-		onTopButton = new Button (decorationStyleGroup, SWT.CHECK);
+		onTopButton = new Button (styleGroup, SWT.CHECK);
 		onTopButton.setText ("SWT.ON_TOP");
-		toolButton = new Button (decorationStyleGroup, SWT.CHECK);
+		toolButton = new Button (styleGroup, SWT.CHECK);
 		toolButton.setText ("SWT.TOOL");
 	
-		/* Create a group for the modal style controls */
-		modalStyleGroup = new Group (styleGroup, SWT.NONE);
-		modalStyleGroup.setLayout (new GridLayout ());
-		modalStyleGroup.setText (ControlExample.getResourceString("Modal_Styles"));
-		gridData = new GridData ();
-		gridData.verticalAlignment = GridData.FILL;
-		modalStyleGroup.setLayoutData(gridData);
-		
 		/* Create the modal style buttons */
 		modelessButton = new Button (modalStyleGroup, SWT.RADIO);
 		modelessButton.setText ("SWT.MODELESS");
@@ -200,22 +190,16 @@ class ShellTab extends Tab {
 		systemModalButton = new Button (modalStyleGroup, SWT.RADIO);
 		systemModalButton.setText ("SWT.SYSTEM_MODAL");
 	
-		/* Create a group for the 'other' controls */
-		otherGroup = new Group (styleGroup, SWT.NONE);
-		otherGroup.setLayout (new GridLayout ());
-		otherGroup.setLayoutData (new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
-		otherGroup.setText (ControlExample.getResourceString("Other"));
-
 		/* Create the 'other' buttons */
 		imageButton = new Button (otherGroup, SWT.CHECK);
 		imageButton.setText (ControlExample.getResourceString("Image"));
 
 		/* Create the "create" and "closeAll" buttons */
-		createButton = new Button (styleGroup, SWT.NONE);
-		gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
+		createButton = new Button (controlGroup, SWT.NONE);
+		GridData gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
 		createButton.setLayoutData (gridData);
 		createButton.setText (ControlExample.getResourceString("Create_Shell"));
-		closeAllButton = new Button (styleGroup, SWT.NONE);
+		closeAllButton = new Button (controlGroup, SWT.NONE);
 		gridData = new GridData (GridData.HORIZONTAL_ALIGN_BEGINNING);
 		closeAllButton.setText (ControlExample.getResourceString("Close_All_Shells"));
 		closeAllButton.setLayoutData (gridData);
