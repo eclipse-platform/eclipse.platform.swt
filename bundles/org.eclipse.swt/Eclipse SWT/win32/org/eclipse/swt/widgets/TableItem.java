@@ -743,10 +743,9 @@ public void setImage (int index, Image image) {
 	lvItem.iItem = itemIndex;
 	lvItem.iSubItem = index;
 	lvItem.iImage = parent.imageIndex (image);
-	if (OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem) != 0) {
-		if (index == 0) parent.setScrollWidth ();
-		parent.fixCheckboxImageList ();
-	}
+	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+	if (index == 0) parent.setScrollWidth ();
+	parent.fixCheckboxImageList ();
 }
 
 public void setImage (Image image) {
@@ -833,9 +832,8 @@ public void setText (int index, String string) {
 	lvItem.iItem = itemIndex;
 	lvItem.pszText = pszText;
 	lvItem.iSubItem = index;
-	if (OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem) != 0) {
-		if (index == 0) parent.setScrollWidth ();
-	}
+	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+	if (index == 0) parent.setScrollWidth ();
 	OS.HeapFree (hHeap, 0, pszText);
 }
 
