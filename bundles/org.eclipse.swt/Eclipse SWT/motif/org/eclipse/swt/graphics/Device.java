@@ -416,10 +416,14 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 		OS.memmove (buffer2, charPtr, length);
 		/* Use the character encoding for the default locale */
 		char [] chars = Converter.mbcsToWcs (null, buffer2);
-		FontData data = FontData.motif_new (new String (chars));
-		boolean isScalable = data.averageWidth == 0 && data.pixels == 0 && data.points == 0;
-		if (isScalable == scalable) {
-			fd [fdIndex++] = data;
+		try {
+			FontData data = FontData.motif_new (new String (chars));
+			boolean isScalable = data.averageWidth == 0 && data.pixels == 0 && data.points == 0;
+			if (isScalable == scalable) {
+				fd [fdIndex++] = data;
+			}
+		} catch (Exception e) {
+			/* do not add the font to the list */
 		}
 		ptr += 4;
 	}
