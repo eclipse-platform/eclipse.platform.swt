@@ -147,7 +147,7 @@ void generateNatives () {
 
 void generateAll() {
 	if (!updateOutputDir()) return;
-	Cursor cursor = new Cursor(shell.getDisplay(), SWT.CURSOR_WAIT);
+	Cursor cursor = display.getSystemCursor(SWT.CURSOR_WAIT);
 	shell.setCursor(cursor);
 	shell.setEnabled(false);
 	Control[] children = actionsPanel.getChildren();
@@ -204,7 +204,6 @@ void generateAll() {
 	progressLabel.setVisible(false);
 	shell.setEnabled(true);
 	shell.setCursor(null);
-	cursor.dispose();
 }
 
 void generateConstants () {
