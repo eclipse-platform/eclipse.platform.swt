@@ -876,6 +876,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 		if (code == 0) return LRESULT.ZERO;
 		return new LRESULT (code);
 	}
+
 	/*
 	* Feature in Windows.  When a tool bar that contains
 	* separators is wrapped, under certain circumstances,
@@ -903,17 +904,10 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 			OS.SendMessage (handle, OS.TB_GETITEMRECT, i, rects [i]);
 		}
 	}
-	
+
 	LRESULT result = super.WM_SIZE (wParam, lParam);
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the resize
-	* event.  If this happens, end the processing of the
-	* Windows message by returning the result of the
-	* WM_SIZE message.
-	*/
 	if (isDisposed ()) return result;
-	
+
 	if (fixRedraw) {
 		int newCount = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 		if (newCount == oldCount) {
@@ -1029,7 +1023,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				case OS.CDDS_PREERASE:
 					return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
 				case OS.CDDS_POSTERASE:
-					drawBackground(nmcd.hdc);
+					drawBackground (nmcd.hdc);
 					return null;
 			}
 			break;
