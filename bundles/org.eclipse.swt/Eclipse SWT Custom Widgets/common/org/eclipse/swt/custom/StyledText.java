@@ -1829,39 +1829,37 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	
 	if (singleLine) {
 		count = 1;
-	}
-	else {
+	} else {
 		count = content.getLineCount();
 	}
+	if (wHint != SWT.DEFAULT) {
+		width = wHint;
+	} 
+	else {
+		width = DEFAULT_WIDTH;
+	}
+
 	if (wordWrap) {
 		if (((WrappedContent) content).getVisualLineCount() != 0) {
 			// lines have already been wrapped to a specific width.
 			// use existing line count. fixes bug 9191
-			width = lineCache.getWidth();
+			if (wHint == SWT.DEFAULT) {
+				width = lineCache.getWidth();
+			} else {
+				((WrappedContent) content).wrapLines(width);
+			}	
 			if (singleLine == false) {
 				count = content.getLineCount();
 			}
 		}
 		else {
-			// lines have not been wrapped yet. wrap to width hint 
-			// or to default width.
-			if (wHint != SWT.DEFAULT) {
-				width = wHint;
-			} 
-			else {
-				width = DEFAULT_WIDTH;
-			}
 			if (singleLine == false) {
 				((WrappedContent) content).wrapLines(width);
 				count = content.getLineCount();
 			}
 		}
 	}
-	else
-	if (wHint != SWT.DEFAULT) {
-		width = wHint;
-	} 
-	else {
+	else if (wHint == SWT.DEFAULT) {
 		// Only calculate what can actually be displayed.
 		// Do this because measuring each text line is a 
 		// time-consuming process.
@@ -1869,9 +1867,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		lineCache.calculate(0, visibleCount);
 		width = lineCache.getWidth() + leftMargin + rightMargin;
 	}
-	// If a height or width has been specified (via hHint and wHint),
-	// use those values.  Otherwise calculate the size based on the
-	// text that is defined.
 	if (hHint != SWT.DEFAULT) {
 		height = hHint;
 	} 
