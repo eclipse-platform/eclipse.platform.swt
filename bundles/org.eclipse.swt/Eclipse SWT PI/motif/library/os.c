@@ -4669,7 +4669,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XClie
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XClientMessageEvent_2I\n")
 	if (arg1) lparg1 = getXClientMessageEventFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setXClientMessageEventFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XClientMessageEvent_2I\n")
 }
 #endif
@@ -4682,7 +4681,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XConf
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XConfigureEvent_2I\n")
 	if (arg1) lparg1 = getXConfigureEventFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setXConfigureEventFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XConfigureEvent_2I\n")
 }
 #endif
@@ -4719,7 +4717,6 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_motif_XKeyE
 	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XKeyEvent_2I\n")
 	if (arg1) lparg1 = getXKeyEventFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) setXKeyEventFields(env, arg1, lparg1);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_motif_XKeyEvent_2I\n")
 }
 #endif
@@ -4807,7 +4804,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3SI)
 	NATIVE_ENTER(env, that, "memmove__I_3SI\n")
 	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
-	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "memmove__I_3SI\n")
 }
 #endif
@@ -4857,7 +4854,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XClien
 {
 	XClientMessageEvent _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XClientMessageEvent_2II\n")
-	if (arg0) lparg0 = getXClientMessageEventFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXClientMessageEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XClientMessageEvent_2II\n")
@@ -4883,7 +4880,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XCreat
 {
 	XCreateWindowEvent _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XCreateWindowEvent_2II\n")
-	if (arg0) lparg0 = getXCreateWindowEventFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXCreateWindowEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XCreateWindowEvent_2II\n")
@@ -4909,7 +4906,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XDestr
 {
 	XDestroyWindowEvent _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XDestroyWindowEvent_2II\n")
-	if (arg0) lparg0 = getXDestroyWindowEventFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXDestroyWindowEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XDestroyWindowEvent_2II\n")
@@ -5013,7 +5010,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XPrope
 {
 	XPropertyEvent _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XPropertyEvent_2II\n")
-	if (arg0) lparg0 = getXPropertyEventFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXPropertyEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XPropertyEvent_2II\n")
@@ -5026,7 +5023,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_motif_XRepar
 {
 	XReparentEvent _arg0, *lparg0=NULL;
 	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XReparentEvent_2II\n")
-	if (arg0) lparg0 = getXReparentEventFields(env, arg0, &_arg0);
+	if (arg0) lparg0 = &_arg0;
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXReparentEventFields(env, arg0, lparg0);
 	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_motif_XReparentEvent_2II\n")
