@@ -713,9 +713,6 @@ void setForegroundPixel (int pixel) {
 		if (xDisplay == 0) return;
 		int xWindow = OS.XtWindow (handle);
 		if (xWindow == 0) return;
-		int [] argList = {OS.XmNforeground, 0};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		if (pixel == argList [1]) return;
 		OS.XClearArea (xDisplay, xWindow, 0, 0, 0, 0, true);
 	}
 }
