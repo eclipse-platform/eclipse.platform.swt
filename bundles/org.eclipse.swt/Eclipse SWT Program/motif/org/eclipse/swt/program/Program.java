@@ -253,7 +253,7 @@ static int getDesktop(Display display) {
 	Integer desktopValue = (Integer)display.getData(DESKTOP_DATA);
 	if (desktopValue != null) return desktopValue.intValue();
 	int desktop = DESKTOP_UNKNOWN;
-	if (isGnomeDesktop(display)) {
+	if (isGnomeDesktop(display) && gnome_init()) {
 		desktop = DESKTOP_GNOME;
 		display.setData(DESKTOP_DATA, new Integer(desktop));
 		return desktop;
@@ -483,7 +483,6 @@ static Program gnome_getProgram(Display display, String mimeType) {
 
 static boolean gnome_init() {
 	try {
-		Library.loadLibrary("swt-gnome");
 		return GNOME.gnome_vfs_init();
 	} catch (Throwable e) {
 		return false;
@@ -494,7 +493,7 @@ static boolean isGnomeDesktop(Display display) {
 	int xDisplay = display.xDisplay;
 	byte[] name = Converter.wcsToMbcs(null, "_WIN_SUPPORTING_WM_CHECK", true);
 	int atom_set = OS.XInternAtom(xDisplay, name, true);
-	return atom_set != OS.None ? gnome_init() : false;
+	return atom_set != OS.None;
 }
 
 static String kde_convertQStringAndFree(int qString) {
