@@ -1705,7 +1705,9 @@ boolean runDeferredEvents () {
 	return true;
 }
 
-void runPopups () {
+boolean runPopups () {
+	if (popups == null) return false;
+	boolean result = false;
 	while (popups != null) {
 		Menu menu = popups [0];
 		if (menu == null) break;
@@ -1713,11 +1715,13 @@ void runPopups () {
 		System.arraycopy (popups, 1, popups, 0, --length);
 		popups [length] = null;
 		menu._setVisible (true);
+		result = true;
 	}
 	popups = null;
+	return result;
 }
 
-void runTimer (int id) {
+boolean runTimer (int id) {
 	if (timerList != null && timerIds != null) {
 		int index = 0;
 		while (index <timerIds.length) {
@@ -1727,11 +1731,12 @@ void runTimer (int id) {
 				Runnable runnable = timerList [index];
 				timerList [index] = null;
 				if (runnable != null) runnable.run ();
-				break;
+				return true;
 			}
 			index++;
 		}
 	}
+	return false;
 }
 
 void sendEvent (int eventType, Event event) {
