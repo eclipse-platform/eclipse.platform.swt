@@ -20,7 +20,7 @@ class ClipboardProxy {
 
 	Display display;
 	int shellHandle;
-	int clipboardAtom, primaryAtom, targetsAtom;
+	int atomAtom, clipboardAtom, primaryAtom, targetsAtom;
 	int[][] convertData = new int[10][3];
 	Clipboard activeClipboard = null;
 	Clipboard activePrimaryClipboard = null;
@@ -38,6 +38,7 @@ class ClipboardProxy {
 	Callback XtSelectionDoneCallback;
 	Callback XtSelectionCallbackCallback;
 	
+	static byte [] ATOM = Converter.wcsToMbcs (null, "ATOM", true); //$NON-NLS-1$
 	static byte [] CLIPBOARD = Converter.wcsToMbcs (null, "CLIPBOARD", true); //$NON-NLS-1$
 	static byte [] PRIMARY = Converter.wcsToMbcs (null, "PRIMARY", true); //$NON-NLS-1$
 	static byte [] TARGETS = Converter.wcsToMbcs (null, "TARGETS", true); //$NON-NLS-1$
@@ -71,9 +72,10 @@ ClipboardProxy(Display display) {
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);
 	int xDisplay = OS.XtDisplay(shellHandle);
-	clipboardAtom = OS.XmInternAtom(xDisplay, CLIPBOARD, false);
-	primaryAtom = OS.XmInternAtom(xDisplay, PRIMARY, false);
-	targetsAtom = OS.XmInternAtom(xDisplay, TARGETS, false);
+	atomAtom = OS.XmInternAtom(xDisplay, ATOM, true);
+	clipboardAtom = OS.XmInternAtom(xDisplay, CLIPBOARD, true);
+	primaryAtom = OS.XmInternAtom(xDisplay, PRIMARY, true);
+	targetsAtom = OS.XmInternAtom(xDisplay, TARGETS, true);
 }
 
 
@@ -146,7 +148,8 @@ int[] getAvailableTypes(int clipboardType) {
 	done = false;
 	selectionValue = null; selectionTransfer = null;
 	int selection = clipboardType == DND.CLIPBOARD ? clipboardAtom : primaryAtom;
-	OS.XtGetSelectionValue(shellHandle, selection, targetsAtom, XtSelectionCallbackCallback.getAddress(), 0, OS.CurrentTime);
+	int target = clipboardType == DND.CLIPBOARD ? atomAtom : targetsAtom;
+	OS.XtGetSelectionValue(shellHandle, selection, target, XtSelectionCallbackCallback.getAddress(), 0, OS.CurrentTime);
 	if (!done) {
 		int xtContext = OS.XtDisplayToApplicationContext(xDisplay);
 		int selectionTimeout = OS.XtAppGetSelectionTimeout(xtContext);
@@ -254,7 +257,7 @@ int XtConvertSelection(int widget, int selection, int target, int type, int valu
 		OS.memmove(dest, target, 4);
 		targetAtom = dest[0];
 	}
-	if (targetAtom == targetsAtom) {
+	if (targetAtom == atomAtom || targetAtom == targetsAtom) {
 		int[] transferTypes = new int[] {targetAtom};
 		for (int i = 0; i < types.length; i++) {
 			TransferData[] subTypes = types[i].getSupportedTypes();
@@ -269,7 +272,7 @@ int XtConvertSelection(int widget, int selection, int target, int type, int valu
 		int ptr = OS.XtMalloc(transferTypes.length*4);
 		storePtr(ptr, selectionAtom, targetAtom);
 		OS.memmove(ptr, transferTypes, transferTypes.length*4);
-		OS.memmove(type, new int[]{targetsAtom}, 4);
+		OS.memmove(type, new int[]{targetAtom}, 4);
 		OS.memmove(value, new int[] {ptr}, 4);
 		OS.memmove(length, new int[]{transferTypes.length}, 4);
 		OS.memmove(format, new int[]{32}, 4);		
@@ -325,7 +328,7 @@ int XtSelectionCallback(int widget, int client_data, int selection, int type, in
 	if (selectionLength[0] == 0) return 0;
 	int[] selectionFormat = new int[1];
 	if (format != 0) OS.memmove(selectionFormat, format, 4);
-	if (selectionType[0] == targetsAtom) {
+	if (selectionType[0] == atomAtom || selectionType[0] == targetsAtom) {
 		int[] targets = new int[selectionLength[0]];
 		OS.memmove(targets, value, selectionLength[0] * selectionFormat [0] / 8);
 		selectionValue = targets;
