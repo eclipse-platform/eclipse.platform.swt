@@ -1065,10 +1065,26 @@ public void setImeInputMode (int mode) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	minWidth = width == SWT.DEFAULT ? SWT.DEFAULT : Math.max (0, width);
-	minHeight = height == SWT.DEFAULT ? SWT.DEFAULT : Math.max (0, height);
+	int widthLimit = 0, heightLimit = 0;
+	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+		widthLimit = OS.GetSystemMetrics (OS.SM_CXMINTRACK);
+		if ((style & SWT.RESIZE) != 0) {
+			heightLimit = OS.GetSystemMetrics (OS.SM_CYMINTRACK);
+		} else {
+			RECT rect = new RECT ();
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			OS.AdjustWindowRectEx (rect, bits, false, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+			heightLimit = rect.bottom - rect.top;
+		}
+	} 
+	minWidth = Math.max (widthLimit, width);
+	minHeight = Math.max (heightLimit, height);
 	Point size = getSize ();
-	int newWidth = Math.max (size.x, minWidth), newHeight = Math.max (size.y, minHeight);
+	int newWidth = Math.max (size.x, minWidth);
+	int newHeight = Math.max (size.y, minHeight);
+	if (minWidth <= widthLimit) minWidth = SWT.DEFAULT;
+	if (minHeight <= heightLimit) minHeight = SWT.DEFAULT;
 	if (newWidth != size.x || newHeight != size.y) setSize (newWidth, newHeight);
 }
 
