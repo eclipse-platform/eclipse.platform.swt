@@ -32,7 +32,7 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames;
 	String fileName = "";
-	String filterPath;
+	String filterPath = "";
 	String fullPath;
 	boolean cancel = false;
 	static final String FILTER = "*";
