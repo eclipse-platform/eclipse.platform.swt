@@ -133,7 +133,7 @@ int /*long*/ fontHandle () {
 }
 
 boolean hasFocus () {
-	return OS.GTK_WIDGET_HAS_FOCUS (focusHandle ());
+	return this == display.getFocusControl();
 }
 
 void hookEvents () {
@@ -1345,7 +1345,7 @@ public boolean forceFocus () {
 
 boolean forceFocus (int /*long*/ focusHandle) {
 	OS.gtk_widget_grab_focus (focusHandle);
-	return OS.gtk_widget_is_focus (focusHandle);
+	return this == display.getFocusControl();
 }
 
 /**
