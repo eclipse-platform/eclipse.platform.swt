@@ -54,7 +54,7 @@ public class Combo extends Composite {
 	 * the operating system limit for the number of characters
 	 * that the text field in an instance of this class can hold
 	 */
-	public static int LIMIT;
+	public static final int LIMIT;
 	
 	/*
 	* These values can be different on different platforms.

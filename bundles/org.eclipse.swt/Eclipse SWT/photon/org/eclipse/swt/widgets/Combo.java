@@ -50,6 +50,20 @@ import org.eclipse.swt.events.*;
  * @see List
  */
 public class Combo extends Composite {
+	/**
+	 * the operating system limit for the number of characters
+	 * that the text field in an instance of this class can hold
+	 */
+	public static final int LIMIT;
+	
+	/*
+	* These values can be different on different platforms.
+	* Therefore they are not initialized in the declaration
+	* to stop the compiler from inlining.
+	*/
+	static {
+		LIMIT = 0x7FFFFFFF;
+	}	
 
 /**
  * Constructs a new instance of this class given its parent
