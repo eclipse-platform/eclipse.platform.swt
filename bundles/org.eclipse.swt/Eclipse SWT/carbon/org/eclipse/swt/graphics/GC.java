@@ -489,6 +489,7 @@ public void drawPolygon(int[] pointArray) {
 	OS.CGContextClosePath(handle);
 	OS.CGContextStrokePath(handle);
 }
+
 /** 
  * Draws the polyline which is defined by the specified array
  * of integer coordinates, using the receiver's foreground color. The array 
@@ -571,6 +572,7 @@ public void drawRectangle(Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	drawRectangle (rect.x, rect.y, rect.width, rect.height);
 }
+
 /** 
  * Draws the outline of the round-cornered rectangle specified by 
  * the arguments, using the receiver's foreground color. The left and
@@ -633,6 +635,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 public void drawString (String string, int x, int y) {
 	drawString(string, x, y, false);
 }
+
 /** 
  * Draws the given string, using the receiver's current font and
  * foreground color. No tab expansion or carriage return processing
