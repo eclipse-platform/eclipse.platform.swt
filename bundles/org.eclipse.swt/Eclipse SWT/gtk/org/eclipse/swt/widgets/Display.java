@@ -214,7 +214,9 @@ public class Display extends Device {
 
 	/* Popup Menus */
 	Menu [] popups;
-	int popupTime;
+	
+	/* Timestamp of the Last Received Event */
+	int lastEventTime;
 	
 	/* Fixed Subclass */
 	static int /*long*/ fixed_type;
@@ -872,7 +874,7 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
 		addGdkEvent (OS.gdk_event_copy (event));
 		return 0;
 	}
-	popupTime = gdkEvent.time;
+	lastEventTime = gdkEvent.time;
 	Control control = null;
 	int /*long*/ window = 0;
 	switch (gdkEvent.type) {
@@ -1387,7 +1389,8 @@ public Point [] getIconSizes () {
 
 int getLastEventTime () {
 //	checkDevice ();
-	return OS.gtk_get_current_event_time ();
+	int time = OS.gtk_get_current_event_time ();
+	return time != 0 ? time : lastEventTime;
 }
 
 int getMessageCount () {

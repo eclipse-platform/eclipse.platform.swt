@@ -177,10 +177,10 @@ public void _setVisible (boolean visible) {
 			/*
 			* Bug in GTK.  The timestamp passed into gtk_menu_popup is used
 			* to perform an X pointer grab.  It cannot be zero, else the grab
-			* will fail.  The fix is to use the timestamp of the last event
-			* processed.
+			* will fail.  The fix is to ensure that the timestamp of the last
+			* event processed is used.
 			*/
-			OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, display.popupTime);
+			OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, display.getLastEventTime ());
 		} else {
 			sendEvent (SWT.Hide);
 		}
