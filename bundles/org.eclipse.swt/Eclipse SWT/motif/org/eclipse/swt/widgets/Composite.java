@@ -494,6 +494,17 @@ void propagateChildren (boolean enabled) {
 		}
 	}
 }
+void propagateWidget (boolean enabled) {
+	super.propagateWidget (enabled);
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) != 0) {
+			if (enabled) {
+				int [] argList = {OS.XmNtraversalOn, 0};
+				OS.XtSetValues (handle, argList, argList.length / 2);
+			}
+		}
+	}
+}
 void realizeChildren () {
 	super.realizeChildren ();
 	Control [] children = _getChildren ();
