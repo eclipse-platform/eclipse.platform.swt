@@ -55,7 +55,7 @@ public static HTMLTransfer getInstance () {
  */
 public void javaToNative (Object object, TransferData transferData){
 	transferData.result = COM.E_FAIL;
-	if (!validate(object) || !isSupportedType(transferData)) {
+	if (!_validate(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	// HTML Format is stored as a null terminated byte array
@@ -122,7 +122,10 @@ protected int[] getTypeIds(){
 protected String[] getTypeNames(){
 	return new String[] {HTML_FORMAT}; 
 }
-protected boolean validate(Object object) {
+boolean _validate(Object object) {
 	return (object != null && object instanceof String && ((String)object).length() > 0);
+}
+protected boolean validate(Object object) {
+	return _validate(object);
 }
 }

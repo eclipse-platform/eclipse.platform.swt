@@ -56,10 +56,10 @@ public static TextTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	transferData.result = COM.E_FAIL;
-	if (!validate(object) || !isSupportedType(transferData)) {
+	if (!_validate(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
+	transferData.result = COM.E_FAIL;
 	String string = (String)object;
 	switch (transferData.type) {
 		case COM.CF_UNICODETEXT: {
@@ -172,7 +172,11 @@ protected String[] getTypeNames(){
 	return new String[] {CF_UNICODETEXT, CF_TEXT};
 }
 
-protected boolean validate(Object object) {
+boolean _validate(Object object) {
 	return (object != null  && object instanceof String && ((String)object).length() > 0);
+}
+
+protected boolean validate(Object object) {
+	return _validate(object);
 }
 }

@@ -158,10 +158,7 @@ public boolean isSupportedType(TransferData transferData){
  *  object will be filled in on return with the platform specific format of the data
  */
 protected void javaToNative (Object object, TransferData transferData) {
-	if (object == null || !(object instanceof byte[]) || ((byte[])object).length == 0) {
-		DND.error(DND.ERROR_INVALID_DATA);
-	}
-	if (!isSupportedType(transferData)) {
+	if (!_validate(object) || !isSupportedType(transferData)) {
 		DND.error(DND.ERROR_INVALID_DATA);
 	}
 	// Allocate the memory because the caller (DropTarget) has not handed it in
@@ -209,6 +206,11 @@ protected Object nativeToJava(TransferData transferData) {
 	OS.GlobalFree(hMem);
 	return buffer;
 }
+
+boolean _validate(Object object) {
+	return (object != null && object instanceof byte[] && ((byte[])object).length > 0);
+}
+
 protected boolean validate(Object object) {
 	return true;
 }
