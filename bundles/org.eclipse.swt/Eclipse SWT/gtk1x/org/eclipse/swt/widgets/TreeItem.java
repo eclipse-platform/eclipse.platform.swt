@@ -412,6 +412,8 @@ public void setChecked (boolean checked) {
 	boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	OS.gtk_ctree_get_node_info (ctree, handle, null, spacing, pixmap, mask, pixmap, mask, is_leaf, expanded);
+	if (checked && pixmap [0] == parent.check) return;
+	if (!checked && pixmap [0] == parent.uncheck) return;
 	pixmap [0] = checked ? parent.check : parent.uncheck;
 	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap [0], mask [0], pixmap [0], mask [0], is_leaf [0], expanded [0]);				
 }
