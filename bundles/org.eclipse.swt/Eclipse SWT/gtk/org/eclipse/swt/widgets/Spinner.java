@@ -173,7 +173,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT && hHint < 0) hHint = 0;
 	int[] w = new int [1], h = new int [1];
 	int /*long*/ layout = OS.gtk_entry_get_layout (handle);
+	int /*long*/ hAdjustment = OS.gtk_spin_button_get_adjustment (handle);
+	GtkAdjustment adjustment = new GtkAdjustment ();
+	OS.memmove (adjustment, hAdjustment);
+	String string = String.valueOf ((int) adjustment.upper);
+	byte [] buffer1 = Converter.wcsToMbcs (null, string, false);
+	int /*long*/ ptr = OS.pango_layout_get_text (layout);
+	int length = OS.strlen (ptr);
+	byte [] buffer2 = new byte [length];
+	OS.memmove (buffer2, ptr, length);	
+	OS.pango_layout_set_text (layout, buffer1, buffer1.length);
 	OS.pango_layout_get_size (layout, w, h);
+	OS.pango_layout_set_text (layout, buffer2, buffer2.length);
 	int width = OS.PANGO_PIXELS (w [0]);
 	int height = OS.PANGO_PIXELS (h [0]);
 	width = wHint == SWT.DEFAULT ? width : wHint;

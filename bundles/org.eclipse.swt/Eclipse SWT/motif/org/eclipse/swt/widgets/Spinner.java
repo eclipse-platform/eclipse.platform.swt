@@ -166,21 +166,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int height = hHint;
 	if (wHint == SWT.DEFAULT) {
 		width = DEFAULT_WIDTH;
-		int [] argList = {OS.XmNtextField, 0}; 
+		int [] argList = {OS.XmNmaximumValue, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		int ptr = OS.XmTextGetString (argList [1]);
-		if (ptr != 0) {
-			int fontList = font.handle;
-			int size = OS.strlen (ptr);
-			if (size != 0) {
-				byte [] buffer = new byte [size + 1];
-				OS.memmove (buffer, ptr, size);
-				int xmString = OS.XmStringCreateLocalized (buffer);
-				width = OS.XmStringWidth (fontList, xmString);
-				OS.XmStringFree (xmString);
-			}
-			OS.XtFree (ptr);
-		}
+		String string = String.valueOf (argList [1]);
+		byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, true);
+		int xmString = OS.XmStringCreateLocalized (buffer);
+		int fontList = font.handle;
+		width = OS.XmStringWidth (fontList, xmString);
+		OS.XmStringFree (xmString);
 	}
 	if (hHint == SWT.DEFAULT) {
 		height = getFontHeight (font.handle);
