@@ -111,11 +111,11 @@ public RGB getRGB () {
 public RGB open () {
 	byte [] buffer = Converter.wcsToMbcs (null, title, true);
 	int /*long*/ handle = OS.gtk_color_selection_dialog_new (buffer);
-	if (parent!=null) {
-		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	if (parent != null) {
+		OS.gtk_window_set_transient_for (handle, parent.topHandle ());
 	}
 	GtkColorSelectionDialog dialog = new GtkColorSelectionDialog ();
-	OS.memmove(dialog, handle);
+	OS.memmove (dialog, handle);
 	GdkColor color = new GdkColor();
 	if (rgb != null) {
 		color.red = (short)((rgb.red & 0xFF) | ((rgb.red & 0xFF) << 8));
@@ -123,7 +123,8 @@ public RGB open () {
 		color.blue = (short)((rgb.blue & 0xFF) | ((rgb.blue & 0xFF) << 8));
 		OS.gtk_color_selection_set_current_color (dialog.colorsel, color);
 	}
-	int response = OS.gtk_dialog_run(handle);
+	OS.gtk_color_selection_set_has_palette (dialog.colorsel, true);
+	int response = OS.gtk_dialog_run (handle);
 	boolean success = response == OS.GTK_RESPONSE_OK; 
 	if (success) {
 		OS.gtk_color_selection_get_current_color (dialog.colorsel, color);
@@ -132,7 +133,7 @@ public RGB open () {
 		int blue = (color.blue >> 8) & 0xFF;
 		rgb = new RGB (red, green, blue);
 	}
-	OS.gtk_widget_destroy(handle);
+	OS.gtk_widget_destroy (handle);
 	if (!success) return null;
 	return rgb;
 }
