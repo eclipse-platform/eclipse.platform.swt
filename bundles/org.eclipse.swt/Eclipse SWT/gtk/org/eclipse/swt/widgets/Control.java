@@ -1776,6 +1776,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
 	switch (event.type) {
 		case OS.GDK_BUTTON_PRESS: {
+			if (widget != eventHandle ()) break;
 			if ((state & MENU) == 0) {
 				GdkEventButton gdkEventButton = new GdkEventButton ();
 				OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
@@ -1786,6 +1787,7 @@ int /*long*/ gtk_event_after (int /*long*/ widget, int /*long*/ gdkEvent) {
 			break;
 		}
 		case OS.GDK_FOCUS_CHANGE: {
+			if (widget != focusHandle ()) break;
 			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
 			sendFocusEvent (gdkEventFocus.in != 0 ? SWT.FocusIn : SWT.FocusOut);
