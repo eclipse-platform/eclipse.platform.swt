@@ -18,7 +18,7 @@ public class OS {
 
 	/* Load the SWT library. */
 	static {
-		Library.loadLibrary ("swt");
+		Library.loadLibrary ("swt-pi");
 	}
 	
 	/** Constants */
