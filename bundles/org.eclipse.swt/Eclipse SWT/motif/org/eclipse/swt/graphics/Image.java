@@ -1070,12 +1070,12 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		destY = destY - destHeight;
 	}
 	byte[] srcReds = null, srcGreens = null, srcBlues = null;
-	if (! palette.isDirect) {
-		int length = palette.getRGBs().length;
+	if (!palette.isDirect) {
+		RGB[] rgbs = palette.getRGBs();
+		int length = rgbs.length;
 		srcReds = new byte[length];
 		srcGreens = new byte[length];
 		srcBlues = new byte[length];
-		RGB[] rgbs = palette.getRGBs();
 		for (int i = 0; i < rgbs.length; i++) {
 			RGB rgb = rgbs[i];
 			if (rgb == null) continue;
