@@ -1757,9 +1757,6 @@ boolean runEnterExit () {
 		OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, rect);
 		where.h -= rect.left;
 		where.v -= rect.top;
-		OS.GetControlBounds (theControl [0], rect);
-    	where.h -= rect.left;
-    	where.v -= rect.top;
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
 		boolean [] cursorWasSet = new boolean [1];
 		OS.HandleControlSetCursor (theControl [0], where, (short) modifiers, cursorWasSet);
