@@ -946,7 +946,7 @@ public void setMenuBar (Menu menu) {
 			if (OS.IsSP) {
 				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_HIDE);
 				menuBar = menu;
-				OS.ShowWindow (menuBar.hwndCB, OS.SW_SHOW);
+				if (menuBar != null) OS.ShowWindow (menuBar.hwndCB, OS.SW_SHOW);
 			}
 		} 
 	} else {
