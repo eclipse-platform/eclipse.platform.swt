@@ -1120,13 +1120,11 @@ public void setTabs (int tabs) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	OS.gtk_signal_handler_block_by_data (handle, SWT.Modify);
 	OS.gtk_editable_delete_text (handle, 0, -1);
 	int [] position = new int [1];
 	byte [] buffer = Converter.wcsToMbcs (null, string);
 	OS.gtk_editable_insert_text (handle, buffer, buffer.length, position);
 	OS.gtk_editable_set_position (handle, 0);
-	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Modify);
 }
 
 /**
