@@ -150,6 +150,7 @@ void drawBand (int x, int y, int width, int height) {
 }
 int processFocusIn () {
 	int result = super.processFocusIn ();
+	if (handle == 0) return result;
 	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	lastX = argList [1];
@@ -159,6 +160,7 @@ int processFocusIn () {
 
 int processFocusOut () {
 	int result = super.processFocusOut ();
+	if (handle == 0) return result;
 	int [] argList = new int [] {OS.XmNtraversalOn, 0};
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	return result;
