@@ -1532,11 +1532,13 @@ public void removeSelectionListener(SelectionListener listener) {
 public void select (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.SINGLE) != 0 && indices.length > 1) return;
+	int length = indices.length;
+	if (length == 0) return;
+	if ((style & SWT.SINGLE) != 0 && length > 1) return;
 	LVITEM lvItem = new LVITEM ();
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
-	for (int i=indices.length-1; i>=0; --i) {
+	for (int i=length-1; i>=0; --i) {
 		/*
 		* An index of -1 will apply the change to all
 	 	* items.  Ensure that indices are greater than -1.
@@ -1600,16 +1602,20 @@ public void select (int index) {
  */
 public void select (int start, int end) {
 	checkWidget ();
-	if (start > end) return;
+	if (end < 0 || start > end) return;
 	if ((style & SWT.SINGLE) != 0 && start != end) return;
+	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (count == 0 || start >= count) return;
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
+
+	/*
+	* An index of -1 will apply the change to all
+	* items.  Indices must be greater than -1.
+	*/
 	LVITEM lvItem = new LVITEM ();
 	lvItem.state = OS.LVIS_SELECTED;
 	lvItem.stateMask = OS.LVIS_SELECTED;
-	/*
-	* An index of -1 will apply the change to all
-	* items.  Ensure that indices are greater than -1.
-	*/
-	start = Math.max (0, start);
 	for (int i=start; i<=end; i++) {
 		ignoreSelect = true;
 		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, i, lvItem);
@@ -2168,12 +2174,12 @@ public void setSelection (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
-	if ((style & SWT.SINGLE) != 0 && indices.length > 1) return;
+	int length = indices.length;
+	if (length == 0) return;
+	if ((style & SWT.SINGLE) != 0 && length > 1) return;
 	select (indices);
-	if (indices.length != 0) {
-		int focusIndex = indices [0];
-		if (focusIndex != -1) setFocusIndex (focusIndex);
-	}
+	int focusIndex = indices [0];
+	if (focusIndex != -1) setFocusIndex (focusIndex);
 	showSelection ();
 }
 
@@ -2201,12 +2207,14 @@ public void setSelection (int [] indices) {
  * @see Table#setSelection(int[])
  */
 public void setSelection (TableItem [] items) {
-	checkWidget ();  
+	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
-	if ((style & SWT.SINGLE) != 0 && items.length > 1) return;
+	int length = items.length;
+	if (length == 0) return;
+	if ((style & SWT.SINGLE) != 0 && length > 1) return;
 	int focusIndex = -1;
-	for (int i=items.length-1; i>=0; --i) {
+	for (int i=length-1; i>=0; --i) {
 		int index = indexOf (items [i]);
 		if (index != -1) {
 			select (focusIndex = index);
@@ -2262,10 +2270,14 @@ public void setSelection (int index) {
 public void setSelection (int start, int end) {
 	checkWidget ();
 	deselectAll ();
-	if (start > end) return;
+	if (end < 0 || start > end) return;
 	if ((style & SWT.SINGLE) != 0 && start != end) return;
+	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (count == 0 || start >= count) return;
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
 	select (start, end);
-	if (start != -1) setFocusIndex (start);
+	setFocusIndex (start);
 	showSelection ();
 }
 
