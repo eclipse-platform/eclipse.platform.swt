@@ -18,6 +18,18 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
 
+#ifndef NO_GDK_1DISPLAY
+JNIEXPORT jint JNICALL OS_NATIVE(GDK_1DISPLAY)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GDK_1DISPLAY\n")
+	rc = (jint)GDK_DISPLAY();
+	NATIVE_EXIT(env, that, "GDK_1DISPLAY\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GDK_1ROOT_1PARENT
 JNIEXPORT jint JNICALL OS_NATIVE(GDK_1ROOT_1PARENT)
 	(JNIEnv *env, jclass that)
@@ -732,6 +744,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(PangoRectangle_1sizeof)
 }
 #endif
 
+#ifndef NO_XClientMessageEvent_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(XClientMessageEvent_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XClientMessageEvent_1sizeof\n")
+	rc = (jint)XClientMessageEvent_sizeof();
+	NATIVE_EXIT(env, that, "XClientMessageEvent_1sizeof\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XDefaultScreen
 JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreen)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -740,6 +764,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XDefaultScreen)
 	NATIVE_ENTER(env, that, "XDefaultScreen\n")
 	rc = (jint)XDefaultScreen((Display *)arg0);
 	NATIVE_EXIT(env, that, "XDefaultScreen\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XGetSelectionOwner
+JNIEXPORT jint JNICALL OS_NATIVE(XGetSelectionOwner)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XGetSelectionOwner\n")
+	rc = (jint)XGetSelectionOwner((Display *)arg0, (Atom)arg1);
+	NATIVE_EXIT(env, that, "XGetSelectionOwner\n")
 	return rc;
 }
 #endif
@@ -755,6 +791,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(XReconfigureWMWindow)
 	rc = (jint)XReconfigureWMWindow((Display *)arg0, (Window)arg1, arg2, arg3, lparg4);
 	if (arg4) setXWindowChangesFields(env, arg4, lparg4);
 	NATIVE_EXIT(env, that, "XReconfigureWMWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_XSendEvent
+JNIEXPORT jint JNICALL OS_NATIVE(XSendEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "XSendEvent\n")
+	rc = (jint)XSendEvent((Display *)arg0, (Window)arg1, arg2, arg3, (XEvent *)arg4);
+	NATIVE_EXIT(env, that, "XSendEvent\n")
 	return rc;
 }
 #endif
@@ -2748,6 +2796,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1n_1monitors)
 }
 #endif
 
+#ifndef NO_gdk_1screen_1get_1number
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1get_1number)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1screen_1get_1number\n")
+	rc = (jint)gdk_screen_get_number((GdkScreen *)arg0);
+	NATIVE_EXIT(env, that, "gdk_1screen_1get_1number\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1screen_1height
 JNIEXPORT jint JNICALL OS_NATIVE(gdk_1screen_1height)
 	(JNIEnv *env, jclass that)
@@ -3128,6 +3188,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1show)
 	NATIVE_ENTER(env, that, "gdk_1window_1show\n")
 	gdk_window_show((GdkWindow *)arg0);
 	NATIVE_EXIT(env, that, "gdk_1window_1show\n")
+}
+#endif
+
+#ifndef NO_gdk_1x11_1atom_1to_1xatom
+JNIEXPORT jint JNICALL OS_NATIVE(gdk_1x11_1atom_1to_1xatom)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gdk_1x11_1atom_1to_1xatom\n")
+	rc = (jint)gdk_x11_atom_to_xatom((GdkAtom)arg0);
+	NATIVE_EXIT(env, that, "gdk_1x11_1atom_1to_1xatom\n")
+	return rc;
 }
 #endif
 
@@ -5042,6 +5114,18 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1object_1sink)
 	NATIVE_ENTER(env, that, "gtk_1object_1sink\n")
 	gtk_object_sink((GtkObject *)arg0);
 	NATIVE_EXIT(env, that, "gtk_1object_1sink\n")
+}
+#endif
+
+#ifndef NO_gtk_1plug_1get_1id
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1plug_1get_1id)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "gtk_1plug_1get_1id\n")
+	rc = (jint)gtk_plug_get_id((GtkPlug *)arg0);
+	NATIVE_EXIT(env, that, "gtk_1plug_1get_1id\n")
+	return rc;
 }
 #endif
 
@@ -8047,6 +8131,18 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_PangoAt
 	if (arg1) lparg1 = getPangoAttributeFields(env, arg1, &_arg1);
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I\n")
+}
+#endif
+
+#ifndef NO_memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I
+JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	XClientMessageEvent _arg1, *lparg1=NULL;
+	NATIVE_ENTER(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I\n")
+	if (arg1) lparg1 = getXClientMessageEventFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I\n")
 }
 #endif
 

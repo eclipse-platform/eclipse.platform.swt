@@ -265,6 +265,16 @@ void setPangoRectangleFields(JNIEnv *env, jobject lpObject, PangoRectangle *lpSt
 #define PangoRectangle_sizeof() 0
 #endif
 
+#ifndef NO_XClientMessageEvent
+XClientMessageEvent *getXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct);
+void setXClientMessageEventFields(JNIEnv *env, jobject lpObject, XClientMessageEvent *lpStruct);
+#define XClientMessageEvent_sizeof() sizeof(XClientMessageEvent)
+#else
+#define getXClientMessageEventFields(a,b,c) NULL
+#define setXClientMessageEventFields(a,b,c)
+#define XClientMessageEvent_sizeof() 0
+#endif
+
 #ifndef NO_XWindowChanges
 XWindowChanges *getXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct);
 void setXWindowChangesFields(JNIEnv *env, jobject lpObject, XWindowChanges *lpStruct);
