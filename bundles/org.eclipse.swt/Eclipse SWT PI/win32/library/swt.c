@@ -34,17 +34,6 @@ BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
 	return TRUE;
 }
 
-/* Cache the handle to the library */
-HINSTANCE g_hInstance = NULL;
-
-BOOL WINAPI DllMain(HANDLE hInstDLL, DWORD dwReason, LPVOID lpvReserved)
-{
-	if (dwReason == DLL_PROCESS_ATTACH) {
-		if (g_hInstance == NULL) g_hInstance = hInstDLL;
-	}
-	return TRUE;
-}
-
 /* Natives */
 
 #ifndef _WIN32_WCE
