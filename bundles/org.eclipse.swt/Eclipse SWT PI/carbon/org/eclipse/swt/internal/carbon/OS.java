@@ -320,6 +320,7 @@ public class OS {
 	public static final int kQDDontChangeFlags = 0xFFFFFFFF;
 	
 	public static native int QDSwapTextFlags(int flags);
+	public static native int GetQDGlobalsScreenBits(int bitmap);
 
 	public static native int GetPort();
 	public static native int GetWindowFromPort(int pHandle);
@@ -1158,7 +1159,11 @@ public class OS {
 	public static native int GetHandleSize(int handle);
 	public static native void DisposeHandle(int handle);
 	public static native void getHandleData(int handle, char[] data);
+	public static native int DerefHandle(int handle);
 	
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// Ptrs
+	//////////////////////////////////////////////////////////////////////////////////////////////////	
 	public static native void DisposePtr(int ptr);
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////

@@ -896,8 +896,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMainEventQueue
 
 //---- GrafPort
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetQDGlobalsScreenBits(JNIEnv *env, jclass zz,
+			jint bitmap) {
+	return (jint) GetQDGlobalsScreenBits((BitMap*)bitmap);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSwapTextFlags(JNIEnv *env, jclass zz, jint flags) {
-	//return (jint) QDSwapTextFlags(flags);
 	return (jint) SwapQDTextFlags(flags);
 }
 
@@ -3095,6 +3099,11 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetData(JNIEnv
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeHandle(JNIEnv *env, jclass zz, jint handle) {
 	DisposeHandle((Handle)handle);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DerefHandle(JNIEnv *env, jclass zz, jint handle) {
+	Handle h= (Handle) handle;
+	return (jint) *h;
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposePtr(JNIEnv *env, jclass zz, jint ptr) {
