@@ -92,6 +92,59 @@ static int checkStyle (int style) {
 	} 
 	return checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 }
+void _setText (String string) {
+	/*
+	* Bug in Motif.  The widget will not receive mouse events, if the
+	* label string is empty.  The fix is to detect that and set a single
+	* space instead. 
+	*/
+	if (string.length () == 0) string = " ";
+
+	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
+	char [] unicode = new char [string.length ()];
+	string.getChars (0, unicode.length, unicode, 0);
+	int mnemonic = fixMnemonic (unicode);
+	
+	/* Wrap the text if necessary, and convert to mbcs. */
+	byte [] buffer = null;
+	if ((style & SWT.WRAP) != 0) {
+		int [] argList = {
+			OS.XmNwidth, 0,        /* 1 */
+			OS.XmNmarginWidth, 0,  /* 3 */
+		};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		int width = argList [1] - argList [3] * 2;
+		if (mnemonic != 0) string = new String (unicode);
+		string = display.wrapText (string, font, width);
+		buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	} else {
+		buffer = Converter.wcsToMbcs (getCodePage (), unicode, true);
+	}
+	
+	int xmString = OS.XmStringGenerate(buffer, null, OS.XmCHARSET_TEXT, null);
+	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		
+	/*
+	* Bug in Solaris.  If a mnemonic is defined to be a character
+	* that appears in a string in a position that follows a '\n',
+	* Solaris segment faults.  For example, a label with text
+	* "Hello\nthe&re" would GP since "r" appears after '\n'.
+	*
+	* The fix is to remove mnemonics from labels that contain
+	* '\n', which is fine since such labels generally just act
+	* as descriptive texts anyways.
+	*/ 
+	if (mnemonic == 0 || string.indexOf ('\n') != -1) {
+		mnemonic = OS.XK_VoidSymbol;
+	}
+	int [] argList = {
+		OS.XmNlabelType, OS.XmSTRING,
+		OS.XmNlabelString, xmString,
+		OS.XmNmnemonic, mnemonic,
+	};
+	OS.XtSetValues (handle, argList, argList.length / 2);
+	if (xmString != 0) OS.XmStringFree (xmString);
+}
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int border = getBorderWidth ();
@@ -120,8 +173,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.XtGetValues (handle, argList4, argList4.length / 2);
 		String string = text;
 		if (wHint != SWT.DEFAULT) {
-			int unavailable = 2 * (argList4 [7] + getBorderWidth());
-			string = display.wrapText (string, font, wHint - unavailable);
+			string = display.wrapText (string, font, wHint - argList4 [7] * 2);
 		}
 		GC gc = new GC(this);
 		Point extent = gc.textExtent(string);
@@ -414,7 +466,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if (changed && resize && (style & SWT.WRAP) != 0) {
 		int [] argList = {OS.XmNlabelType, 0,};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		if (argList [1] == OS.XmSTRING) setText (text);
+		if (argList [1] == OS.XmSTRING) _setText (text);
 	} 
 	return changed;
 }
@@ -445,7 +497,7 @@ public void setFont (Font font) {
 	if ((style & SWT.WRAP) != 0) {
 		int [] argList = {OS.XmNlabelType, 0,};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		if (argList [1] == OS.XmSTRING) setText (text);
+		if (argList [1] == OS.XmSTRING) _setText (text);
 	} 
 }
 /**
@@ -505,61 +557,7 @@ public void setText (String string) {
 	* do nothing.
 	*/
 	if (text.equals (string)) return;
-	text = string;
-	/*
-	* Bug in Motif.  The widget will not receive mouse events, if the
-	* label string is empty.  The fix is to detect that and set a single
-	* space instead. 
-	*/
-	if (string.length () == 0) string = " ";
-
-	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
-	char [] unicode = new char [string.length ()];
-	string.getChars (0, unicode.length, unicode, 0);
-	int mnemonic = fixMnemonic (unicode);
-	
-	/* Wrap the text if necessary, and convert to mbcs. */
-	byte [] buffer;
-	if ((style & SWT.WRAP) != 0) {
-		int [] argList = {
-			OS.XmNwidth, 0,        /* 1 */
-			OS.XmNmarginLeft, 0,   /* 3 */
-			OS.XmNmarginRight, 0,  /* 5 */
-			OS.XmNborderWidth, 0,  /* 7 */
-			OS.XmNmarginWidth, 0,  /* 9 */
-		};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		int width = argList [1] - argList [3] - argList [5] - argList [7] * 2 - argList [9] * 2;
-		if (mnemonic != 0) string = new String (unicode);
-		string = display.wrapText (string, font, width);
-		buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-	} else {
-		buffer = Converter.wcsToMbcs (getCodePage (), unicode, true);
-	}
-	
-	int xmString = OS.XmStringGenerate(buffer, null, OS.XmCHARSET_TEXT, null);
-	if (xmString == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-		
-	/*
-	* Bug in Solaris.  If a mnemonic is defined to be a character
-	* that appears in a string in a position that follows a '\n',
-	* Solaris segment faults.  For example, a label with text
-	* "Hello\nthe&re" would GP since "r" appears after '\n'.
-	*
-	* The fix is to remove mnemonics from labels that contain
-	* '\n', which is fine since such labels generally just act
-	* as descriptive texts anyways.
-	*/ 
-	if (mnemonic == 0 || string.indexOf ('\n') != -1) {
-		mnemonic = OS.XK_VoidSymbol;
-	}
-	int [] argList = {
-		OS.XmNlabelType, OS.XmSTRING,
-		OS.XmNlabelString, xmString,
-		OS.XmNmnemonic, mnemonic,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	if (xmString != 0) OS.XmStringFree (xmString);
+	_setText (text = string);
 }
 int topHandle () {
 	if (formHandle != 0) return formHandle;

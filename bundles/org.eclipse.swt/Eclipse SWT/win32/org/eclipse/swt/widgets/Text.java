@@ -264,7 +264,10 @@ public void append (String string) {
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
-	if ((style & SWT.WRAP) != 0) style |= SWT.MULTI;
+	if ((style & SWT.WRAP) != 0) {
+		style |= SWT.MULTI;
+		style &= ~SWT.H_SCROLL;
+	}
 	if ((style & SWT.MULTI) != 0) style &= ~SWT.PASSWORD;
 	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) return style | SWT.MULTI;
@@ -334,31 +337,30 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (height == 0) height = DEFAULT_HEIGHT;
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
+	Rectangle trim = computeTrim (0, 0, width, height);
+	return new Point (trim.width, trim.height);
+}
 
-	/* Calculate the margin width */
-	int margins = OS.SendMessage(handle, OS.EM_GETMARGINS, 0, 0);
-	int marginWidth = (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
-	width += marginWidth;
-
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget ();
+	Rectangle rect = super.computeTrim (x, y, width, height);
 	/*
 	* The preferred height of a single-line text widget
 	* has been hand-crafted to be the same height as
 	* the single-line text widget in an editable combo
 	* box.
 	*/
-	if ((style & SWT.V_SCROLL) != 0) {
-		width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-	}
-	if ((style & SWT.H_SCROLL) != 0) {
-		height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
-		if ((style & SWT.BORDER) == 0) width++;
-	}
+	int margins = OS.SendMessage(handle, OS.EM_GETMARGINS, 0, 0);
+	rect.x -= margins & 0xFFFF;
+	rect.width += (margins & 0xFFFF) + ((margins >> 16) & 0xFFFF);
+	if ((style & SWT.H_SCROLL) != 0) rect.width++;
 	if ((style & SWT.BORDER) != 0) {
-		int border = getBorderWidth ();
-		width += (border * 2) + 3;
-		height += (border * 2) + 3;
+		rect.x -= 1;
+		rect.y -= 1;
+		rect.width += 2;
+		rect.height += 2;
 	}
-	return new Point (width, height);
+	return rect;
 }
 
 /**

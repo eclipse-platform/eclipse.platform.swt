@@ -213,7 +213,10 @@ public void append (String string) {
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
 	if ((style & SWT.SINGLE) != 0) style &= ~(SWT.H_SCROLL | SWT.V_SCROLL | SWT.WRAP);
-	if ((style & SWT.WRAP) != 0) style |= SWT.MULTI;
+	if ((style & SWT.WRAP) != 0) {
+		style |= SWT.MULTI;
+		style &= ~SWT.H_SCROLL;
+	}
 	if ((style & SWT.MULTI) != 0) style &= ~SWT.PASSWORD;
 	if ((style & (SWT.SINGLE | SWT.MULTI)) != 0) return style;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
@@ -287,6 +290,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		}
 		OS.XtFree (ptr);
 	}
+	Rectangle trim = computeTrim (0, 0, width, height);
+	return new Point (trim.width, trim.height);
+}
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
 	if (horizontalBar != null) {
 		int [] argList1 = {OS.XmNheight, 0};
 		OS.XtGetValues (horizontalBar.handle, argList1, argList1.length / 2);
@@ -297,23 +305,28 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		OS.XtGetValues (verticalBar.handle, argList1, argList1.length / 2);
 		width += argList1 [1] + 4;
 	}
+	if ((style & SWT.MULTI) != 0) height+=4;
 	XRectangle rect = new XRectangle ();
 	OS.XmWidgetGetDisplayRect (handle, rect);
-	width += rect.x * 2;  height += rect.y * 2;
-	if ((style & (SWT.MULTI | SWT.BORDER)) != 0) height++;
-	return new Point (width, height);
-}
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget();
-	Rectangle trim = super.computeTrim(x, y, width, height);
-	XRectangle rect = new XRectangle ();
-	OS.XmWidgetGetDisplayRect (handle, rect);
-	trim.x -= rect.x;
-	trim.y -= rect.y;
-	trim.width += rect.x;
-	trim.height += rect.y;	
-	if ((style & (SWT.MULTI | SWT.BORDER)) != 0) trim.height += 3;
-	return trim;
+	x -= rect.x;
+	y -= rect.y;
+	width += rect.x * 2;
+	height += rect.y * 2;
+	int shadow = 0, highlight = 0;
+	if ((style & SWT.MULTI) != 0 || (style & SWT.BORDER) != 0) {
+		int [] argList = new int [] {
+			OS.XmNshadowThickness, 0,
+			OS.XmNhighlightThickness, 0,
+		};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		shadow = argList [1];
+		highlight = argList [3];
+	}
+	x -= shadow + highlight;
+	y -= shadow + highlight;
+	width += (shadow + highlight) * 2;
+	height += (shadow + highlight) * 2;	
+	return new Rectangle (x, y, width, height);
 }
 /**
  * Copies the selected text.
