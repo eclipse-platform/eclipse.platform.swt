@@ -429,9 +429,9 @@ public int getAlignment() {
  * </ul>
  * 
  * @see #getDescent()
- * @see #setDescent()
- * @see #setAscent()
- * @see #getLineMetrics()
+ * @see #setDescent(int)
+ * @see #setAscent(int)
+ * @see #getLineMetrics(int)
  */
 public int getAscent () {
 	checkLayout();	
@@ -519,9 +519,9 @@ public Rectangle getBounds(int start, int end) {
  * </ul>
  * 
  * @see #getAscent()
- * @see #setAscent()
- * @see #setDescent()
- * @see #getLineMetrics() 
+ * @see #setAscent(int)
+ * @see #setDescent(int)
+ * @see #getLineMetrics(int)
  */
 public int getDescent () {
 	checkLayout();	
