@@ -60,7 +60,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & SWT.CHECK) != 0 || (style & SWT.RADIO) != 0) {
 		height -= 17;
 	}
-	if ((style & SWT.PUSH) != 0 ) {
+	if ((style & SWT.PUSH) != 0 && (style & SWT.FLAT) == 0) {
 		width += 1;
 		height -= 11;
 	}
@@ -103,7 +103,9 @@ void createHandle () {
 		OS.CreateBevelButtonControl(window, null, 0, (short)OS.kControlBevelButtonNormalBevel, (short)OS.kControlBehaviorToggles, 0, (short)0, (short)0, (short)0, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeRoundedBevelButton});
+		if ((style & SWT.FLAT) == 0 ) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeRoundedBevelButton});
+		}
 	}
 	
 	if (outControl [0] == 0) {
@@ -111,7 +113,9 @@ void createHandle () {
 		OS.CreateBevelButtonControl(window, null, 0, (short)2, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemePushButton});
+		if ((style & SWT.FLAT) == 0 ) {
+			OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemePushButton});
+		}
 	}
 
 	ControlFontStyleRec fontRec = new ControlFontStyleRec();
