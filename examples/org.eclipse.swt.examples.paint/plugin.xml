@@ -133,7 +133,7 @@
          category="org.eclipse.swt.examples.launchViewCategory"
          source="paintsrc.zip"
          icon="icons/paint_example.gif"
-         id="org.eclipse.swt.examples.paint.launcher">
+         id="org.eclipse.swt.examples.paint.viewlauncher">
    </viewItem>
 </extension>
 </plugin>

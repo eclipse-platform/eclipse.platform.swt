@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path="src"/>
-    <classpathentry kind="src" path="icons"/>
     <classpathentry kind="src" path="/org.eclipse.swt"/>
     <classpathentry kind="var" path="JRE_LIB"/>
     <classpathentry kind="var"
@@ -12,5 +10,6 @@
         path="ECLIPSE_HOME/plugins/org.eclipse.ui/workbench.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.ui/workbenchsrc.zip"/>
     <classpathentry kind="var"
         path="ECLIPSE_HOME/plugins/org.eclipse.swt/swt.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.swt/swtsrc.zip"/>
+    <classpathentry kind="src" path=""/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
