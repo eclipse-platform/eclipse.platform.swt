@@ -209,10 +209,13 @@ public Browser(Composite parent, int style) {
  *
  * @param listener the listener
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @exception SWTError <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
  *	</ul>
  *
  * @since 3.0
@@ -232,10 +235,13 @@ public void addLocationListener(LocationListener listener) {
  *
  * @param listener the listener
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @exception SWTError <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
  *	</ul>
  *
  * @since 3.0
@@ -255,10 +261,13 @@ public void addProgressListener(ProgressListener listener) {
  *
  * @param listener the listener
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @exception SWTError <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
  *	</ul>
  *
  * @since 3.0
@@ -369,10 +378,13 @@ public void refresh() {
  *
  * @param listener the listener
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @exception SWTError
  *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
  * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  * 
  * @since 3.0
  */
@@ -403,10 +415,13 @@ public void removeLocationListener(LocationListener listener) {
  *
  * @param listener the listener
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @exception SWTError
  *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
  * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  * 
  * @since 3.0
  */
@@ -437,10 +452,13 @@ public void removeProgressListener(ProgressListener listener) {
  *
  * @param listener the listener
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * 
  * @exception SWTError
  *	<ul><li>ERROR_THREAD_INVALID_ACCESS	when called from the wrong thread</li>
  * 		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_NULL_ARGUMENT when listener is null</li></ul>
  * 
  * @since 3.0
  */
