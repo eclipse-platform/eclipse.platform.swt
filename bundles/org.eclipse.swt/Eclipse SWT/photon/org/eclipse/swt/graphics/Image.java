@@ -610,7 +610,8 @@ public boolean isDisposed() {
  * </p><p>
  * The image may be modified by this operation (in effect, the
  * transparent regions may be filled with the supplied color).  Hence
- * this operation is not reversible so a null argument is illegal.
+ * this operation is not reversible and it is not legal to call
+ * this function twice or with a null argument.
  * </p><p>
  * This method has no effect if the receiver does not have a transparent
  * pixel value.
