@@ -1889,6 +1889,38 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	return null;
 }
 
+LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+	if (!OS.IsPPC) return super.WM_LBUTTONDOWN (wParam, lParam);
+	sendMouseEvent (SWT.MouseDown, 1, OS.WM_LBUTTONDOWN, wParam, lParam);
+	/*
+	* Note: On WinCE PPC, only attempt to recognize the gesture for
+	* a context menu when the control contains a valid menu or there
+	* are listeners for the MenuDetect event.
+	* 
+	* Note: On WinCE PPC, the gesture that brings up a popup menu
+	* on the text widget must keep the current text selection.  As a
+	* result, the window proc is only called if the menu is not shown.
+	*/
+	boolean hasMenu = menu != null && !menu.isDisposed ();
+	if (hasMenu || hooks (SWT.MenuDetect)) {
+		int x = (short) (lParam & 0xFFFF);
+		int y = (short) (lParam >> 16);
+		SHRGINFO shrg = new SHRGINFO ();
+		shrg.cbSize = SHRGINFO.sizeof;
+		shrg.hwndClient = handle;
+		shrg.ptDown_x = x;
+		shrg.ptDown_y = y; 
+		shrg.dwFlags = OS.SHRG_RETURNCMD;
+		int type = OS.SHRecognizeGesture (shrg);
+		if (type == OS.GN_CONTEXTMENU) {
+			showMenu (x, y);
+			return LRESULT.ONE;
+		}
+	}
+	int result = callWindowProc (OS.WM_LBUTTONDOWN, wParam, lParam);	
+	return new LRESULT (result);
+}
+
 LRESULT WM_PASTE (int wParam, int lParam) {
 	LRESULT result = super.WM_PASTE (wParam, lParam);
 	if (result != null) return result;
