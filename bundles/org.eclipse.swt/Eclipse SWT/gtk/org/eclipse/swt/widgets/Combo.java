@@ -294,6 +294,7 @@ void createHandle (int index) {
 	listHandle = combo.list;
 	boolean editable = (style & SWT.READ_ONLY) == 0;
 	OS.gtk_entry_set_editable (entryHandle, editable);
+	OS.gtk_combo_set_case_sensitive (handle, true);
 }
 
 GdkColor defaultBackground () {
