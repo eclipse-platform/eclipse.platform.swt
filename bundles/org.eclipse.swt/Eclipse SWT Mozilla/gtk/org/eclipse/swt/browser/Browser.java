@@ -119,19 +119,19 @@ public Browser(Composite parent, int style) {
 		String mozillaPath = GRE.mozillaPath;
 		if (mozillaPath == null) {
 			dispose();
-			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown mozilla path]");
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unknown mozilla path]"); //$NON-NLS-1$
 		}
-		
-//		String filename = mozillaPath+"/libgtkembedmoz.so\0";
-//		String libname = "libgtk-1.2.so.0\0";
-//		boolean isGTK12 = false;
-//		try {
-//			isGTK12 = XPCOM.isDependent(filename.getBytes("UTF-8"), libname.getBytes("UTF-8"));
-//		} catch (UnsupportedEncodingException e) {
-//		}
-//		if (isGTK12) {
-//			SWT.error(SWT.ERROR_NO_HANDLES, null, " [INCOMPATIBLE MOZILLA GTK1.2 DETECTED. MUST INSTALL MOZILLA GTK2.]");				
-//		}
+
+		/*
+		* Note.  Embedding a Mozilla GTK1.2 causes a crash.  The workaround
+		* is to check the version of GTK used by Mozilla by looking for
+		* the libwidget_gtk.so library used by Mozilla GTK1.2. Mozilla GTK2
+		* uses the libwidget_gtk2.so library.   
+		*/
+		File file = new File(mozillaPath, "components/libwidget_gtk.so"); //$NON-NLS-1$
+		if (file.exists()) {
+			SWT.error(SWT.ERROR_NO_HANDLES, null, " [Mozilla GTK2 required (GTK1.2 detected)]"); //$NON-NLS-1$							
+		}
 		
 		int[] retVal = new int[1];
 		nsEmbedString path = new nsEmbedString(mozillaPath);
