@@ -819,20 +819,15 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 		if (keysym [0] != 0) {
 			event.keyCode = Display.translateKey (keysym [0]);
 			/*
-			* If translateKey () could not find a translation for the keysym
-			* then attempt some known keysyms for which we can provide the
-			* appropriate character.
+			* Bug in Motif.  There are some keycodes for which 
+			* XLookupString does not fill buffer [0] properly.
+			* Fix these cases here.
 			*/
-			if (event.keyCode == 0) {
-				switch (keysym [0]) {
-					case OS.XK_ISO_Left_Tab: event.character = '\t'; break;
-					/*
-					* Bug in Motif.  When CTRL+space is pressed XLookupString
-					* does not fill buffer [0] with anything, so we fill in
-					* the event's character here.
-					*/
-					case OS.XK_space: event.character = ' '; break;
-				}
+			switch (keysym [0]) {
+				/* SHIFT+Tab */
+				case OS.XK_ISO_Left_Tab: event.character = '\t'; break;
+				/* CTRL+Space */
+				case OS.XK_space: event.character = ' '; break;
 			}
 		}
 	}
