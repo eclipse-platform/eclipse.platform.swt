@@ -68,8 +68,8 @@ public FileDialog (Shell parent) {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT dialog classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  * Note: Currently, null can be passed in for the parent.
  * This has the effect of creating the dialog on the currently active
@@ -152,7 +152,7 @@ void extractValues() {
 /**
  * Returns the path of the first file that was
  * selected in the dialog relative to the filter path,
- * or null if none is available.
+ * or empty string if the dialog was cancelled.
  * 
  * @return the relative path of the file
  */
@@ -192,10 +192,13 @@ public String [] getFilterNames () {
 }
 
 /**
- * Returns the path which the dialog will use to filter
- * the files it shows.
+ * Returns the directory path that the dialog will use.
+ * File names in this path will appear in the dialog,
+ * filtered according to the filter extensions.
  *
- * @return the filter path
+ * @return the directory path string
+ * 
+ * @see #setFilterExtensions
  */
 public String getFilterPath () {
 	return filterPath;
@@ -385,11 +388,14 @@ public void setFilterNames (String [] names) {
 }
 
 /**
- * Sets the path which the dialog will use to filter
- * the files it shows to the argument, which may be
- * null.
+ * Sets the directory path that the dialog will use
+ * to the argument, which may be null. File names in this
+ * path will appear in the dialog, filtered according
+ * to the filter extensions.
  *
- * @param string the filter path
+ * @param string the directory path
+ * 
+ * @see #setFilterExtensions
  */
 public void setFilterPath (String string) {
 	filterPath = string;

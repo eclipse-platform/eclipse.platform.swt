@@ -67,7 +67,7 @@ import org.eclipse.swt.events.*;
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
+ *
  * @see Slider
  * @see Scrollable
  * @see Scrollable#getHorizontalBar

@@ -63,6 +63,11 @@ import org.eclipse.swt.graphics.*;
  * (only) when constructing multi-threaded applications to use the
  * inter-thread communication mechanisms which this class provides
  * when required.
+ * </p><p>
+ * All SWT API methods which may only be called from the user-interface
+ * thread are distinguished in their documentation by indicating that
+ * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
+ * SWT exception.
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -71,14 +76,8 @@ import org.eclipse.swt.graphics.*;
  * <dd>Close, Dispose</dd>
  * </dl>
  * <p>
- * All SWT API methods which may only be called from the user-interface
- * thread are distinguished in their documentation by indicating that
- * they throw the "<code>ERROR_THREAD_INVALID_ACCESS</code>"
- * SWT exception.
- * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
- * 
  * @see #syncExec
  * @see #asyncExec
  * @see #wake
@@ -2069,6 +2068,12 @@ static int untranslateKey (int key) {
 	}
 	return 0;
 }
+/**
+ * Forces all outstanding paint requests for the display
+ * to be processed before this method returns.
+ *
+ * @see Control#update
+ */
 public void update () {
 	checkDevice ();
 	XAnyEvent event = new XAnyEvent ();

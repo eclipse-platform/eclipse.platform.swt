@@ -22,7 +22,7 @@ import org.eclipse.swt.events.*;
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
  * <p>
- * Note: Only one of the styles MULTI and SINGLE may be specified.
+ * Note: Only one of the styles MULTI and SINGLE may be specified. 
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -56,8 +56,8 @@ public class Text extends Scrollable {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -71,7 +71,10 @@ public class Text extends Scrollable {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#SINGLE
+ * @see SWT#MULTI
+ * @see SWT#READ_ONLY
+ * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -1173,7 +1176,12 @@ public void setDoubleClickEnabled (boolean doubleClick) {
  * <p>
  * The echo character is the character that is
  * displayed when the user enters text or the
- * text is changed by the programmer.
+ * text is changed by the programmer. Setting
+ * the echo character to '\0' clears the echo
+ * character and redraws the original text.
+ * If for any reason the echo character is invalid,
+ * the default echo character for the platform
+ * is used.
  * </p>
  *
  * @param echo the new echo character
@@ -1250,9 +1258,6 @@ public void setRedraw (boolean redraw) {
  *
  * @param start new caret position
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1294,9 +1299,6 @@ public void setSelection (int start) {
  * @param start the start of the range
  * @param end the end of the range
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1351,7 +1353,7 @@ public void setSelection (int start, int end) {
  * @param selection the point
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1384,7 +1386,9 @@ public void setTabs (int tabs) {
 	/* Do nothing.  Tabs are not supported in MOTIF. */
 }
 /**
- * Sets the contents of the receiver to the given string.
+ * Sets the contents of the receiver to the given string. If the receiver has style
+ * SINGLE and the argument contains multiple lines of text, the result of this
+ * operation is undefined and may vary from platform to platform.
  *
  * @param text the new text
  *
@@ -1416,6 +1420,12 @@ public void setText (String string) {
 /**
  * Sets the maximum number of characters that the receiver
  * is capable of holding to be the argument.
+ * <p>
+ * Instead of trying to set the text limit to zero, consider
+ * creating a read-only text widget.
+ * </p><p>
+ * To reset this value to the default, use <code>setTextLimit(Text.LIMIT)</code>.
+ * </p>
  *
  * @param limit new text limit
  *

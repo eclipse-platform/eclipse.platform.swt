@@ -57,6 +57,7 @@ Font() {
  * @param fd the FontData that describes the desired font (must not be null)
  * 
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the fd argument is null</li>
  * </ul>
  * @exception SWTError <ul>
@@ -85,6 +86,7 @@ public Font(Device device, FontData fd) {
  * @param style a bit or combination of NORMAL, BOLD, ITALIC
  * 
  * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if the name argument is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the height is negative</li>
  * </ul>

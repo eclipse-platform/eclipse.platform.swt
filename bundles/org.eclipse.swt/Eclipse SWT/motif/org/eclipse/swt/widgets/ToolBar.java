@@ -32,27 +32,6 @@ import org.eclipse.swt.graphics.*;
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  */
-/**
- * Instances of this class support the layout of selectable
- * tool bar items.
- * <p>
- * The item children that may be added to instances of this class
- * must be of type <code>ToolItem</code>.
- * </p><p>
- * Note that although this class is a subclass of <code>Composite</code>,
- * it does not make sense to add <code>Control</code> children to it,
- * or set a layout on it.
- * </p><p>
- * <dl>
- * <dt><b>Styles:</b></dt>
- * <dd>FLAT, WRAP, RIGHT, HORIZONTAL, VERTICAL</dd>
- * <dt><b>Events:</b></dt>
- * <dd>(none)</dd>
- * </dl>
- * <p>
- * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- * </p>
- */
 public class ToolBar extends Composite {
 	int drawCount, itemCount;
 	ToolItem [] items;
@@ -65,8 +44,8 @@ public class ToolBar extends Composite {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -80,7 +59,11 @@ public class ToolBar extends Composite {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#FLAT
+ * @see SWT#WRAP
+ * @see SWT#RIGHT
+ * @see SWT#HORIZONTAL
+ * @see SWT#VERTICAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */

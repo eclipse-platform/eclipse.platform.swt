@@ -47,8 +47,8 @@ Control () {
  * class, or must be built by <em>bitwise OR</em>'ing together 
  * (that is, using the <code>int</code> "|" operator) two or more
  * of those <code>SWT</code> style constants. The class description
- * for all SWT widget classes should include a comment which
- * describes the style constants which are applicable to the class.
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
  * </p>
  *
  * @param parent a composite control which will be the parent of the new instance (cannot be null)
@@ -62,7 +62,7 @@ Control () {
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  *
- * @see SWT
+ * @see SWT#BORDER
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -125,9 +125,9 @@ public void addFocusListener(FocusListener listener) {
 }
 /**
  * Adds the listener to the collection of listeners who will
- * be notified when the help events are generated for the control, by sending
- * it one of the messages defined in the <code>HelpListener</code>
- * interface.
+ * be notified when help events are generated for the control,
+ * by sending it one of the messages defined in the
+ * <code>HelpListener</code> interface.
  *
  * @param listener the listener which should be notified
  *
@@ -306,7 +306,7 @@ public void addTraverseListener (TraverseListener listener) {
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a control is the size that it would
+ * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
@@ -324,6 +324,11 @@ public void addTraverseListener (TraverseListener listener) {
  * </ul>
  *
  * @see Layout
+ * @see #getBorderWidth
+ * @see #getBounds
+ * @see #getSize
+ * @see #pack
+ * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
@@ -331,7 +336,7 @@ public Point computeSize (int wHint, int hHint) {
 /**
  * Returns the preferred size of the receiver.
  * <p>
- * The <em>prefered size</em> of a control is the size that it would
+ * The <em>preferred size</em> of a control is the size that it would
  * best be displayed at. The width hint and height hint arguments
  * allow the caller to ask a control questions such as "Given a particular
  * width, how high does the control need to be to show all of the contents?"
@@ -356,6 +361,11 @@ public Point computeSize (int wHint, int hHint) {
  * </ul>
  *
  * @see Layout
+ * @see #getBorderWidth
+ * @see #getBounds
+ * @see #getSize
+ * @see #pack
+ * @see "computeTrim, getClientArea for controls that implement them"
  */
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -524,8 +534,10 @@ public boolean forceFocus () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @see addAccessibleListener
- * @see addAccessibleControlListener
+ * @see Accessible#addAccessibleListener
+ * @see Accessible#addAccessibleControlListener
+ * 
+ * @since 2.0
  */
 public Accessible getAccessible () {
 	checkWidget ();

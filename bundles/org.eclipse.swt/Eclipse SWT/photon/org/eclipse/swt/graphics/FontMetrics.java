@@ -19,7 +19,8 @@ import org.eclipse.swt.internal.photon.*;
 public final class FontMetrics {
 
 	/**
-	 * A Photon FontQueryInfo struct
+	 * On Windows, handle is a Win32 TEXTMETRIC struct
+	 * On Photon, handle is a Photon FontQueryInfo struct
 	 * (Warning: This field is platform dependent)
 	 */
 	public FontQueryInfo handle;
