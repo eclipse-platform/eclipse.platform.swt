@@ -366,8 +366,8 @@ ImageData kde_getImageData() {
 		ImageData imageData = image.getImageData();
 		if (gdkPixmap != 0) OS.g_object_unref(gdkPixmap);
 		if (gdkMask != 0) OS.g_object_unref(gdkMask);
-		if (pixmap[0] == 0) KDE.XFreePixmap(xDisplay, pixmap[0]);
-		if (mask[0] == 0) KDE.XFreePixmap(xDisplay, mask[0]);
+		if (pixmap[0] != 0) KDE.XFreePixmap(xDisplay, pixmap[0]);
+		if (mask[0] != 0) KDE.XFreePixmap(xDisplay, mask[0]);
 		return imageData;	
 	}
 	try {

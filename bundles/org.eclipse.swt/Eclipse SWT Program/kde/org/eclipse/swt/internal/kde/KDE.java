@@ -55,6 +55,6 @@ public static final synchronized native int /*long*/ QString_utf8(int /*long*/ q
 public static final synchronized native void free(int /*long*/ mem);
 public static final synchronized native int /*long*/ malloc(int /*long*/ size);
 public static final synchronized native int XpmReadFileToPixmap(int /*long*/ display, int /*long*/ drawable, byte[] filename, int /*long*/ [] pixmap_return, int /*long*/ [] mask_return, int /*long*/ attributes);
-public static final synchronized native void XFreePixmap (int /*long*/ display, int /*long*/ pixmap);
+public static final synchronized native void XFreePixmap(int /*long*/ display, int /*long*/ pixmap);
 
 }

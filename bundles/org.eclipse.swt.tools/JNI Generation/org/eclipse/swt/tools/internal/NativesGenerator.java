@@ -505,9 +505,9 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		outputDelimiter();
 		output("\t\tstatic void *handle = NULL;");
 		outputDelimiter();
-		output("\t\tstatic ");
+		output("\t\ttypedef ");
 		output(getTypeSignature2(returnType));
-		output(" (*fptr)(");
+		output(" (*FPTR)(");
 		for (int i = 0; i < paramTypes.length; i++) {
 			if (i != 0) output(", ");
 			Class paramType = paramTypes[i];
@@ -521,6 +521,8 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		}
 		output(");");
 		outputDelimiter();
+		output("\t\tstatic FPTR fptr;");
+		outputDelimiter();
 		if (returnType != Void.TYPE) {
 			if (needsReturn) {
 				output("\t\trc = 0;");
@@ -533,7 +535,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		output(method.getName());
 		output("_LIB, RTLD_LAZY);");
 		outputDelimiter();
-		output("\t\t\tif (handle) fptr = dlsym(handle, \"");
+		output("\t\t\tif (handle) fptr = (FPTR)dlsym(handle, \"");
 		output(method.getName());
 		output("\");");
 		outputDelimiter();
