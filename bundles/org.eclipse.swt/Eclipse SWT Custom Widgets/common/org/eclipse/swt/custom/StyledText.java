@@ -4593,7 +4593,7 @@ void handleTextChanging(TextChangingEvent event) {
 		redrawMultiLineChange(textChangeY, event.newLineCount, event.replaceLineCount);
 	}
 	else {
-		redraw(0, textChangeY, getClientArea().width, lineHeight, true);	
+		super.redraw(0, textChangeY, getClientArea().width, lineHeight, true);	
 	}
 	// notify default line styler about text change
 	if (defaultLineStyler != null) {
@@ -5196,7 +5196,7 @@ void redrawMultiLineChange(int y, int newLineCount, int replacedLineCount) {
 	// redraw but could cause flash/slowness elsewhere.
 	if (y + lineHeight > 0 && y <= clientArea.height) {
 		// redraw first changed line in case a line was split/joined
-		redraw(0, y, clientArea.width, lineHeight, true);
+		super.redraw(0, y, clientArea.width, lineHeight, true);
 	}
 	if (newLineCount > 0) {
 		int redrawStartY = y + lineHeight;
@@ -5204,7 +5204,7 @@ void redrawMultiLineChange(int y, int newLineCount, int replacedLineCount) {
 		
 		if (redrawStartY + redrawHeight > 0 && redrawStartY <= clientArea.height) {
 			// display new text
-			redraw(0, redrawStartY, clientArea.width, redrawHeight, true);
+			super.redraw(0, redrawStartY, clientArea.width, redrawHeight, true);
 		}
 	}
 }
@@ -5470,7 +5470,7 @@ void reset() {
 	}
 	setScrollBars();
 	setCaretLocation();
-	redraw();
+	super.redraw();
 }
 /**
  * Resets the selection.
@@ -5833,7 +5833,7 @@ public void setFont(Font font) {
 			caret.setSize(caret.getSize().x, lineHeight);
 		}
 	}
-	redraw();
+	super.redraw();
 }
 /** 
  * Sets the horizontal scroll offset relative to the start of the line.
@@ -5962,7 +5962,7 @@ public void setLineBackground(int startLine, int lineCount, Color background) {
 		lineCount = partialBottomIndex - startLine + 1;
 	}
 	startLine -= topIndex;
-	redraw(
+	super.redraw(
 		0, startLine * lineHeight, 
 		getClientArea().width, lineCount * lineHeight, true);
 }
@@ -6279,12 +6279,12 @@ public void setStyleRange(StyleRange range) {
 			String firstLineText = content.getLine(firstLine);
 			int redrawX = getXAtOffset(firstLineText, firstLine, range.start - firstLineOffset);
 			int redrawY = firstLine * lineHeight - verticalScrollOffset;
-			redraw(redrawX, redrawY, getClientArea().width, lineHeight, true);
+			super.redraw(redrawX, redrawY, getClientArea().width, lineHeight, true);
 		}
 		if (redrawLastLine) {
 			// redraw the whole line if the font style changed on the last line	
 			int redrawY = lastLine * lineHeight - verticalScrollOffset;
-			redraw(0, redrawY, getClientArea().width, lineHeight, true);
+			super.redraw(0, redrawY, getClientArea().width, lineHeight, true);
 		}
 	}
 	else {
@@ -6406,6 +6406,8 @@ public void setTabs(int tabs) {
 		}
 		clearSelection(false);
 	}
+	// reset all line widths when the tab width changes
+	contentWidth.reset(0, content.getLineCount(), false);
 	redraw();
 }
 /** 
