@@ -738,8 +738,8 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	//FIXME - need to avoid delimiter and tabs
 	int layout = data.layout;
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	OS.pango_layout_set_text(layout, buffer, buffer.length - 1);
+	byte[] buffer = Converter.wcsToMbcs(null, string, false);
+	OS.pango_layout_set_text(layout, buffer, buffer.length);
 	OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
 }
 
@@ -830,8 +830,8 @@ public void drawText (String string, int x, int y, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	//FIXME - check flags
 	int layout = data.layout;
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	OS.pango_layout_set_text(layout, buffer, buffer.length - 1);
+	byte[] buffer = Converter.wcsToMbcs(null, string, false);
+	OS.pango_layout_set_text(layout, buffer, buffer.length);
 	OS.gdk_draw_layout(data.drawable, handle, x, y, layout);
 }
 
@@ -1736,8 +1736,8 @@ public Point stringExtent(String string) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	//FIXME - need to avoid delimiter and tabs
 	int layout = data.layout;
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	OS.pango_layout_set_text(layout, buffer, buffer.length - 1);
+	byte[] buffer = Converter.wcsToMbcs(null, string, false);
+	OS.pango_layout_set_text(layout, buffer, buffer.length);
 	int[] width = new int[1];
 	int[] height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
@@ -1803,8 +1803,8 @@ public Point textExtent(String string, int flags) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	//FIXME - check flags
 	int layout = data.layout;
-	byte[] buffer = Converter.wcsToMbcs(null, string, true);
-	OS.pango_layout_set_text(layout, buffer, buffer.length - 1);
+	byte[] buffer = Converter.wcsToMbcs(null, string, false);
+	OS.pango_layout_set_text(layout, buffer, buffer.length);
 	int[] width = new int[1];
 	int[] height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
