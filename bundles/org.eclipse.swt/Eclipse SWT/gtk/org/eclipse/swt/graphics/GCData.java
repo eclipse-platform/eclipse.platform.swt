@@ -37,4 +37,7 @@ public final class GCData {
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
 	public boolean xorMode;
+
+	public String string;
+	public int drawFlags;
 }
