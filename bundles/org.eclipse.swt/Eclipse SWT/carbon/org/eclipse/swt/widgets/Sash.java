@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 
@@ -37,6 +38,9 @@ import org.eclipse.swt.events.*;
  */
 public class Sash extends Control {
 	Cursor sizeCursor;
+	int startX, startY, lastX, lastY;
+	private final static int INCREMENT = 1;
+	private final static int PAGE_INCREMENT = 9;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -124,7 +128,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	int features = OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
+	int features = OS.kControlSupportsFocus;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateUserPaneControl (window, null, features, outControl);
@@ -222,6 +226,85 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 				break;
 		}
 	}
+	return result;
+}
+
+int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	Point location = getLocation();
+	lastX = location.x;
+	lastY = location.y;
+	return OS.noErr;
+}
+
+int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int [] keyboardEvent = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamTextInputSendKeyboardEvent, OS.typeEventRef, null, keyboardEvent.length * 4, null, keyboardEvent);
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (keyboardEvent [0], OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	switch (keyCode [0]) {
+		case 126: /* Up arrow */
+		case 123: /* Left arrow */
+		case 125: /* Down arrow */
+		case 124: /* Right arrow */ {
+			int xChange = 0, yChange = 0;
+			int stepSize = PAGE_INCREMENT;
+			int [] modifiers = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+			if ((modifiers [0] & OS.controlKey) != 0) stepSize = INCREMENT;
+			if ((style & SWT.VERTICAL) != 0) {
+				if (keyCode [0] == 126 || keyCode [0] == 125) break;
+				xChange = keyCode [0] == 123 ? -stepSize : stepSize;
+			} else {
+				if (keyCode [0] == 123 || keyCode [0] == 124) break;
+				yChange = keyCode [0] == 126 ? -stepSize : stepSize;
+			}
+			
+			Rectangle bounds = getBounds ();
+			int width = bounds.width, height = bounds.height;
+			Rectangle parentBounds = parent.getBounds ();
+			int parentWidth = parentBounds.width;
+			int parentHeight = parentBounds.height;
+			int newX = lastX, newY = lastY;
+			if ((style & SWT.VERTICAL) != 0) {
+				newX = Math.min (Math.max (0, lastX + xChange - startX), parentWidth - width);
+			} else {
+				newY = Math.min (Math.max (0, lastY + yChange - startY), parentHeight - height);
+			}
+			if (newX == lastX && newY == lastY) return result;
+			
+			/* The event must be sent because its doit flag is used. */
+			Event event = new Event ();
+			event.x = newX;  event.y = newY;
+			event.width = width;  event.height = height;
+			sendEvent (SWT.Selection, event);
+					
+			/*
+			 * It is possible (but unlikely) that client code could have disposed
+			 * the widget in the selection event.  If this happens end the processing
+			 * of this message by returning.
+			 */
+			if (isDisposed ()) break;
+			if (event.doit) {
+				lastX = event.x;  lastY = event.y;
+				/* Adjust the pointer position */
+				int cursorX = newX;  int cursorY = newY;
+				if ((style & SWT.VERTICAL) != 0) {
+					cursorY += height / 2;
+				} else {
+					cursorX += width / 2;
+				}
+				Point pos = parent.toDisplay (cursorX, cursorY);
+				CGPoint pt = new CGPoint ();
+				pt.x = pos.x;  pt.y = pos.y;
+				OS.CGWarpMouseCursorPosition (pt);
+			}
+			break;
+		}
+	}
+
 	return result;
 }
 
