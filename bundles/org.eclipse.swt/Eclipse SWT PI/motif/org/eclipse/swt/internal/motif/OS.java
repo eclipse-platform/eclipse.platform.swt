@@ -78,6 +78,7 @@ public class OS {
 	public static final int DestroyNotify = 17;
 	public static final int EnterNotify = 7;
 	public static final int EnterWindowMask = 1 << 4;
+	public static final int EvenOddRule = 0;
 	public static final int Expose = 12;
 	public static final int ExposureMask = 1 << 15;
 	public static final int FillStippled = 0x2;
@@ -143,6 +144,9 @@ public class OS {
 	public static final int ReparentNotify = 21;
 	public static final int ResizeRedirectMask = 1 << 18;
 	public static final int RevertToParent = 0x2;
+	public static final int ShapeBounding = 0;
+	public static final int ShapeClip = 1;
+	public static final int ShapeSet = 0;
 	public static final int ShiftMask = (1<<0);
 	public static final int StructureNotifyMask = 1 << 17;
 	public static final int SubstructureNotifyMask = 1 << 19;
@@ -626,6 +630,7 @@ public static final synchronized native int XGetModifierMapping(int display);
 public static final synchronized native void XMoveResizeWindow(int display, int w, int x, int y, int width, int height);
 public static final synchronized native int XOpenDisplay(byte[] display_name);
 public static final synchronized native boolean XPointInRegion(int region, int x, int y);
+public static final synchronized native int XPolygonRegion(short[] points, int n, int fill_rule);
 public static final synchronized native int XPutImage(int display, int drawable, int gc, int image, int srcX, int srcY, int destX, int destY, int width, int height);
 public static final synchronized native int XQueryColor(int display, int colormap, XColor color);
 public static final synchronized native int XQueryPointer(int display, int window, int[] root, int[] child, int[] rootX, int[] rootY, int[] windowX, int[] windowY, int[] mask);
@@ -652,6 +657,7 @@ public static final synchronized native int XSetLineAttributes(int display, int 
 public static final synchronized native void XSetRegion(int display, int gc, int region);
 public static final synchronized native void XSetStipple(int display, int gc, int pixmap);
 public static final synchronized native void XSetSubwindowMode(int display, int gc, int subwindow_mode);
+public static final synchronized native void XShapeCombineRegion(int display, int dest, int dest_kind, int x_off, int y_off, int region, int op);
 public static final synchronized native void XSubtractRegion(int sra, int srb, int dr_return);
 public static final synchronized native void XSync(int display, boolean discard);
 public static final synchronized native int XSynchronize(int display, boolean onoff);

@@ -104,6 +104,7 @@ public class Shell extends Decorations {
 	boolean reparented, realized, configured;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
+	int clippingRgn;
 
 	static final  byte [] WM_DELETE_WINDOW = Converter.wcsToMbcs(null, "WM_DELETE_WINDOW\0");
 /**
@@ -795,6 +796,31 @@ public Rectangle getBounds () {
 	int height = argList [3] + trimHeight + (border * 2);
 	return new Rectangle (root_x [0], root_y [0], width, height);
 }
+
+/** 
+ * Sets the region managed by the argument to the current
+ * shape of the shell.
+ *
+ * @param region the region to fill with the clipping region
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
+ * </ul>	
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void getClipping (Region region) {
+	checkWidget ();
+	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (clippingRgn == 0) return;
+	OS.XUnionRegion (clippingRgn, region.handle, region.handle);
+}
+
 /**
  * Returns the receiver's input method editor mode. This
  * will be the result of bitwise OR'ing together one or
@@ -989,6 +1015,8 @@ void releaseWidget () {
 	releaseShells ();
 	super.releaseWidget ();
 	lastActive = null;
+	if (clippingRgn != 0) OS.XDestroyRegion (clippingRgn);
+	clippingRgn = 0;
 }
 /**
  * Removes the listener from the collection of listeners who will
@@ -1142,6 +1170,51 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	}
 	if (isFocus) caret.setFocus ();
 	return move || resize;
+}
+
+/**
+ * Sets the shape of the shell to the region specified
+ * by the argument.  A null region will restore the default shape.
+ * Shell must be created with the style SWT.NO_TRIM.
+ *
+ * @param rect the clipping region.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void setClipping(Region region) {
+	checkWidget ();
+	if ((style & SWT.NO_TRIM) == 0) return;
+	OS.XtSetMappedWhenManaged (shellHandle, false);
+	OS.XtRealizeWidget (shellHandle);
+	int xDisplay = OS.XtDisplay (shellHandle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (shellHandle);
+	if (xWindow == 0) return;
+	if (clippingRgn != 0) OS.XDestroyRegion (clippingRgn);
+	clippingRgn = 0;
+	if (region != null) {
+		clippingRgn = OS.XCreateRegion ();
+		OS.XUnionRegion (clippingRgn, region.handle, clippingRgn);
+		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, clippingRgn, OS.ShapeSet);
+		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeClip, 0, 0, clippingRgn, OS.ShapeSet);
+	} else {
+		// TODO - find a better way to clear region
+		int screen = OS.XDefaultScreen (xDisplay);
+		XRectangle xRect = new XRectangle ();
+		xRect.width = (short) OS.XDisplayWidth (xDisplay, screen);
+		xRect.height = (short) OS.XDisplayHeight (xDisplay, screen);
+		int rgn = OS.XCreateRegion ();
+		OS.XUnionRectWithRegion (xRect, rgn, rgn);
+		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeBounding, 0, 0, rgn, OS.ShapeSet);
+		OS.XShapeCombineRegion (xDisplay, xWindow, OS.ShapeClip, 0, 0, rgn, OS.ShapeSet);
+		OS.XDestroyRegion (rgn);
+	}
 }
 public void setMinimized (boolean minimized) {
 	checkWidget();

@@ -1122,6 +1122,21 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(XPointInRegion)
 }
 #endif
 
+#ifndef NO_XPolygonRegion
+JNIEXPORT jint JNICALL OS_NATIVE(XPolygonRegion)
+	(JNIEnv *env, jclass that, jshortArray arg0, jint arg1, jint arg2)
+{
+	jshort *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XPolygonRegion\n")
+	if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
+	rc = (jint)XPolygonRegion((XPoint *)lparg0, arg1, arg2);
+	if (arg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "XPolygonRegion\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XPutImage
 JNIEXPORT jint JNICALL OS_NATIVE(XPutImage)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
@@ -1454,6 +1469,26 @@ JNIEXPORT void JNICALL OS_NATIVE(XSetSubwindowMode)
 	NATIVE_ENTER(env, that, "XSetSubwindowMode\n")
 	XSetSubwindowMode((Display *)arg0, (GC)arg1, arg2);
 	NATIVE_EXIT(env, that, "XSetSubwindowMode\n")
+}
+#endif
+
+#ifndef NO_XShapeCombineMask
+JNIEXPORT void JNICALL OS_NATIVE(XShapeCombineMask)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	NATIVE_ENTER(env, that, "XShapeCombineMask\n")
+	XShapeCombineMask((Display *)arg0, (Window)arg1, arg2, arg3, arg4, (Pixmap)arg5, arg6);
+	NATIVE_EXIT(env, that, "XShapeCombineMask\n")
+}
+#endif
+
+#ifndef NO_XShapeCombineRegion
+JNIEXPORT void JNICALL OS_NATIVE(XShapeCombineRegion)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	NATIVE_ENTER(env, that, "XShapeCombineRegion\n")
+	XShapeCombineRegion((Display *)arg0, (Window)arg1, arg2, arg3, arg4, (Region)arg5, arg6);
+	NATIVE_EXIT(env, that, "XShapeCombineRegion\n")
 }
 #endif
 
