@@ -2402,8 +2402,9 @@ void sendMouseEvent (int type, int button, int /*long*/ eventPtr) {
 			event.x = pointer_x [0];
 			event.y = pointer_y [0];
 		} else {
+			int /*long*/ window = OS.GTK_WIDGET_WINDOW (eventHandle ());
 			int [] origin_x = new int [1], origin_y = new int [1];
-			OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);	
+			OS.gdk_window_get_origin (window, origin_x, origin_y);	
 			event.x = (int) (gdkEvent.x_root - origin_x [0]);
 			event.y = (int) (gdkEvent.y_root - origin_y [0]);
 		}
