@@ -1053,6 +1053,31 @@ public void removePaintListener(PaintListener listener) {
 	eventTable.unhook(SWT.Paint, listener);
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when traversal events occur.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see TraverseListener
+ * @see #addTraverseListener
+ */
+public void removeTraverseListener(TraverseListener listener) {
+	checkWidget ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Traverse, listener);
+}
+
+
 /*
  * Return (GTKWIDGET)h->window.
  */
@@ -2127,6 +2152,60 @@ void sort (int [] items) {
 	    }
 	}
 }
+
+/**
+ * Based on the argument, perform one of the expected platform
+ * traversal action. The argument should be one of the constants:
+ * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>, 
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
+ * <code>SWT.TRAVERSE_ARROW_NEXT</code> and <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>.
+ *
+ * @param traversal the type of traversal
+ * @return true if the traversal succeeded
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public boolean traverse (int traversal) {
+	checkWidget ();
+	if (!isFocusControl () && !setFocus ()) return false;
+	Event event = new Event ();
+	event.doit = true;
+	event.detail = traversal;
+	return traverse (event);
+}
+
+boolean traverse (Event event) {
+	/*
+	 * It is possible (but unlikely), that application
+	 * code could have disposed the widget in the traverse
+	 * event.  If this happens, return true to stop further
+	 * event processing.
+	 */	
+	sendEvent (SWT.Traverse, event);
+	if (isDisposed ()) return false;
+	if (!event.doit) return false;
+	switch (event.detail) {
+		case SWT.TRAVERSE_NONE:			return true;
+		/*
+		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
+		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
+		case SWT.TRAVERSE_TAB_NEXT:		return traverseGroup (true);
+		case SWT.TRAVERSE_TAB_PREVIOUS:	return traverseGroup (false);
+		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
+		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
+		case SWT.TRAVERSE_MNEMONIC:		return traverseMnemonic (event.character);	
+		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
+		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
+		*/
+	}
+	error(SWT.ERROR_NOT_IMPLEMENTED);
+	return false;
+}
+
+
 /**
  * Forces all outstanding paint requests for the widget tree
  * to be processed before this method returns.
