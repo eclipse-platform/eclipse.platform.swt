@@ -1,7 +1,7 @@
 package org.eclipse.swt.custom;
 
 /*
- * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
+ * Copyright (c) 2000, 2003 IBM Corp.  All rights reserved.
  * This file is made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
@@ -3217,13 +3217,18 @@ void doSelectionCursorPrevious() {
  * direction.
  */
 void doSelectionLineDown() {
-	int oldColumnX = columnX;
+	int oldColumnX;
 	int caretLine;
+	int lineStartOffset;
 	
 	if (isSingleLine()) {
 		return;
 	}
 	caretLine = getCaretLine();	
+	lineStartOffset = content.getOffsetAtLine(caretLine);
+	// reset columnX on selection
+	oldColumnX = columnX = getXAtOffset(
+		content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);
 	if (caretLine == content.getLineCount() - 1) {
 		caretOffset = content.getCharCount();
 	}
@@ -3251,9 +3256,13 @@ void doSelectionLineDown() {
  * direction.
  */
 void doSelectionLineUp() {
-	int oldColumnX = columnX;
+	int oldColumnX;
 	int caretLine = getCaretLine();	
+	int lineStartOffset = content.getOffsetAtLine(caretLine);
 	
+	// reset columnX on selection
+	oldColumnX = columnX = getXAtOffset(
+		content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);	
 	if (caretLine == 0) {
 		caretOffset = 0;
 	}
@@ -3266,6 +3275,54 @@ void doSelectionLineUp() {
 	showCaret(caretLine);
 	doSelection(SWT.LEFT);
 	// save the original horizontal caret position	
+	columnX = oldColumnX;
+}
+/**
+ * Scrolls one page down so that the last line (truncated or whole)
+ * of the current page becomes the fully visible top line.
+ * The caret is scrolled the same number of lines so that its location 
+ * relative to the top line remains the same. The exception is the end 
+ * of the text where a full page scroll is not possible. In this case 
+ * the caret is moved after the last character.
+ * <p>
+ * Adjusts the selection according to the caret change. This can either add
+ * to or subtract from the old selection, depending on the previous selection
+ * direction.
+ * </p>
+ */
+void doSelectionPageDown() {
+	int oldColumnX;
+	int caretLine = getCaretLine();
+	int lineStartOffset = content.getOffsetAtLine(caretLine);
+	
+	// reset columnX on selection
+	oldColumnX = columnX = getXAtOffset(
+		content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);
+	doPageDown(true);
+	columnX = oldColumnX;
+}
+/**
+ * Scrolls one page up so that the first line (truncated or whole)
+ * of the current page becomes the fully visible last line.
+ * The caret is scrolled the same number of lines so that its location 
+ * relative to the top line remains the same. The exception is the beginning 
+ * of the text where a full page scroll is not possible. In this case the
+ * caret is moved in front of the first character.
+ * <p>
+ * Adjusts the selection according to the caret change. This can either add
+ * to or subtract from the old selection, depending on the previous selection
+ * direction.
+ * </p>
+ */
+void doSelectionPageUp() {
+	int oldColumnX;
+	int caretLine = getCaretLine();
+	int lineStartOffset = content.getOffsetAtLine(caretLine);
+	
+	// reset columnX on selection
+	oldColumnX = columnX = getXAtOffset(
+		content.getLine(caretLine), caretLine, caretOffset - lineStartOffset);
+	doPageUp();
 	columnX = oldColumnX;
 }
 /**
@@ -5478,11 +5535,11 @@ public void invokeAction(int action) {
 			doSelection(SWT.RIGHT);
 			break;
 		case ST.SELECT_PAGE_UP:
-			doPageUp();
+			doSelectionPageUp();
 			doSelection(SWT.LEFT);
 			break;
 		case ST.SELECT_PAGE_DOWN:
-			doPageDown(true);
+			doSelectionPageDown();
 			break;
 		case ST.SELECT_WORD_PREVIOUS:
 			doSelectionWordPrevious();
