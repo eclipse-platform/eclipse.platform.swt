@@ -515,24 +515,16 @@ public void setEnabled (boolean enabled) {
 }
 
 public void setImage (Image image) {
-	if ((style & SWT.SEPARATOR) != 0) {
-		checkWidget();
-		return;
-	}
+	checkWidget();
+	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
 	if ((style & SWT.PUSH) == 0) return;
 	if (image != null) {
-		int oldPixmap = OS.gtk_image_menu_item_get_image(handle);
 		int pixmap = OS.gtk_pixmap_new (image.pixmap, image.mask);
-		OS.gtk_image_menu_item_set_image(handle, pixmap);
-		OS.gtk_widget_show(pixmap);
-		if (oldPixmap != 0) OS.gtk_widget_destroy(oldPixmap);
-	} else {  // null image
-		int oldPixmap = OS.gtk_image_menu_item_get_image(handle);
-		if (oldPixmap != 0) {
-			OS.gtk_image_menu_item_set_image(handle, 0);
-			OS.gtk_widget_destroy(oldPixmap);
-		}
+		OS.gtk_image_menu_item_set_image (handle, pixmap);
+		OS.gtk_widget_show (pixmap);
+	} else {
+		OS.gtk_image_menu_item_set_image (handle, 0);
 	}
 }
 
