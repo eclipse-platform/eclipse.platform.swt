@@ -279,6 +279,7 @@ void createHandle () {
 
 	/* Set the extended style bits */
 	int bits = OS.TBSTYLE_EX_DRAWDDARROWS | OS.TBSTYLE_EX_MIXEDBUTTONS | OS.TBSTYLE_EX_HIDECLIPPEDBUTTONS;
+	if (OS.COMCTL32_MAJOR >= 6) bits |= OS.TBSTYLE_EX_DOUBLEBUFFER;
 	OS.SendMessage (handle, OS.TB_SETEXTENDEDSTYLE, 0, bits);
 }
 

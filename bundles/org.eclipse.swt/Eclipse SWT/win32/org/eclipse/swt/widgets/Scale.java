@@ -397,7 +397,7 @@ public void setSelection (int value) {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_TABSTOP | OS.TBS_BOTH | OS.TBS_AUTOTICKS;
-	if ((style & SWT.HORIZONTAL) != 0) return bits | OS.TBS_HORZ;
+	if ((style & SWT.HORIZONTAL) != 0) return bits | OS.TBS_HORZ | OS.TBS_DOWNISLEFT;
 	return bits | OS.TBS_VERT;
 }
 

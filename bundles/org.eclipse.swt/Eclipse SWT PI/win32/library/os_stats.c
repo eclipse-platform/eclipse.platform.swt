@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 642;
-int OS_nativeFunctionCallCount[642];
+int OS_nativeFunctionCount = 644;
+int OS_nativeFunctionCallCount[644];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -131,6 +131,7 @@ char * OS_nativeFunctionNames[] = {
 	"EnumSystemLocalesW",
 	"EqualRect",
 	"EqualRgn",
+	"ExcludeClipRect",
 	"ExpandEnvironmentStringsA",
 	"ExpandEnvironmentStringsW",
 	"ExtCreatePen",
@@ -326,6 +327,7 @@ char * OS_nativeFunctionNames[] = {
 	"InsertMenuItemA",
 	"InsertMenuItemW",
 	"InsertMenuW",
+	"IntersectClipRect",
 	"IntersectRect",
 	"InvalidateRect",
 	"InvalidateRgn",

@@ -1139,6 +1139,7 @@ public class OS extends Platform {
 	public static final int TBSTYLE_DROPDOWN = 0x8;
 	public static final int TBSTATE_ENABLED = 0x4;
 	public static final int TBSTYLE_AUTOSIZE = 0x10;
+	public static final int TBSTYLE_EX_DOUBLEBUFFER = 0x80; 
 	public static final int TBSTYLE_EX_DRAWDDARROWS = 0x1;
 	public static final int TBSTYLE_EX_HIDECLIPPEDBUTTONS = 0x10;
 	public static final int TBSTYLE_EX_MIXEDBUTTONS = 0x8;
@@ -1149,6 +1150,7 @@ public class OS extends Platform {
 	public static final int TBSTYLE_WRAPABLE = 0x200;
 	public static final int TBS_AUTOTICKS = 0x1;
 	public static final int TBS_BOTH = 0x8;
+	public static final int TBS_DOWNISLEFT = 0x0400;
 	public static final int TBS_HORZ = 0x0;
 	public static final int TBS_VERT = 0x2;
 	public static final int TB_ADDSTRING = IsUnicode ? 0x44d : 0x41c;
@@ -2504,6 +2506,7 @@ public static final native int EnumFontFamiliesExW (int hdc, LOGFONTW lpLogfont,
 public static final native int EnumFontFamiliesExA (int hdc, LOGFONTA lpLogfont, int lpEnumFontFamExProc, int lParam, int dwFlags);
 public static final native boolean EqualRect (RECT lprc1, RECT lprc2);
 public static final native boolean EqualRgn (int hSrcRgn1, int hSrcRgn2);
+public static final native int ExcludeClipRect (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 public static final native int ExpandEnvironmentStringsW (char [] lpSrc, char [] lsDst, int nSize);
 public static final native int ExpandEnvironmentStringsA (byte [] lpSrc, byte [] lsDst, int nSize);
 public static final native int ExtCreatePen(int dwPenStyle, int dwWidth, LOGBRUSH lplb, int dwStyleCount, int[] lpStyle);
@@ -2700,6 +2703,7 @@ public static final native boolean InsertMenuW (int hMenu, int uPosition, int uF
 public static final native boolean InsertMenuA (int hMenu, int uPosition, int uFlags, int uIDNewItem, byte [] lpNewItem);
 public static final native boolean InsertMenuItemW (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 public static final native boolean InsertMenuItemA (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native int IntersectClipRect (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect);
 public static final native boolean IntersectRect (RECT lprcDst, RECT lprcSrc1, RECT lprcSrc2);
 public static final native boolean InvalidateRect(int hWnd, RECT lpRect, boolean bErase);
 public static final native boolean InvalidateRgn (int hWnd, int hRgn, boolean bErase);

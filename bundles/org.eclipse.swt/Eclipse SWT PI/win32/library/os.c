@@ -1752,6 +1752,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(EqualRgn)
 }
 #endif
 
+#ifndef NO_ExcludeClipRect
+JNIEXPORT jint JNICALL OS_NATIVE(ExcludeClipRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ExcludeClipRect_FUNC);
+	rc = (jint)ExcludeClipRect((HDC)arg0, arg1, arg2, arg3, arg4);
+	OS_NATIVE_EXIT(env, that, ExcludeClipRect_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ExpandEnvironmentStringsA
 JNIEXPORT jint JNICALL OS_NATIVE(ExpandEnvironmentStringsA)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2)
@@ -4908,6 +4920,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(InsertMenuW)
 fail:
 	if (arg4 && lparg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
 	OS_NATIVE_EXIT(env, that, InsertMenuW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_IntersectClipRect
+JNIEXPORT jint JNICALL OS_NATIVE(IntersectClipRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, IntersectClipRect_FUNC);
+	rc = (jint)IntersectClipRect((HDC)arg0, arg1, arg2, arg3, arg4);
+	OS_NATIVE_EXIT(env, that, IntersectClipRect_FUNC);
 	return rc;
 }
 #endif
