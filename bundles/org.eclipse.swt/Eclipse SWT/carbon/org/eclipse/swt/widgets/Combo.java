@@ -305,21 +305,20 @@ static int checkStyle (int style) {
 
 void checkSelection () {
 	if ((style & SWT.READ_ONLY) != 0) return;
-	String text = getText ();
-	if (!text.equals (lastText)) {
-		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-			String newText = verifyText (text, 0, lastText.length (), null);
-			if (newText == null) {
-				setText (lastText, false);
-				return;
-			}
-		}
-		lastText = text;
-		sendEvent (SWT.Modify);
-		if (isDisposed ()) return;
-		int index = indexOf (text);
-		if (index != -1) postEvent (SWT.Selection);
+	String newText = getText ();
+	if (newText.equals (lastText)) return;
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		setText (lastText, false);
+		newText = verifyText (newText, 0, lastText.length (), null);
+		if (newText == null) return;
+		setText (newText, false);
+	} else {
+		lastText = newText;
 	}
+	sendEvent (SWT.Modify);
+	if (isDisposed ()) return;
+	int index = indexOf (newText);
+	if (index != -1) postEvent (SWT.Selection);
 }
 
 protected void checkSubclass () {
