@@ -3484,6 +3484,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewFindByID
 }
 #endif /* NO_HIViewFindByID */
 
+#ifndef NO_HIViewGetFirstSubview
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetFirstSubview
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HIViewGetFirstSubview\n")
+
+	return (jint)HIViewGetFirstSubview((HIViewRef)arg0);
+}
+#endif
+
 #ifndef NO_HIViewGetFrame
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetFrame
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -3499,6 +3509,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetFrame
 	return rc;
 }
 #endif /* NO_HIViewGetFrame */
+
+#ifndef NO_HIViewGetLastSubview
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetLastSubview
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HIViewGetLastSubview\n")
+
+	return (jint)HIViewGetLastSubview((HIViewRef)arg0);
+}
+#endif
+
+#ifndef NO_HIViewGetNextView
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetNextView
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HIViewGetNextView\n")
+
+	return (jint)HIViewGetNextView((HIViewRef)arg0);
+}
+#endif
 
 #ifndef NO_HIViewGetRoot
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetRoot
