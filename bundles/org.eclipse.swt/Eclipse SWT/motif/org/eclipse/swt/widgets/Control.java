@@ -366,6 +366,35 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (width, height);
 }
 
+Control computeTabGroup () {
+	if (isTabGroup ()) return this;
+	return parent.computeTabGroup ();
+}
+
+Control computeTabRoot () {
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		int index = 0;
+		while (index < tabList.length) {
+			if (tabList [index] == this) break;
+			index++;
+		}
+		if (index == tabList.length) {
+			if (isTabGroup ()) return this;
+		}
+	}
+	return parent.computeTabRoot ();
+}
+
+Control [] computeTabList () {
+	if (isTabGroup ()) {
+		if (getVisible () && getEnabled ()) {
+			return new Control [] {this};
+		}
+	}
+	return new Control [0];
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	
@@ -425,17 +454,6 @@ void createWidget (int index) {
 	* the default font for the widget.
 	*/
 	fontList = defaultFont ();
-	
-	/*
-	* Explicitly set the tab ordering for XmTAB_GROUP widgets to
-	* override the default traversal.  This is done so that the
-	* traversal order can be changed after the widget tree is
-	* created.  Unless explicitly changed, the overridded traversal
-	* order is the same as the default.
-	*/
-	if (getNavigationType () == OS.XmTAB_GROUP) {
-		setNavigationType (OS.XmEXCLUSIVE_TAB_GROUP);
-	}
 }
 int defaultBackground () {
 	return getDisplay ().defaultBackground;
@@ -453,7 +471,7 @@ char findMnemonic (String string) {
 	int index = 0;
 	int length = string.length ();
 	do {
-		while ((index < length) && (string.charAt (index) != Mnemonic)) index++;
+		while (index < length && string.charAt (index) != Mnemonic) index++;
 		if (++index >= length) return '\0';
 		if (string.charAt (index) != Mnemonic) return string.charAt (index);
 		index++;
@@ -769,7 +787,7 @@ public Menu getMenu () {
 }
 int getNavigationType () {
 	int [] argList = {OS.XmNnavigationType, 0};
-	OS.XtSetValues (handle, argList, argList.length / 2);
+	OS.XtGetValues (handle, argList, argList.length / 2);
 	return argList [1];
 }
 /**
@@ -1021,6 +1039,31 @@ public boolean isFocusControl () {
 public boolean isReparentable () {
 	checkWidget();
 	return false;
+}
+boolean isShowing () {
+	/*
+	* This is not complete.  Need to check if the
+	* widget is obscurred by a parent or sibling.
+	*/
+	if (!isVisible ()) return false;
+	Control control = this;
+	while (control != null) {
+		Point size = control.getSize ();
+		if (size.x == 1 || size.y == 1) {
+			return false;
+		}
+		control = control.parent;
+	}
+	return true;
+}
+boolean isTabGroup () {
+	int code = traversalCode (0, null);
+	if ((code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0) return false;
+	return (code & (SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT)) != 0;
+}
+boolean isTabItem () {
+	int code = traversalCode (0, null);
+	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
 }
 /**
  * Returns <code>true</code> if the receiver is visible, and
@@ -2138,12 +2181,6 @@ public void setMenu (Menu menu) {
 	}
 	this.menu = menu;
 }
-
-void setNavigationType (int type) {
-	int [] argList = {OS.XmNnavigationType, type};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-}
-
 /**
  * Changes the parent of the widget to be the one provided if
  * the underlying operating system supports this feature.
@@ -2190,6 +2227,13 @@ public boolean setParent (Composite parent) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
+}
+boolean setTabGroupFocus () {
+	return setTabItemFocus ();
+}
+boolean setTabItemFocus () {
+	if (!isShowing ()) return false;
+	return setFocus ();
 }
 /**
  * Sets the receiver's size to the point specified by the arguments.
@@ -2399,7 +2443,7 @@ boolean translateMnemonic (char key, XKeyEvent xEvent) {
 }
 boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	if (xEvent.state == 0) {
-		int code = traversalCode ();
+		int code = traversalCode (key, xEvent);
 		if ((code & SWT.TRAVERSE_MNEMONIC) == 0) return false;
 	} else {
 		if (xEvent.state != OS.Mod1Mask) return false;
@@ -2413,55 +2457,60 @@ boolean translateMnemonic (int key, XKeyEvent xEvent) {
 }
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	int detail = SWT.TRAVERSE_NONE;
+	int code = traversalCode (key, xEvent);
 	boolean all = false;
 	switch (key) {
 		case OS.XK_Escape:
-		case OS.XK_Cancel:
+		case OS.XK_Cancel: {
 			Shell shell = getShell ();
 			if (shell.parent == null) return false;
 			if (!shell.isVisible () || !shell.isEnabled ()) return false;
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
-		case OS.XK_Return:
+		}
+		case OS.XK_Return: {
 			Button button = menuShell ().getDefaultButton ();
 			if (button == null || button.isDisposed ()) return false;
 			if (!button.isVisible () || !button.isEnabled ()) return false;
 			detail = SWT.TRAVERSE_RETURN;
 			break;
-		case OS.XK_Tab:
-			detail = SWT.TRAVERSE_TAB_PREVIOUS;
+		}
+		case OS.XK_Tab: {
 			boolean next = (xEvent.state & OS.ShiftMask) == 0;
-			if (next && ((xEvent.state & OS.ControlMask) != 0)) return false;
-			if (next) detail = SWT.TRAVERSE_TAB_NEXT;
+			/*
+			* NOTE: This code emulates a bug/feature on Windows where
+			* the default is that that Shift+Tab and Ctrl+Tab traverses
+			* instead of going to the widget.  StyledText currently
+			* relies on this behavior.
+			*/
+			switch (xEvent.state) {
+				case OS.ControlMask:
+				case OS.ShiftMask:
+					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
+			}
+			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
+		}
 		case OS.XK_Up:
 		case OS.XK_Left: 
-			detail = SWT.TRAVERSE_ARROW_PREVIOUS;
-			break;
 		case OS.XK_Down:
-		case OS.XK_Right:
-			detail = SWT.TRAVERSE_ARROW_NEXT;
+		case OS.XK_Right: {
+			boolean next = key == OS.XK_Down || key == OS.XK_Right;
+			detail = next ? SWT.TRAVERSE_ARROW_NEXT : SWT.TRAVERSE_ARROW_PREVIOUS;
 			break;
+		}
 		case OS.XK_Page_Up:
-		case OS.XK_Page_Down:
+		case OS.XK_Page_Down: {
 			all = true;
 			if ((xEvent.state & OS.ControlMask) == 0) return false;
 			detail = key == OS.XK_Page_Down ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
+		}
 		default:
 			return false;
 	}
-	boolean doit = (detail & traversalCode ()) != 0;
-	/*
-	* NOTE:  The native widgets handle tab and arrow key traversal
-	* so it is not necessary to traverse these keys.  A canvas widget
-	* has no native traversal by definition so it is necessary to
-	* traverse all keys.
-	*/
-	int flags = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_ESCAPE | SWT.TRAVERSE_PAGE_NEXT | SWT.TRAVERSE_PAGE_PREVIOUS;
-	if ((detail & flags) == 0 && (state & CANVAS) == 0) return false;
 	Event event = new Event ();
-	event.doit = doit;
+	event.doit = (code & detail) != 0;
 	event.detail = detail;
 	event.time = xEvent.time;
 	setKeyState (event, xEvent);
@@ -2474,13 +2523,12 @@ boolean translateTraversal (int key, XKeyEvent xEvent) {
 	} while (all && control != null);
 	return false;
 }
-int traversalCode () {
-	int code = SWT.TRAVERSE_ESCAPE | SWT.TRAVERSE_RETURN;
-	if (getNavigationType () == OS.XmNONE) {
-		code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
-	} else {
-		code |= SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
-	}
+int traversalCode (int key, XKeyEvent xEvent) {
+	int [] argList = new int [] {OS.XmNtraversalOn, 0};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	if (argList [1] == 0) return 0;
+	int code = SWT.TRAVERSE_ESCAPE | SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
+	if (getNavigationType () == OS.XmNONE) code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
 	return code;
 }
 boolean traverse (Event event) {
@@ -2532,10 +2580,54 @@ boolean traverseEscape () {
 	return true;
 }
 boolean traverseGroup (boolean next) {
-	return OS.XmProcessTraversal (handle, next ? OS.XmTRAVERSE_NEXT_TAB_GROUP : OS.XmTRAVERSE_PREV_TAB_GROUP);
+	Control root = computeTabRoot ();
+	Control group = computeTabGroup ();
+	Control [] list = root.computeTabList ();
+	int length = list.length;
+	int index = 0;
+	while (index < length) {
+		if (list [index] == group) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	if (index == length) return false;
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = ((index + offset + length) % length)) != start) {
+		Control control = list [index];
+		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+			if (!isDisposed () && !isFocusControl ()) return true;
+		}
+	}
+	if (group.isDisposed ()) return false;
+	return group.setTabGroupFocus ();
 }
 boolean traverseItem (boolean next) {
-	return OS.XmProcessTraversal (handle, next ? OS.XmTRAVERSE_NEXT : OS.XmTRAVERSE_PREV);
+	Control [] children = parent._getChildren ();
+	int length = children.length;
+	int index = 0;
+	while (index < length) {
+		if (children [index] == this) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		Control child = children [index];
+		if (!child.isDisposed () && child.isTabItem ()) {
+			if (child.setTabItemFocus ()) return true;
+		}
+	}
+	return false;
 }
 boolean traversePage (boolean next) {
 	return false;

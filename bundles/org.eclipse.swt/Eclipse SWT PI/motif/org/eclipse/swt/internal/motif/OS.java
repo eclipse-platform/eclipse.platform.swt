@@ -34,7 +34,7 @@ public class OS {
 	* Added for XmNnavigationType.
 	*/
 //	public static final int XmSTICKY_TAB_GROUP = 0x2;
-	public static final int XmEXCLUSIVE_TAB_GROUP = 0x3;
+//	public static final int XmEXCLUSIVE_TAB_GROUP = 0x3;
 		
 	/*
 	* Added for XtInsertEventHandler.
@@ -812,16 +812,16 @@ public class OS {
 	public static final int XmSTRING = 0x2;
 	public static final int XmSTRING_COMPONENT_SEPARATOR = 0x4;
 	public static final int XmSTRING_COMPONENT_TAB = 0xC;	
-	public static final int XmTAB_GROUP = 0x1;
+//	public static final int XmTAB_GROUP = 0x1;
 	public static final int XmTRANSFER_FAILURE = 0;
 	public static final int XmTRAVERSE_CURRENT = 0x0;
 //	public static final int XmTRAVERSE_DOWN = 0x7;
 //	public static final int XmTRAVERSE_HOME = 0x3;
 //	public static final int XmTRAVERSE_LEFT = 0x8;
-	public static final int XmTRAVERSE_NEXT = 0x1;
-	public static final int XmTRAVERSE_NEXT_TAB_GROUP = 0x4;
-	public static final int XmTRAVERSE_PREV = 0x2;
-	public static final int XmTRAVERSE_PREV_TAB_GROUP = 0x5;
+//	public static final int XmTRAVERSE_NEXT = 0x1;
+//	public static final int XmTRAVERSE_NEXT_TAB_GROUP = 0x4;
+//	public static final int XmTRAVERSE_PREV = 0x2;
+//	public static final int XmTRAVERSE_PREV_TAB_GROUP = 0x5;
 //	public static final int XmTRAVERSE_RIGHT = 0x9;
 //	public static final int XmTRAVERSE_UP = 0x6;
 //	public static final int XmUNMAP = 0x1;
