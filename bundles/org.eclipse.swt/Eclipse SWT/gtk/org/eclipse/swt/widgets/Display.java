@@ -2425,11 +2425,35 @@ static int untranslateKey (int key) {
  */
 public void update () {
 	checkDevice ();
-	// NOT IMPLEMENTED - need to flush only pending exposes
 	OS.gdk_flush ();
-	while ((OS.gtk_events_pending ()) != 0) {
-		OS.gtk_main_iteration ();
-	}	
+	int pendingCount = 0;
+	int /*long*/ eventPtr = 0;
+	int /*long*/ [] pendingEvents = new int [4];
+	GdkEvent event = new GdkEvent ();
+	while ((eventPtr = OS.gdk_event_get ()) != 0) {
+		OS.memmove (event, eventPtr, GdkEvent.sizeof);
+		switch (event.type) {
+			case OS.GDK_EXPOSE:
+			case OS.GDK_NO_EXPOSE:
+				/* Note: does not call eventProc() */
+				OS.gtk_main_do_event (eventPtr);
+				OS.gdk_event_free (eventPtr);
+				break;
+			default:
+				if (pendingCount == pendingEvents.length) {
+					int[] newEvents = new int [pendingCount + 4];
+					System.arraycopy (pendingEvents, 0, newEvents, 0, pendingCount);
+					pendingEvents = newEvents;
+				}
+				pendingEvents [pendingCount++] = eventPtr;
+		}
+	}
+	for (int i=pendingCount - 1; i>=0; i--) {
+		eventPtr = pendingEvents [i];
+		OS.gdk_event_put (eventPtr);
+		OS.gdk_event_free (eventPtr);
+	}
+	OS.gdk_window_process_all_updates ();
 }
 
 /**

@@ -2989,17 +2989,43 @@ public void update () {
 }
 
 void update (boolean all) {
-	OS.gdk_flush ();
-	int /*long*/ window = paintWindow ();
-	int /*long*/ gc = OS.gdk_gc_new (window);
-	OS.gdk_gc_set_exposures (gc, true);
-	OS.gdk_draw_drawable (window, gc, window, 0, 0, 0, 0, 0, 0);
-	OS.g_object_unref (gc);
-	int /*long*/ event = 0;
-	while ((event = OS.gdk_event_get_graphics_expose (window)) != 0) {
-		OS.gtk_main_do_event (event);
-		OS.gdk_event_free (event);	
+//	checkWidget();
+	if (all) {
+		display.update ();
+	} else {
+		OS.gdk_flush ();
+		int pendingCount = 0;
+		int /*long*/ eventPtr = 0;
+		int /*long*/ [] pendingEvents = new int [4];
+		int /*long*/ window = paintWindow ();
+		GdkEventExpose event = new GdkEventExpose ();
+		while ((eventPtr = OS.gdk_event_get ()) != 0) {
+			OS.memmove (event, eventPtr, GdkEventExpose.sizeof);
+			switch (event.type) {
+				case OS.GDK_EXPOSE:
+				case OS.GDK_NO_EXPOSE:
+					if (event.window == window) {
+						/* Note: does not call eventProc() */
+						OS.gtk_main_do_event (eventPtr);
+						OS.gdk_event_free (eventPtr);
+						break;
+					}
+					//FALL THROUGH
+				default:
+					if (pendingCount == pendingEvents.length) {
+						int[] newEvents = new int [pendingCount + 4];
+						System.arraycopy (pendingEvents, 0, newEvents, 0, pendingCount);
+						pendingEvents = newEvents;
+					}
+					pendingEvents [pendingCount++] = eventPtr;
+			}
+		}
+		for (int i=pendingCount - 1; i>=0; i--) {
+			eventPtr = pendingEvents [i];
+			OS.gdk_event_put (eventPtr);
+			OS.gdk_event_free (eventPtr);
+		}
+		OS.gdk_window_process_updates (window, all);
 	}
-	OS.gdk_window_process_updates (window, all);
 }
 }
