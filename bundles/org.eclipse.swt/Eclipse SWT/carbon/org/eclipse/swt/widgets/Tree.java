@@ -912,7 +912,9 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	Shell shell = getShell ();
     /*
-     * This is nasty, but it was the best we could do.
+     * Silenio:
+     * This is nasty, but it was the best we could do. Oddly enough, 
+     * it doesn't bring the shell forward on McQ's machine.
      */
 	shell.bringToTop (false);
 	/*
