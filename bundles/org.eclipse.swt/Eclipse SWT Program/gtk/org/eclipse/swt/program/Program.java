@@ -313,6 +313,9 @@ static String kde_convertQStringAndFree(int /*long*/ qString) {
 }
 
 static boolean kde_init() {
+	//TEMPORARY CODE
+	if (true) return false;
+
 	try {
 		Library.loadLibrary("swt-kde");
 	} catch (Throwable e) {
