@@ -549,6 +549,10 @@ void setItemOrder (int [] itemOrder) {
  *
  * @param sizes the new sizes for each of the receiver's items
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of sizes is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the array of sizes is not the same length as the number of items</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -557,24 +561,9 @@ void setItemOrder (int [] itemOrder) {
 void setItemSizes (Point [] sizes) {
 	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
-	if (sizes.length != count) error (SWT.ERROR_NULL_ARGUMENT);
+	if (sizes.length != count) error (SWT.ERROR_INVALID_ARGUMENT);
 	for (int i=0; i<count; i++) {
-		RECT rect = new RECT ();
-		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, i, rect);
-		REBARBANDINFO rbBand = new REBARBANDINFO ();
-		rbBand.cbSize = REBARBANDINFO.sizeof;
-	
-		/* Get the child size fields first so we don't overwrite them. */
-		rbBand.fMask = OS.RBBIM_CHILDSIZE;
-		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
-		
-		/* Set the size fields we are currently modifying. */
-		rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
-		int width = sizes [i].x, height = sizes [i].y;
-		rbBand.cx = width;
-		rbBand.cxIdeal = width - rect.left - rect.right;
-		rbBand.cyChild = rbBand.cyMinChild = rbBand.cyMaxChild = height;
-		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+		items [i].setSize (sizes [i].x, sizes [i].y);
 	}
 }
 
