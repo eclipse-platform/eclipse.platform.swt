@@ -856,6 +856,7 @@ public static final native int GetThemeMetric(int inMetric, int [] outMetric);
 public static final native int GetThemeTextColor(short inColor, short inDepth, boolean inColorDev, RGBColor outColor);
 public static final native int GetThemeTextDimensions(int sHandle, short fontID, int state, boolean wrapToWidth, Point ioBounds, short[] baseLine);
 public static final native int GetUserFocusEventTarget();
+public static final native int GetUserFocusWindow();
 public static final native int GetWRefCon(int wHandle);
 public static final native int GetWindowActivationScope(int inWindow, int[] outScope);
 public static final native void GetWindowBounds(int wHandle, short windowRegion, Rect bounds);

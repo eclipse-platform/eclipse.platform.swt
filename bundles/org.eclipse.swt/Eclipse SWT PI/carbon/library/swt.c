@@ -4092,6 +4092,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetUserFocusEvent
 }
 #endif /* NO_GetUserFocusEventTarget */
 
+#ifndef NO_GetUserFocusWindow
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetUserFocusWindow
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetUserFocusWindow\n")
+
+	return (jint)GetUserFocusWindow();
+}
+#endif
+
 #ifndef NO_GetWRefCon
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWRefCon
 	(JNIEnv *env, jclass that, jint arg0)
