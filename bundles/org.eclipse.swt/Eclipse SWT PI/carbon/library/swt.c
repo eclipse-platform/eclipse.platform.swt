@@ -927,9 +927,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewCursor(JNIEnv 
 	return (jint) c;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetCursor(JNIEnv *env, jclass zz,
-			jint cursor) {
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetCursor(JNIEnv *env, jclass zz, jint cursor) {
 	SetCursor((const Cursor*)cursor);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeCursor(JNIEnv *env, jclass zz, jint cursor) {
+	return (jint) SetThemeCursor((ThemeCursor)cursor);
 }
 
 //---- GrafPort
@@ -2346,7 +2349,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlBounds(
         jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
 	Rect *r= (Rect*) sa;
 	if (r->bottom - r->top < 0 || r->right - r->left < 0) {
-		fprintf(stdout, "-*-*-*-*-*_*-*_* SetControlBounds: %d %d %d %d\n", r->left, r->top, r->right-r->left, r->bottom-r->top);
+		//fprintf(stdout, "-*-*-*-*-*_*-*_* SetControlBounds: %d %d %d %d\n", r->left, r->top, r->right-r->left, r->bottom-r->top);
 	} else
 		SetControlBounds((ControlRef)cHandle, r);
 	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);

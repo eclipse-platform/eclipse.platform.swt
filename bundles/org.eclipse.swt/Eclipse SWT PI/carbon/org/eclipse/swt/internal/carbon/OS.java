@@ -301,6 +301,25 @@ public class OS {
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Cursors
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
+    public static final int kThemeArrowCursor = 0;
+    public static final int kThemeCopyArrowCursor = 1;
+    public static final int kThemeAliasArrowCursor = 2;
+    public static final int kThemeContextualMenuArrowCursor = 3;
+    public static final int kThemeIBeamCursor = 4;
+    public static final int kThemeCrossCursor = 5;
+    public static final int kThemePlusCursor = 6;
+    public static final int kThemeWatchCursor = 7;
+    public static final int kThemeClosedHandCursor = 8;
+    public static final int kThemeOpenHandCursor = 9;
+    public static final int kThemePointingHandCursor = 10;
+    public static final int kThemeCountingUpHandCursor = 11;
+    public static final int kThemeCountingDownHandCursor = 12;
+    public static final int kThemeCountingUpAndDownHandCursor = 13;
+    public static final int kThemeSpinningCursor = 14;
+    public static final int kThemeResizeLeftCursor = 15;
+    public static final int kThemeResizeRightCursor = 16;
+    public static final int kThemeResizeLeftRightCursor = 17;
+ 
     public static final short iBeamCursor = 1;
     public static final short crossCursor = 2;
     public static final short plusCursor = 3;
@@ -310,6 +329,7 @@ public class OS {
 	public static native int NewCursor(short hotX, short hotY, short[] data, short[] mask);
 	public static native int GetCursor(short id);
 	public static native void SetCursor(int cursor);
+	public static native int SetThemeCursor(int themeCursor);
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// QuickDraw
