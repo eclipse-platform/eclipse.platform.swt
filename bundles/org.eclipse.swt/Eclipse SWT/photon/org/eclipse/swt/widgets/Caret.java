@@ -91,15 +91,10 @@ boolean drawCaret () {
 	if (!OS.PtWidgetIsRealized (handle)) return false;
 	int phGC = OS.PgCreateGC (0); // NOTE: PgCreateGC ignores the parameter
 	if (phGC == 0) return false;
-	int [] args = {OS.Pt_ARG_COLOR, 0, 0, OS.Pt_ARG_FILL_COLOR, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	int foreground = args [1];
-	int background = args [4];
-	int color = foreground ^ ~background;
 	int prevContext = OS.PgSetGC (phGC);
 	OS.PgSetRegion (OS.PtWidgetRid (handle));
 	OS.PgSetDrawMode (OS.Pg_DRAWMODE_XOR);
-	OS.PgSetFillColor (color);
+	OS.PgSetFillColor (0xFFFFFF);
 	int nWidth = width, nHeight = height;
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
