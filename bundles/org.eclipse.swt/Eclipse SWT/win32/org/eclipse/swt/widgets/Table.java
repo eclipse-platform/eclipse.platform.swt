@@ -3223,12 +3223,23 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 					if (clrText == -1) clrText = item.foreground;
 					int clrTextBk = item.cellBackground != null ? item.cellBackground [nmcd.iSubItem] : -1;
 					if (clrTextBk == -1) clrTextBk = item.background;
+					/*
+					* Feature in Windows.  When the font is set for one cell in a table,
+					* Windows does not reset the font for the next cell.  As a result,
+					* all subsequent cells are drawn using the new font.  The fix is to
+					* reset the font to the default.
+					* 
+					* NOTE: This does not happen for foreground and background.
+					*/
 					if (hFont == -1 && clrText == -1 && clrTextBk == -1) {
 						if (item.cellForeground == null && item.cellBackground == null && item.cellFont == null) {
-							break;
+							int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+							int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+							if (count == 1) break;
 						}
 					}
-					if (hFont != -1) OS.SelectObject(nmcd.hdc, hFont);
+					if (hFont == -1) hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+					OS.SelectObject(nmcd.hdc, hFont);
 					nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 					nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 					OS.MoveMemory (lParam, nmcd, NMLVCUSTOMDRAW.sizeof);

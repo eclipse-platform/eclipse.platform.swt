@@ -633,6 +633,30 @@ public void setFont (Font font){
 	}
 	if (this.font == hFont) return;
 	this.font = hFont;
+	/*
+	* Bug in Windows.  Despite the fact that every item in the
+	* table always has LPSTR_TEXTCALLBACK, Windows caches the
+	* bounds for the selected items.  This means that 
+	* when you change the string to be something else, Windows
+	* correctly asks you for the new string but when the item
+	* is selected, the selection draws using the bounds of the
+	* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+	* even though it has not changed, causing Windows to flush
+	* cached bounds.
+	*/
+	if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
+		int itemIndex = parent.indexOf (this);
+		if (itemIndex != -1) {
+			int hwnd = parent.handle;
+			LVITEM lvItem = new LVITEM ();
+			lvItem.mask = OS.LVIF_TEXT;
+			lvItem.iItem = itemIndex;
+			lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+			OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+			cached = false;
+		}
+	}
+	parent.setScrollWidth (this, false);
 	redraw ();
 }
 
@@ -675,6 +699,32 @@ public void setFont (int index, Font font) {
 	}
 	if (cellFont [index] == hFont) return;
 	cellFont [index] = hFont;
+	if (index == 0) {
+		/*
+		* Bug in Windows.  Despite the fact that every item in the
+		* table always has LPSTR_TEXTCALLBACK, Windows caches the
+		* bounds for the selected items.  This means that 
+		* when you change the string to be something else, Windows
+		* correctly asks you for the new string but when the item
+		* is selected, the selection draws using the bounds of the
+		* previous item.  The fix is to reset LPSTR_TEXTCALLBACK
+		* even though it has not changed, causing Windows to flush
+		* cached bounds.
+		*/
+		if ((parent.style & SWT.VIRTUAL) == 0 && cached) {
+			int itemIndex = parent.indexOf (this);
+			if (itemIndex != -1) {
+				int hwnd = parent.handle;
+				LVITEM lvItem = new LVITEM ();
+				lvItem.mask = OS.LVIF_TEXT;
+				lvItem.iItem = itemIndex;
+				lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
+				OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
+				cached = false;
+			}
+		}
+		parent.setScrollWidth (this, false);
+	}	
 	redraw ();
 }
 /**

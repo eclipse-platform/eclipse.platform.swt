@@ -216,6 +216,21 @@ static TreeItem checkNull (TreeItem item) {
 	return item;
 }
 
+void _setText (String string) {
+	int hwnd = parent.handle;
+	int hHeap = OS.GetProcessHeap ();
+	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (pszText, buffer, byteCount); 
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
+	tvItem.hItem = handle;
+	tvItem.pszText = pszText;
+	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
+	OS.HeapFree (hHeap, 0, pszText);
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -615,6 +630,13 @@ public void setFont (Font font){
 	}
 	if (this.font == hFont) return;
 	this.font = hFont;
+	/*
+	* Bug in Windows.  When the font is changed for an item,
+	* the bounds for the item are not updated causing the text
+	* to be clipped.  The fix is reset the text causing Windows
+	* to compute the new bounds using the new font.
+	*/
+	_setText (text);
 	redraw ();
 }
 
@@ -718,18 +740,7 @@ public void setText (String string) {
 	*/
 	if (string.equals (text)) return;
 	super.setText (string);
-	int hwnd = parent.handle;
-	int hHeap = OS.GetProcessHeap ();
-	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
-	int byteCount = buffer.length () * TCHAR.sizeof;
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
-	OS.MoveMemory (pszText, buffer, byteCount); 
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_TEXT;
-	tvItem.hItem = handle;
-	tvItem.pszText = pszText;
-	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
-	OS.HeapFree (hHeap, 0, pszText);
+	_setText (string);
 }
 
 }
