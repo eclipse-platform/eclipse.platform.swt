@@ -220,11 +220,6 @@ int processKeyDown (int callData) {
 				OS.GrabModeAsync,
 				OS.GrabModeAsync,
 				OS.None,
-				OS.None,
-				OS.CurrentTime);
-			OS.XChangeActivePointerGrab (
-				xDisplay,
-				OS.None,
 				cursor,
 				OS.CurrentTime);
 
