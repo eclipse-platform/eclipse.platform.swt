@@ -73,35 +73,6 @@ public void generate(Class clazz) {
 	}
 }
 
-void generateExcludes(Method[] methods) {
-	HashSet excludes = new HashSet();
-	for (int i = 0; i < methods.length; i++) {
-		Method method = methods[i];
-		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-		MethodData methodData = getMetaData().getMetaData(method);
-		String exclude = methodData.getExclude();
-		if (exclude.length() != 0) {
-			excludes.add(exclude);
-		}
-	}
-	for (Iterator iter = excludes.iterator(); iter.hasNext();) {
-		String exclude = (String)iter.next();
-		outputln(exclude);
-		for (int i = 0; i < methods.length; i++) {
-			Method method = methods[i];
-			if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
-			MethodData methodData = getMetaData().getMetaData(method);
-			String methodExclude = methodData.getExclude();
-			if (exclude.equals(methodExclude)) {
-				output("#define NO_");
-				outputln(getFunctionName(method));
-			}
-		}
-		outputln("#endif");
-		outputln();
-	}
-}
-
 public void generate(Method[] methods) {
 	sort(methods);	
 	for (int i = 0; i < methods.length; i++) {
@@ -134,6 +105,35 @@ public void generate(Method method) {
 
 public void setEnterExitMacro(boolean enterExitMacro) {
 	this.enterExitMacro = enterExitMacro;
+}
+
+void generateExcludes(Method[] methods) {
+	HashSet excludes = new HashSet();
+	for (int i = 0; i < methods.length; i++) {
+		Method method = methods[i];
+		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
+		MethodData methodData = getMetaData().getMetaData(method);
+		String exclude = methodData.getExclude();
+		if (exclude.length() != 0) {
+			excludes.add(exclude);
+		}
+	}
+	for (Iterator iter = excludes.iterator(); iter.hasNext();) {
+		String exclude = (String)iter.next();
+		outputln(exclude);
+		for (int i = 0; i < methods.length; i++) {
+			Method method = methods[i];
+			if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
+			MethodData methodData = getMetaData().getMetaData(method);
+			String methodExclude = methodData.getExclude();
+			if (exclude.equals(methodExclude)) {
+				output("#define NO_");
+				outputln(getFunctionName(method));
+			}
+		}
+		outputln("#endif");
+		outputln();
+	}
 }
 
 void generateNativeMacro(Class clazz) {
