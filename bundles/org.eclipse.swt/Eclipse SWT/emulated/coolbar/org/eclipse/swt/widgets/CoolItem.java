@@ -32,9 +32,8 @@ import org.eclipse.swt.graphics.*;
 public class CoolItem extends Item {
 	Control control;
 	CoolBar parent;
-	int preferredWidth, requestedWidth;
 	boolean ideal;
-	Point minimumSize = new Point(0, 0);
+	int preferredWidth, preferredHeight, minimumWidth, minimumHeight, requestedWidth;
 	Rectangle itemBounds = new Rectangle(0, 0, 0, 0);
 	
 	static final int MARGIN_WIDTH = 4;
@@ -312,7 +311,7 @@ public Control getControl () {
  */
 public Point getMinimumSize () {
 	checkWidget();
-	return minimumSize;
+	return new Point (minimumWidth, minimumHeight);
 }
 /**
  * Returns the receiver's parent, which must be a <code>CoolBar</code>.
@@ -342,8 +341,7 @@ public CoolBar getParent () {
  */
 public Point getPreferredSize () {
 	checkWidget();
-	int height = getSize().y;
-	return new Point(preferredWidth, height);
+	return new Point(preferredWidth, preferredHeight);
 }
 /**
  * Returns a point describing the receiver's size. The
@@ -363,7 +361,7 @@ public Point getSize () {
 	return new Point (itemBounds.width, itemBounds.height);
 }
 int internalGetMinimumWidth () {
-	int width = minimumSize.x + MINIMUM_WIDTH;
+	int width = minimumWidth + MINIMUM_WIDTH;
 	if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 		width += CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 	}
@@ -448,8 +446,11 @@ public void setControl (Control control) {
 	if (oldControl != null) oldControl.setVisible(false);
 	this.control = control;
 	if (control != null && !control.isDisposed ()) {
-		Rectangle bounds = getBounds();
-		control.setBounds (	bounds.x + MINIMUM_WIDTH, bounds.y, bounds.width - MINIMUM_WIDTH, bounds.height);	
+		int controlWidth = itemBounds.width - MINIMUM_WIDTH;
+		if ((style & SWT.DROP_DOWN) != 0 && itemBounds.width < preferredWidth) {
+			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
+		}
+		control.setBounds (itemBounds.x + MINIMUM_WIDTH,	itemBounds.y, controlWidth, itemBounds.height);
 		control.setVisible(true);
 	}
 }
@@ -469,7 +470,8 @@ public void setControl (Control control) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	setMinimumSize(new Point(width, height));
+	minimumWidth = width;
+	minimumHeight = height;
 }
 /**
  * Sets the minimum size that the cool item can be resized to
@@ -489,8 +491,8 @@ public void setMinimumSize (int width, int height) {
  */
 public void setMinimumSize (Point size) {
 	checkWidget ();
-	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);	
-	minimumSize = size;
+	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
+	setMinimumSize(size.x, size.y);
 }
 /**
  * Sets the receiver's ideal size to the point specified by the arguments.
@@ -506,10 +508,8 @@ public void setMinimumSize (Point size) {
 public void setPreferredSize (int width, int height) {
 	checkWidget();
 	ideal = true;
-	preferredWidth = Math.max (width, MINIMUM_WIDTH);
-	Rectangle bounds = getBounds();
-	setBounds(bounds.x, bounds.y, bounds.width, height);
-	if (height != bounds.height) parent.relayout();
+	preferredWidth = Math.max (width, minimumWidth + MINIMUM_WIDTH);
+	preferredHeight = height;
 }
 /**
  * Sets the receiver's ideal size to the point specified by the argument.
@@ -547,13 +547,16 @@ public void setPreferredSize (Point size) {
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	int newWidth = Math.max (width, internalGetMinimumWidth());
-	itemBounds.width = requestedWidth = newWidth;
-	if (!ideal) preferredWidth = newWidth;
+	width = Math.max(width, minimumWidth + MINIMUM_WIDTH);
+	if (!ideal) {
+		preferredWidth = width;
+		preferredHeight = height;
+	}
+	itemBounds.width = requestedWidth = width;
 	itemBounds.height = height;
 	if (control != null) {
-		int controlWidth = newWidth - MINIMUM_WIDTH;
-		if ((style & SWT.DROP_DOWN) != 0 && newWidth < preferredWidth) {
+		int controlWidth = width - MINIMUM_WIDTH;
+		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
 		control.setSize(controlWidth, height);

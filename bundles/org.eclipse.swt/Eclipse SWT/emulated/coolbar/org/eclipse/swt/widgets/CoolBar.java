@@ -119,8 +119,20 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	for (int row = 0; row < items.length; row++) {
 		int rowWidth = 0, rowHeight = 0;
 		for (int i = 0; i < items[row].length; i++) {
-			rowWidth += items[row][i].preferredWidth;
-			rowHeight = Math.max(rowHeight, items[row][i].getSize().y);
+			CoolItem item = items[row][i];
+			Point itemSize;
+			if (item.ideal) {
+				itemSize = new Point (item.preferredWidth, item.preferredHeight);
+			} else {
+				if (item.control != null) {
+					itemSize = item.control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+					itemSize = item.computeSize(itemSize.x, itemSize.y);
+				} else {
+					itemSize = item.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+				}
+			}
+			rowWidth += itemSize.x;
+			rowHeight = Math.max(rowHeight, itemSize.y);			
 		}
 		height += rowHeight;
 		if (!flat && row > 0) height += ROW_SPACING;
@@ -353,6 +365,7 @@ void createItem (CoolItem item, int index) {
 		if (lastItem.ideal) {
 			Rectangle bounds = lastItem.getBounds();
 			bounds.width = lastItem.preferredWidth;
+			bounds.height = lastItem.preferredHeight;
 			lastItem.requestedWidth = lastItem.preferredWidth;
 			lastItem.setBounds(bounds.x, bounds.y, bounds.width, bounds.height);  
 		}
@@ -759,9 +772,7 @@ int layoutItems () {
 		int available = width;
 		for (int i = 0; i < count; i++) {
 			CoolItem item = items[row][i];
-			if (item.control != null) {
-				rowHeight = Math.max(rowHeight, item.control.getSize().y);
-			}
+			rowHeight = Math.max(rowHeight, item.getSize().y);
 			available -= item.internalGetMinimumWidth();	
 		}
 		if (row > 0) y += rowSpacing;
