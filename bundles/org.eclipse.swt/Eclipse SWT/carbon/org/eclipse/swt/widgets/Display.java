@@ -263,6 +263,8 @@ public class Display extends Device {
 		
 	};
 
+	static String APP_NAME = "SWT";
+
 	/* Multiple Displays. */
 	static Display Default;
 	static Display [] Displays = new Display [4];
@@ -290,36 +292,6 @@ public class Display extends Device {
 				setDevice (device);
 			}
 		};
-	}
-	
-	static {
-		/*
-		* Feature in the Macintosh.  On OS 10.2, it is necessary
-		* to explicitly check in with the Process Manager and set
-		* the current process to be the front process in order for
-		* windows to come to the front by default.  The fix is call
-		* both GetCurrentProcess() and SetFrontProcess().
-		* 
-		* NOTE: It is not actually necessary to use the process
-		* serial number returned by GetCurrentProcess() in the
-		* call to SetFrontProcess() (ie. kCurrentProcess can be
-		* used) but both functions must be called in order for
-		* windows to come to the front.
-		*/
-		int [] psn = new int [2];
-		if (OS.GetCurrentProcess (psn) == OS.noErr) {
-			OS.SetFrontProcess (psn);
-		}
-		/*
-		* Feature in the Macintosh.  In order to get the standard
-		* application menu to appear on the menu bar, an application
-		* must manipulate the menu bar.  If the application does not
-		* install a menu bar, the application menu will not appear.
-		* The fix is to use ClearMenuBar() to manipulate the menu
-		* bar before any application has had a chance install a menu
-		* bar.
-		*/
-		OS.ClearMenuBar ();
 	}
 	
 /*
@@ -826,6 +798,41 @@ protected void create (DeviceData data) {
 }
 
 void createDisplay (DeviceData data) {
+	/*
+	* Feature in the Macintosh.  On OS 10.2, it is necessary
+	* to explicitly check in with the Process Manager and set
+	* the current process to be the front process in order for
+	* windows to come to the front by default.  The fix is call
+	* both GetCurrentProcess() and SetFrontProcess().
+	* 
+	* NOTE: It is not actually necessary to use the process
+	* serial number returned by GetCurrentProcess() in the
+	* call to SetFrontProcess() (ie. kCurrentProcess can be
+	* used) but both functions must be called in order for
+	* windows to come to the front.
+	*/
+	int [] psn = new int [2];
+	if (OS.GetCurrentProcess (psn) == OS.noErr) {
+		OS.CPSEnableForegroundOperation (psn, 0x03, 0x3C, 0x2C, 0x1103);
+		if (APP_NAME != null) {
+			byte[] buffer = new byte[APP_NAME.length () + 1];
+			for (int i = 0; i < buffer.length - 1; i++) {
+				buffer[i] = (byte) APP_NAME.charAt (i);					
+			}
+			OS.CPSSetProcessName (psn, buffer);
+		}
+		OS.SetFrontProcess (psn);
+	}
+	/*
+	* Feature in the Macintosh.  In order to get the standard
+	* application menu to appear on the menu bar, an application
+	* must manipulate the menu bar.  If the application does not
+	* install a menu bar, the application menu will not appear.
+	* The fix is to use ClearMenuBar() to manipulate the menu
+	* bar before any application has had a chance install a menu
+	* bar.
+	*/
+	OS.ClearMenuBar ();
 	queue = OS.GetCurrentEventQueue ();
 	OS.TXNInitTextension (0, 0, 0);
 }
@@ -3026,6 +3033,7 @@ void sendEvent (int eventType, Event event) {
  * @param name the new app name
  */
 public static void setAppName (String name) {
+	APP_NAME = name;
 }
 
 void setCurrentCaret (Caret caret) {

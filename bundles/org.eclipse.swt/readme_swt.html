@@ -41,6 +41,9 @@ Under KDE, open RedHatMenu > Run Command...  And then type in "gnome-theme-manag
 the paste operation hangs Eclipse for several minutes. This situation can be
 encountered when copying from an Eclipse target workbench, suspending the target
 workbench at a breakpoint and pasting into the hosting Eclipse workbench. (bug <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=44915">44915</a>)</p>
+<h4>Running SWT App (Mac OS X Carbon only)</h4>
+<p>On Mac OS X Carbon, in order to run an SWT application it is necessary to specify the argument "-XstartOnFirstThread" to the Java VM. This
+argument is only supported in JDK 1.4.2_05 and higher.</p>
 <h4>Drag and drop on Mac (Mac OS X Carbon only)</h4>
 <p>The Mac OS X Carbon implementation of SWT does not support dragging from an SWT application to another application. (bug
 <a href="https://bugs.eclipse.org/bugs/show_bug.cgi?id=68212">68212</a>)</p>
