@@ -104,7 +104,7 @@ public class Shell extends Decorations {
 	boolean hasFocus, mapped;
 	int oldX, oldY, oldWidth, oldHeight;
 	Control lastActive;
-	int clippingRgn;
+	Region region;
 
 /**
  * Constructs a new instance of this class. This is equivalent
@@ -546,15 +546,18 @@ void fixShell (Shell newShell, Control control) {
 	newShell.setToolTipText (control.handle, control.toolTipText);
 }
 
+public Point getLocation () {
+	checkWidget ();
+	int [] x = new int [1], y = new int [1];
+	OS.gtk_window_get_position (shellHandle, x,y);
+	return new Point (x [0], y [0]);
+}
+
 /** 
- * Sets the region managed by the argument to the current
- * shape of the shell.
+ * Returns the region that defines the shape of the shell.
  *
- * @param region the region to fill with the clipping region
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
- * </ul>	
+ * @return the region that defines the shape of the shell
+ *	
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -563,32 +566,9 @@ void fixShell (Shell newShell, Control control) {
  * @since 3.0
  *
  */
-public void getClipping (Region region) {
+public Region getRegion () {
 	checkWidget ();
-	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int hRegion = region.handle;
-	OS.gdk_region_subtract (hRegion, hRegion);
-	if (clippingRgn != 0) {
-		OS.gdk_region_union(hRegion, clippingRgn);
-	} else {
-		int width = OS.GTK_WIDGET_WIDTH (scrolledHandle) + trimWidth ();
-		int height = OS.GTK_WIDGET_HEIGHT (scrolledHandle) + trimHeight ();
-		if (menuBar != null)  {
-			int barHandle = menuBar.handle;
-			height += OS.GTK_WIDGET_HEIGHT (barHandle);
-		}
-		GdkRectangle gdkRect = new GdkRectangle();
-		gdkRect.width = width;
-		gdkRect.height = height;
-		OS.gdk_region_union_with_rect(hRegion, gdkRect);
-	}
-}
-
-public Point getLocation () {
-	checkWidget ();
-	int [] x = new int [1], y = new int [1];
-	OS.gtk_window_get_position (shellHandle, x,y);
-	return new Point (x [0], y [0]);
+	return region;
 }
 
 public Point getSize () {
@@ -893,50 +873,6 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 }
 
 /**
- * Sets the shape of the shell to the region specified
- * by the argument.  A null region will restore the default shape.
- * Shell must be created with the style SWT.NO_TRIM.
- *
- * @param rect the clipping region.
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @since 3.0
- *
- */
-public void setClipping(Region region) {
-	checkWidget ();
-	if ((style & SWT.NO_TRIM) == 0) return;
-	if (clippingRgn != 0) {
-		OS.gdk_region_destroy (clippingRgn);
-		clippingRgn = 0;
-	}
-	if (region == null) {
-		OS.gtk_widget_shape_combine_mask (shellHandle, 0, 0, 0);
-		return;
-	}
-	Rectangle rect = region.getBounds ();
-	Color black = display.getSystemColor (SWT.COLOR_BLACK);
-	Color white = display.getSystemColor (SWT.COLOR_WHITE);
-	PaletteData palette = new PaletteData (new RGB[] {white.getRGB(), black.getRGB()});
-	ImageData data = new ImageData (rect.x + rect.width, rect.y + rect.height, 1, palette);
-	data.transparentPixel = 0;
-	Image image = new Image (display, data);
-	GC gc = new GC (image);
-	gc.setClipping (region);
-	gc.setForeground (black);
-	gc.fillRectangle (0, 0, rect.x + rect.width, rect.y + rect.height);
-	gc.dispose ();
-	OS.gtk_widget_shape_combine_mask(shellHandle, image.mask, 0, 0);
-	image.dispose ();
-	clippingRgn = OS.gdk_region_new ();
-	OS.gdk_region_union (clippingRgn, region.handle);
-}
-
-/**
  * Sets the input method editor mode to the argument which 
  * should be the result of bitwise OR'ing together one or more
  * of the following constants defined in class <code>SWT</code>:
@@ -1009,6 +945,44 @@ public void setMinimized (boolean minimized) {
 		OS.gtk_window_deiconify (shellHandle);
 		bringToTop (false);
 	}
+}
+
+/**
+ * Sets the shape of the shell to the region specified
+ * by the argument.  A null region will restore the default shape.
+ * Shell must be created with the style SWT.NO_TRIM.
+ *
+ * @param rgn the region that defines the shape of the shell
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ *
+ */
+public void setRegion (Region region) {
+	checkWidget ();
+	if ((style & SWT.NO_TRIM) == 0) return;
+	Image image = null;
+	if (region != null) {
+		Rectangle rect = region.getBounds ();
+		Color black = display.getSystemColor (SWT.COLOR_BLACK);
+		Color white = display.getSystemColor (SWT.COLOR_WHITE);
+		PaletteData palette = new PaletteData (new RGB[] {white.getRGB(), black.getRGB()});
+		ImageData data = new ImageData (rect.x + rect.width, rect.y + rect.height, 1, palette);
+		data.transparentPixel = 0;
+		image = new Image (display, data);
+		GC gc = new GC (image);
+		gc.setClipping (region);
+		gc.setForeground (black);
+		gc.fillRectangle (0, 0, rect.x + rect.width, rect.y + rect.height);
+		gc.dispose ();
+	}
+	OS.gtk_widget_shape_combine_mask (shellHandle, image == null ? 0 : image.mask, 0, 0);
+	if (image != null) image.dispose ();
+	this.region = region;
 }
 
 public void setText (String string) {
@@ -1196,8 +1170,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;
-	if (clippingRgn != 0)  OS.gdk_region_destroy (clippingRgn);
-	clippingRgn = 0;
+	region = null;
 	lastActive = null;
 }
 
