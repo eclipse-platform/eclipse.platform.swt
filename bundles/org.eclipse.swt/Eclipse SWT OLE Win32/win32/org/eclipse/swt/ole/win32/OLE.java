@@ -29,6 +29,9 @@ public class OLE extends SWT {
 	public static final int E_NOINTERFACE = -2147467262;  // QueryInterface did not recognize the requested interface.
 	public static final int E_NOTIMPL = -2147467263; // Not implemented
 	
+	public static final String IID_IUNKNOWN = "{00000000-0000-0000-C000-000000000046}";
+	public static final String IID_IDISPATCH = "{00020400-0000-0000-C000-000000000046}";
+	
 	// Verbs that can be invoked on this client
 	public static final int OLEIVERB_DISCARDUNDOSTATE = -6; // close the OLE object and discard the undo state
 	public static final int OLEIVERB_HIDE             = -3; // hide the OLE object
@@ -257,19 +260,19 @@ public class OLE extends SWT {
 	public static final int CC_MPWPASCAL = 8;
 	public static final int CC_MAX = 9;
 	
-	static final String ERROR_NOT_IMPLEMENTED_MSG = "Required functionality not currently supported.";
-	static final String ERROR_CANNOT_CREATE_FILE_MSG = "Failed to create file.";
-	static final String ERROR_CANNOT_CREATE_OBJECT_MSG = "Failed to create Ole Client.";
-	static final String ERROR_CANNOT_OPEN_FILE_MSG = "File does not exist, is not accessible to user or does not have the correct format.";
-	static final String ERROR_INTERFACE_NOT_FOUND_MSG = "Failed to find requested interface on OLE Object.";
-	static final String ERROR_INVALID_CLASSID_MSG = "Class ID not found in registry";
-	static final String ERROR_CANNOT_ACCESS_CLASSFACTORY_MSG = "Failed to get the class factory for the specified classID";
-	static final String ERROR_CANNOT_CREATE_LICENSED_OBJECT_MSG = "Failed to create Licensed instance";
-	static final String ERROR_OUT_OF_MEMORY_MSG = "Out of Memory";
-	static final String ERROR_CANNOT_CHANGE_VARIANT_TYPE_MSG = "Failed to change Variant type";
-	static final String ERROR_INVALID_INTERFACE_ADDRESS_MSG = "Invalid address received for Ole Interface.";
-	static final String ERROR_APPLICATION_NOT_FOUND_MSG = "Unable to find Application.";
-	static final String ERROR_ACTION_NOT_PERFORMED_MSG = "Action can not be performed.";		
+	static final String ERROR_NOT_IMPLEMENTED_MSG = "Required functionality not currently supported.";//$NON-NLS-1$
+	static final String ERROR_CANNOT_CREATE_FILE_MSG = "Failed to create file.";//$NON-NLS-1$
+	static final String ERROR_CANNOT_CREATE_OBJECT_MSG = "Failed to create Ole Client.";//$NON-NLS-1$
+	static final String ERROR_CANNOT_OPEN_FILE_MSG = "File does not exist, is not accessible to user or does not have the correct format.";//$NON-NLS-1$
+	static final String ERROR_INTERFACE_NOT_FOUND_MSG = "Failed to find requested interface on OLE Object.";//$NON-NLS-1$
+	static final String ERROR_INVALID_CLASSID_MSG = "Class ID not found in registry";//$NON-NLS-1$
+	static final String ERROR_CANNOT_ACCESS_CLASSFACTORY_MSG = "Failed to get the class factory for the specified classID";//$NON-NLS-1$
+	static final String ERROR_CANNOT_CREATE_LICENSED_OBJECT_MSG = "Failed to create Licensed instance";//$NON-NLS-1$
+	static final String ERROR_OUT_OF_MEMORY_MSG = "Out of Memory";//$NON-NLS-1$
+	static final String ERROR_CANNOT_CHANGE_VARIANT_TYPE_MSG = "Failed to change Variant type";//$NON-NLS-1$
+	static final String ERROR_INVALID_INTERFACE_ADDRESS_MSG = "Invalid address received for Ole Interface.";//$NON-NLS-1$
+	static final String ERROR_APPLICATION_NOT_FOUND_MSG = "Unable to find Application.";//$NON-NLS-1$
+	static final String ERROR_ACTION_NOT_PERFORMED_MSG = "Action can not be performed.";//$NON-NLS-1$
 
 
 public static void error (int code) {
@@ -286,59 +289,59 @@ public static void error (int code, int hresult) {
 		/* SWT Errors (non-fatal) */
 		case ERROR_CANNOT_CREATE_FILE : {
 			String msg = ERROR_CANNOT_CREATE_FILE_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
 		case ERROR_CANNOT_CREATE_OBJECT : {
 			String msg = ERROR_CANNOT_CREATE_OBJECT_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
-			throw new SWTException (code, msg);
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
+			throw new SWTException (code, msg);//$NON-NLS-1$
 		}
 		case ERROR_CANNOT_OPEN_FILE : {
 			String msg = ERROR_CANNOT_OPEN_FILE_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
 		case ERROR_INTERFACE_NOT_FOUND : {
 			String msg = ERROR_INTERFACE_NOT_FOUND_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
 		case ERROR_INVALID_CLASSID : {
 			String msg = ERROR_INVALID_CLASSID_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
 		case ERROR_CANNOT_ACCESS_CLASSFACTORY : {
 			String msg = ERROR_CANNOT_ACCESS_CLASSFACTORY_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
 		case ERROR_CANNOT_CREATE_LICENSED_OBJECT : {
 			String msg = ERROR_CANNOT_CREATE_LICENSED_OBJECT_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
 		case ERROR_CANNOT_CHANGE_VARIANT_TYPE : {
 			String msg = ERROR_CANNOT_CHANGE_VARIANT_TYPE_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
 		case ERROR_APPLICATION_NOT_FOUND : {
 			String msg = ERROR_APPLICATION_NOT_FOUND_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
 		case ERROR_ACTION_NOT_PERFORMED : {
 			String msg = ERROR_ACTION_NOT_PERFORMED_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult;//$NON-NLS-1$
 			throw new SWTException (code, msg);
 		}
 		
 		/* OS Failure/Limit (fatal, may occur only on some platforms) */
 		case ERROR_OUT_OF_MEMORY : {
 			String msg = ERROR_ACTION_NOT_PERFORMED_MSG;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult; //$NON-NLS-1$
 			throw new SWTError (code, msg);
 		}
 	}
@@ -361,26 +364,26 @@ public static void error (int code, int hresult) {
  */
 public static String findProgramID (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (extension.length () == 0) return "";
+	if (extension.length () == 0) return ""; //$NON-NLS-1$
 	
-	if (extension.charAt (0) != '.') extension = "." + extension;
+	if (extension.charAt (0) != '.') extension = "." + extension; //$NON-NLS-1$
 
 	/* Use the character encoding for the default locale */
 	TCHAR extensionKey = new TCHAR(0, extension, true);
 	String result = getKeyValue(extensionKey);
 	if (result != null) {
 		// look for "<programID>\NotInsertable"
-		TCHAR notInsertableKey = new TCHAR(0, result+"\\NotInsertable", true);
-		if (getKeyExists(notInsertableKey)) return "";
+		TCHAR notInsertableKey = new TCHAR(0, result+"\\NotInsertable", true); //$NON-NLS-1$
+		if (getKeyExists(notInsertableKey)) return ""; //$NON-NLS-1$
 		// look for "<programID>\Insertable"
-		TCHAR insertableKey = new TCHAR(0, result+"\\Insertable", true);
+		TCHAR insertableKey = new TCHAR(0, result+"\\Insertable", true); //$NON-NLS-1$
 		if (getKeyExists(insertableKey)) return result;
 		// look for "<programID>\protocol\StdFileEditing\server"
-		TCHAR serverKey = new TCHAR(0, result+"\\protocol\\StdFileEditing\\server", true);
+		TCHAR serverKey = new TCHAR(0, result+"\\protocol\\StdFileEditing\\server", true); //$NON-NLS-1$
 		if (getKeyExists(serverKey)) return result;
 	}
 	
-	return "";
+	return ""; //$NON-NLS-1$
 }
 static String getKeyValue (TCHAR key) {
 	int [] phkResult = new int [1];
