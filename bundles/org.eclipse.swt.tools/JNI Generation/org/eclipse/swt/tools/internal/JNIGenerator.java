@@ -86,6 +86,7 @@ static int getByteCount(Class clazz) {
 }
 
 static String getTypeSignature(Class clazz) {
+	if (clazz == Void.TYPE) return "V";
 	if (clazz == Integer.TYPE) return "I";
 	if (clazz == Boolean.TYPE) return "Z";
 	if (clazz == Long.TYPE) return "J";
@@ -94,6 +95,7 @@ static String getTypeSignature(Class clazz) {
 	if (clazz == Byte.TYPE) return "B";
 	if (clazz == Float.TYPE) return "F";
 	if (clazz == Double.TYPE) return "D";
+	if (clazz == String.class) return "Ljava/lang/String;";
 	if (clazz.isArray()) {
 		Class componentType = clazz.getComponentType();
 		return "[" + getTypeSignature(componentType);
@@ -102,6 +104,7 @@ static String getTypeSignature(Class clazz) {
 }
 
 static String getTypeSignature1(Class clazz) {
+	if (clazz == Void.TYPE) return "Void";
 	if (clazz == Integer.TYPE) return "Int";
 	if (clazz == Boolean.TYPE) return "Boolean";
 	if (clazz == Long.TYPE) return "Long";
@@ -110,6 +113,7 @@ static String getTypeSignature1(Class clazz) {
 	if (clazz == Byte.TYPE) return "Byte";
 	if (clazz == Float.TYPE) return "Float";
 	if (clazz == Double.TYPE) return "Double";
+	if (clazz == String.class) return "String";
 	return "Object";
 }
 
@@ -159,6 +163,7 @@ static String getTypeSignature4(Class clazz) {
 	if (clazz == Byte.TYPE) return "jbyte";
 	if (clazz == Float.TYPE) return "jfloat";
 	if (clazz == Double.TYPE) return "jdouble";
+	if (clazz == String.class) return "jstring";
 	if (clazz.isArray()) {
 		Class componentType = clazz.getComponentType();
 		return getTypeSignature4(componentType) + " *";
