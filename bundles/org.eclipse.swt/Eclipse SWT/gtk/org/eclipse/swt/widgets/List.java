@@ -1054,18 +1054,18 @@ public void select (int index) {
  * </ul>
  */
 public void select (int start, int end) {
-	checkWidget();
-	if (!(0 <= end && start <= end)) return;
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	if (count <= start || count == 0) return;
-	start = Math.min (count - 1, Math.max (0, start));
-	end = Math.min (count - 1, Math.max (0, end));
+	if (count == 0 || start >= count) return;
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
-		OS.gtk_tree_selection_select_iter (selection, iter); 
+		OS.gtk_tree_selection_select_iter (selection, iter);
 		if ((style & SWT.SINGLE) != 0) {
 			int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, iter);
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
@@ -1094,13 +1094,15 @@ public void select (int start, int end) {
  * </ul>
  */
 public void select (int [] indices) {
-	checkWidget();
+	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int /*long*/ iter = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	for (int i=0; i<indices.length; i++) {
+	for (int i=0; i<length; i++) {
 		int index = indices [i];
 		if (index < 0 || index > count - 1) continue;
 		OS.gtk_tree_model_iter_nth_child (modelHandle, iter, 0, index);
@@ -1290,14 +1292,22 @@ public void setSelection (int index) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
-	checkWidget();
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) {
+		deselectAll ();
+		return;
+	}
+	int count = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
+	if (count == 0 || start >= count) {
+		deselectAll ();
+		return;
+	}
+	start = Math.max (0, start);
+	end = Math.min (end, count - 1);
 	if ((style & SWT.MULTI) != 0) {
 		deselectAll ();
-		if (0 <= end && start <= end) {
-			int focusIndex = Math.max (0, start);
-			selectFocusIndex (focusIndex);
-			start = focusIndex + 1;
-		}
+		selectFocusIndex (start);
+		start++;
 	}
 	select (start, end);
 	showSelection ();
@@ -1321,18 +1331,18 @@ public void setSelection (int start, int end) {
  * @see List#select(int[])
  */
 public void setSelection(int[] indices) {
-	checkWidget();
+	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	if ((style & SWT.MULTI) != 0) {
-		if (indices.length > 0) {
-			int focusIndex = indices [0];
-			if (focusIndex >= 0) {
-				selectFocusIndex (focusIndex);
-				int [] temp = indices;
-				indices = new int [indices.length - 1];
-				System.arraycopy (temp, 1, indices, 0, indices.length);
-			}
+		int focusIndex = indices [0];
+		if (focusIndex >= 0) {
+			selectFocusIndex (focusIndex);
+			int [] temp = indices;
+			indices = new int [length - 1];
+			System.arraycopy (temp, 1, indices, 0, length - 1);
 		}
 	}
 	select (indices);
@@ -1358,12 +1368,17 @@ public void setSelection(int[] indices) {
  * @see List#select(int)
  */
 public void setSelection (String [] items) {
-	checkWidget();
+	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = items.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		deselectAll ();
+		return;
+	}
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	boolean firstSelect = true;
 	int singleSelectIndex = -1;
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < length; i++) {
 		int index = 0;
 		String string = items [i];
 		if (string != null) {
