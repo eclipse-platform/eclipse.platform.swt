@@ -1695,9 +1695,11 @@ TableItem paintItems(Event event, int topPaintIndex, int bottomPaintIndex, Vecto
 		gc.fillRectangle(paintXPosition, paintYPosition, fullSelectionExtent.x, fullSelectionExtent.y);
 		
 		if (paintItem.isSelected() == true) {
-			selectionExtent = paintItem.getSelectionExtent();
-			gc.setBackground(selectionColor);
-			gc.fillRectangle(paintXPosition, paintYPosition, selectionExtent.x, selectionExtent.y);
+			if ((style & SWT.HIDE_SELECTION) == 0 || isFocusControl()) {
+				selectionExtent = paintItem.getSelectionExtent();
+				gc.setBackground(selectionColor);
+				gc.fillRectangle(paintXPosition, paintYPosition, selectionExtent.x, selectionExtent.y);
+			}
 		} 
 		columns = paintColumns.elements(); 
 		while (columns.hasMoreElements() == true) {
