@@ -54,6 +54,34 @@ public final class FillLayout extends Layout {
 	 */
 	public int type = SWT.HORIZONTAL;
 	
+	/**
+	 * marginWidth specifies the number of pixels of horizontal margin
+	 * that will be placed along the left and right edges of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.0
+	 */
+ 	public int marginWidth = 0;
+ 	
+	/**
+	 * marginHeight specifies the number of pixels of vertical margin
+	 * that will be placed along the top and bottom edges of the layout.
+	 *
+	 * The default value is 0.
+	 * 
+	 * @since 3.0
+	 */
+ 	public int marginHeight = 0;
+ 	
+ 	/**
+	 * spacing specifies the number of pixels between the edge of one cell
+	 * and the edge of its neighbouring cell.
+	 *
+	 * The default value is 0.
+	 */
+	public int spacing = 0;
+	
 /**
  * Constructs a new instance of this class.
  */
@@ -80,8 +108,20 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 		Point size = child.computeSize (SWT.DEFAULT, SWT.DEFAULT, flushCache);
 		maxWidth = Math.max (maxWidth, size.x);
 		maxHeight = Math.max (maxHeight, size.y);
-	}	
-	return type == SWT.HORIZONTAL ? new Point (count * maxWidth, maxHeight) : new Point (maxWidth, count * maxHeight);
+	}
+	int width = 0, height = 0;
+	if (type == SWT.HORIZONTAL) {
+		width = count * maxWidth;
+		if (count != 0) width += (count - 1) * spacing;
+		height = maxHeight;
+	} else {
+		width = maxWidth;
+		height = count * maxHeight;
+		if (count != 0) height += (count - 1) * spacing;
+	}
+	width += marginWidth * 2;
+	height += marginHeight * 2;
+	return new Point (width, height);
 }
 
 protected void layout (Composite composite, boolean flushCache) {
@@ -89,23 +129,37 @@ protected void layout (Composite composite, boolean flushCache) {
 	Control [] children = composite.getChildren ();
 	int count = children.length;
 	if (count == 0) return;
+	int width = rect.width - marginWidth * 2;
+	int height = rect.height - marginHeight * 2;
 	if (type == SWT.HORIZONTAL) {
-		int x = rect.x + ((rect.width % count) / 2);
-		int width = rect.width / count;
-		int y = rect.y, height = rect.height;
+		width -= (count - 1) * spacing;
+		int x = rect.x + marginWidth, extra = width % count;
+		int y = rect.y + marginHeight, cellWidth = width / count;
 		for (int i=0; i<count; i++) {
 			Control child = children [i];
-			child.setBounds (x, y, width, height);
-			x += width;
+			int childWidth = cellWidth;
+			if (i == 0) {
+				childWidth += extra / 2;
+			} else {
+				if (i == count - 1) childWidth += (extra + 1) / 2;
+			}
+			child.setBounds (x, y, childWidth, height);
+			x += childWidth + spacing;
 		}
 	} else {
-		int x = rect.x, width = rect.width;
-		int y = rect.y + ((rect.height % count) / 2);
-		int height = rect.height / count;
+		height -= (count - 1) * spacing;
+		int x = rect.x + marginWidth, cellHeight = height / count;
+		int y = rect.y + marginHeight, extra = height % count;
 		for (int i=0; i<count; i++) {
 			Control child = children [i];
-			child.setBounds (x, y, width, height);
-			y += height;
+			int childHeight = cellHeight;
+			if (i == 0) {
+				childHeight += extra / 2;
+			} else {
+				if (i == count - 1) childHeight += (extra + 1) / 2;
+			}
+			child.setBounds (x, y, width, childHeight);
+			y += childHeight + spacing;
 		}
 	}
 }
