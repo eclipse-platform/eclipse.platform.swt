@@ -611,7 +611,7 @@ public int getSelectionCount () {
 public String getSelectionText () {
 	checkWidget ();
 	Point selection = getSelection ();
-	return getText (selection.x, selection.y);
+	return getText ().substring(selection.x, selection.y);
 }
 
 /**
