@@ -931,6 +931,7 @@ void setCursor (int cursor) {
 		case OS.kThemeWatchCursor:
 		case OS.kThemeIBeamCursor:
 		case OS.kThemeNotAllowedCursor:
+		case OS.kThemeResizeLeftRightCursor:
 			OS.SetThemeCursor (cursor);
 			break;
 		default:

@@ -409,6 +409,7 @@ public class OS {
 	public static final int kThemePushButton = 0;
 	public static final int kThemePushButtonFont = 105;
 	public static final int kThemeRadioButton = 2;
+	public static final int kThemeResizeLeftRightCursor = 17;
 	public static final int kThemeRoundedBevelButton = 15;
 	public static final int kThemeSmallBevelButton = 8;
 	public static final int kThemeSmallEmphasizedSystemFont = 2;

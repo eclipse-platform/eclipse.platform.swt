@@ -48,6 +48,18 @@ public final class Cursor {
 	 */
 	Device device;
 	
+	/**
+	 * data used to create a Resize NS Cursor
+	 */
+	static final short [] SIZENS_SOURCE = new short[] {
+		(short)0x0100,(short)0x0380,(short)0x07C0,
+		(short)0x0100,(short)0x0100,(short)0x0000,
+	 	(short)0xFFFE,(short)0xFFFE,(short)0x0000,
+		(short)0x0100,(short)0x0100,(short)0x07C0,
+		(short)0x0380,(short)0x0100,(short)0x0000,
+		(short)0x0000
+	};
+	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -108,9 +120,9 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_HELP: 			handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZEALL: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZENESW: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZENS: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZENS: 		break;
 		case SWT.CURSOR_SIZENWSE: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZEWE: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZEWE: 		handle = OS.kThemeResizeLeftRightCursor; break;
 		case SWT.CURSOR_SIZEN: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZES: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZEE: 		handle = OS.kThemeCrossCursor; break;
@@ -125,6 +137,21 @@ public Cursor(Device device, int style) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	
+	/*
+	 * Mac OS X does not provide a native Size NS cursor.
+	 * Create a Size NS cursor.
+	 */
+	 if (style == SWT.CURSOR_SIZENS) {
+		org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
+		cursor.data = SIZENS_SOURCE;
+		cursor.mask = SIZENS_SOURCE;
+		cursor.hotSpot_h = 7;
+		cursor.hotSpot_v = 6;
+		handle = OS.NewPtrClear(org.eclipse.swt.internal.carbon.Cursor.sizeof);
+		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);	
+	 }
 }
 
 /**	 
@@ -221,6 +248,7 @@ public void dispose () {
 		case OS.kThemeWatchCursor:
 		case OS.kThemeIBeamCursor:
 		case OS.kThemeNotAllowedCursor:
+		case OS.kThemeResizeLeftRightCursor:
 			break;
 		default:
 			OS.DisposePtr(handle);
