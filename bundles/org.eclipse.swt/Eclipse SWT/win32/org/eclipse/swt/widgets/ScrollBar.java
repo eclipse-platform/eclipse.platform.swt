@@ -901,6 +901,16 @@ public void setVisible (boolean visible) {
 	*/
 //	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	if (!OS.IsWinCE) {
+		/*
+		* Set the state bits before calling ShowScrollBar ()
+		* because hiding and showing the scroll bar can cause
+		* WM_SIZE messages when the client area is resized.
+		* Setting the state before the call means that code
+		* that runs during WM_SIZE that queries the visibility
+		* of the scroll bar will get the correct value.
+		*/
+		state &= ~HIDDEN;
+		if (!visible) state |= HIDDEN;
 		int hwnd = hwndScrollBar (), type = scrollBarType ();
 		if (OS.ShowScrollBar (hwnd, type, visible)) {
 			/*
@@ -916,8 +926,6 @@ public void setVisible (boolean visible) {
 			if ((state & DISABLED) == 0) {
 				OS.EnableScrollBar (hwnd, type, OS.ESB_ENABLE_BOTH);
 			}
-			state &= ~HIDDEN;
-			if (!visible) state |= HIDDEN;
 			sendEvent (visible ? SWT.Show : SWT.Hide);
 			// widget could be disposed at this point
 		}
