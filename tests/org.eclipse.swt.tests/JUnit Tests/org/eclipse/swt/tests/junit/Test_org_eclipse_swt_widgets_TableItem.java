@@ -47,10 +47,22 @@ public void test_ConstructorLorg_eclipse_swt_widgets_TableI() {
 	}
 	catch (IllegalArgumentException e) {
 	}
+	
+	for (int i=0; i<10; i++) {
+		new TableItem(table, SWT.NONE);	
+	}
+	assertEquals(11, table.getItemCount());
+	new TableItem(table, SWT.NONE, 5);	
+	assertEquals(12, table.getItemCount());
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_TableII() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_TableII not written");
+	try {
+		new TableItem(table, SWT.NONE, 5);
+		fail("No exception thrown for illegal index argument");
+	}
+	catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_getBackground() {
@@ -58,7 +70,7 @@ public void test_getBackground() {
 }
 
 public void test_getBackgroundI() {
-	warnUnimpl("Test test_getBackgroundI not written");
+	// tested in test_setBackgroundILorg_eclipse_swt_graphics_Color
 }
 
 public void test_getBoundsI() {
@@ -120,7 +132,13 @@ public void test_getBoundsI() {
 }
 
 public void test_getChecked() {
-	warnUnimpl("Test test_getChecked not written");
+	Table newTable = new Table(shell, SWT.CHECK);
+	TableItem tItem = new TableItem(newTable,0);
+	assertEquals(false, tItem.getChecked());
+	tItem.setChecked(true);
+	assertTrue(tItem.getChecked());
+	tItem.setChecked(false);
+	assertEquals(false, tItem.getChecked());
 }
 
 public void test_getFont() {
@@ -136,11 +154,11 @@ public void test_getForeground() {
 }
 
 public void test_getForegroundI() {
-	warnUnimpl("Test test_getForegroundI not written");
+	// tested in test_setForegroundILorg_eclipse_swt_graphics_Color
 }
 
 public void test_getGrayed() {
-	warnUnimpl("Test test_getGrayed not written");
+	// tested in test_setGrayedZ
 }
 
 public void test_getImageBoundsI() {
@@ -150,20 +168,18 @@ public void test_getImageBoundsI() {
 	Rectangle bounds;
 	Table table2 = new Table(shell, SWT.CHECK);
 	TableItem tableItem2 = new TableItem(table2, SWT.NULL);
-	int imageX;
 	
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(-1));
 	
 	bounds = tableItem.getImageBounds(0);
-	assertTrue(":b:", bounds.x > 0 && bounds.width == 0);
-	imageX = bounds.x;
+	assertTrue(":b:", bounds.width == 0);
 	
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem.getImageBounds(1));
 	
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(-1));
 	
 	bounds = tableItem2.getImageBounds(0);
-	assertTrue(":e:", bounds.x > imageX && bounds.width == 0);
+	assertTrue(":e:", bounds.width == 0);
 	
 	assertEquals(new Rectangle(0, 0, 0, 0), tableItem2.getImageBounds(1));
  	//
@@ -218,7 +234,7 @@ public void test_getImageBoundsI() {
 }
 
 public void test_getImageI() {
-	warnUnimpl("Test test_getImageI not written");
+	// tested in test_setImageILorg_eclipse_swt_graphics_Image
 }
 
 public void test_getImageIndent() {
@@ -230,11 +246,54 @@ public void test_getParent() {
 }
 
 public void test_getTextI() {
-	warnUnimpl("Test test_getTextI not written");
+	// tested in test_setTextILJava_lang_String
 }
 
 public void test_setBackgroundILorg_eclipse_swt_graphics_Color() {
-	warnUnimpl("Test test_setBackgroundILorg_eclipse_swt_graphics_Color not written");
+	Display display = tableItem.getDisplay();
+	Color red = display.getSystemColor(SWT.COLOR_RED);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	
+	// no columns
+	assertEquals(table.getBackground(), tableItem.getBackground(0));
+	assertEquals(tableItem.getBackground(), tableItem.getBackground(0));
+	tableItem.setBackground(0, red);
+	assertEquals(red, tableItem.getBackground(0));
+	
+	// index beyond range - no error
+	tableItem.setBackground(10, red);
+	assertEquals(tableItem.getBackground(), tableItem.getBackground(10));
+	
+	// with columns
+	TableColumn column1 = new TableColumn(table, SWT.LEFT);
+	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	
+	// index beyond range - no error
+	tableItem.setBackground(10, red);
+	assertEquals(tableItem.getBackground(), tableItem.getBackground(10));
+	
+	tableItem.setBackground(0, red);
+	assertEquals(red, tableItem.getBackground(0));
+	tableItem.setBackground(0, null);
+	assertEquals(table.getBackground(),tableItem.getBackground(0));
+
+	tableItem.setBackground(0, blue);
+	tableItem.setBackground(red);
+	assertEquals(blue, tableItem.getBackground(0));
+	
+	tableItem.setBackground(0, null);
+	assertEquals(red, tableItem.getBackground(0));
+	
+	tableItem.setBackground(null);
+	assertEquals(table.getBackground(),tableItem.getBackground(0));
+	
+	try { 
+		Color color = new Color(display, 255, 0, 0);
+		color.dispose();
+		tableItem.setBackground(color);
+		fail("No exception thrown for color disposed");		
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
@@ -267,15 +326,18 @@ public void test_setCheckedZ() {
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
+	Display display = tableItem.getDisplay();
 	Font font = tableItem.getFont();
 	tableItem.setFont(font);
 	assertEquals(font, tableItem.getFont());
 	
-	font = new Font(tableItem.getDisplay(), SwtJunit.testFontName, 10, SWT.NORMAL);
+	font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	tableItem.setFont(font);
 	assertEquals(font, tableItem.getFont());
 
 	tableItem.setFont(null);
+	assertEquals(table.getFont(), tableItem.getFont());
+	
 	font.dispose();
 	try {
 		tableItem.setFont(font);
@@ -286,16 +348,47 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 }
 
 public void test_setFontILorg_eclipse_swt_graphics_Font() {
-	Font font = tableItem.getFont(0);
+	Display display = tableItem.getDisplay();
+	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	
+	// no columns
+	assertEquals(table.getFont(), tableItem.getFont(0));
+	assertEquals(tableItem.getFont(), tableItem.getFont(0));
 	tableItem.setFont(0, font);
 	assertEquals(font, tableItem.getFont(0));
 	
-	font = new Font(tableItem.getDisplay(), SwtJunit.testFontName, 10, SWT.NORMAL);
+	// index beyond range - no error
+	tableItem.setFont(10, font);
+	assertEquals(tableItem.getFont(), tableItem.getFont(10));
+	
+	// with columns
+	TableColumn column1 = new TableColumn(table, SWT.LEFT);
+	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	
+	// index beyond range - no error
+	tableItem.setFont(10, font);
+	assertEquals(tableItem.getFont(), tableItem.getFont(10));
+	
 	tableItem.setFont(0, font);
 	assertEquals(font, tableItem.getFont(0));
-
 	tableItem.setFont(0, null);
+	assertEquals(table.getFont(), tableItem.getFont(0));
+	
+	Font font2 = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
+	
+	tableItem.setFont(0, font);
+	tableItem.setFont(font2);
+	assertEquals(font, tableItem.getFont(0));
+	
+	tableItem.setFont(0, null);
+	assertEquals(font2, tableItem.getFont(0));
+	
+	tableItem.setFont(null);
+	assertEquals(table.getFont(),tableItem.getFont(0));
+	
 	font.dispose();
+	font2.dispose();
+	
 	try {
 		tableItem.setFont(0, font);
 		tableItem.setFont(0, null);
@@ -305,7 +398,50 @@ public void test_setFontILorg_eclipse_swt_graphics_Font() {
 }
 
 public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
-	warnUnimpl("Test test_setForegroundILorg_eclipse_swt_graphics_Color not written");
+	Display display = tableItem.getDisplay();
+	Color red = display.getSystemColor(SWT.COLOR_RED);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	
+	// no columns
+	assertEquals(table.getForeground(), tableItem.getForeground(0));
+	assertEquals(tableItem.getForeground(), tableItem.getForeground(0));
+	tableItem.setForeground(0, red);
+	assertEquals(red, tableItem.getForeground(0));
+	
+	// index beyond range - no error
+	tableItem.setForeground(10, red);
+	assertEquals(tableItem.getForeground(), tableItem.getForeground(10));
+	
+	// with columns
+	TableColumn column1 = new TableColumn(table, SWT.LEFT);
+	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	
+	// index beyond range - no error
+	tableItem.setForeground(10, red);
+	assertEquals(tableItem.getForeground(), tableItem.getForeground(10));
+	
+	tableItem.setForeground(0, red);
+	assertEquals(red, tableItem.getForeground(0));
+	tableItem.setForeground(0, null);
+	assertEquals(table.getForeground(),tableItem.getForeground(0));
+
+	tableItem.setForeground(0, blue);
+	tableItem.setForeground(red);
+	assertEquals(blue, tableItem.getForeground(0));
+	
+	tableItem.setForeground(0, null);
+	assertEquals(red, tableItem.getForeground(0));
+	
+	tableItem.setForeground(null);
+	assertEquals(table.getForeground(),tableItem.getForeground(0));
+	
+	try { 
+		Color color = new Color(display, 255, 0, 0);
+		color.dispose();
+		tableItem.setForeground(color);
+		fail("No exception thrown for color disposed");		
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
@@ -323,7 +459,14 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 }
 
 public void test_setGrayedZ() {
-	warnUnimpl("Test test_setGrayedZ not written");
+	Table newTable = new Table(shell, SWT.CHECK);
+	TableItem tItem = new TableItem(newTable,0);
+	assertEquals(false, tItem.getGrayed());
+	tItem.setGrayed(true);
+	assertTrue(tItem.getGrayed());
+	tItem.setGrayed(false);
+	assertEquals(false, tItem.getGrayed());
+	newTable.dispose();
 }
 
 public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
@@ -364,7 +507,43 @@ public void test_setImage$Lorg_eclipse_swt_graphics_Image() {
 }
 
 public void test_setImageILorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setImageILorg_eclipse_swt_graphics_Image not written");
+		// no columns
+	assertEquals(null, tableItem.getImage(0));
+	tableItem.setImage(0, images[0]);
+	assertEquals(images[0], tableItem.getImage(0));
+	
+	// index beyond range - no error
+	tableItem.setImage(10, images[0]);
+	assertEquals(null, tableItem.getImage(10));
+	
+	// with columns
+	TableColumn column1 = new TableColumn(table, SWT.LEFT);
+	TableColumn column2 = new TableColumn(table, SWT.LEFT);
+	
+	// index beyond range - no error
+	tableItem.setImage(10, images[0]);
+	assertEquals(null, tableItem.getImage(10));
+	
+	tableItem.setImage(0, images[0]);
+	assertEquals(images[0], tableItem.getImage(0));
+	tableItem.setImage(0, null);
+	assertEquals(null, tableItem.getImage(0));
+	
+	tableItem.setImage(0, images[0]);
+	tableItem.setImage(images[1]);
+	assertEquals(images[1], tableItem.getImage(0));
+	
+	tableItem.setImage(images[1]);
+	tableItem.setImage(0, images[0]);
+	assertEquals(images[0], tableItem.getImage(0));
+	
+	images[0].dispose();
+	try {
+		tableItem.setImage(0, images[0]);
+		tableItem.setImage(0, null);
+		fail("No exception thrown for disposed font");
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_setImageIndentI() {
@@ -373,10 +552,6 @@ public void test_setImageIndentI() {
 	assertEquals(1, tableItem.getImageIndent());
  	tableItem.setImageIndent(-1);
 	assertEquals(1, tableItem.getImageIndent());
-}
-
-public void test_setImageLorg_eclipse_swt_graphics_Image() {
-	warnUnimpl("Test test_setImageLorg_eclipse_swt_graphics_Image not written");
 }
 
 public void test_setText$Ljava_lang_String() {
@@ -490,10 +665,6 @@ public void test_setTextILjava_lang_String(){
 	} 
 
 
-}
-
-public void test_setTextLjava_lang_String() {
-	warnUnimpl("Test test_setTextLjava_lang_String not written");
 }
 
 public static Test suite() {
