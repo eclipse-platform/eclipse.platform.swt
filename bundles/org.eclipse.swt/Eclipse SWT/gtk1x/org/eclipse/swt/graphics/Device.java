@@ -12,7 +12,7 @@ import org.eclipse.swt.internal.gtk.*;
 public abstract class Device implements Drawable {
 	
 	/* Debugging */
-	public static boolean DEBUG;
+	public static boolean DEBUG = true;
 	boolean debug = DEBUG;
 	boolean tracking = DEBUG;
 	Error [] errors;
@@ -371,7 +371,12 @@ protected void init () {
 	
 	/* Set GTK warning and error handlers */
 	if (debug) {
-		handler_id = OS.g_log_set_handler (0, -1, logProc, 0);
+		int domain = OS.g_malloc(4);
+		byte[] domainb = Converter.wcsToMbcs(null, "Gtk");
+		OS.memmove(domain, domainb, 3);
+		byte[] term = new byte[] { 0 };
+		OS.memmove(domain+3, term, 1);
+		handler_id = OS.g_log_set_handler (domain, OS.G_LOG_LEVEL_CRITICAL | OS.G_LOG_LEVEL_WARNING, logProc, 0);
 	}
 	
 	/* Create the standard colors */
@@ -488,7 +493,12 @@ protected void release () {
 	COLOR_GREEN = COLOR_YELLOW = COLOR_BLUE = COLOR_MAGENTA = COLOR_CYAN = COLOR_WHITE = null;
 		
 	/* Free the GTK error and warning handler */
-	if (handler_id != 0) OS.g_log_remove_handler (0, handler_id);
+	int domain = OS.g_malloc(4);
+	byte[] domainb = Converter.wcsToMbcs(null, "Gtk");
+	OS.memmove(domain, domainb, 3);
+	byte[] term = new byte[] { 0 };
+	OS.memmove(domain+3, term, 1);
+	if (handler_id != 0) OS.g_log_remove_handler (domain, handler_id);
 	logCallback.dispose ();  logCallback = null;
 	handler_id = logProc = 0;
 }
