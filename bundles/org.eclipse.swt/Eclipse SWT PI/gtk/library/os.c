@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2005 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -5162,6 +5162,16 @@ fail:
 }
 #endif
 
+#ifndef NO__1gtk_1color_1selection_1set_1has_1palette
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1color_1selection_1set_1has_1palette)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1color_1selection_1set_1has_1palette_FUNC);
+	gtk_color_selection_set_has_palette((GtkColorSelection *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1color_1selection_1set_1has_1palette_FUNC);
+}
+#endif
+
 #ifndef NO__1gtk_1combo_1disable_1activate
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1combo_1disable_1activate)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -7454,6 +7464,16 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1range_1set_1increments)
 	OS_NATIVE_ENTER(env, that, _1gtk_1range_1set_1increments_FUNC);
 	gtk_range_set_increments((GtkRange *)arg0, arg1, arg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1range_1set_1increments_FUNC);
+}
+#endif
+
+#ifndef NO__1gtk_1range_1set_1inverted
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1range_1set_1inverted)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1range_1set_1inverted_FUNC);
+	gtk_range_set_inverted((GtkRange *)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1range_1set_1inverted_FUNC);
 }
 #endif
 

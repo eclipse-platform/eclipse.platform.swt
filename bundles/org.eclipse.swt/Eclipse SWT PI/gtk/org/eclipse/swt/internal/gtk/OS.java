@@ -3408,6 +3408,15 @@ public static final void gtk_color_selection_set_current_color(int /*long*/ colo
 		lock.unlock();
 	}
 }
+public static final native void _gtk_color_selection_set_has_palette(int /*long*/ colorsel, boolean has_palette);
+public static final void gtk_color_selection_set_has_palette(int /*long*/ colorsel, boolean has_palette) {
+	lock.lock();
+	try {
+		_gtk_color_selection_set_has_palette(colorsel, has_palette);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_combo_disable_activate(int /*long*/ combo);
 public static final void gtk_combo_disable_activate(int /*long*/ combo) {
 	lock.lock();
@@ -5015,6 +5024,15 @@ public static final void gtk_range_set_increments(int /*long*/ range, double ste
 	lock.lock();
 	try {
 		_gtk_range_set_increments(range, step, page);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_range_set_inverted(int /*long*/ range, boolean setting);
+public static final void gtk_range_set_inverted(int /*long*/ range, boolean setting) {
+	lock.lock();
+	try {
+		_gtk_range_set_inverted(range, setting);
 	} finally {
 		lock.unlock();
 	}

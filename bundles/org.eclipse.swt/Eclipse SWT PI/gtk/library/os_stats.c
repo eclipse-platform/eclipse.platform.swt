@@ -1,5 +1,5 @@
 /*******************************************************************************
-* Copyright (c) 2000, 2004 IBM Corporation and others. All rights reserved.
+* Copyright (c) 2000, 2005 IBM Corporation and others. All rights reserved.
 * The contents of this file are made available under the terms
 * of the GNU Lesser General Public License (LGPL) Version 2.1 that
 * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 971;
-int OS_nativeFunctionCallCount[971];
+int OS_nativeFunctionCount = 973;
+int OS_nativeFunctionCallCount[973];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -412,6 +412,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1color_1selection_1dialog_1new",
 	"_1gtk_1color_1selection_1get_1current_1color",
 	"_1gtk_1color_1selection_1set_1current_1color",
+	"_1gtk_1color_1selection_1set_1has_1palette",
 	"_1gtk_1combo_1disable_1activate",
 	"_1gtk_1combo_1new",
 	"_1gtk_1combo_1set_1case_1sensitive",
@@ -591,6 +592,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1radio_1menu_1item_1new_1with_1label",
 	"_1gtk_1range_1get_1adjustment",
 	"_1gtk_1range_1set_1increments",
+	"_1gtk_1range_1set_1inverted",
 	"_1gtk_1range_1set_1range",
 	"_1gtk_1range_1set_1value",
 	"_1gtk_1rc_1parse_1string",
