@@ -183,6 +183,17 @@ void createHandle (int index) {
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			break;
 		case SWT.RADIO:
+			/*
+			* Feature in GTK.  In GTK, radio button must always be part of
+			* a radio button group.  In a radio groups, one button is always
+			* selected.  This means that it is not possible to have a single
+			* radio button that is unselected.  This is necessary to allow
+			* applications to implement their own radio behavior or use radio
+			* buttons outside of radio groups.  The fix is to create a hidden
+			* radio button for each radio button we create and add them
+			* to the same group.  This allows the visible button to be
+			* unselected.
+			*/
 			groupHandle = OS.gtk_radio_button_new (0);
 			if (groupHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.g_object_ref (groupHandle);
