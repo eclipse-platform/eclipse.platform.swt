@@ -843,7 +843,6 @@ public void selectAll () {
 			ignoreSelect = true;
 			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hItem);
 			ignoreSelect = false;
-			OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
 		}
 	}
 	TVITEM tvItem = new TVITEM ();
@@ -877,6 +876,24 @@ void setBackgroundPixel (int pixel) {
 	if (oldPixel != -1) OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
 	OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, pixel);
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
+}
+
+void setBounds (int x, int y, int width, int height, int flags) {
+	/*
+	* Ensure that the selection is visible when the tree is resized
+	* from a zero size to a size that can show the selection.
+	*/
+	boolean fixSelection = false;
+	if ((flags & OS.SWP_NOSIZE) == 0 && (width != 0 || height != 0)) {
+		if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
+			fixSelection = true;
+		}
+	}
+	super.setBounds (x, y, width, height, flags);
+	if (fixSelection) {
+		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+		if (hItem != 0) showItem (hItem);
+	}
 }
 
 void setCheckboxImageList () {
@@ -1085,8 +1102,23 @@ void showItem (int hItem) {
 	*/
 	if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
 		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
+		OS.SendMessage (handle, OS.WM_HSCROLL, OS.SB_TOP ,0);
 	} else {
-		OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
+		boolean scroll = true;
+		RECT itemRect = new RECT ();
+		itemRect.left = hItem;
+		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+			RECT rect = new RECT ();
+			OS.GetClientRect (handle, rect);
+			POINT pt = new POINT ();
+			pt.x = itemRect.left;
+			pt.y = itemRect.top;
+			if (OS.PtInRect (rect, pt)) {
+				pt.y = itemRect.bottom;
+				if (OS.PtInRect (rect, pt)) scroll = false;
+			}
+		}
+		if (scroll) OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
 	}
 }
 
