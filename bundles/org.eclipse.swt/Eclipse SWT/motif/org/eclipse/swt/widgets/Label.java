@@ -361,7 +361,11 @@ void setBitmap (Image image) {
 }
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (changed && resize && (style & SWT.WRAP) != 0) setText (text);
+	if (changed && resize && (style & SWT.WRAP) != 0) {
+		int [] argList = {OS.XmNlabelType, 0,};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		if (argList [1] == OS.XmSTRING) setText (text);
+	} 
 	return changed;
 }
 public void setFont (Font font) {
@@ -388,7 +392,11 @@ public void setFont (Font font) {
 	}
 	super.setFont (font);
 	if (fixString) OS.XtSetValues (handle, argList1, argList1.length / 2);	
-	if ((style & SWT.WRAP) != 0) setText (text);
+	if ((style & SWT.WRAP) != 0) {
+		int [] argList = {OS.XmNlabelType, 0,};
+		OS.XtGetValues (handle, argList, argList.length / 2);
+		if (argList [1] == OS.XmSTRING) setText (text);
+	} 
 }
 /**
  * Sets the receiver's image to the argument, which may be
