@@ -86,7 +86,6 @@ public void add (int[] pointArray) {
 	for (int i = 1; i < pointArray.length / 2; i++) {
 		OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
 	}
-	OS.LineTo((short)pointArray[0], (short)pointArray[1]);
 	OS.CloseRgn(polyRgn);
 	OS.UnionRgn(handle, polyRgn, handle);
 	OS.DisposeRgn(polyRgn);
@@ -369,7 +368,6 @@ public void subtract (int[] pointArray) {
 	for (int i = 1; i < pointArray.length / 2; i++) {
 		OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
 	}
-	OS.LineTo((short)pointArray[0], (short)pointArray[1]);
 	OS.CloseRgn(polyRgn);
 	OS.DiffRgn(handle, polyRgn, handle);
 	OS.DisposeRgn(polyRgn);
