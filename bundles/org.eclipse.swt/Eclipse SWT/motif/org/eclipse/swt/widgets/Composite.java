@@ -292,6 +292,19 @@ public Control [] getChildren () {
 	checkWidget();
 	return _getChildren ();
 }
+public Rectangle getClientArea () {
+	checkWidget();
+	/*
+	* Bug in Motif. For some reason, if a form has not been realized,
+	* calling XtResizeWidget () on the form does not lay out properly.
+	* The fix is to force the widget to be realized by forcing the shell
+	* to be realized. 
+	*/
+	if (formHandle != 0) {
+		if (!OS.XtIsRealized (handle)) getShell ().realizeWidget ();
+	}
+	return super.getClientArea ();
+}
 int getChildrenCount () {
 	/*
 	* NOTE:  The current implementation will count

@@ -150,16 +150,6 @@ void createHandle (int index) {
 	labelHandle = OS.XmCreateLabel (handle, null, argList3, argList3.length / 2);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
 }
-void createWidget (int index) {
-	super.createWidget (index);
-	/*
-	* Bug in Motif. For some reason, if a form has not been realized,
-	* calling XtResizeWidget () on the form does not lay out properly.
-	* The fix is to force the widget to be realized by forcing the shell
-	* to be realized. 
-	*/
-	getShell ().realizeWidget ();
-}
 void enableWidget (boolean enabled) {
 	super.enableWidget (enabled);
 	enableHandle (enabled, labelHandle);
@@ -169,6 +159,13 @@ int fontHandle () {
 }
 public Rectangle getClientArea () {
 	checkWidget();
+	/*
+	* Bug in Motif. For some reason, if a form has not been realized,
+	* calling XtResizeWidget () on the form does not lay out properly.
+	* The fix is to force the widget to be realized by forcing the shell
+	* to be realized. 
+	*/
+	if (!OS.XtIsRealized (handle)) getShell ().realizeWidget ();
 	int [] argList = {
 		OS.XmNwidth, 0, 
 		OS.XmNheight, 0, 
