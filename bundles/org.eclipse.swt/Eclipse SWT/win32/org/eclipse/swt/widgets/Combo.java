@@ -894,6 +894,15 @@ public void select (int index) {
 	}
 }
 
+void setBackgroundPixel (int pixel) {
+	if (background == pixel) return;
+	super.setBackgroundPixel (pixel);
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
+}
+
 void setBounds (int x, int y, int width, int height, int flags) {
 	/*
 	* Feature in Windows. If the combo box has the CBS_DROPDOWN
@@ -947,6 +956,15 @@ void setBounds (int x, int y, int width, int height, int flags) {
 
 void setEditable (boolean editable) {
 	error (SWT.ERROR_NOT_IMPLEMENTED);
+}
+
+void setForegroundPixel (int pixel) {
+	if (foreground == pixel) return;
+	super.setForegroundPixel (pixel);
+	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
+	if (hwndText != 0) OS.InvalidateRect (hwndText, null, true);
+	int hwndList = OS.GetDlgItem (handle, CBID_LIST);
+	if (hwndList != 0) OS.InvalidateRect (hwndList, null, true);
 }
 
 /**
