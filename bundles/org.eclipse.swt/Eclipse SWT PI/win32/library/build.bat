@@ -1,9 +1,15 @@
-@echo off
+rem *******************************************************************************
+rem  Copyright (c) 2000, 2003 IBM Corporation and others.
+rem  All rights reserved. This program and the accompanying materials 
+rem  are made available under the terms of the Common Public License v1.0
+rem  which accompanies this distribution, and is available at
+rem  http://www.eclipse.org/legal/cpl-v10.html
+rem  
+rem  Contributors:
+rem      IBM Corporation - initial API and implementation
+rem *******************************************************************************
 
-rem Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
-rem This file is made available under the terms of the Common Public License v1.0
-rem which accompanies this distribution, and is available at
-rem http://www.eclipse.org/legal/cpl-v10.html
+@echo off
 
 IF NOT "%JAVA_HOME%"=="" GOTO MAKE
 
