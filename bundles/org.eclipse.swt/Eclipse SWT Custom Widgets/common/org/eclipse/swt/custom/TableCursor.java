@@ -373,18 +373,38 @@ void paint(Event event) {
 	gc.setForeground(getForeground());
 	gc.fillRectangle(event.x, event.y, event.width, event.height);
 	TableItem item = table.getItem(row);
-	int x = 0, y = 0;
+	int x = 0;
 	Point size = getSize();
 	Image image = item.getImage(column);
 	if (image != null) {
 		Rectangle imageSize = image.getBounds();
-		int imageY = y + (size.y - imageSize.height) / 2;
+		int imageY = (size.y - imageSize.height) / 2;
 		gc.drawImage(image, x, imageY);
 		x += imageSize.width;
 	}
-	x += column == 0 ? 2 : 6;
-	int textY = y + (size.y - gc.getFontMetrics().getHeight()) / 2;
-	gc.drawString(item.getText(column), x, textY);
+	String text = item.getText(column);
+	if (text != "") {
+		Point extent = gc.stringExtent(text);
+		if (column == 0) {
+			x +=  2;
+		} else {
+			TableColumn tableColumn = table.getColumn(column);
+			int alignmnent = tableColumn.getAlignment();
+			switch (alignmnent) {
+				case SWT.LEFT:
+					x += 6;
+					break;
+				case SWT.RIGHT:
+					x = tableColumn.getWidth() - extent.x - 6;
+					break;
+				case SWT.CENTER:
+					x += (tableColumn.getWidth() - x - extent.x) / 2;
+					break;
+			}
+		}
+		int textY = (size.y - extent.y) / 2;
+		gc.drawString(text, x, textY);
+	}
 	if (isFocusControl()) {
 		gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 		gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
