@@ -43,12 +43,13 @@ public class CTabItem extends Item {
 	int closeImageState = CTabFolder.NONE;
 	boolean showClose = false;
 	
+	// TEMPORARY CODE
 	// internal constants
-	static final int LEFT_MARGIN = 7;
-	static final int RIGHT_MARGIN = 6;
-	static final int TOP_MARGIN = 2;
-	static final int BOTTOM_MARGIN = 2;
-	static final int INTERNAL_SPACING = 2;
+	static /*final*/ int LEFT_MARGIN = 7;
+	static /*final*/ int RIGHT_MARGIN = 6;
+	static /*final*/ int TOP_MARGIN = 2;
+	static /*final*/ int BOTTOM_MARGIN = 2;
+	static /*final*/ int INTERNAL_SPACING = 2;
 	static final int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC;
 	static final String ellipsis = "..."; //$NON-NLS-1$
 	
