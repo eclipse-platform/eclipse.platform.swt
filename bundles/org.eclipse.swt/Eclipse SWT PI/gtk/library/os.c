@@ -1246,6 +1246,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1event_1get_1graphics_1expose)
 }
 #endif
 
+#ifndef NO_gdk_1event_1get_1root_1coords
+JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1event_1get_1root_1coords)
+	(JNIEnv *env, jclass that, jint arg0, jdoubleArray arg1, jdoubleArray arg2)
+{
+	jdouble *lparg1=NULL;
+	jdouble *lparg2=NULL;
+	jboolean rc;
+	NATIVE_ENTER(env, that, "gdk_1event_1get_1root_1coords\n")
+	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL);
+	rc = (jboolean)gdk_event_get_root_coords((GdkEvent *)arg0, (gdouble *)lparg1, (gdouble *)lparg2);
+	if (arg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
+	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "gdk_1event_1get_1root_1coords\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gdk_1event_1get_1state
 JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1event_1get_1state)
 	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
