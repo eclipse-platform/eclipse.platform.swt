@@ -41,7 +41,7 @@ public abstract class Device implements Drawable {
 	int logProc;
 	Callback logCallback;
 	//NOT DONE - get list of valid names
-	String [] log_domains = {"GLib-GObject", "GLib", "GObject", "Pango", "ATK", "GdkPixbuf", "Gdk", "Gtk"};
+	String [] log_domains = {"GLib-GObject", "GLib", "GObject", "Pango", "ATK", "GdkPixbuf", "Gdk", "Gtk", "GnomeVFS"};
 	int [] handler_ids = new int [log_domains.length];
 	int warningLevel;
 	

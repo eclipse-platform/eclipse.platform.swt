@@ -42,13 +42,20 @@ SWT_PREFIX   = swt
 WS_PREFIX    = gtk
 SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWTPI_DLL    = lib$(SWT_PREFIX)-pi-$(WS_PREFIX)-$(SWT_VERSION).so
+GNOME_PREFIX = swt-gnome
+GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
+GNOME_OBJ    = gnome.o 
 
-#GNOME_PREFIX = swt-gnome
-#GNOME_DLL    = lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
-#GNOME_LIB    = -x -shared \
-#    -L/usr/lib \
-#    -lgnome -lglib \
-#    -lm -ldl
+GNOME_CFLAGS = `gnome-config --cflags vfs`
+# GNOME_LIB
+# Use the output of `gnome-config --libs vfs`
+# Replace -rdynamic by --export-dynamic to avoid a rpath error with ld
+# (gcc transforms -rdynamic into --export-dynamic when calling ld)
+GNOME_LIB = -x -shared --export-dynamic -L/usr/lib -L/usr/X11R6/lib \
+			-lgnomevfs -lxml -lz -lgconf-gtk-1 -lgconf-1 -loaf \
+			-lORBitCosNaming -lORBit -lIIOP -lORBitutil -lnsl \
+			-lgtk -lgdk -lXi -lXext -lX11 -lm -lgmodule -lgthread \
+			-lglib -lpthread -ldl
 
 
 # Compile and link options from pkg-config
@@ -69,12 +76,17 @@ GTKLIBS = `pkg-config --libs gthread-2.0` -L/usr/local/lib -lgtk-x11-2.0 -lgdk-x
 #  Target Rules
 #
 
-all: make_swt  # make_gnome
+all: make_swt  make_gnome
 
 make_swt: $(SWT_DLL) $(SWTPI_DLL)
 
-#make_gnome: $(GNOME_DLL)
+make_gnome: $(GNOME_DLL)
 
+$(GNOME_DLL): gnome.o
+	ld -o $@ $(GNOME_OBJ) $(GNOME_LIB)
+
+$(GNOME_OBJ): gnome.c 
+	$(CC) $(CFLAGS) $(GNOME_CFLAGS) -c -o gnome.o gnome.c
 
 # All about Linking
 
