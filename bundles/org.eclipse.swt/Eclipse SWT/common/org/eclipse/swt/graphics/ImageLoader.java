@@ -237,7 +237,8 @@ public void save(String filename, int format) {
 }
 
 /**	 
- * Adds a listener to receive image loader events.
+ * Adds the listener to the collection of listeners who will be
+ * notified when image data is either partially or completely loaded.
  * <p>
  * An ImageLoaderListener should be added before invoking
  * one of the receiver's load methods. The listener's 
@@ -245,7 +246,8 @@ public void save(String filename, int format) {
  * data has been partially loaded, as is supported by interlaced
  * GIF/PNG or progressive JPEG images.
  *
- * @param listener the ImageLoaderListener to add
+ * @param listener the listener which should be notified
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
@@ -262,9 +264,11 @@ public void addImageLoaderListener(ImageLoaderListener listener) {
 }
 
 /**	 
- * Removes a listener that was receiving image loader events.
+ * Removes the listener from the collection of listeners who will be
+ * notified when image data is either partially or completely loaded.
  *
- * @param listener the ImageLoaderListener to remove
+ * @param listener the listener which should no longer be notified
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
