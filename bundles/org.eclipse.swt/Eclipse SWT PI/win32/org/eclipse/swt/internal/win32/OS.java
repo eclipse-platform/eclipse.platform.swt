@@ -705,6 +705,8 @@ public class OS {
 	public static final int SM_CXHSCROLL = 0x15;
 	public static final int SM_CXICON = 0x0b;
 	public static final int SM_CYICON = 0x0c;
+	public static final int SM_CXSMICON = 49;
+	public static final int SM_CYSMICON = 50;
 	public static final int SM_CXSCREEN = 0x0;
 	public static final int SM_CXVSCROLL = 0x2;
 	public static final int SM_CYBORDER = 0x6;

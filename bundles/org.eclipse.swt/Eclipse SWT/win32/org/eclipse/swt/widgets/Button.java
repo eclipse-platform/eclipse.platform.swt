@@ -35,8 +35,8 @@ public class Button extends Control {
 	static {
 		int hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
 		if (hBitmap == 0) {
-			CheckWidth = OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-			CheckHeight = OS.GetSystemMetrics (OS.SM_CYVSCROLL);
+			CheckWidth = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CXSMICON : OS.SM_CXVSCROLL);
+			CheckHeight = OS.GetSystemMetrics (OS.IsWinCE ? OS.SM_CYSMICON : OS.SM_CYVSCROLL);
 		} else {
 			BITMAP bitmap = new BITMAP ();
 			OS.GetObject (hBitmap, BITMAP.sizeof, bitmap);
