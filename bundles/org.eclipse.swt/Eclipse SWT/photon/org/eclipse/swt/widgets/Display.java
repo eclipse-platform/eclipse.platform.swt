@@ -140,6 +140,7 @@ public /*final*/ class Display extends Device {
 	int WIDGET_DARK_SHADOW, WIDGET_NORMAL_SHADOW, WIDGET_LIGHT_SHADOW;
 	int WIDGET_HIGHLIGHT_SHADOW, WIDGET_BACKGROUND, WIDGET_FOREGROUND, WIDGET_BORDER;
 	int LIST_FOREGROUND, LIST_BACKGROUND, LIST_SELECTION, LIST_SELECTION_TEXT;
+	int INFO_FOREGROUND, INFO_BACKGROUND;
 	
 	/* Fonts */
 	byte [] TEXT_FONT, LIST_FONT;
@@ -413,23 +414,25 @@ public Color getSystemColor (int id) {
 	checkDevice ();
 	int color = 0x000000;
 	switch (id) {
-		case SWT.COLOR_TITLE_FOREGROUND: 				color = 0x000000; break;
-		case SWT.COLOR_TITLE_BACKGROUND:				color = 0x6493E7; break;
+		case SWT.COLOR_INFO_FOREGROUND: 					color = INFO_FOREGROUND; break;
+		case SWT.COLOR_INFO_BACKGROUND: 					color = INFO_BACKGROUND; break;
+		case SWT.COLOR_TITLE_FOREGROUND: 					color = 0x000000; break;
+		case SWT.COLOR_TITLE_BACKGROUND:					color = 0x6493E7; break;
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			color = 0x0000FF; break;
 		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			color = 0x000000; break;
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: 		color = 0xABBBD3; break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: 			color = 0xABBBD3; break;
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	color = 0x0000FF; break;
-		case SWT.COLOR_WIDGET_DARK_SHADOW:				color = WIDGET_DARK_SHADOW; break;
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW:			color = WIDGET_NORMAL_SHADOW; break;
-		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 			color = WIDGET_LIGHT_SHADOW; break;
-		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:			color = WIDGET_HIGHLIGHT_SHADOW; break;
-		case SWT.COLOR_WIDGET_BACKGROUND: 				color = WIDGET_BACKGROUND; break;
-		case SWT.COLOR_WIDGET_FOREGROUND:				color = WIDGET_FOREGROUND; break;
-		case SWT.COLOR_WIDGET_BORDER: 				color = WIDGET_BORDER; break;
-		case SWT.COLOR_LIST_FOREGROUND: 				color = LIST_FOREGROUND; break;
-		case SWT.COLOR_LIST_BACKGROUND: 				color = LIST_BACKGROUND; break;
-		case SWT.COLOR_LIST_SELECTION: 				color = LIST_SELECTION; break;
-		case SWT.COLOR_LIST_SELECTION_TEXT: 			color = LIST_SELECTION_TEXT; break;
+		case SWT.COLOR_WIDGET_DARK_SHADOW:					color = WIDGET_DARK_SHADOW; break;
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				color = WIDGET_NORMAL_SHADOW; break;
+		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				color = WIDGET_LIGHT_SHADOW; break;
+		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:				color = WIDGET_HIGHLIGHT_SHADOW; break;
+		case SWT.COLOR_WIDGET_BACKGROUND: 					color = WIDGET_BACKGROUND; break;
+		case SWT.COLOR_WIDGET_FOREGROUND:					color = WIDGET_FOREGROUND; break;
+		case SWT.COLOR_WIDGET_BORDER: 						color = WIDGET_BORDER; break;
+		case SWT.COLOR_LIST_FOREGROUND: 					color = LIST_FOREGROUND; break;
+		case SWT.COLOR_LIST_BACKGROUND: 					color = LIST_BACKGROUND; break;
+		case SWT.COLOR_LIST_SELECTION: 						color = LIST_SELECTION; break;
+		case SWT.COLOR_LIST_SELECTION_TEXT: 				color = LIST_SELECTION_TEXT; break;
 		default:
 			return super.getSystemColor (id);
 	}
@@ -605,6 +608,8 @@ void initializeWidgetColors () {
 		OS.Pt_ARG_DARK_BEVEL_COLOR, 0, 0,
 		OS.Pt_ARG_BEVEL_COLOR, 0, 0,
 		OS.Pt_ARG_LIGHT_BEVEL_COLOR, 0, 0,
+		OS.Pt_ARG_BALLOON_COLOR, 0, 0,
+		OS.Pt_ARG_BALLOON_FILL_COLOR, 0, 0,
 	};
 	OS.PtGetResources (handle, args.length / 3, args);
 	WIDGET_BORDER = args [1];
@@ -612,6 +617,8 @@ void initializeWidgetColors () {
 	WIDGET_NORMAL_SHADOW = args [7];
 	WIDGET_LIGHT_SHADOW = args [10];
 	WIDGET_HIGHLIGHT_SHADOW = args [13];
+	INFO_FOREGROUND = args [16];
+	INFO_BACKGROUND = args [19];
 
 	OS.PtDestroyWidget (shellHandle);
 }
