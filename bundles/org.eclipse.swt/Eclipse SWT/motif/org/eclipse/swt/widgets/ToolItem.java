@@ -174,6 +174,8 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateDrawnButton (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	int pixel = parent.getBackgroundPixel ();
+	setBackgroundPixel (pixel);
 }
 
 Point computeSize () {
@@ -240,7 +242,6 @@ Point computeSize () {
 }
 void createWidget (int index) {
 	super.createWidget (index);
-	setBackgroundPixel (parent.getBackgroundPixel ());
 	toolTipText = "";
 	parent.relayout ();
 }

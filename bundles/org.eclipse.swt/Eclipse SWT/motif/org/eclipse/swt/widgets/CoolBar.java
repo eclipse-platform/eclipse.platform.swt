@@ -557,7 +557,6 @@ void relayout() {
 }
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
-	pixel = getBackgroundPixel ();
 	CoolItem[] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
 		items[i].setBackgroundPixel (pixel);
