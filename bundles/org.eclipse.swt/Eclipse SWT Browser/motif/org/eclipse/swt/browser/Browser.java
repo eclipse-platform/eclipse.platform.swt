@@ -40,29 +40,29 @@ public class Browser extends Composite {
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
 
-	static nsIAppShell appShell;
-	static AppFileLocProvider locProvider; 
-	static int browserCount;
-	static boolean isLinux;
+	static nsIAppShell AppShell;
+	static AppFileLocProvider LocProvider; 
+	static int BrowserCount;
+	static boolean IsLinux;
 	
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
 	
 static {
 	String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-	isLinux = osName.startsWith("linux");
+	IsLinux = osName.startsWith("linux");
 }
 		
 public Browser(Composite parent, int style) {
 	super(parent, style | SWT.EMBEDDED);
 	
-	if (!isLinux) {
+	if (!IsLinux) {
 		dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);		
 	}
 
 	int[] result = new int[1];
-	if (browserCount == 0) {
+	if (BrowserCount == 0) {
 		try {
 			Library.loadLibrary("swt-gtk"); //$NON-NLS-1$
 			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
@@ -77,8 +77,8 @@ public Browser(Composite parent, int style) {
 			SWT.error(SWT.ERROR_NO_HANDLES);
 		}
 		
-		locProvider = new AppFileLocProvider();
-		locProvider.AddRef();
+		LocProvider = new AppFileLocProvider();
+		LocProvider.AddRef();
 
 		int[] retVal = new int[1];
 		int rc = XPCOM.NS_NewLocalFile(mozillaPath, true, retVal);
@@ -86,11 +86,11 @@ public Browser(Composite parent, int style) {
 		if (retVal[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NULL_POINTER));
 	
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
-		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), locProvider.getAddress());
+		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), LocProvider.getAddress());
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
-			locProvider.Release();
-			locProvider = null;
+			LocProvider.Release();
+			LocProvider = null;
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES);
 		}
@@ -106,14 +106,14 @@ public Browser(Composite parent, int style) {
 		if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));		
 		componentManager.Release();
 
-		appShell = new nsIAppShell(result[0]); 
-		rc = appShell.Create(null, null);
+		AppShell = new nsIAppShell(result[0]); 
+		rc = AppShell.Create(null, null);
 		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-		rc = appShell.Spinup();
+		rc = AppShell.Spinup();
 		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
 	}
-	browserCount++;
-	if (browserCount == 1) {
+	BrowserCount++;
+	if (BrowserCount == 1) {
 		GTK.gtk_init_check(new int[1], null);
 		final Display display = getDisplay();
 		display.asyncExec(new Runnable() {
@@ -121,7 +121,7 @@ public Browser(Composite parent, int style) {
 				while (GTK.gtk_events_pending() != 0) {
 					GTK.gtk_main_iteration();
 				}
-				if (browserCount == 0) return;
+				if (BrowserCount == 0) return;
 				display.timerExec(25, this);		
 			}
 		});
@@ -276,7 +276,7 @@ public void addStatusTextListener(StatusTextListener listener) {
  */
 public boolean back() {
 	checkWidget();
-	if (!isLinux) return false;
+	if (!IsLinux) return false;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
@@ -456,7 +456,7 @@ void disposeCOMInterfaces() {
  */
 public boolean forward() {
 	checkWidget();
-	if (!isLinux) return false;
+	if (!IsLinux) return false;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
@@ -485,7 +485,7 @@ public boolean forward() {
  */
 public String getUrl() {
 	checkWidget();
-	if (!isLinux) return "";
+	if (!IsLinux) return "";
 	int[] aContentDOMWindow = new int[1];
 	int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
@@ -533,19 +533,25 @@ void onDispose() {
 	GTK.gtk_widget_destroy(gtkHandle);
 	gtkHandle = 0;
 	
-	browserCount--;
-	if (browserCount == 0) {
-		if (appShell != null) {
-			// Shutdown the appshell service.
-			rc = appShell.Spindown();
-			if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-			appShell.Release();
-			appShell = null;
-		}
-		locProvider.Release();
-		locProvider = null;
-		XPCOM.NS_TermEmbedding();
-	}
+	/*
+	* This code is intentionally commented.  It is not possible to reinitialize
+	* Mozilla once it has been terminated.  NS_InitEmbedding always fails after
+	* NS_TermEmbedding has been called.  The workaround is to call NS_InitEmbedding
+	* once and never call NS_TermEmbedding.
+	*/
+//	BrowserCount--;
+//	if (BrowserCount == 0) {
+//		if (AppShell != null) {
+//			// Shutdown the appshell service.
+//			rc = AppShell.Spindown();
+//			if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+//			AppShell.Release();
+//			AppShell = null;
+//		}
+//		LocProvider.Release();
+//		LocProvider = null;
+//		XPCOM.NS_TermEmbedding();
+//	}
 }
 
 void onFocusGained(Event e) {
@@ -600,7 +606,7 @@ void onResize() {
  */
 public void refresh() {
 	checkWidget();
-	if (!isLinux) return;
+	if (!IsLinux) return;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
@@ -737,7 +743,7 @@ public void removeStatusTextListener(StatusTextListener listener) {
 public boolean setUrl(String url) {
 	checkWidget();
 	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (!isLinux) return false;
+	if (!IsLinux) return false;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
@@ -767,7 +773,7 @@ public boolean setUrl(String url) {
  */
 public void stop() {
 	checkWidget();
-	if (!isLinux) return;
+	if (!IsLinux) return;
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
