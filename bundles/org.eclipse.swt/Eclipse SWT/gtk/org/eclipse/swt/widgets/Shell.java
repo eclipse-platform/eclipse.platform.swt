@@ -297,8 +297,7 @@ void bringToTop () {
  * </ul>
  */
 public void close () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 	closeWidget ();
 }
 void closeWidget () {
@@ -310,9 +309,7 @@ void closeWidget () {
 
 
 /*
- *  HANDLE DANCES
- *
- *  FIRST SPECIES: HANDLE CREATION CODE - The createWidget() cycle.
+ *  ===  Handle code I: The createWidget() cycle.
  */
 
 void createHandle (int index) {
@@ -370,7 +367,6 @@ void register () {
 	super.register ();
 	WidgetTable.put (shellHandle, this);
 	WidgetTable.put (vboxHandle, this);
-	WidgetTable.put (eventBoxHandle, this);
 }
 
 private void _setStyle() {
@@ -778,12 +774,11 @@ void deregister () {
 	super.deregister ();
 	WidgetTable.remove (shellHandle);
 	WidgetTable.remove (vboxHandle);
-	WidgetTable.remove (eventBoxHandle);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
-	shellHandle = vboxHandle = eventBoxHandle = 0;
+	shellHandle = vboxHandle = 0;
 }
 
 void releaseShells () {
