@@ -151,8 +151,8 @@ public class Browser3 {
 		System.out.println("PLUGIN_PATH <"+pluginPath+">");
 		if (pluginPath == null) url = Browser3.class.getClassLoader().getResource("browser3.html").toString();
 		else {
-			pluginPath += "/";
-			url = pluginPath + "browser3.html";
+ 
+			url = pluginPath + "/data/browser3.html";
 		}
 		String[] urls = {url};
 		for (int i = 0; i < urls.length; i++) {
