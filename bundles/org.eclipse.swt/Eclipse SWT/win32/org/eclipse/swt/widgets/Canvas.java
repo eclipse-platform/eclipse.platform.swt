@@ -201,14 +201,12 @@ public void setFont (Font font) {
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	LRESULT result  = super.WM_KILLFOCUS (wParam, lParam);
-	if (result != null) return result;
 	if (caret != null) caret.killFocus ();
 	return result;
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	LRESULT result  = super.WM_SETFOCUS (wParam, lParam);
-	if (result != null) return result;
 	if (caret != null) caret.setFocus ();
 	return result;
 }

@@ -595,19 +595,21 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 }
 
 LRESULT WM_SETFOCUS (int wParam, int lParam) {
-	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
-	if (result != null) return result;
-	if ((style & SWT.RADIO) == 0) return result;
 	/*
 	* Feature in Windows. When Windows sets focus to
 	* a radio button, it sets the WM_TABSTOP style.
 	* This is undocumented and unwanted.  The fix is
 	* to save and restore the window style bits.
 	*/
-	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	int code = callWindowProc (OS.WM_SETFOCUS, wParam, lParam);
-	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
-	return new LRESULT (code);
+	int bits = 0;
+	if ((style & SWT.RADIO) != 0) {
+		bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	}
+	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
+	if ((style & SWT.RADIO) != 0) {
+		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+	}
+	return result;
 }
 
 LRESULT wmCommandChild (int wParam, int lParam) {

@@ -354,6 +354,8 @@ public void setLayout (Layout layout) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the tabList is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if a widget in the tabList is null or has been disposed</li> 
+ *    <li>ERROR_INVALID_PARENT - if widget in the tabList is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -363,6 +365,16 @@ public void setLayout (Layout layout) {
 public void setTabList (Control [] tabList) {
 	checkWidget ();
 	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
+	for (int i=0; i<tabList.length; i++) {
+		Control control = tabList [i];
+		if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
+		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		Shell shell = control.getShell ();
+		while (control != shell && control != this) {
+			control = control.parent;
+		}
+		if (control != this) error (SWT.ERROR_INVALID_PARENT);
+	}
 	/*
 	* This code is intentionally commented.  It is
 	* not yet clear whether setting the tab list 
