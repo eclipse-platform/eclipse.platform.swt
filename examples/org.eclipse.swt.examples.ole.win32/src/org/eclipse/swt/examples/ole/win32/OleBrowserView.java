@@ -212,15 +212,6 @@ public class OleBrowserView extends ViewPart {
 				webBrowser.Navigate(webUrl.getText());
 			}
 		});
-		
-		displayArea.addListener(SWT.KeyUp, new Listener() {
-			public void handleEvent(Event event) {
-				if (webBrowser == null) return;
-				if (event.keyCode == 13) {
-					webBrowser.Navigate(webUrl.getText());
-				}
-			}
-		});
 	}
 
 	/**
