@@ -1168,6 +1168,22 @@ void register () {
 	if (imContext != 0) display.addWidget (imContext, this);
 }
 
+void releaseWidget () {
+	super.releaseWidget ();
+	if (OS.GTK_VERSION < OS.VERSION (2, 6, 0)) {		 
+		/*
+		* Bug in GTK.  Any text put copied into the clipboard will be lost
+		* when the GtkTextView is destroyed.  The fix is to cause a paste as
+		* it is being destroyed, which references the text buffer and keeps
+		* it around until ownership of the clipboard is lost.
+		*/
+		if ((style & SWT.MULTI) != 0) {
+			int /*long*/ clipboard = OS.gtk_clipboard_get (OS.GDK_NONE);
+			OS.gtk_text_buffer_paste_clipboard (bufferHandle, clipboard, null, OS.gtk_text_view_get_editable (handle));
+		}
+	}
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's text is modified.
