@@ -193,12 +193,18 @@ public class Display extends Device {
 	static boolean TrimEnabled = false;
 
 	/* Package Name */
-	static final String PACKAGE_NAME;
-	static {
-		String name = Display.class.getName ();
-		int index = name.lastIndexOf ('.');
-		PACKAGE_NAME = name.substring (0, index + 1);
-	}
+	static final String PACKAGE_NAME = "org.eclipse.swt.widgets";
+	/*
+	* This code is intentionally commented.  In order
+	* to support CLDC, .class cannot be used because
+	* it does not compile on some Java compilers when
+	* they are targeted for CLDC.
+	*/
+//	static {
+//		String name = Display.class.getName ();
+//		int index = name.lastIndexOf ('.');
+//		PACKAGE_NAME = name.substring (0, index + 1);
+//	}
 	
 	/* Display Data */
 	Object data;
