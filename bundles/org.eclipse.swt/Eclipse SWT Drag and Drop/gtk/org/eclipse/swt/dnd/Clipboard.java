@@ -21,6 +21,9 @@ public class Clipboard {
 	Callback getFunc;
 	Callback clearFunc;
 	int pGtkClipboard;
+	boolean onClipboard = false;
+	int pGtkPrimary;
+	boolean onPrimary = false;
 	
 	/* Data is not flushed to the clipboard immediately.
 	 * This class will remember the data and provide it when requested. */
@@ -42,11 +45,22 @@ public Clipboard(Display display) {
 	getFunc = new Callback( this, "getFunc", 4);
 	clearFunc = new Callback( this, "clearFunc", 2);
 	pGtkClipboard = OS.gtk_clipboard_get(OS.GDK_NONE);
+	byte[] buffer = Converter.wcsToMbcs(null, "PRIMARY", true);
+	int primary = OS.gdk_atom_intern(buffer, false);
+	pGtkPrimary = OS.gtk_clipboard_get(primary);
 }
 
 int clearFunc(int clipboard,int user_data_or_owner){
-	data = null;
-	dataTypes = null;
+	if (clipboard == pGtkClipboard) {
+		onClipboard = false;
+	}
+	if (clipboard == pGtkPrimary) {
+		onPrimary = false;
+	}
+	if (!onClipboard && !onPrimary) {	
+		data = null;
+		dataTypes = null;
+	}
 	return 1;
 }
 
@@ -60,14 +74,21 @@ protected void checkSubclass () {
 
 public void dispose () {
 	if (pGtkClipboard == 0) return;
-	if (data != null) OS.gtk_clipboard_clear(pGtkClipboard);
-	OS.g_free(pGtkClipboard);
+	if (onPrimary) OS.gtk_clipboard_clear(pGtkPrimary);
+	if (onClipboard) OS.gtk_clipboard_clear(pGtkClipboard);
+	// Uncommenting the following line causes a segfault on shutdown
+//	OS.g_free(pGtkClipboard);
 	pGtkClipboard = 0;
+	// Uncommenting the following line causes a segfault on shutdown
+//	OS.g_free(pGtkPrimary);
+	pGtkPrimary = 0;
 	display = null;
 	if (getFunc != null ) getFunc.dispose();
 	getFunc = null;
 	if (clearFunc != null) clearFunc.dispose();
 	clearFunc = null;
+	data = null;
+	dataTypes = null;
 }
 
 public Object getContents(Transfer transfer) {
@@ -75,10 +96,20 @@ public Object getContents(Transfer transfer) {
 	int selection_data = 0;
 	int[] typeIds = transfer.getTypeIds();
 	for (int i = 0; i < typeIds.length; i++) {
-		selection_data = OS.gtk_clipboard_wait_for_contents(pGtkClipboard, typeIds[i]);
+		// try the primary selection first
+		selection_data = OS.gtk_clipboard_wait_for_contents(pGtkPrimary, typeIds[i]);
 		if( selection_data != 0) break;
 	};
-	if (selection_data == 0) return null; // No data available for this transfer
+	if (selection_data == 0) {
+		// try the clipboard selection second
+		for (int i = 0; i < typeIds.length; i++) {
+			selection_data = OS.gtk_clipboard_wait_for_contents(pGtkClipboard, typeIds[i]);
+			if( selection_data != 0) break;
+		};
+	}
+	if (selection_data == 0) {
+		return null; // No data available for this transfer
+	}
 	
 	GtkSelectionData gtkSelectionData = new GtkSelectionData();
 	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
@@ -122,8 +153,11 @@ public void setContents(Object[] data, Transfer[] dataTypes){
 	if (display.isDisposed() ) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	if (dataTypes.length == 0) return;	
 	
-	if (this.data != null) {
+	if (onClipboard) {
 		OS.gtk_clipboard_clear(pGtkClipboard);
+	}
+	if (onPrimary) {
+		OS.gtk_clipboard_clear(pGtkPrimary);
 	}
 		
 	GtkTargetEntry[] entries = new  GtkTargetEntry [0];
@@ -155,15 +189,16 @@ public void setContents(Object[] data, Transfer[] dataTypes){
 	this.data = data;
 	this.dataTypes = dataTypes;
 
-	boolean result = OS.gtk_clipboard_set_with_data(pGtkClipboard, pTargetsList, entries.length, getFunc.getAddress(), clearFunc.getAddress(), 0);
-
+	onPrimary = OS.gtk_clipboard_set_with_data(pGtkPrimary, pTargetsList, entries.length, getFunc.getAddress(), clearFunc.getAddress(), 0);
+	onClipboard = OS.gtk_clipboard_set_with_data(pGtkClipboard, pTargetsList, entries.length, getFunc.getAddress(), clearFunc.getAddress(), 0);
+	
 	for (int i = 0; i < entries.length; i++) {
 		GtkTargetEntry entry = entries[i];
 		if( entry.target != 0) OS.g_free(entry.target);
 	}
 	if (pTargetsList != 0) OS.g_free(pTargetsList);
 	
-	if (!result) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
+	if (!onClipboard && !onPrimary) DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 }
 /*
  * Note: getAvailableTypeNames is a tool for writing a Transfer sub-class only.  It should
@@ -174,3 +209,4 @@ public String[] getAvailableTypeNames() {
 	return new String[0];
 }
 }
+

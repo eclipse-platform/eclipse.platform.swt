@@ -49,9 +49,9 @@ public void javaToNative(Object object, TransferData transferData) {
 	String[] files = (String[])object;
 	
 	// create a string separated by "new lines" to represent list of files
-	String nativeFormat = "file:";
+	String nativeFormat = "";
 	for (int i = 0, length = files.length; i < length; i++){
-		nativeFormat += files[i]+"\r";
+		nativeFormat += "file:"+files[i]+"\r";
 	}
 	byte[] buffer = Converter.wcsToMbcs(null, nativeFormat, true);
 	// pass byte array on to super to convert to native
@@ -75,7 +75,7 @@ public Object nativeToJava(TransferData transferData) {
 	if (start == -1) return null;
 	start += 5;
 	String[] fileNames = new String[0];
-	while (start < string.length() - 1) { 
+	while (start < string.length()) { 
 		int end = string.indexOf("\r", start);
 		if (end == -1) end = string.length() - 1;
 		String fileName = string.substring(start, end);
@@ -85,7 +85,9 @@ public Object nativeToJava(TransferData transferData) {
 		newFileNames[fileNames.length] = fileName;
 		fileNames = newFileNames;
 
-		start = end + 1;
+		start = string.indexOf("file:", end);
+		if (start == -1) break;
+		start += 5;
 	}
 	return fileNames;
 }
