@@ -29,21 +29,30 @@ endif
 # Determine the operating system being built
 set OS=`uname -s`
 switch ($OS )
+	case AIX:
+        if ( "$1" == "clean" ) then
+            make -f make_aix.mak clean
+        else
+            echo "Building AIX version of SWT and CDE DLLs."
+            make -f make_aix.mak make_swt
+            make -f make_aix.mak make_cde
+        endif
+        breaksw
 
     case Linux:
-	if ( "$1" == "clean" ) then
-	    make -f make_linux.mak clean
-	else
-	    echo "Building Linux version of SWT and GNOME DLLs."
-	    make -f make_linux.mak make_swt make_gnome
-	    
-	    set build_kde = `rpm -q kdebase | grep "not installed"`
-	    if ( "$build_kde" == "" ) then
-	    	echo "Building Linux version of KDE DLL."
-	    	make -f make_linux.mak make_kde
-	    endif
-	endif
-	breaksw
+		if ( "$1" == "clean" ) then
+		    make -f make_linux.mak clean
+		else
+		    echo "Building Linux version of SWT and GNOME DLLs."
+		    make -f make_linux.mak make_swt make_gnome
+		    
+		    set build_kde = `rpm -q kdebase | grep "not installed"`
+		    if ( "$build_kde" == "" ) then
+		    	echo "Building Linux version of KDE DLL."
+		    	make -f make_linux.mak make_kde
+		    endif
+		endif
+		breaksw
 	
     case SunOS:
         if ( "$1" == "clean" ) then
@@ -56,6 +65,6 @@ switch ($OS )
         breaksw
 
     default:
-       echo "Unknown"
+       echo "Unknown OS -- build aborted"
        breaksw
 endsw

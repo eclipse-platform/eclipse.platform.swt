@@ -7636,6 +7636,8 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XSetIOErrorHandler
  * ======== Start printing functions ========
  */
  
+#ifndef NO_XPRINTING_EXTENSIONS
+
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XpCreateContext
@@ -7902,6 +7904,35 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XpCancelJob
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
+ * Method:    XpQueryVersion
+ * Signature: (I[S[S)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpQueryVersion
+  (JNIEnv *env, jclass that, jint display, jshortArray major_version, jshortArray minor_version)
+{
+    jshort *major_version1=NULL, *minor_version1=NULL;
+    jint rc;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "XpQueryVersion\n");
+#endif
+
+    if (major_version)
+    	major_version1 = (*env)->GetShortArrayElements(env, major_version, NULL);
+    if (minor_version)
+    	minor_version1 = (*env)->GetShortArrayElements(env, minor_version, NULL);    
+    rc = (jint) XpQueryVersion((Display *)display, (short *)major_version1, (short *)minor_version1);
+    if (major_version)
+    	(*env)->ReleaseShortArrayElements(env, major_version, major_version1, 0);
+    if (minor_version)
+    	(*env)->ReleaseShortArrayElements(env, minor_version, minor_version1, 0);
+
+    return rc;
+}
+
+#endif
+
+/*
+ * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XDefaultGCOfScreen
  * Signature: (I)I
  */
@@ -7984,33 +8015,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XDestroyWindow
 	fprintf(stderr, "XDestroyWindow\n");
 #endif
     XDestroyWindow((Display *)display, (Window)w);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XpQueryVersion
- * Signature: (I[S[S)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpQueryVersion
-  (JNIEnv *env, jclass that, jint display, jshortArray major_version, jshortArray minor_version)
-{
-    jshort *major_version1=NULL, *minor_version1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XpQueryVersion\n");
-#endif
-
-    if (major_version)
-    	major_version1 = (*env)->GetShortArrayElements(env, major_version, NULL);
-    if (minor_version)
-    	minor_version1 = (*env)->GetShortArrayElements(env, minor_version, NULL);    
-    rc = (jint) XpQueryVersion((Display *)display, (short *)major_version1, (short *)minor_version1);
-    if (major_version)
-    	(*env)->ReleaseShortArrayElements(env, major_version, major_version1, 0);
-    if (minor_version)
-    	(*env)->ReleaseShortArrayElements(env, minor_version, minor_version1, 0);
-
-    return rc;
 }
 
 /*
