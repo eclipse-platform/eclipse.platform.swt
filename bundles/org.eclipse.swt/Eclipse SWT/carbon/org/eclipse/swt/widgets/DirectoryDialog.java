@@ -47,57 +47,53 @@ public String open () {
 	}
 
 	NavDialogCreationOptions options = new NavDialogCreationOptions ();
-	OS.NavGetDefaultDialogCreationOptions (options);
 	options.parentWindow = OS.GetControlOwner (parent.handle);
 	// NEEDS WORK - no title displayed
-	options.windowTitle = titlePtr;
+	options.windowTitle = options.clientName = titlePtr;
+	options.optionFlags = OS.kNavSupportPackages | OS.kNavAllowOpenPackages | OS.kNavAllowInvisibleFiles;
 	options.message = messagePtr;
+	options.location_h = -1;
+	options.location_v = -1;
 	int [] outDialog = new int [1];
 	// NEEDS WORK - use inFilterProc to handle filtering
 	if (OS.NavCreateChooseFolderDialog (options, 0, 0, 0, outDialog) == OS.noErr) {
 		OS.NavDialogRun (outDialog [0]);
-		switch (OS.NavDialogGetUserAction (outDialog [0])) {
-			case OS.kNavUserActionCancel: break;
-			case OS.kNavUserActionOpen:
-			case OS.kNavUserActionChoose: {		
-				NavReplyRecord record = new NavReplyRecord ();
-				OS.NavDialogGetReply (outDialog [0], record);
-				AEDesc selection = new AEDesc ();
-				selection.descriptorType = record.selection_descriptorType;
-				selection.dataHandle = record.selection_dataHandle;
-				int [] count = new int [1];
-				OS.AECountItems (selection, count);
-				if (count [0] > 0) {
-					int [] theAEKeyword = new int [1];
-					int [] typeCode = new int [1];
-					int maximumSize = 80; // size of FSRef
-					int dataPtr = OS.NewPtr (maximumSize);
-					int [] actualSize = new int [1];
-					int status = OS.AEGetNthPtr (selection, 1, OS.typeFSRef, theAEKeyword, typeCode, dataPtr, maximumSize, actualSize);
-					if (status == OS.noErr && typeCode [0] == OS.typeFSRef) {
-						byte [] fsRef = new byte [actualSize [0]];
-						OS.memcpy (fsRef, dataPtr, actualSize [0]);
-						int anURL = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
-						int ptr = OS.CFURLCopyFileSystemPath(anURL, OS.kCFURLPOSIXPathStyle);
-						OS.CFRelease (anURL);						
-						int length = OS.CFStringGetLength (ptr);
-						char [] buffer= new char [length];
-						CFRange range = new CFRange ();
-						range.length = length;
-						OS.CFStringGetCharacters (ptr, range, buffer);
-						OS.CFRelease (ptr);
-						directoryPath = new String (buffer);
-					}
-					OS.DisposePtr (dataPtr);
+		if (OS.NavDialogGetUserAction (outDialog [0]) == OS.kNavUserActionChoose) {
+			NavReplyRecord record = new NavReplyRecord ();
+			OS.NavDialogGetReply (outDialog [0], record);
+			AEDesc selection = new AEDesc ();
+			selection.descriptorType = record.selection_descriptorType;
+			selection.dataHandle = record.selection_dataHandle;
+			int [] count = new int [1];
+			OS.AECountItems (selection, count);
+			if (count [0] > 0) {
+				int [] theAEKeyword = new int [1];
+				int [] typeCode = new int [1];
+				int maximumSize = 80; // size of FSRef
+				int dataPtr = OS.NewPtr (maximumSize);
+				int [] actualSize = new int [1];
+				int status = OS.AEGetNthPtr (selection, 1, OS.typeFSRef, theAEKeyword, typeCode, dataPtr, maximumSize, actualSize);
+				if (status == OS.noErr && typeCode [0] == OS.typeFSRef) {
+					byte [] fsRef = new byte [actualSize [0]];
+					OS.memcpy (fsRef, dataPtr, actualSize [0]);
+					int dirUrl = OS.CFURLCreateFromFSRef (OS.kCFAllocatorDefault, fsRef);
+					int dirString = OS.CFURLCopyFileSystemPath(dirUrl, OS.kCFURLPOSIXPathStyle);
+					OS.CFRelease (dirUrl);						
+					int length = OS.CFStringGetLength (dirString);
+					char [] buffer= new char [length];
+					CFRange range = new CFRange ();
+					range.length = length;
+					OS.CFStringGetCharacters (dirString, range, buffer);
+					OS.CFRelease (dirString);
+					directoryPath = new String (buffer);
 				}
+				OS.DisposePtr (dataPtr);
 			}
 		}
 	}
-	
 	if (titlePtr != 0) OS.CFRelease (titlePtr);	
 	if (messagePtr != 0) OS.CFRelease (messagePtr);
 	if (outDialog [0] != 0) OS.NavDialogDispose (outDialog [0]);
-	
 	return directoryPath;
 }
 
