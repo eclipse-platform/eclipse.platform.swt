@@ -2350,31 +2350,61 @@ public class SWT {
 		
 	/**
 	 * Line drawing style for flat end caps (value is 1).
+	 * 
+	 * @see org.eclipse.swt.graphics.GC#setLineCap(int)
+	 * @see org.eclipse.swt.graphics.GC#getLineCap()
+	 * 
+	 * @since 3.1
 	 */
 	public static final int CAP_FLAT = 1;
 
 	/**
 	 * Line drawing style for rounded end caps (value is 2).
+	 * 
+	 * @see org.eclipse.swt.graphics.GC#setLineCap(int)
+	 * @see org.eclipse.swt.graphics.GC#getLineCap()
+	 * 
+	 * @since 3.1
 	 */
 	public static final int CAP_ROUND = 2;
 
 	/**
 	 * Line drawing style for square end caps (value is 3).
+	 * 
+	 * @see org.eclipse.swt.graphics.GC#setLineCap(int)
+	 * @see org.eclipse.swt.graphics.GC#getLineCap()
+	 * 
+	 * @since 3.1
 	 */
 	public static final int CAP_SQUARE = 3;
 
 	/**
 	 * Line drawing style for miter joins (value is 1).
+	 * 
+	 * @see org.eclipse.swt.graphics.GC#setLineJoin(int)
+	 * @see org.eclipse.swt.graphics.GC#getLineJoin()
+	 * 
+	 * @since 3.1
 	 */
 	public static final int JOIN_MITER = 1;
 
 	/**
 	 * Line drawing  style for rounded joins (value is 2).
+	 * 
+	 * @see org.eclipse.swt.graphics.GC#setLineJoin(int)
+	 * @see org.eclipse.swt.graphics.GC#getLineJoin()
+	 * 
+	 * @since 3.1
 	 */
 	public static final int JOIN_ROUND = 2;
 
 	/**
 	 * Line drawing style for bevel joins (value is 3).
+	 * 
+	 * @see org.eclipse.swt.graphics.GC#setLineJoin(int)
+	 * @see org.eclipse.swt.graphics.GC#getLineJoin()
+	 * 
+	 * @since 3.1
 	 */
 	public static final int JOIN_BEVEL = 3;
 
