@@ -441,7 +441,8 @@ public void setBottom(Control control) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (bottom != null && !bottom.isDisposed()) {
-		bottom.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
+		Point size = bottom.getSize();
+		bottom.setLocation(OFFSCREEN - size.x, OFFSCREEN - size.y);
 	}
 	bottom = control;
 	layout();
@@ -486,7 +487,8 @@ public void setLeft(Control control) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (left != null && !left.isDisposed()) {
-		left.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
+		Point size = left.getSize();
+		left.setLocation(OFFSCREEN - size.x, OFFSCREEN - size.y);
 	}
 	left = control;
 	layout();
@@ -512,7 +514,8 @@ public void setRight(Control control) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (right != null && !right.isDisposed()) {
-		right.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
+		Point size = right.getSize();
+		right.setLocation(OFFSCREEN - size.x, OFFSCREEN - size.y);
 	}
 	right = control;
 	layout();

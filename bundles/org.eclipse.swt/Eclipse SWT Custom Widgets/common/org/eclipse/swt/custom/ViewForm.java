@@ -518,7 +518,8 @@ public void setTopCenter(Control topCenter) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.topCenter != null && !this.topCenter.isDisposed()) {
-		this.topCenter.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
+		Point size = this.topCenter.getSize();
+		this.topCenter.setLocation(OFFSCREEN - size.x, OFFSCREEN - size.y);
 	}
 	this.topCenter = topCenter;
 	layout();
@@ -543,7 +544,8 @@ public void setTopLeft(Control c) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.topLeft != null && !this.topLeft.isDisposed()) {
-		this.topLeft.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
+		Point size = this.topLeft.getSize();
+		this.topLeft.setLocation(OFFSCREEN - size.x, OFFSCREEN - size.y);
 	}
 	this.topLeft = c;
 	layout();
@@ -568,7 +570,8 @@ public void setTopRight(Control c) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (this.topRight != null && !this.topRight.isDisposed()) {
-		this.topRight.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
+		Point size = this.topRight.getSize();
+		this.topRight.setLocation(OFFSCREEN - size.x, OFFSCREEN - size.y);
 	}
 	this.topRight = c;
 	layout();
