@@ -486,6 +486,7 @@ public static final native void gtk_clist_unselect_row(int clist, int row, int c
 public static final native int gtk_color_selection_dialog_new(byte[] title);
 public static final native void gtk_color_selection_get_current_color(int colorsel, GdkColor color);
 public static final native void gtk_color_selection_set_current_color(int colorsel, GdkColor color);
+public static final native void gtk_combo_disable_activate(int combo);
 public static final native int gtk_combo_new();
 public static final native void gtk_combo_set_case_sensitive(int combo, boolean val);
 public static final native void gtk_combo_set_popdown_strings(int combo, int strings);
@@ -545,6 +546,7 @@ public static final native int gtk_entry_get_max_length(int entry);
 public static final native int gtk_entry_get_text(int entry);
 public static final native boolean gtk_entry_get_visibility(int entry);
 public static final native int gtk_entry_new();
+public static final native void gtk_entry_set_activates_default(int entry, boolean setting);
 public static final native void gtk_entry_set_editable(int entry, boolean editable);
 public static final native void gtk_entry_set_invisible_char(int entry, char ch);
 public static final native void gtk_entry_set_has_frame(int entry, boolean setting);

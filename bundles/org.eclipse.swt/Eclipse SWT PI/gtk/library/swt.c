@@ -2033,6 +2033,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selectio
 	if (arg1) setGdkColorFields(env, arg1, lparg1);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1combo_1disable_1activate
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1combo_1disable_1activate\n")
+
+	gtk_combo_disable_activate((GtkCombo *)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1combo_1new
 	(JNIEnv *env, jclass that)
 {
@@ -2574,6 +2582,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1new
 	DEBUG_CALL("gtk_1entry_1new\n")
 
 	return (jint)gtk_entry_new();
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1activates_1default
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("gtk_1entry_1set_1activates_1default\n")
+
+	gtk_entry_set_activates_default((GtkEntry *)arg0, (gboolean)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1editable
