@@ -1040,11 +1040,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		else height = DEFAULT_HEIGHT;
 	}
 
-	// Hardcode the inset margins.  Assume text is inset
-	// 1 pixel on each side. 
-	width += 2;
-	height += 2;
-	
 	Rectangle rect = computeTrim(0,0,width,height);
 	return new Point (rect.width, rect.height);
 }
