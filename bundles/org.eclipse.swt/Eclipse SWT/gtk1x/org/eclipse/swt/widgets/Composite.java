@@ -164,8 +164,14 @@ boolean isMyHandle(int h) {
 
 
 public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
-	layout();
+	Rectangle old_bounds = _getBounds();
+	if ( (x != old_bounds.x) ||
+	     (y != old_bounds.y) ||
+	     (width != old_bounds.width) ||
+	     (height != old_bounds.height) ) {
+		super.setBounds (x, y, width, height);
+		layout();
+	} else checkWidget();
 }
 
 public void setSize (int width, int height) {
