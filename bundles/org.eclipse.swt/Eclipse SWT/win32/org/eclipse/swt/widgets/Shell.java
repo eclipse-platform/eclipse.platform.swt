@@ -357,22 +357,25 @@ void createHandle () {
 	
 	if (!embedded) {
 		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);	
-		bits &= ~OS.WS_OVERLAPPED;	
+		bits &= ~OS.WS_OVERLAPPED;
 		/*
 		* Note:  On WinCE PPC, enforce WS_CAPTION if SWT.TITLE 
-		* is set.  Don't set WS_POPUP, this would cause the shell
-		* not to have a title in the navigation bar.
+		* is set.
 		*/
 		if (OS.IsWinCE) {
 			if ((style & SWT.TITLE) != 0) bits |= OS.WS_CAPTION;
-		} else {
+		} else {	
 			bits |= OS.WS_POPUP;
+			if ((style & (SWT.TITLE | SWT.CLOSE)) == 0) bits &= ~OS.WS_CAPTION;
 		}
-		if ((style & (SWT.TITLE | SWT.CLOSE)) == 0) bits &= ~OS.WS_CAPTION;
 		if ((style & SWT.NO_TRIM) == 0) {
 			if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		
+		if (OS.IsWinCE) {
+			if (parent != null) setMaximized (true);
+		}
 	}
 	if (OS.IsDBLocale) {
 		hIMC = OS.ImmCreateContext ();
@@ -905,8 +908,20 @@ int widgetExtStyle () {
 
 int widgetStyle () {
 	int bits = super.widgetStyle () & ~OS.WS_POPUP;
+	if (OS.IsWinCE) bits &= ~OS.WS_TABSTOP;
 	if (handle != 0) return bits | OS.WS_CHILD;
 	bits &= ~OS.WS_CHILD;
+	/*
+	* Feature on WinCE: calling createWindowEx with the style OVERLAPPED
+	* and the field hwndParent causes the window to become a child of hwndParent
+	* (not owned by). The workaround is to set the style WS_POPUP for shells
+	* with a parent.
+	* The WS_POPUP style in combination with CW_USEDEFAULT causes the window 
+	* to be of size 0 and will need to be resized.
+	*/
+	if (OS.IsWinCE) {
+		if (parent != null) return bits | OS.WS_POPUP;
+	}
 	return bits | OS.WS_OVERLAPPED | OS.WS_CAPTION;
 }
 

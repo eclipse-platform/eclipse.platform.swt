@@ -750,10 +750,10 @@ public class OS {
 	public static final int SW_HIDE = 0x0;
 	public static final int SW_INVALIDATE = 0x2;
 	public static final int SW_PARENTOPENING = 0x3;
-	public static final int SW_RESTORE = 0x9;
+	public static final int SW_RESTORE = OS.IsWinCE ? 0xd : 0x9;
 	public static final int SW_SCROLLCHILDREN = 0x1;
 	public static final int SW_SHOW = 0x5;
-	public static final int SW_SHOWMAXIMIZED = 0x3;
+	public static final int SW_SHOWMAXIMIZED = OS.IsWinCE ? 0xb : 0x3;
 	public static final int SW_SHOWMINNOACTIVE = 0x7;
 	public static final int SW_SHOWNA = 0x8;
 	public static final int SW_SHOWNOACTIVATE = 0x4;
@@ -1076,8 +1076,8 @@ public class OS {
 	public static final int WS_EX_TOPMOST = 0x8;
 	public static final int WS_EX_TRANSPARENT = 0x20;
 	public static final int WS_HSCROLL = 0x100000;
-	public static final int WS_MAXIMIZEBOX = 0x10000;
-	public static final int WS_MINIMIZEBOX = 0x20000;
+	public static final int WS_MAXIMIZEBOX = OS.IsWinCE ? 0x20000 : 0x10000;
+	public static final int WS_MINIMIZEBOX = OS.IsWinCE ? 0x10000 : 0x20000;
 	public static final int WS_OVERLAPPED = OS.IsWinCE ? WS_BORDER | WS_CAPTION : 0x0;
 	public static final int WS_OVERLAPPEDWINDOW = 0xcf0000;
 	public static final int WS_POPUP = 0x80000000;
