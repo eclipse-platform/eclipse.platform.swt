@@ -180,7 +180,25 @@ public int AlertCheck(int parent, int dialogTitle, int text, int checkMsg, int c
 }
 
 public int Confirm(int parent, int dialogTitle, int text, int _retval) {
-	return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	Browser browser = getBrowser(parent);
+	
+	int length = XPCOM.nsCRT_strlen_PRUnichar(dialogTitle);
+	char[] dest = new char[length];
+	XPCOM.memmove(dest, dialogTitle, length * 2);
+	String titleLabel = new String(dest);
+
+	length = XPCOM.nsCRT_strlen_PRUnichar(text);
+	dest = new char[length];
+	XPCOM.memmove(dest, text, length * 2);
+	String textLabel = new String(dest);
+
+	MessageBox messageBox = new MessageBox(browser.getShell(), SWT.OK | SWT.CANCEL);
+	messageBox.setText(titleLabel);
+	messageBox.setMessage(textLabel);
+	int id = messageBox.open();
+	int[] result = { id == SWT.OK ? 1 : 0};
+	XPCOM.memmove(_retval, result, 4);
+	return XPCOM.NS_OK;
 }
 
 public int ConfirmCheck(int parent, int dialogTitle, int text, int checkMsg, int checkValue, int _retval) {
