@@ -585,6 +585,7 @@ public static final native int CreatePopupArrowControl(int window, Rect boundsRe
 public static final native int CreatePopupButtonControl(int window, Rect boundsRect, int title, short menuID, boolean variableWidth, short titleWidth, short titleJustification, int titleStyle, int[] outControl);
 public static final native int CreateProgressBarControl(int window, Rect boundsRect, int value, int minimim, int maximum, boolean indeterminate, int [] outControl);
 public static final native int CreatePushButtonControl(int window, Rect boundsRect, int title, int[] outControl);
+public static final native int CreatePushButtonWithIconControl(int window, Rect boundsRect, int title, ControlButtonContentInfo icon, short iconAlignment, int[] outControl);
 public static final native int CreateRadioButtonControl(int window, Rect boundsRect, int title, int initialValue, boolean autoToggle, int[] outControl);
 public static final native int CreateRootControl(int windowHandle, int[] cHandle);
 public static final native int CreateSliderControl(int window, Rect boundsRect, int value, int minimum, int maximum, int orientation, short numTickMarks, boolean liveTracking, int liveTrackingProc, int [] outControl);

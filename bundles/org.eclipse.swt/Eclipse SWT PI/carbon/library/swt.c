@@ -1421,6 +1421,28 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePushButtonC
 }
 #endif /* NO_CreatePushButtonControl */
 
+#ifndef NO_CreatePushButtonWithIconControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePushButtonWithIconControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jobject arg3, jshort arg4, jintArray arg5)
+{
+	Rect _arg1, *lparg1=NULL;
+	ControlButtonContentInfo _arg3, *lparg3=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreatePushButtonWithIconControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg3) lparg3 = getControlButtonContentInfoFields(env, arg3, &_arg3);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)CreatePushButtonWithIconControl((WindowRef)arg0, (const Rect *)lparg1, (CFStringRef)arg2, (ControlButtonContentInfo *)lparg3, (ControlPushButtonIconAlignment)arg4, (ControlRef *)lparg5);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg3) setControlButtonContentInfoFields(env, arg3, lparg3);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateRadioButtonControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateRadioButtonControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jboolean arg4, jintArray arg5)
