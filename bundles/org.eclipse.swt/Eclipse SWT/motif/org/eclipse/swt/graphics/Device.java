@@ -556,19 +556,16 @@ protected void init () {
 	/* Create the warning and error callbacks */
 	Class clazz = getClass ();
 	synchronized (clazz) {
-		int index = 0;
-		while (index < Devices.length) {
-			if (Devices [index] != null) break;
-			index++;
-		}
-		if (index == Devices.length) {
+		if (XErrorCallback == null) {
 			XErrorCallback = new Callback (clazz, "XErrorProc", 2);
 			XNullErrorProc = XErrorCallback.getAddress ();
 			if (XNullErrorProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+			XErrorProc = OS.XSetErrorHandler (XNullErrorProc);
+		}
+		if (XIOErrorCallback == null) {
 			XIOErrorCallback = new Callback (clazz, "XIOErrorProc", 1);
 			XNullIOErrorProc = XIOErrorCallback.getAddress ();
 			if (XNullIOErrorProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
-			XErrorProc = OS.XSetErrorHandler (XNullErrorProc);
 			XIOErrorProc = OS.XSetIOErrorHandler (XNullIOErrorProc);
 		}
 	}
@@ -779,12 +776,11 @@ protected void release () {
 	xtWarningCallback.dispose (); xtWarningCallback = null;
 	xtNullWarningProc = xtWarningProc = 0;
 	
-	int index = 0;
-	while (index < Devices.length) {
-		if (Devices [index] != null) break;
-		index++;
+	int count = 0;
+	for (int i = 0; i < Devices.length; i++){
+		if (Devices [i] != null) count++;
 	}
-	if (index == Devices.length) {
+	if (count == 1) {
 		/* Free the X IO error handler */
 		OS.XSetIOErrorHandler (XIOErrorProc);
 		XIOErrorCallback.dispose (); XIOErrorCallback = null;
