@@ -215,6 +215,12 @@ public void setCaret (Caret caret) {
 	}
 }
 
+public void setFont (Font font) {
+	checkWidget();
+	super.setFont (font);
+	if (caret != null) caret.setFont (font);
+}
+	
 public void setLocation (int x, int y) {
 	checkWidget();
 	boolean isFocus = caret != null && caret.isFocusCaret ();

@@ -212,4 +212,9 @@ public void setCaret (Caret caret) {
 	}
 }
 
+public void setFont (Font font) {
+	checkWidget();
+	super.setFont (font);
+	if (caret != null) caret.setFont (font);
+}
 }
