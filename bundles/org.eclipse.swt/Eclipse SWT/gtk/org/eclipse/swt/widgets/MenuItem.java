@@ -538,8 +538,7 @@ public void setEnabled (boolean enabled) {
  * </ul>
  */
 public void setMenu (Menu menu) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget ();
 
 	/* Check to make sure the new menu is valid */
 	if ((style & SWT.CASCADE) == 0) {
@@ -557,13 +556,18 @@ public void setMenu (Menu menu) {
 	/* Assign the new menu */
 	Menu oldMenu = this.menu;
 	if (oldMenu == menu) return;
-	if (oldMenu != null) oldMenu.cascade = null;
+	if (oldMenu != null) {
+		oldMenu.cascade = null;
+		/*
+		* Add a reference to the menu we are about
+		* to replace or GTK will destroy it.
+		*/
+		OS.gtk_object_ref (oldMenu.handle);
+		OS.gtk_menu_item_remove_submenu (handle);
+	}
 	if ((this.menu = menu) != null) {
 		menu.cascade = this;
-		int menuHandle = menu.handle;
-		OS.gtk_menu_item_set_submenu (handle, menuHandle);
-	} else {
-		OS.gtk_menu_item_remove_submenu (handle);
+		OS.gtk_menu_item_set_submenu (handle, menu.handle);
 	}
 
 	
