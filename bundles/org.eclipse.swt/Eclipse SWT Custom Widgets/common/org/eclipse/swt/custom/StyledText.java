@@ -479,7 +479,7 @@ public class StyledText extends Canvas {
 				line, i, paintY, gc, background, foreground, true);
 			if (paintY + lineHeight * 2 > clientArea.y + clientArea.height) {
 				endPage(page);
-				paintY = clientArea.y;
+				paintY = clientArea.y - lineHeight;
 				page++;
 				if (page > endPage || i == lineCount - 1) {
 					break;
