@@ -4009,7 +4009,7 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 	}
 	display.mnemonicKeyHit = true;
 	int result = callWindowProc (OS.WM_SYSCHAR, wParam, lParam);
-	if (!display.mnemonicKeyHit) {
+	if (!display.mnemonicKeyHit || menuShell ().menuBar == null) {
 		sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam);
 	}
 	display.mnemonicKeyHit = false;

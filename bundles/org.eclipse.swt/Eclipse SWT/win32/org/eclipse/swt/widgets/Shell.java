@@ -1007,11 +1007,10 @@ void setToolTipText (NMTTDISPINFO lpnmtdi, char [] buffer) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	/*
-	* Bug on Windows.  Calling ShowOnedPopups to
-	* hide the child windows of a hidden window causes the
-	* application to be deactivated.  The workaround is to
-	* call ShowOwnedPopups to hide child windows before
-	* hiding their parent window.
+	* Bug in Windows.  Calling ShowOwnedPopups() to hide the
+	* child windows of a hidden window causes the application
+	* to be deactivated.  The fix is to call ShowOwnedPopups()
+	* to hide children before hiding the parent.
 	*/
 	if (showWithParent && !visible) {
 		if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, false);
