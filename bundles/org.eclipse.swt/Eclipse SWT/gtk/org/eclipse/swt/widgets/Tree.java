@@ -1414,6 +1414,25 @@ void hookEvents () {
 	return -1;
 }
 
+/*public*/ int indexOf (TreeItem item) {
+	checkWidget();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int index = -1;
+	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
+	int depth = OS.gtk_tree_path_get_depth (path);
+	if (depth == 1) {
+		int /*long*/ indices = OS.gtk_tree_path_get_indices (path);
+		if (indices != 0) {	
+			int[] temp = new int[1];
+			OS.memmove (temp, indices, 4);
+			index = temp[0];
+		}
+	}
+	OS.gtk_tree_path_free (path);
+	return index;
+}
+
 boolean mnemonicHit (char key) {
 	for (int i=0; i<columnCount; i++) {
 		int /*long*/ labelHandle = columns [i].labelHandle;

@@ -8808,6 +8808,18 @@ JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1path_1append_1index)
 }
 #endif
 
+#ifndef NO__1gtk_1tree_1path_1compare
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1tree_1path_1compare)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1tree_1path_1compare_FUNC);
+	rc = (jint)gtk_tree_path_compare((const GtkTreePath *)arg0, (const GtkTreePath *)arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1tree_1path_1compare_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1tree_1path_1down
 JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1tree_1path_1down)
 	(JNIEnv *env, jclass that, jint arg0)

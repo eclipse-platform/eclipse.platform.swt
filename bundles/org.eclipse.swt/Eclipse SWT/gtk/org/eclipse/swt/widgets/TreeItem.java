@@ -785,6 +785,34 @@ public String getText (int index) {
 	return new String (Converter.mbcsToWcs (null, buffer));
 }
 
+/*public*/ int indexOf (TreeItem item) {
+	checkWidget();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int index = -1;
+	boolean isParent = false;
+	int /*long*/ currentPath = OS.gtk_tree_model_get_path (parent.modelHandle, handle);
+	int /*long*/ parentPath = OS.gtk_tree_model_get_path (parent.modelHandle, item.handle);
+	int depth = OS.gtk_tree_path_get_depth (parentPath);
+	if (depth > 1 && OS.gtk_tree_path_up(parentPath)) {
+		if (OS.gtk_tree_path_compare(currentPath, parentPath) == 0) isParent = true;
+	}
+	OS.gtk_tree_path_free (currentPath);
+	OS.gtk_tree_path_free (parentPath);
+	if (!isParent) return index;
+	int /*long*/ path = OS.gtk_tree_model_get_path (parent.modelHandle, item.handle);
+	if (depth > 1) {
+		int /*long*/ indices = OS.gtk_tree_path_get_indices (path);
+		if (indices != 0) {	
+			int[] temp = new int[depth];
+			OS.memmove (temp, indices, 4 * temp.length);
+			index = temp[temp.length - 1];
+		}
+	}
+	OS.gtk_tree_path_free (path);
+	return index;
+}
+
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);

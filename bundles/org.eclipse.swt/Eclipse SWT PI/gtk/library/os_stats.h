@@ -703,6 +703,7 @@ typedef enum {
 	_1gtk_1tree_1model_1iter_1next_FUNC,
 	_1gtk_1tree_1model_1iter_1nth_1child_FUNC,
 	_1gtk_1tree_1path_1append_1index_FUNC,
+	_1gtk_1tree_1path_1compare_FUNC,
 	_1gtk_1tree_1path_1down_FUNC,
 	_1gtk_1tree_1path_1free_FUNC,
 	_1gtk_1tree_1path_1get_1depth_FUNC,

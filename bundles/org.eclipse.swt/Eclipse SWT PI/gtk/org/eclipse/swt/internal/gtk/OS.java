@@ -5991,6 +5991,15 @@ public static final void gtk_tree_path_append_index(int /*long*/ path, int index
 		lock.unlock();
 	}
 }
+public static final native int /*long*/ _gtk_tree_path_compare(int /*long*/ a, int /*long*/ b);
+public static final int /*long*/ gtk_tree_path_compare(int /*long*/ a, int /*long*/ b) {
+	lock.lock();
+	try {
+		 return _gtk_tree_path_compare(a, b);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_tree_path_down(int /*long*/ path);
 public static final void gtk_tree_path_down(int /*long*/ path) {
 	lock.lock();
