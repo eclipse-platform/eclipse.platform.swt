@@ -13,14 +13,18 @@ package org.eclipse.swt.examples.controlexample;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.events.*;
 
 class SashTab extends Tab {
 	/* Example widgets and groups that contain them */
 	Sash hSash, vSash;
+	Composite sashComp;
+	Group sashGroup;
 	List list1, list2, list3;
 	Text text;
+	Button smoothButton;
 
 	static String [] ListData0 = {ControlExample.getResourceString("ListData0_0"),
 								  ControlExample.getResourceString("ListData0_1"),
@@ -52,27 +56,44 @@ class SashTab extends Tab {
 	SashTab(ControlExample instance) {
 		super(instance);
 	}
+	
+	/**
+	 * Creates the "Example" group.
+	 */
+	void createExampleGroup () {
+		super.createExampleGroup ();
+		exampleGroup.setLayout(new FillLayout());
+		
+		/* Create a group for the sash widgets */
+		sashGroup = new Group (exampleGroup, SWT.NONE);
+		FillLayout layout = new FillLayout();
+		layout.marginHeight = layout.marginWidth = 5;
+		sashGroup.setLayout(layout);
+		sashGroup.setText ("Sash");
+	}
 
 	/**
-	 * Creates the tab folder page.
+	 * Creates the "Example" widgets.
 	 */
-	Composite createTabFolderPage (TabFolder tabFolder) {
+	void createExampleWidgets () {
 		/*
 		 * Create the page.  This example does not use layouts.
 		 */
-		tabFolderPage = new Composite(tabFolder, SWT.BORDER);
+		sashComp = new Composite(sashGroup, SWT.BORDER);
 	
 		/* Create the list and text widgets */
-		list1 = new List (tabFolderPage, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		list1 = new List (sashComp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 		list1.setItems (ListData0);
-		list2 = new List (tabFolderPage, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
+		list2 = new List (sashComp, SWT.V_SCROLL | SWT.H_SCROLL | SWT.BORDER);
 		list2.setItems (ListData1);
-		text = new Text (tabFolderPage, SWT.MULTI | SWT.BORDER);
+		text = new Text (sashComp, SWT.MULTI | SWT.BORDER);
 		text.setText (ControlExample.getResourceString("Multi_line"));
 	
 		/* Create the sashes */
-		vSash = new Sash (tabFolderPage, SWT.VERTICAL);
-		hSash = new Sash (tabFolderPage, SWT.HORIZONTAL);
+		int style = getDefaultStyle();
+		if (smoothButton.getSelection()) style |= SWT.SMOOTH;
+		vSash = new Sash (sashComp, SWT.VERTICAL | style);
+		hSash = new Sash (sashComp, SWT.HORIZONTAL | style);
 		
 		/* Add the listeners */
 		hSash.addSelectionListener (new SelectionAdapter () {
@@ -95,22 +116,37 @@ class SashTab extends Tab {
 				}
 			}
 		});
-		tabFolderPage.addControlListener (new ControlAdapter () {
+		sashComp.addControlListener (new ControlAdapter () {
 			public void controlResized (ControlEvent event) {
-				shellResized ();
+				resized ();
 			}
 		});
-	
-		/*
-		* Do not set the bounds of the lists, text and sashes here 
-		* because this method is run before the widget is opened 
-		* so we do not know how big the tabComposite is going to be.
-		* When the widget is opened a resize event will occur 
-		* and the contained widgets can be sized accordingly.
-		*/
-		return tabFolderPage; 
+	}
+
+	/**
+	 * Creates the "Size" group.  The "Size" group contains
+	 * controls that allow the user to change the size of
+	 * the example widgets.
+	 */	
+	void createSizeGroup () {		
 	}
 	
+	/**
+	 * Creates the "Style" group.
+	 */
+	void createStyleGroup() {
+		super.createStyleGroup ();
+	
+		/* Create the extra widgets */
+		smoothButton = new Button (styleGroup, SWT.CHECK);
+		smoothButton.setText("SWT.SMOOTH");
+	}
+	
+	void disposeExampleWidgets () {
+		sashComp.dispose();
+		sashComp = null;
+	}
+
 	/**
 	 * Gets the "Example" widget children.
 	 */
@@ -131,13 +167,13 @@ class SashTab extends Tab {
 	 */
 	void layout () {
 		
-		Rectangle tabCompositeBounds = tabFolderPage.getClientArea ();
+		Rectangle clientArea = sashGroup.getClientArea ();
 		Rectangle hSashBounds = hSash.getBounds ();
 		Rectangle vSashBounds = vSash.getBounds ();
 		
 		list1.setBounds (0, 0, vSashBounds.x, hSashBounds.y);
-		list2.setBounds (vSashBounds.x + vSashBounds.width, 0, tabCompositeBounds.width - (vSashBounds.x + vSashBounds.width), hSashBounds.y);
-		text.setBounds (0, hSashBounds.y + hSashBounds.height, tabCompositeBounds.width, tabCompositeBounds.height - (hSashBounds.y + hSashBounds.height));
+		list2.setBounds (vSashBounds.x + vSashBounds.width, 0, clientArea.width - (vSashBounds.x + vSashBounds.width), hSashBounds.y);
+		text.setBounds (0, hSashBounds.y + hSashBounds.height, clientArea.width, clientArea.height - (hSashBounds.y + hSashBounds.height));
 	
 		/**
 		* If the horizontal sash has been moved then the vertical
@@ -147,43 +183,50 @@ class SashTab extends Tab {
 		vSashBounds.height = hSashBounds.y;
 		vSash.setBounds (vSashBounds);
 	}
+	/**
+	 * Sets the size of the "Example" widgets.
+	 */
+	void setExampleWidgetSize () {
+		sashGroup.layout (true);
+	}
 	
 	/**
-	 * Recreates the "Example" widgets.
+	 * Sets the state of the "Example" widgets.
 	 */
-	void recreateExampleWidgets () {
-		// this tab does not use this framework mechanism
+	void setExampleWidgetState () {
+		super.setExampleWidgetState ();
+		smoothButton.setSelection ((hSash.getStyle () & SWT.SMOOTH) != 0);
 	}
 	
 	/**
 	 * Handle the shell resized event.
 	 */
-	void shellResized () {
+	void resized () {
 	
 		/* Get the client area for the shell */
-		Rectangle tabFolderPageBounds = tabFolderPage.getClientArea ();
+		Rectangle clientArea = sashGroup.getClientArea ();
 		
 		/*
 		* Make list 1 half the width and half the height of the tab leaving room for the sash.
 		* Place list 1 in the top left quadrant of the tab.
 		*/
-		Rectangle list1Bounds = new Rectangle (0, 0, (tabFolderPageBounds.width - SASH_WIDTH) / 2, (tabFolderPageBounds.height - SASH_WIDTH) / 2);
+		Rectangle list1Bounds = new Rectangle (0, 0, (clientArea.width - SASH_WIDTH) / 2, (clientArea.height - SASH_WIDTH) / 2);
 		list1.setBounds (list1Bounds);
 	
 		/*
 		* Make list 2 half the width and half the height of the tab leaving room for the sash.
 		* Place list 2 in the top right quadrant of the tab.
 		*/
-		list2.setBounds (list1Bounds.width + SASH_WIDTH, 0, tabFolderPageBounds.width - (list1Bounds.width + SASH_WIDTH), list1Bounds.height);
+		list2.setBounds (list1Bounds.width + SASH_WIDTH, 0, clientArea.width - (list1Bounds.width + SASH_WIDTH), list1Bounds.height);
 	
 		/*
 		* Make the text area the full width and half the height of the tab leaving room for the sash.
 		* Place the text area in the bottom half of the tab.
 		*/
-		text.setBounds (0, list1Bounds.height + SASH_WIDTH, tabFolderPageBounds.width, tabFolderPageBounds.height - (list1Bounds.height + SASH_WIDTH));
+		text.setBounds (0, list1Bounds.height + SASH_WIDTH, clientArea.width, clientArea.height - (list1Bounds.height + SASH_WIDTH));
 	
 		/* Position the sashes */
 		vSash.setBounds (list1Bounds.width, 0, SASH_WIDTH, list1Bounds.height);
-		hSash.setBounds (0, list1Bounds.height, tabFolderPageBounds.width, SASH_WIDTH);
+		hSash.setBounds (0, list1Bounds.height, clientArea.width, SASH_WIDTH);
 	}
 }
