@@ -740,7 +740,7 @@ public void setMaximized (boolean maximized) {
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the menu has been disposed</li> 
- *    <li>ERROR_INVALID_PARENT - if the menu does not have the same parent as the reciever</li>
+ *    <li>ERROR_INVALID_PARENT - if the menu is not in the same widget tree</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
