@@ -42,7 +42,9 @@ public abstract class Control extends Widget implements Drawable {
 	Menu menu;
 	String toolTipText;
 	Object layoutData;
-	Accessible accessible;	
+	Accessible accessible;
+	
+	static final short [] ACCENTS = new short [] {'~', '`', '\'', '^', '"'};
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -3052,11 +3054,32 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	* high bit of the value returned by MapVirtualKey ().  A further problem
 	* is that the high bit on Windows NT is bit 32 while the high bit on
 	* Windows 95 is bit 16.  They should both be bit 32.
+	* 
+	* NOTE: This code is avoiding a call to ToAscii ().
 	*/
 	if (OS.IsWinNT) {
 		if ((mapKey & 0x80000000) != 0) return null;
 	} else {
 		if ((mapKey & 0x8000) != 0) return null;
+	}
+	
+	/*
+	* Bug in Windows.  When the accent key is generated on an international
+	* keyboard using Ctrl+Alt or the special key, MapVirtualKey () does not
+	* have the high bit set indicating that this is an accent key stroke.
+	* The fix is to iterate through all known accent, mapping them back to
+	* their corresponding virtual key and key state.  If the virtual key
+	* and key state match the current key, then this is an accent that has
+	* been generated using an international keyboard and calling ToAscii ()
+	* will clear the accent state.
+	* 
+	* NOTE: This code is avoiding a call to ToAscii ().
+	*/
+	for (int i=0; i<ACCENTS.length; i++) {
+		int value = OS.VkKeyScan (ACCENTS [i]);
+		if ((value & 0xFF) == wParam && (value & 0x600) == 0x600) {
+			return null;
+		}
 	}
 	
 	/*
@@ -3615,7 +3638,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	int result = callWindowProc (OS.WM_PAINT, wParam, lParam);
 	if (OS.IsWinCE) {
 		RECT rect = new RECT ();
-		OS.GetClipBox (rgn, rect);
+		OS.GetRgnBox (rgn, rect);
 		OS.InvalidateRect (handle, rect, false);
 	} else {
 		OS.InvalidateRgn (handle, rgn, false);
