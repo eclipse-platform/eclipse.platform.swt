@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -35,6 +36,8 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Scale extends Control {
+	int scrollHandle;
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -126,6 +129,16 @@ void createHandle (int index) {
 	int parentHandle = parent.handle;
 	handle = OS.XmCreateScale (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	byte[] scrollbar = Converter.wcsToMbcs (null, "Scrollbar\0");
+	scrollHandle = OS.XtNameToWidget (handle, scrollbar);
+}
+void deregister () {
+	super.deregister ();
+	if (scrollHandle != 0) display.removeWidget (scrollHandle);
+}
+int focusHandle () {
+	if (scrollHandle == 0) return super.focusHandle ();
+	return scrollHandle;
 }
 /**
  * Returns the amount that the receiver's value will be
@@ -217,6 +230,10 @@ void hookEvents () {
 }
 void overrideTranslations () {
 	OS.XtOverrideTranslations (handle, display.tabTranslations);
+}
+void register () {
+	super.register ();
+	if (scrollHandle != 0) display.addWidget (scrollHandle, this);
 }
 /**
  * Removes the listener from the collection of listeners who will

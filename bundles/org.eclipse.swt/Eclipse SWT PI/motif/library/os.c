@@ -4355,6 +4355,21 @@ JNIEXPORT void JNICALL OS_NATIVE(XtMoveWidget)
 }
 #endif
 
+#ifndef NO_XtNameToWidget
+JNIEXPORT jint JNICALL OS_NATIVE(XtNameToWidget)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "XtNameToWidget\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)XtNameToWidget((Widget)arg0, (String)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "XtNameToWidget\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_XtOpenDisplay
 JNIEXPORT jint JNICALL OS_NATIVE(XtOpenDisplay)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jbyteArray arg3, jint arg4, jint arg5, jintArray arg6, jint arg7)

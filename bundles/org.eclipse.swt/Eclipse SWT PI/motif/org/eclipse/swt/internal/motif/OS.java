@@ -875,6 +875,7 @@ public static final synchronized native int XtMalloc(int size);
 public static final synchronized native void XtManageChild(int widget);
 public static final synchronized native void XtMapWidget(int widget);
 public static final synchronized native void XtMoveWidget(int widget, int x, int y);
+public static final synchronized native int XtNameToWidget(int reference, byte[] names);
 public static final synchronized native int XtOpenDisplay(int xtAppContext, byte[] displayName, byte[] applicationName, byte[] applicationClass, int options, int numOptions, int[] argc, int argv);
 public static final synchronized native void XtOverrideTranslations(int w, int translations);
 public static final synchronized native int XtParent(int widget);
