@@ -540,6 +540,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1ref
 }
 #endif
 
+#ifndef NO_g_1object_1set
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1set
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("g_1object_1set\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_object_set((gpointer)arg0, (gchar *)lparg1, arg2, NULL);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+#endif
+
 #ifndef NO_g_1object_1set_1qdata
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1set_1qdata
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

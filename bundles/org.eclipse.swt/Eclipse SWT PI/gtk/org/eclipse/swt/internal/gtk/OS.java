@@ -158,6 +158,7 @@ public class OS {
 	public static final int GTK_ARROW_UP = 0x0;
 	public static final int GTK_CAN_DEFAULT = 0x2000;
 	public static final int GTK_CAN_FOCUS = 0x800;
+	public static final int GTK_CELL_RENDERER_MODE_ACTIVATABLE = 1;
 	public static final int GTK_CLIST_SHOW_TITLES = 0x4;
 	public static final int GTK_DIALOG_DESTROY_WITH_PARENT = 1 << 1;
 	public static final int GTK_DIALOG_MODAL = 1 << 0;
@@ -257,6 +258,7 @@ public class OS {
 	
 	/** Properties */
 	public static final byte[] button_relief = signal("button_relief");
+	public static final byte[] mode = signal("mode");
 	
 static byte [] signal (String name) {
 	int length = name.length ();
@@ -323,6 +325,7 @@ public static final native int g_log_set_handler(byte[] log_domain, int log_leve
 public static final native int g_malloc(int size);
 public static final native int g_object_get_qdata(int object, int quark);
 public static final native int g_object_ref(int object);
+public static final native void g_object_set(int object, byte[] first_property_name, int data);
 public static final native void g_object_set_qdata(int object, int quark, int data);
 public static final native void g_object_unref(int object);
 public static final native int g_quark_from_string(byte[] string);
