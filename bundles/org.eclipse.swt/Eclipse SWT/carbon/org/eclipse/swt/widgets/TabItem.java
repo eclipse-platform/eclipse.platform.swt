@@ -11,7 +11,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlTabInfoRecV1;
-//import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
+import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -30,6 +30,7 @@ public class TabItem extends Item {
 	TabFolder parent;
 	Control control;
 	String toolTipText;
+	int cIcon;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -172,6 +173,10 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (cIcon != 0) {
+		destroyCIcon(cIcon);
+		cIcon = 0;
+	}
 	control = null;
 	parent = null;
 }
@@ -219,17 +224,20 @@ public void setImage (Image image) {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	super.setImage (image);
-//	int kControlContentIconRef = 132;
-//	int kOnSystemDisk = -32768;
-//	int kSystemIconsCreator = ('m'<<24) + ('a'<<16) + ('c'<<8) + 's';
-//	int kColorSyncFolderIcon = ('p'<<24) + ('r'<<16) + ('o'<<8) + 'f';
-//	int [] iconRef = new int [1];
-//	OS.GetIconRef ((short)kOnSystemDisk, kSystemIconsCreator, kColorSyncFolderIcon, iconRef);
-//	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
-//	inContent.contentType = (short)kControlContentIconRef;
-//	inContent.iconRef = iconRef [0];
-//	OS.SetControlData (parent.handle, index+1, OS.kControlTabImageContentTag, ControlButtonContentInfo.sizeof, inContent);
-//	OS.HIViewSetNeedsDisplay (parent.handle, true);
+	if (cIcon != 0) {
+		destroyCIcon(cIcon);
+		cIcon = 0;
+	}
+	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
+	if (image == null) {
+		inContent.contentType = (short)OS.kControlContentTextOnly;
+	} else {
+		cIcon = createCIcon (image);
+		inContent.contentType = (short)OS.kControlContentCIconHandle;
+		inContent.iconRef = cIcon;
+	}
+	OS.SetControlData (parent.handle, index+1, OS.kControlTabImageContentTag, ControlButtonContentInfo.sizeof, inContent);
+	OS.HIViewSetNeedsDisplay (parent.handle, true);
 }
 
 public void setText (String string) {
