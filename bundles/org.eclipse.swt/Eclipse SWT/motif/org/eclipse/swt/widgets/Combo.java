@@ -1216,7 +1216,16 @@ void deregister () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	WidgetTable.remove (argList[1]);
 }
-
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	int [] argList = {
+		OS.XmNlist, 0, 
+		OS.XmNtextField, 0,
+	};
+	OS.XtGetValues (handle, argList, argList.length / 2);
+	enableHandle (enabled, argList [1]);
+	enableHandle (enabled, argList [3]);
+}
 /**
  * Bug in Motif.
  * Empty strings in the combo will cause GPFs if a) they
