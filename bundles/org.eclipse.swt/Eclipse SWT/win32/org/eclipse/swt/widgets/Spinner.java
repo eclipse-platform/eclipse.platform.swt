@@ -104,7 +104,7 @@ static int checkStyle (int style) {
 }
 
 boolean checkHandle (int hwnd) {
-	return hwnd == hwndText || hwnd == hwndUpDown || hwnd == handle;
+	return hwnd == handle || hwnd == hwndText || hwnd == hwndUpDown;
 }
 
 protected void checkSubclass () {
