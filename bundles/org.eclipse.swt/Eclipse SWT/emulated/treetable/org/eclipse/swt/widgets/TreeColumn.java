@@ -468,8 +468,11 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void setAlignment (int alignment) {
 	checkWidget ();
-	if (getIndex () == 0) return; 	/* column 0 can only have left-alignment */
-	if ((style & alignment) != 0) return;				/* same value */
+	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
+	int index = getIndex ();
+	if (index == -1 || index == 0) return;	/* column 0 can only have left-alignment */
+	alignment = checkBits (alignment, SWT.LEFT, SWT.CENTER, SWT.RIGHT, 0, 0, 0);
+	if ((style & alignment) != 0) return;	/* same value */
 	style &= ~(SWT.LEFT | SWT.CENTER | SWT.RIGHT);
 	style |= alignment;
 	int x = getX ();

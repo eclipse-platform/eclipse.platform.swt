@@ -604,7 +604,7 @@ public Color getBackground (int columnIndex) {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	if (!isAvailable()) return new Rectangle (0, 0, 0, 0);
+	if (!isAvailable ()) return new Rectangle (0, 0, 0, 0);
 	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
 	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
 }
@@ -710,11 +710,6 @@ int getContentWidth (int columnIndex) {
 	}
 	return width;
 }
-String getDisplayText (int columnIndex) {
-	if (parent.columns.length == 0) return getText (0);
-	String result = displayTexts [columnIndex];
-	return result != null ? result : "";	//$NON-NLS-1$
-}
 /*
  * Returns the x value where the receiver's content (ie.- its image or text) begins
  * for the specified column.  For columns > 0 this is dependent upon column alignment,
@@ -724,7 +719,7 @@ String getDisplayText (int columnIndex) {
 int getContentX (int columnIndex) {
 	if (columnIndex > 0) {
 		TreeColumn column = parent.columns [columnIndex];
-		int contentX = column.getX () + MARGIN_TEXT;
+		int contentX = column.getX () + Tree.MARGIN_IMAGE;
 		if ((column.style & SWT.LEFT) != 0) return contentX;
 		
 		/* column is not left-aligned */
@@ -751,6 +746,11 @@ int getContentX (int columnIndex) {
 	}
 	contentX += parent.expanderBounds.width;
 	return contentX + Tree.MARGIN_IMAGE + INDENT_HIERARCHY;
+}
+String getDisplayText (int columnIndex) {
+	if (parent.columns.length == 0) return getText (0);
+	String result = displayTexts [columnIndex];
+	return result != null ? result : "";	//$NON-NLS-1$
 }
 /**
  * Returns <code>true</code> if the receiver is expanded,
