@@ -62,6 +62,7 @@ Font () {
  * </ul>
  */
 public Font (Device device, FontData fd) {
+	if (fd == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	init(device, fd);
 }
 /**	 
@@ -85,9 +86,9 @@ public Font (Device device, FontData fd) {
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given arguments</li>
  * </ul>
  */
-public Font (Device device, String fontFamily, int height, int style) {
-	if (fontFamily == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	init(device, new FontData(fontFamily, height, style));
+public Font (Device device, String name, int height, int style) {
+	if (name == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	init(device, new FontData(name, height, style));
 }
 /**
  * Disposes of the operating system resources associated with
