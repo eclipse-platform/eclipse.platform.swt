@@ -42,20 +42,12 @@ public static int getVersion () {
 }
 
 /**
- * Returns the platform name.
+ * Returns the SWT platform name.
  *
  * @return the platform name of the currently running SWT
  */
-static String getPlatform () {
-	String [] names = new String [] {"motif", "gtk", "win32", "photon", "carbon"}; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
-	for (int i = 0; i < names.length; i++) {
-		try {
-			Class.forName("org.eclipse.swt.internal."+names[i]+".OS"); //$NON-NLS-1$ //$NON-NLS-2$
-			return names[i];
-		} catch (ClassNotFoundException e) {
-		}
-	}
-	return "unknown"; //$NON-NLS-1$
+public static String getPlatform () {
+	return Platform.PLATFORM;
 }
 
 /**
@@ -84,7 +76,7 @@ public static void loadLibrary (String name) {
      * Include platform name to support different windowing systems
      * on same operating system.
 	 */
-	String platform = getPlatform ();
+	String platform = Platform.PLATFORM;
 	
 	/*
 	 * Get version qualifier.

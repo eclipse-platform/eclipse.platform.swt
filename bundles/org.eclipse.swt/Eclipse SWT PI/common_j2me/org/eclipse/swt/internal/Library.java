@@ -42,6 +42,15 @@ public static int getVersion () {
 }
 
 /**
+ * Returns the SWT platform name.
+ *
+ * @return the platform name of the currently running SWT
+ */
+public static String getPlatform () {
+	return Platform.PLATFORM;
+}
+
+/**
  * Returns the SWT revision number as an integer. Revision changes
  * occur as a result of non-API breaking bug fixes.
  *

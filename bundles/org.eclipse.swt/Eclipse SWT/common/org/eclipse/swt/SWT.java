@@ -2277,7 +2277,7 @@ public static String getMessage(String key) {
  * @return the SWT platform name
  */
 public static String getPlatform () {
-	return Callback.getPlatform ();
+	return Library.getPlatform ();
 }
 
 /**

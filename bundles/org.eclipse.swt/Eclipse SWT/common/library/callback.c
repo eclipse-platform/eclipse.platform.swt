@@ -252,12 +252,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_Callback_reset
     memset((void *)&callbackData, 0, sizeof(callbackData));
 }
 
-JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_Callback_getPlatform
-  (JNIEnv *env, jclass that)
-{
-	return (*env)->NewStringUTF(env, PLATFORM);
-}
-
 int callback(int index, ...)
 {
 	if (!callbackEnabled) return 0;

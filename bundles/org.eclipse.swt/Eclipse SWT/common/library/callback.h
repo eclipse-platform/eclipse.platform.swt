@@ -17,29 +17,8 @@
 
 #if defined (WIN32) || defined (_WIN32_WCE)
 #include "windows.h"
-#define PLATFORM "win32"
 #define RETURN_TYPE LRESULT CALLBACK
 #define RETURN_CAST (LRESULT)
-#endif
-
-#ifdef MOTIF
-#define PLATFORM "motif"
-#endif
-
-#ifdef GTK
-#define PLATFORM "gtk"
-#endif
-
-#ifdef PHOTON
-#define PLATFORM "photon"
-#endif
-
-#ifdef CARBON
-#define PLATFORM "carbon"
-#endif
-
-#ifndef PLATFORM
-#define PLATFORM "unknown"
 #endif
 
 #ifndef RETURN_TYPE
