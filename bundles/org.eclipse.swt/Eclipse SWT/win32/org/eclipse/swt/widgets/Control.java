@@ -2442,7 +2442,7 @@ boolean translateTraversal (MSG msg) {
 			* The correct behavior is to give every key to a control
 			* that answers DLGC_WANTALLKEYS.
 			*/
-//			int code = OS.SendMessage (hwnd, OS., 0, 0);
+//			int code = OS.SendMessage (hwnd, OS.WM_GETDLGCODE, 0, 0);
 //			if ((code & OS.DLGC_WANTALLKEYS) != 0) doit = false;
 			detail = key == OS.VK_PRIOR ? SWT.TRAVERSE_PAGE_PREVIOUS : SWT.TRAVERSE_PAGE_NEXT;
 			break;
