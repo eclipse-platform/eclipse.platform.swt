@@ -35,6 +35,12 @@ public class LocationEvent extends TypedEvent {
 	public String location;
 	
 	/**
+	 * A flag indicating whether the location opens in the top frame
+	 * or not.
+	 */
+	public boolean top;
+	
+	/**
 	 * A flag indicating whether the location loading should be allowed.
 	 * Setting this field to <code>false</code> will cancel the operation.
 	 */

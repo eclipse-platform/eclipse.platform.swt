@@ -140,22 +140,21 @@ public Browser(Composite parent, int style) {
 					IDispatch dispatch = varResult.getDispatch();
 					Variant variant = new Variant(auto);
 					IDispatch top = variant.getDispatch();
-					if (top.getAddress() == dispatch.getAddress()) {
-						varResult = event.arguments[1];
-						String url = varResult.getString();
-						LocationEvent newEvent = new LocationEvent(Browser.this);
-						newEvent.display = getDisplay();
-						newEvent.widget = Browser.this;
-						newEvent.location = url;
-						newEvent.doit = true;
-						for (int i = 0; i < locationListeners.length; i++)
-							locationListeners[i].changing(newEvent);
-						Variant cancel = event.arguments[6];
-						if (cancel != null) {
-							int pCancel = cancel.getByRef();
-							COM.MoveMemory(pCancel, new short[]{newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
-					   }
-					}
+					varResult = event.arguments[1];
+					String url = varResult.getString();
+					LocationEvent newEvent = new LocationEvent(Browser.this);
+					newEvent.display = getDisplay();
+					newEvent.widget = Browser.this;
+					newEvent.location = url;
+					newEvent.top = top.getAddress() == dispatch.getAddress();
+					newEvent.doit = true;
+					for (int i = 0; i < locationListeners.length; i++)
+						locationListeners[i].changing(newEvent);
+					Variant cancel = event.arguments[6];
+					if (cancel != null) {
+						int pCancel = cancel.getByRef();
+						COM.MoveMemory(pCancel, new short[]{newEvent.doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
+				   }
 					
 					/*
 					* This code is intentionally commented.  This IDispatch was received
@@ -189,74 +188,73 @@ public Browser(Composite parent, int style) {
 				case DocumentComplete: {
 					Variant varResult = event.arguments[0];
 					IDispatch dispatch = varResult.getDispatch();
-					/*
-					* Note.  The completion of the page loading is detected as
-					* described in the MSDN article "Determine when a page is
-					* done loading in WebBrowser Control". 
-					*/
-					if (globalDispatch != 0 && dispatch.getAddress() == globalDispatch) {
-						/* final document complete */
-						globalDispatch = 0;
-						if (html != null) {
-							TCHAR buffer = new TCHAR(0, html, true);
-							html = null;
-							int byteCount = buffer.length() * TCHAR.sizeof;
-							int hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED, byteCount);
-							if (hGlobal != 0) {
-								OS.MoveMemory(hGlobal, buffer, byteCount);
-								int[] ppstm = new int[1];
-								/* 
-								* Note.  CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
-								* If the call succeeds the buffer hGlobal is freed automatically
-								* when the IStream object is released. If the call fails, free the buffer
-								* hGlobal.
-								*/
-								if (OS.CreateStreamOnHGlobal(hGlobal, true, ppstm) == OS.S_OK) {
-									int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
-									Variant pVarResult = auto.getProperty(rgdispid[0]);
-									IDispatch dispatchDocument = pVarResult.getDispatch();
-									int[] ppvObject = new int[1];
-									int result = dispatchDocument.QueryInterface(COM.IIDIPersistStreamInit, ppvObject);
-									if (result == OS.S_OK) {
-										IPersistStreamInit persistStreamInit = new IPersistStreamInit(ppvObject[0]);
-										if (persistStreamInit.InitNew() == OS.S_OK) {
-											persistStreamInit.Load(ppstm[0]);
-										}
-										persistStreamInit.Release();
+					if (html != null) {
+						TCHAR buffer = new TCHAR(0, html, true);
+						html = null;
+						int byteCount = buffer.length() * TCHAR.sizeof;
+						int hGlobal = OS.GlobalAlloc(OS.GMEM_FIXED, byteCount);
+						if (hGlobal != 0) {
+							OS.MoveMemory(hGlobal, buffer, byteCount);
+							int[] ppstm = new int[1];
+							/* 
+							* Note.  CreateStreamOnHGlobal is called with the flag fDeleteOnRelease.
+							* If the call succeeds the buffer hGlobal is freed automatically
+							* when the IStream object is released. If the call fails, free the buffer
+							* hGlobal.
+							*/
+							if (OS.CreateStreamOnHGlobal(hGlobal, true, ppstm) == OS.S_OK) {
+								int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
+								Variant pVarResult = auto.getProperty(rgdispid[0]);
+								IDispatch dispatchDocument = pVarResult.getDispatch();
+								int[] ppvObject = new int[1];
+								int result = dispatchDocument.QueryInterface(COM.IIDIPersistStreamInit, ppvObject);
+								if (result == OS.S_OK) {
+									IPersistStreamInit persistStreamInit = new IPersistStreamInit(ppvObject[0]);
+									if (persistStreamInit.InitNew() == OS.S_OK) {
+										persistStreamInit.Load(ppstm[0]);
 									}
-									pVarResult.dispose();
-									/*
-									* This code is intentionally commented.  The IDispatch obtained from a Variant
-									* did not increase the reference count for the enclosed interface.
-									*/
-									//dispatchDocument.Release();
-									IUnknown stream = new IUnknown(ppstm[0]);
-									stream.Release();
-								} else {
-									OS.GlobalFree(hGlobal);
+									persistStreamInit.Release();
 								}
+								pVarResult.dispose();
+								/*
+								* This code is intentionally commented.  The IDispatch obtained from a Variant
+								* did not increase the reference count for the enclosed interface.
+								*/
+								//dispatchDocument.Release();
+								IUnknown stream = new IUnknown(ppstm[0]);
+								stream.Release();
+							} else {
+								OS.GlobalFree(hGlobal);
 							}
-						} else {
-							Variant variant = new Variant(auto);
-							IDispatch top = variant.getDispatch();
-							if (top.getAddress() == dispatch.getAddress()) {
-								varResult = event.arguments[1];
-								String url = varResult.getString();
-								LocationEvent locationEvent = new LocationEvent(Browser.this);
-								locationEvent.display = getDisplay();
-								locationEvent.widget = Browser.this;
-								locationEvent.location = url;
-								for (int i = 0; i < locationListeners.length; i++)
-									locationListeners[i].changed(locationEvent);
-							}
-							/*
-							 * This code is intentionally commented.  A Variant constructed from an
-							 * OleAutomation object does not increase its reference count.  The IDispatch
-							 * obtained from this Variant did not increase the reference count for the
-							 * OleAutomation instance either. 
-							 */
-							//top.Release();
-							//variant.dispose();
+						}
+					} else {
+						Variant variant = new Variant(auto);
+						IDispatch top = variant.getDispatch();
+						varResult = event.arguments[1];
+						String url = varResult.getString();
+						LocationEvent locationEvent = new LocationEvent(Browser.this);
+						locationEvent.display = getDisplay();
+						locationEvent.widget = Browser.this;
+						locationEvent.location = url;
+						locationEvent.top = top.getAddress() == dispatch.getAddress();
+						for (int i = 0; i < locationListeners.length; i++)
+							locationListeners[i].changed(locationEvent);
+						/*
+						 * This code is intentionally commented.  A Variant constructed from an
+						 * OleAutomation object does not increase its reference count.  The IDispatch
+						 * obtained from this Variant did not increase the reference count for the
+						 * OleAutomation instance either. 
+						 */
+						//top.Release();
+						//variant.dispose();
+						/*
+						 * Note.  The completion of the page loading is detected as
+						 * described in the MSDN article "Determine when a page is
+						 * done loading in WebBrowser Control". 
+						 */
+						if (globalDispatch != 0 && dispatch.getAddress() == globalDispatch) {
+							/* final document complete */
+							globalDispatch = 0;
 							ProgressEvent progressEvent = new ProgressEvent(Browser.this);
 							progressEvent.display = getDisplay();
 							progressEvent.widget = Browser.this;
