@@ -253,6 +253,8 @@ public boolean open () {
 					* event.  If this happens, return false to indicate
 					* that the tracking has failed.
 					*/
+					event.x = newX;
+					event.y = newY;
 					sendEvent (SWT.Move, event);
 					if (isDisposed ()) return false;
 					drawRectangles ();
