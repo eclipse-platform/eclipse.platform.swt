@@ -291,7 +291,6 @@ void updateCaret () {
 	rect.y = caret.y;
 	rect.width = caret.width;
 	rect.height = caret.height;
-	OS.gtk_im_context_reset (imHandle);	
 	OS.gtk_im_context_set_cursor_location (imHandle, rect);
 }
 
