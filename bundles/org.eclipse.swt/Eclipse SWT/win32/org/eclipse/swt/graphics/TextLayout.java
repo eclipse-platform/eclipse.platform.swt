@@ -33,18 +33,20 @@ public class TextLayout {
 	
 	Device device;
 	Font font;
-	String text;
+	String text, segmentsText;
 	int lineSpacing;
 	int alignment;
 	int wrapWidth;
 	int orientation;
 	int[] tabs;
+	int[] segments;
 	StyleItem[] styles;
 
 	StyleItem[] allRuns;
 	StyleItem[][] runs;
 	int[] lineOffset, lineY, lineWidth;
 	
+	static final char LTR_MARK = '\u200E', RTL_MARK = '\u200F';	
 	static final int SCRIPT_VISATTR_SIZEOF = 2;
 	static final int GOFFSET_SIZEOF = 8;
 	
@@ -144,7 +146,7 @@ public TextLayout (Device device) {
 void breakRun(StyleItem run) {
 	if (run.psla != 0) return;
 	char[] chars = new char[run.length];
-	text.getChars(run.start, run.start + run.length, chars, 0);
+	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
 	int hHeap = OS.GetProcessHeap();
 	run.psla = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, SCRIPT_LOGATTR.sizeof * chars.length); 
 	OS.ScriptBreak(chars, chars.length, run.analysis, run.psla);
@@ -177,7 +179,7 @@ void computeRuns (GC gc) {
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
 		if (run.length == 1) {
-			char ch = text.charAt(run.start);
+			char ch = segmentsText.charAt(run.start);
 			switch (ch) {
 				case '\t': {
 					run.tab = true;
@@ -204,7 +206,7 @@ void computeRuns (GC gc) {
 				case '\r': {
 					run.lineBreak = true;
 					StyleItem next = allRuns[i + 1];
-					if (next.length != 0 && text.charAt(next.start) == '\n') {
+					if (next.length != 0 && segmentsText.charAt(next.start) == '\n') {
 						run.length += 1;
 						next.free();
 						i++;
@@ -318,6 +320,7 @@ public void dispose () {
 	freeRuns();
 	font = null;	
 	text = null;
+	segmentsText = null;
 	tabs = null;
 	styles = null;
 	runs = null;
@@ -370,6 +373,8 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 		selectionEnd = Math.min(Math.max(0, selectionEnd), length - 1);
 		if (selectionForeground == null) selectionForeground = device.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
 		if (selectionBackground == null) selectionBackground = device.getSystemColor(SWT.COLOR_LIST_SELECTION);
+		selectionStart = translateOffset(selectionStart);
+		selectionEnd = translateOffset(selectionEnd);
 	}
 	int foreground = OS.GetTextColor(hdc);
 	int state = OS.SaveDC(hdc);
@@ -511,6 +516,7 @@ void freeRuns () {
 	}
 	allRuns = null;
 	runs = null;
+	segmentsText = null;
 }
 
 /**
@@ -559,6 +565,9 @@ public Rectangle getBounds (int start, int end) {
 	end = Math.min(Math.max(0, end), length - 1);
 	int startLine = getLineIndex(start);
 	int endLine = getLineIndex(end);
+	length = segmentsText.length();
+	start = translateOffset(start);
+	end = translateOffset(end);
 	if (startLine != endLine) {
 		int width = 0;
 		int y = lineY[startLine];
@@ -676,6 +685,8 @@ public int getLevel (int offset) {
 	computeRuns(null);
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
+	length = segmentsText.length();
+	offset = translateOffset(offset);	
 	int line;
 	for (line=0; line<runs.length; line++) {
 		if (lineOffset[line + 1] > offset) break;
@@ -736,6 +747,7 @@ public int getLineIndex (int offset) {
 	computeRuns(null);
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
+	offset = translateOffset(offset);
 	for (int line=0; line<runs.length; line++) {
 		if (lineOffset[line + 1] > offset) {
 			return line;
@@ -814,6 +826,8 @@ public Point getLocation (int offset, int trailing) {
 	computeRuns(null);
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
+	length = segmentsText.length();
+	offset = translateOffset(offset);
 	int line;
 	for (line=0; line<runs.length; line++) {
 		if (lineOffset[line + 1] > offset) break;
@@ -876,6 +890,8 @@ public int getNextOffset (int offset, int movement) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (offset == length) return length;
 	if ((movement & MOVEMENT_CHAR) != 0) return offset + 1;
+	length = segmentsText.length();
+	offset = translateOffset(offset);
 	int[] ppSp = new int[1];
 	int[] piNumScripts = new int[1];
 	OS.ScriptGetProperties(ppSp, piNumScripts);
@@ -889,7 +905,7 @@ public int getNextOffset (int offset, int movement) {
 	for (; i < allRuns.length; i++) {
 		StyleItem run = allRuns[i];
 		if (run.start <= offset && offset < run.start + run.length) {
-			if (run.lineBreak && !run.softBreak) return run.start + run.length;
+			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start + run.length);
 			breakRun(run);
 			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
 			previousWhitespace = logAttr.fWhiteSpace;
@@ -898,40 +914,56 @@ public int getNextOffset (int offset, int movement) {
 		}
 	}
 	offset++;
+	if (segments != null) {
+		for (int j = 0; j < segments.length; j++) {
+			if (translateOffset(segments[j]) - 1 == offset) {
+				offset++;
+				break;
+			}
+		}
+	}
 	for (; i < allRuns.length && offset < length; i++) {
 		StyleItem run = allRuns[i];
 		if (run.start <= offset && offset < run.start + run.length) {
-			if (run.lineBreak && !run.softBreak) return offset;
+			if (run.lineBreak && !run.softBreak) return untranslateOffset(offset);
 			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 			if (((movement & MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
-				return offset;
+				return untranslateOffset(offset);
 			}
 			breakRun(run);
 			if ((movement & MOVEMENT_WORD) != 0) {
 				if (run.analysis.eScript != lastScript) {
 					OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
-					if (!logAttr.fWhiteSpace) return offset;
+					if (!logAttr.fWhiteSpace) return untranslateOffset(offset);
 				}				
 				lastScript = run.analysis.eScript;
 			}
 			while (run.start <= offset && offset < run.start + run.length) {
 				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 				if (!logAttr.fInvalid) {
-					if ((movement & MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return offset;
+					if ((movement & MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return untranslateOffset(offset);
 					if ((movement & MOVEMENT_WORD) != 0) {
 						if (properties.fNeedsWordBreaking) {
-							if (logAttr.fWordStop) return offset;
+							if (logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
-							if (!logAttr.fWhiteSpace && previousWhitespace) return offset;
+							if (!logAttr.fWhiteSpace && previousWhitespace) return untranslateOffset(offset);
 						}
 					}
 					previousWhitespace = logAttr.fWhiteSpace;
 				}
 				offset++;
+				if (segments != null) {
+					for (int j = 0; j < segments.length; j++) {
+						if (translateOffset(segments[j]) - 1 == offset) {
+							offset++;
+							break;
+						}
+					}
+				}
 			}
 		}
 	}
-	return length;
+	return text.length();
 }
 
 /**
@@ -976,10 +1008,10 @@ public int getOffset (int x, int y, int[] trailing) {
 		StyleItem firstRun = lineRuns[0];
 		if (firstRun.analysis.fRTL ^ isRTL) {
 			if (trailing != null) trailing[0] = SWT.TRAIL;
-			return firstRun.start + firstRun.length - 1;
+			return untranslateOffset(firstRun.start + firstRun.length - 1);
 		} else {
 			if (trailing != null) trailing[0] = SWT.LEAD; 
-			return firstRun.start;
+			return untranslateOffset(firstRun.start);
 		}
 	}
 	if (x > lineWidth[line]) {
@@ -988,22 +1020,22 @@ public int getOffset (int x, int y, int[] trailing) {
 		StyleItem lastRun = lineRuns[index];
 		if (lastRun.analysis.fRTL ^ isRTL) {
 			if (trailing != null) trailing[0] = SWT.LEAD; 
-			return lastRun.start;
+			return untranslateOffset(lastRun.start);
 		} else {
 			if (trailing != null) trailing[0] = SWT.TRAIL;
-			return lastRun.start + lastRun.length - 1;
+			return untranslateOffset(lastRun.start + lastRun.length - 1);
 		}
 	}	
 	int width = 0;
 	for (int i = 0; i < lineRuns.length; i++) {
 		StyleItem run = lineRuns[i];
-		if (run.lineBreak && !run.softBreak) return run.start;
+		if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
 		if (width + run.width > x) {
 			if (run.tab) {
 				if (trailing != null) {
 					trailing[0] = x < (width + run.width / 2) ? SWT.LEAD : SWT.TRAIL;
 				}
-				return run.start;
+				return untranslateOffset(run.start);
 			}
 			int cChars = run.length;
 			int cGlyphs = run.glyphCount;
@@ -1017,12 +1049,12 @@ public int getOffset (int x, int y, int[] trailing) {
 			if (trailing != null) {
 				trailing[0] = piTrailing[0] == 0 ? SWT.LEAD : SWT.TRAIL;
 			}
-			return run.start + piCP[0];
+			return untranslateOffset(run.start + piCP[0]);
 		}
 		width += run.width;
 	}
 	if (trailing != null) trailing[0] = SWT.LEAD; 
-	return lineOffset[line + 1];
+	return untranslateOffset(lineOffset[line + 1]);
 }
 
 /**
@@ -1049,6 +1081,8 @@ public int getPreviousOffset (int offset, int movement) {
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (offset == 0) return 0;
 	if ((movement & MOVEMENT_CHAR) != 0) return offset - 1;
+	length = segmentsText.length();
+	offset = translateOffset(offset);
 	int[] ppSp = new int[1];
 	int[] piNumScripts = new int[1];
 	OS.ScriptGetProperties(ppSp, piNumScripts);
@@ -1060,10 +1094,18 @@ public int getPreviousOffset (int offset, int movement) {
 	int i = allRuns.length - 1;
 	int lastScript  = -1;
 	offset--;
+	if (segments != null) {
+		for (int j = 0; j < segments.length; j++) {
+			if (translateOffset(segments[j]) - 1 == offset) {
+				offset--;
+				break;
+			}
+		}
+	}
 	for (;  i >= 0; i--) {
 		StyleItem run = allRuns[i];
 		if (run.start <= offset && offset < run.start + run.length) {
-			if (run.lineBreak && !run.softBreak) return run.start;
+			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start);
 			breakRun(run);
 			OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);	
 			previousWhitespace = logAttr.fWhiteSpace;
@@ -1074,14 +1116,14 @@ public int getPreviousOffset (int offset, int movement) {
 	for (; i >= 0 && offset >= 0; i--) {
 		StyleItem run = allRuns[i];
 		if (run.start <= offset && offset < run.start + run.length) {
-			if (run.lineBreak && !run.softBreak) return run.start + run.length;
+			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start + run.length);
 			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
 			if (((movement & MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
-				return offset;
+				return untranslateOffset(offset);
 			}
 			if ((movement & MOVEMENT_WORD) != 0) {
 				if (run.analysis.eScript != lastScript) {
-					if (!previousWhitespace) return offset + 1;
+					if (!previousWhitespace) return untranslateOffset(offset + 1);
 				}
 				lastScript = run.analysis.eScript;
 			}
@@ -1089,21 +1131,62 @@ public int getPreviousOffset (int offset, int movement) {
 			while (run.start <= offset && offset < run.start + run.length) {
 				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 				if (!logAttr.fInvalid) {
-					if ((movement & MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return offset;
+					if ((movement & MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return untranslateOffset(offset);
 					if ((movement & MOVEMENT_WORD) != 0) {
 						if (properties.fNeedsWordBreaking) {
-							if (logAttr.fWordStop) return offset;
+							if (logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
-							if (logAttr.fWhiteSpace && !previousWhitespace) return offset + 1;
+							if (logAttr.fWhiteSpace && !previousWhitespace) return untranslateOffset(offset + 1);
 						}
 					}
 					previousWhitespace = logAttr.fWhiteSpace;
 				};
 				offset--;
+				if (segments != null) {
+					for (int j = 0; j < segments.length; j++) {
+						if (translateOffset(segments[j]) - 1 == offset) {
+							offset--;
+							break;
+						}
+					}
+				}
 			}
 		}
 	}
 	return 0;
+}
+
+public int[] getSegments () {
+	checkLayout();
+	return segments;
+}
+
+String getSegmentsText() {
+	if (segments == null) return text;
+	int nSegments = segments.length;
+	if (nSegments <= 1) return text;
+	int length = text.length();
+	if (length == 0) return text;
+	if (nSegments == 2) {
+		if (segments[0] == 0 && segments[1] == length) return text;
+	}
+	char[] oldChars = new char[length];
+	text.getChars(0, length, oldChars, 0);
+	char[] newChars = new char[length + nSegments];
+	int charCount = 0, segmentCount = 0;
+	char separator = orientation == SWT.RIGHT_TO_LEFT ? RTL_MARK : LTR_MARK;
+	while (charCount < length) {
+		if (segmentCount < nSegments && charCount == segments[segmentCount]) {
+			newChars[charCount + segmentCount++] = separator;
+		} else {
+			newChars[charCount + segmentCount] = oldChars[charCount++];
+		}
+	}
+	if (segmentCount < nSegments) {
+		segments[segmentCount] = charCount;
+		newChars[charCount + segmentCount++] = separator;
+	}
+	return new String(newChars, 0, Math.min(charCount + segmentCount, newChars.length));
 }
 
 /**
@@ -1171,32 +1254,25 @@ public boolean isDisposed () {
  *  Itemize the receiver text
  */
 StyleItem[] itemize () {
-	int length = text.length();
+	segmentsText = getSegmentsText();
+	int length = segmentsText.length();
 	SCRIPT_CONTROL scriptControl = new SCRIPT_CONTROL();
 	SCRIPT_STATE scriptState = new SCRIPT_STATE();
-	int MAX_ITEM = length * 2; //if max_item == length ScriptItemize fails for length == 1
+	final int MAX_ITEM = length + 1;
 	
-	//TODO still working this problem out
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
 		scriptState.uBidiLevel = 1;
-//		scriptControl.uDefaultLanguage = 0x01;
 		scriptState.fArabicNumContext = true;
 	}
-	
-	//TODO NeutralOverride is important when breaking up the RTL text into segments
-	// bug mostly of the time it just case problems.
-//	scriptControl.fNeutralOverride = true;
-//	scriptControl.fNumericOverride = true;
 	
 	int hHeap = OS.GetProcessHeap();
 	int pItems = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_ITEM * SCRIPT_ITEM.sizeof);
 	int[] pcItems = new int[1];	
 	char[] chars = new char[length];
-	text.getChars(0, length, chars, 0); 
-	/*int hr = */OS.ScriptItemize(chars, length, MAX_ITEM, scriptControl, scriptState, pItems, pcItems);
+	segmentsText.getChars(0, length, chars, 0); 
+	OS.ScriptItemize(chars, length, MAX_ITEM, scriptControl, scriptState, pItems, pcItems);
 //	if (hr == E_OUTOFMEMORY) //TODO handle it
 	
-	/* Merge */
 	StyleItem[] runs = merge(pItems, pcItems[0]);
 	OS.HeapFree(hHeap, 0, pItems);
 	return runs;
@@ -1206,7 +1282,7 @@ StyleItem[] itemize () {
  *  Merge styles ranges and script items 
  */
 StyleItem[] merge (int items, int itemCount) {
-	int count = 0, start = 0, end = text.length(), itemIndex = 0, styleIndex = 0;
+	int count = 0, start = 0, end = segmentsText.length(), itemIndex = 0, styleIndex = 0;
 	StyleItem[] runs = new StyleItem[itemCount + styles.length];
 	SCRIPT_ITEM scriptItem = new SCRIPT_ITEM();
 	while (start < end) {
@@ -1219,7 +1295,7 @@ StyleItem[] merge (int items, int itemCount) {
 		scriptItem.a = new SCRIPT_ANALYSIS();
 		OS.MoveMemory(scriptItem, items + (itemIndex + 1) * SCRIPT_ITEM.sizeof, SCRIPT_ITEM.sizeof);
 		int itemLimit = scriptItem.iCharPos;
-		int styleLimit = styles[styleIndex + 1].start;
+		int styleLimit = translateOffset(styles[styleIndex + 1].start);
 		if (styleLimit <= itemLimit) {
 			styleIndex++;
 			start = styleLimit;
@@ -1310,6 +1386,29 @@ public void setOrientation (int orientation) {
 	if (this.orientation == orientation) return;
 	this.orientation = orientation;
 	freeRuns();
+}
+
+/**
+ *  Set segments ranges, affects the bidi reordering algorithm
+ * 
+ * if segments != null the bellow conditions must be true:
+ * segments[0] == 0
+ * segments[segments.length - 1] = text.length
+ */
+public void setSegments(int[] segments) {
+	checkLayout();
+	if (this.segments == null && segments == null) return;
+	if (this.segments != null && segments !=null) {
+		if (this.segments.length == segments.length) {
+			int i;
+			for (i = 0; i <segments.length; i++) {
+				if (this.segments[i] != segments[i]) break;
+			}
+			if (i == segments.length) return;
+		}
+	}
+	freeRuns();
+	this.segments = segments;
 }
 
 /**
@@ -1451,7 +1550,7 @@ public void setWidth (int width) {
 void shape (int hdc, StyleItem run) {
 	int[] buffer = new int[1];
 	char[] chars = new char[run.length];
-	text.getChars(run.start, run.start + run.length, chars, 0);
+	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
 	int MAX_GLYPHS = (chars.length * 3 / 2) + 16;
 	int hHeap = OS.GetProcessHeap();
 	int pGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_GLYPHS * 2);
@@ -1476,5 +1575,35 @@ void shape (int hdc, StyleItem run) {
 	run.goffsets = pGoffsets;
 	run.width = abc[0] + abc[1] + abc[2];
 	run.height = buffer[0];
+}
+
+int translateOffset(int offset) {
+	if (segments == null) return offset;
+	int nSegments = segments.length;
+	if (nSegments <= 1) return offset;
+	int length = text.length();
+	if (length == 0) return offset;
+	if (nSegments == 2) {
+		if (segments[0] == 0 && segments[1] == length) return offset;
+	}
+	for (int i = 0; i < nSegments && offset - i >= segments[i]; i++) {
+		offset++;
+	}	
+	return offset;
+}
+
+int untranslateOffset(int offset) {
+	if (segments == null) return offset;
+	int nSegments = segments.length;
+	if (nSegments <= 1) return offset;
+	int length = text.length();
+	if (length == 0) return offset;
+	if (nSegments == 2) {
+		if (segments[0] == 0 && segments[1] == length) return offset;
+	}
+	for (int i = 0; i < nSegments && offset > segments[i]; i++) {
+		offset--;
+	}
+	return offset;
 }
 }

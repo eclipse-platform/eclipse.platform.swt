@@ -372,6 +372,7 @@ TextLayout getTextLayout(String line, int lineOffset) {
 	layout.setFont(regularFont);
 	layout.setText(line);
 	layout.setOrientation(getOrientation());
+	layout.setSegments(getBidiSegments(lineOffset, line));
 	layout.setTabs(new int[]{tabWidth});
 	int length = line.length();
 	StyledTextEvent event = getLineStyleData(lineOffset, line);

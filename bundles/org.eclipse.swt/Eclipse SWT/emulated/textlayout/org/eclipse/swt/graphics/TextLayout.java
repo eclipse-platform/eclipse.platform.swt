@@ -27,6 +27,7 @@ public class TextLayout {
 	int wrapWidth;
 	int orientation;
 	int[] tabs;
+	int[] segments;
 	StyleItem[] styles;
 	
 	StyleItem[][] runs;
@@ -626,6 +627,11 @@ public int getSpacing () {
 	return lineSpacing;
 }
 
+public int[] getSegments() {
+	checkLayout();
+	return segments;
+}
+
 public TextStyle getStyle (int offset) {
 	checkLayout();
 	int length = text.length();
@@ -758,6 +764,15 @@ public void setFont (Font font) {
 	this.font = font;
 }
 
+public void setOrientation (int orientation) {
+	checkLayout();
+	int mask = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
+	orientation &= mask;
+	if (orientation == 0) return;
+	if ((orientation & SWT.LEFT_TO_RIGHT) != 0) orientation = SWT.LEFT_TO_RIGHT;
+	this.orientation = orientation;
+}
+
 public void setSpacing (int spacing) {
 	checkLayout();
 	if (spacing < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -766,13 +781,20 @@ public void setSpacing (int spacing) {
 	this.lineSpacing = spacing;
 }
 
-public void setOrientation (int orientation) {
+public void setSegments(int[] segments) {
 	checkLayout();
-	int mask = SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT;
-	orientation &= mask;
-	if (orientation == 0) return;
-	if ((orientation & SWT.LEFT_TO_RIGHT) != 0) orientation = SWT.LEFT_TO_RIGHT;
-	this.orientation = orientation;
+	if (this.segments == null && segments == null) return;
+	if (this.segments != null && segments !=null) {
+		if (this.segments.length == segments.length) {
+			int i;
+			for (i = 0; i <segments.length; i++) {
+				if (this.segments[i] != segments[i]) break;
+			}
+			if (i == segments.length) return;
+		}
+	}
+	freeRuns();
+	this.segments = segments;
 }
 
 public void setStyle (TextStyle style, int start, int end) {

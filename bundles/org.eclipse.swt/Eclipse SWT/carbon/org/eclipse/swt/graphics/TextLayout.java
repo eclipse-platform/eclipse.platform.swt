@@ -100,6 +100,7 @@ public class TextLayout {
 	int layout;
 	int spacing;	
 	int[] tabs;
+	int[] segments;
 	int tabsPtr;
 	int[] breaks, lineX, lineWidth, lineHeight, lineAscent;
 
@@ -478,6 +479,11 @@ public int getPreviousOffset (int index, int movement) {
 	return _getOffset(index, movement, false);
 }
 
+public int[] getSegments() {
+	checkLayout();
+	return segments;
+}
+
 public int getSpacing () {
 	checkLayout();	
 	return spacing;
@@ -567,6 +573,22 @@ public void setOrientation(int orientation) {
 	int lineDir = OS.kATSULeftToRightBaseDirection;
 	if (orientation == SWT.RIGHT_TO_LEFT) lineDir = OS.kATSURightToLeftBaseDirection;
 	setLayoutControl(OS.kATSULineDirectionTag, lineDir, 1);
+}
+
+public void setSegments(int[] segments) {
+	checkLayout();
+	if (this.segments == null && segments == null) return;
+	if (this.segments != null && segments !=null) {
+		if (this.segments.length == segments.length) {
+			int i;
+			for (i = 0; i <segments.length; i++) {
+				if (this.segments[i] != segments[i]) break;
+			}
+			if (i == segments.length) return;
+		}
+	}
+	freeRuns();
+	this.segments = segments;
 }
 
 public void setSpacing (int spacing) {
