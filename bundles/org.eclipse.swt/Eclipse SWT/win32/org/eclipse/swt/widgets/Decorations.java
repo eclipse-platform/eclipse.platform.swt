@@ -675,7 +675,7 @@ boolean restoreFocus () {
 	/*
 	* This code is intentionally commented.  When no widget
 	* has been given focus, some platforms give focus to the
-	* default button.  This is unwanted on Windows.
+	* default button.  Windows doesn't do this.
 	*/
 //	if (defaultButton != null && !defaultButton.isDisposed ()) {
 //		if (defaultButton.setFocus ()) return true;
