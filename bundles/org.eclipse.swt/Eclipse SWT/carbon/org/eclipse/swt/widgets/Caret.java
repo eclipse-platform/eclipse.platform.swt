@@ -108,7 +108,7 @@ boolean drawCaret () {
 	OS.GetPort (currentPort);
 	OS.SetPort (port);
 	int oldClip = OS.NewRgn ();
-	int visibleRgn = getVisibleRegion (parentHandle, true);
+	int visibleRgn = parent.getVisibleRegion (parentHandle, true);
 	OS.GetClip (oldClip);
 	OS.SetClip (visibleRgn);
 	Rect rect = new Rect ();
