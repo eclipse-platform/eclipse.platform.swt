@@ -1314,7 +1314,7 @@ void initializeLabel () {
 	/* 
 	 * Bug in Motif. When running on UTF-8 Motif  becomes unstable 
 	 * (causing GPs) if the first label widget is create without a XmString.
-	 * The fix is to create the Label with a non-emptyXmString.
+	 * The fix is to create the Label with a non-empty XmString.
 	 */
 	byte [] buffer = Converter.wcsToMbcs(null, "string", true);
 	int xmString = OS.XmStringCreateLocalized(buffer);
