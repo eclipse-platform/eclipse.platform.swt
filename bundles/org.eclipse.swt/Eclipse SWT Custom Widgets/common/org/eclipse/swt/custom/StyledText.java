@@ -1656,7 +1656,10 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
  * <p>
  *
  * @param key a key code defined in SWT.java or a character. 
- * 	Optionally ORd with a state mask (one or more of SWT.MOD1, SWT.MOD2, SWT.ALT)
+ * 	Optionally ORd with a state mask.  Preferred state masks are one or more of
+ *  SWT.MOD1, SWT.MOD2, SWT.MOD3, since these masks account for modifier platform 
+ *  differences.  However, there may be cases where using the specific state masks
+ *  (i.e., SWT.CTRL, SWT.SHIFT, SWT.ALT, SWT.COMMAND) makes sense.
  * @param action one of the predefined actions defined in ST.java. 
  * 	Use SWT.NULL to remove a key binding.
  * @exception SWTException <ul>
@@ -3633,7 +3636,10 @@ public int getHorizontalPixel() {
  * <p>
  *
  * @param key a key code defined in SWT.java or a character. 
- * 	Optionally ORd with a state mask (one or more of SWT.MOD1, SWT.MOD2, SWT.ALT)
+ * 	Optionally ORd with a state mask.  Preferred state masks are one or more of
+ *  SWT.MOD1, SWT.MOD2, SWT.MOD3, since these masks account for modifier platform 
+ *  differences.  However, there may be cases where using the specific state masks
+ *  (i.e., SWT.CTRL, SWT.SHIFT, SWT.ALT, SWT.COMMAND) makes sense.
  * @return one of the predefined actions defined in ST.java or SWT.NULL 
  * 	if there is no action associated with the key.
  * @exception SWTException <ul>
