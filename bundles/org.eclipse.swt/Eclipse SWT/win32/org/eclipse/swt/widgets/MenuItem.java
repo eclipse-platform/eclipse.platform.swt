@@ -767,7 +767,43 @@ public void setSelection (boolean selected) {
 	}
 	parent.redraw ();
 }
-
+/**
+ * Sets the receiver's text. The string may include
+ * the mnemonic character and accelerator text.
+ * <p>
+ * Mnemonics are indicated by an '&amp' that causes the next
+ * character to be the mnemonic.  When the user presses a
+ * key sequence that matches the mnemonic, a selection
+ * event occurs. On most platforms, the mnemonic appears
+ * underlined but may be emphasised in a platform specific
+ * manner.  The mnemonic indicator character '&amp' can be
+ * escaped by doubling it in the string, causing a single
+ *'&amp' to be displayed.
+ * </p>
+ * <p>
+ * Accelerator text is indicated by the '\t' character.
+ * On platforms that support accelerator text, the text
+ * that follows the '\t' character is displayed to the user,
+ * typically indicating the key stroke that will cause
+ * the item to become selected.  On most platforms, the
+ * accelerator text appears right aligned in the menu.
+ * Setting the accelerator text does not install the
+ * accelerator key sequence. The accelerator key sequence
+ * is installed using #setAccelerator.
+ * </p>
+ * 
+ * @param string the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setAccelerator
+ */
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

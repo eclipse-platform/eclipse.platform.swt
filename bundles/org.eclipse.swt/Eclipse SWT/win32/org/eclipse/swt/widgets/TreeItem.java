@@ -656,11 +656,6 @@ public void setImage (Image image) {
 	OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 }
 
-/**
- * This label will be displayed to the right of the bitmap, 
- * or, if the receiver doesn't have a bitmap to the right of 
- * the horizontal hierarchy connector line.
- */
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);

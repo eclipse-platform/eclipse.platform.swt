@@ -558,6 +558,16 @@ public void setSelection (boolean selected) {
  * This method sets the button label.  The label may include
  * the mnemonic character but must not contain line delimiters.
  * </p>
+ * <p>
+ * Mnemonics are indicated by an '&amp' that causes the next
+ * character to be the mnemonic.  When the user presses a
+ * key sequence that matches the mnemonic, a selection
+ * event occurs. On most platforms, the mnemonic appears
+ * underlined but may be emphasised in a platform specific
+ * manner.  The mnemonic indicator character '&amp' can be
+ * escaped by doubling it in the string, causing a single
+ *'&amp' to be displayed.
+ * </p>
  * 
  * @param string the new text
  *
