@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
 /** 
  * Instances of this class implement a selectable user interface
  * object that displays a list of images and strings and issue
- * notificiation when selected.
+ * notification when selected.
  * <p>
  * The item children that may be added to instances of this class
  * must be of type <code>TableItem</code>.
