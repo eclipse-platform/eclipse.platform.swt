@@ -222,12 +222,6 @@ void drawSelected(GC gc ) {
 		gc.fillRectangle(xx, yy, ww, hh);
 	}
 	
-	Rectangle clipping = gc.getClipping();
-	Rectangle bounds = getBounds();
-	bounds.height += 1;
-	if (parent.onBottom) bounds.y -= 1;
-	if (!clipping.intersects(bounds)) return;
-	
 	if (parent.single) {
 		if (!isShowing()) return;
 	} else {
@@ -287,20 +281,30 @@ void drawSelected(GC gc ) {
 			shape[index++] = parent.simple ? rightEdge - 1 : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y + height + 1;
 		}
-		if (parent.selectionGradientColors != null && !parent.selectionGradientVertical) {
-			parent.drawBackground(gc, shape, true);
-		} else {
-			Color defaultBackground = parent.selectionBackground;
-			Image image = parent.selectionBgImage;
-			Color[] colors = parent.selectionGradientColors;
-			int[] percents = parent.selectionGradientPercents;
-			boolean vertical = parent.selectionGradientVertical;
-			xx = x;
-			yy = parent.onBottom ? y -1 : y + 1;
-			ww = width;
-			hh = height;
-			if (!parent.single && !parent.simple) ww += parent.curveWidth - parent.curveIndent;
-			parent.drawBackground(gc, shape, xx, yy, ww, hh, defaultBackground, image, colors, percents, vertical);
+		
+		Rectangle clipping = gc.getClipping();
+		Rectangle bounds = getBounds();
+		bounds.height += 1;
+		if (parent.onBottom) bounds.y -= 1;
+		boolean tabInPaint = clipping.intersects(bounds);
+		
+		if (tabInPaint) {
+			// fill in tab background
+			if (parent.selectionGradientColors != null && !parent.selectionGradientVertical) {
+				parent.drawBackground(gc, shape, true);
+			} else {
+				Color defaultBackground = parent.selectionBackground;
+				Image image = parent.selectionBgImage;
+				Color[] colors = parent.selectionGradientColors;
+				int[] percents = parent.selectionGradientPercents;
+				boolean vertical = parent.selectionGradientVertical;
+				xx = x;
+				yy = parent.onBottom ? y -1 : y + 1;
+				ww = width;
+				hh = height;
+				if (!parent.single && !parent.simple) ww += parent.curveWidth - parent.curveIndent;
+				parent.drawBackground(gc, shape, xx, yy, ww, hh, defaultBackground, image, colors, percents, vertical);
+			}
 		}
 		
 		// draw outline
@@ -322,6 +326,8 @@ void drawSelected(GC gc ) {
 		parent.antialias(shape, CTabFolder.borderColor.getRGB(), inside, outside, gc);
 		gc.setForeground(CTabFolder.borderColor);
 		gc.drawPolyline(shape);
+		
+		if (!tabInPaint) return;
 	}
 	
 	// draw Image
