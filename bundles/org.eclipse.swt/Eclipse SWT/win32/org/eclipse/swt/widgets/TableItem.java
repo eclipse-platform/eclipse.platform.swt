@@ -172,6 +172,13 @@ public Rectangle getBounds (int index) {
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) return new Rectangle (0, 0, 0, 0); 
 	int gridWidth = parent.getLinesVisible () ? parent.getGridLineWidth () : 0;
+	/*
+	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_LABEL and
+	* zero for the column number gives the bounds of the first item without
+	* including the bounds of the icon.  This behavior is undocumented.
+	* When called with values greater than zero, the icon bounds are
+	* included and this behavior is documented.
+	*/
 	RECT rect = new RECT ();
 	rect.top = index;
 	rect.left = OS.LVIR_LABEL;
@@ -378,9 +385,14 @@ public Rectangle getImageBounds (int index) {
 	int hwnd = parent.handle;	
 	int hwndHeader =  OS.SendMessage (hwnd, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (!(0 <= index && index < count)) return new Rectangle (0, 0, 0, 0); 
-	int gridWidth = 0;
-	if (parent.getLinesVisible ()) gridWidth = parent.getGridLineWidth ();
+	if (!(0 <= index && index < count)) return new Rectangle (0, 0, 0, 0);
+	int gridWidth = parent.getLinesVisible () ? parent.getGridLineWidth () : 0;
+	/*
+	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with LVIR_ICON and
+	* zero for the column number gives the bounds of the icon (despite the
+	* fact that this behaivor is only documented for values greater than
+	* one).
+	*/
 	RECT rect = new RECT ();
 	rect.top = index;
 	rect.left = OS.LVIR_ICON;

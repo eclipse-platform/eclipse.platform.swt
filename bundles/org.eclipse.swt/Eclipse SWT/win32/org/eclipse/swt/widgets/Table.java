@@ -2225,24 +2225,28 @@ public void showColumn (TableColumn column) {
 	int index = indexOf (column);	
 	int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 	int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
-	if (count <= 1 || !(0 <= index && index < count)) return; 
+	if (count <= 1 || !(0 <= index && index < count)) return;
+	/*
+	* Feature in Windows.  Calling LVM_GETSUBITEMRECT with -1 for the
+	* row number gives the bounds of the item that would be above the
+	* first row in the table.  This is undocumented and does not work
+	* for the first column. In this case, to get the bounds of the
+	* first column, get the bounds of the second column and subtract
+	* the width of the first. The left edge of the second column is
+	* also used as the right edge of the first.
+	*/
 	RECT rect = new RECT ();
+	rect.left = OS.LVIR_BOUNDS;
 	if (index == 0) {
-		// Can't get subitemrect for first column (with no item)
-		// so get subitemrect for second column and subtract width
-		// of first column.
-		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, index, 0);
 		rect.top = 1;
-		rect.left = OS.LVIR_BOUNDS;
 		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
 		rect.right = rect.left;
+		int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 		rect.left = rect.right - width;
 	} else {
 		rect.top = index;
-		rect.left = OS.LVIR_BOUNDS;
 		OS.SendMessage (handle, OS.LVM_GETSUBITEMRECT, -1, rect);
 	}
-	
 	RECT area = new RECT ();
 	OS.GetClientRect (handle, area);
 	if (rect.left < area.left) {
