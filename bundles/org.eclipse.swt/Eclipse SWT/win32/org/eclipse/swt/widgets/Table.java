@@ -92,6 +92,11 @@ public Table (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
+TableItem _getItem (int index) {
+	if (items [index] != null) return items [index];
+	return items [index] = new TableItem (this, SWT.NONE, index, false);
+}
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the receiver's selection changes, by sending
@@ -280,46 +285,48 @@ void createItem (TableColumn column, int index) {
 		int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
-			String [] strings = item.strings;
-			if (strings != null) {
-				String [] temp = new String [columnCount];
-				System.arraycopy (strings, 0, temp, 0, index);
-				System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
-				temp [index] = "";
-				items [i].strings = temp;
-			}
-			if (index == 0) items [i].text = "";
-			Image [] images = item.images;
-			if (images != null) {
-				Image [] temp = new Image [columnCount];
-				System.arraycopy (images, 0, temp, 0, index);
-				System.arraycopy (images, index, temp, index+1, columnCount-index-1);
-				items [i].images = temp;
-			}
-			if (index == 0) items [i].image = null;
-			if (items [i].cellBackground != null) {
-				int [] cellBackground = items [i].cellBackground;
-				int [] temp = new int [columnCount];
-				System.arraycopy (cellBackground, 0, temp, 0, index);
-				System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
-				temp [index] = -1;
-				items [i].cellBackground = temp;
-			}
-			if (items [i].cellForeground != null) {
-				int [] cellForeground = items [i].cellForeground;
-				int [] temp = new int [columnCount];
-				System.arraycopy (cellForeground, 0, temp, 0, index);
-				System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
-				temp [index] = -1;
-				items [i].cellForeground = temp;
-			}
-			if (items [i].cellFont != null) {
-				int [] cellFont = items [i].cellFont;
-				int [] temp = new int [columnCount];
-				System.arraycopy (cellFont, 0, temp, 0, index);
-				System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
-				temp [index] = -1;
-				items [i].cellFont = temp;
+			if (item != null) {
+				String [] strings = item.strings;
+				if (strings != null) {
+					String [] temp = new String [columnCount];
+					System.arraycopy (strings, 0, temp, 0, index);
+					System.arraycopy (strings, index, temp, index+1, columnCount-index-1);
+					temp [index] = "";
+					item.strings = temp;
+				}
+				if (index == 0) item.text = "";
+				Image [] images = item.images;
+				if (images != null) {
+					Image [] temp = new Image [columnCount];
+					System.arraycopy (images, 0, temp, 0, index);
+					System.arraycopy (images, index, temp, index+1, columnCount-index-1);
+					item.images = temp;
+				}
+				if (index == 0) item.image = null;
+				if (item.cellBackground != null) {
+					int [] cellBackground = item.cellBackground;
+					int [] temp = new int [columnCount];
+					System.arraycopy (cellBackground, 0, temp, 0, index);
+					System.arraycopy (cellBackground, index, temp, index+1, columnCount-index-1);
+					temp [index] = -1;
+					item.cellBackground = temp;
+				}
+				if (item.cellForeground != null) {
+					int [] cellForeground = item.cellForeground;
+					int [] temp = new int [columnCount];
+					System.arraycopy (cellForeground, 0, temp, 0, index);
+					System.arraycopy (cellForeground, index, temp, index+1, columnCount-index-1);
+					temp [index] = -1;
+					item.cellForeground = temp;
+				}
+				if (item.cellFont != null) {
+					int [] cellFont = item.cellFont;
+					int [] temp = new int [columnCount];
+					System.arraycopy (cellFont, 0, temp, 0, index);
+					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+					temp [index] = -1;
+					item.cellFont = temp;
+				}
 			}
 		}
 	}
@@ -599,61 +606,64 @@ void destroyItem (TableColumn column) {
 	columns [columnCount] = null;
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	for (int i=0; i<itemCount; i++) {
-		String [] strings = items [i].strings;
-		if (strings != null) {
-			if (columnCount == 0) {
-				items [i].strings = null;
-			} else {
-				if (index == 0) items [i].text = strings [1];
-				String [] temp = new String [columnCount];
-				System.arraycopy (strings, 0, temp, 0, index);
-				System.arraycopy (strings, index + 1, temp, index, columnCount - index);
-				items [i].strings = temp;
+		TableItem item = items [i];
+		if (item != null) {
+			String [] strings = item.strings;
+			if (strings != null) {
+				if (columnCount == 0) {
+					item.strings = null;
+				} else {
+					if (index == 0) item.text = strings [1];
+					String [] temp = new String [columnCount];
+					System.arraycopy (strings, 0, temp, 0, index);
+					System.arraycopy (strings, index + 1, temp, index, columnCount - index);
+					item.strings = temp;
+				}
 			}
-		}
-		Image [] images = items [i].images;
-		if (images != null) {
-			if (columnCount == 0) {
-				items [i].images = null;
-			} else {
-				if (index == 0) items [i].image = images [1];
-				Image [] temp = new Image [columnCount];
-				System.arraycopy (images, 0, temp, 0, index);
-				System.arraycopy (images, index + 1, temp, index, columnCount - index);
-				items [i].images = temp;
+			Image [] images = item.images;
+			if (images != null) {
+				if (columnCount == 0) {
+					item.images = null;
+				} else {
+					if (index == 0) item.image = images [1];
+					Image [] temp = new Image [columnCount];
+					System.arraycopy (images, 0, temp, 0, index);
+					System.arraycopy (images, index + 1, temp, index, columnCount - index);
+					item.images = temp;
+				}
 			}
-		}
-		if (items [i].cellBackground != null) {
-			if (columnCount == 0) {
-				items [i].cellBackground = null;
-			} else {
-				int [] cellBackground = items [i].cellBackground;
-				int [] temp = new int [columnCount];
-				System.arraycopy (cellBackground, 0, temp, 0, index);
-				System.arraycopy (cellBackground, index + 1, temp, index, columnCount - index);
-				items [i].cellBackground = temp;
+			if (item.cellBackground != null) {
+				if (columnCount == 0) {
+					item.cellBackground = null;
+				} else {
+					int [] cellBackground = item.cellBackground;
+					int [] temp = new int [columnCount];
+					System.arraycopy (cellBackground, 0, temp, 0, index);
+					System.arraycopy (cellBackground, index + 1, temp, index, columnCount - index);
+					item.cellBackground = temp;
+				}
 			}
-		}
-		if (items [i].cellForeground != null) {
-			if (columnCount == 0) {
-				items [i].cellForeground = null;
-			} else {
-				int [] cellForeground = items [i].cellForeground;
-				int [] temp = new int [columnCount];
-				System.arraycopy (cellForeground, 0, temp, 0, index);
-				System.arraycopy (cellForeground, index + 1, temp, index, columnCount - index);
-				items [i].cellForeground = temp;
+			if (item.cellForeground != null) {
+				if (columnCount == 0) {
+					item.cellForeground = null;
+				} else {
+					int [] cellForeground = item.cellForeground;
+					int [] temp = new int [columnCount];
+					System.arraycopy (cellForeground, 0, temp, 0, index);
+					System.arraycopy (cellForeground, index + 1, temp, index, columnCount - index);
+					item.cellForeground = temp;
+				}
 			}
-		}
-		if (items [i].cellFont != null) {
-			if (columnCount == 0) {
-				items [i].cellFont = null;
-			} else {
-				int [] cellFont = items [i].cellFont;
-				int [] temp = new int [columnCount];
-				System.arraycopy (cellFont, 0, temp, 0, index);
-				System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
-				items [i].cellFont = temp;
+			if (item.cellFont != null) {
+				if (columnCount == 0) {
+					item.cellFont = null;
+				} else {
+					int [] cellFont = item.cellFont;
+					int [] temp = new int [columnCount];
+					System.arraycopy (cellFont, 0, temp, 0, index);
+					System.arraycopy (cellFont, index + 1, temp, index, columnCount - index);
+					item.cellFont = temp;
+				}
 			}
 		}
 	}
@@ -892,7 +902,7 @@ public TableItem getItem (int index) {
 	checkWidget ();
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
-	return items [index];
+	return _getItem (index);
 }
 
 /**
@@ -917,7 +927,7 @@ public TableItem getItem (Point point) {
 	LVHITTESTINFO pinfo = new LVHITTESTINFO ();
 	pinfo.x = point.x;  pinfo.y = point.y;
 	OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
-	if (pinfo.iItem != -1) return items [pinfo.iItem];
+	if (pinfo.iItem != -1) return _getItem (pinfo.iItem);
 	return null;
 }
 
@@ -974,7 +984,13 @@ public TableItem [] getItems () {
 	checkWidget ();
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	TableItem [] result = new TableItem [count];
-	System.arraycopy (items, 0, result, 0, count);
+	if ((style & SWT.VIRTUAL) != 0) {
+		for (int i=0; i<items.length; i++) {
+			result [i] = _getItem (i);
+		}
+	} else {
+		System.arraycopy (items, 0, result, 0, count);
+	}
 	return result;
 }
 
@@ -1022,7 +1038,7 @@ public TableItem [] getSelection () {
 	int i = -1, j = 0, count = OS.SendMessage (handle, OS.LVM_GETSELECTEDCOUNT, 0, 0);
 	TableItem [] result = new TableItem [count];
 	while ((i = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, i, OS.LVNI_SELECTED)) != -1) {
-		result [j++] = items [i];
+		result [j++] = _getItem (i);
 	}
 	return result;
 }
@@ -1252,12 +1268,12 @@ void releaseWidget () {
 			OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
 			ignoreSelect = false;
 			TableItem item = items [i];
-			if (!item.isDisposed ()) item.releaseResources ();
+			if (item != null && !item.isDisposed ()) item.releaseResources ();
 		}
 	} else {	
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
-			if (!item.isDisposed ()) item.releaseResources ();
+			if (item != null && !item.isDisposed ()) item.releaseResources ();
 		}
 	}
 	customDraw = false;
@@ -1311,7 +1327,7 @@ public void remove (int [] indices) {
 			int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
 			ignoreSelect = false;
 			if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
-			items [index].releaseResources ();
+			if (items [index] != null) items [index].releaseResources ();
 			System.arraycopy (items, index + 1, items, index, --count - index);
 			items [count] = null;
 			last = index;
@@ -1352,7 +1368,7 @@ public void remove (int index) {
 	TableItem item = items [index];
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
-	item.releaseResources ();
+	if (item != null) item.releaseResources ();
 }
 
 /**
@@ -1391,7 +1407,7 @@ public void remove (int start, int end) {
 		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 		ignoreSelect = false;
 		if (code == 0) break;
-		items [index].releaseResources ();
+		if (items [index] != null) items [index].releaseResources ();
 		index++;
 	}
 	System.arraycopy (items, index, items, start, count - index);
@@ -1439,7 +1455,7 @@ public void removeAll () {
 			if (code == 0) break;
 			
 			// BUG - disposed callback could remove an item
-			items [index].releaseResources ();
+			if (items [index] != null) items [index].releaseResources ();
 			--index;
 		}
 		if (redraw) {
@@ -1461,7 +1477,7 @@ public void removeAll () {
 		if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
-			if (!item.isDisposed ()) item.releaseResources ();
+			if (item != null && !item.isDisposed ()) item.releaseResources ();
 		}
 	}
 
@@ -1713,7 +1729,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 	if (wasSelected) {
 		ignoreSelect = false;
 		Event event = new Event ();
-		event.item = items [pinfo.iItem];
+		event.item = _getItem (pinfo.iItem);
 		postEvent (SWT.Selection, event);
 	}
 	if (dragStarted) {
@@ -1912,16 +1928,18 @@ public void setHeaderVisible (boolean show) {
 public void setItemCount (int count) {
 	checkWidget ();
 	count = Math.max (0, count);
+	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
 	setRedraw (false);
 	removeAll ();
-	boolean isVirtual = (style & SWT.VIRTUAL) != 0;
 	if (isVirtual) {
 		OS.SendMessage (handle, OS.LVM_SETITEMCOUNT, count, 0);
 		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	}
+	} 
 	items = new TableItem [(count + 3) / 4 * 4];
-	for (int i=0; i<count; i++) {
-		items [i] = new TableItem (this, SWT.NONE, i, !isVirtual);
+	if (!isVirtual) {
+		for (int i=0; i<count; i++) {
+			items [i] = new TableItem (this, SWT.NONE, i, false);
+		}
 	}
 	setRedraw (true);
 }
@@ -2103,8 +2121,13 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 			int index = 0;
 			while (index < count) {
-				String string = item != null ? item.text : items [index].text;
-				if (string.length () != 0) {
+				String string = null;
+				if (item != null) {
+					string = item.text;
+				} else {
+					if (items [index] != null) string = items [index].text;
+				}
+				if (string != null && string.length () != 0) {
 					TCHAR buffer = new TCHAR (getCodePage (), string, true);
 					newWidth = Math.max (newWidth, OS.SendMessage (handle, OS.LVM_GETSTRINGWIDTH, 0, buffer));
 				}
@@ -2571,7 +2594,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	if ((style & SWT.CHECK) != 0 && wParam == OS.VK_SPACE) {
 		int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
 		if (index != -1) {
-			TableItem item = items [index];
+			TableItem item = _getItem (index);
 			item.setChecked (!item.getChecked (), true);
 		}
 	}
@@ -2624,7 +2647,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		*/
 		int index = OS.SendMessage (handle, OS.LVM_HITTEST, 0, pinfo);
 		if (index != -1 && pinfo.flags == OS.LVHT_ONITEMSTATEICON) {
-			TableItem item = items [index];
+			TableItem item = _getItem (index);
 			item.setChecked (!item.getChecked (), true);
 		}	
 	}
@@ -2857,7 +2880,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			NMLVDISPINFO plvfi = new NMLVDISPINFO ();
 			OS.MoveMemory (plvfi, lParam, NMLVDISPINFO.sizeof);
 			lastIndexOf = plvfi.iItem;
-			TableItem item = items [plvfi.iItem];
+			TableItem item = _getItem (plvfi.iItem);
 			item.requested = true;
 			if ((style & SWT.VIRTUAL) != 0) {
 				Event event = new Event ();
@@ -2918,7 +2941,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				case OS.CDDS_PREPAINT: return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
 				case OS.CDDS_ITEMPREPAINT: return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
 				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM: {
-					TableItem item = items [nmcd.dwItemSpec];
+					TableItem item = _getItem (nmcd.dwItemSpec);
 					int hFont = item.cellFont != null ? item.cellFont [nmcd.iSubItem] : -1;
 					if (hFont == -1) hFont = item.font;
 					int clrText = item.cellForeground != null ? item.cellForeground [nmcd.iSubItem] : -1;
@@ -2970,7 +2993,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			OS.MoveMemory(pnmlv, lParam, NMLISTVIEW.sizeof);
 			if (pnmlv.iItem != -1) {
 				Event event = new Event ();
-				event.item = items [pnmlv.iItem];
+				event.item = _getItem (pnmlv.iItem);
 				postEvent (SWT.DefaultSelection, event);
 			}
 			break;
@@ -3003,7 +3026,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 							* This code is intentionally commented.
 							*/
 //								OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
-							event.item = items [index];
+							event.item = _getItem (index);
 						}
 						postEvent (SWT.Selection, event);
 					}
