@@ -413,13 +413,15 @@ void fixAlignment () {
 	if ((style & SWT.LEFT_TO_RIGHT) != 0) {
 		if ((style & SWT.RIGHT) != 0) {
 			bits |= OS.WS_EX_RIGHT;
-		} else {
+		}
+		if ((style & SWT.LEFT) != 0) {
 			bits &=~ OS.WS_EX_RIGHT;
 		}
 	} else {
 		if ((style & SWT.RIGHT) != 0) {
 			bits &=~ OS.WS_EX_RIGHT;
-		} else {
+		}
+		if ((style & SWT.LEFT) != 0) {
 			bits |= OS.WS_EX_RIGHT;
 		}
 	}
