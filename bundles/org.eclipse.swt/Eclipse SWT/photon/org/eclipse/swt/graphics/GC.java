@@ -339,6 +339,8 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
 }
 
 public void drawFocus (int x, int y, int width, int height) {
+	width = (width < 0 ? -width : width) - 1;
+	height = (height < 0 ? -height : height) - 1;
 	drawRectangle(x, y, width, height);
 }
 
