@@ -790,6 +790,39 @@ int itemNotificationProc (int browser, int id, int message) {
 			postEvent (SWT.DefaultSelection, event);
 			break;
 		}
+		case OS.kDataBrowserContainerClosing: {
+			/*
+			* Bug in the Macintosh.  For some reason, if the selected sub items of an item
+			* get a kDataBrowserItemDeselected notificaton when the item is collapsed, a
+			* call to GetDataBrowserSelectionAnchor () will cause a segment fault.  The
+			* fix is to deselect these items ignoring kDataBrowserItemDeselected and them
+			* issue a selection event.
+			*/
+			int ptr = OS.NewHandle (0);
+			if (OS.GetDataBrowserItems (handle, item.id, true, OS.kDataBrowserItemIsSelected, ptr) == OS.noErr) {
+				int count = OS.GetHandleSize (ptr) / 4;
+				if (count > 0) {
+					int [] ids = new int [count];
+					OS.HLock (ptr);
+					int [] start = new int [1];
+					OS.memcpy (start, ptr, 4);
+					OS.memcpy (ids, start [0], count * 4);
+					OS.HUnlock (ptr);
+					ignoreSelect = true;
+					OS.SetDataBrowserSelectedItems (handle, ids.length, ids, OS.kDataBrowserItemsRemove);
+					ignoreSelect = false;
+					Event event = new Event ();
+					event.item = item;
+					if (ignoreExpand) {
+						sendEvent (SWT.Selection, event);
+					} else {
+						postEvent (SWT.Selection, event);
+					}						 
+				}
+			}
+			OS.DisposeHandle (ptr);
+			break;
+		}
 		case OS.kDataBrowserContainerClosed: {
 			if (!ignoreExpand) {
 				Event event = new Event ();
