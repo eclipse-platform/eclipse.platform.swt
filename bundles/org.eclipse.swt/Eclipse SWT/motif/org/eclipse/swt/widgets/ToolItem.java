@@ -110,22 +110,17 @@ void createHandle (int index) {
 }
 
 Point computeSize () {
-	//if (control != null) return control.computeSize(SWT.DEFAULT, SWT.DEFAULT, true);
-
 	int [] argList = {
 		OS.XmNmarginHeight, 0,
 		OS.XmNmarginWidth, 0,
 		OS.XmNshadowThickness, 0,
-		OS.XmNhighlightThickness, 0,
 	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int marginHeight = argList[1];
-	int marginWidth = argList[3];
-	int shadowThickness = 2; //argList[5];
-	int highlightThickness = argList[7];
+	int marginHeight = argList [1], marginWidth = argList [3];
+	int shadowThickness = (parent.style & SWT.FLAT) != 0 ? 2 : argList [5];
 
 	int textWidth = 0, textHeight = 0;
-	if (text != null && text.length() > 0) {
+	if (text.length () > 0) {
 		GC gc = new GC (parent);
 		Point textExtent = gc.textExtent (text);
 		textWidth = textExtent.x;
@@ -133,39 +128,35 @@ Point computeSize () {
 		gc.dispose ();
 	}
 	int imageWidth = 0, imageHeight = 0;
-	if (image !=  null) {
-		Rectangle rect = image.getBounds();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
 		imageWidth = rect.width;
-		imageHeight= rect.height;
+		imageHeight = rect.height;
 	}
 	
 	int contentHeight = 0, contentWidth = 0;
 	if ((parent.style & SWT.RIGHT) > 0) {
-		contentHeight = Math.max(imageHeight, textHeight);
+		contentHeight = Math.max (imageHeight, textHeight);
 		contentWidth = imageWidth + textWidth;
-		if (imageWidth > 0 && textWidth > 0) contentWidth += marginWidth;
+		if (imageWidth > 0 && textWidth > 0) {
+			contentWidth += marginWidth + shadowThickness;
+		}
 	} else {
 		contentHeight = imageHeight + textHeight;
-		if (imageHeight > 0 && textHeight > 0) contentHeight += marginHeight;
-		contentWidth = Math.max(imageWidth, textWidth);
+		if (imageHeight > 0 && textHeight > 0) {
+			contentHeight += marginHeight + shadowThickness;
+		}
+		contentWidth = Math.max (imageWidth, textWidth);
 	}
+	if ((style & SWT.DROP_DOWN) != 0) contentWidth += 12;
 	
-	/* This value comes from Windows */
-	int height = 22;
+	/* These values come from Windows */
+	int height = 22, width = 24;
 	if (contentHeight != 0) {
-		height = contentHeight 
-			+ (2 * marginHeight) 
-			+ (2 * shadowThickness) 
-			+ (2 * highlightThickness);
+		height = contentHeight + (marginHeight + shadowThickness) * 2;
 	}
-	
-	/* This value comes from Windows */	
-	int width = 24;
 	if (contentWidth != 0) {
-		width = contentWidth
-			+ (2 * marginWidth) 
-			+ (2 * shadowThickness) 
-			+ (2 * highlightThickness);
+		width = contentWidth + (marginWidth + shadowThickness) * 2;
 	}
 	
 	return new Point (width, height);
@@ -319,7 +310,6 @@ void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
 	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, SWT.Paint);
-//	OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, SWT.Selection);
 	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, SWT.MouseDown);
 	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, SWT.MouseUp);
 	OS.XtAddEventHandler (handle, OS.PointerMotionMask, false, windowProc, SWT.MouseMove);
@@ -348,22 +338,13 @@ public boolean isEnabled () {
 void manageChildren () {
 	OS.XtManageChild (handle);
 }
-int processSelection (int callData) {
-	if ((style & SWT.RADIO) != 0) {
-		selectRadio ();
-	} else {
-		if ((style & SWT.CHECK) != 0) setSelection(!set);			
-	}
-	postEvent (SWT.Selection);
-	return 0;
-}
-
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
 }
 void releaseWidget () {
-	getDisplay ().releaseToolTipHandle (handle);
+	Display display = getDisplay ();
+	display.releaseToolTipHandle (handle);
 	super.releaseWidget ();
 	parent = null;
 	control = null;
@@ -508,8 +489,8 @@ public void setImage (Image image) {
 	/* Resize */	
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	Point size = computeSize();
-	if (argList[1] != size.x || argList[3] != size.y) {
+	Point size = computeSize ();
+	if (argList [1] != size.x || argList [3] != size.y) {
 		OS.XtResizeWidget (handle, size.x, size.y, 0);
 	}
 	parent.relayout ();
@@ -533,7 +514,8 @@ public void setSelection (boolean selected) {
 	set = selected;
 	setDrawPressed(set);
 	if ((parent.style & SWT.FLAT) != 0) {
-		int shadowThickness = set ? getDisplay().buttonShadowThickness : 0;
+		Display display = getDisplay ();
+		int shadowThickness = set ? display.buttonShadowThickness : 0;
 		int [] argList = {OS.XmNshadowThickness, shadowThickness};
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
@@ -573,7 +555,6 @@ public void setToolTipText (String string) {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	toolTipText = string;
 }
-
 public void setWidth (int width) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -587,26 +568,24 @@ public void setWidth (int width) {
 		control.setBounds (getBounds ());
 	}
 }
-
 void setDrawPressed (boolean value) {
 	int shadowType = value ? OS.XmSHADOW_IN : OS.XmSHADOW_OUT;
 	int [] argList = {OS.XmNshadowType, shadowType};
 	OS.XtSetValues(handle, argList, argList.length / 2);
 }
-
 int processMouseDown (int callData) {
-	getDisplay ().hideToolTip();
+	Display display = getDisplay ();
+	display.hideToolTip();
 	if (set && (style & SWT.RADIO) != 0) return 0;
 	setDrawPressed(!set);
 	return 0;
 }
-
 int processMouseEnter (int callData) {
 	if ((parent.style & SWT.FLAT) != 0) {
-		int [] argList = {OS.XmNshadowThickness, getDisplay().buttonShadowThickness};
+		Display display = getDisplay ();
+		int [] argList = {OS.XmNshadowThickness, display.buttonShadowThickness};
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
-	
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
 	boolean button1Pressed = (xEvent.state & OS.Button1Mask) != 0;
@@ -619,17 +598,14 @@ int processMouseEnter (int callData) {
 	}
 	return 0;
 }
-
 int processMouseExit (int callData) {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
-	
 	if ((parent.style & SWT.FLAT) != 0 && !set) {
 		int [] argList = {OS.XmNshadowThickness, 0};
 		OS.XtSetValues (handle, argList, argList.length / 2);
 	}
-	
 	XCrossingEvent xEvent = new XCrossingEvent ();
 	OS.memmove (xEvent, callData, XCrossingEvent.sizeof);
 	boolean button1Pressed = (xEvent.state & OS.Button1Mask) != 0;
@@ -642,46 +618,45 @@ int processMouseExit (int callData) {
 	}
 	return 0;
 }
-
 Point toControl (Point point) {
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
 	return new Point (point.x - root_x [0], point.y - root_y [0]);
 }
-
 int processMouseHover (int id) {
-	Display display = getDisplay();
-	Point local = toControl(display.getCursorLocation());
-	display.showToolTip(handle, toolTipText);
+	Display display = getDisplay ();
+	Point local = toControl (display.getCursorLocation ());
+	display.showToolTip (handle, toolTipText);
 	return 0;
 }
-
 int processMouseMove (int callData) {
 	Display display = getDisplay ();
 	display.addMouseHoverTimeOut (handle);
 	return 0;
 }
-
 int processMouseUp (int callData) {
-	getDisplay ().hideToolTip();	
-
-	/**
-	* Bug in Motif. The activate callback is unreliable on 
-	* drawn buttons. Rather than relying on it to generate
-	* selection events, use the mouseUp event.
-	*/
+	Display display = getDisplay ();
+	display.hideToolTip(); 
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (xEvent.x >= 0 && xEvent.y >= 0 && xEvent.x <= argList[1] && xEvent.y <= argList[3]) {
-		processSelection(0);
+	int width = argList [1], height = argList [3];
+	if (0 <= xEvent.x && xEvent.x < width && 0 <= xEvent.y && xEvent.y < height) {
+		if ((style & SWT.RADIO) != 0) {
+			selectRadio ();
+		} else {
+			if ((style & SWT.CHECK) != 0) setSelection(!set);			
+		}
+		Event event = new Event ();
+		if ((style & SWT.DROP_DOWN) != 0) {
+			if (xEvent.x > width - 12) event.detail = SWT.ARROW;
+		}
+		postEvent (SWT.Selection, event);
 	}
-
 	setDrawPressed(set);	
 	return 0;
 }
-
 int processPaint (int callData) {
 	if ((style & SWT.SEPARATOR) != 0) return 0;
 	int xDisplay = OS.XtDisplay (handle);
@@ -689,9 +664,18 @@ int processPaint (int callData) {
 	int xWindow = OS.XtWindow (handle);
 	if (xWindow == 0) return 0;
 	
-	int [] argList = {OS.XmNcolormap, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNmarginWidth, 0, OS.XmNmarginHeight, 0};
+	int [] argList = {
+		OS.XmNcolormap, 0,
+		OS.XmNwidth, 0,
+		OS.XmNheight, 0,
+		OS.XmNmarginWidth, 0,
+		OS.XmNmarginHeight, 0,
+		OS.XmNshadowThickness, 0,
+	};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	int x = 0, y = 0, width = argList [3], height = argList [5], marginWidth = argList [7],  marginHeight = argList [9];
+	int x = 0, y = 0, width = argList [3], height = argList [5];
+	int marginWidth = argList [7],  marginHeight = argList [9];
+	int shadowThickness = (parent.style & SWT.FLAT) != 0 ? 2 : argList [11];
 	
 	ToolDrawable wrapper = new ToolDrawable ();
 	wrapper.device = getDisplay ();
@@ -737,21 +721,30 @@ int processPaint (int callData) {
 		imageHeight = imageBounds.height;
 	}
 	
-	if ((parent.style & SWT.RIGHT) > 0) {
-		imageX = x + ((width - imageWidth - textWidth - marginWidth) / 2) + 1;
+	if ((parent.style & SWT.RIGHT) != 0) {
+		imageX = x + ((width - imageWidth - textWidth - marginWidth - shadowThickness) / 2);
 		imageY = y + ((height - imageHeight) / 2);
-		textX = imageX + imageWidth + marginWidth;
+		textX = imageX + imageWidth + marginWidth + shadowThickness;
 		textY = y + ((height - textHeight) / 2);
 	} else {		
-		imageX = x + ((width - imageWidth) / 2) + 1;
-		imageY = y + ((height - imageHeight - textHeight - marginHeight) / 2) + 1;
-		textX = x + ((width - textWidth) / 2) + 2;
-		textY = imageY + imageHeight + marginHeight;
+		imageX = x + ((width - imageWidth) / 2);
+		imageY = y + ((height - imageHeight - textHeight - marginHeight - shadowThickness) / 2);
+		textX = x + ((width - textWidth) / 2);
+		textY = imageY + imageHeight + marginHeight + shadowThickness;
 	}
 	
+	if ((style & SWT.DROP_DOWN) != 0) {
+		textX -= 6;  imageX -=6;
+	}
 	if (textWidth > 0) gc.drawText(text, textX, textY, false);
 	if (imageWidth > 0) gc.drawImage(currentImage, imageX, imageY);
-
+	if ((style & SWT.DROP_DOWN) != 0) {
+		int startX = width - 12, startY = (height - 2) / 2;
+		int [] arrow = {startX, startY, startX + 3, startY + 3, startX + 6, startY};
+		gc.setBackground (parent.getForeground ());
+		gc.fillPolygon (arrow);
+		gc.drawPolygon (arrow);
+	}
 	gc.dispose ();
 	
 	if (!getEnabled() && disabledImage == null) {
@@ -759,5 +752,4 @@ int processPaint (int callData) {
 	}
 	return 0;
 }
-
 }
