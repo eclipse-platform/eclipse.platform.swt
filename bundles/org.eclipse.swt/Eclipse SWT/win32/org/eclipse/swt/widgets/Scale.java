@@ -358,7 +358,6 @@ public void setPageIncrement (int pageIncrement) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	if (value < 0) return;
 	OS.SendMessage (handle, OS.TBM_SETPOS, 1, value);
 }
 

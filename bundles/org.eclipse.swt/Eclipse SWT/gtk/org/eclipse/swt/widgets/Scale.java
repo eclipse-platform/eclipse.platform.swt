@@ -390,7 +390,6 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget();
-	if (value < 0) return;
 	int hAdjustment = OS.gtk_range_get_adjustment (handle);
 	OS.g_signal_handlers_block_matched (hAdjustment, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_set_value (hAdjustment, value);
