@@ -12,6 +12,7 @@ package org.eclipse.swt.widgets;
 
  
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -66,7 +67,7 @@ import org.eclipse.swt.graphics.*;
  * @see ScrollBar
  */
 public class Slider extends Control {
-	boolean dragging;
+	boolean dragging, tracking;
 	int increment = 1;
 	int pageIncrement = 10;
 
@@ -168,7 +169,7 @@ int actionProc (int theControl, int partCode) {
 	        event.detail = SWT.ARROW_DOWN;
 	        break;
 	    case OS.kControlIndicatorPart:
-	    	dragging = true;
+	    		dragging = true;
 			event.detail = SWT.DRAG;
 	        break;
 		default:
@@ -308,16 +309,52 @@ public int getThumb () {
     return OS.GetControlViewSize (handle);
 }
 
+int kEventControlTrack (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlTrack (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	tracking = true;
+	return OS.eventNotHandledErr;
+}
+
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int status = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (status == OS.noErr) return status;
-	dragging = false;
+	/*
+	* Feature in the Macintosh.  Some controls call TrackControl() or
+	* HandleControlClick() to track the mouse.  Unfortunately, mouse move
+	* events and the mouse up events are consumed.  The fix is to call the
+	* default handler and send a fake mouse up when tracking is finished.
+	* 
+	* NOTE: No mouse move events are sent while tracking.  There is no
+	* fix for this at this time.
+	*/
+	display.grabControl = null;
+	display.runDeferredEvents ();
+	dragging = tracking = false;
 	status = OS.CallNextEventHandler (nextHandler, theEvent);
 	if (dragging) {
 		Event event = new Event ();
 		sendEvent (SWT.Selection, event);
 	}
 	dragging = false;
+	if (tracking) {
+		org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetGlobalMouse (outPt);
+		Rect rect = new Rect ();
+		int window = OS.GetControlOwner (handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		int x = outPt.h - rect.left;
+		int y = outPt.v - rect.top;
+		OS.GetControlBounds (parent.handle, rect);
+		x -= rect.left;
+		y -=  rect.top;
+		short [] button = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseButton, OS.typeMouseButton, null, 2, null, button);
+		int chord = OS.GetCurrentEventButtonState ();
+		int modifiers = OS.GetCurrentEventKeyModifiers ();
+		sendMouseEvent (SWT.MouseUp, button [0], chord, (short)x, (short)y, modifiers, true);
+	}
+	tracking = false;
 	return status;
 }
 
