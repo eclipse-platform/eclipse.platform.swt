@@ -5892,7 +5892,8 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtGetValues
 
     if (argList)
         argList1 = (*env)->GetIntArrayElements(env, argList, NULL);    
- 
+
+#ifndef SOLARIS
 	if (numArgs > MAX_ARGS) {
 		values = (int *) XtMalloc (numArgs * sizeof(int));
 		zeros = (int *) XtMalloc (numArgs * sizeof(int));
@@ -5906,9 +5907,9 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtGetValues
             }
         }
     }
-
+#endif
     XtGetValues((Widget)widget, (ArgList)argList1, numArgs);
-
+#ifndef SOLARIS
     for (i = 0; i < numArgs; i++) {   
         if (zeros[i]) {
            char* charPtr = (char *)(argList1[i*2] - 1);
@@ -5921,10 +5922,10 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XtGetValues
         }
     }
 	if (numArgs > MAX_ARGS) {
-		XtFree(values);
-		XtFree(zeros);
+		XtFree((char *)values);
+		XtFree((char *)zeros);
 	}
-
+#endif
     if (argList)
         (*env)->ReleaseIntArrayElements(env, argList, argList1, 0);
 }
