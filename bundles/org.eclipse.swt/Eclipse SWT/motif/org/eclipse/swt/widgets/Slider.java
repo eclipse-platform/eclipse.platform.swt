@@ -307,6 +307,11 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);	
 }
+public void sendScrollEvent (int detail) {
+	Event event = new Event ();
+	event.detail = detail;
+	sendEvent (SWT.Selection, event);
+}
 /**
  * Sets the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
@@ -499,49 +504,35 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	display.setWarnings (warnings);
 }
 int XmNdecrementCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.ARROW_UP;
-	sendEvent (SWT.Selection, event);
+	sendScrollEvent (SWT.ARROW_UP);
 	return 0;
 }
 int XmNdragCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.DRAG;
-	sendEvent (SWT.Selection, event);
+	sendScrollEvent (SWT.DRAG);
 	return 0;
 }
 int XmNincrementCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.ARROW_DOWN;
-	sendEvent (SWT.Selection, event);
+	sendScrollEvent (SWT.ARROW_DOWN);
 	return 0;
 }
 int XmNpageDecrementCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.PAGE_UP;
-	sendEvent (SWT.Selection, event);
+	sendScrollEvent (SWT.PAGE_UP);
 	return 0;
 }
 int XmNpageIncrementCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.PAGE_DOWN;
-	sendEvent (SWT.Selection, event);
+	sendScrollEvent (SWT.PAGE_DOWN);
 	return 0;
 }
 int XmNtoBottomCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.END;
-	sendEvent (SWT.Selection, event);
+	sendScrollEvent (SWT.END);
 	return 0;
 }
 int XmNtoTopCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.HOME;
-	sendEvent (SWT.Selection, event);
+	sendScrollEvent (SWT.HOME);
 	return 0;
 }
 int XmNvalueChangedCallback (int w, int client_data, int call_data) {
-	sendEvent (SWT.Selection);
+	sendScrollEvent (SWT.NONE);
 	return 0;
 }
 }

@@ -408,6 +408,18 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);	
 }
+public void sendScrollEvent (int detail) {
+	Event event = new Event ();
+	event.detail = detail;
+	sendEvent (SWT.Selection, event);
+	/*
+	* Feature in Motif.  When a scroll bar is selected,
+	* it does not make the shell active.  The fix is to
+	* make the shell active.
+	*/
+	Shell shell = parent.getShell ();
+	shell.bringToTop (true);
+}
 /**
  * Enables the receiver if the argument is <code>true</code>,
  * and disables it otherwise. A disabled control is typically
@@ -638,105 +650,35 @@ public void setVisible (boolean visible) {
 	parent.setScrollbarVisible (handle, visible);
 }
 int XmNdecrementCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.ARROW_UP;
-	sendEvent (SWT.Selection, event);
-	/*
-	* Feature in Motif.  When a scroll bar is selected,
-	* it does not make the shell active.  The fix is to
-	* make the shell active.
-	*/
-	Shell shell = parent.getShell ();
-	shell.bringToTop (true);
+	sendScrollEvent (SWT.ARROW_UP);
 	return 0;
 }
 int XmNdragCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.DRAG;
-	sendEvent (SWT.Selection, event);
-	/*
-	* Feature in Motif.  When a scroll bar is selected,
-	* it does not make the shell active.  The fix is to
-	* make the shell active.
-	*/
-	Shell shell = parent.getShell ();
-	shell.bringToTop (true);
+	sendScrollEvent (SWT.DRAG);
 	return 0;
 }
 int XmNincrementCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.ARROW_DOWN;
-	sendEvent (SWT.Selection, event);
-	/*
-	* Feature in Motif.  When a scroll bar is selected,
-	* it does not make the shell active.  The fix is to
-	* make the shell active.
-	*/
-	Shell shell = parent.getShell ();
-	shell.bringToTop (true);
+	sendScrollEvent (SWT.ARROW_DOWN);
 	return 0;
 }
 int XmNpageDecrementCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.PAGE_UP;
-	sendEvent (SWT.Selection, event);
-	/*
-	* Feature in Motif.  When a scroll bar is selected,
-	* it does not make the shell active.  The fix is to
-	* make the shell active.
-	*/
-	Shell shell = parent.getShell ();
-	shell.bringToTop (true);
+	sendScrollEvent (SWT.PAGE_UP);
 	return 0;
 }
 int XmNpageIncrementCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.PAGE_DOWN;
-	sendEvent (SWT.Selection, event);
-	/*
-	* Feature in Motif.  When a scroll bar is selected,
-	* it does not make the shell active.  The fix is to
-	* make the shell active.
-	*/
-	Shell shell = parent.getShell ();
-	shell.bringToTop (true);
+	sendScrollEvent (SWT.PAGE_DOWN);
 	return 0;
 }
 int XmNtoBottomCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.END;
-	sendEvent (SWT.Selection, event);
-	/*
-	* Feature in Motif.  When a scroll bar is selected,
-	* it does not make the shell active.  The fix is to
-	* make the shell active.
-	*/
-	Shell shell = parent.getShell ();
-	shell.bringToTop (true);
+	sendScrollEvent (SWT.END);
 	return 0;
 }
 int XmNtoTopCallback (int w, int client_data, int call_data) {
-	Event event = new Event ();
-	event.detail = SWT.HOME;
-	sendEvent (SWT.Selection, event);
-	/*
-	* Feature in Motif.  When a scroll bar is selected,
-	* it does not make the shell active.  The fix is to
-	* make the shell active.
-	*/
-	Shell shell = parent.getShell ();
-	shell.bringToTop (true);
+	sendScrollEvent (SWT.HOME);
 	return 0;
 }
 int XmNvalueChangedCallback (int w, int client_data, int call_data) {
-	sendEvent (SWT.Selection);
-	/*
-	* Feature in Motif.  When a scroll bar is selected,
-	* it does not make the shell active.  The fix is to
-	* make the shell active.
-	*/
-	Shell shell = parent.getShell ();
-	shell.bringToTop (true);
+	sendScrollEvent (SWT.NONE);
 	return 0;
 }
 }
