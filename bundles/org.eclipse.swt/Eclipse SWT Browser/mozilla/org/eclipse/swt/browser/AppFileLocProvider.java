@@ -13,32 +13,32 @@ package org.eclipse.swt.browser;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.mozilla.*;
 
-class EmbedFileLocProvider {
+class AppFileLocProvider {
 
-	public static final String NS_GRE_DIR = "GreD"; //$NON-NLS-1$
-	public static final String NS_GRE_COMPONENT_DIR = "GreComsD"; //$NON-NLS-1$
-	public static final String NS_APP_DEFAULTS_50_DIR = "DefRt"; //$NON-NLS-1$
-	public static final String NS_APP_PREF_DEFAULTS_50_DIR = "PrfDef"; //$NON-NLS-1$
-	public static final String NS_APP_PROFILE_DEFAULTS_50_DIR = "profDef"; //$NON-NLS-1$
-	public static final String NS_APP_PROFILE_DEFAULTS_NLOC_50_DIR = "ProfDefNoLoc"; //$NON-NLS-1$
-	public static final String NS_APP_USER_PROFILES_ROOT_DIR = "DefProfRt"; //$NON-NLS-1$
-	public static final String NS_APP_RES_DIR = "ARes"; //$NON-NLS-1$
-	public static final String NS_APP_CHROME_DIR = "AChrom"; //$NON-NLS-1$
-	public static final String NS_APP_PLUGINS_DIR = "APlugns"; //$NON-NLS-1$
-	public static final String NS_APP_SEARCH_DIR = "SrchPlugns"; //$NON-NLS-1$
-	public static final String NS_APP_PLUGINS_DIR_LIST = "APluginsDL"; //$NON-NLS-1$
-	public static final String DEFAULTS_DIR_NAME = "defaults"; //$NON-NLS-1$
-	public static final String DEFAULTS_PREF_DIR_NAME = "pref"; //$NON-NLS-1$
-	public static final String DEFAULTS_PROFILE_DIR_NAME = "profile"; //$NON-NLS-1$
-	public static final String RES_DIR_NAME = "res"; //$NON-NLS-1$
-	public static final String CHROME_DIR_NAME ="chrome"; //$NON-NLS-1$
-	public static final String PLUGINS_DIR_NAME = "plugins"; //$NON-NLS-1$
-	public static final String SEARCH_DIR_NAME = "searchplugins"; //$NON-NLS-1$
-	public static final String COMPONENTS_DIR_NAME = "components"; //$NON-NLS-1$
-	public static final String NS_XPCOM_INIT_CURRENT_PROCESS_DIR = "MozBinD"; //$NON-NLS-1$
-	public static final String NS_XPCOM_CURRENT_PROCESS_DIR = "XCurProcD"; //$NON-NLS-1$
-	public static final String NS_XPCOM_COMPONENT_DIR = "ComsD"; //$NON-NLS-1$
-	public static final String NS_OS_CURRENT_PROCESS_DIR = "CurProcD"; //$NON-NLS-1$
+	static final String NS_GRE_DIR = "GreD"; //$NON-NLS-1$
+	static final String NS_GRE_COMPONENT_DIR = "GreComsD"; //$NON-NLS-1$
+	static final String NS_APP_DEFAULTS_50_DIR = "DefRt"; //$NON-NLS-1$
+	static final String NS_APP_PREF_DEFAULTS_50_DIR = "PrfDef"; //$NON-NLS-1$
+	static final String NS_APP_PROFILE_DEFAULTS_50_DIR = "profDef"; //$NON-NLS-1$
+	static final String NS_APP_PROFILE_DEFAULTS_NLOC_50_DIR = "ProfDefNoLoc"; //$NON-NLS-1$
+	static final String NS_APP_USER_PROFILES_ROOT_DIR = "DefProfRt"; //$NON-NLS-1$
+	static final String NS_APP_RES_DIR = "ARes"; //$NON-NLS-1$
+	static final String NS_APP_CHROME_DIR = "AChrom"; //$NON-NLS-1$
+	static final String NS_APP_PLUGINS_DIR = "APlugns"; //$NON-NLS-1$
+	static final String NS_APP_SEARCH_DIR = "SrchPlugns"; //$NON-NLS-1$
+	static final String NS_APP_PLUGINS_DIR_LIST = "APluginsDL"; //$NON-NLS-1$
+	static final String DEFAULTS_DIR_NAME = "defaults"; //$NON-NLS-1$
+	static final String DEFAULTS_PREF_DIR_NAME = "pref"; //$NON-NLS-1$
+	static final String DEFAULTS_PROFILE_DIR_NAME = "profile"; //$NON-NLS-1$
+	static final String RES_DIR_NAME = "res"; //$NON-NLS-1$
+	static final String CHROME_DIR_NAME ="chrome"; //$NON-NLS-1$
+	static final String PLUGINS_DIR_NAME = "plugins"; //$NON-NLS-1$
+	static final String SEARCH_DIR_NAME = "searchplugins"; //$NON-NLS-1$
+	static final String COMPONENTS_DIR_NAME = "components"; //$NON-NLS-1$
+	static final String NS_XPCOM_INIT_CURRENT_PROCESS_DIR = "MozBinD"; //$NON-NLS-1$
+	static final String NS_XPCOM_CURRENT_PROCESS_DIR = "XCurProcD"; //$NON-NLS-1$
+	static final String NS_XPCOM_COMPONENT_DIR = "ComsD"; //$NON-NLS-1$
+	static final String NS_OS_CURRENT_PROCESS_DIR = "CurProcD"; //$NON-NLS-1$
 
 	XPCOMObject supports;
 	XPCOMObject directoryServiceProvider;
@@ -47,7 +47,7 @@ class EmbedFileLocProvider {
 	String mozillaPath;
 	String grePath;
 
-public EmbedFileLocProvider() {
+public AppFileLocProvider() {
 	mozillaPath = GRE.mozillaPath;
 	grePath = GRE.grePath;
 	if (mozillaPath == null) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_FAILURE));	
@@ -194,7 +194,6 @@ int getFile(int str, int persistent, int nsFile) {
 		NS_OS_CURRENT_PROCESS_DIR.equals(prop) ||
 		NS_XPCOM_COMPONENT_DIR.equals(prop)) {
 		if (mozillaPath == null || mozillaPath.length() == 0) return XPCOM.NS_ERROR_FAILURE;
-		String path = new String(mozillaPath);	
 		int[] retVal = new int[1];
 		rc = XPCOM.NS_NewLocalFile(mozillaPath,true,retVal);
 		if (rc == XPCOM.NS_OK && retVal[0] == 0) rc = XPCOM.NS_ERROR_NULL_POINTER;

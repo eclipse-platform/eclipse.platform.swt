@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.mozilla.*;
 public class Browser extends Composite {
 	
 	static nsIAppShell appShell;
-	static EmbedFileLocProvider locProvider; 
+	static AppFileLocProvider locProvider; 
 	static int browserCount;
 
 	BrowserSite browserSite;
@@ -33,7 +33,7 @@ public Browser(Composite parent, int style) {
 		String mozillaPath = GRE.mozillaPath;
 		if (mozillaPath == null) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_FAILURE));
 
-		locProvider = new EmbedFileLocProvider();
+		locProvider = new AppFileLocProvider();
 		locProvider.AddRef();
 
 		int[] retVal = new int[1];
@@ -52,7 +52,7 @@ public Browser(Composite parent, int style) {
 		
 		nsIComponentManager componentManager = new nsIComponentManager(result[0]);
 		result[0] = 0;
-		rc = componentManager.CreateInstance(NsWidgetsCID.NS_APPSHELL_CID, 0, nsIAppShell.NS_IAPPSHELL_IID, result);
+		rc = componentManager.CreateInstance(XPCOM.NS_APPSHELL_CID, 0, nsIAppShell.NS_IAPPSHELL_IID, result);
 		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
 		if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));		
 		componentManager.Release();
