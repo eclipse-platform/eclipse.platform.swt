@@ -132,7 +132,9 @@ public Browser(Composite parent, int style) {
 		LocProvider.AddRef();
 
 		int[] retVal = new int[1];
-		int rc = XPCOM.NS_NewLocalFile(mozillaPath, true, retVal);
+		nsString path = new nsString(mozillaPath);
+		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);
+		path.dispose();
 		if (rc != XPCOM.NS_OK) error(rc);
 		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
 			
@@ -204,7 +206,7 @@ public Browser(Composite parent, int style) {
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
 
-	final nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);	
+	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);	
 	rc = baseWindow.InitWindow(gtkHandle, 0, 0, 0, 2, 2);
 	if (rc != XPCOM.NS_OK) error(XPCOM.NS_ERROR_FAILURE);
 	rc = baseWindow.Create();
