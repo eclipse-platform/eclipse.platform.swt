@@ -990,6 +990,7 @@ public void remove (int [] indices) {
 public void removeAll () {
 	checkWidget();
 	OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0);
+	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	items = new String [4];
 	itemCount = anchorFirst = anchorLast = 0;
 }

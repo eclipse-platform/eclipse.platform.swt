@@ -973,6 +973,7 @@ public void removeAll () {
 	if (OS.RemoveDataBrowserItems (handle, OS.kDataBrowserNoItem, 0, null, 0) != OS.noErr) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
+	OS.SetDataBrowserScrollPosition (handle, 0, 0);
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isDisposed ()) item.releaseResources ();
