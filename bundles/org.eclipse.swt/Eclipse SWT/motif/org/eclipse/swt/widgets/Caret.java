@@ -26,6 +26,7 @@ import org.eclipse.swt.graphics.*;
 
 public /*final*/ class Caret extends Widget {
 	Canvas parent;
+	Image image;
 	int x, y, width, height;
 	boolean moved, resized;
 	boolean isVisible, isShowing;
@@ -91,9 +92,14 @@ boolean drawCaret () {
 	int color = foreground ^ background;
 	OS.XSetFunction (xDisplay, gc, OS.GXxor);
 	OS.XSetForeground (xDisplay, gc, color);
-	int nWidth = width;
+	int nWidth = width, nHeight = height;
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		nWidth = rect.width;
+		nHeight = rect.height;
+	}
 	if (nWidth <= 0) nWidth = 2;
-	OS.XFillRectangle (xDisplay, window, gc, x, y, nWidth, height);
+	OS.XFillRectangle (xDisplay, window, gc, x, y, nWidth, nHeight);
 	OS.XFreeGC (xDisplay, gc);
 	return true;
 }
@@ -110,6 +116,10 @@ boolean drawCaret () {
  */
 public Rectangle getBounds () {
 	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Rectangle (x, y, rect.width, rect.height);
+	}
 	return new Rectangle (x, y, width, height);
 }
 /**
@@ -133,6 +143,20 @@ public Display getDisplay () {
 public Font getFont () {
 	checkWidget();
 	return parent.getFont ();
+}
+/**
+ * Returns the image that the receiver will use to paint the caret.
+ *
+ * @return the receiver's image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Image getImage () {
+	checkWidget();
+	return image;
 }
 /**
  * Returns a point describing the receiver's location relative
@@ -175,6 +199,10 @@ public Canvas getParent () {
  */
 public Point getSize () {
 	checkWidget();
+	if (image != null) {
+		Rectangle rect = image.getBounds ();
+		return new Point (rect.width, rect.height);
+	}
 	return new Point (width, height);
 }
 /**
@@ -248,6 +276,7 @@ void releaseWidget () {
 		display.setCurrentCaret (null);
 	}
 	parent = null;
+	image = null;
 }
 /**
  * Sets the receiver's size and location to the rectangular
@@ -328,6 +357,24 @@ void setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget();
+}
+/**
+ * Sets the image that the receiver will use to paint the caret
+ * to the image specified by the argument, or to the default
+ * which is a filled rectangle if the argument is null
+ *
+ * @param font the new font (or null)
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setImage (Image image) {
+	checkWidget();
+	if (isShowing) hideCaret ();
+	this.image = image;
+	if (isShowing) showCaret ();
 }
 /**
  * Sets the receiver's location to the point specified by
