@@ -453,7 +453,10 @@ void setDefaultWidth(boolean isDefaultWidth) {
 }
 public void setImage(Image image) {
 	super.setImage(image);
-	parent.getHeader().setHeaderHeight();
+	Header header = parent.getHeader();
+	header.setHeaderHeight();
+	header.redraw();
+	parent.redraw();
 }
 /**
  * Set the index of the receiver to 'newIndex'. The index specifies the
