@@ -11,6 +11,7 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.carbon.EventRecord;
+import org.eclipse.swt.internal.carbon.OS;
 
 class MacMouseEvent {
 	
@@ -32,11 +33,15 @@ class MacMouseEvent {
 	public MacMouseEvent(MacEvent me) {
 		fMacEvent= me;
 		fWhen= me.getWhen();
-		fWhere= me.getWhere2();
+		
+		short[] loc= new short[2];
+		OS.GetEventParameter(me.getEventRef(), OS.kEventParamMouseLocation, OS.typeQDPoint, null, loc.length*2, null, loc);
+		fWhere= new Point(loc[1], loc[0]);
+		
 		fState= me.getStateMask();
 		fButton= me.getButton();
 	}
-	
+		
 	public int getWhen() {
 		return fWhen;
 	}

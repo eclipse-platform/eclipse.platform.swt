@@ -80,26 +80,6 @@ class MacEvent {
 		return new org.eclipse.swt.internal.carbon.Point();
 	}
 	
-	public Point getWhere2() {
-		if (fEventRef != -1) {
-			short[] loc= new short[2];
-			if (OS.GetEventParameter(fEventRef, OS.kEventParamMouseLocation, OS.typeQDPoint, null, loc.length*2, null, loc) == OS.noErr) {
-				return new Point(loc[1], loc[0]);
-			}
-		}
-		System.out.println("MacEvent.getWhere2: no EventRef");
-		return new Point(0, 0);
-	}
-
-	/**
-	 * In window coordinates.
-	 */
-	public org.eclipse.swt.internal.carbon.Point getWindowWhere(int window) {
-		org.eclipse.swt.internal.carbon.Point where= getWhere();
-		OS.QDGlobalToLocalPoint(OS.GetWindowPort(window), where);
-		return where;
-	}
-
 	/**
 	 * Returns the Mac modifiers for this event
 	 */
