@@ -1015,7 +1015,8 @@ public void setMenuBar (Menu menu) {
 			if (menuBar != null) OS.CommandBar_Show (menuBar.hwndCB, true);
 			if (resize) {
 				sendEvent (SWT.Resize);
-				layout (false);
+				if (isDisposed ()) return;
+				if (layout != null) layout.layout (this, false);
 			}
 		} else {
 			if (OS.IsPPC) {
@@ -1230,6 +1231,7 @@ public void setVisible (boolean visible) {
 				}
 				OS.ShowWindow (handle, swFlags);
 			}
+			if (isDisposed ()) return;
 			OS.UpdateWindow (handle);
 		}
 	} else {
@@ -1253,12 +1255,6 @@ public void setVisible (boolean visible) {
 		} else {
 			OS.ShowWindow (handle, OS.SW_HIDE);
 		}
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in an event
-		* triggered by ShowWindow().  If this happens, just
-		* return.
-		*/
 		if (isDisposed ()) return;
 		sendEvent (SWT.Hide);
 	}
