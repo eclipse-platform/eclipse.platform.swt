@@ -675,7 +675,8 @@ int /*long*/ gtk_test_collapse_row (int /*long*/ tree, int /*long*/ iter, int /*
 	OS.gtk_tree_model_get (modelHandle, iter, ID_COLUMN, index, -1);
 	Event event = new Event ();
 	event.item = items [index [0]];
-	sendEvent (SWT.Collapse, event);	
+	sendEvent (SWT.Collapse, event);
+	if (isDisposed ()) return 0;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
 	OS.gtk_tree_view_collapse_row (handle, path);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_COLLAPSE_ROW);
@@ -688,6 +689,7 @@ int /*long*/ gtk_test_expand_row (int /*long*/ tree, int /*long*/ iter, int /*lo
 	Event event = new Event ();
 	event.item = items [index [0]];
 	sendEvent (SWT.Expand, event);
+	if (isDisposed ()) return 0;
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
 	OS.gtk_tree_view_expand_row (handle, path, false);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);

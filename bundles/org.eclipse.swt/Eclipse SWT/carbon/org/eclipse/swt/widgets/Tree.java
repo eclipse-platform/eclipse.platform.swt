@@ -49,7 +49,7 @@ public class Tree extends Composite {
 	TreeItem [] items;
 	GC paintGC;
 	int anchorFirst, anchorLast, lastHittest;
-	boolean ignoreSelect, ignoreExpand, wasSelected, wasExpanded;
+	boolean ignoreSelect, wasSelected, wasToggled;
 	TreeItem showItem;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int COLUMN_ID = 1025;
@@ -733,9 +733,6 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 	switch (property) {
 		case CHECK_COLUMN_ID: {
 			if (setValue != 0) {
-//				short [] theData = new short [1];
-//				OS.GetDataBrowserItemDataButtonValue (itemData, theData);
-//				item.checked = theData [0] == OS.kThemeButtonOn;
 				item.checked = !item.checked;
 				if (item.checked && item.grayed) {
 					OS.SetDataBrowserItemDataButtonValue (itemData, (short) OS.kThemeButtonMixed);
@@ -748,24 +745,12 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 				event.detail = SWT.CHECK;
 				postEvent (SWT.Selection, event);
 			} else {
-//				short theData = (short)(item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff);
-//				OS.SetDataBrowserItemDataButtonValue (itemData, theData);
 				int theData = OS.kThemeButtonOff;
 				if (item.checked) theData = item.grayed ? OS.kThemeButtonMixed : OS.kThemeButtonOn;
 				OS.SetDataBrowserItemDataButtonValue (itemData, (short) theData);
 			}
 			break;
 		}
-//		case COLUMN_ID: {
-//			String text = item.text;
-//			char [] buffer = new char [text.length ()];
-//			text.getChars (0, buffer.length, buffer, 0);
-//			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-//			if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-//			OS.SetDataBrowserItemDataText (itemData, ptr);
-//			OS.CFRelease (ptr);
-//			break;
-//		}
 		case OS.kDataBrowserItemIsContainerProperty: {
 			for (int i=0; i<items.length; i++) {
 				if (items [i] != null && items [i].parentItem == item) {
@@ -824,12 +809,25 @@ int itemNotificationProc (int browser, int id, int message) {
 			postEvent (SWT.DefaultSelection, event);
 			break;
 		}
+		case OS.kDataBrowserUserToggledContainer: {
+			wasToggled = true;
+			int [] state = new int [1];
+			Event event = new Event ();
+			event.item = item;
+			OS.GetDataBrowserItemState (handle, id, state);
+			if ((state [0] & OS.kDataBrowserContainerIsOpen) != 0) {
+				sendEvent (SWT.Collapse, event);
+			} else {
+				sendEvent (SWT.Expand, event);
+			}
+			break;
+		}
 		case OS.kDataBrowserContainerClosing: {
 			/*
 			* Bug in the Macintosh.  For some reason, if the selected sub items of an item
 			* get a kDataBrowserItemDeselected notificaton when the item is collapsed, a
 			* call to GetDataBrowserSelectionAnchor () will cause a segment fault.  The
-			* fix is to deselect these items ignoring kDataBrowserItemDeselected and them
+			* fix is to deselect these items ignoring kDataBrowserItemDeselected and then
 			* issue a selection event.
 			*/
 			int ptr = OS.NewHandle (0);
@@ -847,33 +845,17 @@ int itemNotificationProc (int browser, int id, int message) {
 					ignoreSelect = false;
 					Event event = new Event ();
 					event.item = item;
-					if (ignoreExpand) {
-						sendEvent (SWT.Selection, event);
-					} else {
-						postEvent (SWT.Selection, event);
-					}						 
+					sendEvent (SWT.Selection, event);
 				}
 			}
 			OS.DisposeHandle (ptr);
 			break;
 		}
 		case OS.kDataBrowserContainerClosed: {
-			wasExpanded = true;
-			if (!ignoreExpand) {
-				Event event = new Event ();
-				event.item = item;
-				sendEvent (SWT.Collapse, event);
-			}
 			setScrollWidth ();
 			break;
 		}
 		case OS.kDataBrowserContainerOpened: {
-			wasExpanded = true;
-			if (!ignoreExpand) {
-				Event event = new Event ();
-				event.item = item;
-				sendEvent (SWT.Expand, event);
-			}
 			int count = 0;
 			for (int i=0; i<items.length; i++) {
 				if (items [i] != null && items [i].parentItem == item) count++;
@@ -924,14 +906,14 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	*/
 	Control oldFocus = display.getFocusControl ();
 	display.ignoreFocus = true;
-	wasSelected = wasExpanded = false;
+	wasSelected = wasToggled = false;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
 	display.ignoreFocus = false;
 	if (oldFocus != this) {
 		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (false, false);
 		if (!isDisposed () && isEnabled ()) sendFocusEvent (true, false);
 	}
-	if (!wasSelected && !wasExpanded) {
+	if (!wasSelected && !wasToggled) {
 		if (OS.IsDataBrowserItemSelected (handle, lastHittest)) {
 			int index = lastHittest - 1;
 			if (0 <= index && index < items.length) {
@@ -941,7 +923,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 			}
 		}
 	}
-	wasSelected = wasExpanded = false;
+	wasSelected = wasToggled = false;
 	return result;
 }
 
