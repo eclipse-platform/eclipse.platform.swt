@@ -1192,10 +1192,10 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	if ((state & CANVAS) != 0 && (style & SWT.EMBEDDED) != 0) {
 		int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
 		if (hwndChild != 0) {
-			int[] processID = new int[1];
+			int [] processID = new int [1];
 			int threadId = OS.GetWindowThreadProcessId (hwndChild, processID);
 			if (threadId != OS.GetCurrentThreadId ()) {
-				if (processID [0] == OS.GetCurrentProcessId()) {
+				if (processID [0] == OS.GetCurrentProcessId ()) {
 					if (display.msgHook == 0) {
 						if (!OS.IsWinCE) {
 							display.getMsgCallback = new Callback (display, "getMsgProc", 3);
