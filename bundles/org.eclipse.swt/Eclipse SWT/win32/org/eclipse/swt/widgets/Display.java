@@ -1440,9 +1440,7 @@ boolean runDeferredEvents () {
 public void setCursorLocation (Point point) {
 	checkDevice ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int x = point.x;
-	int y = point.y;
-	OS.SetCursorPos (x, y);
+	OS.SetCursorPos (point.x, point.y);
 }
 
 /**
