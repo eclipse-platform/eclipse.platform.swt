@@ -83,6 +83,12 @@ void createHandle () {
 	handle = outControl [0];
 }
 
+void drawBackground (int control) {
+	if ((style & SWT.SEPARATOR) != 0) {
+		drawBackground (control, background);
+	}
+}
+
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	if (isImage && image != null) {
 		GCData data = new GCData ();
