@@ -1,20 +1,18 @@
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.photon.*;
-import org.eclipse.swt.widgets.*;
-
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
 
-/*
- *
+import org.eclipse.swt.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.photon.*;
+import org.eclipse.swt.widgets.*;
+
+/**
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
- *
- */ 
+ */
 public class Clipboard {
 	
 	private Display display;

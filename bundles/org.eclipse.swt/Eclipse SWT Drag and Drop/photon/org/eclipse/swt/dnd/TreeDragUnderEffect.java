@@ -1,13 +1,13 @@
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
  
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
+
 class TreeDragUnderEffect extends DragUnderEffect {
 
 	private Tree tree;
