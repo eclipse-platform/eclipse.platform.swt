@@ -23,14 +23,19 @@ import java.util.*;
  * </p>
  */
 public class FontDialog extends Dialog {
+	
+	private FontData fontData;
+	private Font sampleFont; // the current displayed sample font
+	private RGB rgb;
+	private Color sampleColor; // the current displayed sample color
+	
 	/*
 	 * Table containing all available fonts as FontData objects.
 	 * The table is structured as a series of embedded Hashtables as follows:
 	 * <br>characterRegistryName -> faceName -> extendedStyle -> size -> style
 	 */
 	private Hashtable characterSets = new Hashtable ();
-	private FontData initialFontData;
-	private Font sampleFont;			// the current displayed sample font
+	
 	private boolean okSelected = false;
 	private boolean ignoreEvents = false;
 
@@ -44,6 +49,7 @@ public class FontDialog extends Dialog {
 	private Label sampleLabel;
 	private Button okButton;
 	private Button cancelButton;
+	private Button colorButton;	
 
 	// constants
 	private static final String TEXT_SAMPLE = "AaBbYyZz";
@@ -81,8 +87,6 @@ public class FontDialog extends Dialog {
 		SWT.getMessage ("SWT_Charset_Euro"),
 		SWT.getMessage ("SWT_Charset_Romanian")
 	};
-	
-	RGB rgb;
 
 /**
  * Constructs a new instance of this class given only its
@@ -218,7 +222,7 @@ void createChildren () {
 	GridData gridData = new GridData ();
 	gridData.widthHint = COLUMN1_WIDTH;
 	gridData.heightHint = 150;
-	gridData.verticalSpan = 2;
+	gridData.verticalSpan = 3;
 	charSetCombo.setLayoutData (gridData);
 	charSetCombo.setData (NO_SELECTION);
 	
@@ -226,7 +230,7 @@ void createChildren () {
 	gridData = new GridData ();
 	gridData.widthHint = COLUMN2_WIDTH;
 	gridData.heightHint = 150;	
-	gridData.verticalSpan = 2;
+	gridData.verticalSpan = 3;
 	gridData.verticalAlignment = GridData.FILL;
 	faceNameCombo.setLayoutData (gridData);
 	faceNameCombo.setData (NO_SELECTION);
@@ -235,13 +239,13 @@ void createChildren () {
 	gridData = new GridData ();
 	gridData.widthHint = COLUMN3_WIDTH;
 	gridData.heightHint = 150;	
-	gridData.verticalSpan = 2;
+	gridData.verticalSpan = 3;
 	gridData.verticalAlignment = GridData.FILL;	
 	extStyleCombo.setLayoutData (gridData);
 	extStyleCombo.setData (NO_SELECTION);
 	
-	// create ok and cancel buttons (row two and three)
-	createOkCancel ();
+	// create ok, cancel, and color buttons (row two, three, and four)
+	createButtons ();
 	
 	// row four
 	createEmptyRow ();
@@ -324,7 +328,7 @@ void createEmptyRow () {
 /**
  * Create the widgets of the dialog.
  */
-void createOkCancel () {
+void createButtons () {
 	okButton = new Button (shell, SWT.PUSH);
 	okButton.setText (SWT.getMessage ("SWT_OK"));
 	shell.setDefaultButton (okButton);	
@@ -339,6 +343,13 @@ void createOkCancel () {
 	gridData.horizontalAlignment = GridData.FILL;
 	gridData.verticalAlignment = GridData.BEGINNING;		
 	cancelButton.setLayoutData (gridData);
+
+	colorButton = new Button (shell, SWT.PUSH);
+	colorButton.setText (SWT.getMessage ("SWT_Color"));
+	gridData = new GridData ();
+	gridData.horizontalAlignment = GridData.FILL;
+	gridData.verticalAlignment = GridData.BEGINNING;		
+	colorButton.setLayoutData (gridData);
 }
 
 Hashtable getExtStyles (String charsetName, String faceName) {
@@ -358,10 +369,7 @@ Hashtable getFaces (String charsetName) {
  * @return the FontData for the selected font, or null
  */
 public FontData getFontData () {
-	if (sampleFont != null) {
-		return sampleFont.getFontData ()[0];
-	}
-	return initialFontData;
+	return fontData;
 }
 
 FontData getFontData (String charsetName, String faceName, String extStyle, int size, String style) {
@@ -558,6 +566,16 @@ void handleEvent (Event event) {
 	if (event.widget == cancelButton) {
 		okSelected = false;
 		shell.close ();
+	}
+	else
+	if (event.widget == colorButton) {
+		ColorDialog colorDialog = new ColorDialog (shell, SWT.NONE);
+		colorDialog.setRGB (rgb);
+		RGB newRgb = colorDialog.open ();
+		if (newRgb != null) {
+			rgb = newRgb;
+			updateSampleColor ();
+		}
 	}	
 }
 
@@ -613,15 +631,15 @@ void initializeWidgets () {
 	addFonts (display.getFontList (null, false));		// get all fonts availabe on the current display
 	addFonts (display.getFontList (null, true));
 	setItemsSorted (charSetCombo, getFonts ());
-	if (initialFontData != null) {
-		Font initialFont = new Font (display, initialFontData);	// verify that the initial font data is a valid font
-		initialFontData = null;
+	if (fontData != null) {
+		Font font = new Font (display, fontData);	// verify that the initial font data is a valid font
 		ignoreEvents = true;
-		setFontCombos (initialFont.getFontData ()[0]);
+		setFontCombos (font.getFontData ()[0]);
 		ignoreEvents = false;
-		initialFont.dispose ();
-		updateSampleFont ();
+		font.dispose ();
 	}
+	updateSampleFont ();
+	updateSampleColor ();
 }
 
 /**
@@ -724,6 +742,7 @@ void installListeners () {
 	};
 	okButton.addListener (SWT.Selection, listener);
 	cancelButton.addListener (SWT.Selection, listener);
+	colorButton.addListener (SWT.Selection, listener);	
 	charSetCombo.addListener (SWT.Selection, listener);
 	charSetCombo.addListener (SWT.Modify, listener);
 	faceNameCombo.addListener (SWT.Modify, listener);
@@ -749,8 +768,9 @@ public FontData open () {
 	createChildren ();
 	installListeners ();	
 	
+	FontData originalFontData = fontData;
+	RGB originalRGB = rgb;
 	initializeWidgets ();
-	setFontData (null);
 	openDialog ();
 	Display display = shell.getDisplay ();
 	while (!shell.isDisposed ()) {
@@ -758,8 +778,16 @@ public FontData open () {
 	}
 	
 	FontData result = null;
-	if (okSelected) result = getFontData ();
+	if (okSelected) {
+		result = fontData;
+	} else {
+		fontData = originalFontData;
+		rgb = originalRGB;
+	}	
 	if (sampleFont != null) sampleFont.dispose ();
+	sampleFont = null;
+	if (sampleColor != null) sampleColor.dispose ();
+	sampleColor = null;
 	return result;
 }
 
@@ -834,7 +862,7 @@ void setFontCombos (FontData fontData) {
  * @param fontData the FontData to use initially, or null
  */
 public void setFontData (FontData fontData) {
-	initialFontData = fontData;
+	this.fontData = fontData;
 }
 
 /**
@@ -940,9 +968,21 @@ void updateSampleFont () {
 	 * sampleFont may not be the same as the one specified in selectionFontData.
 	 * This happens when selectionFontData specifies a font alias.
 	 */
-	Font newSampleFont = new Font (shell.getDisplay (), selectionFontData);
-	sampleLabel.setFont (newSampleFont);
 	if (sampleFont != null) sampleFont.dispose ();
-	sampleFont = newSampleFont;
+	sampleFont = new Font (shell.getDisplay (), selectionFontData);
+	fontData = sampleFont.getFontData () [0];
+	sampleLabel.setFont (sampleFont);
+}
+
+void updateSampleColor() {
+	if (rgb == null) {
+		rgb = new RGB(0, 0, 0);
+	}
+	if (sampleColor != null) {
+		if (sampleColor.getRGB ().equals (rgb)) return;
+		sampleColor.dispose();
+	}
+	sampleColor = new Color (getParent ().getDisplay (), rgb);
+	sampleLabel.setForeground (sampleColor);
 }
 }
