@@ -1507,9 +1507,9 @@ boolean setKeyState (Event event, int type, int theEvent) {
 				if (result <= 0x7f) {
 					event.keyCode = result & 0x7f;
 				} else {
+					int [] encoding = new int [1];
 					short keyScript = (short) OS.GetScriptManagerVariable ((short) OS.smKeyScript);
 					short regionCode = (short) OS.GetScriptManagerVariable ((short) OS.smRegionCode);
-					int [] encoding = new int [1];
 					if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, regionCode, null, encoding) == OS.paramErr) {
 						if (OS.UpgradeScriptInfoToTextEncoding (keyScript, (short) OS.kTextLanguageDontCare, (short) OS.kTextRegionDontCare, null, encoding) == OS.paramErr) {
 							encoding [0] = OS.kTextEncodingMacRoman;
