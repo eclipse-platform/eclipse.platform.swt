@@ -46,11 +46,11 @@ public class Browser extends Composite {
 	TitleListener[] titleListeners = new TitleListener[0];
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 	
-	/* Objective-C WebView delegate */
-	static int Delegate;
-	
 	static Callback Callback3, Callback7;
 
+	/* Objective-C WebView delegate */
+	int delegate;
+	
 	/* Carbon HIView handle */
 	int webViewHandle;
 	
@@ -118,6 +118,8 @@ public Browser(Composite parent, int style) {
 		dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);		
 	}
+	getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), this});
+	
 	/*
 	* Bug in Safari. The WebView must be added after the top window is visible
 	* or it eats mouse events from the top window. A second issue is that the WebView 
@@ -175,7 +177,8 @@ public Browser(Composite parent, int style) {
 					} while (c != shell);
 
 					e.display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), null});
-					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver_name_object, Delegate, 0, webView);
+					WebKit.objc_msgSend(notificationCenter, WebKit.S_removeObserver_name_object, delegate, 0, webView);
+					WebKit.objc_msgSend(delegate, WebKit.S_release);
 					break;
 				}
 				case SWT.Hide: {
@@ -295,31 +298,28 @@ public Browser(Composite parent, int style) {
 		int controlTarget = OS.GetControlEventTarget(webViewHandle);
 		OS.InstallEventHandler(controlTarget, Callback3.getAddress(), keyboardMask.length / 2, keyboardMask, webViewHandle, null);
 	}
-	getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new Integer(webViewHandle), this});
-
 	
-	if (Callback7 == null) {
-		Callback7 = new Callback(this.getClass(), "eventProc7", 7); //$NON-NLS-1$
-		int eventProc = Callback7.getAddress();
-		// Delegate = [[WebResourceLoadDelegate alloc] init eventProc];
-		Delegate = WebKit.objc_msgSend(WebKit.C_WebKitDelegate, WebKit.S_alloc);
-		Delegate = WebKit.objc_msgSend(Delegate, WebKit.S_initWithProc, eventProc, webViewHandle);
-	}
+	if (Callback7 == null) Callback7 = new Callback(this.getClass(), "eventProc7", 7); //$NON-NLS-1$
+	
+	int eventProc = Callback7.getAddress();
+	// delegate = [[WebResourceLoadDelegate alloc] init eventProc];
+	delegate = WebKit.objc_msgSend(WebKit.C_WebKitDelegate, WebKit.S_alloc);
+	delegate = WebKit.objc_msgSend(delegate, WebKit.S_initWithProc, eventProc, webViewHandle);
 				
 	// [webView setFrameLoadDelegate:delegate];
-	WebKit.objc_msgSend(webView, WebKit.S_setFrameLoadDelegate, Delegate);
+	WebKit.objc_msgSend(webView, WebKit.S_setFrameLoadDelegate, delegate);
 		
 	// [webView setResourceLoadDelegate:delegate];
-	WebKit.objc_msgSend(webView, WebKit.S_setResourceLoadDelegate, Delegate);
+	WebKit.objc_msgSend(webView, WebKit.S_setResourceLoadDelegate, delegate);
 
 	// [webView setUIDelegate:delegate];
-	WebKit.objc_msgSend(webView, WebKit.S_setUIDelegate, Delegate);
+	WebKit.objc_msgSend(webView, WebKit.S_setUIDelegate, delegate);
 	
 	/* register delegate for all notifications send out from webview */
-	WebKit.objc_msgSend(notificationCenter, WebKit.S_addObserver_selector_name_object, Delegate, WebKit.S_handleNotification, 0, webView);
+	WebKit.objc_msgSend(notificationCenter, WebKit.S_addObserver_selector_name_object, delegate, WebKit.S_handleNotification, 0, webView);
 	
 	// [webView setPolicyDelegate:delegate];
-	WebKit.objc_msgSend(webView, WebKit.S_setPolicyDelegate, Delegate);
+	WebKit.objc_msgSend(webView, WebKit.S_setPolicyDelegate, delegate);
 }
 
 static int eventProc3(int nextHandler, int theEvent, int userData) {
