@@ -10,6 +10,7 @@
  */
 #include "swt.h"
 #include "callback.h"
+#include <string.h>
 
 /* --------------- callback globals ----------------- */
 
