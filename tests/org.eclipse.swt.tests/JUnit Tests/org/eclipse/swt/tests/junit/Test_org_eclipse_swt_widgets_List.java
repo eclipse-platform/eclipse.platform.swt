@@ -1441,97 +1441,196 @@ public void test_setItems$Ljava_lang_String() {
 }
 
 public void test_setSelection$I() {
-	int number = 5;
+	int number = 8;
 	for (int i = 0; i < number; i++)
 		list.add("fred" + i);
 
-	int[] ind = { 1 };
-	list.setSelection(ind);
-	assertEquals(list.getSelectionIndices(), new int[] { 1 });
-
-	String[][] cases = { { "" }, {
-			"", "" }, {
-			"text1", "text2" }
-	};
-	int[] items = { 0 };
-	for (int i = 0; i < cases.length; i++) {
-		list.setItems(cases[i]);
-		list.setSelection(items);
-		assertEquals(
-			"case: " + String.valueOf(i),
-			list.getSelection(), new String[] { cases[i][0] });
-	}
-
-	String[] items2 = { "item0", "item1", "item2", "item3" };
-	list.setItems(items2);
-
-	list.setSelection(new int[] { 0, 2 });
-	assertSame("{0, 2}", list.getSelectionIndices(), new int[] { 0, 2 });
-
-	list.setSelection(new int[] { 1, 3 });
-	assertSame("{1, 3}", list.getSelectionIndices(), new int[] { 1, 3 });
-
-	list.setSelection(new int[] { 0, 1, 2, 3 });
-	assertSame(
-		"{0, 1, 2, 3}",
-		list.getSelectionIndices(), new int[] { 0, 1, 2, 3 });
-
-	list.setSelection(new int[] { 1 });
-	assertEquals("{1}", list.getSelectionIndices(), new int[] { 1 });
-
-	ind = new int[] { -1, 0, 1, 2, 3 };
-	list.setSelection(ind);
-	assertSame(
-		"setSelection(" + ind + "):",
-		list.getSelectionIndices(), new int[] { 0, 1, 2, 3 });
-
-	
-	setSingleList();
-	for (int i = 0; i < number; i++)
-		list.add("fred" + i);
-
-	ind = new int[]{ -1, 0, 1, 2, 3 };
-	list.setSelection(ind);
-	assertEquals(list.getSelectionIndices(), new int[] { 0 });
-
-	
-	ind = new int[32];
-	for (int i = 0; i < ind.length; i++)
-		ind[i] = i;
-
-	list.setSelection(ind);
-	assertEquals(list.getSelectionIndices(), new int[] { 0 });
-
-	
-	ind = new int[]{ 1 };
-	list.setSelection(ind);
-	assertEquals(list.getSelectionIndices(), new int[] { 1 });
-
-	
-	list.deselectAll();
-	assertEquals(0, list.getSelectionCount());
-	
-	ind = new int[]{ -1 };
-	list.setSelection(ind);
-	assertEquals(list.getSelectionIndices(), new int[] {});
-
-	
-	list.setSelection(new int[] { 0, 2 });
-	assertEquals(list.getSelectionIndices(), new int[] { 0 });
-
-	list.setSelection(new int[] { 1, 3 });
-	assertEquals(list.getSelectionIndices(), new int[] { 1 });
-
-	list.setSelection(new int[] { 0, 1, 2, 3 });
-	assertEquals(list.getSelectionIndices(), new int[] { 0 });
-
-	list.setSelection(new int[] { 1 });
-	assertEquals(list.getSelectionIndices(), new int[] { 1 });
+	list.setSelection(new int [0]);
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
 
 	try {
 		list.setSelection((int[]) null);
 		fail("No exception thrown");
 	} catch (IllegalArgumentException e) {
+	}
+	
+	list.setSelection(new int [] {2});
+	assertEquals(list.getSelectionIndices(), new int[] {2});
+	assertEquals(list.getFocusIndex(), 2);
+
+	list.setSelection(new int [] {number});
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 2);
+	
+	list.setSelection(new int [] {1, 0});
+	assertEquals(list.getSelectionIndices(), new int[] {0, 1});
+	assertEquals(list.getFocusIndex(), 1);
+
+	list.setSelection(new int [] {-1, number});
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 1);
+	
+	list.setSelection(new int [] {number - 1, number});
+	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
+	assertEquals(list.getFocusIndex(), number - 1);
+
+	list.setSelection(new int [] {-1, 0});
+	assertEquals(list.getSelectionIndices(), new int[] {0});
+	assertEquals(list.getFocusIndex(), number - 1);
+	
+	int[] indices = new int [number];
+	for (int i = 0; i < number; i++) {
+		indices[i] = i;
+	}
+	list.setSelection(indices);
+	assertEquals(list.getSelectionIndices(), indices);
+	assertEquals(list.getFocusIndex(), indices[0]);
+	
+	list.setSelection(new int [] {number, number});
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
+	
+	list.setSelection(new int [] {number - 1, number - 1});
+	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
+	assertEquals(list.getFocusIndex(), number - 1);
+	
+	list.setSelection(new int [] {0, number, 1});
+	assertEquals(list.getSelectionIndices(), new int[] {0, 1});
+	assertEquals(list.getFocusIndex(), 0);
+	
+	list.setSelection(new int [] {number - 1, 0, number - 2});
+	assertEquals(list.getSelectionIndices(), new int[] {0, number - 2, number - 1});
+	assertEquals(list.getFocusIndex(), number - 1);
+	
+	if (fCheckSWTPolicy) {
+		list.removeAll();
+		
+		list.setSelection(new int [0]);
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+
+		try {
+			list.setSelection((int[]) null);
+			fail("No exception thrown");
+		} catch (IllegalArgumentException e) {
+		}
+		
+		list.setSelection(new int [] {0});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+
+		list.setSelection(new int [] {-1});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+
+		list.setSelection(new int [] {0, 0});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+		
+		list.setSelection(new int [] {-1, 0});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+		
+		list.setSelection(new int [] {0, -1});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+	}
+	
+	setSingleList();
+	for (int i = 0; i < number; i++)
+		list.add("fred" + i);
+
+	list.setSelection(new int [0]);
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
+
+	try {
+		list.setSelection((int[]) null);
+		fail("No exception thrown");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	list.setSelection(new int [] {2});
+	assertEquals(list.getSelectionIndices(), new int[] {2});
+	assertEquals(list.getFocusIndex(), 2);
+
+	list.setSelection(new int [] {number});
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 2);
+	
+	list.setSelection(new int [] {1, 0});
+	assertEquals(list.getSelectionIndices(), new int[] {1});
+	assertEquals(list.getFocusIndex(), 1);
+
+	list.setSelection(new int [] {-1, number});
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 1);
+	
+	list.setSelection(new int [] {number - 1, number});
+	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
+	assertEquals(list.getFocusIndex(), number - 1);
+
+	list.setSelection(new int [] {-1, 0});
+	assertEquals(list.getSelectionIndices(), new int[] {0});
+	assertEquals(list.getFocusIndex(), 0);
+	
+	indices = new int [number];
+	for (int i = 0; i < number; i++) {
+		indices[i] = i;
+	}
+	list.setSelection(indices);
+	assertEquals(list.getSelectionIndices(), new int[] {indices[0]});
+	assertEquals(list.getFocusIndex(), indices[0]);
+	
+	list.setSelection(new int [] {number, number});
+	assertEquals(list.getSelectionIndices(), new int[0]);
+	assertEquals(list.getFocusIndex(), 0);
+	
+	list.setSelection(new int [] {number - 1, number - 1});
+	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
+	assertEquals(list.getFocusIndex(), number - 1);
+	
+	list.setSelection(new int [] {0, number, 1});
+	assertEquals(list.getSelectionIndices(), new int[] {0});
+	assertEquals(list.getFocusIndex(), 0);
+	
+	list.setSelection(new int [] {number - 1, 0, number - 2});
+	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
+	assertEquals(list.getFocusIndex(), number - 1);
+	
+	if (fCheckSWTPolicy) {
+		list.removeAll();
+		
+		list.setSelection(new int [0]);
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+
+		try {
+			list.setSelection((int[]) null);
+			fail("No exception thrown");
+		} catch (IllegalArgumentException e) {
+		}
+		
+		list.setSelection(new int [] {0});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+
+		list.setSelection(new int [] {-1});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+
+		list.setSelection(new int [] {0, 0});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+		
+		list.setSelection(new int [] {-1, 0});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
+		
+		list.setSelection(new int [] {0, -1});
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
 	}
 }
 
@@ -1604,30 +1703,38 @@ public void test_setSelectionI() {
 	list.setSelection(2);
 	assertEquals(list.getSelectionIndices(), new int[] {2});
 	assertEquals(list.getFocusIndex(), 2);
+	
 	list.setSelection(-5);
 	assertEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), 2);
+	
 	list.setSelection(0);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(number);
 	assertEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(number - 1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
+	
 	list.setSelection(-1);
 	assertEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), number - 1);
 	
 	if (fCheckSWTPolicy) {
 		list.removeAll();
+	
 		list.setSelection(-2);
 		assertEquals(list.getSelectionIndices(), new int[0]);
 		assertEquals(list.getFocusIndex(), -1);
+		
 		list.setSelection(0);
 		assertEquals(list.getSelectionIndices(), new int[0]);
 		assertEquals(list.getFocusIndex(), -1);
+		
 		list.setSelection(-1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
 		assertEquals(list.getFocusIndex(), -1);
@@ -1642,30 +1749,38 @@ public void test_setSelectionI() {
 	list.setSelection(2);
 	assertEquals(list.getSelectionIndices(), new int[] {2});
 	assertEquals(list.getFocusIndex(), 2);
+	
 	list.setSelection(-5);
 	assertEquals(list.getSelectionIndices(), new int[] {2});
 	assertEquals(list.getFocusIndex(), 2);
+	
 	list.setSelection(0);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(number);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(number - 1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
+	
 	list.setSelection(-1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
 	
 	if (fCheckSWTPolicy) {
 		list.removeAll();
+	
 		list.setSelection(0);
 		assertEquals(list.getSelectionIndices(), new int[0]);
 		assertEquals(list.getFocusIndex(), -1);
+		
 		list.setSelection(-1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
 		assertEquals(list.getFocusIndex(), -1);
+		
 		list.setSelection(-2);
 		assertEquals(list.getSelectionIndices(), new int[0]);
 		assertEquals(list.getFocusIndex(), -1);
@@ -1679,60 +1794,77 @@ public void test_setSelectionII() {
 		items[i] = "fred" + i;
 
 	list.setItems(items);
+	
 	list.setSelection(1, 2);
 	assertEquals(list.getSelectionIndices(), new int[] {1, 2});
 	assertEquals(list.getFocusIndex(), 1);
+	
 	list.setSelection(-3, -2);
 	assertEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), 1);
+	
 	list.setSelection(0, 1);
 	assertEquals(list.getSelectionIndices(), new int[] {0, 1});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(-2, -1);
 	assertEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(number - 2, number - 1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 2, number - 1});
 	assertEquals(list.getFocusIndex(), number - 2);
+	
 	list.setSelection(number - 1, number);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
+	
 	list.setSelection(-1, 0);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(number, number + 1);
 	assertEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(0, 0);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(2, 1);
 	assertEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(number - 1, number - 1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
+	
 	list.setSelection(-1, -1);
 	assertEquals(list.getSelectionIndices(), new int[0]);
 	assertEquals(list.getFocusIndex(), number - 1);
 
 	if (fCheckSWTPolicy) {
 		list.removeAll();
+
 		list.setSelection(-2, -1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
-		list.setSelection(0, 1);
-		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
+		assertEquals(list.getFocusIndex(), 0);
+		
 		list.setSelection(-1, 0);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
-		list.setSelection(0, -1);
+		assertEquals(list.getFocusIndex(), 0);
+		
+		list.setSelection(0, 1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
+		assertEquals(list.getFocusIndex(), 0);
+		
 		list.setSelection(1, 0);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
+		assertEquals(list.getFocusIndex(), 0);
+		
+		list.setSelection(0, -1);
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), 0);
 	}
 	
 	setSingleList();
@@ -1741,57 +1873,73 @@ public void test_setSelectionII() {
 	list.setSelection(1, 2);
 	assertEquals(list.getSelectionIndices(), new int[] {2});
 	assertEquals(list.getFocusIndex(), 2);
+	
 	list.setSelection(-3, -2);
 	assertEquals(list.getSelectionIndices(), new int[] {2});
 	assertEquals(list.getFocusIndex(), 2);
+	
 	list.setSelection(0, 1);
 	assertEquals(list.getSelectionIndices(), new int[] {1});
 	assertEquals(list.getFocusIndex(), 1);
+	
 	list.setSelection(-2, -1);
 	assertEquals(list.getSelectionIndices(), new int[] {1});
 	assertEquals(list.getFocusIndex(), 1);
+	
 	list.setSelection(number - 2, number - 1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
+	
 	list.setSelection(number - 1, number);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
+	
 	list.setSelection(-1, 0);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(number, number + 1);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(0, 0);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(2, 1);
 	assertEquals(list.getSelectionIndices(), new int[] {0});
 	assertEquals(list.getFocusIndex(), 0);
+	
 	list.setSelection(number - 1, number - 1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
+	
 	list.setSelection(-1, -1);
 	assertEquals(list.getSelectionIndices(), new int[] {number - 1});
 	assertEquals(list.getFocusIndex(), number - 1);
 
 	if (fCheckSWTPolicy) {
 		list.removeAll();
+
 		list.setSelection(-2, -1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
-		list.setSelection(0, 1);
-		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
+		assertEquals(list.getFocusIndex(), 0);
+		
 		list.setSelection(-1, 0);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
-		list.setSelection(0, -1);
+		assertEquals(list.getFocusIndex(), 0);
+		
+		list.setSelection(0, 1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
+		assertEquals(list.getFocusIndex(), 0);
+		
 		list.setSelection(1, 0);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), -1);
+		assertEquals(list.getFocusIndex(), 0);
+		
+		list.setSelection(0, -1);
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), 0);
 	}
 }
 
