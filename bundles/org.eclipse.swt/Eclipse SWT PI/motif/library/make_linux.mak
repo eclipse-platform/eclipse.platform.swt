@@ -21,8 +21,10 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 #    QT_HOME    - identifier namespace package (used by KDE)
 JAVA_HOME   = /bluebird/teamswt/swt-builddir/IBMJava2-141
 MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
-QT_HOME    = /usr/lib/qt-3.1 # Redhat 9
-#QT_HOME    = /usr/lib/qt3 # SuSE 8.2
+# Redhat 9
+QT_HOME    = /usr/lib/qt-3.1
+# SuSE 8.2
+#QT_HOME    = /usr/lib/qt3
 
 # Define the various DLL (shared) libraries to be made.
 
