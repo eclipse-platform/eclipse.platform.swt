@@ -254,7 +254,7 @@ public CTabFolder(Composite parent, int style) {
 	borderTop = onBottom ? borderLeft : 0;
 	borderBottom = onBottom ? 0 : borderLeft;
 	highlight_header = (style & SWT.FLAT) != 0 ? 1 : 3;
-	highlight_margin = (style & SWT.FLAT) != 0 ? 0 : 1;
+	highlight_margin = (style & SWT.FLAT) != 0 ? 0 : 2;
 	//set up default colors
 	Display display = getDisplay();
 	selectionForeground = display.getSystemColor(SELECTION_FOREGROUND);
