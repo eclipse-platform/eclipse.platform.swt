@@ -110,21 +110,23 @@ public void removeSelectionListener(SelectionListener listener) {
 public void setIncrement (int value) {
 	checkWidget();
 	if (value < 1) return;
-	increment= value;
+	increment = value;
 }
 
 public void setMaximum (int value) {
 	checkWidget();
-	if (value < 0) return;
-	if (OS.GetControl32BitValue(handle) > value) OS.SetControl32BitValue(handle, value);
-	OS.SetControl32BitMaximum(handle, value);
+	int minimum = OS.GetControl32BitMinimum (handle);
+	if (0 <= minimum && minimum < value) {
+		OS.SetControl32BitMaximum (handle, value);
+	}
 }
 
 public void setMinimum (int value) {
 	checkWidget();
-	if (value < 0) return;
-	if (OS.GetControl32BitValue (handle) < value) OS.SetControl32BitValue(handle, value);
-	OS.SetControl32BitMinimum (handle, value);
+	int maximum = OS.GetControl32BitMaximum (handle);
+	if (0 <= maximum && maximum < value) {
+		OS.SetControl32BitMinimum (handle, value);
+	}
 }
 
 public void setPageIncrement (int value) {
