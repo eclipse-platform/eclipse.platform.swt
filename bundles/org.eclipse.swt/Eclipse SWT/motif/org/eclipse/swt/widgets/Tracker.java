@@ -233,6 +233,7 @@ public boolean open () {
 	int [] newX = new int [1], newY = new int [1], oldX = new int [1], oldY = new int [1];
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, unused);
+	// Tracker behaves like a Dialog with its own OS event loop.
 	while (tracking) {
 		if (parent != null && parent.isDisposed ()) break;
 		OS.XtAppNextEvent (xtContext,  xEvent);
@@ -267,6 +268,7 @@ public boolean open () {
 				}
 				break;
 		}
+		OS.XtDispatchEvent (xEvent);
 	}
 	drawRectangles ();
 	tracking = false;
