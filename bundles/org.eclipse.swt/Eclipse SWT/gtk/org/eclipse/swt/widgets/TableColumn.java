@@ -32,9 +32,9 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class TableColumn extends Item {
-	int boxHandle, labelHandle, imageHandle;
+	int boxHandle, labelHandle, imageHandle, buttonHandle;
 	Table parent;
-	int modelIndex, lastButton, lastTime;
+	int modelIndex, lastButton, lastTime, lastX, lastWidth;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -186,6 +186,7 @@ void createWidget (int index) {
 void deregister() {
 	super.deregister ();
 	display.removeWidget (handle);
+	if (buttonHandle != 0) display.removeWidget (buttonHandle);
 }
 
 /**
@@ -285,9 +286,25 @@ int gtk_clicked (int widget) {
 	return 0;
 }
 
+int gtk_size_allocate (int widget, int allocation) {
+	boolean mapped = OS.GTK_WIDGET_MAPPED (widget); 
+	int x = OS.GTK_WIDGET_X (widget);
+	int width = OS.GTK_WIDGET_WIDTH (widget);
+	if (width != lastWidth) {
+		lastWidth = width;
+		if (mapped) sendEvent (SWT.Resize);
+	}
+	if (x != lastX) {
+		lastX = x;
+		if (mapped) sendEvent (SWT.Move);
+	}
+	return 0;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	OS.g_signal_connect (handle, OS.clicked, display.windowProc2, CLICKED);
+	if (buttonHandle != 0) OS.g_signal_connect (buttonHandle, OS.size_allocate, display.windowProc3, SIZE_ALLOCATE);
 }
 
 /**
@@ -316,6 +333,7 @@ public void pack () {
 void register () {
 	super.register ();
 	display.addWidget (handle, this);
+	if (buttonHandle != 0) display.addWidget (buttonHandle, this);
 }
 
 void releaseChild () {
@@ -421,10 +439,9 @@ public void setImage (Image image) {
 	* of its internal children if its bounds is set before the image is set.  The fix is to
 	* force this by calling gtk_widget_size_request() (and throw the results away).
 	*/
-	int parentHandle = OS.gtk_widget_get_parent (boxHandle);
-	if (parentHandle != 0) {
+	if (buttonHandle != 0) {
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (parentHandle, requisition);
+		OS.gtk_widget_size_request (buttonHandle, requisition);
 	}
 }
 
@@ -463,10 +480,9 @@ public void setText (String string) {
 	* of its internal children if its bounds is set before the text is set.  The fix is to 
 	* force this by calling gtk_widget_size_request() (and throw the results away).
 	*/
-	int parentHandle = OS.gtk_widget_get_parent (boxHandle);
-	if (parentHandle != 0) {
+	if (buttonHandle != 0) {
 		GtkRequisition requisition = new GtkRequisition ();
-		OS.gtk_widget_size_request (parentHandle, requisition);
+		OS.gtk_widget_size_request (buttonHandle, requisition);
 	}
 }
 
