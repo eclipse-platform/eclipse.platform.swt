@@ -238,7 +238,7 @@ public void setText (String string) {
 	}
 	byte [] buffer = Converter.wcsToMbcs (null, text);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-	if (string.length () != 0) {
+	if (length != 0) {
 		OS.gtk_widget_show (labelHandle);
 	} else {
 		OS.gtk_widget_hide (labelHandle);
