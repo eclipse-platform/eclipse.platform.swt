@@ -65,14 +65,12 @@ void readNextBlockHeader() {
 	if (compressionType > 2) stream.error();	
 	
 	if (compressionType == UNCOMPRESSED) {
-		int length =
-			(stream.getNextIdatByte() & 0xFF) |
-			((stream.getNextIdatByte() & 0xFF) << 8);
-		int testValue =
-			(stream.getNextIdatByte() & 0xFF) |
-			((stream.getNextIdatByte() & 0xFF) << 8);
-		if (length != ~testValue) stream.error();
-		uncompressedBytesRemaining = length;
+		byte b1 = stream.getNextIdatByte();
+		byte b2 = stream.getNextIdatByte();
+		byte b3 = stream.getNextIdatByte();
+		byte b4 = stream.getNextIdatByte();
+		if (b1 != ~b3 || b2 != ~b4) stream.error();
+		uncompressedBytesRemaining = (b1 & 0xFF) | ((b2 & 0xFF) << 8);
 	} else if (compressionType == COMPRESSED_DYNAMIC) {
 		huffmanTables = PngHuffmanTables.getDynamicTables(stream);
 	} else {
