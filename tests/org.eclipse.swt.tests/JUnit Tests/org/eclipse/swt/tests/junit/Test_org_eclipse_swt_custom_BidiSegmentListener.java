@@ -14,6 +14,7 @@ import org.eclipse.swt.custom.BidiSegmentListener;
 import org.eclipse.swt.custom.StyleRange;
 import org.eclipse.swt.custom.StyledText;
 import org.eclipse.swt.widgets.Shell;
+import org.eclipse.swt.internal.BidiUtil;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.custom.BidiSegmentListener
@@ -34,11 +35,7 @@ public Test_org_eclipse_swt_custom_BidiSegmentListener(String name) {
 }
 
 private boolean isBidi() {
-	String codePage = System.getProperty("file.encoding").toUpperCase();
-	boolean isWindows = System.getProperty("os.name").startsWith("Windows");
-	
-	// Running on Windows and with Hebrew or Arabic codepage?
-	return isWindows && ("CP1255".equals(codePage) || "CP1256".equals(codePage));
+	return BidiUtil.isBidiPlatform();
 }
 protected void setUp() {
 	shell = new Shell();
