@@ -371,7 +371,6 @@ void createHandle (int index) {
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (parent != null) OS.gtk_window_set_transient_for (shellHandle, parent.topHandle ());
 	OS.gtk_window_set_policy (shellHandle, 1, 1, 0);
-	OS.gtk_window_set_title (shellHandle, new byte [1]);
 	createScrolledHandle (shellHandle);
 	/*
 	* High level GTK helpers, like gtk_window_set_decorated, simply
@@ -400,6 +399,7 @@ void createHandle (int index) {
 			if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
 		}
 		OS.gdk_window_set_decorations (window, decorations);
+		OS.gtk_window_set_title (shellHandle, new byte [1]);
 	}
 	boolean modal = (style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
 	OS.gtk_window_set_modal (shellHandle, modal);
