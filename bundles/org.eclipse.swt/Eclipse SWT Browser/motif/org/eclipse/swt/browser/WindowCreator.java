@@ -90,6 +90,7 @@ int Release() {
 /* nsIWindowCreator */
 
 int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
+	if (parent == 0) return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	nsIWebBrowserChrome browserChromeParent = new nsIWebBrowserChrome(parent);
 	int[] aWebBrowser = new int[1];
 	int rc = browserChromeParent.GetWebBrowser(aWebBrowser);
