@@ -11,6 +11,7 @@
 package org.eclipse.swt.tests.junit;
 
 
+import java.io.*;
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
@@ -69,7 +70,33 @@ public void test_getMessage() {
 }
 
 public void test_printStackTrace() {
-	warnUnimpl("Test test_printStackTrace not written");
+	
+	// WARNING: this test is not CLDC safe, because it requires java.io.PrintStream
+	
+	try {
+		Class.forName("java.io.PrintStream");
+	} catch (ClassNotFoundException e) {
+		// ignore test if running on CLDC
+		return;
+	}
+	
+	// test default SWTException
+	
+	ByteArrayOutputStream out = new ByteArrayOutputStream();
+	System.setErr(new PrintStream(out));
+	SWTException error = new SWTException();
+	error.printStackTrace();
+	assertTrue(out.size() > 0);
+	assertTrue(new String(out.toByteArray()).indexOf("test_printStackTrace") != -1);
+	
+	// test SWTException with code
+	
+	out = new ByteArrayOutputStream();
+	System.setErr(new PrintStream(out));
+	error = new SWTException(SWT.ERROR_INVALID_ARGUMENT);
+	error.printStackTrace();
+	assertTrue(out.size() > 0);
+	assertTrue(new String(out.toByteArray()).indexOf("test_printStackTrace") != -1);
 }
 
 public static Test suite() {

@@ -15,6 +15,7 @@ import junit.textui.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -45,23 +46,130 @@ protected void tearDown() {
 	shell.dispose();
 }
 public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
-	// tested in setup
+	try {
+		GC gc = new GC(null);
+		gc.dispose();
+		fail("No exception thrown for drawable == null");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
+	}
+
+	try {
+		Image image = new Image(display, 10, 10);
+		GC gc1 = new GC(image);
+		GC gc2 = new GC(image);
+		gc1.dispose();
+		gc2.dispose();
+		image.dispose();
+		fail("No exception thrown for more than one GC on one image");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
+
+	try {
+		Printer printer = new Printer();
+		GC gc1 = new GC(printer);
+		GC gc2 = new GC(printer);
+		gc1.dispose();
+		gc2.dispose();
+		printer.dispose();
+		fail("No exception thrown for more than one GC on one printer");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
+	try {
+		GC gc = new GC(null, SWT.LEFT_TO_RIGHT);
+		gc.dispose();
+		fail("No exception thrown for drawable == null");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for drawable == null", SWT.ERROR_NULL_ARGUMENT, e);
+	}
+
+	try {
+		Image image = new Image(display, 10, 10);
+		GC gc1 = new GC(image, SWT.RIGHT_TO_LEFT);
+		GC gc2 = new GC(image, SWT.LEFT_TO_RIGHT);
+		gc1.dispose();
+		gc2.dispose();
+		image.dispose();
+		fail("No exception thrown for more than one GC on one image");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for more than one GC on one image", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
+
+	try {
+		Printer printer = new Printer();
+		GC gc1 = new GC(printer, SWT.RIGHT_TO_LEFT);
+		GC gc2 = new GC(printer, SWT.LEFT_TO_RIGHT);
+		gc1.dispose();
+		gc2.dispose();
+		printer.dispose();
+		fail("No exception thrown for more than one GC on one printer");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Incorrect exception thrown for more than one GC on one printer", SWT.ERROR_INVALID_ARGUMENT, e);
+	}
+
 	Canvas canvas = new Canvas(shell, SWT.NULL);
 	GC testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
 	testGC.dispose();
-	testGC = new GC(canvas, SWT.RIGHT_TO_LEFT);
+	testGC = new GC(canvas, SWT.LEFT_TO_RIGHT);
 	testGC.dispose();
 }
 
 public void test_copyAreaIIIIII() {
-	warnUnimpl("Test test_copyAreaIIIIII not written");
+	Color white = display.getSystemColor(SWT.COLOR_WHITE);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	int width = 20;
+	int height = 20;
+	int destX = 10;
+	int destY = 50;
+
+	gc.setBackground(white);
+	gc.setForeground(white);
+	gc.fillRectangle(shell.getClientArea());
+	gc.setForeground(blue);
+	gc.drawLine(5, 0, 10, 0);
+	gc.copyArea(0, 0, width, height, destX, destY);
+
+	Image image = new Image(display, 100, 100);
+	gc.copyArea(image, 0, 0);
+
+	ImageData imageData = image.getImageData();
+	PaletteData palette = imageData.palette; 
+	int pixel = imageData.getPixel(destX + 4, destY);
+	assertEquals(":a:", white.getRGB(), palette.getRGB(pixel));
+	pixel = imageData.getPixel(destX + 5, destY);
+	assertEquals(":b:", blue.getRGB(), palette.getRGB(pixel));	
+	pixel = imageData.getPixel(destX + 10, destY);
+	assertEquals(":c:", blue.getRGB(), palette.getRGB(pixel));	
+	pixel = imageData.getPixel(destX + 11, destY);
+	assertEquals(":d:", white.getRGB(), palette.getRGB(pixel));
 }
 
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
-	warnUnimpl("Test test_copyAreaLorg_eclipse_swt_graphics_ImageII not written");
+	Color white = display.getSystemColor(SWT.COLOR_WHITE);
+	Color blue = display.getSystemColor(SWT.COLOR_BLUE);
+	
+	gc.setBackground(white);
+	gc.setForeground(white);
+	gc.fillRectangle(shell.getClientArea());
+	gc.setForeground(blue);
+	gc.drawLine(5, 0, 10, 0);
+	Image image = new Image(display, 12, 12);
+	gc.copyArea(image, 0, 0);
+	ImageData imageData = image.getImageData();
+	PaletteData palette = imageData.palette; 
+	int pixel = imageData.getPixel(4, 0);
+	assertEquals(":a:", white.getRGB(), palette.getRGB(pixel));
+	pixel = imageData.getPixel(5, 0);
+	assertEquals(":b:", blue.getRGB(), palette.getRGB(pixel));
+	pixel = imageData.getPixel(10, 0);
+	assertEquals(":c:", blue.getRGB(), palette.getRGB(pixel));	
+	pixel = imageData.getPixel(11, 0);
+	assertEquals(":d:", white.getRGB(), palette.getRGB(pixel));
 }
 
 public void test_dispose() {

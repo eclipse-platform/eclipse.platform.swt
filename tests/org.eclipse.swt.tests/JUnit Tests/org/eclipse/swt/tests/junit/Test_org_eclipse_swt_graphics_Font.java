@@ -42,7 +42,78 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_graphics_FontData not written");
+	
+	// null  device argument
+	
+	boolean exceptionThrown = false;
+	try {
+		FontData[] data = new FontData[1];
+		Font font = new Font(null,data);
+		font.dispose();
+	} catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	} 
+	assertTrue(exceptionThrown);
+	
+	// null data argument
+	
+	exceptionThrown = false;
+	try {
+		FontData[] data = null;
+		Font font = new Font(display,data);
+		font.dispose();
+	} catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	} 
+	assertTrue(exceptionThrown);
+
+	// zero length data array
+	
+	exceptionThrown = false;
+	try {
+		FontData[] data = new FontData[0];
+		Font font = new Font(display,data);
+		font.dispose();
+	} catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	} 
+	assertTrue(exceptionThrown);
+	
+	// null data element
+	
+	exceptionThrown = false;
+	try {
+		FontData[] data = {
+			null,
+			new FontData()
+		};
+		Font font = new Font(display,data);
+		font.dispose();
+	} catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	} 
+	assertTrue("null data element 0",exceptionThrown);
+
+	exceptionThrown = false;
+	try {
+		FontData[] data = {
+			new FontData(),
+			null
+		};
+		Font font = new Font(display,data);
+		font.dispose();
+	} catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	} 
+	assertTrue("null data element 1",exceptionThrown);
+	
+	// test that FontData is set correctly
+	
+	FontData data = new FontData();
+	Font font = new Font(display,data);
+	FontData[] returnedData = font.getFontData();
+	assertEquals(data,returnedData[0]);
+	font.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData() {
@@ -166,7 +237,10 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 }
 
 public void test_dispose() {
-	warnUnimpl("Test test_dispose not written");
+	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	assertFalse(font.isDisposed());
+	font.dispose();
+	assertTrue(font.isDisposed());
 }
 
 public void test_equalsLjava_lang_Object() {
@@ -252,7 +326,13 @@ public void test_getFontData() {
 }
 
 public void test_hashCode() {
-	warnUnimpl("Test test_hashCode not written");
+	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	assertEquals(font,font);
+	assertEquals(font.hashCode(),font.hashCode());
+	Font boldFont = new Font(display, SwtJunit.testFontName, 10, SWT.BOLD);
+	assertFalse(font.hashCode() == boldFont.hashCode());
+	boldFont.dispose();
+	font.dispose();
 }
 
 public void test_isDisposed() {
@@ -268,7 +348,11 @@ public void test_isDisposed() {
 }
 
 public void test_toString() {
-	warnUnimpl("Test test_toString not written");
+	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
+	assertNotNull(font.toString());
+	
+	font.dispose();
+	assertNotNull(font.toString());
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {

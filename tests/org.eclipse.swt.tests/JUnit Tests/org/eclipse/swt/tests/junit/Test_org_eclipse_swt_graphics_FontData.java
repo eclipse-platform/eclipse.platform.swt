@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.util.*;
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
@@ -90,7 +91,10 @@ public void test_ConstructorLjava_lang_StringII() {
 }
 
 public void test_equalsLjava_lang_Object() {
-	warnUnimpl("Test test_equalsLjava_lang_Object not written");
+	FontData fd1 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	assertEquals(fd1,fd1);
+	assertEquals(fd1,fd2);
 }
 
 public void test_getHeight() {
@@ -98,7 +102,7 @@ public void test_getHeight() {
 }
 
 public void test_getLocale() {
-	warnUnimpl("Test test_getLocale not written");
+	// FontData.getLocale() tested in test_setLocaleLjava_lang_String
 }
 
 public void test_getName() {
@@ -110,7 +114,12 @@ public void test_getStyle() {
 }
 
 public void test_hashCode() {
-	warnUnimpl("Test test_hashCode not written");
+	FontData fd1 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	assertEquals(fd1,fd2);
+	assertEquals(fd1.hashCode(),fd2.hashCode());
+	FontData fd3 = new FontData(SwtJunit.testFontName, 10, SWT.BOLD);
+	assertFalse(fd1.hashCode() == fd3.hashCode());
 }
 
 public void test_setHeightI() {
@@ -145,7 +154,10 @@ public void test_setHeightI() {
 }
 
 public void test_setLocaleLjava_lang_String() {
-	warnUnimpl("Test test_setLocaleLjava_lang_String not written");
+	FontData fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+	Locale locale = Locale.ENGLISH;
+	fd.setLocale(locale.toString());
+	assertEquals(Locale.ENGLISH.toString(),fd.getLocale());
 }
 
 public void test_setNameLjava_lang_String() {

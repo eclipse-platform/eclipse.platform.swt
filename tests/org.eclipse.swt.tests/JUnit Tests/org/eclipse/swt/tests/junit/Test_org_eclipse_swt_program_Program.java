@@ -11,8 +11,13 @@
 package org.eclipse.swt.tests.junit;
 
 
+import java.util.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.program.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.program.Program
@@ -21,6 +26,8 @@ import junit.textui.*;
  */
 public class Test_org_eclipse_swt_program_Program extends SwtTestCase {
 
+	private Display display;
+	
 public Test_org_eclipse_swt_program_Program(String name) {
 	super(name);
 }
@@ -30,49 +37,175 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
+	display = Display.getDefault();
 }
 
 protected void tearDown() {
 }
 
 public void test_equalsLjava_lang_Object() {
-	warnUnimpl("Test test_equalsLjava_lang_Object not written");
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (int i=0; i<extensions.length; i++) {
+			Program program = Program.findProgram(extensions[i]);
+			if (program != null) {
+				assertTrue(program.equals(program));
+			}
+		}
+	}
 }
 
 public void test_executeLjava_lang_String() {
-	warnUnimpl("Test test_executeLjava_lang_String not written");
+	
+	// This test is incomplete because a true test of execute would open
+	// an application that cannot be programmatically closed.
+	
+	try {
+		Program[] programs = Program.getPrograms();
+		if (programs != null && programs.length > 0) {
+
+			// Cannot test empty string argument because it may launch something.
+			//boolean result = programs[0].execute("");
+			//assertFalse(result);
+			
+			// test null argument
+				
+			programs[0].execute(null);
+			fail("Failed to throw ERROR_NULL_ARGUMENT");
+		}
+	} catch (IllegalArgumentException e) {
+		assertEquals("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+	} catch (Exception e) {
+		fail("Invalid Exception thrown of type "+e.getClass());
+	} catch (Error e) {
+		fail("Invalid Error thrown of type "+e.getClass());
+	}
 }
 
 public void test_findProgramLjava_lang_String() {
-	warnUnimpl("Test test_findProgramLjava_lang_String not written");
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (int i=0; i<extensions.length; i++) {
+			Program program = Program.findProgram(extensions[i]);
+			// No assertion here because a null result is allowed.
+		}
+	}
+	
+	try {
+		Program program = Program.findProgram(null);
+		fail("Failed to throw ERROR_NULL_ARGUMENT");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+	} catch (Exception e) {
+		fail("Invalid Exception thrown of type "+e.getClass());
+	} catch (Error e) {
+		fail("Invalid Error thrown of type "+e.getClass());
+	}
 }
 
 public void test_getExtensions() {
-	warnUnimpl("Test test_getExtensions not written");
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (int i=0; i<extensions.length; i++) {
+			assertNotNull(extensions[i]);
+		}
+	}
 }
 
 public void test_getImageData() {
-	warnUnimpl("Test test_getImageData not written");
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (int i=0; i<extensions.length; i++) {
+			Program program = Program.findProgram(extensions[i]);
+			if (program != null) {
+				ImageData data = program.getImageData();
+				// Nothing to do.
+			}
+		}
+	}
 }
 
 public void test_getName() {
-	warnUnimpl("Test test_getName not written");
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (int i=0; i<extensions.length; i++) {
+			Program program = Program.findProgram(extensions[i]);
+			if (program != null) {
+				String name = program.getName();
+				assertNotNull("Program has null name",name);
+			}
+		}
+	}
 }
 
 public void test_getPrograms() {
-	warnUnimpl("Test test_getPrograms not written");
+	Program[] programs = Program.getPrograms();
+	
+	// The result is not well-documented, but it should 
+	// be non-null and contain no null entries.
+	
+	assertNotNull(programs);
+	
+	Hashtable lookup = new Hashtable();
+	for (int i=0; i<programs.length; i++) {
+		
+		// test non-null entry
+		assertNotNull(programs[i]);
+		
+		// test unique hash code
+		int hashCode = programs[i].hashCode();
+		Integer key = new Integer(hashCode);
+		if (lookup.contains(key)) {
+			fail("Duplicate hash code for "+programs[i]+" (same as "+(Program)lookup.get(key)+")");
+		}
+		else {
+			lookup.put(key,programs[i]);
+		}
+	}
 }
 
 public void test_hashCode() {
-	warnUnimpl("Test test_hashCode not written");
+	// tested in test_getPrograms
 }
 
 public void test_launchLjava_lang_String() {
-	warnUnimpl("Test test_launchLjava_lang_String not written");
+
+	// This test is incomplete because a true test of launch would open
+	// an application that cannot be programmatically closed.
+	
+	// Cannot test empty string argument because it may launch something.
+	
+	// test null argument
+	
+	try {
+		Program.launch(null);
+		fail("Failed to throw ERROR_NULL_ARGUMENT");
+	} catch (IllegalArgumentException e) {
+		assertEquals("Failed to throw ERROR_NULL_ARGUMENT", SWT.ERROR_NULL_ARGUMENT, e);
+	} catch (Exception e) {
+		fail("Invalid Exception thrown of type "+e.getClass());
+	} catch (Error e) {
+		fail("Invalid Error thrown of type "+e.getClass());
+	}
 }
 
 public void test_toString() {
-	warnUnimpl("Test test_toString not written");
+	String[] extensions = Program.getExtensions();
+	// No assertion here because the doc does not guarantee a non-null result.
+	if (extensions != null) {
+		for (int i=0; i<extensions.length; i++) {
+			Program program = Program.findProgram(extensions[i]);
+			if (program != null) {
+				String string = program.toString();
+				assertNotNull("toString returned null",string);
+			}
+		}
+	}
 }
 
 public static Test suite() {
@@ -88,8 +221,8 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_executeLjava_lang_String");
-	methodNames.addElement("test_findProgramLjava_lang_String");
 	methodNames.addElement("test_getExtensions");
+	methodNames.addElement("test_findProgramLjava_lang_String");
 	methodNames.addElement("test_getImageData");
 	methodNames.addElement("test_getName");
 	methodNames.addElement("test_getPrograms");
