@@ -23,16 +23,16 @@ import java.util.Hashtable;
  * 2) Add the following code around the sections of interest to dump the
  * native calls done in that section.
  * 
- * NativeStats stats = new NativeStats();
- * ...
- * <code section>
- * ...
- * stats.dumpDiff(System.out);
+ * 		NativeStats stats = new NativeStats();
+ * 		...
+ * 		<code section>
+ * 		...
+ * 		stats.dumpDiff(System.out);
  * 
  * 3) Or add the following code at a given point to dump a snapshot of
  * the native calls done until that point.
  * 
- * new NativeStats().dumpSnapshot(System.out); 
+ * 		new NativeStats().dumpSnapshot(System.out); 
  */
 public class NativeStats {
 	
