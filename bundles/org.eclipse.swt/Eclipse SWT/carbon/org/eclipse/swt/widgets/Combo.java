@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are controls that allow the user
@@ -396,7 +395,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy () {
 	checkWidget ();
-	//NOT IMPLEMENTED
+	OS.TXNCopy(fTX);
 }
 void createHandle (int index) {
 	state |= HANDLE;
@@ -474,7 +473,7 @@ void createHandle (int index) {
  */
 public void cut () {
 	checkWidget ();
-	//NOT IMPLEMENTED
+	OS.TXNCut(fTX);
 }
 void deregister () {
 	super.deregister ();
@@ -896,7 +895,7 @@ public int indexOf (String string, int start) {
  */
 public void paste () {
 	checkWidget ();
-	//NOT IMPLEMENTED
+	OS.TXNPaste(fTX);
 }
 int processFocusIn () {
 	super.processFocusIn ();
@@ -923,7 +922,9 @@ int processFocusOut () {
 int processMouseDown (Object callData) {
 	if (callData instanceof MacEvent) {
 		MacEvent me= (MacEvent) callData;
-		OS.TXNClick(fTX, me.getData());
+		int macEvent[]= me.toOldMacEvent();	
+		if (macEvent != null)
+			OS.TXNClick(fTX, macEvent);
 	}
 	return 0;
 }
@@ -1497,6 +1498,31 @@ void enableWidget (boolean enabled) {
 	}
 	
 	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
+
+		MacEvent mEvent= new MacEvent(eRefHandle);
+		int kind= mEvent.getKind();
+		if ((kind == OS.kEventRawKeyDown || kind == OS.kEventRawKeyRepeat) && (mEvent.getModifiers() & OS.cmdKey) != 0) {
+			int code= mEvent.getKeyCode();
+			switch (code) {
+			case 0:
+				OS.TXNSetSelection(fTX, OS.kTXNStartOffset, OS.kTXNEndOffset);
+				break;
+			case 7:
+				cut();
+				break;
+			case 8:
+				copy();
+				break;
+			case 9:
+				paste();
+				break;
+			default:
+				//System.out.println("key code: " + code);
+				break;
+			}
+			return OS.kNoErr;
+		}
+
 		int status= OS.CallNextEventHandler(nextHandler, eRefHandle);
 		sendEvent (SWT.Modify);
 		return status;

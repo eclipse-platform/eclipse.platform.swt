@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class are selectable user interface
@@ -375,7 +374,6 @@ void createHandle (int index) {
 	// AW: HACK ALERT!
 	// count number of controls under root before we create the MLTE so that we know later
 	// how many controls were created by TXNNewObject
-	short[] numControls= new short[1];
 	int[] rootHandle= new int[1];
 	OS.GetRootControl(wHandle, rootHandle);
 	int root= rootHandle[0];
@@ -636,8 +634,11 @@ public int getLineHeight () {
 }
 int getLineNumber (int position) {
 	if (position == 0) return 0;
+	int count = 0;
+	/* AW
 	int count = 0, start = 0, page = 1024;
 	char [] buffer = new char [page + 1];
+	*/
 	/*
 	* Bug in Linux.  For some reason, XmTextGetSubstringWcs () does
 	* not copy wchar_t characters into the buffer.  Instead, it
@@ -956,8 +957,12 @@ int processFocusOut () {
 	return 0;
 }
 int processMouseDown (Object callData) {
-	MacEvent me= (MacEvent) callData;
-	OS.TXNClick(fTX, me.getData());
+	if (callData instanceof MacEvent) {
+		MacEvent me= (MacEvent) callData;
+		int macEvent[]= me.toOldMacEvent();
+		if (macEvent != null)
+			OS.TXNClick(fTX, macEvent);
+	}
 	return 0;
 }
 int processPaint (Object callData) {
@@ -1106,8 +1111,8 @@ public void setEditable (boolean editable) {
 	checkWidget();
     /* AW
 	OS.XmTextSetEditable (handle, editable);
-	*/
 	int isEditable= editable ? 1 : 0;
+	*/
 	style &= ~SWT.READ_ONLY;
 	if (!editable) style |= SWT.READ_ONLY;
 	if ((style & SWT.MULTI) != 0) return;
@@ -1439,10 +1444,33 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	
 		int status= OS.kNoErr;	// we handled the event
 		
+		MacEvent mEvent= new MacEvent(eRefHandle);
+		int kind= mEvent.getKind();
+		if ((kind == OS.kEventRawKeyDown || kind == OS.kEventRawKeyRepeat) && (mEvent.getModifiers() & OS.cmdKey) != 0) {
+			int code= mEvent.getKeyCode();
+			switch (code) {
+			case 0:
+				selectAll();
+				break;
+			case 7:
+				cut();
+				break;
+			case 8:
+				copy();
+				break;
+			case 9:
+				paste();
+				break;
+			default:
+				//System.out.println("key code: " + code);
+				break;
+			}
+			return OS.kNoErr;
+		}
+		
 		if (hooks (SWT.Verify)) {
 
 			// extract characters from event
-			MacEvent mEvent= new MacEvent(eRefHandle);
 			String unicode= mEvent.getText();
 			String text= unicode != null ? unicode : "";
 			String original= new String(text);
