@@ -26,9 +26,9 @@ import org.eclipse.swt.internal.gtk.*;
 public class FileDialog extends GtkFileDialog {
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
-	String filterPath;
+	String filterPath = "";
 	String fileName = "";
-	String[] fileNames;
+	String[] fileNames = new String[0];
 	String fullPath = "";
 	
 /**
@@ -250,7 +250,8 @@ void interpretOsAnswer(String osAnswer) {
 		return;
 	}
 	answer = fullPath = osAnswer;
-	fileName = fullPath;
+	fileName = fullPath.substring(separatorIndex+1);
+	filterPath = fullPath.substring(0, separatorIndex);
 	if ((style&SWT.MULTI) == 0) {
 		fileNames = new String[] {fileName};
 	} else {
@@ -279,7 +280,8 @@ void interpretOsAnswer(String osAnswer) {
 			OS.memmove(bytes, bytesPtr, bytes.length);
 			// The better way to do it would be:
 			// fileNames[i] = new String(bytes);
-			fileNames[i] = new String(Converter.mbcsToWcs(null, bytes));
+			String name = new String(Converter.mbcsToWcs(null, bytes));
+			fileNames[i] = name.substring(calculateLastSeparatorIndex(name)+1);
 			/*
 			 * NB:  Unlike other similar functions (e.g., g_convert), the glib
 			 * documentation does not say the resulting UTF8 string should be

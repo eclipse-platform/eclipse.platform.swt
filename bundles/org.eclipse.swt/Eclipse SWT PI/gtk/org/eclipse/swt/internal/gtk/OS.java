@@ -169,7 +169,8 @@ public class OS {
 	public static final int GTK_RELIEF_NONE = 0x2;
 	public static final int GTK_RESPONSE_OK = 0xfffffffb;
 	public static final int GTK_SELECTION_BROWSE = 0x2;
-	public static final int GTK_SELECTION_EXTENDED = 0x3;
+	public static final int GTK_SELECTION_MULTIPLE = 0x3;
+	public static final int GTK_SELECTION_EXTENDED = 0x3; /* deprecated */
 	public static final int GTK_SENSITIVE = 0x200;
 	public static final int GTK_SHADOW_ETCHED_IN = 0x3;
 	public static final int GTK_SHADOW_ETCHED_OUT = 0x4;

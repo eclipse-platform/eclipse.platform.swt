@@ -37,7 +37,7 @@ import org.eclipse.swt.events.*;
  */
 public class Tree extends Composite {
 	TreeItem [] items;
-	boolean selected, doubleSelected;
+	boolean selected, doubleSelected, mouseDown;
 	int check, uncheck, imageHeight, timerID;
 	static int CELL_SPACING = 1;
 
@@ -266,6 +266,9 @@ void createItem (TreeItem item, int node, int index) {
 	}
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	item.handle = OS.gtk_ctree_insert_node (handle, node, sibling, null, (byte) 2, uncheck, 0, uncheck, 0, false, false);
+	if ((style & SWT.SINGLE) != 0 && OS.GTK_CLIST_ROWS (handle) == 1) {
+		OS.gtk_clist_unselect_row (handle, 0, 0);
+	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 	if (item.handle == 0) error (SWT.ERROR_ITEM_NOT_ADDED);
 	OS.gtk_ctree_node_set_row_data (handle, item.handle, id + 1);
@@ -298,7 +301,17 @@ GdkColor defaultForeground () {
 public void deselectAll() {
 	checkWidget();
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
-	OS.gtk_ctree_unselect_recursive (handle, 0);
+	if ((style & SWT.SINGLE) != 0) {
+		int selection = OS.GTK_CLIST_SELECTION (handle);
+		if (selection != 0 && OS.g_list_length (selection) > 0) {
+			int index = OS.GTK_CLIST_FOCUS_ROW (handle);
+			if (index == -1) index = 0;
+			OS.gtk_clist_select_row (handle, index, 0);
+			OS.gtk_clist_unselect_row (handle, index, 0);
+		}
+	} else {
+		OS.gtk_ctree_unselect_recursive (handle, 0);
+	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
 }
 
@@ -309,7 +322,17 @@ void destroyItem (TreeItem item) {
 	OS.gtk_ctree_post_recursive (handle, node, address, 0);
 	GtkCTreeFunc.dispose ();
 	OS.gtk_signal_handler_block_by_data (handle, SWT.Collapse);
+	boolean fixSelection = false;
+	if ((style & SWT.SINGLE) != 0) {
+		int selection = OS.GTK_CLIST_SELECTION (handle);
+		fixSelection = selection == 0 || OS.g_list_length (selection) == 0;
+	}
+	if (fixSelection) OS.gtk_signal_handler_block_by_data (handle, SWT.Selection);
 	OS.gtk_ctree_remove_node (handle, node);
+	if (fixSelection) {
+		OS.gtk_clist_unselect_row (handle, 0, 0);
+		OS.gtk_signal_handler_unblock_by_data (handle, SWT.Selection);
+	}
 	OS.gtk_signal_handler_unblock_by_data (handle, SWT.Collapse);
 }
 
@@ -708,7 +731,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 							if (doubleSelected) {
 								postEvent (SWT.DefaultSelection, event);
 							} else {
-								postEvent (SWT.Selection, event);
+								if (selected) postEvent (SWT.Selection, event);
 							}
 						}
 						selected = false;
@@ -767,17 +790,19 @@ int processExpand (int int0, int int1, int int2) {
 }
 
 int processMouseDown (int callData, int arg1, int int2) {
+	mouseDown = true;
 	return 0;
 }
 
 int processMouseUp (int callData, int arg1, int int2) {
+	mouseDown = false;
 	return 0;
 }
 
 int processSelection (int int0, int int1, int int2) {
 	if ((style & SWT.SINGLE) != 0) {
 		selected = true;
-		return 0;
+		if (mouseDown) return 0;
 	}
 	int focus_row = OS.GTK_CLIST_FOCUS_ROW (handle);
 	int focus = OS.gtk_ctree_node_nth (handle, focus_row);

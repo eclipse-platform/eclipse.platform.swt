@@ -420,7 +420,9 @@ void createHandle (int index) {
 		OS.gdk_window_set_decorations (window, decorations);
 		OS.gtk_window_set_title (shellHandle, new byte [1]);
 	}
-	boolean modal = (style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) != 0;
+	//TEMPORARY CODE
+	int bits = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+	boolean modal = (style & bits) != 0 || (parent != null && (parent.style & bits) != 0);
 	OS.gtk_window_set_modal (shellHandle, modal);
 	accelGroup = OS.gtk_accel_group_new ();
 	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
