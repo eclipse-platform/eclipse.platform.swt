@@ -1174,6 +1174,7 @@ public CTabItem getItem (Point pt) {
 	if (items.length == 0) return null;
 	Point size = getSize();
 	if (size.x <= borderLeft + borderRight) return null;
+	if (showChevron && chevronRect.contains(pt)) return null;
 	for (int i = 0; i < priority.length; i++) {
 		CTabItem item = items[priority[i]];
 		Rectangle rect = item.getBounds();
