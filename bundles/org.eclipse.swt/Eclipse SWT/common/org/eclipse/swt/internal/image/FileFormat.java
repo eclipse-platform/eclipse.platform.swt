@@ -14,7 +14,7 @@ import org.eclipse.swt.graphics.*;
 public abstract class FileFormat {
 	static final String FORMAT_PACKAGE = "org.eclipse.swt.internal.image";
 	static final String FORMAT_SUFFIX = "FileFormat";
-	static final String[] FORMATS = {"WinBMP", "WinBMP", "GIF", "WinICO", "JPEG", "PNG"};
+	static String[] FORMATS = {"WinBMP", "WinBMP", "GIF", "WinICO", "JPEG", "PNG"};
 	
 	LEDataInputStream inputStream;
 	LEDataOutputStream outputStream;
@@ -52,14 +52,18 @@ public static ImageData[] load(InputStream is, ImageLoader loader) {
 	LEDataInputStream stream = new LEDataInputStream(is);
 	boolean isSupported = false;	
 	for (int i = 1; i < FORMATS.length; i++) {
-		try {
-			Class clazz = Class.forName(FORMAT_PACKAGE + '.' + FORMATS[i] + FORMAT_SUFFIX);
-			fileFormat = (FileFormat) clazz.newInstance();
-			if (fileFormat.isFileFormat(stream)) {
-				isSupported = true;
-				break;
+		if (FORMATS[i] != null) {
+			try {
+				Class clazz = Class.forName(FORMAT_PACKAGE + '.' + FORMATS[i] + FORMAT_SUFFIX);
+				fileFormat = (FileFormat) clazz.newInstance();
+				if (fileFormat.isFileFormat(stream)) {
+					isSupported = true;
+					break;
+				}
+			} catch (ClassNotFoundException e) {
+				FORMATS[i] = null;
+			} catch (Exception e) {
 			}
-		} catch (Exception e) {
 		}
 	}
 	if (!isSupported) SWT.error(SWT.ERROR_UNSUPPORTED_FORMAT);
@@ -69,6 +73,7 @@ public static ImageData[] load(InputStream is, ImageLoader loader) {
 
 public static void save(OutputStream os, int format, ImageLoader loader) {
 	if (format < 0 || format >= FORMATS.length) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (FORMATS[format] == null) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 
 	/* We do not currently support writing multi-image files,
 	 * so we use the first image data in the loader's array. */
