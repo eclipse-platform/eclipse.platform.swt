@@ -1809,6 +1809,25 @@ fail:
 }
 #endif
 
+#ifndef NO_ExtCreateRegion
+JNIEXPORT jint JNICALL OS_NATIVE(ExtCreateRegion)
+	(JNIEnv *env, jclass that, jfloatArray arg0, jint arg1, jintArray arg2)
+{
+	jfloat *lparg0=NULL;
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, ExtCreateRegion_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetFloatArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)ExtCreateRegion((XFORM *)lparg0, arg1, (CONST RGNDATA *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg0 && lparg0) (*env)->ReleaseFloatArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, ExtCreateRegion_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ExtTextOutA
 JNIEXPORT jboolean JNICALL OS_NATIVE(ExtTextOutA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jbyteArray arg5, jint arg6, jintArray arg7)
@@ -4134,6 +4153,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetWindowThreadProcessId)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, GetWindowThreadProcessId_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetWorldTransform
+JNIEXPORT jboolean JNICALL OS_NATIVE(GetWorldTransform)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
+{
+	jfloat *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, GetWorldTransform_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)GetWorldTransform((HDC)arg0, (LPXFORM)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, GetWorldTransform_FUNC);
 	return rc;
 }
 #endif
@@ -8485,6 +8520,18 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(SetForegroundWindow)
 }
 #endif
 
+#ifndef NO_SetGraphicsMode
+JNIEXPORT jint JNICALL OS_NATIVE(SetGraphicsMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetGraphicsMode_FUNC);
+	rc = (jint)SetGraphicsMode((HDC)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, SetGraphicsMode_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetLayout
 JNIEXPORT jint JNICALL OS_NATIVE(SetLayout)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -8875,6 +8922,22 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetWindowsHookExW)
 	OS_NATIVE_ENTER(env, that, SetWindowsHookExW_FUNC);
 	rc = (jint)SetWindowsHookExW(arg0, (HOOKPROC)arg1, (HINSTANCE)arg2, arg3);
 	OS_NATIVE_EXIT(env, that, SetWindowsHookExW_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetWorldTransform
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetWorldTransform)
+	(JNIEnv *env, jclass that, jint arg0, jfloatArray arg1)
+{
+	jfloat *lparg1=NULL;
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetWorldTransform_FUNC);
+	if (arg1) if ((lparg1 = (*env)->GetFloatArrayElements(env, arg1, NULL)) == NULL) goto fail;
+	rc = (jboolean)SetWorldTransform((HDC)arg0, (XFORM *)lparg1);
+fail:
+	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
+	OS_NATIVE_EXIT(env, that, SetWorldTransform_FUNC);
 	return rc;
 }
 #endif

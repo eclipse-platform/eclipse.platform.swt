@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 604;
-int OS_nativeFunctionCallCount[604];
+int OS_nativeFunctionCount = 608;
+int OS_nativeFunctionCallCount[608];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -134,6 +134,7 @@ char * OS_nativeFunctionNames[] = {
 	"ExpandEnvironmentStringsA",
 	"ExpandEnvironmentStringsW",
 	"ExtCreatePen",
+	"ExtCreateRegion",
 	"ExtTextOutA",
 	"ExtTextOutW",
 	"ExtractIconExA",
@@ -271,6 +272,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetWindowTextLengthW",
 	"GetWindowTextW",
 	"GetWindowThreadProcessId",
+	"GetWorldTransform",
 	"GlobalAlloc",
 	"GlobalFree",
 	"GlobalLock",
@@ -545,6 +547,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetErrorMode",
 	"SetFocus",
 	"SetForegroundWindow",
+	"SetGraphicsMode",
 	"SetLayout",
 	"SetMenu",
 	"SetMenuDefaultItem",
@@ -571,6 +574,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetWindowTextW",
 	"SetWindowsHookExA",
 	"SetWindowsHookExW",
+	"SetWorldTransform",
 	"ShellExecuteExA",
 	"ShellExecuteExW",
 	"Shell_1NotifyIconA",

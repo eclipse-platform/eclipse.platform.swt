@@ -177,6 +177,7 @@
 #define NO_ExpandEnvironmentStringsW
 #define NO_ExpandEnvironmentStringsA
 #define NO_ExtCreatePen
+#define NO_ExtCreateRegion
 #define NO_ExtTextOutA
 #define NO_ExtractIconExA
 #define NO_FillPath
@@ -239,6 +240,7 @@
 #define NO_GetWindowPlacement
 #define NO_GetWindowTextA
 #define NO_GetWindowTextLengthA
+#define NO_GetWorldTransform
 #define NO_GradientFill
 #define NO_IIDFromString
 #define NO_ImmGetCompositionFontA
@@ -329,6 +331,7 @@
 #define NO_SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
 #define NO_SetDIBColorTable
 #define NO_SetErrorMode
+#define NO_SetGraphicsMode
 #define NO_SetMenu
 #define NO_SetMenuDefaultItem
 #define NO_SetMenuInfo
@@ -340,6 +343,7 @@
 #define NO_SetWindowTextA
 #define NO_SetWindowsHookExA
 #define NO_SetWindowsHookExW
+#define NO_SetWorldTransform
 #define NO_ShellExecuteExA
 #define NO_ShowOwnedPopups
 #define NO_ShowScrollBar
