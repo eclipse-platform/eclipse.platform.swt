@@ -6,10 +6,11 @@
  *
  * Andre Weinand, OTI - Initial version
  */
-package org.eclipse.swt.internal.carbon;
+package org.eclipse.swt.graphics;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.carbon.MacUtil;
+import org.eclipse.swt.internal.carbon.OS;
 
 public class MacFont {
 
@@ -23,7 +24,7 @@ public class MacFont {
 	
 	public MacFont(String name, int size, int face) {
 	
-		fFace= OS.normal;
+		fFace= (short)OS.normal;
 		if ((face & SWT.BOLD) !=  0)
 			fFace |= OS.bold;
 		if ((face & SWT.ITALIC) !=  0)
@@ -34,7 +35,7 @@ public class MacFont {
 		}
 		
 		if ("MS Sans Serif".equals(name)) {
-			MacFont f= Display.getThemeFont(OS.kThemeSystemFont);
+			MacFont f= getThemeFont(OS.kThemeSystemFont);
 			fID= f.fID;
 			fSize= f.fSize;
 			return;
@@ -55,10 +56,18 @@ public class MacFont {
 		fSize= (short)size;
 	}
 	
+	public static MacFont getThemeFont(int themeFontId) {
+		byte[] fontName= new byte[256];
+		short[] fontSize= new short[1];
+		byte[] style= new byte[1];
+		OS.GetThemeFont((short)themeFontId, (short)OS.smSystemScript, fontName, fontSize, style);
+		return new MacFont(MacUtil.toString(fontName), fontSize[0], style[0]);
+	}
+	
 	public MacFont(short ID, short size, short face) {
 		fID= ID;
 		fSize= size;
-		fFace= OS.normal;
+		fFace= (short)OS.normal;
 		if ((face & SWT.BOLD) !=  0)
 			fFace |= OS.bold;
 		if ((face & SWT.ITALIC) !=  0)
@@ -71,7 +80,7 @@ public class MacFont {
 	
 	public String getName() {
 		byte[] name= new byte[256];
-		if (OS.FMGetFontFamilyName(fID, name) == OS.kNoErr)
+		if (OS.FMGetFontFamilyName(fID, name) == OS.noErr)
 			return MacUtil.toString(name);
 		return "no name";
 	}

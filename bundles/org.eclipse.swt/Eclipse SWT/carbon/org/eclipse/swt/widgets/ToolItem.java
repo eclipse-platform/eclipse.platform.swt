@@ -10,7 +10,10 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class represent a selectable user interface object
@@ -213,9 +216,9 @@ void click (boolean dropDown, MacMouseEvent mmEvent) {
 }
 Point computeSize () {
 	if ((style & SWT.SEPARATOR) != 0) {
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(handle, bounds.getData());
-		return bounds.getSize();
+		Rect bounds= new Rect();
+		OS.GetControlBounds(handle, bounds);
+		return new Point(bounds.right - bounds.left, bounds.bottom - bounds.top);
 	}
 	/* AW
 	int [] argList = {
@@ -298,15 +301,15 @@ public void dispose () {
 public Rectangle getBounds () {
 	checkWidget();
 	if (MacUtil.USE_FRAME) {
-		float[] f= new float[4];
-		OS.HIViewGetFrame(handle, f);
-		return new Rectangle((int)f[0], (int)f[1], (int)f[2], (int)f[3]);
+		CGRect rect= new CGRect();
+		OS.HIViewGetFrame(handle, rect);
+		return new Rectangle((int)rect.x, (int)rect.y, (int)rect.width, (int)rect.height);
 	} else {
-		short[] bounds= new short[4];
-		short[] pbounds= new short[4];
+		Rect bounds= new Rect();
+		Rect pbounds= new Rect();
 		OS.GetControlBounds(handle, bounds);
 		OS.GetControlBounds(parent.handle, pbounds);
-		return new Rectangle(bounds[1]-pbounds[1], bounds[0]-pbounds[0], bounds[3]-bounds[1], bounds[2]-bounds[0]);
+		return new Rectangle(bounds.left-pbounds.left, bounds.top-pbounds.top, bounds.right-bounds.left, bounds.bottom-bounds.top);
 	}
 }
 /**
@@ -446,16 +449,16 @@ public String getToolTipText () {
  */
 public int getWidth () {
 	checkWidget();
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	return bounds.getWidth();
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	return bounds.right - bounds.left;
 }
 boolean hasCursor () {
-	MacPoint mp= new MacPoint();
-	OS.GetMouse(mp.getData());
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	return bounds.toRectangle().contains(mp.toPoint());
+	org.eclipse.swt.internal.carbon.Point mp= new org.eclipse.swt.internal.carbon.Point();
+	OS.GetMouse(mp);
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	return OS.PtInRect(mp, bounds);
 }
 void hookEvents () {
 	super.hookEvents ();
@@ -471,9 +474,9 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNexposeCallback, windowProc, SWT.Paint);
 	*/
 	Display display= getDisplay();		
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, 4, new int[]{display.fUserPaneDrawProc});
 	if ((style & SWT.SEPARATOR) != 0) return;
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
 }
 /**
  * Returns <code>true</code> if the receiver is enabled and all
@@ -566,20 +569,25 @@ void setBounds (int x, int y, int width, int height) {
 	height = Math.max(height, 0);
 	
 	if (MacUtil.USE_FRAME) {
-		float[] f= new float[4];
-		OS.HIViewGetFrame(handle, f);
-		if (f[0] != x || f[1] != y || f[2] != width || f[3] != height)
-			OS.HIViewSetFrame(handle, x, y, width, height);
+		CGRect rect= new CGRect();
+		OS.HIViewGetFrame(handle, rect);
+		if (rect.x != x || rect.y != y || rect.width != width || rect.height != height) {
+			OS.HIViewSetFrame(handle, rect);
+		}
 	} else {
-		short[] bounds= new short[4];
-		short[] pbounds= new short[4];
+		Rect bounds= new Rect();
+		Rect pbounds= new Rect();
 		OS.GetControlBounds(handle, bounds);
 		OS.GetControlBounds(parent.handle, pbounds);
 			
-		boolean sameOrigin = (bounds[1]-pbounds[1]) == x && (bounds[0]-pbounds[0]) == y;
-		boolean sameExtent = (bounds[3]-bounds[1]) == width && (bounds[2]-bounds[0]) == height;
-		if (!sameOrigin || !sameExtent)
-			OS.SetControlBounds(handle, new MacRect(pbounds[1]+x, pbounds[0]+y, width, height).getData());
+		boolean sameOrigin = (bounds.left-pbounds.left) == x && (bounds.top-pbounds.top) == y;
+		boolean sameExtent = (bounds.right-bounds.left) == width && (bounds.bottom-bounds.top) == height;
+		if (!sameOrigin || !sameExtent){
+			short left = (short)(pbounds.left+x);
+			short top = (short)(pbounds.top +y);
+			OS.SetRect(bounds, left, top, (short)(left + width), (short)(top + height));
+			OS.SetControlBounds(handle, bounds);
+		}
 	}
 
 	if (parent.fGotSize)
@@ -717,9 +725,9 @@ public void setSelection (boolean selected) {
 }
 
 void setSize (int width, int height) {
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	if (bounds.getWidth() != width || bounds.getHeight() != height) {
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	if ((bounds.right - bounds.left) != width || (bounds.bottom - bounds.top) != height) {
 		OS.SizeControl(handle, (short) width, (short) height);
 		parent.relayout();
 	}
@@ -762,9 +770,9 @@ public void setWidth (int width) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) == 0) return;
 	if (width < 0) return;
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	setSize (width, bounds.getHeight());
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	setSize (width, bounds.bottom - bounds.top);
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
@@ -940,9 +948,9 @@ int processMouseUp (MacMouseEvent mmEvent) {
 		OS.XtGetValues (handle, argList, argList.length / 2);
 		int width = argList [1], height = argList [3];
 		*/
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(handle, bounds.getData());
-		int width = bounds.getWidth(), height = bounds.getHeight();
+		Rect bounds= new Rect();
+		OS.GetControlBounds(handle, bounds);
+		int width = bounds.right - bounds.left, height = bounds.bottom - bounds.top;
 				
 		Point mp= MacUtil.toControl(handle, mmEvent.getWhere());
 		//System.out.println("ToolItem.processMouseUp: " + mp);
@@ -976,12 +984,11 @@ int processPaint (Object callData) {
 	if ((style & SWT.SEPARATOR) != 0 && control != null)
 		return 0;
 		
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	bounds.setLocation(0, 0);
-	
-	int width= bounds.getWidth();
-	int height= bounds.getHeight();
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	int width= bounds.right - bounds.left;
+	int height= bounds.bottom - bounds.top;
+	OS.SetRect(bounds, (short)0, (short)0, (short)width, (short)height);
 	
 	final Display display = getDisplay ();
 
@@ -1011,7 +1018,7 @@ int processPaint (Object callData) {
 		
 		if ((style & SWT.SEPARATOR) != 0) {
 		
-			OS.DrawThemeSeparator(bounds.getData(), OS.kThemeStateActive);
+			OS.DrawThemeSeparator(bounds, OS.kThemeStateActive);
 			
 		} else {
 					
@@ -1027,15 +1034,15 @@ int processPaint (Object callData) {
 		
 			short[] newInfo= new short[3];
 					
-			newInfo[1]= set ? OS.kThemeButtonOn : OS.kThemeButtonOff;
+			newInfo[1]= (short)(set ? OS.kThemeButtonOn : OS.kThemeButtonOff);
 			
 			if ((parent.style & SWT.FLAT) != 0) {
 				
 				if (hasCursor && enabled) {
 					if (OS.StillDown())
-						newInfo[0]= OS.kThemeStatePressed;
+						newInfo[0]= (short)OS.kThemeStatePressed;
 					else
-						newInfo[0]= OS.kThemeStateActive;
+						newInfo[0]= (short)OS.kThemeStateActive;
 				} else
 					newInfo= null;
 				
@@ -1044,12 +1051,13 @@ int processPaint (Object callData) {
 					currentImage = hotImage;
 				}
 			} else {
-				newInfo[0]= (hasCursor && OS.StillDown()) ? OS.kThemeStatePressed : OS.kThemeStateActive;
+				newInfo[0]= (short)((hasCursor && OS.StillDown()) ? OS.kThemeStatePressed : OS.kThemeStateActive);
 			}
 	
 			if (newInfo != null) {
-				MacRect b= new MacRect(1, 1, width-2, height-2);
-				OS.DrawThemeButton(b.getData(), OS.kThemeSmallBevelButton, newInfo, fPrevInfo, 0, 0, 0);
+				Rect b= new Rect();
+				OS.SetRect(b, (short)1, (short)1, (short)(width-1), (short)(height-1));
+				OS.DrawThemeButton(b, (short)OS.kThemeSmallBevelButton, newInfo, fPrevInfo, 0, 0, 0);
 			}
 			fPrevInfo= newInfo;
 				

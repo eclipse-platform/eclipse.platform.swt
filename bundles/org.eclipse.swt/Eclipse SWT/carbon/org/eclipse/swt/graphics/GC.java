@@ -35,7 +35,7 @@ public final class GC {
 	GCData data;
 		
 	//---- AW
-	private MacRect fRect= new MacRect();
+	private Rect fRect= new Rect();
 	private int[] fSavePort= new int[1];
 	private int[] fSaveGWorld= new int[1];
 	private int fSaveClip= OS.NewRgn();
@@ -101,12 +101,13 @@ public void copyArea(int x, int y, int width, int height, int destX, int destY) 
 		
 	Rectangle src= new Rectangle(x, y, width, height);
 	src= src.union(new Rectangle(destX, destY, width, height));
-	MacRect r= new MacRect(src);
+	Rect r= new Rect();
+	OS.SetRect(r, (short)src.x, (short)src.y, (short)(src.x + src.width), (short)(src.y + src.height));
 	
 	try {
 		if (focus(true, null)) {
 			int rgn= OS.NewRgn();
-			OS.ScrollRect(r.getData(), (short)deltaX, (short)deltaY, rgn);
+			OS.ScrollRect(r, (short)deltaX, (short)deltaY, rgn);
 			OS.InvalWindowRgn(OS.GetWindowFromPort(handle), rgn);
 			OS.DisposeRgn(rgn);
 		}
@@ -340,10 +341,10 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 	drawImage(image, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, false);
 }
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
-	MacRect bounds= new MacRect();
-	OS.GetPixBounds(srcImage.pixmap, bounds.getData());
- 	int imgWidth = bounds.getWidth();
- 	int imgHeight = bounds.getHeight();
+	Rect bounds= new Rect();
+	OS.GetPixBounds(srcImage.pixmap, bounds);
+ 	int imgWidth = bounds.right - bounds.left;
+ 	int imgHeight = bounds.bottom - bounds.top;
 
  	if (simple) {
  		srcWidth = destWidth = imgWidth;
@@ -369,8 +370,9 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  	try {
 		if (focus(true, null)) {
 	
-			MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
-			fRect.set(destX, destY, destWidth, destHeight);
+			Rect ib= new Rect();
+			OS.SetRect(ib, (short)srcX, (short)srcY, (short)(srcX + srcWidth), (short)(srcY + srcHeight));
+			OS.SetRect(fRect, (short)destX, (short)destY, (short)(destX + destWidth), (short)(destY + destHeight));
 		
 			OS.RGBBackColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
 			OS.RGBForeColor((short)0x0000, (short)0x0000, (short)0x0000);
@@ -378,7 +380,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			if (srcImage.alpha != -1 || srcImage.alphaData != null) {
 				
 				if (srcImage.alpha == 255) {	// fully opaque
-					OS.CopyBits(srcBits, destBits, ib.getData(), fRect.getData(), (short)0, 0);
+					OS.CopyBits(srcBits, destBits, ib, fRect, (short)0, 0);
 					return;
 				}
 				
@@ -391,8 +393,8 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 	
 				int maskBits= srcImage.mask != 0 ? OS.DerefHandle(srcImage.mask) : 0;
 				if (maskBits != 0) {
-					int rc= OS.CopyMask(srcBits, maskBits, destBits, ib.getData(), ib.getData(), fRect.getData());
-					if (rc != OS.kNoErr)
+					int rc= OS.CopyMask(srcBits, maskBits, destBits, ib, ib, fRect);
+					if (rc != OS.noErr)
 						System.out.println("GC.drawImage: error in CopyMask: " + rc);
 				}
 
@@ -400,7 +402,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 				if (srcImage.transparentPixel != -1 && srcImage.memGC != null) srcImage.destroyMask();
 
 			} else {
-				OS.CopyBits(srcBits, destBits, ib.getData(), fRect.getData(), (short)0, 0);
+				OS.CopyBits(srcBits, destBits, ib, fRect, (short)0, 0);
 			}
 		}
 	} finally {
@@ -468,8 +470,8 @@ public void drawOval(int x, int y, int width, int height) {
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			fRect.set(x, y, width+1, height+1);
-			OS.FrameOval(fRect.getData());
+			OS.SetRect(fRect, (short)x, (short)y, (short)(x + width + 1), (short)(y + height + 1));
+			OS.FrameOval(fRect);
 		}
 	} finally {
 		unfocus(true);
@@ -615,8 +617,8 @@ public void drawRectangle (int x, int y, int width, int height) {
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			fRect.set(x, y, width+1, height+1);
-			OS.FrameRect(fRect.getData());
+			OS.SetRect(fRect, (short)x, (short)y, (short)(x+width+1), (short)(y+height+1));
+			OS.FrameRect(fRect);
 		}
 	} finally {
 		unfocus(true);
@@ -675,8 +677,8 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 		if (focus(true, null)) {
 			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
-			fRect.set(x, y, width+1, height+1);
-			OS.FrameRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
+			OS.SetRect(fRect, (short)x, (short)y, (short)(x+width+1), (short)(y+height+1));
+			OS.FrameRoundRect(fRect, (short)arcWidth, (short)arcHeight);
 		}
 	} finally {
 		unfocus(true);
@@ -742,20 +744,21 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 			installFont();
 			MacUtil.RGBForeColor(data.foreground);
 			if (isTransparent) {
-				OS.TextMode(OS.srcOr);
+				OS.TextMode((short)OS.srcOr);
 			} else {
 				if ((data.background & 0xff000000) == 0) {
 					MacUtil.RGBBackColor(data.background);
-					OS.TextMode(OS.srcCopy);
+					OS.TextMode((short)OS.srcCopy);
 				} else {
 					//System.out.println("GC.drawString: " + Integer.toHexString(data.background));
-					OS.TextMode(OS.srcOr);
+					OS.TextMode((short)OS.srcOr);
 				}
 			}
 			short[] fontInfo= new short[4];
 			OS.GetFontInfo(fontInfo);	// FontInfo
 			OS.MoveTo((short)x, (short)(y+fontInfo[0]));
-			OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
+			byte[] buffer = string.getBytes();
+			OS.DrawText(buffer, (short)0, (short)buffer.length);
 		}
 	} finally {
 		unfocus(true);
@@ -881,20 +884,21 @@ public void drawText (String string, int x, int y, int flags) {
 			installFont();
 			MacUtil.RGBForeColor(data.foreground);
 			if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
-				OS.TextMode(OS.srcOr);
+				OS.TextMode((short)OS.srcOr);
 			} else {
 				if ((data.background & 0xff000000) == 0) {
 					MacUtil.RGBBackColor(data.background);
-					OS.TextMode(OS.srcCopy);
+					OS.TextMode((short)OS.srcCopy);
 				} else {
 					//System.out.println("GC.drawText: " + Integer.toHexString(data.background));
-					OS.TextMode(OS.srcOr);
+					OS.TextMode((short)OS.srcOr);
 				}
 			}
 			short[] fontInfo= new short[4];
 			OS.GetFontInfo(fontInfo);	// FontInfo
 			OS.MoveTo((short)x, (short)(y+fontInfo[0]));
-			OS.DrawText(string, data.font.fID, data.font.fSize, data.font.fFace);
+			byte[] buffer = string.getBytes();
+			OS.DrawText(buffer, (short)0, (short)buffer.length);
 		}
 	} finally {
 		unfocus(true);
@@ -1036,8 +1040,8 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 			OS.XFillRectangle(xDisplay, data.drawable, handle, x, y, width, height);
 			*/
 			MacUtil.RGBForeColor(data.foreground);
-			fRect.set(x, y, width, height);
-			OS.PaintRect(fRect.getData());
+			OS.SetRect(fRect, (short)x, (short)y, (short)(x+width), (short)(y+height));
+			OS.PaintRect(fRect);
 			return;
 		}
 		/* X Window deals with a virtually limitless array of color formats
@@ -1134,8 +1138,8 @@ public void fillOval (int x, int y, int width, int height) {
 		if (focus(true, null)) {
 			if ((data.background & 0xff000000) == 0) {
 				MacUtil.RGBForeColor(data.background);
-				fRect.set(x, y, width, height);
-				OS.PaintOval(fRect.getData());
+				OS.SetRect(fRect, (short)x, (short)y, (short)(x+width), (short)(y+height));
+				OS.PaintOval(fRect);
 			} else {
 				//	System.out.println("GC.fillOval: " + Integer.toHexString(data.background));
 			}
@@ -1224,10 +1228,10 @@ public void fillRectangle (int x, int y, int width, int height) {
 	}
 	try {
 		if (focus(true, null)) {
-			fRect.set(x, y, width, height);
+			OS.SetRect(fRect, (short)x, (short)y, (short)(x+width), (short)(y+height));
 			if ((data.background & 0xFF000000) == 0) {
 				MacUtil.RGBForeColor(data.background);
-				OS.PaintRect(fRect.getData());
+				OS.PaintRect(fRect);
 			} else {
 				short depth= getCurrentScreenDepth();
 				int[] state= new int[1];
@@ -1235,7 +1239,7 @@ public void fillRectangle (int x, int y, int width, int height) {
 				//OS.SetThemeBackground(OS.kThemeBrushDialogBackgroundActive, depth, true);
 				if (data.controlHandle != 0)
 					OS.SetUpControlBackground(data.controlHandle, depth, true);
-				OS.EraseRect(fRect.getData());
+				OS.EraseRect(fRect);
 				OS.SetThemeDrawingState(state[0], true);
 			}
 		}
@@ -1285,8 +1289,8 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 		if (focus(true, null)) {
 			if ((data.background & 0xff000000) == 0) {
 				MacUtil.RGBForeColor(data.background);
-				fRect.set(x, y, width, height);
-				OS.PaintRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
+				OS.SetRect(fRect, (short)x, (short)y, (short)(x+width), (short)(y+height));
+				OS.PaintRoundRect(fRect, (short)arcWidth, (short)arcHeight);
 			} else {
 				//	System.out.println("GC.fillRoundRectangle: " + Integer.toHexString(data.background));
 			}
@@ -1388,11 +1392,11 @@ public Rectangle getClipping() {
 	OS.XClipBox(clipRgn, rect);
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 	*/
-	MacRect bounds= new MacRect();
+	Rect bounds= new Rect();
 	if (data.clipRgn == 0) {
 		if (data.controlHandle != 0) {
-			OS.GetControlBounds(data.controlHandle, bounds.getData());
-			return new Rectangle(0, 0, bounds.getWidth(), bounds.getHeight());
+			OS.GetControlBounds(data.controlHandle, bounds);
+			return new Rectangle(0, 0, bounds.right - bounds.left, bounds.bottom - bounds.top);
 		}
 		if (data.image != null) {
 			return data.image.getBounds();
@@ -1400,8 +1404,10 @@ public Rectangle getClipping() {
 		System.out.println("GC.getClipping(): should not happen");
 		return new Rectangle(0, 0, 100, 100);
 	}
-	OS.GetRegionBounds(data.clipRgn, bounds.getData());
-	return bounds.toRectangle();
+	OS.GetRegionBounds(data.clipRgn, bounds);
+	int width = bounds.right - bounds.left;
+	int height = bounds.bottom - bounds.top;
+	return new Rectangle(bounds.left, bounds.top, width, height);
 }
 /** 
  * Sets the region managed by the argument to the current
@@ -1425,7 +1431,7 @@ public void getClipping(Region region) {
 		
 	if (data.clipRgn == 0) {
 		if (data.controlHandle != 0) {
-			OS.GetControlRegion(data.controlHandle, OS.kWindowContentRgn, region.handle);
+			OS.GetControlRegion(data.controlHandle, (short)OS.kWindowContentRgn, region.handle);
 		} else
 			System.out.println("GC.getClipping(Region): nyi");
 	} else {
@@ -1492,8 +1498,8 @@ public FontMetrics getFontMetrics() {
 		installFont();
 		short[] fontInfo= new short[4];
 		OS.GetFontInfo(fontInfo);	// FontInfo
-		String s= "abcdefghijklmnopqrstuvwxyz";
-		int width= OS.TextWidth(s, data.font.fID, data.font.fSize, data.font.fFace) / 26;
+		byte[] s= "abcdefghijklmnopqrstuvwxyz".getBytes();
+		int width= OS.TextWidth(s, (short)0, (short)s.length) / 26;
 		return FontMetrics.carbon_new(fontInfo[0], fontInfo[1], width, fontInfo[3], fontInfo[0]+fontInfo[1]);
 	} finally {
 		unfocus(false);	
@@ -1917,7 +1923,8 @@ public Point stringExtent(String string) {
 	try {
 		focus(false, null);
 		installFont();
-		int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
+		byte[] s= string.getBytes();
+		int width= OS.TextWidth(s, (short)0, (short)s.length);
 		short[] fontInfo= new short[4];
 		OS.GetFontInfo(fontInfo);	// FontInfo
 		return new Point(width, fontInfo[0] + fontInfo[1]);
@@ -2006,7 +2013,8 @@ public Point textExtent(String string, int flags) {
 	try {
 		focus(false, null);
 		installFont();
-		int width= OS.TextWidth(string, data.font.fID, data.font.fSize, data.font.fFace);
+		byte[] s= string.getBytes();
+		int width= OS.TextWidth(s, (short)0, (short)s.length);
 		short[] fontInfo= new short[4];
 		OS.GetFontInfo(fontInfo);	// FontInfo
 		return new Point(width, fontInfo[0] + fontInfo[1]);
@@ -2032,7 +2040,7 @@ public String toString () {
 			data.font.installInGrafPort();
 	}
 
-	private boolean focus(boolean doClip, MacRect bounds) {
+	private boolean focus(boolean doClip, Rect bounds) {
 		
 		if (fIsFocused && !fPendingClip) {
 			return true;
@@ -2049,12 +2057,13 @@ public String toString () {
 
 		// set origin of port using drawable bounds
 		if (data.controlHandle != 0) {
-			OS.GetControlBounds(data.controlHandle, fRect.getData());
-			dx= fRect.getX();
-			dy= fRect.getY();
+			OS.GetControlBounds(data.controlHandle, fRect);
+			dx= fRect.left;
+			dy= fRect.top;
 			OS.SetOrigin((short)-dx, (short)-dy);
-			MacPoint p= new MacPoint(-dx, -dy);
-			OS.QDSetPatternOrigin(p.getData());
+			org.eclipse.swt.internal.carbon.Point p= new org.eclipse.swt.internal.carbon.Point();
+			OS.SetPt(p, (short)-dx, (short)-dy);
+			OS.QDSetPatternOrigin(p);
 		}
 		// save clip region
 		OS.GetClip(fSaveClip);
@@ -2081,7 +2090,7 @@ public String toString () {
 				
 			OS.SetClip(result);
 			if (bounds != null)
-				OS.GetRegionBounds(result, bounds.getData());
+				OS.GetRegionBounds(result, bounds);
 			OS.DisposeRgn(result);
 			
 		} else {
@@ -2089,10 +2098,10 @@ public String toString () {
 			if (data.clipRgn != 0) {
 				OS.SetClip(data.clipRgn);
 				if (bounds != null)
-					OS.GetRegionBounds(data.clipRgn, bounds.getData());
+					OS.GetRegionBounds(data.clipRgn, bounds);
 			} else {
 				if (bounds != null)
-					bounds.set(0, 0, 0x8fff, 0x8fff);
+					OS.SetRect(bounds, (short)0, (short)0, (short)0x8fff, (short)0x8fff);
 			}
 		}
 		fPendingClip= false;
@@ -2118,10 +2127,12 @@ public String toString () {
 	public Rectangle carbon_focus(int damageRgn) {
 		OS.LockPortBits(handle);
 		fDamageRgn= damageRgn;
-		MacRect bounds= new MacRect();
+		Rect bounds= new Rect();
 		focus(true, bounds);
 		fIsFocused= true;
-		return bounds.toRectangle();
+		int width = bounds.right - bounds.left;
+		int height = bounds.bottom - bounds.top;
+		return new Rectangle(bounds.left, bounds.top, width, height);
 	}
 	
 	public void carbon_unfocus() {
@@ -2145,20 +2156,20 @@ public String toString () {
 	
 	public int carbon_CG_focus() {
 		
-		if (OS.QDBeginCGContext(handle, fContext) != OS.kNoErr)
+		if (OS.QDBeginCGContext(handle, fContext) != OS.noErr)
 			return 0;
 			
 		int context= fContext[0];
 		
-		MacRect b= new MacRect();
-		OS.GetPortBounds(handle, b.getData()); 
+		Rect b= new Rect();
+		OS.GetPortBounds(handle, b); 
 		
 		int clip= OS.NewRgn();
 		OS.GetPortClipRegion(handle, clip);
-		OS.ClipCGContextToRegion(context, b.getData(), clip);
+		OS.ClipCGContextToRegion(context, b, clip);
 		OS.DisposeRgn(clip);
 	              		
-		OS.CGContextTranslateCTM(context, 0, b.getHeight());
+		OS.CGContextTranslateCTM(context, 0, b.bottom - b.top);
 		OS.CGContextScaleCTM(context, 1, -1);
 		return context;
 	}

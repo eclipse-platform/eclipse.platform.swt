@@ -7,9 +7,8 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import java.util.*;
-
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -246,7 +245,7 @@ void createHandle (int index) {
 	/*
 	Display disp= getDisplay();
 	Font font= Font.carbon_new (disp, disp.getThemeFont(OS.kThemeSmallSystemFont));
-	if (OS.SetControlFontStyle(handle, font.handle.fID, font.handle.fSize, font.handle.fFace) != OS.kNoErr)
+	if (OS.SetControlFontStyle(handle, font.handle.fID, font.handle.fSize, font.handle.fFace) != OS.noErr)
 		System.out.println("Tree2.setFont("+this+"): error");
 	*/
 }
@@ -541,7 +540,7 @@ public TreeItem2 [] getSelection () {
 public int getSelectionCount () {
 	checkWidget ();
 	int[] result= new int[1];
-	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, result) != OS.kNoErr)
+	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, result) != OS.noErr)
 		error (SWT.ERROR_CANNOT_GET_COUNT);
 	return result[0];
 }
@@ -850,7 +849,7 @@ public void setSelection (TreeItem2 [] items) {
 }
 
 void showItem (int hItem) {
-	if (OS.RevealDataBrowserItem(handle, hItem, COL_ID, false) != OS.kNoErr)
+	if (OS.RevealDataBrowserItem(handle, hItem, COL_ID, false) != OS.noErr)
 		System.out.println("Tree2.RevealDataBrowserItem");
 }
 
@@ -1497,7 +1496,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		TreeItem2 ti= find(item);
 		if (ti == null) {
 			System.out.println("handleItemCallback: can't find row with id: " + item);
-			return OS.kNoErr;
+			return OS.noErr;
 		}
 			
 		switch (property) {
@@ -1550,7 +1549,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		}
 		
-		return OS.kNoErr;
+		return OS.noErr;
 	}
 
 	int handleCompareCallback(int item1ID, int item2ID, int item) {
@@ -1565,7 +1564,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		TreeItem2 ti= find(item);
 		if (ti == null) {
 			System.out.println("handleItemNotificationCallback: can't find row with id: " + item);
-			return OS.kNoErr;
+			return OS.noErr;
 		}
 		
 		Event event= null;
@@ -1609,7 +1608,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			break;
 		}
 		
-		return OS.kNoErr;
+		return OS.noErr;
 	}
 		
 	TreeItem2 find(int id) {

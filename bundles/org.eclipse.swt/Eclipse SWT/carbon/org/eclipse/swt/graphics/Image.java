@@ -189,10 +189,10 @@ public Image(Device device, Image srcImage, int flag) {
 	this.type = srcImage.type;
 	this.mask = 0;
 		
-	MacRect bounds= new MacRect();
-	OS.GetPixBounds(srcImage.pixmap, bounds.getData());
- 	int width = bounds.getWidth();
- 	int height = bounds.getHeight();
+	Rect bounds= new Rect();
+	OS.GetPixBounds(srcImage.pixmap, bounds);
+ 	int width = bounds.right - bounds.left;
+ 	int height = bounds.bottom - bounds.top;
 
 	/* Don't create the mask here if flag is SWT.IMAGE_GRAY. See below.*/
 	if (flag != SWT.IMAGE_GRAY && srcImage.mask != 0) {
@@ -700,9 +700,11 @@ public Color getBackground() {
  */
 public Rectangle getBounds () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	MacRect bounds= new MacRect();		
-	OS.GetPixBounds(pixmap, bounds.getData());
-	return bounds.toRectangle();
+	Rect bounds= new Rect();		
+	OS.GetPixBounds(pixmap, bounds);
+	int width = bounds.right - bounds.left;
+	int height = bounds.bottom - bounds.top;
+	return new Rectangle(bounds.left, bounds.top, width, height);
 }
 /**
  * Returns an <code>ImageData</code> based on the receiver
@@ -939,7 +941,9 @@ void init(Device device, int width, int height) {
 	int[] saveGWorld= new int[1];
 	OS.GetGWorld(savePort, saveGWorld);
 	OS.SetGWorld(gw, 0);
-	OS.EraseRect(new short[] { 0, 0, (short)height, (short)width } );
+	Rect rect = new Rect();
+	OS.SetRect(rect, (short)0, (short)0, (short)width, (short)height);
+	OS.EraseRect(rect);
 	OS.SetGWorld(savePort[0], saveGWorld[0]);
 	
 	OS.DisposeGWorld(gw);
@@ -1310,7 +1314,7 @@ public String toString () {
 		case 2:
 		case 4:
 		case 8:
-			pixelType= OS.Indexed;
+			pixelType= 0; /* Indexed */
 			pixelSize= depth;
 			cmpCount= 1;
 			cmpSize= depth;
@@ -1493,9 +1497,11 @@ public String toString () {
 	private static int duplicate(int handle) {
 		int rowBytes= OS.getRowBytes(handle);
 		if ((rowBytes & 0x8000) == 0) {
-			MacRect bounds= new MacRect();
-			OS.GetPixBounds(handle, bounds.getData());
-			int copy= newBitMap(bounds.getWidth(), bounds.getHeight(), rowBytes);
+			Rect bounds= new Rect();
+			OS.GetPixBounds(handle, bounds);
+			int width = bounds.right - bounds.left;
+			int height = bounds.bottom - bounds.top;
+			int copy= newBitMap(width, height, rowBytes);
 			int baseAddr= OS.getBaseAddr(handle);
 			if (baseAddr != 0) {
 				int size= OS.GetPtrSize(baseAddr);

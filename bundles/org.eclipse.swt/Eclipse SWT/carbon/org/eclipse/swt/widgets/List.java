@@ -12,7 +12,8 @@ import java.util.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.MacUtil;
 
 /** 
  * Instances of this class represent a selectable user interface
@@ -143,7 +144,7 @@ public void add (String string, int index) {
 	}
     Pair p= new Pair(string);
 	fData.add(index, p);
-	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.kNoErr)
+	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.noErr)
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 }
 /**
@@ -525,7 +526,7 @@ public String [] getSelection () {
 public int getSelectionCount () {
 	checkWidget();
 	int[] result= new int[1];
-	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, result) != OS.kNoErr)
+	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, result) != OS.noErr)
 		error (SWT.ERROR_CANNOT_GET_COUNT);
 	return result[0];
 }
@@ -725,7 +726,7 @@ public void remove (int start, int end) {
 	if (start < 0 || start >= n || end < 0 || end >= n)
 		error (SWT.ERROR_INVALID_RANGE);
 	int[] ids= getIds(start, end);
-	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
+	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.noErr)
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 /**
@@ -753,7 +754,7 @@ public void remove (String string) {
 	Pair p= getPair(string);
 	if (p == null) error (SWT.ERROR_INVALID_ARGUMENT);
 	fData.remove(p);
-	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.kNoErr)
+	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, 1, new int[] { p.fId }, 0) != OS.noErr)
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 /**
@@ -777,7 +778,7 @@ public void remove (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int[] ids= getIds(indices);
-	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
+	if (OS.RemoveDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.noErr)
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 /**
@@ -988,7 +989,7 @@ public void setItems (String [] items) {
 		fData.add(p);
 		ids[i]= p.fId;
 	}
-	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.kNoErr)
+	if (OS.AddDataBrowserItems(handle, OS.kDataBrowserNoItem, ids.length, ids, 0) != OS.noErr)
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 }
 /**
@@ -1131,7 +1132,7 @@ public void showSelection () {
 		
 		if (colID != COL_ID) {
 			//System.out.println("List.handleItemCallback: wrong column id: " + colID);
-			return OS.kNoErr;
+			return OS.noErr;
 		}
 			
 		String s= get(rowID);
@@ -1148,7 +1149,7 @@ public void showSelection () {
 			if (sHandle != 0)
 				OS.CFRelease(sHandle);
 		}
-		return OS.kNoErr;
+		return OS.noErr;
 	}
 
 	int handleCompareCallback(int item1ID, int item2ID, int item) {
@@ -1158,7 +1159,7 @@ public void showSelection () {
 	}
 	
 	int handleItemNotificationCallback(int item, int message) {
-		return OS.kNoErr;
+		return OS.noErr;
 	}
 	
 	/**

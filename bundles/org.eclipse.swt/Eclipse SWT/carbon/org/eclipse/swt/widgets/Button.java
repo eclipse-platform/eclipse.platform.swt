@@ -10,7 +10,10 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.MacUtil;
+import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -299,7 +302,7 @@ void createHandle (int index) {
 		};
 		handle = OS.XmCreateToggleButton (parentHandle, null, argList, argList.length / 2);
         */
-		short type= (style & SWT.CHECK) != 0
+		int type= (style & SWT.CHECK) != 0
 					? OS.kControlCheckBoxAutoToggleProc
 					: OS.kControlRadioButtonAutoToggleProc;
 		handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, type);
@@ -316,7 +319,7 @@ void createHandle (int index) {
 		OS.XmNalignment, alignment,
 		OS.XmNborderWidth, borderWidth,
     */
-	short type= (style & SWT.FLAT) != 0
+	int type= (style & SWT.FLAT) != 0
 					? OS.kControlBevelButtonNormalBevelProc
 					: OS.kControlPushButtonProc;
     handle= MacUtil.newControl(parentHandle, type);
@@ -418,7 +421,7 @@ public String getText () {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) return "";
 	int sHandle[]= new int[1];
-    OS.GetControlTitleAsCFString(handle, sHandle);
+    OS.CopyControlTitleAsCFString(handle, sHandle);
 	return MacUtil.getStringAndRelease(sHandle[0]);
 }
 void hookEvents () {
@@ -480,8 +483,10 @@ void releaseWidget () {
 	OS.XtSetValues (handle, argList, argList.length / 2);
     */
     if (fCIconHandle != 0) {
-    	if (handle != 0)
-    		OS.SetBevelButtonContentInfo(handle, (short)0, 0);
+    	if (handle != 0) {
+    		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
+			OS.SetBevelButtonContentInfo(handle, inContent);
+    	}
 		Image.disposeCIcon(fCIconHandle);
 		fCIconHandle= 0;
     }
@@ -637,7 +642,7 @@ public void setText (String string) {
 	int sHandle= 0;
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(string));
-		if (OS.SetControlTitleWithCFString(handle, sHandle) != OS.kNoErr)
+		if (OS.SetControlTitleWithCFString(handle, sHandle) != OS.noErr)
 			error (SWT.ERROR_CANNOT_SET_TEXT);
 	} finally {
 		if (sHandle != 0)
@@ -658,7 +663,10 @@ int traversalCode () {
 private void setMode(int icon) {
 	
 	if ((style & SWT.FLAT) != 0 || fImageMode) {
-		OS.SetBevelButtonContentInfo(handle, OS.kControlContentCIconHandle, icon);
+		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
+		inContent.contentType = (short)OS.kControlContentCIconHandle;
+		inContent.iconRef = icon;
+		OS.SetBevelButtonContentInfo(handle, inContent);
 		redraw();
 		return;
 	}
@@ -670,12 +678,12 @@ private void setMode(int icon) {
 	
 	int[] ph= new int[1];
 	int rc= OS.GetSuperControl(handle, ph);
-	if (rc != OS.kNoErr)
+	if (rc != OS.noErr)
 		System.out.println("Button.setMode: " + rc);
 	int parentHandle= ph[0];
 	
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
 	
 	int index= MacUtil.indexOf(parentHandle, handle);
 	if (index < 0)
@@ -684,36 +692,46 @@ private void setMode(int icon) {
 	WidgetTable.remove(handle);
 	OS.DisposeControl(handle);
 	
-	short type= icon != 0 ? OS.kControlBevelButtonNormalBevelProc : OS.kControlPushButtonProc;
+	int type= icon != 0 ? OS.kControlBevelButtonNormalBevelProc : OS.kControlPushButtonProc;
 		
     handle= MacUtil.newControl(parentHandle, index, (short)0, (short)0, (short)0, type);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	WidgetTable.put(handle, w);
 	
-	OS.SetControlBounds(handle, bounds.getData());
-	OS.SetBevelButtonContentInfo(handle, OS.kControlContentCIconHandle, icon);
+	OS.SetControlBounds(handle, bounds);
+	ControlButtonContentInfo inContent = new ControlButtonContentInfo();
+	inContent.contentType = (short)OS.kControlContentCIconHandle;
+	inContent.iconRef = icon;
+	OS.SetBevelButtonContentInfo(handle, inContent);
 }
 
 /**
  * Overridden from Control.
  * x and y are relative to window!
  */
-void handleResize(int hndl, MacRect bounds) {
+void handleResize(int hndl, Rect bounds) {
 	fTopMargin= fBottomMargin= 0;
 	if ((style & SWT.PUSH) != 0 && image == null) {	// for push buttons
-		Point result= MacUtil.computeSize(hndl);
-		int diff= bounds.getHeight()-result.y;
+		org.eclipse.swt.graphics.Point result= MacUtil.computeSize(hndl);
+		int diff= (bounds.bottom-bounds.top)-result.y;
 		fTopMargin= diff/2;
 		fBottomMargin= diff-fTopMargin;
-		bounds.inset(MARGIN, fTopMargin, MARGIN, fBottomMargin);
+		bounds.left+= MARGIN;
+		bounds.top+= fTopMargin;
+		bounds.right-= MARGIN;
+		bounds.bottom-= fBottomMargin;
 	}
 	super.handleResize(hndl, bounds);
 }
 
-void internalGetControlBounds(int hndl, MacRect bounds) {
+void internalGetControlBounds(int hndl, Rect bounds) {
 	super.internalGetControlBounds(hndl, bounds);
-	if ((style & SWT.PUSH) != 0 && image == null)
-		bounds.inset(-MARGIN, -fTopMargin, -MARGIN, -fBottomMargin);
+	if ((style & SWT.PUSH) != 0 && image == null) {
+		bounds.left+= -MARGIN;
+		bounds.top+= -fTopMargin;
+		bounds.right-= -MARGIN;
+		bounds.bottom-= -fBottomMargin;
+	}
 }
 
 public void setFont (Font font) {

@@ -6,8 +6,9 @@ package org.eclipse.swt.widgets;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
-
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -93,7 +94,7 @@ void createHandle (int index) {
 	handle = MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlProgressBarProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	if ((style & SWT.INDETERMINATE) != 0)
-		OS.SetControlData(handle, (short)0, OS.kControlProgressBarIndeterminateTag, -1);
+		OS.SetControlData(handle, (short)0, OS.kControlProgressBarIndeterminateTag, 4, new int[]{-1});
 }
 /* AW
 void disableButtonPress () {
@@ -230,27 +231,31 @@ public void setSelection (int value) {
 /**
  * Overridden from Control since we want to center the bar within its area. 
  */
-void handleResize(int hndl, MacRect bounds) {	
+void handleResize(int hndl, Rect bounds) {	
 	if ((style & SWT.HORIZONTAL) != 0) { 	// horizontal
-		int diff= bounds.getHeight()-SIZE;
+		int diff= bounds.bottom-bounds.top-SIZE;
 		fTopMargin= diff/2;
 		fBottomMargin= diff-fTopMargin;
-		bounds.inset(0, fTopMargin, 0, fBottomMargin);
+		bounds.top+= fTopMargin;
+		bounds.bottom-= fBottomMargin;
 	} else {	// vertical
-		int diff= bounds.getWidth()-SIZE;
+		int diff= bounds.right-bounds.left-SIZE;
 		fTopMargin= diff/2;
 		fBottomMargin= diff-fTopMargin;
-		bounds.inset(fTopMargin, 0, fBottomMargin, 0);
+		bounds.left+= fTopMargin;
+		bounds.right-= fBottomMargin;
 	}
 	super.handleResize(hndl, bounds);
 }
 
-void internalGetControlBounds(int hndl, MacRect bounds) {
+void internalGetControlBounds(int hndl, Rect bounds) {
 	super.internalGetControlBounds(hndl, bounds);
 	if ((style & SWT.HORIZONTAL) != 0) { 	// horizontal
-		bounds.inset(0, -fTopMargin, 0, -fBottomMargin);
+		bounds.top+= -fTopMargin;
+		bounds.bottom-= -fBottomMargin;
 	} else {	// vertical
-		bounds.inset(-fTopMargin, 0, -fBottomMargin, 0);
+		bounds.left+= -fTopMargin;
+		bounds.right-= -fBottomMargin;
 	}
 }
 

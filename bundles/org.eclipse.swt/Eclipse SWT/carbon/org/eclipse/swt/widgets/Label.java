@@ -9,7 +9,9 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class represent a non-selectable
@@ -111,7 +113,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					
 			GC gc= new GC(this);
 			gc.installFont();
-			OS.GetThemeTextDimensions(sHandle, OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds, baseLine);
+			OS.GetThemeTextDimensions(sHandle, (short)OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds, baseLine);
 			gc.dispose();
 			
 			OS.CFRelease(sHandle);
@@ -224,7 +226,7 @@ public String getText () {
 void hookEvents () {
 	super.hookEvents ();
 	Display display= getDisplay();		
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, 4, new int[]{display.fUserPaneDrawProc});
 }
 /* AW
 boolean mnemonicHit (char key) {
@@ -259,12 +261,12 @@ int processPaint (Object callData) {
 	
 	if (! r.isEmpty()) {
 		
-		MacRect bounds= new MacRect();
+		Rect bounds= new Rect();
 		int hndl= topHandle();
-		OS.GetControlBounds(hndl, bounds.getData());
+		OS.GetControlBounds(hndl, bounds);
 	
-		int w= bounds.getWidth();
-		int h= bounds.getHeight();
+		int w= bounds.right - bounds.left;
+		int h= bounds.bottom - bounds.top;
 		int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
 		
 		gc.fillRectangle(0, 0, r.width, r.height);
@@ -292,8 +294,8 @@ int processPaint (Object callData) {
 				just= 1;
 			MacUtil.RGBForeColor(enabled ? 0x000000 : 0x808080);
 			gc.installFont();
-			bounds.set(borderWidth, borderWidth, w-2*borderWidth, h-2*borderWidth);
-			OS.DrawThemeTextBox(sHandle, OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds.getData(), just, 0);
+			OS.SetRect(bounds, (short)borderWidth, (short)borderWidth, (short)(w-borderWidth), (short)(h-borderWidth));
+			OS.DrawThemeTextBox(sHandle, (short)OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds, just, 0);
 			OS.CFRelease(sHandle);
 		}
 		

@@ -10,7 +10,9 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class are selectable user interface
@@ -337,8 +339,8 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 
 	int wHandle= OS.GetControlOwner(parentHandle);
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
 	int frameType= OS.kTXNTextEditStyleFrameType;
 	int iFileType= OS.kTXNUnicodeTextFile;
 	int iPermanentEncoding= OS.kTXNSystemDefaultEncoding;
@@ -368,9 +370,9 @@ void createHandle (int index) {
 	/*
 	 * Create the MLTE object (and possibly 0-2 scrollbars)
 	 */
-	int status= OS.TXNNewObject(0, wHandle, bounds.getData(), frameOptions, frameType, iFileType, iPermanentEncoding,
+	int status= OS.TXNNewObject(0, wHandle, bounds, frameOptions, frameType, iFileType, iPermanentEncoding,
 						tnxObject, frameID, handle);
-	if (status != OS.kNoErr)
+	if (status != OS.noErr)
 		error(SWT.ERROR_NO_HANDLES);
 		
 	/*
@@ -397,8 +399,8 @@ void createHandle (int index) {
 	 * As a workaround initialize the widget with a single character
 	 * and immediately remove it afterwards.
 	 */
-	OS.TXNSetData(fTX, new char[] { ' ' }, 0, 0);
-	OS.TXNSetData(fTX, new char[0], 0, 1);
+	OS.TXNSetData(fTX, OS.kTXNUnicodeTextData, new char[] { ' ' }, 2, 0, 0);
+	OS.TXNSetData(fTX, OS.kTXNUnicodeTextData, new char[0], 0, 0, 1);
 	
 	OS.setTXNMargins(fTX, (short)MARGIN);
 
@@ -482,15 +484,15 @@ public int getCaretLineNumber () {
  */
 public Point getCaretLocation () {
 	checkWidget();
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
 	int [] start= new int [1], end= new int [1];
 	OS.TXNGetSelection(fTX, start, end);
-	MacPoint loc= new MacPoint();
-	OS.TXNOffsetToPoint(fTX, end[0], loc.getData());
-	Point p= loc.toPoint();
-	p.x-= bounds.getX();
-	p.y-= bounds.getY();
+	org.eclipse.swt.internal.carbon.Point loc= new org.eclipse.swt.internal.carbon.Point();
+	OS.TXNOffsetToPoint(fTX, end[0], loc);
+	Point p= new Point(loc.h, loc.v);
+	p.x-= bounds.left;
+	p.y-= bounds.top;
 	return p;
 }
 /**
@@ -875,8 +877,8 @@ void hookEvents () {
 	OS.XtAddCallback (handle, OS.XmNmodifyVerifyCallback, windowProc, SWT.Verify);
     */
 	Display display= getDisplay();		
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, 4, new int[]{display.fUserPaneDrawProc});
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
 }
 /**
  * Inserts a string.
@@ -1400,7 +1402,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		int l= s.length();
 		char[] chars= new char[l];
 		s.getChars(0, l, chars, 0); 
-		OS.TXNSetData(fTX, chars, start, end);
+		OS.TXNSetData(fTX, OS.kTXNUnicodeTextData, chars, chars.length * 2, start, end);
 		
 		//syncBounds(null);
 		
@@ -1421,7 +1423,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 	
 	int sendKeyEvent(int type, MacEvent mEvent, Event event) {
 	
-		int status= OS.kNoErr;	// we handled the event
+		int status= OS.noErr;	// we handled the event
 		
 		if ((mEvent.getModifiers() & OS.cmdKey) != 0) {
 			int kind= mEvent.getKind();
@@ -1483,11 +1485,11 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 			char[] newChars= new char[l];
 			string.getChars(0, l, newChars, 0);		
 			if (true) {
-				OS.SetEventParameter(eRefHandle, OS.kEventParamTextInputSendText, OS.typeUnicodeText, newChars);
+				OS.SetEventParameter(eRefHandle, OS.kEventParamTextInputSendText, OS.typeUnicodeText, newChars.length * 2, newChars);
 				status= OS.CallNextEventHandler(nextHandler, eRefHandle);
 			} else {
 				OS.TXNSetSelection(fTX, start[0], end[0]);
-				OS.TXNSetData(fTX, newChars, OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
+				OS.TXNSetData(fTX, OS.kTXNUnicodeTextData, newChars, newChars.length * 2, OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection);
 				OS.TXNSetSelection(fTX, start[0], start[0]+newChars.length);
 			}
 		} else {
@@ -1499,25 +1501,25 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		return status;
 	}
 
-	void handleResize(int hndl, MacRect bounds) {
+	void handleResize(int hndl, Rect bounds) {
 		super.handleResize(hndl, bounds);
 		syncBounds(bounds);
 	}
 	
-	private void syncBounds(MacRect b) {
+	private void syncBounds(Rect b) {
 		
 		if (fTX == 0)
 			return;
 	
 		if (b == null) {
-			b= new MacRect();
-			OS.GetControlBounds(handle, b.getData());
+			b= new Rect();
+			OS.GetControlBounds(handle, b);
 		}
 	
-		int x= b.getX();
-		int y= b.getY();
-		int w= b.getWidth();
-		int h= b.getHeight();
+		int x= b.left;
+		int y= b.top;
+		int w= b.right - b.left;
+		int h= b.bottom - b.top;
 		
 		if ((style & SWT.BORDER) != 0) {
 			x+= FOCUS_BORDER;
@@ -1547,29 +1549,34 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		try {
 			Rectangle r= gc.carbon_focus(damageRegion);
 			if (!r.isEmpty()) {
-				MacRect bounds= new MacRect();
-				OS.GetControlBounds(handle, bounds.getData());
-				bounds.setLocation(0, 0);
+				Rect bounds= new Rect();
+				OS.GetControlBounds(handle, bounds);
+				OS.SetRect(bounds, (short)0, (short)0, (short)(bounds.right - bounds.left), (short)(bounds.bottom - bounds.top));
 				int m= FOCUS_BORDER;
-				bounds.inset(m, m, m, m+1);
+				bounds.left+= m;
+				bounds.top+= m;
+				bounds.right-= m;
+				bounds.bottom-= m+1;
 				
-				MacRect fbounds= new MacRect();
-				OS.GetControlBounds(handle, fbounds.getData());
-				fbounds.setLocation(0, 0);
+				Rect fbounds= new Rect();
+				OS.GetControlBounds(handle, fbounds);
+				OS.SetRect(fbounds, (short)0, (short)0, (short)(fbounds.right - fbounds.left), (short)(fbounds.bottom - fbounds.top));
 				int fm= FOCUS_BORDER;
-				fbounds.inset(fm, fm+1, fm, fm+1);
-				
+				fbounds.left+= fm;
+				fbounds.top+= fm+1;
+				fbounds.right-= fm;
+				fbounds.bottom-= fm+1;
 				
 				if ((style & SWT.READ_ONLY) == 0) {
 					if (getDisplay().getFocusControl() == this) {
-						OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
-						OS.DrawThemeFocusRect(fbounds.getData(), true);
+						OS.DrawThemeEditTextFrame(bounds, OS.kThemeStateActive);
+						OS.DrawThemeFocusRect(fbounds, true);
 					} else {
-						OS.DrawThemeFocusRect(fbounds.getData(), false);
-						OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
+						OS.DrawThemeFocusRect(fbounds, false);
+						OS.DrawThemeEditTextFrame(bounds, OS.kThemeStateActive);
 					}
 				} else {
-					OS.DrawThemeEditTextFrame(bounds.getData(), OS.kThemeStateActive);
+					OS.DrawThemeEditTextFrame(bounds, OS.kThemeStateActive);
 				}
 				
 			}

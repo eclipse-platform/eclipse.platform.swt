@@ -7,7 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -183,9 +186,9 @@ public Rectangle getClientArea () {
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	return new Rectangle (0, 0, argList [1], argList [3]);
     */
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	Rectangle r= new Rectangle (0, 0, bounds.getWidth(), bounds.getHeight());
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	Rectangle r= new Rectangle (0, 0, bounds.right-bounds.left, bounds.bottom-bounds.top);
 	/*
 	if (r.isEmpty()) {
 		System.out.println("Scrollable.getClientArea(" + this + "): " + r);
@@ -329,11 +332,11 @@ int topHandle () {
 		if (OS.IsValidControlHandle(parentControlHandle)) {
 		} else if (OS.IsValidWindowPtr(parentControlHandle)) {
 			int[] root= new int[1];
-			if (OS.CreateRootControl(parentControlHandle, root) == OS.kNoErr) {
+			if (OS.CreateRootControl(parentControlHandle, root) == OS.noErr) {
 				//OS.GetRootControl(parentControlHandle, root);
 				parentControlHandle= root[0];
 			} else {
-				OS.HIViewFindByID(OS.HIViewGetRoot(parentControlHandle), 0, root);
+				OS.HIViewFindByID(OS.HIViewGetRoot(parentControlHandle), OS.kHIViewWindowContentID (), root);
 				parentControlHandle= root[0];
 				pos= -1;	// below growbox
 			}
@@ -370,7 +373,7 @@ int topHandle () {
 	 * Overridden from Control.
 	 * x and y are relative to window!
 	 */
-	void handleResize(int handle, MacRect bounds) {
+	void handleResize(int handle, Rect bounds) {
 		super.handleResize(handle, bounds);
 		relayout123();
 	}
@@ -388,15 +391,15 @@ int topHandle () {
 		if (hndl == 0)
 			return;
 		
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(hndl, bounds.getData());
+		Rect bounds= new Rect();
+		OS.GetControlBounds(hndl, bounds);
 		
 		boolean visible= OS.IsControlVisible(hndl);
 		
-		int x= 0; // bounds.getX();
-		int y= 0; // bounds.getY();
-		int w= bounds.getWidth();
-		int h= bounds.getHeight();
+		int x= 0; // bounds.left;
+		int y= 0; // bounds.top;
+		int w= bounds.right-bounds.left;
+		int h= bounds.bottom-bounds.top;
 	
 		int s= 15;
 		int ww= w;
@@ -430,13 +433,28 @@ int topHandle () {
 			}
 		}
 
-		if (hsb != null)
-			OS.HIViewSetFrame(hsb.handle, x, y+h-s, ww, s);
+		CGRect rect = new CGRect();
+		if (hsb != null) {
+			rect.x = x;
+			rect.y = y+h-s;
+			rect.width = ww;
+			rect.height = s;
+			OS.HIViewSetFrame(hsb.handle, rect);
+		}
 			
-		if (vsb != null)
-			OS.HIViewSetFrame(vsb.handle, x+w-s, y, s, hh);
+		if (vsb != null) {
+			rect.x = x+w-s;
+			rect.y = y;
+			rect.width = s;
+			rect.height = hh;
+			OS.HIViewSetFrame(vsb.handle, rect);
+		}
 		
-		OS.HIViewSetFrame(handle, x, y, ww, hh);
+		rect.x = x;
+		rect.y = y;
+		rect.width = ww;
+		rect.height = hh;
+		OS.HIViewSetFrame(handle,rect);
 		
 		//if (ww != w && hh != h)
 		//	OS.InvalWindowRect(OS.GetControlOwner(handle), new MacRect(x+w-s, y+h-s, s, s).getData());
@@ -448,15 +466,15 @@ int topHandle () {
 		if (hndl == 0)
 			return;
 		
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(hndl, bounds.getData());
+		Rect bounds= new Rect();
+		OS.GetControlBounds(hndl, bounds);
 		
 		boolean visible= OS.IsControlVisible(hndl);
 		
-		int x= bounds.getX();
-		int y= bounds.getY();
-		int w= bounds.getWidth();
-		int h= bounds.getHeight();
+		int x= bounds.left;
+		int y= bounds.top;
+		int w= bounds.right-bounds.left;
+		int h= bounds.bottom-bounds.top;
 	
 		int s= 15;
 		int ww= w;
@@ -490,15 +508,23 @@ int topHandle () {
 			}
 		}
 
-		if (hsb != null)
-			hsb.internalSetBounds(new MacRect(x, y+h-s, ww, s));
+		Rect rect = new Rect();
+		if (hsb != null) {
+			OS.SetRect(rect, (short)x, (short)(y+h-s), (short)(x+ww), (short)(y+h));
+			hsb.internalSetBounds(rect);
+		}
 			
-		if (vsb != null)
-			vsb.internalSetBounds(new MacRect(x+w-s, y, s, hh));
+		if (vsb != null) {
+			OS.SetRect(rect, (short)(x+w-s), (short)y, (short)(x+w), (short)(y+hh));
+			vsb.internalSetBounds(rect);
+		}
 		
-		OS.SetControlBounds(handle, new MacRect(x, y, ww, hh).getData());
+		OS.SetRect(rect, (short)x, (short)y, (short)(x+ww), (short)(y+hh));
+		OS.SetControlBounds(handle, rect);
 		
-		if (ww != w && hh != h)
-			OS.InvalWindowRect(OS.GetControlOwner(handle), new MacRect(x+w-s, y+h-s, s, s).getData());
+		if (ww != w && hh != h) {
+			OS.SetRect(rect, (short)(x+w-s), (short)(y+h-s), (short)(x+w), (short)(y+h));
+			OS.InvalWindowRect(OS.GetControlOwner(handle), rect);
+		}
 	}
 }

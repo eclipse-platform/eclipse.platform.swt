@@ -224,13 +224,17 @@ public String open () {
 		int flags= 0;
 		int[] dialogHandle= new int[1];
 		
+		NavDialogCreationOptions options = new NavDialogCreationOptions();
+		OS.NavGetDefaultDialogCreationOptions(options);
+		options.optionFlags |= flags;
+		options.windowTitle= titleHandle;
+		options.parentWindow= parentWindowHandle;
 		if ((style & SWT.SAVE) != 0) {
-			status= OS.NavCreatePutFileDialog(flags, titleHandle, parentWindowHandle, dialogHandle,
-							MacUtil.OSType("TEXT"), MacUtil.OSType("KAHL"));
+			status= OS.NavCreatePutFileDialog(options, MacUtil.OSType("TEXT"), MacUtil.OSType("KAHL"), 0, 0, dialogHandle);
 		} else /* if ((style & SWT.OPEN) != 0) */ {
 			if ((style & SWT.MULTI) != 0)
-				flags |= OS.kNavAllowMultipleFiles;
-			status= OS.NavCreateGetFileDialog(flags, titleHandle, parentWindowHandle, dialogHandle);
+				options.optionFlags |= OS.kNavAllowMultipleFiles;
+			status= OS.NavCreateGetFileDialog(options, 0, 0, 0, 0, 0, dialogHandle);
 		}
 		
 		if (status == 0) {

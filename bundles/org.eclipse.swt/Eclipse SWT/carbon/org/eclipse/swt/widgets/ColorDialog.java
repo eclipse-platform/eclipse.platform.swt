@@ -108,17 +108,28 @@ public RGB getRGB() {
  */
 public RGB open() {
 
-	MacPoint mp= new MacPoint();
-	OS.GetGlobalMouse(mp.getData());
+	org.eclipse.swt.internal.carbon.Point mp= new org.eclipse.swt.internal.carbon.Point();
+	OS.GetGlobalMouse(mp);
 	
-	boolean[] success= new boolean[1];
-	if (OS.PickColor(fColor, mp.getData(), MacUtil.Str255(title), success) == OS.kNoErr) {
-		if (success[0]) {
+	ColorPickerInfo info = new ColorPickerInfo();
+	if (fColor != null) {
+		info.red= fColor[0];
+		info.green= fColor[1];
+		info.blue= fColor[2];
+	}
+	info.flags= OS.kColorPickerDialogIsMoveable | OS.kColorPickerDialogIsModal;
+	info.placeWhere= (short)OS.kAtSpecifiedOrigin;
+	info.v= mp.v;
+	info.h= mp.h;
+	byte[] buffer = MacUtil.Str255(title);
+	System.arraycopy(buffer, 0, info.prompt, 0, Math.min(info.prompt.length, buffer.length));
+	if ((OS.PickColor(info)) == OS.noErr) {
+		if (info.newColorChosen) {
 			if (rgb == null)
 				rgb= new RGB(0, 0, 0);
-			rgb.red=	(fColor[0] >> 8) & 0xff;
-			rgb.green=	(fColor[1] >> 8) & 0xff;
-			rgb.blue=	(fColor[2] >> 8) & 0xff;
+			rgb.red=	(info.red >> 8) & 0xff;
+			rgb.green=	(info.green >> 8) & 0xff;
+			rgb.blue=	(info.blue >> 8) & 0xff;
 		} else
 			rgb= null;
 	} else

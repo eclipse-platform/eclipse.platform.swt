@@ -3,3659 +3,4540 @@
  * This file is made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
- *
- * Andre Weinand, OTI - Initial version
  */
 
-#ifndef _Included_JNIOut
-#include "org_eclipse_swt_internal_carbon_OS.h"
-#endif
+/**
+ * SWT OS natives implementation.
+ */ 
 
-#include <Carbon/Carbon.h>
-	
-//#define USE_ATSUI 1
+#include "swt.h"
+#include "structs.h"
 
-static const Rect NULL_RECT;
+#include "swt2.c"
 
-// forward declarations
-static Point point(JNIEnv *env, jshortArray a);
-static void copyEvent(JNIEnv *env, jintArray eData, EventRecord *event);
-static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData);
+#define OS_NATIVE(func) Java_org_eclipse_swt_internal_carbon_OS_##func
 
-#ifdef DEBUG
-#define RC(f) checkStatus(__LINE__, (f))
+#ifndef NO_AECountItems
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AECountItems
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
 
-static int checkStatus(int line, int rc) {
-    switch (rc) {
-	case 0:
-	case eventNotHandledErr:
-	case eventLoopTimedOutErr:
-	case errControlIsNotEmbedder:
-		break;
-	default:
-        //fprintf(stderr, "OS: line: %d %d\n", line, rc);
-		break;
-	}
-    return rc;
-}
-#else
-#define RC(f) f
-#endif
+	DEBUG_CALL("AECountItems\n")
 
-//---- fonts
-
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyFromName(JNIEnv *env, jclass zz,
-			jbyteArray name) {
-	jbyte *sa= (*env)->GetByteArrayElements(env, name, 0);
-	jshort id= (jshort) FMGetFontFamilyFromName((ConstStr255Param) sa);
-	(*env)->ReleaseByteArrayElements(env, name, sa, 0);
-	return id;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyName(JNIEnv *env, jclass zz,
-			jshort id, jbyteArray name) {
-	Str255 s;
-	jint status= (jshort) RC(FMGetFontFamilyName((FMFontFamily) id, s));
-	jbyte *sa= (*env)->GetByteArrayElements(env, name, 0);
-	memcpy(sa, s, 255);
-	(*env)->ReleaseByteArrayElements(env, name, sa, 0);
-	return status;
-}
-
-/*
-void lisAllFonts() {
-	FMFontFamilyIterator iter;
-	FMFontFamily family;
-	FMCreateFontFamilyIterator(NULL, NULL, kFMUseGlobalScopeOption, &iter);
-
-	while (FMGetNextFontFamily(&iter, &family) != kFMIterationCompleted) {
-		Str255 name;
-		FMGetFontFamilyName(family, name);
-		name[name[0]+1]= 0;
-		fprintf(stderr, "fontfamily: %s\n", &name[1]);
-	}
-	FMDisposeFontFamilyIterator(&iter);
-}
-*/
-
-//---- Appearance Manager
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RegisterAppearanceClient(JNIEnv *env, jclass zz) {
-	return (jint) RC(RegisterAppearanceClient());
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeWindowBackground(JNIEnv *env, jclass zz,
-				jint wHandle, jshort brush, jboolean update) {
-	return (jint) RC(SetThemeWindowBackground((WindowRef) wHandle, (ThemeBrush) brush, (Boolean) update));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeTextBox(JNIEnv *env, jclass zz,
-				jint sHandle, jshort fontID, jint state, jboolean wrapToWidth, jshortArray bounds, jshort just, jint context) {
-
-    jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	jint status= RC(DrawThemeTextBox((CFStringRef)sHandle, (ThemeFontID)fontID, (ThemeDrawState)state,
-		(Boolean)wrapToWidth, (const Rect*)sa, (SInt16)just, (void*)context));
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeTextDimensions(JNIEnv *env, jclass zz,
-				jint sHandle, jshort fontID, jint state, jboolean wrapToWidth, jshortArray size, jshortArray baseLine) {
-
-    jshort *sa= (*env)->GetShortArrayElements(env, size, 0);
-	jint status= RC(GetThemeTextDimensions((CFStringRef)sHandle, (ThemeFontID)fontID, (ThemeDrawState)state,
-		(Boolean)wrapToWidth, (Point*)sa, (SInt16*)baseLine));
-	(*env)->ReleaseShortArrayElements(env, size, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeEditTextFrame(JNIEnv *env, jclass zz,
-				jshortArray bounds, jint state) {
-	jint *sa= (*env)->GetIntArrayElements(env, bounds, 0);
-	OSStatus status= RC(DrawThemeEditTextFrame((Rect*)sa, state));
-	(*env)->ReleaseIntArrayElements(env, bounds, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeFocusRect(JNIEnv *env, jclass zz,
-				jshortArray bounds, jboolean hasFocus) {
-	jint *sa= (*env)->GetIntArrayElements(env, bounds, 0);
-	OSStatus status= RC(DrawThemeFocusRect((Rect*)sa, hasFocus));
-	(*env)->ReleaseIntArrayElements(env, bounds, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeGenericWell(JNIEnv *env, jclass zz,
-				jshortArray bounds, jint state, jboolean fillCenter) {
-	jint *sa= (*env)->GetIntArrayElements(env, bounds, 0);
-	OSStatus status= RC(DrawThemeGenericWell((Rect*)sa, state, fillCenter));
-	(*env)->ReleaseIntArrayElements(env, bounds, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeSeparator(JNIEnv *env, jclass zz,
-				jshortArray bounds, jint state) {
-	jint *sa= (*env)->GetIntArrayElements(env, bounds, 0);
-	OSStatus status= RC(DrawThemeSeparator((Rect*)sa, state));
-	(*env)->ReleaseIntArrayElements(env, bounds, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeFont(JNIEnv *env, jclass zz,
-				jshort themeFontId, jshort scriptCode, jbyteArray fontName, jshortArray fontSize, jbyteArray style) {
-	jbyte *sa= NULL;
-	jshort * sb= NULL;
-	jbyte *sc= NULL;
-	jint status= 0;
-	if (fontName != NULL)
-		sa= (*env)->GetByteArrayElements(env, fontName, 0);
-	sb= (*env)->GetShortArrayElements(env, fontSize, 0);
-	sc= (*env)->GetByteArrayElements(env, style, 0);
-	status= (jint) RC(GetThemeFont((ThemeFontID)themeFontId, (ScriptCode)scriptCode, (unsigned char*)sa, (SInt16*)sb, (Style*)sc));
-	if (sa != NULL)
-		(*env)->ReleaseByteArrayElements(env, fontName, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, fontSize, sb, 0);
-	(*env)->ReleaseByteArrayElements(env, style, sc, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeButton(JNIEnv *env, jclass zz,
-				jshortArray bounds, jshort kind, jshortArray newInfoArray, jshortArray prevInfoArray, jint eraseProc,
-					jint labelProc, jint userData) {
-	ThemeButtonDrawInfo info;
-	ThemeButtonDrawInfo newInfo, *prevInfo= NULL;	
-	jint status= 0;
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	jshort *sb= (*env)->GetShortArrayElements(env, newInfoArray, 0);
-	jshort *sc= NULL;
-	
-	
-	newInfo.state= sb[0];
-	newInfo.value= sb[1];
-	newInfo.adornment= sb[2];
-	
-	if (prevInfoArray != NULL) {
-		sc= (*env)->GetShortArrayElements(env, prevInfoArray, 0);
-		info.state= sc[0];
-		info.value= sc[1];
-		info.adornment= sc[2];
-		prevInfo= &info;
-	}
-
-	status= (jint) RC(DrawThemeButton((const Rect *)sa, (ThemeButtonKind)kind, &newInfo, prevInfo, (ThemeEraseUPP)eraseProc,
-						(ThemeButtonDrawUPP) labelProc, (UInt32)userData));
-						
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, newInfoArray, sb, 0);
-	if (sc != NULL)
-		(*env)->ReleaseShortArrayElements(env, prevInfoArray, sc, 0);
-	
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeBackground(JNIEnv *env, jclass zz,
-				jshort brush, jshort depth, jboolean isColorDevice) {
-	return RC(SetThemeBackground(brush, depth, isColorDevice));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeDrawingState(JNIEnv *env, jclass zz,
-				jintArray state) {
-	jint *sa= (*env)->GetIntArrayElements(env, state, 0);
-	jint status= (jint) RC(GetThemeDrawingState((ThemeDrawingState*) sa));
-	(*env)->ReleaseIntArrayElements(env, state, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeDrawingState(JNIEnv *env, jclass zz,
-				jint state, jboolean disposeNow) {
-	return RC(SetThemeDrawingState((ThemeDrawingState)state, disposeNow));
-}
-
-//---- tabs
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTabText(JNIEnv *env, jclass zz,
-				jint cHandle, jint index, jint sHandle) {
-	ControlTabInfoRecV1 tab;
-			
-	tab.version= kControlTabInfoVersionOne;
-	tab.iconSuiteID= 0;
-	tab.name= (CFStringRef) sHandle;
-	return RC(SetControlData((ControlRef)cHandle, index, kControlTabInfoTag, sizeof(ControlTabInfoRecV1), &tab));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTabIcon(JNIEnv *env, jclass zz,
-				jint cHandle, jint index, jint iconHandle) {
-	ControlButtonContentInfo tab;
-	CIconHandle ih= (CIconHandle) iconHandle;
-			
-	tab.contentType= kControlContentCIconHandle;
-	tab.u.cIconHandle= ih;
-	
-	return RC(SetControlData((ControlRef)cHandle, index, kControlTabImageContentTag, sizeof(ControlButtonContentInfo), &tab));
-}
-
-//---- Combo
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlPopupMenuHandle(JNIEnv *env, jclass zz,
-				jint cHandle, jint mHandle) {
-	SetControlPopupMenuHandle((ControlRef)cHandle, (MenuRef) mHandle);
-}
-
-//---- DataBrowser
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_createDataBrowserControl(JNIEnv *env, jclass zz, jint wHandle) {
-	ControlRef controlRef;
-	DataBrowserCallbacks callbacks;
-	
-	CreateDataBrowserControl((WindowRef)wHandle, &NULL_RECT, kDataBrowserListView, &controlRef);
-	
-	callbacks.version= kDataBrowserLatestCallbacks;
-	InitDataBrowserCallbacks(&callbacks);
-	SetDataBrowserCallbacks(controlRef, &callbacks);
-		
-	return (jint) controlRef;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setDataBrowserCallbacks(JNIEnv *env, jclass zz,
-					jint cHandle, jint dataUPP, jint compareUPP, jint notificationUPP) {
-	DataBrowserCallbacks callbacks;
-	GetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
-	callbacks.u.v1.itemDataCallback= (DataBrowserItemDataUPP) dataUPP;
-	callbacks.u.v1.itemCompareCallback= (DataBrowserItemCompareUPP) compareUPP;
-	callbacks.u.v1.itemNotificationCallback= (DataBrowserItemNotificationUPP) notificationUPP;
-	SetDataBrowserCallbacks((ControlRef) cHandle, &callbacks);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_newColumnDesc(JNIEnv *env, jclass zz,
-			jint propertyID, jint propertyType, jint propertyFlags, jshort minimumWidth, jshort maximumWidth) {
-
-	DataBrowserListViewColumnDesc *columnDesc= (DataBrowserListViewColumnDesc*) calloc(sizeof(DataBrowserListViewColumnDesc), 1);
-			
-	columnDesc->propertyDesc.propertyID= propertyID;
-	columnDesc->propertyDesc.propertyType= propertyType;
-	columnDesc->propertyDesc.propertyFlags= propertyFlags;
-	
-	columnDesc->headerBtnDesc.version= kDataBrowserListViewLatestHeaderDesc;
-	columnDesc->headerBtnDesc.minimumWidth= minimumWidth;
-	columnDesc->headerBtnDesc.maximumWidth= maximumWidth;
-
-	columnDesc->headerBtnDesc.titleOffset= 0;
-	columnDesc->headerBtnDesc.titleString= NULL;
-	columnDesc->headerBtnDesc.initialOrder= kDataBrowserOrderIncreasing;
-	
-	/*
-	columnDesc.headerBtnDesc.titleAlignment= teCenter;
-	columnDesc.headerBtnDesc.titleFontTypeID= kControlFontViewSystemFont;
-	columnDesc.headerBtnDesc.btnFontStyle= normal;
-	*/
-
-	return (jint)columnDesc;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AutoSizeDataBrowserListViewColumns(JNIEnv *env, jclass zz,
-		jint cHandle) {
-	return RC(AutoSizeDataBrowserListViewColumns((ControlRef) cHandle));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserActiveItems(JNIEnv *env, jclass zz,
-		jint cHandle, jboolean active) {
-	return RC(SetDataBrowserActiveItems((ControlRef) cHandle, (Boolean)active));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserItems(JNIEnv *env, jclass zz,
-						jint cHandle, jint containerID, jint numItems, jintArray items, jint sortProperty) {
-    jint *sa= NULL;
-	OSStatus status;
-	if (items != 0)
-		sa= (*env)->GetIntArrayElements(env, items, 0);
-	status= RC(AddDataBrowserItems((ControlRef) cHandle, containerID, numItems, (const DataBrowserItemID*) sa, sortProperty));
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, items, sa, 0);
-	return (jint) status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveDataBrowserItems(JNIEnv *env, jclass zz,
-						jint cHandle, jint containerID, jint numItems, jintArray items, jint sortProperty) {
-    jint *sa= NULL;
-	OSStatus status;
-	if (items != 0)
-		sa= (*env)->GetIntArrayElements(env, items, 0);
-	status= RC(RemoveDataBrowserItems((ControlRef) cHandle, containerID, numItems, (const DataBrowserItemID*) sa, sortProperty));
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, items, sa, 0);
-	return (jint) status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataText(JNIEnv *env, jclass zz,
-			jint itemId, jint sHandle) {
-	return (jint) RC(SetDataBrowserItemDataText((DataBrowserItemDataRef) itemId, (CFStringRef)sHandle));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataBooleanValue(JNIEnv *env, jclass zz,
-			jint itemId, jboolean value) {
-	return (jint) RC(SetDataBrowserItemDataBooleanValue((DataBrowserItemDataRef) itemId, (Boolean)value));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataItemID(JNIEnv *env, jclass zz,
-			jint itemId, jint itemID) {
-	return (jint) RC(SetDataBrowserItemDataItemID((DataBrowserItemDataRef) itemId, (DataBrowserItemID)itemID));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataIcon(JNIEnv *env, jclass zz,
-			jint itemId, jint iconRef) {
-	return (jint) RC(SetDataBrowserItemDataIcon((DataBrowserItemDataRef) itemId, (IconRef)iconRef));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataButtonValue(JNIEnv *env, jclass zz,
-			jint itemId, jshort themeButtonValue) {
-	return (jint) RC(SetDataBrowserItemDataButtonValue((DataBrowserItemDataRef) itemId, (ThemeButtonValue)themeButtonValue));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserHasScrollBars(JNIEnv *env, jclass zz,	
-				jint cHandle, jboolean hScroll, jboolean vScroll) {
-	return RC(SetDataBrowserHasScrollBars((ControlRef) cHandle, hScroll, vScroll));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserListViewHeaderBtnHeight(JNIEnv *env, jclass zz,
-				jint cHandle, jshort height) {
-	return RC(SetDataBrowserListViewHeaderBtnHeight((ControlRef) cHandle, height));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserListViewColumn(JNIEnv *env, jclass zz,
-				jint cHandle, jint handle, jint index) {
-	return RC(AddDataBrowserListViewColumn((ControlRef)cHandle, (DataBrowserListViewColumnDesc*)handle, (DataBrowserTableViewColumnIndex)index));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_UpdateDataBrowserItems(JNIEnv *env, jclass zz,
-				jint cHandle, jint container, jint numItems, jintArray items, jint preSortProperty, jint propertyID) {
-	jint *sa= (*env)->GetIntArrayElements(env, items, 0);
-	jint status= RC(UpdateDataBrowserItems((ControlRef)cHandle, (DataBrowserItemID)container, numItems, sa,
-				(DataBrowserPropertyID)preSortProperty, (DataBrowserPropertyID) propertyID));
-	(*env)->ReleaseIntArrayElements(env, items, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserSelectionFlags(JNIEnv *env, jclass zz,
-				jint cHandle, jint selectionFlags) {
-	return RC(SetDataBrowserSelectionFlags((ControlRef)cHandle, (DataBrowserSelectionFlags) selectionFlags));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemCount(JNIEnv *env, jclass zz,
-				jint cHandle, jint container, jboolean recurse, jint state, jintArray numItems) {
-	jint *sa= (*env)->GetIntArrayElements(env, numItems, 0);
-	OSStatus status= RC(GetDataBrowserItemCount((ControlRef)cHandle, (DataBrowserItemID)container, recurse, state, sa));
-	(*env)->ReleaseIntArrayElements(env, numItems, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItems(JNIEnv *env, jclass zz,
-				jint cHandle, jint container, jboolean recurse, jint state, jint items) {
-	return RC(GetDataBrowserItems((ControlRef)cHandle, (DataBrowserItemID)container, recurse, 
-						(DataBrowserItemState)state, (Handle)items));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserSelectedItems(JNIEnv *env, jclass zz,
-				jint cHandle, jint numItems, jintArray items, jint operation) {
-	jint *sa= (*env)->GetIntArrayElements(env, items, 0);
-	OSStatus status= RC(SetDataBrowserSelectedItems((ControlRef)cHandle, numItems, (DataBrowserItemID*)sa, operation));
-	(*env)->ReleaseIntArrayElements(env, items, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RevealDataBrowserItem(JNIEnv *env, jclass zz,
-				jint cHandle, jint item, jint propertyID, jboolean centerInView) {
-	return RC(RevealDataBrowserItem((ControlRef)cHandle, item, propertyID, centerInView));
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsDataBrowserItemSelected(JNIEnv *env, jclass zz,
-				jint cHandle, jint item) {
-	return IsDataBrowserItemSelected((ControlRef)cHandle, item);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserScrollPosition(JNIEnv *env, jclass zz,
-				jint cHandle, jintArray top, jintArray left) {
-	jint *sa= (*env)->GetIntArrayElements(env, top, 0);
-	jint *sb= (*env)->GetIntArrayElements(env, left, 0);
-	jint status= RC(GetDataBrowserScrollPosition((ControlRef)cHandle, (UInt32*)sa, (UInt32*)sb));
-	(*env)->ReleaseIntArrayElements(env, top, sa, 0);
-	(*env)->ReleaseIntArrayElements(env, left, sb, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserScrollPosition(JNIEnv *env, jclass zz,
-				jint cHandle, jint top, jint left) {
-	return RC(SetDataBrowserScrollPosition((ControlRef)cHandle, (UInt32)top, (UInt32)left));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTarget(JNIEnv *env, jclass zz,
-				jint cHandle, jint rootID) {
-	return RC(SetDataBrowserTarget((ControlRef)cHandle, (DataBrowserItemID)rootID));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserListViewDisclosureColumn(JNIEnv *env, jclass zz,
-				jint cHandle, jint colID, jboolean b) {
-	return RC(SetDataBrowserListViewDisclosureColumn((ControlRef)cHandle, (DataBrowserTableViewColumnID)colID, (Boolean)b));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemPartBounds(JNIEnv *env, jclass zz,
-				jint cHandle, jint item, jint property, jint part, jshortArray bounds) {
-	jint *sa= (*env)->GetIntArrayElements(env, bounds, 0);
-	int rc= RC(GetDataBrowserItemPartBounds((ControlRef)cHandle, item, property, part, (Rect*) sa));
-	(*env)->ReleaseIntArrayElements(env, bounds, sa, 0);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)AECountItems((const AEDescList *)arg0, (long *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	return rc;
 }
+#endif /* NO_AECountItems */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_OpenDataBrowserContainer(JNIEnv *env, jclass zz,
-				jint cHandle, jint container) {
-	return RC(OpenDataBrowserContainer((ControlRef)cHandle, container));
-}
+#ifndef NO_AddDataBrowserItems
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserItems
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)
+{
+	jint *lparg3=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CloseDataBrowserContainer(JNIEnv *env, jclass zz,
-				jint cHandle, jint container) {
-	return RC(CloseDataBrowserContainer((ControlRef)cHandle, container));
-}
+	DEBUG_CALL("AddDataBrowserItems\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemState(JNIEnv *env, jclass zz,
-				jint cHandle, jint item, jshortArray state) {
-	jint *sa= (*env)->GetIntArrayElements(env, state, 0);
-	int rc= RC(GetDataBrowserItemState((ControlRef)cHandle, item, (DataBrowserItemState*) sa));
-	(*env)->ReleaseIntArrayElements(env, state, sa, 0);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)AddDataBrowserItems((ControlRef)arg0, (DataBrowserItemID)arg1, (UInt32)arg2, (const DataBrowserItemID *)lparg3, (DataBrowserPropertyID)arg4);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	return rc;
 }
+#endif /* NO_AddDataBrowserItems */
 
-//---- events
+#ifndef NO_AddDataBrowserListViewColumn
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AddDataBrowserListViewColumn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("AddDataBrowserListViewColumn\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CallNextEventHandler(JNIEnv *env, jclass zz,
-				jint nextHandler, jint eventRefHandle) {
-	return (jint) CallNextEventHandler((EventHandlerCallRef) nextHandler, (EventRef) eventRefHandle);
+	return (jint)AddDataBrowserListViewColumn((ControlRef)arg0, (DataBrowserListViewColumnDesc *)arg1, (DataBrowserTableViewColumnIndex)arg2);
 }
+#endif /* NO_AddDataBrowserListViewColumn */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventHICommand(JNIEnv *env, jclass zz,
-			jint eRefHandle, jintArray outParamType) {
-	jint status;
- 	HICommand command;
-	
-	status= (jint) RC(GetEventParameter((EventRef)eRefHandle, kEventParamDirectObject, typeHICommand, 
-			NULL, sizeof(HICommand), NULL, &command));
-	
-	if (outParamType != NULL) {
-		jint *sa= (*env)->GetIntArrayElements(env, outParamType, 0);
-		sa[0]= (jint) command.attributes;
-		sa[1]= (jint) command.commandID;
-		sa[2]= (jint) command.menu.menuRef;
-		sa[3]= (jint) command.menu.menuItemIndex;
-		(*env)->ReleaseIntArrayElements(env, outParamType, sa, 0);
-	}
+#ifndef NO_AppendMenuItemTextWithCFString
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AppendMenuItemTextWithCFString
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jshortArray arg4)
+{
+	jshort *lparg4=NULL;
+	jint rc;
 
-	return status;
-}
+	DEBUG_CALL("AppendMenuItemTextWithCFString\n")
 
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3I_3I_3B(JNIEnv *env, jclass zz,
-			jint eRefHandle, jint paramName, jint paramType, jintArray outParamType, jintArray outActualSize, jbyteArray data) {
-	jint status;
-    jint *sa= NULL;
-    jint *sb= NULL;
-    jbyte *sc= NULL;
-	int size= 0;
-	
-	if (outParamType != NULL)
-		sa= (*env)->GetIntArrayElements(env, outParamType, 0);
-	if (outActualSize != NULL)
-		sb= (*env)->GetIntArrayElements(env, outActualSize, 0);
-	if (data != NULL) {
-		sc= (*env)->GetByteArrayElements(env, data, 0);
-		size= (*env)->GetArrayLength(env, data);
-	}
-	
-	status= (jint) RC(GetEventParameter((EventRef)eRefHandle, (EventParamName)paramName, (EventParamType)paramType, 
-			(EventParamType*)sa, size * sizeof(jbyte), (UInt32*)sb, (void*)sc));
-	
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, outParamType, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, outActualSize, sb, 0);
-	if (sc != NULL)
-		(*env)->ReleaseByteArrayElements(env, data, sc, 0);
-
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3I_3I_3C(JNIEnv *env, jclass zz,
-			jint eRefHandle, jint paramName, jint paramType, jintArray outParamType, jintArray outActualSize, jcharArray data) {
-	jint status;
-    jint *sa= NULL;
-    jint *sb= NULL;
-    jchar *sc= NULL;
-	int size= 0;
-	
-	if (outParamType != NULL)
-		sa= (*env)->GetIntArrayElements(env, outParamType, 0);
-	if (outActualSize != NULL)
-		sb= (*env)->GetIntArrayElements(env, outActualSize, 0);
-	if (data != NULL) {
-		sc= (*env)->GetCharArrayElements(env, data, 0);
-		size= (*env)->GetArrayLength(env, data);
-	}
-	
-	status= (jint) RC(GetEventParameter((EventRef)eRefHandle, (EventParamName)paramName, (EventParamType)paramType, 
-			(EventParamType*)sa, size * sizeof(jchar), (UInt32*)sb, (void*)sc));
-	
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, outParamType, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, outActualSize, sb, 0);
-	if (sc != NULL)
-		(*env)->ReleaseCharArrayElements(env, data, sc, 0);
-
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3I_3I_3S(JNIEnv *env, jclass zz,
-			jint eRefHandle, jint paramName, jint paramType, jintArray outParamType, jintArray outActualSize, jshortArray data) {
-	jint status;
-    jint *sa= NULL;
-    jint *sb= NULL;
-    jshort *sc= NULL;
-	int size= 0;
-	
-	if (outParamType != NULL)
-		sa= (*env)->GetIntArrayElements(env, outParamType, 0);
-	if (outActualSize != NULL)
-		sb= (*env)->GetIntArrayElements(env, outActualSize, 0);
-	if (data != NULL) {
-		sc= (*env)->GetShortArrayElements(env, data, 0);
-		size= (*env)->GetArrayLength(env, data);
-	}
-	
-	status= (jint) RC(GetEventParameter((EventRef)eRefHandle, (EventParamName)paramName, (EventParamType)paramType, 
-			(EventParamType*)sa, size * sizeof(jshort), (UInt32*)sb, (void*)sc));
-	
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, outParamType, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, outActualSize, sb, 0);
-	if (sc != NULL)
-		(*env)->ReleaseShortArrayElements(env, data, sc, 0);
-
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3I_3I_3I(JNIEnv *env, jclass zz,
-			jint eRefHandle, jint paramName, jint paramType, jintArray outParamType, jintArray outActualSize, jintArray data) {
-	jint status;
-    jint *sa= NULL;
-    jint *sb= NULL;
-    jint *sc= NULL;
-	int size= 0;
-	
-	if (outParamType != NULL)
-		sa= (*env)->GetIntArrayElements(env, outParamType, 0);
-	if (outActualSize != NULL)
-		sb= (*env)->GetIntArrayElements(env, outActualSize, 0);
-	if (data != NULL) {
-		sc= (*env)->GetIntArrayElements(env, data, 0);
-		size= (*env)->GetArrayLength(env, data);
-	}
-	
-	status= (jint) RC(GetEventParameter((EventRef)eRefHandle, (EventParamName)paramName, (EventParamType)paramType, 
-			(EventParamType*)sa, size * sizeof(jint), (UInt32*)sb, (void*)sc));
-	
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, outParamType, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, outActualSize, sb, 0);
-	if (sc != NULL)
-		(*env)->ReleaseIntArrayElements(env, data, sc, 0);
-
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetEventParameter(JNIEnv *env, jclass zz,
-			jint eRefHandle, jint paramName, jint paramType, jcharArray data) {
-	jint status;
-    jchar *sc= NULL;
-	int size= 0;
-	
-	if (data != NULL) {
-		sc= (*env)->GetCharArrayElements(env, data, 0);
-		size= (*env)->GetArrayLength(env, data);
-	}
-	
-	status= (jint) RC(SetEventParameter((EventRef)eRefHandle, (EventParamName)paramName, (EventParamType)paramType, 
-			size * sizeof(jchar), (void*)sc));
-	
-	if (sc != NULL)
-		(*env)->ReleaseCharArrayElements(env, data, sc, 0);
-
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InstallEventHandler(JNIEnv *env, jclass zz,
-						jint eventTargetRef, jint eventHandlerUPP, jintArray eventTypes, jint clientData) {
-    jint *sa= (*env)->GetIntArrayElements(env, eventTypes, 0);
-    jsize length= (*env)->GetArrayLength(env, eventTypes);
-	jint status;
-	
-	status= (jint) RC(InstallEventHandler(
-			(EventTargetRef) eventTargetRef, 
-			(EventHandlerUPP) eventHandlerUPP, 
-			length/2, (EventTypeSpec*) sa,
-			(void*) clientData,
-			NULL
-		));
-		
-	(*env)->ReleaseIntArrayElements(env, eventTypes, sa, 0);
-		
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlEventTarget(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jint) GetControlEventTarget((ControlRef) cHandle);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuEventTarget(JNIEnv *env, jclass zz, jint mHandle) {
-	return (jint) GetMenuEventTarget((MenuRef) mHandle);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetUserFocusEventTarget(JNIEnv *env, jclass zz) {
-	return (jint) GetUserFocusEventTarget();
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetApplicationEventTarget(JNIEnv *env, jclass zz) {
-	return (jint) GetApplicationEventTarget();
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetUserFocusWindow(JNIEnv *env, jclass zz) {
-	return (jint) GetUserFocusWindow();
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_EventAvail(JNIEnv *env, jclass zz, jshort mask, jint eHandle) {
-	return (jboolean) EventAvail(mask, (EventRecord*) eHandle);
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetNextEvent(JNIEnv *env, jclass zz, jshort mask, jintArray eData) {
-	EventRecord event;
-	jboolean rc= GetNextEvent(mask, &event);
-	copyEvent(env, eData, &event);
+	if (arg4) lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL);
+	rc = (jint)AppendMenuItemTextWithCFString((MenuRef)arg0, (CFStringRef)arg1, (MenuItemAttributes)arg2, (MenuCommand)arg3, (MenuItemIndex *)lparg4);
+	if (arg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
 	return rc;
 }
+#endif /* NO_AppendMenuItemTextWithCFString */
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_WaitNextEvent(JNIEnv *env, jclass zz, jshort mask, jintArray eData, jint sleeptime) {
-	EventRecord event;
-	jboolean rc= WaitNextEvent(mask, &event, sleeptime, nil);	
-	copyEvent(env, eData, &event);
+#ifndef NO_AutoSizeDataBrowserListViewColumns
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AutoSizeDataBrowserListViewColumns
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("AutoSizeDataBrowserListViewColumns\n")
+
+	return (jint)AutoSizeDataBrowserListViewColumns((ControlRef)arg0);
+}
+#endif /* NO_AutoSizeDataBrowserListViewColumns */
+
+#ifndef NO_BeginUpdate
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_BeginUpdate
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("BeginUpdate\n")
+
+	BeginUpdate((WindowRef)arg0);
+}
+#endif /* NO_BeginUpdate */
+
+#ifndef NO_BringToFront
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_BringToFront
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("BringToFront\n")
+
+	BringToFront((WindowRef)arg0);
+}
+#endif /* NO_BringToFront */
+
+#ifndef NO_CFRelease
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFRelease
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CFRelease\n")
+
+	CFRelease((CFTypeRef)arg0);
+}
+#endif /* NO_CFRelease */
+
+#ifndef NO_CFStringCreateWithCharacters
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringCreateWithCharacters
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("CFStringCreateWithCharacters\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	rc = (jint)CFStringCreateWithCharacters((CFAllocatorRef)arg0, (const UniChar *)lparg1, (CFIndex)arg2);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
 	return rc;
 }
+#endif /* NO_CFStringCreateWithCharacters */
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_StillDown(JNIEnv *env, jclass zz) {
-	return (jboolean) StillDown();
+#ifndef NO_CFStringGetCharacters
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringGetCharacters
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jcharArray arg2)
+{
+	CFRange _arg1, *lparg1=NULL;
+	jchar *lparg2=NULL;
+
+	DEBUG_CALL("CFStringGetCharacters\n")
+
+	if (arg1) lparg1 = getCFRangeFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	CFStringGetCharacters((CFStringRef)arg0, (CFRange)*lparg1, (UniChar *)lparg2);
+	if (arg1) setCFRangeFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
 }
+#endif /* NO_CFStringGetCharacters */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMouse(JNIEnv *env, jclass zz, jshortArray where) {
-	jshort *sa= (*env)->GetShortArrayElements(env, where, 0);
-	GetMouse((struct Point*)sa);
-	(*env)->ReleaseShortArrayElements(env, where, sa, 0);
+#ifndef NO_CFStringGetLength
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringGetLength
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CFStringGetLength\n")
+
+	return (jint)CFStringGetLength((CFStringRef)arg0);
 }
+#endif /* NO_CFStringGetLength */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_AEProcessAppleEvent(JNIEnv *env, jclass zz,
-				jintArray eventData) {
-	EventRecord event;
-	copyEventData(env, &event, eventData);
-	AEProcessAppleEvent(&event);
+#ifndef NO_CFURLCopyFileSystemPath
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCopyFileSystemPath
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CFURLCopyFileSystemPath\n")
+
+	return (jint)CFURLCopyFileSystemPath((CFURLRef)arg0, (CFURLPathStyle)arg1);
 }
+#endif /* NO_CFURLCopyFileSystemPath */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_MenuEvent(JNIEnv *env, jclass zz,
-				jintArray eventData) {
-	EventRecord event;
-	copyEventData(env, &event, eventData);
-	return (jint) MenuEvent(&event);
-}
+#ifndef NO_CFURLCreateFromFSRef
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCreateFromFSRef
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PostEvent(JNIEnv *env, jclass zz, jshort kind, jint message) {
-	return RC(PostEvent(kind, message));
-}
+	DEBUG_CALL("CFURLCreateFromFSRef\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetKeyboardFocus(JNIEnv *env, jclass zz, jint wHandle, jintArray cHandle) {
-    jint *sa= (*env)->GetIntArrayElements(env, cHandle, 0);
-	int rc= RC(GetKeyboardFocus((WindowRef) wHandle, (ControlRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, cHandle, sa, 0);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)CFURLCreateFromFSRef((CFAllocatorRef)arg0, (const struct FSRef *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	return rc;
 }
+#endif /* NO_CFURLCreateFromFSRef */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AdvanceKeyboardFocus(JNIEnv *env, jclass zz, jint wHandle) {
-	return RC(AdvanceKeyboardFocus((WindowRef) wHandle));
+#ifndef NO_CGContextScaleCTM
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextScaleCTM
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
+{
+	DEBUG_CALL("CGContextScaleCTM\n")
+
+	CGContextScaleCTM((CGContextRef)arg0, (float)arg1, (float)arg2);
 }
+#endif /* NO_CGContextScaleCTM */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetKeyboardFocus(JNIEnv *env, jclass zz,
-			jint wHandle, jint cHandle, jshort part) {
-	return (jint) RC(SetKeyboardFocus((WindowRef) wHandle, (ControlRef) cHandle, part));
+#ifndef NO_CGContextTranslateCTM
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextTranslateCTM
+	(JNIEnv *env, jclass that, jint arg0, jfloat arg1, jfloat arg2)
+{
+	DEBUG_CALL("CGContextTranslateCTM\n")
+
+	CGContextTranslateCTM((CGContextRef)arg0, (float)arg1, (float)arg2);
 }
+#endif /* NO_CGContextTranslateCTM */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentEventLoop(JNIEnv *env, jclass zz) {
-	return (jint) GetCurrentEventLoop();
+#ifndef NO_CallNextEventHandler
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CallNextEventHandler
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CallNextEventHandler\n")
+
+	return (jint)CallNextEventHandler((EventHandlerCallRef)arg0, (EventRef)arg1);
 }
+#endif /* NO_CallNextEventHandler */
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsShowContextualMenuClick(JNIEnv *env, jclass zz, jintArray eventData) {
-	EventRecord event;
-	copyEventData(env, &event, eventData);
-	return (jboolean) IsShowContextualMenuClick(&event);
+#ifndef NO_CharWidth
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_CharWidth
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("CharWidth\n")
+
+	return (jshort)CharWidth((CharParameter)arg0);
 }
+#endif /* NO_CharWidth */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ContextualMenuSelect(JNIEnv *env, jclass zz,
-			jint mHandle, jshortArray location, jshortArray menuId, jshortArray index) {
-	UInt32 outUserSelectionType;	
-    jshort *sa= (*env)->GetShortArrayElements(env, menuId, 0);
-    jshort *sb= (*env)->GetShortArrayElements(env, index, 0);
-	jint status= RC(ContextualMenuSelect(
-				(MenuRef) mHandle,
-				point(env, location), 
-				false, 
-				0, // kCMHelpItemOtherHelp, 
-				0, // "\pinHelpItemString", 
-				NULL, 
-				&outUserSelectionType, 
-				(SInt16*) sa, 
-				(MenuItemIndex*) sb));
-	(*env)->ReleaseShortArrayElements(env, menuId, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, index, sb, 0);
-	return status;
+#ifndef NO_ClearCurrentScrap
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClearCurrentScrap
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("ClearCurrentScrap\n")
+
+	return (jint)ClearCurrentScrap();
 }
+#endif /* NO_ClearCurrentScrap */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InstallEventLoopTimer(JNIEnv *env, jclass zz,
-		jint inEventLoop, jdouble inFireDelay, jdouble inInterval, jint inTimerProc, jint inTimerData, jintArray outTimer) {
-	jint *sa= (*env)->GetIntArrayElements(env, outTimer, 0);
-	int rc= RC(InstallEventLoopTimer((EventLoopRef) inEventLoop, (EventTimerInterval) inFireDelay, (EventTimerInterval) inInterval,
-                (EventLoopTimerUPP) inTimerProc, (void*) inTimerData, (EventLoopTimerRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, outTimer, sa, 0);
+#ifndef NO_ClipCGContextToRegion
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClipCGContextToRegion
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("ClipCGContextToRegion\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	rc = (jint)ClipCGContextToRegion((CGContextRef)arg0, (const Rect *)lparg1, (RgnHandle)arg2);
+	if (arg1) setRectFields(env, arg1, lparg1);
 	return rc;
 }
+#endif /* NO_ClipCGContextToRegion */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveEventLoopTimer(JNIEnv *env, jclass zz, jint timer) {
-	return RC(RemoveEventLoopTimer((EventLoopTimerRef) timer));
-}
-
-JNIEXPORT jdouble JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetLastUserEventTime(JNIEnv *env, jclass zz) {
-	return GetLastUserEventTime();
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ReceiveNextEvent(JNIEnv *env, jclass zz,
-		jintArray eventTypeSpecList, jdouble inTimeout, jboolean inPullEvent, jintArray outEvent) {
-	jint status;
-	jint *sa= NULL, *sb= NULL;
-	UInt32 inNumTypes= 0;
-	if (eventTypeSpecList != NULL) {
-		sa= (*env)->GetIntArrayElements(env, eventTypeSpecList, 0);
-		inNumTypes= (*env)->GetArrayLength(env, eventTypeSpecList)/2;
-	}
-	if (outEvent != NULL)
-		sb= (*env)->GetIntArrayElements(env, outEvent, 0);
-	status= (jint) RC(ReceiveNextEvent(inNumTypes, (const EventTypeSpec*) sa, inTimeout, inPullEvent, (EventRef*) sb));
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, eventTypeSpecList, sa, 0);	
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, outEvent, sb, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventDispatcherTarget(JNIEnv *env, jclass zz) {
-	return (jint) GetEventDispatcherTarget();
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SendEventToEventTarget(JNIEnv *env, jclass zz, jint eHandle, jint target) {
-	return (jint) RC(SendEventToEventTarget((EventRef)eHandle, (EventTargetRef) target));
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ReleaseEvent(JNIEnv *env, jclass zz, jint eHandle) {
-	ReleaseEvent((EventRef)eHandle);
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_ConvertEventRefToEventRecord(JNIEnv *env, jclass zz, jint eHandle, jintArray data) {
-	EventRecord event;
-	jboolean rc= ConvertEventRefToEventRecord((EventRef) eHandle, &event);
-	copyEvent(env, data, &event);
-	return rc;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InstallStandardEventHandler(JNIEnv *env, jclass zz, jint target) {
-	return (jint) RC(InstallStandardEventHandler((EventTargetRef) target));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowEventTarget(JNIEnv *env, jclass zz, jint wHandle) {
-	return (jint) GetWindowEventTarget((WindowRef) wHandle);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventClass(JNIEnv *env, jclass zz, jint eHandle) {
-	return (jint) GetEventClass((EventRef) eHandle);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventKind(JNIEnv *env, jclass zz, jint eHandle) {
-	return (jint) GetEventKind((EventRef) eHandle);
-}
-
-JNIEXPORT jdouble JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventTime(JNIEnv *env, jclass zz, jint eHandle) {
-	return (jdouble) GetEventTime((EventRef) eHandle);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMouseLocation(JNIEnv *env, jclass zz, jint eHandle, jshortArray loc) {
-	jshort *sa= (*env)->GetShortArrayElements(env, loc, 0);
-	jint status= RC(GetEventParameter((EventRef) eHandle, kEventParamMouseLocation, typeQDPoint, NULL, sizeof(Point), NULL, (Point*)sa));
-	(*env)->ReleaseShortArrayElements(env, loc, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackMouseLocation(JNIEnv *env, jclass zz,
-			jint portHandle, jshortArray loc, jshortArray part) {
-	jshort *sa= (*env)->GetShortArrayElements(env, loc, 0);
-	jshort *sb= (*env)->GetShortArrayElements(env, part, 0);
-	jint status= RC(TrackMouseLocation((GrafPtr) portHandle, (Point*) sa, sb));
-	(*env)->ReleaseShortArrayElements(env, loc, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, part, sb, 0);
-	return status;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGlobalMouse(JNIEnv *env, jclass zz, jshortArray where) {
-	jshort *sa= (*env)->GetShortArrayElements(env, where, 0);
-	GetGlobalMouse((Point*)sa);
-	(*env)->ReleaseShortArrayElements(env, where, sa, 0);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateEvent(JNIEnv *env, jclass zz,
-			jint allocator, jint classID, jint kind, jdouble when, jint flags, jintArray eventRef) {
-	jint *sa= (*env)->GetIntArrayElements(env, eventRef, 0);
-	jint status= RC(CreateEvent((CFAllocatorRef)allocator, classID, kind, (EventTime)when, (EventAttributes)flags, (EventRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, eventRef, sa, 0);
-	return status;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PostEventToQueue(JNIEnv *env, jclass zz,
-			jint queue, jint event, jshort priority) {
-	return RC(PostEventToQueue((EventQueueRef)queue, (EventRef)event, (EventPriority) priority));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMainEventQueue(JNIEnv *env, jclass zz) {
-	return (jint) GetMainEventQueue();
-}
-
-//---- Cursors
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCursor(JNIEnv *env, jclass zz,
-		jshort id) {
-	return (jint) GetCursor(id);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewCursor(JNIEnv *env, jclass zz,
-		jshort hotX, jshort hotY, jshortArray data, jshortArray mask) {
-	
-	jshort *sa= (*env)->GetShortArrayElements(env, data, 0);
-	jshort *sb= (*env)->GetShortArrayElements(env, mask, 0);
-
-	Cursor *c= (Cursor*) NewPtrClear(sizeof(Cursor));
-	memcpy(&c->data, sa, sizeof (Bits16));
-	memcpy(&c->mask, sb, sizeof (Bits16));
-	c->hotSpot.h= hotX;
-	c->hotSpot.v= hotY;
-
-	(*env)->ReleaseShortArrayElements(env, data, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, mask, sb, 0);
-	
-	return (jint) c;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetCursor(JNIEnv *env, jclass zz, jint cursor) {
-	SetCursor((const Cursor*)cursor);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeCursor(JNIEnv *env, jclass zz, jint cursor) {
-	return (jint) SetThemeCursor((ThemeCursor)cursor);
-}
-
-//---- GrafPort
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetQDGlobalsScreenBits(JNIEnv *env, jclass zz,
-			jint bitmap) {
-	return (jint) GetQDGlobalsScreenBits((BitMap*)bitmap);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSwapTextFlags(JNIEnv *env, jclass zz, jint flags) {
-	return (jint) SwapQDTextFlags(flags);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSetPatternOrigin(JNIEnv *env, jclass zz,
-		jshortArray o) {
-	QDSetPatternOrigin(point(env, o));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPort(JNIEnv *env, jclass zz) {
-	GrafPtr p;
-	GetPort(&p);
-	return (jint) p;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPort(JNIEnv *env, jclass zz, jint portHandle) {
-	SetPort((GrafPtr) portHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPortWindowPort(JNIEnv *env, jclass zz, jint wHandle) {
-	SetPortWindowPort((WindowRef) wHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortBounds(JNIEnv *env, jclass zz,
-		jint port, jshortArray bounds) {
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	GetPortBounds((CGrafPtr) port, (Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EraseRect(JNIEnv *env, jclass zz, jshortArray bounds) {
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	EraseRect((Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrameRect(JNIEnv *env, jclass zz, jshortArray bounds) {
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	FrameRect((Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PaintRect(JNIEnv *env, jclass zz, jshortArray bounds) {
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	PaintRect((Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrameOval(JNIEnv *env, jclass zz, jshortArray bounds) {
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	FrameOval((Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PaintOval(JNIEnv *env, jclass zz, jshortArray bounds) {
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	PaintOval((Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrameRoundRect(JNIEnv *env, jclass zz,
-			jshortArray bounds, jshort ovalWidth, jshort ovalHeight) {
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	FrameRoundRect((Rect*) sa, ovalWidth, ovalHeight);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PaintRoundRect(JNIEnv *env, jclass zz,
-			jshortArray bounds, jshort ovalWidth, jshort ovalHeight) {
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	PaintRoundRect((Rect*) sa, ovalWidth, ovalHeight);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_NormalizeThemeDrawingState(JNIEnv *env, jclass zz) {
-	NormalizeThemeDrawingState();
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextFont(JNIEnv *env, jclass zz, jshort fontID) {
-	TextFont(fontID);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextSize(JNIEnv *env, jclass zz, jshort size) {
-	TextSize(size);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextFace(JNIEnv *env, jclass zz, jshort face) {
-	TextFace(face);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextMode(JNIEnv *env, jclass zz, jshort mode) {
-	TextMode(mode);
-}
-
-#ifdef USE_ATSUI
-
-static ATSUTextLayout fgTextLayout;
-static ATSUStyle fgStyle;
-static int fgTextLayoutInitialized;
-static ATSUAttributeTag fgATSUAttributeTag[4];
-static ByteCount fgByteCount[4];
-static ATSUAttributeValuePtr fgATSUAttributeValuePtr[4];
-
-static void initATSUI(ATSUFontID font, short size, short face) {
-	ATSUFontID f= 0; 
-	Fixed s= size << 16;
-	Boolean isBold= false;
-	Boolean isItalic= false;
-	int n= 3;
-	
-	if ((face & bold) != 0)
-		isBold= true;
-	if ((face & italic) != 0)
-		isItalic= true;
-	
-	if (ATSUFONDtoFontID(font, (Style) normal, &f) != 0)
-		fprintf(stderr, "ATSUFONDtoFontID: error\n");
-	else if (f != 0)
-		n++;
-	
-	if (fgTextLayoutInitialized == 0) {
-		if (ATSUCreateTextLayout(&fgTextLayout) != 0)
-		
-		if (ATSUSetTransientFontMatching(fgTextLayout, true) != 0)
-			fprintf(stderr, "ATSUSetTransientFontMatching1: error\n");
+#ifndef NO_CloseDataBrowserContainer
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CloseDataBrowserContainer
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CloseDataBrowserContainer\n")
 
-		if (ATSUCreateStyle(&fgStyle) != 0)
-			fprintf(stderr, "ATSUCreateStyle: error\n");
-						
-		fgATSUAttributeTag[0]= kATSUSizeTag;
-		fgATSUAttributeTag[1]= kATSUQDBoldfaceTag;
-		fgATSUAttributeTag[2]= kATSUQDItalicTag;
-		fgATSUAttributeTag[3]= kATSUFontTag;
-
-		fgByteCount[0]= sizeof(Fixed);
-		fgByteCount[1]= sizeof(Boolean);
-		fgByteCount[2]= sizeof(Boolean);
-		fgByteCount[3]= sizeof(ATSUFontID);
-	
-		fgTextLayoutInitialized= 1;
-	} else {
-		if (ATSUSetTransientFontMatching(fgTextLayout, true) != 0)
-			fprintf(stderr, "ATSUSetTransientFontMatching2: error\n");
-	}
-	
-	fgATSUAttributeValuePtr[0]= &s;
-	fgATSUAttributeValuePtr[1]= &isBold;
-	fgATSUAttributeValuePtr[2]= &isItalic;
-	fgATSUAttributeValuePtr[3]= &f;
-	
-	if (ATSUSetAttributes(fgStyle, n, fgATSUAttributeTag, fgByteCount, fgATSUAttributeValuePtr) != 0)
-		fprintf(stderr, "ATSUSetAttributes: error\n");
-}
-#endif
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawText(JNIEnv *env, jclass zz,
-			jstring s, jshort font, jshort size, jshort face) {
-#ifdef USE_ATSUI
-	
-	if (s !=  NULL) {
-		const jchar *ss= (*env)->GetStringChars(env, s, NULL);
-		int l= (*env)->GetStringLength(env, s);
-		
-		initATSUI(font, size, face);
-	
-		if (ATSUSetTextPointerLocation(fgTextLayout, (ConstUniCharArrayPtr)ss, kATSUFromTextBeginning, kATSUToTextEnd, l) != 0)
-			fprintf(stderr, "ATSUSetTextPointerLocation: error\n");
-		
-		if (ATSUSetRunStyle(fgTextLayout, fgStyle, (UniCharArrayOffset) 0, (UniCharCount) l) != 0)
-			fprintf(stderr, "ATSUSetRunStyle: error\n");		
-
-		if (ATSUDrawText(fgTextLayout, kATSUFromTextBeginning,  kATSUToTextEnd , kATSUUseGrafPortPenLoc, kATSUUseGrafPortPenLoc) != 0)
-			fprintf(stderr, "ATSUDrawText: error\n");
-
-		(*env)->ReleaseStringChars(env, s, ss);
-	}
-#else
-
-	const char *ss= (*env)->GetStringUTFChars(env, s, NULL);
-	DrawText(ss, 0, (short)strlen(ss));
-	(*env)->ReleaseStringUTFChars(env, s, ss);
-#endif
-}
-
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextWidth(JNIEnv *env, jclass zz,
-			jstring s, jshort font, jshort size, jshort face) {
-	jshort width= 0;
-	
-#ifdef USE_ATSUI
-	if (s !=  NULL) {
-		ATSTrapezoid trap;
-		ItemCount n;
-		const jchar *ss= (*env)->GetStringChars(env, s, NULL);
-		int l= (*env)->GetStringLength(env, s);
-		
-		initATSUI(font, size, face);
-
-		if (ATSUSetTextPointerLocation(fgTextLayout, (ConstUniCharArrayPtr)ss, kATSUFromTextBeginning, kATSUToTextEnd, l) != 0)
-			fprintf(stderr, "ATSUSetTextPointerLocation: error\n");
-		
-		if (ATSUSetRunStyle(fgTextLayout, fgStyle, (UniCharArrayOffset) 0, (UniCharCount) l) != 0)
-			fprintf(stderr, "ATSUSetRunStyle: error\n");		
-		
-		if (ATSUGetGlyphBounds(fgTextLayout, (ATSUTextMeasurement)0, (ATSUTextMeasurement)0,
-					kATSUFromTextBeginning, kATSUToTextEnd, kATSUseDeviceOrigins, 1, &trap, &n)  != 0)
-			fprintf(stderr, "ATSUGetGlyphBounds: error\n");
-			
-		(*env)->ReleaseStringChars(env, s, ss);
-
-		width= HiWord(trap.lowerRight.x);
-	}
-#else
-	const char *ss= (*env)->GetStringUTFChars(env, s, NULL);
-	width= TextWidth(ss, 0, (short)strlen(ss));
-	(*env)->ReleaseStringUTFChars(env, s, ss);
-#endif
-	return width;
-}
-
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_CharWidth(JNIEnv *env, jclass zz, jbyte c) {
-	return (jshort) CharWidth(c);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetFontInfo(JNIEnv *env, jclass zz, jshortArray info) {
-    jshort *sa= (*env)->GetShortArrayElements(env, info, 0);
-	GetFontInfo((FontInfo*) sa);
-	(*env)->ReleaseShortArrayElements(env, info, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetFractEnable(JNIEnv *env, jclass zz, jboolean enable) {
-	SetFractEnable(enable);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PenSize(JNIEnv *env, jclass zz, jshort h, jshort v) {
-	PenSize(h, v);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_MoveTo(JNIEnv *env, jclass zz, jshort h, jshort v) {
-	MoveTo(h, v);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_LineTo(JNIEnv *env, jclass zz, jshort h, jshort v) {
-	LineTo(h, v);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClipRect(JNIEnv *env, jclass zz, jshortArray clip) {
-    jshort *sa= (*env)->GetShortArrayElements(env, clip, 0);
-	ClipRect((Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, clip, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ScrollRect(JNIEnv *env, jclass zz, jshortArray r, jshort dh, jshort dv, jint rgn) {
-    jshort *sa= (*env)->GetShortArrayElements(env, r, 0);
-	ScrollRect((Rect*) sa, dh, dv, (RgnHandle) rgn);
-	(*env)->ReleaseShortArrayElements(env, r, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDFlushPortBuffer(JNIEnv *env, jclass zz, jint port, jint rgnHandle) {
-	QDFlushPortBuffer((GrafPtr) port, (RgnHandle) rgnHandle);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortVisibleRegion(JNIEnv *env, jclass zz, jint pHandle,
-				jint rgnHandle) {
-	return (jint) GetPortVisibleRegion((CGrafPtr) pHandle, (RgnHandle) rgnHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPortVisibleRegion(JNIEnv *env, jclass zz, jint pHandle,
-				jint rgnHandle) {
-	SetPortVisibleRegion((CGrafPtr) pHandle, (RgnHandle) rgnHandle);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDGetDirtyRegion(JNIEnv *env, jclass zz, jint pHandle,
-				jint rgnHandle) {
-	return (jint) RC(QDGetDirtyRegion((CGrafPtr) pHandle, (RgnHandle) rgnHandle));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSetDirtyRegion(JNIEnv *env, jclass zz, jint pHandle,
-				jint rgnHandle) {
-	return (jint) RC(QDSetDirtyRegion((CGrafPtr) pHandle, (RgnHandle) rgnHandle));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_LockPortBits(JNIEnv *env, jclass zz, jint pHandle) {
-	return (jint) RC(LockPortBits((GrafPtr) pHandle));
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_UnlockPortBits(JNIEnv *env, jclass zz, jint pHandle) {
-	return (jint) RC(UnlockPortBits((GrafPtr) pHandle));
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RGBForeColor(JNIEnv *enc, jclass zz, jshort red, jshort green, jshort blue) {
-	struct RGBColor c;
-	c.red= red;
-	c.green= green;
-	c.blue= blue;
-	RGBForeColor(&c);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RGBBackColor(JNIEnv *enc, jclass zz, jshort red, jshort green, jshort blue) {
-	struct RGBColor c;
-	c.red= red;
-	c.green= green;
-	c.blue= blue;
-	RGBBackColor(&c);
+	return (jint)CloseDataBrowserContainer((ControlRef)arg0, (DataBrowserItemID)arg1);
 }
+#endif /* NO_CloseDataBrowserContainer */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowFromPort(JNIEnv *env, jclass zz, jint pHandle) {
-	return (jint) GetWindowFromPort((GrafPtr)pHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvertRect(JNIEnv *env, jclass zz, jshort x, jshort y, jshort w, jshort h) {
-	Rect r;
-	SetRect(&r, x, y, x+w, y+h);
-	InvertRect(&r);
-}
-
-//---- Regions
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewRgn(JNIEnv *env, jclass zz) {
-	return (jint) NewRgn();
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetEmptyRgn(JNIEnv *env, jclass zz, jint rgnHandle) {
-	SetEmptyRgn((RgnHandle)rgnHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RectRgn(JNIEnv *env, jclass zz, jint rgnHandle, jshortArray rect) {
-    jshort *sa= (*env)->GetShortArrayElements(env, rect, 0);
-	RectRgn((RgnHandle) rgnHandle, (Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, rect, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetRegionBounds(JNIEnv *env, jclass zz, jint rgnHandle,
-				jshortArray bounds) {
-    jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	GetRegionBounds((RgnHandle) rgnHandle, (Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetRectRgn(JNIEnv *env, jclass zz, jint rgnHandle,
-		jshort left, jshort top, jshort right, jshort bottom) {
-	SetRectRgn((RgnHandle)rgnHandle, left, top, right, bottom);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SectRgn(JNIEnv *env, jclass zz, jint ra, jint rb, jint dest) {
-	SectRgn((RgnHandle) ra, (RgnHandle) rb, (RgnHandle) dest);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_UnionRgn(JNIEnv *env, jclass zz, jint ra, jint rb, jint dest) {
-	UnionRgn((RgnHandle) ra, (RgnHandle) rb, (RgnHandle) dest);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DiffRgn(JNIEnv *env, jclass zz, jint ra, jint rb, jint dest) {
-	DiffRgn((RgnHandle) ra, (RgnHandle) rb, (RgnHandle) dest);
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_PtInRgn(JNIEnv *env, jclass zz, jshortArray pt, jint rgnHandle) {
-	return (jboolean) PtInRgn(point(env, pt), (RgnHandle) rgnHandle);
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_RectInRgn(JNIEnv *env, jclass zz, jshortArray rect, jint rgnHandle) {
-    jshort *sa= (*env)->GetShortArrayElements(env, rect, 0);
-	jboolean status= (jboolean) RectInRgn((struct Rect*)sa, (RgnHandle) rgnHandle);
-	(*env)->ReleaseShortArrayElements(env, rect, sa, 0);
-	return status;
-}	
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyRgn(JNIEnv *env, jclass zz, jint src, jint dest) {
-	CopyRgn((RgnHandle) src, (RgnHandle) dest);
-}
-	
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetClip(JNIEnv *env, jclass zz, jint rgnHandle) {
-	GetClip((RgnHandle)rgnHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetClip(JNIEnv *env, jclass zz, jint rgnHandle) {
-	SetClip((RgnHandle)rgnHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortClipRegion(JNIEnv *env, jclass zz,
-		jint port, jint rgnHandle) {
-	GetPortClipRegion((CGrafPtr)port, (RgnHandle)rgnHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetOrigin(JNIEnv *env, jclass zz, jshort h, jshort v) {
-	SetOrigin(h, v);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeRgn(JNIEnv *env, jclass zz, jint rgnHandle) {
-	DisposeRgn((RgnHandle)rgnHandle);
-}
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_EmptyRgn(JNIEnv *env, jclass zz, jint rgnHandle) {
-	return (jboolean) EmptyRgn((RgnHandle)rgnHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_OffsetRgn(JNIEnv *env, jclass zz,
-				jint rgnHandle, jshort dh, jshort dv) {
-	OffsetRgn((RgnHandle)rgnHandle, dh, dv);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EraseRgn(JNIEnv *env, jclass zz, jint rgnHandle) {
-	EraseRgn((RgnHandle) rgnHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvertRgn(JNIEnv *env, jclass zz, jint rgnHandle) {
-	InvertRgn((RgnHandle) rgnHandle);
-}
-
-//---- Polygons
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_OpenPoly(JNIEnv *env, jclass zz) {
-	return (jint) OpenPoly();
-}
+#ifndef NO_ClosePoly
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClosePoly
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("ClosePoly\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClosePoly(JNIEnv *env, jclass zz) {
 	ClosePoly();
 }
+#endif /* NO_ClosePoly */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_OffsetPoly(JNIEnv *env, jclass zz, jint polyHandle, jshort dx, jshort dy) {
-	OffsetPoly((PolyPtr *)polyHandle, dx, dy);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_FramePoly(JNIEnv *env, jclass zz, jint polyHandle) {
-	FramePoly((PolyPtr *)polyHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PaintPoly(JNIEnv *env, jclass zz, jint polyHandle) {
-	PaintPoly((PolyPtr *)polyHandle);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_KillPoly(JNIEnv *env, jclass zz, jint polyHandle) {
-	KillPoly((PolyPtr *)polyHandle);
-}
-
-//---- BitMap & PixMap
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewPixMap(JNIEnv *env, jclass zz,
-			jshort width, jshort height, jshort rowbytes,
-			jshort pixelType, jshort pixelSize, jshort cmpSize, jshort cmpCount, jshort pixelFormat) {
-			
-	PixMapHandle pmh= NewPixMap();
-	PixMap *pm= *pmh;
-	
-	pm->baseAddr= NULL;
-	pm->rowBytes= rowbytes | 0x8000;	// mark as PixMap
-	pm->bounds.top= 0;
-	pm->bounds.left= 0;
-	pm->bounds.bottom= height;
-	pm->bounds.right= width;
-	pm->pmVersion= baseAddr32;	// 32 Bit clean
-	pm->packType= 0;
-	pm->packSize= 0;
-	pm->hRes= 0x00480000;
-	pm->vRes= 0x00480000;
-	pm->pixelType= pixelType;
-	pm->pixelSize= pixelSize;
-	pm->cmpCount= cmpCount;
-	pm->cmpSize= cmpSize;
-	pm->pixelFormat= pixelFormat;
-	pm->pmTable= NULL;
-	pm->pmExt= NULL;
-
-	return (jint) pmh;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getRowBytes(JNIEnv *env, jclass zz, jint pHandle) {
-	BitMap **bmh= (BitMap**) pHandle;
-	return (jint) (*bmh)->rowBytes;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setRowBytes(JNIEnv *env, jclass zz,
-				jint pHandle, jshort rowBytes) {
-	BitMap **bmh= (BitMap**) pHandle;
-	(*bmh)->rowBytes= rowBytes;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getBaseAddr(JNIEnv *env, jclass zz, jint pHandle) {
-	BitMap **bmh= (BitMap**) pHandle;
-	return (jint) (*bmh)->baseAddr;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getColorTableSize(JNIEnv *env, jclass zz,
-		jint pixMapHandle) {
-	PixMapHandle srch= (PixMapHandle) pixMapHandle;
-	PixMap *src= *srch;
-	if (src->pmTable != NULL) {
-		ColorTable *ct= *src->pmTable;
-		return ct->ctSize + 1;
-	}
-	return -1;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_getColorTable(JNIEnv *env, jclass zz,
-			jint pixMapHandle, jshortArray colorspec) {
-	PixMapHandle srch= (PixMapHandle) pixMapHandle;
-	PixMap *src= *srch;
-	int n= (*env)->GetArrayLength(env, colorspec) / 4;
-	if (src->pmTable != NULL) {
-		ColorTable *ct= *src->pmTable;
-		jshort *sa= (*env)->GetShortArrayElements(env, colorspec, 0);
-		memcpy(sa, ct->ctTable, n * sizeof(ColorSpec));
-		(*env)->ReleaseShortArrayElements(env, colorspec, sa, 0);
-	}
-}
-			
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setColorTable(JNIEnv *env, jclass zz,
-			jint pixMapHandle, jshortArray colorspec) {
-				
-	PixMapHandle ph= (PixMapHandle) pixMapHandle;
-	PixMap *pm= *ph;
-	ColorTable *ct;
-	jshort *sa;
-	int n= (*env)->GetArrayLength(env, colorspec) / 4;
-	
-	if (pm->pmTable != NULL)
-		DisposeHandle((Handle)pm->pmTable);
-	pm->pmTable= (ColorTable**) NewHandle(sizeof(ColorTable)+sizeof(ColorSpec)*(n-1));
-	ct= *pm->pmTable;
-	ct->ctSize= (n-1);
-	ct->ctFlags= 0;
-	ct->ctSeed= GetCTSeed();
-	
-	sa= (*env)->GetShortArrayElements(env, colorspec, 0);
-	memcpy(ct->ctTable, sa, n * sizeof(ColorSpec));
-	(*env)->ReleaseShortArrayElements(env, colorspec, sa, 0);
-}
-		
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setBaseAddr(JNIEnv *env, jclass zz,
-				jint bitMapHandle, jint ptr) {
-	BitMap **bmh= (BitMap**) bitMapHandle;
-	(*bmh)->baseAddr= (void*) ptr;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposePixMap(JNIEnv *env, jclass zz, jint pixMapHandle) {
-	PixMapHandle ph= (PixMapHandle) pixMapHandle;
-	PixMap *pm= *ph;
-	
-	if (pm->baseAddr != NULL) {
-		DisposePtr(pm->baseAddr);
-		pm->baseAddr= NULL;
-	}
-	
-	if ((pm->rowBytes & 0x8000) != 0) {	// Pixmap
-		DisposePixMap(ph);
-	} else {	// Bitmap
-		fprintf(stderr, "OS.DisposePixMap: warning: pixmap is bitmap\n");
-	}
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_duplicatePixMap(JNIEnv *env, jclass zz, jint srcPixmap) {
-
-	PixMapHandle srch= (PixMapHandle) srcPixmap;
-	PixMapHandle dsth= NewPixMap();
-		
-	PixMap *src= *srch;
-	PixMap *dst= *dsth;
-	
-	*dst= *src;
-	dst->pmExt= NULL;
-	
-	if (src->baseAddr != NULL) {
-		Size dataSize= GetPtrSize(src->baseAddr);
-		//fprintf(stderr, "duplicatePixMap: data %ld\n", dataSize);
-		dst->baseAddr= NewPtr(dataSize);
-		memcpy(dst->baseAddr, src->baseAddr, dataSize);
-	}
-	
-	if ((dst->rowBytes & 0x8000) != 0) {	// pixmap
-		if (src->pmTable != NULL) {
-			ColorTable *ct;
-			Size dataSize= GetHandleSize((Handle)src->pmTable);
-			//fprintf(stderr, "duplicatePixMap: ctab %ld\n", dataSize);
-			dst->pmTable= (ColorTable**) NewHandle(dataSize);
-			ct= *dst->pmTable;
-			memcpy(ct, *src->pmTable, dataSize);
-			//fprintf(stderr, "duplicatePixMap: ctab size %d\n", ct->ctSize);
-		}
-	}
-			
-	return (jint) dsth;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPixBounds(JNIEnv *env, jclass zz, jint pHandle, jshortArray bounds) {
-    jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	GetPixBounds((PixMapHandle) pHandle, (Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setPixBounds(JNIEnv *env, jclass zz,
-		jint pHandle, jshort top, jshort left, jshort bottom, jshort right) {
-	BitMap **bmh= (BitMap**) pHandle;
-	BitMap *bm= *bmh;
-	bm->bounds.top= top;
-	bm->bounds.left= left;
-	bm->bounds.bottom= bottom;
-	bm->bounds.right= right;
-}
-
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPixDepth(JNIEnv *env, jclass zz, jint pHandle) {
-	return GetPixDepth((PixMapHandle) pHandle);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getPixHRes(JNIEnv *env, jclass zz, jint pHandle) {
-	PixMapHandle pmh= (PixMapHandle) pHandle;
-	return (jint) (*pmh)->hRes;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getPixVRes(JNIEnv *env, jclass zz, jint pHandle) {
-	PixMapHandle pmh= (PixMapHandle) pHandle;
-	return (jint) (*pmh)->vRes;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyBits(JNIEnv *env, jclass zz, jint srcBits, jint dstBits,
-		jshortArray srcRect, jshortArray dstRect, jshort mode, jint maskRgn) {
-    jshort *sa= (*env)->GetShortArrayElements(env, srcRect, 0);
-    jshort *sb= (*env)->GetShortArrayElements(env, dstRect, 0);
-	CopyBits((BitMap*)srcBits, (BitMap*)dstBits, (Rect*) sa, (Rect*) sb, mode, (RgnHandle) maskRgn);
-	(*env)->ReleaseShortArrayElements(env, srcRect, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, dstRect, sb, 0);
-}
-
-static jmp_buf jmpbuf;
-
-static void jumper() {
-	longjmp(jmpbuf, 1);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyMask(JNIEnv *env, jclass zz, jint srcBits,
-		jint maskBits, jint dstBits, jshortArray srcRect, jshortArray maskRect, jshortArray dstRect) {
-		
-    jshort *sa= (*env)->GetShortArrayElements(env, srcRect, 0);
-    jshort *sb= (*env)->GetShortArrayElements(env, maskRect, 0);
-    jshort *sc= (*env)->GetShortArrayElements(env, dstRect, 0);
-    
-    Rect ra= *((Rect*)sa);
-    Rect rb= *((Rect*)sb);
-    Rect rc= *((Rect*)sc);
-    
-	(*env)->ReleaseShortArrayElements(env, srcRect, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, maskRect, sb, 0);
-	(*env)->ReleaseShortArrayElements(env, dstRect, sc, 0);
-    
-    if (setjmp(jmpbuf) != 0) {
-    	SysBeep(100);
-    	fprintf(stderr, "OS.CopyMask: signal %08x %08x %08x\n", srcBits, maskBits, dstBits);
-    	return -1;
-    }
-    
-	if (signal(SIGSEGV, jumper) == BADSIG)
- 		fprintf(stderr, "OS.CopyMask: error in signal1\n");
-	CopyMask((BitMap*)srcBits, (BitMap*)maskBits, (BitMap*)dstBits, &ra, &rb, &rc);
-	if (signal(SIGSEGV, SIG_DFL) == BADSIG)
- 		fprintf(stderr, "OS.CopyMask: error in signal2\n");
-	return 0;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyDeepMask(JNIEnv *env, jclass zz, jint srcBits,
-		jint maskBits, jint dstBits, jshortArray srcRect, jshortArray maskRect, jshortArray dstRect, jshort mode, jint maskRgn) {
-    jshort *sa= (*env)->GetShortArrayElements(env, srcRect, 0);
-    jshort *sb= (*env)->GetShortArrayElements(env, maskRect, 0);
-    jshort *sc= (*env)->GetShortArrayElements(env, dstRect, 0);
-	CopyDeepMask((BitMap*)srcBits, (BitMap*)maskBits, (BitMap*)dstBits, (Rect*) sa, (Rect*) sb, (Rect*) sc, mode, (RgnHandle) maskRgn);
-	(*env)->ReleaseShortArrayElements(env, srcRect, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, maskRect, sb, 0);
-	(*env)->ReleaseShortArrayElements(env, dstRect, sc, 0);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortBitMapForCopyBits(JNIEnv *env, jclass zz, jint grafPort) {
-	return (jint) GetPortBitMapForCopyBits((CGrafPtr)grafPort);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewCIcon(JNIEnv *env, jclass zz,
-					jint pixMapHandle, jint maskHandle) {
-	CIcon *icon;
-	CIconHandle cih;
-	PixMap *ph= NULL;
-	BitMap *mh= NULL;
-	int pixmapRowbytes, pixmapWidth, pixmapHeight, pixmapSize;
-	int maskRowbytes, maskHeight, maskSize;
-	Size ctsize;
-	int size;
-	
-	if (pixMapHandle == 0)
-		return 0;
-	ph= *((PixMap**) pixMapHandle);
-	if (ph == NULL)
-		return 0;
-	
-	// calculate the CIcon size
-	
-	pixmapRowbytes= ph->rowBytes & 0x3fff;
-	pixmapHeight= ph->bounds.bottom - ph->bounds.top;
-	pixmapWidth= ph->bounds.right - ph->bounds.left;
-	pixmapSize= pixmapRowbytes * pixmapHeight;
-
-	mh= *((BitMap**) maskHandle);
-	if (mh == NULL)
-		return 0;
-
-	maskRowbytes= mh->rowBytes & 0x3fff;
-	maskHeight= mh->bounds.bottom - mh->bounds.top;
-	maskSize= maskRowbytes * maskHeight;
-				
-	// allocate the CIcon
-	cih= (CIconHandle) NewHandleClear(sizeof(CIcon) + maskSize);
-	if (cih == NULL)
-		return 0;
-	icon= *cih;
-	if (icon == NULL)
-		return 0;
-	
-	// copy the pixmap
-	memcpy(&icon->iconPMap, ph, sizeof(PixMap));
-	icon->iconPMap.baseAddr= 0;	// this is documented nowhere!
-
-	// allocate the handle for the pixmap's data
-	icon->iconData= NewHandle(pixmapSize);
-	if (icon->iconData == 0)
-		return 0;
-	
-	// copy the pixmap's data
-	memcpy(*icon->iconData, ph->baseAddr, pixmapSize);
-	
-	// copy ctable (if any)
-	if (ph->pmTable != NULL) {
-		ctsize= GetHandleSize((Handle)ph->pmTable);
-		if (ctsize > 0) {
-			Handle h= NewHandle(ctsize);
-			memcpy(*h, *ph->pmTable, ctsize);
-			icon->iconPMap.pmTable= (ColorTable**) h;
-		}
-	}
-
-	memcpy(&icon->iconMask, mh, sizeof(BitMap));
-	// copy mask data to end of CIcon
-	memcpy(&icon->iconMaskData, icon->iconMask.baseAddr, maskSize);
-	icon->iconMask.baseAddr= 0;
-		
-	return (jint) cih;
-}
+#ifndef NO_CollapseWindow
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CollapseWindow
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("CollapseWindow\n")
+
+	return (jint)CollapseWindow((WindowRef)arg0, (Boolean)arg1);
+}
+#endif /* NO_CollapseWindow */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getCIconIconData(JNIEnv *env, jclass zz, jint cIconHandle) {
-	CIcon *icon= *((CIconHandle) cIconHandle);
-	return (jint) icon->iconData;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getCIconColorTable(JNIEnv *env, jclass zz, jint cIconHandle) {
-	CIcon *icon= *((CIconHandle) cIconHandle);
-	return (jint) icon->iconPMap.pmTable;
-}
+#ifndef NO_CopyBits
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyBits
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jshort arg4, jint arg5)
+{
+	Rect _arg2, *lparg2=NULL;
+	Rect _arg3, *lparg3=NULL;
 
-//---- GWorlds & GDevices
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewGWorldFromPtr(JNIEnv *env, jclass zz,
-					jintArray offscreenGWorld, jint pixMapHandle) {
-		
-	PixMapHandle pm= (PixMapHandle) pixMapHandle;
-        jint *sa= (*env)->GetIntArrayElements(env, offscreenGWorld, 0);
-	
-	jint status= (jint) RC(NewGWorldFromPtr(
-				(GWorldPtr*) sa,
-				(*pm)->pixelFormat,
-				&((*pm)->bounds),
-				(*pm)->pmTable,
-				(GDHandle) NULL,
-				(GWorldFlags) 0,
-				(*pm)->baseAddr,
-				(*pm)->rowBytes & 0x3FFF));
-
-	(*env)->ReleaseIntArrayElements(env, offscreenGWorld, sa, 0);
-	return status;
-}
+	DEBUG_CALL("CopyBits\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeGWorld(JNIEnv *env, jclass zz, jint offscreenGWorld) {
-	DisposeGWorld((GWorldPtr)offscreenGWorld);
+	if (arg2) lparg2 = getRectFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = getRectFields(env, arg3, &_arg3);
+	CopyBits((const BitMap *)arg0, (const BitMap *)arg1, (const Rect *)lparg2, (const Rect *)lparg3, (short)arg4, (RgnHandle)arg5);
+	if (arg2) setRectFields(env, arg2, lparg2);
+	if (arg3) setRectFields(env, arg3, lparg3);
 }
+#endif /* NO_CopyBits */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetGWorld(JNIEnv *env, jclass zz, jint portHandle, jint gdHandle) {
-	SetGWorld((CGrafPtr)portHandle, (GDHandle)gdHandle);
-}
+#ifndef NO_CopyControlTitleAsCFString
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyControlTitleAsCFString
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGWorld(JNIEnv *env, jclass zz, jintArray portHandle, jintArray gdHandle) {
-    jint *sa= (*env)->GetIntArrayElements(env, portHandle, 0);
-    jint *sb= (*env)->GetIntArrayElements(env, gdHandle, 0);
-	GetGWorld((CGrafPtr*)sa, (GDHandle*)sb);
-	(*env)->ReleaseIntArrayElements(env, portHandle, sa, 0);
-	(*env)->ReleaseIntArrayElements(env, gdHandle, sb, 0);
+	DEBUG_CALL("CopyControlTitleAsCFString\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)CopyControlTitleAsCFString((ControlRef)arg0, (CFStringRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
+#endif /* NO_CopyControlTitleAsCFString */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGDevice(JNIEnv *env, jclass zz) {
-	return (jint) GetGDevice();
-}
+#ifndef NO_CopyDeepMask
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyDeepMask
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jobject arg4, jobject arg5, jshort arg6, jint arg7)
+{
+	Rect _arg3, *lparg3=NULL;
+	Rect _arg4, *lparg4=NULL;
+	Rect _arg5, *lparg5=NULL;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMainDevice(JNIEnv *env, jclass zz) {
-	return (jint) GetMainDevice();
-}
+	DEBUG_CALL("CopyDeepMask\n")
+
+	if (arg3) lparg3 = getRectFields(env, arg3, &_arg3);
+	if (arg4) lparg4 = getRectFields(env, arg4, &_arg4);
+	if (arg5) lparg5 = getRectFields(env, arg5, &_arg5);
+	CopyDeepMask((const BitMap *)arg0, (const BitMap *)arg1, (const BitMap *)arg2, (const Rect *)lparg3, (const Rect *)lparg4, (const Rect *)lparg5, (short)arg6, (RgnHandle)arg7);
+	if (arg3) setRectFields(env, arg3, lparg3);
+	if (arg4) setRectFields(env, arg4, lparg4);
+	if (arg5) setRectFields(env, arg5, lparg5);
+}
+#endif /* NO_CopyDeepMask */
+
+#ifndef NO_CopyMenuItemTextAsCFString
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyMenuItemTextAsCFString
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("CopyMenuItemTextAsCFString\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)CopyMenuItemTextAsCFString((MenuRef)arg0, (MenuItemIndex)arg1, (CFStringRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_CopyMenuItemTextAsCFString */
+
+#ifndef NO_CopyRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyRgn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CopyRgn\n")
+
+	CopyRgn((RgnHandle)arg0, (RgnHandle)arg1);
+}
+#endif /* NO_CopyRgn */
+
+#ifndef NO_CountMenuItems
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountMenuItems
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CountMenuItems\n")
+
+	return (jshort)CountMenuItems((MenuRef)arg0);
+}
+#endif /* NO_CountMenuItems */
+
+#ifndef NO_CountSubControls
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountSubControls
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1)
+{
+	jshort *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("CountSubControls\n")
+
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	rc = (jint)CountSubControls((ControlRef)arg0, (UInt16 *)lparg1);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_CountSubControls */
+
+#ifndef NO_CreateEvent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateEvent
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jdouble arg3, jint arg4, jintArray arg5)
+{
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateEvent\n")
+
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)CreateEvent((CFAllocatorRef)arg0, (UInt32)arg1, (UInt32)arg2, (EventTime)arg3, (EventAttributes)arg4, (EventRef *)lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
+}
+#endif /* NO_CreateEvent */
+
+#ifndef NO_CreateNewMenu
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateNewMenu
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getgdPMap(JNIEnv *env, jclass zz, jint gdHandle) {
-	GDHandle h= (GDHandle) gdHandle;
-	return (jint) (*h)->gdPMap;
-}
+	DEBUG_CALL("CreateNewMenu\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)CreateNewMenu((MenuID)arg0, (MenuAttributes)arg1, (MenuRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_CreateNewMenu */
 
-//---- Window Manager
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateNewWindow(JNIEnv *env, jclass zz,
-				jint windowClass, jint windowAttributes, jshortArray bounds, jintArray wHandle) {
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	jint *sb= (*env)->GetIntArrayElements(env, wHandle, 0);
-	jint status= (jint) RC(CreateNewWindow((WindowClass)windowClass, (WindowAttributes)windowAttributes, (const Rect*)sa, (WindowRef*)sb));
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-	(*env)->ReleaseIntArrayElements(env, wHandle, sb, 0);
-	return status;
-}
+#ifndef NO_CreateNewWindow
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateNewWindow
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jintArray arg3)
+{
+	Rect _arg2, *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowPort(JNIEnv *env, jclass zz, jint wHandle) {
-	return (jint) GetWindowPort((WindowRef) wHandle);
-}
+	DEBUG_CALL("CreateNewWindow\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_BeginUpdate(JNIEnv *env, jclass zz, jint wHandle) {
-	BeginUpdate((WindowRef)wHandle);
+	if (arg2) lparg2 = getRectFields(env, arg2, &_arg2);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)CreateNewWindow((WindowClass)arg0, (WindowAttributes)arg1, (const Rect *)lparg2, (WindowRef *)lparg3);
+	if (arg2) setRectFields(env, arg2, lparg2);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
 }
+#endif /* NO_CreateNewWindow */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GlobalToLocal(JNIEnv *env, jclass zz, jshortArray point) {
-    jshort *sa= (*env)->GetShortArrayElements(env, point, 0);
-	GlobalToLocal((Point*)sa);
-	(*env)->ReleaseShortArrayElements(env, point, sa, 0);
-}
+#ifndef NO_CreatePushButtonControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePushButtonControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_LocalToGlobal(JNIEnv *env, jclass zz, jshortArray point) {
-    jshort *sa= (*env)->GetShortArrayElements(env, point, 0);
-	LocalToGlobal((Point*)sa);
-	(*env)->ReleaseShortArrayElements(env, point, sa, 0);
-}
+	DEBUG_CALL("CreatePushButtonControl\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDGlobalToLocalPoint(JNIEnv *env, jclass zz,
-			jint port, jshortArray point) {
-    jshort *sa= (*env)->GetShortArrayElements(env, point, 0);
-	QDGlobalToLocalPoint((CGrafPtr)port, (Point*)sa);
-	(*env)->ReleaseShortArrayElements(env, point, sa, 0);
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)CreatePushButtonControl((WindowRef)arg0, (const Rect *)lparg1, (CFStringRef)arg2, (ControlRef *)lparg3);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
 }
+#endif /* NO_CreatePushButtonControl */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDLocalToGlobalPoint(JNIEnv *env, jclass zz,
-			jint port, jshortArray point) {
-    jshort *sa= (*env)->GetShortArrayElements(env, point, 0);
-	QDLocalToGlobalPoint((CGrafPtr)port, (Point*)sa);
-	(*env)->ReleaseShortArrayElements(env, point, sa, 0);
-}
+#ifndef NO_CreateRootControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateRootControl
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EndUpdate(JNIEnv *env, jclass zz, jint wHandle) {
-	EndUpdate((WindowRef)wHandle);
-}
+	DEBUG_CALL("CreateRootControl\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawControls(JNIEnv *env, jclass zz, jint wHandle) {
-	DrawControls((WindowRef)wHandle);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)CreateRootControl((WindowRef)arg0, (ControlRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
+#endif /* NO_CreateRootControl */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_UpdateControls(JNIEnv *env, jclass zz, jint wHandle, jint rgnHandle) {
-	UpdateControls((WindowRef)wHandle, (RgnHandle)rgnHandle);
-}
+#ifndef NO_CreateStandardAlert
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStandardAlert
+	(JNIEnv *env, jclass that, jshort arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc;
 
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawGrowIcon(JNIEnv *env, jclass zz, jint wHandle) {
-	DrawGrowIcon((WindowRef)wHandle);
-}
-*/
+	DEBUG_CALL("CreateStandardAlert\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrontWindow(JNIEnv *env, jclass class) {
-	return (jint) FrontWindow();
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)CreateStandardAlert((AlertType)arg0, (CFStringRef)arg1, (CFStringRef)arg2, (const AlertStdCFStringAlertParamRec *)arg3, (DialogRef *)lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
 }
+#endif /* NO_CreateStandardAlert */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrontNonFloatingWindow(JNIEnv *env, jclass class) {
-	return (jint) FrontNonFloatingWindow();
-}
+#ifndef NO_DeleteMenu
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DeleteMenu
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("DeleteMenu\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SelectWindow(JNIEnv *env, jclass zz, jint wHandle) {
-	SelectWindow((WindowRef)wHandle);
+	DeleteMenu((MenuID)arg0);
 }
+#endif /* NO_DeleteMenu */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ActivateWindow(JNIEnv *env, jclass zz,
-		jint wHandle, jboolean activate) {
-	ActivateWindow((WindowRef)wHandle, activate);
-}
+#ifndef NO_DeleteMenuItem
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DeleteMenuItem
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	DEBUG_CALL("DeleteMenuItem\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_BringToFront(JNIEnv *env, jclass zz, jint wHandle) {
-	BringToFront((WindowRef)wHandle);
+	DeleteMenuItem((MenuRef)arg0, (short)arg1);
 }
+#endif /* NO_DeleteMenuItem */
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FindWindow(JNIEnv *env, jclass zz, jshortArray where, jintArray warr) {
-	jint *body= NULL;
-	jshort part= 0;
-	if (warr != 0)
-    	body= (*env)->GetIntArrayElements(env, warr, 0);
-	part= FindWindow(point(env, where), (WindowRef*)body);
-	if (body != NULL)
-		(*env)->ReleaseIntArrayElements(env, warr, body, 0);
-	return part;
-}
+#ifndef NO_DeleteMenuItems
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DeleteMenuItems
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2)
+{
+	DEBUG_CALL("DeleteMenuItems\n")
 
-/*
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_ResizeWindow(JNIEnv *env, jclass zz, jint wHandle,
-						jshortArray startPt, jshortArray sizeConstraints, jshortArray newContentRect) {
-	jboolean b;
-	jshort *sa= NULL;
-	if (newContentRect != NULL)
-		sa= (*env)->GetShortArrayElements(env, newContentRect, 0);
-	b= ResizeWindow((WindowRef) wHandle, point(env, startPt), NULL, (Rect*) sa);
-	if (sa != NULL)
-		(*env)->ReleaseShortArrayElements(env, newContentRect, sa, 0);
-	return b;
-}
-*/
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DragWindow(JNIEnv *env, jclass zz, jint wHandle,
-							jshortArray startPt, jshortArray boundsRect) {
-	DragWindow((WindowRef)wHandle, point(env, startPt), NULL);
-}
-*/
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowPortBounds(JNIEnv *env, jclass zz, jint wHandle, jshortArray bounds) {
-    jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	GetWindowPortBounds((WindowRef)wHandle, (Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
-*/
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowBounds(JNIEnv *env, jclass zz, jint wHandle, jshort region, jshortArray bounds) {
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	GetWindowBounds((WindowRef)wHandle, region, (Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
+	return (jint)DeleteMenuItems((MenuRef)arg0, (MenuItemIndex)arg1, (ItemCount)arg2);
 }
+#endif /* NO_DeleteMenuItems */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowBounds(JNIEnv *env, jclass zz, jint wHandle, jshort region, jshortArray bounds) {
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	SetWindowBounds((WindowRef)wHandle, region, (Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
+#ifndef NO_DiffRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DiffRgn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("DiffRgn\n")
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsValidWindowPtr(JNIEnv *env, jclass zz, jint port) {
-	return (jboolean) IsValidWindowPtr((void*)port);
+	DiffRgn((RgnHandle)arg0, (RgnHandle)arg1, (RgnHandle)arg2);
 }
+#endif /* NO_DiffRgn */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWRefCon(JNIEnv *env, jclass zz, jint wHandle) {
-	return (jint) GetWRefCon((WindowRef)wHandle);
-}
+#ifndef NO_DisableControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisableControl
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DisableControl\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyWindowTitleAsCFString(JNIEnv *env, jclass zz,
-					jint wHandle, jintArray sHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, sHandle, 0);
-	jint status= (jint) RC(CopyWindowTitleAsCFString((WindowRef)wHandle, (CFStringRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, sHandle, sa, 0);
-	return status;
+	return (jint)DisableControl((ControlRef)arg0);
 }
+#endif /* NO_DisableControl */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowTitleWithCFString(JNIEnv *env, jclass zz, jint wHandle, jint sHandle) {
-	return RC(SetWindowTitleWithCFString((WindowRef)wHandle, (CFStringRef)sHandle));
-}
-  
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SizeWindow(JNIEnv *env, jclass zz, jint wHandle, jshort w, jshort h, jboolean update) {
-	SizeWindow((WindowRef)wHandle, w, h, update);
-}
+#ifndef NO_DisableMenuCommand
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisableMenuCommand
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("DisableMenuCommand\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_MoveWindow(JNIEnv *env, jclass zz, jint wHandle, jshort w, jshort h, jboolean toFront) {
-	MoveWindow((WindowRef)wHandle, w, h, toFront);
+	DisableMenuCommand((MenuRef)arg0, (MenuCommand)arg1);
 }
+#endif /* NO_DisableMenuCommand */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ScrollWindowRect(JNIEnv *env, jclass zz, jint wHandle,
-						jshortArray rect, jshort dx, jshort dy, jint options, jint exposureRgn) {
-	jshort *sa= (*env)->GetShortArrayElements(env, rect, 0);
-	ScrollWindowRect((WindowRef)wHandle, (Rect*)sa, dx, dy, options, (RgnHandle) exposureRgn);
-	(*env)->ReleaseShortArrayElements(env, rect, sa, 0);
-}
+#ifndef NO_DisableMenuItem
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisableMenuItem
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	DEBUG_CALL("DisableMenuItem\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWRefCon(JNIEnv *env, jclass zz, jint wHandle, jint data) {
-	SetWRefCon((WindowRef)wHandle, data);
+	DisableMenuItem((MenuRef)arg0, (MenuItemIndex)arg1);
 }
+#endif /* NO_DisableMenuItem */
 
-/*
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackGoAway(JNIEnv *env, jclass zz, jint wHandle, jshortArray startPt) {
-	return TrackGoAway((WindowRef)wHandle, point(env, startPt));
-}
-*/
-/*
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackBox(JNIEnv *env, jclass zz, jint wHandle, jshortArray startPt, jshort part) {
-	return TrackBox((WindowRef)wHandle, point(env, startPt), part);
-}
-*/
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeWindow(JNIEnv *env, jclass class, jint wHandle) {
-	DisposeWindow((WindowRef)wHandle);
-}
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ZoomWindow(JNIEnv *env, jclass zz, jint wHandle, jshort part, jboolean toFront) {
-	ZoomWindow((WindowRef)wHandle, part, toFront);
-}
-*/
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvalWindowRect(JNIEnv *env, jclass zz, jint wHandle, jshortArray bounds) {
-    jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	InvalWindowRect((WindowRef)wHandle, (Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
+#ifndef NO_DisposeControl
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeControl
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DisposeControl\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvalWindowRgn(JNIEnv *env, jclass zz, jint wHandle, jint rgnHandle) {
-	InvalWindowRgn((WindowRef)wHandle, (RgnHandle)rgnHandle);
+	DisposeControl((ControlRef)arg0);
 }
+#endif /* NO_DisposeControl */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ShowWindow(JNIEnv *env, jclass zz, jint wHandle) {
-	ShowWindow((WindowRef) wHandle);
-}
+#ifndef NO_DisposeGWorld
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeGWorld
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DisposeGWorld\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HideWindow(JNIEnv *env, jclass zz, jint wHandle) {
-	HideWindow((WindowRef) wHandle);
+	DisposeGWorld((GWorldPtr)arg0);
 }
+#endif /* NO_DisposeGWorld */
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsWindowVisible(JNIEnv *env, jclass zz, jint wHandle) {
-	return IsWindowVisible((WindowRef) wHandle);
-}
+#ifndef NO_DisposeHandle
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeHandle
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DisposeHandle\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowDefaultButton(JNIEnv *env, jclass zz,
-				jint wHandle, jint cHandle) {
-	return RC(SetWindowDefaultButton((WindowRef) wHandle, (ControlRef) cHandle));
+	DisposeHandle((Handle)arg0);
 }
+#endif /* NO_DisposeHandle */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowDefaultButton(JNIEnv *env, jclass zz,
-				jint wHandle, jintArray cHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, cHandle, 0);
-	int status= RC(GetWindowDefaultButton((WindowRef) wHandle, (ControlRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, cHandle, sa, 0);
-	return status;
-}
+#ifndef NO_DisposeMenu
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeMenu
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DisposeMenu\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowModality(JNIEnv *env, jclass zz,
-				jint wHandle, jintArray windowModality, jintArray parentWindowHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, windowModality, 0);
-	jint *sb= NULL;
-	jint status= 0;
-	if (parentWindowHandle != 0)
-		sb= (*env)->GetIntArrayElements(env, parentWindowHandle, 0);
-	status= (jint) RC(GetWindowModality((WindowRef) wHandle, (WindowModality*) sa, (WindowRef*) sb));
-	(*env)->ReleaseIntArrayElements(env, windowModality, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, parentWindowHandle, sb, 0);
-	return status;
+	DisposeMenu((MenuRef)arg0);
 }
+#endif /* NO_DisposeMenu */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowModality(JNIEnv *env, jclass zz,
-				jint wHandle, jint modalityKind, jint parentWindow) {
-	return (jint) RC(SetWindowModality((WindowRef) wHandle, (WindowModality) modalityKind, (WindowRef) parentWindow));
-}
+#ifndef NO_DisposePtr
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposePtr
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DisposePtr\n")
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsWindowActive(JNIEnv *env, jclass zz, jint wHandle) {
-	return (jboolean) IsWindowActive((WindowRef) wHandle);
+	DisposePtr((Ptr)arg0);
 }
+#endif /* NO_DisposePtr */
 
-//---- Menu Manager
-   
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitContextualMenus(JNIEnv *env, jclass zz) {
-	return (jint) RC(InitContextualMenus());
-}
+#ifndef NO_DisposeRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeRgn
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DisposeRgn\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateNewMenu(JNIEnv *env, jclass zz,
-				jint menuId, jint menuAttributes, jintArray menuRef) {
-	jint *sa= (*env)->GetIntArrayElements(env, menuRef, 0);
-	jint status= (jint) RC(CreateNewMenu((MenuID)menuId, (MenuAttributes)menuAttributes, (MenuRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, menuRef, sa, 0);
-	return status;
+	DisposeRgn((RgnHandle)arg0);
 }
+#endif /* NO_DisposeRgn */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_MenuSelect(JNIEnv *env, jclass zz, jshortArray where) {
-	return MenuSelect(point(env, where));
-}
+#ifndef NO_DisposeWindow
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeWindow
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DisposeWindow\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HiliteMenu(JNIEnv *env, jclass zz, jshort menuID) {
-	HiliteMenu(menuID);
+	DisposeWindow((WindowRef)arg0);
 }
+#endif /* NO_DisposeWindow */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvalMenuBar(JNIEnv *env, jclass zz) {
-	InvalMenuBar();
-}
+#ifndef NO_DrawMenuBar
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawMenuBar
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("DrawMenuBar\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawMenuBar(JNIEnv *env, jclass zz) {
 	DrawMenuBar();
 }
+#endif /* NO_DrawMenuBar */
+
+#ifndef NO_DrawText
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawText
+	(JNIEnv *env, jclass that, jbyteArray arg0, jshort arg1, jshort arg2)
+{
+	jbyte *lparg0=NULL;
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountMenuItems(JNIEnv *env, jclass zz, jint mHandle) {
-	return CountMenuItems((MenuRef)mHandle);
-}
+	DEBUG_CALL("DrawText\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DeleteMenuItems(JNIEnv *env, jclass zz,
-			jint mHandle, jshort firstItem, jint numItems) {
-	return RC(DeleteMenuItems((MenuRef)mHandle, firstItem, numItems));
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	DrawText((const void *)lparg0, (short)arg1, (short)arg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 }
+#endif /* NO_DrawText */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeMenu(JNIEnv *env, jclass zz, jint mHandle) {
-	DisposeMenu((MenuRef) mHandle);
-}
+#ifndef NO_DrawThemeEditTextFrame
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeEditTextFrame
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	Rect _arg0, *lparg0=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InsertMenu(JNIEnv *env, jclass zz, jint mHandle, jshort index) {
-	InsertMenu((MenuRef) mHandle, index);
-}
+	DEBUG_CALL("DrawThemeEditTextFrame\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DeleteMenu(JNIEnv *env, jclass zz, jshort menuId) {
-	DeleteMenu(menuId);
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	rc = (jint)DrawThemeEditTextFrame((const Rect *)lparg0, (ThemeDrawState)arg1);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	return rc;
 }
+#endif /* NO_DrawThemeEditTextFrame */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClearMenuBar(JNIEnv *env, jclass zz) {
-	ClearMenuBar();
-}
+#ifndef NO_DrawThemeFocusRect
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeFocusRect
+	(JNIEnv *env, jclass that, jobject arg0, jboolean arg1)
+{
+	Rect _arg0, *lparg0=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuItemRefCon(JNIEnv *env, jclass zz, jint mHandle,
-			jshort index, jintArray refCon) {
-	jint *sa= (*env)->GetIntArrayElements(env, refCon, 0);
-	int status= RC(GetMenuItemRefCon((MenuRef) mHandle, index, sa));
-	(*env)->ReleaseIntArrayElements(env, refCon, sa, 0);
-	return status;
-}
+	DEBUG_CALL("DrawThemeFocusRect\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemRefCon(JNIEnv *env, jclass zz, jint mHandle,
-			jshort index, jint refCon) {
-	return RC(SetMenuItemRefCon((MenuRef) mHandle, index, refCon));
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	rc = (jint)DrawThemeFocusRect((const Rect *)lparg0, (Boolean)arg1);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	return rc;
 }
+#endif /* NO_DrawThemeFocusRect */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemTextWithCFString(JNIEnv *env, jclass zz, jint mHandle,
-			jshort index, jint sHandle) {
-	return RC(SetMenuItemTextWithCFString((MenuRef) mHandle, index, (CFStringRef) sHandle));
-}
+#ifndef NO_DrawThemeSeparator
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeSeparator
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	Rect _arg0, *lparg0=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CopyMenuItemTextAsCFString(JNIEnv *env, jclass zz,
-			jint mHandle, jshort index, jintArray sHandle) {
-			
-	jint *sa= (*env)->GetIntArrayElements(env, sHandle, 0);
-	jint status= (jint) RC(CopyMenuItemTextAsCFString((MenuRef) mHandle, index, (CFStringRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, sHandle, sa, 0);
-	return status;
-}
+	DEBUG_CALL("DrawThemeSeparator\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemCommandKey(JNIEnv *env, jclass zz,
-		jint mHandle, jshort index, jboolean virtual, jchar key) {
-	return RC(SetMenuItemCommandKey((MenuRef) mHandle, index, virtual, key));
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	rc = (jint)DrawThemeSeparator((const Rect *)lparg0, (ThemeDrawState)arg1);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	return rc;
 }
+#endif /* NO_DrawThemeSeparator */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemModifiers(JNIEnv *env, jclass zz,
-		jint mHandle, jshort index, jbyte modifiers) {
-	return RC(SetMenuItemModifiers((MenuRef) mHandle, index, modifiers));
-}
+#ifndef NO_DrawThemeTextBox
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawThemeTextBox
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jboolean arg3, jobject arg4, jshort arg5, jint arg6)
+{
+	Rect _arg4, *lparg4=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemKeyGlyph(JNIEnv *env, jclass zz,
-		jint mHandle, jshort index, jshort glyph) {
-	return RC(SetMenuItemKeyGlyph((MenuRef) mHandle, index, glyph));
-}
+	DEBUG_CALL("DrawThemeTextBox\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvalidateMenuItems(JNIEnv *env, jclass zz,
-		jint mHandle, jshort index, jint numItems) {
-	return RC(InvalidateMenuItems((MenuRef) mHandle, index, numItems));
+	if (arg4) lparg4 = getRectFields(env, arg4, &_arg4);
+	rc = (jint)DrawThemeTextBox((CFStringRef)arg0, (ThemeFontID)arg1, (ThemeDrawState)arg2, (Boolean)arg3, (const Rect *)lparg4, (SInt16)arg5, (void *)arg6);
+	if (arg4) setRectFields(env, arg4, lparg4);
+	return rc;
 }
+#endif /* NO_DrawThemeTextBox */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InsertMenuItemTextWithCFString(JNIEnv *env, jclass zz,
-			jint mHandle, jint sHandle, jshort index, jint attributes, jint commandID) {
-	return RC(InsertMenuItemTextWithCFString((MenuRef) mHandle, (CFStringRef) sHandle, index, attributes, commandID));
-}
+#ifndef NO_EmptyRect
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_EmptyRect
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Rect _arg0, *lparg0=NULL;
+	jboolean rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AppendMenuItemTextWithCFString(JNIEnv *env, jclass zz,
-			jint mHandle, jint sHandle, jint attributes, jint commandID, jshortArray outItemIndex) {
-		
-	jint status;
-        jshort *sa= NULL;
-	if (outItemIndex != 0)
-		(*env)->GetShortArrayElements(env, outItemIndex, 0);
-	status= (jint) RC(AppendMenuItemTextWithCFString((MenuRef) mHandle, (CFStringRef) sHandle, attributes, commandID, (MenuItemIndex*) sa));
-	if (sa != NULL)
-		(*env)->ReleaseShortArrayElements(env, outItemIndex, sa, 0);
-	return status;
-}
+	DEBUG_CALL("EmptyRect\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EnableMenuCommand(JNIEnv *env, jclass zz, jint mHandle, jint commandId) {
-	EnableMenuCommand((MenuRef) mHandle, commandId);
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	rc = (jboolean)EmptyRect((const Rect *)lparg0);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	return rc;
 }
+#endif /* NO_EmptyRect */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisableMenuCommand(JNIEnv *env, jclass zz, jint mHandle, jint commandId) {
-	DisableMenuCommand((MenuRef) mHandle, commandId);
-}
+#ifndef NO_EmptyRgn
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_EmptyRgn
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("EmptyRgn\n")
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsMenuCommandEnabled(JNIEnv *env, jclass zz, jint mHandle, jint commandId) {
-	return (jboolean) IsMenuCommandEnabled((MenuRef) mHandle, commandId);
+	return (jboolean)EmptyRgn((RgnHandle)arg0);
 }
+#endif /* NO_EmptyRgn */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetIndMenuItemWithCommandID(JNIEnv *env, jclass zz, jint mHandle,
-			jint commandId, jint index, jintArray outMenu, jshortArray outIndex) {
-	jint status;
-        jint *sa= NULL;
-        jshort *sb= NULL;
-	if (outMenu != NULL)
-		sa= (*env)->GetIntArrayElements(env, outMenu, 0);
-	if (outIndex != NULL) 
-		sb= (*env)->GetShortArrayElements(env, outIndex, 0);
-	status= (jint) RC(GetIndMenuItemWithCommandID((MenuRef) mHandle, commandId, index, (MenuRef*)sa, sb));
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, outMenu, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseShortArrayElements(env, outIndex, sb, 0);
-	return status;
-}
+#ifndef NO_EnableControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_EnableControl
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("EnableControl\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DeleteMenuItem(JNIEnv *env, jclass zz, jint mHandle, jshort index) {
-	DeleteMenuItem((MenuRef) mHandle, index);
+	return (jint)EnableControl((ControlRef)arg0);
 }
+#endif /* NO_EnableControl */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuItemCommandID(JNIEnv *env, jclass zz, jint mHandle, jshort index,
-			jintArray commandId) {
-	jint *sa= (*env)->GetIntArrayElements(env, commandId, 0);
-	jint status= (jint) RC(GetMenuItemCommandID((MenuRef) mHandle, index, (MenuCommand*)sa));
-	(*env)->ReleaseIntArrayElements(env, commandId, sa, 0);
-	return status;
-}
+#ifndef NO_EnableMenuCommand
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EnableMenuCommand
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("EnableMenuCommand\n")
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuID(JNIEnv *env, jclass zz, jint mHandle) {
-	return (jshort) GetMenuID((MenuRef) mHandle);
+	EnableMenuCommand((MenuRef)arg0, (MenuCommand)arg1);
 }
+#endif /* NO_EnableMenuCommand */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuHandle(JNIEnv *env, jclass zz, jshort menuId) {
-	return (jint) GetMenuHandle(menuId);
-}
+#ifndef NO_EnableMenuItem
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EnableMenuItem
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	DEBUG_CALL("EnableMenuItem\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PopUpMenuSelect(JNIEnv *env, jclass zz, jint mHandle,
-		jshort x, jshort y, jshort index) {
-	return PopUpMenuSelect((MenuRef) mHandle, x, y, index);
+	EnableMenuItem((MenuRef)arg0, (MenuItemIndex)arg1);
 }
+#endif /* NO_EnableMenuItem */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetRootMenu(JNIEnv *env, jclass zz, jint mHandle) {
-	return (jint) RC(SetRootMenu((MenuRef) mHandle));
-}
+#ifndef NO_EndUpdate
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EndUpdate
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("EndUpdate\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RetainMenu(JNIEnv *env, jclass zz, jint mHandle) {
-	return (jint) RC(RetainMenu((MenuRef) mHandle));
+	EndUpdate((WindowRef)arg0);
 }
+#endif /* NO_EndUpdate */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ReleaseMenu(JNIEnv *env, jclass zz, jint mHandle) {
-	return (jint) RC(ReleaseMenu((MenuRef) mHandle));
-}
+#ifndef NO_EraseRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EraseRect
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Rect _arg0, *lparg0=NULL;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuTitleWithCFString(JNIEnv *env, jclass zz, jint mHandle, jint sHandle) {
-	return (jint) RC(SetMenuTitleWithCFString((MenuRef) mHandle, (CFStringRef) sHandle));
-}
+	DEBUG_CALL("EraseRect\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuItemHierarchicalMenu(JNIEnv *env, jclass zz, jint mHandle, 
-		jshort index, jintArray outHierMenuHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, outHierMenuHandle, 0);
-	jint status= (jint) RC(GetMenuItemHierarchicalMenu((MenuRef) mHandle, index, (MenuRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, outHierMenuHandle, sa, 0);
-	return status;
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	EraseRect((const Rect *)lparg0);
+	if (arg0) setRectFields(env, arg0, lparg0);
 }
+#endif /* NO_EraseRect */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemHierarchicalMenu(JNIEnv *env, jclass zz, jint mHandle,
-			jshort index, jint hierMenuHandle) {
-	return (jint) RC(SetMenuItemHierarchicalMenu((MenuRef) mHandle, index, (MenuRef) hierMenuHandle));
-}
+#ifndef NO_EraseRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EraseRgn
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("EraseRgn\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InsertMenuItem(JNIEnv *env, jclass zz, jint mHandle,
-			jbyteArray text, jshort index) {
-	jbyte *sa= (*env)->GetByteArrayElements(env, text, 0);
-	InsertMenuItem((MenuRef) mHandle, (ConstStr255Param) sa, index);
-	(*env)->ReleaseByteArrayElements(env, text, sa, 0);
+	EraseRgn((RgnHandle)arg0);
 }
+#endif /* NO_EraseRgn */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_AppendMenu(JNIEnv *env, jclass zz, jint mHandle, jbyteArray text) {
-	jbyte *sa= (*env)->GetByteArrayElements(env, text, 0);
-	AppendMenu((MenuRef) mHandle, (ConstStr255Param) sa);
-	(*env)->ReleaseByteArrayElements(env, text, sa, 0);
-}
+#ifndef NO_FMGetFontFamilyFromName
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyFromName
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jshort rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ChangeMenuItemAttributes(JNIEnv *env, jclass zz, jint mHandle,
-		jshort index, jint setAttributes, jint clearAttributes) {
-	return RC(ChangeMenuItemAttributes((MenuRef) mHandle, index, setAttributes, clearAttributes));
-}
+	DEBUG_CALL("FMGetFontFamilyFromName\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CheckMenuItem(JNIEnv *env, jclass zz, jint mHandle,
-		jshort index, jboolean checked) {
-	CheckMenuItem((MenuRef) mHandle, index, checked);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jshort)FMGetFontFamilyFromName((ConstStr255Param)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
 }
+#endif /* NO_FMGetFontFamilyFromName */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuCommandMark(JNIEnv *env, jclass zz, jint mHandle,
-		jint commandId, jshortArray markCharacter) {
-	jchar *sa= (*env)->GetCharArrayElements(env, markCharacter, 0);
-	jint status= (jint) RC(GetMenuCommandMark((MenuRef) mHandle, commandId, (UniChar*) sa));
-	(*env)->ReleaseCharArrayElements(env, markCharacter, sa, 0);
-	return status;
-}
+#ifndef NO_FMGetFontFamilyName
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyName
+	(JNIEnv *env, jclass that, jshort arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuCommandMark(JNIEnv *env, jclass zz, jint mHandle,
-		jint commandId, jchar markCharacter) {
-	return (jint) RC(SetMenuCommandMark((MenuRef) mHandle, commandId, (UniChar) markCharacter));
-}
+	DEBUG_CALL("FMGetFontFamilyName\n")
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsValidMenu(JNIEnv *env, jclass zz, jint mHandle) {
-	return (jboolean) IsValidMenu((MenuRef) mHandle);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)FMGetFontFamilyName(arg0, lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
+#endif /* NO_FMGetFontFamilyName */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuID(JNIEnv *env, jclass zz, jint mHandle, jshort id) {
-	SetMenuID((MenuRef) mHandle, id);
-}
+#ifndef NO_FindWindow
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FindWindow
+	(JNIEnv *env, jclass that, jobject arg0, jintArray arg1)
+{
+	Point _arg0, *lparg0=NULL;
+	jint *lparg1=NULL;
+	jshort rc;
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsMenuItemEnabled(JNIEnv *env, jclass zz, jint mHandle, jshort index) {
-	return (jboolean) IsMenuItemEnabled((MenuRef) mHandle, index);
-}
+	DEBUG_CALL("FindWindow\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisableMenuItem(JNIEnv *env, jclass zz, jint mHandle, jshort index) {
-	DisableMenuItem((MenuRef) mHandle, index);
+	if (arg0) lparg0 = getPointFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jshort)FindWindow((Point)*lparg0, (WindowRef *)lparg1);
+	if (arg0) setPointFields(env, arg0, lparg0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
+#endif /* NO_FindWindow */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_EnableMenuItem(JNIEnv *env, jclass zz, jint mHandle, jshort index) {
-	EnableMenuItem((MenuRef) mHandle, index);
-}
+#ifndef NO_FrameOval
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrameOval
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Rect _arg0, *lparg0=NULL;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuFont(JNIEnv *env, jclass zz,
-				jint mHandle, jshortArray fontID, jshortArray size) {
-	jshort *sa= (*env)->GetShortArrayElements(env, fontID, 0);
-	jshort *sb= (*env)->GetShortArrayElements(env, size, 0);
-	jint status= (jint) RC(GetMenuFont((MenuRef) mHandle, (SInt16*) sa, (UInt16*) sb));
-	(*env)->ReleaseShortArrayElements(env, fontID, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, size, sb, 0);
-	return status;
-}
+	DEBUG_CALL("FrameOval\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuFont(JNIEnv *env, jclass zz,
-				jint mHandle, jshort fontID, jshort size) {
-	return (jint) RC(SetMenuFont((MenuRef) mHandle, (SInt16) fontID, (UInt16) size));
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	FrameOval((const Rect *)lparg0);
+	if (arg0) setRectFields(env, arg0, lparg0);
 }
+#endif /* NO_FrameOval */
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuWidth(JNIEnv *env, jclass zz, jint mHandle) {
-	return (jshort) GetMenuWidth((MenuRef) mHandle);
-}
+#ifndef NO_FramePoly
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_FramePoly
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("FramePoly\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CalcMenuSize(JNIEnv *env, jclass zz, jint mHandle) {
-	CalcMenuSize((MenuRef) mHandle);
+	FramePoly((PolyHandle)arg0);
 }
+#endif /* NO_FramePoly */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemIconHandle(JNIEnv *env, jclass zz,
-	jint mHandle, jshort index, jbyte type, jint icon) {
-	return RC(SetMenuItemIconHandle((MenuRef) mHandle, (SInt16)index, (UInt8)type, (Handle)icon));
-}
+#ifndef NO_FrameRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrameRect
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Rect _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("FrameRect\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemCommandID(JNIEnv *env, jclass zz,
-	jint mHandle, jshort index, jint commandID) {
-	return RC(SetMenuItemCommandID((MenuRef) mHandle, (SInt16)index, (MenuCommand)commandID));
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	FrameRect((const Rect *)lparg0);
+	if (arg0) setRectFields(env, arg0, lparg0);
 }
+#endif /* NO_FrameRect */
 
-//---- Control Manager
+#ifndef NO_FrameRoundRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrameRoundRect
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2)
+{
+	Rect _arg0, *lparg0=NULL;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlAction(JNIEnv *env, jclass zz, jint cHandle, jint actionProc) {
-	SetControlAction((ControlRef)cHandle, (ControlActionUPP) actionProc);
+	DEBUG_CALL("FrameRoundRect\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	FrameRoundRect((const Rect *)lparg0, (short)arg1, (short)arg2);
+	if (arg0) setRectFields(env, arg0, lparg0);
 }
+#endif /* NO_FrameRoundRect */
 
-/* not for primetime use */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_setControlToolTipText(JNIEnv *env, jclass zz,
-				jint cHandle, jshortArray bounds, jint sHandle) {
-  
-	HMHelpContentRec help;
-	jint status;
-	Rect *r= (Rect*) (*env)->GetShortArrayElements(env, bounds, 0);
-	
-	HMSetHelpTagsDisplayed(true);
+#ifndef NO_FrontWindow
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FrontWindow
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("FrontWindow\n")
 
-	help.version= 0;
-	help.absHotRect.left= r->left;
-	help.absHotRect.top= r->top;
-	help.absHotRect.right= r->right;
-	help.absHotRect.bottom= r->bottom;
-	help.tagSide= kHMDefaultSide;
-	help.content[0].contentType= kHMCFStringContent;
-	help.content[0].u.tagCFString= (CFStringRef) sHandle;
-	help.content[1].contentType= kHMNoContent;
-	help.content[1].u.tagCFString= 0;
-  
-	status= RC(HMSetControlHelpContent((ControlRef) cHandle, &help));
-	
-	(*env)->ReleaseShortArrayElements(env, bounds, (jshort*) r, 0);
-	
-	return status;
+	return (jint)FrontWindow();
 }
-*/
+#endif /* NO_FrontWindow */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControl(JNIEnv *env, jclass zz,
-			jint wHandle, jboolean visible, jshort initialValue, jshort minValue, jshort maxValue, jshort procID) {
-	return (jint) NewControl((WindowRef) wHandle, &NULL_RECT, "", visible, initialValue, minValue, maxValue, procID, 0);
-}
+#ifndef NO_GetApplicationEventTarget
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetApplicationEventTarget
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetApplicationEventTarget\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeControl(JNIEnv *env, jclass zz, jint cHandle) {
-	DisposeControl((ControlRef) cHandle);
+	return (jint)GetApplicationEventTarget();
 }
+#endif /* NO_GetApplicationEventTarget */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateUserPaneControl(JNIEnv *env, jclass zz,
-			jint wHandle, jshortArray bounds, jint features, jintArray cHandle) {
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	jint *sb= (*env)->GetIntArrayElements(env, cHandle, 0);
-	jint status= (jint) RC(CreateUserPaneControl((WindowRef) wHandle, (const Rect*) sa, features, (ControlRef*) sb));
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-	(*env)->ReleaseIntArrayElements(env, cHandle, sb, 0);
-	return status;
-}
+#ifndef NO_GetAvailableWindowPositioningBounds
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetAvailableWindowPositioningBounds
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetRootControl(JNIEnv *env, jclass zz, jint wHandle, jintArray cHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, cHandle, 0);
-	jint status= (jint) RC(GetRootControl((WindowRef) wHandle, (ControlRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, cHandle, sa, 0);
-	return status;
-}
+	DEBUG_CALL("GetAvailableWindowPositioningBounds\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateRootControl(JNIEnv *env, jclass zz, jint wHandle, jintArray cHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, cHandle, 0);
-	jint status= (jint) RC(CreateRootControl((WindowRef) wHandle, (ControlRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, cHandle, sa, 0);
-	return status;
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	rc = (jint)GetAvailableWindowPositioningBounds((GDHandle)arg0, (Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	return rc;
 }
+#endif /* NO_GetAvailableWindowPositioningBounds */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_EmbedControl(JNIEnv *env, jclass zz, jint cHandle, jint parentHandle) {
-	return (jint) RC(EmbedControl((ControlRef) cHandle, (ControlRef) parentHandle));
-}
+#ifndef NO_GetBestControlRect
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetBestControlRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jshortArray arg2)
+{
+	Rect _arg1, *lparg1=NULL;
+	jshort *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlOwner(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jint) GetControlOwner((ControlRef) cHandle);
-}
+	DEBUG_CALL("GetBestControlRect\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_FindControlUnderMouse(JNIEnv *env, jclass zz, jshortArray where,
-													 jint wHandle, jshortArray cHandle) {
-	jshort *sa= (*env)->GetShortArrayElements(env, cHandle, 0);
-	ControlRef c= FindControlUnderMouse(point(env, where), (WindowRef) wHandle, sa);
-	(*env)->ReleaseShortArrayElements(env, cHandle, sa, 0);
-	return (jint) c;
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)GetBestControlRect((ControlRef)arg0, (Rect *)lparg1, (SInt16 *)lparg2);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetBestControlRect */
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_TestControl(JNIEnv *env, jclass zz,
-				jint cHandle, jshortArray where) {
-	return (jshort) TestControl((ControlRef)cHandle, point(env, where));
-}
+#ifndef NO_GetCaretTime
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCaretTime
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetCaretTime\n")
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_HandleControlClick(JNIEnv *env, jclass zz, jint cHandle,
-													jshortArray where, jint modifiers, jint action) {
-	return HandleControlClick((ControlRef)cHandle, point(env, where), modifiers, (ControlActionUPP) action);
+	return (jint)GetCaretTime();
 }
+#endif /* NO_GetCaretTime */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_MoveControl(JNIEnv *env, jclass zz, jint cHandle, jshort x, jshort y) {
-	MoveControl((ControlRef) cHandle, x, y);
-}
+#ifndef NO_GetClip
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetClip
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetClip\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SizeControl(JNIEnv *env, jclass zz, jint cHandle, jshort w, jshort h) {
-	SizeControl((ControlRef) cHandle, w, h);
+	GetClip((RgnHandle)arg0);
 }
+#endif /* NO_GetClip */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ShowControl(JNIEnv *env, jclass zz, jint cHandle) {
-	ShowControl((ControlRef) cHandle);
-}
+#ifndef NO_GetControl32BitMaximum
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControl32BitMaximum
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetControl32BitMaximum\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HideControl(JNIEnv *env, jclass zz, jint cHandle) {
-	HideControl((ControlRef) cHandle);
+	return (jint)GetControl32BitMaximum((ControlRef)arg0);
 }
+#endif /* NO_GetControl32BitMaximum */
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlVisible(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jboolean) IsControlVisible((ControlRef) cHandle);
-}
+#ifndef NO_GetControl32BitMinimum
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControl32BitMinimum
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetControl32BitMinimum\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlVisibility(JNIEnv *env, jclass zz, jint cHandle,
-                jboolean isVisible, jboolean doDraw) {
-	return (jint) RC(SetControlVisibility((ControlRef)cHandle, isVisible, doDraw));
+	return (jint)GetControl32BitMinimum((ControlRef)arg0);
 }
+#endif /* NO_GetControl32BitMinimum */
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlActive(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jboolean) IsControlActive((ControlRef) cHandle);
-}
+#ifndef NO_GetControl32BitValue
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControl32BitValue
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetControl32BitValue\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlBounds(JNIEnv *env, jclass zz, jint cHandle, jshortArray bounds) {
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	Rect *r= (Rect*) sa;
-	if (r->bottom - r->top < 0 || r->right - r->left < 0) {
-		//fprintf(stdout, "-*-*-*-*-*_*-*_* SetControlBounds: %d %d %d %d\n", r->left, r->top, r->right-r->left, r->bottom-r->top);
-	} else
-		SetControlBounds((ControlRef)cHandle, r);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
+	return (jint)GetControl32BitValue((ControlRef)arg0);
 }
+#endif /* NO_GetControl32BitValue */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlBounds(JNIEnv *env, jclass zz, jint cHandle, jshortArray bounds) {
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	GetControlBounds((ControlRef)cHandle, (Rect*) sa);
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-}
+#ifndef NO_GetControlBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlBounds
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlRegion(JNIEnv *env, jclass zz,
-				jint cHandle, jshort part, jint region) {
-	return (jint) RC(GetControlRegion((ControlRef)cHandle, (ControlPartCode) part, (RgnHandle) region));
-}
+	DEBUG_CALL("GetControlBounds\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CountSubControls(JNIEnv *env, jclass zz, jint cHandle, jshortArray count) {
-	jshort *sa= (*env)->GetShortArrayElements(env, count, 0);
-	jint status= (jint) RC(CountSubControls((ControlRef)cHandle, sa));
-	(*env)->ReleaseShortArrayElements(env, count, sa, 0);
-	return status;
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	GetControlBounds((ControlRef)arg0, (Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
 }
+#endif /* NO_GetControlBounds */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetIndexedSubControl(JNIEnv *env, jclass zz,
-				jint cHandle, jshort index, jintArray outCHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, outCHandle, 0);
-	jint status= (jint) RC(GetIndexedSubControl((ControlRef) cHandle, index, (ControlRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, outCHandle, sa, 0);
-	return status;
-}
+#ifndef NO_GetControlData__ISIILorg_eclipse_swt_internal_carbon_Rect_2_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__ISIILorg_eclipse_swt_internal_carbon_Rect_2_3I
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jobject arg4, jintArray arg5)
+{
+	Rect _arg4, *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetSuperControl(JNIEnv *env, jclass zz, jint cHandle, jintArray parentHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, parentHandle, 0);
-	jint status= (jint) RC(GetSuperControl((ControlRef)cHandle, (ControlRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, parentHandle, sa, 0);
-	return status;
-}
+	DEBUG_CALL("GetControlData__ISIILorg_eclipse_swt_internal_carbon_Rect_2_3I\n")
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsValidControlHandle(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jboolean) IsValidControlHandle((ControlRef)cHandle);
+	if (arg4) lparg4 = getRectFields(env, arg4, &_arg4);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)GetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (void *)lparg4, (Size *)lparg5);
+	if (arg4) setRectFields(env, arg4, lparg4);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
 }
+#endif /* NO_GetControlData__ISIILorg_eclipse_swt_internal_carbon_Rect_2_3I */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlReference(JNIEnv *env, jclass zz, jint cHandle, jint data) {
-	SetControlReference((ControlRef)cHandle, data);
-}
+#ifndef NO_GetControlData__ISII_3I_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__ISII_3I_3I
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlReference(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jint) GetControlReference((ControlRef)cHandle);
-}
+	DEBUG_CALL("GetControlData__ISII_3I_3I\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlTitleAsCFString(JNIEnv *env, jclass zz,
-				jint cHandle, jintArray sHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, sHandle, 0);
-	jint status= (jint) RC(CopyControlTitleAsCFString((ControlRef)cHandle, (CFStringRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, sHandle, sa, 0);
-	return status;
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)GetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (void *)lparg4, (Size *)lparg5);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
 }
+#endif /* NO_GetControlData__ISII_3I_3I */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlTitleWithCFString(JNIEnv *env, jclass zz, jint cHandle, jint sHandle) {
-	return (jint) RC(SetControlTitleWithCFString((ControlRef)cHandle, (CFStringRef) sHandle));
-}
+#ifndef NO_GetControlData__ISII_3S_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__ISII_3S_3I
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jshortArray arg4, jintArray arg5)
+{
+	jshort *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_EnableControl(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jint) RC(EnableControl((ControlRef)cHandle));
-}
+	DEBUG_CALL("GetControlData__ISII_3S_3I\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisableControl(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jint) RC(DisableControl((ControlRef)cHandle));
+	if (arg4) lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)GetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (void *)lparg4, (Size *)lparg5);
+	if (arg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
 }
+#endif /* NO_GetControlData__ISII_3S_3I */
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlEnabled(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jboolean) IsControlEnabled((ControlRef)cHandle);
-}
+#ifndef NO_GetControlEventTarget
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlEventTarget
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetControlEventTarget\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControl32BitMaximum(JNIEnv *env, jclass zz, jint cHandle) {
-	return GetControl32BitMaximum((ControlRef)cHandle);
+	return (jint)GetControlEventTarget((ControlRef)arg0);
 }
+#endif /* NO_GetControlEventTarget */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControl32BitMaximum(JNIEnv *env, jclass zz, jint cHandle, jint max) {
-	SetControl32BitMaximum((ControlRef)cHandle, max);
-}
+#ifndef NO_GetControlOwner
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlOwner
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetControlOwner\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControl32BitMinimum(JNIEnv *env, jclass zz, jint cHandle) {
-	return GetControl32BitMinimum((ControlRef)cHandle);
+	return (jint)GetControlOwner((ControlRef)arg0);
 }
+#endif /* NO_GetControlOwner */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlMinimum(JNIEnv *env, jclass zz, jint cHandle, jshort min) {
-	SetControlMinimum((ControlRef)cHandle, min);
+#ifndef NO_GetControlReference
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlReference
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetControlReference\n")
+
+	return (jint)GetControlReference((ControlRef)arg0);
 }
+#endif /* NO_GetControlReference */
+
+#ifndef NO_GetControlRegion
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlRegion
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2)
+{
+	DEBUG_CALL("GetControlRegion\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControl32BitMinimum(JNIEnv *env, jclass zz, jint cHandle, jint min) {
-	SetControl32BitMinimum((ControlRef)cHandle, min);
+	return (jint)GetControlRegion((ControlRef)arg0, (ControlPartCode)arg1, (RgnHandle)arg2);
 }
+#endif /* NO_GetControlRegion */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControl32BitValue(JNIEnv *env, jclass zz, jint cHandle) {
-	return GetControl32BitValue((ControlRef)cHandle);
+#ifndef NO_GetControlValue
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlValue
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetControlValue\n")
+
+	return (jshort)GetControlValue((ControlRef)arg0);
 }
+#endif /* NO_GetControlValue */
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlValue(JNIEnv *env, jclass zz, jint cHandle) {
-	return GetControlValue((ControlRef)cHandle);
+#ifndef NO_GetControlViewSize
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlViewSize
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetControlViewSize\n")
+
+	return (jint)GetControlViewSize((ControlRef)arg0);
 }
+#endif /* NO_GetControlViewSize */
+
+#ifndef NO_GetCurrentEventLoop
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentEventLoop
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetCurrentEventLoop\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControl32BitValue(JNIEnv *env, jclass zz, jint cHandle, jint value) {
-	SetControl32BitValue((ControlRef)cHandle, value);
+	return (jint)GetCurrentEventLoop();
 }
+#endif /* NO_GetCurrentEventLoop */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlViewSize(JNIEnv *env, jclass zz, jint cHandle) {
-	return (jint) GetControlViewSize((ControlRef)cHandle);
+#ifndef NO_GetCurrentProcess
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentProcess
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetCurrentProcess\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)GetCurrentProcess((ProcessSerialNumber *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	return rc;
 }
+#endif /* NO_GetCurrentProcess */
+
+#ifndef NO_GetCurrentScrap
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentScrap
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlViewSize(JNIEnv *env, jclass zz, jint cHandle, jint viewSize) {
-	SetControlViewSize((ControlRef)cHandle, viewSize);
+	DEBUG_CALL("GetCurrentScrap\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)GetCurrentScrap((ScrapRef *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	return rc;
 }
+#endif /* NO_GetCurrentScrap */
+
+#ifndef NO_GetDataBrowserItemCount
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemCount
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserItemCount\n")
 
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_IdleControls(JNIEnv *env, jclass zz, jint wHandle) {
-	IdleControls((WindowRef)wHandle);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)GetDataBrowserItemCount((ControlRef)arg0, (DataBrowserItemID)arg1, (Boolean)arg2, (DataBrowserItemState)arg3, (UInt32 *)lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
 }
-*/
+#endif /* NO_GetDataBrowserItemCount */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetBestControlRect(JNIEnv *env, jclass zz, jint cHandle,
-		jshortArray rect, jshortArray base) {
-        jshort *sa= (*env)->GetShortArrayElements(env, rect, 0);
-        jshort *sb= (*env)->GetShortArrayElements(env, base, 0);
-	jint status= (jint) RC(GetBestControlRect((ControlRef)cHandle, (Rect*) sa, (short*) sb));
-	(*env)->ReleaseShortArrayElements(env, rect, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, base, sb, 0);
-	return status;
+#ifndef NO_GetDataBrowserItemPartBounds
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItemPartBounds
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	Rect _arg4, *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserItemPartBounds\n")
+
+	if (arg4) lparg4 = getRectFields(env, arg4, &_arg4);
+	rc = (jint)GetDataBrowserItemPartBounds((ControlRef)arg0, (DataBrowserItemID)arg1, (DataBrowserPropertyID)arg2, (DataBrowserPropertyPart)arg3, (Rect *)lparg4);
+	if (arg4) setRectFields(env, arg4, lparg4);
+	return rc;
 }
+#endif /* NO_GetDataBrowserItemPartBounds */
+
+#ifndef NO_GetDataBrowserItems
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserItems
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("GetDataBrowserItems\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlKind(JNIEnv *env, jclass zz, jint cHandle, jintArray kind) {
-        jint *sa= (*env)->GetIntArrayElements(env, kind, 0);
-	jint status= (jint) RC(GetControlKind((ControlRef)cHandle, (ControlKind*) sa));
-	(*env)->ReleaseIntArrayElements(env, kind, sa, 0);
-	return status;
+	return (jint)GetDataBrowserItems((ControlRef)arg0, (DataBrowserItemID)arg1, (Boolean)arg2, (DataBrowserItemState)arg3, (Handle)arg4);
 }
+#endif /* NO_GetDataBrowserItems */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__ISI_3I(JNIEnv *env, jclass zz, jint cHandle,
-		jshort partCode, jint tag, jintArray data) {
-	Size outSize;
-        jint *sa= (*env)->GetIntArrayElements(env, data, 0);
-	jsize length= (*env)->GetArrayLength(env, data);
-	OSErr error= RC(GetControlData((ControlRef) cHandle, partCode, tag, sizeof(int)*length, sa, &outSize));
-	(*env)->ReleaseIntArrayElements(env, data, sa, 0);
-	return error;
+#ifndef NO_GetDataBrowserScrollPosition
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDataBrowserScrollPosition
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetDataBrowserScrollPosition\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetDataBrowserScrollPosition((ControlRef)arg0, (UInt32 *)lparg1, (UInt32 *)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetDataBrowserScrollPosition */
+
+#ifndef NO_GetDblTime
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDblTime
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetDblTime\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__ISI_3S(JNIEnv *env, jclass zz, jint cHandle,
-		jshort partCode, jint tag, jshortArray data) {
-	Size outSize;
-        jshort *sa= (*env)->GetShortArrayElements(env, data, 0);
-	jsize length= (*env)->GetArrayLength(env, data);
-	OSErr error= RC(GetControlData((ControlRef) cHandle, partCode, tag, sizeof(short)*length, sa, &outSize));
-	(*env)->ReleaseShortArrayElements(env, data, sa, 0);
-	return error;
+	return (jint)GetDblTime();
 }
+#endif /* NO_GetDblTime */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__ISII(JNIEnv *env, jclass zz,
-		jint cHandle, jshort partCode, jint tag, jint data) {
-	return RC(SetControlData((ControlRef) cHandle, partCode, tag, sizeof(int), (Ptr) &data));
+#ifndef NO_GetEventClass
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventClass
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetEventClass\n")
+
+	return (jint)GetEventClass((EventRef)arg0);
 }
+#endif /* NO_GetEventClass */
+
+#ifndef NO_GetEventDispatcherTarget
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventDispatcherTarget
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetEventDispatcherTarget\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__ISI_3S(JNIEnv *env, jclass zz,
-		jint cHandle, jshort partCode, jint tag, jshortArray data) {
-	jshort *sa= (*env)->GetShortArrayElements(env, data, 0);
-	jsize length= (*env)->GetArrayLength(env, data);
-	jint status= (jint) RC(SetControlData((ControlRef) cHandle, partCode, tag, sizeof(short)*length, (Ptr) sa));
-	(*env)->ReleaseShortArrayElements(env, data, sa, 0);
-	return status;
+	return (jint)GetEventDispatcherTarget();
 }
+#endif /* NO_GetEventDispatcherTarget */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetBevelButtonContentInfo(JNIEnv *env, jclass zz,
-		jint cHandle, jshort controlContentType, jint controlContent) {
-		
-	ControlButtonContentInfo info;
-	
-	info.contentType= (ControlContentType) controlContentType;
-	info.u.cIconHandle= (CIconHandle) controlContent;
-	
-	return RC(SetBevelButtonContentInfo((ControlRef) cHandle, &info));
+#ifndef NO_GetEventKind
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventKind
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetEventKind\n")
+
+	return (jint)GetEventKind((EventRef)arg0);
 }
+#endif /* NO_GetEventKind */
+
+#ifndef NO_GetEventParameter__III_3II_3I_3B
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3II_3I_3B
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jbyteArray arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	jbyte *lparg6=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetEventParameter__III_3II_3I_3B\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlFontStyle(JNIEnv *env, jclass zz,
-				jint cHandle, jshort font, jshort size, jshort style) {
-	ControlFontStyleRec fontRec;
-	fontRec.flags= kControlUseFontMask | kControlUseSizeMask | kControlUseFaceMask;
-	fontRec.font= font;
-	fontRec.size= size;
-	fontRec.style= style;
-	return (jint) RC(SetControlFontStyle((ControlRef) cHandle, &fontRec));
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	return rc;
 }
+#endif /* NO_GetEventParameter__III_3II_3I_3B */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetUpControlBackground(JNIEnv *env, jclass zz,
-				jint cHandle, jshort depth, jboolean isColorDevice) {
-	return (jint) RC(SetUpControlBackground((ControlRef) cHandle, depth, isColorDevice));
+#ifndef NO_GetEventParameter__III_3II_3I_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3II_3I_3I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jintArray arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetEventParameter__III_3II_3I_3I\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	return rc;
 }
+#endif /* NO_GetEventParameter__III_3II_3I_3I */
+
+#ifndef NO_GetEventParameter__III_3II_3I_3C
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3II_3I_3C
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jcharArray arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	jchar *lparg6=NULL;
+	jint rc;
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_HandleControlKey(JNIEnv *env, jclass zz,
-			jint cHandle, jshort inKeyCode, jchar inCharCode, jint modifiers) {
-	return (ControlPartCode) HandleControlKey((ControlRef)cHandle, (SInt16)inKeyCode, (SInt16)inCharCode, (EventModifiers) modifiers);
+	DEBUG_CALL("GetEventParameter__III_3II_3I_3C\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetCharArrayElements(env, arg6, NULL);
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseCharArrayElements(env, arg6, lparg6, 0);
+	return rc;
 }
+#endif /* NO_GetEventParameter__III_3II_3I_3C */
 
-//---- standard dialogs
+#ifndef NO_GetEventParameter__III_3II_3I_3S
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3II_3I_3S
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jshortArray arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	jshort *lparg6=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PickColor(JNIEnv *env, jclass zz,
-			jshortArray rgb, jshortArray where, jbyteArray title, jbooleanArray success) {
+	DEBUG_CALL("GetEventParameter__III_3II_3I_3S\n")
 
-	jint status;
-	ColorPickerInfo info;
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetShortArrayElements(env, arg6, NULL);
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseShortArrayElements(env, arg6, lparg6, 0);
+	return rc;
+}
+#endif /* NO_GetEventParameter__III_3II_3I_3S */
 
-    jshort *sa= (*env)->GetShortArrayElements(env, rgb, 0);
-    jshort *sb= (*env)->GetShortArrayElements(env, where, 0);
-    jbyte *sc= (*env)->GetByteArrayElements(env, title, 0);
-    jboolean *sd= (*env)->GetBooleanArrayElements(env, success, 0);
-	
-	info.theColor.profile= NULL;
-	info.theColor.color.rgb.red= sa[0];
-	info.theColor.color.rgb.green= sa[1];
-	info.theColor.color.rgb.blue= sa[2];
-	info.dstProfile= NULL;
-	info.flags= kColorPickerDialogIsMoveable | kColorPickerDialogIsModal;
-	info.placeWhere= kAtSpecifiedOrigin;
-	info.dialogOrigin.v= sb[0];
-	info.dialogOrigin.h= sb[1];
-	info.pickerType= 0;
-	info.eventProc= NULL;
-	info.colorProc= NULL;
-	info.colorProcData= 0;
-	memcpy(info.prompt, sc, (size_t) sc[0]);
-	info.mInfo.editMenuID= 0;
-	info.mInfo.cutItem= 0;
-	info.mInfo.copyItem= 0;
-	info.mInfo.pasteItem= 0;
-	info.mInfo.clearItem= 0;
-	info.mInfo.undoItem= 0;
-	
-	status= (jint) RC(PickColor(&info));
-	
-	sd[0]= info.newColorChosen;
-	
-	if (info.newColorChosen) {
-		sa[0]= info.theColor.color.rgb.red;
-		sa[1]= info.theColor.color.rgb.green;
-		sa[2]= info.theColor.color.rgb.blue;
-	}
-	
-	(*env)->ReleaseShortArrayElements(env, rgb, sa, 0);
-	(*env)->ReleaseShortArrayElements(env, where, sb, 0);
-	(*env)->ReleaseByteArrayElements(env, title, sc, 0);
-	(*env)->ReleaseBooleanArrayElements(env, success, sd, 0);
+#ifndef NO_GetEventTime
+JNIEXPORT jdouble JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventTime
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetEventTime\n")
 
-	return status;
+	return (jdouble)GetEventTime((EventRef)arg0);
 }
+#endif /* NO_GetEventTime */
+
+#ifndef NO_GetFontInfo
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetFontInfo
+	(JNIEnv *env, jclass that, jshortArray arg0)
+{
+	jshort *lparg0=NULL;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavCreateGetFileDialog(JNIEnv *env, jclass zz,
-				jint optionFlags, jint windowTitle, jint whandle, jintArray dialogHandle) {
-	
-	NavDialogCreationOptions options;
-	jint status;
-        jint *sa= (*env)->GetIntArrayElements(env, dialogHandle, 0);
-	
-	NavGetDefaultDialogCreationOptions(&options);
-	options.optionFlags |= optionFlags;
-	options.parentWindow= (WindowRef) whandle;
-	
-	status= RC(NavCreateGetFileDialog(&options, NULL, NULL, NULL, NULL, NULL, (NavDialogRef*)sa));
-	
-	(*env)->ReleaseIntArrayElements(env, dialogHandle, sa, 0);
-	
-	return status;
+	DEBUG_CALL("GetFontInfo\n")
+
+	if (arg0) lparg0 = (*env)->GetShortArrayElements(env, arg0, NULL);
+	GetFontInfo((FontInfo *)lparg0);
+	if (arg0) (*env)->ReleaseShortArrayElements(env, arg0, lparg0, 0);
 }
+#endif /* NO_GetFontInfo */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavCreatePutFileDialog(JNIEnv *env, jclass zz,
-				jint fileCreator, jint windowTitle, jint whandle, jintArray dialogHandle, 
-				jint optionFlags, jint fileType) {
-	
-	NavDialogCreationOptions options;
-	jint status;
-        jint *sa= (*env)->GetIntArrayElements(env, dialogHandle, 0);
-	
-	NavGetDefaultDialogCreationOptions(&options);
-	options.optionFlags |= optionFlags;
-	options.parentWindow= (WindowRef) whandle;
-	options.windowTitle= (CFStringRef) windowTitle;
-	
-	status= RC(NavCreatePutFileDialog(&options, fileType, fileCreator, NULL, NULL, (NavDialogRef*)sa));
-	
-	(*env)->ReleaseIntArrayElements(env, dialogHandle, sa, 0);
-	
-	return status;
+#ifndef NO_GetGDevice
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGDevice
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetGDevice\n")
+
+	return (jint)GetGDevice();
 }
+#endif /* NO_GetGDevice */
+
+#ifndef NO_GetGWorld
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGWorld
+	(JNIEnv *env, jclass that, jintArray arg0, jintArray arg1)
+{
+	jint *lparg0=NULL;
+	jint *lparg1=NULL;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavCreateChooseFolderDialog(JNIEnv *env, jclass zz,
-				jint optionFlags, jint windowTitle, jint messageHandle, jint whandle, jintArray dialogHandle) {
-	
-	NavDialogCreationOptions options;
-	jint status;
-        jint *sa= (*env)->GetIntArrayElements(env, dialogHandle, 0);
-	
-	NavGetDefaultDialogCreationOptions(&options);
-	options.optionFlags |= optionFlags;
-	options.parentWindow= (WindowRef) whandle;
-	options.windowTitle= (CFStringRef) windowTitle;
-	options.message= (CFStringRef) messageHandle;
-	
-	status= RC(NavCreateChooseFolderDialog(&options, NULL, NULL, NULL, (NavDialogRef*)sa));
-	
-	(*env)->ReleaseIntArrayElements(env, dialogHandle, sa, 0);
-	
-	return status;
+	DEBUG_CALL("GetGWorld\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	GetGWorld((CGrafPtr *)lparg0, (GDHandle *)lparg1);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 }
+#endif /* NO_GetGWorld */
+
+#ifndef NO_GetGlobalMouse
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGlobalMouse
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Point _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("GetGlobalMouse\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogSetSaveFileName(JNIEnv *env, jclass zz,
-			jint dialogHandle, jint fileName) {
-	return (jint) RC(NavDialogSetSaveFileName((NavDialogRef) dialogHandle, (CFStringRef) fileName));
+	if (arg0) lparg0 = getPointFields(env, arg0, &_arg0);
+	GetGlobalMouse((Point *)lparg0);
+	if (arg0) setPointFields(env, arg0, lparg0);
 }
+#endif /* NO_GetGlobalMouse */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogGetSaveFileName(JNIEnv *env, jclass zz,
-			jint dialogHandle) {
-	return (jint) NavDialogGetSaveFileName((NavDialogRef) dialogHandle);	
+#ifndef NO_GetHandleSize
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetHandleSize
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetHandleSize\n")
+
+	return (jint)GetHandleSize((Handle)arg0);
 }
+#endif /* NO_GetHandleSize */
+
+#ifndef NO_GetIndMenuItemWithCommandID
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetIndMenuItemWithCommandID
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jshortArray arg4)
+{
+	jint *lparg3=NULL;
+	jshort *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetIndMenuItemWithCommandID\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogRun(JNIEnv *env, jclass zz,
-				jint dialogHandle) {	
-	return (jint) RC(NavDialogRun((NavDialogRef) dialogHandle));
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL);
+	rc = (jint)GetIndMenuItemWithCommandID((MenuRef)arg0, (MenuCommand)arg1, (UInt32)arg2, (MenuRef *)lparg3, (MenuItemIndex *)lparg4);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	return rc;
 }
+#endif /* NO_GetIndMenuItemWithCommandID */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogGetUserAction(JNIEnv *env, jclass zz,
-				jint dialogHandle) {	
-	return (jint) RC(NavDialogGetUserAction((NavDialogRef) dialogHandle));
+#ifndef NO_GetIndexedSubControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetIndexedSubControl
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetIndexedSubControl\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetIndexedSubControl((ControlRef)arg0, (UInt16)arg1, (ControlRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetIndexedSubControl */
+
+#ifndef NO_GetKeyboardFocus
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetKeyboardFocus
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogGetReply(JNIEnv *env, jclass zz,
-				jint dialogHandle, jintArray replyHandle) {
-	NavReplyRecord *reply= (NavReplyRecord*) malloc(sizeof(NavReplyRecord));
-	jint *sa= (*env)->GetIntArrayElements(env, replyHandle, 0);
-	sa[0]= (jint) reply;
-	(*env)->ReleaseIntArrayElements(env, replyHandle, sa, 0);
-	return (jint) RC(NavDialogGetReply((NavDialogRef) dialogHandle, reply));
+	DEBUG_CALL("GetKeyboardFocus\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetKeyboardFocus((WindowRef)arg0, (ControlRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
+#endif /* NO_GetKeyboardFocus */
+
+#ifndef NO_GetLastUserEventTime
+JNIEXPORT jdouble JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetLastUserEventTime
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetLastUserEventTime\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogDisposeReply(JNIEnv *env, jclass zz,
-				jint replyHandle) {
-	free((NavReplyRecord*) replyHandle);
+	return (jdouble)GetLastUserEventTime();
 }
+#endif /* NO_GetLastUserEventTime */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavReplyRecordGetSelection(JNIEnv *env, jclass zz,
-				jint replyHandle) {
-	NavReplyRecord *reply= (NavReplyRecord*) replyHandle;
-	return (jint) &reply->selection;
+#ifndef NO_GetMainDevice
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMainDevice
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetMainDevice\n")
+
+	return (jint)GetMainDevice();
 }
+#endif /* NO_GetMainDevice */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AECountItems(JNIEnv *env, jclass zz,
-				jint aeDescList, jintArray count) {
-        jint *sa= (*env)->GetIntArrayElements(env, count, 0);
-	int status= (jint) RC(AECountItems((const AEDescList*)aeDescList, (long*)sa));
-	(*env)->ReleaseIntArrayElements(env, count, sa, 0);
-	return status;
+#ifndef NO_GetMainEventQueue
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMainEventQueue
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetMainEventQueue\n")
+
+	return (jint)GetMainEventQueue();
 }
+#endif /* NO_GetMainEventQueue */
+
+#ifndef NO_GetMenuCommandMark
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuCommandMark
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2)
+{
+	jchar *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_AEGetNthPtr(JNIEnv *env, jclass zz,
-				jint aeDescList, jint index, jintArray sHandle) {
-	AEKeyword keyWord;
-	DescType returnedType;
-	FSRef fileSpec;
-	Size actualSize;
-        jint *sa= (*env)->GetIntArrayElements(env, sHandle, 0);
-	
-	jint status= RC(AEGetNthPtr((const AEDescList*)aeDescList, index, typeFSRef, &keyWord, &returnedType,
-                            &fileSpec, sizeof(fileSpec), &actualSize));
+	DEBUG_CALL("GetMenuCommandMark\n")
 
-	if (status == 0) {
-		CFURLRef url= CFURLCreateFromFSRef(kCFAllocatorDefault, &fileSpec);
-		sa[0]= (jint) CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
-	}
-	
-	(*env)->ReleaseIntArrayElements(env, sHandle, sa, 0);
-	return status;
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	rc = (jint)GetMenuCommandMark((MenuRef)arg0, (MenuCommand)arg1, (UniChar *)lparg2);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetMenuCommandMark */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogDispose(JNIEnv *env, jclass zz,
-				jint dialogHandle) {	
-	NavDialogDispose((NavDialogRef) dialogHandle);
+#ifndef NO_GetMenuEventTarget
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuEventTarget
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetMenuEventTarget\n")
+
+	return (jint)GetMenuEventTarget((MenuRef)arg0);
 }
+#endif /* NO_GetMenuEventTarget */
 
-// Strings
+#ifndef NO_GetMenuFont
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuFont
+	(JNIEnv *env, jclass that, jint arg0, jshortArray arg1, jshortArray arg2)
+{
+	jshort *lparg1=NULL;
+	jshort *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringCreateWithCharacters(JNIEnv *env, jclass zz, jstring s) {
-	const jchar *buffer= (*env)->GetStringChars(env, s, NULL);
-	CFIndex length= (*env)->GetStringLength(env, s);
-	CFStringRef sref= CFStringCreateWithCharacters(NULL, (const UniChar*) buffer, length);
-	(*env)->ReleaseStringChars(env, s, buffer);
-	return (jint) sref;
+	DEBUG_CALL("GetMenuFont\n")
+
+	if (arg1) lparg1 = (*env)->GetShortArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)GetMenuFont((MenuRef)arg0, (SInt16 *)lparg1, (UInt16 *)lparg2);
+	if (arg1) (*env)->ReleaseShortArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetMenuFont */
+
+#ifndef NO_GetMenuID
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuID
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetMenuID\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFRelease(JNIEnv *env, jclass zz, jint sHandle) {
-	CFRelease((CFStringRef)sHandle);
+	return (jshort)GetMenuID((MenuRef)arg0);
 }
+#endif /* NO_GetMenuID */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringGetLength(JNIEnv *env, jclass zz, jint sHandle) {
-	return (jint) CFStringGetLength((CFStringRef)sHandle);
+#ifndef NO_GetMenuItemCommandID
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuItemCommandID
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetMenuItemCommandID\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetMenuItemCommandID((MenuRef)arg0, (SInt16)arg1, (MenuCommand *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetMenuItemCommandID */
+
+#ifndef NO_GetMenuItemRefCon
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuItemRefCon
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringGetCharacters(JNIEnv *env, jclass zz,
-					jint sHandle, jint start, jint length, jcharArray buffer) {			
-	jchar *sa= (*env)->GetCharArrayElements(env, buffer, 0);
- 	CFStringGetCharacters((CFStringRef)sHandle, CFRangeMake(start, length), (UniChar*) sa);
-	(*env)->ReleaseShortArrayElements(env, buffer, sa, 0);
+	DEBUG_CALL("GetMenuItemRefCon\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetMenuItemRefCon((MenuRef)arg0, (SInt16)arg1, (UInt32 *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetMenuItemRefCon */
 
-//---- Alerts
+#ifndef NO_GetMouse
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMouse
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Point _arg0, *lparg0=NULL;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStandardAlert(JNIEnv *env, jclass zz,
-						jshort alertType, jint messageHandle, jint explanationHandle, jint param, jintArray dialogHandle) {
-	
-        jint *sa= (*env)->GetIntArrayElements(env, dialogHandle, 0);
-	jint status= RC(CreateStandardAlert((AlertType)alertType, (CFStringRef)messageHandle, (CFStringRef)explanationHandle,
-				(const AlertStdCFStringAlertParamRec*) param, (DialogRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, dialogHandle, sa, 0);
-	return status;
-}	
+	DEBUG_CALL("GetMouse\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RunStandardAlert(JNIEnv *env, jclass zz,
-						jint alertHandle, jint filterProc, jshortArray itemHit) {
-        jshort *sa= (*env)->GetShortArrayElements(env, itemHit, 0);
-	jint status= (jint) RC(RunStandardAlert((DialogRef)alertHandle, (ModalFilterUPP)filterProc, (DialogItemIndex*)sa));
-	(*env)->ReleaseShortArrayElements(env, itemHit, sa, 0);
-	return status;
+	if (arg0) lparg0 = getPointFields(env, arg0, &_arg0);
+	GetMouse((Point *)lparg0);
+	if (arg0) setPointFields(env, arg0, lparg0);
 }
+#endif /* NO_GetMouse */
+
+#ifndef NO_GetPixBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPixBounds
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
 
-//---- MLTE Text
+	DEBUG_CALL("GetPixBounds\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNInitTextension(JNIEnv *env, jclass zz) {
-	return (jint) RC(TXNInitTextension(NULL, 0, 0));
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	GetPixBounds((PixMapHandle)arg0, (Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
 }
+#endif /* NO_GetPixBounds */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNNewObject(JNIEnv *env, jclass zz,
-			jint fileSpec, jint wHandle, jshortArray bounds, jint frameOptions, jint frameType, jint fileType,
-					jint permanentEncoding, jintArray txHandle, jintArray frameID, jint refcon) {
-			
-        jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-        jint *sb= (*env)->GetIntArrayElements(env, txHandle, 0);
-        jint *sc= (*env)->GetIntArrayElements(env, frameID, 0);
-				
-	jint status= (jint) RC(TXNNewObject((const FSSpec*)fileSpec, (WindowRef)wHandle, (Rect*)bounds, (TXNFrameOptions)frameOptions,
-				(TXNFrameType)frameType, (TXNFileType)fileType, (TXNPermanentTextEncodingType)permanentEncoding,
-					(TXNObject*)sb, (TXNFrameID*)sc, (TXNObjectRefcon)refcon));
-	
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
-	(*env)->ReleaseIntArrayElements(env, txHandle, sb, 0);
-	(*env)->ReleaseIntArrayElements(env, frameID, sc, 0);
-	
-	return status;
+#ifndef NO_GetPixDepth
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPixDepth
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetPixDepth\n")
+
+	return (jshort)GetPixDepth((PixMapHandle)arg0);
 }
+#endif /* NO_GetPixDepth */
+
+#ifndef NO_GetPort
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPort
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+
+	DEBUG_CALL("GetPort\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNDeleteObject(JNIEnv *env, jclass zz, jint txHandle) {
-	TXNDeleteObject((TXNObject)txHandle);
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	GetPort((GrafPtr *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 }
+#endif /* NO_GetPort */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetFrameBounds(JNIEnv *env, jclass zz,
-			jint txHandle, jint top, jint left, jint bottom, jint right, jint frameID) {
-	TXNSetFrameBounds((TXNObject)txHandle, top, left, bottom, right, (TXNFrameID) frameID);
+#ifndef NO_GetPortBitMapForCopyBits
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortBitMapForCopyBits
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetPortBitMapForCopyBits\n")
+
+	return (jint)GetPortBitMapForCopyBits((CGrafPtr)arg0);
 }
+#endif /* NO_GetPortBitMapForCopyBits */
+
+#ifndef NO_GetPortBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortBounds
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("GetPortBounds\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNDraw(JNIEnv *env, jclass zz, jint txHandle, jint gDevice) {
-	TXNDraw((TXNObject)txHandle, (GWorldPtr)gDevice);
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	GetPortBounds((CGrafPtr)arg0, (Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
 }
+#endif /* NO_GetPortBounds */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetData(JNIEnv *env, jclass zz,
-					jint txHandle, jint startOffset, jint endOffset, jintArray dataHandle) {
-	jint *sa= (*env)->GetIntArrayElements(env, dataHandle, 0);
-	jint status= (jint) RC(TXNGetData((TXNObject)txHandle, startOffset, endOffset, (Handle*)sa));
-	(*env)->ReleaseIntArrayElements(env, dataHandle, sa, 0);
-	return status;
+#ifndef NO_GetPortClipRegion
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortClipRegion
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("GetPortClipRegion\n")
+
+	GetPortClipRegion((CGrafPtr)arg0, (RgnHandle)arg1);
 }
+#endif /* NO_GetPortClipRegion */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewHandle(JNIEnv *env, jclass zz, jint size) {
-	return (jint) NewHandle(size);	
+#ifndef NO_GetPortVisibleRegion
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPortVisibleRegion
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("GetPortVisibleRegion\n")
+
+	return (jint)GetPortVisibleRegion((CGrafPtr)arg0, (RgnHandle)arg1);
 }
+#endif /* NO_GetPortVisibleRegion */
+
+#ifndef NO_GetPtrSize
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPtrSize
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetPtrSize\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewHandleClear(JNIEnv *env, jclass zz, jint size) {
-	return (jint) NewHandleClear(size);	
+	return (jint)GetPtrSize((Ptr)arg0);
 }
+#endif /* NO_GetPtrSize */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeHandle(JNIEnv *env, jclass zz, jint handle) {
-	DisposeHandle((Handle)handle);
+#ifndef NO_GetRegionBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetRegionBounds
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("GetRegionBounds\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	GetRegionBounds((RgnHandle)arg0, (Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
 }
+#endif /* NO_GetRegionBounds */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetHandleSize(JNIEnv *env, jclass zz, jint handle) {
-	return GetHandleSize((Handle)handle);
+#ifndef NO_GetRootControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetRootControl
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetRootControl\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetRootControl((WindowRef)arg0, (ControlRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
+#endif /* NO_GetRootControl */
+
+#ifndef NO_GetScrapFlavorCount
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorCount
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DerefHandle(JNIEnv *env, jclass zz, jint handle) {
-	Handle h= (Handle) handle;
-	return (jint) *h;
+	DEBUG_CALL("GetScrapFlavorCount\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetScrapFlavorCount((ScrapRef)arg0, (UInt32 *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
+#endif /* NO_GetScrapFlavorCount */
+
+#ifndef NO_GetScrapFlavorData
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorData
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jbyteArray arg3)
+{
+	jint *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetScrapFlavorData\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewPtr(JNIEnv *env, jclass zz, jint size) {
-	return (jint) NewPtr(size);	
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	rc = (jint)GetScrapFlavorData((ScrapRef)arg0, (ScrapFlavorType)arg1, (Size *)lparg2, (void *)lparg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	return rc;
 }
+#endif /* NO_GetScrapFlavorData */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewPtrClear(JNIEnv *env, jclass zz, jint size) {
-	return (jint) NewPtrClear(size);	
+#ifndef NO_GetScrapFlavorInfoList
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorInfoList
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetScrapFlavorInfoList\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetScrapFlavorInfoList((ScrapRef)arg0, (UInt32 *)lparg1, (ScrapFlavorInfo *)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetScrapFlavorInfoList */
+
+#ifndef NO_GetScrapFlavorSize
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorSize
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposePtr(JNIEnv *env, jclass zz, jint ptr) {
-	DisposePtr((void*)ptr);
+	DEBUG_CALL("GetScrapFlavorSize\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetScrapFlavorSize((ScrapRef)arg0, (ScrapFlavorType)arg1, (Size *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetScrapFlavorSize */
+
+#ifndef NO_GetSuperControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetSuperControl
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetSuperControl\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPtrSize(JNIEnv *env, jclass zz, jint ptr) {
-	return (jint) GetPtrSize((void*)ptr);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetSuperControl((ControlRef)arg0, (ControlRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
+#endif /* NO_GetSuperControl */
 
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_MemError(JNIEnv *env, jclass zz) {
-	return (jint) MemError();	
+#ifndef NO_GetThemeDrawingState
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeDrawingState
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetThemeDrawingState\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)GetThemeDrawingState((ThemeDrawingState *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	return rc;
 }
-*/
+#endif /* NO_GetThemeDrawingState */
+
+#ifndef NO_GetThemeFont
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeFont
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jbyteArray arg2, jshortArray arg3, jbyteArray arg4)
+{
+	jbyte *lparg2=NULL;
+	jshort *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_getHandleData__I_3C(JNIEnv *env, jclass zz,
-				jint hndl, jcharArray data) {
-	Handle handle= (Handle)hndl;
-	jchar *sa= (*env)->GetCharArrayElements(env, data, 0);
-	int length= (*env)->GetArrayLength(env, data);
-	memcpy(sa, *handle, length*sizeof(jchar));
-	(*env)->ReleaseCharArrayElements(env, data, sa, 0);
+	DEBUG_CALL("GetThemeFont\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	rc = (jint)GetThemeFont((ThemeFontID)arg0, (ScriptCode)arg1, (char *)lparg2, (SInt16 *)lparg3, (Style *)lparg4);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	return rc;
 }
+#endif /* NO_GetThemeFont */
+
+#ifndef NO_GetThemeTextDimensions
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeTextDimensions
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jboolean arg3, jshortArray arg4, jshortArray arg5)
+{
+	jshort *lparg4=NULL;
+	jshort *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetThemeTextDimensions\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_getHandleData__I_3I(JNIEnv *env, jclass zz,
-				jint hndl, jintArray data) {
-	Handle handle= (Handle)hndl;
-	jint *sa= (*env)->GetIntArrayElements(env, data, 0);
-	int length= (*env)->GetArrayLength(env, data);
-	memcpy(sa, *handle, length*sizeof(jint));
-	(*env)->ReleaseIntArrayElements(env, data, sa, 0);
+	if (arg4) lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetShortArrayElements(env, arg5, NULL);
+	rc = (jint)GetThemeTextDimensions((CFStringRef)arg0, (ThemeFontID)arg1, (ThemeDrawState)arg2, (Boolean)arg3, (Point *)lparg4, (SInt16 *)lparg5);
+	if (arg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseShortArrayElements(env, arg5, lparg5, 0);
+	return rc;
 }
+#endif /* NO_GetThemeTextDimensions */
 
-// mem functions
+#ifndef NO_GetUserFocusEventTarget
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetUserFocusEventTarget
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetUserFocusEventTarget\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__III(JNIEnv *env, jclass zz,
-				jint dest, jint src, jint n) {
-	memcpy((void*)dest, (const void*)src, (size_t)n);
+	return (jint)GetUserFocusEventTarget();
 }
+#endif /* NO_GetUserFocusEventTarget */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__I_3BI(JNIEnv *env, jclass zz,
-				jint dest, jbyteArray src, jint n) {
-	jbyte *sa= (*env)->GetByteArrayElements(env, src, 0);
-	memcpy((void*)dest, (const void*)sa, (size_t)n);
-	(*env)->ReleaseByteArrayElements(env, src, sa, 0);
+#ifndef NO_GetWRefCon
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWRefCon
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetWRefCon\n")
+
+	return (jint)GetWRefCon((WindowRef)arg0);
 }
+#endif /* NO_GetWRefCon */
+
+#ifndef NO_GetWindowBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowBounds
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jobject arg2)
+{
+	Rect _arg2, *lparg2=NULL;
+
+	DEBUG_CALL("GetWindowBounds\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3BII(JNIEnv *env, jclass zz,
-				jbyteArray dest, jint src, jint n) {
-	jbyte *sa= (*env)->GetByteArrayElements(env, dest, 0);
-	memcpy((void*)sa, (const void*)src, (size_t)n);
-	(*env)->ReleaseByteArrayElements(env, dest, sa, 0);
+	if (arg2) lparg2 = getRectFields(env, arg2, &_arg2);
+	GetWindowBounds((WindowRef)arg0, (WindowRegionCode)arg1, (Rect *)lparg2);
+	if (arg2) setRectFields(env, arg2, lparg2);
 }
+#endif /* NO_GetWindowBounds */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset(JNIEnv *env, jclass zz,
-				jint dest, jint value, jint size) {
-	memset((void*)dest, (int)value, (size_t)size);
+#ifndef NO_GetWindowDefaultButton
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowDefaultButton
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetWindowDefaultButton\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)GetWindowDefaultButton((WindowRef)arg0, (ControlRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
 }
+#endif /* NO_GetWindowDefaultButton */
 
-////////////////////////////
+#ifndef NO_GetWindowEventTarget
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowEventTarget
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetWindowEventTarget\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetData(JNIEnv *env, jclass zz,
-					jint txHandle, jcharArray unicodeChars, jint startOffset, jint endOffset) {
-        jchar *sa= (*env)->GetCharArrayElements(env, unicodeChars, 0);
-        jsize length= (*env)->GetArrayLength(env, unicodeChars);
-	jint status= (jint) RC(TXNSetData((TXNObject)txHandle, kTXNUnicodeTextData, (void*) sa, length*sizeof(jchar), startOffset, endOffset));
-	(*env)->ReleaseCharArrayElements(env, unicodeChars, sa, 0);
-	return status;
+	return (jint)GetWindowEventTarget((WindowRef)arg0);
 }
+#endif /* NO_GetWindowEventTarget */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetLineCount(JNIEnv *env, jclass zz,
-					jint txHandle, jintArray lineCount) {
-        jint *sa= (*env)->GetIntArrayElements(env, lineCount, 0);
-	jint status= (jint) RC(TXNGetLineCount((TXNObject)txHandle, (ItemCount*) sa));
-	(*env)->ReleaseIntArrayElements(env, lineCount, sa, 0);
-	return status;
+#ifndef NO_GetWindowFromPort
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowFromPort
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetWindowFromPort\n")
+
+	return (jint)GetWindowFromPort((CGrafPtr)arg0);
 }
+#endif /* NO_GetWindowFromPort */
+
+#ifndef NO_GetWindowModality
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowModality
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetWindowModality\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNDataSize(JNIEnv *env, jclass zz, jint txHandle) {
-	return (jint) TXNDataSize((TXNObject)txHandle);
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetWindowModality((WindowRef)arg0, (WindowModality *)lparg1, (WindowRef *)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_GetWindowModality */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetSelection(JNIEnv *env, jclass zz,
-			jint txHandle, jintArray start, jintArray end) {
-        jint *sa= (*env)->GetIntArrayElements(env, start, 0);
-        jint *sb= (*env)->GetIntArrayElements(env, end, 0);
-	TXNGetSelection((TXNObject)txHandle, (TXNOffset*)sa, (TXNOffset*)sb);	
-	(*env)->ReleaseIntArrayElements(env, start, sa, 0);
-	(*env)->ReleaseIntArrayElements(env, end, sb, 0);
+#ifndef NO_GetWindowPort
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetWindowPort
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetWindowPort\n")
+
+	return (jint)GetWindowPort((WindowRef)arg0);
 }
+#endif /* NO_GetWindowPort */
+
+#ifndef NO_HIComboBoxAppendTextItem
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxAppendTextItem
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("HIComboBoxAppendTextItem\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetSelection(JNIEnv *env, jclass zz,
-			jint txHandle, jint start, jint end) {
-	return (jint) RC(TXNSetSelection((TXNObject)txHandle, (TXNOffset)start, (TXNOffset)end));	
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)HIComboBoxAppendTextItem((HIViewRef)arg0, (CFStringRef)arg1, (CFIndex *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_HIComboBoxAppendTextItem */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSelectAll(JNIEnv *env, jclass zz, jint txHandle) {
-	TXNSelectAll((TXNObject)txHandle);	
+#ifndef NO_HIComboBoxCopyTextItemAtIndex
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxCopyTextItemAtIndex
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("HIComboBoxCopyTextItemAtIndex\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)HIComboBoxCopyTextItemAtIndex((HIViewRef)arg0, (CFIndex)arg1, (CFStringRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_HIComboBoxCopyTextItemAtIndex */
+
+#ifndef NO_HIComboBoxCreate
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxCreate
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jobject arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	CGRect _arg0, *lparg0=NULL;
+	ControlFontStyleRec _arg2, *lparg2=NULL;
+	jint *lparg5=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNShowSelection(JNIEnv *env, jclass zz,
-			jint txHandle, jboolean showEnd) {
-	TXNShowSelection((TXNObject)txHandle, (Boolean)showEnd);	
+	DEBUG_CALL("HIComboBoxCreate\n")
+
+	if (arg0) lparg0 = getCGRectFields(env, arg0, &_arg0);
+	if (arg2) lparg2 = getControlFontStyleRecFields(env, arg2, &_arg2);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)HIComboBoxCreate((const HIRect *)lparg0, (CFStringRef)arg1, (const ControlFontStyleRec *)lparg2, (CFArrayRef)arg3, (OptionBits)arg4, (HIViewRef *)lparg5);
+	if (arg0) setCGRectFields(env, arg0, lparg0);
+	if (arg2) setControlFontStyleRecFields(env, arg2, lparg2);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
 }
+#endif /* NO_HIComboBoxCreate */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNKeyDown(JNIEnv *env, jclass zz,	
-					jint txHandle, jintArray eventData) {
-	EventRecord event;
-	copyEventData(env, &event, eventData);
-	TXNKeyDown((TXNObject)txHandle, &event);
+#ifndef NO_HIComboBoxGetItemCount
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxGetItemCount
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HIComboBoxGetItemCount\n")
+
+	return (jint)HIComboBoxGetItemCount((HIViewRef)arg0);
 }
+#endif /* NO_HIComboBoxGetItemCount */
+
+#ifndef NO_HIComboBoxInsertTextItemAtIndex
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxInsertTextItemAtIndex
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("HIComboBoxInsertTextItemAtIndex\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNClick(JNIEnv *env, jclass zz,	
-					jint txHandle, jintArray eventData) {
-	EventRecord event;
-	copyEventData(env, &event, eventData);
-	TXNClick((TXNObject)txHandle, &event);
+	return (jint)HIComboBoxInsertTextItemAtIndex((HIViewRef)arg0, (CFIndex)arg1, (CFStringRef)arg2);
 }
+#endif /* NO_HIComboBoxInsertTextItemAtIndex */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNFocus(JNIEnv *env, jclass zz,
-			jint txHandle, jboolean becomingFocused) {
-	TXNFocus((TXNObject)txHandle, (Boolean)becomingFocused);	
+#ifndef NO_HIComboBoxRemoveItemAtIndex
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxRemoveItemAtIndex
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("HIComboBoxRemoveItemAtIndex\n")
+
+	return (jint)HIComboBoxRemoveItemAtIndex((HIViewRef)arg0, (CFIndex)arg1);
 }
+#endif /* NO_HIComboBoxRemoveItemAtIndex */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNCut(JNIEnv *env, jclass zz, jint txHandle) {
-	return (jint) RC(TXNCut((TXNObject)txHandle));	
+#ifndef NO_HIObjectCopyClassID
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIObjectCopyClassID
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HIObjectCopyClassID\n")
+
+	return (jint)HIObjectCopyClassID((HIObjectRef)arg0);
 }
+#endif /* NO_HIObjectCopyClassID */
+
+#ifndef NO_HIObjectCreate
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIObjectCreate
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNCopy(JNIEnv *env, jclass zz, jint txHandle) {
-	return (jint) RC(TXNCopy((TXNObject)txHandle));	
+	DEBUG_CALL("HIObjectCreate\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)HIObjectCreate((CFStringRef)arg0, (EventRef)arg1, (HIObjectRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_HIObjectCreate */
+
+#ifndef NO_HIObjectRegisterSubclass
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIObjectRegisterSubclass
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintArray arg5, jint arg6, jintArray arg7)
+{
+	jint *lparg5=NULL;
+	jint *lparg7=NULL;
+	jint rc;
+
+	DEBUG_CALL("HIObjectRegisterSubclass\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNPaste(JNIEnv *env, jclass zz, jint txHandle) {
-	return (jint) RC(TXNPaste((TXNObject)txHandle));	
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	rc = (jint)HIObjectRegisterSubclass((CFStringRef)arg0, (CFStringRef)arg1, (OptionBits)arg2, (EventHandlerUPP)arg3, (UInt32)arg4, (const EventTypeSpec *)lparg5, (void *)arg6, (HIObjectClassRef *)lparg7);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	return rc;
 }
+#endif /* NO_HIObjectRegisterSubclass */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetRectBounds(JNIEnv *env, jclass zz,
-			jint txHandle, jshortArray viewRect, jintArray destRect, jintArray textRect) {
-        jshort *sa= NULL;
-        jint *sb= NULL;
-        jint *sc= NULL;
-	jint status;
-	if (viewRect != NULL)
-		sa= (*env)->GetShortArrayElements(env, viewRect, 0);
-	if (destRect != NULL)
-		sb= (*env)->GetIntArrayElements(env, destRect, 0);
-	if (textRect != NULL)
-		sc= (*env)->GetIntArrayElements(env, textRect, 0);
-	status= (jint) RC(TXNGetRectBounds((TXNObject)txHandle, (Rect*)sa, (TXNLongRect*)sb, (TXNLongRect*)sc));
-	if (sa != NULL)
-		(*env)->ReleaseShortArrayElements(env, viewRect, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, destRect, sb, 0);
-	if (sc != NULL)
-		(*env)->ReleaseIntArrayElements(env, textRect, sc, 0);
-	return status;
+#ifndef NO_HIViewAddSubview
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewAddSubview
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("HIViewAddSubview\n")
+
+	return (jint)HIViewAddSubview((HIViewRef)arg0, (HIViewRef)arg1);
 }
+#endif /* NO_HIViewAddSubview */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetRectBounds(JNIEnv *env, jclass zz,
-			jint txHandle, jshortArray viewRect, jintArray destRect, jboolean update) {
-        jshort *sa= NULL;
-        jint *sb= NULL;
-	if (viewRect != NULL)
-		sa= (*env)->GetShortArrayElements(env, viewRect, 0);
-	if (destRect != NULL)
-		sb= (*env)->GetIntArrayElements(env, destRect, 0);
-	TXNSetRectBounds((TXNObject)txHandle, (Rect*)sa, (TXNLongRect*)sb, update);
-	if (sa != NULL)
-		(*env)->ReleaseShortArrayElements(env, viewRect, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, destRect, sb, 0);
+#ifndef NO_HIViewClick
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewClick
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("HIViewClick\n")
+
+	return (jint)HIViewClick((HIViewRef)arg0, (EventRef)arg1);
 }
+#endif /* NO_HIViewClick */
+
+#ifndef NO_HIViewConvertPoint
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewConvertPoint
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	CGPoint _arg0, *lparg0=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNActivate(JNIEnv *env, jclass zz,
-				jint txHandle, jint frameID, jboolean scrollBarState) {
-	return (jint) RC(TXNActivate((TXNObject)txHandle, (TXNFrameID)frameID, (TXNScrollBarState)scrollBarState));	
+	DEBUG_CALL("HIViewConvertPoint\n")
+
+	if (arg0) lparg0 = getCGPointFields(env, arg0, &_arg0);
+	rc = (jint)HIViewConvertPoint((HIPoint *)lparg0, (HIViewRef)arg1, (HIViewRef)arg2);
+	if (arg0) setCGPointFields(env, arg0, lparg0);
+	return rc;
 }
+#endif /* NO_HIViewConvertPoint */
+
+#ifndef NO_HIViewFindByID
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewFindByID
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNEchoMode(JNIEnv *env, jclass zz,
-				jint txHandle, jchar echoCharacter, jint encoding, jboolean on) {
-	return (jint) RC(TXNEchoMode((TXNObject)txHandle, echoCharacter, encoding, on));	
+	DEBUG_CALL("HIViewFindByID\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)HIViewFindByID((HIViewRef)arg0, *(HIViewID *)arg1, (HIViewRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_HIViewFindByID */
+
+#ifndef NO_HIViewGetFrame
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetFrame
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("HIViewGetFrame\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNOffsetToPoint(JNIEnv *env, jclass zz,
-				jint txHandle, jint offset, jshortArray location) {
-	jshort *sa= (*env)->GetShortArrayElements(env, location, 0);
-	jint status= (jint) RC(TXNOffsetToPoint((TXNObject)txHandle, offset, (Point*) sa));	
-	(*env)->ReleaseShortArrayElements(env, location, sa, 0);
-	return status;
+	if (arg1) lparg1 = getCGRectFields(env, arg1, &_arg1);
+	rc = (jint)HIViewGetFrame((HIViewRef)arg0, (HIRect *)lparg1);
+	if (arg1) setCGRectFields(env, arg1, lparg1);
+	return rc;
 }
+#endif /* NO_HIViewGetFrame */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNResizeFrame(JNIEnv *env, jclass zz,
-				jint txHandle, jint width, jint height, jint frameID) {
-	TXNResizeFrame((TXNObject)txHandle, width, height, frameID);	
+#ifndef NO_HIViewGetRoot
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetRoot
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HIViewGetRoot\n")
+
+	return (jint)HIViewGetRoot((WindowRef)arg0);
 }
+#endif /* NO_HIViewGetRoot */
+
+#ifndef NO_HIViewGetViewForMouseEvent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetViewForMouseEvent
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("HIViewGetViewForMouseEvent\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetViewRect(JNIEnv *env, jclass zz,
-				jint txHandle, jshortArray viewRect) {
-	jshort *sa= (*env)->GetShortArrayElements(env, viewRect, 0);
-	TXNGetViewRect((TXNObject)txHandle, (Rect*) sa);	
-	(*env)->ReleaseShortArrayElements(env, viewRect, sa, 0);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)HIViewGetViewForMouseEvent((HIViewRef)arg0, (EventRef)arg1, (HIViewRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_HIViewGetViewForMouseEvent */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetLineMetrics(JNIEnv *env, jclass zz,
-				jint txHandle, jint lineNumber, jintArray lineWidth, jintArray lineHeight) {
-	jint *sa= (*env)->GetIntArrayElements(env, lineWidth, 0);
-	jint *sb= (*env)->GetIntArrayElements(env, lineHeight, 0);
-	jint status= (jint) RC(TXNGetLineMetrics((TXNObject)txHandle, (UInt32)lineNumber, (Fixed*)sa, (Fixed*)sb));	
-	(*env)->ReleaseIntArrayElements(env, lineWidth, sa, 0);
-	(*env)->ReleaseIntArrayElements(env, lineHeight, sb, 0);
-	return status;
+#ifndef NO_HIViewRemoveFromSuperview
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewRemoveFromSuperview
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HIViewRemoveFromSuperview\n")
+
+	return (jint)HIViewRemoveFromSuperview((HIViewRef)arg0);
 }
+#endif /* NO_HIViewRemoveFromSuperview */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNForceUpdate(JNIEnv *env, jclass zz, jint txHandle) {
-	TXNForceUpdate((TXNObject)txHandle);	
+#ifndef NO_HIViewSetDrawingEnabled
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetDrawingEnabled
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("HIViewSetDrawingEnabled\n")
+
+	return (jint)HIViewSetDrawingEnabled((HIViewRef)arg0, (Boolean)arg1);
 }
+#endif /* NO_HIViewSetDrawingEnabled */
+
+#ifndef NO_HIViewSetFrame
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetFrame
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	CGRect _arg1, *lparg1=NULL;
+	jint rc;
 
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTXNWordWrap(JNIEnv *env, jclass zz,
-				jint txHandle, jboolean wrap) {
-    TXNControlTag controlTag[1];
-    TXNControlData controlData[1];
-    controlTag[0]= kTXNWordWrapStateTag;
-	controlData[0].uValue= wrap ? kTXNAutoWrap : kTXNNoAutoWrap; 
-	TXNSetTXNObjectControls((TXNObject)txHandle, false, 1, controlTag, controlData);
+	DEBUG_CALL("HIViewSetFrame\n")
+
+	if (arg1) lparg1 = getCGRectFields(env, arg1, &_arg1);
+	rc = (jint)HIViewSetFrame((HIViewRef)arg0, (const HIRect *)lparg1);
+	if (arg1) setCGRectFields(env, arg1, lparg1);
+	return rc;
 }
-*/
+#endif /* NO_HIViewSetFrame */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setTXNMargins(JNIEnv *env, jclass zz,
-				jint txHandle, jshort margin) {
-    TXNControlTag controlTag[1];
-    TXNControlData controlData[1];
-    TXNMargins m;
-    m.topMargin= margin;
-    m.leftMargin= margin;
-    m.bottomMargin= margin;
-    m.rightMargin= margin;    
-    controlTag[0]= kTXNMarginsTag;
-	controlData[0].marginsPtr= &m; 
-	TXNSetTXNObjectControls((TXNObject)txHandle, false, 1, controlTag, controlData);
+#ifndef NO_HIViewSetNeedsDisplay
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetNeedsDisplay
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("HIViewSetNeedsDisplay\n")
+
+	return (jint)HIViewSetNeedsDisplay((HIViewRef)arg0, (Boolean)arg1);
 }
+#endif /* NO_HIViewSetNeedsDisplay */
+
+#ifndef NO_HIViewSetNeedsDisplayInRegion
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetNeedsDisplayInRegion
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("HIViewSetNeedsDisplayInRegion\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetTXNObjectControls(JNIEnv *env, jclass zz,
-			jint txHandle, jboolean clearAll, jint controlCount, jintArray controlTags, jintArray controlData) {
-	jint *sa= (*env)->GetIntArrayElements(env, controlTags, 0);
-	jint *sb= (*env)->GetIntArrayElements(env, controlData, 0);
-	jint status= RC(TXNSetTXNObjectControls((TXNObject)txHandle, (Boolean)clearAll, (ItemCount) controlCount,
-								(TXNControlTag*)sa, (TXNControlData*)sb));
-	(*env)->ReleaseIntArrayElements(env, controlTags, sa, 0);
-	(*env)->ReleaseIntArrayElements(env, controlData, sb, 0);
-	return status;
+	return (jint)HIViewSetNeedsDisplayInRegion((HIViewRef)arg0, (RgnHandle)arg1, (Boolean)arg2);
 }
+#endif /* NO_HIViewSetNeedsDisplayInRegion */
 
-//---- Scrap
+#ifndef NO_HIViewSetVisible
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetVisible
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("HIViewSetVisible\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentScrap(JNIEnv *env, jclass zz, jintArray scrapref) {
-	jint *sa= (*env)->GetIntArrayElements(env, scrapref, 0);
-	jint status= RC(GetCurrentScrap((ScrapRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, scrapref, sa, 0);
-	return status;
+	return (jint)HIViewSetVisible((HIViewRef)arg0, (Boolean)arg1);
 }
+#endif /* NO_HIViewSetVisible */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClearCurrentScrap(JNIEnv *env, jclass zz) {
-	return (jint) RC(ClearCurrentScrap());
+#ifndef NO_HIViewSetZOrder
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetZOrder
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("HIViewSetZOrder\n")
+
+	return (jint)HIViewSetZOrder((HIViewRef)arg0, (HIViewZOrderOp)arg1, (HIViewRef)arg2);
 }
+#endif /* NO_HIViewSetZOrder */
+
+#ifndef NO_HIViewSimulateClick
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSimulateClick
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jshortArray arg3)
+{
+	jshort *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("HIViewSimulateClick\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorSize(JNIEnv *env, jclass zz,
-		jint scrapHandle, jint flavorType, jintArray sizeRef) {
-	jint *sa= (*env)->GetIntArrayElements(env, sizeRef, 0);
-	jint status= RC(GetScrapFlavorSize((ScrapRef)scrapHandle, (ScrapFlavorType) flavorType, (Size*)sa));
-	(*env)->ReleaseIntArrayElements(env, sizeRef, sa, 0);
-	return status;
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+	rc = (jint)HIViewSimulateClick((HIViewRef)arg0, (HIViewPartCode)arg1, (UInt32)arg2, (ControlPartCode *)lparg3);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	return rc;
 }
+#endif /* NO_HIViewSimulateClick */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorData(JNIEnv *env, jclass zz,
-		jint scrapHandle, jint flavorType, jintArray sizeRef, jbyteArray data) {
-	jint status;
-	jint *sa= NULL;
-	jbyte *sb= NULL;
-	if (sizeRef != NULL)
-		sa= (*env)->GetIntArrayElements(env, sizeRef, 0);
-	if (data != NULL)
-		sb= (*env)->GetByteArrayElements(env, data, 0);
-	status= RC(GetScrapFlavorData((ScrapRef)scrapHandle, (ScrapFlavorType) flavorType, (Size*)sa, (void*)sb));
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, sizeRef, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseByteArrayElements(env, data, sb, 0);
-	return status;
+#ifndef NO_HandleControlClick
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_HandleControlClick
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
+{
+	Point _arg1, *lparg1=NULL;
+	jshort rc;
+
+	DEBUG_CALL("HandleControlClick\n")
+
+	if (arg1) lparg1 = getPointFields(env, arg1, &_arg1);
+	rc = (jshort)HandleControlClick((ControlRef)arg0, (Point)*lparg1, (EventModifiers)arg2, (ControlActionUPP)arg3);
+	if (arg1) setPointFields(env, arg1, lparg1);
+	return rc;
 }
+#endif /* NO_HandleControlClick */
+
+#ifndef NO_HiWord
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_HiWord
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HiWord\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PutScrapFlavor(JNIEnv *env, jclass zz,
-		jint scrapHandle, jint flavorType, jint flavorFlags, jbyteArray flavorData) {
-	jint status;
-	jbyte *sa= NULL;
-	int size= 0;
-	if (flavorData != NULL) {
-		size= (*env)->GetArrayLength(env, flavorData);
-		sa= (*env)->GetByteArrayElements(env, flavorData, 0);
-	}
-	status= RC(PutScrapFlavor((ScrapRef)scrapHandle, (ScrapFlavorType) flavorType, (ScrapFlavorFlags) flavorFlags,
-				size, (const void*)sa));
-	if (sa != NULL)
-		(*env)->ReleaseByteArrayElements(env, flavorData, sa, 0);
-	return status;
+	return (jshort)HiWord(arg0);
 }
+#endif /* NO_HiWord */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorCount(JNIEnv *env, jclass zz,
-		jint scrapHandle, jintArray infoCount) {
-	jint *sa= (*env)->GetIntArrayElements(env, infoCount, 0);
-	jint status= RC(GetScrapFlavorCount((ScrapRef)scrapHandle, (UInt32*)sa));
-	(*env)->ReleaseIntArrayElements(env, infoCount, sa, 0);
-	return status;
+#ifndef NO_HideWindow
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HideWindow
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HideWindow\n")
+
+	HideWindow((WindowRef)arg0);
 }
+#endif /* NO_HideWindow */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorInfoList(JNIEnv *env, jclass zz,
-		jint scrapHandle, jintArray infoCount, jintArray info) {
-	jint status;
-	jint *sa= NULL;
-	jint *sb= NULL;
-	if (infoCount != NULL)
-		sa= (*env)->GetIntArrayElements(env, infoCount, 0);
-	if (info != NULL)
-		sb= (*env)->GetIntArrayElements(env, info, 0);
-		
-	status= RC(GetScrapFlavorInfoList((ScrapRef)scrapHandle, (UInt32*) sa, (ScrapFlavorInfo*) sb));
-	if (sa != NULL)
-		(*env)->ReleaseIntArrayElements(env, infoCount, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseIntArrayElements(env, info, sb, 0);
-	return status;
+#ifndef NO_HiliteMenu
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_HiliteMenu
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("HiliteMenu\n")
+
+	HiliteMenu((MenuID)arg0);
 }
+#endif /* NO_HiliteMenu */
 
-//---- Misc ------------------------------------------
+#ifndef NO_InitContextualMenus
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitContextualMenus
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("InitContextualMenus\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_Init(JNIEnv *env, jclass zz) {
-	// workaround for Register problem
-	Rect bounds= {};
-	ControlRef ctl;
-	CreatePushButtonControl(NULL, &bounds, NULL, &ctl);
-	DisposeControl(ctl);
+	return (jint)InitContextualMenus();
 }
+#endif /* NO_InitContextualMenus */
+
+#ifndef NO_InitCursor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitCursor
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("InitCursor\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InitCursor(JNIEnv *env, jclass zz) {
 	InitCursor();
 }
+#endif /* NO_InitCursor */
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_HiWord(JNIEnv *env, jclass zz, jint i) {
-	return HiWord(i);
+#ifndef NO_InsertMenu
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InsertMenu
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	DEBUG_CALL("InsertMenu\n")
+
+	InsertMenu((MenuRef)arg0, (MenuID)arg1);
 }
+#endif /* NO_InsertMenu */
 
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_LoWord(JNIEnv *env, jclass zz, jint i) {
-	return LoWord(i);
+#ifndef NO_InsertMenuItemTextWithCFString
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InsertMenuItemTextWithCFString
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshort arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("InsertMenuItemTextWithCFString\n")
+
+	return (jint)InsertMenuItemTextWithCFString((MenuRef)arg0, (CFStringRef)arg1, (MenuItemIndex)arg2, (MenuItemAttributes)arg3, (MenuCommand)arg4);
 }
+#endif /* NO_InsertMenuItemTextWithCFString */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SysBeep(JNIEnv *env, jclass zz, jshort duration) {
-	SysBeep((short)duration);
-}
+#ifndef NO_InstallEventHandler
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InstallEventHandler
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDblTime(JNIEnv *env, jclass zz) {
-	return GetDblTime();
-}
+	DEBUG_CALL("InstallEventHandler\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCaretTime(JNIEnv *env, jclass zz) {
-	return GetCaretTime();
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetAvailableWindowPositioningBounds(JNIEnv *env,
-				jclass zz, jint gHandle, jshortArray bounds) {
-	jshort *sa= (*env)->GetShortArrayElements(env, bounds, 0);
-	jint rc= RC(GetAvailableWindowPositioningBounds((GDHandle) gHandle, (Rect*)sa));
-	(*env)->ReleaseShortArrayElements(env, bounds, sa, 0);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)InstallEventHandler((EventTargetRef)arg0, (EventHandlerUPP)arg1, (UInt32)arg2, (const EventTypeSpec *)lparg3, (void *)arg4, (EventHandlerRef *)lparg5);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	return rc;
 }
+#endif /* NO_InstallEventHandler */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetIconRef(JNIEnv *env, jclass zz,
-			jshort vRefNum, jint creator, jint iconType, jintArray iconRef) {
-	jint *sa= (*env)->GetIntArrayElements(env, iconRef, 0);
-	jint rc= RC(GetIconRef(vRefNum, (OSType)creator, (OSType)iconType, (IconRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, iconRef, sa, 0);
+#ifndef NO_InstallEventLoopTimer
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_InstallEventLoopTimer
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("InstallEventLoopTimer\n")
+
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)InstallEventLoopTimer((EventLoopRef)arg0, (EventTimerInterval)arg1, (EventTimerInterval)arg2, (EventLoopTimerUPP)arg3, (void *)arg4, (EventLoopTimerRef *)lparg5);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	return rc;
 }
+#endif /* NO_InstallEventLoopTimer */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentProcess(JNIEnv *env, jclass zz,
-			jintArray psn) {
-	jint *sa= (*env)->GetIntArrayElements(env, psn, 0);
-	jint status= (jint) GetCurrentProcess((ProcessSerialNumberPtr)sa);
-	(*env)->ReleaseIntArrayElements(env, psn, sa, 0);
-	return status;
+#ifndef NO_InvalWindowRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvalWindowRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("InvalWindowRect\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	InvalWindowRect((WindowRef)arg0, (const Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
 }
+#endif /* NO_InvalWindowRect */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetFrontProcess(JNIEnv *env, jclass zz,
-			jintArray psn) {
-	jint *sa= (*env)->GetIntArrayElements(env, psn, 0);
-	jint status= (jint) SetFrontProcess((ProcessSerialNumberPtr)sa);
-	(*env)->ReleaseIntArrayElements(env, psn, sa, 0);
-	return status;
+#ifndef NO_InvalWindowRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvalWindowRgn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("InvalWindowRgn\n")
+
+	InvalWindowRgn((WindowRef)arg0, (RgnHandle)arg1);
 }
+#endif /* NO_InvalWindowRgn */
 
-//---- utilities
+#ifndef NO_InvertRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvertRect
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Rect _arg0, *lparg0=NULL;
 
-static Point point(JNIEnv *env, jshortArray a) {
-	Point p;
-	jshort *sa= (*env)->GetShortArrayElements(env, a, 0);
-	p.v= sa[0];
-	p.h= sa[1];
-	(*env)->ReleaseShortArrayElements(env, a, sa, 0);
-	return p;
+	DEBUG_CALL("InvertRect\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	InvertRect((const Rect *)lparg0);
+	if (arg0) setRectFields(env, arg0, lparg0);
 }
+#endif /* NO_InvertRect */
 
-static void copyEvent(JNIEnv *env, jintArray eData, EventRecord *event) {
-	if (eData != NULL) {
-		jint *sa= (*env)->GetIntArrayElements(env, eData, 0);
-		sa[0]= (int) event->what;
-		sa[1]= (int) event->message;
-		sa[2]= (int) event->when;
-		sa[3]= (int) event->where.v;
-		sa[4]= (int) event->where.h;
-		sa[5]= (int) event->modifiers;
-		(*env)->ReleaseIntArrayElements(env, eData, sa, 0);
-	}
+#ifndef NO_InvertRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_InvertRgn
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("InvertRgn\n")
+
+	InvertRgn((RgnHandle)arg0);
 }
+#endif /* NO_InvertRgn */
 
-static void copyEventData(JNIEnv *env, EventRecord *event, jintArray eData) {
-	if (eData != NULL) {
-		jint *sa= (*env)->GetIntArrayElements(env, eData, 0);
-		event->what= (short) sa[0];
-		event->message= sa[1];
-		event->when= sa[2];
-		event->where.v= (short) sa[3];
-		event->where.h= (short) sa[4];
-		event->modifiers= sa[5];
-		(*env)->ReleaseIntArrayElements(env, eData, sa, 0);	
-	}
+#ifndef NO_IsControlActive
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlActive
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsControlActive\n")
+
+	return (jboolean)IsControlActive((ControlRef)arg0);
 }
+#endif /* NO_IsControlActive */
 
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-// Jaguar
-////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+#ifndef NO_IsControlEnabled
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlEnabled
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsControlEnabled\n")
 
-//// HIObject
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIObjectRegisterSubclass(JNIEnv *env, jclass zz,
-			jint inClassID,
-			jint inBaseClassID,
-			jint inOptions,
-			jint inConstructProc,
-			jintArray inEventList,
-			jint inConstructData,
-			jintArray outClassRef) {
-				
-	jint *sa= (*env)->GetIntArrayElements(env, inEventList, 0);
-	jsize length= (*env)->GetArrayLength(env, inEventList);
-	
-	jint *sb= (*env)->GetIntArrayElements(env, outClassRef, 0);
-	jint status;
-		
-	status= RC(HIObjectRegisterSubclass(
-	 		(CFStringRef) inClassID,
-	 		(CFStringRef) inBaseClassID,
-			(OptionBits) inOptions,
-	 		(EventHandlerUPP) inConstructProc,
-	 		(UInt32) (length/2),
-	 		(const EventTypeSpec*) sa,
-	 		NULL, // (void*) inConstructData,
-	 		(HIObjectClassRef*) sb));
-				
-	(*env)->ReleaseIntArrayElements(env, inEventList, sa, 0);
-	(*env)->ReleaseIntArrayElements(env, outClassRef, sb, 0);
-
-	return status;
+	return (jboolean)IsControlEnabled((ControlRef)arg0);
 }
+#endif /* NO_IsControlEnabled */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIObjectCreate(JNIEnv *env, jclass zz,
-			jint inClassID, jint inConstructData, jintArray outObject) {
-	jint *sa= (*env)->GetIntArrayElements(env, outObject, 0);
-	jint status= RC(HIObjectCreate((CFStringRef)inClassID, (EventRef) inConstructData, (HIObjectRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, outObject, sa, 0);
-	return status;
+#ifndef NO_IsControlVisible
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsControlVisible
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsControlVisible\n")
+
+	return (jboolean)IsControlVisible((ControlRef)arg0);
 }
+#endif /* NO_IsControlVisible */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIObjectCopyClassID(JNIEnv *env, jclass zz,
-			jint inObject) {
-	return(jint) HIObjectCopyClassID((HIObjectRef)inObject);
+#ifndef NO_IsDataBrowserItemSelected
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsDataBrowserItemSelected
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("IsDataBrowserItemSelected\n")
+
+	return (jboolean)IsDataBrowserItemSelected((ControlRef)arg0, (DataBrowserItemID)arg1);
 }
+#endif /* NO_IsDataBrowserItemSelected */
 
+#ifndef NO_IsMenuCommandEnabled
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsMenuCommandEnabled
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("IsMenuCommandEnabled\n")
 
-//// HIView
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewAddSubview(JNIEnv *env, jclass zz,
-			jint inParent, jint inNewChild) {
-	return RC(HIViewAddSubview((HIViewRef)inParent, (HIViewRef) inNewChild));
+	return (jboolean)IsMenuCommandEnabled((MenuRef)arg0, (MenuCommand)arg1);
 }
+#endif /* NO_IsMenuCommandEnabled */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewRemoveFromSuperview(JNIEnv *env, jclass zz,
-			jint inView) {
-	return RC(HIViewRemoveFromSuperview((HIViewRef) inView));
+#ifndef NO_IsMenuItemEnabled
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsMenuItemEnabled
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	DEBUG_CALL("IsMenuItemEnabled\n")
+
+	return (jboolean)IsMenuItemEnabled((MenuRef)arg0, (MenuItemIndex)arg1);
 }
+#endif /* NO_IsMenuItemEnabled */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetDrawingEnabled(JNIEnv *env, jclass zz,
-			jint inView, jboolean inEnabled) {
-	return RC(HIViewSetDrawingEnabled((HIViewRef)inView, (Boolean) inEnabled));
+#ifndef NO_IsValidControlHandle
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsValidControlHandle
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsValidControlHandle\n")
+
+	return (jboolean)IsValidControlHandle((ControlRef)arg0);
 }
+#endif /* NO_IsValidControlHandle */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSimulateClick(JNIEnv *env, jclass zz,
-			jint inView, jshort inPartToClick, jint inModifiers, jshortArray outPartClicked) {
-	jshort *sa= (*env)->GetShortArrayElements(env, outPartClicked, 0);
-	jint status= RC(HIViewSimulateClick((HIViewRef)inView, (HIViewPartCode)inPartToClick, (UInt32)inModifiers, (ControlPartCode*) sa));
-	(*env)->ReleaseShortArrayElements(env, outPartClicked, sa, 0);
-	return status;
+#ifndef NO_IsValidMenu
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsValidMenu
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsValidMenu\n")
+
+	return (jboolean)IsValidMenu((MenuRef)arg0);
 }
+#endif /* NO_IsValidMenu */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetZOrder(JNIEnv *env, jclass zz,
-			jint inView, jint inOp, jint inOther) {
-	return RC(HIViewSetZOrder((HIViewRef)inView, (HIViewZOrderOp) inOp, (HIViewRef)inOther));
+#ifndef NO_IsValidWindowPtr
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsValidWindowPtr
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsValidWindowPtr\n")
+
+	return (jboolean)IsValidWindowPtr((WindowRef)arg0);
 }
+#endif /* NO_IsValidWindowPtr */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetFrame(JNIEnv *env, jclass zz,
-			jint inView, jint x, jint y, jint width, jint height) {
-	HIRect r;
-	r.origin.x= x;
-	r.origin.y= y;
-	r.size.width= width;
-	r.size.height= height;
-	return RC(HIViewSetFrame((HIViewRef)inView, (const HIRect*) &r));
+#ifndef NO_IsWindowActive
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsWindowActive
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsWindowActive\n")
+
+	return (jboolean)IsWindowActive((WindowRef)arg0);
 }
+#endif /* NO_IsWindowActive */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetFrame(JNIEnv *env, jclass zz,
-			jint inView, jfloatArray outHIRect) {
-	HIRect r;
-	jint status= RC(HIViewGetFrame((HIViewRef)inView, (HIRect*) &r));
-	jfloat *sa= (*env)->GetFloatArrayElements(env, outHIRect, 0);
-	sa[0]= r.origin.x;
-	sa[1]= r.origin.y;
-	sa[2]= r.size.width;
-	sa[3]= r.size.height;
-	(*env)->ReleaseFloatArrayElements(env, outHIRect, sa, 0);
-	return status;
+#ifndef NO_IsWindowVisible
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_IsWindowVisible
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsWindowVisible\n")
+
+	return (jboolean)IsWindowVisible((WindowRef)arg0);
 }
+#endif /* NO_IsWindowVisible */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewClick(JNIEnv *env, jclass zz,
-			jint inView, jint inEvent) {
-	return RC(HIViewClick((HIViewRef)inView, (EventRef) inEvent));
+#ifndef NO_KillPoly
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_KillPoly
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("KillPoly\n")
+
+	KillPoly((PolyHandle)arg0);
 }
+#endif /* NO_KillPoly */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewConvertPoint(JNIEnv *env, jclass zz,
-			jfloatArray ioPoint, jint inSourceView, jint inDestView) {
-	jfloat *sa= (*env)->GetFloatArrayElements(env, ioPoint, 0);
-	HIPoint pt;
-	pt.x= sa[0];
-	pt.y= sa[1];
-	jint status= RC(HIViewConvertPoint((HIPoint*)&pt, (HIViewRef)inSourceView, (HIViewRef) inDestView));
-	sa[0]= pt.x;
-	sa[1]= pt.y;
-	(*env)->ReleaseFloatArrayElements(env, ioPoint, sa, 0);
-	return status;
+#ifndef NO_LineTo
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_LineTo
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1)
+{
+	DEBUG_CALL("LineTo\n")
+
+	LineTo((short)arg0, (short)arg1);
 }
+#endif /* NO_LineTo */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetRoot(JNIEnv *env, jclass zz,
-			jint inWindow) {
-	return (jint) HIViewGetRoot((WindowRef) inWindow);
+#ifndef NO_LoWord
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_LoWord
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("LoWord\n")
+
+	return (jshort)LoWord(arg0);
 }
+#endif /* NO_LoWord */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetNeedsDisplayInRegion(JNIEnv *env, jclass zz,
-			jint inView, jint inRgn, jboolean inNeedsDisplay) {
-	return RC(HIViewSetNeedsDisplayInRegion((HIViewRef) inView, (RgnHandle) inRgn, (Boolean) inNeedsDisplay));
+#ifndef NO_LockPortBits
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_LockPortBits
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("LockPortBits\n")
+
+	return (jint)LockPortBits((GrafPtr)arg0);
 }
+#endif /* NO_LockPortBits */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetNeedsDisplay(JNIEnv *env, jclass zz,
-			jint inView, jboolean inNeedsDisplay) {
-	return RC(HIViewSetNeedsDisplay((HIViewRef) inView, (Boolean) inNeedsDisplay));
+#ifndef NO_MenuSelect
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_MenuSelect
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Point _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("MenuSelect\n")
+
+	if (arg0) lparg0 = getPointFields(env, arg0, &_arg0);
+	rc = (jint)MenuSelect((Point)*lparg0);
+	if (arg0) setPointFields(env, arg0, lparg0);
+	return rc;
 }
+#endif /* NO_MenuSelect */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewSetVisible(JNIEnv *env, jclass zz,
-			jint inView, jboolean inVisible) {
-	return RC(HIViewSetVisible((HIViewRef) inView, (Boolean) inVisible));
+#ifndef NO_MoveControl
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_MoveControl
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2)
+{
+	DEBUG_CALL("MoveControl\n")
+
+	MoveControl((ControlRef)arg0, (SInt16)arg1, (SInt16)arg2);
 }
+#endif /* NO_MoveControl */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewChangeAttributes(JNIEnv *env, jclass zz,
-			jint inView, jint inAttrsToSet, jint inAttrsToClear) {
-	return RC(HIViewChangeAttributes((HIViewRef) inView, (OptionBits) inAttrsToSet, (OptionBits) inAttrsToClear));
+#ifndef NO_MoveTo
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_MoveTo
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1)
+{
+	DEBUG_CALL("MoveTo\n")
+
+	MoveTo((short)arg0, (short)arg1);
 }
+#endif /* NO_MoveTo */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewFindByID(JNIEnv *env, jclass zz,
-			jint inStartView, jint inID, jintArray outControl) {
-	jint *sa= (*env)->GetIntArrayElements(env, outControl, 0);
-	jint status= RC(HIViewFindByID((HIViewRef) inStartView, (HIViewID) kHIViewWindowContentID, (HIViewRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, outControl, sa, 0);
-	return status;
+#ifndef NO_MoveWindow
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_MoveWindow
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2, jboolean arg3)
+{
+	DEBUG_CALL("MoveWindow\n")
+
+	MoveWindow((WindowRef)arg0, (short)arg1, (short)arg2, (Boolean)arg3);
 }
+#endif /* NO_MoveWindow */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetViewForMouseEvent(JNIEnv *env, jclass zz,
-			jint inView, jint inEvent, jintArray outView) {
-	jint *sa= (*env)->GetIntArrayElements(env, outView, 0);
-	jint status= RC(HIViewGetViewForMouseEvent((HIViewRef) inView, (EventRef) inEvent, (HIViewRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, outView, sa, 0);
-	return status;
+#ifndef NO_NavCreateChooseFolderDialog
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavCreateChooseFolderDialog
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	NavDialogCreationOptions _arg0, *lparg0=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("NavCreateChooseFolderDialog\n")
+
+	if (arg0) lparg0 = getNavDialogCreationOptionsFields(env, arg0, &_arg0);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)NavCreateChooseFolderDialog((const NavDialogCreationOptions *)lparg0, (NavEventUPP)arg1, (NavObjectFilterUPP)arg2, (void *)arg3, (NavDialogRef *)lparg4);
+	if (arg0) setNavDialogCreationOptionsFields(env, arg0, lparg0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
 }
+#endif /* NO_NavCreateChooseFolderDialog */
 
-///////
+#ifndef NO_NavCreateGetFileDialog
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavCreateGetFileDialog
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6)
+{
+	NavDialogCreationOptions _arg0, *lparg0=NULL;
+	jint *lparg6=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxCreate(JNIEnv *env, jclass zz,
-			jintArray outComboBox, jint attributes) {
-	HIRect r= {};
-	jint *sa= (*env)->GetIntArrayElements(env, outComboBox, 0);
-	jint status= RC(HIComboBoxCreate(&r, NULL, NULL, NULL, (OptionBits)attributes, (HIViewRef*)sa));
-	(*env)->ReleaseIntArrayElements(env, outComboBox, sa, 0);
-	return status;
+	DEBUG_CALL("NavCreateGetFileDialog\n")
+
+	if (arg0) lparg0 = getNavDialogCreationOptionsFields(env, arg0, &_arg0);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)NavCreateGetFileDialog((const NavDialogCreationOptions *)lparg0, (NavTypeListHandle)arg1, (NavEventUPP)arg2, (NavPreviewUPP)arg3, (NavObjectFilterUPP)arg4, (void *)arg5, (NavDialogRef *)lparg6);
+	if (arg0) setNavDialogCreationOptionsFields(env, arg0, lparg0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	return rc;
 }
+#endif /* NO_NavCreateGetFileDialog */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxGetItemCount(JNIEnv *env, jclass zz,
-			jint inComboBox) {
-	return (jint) HIComboBoxGetItemCount((HIViewRef)inComboBox);
+#ifndef NO_NavCreatePutFileDialog
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavCreatePutFileDialog
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	NavDialogCreationOptions _arg0, *lparg0=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("NavCreatePutFileDialog\n")
+
+	if (arg0) lparg0 = getNavDialogCreationOptionsFields(env, arg0, &_arg0);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)NavCreatePutFileDialog((const NavDialogCreationOptions *)lparg0, (OSType)arg1, (OSType)arg2, (NavEventUPP)arg3, (void *)arg4, (NavDialogRef *)lparg5);
+	if (arg0) setNavDialogCreationOptionsFields(env, arg0, lparg0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
 }
+#endif /* NO_NavCreatePutFileDialog */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxAppendTextItem(JNIEnv *env, jclass zz,
-			jint inView, jint inText) {
-	return RC(HIComboBoxAppendTextItem((HIViewRef)inView, (CFStringRef) inText, (CFIndex*) NULL));
+#ifndef NO_NavDialogDispose
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogDispose
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("NavDialogDispose\n")
+
+	NavDialogDispose((NavDialogRef)arg0);
 }
+#endif /* NO_NavDialogDispose */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxInsertTextItemAtIndex(JNIEnv *env, jclass zz,
-			jint inView, jint inIndex, jint inText) {
-	return RC(HIComboBoxInsertTextItemAtIndex((HIViewRef)inView, (CFIndex) inIndex, (CFStringRef) inText));
+#ifndef NO_NavDialogGetSaveFileName
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogGetSaveFileName
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("NavDialogGetSaveFileName\n")
+
+	return (jint)NavDialogGetSaveFileName((NavDialogRef)arg0);
 }
+#endif /* NO_NavDialogGetSaveFileName */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxRemoveItemAtIndex(JNIEnv *env, jclass zz,
-			jint inView, jint inIndex) {
-	return RC(HIComboBoxRemoveItemAtIndex((HIViewRef)inView, (CFIndex) inIndex));
+#ifndef NO_NavDialogGetUserAction
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogGetUserAction
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("NavDialogGetUserAction\n")
+
+	return (jint)NavDialogGetUserAction((NavDialogRef)arg0);
 }
+#endif /* NO_NavDialogGetUserAction */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIComboBoxCopyTextItemAtIndex(JNIEnv *env, jclass zz,
-			jint inView, jint inIndex, jintArray outString) {
-	jint *sa= (*env)->GetIntArrayElements(env, outString, 0);
-	jint status= RC(HIComboBoxCopyTextItemAtIndex((HIViewRef)inView, (CFIndex) inIndex, (CFStringRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, outString, sa, 0);
-	return status;
+#ifndef NO_NavDialogRun
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogRun
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("NavDialogRun\n")
+
+	return (jint)NavDialogRun((NavDialogRef)arg0);
 }
+#endif /* NO_NavDialogRun */
 
-// core graphics
+#ifndef NO_NavDialogSetSaveFileName
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavDialogSetSaveFileName
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("NavDialogSetSaveFileName\n")
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDBeginCGContext(JNIEnv *env, jclass zz,
-			jint inPort, jintArray outContext) {
-	jint *sa= (*env)->GetIntArrayElements(env, outContext, 0);
-	jint status= RC(QDBeginCGContext((CGrafPtr)inPort, (CGContextRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, outContext, sa, 0);
-	return status;
+	return (jint)NavDialogSetSaveFileName((NavDialogRef)arg0, (CFStringRef)arg1);
 }
+#endif /* NO_NavDialogSetSaveFileName */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDEndCGContext(JNIEnv *env, jclass zz,
-			jint inPort, jintArray inoutContext) {
-	jint *sa= (*env)->GetIntArrayElements(env, inoutContext, 0);
-	jint status= RC(QDEndCGContext((CGrafPtr)inPort, (CGContextRef*) sa));
-	(*env)->ReleaseIntArrayElements(env, inoutContext, sa, 0);
-	return status;
-}
+#ifndef NO_NavGetDefaultDialogCreationOptions
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NavGetDefaultDialogCreationOptions
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	NavDialogCreationOptions _arg0, *lparg0=NULL;
+	jint rc;
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SyncCGContextOriginWithPort(JNIEnv *env, jclass zz,
-			jint inContext, jint port) {
-	return RC(SyncCGContextOriginWithPort((CGContextRef)inContext, (CGrafPtr) port));
-}
+	DEBUG_CALL("NavGetDefaultDialogCreationOptions\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextSaveGState(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextSaveGState((CGContextRef)inContext);
+	if (arg0) lparg0 = getNavDialogCreationOptionsFields(env, arg0, &_arg0);
+	rc = (jint)NavGetDefaultDialogCreationOptions((NavDialogCreationOptions *)lparg0);
+	if (arg0) setNavDialogCreationOptionsFields(env, arg0, lparg0);
+	return rc;
 }
+#endif /* NO_NavGetDefaultDialogCreationOptions */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextRestoreGState(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextRestoreGState((CGContextRef)inContext);
-}
+#ifndef NO_NewControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jbyteArray arg2, jboolean arg3, jshort arg4, jshort arg5, jshort arg6, jshort arg7, jint arg8)
+{
+	Rect _arg1, *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextStrokeRect(JNIEnv *env, jclass zz,
-			jint inContext, jfloat x, jfloat y, jfloat width, jfloat height) {
-	CGRect r;
-	r.origin.x= x;
-	r.origin.y= y;
-	r.size.width= width;
-	r.size.height= height;
-	CGContextStrokeRect((CGContextRef)inContext, r);
-}
+	DEBUG_CALL("NewControl\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextFillRect(JNIEnv *env, jclass zz,
-			jint inContext, jfloat x, jfloat y, jfloat width, jfloat height) {
-	CGRect r;
-	r.origin.x= x;
-	r.origin.y= y;
-	r.size.width= width;
-	r.size.height= height;
-	CGContextFillRect((CGContextRef)inContext, r);
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	rc = (jint)NewControl((WindowRef)arg0, (const Rect *)lparg1, (ConstStr255Param)lparg2, (Boolean)arg3, (SInt16)arg4, (SInt16)arg5, (SInt16)arg6, (SInt16)arg7, (SInt32)arg8);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	return rc;
 }
+#endif /* NO_NewControl */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextScaleCTM(JNIEnv *env, jclass zz,
-			jint inContext, jfloat sx, jfloat sy) {
-	CGContextScaleCTM((CGContextRef)inContext, sx, sy);
-}
+#ifndef NO_NewGWorldFromPtr
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewGWorldFromPtr
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jobject arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
+{
+	jint *lparg0=NULL;
+	Rect _arg2, *lparg2=NULL;
+	jint rc;
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextTranslateCTM(JNIEnv *env, jclass zz,
-			jint inContext, jfloat tx, jfloat ty) {
-	CGContextTranslateCTM((CGContextRef)inContext, tx, ty);
-}
+	DEBUG_CALL("NewGWorldFromPtr\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextClipToRect(JNIEnv *env, jclass zz,
-			jint inContext, jfloat x, jfloat y, jfloat width, jfloat height) {
-	CGRect r;
-	r.origin.x= x;
-	r.origin.y= y;
-	r.size.width= width;
-	r.size.height= height;
-	CGContextClipToRect((CGContextRef)inContext, r);
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = getRectFields(env, arg2, &_arg2);
+	rc = (jint)NewGWorldFromPtr((GWorldPtr *)lparg0, (unsigned long)arg1, (const Rect *)lparg2, (CTabHandle)arg3, (GDHandle)arg4, (GWorldFlags)arg5, (Ptr)arg6, (long)arg7);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	if (arg2) setRectFields(env, arg2, lparg2);
+	return rc;
 }
+#endif /* NO_NewGWorldFromPtr */
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClipCGContextToRegion(JNIEnv *env, jclass zz,
-			jint inContext, jshortArray portRect, jint rgnHandle) {
-	jshort *sa= (*env)->GetShortArrayElements(env, portRect, 0);
-	jint status= RC(ClipCGContextToRegion((CGContextRef)inContext, (const Rect*) sa, (RgnHandle) rgnHandle));
-	(*env)->ReleaseShortArrayElements(env, portRect, sa, 0);
-	return status;
-}
+#ifndef NO_NewHandle
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewHandle
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("NewHandle\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextBeginPath(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextBeginPath((CGContextRef)inContext);
+	return (jint)NewHandle((Size)arg0);
 }
+#endif /* NO_NewHandle */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextMoveToPoint(JNIEnv *env, jclass zz,
-			jint inContext, jfloat x, jfloat y) {
-	CGContextMoveToPoint((CGContextRef)inContext, x, y);
-}
+#ifndef NO_NewHandleClear
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewHandleClear
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("NewHandleClear\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextAddArc(JNIEnv *env, jclass zz,
-			jint inContext, jfloat x, jfloat y, jfloat radius, jfloat startAngle, jfloat endAngle, jint clockwise) {
-	CGContextAddArc((CGContextRef)inContext, x, y, radius, startAngle, endAngle, clockwise);
+	return (jint)NewHandleClear((Size)arg0);
 }
+#endif /* NO_NewHandleClear */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextClosePath(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextClosePath((CGContextRef)inContext);
-}
+#ifndef NO_NewPtr
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewPtr
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("NewPtr\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextStrokePath(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextStrokePath((CGContextRef)inContext);
+	return (jint)NewPtr((Size)arg0);
 }
+#endif /* NO_NewPtr */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextFillPath(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextFillPath((CGContextRef)inContext);
-}
+#ifndef NO_NewPtrClear
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewPtrClear
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("NewPtrClear\n")
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextShowGlyphsAtPoint(JNIEnv *env, jclass zz,
-			jint inContext, jfloat x, jfloat y, jcharArray glyphs) {
-	jshort *sa= (*env)->GetShortArrayElements(env, glyphs, 0);
-	size_t count= (*env)->GetArrayLength(env, glyphs);
-	CGContextShowGlyphsAtPoint((CGContextRef)inContext, x, y, (const CGGlyph*) sa, count);
-	(*env)->ReleaseShortArrayElements(env, glyphs, sa, 0);
+	return (jint)NewPtrClear((Size)arg0);
 }
+#endif /* NO_NewPtrClear */
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CGContextShowTextAtPoint(JNIEnv *env, jclass zz,
-			jint inContext, jfloat x, jfloat y, jbyteArray cstring) {
-	jbyte *sa= (*env)->GetByteArrayElements(env, cstring, 0);
-	size_t count= (*env)->GetArrayLength(env, cstring);
-	CGContextShowTextAtPoint((CGContextRef)inContext, x, y, (const char*) sa, count);
-	(*env)->ReleaseByteArrayElements(env, cstring, sa, 0);
+#ifndef NO_NewRgn
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewRgn
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("NewRgn\n")
+
+	return (jint)NewRgn();
 }
+#endif /* NO_NewRgn */
+
+#ifndef NO_OffsetRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_OffsetRgn
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2)
+{
+	DEBUG_CALL("OffsetRgn\n")
+
+	OffsetRgn((RgnHandle)arg0, (short)arg1, (short)arg2);
+}
+#endif /* NO_OffsetRgn */
+
+#ifndef NO_OpenDataBrowserContainer
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_OpenDataBrowserContainer
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("OpenDataBrowserContainer\n")
+
+	return (jint)OpenDataBrowserContainer((ControlRef)arg0, (DataBrowserItemID)arg1);
+}
+#endif /* NO_OpenDataBrowserContainer */
+
+#ifndef NO_OpenPoly
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_OpenPoly
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("OpenPoly\n")
+
+	return (jint)OpenPoly();
+}
+#endif /* NO_OpenPoly */
+
+#ifndef NO_PaintOval
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PaintOval
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Rect _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("PaintOval\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	PaintOval((const Rect *)lparg0);
+	if (arg0) setRectFields(env, arg0, lparg0);
+}
+#endif /* NO_PaintOval */
+
+#ifndef NO_PaintPoly
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PaintPoly
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("PaintPoly\n")
+
+	PaintPoly((PolyHandle)arg0);
+}
+#endif /* NO_PaintPoly */
+
+#ifndef NO_PaintRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PaintRect
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Rect _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("PaintRect\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	PaintRect((const Rect *)lparg0);
+	if (arg0) setRectFields(env, arg0, lparg0);
+}
+#endif /* NO_PaintRect */
+
+#ifndef NO_PaintRoundRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PaintRoundRect
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2)
+{
+	Rect _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("PaintRoundRect\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	PaintRoundRect((const Rect *)lparg0, (short)arg1, (short)arg2);
+	if (arg0) setRectFields(env, arg0, lparg0);
+}
+#endif /* NO_PaintRoundRect */
+
+#ifndef NO_PenSize
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_PenSize
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1)
+{
+	DEBUG_CALL("PenSize\n")
+
+	PenSize((short)arg0, (short)arg1);
+}
+#endif /* NO_PenSize */
+
+#ifndef NO_PickColor
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PickColor
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	ColorPickerInfo _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("PickColor\n")
+
+	if (arg0) lparg0 = getColorPickerInfoFields(env, arg0, &_arg0);
+	rc = (jint)PickColor((ColorPickerInfo *)lparg0);
+	if (arg0) setColorPickerInfoFields(env, arg0, lparg0);
+	return rc;
+}
+#endif /* NO_PickColor */
+
+#ifndef NO_PopUpMenuSelect
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PopUpMenuSelect
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2, jshort arg3)
+{
+	DEBUG_CALL("PopUpMenuSelect\n")
+
+	return (jint)PopUpMenuSelect((MenuRef)arg0, (short)arg1, (short)arg2, (short)arg3);
+}
+#endif /* NO_PopUpMenuSelect */
+
+#ifndef NO_PostEvent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PostEvent
+	(JNIEnv *env, jclass that, jshort arg0, jint arg1)
+{
+	DEBUG_CALL("PostEvent\n")
+
+	return (jint)PostEvent((EventKind)arg0, (UInt32)arg1);
+}
+#endif /* NO_PostEvent */
+
+#ifndef NO_PostEventToQueue
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PostEventToQueue
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshort arg2)
+{
+	DEBUG_CALL("PostEventToQueue\n")
+
+	return (jint)PostEventToQueue((EventQueueRef)arg0, (EventRef)arg1, (EventPriority)arg2);
+}
+#endif /* NO_PostEventToQueue */
+
+#ifndef NO_PtInRect
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_PtInRect
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	Point _arg0, *lparg0=NULL;
+	Rect _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("PtInRect\n")
+
+	if (arg0) lparg0 = getPointFields(env, arg0, &_arg0);
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	rc = (jboolean)PtInRect((Point)*lparg0, (const Rect *)lparg1);
+	if (arg0) setPointFields(env, arg0, lparg0);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_PtInRect */
+
+#ifndef NO_PtInRgn
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_PtInRgn
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	Point _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("PtInRgn\n")
+
+	if (arg0) lparg0 = getPointFields(env, arg0, &_arg0);
+	rc = (jboolean)PtInRgn((Point)*lparg0, (RgnHandle)arg1);
+	if (arg0) setPointFields(env, arg0, lparg0);
+	return rc;
+}
+#endif /* NO_PtInRgn */
+
+#ifndef NO_PutScrapFlavor
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PutScrapFlavor
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
+{
+	jbyte *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("PutScrapFlavor\n")
+
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	rc = (jint)PutScrapFlavor((ScrapRef)arg0, (ScrapFlavorType)arg1, (ScrapFlavorFlags)arg2, (Size)arg3, (const void *)lparg4);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif /* NO_PutScrapFlavor */
+
+#ifndef NO_QDBeginCGContext
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDBeginCGContext
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("QDBeginCGContext\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)QDBeginCGContext((CGrafPtr)arg0, (CGContextRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_QDBeginCGContext */
+
+#ifndef NO_QDEndCGContext
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDEndCGContext
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("QDEndCGContext\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)QDEndCGContext((CGrafPtr)arg0, (CGContextRef *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_QDEndCGContext */
+
+#ifndef NO_QDFlushPortBuffer
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDFlushPortBuffer
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("QDFlushPortBuffer\n")
+
+	QDFlushPortBuffer((CGrafPtr)arg0, (RgnHandle)arg1);
+}
+#endif /* NO_QDFlushPortBuffer */
+
+#ifndef NO_QDGlobalToLocalPoint
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDGlobalToLocalPoint
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Point _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("QDGlobalToLocalPoint\n")
+
+	if (arg1) lparg1 = getPointFields(env, arg1, &_arg1);
+	QDGlobalToLocalPoint((CGrafPtr)arg0, (Point *)lparg1);
+	if (arg1) setPointFields(env, arg1, lparg1);
+}
+#endif /* NO_QDGlobalToLocalPoint */
+
+#ifndef NO_QDLocalToGlobalPoint
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDLocalToGlobalPoint
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Point _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("QDLocalToGlobalPoint\n")
+
+	if (arg1) lparg1 = getPointFields(env, arg1, &_arg1);
+	QDLocalToGlobalPoint((CGrafPtr)arg0, (Point *)lparg1);
+	if (arg1) setPointFields(env, arg1, lparg1);
+}
+#endif /* NO_QDLocalToGlobalPoint */
+
+#ifndef NO_QDSetPatternOrigin
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSetPatternOrigin
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	Point _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("QDSetPatternOrigin\n")
+
+	if (arg0) lparg0 = getPointFields(env, arg0, &_arg0);
+	QDSetPatternOrigin((Point)*lparg0);
+	if (arg0) setPointFields(env, arg0, lparg0);
+}
+#endif /* NO_QDSetPatternOrigin */
+
+#ifndef NO_QDSwapTextFlags
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSwapTextFlags
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("QDSwapTextFlags\n")
+
+	return (jint)QDSwapTextFlags((UInt32)arg0);
+}
+#endif /* NO_QDSwapTextFlags */
+
+#ifndef NO_RGBBackColor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RGBBackColor
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	RGBColor _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("RGBBackColor\n")
+
+	if (arg0) lparg0 = getRGBColorFields(env, arg0, &_arg0);
+	RGBBackColor((const RGBColor *)lparg0);
+	if (arg0) setRGBColorFields(env, arg0, lparg0);
+}
+#endif /* NO_RGBBackColor */
+
+#ifndef NO_RGBForeColor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RGBForeColor
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	RGBColor _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("RGBForeColor\n")
+
+	if (arg0) lparg0 = getRGBColorFields(env, arg0, &_arg0);
+	RGBForeColor((const RGBColor *)lparg0);
+	if (arg0) setRGBColorFields(env, arg0, lparg0);
+}
+#endif /* NO_RGBForeColor */
+
+#ifndef NO_ReceiveNextEvent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ReceiveNextEvent
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jdouble arg2, jboolean arg3, jintArray arg4)
+{
+	jint *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("ReceiveNextEvent\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)ReceiveNextEvent((UInt32)arg0, (const EventTypeSpec *)lparg1, (EventTimeout)arg2, (Boolean)arg3, (EventRef *)lparg4);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif /* NO_ReceiveNextEvent */
+
+#ifndef NO_RectInRgn
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_RectInRgn
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
+{
+	Rect _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("RectInRgn\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	rc = (jboolean)RectInRgn((const Rect *)lparg0, (RgnHandle)arg1);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	return rc;
+}
+#endif /* NO_RectInRgn */
+
+#ifndef NO_RectRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RectRgn
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("RectRgn\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	RectRgn((RgnHandle)arg0, (const Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
+}
+#endif /* NO_RectRgn */
+
+#ifndef NO_RegisterAppearanceClient
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RegisterAppearanceClient
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("RegisterAppearanceClient\n")
+
+	return (jint)RegisterAppearanceClient();
+}
+#endif /* NO_RegisterAppearanceClient */
+
+#ifndef NO_ReleaseEvent
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ReleaseEvent
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ReleaseEvent\n")
+
+	ReleaseEvent((EventRef)arg0);
+}
+#endif /* NO_ReleaseEvent */
+
+#ifndef NO_ReleaseMenu
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ReleaseMenu
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ReleaseMenu\n")
+
+	return (jint)ReleaseMenu((MenuRef)arg0);
+}
+#endif /* NO_ReleaseMenu */
+
+#ifndef NO_RemoveDataBrowserItems
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveDataBrowserItems
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)
+{
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("RemoveDataBrowserItems\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)RemoveDataBrowserItems((ControlRef)arg0, (DataBrowserItemID)arg1, (UInt32)arg2, (const DataBrowserItemID *)lparg3, (DataBrowserPropertyID)arg4);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif /* NO_RemoveDataBrowserItems */
+
+#ifndef NO_RemoveEventLoopTimer
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RemoveEventLoopTimer
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("RemoveEventLoopTimer\n")
+
+	return (jint)RemoveEventLoopTimer((EventLoopTimerRef)arg0);
+}
+#endif /* NO_RemoveEventLoopTimer */
+
+#ifndef NO_RetainMenu
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RetainMenu
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("RetainMenu\n")
+
+	return (jint)RetainMenu((MenuRef)arg0);
+}
+#endif /* NO_RetainMenu */
+
+#ifndef NO_RevealDataBrowserItem
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RevealDataBrowserItem
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jboolean arg3)
+{
+	DEBUG_CALL("RevealDataBrowserItem\n")
+
+	return (jint)RevealDataBrowserItem((ControlRef)arg0, (DataBrowserItemID)arg1, (DataBrowserPropertyID)arg2, (DataBrowserRevealOptions)arg3);
+}
+#endif /* NO_RevealDataBrowserItem */
+
+#ifndef NO_RunStandardAlert
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RunStandardAlert
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2)
+{
+	jshort *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("RunStandardAlert\n")
+
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)RunStandardAlert((DialogRef)arg0, (ModalFilterUPP)arg1, (DialogItemIndex *)lparg2);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_RunStandardAlert */
+
+#ifndef NO_ScrollRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ScrollRect
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2, jint arg3)
+{
+	Rect _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("ScrollRect\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	ScrollRect((const Rect *)lparg0, (short)arg1, (short)arg2, (RgnHandle)arg3);
+	if (arg0) setRectFields(env, arg0, lparg0);
+}
+#endif /* NO_ScrollRect */
+
+#ifndef NO_SectRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SectRgn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("SectRgn\n")
+
+	SectRgn((RgnHandle)arg0, (RgnHandle)arg1, (RgnHandle)arg2);
+}
+#endif /* NO_SectRgn */
+
+#ifndef NO_SelectWindow
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SelectWindow
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SelectWindow\n")
+
+	SelectWindow((WindowRef)arg0);
+}
+#endif /* NO_SelectWindow */
+
+#ifndef NO_SendEventToEventTarget
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SendEventToEventTarget
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SendEventToEventTarget\n")
+
+	return (jint)SendEventToEventTarget((EventRef)arg0, (EventTargetRef)arg1);
+}
+#endif /* NO_SendEventToEventTarget */
+
+#ifndef NO_SetBevelButtonContentInfo
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetBevelButtonContentInfo
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	ControlButtonContentInfo _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetBevelButtonContentInfo\n")
+
+	if (arg1) lparg1 = getControlButtonContentInfoFields(env, arg1, &_arg1);
+	rc = (jint)SetBevelButtonContentInfo((ControlRef)arg0, (ControlButtonContentInfoPtr)lparg1);
+	if (arg1) setControlButtonContentInfoFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_SetBevelButtonContentInfo */
+
+#ifndef NO_SetClip
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetClip
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetClip\n")
+
+	SetClip((RgnHandle)arg0);
+}
+#endif /* NO_SetClip */
+
+#ifndef NO_SetControl32BitMaximum
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControl32BitMaximum
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetControl32BitMaximum\n")
+
+	SetControl32BitMaximum((ControlRef)arg0, (SInt32)arg1);
+}
+#endif /* NO_SetControl32BitMaximum */
+
+#ifndef NO_SetControl32BitMinimum
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControl32BitMinimum
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetControl32BitMinimum\n")
+
+	SetControl32BitMinimum((ControlRef)arg0, (SInt32)arg1);
+}
+#endif /* NO_SetControl32BitMinimum */
+
+#ifndef NO_SetControl32BitValue
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControl32BitValue
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetControl32BitValue\n")
+
+	SetControl32BitValue((ControlRef)arg0, (SInt32)arg1);
+}
+#endif /* NO_SetControl32BitValue */
+
+#ifndef NO_SetControlAction
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlAction
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetControlAction\n")
+
+	SetControlAction((ControlRef)arg0, (ControlActionUPP)arg1);
+}
+#endif /* NO_SetControlAction */
+
+#ifndef NO_SetControlBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlBounds
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Rect _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("SetControlBounds\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	SetControlBounds((ControlRef)arg0, (const Rect *)lparg1);
+	if (arg1) setRectFields(env, arg1, lparg1);
+}
+#endif /* NO_SetControlBounds */
+
+#ifndef NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_Rect_2
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__IIIILorg_eclipse_swt_internal_carbon_Rect_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4)
+{
+	Rect _arg4, *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetControlData__IIIILorg_eclipse_swt_internal_carbon_Rect_2\n")
+
+	if (arg4) lparg4 = getRectFields(env, arg4, &_arg4);
+	rc = (jint)SetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (const void *)lparg4);
+	if (arg4) setRectFields(env, arg4, lparg4);
+	return rc;
+}
+#endif /* NO_SetControlData__IIIILorg_eclipse_swt_internal_carbon_Rect_2 */
+
+#ifndef NO_SetControlData__IIII_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__IIII_3I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetControlData__IIII_3I\n")
+
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)SetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (const void *)lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif /* NO_SetControlData__IIII_3I */
+
+#ifndef NO_SetControlData__IIIII
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__IIIII
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("SetControlData__IIIII\n")
+
+	return (jint)SetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (const void *)arg4);
+}
+#endif /* NO_SetControlData__IIIII */
+
+#ifndef NO_SetControlData__IIII_3S
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__IIII_3S
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jshortArray arg4)
+{
+	jshort *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetControlData__IIII_3S\n")
+
+	if (arg4) lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL);
+	rc = (jint)SetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (const void *)lparg4);
+	if (arg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif /* NO_SetControlData__IIII_3S */
+
+#ifndef NO_SetControlFontStyle
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlFontStyle
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	ControlFontStyleRec _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetControlFontStyle\n")
+
+	if (arg1) lparg1 = getControlFontStyleRecFields(env, arg1, &_arg1);
+	rc = (jint)SetControlFontStyle((ControlRef)arg0, (const ControlFontStyleRec *)lparg1);
+	if (arg1) setControlFontStyleRecFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_SetControlFontStyle */
+
+#ifndef NO_SetControlPopupMenuHandle
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlPopupMenuHandle
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetControlPopupMenuHandle\n")
+
+	SetControlPopupMenuHandle((ControlRef)arg0, (MenuRef)arg1);
+}
+#endif /* NO_SetControlPopupMenuHandle */
+
+#ifndef NO_SetControlReference
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlReference
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetControlReference\n")
+
+	SetControlReference((ControlRef)arg0, (SInt32)arg1);
+}
+#endif /* NO_SetControlReference */
+
+#ifndef NO_SetControlTitleWithCFString
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlTitleWithCFString
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetControlTitleWithCFString\n")
+
+	return (jint)SetControlTitleWithCFString((ControlRef)arg0, (CFStringRef)arg1);
+}
+#endif /* NO_SetControlTitleWithCFString */
+
+#ifndef NO_SetControlViewSize
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlViewSize
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetControlViewSize\n")
+
+	SetControlViewSize((ControlRef)arg0, (SInt32)arg1);
+}
+#endif /* NO_SetControlViewSize */
+
+#ifndef NO_SetCursor
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetCursor
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetCursor\n")
+
+	SetCursor((const Cursor *)arg0);
+}
+#endif /* NO_SetCursor */
+
+#ifndef NO_SetDataBrowserHasScrollBars
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserHasScrollBars
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jboolean arg2)
+{
+	DEBUG_CALL("SetDataBrowserHasScrollBars\n")
+
+	return (jint)SetDataBrowserHasScrollBars((ControlRef)arg0, (Boolean)arg1, (Boolean)arg2);
+}
+#endif /* NO_SetDataBrowserHasScrollBars */
+
+#ifndef NO_SetDataBrowserItemDataBooleanValue
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataBooleanValue
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("SetDataBrowserItemDataBooleanValue\n")
+
+	return (jint)SetDataBrowserItemDataBooleanValue((DataBrowserItemDataRef)arg0, (Boolean)arg1);
+}
+#endif /* NO_SetDataBrowserItemDataBooleanValue */
+
+#ifndef NO_SetDataBrowserItemDataButtonValue
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataButtonValue
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	DEBUG_CALL("SetDataBrowserItemDataButtonValue\n")
+
+	return (jint)SetDataBrowserItemDataButtonValue((DataBrowserItemDataRef)arg0, (ThemeButtonValue)arg1);
+}
+#endif /* NO_SetDataBrowserItemDataButtonValue */
+
+#ifndef NO_SetDataBrowserItemDataIcon
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataIcon
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetDataBrowserItemDataIcon\n")
+
+	return (jint)SetDataBrowserItemDataIcon((DataBrowserItemDataRef)arg0, (IconRef)arg1);
+}
+#endif /* NO_SetDataBrowserItemDataIcon */
+
+#ifndef NO_SetDataBrowserItemDataItemID
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataItemID
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetDataBrowserItemDataItemID\n")
+
+	return (jint)SetDataBrowserItemDataItemID((DataBrowserItemDataRef)arg0, (DataBrowserItemID)arg1);
+}
+#endif /* NO_SetDataBrowserItemDataItemID */
+
+#ifndef NO_SetDataBrowserItemDataText
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserItemDataText
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetDataBrowserItemDataText\n")
+
+	return (jint)SetDataBrowserItemDataText((DataBrowserItemDataRef)arg0, (CFStringRef)arg1);
+}
+#endif /* NO_SetDataBrowserItemDataText */
+
+#ifndef NO_SetDataBrowserListViewDisclosureColumn
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserListViewDisclosureColumn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("SetDataBrowserListViewDisclosureColumn\n")
+
+	return (jint)SetDataBrowserListViewDisclosureColumn((ControlRef)arg0, (DataBrowserTableViewColumnID)arg1, (Boolean)arg2);
+}
+#endif /* NO_SetDataBrowserListViewDisclosureColumn */
+
+#ifndef NO_SetDataBrowserListViewHeaderBtnHeight
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserListViewHeaderBtnHeight
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1)
+{
+	DEBUG_CALL("SetDataBrowserListViewHeaderBtnHeight\n")
+
+	return (jint)SetDataBrowserListViewHeaderBtnHeight((ControlRef)arg0, (UInt16)arg1);
+}
+#endif /* NO_SetDataBrowserListViewHeaderBtnHeight */
+
+#ifndef NO_SetDataBrowserScrollPosition
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserScrollPosition
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("SetDataBrowserScrollPosition\n")
+
+	return (jint)SetDataBrowserScrollPosition((ControlRef)arg0, (UInt32)arg1, (UInt32)arg2);
+}
+#endif /* NO_SetDataBrowserScrollPosition */
+
+#ifndef NO_SetDataBrowserSelectedItems
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserSelectedItems
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetDataBrowserSelectedItems\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)SetDataBrowserSelectedItems((ControlRef)arg0, (UInt32)arg1, (const DataBrowserItemID *)lparg2, (DataBrowserSetOption)arg3);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_SetDataBrowserSelectedItems */
+
+#ifndef NO_SetDataBrowserSelectionFlags
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserSelectionFlags
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetDataBrowserSelectionFlags\n")
+
+	return (jint)SetDataBrowserSelectionFlags((ControlRef)arg0, (DataBrowserSelectionFlags)arg1);
+}
+#endif /* NO_SetDataBrowserSelectionFlags */
+
+#ifndef NO_SetDataBrowserTarget
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTarget
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetDataBrowserTarget\n")
+
+	return (jint)SetDataBrowserTarget((ControlRef)arg0, (DataBrowserItemID)arg1);
+}
+#endif /* NO_SetDataBrowserTarget */
+
+#ifndef NO_SetEventParameter
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetEventParameter
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4)
+{
+	jchar *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetEventParameter\n")
+
+	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+	rc = (jint)SetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (UInt32)arg3, (const void *)lparg4);
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif /* NO_SetEventParameter */
+
+#ifndef NO_SetFrontProcess
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetFrontProcess
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetFrontProcess\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)SetFrontProcess((const ProcessSerialNumber *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif /* NO_SetFrontProcess */
+
+#ifndef NO_SetGWorld
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetGWorld
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetGWorld\n")
+
+	SetGWorld((CGrafPtr)arg0, (GDHandle)arg1);
+}
+#endif /* NO_SetGWorld */
+
+#ifndef NO_SetKeyboardFocus
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetKeyboardFocus
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshort arg2)
+{
+	DEBUG_CALL("SetKeyboardFocus\n")
+
+	return (jint)SetKeyboardFocus((WindowRef)arg0, (ControlRef)arg1, (ControlFocusPart)arg2);
+}
+#endif /* NO_SetKeyboardFocus */
+
+#ifndef NO_SetMenuCommandMark
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuCommandMark
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jchar arg2)
+{
+	DEBUG_CALL("SetMenuCommandMark\n")
+
+	return (jint)SetMenuCommandMark((MenuRef)arg0, (MenuCommand)arg1, (UniChar)arg2);
+}
+#endif /* NO_SetMenuCommandMark */
+
+#ifndef NO_SetMenuFont
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuFont
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2)
+{
+	DEBUG_CALL("SetMenuFont\n")
+
+	return (jint)SetMenuFont((MenuRef)arg0, (SInt16)arg1, (UInt16)arg2);
+}
+#endif /* NO_SetMenuFont */
+
+#ifndef NO_SetMenuItemCommandKey
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemCommandKey
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jboolean arg2, jchar arg3)
+{
+	DEBUG_CALL("SetMenuItemCommandKey\n")
+
+	return (jint)SetMenuItemCommandKey((MenuRef)arg0, (MenuItemIndex)arg1, (Boolean)arg2, (UInt16)arg3);
+}
+#endif /* NO_SetMenuItemCommandKey */
+
+#ifndef NO_SetMenuItemHierarchicalMenu
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemHierarchicalMenu
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2)
+{
+	DEBUG_CALL("SetMenuItemHierarchicalMenu\n")
+
+	return (jint)SetMenuItemHierarchicalMenu((MenuRef)arg0, (MenuItemIndex)arg1, (MenuRef)arg2);
+}
+#endif /* NO_SetMenuItemHierarchicalMenu */
+
+#ifndef NO_SetMenuItemIconHandle
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemIconHandle
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jbyte arg2, jint arg3)
+{
+	DEBUG_CALL("SetMenuItemIconHandle\n")
+
+	return (jint)SetMenuItemIconHandle((MenuRef)arg0, (SInt16)arg1, (UInt8)arg2, (Handle)arg3);
+}
+#endif /* NO_SetMenuItemIconHandle */
+
+#ifndef NO_SetMenuItemKeyGlyph
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemKeyGlyph
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2)
+{
+	DEBUG_CALL("SetMenuItemKeyGlyph\n")
+
+	return (jint)SetMenuItemKeyGlyph((MenuRef)arg0, (SInt16)arg1, (SInt16)arg2);
+}
+#endif /* NO_SetMenuItemKeyGlyph */
+
+#ifndef NO_SetMenuItemModifiers
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemModifiers
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jbyte arg2)
+{
+	DEBUG_CALL("SetMenuItemModifiers\n")
+
+	return (jint)SetMenuItemModifiers((MenuRef)arg0, (SInt16)arg1, (UInt8)arg2);
+}
+#endif /* NO_SetMenuItemModifiers */
+
+#ifndef NO_SetMenuItemRefCon
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemRefCon
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2)
+{
+	DEBUG_CALL("SetMenuItemRefCon\n")
+
+	return (jint)SetMenuItemRefCon((MenuRef)arg0, (SInt16)arg1, (UInt32)arg2);
+}
+#endif /* NO_SetMenuItemRefCon */
+
+#ifndef NO_SetMenuItemTextWithCFString
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemTextWithCFString
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2)
+{
+	DEBUG_CALL("SetMenuItemTextWithCFString\n")
+
+	return (jint)SetMenuItemTextWithCFString((MenuRef)arg0, (MenuItemIndex)arg1, (CFStringRef)arg2);
+}
+#endif /* NO_SetMenuItemTextWithCFString */
+
+#ifndef NO_SetMenuTitleWithCFString
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuTitleWithCFString
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetMenuTitleWithCFString\n")
+
+	return (jint)SetMenuTitleWithCFString((MenuRef)arg0, (CFStringRef)arg1);
+}
+#endif /* NO_SetMenuTitleWithCFString */
+
+#ifndef NO_SetOrigin
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetOrigin
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1)
+{
+	DEBUG_CALL("SetOrigin\n")
+
+	SetOrigin((short)arg0, (short)arg1);
+}
+#endif /* NO_SetOrigin */
+
+#ifndef NO_SetPort
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPort
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetPort\n")
+
+	SetPort((GrafPtr)arg0);
+}
+#endif /* NO_SetPort */
+
+#ifndef NO_SetPortWindowPort
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPortWindowPort
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetPortWindowPort\n")
+
+	SetPortWindowPort((WindowRef)arg0);
+}
+#endif /* NO_SetPortWindowPort */
+
+#ifndef NO_SetPt
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetPt
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2)
+{
+	Point _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("SetPt\n")
+
+	if (arg0) lparg0 = getPointFields(env, arg0, &_arg0);
+	SetPt((Point *)lparg0, (short)arg1, (short)arg2);
+	if (arg0) setPointFields(env, arg0, lparg0);
+}
+#endif /* NO_SetPt */
+
+#ifndef NO_SetRect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetRect
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2, jshort arg3, jshort arg4)
+{
+	Rect _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("SetRect\n")
+
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	SetRect((Rect *)lparg0, (short)arg1, (short)arg2, (short)arg3, (short)arg4);
+	if (arg0) setRectFields(env, arg0, lparg0);
+}
+#endif /* NO_SetRect */
+
+#ifndef NO_SetRectRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetRectRgn
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2, jshort arg3, jshort arg4)
+{
+	DEBUG_CALL("SetRectRgn\n")
+
+	SetRectRgn((RgnHandle)arg0, (short)arg1, (short)arg2, (short)arg3, (short)arg4);
+}
+#endif /* NO_SetRectRgn */
+
+#ifndef NO_SetRootMenu
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetRootMenu
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetRootMenu\n")
+
+	return (jint)SetRootMenu((MenuRef)arg0);
+}
+#endif /* NO_SetRootMenu */
+
+#ifndef NO_SetThemeBackground
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeBackground
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jboolean arg2)
+{
+	DEBUG_CALL("SetThemeBackground\n")
+
+	return (jint)SetThemeBackground((ThemeBrush)arg0, (SInt16)arg1, (Boolean)arg2);
+}
+#endif /* NO_SetThemeBackground */
+
+#ifndef NO_SetThemeCursor
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeCursor
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetThemeCursor\n")
+
+	return (jint)SetThemeCursor((ThemeCursor)arg0);
+}
+#endif /* NO_SetThemeCursor */
+
+#ifndef NO_SetThemeDrawingState
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeDrawingState
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("SetThemeDrawingState\n")
+
+	return (jint)SetThemeDrawingState((ThemeDrawingState)arg0, (Boolean)arg1);
+}
+#endif /* NO_SetThemeDrawingState */
+
+#ifndef NO_SetThemeWindowBackground
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetThemeWindowBackground
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jboolean arg2)
+{
+	DEBUG_CALL("SetThemeWindowBackground\n")
+
+	return (jint)SetThemeWindowBackground((WindowRef)arg0, (ThemeBrush)arg1, (Boolean)arg2);
+}
+#endif /* NO_SetThemeWindowBackground */
+
+#ifndef NO_SetUpControlBackground
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetUpControlBackground
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jboolean arg2)
+{
+	DEBUG_CALL("SetUpControlBackground\n")
+
+	return (jint)SetUpControlBackground((ControlRef)arg0, (SInt16)arg1, (Boolean)arg2);
+}
+#endif /* NO_SetUpControlBackground */
+
+#ifndef NO_SetWRefCon
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWRefCon
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetWRefCon\n")
+
+	SetWRefCon((WindowRef)arg0, (long)arg1);
+}
+#endif /* NO_SetWRefCon */
+
+#ifndef NO_SetWindowDefaultButton
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowDefaultButton
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetWindowDefaultButton\n")
+
+	return (jint)SetWindowDefaultButton((WindowRef)arg0, (ControlRef)arg1);
+}
+#endif /* NO_SetWindowDefaultButton */
+
+#ifndef NO_SetWindowModality
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowModality
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("SetWindowModality\n")
+
+	return (jint)SetWindowModality((WindowRef)arg0, (WindowModality)arg1, (WindowRef)arg2);
+}
+#endif /* NO_SetWindowModality */
+
+#ifndef NO_SetWindowTitleWithCFString
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetWindowTitleWithCFString
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetWindowTitleWithCFString\n")
+
+	return (jint)SetWindowTitleWithCFString((WindowRef)arg0, (CFStringRef)arg1);
+}
+#endif /* NO_SetWindowTitleWithCFString */
+
+#ifndef NO_ShowWindow
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_ShowWindow
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ShowWindow\n")
+
+	ShowWindow((WindowRef)arg0);
+}
+#endif /* NO_ShowWindow */
+
+#ifndef NO_SizeControl
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SizeControl
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2)
+{
+	DEBUG_CALL("SizeControl\n")
+
+	SizeControl((ControlRef)arg0, (SInt16)arg1, (SInt16)arg2);
+}
+#endif /* NO_SizeControl */
+
+#ifndef NO_SizeWindow
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SizeWindow
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jshort arg2, jboolean arg3)
+{
+	DEBUG_CALL("SizeWindow\n")
+
+	SizeWindow((WindowRef)arg0, (short)arg1, (short)arg2, (Boolean)arg3);
+}
+#endif /* NO_SizeWindow */
+
+#ifndef NO_StillDown
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_carbon_OS_StillDown
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("StillDown\n")
+
+	return (jboolean)StillDown();
+}
+#endif /* NO_StillDown */
+
+#ifndef NO_SysBeep
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SysBeep
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("SysBeep\n")
+
+	SysBeep((short)arg0);
+}
+#endif /* NO_SysBeep */
+
+#ifndef NO_TXNActivate
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNActivate
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("TXNActivate\n")
+
+	return (jint)TXNActivate((TXNObject)arg0, (TXNFrameID)arg1, (TXNScrollBarState)arg2);
+}
+#endif /* NO_TXNActivate */
+
+#ifndef NO_TXNCopy
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNCopy
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("TXNCopy\n")
+
+	return (jint)TXNCopy((TXNObject)arg0);
+}
+#endif /* NO_TXNCopy */
+
+#ifndef NO_TXNCut
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNCut
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("TXNCut\n")
+
+	return (jint)TXNCut((TXNObject)arg0);
+}
+#endif /* NO_TXNCut */
+
+#ifndef NO_TXNDataSize
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNDataSize
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("TXNDataSize\n")
+
+	return (jint)TXNDataSize((TXNObject)arg0);
+}
+#endif /* NO_TXNDataSize */
+
+#ifndef NO_TXNDeleteObject
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNDeleteObject
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("TXNDeleteObject\n")
+
+	TXNDeleteObject((TXNObject)arg0);
+}
+#endif /* NO_TXNDeleteObject */
+
+#ifndef NO_TXNDraw
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNDraw
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("TXNDraw\n")
+
+	TXNDraw((TXNObject)arg0, (GWorldPtr)arg1);
+}
+#endif /* NO_TXNDraw */
+
+#ifndef NO_TXNEchoMode
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNEchoMode
+	(JNIEnv *env, jclass that, jint arg0, jchar arg1, jint arg2, jboolean arg3)
+{
+	DEBUG_CALL("TXNEchoMode\n")
+
+	return (jint)TXNEchoMode((TXNObject)arg0, (UniChar)arg1, (TextEncoding)arg2, (Boolean)arg3);
+}
+#endif /* NO_TXNEchoMode */
+
+#ifndef NO_TXNFocus
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNFocus
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("TXNFocus\n")
+
+	TXNFocus((TXNObject)arg0, (Boolean)arg1);
+}
+#endif /* NO_TXNFocus */
+
+#ifndef NO_TXNGetData
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetData
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNGetData\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)TXNGetData((TXNObject)arg0, (TXNOffset)arg1, (TXNOffset)arg2, (Handle *)lparg3);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif /* NO_TXNGetData */
+
+#ifndef NO_TXNGetLineCount
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetLineCount
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNGetLineCount\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)TXNGetLineCount((TXNObject)arg0, (ItemCount *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif /* NO_TXNGetLineCount */
+
+#ifndef NO_TXNGetSelection
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetSelection
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+
+	DEBUG_CALL("TXNGetSelection\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	TXNGetSelection((TXNObject)arg0, (TXNOffset *)lparg1, (TXNOffset *)lparg2);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+}
+#endif /* NO_TXNGetSelection */
+
+#ifndef NO_TXNInitTextension
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNInitTextension
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("TXNInitTextension\n")
+
+	return (jint)TXNInitTextension((const TXNMacOSPreferredFontDescription *)arg0, (ItemCount)arg1, (TXNInitOptions)arg2);
+}
+#endif /* NO_TXNInitTextension */
+
+#ifndef NO_TXNNewObject
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNNewObject
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3, jint arg4, jint arg5, jint arg6, jintArray arg7, jintArray arg8, jint arg9)
+{
+	Rect _arg2, *lparg2=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNNewObject\n")
+
+	if (arg2) lparg2 = getRectFields(env, arg2, &_arg2);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	rc = (jint)TXNNewObject((const FSSpec *)arg0, (WindowRef)arg1, (const Rect *)lparg2, (TXNFrameOptions)arg3, (TXNFrameType)arg4, (TXNFileType)arg5, (TXNPermanentTextEncodingType)arg6, (TXNObject *)lparg7, (TXNFrameID *)lparg8, (TXNObjectRefcon)arg9);
+	if (arg2) setRectFields(env, arg2, lparg2);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	return rc;
+}
+#endif /* NO_TXNNewObject */
+
+#ifndef NO_TXNOffsetToPoint
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNOffsetToPoint
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	Point _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNOffsetToPoint\n")
+
+	if (arg2) lparg2 = getPointFields(env, arg2, &_arg2);
+	rc = (jint)TXNOffsetToPoint((TXNObject)arg0, (TXNOffset)arg1, (Point *)lparg2);
+	if (arg2) setPointFields(env, arg2, lparg2);
+	return rc;
+}
+#endif /* NO_TXNOffsetToPoint */
+
+#ifndef NO_TXNPaste
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNPaste
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("TXNPaste\n")
+
+	return (jint)TXNPaste((TXNObject)arg0);
+}
+#endif /* NO_TXNPaste */
+
+#ifndef NO_TXNSelectAll
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSelectAll
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("TXNSelectAll\n")
+
+	TXNSelectAll((TXNObject)arg0);
+}
+#endif /* NO_TXNSelectAll */
+
+#ifndef NO_TXNSetData
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetData
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jint arg4, jint arg5)
+{
+	jchar *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNSetData\n")
+
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	rc = (jint)TXNSetData((TXNObject)arg0, (TXNDataType)arg1, (const void *)lparg2, (ByteCount)arg3, (TXNOffset)arg4, (TXNOffset)arg5);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_TXNSetData */
+
+#ifndef NO_TXNSetFrameBounds
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetFrameBounds
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	DEBUG_CALL("TXNSetFrameBounds\n")
+
+	TXNSetFrameBounds((TXNObject)arg0, (SInt32)arg1, (SInt32)arg2, (SInt32)arg3, (SInt32)arg4, (TXNFrameID)arg5);
+}
+#endif /* NO_TXNSetFrameBounds */
+
+#ifndef NO_TXNSetSelection
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetSelection
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("TXNSetSelection\n")
+
+	return (jint)TXNSetSelection((TXNObject)arg0, (TXNOffset)arg1, (TXNOffset)arg2);
+}
+#endif /* NO_TXNSetSelection */
+
+#ifndef NO_TXNSetTXNObjectControls
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetTXNObjectControls
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("TXNSetTXNObjectControls\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)TXNSetTXNObjectControls((TXNObject)arg0, (Boolean)arg1, (ItemCount)arg2, (const TXNControlTag *)lparg3, (const TXNControlData *)lparg4);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif /* NO_TXNSetTXNObjectControls */
+
+#ifndef NO_TXNShowSelection
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNShowSelection
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("TXNShowSelection\n")
+
+	TXNShowSelection((TXNObject)arg0, (Boolean)arg1);
+}
+#endif /* NO_TXNShowSelection */
+
+#ifndef NO_TestControl
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_TestControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	Point _arg1, *lparg1=NULL;
+	jshort rc;
+
+	DEBUG_CALL("TestControl\n")
+
+	if (arg1) lparg1 = getPointFields(env, arg1, &_arg1);
+	rc = (jshort)TestControl((ControlRef)arg0, (Point)*lparg1);
+	if (arg1) setPointFields(env, arg1, lparg1);
+	return rc;
+}
+#endif /* NO_TestControl */
+
+#ifndef NO_TextFace
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextFace
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("TextFace\n")
+
+	TextFace((StyleParameter)arg0);
+}
+#endif /* NO_TextFace */
+
+#ifndef NO_TextFont
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextFont
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("TextFont\n")
+
+	TextFont((short)arg0);
+}
+#endif /* NO_TextFont */
+
+#ifndef NO_TextMode
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextMode
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("TextMode\n")
+
+	TextMode((short)arg0);
+}
+#endif /* NO_TextMode */
+
+#ifndef NO_TextSize
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextSize
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("TextSize\n")
+
+	TextSize((short)arg0);
+}
+#endif /* NO_TextSize */
+
+#ifndef NO_TextWidth
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_TextWidth
+	(JNIEnv *env, jclass that, jbyteArray arg0, jshort arg1, jshort arg2)
+{
+	jbyte *lparg0=NULL;
+	jshort rc;
+
+	DEBUG_CALL("TextWidth\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jshort)TextWidth((const void *)lparg0, (short)arg1, (short)arg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	return rc;
+}
+#endif /* NO_TextWidth */
+
+#ifndef NO_TrackMouseLocation
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackMouseLocation
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jshortArray arg2)
+{
+	Point _arg1, *lparg1=NULL;
+	jshort *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("TrackMouseLocation\n")
+
+	if (arg1) lparg1 = getPointFields(env, arg1, &_arg1);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	rc = (jint)TrackMouseLocation((GrafPtr)arg0, (Point *)lparg1, (MouseTrackingResult *)lparg2);
+	if (arg1) setPointFields(env, arg1, lparg1);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_TrackMouseLocation */
+
+#ifndef NO_UnionRgn
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_UnionRgn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("UnionRgn\n")
+
+	UnionRgn((RgnHandle)arg0, (RgnHandle)arg1, (RgnHandle)arg2);
+}
+#endif /* NO_UnionRgn */
+
+#ifndef NO_UnlockPortBits
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_UnlockPortBits
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("UnlockPortBits\n")
+
+	return (jint)UnlockPortBits((GrafPtr)arg0);
+}
+#endif /* NO_UnlockPortBits */
+
+#ifndef NO_UpdateControls
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_UpdateControls
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("UpdateControls\n")
+
+	UpdateControls((WindowRef)arg0, (RgnHandle)arg1);
+}
+#endif /* NO_UpdateControls */
+
+#ifndef NO_UpdateDataBrowserItems
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_UpdateDataBrowserItems
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jint arg5)
+{
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("UpdateDataBrowserItems\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	rc = (jint)UpdateDataBrowserItems((ControlRef)arg0, (DataBrowserItemID)arg1, (UInt32)arg2, (const DataBrowserItemID *)lparg3, (DataBrowserPropertyID)arg4, (DataBrowserPropertyID)arg5);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	return rc;
+}
+#endif /* NO_UpdateDataBrowserItems */
+
+#ifndef NO_kHIViewWindowContentID
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_kHIViewWindowContentID
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("kHIViewWindowContentID\n")
+
+	return (jint)&kHIViewWindowContentID;
+}
+#endif /* NO_kHIViewWindowContentID */
+
+#ifndef NO_memcpy__I_3BI
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__I_3BI
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("memcpy__I_3BI\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	memcpy((void *)arg0, (const void *)lparg1, (size_t)arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+#endif /* NO_memcpy__I_3BI */
+
+#ifndef NO_memcpy__III
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy__III
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("memcpy__III\n")
+
+	memcpy((void *)arg0, (const void *)arg1, (size_t)arg2);
+}
+#endif /* NO_memcpy__III */
+
+#ifndef NO_memcpy___3BII
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memcpy___3BII
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
+{
+	jbyte *lparg0=NULL;
+
+	DEBUG_CALL("memcpy___3BII\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	memcpy((void *)lparg0, (const void *)arg1, (size_t)arg2);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+}
+#endif /* NO_memcpy___3BII */
+
+#ifndef NO_memset
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_memset
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("memset\n")
+
+	memset((void *)arg0, arg1, arg2);
+}
+#endif /* NO_memset */
 
 

@@ -7,7 +7,8 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 
@@ -183,7 +184,7 @@ public Rectangle getClientArea () {
 public String getText () {
 	checkWidget();
 	int[] sHandle= new int[1];
-    OS.GetControlTitleAsCFString(handle, sHandle);
+    OS.CopyControlTitleAsCFString(handle, sHandle);
 	return MacUtil.getStringAndRelease(sHandle[0]);
 }
 /* AW

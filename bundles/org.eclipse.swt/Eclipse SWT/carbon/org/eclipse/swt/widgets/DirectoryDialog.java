@@ -140,8 +140,12 @@ public String open () {
 		titleHandle= OS.CFStringCreateWithCharacters(title);
 		messageHandle= OS.CFStringCreateWithCharacters(message);
 		
-		int flags= 0;
-		OS.NavCreateChooseFolderDialog(flags, titleHandle, messageHandle, parentWindowHandle, dialogHandle);
+		NavDialogCreationOptions options = new NavDialogCreationOptions();
+		OS.NavGetDefaultDialogCreationOptions(options);
+		options.parentWindow= parentWindowHandle;
+		options.windowTitle= titleHandle;
+		options.message= messageHandle;
+		OS.NavCreateChooseFolderDialog(options, 0, 0, 0, dialogHandle);
 		dialog= dialogHandle[0];
 		
 		if (dialog != 0) {

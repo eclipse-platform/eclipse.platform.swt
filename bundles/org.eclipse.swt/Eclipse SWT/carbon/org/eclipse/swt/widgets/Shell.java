@@ -10,7 +10,9 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class represent the "windows"
@@ -549,7 +551,6 @@ void createHandle (int index) {
 	byte [] appClass = display.appClass;
     */
 	
-	MacRect bounds= new MacRect(100, 100, 100, 100);
 	int windowClass= 0;
 	short themeBrush= OS.kThemeBrushDialogBackgroundActive;
 	if (parent == null && (style & SWT.ON_TOP) == 0) {
@@ -629,11 +630,13 @@ void createHandle (int index) {
 	}
 
 	int[] wHandle= new int[1];
-	if (OS.CreateNewWindow(windowClass, decorations | OS.kWindowStandardHandlerAttribute, bounds.getData(), wHandle) == OS.kNoErr)
+	Rect bounds= new Rect();
+	OS.SetRect(bounds, (short)100, (short)100, (short)200, (short)200);
+	if (OS.CreateNewWindow(windowClass, decorations | OS.kWindowStandardHandlerAttribute, bounds, wHandle) == OS.noErr)
 		shellHandle= wHandle[0];
 	else {
 		System.out.println("Shell.createHandle: can't create window with these attributes; creating default window");
-		if (OS.CreateNewWindow(OS.kDocumentWindowClass, OS.kWindowStandardHandlerAttribute, bounds.getData(), wHandle) == OS.kNoErr)
+		if (OS.CreateNewWindow(OS.kDocumentWindowClass, OS.kWindowStandardHandlerAttribute, bounds, wHandle) == OS.noErr)
 			shellHandle= wHandle[0];
 	}
 
@@ -783,11 +786,11 @@ public Rectangle getBounds () {
 	int border = argList [5];
 	*/
 	
-	MacRect contentBounds= new MacRect();
-	OS.GetWindowBounds(shellHandle, OS.kWindowContentRgn, contentBounds.getData());
+	Rect contentBounds= new Rect();
+	OS.GetWindowBounds(shellHandle, (short)OS.kWindowContentRgn, contentBounds);
 	
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(scrolledHandle, bounds.getData());
+	Rect bounds= new Rect();
+	OS.GetControlBounds(scrolledHandle, bounds);
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	int border= 0;
 	/* AW
@@ -795,9 +798,9 @@ public Rectangle getBounds () {
 	int height = argList [3] + trimHeight + (border * 2);
 	return new Rectangle (root_x [0], root_y [0], width, height);
     */
-	int width = bounds.getWidth() + trimWidth + (border * 2);
-	int height = bounds.getHeight() + trimHeight + (border * 2);
-	Rectangle r= new Rectangle (contentBounds.getX(), contentBounds.getY(), width, height);
+	int width = bounds.right - bounds.left + trimWidth + (border * 2);
+	int height = bounds.bottom - bounds.top + trimHeight + (border * 2);
+	Rectangle r= new Rectangle (contentBounds.left, contentBounds.top, width, height);
 	return r;
 	
 	/*
@@ -846,9 +849,9 @@ public Point getLocation () {
 	return new Point (root_x [0], root_y [0]);
     */
 	// returns the location of the contentArea
-	MacRect bounds= new MacRect();
-	OS.GetWindowBounds(shellHandle, OS.kWindowContentRgn, bounds.getData());
-	return bounds.getLocation();
+	Rect bounds= new Rect();
+	OS.GetWindowBounds(shellHandle, (short)OS.kWindowContentRgn, bounds);
+	return new Point(bounds.left, bounds.top);
 }
 public Shell getShell () {
 	checkWidget();
@@ -897,8 +900,8 @@ public Point getSize () {
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	int border = argList [5];
 	*/
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(scrolledHandle, bounds.getData());
+	Rect bounds= new Rect();
+	OS.GetControlBounds(scrolledHandle, bounds);
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
 	int border = 0;
 	/* AW
@@ -906,8 +909,8 @@ public Point getSize () {
 	int height = argList [3] + trimHeight + (border * 2);
 	return new Point (width, height);
     */
-	int width = bounds.getWidth() + trimWidth + (border * 2);
-	int height = bounds.getHeight() + trimHeight + (border * 2);
+	int width = bounds.right - bounds.left + trimWidth + (border * 2);
+	int height = bounds.bottom - bounds.top + trimHeight + (border * 2);
 	Point p= new Point (width, height);
 	//System.out.println("   Shell.getSize: " + p);
 	return p;
@@ -959,7 +962,7 @@ void hookEvents () {
 		OS.kEventClassMouse, OS.kEventMouseDown,
 		OS.kEventClassMouse, OS.kEventMouseWheelMoved,
 	};
-	OS.InstallEventHandler(ref, display.fWindowProc, mask, shellHandle);
+	OS.InstallEventHandler(ref, display.fWindowProc, mask.length / 2, mask, shellHandle, null);
 }
 int imeHeight () {
     /* AW
@@ -985,7 +988,7 @@ boolean isModal () {
 	return (argList [1] != -1 && argList [1] != OS.MWM_INPUT_MODELESS);
     */
 	int[] modalityKind= new int[1];
-	if (OS.GetWindowModality(shellHandle, modalityKind, null) == OS.kNoErr)
+	if (OS.GetWindowModality(shellHandle, modalityKind, null) == OS.noErr)
 		return modalityKind[0] != OS.kWindowModalityNone;
 	return false;
 }
@@ -1034,23 +1037,24 @@ int processDispose (Object callData) {
 
 int processResize (Object callData) {
 
-	MacRect bounds= new MacRect();
+	Rect bounds= new Rect();
 
 	// outside bounds and location
-	OS.GetWindowBounds(shellHandle, OS.kWindowStructureRgn, bounds.getData());
-	int x= bounds.getX();
-	int y= bounds.getY();
+	OS.GetWindowBounds(shellHandle, (short)OS.kWindowStructureRgn, bounds);
+	int x= bounds.left;
+	int y= bounds.top;
 
 	// inside bounds and location
-	OS.GetWindowBounds(shellHandle, OS.kWindowContentRgn, bounds.getData());
-	int w= bounds.getWidth();
-	int h= bounds.getHeight();
+	OS.GetWindowBounds(shellHandle, (short)OS.kWindowContentRgn, bounds);
+	int w= bounds.right - bounds.left;
+	int h= bounds.bottom - bounds.top;
 		
 	boolean positionChanged= (oldX != x || oldY != y);
 	boolean sizeChanged= (oldWidth != w || oldHeight != h);
 
 	if (scrolledHandle != 0 && sizeChanged) {
-		handleResize(scrolledHandle, new MacRect(0, 0, w, h));
+		OS.SetRect(bounds, (short)0, (short)0, (short)w, (short)h);
+		handleResize(scrolledHandle, bounds);
 	}
 	
 	if (positionChanged) {

@@ -58,7 +58,9 @@ public void add (Rectangle rect) {
 	if (rect == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (rect.width < 0 || rect.height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int rectRgn= OS.NewRgn();
-	OS.RectRgn(rectRgn, new MacRect(rect).getData());
+	Rect r = new Rect();
+	OS.SetRect(r, (short)rect.x, (short)rect.y, (short)(rect.x+rect.width),(short)(rect.y+rect.height));
+	OS.RectRgn(rectRgn, r);
 	OS.UnionRgn(rectRgn, handle, handle);
 	OS.DisposeRgn(rectRgn);
 }
@@ -98,7 +100,9 @@ public void add (Region region) {
  */
 public boolean contains (int x, int y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return OS.PtInRgn(new MacPoint(x, y).getData(), handle);
+	org.eclipse.swt.internal.carbon.Point p= new org.eclipse.swt.internal.carbon.Point();
+	OS.SetPt(p, (short)x, (short)y);
+	return OS.PtInRgn(p, handle);
 }
 /**
  * Returns <code>true</code> if the given point is inside the
@@ -159,9 +163,11 @@ public boolean equals (Object object) {
  */
 public Rectangle getBounds() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	MacRect bounds= new MacRect();
-	OS.GetRegionBounds(handle, bounds.getData());
-	return bounds.toRectangle();
+	Rect bounds= new Rect();
+	OS.GetRegionBounds(handle, bounds);
+	int width = bounds.right - bounds.left;
+	int height = bounds.bottom - bounds.top;
+	return new Rectangle(bounds.left, bounds.top, width, height);
 }
 /**
  * Returns an integer hash code for the receiver. Any two 
@@ -195,7 +201,9 @@ public int hashCode () {
  */
 public boolean intersects (int x, int y, int width, int height) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return OS.RectInRgn(new MacRect(x, y, width, height).getData(), handle);
+	Rect rect = new Rect();
+	OS.SetRect(rect, (short)x, (short)y, (short)(x+width),(short)(y+height));
+	return OS.RectInRgn(rect, handle);
 }
 /**
  * Returns <code>true</code> if the given rectangle intersects

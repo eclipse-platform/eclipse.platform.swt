@@ -7,7 +7,8 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -83,7 +84,7 @@ Control [] _getChildren () {
 	Control [] children = new Control [count];
 	int i = 0, j = 0;
 	while (i < count) {
-		if (MacUtil.getChild(handle, outControl, count, i) != OS.kNoErr)
+		if (MacUtil.getChild(handle, outControl, count, i) != OS.noErr)
 			error (SWT.ERROR_CANNOT_GET_ITEM);
 		int handle = outControl [0];
 		if (handle != 0) {
@@ -355,8 +356,8 @@ void hookEvents () {
 		OS.XtAddEventHandler (handle, 0, true, windowProc, -1);
         */
 		Display display= getDisplay();		
-		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
-		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
+		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, 4, new int[]{display.fUserPaneDrawProc});
+		OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
 
 
 		if (MacUtil.HIVIEW) {
@@ -366,7 +367,7 @@ void hookEvents () {
 				OS.kEventClassMouse, OS.kEventMouseDown,
 				OS.kEventClassMouse, OS.kEventMouseWheelMoved,
 			};
-			OS.InstallEventHandler(ref, display.fMouseProc, mask, handle);
+			OS.InstallEventHandler(ref, display.fMouseProc, mask.length / 2, mask, handle, null);
 		}
 	}
 }

@@ -6,12 +6,12 @@
  *
  * Andre Weinand, OTI - Initial version
  */
-package org.eclipse.swt.internal.carbon;
+package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.SWT;
 
-public class MacMouseEvent {
+class MacMouseEvent {
 	
 	private int fWhen;
 	private Point fWhere;

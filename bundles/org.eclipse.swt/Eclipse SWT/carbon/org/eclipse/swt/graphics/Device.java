@@ -160,13 +160,15 @@ void dispose_Object (Object object) {
 public Rectangle getBounds () {
 	checkDevice ();
 	
-	MacRect bounds= new MacRect();
+	Rect bounds= new Rect();
 	if (fGDeviceHandle != 0) {
 		int pm= OS.getgdPMap(fGDeviceHandle);
 		if (pm != 0)
-			OS.GetPixBounds(pm, bounds.getData());
+			OS.GetPixBounds(pm, bounds);
 	}
-	return bounds.toRectangle();
+	int width = bounds.right - bounds.left;
+	int height = bounds.bottom - bounds.top;
+	return new Rectangle(bounds.left, bounds.top, width, height);
 }
 
 /**
@@ -184,10 +186,12 @@ public Rectangle getBounds () {
 public Rectangle getClientArea () {
 	checkDevice ();
 	
-	MacRect bounds= new MacRect();
+	Rect bounds= new Rect();
 	int gdh= OS.GetMainDevice();
-	OS.GetAvailableWindowPositioningBounds(gdh, bounds.getData());
-	return bounds.toRectangle();
+	OS.GetAvailableWindowPositioningBounds(gdh, bounds);
+	int width = bounds.right - bounds.left;
+	int height = bounds.bottom - bounds.top;
+	return new Rectangle(bounds.left, bounds.top, width, height);
 }
 
 /**

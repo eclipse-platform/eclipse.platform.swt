@@ -7,7 +7,8 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -269,9 +270,9 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	return bounds.getSize();
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	return new Point(bounds.right-bounds.left, bounds.bottom-bounds.top);
 }
 /**
  * Answers the size of the receiver's thumb relative to the
@@ -410,17 +411,17 @@ int processSelection (Object callData) {
 	// flush display
 	getDisplay().update();
 
-	return OS.kNoErr;
+	return OS.noErr;
 }
 int processWheel(int eRefHandle) {
 	int[] t= new int[1];
-	OS.GetEventParameter(eRefHandle, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, null, t);
+	OS.GetEventParameter(eRefHandle, OS.kEventParamMouseWheelDelta, OS.typeSInt32, null, t.length*4, null, t);
 	OS.SetControl32BitValue(handle, OS.GetControl32BitValue(handle) - (increment * t[0]));
 	Event event= new Event ();
     event.detail= t[0] > 0 ? SWT.ARROW_UP : SWT.ARROW_DOWN;	
 	sendEvent (SWT.Selection, event);
 	getDisplay().update();
-	return OS.kNoErr;
+	return OS.noErr;
 }
 void releaseChild () {
 	super.releaseChild ();
@@ -657,8 +658,8 @@ public void setVisible (boolean visible) {
     }
 }
 
-void internalSetBounds(MacRect bounds) {
-	OS.SetControlBounds(handle, bounds.getData());
+void internalSetBounds(Rect bounds) {
+	OS.SetControlBounds(handle, bounds);
 }
 
 }

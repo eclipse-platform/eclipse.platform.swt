@@ -6,8 +6,7 @@ package org.eclipse.swt.widgets;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
- 
-import java.io.StreamTokenizer;
+
 import java.util.StringTokenizer;
 
 import org.eclipse.swt.*;
@@ -334,7 +333,7 @@ public boolean getSelection () {
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	
 	char[] markchar= new char[1];
-	if (OS.GetMenuCommandMark(parent.handle, id, markchar) == OS.kNoErr)
+	if (OS.GetMenuCommandMark(parent.handle, id, markchar) == OS.noErr)
 		return markchar[0] != 0;
 		
 	error (SWT.ERROR_CANNOT_GET_SELECTION);
@@ -600,7 +599,7 @@ public void setMenu (Menu menu) {
 	short[] index= new short[1];
 	OS.GetIndMenuItemWithCommandID(hMenu, id, 1, null, index);
 	if (index[0] >= 1) {
-		if (OS.SetMenuItemHierarchicalMenu(hMenu, index[0], newMenuHandle) == OS.kNoErr) {
+		if (OS.SetMenuItemHierarchicalMenu(hMenu, index[0], newMenuHandle) == OS.noErr) {
 			if (menu != null) {
 				// we set the menu's title to the item's title
 				int sHandle= 0;
@@ -637,11 +636,11 @@ public void setSelection (boolean selected) {
 
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 		
-	char markChar= 0;
+	int markChar= 0;
 	if (selected)
 		markChar= ((style & SWT.RADIO) != 0) ? OS.diamondMark : OS.checkMark;
 		
-	if (OS.SetMenuCommandMark(parent.handle, id, markChar) != OS.kNoErr)
+	if (OS.SetMenuCommandMark(parent.handle, id, (char)markChar) != OS.noErr)
 		error (SWT.ERROR_CANNOT_SET_SELECTION);
 }
 
@@ -718,8 +717,8 @@ private static void setAccelerator(int menu, short index, int accelerator) {
 
 	if (accelerator == 0) {
 		OS.SetMenuItemCommandKey(menu, index, false, (char)0);
-		OS.SetMenuItemKeyGlyph(menu, index, OS.kMenuNullGlyph);
-		OS.SetMenuItemModifiers(menu, index, OS.kMenuNoModifiers);
+		OS.SetMenuItemKeyGlyph(menu, index, (short)OS.kMenuNullGlyph);
+		OS.SetMenuItemModifiers(menu, index, (byte)OS.kMenuNoModifiers);
 		return;
 	}
 	

@@ -672,27 +672,31 @@ final void redrawHandle (int x, int y, int width, int height, int widgetHandle, 
 	
 	if (false) {
 		int rgn= OS.NewRgn();
-		OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
+		Rect rect = new Rect();
+		OS.SetRect(rect, (short)x, (short)y, (short)(x + width), (short)(y + height));
+		OS.RectRgn(rgn, rect);
 		OS.HIViewSetNeedsDisplayInRegion(widgetHandle, rgn, true);
 		OS.DisposeRgn(rgn);
 	} else {
-		MacRect br= new MacRect();
-		OS.GetControlBounds(widgetHandle, br.getData());
-	    if (!br.isEmpty()) {
-	        x+= br.getX();
-	        y+= br.getY();
+		Rect br= new Rect();
+		OS.GetControlBounds(widgetHandle, br);
+	    if (!OS.EmptyRect(br)) {
+	        x+= br.left;
+	        y+= br.top;
 	        if (width == 0)
-	        	width= br.getWidth();
+	        	width= br.right - br.left;
 	        else
 				width+= 1; // AW strange workaround for Caret
 	        if (height == 0)
-				height= br.getHeight();
+				height= br.bottom - br.top;
 	                
 	        int rgn= OS.NewRgn();
-	        OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
+	      	Rect rect = new Rect();
+			OS.SetRect(rect, (short)x, (short)y, (short)(x + width), (short)(y + height));
+	        OS.RectRgn(rgn, rect);
 	                
 	        int region= OS.NewRgn();
-	        if (MacUtil.getVisibleRegion(widgetHandle, region, all) == OS.kNoErr) {
+	        if (MacUtil.getVisibleRegion(widgetHandle, region, all) == OS.noErr) {
 	        
 	            OS.SectRgn(region, rgn, region);
 	        

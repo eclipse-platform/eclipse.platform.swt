@@ -10,7 +10,9 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class implement the notebook user interface
@@ -279,13 +281,13 @@ public Rectangle getClientArea () {
 	return new Rectangle (rect.left, rect.top, width, height);
 	*/
 	
-	short[] outer= new short[4];
+	Rect outer= new Rect();
 	OS.GetControlBounds(handle, outer);
 
-	short[] inner= new short[4];
-	OS.GetControlData(handle, OS.kControlEntireControl, OS.kControlTabContentRectTag, inner);
+	Rect inner= new Rect();
+	OS.GetControlData(handle, (short)OS.kControlEntireControl, OS.kControlTabContentRectTag, Rect.sizeof, inner, null);
 	
-	return new Rectangle(inner[1]-outer[1], inner[0]-outer[0], inner[3]-inner[1], inner[2]-inner[0]);
+	return new Rectangle(inner.left-outer.left, inner.top-outer.top, inner.right-inner.left, inner.bottom-inner.top);
 }
 
 /**
@@ -664,9 +666,11 @@ void setTabImage(int index, Image image) {
  * Overridden from Control.
  * x and y are relative to window!
  */
-void handleResize(int hndl, MacRect bounds) {
-
-	bounds.inset(MARGIN, 0, MARGIN, MARGIN);
+void handleResize(int hndl, Rect bounds) {
+	
+	bounds.left+= MARGIN;
+	bounds.right-= MARGIN;
+	bounds.bottom-= MARGIN;
 	super.handleResize(hndl, bounds);
 	
 	if (handle != 0) {

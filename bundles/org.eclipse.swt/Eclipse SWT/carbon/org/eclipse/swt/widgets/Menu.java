@@ -215,16 +215,19 @@ static int checkStyle (int style) {
 void createHandle () {
 	Display display= getDisplay();
 	int menuHandle[]= new int[1];
-	if (OS.CreateNewMenu(display.nextMenuId(), 0, menuHandle) == OS.kNoErr)
+	if (OS.CreateNewMenu(display.nextMenuId(), 0, menuHandle) == OS.noErr)
 		handle= menuHandle[0];
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	OS.RetainMenu(handle);
+	int[] mask = new int[] {
+		OS.kEventClassMenu, OS.kEventMenuOpening,
+		OS.kEventClassMenu, OS.kEventMenuClosed
+	};
 	OS.InstallEventHandler(OS.GetMenuEventTarget(handle), display.fMenuProc,
-		new int[] {
-			OS.kEventClassMenu, OS.kEventMenuOpening,
-			OS.kEventClassMenu, OS.kEventMenuClosed
-		},
-		handle
+		mask.length / 2,
+		mask,
+		handle,
+		null
 	);
 }
 
@@ -262,7 +265,7 @@ void createItem (MenuItem item, int index) {
 	int attributes= 0;
 	if ((item.style & SWT.SEPARATOR) != 0) 
 		attributes= OS.kMenuItemAttrSeparator;
-	if (OS.InsertMenuItemTextWithCFString(handle, 0, (short) index, attributes, item.id) == OS.kNoErr)
+	if (OS.InsertMenuItemTextWithCFString(handle, 0, (short) index, attributes, item.id) == OS.noErr)
 		success= true;
 	
 	if (!success) {
@@ -375,7 +378,7 @@ public boolean getEnabled () {
 public MenuItem getItem (int index) {
 	checkWidget ();
 	int[] commandID= new int[1];
-	if (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) != OS.kNoErr)
+	if (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) != OS.noErr)
 		error (SWT.ERROR_INVALID_RANGE);
 	return parent.findMenuItem (commandID[0]);
 }
@@ -423,7 +426,7 @@ public MenuItem [] getItems () {
 	while (OS.GetMenuItemInfo (handle, index, true, info)) {
 	*/
 	int[] commandID= new int[1];	
-	while (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) == OS.kNoErr) {
+	while (OS.GetMenuItemCommandID(handle, (short)(index+1), commandID) == OS.noErr) {
 		if (index == items.length) {
 			MenuItem [] newItems = new MenuItem [index + 4];
 			System.arraycopy (newItems, 0, items, 0, index);
@@ -578,7 +581,7 @@ public int indexOf (MenuItem item) {
 	
 	int[] menu= new int[1];
 	short[] index= new short[1];
-	if (OS.GetIndMenuItemWithCommandID(handle, item.id, 1, menu, index) == OS.kNoErr) {
+	if (OS.GetIndMenuItemWithCommandID(handle, item.id, 1, menu, index) == OS.noErr) {
 		if (handle == menu[0])	// ensure that we found item not in submenu
 			return index[0];
 	}

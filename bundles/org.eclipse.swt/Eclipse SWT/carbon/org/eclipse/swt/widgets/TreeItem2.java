@@ -10,7 +10,6 @@ package org.eclipse.swt.widgets;
 import java.util.ArrayList;
 import java.util.Iterator;
 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -261,10 +260,12 @@ public Color getBackground () {
  */
 public Rectangle getBounds () {
 	checkWidget ();
-	MacRect bounds= new MacRect();
+	Rect bounds= new Rect();
 	OS.GetDataBrowserItemPartBounds(parent.handle, handle, Tree2.COL_ID,
-					OS.kDataBrowserPropertyEnclosingPart, bounds.getData());
-	return bounds.toRectangle();
+					OS.kDataBrowserPropertyEnclosingPart, bounds);
+	int width = bounds.right - bounds.left;
+	int height = bounds.bottom - bounds.top;
+	return new Rectangle(bounds.left, bounds.top, width, height);
 }
 
 /**
@@ -695,7 +696,7 @@ void addChild(TreeItem2 child) {
 		fChildren= new ArrayList();
 	fChildren.add(child);
 	if (fIsOpen) {
-		if (OS.AddDataBrowserItems(parent.handle, getContainerID(), 1, new int[] { child.handle }, 0) != OS.kNoErr) {
+		if (OS.AddDataBrowserItems(parent.handle, getContainerID(), 1, new int[] { child.handle }, 0) != OS.noErr) {
 			System.out.println("SWT.ERROR_ITEM_NOT_ADDED");
 			//error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
@@ -708,7 +709,7 @@ void removeChild(TreeItem2 child) {
 	if (fChildren != null)
 		fChildren.remove(child);
 	if (fIsOpen) {
-		if (OS.RemoveDataBrowserItems(parent.handle, getContainerID(), 1, new int[] { child.handle }, 0) != OS.kNoErr) {
+		if (OS.RemoveDataBrowserItems(parent.handle, getContainerID(), 1, new int[] { child.handle }, 0) != OS.noErr) {
 			System.out.println("SWT.ERROR_ITEM_NOT_REMOVED");
 			//error (SWT.ERROR_ITEM_NOT_REMOVED);
 		}
@@ -733,7 +734,7 @@ void open() {
 			TreeItem2 e= (TreeItem2) iter.next();
 			ids[i]= e.handle;
 		}
-		if (OS.AddDataBrowserItems(parent.handle, getContainerID(), ids.length, ids, 0) != OS.kNoErr) {
+		if (OS.AddDataBrowserItems(parent.handle, getContainerID(), ids.length, ids, 0) != OS.noErr) {
 			System.out.println("SWT.ERROR_ITEM_NOT_ADDED");
 			//error (SWT.ERROR_ITEM_NOT_ADDED);
 		}

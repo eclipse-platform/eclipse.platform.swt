@@ -7,7 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.MacUtil;
+import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -93,19 +95,22 @@ boolean drawCaret () {
 	int clipRgn= OS.NewRgn();
 	MacUtil.getVisibleRegion(parent.handle, clipRgn, true);
 
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(parent.handle, bounds.getData());
-	bounds= new MacRect(x+bounds.getX(), y+bounds.getY(), nWidth, nHeight);
+	Rect bounds= new Rect();
+	OS.GetControlBounds(parent.handle, bounds);
+	int left = x+bounds.left;
+	int top = y+bounds.top;
+	OS.SetRect(bounds, (short)left, (short)top, (short)(left+nWidth), (short)(top+nHeight));
 	
 	int caretRgn= OS.NewRgn();
-	OS.RectRgn(caretRgn, bounds.getData());
+	OS.RectRgn(caretRgn, bounds);
 	OS.SectRgn(caretRgn, clipRgn, caretRgn);
 	
 	if (!OS.EmptyRgn(caretRgn)) {
-		int port= OS.GetPort();
+		int[] port= new int[1];
+		OS.GetPort(port);
 		OS.SetPortWindowPort(OS.GetControlOwner(handle));	
 		OS.InvertRgn(caretRgn);
-		OS.SetPort(port);
+		OS.SetPort(port[0]);
 	}
 	
 	OS.DisposeRgn(clipRgn);

@@ -51,7 +51,7 @@ public class MacUtil {
 	
 	static int hiobProc(int a, int b, int c) {
 		System.out.println("hiobProc");
-		return OS.kNoErr;
+		return OS.noErr;
 	}
 	
 	static int createHIView() {
@@ -75,7 +75,7 @@ public class MacUtil {
 			int hiobProc= createCallback("hiobProc", 3);
 		
 			int[] tmp= new int[1];
-			rc= OS.HIObjectRegisterSubclass(fViewClassID, baseClassID, 0, hiobProc, events, 0, tmp);
+			rc= OS.HIObjectRegisterSubclass(fViewClassID, baseClassID, 0, hiobProc, events.length / 2, events, 0, tmp);
 			System.out.println("HIObjectRegisterSubclass: " + rc);
 		
 			OS.CFRelease(baseClassID);
@@ -93,7 +93,7 @@ public class MacUtil {
 	public static int getChild(int handle, int[] t, int n, int i) {
 		int index= (n-1 - i);
 		int status= OS.GetIndexedSubControl(handle, (short)(index+1), t);
-		if (status != OS.kNoErr)
+		if (status != OS.noErr)
 			System.out.println("MacUtil.getChild: error");
 		return status;
 	}
@@ -102,7 +102,7 @@ public class MacUtil {
 		int n= countSubControls(parentHandle);
 		int[] outControl= new int[1];
 		for (int i= 0; i < n; i++) {
-			if (getChild(parentHandle, outControl, n, i) == OS.kNoErr)
+			if (getChild(parentHandle, outControl, n, i) == OS.noErr)
 				if (outControl[0] == handle)
 					return i;
 		}
@@ -148,7 +148,7 @@ public class MacUtil {
 			} else {
 				if (add)
 					OS.HIViewAddSubview(parentControlHandle, controlHandle);
-				if (OS.HIViewSetZOrder(controlHandle, OS.kHIViewZOrderBelow, 0) != OS.kNoErr)
+				if (OS.HIViewSetZOrder(controlHandle, OS.kHIViewZOrderBelow, 0) != OS.noErr)
 					System.out.println("error 2");
 				pos= n;
 			}
@@ -198,18 +198,20 @@ public class MacUtil {
 		
 		OS.DisposeRgn(tmpRgn);
                 
-		return OS.kNoErr;
+		return OS.noErr;
 	}
 	
-	private static int find(int cHandle, Rectangle parentBounds, MacRect tmp, Point where) {
+	private static int find(int cHandle, Rectangle parentBounds, Rect tmp, org.eclipse.swt.graphics.Point where) {
 	
 		if (! OS.IsControlVisible(cHandle))
 			return 0;
 		if (! OS.IsControlActive(cHandle))
 			return 0;
 
-		OS.GetControlBounds(cHandle, tmp.getData());
-		Rectangle rr= tmp.toRectangle();
+		OS.GetControlBounds(cHandle, tmp);
+		int width = tmp.right - tmp.left;
+		int height = tmp.bottom - tmp.top;
+		Rectangle rr = new Rectangle(tmp.left, tmp.top, width, height);
 		if (parentBounds != null)
 			rr= parentBounds.intersection(rr);
 
@@ -233,19 +235,20 @@ public class MacUtil {
 
 	//////////////////////////////////////////////////////////////////////
 	
-	public static Point toControl(int cHandle, Point point) {
-		MacPoint mp= new MacPoint(point);
+	public static org.eclipse.swt.graphics.Point toControl(int cHandle, org.eclipse.swt.graphics.Point point) {
+		Point mp= new Point();
+		OS.SetPt(mp, (short)point.x, (short)point.y);
 		
 		int wHandle= OS.GetControlOwner(cHandle);
 		int port= OS.GetWindowPort(wHandle);
-		OS.QDGlobalToLocalPoint(port, mp.getData());
+		OS.QDGlobalToLocalPoint(port, mp);
 	
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(cHandle, bounds.getData());
+		Rect bounds= new Rect();
+		OS.GetControlBounds(cHandle, bounds);
 		
-		Point p= mp.toPoint();
-		p.x-= bounds.getX();
-		p.y-= bounds.getY();
+		org.eclipse.swt.graphics.Point p= new org.eclipse.swt.graphics.Point(mp.h, mp.v);
+		p.x -= bounds.left;
+		p.y -= bounds.top;
 		
 		/*
 		float[] p2= new float[2];
@@ -258,38 +261,39 @@ public class MacUtil {
 		return p;
 	}
 	
-	public static Point toDisplay(int cHandle, Point point) {
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(cHandle, bounds.getData());
-		MacPoint mp= new MacPoint(point.x+bounds.getX(), point.y+bounds.getY());
+	public static org.eclipse.swt.graphics.Point toDisplay(int cHandle, org.eclipse.swt.graphics.Point point) {
+		Rect bounds= new Rect();
+		OS.GetControlBounds(cHandle, bounds);
+		Point mp= new Point();
+		OS.SetPt(mp, (short)(point.x+bounds.left), (short)(point.y+bounds.top));
 		
 		int wHandle= OS.GetControlOwner(cHandle);
 		int port= OS.GetWindowPort(wHandle);
-		OS.QDLocalToGlobalPoint(port, mp.getData());
+		OS.QDLocalToGlobalPoint(port, mp);
 		
-		return mp.toPoint();
+		return new org.eclipse.swt.graphics.Point(mp.h, mp.v);
 	}
 		
-	private static void getControlRegion(int cHandle, short part, int rgn) {
+	private static void getControlRegion(int cHandle, int part, int rgn) {
 		if (true) {
-			short[] bounds= new short[4];
+			Rect bounds= new Rect();
 			OS.GetControlBounds(cHandle, bounds);
 			OS.RectRgn(rgn, bounds);
 		} else {
-			OS.GetControlRegion(cHandle, part, rgn);
+			OS.GetControlRegion(cHandle, (short) part, rgn);
 		}
 	}
 
 	// Hit detection on the Mac is reversed and doesn't consider clipping,
 	// so we have to do it ourselves
 
-	public static int findControlUnderMouse(MacPoint where, int wHandle, short[] cpart) {
+	public static int findControlUnderMouse(Point where, int wHandle, short[] cpart) {
 		
 		int root;
 		if (true) {
 			int[] rootHandle= new int[1];
 			int rc= OS.GetRootControl(wHandle, rootHandle);
-			if (rc != OS.kNoErr) {
+			if (rc != OS.noErr) {
 				System.out.println("MacUtil.findControlUnderMouse: " + rc);
 				return 0;
 			}
@@ -297,10 +301,10 @@ public class MacUtil {
 		} else {
 			root= OS.HIViewGetRoot(wHandle);
 		}
-		Point w= where.toPoint();
-		int cHandle= find(root, null, new MacRect(), w);
+		org.eclipse.swt.graphics.Point w= new org.eclipse.swt.graphics.Point(where.h, where.v);
+		int cHandle= find(root, null, new Rect(), w);
 		if (cHandle != 0 && cpart != null && cpart.length > 0) {
-			cpart[0]= OS.TestControl(cHandle, where.getData());
+			cpart[0]= OS.TestControl(cHandle, where);
 			//System.out.println("findControlUnderMouse: " + cpart[0]);
 		}
 		return cHandle;
@@ -310,7 +314,7 @@ public class MacUtil {
 		short[] cnt= new short[1];
 		int status= OS.CountSubControls(cHandle, cnt);
 		switch (status) {
-		case OS.kNoErr:
+		case OS.noErr:
 			return cnt[0];			
 		case OS.errControlIsNotEmbedder:
 			//System.out.println("MacUtil.countSubControls: errControlIsNotEmbedder");
@@ -328,7 +332,9 @@ public class MacUtil {
 	public static String getStringAndRelease(int sHandle) {
 		int length= OS.CFStringGetLength(sHandle);
 		char[] buffer= new char[length];
-		OS.CFStringGetCharacters(sHandle, 0, length, buffer);
+		CFRange range = new CFRange();
+		range.length = length;
+		OS.CFStringGetCharacters(sHandle, range, buffer);
 		OS.CFRelease(sHandle);
 		return new String(buffer);
 	}
@@ -368,30 +374,30 @@ public class MacUtil {
 	/**
 	 * Create a new control and embed it in the given parent control.
 	 */
-	public static int newControl(int parentControlHandle, short procID) {
+	public static int newControl(int parentControlHandle, int procID) {
 		return newControl(parentControlHandle, -1, (short)0, (short)0, (short)0, procID);
 	}
 	
 	/**
 	 * Create a new control and embed it in the given parent control.
 	 */
-	public static int newControl(int parentControlHandle, short init, short min, short max, short procID) {
+	public static int newControl(int parentControlHandle, int init, int min, int max, int procID) {
 		return newControl(parentControlHandle, -1, init, min, max, procID);
 	}
 	
 	/**
 	 * Create a new control and embed it in the given parent control.
 	 */
-	public static int newControl(int parentControlHandle, int pos, short init, short min, short max, short procID) {
+	public static int newControl(int parentControlHandle, int pos, int init, int min, int max, int procID) {
 		int controlHandle;
 		if (HIVIEW) {
-			controlHandle= OS.NewControl(0, false, init, min, max, procID);
+			controlHandle= OS.NewControl(0, new Rect(), new byte[1], false, (short)init, (short)min, (short)max, (short)procID, 0);
 			insertControl(controlHandle, parentControlHandle, pos);
 			OS.HIViewSetVisible(controlHandle, true);
 			OS.HIViewSetNeedsDisplay(controlHandle, true);
 		} else {
 			int windowHandle= OS.GetControlOwner(parentControlHandle);
-			controlHandle= OS.NewControl(windowHandle, false, init, min, max, procID);
+			controlHandle= OS.NewControl(windowHandle, new Rect(), new byte[1], false, (short)init, (short)min, (short)max, (short)procID, 0);
 			insertControl(controlHandle, parentControlHandle, pos);
 			initLocation(controlHandle);
 			OS.HIViewSetVisible(controlHandle, true);
@@ -405,28 +411,28 @@ public class MacUtil {
 		int controlHandle;
 		if (HIVIEW) {
 			features |= OS.kControlHandlesTracking;
-			controlHandle= OS.NewControl(0, false, (short)features, (short)0, (short)0, OS.kControlUserPaneProc);
+			controlHandle= OS.NewControl(0, new Rect(), new byte[1], false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 			OS.SizeControl(controlHandle, (short)width, (short)height);
 			insertControl(controlHandle, parentControlHandle, pos);
 			OS.HIViewSetVisible(controlHandle, visible);
 			OS.HIViewSetNeedsDisplay(controlHandle, true);
 		} else {
 			int windowHandle= OS.GetControlOwner(parentControlHandle);
-			controlHandle= OS.NewControl(windowHandle, false, (short)features, (short)0, (short)0, OS.kControlUserPaneProc);
+			controlHandle= OS.NewControl(windowHandle, new Rect(), new byte[1], false, (short)features, (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 			OS.SizeControl(controlHandle, (short)width, (short)height);
 			insertControl(controlHandle, parentControlHandle, pos);
 			initLocation(controlHandle);
 			OS.HIViewSetVisible(controlHandle, visible);
 		}
 		return controlHandle;
-	}	
+	}
 	
 	public static void initLocation(int cHandle) {
 		int parent= getSuperControl(cHandle);
-		short[] bounds= new short[4];
+		Rect bounds= new Rect();
 		OS.GetControlBounds(parent, bounds);
-		short x= bounds[1];
-		short y= bounds[0];
+		short x= bounds.left;
+		short y= bounds.top;
 		if (x > 0 || y > 0)
 			OS.MoveControl(cHandle, x, y);
 	}
@@ -448,7 +454,7 @@ public class MacUtil {
                 
 		int[] parentHandle= new int[1];
 		int rc= OS.GetSuperControl(cHandle, parentHandle);
-		if (rc != OS.kNoErr)
+		if (rc != OS.noErr)
 			System.out.println("MacUtil.getSuperControl: " + rc);
 		return parentHandle[0];
 	}
@@ -470,9 +476,11 @@ public class MacUtil {
 		else
 			System.out.print(cHandle);
 			
-		MacRect bounds= new MacRect();
-		OS.GetControlBounds(cHandle, bounds.getData());
-		System.out.print(" " + bounds.toRectangle());
+		Rect bounds= new Rect();
+		OS.GetControlBounds(cHandle, bounds);
+		int width = bounds.right - bounds.left;
+		int height = bounds.bottom - bounds.top;
+		System.out.print(" " + new Rectangle(bounds.left, bounds.top, width, height));
 		
 		if (cHandle == matchHandle)
 			System.out.println(" ******************");
@@ -489,29 +497,29 @@ public class MacUtil {
 		}
 	}
 	
-	public static Point computeSize(int handle) {
+	public static org.eclipse.swt.graphics.Point computeSize(int handle) {
 		if (OS.IsValidControlHandle(handle)) {
-			MacRect rect= new MacRect();
+			Rect rect= new Rect();
 			short[] base= new short[1];
-			OS.GetBestControlRect(handle, rect.getData(), base);
-			if (rect.isEmpty())
+			OS.GetBestControlRect(handle, rect, base);
+			if (OS.EmptyRect(rect))
 				System.out.println("MacUtil.computeSize: 0 size");
-			return rect.getSize();
+			return new org.eclipse.swt.graphics.Point(rect.right - rect.left, rect.bottom - rect.top);
 		}
 		System.out.println("MacUtil.computeSize: unknown handle type");
-		return new Point(50, 50);
+		return new org.eclipse.swt.graphics.Point(50, 50);
 	}
 	
 	public static int getDisplayWidth() {
-		MacRect bounds= new MacRect();
-		OS.GetAvailableWindowPositioningBounds(OS.GetMainDevice(), bounds.getData());
-		return bounds.getWidth();
+		Rect bounds= new Rect();
+		OS.GetAvailableWindowPositioningBounds(OS.GetMainDevice(), bounds);
+		return bounds.right - bounds.left;
 	}
 	
 	public static int getDisplayHeight() {
-		MacRect bounds= new MacRect();
-		OS.GetAvailableWindowPositioningBounds(OS.GetMainDevice(), bounds.getData());
-		return bounds.getHeight();
+		Rect bounds= new Rect();
+		OS.GetAvailableWindowPositioningBounds(OS.GetMainDevice(), bounds);
+		return bounds.bottom - bounds.top;
 	}
 	
 	public static String toString(int i) {
@@ -564,7 +572,7 @@ public class MacUtil {
 		int resultHandle= 0;
 		try {
 			resultHandle= OS.NewHandle(0);
-			if (OS.GetDataBrowserItems(dataBrowserHandle, containerID, recurse, state, resultHandle) == OS.kNoErr) {
+			if (OS.GetDataBrowserItems(dataBrowserHandle, containerID, recurse, state, resultHandle) == OS.noErr) {
 				int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
 				if (itemCount > 0) {	
 					int resultIDs[]= new int[itemCount];

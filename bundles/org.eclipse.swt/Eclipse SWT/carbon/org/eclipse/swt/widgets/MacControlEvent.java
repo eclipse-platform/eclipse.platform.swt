@@ -6,9 +6,9 @@
  *
  * Andre Weinand, OTI - Initial version
  */
-package org.eclipse.swt.internal.carbon;
+package org.eclipse.swt.widgets;
 
-public class MacControlEvent {
+class MacControlEvent {
 
 	private int fControlhandle;
 	private int fPartCode;

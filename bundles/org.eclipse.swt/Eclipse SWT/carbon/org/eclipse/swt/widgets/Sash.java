@@ -7,7 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.MacUtil;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
@@ -179,21 +181,24 @@ int defaultBackground () {
 }
 void drawBand (int x, int y, int width, int height) {
 
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(parent.handle, bounds.getData());
-	x+= bounds.getX();
-	y+= bounds.getY();
+	Rect bounds= new Rect();
+	OS.GetControlBounds(parent.handle, bounds);
+	x+= bounds.left;
+	y+= bounds.top;
 
-	int port= OS.GetPort();
+	int[] port= new int[1];
+	OS.GetPort(port);
 	OS.SetPortWindowPort(OS.GetControlOwner(handle));
-	OS.InvertRect((short)x, (short)y, (short)width, (short)height);
-	OS.SetPort(port);
+	Rect r = new Rect();
+	OS.SetRect(r, (short)x, (short)y, (short)(x+width), (short)(y+height));
+	OS.InvertRect(r);
+	OS.SetPort(port[0]);
 }
 void hookEvents () {
 	super.hookEvents ();
 	Display display= getDisplay();		
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
-	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, display.fUserPaneHitTestProc);
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, 4, new int[]{display.fUserPaneDrawProc});
+	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
 }
 
 int processMouseDown (MacMouseEvent mmEvent) {
@@ -202,15 +207,15 @@ int processMouseDown (MacMouseEvent mmEvent) {
 	Point mp= MacUtil.toControl(parent.handle, mmEvent.getWhere());
 	startX = mp.x;  startY = mp.y;
 
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	int width = bounds.getWidth(), height = bounds.getHeight();
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	int width = bounds.right-bounds.left, height = bounds.bottom-bounds.top;
 	
-	MacRect parentBounds= new MacRect();
-	OS.GetControlBounds(parent.handle, parentBounds.getData());
+	Rect parentBounds= new Rect();
+	OS.GetControlBounds(parent.handle, parentBounds);
 	
-	lastX = bounds.getX()-parentBounds.getX();
-	lastY = bounds.getY()-parentBounds.getY();
+	lastX = bounds.left-parentBounds.left;
+	lastY = bounds.top-parentBounds.top;
 	
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
@@ -232,20 +237,20 @@ int processMouseMove (MacMouseEvent mmEvent) {
 	if (!dragging || (mmEvent.getButton() != 1)) return 0;
 	Point mp= MacUtil.toControl(parent.handle, mmEvent.getWhere());
 
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	int width = bounds.getWidth(), height = bounds.getHeight();
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	int width = bounds.right-bounds.left, height = bounds.bottom-bounds.top;
 	
-	MacRect parentBounds= new MacRect();
-	OS.GetControlBounds(parent.handle, parentBounds.getData());
+	Rect parentBounds= new Rect();
+	OS.GetControlBounds(parent.handle, parentBounds);
 
-	int x = bounds.getX()-parentBounds.getX(), y = bounds.getY()-parentBounds.getY();
+	int x = bounds.left-parentBounds.left, y = bounds.top-parentBounds.top;
 
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
-		newX = Math.min (Math.max (0, x + (mp.x - startX)), parentBounds.getWidth() - width);
+		newX = Math.min (Math.max (0, x + (mp.x - startX)), parentBounds.right - parentBounds.left - width);
 	} else {
-		newY = Math.min (Math.max (0, y + (mp.y - startY)), parentBounds.getHeight() - height);
+		newY = Math.min (Math.max (0, y + (mp.y - startY)), parentBounds.bottom - parentBounds.top - height);
 	}
 	if (newX == lastX && newY == lastY) return 0;
 	drawBand (lastX, lastY, width, height);
@@ -268,9 +273,9 @@ int processMouseUp (MacMouseEvent mmEvent) {
 	if (!dragging) return 0;
 	dragging = false;
 
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(handle, bounds.getData());
-	int width = bounds.getWidth(), height = bounds.getHeight();
+	Rect bounds= new Rect();
+	OS.GetControlBounds(handle, bounds);
+	int width = bounds.right-bounds.left, height = bounds.bottom-bounds.top;
 
 	Event event = new Event ();
 	//event.time = xEvent.time;

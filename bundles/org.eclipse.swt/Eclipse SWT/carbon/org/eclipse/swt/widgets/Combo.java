@@ -11,7 +11,10 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.dnd.*;
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.MacUtil;
 
 /**
  * Instances of this class are controls that allow the user
@@ -131,11 +134,11 @@ public void add (String string) {
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(string);
 		if (menuHandle != 0) {
-			if (OS.AppendMenuItemTextWithCFString(menuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
+			if (OS.AppendMenuItemTextWithCFString(menuHandle, sHandle, 0, fgCommandID++, null) != OS.noErr)
 				error (SWT.ERROR_ITEM_NOT_ADDED);
 			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(menuHandle));	
 		} else {
-			if (OS.HIComboBoxAppendTextItem(handle, sHandle) != OS.kNoErr)
+			if (OS.HIComboBoxAppendTextItem(handle, sHandle, null) != OS.noErr)
 				error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
 	} finally {
@@ -178,7 +181,7 @@ public void add (String string, int index) {
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(string);
 		if (menuHandle != 0) {
-			if (OS.InsertMenuItemTextWithCFString(menuHandle, sHandle, (short)index, 0, fgCommandID++) != OS.kNoErr)
+			if (OS.InsertMenuItemTextWithCFString(menuHandle, sHandle, (short)index, 0, fgCommandID++) != OS.noErr)
 				error (SWT.ERROR_ITEM_NOT_ADDED);
 			OS.SetControl32BitMaximum(handle, OS.CountMenuItems(menuHandle));	
 		} else {
@@ -301,7 +304,7 @@ protected void checkSubclass () {
 public void clearSelection () {
 	checkWidget();
 	if (menuHandle == 0)
-		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, new short[] { 0, 0 });
+		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, new short[] { 0, 0 });
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -392,7 +395,7 @@ void createHandle (int index) {
 		OS.SetControlPopupMenuHandle(handle, menuHandle);
 	} else {
 	    int[] outComboBox= new int[1];
-		OS.HIComboBoxCreate(outComboBox, OS.kHIComboBoxAutoSizeListAttribute);
+	    OS.HIComboBoxCreate(new CGRect(), 0, null, 0, OS.kHIComboBoxAutoSizeListAttribute, outComboBox);
 		handle= outComboBox[0];
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		MacUtil.addControl(handle, parent.handle);
@@ -608,7 +611,7 @@ public Point getSelection () {
  	Point selection= new Point(0, 0);
 	if (menuHandle == 0) {
 		short[] s= new short[2];
-		OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+		OS.GetControlData(handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s.length*2, s, null);
 		selection.x= (short) s[0];
 		selection.y= (short) s[1];
 	}
@@ -651,7 +654,7 @@ public String getText () {
 		return "";
 	}
 	int[] t= new int[1];
-	OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, t);
+	OS.GetControlData(handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, t.length*4, t, null);
 	return MacUtil.getStringAndRelease(t[0]);
 }
 /**
@@ -1064,7 +1067,7 @@ public void setItem (int index, String string) {
 	try {
 		sHandle= OS.CFStringCreateWithCharacters(string);
 		if (menuHandle != 0) {
-			if (OS.SetMenuItemTextWithCFString(menuHandle, (short)(index+1), sHandle) != OS.kNoErr)
+			if (OS.SetMenuItemTextWithCFString(menuHandle, (short)(index+1), sHandle) != OS.noErr)
 				error (SWT.ERROR_ITEM_NOT_ADDED);
 		} else {
 			OS.HIComboBoxInsertTextItemAtIndex(handle, index, sHandle);
@@ -1126,7 +1129,7 @@ public void setItems (String [] items) {
 			int sHandle= 0;
 			try {
 				sHandle= OS.CFStringCreateWithCharacters(string);
-				if (OS.AppendMenuItemTextWithCFString(menuHandle, sHandle, 0, fgCommandID++, null) != OS.kNoErr)
+				if (OS.AppendMenuItemTextWithCFString(menuHandle, sHandle, 0, fgCommandID++, null) != OS.noErr)
 					error (SWT.ERROR_ITEM_NOT_ADDED);
 			} finally {
 				if (sHandle != 0)
@@ -1143,7 +1146,7 @@ public void setItems (String [] items) {
 			int sHandle= 0;
 			try {
 				sHandle= OS.CFStringCreateWithCharacters(string);
-				if (OS.HIComboBoxAppendTextItem(handle, sHandle) != OS.kNoErr)
+				if (OS.HIComboBoxAppendTextItem(handle, sHandle, null) != OS.noErr)
 					error (SWT.ERROR_ITEM_NOT_ADDED);
 			} finally {
 				if (sHandle != 0)
@@ -1172,7 +1175,7 @@ public void setSelection (Point selection) {
 	checkWidget();
 	if (menuHandle == 0) {
 		short[] s= new short[] { (short)selection.x, (short)selection.y };
-		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s.length*2, s);
 	}
 }
 /**
@@ -1216,7 +1219,7 @@ public void setText (String string) {
 			int sHandle= 0;
 			try {
 				sHandle= OS.CFStringCreateWithCharacters(string);
-				OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, sHandle);
+				OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[]{sHandle});
 			} finally {
 				if (sHandle != 0)
 					OS.CFRelease(sHandle);
@@ -1254,7 +1257,7 @@ public void setTextLimit (int limit) {
 			int sHandle= 0;
 			try {
 				sHandle= OS.CFStringCreateWithCharacters(string);
-				OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, sHandle);
+				OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[]{sHandle});
 			} finally {
 				if (sHandle != 0)
 					OS.CFRelease(sHandle);
@@ -1280,7 +1283,7 @@ public void setTextLimit (int limit) {
 			rc= OS.CopyMenuItemTextAsCFString(menuHandle, (short)(index+1), sHandle);
 		else
 			rc= OS.HIComboBoxCopyTextItemAtIndex(handle, index, sHandle);
-		if (rc != OS.kNoErr)
+		if (rc != OS.noErr)
 			error(SWT.ERROR_CANNOT_GET_ITEM);
 		return MacUtil.getStringAndRelease(sHandle[0]);
 	}
@@ -1289,20 +1292,26 @@ public void setTextLimit (int limit) {
 	 * Overridden from Control.
 	 * x and y are relative to window!
 	 */
-	void handleResize(int hndl, MacRect bounds) {
-		bounds.inset(FOCUS_BORDER, FOCUS_BORDER, FOCUS_BORDER, FOCUS_BORDER);
+	void handleResize(int hndl, Rect bounds) {
+		bounds.left+= FOCUS_BORDER;
+		bounds.top+= FOCUS_BORDER;
+		bounds.right-= FOCUS_BORDER;
+		bounds.bottom-= FOCUS_BORDER;
 		super.handleResize(hndl, bounds);
 	}
 	
-	void internalGetControlBounds(int hndl, MacRect bounds) {
+	void internalGetControlBounds(int hndl, Rect bounds) {
 		super.internalGetControlBounds(hndl, bounds);
-		bounds.inset(-FOCUS_BORDER, -FOCUS_BORDER, -FOCUS_BORDER, -FOCUS_BORDER);
+		bounds.left+= -FOCUS_BORDER;
+		bounds.top+= -FOCUS_BORDER;
+		bounds.right-= -FOCUS_BORDER;
+		bounds.bottom-= -FOCUS_BORDER;
 	}
 
 	private void _selectAll() {
 		String s= getText();
 		short[] selection= new short[] { 0, (short) s.length() };
-		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, selection);
+		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, selection.length*2, selection);
 	}
 	
 	int sendKeyEvent (int type, MacEvent mEvent, Event event) {
@@ -1323,7 +1332,7 @@ public void setTextLimit (int limit) {
 		if (mcc == SWT.CR) {
 			if (kind == OS.kEventRawKeyDown)
 				postEvent (SWT.DefaultSelection);
-			return OS.kNoErr;
+			return OS.noErr;
 		}
 				
 		if ((mEvent.getModifiers() & OS.cmdKey) != 0) {
@@ -1331,19 +1340,19 @@ public void setTextLimit (int limit) {
 			case 0:	// select all
 				if (kind == OS.kEventRawKeyDown)
 					_selectAll();
-				return OS.kNoErr;
+				return OS.noErr;
 			case 7:
 				if (kind == OS.kEventRawKeyDown)
 					cut();
-				return OS.kNoErr;
+				return OS.noErr;
 			case 8:
 				if (kind == OS.kEventRawKeyDown)
 					copy();
-				return OS.kNoErr;
+				return OS.noErr;
 			case 9:
 				if (kind == OS.kEventRawKeyDown || kind == OS.kEventRawKeyRepeat)
 					paste();
-				return OS.kNoErr;
+				return OS.noErr;
 			default:
 				break;
 			}
@@ -1364,10 +1373,10 @@ public void setTextLimit (int limit) {
 	
 	private void selectionToClipboard() {
 		short[] s= new short[2];
-		OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+		OS.GetControlData(handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s.length*2, s, null);
 		if (s[0] != s[1]) {
 			int[] t= new int[1];
-			OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, t);
+			OS.GetControlData(handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, t.length*4, t, null);
 			String txt= MacUtil.getStringAndRelease(t[0]);
 			txt= txt.substring(s[0], s[1]);
 	
@@ -1385,14 +1394,14 @@ public void setTextLimit (int limit) {
 	private void _replaceTextSelection(String newText) {
 		
 		short[] s= new short[2];
-		OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+		OS.GetControlData(handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s.length*2, s, null);
 		
 		boolean selEmpty= s[0] == s[1];
 		if (newText.length() == 0 && selEmpty)
 			return;
 		
 		int[] t= new int[1];
-		OS.GetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, t);
+		OS.GetControlData(handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, t.length*4, t, null);
 		String txt= MacUtil.getStringAndRelease(t[0]);
 		
 		String pre= "";
@@ -1406,14 +1415,14 @@ public void setTextLimit (int limit) {
 		int sHandle= 0;
 		try {
 			sHandle= OS.CFStringCreateWithCharacters(pre + newText + post);
-			OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, sHandle);
+			OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[]{sHandle});
 		} finally {
 			if (sHandle != 0)
 				OS.CFRelease(sHandle);
 		}
 		
 		s[0]= s[1]= (short)(pre.length() + newText.length());
-		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s);
+		OS.SetControlData(handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, s.length*2, s);
 	
 		sendEvent(SWT.Modify);
 	}
