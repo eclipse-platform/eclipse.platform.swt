@@ -594,7 +594,9 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 			Class paramType = paramTypes[i];
 			output(getTypeSignature4(paramType));
 		}
-		output("))(*(int **)arg1)[arg0])");
+		output("))(*(");
+		output(getTypeSignature4(paramTypes[1]));
+		output(" **)arg1)[arg0])");
 		paramStart = 1;
 	} else if (methodData.getFlag("cpp")) {
 		output("(");
