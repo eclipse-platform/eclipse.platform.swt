@@ -195,11 +195,18 @@ void createHandle (int index) {
 			OS.gtk_widget_show (arrowHandle);
 			break;
 		case SWT.RADIO:
-			handle = OS.gtk_radio_button_new (0);
-			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-			OS.gtk_toggle_button_set_mode (handle, false);
-			OS.gtk_container_add (handle, boxHandle);	
-			break;
+			/*
+			*  This code is intentionally commented.  Because GTK
+			* enforces radio behavior in a button group a radio group
+			* is not created for each set of contiguous buttons, each
+			* radio button will not draw unpressed.  The fix is to use
+			* toggle buttons instead.
+			*/
+//			handle = OS.gtk_radio_button_new (0);
+//			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+//			OS.gtk_toggle_button_set_mode (handle, false);
+//			OS.gtk_container_add (handle, boxHandle);	
+//			break;
 		case SWT.CHECK:
 			handle = OS.gtk_toggle_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
