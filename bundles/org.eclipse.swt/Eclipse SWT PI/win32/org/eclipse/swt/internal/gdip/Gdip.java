@@ -84,6 +84,7 @@ public class Gdip extends Platform {
 public static final native int GdiplusStartup(int[] token, GdiplusStartupInput input, int output);
 public static final native void GdiplusShutdown(int[] token);
 public static final native int Bitmap_new(int hbm, int hpal);
+public static final native int Bitmap_new(int hicon);
 public static final native void Bitmap_delete(int bitmap);
 public static final native int Brush_Clone(int brush);
 public static final native int Brush_GetType(int brush);
@@ -107,6 +108,7 @@ public static final native int Graphics_FillPolygon(int graphics, int brush, int
 public static final native int Graphics_FillRectangle(int graphics, int brush, int x, int y, int width, int height);
 public static final native int Graphics_GetClipBounds(int graphics, RectF rect);
 public static final native int Graphics_GetClipBounds(int graphics, Rect rect);
+public static final native int Graphics_GetClip(int graphics, int region);
 public static final native int Graphics_GetInterpolationMode(int graphics);
 public static final native int Graphics_GetSmoothingMode(int graphics);
 public static final native int Graphics_GetTextRenderingHint(int graphics);
@@ -135,6 +137,7 @@ public static final native int SolidBrush_new(int color);
 public static final native void SolidBrush_delete(int pen);
 public static final native int Pen_new(int color, float width);
 public static final native void Pen_delete(int pen);
+public static final native int Pen_GetBrush(int pen);
 public static final native int Pen_SetBrush(int pen, int brush);
 public static final native int Pen_SetDashPattern(int pen, float[] dashArray, int count);
 public static final native int Pen_SetDashStyle(int pen, int dashStyle);
@@ -177,7 +180,12 @@ public static final native int PathGradientBrush_SetCenterColor(int brush, int c
 public static final native int PathGradientBrush_SetCenterPoint(int brush, PointF pt);
 public static final native int PathGradientBrush_SetSurroundColors(int brush, int[] colors, int[] count);
 public static final native int PathGradientBrush_SetGraphicsPath(int brush, int path);
+public static final native int Region_new(int hRgn);
+public static final native int Region_new();
+public static final native void Region_delete(int region);
+public static final native int Region_GetHRGN(int region, int graphics);
 public static final native int TextureBrush_new(int image, int wrapMode, float dstX, float dstY, float dstWidth, float dstHeight);
 public static final native void TextureBrush_delete(int brush);
+public static final native void TextureBrush_SetTransform(int brush, int matrix);
 
 }

@@ -27,14 +27,26 @@ JNIEXPORT void JNICALL Gdip_NATIVE(Bitmap_1delete)
 }
 #endif
 
-#ifndef NO_Bitmap_1new
-JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new)
+#ifndef NO_Bitmap_1new__I
+JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Bitmap_1new__I_FUNC);
+	rc = (jint)new Bitmap((HICON)arg0);
+	Gdip_NATIVE_EXIT(env, that, Bitmap_1new__I_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Bitmap_1new__II
+JNIEXPORT jint JNICALL Gdip_NATIVE(Bitmap_1new__II)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
 	jint rc = 0;
-	Gdip_NATIVE_ENTER(env, that, Bitmap_1new_FUNC);
+	Gdip_NATIVE_ENTER(env, that, Bitmap_1new__II_FUNC);
 	rc = (jint)new Bitmap((HBITMAP)arg0, (HPALETTE)arg1);
-	Gdip_NATIVE_EXIT(env, that, Bitmap_1new_FUNC);
+	Gdip_NATIVE_EXIT(env, that, Bitmap_1new__II_FUNC);
 	return rc;
 }
 #endif
@@ -557,6 +569,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1FillRectangle)
 }
 #endif
 
+#ifndef NO_Graphics_1GetClip
+JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClip)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Graphics_1GetClip_FUNC);
+	rc = (jint)((Graphics *)arg0)->GetClip((Region *)arg1);
+	Gdip_NATIVE_EXIT(env, that, Graphics_1GetClip_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2
 JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -667,7 +691,7 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Graphics_1SetClip__III)
 {
 	jint rc = 0;
 	Gdip_NATIVE_ENTER(env, that, Graphics_1SetClip__III_FUNC);
-	rc = (jint)((Graphics *)arg0)->SetClip((HRGN)arg1, (CombineMode)arg2);
+	rc = (jint)((Graphics *)arg0)->SetClip((Region *)arg1, (CombineMode)arg2);
 	Gdip_NATIVE_EXIT(env, that, Graphics_1SetClip__III_FUNC);
 	return rc;
 }
@@ -1034,6 +1058,18 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(PathGradientBrush_1new)
 }
 #endif
 
+#ifndef NO_Pen_1GetBrush
+JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1GetBrush)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Pen_1GetBrush_FUNC);
+	rc = (jint)((Pen *)arg0)->GetBrush();
+	Gdip_NATIVE_EXIT(env, that, Pen_1GetBrush_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_Pen_1SetBrush
 JNIEXPORT jint JNICALL Gdip_NATIVE(Pen_1SetBrush)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -1142,6 +1178,52 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(Point_1new)
 }
 #endif
 
+#ifndef NO_Region_1GetHRGN
+JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1GetHRGN)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Region_1GetHRGN_FUNC);
+	rc = (jint)((Region *)arg0)->GetHRGN((Graphics *)arg1);
+	Gdip_NATIVE_EXIT(env, that, Region_1GetHRGN_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Region_1delete
+JNIEXPORT void JNICALL Gdip_NATIVE(Region_1delete)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	Gdip_NATIVE_ENTER(env, that, Region_1delete_FUNC);
+	delete (Region *)arg0;
+	Gdip_NATIVE_EXIT(env, that, Region_1delete_FUNC);
+}
+#endif
+
+#ifndef NO_Region_1new__
+JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1new__)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Region_1new___FUNC);
+	rc = (jint)new Region();
+	Gdip_NATIVE_EXIT(env, that, Region_1new___FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_Region_1new__I
+JNIEXPORT jint JNICALL Gdip_NATIVE(Region_1new__I)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	Gdip_NATIVE_ENTER(env, that, Region_1new__I_FUNC);
+	rc = (jint)new Region((HRGN)arg0);
+	Gdip_NATIVE_EXIT(env, that, Region_1new__I_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SolidBrush_1delete
 JNIEXPORT void JNICALL Gdip_NATIVE(SolidBrush_1delete)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -1161,6 +1243,16 @@ JNIEXPORT jint JNICALL Gdip_NATIVE(SolidBrush_1new)
 	rc = (jint)new SolidBrush(*(Color *)arg0);
 	Gdip_NATIVE_EXIT(env, that, SolidBrush_1new_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO_TextureBrush_1SetTransform
+JNIEXPORT void JNICALL Gdip_NATIVE(TextureBrush_1SetTransform)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	Gdip_NATIVE_ENTER(env, that, TextureBrush_1SetTransform_FUNC);
+	((TextureBrush *)arg0)->SetTransform((Matrix *)arg1);
+	Gdip_NATIVE_EXIT(env, that, TextureBrush_1SetTransform_FUNC);
 }
 #endif
 

@@ -14,11 +14,12 @@
 
 #ifdef NATIVE_STATS
 
-int Gdip_nativeFunctionCount = 98;
-int Gdip_nativeFunctionCallCount[98];
+int Gdip_nativeFunctionCount = 106;
+int Gdip_nativeFunctionCallCount[106];
 char * Gdip_nativeFunctionNames[] = {
 	"Bitmap_1delete",
-	"Bitmap_1new",
+	"Bitmap_1new__I",
+	"Bitmap_1new__II",
 	"Brush_1Clone",
 	"Brush_1GetType",
 	"Color_1delete",
@@ -62,6 +63,7 @@ char * Gdip_nativeFunctionNames[] = {
 	"Graphics_1FillPie",
 	"Graphics_1FillPolygon",
 	"Graphics_1FillRectangle",
+	"Graphics_1GetClip",
 	"Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_RectF_2",
 	"Graphics_1GetClipBounds__ILorg_eclipse_swt_internal_gdip_Rect_2",
 	"Graphics_1GetInterpolationMode",
@@ -102,6 +104,7 @@ char * Gdip_nativeFunctionNames[] = {
 	"PathGradientBrush_1SetSurroundColors",
 	"PathGradientBrush_1delete",
 	"PathGradientBrush_1new",
+	"Pen_1GetBrush",
 	"Pen_1SetBrush",
 	"Pen_1SetDashPattern",
 	"Pen_1SetDashStyle",
@@ -111,8 +114,13 @@ char * Gdip_nativeFunctionNames[] = {
 	"Pen_1new",
 	"Point_1delete",
 	"Point_1new",
+	"Region_1GetHRGN",
+	"Region_1delete",
+	"Region_1new__",
+	"Region_1new__I",
 	"SolidBrush_1delete",
 	"SolidBrush_1new",
+	"TextureBrush_1SetTransform",
 	"TextureBrush_1delete",
 	"TextureBrush_1new",
 };
