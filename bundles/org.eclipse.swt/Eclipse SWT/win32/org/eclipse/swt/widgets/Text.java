@@ -1178,6 +1178,7 @@ public void setSelection (int start) {
 	checkWidget ();
 	if (IsDBLocale) start = wcsToMbcsPos (start);
 	OS.SendMessage (handle, OS.EM_SETSEL, start, start);
+	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
 
 /**
@@ -1214,6 +1215,7 @@ public void setSelection (int start, int end) {
 		end = wcsToMbcsPos (end);
 	}
 	OS.SendMessage (handle, OS.EM_SETSEL, start, end);
+	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
 
 public void setRedraw (boolean redraw) {
