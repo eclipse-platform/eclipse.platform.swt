@@ -10,8 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.widgets;
 
- 
-import org.eclipse.swt.internal.carbon.CGRect;
+
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
