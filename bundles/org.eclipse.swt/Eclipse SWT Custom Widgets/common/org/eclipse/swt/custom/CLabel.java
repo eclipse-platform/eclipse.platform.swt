@@ -105,47 +105,7 @@ public CLabel(Composite parent, int style) {
 		}
 	});
 
-/* Start ACCESSIBILITY */
-	getAccessible().addAccessibleListener(new AccessibleAdapter() {
-		public void getName(AccessibleEvent e) {
-			e.result = getText();
-		}
-		
-		public void getHelp(AccessibleEvent e) {
-			e.result = getToolTipText();
-		}
-	});
-		
-	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
-		public void hitTest(AccessibleControlEvent e) {
-			Point testPoint = toControl(new Point(e.x, e.y));
-			if (getBounds().contains(testPoint)) {
-				e.childID = ACC.CHILDID_SELF;
-			}
-		}
-		
-		public void getLocation(AccessibleControlEvent e) {
-			Rectangle location = getBounds();
-			Point pt = toDisplay(new Point(location.x, location.y));
-			e.x = pt.x;
-			e.y = pt.y;
-			e.width = location.width;
-			e.height = location.height;
-		}
-		
-		public void getChildCount(AccessibleControlEvent e) {
-			e.code = 0;
-		}
-		
-		public void getRole(AccessibleControlEvent e) {
-			e.code = ACC.ROLE_SYSTEM_STATICTEXT;
-		}
-		
-		public void getState(AccessibleControlEvent e) {
-			e.code = ACC.STATE_SYSTEM_NORMAL;
-		}
-	});
-/* End ACCESSIBILITY */
+	initAccessible();
 
 }
 /**
@@ -268,6 +228,48 @@ private void paintBorder(GC gc, Rectangle r) {
 		gc.setLineWidth(1);
 		drawBevelRect(gc, r.x, r.y, r.width-1, r.height-1, c1, c2);
 	}
+}
+private void initAccessible() {
+	Accessible accessible = getAccessible();
+	accessible.addAccessibleListener(new AccessibleAdapter() {
+		public void getName(AccessibleEvent e) {
+			String text = getText();
+			e.result = (text == null) ? "" : text;
+		}
+		
+		public void getHelp(AccessibleEvent e) {
+			String tooltip = getToolTipText();
+			e.result = (tooltip == null) ? "" : tooltip;
+		}
+	});
+		
+	accessible.addAccessibleControlListener(new AccessibleControlAdapter() {
+		public void hitTest(AccessibleControlEvent e) {
+			Point pt = toControl(new Point(e.x, e.y));
+			e.childID = (getBounds().contains(pt)) ? ACC.CHILDID_SELF : ACC.CHILDID_NONE;
+		}
+		
+		public void getLocation(AccessibleControlEvent e) {
+			Rectangle location = getBounds();
+			Point pt = toDisplay(new Point(location.x, location.y));
+			e.x = pt.x;
+			e.y = pt.y;
+			e.width = location.width;
+			e.height = location.height;
+		}
+		
+		public void getChildCount(AccessibleControlEvent e) {
+			e.code = 0;
+		}
+		
+		public void getRole(AccessibleControlEvent e) {
+			e.code = ACC.ROLE_SYSTEM_STATICTEXT;
+		}
+		
+		public void getState(AccessibleControlEvent e) {
+			e.code = ACC.STATE_SYSTEM_NORMAL;
+		}
+	});
 }
 private void onDispose(DisposeEvent event) {
 	gradientColors = null;
