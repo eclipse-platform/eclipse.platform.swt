@@ -990,6 +990,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1image_1get_1pix
 	return (jint)gdk_image_get_pixel((GdkImage *)arg0, (gint)arg1, (gint)arg2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1keyboard_1ungrab
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gdk_1keyboard_1ungrab\n")
+
+	gdk_keyboard_ungrab(arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1keyval_1to_1unicode
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -1084,6 +1092,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pointer_1grab
 	DEBUG_CALL("gdk_1pointer_1grab\n")
 
 	return (jint)gdk_pointer_grab((GdkWindow *)arg0, (gboolean)arg1, (GdkEventMask)arg2, (GdkWindow *)arg3, (GdkCursor *)arg4, (guint32)arg5);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pointer_1is_1grabbed
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gdk_1pointer_1is_1grabbed\n")
+
+	return (jboolean)gdk_pointer_is_grabbed();
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pointer_1ungrab
@@ -3298,6 +3314,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1connect
 	rc = (jint)gtk_signal_connect_after((GtkObject *)arg0, (const gchar *)lparg1, (GtkSignalFunc)arg2, (gpointer)arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	return rc;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1disconnect_1by_1data
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1signal_1disconnect_1by_1data\n")
+
+	gtk_signal_disconnect_by_data((GtkObject *)arg0, (gpointer)arg1);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1signal_1emit_1stop_1by_1name

@@ -369,6 +369,7 @@ public static final native void gdk_gc_set_subwindow(int gc, int mode);
 public static final native void gdk_gc_set_values(int gc, GdkGCValues values, int values_mask);
 public static final native int gdk_image_get(int window, int x, int y, int width, int height);
 public static final native int gdk_image_get_pixel(int image, int x, int y);
+public static final native void gdk_keyboard_ungrab(int time);
 public static final native int gdk_keyval_to_unicode(int keyval);
 public static final native int gdk_pango_context_get();
 public static final native int gdk_pixbuf_get_from_drawable(int dest, int src, int cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height);
@@ -381,6 +382,7 @@ public static final native void gdk_pixbuf_scale(int src, int dest, int dest_x, 
 public static final native int gdk_pixbuf_scale_simple(int src, int dest_width, int dest_height, int interp_type);
 public static final native int gdk_pixmap_new(int window, int width, int height, int depth);
 public static final native int gdk_pointer_grab(int window, boolean owner_events, int event_mask, int confine_to, int cursor, int time);
+public static final native boolean gdk_pointer_is_grabbed();
 public static final native void gdk_pointer_ungrab(int time);
 public static final native void gdk_region_destroy(int region);
 public static final native boolean gdk_region_empty(int region);
@@ -618,6 +620,7 @@ public static final native void gtk_scrolled_window_set_shadow_type(int scrolled
 public static final native int gtk_set_locale();
 public static final native int gtk_signal_connect(int object, byte[] name, int func, int func_data);
 public static final native int gtk_signal_connect_after(int object, byte[] name, int func, int func_data);
+public static final native void gtk_signal_disconnect_by_data(int object, int data);
 public static final native void gtk_signal_emit_stop_by_name(int object, byte[] name);
 public static final native void gtk_signal_handler_block_by_data(int object, int data);
 public static final native void gtk_signal_handler_block_by_func(int object, int func, int data);

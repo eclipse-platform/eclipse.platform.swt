@@ -31,6 +31,8 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
+	int barHandle;
+	Callback barHandleCallback;
 	
 /**
  * Constructs a new instance of this class given its parent,
@@ -548,6 +550,25 @@ int processHelp (int int0, int int1, int int2) {
 }
 
 int processHide (int int0, int int1, int int2) {
+	if ((style & SWT.POP_UP) != 0) {
+		/* Release resources and unwanted grabs */
+		int grabHandle = OS.gtk_grab_get_current ();
+		if (grabHandle != 0) OS.gtk_grab_remove (grabHandle);
+		if (OS.gdk_pointer_is_grabbed ()) {
+			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+			OS.gdk_keyboard_ungrab (OS.GDK_CURRENT_TIME);
+		}
+		if (barHandle != 0) {
+			OS.gtk_signal_disconnect_by_data (barHandle, SWT.MouseDown);
+			OS.gtk_signal_disconnect_by_data (barHandle, 0);
+			OS.gtk_widget_destroy (barHandle);
+			barHandle = 0;
+		}
+		if (barHandleCallback != null) {
+			barHandleCallback.dispose ();
+			barHandleCallback = null;
+		}
+	}
 	sendEvent (SWT.Hide);
 	return 0;
 }
@@ -719,6 +740,7 @@ public void setLocation (int x, int y) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
+	if (visible == OS.GTK_WIDGET_MAPPED (handle)) return;
 	if (visible) {
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {
@@ -730,22 +752,26 @@ public void setVisible (boolean visible) {
 			* to pass to gtk_menu_popup().  This requires special code to pop down the
 			* menu when the user clicks outside of the menu and special code to ensure
 			* that an item is selected when it is pressed.
-			*/ 
+			*/
 			int parentHandle = parent.fixedHandle;
 			int width = OS.GTK_WIDGET_WIDTH (parentHandle);
 			int height = OS.GTK_WIDGET_HEIGHT (parentHandle);
-			int barHandle = OS.gtk_menu_bar_new ();
+			barHandle = OS.gtk_menu_bar_new ();
+			if (barHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.gtk_container_add (parentHandle, barHandle);
 			OS.gtk_fixed_move (parentHandle, barHandle, width, height);
 			OS.gtk_widget_show (barHandle);
 			int itemHandle = OS.gtk_image_menu_item_new_with_label (new byte[1]);
+			if (itemHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.gtk_menu_shell_insert (barHandle, itemHandle, 0);
 			OS.gtk_widget_show (itemHandle);
 			OS.gtk_menu_shell_select_item (barHandle, itemHandle);
-			Callback GtkMenuBarEventFunc = new Callback (this, "GtkMenuBarEventFunc", 3);
-			OS.gtk_signal_connect (barHandle, OS.event_after, GtkMenuBarEventFunc.getAddress(), 0);
-			OS.gtk_signal_connect (barHandle, OS.button_press_event, GtkMenuBarEventFunc.getAddress(), SWT.MouseDown);
-			
+			barHandleCallback = new Callback (this, "GtkMenuBarEventFunc", 3);
+			int barHandleProc = barHandleCallback.getAddress ();
+			if (barHandleProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+			OS.gtk_signal_connect (barHandle, OS.event_after, barHandleProc, 0);
+			OS.gtk_signal_connect (barHandle, OS.button_press_event, barHandleProc, SWT.MouseDown);
+
 			/* Pop up the menu */
 			int address = 0;
 			Callback GtkMenuPositionFunc = null;
@@ -755,17 +781,6 @@ public void setVisible (boolean visible) {
 			}
 			OS.gtk_menu_popup (handle, barHandle, itemHandle, address, 0, 0, OS.gtk_get_current_event_time());
 			if (GtkMenuPositionFunc != null) GtkMenuPositionFunc.dispose ();
-			
-			/* Run an event loop */
-			Display display = getDisplay ();
-			while (!isDisposed () && getVisible ()) {
-				if (!display.readAndDispatch()) display.sleep ();
-			}
-			
-			/* Release resources and unwanted grabs */
-			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
-			OS.gtk_widget_destroy (barHandle);			
-			GtkMenuBarEventFunc.dispose ();
 		} else {
 			sendEvent (SWT.Hide);
 		}
