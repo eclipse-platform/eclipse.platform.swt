@@ -3015,7 +3015,7 @@ public void setRedraw (boolean value) {
 	checkWidget();
 	redraw = value;
 	super.setRedraw (value);
-	if (!value) {
+	if (value) {
 		if (items.length - itemsCount > 3) {
 			TableItem[] newItems = new TableItem [itemsCount];
 			System.arraycopy (items, 0, newItems, 0, itemsCount);
