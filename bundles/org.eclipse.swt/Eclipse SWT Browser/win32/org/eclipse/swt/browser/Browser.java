@@ -754,20 +754,27 @@ public boolean execute(String script) {
 	Variant pVarResult = auto.getProperty(dispIdMember);
 	if (pVarResult == null || pVarResult.getType() == COM.VT_EMPTY) return false;
 	OleAutomation document = pVarResult.getAutomation();
+	pVarResult.dispose();
 
+	/* get IHTMLWindow2 */
 	rgdispid = document.getIDsOfNames(new String[]{"parentWindow"}); //$NON-NLS-1$ 
 	dispIdMember = rgdispid[0];
 	pVarResult = document.getProperty(dispIdMember);
-	if (pVarResult == null) return false;
 	OleAutomation ihtmlWindow2 = pVarResult.getAutomation();
+	pVarResult.dispose();
+	document.dispose();
 	
-	rgdispid = ihtmlWindow2.getIDsOfNames(new String[] { "ExecScript", "CODE" }); //$NON-NLS-1$  //$NON-NLS-2$
+	rgdispid = ihtmlWindow2.getIDsOfNames(new String[] { "execScript", "code" }); //$NON-NLS-1$  //$NON-NLS-2$
 	Variant[] rgvarg = new Variant[1];
 	rgvarg[0] = new Variant(script);
 	int[] rgdispidNamedArgs = new int[1];
 	rgdispidNamedArgs[0] = rgdispid[1];
 	pVarResult = ihtmlWindow2.invoke(rgdispid[0], rgvarg, rgdispidNamedArgs);
-	return pVarResult != null;
+	rgvarg[0].dispose();
+	ihtmlWindow2.dispose();
+	if (pVarResult == null) return false;
+	pVarResult.dispose();
+	return true;
 }
 
 /**
