@@ -31,6 +31,7 @@ public class Combo extends Composite {
 		LIMIT = 0x7FFFFFFF;
 	}
 	
+	// NEEDS WORK - is this handle being leaked?
 	int menuHandle;
 
 public Combo (Composite parent, int style) {
