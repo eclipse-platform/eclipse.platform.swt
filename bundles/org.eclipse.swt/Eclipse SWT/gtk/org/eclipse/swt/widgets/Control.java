@@ -2644,7 +2644,25 @@ public void setVisible (boolean visible) {
 	if (visible) {
 		sendEvent (SWT.Show);
 		OS.gtk_widget_show (topHandle);
-	} else {	
+	} else {
+		/*
+		* Bug in GTK.  Invoking gtk_widget_hide() on a widget that has
+		* focus causes a focus_out_event to be sent. If the client disposes
+		* the widget inside the event, GTK GP's.  The fix is to reassign focus
+		* before hiding the widget.
+		* 
+		* NOTE: In order to stop the same widget from taking focus,
+		* temporarily clear and set the GTK_VISIBLE flag.
+		*/
+		if (!visible && isFocusAncestor ()) {
+			int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+			OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);
+			fixFocus ();
+			if (isDisposed ()) return;
+			if ((flags & OS.GTK_VISIBLE) != 0) {
+				OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
+			}
+		}
 		OS.gtk_widget_hide (topHandle);
 		sendEvent (SWT.Hide);
 	}
