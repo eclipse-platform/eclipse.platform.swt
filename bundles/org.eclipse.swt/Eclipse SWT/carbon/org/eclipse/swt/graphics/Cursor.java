@@ -7,7 +7,6 @@ package org.eclipse.swt.graphics;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.*;
 
 /**
@@ -93,8 +92,8 @@ public Cursor (Device device, int style) {
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
+       /* AW
 	int shape = 0;
-        /* AW
 	switch (style) {
 		case SWT.CURSOR_ARROW: shape = OS.XC_left_ptr; break;
 		case SWT.CURSOR_WAIT: shape = OS.XC_watch; break;
