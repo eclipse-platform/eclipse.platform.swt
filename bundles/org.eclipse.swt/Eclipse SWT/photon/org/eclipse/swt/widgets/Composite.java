@@ -180,8 +180,15 @@ int processResize (int info) {
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
 	if (cbinfo.cbdata == 0) return OS.Pt_CONTINUE;
+	
+	// BOGUS code - should add struct
+	short[] data = new short[12];
+	OS.memmove(data, cbinfo.cbdata, 2 * data.length);
+	if (data [8] == data[10] && data [9] == data [11]) {
+		return OS.Pt_CONTINUE;
+	}
+	
 	sendEvent (SWT.Resize);
-	if (layout != null) layout (false);
 	return OS.Pt_CONTINUE;
 }
 
@@ -247,11 +254,13 @@ void resizeClientArea (int width, int height) {
 	int [] args = {OS.Pt_ARG_AREA, ptr, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 	OS.free (ptr);
+	if (layout != null) layout (false);
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if (resize) resizeClientArea (width, height);
 	super.setBounds (x, y, width, height, move, resize);
+	if (resize && layout != null) layout (false);
 }
 
 public void setLayout (Layout layout) {
