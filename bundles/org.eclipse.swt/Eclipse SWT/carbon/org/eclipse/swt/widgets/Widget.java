@@ -490,9 +490,10 @@ void postEvent (int eventType) {
 }
 void postEvent (int eventType, Event event) {
 	if (eventTable == null) return;
+	Display display = getDisplay ();
 	event.type = eventType;
 	event.widget = this;
-	Display display = getDisplay ();
+	event.display = display;
 	if (event.time == 0) {
         /* AW
 		event.time = OS.XtLastTimestampProcessed (display.xDisplay);
@@ -775,8 +776,8 @@ void setInputState (Event event, MacEvent mEvent) {
 	event.stateMask= mEvent.getStateMask();
 }
 void setKeyState (Event event, MacEvent mEvent) {
+	/*
 	if (mEvent.getKeyCode() != 0) {
-		/*
 		byte [] buffer1 = new byte [1];
 		int [] keysym = new int [1];
 		if (OS.XLookupString (xEvent, buffer1, buffer1.length, keysym, null) == 0) {
@@ -792,13 +793,15 @@ void setKeyState (Event event, MacEvent mEvent) {
 		}
 		*/
 		event.keyCode = Display.translateKey(mEvent.getKeyCode());
-		//event.character= (char) mEvent.getCharacter();
-	}
+		event.character= (char) mEvent.getMacCharCodes();
+	/* } */
 	setInputState (event, mEvent);
 }
 void sendEvent (int eventType, Event event) {
 	if (eventTable == null) return;
+	Display display = getDisplay ();
 	event.type = eventType;
+	event.display = display;
 	event.widget = this;
 	if (event.time == 0) {
 		event.time = (int)(OS.GetLastUserEventTime() * 1000.0);

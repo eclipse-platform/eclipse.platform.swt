@@ -140,9 +140,13 @@ void createHandle (int index) {
 	int parentHandle = parent.handle;
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
 	if ((style & SWT.SEPARATOR) != 0) {
-  		handle = MacUtil.createSeparator(parentHandle, style);
+  		handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlSeparatorLineProc);
+		if ((style & SWT.HORIZONTAL) != 0)
+			OS.SizeControl(handle, (short) 20, (short) 1);
+		else
+			OS.SizeControl(handle, (short) 1, (short) 20);	
 	} else {
-		handle = MacUtil.createDrawingArea(parentHandle, 0, 0, borderWidth);
+		handle = MacUtil.createDrawingArea(parentHandle, -1, true, 0, 0, borderWidth);
 	}
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
@@ -222,6 +226,7 @@ void hookEvents () {
 	Display display= getDisplay();		
 	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneDrawProcTag, display.fUserPaneDrawProc);
 }
+/* AW
 boolean mnemonicHit (char key) {
 	Composite control = this.parent;
 	while (control != null) {
@@ -244,6 +249,7 @@ boolean mnemonicMatch (char key) {
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
+*/
 int processPaint (Object callData) {
 	if ((style & SWT.SEPARATOR) != 0) return 0;
 	

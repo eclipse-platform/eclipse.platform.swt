@@ -386,6 +386,36 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	height += border * 2;
 	return new Point (width, height);
 }
+
+Control computeTabGroup () {
+	if (isTabGroup()) return this;
+	return parent.computeTabGroup ();
+}
+
+Control[] computeTabList() {
+	if (isTabGroup()) {
+		if (getVisible() && getEnabled()) {
+			return new Control[] {this};
+		}
+	}
+	return new Control[0];
+}
+
+Control computeTabRoot () {
+	Control[] tabList = parent._getTabList();
+	if (tabList != null) {
+		int index = 0;
+		while (index < tabList.length) {
+			if (tabList [index] == this) break;
+			index++;
+		}
+		if (index == tabList.length) {
+			if (isTabGroup ()) return this;
+		}
+	}
+	return parent.computeTabRoot ();
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	foreground = background = -1;
@@ -462,20 +492,43 @@ public boolean forceFocus () {
 	checkWidget();
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
-	if (!isEnabled () || !isVisible ()) return false;
+	if (!isEnabled () || !isVisible () /* AW || !isActive () */) return false;
 	if (isFocusControl ()) return true;
 	shell.bringToTop ();
-    /* AW
-	return OS.XmProcessTraversal (handle, OS.XmTRAVERSE_CURRENT);
-    */
-	
-	Display display= getDisplay();
-	if (display != null)
-    	return display.setMacFocusHandle(((Shell)shell).shellHandle, handle);
+	/*
+	* This code is intentionally commented.
+	*
+	* When setting focus to a control, it is
+	* possible that application code can set
+	* the focus to another control inside of
+	* WM_SETFOCUS.  In this case, the original
+	* control will no longer have the focus
+	* and the call to setFocus() will return
+	* false indicating failure.
+	* 
+	* We are still working on a solution at
+	* this time.
+	*/
+//	if (OS.GetFocus () != OS.SetFocus (handle)) return false;
 		
-	if (!isFocusControl ()) return false;
-	shell.setDefaultButton (null, false);
-    return true;
+	/* AW
+	OS.SetFocus (handle);
+	*/
+	
+	boolean focus= false;
+	
+	if (this instanceof Text || this instanceof List || this instanceof Combo || this instanceof Canvas)
+		focus= true;
+	if (!focus && MacUtil.FULL_KBD_NAV && this instanceof Button)
+		focus= true;
+	
+	if (focus) {
+		Display display= getDisplay();
+		if (display != null)
+			display.setMacFocusHandle(((Shell)shell).shellHandle, handle);
+	}
+
+	return isFocusControl ();
 }
 
 /**
@@ -923,7 +976,14 @@ public int internal_new_GC (GCData data) {
 		data.controlHandle = handle;
 	}
 
-	int wHandle= OS.GetControlOwner(handle);
+	int wHandle= 0;
+	if (MacUtil.USE_FRAME) {
+		Shell shell= getShell();
+		if (shell != null)
+			wHandle= shell.shellHandle;
+	} else {
+		wHandle= OS.GetControlOwner(handle);
+	}
 	int xGC= OS.GetWindowPort(wHandle);
 	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	
@@ -1002,6 +1062,72 @@ public boolean isFocusControl () {
 public boolean isReparentable () {
 	checkWidget();
 	return false;
+}
+
+boolean isShowing () {
+	/*
+	* This is not complete.  Need to check if the
+	* widget is obscurred by a parent or sibling.
+	*/
+	/* AW
+	if (!isVisible ()) return false;
+	Control control = this;
+	while (control != null) {
+		Point size = control.getSize ();
+		if (size.x == 0 || size.y == 0) {
+			return false;
+		}
+		control = control.parent;
+	}
+	*/
+	return true;
+	/*
+	* Check to see if current damage is included.
+	*/
+//	if (!OS.IsWindowVisible (handle)) return false;
+//	int flags = OS.DCX_CACHE | OS.DCX_CLIPCHILDREN | OS.DCX_CLIPSIBLINGS;
+//	int hDC = OS.GetDCEx (handle, 0, flags);
+//	int result = OS.GetClipBox (hDC, new RECT ());
+//	OS.ReleaseDC (handle, hDC);
+//	return result != OS.NULLREGION;
+}
+
+boolean isTabGroup () {
+	Control [] tabList = parent._getTabList ();
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return true;
+		}
+	}
+	/* AW
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	return (bits & OS.WS_TABSTOP) != 0;
+	*/
+	// AW: Motif:
+	int code = traversalCode ();
+	if ((code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0) return false;
+	return (code & (SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT)) != 0;
+}
+
+boolean isTabItem () {
+	Control [] tabList = parent._getTabList ();	
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] == this) return false;
+		}
+	}
+	/* AW
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.WS_TABSTOP) != 0) return false;
+	int code = OS.SendMessage (handle, OS.WM_GETDLGCODE, 0, 0);
+	if ((code & OS.DLGC_STATIC) != 0) return false;
+	if ((code & OS.DLGC_WANTALLKEYS) != 0) return false;
+	if ((code & OS.DLGC_WANTARROWS) != 0) return false;
+	if ((code & OS.DLGC_WANTTAB) != 0) return false;
+	*/
+	// AW: Motif
+	int code = traversalCode ();
+	return (code & (SWT.TRAVERSE_ARROW_PREVIOUS | SWT.TRAVERSE_ARROW_NEXT)) != 0;
 }
 /**
  * Returns <code>true</code> if the receiver is visible and all
@@ -1143,8 +1269,8 @@ int processKeyDown (Object callData) {
 	
 	MacEvent macEvent = (MacEvent) callData;
 	
-	//if (translateTraversal (macEvent))
-	//	return OS.kNoErr;
+	if (translateTraversal (macEvent))
+		return OS.kNoErr;
 		
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
@@ -2208,6 +2334,16 @@ public void setSize (Point size) {
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
+
+boolean setTabGroupFocus () {
+	return setTabItemFocus ();
+}
+
+boolean setTabItemFocus () {
+	if (!isShowing ()) return false;
+	return setFocus ();
+}
+
 /**
  * Sets the receiver's tool tip text to the argument, which
  * may be null indicating that no tool tip text should be shown.
@@ -2359,109 +2495,126 @@ public Point toDisplay (Point point) {
     */
 	return MacUtil.toDisplay(handle, point);
 }
-/* AW
-boolean translateMnemonic (char key, XKeyEvent xEvent) {
-	if (!isVisible () || !isEnabled ()) return false;
-	boolean doit = mnemonicMatch (key);
-	if (hooks (SWT.Traverse)) {
-		Event event = new Event();
-		event.doit = doit;
-		event.detail = SWT.TRAVERSE_MNEMONIC;
-		event.time = xEvent.time;
-		setKeyState (event, xEvent);
-		sendEvent (SWT.Traverse, event);
-		doit = event.doit;
-	}
-	if (doit) return mnemonicHit (key);
-	return false;
-}
-boolean translateMnemonic (int key, XKeyEvent xEvent) {
-	if (xEvent.state != OS.Mod1Mask) {
-		if (xEvent.state != 0 || !(this instanceof Button)) {
-			return false;
-		}
-	}
-	Decorations shell = menuShell ();
-	if (shell.isVisible () && shell.isEnabled ()) {
-		char ch = mbcsToWcs ((char) key);
-		return ch != 0 && shell.translateMnemonic (ch, xEvent);
-	}
-	return false;
-}
-*/
-/*
-boolean translateTraversal (int key, XKeyEvent xEvent) {
-	int detail = 0;
+boolean translateTraversal (MacEvent mEvent) {
+	
+	int kind= mEvent.getKind();
+	if (kind != OS.kEventRawKeyDown && kind != OS.kEventRawKeyRepeat)
+		return false;
+
+	int detail = SWT.TRAVERSE_NONE;
+	/* AW
+	GdkEventKey keyEvent = new GdkEventKey ();
+	OS.memmove (keyEvent, gdkEvent, GdkEventKey.sizeof);
+	int key = keyEvent.keyval;
+	int code = traversalCode (key, gdkEvent);
+	int [] state = new int [1];
+	OS.gdk_event_get_state (gdkEvent, state);
+	*/
+	int code= traversalCode ();
+	int key= mEvent.getKeyCode();
+	int state= mEvent.getStateMask();
+	boolean all = false;
 	switch (key) {
-		case OS.XK_Escape:
-		case OS.XK_Cancel:
-			Shell shell = getShell ();
-			if (shell.parent == null) return false;
-			if (!shell.isVisible () || !shell.isEnabled ()) return false;
+		case 30 /* OS.GDK_Escape:
+		case OS.GDK_Cancel */: {
+			all = true;
 			detail = SWT.TRAVERSE_ESCAPE;
 			break;
-		case OS.XK_Return:
-			Button button = menuShell ().getDefaultButton ();
-			if (button == null || button.isDisposed ()) return false;
-			if (!button.isVisible () || !button.isEnabled ()) return false;
+		}
+		case 36 /* OS.GDK_Return */ : {
+			all = true;
 			detail = SWT.TRAVERSE_RETURN;
 			break;
-		case OS.XK_Tab:
-			detail = SWT.TRAVERSE_TAB_PREVIOUS;
-			boolean next = (xEvent.state & OS.ShiftMask) == 0;
-			if (next && ((xEvent.state & OS.ControlMask) != 0)) return false;
-			if (next) detail = SWT.TRAVERSE_TAB_NEXT;
+		}
+		//case OS.GDK_ISO_Left_Tab: 
+		case 48 /* OS.GDK_Tab */ : {
+			boolean next = (state & SWT.SHIFT) == 0;
+			/*
+			* NOTE: This code causes Shift+Tab and Ctrl+Tab to
+			* always attempt traversal which is not correct.
+			* The default should be the same as a plain Tab key.
+			* This behavior is currently relied on by StyledText.
+			* 
+			* The correct behavior is to give every key to any
+			* control that wants to see every key.  The default
+			* behavior for a Canvas should be to see every key.
+			*/
+			/* AW
+			switch (state [0]) {
+				case OS.GDK_SHIFT_MASK:
+				case OS.GDK_CONTROL_MASK:
+					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
+			}
+			*/
+			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
-		case OS.XK_Up:
-		case OS.XK_Left:
+		}
+		case 126: // OS.GDK_Up:
+		case 123: // OS.GDK_Left:
 			detail = SWT.TRAVERSE_ARROW_PREVIOUS;
 			break;
-		case OS.XK_Down:
-		case OS.XK_Right:
+			
+		case 125: // OS.GDK_Down:
+		case 124: /* OS.GDK_Right: */
 			detail = SWT.TRAVERSE_ARROW_NEXT;
 			break;
+			
+		case 116: // OS.GDK_Page_Up:
+		case 121: /* OS.GDK_Page_Down: */ {
+			all = true;
+			/* AW
+			if ((state [0] & OS.GDK_CONTROL_MASK) == 0) return false;
+			*/
+			/*
+			* NOTE: This code causes Ctrl+PgUp and Ctrl+PgDn to always
+			* attempt traversal which is not correct.  This behavior is
+			* currently relied on by StyledText.
+			* 
+			* The correct behavior is to give every key to any
+			* control that wants to see every key.  The default
+			* behavior for a Canvas should be to see every key.
+			*/
+			code |= SWT.TRAVERSE_PAGE_NEXT | SWT.TRAVERSE_PAGE_PREVIOUS;
+			detail = key == 121 ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
+			break;
+		}
 		default:
 			return false;
 	}
-	boolean doit = (detail & traversalCode ()) != 0;
-	if (hooks (SWT.Traverse)) {
-		Event event = new Event();
-		event.doit = doit;
-		event.detail = detail;
-		event.time = xEvent.time;
-		setKeyState (event, xEvent);
-		sendEvent (SWT.Traverse, event);
-		doit = event.doit;
-		detail = event.detail;
-	}
-        */
-	/*
-	* NOTE:  The native widgets handle tab and arrow key traversal
-	* so it is not necessary to traverse these keys.  A canvas widget
-	* has no native traversal by definition so it is necessary to
-	* traverse all keys.
+	
+	Event event = new Event ();
+	event.doit = (code & detail) != 0;
+	event.detail = detail;
+	/* AW
+	event.time = keyEvent.time;
+	setInputState (event, gdkEvent);
 	*/
-        /* AW
-	if (doit) {
-		int flags = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_ESCAPE;
-		if ((detail & flags) != 0 || (state & CANVAS) != 0) {
-			return traverse (detail);
+	Shell shell = getShell ();
+	Control control = this;
+	do {
+		if (control.traverse (event)) return true;
+		if (!event.doit && control.hooks (SWT.Traverse)) {
+			return false;
 		}
-	}
+		if (control == shell) return false;
+		control = control.parent;
+	} while (all && control != null);
 	return false;
 }
-*/
 int traversalCode () {
-	int code = SWT.TRAVERSE_ESCAPE | SWT.TRAVERSE_RETURN;
-    /* AW
-	int [] argList = {OS.XmNnavigationType, 0};
+	/* AW
+	int [] argList = new int [] {OS.XmNtraversalOn, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmNONE) {
+	if (argList [1] == 0) return 0;
+	*/
+	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
+	Shell shell = getShell ();
+	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;
+	/* AW
+	if (getNavigationType () == OS.XmNONE) {
 		code |= SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
-	} else {
-		code |= SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
 	}
-    */
+	*/
 	return code;
 }
 boolean traverseMnemonic (char key) {
@@ -2471,8 +2624,8 @@ boolean traverseMnemonic (char key) {
 /**
  * Based on the argument, perform one of the expected platform
  * traversal action. The argument should be one of the constants:
- * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>,
- * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>,
+ * <code>SWT.TRAVERSE_ESCAPE</code>, <code>SWT.TRAVERSE_RETURN</code>, 
+ * <code>SWT.TRAVERSE_TAB_NEXT</code>, <code>SWT.TRAVERSE_TAB_PREVIOUS</code>, 
  * <code>SWT.TRAVERSE_ARROW_NEXT</code> and <code>SWT.TRAVERSE_ARROW_PREVIOUS</code>.
  *
  * @param traversal the type of traversal
@@ -2486,17 +2639,31 @@ boolean traverseMnemonic (char key) {
 public boolean traverse (int traversal) {
 	checkWidget();
 	if (!isFocusControl () && !setFocus ()) return false;
-	switch (traversal) {
+	Event event = new Event ();
+	event.doit = true;
+	event.detail = traversal;
+	return traverse (event);
+}
+
+boolean traverse (Event event) {
+	sendEvent (SWT.Traverse, event);
+	if (isDisposed ()) return false;
+	if (!event.doit) return false;
+	switch (event.detail) {
+		case SWT.TRAVERSE_NONE:				return true;
 		case SWT.TRAVERSE_ESCAPE:			return traverseEscape ();
 		case SWT.TRAVERSE_RETURN:			return traverseReturn ();
 		case SWT.TRAVERSE_TAB_NEXT:			return traverseGroup (true);
 		case SWT.TRAVERSE_TAB_PREVIOUS:		return traverseGroup (false);
 		case SWT.TRAVERSE_ARROW_NEXT:		return traverseItem (true);
 		case SWT.TRAVERSE_ARROW_PREVIOUS:	return traverseItem (false);
-//		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (??);
+		case SWT.TRAVERSE_MNEMONIC:			return traverseMnemonic (event);	
+		case SWT.TRAVERSE_PAGE_NEXT:		return traversePage (true);
+		case SWT.TRAVERSE_PAGE_PREVIOUS:	return traversePage (false);
 	}
 	return false;
 }
+
 boolean traverseEscape () {
 	Shell shell = getShell ();
 	if (shell.parent == null) return false;
@@ -2504,23 +2671,78 @@ boolean traverseEscape () {
 	shell.close ();
 	return true;
 }
+
 boolean traverseGroup (boolean next) {
-	/* AW
-	return OS.XmProcessTraversal (handle, next ? OS.XmTRAVERSE_NEXT_TAB_GROUP : OS.XmTRAVERSE_PREV_TAB_GROUP);
+	Control root = computeTabRoot ();
+	Control group = computeTabGroup ();
+	Control [] list = root.computeTabList ();
+	int length = list.length;
+	int index = 0;
+	while (index < length) {
+		if (list [index] == group) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
 	*/
-	return false;
+	if (index == length) return false;
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = ((index + offset + length) % length)) != start) {
+		Control control = list [index];
+		if (!control.isDisposed () && control.setTabGroupFocus ()) {
+			if (!isDisposed () && !isFocusControl ()) return true;
+		}
+	}
+	if (group.isDisposed ()) return false;
+	return group.setTabGroupFocus ();
 }
+
 boolean traverseItem (boolean next) {
-	/* AW
-	return OS.XmProcessTraversal (handle, next ? OS.XmTRAVERSE_NEXT : OS.XmTRAVERSE_PREV);
+	Control [] children = parent._getChildren ();
+	int length = children.length;
+	int index = 0;
+	while (index < length) {
+		if (children [index] == this) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
 	*/
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		Control child = children [index];
+		if (!child.isDisposed () && child.isTabItem ()) {
+			if (child.setTabItemFocus ()) return true;
+		}
+	}
 	return false;
 }
+
 boolean traverseReturn () {
 	Button button = menuShell ().getDefaultButton ();
 	if (button == null || button.isDisposed ()) return false;
 	if (!button.isVisible () || !button.isEnabled ()) return false;
 	button.click ();
+	return true;
+}
+
+boolean traversePage (boolean next) {
+	return false;
+}
+
+boolean traverseMnemonic (Event event) {
+	// This code is intentionally commented.
+	// TraverseMnemonic always originates from the OS and
+	// never through the API, and on the GTK platform, accels
+	// are hooked by the OS before we get the key event.
+	// int shellHandle = _getShell ().topHandle ();
+	// return OS.gtk_accel_groups_activate (shellHandle, keyCode, stateMask);
 	return true;
 }
 /**

@@ -329,6 +329,7 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 		return layoutHorizontal (nWidth, nHeight, resize);
 	}
 }
+/* AW
 boolean mnemonicHit (char key) {
 	for (int i = 0; i < items.length; i++) {
 		ToolItem item = items [i];
@@ -336,9 +337,7 @@ boolean mnemonicHit (char key) {
 			char mnemonic = findMnemonic (item.getText ());
 			if (mnemonic != '\0') {
 				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
-					/* AW
 					OS.XmProcessTraversal (item.handle, OS.XmTRAVERSE_CURRENT);
-					*/
 					item.click (false, null);
 					return true;
 				}
@@ -361,6 +360,7 @@ boolean mnemonicMatch (char key) {
 	}
 	return false;
 }
+*/
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	for (int i=0; i<itemCount; i++) {

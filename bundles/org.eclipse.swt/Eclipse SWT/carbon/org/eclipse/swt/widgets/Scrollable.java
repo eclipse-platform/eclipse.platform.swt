@@ -228,6 +228,10 @@ public ScrollBar getVerticalBar () {
 	checkWidget();
 	return verticalBar;
 }
+boolean isTabGroup () {
+	if ((state & CANVAS) != 0) return true;
+	return super.isTabGroup ();
+}
 void manageChildren () {
     /* AW
 	if (scrolledHandle != 0) {
@@ -324,6 +328,8 @@ int topHandle () {
 	
 		Display display= getDisplay();
 	
+		int pos= -1;
+	
 		if (OS.IsValidControlHandle(parentControlHandle)) {
 		} else if (OS.IsValidWindowPtr(parentControlHandle)) {
 			int[] root= new int[1];
@@ -332,7 +338,7 @@ int topHandle () {
 		} else
 			System.out.println("createScrollView: don't know");
 	
-		int controlHandle = MacUtil.createDrawingArea(parentControlHandle, 0, 0, 0);
+		int controlHandle = MacUtil.createDrawingArea(parentControlHandle, pos, true, 0, 0, 0);
 		
 		/*
 		OS.InstallEventHandler(OS.GetControlEventTarget(controlHandle), display.fControlProc, 
@@ -362,12 +368,81 @@ int topHandle () {
 	 * Overridden from Control.
 	 * x and y are relative to window!
 	 */
-	void handleResize(int scrolledHandle, MacRect bounds) {
-		super.handleResize(scrolledHandle, bounds);
+	void handleResize(int handle, MacRect bounds) {
+		super.handleResize(handle, bounds);
 		relayout123();
 	}
 	
 	void relayout123() {
+		if (MacUtil.HIVIEW)
+			relayout123new();
+		else
+			relayout123old();
+	}
+	
+	private void relayout123new() {
+		
+		int hndl= scrolledHandle;
+		if (hndl == 0)
+			return;
+		
+		MacRect bounds= new MacRect();
+		OS.GetControlBounds(hndl, bounds.getData());
+		
+		boolean visible= OS.IsControlVisible(hndl);
+		
+		System.out.println("relayout123new: " + bounds.toRectangle());
+		
+		int x= 0; // bounds.getX();
+		int y= 0; // bounds.getY();
+		int w= bounds.getWidth();
+		int h= bounds.getHeight();
+	
+		int s= 15;
+		int ww= w;
+		int hh= h;
+		int style= getStyle();
+
+		if (ww < 0 || hh < 0) {
+			System.out.println("******* Scrollable.relayout123: " + ww + " " + hh);
+			return;
+		}
+		
+		ScrollBar hsb= null;
+		if ((style & SWT.H_SCROLL) != 0) {
+			hsb= getHorizontalBar();
+			if (hsb != null) {
+				if (visible && !OS.IsControlVisible(hsb.handle))
+					;
+				else
+					hh-= s;
+			}
+		}
+
+		ScrollBar vsb= null;
+		if ((style & SWT.V_SCROLL) != 0) {
+			vsb= getVerticalBar();
+			if (vsb != null) {
+				if (visible && !OS.IsControlVisible(vsb.handle))
+					;
+				else
+					ww-= s;
+			}
+		}
+
+		if (hsb != null)
+			OS.HIViewSetFrame(hsb.handle, x, y+h-s, ww, s);
+			
+		if (vsb != null)
+			OS.HIViewSetFrame(vsb.handle, x+w-s, y, s, hh);
+		
+		OS.HIViewSetFrame(handle, x, y, ww, hh);
+		
+		//if (ww != w && hh != h)
+		//	OS.InvalWindowRect(OS.GetControlOwner(handle), new MacRect(x+w-s, y+h-s, s, s).getData());
+	}
+	
+	private void relayout123old() {
 		
 		int hndl= scrolledHandle;
 		if (hndl == 0)

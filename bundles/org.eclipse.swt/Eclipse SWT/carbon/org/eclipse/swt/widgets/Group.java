@@ -150,11 +150,6 @@ void createHandle (int index) {
 	handle= MacUtil.newControl(parentHandle, OS.kControlGroupBoxTextTitleProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	setFont(defaultFont());
-    /* AW
-	int [] argList3 = {OS.XmNchildType, OS.XmFRAME_TITLE_CHILD};
-	labelHandle = OS.XmCreateLabel (handle, null, argList3, argList3.length / 2);
-	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-    */
 }
 Font defaultFont () {
 	return getDisplay ().groupFont;
@@ -206,6 +201,7 @@ public String getText () {
     OS.GetControlTitleAsCFString(handle, sHandle);
 	return MacUtil.getStringAndRelease(sHandle[0]);
 }
+/* AW
 boolean mnemonicHit (char key) {
 	return setFocus ();
 }
@@ -214,6 +210,7 @@ boolean mnemonicMatch (char key) {
 	if (mnemonic == '\0') return false;
 	return Character.toUpperCase (key) == Character.toUpperCase (mnemonic);
 }
+*/
 /**
  * Sets the receiver's text, which is the string that will
  * be displayed as the receiver's <em>title</em>, to the argument,

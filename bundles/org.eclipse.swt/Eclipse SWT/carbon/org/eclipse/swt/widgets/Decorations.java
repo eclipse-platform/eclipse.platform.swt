@@ -195,6 +195,12 @@ static int checkStyle (int style) {
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
+Control computeTabGroup () {
+	return this;
+}
+Control computeTabRoot () {
+	return this;
+}
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	createScrolledHandle (parent.handle);
@@ -343,6 +349,12 @@ String getNameText () {
 public String getText () {
 	checkWidget();
 	return label;
+}
+boolean isTabGroup () {
+	return true;
+}
+boolean isTabItem () {
+	return false;
 }
 Decorations menuShell () {
 	return this;

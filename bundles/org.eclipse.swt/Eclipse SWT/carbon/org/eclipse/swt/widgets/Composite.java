@@ -36,6 +36,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Composite extends Scrollable {
 	Layout layout;
+	Control[] tabList;
 	/* AW
 	int damagedRegion;
 	*/
@@ -111,6 +112,30 @@ Control [] _getChildren () {
 	System.arraycopy (children, 0, newChildren, 0, j);
 	return newChildren;
 }
+
+/**
+ * Returns tabList or null
+ */
+Control [] _getTabList () {
+	if (tabList == null) return null;
+	// ensure to return only non-disposed controls
+	int count = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [i].isDisposed ()) count++;
+	}
+	if (count == tabList.length) return tabList;
+	// copy only non-disposed controls
+	Control [] newList = new Control [count];
+	int index = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (!tabList [i].isDisposed ()) {
+			newList [index++] = tabList [i];
+		}
+	}
+	tabList = newList;
+	return tabList;
+}
+
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	Point size;
@@ -133,6 +158,24 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 protected void checkSubclass () {
 	/* Do nothing - Subclassing is allowed */
 }
+
+Control [] computeTabList () {
+	Control result [] = super.computeTabList ();
+	if (result.length == 0) return result;
+	Control [] list = tabList != null ? _getTabList () : _getChildren ();
+	for (int i=0; i<list.length; i++) {
+		Control child = list [i];
+		Control [] childList = child.computeTabList ();
+		if (childList.length != 0) {
+			Control [] newResult = new Control [result.length + childList.length];
+			System.arraycopy (result, 0, newResult, 0, result.length);
+			System.arraycopy (childList, 0, newResult, result.length, childList.length);
+			result = newResult;
+		}
+	}
+	return result;
+}
+
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
@@ -305,28 +348,22 @@ public Layout getLayout () {
  */
 public Control [] getTabList () {
 	checkWidget ();
-    /* AW
-	int count = 0;
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control control = children [i];
-		int [] argList = new int [] {OS.XmNnavigationType, 0};
-		OS.XtGetValues (control.handle, argList, argList.length / 2);
-		if (argList [1] == OS.XmEXCLUSIVE_TAB_GROUP) count++;
-	}
-	int index = 0;
-	Control [] tabList = new Control [count];
-	for (int i=0; i<children.length; i++) {
-		Control control = children [i];
-		int [] argList = new int [] {OS.XmNnavigationType, 0};
-		OS.XtGetValues (control.handle, argList, argList.length / 2);
-		if (argList [1] == OS.XmEXCLUSIVE_TAB_GROUP) {
-			tabList [index++] = control;
+	Control [] tabList = _getTabList ();
+	if (tabList == null) {
+		int count = 0;
+		Control [] list =_getChildren ();
+		for (int i=0; i<list.length; i++) {
+			if (list [i].isTabGroup ()) count++;
+		}
+		tabList = new Control [count];
+		int index = 0;
+		for (int i=0; i<list.length; i++) {
+			if (list [i].isTabGroup ()) {
+				tabList [index++] = list [i];
+			}
 		}
 	}
 	return tabList;
-    */
-    return new Control[0];
 }
 
 void hookEvents () {
@@ -524,6 +561,7 @@ void releaseWidget () {
 	releaseChildren ();
 	super.releaseWidget ();
 	layout = null;
+	tabList = null;
     /* AW
 	if (damagedRegion != 0) OS.XDestroyRegion (damagedRegion);
 	damagedRegion = 0;
@@ -595,33 +633,33 @@ public void setSize (int width, int height) {
  */
 public void setTabList (Control [] tabList) {
 	checkWidget ();
-	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
-    /* AW
-	int [] argList1 = new int [] {OS.XmNnavigationType, OS.XmTAB_GROUP};
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		Control control = children [i];
-		OS.XtSetValues (control.handle, argList1, argList1.length / 2);
-	}
-	int [] argList2 = new int [] {OS.XmNnavigationType, OS.XmEXCLUSIVE_TAB_GROUP};
-	for (int i=0; i<tabList.length; i++) {
-        */
-		/*
-		* Set the XmNnavigationType twice, once to clear the
-		* old value and once to set the new.  If the old value
-		* is not cleared, Motif detects that the values are the
-		* same and does not change the tab order.
-		*/
-		/* AW
-		Control control = tabList [i];
-		OS.XtSetValues (control.handle, argList1, argList1.length / 2);
-		OS.XtSetValues (control.handle, argList2, argList2.length / 2);
-	}
-	*/
+	if (tabList != null) {
+		for (int i=0; i<tabList.length; i++) {
+			Control control = tabList [i];
+			if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
+			if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+			/*
+			* This code is intentionally commented.
+			* Tab lists are currently only supported
+			* for the direct children of a composite.
+			*/
+//			Shell shell = control.getShell ();
+//			while (control != shell && control != this) {
+//				control = control.parent;
+//			}
+//			if (control != this) error (SWT.ERROR_INVALID_PARENT);
+			if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
+		}
+		Control [] newList = new Control [tabList.length];
+		System.arraycopy (tabList, 0, newList, 0, tabList.length);
+		tabList = newList;
+	} 
+	this.tabList = tabList;
 }
 int traversalCode () {
 	if ((state & CANVAS) != 0) {
-		if (hooks (SWT.KeyDown)) return 0;
+		if ((style & SWT.NO_FOCUS) != 0) return 0;
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) return 0;
 	}
 	return super.traversalCode ();
 }
