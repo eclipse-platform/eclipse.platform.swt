@@ -244,7 +244,7 @@ public int getItemCount () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the receiver's items
@@ -403,7 +403,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the receiver's item order

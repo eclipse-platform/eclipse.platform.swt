@@ -428,7 +428,7 @@ public int getItemHeight () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the number of items
@@ -483,7 +483,7 @@ public TreeItem getParentItem () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its selection, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  * @return an array representing the selection
  *

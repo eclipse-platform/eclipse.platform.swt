@@ -136,7 +136,7 @@ void drawBackground (int hdc, RECT rect) {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of children, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return an array of children

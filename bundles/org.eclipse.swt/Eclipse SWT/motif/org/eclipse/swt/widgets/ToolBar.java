@@ -196,7 +196,7 @@ public int getItemCount () {
  * <p>
  * Note: This is not the actual structure used by the receiver
  * to maintain its list of items, so modifying the array will
- * not effect the receiver. 
+ * not affect the receiver. 
  * </p>
  *
  * @return the items in the receiver

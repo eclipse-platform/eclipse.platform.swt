@@ -15,7 +15,7 @@ import java.util.EventListener;
 /**
  * This class is the abstract superclass of all user interface objects.  
  * Widgets are created, disposed and issue notification to listeners
- * when events occur which effect them.
+ * when events occur which affect them.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>
