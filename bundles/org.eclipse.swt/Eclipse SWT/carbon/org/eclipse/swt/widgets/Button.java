@@ -298,6 +298,7 @@ public void setText (String string) {
 		OS.SetBevelButtonContentInfo(handle, inContent);
 	}
 	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
 	int i=0, j=0;
 	while (i < buffer.length) {
 		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
@@ -306,7 +307,6 @@ public void setText (String string) {
 			j--;
 		}
 	}
-	text.getChars (0, buffer.length, buffer, 0);
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlTitleWithCFString (handle, ptr);

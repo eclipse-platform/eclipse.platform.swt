@@ -409,6 +409,43 @@ void setControlFontStyleRecFields(JNIEnv *env, jobject lpObject, ControlFontStyl
 }
 #endif /* NO_ControlFontStyleRec */
 
+#ifndef NO_ControlTabEntry
+typedef struct ControlTabEntry_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID icon, name, enabled;
+} ControlTabEntry_FID_CACHE;
+
+ControlTabEntry_FID_CACHE ControlTabEntryFc;
+
+void cacheControlTabEntryFids(JNIEnv *env, jobject lpObject)
+{
+	if (ControlTabEntryFc.cached) return;
+	ControlTabEntryFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	ControlTabEntryFc.icon = (*env)->GetFieldID(env, ControlTabEntryFc.clazz, "icon", "I");
+	ControlTabEntryFc.name = (*env)->GetFieldID(env, ControlTabEntryFc.clazz, "name", "I");
+	ControlTabEntryFc.enabled = (*env)->GetFieldID(env, ControlTabEntryFc.clazz, "enabled", "Z");
+	ControlTabEntryFc.cached = 1;
+}
+
+ControlTabEntry *getControlTabEntryFields(JNIEnv *env, jobject lpObject, ControlTabEntry *lpStruct)
+{
+	if (!ControlTabEntryFc.cached) cacheControlTabEntryFids(env, lpObject);
+	lpStruct->icon = (ControlButtonContentInfo *)(*env)->GetIntField(env, lpObject, ControlTabEntryFc.icon);
+	lpStruct->name = (CFStringRef)(*env)->GetIntField(env, lpObject, ControlTabEntryFc.name);
+	lpStruct->enabled = (Boolean)(*env)->GetBooleanField(env, lpObject, ControlTabEntryFc.enabled);
+	return lpStruct;
+}
+
+void setControlTabEntryFields(JNIEnv *env, jobject lpObject, ControlTabEntry *lpStruct)
+{
+	if (!ControlTabEntryFc.cached) cacheControlTabEntryFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, ControlTabEntryFc.icon, (jint)lpStruct->icon);
+	(*env)->SetIntField(env, lpObject, ControlTabEntryFc.name, (jint)lpStruct->name);
+	(*env)->SetBooleanField(env, lpObject, ControlTabEntryFc.enabled, (jboolean)lpStruct->enabled);
+}
+#endif /* NO_ControlTabEntry */
+
 #ifndef NO_ControlTabInfoRecV1
 typedef struct ControlTabInfoRecV1_FID_CACHE {
 	int cached;

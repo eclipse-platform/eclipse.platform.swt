@@ -1409,6 +1409,29 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStaticTextC
 }
 #endif /* NO_CreateStaticTextControl */
 
+#ifndef NO_CreateTabsControl
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateTabsControl
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jshort arg2, jshort arg3, jshort arg4, jobject arg5, jintArray arg6)
+{
+	Rect _arg1, *lparg1=NULL;
+	ControlTabEntry _arg5, *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint rc;
+
+printf("size of ControlTabEntry %d", sizeof(ControlTabEntry));
+	DEBUG_CALL("CreateTabsControl\n")
+
+	if (arg1) lparg1 = getRectFields(env, arg1, &_arg1);
+	if (arg5) lparg5 = getControlTabEntryFields(env, arg5, &_arg5);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)CreateTabsControl((WindowRef)arg0, (const Rect *)lparg1, (ControlTabSize)arg2, (ControlTabDirection)arg3, (UInt16)arg4, (const ControlTabEntry *)lparg5, (ControlRef *)lparg6);
+	if (arg1) setRectFields(env, arg1, lparg1);
+	if (arg5) setControlTabEntryFields(env, arg5, lparg5);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateUserPaneControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateUserPaneControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)

@@ -75,6 +75,14 @@ void setControlFontStyleRecFields(JNIEnv *env, jobject lpObject, ControlFontStyl
 #define setControlFontStyleRecFields(a,b,c)
 #endif /* NO_ControlFontStyleRec */
 
+#ifndef NO_ControlTabEntry
+ControlTabEntry *getControlTabEntryFields(JNIEnv *env, jobject lpObject, ControlTabEntry *lpStruct);
+void setControlTabEntryFields(JNIEnv *env, jobject lpObject, ControlTabEntry *lpStruct);
+#else
+#define getControlTabEntryFields(a,b,c) NULL
+#define setControlTabEntryFields(a,b,c)
+#endif /* NO_ControlTabEntry */
+
 #ifndef NO_ControlTabInfoRecV1
 ControlTabInfoRecV1 *getControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoRecV1 *lpStruct);
 void setControlTabInfoRecV1Fields(JNIEnv *env, jobject lpObject, ControlTabInfoRecV1 *lpStruct);
