@@ -1998,14 +1998,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if (hasMenu || hooks (SWT.MenuDetect)) {
 					NMRGINFO nmrg = new NMRGINFO ();
 					OS.MoveMemory (nmrg, lParam, NMRGINFO.sizeof);
-					/*
-					* Feature on Pocket PC.  The popup menu is expected to become
-					* visible when the stylus is still down.  On a tree and a
-					* table, activating the menu from within the event loop causes
-					* the menu to be visible only when the stylus is released.
-					* The fix is to force the menu to be visible immediately.
-					*/
-					showMenu (nmrg.x, nmrg.y, true);
+					showMenu (nmrg.x, nmrg.y);
+					return LRESULT.ONE;
 				}
 			}
 			break;

@@ -2370,7 +2370,7 @@ public void setVisible (boolean visible) {
 	if (fixFocus) fixFocus ();
 }
 
-boolean showMenu (int x, int y, boolean force) {
+boolean showMenu (int x, int y) {
 	Event event = new Event ();
 	event.x = x;
 	event.y = y;
@@ -2380,11 +2380,7 @@ boolean showMenu (int x, int y, boolean force) {
 		if (x != event.x || y != event.y) {
 			menu.setLocation (event.x, event.y);
 		}
-		if (force) {
-			menu._setVisible (true);
-		} else {
-			menu.setVisible (true);
-		}
+		menu.setVisible (true);
 		return true;
 	}
 	return false;
@@ -3080,7 +3076,7 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 	}
 
 	/* Show the menu */
-	return showMenu (x, y, false) ? LRESULT.ZERO : null;
+	return showMenu (x, y) ? LRESULT.ZERO : null;
 }
 
 LRESULT WM_CTLCOLOR (int wParam, int lParam) {
@@ -3657,7 +3653,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 			shrg.ptDown_y = y; 
 			shrg.dwFlags = OS.SHRG_RETURNCMD;
 			int type = OS.SHRecognizeGesture (shrg);
-			if (type == OS.GN_CONTEXTMENU) showMenu (x, y, false);
+			if (type == OS.GN_CONTEXTMENU) showMenu (x, y);
 		}
 	}
 	if (mouseDown) {
