@@ -92,6 +92,8 @@ void createHandle (int index) {
 	int parentHandle = parent.handle;
 	handle = MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlProgressBarProc);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	if ((style & SWT.INDETERMINATE) != 0)
+		OS.SetControlData(handle, (short)0, OS.kControlProgressBarIndeterminateTag, -1);
 }
 /* AW
 void disableButtonPress () {
