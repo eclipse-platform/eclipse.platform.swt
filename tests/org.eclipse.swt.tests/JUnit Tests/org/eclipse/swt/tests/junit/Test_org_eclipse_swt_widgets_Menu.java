@@ -14,6 +14,7 @@ import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -49,8 +50,15 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Control() {
 
 public void test_ConstructorLorg_eclipse_swt_widgets_DecorationsI() {
 	Menu newMenu;
-	MenuItem mItem = new MenuItem(menu, SWT.NULL);
-	newMenu = new Menu(mItem);
+	Shell nullShell = null;
+	try {
+		newMenu = new Menu(nullShell, SWT.NULL);
+		newMenu.dispose();
+		fail("No exception thrown for parent == null");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	newMenu = new Menu(shell, SWT.NULL);
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_Menu() {
@@ -59,23 +67,86 @@ public void test_ConstructorLorg_eclipse_swt_widgets_Menu() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_widgets_MenuItem() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_widgets_MenuItem not written");
+	Menu newMenu;
+	MenuItem mItem = null;
+	try {
+		newMenu = new Menu(mItem);
+		newMenu.dispose();
+		fail("No exception thrown for parent == null");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	mItem = new MenuItem(menu, SWT.NULL);
+	newMenu = new Menu(mItem);
 }
 
 public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	warnUnimpl("Test test_addHelpListenerLorg_eclipse_swt_events_HelpListener not written");
+	listenerCalled = false;
+	HelpListener listener = new HelpListener() {
+		public void helpRequested(HelpEvent e) {
+			listenerCalled = true;
+		};
+	};
+	
+	try {
+		menu.addHelpListener(null);
+		fail("No exception thrown for addHelpListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	menu.addHelpListener(listener);
+	menu.notifyListeners(SWT.Help, new Event());
+	assertTrue(listenerCalled);
+	
+	try {
+		menu.removeHelpListener(null);
+		fail("No exception thrown for removeHelpListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	menu.removeHelpListener(listener);
 }
 
 public void test_addMenuListenerLorg_eclipse_swt_events_MenuListener() {
-	warnUnimpl("Test test_addMenuListenerLorg_eclipse_swt_events_MenuListener not written");
+	listenerCalled = false;
+	MenuListener menuListener = new MenuListener() {
+		public void menuShown(MenuEvent e) {
+			listenerCalled = true;
+		};
+		public void menuHidden(MenuEvent e) {
+			listenerCalled = true;
+		};
+	};
+
+	try {
+		menu.addMenuListener(null);
+		fail("No exception thrown for addMenuListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	menu.addMenuListener(menuListener);
+	menu.notifyListeners(SWT.Show, new Event());
+	assertTrue(":a:", listenerCalled);
+
+	listenerCalled = false;
+	menu.notifyListeners(SWT.Hide, new Event());
+	assertTrue(":b:", listenerCalled);
+	
+	try {
+		menu.removeMenuListener(null);
+		fail("No exception thrown for removeMenuListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+	
+	menu.removeMenuListener(menuListener);
 }
 
 public void test_getDefaultItem() {
-	warnUnimpl("Test test_getDefaultItem not written");
+	// tested in setDefaultItem method
 }
 
 public void test_getEnabled() {
-	warnUnimpl("Test test_getEnabled not written");
+	// tested in setEnabled method
 }
 
 public void test_getItemCount() {
@@ -137,7 +208,7 @@ public void test_getShell() {
 }
 
 public void test_getVisible() {
-	warnUnimpl("Test test_getVisible not written");
+	// tested in setVisible method
 }
 
 public void test_indexOfLorg_eclipse_swt_widgets_MenuItem() {
@@ -154,7 +225,7 @@ public void test_indexOfLorg_eclipse_swt_widgets_MenuItem() {
 }
 
 public void test_isEnabled() {
-	warnUnimpl("Test test_isEnabled not written");
+	// tested in setEnabled method
 }
 
 public void test_isVisible() {
@@ -175,11 +246,11 @@ public void test_isVisible() {
 }
 
 public void test_removeHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	warnUnimpl("Test test_removeHelpListenerLorg_eclipse_swt_events_HelpListener not written");
+	// tested in addHelpListener method
 }
 
 public void test_removeMenuListenerLorg_eclipse_swt_events_MenuListener() {
-	warnUnimpl("Test test_removeMenuListenerLorg_eclipse_swt_events_MenuListener not written");
+	// tested in addMenuListener method
 }
 
 public void test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem() {
@@ -194,7 +265,10 @@ public void test_setDefaultItemLorg_eclipse_swt_widgets_MenuItem() {
 }
 
 public void test_setEnabledZ() {
-	warnUnimpl("Test test_setEnabledZ not written");
+	menu.setEnabled(true);
+	assertTrue(menu.getEnabled());
+	menu.setEnabled(false);
+	assertFalse(menu.getEnabled());
 }
 
 public void test_setLocationII() {

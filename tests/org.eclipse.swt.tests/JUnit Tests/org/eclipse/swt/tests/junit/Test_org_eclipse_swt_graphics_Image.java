@@ -14,8 +14,9 @@ package org.eclipse.swt.tests.junit;
 import java.io.*;
 
 import junit.framework.*;
-import junit.textui.TestRunner;
+import junit.textui.*;
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
@@ -42,7 +43,27 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceII not written");
+	Image image;
+	try {
+		image = new Image(display, -1, 10);
+		image.dispose();
+		fail("No exception thrown for width <= 0");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		image = new Image(display, 10, 0);
+		image.dispose();
+		fail("No exception thrown for height <= 0");
+	} catch (IllegalArgumentException e) {
+	}
+
+	image = new Image(null, 10, 10);
+	image.dispose();
+
+	image = new Image(display, 10, 10);
+	image.dispose();
+		
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI() {
@@ -50,39 +71,241 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle not written");
+	Image image;
+	Rectangle bounds = null;
+
+	try {
+		image = new Image(display, bounds);
+		image.dispose();
+		fail("No exception thrown for rectangle == null");
+	} catch (IllegalArgumentException e) {
+	}
+
+	bounds = new Rectangle(0, 0, -1, 10);
+	try {
+		image = new Image(display, bounds);
+		image.dispose();
+		fail("No exception thrown for width <= 0");
+	} catch (IllegalArgumentException e) {
+	}
+
+	bounds = new Rectangle(0, 0, 10, -1);
+	try {
+		image = new Image(display, bounds);
+		image.dispose();
+		fail("No exception thrown for height <= 0");
+	} catch (IllegalArgumentException e) {
+	}
+
+	// valid images
+	bounds = new Rectangle(0, 0, 10, 10);
+	image = new Image(null, bounds);
+	image.dispose();
+	
+	image = new Image(display, bounds);
+	image.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData not written");
+	ImageData data = null;
+	Image image = null;
+	
+	try {
+		image = new Image(display, data);
+		image.dispose();
+		fail("No exception thrown for ImageData == null");
+	} catch (IllegalArgumentException e) {
+	}
+
+	data = new ImageData(10, 10, 1, new PaletteData(0xff0000, 0x00ff00, 0x0000ff));
+	try {
+		image = new Image(display, data);
+		fail("Unsupported color depth");
+		image.dispose();
+	} catch (SWTException e) {
+	}
+
+	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	image = new Image(null, data);
+	image.dispose();
+
+	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	image = new Image(display, data);
+	image.dispose();
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData() {
+	ImageData data = null;
+	ImageData data1 = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	Image image = null;
+	
+	try {
+		image = new Image(display, data, data1);
+		image.dispose();
+		fail("No exception thrown for ImageData source == null");
+	} catch (IllegalArgumentException e) {
+	}
+
+	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data1 = null;
+	try {
+		image = new Image(display, data, data1);
+		image.dispose();
+		fail("No exception thrown for ImageData mask == null");
+	} catch (IllegalArgumentException e) {
+	}
+
+	data = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data1 = new ImageData(1, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	try {
+		image = new Image(display, data, data1);
+		image.dispose();
+		fail("No exception thrown for ImageData source width != ImageData mask width");
+	} catch (IllegalArgumentException e) {
+	}
+
+	data = new ImageData(10, 1, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data1 = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	try {
+		image = new Image(display, data, data1);
+		image.dispose();
+		fail("No exception thrown for ImageData source height != ImageData mask height");
+	} catch (IllegalArgumentException e) {
+	}
+
+	data = new ImageData(10, 10, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	data1 = new ImageData(10, 10, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	try {
+		image = new Image(display, data, data1);
+		image.dispose();
+		fail("No exception thrown for ImageData mask color depth != 1");
+	} catch (IllegalArgumentException e) {
+	}
+
+	// This test isn't finished yet, don't remove until it is!  Should test mask support.
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData not written");
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream not written");
+	InputStream stream = null;
+	Image image = null;
+	try {
+		try {
+			image = new Image(display, stream);
+			image.dispose();
+			fail("No exception thrown for InputStream == null");
+		} catch (IllegalArgumentException e) {
+		}
+		
+		stream = SwtTestCase.class.getResourceAsStream("empty.txt");
+		try {
+			image = new Image(display, stream);
+			image.dispose();
+			try {
+				stream.close();
+			} catch (IOException e) {}
+			fail("No exception thrown for invalid InputStream");
+		} catch (SWTException e) {
+		}
+	
+		// create valid images
+		int numFormats = SwtTestCase.imageFormats.length;
+		String fileName = SwtTestCase.imageFilenames[0];
+		Display[] displays = {display, null};
+		for (int j = 0; j < displays.length; j++) {
+			Display tempDisplay = displays[j];
+			for (int i=0; i<numFormats; i++) {
+				String format = SwtTestCase.imageFormats[i];
+				stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+				image = new Image(tempDisplay, stream);
+				image.dispose();
+				try {
+					stream.close();
+				} catch (IOException e) {}
+			}
+		}
+	} finally {
+		try {
+			stream.close();
+		} catch (Exception e) {
+		}
+	}
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String not written");
+	String filename = null;
+	try {
+		Image image = new Image(display, filename);
+		image.dispose();
+		fail("No exception thrown for filename == null");
+	} catch (IllegalArgumentException e) {
+	}
+	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
 }
 
 public void test_dispose() {
-	warnUnimpl("Test test_dispose not written");
+	// tested in isDisposed() method
 }
 
 public void test_equalsLjava_lang_Object() {
-	warnUnimpl("Test test_equalsLjava_lang_Object not written");
+	Image image = null;
+	Image image1 = null;;
+
+	try {
+		image = new Image(display, 10, 10);
+		image1 = image;
+	
+		assertFalse(":a:", image.equals(null));
+		
+		assertTrue(":b:", image.equals(image1));
+		
+		ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+		image.dispose();
+		image = new Image(display, imageData);
+		image1 = new Image(display, imageData);
+		assertFalse(":c:", image.equals(image1));
+	} finally {
+		try {
+			image.dispose();
+			image1.dispose();
+		} catch (Exception e) {}
+	}
 }
 
 public void test_getBackground() {
-	warnUnimpl("Test test_getBackground not written");
+	Image image = new Image(display, 10, 10);
+	image.dispose();
+	try {
+		image.getBackground();
+		fail("No exception thrown for disposed image");
+	} catch (SWTException e) {
+	}
+	// remainder tested in setBackground method
 }
 
 public void test_getBounds() {
-	warnUnimpl("Test test_getBounds not written");
+	Rectangle bounds = new Rectangle(0, 0, 10, 20);
+	Image image = new Image(display, bounds.width, bounds.height);
+	image.dispose();
+	try {
+		image.getBounds();
+		fail("No exception thrown for disposed image");
+	} catch (SWTException e) {
+		image.dispose();
+	}
+		
+	// creates bitmap image
+	image = new Image(display, bounds.width, bounds.height);
+	Rectangle bounds1 = image.getBounds();
+	image.dispose();
+	assertEquals(":a:", bounds, bounds1);
+	
+	// create icon image
+	ImageData imageData = new ImageData(bounds.width, bounds.height, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+	image = new Image(display, imageData);
+	bounds1 = image.getBounds();
+	image.dispose();
+	assertEquals(":b:", bounds, bounds1);
 }
 
 public void test_getImageData() {	
@@ -92,27 +315,106 @@ public void test_getImageData() {
 }
 
 public void test_hashCode() {
-	warnUnimpl("Test test_hashCode not written");
+	Image image = null;
+	Image image1 = null;;
+
+	try {
+		image = new Image(display, 10, 10);
+		image1 = image;
+	
+		assertEquals(":a:", image1.hashCode(), image.hashCode());
+		
+		ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
+		image.dispose();
+		image = new Image(display, imageData);
+		image1 = new Image(display, imageData);
+		boolean equals = (image1.hashCode() == image.hashCode());
+		assertFalse(":b:", equals);
+	} finally {
+		try {
+			image.dispose();
+			image1.dispose();
+		} catch (Exception e) {}
+	}
 }
 
 public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
-	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
+	// javadoc states:
+	// <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+	// API for <code>Image</code>
 }
 
 public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
-	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
+	// javadoc states:
+	// <b>IMPORTANT:</b> This method is <em>not</em> part of the public
+	// API for <code>Image</code>
 }
 
 public void test_isDisposed() {
-	warnUnimpl("Test test_isDisposed not written");
+	Image image = new Image(display, 10, 10);
+	assertFalse(":a:", image.isDisposed());
+	image.dispose();
+	assertTrue(":b:", image.isDisposed());
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	warnUnimpl("Test test_setBackgroundLorg_eclipse_swt_graphics_Color not written");
+	Image image = new Image(display, 10, 10);
+	Color color = new Color(display, 255, 255, 255);
+
+	try {
+		image.setBackground(null);
+		image.dispose();
+		color.dispose();
+		fail("No exception thrown for color == null");
+	} catch (IllegalArgumentException e) {
+		image.dispose();
+		color.dispose();
+	}
+
+	image = new Image(display, 10, 10);
+	color = new Color(display, 255, 255, 255);
+	color.dispose();
+	try {
+		image.setBackground(color);
+		image.dispose();
+		fail("No exception thrown for disposed color");
+	} catch (IllegalArgumentException e) {
+	}
+
+	try {
+		image.dispose();
+		color = new Color(display, 255, 255, 255);
+		image.setBackground(color);
+		color.dispose();
+		fail("No exception thrown for disposed image");
+	} catch (SWTException e) {
+	}
+	
+	// this image does not have a transparent pixel by default so setBackground has not effect
+	image = new Image(display, 10, 10);
+	image.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+	color = image.getBackground();
+	image.dispose();
+	assertNull(":a:", color);
+	
+	// simulate a transparent pixel
+	ImageData imageData = new ImageData(10, 10, 2, new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)}));
+	imageData.transparentPixel = 0;
+	image = new Image(display, imageData);
+	image.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
+	color = image.getBackground();
+	image.dispose();
+	assertEquals(":b:", display.getSystemColor(SWT.COLOR_GREEN), color);
 }
 
 public void test_toString() {
-	warnUnimpl("Test test_toString not written");
+	Image image = new Image(display, 10, 10);
+	try {
+		assertNotNull(image.toString());
+		assertTrue(image.toString().length() > 0);
+	} finally {
+		image.dispose();
+	}
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceII() {

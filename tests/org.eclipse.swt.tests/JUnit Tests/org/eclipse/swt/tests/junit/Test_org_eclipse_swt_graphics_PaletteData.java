@@ -11,6 +11,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import org.eclipse.swt.graphics.*;
+
 import junit.framework.*;
 import junit.textui.*;
 
@@ -36,23 +38,101 @@ protected void tearDown() {
 }
 
 public void test_Constructor$Lorg_eclipse_swt_graphics_RGB() {
-	warnUnimpl("Test test_Constructor$Lorg_eclipse_swt_graphics_RGB not written");
+	try {
+		new PaletteData(null);
+		fail("No exception thrown for rgb == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+	PaletteData data = new PaletteData(new RGB[] {});
+	assertFalse(":a:", data.isDirect);
+
+	new PaletteData(new RGB[] {null, null});
+	assertFalse(":b:", data.isDirect);
+
+	new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255)});
+	assertFalse(":c:", data.isDirect);
 }
 
 public void test_ConstructorIII() {
-	warnUnimpl("Test test_ConstructorIII not written");
+	PaletteData data = new PaletteData(0, 0, 0);
+	assertTrue(":a:", data.isDirect);
+
+	data = new PaletteData(-1, -1, -1);
+	assertTrue(":b:", data.isDirect);
+
+	data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
+	assertTrue(":c:", data.isDirect);
 }
 
 public void test_getPixelLorg_eclipse_swt_graphics_RGB() {
-	warnUnimpl("Test test_getPixelLorg_eclipse_swt_graphics_RGB not written");
+	// indexed palette tests	
+	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)};
+	PaletteData data = new PaletteData(rgbs);
+	
+	try {
+		data.getPixel(null);
+		fail("No exception thrown for indexed palette with rgb == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+	
+	try {
+		data.getPixel(new RGB(0, 0, 1));
+		fail("No exception thrown for rgb not found");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+	assertEquals(":a:", rgbs.length-1, data.getPixel(rgbs[rgbs.length-1]));
+	
+	// direct palette tests	
+	RGB rgb =new RGB(0x32, 0x64, 0x96);
+	data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
+	
+	try {
+		data.getPixel(null);
+		fail("No exception thrown for direct palette with rgb == null");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+	assertEquals(":b:", 0x326496, data.getPixel(rgb));
 }
 
 public void test_getRGBI() {
-	warnUnimpl("Test test_getRGBI not written");
+	// indexed palette tests	
+	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255), new RGB(50, 100, 150)};
+	PaletteData data = new PaletteData(rgbs);
+
+	try {
+		data.getRGB(rgbs.length);
+		fail("No exception thrown for nonexistent pixel");
+	}
+	catch (IllegalArgumentException e) {
+	}
+
+	assertEquals(":a:", rgbs[rgbs.length-1], data.getRGB(rgbs.length-1));
+
+	// direct palette tests	
+	RGB rgb =new RGB(0x32, 0x64, 0x96);
+	data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
+	
+	assertEquals(":b:", rgb, data.getRGB(0x326496));
 }
 
 public void test_getRGBs() {
-	warnUnimpl("Test test_getRGBs not written");
+	// indexed palette tests	
+	RGB[] rgbs = {new RGB(0, 0, 0), new RGB(255, 255, 255)};
+	PaletteData data = new PaletteData(rgbs);
+	
+	assertEquals(":a:", rgbs, data.getRGBs());
+	
+	// direct palette tests	
+	data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
+	
+	assertNull(":b:", data.getRGBs());
 }
 
 public static Test suite() {

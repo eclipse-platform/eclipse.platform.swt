@@ -11,8 +11,13 @@
 package org.eclipse.swt.tests.junit;
 
 
+import java.io.*;
+
 import junit.framework.*;
 import junit.textui.*;
+
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.ImageLoader
@@ -36,39 +41,165 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	warnUnimpl("Test test_Constructor not written");
+	ImageLoader loader = new ImageLoader();
 }
 
 public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
-	warnUnimpl("Test test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener not written");
+	ImageLoader loader = new ImageLoader();
+	ImageLoaderListener loaderListener = new ImageLoaderListener() {
+		public void imageDataLoaded(ImageLoaderEvent e) {
+			loaderListenerCalled = true;
+		};
+	};
+	
+	try {
+		loader.addImageLoaderListener(null);
+		fail("No exception thrown for addImageLoaderListener with null argument");
+	} catch (IllegalArgumentException e) {
+	}
+
+	assertFalse(":a:", loader.hasListeners());
+	loader.addImageLoaderListener(loaderListener);
+	assertTrue(":b:", loader.hasListeners());
+
+	loaderListenerCalled = false;
+	InputStream stream = SwtTestCase.class.getResourceAsStream("interlaced_target.png");	
+	loader.load(stream);
+	try {
+		stream.close();
+	} catch (IOException e) {}
+	assertTrue(":c:", loaderListenerCalled);
+
+	loaderListenerCalled = false;
+	stream = SwtTestCase.class.getResourceAsStream("target.png");	
+	loader.load(stream);
+	try {
+		stream.close();
+	} catch (IOException e) {}
+	assertFalse(":d:", loaderListenerCalled);
+
+	loaderListenerCalled = false;
+	loader.notifyListeners(new ImageLoaderEvent(loader, loader.data[0], 0, true));
+	assertTrue(":e:", loaderListenerCalled);
+
+	loader.removeImageLoaderListener(loaderListener);
+	assertFalse(":f:", loader.hasListeners());
 }
 
 public void test_hasListeners() {
-	warnUnimpl("Test test_hasListeners not written");
+	// tested in addImageLoaderListener method
 }
 
 public void test_loadLjava_io_InputStream() {
-	warnUnimpl("Test test_loadLjava_io_InputStream not written");
+	ImageLoader loader = new ImageLoader();
+	InputStream stream = null;
+	try {
+		try {
+			loader.load(stream);
+			fail("No exception thrown for load inputStream == null");
+		} catch (IllegalArgumentException e) {
+		}
+		
+		stream = SwtTestCase.class.getResourceAsStream("empty.txt");
+		try {
+			loader.load(stream);
+			try {
+				stream.close();
+			} catch (IOException e) {}
+			fail("No exception thrown for load from invalid inputStream");
+		} catch (SWTException e) {
+		}
+	
+		int numFormats = SwtTestCase.imageFormats.length;
+		String fileName = SwtTestCase.imageFilenames[0];
+		for (int i=0; i<numFormats; i++) {
+			String format = SwtTestCase.imageFormats[i];
+			stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+			loader.load(stream);
+			try {
+				stream.close();
+			} catch (IOException e) {}
+		}
+	} finally {
+		try {
+			stream.close();
+		} catch (Exception e) {
+		}
+	}
 }
 
 public void test_loadLjava_lang_String() {
-	warnUnimpl("Test test_loadLjava_lang_String not written");
+	ImageLoader loader = new ImageLoader();
+	String filename = null;
+	try {
+		loader.load(filename);
+		fail("No exception thrown for load filename == null");
+	} catch (IllegalArgumentException e) {
+	}
+	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
 }
 
 public void test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent() {
-	warnUnimpl("Test test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent not written");
+	// tested in addImageLoaderListener method
 }
 
 public void test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
-	warnUnimpl("Test test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener not written");
+	// tested in addImageLoaderListener method
 }
 
 public void test_saveLjava_io_OutputStreamI() {
-	warnUnimpl("Test test_saveLjava_io_OutputStreamI not written");
+	ImageLoader loader = new ImageLoader();
+	ByteArrayOutputStream outStream = null;
+	InputStream inStream = null;
+	try {
+		try {
+			loader.save(outStream, 0);
+			fail("No exception thrown for save outputStream == null");
+		} catch (IllegalArgumentException e) {
+		}
+	
+		outStream = new ByteArrayOutputStream();
+		try {
+			loader.save(outStream, -1);
+			fail("No exception thrown for save to invalid outputStream format");
+		} catch (IllegalArgumentException e) {
+		}
+		
+		String filename = SwtTestCase.imageFilenames[0];
+		// must use jpg since save is not implemented yet in png format		
+		String filetype = "jpg";
+		inStream = SwtTestCase.class.getResourceAsStream(filename + "." + filetype);	
+		loader.load(inStream);
+		try {
+			inStream.close();
+		} catch (IOException e) {}
+	
+		String[] formats = {"bmp", "bmp_rle", "gif", "ico", "jpg", "png", "tif"};
+		for (int i = 0; i < formats.length; i++) {
+			if (formats[i].equals(filetype)) {
+				// save using the appropriate format
+				loader.save(outStream, i);
+				break;
+			}
+		}
+	} finally {
+		try {
+			outStream.close();
+		} catch (Exception e) {
+		}
+	}
+	
 }
 
 public void test_saveLjava_lang_StringI() {
-	warnUnimpl("Test test_saveLjava_lang_StringI not written");
+	ImageLoader loader = new ImageLoader();
+	String filename = null;
+	try {
+		loader.save(filename, 0);
+		fail("No exception thrown for save filename == null");
+	} catch (IllegalArgumentException e) {
+	}
+	// j2se and j2me(cdc) can load from a filename but, j2me(cldc) throws an exception
 }
 
 public static Test suite() {
@@ -104,4 +235,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_saveLjava_io_OutputStreamI")) test_saveLjava_io_OutputStreamI();
 	else if (getName().equals("test_saveLjava_lang_StringI")) test_saveLjava_lang_StringI();
 }
+/* custom */
+boolean loaderListenerCalled;
 }
