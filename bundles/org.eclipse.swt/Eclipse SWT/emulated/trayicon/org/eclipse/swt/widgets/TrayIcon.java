@@ -11,7 +11,9 @@ public class TrayIcon extends Widget {
 	boolean visible;
 
 public TrayIcon (Display display) {
-	if (display == null) error (SWT.ERROR_NULL_ARGUMENT);
+//	checkSubclass();
+	if (display == null) display = Display.getCurrent ();
+	if (display == null) display = Display.getDefault ();
 	if (!display.isValidThread ()) {
 		error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	}
