@@ -123,7 +123,7 @@ public Object getContents(Transfer transfer) {
 	if (display == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
 	if (transfer == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (!transfer instanceof TextTransfer) return null;
+	if (!(transfer instanceof TextTransfer)) return null;
 	return display.getData("TextTransfer");
 }
 
