@@ -274,7 +274,11 @@ public void dispose () {
 	* LoadCursor() does not leak.
 	*/
 	if (OS.GetCursor() == handle) {
-		OS.SetCursor(OS.LoadCursor(0, OS.IDC_ARROW));
+		// This code intentionally commented out.
+		// Disposing of a system cursor that is the 
+		// cursor currently being displayed will cause the
+		// arrow cursor to be displayed.
+//		OS.SetCursor(OS.LoadCursor(0, OS.IDC_ARROW));
 	}
 	
 	/*
