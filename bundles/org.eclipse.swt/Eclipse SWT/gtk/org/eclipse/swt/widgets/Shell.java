@@ -401,7 +401,8 @@ void adjustTrim () {
 }
 
 void bringToTop (boolean force) {
-	if (!OS.GTK_WIDGET_VISIBLE (shellHandle)) return; 
+	if (!OS.GTK_WIDGET_VISIBLE (shellHandle)) return;
+	Display display = this.display;
 	Shell activeShell = display.activeShell;
 	if (activeShell == this) return;
 	if (!force) {
@@ -1064,6 +1065,7 @@ void setCursor (int /*long*/ cursor) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (((state & DISABLED) == 0) == enabled) return;
+	Display display = this.display;
 	Control control = null;
 	boolean fixFocus = false;
 	if (!enabled) {
