@@ -522,10 +522,14 @@ private void onKeyDown(Event e) {
  * Dispose the items of the receiver
  */
 private void onDispose() {
+	/*
+	 * Usually when an item is disposed, destroyItem will change the size of the items array, 
+	 * reset the bounds of all the tabs and manage the widget associated with the tab.
+	 * Since the whole folder is being disposed, this is not necessary.  For speed
+	 * the inDispose flag is used to skip over this part of the item dispose.
+	 */
 	inDispose = true;
 	
-	// items array is resized during CTabItem.dispose
-	// it is set to null if the last item is removed
 	int length = items.length;
 	for (int i = 0; i < length; i++) {						
 		if (items[i] != null) {

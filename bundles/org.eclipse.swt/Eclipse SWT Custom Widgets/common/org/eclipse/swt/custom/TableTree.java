@@ -396,6 +396,12 @@ public int indexOf (TableTreeItem item) {
 }
 
 void onDispose(Event e) {
+	/*
+	 * Usually when an item is disposed, destroyItem will change the size of the items array
+	 * and dispose of the underlying table items.
+	 * Since the whole table tree is being disposed, this is not necessary.  For speed
+	 * the inDispose flag is used to skip over this part of the item dispose.
+	 */
 	inDispose = true;
 	for (int i = 0; i < items.length; i++) {
 		items[i].dispose();
