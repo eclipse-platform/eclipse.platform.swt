@@ -153,8 +153,8 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_SIZEWE: 		handle = OS.kThemeResizeLeftRightCursor; break;
 		case SWT.CURSOR_SIZEN: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZES: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZEE: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZEW: 		handle = OS.kThemeCrossCursor; break;
+		case SWT.CURSOR_SIZEE: 		handle = OS.kThemeResizeRightCursor; break;
+		case SWT.CURSOR_SIZEW: 		handle = OS.kThemeResizeLeftCursor; break;
 		case SWT.CURSOR_SIZENE: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZESE: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZESW: 		handle = OS.kThemeCrossCursor; break;
@@ -277,6 +277,8 @@ public void dispose () {
 		case OS.kThemeIBeamCursor:
 		case OS.kThemeNotAllowedCursor:
 		case OS.kThemeResizeLeftRightCursor:
+		case OS.kThemeResizeLeftCursor:
+		case OS.kThemeResizeRightCursor:
 			break;
 		default:
 			OS.DisposePtr(handle);
