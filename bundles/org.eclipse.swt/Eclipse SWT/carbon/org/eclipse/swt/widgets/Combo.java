@@ -268,7 +268,7 @@ public void addSelectionListener(SelectionListener listener) {
  * @see VerifyListener
  * @see #removeVerifyListener
  */
-void addVerifyListener (VerifyListener listener) {
+public void addVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
@@ -1234,7 +1234,7 @@ public void removeSelectionListener (SelectionListener listener) {
  * @see VerifyListener
  * @see #addVerifyListener
  */
-void removeVerifyListener (VerifyListener listener) {
+public void removeVerifyListener (VerifyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
