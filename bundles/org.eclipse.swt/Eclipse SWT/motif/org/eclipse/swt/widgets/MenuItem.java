@@ -884,7 +884,7 @@ boolean translateAccelerator (int accel, boolean doit) {
 }
 int XmNactivateCallback (int w, int client_data, int call_data) {
 	if ((style & SWT.CASCADE) != 0) {
-		postEvent (SWT.Arm);
+		sendEvent (SWT.Arm);
 	}
 	if (!isEnabled ()) return 0;
 	XmAnyCallbackStruct struct = new XmAnyCallbackStruct ();
@@ -907,11 +907,17 @@ int XmNactivateCallback (int w, int client_data, int call_data) {
 	return 0;
 }
 int XmNarmCallback (int w, int client_data, int call_data) {
-	postEvent (SWT.Arm);
+	sendEvent (SWT.Arm);
 	return 0;
 }
 int XmNcascadingCallback (int w, int client_data, int call_data) {
-	postEvent (SWT.Arm);
+	/*
+	* Bug in Motif.  When XmNlabelString is set as a result of
+	* an XmNcascadingCallback after the callback has returned,
+	* Motif measures the new string properly but does not draw
+	* it.  The fix is to send rather than post the SWT.Arm event.
+	*/
+	sendEvent (SWT.Arm);
 	return 0;
 }
 int XmNhelpCallback (int w, int client_data, int call_data) {
