@@ -1291,12 +1291,6 @@ void subclass () {
 }
 
 boolean translateTraversal (MSG msg) {
-	/*
-	* Feature in Windows.  For some reason, when the
-	* user presses tab, return or escape, Windows beeps.
-	* The fix is to look for these keys and not call
-	* the window proc.
-	*/
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText != 0 && msg.hwnd == hwndText) {
 		switch (msg.wParam) {
@@ -1305,19 +1299,6 @@ boolean translateTraversal (MSG msg) {
 				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
 					return false;
 				}
-				// FALL THROUGH
-			case OS.VK_TAB:
-			case OS.VK_RETURN:
-				boolean translated = super.translateTraversal (msg);
-				if (!translated) {
-					if (sendKeyEvent (SWT.KeyDown, msg.message, msg.wParam, msg.lParam)) {
-						if (msg.wParam == OS.VK_RETURN) {
-							sendEvent (SWT.DefaultSelection);
-							// widget could be disposed at this point
-						}
-					}
-				}
-				return true;
 		}
 	}
 	return super.translateTraversal (msg);
@@ -1392,8 +1373,18 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 LRESULT WM_CHAR (int wParam, int lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
-	if (wParam == OS.VK_RETURN) {
-		postEvent (SWT.DefaultSelection);
+	/*
+	* Feature in Windows.  For some reason, when the
+	* widget is a single line text widget, when the
+	* user presses tab or return, Windows beeps.
+	* The fix is to look for these keys and not call
+	* the window proc.
+	*/
+	switch (wParam) {
+		case OS.VK_RETURN:
+			postEvent (SWT.DefaultSelection);
+			// FALL THROUGH
+		case OS.VK_TAB: return LRESULT.ZERO;
 	}
 	return result;
 }
