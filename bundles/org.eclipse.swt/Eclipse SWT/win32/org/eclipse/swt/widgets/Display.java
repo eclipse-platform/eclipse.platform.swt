@@ -197,6 +197,22 @@ public class Display extends Device {
 	String [] keys;
 	Object [] values;
 	
+	/*
+	* TEMPORARY CODE.  Install the runnable that
+	* gets the current display. This code will
+	* be removed in the future.
+	*/
+	static {
+		DeviceFinder = new Runnable () {
+			public void run () {
+				CurrentDevice = getCurrent ();
+				if (CurrentDevice == null) {
+					CurrentDevice = getDefault ();
+				}
+			}
+		};
+	}
+	
 /**
  * Constructs a new instance of this class.
  * <p>
