@@ -1330,8 +1330,6 @@ int processIMEFocusIn () {
 	* XmImSetFocusValues.
 	*/
 	int[] argList = {
-		OS.XmNforeground, getForegroundPixel(),
-		OS.XmNbackground, getBackgroundPixel(),
 		OS.XmNspotLocation, ptr,
 		OS.XmNfontList, font.handle,
 	};
@@ -2204,6 +2202,7 @@ public void setFont (Font font) {
 	int fontHandle = fontHandle ();
 	int [] argList2 = {OS.XmNfontList, font.handle};
 	OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
+	OS.XmImSetValues (handle, argList2, argList2.length / 2);
 
 	/* Restore the widget size */
 	OS.XtSetValues (handle, argList1, argList1.length / 2);
