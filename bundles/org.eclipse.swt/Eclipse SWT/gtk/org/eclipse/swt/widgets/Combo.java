@@ -998,9 +998,9 @@ public void setItems (String [] items) {
 }
 	
 void setItems (String [] items, boolean keepText, boolean keepSelection) {
+	this.items = items;
 	int selectedIndex = -1;
 	if (keepSelection) selectedIndex = getSelectionIndex ();
-	this.items = items;
 	if (items.length == 0) {
 		int itemsList = OS.gtk_container_get_children (listHandle);
 		if (itemsList != 0) {
