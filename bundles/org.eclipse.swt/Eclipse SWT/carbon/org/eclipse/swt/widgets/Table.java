@@ -52,7 +52,8 @@ public class Table extends Composite {
 	TableColumn [] columns;
 	GC paintGC;
 	int itemCount, columnCount, column_id, idCount, anchorFirst, anchorLast, headerHeight;
-	boolean ignoreRedraw, ignoreSelect, wasSelected, itemHeight;
+	boolean ignoreRedraw, ignoreSelect, wasSelected;
+	Rectangle imageBounds;
 	int showIndex, lastHittest;
 	static final int CHECK_COLUMN_ID = 1024;
 	static final int EXTRA_WIDTH = 24;
@@ -873,7 +874,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	Rectangle imageBounds = null;
 	if (image != null) {
 		imageBounds = image.getBounds ();
-		itemWidth += imageBounds.width + 2;
+		itemWidth += this.imageBounds.width + 2;
 	}
 	if (columnCount != 0) {
 		TableColumn column = columns [columnIndex];
@@ -881,8 +882,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		if ((column.style & SWT.RIGHT) != 0) x += width - itemWidth;
 	}
 	if (image != null) {
-		gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, x, y + (height - imageBounds.height) / 2, imageBounds.width, imageBounds.height);
-		x += imageBounds.width + 2;
+		gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, x, y + (height - this.imageBounds.height) / 2, this.imageBounds.width, this.imageBounds.height);
+		x += this.imageBounds.width + 2;
 	}
 	if (selected) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
@@ -1930,6 +1931,7 @@ void setFontStyle (Font font) {
 		if (item != null) item.width = -1;
 	}
 	setScrollWidth (items, true);
+	setItemHeight (null);
 }
 
 /**
@@ -2008,12 +2010,13 @@ public void setItemCount (int count) {
 }
 
 void setItemHeight (Image image) {
+	Rectangle bounds = image != null ? image.getBounds () : imageBounds;
+	if (bounds == null) return;
+	imageBounds = bounds;
 	short [] height = new short [1];
 	if (OS.GetDataBrowserTableViewRowHeight (handle, height) == OS.noErr) {
-		Rectangle bounds = image.getBounds ();
 		if (height [0] < bounds.height) {
 			OS.SetDataBrowserTableViewRowHeight (handle, (short) bounds.height);
-			itemHeight = true;
 		}
 	}
 }
@@ -2251,10 +2254,10 @@ public void setSelection (TableItem [] items) {
 void setTableEmpty () {
 	itemCount = anchorFirst = anchorLast = 0;
 	items = new TableItem [4];
-	if (itemHeight) {
+	if (imageBounds != null) {
 		/* Reset the item height to the font height */
+		imageBounds = null;
 		setFontStyle (font);
-		itemHeight = false;
 	}
 }
 

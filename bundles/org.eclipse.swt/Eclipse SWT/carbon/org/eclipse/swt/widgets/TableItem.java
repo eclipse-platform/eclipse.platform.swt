@@ -753,7 +753,7 @@ public void setImage (int index, Image image) {
 	}
 	int itemIndex = parent.indexOf (this);
 	if (itemIndex == -1) return;
-	if (!parent.itemHeight && image != null) {
+	if (parent.imageBounds == null && image != null) {
 		parent.setItemHeight (image);
 	}
 	if (index == 0)  {
