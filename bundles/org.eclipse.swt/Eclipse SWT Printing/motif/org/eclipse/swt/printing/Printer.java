@@ -77,6 +77,7 @@ public static PrinterData[] getPrinterList() {
 			int length = OS.strlen(address);
 			byte[] buffer = new byte [length];
 			OS.memmove(buffer, address, length);
+			/* Use the character encoding for the default locale */
 			name = new String(Converter.mbcsToWcs(null, buffer));
 		}
 		printerList[i] = new PrinterData(Device.XDefaultPrintServer, name);
@@ -150,6 +151,7 @@ protected void init() {
 	super.init();
 	
 	/* Create the printContext for the printer */
+	/* Use the character encoding for the default locale */
 	byte[] name = Converter.wcsToMbcs(null, data.name, true);
 	printContext = OS.XpCreateContext(xDisplay, name);
 	if (printContext == OS.None) {
@@ -170,6 +172,7 @@ protected void init() {
 	OS.XtDestroyWidget(shellHandle);
 	
 	/* Initialize the default font */
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs(null, "-*-courier-medium-r-*-*-*-120-*-*-*-*-*-*", true);
 	int fontListEntry = OS.XmFontListEntryLoad(xDisplay, buffer, 0, OS.XmFONTLIST_DEFAULT_TAG);
 	if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
@@ -251,6 +254,7 @@ public void internal_dispose_GC(int xGC, GCData data) {
  */
 public boolean startJob(String jobName) {
 	checkDevice();
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs(null, "*job-name: " + jobName, true);
 	OS.XpSetAttributes(xDisplay, printContext, OS.XPJobAttr, buffer, OS.XPAttrMerge);
 	OS.XpStartJob(xDisplay, OS.XPSpool);
@@ -348,6 +352,7 @@ public void endPage() {
  */
 public Point getDPI() {
 	checkDevice();
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs(null, "default-printer-resolution", true);
 	int pool = OS.XpGetOneAttribute(xDisplay, printContext, OS.XPDocAttr, buffer);
     int length = OS.strlen(pool);
@@ -358,6 +363,7 @@ public Point getDPI() {
 	int res = 300; // default
 	if (resolution.length() == 0) {
 		/* If we can't get the info from the DocAttrs, ask the printer. */
+		/* Use the character encoding for the default locale */
 		buffer = Converter.wcsToMbcs(null, "printer-resolutions-supported", true);
 		pool = OS.XpGetOneAttribute(xDisplay, printContext, OS.XPPrinterAttr, buffer);
     		length = OS.strlen(pool);

@@ -67,27 +67,11 @@ public abstract class Widget {
 	
 	/* Global widget variables */
 	static final char Mnemonic = '&';
-	static final boolean IsAIX, IsSunOS, IsLinux;
+
+	/* DBCS flags */
+	static final boolean IsDBLocale;
 	static {
-		
-		/* Initialize the X/MOTIF flags */
-		String osName = System.getProperty ("os.name");
-		if (osName.equals("Linux")) {
-			IsLinux = true;
-			IsAIX = IsSunOS = false;
-		} else {
-			if (osName.equals("AIX")) {
-				IsAIX = true;
-				IsLinux = IsSunOS = false;
-			} else {
-				if (osName.equals("Solaris")) {
-					IsSunOS = true;
-					IsLinux = IsAIX = false;
-				} else {
-					IsLinux = IsSunOS = IsAIX = false;
-				}
-			}
-		}
+		IsDBLocale = OS.MB_CUR_MAX () != 1;
 	}
 Widget () {
 	/* Do nothing */
@@ -463,6 +447,9 @@ void manageChildren () {
 	/* Do nothing */
 }
 char mbcsToWcs (char ch) {
+	return mbcsToWcs (ch, null);
+}
+char mbcsToWcs (char ch, String codePage) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
 	byte [] buffer;
@@ -474,7 +461,7 @@ char mbcsToWcs (char ch) {
 		buffer [0] = (byte) ((key >> 8) & 0xFF);
 		buffer [1] = (byte) (key & 0xFF);
 	}
-	char [] result = Converter.mbcsToWcs (null, buffer);
+	char [] result = Converter.mbcsToWcs (codePage, buffer);
 	if (result.length == 0) return 0;
 	return result [0];
 }
@@ -853,9 +840,12 @@ int topHandle () {
 	return handle;
 }
 char wcsToMbcs (char ch) {
+	return wcsToMbcs (ch, null);
+}
+char wcsToMbcs (char ch, String codePage) {
 	int key = ch & 0xFFFF;
 	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (null, new char [] {ch}, false);
+	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
 	if (buffer.length == 1) return (char) buffer [0];
 	if (buffer.length == 2) {
 		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));

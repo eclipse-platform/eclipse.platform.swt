@@ -57,6 +57,7 @@ static int getDesktop( Display display ) {
 	// Obtain the atoms for the various window manager signature properties.
 	int desktop = DESKTOP_UNKNOWN;
 	int xDisplay = display.xDisplay;
+	/* Use the character encoding for the default locale */
 	byte[] gnomeName = Converter.wcsToMbcs (null, "GNOME_NAME_SERVER", true);
 	byte[] cdeName   = Converter.wcsToMbcs (null, "DTWM_IS_RUNNING", true);
 	byte[] kdeName   = Converter.wcsToMbcs (null, "KWIN_RUNNING", true);
@@ -474,12 +475,14 @@ private static String[] parseCommand( String cmd ) {
 
 
 static String gnome_getDataDirectory(String dirName) {
+	/* Use the character encoding for the default locale */
 	byte [] nameBuffer = Converter.wcsToMbcs (null, dirName, true);
 	int ptr = GNOME.gnome_datadir_file(nameBuffer);
 	if (ptr == 0) return null;
 	int length = OS.strlen(ptr);
 	byte[] dirBuffer = new byte[length];
 	OS.memmove(dirBuffer, ptr, length);
+	/* Use the character encoding for the default locale */
 	return new String(Converter.mbcsToWcs(null, dirBuffer));
 }
 
@@ -489,20 +492,24 @@ static String gnome_getHomeDirectory() {
 	int length = OS.strlen(ptr);
 	byte[] homeDirBuffer = new byte[length];
 	OS.memmove(homeDirBuffer, ptr, length);
+	/* Use the character encoding for the default locale */
 	return new String(Converter.mbcsToWcs(null, homeDirBuffer));
 }
 
 static String gnome_getMimeType(String name) {
+	/* Use the character encoding for the default locale */
 	byte [] nameBuffer = Converter.wcsToMbcs (null, name, true);
 	int ptr = GNOME.gnome_mime_type(nameBuffer);
 	if (ptr == 0) return null;
 	int length = OS.strlen(ptr);
 	byte[] mimeBuffer = new byte[length];
 	OS.memmove(mimeBuffer, ptr, length);
+	/* Use the character encoding for the default locale */
 	return new String(Converter.mbcsToWcs(null, mimeBuffer));
 }
 
 static String gnome_getMimeValue(String mimeType, String key) {
+	/* Use the character encoding for the default locale */
 	byte [] typeBuffer = Converter.wcsToMbcs (null, mimeType, true);
 	byte [] keyBuffer = Converter.wcsToMbcs (null, key, true);
 	int ptr = GNOME.gnome_mime_get_value(typeBuffer, keyBuffer);
@@ -512,6 +519,7 @@ static String gnome_getMimeValue(String mimeType, String key) {
 	int length = OS.strlen(ptr);
 	byte[] valueBuffer = new byte[length];
 	OS.memmove(valueBuffer, ptr, length);
+	/* Use the character encoding for the default locale */
 	return new String(Converter.mbcsToWcs(null, valueBuffer));
 }
 
@@ -521,6 +529,8 @@ static boolean kde_init () {
 	} catch (UnsatisfiedLinkError e) {
 		return false;
 	}
+
+	/* Use the character encoding for the default locale */
 	byte [] nameBuffer = Converter.wcsToMbcs( null, "SWT", true );
 	int qcString = KDE.QCString_new( nameBuffer );
 	KDE.KApplication_new( qcString );
@@ -529,6 +539,7 @@ static boolean kde_init () {
 }
 
 private static String kde_getMimeTypeCommand( String mimeType ) {
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (null, mimeType, true);
 	int qMimeType = KDE.QString_new( buffer );
 	int serviceList = KDE.KMimeType_offers( qMimeType );
@@ -608,6 +619,7 @@ static String kde_convertQStringAndFree (int qString) {
 	int length = KDE.strlen (charString);
 	byte[] buffer = new byte [length];
 	KDE.memmove (buffer, charString, length);
+	/* Use the character encoding for the default locale */
 	String answer = new String (Converter.mbcsToWcs (null, buffer));
 		
 	KDE.QCString_delete (qCString);
@@ -678,10 +690,12 @@ public boolean execute (String fileName) {
 	switch (getDesktop( display )) {
 		case DESKTOP_KDE: {
 			String urlString = "file://" + fileName;
+			/* Use the character encoding for the default locale */
 			byte[] buffer = Converter.wcsToMbcs( null, urlString, true );
 			int qString = KDE.QString_new( buffer );
 			int url = KDE.KURL_new( qString );
 			KDE.QString_delete( qString );
+			/* Use the character encoding for the default locale */
 			buffer = Converter.wcsToMbcs (null, name, true);
 			int mimeTypeName = KDE.QString_new( buffer );
 			int pid = KDE.KRun_runURL( url, mimeTypeName );
@@ -723,6 +737,7 @@ public boolean execute (String fileName) {
 		}
 		
 		case DESKTOP_CDE: {
+			/* Use the character encoding for the default locale */
 			byte[] action = Converter.wcsToMbcs( null, command, true );
 			byte[] fileArg = Converter.wcsToMbcs( null, fileName, true );
 			Integer shell = (Integer) display.getData( cdeShell );
@@ -747,7 +762,8 @@ public boolean execute (String fileName) {
 public ImageData getImageData () {
 	String iconPath = null;
 	switch (getDesktop( display )) {
-		case DESKTOP_KDE: {	
+		case DESKTOP_KDE: {
+			/* Use the character encoding for the default locale */
 			byte [] buffer = Converter.wcsToMbcs (null, name, true);
 			int mimeTypeName = KDE.QString_new( buffer );
 			int mimeType = KDE.KMimeType_mimeType( mimeTypeName );
@@ -783,6 +799,7 @@ public ImageData getImageData () {
 		int screen  = OS.XDefaultScreenOfDisplay( xDisplay );
 		int fgPixel = OS.XWhitePixel( display.xDisplay, OS.XDefaultScreen( xDisplay ) );
 		int bgPixel = OS.XBlackPixel( display.xDisplay, OS.XDefaultScreen( xDisplay ) );
+		/* Use the character encoding for the default locale */
 		byte [] iconName = Converter.wcsToMbcs (null, iconPath, true);
 		int pixmap = OS.XmGetPixmap( screen, iconName, fgPixel, bgPixel );
     	if (pixmap == OS.XmUNSPECIFIED_PIXMAP) return null;
@@ -859,6 +876,7 @@ static boolean gnome_init () {
  */
 
 static String cde_getAttribute(String dataType, String attrName) {
+	/* Use the character encoding for the default locale */
 	byte [] dataTypeBuf = Converter.wcsToMbcs (null, dataType, true);
     byte [] attrNameBuf = Converter.wcsToMbcs (null, attrName, true);
     byte [] optNameBuf  = null;
@@ -868,6 +886,7 @@ static String cde_getAttribute(String dataType, String attrName) {
     byte[] attrValueBuf = new byte[length];
     OS.memmove(attrValueBuf, attrValue, length);
     CDE.DtDtsFreeAttributeValue( attrValue );
+	/* Use the character encoding for the default locale */
     return new String(Converter.mbcsToWcs(null, attrValueBuf));
 }
 
@@ -932,6 +951,7 @@ static Hashtable cde_getDataTypeInfo() {
     		int length = OS.strlen(dataType);
     		byte[] dataTypeBuf = new byte[length];
     		OS.memmove(dataTypeBuf, dataType, length);
+			/* Use the character encoding for the default locale */
      		String dataTypeName = new String(Converter.mbcsToWcs(null, dataTypeBuf));
      		
 	   		// The data type is valid if it is not an action, and it has an extension and an action.
@@ -972,6 +992,7 @@ ImageData cde_getImageData() {
     byte [] maskName = null;
     int    pixmap = 0;
     for (int index = 0; index < cdeIconExt.length && pixmap == 0; index++) {
+		/* Use the character encoding for the default locale */
     	iconName = Converter.wcsToMbcs (null, icon + cdeIconExt[ index ], true);
     	maskName = Converter.wcsToMbcs (null, icon + cdeMaskExt[ index ], true);
 		pixmap = OS.XmGetPixmap( screen, iconName, fgPixel, bgPixel );
@@ -1016,6 +1037,7 @@ static boolean cde_init( Display display ) {
 		return false;
 	}
 
+	/* Use the character encoding for the default locale */
 	byte[] appName = Converter.wcsToMbcs( null, "SWT", true );
 	int xtContext  = OS.XtDisplayToApplicationContext( display.xDisplay );
 	int widgetClass = OS.TopLevelShellWidgetClass();

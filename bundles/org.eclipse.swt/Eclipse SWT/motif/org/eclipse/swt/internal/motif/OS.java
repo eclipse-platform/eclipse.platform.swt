@@ -14,6 +14,35 @@ public class OS {
 		Callback.loadLibrary ();
 	}
 
+	/* OS and locale Constants*/
+	public static final boolean IsAIX, IsSunOS, IsLinux;
+	public static final int CODESET;
+	public static final int LC_CTYPE;
+	static {
+		
+		/* Initialize the OS flags and locale constants */
+		String osName = System.getProperty ("os.name");
+		if (osName.equals("Linux")) {
+			IsLinux = true;
+			IsAIX = IsSunOS = false;
+		} else {
+			if (osName.equals("AIX")) {
+				IsAIX = true;
+				IsLinux = IsSunOS = false;
+			} else {
+				if (osName.equals("Solaris")) {
+					IsSunOS = true;
+					IsLinux = IsAIX = false;
+				} else {
+					IsLinux = IsSunOS = IsAIX = false;
+				}
+			}
+		}
+		
+		CODESET = OS.IsLinux ? 14 : 49;
+		LC_CTYPE = OS.IsAIX ? 1 : 0;
+	}
+	
 	/* BEGIN Visual classes */
 	//public static final int StaticGray = 0;
 	//public static final int GrayScale = 1;
@@ -742,6 +771,11 @@ public class OS {
 	public static final int XmNvisibleItemCount = malloc ("visibleItemCount");
 	public static final int XmNdropTransfers  = malloc ("dropTransfers");
 	public static final int XmNshowArrows = malloc ("showArrows");
+	public static final int XmNspotLocation = malloc ("spotLocation");
+//	public static final int XNFocusWindow = malloc ("focusWindow");
+//	public static final int XNInputStyle = malloc ("inputStyle");
+//	public static final int XNClientWindow = malloc ("clientWindow");
+//	public static final int XNQueryInputStyle = malloc ("queryInputStyle");
 			
 	/* Unknown */	
 	public static final int XmNdropSiteActivity = malloc("dropSiteActivity");
@@ -1114,7 +1148,7 @@ public static final native void XmTextSetString (int widget, byte [] value);
 public static final native void XmTextShowPosition (int widget, int position);
 public static final native void XmUpdateDisplay (int widget);
 public static final native boolean XmWidgetGetDisplayRect (int region, XRectangle rectangle);
-public static final native int XmbLookupString (int ic, XKeyEvent event, byte [] string, int size, int [] keysym, int [] status);
+//public static final native int XmbLookupString (int ic, XKeyEvent event, byte [] string, int size, int [] keysym, int [] status);
 public static final native void XtAddCallback (int widget, int callback_name, int callback, int client_data);
 public static final native void XtAddEventHandler (int widget, int event_mask, boolean nonmaskable, int proc, int client_data);
 public static final native void XtAddExposureToRegion (int event, int region);
@@ -1282,5 +1316,33 @@ public static final native void XtRemoveInput (int id);
 
 public static final native int XLoadQueryFont (int display, byte[] name);
 public static final native int XmFontListEntryCreate (byte[] tag, int type, int font);
+
+public static final native int XmImGetXIC (int widget, int input_policy, int[] args, int num_args);
+public static final native int XmImGetXIM (int widget);
+public static final native void XmImRegister (int widget, int reserved);
+//public static final native int XmImSetFocusValues (int widget, int[] args, int num_args);
+public static final native int XmImVaSetFocusValues(int widget, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7, int arg8, int arg9);
+public static final native int XmImSetValues (int widget, int[] args, int num_args);
+public static final native void XmImUnregister (int widget);
+public static final native void XmImUnsetFocus (int widget);
+//public static final native void XSetICFocus (int ic);
+//public static final native void XUnsetICFocus (int ic);
+//public static final native int XCreateIC (int im, int arg1, int arg2, int arg3, int arg4, int arg5, int arg6, int arg7);
+//public static final native int XSetICValues (int ic, int arg1, int arg2, int arg3);
+//public static final native int XGetICValues (int ic, int arg1, int arg2, int arg3);
+//public static final native int XGetIMValues (int im, int arg1, int arg2, int arg3);
+public static final native void memmove (int dest, short [] src, int count);
+//public static final native void memmove (char[] dest, int src, int count);
+//public static final native void memmove ( int dest, char[] src,int count);
+
+public static final native int nl_langinfo (int item);
+public static final native int iconv_open (byte[] tocode, byte[] fromcode);
+public static final native int iconv_close (int cd);
+public static final native int iconv (int cd, int[] inBuf, int[] inBytesLeft, int[] outBuf, int[] outBytesLeft);
+public static final native int MB_CUR_MAX ();
+public static final native int setlocale (int category, byte[] locale);
+
+public static final native int XCreateFontSet (int display, byte [] base_font_name_list, int [] missing_charset_list_return, int [] missing_charset_count_return, int [] def_string_return);
+public static final native int XLocaleOfFontSet (int fontSet);
 
 }
