@@ -47,14 +47,20 @@ static int checkStyle (int style) {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) {
-		return new Point (25, 25);
+		return new Point (10, 10);
 	}
 	Rect rect = new Rect();
 	short [] base = new short [1];
 	OS.GetBestControlRect (handle, rect, base);
-	int width = rect.right - rect.left + 1;
+	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
-	if ((style & SWT.TOGGLE) == 0) height -= 12;
+	if ((style & SWT.CHECK) != 0 || (style & SWT.RADIO) != 0) {
+		height -= 17;
+	}
+	if ((style & SWT.PUSH) != 0 ) {
+		width += 1;
+		height -= 11;
+	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	return new Point (width, height);
@@ -65,15 +71,13 @@ void createHandle () {
 	int window = OS.GetControlOwner (parent.handle);
 				
 	if ((style & SWT.ARROW) != 0) {
-//		short orientation = OS.kControlPopupArrowOrientationEast;
-//		if ((style & SWT.UP) != 0) orientation = (short) OS.kControlPopupArrowOrientationNorth;
-//		if ((style & SWT.DOWN) != 0) orientation = (short) OS.kControlPopupArrowOrientationSouth;
-//		if ((style & SWT.LEFT) != 0) orientation = (short) OS.kControlPopupArrowOrientationWest;
-//		OS.CreatePopupArrowControl (window, null, orientation, (short)OS.kControlPopupArrowSizeNormal, outControl);
-		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)0, 0, (short)0, (short)0, (short)0, outControl);
+		short orientation = OS.kControlPopupArrowOrientationEast;
+		if ((style & SWT.UP) != 0) orientation = (short) OS.kControlPopupArrowOrientationNorth;
+		if ((style & SWT.DOWN) != 0) orientation = (short) OS.kControlPopupArrowOrientationSouth;
+		if ((style & SWT.LEFT) != 0) orientation = (short) OS.kControlPopupArrowOrientationWest;
+		OS.CreatePopupArrowControl (window, null, orientation, (short)OS.kControlPopupArrowSizeNormal, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
-		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)OS.kThemeArrowButton});
 	}
 	
 	if ((style & SWT.CHECK) != 0) {
