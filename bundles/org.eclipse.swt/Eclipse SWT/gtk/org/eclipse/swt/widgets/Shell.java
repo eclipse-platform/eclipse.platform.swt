@@ -450,7 +450,6 @@ public void close () {
 	closeWidget ();
 }
 void closeWidget () {
-	if (!isEnabled()) return;
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if (event.doit && !isDisposed ()) dispose ();
@@ -734,7 +733,7 @@ int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_delete_event (int /*long*/ widget, int /*long*/ event) {
-	closeWidget ();
+	if (isEnabled()) closeWidget ();
 	return 1;
 }
 
