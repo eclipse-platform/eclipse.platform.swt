@@ -342,17 +342,23 @@ void adjustTrim () {
 	int [] trimBorder = new int [1];
 	int [] trimWidth = new int [1];
 	int [] trimHeight = new int [1];
-	OS.XGetGeometry (xDisplay, trimWindow, unused, unused, unused, trimWidth, trimHeight, trimBorder, unused);
+	int [] trimY = new int [1];
+	OS.XGetGeometry (xDisplay, trimWindow, unused, unused, trimY, trimWidth, trimHeight, trimBorder, unused);
 
 	/* Query the border width of the direct child of the shell window */
 	int [] shellBorder = new int [1];
 	int [] shellWidth = new int [1];
 	int [] shellHeight = new int [1];
 	OS.XGetGeometry (xDisplay, shellWindow, unused, unused, unused, shellWidth, shellHeight, shellBorder, unused);
+	
+	/* Query the trim-adjusted position of the inner window */
+	short [] inner_x = new short [1], inner_y = new short [1];
+	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, inner_x, inner_y);
 
 	/* Calculate the trim */
 	int width = (trimWidth [0] + (trimBorder [0] * 2)) - (shellWidth [0] + (shellBorder [0] * 2));
 	int height = (trimHeight [0] + (trimBorder [0] * 2)) - (shellHeight [0] + (shellBorder [0] * 2));
+	int titleHeight = inner_y [0] - trimY [0];
 	
 	/* Update the trim guesses to match the query */
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
@@ -362,6 +368,7 @@ void adjustTrim () {
 		hasBorder = (style & SWT.BORDER) != 0;
 	}
 	if (hasTitle) {
+		display.titleHeight = titleHeight;
 		if (hasResize)  {
 			display.titleResizeTrimWidth = width;
 			display.titleResizeTrimHeight = height;
@@ -620,6 +627,10 @@ public Rectangle getBounds () {
 	checkWidget();
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
+	if (realized) {
+		root_x [0] -= trimWidth () / 2;
+		root_y [0] -= titleHeight ();
+	}
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	int border = argList [5];
@@ -657,6 +668,10 @@ public Point getLocation () {
 	checkWidget();
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
+	if (realized) {
+		root_x [0] -= trimWidth () / 2;
+		root_y [0] -= titleHeight ();
+	}
 	return new Point (root_x [0], root_y [0]);
 }
 public Shell getShell () {
@@ -939,6 +954,10 @@ void saveBounds () {
 	if (!reparented) return;
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
+	if (realized) {
+		root_x [0] -= trimWidth () / 2;
+		root_y [0] -= titleHeight ();
+	}
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
 	OS.XtGetValues (scrolledHandle, argList, argList.length / 2);
 	int trimWidth = trimWidth (), trimHeight = trimHeight ();
@@ -1175,6 +1194,11 @@ boolean traverseEscape () {
 	if (!isVisible () || !isEnabled ()) return false;
 	close ();
 	return true;
+}
+int titleHeight () {
+	int hasTitle = style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU);
+	if (hasTitle != 0) return display.titleHeight;
+	return 0;
 }
 int trimHeight () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
