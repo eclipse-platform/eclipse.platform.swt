@@ -17,93 +17,76 @@ import org.eclipse.swt.internal.gtk.OS;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
-	private int currentEffect = DND.FEEDBACK_NONE;
-
-	private TableItem scrollItem;
+	private int scrollIndex = -1;
 	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
+	private static final int SCROLL_HYSTERESIS = 500; // milli seconds
 
 TableDragUnderEffect(Table table) {
 	this.table = table;
 }
-void show(int effect, int x, int y) {
-	TableItem item = findItem(x, y);
-	if (item == null) effect = DND.FEEDBACK_NONE;
-	scrollHover(effect, item, x, y);
-	setDragUnderEffect(effect, item);
-	currentEffect = effect;
+private int checkEffect(int effect) {
+	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
+	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
+	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
+	return effect;
 }
-private TableItem findItem(int x, int y){
+
+void show(int effect, int x, int y) {
+	effect = checkEffect(effect);
+	int handle = table.handle;
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
-	Rectangle area = table.getClientArea();
-	if (!area.contains(coordinates)) return null;
-
-	TableItem item = table.getItem(coordinates);
-	if (item != null) return item;
-
-	// Scan across the width of the table
-	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		Point pt = new Point(x1, coordinates.y);
-		item = table.getItem(pt);
-		if (item != null) return item;
-	}
-	return null;
-}
-private void setDragUnderEffect(int effect, TableItem item) {	
-	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(item);
-		return;
-	}
-	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(null);
-	}
-}
-private void setDropSelection (TableItem item) {
-	if (item == null) {
-		OS.gtk_tree_view_unset_rows_drag_dest(table.handle);
-		return;
-	}
-	Rectangle rect = item.getBounds(0);
 	int /*long*/ [] path = new int /*long*/ [1];
-	if (!OS.gtk_tree_view_get_path_at_pos(table.handle, rect.x, rect.y, path, null, null, null)) return;
-	if (path [0] == 0) return;
-	OS.gtk_tree_view_set_drag_dest_row(table.handle, path[0], OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
-	OS.gtk_tree_path_free (path [0]);
-}
-private void scrollHover (int effect, TableItem item, int x, int y) {
+	int clientX = coordinates.x - table.getBorderWidth ();
+	int clientY = coordinates.y - table.getHeaderHeight ();
+	OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY, path, null, null, null);
+	int index = -1;
+	if (path[0] != 0) {
+		int /*long*/ indices = OS.gtk_tree_path_get_indices (path[0]);
+		if (indices != 0) {
+			int[] temp = new int[1];
+			OS.memmove (temp, indices, 4);
+			index = temp[0];
+		}
+	}
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
-		scrollItem = null;
-		return;
-	}
-	if (scrollItem == item && scrollBeginTime != 0) {
-		if (System.currentTimeMillis() >= scrollBeginTime) {
-			scroll(item, x, y);
-			scrollBeginTime = 0;
-			scrollItem = null;
+		scrollIndex = -1;
+	} else {
+		if (index != -1 && scrollIndex == index && scrollBeginTime != 0) {
+			if (System.currentTimeMillis() >= scrollBeginTime) {
+				if (clientY < table.getItemHeight()) {
+					OS.gtk_tree_path_prev(path[0]);
+				} else {
+					OS.gtk_tree_path_next(path[0]);
+				}
+				if (path[0] != 0) {
+					OS.gtk_tree_view_scroll_to_cell(handle, path[0], 0, false, 0, 0);
+					OS.gtk_tree_path_free(path[0]);
+					path[0] = 0;
+					OS.gtk_tree_view_get_path_at_pos (handle, clientX, clientY, path, null, null, null);
+				}
+				scrollBeginTime = 0;
+				scrollIndex = -1;
+			}
+		} else {
+			scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+			scrollIndex = index;
 		}
-		return;
 	}
-	scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
-	scrollItem = item;
-}
-private void scroll(TableItem item, int x, int y) {
-	if (item == null) return;
-	Point coordinates = new Point(x, y);
-	coordinates = table.toControl(coordinates);
-	Rectangle area = table.getClientArea();
-	int top = table.getTopIndex();
-	int newTop = -1;
-	// scroll if two lines from top or bottom
-	int scroll_width = 2*table.getItemHeight();
-	if (coordinates.y < area.y + scroll_width) {
-		newTop = Math.max(0, top - 1);
-	} else if (coordinates.y > area.y + area.height - scroll_width) {
-		newTop = Math.min(table.getItemCount() - 1, top + 1);
+	if (path[0] != 0) {
+		int position = 0;
+		if ((effect & DND.FEEDBACK_SELECT) != 0) position = OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE;
+		//if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) position = OS.GTK_TREE_VIEW_DROP_BEFORE;
+		//if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0) position = OS.GTK_TREE_VIEW_DROP_AFTER;
+		if (position != 0) {
+			OS.gtk_tree_view_set_drag_dest_row(handle, path[0], OS.GTK_TREE_VIEW_DROP_INTO_OR_BEFORE);
+		} else {
+			OS.gtk_tree_view_unset_rows_drag_dest(handle);
+		}
+	} else {
+		OS.gtk_tree_view_unset_rows_drag_dest(handle);
 	}
-	if (newTop != -1 && newTop != top) {
-		table.setTopIndex(newTop);
-	}
+	if (path[0] != 0) OS.gtk_tree_path_free (path [0]);
 }
 }
