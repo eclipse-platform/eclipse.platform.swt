@@ -284,6 +284,7 @@ public CTabFolder(Composite parent, int style) {
 				case SWT.DragDetect:		onDragDetect(event); break;
 				case SWT.FocusIn:          onFocus(event);	break;
 				case SWT.FocusOut:         onFocus(event);	break;
+				case SWT.KeyDown:			onKeyDown(event); break;
 				case SWT.MouseDoubleClick: onMouseDoubleClick(event); break;
 				case SWT.MouseDown:        onMouse(event);	break;
 				case SWT.MouseExit:        onMouse(event);	break;
@@ -1671,16 +1672,20 @@ void initAccessible() {
 		}
 	});
 }
-boolean onArrowTraversal (Event event) {
-	int count = items.length;
-	if (count == 0) return false;
-	if (selectedIndex  == -1) return false;
-	int offset = (event.detail == SWT.TRAVERSE_ARROW_NEXT) ? 1 : -1;
-	int index = selectedIndex + offset;
-	if (index < 0 || index >= count) return false;
-	setSelection (index, true);
-	forceFocus();
-	return true;
+void onKeyDown (Event event) {
+	switch (event.keyCode) {
+		case SWT.ARROW_LEFT:
+		case SWT.ARROW_RIGHT:
+			int count = items.length;
+			if (count == 0) return;
+			if (selectedIndex  == -1) return;
+			int leadKey = (getStyle() & SWT.RIGHT_TO_LEFT) != 0 ? SWT.ARROW_RIGHT : SWT.ARROW_LEFT;
+			int offset =  event.keyCode == leadKey ? -1 : 1;
+			int index = selectedIndex + offset;
+			if (index < 0 || index >= count) return;
+			setSelection (index, true);
+			forceFocus();
+	}
 }
 void onDispose() {
 	/*
@@ -2022,7 +2027,6 @@ boolean onPageTraversal(Event event) {
 		index = (selectedIndex + offset + count) % count;
 	}
 	setSelection (index, true);
-	forceFocus();
 	return true;
 }
 void onPaint(Event event) {
@@ -2096,11 +2100,6 @@ void onResize() {
 }
 void onTraverse (Event event) {
 	switch (event.detail) {
-		case SWT.TRAVERSE_ARROW_NEXT:
-		case SWT.TRAVERSE_ARROW_PREVIOUS:
-			event.doit = onArrowTraversal(event);
-			event.detail = SWT.TRAVERSE_NONE;
-			break;
 		case SWT.TRAVERSE_ESCAPE:
 		case SWT.TRAVERSE_RETURN:
 		case SWT.TRAVERSE_TAB_NEXT:
