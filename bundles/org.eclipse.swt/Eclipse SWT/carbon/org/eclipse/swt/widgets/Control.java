@@ -184,7 +184,8 @@ public boolean forceFocus () {
 
 public Color getBackground () {
 	checkWidget();
-	return Color.carbon_new (getDisplay (), 1, false);
+	//WRONG
+	return getDisplay ().getSystemColor (SWT.COLOR_WHITE);
 }
 
 public int getBorderWidth () {
@@ -217,7 +218,8 @@ public Font getFont () {
 
 public Color getForeground () {
 	checkWidget();
-	return Color.carbon_new (getDisplay (), 0, false);
+	//WRONG
+	return getDisplay ().getSystemColor (SWT.COLOR_BLACK);
 }
 
 public Object getLayoutData () {
