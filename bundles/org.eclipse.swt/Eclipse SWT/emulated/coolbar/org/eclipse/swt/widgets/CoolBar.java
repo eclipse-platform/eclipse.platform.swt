@@ -1,10 +1,4 @@
 package org.eclipse.swt.widgets;
-
-/*
- * (c) Copyright IBM Corp. 2000, 2001.
- * All Rights Reserved
- */
-
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -33,8 +27,7 @@ import java.util.Vector;
  */
 public /*final*/ class CoolBar extends Composite {
 	Vector rows;
-	Cursor hoverCursor;
-	Cursor dragCursor;
+	Cursor hoverCursor, dragCursor;
 	static final int ROW_SPACING = 2;
 		
 /**
@@ -66,14 +59,43 @@ public /*final*/ class CoolBar extends Composite {
  * @see Widget#getStyle
  */
 public CoolBar (Composite parent, int style) {
-	super (parent, style);
+	super (parent, checkStyle(style));
+	rows = new Vector(5);
+	rows.addElement(new Vector(10));
+	hoverCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEWE);
+	dragCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEALL);
+	Listener listener = new Listener() {
+		public void handleEvent(Event e) {
+			switch (e.type) {
+				case SWT.Paint:		
+					processPaint(e);	
+					break;
+				case SWT.Dispose:
+					rows = null;
+					hoverCursor.dispose();
+					dragCursor.dispose();					
+					break;
+			}
+		}
+	};
+	addListener(SWT.Paint, listener);
+	addListener(SWT.Dispose, listener);
+}
+private static int checkStyle(int style) {
+	return style & SWT.BORDER;
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	return new Point (wHint, hHint);
+	int width = wHint, height = hHint;
+	if (wHint == SWT.DEFAULT) width = 0x7FFFFFFF;
+	if (hHint == SWT.DEFAULT) height = 0x7FFFFFFF;
+	Point extent = layout (width, false);
+	if (wHint != SWT.DEFAULT) extent.x = wHint;
+	if (hHint != SWT.DEFAULT) extent.y = hHint;
+	return extent;
 }
 /**
  * Returns the item at the given, zero-relative index in the
@@ -161,6 +183,36 @@ public CoolItem [] getItems () {
 	}
 	return result;
 }
+int getRowHeight (int rowIndex) {
+	Vector row = (Vector) rows.elementAt(rowIndex);
+	int height = 0;
+	for (int i = 0; i < row.size(); i++) {
+		CoolItem item = (CoolItem) row.elementAt(i);
+		int itemHeight = item.getSize().y;
+		height = Math.max(height, itemHeight);
+	}
+	return height;
+}
+int getRowIndex (CoolItem item) {
+	for (int i = 0; i < rows.size(); i++) {
+		Vector row = (Vector) rows.elementAt(i);
+		for (int j = 0; j < row.size(); j++) {
+			CoolItem next = (CoolItem) row.elementAt(j);
+			if (next.equals(item)) return i;		
+		}
+	}
+	return -1;
+}
+Vector getRow (CoolItem item) {
+	for (int i = 0; i < rows.size(); i++) {
+		Vector row = (Vector) rows.elementAt(i);
+		for (int j = 0; j < row.size(); j++) {
+			CoolItem next = (CoolItem) row.elementAt(j);
+			if (next.equals(item)) return row;		
+		}
+	}
+	return null;
+}
 /**
  * Searches the receiver's items, in the order they were
  * added, starting at the first item (index 0) until an item
@@ -197,11 +249,304 @@ public int indexOf (CoolItem item) {
 	}
 	return -1;
 }
+/**
+ * Insert the item into the row. Adjust the x and width values
+ * appropriately.
+ */
+void insertItemIntoRow(CoolItem item, Vector row, int x_root, int rowY) {
+	int barWidth = getSize().x;
+	int height = item.getSize().y;
+	if (row.size() == 0) {
+		item.setBounds(0, rowY, barWidth, height);		
+		row.addElement(item);
+		return;
+	}
+	
+	int x = Math.max(0, x_root - toDisplay(new Point(0, 0)).x);
+	
+	/* Find the insertion index and add the item. */
+	int index;
+	for (index = 0; index < row.size(); index++) {
+		CoolItem next = (CoolItem) row.elementAt(index);
+		if (x < next.getBounds().x) break;
+	}
+	row.insertElementAt(item, index);
+
+	/* Adjust the width of the item to the left. */
+	if (index > 0) {
+		CoolItem left = (CoolItem) row.elementAt(index - 1);
+		Rectangle leftBounds = left.getBounds();
+		int newWidth = x - leftBounds.x;
+		if (newWidth < CoolItem.MINIMUM_WIDTH) {
+			x += CoolItem.MINIMUM_WIDTH - newWidth;
+			newWidth = CoolItem.MINIMUM_WIDTH;
+		}
+		left.setBounds(leftBounds.x, leftBounds.y, newWidth, leftBounds.height);
+		left.requestedWidth = newWidth;
+	}
+	
+	/* Set the item's bounds. */
+	int width = 0;
+	if (index < row.size() - 1) {
+		CoolItem right = (CoolItem) row.elementAt(index + 1);
+		width = right.getBounds().x - x;
+		if (width < CoolItem.MINIMUM_WIDTH) {
+			moveRight(right, CoolItem.MINIMUM_WIDTH - width);
+			width = right.getBounds().x - x;
+		}
+		item.setBounds(x, rowY, width, height);
+		if (width < CoolItem.MINIMUM_WIDTH) moveLeft(item, CoolItem.MINIMUM_WIDTH - width);
+	} else {
+		width = Math.max(CoolItem.MINIMUM_WIDTH, barWidth - x);
+		item.setBounds(x, rowY, width, height);
+		if (x + width > barWidth) moveLeft(item, x + width - barWidth); 
+	}
+	item.requestedWidth = width;
+}
+void createItem (CoolItem item, int index) {
+	int itemCount = getItemCount();
+	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
+	item.id = itemCount;
+	if (index < itemCount) {
+		for (int i = 0; i < rows.size(); i++) {
+			Vector row = (Vector) rows.elementAt(i);
+			if (row.size() > index) {
+				row.insertElementAt(item, index);
+				return;
+			} else {
+				index -= row.size();
+			}
+		}
+	} else {
+		Vector lastRow = (Vector) rows.lastElement();
+		lastRow.addElement(item);	
+	}
+}
+void moveDown(CoolItem item, int x_root) {
+	int oldRowIndex = getRowIndex(item);
+	Vector oldRowItems = (Vector) rows.elementAt(oldRowIndex);	
+	if (oldRowIndex == rows.size() - 1 && oldRowItems.size() == 1) {
+		/* This is the only item in the bottom row, don't move it. */
+		return;
+	}
+	
+	int newRowIndex = (oldRowItems.size() == 1) ? oldRowIndex : oldRowIndex + 1;
+	removeItemFromRow(item, oldRowItems);
+	
+	int newRowY = ROW_SPACING;
+	for (int i = 0; i < newRowIndex; i++) {
+		newRowY += getRowHeight(i) + ROW_SPACING;	
+	}
+	
+	if (newRowIndex == rows.size()) {
+		/* Create a new bottom row for the item. */
+		Vector newRow = new Vector(10);
+		insertItemIntoRow(item, newRow, x_root, newRowY);
+		rows.addElement(newRow);
+		adjustItemHeights(oldRowIndex);
+		return;
+	}
+	
+	Vector newRowItems = (Vector) rows.elementAt(newRowIndex);
+	insertItemIntoRow(item, newRowItems, x_root, newRowY);
+	adjustItemHeights(oldRowIndex);
+}
+void moveLeft(CoolItem item, int pixels) {
+	Vector row = getRow(item);
+	int index = row.indexOf(item);
+	if (index == 0) return;	
+	Rectangle bounds = item.getBounds();
+	int min = index * CoolItem.MINIMUM_WIDTH;
+	int x = Math.max(min, bounds.x - pixels);
+	CoolItem left = (CoolItem) row.elementAt(index - 1);
+	Rectangle leftBounds = left.getBounds();
+	if (leftBounds.x + CoolItem.MINIMUM_WIDTH >= x) {
+		int shift = leftBounds.x + CoolItem.MINIMUM_WIDTH - x;
+		moveLeft(left, shift);
+		leftBounds = left.getBounds();
+	}
+	int leftWidth = Math.max(CoolItem.MINIMUM_WIDTH, leftBounds.width - pixels);
+	left.setBounds(leftBounds.x, leftBounds.y, leftWidth, leftBounds.height);
+	left.requestedWidth = leftWidth;
+	int width = bounds.width + (bounds.x - x);
+	item.setBounds(x, bounds.y, width, bounds.height);
+	item.requestedWidth = width;
+}
+void moveRight(CoolItem item, int pixels) {
+	Vector row = getRow(item);
+	int index = row.indexOf(item);
+	if (index == 0) return;	
+	Rectangle bounds = item.getBounds();
+	int minSpaceOnRight = (row.size() - index) * CoolItem.MINIMUM_WIDTH;
+	int max = getBounds().width - minSpaceOnRight;
+	int x = Math.min(max, bounds.x + pixels);	
+	int width = 0;
+	if (index + 1 == row.size()) {
+		width = getBounds().width - x;
+	} else {
+		CoolItem right = (CoolItem) row.elementAt(index + 1);
+		Rectangle rightBounds = right.getBounds();
+		if (x + CoolItem.MINIMUM_WIDTH >= rightBounds.x) {
+			int shift = x + CoolItem.MINIMUM_WIDTH - rightBounds.x;
+			moveRight(right, shift);
+			rightBounds = right.getBounds();
+		}
+		width = rightBounds.x - x;
+	}
+	item.setBounds(x, bounds.y, width, bounds.height);
+	item.requestedWidth = width;
+	CoolItem left = (CoolItem) row.elementAt(index - 1);
+	Rectangle leftBounds = left.getBounds();
+	int leftWidth = x - leftBounds.x;
+	left.setBounds(leftBounds.x, leftBounds.y, leftWidth, leftBounds.height);
+	left.requestedWidth = leftWidth;
+}
+void moveUp(CoolItem item, int x_root) {
+	int oldRowIndex = getRowIndex(item);
+	Vector oldRowItems = (Vector) rows.elementAt(oldRowIndex);
+	if (oldRowIndex == 0 && oldRowItems.size() == 1) {
+		/* This is the only item in the top row, don't move it. */
+		return;
+	}
+	
+	removeItemFromRow(item, oldRowItems);
+	int newRowIndex = oldRowIndex - 1;
+	int newRowY = ROW_SPACING;
+	for (int i = 0; i < newRowIndex; i++) {
+		newRowY += getRowHeight(i) + ROW_SPACING;	
+	}
+	
+	if (oldRowIndex == 0) {
+		/* Create a new top row for the item. */
+		Vector newRow = new Vector(10);
+		insertItemIntoRow(item, newRow, x_root, newRowY);
+		rows.insertElementAt(newRow, 0);
+		adjustItemHeights(0);
+		return;
+	}
+	
+	Vector newRowItems = (Vector) rows.elementAt(newRowIndex);
+	insertItemIntoRow(item, newRowItems, x_root, newRowY);
+	adjustItemHeights(newRowIndex);
+}
+void processPaint (Event e) {
+	if (rows.size() == 0) return;
+	GC gc = new GC(this);
+	Display display = getDisplay();
+	int y = getRowHeight(0) + ROW_SPACING;
+	int stopX = getBounds().width;
+	Color shadowColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+	Color highlightColor = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+	for (int i = 1; i < rows.size(); i++) {
+		gc.setForeground(shadowColor);
+		gc.drawLine(0, y, stopX, y);	
+		gc.setForeground(highlightColor);
+		gc.drawLine(0, y + 1, stopX, y + 1);
+		y += getRowHeight(i) + ROW_SPACING;
+	}
+	gc.dispose();
+}
+/**
+ * Remove the item from the row. Adjust the x and width values
+ * appropriately.
+ */
+void removeItemFromRow(CoolItem item, Vector row) {
+	int index = row.indexOf(item);
+	row.removeElementAt(index);
+	if (row.size() == 0) {
+		rows.removeElement(row);
+		return;
+	}	
+	if (index == 0) {
+		CoolItem first = (CoolItem) row.elementAt(0);
+		Rectangle bounds = first.getBounds();
+		int width = bounds.x + bounds.width;
+		first.setBounds(0, bounds.y, width, bounds.height);
+		first.requestedWidth = width;
+	} else {
+		CoolItem previous = (CoolItem) row.elementAt(index - 1);
+		Rectangle bounds = previous.getBounds();
+		int width = bounds.width + item.getSize().x;
+		previous.setBounds(bounds.x, bounds.y, width, bounds.height);
+		previous.requestedWidth = width;
+	}
+}
+/**
+ * Update the children to reflect a change in y values.
+ */
+void adjustItemHeights(int startIndex) {
+	int y = ROW_SPACING;
+	for (int i = 0; i < rows.size(); i++) {
+		Vector row = (Vector) rows.elementAt(i);
+		int rowHeight = getRowHeight(i);
+		if (i >= startIndex) {
+			for (int j = 0; j < row.size(); j++) {
+				CoolItem child = (CoolItem) row.elementAt(j);
+				Rectangle bounds = child.getBounds();
+				if (bounds.y != y || bounds.height != rowHeight) {
+					child.setBounds(bounds.x, y, bounds.width, rowHeight);
+				}
+			}
+		}
+		y += ROW_SPACING + rowHeight;
+	}
+	Point size = getSize();
+	if (size.y != y) super.setSize(size.x, y);
+}
+Point layout (int width, boolean resize) {
+	int y = ROW_SPACING, maxWidth = 0;
+	for (int i = 0; i < rows.size(); i++) {
+		Vector row = (Vector) rows.elementAt(i);
+		int count = row.size();
+		if (count > 0) {
+			int available = width - count * CoolItem.MINIMUM_WIDTH;
+			if (available < 0) available = count * CoolItem.MINIMUM_WIDTH;
+			int x = 0, rowHeight = getRowHeight(i);
+			for (int j = 0; j < count; j++) {
+				CoolItem child = (CoolItem) row.elementAt(j);
+				int newWidth = available + CoolItem.MINIMUM_WIDTH;
+				if (j + 1 < count) {
+					newWidth = Math.min(newWidth, child.requestedWidth);
+					available -= (newWidth - CoolItem.MINIMUM_WIDTH);
+				}
+				if (resize) child.setBounds(x, y, newWidth, rowHeight);
+				x += resize ? newWidth : child.preferredWidth;
+			}		
+			maxWidth = Math.max(maxWidth, x);
+			y += ROW_SPACING + rowHeight;
+		}
+	}
+	return new Point(maxWidth, y);
+}
+void relayout() {
+	int width = getSize().x;
+	int height = layout(width, true).y;
+	super.setSize(width, height);
+}
+public void setBackground (Color color) {
+	super.setBackground (color);
+	CoolItem[] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		items[i].composite.setBackground (color);	
+	}
+}
 public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);
+	layout(width, true);
 }
 public void setSize (int width, int height) {
 	super.setSize (width, height);
+	layout (width, true);
+}
+CoolItem getChild (int id) {
+	for (int i = 0; i < rows.size(); i++) {
+		Vector row = (Vector) rows.elementAt(i);
+		for (int j = 0; j < row.size(); j++) {
+			CoolItem child = (CoolItem) row.elementAt(j);
+			if (child.id == id) return child;
+		}
+	}
+	return null;
 }
 /**
  * Returns an array of zero-relative indices which map the order
@@ -233,6 +578,19 @@ public int[] getItemOrder () {
 	}
 	return ids;
 }
+void setItemOrder (int[] itemOrder) {
+	if (itemOrder == null) error(SWT.ERROR_NULL_ARGUMENT);
+	CoolItem[] items = getItems();
+	if (itemOrder.length != items.length) error(SWT.ERROR_INVALID_ARGUMENT);
+	Vector row = new Vector(items.length);
+	for (int i = 0; i < itemOrder.length; i++) {
+		CoolItem child = getChild(itemOrder[i]);
+		if (child == null) error(SWT.ERROR_INVALID_ARGUMENT);
+		row.addElement(child);
+	}
+	rows = new Vector(1);
+	rows.addElement(row);
+}
 /**
  * Returns an array of points whose x and y coordinates describe
  * the widths and heights (respectively) of the items in the receiver
@@ -253,6 +611,15 @@ public Point[] getItemSizes () {
 		sizes[i] = items[i].getSize();
 	}
 	return sizes;
+}
+void setItemSizes (Point[] sizes) {
+	if (sizes == null) error(SWT.ERROR_NULL_ARGUMENT);
+	CoolItem[] items = getItems();
+	if (sizes.length != items.length) error(SWT.ERROR_INVALID_ARGUMENT);
+	for (int i = 0; i < items.length; i++) {
+		Rectangle bounds = items[i].getBounds();
+		items[i].setSize(sizes[i]);
+	}
 }
 /**
  * Returns an array of ints which describe the zero-relative
@@ -311,6 +678,7 @@ public void setWrapIndices (int[] data) {
 		itemIndex++;
 	}
 	rows.addElement(row);
+	relayout();
 }
 /**
  * Sets the receiver's item order, wrap indices, and item
@@ -328,5 +696,9 @@ public void setWrapIndices (int[] data) {
  */
 public void setItemLayout (int[] itemOrder, int[] wrapIndices, Point[] sizes) {
 	checkWidget();
+	setItemOrder(itemOrder);
+	setWrapIndices(wrapIndices);
+	setItemSizes(sizes);	
+	relayout();
 }
 }

@@ -1,10 +1,4 @@
 package org.eclipse.swt.widgets;
-
-/*
- * (c) Copyright IBM Corp. 2000, 2001.
- * All Rights Reserved
- */
- 
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
@@ -24,6 +18,7 @@ import org.eclipse.swt.*;
  * </p>
  */
 public /*final*/ class CoolItem extends Item {
+	Composite composite;
 	Control control;
 	CoolBar parent;
 	boolean dragging;
@@ -68,8 +63,10 @@ public /*final*/ class CoolItem extends Item {
  * @see Widget#getStyle
  */
 public CoolItem (CoolBar parent, int style) {
-	super(parent, style);
+	super(parent, checkStyle(style));
 	this.parent = parent;
+	parent.createItem (this, parent.getItemCount());
+	createWidget();
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -103,11 +100,44 @@ public CoolItem (CoolBar parent, int style) {
  * @see Widget#getStyle
  */
 public CoolItem (CoolBar parent, int style, int index) {
-	super(parent, style);
+	super(parent, checkStyle(style));
 	this.parent = parent;
+	parent.createItem (this, index);
+	createWidget();
+}
+static int checkStyle(int style) {
+	return SWT.NONE;
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+void createWidget () {
+	composite = new Composite(parent, 0);
+	int pixel = parent.getBackgroundPixel ();
+	composite.setBackgroundPixel (pixel);
+
+		
+	Listener listener = new Listener() {
+		public void handleEvent(Event event) {
+			switch (event.type) {
+				case SWT.Paint:		processPaint(event);		break;
+				case SWT.MouseDown:	processMouseDown(event);	break;
+				case SWT.MouseUp:	processMouseUp(event);		break;
+				case SWT.MouseExit:	processMouseExit(event);	break;
+				case SWT.MouseMove:	processMouseMove(event);	break;
+			}
+		}
+	};
+	int[] events = new int[]{
+		SWT.Paint, 
+		SWT.MouseDown, 
+		SWT.MouseUp, 
+		SWT.MouseExit, 
+		SWT.MouseMove
+	};
+	for (int i = 0; i < events.length; i++) {
+		composite.addListener(events[i], listener);
+	}
 }
 /**
  * Returns the preferred size of the receiver.
@@ -141,9 +171,12 @@ public Point computeSize (int wHint, int hHint) {
 	return new Point (width, height);
 }
 public void dispose () {
+	checkWidget();
 	if (isDisposed()) return;
+	composite.dispose();
 	CoolBar parent = this.parent;
 	super.dispose ();
+	parent.relayout ();
 }
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -158,7 +191,7 @@ public void dispose () {
  */
 public Rectangle getBounds () {
 	checkWidget();
-	return new Rectangle (0, 0, 40, 20);
+	return composite.getBounds();
 }
 /**
  * Gets the control which is associated with the receiver.
@@ -179,6 +212,9 @@ public Display getDisplay () {
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
+Rectangle getGrabberArea () {
+	return new Rectangle(0, 0, MINIMUM_WIDTH, composite.getSize().y);	
+}
 /**
  * Returns the receiver's parent, which must be a <code>CoolBar</code>.
  *
@@ -194,7 +230,89 @@ public CoolBar getParent () {
 	return parent;
 }
 public Point getSize () {
-	return new Point (40, 20);
+	checkWidget();
+	return composite.getSize();
+}
+int processMouseDown (Event event) {
+	Shell shell = parent.getShell();
+	if (getGrabberArea().contains(event.x, event.y)) {
+		dragging = true;
+		mouseXOffset = event.x;
+		parent.setCursor(parent.dragCursor);
+	}
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	if (!shell.isDisposed()) {
+		shell.setActiveControl(parent);
+	}
+	return 0;
+}
+void processMouseExit (Event event) {
+	if (!dragging) parent.setCursor(null);
+}
+void processMouseMove (Event event) {
+	if (dragging) {
+		int height = composite.getSize().y;
+		int left_root = composite.toDisplay(new Point(event.x, event.y)).x;
+		if (event.y < 0) {
+			parent.moveUp(this, left_root);				
+			return;
+		} 
+		if (event.y > height){
+			parent.moveDown(this, left_root);
+			return;
+		}		
+		int delta = Math.abs(event.x - mouseXOffset);
+		if (event.x < mouseXOffset) {
+			parent.moveLeft(this, delta);
+			return;
+		}
+		if (event.x > mouseXOffset) {
+			parent.moveRight(this, delta);
+			return;
+		}
+		return;
+	}
+	if (getGrabberArea().contains(event.x, event.y)) {
+		parent.setCursor(parent.hoverCursor);
+	} else {
+		parent.setCursor(null);
+	}
+}
+void processMouseUp (Event event) {
+	if (dragging) {
+		dragging = false;
+		parent.setCursor(parent.hoverCursor);
+	}
+}
+void processPaint (Event event) {
+	GC gc = new GC(composite);
+	Display display = getDisplay();
+	Color shadowColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
+	Color highlightColor = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
+	Color lightShadowColor = display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+	
+	int height = composite.getSize().y;
+	int grabberHeight = height - (2 * MARGIN_HEIGHT) - 1;
+
+	/* Draw separator. */
+	gc.setForeground(shadowColor);
+	gc.drawLine(0, 0, 0, height);
+	gc.setForeground(highlightColor);
+	gc.drawLine(1, 0, 1, height);
+
+	/* Draw grabber. */
+	gc.setForeground(shadowColor);
+	gc.drawRectangle(MARGIN_WIDTH, MARGIN_HEIGHT, GRABBER_WIDTH, grabberHeight);
+	gc.setForeground(highlightColor);
+	gc.drawLine(MARGIN_WIDTH, MARGIN_HEIGHT + 1, MARGIN_WIDTH, MARGIN_HEIGHT + grabberHeight - 1);
+	gc.drawLine(MARGIN_WIDTH, MARGIN_HEIGHT, MARGIN_WIDTH + 1, MARGIN_HEIGHT);	
+
+	gc.dispose();
 }
 /**
  * Sets the control which is associated with the receiver
@@ -221,6 +339,13 @@ public void setControl (Control control) {
 	if (oldControl != null) oldControl.setVisible(false);
 	this.control = control;
 	if (control != null && !control.isDisposed ()) {
+		Rectangle bounds = composite.getBounds();
+		control.setBounds (
+			bounds.x + MINIMUM_WIDTH, 
+			bounds.y + MARGIN_HEIGHT, 
+			bounds.width - MINIMUM_WIDTH - MARGIN_WIDTH, 
+			bounds.height - (2 * MARGIN_HEIGHT));
+			
 		control.setVisible(true);
 	}
 }
@@ -228,29 +353,54 @@ public void setSize (int width, int height) {
 	checkWidget();
 	width = Math.max (width, MINIMUM_WIDTH);
 	preferredWidth = requestedWidth = width;
-	height = Math.max (height, 1);
+	composite.setSize(width, height);		
 	if (control != null) {
 		int controlWidth = width - MINIMUM_WIDTH - MARGIN_WIDTH;
 		int controlHeight = height - (2 * MARGIN_HEIGHT);
 		control.setSize(controlWidth, controlHeight);
 	}
+	parent.relayout();
+}
+int getControlOffset(int height) {
+	return ((height - control.getSize().y - (2 * MARGIN_HEIGHT)) / 2) + MARGIN_HEIGHT;
+}
+void releaseWidget () {
+	super.releaseWidget ();
+	composite.dispose();
+	parent = null;
+	control = null;
 }
 public void setSize (Point size) {
+	checkWidget();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
 }
+void setBackgroundPixel(int pixel) {
+	composite.setBackgroundPixel(pixel);
+}
+void setBounds (int x, int y, int width, int height) {
+	composite.setBounds(x, y, width, height);
+	if (control != null) {
+		control.setBounds(
+			x + MINIMUM_WIDTH, 
+			y + MARGIN_HEIGHT, 
+			width - MINIMUM_WIDTH - MARGIN_WIDTH, 
+			control.getSize().y);
+	}
+}
 public Point getPreferredSize () {
 	checkWidget();
-	return new Point(preferredWidth, 20 + (2 * MARGIN_HEIGHT));
+	int height = composite.getSize().y;
+	return new Point(preferredWidth, height + (2 * MARGIN_HEIGHT));
 }
 public void setPreferredSize (int width, int height) {
 	checkWidget();
 	preferredWidth = Math.max (width, MINIMUM_WIDTH);
-	if (control != null) {
-		control.setSize(control.getSize().x, height - (2 * MARGIN_HEIGHT));
-	}
+	Rectangle bounds = composite.getBounds();
+	setBounds(bounds.x, bounds.y, bounds.width, height);
 }
 public void setPreferredSize (Point size) {
+	checkWidget();
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setPreferredSize(size.x, size.y);
 }
