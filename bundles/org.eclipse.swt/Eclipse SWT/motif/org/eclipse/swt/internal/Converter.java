@@ -49,9 +49,14 @@ public final class Converter {
 	static int BufferSize;
 	static int MbcsBuffer, Ucs2Buffer, Utf8Buffer;
 	
-	static {		
-		UCS2 = getAsciiBytes("UCS-2");
-		UTF8 = getAsciiBytes("UTF-8");
+	static {
+		if (OS.IsHPUX) {
+			UCS2 = getAsciiBytes("ucs2");
+			UTF8 = getAsciiBytes("utf8");
+		} else {
+			UCS2 = getAsciiBytes("UCS-2");
+			UTF8 = getAsciiBytes("UTF-8");
+		}
 
 		int length, item = OS.nl_langinfo (OS.CODESET);
 		if (item != 0 && (length = OS.strlen (item)) > 0) {
