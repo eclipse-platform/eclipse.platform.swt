@@ -580,6 +580,10 @@ void moveAbove (int /*long*/ child, int /*long*/ sibling) {
 void moveBelow (int /*long*/ child, int /*long*/ sibling) {
 	if (child == sibling) return;
 	int /*long*/ parentHandle = parentingHandle ();
+	if (sibling == 0 && parentHandle == fixedHandle) {
+		moveAbove (child, handle);
+		return;
+	}
 	GtkFixed fixed = new GtkFixed ();
 	OS.memmove (fixed, parentHandle);
 	int /*long*/ children = fixed.children;
