@@ -453,6 +453,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawArc
     }
     if (radii) {
         lpRadii1 = &radii1;
+        cachePhPoint_tFids(env, radii, &PGLOB(PhPoint_tFc));
         getPhPoint_tFields(env, radii, lpRadii1, &PGLOB(PhPoint_tFc));
     }
     return (jint) PgDrawArc(lpCenter1, lpRadii1, start, end, flags);
@@ -480,9 +481,51 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawEllipse
     }
     if (radii) {
         lpRadii1 = &radii1;
+        cachePhPoint_tFids(env, radii, &PGLOB(PhPoint_tFc));
         getPhPoint_tFields(env, radii, lpRadii1, &PGLOB(PhPoint_tFc));
     }
     return (jint) PgDrawEllipse(lpCenter1, lpRadii1, flags);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PgDrawGradient
+ * Signature: (Lorg/eclipse/swt/photon/PhPoint_t;Lorg/eclipse/swt/photon/PhPoint_t;IIIIIIII[B)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgDrawGradient
+  (JNIEnv *env, jobject that, jobject ul, jobject lr, jint gradient_type, jint transition_type, jint num_color_pts, jint color1, jint color2, jint color3, jint color4, jint table_size, jbyteArray transition_table)
+{
+	DECL_GLOB(pGlob)
+    jbyte *transition_table1=NULL;
+    PhPoint_t ul1, *lpUl1 = NULL, lr1, *lpLr1 = NULL;
+    jint result;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PgDrawGradient\n");
+#endif
+
+    if (ul) {
+        lpUl1 = &ul1;
+        cachePhPoint_tFids(env, ul, &PGLOB(PhPoint_tFc));
+        getPhPoint_tFields(env, ul, lpUl1, &PGLOB(PhPoint_tFc));
+    }
+    if (lr) {
+        lpLr1 = &lr1;
+        cachePhPoint_tFids(env, ul, &PGLOB(PhPoint_tFc));
+        getPhPoint_tFields(env, lr, lpLr1, &PGLOB(PhPoint_tFc));
+    }
+    if (transition_table)
+    	transition_table1 = (*env)->GetByteArrayElements(env, transition_table, NULL);
+
+    result = (jint) PgDrawGradient(lpUl1, lpLr1,
+    	(unsigned long) gradient_type, (unsigned long) transition_type, (unsigned long) num_color_pts,
+    	(PgColor_t) color1, (PgColor_t) color2, (PgColor_t) color3, (PgColor_t) color4,
+    	(unsigned long) table_size, (unsigned char*) transition_table1);
+
+    if (transition_table)
+    	(*env)->ReleaseByteArrayElements(env, transition_table, transition_table1, 0);
+
+    return result;
 }
 
 /*

@@ -914,6 +914,64 @@ public void fillArc (int x, int y, int width, int height, int startAngle, int en
 	}
 }
 
+/**
+ * Fills the interior of the specified rectangle with a gradient
+ * sweeping from left to right or top to bottom progressing
+ * from the receiver's foreground color to its background color.
+ *
+ * @param x the x coordinate of the rectangle to be filled
+ * @param y the y coordinate of the rectangle to be filled
+ * @param width the width of the rectangle to be filled, may be negative
+ *        (inverts direction of gradient if horizontal)
+ * @param height the height of the rectangle to be filled, may be negative
+ *        (inverts direction of gradient if vertical)
+ * @param vertical if true sweeps from top to bottom, else 
+ *        sweeps from left to right
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @see #drawRectangle
+ */
+public void fillGradientRectangle(int x, int y, int width, int height, boolean vertical) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if ((width == 0) || (height == 0)) return;
+	int fromColor = data.foreground;
+	int toColor = data.background;
+	boolean swapColors = false;
+	if (width < 0) {
+		x += width; width = -width;
+		if (! vertical) swapColors = true;
+	}
+	if (height < 0) {
+		y += height; height = -height;
+		if (vertical) swapColors = true;
+	}
+	if (swapColors) {
+		final int t = toColor;
+		toColor = fromColor;
+		fromColor = t;
+	}
+	PhPoint_t upperLeft = new PhPoint_t();
+	upperLeft.x = (short)x;
+	upperLeft.y = (short)y;
+	PhPoint_t lowerRight = new PhPoint_t();
+	lowerRight.x = (short)(x + width - 1);
+	lowerRight.y = (short)(y + height - 1);
+	int flags = OS.PtEnter(0);
+	try {
+		int prevContext = setGC();	
+		setGCClipping();
+		OS.PgDrawGradient(upperLeft, lowerRight,
+			vertical ? OS.Pg_GRAD_VERTICAL : OS.Pg_GRAD_HORIZONTAL, OS.Pg_GRAD_LINEAR,
+			vertical ? height : width, fromColor, toColor, 0, 0, 0, null);
+		unsetGC(prevContext);
+	} finally {
+		if (flags >= 0) OS.PtLeave(flags);
+	}
+}
+
 public void fillOval (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhPoint_t center = new PhPoint_t();

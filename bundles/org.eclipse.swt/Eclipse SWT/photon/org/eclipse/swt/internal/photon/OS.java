@@ -124,6 +124,27 @@ public class OS {
 //	public static final int Pg_BLEND_DST_DST_ALPHA                          = 0x06;		// (Ad,Ad,Ad,Ad)
 //	public static final int Pg_BLEND_DST_ONE_MINUS_DST_ALPHA                = 0x07;		// (1,1,1,1)-(Ad,Ad,Ad,Ad)
 
+//	public static final int Pg_GRAD_BYTES_PER_PIXEL = 3;
+//	public static final int Pg_GRAD_IMAGE_TYPE  = Pg_IMAGE_DIRECT_888;
+//	public static final int Pg_GRAD_BOXY        = 0x80000000;
+//	public static final int Pg_GRAD_NOGRADIENT  = 0;
+//	public static final int Pg_GRAD_VECTOR      = 1;
+//	public static final int Pg_GRAD_RADIAL      = 2;
+	public static final int Pg_GRAD_HORIZONTAL  = 3;
+	public static final int Pg_GRAD_VERTICAL    = 4;
+//	public static final int Pg_GRAD_FAST_VECTOR = 5;
+//	public static final int Pg_GRAD_DIAGF       = 6;
+//	public static final int Pg_GRAD_DIAGB       = 7;
+//	public static final int Pg_GRAD_4POINT      = 8;
+//	public static final int Pg_GRAD_BOX_DIAGF   = Pg_GRAD_DIAGF | Pg_GRAD_BOXY;
+//	public static final int Pg_GRAD_BOX_DIAGB   = Pg_GRAD_DIAGB | Pg_GRAD_BOXY;
+//	public static final int Pg_GRAD_BOX_4POINT  = Pg_GRAD_4POINT | Pg_GRAD_BOXY;
+//	public static final int Pg_GRAD_TABLE       = 100;
+	public static final int Pg_GRAD_LINEAR      = 0;
+//	public static final int Pg_GRAD_HILL        = 1;
+//	public static final int Pg_GRAD_HILL2       = 2;
+//	public static final int Pg_GRAD_EXP         = 3;
+
 //	public static final int Pt_ARG_PG_FLAGS		 			= 64 * 1000 + 0;
 //	public static final int Pt_ARG_PG_CURRENT					= 64 * 1000 + 1;
 	public static final int Pt_ARG_PG_PANEL_TITLES				= 64 * 1000 + 2;
@@ -2555,6 +2576,7 @@ public static final native int PgCreateGC (int size);
 public static final native void PgDestroyGC (int GC);
 public static final native int PgDrawArc (PhPoint_t center, PhPoint_t radii, int start, int end, int flags);
 public static final native int PgDrawEllipse (PhPoint_t center, PhPoint_t radii, int flags);
+public static final native int PgDrawGradient (PhPoint_t ul, PhPoint_t lr, int gradient_type, int transition_type, int num_color_pts, int color1, int color2, int color3, int color4, int table_size, byte[] transition_table);
 public static final native int PgDrawPolygon (short[] ptr, int num, PhPoint_t pos, int flags);
 public static final native int PgDrawRoundRect (PhRect_t rect, PhPoint_t radii, int flags);
 public static final native int PgDrawILine (int x1, int y1, int x2, int y2);
