@@ -3178,8 +3178,8 @@ public void update () {
 void update (boolean all) {
 //	checkWidget();
 	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
-	display.flushExposes ();
 	int /*long*/ window = paintWindow ();
+	display.flushExposes (window, all);
 	OS.gdk_window_process_updates (window, all);
 }
 }

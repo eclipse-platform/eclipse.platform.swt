@@ -173,6 +173,16 @@ public class Display extends Device {
 	int /*long*/ pixbufCellDataProc;
 	Callback pixbufCellDataCallback;
 	
+	/* Flush exposes */
+	int /*long*/ checkIfEventProc;
+	Callback checkIfEventCallback;
+	int /*long*/ flushWindow;
+	boolean flushAll;
+	GdkRectangle flushRect = new GdkRectangle ();
+	XExposeEvent exposeEvent = new XExposeEvent ();
+	XVisibilityEvent visibilityEvent = new XVisibilityEvent ();
+	int /*long*/ [] flushData = new int /*long*/ [1];
+
 	/* Drag Detect */
 	int dragStartX,dragStartY;
 	boolean dragging;
@@ -573,6 +583,68 @@ static synchronized void checkDisplay (Thread thread) {
 	}
 }
 
+int /*long*/ checkIfEventProc (int /*long*/ display, int /*long*/ xEvent, int /*long*/ userData) {
+	OS.memmove (exposeEvent, xEvent, XExposeEvent.sizeof);
+	switch (exposeEvent.type) {
+		case OS.VisibilityNotify:
+		case OS.Expose:
+		case OS.GraphicsExpose:
+			break;
+		default:
+			return 0;
+	}
+	int /*long*/ window = OS.gdk_window_lookup (exposeEvent.window);
+	if (window == 0) return 0;
+	if (flushWindow != 0) {
+		if (flushAll) {
+			int /*long*/ tempWindow = window;
+			do {
+				if (tempWindow == flushWindow) break;
+			} while ((tempWindow = OS.gdk_window_get_parent (tempWindow)) != 0);
+			if (tempWindow != flushWindow) return 0;
+		} else {
+			if (window != flushWindow) return 0;
+		}
+	}
+	switch (exposeEvent.type) {
+		case OS.Expose:
+		case OS.GraphicsExpose: {
+			flushRect.x = exposeEvent.x;
+			flushRect.y = exposeEvent.y;
+			flushRect.width = exposeEvent.width;
+			flushRect.height = exposeEvent.height;
+			OS.gdk_window_invalidate_rect (window, flushRect, true);
+			exposeEvent.type = -1;
+			OS.memmove (xEvent, exposeEvent, XExposeEvent.sizeof);
+			break;
+		}
+		case OS.VisibilityNotify: {
+			Control control = null;
+			OS.memmove (visibilityEvent, xEvent, XVisibilityEvent.sizeof);
+			do {
+				OS.gdk_window_get_user_data (window, flushData);
+				int /*long*/ handle = flushData [0];
+				if (handle != 0) {
+					Widget widget = getWidget (handle);
+					if (widget != null && widget instanceof Control) {
+						control = (Control) widget;
+						break;
+					}
+				}
+			} while ((window = OS.gdk_window_get_parent (window)) != 0);
+			if (control != null) {
+				if (visibilityEvent.state == OS.VisibilityFullyObscured) {
+					control.state |= Widget.OBSCURED;
+				} else {
+					control.state &= ~Widget.OBSCURED;
+				}
+			}
+			break;
+		}
+	}
+	return 0;
+}
+
 /**
  * Checks that this class can be subclassed.
  * <p>
@@ -838,24 +910,17 @@ public Widget findWidget (int /*long*/ handle) {
 	return getWidget (handle);
 }
 
-void flushExposes () {
+void flushExposes (int /*long*/ window, boolean all) {
 	OS.gdk_flush ();
 	OS.gdk_flush ();
 	if (OS.GDK_WINDOWING_X11 ()) {
-		GdkRectangle rect = new GdkRectangle ();
-		XExposeEvent exposeEvent = new XExposeEvent ();
+		this.flushWindow = window;
+		this.flushAll = all;
 		int /*long*/ xDisplay = OS.GDK_DISPLAY ();
 		int /*long*/ xEvent = OS.g_malloc (XEvent.sizeof);
-		while (OS.XCheckMaskEvent (xDisplay, OS.ExposureMask, xEvent)) {
-			OS.memmove (exposeEvent, xEvent, XExposeEvent.sizeof);
-			rect.x = exposeEvent.x;
-			rect.y = exposeEvent.y;
-			rect.width = exposeEvent.width;
-			rect.height = exposeEvent.height;
-			int /*long*/ window = OS.gdk_window_lookup (exposeEvent.window);
-			if (window != 0) OS.gdk_window_invalidate_rect (window, rect, true);
-		}
+		OS.XCheckIfEvent (xDisplay, xEvent, checkIfEventProc, 0);
 		OS.g_free (xEvent);
+		this.flushWindow = 0;
 	}
 }
 
@@ -1762,6 +1827,10 @@ void initializeCallbacks () {
 	pixbufCellDataCallback = new Callback (this, "pixbufCellDataProc", 5);
 	pixbufCellDataProc = pixbufCellDataCallback.getAddress ();
 	if (pixbufCellDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+
+	checkIfEventCallback = new Callback (this, "checkIfEventProc", 3);
+	checkIfEventProc = checkIfEventCallback.getAddress ();
+	if (checkIfEventProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 }
 
 void initializeWidgetTable () {
@@ -2290,6 +2359,10 @@ void releaseDisplay () {
 	windowCallback3.dispose ();  windowCallback3 = null;
 	windowCallback4.dispose ();  windowCallback4 = null;
 	windowCallback5.dispose ();  windowCallback5 = null;
+
+	/* Dispose checkIfEvent callback */
+	checkIfEventCallback.dispose(); checkIfEventCallback = null;
+	checkIfEventProc = 0;
 	
 	/* Dispose preedit window */
 	if (preeditWindow != 0) OS.gtk_widget_destroy (preeditWindow);
@@ -2971,7 +3044,7 @@ static int untranslateKey (int key) {
  */
 public void update () {
 	checkDevice ();
-	flushExposes ();
+	flushExposes (0, true);
 	OS.gdk_window_process_all_updates ();
 }
 
