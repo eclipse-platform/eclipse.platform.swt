@@ -1,8 +1,5 @@
-package org.eclipse.swt.internal.accessibility.gtk;
-
-/*
- * Copyright (c) IBM Corp. 2000, 2002.  All rights reserved.
- *
+/*******************************************************************************
+ * Copyright (c) 2000, 2003 IBM Corporation and others. All rights reserved.
  * The contents of this file are made available under the terms
  * of the GNU Lesser General Public License (LGPL) Version 2.1 that
  * accompanies this distribution (lgpl-v21.txt).  The LGPL is also
@@ -11,8 +8,10 @@ package org.eclipse.swt.internal.accessibility.gtk;
  * the LGPL accompanying this distribution and there is any conflict
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
- */
- 
+ *******************************************************************************/
+package org.eclipse.swt.internal.accessibility.gtk;
+
+
 public class AtkActionIface {
 //	GTypeInterface parent;
 	public int do_action;
