@@ -24,7 +24,6 @@ abstract class StyledTextRenderer {
 	private Device device;					// device to render on
 	protected Font regularFont;
 	protected Font boldFont;
-	private int leftMargin;
 	private int tabWidth;					// width in pixels of a tab character
 	private int lineHeight;					// height in pixels of a line
 	private int lineEndSpaceWidth;			// width in pixels of the space used to represent line delimiters
@@ -36,7 +35,7 @@ abstract class StyledTextRenderer {
  * @param regularFont Font to use for regular (non-bold) text
  * @param leftMargin margin to the left of the text
  */
-StyledTextRenderer(Device device, Font regularFont, int leftMargin) {
+StyledTextRenderer(Device device, Font regularFont) {
 	FontData[] fontDatas = regularFont.getFontData();
 	for (int i = 0; i < fontDatas.length; i++) {
 		fontDatas[i].setStyle(fontDatas[i].getStyle() | SWT.BOLD);
@@ -44,7 +43,6 @@ StyledTextRenderer(Device device, Font regularFont, int leftMargin) {
 	boldFont = new Font(device, fontDatas);
 	this.device = device;
 	this.regularFont = regularFont;
-	this.leftMargin = leftMargin;
 }
 /**
  * Calculates the line height and space width.
@@ -100,6 +98,7 @@ void drawLine(String line, int lineIndex, int paintY, GC gc, Color widgetBackgro
 	Point selection = getSelection();
 	int selectionStart = selection.x;
 	int selectionEnd = selection.y;
+	int leftMargin = getLeftMargin();
 	Color lineBackground = null;
 	StyledTextEvent event = getLineStyleData(lineOffset, line);
 	TextLayout layout = getTextLayout(line, lineOffset, event);
@@ -209,12 +208,8 @@ protected abstract GC getGC();
  * @return the horizontal scroll position.
  */
 protected abstract int getHorizontalPixel();
-/**
- * Method getLeftMargin.
- * @return int
- */
-int getLeftMargin() {
-	return leftMargin;
+protected int getLeftMargin() {
+	return 0;
 }
 /**
  * Returns the width in pixels of the space used to represent line delimiters.
@@ -285,6 +280,12 @@ protected abstract StyledTextEvent getLineStyleData(int lineOffset, String line)
  *
  */
 protected abstract int getOrientation ();
+/**
+*
+*/
+protected int getRightMargin() {
+	return 0;
+}
 /**
  *
  */

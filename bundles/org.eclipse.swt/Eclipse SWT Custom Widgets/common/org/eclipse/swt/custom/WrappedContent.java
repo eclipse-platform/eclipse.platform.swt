@@ -398,7 +398,7 @@ void textChanged(int startOffset, int newLineCount, int replaceLineCount, int ne
 private int wrapLineRange(int startLine, int endLine, int visualLineIndex) {
 	int emptyLineCount = 0;
 		
-	int width = renderer.getClientArea().width - renderer.getLeftMargin();
+	int width = renderer.getClientArea().width - renderer.getLeftMargin() - renderer.getRightMargin();
 	visualLineIndex = wrapLineRange(startLine, endLine, visualLineIndex, width);
 	// is there space left for more visual lines? can happen if there are fewer
 	// visual lines for a given logical line than before
@@ -460,7 +460,7 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
  * StyledText widget
  */
 void wrapLines() {
-	int width = renderer.getClientArea().width - renderer.getLeftMargin();
+	int width = renderer.getClientArea().width - renderer.getLeftMargin() - renderer.getRightMargin();
 	wrapLines(width);
 }
 /**

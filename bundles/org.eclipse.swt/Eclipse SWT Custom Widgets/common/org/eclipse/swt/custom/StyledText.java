@@ -1593,7 +1593,7 @@ public StyledText(Composite parent, int style) {
 	if ((style & SWT.READ_ONLY) != 0) {
 		setEditable(false);
 	}
-	leftMargin = isBidi() ? BIDI_CARET_WIDTH - 1 : 0;
+	leftMargin = rightMargin = isBidi() ? BIDI_CARET_WIDTH - 1: 0;
 	if ((style & SWT.SINGLE) != 0 && (style & SWT.BORDER) != 0) {
 		leftMargin = topMargin = rightMargin = bottomMargin = 2;
 	}
@@ -5291,8 +5291,7 @@ void initializeRenderer() {
 	if (renderer != null) {
 		renderer.dispose();
 	}
-	renderer = new DisplayRenderer(
-		getDisplay(), getFont(), leftMargin, this, tabLength);
+	renderer = new DisplayRenderer(getDisplay(), getFont(), this, tabLength);
 	lineHeight = renderer.getLineHeight();
 	if (wordWrap) {
 	    content = new WrappedContent(renderer, logicalContent);
@@ -6298,7 +6297,7 @@ void resetSelection() {
 void scrollHorizontal(int pixels) {
 	Rectangle clientArea;
 	
-	if (pixels == 0) {
+	if (pixels == 0 || wordWrap) {
 		return;
 	}
 	clientArea = getClientArea();

@@ -30,8 +30,8 @@ class DisplayRenderer extends StyledTextRenderer {
  * @param parent <class>StyledText</class> widget to render
  * @param tabLength length in characters of a tab character
  */
-DisplayRenderer(Device device, Font regularFont, int leftMargin, StyledText parent, int tabLength) {
-	super(device, regularFont, leftMargin);
+DisplayRenderer(Device device, Font regularFont, StyledText parent, int tabLength) {
+	super(device, regularFont);
 	this.parent = parent;
 	calculateLineHeight();
 	setTabLength(tabLength);
@@ -150,6 +150,9 @@ protected GC getGC() {
 protected int getHorizontalPixel() {
 	return parent.internalGetHorizontalPixel();
 }
+protected int getLeftMargin() {
+	return parent.leftMargin;
+}
 /**
  * @see StyledTextRenderer#getLineBackgroundData
  */
@@ -168,6 +171,9 @@ protected StyledTextEvent getLineStyleData(int lineOffset, String line) {
 }
 protected  int getOrientation () {
 	return parent.getOrientation();
+}
+protected int getRightMargin() {
+	return parent.rightMargin;
 }
 protected Color getSelectionBackground() {
 	return parent.getSelectionBackground();
