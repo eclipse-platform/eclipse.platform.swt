@@ -29,6 +29,7 @@ import org.eclipse.swt.graphics.RGB;
 public /*final*/ class ColorDialog extends Dialog {
 
 	private RGB rgb;
+	private short[] fColor= new short[3];
 	
 /**
  * Constructs a new instance of this class given only its parent.
@@ -106,24 +107,18 @@ public RGB getRGB() {
  * </ul>
  */
 public RGB open() {
-	short[] c= new short[3];
-	
-	if (rgb == null)
-		rgb= new RGB(255, 255, 255);
-		
-	c[0]= (short) (rgb.red * 257);
-	c[1]= (short) (rgb.green * 257);
-	c[2]= (short) (rgb.blue * 257);
-	
+
 	MacPoint mp= new MacPoint();
 	OS.GetGlobalMouse(mp.getData());
 	
 	boolean[] success= new boolean[1];
-	if (OS.PickColor(c, mp.getData(), MacUtil.Str255(title), success) == OS.kNoErr) {
+	if (OS.PickColor(fColor, mp.getData(), MacUtil.Str255(title), success) == OS.kNoErr) {
 		if (success[0]) {
-			rgb.red= c[0] / 257;
-			rgb.green= c[1] / 257;
-			rgb.blue= c[2] / 257;
+			if (rgb == null)
+				rgb= new RGB(0, 0, 0);
+			rgb.red=	(fColor[0] >> 8) & 0xff;
+			rgb.green=	(fColor[1] >> 8) & 0xff;
+			rgb.blue=	(fColor[2] >> 8) & 0xff;
 		} else
 			rgb= null;
 	} else
@@ -142,5 +137,9 @@ public RGB open() {
  */
 public void setRGB(RGB rgb) {
 	this.rgb = rgb;
+	fColor[0]= (short) (rgb.red * 257);
+	fColor[1]= (short) (rgb.green * 257);
+	fColor[2]= (short) (rgb.blue * 257);
+
 }
 }
