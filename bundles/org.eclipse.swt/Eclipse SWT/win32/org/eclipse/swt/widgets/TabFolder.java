@@ -254,6 +254,14 @@ void createHandle () {
 	*/
 	int hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
 	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
+	
+	/*
+	* Feature in WinCE Pocket PC.  Tab folder must have a flat look
+	* that is enabled by specifying the version of the Pocket PC library.  
+	*/
+	if (OS.IsPPC) {
+		OS.SendMessage (handle, OS.CCM_SETVERSION, 0x020c /*COMCTL32_VERSION*/, 0);
+	}
 }
 
 void createWidget () {
@@ -656,6 +664,7 @@ int widgetStyle () {
 	int bits = super.widgetStyle () | OS.WS_CLIPCHILDREN;
 	if ((style & SWT.NO_FOCUS) != 0) bits |= OS.TCS_FOCUSNEVER;
 	if ((style & SWT.BOTTOM) != 0) bits |= OS.TCS_BOTTOM;
+	if (OS.IsPPC) bits |= OS.TCS_BOTTOM;
 	return bits | OS.TCS_TABS | OS.TCS_TOOLTIPS;
 }
 
