@@ -301,6 +301,10 @@ private void initAccessible() {
 		public void getState(AccessibleControlEvent e) {
 			e.detail = ACC.STATE_READONLY;
 		}
+		
+		public void getValue(AccessibleControlEvent e) {
+			e.result = getText();
+		}
 	});
 }
 void onDispose(DisposeEvent event) {
