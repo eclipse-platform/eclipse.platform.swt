@@ -272,18 +272,8 @@ void createItem (MenuItem item, int index) {
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
 	modified = true;
-	/*
-	* Bug in the Macintosh.  Mac segments fault, if the item in
-	* a menu bar does not have a menu attached.  The fix is to
-	* temporarily attach an empty menu. 
-	*/
-	if ((style & SWT.BAR) != 0) {
-		int outMenuRef [] = new int [1];
-		if (OS.CreateNewMenu ((short) 0, 0, outMenuRef) != OS.noErr) {
-			error (SWT.ERROR_NO_HANDLES);
-		}
-		OS.SetMenuItemHierarchicalMenu (handle, (short) (index + 1), outMenuRef [0]);
-	}
+	int emptyMenu = item.createEmptyMenu ();
+	if (emptyMenu != 0) OS.SetMenuItemHierarchicalMenu (handle, (short) (index + 1), emptyMenu);
 }
 
 void createWidget () {
@@ -303,16 +293,7 @@ void destroyItem (MenuItem item) {
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
 	if (count == 0) items = new MenuItem [4];
-	if ((style & SWT.BAR) != 0) {
-		if (item.menu == null) {
-			int [] outMenuRef = new int [1];
-			short menuIndex = (short) (index + 1);
-			OS.GetMenuItemHierarchicalMenu (handle, menuIndex, outMenuRef);
-			if (outMenuRef [0] != 0) {
-				OS.DisposeMenu (outMenuRef [0]);
-			}
-		}
-	}
+	if (item.menu == null) item.destroyEmptyMenu (index);
 	modified = true;
 	OS.DeleteMenuItem (handle, (short) (index + 1));
 }

@@ -224,6 +224,36 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.CASCADE, 0);
 }
 
+int createEmptyMenu () {
+	/*
+	* Bug in the Macintosh.  When a menu bar item does not have
+	* an associated pull down menu, the Macintosh segment faults.
+	* The fix is to temporarily attach an empty menu. 
+	*/
+	if ((parent.style & SWT.BAR) != 0) {
+		int outMenuRef [] = new int [1];
+		if (OS.CreateNewMenu ((short) 0, 0, outMenuRef) != OS.noErr) {
+			error (SWT.ERROR_NO_HANDLES);
+		}
+		return outMenuRef [0];
+	}
+	return 0;
+}
+
+void destroyEmptyMenu (int index) {
+	if ((parent.style & SWT.BAR) != 0) {
+		if (index == -1) index = parent.indexOf (this);
+		if (index != -1) {
+			short menuIndex = (short) (index + 1);
+			int [] outMenuRef = new int [1];
+			OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
+			if (outMenuRef [0] != 0) {
+				OS.DisposeMenu (outMenuRef [0]);
+			}
+		}
+	}
+}
+
 /**
  * Return the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
@@ -409,21 +439,11 @@ void releaseChild () {
 }
 
 void releaseWidget () {
-	if (menu != null) {
+	if (menu == null) {
+		destroyEmptyMenu (-1);
+	} else {
 		menu.releaseWidget ();
 		menu.destroyWidget ();
-	} else {
-		if ((parent.style & SWT.BAR) != 0) {
-			int index = parent.indexOf (this);
-			if (index != -1) {
-				short menuIndex = (short) (index + 1);
-				int [] outMenuRef = new int [1];
-				OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
-				if (outMenuRef [0] != 0) {
-					OS.DisposeMenu (outMenuRef [0]);
-				}
-			}
-		}
 	}
 	menu = null;
 	super.releaseWidget ();
@@ -655,33 +675,24 @@ public void setMenu (Menu menu) {
 	/* Update the menu in the OS */
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	short menuIndex = (short) (index + 1);
-	int outMenuRef [] = new int [1];
+	int menuHandle = 0;
 	if (menu == null) {
-		if ((parent.style & SWT.BAR) != 0) {
-			if (OS.CreateNewMenu ((short) 0, 0, outMenuRef) != OS.noErr) {
-				error (SWT.ERROR_NO_HANDLES);
-			}
-		}
+		menuHandle = createEmptyMenu ();
 	} else {
 		menu.cascade = this;
-		if ((parent.style & SWT.BAR) != 0) {
-			if (oldMenu == null) {
-				OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
-				if (outMenuRef [0] != 0) {
-					OS.DisposeMenu (outMenuRef [0]);
-				}
-			}
+		if (oldMenu == null) 	destroyEmptyMenu (index);
+		menuHandle = menu.handle;
+	}
+	short menuIndex = (short) (index + 1);
+	if (menuHandle != 0) {
+		int [] outString = new int [1];
+		if (OS.CopyMenuItemTextAsCFString (parent.handle, menuIndex, outString) != OS.noErr) {
+			error (SWT.ERROR_CANNOT_SET_MENU);
 		}
-		outMenuRef [0] = menu.handle;
+		OS.SetMenuTitleWithCFString (menuHandle, outString [0]);
+		OS.CFRelease (outString [0]);
 	}
-	int [] outString = new int [1];
-	if (OS.CopyMenuItemTextAsCFString (parent.handle, menuIndex, outString) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_SET_MENU);
-	}
-	OS.SetMenuTitleWithCFString (outMenuRef [0], outString [0]);
-	OS.CFRelease (outString [0]);
-	if (OS.SetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef [0]) != OS.noErr) {
+	if (OS.SetMenuItemHierarchicalMenu (parent.handle, menuIndex, menuHandle) != OS.noErr) {
 		error (SWT.ERROR_CANNOT_SET_MENU);
 	}
 }
