@@ -772,9 +772,11 @@ void place (StyleItem run) {
 	short[] width = new short[1], height = new short[1];
 	int xmString = OS.XmStringCreateLocalized(buffer);
 	OS.XmStringExtent(fontList, xmString, width, height);
-	run.width = width[0] & 0xFFFF;
 	run.height = height[0] & 0xFFFF;
-	run.baseline = OS.XmStringBaseline(fontList, xmString);
+	if (!(run.tab || run.lineBreak)) {
+		run.width = width[0] & 0xFFFF;
+		run.baseline = OS.XmStringBaseline(fontList, xmString);
+	}
 	OS.XmStringFree(xmString);
 }
 
