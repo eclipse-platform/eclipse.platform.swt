@@ -1747,26 +1747,6 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
-boolean sendKeyEvent (int type, int msg, int wParam, int lParam) {
-	Event event = new Event ();
-	if (!setKeyState (event, type, wParam, lParam)) return true;
-	return sendKeyEvent (type, msg, wParam, lParam, event);
-}
-
-boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
-	sendEvent (type, event);
-	// widget could be disposed at this point
-	
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the key
-	* events.  If this happens, end the processing of
-	* the key by returning false.
-	*/
-	if (isDisposed ()) return false;
-	return event.doit;
-}
-
 boolean sendFocusEvent (int type) {
 	Shell shell = getShell ();
 	
