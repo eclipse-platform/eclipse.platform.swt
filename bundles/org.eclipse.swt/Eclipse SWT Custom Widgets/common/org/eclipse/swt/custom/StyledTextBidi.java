@@ -158,8 +158,6 @@ void drawGlyphs(int visualStart, int length, int x, int y) {
 	System.arraycopy(glyphBuffer, visualStart * 2, renderBuffer, 0, length * 2);
 	// copy the distance values for the desired rendering range
 	System.arraycopy(dx, visualStart, renderDx, 0, length);	
-	// why do we have to specify the WORD count, not the byte count?
-	// when using the ANSI version of ExtTextOut cbCount is supposed to specify the byte count.
 	BidiText.drawGlyphs(gc, renderBuffer, renderDx, x, y);
 }
 public boolean equals(Object object) {

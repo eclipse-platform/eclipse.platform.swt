@@ -56,6 +56,8 @@ public class BidiText {
 public static void drawGlyphs(GC gc, byte[] renderBuffer, int[] renderDx, int x, int y) {
 	RECT rect = null;
 
+	// why do we have to specify the WORD count, not the byte count?
+	// when using the ANSI version of ExtTextOut cbCount is supposed to specify the byte count.
 	OS.ExtTextOut(gc.handle, x, y, ETO_GLYPH_INDEX, rect, renderBuffer, renderBuffer.length / 2, renderDx);
 }
 /*
