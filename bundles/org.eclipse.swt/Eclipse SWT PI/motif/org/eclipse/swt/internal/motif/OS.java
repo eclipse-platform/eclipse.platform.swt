@@ -36,8 +36,8 @@ public class OS {
 		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;  IsHPUX = isHPUX;
 		IsDBLocale = OS.MB_CUR_MAX () != 1;
 	}
-	public static final int CODESET = OS.IsLinux ? 14 : 49;
-	public static final int LC_CTYPE = OS.IsAIX ? 1 : 0;
+	public static final int CODESET = CODESET ();
+	public static final int LC_CTYPE = LC_CTYPE ();
 	
 	static final int RESOURCE_LENGTH = 1024 * 3;
 	static final int RESOURCE_START = OS.XtMalloc (RESOURCE_LENGTH);
@@ -528,9 +528,11 @@ public class OS {
 /** Natives */
 public static final synchronized native int Call(int proc, int arg1, int arg2);
 public static final synchronized native int ConnectionNumber(int display);
+public static final native int CODESET();
 public static final native boolean FD_ISSET(int fd, byte[] fd_set);
 public static final native void FD_SET(int fd, byte[] fd_set);
 public static final native void FD_ZERO(byte[] fd_set);
+public static final native int LC_CTYPE();
 public static final native int MB_CUR_MAX();
 public static final synchronized native int overrideShellWidgetClass();
 public static final synchronized native int shellWidgetClass();

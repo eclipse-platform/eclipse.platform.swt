@@ -14,6 +14,18 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_motif_OS_##func
 
+#ifndef NO_CODESET
+JNIEXPORT jint JNICALL OS_NATIVE(CODESET)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "CODESET\n")
+	rc = (jint)CODESET;
+	NATIVE_EXIT(env, that, "CODESET\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_ConnectionNumber
 JNIEXPORT jint JNICALL OS_NATIVE(ConnectionNumber)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -64,6 +76,18 @@ JNIEXPORT void JNICALL OS_NATIVE(FD_1ZERO)
 	FD_ZERO((fd_set *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	NATIVE_EXIT(env, that, "FD_1ZERO\n")
+}
+#endif
+
+#ifndef NO_LC_1CTYPE
+JNIEXPORT jint JNICALL OS_NATIVE(LC_1CTYPE)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "LC_1CTYPE\n")
+	rc = (jint)LC_CTYPE;
+	NATIVE_EXIT(env, that, "LC_1CTYPE\n")
+	return rc;
 }
 #endif
 

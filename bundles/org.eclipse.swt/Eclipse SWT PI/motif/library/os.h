@@ -37,6 +37,7 @@
 #include <stdio.h>
 #include <assert.h>
 #include <langinfo.h>
+#include <locale.h>
 #include <iconv.h>
 #include <stdlib.h>
 #ifdef	_HPUX
