@@ -2539,6 +2539,6 @@ public static final native int VtblCall (int ppVtbl, int fnNumber, int arg0);
 public static final native boolean WaitMessage ();
 public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, byte [] lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
 public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, int lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
-public static final native int WindowFromDC (int lpPoint);
+public static final native int WindowFromDC (int hDC);
 public static final native int WindowFromPoint (POINT lpPoint);
 }
