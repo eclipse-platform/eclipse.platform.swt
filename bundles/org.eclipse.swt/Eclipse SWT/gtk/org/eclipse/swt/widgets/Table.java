@@ -1437,6 +1437,7 @@ public void setRedraw (boolean redraw) {
  * @see Table#select(int,int)
  */
 public void setSelection (int start, int end) {
+	checkWidget();
 	deselectAll ();
 	select (start, end);
 	setTopIndex (getSelectionIndex ());
@@ -1460,6 +1461,8 @@ public void setSelection (int start, int end) {
  * @see Table#select(int[])
  */
 public void setSelection (int [] indices) {
+	checkWidget();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	select (indices);
 	setTopIndex (getSelectionIndex ());
