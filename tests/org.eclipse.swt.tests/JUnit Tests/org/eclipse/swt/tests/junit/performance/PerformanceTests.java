@@ -57,7 +57,7 @@ public PerformanceTests() {
 //	addTest(Test_org_eclipse_swt_widgets_Display.suite());
 
 	addTest(Test_org_eclipse_swt_graphics_Image.suite());
-	addTest(Test_org_eclipse_swt_graphics_Cursor.suite());
+////addTest(Test_org_eclipse_swt_graphics_Cursor.suite());
 	addTest(Test_org_eclipse_swt_graphics_DeviceData.suite());
 //	addTest(Test_org_eclipse_swt_graphics_ImageLoaderEvent.suite());
 	addTest(Test_org_eclipse_swt_graphics_RGB.suite());
