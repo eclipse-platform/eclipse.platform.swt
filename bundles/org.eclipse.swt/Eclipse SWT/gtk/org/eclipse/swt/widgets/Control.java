@@ -1882,6 +1882,14 @@ void sendKeyEvent (int type, int gdkEvent) {
 		event.time = time;
 		setInputState (event, gdkEvent);
 		event.keyCode = Display.translateKey (keyEvent.keyval);
+		if (event.keyCode == 0) {
+			switch (keyEvent.keyval) {
+				case OS.GDK_ISO_Left_Tab: 	event.character = '\t'; break;
+				case OS.GDK_Scroll_Lock:		event.character = 0x14; break;
+				default:
+					event.character = (char) keyEvent.keyval;
+			}
+		}
 		postEvent (type, event);
 	} else {
 		int string = keyEvent.string;
