@@ -4,13 +4,11 @@
 
 	<target name="init">
 		<tstamp/>
-       	<property name="fragment_dir" value="../../../../org.eclipse.swt.browser.carbon" />
-        <property name="jar_destdir" value="${fragment_dir}/ws/carbon" />
+       	<property name="fragment_dir" value="../../../../org.eclipse.swt.carbon" />
         <property name="lib_destdir" value="${fragment_dir}/os/macosx/ppc" />
 		<property name="plugin" value="org.eclipse.swt.browser" />
 		<property name="bin_dir" value="../../../bin" />
 		<property name="lib_extension" value=".jnilib" />
-        <mkdir dir="${jar_destdir}" />
         <mkdir dir="${lib_destdir}" />
 	</target>
 
@@ -26,13 +24,6 @@
 		    <fileset dir="${bin_dir}/library" includes="**/*${lib_extension}"/>
 		</copy>
 	</target>
-		
-    <target name="build_jar" depends="build">
-        <jar
-            jarfile="${jar_destdir}/swtxpcom.jar"
-            basedir="${bin_dir}"
-        />
-    </target>
     
 	<target name="clean" depends="init">
 		<exec dir="${bin_dir}/library/" executable="sh">

@@ -8,6 +8,14 @@
 # Contributors:
 #     IBM Corporation - initial API and implementation
 #*******************************************************************************
+# Makefile for SWT libraries on Carbon/Mac
+
+include make_common.mak
+
+MOZ_PREFIX=swt-mozilla
+WS_PREFIX=carbon
+SWT_VERSION=$(maj_ver)$(min_ver)
+MOZ_LIB=lib$(MOZ_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 
 # Define the installation directories for various products.
 # Your system may have these in a different place.
@@ -18,12 +26,7 @@ JAVA_HOME=$(IVE_HOME)/bin/include
 #  mozilla dist folder
 MOZ_HOME = /Users/stephennorthover/Desktop/chrix/1.4/mozilla/dist
 
-# Define the shared library to be made.
-MOZ_LIB	      = libswtxpcom.jnilib
-#MOZ_REQ_LIB = -lstring_s -lstring_obsolete_s -lembed_base_s -lunicharutil_s -lnspr4 -lxpcom -lplds4	-lplc4
-#LDLIBS = -L$(MOZ_HOME)/bin $(MOZ_REQ_LIB) -L$(MOZ_HOME)/lib
 LDLIBS = -L$(MOZ_HOME)/bin -lxpcom -L$(MOZ_HOME)/lib -lplds4 -lplc4 -lnspr4 -lpthread  -lgkgfx $(MOZ_HOME)/lib/libembed_base_s.a $(MOZ_HOME)/lib/libembedstring.a
-
 
 MOZ_INCLUDES =  -I$(MOZ_HOME)/include \
 	-I$(MOZ_HOME)/include/xpcom \
