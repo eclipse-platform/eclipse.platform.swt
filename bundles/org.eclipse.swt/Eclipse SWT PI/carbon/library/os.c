@@ -860,6 +860,42 @@ JNIEXPORT jint JNICALL OS_NATIVE(CFArrayGetValueAtIndex)
 }
 #endif
 
+#ifndef NO_CFLocaleCopyCurrent
+JNIEXPORT jint JNICALL OS_NATIVE(CFLocaleCopyCurrent)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFLocaleCopyCurrent_FUNC);
+	rc = (jint)CFLocaleCopyCurrent();
+	OS_NATIVE_EXIT(env, that, CFLocaleCopyCurrent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFNumberFormatterCopyProperty
+JNIEXPORT jint JNICALL OS_NATIVE(CFNumberFormatterCopyProperty)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFNumberFormatterCopyProperty_FUNC);
+	rc = (jint)CFNumberFormatterCopyProperty((CFNumberFormatterRef)arg0, (CFStringRef)arg1);
+	OS_NATIVE_EXIT(env, that, CFNumberFormatterCopyProperty_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFNumberFormatterCreate
+JNIEXPORT jint JNICALL OS_NATIVE(CFNumberFormatterCreate)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, CFNumberFormatterCreate_FUNC);
+	rc = (jint)CFNumberFormatterCreate((CFAllocatorRef)arg0, (CFLocaleRef)arg1, (CFNumberFormatterStyle)arg2);
+	OS_NATIVE_EXIT(env, that, CFNumberFormatterCreate_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFRelease
 JNIEXPORT void JNICALL OS_NATIVE(CFRelease)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -10836,6 +10872,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(ZoomWindowIdeal)
 fail:
 	if (arg2 && lparg2) setPointFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, ZoomWindowIdeal_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_kCFNumberFormatterDecimalSeparator
+JNIEXPORT jint JNICALL OS_NATIVE(kCFNumberFormatterDecimalSeparator)
+	(JNIEnv *env, jclass that)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, kCFNumberFormatterDecimalSeparator_FUNC);
+	rc = (jint)kCFNumberFormatterDecimalSeparator;
+	OS_NATIVE_EXIT(env, that, kCFNumberFormatterDecimalSeparator_FUNC);
 	return rc;
 }
 #endif

@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 815;
-int OS_nativeFunctionCallCount[815];
+int OS_nativeFunctionCount = 819;
+int OS_nativeFunctionCallCount[819];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -70,6 +70,9 @@ char * OS_nativeFunctionNames[] = {
 	"CFArrayCreateMutable",
 	"CFArrayGetCount",
 	"CFArrayGetValueAtIndex",
+	"CFLocaleCopyCurrent",
+	"CFNumberFormatterCopyProperty",
+	"CFNumberFormatterCreate",
 	"CFRelease",
 	"CFStringCreateWithBytes",
 	"CFStringCreateWithCharacters",
@@ -801,6 +804,7 @@ char * OS_nativeFunctionNames[] = {
 	"WaitMouseMoved",
 	"X2Fix",
 	"ZoomWindowIdeal",
+	"kCFNumberFormatterDecimalSeparator",
 	"kHIViewWindowContentID",
 	"kPMDocumentFormatPDF",
 	"kPMGraphicsContextCoreGraphics",

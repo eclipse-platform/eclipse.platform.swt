@@ -90,6 +90,7 @@ public class OS extends Platform {
 	public static final int kATSUSizeTag = 262;
 	public static final int kATSUToTextEnd = 0xFFFFFFFF;
 	public static final int kCFAllocatorDefault = 0;
+	public static final int kCFNumberFormatterDecimalStyle = 1;
 	public static final int kCFURLPOSIXPathStyle = 0;
 	public static final int kCFStringEncodingASCII = 0x0600;
 	public static final int kCGEncodingMacRoman = 1;
@@ -757,6 +758,9 @@ public static final native void CFArrayAppendValue(int theArray, int value);
 public static final native int CFArrayCreateMutable(int allocator, int capacity, int callBacks);
 public static final native int CFArrayGetCount(int theArray); 
 public static final native int CFArrayGetValueAtIndex(int theArray, int idx); 
+public static final native int CFLocaleCopyCurrent();
+public static final native int CFNumberFormatterCopyProperty(int formatter, int key);
+public static final native int CFNumberFormatterCreate(int alloc, int locale, int style);
 public static final native int CFStringCreateWithBytes(int alloc, byte[] bytes, int numBytes, int encoding, boolean isExternalRepresentation);
 public static final native int CFStringCreateWithCharacters(int alloc, char[] chars, int numChars);
 public static final native int CFStringGetBytes(int theString, CFRange range, int encoding, byte lossByte, boolean isExternalRepresentation, byte[] buffer, int maxBufLen, int[] usedBufLen);
@@ -1487,6 +1491,7 @@ public static final native int UpgradeScriptInfoToTextEncoding(short iTextScript
 public static final native boolean WaitMouseMoved(Point initialGlobalMouse);
 public static final native int X2Fix(double x);
 public static final native int ZoomWindowIdeal(int inWindow, short inPartCode, Point ioIdealSize);
+public static final native int kCFNumberFormatterDecimalSeparator();
 public static final native void memcpy(ATSTrapezoid dest, int src, int n);
 public static final native void memcpy(byte[] dest, int src, int n);
 public static final native void memcpy(char[] dest, int src, int n);
