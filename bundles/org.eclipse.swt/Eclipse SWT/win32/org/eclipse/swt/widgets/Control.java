@@ -2950,8 +2950,8 @@ int widgetStyle () {
  *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
  * </ul>
  * @exception SWTException <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *	</ul>
  */
 public boolean setParent (Composite parent) {

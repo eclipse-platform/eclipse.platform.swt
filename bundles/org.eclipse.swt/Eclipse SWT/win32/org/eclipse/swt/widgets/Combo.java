@@ -1362,6 +1362,9 @@ public void setItem (int index, String string) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_ITEM_NOT_ADDED - if the operation fails because of an operating system failure</li>
+ * </ul>
  */
 public void setItems (String [] items) {
 	checkWidget ();
