@@ -1025,8 +1025,8 @@ public void test_setTextLimitI() {
 	text.setTextLimit(10);
 	assertTrue(":a:", text.getTextLimit() == 10);
 
-	text.setTextLimit(-1);
-	assertTrue(":b:", text.getTextLimit() == -1);
+	text.setTextLimit(Text.LIMIT);
+	assertTrue(":b:", text.getTextLimit() == Text.LIMIT);
 
 	try {
 		text.setTextLimit(0);
