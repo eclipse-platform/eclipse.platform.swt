@@ -232,9 +232,9 @@ Rectangle getClientArea () {
 }
 
 /**
- * Gets the control which is associated with the receiver.
+ * Returns the control that is associated with the receiver.
  *
- * @return the control
+ * @return the control that is contained by the receiver
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -279,10 +279,10 @@ void releaseWidget () {
 }
 
 /**
- * Sets the control which is associated with the receiver
+ * Sets the control that is associated with the receiver
  * to the argument.
  *
- * @param control the new control
+ * @param control the new control that will be contained by the receiver
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_ARGUMENT - if the control has been disposed</li> 
@@ -324,6 +324,18 @@ public void setControl (Control control) {
 	if (showOld) oldControl.setVisible (true);
 }
 
+/**
+ * Returns a point describing the receiver's ideal size.
+ * The x coordinate of the result is the ideal width of the receiver.
+ * The y coordinate of the result is the ideal height of the receiver.
+ *
+ * @return the receiver's ideal size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getPreferredSize () {
 	checkWidget ();
 	int index = parent.indexOf (this);
@@ -339,6 +351,17 @@ public Point getPreferredSize () {
 	return new Point (width, rbBand.cyMinChild);
 }
 
+/**
+ * Sets the receiver's ideal size to the point specified by the arguments.
+ *
+ * @param width the new ideal width for the receiver
+ * @param height the new ideal height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setPreferredSize (int width, int height) {
 	checkWidget ();
 	int index = parent.indexOf (this);
@@ -362,12 +385,39 @@ public void setPreferredSize (int width, int height) {
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 
+/**
+ * Sets the receiver's ideal size to the point specified by the argument.
+ *
+ * @param size the new ideal size for the receiver
+ * @param height the new ideal height for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setPreferredSize (Point size) {
 	checkWidget ();
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setPreferredSize (size.x, size.y);
 }
 
+/**
+ * Returns a point describing the receiver's size. The
+ * x coordinate of the result is the width of the receiver.
+ * The y coordinate of the result is the height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Point getSize() {
 	checkWidget ();
 	int index = parent.indexOf (this);
@@ -380,6 +430,22 @@ public Point getSize() {
 	return new Point (width, height);
 }
 
+/**
+ * Sets the receiver's size to the point specified by the arguments.
+ * <p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a negative number will cause that
+ * value to be set to zero instead.
+ * </p>
+ *
+ * @param width the new width for the receiver
+ * @param height the new height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSize (int width, int height) {
 	checkWidget ();
 	int index = parent.indexOf (this);
@@ -422,6 +488,25 @@ public void setSize (int width, int height) {
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
 }
 
+/**
+ * Sets the receiver's size to the point specified by the argument.
+ * <p>
+ * Note: Attempting to set the width or height of the
+ * receiver to a negative number will cause them to be
+ * set to zero instead.
+ * </p>
+ *
+ * @param size the new size for the receiver
+ * @param height the new height for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSize (Point size) {
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setSize (size.x, size.y);
@@ -453,30 +538,8 @@ public Point getMinimumSize () {
 }
 
 /**
- * Sets the minimum size that the cool item can
- * be resized to using the cool item's gripper.
- * 
- * @param size a point representing the minimum width and height of the cool item, in pixels
- * 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- */
-public void setMinimumSize (Point size) {
-	checkWidget ();
-	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setMinimumSize (size.x, size.y);
-}
-
-/**
- * Sets the minimum size that the cool item can
- * be resized to using the cool item's gripper.
+ * Sets the minimum size that the cool item can be resized to
+ * using the cool item's gripper, to the point specified by the arguments.
  * 
  * @param width the minimum width of the cool item, in pixels
  * @param height the minimum height of the cool item, in pixels
@@ -505,6 +568,28 @@ public void setMinimumSize (int width, int height) {
 	rbBand.cxMinChild = width;
 	rbBand.cyMinChild = height;
 	OS.SendMessage (hwnd, OS.RB_SETBANDINFO, index, rbBand);
+}
+
+/**
+ * Sets the minimum size that the cool item can be resized to
+ * using the cool item's gripper, to the point specified by the argument.
+ * 
+ * @param size a point representing the minimum width and height of the cool item, in pixels
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ */
+public void setMinimumSize (Point size) {
+	checkWidget ();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setMinimumSize (size.x, size.y);
 }
 
 boolean getWrap() {
