@@ -57,10 +57,10 @@ class AccessibleType {
 	static int objectDefinition;
 	static int selectionIfaceDefinition;
 	static int textIfaceDefinition;
-	static int ATK_ACTION_TYPE = OS.g_type_from_name (Converter.wcsToMbcs (null, "AtkAction", true));
-	static int ATK_COMPONENT_TYPE = OS.g_type_from_name (Converter.wcsToMbcs (null, "AtkComponent", true));
-	static int ATK_SELECTION_TYPE = OS.g_type_from_name (Converter.wcsToMbcs (null, "AtkSelection", true));		
-	static int ATK_TEXT_TYPE = OS.g_type_from_name (Converter.wcsToMbcs (null, "AtkText", true));
+	static int ATK_ACTION_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkAction", true));
+	static int ATK_COMPONENT_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkComponent", true));
+	static int ATK_SELECTION_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkSelection", true));		
+	static int ATK_TEXT_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkText", true));
 	static {
 		atkActionCB_get_keybinding = new Callback (AccessibleType.class, "atkAction_get_keybinding", 2);
 		atkActionCB_get_name = new Callback (AccessibleType.class, "atkAction_get_name", 2);
@@ -91,46 +91,46 @@ class AccessibleType {
 		GInterfaceInfo interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = initActionIfaceCB.getAddress ();
 		actionIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
-		OS.memmove (actionIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
+		ATK.memmove (actionIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		// Component interface
 		initComponentIfaceCB = new Callback (AccessibleType.class, "initComponentIfaceCB", 1);
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = initComponentIfaceCB.getAddress ();
 		componentIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);
-		OS.memmove (componentIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
+		ATK.memmove (componentIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		// Selection interface
 		initSelectionIfaceCB = new Callback (AccessibleType.class, "initSelectionIfaceCB", 1);
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = initSelectionIfaceCB.getAddress ();
 		selectionIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
-		OS.memmove (selectionIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
+		ATK.memmove (selectionIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 		// Text interface
 		initTextIfaceCB = new Callback (AccessibleType.class, "initTextIfaceCB", 1);
 		interfaceInfo = new GInterfaceInfo ();
 		interfaceInfo.interface_init = initTextIfaceCB.getAddress ();
 		textIfaceDefinition = OS.g_malloc (GInterfaceInfo.sizeof);  
-		OS.memmove (textIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
+		ATK.memmove (textIfaceDefinition, interfaceInfo, GInterfaceInfo.sizeof);
 	}
 	
 	AccessibleType (byte[] typeName, int parentType) {
 		super ();
 		this.parentType = parentType;
 		int queryPtr = OS.g_malloc (GTypeQuery.sizeof);
-		OS.g_type_query (parentType, queryPtr);
+		ATK.g_type_query (parentType, queryPtr);
 		GTypeQuery query = new GTypeQuery ();
-		OS.memmove (query, queryPtr, GTypeQuery.sizeof);
+		ATK.memmove (query, queryPtr, GTypeQuery.sizeof);
 		OS.g_free (queryPtr);
 		GTypeInfo typeInfo = new GTypeInfo ();
 		typeInfo.base_init = gTypeInfo_base_init.getAddress ();
 		typeInfo.class_size = (short) query.class_size;
 		typeInfo.instance_size = (short) query.instance_size;
 		objectDefinition = OS.g_malloc (GTypeInfo.sizeof); 
-		OS.memmove (objectDefinition, typeInfo, GTypeInfo.sizeof); 
-		handle = OS.g_type_register_static (parentType, typeName, objectDefinition, 0);
-		OS.g_type_add_interface_static (handle, ATK_COMPONENT_TYPE, componentIfaceDefinition);
-		OS.g_type_add_interface_static (handle, ATK_ACTION_TYPE, actionIfaceDefinition);
-		OS.g_type_add_interface_static (handle, ATK_SELECTION_TYPE, selectionIfaceDefinition);
-		OS.g_type_add_interface_static (handle, ATK_TEXT_TYPE, textIfaceDefinition);
+		ATK.memmove (objectDefinition, typeInfo, GTypeInfo.sizeof); 
+		handle = ATK.g_type_register_static (parentType, typeName, objectDefinition, 0);
+		ATK.g_type_add_interface_static (handle, ATK_COMPONENT_TYPE, componentIfaceDefinition);
+		ATK.g_type_add_interface_static (handle, ATK_ACTION_TYPE, actionIfaceDefinition);
+		ATK.g_type_add_interface_static (handle, ATK_SELECTION_TYPE, selectionIfaceDefinition);
+		ATK.g_type_add_interface_static (handle, ATK_TEXT_TYPE, textIfaceDefinition);
 	}
 
 	static void addInstance (AccessibleObject object) {
@@ -341,8 +341,8 @@ class AccessibleType {
 		if (acc == null) {
 			// we don't care about this control, so create it with the parent's 
 			// type so that its accessibility callbacks will not pass though here
-			type = OS.g_type_parent (type);
-			int result = OS.g_object_new (type, 0);
+			type = ATK.g_type_parent (type);
+			int result = ATK.g_object_new (type, 0);
 			ATK.atk_object_initialize (result, widget);
 			return result;
 		}
@@ -357,11 +357,11 @@ class AccessibleType {
 	}
 
 	static int gObjectClass_finalize (int atkObject) {
-		int superType = OS.g_type_class_peek_parent (OS.G_OBJECT_GET_CLASS (atkObject));
-		int gObjectClass = OS.G_OBJECT_CLASS (superType);
+		int superType = ATK.g_type_class_peek_parent (ATK.G_OBJECT_GET_CLASS (atkObject));
+		int gObjectClass = ATK.G_OBJECT_CLASS (superType);
 		GObjectClass objectClassStruct = new GObjectClass ();
-		OS.memmove (objectClassStruct, gObjectClass);
-		OS.call (objectClassStruct.finalize, atkObject);
+		ATK.memmove (objectClassStruct, gObjectClass);
+		ATK.call (objectClassStruct.finalize, atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
 			accessibleObjects.remove (new Integer (atkObject));
@@ -381,11 +381,11 @@ class AccessibleType {
 		objectClass.ref_state_set = atkObjectCB_ref_state_set.getAddress ();
 		objectClass.get_index_in_parent = atkObjectCB_get_index_in_parent.getAddress ();
 		objectClass.ref_child = atkObjectCB_ref_child.getAddress ();
-		int gObjectClass = OS.G_OBJECT_CLASS (klass);
+		int gObjectClass = ATK.G_OBJECT_CLASS (klass);
 		GObjectClass objectClassStruct = new GObjectClass ();
-		OS.memmove (objectClassStruct, gObjectClass);
+		ATK.memmove (objectClassStruct, gObjectClass);
 		objectClassStruct.finalize = gObjectClass_finalize.getAddress ();
-		OS.memmove (gObjectClass, objectClassStruct); 
+		ATK.memmove (gObjectClass, objectClassStruct); 
 		ATK.memmove (klass, objectClass);
 		return 0;
 	}	

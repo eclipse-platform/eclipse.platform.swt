@@ -909,34 +909,4 @@ public static final synchronized native void pango_tab_array_free(int tab_array)
 public static final synchronized native int pango_tab_array_new(int initial_size, boolean positions_in_pixels);
 public static final synchronized native void pango_tab_array_set_tab(int tab_array, int tab_index, int alignment, int location);
 public static final native int strlen(int str);
-
-public static final synchronized native int G_OBJECT_CLASS (int klass);
-public static final synchronized native int G_OBJECT_GET_CLASS (int object);
-public static final synchronized native int G_TYPE_FROM_INSTANCE (int instance);
-public static final synchronized native int GTK_ACCESSIBLE (int handle);
-public static final synchronized native int call (int function, int arg0);
-public static final synchronized native int call (int function, int arg0, int arg1);
-public static final synchronized native int call (int function, int arg0, int arg1, int arg2);
-public static final synchronized native int call (int function, int arg0, int arg1, int arg2, int arg3);
-public static final synchronized native int call (int function, int arg0, int arg1, int arg2, int arg3, int arg4);
-public static final synchronized native int call (int function, int arg0, int arg1, int arg2, int arg3, int arg4, int arg5);
-public static final synchronized native int g_object_new (int type, int first_property_name);
-public static final synchronized native void g_type_add_interface_static (int instance_type, int interface_type, int info);
-public static final synchronized native int g_type_class_peek (int g_class);
-public static final synchronized native int g_type_class_peek_parent (int g_class);
-public static final synchronized native int g_type_from_name (byte[] name);
-public static final synchronized native int g_type_interface_peek_parent (int iface);
-public static final synchronized native boolean g_type_is_a (int type, int is_a_type);
-public static final synchronized native int g_type_name(int handle);
-public static final synchronized native int g_type_parent (int type);
-public static final synchronized native void g_type_query (int type, int query);
-public static final synchronized native int g_type_register_static (int parent_type, byte[] type_name, int info, int flags);	
-public static final synchronized native int gtk_widget_get_toplevel (int widget);
-public static final synchronized native void memmove (int dest, GtkAccessible src);
-public static final synchronized native void memmove (int dest, GInterfaceInfo src, int size);
-public static final synchronized native void memmove (int dest, GObjectClass src);
-public static final synchronized native void memmove (int dest, GTypeInfo src, int size);
-public static final synchronized native void memmove (GtkAccessible  dest, int src);
-public static final synchronized native void memmove (GObjectClass  dest, int src);
-public static final synchronized native void memmove (GTypeQuery dest, int src, int size);
 }

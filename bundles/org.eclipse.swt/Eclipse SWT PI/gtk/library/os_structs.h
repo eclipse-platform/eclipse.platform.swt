@@ -15,38 +15,6 @@
 
 #include "os.h"
 
-#ifndef NO_GInterfaceInfo
-GInterfaceInfo *getGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct);
-void setGInterfaceInfoFields(JNIEnv *env, jobject lpObject, GInterfaceInfo *lpStruct);
-#else
-#define getGInterfaceInfoFields(a,b,c) NULL
-#define setGInterfaceInfoFields(a,b,c)
-#endif
-
-#ifndef NO_GObjectClass
-GObjectClass *getGObjectClassFields(JNIEnv *env, jobject lpObject, GObjectClass *lpStruct);
-void setGObjectClassFields(JNIEnv *env, jobject lpObject, GObjectClass *lpStruct);
-#else
-#define getGObjectClassFields(a,b,c) NULL
-#define setGObjectClassFields(a,b,c)
-#endif
-
-#ifndef NO_GTypeInfo
-GTypeInfo *getGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct);
-void setGTypeInfoFields(JNIEnv *env, jobject lpObject, GTypeInfo *lpStruct);
-#else
-#define getGTypeInfoFields(a,b,c) NULL
-#define setGTypeInfoFields(a,b,c)
-#endif
-
-#ifndef NO_GTypeQuery
-GTypeQuery *getGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct);
-void setGTypeQueryFields(JNIEnv *env, jobject lpObject, GTypeQuery *lpStruct);
-#else
-#define getGTypeQueryFields(a,b,c) NULL
-#define setGTypeQueryFields(a,b,c)
-#endif
-
 #ifndef NO_GdkColor
 GdkColor *getGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct);
 void setGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpStruct);
@@ -149,14 +117,6 @@ void setGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpStruct);
 #else
 #define getGdkVisualFields(a,b,c) NULL
 #define setGdkVisualFields(a,b,c)
-#endif
-
-#ifndef NO_GtkAccessible
-GtkAccessible *getGtkAccessibleFields(JNIEnv *env, jobject lpObject, GtkAccessible *lpStruct);
-void setGtkAccessibleFields(JNIEnv *env, jobject lpObject, GtkAccessible *lpStruct);
-#else
-#define getGtkAccessibleFields(a,b,c) NULL
-#define setGtkAccessibleFields(a,b,c)
 #endif
 
 #ifndef NO_GtkAdjustment
