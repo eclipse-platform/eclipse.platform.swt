@@ -1715,6 +1715,7 @@ void onMouse(Event event) {
 	int x = event.x, y = event.y;
 	switch (event.type) {
 		case SWT.MouseExit: {
+			if (ignoreUp) ignoreUp = false;
 			if (minImageState != NORMAL) {
 				minImageState = NORMAL;
 				redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
