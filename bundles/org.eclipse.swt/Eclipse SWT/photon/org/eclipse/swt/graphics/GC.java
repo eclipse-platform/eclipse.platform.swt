@@ -1371,23 +1371,19 @@ int setGC() {
 void setGCClipping() {
 	int rid = data.rid;
 	int widget = data.widget;
-	int topWidget = data.topWidget;
 	if (rid == OS.Ph_DEV_RID) OS.PgSetRegion(rid);
 	else if (widget != 0) OS.PgSetRegion(OS.PtWidgetRid(widget));
 	else if (data.image != null) return;
 	
-	// NOTE: PgSetRegion resets the clipping rectangle to the full size of
-	// the region.
+	/* NOTE: PgSetRegion resets the clipping rectangle */
 	OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);	
 
 	if (widget == 0) return;
 	
-	int clip_tile = getClipping(widget, topWidget, true, true);
+	int clip_tile = getClipping(widget, data.topWidget, true, true);
 	int[] clip_rects_count = new int[1];
 	int clip_rects = OS.PhTilesToRects(clip_tile, clip_rects_count);
-	OS.PhFreeTiles(clip_tile);
-	
-	/* PgSetClipping sets the clipping to the full region when the count is zero */
+	OS.PhFreeTiles(clip_tile);	
 	if (clip_rects_count[0] == 0) {
 		clip_rects_count[0] = 1;
 		OS.free(clip_rects);
@@ -1400,7 +1396,10 @@ void setGCClipping() {
 int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSiblings) {
 	int child_tile = 0;
 	int widget_tile = OS.PhGetTile(); // NOTE: PhGetTile native initializes the tile
-			
+
+	PhRect_t rect = new PhRect_t ();
+	int args [] = {OS.Pt_ARG_FLAGS, 0, 0, OS.Pt_ARG_BASIC_FLAGS, 0, 0};
+	
 	/* Get the rectangle of all siblings in front of the widget */
 	if (clipSiblings) {
 		int temp_widget = topWidget;
@@ -1410,6 +1409,17 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 				if (child_tile == 0) child_tile = tile;			
 				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
 				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+				args [1] = args [4] = 0;
+				OS.PtGetResources(temp_widget, args.length / 3, args);
+				if ((args [1] & OS.Pt_HIGHLIGHTED) != 0) {
+					int basic_flags = args [4];
+					OS.memmove(rect, tile, PhRect_t.sizeof);
+					if ((basic_flags & OS.Pt_TOP_ETCH) != 0) rect.ul_y++;
+					if ((basic_flags & OS.Pt_BOTTOM_ETCH) != 0) rect.lr_y--;
+					if ((basic_flags & OS.Pt_RIGHT_ETCH) != 0) rect.ul_x++;
+					if ((basic_flags & OS.Pt_LEFT_ETCH) != 0) rect.lr_x--;
+					OS.memmove(tile, rect, PhRect_t.sizeof);
+				}
 			}
 		}
 		/* Translate the siblings rectangles to the widget's coordinates */
@@ -1426,6 +1436,17 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 				if (child_tile == 0) child_tile = tile;			
 				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
 				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+				args [1] = args [4] = 0;
+				OS.PtGetResources(temp_widget, args.length / 3, args);
+				if ((args [1] & OS.Pt_HIGHLIGHTED) != 0) {
+					int basic_flags = args [4];
+					OS.memmove(rect, tile, PhRect_t.sizeof);
+					if ((basic_flags & OS.Pt_TOP_ETCH) != 0) rect.ul_y++;
+					if ((basic_flags & OS.Pt_BOTTOM_ETCH) != 0) rect.lr_y--;
+					if ((basic_flags & OS.Pt_RIGHT_ETCH) != 0) rect.ul_x++;
+					if ((basic_flags & OS.Pt_LEFT_ETCH) != 0) rect.lr_x--;
+					OS.memmove(tile, rect, PhRect_t.sizeof);
+				}
 			}
 			temp_widget = OS.PtWidgetBrotherInFront(temp_widget);
 		}

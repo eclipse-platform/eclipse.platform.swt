@@ -119,6 +119,7 @@ void createHandle (int index) {
 	if (handle != 0) {
 		int clazz = display.PtContainer;
 		int [] args = {
+			OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
 		shellHandle = OS.PtCreateWidget (clazz, handle, args.length / 3, args);
@@ -160,16 +161,13 @@ void createHandle (int index) {
 			OS.Pt_ARG_WINDOW_NOTIFY_FLAGS, notifyFlags, notifyFlags,
 			OS.Pt_ARG_WINDOW_STATE, windowState, ~0,
 			OS.Pt_ARG_FLAGS, OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
+			OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
 		OS.PtSetParentWidget (parentHandle);
 		shellHandle = OS.PtCreateWidget (OS.PtWindow (), parentHandle, args.length / 3, args);
 		OS.free (titlePtr);
 		if (shellHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	}
-	if ((style & SWT.NO_BACKGROUND) != 0) {
-		int [] args = new int [] {OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0};
-		OS.PtSetResources(shellHandle, args.length / 3, args);
 	}
 	createScrolledHandle (shellHandle);
 	if ((style & (SWT.NO_TRIM | SWT.BORDER | SWT.RESIZE)) == 0) {

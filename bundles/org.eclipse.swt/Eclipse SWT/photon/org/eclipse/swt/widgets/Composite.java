@@ -93,15 +93,21 @@ void createScrolledHandle (int parentHandle) {
 		OS.Pt_ARG_FLAGS, hasBorder () ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 		OS.Pt_ARG_BASIC_FLAGS, hasBorder () ? etches : 0, etches,
 		OS.Pt_ARG_CONTAINER_FLAGS, 0, OS.Pt_ENABLE_CUA | OS.Pt_ENABLE_CUA_ARROWS,
+		OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	scrolledHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
-	if ((style & SWT.NO_BACKGROUND) != 0) {
-		args = new int [] {OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0};
-		OS.PtSetResources(scrolledHandle, args.length / 3, args);
-	}
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	Display display = getDisplay ();
+	etches = OS.Pt_TOP_OUTLINE | OS.Pt_LEFT_OUTLINE;
+	args = new int [] {
+		OS.Pt_ARG_FLAGS, OS.Pt_HIGHLIGHTED, OS.Pt_HIGHLIGHTED,
+		OS.Pt_ARG_BASIC_FLAGS, etches, etches,
+		OS.Pt_ARG_WIDTH, display.SCROLLBAR_WIDTH, 0,
+		OS.Pt_ARG_HEIGHT, display.SCROLLBAR_HEIGHT, 0,
+		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
+	};
+	OS.PtCreateWidget (OS.PtContainer (), scrolledHandle, args.length / 3, args);
 	int clazz = display.PtContainer;
 	args = new int [] {
 		OS.Pt_ARG_CONTAINER_FLAGS, 0, OS.Pt_ENABLE_CUA | OS.Pt_ENABLE_CUA_ARROWS,
@@ -120,7 +126,79 @@ public Rectangle getClientArea () {
 	OS.PtWidgetArea (handle, area);
 	return new Rectangle (area.pos_x, area.pos_y, area.size_w, area.size_h);
 }
+
+int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSiblings) {
+	int child_tile = 0;
+	int widget_tile = OS.PhGetTile(); // NOTE: PhGetTile native initializes the tile
+
+	PhRect_t rect = new PhRect_t ();
+	int args [] = {OS.Pt_ARG_FLAGS, 0, 0, OS.Pt_ARG_BASIC_FLAGS, 0, 0};
 	
+	/* Get the rectangle of all siblings in front of the widget */
+	if (clipSiblings) {
+		int temp_widget = topWidget;
+		while ((temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0) {
+			if (OS.PtWidgetIsRealized(temp_widget)) {
+				int tile = OS.PhGetTile();
+				if (child_tile == 0) child_tile = tile;			
+				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
+				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+				args [1] = args [4] = 0;
+				OS.PtGetResources(temp_widget, args.length / 3, args);
+				if ((args [1] & OS.Pt_HIGHLIGHTED) != 0) {
+					int basic_flags = args [4];
+					OS.memmove(rect, tile, PhRect_t.sizeof);
+					if ((basic_flags & OS.Pt_TOP_ETCH) != 0) rect.ul_y++;
+					if ((basic_flags & OS.Pt_BOTTOM_ETCH) != 0) rect.lr_y--;
+					if ((basic_flags & OS.Pt_RIGHT_ETCH) != 0) rect.ul_x++;
+					if ((basic_flags & OS.Pt_LEFT_ETCH) != 0) rect.lr_x--;
+					OS.memmove(tile, rect, PhRect_t.sizeof);
+				}
+			}
+		}
+		/* Translate the siblings rectangles to the widget's coordinates */
+		OS.PtWidgetCanvas(topWidget, widget_tile); // NOTE: widget_tile->rect
+		OS.PhDeTranslateTiles(child_tile, widget_tile); // NOTE: widget_tile->rect.ul
+	}
+			
+	/* Get the rectangle of the widget's children */
+	if (clipChildren) {
+		int temp_widget = OS.PtWidgetChildBack(widget);
+		while (temp_widget != 0) {
+			if (OS.PtWidgetIsRealized(temp_widget)) {
+				int tile = OS.PhGetTile();
+				if (child_tile == 0) child_tile = tile;			
+				else child_tile = OS.PhAddMergeTiles(tile, child_tile, null);
+				OS.PtWidgetExtent(temp_widget, tile); // NOTE: tile->rect
+				args [1] = args [4] = 0;
+				OS.PtGetResources(temp_widget, args.length / 3, args);
+				if ((args [1] & OS.Pt_HIGHLIGHTED) != 0) {
+					int basic_flags = args [4];
+					OS.memmove(rect, tile, PhRect_t.sizeof);
+					if ((basic_flags & OS.Pt_TOP_ETCH) != 0) rect.ul_y++;
+					if ((basic_flags & OS.Pt_BOTTOM_ETCH) != 0) rect.lr_y--;
+					if ((basic_flags & OS.Pt_RIGHT_ETCH) != 0) rect.ul_x++;
+					if ((basic_flags & OS.Pt_LEFT_ETCH) != 0) rect.lr_x--;
+					OS.memmove(tile, rect, PhRect_t.sizeof);
+				}
+			}
+			temp_widget = OS.PtWidgetBrotherInFront(temp_widget);
+		}
+	}
+
+	/* Get the widget's rectangle */
+	OS.PtWidgetCanvas(widget, widget_tile); // NOTE: widget_tile->rect
+	OS.PhDeTranslateTiles(widget_tile, widget_tile); // NOTE: widget_tile->rect.ul
+
+	/* Clip the widget's rectangle from the child/siblings rectangle's */
+	if (child_tile != 0) {
+		int clip_tile = OS.PhClipTilings(widget_tile, child_tile, null);
+		OS.PhFreeTiles(child_tile);
+		return clip_tile;
+	}
+	return widget_tile;
+}
+
 public Control [] getChildren () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -213,7 +291,37 @@ int processMouse (int info) {
 int processPaint (int damage) {
 	if ((state & CANVAS) != 0) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
+			
+			/* Get the clipping tiles for children and siblings */
+			int clip_tile = getClipping (handle, topHandle (), true, true);
+
+			/* Translate the clipping to the current GC coordinates */
+			short [] abs_x = new short [1], abs_y = new short [1];
+			OS.PtGetAbsPosition (handle, abs_x, abs_y);
+			short [] dis_abs_x = new short [1], dis_abs_y = new short [1];
+			OS.PtGetAbsPosition (OS.PtFindDisjoint (handle), dis_abs_x, dis_abs_y);
+			PhPoint_t delta = new PhPoint_t ();
+			delta.x = (short) (abs_x [0] - dis_abs_x [0]);
+			delta.y = (short) (abs_y [0] - dis_abs_y [0]);
+			OS.PhTranslateTiles(clip_tile, delta);
+
+			/* Set the clipping */
+			int[] clip_rects_count = new int [1];
+			int clip_rects = OS.PhTilesToRects (clip_tile, clip_rects_count);
+			OS.PhFreeTiles (clip_tile);	
+			if (clip_rects_count [0] == 0) {
+				clip_rects_count [0] = 1;
+				OS.free (clip_rects);
+				clip_rects = OS.malloc (PhRect_t.sizeof);
+			}
+			OS.PgSetMultiClip (clip_rects_count[0], clip_rects);
+			OS.free (clip_rects);
+			
+			/* Draw the widget */
 			OS.PtSuperClassDraw (OS.PtContainer (), handle, damage);
+			
+			/* Reset the clipping */
+			OS.PgSetMultiClip (0, 0);
 		}
 	}
 	return super.processPaint (damage);
@@ -316,6 +424,14 @@ void resizeClientArea (int width, int height) {
 		OS.Pt_ARG_HEIGHT, Math.max (clientHeight, 0), 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
+	PhPoint_t pt = new PhPoint_t ();
+	pt.x = (short) clientWidth;
+	pt.y = (short) clientHeight;
+	int ptr = OS.malloc (PhPoint_t.sizeof);
+	OS.memmove (ptr, pt, PhPoint_t.sizeof);
+	args = new int [] {OS.Pt_ARG_POS, ptr, 0};
+	OS.PtSetResources (OS.PtWidgetChildBack (scrolledHandle), args.length / 3, args);
+	OS.free (ptr);
 }
 
 void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
