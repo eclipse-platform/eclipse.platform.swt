@@ -461,7 +461,12 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 			items [id] = null;
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
-	} else {
+	} else {	
+		/*
+		* Bug in the Macintosh.  When the first child of a tree item is
+		* added and the parent is not expanded, the parent does not
+		* redraw to show the expander.  The fix is to force a redraw.
+		*/
 		if (count == 0 && parentItem != null) parentItem.redraw (OS.kDataBrowserNoItem);
 	}
 }
@@ -616,10 +621,22 @@ void destroyItem (TreeItem item) {
 	}
 	releaseItems (item.getItems ());
 	releaseItem (item);
+	boolean hasChild = false;
 	for (int i=0; i<items.length; i++) {
 		if (items [i] != null && items [i].parentItem == parentItem) {
-			if (items [i].index >= item.index) --items [i].index;
+			if (items [i].index >= item.index) {
+				--items [i].index;
+				hasChild = true;
+			}
 		}
+	}
+	/*
+	* Bug in the Macintosh.  When the last child of a tree item is
+	* removed and the parent is not expanded, the parent does not
+	* redraw to remove the expander.  The fix is to force a redraw.
+	*/
+	if (hasChild && parentItem != null && !parentItem.getExpanded ()) {
+		parentItem.redraw (OS.kDataBrowserNoItem);
 	}
 	setScrollWidth ();
 }

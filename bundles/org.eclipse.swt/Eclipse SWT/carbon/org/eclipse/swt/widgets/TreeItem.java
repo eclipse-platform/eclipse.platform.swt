@@ -677,14 +677,12 @@ void redraw (int propertyID) {
 	if (parent.drawCount != 0 && propertyID != Tree.CHECK_COLUMN_ID) return;
 	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 	/*
-	 * Bug in Carbon.  Calling UpdateDataBrowserItems with kDataBrowserNoItem
-	 * updates all columns associated with the items in the items array.
-	 * This is much slower than updating the items array for a specific column.
-	 * The fix is to give the specific column id if no columns are created.
-	 */
-	if (propertyID == OS.kDataBrowserNoItem && parent.columnCount == 0) {
-		propertyID = parent.column_id;
-	}
+	* Feature in Carbon.  Calling UpdateDataBrowserItems with kDataBrowserNoItem
+	* updates all columns associated with the items in the items array.  This is
+	* much slower than updating the items array for a specific column.  The fix
+	* is to give the specific column id if no columns are created.
+	*/
+	if (propertyID == OS.kDataBrowserNoItem && parent.columnCount == 0) propertyID = parent.column_id;
 	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, propertyID);
 }
 
@@ -711,16 +709,11 @@ public void removeAll () {
 	checkWidget ();
 	TreeItem [] items = parent.items;
 	for (int i=0; i<items.length; i++) {
-		if (items [i] != null && items [i].parentItem == this) {
-			TreeItem item = items [i];
-			item.releaseChild ();
-			item.releaseWidget ();
-			item.destroyWidget ();
+		TreeItem item = items [i];
+		if (item != null && !item.isDisposed () && item.parentItem == this) {
+			item.dispose ();
 		}
 	}
-	// TODO this redraw should not be required
-	// Find out why item.dispose does not redraw the parent item 
-	redraw (OS.kDataBrowserNoItem);
 }
 
 /**
