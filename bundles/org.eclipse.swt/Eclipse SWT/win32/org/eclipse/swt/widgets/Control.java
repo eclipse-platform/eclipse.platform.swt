@@ -1283,6 +1283,10 @@ public boolean isVisible () {
 	return getVisible () && parent.isVisible ();
 }
 
+void markLayout (boolean changed, boolean all) {
+	/* Do nothing */
+}
+
 Decorations menuShell () {
 	return parent.menuShell ();
 }
@@ -2886,6 +2890,10 @@ void update (boolean all) {
 void updateFont (Font oldFont, Font newFont) {
 	Font font = getFont ();
 	if (font.equals (oldFont)) setFont (newFont);
+}
+
+void updateLayout (boolean resize, boolean all) {
+	/* Do nothing */
 }
 
 CREATESTRUCT widgetCreateStruct () {

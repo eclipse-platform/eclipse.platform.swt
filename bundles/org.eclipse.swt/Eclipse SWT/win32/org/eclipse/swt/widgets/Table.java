@@ -3194,7 +3194,10 @@ LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
 		sendEvent (SWT.Resize);
 		// widget may be disposed at this point
 		if (isDisposed ()) return new LRESULT (code);
-		if (layout != null) layout.layout (this, false);
+		if (layout != null) {
+			markLayout (false, false);
+			updateLayout (false, false);
+		}
 		setResizeChildren (true);
 		return new LRESULT (code);
 	}

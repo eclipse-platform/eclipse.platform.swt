@@ -741,6 +741,11 @@ public Shell [] getShells () {
 	return result;
 }
 
+public boolean isLayoutDeferred () {
+	checkWidget ();
+	return layoutCount > 0;
+}
+
 public boolean isEnabled () {
 	checkWidget ();
 	return getEnabled ();

@@ -55,6 +55,8 @@ public abstract class Widget {
 	static final int KEYED_DATA		= 1<<2;
 	static final int DISABLED		= 1<<3;
 	static final int HIDDEN			= 1<<4;
+	static final int LAYOUT_NEEDED	= 1<<5;
+	static final int LAYOUT_CHANGED = 1<<6;
 	
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
