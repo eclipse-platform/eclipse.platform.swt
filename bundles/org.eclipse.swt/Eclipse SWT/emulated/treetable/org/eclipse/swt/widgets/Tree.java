@@ -2199,15 +2199,17 @@ void onPaint (Event event) {
 		if (isFocusControl ()) {
 			if (focusItem == item) {
 				Rectangle focusBounds = item.getFocusBounds ();
-				gc.setClipping (focusBounds);
-				int[] oldLineDash = gc.getLineDash ();
-				if (item.isSelected ()) {
-					gc.setLineDash (new int[] {2, 2});
-				} else {
-					gc.setLineDash (new int[] {1, 1});
+				if (focusBounds.width > 0) {
+					gc.setClipping (focusBounds);
+					int[] oldLineDash = gc.getLineDash ();
+					if (item.isSelected ()) {
+						gc.setLineDash (new int[] {2, 2});
+					} else {
+						gc.setLineDash (new int[] {1, 1});
+					}
+					gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
+					gc.setLineDash (oldLineDash);
 				}
-				gc.drawFocus (focusBounds.x, focusBounds.y, focusBounds.width, focusBounds.height);
-				gc.setLineDash (oldLineDash);
 			}
 			if (insertMarkItem == item) {
 				Rectangle focusBounds = item.getFocusBounds ();

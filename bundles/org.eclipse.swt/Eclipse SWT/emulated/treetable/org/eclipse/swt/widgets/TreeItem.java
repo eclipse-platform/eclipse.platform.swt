@@ -1282,13 +1282,17 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 			if (parent.columns.length < 2 || (parent.style & SWT.FULL_SELECTION) == 0) {
 				fillWidth -= 2;	/* space for right bound of focus rect */
 			}
-			gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, fillWidth, focusBounds.height - 2);
+			if (fillWidth > 0) {
+				gc.fillRectangle (focusBounds.x + 1, focusBounds.y + 1, fillWidth, focusBounds.height - 2);
+			}
 		} else {
 			int fillWidth = column.width;
 			if (columnIndex == parent.columns.length - 1) {
 				fillWidth -= 2;		/* space for right bound of focus rect */
 			}
-			gc.fillRectangle (column.getX (), y + 2, fillWidth, itemHeight - 3);
+			if (fillWidth > 0) {
+				gc.fillRectangle (column.getX (), y + 2, fillWidth, itemHeight - 3);
+			}
 		}
 		gc.setBackground (oldBackground);
 	}
