@@ -278,8 +278,16 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget ();
-	//FIXME - NOT_IMPLEMENTED
-	return new Point (10, 10);
+	int h = 0;
+	if ((style & SWT.HORIZONTAL) != 0) {
+		h = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR(parent.scrolledHandle);
+	} else {
+		h = OS.GTK_SCROLLED_WINDOW_VSCROLLBAR(parent.scrolledHandle);
+	}
+	if (h==0) return new Point(0,0);
+	GtkRequisition requisition = new GtkRequisition();
+	OS.gtk_widget_size_request(h, requisition);
+	return new Point(requisition.width, requisition.height);
 }
 
 /**
