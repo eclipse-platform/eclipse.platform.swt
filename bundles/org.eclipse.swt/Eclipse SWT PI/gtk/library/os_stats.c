@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 938;
-int OS_nativeFunctionCallCount[938];
+int OS_nativeFunctionCount = 937;
+int OS_nativeFunctionCallCount[937];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -70,8 +70,6 @@ char * OS_nativeFunctionNames[] = {
 	"GtkTargetPair_1sizeof",
 	"GtkTextIter_1sizeof",
 	"GtkTreeIter_1sizeof",
-	"MonitorEnter",
-	"MonitorExit",
 	"PTR_1sizeof",
 	"PangoAttribute_1sizeof",
 	"PangoItem_1sizeof",
@@ -504,6 +502,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1image_1menu_1item_1set_1image",
 	"_1gtk_1image_1new",
 	"_1gtk_1image_1new_1from_1pixmap",
+	"_1gtk_1image_1set_1from_1pixbuf",
 	"_1gtk_1image_1set_1from_1pixmap",
 	"_1gtk_1init_1check",
 	"_1gtk_1label_1get_1mnemonic_1keyval",

@@ -4273,6 +4273,15 @@ public static final int /*long*/ gtk_image_new_from_pixmap(int /*long*/ pixmap, 
 		lock.unlock();
 	}
 }
+public static final native void _gtk_image_set_from_pixbuf(int /*long*/ image, int /*long*/ pixbuf);
+public static final void gtk_image_set_from_pixbuf(int /*long*/ image, int /*long*/ pixbuf) {
+	lock.lock();
+	try {
+		_gtk_image_set_from_pixbuf(image, pixbuf);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_image_set_from_pixmap(int /*long*/ image, int /*long*/ pixmap, int /*long*/ mask);
 public static final void gtk_image_set_from_pixmap(int /*long*/ image, int /*long*/ pixmap, int /*long*/ mask) {
 	lock.lock();
