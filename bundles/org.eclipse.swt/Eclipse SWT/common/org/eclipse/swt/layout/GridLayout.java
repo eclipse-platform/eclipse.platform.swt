@@ -153,6 +153,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 		if (data.grabExcessHorizontalSpace && data.minimumWidth > 0) {
 			if (data.cacheWidth < data.minimumWidth) {
 				int trim = 0;
+				//TEMPORARY CODE
 				if (child instanceof Scrollable) {
 					Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
 					trim = rect.width;

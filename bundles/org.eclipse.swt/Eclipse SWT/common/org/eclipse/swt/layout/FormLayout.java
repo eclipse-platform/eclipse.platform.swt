@@ -259,6 +259,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 			int x1 = left.solveX (width), x2 = right.solveX (width);
 			if (data.height == SWT.DEFAULT && !data.needed) {
 				int trim = 0;
+				//TEMPORARY CODE
 				if (child instanceof Scrollable) {
 					Rectangle rect = ((Scrollable) child).computeTrim (0, 0, 0, 0);
 					trim = rect.width;
