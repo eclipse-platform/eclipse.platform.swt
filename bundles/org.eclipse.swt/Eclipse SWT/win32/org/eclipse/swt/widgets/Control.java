@@ -1901,6 +1901,11 @@ public void setCapture (boolean capture) {
 	}
 }
 
+void setCursor () {
+	int lParam = OS.HTCLIENT | (OS.WM_MOUSEMOVE << 16);
+	OS.SendMessage (handle, OS.WM_SETCURSOR, handle, lParam);
+}
+
 /**
  * Sets the receiver's cursor to the cursor specified by the
  * argument, or to the default cursor for that kind of control
@@ -1941,12 +1946,7 @@ public void setCursor (Cursor cursor) {
 	}
 	Control control = display.getControl (hwndCursor);
 	if (control == null) control = this;
-	control.setCursor (hwndCursor);
-}
-
-void setCursor (int hwndCursor) {
-	int lParam = OS.HTCLIENT | (OS.WM_MOUSEMOVE << 16);
-	OS.SendMessage (hwndCursor, OS.WM_SETCURSOR, hwndCursor, lParam);
+	control.setCursor ();
 }
 
 void setDefaultFont () {

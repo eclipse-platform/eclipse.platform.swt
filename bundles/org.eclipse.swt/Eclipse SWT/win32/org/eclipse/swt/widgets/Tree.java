@@ -943,7 +943,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
 	}
 }
 
-void setCursor (int hwndCursor) {
+void setCursor () {
 	/*
 	* Bug in Windows.  Under certain circumstances, when WM_SETCURSOR
 	* is sent using SendMessage(), Windows GP's in the window proc for
