@@ -2359,12 +2359,17 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		int newWidth = 0;
 		count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 		int index = 0;
+		int imageIndent = 0;
 		while (index < count) {
 			String string = null;
 			if (item != null) {
 				string = item.text;
+				imageIndent = Math.max (imageIndent, item.imageIndent);
 			} else {
-				if (items [index] != null) string = items [index].text;
+				if (items [index] != null) {
+					string = items [index].text;
+					imageIndent = Math.max (imageIndent, items [index].imageIndent);
+				}
 			}
 			if (string != null && string.length () != 0) {
 				TCHAR buffer = new TCHAR (getCodePage (), string, true);
@@ -2383,7 +2388,7 @@ boolean setScrollWidth (TableItem item, boolean force) {
 		if (hImageList != 0) {
 			int [] cx = new int [1], cy = new int [1];
 			OS.ImageList_GetIconSize (hImageList, cx, cy);
-			newWidth += cx [0];
+			newWidth += (imageIndent + 1) * cx [0];
 		}
 		newWidth += 8;
 		int oldWidth = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
