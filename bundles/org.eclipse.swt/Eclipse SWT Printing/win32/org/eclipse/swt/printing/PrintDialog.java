@@ -255,7 +255,7 @@ public PrinterData open() {
 			data.scope = PrinterData.SELECTION;
 		}
 		data.printToFile = (pd.Flags & OS.PD_PRINTTOFILE) != 0;
-		data.fileName = output;
+		if (data.printToFile) data.fileName = output;
 		data.copyCount = pd.nCopies;
 		data.collate = (pd.Flags & OS.PD_COLLATE) != 0;
 
