@@ -760,7 +760,7 @@ public void setDigits (int value) {
 	} else {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
-	setSelection (pos, false, false);
+	setSelection (pos, false);
 }
 
 void setBackgroundPixel (int pixel) {
@@ -833,7 +833,7 @@ public void setMaximum (int value) {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, min [0], value);	
-	if (pos > value) setSelection (value, false, true);
+	if (pos > value) setSelection (value, false);
 }
 
 /**
@@ -862,7 +862,7 @@ public void setMinimum (int value) {
 		pos = OS.SendMessage (hwndUpDown, OS.UDM_GETPOS32, 0, 0);
 	}
 	OS.SendMessage (hwndUpDown , OS.UDM_SETRANGE32, value, max [0]);
-	if (pos < value) setSelection (value, false, true);
+	if (pos < value) setSelection (value, false);
 }
 
 /**
@@ -901,13 +901,11 @@ public void setSelection (int value) {
 	int [] max = new int [1], min = new int [1];
 	OS.SendMessage (hwndUpDown , OS.UDM_GETRANGE32, min, max);
 	value = Math.min (Math.max (min [0], value), max [0]);
-	setSelection (value, false, true);
+	setSelection (value, false);
 }
 
-void setSelection (int value, boolean notify, boolean updateUpDown) {
-	if (updateUpDown) {
-		OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
-	}
+void setSelection (int value, boolean notify) {
+	OS.SendMessage (hwndUpDown , OS.IsWinCE ? OS.UDM_SETPOS : OS.UDM_SETPOS32, 0, value);
 	String string = String.valueOf (value);
 	if (digits > 0) {
 		String decimalSeparator = getDecimalSeparator ();
@@ -1091,7 +1089,7 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 	switch (wParam) {
 		case SWT.CR:
 			int value = getSelectionText ();
-			setSelection (value, true, true);
+			setSelection (value, true);
 			postEvent (SWT.DefaultSelection);
 			// FALL THROUGH		
 		case SWT.TAB:
@@ -1200,7 +1198,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 			if (newValue > max [0]) newValue = min [0];
 		}
 		newValue = Math.min (Math.max (min [0], newValue), max [0]);
-		if (value != newValue) setSelection (newValue, true, true);
+		if (value != newValue) setSelection (newValue, true);
 	}
 	
 	/*  Stop the edit control from moving the caret */
@@ -1214,7 +1212,7 @@ LRESULT wmKeyDown (int hwnd, int wParam, int lParam) {
 
 LRESULT wmKillFocus (int hwnd, int wParam, int lParam) {
 	int value = getSelectionText ();
-	setSelection (value, true, true);
+	setSelection (value, true);
 	return super.wmKillFocus (hwnd, wParam, lParam);
 }
 
@@ -1242,9 +1240,17 @@ LRESULT wmNotifyChild(int wParam, int lParam) {
 				if (value < min [0]) value = max [0];
 				if (value > max [0]) value = min [0];
 			}
+			/*
+			* The SWT.Modify event is after the widget has been
+			* updated with the new state.  Rather than allowing
+			* the default updown window proc to set the value
+			* when the user clicks on the updown control, set
+			* the value explicity and stop the window proc
+			* from running.
+			*/
 			value = Math.min (Math.max (min [0], value), max [0]);
-			setSelection (value, true, false);
-			break;
+			setSelection (value, true);
+			return LRESULT.ONE;
 	}
 	return super.wmNotifyChild (wParam, lParam);
 }
