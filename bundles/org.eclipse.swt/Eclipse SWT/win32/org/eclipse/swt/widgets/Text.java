@@ -862,7 +862,7 @@ public String getText () {
  */
 public String getText (int start, int end) {
 	checkWidget ();
-	if (start > end) return "";
+	if (!(start <= end && 0 <= end)) return "";
 	int length = OS.GetWindowTextLength (handle);
 	if (OS.IsDBLocale) length = mbcsToWcsPos (length);
 	if (length == 0) return "";
