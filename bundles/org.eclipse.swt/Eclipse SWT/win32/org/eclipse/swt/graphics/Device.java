@@ -142,7 +142,6 @@ protected void checkDevice () {
 
 void checkGDIP() {
 	if (gdipToken != null) return;
-    int oldErrorMode = OS.SetErrorMode (OS.SEM_FAILCRITICALERRORS);
 	try {
 		int [] token = new int [1];
 		GdiplusStartupInput input = new GdiplusStartupInput ();
@@ -152,9 +151,7 @@ void checkGDIP() {
 		}
 	} catch (Throwable t) {
 		SWT.error (SWT.ERROR_NO_GRAPHICS_LIBRARY, t);
-	} finally {
-        OS.SetErrorMode (oldErrorMode);
-    }
+	}
 }
 
 /**

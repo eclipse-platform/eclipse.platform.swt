@@ -2267,7 +2267,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 					updateLayout (false, false);
 				}
 				setResizeChildren (true);
-				return code;
+				return 0;
 			}
 			case OS.WM_COMMAND:
 			case OS.WM_NOTIFY:
