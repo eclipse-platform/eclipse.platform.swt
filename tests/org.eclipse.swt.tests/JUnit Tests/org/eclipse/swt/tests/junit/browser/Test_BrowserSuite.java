@@ -109,8 +109,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("Browser5");
 	methodNames.addElement("Browser6");
 	methodNames.addElement("Browser7");
-//	methodNames.addElement("Browser8");
-//	methodNames.addElement("Browser9");
+	methodNames.addElement("Browser8");
+	methodNames.addElement("Browser9");
 	return methodNames;
 }
 
