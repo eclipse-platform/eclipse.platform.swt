@@ -92,7 +92,7 @@ class CoolBarTab extends Tab {
 		Point pushSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		pushSize = pushItem.computeSize(pushSize.x, pushSize.y);
 		pushItem.setSize(pushSize);
-		pushItem.setMinimumWidth(item.getWidth());
+		pushItem.setMinimumSize(item.getWidth(), pushSize.y);
         pushItem.addSelectionListener (new CoolItemDropDownSelectionListener());
 				
 		/* create the dropdown toolbar */
@@ -110,7 +110,7 @@ class CoolBarTab extends Tab {
 		Point dropSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		dropSize = dropDownItem.computeSize(dropSize.x, dropSize.y);
 		dropDownItem.setSize(dropSize);
-		dropDownItem.setMinimumWidth(item.getWidth());
+		dropDownItem.setMinimumSize(item.getWidth(), dropSize.y);
         dropDownItem.addSelectionListener (new CoolItemDropDownSelectionListener());
 				
 		/* create the radio button toolbar */
@@ -129,7 +129,7 @@ class CoolBarTab extends Tab {
 		Point radioSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		radioSize = radioItem.computeSize(radioSize.x, radioSize.y);
 		radioItem.setSize(radioSize);
-		radioItem.setMinimumWidth(item.getWidth());
+		radioItem.setMinimumSize(item.getWidth(), radioSize.y);
         radioItem.addSelectionListener (new CoolItemDropDownSelectionListener());
 		
 		/* create the check button toolbar */
@@ -151,7 +151,7 @@ class CoolBarTab extends Tab {
 		Point checkSize = toolBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 		checkSize = checkItem.computeSize(checkSize.x, checkSize.y);
 		checkItem.setSize(checkSize);
-		checkItem.setMinimumWidth(item.getWidth());
+		checkItem.setMinimumSize(item.getWidth(), checkSize.y);
         checkItem.addSelectionListener (new CoolItemDropDownSelectionListener());
 		
 		/* if we have saved state, restore it */
