@@ -391,7 +391,7 @@ void layoutControl () {
 	OS.GetWindowBounds (shellHandle, (short)  OS.kWindowContentRgn, rect);
 	int control = scrolledHandle != 0 ? scrolledHandle : handle;
 	setBounds (control, 0, 0, rect.right - rect.left, rect.bottom - rect.top, false, true);
-	super.layoutControl();
+	super.layoutControl ();
 }
 
 public void open () {
