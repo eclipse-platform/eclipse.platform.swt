@@ -8124,3 +8124,85 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetTextAlign
 
     return (jint) SetTextAlign((HDC)hdc, fMode);
 }
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    TranslateCharsetInfo
+ * Signature: 
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateCharsetInfo
+  (JNIEnv *env, jclass that, jint lpSrc, jintArray lpCs, jint dwFlags)
+{
+	LPCHARSETINFO lpCs1 =NULL;
+    jboolean rc;
+    
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "TranslateCharsetInfo\n");
+#endif
+
+    if (lpCs)
+        lpCs1 = (LPCHARSETINFO)(*env)->GetIntArrayElements(env, lpCs, NULL);
+
+    rc = (jboolean)TranslateCharsetInfo((DWORD *)lpSrc, lpCs1, dwFlags);
+    
+    if (lpCs)
+        (*env)->ReleaseIntArrayElements(env, lpCs, (jint *)lpCs1, 0);
+        
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetTextCharset
+ * Signature: 
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextCharset
+  (JNIEnv *env, jclass that, jint hdc)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetTextCharset\n");
+#endif
+
+    return (jint) GetTextCharset((HDC)hdc);
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    GetLocaleInfo
+ * Signature: (II[BI)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetLocaleInfo
+  (JNIEnv *env, jclass that, jint Locale, jint LCType, jbyteArray lpLCData, jint cchData)
+{
+    LPTSTR lpLCData1=NULL;
+    jint rc;
+
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "GetLocaleInfo\n");
+#endif
+
+    if (lpLCData)
+        lpLCData1 = (*env)->GetByteArrayElements(env, lpLCData, NULL);
+
+    rc = (jint) GetLocaleInfo(Locale, LCType, lpLCData1, cchData);
+
+    if (lpLCData)
+        (*env)->ReleaseByteArrayElements(env, lpLCData, (jbyte *)lpLCData1, 0);
+    return rc;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_win32_OS
+ * Method:    EnumSystemLocales
+ * Signature: (II)Z
+ */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemLocales
+  (JNIEnv *env, jclass that, jint lpLocaleEnumProc, jint dwFlags)
+{
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "EnumSystemLocales\n");
+#endif
+
+    return (jboolean) EnumSystemLocales((LOCALE_ENUMPROC)lpLocaleEnumProc, (DWORD)dwFlags);
+}
+

@@ -31,7 +31,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Group extends Composite {
 	static final int GroupProc;
-	static final byte [] GroupClass = Converter.wcsToMbcs (0, "BUTTON\0", false);
+	static final byte [] GroupClass = Converter.wcsToMbcs (0, "BUTTON\0");
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -162,7 +162,7 @@ public String getText () {
 	if (length == 0) return "";
 	byte [] buffer1 = new byte [length + 1];
 	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
 	return new String (buffer2, 0, buffer2.length - 1);
 }
 
@@ -194,7 +194,7 @@ boolean mnemonicMatch (char key) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 }
 

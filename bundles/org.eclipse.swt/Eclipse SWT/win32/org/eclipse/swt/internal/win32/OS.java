@@ -29,6 +29,33 @@ public class OS {
 	/* OLE Constants */
 	public static final int S_OK = 0;
 	
+	/* Charset Constants */
+//	public static final int ANSI_CHARSET           = 0;
+	public static final int DEFAULT_CHARSET        = 1;
+//	public static final int SYMBOL_CHARSET         = 2;
+//	public static final int SHIFTJIS_CHARSET       = 128;
+//	public static final int HANGEUL_CHARSET        = 129;
+//	public static final int GB2312_CHARSET         = 134;
+//	public static final int CHINESEBIG5_CHARSET    = 136;
+//	public static final int OEM_CHARSET            = 255;
+//	public static final int JOHAB_CHARSET          = 130;
+//	public static final int HEBREW_CHARSET         = 177;
+//	public static final int ARABIC_CHARSET         = 178;
+//	public static final int GREEK_CHARSET          = 161;
+//	public static final int TURKISH_CHARSET        = 162;
+//	public static final int VIETNAMESE_CHARSET     = 163;
+//	public static final int THAI_CHARSET           = 222;
+//	public static final int EASTEUROPE_CHARSET     = 238;
+//	public static final int RUSSIAN_CHARSET        = 204;
+//	public static final int MAC_CHARSET            = 77;
+//	public static final int BALTIC_CHARSET         = 186;
+	
+	/* Locale Constants */
+	public static final int LCID_SUPPORTED = 0x00000002;
+	public static final int LOCALE_SISO3166CTRYNAME = 0x0000005A;
+	public static final int LOCALE_SISO639LANGNAME = 0x00000059;
+	public static final int LOCALE_IDEFAULTANSICODEPAGE = 0x00001004;
+	
 	/* Window Constants */
 	public static final int COLOR_BTNFACE = 15;
 	public static final int COLOR_BTNHIGHLIGHT = 20;
@@ -820,7 +847,6 @@ public class OS {
 //	public static final int DCX_PARENTCLIP = 0x20;
 //	public static final int DCX_VALIDATE = 0x200000;
 //	public static final int DCX_WINDOW = 0x1;
-	public static final int DEFAULT_CHARSET = 1;
 	public static final int DEFAULT_GUI_FONT = 0x11;
 //	public static final int DEFAULT_PALETTE = 0xF;
 //	public static final int DEVICE_DEFAULT_FONT = 0xE;
@@ -3132,6 +3158,8 @@ public class OS {
 //	public static final int TC_SO_ABLE = 0x1000;
 //	public static final int TC_UA_ABLE = 0x800;
 //	public static final int TC_VA_ABLE = 0x4000;
+	public static final int TCI_SRCCHARSET = 1;
+	public static final int TCI_SRCCODEPAGE = 2;
 	public static final int TCIF_IMAGE = 0x0002;
 //	public static final int TCIF_PARAM = 0x0008;
 //	public static final int TCIF_RTLREADING = 0x0004;
@@ -4477,5 +4505,10 @@ public static final native int GetKeyboardLayoutList(int nBuff, int[] lpList);
 public static final native int GetKeyboardLayout(int idThread);
 public static final native int ActivateKeyboardLayout(int hkl, int Flags);
 public static final native int SetTextAlign(int hdc, int fMode);
+
+public static final native boolean TranslateCharsetInfo(int lpSrc, int [] lpCs, int dwFlags);
+public static final native int GetTextCharset(int hdc);
+public static final native int GetLocaleInfo(int Locale, int LCType, byte[] lpLCData, int cchData);
+public static final native boolean EnumSystemLocales(int lpLocaleEnumProc, int dwFlags);
 
 }

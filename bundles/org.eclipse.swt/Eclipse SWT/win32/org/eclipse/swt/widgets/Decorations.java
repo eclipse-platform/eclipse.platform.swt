@@ -435,6 +435,7 @@ public String getText () {
 	if (length == 0) return "";
 	byte [] buffer1 = new byte [length + 1];
 	OS.GetWindowText (handle, buffer1, buffer1.length);
+	/* Use the character encoding for the default locale */
 	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
 	return new String (buffer2, 0, buffer2.length - 1);
 }
@@ -815,6 +816,7 @@ void setSystemMenu () {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (0, string, true);
 	OS.SetWindowText (handle, buffer);
 }

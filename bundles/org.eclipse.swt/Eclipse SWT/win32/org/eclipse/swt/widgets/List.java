@@ -29,7 +29,7 @@ import org.eclipse.swt.events.*;
 
 public class List extends Scrollable {
 	static final int ListProc;
-	static final byte [] ListClass = Converter.wcsToMbcs (0, "LISTBOX\0", false);
+	static final byte [] ListClass = Converter.wcsToMbcs (0, "LISTBOX\0");
 	static {
 		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 		lpWndClass.cbSize = WNDCLASSEX.sizeof;
@@ -89,7 +89,7 @@ public List (Composite parent, int style) {
 public void add (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int result = OS.SendMessage (handle, OS.LB_ADDSTRING, 0, buffer);
 	if (result == OS.LB_ERR) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.LB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -125,7 +125,7 @@ public void add (String string, int index) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (index == -1) error (SWT.ERROR_INVALID_RANGE);
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	int result = OS.SendMessage (handle, OS.LB_INSERTSTRING, index, buffer);
 	if (result == OS.LB_ERRSPACE) error (SWT.ERROR_ITEM_NOT_ADDED);
 	if (result == OS.LB_ERR) {
@@ -395,7 +395,7 @@ public String getItem (int index) {
 		byte [] buffer1 = new byte [length + 1];
 		int result = OS.SendMessage (handle, OS.LB_GETTEXT, index, buffer1);
 		if (result != OS.LB_ERR) {
-			char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
+			char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
 			return new String (buffer2, 0, buffer2.length - 1);
 		}
 	}
@@ -682,7 +682,7 @@ public int indexOf (String string, int start) {
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	if (!((0 <= start) && (start < count))) return -1;
 	int index = start - 1, last;
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
 	do {
 		index = OS.SendMessage (handle, OS.LB_FINDSTRINGEXACT, last = index, buffer);
 		if ((index == OS.LB_ERR) || (index <= last)) return -1;

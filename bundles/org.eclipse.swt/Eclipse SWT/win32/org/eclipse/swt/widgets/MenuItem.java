@@ -563,6 +563,7 @@ public void setText (String string) {
 	super.setText (string);
 	int hMenu = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
+	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (0, string, false);
 	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
 	OS.MoveMemory (pszText, buffer, buffer.length);

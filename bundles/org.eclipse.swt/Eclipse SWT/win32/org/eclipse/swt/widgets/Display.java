@@ -712,15 +712,18 @@ public Control getFocusControl () {
 public int getIconDepth () {
 	checkDevice ();
 	int [] phkResult = new int [1];
+	/* Use the character encoding for the default locale */
 	byte [] buffer1 = Converter.wcsToMbcs (0, "Control Panel\\Desktop\\WindowMetrics", true);
 	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, buffer1, 0, OS.KEY_READ, phkResult);
 	if (result != 0) return 4;
 	int depth = 4;
 	int [] lpcbData = {128};
 	byte [] lpData = new byte [lpcbData [0]];
+	/* Use the character encoding for the default locale */
 	byte [] buffer2 = Converter.wcsToMbcs (0, "Shell Icon BPP", true);
 	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, lpData, lpcbData);
 	if (result == 0) {
+		/* Use the character encoding for the default locale */
 		char [] buffer3 = Converter.mbcsToWcs (0, lpData);
 		int length = 0;
 		while (length < buffer3.length && buffer3 [length] != 0) length++;
@@ -1042,10 +1045,12 @@ protected void init () {
 	threadId = OS.GetCurrentThreadId ();
 	processId = OS.GetCurrentProcessId ();
 	
+	/* Use the character encoding for the default locale */
+	windowClass = Converter.wcsToMbcs (0, WindowName + windowClassCount++ + "\0");
+
 	/* Register the SWT window class */
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
-	windowClass = Converter.wcsToMbcs (0, WindowName + windowClassCount++ + "\0");
 	WNDCLASSEX lpWndClass = new WNDCLASSEX ();
 	lpWndClass.cbSize = WNDCLASSEX.sizeof;
 	if (OS.GetClassInfoEx (hInstance, windowClass, lpWndClass)) {

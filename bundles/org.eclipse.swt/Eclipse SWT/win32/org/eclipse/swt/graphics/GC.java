@@ -933,7 +933,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
  */
 public void drawString (String string, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte [] buffer = Converter.wcsToMbcs (0, string, false);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, false);
 	OS.TextOut (handle, x, y, buffer, buffer.length);
 }
 
@@ -959,7 +959,7 @@ public void drawString (String string, int x, int y) {
  */
 public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte [] buffer = Converter.wcsToMbcs (0, string, false);
+	byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, false);
 	if (isTransparent) {
 		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
 		OS.TextOut (handle, x, y, buffer, buffer.length);
@@ -991,7 +991,7 @@ public void drawText (String string, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
-	byte [] buffer = Converter.wcsToMbcs(0, string, false);
+	byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
 	OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
 }
 
@@ -1019,7 +1019,7 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
-	byte [] buffer = Converter.wcsToMbcs(0, string, false);
+	byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
 	if (isTransparent) {
 		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
 		OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
@@ -1264,7 +1264,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  */
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte[] buffer = Converter.wcsToMbcs(0, new char[] { ch });
+	byte[] buffer = Converter.wcsToMbcs(getCodePage(), new char[] { ch });
 	int val = 0;
 	for (int i = 0; i < buffer.length; i++) {
 		val |= (buffer[i] & 0xFF) << (i * 8);
@@ -1310,7 +1310,7 @@ public Color getBackground() {
  */
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte[] buffer = Converter.wcsToMbcs(0, new char[] { ch });
+	byte[] buffer = Converter.wcsToMbcs(getCodePage(), new char[] { ch });
 	int val = 0;
 	for (int i = 0; i < buffer.length; i++) {
 		val |= (buffer[i] & 0xFF) << (i * 8);
@@ -1368,6 +1368,13 @@ public void getClipping (Region region) {
 	RECT rect = new RECT();
 	OS.GetClipBox(handle, rect);
 	OS.SetRectRgn(region.handle, rect.left, rect.top, rect.right, rect.bottom);
+}
+
+int getCodePage () {
+	int[] lpCs = new int[8];
+	int cs = OS.GetTextCharset(handle);
+	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
+	return lpCs[1];
 }
 
 /** 
@@ -1817,7 +1824,7 @@ public Point stringExtent(String string) {
 		OS.GetTextExtentPoint32(handle, SPACE, 1, size);
 		return new Point(0, size.cy);
 	} else {
-		byte [] buffer = Converter.wcsToMbcs(0, string, false);
+		byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
 		OS.GetTextExtentPoint32(handle, buffer, buffer.length, size);
 		return new Point(size.cx, size.cy);
 	}
@@ -1851,7 +1858,7 @@ public Point textExtent(String string) {
 		return new Point(0, size.cy);
 	} else {
 		RECT rect = new RECT();
-		byte [] buffer = Converter.wcsToMbcs(0, string, false);
+		byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
 		OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX | OS.DT_CALCRECT);
 		return new Point(rect.right, rect.bottom);
 	}
