@@ -214,7 +214,7 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 				sendEvent (SWT.Selection, event);
 				if (isDisposed ()) return result;
 				if (event.doit) {
-					setBounds (newX, newY, width, height);
+					setBounds (event.x, event.y, width, height);
 					Shell shell = parent.getShell ();
 					shell.update (true);
 				}
