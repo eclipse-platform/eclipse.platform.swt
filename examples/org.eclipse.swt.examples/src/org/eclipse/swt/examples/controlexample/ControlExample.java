@@ -20,6 +20,7 @@ public class ControlExample {
 		ResourceBundle.getBundle("examples_control");
 	private ShellTab shellTab;
 	private TabFolder tabFolder;
+	private EventConsole eventConsole;
 
 	static final int
 		ciClosedFolder = 0,
@@ -61,13 +62,34 @@ public class ControlExample {
 			new ToolBarTab (this),
 			new TreeTab (this),
 		};
+		eventConsole = new EventConsole (parent.getShell());
 		for (int i=0; i<tabs.length; i++) {
 			TabItem item = new TabItem (tabFolder, SWT.NULL);
 		    item.setText (tabs [i].getTabText ());
 		    item.setControl (tabs [i].createTabFolderPage (tabFolder));
+		    Control[] exampleWidgets = tabs [i].getExampleWidgets();
+		    hookControlListeners(exampleWidgets);
 		}
+		eventConsole.open ();
 	}
 	
+	/**
+	 * Hook all listeners to all controls. 
+	 */
+	private void hookControlListeners (Control [] exampleControls) {
+		Listener listener = new Listener() {
+			public void handleEvent (Event event) {
+				eventConsole.log (event);
+			}
+		};
+		for (int i = 0; i < exampleControls.length; i++) {
+			Control control = exampleControls [i];
+			for (int j = SWT.KeyDown; j < SWT.HardKeyUp; j++) {
+				control.addListener (j, listener);
+			}
+		}
+	}
+
 	/**
 	 * Grabs input focus.
 	 */
