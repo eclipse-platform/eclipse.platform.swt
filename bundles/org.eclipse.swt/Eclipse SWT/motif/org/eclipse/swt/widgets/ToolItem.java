@@ -203,7 +203,13 @@ void click (boolean dropDown, XInputEvent xEvent) {
 	}
 	Event event = new Event ();
 	if ((style & SWT.DROP_DOWN) != 0) {
-		if (dropDown) event.detail = SWT.ARROW;
+		if (dropDown) {
+			event.detail = SWT.ARROW;
+			int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNheight, 0};
+			OS.XtGetValues (handle, argList, argList.length / 2);
+			event.x = (short) argList [1];
+			event.y = (short) argList [3] + (short) argList [5];
+		}
 	}
 	if (xEvent != null) setInputState (event, xEvent);
 	postEvent (SWT.Selection, event);

@@ -906,6 +906,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if (child != null) {
 				Event event = new Event ();
 				event.detail = SWT.ARROW;
+				int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lpnmtb.iItem, 0);
+				RECT rect = new RECT ();
+				OS.SendMessage (handle, OS.TB_GETITEMRECT, index, rect);
+				event.x = rect.left;
+				event.y = rect.bottom;
 				child.postEvent (SWT.Selection, event);
 				return null;
 			}

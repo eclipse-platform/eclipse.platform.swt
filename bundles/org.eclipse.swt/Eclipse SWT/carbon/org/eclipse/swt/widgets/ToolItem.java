@@ -344,7 +344,12 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		int [] theControl = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-		if (theControl [0] == arrowHandle) event.detail = SWT.ARROW;
+		if (theControl [0] == arrowHandle) {
+			event.detail = SWT.ARROW;
+			Rect rect = getControlBounds (handle);
+			event.x = rect.left;
+			event.y = rect.bottom;
+		}
 	}
 	postEvent (SWT.Selection, event);
 	return OS.eventNotHandledErr;

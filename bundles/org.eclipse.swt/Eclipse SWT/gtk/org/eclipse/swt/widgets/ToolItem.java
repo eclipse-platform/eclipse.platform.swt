@@ -449,6 +449,9 @@ int gtk_clicked (int widget) {
 					OS.gdk_event_get_coords (eventPtr, x_win, y_win);
 					if ((int) x_win [0] > OS.GTK_WIDGET_WIDTH (boxHandle)) {
 						event.detail = SWT.ARROW;
+						int topHandle = topHandle ();
+						event.x = OS.GTK_WIDGET_X (topHandle);
+						event.y = OS.GTK_WIDGET_Y (topHandle) + OS.GTK_WIDGET_HEIGHT (topHandle);
 					}
 					break;
 				}
