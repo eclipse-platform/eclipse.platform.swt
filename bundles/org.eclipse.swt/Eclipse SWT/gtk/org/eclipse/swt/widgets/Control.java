@@ -129,8 +129,6 @@ void hookEvents () {
 	OS.gtk_signal_connect (eventHandle, OS.focus_out_event, windowProc3, SWT.FocusOut);
 	OS.gtk_signal_connect_after (eventHandle, OS.button_press_event, windowProc3, -SWT.MouseDown);
 	OS.gtk_signal_connect_after (eventHandle, OS.button_release_event, windowProc3, -SWT.MouseUp);
-	OS.gtk_signal_connect_after (eventHandle, OS.key_press_event, windowProc3, -SWT.KeyDown);
-	OS.gtk_signal_connect_after (eventHandle, OS.key_release_event, windowProc3, -SWT.KeyUp);
 	OS.gtk_signal_connect_after (eventHandle, OS.motion_notify_event, windowProc3, -SWT.MouseMove);
 	OS.gtk_signal_connect_after (eventHandle, OS.enter_notify_event, windowProc3, SWT.MouseEnter);
 	OS.gtk_signal_connect_after (eventHandle, OS.leave_notify_event, windowProc3, SWT.MouseExit);
@@ -1499,8 +1497,9 @@ public boolean getVisible () {
  * @private
  */
 public int internal_new_GC (GCData data) {
-	if (data == null) error (SWT.ERROR_NULL_ARGUMENT);
+	checkWidget ();
 	int window = paintWindow ();
+	if (window == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	int gdkGC = OS.gdk_gc_new (window);
 	if (gdkGC == 0) error (SWT.ERROR_NO_HANDLES);	
 	if (data != null) {
@@ -1542,7 +1541,8 @@ public int internal_new_GC (GCData data) {
  * @private
  */
 public void internal_dispose_GC (int gdkGC, GCData data) {
-	OS.g_object_unref(gdkGC);
+	checkWidget ();
+	OS.g_object_unref (gdkGC);
 }
 
 /**
@@ -1663,11 +1663,16 @@ int processHelp (int int0, int int1, int int2) {
 }
 
 int processKeyDown (int callData, int arg1, int int2) {
+	if (!hasFocus ()) return 0;
+	if (translateTraversal (callData)) return 1;
+	// widget could be disposed at this point
+	if (isDisposed ()) return 0;
 	sendKeyEvent (SWT.KeyDown, callData);
 	return 0;
 }
 
 int processKeyUp (int callData, int arg1, int int2) {
+	if (!hasFocus ()) return 0;
 	sendKeyEvent (SWT.KeyUp, callData);
 	return 0;
 }
@@ -1738,8 +1743,10 @@ int processMouseUp (int callData, int arg1, int int2) {
 }
 
 int processMouseMove (int callData, int arg1, int int2) {
-	Display display = getDisplay ();
-	display.addMouseHoverTimeout (handle);
+	if (hooks (SWT.MouseHover)) {
+		Display display = getDisplay ();
+		display.addMouseHoverTimeout (handle);
+	}
 	sendMouseEvent (SWT.MouseMove, 0, callData);
 	return 0;
 }
@@ -1943,11 +1950,11 @@ void sendMouseEvent (int type, int button, int gdkEvent) {
 	Event event = new Event ();
 	event.time = OS.gdk_event_get_time (gdkEvent);
 	event.button = button;
-	double [] x_win = new double [1];
-	double [] y_win = new double [1];
-	OS.gdk_event_get_coords (gdkEvent, x_win, y_win);
-	event.x = (int) x_win [0];
-	event.y = (int) y_win [0];
+	double [] x = new double [1];
+	double [] y = new double [1];
+	OS.gdk_event_get_coords (gdkEvent, x, y);
+	event.x = (int) x [0];
+	event.y = (int) y [0];
 	setInputState (event, gdkEvent);
 	postEvent (type, event);
 }
@@ -2369,7 +2376,6 @@ boolean translateTraversal (int gdkEvent) {
 	int code = traversalCode (key, gdkEvent);
 	int [] state = new int [1];
 	OS.gdk_event_get_state (gdkEvent, state);
-	int shellHandle = _getShell ().topHandle ();
 	boolean all = false;
 	switch (key) {
 		case OS.GDK_Escape:
@@ -2383,15 +2389,16 @@ boolean translateTraversal (int gdkEvent) {
 			detail = SWT.TRAVERSE_RETURN;
 			break;
 		}
+		case OS.GDK_ISO_Left_Tab: 
 		case OS.GDK_Tab: {
-			boolean next = (state[0] & OS.GDK_SHIFT_MASK) == 0;
+			boolean next = (state [0] & OS.GDK_SHIFT_MASK) == 0;
 			/*
 			 * NOTE: This code emulates a bug/feature on Windows where
 			 * the default is that that Shift+Tab and Ctrl+Tab traverses
 			 * instead of going to the widget.  StyledText currently
 			 * relies on this behavior.
 			 */
-			switch (state[0]) {
+			switch (state [0]) {
 				case OS.GDK_SHIFT_MASK:
 				case OS.GDK_CONTROL_MASK:
 					code |= SWT.TRAVERSE_TAB_PREVIOUS | SWT.TRAVERSE_TAB_NEXT;
@@ -2410,7 +2417,7 @@ boolean translateTraversal (int gdkEvent) {
 		case OS.GDK_Page_Up:
 		case OS.GDK_Page_Down: {
 			all = true;
-			if ((state[0] & OS.GDK_CONTROL_MASK) == 0) return false;
+			if ((state [0] & OS.GDK_CONTROL_MASK) == 0) return false;
 			detail = key == OS.GDK_Page_Down ? SWT.TRAVERSE_PAGE_NEXT : SWT.TRAVERSE_PAGE_PREVIOUS;
 			break;
 		}

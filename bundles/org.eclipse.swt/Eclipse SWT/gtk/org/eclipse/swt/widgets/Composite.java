@@ -425,13 +425,23 @@ int parentingHandle () {
 }
 
 int processFocusIn(int int0, int int1, int int2) {
-	int result = super.processFocusIn(int0, int1, int2);
+	int result = super.processFocusIn (int0, int1, int2);
 	return (state & CANVAS) != 0 ? 1 : result;
 }
 
 int processFocusOut(int int0, int int1, int int2) {
-	int result = super.processFocusOut(int0, int1, int2);
+	int result = super.processFocusOut (int0, int1, int2);
 	return (state & CANVAS) != 0 ? 1 : result;
+}
+
+int processKeyDown (int int0, int int1, int int2) {
+	int result = super.processKeyDown (int0, int1, int2);
+	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
+}
+
+int processKeyUp (int int0, int int1, int int2) {
+	int result = super.processKeyUp (int0, int1, int2);
+	return (state & CANVAS) != 0 && result != 1 && hasFocus () ? 1 : result;
 }
 
 int processMouseDown (int callData, int arg1, int int2) {

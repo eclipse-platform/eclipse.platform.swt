@@ -568,12 +568,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		case SWT.FocusOut:			return processFocusOut        	(int0, int1, int2);
 		case SWT.Help:				return processHelp            	(int0, int1, int2);
 		case SWT.Hide:				return processHide            	(int0, int1, int2);
-		case SWT.KeyDown:
-			if (!translateTraversal(int0)) {
-				return processKeyDown (int0, int1, int2);
-			} else {
-				return 1;
-			}
+		case SWT.KeyDown:		return processKeyDown (int0, int1, int2);
 		case SWT.KeyUp:			return processKeyUp        	(int0, int1, int2);
 		case SWT.Iconify:			return processIconify         	(int0, int1, int2);
 		case SWT.Modify:			return processModify          	(int0, int1, int2);
