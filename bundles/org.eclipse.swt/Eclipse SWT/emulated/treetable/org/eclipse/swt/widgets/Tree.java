@@ -2055,6 +2055,7 @@ public void setFont (Font value) {
 	if (headerSize.y != newHeaderHeight) {
 		header.setSize (headerSize.x, newHeaderHeight);
 	}
+	header.setFont (font);
 
 	/* 
 	 * Notify all items of the font change so that those items that
@@ -2239,6 +2240,16 @@ void updateColumnWidth (TreeColumn column, int width) {
 	hBar.setThumb (bounds.width);
 	hBar.setPageIncrement (bounds.width);
 	horizontalOffset = hBar.getSelection ();
+	
+	/* 
+	 * Notify all items of column width change so that display labels can be
+	 * recomputed if needed.
+	 */
+	for (int i = 0; i < items.length; i++) {
+		GC gc = new GC (this);
+		items [i].updateColumnWidth (column, gc);
+		gc.dispose ();
+	}
 
 	int x = column.getX ();
 	redraw (x, 0, bounds.width - x, bounds.height, false);

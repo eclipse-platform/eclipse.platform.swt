@@ -18,12 +18,14 @@ public class TreeItem extends Item {
 	int[] fontHeights;
 	Image[] images = new Image [1];
 	Color foreground, background;
+	String[] displayTexts;
 	Color[] cellForegrounds, cellBackgrounds;
 	Font font;
 	Font[] cellFonts;
 	
 	static final int INDENT_HIERARCHY = 6;	/* the margin between an item's expander and its checkbox or content */
 	static final int MARGIN_TEXT = 3;			/* the left and right margins within the text's space */
+	static final String ELLIPSIS = "...";
 
 public TreeItem (Tree parent, int style) {
 	this (parent, style, checkNull (parent).items.length);
@@ -34,7 +36,11 @@ public TreeItem (Tree parent, int style, int index) {
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
 	parent.createItem (this, index);
-	int validColumnCount = Math.max (1, parent.columns.length);
+	int columnCount = parent.columns.length;
+	if (columnCount > 0) {
+		displayTexts = new String [columnCount];
+	}
+	int validColumnCount = Math.max (1, columnCount);
 	if (validColumnCount > 1) {
 		texts = new String [validColumnCount];
 		textWidths = new int [validColumnCount];
@@ -52,7 +58,11 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	int validItemIndex = parentItem.items.length;
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
 	parentItem.addItem (this, index);
-	int validColumnCount = Math.max (1, parent.columns.length);
+	int columnCount = parent.columns.length;
+	if (columnCount > 0) {
+		displayTexts = new String [columnCount];
+	}
+	int validColumnCount = Math.max (1, columnCount);
 	if (validColumnCount > 1) {
 		texts = new String [validColumnCount];
 		textWidths = new int [validColumnCount];
@@ -85,6 +95,22 @@ void addColumn (TreeColumn column) {
 		System.arraycopy (textWidths, 0, newTextWidths, 0, index);
 		System.arraycopy (textWidths, index, newTextWidths, index + 1, columnCount - index - 1);
 		textWidths = newTextWidths;
+	}
+	/*
+	 * The length of displayTexts always matches the parent's column count, unless this
+	 * count is zero, in which case displayTexts is null.  
+	 */
+	String[] newDisplayTexts = new String [columnCount];
+	if (columnCount > 1) {
+		System.arraycopy (displayTexts, 0, newDisplayTexts, 0, index);
+		System.arraycopy (displayTexts, index, newDisplayTexts, index + 1, columnCount - index - 1);
+	}
+	displayTexts = newDisplayTexts;
+	if (columnCount == 1) {
+		GC gc = new GC (parent);
+		computeDisplayText (0, gc);
+		textWidths [0] = gc.textExtent (getDisplayText (0)).x;
+		gc.dispose ();
 	}
 
 	if (cellBackgrounds != null) {
@@ -222,6 +248,75 @@ TreeItem[] computeAvailableDescendents () {
 	}
 	return result;
 }
+void computeDisplayText (int columnIndex, GC gc) {
+	int columnCount = parent.columns.length;
+	if (columnCount == 0) return;
+	
+	TreeColumn column = parent.columns [columnIndex];
+	int availableWidth = column.getX () + column.width - getTextX (columnIndex) - 2 * MARGIN_TEXT;
+	String text = getText (columnIndex);
+	int textWidth = gc.textExtent (text).x;
+	if (textWidth <= availableWidth) {
+		displayTexts [columnIndex] = text;
+		return;
+	}
+	
+	/* Ellipsis will be needed, so subtract their width from the available text width */
+	int ellipsisWidth = gc.textExtent (ELLIPSIS).x;
+	availableWidth -= ellipsisWidth;
+	if (availableWidth <= 0) {
+		displayTexts [columnIndex] = ELLIPSIS;
+		return;
+	}
+	
+	/* Make initial guess. */
+	int index = availableWidth / gc.getFontMetrics ().getAverageCharWidth ();
+	textWidth = gc.textExtent (text.substring (0, index)).x;
+
+	/* Initial guess is correct. */
+	if (availableWidth == textWidth) {
+		displayTexts [columnIndex] = text.substring (0, index) + ELLIPSIS;
+		return;
+	}
+
+	/* Initial guess is too high, so reduce until fit is found. */
+	if (availableWidth < textWidth) {
+		do {
+			index--;
+			if (index < 0) {
+				displayTexts [columnIndex] = ELLIPSIS;
+				return;
+			}
+			text = text.substring (0, index);
+			textWidth = gc.textExtent (text).x;
+		} while (availableWidth < textWidth);
+		displayTexts [columnIndex] = text + ELLIPSIS;
+		return;
+	}
+	
+	/* Initial guess is too low, so increase until overrun is found. */
+	while (textWidth < availableWidth) {
+		index++;
+		textWidth = gc.textExtent (text.substring (0, index)).x;
+	}
+	displayTexts [columnIndex] = text.substring (0, index - 1) + ELLIPSIS;
+}
+void computeDisplayTexts (GC gc) {
+	int columnCount = parent.columns.length;
+	if (columnCount == 0) return;
+	
+	Font oldFont = gc.getFont ();
+	for (int i = 0; i < columnCount; i++) {
+		boolean fontChanged = false;
+		Font font = getFont (i);
+		if (!font.equals (oldFont)) {
+			gc.setFont (font);
+			fontChanged = true;
+		}
+		computeDisplayText (i, gc);
+		if (fontChanged) gc.setFont (oldFont);
+	}
+}
 public void dispose () {
 	if (isDisposed ()) return;
 	int startIndex = -1, endIndex = -1;
@@ -271,7 +366,7 @@ void dispose (boolean notifyParent) {
 	font = null;
 	cellFonts = null;
 	images = null;
-	texts = null;
+	texts = displayTexts = null;
 	textWidths = fontHeights = null;
 	parent = null;
 	parentItem = null;
@@ -374,6 +469,10 @@ int getContentWidth (int columnIndex) {
 		width += Tree.MARGIN_IMAGE + image.getBounds ().width;
 	}
 	return width;
+}
+String getDisplayText (int columnIndex) {
+	if (parent.columns.length == 0) return getText (0);
+	return displayTexts [columnIndex];
 }
 /*
  * Returns the x value where the receiver's content (ie.- its image or text) begins
@@ -805,7 +904,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 	}
 
 	Image image = images [columnIndex];
-	String text = getText (columnIndex);
+	String text = getDisplayText (columnIndex);
 	Rectangle imageArea = getImageBounds (columnIndex);
 	int startX = imageArea.x;
 	
@@ -860,7 +959,7 @@ void recomputeTextWidths (GC gc) {
 	textWidths = new int [texts.length];
 	Font oldFont = gc.getFont ();
 	for (int i = 0; i < texts.length; i++) {
-		String value = texts [i];
+		String value = getDisplayText (i);
 		if (value != null) {
 			boolean fontChanged = false;
 			Font font = getFont (i);
@@ -885,14 +984,13 @@ void removeColumn (TreeColumn column, int index) {
 	if (columnCount == 0) {
 		/* reverts to normal tree when last column disposed */
 		cellBackgrounds = cellForegrounds = null;
-		boolean recomputeTextWidths = cellFonts != null;
+		displayTexts = null;
 		cellFonts = null;
-		if (recomputeTextWidths) {
-			GC gc = new GC (parent);
-			gc.setFont (getFont ());
-			recomputeTextWidths (gc);
-			gc.dispose ();
-		}
+		fontHeights = null;
+		GC gc = new GC (parent);
+		gc.setFont (getFont ());
+		recomputeTextWidths (gc);
+		gc.dispose ();
 		/* notify all child items as well */
 		for (int i = 0; i < items.length; i++) {
 			items [i].removeColumn (column, index);
@@ -914,6 +1012,11 @@ void removeColumn (TreeColumn column, int index) {
 	System.arraycopy (textWidths, 0, newTextWidths, 0, index);
 	System.arraycopy (textWidths, index + 1, newTextWidths, index, columnCount - index);
 	textWidths = newTextWidths;
+
+	String[] newDisplayTexts = new String [columnCount];
+	System.arraycopy (displayTexts, 0, newDisplayTexts, 0, index);
+	System.arraycopy (displayTexts, index + 1, newDisplayTexts, index, columnCount - index);
+	displayTexts = newDisplayTexts;
 
 	if (cellBackgrounds != null) {
 		Color[] newCellBackgrounds = new Color [columnCount];
@@ -1113,6 +1216,7 @@ public void setFont (Font value) {
 	/* recompute cached values for string measurements */
 	GC gc = new GC (parent);
 	gc.setFont (getFont ());
+	computeDisplayTexts (gc);
 	recomputeTextWidths (gc);
 	fontHeight = gc.getFontMetrics ().getHeight ();
 	gc.dispose ();
@@ -1143,10 +1247,8 @@ public void setFont (int columnIndex, Font value) {
 	gc.setFont (getFont (columnIndex));
 	if (fontHeights == null) fontHeights = new int [validColumnCount];
 	fontHeights [columnIndex] = gc.getFontMetrics ().getHeight ();
-	String string = getText (columnIndex);
-	if (string.length () > 0) {
-		textWidths [columnIndex] = gc.textExtent (string).x;
-	}
+	computeDisplayText (columnIndex, gc);
+	textWidths [columnIndex] = gc.textExtent (getDisplayText (columnIndex)).x;
 	gc.dispose ();
 
 	if (availableIndex == -1) return;
@@ -1177,8 +1279,12 @@ public void setForeground (int columnIndex, Color value) {
 	if (cellForegrounds [columnIndex] != null && cellForegrounds [columnIndex].equals (value)) return;
 	cellForegrounds [columnIndex] = value;
 	if (availableIndex == -1) return;
-	Rectangle bounds = getCellBounds (columnIndex);
-	parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
+	parent.redraw (
+		getTextX (columnIndex),
+		parent.getItemY (this),
+		getTextPaintWidth (columnIndex),
+		parent.itemHeight,
+		false);
 }
 public void setGrayed (boolean value) {
 	checkWidget ();
@@ -1212,6 +1318,19 @@ public void setImage (int columnIndex, Image value) {
 	if (value == images [columnIndex]) return;
 	if (value != null && value.equals (images [columnIndex])) return;
 	images [columnIndex] = value;
+	
+	/* 
+	 * An image width change may affect the space available for the item text, so
+	 * recompute the displayText if there are columns.
+	 */
+	if (columns.length > 0) {
+		GC gc = new GC (parent);
+		gc.setFont (getFont (columnIndex));
+		computeDisplayText (columnIndex, gc);
+		textWidths [columnIndex] = gc.textExtent (getDisplayText (columnIndex)).x;
+		gc.dispose ();
+	}
+	
 	if (value == null) {
 		redrawItem ();
 		return;
@@ -1227,6 +1346,18 @@ public void setImage (int columnIndex, Image value) {
 		if (oldItemHeight != parent.itemHeight) {
 			if (columnIndex == 0) {
 				parent.col0ImageWidth = value.getBounds ().width;
+				if (columns.length > 0) {
+					/* 
+					 * All column 0 cells will now have less room available for their texts,
+					 * so all items must now recompute their column 0 displayTexts.
+					 */
+					GC gc = new GC (parent);
+					TreeItem[] rootItems = parent.items;
+					for (int i = 0; i < rootItems.length; i++) {
+						rootItems [i].updateColumnWidth (columns [0], gc);
+					}
+					gc.dispose ();
+				}
 			}
 			parent.redraw ();
 			return;
@@ -1243,12 +1374,23 @@ public void setImage (int columnIndex, Image value) {
 		if (columns.length == 0) {
 			parent.redraw ();
 		} else {
+			/* 
+			 * All column 0 cells will now have less room available for their texts,
+			 * so all items must now recompute their column 0 displayTexts.
+			 */
+			GC gc = new GC (parent);
+			TreeItem[] rootItems = parent.items;
+			for (int i = 0; i < rootItems.length; i++) {
+				rootItems [i].updateColumnWidth (columns [0], gc);
+			}
+			gc.dispose ();
 			parent.redraw (
 				0, 0,
 				columns [0].width,
 				parent.getClientArea ().height,
 				true);
 		}
+		return;
 	}
 	redrawItem ();
 }
@@ -1292,7 +1434,8 @@ public void setText (int columnIndex, String value) {
 	int oldWidth = textWidths [columnIndex];
 	GC gc = new GC (parent);
 	gc.setFont (getFont (columnIndex));
-	textWidths [columnIndex] = gc.textExtent (value).x;
+	computeDisplayText (columnIndex, gc);
+	textWidths [columnIndex] = gc.textExtent (getDisplayText (columnIndex)).x;
 	gc.dispose ();
 	if (availableIndex == -1) return;
 	parent.redraw (
@@ -1302,6 +1445,22 @@ public void setText (int columnIndex, String value) {
 		parent.itemHeight,
 		false);
 }
+void updateColumnWidth (TreeColumn column, GC gc) {
+	int columnIndex = column.getIndex ();
+	boolean fontChanged = false;
+	Font oldFont = gc.getFont ();
+	Font font = getFont (columnIndex);
+	if (!font.equals(oldFont)) {
+		gc.setFont (font);
+		fontChanged = true;
+	}
+	computeDisplayText (columnIndex, gc);
+	textWidths [columnIndex] = gc.textExtent (getDisplayText (columnIndex)).x;
+	if (fontChanged) gc.setFont (oldFont);
+	for (int i = 0; i < items.length; i++) {
+		items [i].updateColumnWidth (column, gc);
+	}
+}
 /*
  * The parent's font has changed, so if this font was being used by the receiver then
  * recompute its cached text sizes using the gc argument.  Pass this notification on to
@@ -1309,6 +1468,7 @@ public void setText (int columnIndex, String value) {
  */
 void updateFont (GC gc) {
 	if (font == null) {		/* receiver is using the Tree's font */
+		computeDisplayTexts (gc);
 		recomputeTextWidths (gc);
 	}
 	/* pass notification on to all children */
