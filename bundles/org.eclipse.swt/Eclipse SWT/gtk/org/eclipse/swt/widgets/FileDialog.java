@@ -250,7 +250,7 @@ void interpretOsAnswer(String osAnswer) {
 		return;
 	}
 	answer = fullPath = osAnswer;
-	fileName = answer.substring(separatorIndex+1);
+	fileName = fullPath;
 	if ((style&SWT.MULTI) == 0) {
 		fileNames = new String[] {fileName};
 	} else {
