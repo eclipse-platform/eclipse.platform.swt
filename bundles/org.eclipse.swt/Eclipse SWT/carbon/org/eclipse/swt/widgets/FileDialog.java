@@ -65,7 +65,7 @@ public String open () {
 	NavDialogCreationOptions options = new NavDialogCreationOptions ();
 	options.windowTitle = options.clientName = titlePtr;
 	options.parentWindow = OS.GetControlOwner (parent.handle);
-	options.optionFlags = OS.kNavSupportPackages | OS.kNavAllowOpenPackages | OS.kNavAllowInvisibleFiles;
+	options.optionFlags = OS.kNavSupportPackages | OS.kNavAllowInvisibleFiles;
 	options.location_h = -1;
 	options.location_v = -1;
 	options.saveFileName = fileNamePtr;
