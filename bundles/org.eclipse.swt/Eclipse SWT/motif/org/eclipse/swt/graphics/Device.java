@@ -61,7 +61,13 @@ public abstract class Device implements Drawable {
 	Font systemFont;
 	
 	/* Parsing Tables */
-	int tabMapping, crMapping, tabPointer, crPointer;
+	int tabPointer, crPointer;
+	/**
+	 * parse table mappings for tab and cr
+	 * (Warning: This field is platform dependent)
+	 */
+	// TEMPORARY CODE
+	public int tabMapping, crMapping;
 
 	/* Xt Warning and Error Handlers */
 	boolean warnings = true;

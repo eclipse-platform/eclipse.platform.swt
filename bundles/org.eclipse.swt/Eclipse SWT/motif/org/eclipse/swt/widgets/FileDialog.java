@@ -31,6 +31,7 @@ import org.eclipse.swt.*;
  * </p>
  */
 public class FileDialog extends Dialog {
+	Display appContext;
 	int dialog;
 	String [] filterNames = new String [0];
 	String [] filterExtensions = new String [0];
@@ -182,13 +183,14 @@ int itemSelected (int widget, int client, int call) {
 		ptr = buffer [0];
 	}
 	if (ptr == 0) return 0;
+	int [] table = new int [] {appContext.tabMapping, appContext.crMapping};
 	int address = OS.XmStringUnparse (
 		ptr,
 		null,
 		OS.XmCHARSET_TEXT,
 		OS.XmCHARSET_TEXT,
-		null,
-		0,
+		table,
+		table.length,
 		OS.XmOUTPUT_ALL);
 	if (itemCount == 0) OS.XmStringFree (ptr);
 	if (address == 0) return 0;
@@ -210,13 +212,14 @@ int okPressed (int widget, int client, int call) {
 	OS.XtGetValues (dialog, argList, argList.length / 2);
 	
 	int xmString1 = argList [1];
+	int [] table = new int [] {appContext.tabMapping, appContext.crMapping};
 	int ptr = OS.XmStringUnparse (
 		xmString1,
 		null,
 		OS.XmCHARSET_TEXT,
 		OS.XmCHARSET_TEXT,
-		null,
-		0,
+		table,
+		table.length,
 		OS.XmOUTPUT_ALL);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
@@ -245,8 +248,8 @@ int okPressed (int widget, int client, int call) {
 				null,
 				OS.XmCHARSET_TEXT,
 				OS.XmCHARSET_TEXT,
-				null,
-				0,
+				table,
+				table.length,
 				OS.XmOUTPUT_ALL);
 			if (address != 0) {
 				int length = OS.strlen (address);
@@ -294,8 +297,8 @@ int okPressed (int widget, int client, int call) {
 		null,
 		OS.XmCHARSET_TEXT,
 		OS.XmCHARSET_TEXT,
-		null,
-		0,
+		table,
+		table.length,
 		OS.XmOUTPUT_ALL);
 	if (ptr != 0) {
 		int length = OS.strlen (ptr);
@@ -333,7 +336,7 @@ public String open () {
 
 	/* Get the parent */
 	boolean destroyContext;
-	Display appContext = Display.getCurrent ();
+	appContext = Display.getCurrent ();
 	if (destroyContext = (appContext == null)) appContext = new Display ();
 	int display = appContext.xDisplay;
 	int parentHandle = appContext.shellHandle;

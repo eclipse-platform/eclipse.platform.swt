@@ -24,6 +24,7 @@ import org.eclipse.swt.*;
  * </p>
  */
 public class DirectoryDialog extends Dialog {
+	Display appContext;
 	String filterPath = "";
 	boolean cancel = true;
 	String message = "";
@@ -128,7 +129,7 @@ public String open () {
 
 	/* Get the parent */
 	boolean destroyContext;
-	Display appContext = Display.getCurrent ();
+	appContext = Display.getCurrent ();
 	if (destroyContext = (appContext == null)) appContext = new Display ();
 	int display = appContext.xDisplay;
 	int parentHandle = appContext.shellHandle;
@@ -263,13 +264,14 @@ public String open () {
 		int [] argList2 = {OS.XmNdirMask, 0};
 		OS.XtGetValues (dialog, argList2, argList2.length / 2);
 		int xmString3 = argList2 [1];
+		int [] table = new int [] {appContext.tabMapping, appContext.crMapping};
 		int ptr = OS.XmStringUnparse (
 			xmString3,
 			null,
 			OS.XmCHARSET_TEXT,
 			OS.XmCHARSET_TEXT,
-			null,
-			0,
+			table,
+			table.length,
 			OS.XmOUTPUT_ALL);
 		if (ptr != 0) {
 			int length = OS.strlen (ptr);

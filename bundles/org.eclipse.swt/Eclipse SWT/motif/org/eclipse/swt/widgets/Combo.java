@@ -484,13 +484,14 @@ public String getItem (int index) {
 	int [] buffer1 = new int [1]; 
 	OS.memmove (buffer1, ptr, 4);
 	ptr = buffer1 [0];
+	int [] table = new int [] {display.tabMapping, display.crMapping};
 	int address = OS.XmStringUnparse (
 		ptr,
 		null,
 		OS.XmCHARSET_TEXT,
 		OS.XmCHARSET_TEXT,
-		null,
-		0,
+		table,
+		table.length,
 		OS.XmOUTPUT_ALL);
 	if (address == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 	int length = OS.strlen (address);
@@ -572,13 +573,14 @@ public String [] getItems () {
 	for (int i = 0; i < itemCount; i++) {
 		OS.memmove (buffer1, items, 4);
 		int ptr = buffer1 [0];
+		int [] table = new int [] {display.tabMapping, display.crMapping};
 		int address = OS.XmStringUnparse (
 			ptr,
 			null,
 			OS.XmCHARSET_TEXT,
 			OS.XmCHARSET_TEXT,
-			null,
-			0,
+			table,
+			table.length,
 			OS.XmOUTPUT_ALL);
 		if (address == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
 		int length = OS.strlen (address);
