@@ -140,6 +140,31 @@ Decorations () {
 public Decorations (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
+
+void _setImages (Image [] images) {
+	Image icon = images != null && images.length > 0 ? icon = images [0] : null;
+	int pixmap = 0, mask = 0;
+	if (icon != null) {
+		switch (icon.type) {
+			case SWT.BITMAP:
+				pixmap = icon.pixmap;
+				break;
+			case SWT.ICON:
+				pixmap = icon.pixmap;
+				mask = icon.mask;
+				break;
+			default:
+				error (SWT.ERROR_INVALID_IMAGE);
+		}
+	}
+	int [] argList = {
+		OS.XmNiconPixmap, pixmap,
+		OS.XmNiconMask, mask,
+	};
+	int topHandle = topHandle ();
+	OS.XtSetValues (topHandle, argList, argList.length / 2);
+}
+
 void add (Menu menu) {
 	if (menus == null) menus = new Menu [4];
 	for (int i=0; i<menus.length; i++) {
@@ -437,7 +462,7 @@ public void setImage (Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	this.image = image;
-	setImages (image , images);
+	_setImages (image != null ? new Image [] {image} : null);
 }
 
 public void setImages (Image [] images) {
@@ -447,34 +472,7 @@ public void setImages (Image [] images) {
 		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	}
 	this.images = images;
-	setImages (image, images);
-}
-
-void setImages (Image image, Image [] images) {
-	Image icon = image;
-	if (icon == null) {
-		if (images != null && images.length > 0) icon = images [0];
-	}
-	int pixmap = 0, mask = 0;
-	if (icon != null) {
-		switch (icon.type) {
-			case SWT.BITMAP:
-				pixmap = icon.pixmap;
-				break;
-			case SWT.ICON:
-				pixmap = icon.pixmap;
-				mask = icon.mask;
-				break;
-			default:
-				error (SWT.ERROR_INVALID_IMAGE);
-		}
-	}
-	int [] argList = {
-		OS.XmNiconPixmap, pixmap,
-		OS.XmNiconMask, mask,
-	};
-	int topHandle = topHandle ();
-	OS.XtSetValues (topHandle, argList, argList.length / 2);
+	_setImages (images);
 }
 
 /**
