@@ -301,19 +301,24 @@ void createHandle () {
 
 void createItem (TreeItem item, TreeItem parentItem, int index) {
 	int count = 0;
+	int id = items.length;
 	for (int i=0; i<items.length; i++) {
-		if (items [i] != null && items [i].parentItem == parentItem) count++;
+		if (items [i] == null) {
+			if (id == items.length) id = i;
+		} else {
+			if (items [i].parentItem == parentItem) count++;
+		}
 	}
 	if (index == -1) index = count;
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	item.index = index;
-	for (int i=0; i<items.length; i++) {
-		if (items [i] != null && items [i].parentItem == parentItem) {
-			if (items [i].index >= item.index) items [i].index++;
+	if (index != count) {
+		for (int i=0; i<items.length; i++) {
+			if (items [i] != null && items [i].parentItem == parentItem) {
+				if (items [i].index >= item.index) items [i].index++;
+			}
 		}
 	}
-	int id = 0;
-	while (id < items.length && items [id] != null) id++;
 	if (id == items.length) {
 		TreeItem [] newItems = new TreeItem [items.length + 4];
 		System.arraycopy (items, 0, newItems, 0, items.length);
@@ -1093,7 +1098,8 @@ void setFontStyle (Font font) {
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) item.width = -1;
-	}	
+	}
+	setScrollWidth ();
 }
 
 public void setRedraw (boolean redraw) {

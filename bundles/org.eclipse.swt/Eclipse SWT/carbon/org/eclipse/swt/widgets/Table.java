@@ -1803,7 +1803,8 @@ void setFontStyle (Font font) {
 	for (int i = 0; i < items.length; i++) {
 		TableItem item = items [i];
 		if (item != null) item.width = -1;
-	}	
+	}
+	setScrollWidth (items, true);
 }
 
 /**
