@@ -312,7 +312,7 @@ public int internal_new_GC (GCData data) {
 }
 
 public void internal_dispose_GC (int phGC, GCData data) {
-	//if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	checkWidget ();
 	OS.PgDestroyGC(phGC);
 }
 

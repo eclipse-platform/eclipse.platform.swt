@@ -941,6 +941,7 @@ public int internal_new_GC (GCData data) {
  * @private
  */
 public void internal_dispose_GC (int xGC, GCData data) {
+	checkWidget ();
 	int xDisplay = 0;
 	if (data != null) xDisplay = data.display;
 	if (xDisplay == 0 && handle != 0) xDisplay = OS.XtDisplay (handle);
