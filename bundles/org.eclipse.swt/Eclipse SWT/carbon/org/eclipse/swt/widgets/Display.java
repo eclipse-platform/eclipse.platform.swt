@@ -1499,9 +1499,9 @@ void initializeCallbacks () {
 	};
 	OS.InstallEventHandler (appTarget, appleEventProc, mask3.length / 2, mask3, 0, null);
 	int [] mask4 = new int[] {
-//		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
+		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
 		OS.kEventClassKeyboard, OS.kEventRawKeyModifiersChanged,
-//		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
+		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
 		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
 	};
 	int focusTarget = OS.GetUserFocusEventTarget ();
