@@ -226,7 +226,7 @@ public void setText (String string) {
 	for (int i=0; i<count; i++) {
 		int str;
 		if (i == index) {
-			byte [] buffer = Converter.wcsToMbcs (null, string);
+			byte [] buffer = Converter.wcsToMbcs (null, stripMnemonics (string));
 			str = OS.malloc (buffer.length + 1);
 			OS.memmove (str, buffer, buffer.length);
 		} else {
@@ -261,5 +261,24 @@ public void setText (String string) {
 public void setToolTipText (String string) {
 	checkWidget();
 	toolTipText = string;
+}
+
+/**
+ * Returns the provided string without mnemonic indicators.
+ * 
+ * @param string the string to demangle
+ */
+static String stripMnemonics (String string) {
+	char [] text = new char [string.length ()];
+	string.getChars (0, text.length, text, 0);
+	int j = 0;
+	for (int i = 0; i < text.length;) {
+		if ((text[j++] = text[i++]) == Mnemonic) {
+			if (i != text.length) {
+				if (text[i] == Mnemonic) i++; else j--;
+			}
+		}
+	}
+	return new String(text, 0, j);
 }
 }
