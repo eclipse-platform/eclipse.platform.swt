@@ -387,13 +387,13 @@ public boolean open () {
 	
 	int region = 0;
 	if (info.dragger == 0) {
-		PgDisplaySettings_t settings = new PgDisplaySettings_t ();
-		OS.PgGetVideoMode (settings);
+		PhRect_t rect = new PhRect_t ();
+		OS.PhWindowQueryVisible (OS.Ph_QUERY_CONSOLE, 0, 1, rect);
 		int sense = OS.Ph_EV_DRAG | OS.Ph_EV_KEY | OS.Ph_EV_BUT_PRESS |
 			OS.Ph_EV_BUT_RELEASE | OS.Ph_EV_PTR_MOTION;
 		int [] args = {
-			OS.Pt_ARG_WIDTH, settings.xres, 0,
-			OS.Pt_ARG_HEIGHT, settings.yres, 0,
+			OS.Pt_ARG_WIDTH, rect.lr_x - rect.ul_x + 1, 0,
+			OS.Pt_ARG_HEIGHT, rect.lr_y - rect.ul_y + 1, 0,
 			OS.Pt_ARG_REGION_OPAQUE, 0, ~0,
 			OS.Pt_ARG_REGION_SENSE, sense, ~0,
 			OS.Pt_ARG_REGION_FLAGS, OS.Ph_FORCE_BOUNDARY, OS.Ph_FORCE_BOUNDARY,
@@ -402,7 +402,7 @@ public boolean open () {
 		region = OS.PtCreateWidget (OS.PtRegion (), OS.Pt_NO_PARENT, args.length / 3, args);
 		OS.PtRealizeWidget (region);
 	
-		PhRect_t rect = new PhRect_t ();
+		rect = new PhRect_t ();
 		int rid = OS.PtWidgetRid (region);
 		OS.PhInitDrag (rid, OS.Ph_DRAG_KEY_MOTION | OS.Ph_TRACK_DRAG, rect, null, input_group, null, null, null, null, null);
 	}
