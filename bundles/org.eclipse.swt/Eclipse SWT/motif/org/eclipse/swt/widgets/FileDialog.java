@@ -347,10 +347,10 @@ public String open () {
 	/* Hook the callbacks. */
 	Callback cancelCallback = new Callback (this, "cancelPressed", 3);
 	int cancelAddress = cancelCallback.getAddress ();
-	OS.XtAddCallback (dialog, OS.XmNcancelCallback, cancelAddress, OS.XmDIALOG_CANCEL_BUTTON);
+	OS.XtAddCallback (dialog, OS.XmNcancelCallback, cancelAddress, 0);
 	Callback okCallback = new Callback (this, "okPressed", 3);
 	int okAddress = okCallback.getAddress ();
-	OS.XtAddCallback (dialog, OS.XmNokCallback, okAddress, OS.XmDIALOG_OK_BUTTON);
+	OS.XtAddCallback (dialog, OS.XmNokCallback, okAddress, 0);
 
 /*
 	shell == nil ifFalse: [
