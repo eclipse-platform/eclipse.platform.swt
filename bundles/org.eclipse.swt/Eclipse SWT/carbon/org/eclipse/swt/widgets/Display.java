@@ -1698,8 +1698,8 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 }
 
 public boolean post(Event event) {
-	checkDevice ();
-	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int type = event.type;
 	switch (type) {
 		case SWT.KeyDown:

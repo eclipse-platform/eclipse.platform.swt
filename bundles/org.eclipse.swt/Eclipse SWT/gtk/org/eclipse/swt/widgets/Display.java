@@ -1633,8 +1633,8 @@ int /*long*/ mouseHoverProc (int /*long*/ handle) {
 }
 
 public boolean post (Event event) {
-	checkDevice ();
-	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!OS.GDK_WINDOWING_X11()) return false;
 	int /*long*/ xDisplay = OS.GDK_DISPLAY ();
 	int type = event.type;
@@ -1648,7 +1648,7 @@ public boolean post (Event event) {
 				char key = event.character;
 				switch (key) {
 					case '\r': keysym = OS.GDK_Return; break;
-					default: keysym = wcsToMbcs ((char) key);
+					default: keysym = wcsToMbcs (key);
 				}
 				keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
 				if (keyCode == 0) return false;

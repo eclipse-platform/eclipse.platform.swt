@@ -1496,8 +1496,8 @@ public Rectangle map (Control from, Control to, int x, int y, int width, int hei
 }
 
 public boolean post (Event event) {
-	checkDevice ();
-	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	return false;
 }
 

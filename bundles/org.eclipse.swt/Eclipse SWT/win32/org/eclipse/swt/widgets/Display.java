@@ -2094,7 +2094,8 @@ int numpadKey (int key) {
  * 
  * <code>post</code> is used to generate low level keyboard
  * and mouse events. This enables automated UI testing which is
- * indistinguishable from an actual user.
+ * indistinguishable from an actual user. Regular applications
+ * should not call this method.
  * <p>
  * <b>Event Types:</b>
  * <p>KeyDown, KeyUp
@@ -2129,7 +2130,6 @@ int numpadKey (int key) {
  *    <li>ERROR_NULL_ARGUMENT - if the event is null</li>
  * </ul>
  * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
@@ -2144,8 +2144,8 @@ int numpadKey (int key) {
  * 
  */
 public boolean post (Event event) {
-	checkDevice ();
-	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int type = event.type;
 	switch (type){
 		case SWT.KeyDown:

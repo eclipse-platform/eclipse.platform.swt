@@ -2095,8 +2095,8 @@ int mouseHoverProc (int handle, int id) {
 	return widget.hoverProc (id);
 }
 public boolean post (Event event) {
-	checkDevice ();
-	if (event == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
+	if (event == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int type = event.type;
 	switch (type) {
 		case SWT.KeyDown :
@@ -2105,8 +2105,7 @@ public boolean post (Event event) {
 			int keysym = untranslateKey (event.keyCode);
 			if (keysym != 0) keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
 			if (keyCode == 0) {
-				char key = event.character;
-				keysym = wcsToMbcs ((char) key);
+				keysym = wcsToMbcs (event.character);
 				keyCode = OS.XKeysymToKeycode (xDisplay, keysym);
 				if (keyCode == 0) return false;
 			}
