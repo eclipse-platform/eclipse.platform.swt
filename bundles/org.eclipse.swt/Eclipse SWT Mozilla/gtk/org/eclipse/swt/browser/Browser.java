@@ -328,7 +328,7 @@ public Browser(Composite parent, int style) {
 		OS.g_list_free(list);
 		
 		if (mozillaHandle != 0) {			
-			getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new Integer(mozillaHandle), this});
+			getDisplay().setData(ADD_WIDGET_KEY, new Object[] {new LONG(mozillaHandle), this});
 
 			/* Note. Callback to get events before Mozilla receives and consumes them. */
 			OS.g_signal_connect (mozillaHandle, OS.event, eventProc, 1);
@@ -963,7 +963,7 @@ static String error(int code) {
 }
 
 void onDispose(Display display) {
-	display.setData(ADD_WIDGET_KEY, new Object[] {new Integer(mozillaHandle), null});
+	display.setData(ADD_WIDGET_KEY, new Object[] {new LONG(mozillaHandle), null});
 
 	int rc = webBrowser.RemoveWebBrowserListener(weakReference.getAddress(), nsIWebProgressListener.NS_IWEBPROGRESSLISTENER_IID);
 	if (rc != XPCOM.NS_OK) error(rc);

@@ -2895,7 +2895,7 @@ public void setData (String key, Object value) {
 
 	if (key.equals (ADD_WIDGET_KEY)) {
 		Object [] data = (Object [])value;
-		int handle = ((Integer)data [0]).intValue ();
+		int /*long*/ handle = ((LONG)data [0]).value;
 		Widget widget = (Widget)data [1];
 		if (widget == null) removeWidget (handle);
 		else addWidget (handle, widget);
