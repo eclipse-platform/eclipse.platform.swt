@@ -4752,6 +4752,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1get_1default_1language)
 }
 #endif
 
+#ifndef NO_gtk_1get_1event_1widget
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1get_1event_1widget)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1get_1event_1widget_FUNC);
+	rc = (jint)gtk_get_event_widget((GdkEvent *)arg0);
+	OS_NATIVE_EXIT(env, that, gtk_1get_1event_1widget_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1grab_1add
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1grab_1add)
 	(JNIEnv *env, jclass that, jint arg0)

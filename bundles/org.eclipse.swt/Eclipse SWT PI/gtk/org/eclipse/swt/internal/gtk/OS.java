@@ -44,6 +44,7 @@ public class OS {
 	public static final int GDK_CAP_BUTT = 0x1;
 	public static final int GDK_CAP_ROUND = 0x2;
 	public static final int GDK_COLORSPACE_RGB = 0;
+	public static final int GDK_CONFIGURE = 13;
 	public static final int GDK_CONTROL_MASK = 0x4;
 	public static final int GDK_COPY = 0x0;
 	public static final int GDK_CROSS = 0x1e;
@@ -143,6 +144,7 @@ public class OS {
 	public static final int GDK_Left = 0xff51;
 	public static final int GDK_Meta_L = 0xFFE7;
 	public static final int GDK_Meta_R = 0xFFE8;
+	public static final int GDK_MAP = 14;
 	public static final int GDK_MOD1_MASK = 0x8;
 	public static final int GDK_MOTION_NOTIFY = 0x3;
 	public static final int GDK_NO_EXPOSE = 30;
@@ -170,6 +172,7 @@ public class OS {
 	public static final int GDK_SB_H_DOUBLE_ARROW = 0x6c;
 	public static final int GDK_SB_UP_ARROW = 0x72;
 	public static final int GDK_SB_V_DOUBLE_ARROW = 0x74;
+	public static final int GDK_SELECTION_NOTIFY = 19;
 	public static final int GDK_SHIFT_MASK = 0x1;
 	public static final int GDK_SIZING = 0x78;
 	public static final int GDK_STIPPLED = 0x2;
@@ -248,6 +251,7 @@ public class OS {
 	public static final int GTK_TREE_VIEW_DROP_AFTER = 1;
 	public static final int GTK_TREE_VIEW_DROP_INTO_OR_BEFORE = 2;
 	public static final int GTK_TREE_VIEW_DROP_INTO_OR_AFTER = 3;
+	public static final int GDK_UNMAP = 15;
 	public static final int GTK_VISIBILITY_FULL = 0x2;
 	public static final int GTK_VISIBILITY_NONE = 0x0;
 	public static final int GTK_VISIBLE = 0x100;
@@ -745,6 +749,7 @@ public static final synchronized native int /*long*/ gtk_get_current_event();
 public static final synchronized native boolean gtk_get_current_event_state (int[] state);
 public static final synchronized native int gtk_get_current_event_time();
 public static final synchronized native int /*long*/ gtk_get_default_language();
+public static final synchronized native int /*long*/ gtk_get_event_widget(int /*long*/ event);
 public static final synchronized native void gtk_grab_add(int /*long*/ widget);
 public static final synchronized native int /*long*/ gtk_grab_get_current();
 public static final synchronized native void gtk_grab_remove(int /*long*/ widget);
