@@ -135,7 +135,7 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 	int args [] = {OS.Pt_ARG_FLAGS, 0, 0, OS.Pt_ARG_BASIC_FLAGS, 0, 0};
 	
 	/* Get the rectangle of all siblings in front of the widget */
-	if (clipSiblings) {
+	if (clipSiblings && OS.PtWidgetClass(topWidget) != OS.PtWindow()) {
 		int temp_widget = topWidget;
 		while ((temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0) {
 			if (OS.PtWidgetIsRealized(temp_widget)) {
@@ -293,7 +293,7 @@ int processPaint (int damage) {
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			
 			/* Get the clipping tiles for children and siblings */
-			int clip_tile = getClipping (handle, scrolledHandle, true, true);
+			int clip_tile = getClipping (handle, topHandle (), true, true);
 
 			/* Translate the clipping to the current GC coordinates */
 			short [] abs_x = new short [1], abs_y = new short [1];

@@ -1401,7 +1401,7 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 	int args [] = {OS.Pt_ARG_FLAGS, 0, 0, OS.Pt_ARG_BASIC_FLAGS, 0, 0};
 	
 	/* Get the rectangle of all siblings in front of the widget */
-	if (clipSiblings) {
+	if (clipSiblings && OS.PtWidgetClass(topWidget) != OS.PtWindow()) {
 		int temp_widget = topWidget;
 		while ((temp_widget = OS.PtWidgetBrotherInFront(temp_widget)) != 0) {
 			if (OS.PtWidgetIsRealized(temp_widget)) {
