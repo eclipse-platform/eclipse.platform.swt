@@ -647,6 +647,7 @@ public void setGrayed (boolean grayed) {
 public void setExpanded (boolean expanded) {
 	checkWidget();
 	if (items.length == 0) return;
+	if (this.expanded == expanded) return;
 	this.expanded = expanded;
 	if (tableItem == null) return;
 	parent.setRedraw(false);
