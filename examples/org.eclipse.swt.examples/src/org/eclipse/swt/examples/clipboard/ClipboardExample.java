@@ -14,6 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
@@ -44,35 +45,40 @@ public void open(Display display) {
 	clipboard = new Clipboard(display);
 	shell = new Shell (display);
 	shell.setText("SWT Clipboard");
-	shell.setLayout(new GridLayout(2, true));
+	shell.setLayout(new FillLayout());
 	
-	Group copyGroup = new Group(shell, SWT.NONE);
+	ScrolledComposite sc = new ScrolledComposite(shell, SWT.H_SCROLL | SWT.V_SCROLL);
+	Composite parent = new Composite(sc, SWT.NONE);
+	sc.setContent(parent);
+	parent.setLayout(new GridLayout(2, true));
+	
+	Group copyGroup = new Group(parent, SWT.NONE);
 	copyGroup.setText("Copy From:");
 	GridData data = new GridData(GridData.FILL_BOTH);
 	copyGroup.setLayoutData(data);
 	copyGroup.setLayout(new GridLayout(3, false));
 	
-	Group pasteGroup = new Group(shell, SWT.NONE);
+	Group pasteGroup = new Group(parent, SWT.NONE);
 	pasteGroup.setText("Paste To:");
 	data = new GridData(GridData.FILL_BOTH);
 	pasteGroup.setLayoutData(data);
 	pasteGroup.setLayout(new GridLayout(3, false));
 	
-	Group controlGroup = new Group(shell, SWT.NONE);
+	Group controlGroup = new Group(parent, SWT.NONE);
 	controlGroup.setText("Control API:");
 	data = new GridData(GridData.FILL_BOTH);
 	data.horizontalSpan = 2;
 	controlGroup.setLayoutData(data);
 	controlGroup.setLayout(new GridLayout(5, false));
 	
-	Group typesGroup = new Group(shell, SWT.NONE);
+	Group typesGroup = new Group(parent, SWT.NONE);
 	typesGroup.setText("Available Types");
 	data = new GridData(GridData.FILL_BOTH);
 	data.horizontalSpan = 2;
 	typesGroup.setLayoutData(data);
 	typesGroup.setLayout(new GridLayout(2, false));
 	
-	status = new Label(shell, SWT.BORDER);
+	status = new Label(parent, SWT.BORDER);
 	data = new GridData(GridData.FILL_HORIZONTAL);
 	data.horizontalSpan = 2;
 	data.heightHint = 60;
@@ -86,7 +92,13 @@ public void open(Display display) {
 	createControlTransfer(controlGroup);
 	createAvailableTypes(typesGroup);
 	
-	shell.pack();
+	sc.setMinSize(parent.computeSize(SWT.DEFAULT, SWT.DEFAULT));
+	sc.setExpandHorizontal(true);
+	sc.setExpandVertical(true);
+	
+	Point size = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	Rectangle monitorArea = shell.getMonitor().getClientArea();
+	shell.setSize(Math.min(size.x, monitorArea.width), Math.min(size.y, monitorArea.height));
 	shell.open();
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
