@@ -43,7 +43,7 @@ import org.eclipse.swt.events.*;
  */
 public class Table extends Composite {
 	int modelHandle, checkRenderer;
-	int itemCount, columnCount;
+	int itemCount, columnCount, lastIndexOf;
 	TableItem [] items;
 	TableColumn [] columns;
 	ImageList imageList;
@@ -300,13 +300,18 @@ void createItem (TableColumn column, int index) {
 void createItem (TableItem item, int index) {
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	if (itemCount == items.length) {
-		TableItem [] newItems = new TableItem [items.length + 4];
+		int newLength = drawCount == 0 ? items.length + 4 : items.length * 3 / 2;
+		TableItem [] newItems = new TableItem [newLength];	
 		System.arraycopy (items, 0, newItems, 0, items.length);
 		items = newItems;
 	}
 	item.handle = OS.g_malloc (OS.GtkTreeIter_sizeof ());
 	if (item.handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_list_store_insert (modelHandle, item.handle, index);
+	if (index == itemCount) {
+		OS.gtk_list_store_append (modelHandle, item.handle);
+	} else {
+		OS.gtk_list_store_insert (modelHandle, item.handle, index);
+	}
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 }
@@ -1123,8 +1128,14 @@ public int indexOf (TableColumn column) {
 public int indexOf (TableItem item) {
 	checkWidget();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	for (int i=0; i<itemCount; i++) {
-		if (items [i] == item) return i;
+	if (lastIndexOf < itemCount / 2) {
+		for (int i=0; i<itemCount; i++) {
+			if (items [i] == item) return lastIndexOf = i;
+		}
+	} else {
+		for (int i=itemCount - 1; i>=0; --i) {
+			if (items [i] == item) return lastIndexOf = i;
+		}
 	}
 	return -1;
 }
@@ -1520,6 +1531,19 @@ public void setHeaderVisible (boolean show) {
 public void setLinesVisible (boolean show) {
 	checkWidget();
 	OS.gtk_tree_view_set_rules_hint (handle, show);
+}
+
+public void setRedraw (boolean redraw) {
+	checkWidget();
+	super.setRedraw (redraw);
+	if (redraw && drawCount == 0) {
+		/* Resize the item array to match the item count */
+		if (items.length > 4 && items.length - itemCount > 3) {
+			TableItem [] newItems = new TableItem [(itemCount + 3) / 4 * 4];
+			System.arraycopy (items, 0, newItems, 0, itemCount);
+			items = newItems;
+		}
+	}
 }
 
 /**
