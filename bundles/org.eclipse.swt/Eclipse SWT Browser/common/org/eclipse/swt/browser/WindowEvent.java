@@ -69,6 +69,11 @@ import org.eclipse.swt.graphics.*;
  *					Point size = event.size;
  *					shell.setSize(shell.computeSize(size.x, size.y));
  *				}
+ *				if (event.addressbar || event.menubar || event.statusBar || event.toolBar) {
+ *					// create widgets for the address bar, menu bar, status bar and/or toolbar
+ *					// leave enough space in the Shell to accomodate a Browser of the size
+ *					// given by event.size
+ *				}
  *				shell.open();
  *			}
  *		});
@@ -103,7 +108,8 @@ public class WindowEvent extends TypedEvent {
 	public Point location;
 
 	/** 
-	 * Requested client size for the <code>Shell</code> hosting the <code>Browser</code>.
+	 * Requested <code>Browser</code> size. The client area of the <code>Shell</code> 
+	 * hosting the <code>Browser</code> should be large enough to accomodate that size. 
 	 * It is <code>null</code> if no size has been requested.
 	 */
 	public Point size;
