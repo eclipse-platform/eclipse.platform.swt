@@ -477,6 +477,10 @@ void createItem (TableColumn column, int index) {
 		desc.propertyDesc_propertyFlags = OS.kDataBrowserDefaultPropertyFlags;
 		desc.headerBtnDesc_maximumWidth = 0x7fff;
 		desc.headerBtnDesc_initialOrder = OS.kDataBrowserOrderIncreasing;
+		desc.headerBtnDesc_btnFontStyle_just = OS.teFlushLeft;
+		if ((style & SWT.CENTER) != 0) desc.headerBtnDesc_btnFontStyle_just = OS.teCenter;
+		if ((style & SWT.RIGHT) != 0) desc.headerBtnDesc_btnFontStyle_just = OS.teFlushRight;
+		desc.headerBtnDesc_btnFontStyle_flags |= OS.kControlUseJustMask;
 		OS.AddDataBrowserListViewColumn (handle, desc, position);
 		OS.SetDataBrowserTableViewNamedColumnWidth (handle, column.id, (short)0);
 	} 
@@ -824,6 +828,7 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	OS.memcpy (rect, theRect, Rect.sizeof);
 	int x = rect.left;
 	int y = rect.top;
+	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	boolean selected = (itemState & OS.kDataBrowserItemIsSelected) != 0;
 	Rect controlRect = new Rect ();
@@ -860,15 +865,22 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 	gc.setClipping (Region.carbon_new (display, clip));
 	OS.DisposeRgn (clip);
 	Image image = item.getImage (columnIndex);
-	if (image != null) {
-		Rectangle bounds = image.getBounds ();
-		gc.drawImage (image, 0, 0, bounds.width, bounds.height, x, y + (height - bounds.height) / 2, bounds.width, bounds.height);
-		x += bounds.width + 2;
-	}
 	String text = item.getText (columnIndex);
-	Font font = item.getFont (columnIndex); 
-	gc.setFont (font);
+	gc.setFont (item.getFont (columnIndex));
 	Point extent = gc.stringExtent (text);
+	int itemWidth = extent.x;
+	Rectangle imageBounds = null;
+	if (image != null) {
+		imageBounds = image.getBounds ();
+		itemWidth += imageBounds.width + 2;
+	}
+	TableColumn column = columns [columnIndex];
+	if ((column.style & SWT.CENTER) != 0) x += (width - itemWidth) / 2;
+	if ((column.style & SWT.RIGHT) != 0) x += width - itemWidth;
+	if (image != null) {
+		gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, x, y + (height - imageBounds.height) / 2, imageBounds.width, imageBounds.height);
+		x += imageBounds.width + 2;
+	}
 	if (selected) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
 		if (columnIndex == 0 && (style & SWT.FULL_SELECTION) == 0) {
@@ -1417,9 +1429,6 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 		case CHECK_COLUMN_ID: {
 			TableItem item = _getItem (row);
 			if (setValue != 0) {
-//				short [] theData = new short [1];
-//				OS.GetDataBrowserItemDataButtonValue (itemData, theData);
-//				item.checked = theData [0] == OS.kThemeButtonOn;
 				item.checked = !item.checked;
 				if (item.checked && item.grayed) {
 					OS.SetDataBrowserItemDataButtonValue (itemData, (short) OS.kThemeButtonMixed);
@@ -1432,8 +1441,6 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 				event.detail = SWT.CHECK;
 				postEvent (SWT.Selection, event);
 			} else {
-//				short theData = (short)(item.checked ? OS.kThemeButtonOn : OS.kThemeButtonOff);
-//				OS.SetDataBrowserItemDataButtonValue (itemData, theData);
 				int theData = OS.kThemeButtonOff;
 				if (item.checked) theData = item.grayed ? OS.kThemeButtonMixed : OS.kThemeButtonOn;
 				OS.SetDataBrowserItemDataButtonValue (itemData, (short) theData);
@@ -1445,6 +1452,18 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 }
 
 int itemNotificationProc (int browser, int id, int message) {
+	if (message == OS.kDataBrowserUserStateChanged) {
+		short [] width = new short [1];
+		for (int i = 0; i < columnCount; i++) {
+			TableColumn column = columns [i];
+			OS.GetDataBrowserTableViewNamedColumnWidth (handle, column.id, width);
+			if (width [0] != column.lastWidth) {
+				column.resized (width [0]);
+				return OS.noErr;
+			}
+		}
+		return OS.noErr;
+	}
 	int index = id - 1;
 	if (!(0 <= index && index < items.length)) return OS.noErr;
 	switch (message) {

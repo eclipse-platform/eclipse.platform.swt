@@ -34,7 +34,7 @@ import org.eclipse.swt.events.*;
  */
 public class TableColumn extends Item {
 	Table parent;
-	int id;
+	int id, lastWidth;
 	boolean resizable;
 
 /**
@@ -281,8 +281,7 @@ public void pack () {
 		}
 	}
 	gc.dispose ();
-	width += Table.EXTRA_WIDTH;
-	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
+	setWidth (width);
 }
 
 void releaseChild () {
@@ -345,6 +344,16 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void resized (int newWidth) {
+	lastWidth = newWidth;
+	sendEvent (SWT.Resize);
+	int index = parent.indexOf(this);
+	for (int j = index + 1; j < parent.columnCount; j++) {
+		TableColumn column = parent.columns [j];
+		column.sendEvent (SWT.Move);
+	}
+}
+
 /**
  * Controls how text and images will be displayed in the receiver.
  * The argument should be one of <code>LEFT</code>, <code>RIGHT</code>
@@ -364,6 +373,7 @@ public void setAlignment (int alignment) {
 	if (index == -1 || index == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	updateHeader ();
 }
 
 public void setImage (Image image) {
@@ -413,8 +423,10 @@ public void setText (String string) {
  */
 public void setWidth (int width) {
 	checkWidget ();
-	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) (width + Table.EXTRA_WIDTH));
+	width += Table.EXTRA_WIDTH;
+	OS.SetDataBrowserTableViewNamedColumnWidth (parent.handle, id, (short) width);
 	updateHeader ();
+	if (width != lastWidth) resized (width);
 }
 
 void updateHeader () {
@@ -425,6 +437,10 @@ void updateHeader () {
 	if (str == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
 	desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
+	desc.btnFontStyle_just = OS.teFlushLeft;
+	if ((style & SWT.CENTER) != 0) desc.btnFontStyle_just = OS.teCenter;
+	if ((style & SWT.RIGHT) != 0) desc.btnFontStyle_just = OS.teFlushRight;
+	desc.btnFontStyle_flags |= OS.kControlUseJustMask;
 	if (resizable) {
 		desc.minimumWidth = 0;
 		desc.maximumWidth = 0x7fff;
