@@ -1781,8 +1781,12 @@ public void setSelection (TableItem [] items) {
 }
 
 boolean setTabGroupFocus () {
-	if (super.setTabGroupFocus ()) return true;
 	return setTabItemFocus ();
+}
+
+boolean setTabItemFocus () {
+	if (!isShowing ()) return false;
+	return forceFocus ();
 }
 
 /**
