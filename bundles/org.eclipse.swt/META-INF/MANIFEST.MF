@@ -12,7 +12,7 @@ Provide-Package:
  org.eclipse.swt.events,
  org.eclipse.swt.graphics,
  org.eclipse.swt.internal,
- org.eclipse.swt.internal.awt,
+ org.eclipse.swt.awt,
  org.eclipse.swt.internal.image,
  org.eclipse.swt.layout,
  org.eclipse.swt.printing,
