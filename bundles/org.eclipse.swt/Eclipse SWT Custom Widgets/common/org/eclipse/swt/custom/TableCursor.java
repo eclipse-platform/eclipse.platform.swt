@@ -287,6 +287,8 @@ public TableCursor(Table parent, int style) {
  *
  * @see SelectionListener
  * @see SelectionEvent
+ * @see #removeSelectionListener(SelectionListener)
+ * 
  */
 public void addSelectionListener(SelectionListener listener) {
 	checkWidget();
