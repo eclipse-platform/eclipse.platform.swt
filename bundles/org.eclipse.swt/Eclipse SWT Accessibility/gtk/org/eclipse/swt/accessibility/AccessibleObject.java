@@ -18,7 +18,8 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.widgets.*;
 
 class AccessibleObject {
-	int handle, parentType, index = -1, id = ACC.CHILDID_SELF;
+	int /*long*/ handle;
+	int parentType, index = -1, id = ACC.CHILDID_SELF;
 	Accessible accessible;
 	AccessibleObject parent;
 	Hashtable children = new Hashtable (9);
@@ -26,10 +27,10 @@ class AccessibleObject {
 	// to a logical child of a widget (eg.- a CTabItem, which is simply drawn) 
 	boolean isLightweight = false;
 
-	static int actionNamePtr = -1;
-	static int descriptionPtr = -1;
-	static int keybindingPtr = -1;
-	static int namePtr = -1;
+	static int /*long*/ actionNamePtr = -1;
+	static int /*long*/ descriptionPtr = -1;
+	static int /*long*/ keybindingPtr = -1;
+	static int /*long*/ namePtr = -1;
 	static final Hashtable AccessibleObjects = new Hashtable (9);
 	static final int ATK_ACTION_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkAction", true));
 	static final int ATK_COMPONENT_TYPE = ATK.g_type_from_name (Converter.wcsToMbcs (null, "AtkComponent", true));
@@ -44,20 +45,20 @@ class AccessibleObject {
 		ATK.atk_object_initialize (handle, widget);
 		this.accessible = accessible;
 		this.isLightweight = isLightweight;
-		AccessibleObjects.put (new Integer (handle), this);
+		AccessibleObjects.put (new LONG (handle), this);
 		if (DEBUG) System.out.println("new AccessibleObject: " + handle);
 	}
 
 	void addChild (AccessibleObject child) {
-		children.put (new Integer (child.handle), child);
+		children.put (new LONG (child.handle), child);		
 		child.setParent (this);
 	}
 	
-	static int atkAction_get_keybinding (int atkObject, int index) {
+	static int /*long*/ atkAction_get_keybinding (int /*long*/ atkObject, int /*long*/ index) {
 		if (DEBUG) System.out.println ("-->atkAction_get_keybinding");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
+		int /*long*/ parentResult = 0;
 		if (ATK.g_type_is_a (object.parentType, ATK_ACTION_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_ACTION_GET_IFACE (object.handle));
 			AtkActionIface actionIface = new AtkActionIface ();
@@ -88,11 +89,11 @@ class AccessibleObject {
 		return keybindingPtr; 	
 	}
 
-	static int atkAction_get_name (int atkObject, int index) {
+	static int /*long*/ atkAction_get_name (int /*long*/ atkObject, int /*long*/ index) {
 		if (DEBUG) System.out.println ("-->atkAction_get_name");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
+		int /*long*/ parentResult = 0;
 		if (ATK.g_type_is_a (object.parentType, ATK_ACTION_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_ACTION_GET_IFACE (object.handle));
 			AtkActionIface actionIface = new AtkActionIface ();
@@ -123,7 +124,7 @@ class AccessibleObject {
 		return actionNamePtr;
 	}	
 
-	static int atkComponent_get_extents (int atkObject, int x, int y, int width, int height, int coord_type) {
+	static int /*long*/ atkComponent_get_extents (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ width, int /*long*/ height, int /*long*/ coord_type) {
 		if (DEBUG) System.out.println ("-->atkComponent_get_extents");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
@@ -154,11 +155,11 @@ class AccessibleObject {
 		event.width = parentWidth [0]; event.height = parentHeight [0];
 		if (coord_type == ATK.ATK_XY_WINDOW) {
 			// translate control -> display, for filling in the event to be dispatched
-			int gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
+			int /*long*/ gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
 			GtkAccessible gtkAccessible = new GtkAccessible ();
 			ATK.memmove (gtkAccessible, gtkAccessibleHandle);
-			int topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
-			int window = OS.GTK_WIDGET_WINDOW (topLevel);				
+			int /*long*/ topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int /*long*/ window = OS.GTK_WIDGET_WINDOW (topLevel);				
 			int[] topWindowX = new int [1], topWindowY = new int [1];
 			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
 			event.x += topWindowX [0];
@@ -169,11 +170,11 @@ class AccessibleObject {
 		}
 		if (coord_type == ATK.ATK_XY_WINDOW) {
 			// translate display -> control, for answering to the OS 
-			int gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
+			int /*long*/ gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
 			GtkAccessible gtkAccessible = new GtkAccessible ();
 			ATK.memmove (gtkAccessible, gtkAccessibleHandle);
-			int topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
-			int window = OS.GTK_WIDGET_WINDOW (topLevel);
+			int /*long*/ topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int /*long*/ window = OS.GTK_WIDGET_WINDOW (topLevel);
 			int[] topWindowX = new int [1], topWindowY = new int [1];
 			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
 			event.x -= topWindowX [0];
@@ -186,7 +187,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int atkComponent_get_position (int atkObject, int x, int y, int coord_type) {
+	static int /*long*/ atkComponent_get_position (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ coord_type) {
 		if (DEBUG) System.out.println ("-->atkComponent_get_position, object: " + atkObject + " x: " + x + " y: " + y + " coord: " + coord_type);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
@@ -211,11 +212,11 @@ class AccessibleObject {
 		event.x = parentX [0]; event.y = parentY [0];
 		if (coord_type == ATK.ATK_XY_WINDOW) {
 			// translate control -> display, for filling in the event to be dispatched
-			int gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
+			int /*long*/ gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
 			GtkAccessible gtkAccessible = new GtkAccessible ();
 			ATK.memmove (gtkAccessible, gtkAccessibleHandle);
-			int topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
-			int window = OS.GTK_WIDGET_WINDOW (topLevel);				
+			int /*long*/ topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int /*long*/ window = OS.GTK_WIDGET_WINDOW (topLevel);				
 			int[] topWindowX = new int [1], topWindowY = new int [1];
 			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
 			event.x += topWindowX [0];
@@ -226,11 +227,11 @@ class AccessibleObject {
 		}
 		if (coord_type == ATK.ATK_XY_WINDOW) {
 			// translate display -> control, for answering to the OS 
-			int gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
+			int /*long*/ gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
 			GtkAccessible gtkAccessible = new GtkAccessible ();
 			ATK.memmove (gtkAccessible, gtkAccessibleHandle);
-			int topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
-			int window = OS.GTK_WIDGET_WINDOW (topLevel);
+			int /*long*/ topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int /*long*/ window = OS.GTK_WIDGET_WINDOW (topLevel);
 			int[] topWindowX = new int [1], topWindowY = new int [1];
 			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
 			event.x -= topWindowX [0];
@@ -241,7 +242,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int atkComponent_get_size (int atkObject, int width, int height, int coord_type) {
+	static int /*long*/ atkComponent_get_size (int /*long*/ atkObject, int /*long*/ width, int /*long*/ height, int /*long*/ coord_type) {
 		if (DEBUG) System.out.println ("-->atkComponent_get_size");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
@@ -272,11 +273,11 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int atkComponent_ref_accessible_at_point (int atkObject, int x, int y, int coord_type) {
+	static int /*long*/ atkComponent_ref_accessible_at_point (int /*long*/ atkObject, int /*long*/ x, int /*long*/ y, int /*long*/ coord_type) {
 		if (DEBUG) System.out.println ("-->atkComponent_ref_accessible_at_point");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
+		int /*long*/ parentResult = 0;
 		if (ATK.g_type_is_a (object.parentType, ATK_COMPONENT_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_COMPONENT_GET_IFACE (object.handle));
 			AtkComponentIface componentIface = new AtkComponentIface ();
@@ -290,14 +291,14 @@ class AccessibleObject {
 		
 		AccessibleControlEvent event = new AccessibleControlEvent (object);
 		event.childID = object.id;
-		event.x = x; event.y = y;
+		event.x = (int)/*64*/x; event.y = (int)/*64*/y;
 		if (coord_type == ATK.ATK_XY_WINDOW) {
 			// translate control -> display, for filling in the event to be dispatched
-			int gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
+			int /*long*/ gtkAccessibleHandle = ATK.GTK_ACCESSIBLE (object.handle);
 			GtkAccessible gtkAccessible = new GtkAccessible ();
 			ATK.memmove (gtkAccessible, gtkAccessibleHandle);
-			int topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
-			int window = OS.GTK_WIDGET_WINDOW (topLevel);				
+			int /*long*/ topLevel = ATK.gtk_widget_get_toplevel (gtkAccessible.widget);
+			int /*long*/ window = OS.GTK_WIDGET_WINDOW (topLevel);				
 			int[] topWindowX = new int [1], topWindowY = new int [1];
 			OS.gdk_window_get_origin (window, topWindowX, topWindowY);
 			event.x += topWindowX [0];
@@ -316,12 +317,12 @@ class AccessibleObject {
 		return parentResult;
 	}	
 
-	static int atkObject_get_description (int atkObject) {
+	static int /*long*/ atkObject_get_description (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkObject_get_description");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
-		int superType = ATK.g_type_class_peek (object.parentType);
+		int /*long*/ parentResult = 0;
+		int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
 		if (objectClass.get_description != 0) {
@@ -349,12 +350,12 @@ class AccessibleObject {
 		return descriptionPtr; 
 	}
 
-	static int atkObject_get_name (int atkObject) {
+	static int /*long*/ atkObject_get_name (int atkObject) {
 		if (DEBUG) System.out.println ("-->atkObject_get_name: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
-		int superType = ATK.g_type_class_peek (object.parentType);
+		int /*long*/ parentResult = 0;
+		int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
 		if (objectClass.get_name != 0) {
@@ -382,12 +383,12 @@ class AccessibleObject {
 		return namePtr; 
 	}	
 
-	static int atkObject_get_n_children (int atkObject) {
+	static int /*long*/ atkObject_get_n_children (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkObject_get_n_children: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
-		int superType = ATK.g_type_class_peek (object.parentType);
+		int /*long*/ parentResult = 0;
+		int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
 		if (objectClass.get_n_children != 0) { 
@@ -398,38 +399,38 @@ class AccessibleObject {
 			
 		AccessibleControlEvent event = new AccessibleControlEvent (object);
 		event.childID = object.id;
-		event.detail = parentResult;
+		event.detail = (int)/*64*/parentResult;
 		for (int i = 0; i < listeners.length; i++) {
 			listeners [i].getChildCount (event);
 		} 
 		return event.detail;
 	}
 
-	static int atkObject_get_index_in_parent (int atkObject) {
+	static int /*long*/ atkObject_get_index_in_parent (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkObjectCB_get_index_in_parent.  ");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
 		if (object.index != -1) return object.index;
-		int superType = ATK.g_type_class_peek (object.parentType);
+		int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
 		if (objectClass.get_index_in_parent == 0) return 0;
 		return ATK.call (objectClass.get_index_in_parent,object. handle);
 	}
 
-	static int atkObject_get_parent (int atkObject) {
+	static int /*long*/ atkObject_get_parent (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkObject_get_parent: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
 		if (object.parent != null) return object.parent.handle;
-		int superType = ATK.g_type_class_peek (object.parentType);
+		int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
 		if (objectClass.get_parent == 0) return 0;
 		return ATK.call (objectClass.get_parent, object.handle);
 	}
 
-	static int atkObject_get_role (int atkObject) {
+	static int /*long*/ atkObject_get_role (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkObject_get_role: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
@@ -475,36 +476,36 @@ class AccessibleObject {
 				}
 			}
 		} 
-		int superType = ATK.g_type_class_peek (object.parentType);
+		int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
 		if (objectClass.get_role == 0) return 0;
 		return ATK.call (objectClass.get_role, object.handle);
 	}
 
-	static int atkObject_ref_child (int atkObject, int index) {
+	static int /*long*/ atkObject_ref_child (int /*long*/ atkObject, int /*long*/ index) {
 		if (DEBUG) System.out.println ("-->atkObject_ref_child: " + index + " of: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
 		object.updateChildren ();
-		AccessibleObject accObject = object.getChildByIndex (index);	
+		AccessibleObject accObject = object.getChildByIndex ((int)/*64*/index);	
 		if (accObject != null) {
 			OS.g_object_ref (accObject.handle);	
 			return accObject.handle;
 		}
-		int superType = ATK.g_type_class_peek (object.parentType);
+		int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
 		if (objectClass.ref_child == 0) return 0;
 		return ATK.call (objectClass.ref_child, object.handle, index);
 	}
 
-	static int atkObject_ref_state_set (int atkObject) {
+	static int /*long*/ atkObject_ref_state_set (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkObject_ref_state_set");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
-		int superType = ATK.g_type_class_peek (object.parentType);
+		int /*long*/ parentResult = 0;
+		int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, superType);
 		if (objectClass.ref_state_set != 0) { 
@@ -513,7 +514,7 @@ class AccessibleObject {
 		AccessibleControlListener[] listeners = object.getControlListeners ();
 		if (listeners.length == 0) return parentResult;
 
-		int set = parentResult;
+		int /*long*/ set = parentResult;
 		AccessibleControlEvent event = new AccessibleControlEvent (object);
 		event.childID = object.id;
 		event.detail = -1;
@@ -542,11 +543,11 @@ class AccessibleObject {
 		return set;
 	}
 
-	static int atkSelection_is_child_selected (int atkObject, int index) {
+	static int /*long*/ atkSelection_is_child_selected (int /*long*/ atkObject, int /*long*/ index) {
 		if (DEBUG) System.out.println ("-->atkSelection_is_child_selected");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
+		int /*long*/ parentResult = 0;
 		if (ATK.g_type_is_a (object.parentType, ATK_SELECTION_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_SELECTION_GET_IFACE (object.handle));
 			AtkSelectionIface selectionIface = new AtkSelectionIface ();
@@ -570,11 +571,11 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int atkSelection_ref_selection (int atkObject, int index) {
+	static int /*long*/ atkSelection_ref_selection (int /*long*/ atkObject, int /*long*/ index) {
 		if (DEBUG) System.out.println ("-->atkSelection_ref_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
+		int /*long*/ parentResult = 0;
 		if (ATK.g_type_is_a (object.parentType, ATK_SELECTION_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_SELECTION_GET_IFACE (object.handle));
 			AtkSelectionIface selectionIface = new AtkSelectionIface ();
@@ -600,11 +601,11 @@ class AccessibleObject {
 		return parentResult;
 	}
 
-	static int atkText_get_caret_offset (int atkObject) {
+	static int /*long*/ atkText_get_caret_offset (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkText_get_caret_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
+		int /*long*/ parentResult = 0;
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (object.handle));
 			AtkTextIface textIface = new AtkTextIface ();
@@ -618,21 +619,21 @@ class AccessibleObject {
 		
 		AccessibleTextEvent event = new AccessibleTextEvent (object);
 		event.childID = object.id;
-		event.offset = parentResult;
+		event.offset = (int)/*64*/parentResult;
 		for (int i = 0; i < listeners.length; i++) {
 			listeners [i].getCaretOffset (event);	
 		} 
 		return event.offset; 	
 	}
 	
-	static int atkText_get_character_at_offset (int atkObject, int offset) {
+	static int /*long*/ atkText_get_character_at_offset (int /*long*/ atkObject, int /*long*/ offset) {
 		if (DEBUG) System.out.println ("-->atkText_get_character_at_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
 		String text = object.getText ();
-		if (text != null) return (int)text.charAt (offset); // TODO
+		if (text != null) return (int)text.charAt ((int)/*64*/offset); // TODO
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
-			int superType = ATK.g_type_class_peek (object.parentType);
+			int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 			AtkTextIface textIface = new AtkTextIface ();
 			ATK.memmove (textIface, superType);
 			if (textIface.get_character_at_offset != 0) {
@@ -642,14 +643,14 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int atkText_get_character_count (int atkObject) {
+	static int /*long*/ atkText_get_character_count (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkText_get_character_count");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
 		String text = object.getText ();
 		if (text != null) return text.length ();
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
-			int superType = ATK.g_type_class_peek (object.parentType);
+			int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 			AtkTextIface textIface = new AtkTextIface ();
 			ATK.memmove (textIface, superType);
 			if (textIface.get_character_count != 0) {
@@ -659,11 +660,11 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int atkText_get_n_selections (int atkObject) {
+	static int /*long*/ atkText_get_n_selections (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkText_get_n_selections");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
-		int parentResult = 0;
+		int /*long*/ parentResult = 0;
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (object.handle));
 			AtkTextIface textIface = new AtkTextIface ();
@@ -683,7 +684,7 @@ class AccessibleObject {
 		return event.length == 0 ? parentResult : 1;
 	}
 
-	static int atkText_get_selection (int atkObject, int selection_num, int start_offset, int end_offset) {
+	static int /*long*/ atkText_get_selection (int /*long*/ atkObject, int /*long*/ selection_num, int /*long*/ start_offset, int /*long*/ end_offset) {
 		if (DEBUG) System.out.println ("-->atkText_get_selection");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
@@ -716,7 +717,7 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int atkText_get_text (int atkObject, int start_offset, int end_offset) {
+	static int /*long*/ atkText_get_text (int /*long*/ atkObject, int /*long*/ start_offset, int /*long*/ end_offset) {
 		if (DEBUG) System.out.println ("-->atkText_get_text: " + start_offset + "," + end_offset);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
@@ -728,14 +729,14 @@ class AccessibleObject {
 				end_offset = Math.min (end_offset, text.length ());	
 			}
 			start_offset = Math.min (start_offset, end_offset);
-			text = text.substring (start_offset, end_offset);
+			text = text.substring ((int)/*64*/start_offset, (int)/*64*/end_offset);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-			int result = OS.g_malloc (bytes.length);
+			int /*long*/ result = OS.g_malloc (bytes.length);
 			OS.memmove (result, bytes, bytes.length);
 			return result;
 		}
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
-			int superType = ATK.g_type_class_peek (object.parentType);
+			int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 			AtkTextIface textIface = new AtkTextIface ();
 			ATK.memmove (textIface, superType);
 			if (textIface.get_text != 0) {
@@ -745,17 +746,18 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int atkText_get_text_after_offset (int atkObject, int offset, int boundary_type, int start_offset, int end_offset) {
+	static int /*long*/ atkText_get_text_after_offset (int /*long*/ atkObject, int /*long*/ offset_value, int /*long*/ boundary_type, int /*long*/ start_offset, int /*long*/ end_offset) {
 		if (DEBUG) System.out.println ("-->atkText_get_text_after_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
+		int offset = (int)/*64*/offset_value;
 		String text = object.getText ();
 		if (text != null) {
 			int length = text.length ();
 			offset = Math.min (offset, length - 1);
 			int startBounds = offset;
 			int endBounds = offset;
-			switch (boundary_type) {
+			switch ((int)/*64*/boundary_type) {
 				case ATK.ATK_TEXT_BOUNDARY_CHAR: {
 					if (length > offset) endBounds++;
 					break;
@@ -789,7 +791,7 @@ class AccessibleObject {
 						startBounds = endBounds = length;
 						break;
 					}
-					int wordEnd1 = nextIndexOfChar (text, " !?.\n", offset);
+					int wordEnd1 = nextIndexOfChar (text, " !?.\n", (int)/*64*/offset);
 					if (wordEnd1 == -1) {
 						startBounds = endBounds = length;
 						break;
@@ -910,12 +912,12 @@ class AccessibleObject {
 			OS.memmove (end_offset, new int[] {endBounds}, 4);
 			text = text.substring (startBounds, endBounds);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-			int result = OS.g_malloc (bytes.length);
+			int /*long*/ result = OS.g_malloc (bytes.length);
 			OS.memmove (result, bytes, bytes.length);
 			return result;
 		} 
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
-			int superType = ATK.g_type_class_peek (object.parentType);
+			int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 			AtkTextIface textIface = new AtkTextIface ();
 			ATK.memmove (textIface, superType);
 			if (textIface.get_text_after_offset != 0) {
@@ -925,17 +927,18 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int atkText_get_text_at_offset (int atkObject, int offset, int boundary_type, int start_offset, int end_offset) {
-		if (DEBUG) System.out.println ("-->atkText_get_text_at_offset: " + offset + " start: " + start_offset + " end: " + end_offset);
+	static int /*long*/ atkText_get_text_at_offset (int /*long*/ atkObject, int /*long*/ offset_value, int /*long*/ boundary_type, int /*long*/ start_offset, int /*long*/ end_offset) {
+		if (DEBUG) System.out.println ("-->atkText_get_text_at_offset: " + offset_value + " start: " + start_offset + " end: " + end_offset);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
+		int offset = (int)/*64*/offset_value;
 		String text = object.getText ();
 		if (text != null) {
 			int length = text.length ();
 			offset = Math.min (offset, length - 1);
 			int startBounds = offset;
 			int endBounds = offset;
-			switch (boundary_type) {
+			switch ((int)/*64*/boundary_type) {
 				case ATK.ATK_TEXT_BOUNDARY_CHAR: {
 					if (length > offset) endBounds++;
 					break;
@@ -1033,12 +1036,12 @@ class AccessibleObject {
 			OS.memmove (end_offset, new int[] {endBounds}, 4);
 			text = text.substring (startBounds, endBounds);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-			int result = OS.g_malloc (bytes.length);
+			int /*long*/ result = OS.g_malloc (bytes.length);
 			OS.memmove (result, bytes, bytes.length);
 			return result;
 		} 
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
-			int superType = ATK.g_type_class_peek (object.parentType);
+			int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 			AtkTextIface textIface = new AtkTextIface ();
 			ATK.memmove (textIface, superType);
 			if (textIface.get_text_after_offset != 0) {
@@ -1048,17 +1051,18 @@ class AccessibleObject {
 		return 0;
 	}
 
-	static int atkText_get_text_before_offset (int atkObject, int offset, int boundary_type, int start_offset, int end_offset) {
+	static int /*long*/ atkText_get_text_before_offset (int /*long*/ atkObject, int /*long*/ offset_value, int /*long*/ boundary_type, int /*long*/ start_offset, int /*long*/ end_offset) {
 		if (DEBUG) System.out.println ("-->atkText_get_text_before_offset");
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
+		int offset = (int)/*64*/offset_value;
 		String text = object.getText ();
 		if (text != null) {
 			int length = text.length ();
 			offset = Math.min (offset, length - 1);
 			int startBounds = offset;
 			int endBounds = offset;
-			switch (boundary_type) {
+			switch ((int)/*64*/boundary_type) {
 				case ATK.ATK_TEXT_BOUNDARY_CHAR: {
 					if (length >= offset && offset > 0) startBounds--;
 					break;
@@ -1161,12 +1165,12 @@ class AccessibleObject {
 			OS.memmove (end_offset, new int[] {endBounds}, 4);
 			text = text.substring (startBounds, endBounds);
 			byte[] bytes = Converter.wcsToMbcs (null, text, true);
-			int result = OS.g_malloc (bytes.length);
+			int /*long*/ result = OS.g_malloc (bytes.length);
 			OS.memmove (result, bytes, bytes.length);
 			return result;
 		} 
 		if (ATK.g_type_is_a (object.parentType, ATK_TEXT_TYPE)) {
-			int superType = ATK.g_type_class_peek (object.parentType);
+			int /*long*/ superType = ATK.g_type_class_peek (object.parentType);
 			AtkTextIface textIface = new AtkTextIface ();
 			ATK.memmove (textIface, superType);
 			if (textIface.get_text_before_offset != 0) {
@@ -1181,12 +1185,12 @@ class AccessibleObject {
 		return accessible.getAccessibleListeners ();
 	}
 
-	static AccessibleObject getAccessibleObject (int atkObject) {
-		return (AccessibleObject)AccessibleObjects.get (new Integer (atkObject));
+	static AccessibleObject getAccessibleObject (int /*long*/ atkObject) {
+		return (AccessibleObject)AccessibleObjects.get (new LONG (atkObject));
 	}
 	
-	AccessibleObject getChildByHandle (int handle) {
-		return (AccessibleObject) children.get (new Integer (handle));	
+	AccessibleObject getChildByHandle (int /*long*/ handle) {
+		return (AccessibleObject) children.get (new LONG (handle));	
 	}	
 
 	AccessibleObject getChildByID (int childId) {
@@ -1214,13 +1218,13 @@ class AccessibleObject {
 	}
 
 	String getText () {
-		int parentResult = 0;
+		int /*long*/ parentResult = 0;
 		String parentText = "";
 		if (ATK.g_type_is_a (parentType, ATK_TEXT_TYPE)) {
 			int superType = ATK.g_type_interface_peek_parent (ATK.ATK_TEXT_GET_IFACE (handle));
 			AtkTextIface textIface = new AtkTextIface ();
 			ATK.memmove (textIface, superType);
-			int characterCount = 0;
+			int /*long*/ characterCount = 0;
 			if (textIface.get_character_count != 0) {
 				characterCount = ATK.call (textIface.get_character_count, handle);
 			}
@@ -1251,8 +1255,8 @@ class AccessibleObject {
 	}
 
 	static int gObjectClass_finalize (int atkObject) {
-		int superType = ATK.g_type_class_peek_parent (ATK.G_OBJECT_GET_CLASS (atkObject));
-		int gObjectClass = ATK.G_OBJECT_CLASS (superType);
+		int /*long*/ superType = ATK.g_type_class_peek_parent (ATK.G_OBJECT_GET_CLASS (atkObject));
+		int /*long*/ gObjectClass = ATK.G_OBJECT_CLASS (superType);
 		GObjectClass objectClassStruct = new GObjectClass ();
 		ATK.memmove (objectClassStruct, gObjectClass);
 		ATK.call (objectClassStruct.finalize, atkObject);
@@ -1320,7 +1324,7 @@ class AccessibleObject {
 	}
 	
 	void removeChild (AccessibleObject child, boolean unref) {
-		children.remove (new Integer (child.handle));
+		children.remove (new LONG (child.handle));
 		if (unref && child.isLightweight) OS.g_object_unref (child.handle);
 	}
 	
@@ -1375,7 +1379,7 @@ class AccessibleObject {
 					AccessibleObject object = getChildByIndex (i);
 					if (object == null) {
 						object = new AccessibleObject (childType, 0, accessible, parentType, true);
-						AccessibleObjects.put (new Integer (object.handle), object);
+						AccessibleObjects.put (new LONG (object.handle), object);
 						addChild (object);
 						object.index = i;
 					}
@@ -1384,7 +1388,7 @@ class AccessibleObject {
 					} catch (ClassCastException e) {
 						// a non-ID value was given so don't set the ID
 					}
-					idsToKeep.addElement (new Integer (object.handle));
+					idsToKeep.addElement (new LONG (object.handle));
 				}
 			} else {
 				// an array of Accessible children was answered
@@ -1398,7 +1402,7 @@ class AccessibleObject {
 					}
 					if (object != null) {
 						object.index = childIndex++;
-						idsToKeep.addElement (new Integer (object.handle));
+						idsToKeep.addElement (new LONG (object.handle));
 					}
 				}
 			}

@@ -13,8 +13,8 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
  
 public class GInterfaceInfo {
-	public int interface_init;
-	public int interface_finalize;
-	public int interface_data;
+	public int /*long*/ interface_init;
+	public int /*long*/ interface_finalize;
+	public int /*long*/ interface_data;
 	public static final int sizeof = ATK.GInterfaceInfo_sizeof();
 }

@@ -13,11 +13,11 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class GObjectClass {
-	public int constructor;
-	public int set_property;
-	public int get_property;
-	public int dispose;
-	public int finalize;
-	public int dispatch_properties_changed;
-	public int notify;
+	public int /*long*/ constructor;
+	public int /*long*/ set_property;
+	public int /*long*/ get_property;
+	public int /*long*/ dispose;
+	public int /*long*/ finalize;
+	public int /*long*/ dispatch_properties_changed;
+	public int /*long*/ notify;
 }

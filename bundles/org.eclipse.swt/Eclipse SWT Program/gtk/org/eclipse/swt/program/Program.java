@@ -204,7 +204,7 @@ static Hashtable gnome_getMimeInfo(Display display) {
 	int[] mimeData = new int[1];
 	int[] extensionData = new int[1];
 	int mimeList = GNOME.gnome_vfs_get_registered_mime_types();
-	int mimeElement = mimeList;
+	int /*long*/ mimeElement = mimeList;
 	while (mimeElement != 0) {
 		OS.memmove (mimeData, mimeElement, 4);
 		int mimePtr = mimeData[0];
@@ -215,7 +215,7 @@ static Hashtable gnome_getMimeInfo(Display display) {
 		int extensionList = GNOME.gnome_vfs_mime_get_extensions_list(mimePtr);
 		if (extensionList != 0) {
 			Vector extensions = new Vector();
-			int extensionElement = extensionList;
+			int /*long*/ extensionElement = extensionList;
 			while (extensionElement != 0) {
 				OS.memmove(extensionData, extensionElement, 4);
 				int extensionPtr = extensionData[0];
@@ -298,12 +298,12 @@ static boolean isGnomeDesktop() {
 	 * property on the root window.
 	 */
 	byte[] name = Converter.wcsToMbcs(null, "_WIN_SUPPORTING_WM_CHECK", true);
-	int atom = OS.gdk_atom_intern(name, true);
+	int /*long*/ atom = OS.gdk_atom_intern(name, true);
 	if (atom == OS.GDK_NONE) return false;	
-	int[] actualType = new int[1];
+	int /*long*/[] actualType = new int /*long*/[1];
 	int[] actualFormat = new int[1];
 	int[] actualLength = new int[1];
-	int[] data = new int[1];
+	int /*long*/[] data = new int /*long*/[1];
 	if (!OS.gdk_property_get(OS.GDK_ROOT_PARENT(), atom, OS.XA_CARDINAL,
 		0, 1, 0, actualType, actualFormat, actualLength, data)) return false;
 	if (data[0] != 0) OS.g_free(data[0]);

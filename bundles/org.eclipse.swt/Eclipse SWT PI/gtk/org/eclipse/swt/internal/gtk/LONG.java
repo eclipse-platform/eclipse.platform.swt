@@ -9,13 +9,23 @@
  * between the two license versions, the terms of the LGPL accompanying
  * this distribution shall govern.
  *******************************************************************************/
-package org.eclipse.swt.internal.accessibility.gtk;
+package org.eclipse.swt.internal.gtk;
 
+public class LONG {
+	public int /*long*/ value;
+	
+	public LONG(int /*long*/ value) {
+		this.value = value;
+	}
 
-public class GTypeQuery {
-	public int type;
-	public int /*long*/ type_name;
-	public int class_size;
-	public int instance_size;
-	public static final int sizeof = ATK.GTypeQuery_sizeof();
+	public boolean equals (Object object) {
+		if (object == this) return true;
+		if (!(object instanceof LONG)) return false;
+		LONG obj = (LONG)object;
+		return (obj.value == this.value);
+	}
+
+	public int hashCode () {
+		return (int)/*64*/value;
+	}
 }

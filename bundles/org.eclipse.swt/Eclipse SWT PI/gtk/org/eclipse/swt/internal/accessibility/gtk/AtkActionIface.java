@@ -14,12 +14,12 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 public class AtkActionIface {
 //	GTypeInterface parent;
-	public int do_action;
-	public int get_n_actions;
-	public int get_description;
-	public int get_name;
-	public int get_keybinding;
-	public int set_description;	
+	public int /*long*/ do_action;
+	public int /*long*/ get_n_actions;
+	public int /*long*/ get_description;
+	public int /*long*/ get_name;
+	public int /*long*/ get_keybinding;
+	public int /*long*/ set_description;	
 //   AtkFunction             pad1;
 //   AtkFunction             pad2;
 }

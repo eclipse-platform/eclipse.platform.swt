@@ -13,12 +13,12 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class AtkSelectionIface {
-	public int add_selection;
-	public int clear_selection;
-	public int ref_selection;
-	public int get_selection_count;
-	public int is_child_selected;
-	public int remove_selection;
-	public int select_all_selection;
-	public int selection_changed;
+	public int /*long*/ add_selection;
+	public int /*long*/ clear_selection;
+	public int /*long*/ ref_selection;
+	public int /*long*/ get_selection_count;
+	public int /*long*/ is_child_selected;
+	public int /*long*/ remove_selection;
+	public int /*long*/ select_all_selection;
+	public int /*long*/ selection_changed;
 }

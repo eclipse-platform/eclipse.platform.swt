@@ -540,7 +540,7 @@ public static final synchronized native int /*long*/ gdk_pixmap_new(int /*long*/
 public static final synchronized native int gdk_pointer_grab(int /*long*/ window, boolean owner_events, int event_mask, int /*long*/ confine_to, int /*long*/ cursor, int time);
 public static final synchronized native boolean gdk_pointer_is_grabbed();
 public static final synchronized native void gdk_pointer_ungrab(int time);
-public static final synchronized native boolean gdk_property_get(int /*long*/ window, int /*long*/ property, int /*long*/ type, int offset, int length, int pdelete, int /*long*/[] actual_property_type, int /*long*/[] actual_format, int /*long*/[] actual_length, int /*long*/[] data);
+public static final synchronized native boolean gdk_property_get(int /*long*/ window, int /*long*/ property, int /*long*/ type, int /*long*/ offset, int /*long*/ length, int pdelete, int /*long*/[] actual_property_type, int[] actual_format, int[] actual_length, int /*long*/[] data);
 public static final synchronized native void gdk_region_destroy(int /*long*/ region);
 public static final synchronized native boolean gdk_region_empty(int /*long*/ region);
 public static final synchronized native void gdk_region_get_clipbox(int /*long*/ region, GdkRectangle rectangle);

@@ -45,7 +45,7 @@ static synchronized void loadLibrary () {
 
 public static Frame new_Frame (final Composite parent) {
 	if (parent == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	int handle = parent.embeddedHandle;
+	int /*long*/ handle = parent.embeddedHandle;
 	/*
 	 * Some JREs have implemented the embedded frame constructor to take an integer
 	 * and other JREs take a long.  To handle this binary incompatability, use
@@ -57,21 +57,18 @@ public static Frame new_Frame (final Composite parent) {
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
 	}
+	Object value = null;
 	Constructor constructor = null;
 	try {
 		constructor = clazz.getConstructor (new Class [] {int.class});
+		value = constructor.newInstance (new Object [] {new Integer ((int)/*64*/handle)});
 	} catch (Throwable e1) {
 		try {
 			constructor = clazz.getConstructor (new Class [] {long.class});
+			value = constructor.newInstance (new Object [] {new Long (handle)});
 		} catch (Throwable e2) {
 			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
 		}
-	}
-	Object value = null;
-	try {
-		value = constructor.newInstance (new Object [] {new Integer (handle)});
-	} catch (Throwable e) {
-		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
 	try {
 		/* Call registerListeners() to make XEmbed focus traversal work */

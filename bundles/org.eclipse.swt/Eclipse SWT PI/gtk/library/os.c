@@ -801,7 +801,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1from_1utf8)
 	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
 	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
-	rc = (jint)g_filename_from_utf8((const gchar *)arg0, arg1, lparg2, lparg3, (GError **)lparg4);
+	rc = (jint)g_filename_from_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)lparg2, (gsize *)lparg3, (GError **)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);

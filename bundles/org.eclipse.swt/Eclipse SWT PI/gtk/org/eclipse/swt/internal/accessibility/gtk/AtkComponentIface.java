@@ -13,17 +13,17 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class AtkComponentIface {
-	public int add_focus_handler;
-	public int contains;
-	public int ref_accessible_at_point;
-	public int get_extents;
-	public int get_position;
-	public int get_size;
-	public int grab_focus;
-	public int remove_focus_handler;
-	public int set_extents;
-	public int set_position;
-	public int set_size;
-	public int get_layer;
-	public int get_mdi_zorder;
+	public int /*long*/ add_focus_handler;
+	public int /*long*/ contains;
+	public int /*long*/ ref_accessible_at_point;
+	public int /*long*/ get_extents;
+	public int /*long*/ get_position;
+	public int /*long*/ get_size;
+	public int /*long*/ grab_focus;
+	public int /*long*/ remove_focus_handler;
+	public int /*long*/ set_extents;
+	public int /*long*/ set_position;
+	public int /*long*/ set_size;
+	public int /*long*/ get_layer;
+	public int /*long*/ get_mdi_zorder;
 }

@@ -148,7 +148,7 @@ public class Accessible {
 		return result;
 	}
 
-	int getControlHandle () {
+	int /*long*/ getControlHandle () {
 		return control.handle;
 	}
 	

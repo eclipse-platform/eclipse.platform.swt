@@ -13,5 +13,5 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class GtkAccessible {
-	public int widget;
+	public int /*long*/ widget;
 }

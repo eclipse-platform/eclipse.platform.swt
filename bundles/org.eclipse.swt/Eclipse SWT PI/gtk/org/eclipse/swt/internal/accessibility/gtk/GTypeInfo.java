@@ -14,14 +14,14 @@ package org.eclipse.swt.internal.accessibility.gtk;
  
 public class GTypeInfo {
 	public short class_size;
-	public int base_init;
-	public int base_finalize;
-	public int class_init;
-	public int class_finalize;
-	public int class_data;
+	public int /*long*/ base_init;
+	public int /*long*/ base_finalize;
+	public int /*long*/ class_init;
+	public int /*long*/ class_finalize;
+	public int /*long*/ class_data;
 	public short instance_size;
 	public short n_preallocs;
-	public int instance_init;
-	public int value_table;
+	public int /*long*/ instance_init;
+	public int /*long*/ value_table;
 	public static final int sizeof = ATK.GTypeInfo_sizeof();	
 }

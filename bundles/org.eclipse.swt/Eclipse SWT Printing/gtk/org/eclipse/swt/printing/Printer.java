@@ -112,7 +112,7 @@ public Printer(PrinterData data) {
  * @param data the platform specific GC data 
  * @return the platform specific GC handle
  */
-public int internal_new_GC(GCData data) {
+public int /*long*/ internal_new_GC(GCData data) {
 	return 0;
 }
 
@@ -129,7 +129,7 @@ public int internal_new_GC(GCData data) {
  * @param handle the platform specific GC handle
  * @param data the platform specific GC data 
  */
-public void internal_dispose_GC(int xGC, GCData data) {
+public void internal_dispose_GC(int /*long*/ xGC, GCData data) {
 }
 
 /**

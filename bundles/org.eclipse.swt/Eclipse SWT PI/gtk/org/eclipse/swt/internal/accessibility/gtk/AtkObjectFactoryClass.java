@@ -13,7 +13,7 @@ package org.eclipse.swt.internal.accessibility.gtk;
 
 
 public class AtkObjectFactoryClass {
-	public int create_accessible;
-	public int invalidate;
-	public int get_accessible_type;
+	public int /*long*/ create_accessible;
+	public int /*long*/ invalidate;
+	public int /*long*/ get_accessible_type;
 }
