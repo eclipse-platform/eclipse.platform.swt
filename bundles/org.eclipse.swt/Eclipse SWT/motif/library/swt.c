@@ -7929,7 +7929,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_XpQueryVersion
     return rc;
 }
 
-#endif
+#endif /* ! NO_XPRINTING_EXTENSIONS */
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
