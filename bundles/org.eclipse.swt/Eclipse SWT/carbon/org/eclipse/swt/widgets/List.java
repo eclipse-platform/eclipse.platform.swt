@@ -914,7 +914,8 @@ public void remove (int index) {
  */
 public void remove (int start, int end) {
 	checkWidget();
-	if (!(0 <= start && start <= end && end < itemCount)) {
+	if (start > end) return;
+	if (!(0 <= start && end < itemCount)) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	int length = end - start + 1;
