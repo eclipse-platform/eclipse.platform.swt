@@ -18,9 +18,9 @@ import org.eclipse.swt.*;
  * <code>TextLayout</code> is a graphic object that represents
  * styled text.
  *<p>
- * Instances of this class provides support for drawing, cursor
- * navigation, hit testing, text wrapping, alignment, tab expantion
- * line breaking, etc, envolving internationalized text.
+ * Instances of this class provide support for drawing, cursor
+ * navigation, hit testing, text wrapping, alignment, tab expansion
+ * line breaking, etc.  These are aspects required for rendering internationalized text.
  * </p>
  * 
  * <p>
@@ -131,6 +131,8 @@ public final class TextLayout {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  * </ul>
+ * 
+ * @see #dispose()
  */
 public TextLayout (Device device) {
 	if (device == null) device = Device.getDevice();
@@ -142,7 +144,7 @@ public TextLayout (Device device) {
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
-	text = "";
+	text = ""; //$NON-NLS-1$
 	if (device.tracking) device.new_Object(this);
 }
 
@@ -349,8 +351,7 @@ void computeRuns (GC gc) {
 
 /**
  * Disposes of the operating system resources associated with
- * the text layout. Applications must dispose of all text layouts
- * which they allocate.
+ * the text layout. Applications must dispose of all allocated text layouts.
  */
 public void dispose () {
 	if (device == null) return;
@@ -553,7 +554,7 @@ void freeRuns () {
 }
 
 /** 
- * Returns the receiver's text alignment, which will be one
+ * Returns the receiver's horizontal text alignment, which will be one
  * of <code>SWT.LEFT</code>, <code>SWT.CENTER</code> or
  * <code>SWT.RIGHT</code>.
  *
@@ -569,7 +570,7 @@ public int getAlignment () {
 }
 
 /**
- * Gets the ascent of the receiver.
+ * Returns the ascent of the receiver.
  *
  * @return the ascent
  *
@@ -577,7 +578,8 @@ public int getAlignment () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see getDescent()
+ *  @see #getDescent()
+ * 
  */
 public int getAscent () {
 	checkLayout();
@@ -731,7 +733,7 @@ public Rectangle getBounds (int start, int end) {
 }
 
 /**
- * Gets the descent of the receiver.
+ * Returns the descent of the receiver.
  *
  * @return the descent
  *
@@ -739,7 +741,7 @@ public Rectangle getBounds (int start, int end) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see getAscent()
+ * @see #getAscent()
  */
 public int getDescent () {
 	checkLayout();
@@ -855,7 +857,7 @@ public int getLineCount () {
 }
 
 /**
- * Returns the index of the line that containing the specified
+ * Returns the index of the line that contains the specified
  * character offset.
  * 
  * @param offset the character offset
@@ -954,7 +956,7 @@ public int[] getLineOffsets () {
 }
 
 /**
- * Returns the location for the speficied character offset. The
+ * Returns the location for the specified character offset. The
  * <code>trailing</code> argument indicates whether the offset
  * corresponds to the leading or trailing edge of the cluster.
  * 
@@ -966,8 +968,8 @@ public int[] getLineOffsets () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see getOffset(Point, int[])
- * @see getOffset(int, int, int[])
+ * @see #getOffset(Point, int[])
+ * @see #getOffset(int, int, int[])
  */
 public Point getLocation (int offset, boolean trailing) {
 	checkLayout();
@@ -1037,7 +1039,7 @@ public Point getLocation (int offset, boolean trailing) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see getPreviousOffset(int, int)
+ * @see #getPreviousOffset(int, int)
  */
 public int getNextOffset (int offset, int movement) {
 	checkLayout();
@@ -1127,8 +1129,8 @@ public int getNextOffset (int offset, int movement) {
 /**
  * Returns the character offset for the specified point.  When
  * the point is over a cluster composed by multiple characters,
- * the trailing argument will determine each character in the
- * cluster is under the point.
+ * the trailing argument will determine for each character in the
+ * cluster whether it is under the point.
  * 
  * @param point the point
  * @param trailing the trailing buffer
@@ -1141,7 +1143,7 @@ public int getNextOffset (int offset, int movement) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see getLocation(int, boolean)
+ * @see #getLocation(int, boolean)
  */
 public int getOffset (Point point, int[] trailing) {
 	checkLayout();
@@ -1152,8 +1154,8 @@ public int getOffset (Point point, int[] trailing) {
 /**
  * Returns the character offset for the specified point.  When
  * the point is over a cluster composed by multiple characters,
- * the trailing argument will determine each character in the
- * cluster is under the point.
+ * the trailing argument will determine for each character in the
+ * cluster whether it is under the point.
  * 
  * @param x the x coordinate of the point
  * @param y the y coordinate of the point
@@ -1167,7 +1169,7 @@ public int getOffset (Point point, int[] trailing) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see getLocation(int, boolean)
+ * @see #getLocation(int, boolean)
  */
 public int getOffset (int x, int y, int[] trailing) {
 	checkLayout();
@@ -1266,7 +1268,7 @@ public int getOrientation () {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see getNextOffset(int, int)
+ * @see #getNextOffset(int, int)
  */
 public int getPreviousOffset (int offset, int movement) {
 	checkLayout();
@@ -1336,7 +1338,7 @@ public int getPreviousOffset (int offset, int movement) {
 						}
 					}
 					previousWhitespace = logAttr.fWhiteSpace;
-				};
+				}
 				offset--;
 				if (segments != null && segments.length > 2) {
 					for (int j = 0; j < segments.length; j++) {
@@ -1354,7 +1356,7 @@ public int getPreviousOffset (int offset, int movement) {
 }
 
 /**
- * Gets the text segments offsets of the receiver.
+ * Returns the text segments offsets of the receiver.
  *
  * @return the text segments offsets
  *
@@ -1396,7 +1398,7 @@ String getSegmentsText() {
 }
 
 /**
- * Gets the line spacing of the receiver.
+ * Returns the line spacing of the receiver.
  *
  * @return the line spacing
  *
@@ -1433,7 +1435,7 @@ public TextStyle getStyle (int offset) {
 }
 
 /**
- * Gets the tab list of the receiver.
+ * Returns the tab list of the receiver.
  *
  * @return the tab list
  *
@@ -1462,7 +1464,7 @@ public String getText () {
 }
 
 /**
- * Gets the width of the receiver.
+ * Returns the width of the receiver.
  *
  * @return the width
  *
@@ -1598,7 +1600,7 @@ StyleItem[] reorder (StyleItem[] runs) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see setWidth()
+ * @see #setWidth(int)
  */
 public void setAlignment (int alignment) {
 	checkLayout();
@@ -1625,7 +1627,7 @@ public void setAlignment (int alignment) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see setDescent()
+ * @see #setDescent(int)
  */
 public void setAscent(int ascent) {
 	checkLayout();
@@ -1650,7 +1652,7 @@ public void setAscent(int ascent) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see setAscent()
+ * @see #setAscent(int)
  */
 public void setDescent(int descent) {
 	checkLayout();
@@ -1662,7 +1664,7 @@ public void setDescent(int descent) {
 
 /** 
  * Sets the default font which will be used by the receiver
- * to draw and measure text to the argument. If the
+ * to draw and measure text. If the
  * argument is null, then a default font appropriate
  * for the platform will be used instead. Note that a text
  * style can override the default font.
@@ -1708,7 +1710,7 @@ public void setOrientation (int orientation) {
 }
 
 /**
- * Sets the receiver's text segments offsets. Text segments are used to
+ * Sets the offsets of the receiver's text segments. Text segments are used to
  * override the default behaviour of the bidirectional algorithm.
  * Bidirectional reordering can happen within a text segment but not 
  * between two adjacent segments.
@@ -1762,7 +1764,7 @@ public void setSpacing (int spacing) {
 }
 
 /**
- * Sets the receiver's style for the specified range.  Styles previously
+ * Sets the style of the receiver for the specified range.  Styles previously
  * set for that range will be overwritten.  The start and end offsets are
  * inclusive and will be clamped if out of range.
  * 
@@ -1890,7 +1892,7 @@ public void setText (String text) {
 
 /**
  * Sets the line width of the receiver, which determines how
- * text should be wrapped and alignment. The default value is
+ * text should be wrapped and aligned. The default value is
  * <code>-1</code> which means wrapping is disabled.
  *
  * @param width the new width 
@@ -1902,7 +1904,7 @@ public void setText (String text) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
- * @see setAlignment()
+ * @see #setAlignment(int)
  */
 public void setWidth (int width) {
 	checkLayout();
@@ -1998,7 +2000,7 @@ void shape (final int hdc, final StyleItem run) {
 					return 1;
 				}
 			};
-			Callback callback = new Callback(object, "EnumFontFamExProc", 4);
+			Callback callback = new Callback(object, "EnumFontFamExProc", 4); //$NON-NLS-1$
 			int address = callback.getAddress();
 			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
 			newLogFont.lfCharSet = (byte)charSet;

@@ -184,6 +184,15 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	return new Rectangle(x, y, width, height);
 }
 /**
+* Returns the Control that appears on the bottom side of the banner.
+* 
+* @return the control that appears on the bottom side of the banner or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
+* 
 * @since 3.0
 */
 public Control getBottom() {
@@ -227,6 +236,13 @@ public Control getRight() {
 	checkWidget();
 	return right;
 }
+/**
+ * Returns the width of the control that appears on the right of the banner.
+ * 
+ * @return the width of the control that appears on the right of the banner
+ * 
+ * @since 3.0
+ */
 public int getRightWidth() {
 	checkWidget();
 	if (right == null) return 0;
@@ -405,10 +421,20 @@ void onResize() {
 	layout();
 }
 /**
- * 
- * 
- * @since 3.0
- */
+* Set the control that appears on the bottom side of the banner.
+* The bottom control is optional.  Setting the bottom control to null will remove it from 
+* the banner - however, the creator of the control must dispose of the control.
+* 
+* @param control the control to be displayed on the bottom or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+*    <li>ERROR_INVALID_ARGUMENT - if the bottom control was not created as a child of the receiver</li>
+* </ul>
+* 
+* @since 3.0
+*/
 public void setBottom(Control control) {
 	checkWidget();
 	if (control != null && control.getParent() != this) {
@@ -491,6 +517,17 @@ public void setRight(Control control) {
 	right = control;
 	layout();
 }
+/**
+ * 
+ * @param width the width of the control on the right
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
 public void setRightWidth(int width) {
 	checkWidget();
 	if (width < SWT.DEFAULT) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
