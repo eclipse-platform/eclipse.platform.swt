@@ -407,6 +407,8 @@ public class SWT {
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Text</code></li>
 	 * </ul></p>
+	 * 
+	 * @since 3.0
 	 */
 	public static final int PASSWORD = 1 << 22;
 	
