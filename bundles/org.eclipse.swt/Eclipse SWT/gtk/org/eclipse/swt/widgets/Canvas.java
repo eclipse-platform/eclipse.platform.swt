@@ -162,12 +162,6 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (!isVisible ()) return;
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	
-	update ();
-//	GC gc = new GC (this);
-//	gc.copyArea (x, y, width, height, destX, destY);
-//	gc.dispose ();
-	
 	int /*long*/ window = paintWindow ();
 	int /*long*/ visibleRegion = OS.gdk_drawable_get_visible_region (window);
 	GdkRectangle srcRect = new GdkRectangle ();
@@ -182,6 +176,12 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	OS.gdk_region_offset (invalidateRegion, deltaX, deltaY);
 	GdkRectangle copyRect = new GdkRectangle();
 	OS.gdk_region_get_clipbox (copyRegion, copyRect);
+	if (copyRect.width != 0 && copyRect.height != 0) {
+		update ();
+	}
+//	GC gc = new GC (this);
+//	gc.copyArea (x, y, width, height, destX, destY);
+//	gc.dispose ();
 	int /*long*/ gdkGC = OS.gdk_gc_new (window);
 	OS.gdk_gc_set_exposures (gdkGC, true);
 	OS.gdk_draw_drawable (window, gdkGC, window, copyRect.x, copyRect.y, copyRect.x + deltaX, copyRect.y + deltaY, copyRect.width, copyRect.height);

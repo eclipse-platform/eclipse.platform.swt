@@ -142,20 +142,21 @@ void releaseWidget () {
  */
 public void scroll (int destX, int destY, int x, int y, int width, int height, boolean all) {
 	checkWidget ();
-		
-	/* Remove the caret so it won't get scrolled */
+	forceResize ();
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-
-	/* Flush outstanding WM_PAINT's and scroll the window */
-	if (OS.IsWinCE) {
-		OS.UpdateWindow (handle);
-	} else {
-		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (handle, null, 0, flags);
+	RECT sourceRect = new RECT ();
+	OS.SetRect (sourceRect, x, y, x + width, y + height);
+	RECT clientRect = new RECT ();
+	OS.GetClientRect (handle, clientRect);
+	if (OS.IntersectRect (clientRect, sourceRect, clientRect)) {
+		if (OS.IsWinCE) {
+			OS.UpdateWindow (handle);
+		} else {
+			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (handle, null, 0, flags);
+		}
 	}
-	RECT lpRect = new RECT ();
-	OS.SetRect (lpRect, x, y, x + width, y + height);
 	int deltaX = destX - x, deltaY = destY - y;
 	int flags = OS.SW_INVALIDATE | OS.SW_ERASE;
 	/*
@@ -173,7 +174,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	* explicitly after scrolling.  
 	*/
 //	if (all) flags |= OS.SW_SCROLLCHILDREN;
-	OS.ScrollWindowEx (handle, deltaX, deltaY, lpRect, null, 0, null, flags);
+	OS.ScrollWindowEx (handle, deltaX, deltaY, sourceRect, null, 0, null, flags);
 	if (all) {
 		Control [] children = _getChildren ();
 		for (int i=0; i<children.length; i++) {
@@ -185,8 +186,6 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 			}
 		}
 	}
-
-	/* Restore the caret */
 	if (isFocus) caret.setFocus ();
 }
 
