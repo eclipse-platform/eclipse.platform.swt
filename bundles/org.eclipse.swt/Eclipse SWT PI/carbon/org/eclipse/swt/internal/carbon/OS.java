@@ -877,7 +877,9 @@ public class OS {
 	public static final short kControlIndicatorPart	= 129;
 	public static final short thumbDrag				= 999;
 	
-
+	// tags
+	public static final int kControlProgressBarIndeterminateTag = ('i'<<24) + ('n'<<16) + ('d'<<8) + 'e';
+	
 	// BevelButton control types
 	public static final short kControlBehaviorPushbutton    = 0;
 	public static final short kControlBehaviorToggles       = 0x0100;
