@@ -107,7 +107,7 @@ public boolean isFocusControl() {
  * @see Widget#getStyle
  */
 public Table (Composite parent, int style) {
-	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE));
+	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
 	setForeground (display.getSystemColor (SWT.COLOR_LIST_FOREGROUND));
 	setBackground (display.getSystemColor (SWT.COLOR_LIST_BACKGROUND));
 	GC gc = new GC (this);
@@ -2298,33 +2298,12 @@ void onPaint (Event event) {
 		startColumn = endColumn = 0;
 	}
 
-	/* repaint grid lines */
-	if (linesVisible) {
-		Color oldForeground = gc.getForeground ();
-		gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_LIGHT_SHADOW));
-		if (numColumns > 0 && startColumn != -1) {
-			/* vertical column lines */
-			for (int i = startColumn; i <= endColumn; i++) {
-				int x = orderedColumns [i].getX () + orderedColumns [i].width - 1;
-				gc.drawLine (x, clipping.y, x, clipping.y + clipping.height);
-			}
-		}
-		/* horizontal item lines */
-		int bottomY = clipping.y + clipping.height;
-		int rightX = clipping.x + clipping.width;
-		int y = (clipping.y - headerHeight) / itemHeight * itemHeight + headerHeight;
-		while (y <= bottomY) {
-			gc.drawLine (clipping.x, y, rightX, y);
-			y += itemHeight;
-		}
-		gc.setForeground (oldForeground);
-	}
-	
 	/* Determine the TableItems to be painted */
 	int startIndex = (clipping.y - headerHeight) / itemHeight + topIndex;
-	if (itemsCount < startIndex) return;		/* no items to paint */
-	int endIndex = startIndex + Compatibility.ceil (clipping.height, itemHeight);
-	if (endIndex < 0) return;		/* no items to paint */
+	int endIndex = -1;
+	if (startIndex < itemsCount) {
+		endIndex = startIndex + Compatibility.ceil (clipping.height, itemHeight);
+	}
 	startIndex = Math.max (0, startIndex);
 	endIndex = Math.min (endIndex, itemsCount - 1);
 	int current = 0;
@@ -2358,6 +2337,45 @@ void onPaint (Event event) {
 				}
 			}
 		}
+	}
+
+	/* fill background not handled by items */
+	gc.setBackground (getBackground ());
+	gc.setClipping (clipping);
+	Rectangle clientArea = getClientArea ();
+	int bottomY = endIndex >= 0 ? getItemY (items [endIndex]) + itemHeight : 0;
+	int fillHeight = Math.max (0, clientArea.height - bottomY);
+	if (fillHeight > 0) {	/* space below bottom item */
+		gc.fillRectangle (0, bottomY, clientArea.width, fillHeight);
+	}
+	if (columns.length > 0) {
+		TableColumn column = columns [columns.length - 1];	/* last column */
+		int rightX = column.getX () + column.width;
+		if (rightX < clientArea.width) {
+			gc.fillRectangle (rightX, 0, clientArea.width - rightX, clientArea.height - fillHeight);
+		}
+	}
+
+	/* repaint grid lines */
+	if (linesVisible) {
+		Color oldForeground = gc.getForeground ();
+		gc.setForeground (display.getSystemColor (SWT.COLOR_WIDGET_LIGHT_SHADOW));
+		if (numColumns > 0 && startColumn != -1) {
+			/* vertical column lines */
+			for (int i = startColumn; i <= endColumn; i++) {
+				int x = columns [i].getX () + columns [i].width - 1;
+				gc.drawLine (x, clipping.y, x, clipping.y + clipping.height);
+			}
+		}
+		/* horizontal item lines */
+		bottomY = clipping.y + clipping.height;
+		int rightX = clipping.x + clipping.width;
+		int y = (clipping.y - headerHeight) / itemHeight * itemHeight + headerHeight;
+		while (y <= bottomY) {
+			gc.drawLine (clipping.x, y, rightX, y);
+			y += itemHeight;
+		}
+		gc.setForeground (oldForeground);
 	}
 }
 void onResize (Event event) {

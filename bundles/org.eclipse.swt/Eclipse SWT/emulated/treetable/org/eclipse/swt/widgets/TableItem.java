@@ -578,7 +578,11 @@ Rectangle getFocusBounds () {
 		}
 		width = column.getX () + column.width - x - 1;
 	}
-	return new Rectangle (x, parent.getItemY (this) + 1, width, parent.itemHeight - 1);
+	return new Rectangle (
+		x,
+		parent.getItemY (this) + (parent.linesVisible ? 1 : 0),
+		width,
+		parent.itemHeight - (parent.linesVisible ? 1 : 0));
 }
 /**
  * Returns the font that the receiver will use to paint textual information for this item.
@@ -896,6 +900,10 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 	if (clientArea.x + clientArea.width < x) return;
 
 	Rectangle cellBounds = getCellBounds (columnIndex);
+	if (parent.linesVisible) {
+		cellBounds.y++;
+		cellBounds.height--;
+	}
 	int cellRightX = 0;
 	if (column != null) {
 		cellRightX = column.getX () + column.width;
@@ -907,40 +915,52 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 	if (cellRightX < 0) return;
 
 	/* restrict the clipping region to the cell */
-	gc.setClipping (x, cellBounds.y, cellRightX - x, cellBounds.height);
+	gc.setClipping (x, cellBounds.y, clientArea.width - x, cellBounds.height);
 	
 	int y = parent.getItemY (this);
-	int padding = parent.getCellPadding ();
 	int itemHeight = parent.itemHeight;
 
-	/* draw the background color if this item has a custom color set */
+	/* draw the background color of this cell */
 	Color background = getBackground (columnIndex);
-	if (!background.equals (parent.getBackground ())) {
-		Color oldBackground = gc.getBackground ();
-		gc.setBackground (background);
-		TableColumn[] orderedColumns = parent.orderedColumns;
-		if (columnIndex == 0 && (column == null || column.getOrderIndex () == 0)) {
-			Rectangle focusBounds = getFocusBounds ();
-			int fillWidth = 0;
-			if (column == null) {
-				fillWidth = focusBounds.width;
-			} else {
-				fillWidth = column.width - focusBounds.x;
-				if (parent.linesVisible) fillWidth--;
-			}
-			gc.fillRectangle (focusBounds.x, focusBounds.y, fillWidth, focusBounds.height);
-		} else {
-			int fillWidth = cellBounds.width;
-			if (parent.linesVisible) fillWidth--;
-			gc.fillRectangle (cellBounds.x, cellBounds.y + 1, fillWidth, cellBounds.height - 1);
+	Color oldBackground = gc.getBackground ();
+	TableColumn[] orderedColumns = parent.orderedColumns;
+	if (columnIndex == 0 && (column == null || column.getOrderIndex () == 0)) {
+		Rectangle focusBounds = getFocusBounds ();		
+		gc.setBackground (parent.getBackground ());
+		if (focusBounds.x > 0) {
+			/* fill space to left of selection rect */
+			gc.fillRectangle (0, y, focusBounds.x, itemHeight);
 		}
-		gc.setBackground (oldBackground);
+		if (column == null) {
+			/* fill space to right of selection rect */
+			int rightX = focusBounds.x + focusBounds.width;
+			int width = clientArea.width - rightX;
+			if (width > 0) {
+				gc.fillRectangle (rightX, y, width, itemHeight);
+			}
+		}
+		
+		int fillWidth = 0;
+		if (column == null) {
+			fillWidth = focusBounds.width;
+		} else {
+			fillWidth = column.width - focusBounds.x;
+			if (parent.linesVisible) fillWidth--;
+		}
+		gc.setBackground (background);
+		gc.fillRectangle (focusBounds.x, focusBounds.y, fillWidth, focusBounds.height);
+	} else {
+		int fillWidth = cellBounds.width;
+		if (parent.linesVisible) fillWidth--;
+		gc.setBackground (background);
+		gc.fillRectangle (cellBounds.x, cellBounds.y, fillWidth, cellBounds.height);
 	}
+	gc.setBackground (oldBackground);
 
 	/* draw the selection bar if the receiver is selected */
 	if (isSelected () && (columnIndex == 0 || (parent.style & SWT.FULL_SELECTION) != 0)) {
 		if (parent.hasFocus () || (parent.style & SWT.HIDE_SELECTION) == 0) {
-			Color oldBackground = gc.getBackground ();
+			oldBackground = gc.getBackground ();
 			gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
 			if (columnIndex == 0) {
 				Rectangle focusBounds = getFocusBounds ();
@@ -972,7 +992,11 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 					fillWidth -= 2;		/* space for right bound of focus rect */
 				}
 				if (fillWidth > 0) {
-					gc.fillRectangle (startX, y + 2, fillWidth, itemHeight - 3);
+					gc.fillRectangle (
+						column.getX (),
+						cellBounds.y + 1,
+						fillWidth,
+						cellBounds.height - 2);
 				}
 			}
 			gc.setBackground (oldBackground);
@@ -1002,6 +1026,7 @@ void paint (GC gc, TableColumn column, boolean paintCellContent) {
 	int startX = imageArea.x;
 	
 	/* while painting the cell's content restrict the clipping region */
+	int padding = parent.getCellPadding ();
 	gc.setClipping (
 		startX,
 		cellBounds.y + padding,
