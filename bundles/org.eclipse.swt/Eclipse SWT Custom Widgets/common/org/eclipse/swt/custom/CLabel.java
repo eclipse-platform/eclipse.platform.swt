@@ -190,6 +190,7 @@ private void drawBevelRect(GC gc, int x, int y, int w, int h, Color topleft, Col
 }
 
 char findMnemonic (String string) {
+	if (string == null) return '\0';
 	int index = 0;
 	int length = string.length ();
 	do {
@@ -281,11 +282,9 @@ private void initAccessible() {
 		}
 		
 		public void getKeyboardShortcut(AccessibleEvent e) {
-			if (CLabel.this.text != null) {
-				char mnemonic = findMnemonic(CLabel.this.text);	
-				if (mnemonic != '\0') {
-					e.result = "Alt+"+mnemonic; //$NON-NLS-1$
-				}
+			char mnemonic = findMnemonic(CLabel.this.text);	
+			if (mnemonic != '\0') {
+				e.result = "Alt+"+mnemonic; //$NON-NLS-1$
 			}
 		}
 	});
@@ -331,7 +330,6 @@ void onDispose(DisposeEvent event) {
 	appToolTipText = null;
 }
 void onMnemonic(TraverseEvent event) {
-	if (text == null) return;
 	char mnemonic = findMnemonic(text);
 	if (mnemonic == '\0') return;
 	if (Character.toUpperCase(event.character) != Character.toUpperCase(mnemonic)) return;
