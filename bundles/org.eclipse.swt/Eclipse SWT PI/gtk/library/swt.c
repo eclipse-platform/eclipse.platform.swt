@@ -1187,7 +1187,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1get_1
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1get_1editable
   (JNIEnv *env, jclass that, jint editable)
 {
-	return (jint)(((GtkEditable*)editable)->editable);
+	return gtk_editable_get_editable ((GtkEditable*)editable);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1editable_1copy_1clipboard

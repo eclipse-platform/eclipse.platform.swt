@@ -567,7 +567,7 @@ public static final native int gtk_event_box_new();
 
 public static final native int gtk_editable_get_selection_start(int editable);
 public static final native int gtk_editable_get_selection_end(int editable);
-public static final native int gtk_editable_get_editable(int editable);
+public static final native boolean gtk_editable_get_editable(int editable);
 public static final native void gtk_editable_copy_clipboard(int editable);
 public static final native void gtk_editable_cut_clipboard(int editable);
 public static final native void gtk_editable_paste_clipboard(int editable);
