@@ -96,9 +96,9 @@ public Caret getCaret () {
 
 short [] getIMCaretPos () {
 	if (caret == null) return super.getIMCaretPos ();
-	int width = caret.width;
-	if (width <= 0) width = 2;
-	return new short[]{(short) (caret.x + width), (short) (caret.y + caret.height)};
+	int x = caret.x + (caret.width <= 0 ? 2 : caret.width);
+	int y = caret.y + getFontAscent();
+	return new short[]{(short) x, (short) y};
 }
 void redrawWidget (int x, int y, int width, int height, boolean all) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
@@ -229,12 +229,21 @@ void updateCaret () {
 	if (caret == null) return;
 	if (!OS.IsDBLocale) return;
 	short [] point = getIMCaretPos ();
-	int ptr = OS.XtMalloc (4);
-	OS.memmove (ptr, point, 4);
-	int[] argList = {OS.XmNspotLocation, ptr};
+	int ptr1 = OS.XtMalloc (4);
+	OS.memmove (ptr1, point, 4);
+	int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	short [] rect = new short[]{0, 0, (short) argList1 [1], (short) argList1 [3]};
+	int ptr2 = OS.XtMalloc (8);
+	OS.memmove (ptr2, rect, 8);
+	int [] argList2 = {OS.XmNspotLocation, ptr1, OS.XmNarea, ptr2};
+	OS.XmImSetValues (handle, argList2, argList2.length / 2);
 	int focusHandle = focusHandle ();
-	OS.XmImSetValues (focusHandle, argList, argList.length / 2);
-	if (ptr != 0) OS.XtFree (ptr);
+	if (handle != focusHandle) {
+		OS.XmImSetValues (focusHandle, argList2, argList2.length / 2);
+	}
+	if (ptr1 != 0) OS.XtFree (ptr1);
+	if (ptr2 != 0) OS.XtFree (ptr2);
 }
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
@@ -243,13 +252,13 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	if (isFocus) caret.setFocus ();
 	return result;
 }
-int xFocusIn () {
-	int result = super.xFocusIn ();
+int xFocusIn (XFocusChangeEvent xEvent) {
+	int result = super.xFocusIn (xEvent);
 	if (caret != null) caret.setFocus ();
 	return result;
 }
-int xFocusOut () {
-	int result = super.xFocusOut ();
+int xFocusOut (XFocusChangeEvent xEvent) {
+	int result = super.xFocusOut (xEvent);
 	if (caret != null) caret.killFocus ();
 	return result;
 }

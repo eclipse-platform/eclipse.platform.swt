@@ -1444,8 +1444,8 @@ int traversalCode (int key, XKeyEvent xEvent) {
 	}
 	return bits;
 }
-int xFocusIn () {
-	super.xFocusIn ();
+int xFocusIn (XFocusChangeEvent xEvent) {
+	super.xFocusIn (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.READ_ONLY) != 0) return 0;
@@ -1454,8 +1454,8 @@ int xFocusIn () {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	return 0;
 }
-int xFocusOut () {
-	super.xFocusOut ();
+int xFocusOut (XFocusChangeEvent xEvent) {
+	super.xFocusOut (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.READ_ONLY) != 0) return 0;

@@ -157,11 +157,11 @@ void hookEvents () {
 	OS.g_signal_connect_after (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
 	OS.g_signal_connect_after (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
 	OS.g_signal_connect_after (eventHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
+	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
 	int imHandle = imHandle ();
 	if (imHandle != 0) {
 		int topHandle = topHandle ();
-		OS.g_signal_connect (handle, OS.map_event, windowProc3, MAP_EVENT);
-		OS.g_signal_connect (topHandle, OS.hide, windowProc2, HIDE);
+		OS.g_signal_connect (handle, OS.unrealize, windowProc2, UNREALIZE);
 		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
 		OS.g_signal_connect (imHandle, OS.preedit_changed, windowProc2, PREEDIT_CHANGED);
 	}
@@ -1735,12 +1735,6 @@ int gtk_focus_out_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_hide (int widget) {
-	int imHandle = imHandle ();
-	if (imHandle != 0) OS.gtk_im_context_reset (imHandle);
-	return 0;	
-}
-
 int gtk_key_press_event (int widget, int event) {
 	if (!hasFocus ()) return 0;
 	int imHandle = imHandle ();
@@ -1779,12 +1773,6 @@ int gtk_leave_notify_event (int widget, int event) {
 	return 0;
 }
 
-int gtk_map_event (int widget, int event) {
-	int imHandle = imHandle ();
-	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, paintWindow ());
-	return 0;	
-}
-
 int gtk_motion_notify_event (int widget, int event) {
 	Display display = getDisplay ();
 	if (hooks (SWT.DragDetect)) {
@@ -1819,9 +1807,24 @@ int gtk_preedit_changed (int imcontext) {
 	return 0;
 }
 
+int gtk_realize (int widget) {
+	int imHandle = imHandle ();
+	if (imHandle != 0) {
+		int window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		OS.gtk_im_context_set_client_window (imHandle, window);
+	}
+	return 0;
+}
+
 int gtk_show_help (int widget, int helpType) {
 	sendHelpEvent (helpType);
 	return 0;
+}
+
+int gtk_unrealize (int widget) {
+	int imHandle = imHandle ();
+	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, 0);
+	return 0;	
 }
 
 /**	 
@@ -2083,6 +2086,11 @@ void releaseWidget () {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeout (handle);
 	super.releaseWidget ();
+	int imHandle = imHandle ();
+	if (imHandle != 0) {
+		OS.gtk_im_context_reset (imHandle);
+		OS.gtk_im_context_set_client_window (imHandle, 0);
+	}
 	toolTipText = null;
 	parent = null;
 	menu = null;
@@ -2490,13 +2498,8 @@ public void setVisible (boolean visible) {
 		* By observation, a widget that is not realized will
 		* not respond to a mnemonic.  The fix is to unrealize
 		* the widget hierarchy every time a widget is hidden.
-		* 
-		* Note: Controls who have an IM context associated cannot
-		* call gtk_widget_unrealize() because it forces the widget to
-		* be remapped.
 		*/
-		int imHandle = imHandle ();
-		if (imHandle == 0) OS.gtk_widget_unrealize (topHandle);
+		OS.gtk_widget_unrealize (topHandle);
 		sendEvent (SWT.Hide);
 	}
 }

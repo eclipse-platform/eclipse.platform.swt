@@ -823,6 +823,7 @@ public class OS {
 	public static final int XmNdropTransfers  = malloc ("dropTransfers", 4);
 	public static final int XmNshowArrows = malloc ("showArrows", 4);
 	public static final int XmNspotLocation = malloc ("spotLocation", 4);
+	public static final int XmNarea = malloc ("area", 4);
 //	public static final int XNFocusWindow = malloc ("focusWindow", 4);
 //	public static final int XNInputStyle = malloc ("inputStyle", 4);
 //	public static final int XNClientWindow = malloc ("clientWindow", 4);

@@ -146,13 +146,6 @@ int gtk_realize (int widget) {
 	return 0;
 }
 
-void hookEvents () {
-	super.hookEvents ();
-	Display display = getDisplay ();
-	int windowProc2 = display.windowProc2;
-	OS.g_signal_connect_after (handle, OS.realize, windowProc2, REALIZE);
-}
-
 void releaseWidget () {
 	super.releaseWidget ();
 	if (timerId != 0) OS.gtk_timeout_remove (timerId);

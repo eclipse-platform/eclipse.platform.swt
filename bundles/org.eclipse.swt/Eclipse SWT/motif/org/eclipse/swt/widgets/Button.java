@@ -743,8 +743,8 @@ void updateShadows () {
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
 	}
 }
-int xFocusIn () {
-	super.xFocusIn ();
+int xFocusIn (XFocusChangeEvent xEvent) {
+	super.xFocusIn (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0) {
@@ -752,8 +752,8 @@ int xFocusIn () {
 	}
 	return 0;
 }
-int xFocusOut () {
-	super.xFocusOut ();
+int xFocusOut (XFocusChangeEvent xEvent) {
+	super.xFocusOut (xEvent);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
 	if ((style & SWT.PUSH) != 0 && getDefault ()) {

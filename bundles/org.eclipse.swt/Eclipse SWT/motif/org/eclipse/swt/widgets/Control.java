@@ -432,8 +432,11 @@ void createWidget (int index) {
 	* on a German locale.
 	*/
 	if (!hasIMSupport()) {
+		OS.XmImRegister (handle, 0);
 		int focusHandle = focusHandle ();
-		OS.XmImRegister (focusHandle, 0);
+		if (handle != focusHandle) {
+			OS.XmImRegister (focusHandle, 0);
+		}
 	}
 	
 	/*
@@ -539,7 +542,18 @@ public boolean forceFocus () {
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	shell.bringToTop (false);
-	return XmProcessTraversal (focusHandle (), OS.XmTRAVERSE_CURRENT);
+	int focusHandle = focusHandle ();
+	if (handle != focusHandle) {
+		int [] argList1 = {OS.XmNnumChildren, 0};
+		OS.XtGetValues (handle, argList1, argList1.length / 2);
+		if (argList1 [1] > 1) {
+			int [] argList2 = {OS.XmNtraversalOn, 1};
+			OS.XtSetValues (focusHandle, argList2, argList2.length / 2);
+		} else {
+			focusHandle = handle;
+		}
+	}
+	return XmProcessTraversal (focusHandle, OS.XmTRAVERSE_CURRENT);
 }
 
 /**
@@ -991,7 +1005,6 @@ boolean hasIMSupport() {
 	return false;
 }
 void hookEvents () {
-	int focusHandle = focusHandle ();
 	int windowProc = getDisplay ().windowProc;
 	OS.XtAddEventHandler (handle, OS.ButtonPressMask, false, windowProc, BUTTON_PRESS);
 	OS.XtAddEventHandler (handle, OS.ButtonReleaseMask, false, windowProc, BUTTON_RELEASE);
@@ -1000,9 +1013,15 @@ void hookEvents () {
 	OS.XtAddEventHandler (handle, OS.LeaveWindowMask, false, windowProc, LEAVE_WINDOW);
 	OS.XtInsertEventHandler (handle, OS.ExposureMask, false, windowProc, EXPOSURE, OS.XtListTail);
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, HELP_CALLBACK);
-	OS.XtAddEventHandler (focusHandle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
-	OS.XtAddEventHandler (focusHandle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
-	OS.XtInsertEventHandler (focusHandle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
+	OS.XtAddEventHandler (handle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
+	OS.XtAddEventHandler (handle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
+	OS.XtInsertEventHandler (handle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
+	int focusHandle = focusHandle ();
+	if (handle != focusHandle) {
+		OS.XtAddEventHandler (focusHandle, OS.KeyPressMask, false, windowProc, KEY_PRESS);
+		OS.XtAddEventHandler (focusHandle, OS.KeyReleaseMask, false, windowProc, KEY_RELEASE);
+		OS.XtInsertEventHandler (focusHandle, OS.FocusChangeMask, false, windowProc, FOCUS_CHANGE, OS.XtListTail);
+	}
 }
 int hoverProc (int id) {
 	return hoverProc (id, true);
@@ -1255,9 +1274,13 @@ public void moveBelow (Control control) {
 }
 void overrideTranslations () {
 	Display display = getDisplay ();
+	OS.XtOverrideTranslations (handle, display.tabTranslations);
+	OS.XtOverrideTranslations (handle, display.arrowTranslations);
 	int focusHandle = focusHandle ();
-	OS.XtOverrideTranslations (focusHandle, display.tabTranslations);
-	OS.XtOverrideTranslations (focusHandle, display.arrowTranslations);
+	if (handle != focusHandle) {
+		OS.XtOverrideTranslations (focusHandle, display.tabTranslations);
+		OS.XtOverrideTranslations (focusHandle, display.arrowTranslations);
+	}
 }
 /**
  * Causes the receiver to be resized to its preferred size.
@@ -1376,8 +1399,11 @@ void releaseWidget () {
 	}
 	menu = null;
 	if (!hasIMSupport()) {
+		OS.XmImUnregister (handle);
 		int focusHandle = focusHandle ();
-		OS.XmImUnregister (focusHandle);
+		if (handle != focusHandle) {
+			OS.XmImUnregister (focusHandle);
+		}
 	}
 	parent = null;
 	layoutData = null;
@@ -1613,7 +1639,7 @@ void sendIMKeyEvent (int type, XKeyEvent xEvent) {
 	*/
 	byte [] buffer = new byte [512];
 	int [] status = new int [1], unused = new int [1];
-	int focusHandle = focusHandle ();
+	int focusHandle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
 	int length = OS.XmImMbLookupString (focusHandle, xEvent, buffer, buffer.length, unused, status);
 	if (status [0] == OS.XBufferOverflow) {
 		buffer = new byte [length];
@@ -1736,6 +1762,20 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		boolean sameExtent = (width == argList [5]) && (height == argList [7]);
 		if (sameOrigin && sameExtent) return false;
 		OS.XtConfigureWidget (topHandle, x, y, width, height, argList [9]);
+		if (OS.IsDBLocale && !hasIMSupport ()) {
+			int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+			OS.XtGetValues (handle, argList1, argList1.length / 2);
+			short [] rect = new short[]{0, 0, (short) argList1 [1], (short) argList1 [3]};
+			int ptr = OS.XtMalloc (8);
+			OS.memmove (ptr, rect, 8);
+			int [] argList2 = {OS.XmNarea, ptr};
+			OS.XmImSetValues (handle, argList2, argList2.length / 2);
+			int focusHandle = focusHandle ();
+			if (handle != focusHandle) {
+				OS.XmImSetValues (focusHandle, argList2, argList2.length / 2);
+			}
+			if (ptr != 0) OS.XtFree (ptr);
+		}
 		if (!sameOrigin) sendEvent (SWT.Move);
 		if (!sameExtent) sendEvent (SWT.Resize);
 		return true;
@@ -1960,8 +2000,11 @@ public void setFont (Font font) {
 	int [] argList2 = {OS.XmNfontList, font.handle};
 	OS.XtSetValues (fontHandle, argList2, argList2.length / 2);
 	if (!hasIMSupport()) {
+		OS.XmImSetValues (handle, argList2, argList2.length / 2);
 		int focusHandle = focusHandle ();
-		OS.XmImSetValues (focusHandle, argList2, argList2.length / 2);
+		if (handle != focusHandle) {
+			OS.XmImSetValues (focusHandle, argList2, argList2.length / 2);
+		}
 	}
 
 	/* Restore the widget size */
@@ -2746,7 +2789,7 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	switch (xEvent.type) {
 		case OS.FocusIn: {
 			Shell shell = getShell ();
-			xFocusIn ();
+			xFocusIn (xEvent);
 			// widget could be disposed at this point
 			
 			/*
@@ -2764,7 +2807,7 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 			Shell shell = getShell ();
 			Display display = getDisplay ();
 			
-			xFocusOut ();
+			xFocusOut (xEvent);
 			// widget could be disposed at this point
 			
 			/*
@@ -2784,35 +2827,44 @@ int XFocusChange (int w, int client_data, int call_data, int continue_to_dispatc
 	}
 	return 0;
 }
-int xFocusIn () {
+int xFocusIn (XFocusChangeEvent xEvent) {
 	if (!hasIMSupport()) {
-		short [] point = getIMCaretPos ();
-		int ptr = OS.XtMalloc (4);
-		OS.memmove (ptr, point, 4);
-		/*
-		* Bug in Motif. On Linux Japanese only, XmImSetFocusValues() causes
-		* a GP when the XmNfontList resources does not containt a FontSet.
-		* The fix is to call XmImSetValues() to set the values and then call
-		* XmImSetFocusValues() with no parameters to set the IME focus.
-		*/
-		int[] argList = {
-//			OS.XmNforeground, getForegroundPixel(),
-//			OS.XmNbackground, getBackgroundPixel(),
-			OS.XmNspotLocation, ptr,
-			OS.XmNfontList, font.handle,
-		};
-		int focusHandle = focusHandle ();
-		OS.XmImSetValues (focusHandle, argList, argList.length / 2);
+		int focusHandle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
+		if (OS.IsDBLocale) {
+			short [] point = getIMCaretPos ();
+			int ptr1 = OS.XtMalloc (4);
+			OS.memmove (ptr1, point, 4);
+			int [] argList1 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+			OS.XtGetValues (handle, argList1, argList1.length / 2);
+			short [] rect = new short[]{0, 0, (short) argList1 [1], (short) argList1 [3]};
+			int ptr2 = OS.XtMalloc (8);
+			OS.memmove (ptr2, rect, 8);
+			/*
+			* Bug in Motif. On Linux Japanese only, XmImSetFocusValues() causes
+			* a GP when the XmNfontList resources does not containt a FontSet.
+			* The fix is to call XmImSetValues() to set the values and then call
+			* XmImSetFocusValues() with no parameters to set the IME focus.
+			*/
+			int[] argList = {
+//				OS.XmNforeground, getForegroundPixel(),
+//				OS.XmNbackground, getBackgroundPixel(),
+				OS.XmNspotLocation, ptr1,
+				OS.XmNarea, ptr2,
+				OS.XmNfontList, font.handle,
+			};
+			OS.XmImSetValues (focusHandle, argList, argList.length / 2);
+			if (ptr1 != 0) OS.XtFree (ptr1);
+			if (ptr2 != 0) OS.XtFree (ptr2);
+		}
 		OS.XmImSetFocusValues (focusHandle, null, 0);
-		if (ptr != 0) OS.XtFree (ptr);
 	}
 	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
 	return 0;
 }
-int xFocusOut () {
+int xFocusOut (XFocusChangeEvent xEvent) {
 	if (!hasIMSupport()) {
-		int focusHandle = focusHandle ();
+		int focusHandle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
 		OS.XmImUnsetFocus (focusHandle);
 	}
 	Display display = getDisplay();
