@@ -66,8 +66,6 @@ void createHandle (int index) {
 		handle = OS.PtCreateWidget (OS.PtSeparator (), parentHandle, 0, null);	
 	} else if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		int [] args = {
-//			OS.Pt_ARG_FLAGS, OS.Pt_MENU_BUTTON | OS.Pt_SELECTABLE, OS.Pt_MENU_BUTTON | OS.Pt_SELECTABLE,
-//			OS.Pt_ARG_FLAGS, OS.Pt_AUTOHIGHLIGHT, OS.Pt_AUTOHIGHLIGHT,
 			OS.Pt_ARG_INDICATOR_TYPE, (style & SWT.CHECK) != 0 ? OS.Pt_N_OF_MANY : OS.Pt_ONE_OF_MANY, 0
 		};
 		handle = OS.PtCreateWidget (OS.PtToggleButton (), parentHandle, args.length / 3, args);	
@@ -190,7 +188,7 @@ void releaseWidget () {
 	parent = null;
 }
 
-int processShow (int damage) {
+int processShow (int info) {
 	if (menu != null) {		
 		int menuHandle = menu.handle;
 		OS.PtPositionMenu (menuHandle, null);
@@ -284,7 +282,7 @@ public void setMenu (Menu menu) {
 		int menuHandle = oldMenu.handle;
 		int shellHandle = oldMenu.parent.topHandle ();
 		if ((parent.style & SWT.BAR) == 0) {
-			int [] args = {OS.Pt_ARG_BUTTON_TYPE, 0, OS.Pt_MENU_RIGHT};
+			int [] args = {OS.Pt_ARG_BUTTON_TYPE, OS.Pt_MENU_TEXT, 0};
 			OS.PtSetResources (handle, args.length / 3, args);
 			args = new int [] {OS.Pt_ARG_MENU_FLAGS, 0, OS.Pt_MENU_CHILD};
 			OS.PtSetResources (menuHandle, args.length / 3, args);
@@ -295,7 +293,7 @@ public void setMenu (Menu menu) {
 		menu.cascade = this;
 		int menuHandle = menu.handle;
 		if ((parent.style & SWT.BAR) == 0) {
-			int [] args = {OS.Pt_ARG_BUTTON_TYPE, OS.Pt_MENU_RIGHT, OS.Pt_MENU_RIGHT};
+			int [] args = {OS.Pt_ARG_BUTTON_TYPE, OS.Pt_MENU_RIGHT, 0};
 			OS.PtSetResources (handle, args.length / 3, args);		
 			args = new int [] {OS.Pt_ARG_MENU_FLAGS, OS.Pt_MENU_CHILD, OS.Pt_MENU_CHILD};
 			OS.PtSetResources (menuHandle, args.length / 3, args);					

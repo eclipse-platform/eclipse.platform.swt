@@ -251,9 +251,6 @@ int processShow (int info) {
 	* the menu to relayout and position itself again.
 	*/
 	OS.PtExtentWidgetFamily (handle);
-	if ((style & (SWT.POP_UP | SWT.BAR)) == 0) {
-		OS.PtPositionMenu (handle, null);
-	}
 
 	return OS.Pt_CONTINUE;
 }
