@@ -1198,7 +1198,6 @@ public Rectangle getClientArea() {
 	height -= tabHeight+HIGHLIGHT_HEADER;
 	return new Rectangle(xClient, yClient, width, height);
 }
-
 /**
  * Return the tab that is located at the specified index.
  * 
@@ -1303,6 +1302,13 @@ public boolean getMinimized() {
 	return minimized;
 }
 /**
+ * @since 3.0
+ */
+public boolean getMinimizeVisible() {
+	checkWidget();
+	return showMin;
+}
+/**
  * Returns <code>true</code> if the receiver is maximized,
  * and false otherwise.
  * <p>
@@ -1319,6 +1325,13 @@ public boolean getMinimized() {
 public boolean getMaximized() {
 	checkWidget();
 	return maximized;
+}
+/**
+ * @since 3.0
+ */
+public boolean getMaximizeVisible() {
+	checkWidget();
+	return showMax;
 }
 int getRightItemEdge (){
 	return getSize().x - borderRight - minRect.width - maxRect.width - topRightRect.width - chevronRect.width - 1;
@@ -1338,6 +1351,20 @@ public CTabItem2 getSelection() {
 	//checkWidget();
 	if (selectedIndex == -1) return null;
 	return items[selectedIndex];
+}
+/**
+ * @since 3.0
+ */
+public Color getSelectionBackground() {
+	checkWidget();
+	return selectionBackground;
+}
+/**
+ * @since 3.0
+ */
+public Color getSelectionForeground() {
+	checkWidget();
+	return selectionForeground;
 }
 /**
  * Return the index of the selected tab item, or -1 if there
@@ -1394,7 +1421,20 @@ public Control getTopRight() {
 	checkWidget();
 	return topRight;
 }
-
+/**
+ * @since 3.0
+ */
+public boolean getUnselectedCloseVisible() {
+	checkWidget();
+	return showUnselectedClose;
+}
+/**
+ * @since 3.0
+ */
+public boolean getUnselectedImageVisible() {
+	checkWidget();
+	return showUnselectedImage;
+}
 /**
  * Return the index of the specified tab or -1 if the tab is not 
  * in the receiver.
@@ -2984,7 +3024,7 @@ public void setSelectionBackground(Color[] colors, int[] percents, boolean verti
  * </ul>
  */
 public void setSelectionBackground(Image image) {
-		checkWidget();
+	checkWidget();
 	if (image == selectionBgImage) return;
 	if (image != null) {
 		selectionGradientColors = null;
@@ -3120,6 +3160,7 @@ public void setTopRight(Control control) {
  * @since 3.0
  */
 public void setUnselectedCloseVisible(boolean visible) {
+	checkWidget();
 	if (showUnselectedClose == visible) return;
 	// display close button when mouse hovers
 	showUnselectedClose = visible;
@@ -3130,6 +3171,7 @@ public void setUnselectedCloseVisible(boolean visible) {
  * @since 3.0
  */
 public void setUnselectedImageVisible(boolean visible) {
+	checkWidget();
 	if (showUnselectedImage == visible) return;
 	// display image on unselected items
 	showUnselectedImage = visible;
