@@ -404,11 +404,13 @@ String keysymName (int keysym) {
 		case 9: return "Tab";
 		/*
 		* Bug in Motif. For some reason, the XmNaccelerator
-		* resource will not accept Linefeed and prints Xt
-		* warnings.  The fix is to use Return instead.
+		* resource will not accept XK_Linefeed and prints Xt
+		* warnings.  The fix is to use XK_Return instead.
 		*/
-//		case 10: return "Linefeed";
+//		case 10:
+//		case OS.XK_Linefeed: return "Linefeed";
 		case 10:
+		case OS.XK_Linefeed:
 		case 13: return "Return";
 		case 27: return "Escape";
 		case 127: return "Delete";

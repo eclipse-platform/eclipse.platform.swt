@@ -163,7 +163,7 @@ public class Display extends Device {
 //		{OS.VK_MBUTTON, SWT.BUTTON3},
 //		{OS.VK_RBUTTON, SWT.BUTTON2},
 		
-		/* Non-Numeric Keypad Constants */
+		/* Non-Numeric Keypad Keys */
 		{OS.XK_Up,			SWT.ARROW_UP},
 		{OS.XK_Down,		SWT.ARROW_DOWN},
 		{OS.XK_Left,		SWT.ARROW_LEFT},
@@ -173,7 +173,16 @@ public class Display extends Device {
 		{OS.XK_Home,		SWT.HOME},
 		{OS.XK_End,			SWT.END},
 		{OS.XK_Insert,		SWT.INSERT},
-//		{OS.XK_Delete,		SWT.DELETE},
+		
+		/* Virtual and Ascii Keys */
+		{OS.XK_BackSpace,	SWT.BS},
+		{OS.XK_Return,		SWT.CR},
+		{OS.XK_Delete,		SWT.DEL},
+		{OS.XK_Escape,		SWT.ESC},
+		{OS.XK_Cancel,		SWT.ESC},
+		{OS.XK_Linefeed,	SWT.LF},
+		{OS.XK_Tab,			SWT.TAB},
+		{OS.XK_ISO_Left_Tab,SWT.TAB},
 	
 		/* Functions Keys */
 		{OS.XK_F1,	SWT.F1},
@@ -1270,7 +1279,8 @@ void initializeList () {
 	* since there is no API to query the color, use the list foreground
 	* color.
 	*/
-	switch ((byte) argList [7]) {
+	int selectColor = (byte) argList [7];
+	switch (selectColor) {
 		case OS.XmDEFAULT_SELECT_COLOR:
 		case OS.XmREVERSED_GROUND_COLORS:
 			listSelect = listForeground;

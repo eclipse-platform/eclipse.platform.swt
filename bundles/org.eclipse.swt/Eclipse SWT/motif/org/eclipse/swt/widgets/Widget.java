@@ -813,7 +813,10 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 		}
 		
 		/* Fill in the event keyCode or character */
-		if (buffer [0] == 0) {
+		if (buffer [0] != 0) {
+			event.character = mbcsToWcs (buffer [0] & 0xFF);
+		}
+		if (keysym [0] != 0) {
 			event.keyCode = Display.translateKey (keysym [0]);
 			/*
 			* If translateKey () could not find a translation for the keysym
@@ -831,8 +834,6 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 					case OS.XK_space: event.character = ' '; break;
 				}
 			}
-		} else {
-			event.character = mbcsToWcs (buffer [0] & 0xFF);
 		}
 	}
 	setInputState (event, xEvent);

@@ -173,12 +173,12 @@ public class Display extends Device {
 		{OS.VK_INSERT,	SWT.INSERT},
 
 		/* Virtual and Ascii Keys */
-//		{OS.VK_BACK,	SWT.BS},
-//		{OS.VK_RETURN,	SWT.CR},
-//		{OS.VK_DELETE,	SWT.DEL},
-//		{OS.VK_ESCAPE,	SWT.ESC},
-////	{OS.VK_LINEFEED,SWT.LF},
-//		{OS.VK_TAB,		SWT.TAB},
+		{OS.VK_BACK,	SWT.BS},
+		{OS.VK_RETURN,	SWT.CR},
+		{OS.VK_DELETE,	SWT.DEL},
+		{OS.VK_ESCAPE,	SWT.ESC},
+//		{OS.VK_????,	SWT.LF},
+		{OS.VK_TAB,		SWT.TAB},
 	
 		/* Functions Keys */
 		{OS.VK_F1,	SWT.F1},
