@@ -1177,14 +1177,16 @@ public void drawRectangle (Rectangle rect) {
  * right edges of the rectangle are at <code>x</code> and <code>x + width</code>. 
  * The top and bottom edges are at <code>y</code> and <code>y + height</code>.
  * The <em>roundness</em> of the corners is specified by the 
- * <code>arcWidth</code> and <code>arcHeight</code> arguments. 
+ * <code>arcWidth</code> and <code>arcHeight</code> arguments, which
+ * are respectively the width and height of the ellipse used to draw
+ * the corners.
  *
  * @param x the x coordinate of the rectangle to be drawn
  * @param y the y coordinate of the rectangle to be drawn
  * @param width the width of the rectangle to be drawn
  * @param height the height of the rectangle to be drawn
- * @param arcWidth the horizontal diameter of the arc at the four corners
- * @param arcHeight the vertical diameter of the arc at the four corners
+ * @param arcWidth the width of the arc
+ * @param arcHeight the height of the arc
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
@@ -1814,8 +1816,8 @@ public void fillRectangle (Rectangle rect) {
  * @param y the y coordinate of the rectangle to be filled
  * @param width the width of the rectangle to be filled
  * @param height the height of the rectangle to be filled
- * @param arcWidth the horizontal diameter of the arc at the four corners
- * @param arcHeight the vertical diameter of the arc at the four corners
+ * @param arcWidth the width of the arc
+ * @param arcHeight the height of the arc
  *
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
