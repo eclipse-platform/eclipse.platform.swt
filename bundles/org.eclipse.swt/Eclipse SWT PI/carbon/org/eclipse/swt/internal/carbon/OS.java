@@ -576,6 +576,7 @@ public static final native int CallNextEventHandler(int nextHandler, int eventRe
 public static final native short CharWidth(short c);
 public static final native int ClearCurrentScrap();
 public static final native int ClearKeyboardFocus(int inWindow);
+public static final native void ClearMenuBar();
 public static final native int ClipCGContextToRegion(int inContext, Rect portRect, int rgnHandle);
 public static final native int CloseDataBrowserContainer(int cHandle, int container);
 public static final native void ClosePoly();
@@ -769,7 +770,7 @@ public static final native int GetWindowDefaultButton(int wHandle, int[] cHandle
 public static final native int GetWindowEventTarget(int wHandle);
 public static final native int GetWindowFromPort(int pHandle);
 public static final native int GetWindowGroupOfClass (int windowClass);
-public static final native int GetWindowModality(int wHandle, int[] modalityKind, int[] unavailableWindowHandle);
+public static final native int GetWindowModality(int inWindow, int[] outModalKind, int[] outUnavailableWindow);
 public static final native int GetWindowPort(int wHandle);
 public static final native void GetWindowStructureWidths(int intWindow, Rect outRect);
 public static final native int HandleControlSetCursor(int control, Point localPoint, int modifiers, boolean[] cursorWasSet);  
@@ -984,7 +985,7 @@ public static final native int SetWindowDefaultButton(int wHandle, int cHandle);
 public static final native int SetWindowGroup(int inWindow, int inNewGroup);
 public static final native int SetWindowGroupOwner(int inGroup, int inWindow);
 public static final native int SetWindowGroupParent(int inGroup, int inNewGroup);
-public static final native int SetWindowModality(int wHandle, int modalityKind, int unavailableWindowHandle);
+public static final native int SetWindowModality(int inWindow, int inModalKind, int inUnavailableWindow);
 public static final native int SetWindowTitleWithCFString(int wHandle, int sHandle);
 public static final native void ShowWindow(int wHandle);
 public static final native void SizeControl(int cHandle, short w, short h);
