@@ -24,7 +24,7 @@ CFLAGS = -c -DSWT_VERSION=$(SWT_VERSION) $(DEBUG) -DCARBON -I /System/Library/Fr
 LFLAGS = -bundle -framework JavaVM -framework Carbon 
 WEBKITCFLAGS = -c -xobjective-c -I /System/Library/Frameworks/JavaVM.framework/Versions/1.3.1/Headers -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers
 WEBKITLFLAGS = $(LFLAGS) -framework WebKit -framework Cocoa
-SWT_OBJS = os.o os_custom.o os_structs.o callback.o
+SWT_OBJS = os.o os_custom.o os_structs.o os_stats.o callback.o
 WEBKIT_OBJS = webkit.o
 
 all: $(SWT_LIB) $(WEBKIT_LIB)
