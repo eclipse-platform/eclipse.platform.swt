@@ -592,6 +592,7 @@ int eventProc (int event, int data) {
 	switch (gdkEvent.type) {
 		case OS.GDK_BUTTON_PRESS:
 		case OS.GDK_2BUTTON_PRESS: 
+		case OS.GDK_3BUTTON_PRESS:
 		case OS.GDK_BUTTON_RELEASE: 
 		case OS.GDK_MOTION_NOTIFY:  {
 			Control control = null;
@@ -611,19 +612,22 @@ int eventProc (int event, int data) {
 				}
 			} while ((window = OS.gdk_window_get_parent (window)) != 0);
 			if (window != 0 && forward && control != null) {
-				int oldWindow = gdkEvent.window;
-				double oldX = gdkEvent.x, oldY = gdkEvent.y;
+				GdkEventButton gdkEventButton = new GdkEventButton ();
+				OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
+				int oldWindow = gdkEventButton.window;
+				double oldX = gdkEventButton.x, oldY = gdkEventButton.y;
 				int eventHandle = control.eventHandle ();
-				gdkEvent.window = OS.GTK_WIDGET_WINDOW (eventHandle);
+				gdkEventButton.window = OS.GTK_WIDGET_WINDOW (eventHandle);
 				int [] origin_x = new int [1], origin_y = new int [1];
-				OS.gdk_window_get_origin (gdkEvent.window, origin_x, origin_y);
-				gdkEvent.x = gdkEvent.x_root - origin_x [0];
-				gdkEvent.y = gdkEvent.y_root - origin_y [0];
-				OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+				OS.gdk_window_get_origin (gdkEventButton.window, origin_x, origin_y);
+				gdkEventButton.x = gdkEventButton.x_root - origin_x [0];
+				gdkEventButton.y = gdkEventButton.y_root - origin_y [0];
+				OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
 				OS.gtk_main_do_event (event);
-				gdkEvent.window = oldWindow;
-				gdkEvent.x = oldX;  gdkEvent.y = oldY;
-				OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
+				gdkEventButton.window = oldWindow;
+				gdkEventButton.x = oldX;
+				gdkEventButton.y = oldY;
+				OS.memmove (event, gdkEventButton, GdkEventButton.sizeof);
 				return 0;
 			}
 		}

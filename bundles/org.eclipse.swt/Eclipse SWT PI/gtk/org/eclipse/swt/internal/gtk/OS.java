@@ -21,6 +21,7 @@ public class OS {
 	/** Constants */
 	public static final int G_SIGNAL_MATCH_DATA = 1 << 4;
 	public static final int GDK_2BUTTON_PRESS = 0x5;
+	public static final int GDK_3BUTTON_PRESS = 0x6;
 	public static final int GDK_ACTION_COPY = 1 << 1;
 	public static final int GDK_ACTION_MOVE = 1 << 2;
 	public static final int GDK_ACTION_LINK = 1 << 3;
