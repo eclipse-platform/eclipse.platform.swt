@@ -101,6 +101,7 @@ public class Display extends Device {
 	Callback windowCallback;
 	int windowProc, shellHandle;
 	static String APP_NAME = "SWT";
+	static final String SHELL_HANDLE_KEY = "org.eclipse.swt.internal.motif.shellHandle";
 	byte [] displayName, appName, appClass;
 	Event [] eventQueue;
 	XKeyEvent keyEvent = new XKeyEvent ();
@@ -1247,6 +1248,9 @@ public static synchronized Display getDefault () {
 public Object getData (String key) {
 	checkDevice ();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (key.equals (SHELL_HANDLE_KEY)) {
+		return new Integer(shellHandle);
+	}
 	if (keys == null) return null;
 	for (int i=0; i<keys.length; i++) {
 		if (keys [i].equals (key)) return values [i];
