@@ -736,6 +736,7 @@ public static final synchronized native boolean gtk_tree_view_get_headers_visibl
 public static final synchronized native boolean gtk_tree_view_get_path_at_pos(int tree_view, int x, int y, int[] path, int[] column, int[] cell_x, int[] cell_y);
 public static final synchronized native boolean gtk_tree_view_get_rules_hint(int tree_view);
 public static final synchronized native int gtk_tree_view_get_selection(int tree_view);
+public static final synchronized native void gtk_tree_view_get_visible_rect(int tree_view, GdkRectangle visible_rect);
 public static final synchronized native int gtk_tree_view_insert_column(int tree_view, int column, int position);
 public static final synchronized native int gtk_tree_view_new_with_model(int model);
 public static final synchronized native void gtk_tree_view_remove_column(int tree_view, int column);
@@ -745,6 +746,7 @@ public static final synchronized native void gtk_tree_view_set_cursor(int tree_v
 public static final synchronized native void gtk_tree_view_set_headers_visible(int tree_view, boolean visible);
 public static final synchronized native void gtk_tree_view_set_model(int tree_view, int model);
 public static final synchronized native void gtk_tree_view_set_rules_hint(int tree_view, boolean setting);
+public static final synchronized native void gtk_tree_view_widget_to_tree_coords(int tree_view, int wx, int wy, int[] tx, int[] ty);
 public static final synchronized native int gtk_vbox_new(boolean homogeneous, int spacing);
 public static final synchronized native int gtk_vscale_new(int adjustment);
 public static final synchronized native int gtk_vscrollbar_new(int adjustment);

@@ -5304,6 +5304,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1get_1visible_1rect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1get_1visible_1rect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1tree_1view_1get_1visible_1rect\n")
+
+	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	gtk_tree_view_get_visible_rect((GtkTreeView *)arg0, lparg1);
+	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1insert_1column
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1insert_1column
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
@@ -5391,6 +5405,23 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1set
 	DEBUG_CALL("gtk_1tree_1view_1set_1rules_1hint\n")
 
 	gtk_tree_view_set_rules_hint((GtkTreeView *)arg0, (gboolean)arg1);
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1widget_1to_1tree_1coords
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1view_1widget_1to_1tree_1coords
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+
+	DEBUG_CALL("gtk_1tree_1view_1widget_1to_1tree_1coords\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	gtk_tree_view_widget_to_tree_coords((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 }
 #endif
 
