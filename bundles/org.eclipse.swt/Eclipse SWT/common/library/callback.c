@@ -276,7 +276,14 @@ SWT_PTR callback(int index, ...)
 	fprintf(stderr, "* callback starting %d\n", counter++);
 #endif
 
-	(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_1);
+#ifdef JNI_VERSION_1_2
+	if (IS_JNI_1_2) {
+		(*jvm)->GetEnv(jvm, (void **)&env, JNI_VERSION_1_2);
+	} else
+#endif
+	{
+		(*jvm)->AttachCurrentThread(jvm, (void **)&env, NULL);
+	}
 
 	/* Either we are disconnected from the VM or an exception has occurred. */
 	if (env == 0 ||(*env)->ExceptionOccurred(env)) {

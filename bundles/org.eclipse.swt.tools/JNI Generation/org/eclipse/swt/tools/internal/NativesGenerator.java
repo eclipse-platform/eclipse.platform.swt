@@ -18,10 +18,9 @@ import org.eclipse.swt.internal.Platform;
 
 public class NativesGenerator extends JNIGenerator {
 	
-boolean nativeMacro, enterExitMacro, useCritical;
+boolean nativeMacro, enterExitMacro;
 
 public NativesGenerator() {
-	useCritical = true;
 	enterExitMacro = true;
 	nativeMacro = true;
 }
@@ -121,10 +120,6 @@ public void setNativeMacro(boolean nativeMacro) {
 	this.nativeMacro = nativeMacro;
 }
 
-public void setUseCritical(boolean useCritical) {
-	this.useCritical = useCritical;
-}
-
 void generateNativeMacro(Class clazz) {
 	output("#define ");
 	output(getClassName(clazz));
@@ -135,7 +130,7 @@ void generateNativeMacro(Class clazz) {
 	outputDelimiter();
 }
 
-void generateGetParameter(int i, Class paramType, ParameterData paramData) {
+void generateGetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
 	if (paramType.isPrimitive()) return;
 	output("\tif (arg" + i);
 	output(") lparg" + i);
@@ -143,7 +138,7 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData) {
 	if (paramType.isArray()) {
 		Class componentType = paramType.getComponentType();
 		if (componentType.isPrimitive()) {
-			if (useCritical && paramData.getFlag("critical")) {
+			if (critical) {
 				output("(*env)->GetPrimitiveArrayCritical(env, arg" + i);
 				output(", NULL);");
 			} else {
@@ -178,14 +173,14 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData) {
 	outputDelimiter();
 }
 
-void genereateSetParameter(int i, Class paramType, ParameterData paramData) {
+void generateSetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
 	if (paramType.isPrimitive()) return;
 	if (paramType.isArray()) {
 		output("\tif (arg" + i);
 		output(") ");
 		Class componentType = paramType.getComponentType();
 		if (componentType.isPrimitive()) {
-			if (useCritical && paramData.getFlag("critical")) {
+			if (critical) {
 				output("(*env)->ReleasePrimitiveArrayCritical(env, arg" + i);
 			} else {
 				output("(*env)->Release");
@@ -294,35 +289,92 @@ boolean generateLocalVars(Method method, Class[] paramTypes, Class returnType) {
 }
 
 void generateGetters(Method method, Class[] paramTypes) {
+	int criticalCount = 0;
 	for (int i = 0; i < paramTypes.length; i++) {
 		Class paramType = paramTypes[i];
 		ParameterData paramData = getMetaData().getMetaData(method, i);
-		if (!paramData.getFlag("critical")) {
-			generateGetParameter(i, paramType, paramData);
+		if (!isCritical(paramType, paramData)) {
+			generateGetParameter(i, paramType, paramData, false);
+		} else {
+			criticalCount++;
 		}
 	}
-	for (int i = 0; i < paramTypes.length; i++) {
-		Class paramType = paramTypes[i];
-		ParameterData paramData = getMetaData().getMetaData(method, i);
-		if (paramData.getFlag("critical")) {
-			generateGetParameter(i, paramType, paramData);
+	if (criticalCount != 0) {
+		output("#ifdef JNI_VERSION_1_2");
+		outputDelimiter();
+		output("\tif (IS_JNI_1_2) {");
+		outputDelimiter();
+		for (int i = 0; i < paramTypes.length; i++) {
+			Class paramType = paramTypes[i];
+			ParameterData paramData = getMetaData().getMetaData(method, i);
+			if (isCritical(paramType, paramData)) {
+				output("\t");
+				generateGetParameter(i, paramType, paramData, true);
+			}
 		}
+		output("\t} else");
+		outputDelimiter();
+		output("#endif");
+		outputDelimiter();
+		output("\t{");
+		outputDelimiter();
+		for (int i = 0; i < paramTypes.length; i++) {
+			Class paramType = paramTypes[i];
+			ParameterData paramData = getMetaData().getMetaData(method, i);
+			if (isCritical(paramType, paramData)) {
+				output("\t");
+				generateGetParameter(i, paramType, paramData, false);
+			}
+		}
+		output("\t}");
+		outputDelimiter();	
 	}
 }
 
 void generateSetters(Method method, Class[] paramTypes) {
+	int criticalCount = 0;
 	for (int i = paramTypes.length - 1; i >= 0; i--) {
 		Class paramType = paramTypes[i];
 		ParameterData paramData = getMetaData().getMetaData(method, i);
-		if (paramData.getFlag("critical")) {
-			genereateSetParameter(i, paramType, paramData);
+		if (isCritical(paramType, paramData)) {
+			criticalCount++;
 		}
+	}
+	if (criticalCount != 0) {
+		output("#ifdef JNI_VERSION_1_2");
+		outputDelimiter();
+		output("\tif (IS_JNI_1_2) {");
+		outputDelimiter();
+		for (int i = paramTypes.length - 1; i >= 0; i--) {
+			Class paramType = paramTypes[i];
+			ParameterData paramData = getMetaData().getMetaData(method, i);
+			if (isCritical(paramType, paramData)) {
+				output("\t");
+				generateSetParameter(i, paramType, paramData, true);
+			}
+		}
+		output("\t} else");
+		outputDelimiter();
+		output("#endif");
+		outputDelimiter();
+		output("\t{");
+		outputDelimiter();
+		for (int i = paramTypes.length - 1; i >= 0; i--) {
+			Class paramType = paramTypes[i];
+			ParameterData paramData = getMetaData().getMetaData(method, i);
+			if (isCritical(paramType, paramData)) {
+				output("\t");
+				generateSetParameter(i, paramType, paramData, false);
+			}
+		}
+		output("\t}");
+		outputDelimiter();
 	}
 	for (int i = paramTypes.length - 1; i >= 0; i--) {
 		Class paramType = paramTypes[i];
 		ParameterData paramData = getMetaData().getMetaData(method, i);
-		if (!paramData.getFlag("critical")) {
-			genereateSetParameter(i, paramType, paramData);
+		if (!isCritical(paramType, paramData)) {
+			generateSetParameter(i, paramType, paramData, false);
 		}
 	}
 }
@@ -590,6 +642,10 @@ void generateSourceStart(String function) {
 void generateSourceEnd(String function) {
 	output("#endif");
 	outputDelimiter();
+}
+
+boolean isCritical(Class paramType, ParameterData paramData) {
+	return paramType.isArray() && paramType.getComponentType().isPrimitive() && paramData.getFlag("critical");
 }
 
 boolean isUnique(Method method) {

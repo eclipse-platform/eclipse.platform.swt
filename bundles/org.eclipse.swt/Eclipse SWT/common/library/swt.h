@@ -22,6 +22,8 @@
 
 #include "jni.h"
 
+extern int IS_JNI_1_2;
+
 /* 64 bit support */
 #ifndef SWT_PTR_SIZE_64
 
@@ -73,8 +75,5 @@
 #else
 #define DEBUG_CHECK_NULL(env, address)
 #endif
-
-#define DECL_GLOB(pSym)
-#define PGLOB(x) x
 
 #endif /* ifndef INC_swt_H */
