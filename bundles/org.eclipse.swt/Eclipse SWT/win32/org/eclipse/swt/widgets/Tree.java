@@ -2115,7 +2115,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						nmcd.clrText = clrText == -1 ? getForegroundPixel () : clrText;
 						nmcd.clrTextBk = clrTextBk == -1 ? getBackgroundPixel () : clrTextBk;
 							OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
-					}
+						}
 					}
 					return new LRESULT (OS.CDRF_NEWFONT);
 			}
