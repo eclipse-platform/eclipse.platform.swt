@@ -51,38 +51,32 @@ public class Browser extends Composite {
 static {
 	String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
 	isLinux = osName.startsWith("linux");
-		
-	if (isLinux) {
-		Library.loadLibrary("swt-gtk"); //$NON-NLS-1$
-		Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
-	}
 }
 		
 public Browser(Composite parent, int style) {
 	super(parent, style | SWT.EMBEDDED);
-	if (!isLinux) return;
-	browserCount++;
-	GTK.gtk_init_check(new int[1], null);
-	if (browserCount == 1) {
-		final Display display = getDisplay();
-		display.asyncExec(new Runnable() {
-			public void run() {
-				while (GTK.gtk_events_pending() != 0) {
-					GTK.gtk_main_iteration();
-				}
-				if (browserCount == 0) return;
-				display.timerExec(25, this);		
-			}
-		});
-	}
-	parent.getShell().setFocus();
-	gtkHandle = GTK.gtk_plug_new(embeddedHandle);
 	
-	int[] result = new int[1];
-	if (browserCount == 1) {
-		String mozillaPath = GRE.mozillaPath;
-		if (mozillaPath == null) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_FAILURE));
+	if (!isLinux) {
+		dispose();
+		SWT.error(SWT.ERROR_NO_HANDLES);		
+	}
 
+	int[] result = new int[1];
+	if (browserCount == 0) {
+		try {
+			Library.loadLibrary("swt-gtk"); //$NON-NLS-1$
+			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
+		} catch (UnsatisfiedLinkError e) {
+			dispose();
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		}
+		
+		String mozillaPath = GRE.mozillaPath;
+		if (mozillaPath == null) {
+			dispose();
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		}
+		
 		locProvider = new AppFileLocProvider();
 		locProvider.AddRef();
 
@@ -93,8 +87,13 @@ public Browser(Composite parent, int style) {
 	
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
 		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), locProvider.getAddress());
-		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-		localFile.Release(); 
+		localFile.Release();
+		if (rc != XPCOM.NS_OK) {
+			locProvider.Release();
+			locProvider = null;
+			dispose();
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		}
 
 		rc = XPCOM.NS_GetComponentManager(result);
 		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
@@ -113,6 +112,23 @@ public Browser(Composite parent, int style) {
 		rc = appShell.Spinup();
 		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
 	}
+	browserCount++;
+	if (browserCount == 1) {
+		GTK.gtk_init_check(new int[1], null);
+		final Display display = getDisplay();
+		display.asyncExec(new Runnable() {
+			public void run() {
+				while (GTK.gtk_events_pending() != 0) {
+					GTK.gtk_main_iteration();
+				}
+				if (browserCount == 0) return;
+				display.timerExec(25, this);		
+			}
+		});
+	}
+	parent.getShell().setFocus();
+	gtkHandle = GTK.gtk_plug_new(embeddedHandle);
+
 	int rc = XPCOM.NS_GetComponentManager(result);
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
 	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));
