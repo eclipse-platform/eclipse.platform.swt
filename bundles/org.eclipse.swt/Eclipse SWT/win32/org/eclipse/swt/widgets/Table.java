@@ -1276,11 +1276,7 @@ public void remove (int index) {
 /**
  * Removes the items from the receiver which are
  * between the given zero-relative start and end 
- * indices (inclusive).  If an invalid range end is
- * specified then all items in the receiver that
- * correspond to valid indices within the range are
- * removed before the <code>ERROR_INVALID_RANGE</code>
- * exception is thrown.
+ * indices (inclusive).
  *
  * @param start the start of the range
  * @param end the end of the range
@@ -1300,6 +1296,9 @@ public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+	if (!(0 <= start && start <= end && end < count)) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	if (start == 0 && end == count - 1) {
 		removeAll ();
 		return;
@@ -1310,20 +1309,12 @@ public void remove (int start, int end) {
 		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 		ignoreSelect = false;
 		if (code == 0) break;
-		
-		// BUG - disposed callback could remove an item
 		items [index].releaseResources ();
 		index++;
 	}
 	System.arraycopy (items, index, items, start, count - index);
 	for (int i=count-(index-start); i<count; i++) items [i] = null;
-	if (index <= end) {
-		if (0 <= index && index < count) {
-			error (SWT.ERROR_ITEM_NOT_REMOVED);
-		} else {
-			error (SWT.ERROR_INVALID_RANGE);
-		}
-	}
+	if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
 }
 
 /**
