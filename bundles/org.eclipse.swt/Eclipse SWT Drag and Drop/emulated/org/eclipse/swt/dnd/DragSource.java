@@ -101,6 +101,16 @@ public void addDragListener(DragSourceListener listener) {
 
 }
 
+/**
+ * Returns the Control which is registered for this DragSource.  This is the control that the 
+ * user clicks in to initiate dragging.
+ *
+ * @return the Control which is registered for this DragSource
+ */
+public Control getControl () {
+	return null;
+}
+
 public Display getDisplay () {
 	return null;
 }
@@ -131,11 +141,6 @@ public void removeDragListener(DragSourceListener listener) {
  * a successful drop has occurred.
  */
 public void setTransfer(Transfer[] transferAgents){
-}
-/**
- * @deprecated - use DragSourceListener.dragStart
- */
-public void startDrag() {
 }
 
 }
