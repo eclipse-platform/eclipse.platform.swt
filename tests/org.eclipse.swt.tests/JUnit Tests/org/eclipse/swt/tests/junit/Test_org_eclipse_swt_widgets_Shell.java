@@ -174,6 +174,10 @@ public void test_getLocation() {
 	assertTrue(":b:", shell.getLocation().y == 15);
 }
 
+public void test_getRegion() {
+	// tested in test_setRegion()
+}
+
 public void test_getShell() {
 	assertTrue(":a:", shell.getShell()==shell);
 	Shell shell_1 = new Shell(shell);
@@ -264,6 +268,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getEnabled");
 	methodNames.addElement("test_getImeInputMode");
 	methodNames.addElement("test_getLocation");
+	methodNames.addElement("test_getRegion");
 	methodNames.addElement("test_getShell");
 	methodNames.addElement("test_getShells");
 	methodNames.addElement("test_isEnabled");
@@ -272,6 +277,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setActive");
 	methodNames.addElement("test_setEnabledZ");
 	methodNames.addElement("test_setImeInputModeI");
+	methodNames.addElement("test_setRegion");
 	methodNames.addElement("test_setVisibleZ");
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_widgets_DisplayI");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Decorations.methodNames()); // add superclass method names
@@ -292,6 +298,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getEnabled")) test_getEnabled();
 	else if (getName().equals("test_getImeInputMode")) test_getImeInputMode();
 	else if (getName().equals("test_getLocation")) test_getLocation();
+	else if (getName().equals("test_getRegion")) test_getRegion();
 	else if (getName().equals("test_getShell")) test_getShell();
 	else if (getName().equals("test_getShells")) test_getShells();
 	else if (getName().equals("test_isEnabled")) test_isEnabled();
@@ -300,6 +307,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setActive")) test_setActive();
 	else if (getName().equals("test_setEnabledZ")) test_setEnabledZ();
 	else if (getName().equals("test_setImeInputModeI")) test_setImeInputModeI();
+	else if (getName().equals("test_setRegion")) test_setRegion();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_widgets_DisplayI")) test_win32_newLorg_eclipse_swt_widgets_DisplayI();
 	else super.runTest();
@@ -393,7 +401,26 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 //		}
 //	}
 }
-
+public void test_setRegion() {
+	Region region = new Region();
+	region.add(new Rectangle(10, 20, 100, 200));
+	// test shell without style SWT.NO_TRIM
+	assertTrue(":a:", shell.getRegion() == null);
+	shell.setRegion(region);
+	assertTrue(":b:", shell.getRegion() == null);
+	shell.setRegion(null);
+	assertTrue(":c:", shell.getRegion() == null);
+	// test shell with style SWT.NO_TRIM
+	Display display = shell.getDisplay();
+	Shell shell2 = new Shell(display, SWT.NO_TRIM);
+	assertTrue(":d:", shell2.getRegion() == null);
+	shell2.setRegion(region);
+	assertTrue(":e:", shell2.getRegion().handle == region.handle);
+	region.dispose();
+	assertTrue(":f:", shell2.getRegion().isDisposed());
+	shell2.setRegion(null);
+	assertTrue(":g:", shell2.getRegion() == null);
+}
 public void test_setSizeII() {
 	/* windows */
 	/* note that there is a minimum size for a shell, this test will fail if p1.x < 112 or p1.y < 27 */
