@@ -72,17 +72,9 @@ public class Browser extends Composite {
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
-	static boolean IsWindows;
-	static boolean IsLinux;
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
-	
-	static {
-		String osName = System.getProperty("os.name").toLowerCase(); //$NON-NLS-1$
-		IsWindows = osName.startsWith("windows");
-		IsLinux = osName.startsWith("linux");
-	}
 
 /**
  * Constructs a new instance of this class given its parent
@@ -140,20 +132,19 @@ public Browser(Composite parent, int style) {
 		if (retVal[0] == 0) error(XPCOM.NS_ERROR_NULL_POINTER);
 
 		/*
-		* Feature on Mozilla.  On Windows, the mozilla libraries are split
-		* up into 2 locations indicated by the GRE and Mozilla paths.  The
-		* default nsIDirectoryServiceProvider only works when the libraries
-		* are in the same folder.  The workaround is to provide a custom
-		* nsIDirectoryServiceProvider on this platform.  It provides the 
-		* 2 locations set by Mozilla in the Windows registry.
+		* Feature in Mozilla on Windows.  The Mozilla libraries are split
+		* up into 2 locations indicated by the GRE and Mozilla paths on
+		* Windows platforms.  The default nsIDirectoryServiceProvider 
+		* only works when the libraries are in the same folder.  The 
+		* workaround is to provide a custom nsIDirectoryServiceProvider
+		* on this platform.  It provides the 2 locations set by Mozilla
+		* in the Windows registry.
 		*/
-		if (IsWindows) {
-			LocProvider = new AppFileLocProvider();
-			LocProvider.AddRef();
-		}
+		LocProvider = new AppFileLocProvider();
+		LocProvider.AddRef();
 		
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
-		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), IsWindows ? LocProvider.getAddress() : 0);
+		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), LocProvider.getAddress());
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
 			if (LocProvider != null) LocProvider.Release();
@@ -1621,17 +1612,6 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 				inputStream.Release();
 			}
 		}
-
-		/*
-		* Bug on Mozilla Linux GTK.  The Mozilla browser is embedded into
-		* a GtkFixed handle. The Flash plug-in causes the GtkFixed handle
-		* to be reset to 1 pixel wide when a Flash document is loaded.  
-		* A workaround specific to Linux GTK would be to resize Mozilla on 
-		* the size-allocate callback for that GtkFixed handle.  This would
-		* add a dependency on the GTK API.  The workaround is to resize 
-		* Mozilla after every document complete.
-		*/
-		if (IsLinux) onResize();
 		
 		/*
 		* Feature on Mozilla.  When a request is redirected (STATE_REDIRECTING),
