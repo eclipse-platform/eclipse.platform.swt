@@ -16,6 +16,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 import java.io.IOException;
+import java.util.Vector;
 
 /**
  * Instances of this class represent programs and
@@ -26,10 +27,6 @@ public final class Program {
 	String name;
 	String command;
 	String iconName;
-	
-	// AW
-	ImageData fImageData;
-	// AW
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -53,21 +50,7 @@ Program () {
 public static Program findProgram (String extension) {
 	if (extension == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (extension.length () == 0) return null;
-	if (extension.charAt (0) != '.') extension = "." + extension;
-	/* Use the character encoding for the default locale */
-	/* AW
-	TCHAR key = new TCHAR (0, extension, true);
-	int [] phkResult = new int [1];
-	if (OS.RegOpenKeyEx (OS.HKEY_CLASSES_ROOT, key, 0, OS.KEY_READ, phkResult) != 0) {
-		return null;
-	}	
-	int [] lpcbData = new int [] {256};
-	TCHAR lpData = new TCHAR (0, lpcbData [0]);
-	int result = OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData);
-	OS.RegCloseKey (phkResult [0]);
-	if (result != 0) return null;
-	return getProgram (lpData.toString (0, lpData.strlen ()));
-	*/
+	if (extension.charAt (0) != '.') extension = '.' + extension;
 	return getProgram(extension);
 }
 
@@ -79,66 +62,28 @@ public static Program findProgram (String extension) {
  * @return an array of extensions
  */
 public static String [] getExtensions () {
-	String [] extensions = new String [1024];
-	/* Use the character encoding for the default locale */
-	/* AW
-	TCHAR lpName = new TCHAR (0, 1024);
-	int [] lpcName = new int [] {lpName.length ()};
-	FILETIME ft = new FILETIME ();
-	*/
-	int count = 0;
-	/* AW
-	int dwIndex = 0;
-	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {
-		String extension = lpName.toString (0, lpcName [0]);
-		lpcName [0] = lpName.length ();
-		if (extension.length () > 0 && extension.charAt (0) == '.') {
-			if (count == extensions.length) {
-				String [] newExtensions = new String [extensions.length + 1024];
-				System.arraycopy (extensions, 0, newExtensions, 0, extensions.length);
-				extensions = newExtensions;
-			}
-			extensions [count++] = extension;
-		}
-		dwIndex++;
-	}
-	*/
-	extensions[count++]= "xml";
-	extensions[count++]= "java";
-	extensions[count++]= "properties";
-	extensions[count++]= "jar";
-	extensions[count++]= "zip";
-	extensions[count++]= "xml";
-	
-	if (count != extensions.length) {
-		String [] newExtension = new String [count];
-		System.arraycopy (extensions, 0, newExtension, 0, count);
-		extensions = newExtension;
-	}
-	return extensions;
+    Vector extensions = new Vector();
+	extensions.add(".xml");
+	extensions.add(".java");
+	extensions.add(".properties");
+	extensions.add(".jar");
+	extensions.add(".zip");
+	extensions.add(".xml");	
+	String[] result = new String[extensions.size()];
+	extensions.copyInto(result);
+	return result;
 }
 
 static Program getProgram (String key) {
 	/* Name */
-	/* AW
-	String name = getKeyValue (key);
-	*/
 	String name = key;
 	if (name == null || name.length () == 0) return null;
 
 	/* Command */
-	/* AW
-	String COMMAND = "\\shell\\open\\command";
-	String command = getKeyValue (key + COMMAND);
-	*/
-	String command = "/usr/bin/open";
+	String command = "/usr/bin/open %f";
 	if (command == null || command.length () == 0) return null;
 
 	/* Icon */
-	/* AW
-	String DEFAULT_ICON = "\\DefaultIcon";
-	String iconName = getKeyValue (key + DEFAULT_ICON);
-	*/
 	String iconName= "icon";
 	if (iconName == null || iconName.length () == 0) return null;
 	
@@ -157,40 +102,11 @@ static Program getProgram (String key) {
  * @return an array of programs
  */
 public static Program [] getPrograms () {
-	Program [] programs = new Program [1024];
-	/* Use the character encoding for the default locale */
-	/*
-	TCHAR lpName = new TCHAR (0, 1024);
-	int [] lpcName = new int [] {lpName.length ()};
-	FILETIME ft = new FILETIME ();
-	*/
-	int count = 0;
-	/*
-	int dwIndex = 0;
-	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {	
-		String path = lpName.toString (0, lpcName [0]);
-		lpcName [0] = lpName.length ();
-		Program program = getProgram (path);
-		if (program != null) {
-			if (count == programs.length) {
-				Program [] newPrograms = new Program [programs.length + 1024];
-				System.arraycopy (programs, 0, newPrograms, 0, programs.length);
-				programs = newPrograms;
-			}
-			programs [count++] = program;
-		}
-		dwIndex++;
-	}
-	*/
-	
-	programs[count++]= getProgram(".html");
-
-	if (count != programs.length) {
-		Program [] newPrograms = new Program [count];
-		System.arraycopy (programs, 0, newPrograms, 0, count);
-		programs = newPrograms;
-	}
-	return programs;
+	Vector programs = new Vector ();
+	programs.add(getProgram(".html")); 	
+	Program[] result = new Program[programs.size()];
+	programs.copyInto(result);
+	return result;
 }
 
 /**
@@ -209,18 +125,55 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-
-	String[] args= new String[] {
-		"/usr/bin/open",
-		fileName
-	};
+	String[] args= new String[] {"/usr/bin/open", fileName};
 	try {
 		Compatibility.exec(args);
 		return true;
-	} catch(IOException ex) {
-	}
-	
+	} catch(IOException ex) {}	
 	return false;
+}
+
+static String[] parseCommand(String cmd) {
+	Vector args = new Vector();
+	int sIndex = 0;
+	int eIndex;
+	while (sIndex < cmd.length()) {
+		/* Trim initial white space of argument. */
+		while (sIndex < cmd.length() && Compatibility.isWhitespace(cmd.charAt(sIndex))) {
+			sIndex++;
+		}
+		if (sIndex < cmd.length()) {
+			/* If the command is a quoted string */
+			if (cmd.charAt(sIndex) == '"' || cmd.charAt(sIndex) == '\'') {
+				/* Find the terminating quote (or end of line).
+				 * This code currently does not handle escaped characters (e.g., " a\"b").
+				 */
+				eIndex = sIndex + 1;
+				while (eIndex < cmd.length() && cmd.charAt(eIndex) != cmd.charAt(sIndex)) eIndex++;
+				if (eIndex >= cmd.length()) { 
+					/* The terminating quote was not found
+					 * Add the argument as is with only one initial quote.
+					 */
+					args.addElement(cmd.substring(sIndex, eIndex));
+				}
+				else {
+					/* Add the argument, trimming off the quotes. */
+					args.addElement(cmd.substring(sIndex+1, eIndex));
+				}
+				sIndex = eIndex + 1;
+			}			
+			else {
+				/* Use white space for the delimiters. */
+				eIndex = sIndex;
+				while (eIndex < cmd.length() && !Compatibility.isWhitespace(cmd.charAt(eIndex))) eIndex++;
+				args.addElement(cmd.substring(sIndex, eIndex));
+				sIndex = eIndex + 1;
+			}
+		}
+	}	
+	String[] result = new String[args.size()];
+	args.copyInto(result);
+	return result;
 }
 
 /**
@@ -237,24 +190,32 @@ public static boolean launch (String fileName) {
  *	</ul>
  */
 public boolean execute (String fileName) {
-	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	boolean quote = true;
-	String prefix = command, suffix = "";
-	int index = command.indexOf ("%1");
-	if (index != -1) {
-		int count=0;
-		int i=index + 2, length = command.length ();
-		while (i < length) {
-			if (command.charAt (i) == '"') count++;
-			i++;
+	if (fileName == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	
+	/* Parse the command into its individual arguments. */
+	String[] args = parseCommand(command);
+	int fileArg = -1;
+	int index;
+	for (index = 0; index < args.length; index++) {
+		int j = args[index].indexOf("%f");
+		if (j != -1) {
+			String value = args[index];
+			fileArg = index;
+			args[index] = value.substring(0, j) + fileName + value.substring(j + 2);
 		}
-		quote = count % 2 == 0;
-		prefix = command.substring (0, index);
-		suffix = command.substring (index + 2, length);
 	}
-	if (quote) fileName = " \"" + fileName + "\"";
+
+	/* If a file name was given but the command did not have "%f" */
+	if ((fileName.length() > 0) && (fileArg < 0)) {
+		String[] newArgs = new String[args.length + 1];
+		for (index = 0; index < args.length; index++) newArgs[index] = args[index];
+		newArgs[args.length] = fileName;
+		args = newArgs;
+	}
+
+	/* Execute the command. */
 	try {
-		Compatibility.exec(prefix + fileName + suffix);
+		Compatibility.exec(args);
 	} catch (IOException e) {
 		return false;
 	}
@@ -269,65 +230,39 @@ public boolean execute (String fileName) {
  * @return the image data for the program, may be null
  */
 public ImageData getImageData () {
-	/* AW
-	int nIconIndex = 0;
-	String fileName = iconName;
-	int index = iconName.indexOf (',');
-	if (index != -1) {
-		fileName = iconName.substring (0, index);
-		String iconIndex = iconName.substring (index + 1, iconName.length ()).trim ();
-		try {
-			nIconIndex = Integer.parseInt (iconIndex);
-		} catch (NumberFormatException e) {};
-	}
-	*/
-	/* Use the character encoding for the default locale */
-	/*
-	TCHAR lpszFile = new TCHAR (0, fileName, true);
-	int [] phiconSmall = new int[1], phiconLarge = null;
-	OS.ExtractIconEx (lpszFile, nIconIndex, phiconLarge, phiconSmall, 1);
-	if (phiconSmall [0] == 0) return null;
-	Image image = Image.win32_new (null, SWT.ICON, phiconSmall[0]);
-	*/
-	
-	if (fImageData == null) {
-		fImageData= new ImageData(16, 16, 4, 
-			new PaletteData(
-				new RGB[] {
-					new RGB(0xff, 0xff, 0xff), 
-					new RGB(0x5f, 0x5f, 0x5f),
-					new RGB(0x80, 0x80, 0x80),
-					new RGB(0xC0, 0xC0, 0xC0),
-					new RGB(0xDF, 0xDF, 0xBF),
-					new RGB(0xFF, 0xDF, 0x9F),
-					new RGB(0x00, 0x00, 0x00),
-				}
-			)
-		);
-		fImageData.transparentPixel= 6;			// use black for transparency
-	
-		String[] p= {
-			"CCCCCCCCGGG",
-			"CFAAAAACBGG",
-			"CAAAAAACFBG",
-			"CAAAAAACBBB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CAAAAAAAAEB",
-			"CDDDDDDDDDB",
-			"CBBBBBBBBBB"
-		};
-		
-		for (int y= 0; y < p.length; y++)
-			for (int x= 0; x < 11; x++)
-				fImageData.setPixel(x+3, y+1, p[y].charAt(x)-'A');
+	RGB[] rgbs = new RGB[] {
+		new RGB(0xff, 0xff, 0xff), 
+		new RGB(0x5f, 0x5f, 0x5f),
+		new RGB(0x80, 0x80, 0x80),
+		new RGB(0xC0, 0xC0, 0xC0),
+		new RGB(0xDF, 0xDF, 0xBF),
+		new RGB(0xFF, 0xDF, 0x9F),
+		new RGB(0x00, 0x00, 0x00),
+	};  
+	ImageData data = new ImageData(16, 16, 4, new PaletteData(rgbs)	);
+	data.transparentPixel = 6; // use black for transparency
+	String[] p= {
+		"CCCCCCCCGGG",
+		"CFAAAAACBGG",
+		"CAAAAAACFBG",
+		"CAAAAAACBBB",
+		"CAAAAAAAAEB",
+		"CAAAAAAAAEB",
+		"CAAAAAAAAEB",
+		"CAAAAAAAAEB",
+		"CAAAAAAAAEB",
+		"CAAAAAAAAEB",
+		"CAAAAAAAAEB",
+		"CAAAAAAAAEB",
+		"CDDDDDDDDDB",
+		"CBBBBBBBBBB",
+	};
+	for (int y= 0; y < p.length; y++) {
+		for (int x= 0; x < 11; x++) {
+			data.setPixel(x+3, y+1, p[y].charAt(x)-'A');
+		}
 	}		
-	return fImageData;
+	return data;
 }
 
 /**
