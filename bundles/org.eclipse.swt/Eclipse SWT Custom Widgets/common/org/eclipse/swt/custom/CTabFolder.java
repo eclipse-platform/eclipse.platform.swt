@@ -796,7 +796,6 @@ void drawExpand(GC gc) {
 	
 	// draw triangle (7x4 or 4x7)
 	int indent = (tabHeight - 7)/2;
-	gc.setBackground(selectionForeground);
 	int[] points = null;
 	if (expanded && onBottom) {
 		points = new int[] {x+3,y+height-tabHeight+indent+6, x+12,y+height-tabHeight+indent+6, x+7,y+height-tabHeight+indent+1};
@@ -810,6 +809,7 @@ void drawExpand(GC gc) {
 	if (!expanded && !onBottom) {
 		points = new int[] {x+7,y+indent-2, x+11,y+indent+2, x+7,y+indent+6};
 	}
+	gc.setBackground(getForeground());
 	gc.fillPolygon(points);
 }
 void drawSelectionBackground(GC gc, int y, int[] shape) {
