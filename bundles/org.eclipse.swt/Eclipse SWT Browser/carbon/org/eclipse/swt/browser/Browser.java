@@ -10,7 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
-import java.util.HashMap;
+import java.util.Hashtable;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.Point;
@@ -51,7 +51,7 @@ public class Browser extends Composite {
 	/* Objective-C WebView delegate */
 	static int Delegate;
 	
-	static HashMap Map = new HashMap();
+	static Hashtable Map = new Hashtable();
 	static Callback callback;
 
 	/* Carbon HIView handle */
