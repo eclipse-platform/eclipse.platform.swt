@@ -500,6 +500,9 @@ public void setSize (int width, int height) {
 	itemBounds.height = height;
 	if (control != null) {
 		int controlWidth = newWidth - MINIMUM_WIDTH - MARGIN_WIDTH;
+		if (width < preferredWidth) {
+			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
+		}
 		int controlHeight = height - (2 * MARGIN_HEIGHT);
 		control.setSize(controlWidth, controlHeight);
 	}
