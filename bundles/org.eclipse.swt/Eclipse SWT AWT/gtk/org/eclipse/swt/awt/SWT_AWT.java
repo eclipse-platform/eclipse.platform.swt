@@ -16,6 +16,8 @@ import java.lang.reflect.Method;
 /* SWT Imports */
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.Library;
+import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -73,17 +75,19 @@ public static Frame new_Frame (final Composite parent) {
 			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
 		}
 	}
+	final Frame frame = (Frame) value;
 	try {
 		/* Call registerListeners() to make XEmbed focus traversal work */
 		Method method = clazz.getMethod("registerListeners", null);
 		if (method != null) method.invoke(value, null);
 	} catch (Throwable e) {}
-	final Frame frame = (Frame) value;
 	parent.getShell ().addListener (SWT.Move, new Listener () {
 		public void handleEvent (Event e) {
+			Display display = parent.getDisplay();
+			final Point location = display.map(parent, null, 0, 0);
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
-					frame.dispatchEvent (new ComponentEvent (frame, ComponentEvent.COMPONENT_MOVED));
+					frame.setLocation (location.x, location.y);
 				}
 			});
 		}
@@ -94,6 +98,20 @@ public static Frame new_Frame (final Composite parent) {
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
 					frame.dispose ();
+				}
+			});
+		}
+	});
+	parent.getDisplay().asyncExec(new Runnable() {
+		public void run () {
+			if (parent.isDisposed()) return;
+			Display display = parent.getDisplay();
+			Rectangle clientArea = parent.getClientArea();
+			final Rectangle bounds = display.map(parent, null, clientArea);
+			EventQueue.invokeLater(new Runnable () {
+				public void run () {
+					frame.setBounds (bounds.x, bounds.y, bounds.width, bounds.height);
+					frame.validate ();
 				}
 			});
 		}
