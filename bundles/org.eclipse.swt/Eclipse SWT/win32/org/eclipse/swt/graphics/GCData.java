@@ -27,5 +27,6 @@ public final class GCData {
 	public int background = -1;
 	public int hFont;
 	public int hNullBitmap;
+	public int hwnd;
 	public PAINTSTRUCT ps;
 }

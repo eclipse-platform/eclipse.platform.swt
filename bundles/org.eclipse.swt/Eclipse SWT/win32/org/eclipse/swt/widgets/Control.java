@@ -919,6 +919,7 @@ public int internal_new_GC (GCData data) {
 		data.foreground = getForegroundPixel ();
 		data.background = getBackgroundPixel ();
 		data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		data.hwnd = handle;
 	}
 	return hDC;
 }

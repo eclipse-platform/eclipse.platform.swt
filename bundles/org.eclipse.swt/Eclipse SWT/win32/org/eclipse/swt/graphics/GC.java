@@ -123,6 +123,7 @@ public void copyArea(Image image, int x, int y) {
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+
 	/*
 	* Feature in WinCE.  The function WindowFromDC is not part of the
 	* WinCE SDK.
@@ -144,7 +145,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 
 		/*
 		* Feature in WinCE.  ScrollWindowEx does not accept combined
-		* vertical and horizontal scrollings.  The fix is to do a
+		* vertical and horizontal scrolling.  The fix is to do a
 		* BitBlt and invalidate the appropriate source area.
 		*/
 		if (res == 0 && OS.IsWinCE) {
