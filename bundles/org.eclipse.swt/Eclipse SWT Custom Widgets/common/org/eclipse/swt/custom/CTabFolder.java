@@ -775,8 +775,6 @@ private void layoutItems() {
 	if (isDisposed()) return;
 
 	Rectangle area = super.getClientArea();
-	if (area.height == 0) return;
-	
 	int tabHeight = getTabHeight();
 
 	shortenedTabs = false;
@@ -951,8 +949,9 @@ private void redrawTabArea(int index) {
 		CTabItem item = items[index];
 		x = item.x;
 		y = item.y;
-		width = item.width;
-		height = item.height;
+		Rectangle area = super.getClientArea();
+		width = area.x + area.width - x;
+		height = area.y + area.height - y;
 	}
 	redraw(x, y, width, height, false);
 }
@@ -1021,10 +1020,10 @@ private void onResize() {
 		layoutItems();
 		redraw();
 	} else {
-		if (onBottom && oldArea.height != area.height) {
+		if (onBottom && oldArea.height != area.height){
 			// move tabs up or down if tabs on bottom
 			layoutItems();
-			redraw();		
+			redraw();
 		} else {
 			int width = 0;
 			if (oldArea.width < area.width) {
@@ -1045,11 +1044,8 @@ private void onResize() {
 		
 			if (oldArea.width != area.width) {
 				// resize the widths so that all tabs are visible
-				boolean wasShortened = shortenedTabs;
 				layoutItems();
-				if (wasShortened || shortenedTabs) {
-					redrawTabArea(-1);
-				}
+				redrawTabArea(-1);
 			}
 		}
 	}
