@@ -273,9 +273,10 @@ public void dispose () {
 	* Windows shares predefined cursors so the call to
 	* LoadCursor() does not leak.
 	*/
-	if (OS.GetCursor() == handle) {
-		OS.SetCursor(OS.LoadCursor(0, OS.IDC_ARROW));
-	}
+	// TEMPORARY CODE
+//	if (OS.GetCursor() == handle) {
+//		OS.SetCursor(OS.LoadCursor(0, OS.IDC_ARROW));
+//	}
 	
 	/*
 	 * The MSDN states that one should not destroy a shared
