@@ -97,10 +97,9 @@ boolean drawCaret () {
 	int nWidth = width, nHeight = height;
 	if (image != null) {
 		Rectangle rect = image.getBounds ();
-		nWidth = rect.width;
 		nHeight = rect.height;
 	}
-	if (nWidth <= 0) nWidth = 2;
+	if (nWidth <= 0) nWidth = 1;
 	int parentHandle = parent.handle;
 	int window = OS.GetControlOwner (parentHandle);
 	int port = OS.GetWindowPort (window);

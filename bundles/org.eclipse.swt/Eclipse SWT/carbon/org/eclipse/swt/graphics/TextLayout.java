@@ -19,7 +19,7 @@ public class TextLayout {
 	final public static int MOVEMENT_CLUSTER = 2;
 	final public static int MOVEMENT_WORD = 4;
 	
-	class StyleItem {
+	static class StyleItem {
 		TextStyle style;
 		int start;
 	}
