@@ -96,7 +96,7 @@ int getNextValue(PngDecodingDataStream stream) {
 
 	// Here we are taking advantage of the fact that 1 bits are used as
 	// a prefix to the longer codeValues.
-	while (code > codeLengthInfo[codelength].max && codelength < MAX_CODE_LENGTH) {
+	while (codelength < MAX_CODE_LENGTH && code > codeLengthInfo[codelength].max) {
 		code = ((code << 1) | stream.getNextIdatBit());
         codelength++;
 	}

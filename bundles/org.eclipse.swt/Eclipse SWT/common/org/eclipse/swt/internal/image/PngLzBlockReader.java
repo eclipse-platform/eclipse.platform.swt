@@ -143,7 +143,7 @@ private byte getNextCompressedByte() {
 		return (byte) (value & 0xFF);		
 	} else if (value == END_OF_COMPRESSED_BLOCK) {
 		readNextBlockHeader();
-		return getNextCompressedByte();
+		return getNextByte();
 	} else if (value <= LAST_LENGTH_CODE) {
 		int extraBits = extraLengthBits[value - FIRST_LENGTH_CODE];
 		int length = lengthBases[value - FIRST_LENGTH_CODE];

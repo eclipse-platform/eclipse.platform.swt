@@ -68,21 +68,18 @@ private PngHuffmanTable getFixedDistanceTable() {
 }
 
 private PngHuffmanTables () {
-	super();
 	literalTable = getFixedLiteralTable();
 	distanceTable = getFixedDistanceTable();
 }
 
 private PngHuffmanTables (PngDecodingDataStream stream) {
-	super();
-	
 	int literals = PngLzBlockReader.FIRST_LENGTH_CODE 
 		+ stream.getNextIdatBits(5);
 	int distances = PngLzBlockReader.FIRST_DISTANCE_CODE 
 		+ stream.getNextIdatBits(5);
 	int codeLengthCodes = PngLzBlockReader.FIRST_CODE_LENGTH_CODE 
 		+ stream.getNextIdatBits(4);
-	
+
 	if (codeLengthCodes > PngLzBlockReader.LAST_CODE_LENGTH_CODE) {
 		stream.error();
 	}
