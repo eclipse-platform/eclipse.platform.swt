@@ -646,8 +646,7 @@ public static final native void gtk_notebook_set_scrollable(int notebook, boolea
 public static final native void gtk_notebook_set_show_tabs(int notebook, boolean show_tabs);
 public static final native void gtk_object_sink(int object);
 public static final native int gtk_progress_bar_new();
-public static final native void gtk_progress_bar_pulse(int pbar);
-public static final native void gtk_progress_bar_set_fraction(int pbar, double fraction);
+public static final native void gtk_progress_bar_pulse(int pbar);public static final native void gtk_progress_bar_set_fraction(int pbar, double fraction);
 public static final native void gtk_progress_bar_set_bar_style(int pbar, int style);
 public static final native void gtk_progress_bar_set_orientation(int pbar, int orientation);
 public static final native int gtk_radio_button_get_group(int radio_button);
@@ -866,6 +865,7 @@ public static final native int gtk_cell_renderer_pixbuf_new();
 public static final native int gtk_cell_renderer_toggle_new();
 public static final native void gtk_list_store_clear(int store);
 public static final native int  gtk_list_store_newv(int numColumns, int[] types);
+public static final native int  gtk_tree_store_newv(int numColumns, int[] types);
 public static final native void gtk_list_store_remove(int list_store, int iter);
 public static final native void gtk_list_store_set(int store, int iter, int column, byte[] value, int terminator);
 public static final native void gtk_list_store_set(int store, int iter, int column, int value, int terminator);
@@ -888,9 +888,10 @@ public static final native int     gtk_tree_view_column_new();
 public static final native void    gtk_tree_view_column_set_title(int tree_column, byte[] title);
 public static final native boolean gtk_tree_view_column_get_resizable(int column);
 public static final native int     gtk_tree_view_column_get_width(int column);
+public static final native void    gtk_tree_view_column_set_clickable(int column, boolean clickable);
+public static final native void    gtk_tree_view_column_set_fixed_width(int column, int fixed_width);
 public static final native void    gtk_tree_view_column_set_resizable(int column, boolean resizable);
 public static final native void    gtk_tree_view_column_set_sizing(int column, int type);
-public static final native void    gtk_tree_view_column_set_fixed_width(int column, int fixed_width);
 public static final native void    gtk_tree_view_column_pack_end(int tree_column, int cell_renderer, boolean expand);
 public static final native void    gtk_tree_view_column_add_attribute (int treeColumn, int cellRenderer, String attribute, int column);
 public static final native void    gtk_tree_view_columns_autosize(int tree_view);
@@ -900,6 +901,7 @@ public static final native boolean gtk_tree_view_get_path_at_pos (int tree_view,
 public static final native boolean gtk_tree_view_get_headers_visible(int tree_view);
 public static final native int     gtk_tree_view_insert_column(int tree_view, int column, int position);
 public static final native int     gtk_tree_view_new_with_model(int model);
+public static final native void    gtk_tree_view_remove_column(int tree_view, int column);
 public static final native void    gtk_tree_view_scroll_to_cell(int tree_view, int path, int column, boolean use_align, float row_aligh, float column_align);
 public static final native void    gtk_tree_view_set_headers_visible(int tree_view, boolean visible);
 public static final native void    gtk_tree_view_get_cell_area(int tree_view, int path, int column, GdkRectangle rect);
@@ -909,4 +911,4 @@ static final native int GValue_sizeof();
 public static final native int G_TYPE_BOOLEAN();
 public static final native int G_TYPE_STRING();
 public static final native int GDK_TYPE_COLOR();
-}
+public static final native void gtk_progress_bar_pulse(int pbar);public static final native void gtk_progress_bar_pulse(int pbar);}
