@@ -11,7 +11,6 @@
 package org.eclipse.swt.widgets;
 
 
-import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 
@@ -296,10 +295,7 @@ int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userDa
 				} else {
 					cursorX += width / 2;
 				}
-				Point pos = parent.toDisplay (cursorX, cursorY);
-				CGPoint pt = new CGPoint ();
-				pt.x = pos.x;  pt.y = pos.y;
-				OS.CGWarpMouseCursorPosition (pt);
+				display.setCursorLocation (parent.toDisplay (cursorX, cursorY));
 			}
 			break;
 		}
