@@ -209,6 +209,7 @@ void destroyWidget () {
 
 public void forceActive () {
 	checkWidget ();
+	OS.SetFrontProcess (new int [] {0, OS.kCurrentProcess});
 	OS.SelectWindow (shellHandle);
 }
 

@@ -131,6 +131,7 @@ public class OS {
 	public static final int kControlUseSizeMask = 0x4;
 	public static final int kControlUseThemeFontIDMask = 0x80;
 	public static final int kControlUseFaceMask = 0x2;
+	public static final int kCurrentProcess = 2;
 	public static final int kDataBrowserCheckboxType = ('c'<<24) + ('h'<<16) + ('b'<<8) + 'x';
 	public static final int kDataBrowserCmdTogglesSelection = 1 << 3;
 	public static final int kDataBrowserContainerClosed = 10;
