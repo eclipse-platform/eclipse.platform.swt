@@ -115,7 +115,7 @@ public class ViewForm extends Composite {
  *
  * @see SWT#BORDER
  * @see SWT#FLAT
- * @see #getStyle
+ * @see #getStyle()
  */		
 public ViewForm(Composite parent, int style) {
 	super(parent, checkStyle(style));
@@ -142,11 +142,8 @@ public ViewForm(Composite parent, int style) {
 		}
 	});	
 }
-/**
- * Check the style bits to ensure that no invalid styles are applied.
- * @private
- */
-private static int checkStyle (int style) {
+
+static int checkStyle (int style) {
 	int mask = SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask | SWT.NO_REDRAW_RESIZE;
 }
@@ -286,7 +283,7 @@ public void layout (boolean changed) {
 	int height = rect.y + marginHeight;
 	
 	boolean top = false;
-	if (separateTopCenter || minTopWidth > rect.width) {;
+	if (separateTopCenter || minTopWidth > rect.width) {
 		int topHeight = Math.max(rightSize.y, leftSize.y);
 		if (topRight != null && !topRight.isDisposed()) {
 			top = true;
@@ -353,7 +350,7 @@ public void layout (boolean changed) {
 		                   rect.y + rect.height - height - marginHeight);
 	}
 }
-private void onDispose() {
+void onDispose() {
 	if (borderColor1 != null) {
 		borderColor1.dispose();
 	}
@@ -375,10 +372,8 @@ private void onDispose() {
 	content = null;
 	oldArea = null;
 }
-/**
-* Draws the focus border.
-*/
-private void onPaint(GC gc) {
+
+void onPaint(GC gc) {
 	Rectangle d = super.getClientArea();
 	
 	if (showBorder) {
@@ -424,7 +419,7 @@ private void onPaint(GC gc) {
 
 	gc.setForeground(getForeground());
 }
-private void onResize() {
+void onResize() {
 	layout();
 	
 	Rectangle area = super.getClientArea();
@@ -455,11 +450,12 @@ private void onResize() {
 * Setting the content to null will remove it from 
 * the pane - however, the creator of the content must dispose of the content.
 * 
-* @param c the control to be displayed in the content area or null
+* @param content the control to be displayed in the content area or null
 * 
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+*    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this ViewForm</li>
 * </ul>
 */
 public void setContent(Control content) {
@@ -474,10 +470,6 @@ public void setContent(Control content) {
 	layout();
 }
 
-/**
-* Set the widget font.
-* This will apply the font to the topLeft, topRight and topCenter widgets.
-*/
 public void setFont(Font f) {
 	super.setFont(f);
 	if (topLeft != null && !topLeft.isDisposed()) topLeft.setFont(f);
@@ -493,7 +485,7 @@ public void setFont(Font f) {
  * Note : ViewForm does not use a layout class to size and position its children.
  * </p>
  *
- * @param the receiver's new layout or null
+ * @param layout the receiver's new layout or null
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -510,11 +502,12 @@ public void setLayout (Layout layout) {
 * The topCenter is optional.  Setting the topCenter to null will remove it from 
 * the pane - however, the creator of the topCenter must dispose of the topCenter.
 * 
-* @param c the control to be displayed in the top center or null
+* @param topCenter the control to be displayed in the top center or null
 * 
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+*    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this ViewForm</li>
 * </ul>
 */
 public void setTopCenter(Control topCenter) {
@@ -539,6 +532,7 @@ public void setTopCenter(Control topCenter) {
 * @exception SWTException <ul>
 *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
 *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+*    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this ViewForm</li>
 * </ul>
 */
 public void setTopLeft(Control c) {

@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
 /**
 * DO NOT USE - UNDER CONSTRUCTION
 *
-* @ since 3.0
+* @since 3.0
 */
 
 /**
@@ -64,6 +64,14 @@ public class CBanner extends Composite {
 	static RGB BORDER2 = null;
 	
 		
+/**
+ * DO NOT USE - UNDER CONSTRUCTION
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ * 
+ * @since 3.0
+ */
 public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	
@@ -112,12 +120,9 @@ static int[] bezier(int x0, int y0, int x1, int y1, int x2, int y2, int x3, int 
 	}
 	return polygon;
 }
-/**
- * Check the style bits to ensure that no invalid styles are applied.
- * @private
- */
+
 static int checkStyle (int style) {
-	return SWT.NO_BACKGROUND;
+	return SWT.NONE;
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
@@ -158,16 +163,52 @@ public Rectangle getClientArea() {
 	return new Rectangle(0, 0, 0, 0);
 }
 
+/**
+* Returns the Control that appears on the left side of the banner.
+* 
+* @return the control that appears on the left side of the banner or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
+* 
+* @since 3.0
+*/
 public Control getLeft() {
 	checkWidget();
 	return left;
 }
 
+/**
+* Returns the Control that appears in the middle of the banner.
+* 
+* @return the control that appears in the middle of the banner or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
+* 
+* @since 3.0
+*/
 public Control getMiddle() {
 	checkWidget();
 	return middle;
 }
 
+/**
+* Returns the Control that appears on the right side of the banner.
+* 
+* @return the control that appears on the right side of the banner or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
+* 
+* @since 3.0
+*/
 public Control getRight() {
 	checkWidget();
 	return right;
@@ -219,20 +260,14 @@ public void layout (boolean changed) {
 	if (middleRect != null) middle.setBounds(middleRect);
 	if (rightRect != null) right.setBounds(rightRect);
 }
-private void onDispose() {
+void onDispose() {
 	left = null;
 	right = null;
 }
 
-private void onPaint(GC gc) {
+void onPaint(GC gc) {
 	if (curve == null) updateCurve();
 	Point size = getSize();
-	// TODO Consider a way to not draw background
-	// under lines
-	Color background = getBackground();
-	gc.setBackground(background);
-	gc.fillRectangle(0, 0, size.x, size.y);
-	
 	int[] line1 = new int[curve.length+6];
 	int[] line2 = new int[curve.length+6];
 	int index = 0;
@@ -257,6 +292,8 @@ private void onPaint(GC gc) {
 	line1[index] = 0;
 	line2[index++] = 1;
 	
+	Color background = getBackground();
+	
 	int x1 = Math.max(0, curveStart - CURVE_TAIL);
 	Color border2 = new Color(getDisplay(), BORDER2);
 	gc.setForeground(background);
@@ -275,7 +312,7 @@ private void onPaint(GC gc) {
 	border1.dispose();
 }
 
-private void onResize() {
+void onResize() {
 	updateCurve();
 	layout();
 }
@@ -287,7 +324,7 @@ private void onResize() {
  * Note : CBanner does not use a layout class to size and position its children.
  * </p>
  *
- * @param the receiver's new layout or null
+ * @param layout the receiver's new layout or null
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -299,37 +336,82 @@ public void setLayout (Layout layout) {
 	return;
 }
 
-public void setLeft(Control leftControl) {
+/**
+* Set the control that appears on the left side of the banner.
+* The left control is optional.  Setting the left control to null will remove it from 
+* the banner - however, the creator of the control must dispose of the control.
+* 
+* @param control the control to be displayed on the left or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+*    <li>ERROR_INVALID_ARGUMENT - if the left control was not created as a child of the receiver</li>
+* </ul>
+* 
+* @since 3.0
+*/
+public void setLeft(Control control) {
 	checkWidget();
-	if (leftControl != null && leftControl.getParent() != this) {
+	if (control != null && control.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (left != null && !left.isDisposed()) {
 		left.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
-	left = leftControl;
+	left = control;
 	layout();
 }
-public void setMiddle(Control middleControl) {
+/**
+* Set the control that appears in the middle of the banner.
+* The middle control is optional.  Setting the middle control to null will remove it from 
+* the banner - however, the creator of the control must dispose of the control.
+* 
+* @param control the control to be displayed in the middle or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+*    <li>ERROR_INVALID_ARGUMENT - if the middle control was not created as a child of the receiver</li>
+* </ul>
+* 
+* @since 3.0
+*/
+public void setMiddle(Control control) {
 	checkWidget();
-	if (middleControl != null && middleControl.getParent() != this) {
+	if (control != null && control.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (middle != null && !middle.isDisposed()) {
 		middle.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
-	middle = middleControl;
+	middle = control;
 	layout();
 }
-public void setRight(Control rightControl) {
+/**
+* Set the control that appears on the right side of the banner.
+* The right control is optional.  Setting the right control to null will remove it from 
+* the banner - however, the creator of the control must dispose of the control.
+* 
+* @param control the control to be displayed on the right or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+*    <li>ERROR_INVALID_ARGUMENT - if the right control was not created as a child of the receiver</li>
+* </ul>
+* 
+* @since 3.0
+*/
+public void setRight(Control control) {
 	checkWidget();
-	if (rightControl != null && rightControl.getParent() != this) {
+	if (control != null && control.getParent() != this) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	if (right != null && !right.isDisposed()) {
 		right.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
-	right = rightControl;
+	right = control;
 	layout();
 }
 void updateCurve () {
