@@ -505,21 +505,6 @@ public void close () {
 	closeWidget ();
 }
 void closeWidget () {
-	if (!isEnabled ()) return;
-	Control widget = parent;
-	while (widget != null && !(widget.getShell ().isModal ())) {
-		widget = widget.parent;
-	}
-	if (widget == null) {
-		Shell [] shells = getShells ();
-		for (int i=0; i<shells.length; i++) {
-			Shell shell = shells [i];
-			if (shell != this && shell.isModal () && shell.isVisible ()) {
-				shell.bringToTop (false);
-				return;
-			}
-		}
-	}
 	Event event = new Event ();
 	sendEvent (SWT.Close, event);
 	if (event.doit && !isDisposed ()) dispose ();
@@ -1509,6 +1494,21 @@ void updateResizable (int width, int height) {
 	}
 }
 int WM_DELETE_WINDOW (int w, int client_data, int call_data) {
+	if (!isEnabled ()) return 0;
+	Control widget = parent;
+	while (widget != null && !(widget.getShell ().isModal ())) {
+		widget = widget.parent;
+	}
+	if (widget == null) {
+		Shell [] shells = getShells ();
+		for (int i=0; i<shells.length; i++) {
+			Shell shell = shells [i];
+			if (shell != this && shell.isModal () && shell.isVisible ()) {
+				shell.bringToTop (false);
+				return 0;
+			}
+		}
+	}
 	closeWidget ();
 	return 0;
 }
