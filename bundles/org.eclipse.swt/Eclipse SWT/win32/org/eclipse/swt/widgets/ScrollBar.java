@@ -903,6 +903,9 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
+	boolean isVisible = (state & HIDDEN) == 0;
+	if (isVisible == visible) return;
+	
 	if (OS.IsWinCE) {
 		SCROLLINFO info = new SCROLLINFO ();
 		info.cbSize = SCROLLINFO.sizeof;
