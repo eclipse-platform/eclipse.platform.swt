@@ -363,6 +363,18 @@ public boolean open () {
 	int [] oldX = new int [1], oldY = new int [1];
 	int [] unused = new int [1], mask = new int [1];
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, mask);
+	
+	// if exactly one of UP/DOWN is specified as a style then set the cursor
+	// orientation accordingly (the same is done for LEFT/RIGHT styles below)
+	int vStyle = style & (SWT.UP | SWT.DOWN);
+	if (vStyle == SWT.UP || vStyle == SWT.DOWN) {
+		cursorOrientation |= vStyle;
+	}
+	int hStyle = style & (SWT.LEFT | SWT.RIGHT);
+	if (hStyle == SWT.LEFT || hStyle == SWT.RIGHT) {
+		cursorOrientation |= hStyle;
+	}
+	
 	Point cursorPos;
 	int mouseMasks = OS.Button1Mask | OS.Button2Mask | OS.Button3Mask;
 	boolean mouseDown = (mask [0] & mouseMasks) != 0;
