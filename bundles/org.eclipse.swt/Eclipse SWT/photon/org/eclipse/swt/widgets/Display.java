@@ -696,6 +696,11 @@ public static void setAppName (String name) {
 	/* Do nothing */
 }
 
+public int getDismissalAlignment () {
+	checkDevice ();
+	return SWT.RIGHT;
+}
+
 /**
  * Returns the longest duration, in milliseconds, between
  * two mouse button clicks that will be considered a
