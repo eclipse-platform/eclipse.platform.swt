@@ -987,12 +987,31 @@ public void setCursor (Cursor cursor) {
 		OS.GetSuperControl (theControl [0], theControl);
 	}
 	if (theControl [0] == 0) return;
+	theControl [0] = cursorControl;
+	do {
+		Widget widget = WidgetTable.get (theControl [0]);
+		if (widget != null) {
+			if (widget instanceof Control) {
+				Control control = (Control) widget;
+				if (control.isEnabled ()) break;
+			}
+		}
+		OS.GetSuperControl (theControl [0], theControl);
+	} while (theControl [0] != 0);
+	if (theControl [0] == 0) {
+		theControl [0] = theRoot [0];
+		Widget widget = WidgetTable.get (theControl [0]);
+		if (widget != null && widget instanceof Control) {
+			Control control = (Control) widget;
+			theControl [0] = control.handle;
+		}
+	} 
 	org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
 	localPoint.h = (short) inPoint.x;
 	localPoint.v = (short) inPoint.y;
 	int modifiers = OS.GetCurrentEventKeyModifiers ();
 	boolean [] cursorWasSet = new boolean [1];
-	OS.HandleControlSetCursor (cursorControl, localPoint, (short) modifiers, cursorWasSet);
+	OS.HandleControlSetCursor (theControl [0], localPoint, (short) modifiers, cursorWasSet);
 	if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 }
 

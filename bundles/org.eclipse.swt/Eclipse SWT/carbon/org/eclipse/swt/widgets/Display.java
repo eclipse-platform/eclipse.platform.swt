@@ -1207,6 +1207,7 @@ boolean runEnterExit () {
 				Widget widget = WidgetTable.get (theControl [0]);
 				if (widget != null && widget instanceof Control) {
 					control = (Control) widget;
+					theControl[0] = control.handle;
 				}
 			}
 		}
