@@ -254,9 +254,11 @@ public boolean isEmpty () {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.EmptyRgn(handle);
 }
-public static Region macosx_new(int rgnHandle) {
+/* AW
+public static Region carbon_new(int rgnHandle) {
 	return new Region(rgnHandle);
 }
+*/
 /**
  * Returns a string containing a concise, human-readable
  * description of the receiver.
