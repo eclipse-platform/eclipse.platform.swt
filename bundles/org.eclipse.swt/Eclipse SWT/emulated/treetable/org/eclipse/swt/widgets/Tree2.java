@@ -376,8 +376,7 @@ void doEnd(int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
-			int visibleItemCount = (getClientArea().height - getHeaderHeight()) / itemHeight;
-			setTopItem(availableItems[availableItems.length - visibleItemCount]);
+			// TODO scroll to bottom
 			return;
 		} else {
 			int lastAvailableIndex = availableItems.length - 1;
@@ -393,18 +392,11 @@ void doEnd(int stateMask) {
 			return;
 		}
 	}
-	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
 			// TODO scroll to bottom, fire selection (?) but don't change it
 		} else {
-			int lastAvailableIndex = availableItems.length - 1;
-			if (focusItem.getAvailableIndex() == lastAvailableIndex) return; /* at bottom */
-			TreeItem2 item = availableItems[lastAvailableIndex];
-			setFocusItem(item, true);
-			showItem(item);
-			redrawItem(item.getAvailableIndex());
-			return;
+			// TODO move focus to bottom but don't change selection
 		}
 	} else {
 		// TODO select anchor -> bottom
@@ -443,7 +435,7 @@ void doHome(int stateMask) {
 	}
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
-			setTopItem(availableItems[0]);
+			// TODO scroll to top
 			return;
 		} else {
 			if (focusItem.getAvailableIndex() == 0) return; 		/* at top */
@@ -458,17 +450,11 @@ void doHome(int stateMask) {
 			return;
 		}
 	}
-	/* SWT.MULTI */
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
 			// TODO scroll to top, fire selection (?) but don't change it
 		} else {
-			if (focusItem.getAvailableIndex() == 0) return; /* at top */
-			TreeItem2 item = availableItems[0];
-			setFocusItem(item, true);
-			showItem(item);
-			redrawItem(item.getAvailableIndex());
-			return;
+			// TODO move focus to top but don't change selection
 		}
 	} else {
 		// TODO select anchor -> top
@@ -755,8 +741,6 @@ void doSpace() {
 	if (focusItem == null) return;
 	if (!focusItem.isSelected()) {
 		selectItem(focusItem, (style & SWT.MULTI) != 0);
-		showItem(focusItem);
-		redrawItem(focusItem.getAvailableIndex());
 	}
 	Event event = new Event();
 	event.item = focusItem;
