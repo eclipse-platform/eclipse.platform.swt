@@ -3048,7 +3048,14 @@ int getBidiOffsetAtMouseLocation(int x, int line) {
  * @return index of the last fully visible line.
  */
 int getBottomIndex() {
-	return Math.min(content.getLineCount() - 1, topIndex + Math.max(0, getLineCountWhole() - 1));
+	int lineCount = 1;
+	
+	if (lineHeight != 0) {
+		// calculate the number of lines that are fully visible
+		int partialTopLineHeight = topIndex * lineHeight - verticalScrollOffset;
+		lineCount = (getClientArea().height - partialTopLineHeight) / lineHeight;
+	}
+	return Math.min(content.getLineCount() - 1, topIndex + Math.max(0, lineCount - 1));
 }
 /**
  * Returns the caret position relative to the start of the text.
@@ -3317,11 +3324,11 @@ public int getLineCount() {
 	return getLineAtOffset(getCharCount()) + 1;
 }
 /**
- * Returns the number of lines that are completely displayed in the 
+ * Returns the number of lines that can be completely displayed in the 
  * widget client area.
  * <p>
  *
- * @return number of lines that are completely displayed in the widget 
+ * @return number of lines that can be completely displayed in the widget 
  * 	client area.
  */
 int getLineCountWhole() {
@@ -7137,7 +7144,7 @@ boolean showLocation(int x, int line) {
 	}
 	else
 	if (line > getBottomIndex()) {
-		setVerticalScrollOffset((line - getBottomIndex()) * verticalIncrement + verticalScrollOffset, true);
+		setVerticalScrollOffset((line + 1) * verticalIncrement - getClientArea().height, true);
 		scrolled = true;
 	}
 	return scrolled;
