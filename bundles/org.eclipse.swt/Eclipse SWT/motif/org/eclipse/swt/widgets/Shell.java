@@ -1282,16 +1282,10 @@ public void setMinimized (boolean minimized) {
 }
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	int minWidth = 0, minHeight = 0;
-	if (width != SWT.DEFAULT) {
-		width = Math.max (width, trimWidth ());
-		minWidth = width - trimWidth ();
-	}
-	if (height != SWT.DEFAULT) {
-		height = Math.max (height, trimHeight ());
-		minHeight = height - trimHeight ();
-	}
-	int [] argList = {OS.XmNminWidth, minWidth, OS.XmNminHeight, minHeight};
+	int [] argList = {
+		OS.XmNminWidth, Math.max (width, trimWidth ()) - trimWidth (),
+		OS.XmNminHeight, Math.max (height, trimHeight ()) - trimHeight (),
+	};
 	OS.XtSetValues (shellHandle, argList, argList.length / 2);
 }
 public void setMinimumSize (Point size) {

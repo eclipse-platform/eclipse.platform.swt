@@ -1144,18 +1144,9 @@ public void setMinimized (boolean minimized) {
 
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
-	minWidth = minHeight = 0;
-	if (width != SWT.DEFAULT) {
-		width = Math.max (width, trimWidth ());
-		minWidth = width - trimWidth ();
-	}
-	if (height != SWT.DEFAULT) {
-		height = Math.max (height, trimHeight ());
-		minHeight = height - trimHeight ();
-	}
 	GdkGeometry geometry = new GdkGeometry ();
-	geometry.min_width = Math.max (1, minWidth);
-	geometry.min_height = Math.max (1, minHeight);
+	minWidth = geometry.min_width = Math.max (width, trimWidth ()) - trimWidth ();
+	minHeight = geometry.min_height = Math.max (height, trimHeight ()) - trimHeight ();
 	OS.gtk_window_set_geometry_hints (shellHandle, 0, geometry, OS.GDK_HINT_MIN_SIZE);
 }
 

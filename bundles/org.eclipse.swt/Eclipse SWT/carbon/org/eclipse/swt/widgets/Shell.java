@@ -1258,18 +1258,10 @@ public void setMinimumSize (int width, int height) {
 	OS.GetWindowStructureWidths (shellHandle, rect);
 	CGPoint inMinLimits = new CGPoint (), inMaxLimits = new CGPoint ();
 	OS.GetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
-	if (width != SWT.DEFAULT) {
-		width = Math.max (width, clientWidth + rect.left + rect.right);
-		inMinLimits.x = width - (rect.left + rect.right);
-	} else {
-		inMinLimits.x = clientWidth;
-	}
-	if (height != SWT.DEFAULT) {
-		height = Math.max (height, clientHeight + rect.top + rect.bottom);
-		inMinLimits.y = height - (rect.top + rect.bottom);
-	} else {
-		inMinLimits.y = clientHeight;
-	}
+	width = Math.max (width, clientWidth + rect.left + rect.right);
+	height = Math.max (height, clientHeight + rect.top + rect.bottom);
+	inMinLimits.x = width - (rect.left + rect.right);
+	inMinLimits.y = height - (rect.top + rect.bottom);
 	OS.SetWindowResizeLimits (shellHandle, inMinLimits, inMaxLimits);
 	Point size = getSize ();
 	int newWidth = Math.max (size.x, width), newHeight = Math.max (size.y, height);
