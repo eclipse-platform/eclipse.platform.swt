@@ -580,7 +580,13 @@ void initAccessible() {
 			e.result = getToolTipText();
 		}
 	});
-		
+	
+	getAccessible().addAccessibleTextListener(new AccessibleTextAdapter() {
+		public void getCaretOffset(AccessibleTextEvent e) {
+			e.offset = text.getCaretPosition();
+		}
+	});
+	
 	getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
 		public void getChildAtPoint(AccessibleControlEvent e) {
 			Point testPoint = toControl(new Point(e.x, e.y));
