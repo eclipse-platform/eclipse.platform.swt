@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 public class StructsGenerator extends JNIGenerator {
-	
+
 	boolean isCPP;
 	
 public boolean getCPP() {
@@ -72,6 +72,7 @@ public void generateHeaderFile(Class[] classes) {
 		ClassData classData = getMetaData().getMetaData(clazz);
 		if (classData.getFlag("no_gen")) continue;
 		generateHeaderFile(clazz);
+		if (progress != null) progress.step();
 	}
 }
 
@@ -105,6 +106,7 @@ public void generateSourceFile(Class[] classes) {
 		ClassData classData = getMetaData().getMetaData(clazz);
 		if (classData.getFlag("no_gen")) continue;
 		generateSourceFile(clazz);
+		if (progress != null) progress.step();
 	}
 }
 

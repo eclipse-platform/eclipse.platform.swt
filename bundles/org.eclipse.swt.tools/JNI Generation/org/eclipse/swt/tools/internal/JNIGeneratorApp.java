@@ -22,6 +22,7 @@ import org.eclipse.swt.SWT;
 
 public class JNIGeneratorApp {
 
+	ProgressMonitor progress;
 	String mainClass, outputDir, classpath;
 	MetaData metaData;
 
@@ -48,7 +49,7 @@ public String getOutputDir() {
 	return outputDir;
 }
 
-void generateSTATS_C() {
+void generateSTATS_C(Class[] classes) {
 	try {
 		String outputName = getClassName(mainClass).toLowerCase();
 		String inc = 
@@ -57,10 +58,11 @@ void generateSTATS_C() {
 		metaData.setMetaData("swt_includes", inc);
 		StatsGenerator gen = new StatsGenerator();
 		gen.setMetaData(metaData);
+		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generateSourceFile(getNativesClasses());
+		gen.generateSourceFile(classes);
 		print.flush();
 		String extension = gen.getCPP() ? ".cpp" : ".c";
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_stats" + extension);
@@ -70,17 +72,18 @@ void generateSTATS_C() {
 	}
 }
 
-void generateSTATS_H() {
+void generateSTATS_H(Class[] classes) {
 	try {
 		String outputName = getClassName(mainClass).toLowerCase();
 		String inc = "";
 		metaData.setMetaData("swt_includes", inc);
 		StatsGenerator gen = new StatsGenerator();
 		gen.setMetaData(metaData);
+		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generateHeaderFile(getNativesClasses());
+		gen.generateHeaderFile(classes);
 		print.flush();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_stats.h");
 	} catch (Exception e) {
@@ -89,16 +92,17 @@ void generateSTATS_H() {
 	}
 }
 
-void generateSTRUCTS_H() {
+void generateSTRUCTS_H(Class[] classes) {
 	try {
 		String outputName = getClassName(mainClass).toLowerCase();
 		metaData.setMetaData("swt_includes", "#include \"" + outputName + ".h\"\n");
 		StructsGenerator gen = new StructsGenerator();
 		gen.setMetaData(metaData);
+		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generateHeaderFile(getStructureClasses());
+		gen.generateHeaderFile(classes);
 		print.flush();
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_structs.h");
 	} catch (Exception e) {
@@ -108,7 +112,7 @@ void generateSTRUCTS_H() {
 
 }
 
-void generateSTRUCTS_C() {
+void generateSTRUCTS_C(Class[] classes) {
 	try {
 		String outputName = getClassName(mainClass).toLowerCase();
 		String inc = 
@@ -117,10 +121,11 @@ void generateSTRUCTS_C() {
 		metaData.setMetaData("swt_includes", inc);
 		StructsGenerator gen = new StructsGenerator();
 		gen.setMetaData(metaData);
+		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generateSourceFile(getStructureClasses());
+		gen.generateSourceFile(classes);
 		print.flush();
 		String extension = gen.getCPP() ? ".cpp" : ".c";
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + "_structs" + extension);
@@ -131,7 +136,7 @@ void generateSTRUCTS_C() {
 
 }
 
-void generateSWT_C() {
+void generateSWT_C(Class[] classes) {
 	try {
 		String outputName = getClassName(mainClass).toLowerCase();
 		String inc = 
@@ -141,10 +146,11 @@ void generateSWT_C() {
 		metaData.setMetaData("swt_includes", inc);
 		NativesGenerator gen = new NativesGenerator();
 		gen.setMetaData(metaData);
+		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
-		gen.generate(getNativesClasses());
+		gen.generate(classes);
 		print.flush();
 		String extension = gen.getCPP() ? ".cpp" : ".c";
 		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + extension);
@@ -159,6 +165,7 @@ void generateAllMetaData() {
 	try {
 		MetaDataGenerator gen = new MetaDataGenerator();
 		gen.setMetaData(metaData);
+		gen.setProgressMonitor(progress);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
 		PrintStream print = new PrintStream(out);
 		gen.setOutput(print);
@@ -176,13 +183,41 @@ void generateAllMetaData() {
 }
 
 public void generate() {
+	generate(null);
+}
+
+public void generate(ProgressMonitor progress) {
 	if (mainClass == null) return;
-	generateSTRUCTS_H();
-	generateSTRUCTS_C();
-	generateSWT_C();
-	generateSTATS_H();
-	generateSTATS_C();
+	if (progress != null) progress.setMessage("Initializing...");
+	Class[] natives = getNativesClasses();
+	Class[] structs = getStructureClasses();
+	this.progress = progress;
+	if (progress != null) {
+		int nativeCount = 0;
+		for (int i = 0; i < natives.length; i++) {
+			Class clazz = natives[i];
+			Method[] methods = clazz.getDeclaredMethods();
+			for (int j = 0; j < methods.length; j++) {
+				Method method = methods[j];
+				if ((method.getModifiers() & Modifier.NATIVE) != 0) nativeCount++;
+			}
+		}
+		progress.setTotal(nativeCount * 4 + structs.length * 3);
+		progress.setMessage("Generating structs.h ...");
+	}
+	generateSTRUCTS_H(structs);
+	if (progress != null) progress.setMessage("Generating structs.c ...");
+	generateSTRUCTS_C(structs);
+	if (progress != null) progress.setMessage("Generating natives ...");
+	generateSWT_C(natives);
+	if (progress != null) progress.setMessage("Generating stats.h ...");
+	generateSTATS_H(natives);
+	if (progress != null) progress.setMessage("Generating stats.c ...");
+	generateSTATS_C(natives);
+	if (progress != null) progress.setMessage("Generating meta data ...");
 	generateAllMetaData();
+	if (progress != null) progress.setMessage("Done.");
+	this.progress = null;
 }
 
 boolean compare(InputStream is1, InputStream is2) throws IOException {

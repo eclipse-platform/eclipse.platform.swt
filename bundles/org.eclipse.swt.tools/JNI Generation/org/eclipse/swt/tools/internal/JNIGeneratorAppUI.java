@@ -27,6 +27,8 @@ public class JNIGeneratorAppUI {
 	Composite actionsPanel;
 	Combo mainClassCb, outputDirCb;
 	Table classesLt, membersLt, paramsLt;
+	ProgressBar progressBar;
+	Label progressLabel;
 	FileDialog fileDialog;
 	
 	TableEditor paramTextEditor, memberTextEditor, classTextEditor;
@@ -136,13 +138,41 @@ void generateAll() {
 	shell.setEnabled(false);
 	Control[] children = actionsPanel.getChildren();
 	for (int i = 0; i < children.length; i++) {
-		children[i].setEnabled(false);				
+		Control child = children[i];
+		if (child instanceof Button) child.setEnabled(false);				
 	}
+	progressLabel.setText("");
+	progressBar.setSelection(0);
+	progressLabel.setVisible(true);
+	progressBar.setVisible(true);
 	final boolean[] done = new boolean[1];
 	new Thread() {
 		public void run() {
 			try {
-				app.generate();
+				app.generate(new ProgressMonitor() {
+					public void setTotal(final int total) {
+						display.syncExec(new Runnable() {
+							public void run() {
+								progressBar.setMaximum(total);
+							}
+						});
+					}
+					public void step() {
+						display.syncExec(new Runnable() {
+							public void run() {
+								progressBar.setSelection(progressBar.getSelection() + 1);
+							}
+						});					
+					}
+					public void setMessage(final String message) {
+						display.syncExec(new Runnable() {
+							public void run() {
+								progressLabel.setText(message);
+								progressLabel.update();
+							}
+						});
+					}
+				});
 			} finally {
 				done[0] = true;
 				display.wake();
@@ -153,8 +183,11 @@ void generateAll() {
 		if (!display.readAndDispatch()) display.sleep();
 	}
 	for (int i = 0; i < children.length; i++) {
-		children[i].setEnabled(true);				
+		Control child = children[i];
+		if (child instanceof Button) child.setEnabled(true);				
 	}
+	progressBar.setVisible(false);
+	progressLabel.setVisible(false);
 	shell.setEnabled(true);
 	shell.setCursor(null);
 	cursor.dispose();
@@ -833,6 +866,17 @@ void createActionButtons(Composite parent) {
 			generateMetaData();
 		}
 	});
+
+	Composite filler = new Composite(actionsPanel, SWT.NONE);
+	filler.setLayoutData(new GridData(GridData.FILL_BOTH));
+	
+	progressLabel = new Label(actionsPanel, SWT.NONE);
+	progressLabel.setLayoutData(data);
+	progressLabel.setVisible(false);
+	
+	progressBar = new ProgressBar(actionsPanel, SWT.NONE);
+	progressBar.setLayoutData(data);
+	progressBar.setVisible(false);
 }
 
 public void run() {

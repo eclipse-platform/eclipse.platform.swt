@@ -34,6 +34,7 @@ public void generate(Method[] methods) {
 		Method method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		generateStringArray(method);
+		if (progress != null) progress.step();
 	}
 }
 
@@ -202,6 +203,7 @@ void generateFunctionEnum(Method[] methods) {
 		output("\t");
 		output(getFunctionName(method));
 		outputln("_FUNC,");
+		if (progress != null) progress.step();
 	}
 	Class clazz = methods[0].getDeclaringClass();
 	output("} ");

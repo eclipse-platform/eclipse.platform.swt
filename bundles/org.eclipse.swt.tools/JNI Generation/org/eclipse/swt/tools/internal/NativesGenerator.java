@@ -15,7 +15,7 @@ import java.util.HashSet;
 import java.util.Iterator;
 
 public class NativesGenerator extends JNIGenerator {
-	
+
 boolean nativeMacro, enterExitMacro, isCPP;
 
 public NativesGenerator() {
@@ -96,6 +96,7 @@ public void generate(Method[] methods) {
 		Method method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		generate(method);
+		if (progress != null) progress.step();
 	}
 }
 

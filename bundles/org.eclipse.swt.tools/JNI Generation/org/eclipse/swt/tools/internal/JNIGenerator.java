@@ -21,6 +21,7 @@ public abstract class JNIGenerator {
 String delimiter;
 PrintStream output;
 MetaData metaData;
+ProgressMonitor progress;
 
 public JNIGenerator() {
 	delimiter = System.getProperty("line.separator");
@@ -281,6 +282,10 @@ public String getPlatform() {
 	return SWT.getPlatform();
 }
 
+public ProgressMonitor getProgressMonitor() {
+	return progress;
+}
+
 public void output(String str) {
 	output.print(str);
 }
@@ -304,6 +309,10 @@ public void setMetaData(MetaData data) {
 
 public void setOutput(PrintStream output) {
 	this.output = output;
+}
+
+public void setProgressMonitor(ProgressMonitor progress) {
+	this.progress = progress;
 }
 
 }

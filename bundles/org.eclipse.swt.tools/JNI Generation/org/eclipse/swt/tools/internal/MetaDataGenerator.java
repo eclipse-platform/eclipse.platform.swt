@@ -41,6 +41,7 @@ public void generate(Field[] fields) {
 		if ((mods & Modifier.STATIC) != 0) continue;
 		generate(field);
 		outputln();
+		if (progress != null) progress.step();
 	}
 }
 
@@ -60,6 +61,7 @@ public void generate(Method[] methods) {
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
 		generate(method);
 		outputln();
+		if (progress != null) progress.step();
 	}
 }
 
