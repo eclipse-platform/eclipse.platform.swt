@@ -1,7 +1,7 @@
 package org.eclipse.swt.layout;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 import org.eclipse.swt.*;
@@ -35,13 +35,11 @@ import org.eclipse.swt.*;
  */
 public final class FormData {
 	/**
-	 * height specifies the desired height in pixels given
-	 * by the user
+	 * height specifies the desired height in pixels
 	 */
 	public int height;
 	/**
-	 * width specifies the desired width in pixels given
-	 * by the user
+	 * width specifies the desired width in pixels
 	 */
 	public int width;
 	/**
@@ -86,7 +84,13 @@ FormAttachment getBottomAttachment () {
 	isVisited = true;
 	FormData bottomData = (FormData) bottom.control.getLayoutData ();
 	FormAttachment topAttachment = bottomData.getTopAttachment ();
+	FormAttachment bottomAttachment = bottomData.getBottomAttachment ();
 	isVisited = false;
+	if (bottom.alignment == SWT.BOTTOM) return bottomAttachment.plus (bottom.offset);
+	if (bottom.alignment == SWT.CENTER) {
+		FormAttachment bottomHeight = bottomAttachment.minus (topAttachment);
+		return bottomAttachment.minus (bottomHeight.minus (cacheHeight).divide (2));
+	}
 	return topAttachment.plus (bottom.offset);	
 }
 
@@ -100,7 +104,13 @@ FormAttachment getLeftAttachment () {
 	isVisited = true;
 	FormData leftData = (FormData) left.control.getLayoutData ();
 	FormAttachment rightAttachment = leftData.getRightAttachment ();
+	FormAttachment leftAttachment = leftData.getLeftAttachment ();
 	isVisited = false; 
+	if (left.alignment == SWT.LEFT) return leftAttachment.plus (left.offset);
+	if (left.alignment == SWT.CENTER) {
+		FormAttachment leftWidth = rightAttachment.minus (leftAttachment);
+		return leftAttachment.plus (leftWidth.minus (cacheWidth).divide (2));
+	}
 	return rightAttachment.plus (left.offset); 
 }	
 
@@ -114,7 +124,13 @@ FormAttachment getRightAttachment () {
 	isVisited = true;
 	FormData rightData = (FormData) right.control.getLayoutData ();
 	FormAttachment leftAttachment = rightData.getLeftAttachment ();
+	FormAttachment rightAttachment = rightData.getRightAttachment ();
 	isVisited = false;
+	if (right.alignment == SWT.RIGHT) return rightAttachment.plus (right.offset);
+	if (right.alignment == SWT.CENTER) {
+		FormAttachment rightWidth = rightAttachment.minus (leftAttachment);
+		return rightAttachment.minus (rightWidth.minus (cacheWidth).divide (2));
+	}
 	return leftAttachment.plus (right.offset);
 }
 
@@ -127,8 +143,14 @@ FormAttachment getTopAttachment () {
 	if (top.control == null) return top;
 	isVisited = true;
 	FormData topData = (FormData) top.control.getLayoutData ();
+	FormAttachment topAttachment = topData.getTopAttachment ();
 	FormAttachment bottomAttachment = topData.getBottomAttachment ();
 	isVisited = false;
+	if (top.alignment == SWT.TOP) return topAttachment.plus (top.offset);
+	if (top.alignment == SWT.CENTER) {
+		FormAttachment topHeight = bottomAttachment.minus (topAttachment);
+		return topAttachment.plus (topHeight.minus (cacheHeight).divide (2));
+	}
 	return bottomAttachment.plus (top.offset);
 }
 
