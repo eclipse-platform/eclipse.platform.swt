@@ -3625,6 +3625,17 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	GdkEventButton _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I\n")
+
+	if (arg1) lparg1 = getGdkEventButtonFields(env, arg1, &_arg1);
+	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclipse_swt_internal_gtk_GtkCListColumn_2I
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {

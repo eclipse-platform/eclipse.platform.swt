@@ -592,6 +592,7 @@ public static final native void memmove(int dest, GtkTargetEntry src, int size);
 public static final native void memmove(int dest, GtkCListColumn src, int size);
 public static final native void memmove(int dest, GtkAdjustment src);
 public static final native void memmove(int dest, GtkStyle src);
+public static final native void memmove(int dest, GdkEventButton src, int size);
 public static final native void memmove(GtkColorSelectionDialog dest, int src);
 public static final native void memmove(GtkSelectionData dest, int src, int size);
 public static final native void memmove(GtkCTreeRow dest, int src, int size);
