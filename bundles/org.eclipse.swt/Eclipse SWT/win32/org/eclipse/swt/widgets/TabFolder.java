@@ -683,19 +683,20 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the tab folder window
 	* proc processes WM_NOTIFY, it forwards this
-	* message to the parent.  This is done so that
-	* children of the tab folder that send WM_NOTIFY
-	* messages to their parent will notify not only
-	* the tab folder but also the parent of the tab folder,
+	* message to its parent.  This is done so that
+	* children of this control that send this message 
+	* type to their parent will notify not only
+	* this control but also the parent of this control,
 	* which is typically the application window and
-	* the window that is looking for this message.
-	* If the tab folder did not do this, applications
-	* would have to subclass the tab folder window to
-	* see WM_NOTIFY messages. Because the tab folder
-	* window is subclassed by SWT, the WM_NOTIFY message
-	* is delivered twice, once by SWT and once because
-	* the message is forwarded.  The fix is to avoid
-	* calling the tab folder window proc.
+	* the window that is looking for the message.
+	* If the control did not forward the message, 
+	* applications would have to subclass the control 
+	* window to see the message. Because the control
+	* window is subclassed by SWT, the message
+	* is delivered twice, once by SWT and once when
+	* the message is forwarded by the window proc.
+	* The fix is to avoid calling the window proc 
+	* for this control.
 	*/
 	LRESULT result = super.WM_NOTIFY (wParam, lParam);
 	if (result != null) return result;
