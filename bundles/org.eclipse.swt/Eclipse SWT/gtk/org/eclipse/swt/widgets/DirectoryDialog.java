@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.*;
 
 public class DirectoryDialog extends GtkFileDialog {
 	String message = "", filterPath = "";
-	String directoryPath;
 
 /**
  * Constructs a new instance of this class given only its
@@ -136,14 +135,30 @@ public void setFilterPath (String string) {
  * @param string the message
  */
 public void setMessage (String string) {
+	/*
+	 * The native Gtk file selection dialog does not support message
+	 * strings other than the dialog title.  However, we maintain the set
+	 * message so at least the application programs get back the same string.
+	 */
 	message = string;
 }
 
-boolean getAnswer() {
-	String fileNameFromOS = getFileNameFromOS();
-	int separatorIndex = calculateLastSeparatorIndex(fileNameFromOS);
-	if (separatorIndex+1 != fileNameFromOS.length()) return false;  // the user selected a file
-	directoryPath = answer = fileNameFromOS;
-	return true;
+void interpretOsAnswer(String osAnswer) {
+	if (osAnswer==null) return;
+	int separatorIndex = calculateLastSeparatorIndex(osAnswer);
+	if (separatorIndex+1 != osAnswer.length()) {
+		/*
+		 * the selected thing is a file
+		 */
+		answer = null;
+		return;
+	}
+	answer = osAnswer;
+}
+void preset() {
+	if (filterPath != null) {
+		byte [] filterBytes = Converter.wcsToMbcs (null, filterPath, true);
+		OS.gtk_file_selection_set_filename (handle, filterBytes);
+	}
 }
 }
