@@ -68,7 +68,6 @@ void createHandle (int index) {
 	};
 	handle = OS.PtCreateWidget (OS.PtScrollbar (), parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.PtExtentWidget (handle);
 }
 
 public Display getDisplay () {
@@ -305,6 +304,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 public void setVisible (boolean visible) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (visible == OS.PtWidgetIsRealized (handle)) return;
 	int [] args = {
 		OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE,
 	};
