@@ -1222,11 +1222,9 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	*/
 	if (getMaximized ()) {
 		Rectangle rect = getBounds ();
-		if (!move || (rect.x == x && rect.y == y)) {
-			if (!resize || (rect.width == width && rect.height == height)) {
-				return false;
-			}
-		}
+		boolean sameOrigin = !move || (rect.x == x && rect.y == y);
+		boolean sameExtent = !resize || (rect.width == width && rect.height == height);
+		if (sameOrigin && sameExtent) return false;
 	}
 	if (resize) {
 		int [] argList = {OS.XmNminWidth, 0, OS.XmNminHeight, 0};
