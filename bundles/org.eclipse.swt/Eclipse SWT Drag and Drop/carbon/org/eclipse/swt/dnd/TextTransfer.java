@@ -12,6 +12,7 @@ package org.eclipse.swt.dnd;
 
 
 import org.eclipse.swt.internal.Converter; 
+import org.eclipse.swt.internal.carbon.CFRange;
 import org.eclipse.swt.internal.carbon.OS;
  
 /**
@@ -57,8 +58,23 @@ public void javaToNative (Object object, TransferData transferData){
 	if (object == null || !(object instanceof String)) {
 		transferData.result = -1;
 		return;
-	} 
-	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
+	}
+	String string = (String)object;
+	char[] chars = new char[string.length()];
+	string.getChars (0, chars.length, chars, 0);
+	int ptr = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, chars.length);
+	if (ptr == 0) {
+		transferData.result = -1;
+		return;
+	}
+	CFRange range = new CFRange();
+	range.length = chars.length;
+	int encoding = OS.CFStringGetSystemEncoding();
+	int[] size = new int[1];
+	OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, null, 0, size);
+	byte[] buffer = new byte[size[0]];
+	OS.CFStringGetBytes(ptr, range, encoding, (byte)'?', true, buffer, size [0], size);
+	OS.CFRelease(ptr);
 	super.javaToNative(buffer, transferData);
 }
 
@@ -77,17 +93,22 @@ public Object nativeToJava(TransferData transferData){
 	byte[] buffer = (byte[])super.nativeToJava(transferData);
 	if (buffer == null) return null;
 	// convert byte array to a string
-	char [] unicode = Converter.mbcsToWcs (null, buffer);
-	String string = new String (unicode);
-	int end = string.indexOf('\0');
-	return (end == -1) ? string : string.substring(0, end);
+	int encoding = OS.CFStringGetSystemEncoding();
+	int ptr = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+	int length = OS.CFStringGetLength(ptr);
+	char[] chars = new char[length];
+	CFRange range = new CFRange();
+	range.length = length;
+	OS.CFStringGetCharacters(ptr, range, chars);
+	OS.CFRelease (ptr);
+	return new String (chars);
 }
 
 protected String[] getTypeNames() {
-	return new String[] { TYPENAME1 };
+	return new String[] {TYPENAME1};
 }
 
 protected int[] getTypeIds() {
-	return new int[] { TYPEID1 };
+	return new int[] {TYPEID1};
 }
 }
