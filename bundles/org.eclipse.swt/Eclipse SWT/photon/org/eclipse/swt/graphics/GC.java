@@ -924,9 +924,7 @@ public void fillOval (int x, int y, int width, int height) {
 	center.x = (short)x; center.y = (short)y;
 	PhPoint_t radii = new PhPoint_t();
 	radii.x = (short)(x + width);
-	if (width != 2) radii.x--;
 	radii.y = (short)(y + height);
-	if (height != 2) radii.y--;
 
 	int flags = OS.PtEnter(0);
 	try {
