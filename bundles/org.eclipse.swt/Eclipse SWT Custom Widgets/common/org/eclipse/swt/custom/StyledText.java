@@ -4446,7 +4446,12 @@ void modifyContent(Event event, boolean updateCaret) {
 		if (updateCaret) {
 			internalSetSelection(event.start + event.text.length(), 0);
 			// always update the caret location. fixes 1G8FODP	
-			showCaret();
+			if (isBidi()) {
+				showBidiCaret();
+			}
+			else {
+				showCaret();
+			}
 		}		
 		notifyListeners(SWT.Modify, event);		
 		if (isListening(ExtendedModify)) {
@@ -4854,7 +4859,7 @@ void reset() {
 		horizontalBar.setSelection(0);	
 	}
 	setScrollBars();
-	setCaretLocation();
+	setCaret();
 	redraw();
 }
 /**
@@ -4882,7 +4887,7 @@ void scrollHorizontal(int pixels) {
 		0, 0,						// source x, y
 		clientArea.width, clientArea.height, true);
 	horizontalScrollOffset += pixels;
-	setCaretLocation();
+	setCaret();
 }
 /**
  * Scrolls the widget horizontally and adjust the horizontal scroll bar to 
@@ -4941,6 +4946,14 @@ void sendSelectionEvent() {
 	event.y = selection.y;
 	notifyListeners(SWT.Selection, event);
 }
+void setCaret () {
+	if (isBidi()) {
+		setBidiCaret();
+	}
+	else {
+		setCaretLocation();
+	}	
+}
 /**
  * Sets the receiver's caret.  Set the caret's height and location.
  * 
@@ -4961,6 +4974,36 @@ public void setCaret (Caret caret) {
 		}
 		setCaretLocation();
 	}		
+}
+/**
+ * Moves the Caret to the current caret offset, but does NOT
+ * switch the keyboard.
+ */
+void setBidiCaret() {
+	int line = content.getLineAtOffset(caretOffset);
+	int lineStartOffset = content.getOffsetAtLine(line);
+	int offsetInLine = caretOffset - lineStartOffset;
+	String lineText = content.getLine(line);
+	GC gc = new GC(this);
+	StyledTextEvent event = getLineStyleData(lineStartOffset, lineText);
+	StyledTextBidi bidi;
+	int[] boldStyles = null;
+	Caret caret;
+	
+	if (event != null) {
+		boldStyles = getBoldRanges(event.styles, lineStartOffset, lineText.length());
+	}
+	bidi = new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont);
+	caret = getCaret();
+	if (caret != null) {
+		int caretX = bidi.getCaretPosition(offsetInLine);
+		caretX = caretX - horizontalScrollOffset;
+		if (StyledTextBidi.getKeyboardLanguageDirection() == SWT.RIGHT) {
+			caretX -= (getCaretWidth() - 1);
+		}
+		caret.setLocation(caretX, line * lineHeight - verticalScrollOffset);
+	}
+	gc.dispose();
 }
 /**
  * Moves the Caret to the current caret offset.
@@ -4984,11 +5027,6 @@ void setBidiCaretLocation() {
 		// continue with previous character type
 		bidi.setKeyboardLanguage(offsetInLine - 1);
 	} 
-	else
-	if (offsetInLine > 0 && offsetInLine == lineText.length() &&
-		Character.isWhitespace(lineText.charAt(offsetInLine - 1)) == false) {
-		bidi.setKeyboardLanguage(offsetInLine - 1);
-	}
 	else  {
 		bidi.setKeyboardLanguage(offsetInLine);
 	}	
@@ -5153,7 +5191,7 @@ public void setFont(Font font) {
 		caretDirection = SWT.NULL;
 		createCaretBitmaps();
 		createBidiCaret();
-		setBidiCaretLocation();		
+		setCaret();		
 	} 
 	else {
 		Caret caret = getCaret();
@@ -5593,7 +5631,7 @@ public void setStyleRange(StyleRange range) {
 	// make sure that the caret is positioned correctly.
 	// caret location may change if font style changes.
 	// fixes 1G8FODP
-	setCaretLocation();
+	setCaret();
 }
 
 /** 
@@ -5638,7 +5676,7 @@ public void setStyleRanges(StyleRange[] ranges) {
 	// make sure that the caret is positioned correctly.
 	// caret location may change if font style changes.
 	// fixes 1G8FODP
-	setCaretLocation();
+	setCaret();
 }
 /**
  * Ensures that the selection style ends at the selection end.
@@ -5685,7 +5723,12 @@ public void setTabs(int tabs) {
 	calculateTabWidth();
 	if (caretOffset > 0) {
 		caretOffset = 0;
-		showCaret();
+		if (isBidi()) {
+			showBidiCaret();
+		}
+		else {
+			showCaret();
+		}
 		clearSelection(false);
 	}
 	redraw();
@@ -5836,7 +5879,47 @@ void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 		}
 	}
 	verticalScrollOffset = pixelOffset;	
-	setCaretLocation();
+	setCaret();
+}
+/**
+ * Sets the caret location and scrolls the caret offset into view.
+ */
+void showBidiCaret() {
+	int line = content.getLineAtOffset(caretOffset);
+	int lineOffset = content.getOffsetAtLine(line);
+	int offsetInLine = caretOffset - lineOffset;
+	String lineText = content.getLine(line);
+	int xAtOffset = getXAtOffset(lineText, line, offsetInLine);
+	int clientAreaWidth = getClientArea().width;
+	int verticalIncrement = getVerticalIncrement();
+	int horizontalIncrement = clientAreaWidth / 4;
+	boolean scrolled = false;		
+	
+	if (xAtOffset < 0) {
+		// always make 1/4 of a page visible
+		xAtOffset = Math.max(horizontalScrollOffset * -1, xAtOffset - horizontalIncrement);	
+		scrollHorizontalBar(xAtOffset);
+		scrolled = true;
+	}
+	else 
+	if (xAtOffset > clientAreaWidth) {
+		// always make 1/4 of a page visible
+		xAtOffset = Math.min(contentWidth - horizontalScrollOffset, xAtOffset + horizontalIncrement);
+		scrollHorizontalBar(xAtOffset - clientAreaWidth);
+		scrolled = true;
+	}
+	if (line < topIndex) {
+		setVerticalScrollOffset(line * verticalIncrement, true);
+		scrolled = true;
+	}
+	else
+	if (line > getBottomIndex()) {
+		setVerticalScrollOffset((line - getBottomIndex()) * verticalIncrement + verticalScrollOffset, true);
+		scrolled = true;
+	}
+	if (scrolled == false) {
+		setCaret();
+	}
 }
 /**
  * Sets the caret location and scrolls the caret offset into view.
