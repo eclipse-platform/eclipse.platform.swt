@@ -19,10 +19,12 @@
 
 #include "swt.h"
 
+#include <string.h>
 #include <stdio.h>
 #include <assert.h>
 #include <libgnomevfs/gnome-vfs.h>
 #include <libgnomevfs/gnome-vfs-mime-handlers.h>
+#include <libgnomevfs/gnome-vfs-mime-info.h>
 
 #ifndef NO_GnomeVFSMimeApplication
 typedef struct GnomeVFSMimeApplication_FID_CACHE {
@@ -109,7 +111,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1vfs_1mime_
 {
 	DEBUG_CALL("gnome_1vfs_1mime_1extensions_1list_1free\n")
 
-	gnome_vfs_mime_extensions_list_free(arg0);
+	gnome_vfs_mime_extensions_list_free((GList*)arg0);
 }
 #endif
 
@@ -119,7 +121,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GNOME_gnome_1vfs_1mime_
 {
 	DEBUG_CALL("gnome_1vfs_1mime_1registered_1mime_1type_1list_1free\n")
 
-	gnome_vfs_mime_registered_mime_type_list_free(arg0);
+	gnome_vfs_mime_registered_mime_type_list_free((GList *)arg0);
 }
 #endif
 

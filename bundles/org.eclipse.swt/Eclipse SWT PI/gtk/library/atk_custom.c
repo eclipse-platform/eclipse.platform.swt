@@ -14,7 +14,7 @@
 *******************************************************************************/
 
 #include "swt.h"
-#include "os_structs.h"
+#include "atk_structs.h"
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_accessibility_gtk_ATK_##func
 

@@ -27,6 +27,12 @@
 #include <string.h>
 #include <dlfcn.h>
 
+/*
+* Defined this prototype to avoid warnings, 
+* because it is a deprecated function in GTK.
+*/
+void gtk_progress_bar_set_bar_style(void*, int);
+
 #define NATIVE_ENTER(env,clazz,func)
 #define NATIVE_EXIT(env,clazz,func)
 
