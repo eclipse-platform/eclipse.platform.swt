@@ -34,11 +34,6 @@ public final class GC {
 
 	Drawable drawable;
 	GCData data;
-	
-	/**
-	 * A pre-converted string containing a space character.
-	 */
-	static final byte [] SPACE = new byte [] {(byte)' '};
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -128,6 +123,7 @@ public void copyArea(Image image, int x, int y) {
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	int hwnd = OS.WindowFromDC(handle);
 	if (hwnd == 0) {
 		OS.BitBlt(handle, destX, destY, width, height, handle, srcX, srcY, OS.SRCCOPY);
@@ -271,6 +267,7 @@ public void dispose() {
  */
 public void drawArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	int x1, y1, x2, y2,tmp;
 	boolean isNegative;
 	if (width < 0) {
@@ -422,6 +419,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 
 	/* Get the icon info */
 	ICONINFO srcIconInfo = new ICONINFO();
+	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	OS.GetIconInfo(srcImage.handle, srcIconInfo);
 
 	/* Get the icon width and height */
@@ -468,7 +466,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			newIconInfo.hbmColor = OS.CreateCompatibleBitmap(srcHdc, destWidth, destHeight);
 			if (newIconInfo.hbmColor == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			int oldDestBitmap = OS.SelectObject(dstHdc, newIconInfo.hbmColor);
-			OS.SetStretchBltMode(dstHdc, OS.COLORONCOLOR);
+			if (!OS.IsWinCE) OS.SetStretchBltMode(dstHdc, OS.COLORONCOLOR);
 			OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCCOPY);
 
 			/* Blt the mask bitmap */
@@ -621,7 +619,7 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	}
 	
 	/* Scale the foreground pixels with alpha */
-	OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
+	if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
 	OS.MoveMemory(dibBM.bmBits, srcData, sizeInBytes);
 	OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
 	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
@@ -670,6 +668,7 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 			/* Palette-based DIBSECTION */
 			int maxColors = 1 << bm.bmBitsPixel;
 			byte[] oldColors = new byte[maxColors * 4];
+			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			int numColors = OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
 			int offset = srcImage.transparentPixel * 4;
 			byte[] newColors = new byte[oldColors.length];
@@ -677,6 +676,7 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 			newColors[offset] = (byte)transBlue;
 			newColors[offset+1] = (byte)transGreen;
 			newColors[offset+2] = (byte)transRed;
+			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.SetDIBColorTable(srcHdc, 0, maxColors, newColors);
 			originalColors = oldColors;
 		} else {
@@ -689,6 +689,7 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 			bmi[13] = (byte)((bm.bmPlanes >> 8) & 0xFF);
 			bmi[14] = (byte)(bm.bmBitsPixel & 0xFF);
 			bmi[15] = (byte)((bm.bmBitsPixel >> 8) & 0xFF);
+			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetDIBits(srcHdc, srcImage.handle, 0, 0, 0, bmi, OS.DIB_RGB_COLORS);
 			int offset = 40 + 4 * srcImage.transparentPixel;
 			transRed = bmi[offset + 2] & 0xFF;
@@ -730,7 +731,7 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 	int tempBitmap = OS.CreateCompatibleBitmap(hDC, destWidth, destHeight);	
 	int oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
 	OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
-	OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
+	if (!OS.IsWinCE) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
 	OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
 	OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
 	OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
@@ -754,11 +755,19 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
-	int bltRop = OS.SRCCOPY;
-	if (OS.GetROP2(handle) == OS.R2_XORPEN) bltRop = OS.SRCINVERT;
-	int oldStretchMode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
-	OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, bltRop);
-	OS.SetStretchBltMode(handle, oldStretchMode);
+	int mode = 0, rop2 = 0;
+	if (!OS.IsWinCE) {
+		rop2 = OS.GetROP2(handle);
+		mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+	} else {
+		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
+		OS.SetROP2 (handle, rop2);
+	}
+	int dwRop = rop2 == OS.R2_XORPEN ? OS.SRCINVERT : OS.SRCCOPY;
+	OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, dwRop);
+	if (!OS.IsWinCE) {
+		OS.SetStretchBltMode(handle, mode);
+	}
 	OS.SelectObject(srcHdc, oldSrcBitmap);
 	OS.DeleteDC(srcHdc);
 }
@@ -778,8 +787,13 @@ void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight,
  */
 public void drawLine (int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	OS.MoveToEx (handle, x1, y1, 0);
-	OS.LineTo (handle, x2, y2);
+	if (OS.IsWinCE) {
+		int [] points = new int [] {x1, y1, x2, y2};
+		OS.Polyline (handle, points, points.length / 2);
+	} else {
+		OS.MoveToEx (handle, x1, y1, 0);
+		OS.LineTo (handle, x2, y2);
+	}
 	OS.SetPixel (handle, x2, y2, OS.GetTextColor (handle));
 }
 
@@ -954,8 +968,11 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 public void drawString (String string, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, false);
-	OS.TextOut (handle, x, y, buffer, buffer.length);
+//	TCHAR buffer = new TCHAR (getCodePage(), string, false);
+	int length = string.length();
+	char[] buffer = new char [length];
+	string.getChars(0, length, buffer, 0);
+	OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
 }
 
 /** 
@@ -981,13 +998,16 @@ public void drawString (String string, int x, int y) {
 public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, false);
+//	TCHAR buffer = new TCHAR (getCodePage(), string, false);
+	int length = string.length();
+	char[] buffer = new char [length];
+	string.getChars(0, length, buffer, 0);
 	if (isTransparent) {
 		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
-		OS.TextOut (handle, x, y, buffer, buffer.length);
+		OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
 		OS.SetBkMode(handle, oldBkMode);
 	} else {
-		OS.TextOut (handle, x, y, buffer, buffer.length);
+		OS.ExtTextOutW(handle, x, y, 0, null, buffer, length, null);
 	}
 }
 
@@ -1014,8 +1034,8 @@ public void drawText (String string, int x, int y) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
-	byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
-	OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
+	TCHAR buffer = new TCHAR (getCodePage(), string, false);
+	OS.DrawText(handle, buffer, buffer.length(), rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
 }
 
 /** 
@@ -1043,13 +1063,13 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
-	byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
+	TCHAR buffer = new TCHAR(getCodePage(), string, false);
 	if (isTransparent) {
 		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
-		OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
+		OS.DrawText(handle, buffer, buffer.length(), rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
 		OS.SetBkMode(handle, oldBkMode);
 	} else {
-		OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
+		OS.DrawText(handle, buffer, buffer.length(), rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX);
 	}
 }
 
@@ -1104,6 +1124,7 @@ public boolean equals (Object object) {
  */
 public void fillArc (int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	int x1, y1, x2, y2,tmp;
 	boolean isNegative;
 
@@ -1200,37 +1221,39 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 	}
 
 	/* Use GradientFill if supported, only on Windows 98, 2000 and newer */
-	final int hHeap = OS.GetProcessHeap();
-	final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY,
-		GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);
-	final int pVertex = pMesh + GRADIENT_RECT.sizeof;
-
-	GRADIENT_RECT gradientRect = new GRADIENT_RECT();
-	gradientRect.UpperLeft = 0;
-	gradientRect.LowerRight = 1;
-	OS.MoveMemory(pMesh, gradientRect, gradientRect.sizeof);
-
-	TRIVERTEX trivertex = new TRIVERTEX();
-	trivertex.x = x;
-	trivertex.y = y;
-	trivertex.Red = (short)((fromRGB.red << 8) | fromRGB.red);
-	trivertex.Green = (short)((fromRGB.green << 8) | fromRGB.green);
-	trivertex.Blue = (short)((fromRGB.blue << 8) | fromRGB.blue);
-	trivertex.Alpha = -1;
-	OS.MoveMemory(pVertex, trivertex, TRIVERTEX.sizeof);
+	if (!OS.IsWinCE) {
+		final int hHeap = OS.GetProcessHeap();
+		final int pMesh = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY,
+			GRADIENT_RECT.sizeof + TRIVERTEX.sizeof * 2);
+		final int pVertex = pMesh + GRADIENT_RECT.sizeof;
 	
-	trivertex.x = x + width;
-	trivertex.y = y + height;
-	trivertex.Red = (short)((toRGB.red << 8) | toRGB.red);
-	trivertex.Green = (short)((toRGB.green << 8) | toRGB.green);
-	trivertex.Blue = (short)((toRGB.blue << 8) | toRGB.blue);
-	trivertex.Alpha = -1;
-	OS.MoveMemory(pVertex + TRIVERTEX.sizeof, trivertex, TRIVERTEX.sizeof);
-
-	boolean success = OS.GradientFill(handle, pVertex, 2, pMesh, 1,
-		vertical ? OS.GRADIENT_FILL_RECT_V : OS.GRADIENT_FILL_RECT_H);
-	OS.HeapFree(hHeap, 0, pMesh);
-	if (success) return;
+		GRADIENT_RECT gradientRect = new GRADIENT_RECT();
+		gradientRect.UpperLeft = 0;
+		gradientRect.LowerRight = 1;
+		OS.MoveMemory(pMesh, gradientRect, gradientRect.sizeof);
+	
+		TRIVERTEX trivertex = new TRIVERTEX();
+		trivertex.x = x;
+		trivertex.y = y;
+		trivertex.Red = (short)((fromRGB.red << 8) | fromRGB.red);
+		trivertex.Green = (short)((fromRGB.green << 8) | fromRGB.green);
+		trivertex.Blue = (short)((fromRGB.blue << 8) | fromRGB.blue);
+		trivertex.Alpha = -1;
+		OS.MoveMemory(pVertex, trivertex, TRIVERTEX.sizeof);
+		
+		trivertex.x = x + width;
+		trivertex.y = y + height;
+		trivertex.Red = (short)((toRGB.red << 8) | toRGB.red);
+		trivertex.Green = (short)((toRGB.green << 8) | toRGB.green);
+		trivertex.Blue = (short)((toRGB.blue << 8) | toRGB.blue);
+		trivertex.Alpha = -1;
+		OS.MoveMemory(pVertex + TRIVERTEX.sizeof, trivertex, TRIVERTEX.sizeof);
+	
+		boolean success = OS.GradientFill(handle, pVertex, 2, pMesh, 1,
+			vertical ? OS.GRADIENT_FILL_RECT_V : OS.GRADIENT_FILL_RECT_H);
+		OS.HeapFree(hHeap, 0, pMesh);
+		if (success) return;
+	}
 	
 	final int depth = OS.GetDeviceCaps(handle, OS.BITSPIXEL);
 	final int bitResolution = (depth >= 24) ? 8 : (depth >= 15) ? 5 : 0;
@@ -1309,10 +1332,15 @@ public void fillPolygon(int[] pointArray) {
  */
 public void fillRectangle (int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (OS.GetROP2(handle) == OS.R2_COPYPEN)
-		OS.PatBlt (handle, x, y, width, height, OS.PATCOPY);
-	else
-		OS.PatBlt (handle, x, y, width, height, OS.PATINVERT);
+	int rop2 = 0;
+	if (OS.IsWinCE) {
+		rop2 = OS.SetROP2(handle, OS.R2_COPYPEN);
+		OS.SetROP2(handle, rop2);
+	} else {
+		rop2 = OS.GetROP2(handle);
+	}
+	int dwRop = rop2 == OS.R2_XORPEN ? OS.PATINVERT : OS.PATCOPY;
+	OS.PatBlt(handle, x, y, width, height, dwRop);
 }
 
 /** 
@@ -1377,13 +1405,18 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
  */
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte[] buffer = Converter.wcsToMbcs(getCodePage(), new char[] { ch });
-	int val = 0;
-	for (int i = 0; i < buffer.length; i++) {
-		val |= (buffer[i] & 0xFF) << (i * 8);
+	if (OS.IsWinCE) {
+		SIZE size = new SIZE();
+		OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
+		return size.cx;
+	}
+	int tch = ch;
+	if (ch > 0x7F) {
+		TCHAR buffer = new TCHAR(getCodePage(), ch, false);
+		tch = buffer.tcharAt(0);
 	}
 	int[] width = new int[1];
-	OS.GetCharWidth(handle, val, val, width);
+	OS.GetCharWidth(handle, tch, tch, width);
 	return width[0];
 }
 
@@ -1423,21 +1456,25 @@ public Color getBackground() {
  */
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	byte[] buffer = Converter.wcsToMbcs(getCodePage(), new char[] { ch });
-	int val = 0;
-	for (int i = 0; i < buffer.length; i++) {
-		val |= (buffer[i] & 0xFF) << (i * 8);
-	}
-	int[] width = new int[3];
+	
 	/* GetCharABCWidths only succeeds on truetype fonts */
-	if (OS.GetCharABCWidths(handle, val, val, width)) {
-		return width[1];
+	if (!OS.IsWinCE) {
+		int tch = ch;
+		if (ch > 0x7F) {
+			TCHAR buffer = new TCHAR(getCodePage(), ch, false);
+			tch = buffer.tcharAt (0);
+		}
+		int[] width = new int[3];
+		if (OS.GetCharABCWidths(handle, tch, tch, width)) {
+			return width[1];
+		}
 	}
+	
 	/* It wasn't a truetype font */
 	TEXTMETRIC tm = new TEXTMETRIC();
-	OS.GetTextMetrics(handle, tm);
+	OS.GetTextMetricsW(handle, tm);
 	SIZE size = new SIZE();
-	OS.GetTextExtentPoint32(handle, buffer, buffer.length, size);
+	OS.GetTextExtentPoint32W(handle, new char[]{ch}, 1, size);
 	return size.cx - tm.tmOverhang;
 }
 
@@ -1484,6 +1521,7 @@ public void getClipping (Region region) {
 }
 
 int getCodePage () {
+	if (OS.IsWinCE) return OS.GetACP();
 	int[] lpCs = new int[8];
 	int cs = OS.GetTextCharset(handle);
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
@@ -1605,7 +1643,14 @@ public int getLineWidth() {
  */
 public boolean getXORMode() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return OS.GetROP2(handle) == OS.R2_XORPEN;
+	int rop2 = 0;
+	if (OS.IsWinCE) {
+		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
+		OS.SetROP2 (handle, rop2);
+	} else {
+		rop2 = OS.GetROP2(handle);
+	}
+	return rop2 == OS.R2_XORPEN;
 }
 
 void init(Drawable drawable, GCData data, int hDC) {
@@ -1933,12 +1978,16 @@ public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	SIZE size = new SIZE();
-	if (string.length () == 0) {
-		OS.GetTextExtentPoint32(handle, SPACE, 1, size);
+	int length = string.length();
+	if (length == 0) {
+//		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
+		OS.GetTextExtentPoint32W(handle, new char[]{' '}, 1, size);
 		return new Point(0, size.cy);
 	} else {
-		byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
-		OS.GetTextExtentPoint32(handle, buffer, buffer.length, size);
+//		TCHAR buffer = new TCHAR (getCodePage(), string, false);
+		char[] buffer = new char [length];
+		string.getChars(0, length, buffer, 0);
+		OS.GetTextExtentPoint32W(handle, buffer, length, size);
 		return new Point(size.cx, size.cy);
 	}
 }
@@ -1967,12 +2016,13 @@ public Point textExtent(String string) {
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if (string.length () == 0) {
 		SIZE size = new SIZE();
-		OS.GetTextExtentPoint32(handle, SPACE, 1, size);
+//		OS.GetTextExtentPoint32(handle, SPACE, SPACE.length(), size);
+		OS.GetTextExtentPoint32W(handle, new char [] {' '}, 1, size);
 		return new Point(0, size.cy);
 	} else {
 		RECT rect = new RECT();
-		byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
-		OS.DrawText(handle, buffer, buffer.length, rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX | OS.DT_CALCRECT);
+		TCHAR buffer = new TCHAR(getCodePage(), string, false);
+		OS.DrawText(handle, buffer, buffer.length(), rect, OS.DT_EXPANDTABS | OS.DT_LEFT | OS.DT_NOPREFIX | OS.DT_CALCRECT);
 		return new Point(rect.right, rect.bottom);
 	}
 }

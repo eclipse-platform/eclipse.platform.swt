@@ -38,12 +38,9 @@ public class TabFolder extends Composite {
 	TabItem [] items;
 	ImageList imageList;
 	static final int TabFolderProc;
-	static final byte [] TabFolderClass;
+	static final TCHAR TabFolderClass = new TCHAR (0, "SWT_" + OS.WC_TABCONTROL, true);
 	static {
-		byte [] prefix = Converter.wcsToMbcs (0, "SWT_");
-		TabFolderClass = new byte [prefix.length + OS.WC_TABCONTROL.length];
-		System.arraycopy (prefix, 0, TabFolderClass, 0, prefix.length);
-		System.arraycopy (OS.WC_TABCONTROL, 0, TabFolderClass, prefix.length, OS.WC_TABCONTROL.length);
+		
 		/*
 		* Feature in Windows.  The tab control window class
 		* uses the CS_HREDRAW and CS_VREDRAW style bits to
@@ -53,18 +50,21 @@ public class TabFolder extends Composite {
 		* implement special code that damages only the exposed
 		* area.
 		*/
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, OS.WC_TABCONTROL, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		TCHAR WC_TABCONTROL = new TCHAR (0, OS.WC_TABCONTROL, true);
+		OS.GetClassInfo (0, WC_TABCONTROL, lpWndClass);
 		TabFolderProc = lpWndClass.lpfnWndProc;
 		int hInstance = OS.GetModuleHandle (null);
-		if (!OS.GetClassInfoEx (hInstance, TabFolderClass, lpWndClass)) {
+		if (!OS.GetClassInfo (hInstance, TabFolderClass, lpWndClass)) {
 			int hHeap = OS.GetProcessHeap ();
 			lpWndClass.hInstance = hInstance;
 			lpWndClass.style &= ~(OS.CS_HREDRAW | OS.CS_VREDRAW);
-			lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TabFolderClass.length);
-			OS.MoveMemory (lpWndClass.lpszClassName, TabFolderClass, TabFolderClass.length);
-			OS.RegisterClassEx (lpWndClass);
+			int byteCount = TabFolderClass.length () * TCHAR.sizeof;
+			int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+			OS.MoveMemory (lpszClassName, TabFolderClass, byteCount);
+			lpWndClass.lpszClassName = lpszClassName;
+			OS.RegisterClass (lpWndClass);
+//			OS.HeapFree (hHeap, 0, lpszClassName);
 		}
 	}
 
@@ -578,7 +578,7 @@ int widgetStyle () {
 	return bits | OS.TCS_TABS | OS.TCS_FOCUSNEVER | OS.TCS_TOOLTIPS;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return TabFolderClass;
 }
 
@@ -603,42 +603,6 @@ LRESULT WM_NCHITTEST (int wParam, int lParam) {
 	*/
 	int hittest = OS.DefWindowProc (handle, OS.WM_NCHITTEST, wParam, lParam);
 	return new LRESULT (hittest);
-}
-
-LRESULT WM_NOTIFY (int wParam, int lParam) {
-	/*
-	* Bug in Windows NT.  For some reason, Windows NT requests a
-	* UNICODE tool tip string instead of a DBCS string by sending
-	* TTN_GETDISPINFOW instead of TTN_GETDISPINFOA.  This is not
-	* correct because the control is created as a DBCS control and
-	* expects to process TTN_GETDISPINFOA.  TTN_GETDISPINFOA is
-	* never sent on NT.  The fix is to handle TTN_GETDISPINFOW and
-	* give the control a UNICODE string.
-	*/
-	if (IsWinNT) {
-		NMHDR hdr = new NMHDR ();
-		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-		if (hdr.code == OS.TTN_GETDISPINFOW) {
-			NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-			OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
-			String string = null;
-			int index = hdr.idFrom;
-			if (0 <= index && index < items.length) {
-				TabItem item = items [index];
-				if (item != null) string = item.toolTipText;
-			}
-			if (string != null && string.length () != 0) {
-				string = Display.withCrLf (string);
-				int length = string.length ();
-				char [] buffer = new char [length + 1];
-				string.getChars (0, length, buffer, 0);
-				getShell ().setToolTipText (lpnmtdi, buffer);
-				OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
-			}
-			return LRESULT.ZERO;
-		}
-	}
-	return super.WM_NOTIFY (wParam, lParam);
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {

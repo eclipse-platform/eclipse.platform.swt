@@ -177,14 +177,51 @@ void bringToTop () {
 }
 
 static int checkStyle (int style) {
+	if (OS.IsWinCE) {
+		return style & ~(SWT.SHELL_TRIM | SWT.DIALOG_TRIM);
+	}
 	if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
 		style |= SWT.TITLE;
 	}
+	/*
+	* Bug in Windows.  If WS_MINIMIZEBOX or WS_MAXIMIZEBOX
+	* are set, we must also set WS_SYSMENU or the buttons
+	* will not appear.
+	*/
+	if ((style & (SWT.MIN | SWT.MAX)) != 0) style |= SWT.CLOSE;
 	return style;
 }
 
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget ();
+
+	/* Get the size of the trimmings */
+	RECT rect = new RECT ();
+	OS.SetRect (rect, x, y, x + width, y + height);
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	boolean hasMenu = OS.IsWinCE ? false : OS.GetMenu (handle) != 0;
+	OS.AdjustWindowRectEx (rect, bits, hasMenu, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+
+	/* Get the size of the scroll bars */
+	if (horizontalBar != null) rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
+	if (verticalBar != null) rect.right += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
+
+	/* Get the height of the menu bar */
+	if (hasMenu) {
+		RECT testRect = new RECT ();
+		OS.SetRect (testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
+		OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
+		while ((testRect.bottom - testRect.top) < height) {
+			rect.top -= OS.GetSystemMetrics (OS.SM_CYMENU) - OS.GetSystemMetrics (OS.SM_CYBORDER);
+			OS.SetRect(testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
+			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
+		}
+	}
+	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 void createAcceleratorTable () {
@@ -220,12 +257,6 @@ void createHandle () {
 }
 
 void createWidget () {
-	/*
-	* Bug in Windows.  If WS_MINIMIZEBOX or WS_MAXIMIZEBOX
-	* are set, we must also set WS_SYSMENU or the buttons
-	* will not appear.
-	*/
-	if ((style & (SWT.MIN | SWT.MAX)) != 0) style |= SWT.CLOSE;
 	super.createWidget ();
 	swFlags = OS.SW_SHOWNOACTIVATE;
 	hAccel = -1;
@@ -257,29 +288,33 @@ MenuItem findMenuItem (int id) {
 
 public Rectangle getBounds () {
 	checkWidget ();
-	if (OS.IsIconic (handle)) {
-		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-		lpwndpl.length = WINDOWPLACEMENT.sizeof;
-		OS.GetWindowPlacement (handle, lpwndpl);
-		int width = lpwndpl.right - lpwndpl.left;
-		int height = lpwndpl.bottom - lpwndpl.top;
-		return new Rectangle (lpwndpl.left, lpwndpl.top, width, height);
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) {
+			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+			lpwndpl.length = WINDOWPLACEMENT.sizeof;
+			OS.GetWindowPlacement (handle, lpwndpl);
+			int width = lpwndpl.right - lpwndpl.left;
+			int height = lpwndpl.bottom - lpwndpl.top;
+			return new Rectangle (lpwndpl.left, lpwndpl.top, width, height);
+		}
 	}
 	return super.getBounds ();
 }
 
 public Rectangle getClientArea () {
 	checkWidget ();
-	RECT rect = new RECT ();
-	if (OS.IsIconic (handle)) {
-		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-		lpwndpl.length = WINDOWPLACEMENT.sizeof;
-		OS.GetWindowPlacement (handle, lpwndpl);
-		int width = lpwndpl.right - lpwndpl.left;
-		int height = lpwndpl.bottom - lpwndpl.top;
-		OS.SetRect (rect, 0, 0, width, height);
-		OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, rect);
-		return new Rectangle (0, 0, rect.right, rect.bottom);
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) {
+			RECT rect = new RECT ();
+			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+			lpwndpl.length = WINDOWPLACEMENT.sizeof;
+			OS.GetWindowPlacement (handle, lpwndpl);
+			int width = lpwndpl.right - lpwndpl.left;
+			int height = lpwndpl.bottom - lpwndpl.top;
+			OS.SetRect (rect, 0, 0, width, height);
+			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, rect);
+			return new Rectangle (0, 0, rect.right, rect.bottom);
+		}
 	}
 	return super.getClientArea ();
 }
@@ -330,11 +365,13 @@ public Image getImage () {
 
 public Point getLocation () {
 	checkWidget ();
-	if (OS.IsIconic (handle)) {
-		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-		lpwndpl.length = WINDOWPLACEMENT.sizeof;
-		OS.GetWindowPlacement (handle, lpwndpl);
-		return new Point (lpwndpl.left, lpwndpl.top);
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) {
+			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+			lpwndpl.length = WINDOWPLACEMENT.sizeof;
+			OS.GetWindowPlacement (handle, lpwndpl);
+			return new Point (lpwndpl.left, lpwndpl.top);
+		}
 	}
 	return super.getLocation ();
 }
@@ -355,6 +392,7 @@ public Point getLocation () {
  */
 public boolean getMaximized () {
 	checkWidget ();
+	if (OS.IsWinCE) return false;
 	if (OS.IsWindowVisible (handle)) return OS.IsZoomed (handle);
 	return swFlags == OS.SW_SHOWMAXIMIZED;
 }
@@ -391,6 +429,7 @@ public Menu getMenuBar () {
  */
 public boolean getMinimized () {
 	checkWidget ();
+	if (OS.IsWinCE) return false;
 	if (OS.IsWindowVisible (handle)) return OS.IsIconic (handle);
 	return swFlags == OS.SW_SHOWMINNOACTIVE;
 }
@@ -401,13 +440,15 @@ String getNameText () {
 
 public Point getSize () {
 	checkWidget ();
-	if (OS.IsIconic (handle)) {
-		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-		lpwndpl.length = WINDOWPLACEMENT.sizeof;
-		OS.GetWindowPlacement (handle, lpwndpl);
-		int width = lpwndpl.right - lpwndpl.left;
-		int height = lpwndpl.bottom - lpwndpl.top;
-		return new Point (width, height);
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) {
+			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+			lpwndpl.length = WINDOWPLACEMENT.sizeof;
+			OS.GetWindowPlacement (handle, lpwndpl);
+			int width = lpwndpl.right - lpwndpl.left;
+			int height = lpwndpl.bottom - lpwndpl.top;
+			return new Point (width, height);
+		}
 	}
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
@@ -433,11 +474,10 @@ public String getText () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
-	byte [] buffer1 = new byte [length + 1];
-	OS.GetWindowText (handle, buffer1, buffer1.length);
 	/* Use the character encoding for the default locale */
-	char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
-	return new String (buffer2, 0, buffer2.length - 1);
+	TCHAR buffer = new TCHAR (0, length + 1);
+	OS.GetWindowText (handle, buffer, length + 1);
+	return buffer.toString (0, length);
 }
 
 Decorations menuShell () {
@@ -500,21 +540,23 @@ void saveFocus () {
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
-	if (OS.IsIconic (handle)) {
-		WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
-		lpwndpl.length = WINDOWPLACEMENT.sizeof;
-		OS.GetWindowPlacement (handle, lpwndpl);
-		lpwndpl.showCmd = 0;
-		if ((flags & OS.SWP_NOMOVE) == 0) {
-			lpwndpl.left = x;
-			lpwndpl.top = y;
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) {
+			WINDOWPLACEMENT lpwndpl = new WINDOWPLACEMENT ();
+			lpwndpl.length = WINDOWPLACEMENT.sizeof;
+			OS.GetWindowPlacement (handle, lpwndpl);
+			lpwndpl.showCmd = 0;
+			if ((flags & OS.SWP_NOMOVE) == 0) {
+				lpwndpl.left = x;
+				lpwndpl.top = y;
+			}
+			if ((flags & OS.SWP_NOSIZE) == 0) {
+				lpwndpl.right = x + width;
+				lpwndpl.bottom = y + height;
+			}
+			OS.SetWindowPlacement (handle, lpwndpl);
+			return;
 		}
-		if ((flags & OS.SWP_NOSIZE) == 0) {
-			lpwndpl.right = x + width;
-			lpwndpl.bottom = y + height;
-		}
-		OS.SetWindowPlacement (handle, lpwndpl);
-		return;
 	}
 	super.setBounds (x, y, width, height, flags);
 }
@@ -645,8 +687,11 @@ public void setImage (Image image) {
 	* trimmings do not redraw to hide the previous icon.
 	* The fix is to force a redraw.
 	*/
-	if (hIcon == 0 && ((style & SWT.BORDER) != 0)) {
-		OS.RedrawWindow (handle, null, 0, OS.RDW_FRAME | OS.RDW_INVALIDATE);
+	if (!OS.IsWinCE) {
+		if (hIcon == 0 && (style & SWT.BORDER) != 0) {
+			int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
+			OS.RedrawWindow (handle, null, 0, flags);
+		}
 	}
 }
 
@@ -675,6 +720,7 @@ public void setImage (Image image) {
  */
 public void setMaximized (boolean maximized) {
 	checkWidget ();
+	if (OS.IsWinCE) return;
 	swFlags = OS.SW_RESTORE;
 	if (maximized) swFlags = OS.SW_SHOWMAXIMIZED;
 	if (!OS.IsWindowVisible (handle)) return;
@@ -708,6 +754,7 @@ public void setMenuBar (Menu menu) {
 	menuBar = menu;
 	int hMenu = 0;
 	if (menuBar != null) hMenu = menuBar.handle;
+	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	OS.SetMenu (handle, hMenu);
 	destroyAcceleratorTable ();
 }
@@ -737,6 +784,7 @@ public void setMenuBar (Menu menu) {
  */
 public void setMinimized (boolean minimized) {
 	checkWidget ();
+	if (OS.IsWinCE) return;
 	swFlags = OS.SW_RESTORE;
 	if (minimized) swFlags = OS.SW_SHOWMINNOACTIVE;
 	if (!OS.IsWindowVisible (handle)) return;
@@ -773,6 +821,7 @@ void setSavedFocus (Control control) {
 }
 
 void setSystemMenu () {
+	if (OS.IsWinCE) return;
 	int hMenu = OS.GetSystemMenu (handle, false);
 	if (hMenu == 0) return;
 	int oldCount = OS.GetMenuItemCount (hMenu);
@@ -829,7 +878,7 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	/* Use the character encoding for the default locale */
-	byte [] buffer = Converter.wcsToMbcs (0, string, true);
+	TCHAR buffer = new TCHAR (0, string, true);
 	OS.SetWindowText (handle, buffer);
 }
 
@@ -848,16 +897,18 @@ public void setVisible (boolean visible) {
 		OS.ShowWindow (handle, swFlags);
 		OS.UpdateWindow (handle);
 	} else {
-		if (OS.IsIconic (handle)) {
-			swFlags = OS.SW_SHOWMINNOACTIVE;
-		} else {
-			if (OS.IsZoomed (handle)) {
-				swFlags = OS.SW_SHOWMAXIMIZED;
+		if (!OS.IsWinCE) {
+			if (OS.IsIconic (handle)) {
+				swFlags = OS.SW_SHOWMINNOACTIVE;
 			} else {
-				if (handle == OS.GetActiveWindow ()) {
-					swFlags = OS.SW_RESTORE;
+				if (OS.IsZoomed (handle)) {
+					swFlags = OS.SW_SHOWMAXIMIZED;
 				} else {
-					swFlags = OS.SW_SHOWNOACTIVATE;
+					if (handle == OS.GetActiveWindow ()) {
+						swFlags = OS.SW_RESTORE;
+					} else {
+						swFlags = OS.SW_SHOWNOACTIVATE;
+					}
 				}
 			}
 		}

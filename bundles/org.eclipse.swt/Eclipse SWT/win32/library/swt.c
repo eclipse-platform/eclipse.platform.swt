@@ -10,7 +10,7 @@
 #include "globals.h"
 #include "structs.h"
 
-/* export the dll version info call */
+/* Export the dll version info call */
 
 __declspec(dllexport) HRESULT DllGetVersion(DLLVERSIONINFO *dvi);
 
@@ -23,8295 +23,6316 @@ HRESULT DllGetVersion(DLLVERSIONINFO *dvi)
      return 1;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    Call
- * Signature: (ILorg/eclipse/swt/internal/win32/DLLVERSIONINFO;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_Call
-  (JNIEnv *env, jclass that, jint address, jobject arg0)
-{
-	DECL_GLOB(pGlob)
-    DLLVERSIONINFO dllversioninfo, *arg01=NULL;
-    jint rc;
+/* Natives */
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Call\n");
-#endif
-
-    if (arg0) {
-        arg01 = &dllversioninfo;
-        cacheDllversioninfoFids(env, arg0, &PGLOB(DllversioninfoFc));
-        getDllversioninfoFields(env, arg0, arg01, &PGLOB(DllversioninfoFc));
-    }
-    rc = ((DLLGETVERSIONPROC)address)(arg01);
-
-    if (arg0) {
-        setDllversioninfoFields(env, arg0, arg01, &PGLOB(DllversioninfoFc));
-    }
-    return rc;
-}
-
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_win32_OS_getSharedLibraryMajorVersionNumber
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "getSharedLibraryMajorVersionNumber\n");
-#endif
-    return SWT_LIBRARY_MAJOR_VERSION;
-}
-
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_win32_OS_getSharedLibraryMinorVersionNumber
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "getSharedLibraryMinorVersionNumber\n");
-#endif
-    return SWT_LIBRARY_MINOR_VERSION;
-}
-
-JNIEXPORT int JNICALL Java_org_eclipse_swt_internal_win32_OS_getSharedLibraryBuildNumber
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "getSharedLibraryBuildNumber\n");
-#endif
-    return SWT_LIBRARY_BUILD_NUM;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    AbortDoc
- * Signature: (I)I
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_AbortDoc
-  (JNIEnv *env, jclass that, jint hdc)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "AbortDoc\n");
-#endif
-    return (jint) AbortDoc((HDC)hdc);
-}
+	DEBUG_CALL("AbortDoc\n")
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    AdjustWindowRectEx
- * Signature: (Lorg/eclipse/swt/internal/win32/RECT;IZI)Z
- */
+	return (jint)AbortDoc((HDC)arg0);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ActivateKeyboardLayout
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("ActivateKeyboardLayout\n")
+
+	return (jint)ActivateKeyboardLayout((HKL)arg0, arg1);
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_AdjustWindowRectEx
-  (JNIEnv *env, jclass that, jobject lpRect, jint dwStyle, jboolean bMenu, jint dwExStyle)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jboolean arg2, jint arg3)
 {
 	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jboolean rc;
+	RECT _arg0, *lparg0=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "AdjustWindowRectEx\n");
-#endif
+	DEBUG_CALL("AdjustWindowRectEx\n")
 
-    if (lpRect) {
-        lpRect1 = &rect;
+	if (arg0) lparg0 = getRECTFields(env, arg0, &_arg0, &PGLOB(RECTFc));
 
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) AdjustWindowRectEx(lpRect1, dwStyle, bMenu, dwExStyle);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    return rc;
+	rc = (jboolean)AdjustWindowRectEx(lparg0, arg1, arg2, arg3);
+
+	if (arg0) setRECTFields(env, arg0, lparg0, &PGLOB(RECTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    Arc
- * Signature: (IIIIIIIII)Z
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Arc
-  (JNIEnv *env, jclass that, jint hdc, jint nLeftRect, jint nTopRect, jint nRightRect, jint nBottomRect, jint nXStartArc,jint nYStartArc, jint nXEndArc, jint nYEndArc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Arc\n");
-#endif
+	DEBUG_CALL("Arc\n")
 
-    return (jboolean) Arc((HDC)hdc, nLeftRect, nTopRect, nRightRect, nBottomRect, nXStartArc, nYStartArc, nXEndArc, nYEndArc);
+	return (jboolean)Arc((HDC)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    BitBlt
- * Signature: (IIIIIIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_BitBlt
-  (JNIEnv *env, jclass that, jint hdcDest, jint nXDest, jint nYDest, jint nWidth, jint nHeight, jint hdcSrc, jint nXSrc, jint nYSrc, jint dwRop)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "BitBlt\n");
-#endif
-
-    return (jboolean) BitBlt((HDC)hdcDest, nXDest, nYDest, nWidth, nHeight, (HDC)hdcSrc, nXSrc, nYSrc, dwRop);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    BeginDeferWindowPos
- * Signature: (I)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_BeginDeferWindowPos
-  (JNIEnv *env, jclass that, jint numWindows)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "BeginDeferWindowPos\n");
-#endif
+	DEBUG_CALL("BeginDeferWindowPos\n")
 
-    return (jint) BeginDeferWindowPos(numWindows);
+	return (jint)BeginDeferWindowPos(arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    BeginPaint
- * Signature: (ILorg/eclipse/swt/internal/win32/PAINTSTRUCT;)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_BeginPaint
-  (JNIEnv *env, jclass that, jint hwnd, jobject lpPaint)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    PAINTSTRUCT paint, *lpPaint1=NULL;
-    jint rc;
+	PAINTSTRUCT _arg1, *lparg1=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "BeginPaint\n");
-#endif
+	DEBUG_CALL("BeginPaint\n")
 
-    lpPaint1 = &paint;
-    rc = (jint) BeginPaint((HWND)hwnd, lpPaint1);
+	if (arg1) lparg1 = &_arg1;
 
-    if (lpPaint) {
-        cachePaintstructFids(env, lpPaint, &PGLOB(PaintstructFc));
-        setPaintstructFields(env, lpPaint, lpPaint1, &PGLOB(PaintstructFc));
-        /* we do not touch rgbReserved byte array of the PAINTSTRUCT */
-    }
-    return rc;
+	rc = (jint)BeginPaint((HWND)arg0, lparg1);
+
+	if (arg1) setPAINTSTRUCTFields(env, arg1, lparg1, &PGLOB(PAINTSTRUCTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    BringWindowToTop
- * Signature: (I)Z
- */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_BitBlt
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
+{
+	DEBUG_CALL("BitBlt\n")
+
+	return (jboolean)BitBlt((HDC)arg0, arg1, arg2, arg3, arg4, (HDC)arg5, arg6, arg7, arg8);
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_BringWindowToTop
-  (JNIEnv *env, jclass that, jint hwnd)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "BringWindowToTop\n");
-#endif
+	DEBUG_CALL("BringWindowToTop\n")
 
-    return (jboolean) BringWindowToTop((HWND)hwnd);
+	return (jboolean)BringWindowToTop((HWND)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CallWindowProc
- * Signature: (IIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CallWindowProc
-  (JNIEnv *env, jclass that,jint lpPrevWndFunc, jint hWnd, jint Msg, jint wParam, jint lParam)
-{
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CallWindowProc\n");
-#endif
-    
-    return (jint) CallWindowProc((WNDPROC)lpPrevWndFunc,(HWND)hWnd, Msg, wParam, lParam);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CharLower
- * Signature: (S)S
- */
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_CharLower
-  (JNIEnv *env, jclass that, jshort lpsz)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CharLower\n");
-#endif
-
-    return (jshort) CharLower((LPSTR) lpsz);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CharUpper
- * Signature: (S)S
- */
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_CharUpper
-  (JNIEnv *env, jclass that, jshort lpsz)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CharUpper\n");
-#endif
-
-    return (jshort) CharUpper((LPSTR) lpsz);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ChooseColor
- * Signature: (Lorg/eclipse/swt/internal/win32/CHOOSECOLOR;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseColor
-  (JNIEnv *env, jclass that, jobject lpcc)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_Call
+	(JNIEnv *env, jclass that, jint address, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    CHOOSECOLOR choosecolor, *lpcc1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ChooseColor\n");
-#endif
+	DLLVERSIONINFO _arg0, *lparg0=NULL;
+	jint rc;
 
-    if (lpcc) {
-        lpcc1 = &choosecolor;
-        cacheChoosecolorFids(env, lpcc, &PGLOB(ChoosecolorFc));
-        getChoosecolorFields(env, lpcc, lpcc1, &PGLOB(ChoosecolorFc));
-    }
-    rc = (jboolean) ChooseColor((LPCHOOSECOLOR) lpcc1);
-    if (lpcc) {
-        setChoosecolorFields(env, lpcc, lpcc1, &PGLOB(ChoosecolorFc));
-    }
-    return rc;
+	DEBUG_CALL("Call\n")
+
+	if (arg0) lparg0 = getDLLVERSIONINFOFields(env, arg0, &_arg0, &PGLOB(DLLVERSIONINFOFc));
+
+	rc = (jint)((DLLGETVERSIONPROC)address)(lparg0);
+
+	if (arg0) setDLLVERSIONINFOFields(env, arg0, lparg0, &PGLOB(DLLVERSIONINFOFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ChooseFont
- * Signature: (Lorg/eclipse/swt/internal/win32/CHOOSEFONT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseFont
-  (JNIEnv *env, jclass that, jobject chooseFont)
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CallNextHookEx
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("CallNextHookEx\n")
+
+	return (jint)CallNextHookEx((HHOOK)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CallWindowProcA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("CallWindowProcA\n")
+
+	return (jint)CallWindowProcA((WNDPROC)arg0, (HWND)arg1, arg2, arg3, arg4);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CallWindowProcW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("CallWindowProcW\n")
+
+	return (jint)CallWindowProcW((WNDPROC)arg0, (HWND)arg1, arg2, arg3, arg4);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_CharLowerA
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("CharLowerA\n")
+
+	return (jshort)CharLowerA((LPSTR)arg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_CharLowerW
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("CharLowerW\n")
+
+	return (jshort)CharLowerW((LPWSTR)arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_CharUpperA
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("CharUpperA\n")
+
+	return (jshort)CharUpperA((LPSTR)arg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_CharUpperW
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("CharUpperW\n")
+
+	return (jshort)CharUpperW((LPWSTR)arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseColorA
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    CHOOSEFONT choosefont, *chooseFont1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ChooseFont\n");
-#endif
+	CHOOSECOLOR _arg0, *lparg0=NULL;
+	jboolean rc;
 
-    if (chooseFont) {
-        chooseFont1 = &choosefont;
-        cacheChoosefontFids(env, chooseFont, &PGLOB(ChoosefontFc));
-        getChoosefontFields(env, chooseFont, chooseFont1, &PGLOB(ChoosefontFc));
-    }
-    rc = (jboolean) ChooseFont((LPCHOOSEFONT) chooseFont1);
-    if (chooseFont) {
-        setChoosefontFields(env, chooseFont, chooseFont1, &PGLOB(ChoosefontFc));
-    }
-    return rc;
+	DEBUG_CALL("ChooseColorA\n")
+
+	if (arg0) lparg0 = getCHOOSECOLORFields(env, arg0, &_arg0, &PGLOB(CHOOSECOLORFc));
+
+	rc = (jboolean)ChooseColorA(lparg0);
+
+	if (arg0) setCHOOSECOLORFields(env, arg0, lparg0, &PGLOB(CHOOSECOLORFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifdef _WIN32_WCE
+#define ChooseColorW ChooseColor
+#define CHOOSECOLORW CHOOSECOLOR
+#define LPCHOOSECOLORW LPCHOOSECOLOR
+#endif
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseColorW
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	CHOOSECOLOR _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ChooseColorW\n")
+
+	if (arg0) lparg0 = getCHOOSECOLORFields(env, arg0, &_arg0, &PGLOB(CHOOSECOLORFc));
+
+	rc = (jboolean)ChooseColorW((LPCHOOSECOLORW)lparg0);
+
+	if (arg0) setCHOOSECOLORFields(env, arg0, lparg0, &PGLOB(CHOOSECOLORFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ClientToScreen
- * Signature: (ILorg/eclipse/swt/internal/win32/POINT;)Z
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseFontA
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	CHOOSEFONT _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ChooseFontA\n")
+
+	if (arg0) lparg0 = getCHOOSEFONTFields(env, arg0, &_arg0, &PGLOB(CHOOSEFONTFc));
+
+	rc = (jboolean)ChooseFontA(lparg0);
+
+	if (arg0) setCHOOSEFONTFields(env, arg0, lparg0, &PGLOB(CHOOSEFONTFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ChooseFontW
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	CHOOSEFONT _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ChooseFontW\n")
+
+	if (arg0) lparg0 = getCHOOSEFONTFields(env, arg0, &_arg0, &PGLOB(CHOOSEFONTFc));
+
+	rc = (jboolean)ChooseFontW((LPCHOOSEFONTW)lparg0);
+
+	if (arg0) setCHOOSEFONTFields(env, arg0, lparg0, &PGLOB(CHOOSEFONTFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ClientToScreen
-  (JNIEnv *env, jclass that, jint hWnd, jobject lpPoint)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    POINT point, *lpPoint1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ClientToScreen\n");
-#endif
+	POINT _arg1, *lparg1=NULL;
+	jboolean rc;
 
-    if (lpPoint) {
-        lpPoint1 = &point;
-        cachePointFids(env, lpPoint, &PGLOB(PointFc));
-        getPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    rc = (jboolean) ClientToScreen((HWND)hWnd, lpPoint1);
-    if (lpPoint) {
-        setPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    return rc;
+	DEBUG_CALL("ClientToScreen\n")
+
+	if (arg1) lparg1 = getPOINTFields(env, arg1, &_arg1, &PGLOB(POINTFc));
+
+	rc = (jboolean)ClientToScreen((HWND)arg0, lparg1);
+
+	if (arg1) setPOINTFields(env, arg1, lparg1, &PGLOB(POINTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CloseClipboard
- * Signature: ()Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CloseClipboard
-  (JNIEnv *env,  jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CloseClipboard\n");
-#endif
-    return (jboolean) CloseClipboard();
+	DEBUG_CALL("CloseClipboard\n")
+
+	return (jboolean)CloseClipboard();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CombineRgn
- * Signature: (IIII)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CombineRgn
-  (JNIEnv *env, jclass that, jint hrgnDest, jint hrgnSrc1, jint hrgnSrc2, jint fnCombineMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CombineRgn\n");
-#endif
+	DEBUG_CALL("CombineRgn\n")
 
-    return (jint) CombineRgn( (HRGN)hrgnDest, (HRGN)hrgnSrc1, (HRGN)hrgnSrc2, fnCombineMode);
+	return (jint)CombineRgn((HRGN)arg0, (HRGN)arg1, (HRGN)arg2, arg3);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CommDlgExtendedError
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CommDlgExtendedError
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CommDlgExtendedError\n");
-#endif
+	DEBUG_CALL("CommDlgExtendedError\n")
 
-    return (jint) CommDlgExtendedError();
+	return (jint)CommDlgExtendedError();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CopyImage
- * Signature: (IIIII)I
- */
+
+
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CopyImage
-  (JNIEnv *env, jclass that, jint hImage, jint uType, jint cxDesired, jint cyDesired, jint fuFlags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CopyImage\n");
-#endif
+	DEBUG_CALL("CopyImage\n")
 
-    return (jint)CopyImage((HANDLE)hImage, uType, cxDesired, cyDesired, fuFlags);
+	return (jint)CopyImage((HANDLE)arg0, arg1, arg2, arg3, arg4);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateAcceleratorTableA
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateAcceleratorTableA\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+
+	rc = (jint)CreateAcceleratorTableA((LPACCEL)lparg0, arg1);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateAcceleratorTableW
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateAcceleratorTableW\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+
+	rc = (jint)CreateAcceleratorTableW((LPACCEL)lparg0, arg1);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateAcceleratorTable
- * Signature: ([BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateAcceleratorTable
-  (JNIEnv *env, jclass that, jbyteArray lpAccel, jint cEntries)
-{
-    LPACCEL lpAccel1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateAcceleratorTable\n");
-#endif
-
-    if (lpAccel)
-        lpAccel1 = (LPACCEL)(*env)->GetByteArrayElements(env, lpAccel, NULL);
-
-    rc = (jint)CreateAcceleratorTable(lpAccel1, cEntries);
-
-    if (lpAccel)
-        (*env)->ReleaseByteArrayElements(env, lpAccel, (jbyte *)lpAccel1, 0);
-    return rc;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateBitmap
- * Signature: (IIII[B)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateBitmap
-  (JNIEnv *env, jclass that, jint nWidth, jint nHeight, jint cPlanes, jint cBitsPerPel, jbyteArray lpvBits)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
 {
-    LPVOID lpvBits1=NULL;
-    jint rc;
+	jbyte *lparg4=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateBitmap\n");
-#endif
+	DEBUG_CALL("CreateBitmap\n")
 
-    if (lpvBits)
-        lpvBits1 = (LPVOID)(*env)->GetByteArrayElements(env, lpvBits, NULL);
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
 
-    rc = (jint)CreateBitmap(nWidth, nHeight, cPlanes, cBitsPerPel, (CONST VOID *)lpvBits1);
+	rc = (jint)CreateBitmap(arg0, arg1, arg2, arg3, (CONST VOID *)lparg4);
 
-    if (lpvBits)
-        (*env)->ReleaseByteArrayElements(env, lpvBits, (jbyte *)lpvBits1, 0);
-    return rc;
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateCompatibleBitmap
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateCompatibleBitmap
-  (JNIEnv *env, jclass that, jint hdc, jint nWidth, jint nHeight)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateCompatibleBitmap\n");
-#endif
-
-    return (jint) CreateCompatibleBitmap((HDC)hdc, nWidth, nHeight);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateCaret
- * Signature: (IIII)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateCaret
-  (JNIEnv *env, jclass that, jint hWnd, jint hBitMap, jint nWidth, jint nHeight)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateCaret\n");
-#endif
+	DEBUG_CALL("CreateCaret\n")
 
-    return (jboolean) CreateCaret( (HWND) hWnd, (HBITMAP)hBitMap, nWidth, nHeight);
+	return (jboolean)CreateCaret((HWND)arg0, (HBITMAP)arg1, arg2, arg3);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateCompatibleDC
- * Signature: (I)I
- */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateCompatibleBitmap
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("CreateCompatibleBitmap\n")
+
+	return (jint)CreateCompatibleBitmap((HDC)arg0, arg1, arg2);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateCompatibleDC
-  (JNIEnv *env, jclass that, jint hdc)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateCompatibleDC\n");
-#endif
+	DEBUG_CALL("CreateCompatibleDC\n")
 
-    return (jint) CreateCompatibleDC((HDC) hdc);
+	return (jint)CreateCompatibleDC((HDC)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateCursor
- * Signature: (IIIII[B[B)I
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateCursor
-  (JNIEnv *env, jclass that, jint hInst, jint xHotSpot, jint yHotSpot, jint nWidth, jint nHeight, jbyteArray pvANDPlane, jbyteArray pvXORPlane)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jbyteArray arg5, jbyteArray arg6)
 {
-    CONST VOID *pvANDPlane1=NULL;
-    CONST VOID *pvXORPlane1=NULL;
-    jint rc;
+	jbyte *lparg5=NULL;
+	jbyte *lparg6=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateCursor\n");
-#endif
+	DEBUG_CALL("CreateCursor\n")
 
-    if (pvANDPlane)
-        pvANDPlane1 = (CONST VOID *)(*env)->GetByteArrayElements(env,pvANDPlane, NULL);
+	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
 
-    if (pvXORPlane)
-        pvXORPlane1 = (CONST VOID *)(*env)->GetByteArrayElements(env,pvXORPlane, NULL);
+	rc = (jint)CreateCursor((HINSTANCE)arg0, arg1, arg2, arg3, arg4, (CONST VOID *)lparg5, (CONST VOID *)lparg6);
 
-    rc = (jint)CreateCursor((HINSTANCE) hInst, xHotSpot, yHotSpot, nWidth, nHeight, pvANDPlane1, pvXORPlane1);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 
-    if (pvANDPlane)
-        (*env)->ReleaseByteArrayElements(env, pvANDPlane, (jbyte *)pvANDPlane1, 0);
+	return rc;
+}
+#endif // _WIN32_WCE
 
-    if (pvXORPlane)
-        (*env)->ReleaseByteArrayElements(env, pvXORPlane, (jbyte *)pvXORPlane1, 0);
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateDCA
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jint arg2, jint arg3)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jint rc;
 
-    return rc;
+	DEBUG_CALL("CreateDCA\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	rc = (jint)CreateDCA((LPSTR)lparg0, (LPSTR)lparg1, (LPSTR)arg2, (CONST DEVMODE *)arg3);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateDCW
+	(JNIEnv *env, jclass that, jcharArray arg0, jcharArray arg1, jint arg2, jint arg3)
+{
+	jchar *lparg0=NULL;
+	jchar *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateDCW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	rc = (jint)CreateDCW((LPWSTR)lparg0, (LPWSTR)lparg1, (LPWSTR)arg2, (CONST DEVMODEW *)arg3);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
 }
 
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateDC
- * Signature: ([B[BII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateDC
-  (JNIEnv *env, jclass that, jbyteArray lpszDriver, jbyteArray lpszDevice, jint lpszOutput, jint lpInitData)
-{
-    LPCTSTR lpszDriver1=NULL;
-    LPCTSTR lpszDevice1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateDC\n");
-#endif
-
-    if (lpszDriver)
-        lpszDriver1 = (LPCTSTR)(*env)->GetByteArrayElements(env,lpszDriver, NULL);
-
-    if (lpszDevice)
-        lpszDevice1 = (LPCTSTR)(*env)->GetByteArrayElements(env,lpszDevice, NULL);
-
-    rc = (jint)CreateDC(lpszDriver1, lpszDevice1, (LPCTSTR)lpszOutput, (CONST DEVMODE *)lpInitData);
-
-    if (lpszDriver)
-        (*env)->ReleaseByteArrayElements(env, lpszDriver, (jbyte *)lpszDriver1, 0);
-
-    if (lpszDevice)
-        (*env)->ReleaseByteArrayElements(env, lpszDevice, (jbyte *)lpszDevice1, 0);
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateDIBSection
- * Signature: (I[BI[III)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateDIBSection
-  (JNIEnv *env, jclass that, jint hdc, jbyteArray pbmi, jint iUsage, jintArray ppvBits, jint hSection, jint dwOffset)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3, jint arg4, jint arg5)
 {
-    BITMAPINFO *pbmi1=NULL;
-    PVOID *ppvBits1=NULL;
-    jint rc;
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateDIBSection\n");
-#endif
+	DEBUG_CALL("CreateDIBSection\n")
 
-    if (pbmi)
-        pbmi1 = (BITMAPINFO *)(*env)->GetByteArrayElements(env,pbmi, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 
-    if (ppvBits)
-        ppvBits1 = (PVOID *)(*env)->GetIntArrayElements(env, ppvBits, NULL);
+	rc = (jint)CreateDIBSection((HDC)arg0, (BITMAPINFO *)lparg1, arg2, (VOID **)lparg3, (HANDLE)arg4, arg5);
 
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 
-    rc = (jint)CreateDIBSection((HDC)hdc, pbmi1, iUsage, ppvBits1, (HANDLE)hSection, dwOffset);
-
-    if (pbmi)
-        (*env)->ReleaseByteArrayElements(env, pbmi, (jbyte *)pbmi1, 0);
-
-    if (ppvBits)
-        (*env)->ReleaseIntArrayElements(env, ppvBits, (jint *)ppvBits1, 0);
-
-    return rc;
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateFontIndirect
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateFontIndirect__I
-  (JNIEnv *env, jclass that, jint lplf)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateFontIndirect__I\n");
-#endif
-    return (jint) CreateFontIndirect((LOGFONT *)lplf);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateFontIndirect
- * Signature: (Lorg/eclipse/swt/internal/win32/LOGFONT;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateFontIndirect__Lorg_eclipse_swt_internal_win32_LOGFONT_2
-  (JNIEnv *env, jclass that, jobject lpLogFont)
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONT_2
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    LOGFONT logfont, *lpLogFont1=NULL;
+	LOGFONTA _arg0, *lparg0=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateFontIndirect__Lorg_eclipse_swt_internal_win32_LOGFONT_2\n");
-#endif
+	DEBUG_CALL("CreateFontIndirectA\n")
 
-    if (lpLogFont) {
-        lpLogFont1 = &logfont;
-        cacheLogfontFids(env, lpLogFont, &PGLOB(LogfontFc));
-        getLogfontFields(env, lpLogFont, lpLogFont1, &PGLOB(LogfontFc));
-    }
-    return (jint) CreateFontIndirect(lpLogFont1);
+	if (arg0) lparg0 = getLOGFONTAFields(env, arg0, &_arg0, &PGLOB(LOGFONTFc));
+
+	rc = (jint)CreateFontIndirectA(lparg0);
+
+	if (arg0) setLOGFONTAFields(env, arg0, lparg0, &PGLOB(LOGFONTFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateFontIndirectA__I
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CreateFontIndirectA\n")
+
+	return (jint)CreateFontIndirectA((LPLOGFONTA)arg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateFontIndirectW__Lorg_eclipse_swt_internal_win32_LOGFONT_2
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	LOGFONTW _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateFontIndirectW\n")
+
+	if (arg0) lparg0 = getLOGFONTWFields(env, arg0, &_arg0, &PGLOB(LOGFONTFc));
+
+	rc = (jint)CreateFontIndirectW(lparg0);
+
+	if (arg0) setLOGFONTWFields(env, arg0, lparg0, &PGLOB(LOGFONTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateIconIndirect
- * Signature: (Lorg/eclipse/swt/internal/win32/ICONINFO;)I
- */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateFontIndirectW__I
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CreateFontIndirectW\n")
+
+	return (jint)CreateFontIndirectW((LPLOGFONTW)arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateIconIndirect
-  (JNIEnv *env, jclass that, jobject lplf)
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    ICONINFO iconinfo, *lplf1=NULL;
-    jint rc;
+	ICONINFO _arg0, *lparg0=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateIconIndirect\n");
-#endif
+	DEBUG_CALL("CreateIconIndirect\n")
 
-    if (lplf) {
-        lplf1 = &iconinfo;
-        cacheIconinfoFids(env, lplf, &PGLOB(IconinfoFc));
-        getIconinfoFields(env, lplf, lplf1, &PGLOB(IconinfoFc));
-    }
-    rc = (jint) CreateIconIndirect(lplf1);
-    if (lplf) {
-        setIconinfoFields(env, lplf, lplf1, &PGLOB(IconinfoFc));
-    }
-    return rc;
+	if (arg0) lparg0 = getICONINFOFields(env, arg0, &_arg0, &PGLOB(ICONINFOFc));
 
+	rc = (jint)CreateIconIndirect(lparg0);
+
+	if (arg0) setICONINFOFields(env, arg0, lparg0, &PGLOB(ICONINFOFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateBitmapIndirect
- * Signature: (Lorg/eclipse/swt/internal/win32/BITMAP;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateBitmapIndirect
-  (JNIEnv *env, jclass that, jobject lpbm)
-{
-	DECL_GLOB(pGlob)
-    BITMAP bm, *lpbm1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateBitmapIndirect\n");
-#endif
-
-    if (lpbm) {
-        lpbm1= &bm;
-        cacheBitmapFids(env, lpbm, &PGLOB(BitmapFc));
-        getBitmapFields(env, lpbm, lpbm1, &PGLOB(BitmapFc));
-    }
-    rc = (jint) CreateBitmapIndirect(lpbm1);
-    if (lpbm) {
-        setBitmapFields(env, lpbm, lpbm1, &PGLOB(BitmapFc));
-    }
-    return rc;
-
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateMenu
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateMenu
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateMenu\n");
-#endif
+	DEBUG_CALL("CreateMenu\n")
 
-    return (jint) CreateMenu();
+	return (jint)CreateMenu();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreatePalette
- * Signature: ([B)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreatePalette
-  (JNIEnv *env, jclass that, jbyteArray logPalette)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
-    jbyte *logPalette1=NULL;
-    jint rc;
+	jbyte *lparg0=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreatePalette\n");
-#endif
+	DEBUG_CALL("CreatePalette\n")
 
-    if (logPalette)
-        logPalette1 = (*env)->GetByteArrayElements(env, logPalette, NULL);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
 
-    rc = (jint) CreatePalette( (LOGPALETTE *) logPalette1);
+	rc = (jint)CreatePalette((LOGPALETTE *)lparg0);
 
-    if (logPalette)
-        (*env)->ReleaseByteArrayElements(env, logPalette, (jbyte *)logPalette1, 0);
-    return rc;
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreatePatternBrush
- * Signature: (I)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreatePatternBrush
-  (JNIEnv *env, jclass that, jint colorRef)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreatePatternBrush\n");
-#endif
+	DEBUG_CALL("CreatePatternBrush\n")
 
-    return (jint) CreatePatternBrush((HBITMAP)colorRef);
+	return (jint)CreatePatternBrush((HBITMAP)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreatePen
- * Signature: (III)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreatePen
-  (JNIEnv *env, jclass that, jint fnPenStyle, jint nWidth, jint crColor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreatePen\n");
-#endif
+	DEBUG_CALL("CreatePen\n")
 
-    return (jint) CreatePen(fnPenStyle, nWidth, (COLORREF)crColor);
+	return (jint)CreatePen(arg0, arg1, (COLORREF)arg2);
 }
-  
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ExtCreatePen
- * Signature: (IILorg/eclipse/swt/internal/win32/LOGBRUSH;II)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtCreatePen
-  (JNIEnv *env, jclass that, jint dwPenStyle, jint dwWidth, jobject lplb, int dwStyleCount, int lpStyle)
-{
-    DECL_GLOB(pGlob)
-    LOGBRUSH logbrush, *lplb1=NULL;
-    jint rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ExtCreatePen\n");
-#endif
 
-	if (lplb) {
-        lplb1 = &logbrush;
-        cacheLogbrushFids(env, lplb, &PGLOB(LogbrushFc));
-        getLogbrushFields(env, lplb, lplb1, &PGLOB(LogbrushFc));
-    }
-    rc = (jint) ExtCreatePen(dwPenStyle, dwWidth, (CONST LOGBRUSH *)lplb1, dwStyleCount, (CONST DWORD *)lpStyle);
-    
-    if (lplb) {
-        setLogbrushFields(env, lplb, lplb1, &PGLOB(LogbrushFc));
-    }
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreatePopupMenu
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreatePopupMenu
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreatePopupMenu\n");
-#endif
+	DEBUG_CALL("CreatePopupMenu\n")
 
-    return (jint) CreatePopupMenu();
+	return (jint)CreatePopupMenu();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    
- * Signature: (IIII)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateRectRgn
-  (JNIEnv *env, jclass that, jint nLeftRect, jint nTopRect, jint nRightRect, jint nBottomRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateRectRgn\n");
-#endif
+	DEBUG_CALL("CreateRectRgn\n")
 
-    return (jint) CreateRectRgn(nLeftRect, nTopRect, nRightRect, nBottomRect);
+	return (jint)CreateRectRgn(arg0, arg1, arg2, arg3);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateSolidBrush
- * Signature: (I)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateSolidBrush
-  (JNIEnv *env, jclass that, jint crColor)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "\n");
-#endif
+	DEBUG_CALL("CreateSolidBrush\n")
 
-    return (jint) CreateSolidBrush((COLORREF)crColor) ;
+	return (jint)CreateSolidBrush((COLORREF)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CreateWindowEx
- * Signature: (I[B[BIIIIIIIILorg/eclipse/swt/internal/win32/CREATESTRUCT;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateWindowEx
-  (JNIEnv *env, jclass that, jint dwExStyle, jbyteArray buff1, jbyteArray buff2,
-                             jint dwStyle, jint X, jint Y, jint nWidth, jint nHeight,
-                             jint hWndParent, jint hMenu, jint hInstance, jobject lpParam)
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateWindowExA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jobject arg11)
 {
 	DECL_GLOB(pGlob)
-    LPCTSTR lpClassName=NULL, lpWindowName=NULL;
-    CREATESTRUCT param, *lpParam1=NULL;
-    jint rc;
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	CREATESTRUCT _arg11, *lparg11=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CreateWindowEx\n");
-#endif
+	DEBUG_CALL("CreateWindowExA\n")
 
-    if (lpParam) {
-        lpParam1 = &param;
-        cacheCreatestructFids(env, lpParam, &PGLOB(CreatestructFc));
-        getCreatestructFields(env, lpParam, lpParam1, &PGLOB(CreatestructFc));
-    }
-    if (buff1)
-        lpClassName = (*env)->GetByteArrayElements(env, buff1, NULL);
-    if (buff2)
-        lpWindowName = (*env)->GetByteArrayElements(env, buff2, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg11) lparg11 = getCREATESTRUCTFields(env, arg11, &_arg11, &PGLOB(CREATESTRUCTFc));
 
-    rc = (jint) CreateWindowEx (dwExStyle, lpClassName, lpWindowName, dwStyle, X, Y, nWidth, nHeight,
-                                     (HWND)hWndParent, (HMENU)hMenu, (HINSTANCE) hInstance, lpParam1);
+	rc = (jint)CreateWindowExA(arg0, (LPSTR)lparg1, (LPSTR)lparg2, arg3, arg4, arg5, arg6, arg7, (HWND)arg8, (HMENU)arg9, (HINSTANCE)arg10, lparg11);
 
-    if (buff1)
-        (*env)->ReleaseByteArrayElements(env, buff1, (jbyte *)lpClassName, 0);
-    if (buff2)
-        (*env)->ReleaseByteArrayElements(env, buff2, (jbyte *)lpWindowName, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg11) setCREATESTRUCTFields(env, arg11, lparg11, &PGLOB(CREATESTRUCTFc));
 
-    if (lpParam) {
-        setCreatestructFields(env, lpParam, lpParam1, &PGLOB(CreatestructFc));
-    }
-    return rc;
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CreateWindowExW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jcharArray arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10, jobject arg11)
+{
+	DECL_GLOB(pGlob)
+	jchar *lparg1=NULL;
+	jchar *lparg2=NULL;
+	CREATESTRUCT _arg11, *lparg11=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateWindowExW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	if (arg11) lparg11 = getCREATESTRUCTFields(env, arg11, &_arg11, &PGLOB(CREATESTRUCTFc));
+
+	rc = (jint)CreateWindowExW(arg0, (LPWSTR)lparg1, (LPWSTR)lparg2, arg3, arg4, arg5, arg6, arg7, (HWND)arg8, (HMENU)arg9, (HINSTANCE)arg10, lparg11);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg11) setCREATESTRUCTFields(env, arg11, lparg11, &PGLOB(CREATESTRUCTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DeferWindowPos
- * Signature: (IIIIIIII)I
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefWindowProcA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("DefWindowProcA\n")
+
+	return (jint)DefWindowProcA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefWindowProcW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("DefWindowProcW\n")
+
+	return (jint)DefWindowProcW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DeferWindowPos
-  (JNIEnv *env, jclass that, jint hWinPosInfo, jint hWnd, jint hWndInsertAfter, jint x, jint y, jint cx, jint cy, jint uFlags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DeferWindowPos\n");
-#endif
+	DEBUG_CALL("DeferWindowPos\n")
 
-    return (jint) DeferWindowPos((HDWP)hWinPosInfo, (HWND)hWnd, (HWND)hWndInsertAfter, x, y, cx, cy, uFlags);
+	return (jint)DeferWindowPos((HDWP)arg0, (HWND)arg1, (HWND)arg2, arg3, arg4, arg5, arg6, arg7);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DefWindowProc
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefWindowProc
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jint lParam)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DefWindowProc\n");
-#endif
-
-    return (jint) DefWindowProc((HWND)hWnd, Msg, (WPARAM)wParam, (LPARAM)lParam);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DeleteDC
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DeleteDC
-  (JNIEnv *env, jclass that, jint hdc)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DeleteDC\n");
-#endif
+	DEBUG_CALL("DeleteDC\n")
 
-    return (jboolean) DeleteDC((HDC)hdc);
+	return (jboolean)DeleteDC((HDC)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DeleteMenu
- * Signature: (III)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DeleteMenu
-  (JNIEnv *env, jclass that, jint hMenu, jint uPosition, jint uFlags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DeleteMenu\n");
-#endif
+	DEBUG_CALL("DeleteMenu\n")
 
-    return (jboolean) DeleteMenu((HMENU)hMenu, uPosition, uFlags);
+	return (jboolean)DeleteMenu((HMENU)arg0, arg1, arg2);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DeleteObject
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DeleteObject
-  (JNIEnv *env, jclass that, jint hObject)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DeleteObject\n");
-#endif
+	DEBUG_CALL("DeleteObject\n")
 
-    return (jboolean) DeleteObject((HGDIOBJ)hObject);
+	return (jboolean)DeleteObject((HGDIOBJ)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DestroyAcceleratorTable
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DestroyAcceleratorTable
-  (JNIEnv *env, jclass that, jint hAccel)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DestroyAcceleratorTable\n");
-#endif
+	DEBUG_CALL("DestroyAcceleratorTable\n")
 
-    return (jboolean) DestroyAcceleratorTable((HACCEL) hAccel);
+	return (jboolean)DestroyAcceleratorTable((HACCEL)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DestroyCaret
- * Signature: ()Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DestroyCaret
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DestroyCaret\n");
-#endif
+	DEBUG_CALL("DestroyCaret\n")
 
-    return (jboolean) DestroyCaret();
+	return (jboolean)DestroyCaret();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DestroyCursor
- * Signature: (I)Z
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DestroyCursor
-  (JNIEnv *env, jclass that, jint hCursor)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DestroyCursor\n");
-#endif
+	DEBUG_CALL("DestroyCursor\n")
 
-    return (jboolean) DestroyCursor((HCURSOR)hCursor);
+	return (jboolean)DestroyCursor((HCURSOR)arg0);
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DestroyIcon
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DestroyIcon
-  (JNIEnv *env, jclass that, jint hIcon)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DestroyIcon\n");
-#endif
+	DEBUG_CALL("DestroyIcon\n")
 
-    return (jboolean) DestroyIcon((HICON)hIcon);
+	return (jboolean)DestroyIcon((HICON)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DestroyMenu
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DestroyMenu
-  (JNIEnv *env, jclass that, jint hMenu)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DestroyMenu\n");
-#endif
+	DEBUG_CALL("DestroyMenu\n")
 
-    return (jboolean) DestroyMenu((HMENU) hMenu);
+	return (jboolean)DestroyMenu((HMENU)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DestroyWindow
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DestroyWindow
-  (JNIEnv *env, jclass that, jint hWnd)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DestroyWindow\n");
-#endif
+	DEBUG_CALL("DestroyWindow\n")
 
-    return (jboolean) DestroyWindow((HWND) hWnd);
+	return (jboolean)DestroyWindow((HWND)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DispatchMessage
- * Signature: (Lorg/eclipse/swt/internal/win32/MSG;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DispatchMessage
-  (JNIEnv *env, jclass that, jobject lpMsg)
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DispatchMessageA
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    MSG callBack, *lpMsg1 = NULL;
+	MSG _arg0, *lparg0=NULL;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DispatchMessage\n");
-#endif
+	DEBUG_CALL("DispatchMessageA\n")
 
-    if (lpMsg) {
-        lpMsg1 = &callBack;
-        cacheMsgFids(env, lpMsg, &PGLOB(MsgFc));
-        getMsgFields(env, lpMsg, lpMsg1, &PGLOB(MsgFc));
-    }
-    return (jint) DispatchMessage(lpMsg1);
+	if (arg0) lparg0 = getMSGFields(env, arg0, &_arg0, &PGLOB(MSGFc));
+
+	return (jint)DispatchMessageA(lparg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DispatchMessageW
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	MSG _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("DispatchMessageW\n")
+
+	if (arg0) lparg0 = getMSGFields(env, arg0, &_arg0, &PGLOB(MSGFc));
+
+	return (jint)DispatchMessageW(lparg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DragDetect
- * Signature: (ILorg/eclipse/swt/internal/win32/POINT;)Z
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DragDetect
-  (JNIEnv *env, jclass that, jint hwnd, jobject pt)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    POINT point, *pt1=NULL;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DragDetect\n");
-#endif
+	POINT _arg1, *lparg1=NULL;
 
-    if (pt) {
-        pt1 = &point;
-        cachePointFids(env, pt, &PGLOB(PointFc));
-        getPointFields(env, pt, pt1, &PGLOB(PointFc));
-    }
-    return (jboolean) DragDetect((HWND)hwnd, *pt1);
+	DEBUG_CALL("DragDetect\n")
+
+	if (arg1) lparg1 = getPOINTFields(env, arg1, &_arg1, &PGLOB(POINTFc));
+
+	return (jboolean)DragDetect((HWND)arg0, *lparg1);
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DrawEdge
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;II)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawEdge
-  (JNIEnv *env, jclass that, jint hdc, jobject lpRect, jint edge, jint grfFlags)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
 {
 	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jboolean rc;
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DrawEdge\n");
-#endif
+	DEBUG_CALL("DrawEdge\n")
 
-    if (lpRect) {
-        lpRect1 = &rect;
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
 
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) DrawEdge((HDC)hdc, lpRect1, edge, grfFlags);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));    }
-    return rc;
+	rc = (jboolean)DrawEdge((HDC)arg0, lparg1, arg2, arg3);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DrawFocusRect
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawFocusRect
-  (JNIEnv *env, jclass that, jint hdc, jobject lpRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jboolean rc;
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DrawFocusRect\n");
-#endif
+	DEBUG_CALL("DrawFocusRect\n")
 
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) DrawFocusRect((HDC)hdc, lpRect1);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));    }
-    return rc;
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)DrawFocusRect((HDC)arg0, lparg1);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DrawFrameControl
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;II)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawFrameControl
-  (JNIEnv *env, jclass that, jint hdc, jobject lprc, jint uType, jint uState)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
 {
 	DECL_GLOB(pGlob)
-    RECT rect, *lprc1=NULL;
-    jboolean rc;
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DrawFrameControl\n");
-#endif
+	DEBUG_CALL("DrawFrameControl\n")
 
-    if (lprc) {
-        lprc1 = &rect;
-        cacheRectFids(env, lprc, &PGLOB(RectFc));
-        getRectFields(env, lprc, lprc1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) DrawFrameControl((HDC)hdc, lprc1, uType, uState);
-    if (lprc) {
-        setRectFields(env, lprc, lprc1, &PGLOB(RectFc));
-    }
-    return rc;
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)DrawFrameControl((HDC)arg0, lparg1, arg2, arg3);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DrawIconEx
- * Signature: (IIIIIIIII)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawIconEx
-  (JNIEnv *env, jclass that, jint hdc, jint xLeft, jint yTop, jint hIcom,
-                             jint cxWidth, jint cyWidth, jint istepIfAniCur,
-                             jint hbrFlickerFreeDraw, jint diFlags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DrawIconEx\n");
-#endif
+	DEBUG_CALL("DrawIconEx\n")
 
-    return (jboolean) DrawIconEx((HDC)hdc, xLeft, yTop, (HICON)hIcom, cxWidth,
-                                   cyWidth, istepIfAniCur, (HBRUSH)hbrFlickerFreeDraw,
-                                   diFlags);
+	return (jboolean)DrawIconEx((HDC)arg0, arg1, arg2, (HICON)arg3, arg4, arg5, arg6, (HBRUSH)arg7, arg8);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DrawMenuBar
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawMenuBar
-  (JNIEnv *env, jclass that, jint hWnd)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DrawMenuBar\n");
-#endif
+	DEBUG_CALL("DrawMenuBar\n")
 
-    return (jboolean) DrawMenuBar((HWND)hWnd);
+	return (jboolean)DrawMenuBar((HWND)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DrawText
- * Signature: (I[BILorg/eclipse/swt/internal/win32/RECT;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawText
-  (JNIEnv *env, jclass that, jint hDC, jbyteArray lpString, jint nCount, jobject lpRect, jint uFormat)
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawStateA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
+{
+	DEBUG_CALL("DrawStateA\n")
+
+	return (jboolean)DrawStateA((HDC)arg0, (HBRUSH)arg1, (DRAWSTATEPROC)arg2, (LPARAM)arg3, (WPARAM)arg4, arg5, arg6, arg7, arg8, arg9);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawStateW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9)
+{
+	DEBUG_CALL("DrawStateW\n")
+
+	return (jboolean)DrawStateW((HDC)arg0, (HBRUSH)arg1, (DRAWSTATEPROC)arg2, (LPARAM)arg3, (WPARAM)arg4, arg5, arg6, arg7, arg8, arg9);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawTextA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jobject arg3, jint arg4)
 {
 	DECL_GLOB(pGlob)
-    LPCTSTR lpString1=NULL;
-    RECT rect, *lpRect1=NULL;
-    jint rc;
+	jbyte *lparg1=NULL;
+	RECT _arg3, *lparg3=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DrawText\n");
-#endif
+	DEBUG_CALL("DrawTextA\n")
 
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = getRECTFields(env, arg3, &_arg3, &PGLOB(RECTFc));
 
-    if (lpString)
-        lpString1 = (*env)->GetByteArrayElements(env, lpString, NULL);
+	rc = (jint)DrawTextA((HDC)arg0, (LPSTR)lparg1, arg2, lparg3, arg4);
 
-    rc = (jint) DrawText((HDC)hDC, lpString1, nCount, lpRect1, uFormat);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) setRECTFields(env, arg3, lparg3, &PGLOB(RECTFc));
 
-    if (lpString)
-        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
+	return rc;
+}
+#endif // _WIN32_WCE
 
-    if (lpRect)
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    return rc;
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawTextW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jobject arg3, jint arg4)
+{
+	DECL_GLOB(pGlob)
+	jchar *lparg1=NULL;
+	RECT _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("DrawTextW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = getRECTFields(env, arg3, &_arg3, &PGLOB(RECTFc));
+
+	rc = (jint)DrawTextW((HDC)arg0, (LPWSTR)lparg1, arg2, lparg3, arg4);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg3) setRECTFields(env, arg3, lparg3, &PGLOB(RECTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    Ellipse
- * Signature: (IIIII)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Ellipse
-  (JNIEnv *env, jclass that, jint hdc, jint nLeftRect, jint nTopRect, jint nRightRect, jint nBottomRect)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Ellipse\n");
-#endif
+	DEBUG_CALL("Ellipse\n")
 
-    return (jboolean) Ellipse((HDC)hdc, nLeftRect, nTopRect, nRightRect, nBottomRect);
+	return (jboolean)Ellipse((HDC)arg0, arg1, arg2, arg3, arg4);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EnableMenuItem
- * Signature: (III)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnableMenuItem
-  (JNIEnv *env, jclass that, jint hMenu, jint uIDEnableItem, jint uEnable)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EnableMenuItem\n");
-#endif
+	DEBUG_CALL("EnableMenuItem\n")
 
-    return (jboolean) EnableMenuItem((HMENU)hMenu, uIDEnableItem, uEnable);
+	return (jboolean)EnableMenuItem((HMENU)arg0, arg1, arg2);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EnableScrollBar
- * Signature: (III)Z
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnableScrollBar
-  (JNIEnv *env, jclass that, jint hWnd, jint wSBflags, jint wArrows)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EnableScrollBar\n");
-#endif
+	DEBUG_CALL("EnableScrollBar\n")
 
-    return (jboolean) EnableScrollBar((HWND)hWnd, wSBflags, wArrows);
+	return (jboolean)EnableScrollBar((HWND)arg0, arg1, arg2);
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EnableWindow
- * Signature: (IZ)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnableWindow
-  (JNIEnv *env, jclass that, jint hWnd, jboolean bEnable)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EnableWindow\n");
-#endif
+	DEBUG_CALL("EnableWindow\n")
 
-    return (jboolean) EnableWindow((HWND)hWnd, bEnable);
+	return (jboolean)EnableWindow((HWND)arg0, arg1);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EndDeferWindowPos
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EndDeferWindowPos
-  (JNIEnv *env, jclass that, jint hWinPosInfo)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EndDeferWindowPos\n");
-#endif
+	DEBUG_CALL("EndDeferWindowPos\n")
 
-    return (jboolean) EndDeferWindowPos((HDWP)hWinPosInfo);
+	return (jboolean)EndDeferWindowPos((HDWP)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EndDoc
- * Signature: (I)I
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_EndDoc
-  (JNIEnv *env, jclass that, jint hdc)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EndDoc\n");
-#endif
-    return (jint) EndDoc((HDC)hdc);
-}
+	DEBUG_CALL("EndDoc\n")
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EndPage
- * Signature: (I)I
- */
+	return (jint)EndDoc((HDC)arg0);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_EndPage
-  (JNIEnv *env, jclass that, jint hdc)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EndPage\n");
-#endif
-    return (jint) EndPage((HDC)hdc);
-}
+	DEBUG_CALL("EndPage\n")
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EndPaint
- * Signature: (ILorg/eclipse/swt/internal/win32/;)I
- */
+	return (jint)EndPage((HDC)arg0);
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_EndPaint
-  (JNIEnv *env, jclass that, jint hWnd, jobject lpPaint)
-{
-    PAINTSTRUCT paint, *lpPaint1=NULL;
-    jclass paintClass;
-    jfieldID fid;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EndPaint\n");
-#endif
-
-    if (lpPaint) {
-        paintClass = (*env)->GetObjectClass(env,lpPaint);
-        lpPaint1=&paint;
-
-        fid = (*env)->GetFieldID(env,paintClass,"hdc","I");
-        lpPaint1->hdc = (void *) (*env)->GetIntField(env,lpPaint,fid);
-    }
-    rc = (jint)EndPaint((HWND)hWnd, lpPaint1);
-    
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EnumFontFamilies
- * Signature: (I[BII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumFontFamilies
-  (JNIEnv *env, jclass that, jint hdc, jbyteArray lpszFamily, jint lpEnumFontFamProc, jint lParam)
-{
-    LPCTSTR lpszFamily1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EnumFontFamilies\n");
-#endif
-
-    if (lpszFamily)
-        lpszFamily1 = (*env)->GetByteArrayElements(env, lpszFamily, NULL);
-
-    rc = (jint) EnumFontFamilies((HDC)hdc, lpszFamily1, (FONTENUMPROC)lpEnumFontFamProc, (LPARAM)lParam);
-
-    if (lpszFamily)
-        (*env)->ReleaseByteArrayElements(env, lpszFamily, (jbyte *)lpszFamily1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EnumFontFamiliesEx
- * Signature: (ILorg/eclipse/swt/internal/win32/LOGFONT;III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumFontFamiliesEx
-  (JNIEnv *env, jclass that, jint hdc, jobject lpLogfont, jint lpEnumFontFamExProc, jint lParam, jint dwFlags)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    LOGFONT logfont, *lpLogfont1=NULL;
-    jint rc;
+	PAINTSTRUCT _arg1, *lparg1=NULL;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EnumFontFamiliesEx\n");
-#endif
-    if (lpLogfont) {
-        lpLogfont1 = &logfont;
-        cacheLogfontFids(env, lpLogfont, &PGLOB(LogfontFc));
-        getLogfontFields(env, lpLogfont, lpLogfont1, &PGLOB(LogfontFc));
-    }
-    rc = (jint) EnumFontFamiliesEx((HDC)hdc, lpLogfont1, (FONTENUMPROC)lpEnumFontFamExProc, lParam, dwFlags);
-    if (lpLogfont) {
-        setLogfontFields(env, lpLogfont, lpLogfont1, &PGLOB(LogfontFc));
-    }
-    return rc;
+	DEBUG_CALL("EndPaint\n")
+
+	if (arg1) lparg1 = getPAINTSTRUCTFields(env, arg1, &_arg1, &PGLOB(PAINTSTRUCTFc));
+
+	return (jint)EndPaint((HWND)arg0, lparg1);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EqualRgn
- * Signature: (II)Z
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumFontFamiliesA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("EnumFontFamiliesA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	rc = (jint)EnumFontFamiliesA((HDC)arg0, (LPSTR)lparg1, (FONTENUMPROC)arg2, (LPARAM)arg3);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifdef _WIN32_WCE
+#define FONTENUMPROCW FONTENUMPROC
+#endif // _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumFontFamiliesW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3)
+{
+	jchar *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("EnumFontFamiliesW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	rc = (jint)EnumFontFamiliesW((HDC)arg0, (LPCWSTR)lparg1, (FONTENUMPROCW)arg2, (LPARAM)arg3);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemLocalesA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("EnumSystemLocalesA\n")
+
+	return (jboolean)EnumSystemLocalesA((LOCALE_ENUMPROCA)arg0, arg1);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemLocalesW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("EnumSystemLocalesW\n")
+
+	return (jboolean)EnumSystemLocalesW((LOCALE_ENUMPROCW)arg0, arg1);
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EqualRgn
-  (JNIEnv *env, jclass that, jint hSrcRgn1, jint hSrcRgn2)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EqualRgn\n");
-#endif
+	DEBUG_CALL("EqualRgn\n")
 
-    return (jboolean) EqualRgn((HRGN)hSrcRgn1, (HRGN)hSrcRgn2);
+	return (jboolean)EqualRgn((HRGN)arg0, (HRGN)arg1);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ExpandEnvironmentStrings
- * Signature: ([B[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ExpandEnvironmentStrings
-  (JNIEnv *env, jclass that, jbyteArray lpSrc, jbyteArray lpDest, jint nSize)
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOutA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jbyteArray arg5, jint arg6, jintArray arg7)
 {
-    LPCTSTR lpSrc1=NULL;
-    LPTSTR lpDest1=NULL;
-    jint rc;
+	DECL_GLOB(pGlob)
+	RECT _arg4, *lparg4=NULL;
+	jbyte *lparg5=NULL;
+	jint *lparg7=NULL;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ExpandEnvironmentStrings\n");
-#endif
+	DEBUG_CALL("ExtTextOutA\n")
 
-    if (lpSrc)
-        lpSrc1 = (*env)->GetByteArrayElements(env, lpSrc, NULL);
-    if (lpDest)
-        lpDest1 = (*env)->GetByteArrayElements(env, lpDest, NULL);
+	if (arg4) lparg4 = getRECTFields(env, arg4, &_arg4, &PGLOB(RECTFc));
+	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
 
-    rc = (jint) ExpandEnvironmentStrings(lpSrc1, lpDest1, nSize);
+	return (jboolean)ExtTextOutA((HDC)arg0, arg1, arg2, arg3, lparg4, (LPSTR)lparg5, arg6, (CONST INT*)lparg7);
+}
+#endif // _WIN32_WCE
 
-    if (lpSrc)
-        (*env)->ReleaseByteArrayElements(env, lpSrc, (jbyte *)lpSrc1, 0);
-    if (lpDest)
-        (*env)->ReleaseByteArrayElements(env, lpDest, (jbyte *)lpDest1, 0);
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOutW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jobject arg4, jcharArray arg5, jint arg6, jintArray arg7)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg4, *lparg4=NULL;
+	jchar *lparg5=NULL;
+	jint *lparg7=NULL;
 
-    return rc;
+	DEBUG_CALL("ExtTextOutW\n")
+
+	if (arg4) lparg4 = getRECTFields(env, arg4, &_arg4, &PGLOB(RECTFc));
+	if (arg5) lparg5 = (*env)->GetCharArrayElements(env, arg5, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+
+	return (jboolean)ExtTextOutW((HDC)arg0, arg1, arg2, arg3, lparg4, (LPWSTR)lparg5, arg6, (CONST INT*)lparg7);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ExtractIconEx
- * Signature: ([BI[I[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtractIconEx
-  (JNIEnv *env, jclass that, jbyteArray lpszFile, jint nIconIndex, jintArray phiconLarge, jintArray phiconSmall, jint nIcons)
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtractIconExA
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jintArray arg2, jintArray arg3, jint arg4)
 {
-    LPCTSTR lpszFile1=NULL;
-    HICON FAR *phiconLarge1=NULL, *phiconSmall1=NULL;
-    jint rc;
+	jbyte *lparg0=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ExtractIconEx\n");
-#endif
+	DEBUG_CALL("ExtractIconExA\n")
 
-    if (lpszFile)
-        lpszFile1 = (*env)->GetByteArrayElements(env, lpszFile, NULL);
-    if (phiconLarge)
-        phiconLarge1 = (HICON FAR *)(*env)->GetIntArrayElements(env, phiconLarge, NULL);
-    if (phiconSmall)
-        phiconSmall1 = (HICON FAR *)(*env)->GetIntArrayElements(env, phiconSmall, NULL);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
 
-    rc = (jint) ExtractIconEx( lpszFile1, nIconIndex, phiconLarge1, phiconSmall1, nIcons);
+	rc = (jint)ExtractIconExA((LPSTR)lparg0, arg1, (HICON FAR *)lparg2, (HICON FAR *)lparg3, arg4);
 
-    if (lpszFile)
-        (*env)->ReleaseByteArrayElements(env, lpszFile, (jbyte *)lpszFile1, 0);
-    if (phiconLarge)
-        (*env)->ReleaseIntArrayElements(env, phiconLarge, (jint *)phiconLarge1, 0);
-    if (phiconSmall)
-        (*env)->ReleaseIntArrayElements(env, phiconSmall, (jint *)phiconSmall1, 0);
-    return rc;
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtractIconExW
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jintArray arg2, jintArray arg3, jint arg4)
+{
+	jchar *lparg0=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("ExtractIconExW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+
+	rc = (jint)ExtractIconExW((LPWSTR)lparg0, arg1, (HICON FAR *)lparg2, (HICON FAR *)lparg3, arg4);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    FillRect
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;I)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_FillRect
-  (JNIEnv *env, jclass that, jint hDC, jobject lpRect, jint hbr)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
 {
 	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jint rc;
+	RECT _arg1, *lparg1=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "FillRect\n");
-#endif
+	DEBUG_CALL("FillRect\n")
 
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jint) FillRect((HDC)hDC, lpRect1, (HBRUSH) hbr);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    return rc;
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jint)FillRect((HDC)arg0, lparg1, (HBRUSH)arg2);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    FreeLibrary
- * Signature: (I)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_FreeLibrary
-  (JNIEnv *env, jclass that, jint hLibModule)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "FreeLibrary\n");
-#endif
+	DEBUG_CALL("FreeLibrary\n")
 
-    return (jboolean) FreeLibrary((HMODULE) hLibModule);
+	return (jboolean)FreeLibrary((HMODULE)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetACP
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetACP
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetACP\n");
-#endif
+	DEBUG_CALL("GetACP\n")
 
-    return (jint)GetACP();
+	return (jint)GetACP();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetActiveWindow
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetActiveWindow
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetActiveWindow\n");
-#endif
+	DEBUG_CALL("GetActiveWindow\n")
 
-    return (jint)GetActiveWindow();
+	return (jint)GetActiveWindow();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetBkColor
- * Signature: (I)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetBkColor
-  (JNIEnv *env, jclass that, jint hDC)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetBkColor\n");
-#endif
+	DEBUG_CALL("GetBkColor\n")
 
-    return (jint) GetBkColor((HDC)hDC);
+	return (jint)GetBkColor((HDC)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCapture
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCapture
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCapture\n");
-#endif
+	DEBUG_CALL("GetCapture\n")
 
-    return (jint)GetCapture();
+	return (jint)GetCapture();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCaretPos
- * Signature: (Lorg/eclipse/swt/internal/win32/POINT;)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCaretPos
-  (JNIEnv *env, jclass that, jobject lpPoint)
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    POINT point, *lpPoint1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCaretPos\n");
-#endif
+	POINT _arg0, *lparg0=NULL;
+	jboolean rc;
 
-    if (lpPoint) {
-        lpPoint1 = &point;
-        cachePointFids(env, lpPoint, &PGLOB(PointFc));
-        getPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    rc = (jboolean) GetCaretPos(lpPoint1);
-    if (lpPoint) {
-        setPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    return rc;
+	DEBUG_CALL("GetCaretPos\n")
+
+	if (arg0) lparg0 = getPOINTFields(env, arg0, &_arg0, &PGLOB(POINTFc));
+
+	rc = (jboolean)GetCaretPos(lparg0);
+
+	if (arg0) setPOINTFields(env, arg0, lparg0, &PGLOB(POINTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCharABCWidths
- * Signature: (III[I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharABCWidths
-  (JNIEnv *env, jclass that, jint hdc, jint iFirstChar, jint iLastChar, jintArray lpabc)
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharABCWidthsA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
 {
-    LPABC lpabc1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCharABCWidths\n");
-#endif
-    
-    if (lpabc)
-        lpabc1 = (LPABC)(*env)->GetIntArrayElements(env, lpabc, NULL);
-        
-    rc = (jboolean) GetCharABCWidths((HDC)hdc, iFirstChar, iLastChar, lpabc1);
-    
-    if (lpabc)
-        (*env)->ReleaseIntArrayElements(env, lpabc, (jint *)lpabc1, 0);
-        
-    return rc;
-}
+	jint *lparg3=NULL;
+	jboolean rc;
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCharWidth
- * Signature: (III[I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharWidth
-  (JNIEnv *env, jclass that, jint hdc, jint iFirstCharacter, jint iLastCharacter, jintArray lpBuffer)
+	DEBUG_CALL("GetCharABCWidthsA\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+
+	rc = (jboolean)GetCharABCWidthsA((HDC)arg0, arg1, arg2, (LPABC)lparg3);
+
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharABCWidthsW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
 {
-    LPINT lpBuffer1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCharWidth\n");
-#endif
-    
-    if (lpBuffer)
-        lpBuffer1 = (LPINT)(*env)->GetIntArrayElements(env, lpBuffer, NULL);
-        
-    rc = (jboolean) GetCharWidth((HDC)hdc, iFirstCharacter, iLastCharacter, lpBuffer1);
-    
-    if (lpBuffer)
-        (*env)->ReleaseIntArrayElements(env, lpBuffer, (jint *)lpBuffer1, 0);
-        
-    return rc;
-}
+	jint *lparg3=NULL;
+	jboolean rc;
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetClassInfoEx
- * Signature: (I[BLorg/eclipse/swt/internal/win32/WNDCLASSEX;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClassInfoEx
-  (JNIEnv *env, jclass that, jint hinst, jbyteArray lpszClass, jobject lpwcx)
+	DEBUG_CALL("GetCharABCWidthsW\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+
+	rc = (jboolean)GetCharABCWidthsW((HDC)arg0, arg1, arg2, (LPABC)lparg3);
+
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharWidthA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetCharWidthA\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+
+	rc = (jboolean)GetCharWidthA((HDC)arg0, arg1, arg2, (LPINT)lparg3);
+
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharWidthW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetCharWidthW\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+
+	rc = (jboolean)GetCharWidthW((HDC)arg0, arg1, arg2, (LPINT)lparg3);
+
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharacterPlacementA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5)
 {
 	DECL_GLOB(pGlob)
-    LPCTSTR lpszClass1=NULL;
-    WNDCLASSEX wcx, *lpwcx1=NULL;
-    jboolean rc;
+	jbyte *lparg1=NULL;
+	GCP_RESULTS _arg4, *lparg4=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetClassInfoEx\n");
-#endif
+	DEBUG_CALL("GetCharacterPlacementA\n")
 
-    if (lpszClass)
-        lpszClass1 = (*env)->GetByteArrayElements(env, lpszClass, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg4) lparg4 = getGCP_RESULTSFields(env, arg4, &_arg4, &PGLOB(GCP_RESULTSFc));
 
-    if (lpwcx) {
-        lpwcx1 = &wcx;
-        cacheWndclassexFids(env, lpwcx, &PGLOB(WndclassexFc));
-        getWndclassexFields(env, lpwcx, lpwcx1, &PGLOB(WndclassexFc));
-    }
-    rc = (jboolean) GetClassInfoEx((HINSTANCE)hinst, lpszClass1, &wcx);
+	rc = (jint)GetCharacterPlacementA((HDC)arg0, (LPSTR)lparg1, arg2, arg3, lparg4, arg5);
 
-    if (lpwcx) {
-        setWndclassexFields(env, lpwcx, lpwcx1, &PGLOB(WndclassexFc));
-    }
-    if (lpszClass)
-        (*env)->ReleaseByteArrayElements(env, lpszClass, (jbyte *)lpszClass1, 0);
-    return rc;
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg4) setGCP_RESULTSFields(env, arg4, lparg4, &PGLOB(GCP_RESULTSFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharacterPlacementW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jobject arg4, jint arg5)
+{
+	DECL_GLOB(pGlob)
+	jchar *lparg1=NULL;
+	GCP_RESULTS _arg4, *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetCharacterPlacementW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg4) lparg4 = getGCP_RESULTSFields(env, arg4, &_arg4, &PGLOB(GCP_RESULTSFc));
+
+	rc = (jint)GetCharacterPlacementW((HDC)arg0, (LPWSTR)lparg1, arg2, arg3, (LPGCP_RESULTSW)lparg4, arg5);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg4) setGCP_RESULTSFields(env, arg4, lparg4, &PGLOB(GCP_RESULTSFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClassInfoA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jobject arg2)
+{
+	DECL_GLOB(pGlob)
+	jbyte *lparg1=NULL;
+	WNDCLASS _arg2, *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetClassInfoA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = getWNDCLASSFields(env, arg2, &_arg2, &PGLOB(WNDCLASSFc));
+
+	rc = (jboolean)GetClassInfoA((HINSTANCE)arg0, (LPSTR)lparg1, lparg2);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) setWNDCLASSFields(env, arg2, lparg2, &PGLOB(WNDCLASSFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClassInfoW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jobject arg2)
+{
+	DECL_GLOB(pGlob)
+	jchar *lparg1=NULL;
+	WNDCLASS _arg2, *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetClassInfoW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = getWNDCLASSFields(env, arg2, &_arg2, &PGLOB(WNDCLASSFc));
+
+	rc = (jboolean)GetClassInfoW((HINSTANCE)arg0, (LPWSTR)lparg1, (LPWNDCLASSW)lparg2);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg2) setWNDCLASSFields(env, arg2, lparg2, &PGLOB(WNDCLASSFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetClientRect
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;)Z
- */
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClientRect
-  (JNIEnv *env, jclass that, jint hWnd, jobject lpRect)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jboolean rc;
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetClientRect\n");
-#endif
+	DEBUG_CALL("GetClientRect\n")
 
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) GetClientRect((HWND)hWnd, lpRect1);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    return rc;
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)GetClientRect((HWND)arg0, lparg1);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetClipboardData
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClipboardData
-  (JNIEnv *env,  jclass that, jint uFormat)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetClipboardData\n");
-#endif
-    return (jint) GetClipboardData(uFormat);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetClipBox
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClipBox
-  (JNIEnv *env, jclass that, jint hdc, jobject lprc)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    RECT rect, *lprc1=NULL;
-    jint rc;
+	RECT _arg1, *lparg1=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetClipBox\n");
-#endif
+	DEBUG_CALL("GetClipBox\n")
 
-    if (lprc) {
-        lprc1 = &rect;
-        cacheRectFids(env, lprc, &PGLOB(RectFc));
-        getRectFields(env, lprc, lprc1, &PGLOB(RectFc));
-    }
-    rc = (jint) GetClipBox((HDC)hdc, lprc1);
-    if (lprc) {
-        setRectFields(env, lprc, lprc1, &PGLOB(RectFc));
-    }
-    return rc;
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jint)GetClipBox((HDC)arg0, lparg1);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCursor
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCursor
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCursor\n");
-#endif
-
-    return (jint) GetCursor();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetClipRgn
- * Signature: (II)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClipRgn
-  (JNIEnv *env, jclass that, jint hdc, jint hrgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetClipRgn\n");
-#endif
-    return (jint) GetClipRgn((HDC)hdc, (HRGN)hrgn);
+	DEBUG_CALL("GetClipRgn\n")
+
+	return (jint)GetClipRgn((HDC)arg0, (HRGN)arg1);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCurrentObject
- * Signature: (II)I
- */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClipboardData
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetClipboardData\n")
+
+	return (jint)GetClipboardData(arg0);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCurrentObject
-  (JNIEnv *env, jclass that, jint hdc, jint uObjectType)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCurrentObject\n");
-#endif
+	DEBUG_CALL("GetCurrentObject\n")
 
-    return (jint)GetCurrentObject((HDC)hdc, uObjectType);
+	return (jint)GetCurrentObject((HDC)arg0, arg1);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCurrentProcessId
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCurrentProcessId
-  (JNIEnv * env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCurrentProcessId\n");
-#endif
+	DEBUG_CALL("GetCurrentProcessId\n")
 
-    return (jint) GetCurrentProcessId();
+	return (jint)GetCurrentProcessId();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCurrentThreadId
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCurrentThreadId
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCurrentThreadId\n");
-#endif
+	DEBUG_CALL("GetCurrentThreadId\n")
 
-    return (jint)GetCurrentThreadId();
+	return (jint)GetCurrentThreadId();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCursorPos
- * Signature: (Lorg/eclipse/swt/internal/win32/POINT;)I
- */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCursor
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetCursor\n")
+
+	return (jint)GetCursor();
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCursorPos
-  (JNIEnv *env, jclass that, jobject lpPoint)
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    POINT point, *lpPoint1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCursorPos\n");
-#endif
+	POINT _arg0, *lparg0=NULL;
+	jboolean rc;
 
-    if (lpPoint) {
-        lpPoint1 = &point;
-        cachePointFids(env, lpPoint, &PGLOB(PointFc));
-        getPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    rc = (jboolean) GetCursorPos(lpPoint1);
-    if (lpPoint)
-        setPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
+	DEBUG_CALL("GetCursorPos\n")
 
-    return rc;
+	if (arg0) lparg0 = getPOINTFields(env, arg0, &_arg0, &PGLOB(POINTFc));
+
+	rc = (jboolean)GetCursorPos(lparg0);
+
+	if (arg0) setPOINTFields(env, arg0, lparg0, &PGLOB(POINTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDC
- * Signature: (I)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDC
-  (JNIEnv *env, jclass that, jint hWnd)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDC\n");
-#endif
+	DEBUG_CALL("GetDC\n")
 
-    return (jint)GetDC((HWND)hWnd);
+	return (jint)GetDC((HWND)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDCEx
- * Signature: (III)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDCEx
-  (JNIEnv *env, jclass that, jint hWnd, jint hrgnClip, jint flags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDCEx\n");
-#endif
+	DEBUG_CALL("GetDCEx\n")
 
-    return (jint)GetDCEx((HWND)hWnd, (HRGN)hrgnClip, (DWORD)flags);
+	return (jint)GetDCEx((HWND)arg0, (HRGN)arg1, arg2);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDesktopWindow
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDesktopWindow
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDesktopWindow\n");
-#endif
-
-    return (jint) GetDesktopWindow();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDeviceCaps
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDeviceCaps
-  (JNIEnv *env, jclass that, jint hdc, jint nIndex)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDeviceCaps\n");
-#endif
-
-    return (jint) GetDeviceCaps((HDC) hdc, nIndex);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDialogBaseUnits
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDialogBaseUnits
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDialogBaseUnits\n");
-#endif
-
-    return (jint)GetDialogBaseUnits();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDIBColorTable
- * Signature: (III[B)I
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDIBColorTable
-  (JNIEnv *env, jclass that, jint hdc, jint uStartIndex, jint cEntries, jbyteArray pColors)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
 {
-    RGBQUAD *pColors1=NULL;
-    jint rc;
+	jbyte *lparg3=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDIBColorTable\n");
-#endif
+	DEBUG_CALL("GetDIBColorTable\n")
 
-    if (pColors)
-        pColors1 = (RGBQUAD *)(*env)->GetByteArrayElements(env,pColors, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
 
-    rc = (jint)GetDIBColorTable((HDC)hdc, uStartIndex, cEntries, pColors1);
+	rc = (jint)GetDIBColorTable((HDC)arg0, arg1, arg2, (RGBQUAD *)lparg3);
 
-    if (pColors)
-        (*env)->ReleaseByteArrayElements(env, pColors, (jbyte *)pColors1, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 
-    return rc;
+	return rc;
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDIBits
- * Signature: (IIIII[BI)I
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDIBits
-  (JNIEnv *env, jclass that, jint hdc, jint hbmp, jint uStartScan, jint cScanLines, jint lpvBits, jbyteArray lpbi, jint uUsage)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jbyteArray arg5, jint arg6)
 {
-    LPBITMAPINFO lpbi1=NULL;
-    jint rc;
+	jbyte *lparg5=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDIBits\n");
-#endif
+	DEBUG_CALL("GetDIBits\n")
 
-    if (lpbi)
-        lpbi1 = (LPBITMAPINFO)(*env)->GetByteArrayElements(env,lpbi, NULL);
+	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
 
-    rc = (jint)GetDIBits((HDC)hdc, (HBITMAP)hbmp, uStartScan, cScanLines, (LPBITMAPINFO)lpvBits, lpbi1, uUsage);
+	rc = (jint)GetDIBits((HDC)arg0, (HBITMAP)arg1, arg2, arg3, (LPVOID)arg4, (LPBITMAPINFO)lparg5, arg6);
 
-    if (lpbi)
-        (*env)->ReleaseByteArrayElements(env, lpbi, (jbyte *)lpbi1, 0);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
 
-    return rc;
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDesktopWindow
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetDesktopWindow\n")
+
+	return (jint)GetDesktopWindow();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDlgItem
- * Signature: (II)I
- */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDeviceCaps
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("GetDeviceCaps\n")
+
+	return (jint)GetDeviceCaps((HDC)arg0, arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDialogBaseUnits
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetDialogBaseUnits\n")
+
+	return (jint)GetDialogBaseUnits();
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDlgItem
-  (JNIEnv *env, jclass that, jint hDlg, jint nIDDlgItem)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDlgItem\n");
-#endif
+	DEBUG_CALL("GetDlgItem\n")
 
-    return (jint)GetDlgItem((HWND)hDlg, nIDDlgItem);
+	return (jint)GetDlgItem((HWND)arg0, arg1);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDoubleClickTime
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDoubleClickTime
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDoubleClickTime\n");
-#endif
+	DEBUG_CALL("GetDoubleClickTime\n")
 
-    return (jint)GetDoubleClickTime();
+	return (jint)GetDoubleClickTime();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetFileTitle
- * Signature: ([B[BS)S
- */
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_GetFileTitle
-  (JNIEnv *env, jclass that, jbyteArray lpszFile, jbyteArray lpszTitle, jshort cbBuf)
+#ifndef _WIN32_WCE
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_GetFileTitleA
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jshort arg2)
 {
-    LPCTSTR lpszFile1=NULL;
-    LPTSTR lpszTitle1=NULL;
-    jshort rc;
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jshort rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetFileTitle\n");
-#endif
+	DEBUG_CALL("GetFileTitleA\n")
 
-    if (lpszFile)
-        lpszFile1 = (*env)->GetByteArrayElements(env, lpszFile, NULL);
-    if (lpszTitle)
-        lpszTitle1 = (*env)->GetByteArrayElements(env, lpszTitle, NULL);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
 
-    rc = (jshort)GetFileTitle(lpszFile1, lpszTitle1, (WORD)cbBuf);
+	rc = (jshort)GetFileTitleA((LPSTR)lparg0, (LPSTR)lparg1, arg2);
 
-    if (lpszFile)
-        (*env)->ReleaseByteArrayElements(env, lpszFile, (jbyte *)lpszFile1, 0);
-    if (lpszTitle)
-        (*env)->ReleaseByteArrayElements(env, lpszTitle, (jbyte *)lpszTitle1, 0);
-    return rc;
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetFocus
- * Signature: ()I
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_GetFileTitleW
+	(JNIEnv *env, jclass that, jcharArray arg0, jcharArray arg1, jshort arg2)
+{
+	jchar *lparg0=NULL;
+	jchar *lparg1=NULL;
+	jshort rc;
+
+	DEBUG_CALL("GetFileTitleW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	rc = (jshort)GetFileTitleW((LPWSTR)lparg0, (LPWSTR)lparg1, arg2);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetFocus
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetFocus\n");
-#endif
+	DEBUG_CALL("GetFocus\n")
 
-    return (jint) GetFocus();
+	return (jint)GetFocus();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetIconInfo
- * Signature: (ILorg/eclipse/swt/internal/win32/ICONINFO;)Z
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetFontLanguageInfo
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetFontLanguageInfo\n")
+
+	return (jint)GetFontLanguageInfo((HDC)arg0);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetIconInfo
-  (JNIEnv *env, jclass that, jint hIcon, jobject lpIconinfo)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    ICONINFO iconinfo, *lpIconinfo1=NULL;
-    jboolean rc;
+	ICONINFO _arg1, *lparg1=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetIconInfo\n");
-#endif
+	DEBUG_CALL("GetIconInfo\n")
 
-    if (lpIconinfo) {
-        lpIconinfo1 = &iconinfo;
-        cacheIconinfoFids(env, lpIconinfo, &PGLOB(IconinfoFc));
-        getIconinfoFields(env, lpIconinfo, lpIconinfo1, &PGLOB(IconinfoFc));
-    }
-    rc = (jboolean) GetIconInfo((HICON)hIcon, lpIconinfo1);
-    if (lpIconinfo) {
-        setIconinfoFields(env, lpIconinfo, lpIconinfo1, &PGLOB(IconinfoFc));
-    }
-    return rc;
+	if (arg1) lparg1 = getICONINFOFields(env, arg1, &_arg1, &PGLOB(ICONINFOFc));
+
+	rc = (jboolean)GetIconInfo((HICON)arg0, lparg1);
+
+	if (arg1) setICONINFOFields(env, arg1, lparg1, &PGLOB(ICONINFOFc));
+
+	return rc;
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetKeyboardState
- * Signature: ([B)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardState
-  (JNIEnv *env, jclass that, jbyteArray lpKeyState)
-{
-    PBYTE lpKeyState1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetKeyboardState\n");
-#endif
-
-    if (lpKeyState)
-        lpKeyState1 = (*env)->GetByteArrayElements(env, lpKeyState, NULL);
-
-    rc = (jboolean) GetKeyboardState(lpKeyState1);
-    
-    if (lpKeyState)
-        (*env)->ReleaseByteArrayElements(env, lpKeyState, (jbyte *)lpKeyState1, 0);
-
-    return rc;    
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetKeyState
- * Signature: (I)S
- */
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyState
-  (JNIEnv *env, jclass that, jint nVirtKey)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetKeyState\n");
-#endif
+	DEBUG_CALL("GetKeyState\n")
 
-    return (jshort) GetKeyState(nVirtKey);
+	return (jshort)GetKeyState(arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetLastActivePopup
- * Signature: (I)I
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardLayout
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetKeyboardLayout\n")
+
+	return (jint)GetKeyboardLayout(arg0);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardLayoutList
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetKeyboardLayoutList\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+
+	rc = (jint)GetKeyboardLayoutList(arg0, (HKL FAR *)lparg1);
+
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardState
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetKeyboardState\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+
+	rc = (jboolean)GetKeyboardState((PBYTE)lparg0);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetLastActivePopup
-  (JNIEnv *env, jclass that, jint hWnd)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetLastActivePopup\n");
-#endif
+	DEBUG_CALL("GetLastActivePopup\n")
 
-    return (jint) GetLastActivePopup((HWND) hWnd);
+	return (jint)GetLastActivePopup((HWND)arg0);
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetLastError
- * Signature: ()I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetLastError
-  (JNIEnv *env,  jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetLastError\n");
-#endif
-    return (jint) GetLastError();
+	DEBUG_CALL("GetLastError\n")
+
+	return (jint)GetLastError();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetMenu
- * Signature: (I)I
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetLocaleInfoA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
+{
+	jbyte *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetLocaleInfoA\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+
+	rc = (jint)GetLocaleInfoA(arg0, arg1, (LPSTR)lparg2, arg3);
+
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetLocaleInfoW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3)
+{
+	jchar *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetLocaleInfoW\n")
+
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+
+	rc = (jint)GetLocaleInfoW(arg0, arg1, (LPWSTR)lparg2, arg3);
+
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMenu
-  (JNIEnv *env, jclass that, jint hWnd)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetMenu\n");
-#endif
+	DEBUG_CALL("GetMenu\n")
 
-    return (jint) GetMenu((HWND)hWnd);
+	return (jint)GetMenu((HWND)arg0);
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetMenuDefaultItem
- * Signature: (III)I
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMenuDefaultItem
-  (JNIEnv *env, jclass that, jint hMenu, jint fByPos, jint gmdiFlags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetMenuDefaultItem\n");
-#endif
+	DEBUG_CALL("GetMenuDefaultItem\n")
 
-    return (jint) GetMenuDefaultItem((HMENU)hMenu, fByPos, gmdiFlags);
+	return (jint)GetMenuDefaultItem((HMENU)arg0, arg1, arg2);
 }
+#endif // _WIN32_WCE
 
-#ifdef USE_2000_CALLS
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetMenuInfo
- * Signature: (ILorg/eclipse/swt/internal/win32/MENUINFO;)Z
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMenuInfo
-  (JNIEnv *env, jclass that, jint hmenu, jobject lpcmi)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
+	MENUINFO _arg1, *lparg1=NULL;
+	jboolean rc = (jboolean)FALSE;
     HMODULE hm;
     FARPROC fp;
-    MENUINFO menuinfo, *lpcmi1=NULL;
-    jboolean rc=FALSE;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetMenuInfo\n");
-#endif
+	DEBUG_CALL("GetMenuInfo\n")
 
     /*
-    **  GetMenuInfo is a Win2000 and Win98 specific call
-    **  If you link it into swt.dll a system modal entry point not found dialog will
-    **  appear as soon as swt.dll is loaded. Here we check for the entry point and
-    **  only do the call if it exists.
+    *  GetMenuInfo is a Win2000 and Win98 specific call
+    *  If you link it into swt.dll a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
     */
     if ((hm=GetModuleHandle("user32.dll")) && (fp=GetProcAddress(hm, "GetMenuInfo"))) {
-        if (lpcmi) {
-            lpcmi1 = &menuinfo;
-            cacheMenuinfoFids(env, lpcmi, &PGLOB(MenuinfoFc));
-            getMenuinfoFields(env, lpcmi, lpcmi1, &PGLOB(MenuinfoFc));
-        }
-        rc = (jboolean) (fp)((HMENU)hmenu, lpcmi1);
-//        rc = (jboolean) GetMenuInfo((HMENU)hmenu, lpcmi1);
-        if (lpcmi) {
-            setMenuinfoFields(env, lpcmi, lpcmi1, &PGLOB(MenuinfoFc));
-        }
-    }
-    return rc;
-}
-#endif
+    
+		if (arg1) lparg1 = getMENUINFOFields(env, arg1, &_arg1, &PGLOB(MENUINFOFc));
+		
+        rc = (jboolean) (fp)((HMENU)arg0, lparg1);
+//		rc = (jboolean)GetMenuInfo(arg0, lparg1);
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetMenuItemCount
- * Signature: (I)I
- */
+		if (arg1) setMENUINFOFields(env, arg1, lparg1, &PGLOB(MENUINFOFc));
+	}
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMenuItemCount
-  (JNIEnv *env, jclass that, jint hMenu)
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetMenuItemCount\n");
-#endif
+	DEBUG_CALL("GetMenuItemCount\n")
 
-    return (jint) GetMenuItemCount((HMENU)hMenu);
+	return (jint)GetMenuItemCount((HMENU)arg0);
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetMenuItemInfo
- * Signature: (IIZLorg/eclipse/swt/internal/win32/MENUITEMINFO;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMenuItemInfo
-  (JNIEnv *env, jclass that, jint hMenu, jint uItem, jboolean fByPosition, jobject lpmii)
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMenuItemInfoA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jobject arg3)
 {
 	DECL_GLOB(pGlob)
-    MENUITEMINFO mii1, *lpmii1=NULL;
-    jboolean rc;
+	MENUITEMINFO _arg3, *lparg3=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetMenuItemInfo\n");
-#endif
+	DEBUG_CALL("GetMenuItemInfoA\n")
 
-    if (lpmii) {
-        lpmii1 = &mii1;
-        cacheMenuiteminfoFids(env, lpmii, &PGLOB(MenuiteminfoFc));
-        getMenuiteminfoFields(env, lpmii, lpmii1, &PGLOB(MenuiteminfoFc));
-    }
+	if (arg3) lparg3 = getMENUITEMINFOFields(env, arg3, &_arg3, &PGLOB(MENUITEMINFOFc));
 
-    rc = (jboolean) GetMenuItemInfo((HMENU)hMenu, uItem, fByPosition, lpmii1);
-    if (lpmii) {
-        setMenuiteminfoFields(env, lpmii, lpmii1, &PGLOB(MenuiteminfoFc));
-    }
-    return rc;
+	rc = (jboolean)GetMenuItemInfoA((HMENU)arg0, arg1, arg2, lparg3);
+
+	if (arg3) setMENUITEMINFOFields(env, arg3, lparg3, &PGLOB(MENUITEMINFOFc));
+
+	return rc;
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetMessage
- * Signature: (Lorg/eclipse/swt/internal/win32/MSG;III)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMessage
-  (JNIEnv *env, jclass that, jobject lpMsg, jint hWnd, jint wMsgFilterMin, jint wMsgFilterMax)
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMenuItemInfoW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jobject arg3)
 {
 	DECL_GLOB(pGlob)
-    MSG callBack, *lpMsg1=NULL;
-    jboolean rc;
+	MENUITEMINFO _arg3, *lparg3=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetMessage\n");
-#endif
+	DEBUG_CALL("GetMenuItemInfoW\n")
 
-    if (lpMsg) {
-        lpMsg1 = &callBack;
-        cacheMsgFids(env, lpMsg, &PGLOB(MsgFc));
-        getMsgFields(env, lpMsg, lpMsg1, &PGLOB(MsgFc));
-    }
-    rc = (jboolean) GetMessage(&callBack,(HWND)hWnd,wMsgFilterMin,wMsgFilterMax);
-    if (lpMsg) {
-        setMsgFields(env, lpMsg, lpMsg1, &PGLOB(MsgFc));
-    }
-    return rc;
+	if (arg3) lparg3 = getMENUITEMINFOFields(env, arg3, &_arg3, &PGLOB(MENUITEMINFOFc));
+
+	rc = (jboolean)GetMenuItemInfoW((HMENU)arg0, arg1, arg2, (LPMENUITEMINFOW)lparg3);
+
+	if (arg3) setMENUITEMINFOFields(env, arg3, lparg3, &PGLOB(MENUITEMINFOFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetMessagePos
- * Signature: ()I
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMessageA
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	MSG _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetMessageA\n")
+
+	if (arg0) lparg0 = getMSGFields(env, arg0, &_arg0, &PGLOB(MSGFc));
+
+	rc = (jboolean)GetMessageA(lparg0, (HWND)arg1, arg2, arg3);
+
+	if (arg0) setMSGFields(env, arg0, lparg0, &PGLOB(MSGFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMessagePos
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetMessagePos\n");
-#endif
+	DEBUG_CALL("GetMessagePos\n")
 
-    return (jint) GetMessagePos();
+	return (jint)GetMessagePos();
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetMessageTime
- * Signature: ()I
- */
+#ifndef _WIN32_WCE
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMessageTime
-  (JNIEnv *env, jclass that)
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetMessageTime\n");
-#endif
+	DEBUG_CALL("GetMessageTime\n")
 
-    return (jint) GetMessageTime();
+	return (jint)GetMessageTime();
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetModuleHandle
- * Signature: ([B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetModuleHandle
-  (JNIEnv *env, jclass that, jbyteArray lpModuleName)
-{
-    jbyte *lpModuleName1 = NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetModuleHandle\n");
-#endif
-
-    if (lpModuleName)
-         lpModuleName1 = (*env)->GetByteArrayElements(env, lpModuleName, NULL);
-
-    rc = (jint) GetModuleHandle(lpModuleName1);
-
-    if (lpModuleName)
-        (*env)->ReleaseByteArrayElements(env, lpModuleName, lpModuleName1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetNearestPaletteIndex
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetNearestPaletteIndex
-  (JNIEnv *env, jclass that, jint hPal, jint crColor)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetNearestPaletteIndex\n");
-#endif
-
-    return (jint)GetNearestPaletteIndex((HPALETTE)hPal, (COLORREF) crColor);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetObject
- * Signature: (IILorg/eclipse/swt/internal/win32/BITMAP;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObject__IILorg_eclipse_swt_internal_win32_BITMAP_2
-  (JNIEnv *env, jclass that, jint hgdiobj, jint cbBuffer, jobject lpvObject)
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetMessageW
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3)
 {
 	DECL_GLOB(pGlob)
-    BITMAP bitmap, *lpvObject1=NULL;
-    jint rc;
+	MSG _arg0, *lparg0=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetObject__IILorg_eclipse_swt_internal_win32_BITMAP_2\n");
-#endif
+	DEBUG_CALL("GetMessageW\n")
 
-    if (lpvObject) {
-        lpvObject1 = &bitmap;
-        cacheBitmapFids(env, lpvObject, &PGLOB(BitmapFc));
-        getBitmapFields(env, lpvObject, lpvObject1, &PGLOB(BitmapFc));
-    }
-    rc = (jint) GetObject((HGDIOBJ)hgdiobj, cbBuffer, (LPVOID)lpvObject1);
-    if (lpvObject) {
-        setBitmapFields(env, lpvObject, lpvObject1, &PGLOB(BitmapFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetObject
- * Signature: (IILorg/eclipse/swt/internal/win32/DIBSECTION;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObject__IILorg_eclipse_swt_internal_win32_DIBSECTION_2
-  (JNIEnv *env, jclass that, jint hgdiobj, jint cbBuffer, jobject lpvObject)
-{
-	DECL_GLOB(pGlob)
-    DIBSECTION dibsection, *lpvObject1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetObject__IILorg_eclipse_swt_internal_win32_DIBSECTION_2\n");
-#endif
-
-    if (lpvObject) {
-        lpvObject1 = &dibsection;
-        cacheDibsectionFids(env, lpvObject, &PGLOB(DibsectionFc));
-        getDibsectionFields(env, lpvObject, lpvObject1, &PGLOB(DibsectionFc));
-    }
-    rc = (jint) GetObject((HGDIOBJ)hgdiobj, cbBuffer, (LPVOID)lpvObject1);
-    if (lpvObject) {
-        setDibsectionFields(env, lpvObject, lpvObject1, &PGLOB(DibsectionFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetObject
- * Signature: (IILorg/eclipse/swt/internal/win32/LOGBRUSH;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObject__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2
-  (JNIEnv *env, jclass that, jint hgdiobj, jint cbBuffer, jobject lpvObject)
-{
-	DECL_GLOB(pGlob)
-    LOGBRUSH logbrush, *lpvObject1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetObject__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2\n");
-#endif
-
-    if (lpvObject) {
-        lpvObject1 = &logbrush;
-        cacheLogbrushFids(env, lpvObject, &PGLOB(LogbrushFc));
-        getLogbrushFields(env, lpvObject, lpvObject1, &PGLOB(LogbrushFc));
-    }
-    rc = (jint) GetObject((HGDIOBJ)hgdiobj, cbBuffer, (LPVOID)lpvObject1);
-    if (lpvObject) {
-        setLogbrushFields(env, lpvObject, lpvObject1, &PGLOB(LogbrushFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetObject
- * Signature: (IILorg/eclipse/swt/internal/win32/LOGFONT;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObject__IILorg_eclipse_swt_internal_win32_LOGFONT_2
-  (JNIEnv *env, jclass that, jint hgdiobj, jint cbBuffer, jobject lpvObject)
-{
-	DECL_GLOB(pGlob)
-    LOGFONT logfont, *lpvObject1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetObject__IILorg_eclipse_swt_internal_win32_LOGFONT_2\n");
-#endif
-    if (lpvObject) {
-        lpvObject1 = &logfont;
-        cacheLogfontFids(env, lpvObject, &PGLOB(LogfontFc));
-        getLogfontFields(env, lpvObject, lpvObject1, &PGLOB(LogfontFc));
-    }
-
-    rc = (jint) GetObject((HGDIOBJ)hgdiobj, cbBuffer, lpvObject1);
-
-    if (lpvObject1) {
-        setLogfontFields(env, lpvObject, lpvObject1, &PGLOB(LogfontFc));
-    }
-    return rc;
-}
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetObject
- * Signature: (IILorg/eclipse/swt/internal/win32/LOGPEN;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObject__IILorg_eclipse_swt_internal_win32_LOGPEN_2
-  (JNIEnv *env, jclass that, jint hgdiobj, jint cbBuffer, jobject lpvObject)
-{
-	DECL_GLOB(pGlob)
-    LOGPEN logpen, *lpvObject1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetObject__IILorg_eclipse_swt_internal_win32_LOGPEN_2\n");
-#endif
-    if (lpvObject) {
-        lpvObject1 = &logpen;
-        cacheLogpenFids(env, lpvObject, &PGLOB(LogpenFc));
-        getLogpenFields(env, lpvObject, lpvObject1, &PGLOB(LogpenFc));
-    }
-
-    rc = (jint) GetObject((HGDIOBJ)hgdiobj, cbBuffer, lpvObject1);
-
-    if (lpvObject1) {
-        setLogpenFields(env, lpvObject, lpvObject1, &PGLOB(LogpenFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetObject
- * Signature: (IILorg/eclipse/swt/internal/win32/EXTLOGPEN;)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObject__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2
-  (JNIEnv *env, jclass that, jint hgdiobj, jint cbBuffer, jobject lpvObject)
-{
-	DECL_GLOB(pGlob)
-    EXTLOGPEN extlogpen, *lpvObject1=NULL;
-    jint rc;
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetObject__IILorg_eclipse_swt_internal_win32_EXTLOGPEN_2\n");
-#endif
-    if (lpvObject) {
-        lpvObject1 = &extlogpen;
-        cacheExtlogpenFids(env, lpvObject, &PGLOB(ExtlogpenFc));
-        getExtlogpenFields(env, lpvObject, lpvObject1, &PGLOB(ExtlogpenFc));
-    }
-    rc = (jint) GetObject((HGDIOBJ)hgdiobj, cbBuffer, lpvObject1);
-    if (lpvObject1) {
-        setExtlogpenFields(env, lpvObject, lpvObject1, &PGLOB(ExtlogpenFc));
-    }
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetOpenFileName
- * Signature: (Lorg/eclipse/swt/internal/win32/OPENFILENAME;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetOpenFileName
-  (JNIEnv *env, jclass that, jobject lpofn)
-{
-	DECL_GLOB(pGlob)
-    OPENFILENAME ofn1, *lpofn1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetOpenFileName\n");
-#endif
-
-    if (lpofn) {
-        lpofn1 = &ofn1;
-        cacheOpenfilenameFids(env, lpofn, &PGLOB(OpenfilenameFc));
-        getOpenfilenameFields(env, lpofn, lpofn1, &PGLOB(OpenfilenameFc));
-    }
-    rc = (jboolean) GetOpenFileName((LPOPENFILENAME)lpofn1);
-    if (lpofn) {
-        setOpenfilenameFields(env, lpofn, lpofn1, &PGLOB(OpenfilenameFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetPaletteEntries
- * Signature: (III[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetPaletteEntries
-  (JNIEnv *env, jclass that, jint hPalette, jint iStartIndex, jint nEntries, jbyteArray logPalette)
-{
-    LPTSTR logPalette1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetPaletteEntries\n");
-#endif
-
-    if (logPalette)
-        logPalette1 = (*env)->GetByteArrayElements(env, logPalette, NULL);
-
-    rc = (jint) GetPaletteEntries((HPALETTE) hPalette, iStartIndex, nEntries, (LPPALETTEENTRY)logPalette1);
-
-    if (logPalette)
-        (*env)->ReleaseByteArrayElements(env, logPalette, (jbyte *)logPalette1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetParent
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetParent
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetParent\n");
-#endif
-
-    return (jint) GetParent((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetProcAddress
- * Signature: (I[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetProcAddress
-  (JNIEnv *env, jclass that, jint hModule, jbyteArray lpProcName)
-{
-    LPCSTR lpProcName1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetProcAddress\n");
-#endif
-
-    if (lpProcName)
-        lpProcName1 = (LPCSTR)(*env)->GetByteArrayElements(env,lpProcName, NULL);
-
-    rc = (jint)GetProcAddress((HMODULE)hModule, lpProcName1);
-
-    if (lpProcName)
-        (*env)->ReleaseByteArrayElements(env, lpProcName, (jbyte *)lpProcName1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetProcessHeap
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetProcessHeap
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetProcessHeap\n");
-#endif
-
-    return (jint) GetProcessHeap();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetProfileString
- * Signature: ([B[B[B[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetProfileString
-  (JNIEnv *env, jclass that, jbyteArray lpAppName, jbyteArray lpKeyName, jbyteArray lpDefault, jbyteArray lpReturnedString, jint nSize)
-{
-    LPCTSTR lpAppName1=NULL;
-    LPCTSTR lpKeyName1=NULL;
-    LPCTSTR lpDefault1=NULL;
-    LPTSTR lpReturnedString1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetProfileString\n");
-#endif
-    if (lpAppName)
-        lpAppName1 = (LPCTSTR)(*env)->GetByteArrayElements(env,lpAppName, NULL);
-
-    if (lpKeyName)
-        lpKeyName1 = (LPCTSTR)(*env)->GetByteArrayElements(env,lpKeyName, NULL);
-
-    if (lpDefault)
-        lpDefault1 = (LPCTSTR)(*env)->GetByteArrayElements(env,lpDefault, NULL);
-
-    if (lpReturnedString)
-        lpReturnedString1 = (LPTSTR)(*env)->GetByteArrayElements(env,lpReturnedString, NULL);
-
-    rc = (jint)GetProfileString(lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
-
-    if (lpAppName)
-        (*env)->ReleaseByteArrayElements(env, lpAppName, (jbyte *)lpAppName1, 0);
-
-    if (lpKeyName)
-        (*env)->ReleaseByteArrayElements(env, lpKeyName, (jbyte *)lpKeyName1, 0);
-
-    if (lpDefault)
-        (*env)->ReleaseByteArrayElements(env, lpDefault, (jbyte *)lpDefault1, 0);
-
-    if (lpReturnedString)
-        (*env)->ReleaseByteArrayElements(env, lpReturnedString, (jbyte *)lpReturnedString1, 0);
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetRegionData
- * Signature: (II[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetRegionData
-  (JNIEnv *env, jclass that, jint hRgn, jint dwCount, jintArray lpRgnData)
-{
-    RGNDATA *lpRgnData1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetRegionData\n");
-#endif
-
-    if (lpRgnData)
-        lpRgnData1 = (RGNDATA *)(*env)->GetIntArrayElements(env, lpRgnData, NULL);
-
-    rc = (jint) GetRegionData((HRGN)hRgn, dwCount, lpRgnData1);
-
-    if (lpRgnData)
-        (*env)->ReleaseIntArrayElements(env, lpRgnData, (jint *)lpRgnData1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetRgnBox
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetRgnBox
-  (JNIEnv *env, jclass that, jint hrgn, jobject lpRect)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetRgnBox\n");
-#endif
-
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jint) GetRgnBox((HRGN)hrgn, lpRect1);
-
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetROP2
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetROP2
-  (JNIEnv *env, jclass that, jint hdc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetROP2\n");
-#endif
-
-    return (jint) GetROP2((HDC)hdc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetSaveFileName
- * Signature: (Lorg/eclipse/swt/internal/win32/OPENFILENAME;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSaveFileName
-  (JNIEnv *env, jclass that, jobject lpofn)
-{
-	DECL_GLOB(pGlob)
-    OPENFILENAME ofn1, *lpofn1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetSaveFileName\n");
-#endif
-
-    if (lpofn) {
-        lpofn1 = &ofn1;
-        cacheOpenfilenameFids(env, lpofn, &PGLOB(OpenfilenameFc));
-        getOpenfilenameFields(env, lpofn, lpofn1, &PGLOB(OpenfilenameFc));
-    }
-    rc = (jboolean) GetSaveFileName((LPOPENFILENAME)lpofn1);
-    if (lpofn) {
-        setOpenfilenameFields(env, lpofn, lpofn1, &PGLOB(OpenfilenameFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetScrollInfo
- * Signature: (IILorg/eclipse/swt/internal/win32/SCROLLINFO;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetScrollInfo
-  (JNIEnv *env, jclass that, jint hWnd, jint fnBar, jobject lpsi)
-{
-	DECL_GLOB(pGlob)
-    SCROLLINFO si1, *lpsi1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetScrollInfo\n");
-#endif
-
-    if (lpsi) {
-        lpsi1 = &si1;
-        cacheScrollinfoFids(env, lpsi, &PGLOB(ScrollinfoFc));
-        getScrollinfoFields(env, lpsi, lpsi1, &PGLOB(ScrollinfoFc));
-    }
-    rc = (jboolean) GetScrollInfo((HWND)hWnd, fnBar, lpsi1);
-    if (lpsi) {
-        setScrollinfoFields(env, lpsi, lpsi1, &PGLOB(ScrollinfoFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetStockObject
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetStockObject
-  (JNIEnv *env, jclass that, jint fnObject)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetStockObject\n");
-#endif
-
-    return (jint) GetStockObject(fnObject);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetSysColor
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSysColor
-  (JNIEnv *env, jclass that, jint nIndex)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetSysColor\n");
-#endif
-
-    return (jint) GetSysColor(nIndex);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetSysColorBrush
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSysColorBrush
-  (JNIEnv *env, jclass that, jint nIndex)
-{
-    return (jint) GetSysColorBrush(nIndex);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetSystemMenu
- * Signature: (IZ)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSystemMenu
-  (JNIEnv *env, jclass that, jint hWnd, jboolean bRevert)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetSystemMenu\n");
-#endif
-
-    return (jint) GetSystemMenu((HWND)hWnd, bRevert);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetSystemMetrics
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSystemMetrics
-  (JNIEnv *env, jclass that, jint nIndex)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetSystemMetrics\n");
-#endif
-
-    return (jint) GetSystemMetrics(nIndex);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetTextColor
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextColor
-  (JNIEnv *env, jclass that, jint hDC)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetTextColor\n");
-#endif
-
-    return (jint) GetTextColor((HDC)hDC);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetTextMetrics
- * Signature: (ILorg/eclipse/swt/internal/win32/TEXTMETRIC;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextMetrics
-  (JNIEnv *env, jclass that, jint hdc, jobject lptm)
-{
-	DECL_GLOB(pGlob)
-    TEXTMETRIC tm, *lptm1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetTextMetrics\n");
-#endif
-
-    rc = GetTextMetrics((HDC)hdc, &tm);
-
-    if (lptm) {
-        lptm1 = &tm;
-        cacheTextmetricFids(env, lptm, &PGLOB(TextmetricFc));
-        setTextmetricFields(env, lptm, lptm1, &PGLOB(TextmetricFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetUpdateRgn
- * Signature: (IIZ)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetUpdateRgn
-  (JNIEnv *env, jclass that, jint hWnd, jint hRgn, jboolean hErase)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetUpdateRgn\n");
-#endif
-
-    return (jint) GetUpdateRgn((HWND)hWnd, (HRGN)hRgn, hErase);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetVersion
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetVersion
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetVersion\n");
-#endif
-
-    return (jint) GetVersion();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetWindow
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindow
-  (JNIEnv *env, jclass that, jint hWnd, jint uCmd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetWindow\n");
-#endif
-
-    return (jint) GetWindow((HWND)hWnd, uCmd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetWindowLong
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowLong
-  (JNIEnv *env, jclass that, jint hWnd, jint nIndex)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetWindowLong\n");
-#endif
-
-     return (jint) GetWindowLong((HWND)hWnd, nIndex);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetWindowPlacement
- * Signature: (ILorg/eclipse/swt/internal/win32/WINDOWPLACEMENT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowPlacement
-  (JNIEnv *env, jclass that, jint hWnd, jobject lpwndpl)
-{
-	DECL_GLOB(pGlob)
-    WINDOWPLACEMENT wndpl, *lpwndpl1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetWindowPlacement\n");
-#endif
-
-    if (lpwndpl) {
-        lpwndpl1 = &wndpl;
-        cacheWindowplacementFids(env, lpwndpl, &PGLOB(WindowplacementFc));
-        getWindowplacementFields(env, lpwndpl, lpwndpl1, &PGLOB(WindowplacementFc));
-    }
-    rc = (jboolean) GetWindowPlacement((HWND)hWnd, lpwndpl1);
-    if (lpwndpl) {
-        setWindowplacementFields(env, lpwndpl, lpwndpl1, &PGLOB(WindowplacementFc));    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetWindowRect
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowRect
-  (JNIEnv *env, jclass that, jint hWnd, jobject lpRect)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetWindowRect\n");
-#endif
-
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) GetWindowRect((HWND)hWnd, lpRect1);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetWindowText
- * Signature: (I[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowText
-  (JNIEnv *env, jclass that, jint hWnd, jbyteArray lpString, jint nMaxCount)
-{
-    LPTSTR lpString1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetWindowText\n");
-#endif
-
-    if (lpString)
-        lpString1 = (*env)->GetByteArrayElements(env, lpString, NULL);
-
-    rc = (jint) GetWindowText((HWND)hWnd, lpString1, nMaxCount);
-
-    if (lpString)
-        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetWindowTextLength
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowTextLength
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetWindowTextLength\n");
-#endif
-
-    return (jint) GetWindowTextLength((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetWindowThreadProcessId
- * Signature: (I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowThreadProcessId
-  (JNIEnv *env, jclass that, jint hWnd, jintArray lpdwProcessId)
-{
-    LPDWORD lpdwProcessId1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetWindowThreadProcessId\n");
-#endif
-
-    if (lpdwProcessId)
-        lpdwProcessId1 = (*env)->GetIntArrayElements(env, lpdwProcessId, NULL);
-
-    rc = (jint) GetWindowThreadProcessId((HWND)hWnd, lpdwProcessId1);
-
-    if (lpdwProcessId)
-        (*env)->ReleaseIntArrayElements(env, lpdwProcessId, (jint *)lpdwProcessId1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GlobalAlloc
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalAlloc
-  (JNIEnv *env,  jclass that, jint uFlags, jint dwBytes)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GlobalAlloc\n");
-#endif
-    return (jint) GlobalAlloc(uFlags, dwBytes);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GlobalFree
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalFree
-  (JNIEnv *env,  jclass that, jint hMem)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GlobalFree: handle = %d\n", hMem);
-#endif
-    return (jint) GlobalFree((HANDLE)hMem);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GlobalLock
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalLock
-  (JNIEnv *env,  jclass that, jint hMem)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GlobalLock\n");
-#endif
-    return (jint) GlobalLock((HANDLE)hMem);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GlobalSize
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalSize
-  (JNIEnv *env,  jclass that, jint hMem)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GlobalSize\n");
-#endif
-    return (jint) GlobalSize((HANDLE)hMem);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GlobalUnlock
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalUnlock
-  (JNIEnv *env,  jclass that, jint hMem)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GlobalUnlock\n");
-#endif
-    return (jboolean) GlobalUnlock((HANDLE)hMem);
-}
-
-#ifdef USE_2000_CALLS
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GradientFill
- * Signature: (IIIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GradientFill
-  (JNIEnv *env, jclass that, jint hdc, int pVertex, jint dwNumVertex, int pMesh, jint dwNumMesh, jint dwMode)
-{
-	DECL_GLOB(pGlob)
-	BOOL rc = FALSE;
-    HMODULE hm;
-    FARPROC fp;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GradientFill\n");
-#endif
-    /*
-    **  GradientFill is a Win2000 and Win98 specific call
-    **  If you link it into swt.dll, a system modal entry point not found dialog will
-    **  appear as soon as swt.dll is loaded. Here we check for the entry point and
-    **  only do the call if it exists.
-    */
-    if (! (hm = GetModuleHandle("msimg32.dll"))) hm = LoadLibrary("msimg32.dll");
-    if (hm && (fp = GetProcAddress(hm, "GradientFill"))) {
-		rc = fp((HDC)hdc, (PTRIVERTEX)pVertex, (ULONG)dwNumVertex, (PVOID)pMesh, (ULONG)dwNumMesh, (ULONG)dwMode);
-//		rc = GradientFill((HDC)hdc, (PTRIVERTEX)pVertex, (ULONG)dwNumVertex, (PVOID)pMesh, (ULONG)dwNumMesh, (ULONG)dwMode);
-    }
-    return (jboolean) rc;
-}
-#endif
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    HeapAlloc
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_HeapAlloc
-  (JNIEnv *env, jclass that, jint hHeap, jint dwFlags, jint dwBytes)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "HeapAlloc\n");
-#endif
-
-    return (jint) HeapAlloc((HANDLE)hHeap, (DWORD)dwFlags, (DWORD)dwBytes);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    HeapFree
- * Signature: (III)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_HeapFree
-  (JNIEnv *env, jclass that, jint hHeap, jint dwFlags, jint lpMenu)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "HeapFree\n");
-#endif
-
-    return (jboolean) HeapFree((HANDLE)hHeap, (DWORD)dwFlags, (LPVOID)lpMenu);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    HideCaret
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_HideCaret
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "HideCaret\n");
-#endif
-
-    return (jboolean) HideCaret((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_AddMasked
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1AddMasked
-  (JNIEnv *env, jclass that, jint himl, jint hbmImage, jint crMask)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImageList_AddMasked\n");
-#endif
-
-    return (jint)ImageList_AddMasked((HIMAGELIST)himl, (HBITMAP)hbmImage, (COLORREF)crMask);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_Create
- * Signature: (IIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1Create
-  (JNIEnv *env, jclass that, jint cx, jint cy, jint flags, jint cInitial, jint cGrow)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImageList_Create\n");
-#endif
-
-    return (jint)ImageList_Create(cx, cy, flags, cInitial, cGrow);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_Destroy
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1Destroy
-  (JNIEnv *env, jclass that, jint himl)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImageList_Destroy\n");
-#endif
-
-    return (jboolean)ImageList_Destroy((HIMAGELIST)himl);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_GetIcon
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1GetIcon
-  (JNIEnv *env, jclass that, jint himl, jint i, jint flags)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImageList_GetIcon\n");
-#endif
-
-    return (jint)ImageList_GetIcon((HIMAGELIST)himl, i, flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_GetIconSize
- * Signature: (I[I[I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1GetIconSize
-  (JNIEnv *env, jclass that, jint himl, jintArray cx, jintArray cy)
-{
-    int FAR *lpcx1=NULL,*lpcy1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImageList_GetIconSize\n");
-#endif
-
-    if (cx)
-        lpcx1 = (int FAR *)(*env)->GetIntArrayElements(env, cx, NULL);
-    if (cy)
-        lpcy1 = (int FAR *)(*env)->GetIntArrayElements(env, cy, NULL);
-
-    rc = (jboolean) ImageList_GetIconSize((HIMAGELIST)himl, lpcx1, lpcy1);
-
-    if (cx)
-        (*env)->ReleaseIntArrayElements(env, cx, (jint *)lpcx1, 0);
-    if (cy)
-        (*env)->ReleaseIntArrayElements(env, cy, (jint *)lpcy1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_GetImageCount
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1GetImageCount
-  (JNIEnv *env, jclass that, jint himl)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImageList_GetImageCount\n");
-#endif
-
-    return (jint)ImageList_GetImageCount((HIMAGELIST)himl);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_Remove
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1Remove
-   (JNIEnv *env, jclass that, jint himl, jint i)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "ImageList_Remove\n");
-#endif
-
-	return (jboolean)ImageList_Remove((HIMAGELIST)himl, i);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_Replace
- * Signature: (IIII)Z
- */
-JNIEXPORT boolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1Replace
-   (JNIEnv *env, jclass that, jint himl, jint i, jint hbmImage, jint hbmMask)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "ImageList_Replace\n");
-#endif
-
-	return (boolean)ImageList_Replace((HIMAGELIST)himl, i, (HBITMAP)hbmImage, (HBITMAP)hbmMask);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_ReplaceIcon
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1ReplaceIcon
-   (JNIEnv *env, jclass that, jint himl, jint i, jint hicon)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "ImageList_ReplaceIcon\n");
-#endif
-
-	return (jint)ImageList_ReplaceIcon((HIMAGELIST)himl, i, (HICON)hicon);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImageList_SetIconSize
- * Signature: (III)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1SetIconSize
-  (JNIEnv *env, jclass that, jint himl, jint cx, jint cy)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImageList_SetIconSize\n");
-#endif
-
-    return (jboolean)ImageList_SetIconSize((HIMAGELIST)himl, cx, cy);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmAssociateContext
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmAssociateContext
-  (JNIEnv *env, jclass that, jint hWnd, jint hIMC)
-{
-    return (jint) ImmAssociateContext((HWND)hWnd, (HIMC)hIMC);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmCreateContext
- * Signature: ()I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmCreateContext
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImmCreateContext\n");
-#endif
-    return (jint) ImmCreateContext();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmDestroyContext
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmDestroyContext
-  (JNIEnv *env, jclass that, jint hIMC)
-{
-    return (jboolean) ImmDestroyContext((HIMC)hIMC);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmGetCompositionFont
- * Signature: (ILorg/eclipse/swt/internal/win32/LOGFONT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetCompositionFont
-  (JNIEnv *env, jclass that, jint hIMC, jobject lplf)
-{
-	DECL_GLOB(pGlob)
-    LOGFONT logfont, *lplf1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImmGetCompositionFont\n");
-#endif
-    if (lplf) {
-        lplf1 = &logfont;
-        cacheLogfontFids(env, lplf, &PGLOB(LogfontFc));
-        getLogfontFields(env, lplf, lplf1, &PGLOB(LogfontFc));
-    }
-    rc = (jboolean) ImmGetCompositionFont((HIMC)hIMC, lplf1);
-    if (lplf) {
-        setLogfontFields(env, lplf, lplf1, &PGLOB(LogfontFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmGetCompositionString
- * Signature: (II[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetCompositionString
-  (JNIEnv *env, jclass that, jint hIMC, jint dwIndex, jbyteArray lpBuf, jint dwBufLen)
-{
-    LPVOID lpBuf1=NULL;
-    jint rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImmGetCompositionString\n");
-#endif
-    
-    if (lpBuf)
-        lpBuf1 = (LPVOID)(*env)->GetByteArrayElements(env, lpBuf, NULL);
-        
-    rc = (jint) ImmGetCompositionString((HIMC)hIMC, dwIndex, lpBuf1, dwBufLen);
-    
-    if (lpBuf)
-        (*env)->ReleaseByteArrayElements(env, lpBuf, (jbyte *)lpBuf1, 0);
-        
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmGetContext
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetContext
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-    return (jint) ImmGetContext((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmGetConversionStatus
- * Signature: (I[I[I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetConversionStatus
-  (JNIEnv *env, jclass that, jint hIMC, jintArray lpfdwConversion, jintArray lpfdwSentence)
-{
-    LPDWORD lpfdwConversion1=NULL, lpfdwSentence1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImmGetConversionStatus\n");
-#endif
-    
-    if (lpfdwConversion)
-        lpfdwConversion1 = (LPDWORD)(*env)->GetIntArrayElements(env, lpfdwConversion, NULL);
-
-    if (lpfdwSentence)
-        lpfdwSentence1 = (LPDWORD)(*env)->GetIntArrayElements(env, lpfdwSentence, NULL);
-
-    rc = (jboolean) ImmGetConversionStatus((HIMC)hIMC, lpfdwConversion1, lpfdwSentence1);
-    
-    if (lpfdwConversion)
-        (*env)->ReleaseIntArrayElements(env, lpfdwConversion, (jint *)lpfdwConversion1, 0);
-
-    if (lpfdwSentence)
-        (*env)->ReleaseIntArrayElements(env, lpfdwSentence, (jint *)lpfdwSentence1, 0);
-        
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmGetDefaultIMEWnd
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetDefaultIMEWnd
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-    return (jint) ImmGetDefaultIMEWnd((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmGetOpenStatus
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetOpenStatus
-  (JNIEnv *env, jclass that, jint hIMC)
-{
-    return (jboolean) ImmGetOpenStatus((HIMC) hIMC);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmReleaseContext
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmReleaseContext
-  (JNIEnv *env, jclass that, jint hWnd, jint hIMC)
-{
-    return (jboolean) ImmReleaseContext((HWND)hWnd, (HIMC)hIMC);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmSetCompositionFont
- * Signature: (ILorg/eclipse/swt/internal/win32/LOGFONT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmSetCompositionFont
-  (JNIEnv *env, jclass that, jint hIMC, jobject lplf)
-{
-	DECL_GLOB(pGlob)
-    LOGFONT logfont, *lplf1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImmSetCompositionFont\n");
-#endif
-    if (lplf) {
-        lplf1 = &logfont;
-        cacheLogfontFids(env, lplf, &PGLOB(LogfontFc));
-        getLogfontFields(env, lplf, lplf1, &PGLOB(LogfontFc));
-    }
-    return (jboolean) ImmSetCompositionFont((HIMC)hIMC, lplf1);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmSetCompositionWindow
- * Signature: (ILorg/eclipse/swt/internal/win32/COMPOSITIONFORM;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmSetCompositionWindow
-  (JNIEnv *env, jclass that, jint hIMC, jobject lpCompForm)
-{
-	DECL_GLOB(pGlob)
-     
-    COMPOSITIONFORM compositionform, *lpCompForm1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ImmSetCompositionWindow\n");
-#endif
-    if (lpCompForm) {
-        lpCompForm1 = &compositionform;
-        cacheCompositionformFids(env, lpCompForm, &PGLOB(CompositionformFc));
-        getCompositionformFields(env, lpCompForm, lpCompForm1, &PGLOB(CompositionformFc));
-    }
-    rc = (jboolean) ImmSetCompositionWindow((HIMC)hIMC, lpCompForm1);
-    if (lpCompForm) {
-        setCompositionformFields(env, lpCompForm, lpCompForm1, &PGLOB(CompositionformFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmSetConversionStatus
- * Signature: (III)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmSetConversionStatus
-  (JNIEnv *env, jclass that, jint hIMC, jint fdwConversion, jint dwSentence)
-{
-    return (jboolean) ImmSetConversionStatus((HIMC)hIMC, fdwConversion, dwSentence);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ImmSetOpenStatus
- * Signature: (IZ)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmSetOpenStatus
-  (JNIEnv *env, jclass that, jint hIMC, jboolean fOpen)
-{
-    return (jboolean) ImmSetOpenStatus((HIMC) hIMC, fOpen);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    InitCommonControls
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_InitCommonControls
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "InitCommonControls\n");
-#endif
-
-    InitCommonControls();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    InitCommonControlsEx
- * Signature: (Lorg/eclipse/swt/internal/win32/INITCOMMONCONTROLSEX;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InitCommonControlsEx
-  (JNIEnv *env, jclass that, jobject lpInitCtrls)
-{
-	DECL_GLOB(pGlob)
-    INITCOMMONCONTROLSEX initCtrl, *lpInitCtrls1=NULL;
-    jboolean rc;
-
-    if (lpInitCtrls) {
-        lpInitCtrls1 = &initCtrl;
-        cacheInitcommoncontrolsexFids(env, lpInitCtrls, &PGLOB(InitcommoncontrolsexFc));
-        getInitcommoncontrolsexFields(env, lpInitCtrls, lpInitCtrls1, &PGLOB(InitcommoncontrolsexFc));
-    }
-    rc = (jboolean) InitCommonControlsEx(lpInitCtrls1);
-    if (lpInitCtrls) {
-        setInitcommoncontrolsexFields(env, lpInitCtrls, lpInitCtrls1, &PGLOB(InitcommoncontrolsexFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    InsertMenuItem
- * Signature: (IIZLorg/eclipse/swt/internal/win32/MENUITEMINFO;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InsertMenuItem
-  (JNIEnv *env, jclass that, jint hMenu, jint uItem, jboolean fByPosition, jobject lpmii)
-{
-	DECL_GLOB(pGlob)
-    MENUITEMINFO mii1, *lpmii1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "InsertMenuItem\n");
-#endif
-
-    if (lpmii) {
-        lpmii1 = &mii1;
-        cacheMenuiteminfoFids(env, lpmii, &PGLOB(MenuiteminfoFc));
-        getMenuiteminfoFields(env, lpmii, lpmii1, &PGLOB(MenuiteminfoFc));
-    }
-    rc = (jboolean) InsertMenuItem((HMENU)hMenu, uItem, fByPosition, lpmii1);
-    if (lpmii) {
-        setMenuiteminfoFields(env, lpmii, lpmii1, &PGLOB(MenuiteminfoFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    InvalidateRect
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;Z)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InvalidateRect
-  (JNIEnv *env, jclass that, jint hWnd, jobject lpRect, jboolean hErase)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "InvalidateRect\n");
-#endif
-
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) InvalidateRect((HWND)hWnd, lpRect1, hErase);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    InvalidateRgn
- * Signature: (IIZ)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InvalidateRgn
-  (JNIEnv *env, jclass that, jint hWnd, jint hRgn, jboolean hErase)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "InvalidateRgn\n");
-#endif
-
-    return (jboolean) InvalidateRgn((HWND)hWnd, (HRGN)hRgn, hErase);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IsDBCSLeadByte
- * Signature: (B)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsDBCSLeadByte
-  (JNIEnv *env, jclass that, jbyte TestChar)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IsDBCSLeadByte\n");
-#endif
-    return (jboolean) IsDBCSLeadByte(TestChar);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IsIconic
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsIconic
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IsIconic\n");
-#endif
-
-    return (jboolean) IsIconic((HWND)hWnd);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IsMenu
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsMenu
-  (JNIEnv *env, jclass that, jint hMenu)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IsMenu\n");
-#endif
-
-    return (jboolean) IsMenu((HMENU)hMenu);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IsWindow
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsWindow
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IsWindow\n");
-#endif
-
-    return (jboolean) IsWindow((HWND)hWnd);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IsWindowEnabled
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsWindowEnabled
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IsWindowEnabled\n");
-#endif
-
-    return (jboolean) IsWindowEnabled((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IsWindowVisible
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsWindowVisible
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IsWindowVisible\n");
-#endif
-
-    return (jboolean) IsWindowVisible((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IsZoomed
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsZoomed
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IsZoomed\n");
-#endif
-
-    return (jboolean) IsZoomed((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LineTo
- * Signature: (III)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_LineTo
-  (JNIEnv *env, jclass that, jint hdc, jint nXEnd, jint nYEnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LineTo\n");
-#endif
-
-    return (jboolean) LineTo((HDC)hdc, nXEnd, nYEnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LoadBitmap
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadBitmap__II
-  (JNIEnv *env, jclass that, jint hInstance, jint lpBitmapName)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LoadBitmap__II\n");
-#endif
-
-    return (jint) LoadBitmap((HINSTANCE)hInstance, (LPCTSTR)lpBitmapName);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LoadCursor
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadCursor
-  (JNIEnv *env, jclass that, jint hInstance, jint lpCursorName)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LoadCursor\n");
-#endif
-
-    return (jint) LoadCursor((HINSTANCE)hInstance, (LPCTSTR)lpCursorName);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LoadIcon
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadIcon
-  (JNIEnv *env, jclass that, jint hInstance, jint lpIconName)
-{
-    LPCTSTR lpin;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LoadIcon\n");
-#endif
-
-    lpin = MAKEINTRESOURCE( lpIconName );
-    return (jint) LoadIcon((HINSTANCE)hInstance, lpin);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LoadLibrary
- * Signature: ([B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadLibrary
-  (JNIEnv *env, jclass that, jbyteArray lpLibFileName)
-{
-    LPCTSTR lpLibFileName1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LoadLibrary\n");
-#endif
-
-    if (lpLibFileName)
-        lpLibFileName1 = (*env)->GetByteArrayElements(env, lpLibFileName, NULL);
+	if (arg0) lparg0 = getMSGFields(env, arg0, &_arg0, &PGLOB(MSGFc));
 
-    rc = (jint) LoadLibrary(lpLibFileName1);
+	rc = (jboolean)GetMessageW(lparg0, (HWND)arg1, arg2, arg3);
 
-    if (lpLibFileName)
-        (*env)->ReleaseByteArrayElements(env, lpLibFileName, (jbyte *)lpLibFileName1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MapVirtualKey
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MapVirtualKey
-  (JNIEnv *env, jclass that, jint uCode, jint uMapType)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MapVirtualKey\n");
-#endif
-
-    return (jint) MapVirtualKey(uCode, uMapType);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MapWindowPoints
- * Signature: (IILorg/eclipse/swt/internal/win32/POINT;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MapWindowPoints__IILorg_eclipse_swt_internal_win32_POINT_2I
-  (JNIEnv *env, jclass that, jint hWndFrom, jint hWndTo, jobject lpPoints, jint cPoints)
-{
-	DECL_GLOB(pGlob)
-    POINT point, *lpPoints1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MapWindowPoints__IILorg_eclipse_swt_internal_win32_POINT_2I\n");
-#endif
-
-    if (lpPoints) {
-        lpPoints1 = &point;
-        cachePointFids(env, lpPoints, &PGLOB(PointFc));
-        getPointFields(env, lpPoints, lpPoints1, &PGLOB(PointFc));
-    }
-    rc = (jint) MapWindowPoints((HWND)hWndFrom, (HWND)hWndTo, (LPPOINT)lpPoints1, cPoints);
-
-    if (lpPoints) {
-        setPointFields(env, lpPoints, lpPoints1, &PGLOB(PointFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MapWindowPoints
- * Signature: (IILorg/eclipse/swt/internal/win32/RECT;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MapWindowPoints__IILorg_eclipse_swt_internal_win32_RECT_2I
-  (JNIEnv *env, jclass that, jint hWndFrom, jint hWndTo, jobject lpPoints, jint cPoints)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lpPoints1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MapWindowPoints__IILorg_eclipse_swt_internal_win32_RECT_2I\n");
-#endif
-
-    if (lpPoints) {
-        lpPoints1 = &rect;
-        cacheRectFids(env, lpPoints, &PGLOB(RectFc));
-        getRectFields(env, lpPoints, lpPoints1, &PGLOB(RectFc));
-    }
-    rc = (jint) MapWindowPoints((HWND)hWndFrom, (HWND)hWndTo, (LPPOINT)lpPoints1, cPoints);
-
-    if (lpPoints) {
-        setRectFields(env, lpPoints, lpPoints1, &PGLOB(RectFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MessageBeep
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_MessageBeep
-  (JNIEnv *env, jclass that, jint uType)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MessageBeep\n");
-#endif
-
-    return (jboolean) MessageBeep(uType);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MessageBox
- * Signature: (I[B[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MessageBox
-  (JNIEnv *env, jclass that, jint hWnd, jbyteArray lpText, jbyteArray lpCaption, jint uType)
-{
-    LPCTSTR lpText1=NULL, lpCaption1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MessageBox\n");
-#endif
-
-    if (lpText)
-        lpText1 = (*env)->GetByteArrayElements(env, lpText, NULL);
-    if (lpCaption)
-        lpCaption1 = (*env)->GetByteArrayElements(env, lpCaption, NULL);
-
-    rc = (jint) MessageBox((HWND)hWnd, lpText1, lpCaption1, uType);
-
-    if (lpText)
-        (*env)->ReleaseByteArrayElements(env, lpText, (jbyte *)lpText1, 0);
-    if (lpCaption)
-        (*env)->ReleaseByteArrayElements(env, lpCaption, (jbyte *)lpCaption1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: ([BII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3BII
-  (JNIEnv *env, jclass that, jbyteArray Destination, jint Source, jint Length)
-{
-    PVOID Destination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "OS_MoveMemory___3BII\n");
-#endif
-
-    if (Destination)
-        Destination1 = (PVOID)(*env)->GetByteArrayElements(env, Destination, NULL);
-
-    MoveMemory(Destination1, (CONST VOID *)Source, Length);
-
-    if (Destination)
-        (*env)->ReleaseByteArrayElements(env, Destination, (jbyte *)Destination1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: ([BLorg/eclipse/swt/internal/win32/ACCEL;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I
-  (JNIEnv *env, jclass that, jbyteArray Destination, jobject lpSource, jint Length)
-{
-	DECL_GLOB(pGlob)
-    PVOID Destination1=NULL;
-    ACCEL source, *lpSource1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I\n");
-#endif
-
-    if (lpSource) {
-        lpSource1 = &source;
-        cacheAccelFids(env, lpSource, &PGLOB(AccelFc));
-        getAccelFields(env, lpSource, lpSource1, &PGLOB(AccelFc));
-    }
-
-    if (Destination)
-        Destination1 = (PVOID)(*env)->GetByteArrayElements(env, Destination, NULL);
-
-    MoveMemory(Destination1, (CONST VOID *)lpSource1, Length);
-
-    if (Destination)
-        (*env)->ReleaseByteArrayElements(env, Destination, (jbyte *)Destination1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: ([III)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3III
-  (JNIEnv *env, jclass that, jintArray lpDestination, jint Source, jint Length)
-{
-    jint *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory___3III\n");
-#endif
-
-    if (lpDestination)
-        lpDestination1 = (*env)->GetIntArrayElements(env, lpDestination, NULL);
-
-    MoveMemory((PVOID)lpDestination1, (PVOID)Source, Length);
-
-    if (lpDestination)
-        (*env)->ReleaseIntArrayElements(env, lpDestination, lpDestination1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/HDITEM;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    HDITEM hditem, *Destination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II\n");
-#endif
-
-    MoveMemory((PVOID)&hditem, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        Destination1 = &hditem;
-        cacheHditemFids(env, Destination, &PGLOB(HditemFc));
-        setHditemFields(env, Destination, Destination1, &PGLOB(HditemFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/HELPINFO;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    HELPINFO helpinfo, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II\n");
-#endif
-
-    MoveMemory((PVOID)&helpinfo, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        lpDestination1 = &helpinfo;
-        cacheHelpinfoFids(env, Destination, &PGLOB(HelpinfoFc));
-        setHelpinfoFields(env, Destination, lpDestination1, &PGLOB(HelpinfoFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/LOGFONT;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONT_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    LOGFONT logfont, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONT_2II\n");
-#endif
-
-    MoveMemory((PVOID)&logfont, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        lpDestination1 = &logfont;
-        cacheLogfontFids(env, Destination, &PGLOB(LogfontFc));
-        setLogfontFields(env, Destination, lpDestination1, &PGLOB(LogfontFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/NMHEADER;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    NMHEADER nmheader, *Destination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II\n");
-#endif
-
-    MoveMemory((PVOID)&nmheader, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        Destination1 = &nmheader;
-        cacheNmheaderFids(env, Destination, &PGLOB(NmheaderFc));
-        setNmheaderFields(env, Destination, Destination1, &PGLOB(NmheaderFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/NMLISTVIEW;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    NMLISTVIEW nmlistview, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II\n");
-#endif
-
-       MoveMemory((PVOID)&nmlistview, (CONST VOID *)Source, Length);
-    if (Destination) {
-           lpDestination1=&nmlistview;
-        cacheNmlistviewFids(env, Destination, &PGLOB(NmlistviewFc));
-        setNmlistviewFields(env, Destination, lpDestination1, &PGLOB(NmlistviewFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (I[BI)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3BI
-  (JNIEnv *env, jclass that, jint Destination, jbyteArray Source, jint Length)
-{
-    CONST VOID *Source1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__I_3BI\n");
-#endif
-
-    if (Source)
-        Source1 = (PVOID)(*env)->GetByteArrayElements(env, Source, NULL);
-
-    MoveMemory((PVOID)Destination, Source1, Length);
-
-    if (Source)
-        (*env)->ReleaseByteArrayElements(env, Source, (jbyte *)Source1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (I[CI)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3CI
-  (JNIEnv * env, jclass that, jint Destination, jcharArray Source, jint Length)
-{
-    CONST VOID *Source1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__I_3CI\n");
-#endif
-
-    if (Source)
-        Source1 = (PVOID)(*env)->GetCharArrayElements(env, Source, NULL);
-
-    MoveMemory((PVOID)Destination, Source1, Length);
-
-    if (Source)
-        (*env)->ReleaseCharArrayElements(env, Source, (jchar *)Source1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (I[II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3II
-  (JNIEnv *env, jclass that, jint Destination, jintArray Source, jint Length)
-{
-    CONST VOID *Source1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__I_3II\n");
-#endif
-
-    if (Source)
-        Source1 = (CONST VOID *)(*env)->GetIntArrayElements(env, Source, NULL);
-
-    MoveMemory((PVOID)Destination, Source1, Length);
-
-    if (Source)
-        (*env)->ReleaseIntArrayElements(env, Source, (jint *)Source1, 0);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (ILorg/eclipse/swt/internal/win32/GRADIENT_RECT;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I
-  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    GRADIENT_RECT gradientrect, *lpSource1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I\n");
-#endif
-
-    if (Source) {
-        lpSource1 = &gradientrect;
-        cacheGradientrectFids(env, Source, &PGLOB(GradientrectFc));
-        getGradientrectFields(env, Source, lpSource1, &PGLOB(GradientrectFc));
-    }
-    MoveMemory((PVOID)Destination, lpSource1, Length);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (ILorg/eclipse/swt/internal/win32/LOGFONT;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONT_2I
-  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    LOGFONT logfont, *Source1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONT_2I\n");
-#endif
-    if (Source) {
-        Source1 = &logfont;
-        cacheLogfontFids(env, Source, &PGLOB(LogfontFc));
-        getLogfontFields(env, Source, Source1, &PGLOB(LogfontFc));
-    }
-    MoveMemory((PVOID)Destination, (CONST VOID *)Source1, Length);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/MEASUREITEMSTRUCT;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    MEASUREITEMSTRUCT measureitemstruct, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II\n");
-#endif
-
-    MoveMemory((PVOID)&measureitemstruct, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        lpDestination1 = &measureitemstruct;
-        cacheMeasureitemstructFids(env, Destination, &PGLOB(MeasureitemstructFc));
-        setMeasureitemstructFields(env, Destination, lpDestination1, &PGLOB(MeasureitemstructFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (ILorg/eclipse/swt/internal/win32/MEASUREITEMSTRUCT;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I
-  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    MEASUREITEMSTRUCT measureitemstruct, *lpSource1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I\n");
-#endif
-
-    if (Source) {
-        lpSource1 = &measureitemstruct;
-        cacheMeasureitemstructFids(env, Source, &PGLOB(MeasureitemstructFc));
-        getMeasureitemstructFields(env, Source, lpSource1, &PGLOB(MeasureitemstructFc));
-    }
-    MoveMemory((PVOID)Destination, lpSource1, Length);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (ILorg/eclipse/swt/internal/win32/NMTTDISPINFO;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFO_2I
-  (JNIEnv * env, jclass that, jint Destination, jobject Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    NMTTDISPINFO nmttdispinfo, *lpSource1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_NMTTDISPINFO_2I\n");
-#endif
-
-    if (Source) {
-        lpSource1 = &nmttdispinfo;
-        cacheNmttdispinfoFids(env, Source, &PGLOB(NmttdispinfoFc));
-        getNmttdispinfoFields(env, Source, lpSource1, &PGLOB(NmttdispinfoFc));
-    }
-       MoveMemory((PVOID)Destination, lpSource1, Length);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I
-  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lpSource1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I\n");
-#endif
+	if (arg0) setMSGFields(env, arg0, lparg0, &PGLOB(MSGFc));
 
-    if (Source) {
-        lpSource1 = &rect;
-        cacheRectFids(env, Source, &PGLOB(RectFc));
-        getRectFields(env, Source, lpSource1, &PGLOB(RectFc));
-    }
-    MoveMemory((PVOID)Destination, lpSource1, Length);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (ILorg/eclipse/swt/internal/win32/TRIVERTEX;I)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I
-  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    TRIVERTEX trivertex, *lpSource1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I\n");
-#endif
-
-    if (Source) {
-        lpSource1 = &trivertex;
-        cacheTrivertexFids(env, Source, &PGLOB(TrivertexFc));
-        getTrivertexFields(env, Source, lpSource1, &PGLOB(TrivertexFc));
-    }
-    MoveMemory((PVOID)Destination, lpSource1, Length);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/DRAWITEMSTRUCT;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    DRAWITEMSTRUCT drawItem, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II\n");
-#endif
-
-    if (Source) {
-           lpDestination1=&drawItem;
-    }
-
-       MoveMemory((PVOID)lpDestination1, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        cacheDrawitemstructFids(env, Destination, &PGLOB(DrawitemstructFc));
-        setDrawitemstructFields(env, Destination, lpDestination1, &PGLOB(DrawitemstructFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/NMHDR;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    NMHDR nmhdr, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II\n");
-#endif
-
-       MoveMemory((PVOID)&nmhdr, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        lpDestination1 = &nmhdr;
-        cacheNmhdrFids(env, Destination, &PGLOB(NmhdrFc));
-        setNmhdrFields(env, Destination, lpDestination1, &PGLOB(NmhdrFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/NMTOOLBAR;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    NMTOOLBAR nmtoolbar, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II\n");
-#endif
-
-       MoveMemory((PVOID)&nmtoolbar, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        lpDestination1 = &nmtoolbar;
-        cacheNmtoolbarFids(env, Destination, &PGLOB(NmtoolbarFc));
-        setNmtoolbarFields(env, Destination, lpDestination1, &PGLOB(NmtoolbarFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/NMTTDISPINFO;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFO_2II
-  (JNIEnv * env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    NMTTDISPINFO nmttdispinfo, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTTDISPINFO_2II\n");
-#endif
-
-       MoveMemory((PVOID)&nmttdispinfo, (CONST VOID *)Source, Length);
-    if (Destination) {
-        lpDestination1 = &nmttdispinfo;
-        cacheNmttdispinfoFids(env, Destination, &PGLOB(NmttdispinfoFc));
-        setNmttdispinfoFields(env, Destination, lpDestination1, &PGLOB(NmttdispinfoFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/TVITEM;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    TVITEM tvitem, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II\n");
-#endif
-
-       MoveMemory((PVOID)&tvitem, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        lpDestination1 = &tvitem;
-        cacheTvitemFids(env, Destination, &PGLOB(TvitemFc));
-        setTvitemFields(env, Destination, lpDestination1, &PGLOB(TvitemFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/WINDOWPOS;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-	DECL_GLOB(pGlob)
-    WINDOWPOS windowpos, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II\n");
-#endif
-
-       MoveMemory((PVOID)&windowpos, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        lpDestination1 = &windowpos;
-        cacheWindowposFids(env, Destination, &PGLOB(WindowposFc));
-        setWindowposFields(env, Destination, lpDestination1, &PGLOB(WindowposFc));
-    }
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveToEx
- * Signature: (IIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveToEx
-  (JNIEnv *env, jclass that, jint hdc, jint X, jint Y, jint lpPoint)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveToEx\n");
-#endif
-
-    return (jboolean) MoveToEx((HDC)hdc, X, Y, (LPPOINT)lpPoint);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MultiByteToWideChar
- * Signature: (II[BI[CI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideChar__II_3BI_3CI
-  (JNIEnv *env, jclass that, jint CodePage, jint dwFlags, jbyteArray lpMultiByteStr, jint cchMultiByte, jcharArray lpWideCharStr, jint cchWideChar)
-{
-    LPCSTR lpMultiByteStr1=NULL;
-    LPWSTR lpWideCharStr1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MultiByteToWideChar__II_3BI_3CI\n");
-#endif
-
-    if (lpMultiByteStr)
-        lpMultiByteStr1 = (LPCSTR) (*env)->GetByteArrayElements(env, lpMultiByteStr, NULL);
-    if (lpWideCharStr)
-        lpWideCharStr1 = (LPWSTR) (*env)->GetCharArrayElements(env, lpWideCharStr, NULL);
-
-    rc = (jint) MultiByteToWideChar(CodePage, dwFlags, lpMultiByteStr1, cchMultiByte, lpWideCharStr1, cchWideChar);
-
-    if (lpMultiByteStr)
-        (*env)->ReleaseByteArrayElements(env, lpMultiByteStr, (jbyte *)lpMultiByteStr1, 0);
-    if (lpWideCharStr)
-        (*env)->ReleaseCharArrayElements(env, lpWideCharStr, (jchar *)lpWideCharStr1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MultiByteToWideChar
- * Signature: (IIII[CI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideChar__IIII_3CI
-  (JNIEnv *env, jclass that, jint CodePage, jint dwFlags, jint lpMultiByteStr, jint cchMultiByte, jcharArray lpWideCharStr, jint cchWideChar)
-{
-    LPWSTR lpWideCharStr1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MultiByteToWideChar__IIII_3CI\n");
-#endif
-
-    if (lpWideCharStr)
-        lpWideCharStr1 = (LPWSTR) (*env)->GetCharArrayElements(env, lpWideCharStr, NULL);
-
-    rc = (jint) MultiByteToWideChar(CodePage, dwFlags, (LPCSTR)lpMultiByteStr, cchMultiByte, lpWideCharStr1, cchWideChar);
-
-    if (lpWideCharStr)
-        (*env)->ReleaseCharArrayElements(env, lpWideCharStr, (jchar *)lpWideCharStr1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    OpenClipboard
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_OpenClipboard
-  (JNIEnv *env,  jclass that, jint hWndNewOwner)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "OpenClipboard\n");
-#endif
-    return (jboolean) OpenClipboard((HWND) hWndNewOwner);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    PatBlt
- * Signature: (IIIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PatBlt
-  (JNIEnv *env, jclass that, jint hdc, jint nXLeft, jint nYLeft, jint nWidth, jint nHeight, jint dwRop)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PatBlt\n");
-#endif
-
-    return (jboolean) PatBlt((HDC)hdc, nXLeft, nYLeft, nWidth, nHeight, dwRop);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    PeekMessage
- * Signature: (Lorg/eclipse/swt/internal/win32/MSG;IIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PeekMessage
-  (JNIEnv *env, jclass that, jobject lpMsg, jint hWnd, jint wMsgFilterMin, jint wMsgFilterMax, jint wRemoveMsg)
-{
-	DECL_GLOB(pGlob)
-    MSG callBack, *lpMsg1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PeekMessage\n");
-#endif
-
-    if (lpMsg) {
-        lpMsg1 = &callBack;
-        cacheMsgFids(env, lpMsg, &PGLOB(MsgFc));
-        getMsgFields(env, lpMsg, lpMsg1, &PGLOB(MsgFc));
-    }
-    rc = (jboolean) PeekMessage(lpMsg1,(HWND)hWnd,wMsgFilterMin,wMsgFilterMax, wRemoveMsg);
-    if (lpMsg) {
-        setMsgFields(env, lpMsg, lpMsg1, &PGLOB(MsgFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    Pie
- * Signature: (IIIIIIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Pie
-  (JNIEnv *env, jclass that, jint hdc, jint nLeftRect, jint nTopRect, jint nRightRect, jint nBottomRect, jint nXStartArc, jint nYStartArc, jint nXEndArc, jint nYEndArc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Pie\n");
-#endif
-
-    return (jboolean) Pie((HDC)hdc, nLeftRect, nTopRect, nRightRect, nBottomRect, nXStartArc, nYStartArc, nXEndArc, nYEndArc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    Polygon
- * Signature: (I[II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Polygon
-  (JNIEnv *env, jclass that, jint hdc, jintArray points, jint nPoints)
-{
-    jint *points1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Polygon\n");
-#endif
-
-    if (points)
-        points1 = (*env)->GetIntArrayElements(env, points, NULL);
-
-    rc = (jboolean) Polygon((HDC)hdc, (POINT *)points1, nPoints);
-
-    if (points)
-        (*env)->ReleaseIntArrayElements(env, points, (jint *)points1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    Polyline
- * Signature: (I[II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Polyline
-  (JNIEnv *env, jclass that, jint hdc, jintArray points, jint nPoints)
-{
-    POINT *points1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Polyline\n");
-#endif
-
-    if (points)
-        points1 = (POINT *)(*env)->GetIntArrayElements(env, points, NULL);
-
-    rc = (jboolean) Polyline((HDC)hdc, points1, nPoints);
-
-    if (points)
-        (*env)->ReleaseIntArrayElements(env, points, (jint *)points1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    PostMessage
- * Signature: (IIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PostMessage
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jint lParam)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PostMessage\n");
-#endif
-
-    return (jboolean) PostMessage((HWND)hWnd, Msg, (WPARAM)wParam, (LPARAM)lParam);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    PostThreadMessage
- * Signature: (IIII)I
- */
-JNIEXPORT boolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PostThreadMessage
-  (JNIEnv *env, jclass that, jint idThread, jint Msg, jint wParam, jint lParam)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PostThreadMessage\n");
-#endif
-
-    return (jboolean) PostThreadMessage(idThread, Msg, (WPARAM)wParam, (LPARAM)lParam);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    PtInRect
- * Signature: (Lorg/eclipse/swt/internal/win32/RECT;Lorg/eclipse/swt/internal/win32/POINT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PtInRect
-  (JNIEnv *env, jclass that, jobject lpRect, jobject lpPoint)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    POINT point, *lpPoint1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtInRect\n");
-#endif
-
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    if (lpPoint) {
-        lpPoint1 = &point;
-        cachePointFids(env, lpPoint, &PGLOB(PointFc));
-        getPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    rc = (jboolean) PtInRect(lpRect1, point);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    if (lpPoint) {
-        setPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    PtInRegion
- * Signature: (III)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PtInRegion
-  (JNIEnv *env, jclass that, jint hrgn, jint X, jint Y)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PtInRegion\n");
-#endif
-
-    return (jboolean) PtInRegion((HRGN)hrgn, X, Y);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RealizePalette
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RealizePalette
-  (JNIEnv *env, jclass that, jint hdc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RealizePalette\n");
-#endif
-
-    return (jint) RealizePalette((HDC)hdc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    Rectangle
- * Signature: (IIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Rectangle
-  (JNIEnv *env, jclass that, jint hdc, jint nLeftRect, jint nTopRect, jint nRightRect, jint nBottomRect)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "Rectangle\n");
-#endif
-    return (jboolean) Rectangle((HDC)hdc, nLeftRect, nTopRect, nRightRect, nBottomRect);
-}
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RectInRegion
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_RectInRegion
-  (JNIEnv *env, jclass that, jint hrgn, jobject lprc)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lprc1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RectInRegion\n");
-#endif
-
-    if (lprc) {
-        lprc1 = &rect;
-        cacheRectFids(env, lprc, &PGLOB(RectFc));
-        getRectFields(env, lprc, lprc1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) RectInRegion((HRGN)hrgn, lprc1);
-
-    if (lprc) {
-        setRectFields(env, lprc, lprc1, &PGLOB(RectFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RedrawWindow
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_RedrawWindow
-  (JNIEnv *env, jclass that, jint hWnd, jobject lprcUpdate, jint hrgnUpdate, jint flags)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lprcUpdate1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RedrawWindow\n");
-#endif
-
-    if (lprcUpdate) {
-        lprcUpdate1 = &rect;
-        cacheRectFids(env, lprcUpdate, &PGLOB(RectFc));
-        getRectFields(env, lprcUpdate, lprcUpdate1, &PGLOB(RectFc));
-    }
-
-    rc = (jboolean) RedrawWindow((HWND)hWnd, lprcUpdate1, (HRGN)hrgnUpdate, flags);
-
-    if (lprcUpdate) {
-        setRectFields(env, lprcUpdate, lprcUpdate1, &PGLOB(RectFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RegCloseKey
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegCloseKey
-  (JNIEnv *env, jclass that, jint hKey)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RegCloseKey\n");
-#endif
-    
-    return (jint) RegCloseKey((HKEY)hKey);
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RegEnumKey
- * Signature: (II[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegEnumKey
-  (JNIEnv *env, jclass that, jint hKey, jint dwIndex, jbyteArray lpName, jint cbName)
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetModuleHandleA
+	(JNIEnv *env, jclass that, jbyteArray arg0)
 {
-	jbyte *lpName1=NULL;
+	jbyte *lparg0=NULL;
 	jint rc;
-	
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RegEnumKey\n");
-#endif
-    if (lpName)
-        lpName1 = (*env)->GetByteArrayElements(env, lpName, NULL);
-    
-    rc = (jint) RegEnumKey((HKEY)hKey, dwIndex, (LPTSTR)lpName1, cbName);
-    
-    if (lpName)
-        (*env)->ReleaseByteArrayElements(env, lpName, lpName1, 0);
-        
-    return rc;
+
+	DEBUG_CALL("GetModuleHandleA\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+
+	rc = (jint)GetModuleHandleA((LPSTR)lparg0);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetModuleHandleW
+	(JNIEnv *env, jclass that, jcharArray arg0)
+{
+	jchar *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetModuleHandleW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+
+	rc = (jint)GetModuleHandleW((LPWSTR)lparg0);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RegisterClassEx
- * Signature: (Lorg/eclipse/swt/internal/win32/WNDCLASSEX;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegisterClassEx
-  (JNIEnv *env, jclass that, jobject lpwcx)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetNearestPaletteIndex
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("GetNearestPaletteIndex\n")
+
+	return (jint)GetNearestPaletteIndex((HPALETTE)arg0, (COLORREF)arg1);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGPEN_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    WNDCLASSEX wcx, *lpwcx1=NULL;
-    jint rc;
+	LOGPEN _arg2, *lparg2=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RegisterClassEx\n");
-#endif
+	DEBUG_CALL("GetObjectA\n")
 
-    if (lpwcx) {
-        lpwcx1 = &wcx;
-        cacheWndclassexFids(env, lpwcx, &PGLOB(WndclassexFc));
-        getWndclassexFields(env, lpwcx, lpwcx1, &PGLOB(WndclassexFc));
-    }
-    rc = (jint) RegisterClassEx(lpwcx1);
+	if (arg2) lparg2 = getLOGPENFields(env, arg2, &_arg2, &PGLOB(LOGPENFc));
 
-    if (lpwcx) {
-        setWndclassexFields(env, lpwcx, lpwcx1, &PGLOB(WndclassexFc));
-    }
-    return rc;
+	rc = (jint)GetObjectA((HGDIOBJ)arg0, arg1, lparg2);
+
+	if (arg2) setLOGPENFields(env, arg2, lparg2, &PGLOB(LOGPENFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RegOpenKeyEx
- * Signature: (I[BII[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegOpenKeyEx
-  (JNIEnv *env, jclass that, jint hKey, jbyteArray lpSubKey, jint ulOptions, jint samDesired, jintArray jhkResult)
-{
-    jint *jhkResult1=NULL;
-    jbyte *lpSubKey1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RegOpenKeyEx\n");
-#endif
-    
-
-    if (jhkResult)
-        jhkResult1 = (*env)->GetIntArrayElements(env, jhkResult, NULL);
-    if (lpSubKey)
-        lpSubKey1 = (*env)->GetByteArrayElements(env, lpSubKey, NULL);
-
-    rc = (jint) RegOpenKeyEx((HKEY)hKey, (LPTSTR)lpSubKey1, ulOptions, samDesired, (PHKEY)jhkResult1);
-
-    if (jhkResult)
-        (*env)->ReleaseIntArrayElements(env, jhkResult, jhkResult1, 0);
-    if (lpSubKey)
-        (*env)->ReleaseByteArrayElements(env, lpSubKey, lpSubKey1, 0);
-    return rc;    
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RegQueryInfoKey
- * Signature: (II[II[I[I[I[I[I[I[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegQueryInfoKey
-  (JNIEnv *env, jclass that, jint hKey, jint lpClass, jintArray lpcbClass, jint lpReserved, jintArray lpSubKeys, jintArray lpcbMaxSubKeyLen, jintArray lpcbMaxClassLen, jintArray lpcValues, jintArray lpcbMaxValueNameLen, jintArray lpcbMaxValueLen, jintArray lpcbSecurityDescriptor, jint lpftLastWriteTime)
-{
-    jint *lpcbClass1=NULL;
-    jint *lpSubKeys1=NULL;
-    jint *lpcbMaxSubKeyLen1=NULL;
-    jint *lpcbMaxClassLen1=NULL;
-    jint *lpcValues1=NULL;
-    jint *lpcbMaxValueNameLen1=NULL;
-    jint *lpcbMaxValueLen1=NULL;
-    jint *lpcbSecurityDescriptor1=NULL;
-    jint rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RegQueryInfoKey\n");
-#endif
-    
-    if (lpcbClass)
-        lpcbClass1 = (*env)->GetIntArrayElements(env, lpcbClass, NULL);
-    if (lpSubKeys)
-        lpSubKeys1 = (*env)->GetIntArrayElements(env, lpSubKeys, NULL);
-    if (lpcbMaxSubKeyLen)
-        lpcbMaxSubKeyLen1 = (*env)->GetIntArrayElements(env, lpcbMaxSubKeyLen, NULL);
-    if (lpcbMaxClassLen)
-        lpcbMaxClassLen1 = (*env)->GetIntArrayElements(env, lpcbMaxClassLen, NULL);
-    if (lpcValues)
-        lpcValues1 = (*env)->GetIntArrayElements(env, lpcValues, NULL);
-    if (lpcbMaxValueNameLen)
-        lpcbMaxValueNameLen1 = (*env)->GetIntArrayElements(env, lpcbMaxValueNameLen, NULL);
-    if (lpcbMaxValueLen)
-        lpcbMaxValueLen1 = (*env)->GetIntArrayElements(env, lpcbMaxValueLen, NULL);
-    if (lpcbSecurityDescriptor)
-        lpcbSecurityDescriptor1 = (*env)->GetIntArrayElements(env, lpcbSecurityDescriptor, NULL);
-
-    rc = (jint) RegQueryInfoKey((HKEY)hKey, (LPTSTR)lpClass, lpcbClass1, (LPDWORD)lpReserved, lpSubKeys1, lpcbMaxSubKeyLen1, lpcbMaxClassLen1, lpcValues1, lpcbMaxValueNameLen1, lpcbMaxValueLen1, lpcbSecurityDescriptor1, (PFILETIME)lpftLastWriteTime);
-    
-    if (lpcbClass)
-        (*env)->ReleaseIntArrayElements(env, lpcbClass, lpcbClass1, 0);
-    if (lpSubKeys)
-        (*env)->ReleaseIntArrayElements(env, lpSubKeys, lpSubKeys1, 0);
-    if (lpcbMaxSubKeyLen)
-        (*env)->ReleaseIntArrayElements(env, lpcbMaxSubKeyLen, lpcbMaxSubKeyLen1, 0);
-    if (lpcbMaxClassLen)
-        (*env)->ReleaseIntArrayElements(env, lpcbMaxClassLen, lpcbMaxClassLen1, 0);
-    if (lpcValues)
-        (*env)->ReleaseIntArrayElements(env, lpcValues, lpcValues1, 0);
-    if (lpcbMaxValueNameLen)
-        (*env)->ReleaseIntArrayElements(env, lpcbMaxValueNameLen, lpcbMaxValueNameLen1, 0);
-    if (lpcbMaxValueLen)
-        (*env)->ReleaseIntArrayElements(env, lpcbMaxValueLen, lpcbMaxValueLen1, 0);
-    if (lpcbSecurityDescriptor)
-        (*env)->ReleaseIntArrayElements(env, lpcbSecurityDescriptor, lpcbSecurityDescriptor1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RegQueryValueEx
- * Signature: (I[BI[I[B[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegQueryValueEx
-  (JNIEnv *env, jclass that, jint hKey, jbyteArray lpValueName, jint lpReserved, jintArray lpType, jbyteArray lpData, jintArray lpcbData)
-{
-    jbyte *lpValueName1=NULL;
-    jbyte *lpData1=NULL;
-    jint *lpType1=NULL;
-    jint *lpcbData1=NULL;
-    jint rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RegQueryValueEx\n");
-#endif
-    
-    if (lpValueName)
-        lpValueName1 = (*env)->GetByteArrayElements(env, lpValueName, NULL);
-    if (lpData)
-        lpData1 = (*env)->GetByteArrayElements(env, lpData, NULL);
-    if (lpType)
-        lpType1 = (*env)->GetIntArrayElements(env, lpType, NULL);
-    if (lpcbData)
-        lpcbData1 = (*env)->GetIntArrayElements(env, lpcbData, NULL);
-
-    rc = (jint) RegQueryValueEx((HKEY)hKey, (LPCTSTR)lpValueName1, (LPDWORD)lpReserved, lpType1, (LPBYTE)lpData1, lpcbData1);
-
-    if (lpValueName)
-        (*env)->ReleaseByteArrayElements(env, lpValueName, lpValueName1, 0);
-    if (lpData)
-        (*env)->ReleaseByteArrayElements(env, lpData, lpData1, 0);
-    if (lpType)
-        (*env)->ReleaseIntArrayElements(env, lpType, lpType1, 0);
-    if (lpcbData)
-        (*env)->ReleaseIntArrayElements(env, lpcbData, lpcbData1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ReleaseCapture
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ReleaseCapture
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ReleaseCapture\n");
-#endif
-
-    return (jboolean) ReleaseCapture();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ReleaseDC
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ReleaseDC
-  (JNIEnv *env, jclass that, jint hWnd, jint hDC)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ReleaseDC\n");
-#endif
-
-    return (jint) ReleaseDC((HWND)hWnd, (HDC)hDC);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RemoveMenu
- * Signature: (III)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_RemoveMenu
-  (JNIEnv *env, jclass that, jint hMenu, jint uPosition, jint uFlags)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RemoveMenu\n");
-#endif
-
-    return (jboolean) RemoveMenu((HMENU)hMenu, uPosition, uFlags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    RoundRect
- * Signature: (IIIIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_RoundRect
-  (JNIEnv *env, jclass that, jint hdc, jint nLeftRect, jint nTopRect, jint nRightRect, jint nBottomRect, jint nWidth, jint nHeight)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "RoundRect\n");
-#endif
-
-    return (jboolean) RoundRect((HDC)hdc, nLeftRect, nTopRect, nRightRect, nBottomRect, nWidth, nHeight);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ScreenToClient
- * Signature: (ILorg/eclipse/swt/internal/win32/POINT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ScreenToClient
-  (JNIEnv *env, jclass that, jint hWnd, jobject lpPoint)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGFONT_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    POINT point1, *lpPoint1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ScreenToClient\n");
-#endif
+	LOGFONTA _arg2, *lparg2=NULL;
+	jint rc;
 
-    if (lpPoint) {
-        lpPoint1 = &point1;
-        cachePointFids(env, lpPoint, &PGLOB(PointFc));
-        getPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    rc = (jboolean) ScreenToClient((HWND)hWnd, lpPoint1);
-    if (lpPoint) {
-        setPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    return rc;
+	DEBUG_CALL("GetObjectA\n")
+
+	if (arg2) lparg2 = getLOGFONTAFields(env, arg2, &_arg2, &PGLOB(LOGFONTFc));
+
+	rc = (jint)GetObjectA((HGDIOBJ)arg0, arg1, lparg2);
+
+	if (arg2) setLOGFONTAFields(env, arg2, lparg2, &PGLOB(LOGFONTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ScrollWindowEx
- * Signature: (IIILorg/eclipse/swt/internal/win32/RECT;Lorg/eclipse/swt/internal/win32/RECT;ILorg/eclipse/swt/internal/win32/RECT;I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ScrollWindowEx
-  (JNIEnv *env, jclass that, jint hWnd, jint dx, jint dy, jobject prcScroll, jobject prcClip, jint hrgnUpdate, jobject prcUpdate, jint flags)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectA__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    RECT rect1, rect2, rect3;
-    RECT *prcScroll1=NULL, *prcClip1=NULL, *prcUpdate1=NULL;
-    jobject lpRect;
-    jint rc;
+	LOGBRUSH _arg2, *lparg2=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ScrollWindowEx\n");
-#endif
+	DEBUG_CALL("GetObjectA\n")
 
-    if (prcScroll || prcClip || prcUpdate) {
-        if (prcScroll) {
-            lpRect = prcScroll;
-        } 
-        else if (prcClip) {
-            lpRect = prcClip;
-        }
-        else if (prcUpdate) {
-            lpRect = prcUpdate;
-        }
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-    }
+	if (arg2) lparg2 = getLOGBRUSHFields(env, arg2, &_arg2, &PGLOB(LOGBRUSHFc));
 
-    if (prcScroll) {
-        prcScroll1 = &rect1;
-        getRectFields(env, prcScroll, prcScroll1, &PGLOB(RectFc));
-    }
-    if (prcClip) {
-        prcClip1 = &rect2;
-        getRectFields(env, prcClip, prcClip1, &PGLOB(RectFc));
-    }
-    if (prcUpdate) {
-        prcUpdate1 = &rect3;
-        getRectFields(env, prcUpdate, prcUpdate1, &PGLOB(RectFc));
-    }
-    rc = (jint) ScrollWindowEx((HWND)hWnd, dx, dy, prcScroll1, prcClip1, (HRGN)hrgnUpdate, prcUpdate1, flags);
-    if (prcScroll) {
-        setRectFields(env, prcScroll, prcScroll1, &PGLOB(RectFc));
-    }
-    if (prcClip) {
-        setRectFields(env, prcClip, prcClip1, &PGLOB(RectFc));
-    }
-    if (prcUpdate) {
-        setRectFields(env, prcUpdate, prcUpdate1, &PGLOB(RectFc));
-    }
-    return rc;
+	rc = (jint)GetObjectA((HGDIOBJ)arg0, arg1, lparg2);
+
+	if (arg2) setLOGBRUSHFields(env, arg2, lparg2, &PGLOB(LOGBRUSHFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SelectClipRgn
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SelectClipRgn
-  (JNIEnv *env, jclass that, jint hdc, jint hrgn)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SelectClipRgn\n");
-#endif
-
-    return (jint) SelectClipRgn((HDC)hdc, (HRGN)hrgn);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SelectObject
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SelectObject
-  (JNIEnv *env, jclass that, jint hdc, jint hgdiobj)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SelectObject\n");
-#endif
-
-    return (jint) SelectObject((HDC)hdc, (HGDIOBJ)hgdiobj);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SelectPalette
- * Signature: (IIZ)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SelectPalette
-  (JNIEnv *env, jclass that, jint hdc, jint hpal, jboolean bForceBackground)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SelectPalette\n");
-#endif
-
-    return (jint) SelectPalette((HDC)hdc, (HPALETTE)hpal, bForceBackground);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (II[I[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__II_3I_3B
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jintArray wParam, jbyteArray lParam)
-{
-    jint *wParam1=NULL;
-    jbyte *lParam1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__II_3I_3B\n");
-#endif
-
-    if (wParam)
-        wParam1 = (*env)->GetIntArrayElements(env, wParam, NULL);
-    if (lParam)
-        lParam1 = (*env)->GetByteArrayElements(env, lParam, NULL);
-
-    rc = (jint) SendMessage((HWND)hWnd, Msg, (WPARAM)wParam1, (LPARAM)lParam1);
-
-    if (wParam)
-        (*env)->ReleaseIntArrayElements(env, wParam, wParam1, 0);
-    if (lParam)
-        (*env)->ReleaseByteArrayElements(env, lParam, lParam1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (II[II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__II_3II
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jintArray wParam, jint lParam)
-{
-    jint *wParam1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__II_3II\n");
-#endif
-
-    if (wParam)
-        wParam1 = (*env)->GetIntArrayElements(env, wParam, NULL);
-
-    rc = (jint) SendMessage((HWND)hWnd, Msg, (WPARAM)wParam1, (LPARAM)lParam);
-
-    if (wParam)
-        (*env)->ReleaseIntArrayElements(env, wParam, wParam1, 0);
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (II[I[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__II_3I_3I
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jintArray wParam, jintArray lParam)
-{
-    WPARAM wParam1=0;
-    LPARAM lParam1=0;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__II_3I_3I\n");
-#endif
-
-    if (wParam)
-        wParam1 = (WPARAM)(*env)->GetIntArrayElements(env, wParam, NULL);
-    if (lParam)
-        lParam1 = (LPARAM)(*env)->GetIntArrayElements(env, lParam, NULL);
-
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam1, lParam1);
-
-    if (wParam)
-        (*env)->ReleaseIntArrayElements(env, wParam, (jint *)wParam1, 0);
-    if (lParam)
-        (*env)->ReleaseIntArrayElements(env, lParam, (jint *)lParam1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (III[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__III_3B
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jbyteArray lParam)
-{
-    LPARAM lParam1=0;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__III_3B\n");
-#endif
-
-    if (lParam)
-        lParam1 = (LPARAM)(*env)->GetByteArrayElements(env, lParam, NULL);
-
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, lParam1);
-
-    if (lParam)
-        (*env)->ReleaseByteArrayElements(env, lParam, (jbyte *)lParam1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (III[I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__III_3I
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jintArray lParam)
-{
-    LPARAM lParam1=0;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__III_3I\n");
-#endif
-
-    if (lParam)
-        lParam1 = (LPARAM)(*env)->GetIntArrayElements(env, lParam, NULL);
-
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, lParam1);
-
-    if (lParam)
-        (*env)->ReleaseIntArrayElements(env, lParam, (jint *)lParam1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (III[S)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__III_3S
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jshortArray lParam)
-{
-    LPARAM lParam1=0;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__III_3S\n");
-#endif
-
-    if (lParam)
-        lParam1 = (LPARAM)(*env)->GetShortArrayElements(env, lParam, NULL);
-
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, lParam1);
-
-    if (lParam)
-        (*env)->ReleaseShortArrayElements(env, lParam, (jshort *)lParam1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIII
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jint lParam)
-{
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIII\n");
-#endif
-
-    return (jint) SendMessage((HWND)hWnd, Msg, wParam, lParam);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/CHARFORMAT2;)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_CHARFORMAT2_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectA__IILorg_eclipse_swt_internal_win32_DIBSECTION_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    CHARFORMAT2 charformat2, *lParam1=NULL;
-    jint rc;
+	DIBSECTION _arg2, *lparg2=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_CHARFORMAT2_2\n");
-#endif
+	DEBUG_CALL("GetObjectA\n")
 
-    if (lParam) {
-        lParam1 = &charformat2;
-        cacheCharformat2Fids(env, lParam, &PGLOB(Charformat2Fc));
-        getCharformat2Fields(env, lParam, lParam1, &PGLOB(Charformat2Fc));
-    }
+	if (arg2) lparg2 = getDIBSECTIONFields(env, arg2, &_arg2, &PGLOB(DIBSECTIONFc));
 
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lParam1);
-    if (lParam) {
-        setCharformat2Fields(env, lParam, lParam1, &PGLOB(Charformat2Fc));
-    }
-    return rc;
+	rc = (jint)GetObjectA((HGDIOBJ)arg0, arg1, lparg2);
+
+	if (arg2) setDIBSECTIONFields(env, arg2, lparg2, &PGLOB(DIBSECTIONFc));
+
+	return rc;
 }
-*/
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/LVCOLUMN;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectA__IILorg_eclipse_swt_internal_win32_BITMAP_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    LVCOLUMN lvcolumn, *lpParam1=NULL;
-    jint rc;
+	BITMAP _arg2, *lparg2=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2\n");
-#endif
+	DEBUG_CALL("GetObjectA\n")
 
-    if (lParam) {
-        lpParam1 = &lvcolumn;
-        cacheLvcolumnFids(env, lParam, &PGLOB(LvcolumnFc));
-        getLvcolumnFields(env, lParam, lpParam1, &PGLOB(LvcolumnFc));
-    }
-    
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
+	if (arg2) lparg2 = getBITMAPFields(env, arg2, &_arg2, &PGLOB(BITMAPFc));
 
-    if (lParam) {
-        setLvcolumnFields(env, lParam, lpParam1, &PGLOB(LvcolumnFc));
-    }
-    return rc;
+	rc = (jint)GetObjectA((HGDIOBJ)arg0, arg1, lparg2);
+
+	if (arg2) setBITMAPFields(env, arg2, lparg2, &PGLOB(BITMAPFc));
+
+	return rc;
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/LVHITTESTINFO;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectW__IILorg_eclipse_swt_internal_win32_LOGPEN_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    LVHITTESTINFO lvhittestinfo, *lParam1=NULL;
-    jint rc;
+	LOGPEN _arg2, *lparg2=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2\n");
-#endif
+	DEBUG_CALL("GetObjectW\n")
 
-    if (lParam) {
-        lParam1 = &lvhittestinfo;
-        cacheLvhittestinfoFids(env, lParam, &PGLOB(LvhittestinfoFc));
-        getLvhittestinfoFields(env, lParam, lParam1, &PGLOB(LvhittestinfoFc));
-    }
-    
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lParam1);
+	if (arg2) lparg2 = getLOGPENFields(env, arg2, &_arg2, &PGLOB(LOGPENFc));
 
-    if (lParam) {
-        setLvhittestinfoFields(env, lParam, lParam1, &PGLOB(LvhittestinfoFc));
-    }
-    return rc;
+	rc = (jint)GetObjectW((HGDIOBJ)arg0, arg1, lparg2);
+
+	if (arg2) setLOGPENFields(env, arg2, lparg2, &PGLOB(LOGPENFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/LVITEM;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_LVITEM_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectW__IILorg_eclipse_swt_internal_win32_LOGFONT_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    LVITEM lvitem, *lpParam1=NULL;
-    jint rc;
+	LOGFONTW _arg2, *lparg2=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_LVITEM_2\n");
-#endif
+	DEBUG_CALL("GetObjectW\n")
 
-    if (lParam) {
-        lpParam1 = &lvitem;
-        cacheLvitemFids(env, lParam, &PGLOB(LvitemFc));
-        getLvitemFields(env, lParam, lpParam1, &PGLOB(LvitemFc));
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setLvitemFields(env, lParam, lpParam1, &PGLOB(LvitemFc));
-    }
-    return rc;
+	if (arg2) lparg2 = getLOGFONTWFields(env, arg2, &_arg2, &PGLOB(LOGFONTFc));
+
+	rc = (jint)GetObjectW((HGDIOBJ)arg0, arg1, lparg2);
+
+	if (arg2) setLOGFONTWFields(env, arg2, lparg2, &PGLOB(LOGFONTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/PARAFORMAT;)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_PARAFORMAT_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectW__IILorg_eclipse_swt_internal_win32_LOGBRUSH_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    PARAFORMAT paraformat, *lpParam1=NULL;
-    jint rc;
+	LOGBRUSH _arg2, *lparg2=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_PARAFORMAT_2\n");
-#endif
+	DEBUG_CALL("GetObjectW\n")
 
-    if (lParam) {
-        lpParam1 = &paraformat;
-        cacheParaformatFids(env, lParam, &PGLOB(ParaformatFc));
-        getParaformatFields(env, lParam, lpParam1, &PGLOB(ParaformatFc));
-    }
+	if (arg2) lparg2 = getLOGBRUSHFields(env, arg2, &_arg2, &PGLOB(LOGBRUSHFc));
 
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
+	rc = (jint)GetObjectW((HGDIOBJ)arg0, arg1, lparg2);
 
-    if (lParam) {
-        setParaformatFields(env, lParam, lpParam1, &PGLOB(ParaformatFc));
-    }
-    return rc;
+	if (arg2) setLOGBRUSHFields(env, arg2, lparg2, &PGLOB(LOGBRUSHFc));
+
+	return rc;
 }
-*/
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/REBARBANDINFO;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectW__IILorg_eclipse_swt_internal_win32_DIBSECTION_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    REBARBANDINFO rebarbandinfo, *lpParam1=NULL;
-    jint rc;
+	DIBSECTION _arg2, *lparg2=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2\n");
-#endif
+	DEBUG_CALL("GetObjectW\n")
 
-    if (lParam) {
-        lpParam1 = &rebarbandinfo;
-        cacheRebarbandinfoFids(env, lParam, &PGLOB(RebarbandinfoFc));
-        getRebarbandinfoFields(env, lParam, lpParam1, &PGLOB(RebarbandinfoFc));
-    }
+	if (arg2) lparg2 = getDIBSECTIONFields(env, arg2, &_arg2, &PGLOB(DIBSECTIONFc));
 
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
+	rc = (jint)GetObjectW((HGDIOBJ)arg0, arg1, lparg2);
 
-    if (lParam) {
-        setRebarbandinfoFields(env, lParam, lpParam1, &PGLOB(RebarbandinfoFc));
-    }
-    return rc;
+	if (arg2) setDIBSECTIONFields(env, arg2, lparg2, &PGLOB(DIBSECTIONFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/RECT;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_RECT_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetObjectW__IILorg_eclipse_swt_internal_win32_BITMAP_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    RECT rect, *lpParam1=NULL;
-    jint rc;
+	BITMAP _arg2, *lparg2=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_RECT_2\n");
-#endif
+	DEBUG_CALL("GetObjectW\n")
 
-    if (lParam) {
-        lpParam1 = &rect;
-        cacheRectFids(env, lParam, &PGLOB(RectFc));
-        getRectFields(env, lParam, lpParam1, &PGLOB(RectFc));
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setRectFields(env, lParam, lpParam1, &PGLOB(RectFc));
-    }
-    return rc;
+	if (arg2) lparg2 = getBITMAPFields(env, arg2, &_arg2, &PGLOB(BITMAPFc));
+
+	rc = (jint)GetObjectW((HGDIOBJ)arg0, arg1, lparg2);
+
+	if (arg2) setBITMAPFields(env, arg2, lparg2, &PGLOB(BITMAPFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/TBBUTTON;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetOpenFileNameA
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    TBBUTTON tbbutton, *lpParam1=NULL;
-    jint rc;
+	OPENFILENAME _arg0, *lparg0=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2\n");
-#endif
+	DEBUG_CALL("GetOpenFileNameA\n")
 
-    if (lParam) {
-        lpParam1 = &tbbutton;
-        cacheTbbuttonFids(env, lParam, &PGLOB(TbbuttonFc));
-        getTbbuttonFields(env, lParam, lpParam1, &PGLOB(TbbuttonFc));
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setTbbuttonFields(env, lParam, lpParam1, &PGLOB(TbbuttonFc));
-    }
-    return rc;
+	if (arg0) lparg0 = getOPENFILENAMEFields(env, arg0, &_arg0, &PGLOB(OPENFILENAMEFc));
+
+	rc = (jboolean)GetOpenFileNameA(lparg0);
+
+	if (arg0) setOPENFILENAMEFields(env, arg0, lparg0, &PGLOB(OPENFILENAMEFc));
+
+	return rc;
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/TBBUTTONINFO;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetOpenFileNameW
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    TBBUTTONINFO tbbuttoninfo, *lpParam1=NULL;
-    jint rc;
+	OPENFILENAME _arg0, *lparg0=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2\n");
-#endif
+	DEBUG_CALL("GetOpenFileNameW\n")
 
-    if (lParam) {
-        lpParam1 = &tbbuttoninfo;
-        cacheTbbuttoninfoFids(env, lParam, &PGLOB(TbbuttoninfoFc));
-        getTbbuttoninfoFields(env, lParam, lpParam1, &PGLOB(TbbuttoninfoFc));
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
+	if (arg0) lparg0 = getOPENFILENAMEFields(env, arg0, &_arg0, &PGLOB(OPENFILENAMEFc));
 
-    if (lParam) {
-        setTbbuttoninfoFields(env, lParam, lpParam1, &PGLOB(TbbuttoninfoFc));
-    }
-    return rc;
+	rc = (jboolean)GetOpenFileNameW((LPOPENFILENAMEW)lparg0);
+
+	if (arg0) setOPENFILENAMEFields(env, arg0, lparg0, &PGLOB(OPENFILENAMEFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/TCITEM;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_TCITEM_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetPaletteEntries
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
+{
+	jbyte *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetPaletteEntries\n")
+
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+
+	rc = (jint)GetPaletteEntries((HPALETTE)arg0, arg1, arg2, (LPPALETTEENTRY)lparg3);
+
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetParent
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetParent\n")
+
+	return (jint)GetParent((HWND)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetProcAddress
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetProcAddress\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	rc = (jint)GetProcAddress((HMODULE)arg0, (LPCTSTR)lparg1);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetProcessHeap
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetProcessHeap\n")
+
+	return (jint)GetProcessHeap();
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetProfileStringA
+	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jbyteArray arg2, jbyteArray arg3, jint arg4)
+{
+	jbyte *lparg0=NULL;
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jbyte *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetProfileStringA\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+
+	rc = (jint)GetProfileStringA((LPSTR)lparg0, (LPSTR)lparg1, (LPSTR)lparg2, (LPSTR)lparg3, arg4);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetProfileStringW
+	(JNIEnv *env, jclass that, jcharArray arg0, jcharArray arg1, jcharArray arg2, jcharArray arg3, jint arg4)
+{
+	jchar *lparg0=NULL;
+	jchar *lparg1=NULL;
+	jchar *lparg2=NULL;
+	jchar *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetProfileStringW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL);
+
+	rc = (jint)GetProfileStringW((LPWSTR)lparg0, (LPWSTR)lparg1, (LPWSTR)lparg2, (LPWSTR)lparg3, arg4);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetROP2
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetROP2\n")
+
+	return (jint)GetROP2((HDC)arg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetRegionData
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetRegionData\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+
+	rc = (jint)GetRegionData((HRGN)arg0, arg1, (RGNDATA *)lparg2);
+
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetRgnBox
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    TCITEM tcitem, *lpParam1=NULL;
-    jint rc;
+	RECT _arg1, *lparg1=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_TCITEM_2\n");
-#endif
+	DEBUG_CALL("GetRgnBox\n")
 
-    if (lParam) {
-        lpParam1 = &tcitem;
-        cacheTcitemFids(env, lParam, &PGLOB(TcitemFc));
-        getTcitemFields(env, lParam, lpParam1, &PGLOB(TcitemFc));
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setTcitemFields(env, lParam, lpParam1, &PGLOB(TcitemFc));
-    }
-    return rc;
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jint)GetRgnBox((HRGN)arg0, lparg1);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/TOOLINFO;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
-  (JNIEnv * env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSaveFileNameA
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    TOOLINFO toolinfo, *lpParam1=NULL;
-    jint rc;
+	OPENFILENAME _arg0, *lparg0=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2\n");
-#endif
+	DEBUG_CALL("GetSaveFileNameA\n")
 
-    if (lParam) {
-        lpParam1 = &toolinfo;
-        cacheToolinfoFids(env, lParam, &PGLOB(ToolinfoFc));
-        getToolinfoFields(env, lParam, lpParam1, &PGLOB(ToolinfoFc));
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setToolinfoFields(env, lParam, lpParam1, &PGLOB(ToolinfoFc));
-    }
-    return rc;
+	if (arg0) lparg0 = getOPENFILENAMEFields(env, arg0, &_arg0, &PGLOB(OPENFILENAMEFc));
+
+	rc = (jboolean)GetSaveFileNameA(lparg0);
+
+	if (arg0) setOPENFILENAMEFields(env, arg0, lparg0, &PGLOB(OPENFILENAMEFc));
+
+	return rc;
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/TVHITTESTINFO;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSaveFileNameW
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    TVHITTESTINFO tvhittestinfo, *lpParam1=NULL;
-    jint rc;
+	OPENFILENAME _arg0, *lparg0=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2\n");
-#endif
+	DEBUG_CALL("GetSaveFileNameW\n")
 
-    if (lParam) {
-        lpParam1 = &tvhittestinfo;
-        cacheTvhittestinfoFids(env, lParam, &PGLOB(TvhittestinfoFc));
-        getTvhittestinfoFields(env, lParam, lpParam1, &PGLOB(TvhittestinfoFc));
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setTvhittestinfoFields(env, lParam, lpParam1, &PGLOB(TvhittestinfoFc));
-    }
-    return rc;
+	if (arg0) lparg0 = getOPENFILENAMEFields(env, arg0, &_arg0, &PGLOB(OPENFILENAMEFc));
+
+	rc = (jboolean)GetSaveFileNameW((LPOPENFILENAMEW)lparg0);
+
+	if (arg0) setOPENFILENAMEFields(env, arg0, lparg0, &PGLOB(OPENFILENAMEFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/TVINSERTSTRUCT;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetScrollInfo
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
 {
 	DECL_GLOB(pGlob)
-    TVINSERTSTRUCT tvinsertstruct, *lpParam1=NULL;
-    jint rc;
+	SCROLLINFO _arg2, *lparg2=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2\n");
-#endif
+	DEBUG_CALL("GetScrollInfo\n")
 
-    if (lParam) {
-        lpParam1 = &tvinsertstruct;
-        cacheTvinsertstructFids(env, lParam, &PGLOB(TvinsertstructFc));
-        getTvinsertstructFields(env, lParam, lpParam1, &PGLOB(TvinsertstructFc));
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setTvinsertstructFields(env, lParam, lpParam1, &PGLOB(TvinsertstructFc));
-    }
-    return rc;
+	if (arg2) lparg2 = getSCROLLINFOFields(env, arg2, &_arg2, &PGLOB(SCROLLINFOFc));
+
+	rc = (jboolean)GetScrollInfo((HWND)arg0, arg1, lparg2);
+
+	if (arg2) setSCROLLINFOFields(env, arg2, lparg2, &PGLOB(SCROLLINFOFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/TVITEM;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_TVITEM_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetStockObject
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetStockObject\n")
+
+	return (jint)GetStockObject(arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSysColor
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetSysColor\n")
+
+	return (jint)GetSysColor(arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSysColorBrush
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetSysColorBrush\n")
+
+	return (jint)GetSysColorBrush(arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSystemMenu
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("GetSystemMenu\n")
+
+	return (jint)GetSystemMenu((HWND)arg0, arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetSystemMetrics
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetSystemMetrics\n")
+
+	return (jint)GetSystemMetrics(arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextCharset
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetTextCharset\n")
+
+	return (jint)GetTextCharset((HDC)arg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextColor
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetTextColor\n")
+
+	return (jint)GetTextColor((HDC)arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextExtentPoint32A
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jobject arg3)
 {
 	DECL_GLOB(pGlob)
-    TVITEM tvitem, *lpParam1=NULL;
-    jint rc;
+	jbyte *lparg1=NULL;
+	SIZE _arg3, *lparg3=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_TVITEM_2\n");
-#endif
+	DEBUG_CALL("GetTextExtentPoint32A\n")
 
-    if (lParam) {
-        lpParam1 = &tvitem;
-        cacheTvitemFids(env, lParam, &PGLOB(TvitemFc));
-        getTvitemFields(env, lParam, lpParam1, &PGLOB(TvitemFc));
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setTvitemFields(env, lParam, lpParam1, &PGLOB(TvitemFc));
-    }
-    return rc;
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = getSIZEFields(env, arg3, &_arg3, &PGLOB(SIZEFc));
+
+	rc = (jboolean)GetTextExtentPoint32A((HDC)arg0, (LPSTR)lparg1, arg2, lparg3);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) setSIZEFields(env, arg3, lparg3, &PGLOB(SIZEFc));
+
+	return rc;
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetActiveWindow
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetActiveWindow
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetActiveWindow\n");
-#endif
-
-    return (jint) SetActiveWindow((HWND) hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetBkColor
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetBkColor
-  (JNIEnv *env, jclass that, jint hdc, jint crColor)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetBkColor\n");
-#endif
-
-    return (jint) SetBkColor((HDC)hdc, (COLORREF)crColor);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetBkMode
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetBkMode
-  (JNIEnv *env, jclass that, jint hdc, jint iBkMode)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetBkMode\n");
-#endif
-    return (jint) SetBkMode((HDC)hdc, iBkMode);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetCapture
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetCapture
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetCapture\n");
-#endif
-
-    return (jint) SetCapture((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetCaretPos
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetCaretPos
-  (JNIEnv *env, jclass that, jint X, jint Y)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetCaretPos\n");
-#endif
-
-    return (jboolean) SetCaretPos(X, Y);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetClipboardData
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetClipboardData
-  (JNIEnv *env,  jclass that, jint uFormat, jint hMem)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetClipboardData\n");
-#endif
-    return (jint) SetClipboardData(uFormat, (HANDLE)hMem);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetCursor
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetCursor
-  (JNIEnv *env, jclass that, jint hCursor)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetCursor\n");
-#endif
-
-    return (jint) SetCursor((HCURSOR)hCursor);
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetDIBColorTable
- * Signature: (III[B)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetDIBColorTable
-  (JNIEnv *env, jclass that, jint hdc, jint uStartIndex, jint cEntries, jbyteArray pColors)
-{
-    RGBQUAD *pColors1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetDIBColorTable\n");
-#endif
-
-    if (pColors)
-        pColors1 = (RGBQUAD *)(*env)->GetByteArrayElements(env,pColors, NULL);
-
-    rc = (jint)SetDIBColorTable((HDC)hdc, uStartIndex, cEntries, pColors1);
-
-    if (pColors)
-        (*env)->ReleaseByteArrayElements(env, pColors, (jbyte *)pColors1, 0);
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetFocus
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetFocus
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetFocus\n");
-#endif
-
-    return (jint) SetFocus((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetMapMode
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMapMode
-  (JNIEnv *env, jclass that, jint hdc, jint fnMapMode)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetMapMode\n");
-#endif
-    return (jint) SetMapMode((HDC)hdc, fnMapMode);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetMenu
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMenu
-   (JNIEnv *env, jclass that, jint hWnd, jint hMenu)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "SetMenu\n");
-#endif
-
-	return (jboolean) SetMenu((HWND)hWnd, (HMENU)hMenu);
-}
-
-/*
- * Class:		org_eclipse_swt_internal_win32_OS
- * Method:		ShowOwnedPopups:with:
- * Signature:	(IZ)Z
- */
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShowOwnedPopups
-   (JNIEnv *env, jclass that, jint hWnd, jboolean fShow)
-{
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "SetShowOwnedPopups\n");
-#endif
-
-	return (jboolean) ShowOwnedPopups((HWND)hWnd, fShow);
-}
- 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetMenuDefaultItem
- * Signature: (III)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMenuDefaultItem
-  (JNIEnv *env, jclass that, jint hMenu, jint uItem, jint fByPos)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetMenuDefaultItem\n");
-#endif
-
-    return (jboolean) SetMenuDefaultItem((HMENU)hMenu, uItem, fByPos);
-}
-
-#ifdef USE_2000_CALLS
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetMenuInfo
- * Signature: (ILorg/eclipse/swt/internal/win32/MENUINFO;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMenuInfo
-  (JNIEnv *env, jclass that, jint hmenu, jobject lpcmi)
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextExtentPoint32W
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jobject arg3)
 {
 	DECL_GLOB(pGlob)
+	jchar *lparg1=NULL;
+	SIZE _arg3, *lparg3=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetTextExtentPoint32W\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = getSIZEFields(env, arg3, &_arg3, &PGLOB(SIZEFc));
+
+	rc = (jboolean)GetTextExtentPoint32W((HDC)arg0, (LPWSTR)lparg1, arg2, lparg3);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg3) setSIZEFields(env, arg3, lparg3, &PGLOB(SIZEFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextMetricsA
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	TEXTMETRICA _arg1={0}, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetTextMetricsA\n")
+
+	if (arg1) lparg1 = &_arg1;
+
+	rc = (jboolean)GetTextMetricsA((HDC)arg0, lparg1);
+
+	if (arg1) setTEXTMETRICAFields(env, arg1, lparg1, &PGLOB(TEXTMETRICFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextMetricsW
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	TEXTMETRICW _arg1={0}, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetTextMetricsW\n")
+
+	if (arg1) lparg1 = &_arg1;
+
+	rc = (jboolean)GetTextMetricsW((HDC)arg0, lparg1);
+
+	if (arg1) setTEXTMETRICWFields(env, arg1, lparg1, &PGLOB(TEXTMETRICFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTickCount
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetTickCount\n")
+
+	return (jint)GetTickCount();
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetUpdateRgn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("GetUpdateRgn\n")
+
+	return (jint)GetUpdateRgn((HWND)arg0, (HRGN)arg1, arg2);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetVersionExA
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	OSVERSIONINFOA _arg0={0}, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetVersionExA\n")
+
+	if (arg0) lparg0 = getOSVERSIONINFOAFields(env, arg0, &_arg0, &PGLOB(OSVERSIONINFOFc));
+
+	rc = (jboolean)GetVersionExA(lparg0);
+
+	if (arg0) setOSVERSIONINFOAFields(env, arg0, lparg0, &PGLOB(OSVERSIONINFOFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetVersionExW
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	OSVERSIONINFOW _arg0={0}, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetVersionExW\n")
+
+	if (arg0) lparg0 = getOSVERSIONINFOWFields(env, arg0, &_arg0, &PGLOB(OSVERSIONINFOFc));
+
+	rc = (jboolean)GetVersionExW(lparg0);
+
+	if (arg0) setOSVERSIONINFOWFields(env, arg0, lparg0, &PGLOB(OSVERSIONINFOFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindow
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("GetWindow\n")
+
+	return (jint)GetWindow((HWND)arg0, arg1);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowLongA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("GetWindowLongA\n")
+
+	return (jint)GetWindowLongA((HWND)arg0, arg1);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowLongW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("GetWindowLongW\n")
+
+	return (jint)GetWindowLongW((HWND)arg0, arg1);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowPlacement
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	WINDOWPLACEMENT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetWindowPlacement\n")
+
+	if (arg1) lparg1 = getWINDOWPLACEMENTFields(env, arg1, &_arg1, &PGLOB(WINDOWPLACEMENTFc));
+
+	rc = (jboolean)GetWindowPlacement((HWND)arg0, lparg1);
+
+	if (arg1) setWINDOWPLACEMENTFields(env, arg1, lparg1, &PGLOB(WINDOWPLACEMENTFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("GetWindowRect\n")
+
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)GetWindowRect((HWND)arg0, lparg1);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowTextA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetWindowTextA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	rc = (jint)GetWindowTextA((HWND)arg0, (LPSTR)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowTextLengthA
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetWindowTextLengthA\n")
+
+	return (jint)GetWindowTextLengthA((HWND)arg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowTextLengthW
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GetWindowTextLengthW\n")
+
+	return (jint)GetWindowTextLengthW((HWND)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowTextW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetWindowTextW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	rc = (jint)GetWindowTextW((HWND)arg0, (LPWSTR)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetWindowThreadProcessId
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetWindowThreadProcessId\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+
+	rc = (jint)GetWindowThreadProcessId((HWND)arg0, (LPDWORD)lparg1);
+
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalAlloc
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("GlobalAlloc\n")
+
+	return (jint)GlobalAlloc(arg0, arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalFree
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GlobalFree\n")
+
+	return (jint)GlobalFree((HANDLE)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalLock
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GlobalLock\n")
+
+	return (jint)GlobalLock((HANDLE)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalSize
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GlobalSize\n")
+
+	return (jint)GlobalSize((HANDLE)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GlobalUnlock
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GlobalUnlock\n")
+
+	return (jboolean)GlobalUnlock((HANDLE)arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GradientFill
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
     HMODULE hm;
     FARPROC fp;
-    MENUINFO menuinfo, *lpcmi1=NULL;
-    jboolean rc=FALSE;
+ 
+	DEBUG_CALL("GradientFill\n")
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetMenuInfo\n");
-#endif
-    
     /*
-    **  SetMenuInfo is a Win2000 and Win98 specific call
-    **  If you link it into swt.dll a system modal entry point not found dialog will
-    **  appear as soon as swt.dll is loaded. Here we check for the entry point and
-    **  only do the call if it exists.
+    *  GradientFill is a Win2000 and Win98 specific call
+    *  If you link it into swt.dll, a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
+    */
+    if (!(hm = GetModuleHandle("msimg32.dll"))) hm = LoadLibrary("msimg32.dll");
+    if (hm && (fp = GetProcAddress(hm, "GradientFill"))) {
+//		return (jboolean)GradientFill((HDC)arg0, (PTRIVERTEX)arg1, (ULONG)arg2, (PVOID)arg3, (ULONG)arg4, (ULONG)arg5);
+		return (jboolean)fp(arg0, arg1, arg2, arg3, arg4, arg5);
+	}
+	return (jboolean)FALSE;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_HeapAlloc
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("HeapAlloc\n")
+
+	return (jint)HeapAlloc((HANDLE)arg0, arg1, arg2);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_HeapFree
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("HeapFree\n")
+
+	return (jboolean)HeapFree((HANDLE)arg0, arg1, (LPVOID)arg2);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_HideCaret
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("HideCaret\n")
+
+	return (jboolean)HideCaret((HWND)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1AddMasked
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("ImageList_AddMasked\n")
+
+	return (jint)ImageList_AddMasked((HIMAGELIST)arg0, (HBITMAP)arg1, (COLORREF)arg2);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1Create
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("ImageList_Create\n")
+
+	return (jint)ImageList_Create(arg0, arg1, arg2, arg3, arg4);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1Destroy
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ImageList_Destroy\n")
+
+	return (jboolean)ImageList_Destroy((HIMAGELIST)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1GetIcon
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("ImageList_GetIcon\n")
+
+	return (jint)ImageList_GetIcon((HIMAGELIST)arg0, arg1, arg2);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1GetIconSize
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ImageList_GetIconSize\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+
+	rc = (jboolean)ImageList_GetIconSize((HIMAGELIST)arg0, lparg1, lparg2);
+
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1GetImageCount
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ImageList_GetImageCount\n")
+
+	return (jint)ImageList_GetImageCount((HIMAGELIST)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1Remove
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("ImageList_Remove\n")
+
+	return (jboolean)ImageList_Remove((HIMAGELIST)arg0, arg1);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1Replace
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("ImageList_Replace\n")
+
+	return (jboolean)ImageList_Replace((HIMAGELIST)arg0, arg1, (HBITMAP)arg2, (HBITMAP)arg3);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1ReplaceIcon
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("ImageList_ReplaceIcon\n")
+
+	return (jint)ImageList_ReplaceIcon((HIMAGELIST)arg0, arg1, (HICON)arg2);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImageList_1SetIconSize
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("ImageList_SetIconSize\n")
+
+	return (jboolean)ImageList_SetIconSize((HIMAGELIST)arg0, arg1, arg2);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmAssociateContext
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("ImmAssociateContext\n")
+
+	return (jint)ImmAssociateContext((HWND)arg0, (HIMC)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmCreateContext
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("ImmCreateContext\n")
+
+	return (jint)ImmCreateContext();
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmDestroyContext
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ImmDestroyContext\n")
+
+	return (jboolean)ImmDestroyContext((HIMC)arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetCompositionFontA
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	LOGFONTA _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ImmGetCompositionFontA\n")
+
+	if (arg1) lparg1 = getLOGFONTAFields(env, arg1, &_arg1, &PGLOB(LOGFONTFc));
+
+	rc = (jboolean)ImmGetCompositionFontA((HIMC)arg0, lparg1);
+
+	if (arg1) setLOGFONTAFields(env, arg1, lparg1, &PGLOB(LOGFONTFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetCompositionFontW
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	LOGFONTW _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ImmGetCompositionFontW\n")
+
+	if (arg1) lparg1 = getLOGFONTWFields(env, arg1, &_arg1, &PGLOB(LOGFONTFc));
+
+	rc = (jboolean)ImmGetCompositionFontW((HIMC)arg0, lparg1);
+
+	if (arg1) setLOGFONTWFields(env, arg1, lparg1, &PGLOB(LOGFONTFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetCompositionStringA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3)
+{
+	jbyte *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("ImmGetCompositionStringA\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+
+	rc = (jint)ImmGetCompositionStringA((HIMC)arg0, arg1, (LPSTR)lparg2, arg3);
+
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetCompositionStringW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3)
+{
+	jchar *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("ImmGetCompositionStringW\n")
+
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+
+	rc = (jint)ImmGetCompositionStringW((HIMC)arg0, arg1, (LPWSTR)lparg2, arg3);
+
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetContext
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ImmGetContext\n")
+
+	return (jint)ImmGetContext((HWND)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetConversionStatus
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jintArray arg2)
+{
+	jint *lparg1=NULL;
+	jint *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ImmGetConversionStatus\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+
+	rc = (jboolean)ImmGetConversionStatus((HIMC)arg0, lparg1, lparg2);
+
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetDefaultIMEWnd
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ImmGetDefaultIMEWnd\n")
+
+	return (jint)ImmGetDefaultIMEWnd((HWND)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmGetOpenStatus
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("ImmGetOpenStatus\n")
+
+	return (jboolean)ImmGetOpenStatus((HIMC)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmReleaseContext
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("ImmReleaseContext\n")
+
+	return (jboolean)ImmReleaseContext((HWND)arg0, (HIMC)arg1);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmSetCompositionFontA
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	LOGFONTA _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("ImmSetCompositionFontA\n")
+
+	if (arg1) lparg1 = getLOGFONTAFields(env, arg1, &_arg1, &PGLOB(LOGFONTFc));
+
+	return (jboolean)ImmSetCompositionFontA((HIMC)arg0, lparg1);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmSetCompositionFontW
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	LOGFONTW _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("ImmSetCompositionFontW\n")
+
+	if (arg1) lparg1 = getLOGFONTWFields(env, arg1, &_arg1, &PGLOB(LOGFONTFc));
+
+	return (jboolean)ImmSetCompositionFontW((HIMC)arg0, lparg1);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmSetCompositionWindow
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	COMPOSITIONFORM _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ImmSetCompositionWindow\n")
+
+	if (arg1) lparg1 = getCOMPOSITIONFORMFields(env, arg1, &_arg1, &PGLOB(COMPOSITIONFORMFc));
+
+	rc = (jboolean)ImmSetCompositionWindow((HIMC)arg0, lparg1);
+
+	if (arg1) setCOMPOSITIONFORMFields(env, arg1, lparg1, &PGLOB(COMPOSITIONFORMFc));
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmSetConversionStatus
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("ImmSetConversionStatus\n")
+
+	return (jboolean)ImmSetConversionStatus((HIMC)arg0, arg1, arg2);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ImmSetOpenStatus
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("ImmSetOpenStatus\n")
+
+	return (jboolean)ImmSetOpenStatus((HIMC)arg0, arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_InitCommonControls
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("InitCommonControls\n")
+
+	InitCommonControls();
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InitCommonControlsEx
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	INITCOMMONCONTROLSEX _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("InitCommonControlsEx\n")
+
+	if (arg0) lparg0 = getINITCOMMONCONTROLSEXFields(env, arg0, &_arg0, &PGLOB(INITCOMMONCONTROLSEXFc));
+
+	rc = (jboolean)InitCommonControlsEx(lparg0);
+
+	if (arg0) setINITCOMMONCONTROLSEXFields(env, arg0, lparg0, &PGLOB(INITCOMMONCONTROLSEXFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InsertMenuA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jbyteArray arg4)
+{
+	jbyte *lparg4=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("InsertMenuA\n")
+
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+
+	rc = (jboolean)InsertMenuA((HMENU)arg0, arg1, arg2, arg3, lparg4);
+
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InsertMenuItemA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	MENUITEMINFO _arg3, *lparg3=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("InsertMenuItemA\n")
+
+	if (arg3) lparg3 = getMENUITEMINFOFields(env, arg3, &_arg3, &PGLOB(MENUITEMINFOFc));
+
+	rc = (jboolean)InsertMenuItemA((HMENU)arg0, arg1, arg2, lparg3);
+
+	if (arg3) setMENUITEMINFOFields(env, arg3, lparg3, &PGLOB(MENUITEMINFOFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InsertMenuItemW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	MENUITEMINFO _arg3, *lparg3=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("InsertMenuItemW\n")
+
+	if (arg3) lparg3 = getMENUITEMINFOFields(env, arg3, &_arg3, &PGLOB(MENUITEMINFOFc));
+
+	rc = (jboolean)InsertMenuItemW((HMENU)arg0, arg1, arg2, (LPMENUITEMINFOW)lparg3);
+
+	if (arg3) setMENUITEMINFOFields(env, arg3, lparg3, &PGLOB(MENUITEMINFOFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InsertMenuW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4)
+{
+	jchar *lparg4=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("InsertMenuW\n")
+
+	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+
+	rc = (jboolean)InsertMenuW((HMENU)arg0, arg1, arg2, arg3, lparg4);
+
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InvalidateRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jboolean arg2)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("InvalidateRect\n")
+
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)InvalidateRect((HWND)arg0, lparg1, arg2);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_InvalidateRgn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("InvalidateRgn\n")
+
+	return (jboolean)InvalidateRgn((HWND)arg0, (HRGN)arg1, arg2);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsDBCSLeadByte
+	(JNIEnv *env, jclass that, jbyte arg0)
+{
+	DEBUG_CALL("IsDBCSLeadByte\n")
+
+	return (jboolean)IsDBCSLeadByte(arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsIconic
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsIconic\n")
+
+	return (jboolean)IsIconic((HWND)arg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsWindowEnabled
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsWindowEnabled\n")
+
+	return (jboolean)IsWindowEnabled((HWND)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsWindowVisible
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsWindowVisible\n")
+
+	return (jboolean)IsWindowVisible((HWND)arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsZoomed
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("IsZoomed\n")
+
+	return (jboolean)IsZoomed((HWND)arg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_KillTimer
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("KillTimer\n")
+
+	return (jboolean)KillTimer((HWND)arg0, arg1);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_LineTo
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("LineTo\n")
+
+	return (jboolean)LineTo((HDC)arg0, arg1, arg2);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadBitmapA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("LoadBitmapA\n")
+
+	return (jint)LoadBitmapA((HINSTANCE)arg0, (LPSTR)arg1);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadBitmapW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("LoadBitmapW\n")
+
+	return (jint)LoadBitmapW((HINSTANCE)arg0, (LPWSTR)arg1);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadCursorA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("LoadCursorA\n")
+
+	return (jint)LoadCursorA((HINSTANCE)arg0, (LPSTR)arg1);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadCursorW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("LoadCursorW\n")
+
+	return (jint)LoadCursorW((HINSTANCE)arg0, (LPWSTR)arg1);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadIconA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("LoadIconA\n")
+
+	return (jint)LoadIconA((HINSTANCE)arg0, (LPSTR)arg1);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadIconW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("LoadIconW\n")
+
+	return (jint)LoadIconW((HINSTANCE)arg0, (LPWSTR)arg1);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadImageA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("LoadImageA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	rc = (jint)LoadImageA((HINSTANCE)arg0, (LPSTR)lparg1, arg2, arg3, arg4, arg5);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadImageW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	jchar *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("LoadImageW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	rc = (jint)LoadImageW((HINSTANCE)arg0, (LPWSTR)lparg1, arg2, arg3, arg4, arg5);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadLibraryA
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("LoadLibraryA\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+
+	rc = (jint)LoadLibraryA((LPSTR)lparg0);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadLibraryW
+	(JNIEnv *env, jclass that, jcharArray arg0)
+{
+	jchar *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("LoadLibraryW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+
+	rc = (jint)LoadLibraryW((LPWSTR)lparg0);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MapVirtualKeyA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("MapVirtualKeyA\n")
+
+	return (jint)MapVirtualKeyA(arg0, arg1);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MapVirtualKeyW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("MapVirtualKeyW\n")
+
+	return (jint)MapVirtualKeyW(arg0, arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MapWindowPoints__IILorg_eclipse_swt_internal_win32_RECT_2I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("MapWindowPoints\n")
+
+	if (arg2) lparg2 = getRECTFields(env, arg2, &_arg2, &PGLOB(RECTFc));
+
+	rc = (jint)MapWindowPoints((HWND)arg0, (HWND)arg1, (LPPOINT)lparg2, arg3);
+
+	if (arg2) setRECTFields(env, arg2, lparg2, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MapWindowPoints__IILorg_eclipse_swt_internal_win32_POINT_2I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	POINT _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("MapWindowPoints\n")
+
+	if (arg2) lparg2 = getPOINTFields(env, arg2, &_arg2, &PGLOB(POINTFc));
+
+	rc = (jint)MapWindowPoints((HWND)arg0, (HWND)arg1, (LPPOINT)lparg2, arg3);
+
+	if (arg2) setPOINTFields(env, arg2, lparg2, &PGLOB(POINTFc));
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_MessageBeep
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("MessageBeep\n")
+
+	return (jboolean)MessageBeep(arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MessageBoxA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jbyteArray arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	jbyte *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("MessageBoxA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+
+	rc = (jint)MessageBoxA((HWND)arg0, (LPSTR)lparg1, (LPSTR)lparg2, arg3);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MessageBoxW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jcharArray arg2, jint arg3)
+{
+	jchar *lparg1=NULL;
+	jchar *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("MessageBoxW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+
+	rc = (jint)MessageBoxW((HWND)arg0, (LPWSTR)lparg1, (LPWSTR)lparg2, arg3);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	MSG _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setMSGFields(env, arg0, lparg0, &PGLOB(MSGFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_WINDOWPOS_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	WINDOWPOS _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setWINDOWPOSFields(env, arg0, lparg0, &PGLOB(WINDOWPOSFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_TVITEM_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	TVITEM _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setTVITEMFields(env, arg0, lparg0, &PGLOB(TVITEMFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTOOLBAR_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMTOOLBAR _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setNMTOOLBARFields(env, arg0, lparg0, &PGLOB(NMTOOLBARFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLISTVIEW_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMLISTVIEW _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setNMLISTVIEWFields(env, arg0, lparg0, &PGLOB(NMLISTVIEWFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMHEADER_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMHEADER _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setNMHEADERFields(env, arg0, lparg0, &PGLOB(NMHEADERFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMHDR _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setNMHDRFields(env, arg0, lparg0, &PGLOB(NMHDRFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	MEASUREITEMSTRUCT _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setMEASUREITEMSTRUCTFields(env, arg0, lparg0, &PGLOB(MEASUREITEMSTRUCTFc));
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_HELPINFO_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	HELPINFO _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setHELPINFOFields(env, arg0, lparg0, &PGLOB(HELPINFOFc));
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_HDITEM_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	HDITEM _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setHDITEMFields(env, arg0, lparg0, &PGLOB(HDITEMFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_DRAWITEMSTRUCT_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	DRAWITEMSTRUCT _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setDRAWITEMSTRUCTFields(env, arg0, lparg0, &PGLOB(DRAWITEMSTRUCTFc));
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_TRIVERTEX_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	TRIVERTEX _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = getTRIVERTEXFields(env, arg1, &_arg1, &PGLOB(TRIVERTEXFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_RECT_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	MEASUREITEMSTRUCT _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = getMEASUREITEMSTRUCTFields(env, arg1, &_arg1, &PGLOB(MEASUREITEMSTRUCTFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_GRADIENT_1RECT_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	GRADIENT_RECT _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = getGRADIENT_RECTFields(env, arg1, &_arg1, &PGLOB(GRADIENT_RECTFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3II
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3CI
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2)
+{
+	jchar *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__I_3BI
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
+{
+	jbyte *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3III
+	(JNIEnv *env, jclass that, jintArray arg0, jint arg1, jint arg2)
+{
+	jint *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3BLorg_eclipse_swt_internal_win32_ACCEL_2I
+	(JNIEnv *env, jclass that, jbyteArray arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	jbyte *lparg0=NULL;
+	ACCEL _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg1) lparg1 = getACCELFields(env, arg1, &_arg1, &PGLOB(ACCELFc));
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3BII
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)
+{
+	jbyte *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory___3CII
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1, jint arg2)
+{
+	jchar *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__Lorg_eclipse_swt_internal_win32_NMTTDISPINFO_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMTTDISPINFOA _arg0={0}, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemoryA\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setNMTTDISPINFOAFields(env, arg0, lparg0, &PGLOB(NMTTDISPINFOFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__Lorg_eclipse_swt_internal_win32_LOGFONT_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	LOGFONTA _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemoryA\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setLOGFONTAFields(env, arg0, lparg0, &PGLOB(LOGFONTFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__ILorg_eclipse_swt_internal_win32_NMTTDISPINFO_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMTTDISPINFOA _arg1={0}, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemoryA\n")
+
+	if (arg1) lparg1 = getNMTTDISPINFOAFields(env, arg1, &_arg1, &PGLOB(NMTTDISPINFOFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryA__ILorg_eclipse_swt_internal_win32_LOGFONT_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	LOGFONTA _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemoryA\n")
+
+	if (arg1) lparg1 = getLOGFONTAFields(env, arg1, &_arg1, &PGLOB(LOGFONTFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__Lorg_eclipse_swt_internal_win32_NMTTDISPINFO_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMTTDISPINFOW _arg0={0}, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemoryW\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setNMTTDISPINFOWFields(env, arg0, lparg0, &PGLOB(NMTTDISPINFOFc));
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__Lorg_eclipse_swt_internal_win32_LOGFONT_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	LOGFONTW _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemoryW\n")
+
+	if (arg0) lparg0 = &_arg0;
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setLOGFONTWFields(env, arg0, lparg0, &PGLOB(LOGFONTFc));
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__ILorg_eclipse_swt_internal_win32_NMTTDISPINFO_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMTTDISPINFOW _arg1={0}, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemoryW\n")
+
+	if (arg1) lparg1 = getNMTTDISPINFOWFields(env, arg1, &_arg1, &PGLOB(NMTTDISPINFOFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemoryW__ILorg_eclipse_swt_internal_win32_LOGFONT_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	LOGFONTW _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemoryW\n")
+
+	if (arg1) lparg1 = getLOGFONTWFields(env, arg1, &_arg1, &PGLOB(LOGFONTFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveToEx
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("MoveToEx\n")
+
+	return (jboolean)MoveToEx((HDC)arg0, arg1, arg2, (LPPOINT)arg3);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_MultiByteToWideChar
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jint arg3, jcharArray arg4, jint arg5)
+{
+	jbyte *lparg2=NULL;
+	jchar *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("MultiByteToWideChar\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+
+	rc = (jint)MultiByteToWideChar(arg0, arg1, (LPCSTR)lparg2, arg3, (LPWSTR)lparg4, arg5);
+
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_OleInitialize
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("OleInitialize\n")
+
+	return (jint)OleInitialize((LPVOID)arg0);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_OleUninitialize
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("OleUninitialize\n")
+
+	OleUninitialize();
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_OpenClipboard
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("OpenClipboard\n")
+
+	return (jboolean)OpenClipboard((HWND)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PatBlt
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5)
+{
+	DEBUG_CALL("PatBlt\n")
+
+	return (jboolean)PatBlt((HDC)arg0, arg1, arg2, arg3, arg4, arg5);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PeekMessageA
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DECL_GLOB(pGlob)
+	MSG _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("PeekMessageA\n")
+
+	if (arg0) lparg0 = getMSGFields(env, arg0, &_arg0, &PGLOB(MSGFc));
+
+	rc = (jboolean)PeekMessageA(lparg0, (HWND)arg1, arg2, arg3, arg4);
+
+	if (arg0) setMSGFields(env, arg0, lparg0, &PGLOB(MSGFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PeekMessageW
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DECL_GLOB(pGlob)
+	MSG _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("PeekMessageW\n")
+
+	if (arg0) lparg0 = getMSGFields(env, arg0, &_arg0, &PGLOB(MSGFc));
+
+	rc = (jboolean)PeekMessageW(lparg0, (HWND)arg1, arg2, arg3, arg4);
+
+	if (arg0) setMSGFields(env, arg0, lparg0, &PGLOB(MSGFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Pie
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8)
+{
+	DEBUG_CALL("Pie\n")
+
+	return (jboolean)Pie((HDC)arg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7, arg8);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Polygon
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("Polygon\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+
+	rc = (jboolean)Polygon((HDC)arg0, (CONST POINT *)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Polyline
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("Polyline\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+
+	rc = (jboolean)Polyline((HDC)arg0, (CONST POINT *)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PostMessageA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("PostMessageA\n")
+
+	return (jboolean)PostMessageA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PostMessageW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("PostMessageW\n")
+
+	return (jboolean)PostMessageW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PostThreadMessageA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("PostThreadMessageA\n")
+
+	return (jboolean)PostThreadMessageA(arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PostThreadMessageW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("PostThreadMessageW\n")
+
+	return (jboolean)PostThreadMessageW(arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PrintDlgA
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	PRINTDLG _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("PrintDlgA\n")
+
+	if (arg0) lparg0 = getPRINTDLGFields(env, arg0, &_arg0, &PGLOB(PRINTDLGFc));
+
+	rc = (jboolean)PrintDlgA(lparg0);
+
+	if (arg0) setPRINTDLGFields(env, arg0, lparg0, &PGLOB(PRINTDLGFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PrintDlgW
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	PRINTDLG _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("PrintDlgW\n")
+
+	if (arg0) lparg0 = getPRINTDLGFields(env, arg0, &_arg0, &PGLOB(PRINTDLGFc));
+
+	rc = (jboolean)PrintDlgW((LPPRINTDLGW)lparg0);
+
+	if (arg0) setPRINTDLGFields(env, arg0, lparg0, &PGLOB(PRINTDLGFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PtInRect
+	(JNIEnv *env, jclass that, jobject arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg0, *lparg0=NULL;
+	POINT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("PtInRect\n")
+
+	if (arg0) lparg0 = getRECTFields(env, arg0, &_arg0, &PGLOB(RECTFc));
+	if (arg1) lparg1 = getPOINTFields(env, arg1, &_arg1, &PGLOB(POINTFc));
+
+	rc = (jboolean)PtInRect(lparg0, *lparg1);
+
+	if (arg0) setRECTFields(env, arg0, lparg0, &PGLOB(RECTFc));
+	if (arg1) setPOINTFields(env, arg1, lparg1, &PGLOB(POINTFc));
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PtInRegion
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("PtInRegion\n")
+
+	return (jboolean)PtInRegion((HRGN)arg0, arg1, arg2);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RealizePalette
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("RealizePalette\n")
+
+	return (jint)RealizePalette((HDC)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_RectInRegion
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("RectInRegion\n")
+
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)RectInRegion((HRGN)arg0, lparg1);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_Rectangle
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("Rectangle\n")
+
+	return (jboolean)Rectangle((HDC)arg0, arg1, arg2, arg3, arg4);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_RedrawWindow
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("RedrawWindow\n")
+
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)RedrawWindow((HWND)arg0, lparg1, (HRGN)arg2, arg3);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegCloseKey
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("RegCloseKey\n")
+
+	return (jint)RegCloseKey((HKEY)arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegEnumKeyExA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jintArray arg3, jintArray arg4, jbyteArray arg5, jintArray arg6, jobject arg7)
+{
+	DECL_GLOB(pGlob)
+	jbyte *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jbyte *lparg5=NULL;
+	jint *lparg6=NULL;
+	FILETIME _arg7, *lparg7=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegEnumKeyExA\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = getFILETIMEFields(env, arg7, &_arg7, &PGLOB(FILETIMEFc));
+
+	rc = (jint)RegEnumKeyExA((HKEY)arg0, arg1, (LPSTR)lparg2, lparg3, lparg4, (LPSTR)lparg5, lparg6, lparg7);
+
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg7) setFILETIMEFields(env, arg7, lparg7, &PGLOB(FILETIMEFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegEnumKeyExW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jintArray arg3, jintArray arg4, jcharArray arg5, jintArray arg6, jobject arg7)
+{
+	DECL_GLOB(pGlob)
+	jchar *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jchar *lparg5=NULL;
+	jint *lparg6=NULL;
+	FILETIME _arg7, *lparg7=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegEnumKeyExW\n")
+
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetCharArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = getFILETIMEFields(env, arg7, &_arg7, &PGLOB(FILETIMEFc));
+
+	rc = (jint)RegEnumKeyExW((HKEY)arg0, arg1, (LPWSTR)lparg2, lparg3, lparg4, (LPWSTR)lparg5, lparg6, lparg7);
+
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseCharArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg7) setFILETIMEFields(env, arg7, lparg7, &PGLOB(FILETIMEFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegOpenKeyExA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegOpenKeyExA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+
+	rc = (jint)RegOpenKeyExA((HKEY)arg0, (LPSTR)lparg1, arg2, arg3, (PHKEY)lparg4);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegOpenKeyExW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	jchar *lparg1=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegOpenKeyExW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+
+	rc = (jint)RegOpenKeyExW((HKEY)arg0, (LPWSTR)lparg1, arg2, arg3, (PHKEY)lparg4);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegQueryInfoKeyA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7, jintArray arg8, jintArray arg9, jintArray arg10, jint arg11)
+{
+	jint *lparg2=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint *lparg9=NULL;
+	jint *lparg10=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegQueryInfoKeyA\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	if (arg9) lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL);
+	if (arg10) lparg10 = (*env)->GetIntArrayElements(env, arg10, NULL);
+
+	rc = (jint)RegQueryInfoKeyA((HKEY)arg0, (LPTSTR)arg1, lparg2, (LPDWORD)arg3, lparg4, lparg5, lparg6, lparg7, lparg8, lparg9, lparg10, (PFILETIME)arg11);
+
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
+	if (arg10) (*env)->ReleaseIntArrayElements(env, arg10, lparg10, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegQueryInfoKeyW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3, jintArray arg4, jintArray arg5, jintArray arg6, jintArray arg7, jintArray arg8, jintArray arg9, jintArray arg10, jint arg11)
+{
+	jint *lparg2=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint *lparg6=NULL;
+	jint *lparg7=NULL;
+	jint *lparg8=NULL;
+	jint *lparg9=NULL;
+	jint *lparg10=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegQueryInfoKeyW\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
+	if (arg9) lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL);
+	if (arg10) lparg10 = (*env)->GetIntArrayElements(env, arg10, NULL);
+
+	rc = (jint)RegQueryInfoKeyW((HKEY)arg0, (LPWSTR)arg1, lparg2, (LPDWORD)arg3, lparg4, lparg5, lparg6, lparg7, lparg8, lparg9, lparg10, (PFILETIME)arg11);
+
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
+	if (arg10) (*env)->ReleaseIntArrayElements(env, arg10, lparg10, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegQueryValueExA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3, jbyteArray arg4, jintArray arg5)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+	jbyte *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegQueryValueExA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+
+	rc = (jint)RegQueryValueExA((HKEY)arg0, (LPSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegQueryValueExW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1, jint arg2, jintArray arg3, jcharArray arg4, jintArray arg5)
+{
+	jchar *lparg1=NULL;
+	jint *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegQueryValueExW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+
+	rc = (jint)RegQueryValueExW((HKEY)arg0, (LPWSTR)lparg1, (LPDWORD)arg2, lparg3, (LPBYTE)lparg4, lparg5);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegisterClassA
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	WNDCLASS _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegisterClassA\n")
+
+	if (arg0) lparg0 = getWNDCLASSFields(env, arg0, &_arg0, &PGLOB(WNDCLASSFc));
+
+	rc = (jint)RegisterClassA(lparg0);
+
+	if (arg0) setWNDCLASSFields(env, arg0, lparg0, &PGLOB(WNDCLASSFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_RegisterClassW
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	WNDCLASS _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("RegisterClassW\n")
+
+	if (arg0) lparg0 = getWNDCLASSFields(env, arg0, &_arg0, &PGLOB(WNDCLASSFc));
+
+	rc = (jint)RegisterClassW((LPWNDCLASSW)lparg0);
+
+	if (arg0) setWNDCLASSFields(env, arg0, lparg0, &PGLOB(WNDCLASSFc));
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ReleaseCapture
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("ReleaseCapture\n")
+
+	return (jboolean)ReleaseCapture();
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ReleaseDC
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("ReleaseDC\n")
+
+	return (jint)ReleaseDC((HWND)arg0, (HDC)arg1);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_RemoveMenu
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("RemoveMenu\n")
+
+	return (jboolean)RemoveMenu((HMENU)arg0, arg1, arg2);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_RoundRect
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	DEBUG_CALL("RoundRect\n")
+
+	return (jboolean)RoundRect((HDC)arg0, arg1, arg2, arg3, arg4, arg5, arg6);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHBrowseForFolderA
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	BROWSEINFO _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("SHBrowseForFolderA\n")
+
+	if (arg0) lparg0 = getBROWSEINFOFields(env, arg0, &_arg0, &PGLOB(BROWSEINFOFc));
+
+	rc = (jint)SHBrowseForFolderA(lparg0);
+
+	if (arg0) setBROWSEINFOFields(env, arg0, lparg0, &PGLOB(BROWSEINFOFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHBrowseForFolderW
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	BROWSEINFO _arg0, *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("SHBrowseForFolderW\n")
+
+	if (arg0) lparg0 = getBROWSEINFOFields(env, arg0, &_arg0, &PGLOB(BROWSEINFOFc));
+
+	rc = (jint)SHBrowseForFolderW((LPBROWSEINFOW)lparg0);
+
+	if (arg0) setBROWSEINFOFields(env, arg0, lparg0, &PGLOB(BROWSEINFOFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHGetMalloc
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+
+	DEBUG_CALL("SHGetMalloc\n")
+
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+
+	rc = (jint)SHGetMalloc((LPMALLOC *)lparg0);
+
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHGetPathFromIDListA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SHGetPathFromIDListA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	rc = (jboolean)SHGetPathFromIDListA((LPCITEMIDLIST)arg0, (LPSTR)lparg1);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHGetPathFromIDListW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1)
+{
+	jchar *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SHGetPathFromIDListW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	rc = (jboolean)SHGetPathFromIDListW((LPCITEMIDLIST)arg0, (LPWSTR)lparg1);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ScreenToClient
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	POINT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ScreenToClient\n")
+
+	if (arg1) lparg1 = getPOINTFields(env, arg1, &_arg1, &PGLOB(POINTFc));
+
+	rc = (jboolean)ScreenToClient((HWND)arg0, lparg1);
+
+	if (arg1) setPOINTFields(env, arg1, lparg1, &PGLOB(POINTFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ScrollWindowEx
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3, jobject arg4, jint arg5, jobject arg6, jint arg7)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg3, *lparg3=NULL;
+	RECT _arg4, *lparg4=NULL;
+	RECT _arg6, *lparg6=NULL;
+	jint rc;
+
+	DEBUG_CALL("ScrollWindowEx\n")
+
+	if (arg3) lparg3 = getRECTFields(env, arg3, &_arg3, &PGLOB(RECTFc));
+	if (arg4) lparg4 = getRECTFields(env, arg4, &_arg4, &PGLOB(RECTFc));
+	if (arg6) lparg6 = getRECTFields(env, arg6, &_arg6, &PGLOB(RECTFc));
+
+	rc = (jint)ScrollWindowEx((HWND)arg0, arg1, arg2, lparg3, lparg4, (HRGN)arg5, lparg6, arg7);
+
+	if (arg3) setRECTFields(env, arg3, lparg3, &PGLOB(RECTFc));
+	if (arg4) setRECTFields(env, arg4, lparg4, &PGLOB(RECTFc));
+	if (arg6) setRECTFields(env, arg6, lparg6, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SelectClipRgn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SelectClipRgn\n")
+
+	return (jint)SelectClipRgn((HDC)arg0, (HRGN)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SelectObject
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SelectObject\n")
+
+	return (jint)SelectObject((HDC)arg0, (HGDIOBJ)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SelectPalette
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("SelectPalette\n")
+
+	return (jint)SelectPalette((HDC)arg0, (HPALETTE)arg1, arg2);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVITEM_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TVITEM _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getTVITEMFields(env, arg3, &_arg3, &PGLOB(TVITEMFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTVITEMFields(env, arg3, lparg3, &PGLOB(TVITEMFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TVINSERTSTRUCT _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getTVINSERTSTRUCTFields(env, arg3, &_arg3, &PGLOB(TVINSERTSTRUCTFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTVINSERTSTRUCTFields(env, arg3, lparg3, &PGLOB(TVINSERTSTRUCTFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TVHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getTVHITTESTINFOFields(env, arg3, &_arg3, &PGLOB(TVHITTESTINFOFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTVHITTESTINFOFields(env, arg3, lparg3, &PGLOB(TVHITTESTINFOFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TOOLINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getTOOLINFOFields(env, arg3, &_arg3, &PGLOB(TOOLINFOFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTOOLINFOFields(env, arg3, lparg3, &PGLOB(TOOLINFOFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_TCITEM_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TCITEM _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getTCITEMFields(env, arg3, &_arg3, &PGLOB(TCITEMFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTCITEMFields(env, arg3, lparg3, &PGLOB(TCITEMFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TBBUTTONINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getTBBUTTONINFOFields(env, arg3, &_arg3, &PGLOB(TBBUTTONINFOFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTBBUTTONINFOFields(env, arg3, lparg3, &PGLOB(TBBUTTONINFOFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TBBUTTON _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getTBBUTTONFields(env, arg3, &_arg3, &PGLOB(TBBUTTONFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTBBUTTONFields(env, arg3, lparg3, &PGLOB(TBBUTTONFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_RECT_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getRECTFields(env, arg3, &_arg3, &PGLOB(RECTFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setRECTFields(env, arg3, lparg3, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	REBARBANDINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getREBARBANDINFOFields(env, arg3, &_arg3, &PGLOB(REBARBANDINFOFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setREBARBANDINFOFields(env, arg3, lparg3, &PGLOB(REBARBANDINFOFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVITEM_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	LVITEM _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getLVITEMFields(env, arg3, &_arg3, &PGLOB(LVITEMFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setLVITEMFields(env, arg3, lparg3, &PGLOB(LVITEMFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	LVHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getLVHITTESTINFOFields(env, arg3, &_arg3, &PGLOB(LVHITTESTINFOFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setLVHITTESTINFOFields(env, arg3, lparg3, &PGLOB(LVHITTESTINFOFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	LVCOLUMN _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = getLVCOLUMNFields(env, arg3, &_arg3, &PGLOB(LVCOLUMNFc));
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setLVCOLUMNFields(env, arg3, lparg3, &PGLOB(LVCOLUMNFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__IIII
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("SendMessageA\n")
+
+	return (jint)SendMessageA((HWND)arg0, arg1, arg2, arg3);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__III_3S
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jshortArray arg3)
+{
+	jshort *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__III_3I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__III_3B
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
+{
+	jbyte *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__II_3II
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)arg3);
+
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageA__II_3I_3I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageA\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+
+	rc = (jint)SendMessageA((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_TVITEM_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TVITEM _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getTVITEMFields(env, arg3, &_arg3, &PGLOB(TVITEMFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTVITEMFields(env, arg3, lparg3, &PGLOB(TVITEMFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_TVINSERTSTRUCT_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TVINSERTSTRUCT _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getTVINSERTSTRUCTFields(env, arg3, &_arg3, &PGLOB(TVINSERTSTRUCTFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTVINSERTSTRUCTFields(env, arg3, lparg3, &PGLOB(TVINSERTSTRUCTFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_TVHITTESTINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TVHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getTVHITTESTINFOFields(env, arg3, &_arg3, &PGLOB(TVHITTESTINFOFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTVHITTESTINFOFields(env, arg3, lparg3, &PGLOB(TVHITTESTINFOFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_TOOLINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TOOLINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getTOOLINFOFields(env, arg3, &_arg3, &PGLOB(TOOLINFOFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTOOLINFOFields(env, arg3, lparg3, &PGLOB(TOOLINFOFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_TCITEM_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TCITEM _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getTCITEMFields(env, arg3, &_arg3, &PGLOB(TCITEMFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTCITEMFields(env, arg3, lparg3, &PGLOB(TCITEMFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTONINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TBBUTTONINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getTBBUTTONINFOFields(env, arg3, &_arg3, &PGLOB(TBBUTTONINFOFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTBBUTTONINFOFields(env, arg3, lparg3, &PGLOB(TBBUTTONINFOFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_TBBUTTON_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	TBBUTTON _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getTBBUTTONFields(env, arg3, &_arg3, &PGLOB(TBBUTTONFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setTBBUTTONFields(env, arg3, lparg3, &PGLOB(TBBUTTONFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_RECT_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getRECTFields(env, arg3, &_arg3, &PGLOB(RECTFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setRECTFields(env, arg3, lparg3, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_REBARBANDINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	REBARBANDINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getREBARBANDINFOFields(env, arg3, &_arg3, &PGLOB(REBARBANDINFOFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setREBARBANDINFOFields(env, arg3, lparg3, &PGLOB(REBARBANDINFOFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_LVITEM_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	LVITEM _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getLVITEMFields(env, arg3, &_arg3, &PGLOB(LVITEMFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setLVITEMFields(env, arg3, lparg3, &PGLOB(LVITEMFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_LVHITTESTINFO_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	LVHITTESTINFO _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getLVHITTESTINFOFields(env, arg3, &_arg3, &PGLOB(LVHITTESTINFOFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setLVHITTESTINFOFields(env, arg3, lparg3, &PGLOB(LVHITTESTINFOFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIILorg_eclipse_swt_internal_win32_LVCOLUMN_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	LVCOLUMN _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = getLVCOLUMNFields(env, arg3, &_arg3, &PGLOB(LVCOLUMNFc));
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) setLVCOLUMNFields(env, arg3, lparg3, &PGLOB(LVCOLUMNFc));
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__IIII
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("SendMessageW\n")
+
+	return (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)arg3);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__III_3S
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jshortArray arg3)
+{
+	jshort *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__III_3I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3)
+{
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__III_3C
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jcharArray arg3)
+{
+	jchar *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg3) lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL);
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, arg2, (LPARAM)lparg3);
+
+	if (arg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__II_3II
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jint arg3)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)arg3);
+
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessageW__II_3I_3I
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+{
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SendMessageW\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+
+	rc = (jint)SendMessageW((HWND)arg0, arg1, (WPARAM)lparg2, (LPARAM)lparg3);
+
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetActiveWindow
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetActiveWindow\n")
+
+	return (jint)SetActiveWindow((HWND)arg0);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetBkColor
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetBkColor\n")
+
+	return (jint)SetBkColor((HDC)arg0, (COLORREF)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetBkMode
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetBkMode\n")
+
+	return (jint)SetBkMode((HDC)arg0, arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetCapture
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetCapture\n")
+
+	return (jint)SetCapture((HWND)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetCaretPos
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetCaretPos\n")
+
+	return (jboolean)SetCaretPos(arg0, arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetClipboardData
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetClipboardData\n")
+
+	return (jint)SetClipboardData(arg0, (HANDLE)arg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetCursor
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetCursor\n")
+
+	return (jint)SetCursor((HCURSOR)arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetDIBColorTable
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
+{
+	jbyte *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetDIBColorTable\n")
+
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+
+	rc = (jint)SetDIBColorTable((HDC)arg0, arg1, arg2, (RGBQUAD *)lparg3);
+
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetFocus
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("SetFocus\n")
+
+	return (jint)SetFocus((HWND)arg0);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMenu
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetMenu\n")
+
+	return (jboolean)SetMenu((HWND)arg0, (HMENU)arg1);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMenuDefaultItem
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("SetMenuDefaultItem\n")
+
+	return (jboolean)SetMenuDefaultItem((HMENU)arg0, arg1, arg2);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMenuInfo
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	MENUINFO _arg1, *lparg1=NULL;
+	jboolean rc = (jboolean)FALSE;
+    HMODULE hm;
+    FARPROC fp;
+
+	DEBUG_CALL("SetMenuInfo\n")
+	
+    /*
+    *  SetMenuInfo is a Win2000 and Win98 specific call
+    *  If you link it into swt.dll a system modal entry point not found dialog will
+    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
+    *  only do the call if it exists.
     */
     if ((hm=GetModuleHandle("user32.dll")) && (fp=GetProcAddress(hm, "SetMenuInfo"))) {
 
-        if (lpcmi) {
-            lpcmi1 = &menuinfo;
-            cacheMenuinfoFids(env, lpcmi, &PGLOB(MenuinfoFc));
-            getMenuinfoFields(env, lpcmi, lpcmi1, &PGLOB(MenuinfoFc));
-        }
-        rc = (jboolean) (fp)((HMENU)hmenu, lpcmi1);
-//        rc = (jboolean) SetMenuInfo((HMENU)hmenu, lpcmi1);
-        if (lpcmi) {
-            setMenuinfoFields(env, lpcmi, lpcmi1, &PGLOB(MenuinfoFc));
-        }
-    }
-    return rc;
-}
-#endif
+		if (arg1) lparg1 = getMENUINFOFields(env, arg1, &_arg1, &PGLOB(MENUINFOFc));
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetMenuItemInfo
- * Signature: (IIZLorg/eclipse/swt/internal/win32/MENUITEMINFO;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMenuItemInfo
-  (JNIEnv *env, jclass that, jint hMenu, jint uItem, jboolean fByPosition, jobject lpmii)
+        rc = (jboolean) (fp)((HMENU)arg0, lparg1);
+//		rc = (jboolean)SetMenuInfo(arg0, lparg1);
+
+		if (arg1) setMENUINFOFields(env, arg1, lparg1, &PGLOB(MENUINFOFc));
+	}
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMenuItemInfoA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jobject arg3)
 {
 	DECL_GLOB(pGlob)
-    MENUITEMINFO mii1, *lpmii1=NULL;
-    jboolean rc;
+	MENUITEMINFO _arg3, *lparg3=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetMenuItemInfo\n");
-#endif
+	DEBUG_CALL("SetMenuItemInfoA\n")
 
-    if (lpmii) {
-        lpmii1 = &mii1;
-        cacheMenuiteminfoFids(env, lpmii, &PGLOB(MenuiteminfoFc));
-        getMenuiteminfoFields(env, lpmii, lpmii1, &PGLOB(MenuiteminfoFc));
-    }
-    rc = (jboolean) SetMenuItemInfo((HMENU)hMenu, uItem, fByPosition, lpmii1);
-    if (lpmii) {
-        setMenuiteminfoFields(env, lpmii, lpmii1, &PGLOB(MenuiteminfoFc));
-    }
-    return rc;
+	if (arg3) lparg3 = getMENUITEMINFOFields(env, arg3, &_arg3, &PGLOB(MENUITEMINFOFc));
+
+	rc = (jboolean)SetMenuItemInfoA((HMENU)arg0, arg1, arg2, lparg3);
+
+	if (arg3) setMENUITEMINFOFields(env, arg3, lparg3, &PGLOB(MENUITEMINFOFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetMenuItemInfoW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2, jobject arg3)
+{
+	DECL_GLOB(pGlob)
+	MENUITEMINFO _arg3, *lparg3=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SetMenuItemInfoW\n")
+
+	if (arg3) lparg3 = getMENUITEMINFOFields(env, arg3, &_arg3, &PGLOB(MENUITEMINFOFc));
+
+	rc = (jboolean)SetMenuItemInfoW((HMENU)arg0, arg1, arg2, (LPMENUITEMINFOW)lparg3);
+
+	if (arg3) setMENUITEMINFOFields(env, arg3, lparg3, &PGLOB(MENUITEMINFOFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetPaletteEntries
- * Signature: (III[B)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetPaletteEntries
-  (JNIEnv *env, jclass that, jint hPal, jint iStart, jint cEntries, jbyteArray lppe)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jbyteArray arg3)
 {
-    PALETTEENTRY *lppe1=NULL;
-    jint rc;
+	jbyte *lparg3=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetPaletteEntries\n");
-#endif
+	DEBUG_CALL("SetPaletteEntries\n")
 
-    if (lppe)
-        lppe1 = (PALETTEENTRY *)(*env)->GetByteArrayElements(env, lppe, NULL);
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
 
-    rc = (jint) SetPaletteEntries((HPALETTE)hPal, iStart, cEntries, lppe1);
+	rc = (jint)SetPaletteEntries((HPALETTE)arg0, arg1, arg2, (PALETTEENTRY *)lparg3);
 
-    if (lppe)
-        (*env)->ReleaseByteArrayElements(env, lppe, (jbyte *)lppe1, 0);
-    return rc;
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetParent
- * Signature: (II)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetParent
-  (JNIEnv *env, jclass that, jint hWndChild, jint hWndNewParent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetParent\n");
-#endif
+	DEBUG_CALL("SetParent\n")
 
-    return (jint) SetParent((HWND)hWndChild, (HWND)hWndNewParent);
+	return (jint)SetParent((HWND)arg0, (HWND)arg1);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetPixel
- * Signature: (IIII)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetPixel
-  (JNIEnv *env, jclass that, jint hDC, jint X, jint Y, jint crColor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetPixel\n");
-#endif
+	DEBUG_CALL("SetPixel\n")
 
-    return (jint) SetPixel((HDC) hDC, X, Y, crColor);
+	return (jint)SetPixel((HDC)arg0, arg1, arg2, arg3);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetRect
- * Signature: (Lorg/eclipse/swt/internal/win32/RECT;IIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetRect
-  (JNIEnv *env, jclass that, jobject lprc, jint xLeft, jint yTop, jint xRight, jint yBottom)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lprc1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetRect\n");
-#endif
-
-    if (lprc) {
-        lprc1 = &rect;
-        cacheRectFids(env, lprc, &PGLOB(RectFc));
-        getRectFields(env, lprc, lprc1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) SetRect(lprc1, xLeft, yTop, xRight, yBottom);
-
-    if (lprc) {
-        setRectFields(env, lprc, lprc1, &PGLOB(RectFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetRectRgn
- * Signature: (IIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetRectRgn
-  (JNIEnv *env, jclass that, jint hrgn, jint nLeftRect, jint nTopRect, jint nRightRect, jint nBottomRect)
-{
-    return (jboolean) SetRectRgn((HRGN)hrgn, nLeftRect, nTopRect, nRightRect, nBottomRect);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetROP2
- * Signature: (II)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetROP2
-  (JNIEnv *env, jclass that, jint hdc, jint fnDrawMode)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetROP2\n");
-#endif
-    return (jint) SetROP2((HDC)hdc, fnDrawMode);
+	DEBUG_CALL("SetROP2\n")
+
+	return (jint)SetROP2((HDC)arg0, arg1);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetScrollInfo
- * Signature: (IILorg/eclipse/swt/internal/win32/SCROLLINFO;Z)Z
- */
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetRect
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SetRect\n")
+
+	if (arg0) lparg0 = getRECTFields(env, arg0, &_arg0, &PGLOB(RECTFc));
+
+	rc = (jboolean)SetRect(lparg0, arg1, arg2, arg3, arg4);
+
+	if (arg0) setRECTFields(env, arg0, lparg0, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetRectRgn
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
+{
+	DEBUG_CALL("SetRectRgn\n")
+
+	return (jboolean)SetRectRgn((HRGN)arg0, arg1, arg2, arg3, arg4);
+}
+
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetScrollInfo
-  (JNIEnv *env, jclass that, jint hWnd, jint fnBar, jobject lpsi, jboolean fRedraw)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jboolean arg3)
 {
 	DECL_GLOB(pGlob)
-    SCROLLINFO si1, *lpsi1=NULL;
-    jboolean rc;
+	SCROLLINFO _arg2, *lparg2=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetScrollInfo\n");
-#endif
+	DEBUG_CALL("SetScrollInfo\n")
 
-    if (lpsi) {
-        lpsi1 = &si1;
-        cacheScrollinfoFids(env, lpsi, &PGLOB(ScrollinfoFc));
-        getScrollinfoFields(env, lpsi, lpsi1, &PGLOB(ScrollinfoFc));
-    }
-    rc = (jboolean) SetScrollInfo((HWND)hWnd, fnBar, lpsi1, fRedraw);
-    if (lpsi) {
-        setScrollinfoFields(env, lpsi, lpsi1, &PGLOB(ScrollinfoFc));
-    }
-    return rc;
+	if (arg2) lparg2 = getSCROLLINFOFields(env, arg2, &_arg2, &PGLOB(SCROLLINFOFc));
+
+	rc = (jboolean)SetScrollInfo((HWND)arg0, arg1, lparg2, arg3);
+
+	if (arg2) setSCROLLINFOFields(env, arg2, lparg2, &PGLOB(SCROLLINFOFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetTextColor
- * Signature: (II)I
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetStretchBltMode
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetStretchBltMode\n")
+
+	return (jint)SetStretchBltMode((HDC)arg0, arg1);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetTextAlign
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("SetTextAlign\n")
+
+	return (jint)SetTextAlign((HDC)arg0, arg1);
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetTextColor
-  (JNIEnv *env, jclass that, jint hdc, jint crColor)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetTextColor\n");
-#endif
+	DEBUG_CALL("SetTextColor\n")
 
-    return (jint) SetTextColor((HDC)hdc, (COLORREF)crColor);
+	return (jint)SetTextColor((HDC)arg0, (COLORREF)arg1);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetWindowLong
- * Signature: (III)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowLong
-  (JNIEnv *env, jclass that, jint hWnd, jint nIndex, jint dwNewLong)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetWindowLong\n");
-#endif
-
-     return (jint) SetWindowLong((HWND)hWnd, nIndex,dwNewLong);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetWindowPlacement
- * Signature: (ILorg/eclipse/swt/internal/win32/WINDOWPLACEMENT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowPlacement
-  (JNIEnv *env, jclass that, jint hWnd, jobject lpwndpl)
-{ 
-	DECL_GLOB(pGlob)
-    WINDOWPLACEMENT wndpl, *lpwndpl1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetWindowPlacement\n");
-#endif
-
-    if (lpwndpl) {
-        lpwndpl1 = &wndpl;
-        cacheWindowplacementFids(env, lpwndpl, &PGLOB(WindowplacementFc));
-        getWindowplacementFields(env, lpwndpl, lpwndpl1, &PGLOB(WindowplacementFc));
-    }
-    rc = (jboolean) SetWindowPlacement((HWND)hWnd, lpwndpl1);
-    if (lpwndpl) {
-        setWindowplacementFields(env, lpwndpl, lpwndpl1, &PGLOB(WindowplacementFc));    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetWindowPos
- * Signature: (IIIIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowPos
-  (JNIEnv *env, jclass that, jint hWnd, jint hWndInsertAfter, jint X, jint Y, jint cx, jint cy, jint uFlags)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetWindowPos\n");
-#endif
-
-    return (jboolean) SetWindowPos((HWND)hWnd, (HWND)hWndInsertAfter, X, Y, cx, cy, uFlags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetWindowText
- * Signature: (I[B)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowText
-  (JNIEnv *env, jclass that, jint hWnd, jbyteArray lpString)
-{
-    LPCTSTR lpString1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetWindowText\n");
-#endif
-
-    if (lpString)
-        lpString1 = (*env)->GetByteArrayElements(env, lpString, NULL);
-
-    rc = (jboolean) SetWindowText((HWND)hWnd, lpString1);
-
-    if (lpString)
-        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SHBrowseForFolder
- * Signature: (Lorg/eclipse/swt/internal/win32/BROWSEINFO;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHBrowseForFolder
-  (JNIEnv *env, jclass that, jobject lpbi)
-{
-	DECL_GLOB(pGlob)
-    BROWSEINFO bi, *lpbi1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SHBrowseForFolder\n");
-#endif
-
-    if (lpbi) {
-        lpbi1 = &bi;
-        cacheBrowseinfoFids(env, lpbi, &PGLOB(BrowseinfoFc));
-        getBrowseinfoFields(env, lpbi, lpbi1, &PGLOB(BrowseinfoFc));
-    }
-    rc = (jint) SHBrowseForFolder(lpbi1);
-    if (lpbi) {
-        setBrowseinfoFields(env, lpbi, lpbi1, &PGLOB(BrowseinfoFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ShellExecute
- * Signature: (I[B[B[B[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ShellExecute
-  (JNIEnv *env, jclass that, jint hwnd, jbyteArray lpOperation, jbyteArray lpFile, 
-                                jbyteArray lpParameters, jbyteArray lpDirectory, jint nShowCmd)
-{
-    LPCTSTR lpOperation1=NULL, lpFile1=NULL, lpParameters1=NULL, lpDirectory1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ShellExecute\n");
-#endif
-
-    if (lpOperation)
-        lpOperation1 = (LPCTSTR)(*env)->GetByteArrayElements(env,lpOperation, NULL);
-
-    if (lpFile)
-        lpFile1 = (LPCTSTR)(*env)->GetByteArrayElements(env,lpFile, NULL);
-
-    if (lpParameters)
-        lpParameters1 = (LPCTSTR)(*env)->GetByteArrayElements(env,lpParameters, NULL);
-
-    if (lpDirectory)
-        lpDirectory1 = (LPCTSTR)(*env)->GetByteArrayElements(env,lpDirectory, NULL);
-
-    rc = (jint)ShellExecute((HWND) hwnd, lpOperation1, lpFile1, lpParameters1, lpDirectory1, nShowCmd);
-
-    if (lpOperation)
-        (*env)->ReleaseByteArrayElements(env, lpOperation, (jbyte *)lpOperation1, 0);
-    if (lpFile)
-        (*env)->ReleaseByteArrayElements(env, lpFile, (jbyte *)lpFile1, 0);
-    if (lpParameters)
-        (*env)->ReleaseByteArrayElements(env, lpParameters, (jbyte *)lpParameters1, 0);
-    if (lpDirectory)
-        (*env)->ReleaseByteArrayElements(env, lpDirectory, (jbyte *)lpDirectory1, 0);
-
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SHGetMalloc
- * Signature: ([I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHGetMalloc
-  (JNIEnv *env, jclass that, jintArray ppMalloc)
-{
-    LPMALLOC *ppMalloc1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SHGetMalloc\n");
-#endif
-
-    if (ppMalloc)
-        ppMalloc1 = (LPMALLOC *)(*env)->GetIntArrayElements(env, ppMalloc, NULL);
-
-    rc = (jint) SHGetMalloc(ppMalloc1);
-
-    if (ppMalloc)
-        (*env)->ReleaseIntArrayElements(env, ppMalloc, (jint *)ppMalloc1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SHGetPathFromIDList
- * Signature: (I[B)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SHGetPathFromIDList
-  (JNIEnv *env, jclass that, jint pidl, jbyteArray pszPath)
-{
-    LPSTR pszPath1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SHGetPathFromIDList\n");
-#endif
-
-    if (pszPath)
-        pszPath1 = (*env)->GetByteArrayElements(env,pszPath, NULL);
-
-    rc = (jboolean)SHGetPathFromIDList((LPCITEMIDLIST)pidl, pszPath1);
-
-    if (pszPath)
-        (*env)->ReleaseByteArrayElements(env, pszPath, (jbyte *)pszPath1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ShowCaret
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShowCaret
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ShowCaret\n");
-#endif
-
-    return (jboolean) ShowCaret((HWND)hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ShowScrollBar
- * Signature: (IIZ)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShowScrollBar
-  (JNIEnv *env, jclass that, jint hWnd, jint wBar, jboolean bShow)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ShowScrollBar\n");
-#endif
-
-    return (jboolean) ShowScrollBar((HWND)hWnd, wBar, bShow);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ShowWindow
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShowWindow
-  (JNIEnv *env, jclass that, jint hWnd, jint nCmdShow)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ShowWindow\n");
-#endif
-
-    return (jboolean) ShowWindow((HWND)hWnd, nCmdShow);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    StartDoc
- * Signature: (ILorg/eclipse/swt/internal/win32/DOCINFO;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_StartDoc
-  (JNIEnv *env, jclass that, jint hdc, jobject lpdi)
-{
-    DECL_GLOB(pGlob)
-    DOCINFO di, *lpdi1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "StartDoc\n");
-#endif
-
-    if (lpdi) {
-        lpdi1 = &di;
-        cacheDocinfoFids(env, lpdi, &PGLOB(DocinfoFc));
-        getDocinfoFields(env, lpdi, lpdi1, &PGLOB(DocinfoFc));
-    }
-    rc = (jint) StartDoc((HDC)hdc, lpdi1);
-    if (lpdi) {
-        setDocinfoFields(env, lpdi, lpdi1, &PGLOB(DocinfoFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    StartPage
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_StartPage
-  (JNIEnv *env, jclass that, jint hdc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "StartPage\n");
-#endif
-    return (jint) StartPage((HDC)hdc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    StretchBlt
- * Signature: (IIIIIIIIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_StretchBlt
-  (JNIEnv *env, jclass that, jint hdcDest, jint nxOriginDest, jint nyOriginDest, jint nWidthDest, jint nHeightDest,
-                             jint hdcSrc, jint nXOriginSrc, jint nYOriginSrc, jint nWidthSrc, jint nHeightSrc, jint dwRop)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "StretchBlt\n");
-#endif
-
-    return (jboolean) StretchBlt((HDC)hdcDest, nxOriginDest, nyOriginDest, nWidthDest, nHeightDest,
-                                 (HDC)hdcSrc, nXOriginSrc, nYOriginSrc, nWidthSrc, nHeightSrc, dwRop);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    TextOut
- * Signature: (III[BI)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TextOut
-  (JNIEnv *env, jclass that, jint hdc, jint nXStart, jint nYStart, jbyteArray lpString, jint cbString)
-{
-    LPCTSTR lpString1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "TextOut\n");
-#endif
-
-    if (lpString)
-        lpString1 = (*env)->GetByteArrayElements(env, lpString, NULL);
-        
-    rc = (jboolean) TextOut((HDC)hdc, nXStart, nYStart, lpString1, cbString);
-
-    if (lpString)
-        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
-    return rc;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ToAscii
- * Signature: (II[B[SI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ToAscii
-  (JNIEnv *env, jclass that, jint uVirtKey, jint uScanMode, jbyteArray lpKeyState, jshortArray lpChar, jint uFlags)
-{
-    PBYTE lpKeyState1=NULL;
-    LPWORD lpChar1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ToAscii\n");
-#endif
-
-    if (lpKeyState)
-        lpKeyState1 = (*env)->GetByteArrayElements(env, lpKeyState, NULL);
-    if (lpChar)
-        lpChar1 = (*env)->GetShortArrayElements(env, lpChar, NULL);
-
-    rc = (jint) ToAscii(uVirtKey, uScanMode, lpKeyState1, lpChar1, uFlags);
-
-    if (lpKeyState)
-        (*env)->ReleaseByteArrayElements(env, lpKeyState, (jbyte *)lpKeyState1, 0);
-    if (lpChar)
-        (*env)->ReleaseShortArrayElements(env, lpChar, (jshort *)lpChar1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    TrackMouseEvent
- * Signature: (Lorg/eclipse/swt/internal/win32/TRACKMOUSEEVENT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TrackMouseEvent
-  (JNIEnv *env, jclass that, jobject lpEventTrack)
-{
-	DECL_GLOB(pGlob)
-    TRACKMOUSEEVENT eventTrack, *lpEventTrack1=NULL;
-    jboolean rc;
-
-#ifdef DEEBUG_CALL_PRINTS
-    fprintf(stderr, "TrackMouseEvent\n");
-#endif
-
-    if (lpEventTrack) {
-        lpEventTrack1 = &eventTrack;
-        cacheTrackmouseeventFids(env, lpEventTrack, &PGLOB(TrackmouseeventFc));
-        getTrackmouseeventFields(env, lpEventTrack, lpEventTrack1, &PGLOB(TrackmouseeventFc));
-    }
-    rc = (jboolean) _TrackMouseEvent(lpEventTrack1);
-    if (lpEventTrack) {
-        setTrackmouseeventFields(env, lpEventTrack, lpEventTrack1, &PGLOB(TrackmouseeventFc));
-    }
-    return rc;
-}
-
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    TrackPopupMenu
- * Signature: (IIIIIILorg/eclipse/swt/internal/win32/RECT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TrackPopupMenu
-  (JNIEnv *env, jclass that, jint hMenu, jint uFlags, jint x, jint y, jint nReserved, jint hWnd, jobject lpRect)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "TrackPopupMenu\n");
-#endif
-
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) TrackPopupMenu((HMENU)hMenu, uFlags, x, y, nReserved, (HWND)hWnd, lpRect1);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    TranslateAccelerator
- * Signature: (IILorg/eclipse/swt/internal/win32/MSG;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateAccelerator
-  (JNIEnv *env, jclass that, jint hWnd, jint hAccTable, jobject lpMsg)
-{
-	DECL_GLOB(pGlob)
-    MSG callBack, *lpMsg1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "TranslateAccelerator\n");
-#endif
-
-    if (lpMsg) {
-        lpMsg1 = &callBack;
-        cacheMsgFids(env, lpMsg, &PGLOB(MsgFc));
-        getMsgFields(env, lpMsg, lpMsg1, &PGLOB(MsgFc));
-    }
-    rc = (jint)TranslateAccelerator((HWND)hWnd, (HACCEL)hAccTable, lpMsg1);
-    if (lpMsg) {
-        setMsgFields(env, lpMsg, lpMsg1, &PGLOB(MsgFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    TranslateMessage
- * Signature: (Lorg/eclipse/swt/internal/win32/MSG;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateMessage
-  (JNIEnv *env, jclass that, jobject lpMsg)
-{
-	DECL_GLOB(pGlob)
-    MSG callBack, *lpMsg1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "TranslateMessage\n");
-#endif
-
-    if (lpMsg) {
-        lpMsg1 = &callBack;
-        cacheMsgFids(env, lpMsg, &PGLOB(MsgFc));
-        getMsgFields(env, lpMsg, lpMsg1, &PGLOB(MsgFc));
-    }
-    rc = (jboolean)TranslateMessage(lpMsg1);
-    if (lpMsg) {
-        setMsgFields(env, lpMsg, lpMsg1, &PGLOB(MsgFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    UnregisterClass
- * Signature: ([BI)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_UnregisterClass
-  (JNIEnv *env, jclass that, jbyteArray lpClassName, jint hInstance)
-{
-    LPCTSTR lpClassName1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "UnregisterClass\n");
-#endif
-
-    if (lpClassName)
-        lpClassName1 = (*env)->GetByteArrayElements(env,lpClassName, NULL);
-
-    rc = (jboolean)UnregisterClass(lpClassName1, (HINSTANCE)hInstance);
-
-    if (lpClassName)
-        (*env)->ReleaseByteArrayElements(env, lpClassName, (jbyte *)lpClassName1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    UpdateWindow
- * Signature: (I)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_UpdateWindow
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "UpdateWindow\n");
-#endif
-
-    return (jboolean) UpdateWindow((HWND) hWnd);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ValidateRect
- * Signature: (ILorg/eclipse/swt/internal/win32/RECT;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ValidateRect
-  (JNIEnv *env, jclass that, jint hWnd, jobject lpRect)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ValidateRect\n");
-#endif
-
-    if (lpRect) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lpRect, &PGLOB(RectFc));
-        getRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    rc = (jboolean) ValidateRect((HWND)hWnd, lpRect1);
-    if (lpRect) {
-        setRectFields(env, lpRect, lpRect1, &PGLOB(RectFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    VkKeyScan
- * Signature: (S)S
- */
-JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_VkKeyScan
-  (JNIEnv *env, jclass that, jshort ch)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "VkKeyScan\n");
-#endif
-
-    return (jshort) VkKeyScan((TCHAR)ch);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    WaitMessage
- * Signature: ()Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_WaitMessage
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "WaitMessage\n");
-#endif
-
-    return (jboolean) WaitMessage();
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    WideCharToMultiByte
- * Signature: (II[CI[BI[B[Z)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WideCharToMultiByte
-  (JNIEnv *env, jclass that,
-   jint CodePage,  jint dwFlags, jcharArray lpWideCharStr, jint cchWideChar, 
-   jbyteArray lpMultiByteCharStr, jint cchMultiByte, jbyteArray lpDefaultChar,
-   jbooleanArray lpUsedDefaultChar)
-{
-    LPCWSTR lpWideCharStr1=NULL;
-    LPSTR lpMultiByteCharStr1=NULL;
-    LPCSTR lpDefaultChar1=NULL;
-    LPBOOL lpUsedDefaultChar1=NULL;
-    
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "WideCharToMultiByte\n");
-#endif
-
-    if (lpWideCharStr)
-        lpWideCharStr1 = (LPWSTR)(*env)->GetCharArrayElements(env, lpWideCharStr, NULL);
-    if (lpMultiByteCharStr)
-        lpMultiByteCharStr1 = (LPSTR)(*env)->GetByteArrayElements(env, lpMultiByteCharStr, NULL);
-    if (lpDefaultChar)
-        lpDefaultChar1 = (*env)->GetByteArrayElements(env, lpDefaultChar, NULL);
-    if (lpUsedDefaultChar)
-        lpUsedDefaultChar1 = (LPBOOL)(*env)->GetBooleanArrayElements(env,lpUsedDefaultChar, NULL);
-
-    rc = (jint) WideCharToMultiByte(CodePage, (DWORD)dwFlags, lpWideCharStr1, cchWideChar, lpMultiByteCharStr1,
-                                        cchMultiByte, lpDefaultChar1, lpUsedDefaultChar1);
-    if (lpWideCharStr)
-        (*env)->ReleaseCharArrayElements(env, lpWideCharStr, (jchar *)lpWideCharStr1, 0);
-    if (lpMultiByteCharStr)
-        (*env)->ReleaseByteArrayElements(env, lpMultiByteCharStr, (jbyte *)lpMultiByteCharStr1, 0);
-    if (lpDefaultChar)
-        (*env)->ReleaseByteArrayElements(env, lpDefaultChar, (jbyte *)lpDefaultChar1, 0);
-    if (lpUsedDefaultChar)
-        (*env)->ReleaseBooleanArrayElements(env, lpUsedDefaultChar, (jboolean *)lpUsedDefaultChar1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    WindowFromDC
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WindowFromDC
-  (JNIEnv *env, jclass that, jint hdc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "WindowFromDC\n");
-#endif
-
-    return (jint) WindowFromDC((HDC)hdc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    WindowFromPoint
- * Signature: (Lorg/eclipse/swt/internal/win32/POINT;)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WindowFromPoint
-  (JNIEnv *env, jclass that, jobject lpPoint)
-{
-	DECL_GLOB(pGlob)
-    POINT point, *lpPoint1=NULL;
-    jint rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "WindowFromPoint\n");
-#endif
-
-    if (lpPoint) {
-        lpPoint1 = &point;
-        cachePointFids(env, lpPoint, &PGLOB(PointFc));
-        getPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    rc = (jint) WindowFromPoint(point);
-    if (lpPoint) {
-        setPointFields(env, lpPoint, lpPoint1, &PGLOB(PointFc));
-    }
-    return rc;
-}
-
-/* ****************************************************************
-
-UNUSED OS calls - kept here in case we decide to use them again
-
-******************************************************************* */
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ChildWindowFromPoint
- * Signature: (ILorg/eclipse/swt/internal/win32/POINT;)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ChildWindowFromPoint
-  (JNIEnv *env, jclass that, jint hWndParent, jobject lpPoint)
-{
-    POINT point, *lpPoint1=NULL;
-    jint rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ChildWindowFromPoint\n");
-#endif
-
-    if (lpPoint) {
-        lpPoint1 = &point;
-        cachePointFids(env, lpPoint, &PointFc);
-        getPointFields(env, lpPoint, lpPoint1, &PointFc);
-    }
-    rc = (jint) ChildWindowFromPoint((HWND)hWndParent, point);
-    if (lpPoint) {
-        setPointFields(env, lpPoint, lpPoint1, &PointFc);
-    }
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetClassLong
- * Signature: (II)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetClassLong
-  (JNIEnv *env, jclass that, jint hWnd, jint nIndex)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetClassLong\n");
-#endif
-
-    return (jint)GetClassLong((HWND)hWnd, nIndex);
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCaretBlinkTime
- * Signature: ()I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCaretBlinkTime
-  (JNIEnv *env, jclass that)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCaretBlinkTime\n");
-#endif
-
-    return (jint)GetCaretBlinkTime();
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CopyAcceleratorTable
- * Signature: (I[BI)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CopyAcceleratorTable
-  (JNIEnv *env, jclass that, jint hAccelSrc, jbyteArray lpAccelDst, jint cAccelEntries)
-{
-    LPACCEL lpAccelDst1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CopyAcceleratorTable\n");
-#endif
-
-    if (lpAccelDst)
-        lpAccelDst1 = (LPACCEL)(*env)->GetByteArrayElements(env,lpAccelDst, NULL);
-
-    rc = (jint)CopyAcceleratorTable((HACCEL)hAccelSrc, (LPACCEL)lpAccelDst1, cAccelEntries);
-
-    if (lpAccelDst)
-        (*env)->ReleaseByteArrayElements(env, lpAccelDst, (jbyte *)lpAccelDst1, 0);
-    return rc;
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EqualRect
- * Signature: (Lorg/eclipse/swt/internal/win32/RECT;Lorg/eclipse/swt/internal/win32/RECT;)Z
- */
-/* JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EqualRect
-  (JNIEnv *env, jclass that, jobject lprc1, jobject lprc2)
-{
-    RECT rect1, rect2, *lprc11=NULL, *lprc21=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EqualRect\n");
-#endif
-
-    if (lprc1 || lprc2) {
-        if (lprc1) {
-            cacheRectFids(env, lprc1, &RectFc);
-        } 
-        else if (lprc2) {
-            cacheRectFids(env, lprc2, &RectFc);
-        }
-    }
-
-    if (lprc1) {
-        lprc11 = &rect1;
-        getRectFields(env, lprc1, lprc11, &RectFc);
-    }
-    if (lprc2) {
-        lprc21 = &rect2;
-        getRectFields(env, lprc2, lprc21, &RectFc);
-    }
-    rc = (jboolean) EqualRect(lprc11, lprc21);
-    if (lprc1) {
-        setRectFields(env, lprc1, lprc11, &RectFc);
-    }
-    if (lprc2) {
-        setRectFields(env, lprc2, lprc21, &RectFc);
-    }
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetDlgCtrlID
- * Signature: (I)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetDlgCtrlID
-  (JNIEnv *env, jclass that, jint hwndCtl)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetDlgCtrlID\n");
-#endif
-
-    return (jint)GetDlgCtrlID((HWND)hwndCtl);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetTextExtentPoint32
- * Signature: (I[BILorg/eclipse/swt/internal/win32/SIZE;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextExtentPoint32
-  (JNIEnv *env, jclass that, jint hdc, jbyteArray lpString, jint cbString, jobject lpSize)
-{
-	DECL_GLOB(pGlob)
-    PBYTE lpString1=NULL;
-    SIZE size, *lpSize1=NULL;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetTextExtentPoint32\n");
-#endif
-
-    if (lpString)
-        lpString1 = (*env)->GetByteArrayElements(env, lpString, NULL);
-
-    if (lpSize) {
-        lpSize1=&size;
-        cacheSizeFids(env, lpSize, &PGLOB(SizeFc));
-        getSizeFields(env, lpSize, lpSize1, &PGLOB(SizeFc));
-    }
-    rc = (jboolean) GetTextExtentPoint32((HDC)hdc, lpString1, cbString, lpSize1);
-
-    if (lpSize) {
-        setSizeFields(env, lpSize, lpSize1, &PGLOB(SizeFc));
-    }
-    
-    if (lpString)
-        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
-    return rc;    
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IntersectRect
- * Signature: (Lorg/eclipse/swt/internal/win32/RECT;Lorg/eclipse/swt/internal/win32/RECT;Lorg/eclipse/swt/internal/win32/RECT;)Z
- */
-/* JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IntersectRect
-  (JNIEnv *env, jclass that, jobject lprcDst, jobject lprcSrc1, jobject lprcSrc2)
-{
-    RECT rect1, rect2, rect3;
-    RECT *lprcDst1=NULL, *lprcSrc11=NULL, *lprcSrc21=NULL;
-    jobject lpRect;
-    jboolean rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IntersectRect\n");
-#endif
-
-    if (lprcDst || lprcSrc1 || lprcSrc2) {
-        if (lprcDst) {
-            lpRect = lprcDst;
-        } 
-        else if (lprcSrc1) {
-            lpRect = lprcSrc1;
-        }
-        else if (lprcSrc2) {
-            lpRect = lprcSrc2;
-        }
-        cacheRectFids(env, lpRect, &RectFc);
-    }
-
-    if (lprcDst) {
-        lprcDst1 = &rect1;
-
-        lprcDst1->left = (*env)->GetIntField(env,lprcDst,RectFc.left);
-        lprcDst1->top = (*env)->GetIntField(env,lprcDst,RectFc.top);
-        lprcDst1->right = (*env)->GetIntField(env,lprcDst,RectFc.right);
-        lprcDst1->bottom = (*env)->GetIntField(env,lprcDst,RectFc.bottom);
-    }
-    if (lprcSrc1) {
-        lprcSrc11 = &rect2;
-
-        lprcSrc11->left = (*env)->GetIntField(env,lprcSrc1,RectFc.left);
-        lprcSrc11->top = (*env)->GetIntField(env,lprcSrc1,RectFc.top);
-        lprcSrc11->right = (*env)->GetIntField(env,lprcSrc1,RectFc.right);
-        lprcSrc11->bottom = (*env)->GetIntField(env,lprcSrc1,RectFc.bottom);
-    }
-    if (lprcSrc2) {
-        lprcSrc21 = &rect3;
-
-        lprcSrc21->left = (*env)->GetIntField(env,lprcSrc2,RectFc.left);
-        lprcSrc21->top = (*env)->GetIntField(env,lprcSrc2,RectFc.top);
-        lprcSrc21->right = (*env)->GetIntField(env,lprcSrc2,RectFc.right);
-        lprcSrc21->bottom = (*env)->GetIntField(env,lprcSrc2,RectFc.bottom);
-    }
-    rc = (jboolean) IntersectRect(lprcDst1, lprcSrc11, lprcSrc21);
-    if (lprcDst) {
-        (*env)->SetIntField(env,lprcDst,RectFc.left,lprcDst1->left);
-        (*env)->SetIntField(env,lprcDst,RectFc.top,lprcDst1->top);
-        (*env)->SetIntField(env,lprcDst,RectFc.right, lprcDst1->right);
-        (*env)->SetIntField(env,lprcDst,RectFc.bottom, lprcDst1->bottom);
-    }
-    if (lprcSrc1) {
-        (*env)->SetIntField(env,lprcSrc1,RectFc.left,lprcSrc11->left);
-        (*env)->SetIntField(env,lprcSrc1,RectFc.top,lprcSrc11->top);
-        (*env)->SetIntField(env,lprcSrc1,RectFc.right, lprcSrc11->right);
-        (*env)->SetIntField(env,lprcSrc1,RectFc.bottom, lprcSrc11->bottom);
-    }
-    if (lprcSrc2) {
-        (*env)->SetIntField(env,lprcSrc2,RectFc.left,lprcSrc21->left);
-        (*env)->SetIntField(env,lprcSrc2,RectFc.top,lprcSrc21->top);
-        (*env)->SetIntField(env,lprcSrc2,RectFc.right, lprcSrc21->right);
-        (*env)->SetIntField(env,lprcSrc2,RectFc.bottom, lprcSrc21->bottom);
-    }
-    return rc;
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IsMenu
- * Signature: (I)Z
- */
-/* JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsMenu
-  (JNIEnv *env, jclass that, jint hMenu)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IsMenu\n");
-#endif
-
-    return (jboolean) IsMenu((HMENU)hMenu);
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    IsWindow
- * Signature: (I)Z
- */
-/* JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_IsWindow
-  (JNIEnv *env, jclass that, jint hWnd)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "IsWindow\n");
-#endif
-
-    return (jboolean) IsWindow((HWND)hWnd);
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    KillTimer
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_KillTimer
-  (JNIEnv *env, jclass that, jint hWnd, jint uIDEvent)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "KillTimern\n");
-#endif
-
-    return (jboolean) KillTimer((HWND)hWnd, uIDEvent);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LoadBitmap
- * Signature: (I[B)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadBitmap__I_3B
-  (JNIEnv *env, jclass that, jint hInstance, jbyteArray lpBitmapName)
-{
-    LPCTSTR lpBitmapName1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LoadBitmap__I_3B\n");
-#endif
-
-    if (lpBitmapName)
-        lpBitmapName1 = (*env)->GetByteArrayElements(env, lpBitmapName, NULL);
-
-    rc = (jint) LoadBitmap((HINSTANCE)hInstance, lpBitmapName1);
-
-    if (lpBitmapName)
-        (*env)->ReleaseByteArrayElements(env, lpBitmapName, (jbyte *)lpBitmapName1, 0);
-    return rc;
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LoadCursor
- * Signature: (I[B)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadCursor__I_3B
-  (JNIEnv *env, jclass that, jint hInstance, jbyteArray lpCursorName)
-{
-    LPCTSTR lpCursorName1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LoadCursor__I_3B\n");
-#endif
-
-    if (lpCursorName)
-        lpCursorName1 = (*env)->GetByteArrayElements(env, lpCursorName, NULL);
-
-    rc = (jint) LoadCursor((HINSTANCE)hInstance, lpCursorName1);
-
-    if (lpCursorName)
-        (*env)->ReleaseByteArrayElements(env, lpCursorName, (jbyte *)lpCursorName1, 0);
-        
-    return rc;
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LoadIcon
- * Signature: (I[B)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadIcon__I_3B
-  (JNIEnv *env, jclass that, jint hInstance, jbyteArray lpIconName)
-{
-    LPCTSTR lpIconName1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LoadIcon__I_3B\n");
-#endif
-
-    if (lpIconName)
-        lpIconName1 = (*env)->GetByteArrayElements(env, lpIconName, NULL);
-
-    rc = (jint) LoadIcon((HINSTANCE)hInstance, lpIconName1);
-
-    if (lpIconName)
-        (*env)->ReleaseByteArrayElements(env, lpIconName, (jbyte *)lpIconName1, 0);
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LoadImage
- * Signature: (I[BIIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadImage__I_3BIIII
-  (JNIEnv *env, jclass that, jint hinst, jbyteArray lpszName, jint uType, jint cxDesired, jint cyDesired, jint fuLoad)
-{
-    LPCTSTR lpszName1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LoadImage__I_3BIIII\n");
-#endif
-
-    if (lpszName)
-        lpszName1 = (*env)->GetByteArrayElements(env, lpszName, NULL);
-
-    rc = (jint) LoadImage((HINSTANCE)hinst, lpszName1, uType, cxDesired, cyDesired, fuLoad);
-
-    if (lpszName)
-        (*env)->ReleaseByteArrayElements(env, lpszName, (jbyte *)lpszName1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    LoadImage
- * Signature: (IIIIII)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_LoadImage__IIIIII
-  (JNIEnv *env, jclass that, jint hinst, jint lpszName, jint uType, jint cxDesired, jint cyDesired, jint fuLoad)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "LoadImage__IIIIII\n");
-#endif
-
-    return (jint) LoadImage((HINSTANCE)hinst, (LPCTSTR)lpszName, uType, cxDesired, cyDesired, fuLoad);
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/ACCEL;[BI)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_ACCEL_2_3BI
-  (JNIEnv *env, jclass that, jobject lpDestination, jbyteArray lpSource, jint Length)
-{
-    PVOID lpSource1=NULL;
-    ACCEL destination, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_ACCEL_2_3BI\n");
-#endif
-
-    if (lpSource)
-        lpSource1 = (PVOID)(*env)->GetByteArrayElements(env, lpSource, NULL);
-
-    if (lpDestination) {
-        cacheAccelFids(env, lpDestination, &AccelFc);
-        lpDestination1 = &destination;
-    }
-    
-    if (lpSource && lpDestination)
-           MoveMemory(lpDestination1, (CONST VOID *)lpSource1, Length);
-
-    if (lpSource)
-        (*env)->ReleaseByteArrayElements(env, lpSource, (jbyte *)lpSource1, 0);
-
-    if (lpDestination) {
-        setAccelFields(env, lpDestination, lpDestination1, &AccelFc);
-    }
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/NMTVCUSTOMDRAW;II)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-    NMTVCUSTOMDRAW nmtvcustomdraw, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II\n");
-#endif
-
-       MoveMemory((PVOID)&nmtvcustomdraw, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        lpDestination1 = &nmtvcustomdraw;
-        cacheNmtvcustomdrawFids(env, Destination, &NmtvcustomdrawFc);
-        setNmtvcustomdrawFields(env, Destination, lpDestination1, &NmtvcustomdrawFc);
-    }
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/RECT;II)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-    RECT rect, *lpDestination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_RECT_2II\n");
-#endif
-
-       MoveMemory((PVOID)&rect, (CONST VOID *)Source, Length);
-
-    if (Destination) {
-        lpDestination1 = &rect;
-        cacheRectFids(env, Destination, &RectFc);
-        setRectFields(env, Destination, lpDestination1, &RectFc);
-    }
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    PostQuitMessage
- * Signature: (I)V
- */
-/* JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_PostQuitMessage
-  (JNIEnv *env, jclass that, jint nExitCode)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PostQuitMessage\n");
-#endif
-
-     PostQuitMessage(nExitCode);
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/MSG;)I
- */
-/* JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_MSG_2
-  (JNIEnv * env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
-{
-    MSG msg, *lpParam1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_MSG_2\n");
-#endif
-
-    if (lParam) {
-        lpParam1 = &msg;
-        cacheMsgFids(env, lParam, &MsgFc);
-        getMsgFields(env, lParam, lpParam1, &MsgFc);
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setMsgFields(env, lParam, lpParam1, &MsgFc);
-    }
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetCaretBlinkTime
- * Signature: (I)Z
- */
-/* JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetCaretBlinkTime
-  (JNIEnv *env, jclass that, jint uMSeconds)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetCaretBlinkTime\n");
-#endif
-
-    return (jboolean) SetCaretBlinkTime(uMSeconds);
-}
-*/
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetTimer
- * Signature: (IIII)I
- */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetTimer
-  (JNIEnv *env, jclass that, jint hWnd, jint nIDEvent, jint uElapse, jint lpTimerFunc)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetTimer\n");
-#endif
+	DEBUG_CALL("SetTimer\n")
 
-    return (jint) SetTimer((HWND)hWnd, nIDEvent, uElapse, (TIMERPROC)lpTimerFunc);
+	return (jint)SetTimer((HWND)arg0, arg1, arg2, (TIMERPROC)arg3);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ExtractIcon
- * Signature: (I[BI)I
- */
-/*JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtractIcon
-  (JNIEnv *env, jclass that, jint hinst, jbyteArray lpszFile, jint nIconIndex)
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowLongA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-    LPCTSTR lpszFile1=NULL;
-    jint rc;
+	DEBUG_CALL("SetWindowLongA\n")
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ExtractIcon\n");
-#endif
-
-    if (lpszFile)
-        lpszFile1 = (*env)->GetByteArrayElements(env, lpszFile, NULL);
-
-    rc = (jint) ExtractIcon( (HINSTANCE)hinst, lpszFile1, nIconIndex);
-
-    if (lpszFile)
-        (*env)->ReleaseByteArrayElements(env, lpszFile, (jbyte *)lpszFile1, 0);
-    return rc;
+	return (jint)SetWindowLongA((HWND)arg0, arg1, arg2);
 }
-*/
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (ILorg/eclipse/swt/internal/win32/MSGFILTER;I)V
- */
-/*
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_MSGFILTER_2I
-  (JNIEnv *env, jclass that, jint Destination, jobject Source, jint Length)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowLongW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
 {
-    MSGFILTER msgfilter, *Source1=NULL;
+	DEBUG_CALL("SetWindowLongW\n")
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__ILorg_eclipse_swt_internal_win32_MSGFILTER_2I\n");
-#endif
-    if (Source) {
-        Source1 = &msgfilter;
-        cacheMsgfilterFids(env, Source, &MsgfilterFc);
-        getMsgfilterFields(env, Source, Source1, &MsgfilterFc);
-    }
-    MoveMemory((PVOID)Destination, (CONST VOID *)Source1, Length);
+	return (jint)SetWindowLongW((HWND)arg0, arg1, arg2);
 }
-*/
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/MSGFILTER;II)V
- */
-/*JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_MSGFILTER_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
-{
-    MSGFILTER msgfilter, *Destination1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_MSGFILTER_2II\n");
-#endif
-    MoveMemory((PVOID)Destination1, (CONST VOID *)Source, Length);
-    if (Destination) {
-        Destination1 = &msgfilter;
-        cacheMsgfilterFids(env, Destination, &MsgfilterFc);
-        setMsgfilterFields(env, Destination, Destination1, &MsgfilterFc);
-    }
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetNearestColor
- * Signature: (II)I
- */
-/*JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetNearestColor
-  (JNIEnv *env, jclass that, jint hdc, jint crColor)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetNearestColor\n");
-#endif
-
-    return (jint) GetNearestColor((HDC)hdc, (COLORREF)crColor);
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SendMessage
- * Signature: (IIILorg/eclipse/swt/internal/win32/CHARFORMAT;)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SendMessage__IIILorg_eclipse_swt_internal_win32_CHARFORMAT_2
-  (JNIEnv *env, jclass that, jint hWnd, jint Msg, jint wParam, jobject lParam)
-{
-    CHARFORMAT charformat, *lpParam1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SendMessage__IIILorg_eclipse_swt_internal_win32_CHARFORMAT_2\n");
-#endif
-
-    if (lParam) {
-        lpParam1 = &charformat;
-        cacheCharformatFids(env, lParam, &CharformatFc);
-        getCharformatFields(env, lParam, lpParam1, &CharformatFc);
-    }
-    rc = (jint) SendMessage((HWND)hWnd, Msg, wParam, (LPARAM)lpParam1);
-    if (lParam) {
-        setCharformatFields(env, lParam, lpParam1, &CharformatFc);
-    }
-    return rc;
-}
-*/
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    PrintDlg
- * Signature: (Lorg/eclipse/swt/internal/win32/PRINTDLG;)Z
- */
-
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PrintDlg
-  (JNIEnv *env, jclass that, jobject lppd)
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowPlacement
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
 	DECL_GLOB(pGlob)
-    PRINTDLG printdlg, *lppd1=NULL;
-    jboolean rc;
+	WINDOWPLACEMENT _arg1, *lparg1=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PrintDlg\n");
-#endif
+	DEBUG_CALL("SetWindowPlacement\n")
 
-    if (lppd) {
-        lppd1 = &printdlg;
-        cachePrintdlgFids(env, lppd, &PGLOB(PrintdlgFc));
-        getPrintdlgFields(env, lppd, lppd1, &PGLOB(PrintdlgFc));
-    }
-    rc = (jboolean) PrintDlg(lppd1);
-    if (lppd) {
-        setPrintdlgFields(env, lppd, lppd1, &PGLOB(PrintdlgFc));
-    }
-    return rc;
+	if (arg1) lparg1 = getWINDOWPLACEMENTFields(env, arg1, &_arg1, &PGLOB(WINDOWPLACEMENTFc));
+
+	rc = (jboolean)SetWindowPlacement((HWND)arg0, lparg1);
+
+	if (arg1) setWINDOWPLACEMENTFields(env, arg1, lparg1, &PGLOB(WINDOWPLACEMENTFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowPos
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	DEBUG_CALL("SetWindowPos\n")
+
+	return (jboolean)SetWindowPos((HWND)arg0, (HWND)arg1, arg2, arg3, arg4, arg5, arg6);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    PageSetupDlg
- * Signature: (Lorg/eclipse/swt/internal/win32/PAGESETUPDLG;)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_PageSetupDlg
-  (JNIEnv *env, jclass that, jobject lppsd)
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowTextA
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SetWindowTextA\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+
+	rc = (jboolean)SetWindowTextA((HWND)arg0, (LPSTR)lparg1);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowTextW
+	(JNIEnv *env, jclass that, jint arg0, jcharArray arg1)
+{
+	jchar *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SetWindowTextW\n")
+
+	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+
+	rc = (jboolean)SetWindowTextW((HWND)arg0, (LPWSTR)lparg1);
+
+	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowsHookExA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("SetWindowsHookExA\n")
+
+	return (jint)SetWindowsHookExA(arg0, (HOOKPROC)arg1, (HINSTANCE)arg2, arg3);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowsHookExW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("SetWindowsHookExW\n")
+
+	return (jint)SetWindowsHookExW(arg0, (HOOKPROC)arg1, (HINSTANCE)arg2, arg3);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShellExecuteExA
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    PAGESETUPDLG pagesetupdlg, *lppsd1=NULL;
-    jboolean rc;
+	SHELLEXECUTEINFO _arg0, *lparg0=NULL;
+	jboolean rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "PageSetupDlg\n");
-#endif
+	DEBUG_CALL("ShellExecuteExA\n")
 
-    if (lppsd) {
-        lppsd1 = &pagesetupdlg;
-        cachePagesetupdlgFids(env, lppsd, &PGLOB(PagesetupdlgFc));
-        getPagesetupdlgFields(env, lppsd, lppsd1, &PGLOB(PagesetupdlgFc));
-    }
-    rc = (jboolean) PageSetupDlg(lppsd1);
-    if (lppsd) {
-        setPagesetupdlgFields(env, lppsd, lppsd1, &PGLOB(PagesetupdlgFc));
-    }
-    return rc;
+	if (arg0) lparg0 = getSHELLEXECUTEINFOFields(env, arg0, &_arg0, &PGLOB(SHELLEXECUTEINFOFc));
+
+	rc = (jboolean)ShellExecuteExA(lparg0);
+
+	if (arg0) setSHELLEXECUTEINFOFields(env, arg0, lparg0, &PGLOB(SHELLEXECUTEINFOFc));
+
+	return rc;
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    OleInitialize
- * Signature: (I)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_OleInitialize
-  (JNIEnv *env, jclass that, jint pvReserved)
+#ifdef _WIN32_WCE
+#define ShellExecuteExW ShellExecuteEx
+#define LPSHELLEXECUTEINFOW LPSHELLEXECUTEINFO
+#endif // _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShellExecuteExW
+	(JNIEnv *env, jclass that, jobject arg0)
 {
-    return (jint) OleInitialize ((LPVOID)pvReserved);
+	DECL_GLOB(pGlob)
+	SHELLEXECUTEINFO _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ShellExecuteExW\n")
+
+	if (arg0) lparg0 = getSHELLEXECUTEINFOFields(env, arg0, &_arg0, &PGLOB(SHELLEXECUTEINFOFc));
+
+	rc = (jboolean)ShellExecuteExW((LPSHELLEXECUTEINFOW)lparg0);
+
+	if (arg0) setSHELLEXECUTEINFOFields(env, arg0, lparg0, &PGLOB(SHELLEXECUTEINFOFc));
+
+	return rc;
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    OleUninitialize
- * Signature: ()V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_OleUninitialize
-  (JNIEnv *env, jclass that)
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShowCaret
+	(JNIEnv *env, jclass that, jint arg0)
 {
-   OleUninitialize (); 
+	DEBUG_CALL("ShowCaret\n")
+
+	return (jboolean)ShowCaret((HWND)arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    VtblCall
- * Signature: (III)I
- */
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShowOwnedPopups
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("ShowOwnedPopups\n")
+
+	return (jboolean)ShowOwnedPopups((HWND)arg0, arg1);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShowScrollBar
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jboolean arg2)
+{
+	DEBUG_CALL("ShowScrollBar\n")
+
+	return (jboolean)ShowScrollBar((HWND)arg0, arg1, arg2);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ShowWindow
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("ShowWindow\n")
+
+	return (jboolean)ShowWindow((HWND)arg0, arg1);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_StartDocA
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	DOCINFO _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("StartDocA\n")
+
+	if (arg1) lparg1 = getDOCINFOFields(env, arg1, &_arg1, &PGLOB(DOCINFOFc));
+
+	rc = (jint)StartDocA((HDC)arg0, lparg1);
+
+	if (arg1) setDOCINFOFields(env, arg1, lparg1, &PGLOB(DOCINFOFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_StartDocW
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	DOCINFO _arg1, *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("StartDocW\n")
+
+	if (arg1) lparg1 = getDOCINFOFields(env, arg1, &_arg1, &PGLOB(DOCINFOFc));
+
+	rc = (jint)StartDocW((HDC)arg0, (LPDOCINFOW)lparg1);
+
+	if (arg1) setDOCINFOFields(env, arg1, lparg1, &PGLOB(DOCINFOFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_StartPage
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("StartPage\n")
+
+	return (jint)StartPage((HDC)arg0);
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_StretchBlt
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6, jint arg7, jint arg8, jint arg9, jint arg10)
+{
+	DEBUG_CALL("StretchBlt\n")
+
+	return (jboolean)StretchBlt((HDC)arg0, arg1, arg2, arg3, arg4, (HDC)arg5, arg6, arg7, arg8, arg9, arg10);
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg2, *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SystemParametersInfoA\n")
+
+	if (arg2) lparg2 = getRECTFields(env, arg2, &_arg2, &PGLOB(RECTFc));
+
+	rc = (jboolean)SystemParametersInfoA(arg0, arg1, lparg2, arg3);
+
+	if (arg2) setRECTFields(env, arg2, lparg2, &PGLOB(RECTFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfoW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg2, *lparg2=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("SystemParametersInfoW\n")
+
+	if (arg2) lparg2 = getRECTFields(env, arg2, &_arg2, &PGLOB(RECTFc));
+
+	rc = (jboolean)SystemParametersInfoW(arg0, arg1, lparg2, arg3);
+
+	if (arg2) setRECTFields(env, arg2, lparg2, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ToAscii
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jshortArray arg3, jint arg4)
+{
+	jbyte *lparg2=NULL;
+	jshort *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("ToAscii\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
+
+	rc = (jint)ToAscii(arg0, arg1, (PBYTE)lparg2, (LPWORD)lparg3, arg4);
+
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ToUnicode
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jbyteArray arg2, jcharArray arg3, jint arg4, jint arg5)
+{
+	jbyte *lparg2=NULL;
+	jchar *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("ToUnicode\n")
+
+	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetCharArrayElements(env, arg3, NULL);
+
+	rc = (jint)ToUnicode(arg0, arg1, (PBYTE)lparg2, (LPWSTR)lparg3, arg4, arg5);
+
+	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseCharArrayElements(env, arg3, lparg3, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TrackMouseEvent
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	TRACKMOUSEEVENT _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("TrackMouseEvent\n")
+
+	if (arg0) lparg0 = getTRACKMOUSEEVENTFields(env, arg0, &_arg0, &PGLOB(TRACKMOUSEEVENTFc));
+
+	rc = (jboolean)_TrackMouseEvent(lparg0);
+
+	if (arg0) setTRACKMOUSEEVENTFields(env, arg0, lparg0, &PGLOB(TRACKMOUSEEVENTFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TrackPopupMenu
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jobject arg6)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg6, *lparg6=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("TrackPopupMenu\n")
+
+	if (arg6) lparg6 = getRECTFields(env, arg6, &_arg6, &PGLOB(RECTFc));
+
+	rc = (jboolean)TrackPopupMenu((HMENU)arg0, arg1, arg2, arg3, arg4, (HWND)arg5, lparg6);
+
+	if (arg6) setRECTFields(env, arg6, lparg6, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateAcceleratorA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	DECL_GLOB(pGlob)
+	MSG _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("TranslateAcceleratorA\n")
+
+	if (arg2) lparg2 = getMSGFields(env, arg2, &_arg2, &PGLOB(MSGFc));
+
+	rc = (jint)TranslateAcceleratorA((HWND)arg0, (HACCEL)arg1, lparg2);
+
+	if (arg2) setMSGFields(env, arg2, lparg2, &PGLOB(MSGFc));
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateAcceleratorW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2)
+{
+	DECL_GLOB(pGlob)
+	MSG _arg2, *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("TranslateAcceleratorW\n")
+
+	if (arg2) lparg2 = getMSGFields(env, arg2, &_arg2, &PGLOB(MSGFc));
+
+	rc = (jint)TranslateAcceleratorW((HWND)arg0, (HACCEL)arg1, lparg2);
+
+	if (arg2) setMSGFields(env, arg2, lparg2, &PGLOB(MSGFc));
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateCharsetInfo
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1, jint arg2)
+{
+	jint *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("TranslateCharsetInfo\n")
+
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+
+	rc = (jboolean)TranslateCharsetInfo((DWORD *)arg0, (LPCHARSETINFO)lparg1, arg2);
+
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateMessage
+	(JNIEnv *env, jclass that, jobject arg0)
+{
+	DECL_GLOB(pGlob)
+	MSG _arg0, *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("TranslateMessage\n")
+
+	if (arg0) lparg0 = getMSGFields(env, arg0, &_arg0, &PGLOB(MSGFc));
+
+	rc = (jboolean)TranslateMessage(lparg0);
+
+	if (arg0) setMSGFields(env, arg0, lparg0, &PGLOB(MSGFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_UnhookWindowsHookEx
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("UnhookWindowsHookEx\n")
+
+	return (jboolean)UnhookWindowsHookEx((HHOOK)arg0);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_UnregisterClassA
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1)
+{
+	jbyte *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("UnregisterClassA\n")
+
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+
+	rc = (jboolean)UnregisterClassA((LPSTR)lparg0, (HINSTANCE)arg1);
+
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
+}
+#endif // _WIN32_WCE
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_UnregisterClassW
+	(JNIEnv *env, jclass that, jcharArray arg0, jint arg1)
+{
+	jchar *lparg0=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("UnregisterClassW\n")
+
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+
+	rc = (jboolean)UnregisterClassW((LPWSTR)lparg0, (HINSTANCE)arg1);
+
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+
+	return rc;
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_UpdateWindow
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("UpdateWindow\n")
+
+	return (jboolean)UpdateWindow((HWND)arg0);
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ValidateRect
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	DECL_GLOB(pGlob)
+	RECT _arg1, *lparg1=NULL;
+	jboolean rc;
+
+	DEBUG_CALL("ValidateRect\n")
+
+	if (arg1) lparg1 = getRECTFields(env, arg1, &_arg1, &PGLOB(RECTFc));
+
+	rc = (jboolean)ValidateRect((HWND)arg0, lparg1);
+
+	if (arg1) setRECTFields(env, arg1, lparg1, &PGLOB(RECTFc));
+
+	return rc;
+}
+
+#ifndef _WIN32_WCE
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_VkKeyScanA
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("VkKeyScanA\n")
+
+	return (jshort)VkKeyScanA((TCHAR)arg0);
+}
+#endif // _WIN32_WCE
+
+#ifndef _WIN32_WCE
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_win32_OS_VkKeyScanW
+	(JNIEnv *env, jclass that, jshort arg0)
+{
+	DEBUG_CALL("VkKeyScanW\n")
+
+	return (jshort)VkKeyScanW((WCHAR)arg0);
+}
+#endif // _WIN32_WCE
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_VtblCall
-  (JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0)
+	(JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0)
 {
-    P_OLE_FN_2 fn; /* this is a function that returns int */
-    jint rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "OS_VtblCall\n");
-#endif
+    P_OLE_FN_2 fn;
+
+	DEBUG_CALL("VtblCall\n")
 
     fn = (P_OLE_FN_2)(*(int **)ppVtbl)[fnNumber];
 
-    rc = fn(ppVtbl, arg0); /* cast it to an OLE function returning int */
-    return rc;
+    return fn(ppVtbl, arg0);
 }
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    DrawState
- * Signature: (IIIIIIIIII)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_DrawState
-  (JNIEnv *env, jclass that, jint hdc, jint hbr, jint lpOutputFunc, jint lData, jint wData, jint x, jint y, jint cx, jint cy, jint fuFlags)
+#ifndef _WIN32_WCE
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_WaitMessage
+	(JNIEnv *env, jclass that)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "DrawState");
-#endif
-	return (jboolean) DrawState ((HDC)hdc, (HBRUSH)hbr, (DRAWSTATEPROC) lpOutputFunc, (LPARAM)lData, (WPARAM) wData, x, y, cx, cy, fuFlags);
+	DEBUG_CALL("WaitMessage\n")
 
+	return (jboolean)WaitMessage();
 }
-    
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SHGetFileInfo
- * Signature: ([BILorg/eclipse/swt/internal/win32/SHFILEINFO;II)I
- */
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SHGetFileInfo
-  (JNIEnv * env, jclass that, jbyteArray pszPath, jint dwFileAttributes, jobject psfi, jint cbFileInfo, jint uFlags)
+#endif // _WIN32_WCE
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WideCharToMultiByte
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jcharArray arg2, jint arg3, jbyteArray arg4, jint arg5, jbyteArray arg6, jbooleanArray arg7)
 {
-	DECL_GLOB(pGlob)
-	LPCTSTR pszPath1=NULL;
-	SHFILEINFO shellinfo, *psfi1=NULL;
-    jint rc;
+	jchar *lparg2=NULL;
+	jbyte *lparg4=NULL;
+	jbyte *lparg6=NULL;
+	jboolean *lparg7=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SHGetFileInfo\n");
-#endif
+	DEBUG_CALL("WideCharToMultiByte\n")
 
-	if (pszPath)
-        pszPath1 = (*env)->GetByteArrayElements(env, pszPath, NULL);
-    if (psfi) {
-        psfi1 = &shellinfo;
-        cacheShfileinfoFids(env, psfi, &PGLOB(ShfileinfoFc));
-        getShfileinfoFields(env, psfi, psfi1, &PGLOB(ShfileinfoFc));
-    }
-    
-    rc = (jint) SHGetFileInfo (pszPath1, dwFileAttributes, psfi1, cbFileInfo, uFlags);
+	if (arg2) lparg2 = (*env)->GetCharArrayElements(env, arg2, NULL);
+	if (arg4) lparg4 = (*env)->GetByteArrayElements(env, arg4, NULL);
+	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
+	if (arg7) lparg7 = (*env)->GetBooleanArrayElements(env, arg7, NULL);
 
-    if (pszPath)
-        (*env)->ReleaseByteArrayElements(env, pszPath, (jbyte *)pszPath1, 0);
-    if (psfi) {
-        setShfileinfoFields(env, psfi, psfi1, &PGLOB(ShfileinfoFc));
-    } 
- 
-    return rc;
+	rc = (jint)WideCharToMultiByte(arg0, arg1, (LPCWSTR)lparg2, arg3, (LPSTR)lparg4, arg5, (LPCSTR)lparg6, (LPBOOL)lparg7);
+
+	if (arg2) (*env)->ReleaseCharArrayElements(env, arg2, lparg2, 0);
+	if (arg4) (*env)->ReleaseByteArrayElements(env, arg4, lparg4, 0);
+	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
+	if (arg7) (*env)->ReleaseBooleanArrayElements(env, arg7, lparg7, 0);
+
+	return rc;
 }
-*/
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetStretchBltMode
- * Signature: (II)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetStretchBltMode
-  (JNIEnv *env, jclass that, jint hdc, jint iStretchMode)
+#ifndef _WIN32_WCE
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WindowFromDC
+	(JNIEnv *env, jclass that, jint arg0)
 {
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetStretchBltMode\n");
-#endif
+	DEBUG_CALL("WindowFromDC\n")
 
-    return (jint) SetStretchBltMode((HDC)hdc, iStretchMode);
+	return (jint)WindowFromDC((HDC)arg0);
 }
+#endif // _WIN32_WCE
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetWindowsHookEx
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetWindowsHookEx
-  (JNIEnv *env, jclass that, jint idHook, jint lpfn, jint hMod,  jint dwThreadId)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetWindowsHookEx\n");
-#endif
-    return (jint) SetWindowsHookEx(idHook, (HOOKPROC)lpfn, (HINSTANCE)hMod, dwThreadId);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    UnhookWindowsHookEx
- * Signature: (I)I
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_UnhookWindowsHookEx
-  (JNIEnv *env, jclass that, jint hhk)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "UnhookWindowsHookEx\n");
-#endif
-
-    return (jboolean) UnhookWindowsHookEx((HHOOK)hhk);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    CallNextHookEx
- * Signature: (IIII)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CallNextHookEx
-  (JNIEnv *env, jclass that, jint hhk, jint nCode,  jint wParam,  jint lParam)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "CallNextHookEx\n");
-#endif
-
-    return (jint) CallNextHookEx((HHOOK)hhk, nCode, (WPARAM)wParam, (LPARAM)lParam);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    MoveMemory
- * Signature: (Lorg/eclipse/swt/internal/win32/MSG;II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II
-  (JNIEnv *env, jclass that, jobject Destination, jint Source, jint Length)
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_WindowFromPoint
+	(JNIEnv *env, jclass that, jobject arg0)
 {
 	DECL_GLOB(pGlob)
-    MSG msg, *lpDestination1=NULL;
+	POINT _arg0, *lparg0=NULL;
+	jint rc;
 
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II\n");
-#endif
+	DEBUG_CALL("WindowFromPoint\n")
 
-       MoveMemory((PVOID)&msg, (CONST VOID *)Source, Length);
+	if (arg0) lparg0 = getPOINTFields(env, arg0, &_arg0, &PGLOB(POINTFc));
 
-    if (Destination) {
-        lpDestination1 = &msg;
-        cacheMsgFids(env, Destination, &PGLOB(MsgFc));
-        setMsgFields(env, Destination, lpDestination1, &PGLOB(MsgFc));
-    }
-}
+	rc = (jint)WindowFromPoint(*lparg0);
 
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetCharacterPlacement
- * Signature: 
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetCharacterPlacement
-  (JNIEnv *env, jclass that, jint hdc, jbyteArray lpString, jint nCount, jint nMaxExtent, jobject lpResults, jint dwFlags)
-{
-	DECL_GLOB(pGlob)
-    GCP_RESULTS results, *lpResults1=NULL;
-    LPCTSTR lpString1=NULL;
-    jint rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetCharacterPlacement\n");
-#endif
+	if (arg0) setPOINTFields(env, arg0, lparg0, &PGLOB(POINTFc));
 
-    if (lpString)
-        lpString1 = (LPCTSTR)(*env)->GetByteArrayElements(env, lpString, NULL);
-    if (lpResults) {
-        lpResults1 = &results;
-        cacheGCP_RESULTSFids(env, lpResults, &PGLOB(GCP_RESULTSFc));
-        getGCP_RESULTSFields(env, lpResults, lpResults1, &PGLOB(GCP_RESULTSFc));
-    }
-    
-    rc = (jint) GetCharacterPlacement((HDC)hdc, lpString1, nCount, nMaxExtent, lpResults1, dwFlags);
-    
-    if (lpString)
-        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
-    if (lpResults) {
-        setGCP_RESULTSFields(env, lpResults, lpResults1, &PGLOB(GCP_RESULTSFc));
-    }
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ExtTextOut
- * Signature: 
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_ExtTextOut
-  (JNIEnv *env, jclass that, jint hdc, jint X, jint Y, jint fuOptions, jobject lprc, jbyteArray lpString, jint cbCount, jintArray lpDx)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *lpRect1=NULL;
-    LPCTSTR lpString1=NULL;
-	CONST INT* lpDx1 = NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ExtTextOut\n");
-#endif
-
-    if (lpString)
-        lpString1 = (LPCTSTR)(*env)->GetByteArrayElements(env, lpString, NULL);
-    if (lprc) {
-        lpRect1 = &rect;
-        cacheRectFids(env, lprc, &PGLOB(RectFc));
-        getRectFields(env, lprc, lpRect1, &PGLOB(RectFc));
-    }
-    if (lpDx)
-        lpDx1 = (CONST INT*)(*env)->GetIntArrayElements(env, lpDx, NULL);
-    
-    rc = (jboolean) ExtTextOut((HDC)hdc, X, Y, fuOptions, lpRect1, lpString1, cbCount, lpDx1);
-    
-    if (lpString)
-        (*env)->ReleaseByteArrayElements(env, lpString, (jbyte *)lpString1, 0);
-    if (lprc) {
-        setRectFields(env, lprc, lpRect1, &PGLOB(RectFc));
-    }
-    if (lpDx)
-        (*env)->ReleaseIntArrayElements(env, lpDx, (jint *)lpDx1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetFontLanguageInfo
- * Signature: 
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetFontLanguageInfo
-  (JNIEnv *env, jclass that, jint hdc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetFontLanguageInfo\n");
-#endif
-
-    return (jint) GetFontLanguageInfo((HDC)hdc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetKeyboardLayoutList
- * Signature: 
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardLayoutList
-  (JNIEnv *env, jclass that, jint nBuff, jintArray lpList)
-{
-	HKL FAR *lpList1;
-    jint rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetKeyboardLayoutList\n");
-#endif
-
-    if (lpList)
-        lpList1 = (HKL FAR *)(*env)->GetIntArrayElements(env, lpList, NULL);
-
-    rc = (jint) GetKeyboardLayoutList(nBuff, lpList1);
-    
-    if (lpList)
-        (*env)->ReleaseIntArrayElements(env, lpList, (jint *)lpList1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetKeyboardLayout
- * Signature: 
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetKeyboardLayout
-  (JNIEnv *env, jclass that, jint idThread)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetKeyboardLayout\n");
-#endif
-
-    return (jint) GetKeyboardLayout(idThread);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    ActivateKeyboardLayout
- * Signature: 
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_ActivateKeyboardLayout
-  (JNIEnv *env, jclass that, jint hkl, jint Flags)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "ActivateKeyboardLayout\n");
-#endif
-
-    return (jint) ActivateKeyboardLayout((HKL)hkl, Flags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SetTextAlign
- * Signature: 
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_SetTextAlign
-  (JNIEnv *env, jclass that, jint hdc, jint fMode)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SetTextAlign\n");
-#endif
-
-    return (jint) SetTextAlign((HDC)hdc, fMode);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    TranslateCharsetInfo
- * Signature: 
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_TranslateCharsetInfo
-  (JNIEnv *env, jclass that, jint lpSrc, jintArray lpCs, jint dwFlags)
-{
-	LPCHARSETINFO lpCs1 =NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "TranslateCharsetInfo\n");
-#endif
-
-    if (lpCs)
-        lpCs1 = (LPCHARSETINFO)(*env)->GetIntArrayElements(env, lpCs, NULL);
-
-    rc = (jboolean)TranslateCharsetInfo((DWORD *)lpSrc, lpCs1, dwFlags);
-    
-    if (lpCs)
-        (*env)->ReleaseIntArrayElements(env, lpCs, (jint *)lpCs1, 0);
-        
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetTextCharset
- * Signature: 
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetTextCharset
-  (JNIEnv *env, jclass that, jint hdc)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetTextCharset\n");
-#endif
-
-    return (jint) GetTextCharset((HDC)hdc);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    GetLocaleInfo
- * Signature: (II[BI)I
- */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_GetLocaleInfo
-  (JNIEnv *env, jclass that, jint Locale, jint LCType, jbyteArray lpLCData, jint cchData)
-{
-    LPTSTR lpLCData1=NULL;
-    jint rc;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "GetLocaleInfo\n");
-#endif
-
-    if (lpLCData)
-        lpLCData1 = (*env)->GetByteArrayElements(env, lpLCData, NULL);
-
-    rc = (jint) GetLocaleInfo(Locale, LCType, lpLCData1, cchData);
-
-    if (lpLCData)
-        (*env)->ReleaseByteArrayElements(env, lpLCData, (jbyte *)lpLCData1, 0);
-    return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    EnumSystemLocales
- * Signature: (II)Z
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_EnumSystemLocales
-  (JNIEnv *env, jclass that, jint lpLocaleEnumProc, jint dwFlags)
-{
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "EnumSystemLocales\n");
-#endif
-
-    return (jboolean) EnumSystemLocales((LOCALE_ENUMPROC)lpLocaleEnumProc, (DWORD)dwFlags);
-}
-
-/*
- * Class:     org_eclipse_swt_internal_win32_OS
- * Method:    SystemParametersInfo
- * Signature: 
- */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_SystemParametersInfo
-  (JNIEnv *env, jclass that, jint uiAction, jint uiName, jobject pvParam, jint fWinIni)
-{
-	DECL_GLOB(pGlob)
-    RECT rect, *pvParam1=NULL;
-    jboolean rc;
-    
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "SystemParametersInfo\n");
-#endif
-
-     if (pvParam) {
-        pvParam1 = &rect;
-        cacheRectFids(env, pvParam, &PGLOB(RectFc));
-        getRectFields(env, pvParam, pvParam1, &PGLOB(RectFc));
-    }
-    
-    rc = (jboolean) SystemParametersInfo(uiAction, uiName, pvParam1, fWinIni);
-    
-    if (pvParam) {
-        setRectFields(env, pvParam, pvParam1, &PGLOB(RectFc));
-    }
-
-    return rc;
+	return rc;
 }
 

@@ -244,7 +244,7 @@ void killFocus () {
 void move () {
 	moved = false;
 	if (!OS.SetCaretPos (x, y)) return;
-	if (IsDBLocale) {
+	if (OS.IsDBLocale) {
 		POINT ptCurrentPos = new POINT ();
 		if (!OS.GetCaretPos (ptCurrentPos)) return;
 		COMPOSITIONFORM lpCompForm = new COMPOSITIONFORM ();
@@ -284,7 +284,7 @@ void resize () {
 }
 
 void restoreIMEFont () {
-	if (!IsDBLocale) return;
+	if (!OS.IsDBLocale) return;
 	if (oldFont == null) return;
 	int hwnd = parent.handle;
 	int hIMC = OS.ImmGetContext (hwnd);
@@ -294,7 +294,7 @@ void restoreIMEFont () {
 }
 
 void saveIMEFont () {
-	if (!IsDBLocale) return;
+	if (!OS.IsDBLocale) return;
 	if (oldFont != null) return;
 	int hwnd = parent.handle;
 	int hIMC = OS.ImmGetContext (hwnd);
@@ -410,7 +410,7 @@ public void setImage (Image image) {
 }
 
 void setIMEFont (int hFont) {
-	if (!IsDBLocale) return;
+	if (!OS.IsDBLocale) return;
 	LOGFONT logFont = new LOGFONT ();
 	if (OS.GetObject (hFont, LOGFONT.sizeof, logFont) != 0) {
 		int hwnd = parent.handle;

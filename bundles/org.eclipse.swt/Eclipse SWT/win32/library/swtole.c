@@ -6,6 +6,95 @@
 #include "globals.h"
 #include "structs.h"
 
+#define cacheGuidFids cacheGUIDFids
+#define getGuidFields getGUIDFields
+#define setGuidFields setGUIDFields
+#define GuidFc GUIDFc
+#define cacheDropfilesFids cacheDROPFILESFids
+#define getDropfilesFields getDROPFILESFields
+#define setDropfilesFields setDROPFILESFields
+#define DropfilesFc DROPFILESFc
+#define cacheFormatetcFids cacheFORMATETCFids
+#define getFormatetcFields getFORMATETCFields
+#define setFormatetcFields setFORMATETCFields
+#define FormatetcFc FORMATETCFc
+#define cacheOleinplaceframeinfoFids cacheOLEINPLACEFRAMEINFOFids
+#define getOleinplaceframeinfoFields getOLEINPLACEFRAMEINFOFields
+#define setOleinplaceframeinfoFields setOLEINPLACEFRAMEINFOFields
+#define OleinplaceframeinfoFc OLEINPLACEFRAMEINFOFc
+#define cacheStatstgFids cacheSTATSTGFids
+#define getStatstgFields getSTATSTGFields
+#define setStatstgFields setSTATSTGFields
+#define StatstgFc STATSTGFc
+#define cacheStgmediumFids cacheSTGMEDIUMFids
+#define getStgmediumFields getSTGMEDIUMFields
+#define setStgmediumFields setSTGMEDIUMFields
+#define StgmediumFc STGMEDIUMFc
+#define cacheDispparamsFids cacheDISPPARAMSFids
+#define getDispparamsFields getDISPPARAMSFields
+#define setDispparamsFields setDISPPARAMSFields
+#define DispparamsFc DISPPARAMSFc
+#define cacheTypeattrFids cacheTYPEATTRFids
+#define getTypeattrFields getTYPEATTRFields
+#define setTypeattrFields setTYPEATTRFields
+#define TypeattrFc TYPEATTRFc
+#define cacheRectFids cacheRECTFids
+#define getRectFields getRECTFields
+#define setRectFields setRECTFields
+#define RectFc RECTFc
+#define cacheFuncdesc1Fids cacheFUNCDESC1Fids
+#define getFuncdesc1Fields getFUNCDESC1Fields
+#define setFuncdesc1Fields setFUNCDESC1Fields
+#define Funcdesc1Fc FUNCDESC1Fc
+#define cacheFuncdesc2Fids cacheFUNCDESC2Fids
+#define getFuncdesc2Fields getFUNCDESC2Fields
+#define setFuncdesc2Fields setFUNCDESC2Fields
+#define Funcdesc2Fc FUNCDESC2Fc
+#define cacheVardesc1Fids cacheVARDESC1Fids
+#define getVardesc1Fields getVARDESC1Fields
+#define setVardesc1Fields setVARDESC1Fields
+#define Vardesc1Fc VARDESC1Fc
+#define cacheVardesc2Fids cacheVARDESC2Fids
+#define getVardesc2Fields getVARDESC2Fields
+#define setVardesc2Fields setVARDESC2Fields
+#define Vardesc2Fc VARDESC2Fc
+#define cacheDvtargetdeviceFids cacheDVTARGETDEVICEFids
+#define getDvtargetdeviceFields getDVTARGETDEVICEFields
+#define setDvtargetdeviceFields setDVTARGETDEVICEFields
+#define DvtargetdeviceFc DVTARGETDEVICEFc
+#define cacheSizeFids cacheSIZEFids
+#define getSizeFields getSIZEFields
+#define setSizeFields setSIZEFields
+#define SizeFc SIZEFc
+#define cacheExcepinfoFids cacheEXCEPINFOFids
+#define getExcepinfoFields getEXCEPINFOFields
+#define setExcepinfoFields setEXCEPINFOFields
+#define ExcepinfoFc EXCEPINFOFc
+#define cacheMsgFids cacheMSGFids
+#define getMsgFields getMSGFields
+#define setMsgFields setMSGFields
+#define MsgFc MSGFc
+#define cacheCauuidFids cacheCAUUIDFids
+#define getCauuidFields getCAUUIDFields
+#define setCauuidFields setCAUUIDFields
+#define CauuidFc CAUUIDFc
+#define cacheControlinfoFids cacheCONTROLINFOFids
+#define getControlinfoFields getCONTROLINFOFields
+#define setControlinfoFields setCONTROLINFOFields
+#define ControlinfoFc CONTROLINFOFc
+#define cacheOlecmdFids cacheOLECMDFids
+#define getOlecmdFields getOLECMDFields
+#define setOlecmdFields setOLECMDFields
+#define OlecmdFc OLECMDFc
+#define cacheOlecmdtextFids cacheOLECMDTEXTFids
+#define getOlecmdtextFields getOLECMDTEXTFields
+#define setOlecmdtextFields setOLECMDTEXTFields
+#define OlecmdtextFc OLECMDTEXTFc
+#define cacheLicinfoFids cacheLICINFOFids
+#define getLicinfoFields getLICINFOFields
+#define setLicinfoFields setLICINFOFields
+#define LicinfoFc LICINFOFc
+
 /*
  * Class:     org_eclipse_swt_internal_ole_win32_COM
  * Method:    CLSIDFromProgID
@@ -421,29 +510,6 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_IsEqualGU
         setGuidFields(env, rguid2, rguid21, &PGLOB(GuidFc));
     }
     return rc;
-}
-
-/*
- * Class:     org_eclipse_swt_internal_ole_win32_COM
- * Method:    MoveMemory
- * Signature: ([CII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_MoveMemory___3CII
-  (JNIEnv *env, jclass that, jcharArray DestinationPtr, jint Source, jint Length)
-{
-    jchar *DestinationPtr1=NULL;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "COM_MoveMemory___3CII\n");
-#endif
-
-    if (DestinationPtr)
-        DestinationPtr1 = (*env)->GetCharArrayElements(env, DestinationPtr, NULL);
-
-    MoveMemory(DestinationPtr1, (CONST VOID *)Source, Length);
-
-    if (DestinationPtr)
-        (*env)->ReleaseCharArrayElements(env, DestinationPtr, DestinationPtr1, 0);
 }
 
 /*

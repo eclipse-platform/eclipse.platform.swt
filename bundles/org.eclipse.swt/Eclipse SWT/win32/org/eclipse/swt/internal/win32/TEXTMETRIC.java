@@ -15,17 +15,19 @@ public class TEXTMETRIC {
 	public int tmWeight; 
 	public int tmOverhang;
 	public int tmDigitizedAspectX;
-	public int tmDigitizedAspectY; 
-	public byte tmFirstChar;
-	public byte tmLastChar;
-	public byte tmDefaultChar; 
-	public byte tmBreakChar;
+	public int tmDigitizedAspectY;
+//	TCHAR tmFirstChar;
+//	TCHAR tmLastChar;
+//	TCHAR tmDefaultChar;
+//	TCHAR tmBreakChar;
+//	public char tmFirstChar;
+//	public char tmLastChar;
+//	public char tmDefaultChar; 
+//	public char tmBreakChar;
 	public byte tmItalic;
 	public byte tmUnderlined; 
 	public byte tmStruckOut;
 	public byte tmPitchAndFamily;
 	public byte tmCharSet;
-	public byte ___MISSING_ALIGNMENT__0; 
-	public short ___MISSING_ALIGNMENT__1;
-	public static final int sizeof = 56;
+	public static final int sizeof = OS.IsUnicode ? 60 : 56;
 }

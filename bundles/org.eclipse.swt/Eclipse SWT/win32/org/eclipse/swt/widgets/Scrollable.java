@@ -96,30 +96,14 @@ int callWindowProc (int msg, int wParam, int lParam) {
  */
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
-
-	/* Get the size of the trimmings */
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	boolean hasMenu = ((bits & OS.WS_CHILD) == 0) && (OS.GetMenu (handle) != 0);
-	OS.AdjustWindowRectEx (rect, bits, hasMenu, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
-
-	/* Get the size of the scroll bars */
+	OS.AdjustWindowRectEx (rect, bits, false, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
 	if (horizontalBar != null) rect.bottom += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 	if (verticalBar != null) rect.right += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
-
-	/* Get the height of the menu bar */
-	if (hasMenu) {
-		RECT testRect = new RECT ();
-		OS.SetRect (testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
-		OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
-		while ((testRect.bottom - testRect.top) < height) {
-			rect.top -= OS.GetSystemMetrics (OS.SM_CYMENU) - OS.GetSystemMetrics (OS.SM_CYBORDER);
-			OS.SetRect(testRect, 0, 0, rect.right - rect.left, rect.bottom - rect.top);
-			OS.SendMessage (handle, OS.WM_NCCALCSIZE, 0, testRect);
-		}
-	}
-	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	int nWidth = rect.right - rect.left, nHeight = rect.bottom - rect.top;
+	return new Rectangle (rect.left, rect.top, nWidth, nHeight);
 }
 
 ScrollBar createScrollBar (int type) {
@@ -223,7 +207,7 @@ int widgetStyle () {
 	return bits;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return getDisplay ().windowClass;
 }
 

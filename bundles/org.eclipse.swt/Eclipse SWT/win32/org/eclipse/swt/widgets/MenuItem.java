@@ -206,8 +206,8 @@ void fillAccel (ACCEL accel) {
 		if (key == 0x7F) {
 			key = OS.VK_DELETE;
 		} else {
-			char ch = wcsToMbcs ((char) key);
-			key = OS.CharUpper ((short) ch);
+			short ch = (short) wcsToMbcs ((char) key);
+			key = OS.CharUpper (ch);
 		}
 	}
 	accel.key = (short) key;
@@ -490,7 +490,7 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	if ((WIN32_MAJOR << 16 | WIN32_MINOR) < (4 << 16 | 10)) {
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		return;
 	}
 	int hMenu = parent.handle;
@@ -564,19 +564,19 @@ public void setMenu (Menu menu) {
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_ID;
-	int index = 0, count = OS.GetMenuItemCount (hMenu);
-	while (index < count) {
-		if (OS.GetMenuItemInfo (hMenu, index, true, info) && (info.wID == id)) {
-			break;
-		}
+	int index = 0;
+	while (OS.GetMenuItemInfo (hMenu, index, true, info)) {
+		if (info.wID == id) break;
 		index++;
 	}
-	if (index == count) return;
+	if (info.wID != id) return;
+	int cch = 128;
 	int hHeap = OS.GetProcessHeap ();
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 128);
+	int byteCount = cch * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	info.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE;
 	info.dwTypeData = pszText;
-	info.cch = 128;
+	info.cch = cch;
 	boolean success = OS.GetMenuItemInfo (hMenu, index, true, info);
 	if (menu != null) {
 		menu.cascade = this; 
@@ -584,7 +584,12 @@ public void setMenu (Menu menu) {
 		info.hSubMenu = menu.handle;
 	}
 	OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
-	success = OS.InsertMenuItem (hMenu, index, true, info);
+	if (OS.IsWinCE) {
+		success = OS.InsertMenu (hMenu, index, OS.MF_BYPOSITION, id, null); 
+		if (success) success = OS.SetMenuItemInfo (hMenu, index, true, info);
+	} else {
+		success = OS.InsertMenuItem (hMenu, index, true, info);
+	}
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (!success) error (SWT.ERROR_CANNOT_SET_MENU);
 	parent.destroyAcceleratorTable ();
@@ -627,9 +632,10 @@ public void setText (String string) {
 	int hMenu = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
 	/* Use the character encoding for the default locale */
-	byte [] buffer = Converter.wcsToMbcs (0, string, false);
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
-	OS.MoveMemory (pszText, buffer, buffer.length);
+	TCHAR buffer = new TCHAR (0, string, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (pszText, buffer, byteCount);
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_TYPE;
@@ -713,7 +719,8 @@ LRESULT wmMeasureChild (int wParam, int lParam) {
 				OS.GetObject (hImage, BITMAP.sizeof, bm);
 				break;
 			case SWT.ICON:
-				ICONINFO info = new ICONINFO ();
+				ICONINFO info = new ICONINFO ();		
+				if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetIconInfo (hImage, info);
 				int hBitmap = info.hbmColor;
 				if (hBitmap == 0) hBitmap = info.hbmMask;

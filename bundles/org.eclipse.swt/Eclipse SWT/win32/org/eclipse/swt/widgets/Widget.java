@@ -66,37 +66,23 @@ public abstract class Widget {
 	static final int DEFAULT_HEIGHT	= 64;
 	static final char Mnemonic = '&';
 
-	/* Windows, DBCS and COMCTL32.DLL flags */
-	static final boolean IsWinNT, IsDBLocale;
-	static final int WIN32_MAJOR, WIN32_MINOR;
+	/* COMCTL32.DLL flags */
 	static final int COMCTL32_MAJOR, COMCTL32_MINOR;
 	static {
-
-		/* Get the Windows version */
-		int version = OS.GetVersion ();
-		IsWinNT = (version & 0x80000000) == 0;
-		WIN32_MAJOR = version & 0x00FF;
-		WIN32_MINOR = (version & 0xFFFF) >> 8;
-
-		/* Get the DBCS flag */
-		boolean isDBLocale = false;
-		for (int i = 0; i <= 0xFF; i++) {
-			if (OS.IsDBCSLeadByte ((byte) i)) {
-				isDBLocale = true;
-				break;
-			}
-		}
-		IsDBLocale = isDBLocale;
 
 		/* Get the COMCTL32.DLL version */
 		DLLVERSIONINFO dvi = new DLLVERSIONINFO ();
 		dvi.cbSize = DLLVERSIONINFO.sizeof;
 		dvi.dwMajorVersion = 4;
 		dvi.dwMinorVersion = 0;
-		byte[] lpLibFileName = Converter.wcsToMbcs (0, "comctl32.dll\0");
+		TCHAR lpLibFileName = new TCHAR (0, "comctl32.dll", true);
 		int hModule = OS.LoadLibrary (lpLibFileName);
 		if (hModule != 0) {
-			byte [] lpProcName = Converter.wcsToMbcs (0, "DllGetVersion\0");
+			String name = "DllGetVersion\0";
+			byte [] lpProcName = new byte [name.length ()];
+			for (int i=0; i<lpProcName.length; i++) {
+				lpProcName [i] = (byte) name.charAt (i);
+			}
 			int DllGetVersion = OS.GetProcAddress (hModule, lpProcName);
 			if (DllGetVersion != 0) OS.Call (DllGetVersion, dvi);
 			OS.FreeLibrary (hModule);
@@ -105,6 +91,7 @@ public abstract class Widget {
 		COMCTL32_MINOR = dvi.dwMinorVersion;
 		if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) < (4 << 16 | 71)) {
 			System.out.println ("***WARNING: SWT requires comctl32.dll version 4.71 or greater");
+			System.out.println ("***WARNING: Detected: " + COMCTL32_MAJOR + "." + COMCTL32_MINOR);
 		}
 		
 		/* Initialize the Common Controls DLL */
@@ -590,7 +577,7 @@ boolean isValidThread () {
  * @param ch the MBCS character
  * @return the WCS character
  */
-char mbcsToWcs (char ch) {
+char mbcsToWcs (int ch) {
 	return mbcsToWcs (ch, 0);
 }
 
@@ -603,21 +590,27 @@ char mbcsToWcs (char ch) {
  * @param codePage the code page used to convert the character
  * @return the WCS character
  */
-char mbcsToWcs (char ch, int codePage) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer;
-	if (key <= 0xFF) {
-		buffer = new byte [1];
-		buffer [0] = (byte) key;
+char mbcsToWcs (int ch, int codePage) {
+	if (OS.IsUnicode) {
+		return (char) ch;
 	} else {
-		buffer = new byte [2];
-		buffer [0] = (byte) ((key >> 8) & 0xFF);
-		buffer [1] = (byte) (key & 0xFF);
+		int key = ch & 0xFFFF;
+		if (key <= 0x7F) return (char) ch;
+		byte [] buffer;
+		if (key <= 0xFF) {
+			buffer = new byte [1];
+			buffer [0] = (byte) key;
+		} else {
+			buffer = new byte [2];
+			buffer [0] = (byte) ((key >> 8) & 0xFF);
+			buffer [1] = (byte) (key & 0xFF);
+		}
+		char [] unicode = new char [1];
+		int cp = codePage != 0 ? codePage : OS.CP_ACP;
+		int count = OS.MultiByteToWideChar (cp, OS.MB_PRECOMPOSED, buffer, buffer.length, unicode, 1);
+		if (count == 0) return 0;
+		return unicode [0];
 	}
-	char [] result = Converter.mbcsToWcs (codePage, buffer);
-	if (result.length == 0) return 0;
-	return result [0];
 }
 
 /**
@@ -655,9 +648,14 @@ void postEvent (int eventType, Event event) {
 	event.type = eventType;
 	event.widget = this;
 	if (event.time == 0) {
-		event.time = OS.GetMessageTime ();
+		if (OS.IsWinCE) {
+			event.time = OS.GetTickCount ();
+		} else {
+			event.time = OS.GetMessageTime ();
+		}
 	}
-	getDisplay ().postEvent (event);
+	Display display = getDisplay ();
+	display.postEvent (event);
 }
 
 /*
@@ -835,7 +833,11 @@ void sendEvent (int eventType, Event event) {
 	event.widget = this;
 	event.type = eventType;
 	if (event.time == 0) {
-		event.time = OS.GetMessageTime ();
+		if (OS.IsWinCE) {
+			event.time = OS.GetTickCount ();
+		} else {
+			event.time = OS.GetMessageTime ();
+		}
 	}
 	eventTable.sendEvent (event);
 }
@@ -960,7 +962,7 @@ public String toString () {
  * @param ch the WCS character
  * @return the MBCS character
  */
-char wcsToMbcs (char ch) {
+int wcsToMbcs (char ch) {
 	return wcsToMbcs (ch, 0);
 }
 
@@ -974,15 +976,11 @@ char wcsToMbcs (char ch) {
  * @param codePage the code page used to convert the character
  * @return the MBCS character
  */
-char wcsToMbcs (char ch, int codePage) {
-	int key = ch & 0xFFFF;
-	if (key <= 0x7F) return ch;
-	byte [] buffer = Converter.wcsToMbcs (codePage, new char [] {ch}, false);
-	if (buffer.length == 1) return (char) buffer [0];
-	if (buffer.length == 2) {
-		return (char) (((buffer [0] & 0xFF) << 8) | (buffer [1] & 0xFF));
-	}
-	return 0;
+int wcsToMbcs (char ch, int codePage) {
+	if (OS.IsUnicode) return ch;
+	if (ch <= 0x7F) return ch;
+	TCHAR buffer = new TCHAR (codePage, ch, false);
+	return buffer.tcharAt (0);
 }
 
 }

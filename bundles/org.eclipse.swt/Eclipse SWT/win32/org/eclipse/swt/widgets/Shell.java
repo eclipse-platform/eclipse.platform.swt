@@ -347,7 +347,7 @@ void createHandle () {
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	}
-	if (IsDBLocale) {
+	if (OS.IsDBLocale) {
 		hIMC = OS.ImmCreateContext ();
 		if (hIMC != 0) OS.ImmAssociateContext (handle, hIMC);
 	}
@@ -407,7 +407,9 @@ int findCursor () {
 
 public Rectangle getBounds () {
 	checkWidget ();
-	if (OS.IsIconic (handle)) return super.getBounds ();
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) return super.getBounds ();
+	}
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
 	int width = rect.right - rect.left;
@@ -445,7 +447,7 @@ public boolean getEnabled () {
  */
 public int getImeInputMode () {
 	checkWidget ();
-	if (!IsDBLocale) return 0;
+	if (!OS.IsDBLocale) return 0;
 	int hIMC = OS.ImmGetContext (handle);
 	int [] lpfdwConversion = new int [1], lpfdwSentence = new int [1];
 	boolean open = OS.ImmGetOpenStatus (hIMC);
@@ -462,8 +464,10 @@ public int getImeInputMode () {
 
 public Point getLocation () {
 	checkWidget ();
-	if (OS.IsIconic (handle)) {
-		return super.getLocation ();
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) {
+			return super.getLocation ();
+		}
 	}
 	RECT rect = new RECT ();
 	OS.GetWindowRect (handle, rect);
@@ -572,7 +576,7 @@ void releaseWidget () {
 		}
 	}
 	brushes = null;
-	if (IsDBLocale) {
+	if (OS.IsDBLocale) {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
 	lastActive = null;
@@ -663,9 +667,11 @@ void setActiveControl (Control control) {
 }
 
 void setBounds (int x, int y, int width, int height, int flags) {
-	if (OS.IsIconic (handle)) {
-		super.setBounds (x, y, width, height, flags);
-		return;
+	if (!OS.IsWinCE) {
+		if (OS.IsIconic (handle)) {
+			super.setBounds (x, y, width, height, flags);
+			return;
+		}
 	}
 	flags |= OS.SWP_NOZORDER | OS.SWP_DRAWFRAME | OS.SWP_NOACTIVATE;
 	OS.SetWindowPos (handle, 0, x, y, width, height, flags);
@@ -700,7 +706,7 @@ public void setEnabled (boolean enabled) {
  */
 public void setImeInputMode (int mode) {
 	checkWidget ();
-	if (!IsDBLocale) return;
+	if (!OS.IsDBLocale) return;
 	boolean imeOn = mode != SWT.NONE && mode != SWT.ROMAN;
 	int hIMC = OS.ImmGetContext (handle);
 	OS.ImmSetOpenStatus (hIMC, imeOn);
@@ -748,10 +754,11 @@ void setParent () {
 }
 
 void setToolTipText (int hwnd, String text) {
+	if (OS.IsWinCE) return;
 	if (toolTipHandle == 0) {
 		toolTipHandle = OS.CreateWindowEx (
 			OS.WS_EX_TOPMOST,
-			OS.TOOLTIPS_CLASS,
+			new TCHAR (0, OS.TOOLTIPS_CLASS, true),
 			null,
 			OS.TTS_ALWAYSTIP,
 			OS.CW_USEDEFAULT, 0, OS.CW_USEDEFAULT, 0,
@@ -782,7 +789,7 @@ void setToolTipText (int hwnd, String text) {
 	}
 }
 
-void setToolTipText (NMTTDISPINFO lpnmtdi, byte [] buffer) {
+void setToolTipText (NMTTDISPINFO lpnmtdi, TCHAR buffer) {
 	/*
 	* Ensure that the current position of the mouse
 	* is inside the client area of the shell.  This
@@ -792,23 +799,9 @@ void setToolTipText (NMTTDISPINFO lpnmtdi, byte [] buffer) {
 	if (!hasCursor ()) return;
 	int hHeap = OS.GetProcessHeap ();
 	if (lpstrTip != 0) OS.HeapFree (hHeap, 0, lpstrTip);
-	lpstrTip = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
-	OS.MoveMemory (lpstrTip, buffer, buffer.length);
-	lpnmtdi.lpszText = lpstrTip;
-}
-
-void setToolTipText (NMTTDISPINFO lpnmtdi, char [] buffer) {
-	/*
-	* Ensure that the current position of the mouse
-	* is inside the client area of the shell.  This
-	* prevents tool tips from popping up over the
-	* shell trimmings.
-	*/
-	if (!hasCursor ()) return;
-	int hHeap = OS.GetProcessHeap ();
-	if (lpstrTip != 0) OS.HeapFree (hHeap, 0, lpstrTip);
-	lpstrTip = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length * 2);
-	OS.MoveMemory (lpstrTip, buffer, buffer.length * 2);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	lpstrTip = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (lpstrTip, buffer, byteCount);
 	lpnmtdi.lpszText = lpstrTip;
 }
 
@@ -816,7 +809,8 @@ public void setVisible (boolean visible) {
 	checkWidget ();
 	super.setVisible (visible);
 	if (showWithParent == visible) return;
-	OS.ShowOwnedPopups (handle, showWithParent = visible);
+	showWithParent = visible;
+	if (!OS.IsWinCE) OS.ShowOwnedPopups (handle, visible);
 	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	if ((style & mask) != 0) {
 		if (visible) {
@@ -978,11 +972,13 @@ LRESULT WM_SETCURSOR (int wParam, int lParam) {
 			}
 		}
 		if (!OS.IsWindowEnabled (handle)) {
-			int hwndPopup = OS.GetLastActivePopup (handle);
-			if (hwndPopup != 0 && hwndPopup != handle) {
-				if (WidgetTable.get (hwndPopup) == null) {
-					OS.SetActiveWindow (hwndPopup);
-				} 
+			if (!OS.IsWinCE) {
+				int hwndPopup = OS.GetLastActivePopup (handle);
+				if (hwndPopup != 0 && hwndPopup != handle) {
+					if (WidgetTable.get (hwndPopup) == null) {
+						OS.SetActiveWindow (hwndPopup);
+					}
+				}
 			}
 		}
 	}

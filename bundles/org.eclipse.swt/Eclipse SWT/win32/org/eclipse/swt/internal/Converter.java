@@ -14,6 +14,8 @@ import org.eclipse.swt.internal.win32.*;
  * Note that, unicode characters which can not be found in the platform
  * encoding will be converted to an arbitrary platform specific character.
  * </p>
+ * 
+ * @deprecated
  */
 
 public final class Converter {

@@ -404,21 +404,24 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_NOTIFY (int wParam, int lParam) {
-	NMHDR hdr = new NMHDR ();
-	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-	switch (hdr.code) {
-		case OS.TTN_GETDISPINFO:
-			NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-			OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
-			String string = toolTipText (lpnmtdi);
-			if (string != null && string.length () != 0) {
-				string = Display.withCrLf (string);
-				/* Use the character encoding for the default locale */
-				byte [] buffer = Converter.wcsToMbcs (0, string, true);
-				getShell ().setToolTipText (lpnmtdi, buffer);
-				OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
-			}
-			return LRESULT.ZERO;
+	if (!OS.IsWinCE) {
+		NMHDR hdr = new NMHDR ();
+		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+		switch (hdr.code) {
+			case OS.TTN_GETDISPINFOA:
+			case OS.TTN_GETDISPINFOW:
+				NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
+				OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
+				String string = toolTipText (lpnmtdi);
+				if (string != null && string.length () != 0) {
+					string = Display.withCrLf (string);
+					/* Use the character encoding for the default locale */
+					TCHAR buffer = new TCHAR (0, string, true);
+					getShell ().setToolTipText (lpnmtdi, buffer);
+					OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
+				}
+				return LRESULT.ZERO;
+		}
 	}
 	return super.WM_NOTIFY (wParam, lParam);
 }
@@ -454,9 +457,12 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	}
 
 	/* Set the clipping bits */
-	int oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-	int newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;
-	OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+	int oldBits = 0;
+	if (!OS.IsWinCE) {
+		oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+		int newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;	
+		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+	}
 
 	/* Create the paint GC */
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
@@ -509,14 +515,16 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	event.gc = null;
 	gc.dispose ();
 
-	/*
-	* It is possible (but unlikely), that application
-	* code could have disposed the widget in the paint
-	* event.  If this happens, don't attempt to restore
-	* the style.
-	*/
-	if (!isDisposed ()) {
-		OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+	if (!OS.IsWinCE) { 
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the paint
+		* event.  If this happens, don't attempt to restore
+		* the style.
+		*/
+		if (!isDisposed ()) {
+			OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+		}
 	}
 	return LRESULT.ZERO;
 }
@@ -589,22 +597,23 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 	* does not redraw properly.  The fix is to detect this case and
 	* redraw the non-client area.
 	*/
-	int cmd = wParam & 0xFFF0;
-	switch (cmd) {
-		case OS.SC_HSCROLL:
-		case OS.SC_VSCROLL:
-			boolean showHBar = horizontalBar != null && horizontalBar.getVisible ();
-			boolean showVBar = verticalBar != null && verticalBar.getVisible ();
-			int code = callWindowProc (OS.WM_SYSCOMMAND, wParam, lParam);
-			if ((showHBar != (horizontalBar != null && horizontalBar.getVisible ())) ||
-				(showVBar != (verticalBar != null && verticalBar.getVisible ()))) {
-					int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
-					OS.RedrawWindow (handle, null, 0, flags);
-				}		
-			if (code == 0) return LRESULT.ZERO;
-			return new LRESULT (code);
+	if (!OS.IsWinCE) {
+		int cmd = wParam & 0xFFF0;
+		switch (cmd) {
+			case OS.SC_HSCROLL:
+			case OS.SC_VSCROLL:
+				boolean showHBar = horizontalBar != null && horizontalBar.getVisible ();
+				boolean showVBar = verticalBar != null && verticalBar.getVisible ();
+				int code = callWindowProc (OS.WM_SYSCOMMAND, wParam, lParam);
+				if ((showHBar != (horizontalBar != null && horizontalBar.getVisible ())) ||
+					(showVBar != (verticalBar != null && verticalBar.getVisible ()))) {
+						int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
+						OS.RedrawWindow (handle, null, 0, flags);
+					}		
+				if (code == 0) return LRESULT.ZERO;
+				return new LRESULT (code);
+		}
 	}
-
 	/* Return the result */
 	return result;
 }

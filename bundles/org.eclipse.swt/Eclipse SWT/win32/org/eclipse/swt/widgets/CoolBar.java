@@ -35,15 +35,14 @@ public class CoolBar extends Composite {
 	
 	CoolItem [] items;
 	static final int ReBarProc;
-	static final byte [] ReBarClass = OS.REBARCLASSNAME;
+	static final TCHAR ReBarClass = new TCHAR (0, OS.REBARCLASSNAME, true);
 	static {
 		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
 		icex.dwSize = INITCOMMONCONTROLSEX.sizeof;
 		icex.dwICC = OS.ICC_COOL_CLASSES;
 		OS.InitCommonControlsEx (icex);
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, ReBarClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, ReBarClass, lpWndClass);
 		ReBarProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -155,7 +154,7 @@ void createItem (CoolItem item, int index) {
 		items = newItems;
 	}
 	int hHeap = OS.GetProcessHeap ();
-	int lpText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 1);
+	int lpText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
 	REBARBANDINFO rbBand = new REBARBANDINFO ();
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_TEXT | OS.RBBIM_STYLE | OS.RBBIM_ID;
@@ -340,7 +339,7 @@ int widgetStyle () {
 	return bits;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return ReBarClass;
 }
 

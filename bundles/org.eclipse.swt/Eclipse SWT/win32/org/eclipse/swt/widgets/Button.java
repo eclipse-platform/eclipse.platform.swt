@@ -30,7 +30,7 @@ import org.eclipse.swt.events.*;
 public class Button extends Control {
 	Image image;
 	static final int ButtonProc;
-	static final byte [] ButtonClass = Converter.wcsToMbcs (0,"BUTTON\0");
+	static final TCHAR ButtonClass = new TCHAR (0,"BUTTON", true);
 	static final int CheckWidth, CheckHeight;
 	static {
 		int hBitmap = OS.LoadBitmap (0, OS.OBM_CHECKBOXES);
@@ -44,9 +44,8 @@ public class Button extends Control {
 			CheckWidth = bitmap.bmWidth / 4;
 			CheckHeight =  bitmap.bmHeight / 3;
 		}
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, ButtonClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, ButtonClass, lpWndClass);
 		ButtonProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -167,8 +166,8 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height += lptm.tmHeight;
 		} else {
 			extra = Math.max (8, lptm.tmAveCharWidth);
-			byte [] buffer = new byte [length + 1];
-			OS.GetWindowText (handle, buffer, length + 1);
+			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+			OS.GetWindowText (handle, buffer, buffer.length ());
 			RECT rect = new RECT ();
 			int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
 			OS.DrawText (hDC, buffer, length, rect, flags);
@@ -192,6 +191,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					BITMAP bm = new BITMAP ();
 					ICONINFO info = new ICONINFO ();
 					int hImage = image.handle;
+					if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 					OS.GetIconInfo (hImage, info);
 					int hBitmap = info.hbmColor;
 					if (hBitmap == 0) hBitmap = info.hbmMask;
@@ -316,10 +316,9 @@ public String getText () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
-	byte [] buffer1 = new byte [length + 1];
-	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
-	return new String (buffer2, 0, buffer2.length - 1);
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (handle, buffer, length + 1);
+	return buffer.toString (0, length);
 }
 
 boolean mnemonicHit () {
@@ -549,7 +548,7 @@ public void setText (String string) {
 	if (newBits != oldBits) {
 		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 	}
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 }
 
@@ -567,7 +566,7 @@ int widgetStyle () {
 	return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return ButtonClass;
 }
 

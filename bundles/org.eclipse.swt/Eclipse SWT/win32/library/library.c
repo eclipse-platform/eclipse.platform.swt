@@ -15,16 +15,20 @@
 
 unsigned int OpenLibrary(char *name)
 {
+#ifndef _WIN32_WCE
 	UINT prevMode = SetErrorMode(SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
-	HINSTANCE handle = LoadLibrary ((LPCSTR)name);
+#endif
+	HINSTANCE handle = LoadLibrary ((LPCTSTR)name);
+#ifndef _WIN32_WCE
 	SetErrorMode(prevMode);
+#endif
 	return (unsigned int)handle;
 }
 
 unsigned int LibraryLookupName(unsigned int handle, char *name)
 {
 	if (handle == 0) return 0;
-	return (unsigned int)GetProcAddress ((HINSTANCE)handle, (LPCSTR)name);
+	return (unsigned int)GetProcAddress ((HINSTANCE)handle, (LPCTSTR)name);
 }
 
 void CloseLibrary(unsigned int handle)

@@ -156,7 +156,7 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return getDisplay ().windowClass;
 }
 
@@ -217,8 +217,12 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if (event.doit) {
 		dragging = true;
 		menuShell ().bringToTop ();
-		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (hwndTrack, null, 0, flags);
+		if (OS.IsWinCE) {
+			OS.UpdateWindow (hwndTrack);
+		} else {
+			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (hwndTrack, null, 0, flags);
+		}
 		drawBand (lastX = event.x, lastY = event.y, width, height);
 	}
 	return result;
@@ -269,7 +273,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	} else {
 		newY = Math.min (Math.max (0, pt.y - startY), clientHeight - height);
 	}
-	if ((newX == lastX) && (newY == lastY)) return result;
+	if (newX == lastX && newY == lastY) return result;
 	drawBand (lastX, lastY, width, height);
 
 	/* The event must be sent because doit flag is used */
@@ -291,8 +295,12 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	/* Draw the banding rectangle */
 	if (event.doit) {
 		lastX = event.x; lastY = event.y;
-		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-		OS.RedrawWindow (hwndTrack, null, 0, flags);
+		if (OS.IsWinCE) {
+			OS.UpdateWindow (hwndTrack);
+		} else {
+			int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+			OS.RedrawWindow (hwndTrack, null, 0, flags);
+		}
 		drawBand (lastX, lastY, width, height);
 	}
 	return result;

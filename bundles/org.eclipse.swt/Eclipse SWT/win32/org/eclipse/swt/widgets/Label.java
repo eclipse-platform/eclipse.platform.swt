@@ -31,11 +31,10 @@ public class Label extends Control {
 	Image image;
 	int font;
 	static final int LabelProc;
-	static final byte [] LabelClass = Converter.wcsToMbcs (0, "STATIC\0");
+	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, LabelClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, LabelClass, lpWndClass);
 		LabelProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -116,6 +115,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					break;
 				case SWT.ICON: {
 					ICONINFO info = new ICONINFO ();
+					if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 					OS.GetIconInfo (hImage, info);
 					int hBitmap = info.hbmColor;
 					if (hBitmap == 0) hBitmap = info.hbmMask;
@@ -139,7 +139,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			rect.right = wHint;
 		}
 		int length = OS.GetWindowTextLength (handle);
-		byte [] buffer = new byte [length + 1];
+		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 		OS.GetWindowText (handle, buffer, length + 1);
 		OS.DrawText (hDC, buffer, length, rect, flags);
 		width = rect.right - rect.left;
@@ -218,10 +218,9 @@ public String getText () {
 	if ((style & SWT.SEPARATOR) != 0) return "";
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
-	byte [] buffer1 = new byte [length + 1];
-	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
-	return new String (buffer2, 0, buffer2.length - 1);
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (handle, buffer, length + 1);
+	return buffer.toString (0, length);
 }
 
 /*
@@ -410,7 +409,7 @@ public void setText (String string) {
 		if (hFont != 0) OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 	}
 	string = Display.withCrLf (string);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 }
 
@@ -440,7 +439,7 @@ int widgetStyle () {
 	return bits | OS.SS_LEFTNOWORDWRAP;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return LabelClass;
 }
 

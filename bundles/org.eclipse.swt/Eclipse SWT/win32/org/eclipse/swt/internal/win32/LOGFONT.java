@@ -19,7 +19,7 @@ public class LOGFONT {
 	public byte lfQuality;    
 	public byte lfPitchAndFamily;
 //	TCHAR lfFaceName[LF_FACESIZE]; 
-	public byte
+	public char
 		lfFaceName0,  lfFaceName1,  lfFaceName2,  lfFaceName3,
 		lfFaceName4,  lfFaceName5,  lfFaceName6,  lfFaceName7,
 		lfFaceName8,  lfFaceName9,  lfFaceName10, lfFaceName11,
@@ -28,5 +28,5 @@ public class LOGFONT {
 		lfFaceName20, lfFaceName21, lfFaceName22, lfFaceName23,
 		lfFaceName24, lfFaceName25, lfFaceName26, lfFaceName27,
 		lfFaceName28, lfFaceName29, lfFaceName30, lfFaceName31;
-	public static final int sizeof = 60;
+	public static final int sizeof = OS.IsUnicode ? 92 : 60;
 }

@@ -79,7 +79,7 @@ public static void drawGlyphs(GC gc, byte[] renderBuffer, int[] renderDx, int x,
 
 	// why do we have to specify the WORD count, not the byte count?
 	// when using the ANSI version of ExtTextOut cbCount is supposed to specify the byte count.
-	OS.ExtTextOut(gc.handle, x, y, ETO_GLYPH_INDEX, rect, renderBuffer, renderBuffer.length / 2, renderDx);
+	OS.ExtTextOutA(gc.handle, x, y, ETO_GLYPH_INDEX, rect, renderBuffer, renderBuffer.length / 2, renderDx);
 }
 /*
  *  Wraps GetFontLanguageInfo and GetCharacterPlacement functions.
@@ -154,7 +154,7 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		result.nGlyphs = length;
 		byte [] textBuffer2 = new byte [length];
 		System.arraycopy (textBuffer, offset, textBuffer2, 0, length);
-		OS.GetCharacterPlacement(gc.handle, textBuffer2, textBuffer2.length, 0, result, dwFlags);
+		OS.GetCharacterPlacementA(gc.handle, textBuffer2, textBuffer2.length, 0, result, dwFlags);
 
 		if (dx != null) {
 			int [] dx2 = new int [result.nGlyphs];

@@ -184,6 +184,7 @@ public Cursor(Device device, int style) {
 		int height = OS.GetSystemMetrics(OS.SM_CYCURSOR);
 		if (width == 32 && height == 32) {
 			int hInst = OS.GetModuleHandle(null);
+			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			handle = OS.CreateCursor(hInst, 5, 0, 32, 32, HAND_SOURCE, HAND_MASK);
 
 		}
@@ -247,6 +248,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	}
 	/* Create the cursor */
 	int hInst = OS.GetModuleHandle(null);
+	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	handle = OS.CreateCursor(hInst, hotspotX, hotspotY, source.width, source.height, source.data, mask.data);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (device.tracking) device.new_Object(this);
@@ -280,7 +282,7 @@ public void dispose () {
 	 * destroy them all. If this causes problems in the future,
 	 * put the flag back in.
 	 */
-	OS.DestroyCursor(handle);
+	if (!OS.IsWinCE) OS.DestroyCursor(handle);
 	handle = 0;
 	if (device.tracking) device.dispose_Object(this);
 	device = null;

@@ -409,7 +409,7 @@ void createHandle () {
 		OS.GetModuleHandle (null),
 		null);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	if (IsDBLocale && parent != null) {
+	if (OS.IsDBLocale && parent != null) {
 		int hIMC = OS.ImmGetContext (hwndParent);
 		OS.ImmAssociateContext (handle, hIMC);
 		OS.ImmReleaseContext (hwndParent, hIMC);
@@ -577,6 +577,7 @@ int getCodePage () {
 	LOGFONT logFont = new LOGFONT ();
 	OS.GetObject (hFont, LOGFONT.sizeof, logFont);
 	int cs = logFont.lfCharSet & 0xFF;
+//	if (cs == OS.DEFAULT_CHARSET) return OS.CP_ACP;
 	int [] lpCs = new int [8];
 	OS.TranslateCharsetInfo (cs, lpCs, OS.TCI_SRCCHARSET);
 	return lpCs [1];
@@ -1183,8 +1184,12 @@ public void pack (boolean changed) {
 public void redraw () {
 	checkWidget ();
 	if (!OS.IsWindowVisible (handle)) return;
-	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
-	OS.RedrawWindow (handle, null, 0, flags);
+	if (OS.IsWinCE) {
+		OS.InvalidateRect (handle, null, true);
+	} else {
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
 }
 
 /**
@@ -1215,10 +1220,14 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 	if (width <= 0 || height <= 0) return;
 	if (!OS.IsWindowVisible (handle)) return;
 	RECT rect = new RECT ();
-	int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
-	if (all) flags |= OS.RDW_ALLCHILDREN;
 	OS.SetRect (rect, x, y, x + width, y + height);
-	OS.RedrawWindow (handle, rect, 0, flags);
+	if (OS.IsWinCE) {
+		OS.InvalidateRect (handle, rect, true);
+	} else {
+		int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE;
+		if (all) flags |= OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, rect, 0, flags);
+	}
 }
 
 void register () {
@@ -1231,7 +1240,7 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (IsDBLocale) {
+	if (OS.IsDBLocale) {
 		OS.ImmAssociateContext (handle, 0);
 	}
 	if (toolTipText != null) {
@@ -1973,8 +1982,12 @@ public void setRedraw (boolean redraw) {
 	if (redraw) {
 		if (--drawCount == 0) {
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
-			int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-			OS.RedrawWindow (handle, null, 0, flags);
+			if (OS.IsWinCE) {
+				OS.InvalidateRect (handle, null, true);
+			} else {
+				int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+				OS.RedrawWindow (handle, null, 0, flags);
+			}
 		}
 	} else {
 		if (drawCount++ == 0) {
@@ -2380,8 +2393,12 @@ void unsubclass () {
  */
 public void update () {
 	checkWidget ();
-	int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
-	OS.RedrawWindow (handle, null, 0, flags);
+	if (OS.IsWinCE) {
+		OS.UpdateWindow (handle);
+	} else {
+		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
 }
 
 int widgetExtStyle () {
@@ -2432,7 +2449,7 @@ public boolean setParent (Composite parent) {
 	return true;
 }
 
-abstract byte [] windowClass ();
+abstract TCHAR windowClass ();
 
 abstract int windowProc ();
 
@@ -2522,7 +2539,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	* Do not report a lead byte as a key pressed.
 	*/
 	Display display = getDisplay ();
-	if (IsDBLocale) {
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		byte lead = (byte) (wParam & 0xFF);
 		if (OS.IsDBCSLeadByte (lead)) return null;
 	}
@@ -2541,8 +2558,8 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 		display.lastKey = wParam;
 		display.lastVirtual = display.isVirtualKey (wParam);
 	} else {
-		int result = OS.VkKeyScan ((short) wParam);
-		if (result == -1 || (result >> 8) <= 2) {
+		int result = OS.IsWinCE ? 0 : OS.VkKeyScan ((short) wParam);
+		if (!OS.IsWinCE && (result == -1 || (result >> 8) <= 2)) {
 			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
 				display.lastVirtual = display.isVirtualKey (display.lastKey);
 			}
@@ -2643,6 +2660,7 @@ LRESULT WM_GETFONT (int wParam, int lParam) {
 }
 
 LRESULT WM_HELP (int wParam, int lParam) {
+	if (OS.IsWinCE) return null;
 	HELPINFO lphi = new HELPINFO ();
 	OS.MoveMemory (lphi, lParam, HELPINFO.sizeof);
 	Decorations shell = menuShell ();
@@ -2777,8 +2795,8 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	/*
 	* Do not report a lead byte as a key pressed.
 	*/
-	Display display = getDisplay ();	
-	if (IsDBLocale) {
+	Display display = getDisplay ();
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		byte lead = (byte) (wParam & 0xFF);
 		if (OS.IsDBCSLeadByte (lead)) {
 			display.lastAscii = display.lastKey = 0;
@@ -2812,14 +2830,14 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	* is that the high bit on Windows NT is bit 32 while the high bit on
 	* Windows 95 is bit 16.  They should both be bit 32.
 	*/
-	if (IsWinNT) {
+	if (OS.IsWinNT) {
 		if ((mapKey & 0x80000000) != 0) return null;
 	} else {
 		if ((mapKey & 0x8000) != 0) return null;
 	}
 	
 	/*
-	* If are going to get a WM_CHAR, ensure that last key has
+	* If we are going to get a WM_CHAR, ensure that last key has
 	* the correct character value for the key down and key up
 	* events.  It is not sufficient to ignore the WM_KEYDOWN
 	* (when we know we are going to get a WM_CHAR) and compute
@@ -2852,7 +2870,7 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		* that Ctrl+Home does not issue a WM_CHAR when Num Lock is
 		* down.
 		*/
-		if ((OS.VK_NUMPAD0 <= display.lastKey) && (display.lastKey <= OS.VK_DIVIDE)) {
+		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
 			if (display.asciiKey (display.lastKey) != 0) return null;
 		}
 	} else {
@@ -2945,7 +2963,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	* is that the high bit on Windows NT is bit 32 while the high bit on
 	* Windows 95 is bit 16.  They should both be bit 32.
 	*/
-	if (IsWinNT) {
+	if (OS.IsWinNT) {
 		if ((mapKey & 0x80000000) != 0) return null;
 	} else {
 		if ((mapKey & 0x8000) != 0) return null;
@@ -3037,23 +3055,25 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		POINT pt = new POINT ();
 		pt.x = (short) (lParam & 0xFFFF);
 		pt.y = (short) (lParam >> 16);
-		/*
-		* The DragDetect function captures the mouse and tracks its movement until the user releases
-		* the left button, presses the ESC key, or moves the mouse outside the drag rectangle around 
-		* the specified point.   If the user moves the mouse outside of the drag rectangle, DragDetect
-		* returns true.
-		*/
-		if (OS.DragDetect (handle, pt)) {
-			sendEvent (SWT.DragDetect);
-			// widget could be disposed at this point
-		} else {
+		if (!OS.IsWinCE) {
 			/*
-			* The Mouse up event and the ESC key event have been consumed by DragDetect so 
-			* detect the cases and send the events.
+			* The DragDetect function captures the mouse and tracks its movement until the user releases
+			* the left button, presses the ESC key, or moves the mouse outside the drag rectangle around 
+			* the specified point.   If the user moves the mouse outside of the drag rectangle, DragDetect
+			* returns true.
 			*/
-			if (OS.GetKeyState (OS.VK_ESCAPE) ==  0) {
-				sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+			if (OS.DragDetect (handle, pt)) {
+				sendEvent (SWT.DragDetect);
 				// widget could be disposed at this point
+			} else {
+				/*
+				* The Mouse up event and the ESC key event have been consumed by DragDetect so 
+				* detect the cases and send the events.
+				*/
+				if (OS.GetKeyState (OS.VK_ESCAPE) ==  0) {
+					sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+					// widget could be disposed at this point
+				}
 			}
 		}
 	}
@@ -3229,7 +3249,6 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
 	int pos = OS.GetMessagePos ();
 	Event event = new Event ();
-	event.time = OS.GetMessageTime ();
 	POINT pt = new POINT ();
 	pt.x = (short) (pos & 0xFFFF);
 	pt.y = (short) (pos >> 16); 
@@ -3243,7 +3262,6 @@ LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
 LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
 	int pos = OS.GetMessagePos ();
 	Event event = new Event ();
-	event.time = OS.GetMessageTime ();
 	POINT pt = new POINT ();
 	pt.x = (short) (pos & 0xFFFF);
 	pt.y = (short) (pos >> 16); 
@@ -3255,27 +3273,28 @@ LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
 }
 
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
-	boolean hooksMouseEnter = hooks (SWT.MouseEnter);
-	if (hooksMouseEnter || hooks (SWT.MouseExit) || hooks (SWT.MouseHover)) {
-		TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
-		lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
-		lpEventTrack.dwFlags = OS.TME_QUERY;
-		lpEventTrack.hwndTrack = handle;
-		OS.TrackMouseEvent (lpEventTrack);
-		if (lpEventTrack.dwFlags == 0) {
-			lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
+	if (!OS.IsWinCE) {
+		boolean hooksMouseEnter = hooks (SWT.MouseEnter);
+		if (hooksMouseEnter || hooks (SWT.MouseExit) || hooks (SWT.MouseHover)) {
+			TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
+			lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
+			lpEventTrack.dwFlags = OS.TME_QUERY;
 			lpEventTrack.hwndTrack = handle;
 			OS.TrackMouseEvent (lpEventTrack);
-			if (hooksMouseEnter) {
-				Event event = new Event ();
-				event.time = OS.GetMessageTime ();
-				event.x = (short) (lParam & 0xFFFF);
-				event.y = (short) (lParam >> 16);
-				postEvent (SWT.MouseEnter, event);
+			if (lpEventTrack.dwFlags == 0) {
+				lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
+				lpEventTrack.hwndTrack = handle;
+				OS.TrackMouseEvent (lpEventTrack);
+				if (hooksMouseEnter) {
+					Event event = new Event ();
+					event.x = (short) (lParam & 0xFFFF);
+					event.y = (short) (lParam >> 16);
+					postEvent (SWT.MouseEnter, event);
+				}
+			} else {
+				lpEventTrack.dwFlags = OS.TME_HOVER;
+				OS.TrackMouseEvent (lpEventTrack);
 			}
-		} else {
-			lpEventTrack.dwFlags = OS.TME_HOVER;
-			OS.TrackMouseEvent (lpEventTrack);
 		}
 	}
 	Display display = getDisplay ();
@@ -3338,7 +3357,13 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	rgn = OS.CreateRectRgn (0, 0, 0, 0);
 	OS.GetUpdateRgn (handle, rgn, false);
 	int result = callWindowProc (OS.WM_PAINT, wParam, lParam);
-	OS.InvalidateRgn (handle, rgn, false);
+	if (OS.IsWinCE) {
+		RECT rect = new RECT ();
+		OS.GetClipBox (rgn, rect);
+		OS.InvalidateRect (handle, rect, false);
+	} else {
+		OS.InvalidateRgn (handle, rgn, false);
+	}
 	OS.DeleteObject (rgn);
 
 	/* Create the paint GC */

@@ -142,7 +142,12 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.killFocus ();
 
 	/* Flush outstanding WM_PAINT's and scroll the window */
-	OS.RedrawWindow (handle, null, 0, OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN);
+	if (OS.IsWinCE) {
+		OS.UpdateWindow (handle);
+	} else {
+		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+		OS.RedrawWindow (handle, null, 0, flags);
+	}
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
 	int deltaX = destX - x, deltaY = destY - y;

@@ -89,10 +89,10 @@ public class Display extends Device {
 	public MSG msg = new MSG ();
 	
 	/* Windows, Events and Callback */
-	byte [] windowClass;
+	Event [] eventQueue;
 	Callback windowCallback;
 	int windowProc, threadId, processId;
-	Event [] eventQueue;
+	TCHAR windowClass;
 	static int windowClassCount = 0;
 	static final String WindowName = "SWT_Window";
 
@@ -252,14 +252,20 @@ public Display (DeviceData data) {
 }
 
 int asciiKey (int key) {
+	if (OS.IsWinCE) return 0;
 	
 	/* Get the current keyboard. */
 	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
 	if (!OS.GetKeyboardState (keyboard)) return 0;
-	
-	/* Translate the key to ASCII using the current keyboard. */
-	short [] result = new short [1];
-	if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+		
+	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
+	if (OS.IsUnicode) {
+		char [] result = new char [1];
+		if (OS.ToUnicode (key, key, keyboard, result, 1, 0) == 1) return result [0];
+	} else {
+		short [] result = new short [1];
+		if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+	}
 	return 0;
 }
 
@@ -720,24 +726,24 @@ public Control getFocusControl () {
  */
 public int getIconDepth () {
 	checkDevice ();
-	int [] phkResult = new int [1];
+
 	/* Use the character encoding for the default locale */
-	byte [] buffer1 = Converter.wcsToMbcs (0, "Control Panel\\Desktop\\WindowMetrics", true);
+	TCHAR buffer1 = new TCHAR (0, "Control Panel\\Desktop\\WindowMetrics", true);
+
+	int [] phkResult = new int [1];
 	int result = OS.RegOpenKeyEx (OS.HKEY_CURRENT_USER, buffer1, 0, OS.KEY_READ, phkResult);
 	if (result != 0) return 4;
 	int depth = 4;
 	int [] lpcbData = {128};
-	byte [] lpData = new byte [lpcbData [0]];
+	
 	/* Use the character encoding for the default locale */
-	byte [] buffer2 = Converter.wcsToMbcs (0, "Shell Icon BPP", true);
+	TCHAR lpData = new TCHAR (0, lpcbData [0]);
+	TCHAR buffer2 = new TCHAR (0, "Shell Icon BPP", true);
+	
 	result = OS.RegQueryValueEx (phkResult [0], buffer2, 0, null, lpData, lpcbData);
 	if (result == 0) {
-		/* Use the character encoding for the default locale */
-		char [] buffer3 = Converter.mbcsToWcs (0, lpData);
-		int length = 0;
-		while (length < buffer3.length && buffer3 [length] != 0) length++;
 		try {
-			depth = Integer.parseInt (new String (buffer3, 0, length));
+			depth = Integer.parseInt (lpData.toString (0, lpData.strlen ()));
 		} catch (NumberFormatException e) {};
 	}
 	OS.RegCloseKey (phkResult [0]);
@@ -1049,31 +1055,32 @@ protected void init () {
 	/* Create the callbacks */
 	windowCallback = new Callback (this, "windowProc", 4);
 	windowProc = windowCallback.getAddress ();
-	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
-
+	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
 	/* Remember the current procsss and thread */
 	threadId = OS.GetCurrentThreadId ();
 	processId = OS.GetCurrentProcessId ();
 	
 	/* Use the character encoding for the default locale */
-	windowClass = Converter.wcsToMbcs (0, WindowName + windowClassCount++ + "\0");
+	windowClass = new TCHAR (0, WindowName + windowClassCount++, true);
 
 	/* Register the SWT window class */
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
-	WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-	lpWndClass.cbSize = WNDCLASSEX.sizeof;
-	if (OS.GetClassInfoEx (hInstance, windowClass, lpWndClass)) {
+	WNDCLASS lpWndClass = new WNDCLASS ();
+	if (OS.GetClassInfo (hInstance, windowClass, lpWndClass)) {
 		OS.UnregisterClass (windowClass, hInstance);
 	}
 	lpWndClass.hInstance = hInstance;
 	lpWndClass.lpfnWndProc = windowProc;
 	lpWndClass.style = OS.CS_BYTEALIGNWINDOW | OS.CS_DBLCLKS;
 	lpWndClass.hCursor = OS.LoadCursor (0, OS.IDC_ARROW);
-	lpWndClass.lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, windowClass.length);
-	OS.MoveMemory (lpWndClass.lpszClassName, windowClass, windowClass.length); 
-	OS.RegisterClassEx (lpWndClass);
-	OS.HeapFree (hHeap, 0, lpWndClass.lpszClassName);
+	int byteCount = windowClass.length () * TCHAR.sizeof;
+	int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	lpWndClass.lpszClassName = lpszClassName;
+	OS.MoveMemory (lpszClassName, windowClass, byteCount);
+	OS.RegisterClass (lpWndClass);
+//	OS.HeapFree (hHeap, 0, lpszClassName);
 }
 
 /**	 
@@ -1234,9 +1241,8 @@ void releaseDisplay () {
 	/* Unregister the SWT Window class */
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
-	WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-	lpWndClass.cbSize = WNDCLASSEX.sizeof;
-	OS.GetClassInfoEx (0, windowClass, lpWndClass);
+	WNDCLASS lpWndClass = new WNDCLASS ();
+	OS.GetClassInfo (0, windowClass, lpWndClass);
 	int ptr = lpWndClass.lpszClassName;
 	OS.UnregisterClass (windowClass, hInstance);
 	OS.HeapFree (hHeap, 0, ptr);
@@ -1524,14 +1530,20 @@ public void setSynchronizer (Synchronizer synchronizer) {
 }
 
 int shiftedKey (int key) {
+	if (OS.IsWinCE) return 0;
 	
-	/* Clear the virtual keyboard and press the shift key. */
+	/* Clear the virtual keyboard and press the shift key */
 	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
 	keyboard [OS.VK_SHIFT] |= 0x80;
 
-	/* Translate aKey to ASCII using the virtual keyboard. */
-	short [] result = new short [1];
-	if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+	/* Translate the key to ASCII or UNICODE using the virtual keyboard */
+	if (OS.IsUnicode) {
+		char [] result = new char [1];
+		if (OS.ToUnicode (key, key, keyboard, result, 1, 0) == 1) return result [0];
+	} else {
+		short [] result = new short [1];
+		if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
+	}
 	return 0;
 }
 
@@ -1550,6 +1562,15 @@ int shiftedKey (int key) {
  */
 public boolean sleep () {
 	checkDevice ();
+	if (OS.IsWinCE) {
+		OS.GetMessage (msg, 0, 0, 0);
+		if (!filterMessage (msg)) {
+			OS.TranslateMessage (msg);
+			OS.DispatchMessage (msg);
+		}
+		runDeferredEvents ();
+		return true;
+	}
 	return OS.WaitMessage ();
 }
 

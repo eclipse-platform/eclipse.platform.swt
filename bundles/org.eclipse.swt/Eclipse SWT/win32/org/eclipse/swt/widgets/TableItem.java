@@ -316,7 +316,8 @@ public String getText (int index) {
 	int cchTextMax = 1024;
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, cchTextMax);
+	int byteCount = cchTextMax * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	LVITEM lvItem = new LVITEM ();
 	lvItem.mask = OS.LVIF_TEXT;
 	lvItem.iItem = itemIndex;
@@ -324,14 +325,11 @@ public String getText (int index) {
 	lvItem.pszText = pszText;
 	lvItem.cchTextMax = cchTextMax;
 	int result = OS.SendMessage (hwnd, OS.LVM_GETITEM, 0, lvItem);
-	byte [] buffer1 = new byte [cchTextMax];
-	OS.MoveMemory (buffer1, pszText, cchTextMax);
+	TCHAR buffer = new TCHAR (parent.getCodePage (), cchTextMax);
+	OS.MoveMemory (buffer, pszText, byteCount);
 	OS.HeapFree (hHeap, 0, pszText);
 	if (result == 0) error (SWT.ERROR_CANNOT_GET_TEXT);
-	char [] buffer2 = Converter.mbcsToWcs (parent.getCodePage (), buffer1);
-	int length = 0;
-	while (length < buffer2.length && buffer2 [length] != 0) length++;
-	return new String (buffer2, 0, length);
+	return buffer.toString (0, buffer.strlen ());
 }
 
 void releaseChild () {
@@ -555,12 +553,13 @@ public void setText (int index, String string) {
 	if (itemIndex == -1) return;
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();	
-	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, true);
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
+	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (pszText, buffer, byteCount); 
 	LVITEM lvItem = new LVITEM ();
 	lvItem.mask = OS.LVIF_TEXT;
 	lvItem.iItem = itemIndex;
-	OS.MoveMemory (pszText, buffer, buffer.length); 
 	lvItem.pszText = pszText;
 	lvItem.iSubItem = index;
 	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
@@ -578,9 +577,10 @@ public void setText (String string) {
 	lvItem.mask = OS.LVIF_TEXT;
 	lvItem.iItem = index;
 	int hHeap = OS.GetProcessHeap ();
-	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, false);
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
-	OS.MoveMemory (pszText, buffer, buffer.length); 
+	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (pszText, buffer, byteCount); 
 	lvItem.pszText = pszText;
 	if (OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem) != 0) {
 		parent.setScrollWidth ();

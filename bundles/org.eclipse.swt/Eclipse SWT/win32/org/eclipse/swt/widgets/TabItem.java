@@ -219,6 +219,7 @@ public void setImage (Image image) {
 	tcItem.iImage = parent.imageIndex (image);
 	OS.SendMessage (hwnd, OS.TCM_SETITEM, index, tcItem);
 }
+
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -227,9 +228,10 @@ public void setText (String string) {
 	super.setText (string);
 	int hwnd = parent.handle;
 	int hHeap = OS.GetProcessHeap ();
-	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, false);
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length + 1);
-	OS.MoveMemory (pszText, buffer, buffer.length); 
+	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (pszText, buffer, byteCount); 
 	TCITEM tcItem = new TCITEM ();
 	tcItem.mask = OS.TCIF_TEXT;
 	tcItem.pszText = pszText;

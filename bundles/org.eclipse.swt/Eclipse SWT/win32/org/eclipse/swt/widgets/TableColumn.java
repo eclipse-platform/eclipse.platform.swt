@@ -265,7 +265,7 @@ public void pack () {
 	int index = parent.indexOf (this);
 	if (index == -1) return;
 	int hwnd = parent.handle;
-	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), text, true);
+	TCHAR buffer = new TCHAR (parent.getCodePage (), text, true);
 	int headerWidth = OS.SendMessage (hwnd, OS.LVM_GETSTRINGWIDTH, 0, buffer);
 	OS.SendMessage (hwnd, OS.LVM_SETCOLUMNWIDTH, index, OS.LVSCW_AUTOSIZE);
 	int columnWidth = OS.SendMessage (hwnd, OS.LVM_GETCOLUMNWIDTH, index, 0);
@@ -402,9 +402,10 @@ public void setText (String string) {
 
 	/* Set the column title */
 	int hHeap = OS.GetProcessHeap ();
-	byte [] buffer = Converter.wcsToMbcs (parent.getCodePage (), string, true);
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
-	OS.MoveMemory (pszText, buffer, buffer.length);
+	TCHAR buffer = new TCHAR (parent.getCodePage (), string, true);
+	int byteCount = buffer.length () * TCHAR.sizeof;
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	OS.MoveMemory (pszText, buffer, byteCount);
 	lvColumn.mask |= OS.LVCF_TEXT;
 	lvColumn.pszText = pszText;
 	int result = OS.SendMessage (hwnd, OS.LVM_SETCOLUMN, index, lvColumn);

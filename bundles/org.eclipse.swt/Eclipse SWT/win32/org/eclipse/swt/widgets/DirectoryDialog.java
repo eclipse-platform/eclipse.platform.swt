@@ -88,23 +88,22 @@ int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
 		case OS.BFFM_INITIALIZED:
 			if (filterPath != null && filterPath.length () != 0) {
 				/* Use the character encoding for the default locale */
-				byte [] buffer = Converter.wcsToMbcs (0, filterPath, true);
+				TCHAR buffer = new TCHAR (0, filterPath, true);
 				OS.SendMessage (hwnd, OS.BFFM_SETSELECTION, 1, buffer);
 			}
 			if (title != null && title.length () != 0) {
 				/* Use the character encoding for the default locale */
-				byte [] buffer = Converter.wcsToMbcs (0, title, true);
+				TCHAR buffer = new TCHAR (0, title, true);
 				OS.SetWindowText (hwnd, buffer);
 			}
 			break;
-		case OS.BFFM_VALIDATEFAILED:
-			byte [] buffer1 = new byte [256];
-			OS.MoveMemory (buffer1, lParam, 256);
+		case OS.BFFM_VALIDATEFAILEDA:
+		case OS.BFFM_VALIDATEFAILEDW:
 			/* Use the character encoding for the default locale */
-			char [] buffer2 = Converter.mbcsToWcs (0, buffer1);
-			int length = 0;
-			while (length < buffer2.length && buffer2 [length] != 0) length++;
-			directoryPath = new String (buffer2, 0, length);
+			TCHAR buffer = new TCHAR (0, 256);
+			int byteCount = buffer.length () * TCHAR.sizeof;
+			OS.MoveMemory (buffer, lParam, byteCount);
+			directoryPath = buffer.toString (0, buffer.strlen ());
 			break;
 	}
 	return 0;
@@ -144,6 +143,7 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
+	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	
 	/* Initialize OLE */
 	OS.OleInitialize (0);
@@ -158,9 +158,10 @@ public String open () {
 	int lpszTitle = 0;
 	if (message != null && message.length () != 0) {
 		/* Use the character encoding for the default locale */
-		byte [] buffer = Converter.wcsToMbcs (0, message, true);
-		lpszTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, buffer.length);
-		OS.MoveMemory (lpszTitle, buffer, buffer.length);
+		TCHAR buffer = new TCHAR (0, message, true);
+		int byteCount = buffer.length () * TCHAR.sizeof;
+		lpszTitle = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+		OS.MoveMemory (lpszTitle, buffer, byteCount);
 	}
 
 	/* Create the BrowseCallbackProc */
@@ -176,13 +177,10 @@ public String open () {
 	lpbi.lpfn = address;
 	int lpItemIdList = OS.SHBrowseForFolder (lpbi);
 	if (lpItemIdList != 0) {
-		byte [] buffer = new byte [256];
+		/* Use the character encoding for the default locale */
+		TCHAR buffer = new TCHAR (0, 256);
 		if (OS.SHGetPathFromIDList (lpItemIdList, buffer)) {
-			/* Use the character encoding for the default locale */
-			char [] path = Converter.mbcsToWcs (0, buffer);
-			int length = 0;
-			while ((length < path.length) && (path [length] != 0)) length++;
-			directoryPath = new String (path, 0, length);
+			directoryPath = buffer.toString (0, buffer.strlen ());
 		}
 	}
 

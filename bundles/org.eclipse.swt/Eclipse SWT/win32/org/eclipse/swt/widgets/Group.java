@@ -31,11 +31,10 @@ import org.eclipse.swt.graphics.*;
 
 public class Group extends Composite {
 	static final int GroupProc;
-	static final byte [] GroupClass = Converter.wcsToMbcs (0, "BUTTON\0");
+	static final TCHAR GroupClass = new TCHAR (0, "BUTTON", true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, GroupClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, GroupClass, lpWndClass);
 		GroupProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -100,7 +99,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	int length = OS.GetWindowTextLength (handle);
-	byte [] buffer1 = new byte [length + 1];
+	TCHAR buffer1 = new TCHAR (getCodePage (), length + 1);
 	OS.GetWindowText (handle, buffer1, length + 1);
 	int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
 	OS.DrawText (hDC, buffer1, length, rect, flags);
@@ -188,10 +187,9 @@ public String getText () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
 	if (length == 0) return "";
-	byte [] buffer1 = new byte [length + 1];
-	OS.GetWindowText (handle, buffer1, buffer1.length);
-	char [] buffer2 = Converter.mbcsToWcs (getCodePage (), buffer1);
-	return new String (buffer2, 0, buffer2.length - 1);
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (handle, buffer, length + 1);
+	return buffer.toString (0, length);
 }
 
 boolean mnemonicHit () {
@@ -222,7 +220,7 @@ boolean mnemonicMatch (char key) {
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	TCHAR buffer = new TCHAR (getCodePage (), string, true);
 	OS.SetWindowText (handle, buffer);
 }
 
@@ -241,7 +239,7 @@ int widgetStyle () {
 	return super.widgetStyle () | OS.BS_GROUPBOX | OS.WS_CLIPCHILDREN | OS.WS_CLIPSIBLINGS;
 }
 
-byte [] windowClass () {
+TCHAR windowClass () {
 	return GroupClass;
 }
 
@@ -285,23 +283,25 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		POINT pt = new POINT ();
 		pt.x = (short) (lParam & 0xFFFF);
 		pt.y = (short) (lParam >> 16);
-		/*
-		* The DragDetect function captures the mouse and tracks its movement until the user releases
-		* the left button, presses the ESC key, or moves the mouse outside the drag rectangle around 
-		* the specified point.   If the user moves the mouse outside of the drag rectangle, DragDetect
-		* returns true.
-		*/
-		if (OS.DragDetect (handle, pt)) {
-			sendEvent (SWT.DragDetect);
-			// widget could be disposed at this point
-		} else {
+		if (!OS.IsWinCE) {
 			/*
-			* The Mouse up event and the ESC key event have been consumed by DragDetect so 
-			* detect the cases and send the events.
+			* The DragDetect function captures the mouse and tracks its movement until the user releases
+			* the left button, presses the ESC key, or moves the mouse outside the drag rectangle around 
+			* the specified point.   If the user moves the mouse outside of the drag rectangle, DragDetect
+			* returns true.
 			*/
-			if (OS.GetKeyState (OS.VK_ESCAPE) ==  0) {
-				sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+			if (OS.DragDetect (handle, pt)) {
+				sendEvent (SWT.DragDetect);
 				// widget could be disposed at this point
+			} else {
+				/*
+				* The Mouse up event and the ESC key event have been consumed by DragDetect so 
+				* detect the cases and send the events.
+				*/
+				if (OS.GetKeyState (OS.VK_ESCAPE) ==  0) {
+					sendMouseEvent (SWT.MouseUp, 1, OS.WM_LBUTTONUP, wParam, lParam);
+					// widget could be disposed at this point
+				}
 			}
 		}
 	}

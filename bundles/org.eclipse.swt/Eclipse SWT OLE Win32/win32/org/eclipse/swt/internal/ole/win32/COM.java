@@ -430,7 +430,6 @@ private static GUID IIDFromString(String lpsz) {
 }
 public static final native boolean IsEqualGUID(GUID rguid1, GUID rguid2);
 public static final native void MoveMemory( byte[] Destination, DROPFILES Source, int Length);
-public static final native void MoveMemory(char[] Destination, int SourcePtr, int Length);
 public static final native void MoveMemory(double[] Destination, int SourcePtr, int Length);
 public static final native void MoveMemory(float[] Destination, int SourcePtr, int Length);
 public static final native void MoveMemory(short[] Destination, int SourcePtr, int Length);
