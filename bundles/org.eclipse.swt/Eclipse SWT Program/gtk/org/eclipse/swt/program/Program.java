@@ -47,6 +47,8 @@ public final class Program {
 	static final int DESKTOP_KDE = 1;		// Linux
 	static final int DESKTOP_GNOME = 2;		// Linux
 	
+	static final int PREFERRED_ICON_SIZE = 16;
+	
 /**
  * Prevents uninitialized instances from being created outside the package.
  */
@@ -83,16 +85,8 @@ static int getDesktop(Display display) {
  *		<li>ERROR_NULL_ARGUMENT when extension is null</li>
  *	</ul>
  */
-public static Program findProgram(String extension) {
-	boolean disposeDisplay = false;
-	Display display = Display.getCurrent ();
-	if (display == null) {
-		display = new Display ();
-		disposeDisplay = true;
-	}
-	Program result = findProgram (display, extension);
-	if (disposeDisplay) display.dispose ();
-	return result;
+public static Program findProgram (String extension) {
+	return findProgram( Display.getCurrent(), extension );
 }
 
 /*
@@ -123,22 +117,8 @@ private static Program findProgram(Display display, String extension) {
 		}
 	}			
 	if (name == null) return null;
-
-	// Get the corresponding command for the mime type.
-	boolean[] gnomeExpectUri = null;
-	if (desktop == DESKTOP_GNOME) {
-		gnomeExpectUri = new boolean[1];
-		command = gnome_getMimeTypeCommand(name, gnomeExpectUri);
-	}
-	if (command == null) return null;
-	
-	// Return the corresponding program.
-	Program program   = new Program();
-	program.name      = name;
-	program.command   = command;
-	if (desktop == DESKTOP_GNOME) program.gnomeExpectUri = gnomeExpectUri[0];
-	program.extension = extension;
-	program.display   = display;
+	Program program = null;
+	if (desktop == DESKTOP_GNOME) program = gnome_getProgram(display, name);
 	return program;
 }
 
@@ -214,20 +194,9 @@ private static Program[] getPrograms(Display display) {
 		if (mimeExts.size() > 0){
 			extension = (String)mimeExts.elementAt(0);
 		}
-		String command = null;
-		if (desktop == DESKTOP_GNOME) command = gnome_getMimeTypeCommand( mimeType, gnomeExpectUri);
-		if (command != null) {
-			Program program = new Program ();
-			program.name = mimeType;
-			program.command = command;
-			if (desktop == DESKTOP_GNOME) {
-				program.gnomeExpectUri = gnomeExpectUri[0];
-				program.imageData = gnome_getMimeIcon(mimeType);
-			}
-			program.extension = extension;
-			program.display = display;
-			programs.addElement(program);
-		}
+		Program program = null;
+		if (desktop == DESKTOP_GNOME) program = gnome_getProgram(display, mimeType);
+		if (program != null) programs.addElement(program);
 	}
 			
 	// Return the list of programs to the user.
@@ -299,48 +268,52 @@ private static Hashtable gnome_getMimeInfo(Display display) {
 	return mimeInfo;
 }
 
-private static String gnome_getMimeTypeCommand(String mimeType, boolean gnomeExpectUri[]) {
-	String command = null;
+private static Program gnome_getProgram(Display display, String mimeType) {
+	Program program = null;
 	GnomeVFSMimeApplication application = new GnomeVFSMimeApplication();
 	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType, true);
 	int ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
 	if (ptr != 0) {
+		program = new Program();
+		program.display = display;
+		program.name = mimeType;
 		GNOME.memmove(application, ptr, GnomeVFSMimeApplication.sizeof);
-		int	length = OS.strlen(application.command);
+		int length = OS.strlen(application.command);
 		byte[] buffer = new byte[length];
-		OS.memmove(buffer, application.command, length);
-		command = new String(Converter.mbcsToWcs(null, buffer));
-		gnomeExpectUri[0] = application.expects_uris == GNOME.GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS;
+		OS.memmove(buffer, application.command, length);		
+		program.command = new String(Converter.mbcsToWcs(null, buffer));
+		program.gnomeExpectUri = application.expects_uris == GNOME.GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS;
+		
+		length = OS.strlen(application.id);
+		buffer = new byte[length + 1];
+		OS.memmove(buffer, application.id, length);
+		/* 
+		* Note.  gnome_icon_theme_new uses g_object_new to allocate the data it returns.
+		* Use g_object_unref to free the pointer it returns.
+		*/
+		int icon_theme = GNOME.gnome_icon_theme_new();
+		int icon_name = GNOME.gnome_icon_lookup(icon_theme, 0, null, buffer, 0, mimeTypeBuffer, 
+				GNOME.GNOME_ICON_LOOKUP_FLAGS_NONE, null);
+		int path = 0;
+		if (icon_name != 0) path = GNOME.gnome_icon_theme_lookup_icon(icon_theme, icon_name, PREFERRED_ICON_SIZE, null, null);
+		GNOME.g_object_unref(icon_theme);
+		if (path != 0) {
+			length = OS.strlen(path);
+			if (length > 0) {
+				buffer = new byte[length];
+				OS.memmove(buffer, path, length);
+				String result = new String(Converter.mbcsToWcs(null, buffer));
+				try {
+					program.imageData = new ImageData(result);
+				} catch (Exception e) {
+				}
+			}
+			GNOME.g_free(icon_name);
+			GNOME.g_free(path);
+		}
 		GNOME.gnome_vfs_mime_application_free(ptr);
 	}
-	return command;
-}
-
-private static ImageData gnome_getMimeIcon(String mimeType) {
-	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType, true);
-	/* 
-	* Note.  gnome_icon_theme_new uses g_object_new to allocate the data it returns.
-	* Use g_object_unref to free the pointer it returns.
-	*/
-	int icon_theme = GNOME.gnome_icon_theme_new();
-	int icon_name = GNOME.gnome_icon_lookup(icon_theme, 0, null, null, 0, mimeTypeBuffer, 
-			GNOME.GNOME_ICON_LOOKUP_FLAGS_NONE, null);
-	int path = 0;
-	if (icon_name != 0) path = GNOME.gnome_icon_theme_lookup_icon(icon_theme, icon_name, -1, null, null);
-	GNOME.g_object_unref(icon_theme);
-	if (path == 0) return null;
-	int length = OS.strlen(path);
-	if (length == 0) return null;
-	byte[] buffer = new byte[length];
-	OS.memmove(buffer, path, length);
-	OS.g_free(path);
-	String result = new String(Converter.mbcsToWcs(null, buffer));
-	ImageData data = null;
-	try {
-		data = new ImageData(result);
-	} catch (Exception e) {
-	}
-	return data;
+	return program;
 }
 
 // Private method for parsing a command line into its arguments.
