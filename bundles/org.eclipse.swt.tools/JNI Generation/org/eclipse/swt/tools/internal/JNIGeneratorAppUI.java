@@ -309,10 +309,6 @@ public void open () {
 
 	Point preferredSize = shell.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	shell.setSize(shell.getSize().x, preferredSize.y);
-	((GridData)classesLt.getLayoutData()).heightHint = classesLt.getItemHeight() * 2;
-	((GridData)membersLt.getLayoutData()).heightHint = membersLt.getItemHeight() * 2;
-	((GridData)paramsLt.getLayoutData()).heightHint = paramsLt.getItemHeight() * 2;
-	panel.layout(true);
 	
 	updateMainClass();
 	updateClasses();
