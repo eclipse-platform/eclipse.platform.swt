@@ -7517,24 +7517,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmParseMappingFree
 }
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
- * Method:    XmParseTableFree
- * Signature: ([II)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_motif_OS_XmParseTableFree
-  (JNIEnv *env, jclass that, jintArray parseTable, jint mappingCount)
-{
-	jint *parseTable1 = NULL;
-#ifdef DEBUG_CALL_PRINTS
-	fprintf(stderr, "XmParseTableFree\n");
-#endif
-	if (parseTable) {
-		parseTable1 = (*env)->GetIntArrayElements(env, parseTable, NULL);    
-		XmParseTableFree((XmParseTable) parseTable1, mappingCount);
-		(*env)->ReleaseIntArrayElements(env, parseTable, parseTable1, 0);
-	}
-}
-/*
- * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    XmStringComponentCreate
  * Signature: (II[B)I
  */

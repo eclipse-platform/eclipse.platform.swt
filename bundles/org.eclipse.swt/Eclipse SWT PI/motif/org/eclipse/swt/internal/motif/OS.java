@@ -1138,7 +1138,6 @@ public static final synchronized native int XmMenuShellWidgetClass ();
 public static final synchronized native int XmMessageBoxGetChild (int widget, int child);
 public static final synchronized native int XmParseMappingCreate (int [] argList, int argCount);
 public static final synchronized native void XmParseMappingFree (int parseMapping);
-public static final synchronized native void XmParseTableFree (int [] parseTable, int mappingCount);
 public static final synchronized native boolean XmProcessTraversal (int widget, int dir);
 public static final synchronized native int XmRenderTableAddRenditions(int oldTable, int[] renditions, int renditionCount, int mergeMode);
 public static final synchronized native void XmRenderTableFree(int renderTable);
