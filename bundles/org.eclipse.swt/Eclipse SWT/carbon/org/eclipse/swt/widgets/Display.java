@@ -220,8 +220,7 @@ public class Display extends Device {
 	int fControlActionProc;
 	int fUserPaneDrawProc;
 	int fUserPaneHitTestProc;
-	int fDataBrowserDataProc;
-	int fDataBrowserItemNotificationProc;
+	int fDataBrowserDataProc, fDataBrowserCompareProc, fDataBrowserItemNotificationProc;
 	
 	private boolean fMenuIsVisible;
 	private int fUpdateRegion;
@@ -901,7 +900,8 @@ protected void init () {
 	
 	fDataBrowserDataProc= OS.NewDataBrowserDataCallbackUPP(this, "handleDataBrowserDataCallback");
 	if (fDataBrowserDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	
+	fDataBrowserCompareProc= OS.NewDataBrowserCompareCallbackUPP(this, "handleDataBrowserCompareCallback");
+	if (fDataBrowserCompareProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	fDataBrowserItemNotificationProc= OS.NewDataBrowserItemNotificationCallbackUPP(this, "handleDataBrowserItemNotificationCallback");
 	if (fDataBrowserItemNotificationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
@@ -1780,15 +1780,25 @@ static String convertToLf(String text) {
 		Widget widget= WidgetTable.get(cHandle);
 		if (widget instanceof List) {
 			List list= (List) widget;
-			list.handleItemCallback(cHandle, colID, rowID, itemData);
+			return list.handleItemCallback(rowID, colID, itemData);
+		}
+		return OS.kNoErr;
+	}
+	
+	private int handleDataBrowserCompareCallback(int cHandle, int item1ID, int item2ID, int sortID) {
+		Widget widget= WidgetTable.get(cHandle);
+		if (widget instanceof List) {
+			List list= (List) widget;
+			return list.handleCompareCallback(item1ID, item2ID, sortID);
 		}
 		return OS.kNoErr;
 	}
 	
 	private int handleDataBrowserItemNotificationCallback(int cHandle, int item, int message) {
-		if (message == 14) {	// selection changed
-			windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, item, false));
-		}
+//		System.out.println("handleDataBrowserItemNotificationCallback: " + message);
+//		if (message == 14) {	// selection changed
+//			windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, item, false));
+//		}
 		return OS.kNoErr;
 	}
 	
