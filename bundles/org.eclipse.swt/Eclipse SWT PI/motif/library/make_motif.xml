@@ -47,12 +47,12 @@
 </target>
 
 <target name="build_file_dll">
-	<exec dir="./bin/library" executable="csh" output="${log_dir}/build_log.txt">
-		<arg line="${basedir}/bin/library/build.csh"/>
+	<exec dir="./bin/library" executable="sh" output="${log_dir}/build_log.txt">
+		<arg line="${basedir}/bin/library/build.sh"/>
 		<arg line="clean"/>
 	</exec>
-	<exec dir="./bin/library" executable="csh" output="${log_dir}/build_log.txt">
-		<arg line="${basedir}/bin/library/build.csh"/>
+	<exec dir="./bin/library" executable="sh" output="${log_dir}/build_log.txt">
+		<arg line="${basedir}/bin/library/build.sh"/>
 	</exec>
 	<copy todir="${dll_destdir}">
 		<fileset dir="${basedir}/bin/library/" includes="*.so"/>
