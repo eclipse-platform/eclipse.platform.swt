@@ -640,6 +640,7 @@ public Shell [] getShells () {
  * @see Shell#forceActive
 */
 public void open () {
+	checkWidget ();
 	bringToTop (false);
 	setVisible (true);
 	int focusHandle = OS.gtk_window_get_focus (shellHandle);
