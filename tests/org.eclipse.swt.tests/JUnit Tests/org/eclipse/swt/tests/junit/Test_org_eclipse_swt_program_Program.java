@@ -35,24 +35,20 @@ protected void setUp() {
 protected void tearDown() {
 }
 
+public void test_equalsLjava_lang_Object() {
+	warnUnimpl("Test test_equalsLjava_lang_Object not written");
+}
+
+public void test_executeLjava_lang_String() {
+	warnUnimpl("Test test_executeLjava_lang_String not written");
+}
+
 public void test_findProgramLjava_lang_String() {
 	warnUnimpl("Test test_findProgramLjava_lang_String not written");
 }
 
 public void test_getExtensions() {
 	warnUnimpl("Test test_getExtensions not written");
-}
-
-public void test_getPrograms() {
-	warnUnimpl("Test test_getPrograms not written");
-}
-
-public void test_launchLjava_lang_String() {
-	warnUnimpl("Test test_launchLjava_lang_String not written");
-}
-
-public void test_executeLjava_lang_String() {
-	warnUnimpl("Test test_executeLjava_lang_String not written");
 }
 
 public void test_getImageData() {
@@ -63,12 +59,16 @@ public void test_getName() {
 	warnUnimpl("Test test_getName not written");
 }
 
-public void test_equalsLjava_lang_Object() {
-	warnUnimpl("Test test_equalsLjava_lang_Object not written");
+public void test_getPrograms() {
+	warnUnimpl("Test test_getPrograms not written");
 }
 
 public void test_hashCode() {
 	warnUnimpl("Test test_hashCode not written");
+}
+
+public void test_launchLjava_lang_String() {
+	warnUnimpl("Test test_launchLjava_lang_String not written");
 }
 
 public void test_toString() {
@@ -86,28 +86,28 @@ public static Test suite() {
 }
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
+	methodNames.addElement("test_equalsLjava_lang_Object");
+	methodNames.addElement("test_executeLjava_lang_String");
 	methodNames.addElement("test_findProgramLjava_lang_String");
 	methodNames.addElement("test_getExtensions");
-	methodNames.addElement("test_getPrograms");
-	methodNames.addElement("test_launchLjava_lang_String");
-	methodNames.addElement("test_executeLjava_lang_String");
 	methodNames.addElement("test_getImageData");
 	methodNames.addElement("test_getName");
-	methodNames.addElement("test_equalsLjava_lang_Object");
+	methodNames.addElement("test_getPrograms");
 	methodNames.addElement("test_hashCode");
+	methodNames.addElement("test_launchLjava_lang_String");
 	methodNames.addElement("test_toString");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
-	if (getName().equals("test_findProgramLjava_lang_String")) test_findProgramLjava_lang_String();
-	else if (getName().equals("test_getExtensions")) test_getExtensions();
-	else if (getName().equals("test_getPrograms")) test_getPrograms();
-	else if (getName().equals("test_launchLjava_lang_String")) test_launchLjava_lang_String();
+	if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_executeLjava_lang_String")) test_executeLjava_lang_String();
+	else if (getName().equals("test_findProgramLjava_lang_String")) test_findProgramLjava_lang_String();
+	else if (getName().equals("test_getExtensions")) test_getExtensions();
 	else if (getName().equals("test_getImageData")) test_getImageData();
 	else if (getName().equals("test_getName")) test_getName();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
+	else if (getName().equals("test_getPrograms")) test_getPrograms();
 	else if (getName().equals("test_hashCode")) test_hashCode();
+	else if (getName().equals("test_launchLjava_lang_String")) test_launchLjava_lang_String();
 	else if (getName().equals("test_toString")) test_toString();
 }
 }

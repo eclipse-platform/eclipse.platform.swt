@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.printing.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.printing.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.printing.PrinterData
