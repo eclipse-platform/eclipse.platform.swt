@@ -120,8 +120,8 @@ public void setMaximum (int value) {
 public void setMinimum (int value) {
 	checkWidget();
 	int maximum = OS.GetControl32BitMaximum (handle);
-	if (0 <= maximum && maximum > value) {
-		OS.SetControl32BitMinimum (handle, value);
+	if (0 <= value && value < maximum) {
+		OS.SetControl32BitMaximum (handle, value);
 	}
 }
 
