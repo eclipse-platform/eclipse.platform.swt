@@ -6100,16 +6100,20 @@ void scrollHorizontal(int pixels) {
  *
  * @param pixels number of pixels to scroll, > 0 = scroll left,
  * 	< 0 scroll right
+ * @return
+ *	true=the widget was scrolled 
+ *	false=the widget was not scrolled, the given offset is not valid.
  */
-void scrollHorizontalBar(int pixels) {
+boolean scrollHorizontalBar(int pixels) {
 	if (pixels == 0) {
-		return;
+		return false;
 	}
 	ScrollBar horizontalBar = getHorizontalBar();
 	if (horizontalBar != null) {
 		horizontalBar.setSelection(horizontalScrollOffset + pixels);
 	}
 	scrollHorizontal(pixels);
+	return true;
 }
 /** 
  * Selects all the text.
@@ -7230,13 +7234,16 @@ public void setTopPixel(int pixel) {
  * @param adjustScrollBar 
  * 	true= the scroll thumb will be moved to reflect the new scroll offset.
  * 	false = the scroll thumb will not be moved
+ * @return 
+ *	true=the widget was scrolled 
+ *	false=the widget was not scrolled, the given offset is not valid.
  */
-void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
+boolean setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 	Rectangle clientArea;
 	ScrollBar verticalBar = getVerticalBar();
 	
 	if (pixelOffset == verticalScrollOffset) {
-		return;
+		return false;
 	}
 	if (verticalBar != null && adjustScrollBar) {
 		verticalBar.setSelection(pixelOffset);
@@ -7250,6 +7257,7 @@ void setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 	verticalScrollOffset = pixelOffset;
 	calculateTopIndex();
 	setCaretLocation();
+	return true;
 }
 /**
  * Scrolls the specified location into view.
@@ -7272,28 +7280,20 @@ boolean showLocation(int x, int line) {
 	if (x < leftMargin) {
 		// always make 1/4 of a page visible
 		x = Math.max(horizontalScrollOffset * -1, x - horizontalIncrement);	
-		if (x != 0) {
-			scrollHorizontalBar(x);
-			scrolled = true;
-		}
+		scrolled = scrollHorizontalBar(x);
 	}
 	else 
 	if (x >= clientAreaWidth) {
 		// always make 1/4 of a page visible
 		x = Math.min(lineCache.getWidth() - horizontalScrollOffset, x + horizontalIncrement);
-		if (x - clientAreaWidth != 0) {
-			scrollHorizontalBar(x - clientAreaWidth);
-			scrolled = true;
-		}
+		scrolled = scrollHorizontalBar(x - clientAreaWidth);
 	}
 	if (line < topIndex) {
-		setVerticalScrollOffset(line * verticalIncrement, true);
-		scrolled = true;
+		scrolled = setVerticalScrollOffset(line * verticalIncrement, true);
 	}
 	else
 	if (line > getBottomIndex()) {
-		setVerticalScrollOffset((line + 1) * verticalIncrement - getClientArea().height, true);
-		scrolled = true;
+		scrolled = setVerticalScrollOffset((line + 1) * verticalIncrement - getClientArea().height, true);
 	}
 	return scrolled;
 }
