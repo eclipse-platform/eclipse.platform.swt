@@ -29,6 +29,9 @@ import org.eclipse.swt.widgets.*;
  *	<dt><b>Styles:</b> <dd> SINGLE, MULTI, CHECK, FULL_SELECTION
  *	<dt><b>Events:</b> <dd> Selection, DefaultSelection, Collapse, Expand
  * </dl>
+ * <p>
+ * Note: Only one of the styles SINGLE, and MULTI may be specified.
+ * </p>
  */
 public class TableTree extends Composite {
 	Table table;
