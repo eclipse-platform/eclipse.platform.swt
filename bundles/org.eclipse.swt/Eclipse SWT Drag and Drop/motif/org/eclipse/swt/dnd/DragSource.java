@@ -84,8 +84,8 @@ public class DragSource extends Widget {
 	private Control control;
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
-
-	private boolean myDrag;
+	
+	private boolean moveRequested;
 
 	int dragContext;
 
@@ -172,6 +172,7 @@ private int convertProcCallback(int widget, int pSelection, int pTarget, int pTy
 
 	//  handle the "Move" case
 	if (target[0] == Transfer.registerType("DELETE\0")) { // DELETE corresponds to a Move request
+		moveRequested = true;
 		OS.memmove(pType_return,new int[]{Transfer.registerType("NULL\0")}, 4);
 		OS.memmove(ppValue_return, new int[]{0}, 4);
 		OS.memmove(pLength_return, new int[]{0}, 4);
@@ -246,13 +247,10 @@ private void drag() {
 	}
 
 	if (!event.doit) { 
-		int time = display.xEvent.pad2; // corresponds to time field in XButtonEvent
-		int[] args = new int[]{	OS.XmNdragOperations,	OS.XmDROP_NOOP};	
+		int time = display.xEvent.pad2; // corresponds to time field in XButtonEvent	
 		int dc = OS.XmGetDragContext(control.handle, time);
 		if (dc != 0){
-			OS.XtSetValues(dc, args, args.length /2);
-		} else {			
-			dc = OS.XmDragStart(this.control.handle, display.xEvent, args, args.length/2);
+			OS.XmDragCancel(dc);
 		}
 		return;
 	}
@@ -302,7 +300,6 @@ private void drag() {
 		OS.XtSetValues(dragContext, args, args.length /2);
 	} else {
 		dragContext = OS.XmDragStart(this.control.handle, display.xEvent, args, args.length / 2);
-		myDrag = true;
 	}
 	OS.XtFree(pExportTargets);
 	if (dragContext == 0) return;
@@ -358,13 +355,24 @@ private int dropFinishCallback(int widget, int client_data, int call_data) {
 	DNDEvent event = new DNDEvent();
 	event.widget = this.control;
 	event.time = data.timeStamp;
-	event.detail = osOpToOp(data.operation);
+	if (moveRequested) {
+		event.detail = DND.DROP_MOVE;
+	} else {
+		if (data.operation == OS.XmDROP_MOVE) {
+			event.detail = DND.DROP_NONE;
+		} else {
+			event.detail = osOpToOp(data.operation);
+		}
+		
+	}
 	event.doit = (data.completionStatus != 0);
 
 	try {
 		notifyListeners(DND.DragEnd,event);
 	} catch (Throwable err) {
 	}
+	
+	moveRequested = false;
 	
 	return 0;
 }
@@ -394,11 +402,6 @@ public Transfer[] getTransfer(){
 	return transferAgents;
 }
 private void onDispose() {
-
-	// Check if there is a drag in progress and cancel it
-	//if (dragContext != 0 && myDrag)
-	//	OS.XmDragCancel(dragContext);
-		
 	if (convertProc != null)
 		convertProc.dispose();
 	convertProc = null;
