@@ -353,9 +353,10 @@ public void setAlignment (int alignment) {
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
+	boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 	if ((style & SWT.LEFT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
+		OS.gtk_label_set_justify (labelHandle, isRTL ? OS.GTK_JUSTIFY_RIGHT : OS.GTK_JUSTIFY_LEFT);
 		OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
 		return;
 	}
@@ -367,7 +368,7 @@ public void setAlignment (int alignment) {
 	}
 	if ((style & SWT.RIGHT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.0f);
-		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
+		OS.gtk_label_set_justify (labelHandle, isRTL ? OS.GTK_JUSTIFY_LEFT : OS.GTK_JUSTIFY_RIGHT);
 		OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
 		return;
 	}
@@ -429,6 +430,20 @@ void setForegroundColor (GdkColor color) {
 	OS.gtk_widget_modify_fg (fixedHandle, 0, color);
 	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle, 0, color);
 	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle, 0, color);
+}
+
+void setOrientation () {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+		if (labelHandle != 0) OS.gtk_widget_set_direction (labelHandle, OS.GTK_TEXT_DIR_RTL);
+		if (imageHandle != 0) OS.gtk_widget_set_direction (imageHandle, OS.GTK_TEXT_DIR_RTL);
+		if ((style & SWT.LEAD) != 0) {
+			if (labelHandle != 0) OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
+		}
+		if ((style & SWT.TRAIL) != 0) {
+			if (labelHandle != 0) OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
+		}
+	}
 }
 
 /**
