@@ -806,15 +806,19 @@ int layoutItems () {
 void relayout() {
 	Point size = getSize();
 	int height = layoutItems();
-	Rectangle trim = computeTrim (0, 0, 0, height);
+	Rectangle trim = computeTrim(0, 0, 0, height);
 	if (height != size.y) super.setSize(size.x, trim.height);
 }
 public void setBounds (int x, int y, int width, int height) {
-	super.setBounds (x, y, width, height);
+	super.setBounds(x, y, width, height);
+	layoutItems();
+}
+public void setBounds (Rectangle rect) {
+	super.setBounds(rect);
 	layoutItems();
 }
 public void setSize (int width, int height) {
-	super.setSize (width, height);
+	super.setSize(width, height);
 	layoutItems();
 }
 /**
