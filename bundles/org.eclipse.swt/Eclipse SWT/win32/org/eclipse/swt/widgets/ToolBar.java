@@ -136,16 +136,7 @@ static int checkStyle (int style) {
 	* A vertical tool bar cannot wrap because TB_SETROWS
 	* fails when the toobar has TBSTYLE_WRAPABLE.
 	*/
-	/*
-	* This code is intentionally commented.
-	*/
-	//if ((style & SWT.VERTICAL) != 0) style &= ~SWT.WRAP;
-	
-	/*
-	* The TB_SETROWS calls are currently commented, so force
-	* the wrap style if this bar is vertical.
-	*/
-	if ((style & SWT.VERTICAL) != 0) style |= SWT.WRAP;
+	if ((style & SWT.VERTICAL) != 0) style &= ~SWT.WRAP;
 		
 	/*
 	* Even though it is legal to create this widget
@@ -167,28 +158,42 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		return super.computeSize (wHint, hHint, changed);
 	}
 	int width = 0, height = 0;
-	RECT oldRect = new RECT ();
-	OS.GetWindowRect (handle, oldRect);
-	int oldWidth = oldRect.right - oldRect.left;
-	int oldHeight = oldRect.bottom - oldRect.top;
-	int border = getBorderWidth ();
-	int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + (border * 2);
-	int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + (border * 2);
-	boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
-	ignoreResize = true;
-	if (redraw) OS.UpdateWindow (handle);
-	int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
-	OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
-	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
-	if (count != 0) {
+	if ((style & SWT.VERTICAL) != 0) {
 		RECT rect = new RECT ();
-		OS.SendMessage (handle, OS.TB_GETITEMRECT, count - 1, rect);
-		width = Math.max (width, rect.right);
-		height = Math.max (height, rect.bottom);
+		TBBUTTON lpButton = new TBBUTTON ();
+		int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
+		for (int i=0; i<count; i++) {
+			OS.SendMessage (handle, OS.TB_GETITEMRECT, i, rect);
+			height = Math.max (height, rect.bottom);
+			OS.SendMessage (handle, OS.TB_GETBUTTON, i, lpButton);
+			if ((lpButton.fsStyle & OS.BTNS_SEP) == 0) {
+				width = Math.max (width, rect.right);
+			}
+		}
+	} else {
+		RECT oldRect = new RECT ();
+		OS.GetWindowRect (handle, oldRect);
+		int oldWidth = oldRect.right - oldRect.left;
+		int oldHeight = oldRect.bottom - oldRect.top;
+		int border = getBorderWidth ();
+		int newWidth = wHint == SWT.DEFAULT ? 0x3FFF : wHint + border * 2;
+		int newHeight = hHint == SWT.DEFAULT ? 0x3FFF : hHint + border * 2;
+		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
+		ignoreResize = true;
+		if (redraw) OS.UpdateWindow (handle);
+		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOREDRAW | OS.SWP_NOZORDER;
+		OS.SetWindowPos (handle, 0, 0, 0, newWidth, newHeight, flags);
+		int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
+		if (count != 0) {
+			RECT rect = new RECT ();
+			OS.SendMessage (handle, OS.TB_GETITEMRECT, count - 1, rect);
+			width = Math.max (width, rect.right);
+			height = Math.max (height, rect.bottom);
+		}
+		OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
+		if (redraw) OS.ValidateRect (handle, null);
+		ignoreResize = false;
 	}
-	OS.SetWindowPos (handle, 0, 0, 0, oldWidth, oldHeight, flags);
-	if (redraw) OS.ValidateRect (handle, null);
-	ignoreResize = false;
 	
 	/*
 	* From the Windows SDK for TB_SETBUTTONSIZE:
@@ -306,12 +311,7 @@ void createItem (ToolItem item, int index) {
 		error (SWT.ERROR_ITEM_NOT_ADDED);
 	}
 	items [item.id = id] = item;
-	/*
-	* This code is intentionally commented.
-	*/
-//	if ((style & SWT.VERTICAL) != 0) {
-//		OS.SendMessage (handle, OS.TB_SETROWS, count+1, 0);
-//	}
+	if ((style & SWT.VERTICAL) != 0) setRows (count + 1);
 	layoutItems ();
 }
 
@@ -367,12 +367,7 @@ void destroyItem (ToolItem item) {
 		imageList = hotImageList = disabledImageList = null;
 		items = new ToolItem [4];
 	}
-	/*
-	* This code is intentionally commented.
-	*/
-//	if ((style & SWT.VERTICAL) != 0) {
-//		OS.SendMessage (handle, OS.TB_SETROWS, count-1, 0);
-//	}
+	if ((style & SWT.VERTICAL) != 0) setRows (count - 1);
 	layoutItems ();
 }
 
@@ -498,6 +493,9 @@ public ToolItem [] getItems () {
  */
 public int getRowCount () {
 	checkWidget ();
+	if ((style & SWT.VERTICAL) != 0) {
+		return OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
+	}
 	return OS.SendMessage (handle, OS.TB_GETROWS, 0, 0);
 }
 
@@ -628,6 +626,41 @@ void setImageList (ImageList imageList) {
 		hImageList = imageList.getHandle ();
 	}
 	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
+}
+
+void setRows (int count) {
+	if ((style & SWT.VERTICAL) != 0) {
+		/*
+		* Feature in Windows.  When the TB_SETROWS is used to set the
+		* number of rows in a tool bar, the tool bar is resized to show
+		* the items.  This is unexpected.  The fix is to save and restore
+		* the current size of the tool bar.
+		*/
+		RECT rect = new RECT ();
+		OS.GetWindowRect (handle, rect);
+		OS.MapWindowPoints (0, parent.handle, rect, 2);
+		ignoreResize = true;
+		/*
+		* Feature in Windows.  When the last button in a tool bar has the
+		* style BTNS_SEP and TB_SETROWS is used to set the number of rows
+		* in the tool bar, depending on the number of buttons, the toolbar
+		* will wrap items with the style BTNS_CHECK, even when the fLarger
+		* flags is used to force the number of rows to be larger than the
+		* number of items.  The fix is to set the number of rows to be two
+		* larger than the actual number of rows in the tool bar.  When items
+		* are being added, as long as the number of rows is at least one
+		* item larger than the count, the tool bar is layed out properly.
+		* When items are being removed, setting the number of rows to be
+		* one more than the item count has no effect.  The number of rows
+		* is already one more causing TB_SETROWS to do nothing.  Therefore,
+		* choosing two instead of one as the row increment fixes both cases.
+		*/
+		count += 2;
+		OS.SendMessage (handle, OS.TB_SETROWS, (1 << 16) | count, 0);
+		int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOZORDER;
+		OS.SetWindowPos (handle, 0, 0, 0, rect.right - rect.left, rect.bottom - rect.top, flags);
+		ignoreResize = false;
+	}
 }
 
 boolean setTabItemFocus () {
@@ -799,9 +832,9 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 	* Feature in Windows.  When a tool bar that contains
 	* separators is wrapped, under certain circumstances,
 	* Windows redraws the entire tool bar unnecessarily
-	* when resized no item is moves.  Whether the entire
-	* toolbar is damaged or not seems to depend on the
-	* size of the tool bar and the position of the separators.
+	* when resized and no item moves.  Whether the entire
+	* toolbar is damaged or not seems to depend on the size
+	* of the tool bar and the position of the separators.
 	* The fix is to ensure that the newly exposed areas are
 	* always damaged, and avoid the redraw when no tool item
 	* moves.
