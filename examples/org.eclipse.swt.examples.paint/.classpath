@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-    <classpathentry kind="src" path=""/>
+    <classpathentry kind="src" path="src"/>
     <classpathentry kind="var" path="JRE_LIB"/>
     <classpathentry kind="src" path="/org.eclipse.swt"/>
     <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime/runtime.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.core.runtime/runtimesrc.zip"/>
+        path="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_1.9.0/runtime.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.core.runtime_1.9.0/runtimesrc.zip"/>
     <classpathentry kind="var"
-        path="ECLIPSE_HOME/plugins/org.eclipse.ui/workbench.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.ui/workbenchsrc.zip"/>
+        path="ECLIPSE_HOME/plugins/org.eclipse.ui_1.9.0/workbench.jar" sourcepath="ECLIPSE_HOME/plugins/org.eclipse.ui_1.9.0/workbenchsrc.zip"/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
