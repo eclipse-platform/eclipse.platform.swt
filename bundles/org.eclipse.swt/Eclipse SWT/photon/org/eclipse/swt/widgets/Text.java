@@ -369,7 +369,7 @@ public int getTopIndex () {
 	if ((style & SWT.SINGLE) != 0) return 0;
 	int [] args = {OS.Pt_ARG_MULTITEXT_TOP_LINE, 0, 0};
 	OS.PtGetResources(handle, args.length / 3, args);
-	return args [1];
+	return args [1] - 1;
 }
 
 public int getTopPixel () {
