@@ -21,7 +21,7 @@ import org.eclipse.swt.graphics.*;
  * </dl>
  * <p>
  * This class may be subclassed by custom control implementors
- * who are building controls that are constructed from agregates
+ * who are building controls that are constructed from aggregates
  * of other controls.
  * </p>
  *

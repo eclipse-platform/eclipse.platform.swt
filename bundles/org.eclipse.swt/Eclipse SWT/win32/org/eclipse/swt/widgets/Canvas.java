@@ -21,7 +21,7 @@ import org.eclipse.swt.graphics.*;
  * <p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are <em>not</em> constructed
- * from agregates of other controls. That is, they are either
+ * from aggregates of other controls. That is, they are either
  * painted using SWT graphics calls or are handled by native
  * methods.
  * </p>

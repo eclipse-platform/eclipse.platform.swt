@@ -10,7 +10,7 @@ import org.eclipse.swt.*;
 
 /**
  * Instances of this class represent areas of an x-y coordinate
- * system that are agregates of the areas covered by a number
+ * system that are aggregates of the areas covered by a number
  * of rectangles.
  * <p>
  * Application code must explicitly invoke the <code>Region.dispose()</code> 
