@@ -421,10 +421,12 @@ protected void create (DeviceData data) {
 }
 
 synchronized void createDisplay (DeviceData data) {
-	if (!OS.g_thread_supported ()) {
-		OS.g_thread_init (0);
-		OS.gdk_threads_init ();
-	}
+	/*
+	* This code is intentionally commneted.	*/
+//	if (!OS.g_thread_supported ()) {
+//		OS.g_thread_init (0);
+//		OS.gdk_threads_init ();
+//	}
 	OS.gtk_set_locale();
 	if (!OS.gtk_init_check (new int [] {0}, null)) {
 		SWT.error (SWT.ERROR_DEVICE_DISPOSED);
