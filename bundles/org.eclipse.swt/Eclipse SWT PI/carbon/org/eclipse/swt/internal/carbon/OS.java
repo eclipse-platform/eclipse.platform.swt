@@ -945,6 +945,7 @@ public static final native int QDEndCGContext(int inPort, int[] inoutContext);
 public static final native void QDFlushPortBuffer(int port, int rgnHandle);
 public static final native void QDGlobalToLocalPoint(int port, Point point);
 public static final native void QDLocalToGlobalPoint(int port, Point point);
+public static final native int QDSetDirtyRegion (int port, int rgn);
 public static final native void QDSetPatternOrigin(Point point);
 public static final native int QDSwapTextFlags(int flags);
 public static final native void RGBBackColor(RGBColor color);

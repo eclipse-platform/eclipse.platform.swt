@@ -5559,6 +5559,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDLocalToGlobalPo
 }
 #endif /* NO_QDLocalToGlobalPoint */
 
+#ifndef NO_QDSetDirtyRegion
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSetDirtyRegion
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("QDSetDirtyRegion\n")
+
+	return (jint)QDSetDirtyRegion((CGrafPtr)arg0, (RgnHandle)arg1);
+}
+#endif
+
 #ifndef NO_QDSetPatternOrigin
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_QDSetPatternOrigin
 	(JNIEnv *env, jclass that, jobject arg0)
