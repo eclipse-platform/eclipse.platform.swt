@@ -867,6 +867,7 @@ int processMouseEnter (MacMouseEvent mme) {
 	return 0;
 }
 int processMouseExit (MacMouseEvent mme) {
+	parent.processMouseExit(mme);
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeOut ();
 	display.hideToolTip ();
@@ -874,23 +875,12 @@ int processMouseExit (MacMouseEvent mme) {
 	else if ((parent.style & SWT.FLAT) != 0) redraw ();
 	return 0;
 }
-//Point toControl (Point point) {
-//	return MacUtil.toControl(handle, point);
-//}
 /* AW
 boolean translateTraversal (int key, XKeyEvent xEvent) {
 	return parent.translateTraversal (key, xEvent);
 }
 */
-int processMouseHover (MacMouseEvent mme) {
-	Display display = getDisplay ();
-	display.showToolTip (handle, toolTipText);
-	return 0;
-}
-int processMouseMove (MacMouseEvent mmEvent) {
-	Display display = getDisplay ();
-	display.addMouseHoverTimeOut (handle);
-
+int processMouseHover (MacMouseEvent mmEvent) {
 	/*
 	* Forward the mouse event to the parent.
 	* This is necessary so that mouse listeners
@@ -899,44 +889,33 @@ int processMouseMove (MacMouseEvent mmEvent) {
 	* in X in the parent.  This is done to be
 	* compatible with Windows.
 	*/
-	/* AW
-	XButtonEvent xEvent = new XButtonEvent ();
-	OS.memmove (xEvent, callData, XButtonEvent.sizeof);
-	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	xEvent.window = OS.XtWindow (parent.handle);
-	xEvent.x += argList [1];  xEvent.y += argList [3];
-	*/
+	parent.processMouseHover(mmEvent);
+	getDisplay().showToolTip(handle, toolTipText);
+	return OS.noErr;
+}
+int processMouseMove (MacMouseEvent mmEvent) {
+	Display display = getDisplay ();
+	display.addMouseHoverTimeOut (handle);
 	/*
-	* This code is intentionally commented.
-	* Currently, the implementation of the
-	* mouse move code in the parent interferes
-	* with tool tips for tool items.
+	* Forward the mouse event to the parent.
+	* This is necessary so that mouse listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
 	*/
-//	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
-//	parent.processMouseMove (callData);
-
+//	parent.processMouseMove (mmEvent);
 	parent.sendMouseEvent (SWT.MouseMove, 0, mmEvent);
-
-	return 0;
+	return OS.noErr;
 }
 int processMouseUp (MacMouseEvent mmEvent) {
 	Display display = getDisplay ();
 	display.hideToolTip(); 
-		
 	if (mmEvent.getButton() == 1) {
-		/* AW
-		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		int width = argList [1], height = argList [3];
-		*/
 		Rect bounds= new Rect();
 		OS.GetControlBounds(handle, bounds);
 		int width = bounds.right - bounds.left, height = bounds.bottom - bounds.top;
-				
 		Point mp= MacUtil.toControl(handle, mmEvent.getWhere());
-		//System.out.println("ToolItem.processMouseUp: " + mp);
-
 		if (0 <= mp.x && mp.x < width && 0 <= mp.y && mp.y < height) {
 			click (mp.x > width - 12, mmEvent);
 		}
@@ -950,21 +929,13 @@ int processMouseUp (MacMouseEvent mmEvent) {
 	* in X in the parent.  This is done to be
 	* compatible with Windows.
 	*/
-	/* AW
-	int [] argList = {OS.XmNx, 0, OS.XmNy, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	xEvent.window = OS.XtWindow (parent.handle);
-	xEvent.x += argList [1];  xEvent.y += argList [3];
-	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
-	*/
 	parent.processMouseUp (mmEvent);
-
-	return 0;
+	return OS.noErr;
 }
 int processPaint (Object callData) {
 	
 	if ((style & SWT.SEPARATOR) != 0 && control != null)
-		return 0;
+		return OS.noErr;
 		
 	Rect bounds= new Rect();
 	OS.GetControlBounds(handle, bounds);
@@ -1109,7 +1080,7 @@ int processPaint (Object callData) {
 	gc.carbon_unfocus();
 	gc.dispose ();
 	
-	return 0;
+	return OS.noErr;
 }
 void propagateWidget (boolean enabled) {
 	propagateHandle (enabled, handle);
