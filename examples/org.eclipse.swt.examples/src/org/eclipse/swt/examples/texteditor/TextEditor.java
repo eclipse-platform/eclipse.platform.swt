@@ -258,7 +258,7 @@ void handleExtendedModify(ExtendedModifyEvent event) {
 		// typing) if no style information is active.
 		int caretOffset = text.getCaretOffset();
 		style = null;
-		if (caretOffset <= text.getCharCount()) style = text.getStyleRangeAtOffset(caretOffset);
+		if (caretOffset < text.getCharCount()) style = text.getStyleRangeAtOffset(caretOffset);
 		if (style != null) {
 			style.start = event.start;
 			style.length = event.length;
