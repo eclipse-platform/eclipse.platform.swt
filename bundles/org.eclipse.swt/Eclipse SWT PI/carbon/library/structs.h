@@ -99,6 +99,14 @@ void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct);
 #define setEventRecordFields(a,b,c)
 #endif /* NO_EventRecord */
 
+#ifndef NO_HICommand
+HICommand *getHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
+void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct);
+#else
+#define getHICommandFields(a,b,c) NULL
+#define setHICommandFields(a,b,c)
+#endif /* NO_HICommand */
+
 #ifndef NO_NavDialogCreationOptions
 NavDialogCreationOptions *getNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogCreationOptions *lpStruct);
 void setNavDialogCreationOptionsFields(JNIEnv *env, jobject lpObject, NavDialogCreationOptions *lpStruct);

@@ -595,6 +595,46 @@ void setEventRecordFields(JNIEnv *env, jobject lpObject, EventRecord *lpStruct)
 }
 #endif /* NO_EventRecord */
 
+#ifndef NO_HICommand
+typedef struct HICommand_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID attributes, commandID, menu_menuRef, menu_menuItemIndex;
+} HICommand_FID_CACHE;
+
+HICommand_FID_CACHE HICommandFc;
+
+void cacheHICommandFids(JNIEnv *env, jobject lpObject)
+{
+	if (HICommandFc.cached) return;
+	HICommandFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	HICommandFc.attributes = (*env)->GetFieldID(env, HICommandFc.clazz, "attributes", "I");
+	HICommandFc.commandID = (*env)->GetFieldID(env, HICommandFc.clazz, "commandID", "I");
+	HICommandFc.menu_menuRef = (*env)->GetFieldID(env, HICommandFc.clazz, "menu_menuRef", "I");
+	HICommandFc.menu_menuItemIndex = (*env)->GetFieldID(env, HICommandFc.clazz, "menu_menuItemIndex", "S");
+	HICommandFc.cached = 1;
+}
+
+HICommand *getHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct)
+{
+	if (!HICommandFc.cached) cacheHICommandFids(env, lpObject);
+	lpStruct->attributes = (*env)->GetIntField(env, lpObject, HICommandFc.attributes);
+	lpStruct->commandID = (*env)->GetIntField(env, lpObject, HICommandFc.commandID);
+	lpStruct->menu.menuRef = (MenuRef)(*env)->GetIntField(env, lpObject, HICommandFc.menu_menuRef);
+	lpStruct->menu.menuItemIndex = (MenuItemIndex)(*env)->GetShortField(env, lpObject, HICommandFc.menu_menuItemIndex);
+	return lpStruct;
+}
+
+void setHICommandFields(JNIEnv *env, jobject lpObject, HICommand *lpStruct)
+{
+	if (!HICommandFc.cached) cacheHICommandFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, HICommandFc.attributes, (jint)lpStruct->attributes);
+	(*env)->SetIntField(env, lpObject, HICommandFc.commandID, (jint)lpStruct->commandID);
+	(*env)->SetIntField(env, lpObject, HICommandFc.menu_menuRef, (jint)lpStruct->menu.menuRef);
+	(*env)->SetShortField(env, lpObject, HICommandFc.menu_menuItemIndex, (jshort)lpStruct->menu.menuItemIndex);
+}
+#endif /* NO_HICommand */
+
 #ifndef NO_NavDialogCreationOptions
 typedef struct NavDialogCreationOptions_FID_CACHE {
 	int cached;

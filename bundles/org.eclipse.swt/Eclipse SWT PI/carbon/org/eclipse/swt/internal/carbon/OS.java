@@ -316,6 +316,7 @@ public class OS extends OS2 {
 	public static final int typeControlPartCode = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
 	public static final int typeControlRef = ('c'<<24) + ('t'<<16) + ('r'<<8) + 'l';
 	public static final int typeFSRef = ('f'<<24) + ('s'<<16) + ('r'<<8) + 'f';
+	public static final int typeHICommand = ('h'<<24) + ('c'<<16) + ('m'<<8) + 'd';
 	public static final int typeMouseButton = ('m'<<24) + ('b'<<16) + ('t'<<8) + 'n';
 	public static final int typeQDPoint = ('Q'<<24) + ('D'<<16) + ('p'<<8) + 't';
 	public static final int typeQDRgnHandle= ('r'<<24) + ('g'<<16) + ('n'<<8) + 'h';
@@ -441,6 +442,7 @@ public static final native int GetEventParameter(int inEvent, int inName, int in
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, char[] outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, short[] outData);
 public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, byte[] outData);
+public static final native int GetEventParameter(int inEvent, int inName, int inDesiredType, int[] outActualType, int inBufferSize, int[] outActualSize, HICommand outData);
 public static final native double GetEventTime(int eHandle);
 public static final native void GetFontInfo(short[] info);
 public static final native int GetGDevice();

@@ -33,26 +33,6 @@ static int checkStatus(int line, int rc) {
 #define RC(f) f
 #endif
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_GetEventHICommand(JNIEnv *env, jclass zz,
-			jint eRefHandle, jintArray outParamType) {
-	jint status;
- 	HICommand command;
-	
-	status= (jint) RC(GetEventParameter((EventRef)eRefHandle, kEventParamDirectObject, typeHICommand, 
-			NULL, sizeof(HICommand), NULL, &command));
-	
-	if (outParamType != NULL) {
-		jint *sa= (*env)->GetIntArrayElements(env, outParamType, 0);
-		sa[0]= (jint) command.attributes;
-		sa[1]= (jint) command.commandID;
-		sa[2]= (jint) command.menu.menuRef;
-		sa[3]= (jint) command.menu.menuItemIndex;
-		(*env)->ReleaseIntArrayElements(env, outParamType, sa, 0);
-	}
-
-	return status;
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_NewCursor(JNIEnv *env, jclass zz,
 		jshort hotX, jshort hotY, jshortArray data, jshortArray mask) {
 	

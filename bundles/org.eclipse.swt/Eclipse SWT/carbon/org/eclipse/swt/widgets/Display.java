@@ -16,6 +16,7 @@ import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.EventRecord;
+import org.eclipse.swt.internal.carbon.HICommand;
 
 /**
  * Instances of this class are responsible for managing the
@@ -2069,18 +2070,18 @@ static String convertToLf(String text) {
 			
 		case OS.kEventClassCommand:
 			if (eventKind == OS.kEventProcessCommand) {
-				int[] rc= new int[4];
-				OS.GetEventHICommand(eRefHandle, rc);
-				if (rc[1] == OS.kAEQuitApplication) {
+				HICommand command= new HICommand();
+				OS.GetEventParameter(eRefHandle, OS.kEventParamDirectObject, OS.typeHICommand, null, HICommand.sizeof, null, command);
+				if (command.commandID == OS.kAEQuitApplication) {
 					close();
 					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
 					return OS.noErr;
 				}
 				// try to map the MenuRef to a SWT Menu
-				Widget w= findWidget (rc[2]);
+				Widget w= findWidget (command.menu_menuRef);
 				if (w instanceof Menu) {
 					Menu menu= (Menu) w;
-					menu.handleMenu(rc[3]);
+					menu.handleMenu(command.menu_menuItemIndex);
 					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
 					return OS.noErr;
 				}

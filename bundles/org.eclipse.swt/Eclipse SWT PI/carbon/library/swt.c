@@ -1441,6 +1441,28 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter
 }
 #endif /* NO_GetEventParameter__III_3II_3I_3B */
 
+#ifndef NO_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_HICommand_2
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_HICommand_2
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jobject arg6)
+{
+	jint *lparg3=NULL;
+	jint *lparg5=NULL;
+	HICommand _arg6, *lparg6=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_HICommand_2\n")
+
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg6) lparg6 = getHICommandFields(env, arg6, &_arg6);
+	rc = (jint)GetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (EventParamType *)lparg3, (UInt32)arg4, (UInt32 *)lparg5, (void *)lparg6);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	if (arg6) setHICommandFields(env, arg6, lparg6);
+	return rc;
+}
+#endif /* NO_GetEventParameter__III_3II_3ILorg_eclipse_swt_internal_carbon_HICommand_2 */
+
 #ifndef NO_GetEventParameter__III_3II_3I_3I
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventParameter__III_3II_3I_3I
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4, jintArray arg5, jintArray arg6)
