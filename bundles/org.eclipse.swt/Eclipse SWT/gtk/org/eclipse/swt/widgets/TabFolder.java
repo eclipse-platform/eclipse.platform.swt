@@ -616,7 +616,7 @@ void setForegroundColor (GdkColor color) {
 public void setSelection (int index) {
 	checkWidget ();
 	int count = getItemCount ();
-	if (!(0 <= index  && index < count)) return;
+	if (!(0 <= index && index < count)) return;
 	setSelection (index, false);
 }
 
