@@ -1702,10 +1702,38 @@ boolean onMnemonic (Event event) {
 	}
 	return false;
 }
-void onMouseDoubleClick(Event event) { 
+void onMouseDoubleClick(Event event) {
+	int x = event.x, y = event.y;
+	if (minRect.contains(x, y)) return;
+	if (maxRect.contains(x, y)) return;
+	if (chevronRect.contains(x, y)) return;
+	
+	if (showMax) {
+		CTabFolderEvent e = new CTabFolderEvent(this);
+		e.widget = this;
+		e.time = event.time;
+		e.doit = true;
+		boolean restore = maximized;
+		for (int i = 0; i < minmaxListeners.length; i++) {
+			if (restore) {
+				minmaxListeners[i].restore(e);
+			} else {
+				minmaxListeners[i].maximize(e);
+			}
+		}
+		if (e.doit) {
+			maximized = !restore;
+			redraw(maxRect.x, maxRect.y, maxRect.width, maxRect.height, false);
+			update();
+		}
+	}
+		
+	
 	Event e = new Event();
 	e.item = getItem(new Point(event.x, event.y));
-	notifyListeners(SWT.DefaultSelection, e);
+	if (e.item != null) {
+		notifyListeners(SWT.DefaultSelection, e);
+	}
 }
 void onMouseHover(Event event) {
 	if (tipShowing) return;
