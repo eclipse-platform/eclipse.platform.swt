@@ -365,6 +365,7 @@ public boolean isEnabled () {
 }
 
 int processSelection (int int0, int int1, int int2) {
+	if ((style & SWT.CASCADE) != 0 && menu != null) return 0;
 	postEvent (SWT.Selection);
 	return 0;
 }
