@@ -120,7 +120,8 @@ abstract protected Object nativeToJava(TransferData transferData);
  * @return the unique identifier associated with htis data type
  */
 public static int registerType(String formatName) {
-	System.out.println("Transfer.registerType: " + formatName);
+	// System.out.println("Transfer.registerType: " + formatName);
+	// AW: FIXME: hashCode may not be not unique!
 	return formatName.hashCode();
 }
 }
