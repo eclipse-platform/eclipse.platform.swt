@@ -186,6 +186,7 @@ void doArrowDown (int stateMask) {
 		if ((stateMask & SWT.CTRL) != 0) {
 			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 			if (availableItems.length <= topIndex + visibleItemCount) return;	/* at bottom */
+			update ();
 			topIndex++;
 			getVerticalBar ().setSelection (topIndex);
 			Rectangle clientArea = getClientArea ();
@@ -213,6 +214,7 @@ void doArrowDown (int stateMask) {
 		if ((stateMask & SWT.SHIFT) != 0) {
 			int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 			if (availableItems.length <= topIndex + visibleItemCount) return;	/* at bottom */
+			update ();
 			topIndex++;
 			getVerticalBar ().setSelection (topIndex);
 			Rectangle clientArea = getClientArea ();
@@ -228,8 +230,8 @@ void doArrowDown (int stateMask) {
 		if (focusIndex == availableItems.length - 1) return;	/* at bottom */
 		TreeItem newFocusItem = availableItems[focusIndex + 1];
 		setFocusItem (newFocusItem, true);
-		showItem (newFocusItem);
 		redrawItem (newFocusItem.availableIndex, true);
+		showItem (newFocusItem);
 		return;
 	}
 	int newFocusIndex = focusItem.availableIndex + 1;
@@ -248,6 +250,7 @@ void doArrowLeft (int stateMask) {
 		if (horizontalOffset == 0) return;
 		int newSelection = Math.max (0, horizontalOffset - SIZE_HORIZONTALSCROLL);
 		Rectangle clientArea = getClientArea ();
+		update ();
 		GC gc = new GC (this);
 		gc.copyArea (
 			0, 0,
@@ -255,6 +258,7 @@ void doArrowLeft (int stateMask) {
 			horizontalOffset - newSelection, 0);
 		gc.dispose ();
 		if (getHeaderVisible ()) {
+			header.update ();
 			clientArea = header.getClientArea ();
 			gc = new GC (header);
 			gc.copyArea (
@@ -293,6 +297,7 @@ void doArrowRight (int stateMask) {
 		if ((horizontalOffset + getClientArea ().width) == maximum) return;
 		int newSelection = Math.min (maximum - clientWidth, horizontalOffset + SIZE_HORIZONTALSCROLL);
 		Rectangle clientArea = getClientArea ();
+		update ();
 		GC gc = new GC (this);
 		gc.copyArea (
 			0, 0,
@@ -301,6 +306,7 @@ void doArrowRight (int stateMask) {
 		gc.dispose ();
 		if (getHeaderVisible ()) {
 			clientArea = header.getClientArea ();
+			header.update ();
 			gc = new GC (header);
 			gc.copyArea (
 				0, 0,
@@ -352,6 +358,7 @@ void doArrowUp (int stateMask) {
 	if ((style & SWT.SINGLE) != 0) {
 		if ((stateMask & SWT.CTRL) != 0) {
 			if (topIndex == 0) return;	/* at top */
+			update ();
 			topIndex--;
 			getVerticalBar ().setSelection (topIndex);
 			Rectangle clientArea = getClientArea ();
@@ -379,6 +386,7 @@ void doArrowUp (int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
 		if ((stateMask & SWT.SHIFT) != 0) {
 			if (topIndex == 0) return;	/* at top */
+			update ();
 			topIndex--;
 			getVerticalBar ().setSelection (topIndex);
 			Rectangle clientArea = getClientArea ();
@@ -1024,9 +1032,9 @@ void doResize (Event event) {
 	header.setSize (clientArea.width, headerHeight);
 }
 void doScrollHorizontal (Event event) {
-	update ();
 	int newSelection = getHorizontalBar ().getSelection ();
 	Rectangle clientArea = getClientArea ();
+	update ();
 	GC gc = new GC (this);
 	gc.copyArea (
 		0, 0,
@@ -1046,9 +1054,9 @@ void doScrollHorizontal (Event event) {
 	horizontalOffset = newSelection;
 }
 void doScrollVertical (Event event) {
-	update ();
 	int newSelection = getVerticalBar ().getSelection ();
 	Rectangle clientArea = getClientArea ();
+	update ();
 	GC gc = new GC (this);
 	gc.copyArea (
 		0, 0,
@@ -1887,9 +1895,15 @@ public void setTopItem (TreeItem item) {
 	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	int index = Math.min (item.availableIndex, availableItems.length - visibleItemCount);
 	if (topIndex == index) return;
+
+	update ();
+	int change = topIndex - index;
 	topIndex = index;
 	getVerticalBar ().setSelection (topIndex);
-	redraw ();
+	Rectangle clientArea = getClientArea ();
+	GC gc = new GC (this);
+	gc.copyArea (0, 0, clientArea.width, clientArea.height, 0, change * itemHeight);
+	gc.dispose ();
 }
 public void showColumn (TreeColumn column) {
 	checkWidget ();
