@@ -794,9 +794,6 @@ int processKeyDown (int callData) {
 		case OS.XK_Return:
 			click (true, xEvent);
 			break;
-		case OS.XK_Down:
-			if ((style & SWT.DROP_DOWN) != 0) click (true, xEvent);
-			break;
 	}
 	/*
 	* Forward the key event to the parent.
@@ -896,7 +893,6 @@ boolean translateMnemonic (int key, XKeyEvent xEvent) {
 	return parent.translateMnemonic (key, xEvent);
 }
 boolean translateTraversal (int key, XKeyEvent xEvent) {
-	if (key == OS.XK_Down) return true;
 	return parent.translateTraversal (key, xEvent);
 }
 int processMouseHover (int id) {
