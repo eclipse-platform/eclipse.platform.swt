@@ -196,7 +196,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height += 10;
 		} else {
 			width += 28;
-			height += 8;
+			int [] outMetric = new int [1];
+			OS.GetThemeMetric (OS.kThemeMetricPushButtonHeight, outMetric);
+			height = Math.max (height, outMetric [0]);
 		}
 	}
 	
