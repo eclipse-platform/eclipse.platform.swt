@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>MULTI, SINGLE, READ_ONLY, WRAP</dd>
+ * <dd>CENTER, LEFT, MULTI, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
@@ -1266,7 +1266,7 @@ public void setSelection (int start, int end) {
 	}
 }
 
- /**
+/**
  * Sets the number of tabs.
  * <p>
  * Tab stop spacing is specified in terms of the
@@ -1281,7 +1281,7 @@ public void setSelection (int start, int end) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
-*/
+ */
 public void setTabs (int tabs) {
 	checkWidget();
 	if (tabs < 0) return;

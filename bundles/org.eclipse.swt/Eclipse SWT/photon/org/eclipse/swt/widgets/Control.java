@@ -19,14 +19,19 @@ import org.eclipse.swt.accessibility.*;
  * <dl>
  * <dt><b>Styles:</b>
  * <dd>BORDER</dd>
+ * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b>
  * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
  *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize</dd>
  * </dl>
  * <p>
+ * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
+ * </p><p>
  * IMPORTANT: This class is intended to be subclassed <em>only</em>
  * within the SWT implementation.
  * </p>
+ * 
+ * Note: Only one of LEFT_TO_RIGHT and RIGHT_TO_LEFT may be specified.
  */
 public abstract class Control extends Widget implements Drawable {
 	Composite parent;
@@ -706,6 +711,8 @@ public Display getDisplay () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #isEnabled
  */
 public boolean getEnabled () {
 	checkWidget ();
@@ -2374,6 +2381,22 @@ void sort (int [] items) {
 	}
 }
 
+/**
+ * Returns a point which is the result of converting the
+ * argument, which is specified in display relative coordinates,
+ * to coordinates relative to the receiver.
+ * <p>
+ * @param x the x coordinate to be translated
+ * @param y the y coordinate to be translated
+ * @return the translated coordinates
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
 public Point toControl (int x, int y) {
 	checkWidget();
 	short [] position_x = new short [1], position_y = new short [1];
@@ -2387,6 +2410,7 @@ public Point toControl (int x, int y) {
  * to coordinates relative to the receiver.
  * <p>
  * @param point the point to be translated (must not be null)
+ * @return the translated coordinates
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -2402,6 +2426,22 @@ public Point toControl (Point point) {
 	return toControl (point.x, point.y);
 }
 
+/**
+ * Returns a point which is the result of converting the
+ * argument, which is specified in coordinates relative to
+ * the receiver, to display relative coordinates.
+ * <p>
+ * @param x the x coordinate to be translated
+ * @param y the y coordinate to be translated
+ * @return the translated coordinates
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
 public Point toDisplay (int x, int y) {
 	checkWidget();
 	short [] position_x = new short [1], position_y = new short [1];
@@ -2415,6 +2455,7 @@ public Point toDisplay (int x, int y) {
  * the receiver, to display relative coordinates.
  * <p>
  * @param point the point to be translated (must not be null)
+ * @return the translated coordinates
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -2615,7 +2656,7 @@ boolean traverseReturn () {
 }
 
 /**
- * Forces all outstanding paint requests for the widget tree
+ * Forces all outstanding paint requests for the widget
  * to be processed before this method returns.
  *
  * @exception SWTException <ul>

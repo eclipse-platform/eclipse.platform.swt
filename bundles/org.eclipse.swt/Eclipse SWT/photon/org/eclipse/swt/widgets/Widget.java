@@ -568,6 +568,19 @@ boolean isValidSubclass () {
 	return Display.isValidClass (getClass ());
 }
 
+/**
+ * Returns <code>true</code> if there are any listeners
+ * for the specified event type associated with the receiver,
+ * and <code>false</code> otherwise.
+ *
+ * @param	eventType the type of event
+ * @return true if the event is hooked
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 protected boolean isListening (int eventType) {
 	checkWidget();
 	return hooks (eventType);

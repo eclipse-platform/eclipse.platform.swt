@@ -678,7 +678,7 @@ int hotkeyProc (int w, int data, int info) {
  * @see Decorations#setDefaultButton
  * @see Shell#setActive
  * @see Shell#forceActive
-*/
+ */
 public void open () {
 	checkWidget();
 	bringToTop ();

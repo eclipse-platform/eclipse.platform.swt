@@ -26,7 +26,7 @@ import org.eclipse.swt.*;
 public final class Font {
 
 	/**
-	 * the handle to the OS font (a FMFont)
+	 * the handle to the OS font resource (a FMFont)
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
@@ -90,8 +90,9 @@ public Font(Device display, FontData fd) {
 }
 
 /**	 
- * Constructs a new font given a device and font datas
- * which describes the desired font's appearance.
+ * Constructs a new font given a device and an array
+ * of font data which describes the desired font's
+ * appearance.
  * <p>
  * You must dispose the font when it is no longer required. 
  * </p>
@@ -108,6 +109,8 @@ public Font(Device display, FontData fd) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
+ * 
+ * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
 	if (device == null) device = Device.getDevice();

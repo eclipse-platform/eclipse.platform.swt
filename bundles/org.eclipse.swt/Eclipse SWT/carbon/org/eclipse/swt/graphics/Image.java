@@ -68,7 +68,7 @@ public final class Image implements Drawable{
 	
 	/**
 	 * The handle to the OS image resource.
-	 * Warning: This field is platform dependent.
+	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
 
