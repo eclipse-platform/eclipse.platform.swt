@@ -200,6 +200,7 @@ public void dispose () {
 * Not currently used.
 */
 Rectangle getBounds () {
+	parent.forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (parent.handle, rect);
 	int x = 0, y = 0, width, height;
@@ -362,6 +363,7 @@ public int getSelection () {
  */
 public Point getSize () {
 	checkWidget();
+	parent.forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (parent.handle, rect);
 	int width, height;

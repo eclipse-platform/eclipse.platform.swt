@@ -1173,6 +1173,7 @@ void showItem (int hItem) {
 		RECT itemRect = new RECT ();
 		itemRect.left = hItem;
 		if (OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, itemRect) != 0) {
+			forceResize ();
 			RECT rect = new RECT ();
 			OS.GetClientRect (handle, rect);
 			POINT pt = new POINT ();

@@ -615,11 +615,7 @@ public Point getSize () {
 			return new Point (width, height);
 		}
 	}
-	RECT rect = new RECT ();
-	OS.GetWindowRect (handle, rect);
-	int width = rect.right - rect.left;
-	int height = rect.bottom - rect.top;
-	return new Point (width, height);
+	return super.getSize ();
 }
 
 /**

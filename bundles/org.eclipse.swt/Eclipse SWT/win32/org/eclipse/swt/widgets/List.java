@@ -1515,6 +1515,7 @@ public void showSelection () {
 	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	if (count == 0) return;
 	int height = OS.SendMessage (handle, OS.LB_GETITEMHEIGHT, 0, 0);
+	forceResize ();
 	RECT rect = new RECT ();
 	OS.GetClientRect (handle, rect);
 	int topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
