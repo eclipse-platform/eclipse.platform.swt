@@ -389,7 +389,7 @@ public void addFilter (int eventType, Listener listener) {
 }
 
 void addGdkEvent (int /*long*/ event) {
-	if (gdkEvents == null) gdkEvents = new /*long*/ int [4];
+	if (gdkEvents == null) gdkEvents = new int /*long*/ [4];
 	if (gdkEventCount == gdkEvents.length) {
 		int /*long*/ [] newEvents = new int /*long*/ [gdkEventCount + 4];
 		System.arraycopy (gdkEvents, 0, newEvents, 0, gdkEventCount);
