@@ -1066,26 +1066,207 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
 	if (result != null) return result;
-	if ((style & SWT.CHECK) != 0 && wParam == OS.VK_SPACE) {
-		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-		if (hItem != 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE | OS.TVIF_PARAM;
-			tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
-			tvItem.hItem = hItem;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			int state = tvItem.state >> 12;
-			if ((state & 0x1) != 0) {
-				state++;
-			} else  {
-				--state;
-			}		
-			tvItem.state = state << 12;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-			Event event = new Event ();
-			event.item = items [tvItem.lParam];
-			event.detail = SWT.CHECK;
-			postEvent (SWT.Selection, event);
+	switch (wParam) {
+		case OS.VK_SPACE: {
+			int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+			if (hItem != 0) {
+				hAnchor = hItem;
+				OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
+				TVITEM tvItem = new TVITEM ();
+				tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
+				tvItem.hItem = hItem;
+				if ((style & SWT.CHECK) != 0) {
+					tvItem.stateMask = OS.TVIS_STATEIMAGEMASK;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					int state = tvItem.state >> 12;
+					if ((state & 0x1) != 0) {
+						state++;
+					} else  {
+						--state;
+					}
+					tvItem.state = state << 12;
+					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+				}
+				tvItem.stateMask = OS.TVIS_SELECTED;
+				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+				if ((style & SWT.MULTI) != 0 && OS.GetKeyState (OS.VK_CONTROL) < 0) {
+					if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+						tvItem.state &= ~OS.TVIS_SELECTED;
+					} else {
+						tvItem.state |= OS.TVIS_SELECTED;
+					}
+				} else {
+					tvItem.state |= OS.TVIS_SELECTED;
+				}
+				OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+				TreeItem item = items [tvItem.lParam];
+				Event event = new Event ();
+				event.item = item;
+				postEvent (SWT.Selection, event);
+				if ((style & SWT.CHECK) != 0) {
+					event = new Event ();
+					event.item = item;
+					event.detail = SWT.CHECK;
+					postEvent (SWT.Selection, event);
+				}
+				return LRESULT.ZERO;
+			}
+			break;
+		}
+		case OS.VK_UP:
+		case OS.VK_DOWN:
+		case OS.VK_PRIOR:
+		case OS.VK_NEXT:
+		case OS.VK_HOME:
+		case OS.VK_END: {
+			if ((style & SWT.SINGLE) != 0) break;
+			if (OS.GetKeyState (OS.VK_SHIFT) < 0) {
+				int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+				if (hItem != 0) {
+					if (hAnchor == 0) hAnchor = hItem;
+					boolean selected = false;
+					ignoreSelect = ignoreDeselect = true;
+					int code = callWindowProc (OS.WM_KEYDOWN, wParam, lParam);
+					ignoreSelect = ignoreDeselect = false;
+					int hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+					TVITEM tvItem = new TVITEM ();
+					tvItem.mask = OS.TVIF_STATE;
+					tvItem.stateMask = OS.TVIS_SELECTED;
+					int hDeselectItem = hItem;					
+					RECT rect1 = new RECT ();
+					rect1.left = hAnchor;
+					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect1);
+					RECT rect2 = rect2 = new RECT ();
+					rect2.left = hDeselectItem;
+					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect2);
+					int flags = rect1.top < rect2.top ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE;
+					while (hDeselectItem != hAnchor) {
+						tvItem.hItem = hDeselectItem;
+						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+						hDeselectItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, hDeselectItem);
+					}
+					int hSelectItem = hAnchor;
+					rect1.left = hNewItem;
+					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect1);
+					rect2.left = hSelectItem;
+					OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect2);
+					tvItem.state = OS.TVIS_SELECTED;
+					flags = rect1.top < rect2.top ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE;
+					while (hSelectItem != hNewItem) {
+						tvItem.hItem = hSelectItem;
+						OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+						hSelectItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, flags, hSelectItem);
+					}
+					tvItem.hItem = hNewItem;
+					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+					tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
+					tvItem.hItem = hNewItem;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					Event event = new Event ();
+					if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+						event.item = items [tvItem.lParam];
+					}
+					postEvent (SWT.Selection, event);
+					return new LRESULT (code);
+				}
+			}
+			if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+				int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
+				if (hItem != 0) {
+					TVITEM tvItem = new TVITEM ();
+					tvItem.mask = OS.TVIF_STATE;
+					tvItem.stateMask = OS.TVIS_SELECTED;
+					tvItem.hItem = hItem;
+					OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+					boolean oldSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
+					int hNewItem = 0;
+					switch (wParam) {
+						case OS.VK_UP:
+							hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_PREVIOUSVISIBLE, hItem);
+							break;
+						case OS.VK_DOWN:
+							hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hItem);
+							break;
+						case OS.VK_HOME:
+							hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
+							break;
+						case OS.VK_PRIOR:
+							hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+							if (hNewItem == hItem) {
+								OS.SendMessage (handle, OS.WM_VSCROLL, OS.SB_PAGEUP, 0);
+								hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+							}
+							break;
+						case OS.VK_NEXT:			
+							RECT rect = new RECT (), clientRect = new RECT ();
+							OS.GetClientRect (handle, clientRect);
+							hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+							do {
+								int hVisible = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXTVISIBLE, hNewItem);
+								if (hVisible == 0) break;
+								rect.left = hVisible;
+								OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect);
+								if (rect.bottom > clientRect.bottom) break;
+								if ((hNewItem = hVisible) == hItem) {
+									OS.SendMessage (handle, OS.WM_VSCROLL, OS.SB_PAGEDOWN, 0);
+								}
+							} while (hNewItem != 0);
+							break;
+						case OS.VK_END:
+							hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_LASTVISIBLE, 0);
+							break;
+					}
+					if (hNewItem != 0) {
+						OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hNewItem);
+						tvItem.hItem = hNewItem;
+						OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+						boolean newSelected = (tvItem.state & OS.TVIS_SELECTED) != 0;
+						if (!newSelected && drawCount == 0) {
+							OS.UpdateWindow (handle);
+							OS.DefWindowProc (handle, OS.WM_SETREDRAW, 0, 0);
+							/*
+							* This code is intentionally commented.
+							*/
+//							OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
+						}
+						ignoreSelect = true;
+						OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
+						ignoreSelect = false;
+						if (oldSelected) {
+							tvItem.state = OS.TVIS_SELECTED;
+							tvItem.hItem = hItem;
+							OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+						}
+						if (!newSelected) {
+							tvItem.state = 0;
+							tvItem.hItem = hNewItem;
+							OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+						}
+						if (!newSelected && drawCount == 0) {
+							RECT rect1 = new RECT (), rect2 = new RECT ();
+							rect1.left = hItem;  rect2.left = hNewItem;
+							OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect1);
+							OS.SendMessage (handle, OS.TVM_GETITEMRECT, 1, rect2);
+							/*
+							* This code is intentionally commented.
+							*/
+//							OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+							OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
+							if (OS.IsWinCE) {
+								OS.InvalidateRect (handle, rect1, false);
+								OS.InvalidateRect (handle, rect2, false);
+								OS.UpdateWindow (handle);
+							} else {
+								int flags = OS.RDW_UPDATENOW | OS.RDW_INVALIDATE;
+								OS.RedrawWindow (handle, rect1, 0, flags);
+								OS.RedrawWindow (handle, rect2, 0, flags);
+							}
+						}
+						return LRESULT.ZERO;
+					}
+				}
+			}
+			break;
 		}
 	}
 	return result;
