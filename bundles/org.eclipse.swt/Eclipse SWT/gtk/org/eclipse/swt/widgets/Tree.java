@@ -865,14 +865,15 @@ public void setSelection (TreeItem [] items) {
 		TreeItem item = items [i];
 		if (item == null) continue;
 		if (item.isDisposed ()) break;
-		if (first) {
-			int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
-			showItem (path, true);
+		int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
+		showItem (path, first);
+		if ((style & SWT.SINGLE) != 0) {
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
-			OS.gtk_tree_path_free (path);
-			first = false;
+		} else {
+			OS.gtk_tree_selection_select_iter (selection, item.handle);
 		}
-		OS.gtk_tree_selection_select_iter (selection, item.handle);
+		OS.gtk_tree_path_free (path);
+		first = false;
 		if ((style & SWT.SINGLE) != 0) break;
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
@@ -887,6 +888,7 @@ public void setTopItem (TreeItem item) {
 	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.0f, 0.5f);
 	OS.gtk_tree_path_free (path);
 }
+
 
 /**
  * Shows the selection.  If the selection is already showing in the receiver,
