@@ -626,7 +626,7 @@ JNIEXPORT jint JNICALL XPCOM_NATIVE(VtblCall__III)
     return fn(ppVtbl, arg0); 
 }
 
-JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__II)
+JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__III)
 	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jint arg0)
 {
     P_OLE_FNNORET_2 fn = (P_OLE_FNNORET_2)(*(int **)ppVtbl)[fnNumber];
@@ -634,15 +634,15 @@ JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__II)
     fn(ppVtbl, arg0); 
 }
 
-JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__III)
-	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jint arg0, jint arg1)
+JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__IIII)
+	(JNIEnv *env, jclass that, jint fnNumber, jint ppVtbl, jint arg0, jint arg1)
 {
     P_OLE_FNNORET_3 fn = (P_OLE_FNNORET_3)(*(int **)ppVtbl)[fnNumber];
 
     fn(ppVtbl, arg0, arg1); 
 }
 
-JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__I_3I_3I)
+JNIEXPORT void JNICALL XPCOM_NATIVE(VtblCallNoRet__II_3I_3I)
 	(JNIEnv *env, jclass, jint fnNumber, jint ppVtbl, jintArray arg0, jintArray arg1)
 {
 	P_OLE_FNNORET_3 fn = (P_OLE_FNNORET_3)(*(int **)ppVtbl)[fnNumber];
