@@ -609,8 +609,10 @@ void initExtStyleCombo () {
 void initFaceNameCombo () {
 	String oldSelect = faceNameCombo.getText ();
 	faceNameCombo.removeAll ();
+	String charSetText = charSetCombo.getText ();
+	if (charSetText.length () == 0) return;
 	
-	Hashtable faceNames = getFaces (charSetCombo.getText ());
+	Hashtable faceNames = getFaces (charSetText);
 	setItemsSorted (faceNameCombo, faceNames);
 	
 	int selectIndex = faceNameCombo.indexOf (oldSelect);
