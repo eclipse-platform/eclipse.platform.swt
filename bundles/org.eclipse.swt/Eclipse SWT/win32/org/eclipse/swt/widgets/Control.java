@@ -2005,6 +2005,11 @@ boolean setTabGroupFocus () {
 }
 
 boolean setTabItemFocus () {
+	Control [] path = getPath ();
+	for (int i=0; i<path.length; i++) {
+		Point size = path [i].getSize ();
+		if (size.x == 0 || size.y == 0) return false;
+	}
 	return setFocus ();
 }
 

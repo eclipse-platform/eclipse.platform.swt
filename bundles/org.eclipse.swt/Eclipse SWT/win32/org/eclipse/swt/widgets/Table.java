@@ -1766,6 +1766,11 @@ public void setSelection (int start, int end) {
 	select (start, end);
 }
 
+boolean setTabGroupFocus () {
+	if (super.setTabGroupFocus()) return true;
+	return setTabItemFocus();
+}
+
 /**
  * Sets the zero-relative index of the item which is currently
  * at the top of the receiver. This index can change when items
