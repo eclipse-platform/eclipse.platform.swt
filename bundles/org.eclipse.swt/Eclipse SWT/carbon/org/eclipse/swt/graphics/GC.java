@@ -1566,8 +1566,20 @@ public Rectangle getClipping() {
 	OS.XClipBox(clipRgn, rect);
 	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 	*/
-	System.out.println("GC.getClipping: nyi");
-	return new Rectangle(0, 0, 100, 100);
+	MacRect bounds= new MacRect();
+	if (data.clipRgn == 0) {
+		if (data.controlHandle != 0) {
+			OS.GetControlBounds(data.controlHandle, bounds.getData());
+			return new Rectangle(0, 0, bounds.getWidth(), bounds.getHeight());
+		}
+		if (data.image != null) {
+			return data.image.getBounds();
+		}	
+		System.out.println("GC.getClipping(): should not happen");
+		return new Rectangle(0, 0, 100, 100);
+	}
+	OS.GetRegionBounds(data.clipRgn, bounds.getData());
+	return bounds.toRectangle();
 }
 /** 
  * Sets the region managed by the argument to the current
@@ -1585,8 +1597,19 @@ public Rectangle getClipping() {
 public void getClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	int hRegion = region.handle;
-	int clipRgn = data.clipRgn;
+	
+	if (region.handle == 0)
+		region.handle= OS.NewRgn();
+		
+	if (data.clipRgn == 0) {
+		if (data.controlHandle != 0) {
+			OS.GetControlRegion(data.controlHandle, OS.kWindowContentRgn, region.handle);
+		} else
+			System.out.println("GC.getClipping(Region): nyi");
+	} else {
+		OS.CopyRgn(data.clipRgn, region.handle);
+	}
+	
 	/* AW
 	if (clipRgn == 0) {
 		int[] width = new int[1]; int[] height = new int[1];
@@ -1602,7 +1625,6 @@ public void getClipping(Region region) {
 	OS.XSubtractRegion (hRegion, hRegion, hRegion);
 	OS.XUnionRegion (clipRgn, hRegion, hRegion);
 	*/
-	System.out.println("GC.getClipping: nyi");
 }
 /** 
  * Returns the font currently being used by the receiver
