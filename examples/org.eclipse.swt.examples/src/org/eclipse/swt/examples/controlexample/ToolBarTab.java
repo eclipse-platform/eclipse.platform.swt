@@ -19,8 +19,8 @@ import org.eclipse.swt.events.*;
 
 class ToolBarTab extends Tab {
 	/* Example widgets and groups that contain them */
-	ToolBar imageToolBar, textToolBar;
-	Group imageToolBarGroup, textToolBarGroup;
+	ToolBar imageToolBar, textToolBar, imageTextToolBar;
+	Group imageToolBarGroup, textToolBarGroup, imageTextToolBarGroup;
 	
 	/* Style widgets added to the "Style" group */
 	Button horizontalButton, verticalButton, flatButton, shadowOutButton, wrapButton, rightButton;
@@ -49,6 +49,12 @@ class ToolBarTab extends Tab {
 		textToolBarGroup.setLayout (new GridLayout ());
 		textToolBarGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		textToolBarGroup.setText (ControlExample.getResourceString("Text_ToolBar"));
+		
+		/* Create a group for the image and text tool bar */
+		imageTextToolBarGroup = new Group (exampleGroup, SWT.NONE);
+		imageTextToolBarGroup.setLayout (new GridLayout ());
+		imageTextToolBarGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		imageTextToolBarGroup.setText (ControlExample.getResourceString("ImageText_ToolBar"));
 	}
 	
 	/**
@@ -132,7 +138,45 @@ class ToolBarTab extends Tab {
 		item.setText (ControlExample.getResourceString("Drop_Down"));
 		item.setToolTipText("SWT.DROP_DOWN");
 		item.addSelectionListener(new DropDownSelectionListener());
-	
+
+		/* Create the image and text tool bar */
+		imageTextToolBar = new ToolBar (imageTextToolBarGroup, style);
+		item = new ToolItem (imageTextToolBar, SWT.PUSH);
+		item.setImage (instance.images[ControlExample.ciClosedFolder]);
+		item.setText (ControlExample.getResourceString("Push"));
+		item.setToolTipText("SWT.PUSH");
+		item = new ToolItem (imageTextToolBar, SWT.PUSH);
+		item.setImage (instance.images[ControlExample.ciClosedFolder]);
+		item.setText (ControlExample.getResourceString("Push"));
+		item.setToolTipText("SWT.PUSH");
+		item = new ToolItem (imageTextToolBar, SWT.RADIO);
+		item.setImage (instance.images[ControlExample.ciOpenFolder]);
+		item.setText (ControlExample.getResourceString("Radio"));
+		item.setToolTipText("SWT.RADIO");
+		item = new ToolItem (imageTextToolBar, SWT.RADIO);
+		item.setImage (instance.images[ControlExample.ciOpenFolder]);
+		item.setText (ControlExample.getResourceString("Radio"));
+		item.setToolTipText("SWT.RADIO");
+		item = new ToolItem (imageTextToolBar, SWT.CHECK);
+		item.setImage (instance.images[ControlExample.ciTarget]);
+		item.setText (ControlExample.getResourceString("Check"));
+		item.setToolTipText("SWT.CHECK");
+		item = new ToolItem (imageTextToolBar, SWT.RADIO);
+		item.setImage (instance.images[ControlExample.ciClosedFolder]);
+		item.setText (ControlExample.getResourceString("Radio"));
+		item.setToolTipText("SWT.RADIO");
+		item = new ToolItem (imageTextToolBar, SWT.RADIO);
+		item.setImage (instance.images[ControlExample.ciClosedFolder]);
+		item.setText (ControlExample.getResourceString("Radio"));
+		item.setToolTipText("SWT.RADIO");
+		item = new ToolItem (imageTextToolBar, SWT.SEPARATOR);
+		item.setToolTipText("SWT.SEPARATOR");
+		item = new ToolItem (imageTextToolBar, SWT.DROP_DOWN);
+		item.setImage (instance.images[ControlExample.ciTarget]);
+		item.setText (ControlExample.getResourceString("Drop_Down"));
+		item.setToolTipText("SWT.DROP_DOWN");
+		item.addSelectionListener(new DropDownSelectionListener());
+
 		/*
 		* Do not add the selection event for this drop down
 		* tool item.  Without hooking the event, the drop down
@@ -176,9 +220,11 @@ class ToolBarTab extends Tab {
 	Item [] getExampleWidgetItems () {
 		Item [] imageToolBarItems = imageToolBar.getItems();
 		Item [] textToolBarItems = textToolBar.getItems();
-		Item [] allItems = new Item [imageToolBarItems.length + textToolBarItems.length];
+		Item [] imageTextToolBarItems = imageTextToolBar.getItems();
+		Item [] allItems = new Item [imageToolBarItems.length + textToolBarItems.length + imageTextToolBarItems.length];
 		System.arraycopy(imageToolBarItems, 0, allItems, 0, imageToolBarItems.length);
 		System.arraycopy(textToolBarItems, 0, allItems, imageToolBarItems.length, textToolBarItems.length);
+		System.arraycopy(imageTextToolBarItems, 0, allItems, imageToolBarItems.length + textToolBarItems.length, imageTextToolBarItems.length);
 		return allItems;
 	}
 	
@@ -186,7 +232,7 @@ class ToolBarTab extends Tab {
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {
-		return new Control [] {imageToolBar, textToolBar};
+		return new Control [] {imageToolBar, textToolBar, imageTextToolBar};
 	}
 	
 	/**
