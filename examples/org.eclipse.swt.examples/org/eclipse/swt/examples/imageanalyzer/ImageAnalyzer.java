@@ -12,6 +12,8 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.printing.*;
 import java.util.*;
+import java.net.*;
+import java.io.*;
 import java.text.MessageFormat;
 
 public class ImageAnalyzer {
@@ -46,6 +48,7 @@ public class ImageAnalyzer {
 	Thread animateThread; // draws animated images
 	Thread incrementalThread; // draws incremental images
 	String lastPath; // used to seed the file dialog
+	String currentName; // the current image file or URL name
 	String fileName; // the current image file
 	ImageLoader loader; // the loader for the current image file
 	ImageData[] imageDataArray; // all image data read from the current file
@@ -58,6 +61,70 @@ public class ImageAnalyzer {
 	static final int ALPHA_CONSTANT = 0;
 	static final int ALPHA_X = 1;
 	static final int ALPHA_Y = 2;
+
+	class TextPrompter extends Dialog {
+		String message = "";
+		String result = null;
+		Shell dialog;
+		Text text;
+		public TextPrompter (Shell parent, int style) {
+			super (parent, style);
+		}
+		public TextPrompter (Shell parent) {
+			this (parent, SWT.APPLICATION_MODAL);
+		}
+		public String getMessage () {
+			return message;
+		}
+		public void setMessage (String string) {
+			message = string;
+		}
+		public String open () {
+			dialog = new Shell(getParent(), getStyle());
+			dialog.setText(getText());
+			dialog.setLayout(new GridLayout());
+			Label label = new Label(dialog, SWT.NULL);
+			label.setText(message);
+			label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+			text = new Text(dialog, SWT.SINGLE | SWT.BORDER);
+			GridData data = new GridData(GridData.FILL_HORIZONTAL);
+			data.widthHint = 300;
+			text.setLayoutData(data);
+			Composite buttons = new Composite(dialog, SWT.NONE);
+			GridLayout grid = new GridLayout();
+			grid.numColumns = 2;
+			buttons.setLayout(grid);
+			buttons.setLayoutData(new GridData(GridData.HORIZONTAL_ALIGN_END));
+			Button ok = new Button(buttons, SWT.PUSH);
+			ok.setText(bundle.getString("OK"));
+			data = new GridData();
+			data.widthHint = 75;
+			ok.setLayoutData(data);
+			ok.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					result = text.getText();
+					dialog.dispose();
+				}
+			});
+			Button cancel = new Button(buttons, SWT.PUSH);
+			cancel.setText(bundle.getString("Cancel"));
+			data = new GridData();
+			data.widthHint = 75;
+			cancel.setLayoutData(data);
+			cancel.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					dialog.dispose();
+				}
+			});
+			dialog.setDefaultButton(ok);
+			dialog.pack();
+			dialog.open();
+			while (!dialog.isDisposed()) {
+				if (!display.readAndDispatch()) display.sleep();
+			}
+			return result;
+		}
+	}
 	public static void main(String [] args) {
 		ImageAnalyzer imageAnalyzer = new ImageAnalyzer();
 		imageAnalyzer.open();
@@ -513,13 +580,23 @@ public class ImageAnalyzer {
 		item.setText(bundle.getString("File"));
 		Menu fileMenu = new Menu(shell, SWT.DROP_DOWN);
 		item.setMenu(fileMenu);
-		// File -> Open...
+		// File -> Open File...
 		item = new MenuItem(fileMenu, SWT.NULL);
-		item.setText(bundle.getString("Open"));
+		item.setText(bundle.getString("OpenFile"));
 		item.setAccelerator(SWT.CTRL + 'O');
 		item.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent event) {
-				menuOpen();
+				menuOpenFile();
+			}
+		});
+		
+		// File -> Open URL...
+		item = new MenuItem(fileMenu, SWT.NULL);
+		item.setText(bundle.getString("OpenURL"));
+		item.setAccelerator(SWT.CTRL + 'U');
+		item.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent event) {
+				menuOpenURL();
 			}
 		});
 		
@@ -656,7 +733,7 @@ public class ImageAnalyzer {
 			waitCursor.dispose();
 		}
 	}
-	void menuOpen() {
+	void menuOpenFile() {
 		animate = false; // stop any animation in progress
 		resetScaleCombos();
 		
@@ -690,6 +767,7 @@ public class ImageAnalyzer {
 			imageDataArray = loader.load(filename);
 			loadTime = System.currentTimeMillis() - startTime;
 			if (imageDataArray.length > 0) {				// Cache the filename.
+				currentName = filename;
 				fileName = filename;
 				
 				// If there are multiple images in the file (typically GIF)
@@ -712,6 +790,61 @@ public class ImageAnalyzer {
 		}
 	}
 	
+	void menuOpenURL() {
+		animate = false; // stop any animation in progress
+		resetScaleCombos();
+		
+		// Get the user to choose an image URL.
+		TextPrompter textPrompter = new TextPrompter(shell, SWT.APPLICATION_MODAL | SWT.DIALOG_TRIM);
+		textPrompter.setText(bundle.getString("OpenURLDialog"));
+		textPrompter.setMessage(bundle.getString("EnterURL"));
+		String urlname = textPrompter.open();
+		if (urlname == null) return;
+
+		Cursor waitCursor = new Cursor(display, SWT.CURSOR_WAIT);
+		shell.setCursor(waitCursor);
+		imageCanvas.setCursor(waitCursor);
+		try {
+			URL url = new URL(urlname);
+			InputStream stream = url.openStream();
+			loader = new ImageLoader();
+			if (incremental) {
+				// Prepare to handle incremental events.
+				loader.addImageLoaderListener(new ImageLoaderListener() {
+					public void imageDataLoaded(ImageLoaderEvent event) {
+						incrementalDataLoaded(event);
+					}
+				});
+				incrementalThreadStart();
+			}
+			// Read the new image(s) from the chosen file.
+			long startTime = System.currentTimeMillis();
+			imageDataArray = loader.load(stream);
+			loadTime = System.currentTimeMillis() - startTime;
+			if (imageDataArray.length > 0) {
+				currentName = urlname;
+				fileName = null;
+				
+				// If there are multiple images in the file (typically GIF)
+				// then enable the Previous, Next and Animate buttons.
+				previousButton.setEnabled(imageDataArray.length > 1);
+				nextButton.setEnabled(imageDataArray.length > 1);
+				animateButton.setEnabled(imageDataArray.length > 1 && loader.logicalScreenWidth > 0 && loader.logicalScreenHeight > 0);
+	
+				// Display the first image in the file.
+				imageDataIndex = 0;
+				displayImage(imageDataArray[imageDataIndex]);
+				resetScrollBars();
+			}
+		} catch (Exception e) {
+			showErrorDialog(bundle.getString("Loading_lc"), urlname, e);
+		} finally {
+			shell.setCursor(null);
+			imageCanvas.setCursor(crossCursor);
+			waitCursor.dispose();
+		}
+	}
+
 	/*
 	 * Called to start a thread that draws incremental images
 	 * as they are loaded.
@@ -770,7 +903,7 @@ public class ImageAnalyzer {
 		animate = false; // stop any animation in progress
 		// If the image file type is unknown, we can't 'Save',
 		// so we have to use 'Save As...'.
-		if (imageData.type == SWT.IMAGE_UNDEFINED) {
+		if (imageData.type == SWT.IMAGE_UNDEFINED || fileName == null) {
 			menuSaveAs();
 			return;
 		}
@@ -798,7 +931,7 @@ public class ImageAnalyzer {
 		// Get the user to choose a file name and type to save.
 		FileDialog fileChooser = new FileDialog(shell, SWT.SAVE);
 		fileChooser.setFilterPath(lastPath);
-		fileChooser.setFileName(fileName);
+		if (fileName != null) fileChooser.setFileName(fileName);
 		fileChooser.setFilterExtensions(new String[] { "*.bmp", "*.gif", "*.ico", "*.jpg", "*.png" });
 		fileChooser.setFilterNames(new String[] { "BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg)", "PNG (*.png)" });
 		String filename = fileChooser.open();
@@ -856,7 +989,7 @@ public class ImageAnalyzer {
 		// Get the user to choose a file name and type to save.
 		FileDialog fileChooser = new FileDialog(shell, SWT.SAVE);
 		fileChooser.setFilterPath(lastPath);
-		fileChooser.setFileName(fileName);
+		if (fileName != null) fileChooser.setFileName(fileName);
 		fileChooser.setFilterExtensions(new String[] { "*.bmp", "*.gif", "*.ico", "*.jpg", "*.png" });
 		fileChooser.setFilterNames(new String[] { "BMP (*.bmp)", "GIF (*.gif)", "ICO (*.ico)", "JPEG (*.jpg)", "PNG (*.png)" });
 		String filename = fileChooser.open();
@@ -916,7 +1049,7 @@ public class ImageAnalyzer {
 			Point printerDPI = printer.getDPI();
 			int scaleFactor = printerDPI.x / screenDPI.x;
 			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
-			if (printer.startJob(fileName)) {
+			if (printer.startJob(currentName)) {
 				GC gc = new GC(printer);
 				if (printer.startPage()) {
 					gc.drawImage(
@@ -942,7 +1075,7 @@ public class ImageAnalyzer {
 	}
 
 	void menuReopen() {
-		if (fileName == null) return;
+		if (currentName == null) return;
 		animate = false; // stop any animation in progress
 		resetScrollBars();
 		resetScaleCombos();
@@ -952,13 +1085,20 @@ public class ImageAnalyzer {
 		try {
 			loader = new ImageLoader();
 			long startTime = System.currentTimeMillis();
-			ImageData[] newImageData = loader.load(fileName);
+			ImageData[] newImageData;
+			if (fileName == null) {
+				URL url = new URL(currentName);
+				InputStream stream = url.openStream();
+				newImageData = loader.load(stream);
+			} else {
+				newImageData = loader.load(fileName);
+			}
 			loadTime = System.currentTimeMillis() - startTime;
 			imageDataIndex = 0;
 			displayImage(newImageData[imageDataIndex]);
 
-		} catch (SWTException e) {
-			showErrorDialog(bundle.getString("Reloading_lc"), fileName, e);
+		} catch (Exception e) {
+			showErrorDialog(bundle.getString("Reloading_lc"), currentName, e);
 		} finally {	
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
@@ -1144,7 +1284,7 @@ public class ImageAnalyzer {
 							public void run() {
 								showErrorDialog(createMsg(bundle.getString("Creating_image"), 
 										    new Integer(imageDataIndex+1)),
-										    fileName, e);
+										    currentName, e);
 							}
 						});
 					}
@@ -1374,13 +1514,13 @@ public class ImageAnalyzer {
 			imageData = newImageData;
 
 		} catch (SWTException e) {
-			showErrorDialog(bundle.getString("Creating_from") + " ", fileName, e);
+			showErrorDialog(bundle.getString("Creating_from") + " ", currentName, e);
 			image = null;
 			return;
 		}
 
 		// Update the widgets with the new image info.
-		String string = createMsg(bundle.getString("Analyzer_on"), fileName);
+		String string = createMsg(bundle.getString("Analyzer_on"), currentName);
 		shell.setText(string);
 
 		if (imageDataArray.length > 1) {
@@ -1707,12 +1847,20 @@ public class ImageAnalyzer {
 	/*
 	 * Open an error dialog displaying the specified information.
 	 */
-	void showErrorDialog(String operation, String filename, SWTException e) {
+	void showErrorDialog(String operation, String filename, Exception e) {
 		MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
 		String message = createMsg(bundle.getString("Error"), new String[] {operation, filename});
-		String errorMessage = e.getMessage();
-		if (e.throwable != null) {
-			errorMessage += ":\n" + e.throwable.toString();
+		String errorMessage = "";
+		if (e != null) {
+			if (e instanceof SWTException) {
+				SWTException swte = (SWTException) e;
+				errorMessage = swte.getMessage();
+				if (swte.throwable != null) {
+					errorMessage += ":\n" + swte.throwable.toString();
+				}
+			} else {
+				errorMessage = e.toString();
+			}
 		}
 		box.setMessage(message + errorMessage);
 		box.open();
