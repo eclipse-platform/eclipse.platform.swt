@@ -1072,9 +1072,9 @@ public void remove (int index) {
 	int /*long*/ item = OS.g_list_nth_data (children, index);
 	boolean selected = OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
 	int /*long*/ items = OS.g_list_append (0, item);
-	OS.gtk_list_remove_items(listHandle, items);
-	OS.g_list_free(items);
-	OS.g_list_free(children);
+	OS.gtk_list_remove_items (listHandle, items);
+	OS.g_list_free (items);
+	OS.g_list_free (children);
 	if (selected) {
 		OS.gtk_entry_set_text (entryHandle, new byte[1]);
 	}
@@ -1120,9 +1120,9 @@ public void remove (int start, int end) {
 		selected |= OS.GTK_WIDGET_STATE (item) == OS.GTK_STATE_SELECTED;
 		items = OS.g_list_append (items, item);
 	}
-	OS.gtk_list_remove_items(listHandle, items);
-	OS.g_list_free(items);
-	OS.g_list_free(children);
+	OS.gtk_list_remove_items (listHandle, items);
+	OS.g_list_free (items);
+	OS.g_list_free (children);
 	if (selected) {
 		OS.gtk_entry_set_text (entryHandle, new byte[1]);
 	}
