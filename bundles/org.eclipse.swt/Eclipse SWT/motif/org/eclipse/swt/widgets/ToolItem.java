@@ -14,15 +14,18 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class represent a selectable user interface object
  * that represents a button in a tool bar.
- * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>PUSH, CHECK, RADIO, SEPARATOR, DROP_DOWN</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
- * </p>
+ * <p>
+ * Note: Only one of the styles CHECK, PUSH, RADIO, SEPARATOR and DROP_DOWN 
+ * may be specified.
+ * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
  */
 public class ToolItem extends Item {
 	ToolBar parent;
@@ -741,23 +744,6 @@ void setDrawPressed (boolean value) {
 int processKeyDown (int callData) {
 	XKeyEvent xEvent = new XKeyEvent ();
 	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
-
-	/*
-	* Forward the key event to the parent.
-	* This is necessary so that mouse listeners
-	* in the parent will be called, despite the
-	* fact that the event did not really occur
-	* in X in the parent.  This is done to be
-	* compatible with Windows.
-	*/
-	xEvent.window = OS.XtWindow (parent.handle);
-//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
-	parent.processKeyDown (callData);
-	return 0;
-}
-int processKeyUp (int callData) {
-	XKeyEvent xEvent = new XKeyEvent ();
-	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
 	int [] keysym = new int [1];
 	OS.XLookupString (xEvent, null, 0, keysym, null);
 	keysym [0] &= 0xFFFF;
@@ -774,7 +760,24 @@ int processKeyUp (int callData) {
 	}
 	/*
 	* Forward the key event to the parent.
-	* This is necessary so that mouse listeners
+	* This is necessary so that key listeners
+	* in the parent will be called, despite the
+	* fact that the event did not really occur
+	* in X in the parent.  This is done to be
+	* compatible with Windows.
+	*/
+	xEvent.window = OS.XtWindow (parent.handle);
+//	OS.memmove (callData, xEvent, XKeyEvent.sizeof);
+	parent.processKeyDown (callData);
+	return 0;
+}
+int processKeyUp (int callData) {
+	XKeyEvent xEvent = new XKeyEvent ();
+	OS.memmove (xEvent, callData, XKeyEvent.sizeof);
+
+	/*
+	* Forward the key event to the parent.
+	* This is necessary so that key listeners
 	* in the parent will be called, despite the
 	* fact that the event did not really occur
 	* in X in the parent.  This is done to be

@@ -626,3 +626,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1MAPPED
 {
 	return GTK_WIDGET_MAPPED((GtkWidget*)wid);
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1widget_1send_1expose
+  (JNIEnv *env, jclass that, jint wid, jint event)
+{
+	return gtk_widget_send_expose((GtkWidget*)wid, (GdkEvent*)event);
+}
+
