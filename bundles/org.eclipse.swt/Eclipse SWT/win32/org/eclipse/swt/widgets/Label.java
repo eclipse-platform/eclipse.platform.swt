@@ -124,7 +124,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		TCHAR buffer = new TCHAR (getCodePage (), length + 1);
 		OS.GetWindowText (handle, buffer, length + 1);
 		OS.DrawText (hDC, buffer, length, rect, flags);
-		width = rect.right - rect.left + (OS.IsWinCE ? 1 : 0);
+		width = rect.right - rect.left;
 		height = rect.bottom - rect.top;
 		if (height == 0) {
 			TEXTMETRIC tm = new TEXTMETRIC ();
@@ -137,6 +137,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
 	width += border * 2; height += border * 2;
+	/* 
+	* Feature in WinCE PPC.  Text labels have a trim
+	* of one pixel wide on the right and left side.
+	* The fix is to increase the size.
+	*/
+	if (OS.IsWinCE) {
+		if (!isBitmap && !isIcon) width += 2;
+	}
 	return new Point (width, height);
 }
 
