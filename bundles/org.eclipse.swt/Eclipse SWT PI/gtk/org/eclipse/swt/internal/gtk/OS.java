@@ -189,7 +189,7 @@ public class OS {
 	public static final int GTK_SHADOW_OUT = 0x2;
 	public static final int GTK_STATE_INSENSITIVE = 0x4;
 	public static final int GTK_STATE_NORMAL = 0x0;
-	public static final int GTK_TEXT_WINDOW_WIDGET = 1;
+	public static final int GTK_TEXT_WINDOW_TEXT = 2;
 	public static final int GTK_TOOLBAR_CHILD_BUTTON = 0x1;
 	public static final int GTK_TOOLBAR_CHILD_RADIOBUTTON = 0x3;
 	public static final int GTK_TOOLBAR_CHILD_TOGGLEBUTTON = 0x2;
@@ -689,6 +689,7 @@ public static final native boolean gtk_text_view_get_editable(int text_view);
 public static final native void gtk_text_view_get_iter_location(int text_view, byte[] iter, GdkRectangle location);
 public static final native void gtk_text_view_get_line_at_y(int text_view, byte[] target_iter, int y, int[] line_top);
 public static final native void gtk_text_view_get_visible_rect(int text_view, GdkRectangle visible_rect);
+public static final native int gtk_text_view_get_window(int text_view, int win);
 public static final native int gtk_text_view_new();
 public static final native void gtk_text_view_scroll_mark_onscreen(int text_view, int mark);
 public static final native boolean gtk_text_view_scroll_to_iter(int text_view, byte[] iter, double within_margin, boolean use_align,  double xalign, double yalign);

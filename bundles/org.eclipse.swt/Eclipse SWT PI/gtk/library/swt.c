@@ -3949,6 +3949,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1get
 	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1get_1window
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1text_1view_1get_1window\n")
+
+	return (jint)gtk_text_view_get_window((GtkTextView *)arg0, (GtkTextWindowType)arg1);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1text_1view_1new
 	(JNIEnv *env, jclass that)
 {

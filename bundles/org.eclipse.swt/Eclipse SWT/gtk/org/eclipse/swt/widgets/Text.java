@@ -387,7 +387,7 @@ public Point getCaretLocation () {
 	OS.gtk_text_view_get_iter_location (handle, position, rect);
 	int [] x = new int [1];
 	int [] y  = new int [1];
-	OS.gtk_text_view_buffer_to_window_coords (handle, OS.GTK_TEXT_WINDOW_WIDGET, rect.x, rect.y, x, y);
+	OS.gtk_text_view_buffer_to_window_coords (handle, OS.GTK_TEXT_WINDOW_TEXT, rect.x, rect.y, x, y);
 	return new Point (x [0], y [0]);
 }
 
@@ -825,6 +825,14 @@ public void insert (String string) {
 		OS.gtk_text_buffer_insert (bufferHandle, start, buffer, buffer.length);
 		OS.gtk_text_buffer_place_cursor (bufferHandle, start);
 	}
+}
+
+int paintWindow () {
+	OS.gtk_widget_realize (handle);
+	if ((style & SWT.SINGLE) != 0) {
+		return OS.GTK_WIDGET_WINDOW (handle);
+	}
+	return OS.gtk_text_view_get_window (handle, OS.GTK_TEXT_WINDOW_TEXT);
 }
 
 /**
