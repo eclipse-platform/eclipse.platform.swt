@@ -90,7 +90,6 @@ public class Decorations extends Canvas {
 	*/
 	// AW
 	private static final int FIRST_MENU_ITEM_ID= 1000;
-	int fExitMenuItemId= -1;
 	// AW
 	boolean minimized, maximized;
 	Menu menuBar;

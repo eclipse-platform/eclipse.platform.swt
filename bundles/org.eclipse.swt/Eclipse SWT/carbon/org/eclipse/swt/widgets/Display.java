@@ -1927,17 +1927,6 @@ static String convertToLf(String text) {
 		return OS.eventNotHandledErr;
 	}
 	
-	/**
-	 * Tries to use the exit menu item for shutdown 
-	 */
-	private void quit() {
-		if (fMenuRootShell != null) {
-			MenuItem mi= fMenuRootShell.findMenuItem(fMenuRootShell.fExitMenuItemId);
-			if (mi != null)
-				mi.handleMenuSelect();
-		}				
-	}
-
 	private int handleApplicationCallback(int nextHandler, int eRefHandle, int userData) {
 	
 		MacEvent mEvent= new MacEvent(eRefHandle);
@@ -1948,6 +1937,7 @@ static String convertToLf(String text) {
 			
 		case OS.kEventClassAppleEvent:
 		
+			// check for 'quit' events
 			int[] aeclass= new int[1];
 			if (OS.GetEventParameter(eRefHandle, OS.kEventParamAEEventClass, OS.typeType, null, null, aeclass) == OS.kNoErr) {
 				// System.out.println("kEventClassAppleEvent: " + MacUtil.toString(aeclass[0]));
@@ -1955,7 +1945,7 @@ static String convertToLf(String text) {
 				if (OS.GetEventParameter(eRefHandle, OS.kEventParamAEEventID, OS.typeType, null, null, aetype) == OS.kNoErr) {
 					//System.out.println("kEventParamAEEventID: " + MacUtil.toString(aetype[0]));
 					if (aetype[0] == OS.kAEQuitApplication)
-						quit();
+						close();
 				}
 			}
 			
@@ -1969,7 +1959,7 @@ static String convertToLf(String text) {
 				OS.GetEventHICommand(eRefHandle, rc);
 				
 				if (rc[1] == OS.kAEQuitApplication) {
-					quit();
+					close();
 					OS.HiliteMenu((short)0);	// unhighlight what MenuSelect (or MenuKey) hilited
 					return OS.kNoErr;
 				}

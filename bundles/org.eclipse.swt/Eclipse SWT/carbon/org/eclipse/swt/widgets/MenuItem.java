@@ -661,12 +661,7 @@ public void setText (String string) {
 	if (index[0] >= 1) {
 		int sHandle= 0;
 		try {
-			String s= removeMnemonicsAndShortcut(text);
-			if ("Exit".equals(s)) {
-				getParent().getParent().fExitMenuItemId= id;
-				System.out.println("Exit: " + id);
-			}
-			sHandle= OS.CFStringCreateWithCharacters(s);
+			sHandle= OS.CFStringCreateWithCharacters(removeMnemonicsAndShortcut(text));
 			OS.SetMenuItemTextWithCFString(hMenu, index[0], sHandle);
 		} finally {
 			OS.CFRelease(sHandle);
