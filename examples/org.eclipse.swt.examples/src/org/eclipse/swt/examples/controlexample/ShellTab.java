@@ -17,11 +17,12 @@ import org.eclipse.swt.layout.*;
 import org.eclipse.swt.events.*;
 
 class ShellTab extends Tab {	
-	/* Style widgets added to the "Style" group */
+	/* Style widgets added to the "Style" groups, and "Other" group */
 	Button noParentButton, parentButton;
 	Button noTrimButton, closeButton, titleButton, minButton, maxButton, borderButton, resizeButton, onTopButton, toolButton;
 	Button createButton, closeAllButton;
 	Button modelessButton, primaryModalButton, applicationModalButton, systemModalButton;
+	Button imageButton;
 	Group parentStyleGroup, modalStyleGroup;
 
 	/* Variables used to track the open shells */
@@ -99,9 +100,10 @@ class ShellTab extends Tab {
 			}
 		});
 	
-		/* Set the size, title and open the shell */
+		/* Set the size, title, and image, and open the shell */
 		currentShell.setSize (300, 100);
 		currentShell.setText (ControlExample.getResourceString("Title") + shellCount);
+		if (imageButton.getSelection()) currentShell.setImage(instance.images[ControlExample.ciTarget]);
 		hookListeners (currentShell);
 		currentShell.open ();
 		shellCount++;
@@ -198,6 +200,16 @@ class ShellTab extends Tab {
 		systemModalButton = new Button (modalStyleGroup, SWT.RADIO);
 		systemModalButton.setText ("SWT.SYSTEM_MODAL");
 	
+		/* Create a group for the 'other' controls */
+		otherGroup = new Group (styleGroup, SWT.NONE);
+		otherGroup.setLayout (new GridLayout ());
+		otherGroup.setLayoutData (new GridData(SWT.FILL, SWT.FILL, false, false, 2, 1));
+		otherGroup.setText (ControlExample.getResourceString("Other"));
+
+		/* Create the 'other' buttons */
+		imageButton = new Button (otherGroup, SWT.CHECK);
+		imageButton.setText (ControlExample.getResourceString("Image"));
+
 		/* Create the "create" and "closeAll" buttons */
 		createButton = new Button (styleGroup, SWT.NONE);
 		gridData = new GridData (GridData.HORIZONTAL_ALIGN_END);
