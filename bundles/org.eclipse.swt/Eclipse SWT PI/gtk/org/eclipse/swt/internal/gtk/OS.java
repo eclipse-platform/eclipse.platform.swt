@@ -183,6 +183,7 @@ public class OS {
 	public static final int GTK_POLICY_ALWAYS = 0x0;
 	public static final int GTK_POLICY_AUTOMATIC = 0x1;
 	public static final int GTK_POLICY_NEVER = 0x2;
+	public static final int GTK_POS_BOTTOM = 0x3;
 	public static final int GTK_PROGRESS_CONTINUOUS = 0x0;
 	public static final int GTK_PROGRESS_DISCRETE = 0x1;
 	public static final int GTK_PROGRESS_LEFT_TO_RIGHT = 0x0;
@@ -662,6 +663,7 @@ public static final synchronized native void gtk_notebook_remove_page(int notebo
 public static final synchronized native void gtk_notebook_set_current_page(int notebook, int page_num);
 public static final synchronized native void gtk_notebook_set_scrollable(int notebook, boolean scrollable);
 public static final synchronized native void gtk_notebook_set_show_tabs(int notebook, boolean show_tabs);
+public static final synchronized native void gtk_notebook_set_tab_pos(int notebook, int pos);
 public static final synchronized native void gtk_object_sink(int object);
 public static final synchronized native int gtk_plug_new(int socket_id);
 public static final synchronized native int gtk_progress_bar_new();

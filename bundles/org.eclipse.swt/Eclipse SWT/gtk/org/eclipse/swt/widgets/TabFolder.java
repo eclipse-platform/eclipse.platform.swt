@@ -166,7 +166,13 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	x -= clientX;
 	y -= clientY;
 	width +=  clientX + clientX;
-	height +=  clientX + clientY;
+	if ((style & SWT.BOTTOM) != 0) {
+		int parentHeight = OS.GTK_WIDGET_HEIGHT (handle);
+		int clientHeight = OS.GTK_WIDGET_HEIGHT (clientHandle);
+		height += parentHeight - clientHeight;
+	} else {
+		height +=  clientX + clientY;
+	}
 	return new Rectangle (x, y, width, height);
 }
 
@@ -184,6 +190,9 @@ void createHandle (int index) {
 	OS.gtk_widget_show (fixedHandle);
 	OS.gtk_notebook_set_scrollable (handle, true);
 	OS.gtk_notebook_set_show_tabs (handle, true);
+	if ((style & SWT.BOTTOM) != 0) {
+		OS.gtk_notebook_set_tab_pos (handle, OS.GTK_POS_BOTTOM);
+	}
 }
 
 void createWidget (int index) {

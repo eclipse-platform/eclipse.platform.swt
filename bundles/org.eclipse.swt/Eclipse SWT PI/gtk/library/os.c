@@ -4165,6 +4165,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1notebook_1set_1show_1tabs)
 }
 #endif
 
+#ifndef NO_gtk_1notebook_1set_1tab_1pos
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1notebook_1set_1tab_1pos)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	NATIVE_ENTER(env, that, "gtk_1notebook_1set_1tab_1pos\n")
+	gtk_notebook_set_tab_pos((GtkNotebook *)arg0, (GtkPositionType)arg1);
+	NATIVE_EXIT(env, that, "gtk_1notebook_1set_1tab_1pos\n")
+}
+#endif
+
 #ifndef NO_gtk_1object_1sink
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1object_1sink)
 	(JNIEnv *env, jclass that, jint arg0)
