@@ -452,7 +452,7 @@ int processSelection (int callData) {
 				if ((xEvent.state & OS.Button3Mask) != 0) event.stateMask |= SWT.BUTTON3;
 		}
 	}
-	sendEvent (SWT.Selection, event);
+	postEvent (SWT.Selection, event);
 	return 0;
 }
 void releaseChild () {
