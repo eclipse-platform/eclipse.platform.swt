@@ -566,8 +566,22 @@ void fixShell (Shell newShell, Control control) {
 public void getClipping (Region region) {
 	checkWidget ();
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
-	if (clippingRgn == 0) return;
-	OS.gdk_region_union(region.handle, clippingRgn);
+	int hRegion = region.handle;
+	OS.gdk_region_subtract (hRegion, hRegion);
+	if (clippingRgn != 0) {
+		OS.gdk_region_union(hRegion, clippingRgn);
+	} else {
+		int width = OS.GTK_WIDGET_WIDTH (scrolledHandle) + trimWidth ();
+		int height = OS.GTK_WIDGET_HEIGHT (scrolledHandle) + trimHeight ();
+		if (menuBar != null)  {
+			int barHandle = menuBar.handle;
+			height += OS.GTK_WIDGET_HEIGHT (barHandle);
+		}
+		GdkRectangle gdkRect = new GdkRectangle();
+		gdkRect.width = width;
+		gdkRect.height = height;
+		OS.gdk_region_union_with_rect(hRegion, gdkRect);
+	}
 }
 
 public Point getLocation () {
