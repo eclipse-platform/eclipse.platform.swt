@@ -819,6 +819,7 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 		return super.gtk_focus_out_event (widget, event);
 	}
 	if (tooltipsHandle != 0) OS.gtk_tooltips_disable (tooltipsHandle);
+	Display display = this.display;
 	sendEvent (SWT.Deactivate);
 	setActiveControl (null);
 	if (display.activeShell == this) display.activeShell = null;
