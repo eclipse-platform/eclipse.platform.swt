@@ -1788,14 +1788,15 @@ private void onMouseDoubleClick(Event event) {
 }
 /** 
  * A mouse button was pressed down. 
- * If one of the tab scroll buttons was hit, scroll in the appropriate 
- * direction.
  * If a tab was hit select the tab.
  */
 private void onMouseDown(Event event) {
 	for (int i=0; i<items.length; i++) {
 		if (items[i].getBounds().contains(new Point(event.x, event.y))) {
+			if (i == selectedIndex) return;
+			forceFocus();
 			setSelection(i, true);
+			setFocus();
 			return;
 		}
 	}
