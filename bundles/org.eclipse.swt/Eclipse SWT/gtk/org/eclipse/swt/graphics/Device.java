@@ -500,7 +500,7 @@ protected void release () {
 			GdkColor color = gdkColors [i];
 			if (color != null) {
 				while (colorRefCount [i] > 0) {
-					OS.gdk_color_free(color);
+					OS.gdk_colormap_free_colors(colormap, color, 1);
 					--colorRefCount [i];
 				}
 			}
