@@ -3836,6 +3836,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1resize
 	gdk_window_resize((GdkWindow*)window, (gint)width, (gint)height);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1move
+  (JNIEnv *env, jclass that, jint window, jint x, jint y)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "gdk_window_move");
+#endif
+
+	gdk_window_move((GdkWindow*)window, (gint)x, (gint)y);
+}
+
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS
  * Method:	gdk_window_clear_area_e
