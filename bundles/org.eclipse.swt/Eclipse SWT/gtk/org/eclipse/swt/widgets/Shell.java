@@ -834,7 +834,7 @@ int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 }
 
 int /*long*/ gtk_realize (int /*long*/ widget) {
-	int result = super.gtk_realize (widget);
+	int /*long*/ result = super.gtk_realize (widget);
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	if ((style & SWT.SHELL_TRIM) != SWT.SHELL_TRIM) {
 		int decorations = 0;
