@@ -2465,6 +2465,9 @@ public class SWT {
 	/**
 	 * The character movement type (value is 1&lt;&lt;0).
 	 * 
+	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset()
+	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset()
+	 * 
 	 * @since 3.0
 	 */	
 	public static final int MOVEMENT_CHAR = 1 << 0;
@@ -2472,12 +2475,18 @@ public class SWT {
 	/**
 	 * The cluster movement type (value is 1&lt;&lt;1).
 	 * 
+	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset()
+	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset()
+	 * 
 	 * @since 3.0
 	 */
 	public static final int MOVEMENT_CLUSTER = 1 << 1;
 
 	/**
 	 * The word movement type (value is 1&lt;&lt;2).
+	 * 
+	 * @see org.eclipse.swt.graphics.TextLayout#getNextOffset()
+	 * @see org.eclipse.swt.graphics.TextLayout#getPreviousOffset()
 	 * 
 	 * @since 3.0
 	 */	
