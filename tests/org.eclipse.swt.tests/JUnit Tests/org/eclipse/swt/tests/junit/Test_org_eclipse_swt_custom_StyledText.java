@@ -972,7 +972,44 @@ public void test_getLocationAtOffsetI(){
 	assertTrue(":j:", text.getLocationAtOffset(0).x < 0 && text.getLocationAtOffset(0).y < 0);
 	assertTrue(":k:", text.getLocationAtOffset(7).x < 0 && text.getLocationAtOffset(7).y == 0);
 }
+public void test_getOffsetAtLineI() {
+	boolean exceptionThrown = false;
+	
+	assertEquals(":a:", 0, text.getOffsetAtLine(0));
+	try {
+		text.getOffsetAtLine(-1);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(":b:", exceptionThrown);
+	exceptionThrown = false;
+	
+	try {
+		text.getOffsetAtLine(100);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(":c:", exceptionThrown);
+	exceptionThrown = false;
+	
+	text.setText("Line0\r\n");	
+	assertEquals(":d:", 0, text.getOffsetAtLine(0));
+	assertEquals(":e:", 7, text.getOffsetAtLine(1));
 
+	try {
+		text.getOffsetAtLine(2);
+	}
+	catch (IllegalArgumentException e) {
+		exceptionThrown = true;
+	}
+	assertTrue(":f:", exceptionThrown);
+	exceptionThrown = false;
+
+	text.setText("");	
+	assertEquals(":g:", 0, text.getOffsetAtLine(0));
+}
 public void test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point() {
 	boolean exceptionThrown = false;
 	Point location;
@@ -1363,7 +1400,17 @@ public void test_getTopPixel() {
 	text.setText("");
 	assertTrue(":i:", text.getTopPixel() == 0);
 }
-
+public void test_getWordWrap() {
+	assertTrue(":a:", text.getWordWrap() == false);
+	text.setWordWrap(true);
+	assertTrue(":b:", text.getWordWrap());
+	text.setWordWrap(false);
+	assertTrue(":c:", text.getWordWrap() == false);
+	text.setWordWrap(false);
+	assertTrue(":d:", text.getWordWrap() == false);
+	text.setWordWrap(true);
+	assertTrue(":e:", text.getWordWrap());
+}
 public void test_insertLjava_lang_String(){
 	String delimiterString = "\n";
 	try {
@@ -3324,6 +3371,22 @@ public void test_setTopIndexI(){
 	text.setTopIndex(2);
 	assertTrue(":g:", text.getTopIndex() == 0);
 }
+public void test_setWordWrapZ(){
+	String testString = "Line1\nLine2";
+	
+	text.setWordWrap(true);
+	assertTrue(":a:", text.getWordWrap());
+	text.setWordWrap(false);
+	assertTrue(":b:", text.getWordWrap() == false);
+	text.setWordWrap(false);
+	assertTrue(":c:", text.getWordWrap() == false);
+	text.setWordWrap(true);
+	assertTrue(":d:", text.getWordWrap());
+	
+	text.setText(testString);
+	assertEquals(":e:", testString, text.getText());
+	assertEquals(":f:", 2, text.getLineCount());	
+}
 
 public void test_showSelection() {
 	text.showSelection();
@@ -3375,6 +3438,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getLineDelimiter");
 	methodNames.addElement("test_getLineHeight");
 	methodNames.addElement("test_getLocationAtOffsetI");
+	methodNames.addElement("test_getOffsetAtLineI");	
 	methodNames.addElement("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_getSelection");
 	methodNames.addElement("test_getSelectionRange");
@@ -3389,6 +3453,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getTextLimit");
 	methodNames.addElement("test_getTopIndex");
 	methodNames.addElement("test_getTopPixel");
+	methodNames.addElement("test_getWordWrap");	
 	methodNames.addElement("test_insertLjava_lang_String");
 	methodNames.addElement("test_invokeActionI");
 	methodNames.addElement("test_paste");
@@ -3426,6 +3491,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setTextLimitI");
 	methodNames.addElement("test_setTopIndexI");
+	methodNames.addElement("test_setWordWrapZ");
 	methodNames.addElement("test_showSelection");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
 	return methodNames;
@@ -3460,6 +3526,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getLineDelimiter")) test_getLineDelimiter();
 	else if (getName().equals("test_getLineHeight")) test_getLineHeight();
 	else if (getName().equals("test_getLocationAtOffsetI")) test_getLocationAtOffsetI();
+	else if (getName().equals("test_getOffsetAtLineI")) test_getOffsetAtLineI();	
 	else if (getName().equals("test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point")) test_getOffsetAtLocationLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_getSelection")) test_getSelection();
 	else if (getName().equals("test_getSelectionRange")) test_getSelectionRange();
@@ -3474,6 +3541,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getTextLimit")) test_getTextLimit();
 	else if (getName().equals("test_getTopIndex")) test_getTopIndex();
 	else if (getName().equals("test_getTopPixel")) test_getTopPixel();
+	else if (getName().equals("test_getWordWrap")) test_getWordWrap();	
 	else if (getName().equals("test_insertLjava_lang_String")) test_insertLjava_lang_String();
 	else if (getName().equals("test_invokeActionI")) test_invokeActionI();
 	else if (getName().equals("test_paste")) test_paste();
@@ -3511,6 +3579,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
 	else if (getName().equals("test_setTopIndexI")) test_setTopIndexI();
+	else if (getName().equals("test_setWordWrapZ")) test_setWordWrapZ();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else super.runTest();
 }
