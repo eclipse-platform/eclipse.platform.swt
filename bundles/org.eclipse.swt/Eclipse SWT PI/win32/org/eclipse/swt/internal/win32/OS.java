@@ -496,7 +496,6 @@ public class OS {
 	public static final int IDC_SIZEWE = 0x7f84;
 	public static final int IDC_UPARROW = 0x7f04;
 	public static final int IDC_WAIT = 0x7f02;
-	public static final int IDI_WINLOGO = 0x7f05;
 	public static final int IDNO = 0x7;
 	public static final int IDOK = 0x1;
 	public static final int IDRETRY = 0x4;
@@ -777,6 +776,7 @@ public class OS {
 	public static final int OIC_HAND = 0x7F01;
 	public static final int OIC_INFORMATION = 0x7F04;
 	public static final int OIC_QUES = 0x7F02;
+	public static final int OIC_WINLOGO = 0x7F05;
 	public static final int OPAQUE = 0x2;
 	public static final int PATCOPY = 0xf00021;
 	public static final int PATINVERT = 0x5a0049;
@@ -2450,7 +2450,6 @@ public static final native int LoadStringA (int hinst, int uID, byte [] lpBuffer
 public static final native int LoadLibraryW (char [] lpLibFileName);
 public static final native int LoadLibraryA (byte [] lpLibFileName);
 public static final native int LocalFree(int hMem);
-public static final native int MAKEINTRESOURCE (int wInteger);
 public static final native int MapVirtualKeyW (int uCode, int uMapType);
 public static final native int MapVirtualKeyA (int uCode, int uMapType);
 public static final native int MapWindowPoints (int hWndFrom, int hWndTo, POINT lpPoints, int cPoints);

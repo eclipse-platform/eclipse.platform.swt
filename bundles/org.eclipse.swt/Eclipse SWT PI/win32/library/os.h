@@ -238,7 +238,8 @@
 #define NO_LoadBitmapA
 #define NO_LoadCursorA
 #define NO_LoadIconA
-#define NO_LoadImageA
+#define NO_LoadImageA__IIIIII
+#define NO_LoadImageA__I_3BIIII
 #define NO_LoadLibraryA
 #define NO_LoadStringA
 #define NO_MapVirtualKeyA

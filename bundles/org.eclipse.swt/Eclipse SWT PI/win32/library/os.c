@@ -4409,18 +4409,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(LocalFree)
 }
 #endif
 
-#ifndef NO_MAKEINTRESOURCE
-JNIEXPORT jint JNICALL OS_NATIVE(MAKEINTRESOURCE)
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	jint rc;
-	OS_NATIVE_ENTER(env, that, MAKEINTRESOURCE_FUNC);
-	rc = (jint)MAKEINTRESOURCE(arg0);
-	OS_NATIVE_EXIT(env, that, MAKEINTRESOURCE_FUNC);
-	return rc;
-}
-#endif
-
 #ifndef NO_MapVirtualKeyA
 JNIEXPORT jint JNICALL OS_NATIVE(MapVirtualKeyA)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

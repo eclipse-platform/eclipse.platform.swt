@@ -1398,7 +1398,6 @@ public Image getSystemImage (int id) {
 			image = warningImage;
 			break;
 		}
-		default: return null;
 	}
 	if (image == 0) return null;
 	int /*long*/[] pixmap_return = new int /*long*/[1];
