@@ -683,6 +683,7 @@ typedef enum {
 	SetDataBrowserSelectedItems_FUNC,
 	SetDataBrowserSelectionFlags_FUNC,
 	SetDataBrowserSortOrder_FUNC,
+	SetDataBrowserSortProperty_FUNC,
 	SetDataBrowserTableViewColumnPosition_FUNC,
 	SetDataBrowserTableViewHiliteStyle_FUNC,
 	SetDataBrowserTableViewItemRow_FUNC,

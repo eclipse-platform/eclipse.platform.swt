@@ -9238,6 +9238,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserSortOrder)
 }
 #endif
 
+#ifndef NO_SetDataBrowserSortProperty
+JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserSortProperty)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetDataBrowserSortProperty_FUNC);
+	rc = (jint)SetDataBrowserSortProperty((ControlRef)arg0, (DataBrowserPropertyID)arg1);
+	OS_NATIVE_EXIT(env, that, SetDataBrowserSortProperty_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetDataBrowserTableViewColumnPosition
 JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserTableViewColumnPosition)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

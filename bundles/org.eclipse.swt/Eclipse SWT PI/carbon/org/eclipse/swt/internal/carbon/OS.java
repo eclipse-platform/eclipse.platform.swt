@@ -1357,6 +1357,7 @@ public static final native int SetDataBrowserScrollPosition(int cHandle, int top
 public static final native int SetDataBrowserSelectedItems(int cHandle, int numItems, int[] items, int operation);
 public static final native int SetDataBrowserSelectionFlags(int cHandle, int selectionFlags);
 public static final native int SetDataBrowserSortOrder(int browser, short order);
+public static final native int SetDataBrowserSortProperty(int browser, int property);
 public static final native int SetDataBrowserTableViewColumnPosition(int browser, int column, int position);
 public static final native int SetDataBrowserTableViewHiliteStyle(int browser, int hiliteStyle);  
 public static final native int SetDataBrowserTableViewItemRow(int browser, int item, int row);
