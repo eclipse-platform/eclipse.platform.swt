@@ -2633,19 +2633,19 @@ boolean setItemLocation() {
 	if (single) {
 		int defaultX = size.x + 10; // off screen
 		for (int i = 0; i < items.length; i++) {
-			if (items[i].x != defaultX) changed = true;
-			items[i].x = defaultX; 	
-		}
-		if (selectedIndex > -1) {
-			CTabItem item = items[selectedIndex];
-			int oldX = item.x, oldY = item.y;
-			item.x = borderLeft;
-			item.y = y;
-			if (showClose || item.showClose) {
-				item.closeRect.x = borderLeft + CTabItem.LEFT_MARGIN;
-				item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
+			if (i == selectedIndex) {
+				CTabItem item = items[selectedIndex];
+				int oldX = item.x, oldY = item.y;
+				item.x = borderLeft;
+				item.y = y;
+				if (showClose || item.showClose) {
+					item.closeRect.x = borderLeft + CTabItem.LEFT_MARGIN;
+					item.closeRect.y = onBottom ? size.y - borderBottom - tabHeight + (tabHeight - BUTTON_SIZE)/2: borderTop + (tabHeight - BUTTON_SIZE)/2;
+				}
+				if (item.x != oldX || item.y != oldY) changed = true;
+			} else {
+				items[i].x = defaultX;
 			}
-			if (item.x != oldX || item.y != oldY) changed = true;
 		}
 	} else {
 		int x = -1;
