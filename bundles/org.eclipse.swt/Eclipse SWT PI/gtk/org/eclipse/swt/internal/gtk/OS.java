@@ -439,6 +439,7 @@ public static final synchronized native void gdk_draw_layout(int drawable, int g
 public static final synchronized native void gdk_draw_layout_with_colors(int drawable, int gc, int x, int y, int layout, GdkColor foreground, GdkColor background);
 public static final synchronized native void gdk_draw_line(int drawable, int gc, int x1, int y1, int x2, int y2);
 public static final synchronized native void gdk_draw_lines(int drawable, int gc, int[] points, int npoints);
+public static final synchronized native void gdk_draw_point(int drawable, int gc, int x, int y);
 public static final synchronized native void gdk_draw_polygon(int drawable, int gc, int filled, int[] points, int npoints);
 public static final synchronized native void gdk_draw_rectangle(int drawable, int gc, int filled, int x, int y, int width, int height);
 public static final synchronized native int gdk_drawable_get_image(int drawable, int x, int y, int width, int height);

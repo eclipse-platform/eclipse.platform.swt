@@ -1182,6 +1182,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1draw_1lines)
 }
 #endif
 
+#ifndef NO_gdk_1draw_1point
+JNIEXPORT void JNICALL OS_NATIVE(gdk_1draw_1point)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	NATIVE_ENTER(env, that, "gdk_1draw_1point\n")
+	gdk_draw_point((GdkDrawable *)arg0, (GdkGC *)arg1, arg2, arg3);
+	NATIVE_EXIT(env, that, "gdk_1draw_1point\n")
+}
+#endif
+
 #ifndef NO_gdk_1draw_1polygon
 JNIEXPORT void JNICALL OS_NATIVE(gdk_1draw_1polygon)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jint arg4)
