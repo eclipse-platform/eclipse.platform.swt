@@ -233,7 +233,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	Control [] children = composite.getChildren ();
 	for (int i = 0; i < children.length; i++) {
 		Control child = children [i];
-		Point pt = getSize (child, false);
+		Point pt = getSize (child, flushCache);
 		FormData data = (FormData) child.getLayoutData ();
 		if (data == null) {
 			child.setLayoutData (data = new FormData ());
