@@ -539,8 +539,10 @@ public boolean isDisposed () {
 }
 
 int logProc (int log_domain, int log_level, int message, int user_data) {
-	if (DEBUG || (debug && warningLevel == 0)) {
-		new Error ().printStackTrace ();
+	if (warningLevel == 0) {
+		if (DEBUG || debug) {
+			new Error ().printStackTrace ();
+		}
 		OS.g_log_default_handler (log_domain, log_level, message, 0);
 	}
 	return 0;
