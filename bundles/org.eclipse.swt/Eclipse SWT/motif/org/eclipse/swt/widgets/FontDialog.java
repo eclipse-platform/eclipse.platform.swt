@@ -22,6 +22,8 @@ import java.util.*;
 public /*final*/ class FontDialog extends Dialog {
 	private static final String TEXT_SAMPLE = "AaBbYyZz";
 	private static final String TEXT_FONT_NOT_LOADED = "Could not load selected font";	// text used in place of sample text when the selected font could not be loaded
+	private static final String SCALABLE_SIZES[] = new String[] {"8", "10", "11", "12", "14", "16", "18", "22", "24", "26"};
+	private static final int SELECTION_SIZE = 14;
 	
 	private Shell shell;						// the dialog shell
 	private Combo characterSet;
@@ -577,32 +579,35 @@ void initFontDataCombos() {
  * is used.
  */
 void initSizeCombo(FontExtStyles fontExtStyles) {
-	Vector sizes = null;
-	Integer size;
 	Combo sizeCombo = getSizeCombo();
-	String sizeStrings[] = {"8", "10", "11", "12", "14", "16", "18", "22", "24", "26"};
-	int selectionIndex = -1;
-	final int SelectionSize = 14;	
-
+	String previousSize = sizeCombo.getText();
 	sizeCombo.removeAll();
-	if (fontExtStyles.isScalable() == true) {
-		sizeCombo.setItems(sizeStrings);
-		selectionIndex = 4;
+
+	int selectionIndex = -1;
+
+	if (fontExtStyles.isScalable()) {
+		sizeCombo.setItems(SCALABLE_SIZES);
+		selectionIndex = sizeCombo.indexOf(String.valueOf(SELECTION_SIZE));
 	}
 	else {
-		sizes = fontExtStyles.getSizes(getExtStyleCombo().getText());
+		Vector sizes = fontExtStyles.getSizes(getExtStyleCombo().getText());
 		for (int i = 0; i < sizes.size(); i++) {
-			size = (Integer) sizes.elementAt(i);
+			Integer size = (Integer) sizes.elementAt(i);
 			sizeCombo.add(size.toString());
-			if (size.intValue() >= SelectionSize && selectionIndex == -1) {
+			// select the largest height if there's no font
+			// size that is at least as high as SelectionSize
+			if (size.intValue() >= SELECTION_SIZE && selectionIndex == -1)
 				selectionIndex = i;
-			}
 		}
-	}	
-	if (selectionIndex == -1) {
-		selectionIndex = sizes.size() - 1;			// select largest height if there's no font 
-													// size that is at least as high as SelectionSize 
 	}
+
+	int indexOfPreviousSelection = sizeCombo.indexOf(previousSize);
+	if (indexOfPreviousSelection != -1)
+		selectionIndex = indexOfPreviousSelection;
+
+	if (selectionIndex == -1)	// last resort case, should not happen
+		selectionIndex = sizeCombo.getItemCount() - 1;			
+
 	sizeCombo.select(selectionIndex);	
 }
 /**
