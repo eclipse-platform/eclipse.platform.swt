@@ -352,6 +352,7 @@ public String open () {
 		}
 	} else {
 		fileName = "";
+		fileNames = null;
 	}
 	
 	/* Free the memory that was allocated. */
