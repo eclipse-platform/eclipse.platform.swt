@@ -722,6 +722,15 @@ public void setMenu (Menu menu) {
 	if (accelGroup != 0) addAccelerators (accelGroup);
 }
 
+void setOrientation() {
+	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (handle != 0) {
+			OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+			OS.gtk_container_forall (handle, display.setDirectionProc, OS.GTK_TEXT_DIR_RTL);		
+		}
+	}
+}
+
 boolean setRadioSelection (boolean value) {
 	if ((style & SWT.RADIO) == 0) return false;
 	if (getSelection () != value) {

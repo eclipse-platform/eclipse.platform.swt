@@ -878,6 +878,12 @@ public void setLocation (Point location) {
 	setLocation (location.x, location.y);
 }
 
+void setOrientation() {
+	if ((parent.style & SWT.RIGHT_TO_LEFT) != 0) {
+		if (handle != 0) OS.gtk_widget_set_direction (handle, OS.GTK_TEXT_DIR_RTL);
+	}
+}
+
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,
  * and marks it invisible otherwise. 
