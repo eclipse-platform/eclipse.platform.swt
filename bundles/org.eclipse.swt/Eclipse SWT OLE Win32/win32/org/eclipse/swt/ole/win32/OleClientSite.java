@@ -850,7 +850,7 @@ private void onPaint(Event e) {
 		SIZE size = getExtent();
 		Rectangle area = getClientArea();
 		RECT rect = new RECT();
-		if (getProgramID().startsWith("Excel.Sheet")) {
+		if (getProgramID().startsWith("Excel.Sheet")) { //$NON-NLS-1$
 			rect.left = area.x; rect.right = area.x + (area.height * size.cx / size.cy);
 			rect.top = area.y; rect.bottom = area.y + area.height;
 		} else {
@@ -921,17 +921,6 @@ private void onTraverse(Event event) {
 private int OnViewChange(int dwAspect, int lindex) {
 	return COM.S_OK;
 }
-private IStorage openStorage(IStorage storage, String name) {
-	int mode = COM.STGM_TRANSACTED | COM.STGM_READWRITE | COM.STGM_SHARE_EXCLUSIVE;
-	int[] ppStg = new int[1];
-	if (storage.OpenStorage(name, 0, mode, null, 0, ppStg) != COM.S_OK) {
-		// IStorage does not exist, so create one
-		mode = mode | COM.STGM_CREATE;
-		if (storage.CreateStorage(name, mode, 0, 0, ppStg) != COM.S_OK)
-			return null;
-	}
-	return new IStorage(ppStg[0]);
-}
 protected int QueryInterface(int riid, int ppvObject) {
 
 	if (riid == 0 || ppvObject == 0)
@@ -961,7 +950,7 @@ protected int QueryInterface(int riid, int ppvObject) {
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIOleDocumentSite )) {
 		String progID = getProgramID();
-		if (!progID.startsWith("PowerPoint")) {
+		if (!progID.startsWith("PowerPoint")) { //$NON-NLS-1$
 			COM.MoveMemory(ppvObject, new int[] {iOleDocumentSite.getAddress()}, 4);
 			AddRef();
 			return COM.S_OK;
