@@ -666,9 +666,7 @@ public Control getCursorControl () {
 public Point getCursorLocation () {
 	checkDevice ();
 	int window = OS.XDefaultRootWindow (xDisplay);
-	int [] rootX = new int [1];
-	int [] rootY = new int [1];
-	int [] unused = new int [1];
+	int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
 	OS.XQueryPointer(xDisplay, window, unused, unused, rootX, rootY, unused, unused, unused);
 	return new Point (rootX [0], rootY [0]);
 }
@@ -1418,12 +1416,6 @@ static synchronized void register (Display display) {
 	Displays = newDisplays;
 }
 protected void release () {
-	if (disposeList != null) {
-		for (int i=0; i<disposeList.length; i++) {
-			if (disposeList [i] != null) disposeList [i].run ();
-		}
-	}
-	disposeList = null;	
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1432,6 +1424,12 @@ protected void release () {
 		}
 	}
 	while (readAndDispatch ()) {};
+	if (disposeList != null) {
+		for (int i=0; i<disposeList.length; i++) {
+			if (disposeList [i] != null) disposeList [i].run ();
+		}
+	}
+	disposeList = null;	
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
 	releaseDisplay ();
@@ -1567,26 +1565,6 @@ boolean runDeferredEvents () {
 	return true;
 }
 /**
- * On platforms which support it, sets the application name
- * to be the argument. On Motif, for example, this can be used
- * to set the name used for resource lookup.
- *
- * @param name the new app name
- */
-public static void setAppName (String name) {
-	APP_NAME = name;
-}
-void setCurrentCaret (Caret caret) {
-	if (caretID != 0) OS.XtRemoveTimeOut (caretID);
-	caretID = 0;
-	currentCaret = caret;
-	if (currentCaret != null) {
-		int blinkRate = currentCaret.blinkRate;
-		int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-		caretID = OS.XtAppAddTimeOut (xtContext, blinkRate, caretProc, 0);
-	}
-}
-/**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
  * program to move the user's pointer.</b>
@@ -1607,6 +1585,26 @@ public void setCursorLocation (Point pt) {
 	if (x > bounds.width || y > bounds.height) error (SWT.ERROR_INVALID_ARGUMENT);
 	int xWindow = OS.XDefaultRootWindow (xDisplay);	
 	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
+}
+/**
+ * On platforms which support it, sets the application name
+ * to be the argument. On Motif, for example, this can be used
+ * to set the name used for resource lookup.
+ *
+ * @param name the new app name
+ */
+public static void setAppName (String name) {
+	APP_NAME = name;
+}
+void setCurrentCaret (Caret caret) {
+	if (caretID != 0) OS.XtRemoveTimeOut (caretID);
+	caretID = 0;
+	currentCaret = caret;
+	if (currentCaret != null) {
+		int blinkRate = currentCaret.blinkRate;
+		int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+		caretID = OS.XtAppAddTimeOut (xtContext, blinkRate, caretProc, 0);
+	}
 }
 /**
  * Sets the application defined property of the receiver
