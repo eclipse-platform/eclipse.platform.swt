@@ -338,19 +338,29 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (hHint != SWT.DEFAULT) minHeight = hHint;
 
 	Rectangle trim = computeTrim(0, 0, minWidth, minHeight);
-	return new Point (trim.width, trim.height);
+	return new Point (trim.width - trim.x, trim.height - trim.y);
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	int tabHeight = getTabHeight();
-	int trimX = x - marginWidth - borderLeft;
-	int trimY = y - marginHeight - tabHeight - borderTop;
-	if (onBottom) {
-		trimY = y - marginHeight - borderTop;
+	if (items.length == 0) {
+		if (!showBorders) return new Rectangle(x, y, width, height);
+		int trimX = x - borderRight - 1;
+		int trimY = y - borderBottom - 1;
+		int trimWidth = width + borderRight + 2;
+		int trimHeight = height + borderBottom + 2;
+		return new Rectangle (trimX, trimY, trimWidth, trimHeight);
+	} else {
+		int tabHeight = getTabHeight();
+		int trimX = x - marginWidth - borderLeft;
+		int trimY = y - marginHeight - tabHeight - borderTop - 1;
+		// -1 is for the line at the bottom of the tabs
+		if (onBottom) {
+			trimY = y - marginHeight - borderTop;
+		}
+		int trimWidth = width + borderLeft + borderRight + 2*marginWidth;
+		int trimHeight = height + borderTop + borderBottom + 2*marginHeight + tabHeight + 1;
+		return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 	}
-	int trimWidth = width + borderLeft + borderRight + 2*marginWidth;
-	int trimHeight = height + borderTop + borderBottom + 2*marginHeight + tabHeight;
-	return new Rectangle (trimX, trimY, trimWidth, trimHeight);
 }
 /**
  * Create the specified item at 'index'.
@@ -608,12 +618,17 @@ private void drawBorder(GC gc) {
 }
 public Rectangle getClientArea() {
 	checkWidget();
-	Rectangle clientArea = super.getClientArea();
-	clientArea.x = xClient;
-	clientArea.y = yClient;
-	clientArea.width -= 2*marginWidth + borderLeft + borderRight;
-	clientArea.height -= 2*marginHeight + borderTop + borderBottom + getTabHeight() + 1;
-	return clientArea;
+	Point size = getSize();
+	if (items.length == 0) {
+		if (!showBorders) return super.getClientArea();
+		int width = size.x - borderRight - 2;
+		int height = size.y - borderBottom - 2;
+		return new Rectangle(borderRight + 1, borderBottom + 1, width, height);	
+	} else {
+		int width = size.x - 2*marginWidth - borderLeft - borderRight;
+		int height = size.y - 2*marginHeight - borderTop - borderBottom - getTabHeight() - 1;
+		return new Rectangle(xClient, yClient, width, height);
+	}
 }
 /**
  * Returns the height of the tab
