@@ -26,7 +26,7 @@ import org.eclipse.swt.*;
  *  @since 3.0
  */
 
-public class TextLayout {
+public final class TextLayout {
 
 	final public static int MOVEMENT_CHAR = 1;
 	final public static int MOVEMENT_CLUSTER = 2;

@@ -13,7 +13,7 @@ package org.eclipse.swt.graphics;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
 
-public class TextLayout {
+public final class TextLayout {
 
 	final public static int MOVEMENT_CHAR = 1;
 	final public static int MOVEMENT_CLUSTER = 2;
