@@ -445,8 +445,8 @@ String getTranslatedCharSet (FontData fontData) {
 			 * value is already specified above.
 			 */
 		}
+		characterSet += "-" + charSetName;
 		if (charSetName < ISO_CHARSETS.length) {
-			characterSet += "-" + charSetName;
 			translatedCharSet = ISO_CHARSETS [charSetName];
 		}
 	}
