@@ -1168,7 +1168,6 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 	switch (code) {
 		case OS.EN_CHANGE:
 			if (ignoreModify) break;
-//			System.out.println("EN_CHANGE");
 			sendEvent (SWT.Modify);
 			if (isDisposed ()) return LRESULT.ZERO;
 			break;
@@ -1222,7 +1221,6 @@ LRESULT wmScrollChild (int wParam, int lParam) {
 	int code = wParam & 0xFFFF;
 	switch (code) {
 		case OS.SB_THUMBPOSITION:
-//			System.out.println("SB_THUMBPOSITION");
 			postEvent (SWT.Selection);
 			break;
 	}
@@ -1234,7 +1232,6 @@ LRESULT wmNotifyChild(int wParam, int lParam) {
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
 		case OS.UDN_DELTAPOS:
-//			System.out.println("UDN_DELTAPOS");
 			NMUPDOWN lpnmud = new NMUPDOWN ();
 			OS.MoveMemory (lpnmud, lParam, NMUPDOWN.sizeof);
 			int value = lpnmud.iPos + lpnmud.iDelta;
@@ -1245,10 +1242,8 @@ LRESULT wmNotifyChild(int wParam, int lParam) {
 				if (value > max [0]) value = min [0];
 			}
 			value = Math.min (Math.max (min [0], value), max [0]);
-//			setSelection (value, true, false);
-//			break;
-			setSelection (value, true, true);
-			return LRESULT.ONE;
+			setSelection (value, true, false);
+			break;
 	}
 	return super.wmNotifyChild (wParam, lParam);
 }
