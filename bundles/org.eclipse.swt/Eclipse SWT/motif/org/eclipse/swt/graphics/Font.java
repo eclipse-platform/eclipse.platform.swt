@@ -31,7 +31,10 @@ public Font (Device device, String fontFamily, int height, int style) {
 	init(device, new FontData(fontFamily, height, style));
 }
 public void dispose () {
-	if (handle != 0) OS.XmFontListFree (handle);
+	if (handle == 0) return;
+	if (device.isDisposed()) return;
+	OS.XmFontListFree (handle);
+	device = null;
 	handle = 0;
 }
 public boolean equals (Object object) {

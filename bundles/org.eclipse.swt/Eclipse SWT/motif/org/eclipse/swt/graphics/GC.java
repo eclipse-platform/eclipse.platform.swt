@@ -69,6 +69,7 @@ public void copyArea(Image image, int x, int y) {
 }
 public void dispose () {
 	if (handle == 0) return;
+	if (data.device.isDisposed()) return;
 	
 	/* Free resources */
 	int clipRgn = data.clipRgn;

@@ -31,6 +31,7 @@ public Color (Device device, RGB rgb) {
 }
 public void dispose() {
 	if (handle == null) return;
+	if (device.isDisposed()) return;
 	int xDisplay = device.xDisplay;
 	int pixel = handle.pixel;
 	if (device.colorRefCount != null) {

@@ -128,7 +128,9 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 }
 public void dispose () {
-	if (handle != 0) OS.XFreeCursor(device.xDisplay, handle);
+	if (handle == 0) return;
+	if (device.isDisposed()) return;
+	OS.XFreeCursor(device.xDisplay, handle);
 	device = null;
 	handle = 0;
 }
