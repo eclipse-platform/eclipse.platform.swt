@@ -913,8 +913,8 @@ public boolean readAndDispatch () {
 	if (status == OS.noErr) {
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
-		runDeferredEvents ();
 		runPopups ();
+		runDeferredEvents ();
 		runGrabs ();
 		return true;
 	}
