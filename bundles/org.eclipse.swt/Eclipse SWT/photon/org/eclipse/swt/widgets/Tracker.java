@@ -638,7 +638,49 @@ void resizeRectangles (int xChange, int yChange) {
 	} else if (yChange > 0 && ((style & SWT.DOWN) != 0) && ((cursorOrientation & SWT.UP) == 0)) {
 		cursorOrientation |= SWT.DOWN;
 	}
+	
 	Rectangle bounds = computeBounds ();
+	// if the bounds will flip about the x or y axis then apply the adjustment
+	// up to the axis (ie.- where bounds width/height becomes 0) and change the
+	// cursor's orientation accordingly
+	if ((cursorOrientation & SWT.LEFT) != 0) {
+		if (xChange > bounds.width) {
+			if ((style & SWT.RIGHT) == 0) return;
+			cursorOrientation |= SWT.RIGHT;
+			cursorOrientation &= ~SWT.LEFT;
+			bounds.x += bounds.width;
+			xChange -= bounds.width;
+			bounds.width = 0;
+		}
+	} else if ((cursorOrientation & SWT.RIGHT) != 0) {
+		if (bounds.width < -xChange) {
+			if ((style & SWT.LEFT) == 0) return;
+			cursorOrientation |= SWT.LEFT;
+			cursorOrientation &= ~SWT.RIGHT;
+			xChange += bounds.width;
+			bounds.width = 0;
+		}
+	}
+	if ((cursorOrientation & SWT.UP) != 0) {
+		if (yChange > bounds.height) {
+			if ((style & SWT.DOWN) == 0) return;
+			cursorOrientation |= SWT.DOWN;
+			cursorOrientation &= ~SWT.UP;
+			bounds.y += bounds.height;
+			yChange -= bounds.height;
+			bounds.height = 0;
+		}
+	} else if ((cursorOrientation & SWT.DOWN) != 0) {
+		if (bounds.height < -yChange) {
+			if ((style & SWT.UP) == 0) return;
+			cursorOrientation |= SWT.UP;
+			cursorOrientation &= ~SWT.DOWN;
+			yChange += bounds.height;
+			bounds.height = 0;
+		}
+	}
+	
+	// apply the bounds adjustment
 	if ((cursorOrientation & SWT.LEFT) != 0) {
 		bounds.x += xChange;
 		bounds.width -= xChange;
@@ -651,10 +693,6 @@ void resizeRectangles (int xChange, int yChange) {
 	} else if ((cursorOrientation & SWT.DOWN) != 0) {
 		bounds.height += yChange;
 	}
-	/*
-	* The following are conditions under which the resize should not be applied
-	*/
-	if (bounds.width < 0 || bounds.height < 0) return;
 	
 	Rectangle [] newRects = new Rectangle [rectangles.length];
 	for (int i = 0; i < rectangles.length; i++) {
