@@ -847,15 +847,7 @@ public void open () {
 	checkWidget ();
 	setVisible (true);
 	bringToTop (false);
-	if (!restoreFocus ()) {
-		int /*long*/ focusHandle = OS.gtk_window_get_focus (shellHandle);
-		if (focusHandle == 0 || focusHandle == handle) {
-			if (!traverseGroup (true)) {
-				focusHandle = OS.gtk_window_get_focus (shellHandle);
-				if (focusHandle == 0) OS.gtk_widget_grab_focus (focusHandle ());
-			}
-		}
-	}
+	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 
 /**

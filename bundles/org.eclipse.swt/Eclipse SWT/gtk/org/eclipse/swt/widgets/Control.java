@@ -1391,7 +1391,7 @@ public boolean forceFocus () {
 
 boolean forceFocus (int /*long*/ focusHandle) {
 	OS.gtk_widget_grab_focus (focusHandle);
-	return this == display.getFocusControl();
+	return OS.gtk_widget_is_focus (focusHandle);
 }
 
 /**

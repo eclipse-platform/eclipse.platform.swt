@@ -1006,7 +1006,7 @@ void manageChildren () {
 public void open () {
 	checkWidget();
 	setVisible (true);
-	if (!restoreFocus ()) traverseGroup (true);
+	if (!restoreFocus () && !traverseGroup (true)) setFocus ();
 }
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
