@@ -4,7 +4,7 @@
    id="org.eclipse.swt.tests"
    name="Tests"
    provider-name="%providerName"
-   version="2.0.0">
+   version="2.1.0">
 
 <requires>
    <import plugin="org.junit"/>
