@@ -38,7 +38,7 @@ GNOME_CFLAGS = `pkg-config --cflags gnome-vfs-2.0`
 GNOME_LIB = `pkg-config --libs gnome-vfs-2.0`
 
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
-GTKLIBS = `pkg-config --libs gtk+-2.0`
+GTKLIBS = `pkg-config --libs gtk+-2.0 gthread-2.0`
 
 CFLAGS = -shared -O -DSWT_VERSION=$(SWT_VERSION) \
 		-DLINUX -DGTK \
