@@ -319,11 +319,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			flags |= OS.DT_WORDBREAK;
 			rect.right = wHint;
 		}
-		String text = getText ();
-		TCHAR buffer = new TCHAR (getCodePage (), text, false);
-		int length = buffer.length ();
+		int length = OS.GetWindowTextLength (handle);
 		if (length != 0) {
-			OS.DrawText (hDC, buffer, length, rect, flags); 
+			TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+			OS.GetWindowText (handle, buffer, length + 1);
+			OS.DrawText (hDC, buffer, length, rect, flags);
 			width = rect.right - rect.left;
 		}
 		if (wrap && hHint == SWT.DEFAULT) {
