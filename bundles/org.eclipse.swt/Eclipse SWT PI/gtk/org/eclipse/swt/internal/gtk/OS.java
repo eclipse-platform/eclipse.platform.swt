@@ -371,6 +371,7 @@ public class OS {
 	public static final byte[] interior_focus = signal("interior_focus");
 	public static final byte[] mode = signal("mode");
 	public static final byte[] pixbuf = signal("pixbuf");
+	public static final byte[] show_hidden = signal("show-hidden");
 	public static final byte[] text = signal("text");
 	public static final byte[] xalign = signal("xalign");
 	public static final byte[] default_border = signal("default_border");
