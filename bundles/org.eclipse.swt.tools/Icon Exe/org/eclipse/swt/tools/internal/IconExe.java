@@ -76,6 +76,7 @@ public class IconExe {
 	 * its corruption. 
 	 * 
 	 * @param program the Windows executable e.g c:/eclipse/eclipse.exe
+	 * @param icons to write to the given executable
 	 * @return the number of icons written to the program
 	 */	
 	public static int unloadIcons(String program, ImageData[] icons) throws FileNotFoundException, IOException {
