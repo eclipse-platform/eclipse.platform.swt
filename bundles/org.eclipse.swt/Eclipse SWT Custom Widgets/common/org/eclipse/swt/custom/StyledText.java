@@ -3378,12 +3378,12 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 		trailing = new int[1];
 		offset = layout.getOffset(x, 0, trailing);
 		advancing = false;
-		if ((trailing[0] & SWT.TRAIL) != 0) {
+		if (trailing[0] != 0) {
 			int level = layout.getLevel(offset) & 0x1;
-			offset++;
+			offset = Math.min(line.length(), offset + trailing[0]);
 			int trailingLevel = layout.getLevel(offset) & 0x1;
 			advancing  = (level ^ trailingLevel) != 0;
-		} 
+		}
 	}
 	renderer.disposeTextLayout(layout);
 	return offset;
@@ -3886,7 +3886,7 @@ public int getOffsetAtLocation(Point point) {
 	}
 	int[] trailing = new int[1];
 	offsetInLine = layout.getOffset(x, 0, trailing);
-	if ((offsetInLine != lineText.length() - 1) && (trailing[0] & SWT.TRAIL) != 0) offsetInLine++;
+	offsetInLine = Math.min(lineText.length(), offsetInLine + trailing[0]);
 	renderer.disposeTextLayout(layout);
 	return lineOffset + offsetInLine;
 }
@@ -4644,9 +4644,9 @@ int getXAtOffset(String line, int lineIndex, int offsetInLine) {
 		int lineOffset = content.getOffsetAtLine(lineIndex);
 		TextLayout layout = renderer.getTextLayout(line, lineOffset);
 		if (!advancing || offsetInLine == 0) {
-			x = layout.getLocation(offsetInLine, SWT.LEAD).x;
+			x = layout.getLocation(offsetInLine, false).x;
 		} else {
-			x = layout.getLocation(offsetInLine - 1, SWT.TRAIL).x;
+			x = layout.getLocation(offsetInLine - 1, true).x;
 		}
 		renderer.disposeTextLayout(layout);
 	}
