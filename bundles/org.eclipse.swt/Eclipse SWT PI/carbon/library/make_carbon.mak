@@ -23,9 +23,9 @@ SWTPI_LIB=lib$(SWTPI_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 WEBKIT_LIB=lib$(SWTWEBKIT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).jnilib
 
 DEBUG =  
-CFLAGS = -c -DSWT_VERSION=$(SWT_VERSION) $(DEBUG) -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Versions/1.3.1/Headers
+CFLAGS = -c -DSWT_VERSION=$(SWT_VERSION) $(DEBUG) -DCARBON -I /System/Library/Frameworks/JavaVM.framework/Headers
 LFLAGS = -bundle -framework JavaVM -framework Carbon 
-WEBKITCFLAGS = -c -xobjective-c -I /System/Library/Frameworks/JavaVM.framework/Versions/1.3.1/Headers -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers
+WEBKITCFLAGS = -c -xobjective-c -I /System/Library/Frameworks/JavaVM.framework/Headers -I /System/Library/Frameworks/Cocoa.framework/Headers -I /System/Library/Frameworks/WebKit.framework/Headers
 WEBKITLFLAGS = $(LFLAGS) -framework WebKit -framework Cocoa
 SWT_OBJECTS = swt.o callback.o
 SWTPI_OBJECTS = swt.o os.o os_custom.o os_structs.o os_stats.o
