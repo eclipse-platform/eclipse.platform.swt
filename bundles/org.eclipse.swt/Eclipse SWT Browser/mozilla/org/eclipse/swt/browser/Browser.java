@@ -281,8 +281,11 @@ public Browser(Composite parent, int style) {
 			switch (event.type) {
 				case SWT.Dispose: onDispose(); break;
 				case SWT.Resize: onResize(); break;
-				case SWT.FocusIn: onFocusGained(event);	break;
-				case SWT.FocusOut: onFocusLost(event); break;
+				case SWT.FocusIn: onFocusGained(); break;
+				case SWT.Deactivate: {
+					if (Browser.this == getDisplay().getFocusControl()) onFocusLost();
+					break;
+				}
 			}
 		}
 	};	
@@ -290,7 +293,8 @@ public Browser(Composite parent, int style) {
 		SWT.Dispose,
 		SWT.Resize,  
 		SWT.FocusIn, 
-		SWT.FocusOut, 
+		SWT.KeyDown,
+		SWT.Deactivate
 	};
 	for (int i = 0; i < folderEvents.length; i++) {
 		addListener(folderEvents[i], listener);
@@ -855,7 +859,7 @@ void onDispose() {
 //	}
 }
 
-void onFocusGained(Event e) {
+void onFocusGained() {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -867,7 +871,7 @@ void onFocusGained(Event e) {
 	webBrowserFocus.Release();
 }
 	
-void onFocusLost(Event e) {
+void onFocusLost() {
 	int[] result = new int[1];
 	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
@@ -875,6 +879,18 @@ void onFocusLost(Event e) {
 	
 	nsIWebBrowserFocus webBrowserFocus = new nsIWebBrowserFocus(result[0]);
 	rc = webBrowserFocus.Deactivate();
+	if (rc != XPCOM.NS_OK) error(rc);
+	webBrowserFocus.Release();
+}
+
+void SetFocusAtFirstElement() {
+	int[] result = new int[1];
+	int rc = webBrowser.QueryInterface(nsIWebBrowserFocus.NS_IWEBBROWSERFOCUS_IID, result);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	
+	nsIWebBrowserFocus webBrowserFocus = new nsIWebBrowserFocus(result[0]);
+	rc = webBrowserFocus.SetFocusAtFirstElement();
 	if (rc != XPCOM.NS_OK) error(rc);
 	webBrowserFocus.Release();
 }
@@ -1778,7 +1794,17 @@ int GetDimensions(int flags, int x, int y, int cx, int cy) {
 	return XPCOM.NS_OK;     	
 }	
 
-int SetFocus() {
+int SetFocus() {	
+	int[] result = new int[1];
+	int rc = webBrowser.QueryInterface(nsIBaseWindow.NS_IBASEWINDOW_IID, result);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
+	
+	nsIBaseWindow baseWindow = new nsIBaseWindow(result[0]);
+	rc = baseWindow.SetFocus();
+	if (rc != XPCOM.NS_OK) error(rc);
+	baseWindow.Release();
+
 	return XPCOM.NS_OK;     	
 }	
 
@@ -1841,12 +1867,32 @@ int GetSiteWindow(int aSiteWindow) {
 /* nsIWebBrowserChromeFocus */
 
 int FocusNextElement() {
-	traverse(SWT.TRAVERSE_TAB_NEXT);
+	/*
+	* Bug in Mozilla embedding API.  Mozilla takes back the focus after sending
+	* this event.  This prevents tabbing out of Mozilla. This behaviour can be reproduced
+	* with the Mozilla application TestGtkEmbed.  The workaround is to
+	* send the traversal notification after this callback returns.
+	*/
+	getDisplay().asyncExec(new Runnable() {
+		public void run() {
+			traverse(SWT.TRAVERSE_TAB_NEXT);
+		}
+	});
 	return XPCOM.NS_OK;  
 }
 
 int FocusPrevElement() {
-	traverse(SWT.TRAVERSE_TAB_PREVIOUS);
+	/*
+	* Bug in Mozilla embedding API.  Mozilla takes back the focus after sending
+	* this event.  This prevents tabbing out of Mozilla. This behaviour can be reproduced
+	* with the Mozilla application TestGtkEmbed.  The workaround is to
+	* send the traversal notification after this callback returns.
+	*/
+	getDisplay().asyncExec(new Runnable() {
+		public void run() {
+			traverse(SWT.TRAVERSE_TAB_PREVIOUS);
+		}
+	});
 	return XPCOM.NS_OK;     	
 }
 
