@@ -396,6 +396,14 @@ public void dispose() {
 		Image image = data.image;
 		if (image != null) {
 			flushImage();
+			/* Regenerate the mask if necessary */
+			if (image.transparentPixel != -1) {
+				PhImage_t phImage = new PhImage_t ();
+				OS.memmove(phImage, image.handle, PhImage_t.sizeof);
+				if (phImage.mask_bm == 0) {
+					createMask(image.handle, phImage.type, image.transparentPixel);
+				}
+			}
 			image.memGC = null;
 		}
 		
