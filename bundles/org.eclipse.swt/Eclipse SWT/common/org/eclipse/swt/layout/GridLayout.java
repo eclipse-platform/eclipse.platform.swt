@@ -96,6 +96,8 @@ public final class GridLayout extends Layout {
 	 * that will be placed along the left edge of the layout.
 	 *
 	 * The default value is 0.
+	 * 
+	 * @since 3.1
 	 */
 	public int marginLeft = 0;
 
@@ -104,6 +106,8 @@ public final class GridLayout extends Layout {
 	 * that will be placed along the top edge of the layout.
 	 *
 	 * The default value is 0.
+	 * 
+	 * @since 3.1
 	 */
 	public int marginTop = 0;
 
@@ -112,6 +116,8 @@ public final class GridLayout extends Layout {
 	 * that will be placed along the right edge of the layout.
 	 *
 	 * The default value is 0.
+	 * 
+	 * @since 3.1
 	 */
 	public int marginRight = 0;
 
@@ -120,6 +126,8 @@ public final class GridLayout extends Layout {
 	 * that will be placed along the bottom edge of the layout.
 	 *
 	 * The default value is 0.
+	 * 
+	 * @since 3.1
 	 */
 	public int marginBottom = 0;
 	
