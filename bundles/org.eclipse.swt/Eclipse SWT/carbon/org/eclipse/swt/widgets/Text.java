@@ -206,12 +206,6 @@ public void cut () {
 	if (!oldSelection.equals (newSelection)) sendEvent (SWT.Modify);
 }
 
-void destroyWidget () {
-	super.destroyWidget();
-	OS.TXNDeleteObject (txnObject);
-	txnObject = txnFrameID = 0;
-}
-
 void draw (int control) {
 	if (control != handle) return;
 	OS.TXNDraw (txnObject, 0);
@@ -407,8 +401,8 @@ public void insert (String string) {
 int kEventControlActivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlActivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncAlwaysActive);
 	OS.TXNFocus (txnObject, hasFocus ());
+	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncAlwaysActive);
 	return result;
 }
 
@@ -444,8 +438,8 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlDeactivate (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncWithFocus);
 	OS.TXNFocus (txnObject, hasFocus());
+	OS.TXNActivate (txnObject, txnFrameID, OS.kScrollBarsSyncWithFocus);
 	return result;
 }
 
@@ -463,6 +457,12 @@ public void paste () {
 	checkWidget();
 	//NOT DONE - get clipboard text and verify or use undo?
 	OS.TXNPaste (txnObject);
+}
+
+void releaseWidget () {
+	super.releaseWidget ();
+	OS.TXNDeleteObject (txnObject);
+	txnObject = txnFrameID = 0;
 }
 
 public void removeModifyListener (ModifyListener listener) {
