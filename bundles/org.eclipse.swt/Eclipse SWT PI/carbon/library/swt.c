@@ -1394,7 +1394,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_duplicatePixMap(J
 	return (jint) dsth;
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_copyPixmpaData(JNIEnv *env, jclass zz,
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_copyPixmapData(JNIEnv *env, jclass zz,
 		jbyteArray data, jint pixmap, jint length) {
 		
 	PixMapHandle srch;
@@ -1415,6 +1415,35 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_copyPixmpaData(JN
 	HUnlock((Handle)srch);
 	
 	return 0;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getRGB(JNIEnv *env, jclass zz,
+		jint pixmap, jint pixel) {
+	
+	PixMapHandle srch;
+	PixMap *src;
+	int value= -1;
+
+	srch= (PixMapHandle) pixmap;
+	HLock((Handle)srch);
+	src= *srch;
+	
+	if ((src->rowBytes & 0x8000) != 0) {
+		if (src->pmTable != NULL) {
+			ColorTable *ct= *src->pmTable;
+			ColorSpec *cs= &ct->ctTable[i];
+			
+			int red= (cs->rgb.red >> 8);
+			int green= (cs->rgb.green >> 8);
+			int blue= (cs->rgb.blue >> 8);
+			
+			value= (red << 16) + (green << 8) + blue;
+		}
+	}
+		
+	HUnlock((Handle)srch);
+	
+	return value;
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposePixMap(JNIEnv *env, jclass zz, jint pixMapHandle) {

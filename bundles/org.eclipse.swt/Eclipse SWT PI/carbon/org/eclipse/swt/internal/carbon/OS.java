@@ -376,7 +376,8 @@ public class OS {
     // PixMaps
 	public static native int NewPixMap(short w, short h, short depth, short pad, short[] reds, short[] greens, short[] blues);
 	public static native int duplicatePixMap(int srcPixmap);
-	public static native int copyPixmpaData(byte[] srcData, int pixmap, int length);
+	public static native int copyPixmapData(byte[] srcData, int pixmap, int length);
+	public static native int getRGB(int pixmap, int srcPixel);
 
 	public static native void DisposePixMap(int pHandle);
 	public static native void GetPixBounds(int pHandle, short[] bounds);

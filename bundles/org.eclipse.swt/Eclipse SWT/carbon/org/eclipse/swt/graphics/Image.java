@@ -868,7 +868,7 @@ public ImageData getImageData() {
     /* AW
 	OS.memmove(srcData, xSrcImage.data, length);
     */
-	OS.copyPixmpaData(srcData, pixmap, length);
+	OS.copyPixmapData(srcData, pixmap, length);
 	
 	switch (xSrcImage.depth) {
 		case 1:
@@ -913,16 +913,23 @@ public ImageData getImageData() {
 			RGB[] rgbs = new RGB[ numPixels ];
 			/* AW
 			XColor color = new XColor();
+			*/
 			for (int srcPixel = 0; srcPixel < normPixel.length; srcPixel++) {
 				// If the pixel value was used in the image, get its RGB values.
 				if (srcPixel == 0 || normPixel[ srcPixel ] != 0) {
+					/*
 					color.pixel = srcPixel;
 					OS.XQueryColor(xDisplay, colormap, color);
+					*/
+					int packed= OS.getRGB(pixmap, srcPixel);
 					int rgbIndex = normPixel[ srcPixel ] & 0xFF;
+					rgbs[ rgbIndex ] = new RGB((packed >> 16) & 0xFF, (packed >> 8) & 0xFF, (packed >> 0) & 0xFF);					
+					/*
 					rgbs[ rgbIndex ] = new RGB((color.red >> 8) & 0xFF, (color.green >> 8) & 0xFF, (color.blue >> 8) & 0xFF);
+					*/
 				}
 			}
-			*/
+			
 			palette = new PaletteData(rgbs);
 			break;
 		case 16:
