@@ -730,6 +730,16 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	int /*long*/ result = super.gtk_button_press_event (widget, event);
 	if (result != 0) return result;
 	/*
+	* Bug in GTK. GTK segments fault, if the GtkTreeView widget is
+	* not in focus and all items in the widget are disposed before
+	* it finishes processing a button press.  The fix is to give
+	* focus to the widget before it starts processing the event.
+	*/
+	if (!OS.GTK_WIDGET_HAS_FOCUS (handle)) {
+		OS.gtk_widget_grab_focus (handle);
+		if (isDisposed ()) return 0;
+	}
+	/*
 	* Feature in GTK.  In a multi-select tree view, when multiple items are already
 	* selected, the selection state of the item is toggled and the previous selection 
 	* is cleared. This is not the desired behaviour when bringing up a popup menu.
