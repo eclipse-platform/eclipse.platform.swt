@@ -2241,11 +2241,13 @@ void sendMouseEvent (int type, int button, int gdkEvent) {
 	Event event = new Event ();
 	event.time = OS.gdk_event_get_time (gdkEvent);
 	event.button = button;
-	double [] x = new double [1];
-	double [] y = new double [1];
-	OS.gdk_event_get_coords (gdkEvent, x, y);
-	event.x = (int) x [0];
-	event.y = (int) y [0];
+	double [] root_x = new double [1], root_y = new double [1];
+	OS.gdk_event_get_root_coords (gdkEvent, root_x, root_y);	
+	int window = OS.GTK_WIDGET_WINDOW (eventHandle ());
+	int [] origin_x = new int [1], origin_y = new int [1];
+	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	event.x = (int)(root_x [0] - origin_x [0]);
+	event.y = (int)(root_y [0] - origin_y [0]);
 	int [] state = new int [1];
 	OS.gdk_event_get_state (gdkEvent, state);
 	setInputState (event, state [0]);
@@ -2897,6 +2899,10 @@ boolean traverseMnemonic (char key) {
  */
 public void update () {
 	checkWidget ();
+	update (false);
+}
+
+void update (boolean all) {
 	OS.gdk_flush ();
 	int window = paintWindow ();
 	int gc = OS.gdk_gc_new (window);
@@ -2908,6 +2914,6 @@ public void update () {
 		OS.gtk_main_do_event (event);
 		OS.gdk_event_free (event);	
 	}
-	OS.gdk_window_process_updates (window, false);
+	OS.gdk_window_process_updates (window, all);
 }
 }

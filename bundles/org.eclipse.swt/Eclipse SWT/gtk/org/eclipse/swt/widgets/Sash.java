@@ -162,8 +162,11 @@ int gtk_button_press_event (int widget, int eventPtr) {
 	OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 	int button = gdkEvent.button;
 	if (button != 1) return 0;
-	startX = (int) gdkEvent.x; 
-	startY = (int) gdkEvent.y;
+	int window = OS.GTK_WIDGET_WINDOW (widget);
+	int [] origin_x = new int [1], origin_y = new int [1];
+	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	startX = (int) (gdkEvent.x_root - origin_x [0]);
+	startY = (int) (gdkEvent.y_root - origin_y [0]);
 	int border = 0;
 	int x = OS.GTK_WIDGET_X (handle);
 	int y = OS.GTK_WIDGET_Y (handle);
@@ -188,6 +191,7 @@ int gtk_button_press_event (int widget, int eventPtr) {
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		dragging = true;
+		parent.update (true);
 		drawBand (lastX = event.x, lastY = event.y, width, height);
 	}
 	return result;	
@@ -228,13 +232,17 @@ int gtk_motion_notify_event (int widget, int eventPtr) {
 	int parentBorder = 0;
 	int parentWidth = OS.GTK_WIDGET_WIDTH (parent.handle);
 	int parentHeight = OS.GTK_WIDGET_HEIGHT (parent.handle);
-	double[] px = new double [1], py = new double [1];
-	OS.gdk_event_get_coords (eventPtr, px, py);
+	double [] root_x = new double [1], root_y = new double [1];
+	OS.gdk_event_get_root_coords (eventPtr, root_x, root_y);	
+	int window = OS.GTK_WIDGET_WINDOW (widget);
+	int [] origin_x = new int [1], origin_y = new int [1];
+	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	int eventX = (int) (root_x [0] - origin_x [0]), eventY = (int) (root_y [0] - origin_y [0]);
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
-		newX = Math.min (Math.max (0, (int)px [0] + x - startX - parentBorder), parentWidth - width);
+		newX = Math.min (Math.max (0, eventX + x - startX - parentBorder), parentWidth - width);
 	} else {
-		newY = Math.min (Math.max (0, (int)py[0] + y - startY - parentBorder), parentHeight - height);
+		newY = Math.min (Math.max (0, eventY + y - startY - parentBorder), parentHeight - height);
 	}
 	if (newX == lastX && newY == lastY) return 0;
 	drawBand (lastX, lastY, width, height);
@@ -242,8 +250,10 @@ int gtk_motion_notify_event (int widget, int eventPtr) {
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
 	event.time = OS.gdk_event_get_time (eventPtr);
-	event.x = newX;  event.y = newY;
-	event.width = width;  event.height = height;
+	event.x = newX;
+	event.y = newY;
+	event.width = width;
+	event.height = height;
 	/*
 	 * It is possible (but unlikely) that client code could have disposed
 	 * the widget in the selection event.  If this happens end the processing
@@ -253,6 +263,7 @@ int gtk_motion_notify_event (int widget, int eventPtr) {
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		lastX = event.x;  lastY = event.y;
+		parent.update (true);
 		drawBand (lastX, lastY, width, height);
 	}
 	return result;
@@ -263,6 +274,11 @@ int gtk_realize (int widget) {
 	int gdkCursor = cursor != null && !cursor.isDisposed() ? cursor.handle : defaultCursor;
 	OS.gdk_window_set_cursor (window, gdkCursor);
 	return 0;
+}
+
+void hookEvents () {
+	super.hookEvents ();
+	OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
 }
 
 void releaseWidget () {
