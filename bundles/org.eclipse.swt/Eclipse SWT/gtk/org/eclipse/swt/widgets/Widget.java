@@ -48,8 +48,8 @@ public abstract class Widget {
 	 * (Warning: This field is platform dependent)
 	 */
 	public int handle;
-	
 	int style, state;
+	Display display;
 	EventTable eventTable;
 	Object data;
 	
@@ -154,6 +154,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
+	display = parent.display;
 }
 
 /**
@@ -246,8 +247,7 @@ void checkOrientation (Widget parent) {
  */
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	parent.checkWidget ();
 }
 
 /**
@@ -306,8 +306,10 @@ protected void checkSubclass () {
  * </ul>
  */
 protected void checkWidget () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (display.thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
 void createHandle (int index) {
@@ -449,7 +451,11 @@ public Object getData (String key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public abstract Display getDisplay ();
+public Display getDisplay () {
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	return display;
+}
 
 String getName () {
 //	String string = getClass ().getName ();
@@ -666,7 +672,6 @@ int fontHeight (int font, int widgetHandle) {
 }
 
 boolean filters (int eventType) {
-	Display display = getDisplay ();
 	return display.filters (eventType);
 }
 
@@ -827,6 +832,7 @@ void releaseChild () {
 void releaseHandle () {
 	handle = 0;
 	state |= DISPOSED;
+	display = null;
 }
 
 void releaseResources () {
@@ -937,7 +943,6 @@ void sendEvent (int eventType, Event event) {
 }
 
 void sendEvent (int eventType, Event event, boolean send) {
-	Display display = getDisplay ();
 	if (eventTable == null && !display.filters (eventType)) {
 		return;
 	}

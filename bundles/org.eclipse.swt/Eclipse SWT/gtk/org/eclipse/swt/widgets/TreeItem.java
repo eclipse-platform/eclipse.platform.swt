@@ -207,7 +207,7 @@ public Color getBackground () {
 	if (ptr [0] == 0) return parent.getBackground ();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	return Color.gtk_new (getDisplay (), gdkColor);
+	return Color.gtk_new (display, gdkColor);
 }
 
 /**
@@ -253,11 +253,6 @@ public boolean getChecked () {
 	return ptr [0] != 0;
 }
 
-public Display getDisplay () {
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is expanded,
  * and false otherwise.
@@ -298,7 +293,7 @@ public Color getForeground () {
 	if (ptr [0]==0) return parent.getForeground();
 	GdkColor gdkColor = new GdkColor ();
 	OS.memmove (gdkColor, ptr [0], GdkColor.sizeof);
-	return Color.gtk_new (getDisplay (), gdkColor);
+	return Color.gtk_new (display, gdkColor);
 }
 
 /**

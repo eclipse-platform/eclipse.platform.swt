@@ -493,11 +493,6 @@ public Control getControl () {
 	return control;
 }
 
-public Display getDisplay () {
-	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	return control.getDisplay ();
-}
-
 /**
  * Returns a list of the data types that can be transferred to this DropTarget.
  *

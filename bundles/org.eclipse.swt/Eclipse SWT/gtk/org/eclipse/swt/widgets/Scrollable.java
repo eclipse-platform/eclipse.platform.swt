@@ -123,6 +123,7 @@ ScrollBar createScrollBar (int style) {
 	ScrollBar bar = new ScrollBar ();
 	bar.parent = this;
 	bar.style = style;
+	bar.display = display;
 	bar.state |= HANDLE;
 	if ((style & SWT.H_SCROLL) != 0) {
 		bar.handle = OS.gtk_scrolled_window_get_hadjustment (scrolledHandle);

@@ -132,12 +132,6 @@ public Rectangle getBounds () {
 	return new Rectangle (x, y, width, height);
 }
 
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns the font that the receiver will use to paint textual information.
  *
@@ -267,12 +261,10 @@ public boolean isVisible () {
 }
 
 boolean isFocusCaret () {
-	Display display = getDisplay ();
 	return this == display.currentCaret;
 }
 
 void killFocus () {
-	Display display = getDisplay ();
 	if (display.currentCaret != this) return;
 	display.setCurrentCaret (null);
 	if (isVisible) hideCaret ();
@@ -285,7 +277,6 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	Display display = getDisplay ();
 	if (display.currentCaret == this) {
 		hideCaret ();
 		display.setCurrentCaret (null);
@@ -341,7 +332,6 @@ public void setBounds (Rectangle rect) {
 }
 
 void setFocus () {
-	Display display = getDisplay ();
 	if (display.currentCaret == this) return;
 	display.setCurrentCaret (this);
 	if (isVisible) showCaret ();

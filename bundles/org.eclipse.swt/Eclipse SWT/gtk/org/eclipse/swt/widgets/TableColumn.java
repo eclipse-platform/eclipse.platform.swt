@@ -208,12 +208,6 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
-public Display getDisplay () {
-	Table parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns the receiver's parent, which must be a <code>Table</code>.
  *
@@ -276,7 +270,6 @@ int gtk_clicked (int widget) {
 		OS.memmove (gdkEvent, eventPtr, GdkEventButton.sizeof);
 		switch (gdkEvent.type) {
 			case OS.GDK_BUTTON_RELEASE: {
-				Display display = getDisplay ();
 				int clickTime = display.getDoubleClickTime ();
 				int eventTime = gdkEvent.time, eventButton = gdkEvent.button;
 				if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
@@ -294,7 +287,6 @@ int gtk_clicked (int widget) {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	OS.g_signal_connect (handle, OS.clicked, display.windowProc2, CLICKED);
 }
 

@@ -278,12 +278,6 @@ int getAccelGroup () {
 	return shell.menuBar == menu ? shell.accelGroup : 0;
 }
 
-public Display getDisplay () {
-	Menu parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -415,7 +409,6 @@ int gtk_show_help (int widget, int helpType) {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	OS.g_signal_connect (handle, OS.activate, windowProc2, ACTIVATE);

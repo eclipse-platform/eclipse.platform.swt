@@ -203,7 +203,6 @@ void createScrolledHandle (int parentHandle) {
 		* not scrolled automatically.  Calling gtk_container_add
 		* seems to add the child correctly but cause a warning.
 		*/
-		Display display = getDisplay ();
 		boolean warnings = display.getWarnings ();
 		display.setWarnings (false);
 		OS.gtk_container_add (scrolledHandle, handle);

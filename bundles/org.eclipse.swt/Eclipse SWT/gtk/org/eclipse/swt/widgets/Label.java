@@ -287,7 +287,6 @@ int gtk_mnemonic_activate (int widget, int arg1) {
 void hookEvents () {
 	super.hookEvents();
 	if (labelHandle != 0) {
-		Display display = getDisplay ();
 		OS.g_signal_connect (labelHandle, OS.mnemonic_activate, display.windowProc3, MNEMONIC_ACTIVATE);
 	}
 }

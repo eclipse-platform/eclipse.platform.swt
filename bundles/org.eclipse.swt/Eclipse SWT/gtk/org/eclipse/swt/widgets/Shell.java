@@ -100,7 +100,6 @@ import org.eclipse.swt.events.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	Display display;
 	int shellHandle, tooltipsHandle;
 	boolean hasFocus;
 	int oldX, oldY, oldWidth, oldHeight;
@@ -507,7 +506,6 @@ boolean hasBorder () {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int windowProc3 = display.windowProc3;
 	OS.g_signal_connect (shellHandle, OS.map_event, windowProc3, MAP_EVENT);
 	OS.g_signal_connect (shellHandle, OS.unmap_event, windowProc3, UNMAP_EVENT);
@@ -552,11 +550,6 @@ public Point getSize () {
 		height += OS.GTK_WIDGET_HEIGHT (barHandle);
 	}
 	return new Point (width + trimWidth (), height + trimHeight ());
-}
-
-public Display getDisplay () {
-	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return display;
 }
 
 /**
@@ -1080,7 +1073,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;
-	display = null;
 	lastActive = null;
 }
 

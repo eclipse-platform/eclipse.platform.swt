@@ -231,12 +231,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 GdkColor defaultBackground () {
-	Display display = getDisplay ();
 	return display.COLOR_LIST_BACKGROUND;
 }
 
 GdkColor defaultForeground () {
-	Display display = getDisplay ();
 	return display.COLOR_LIST_FOREGROUND;
 }
 
@@ -548,7 +546,6 @@ public String [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	Display display = getDisplay ();
 	display.treeSelectionLength = 0;
 	display.treeSelection = null;
 	int selection = OS.gtk_tree_view_get_selection (handle);
@@ -573,7 +570,6 @@ public int getSelectionCount () {
 public int getSelectionIndex () {
 	checkWidget();
 	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	Display display = getDisplay ();
 	display.treeSelectionLength  = 0;
 	display.treeSelection = new int [itemCount];
 	int selection = OS.gtk_tree_view_get_selection (handle);
@@ -603,7 +599,6 @@ public int getSelectionIndex () {
 public int [] getSelectionIndices () {
 	checkWidget();
 	int itemCount = OS.gtk_tree_model_iter_n_children (modelHandle, 0);
-	Display display = getDisplay ();
 	display.treeSelectionLength  = 0;
 	display.treeSelection = new int [itemCount];
 	int selection = OS.gtk_tree_view_get_selection (handle);
@@ -702,7 +697,6 @@ int gtk_row_activated (int tree, int path, int column) {
 
 void hookEvents () {
 	super.hookEvents();
-	Display display = getDisplay ();
 	int selection = OS.gtk_tree_view_get_selection(handle);
 	OS.g_signal_connect (selection, OS.changed, display.windowProc2, CHANGED);
 	OS.g_signal_connect (handle, OS.row_activated, display.windowProc4, ROW_ACTIVATED);

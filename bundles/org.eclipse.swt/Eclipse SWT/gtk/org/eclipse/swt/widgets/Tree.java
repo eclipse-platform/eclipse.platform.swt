@@ -256,12 +256,10 @@ void createWidget (int index) {
 }
 
 GdkColor defaultBackground () {
-	Display display = getDisplay ();
 	return display.COLOR_LIST_BACKGROUND;
 }
 
 GdkColor defaultForeground () {
-	Display display = getDisplay ();
 	return display.COLOR_LIST_FOREGROUND;
 }
 
@@ -500,7 +498,6 @@ public TreeItem getParentItem () {
 public TreeItem[] getSelection () {
 	checkWidget();
 	if ((style & SWT.MULTI) != 0) {
-		Display display = getDisplay ();
 		display.treeSelectionLength  = 0;
 		display.treeSelection = new int [items.length];
 		int selection = OS.gtk_tree_view_get_selection (handle);
@@ -537,7 +534,6 @@ public TreeItem[] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget();
-	Display display = getDisplay ();
 	display.treeSelectionLength = 0;
 	display.treeSelection = null;
 	int selection = OS.gtk_tree_view_get_selection (handle);
@@ -689,7 +685,6 @@ int gtk_button_press_event (int widget, int event) {
 	
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int selection = OS.gtk_tree_view_get_selection(handle);
 	OS.g_signal_connect_after (selection, OS.changed, display.windowProc2, CHANGED);
 	OS.g_signal_connect (handle, OS.row_activated, display.windowProc4, ROW_ACTIVATED);

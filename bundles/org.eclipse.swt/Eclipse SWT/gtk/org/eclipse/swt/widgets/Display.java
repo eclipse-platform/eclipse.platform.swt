@@ -1038,7 +1038,7 @@ public Shell [] getShells () {
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed () && (this == shell.getDisplay ())) {
+		if (!shell.isDisposed () && (this == shell.display)) {
 			count++;
 		}
 	}
@@ -1046,7 +1046,7 @@ public Shell [] getShells () {
 	Shell [] result = new Shell [count];
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed () && (this == shell.getDisplay ())) {
+		if (!shell.isDisposed () && (this == shell.display)) {
 			result [index++] = shell;
 		}
 	}
@@ -1537,7 +1537,7 @@ protected void release () {
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) {
-			if (this == shell.getDisplay ()) shell.dispose ();
+			if (this == shell.display) shell.dispose ();
 		}
 	}
 	while (readAndDispatch ()) {};

@@ -336,12 +336,10 @@ public void cut () {
 }
 
 GdkColor defaultBackground () {
-	Display display = getDisplay ();
 	return display.COLOR_TEXT_BACKGROUND;
 }
 
 GdkColor defaultForeground () {
-	Display display = getDisplay ();
 	return display.COLOR_TEXT_FOREGROUND;
 }
 
@@ -879,7 +877,6 @@ int gtk_insert_text (int widget, int int0, int int1, int int2) {
 
 void hookEvents () {
 	super.hookEvents();
-	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc4 = display.windowProc4;
 	int windowProc5 = display.windowProc5;

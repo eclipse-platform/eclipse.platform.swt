@@ -83,7 +83,6 @@ void createHandle (int index) {
 	int orientation = (style & SWT.VERTICAL) != 0 ? OS.GTK_PROGRESS_TOP_TO_BOTTOM : OS.GTK_PROGRESS_LEFT_TO_RIGHT;
 	OS.gtk_progress_bar_set_orientation (handle, orientation);
 	if ((style & SWT.INDETERMINATE) != 0) {
-		Display display = getDisplay ();
 		timerId = OS.gtk_timeout_add (DELAY, display.windowTimerProc, handle);
 	} else {
 		/*

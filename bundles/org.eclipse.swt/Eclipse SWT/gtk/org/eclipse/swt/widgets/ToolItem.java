@@ -292,11 +292,6 @@ public Image getDisabledImage () {
 	return disabledImage;
 }
 
-public Display getDisplay () {
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -506,7 +501,6 @@ int gtk_leave_notify_event (int widget, int event) {
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	OS.g_signal_connect (handle, OS.clicked, windowProc2, CLICKED);

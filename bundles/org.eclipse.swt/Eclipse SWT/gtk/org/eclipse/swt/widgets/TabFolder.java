@@ -426,7 +426,6 @@ int gtk_switch_page (int widget, int page, int page_num) {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	OS.g_signal_connect (handle, OS.switch_page, display.windowProc4, SWITCH_PAGE);
 }
 

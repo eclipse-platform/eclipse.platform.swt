@@ -138,12 +138,6 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
-public Display getDisplay () {
-	Scrollable parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -359,7 +353,6 @@ int gtk_value_changed (int adjustment) {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	OS.g_signal_connect (handle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
 }
 

@@ -352,10 +352,6 @@ int dragDataDelete(int widget, int context, int data){
 	return 1;
 }
 
-public Display getDisplay () {
-	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	return control.getDisplay ();
-}
 /**
  * Returns the list of data types that can be transferred by this DragSource.
  *

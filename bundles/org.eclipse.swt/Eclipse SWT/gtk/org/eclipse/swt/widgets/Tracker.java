@@ -37,7 +37,6 @@ import org.eclipse.swt.events.*;
  */
 public class Tracker extends Widget {
 	Composite parent;
-	Display display;
 	int cursor, lastCursor;
 	boolean tracking, stippled;
 	Rectangle [] rectangles = new Rectangle [0];
@@ -80,8 +79,7 @@ public class Tracker extends Widget {
 public Tracker (Composite parent, int style) {
 	super (parent, checkStyle(style));
 	this.parent = parent;
-	display = parent.getDisplay ();
-	xWindow = calculateWindow();
+	xWindow = calculateWindow ();
 }
 
 /**
@@ -182,17 +180,6 @@ public void removeControlListener (ControlListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Move, listener);
-}
-
-
-
-
-/*
- *   ===  PUBLIC ACCESSORS  ===
- */
-
-public Display getDisplay () {
-	return display;
 }
 
 /**

@@ -280,12 +280,6 @@ public MenuItem getDefaultItem () {
 	return null;
 }
 
-public Display getDisplay () {
-	Decorations parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -526,7 +520,6 @@ int gtk_show_help (int widget, int helpType) {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	OS.g_signal_connect (handle, OS.show, windowProc2, SHOW);
@@ -805,7 +798,6 @@ public void setVisible (boolean visible) {
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible == OS.GTK_WIDGET_MAPPED (handle)) return;
 	if (visible) {
-		Display display = getDisplay ();
 		display.runDeferredEvents ();
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {

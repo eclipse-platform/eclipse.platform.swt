@@ -87,17 +87,14 @@ public Control (Composite parent, int style) {
 }
 
 GdkColor defaultBackground () {
-	Display display = getDisplay ();
 	return display.COLOR_WIDGET_BACKGROUND;
 }
 
 int defaultFont () {
-	Display display = getDisplay ();
 	return display.defaultFont;
 }
 
 GdkColor defaultForeground () {
-	Display display = getDisplay ();
 	return display.COLOR_WIDGET_FOREGROUND;
 }
 
@@ -143,7 +140,6 @@ void hookEvents () {
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK |
 		OS.GDK_FOCUS_CHANGE_MASK;
 	OS.gtk_widget_add_events (eventHandle, mask);
-	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	OS.g_signal_connect (eventHandle, OS.popup_menu, windowProc2, POPUP_MENU);
@@ -1308,7 +1304,7 @@ public boolean forceFocus () {
  */
 public Color getBackground () {
 	checkWidget();
-	return Color.gtk_new (getDisplay (), getBackgroundColor ());
+	return Color.gtk_new (display, getBackgroundColor ());
 }
 
 GdkColor getBackgroundColor () {
@@ -1355,22 +1351,6 @@ public int getBorderWidth () {
 }
 
 /**
- * Returns the display that the receiver was created on.
- *
- * @return the receiver's display
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Display getDisplay () {
-	if (parent == null) {
-		error (SWT.ERROR_WIDGET_DISPOSED);
-	}
-	return parent.getDisplay ();
-}
-/**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
  * not selectable from the user interface and draws with an
@@ -1403,7 +1383,7 @@ public boolean getEnabled () {
 public Font getFont () {
 	checkWidget();
 	if (font != null) return font;
-	return Font.gtk_new (getDisplay (), defaultFont ());
+	return Font.gtk_new (display, defaultFont ());
 }
 	
 int getFontDescription () {
@@ -1425,7 +1405,7 @@ int getFontDescription () {
  */
 public Color getForeground () {
 	checkWidget();
-	return Color.gtk_new (getDisplay (), getForegroundColor ());
+	return Color.gtk_new (display, getForegroundColor ());
 }
 
 GdkColor getForegroundColor () {
@@ -1592,7 +1572,6 @@ int gtk_button_press_event (int widget, int event) {
 	Shell shell = _getShell ();
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
-	Display display = getDisplay ();
 	display.dragStartX = (int) gdkEvent.x;
 	display.dragStartY = (int) gdkEvent.y;
 	display.dragging = false;
@@ -1680,7 +1659,6 @@ int gtk_focus_in_event (int widget, int event) {
 	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
 	if (handle == 0) return 0;
-	Display display = getDisplay ();
 	Control oldControl = display.imControl;
 	if (oldControl != this)  {
 		if (oldControl != null && !oldControl.isDisposed ()) {
@@ -1725,7 +1703,6 @@ int gtk_focus_out_event (int widget, int event) {
 	*/
 	Shell shell = _getShell ();
 	if (!shell.isDisposed ()) {
-		Display display = shell.getDisplay ();
 		Control control = display.getFocusControl ();
 		if (control == null || shell != control.getShell () ) {
 			shell.setActiveControl (null);
@@ -1768,7 +1745,6 @@ int gtk_key_release_event (int widget, int event) {
 }
 
 int gtk_leave_notify_event (int widget, int event) {
-	Display display = getDisplay ();
 	display.removeMouseHoverTimeout (handle);
 	GdkEventCrossing gdkEvent = new GdkEventCrossing ();
 	OS.memmove (gdkEvent, event, GdkEventCrossing.sizeof);
@@ -1785,7 +1761,6 @@ int gtk_map_event (int widget, int event) {
 }
 
 int gtk_motion_notify_event (int widget, int event) {
-	Display display = getDisplay ();
 	if (hooks (SWT.DragDetect)) {
 		if (!display.dragging) {
 			int []  state = new int [1];
@@ -1815,7 +1790,6 @@ int gtk_popup_menu (int widget) {
 }
 
 int gtk_preedit_changed (int imcontext) {
-	Display display = getDisplay ();
 	display.showIMWindow (this);
 	return 0;
 }
@@ -1873,7 +1847,7 @@ public int internal_new_GC (GCData data) {
 		background.green = style.bg0_green;
 		background.blue = style.bg0_blue;
 		data.drawable = window;
-		data.device = getDisplay ();
+		data.device = display;
 		data.background = background;
 		data.foreground = foreground;
 		data.font = font != null ? font.handle : defaultFont (); 
@@ -1977,7 +1951,6 @@ public boolean isEnabled () {
 }
 
 boolean isFocusAncestor () {
-	Display display = getDisplay ();
 	Control control = display.getFocusControl ();
 	while (control != null && control != this) {
 		control = control.parent;
@@ -2095,7 +2068,6 @@ void releaseHandle () {
 }
 
 void releaseWidget () {
-	Display display = getDisplay ();
 	display.removeMouseHoverTimeout (handle);
 	super.releaseWidget ();
 	cursor = null;

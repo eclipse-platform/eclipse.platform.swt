@@ -135,7 +135,6 @@ void createHandle (int index) {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	OS.g_signal_connect (handle, OS.value_changed, display.windowProc2, VALUE_CHANGED);
 }
 

@@ -381,12 +381,10 @@ public void cut () {
 }
 
 GdkColor defaultBackground () {
-	Display display = getDisplay ();
 	return display.COLOR_TEXT_BACKGROUND;
 }
 
 GdkColor defaultForeground () {
-	Display display = getDisplay ();
 	return display.COLOR_TEXT_FOREGROUND;
 }
 
@@ -417,7 +415,6 @@ boolean hasFocus () {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int windowProc2 = display.windowProc2;
 	int windowProc3 = display.windowProc3;
 	// TODO - fix multiple selection events for one user action
