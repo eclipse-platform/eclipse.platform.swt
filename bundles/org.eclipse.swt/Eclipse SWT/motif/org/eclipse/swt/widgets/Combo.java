@@ -1093,7 +1093,7 @@ public void setFont (Font font) {
 	if (OS.XtIsRealized (handle)) {
 		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		OS.XtResizeWidget (handle, argList [1] + 1, argList [3], argList [5]);
+		OS.XtResizeWidget (handle, argList [1], argList [3] + 1, argList [5]);
 		OS.XtResizeWidget (handle, argList [1], argList [3], argList [5]);
 	}
 }
