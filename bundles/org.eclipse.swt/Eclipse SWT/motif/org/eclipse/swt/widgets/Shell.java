@@ -638,7 +638,7 @@ public Rectangle getBounds () {
 	checkWidget();
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
-	if (realized) {
+	if (reparented) {
 		root_x [0] -= trimLeftInset ();
 		root_y [0] -= trimTopInset ();
 	}
@@ -679,7 +679,7 @@ public Point getLocation () {
 	checkWidget();
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
-	if (realized) {
+	if (reparented) {
 		root_x [0] -= trimLeftInset ();
 		root_y [0] -= trimTopInset ();
 	}
@@ -743,7 +743,7 @@ public boolean getVisible () {
 	if (xWindow == 0) return false;
 	XWindowAttributes attributes = new XWindowAttributes ();
 	OS.XGetWindowAttributes (xDisplay, xWindow, attributes);
-	if (attributes.map_state == OS.IsViewable) return true;
+	if (attributes.map_state == OS.IsViewable && reparented) return true;
 	int [] argList = {OS.XmNmappedWhenManaged, 0};
 	OS.XtGetValues (shellHandle, argList, argList.length / 2);
 	return minimized && attributes.map_state == OS.IsUnviewable && argList [1] != 0;
@@ -966,7 +966,7 @@ public void removeShellListener(ShellListener listener) {
 void saveBounds () {
 	short [] root_x = new short [1], root_y = new short [1];
 	OS.XtTranslateCoords (scrolledHandle, (short) 0, (short) 0, root_x, root_y);
-	if (realized) {
+	if (reparented) {
 		root_x [0] -= trimLeftInset ();
 		root_y [0] -= trimTopInset ();
 	}
