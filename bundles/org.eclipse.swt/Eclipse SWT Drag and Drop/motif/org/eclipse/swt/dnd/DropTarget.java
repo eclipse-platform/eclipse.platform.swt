@@ -158,7 +158,7 @@ public DropTarget(Control control, int style) {
 		effect = new NoDragUnderEffect(control);
 	}
 	
-	registerDropTarget();
+	if (control.isVisible()) registerDropTarget();
 }
 
 /**
