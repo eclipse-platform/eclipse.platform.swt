@@ -623,7 +623,24 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 					string = Display.withCrLf (string);
 					int length = string.length ();
 					char [] chars = new char [length + 1];
-					string.getChars (0, length, chars, 0);	
+					string.getChars (0, length, chars, 0);
+					
+					/*
+					* Ensure that the orientation of the tool tip matches
+					* the orientation of the control.
+					*/
+					int hwnd = hdr.idFrom;
+					if (hwnd != 0 && ((lpnmtdi.uFlags & OS.TTF_IDISHWND) != 0)) {
+						Control control = WidgetTable.get (hwnd);
+						if (control != null) {
+							if ((control.getStyle () & SWT.RIGHT_TO_LEFT) != 0) {
+								lpnmtdi.uFlags |= OS.TTF_RTLREADING;
+							} else {
+								lpnmtdi.uFlags &= ~OS.TTF_RTLREADING;
+							}
+						}
+					}
+					
 					if (hdr.code == OS.TTN_GETDISPINFOA) {
 						byte [] bytes = new byte [chars.length * 2];
 						OS.WideCharToMultiByte (OS.CP_ACP, 0, chars, chars.length, bytes, bytes.length, null, null);

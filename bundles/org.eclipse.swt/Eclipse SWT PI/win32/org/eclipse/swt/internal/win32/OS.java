@@ -963,6 +963,7 @@ public class OS {
 	public static final int TRANSPARENT = 0x1;
 	public static final int TTF_IDISHWND = 0x1;
 	public static final int TTF_SUBCLASS = 0x10;
+	public static final int TTF_RTLREADING = 0x4;                      //rtl	
 	public static final int TTM_ADDTOOL = IsUnicode ? 0x432 : 0x404;
 	public static final int TTM_DELTOOL = IsUnicode ? 0x433 : 0x405;
 	public static final int TTM_SETMAXTIPWIDTH = 0x418;
