@@ -9,7 +9,6 @@ public class TBBUTTON {
 	public int idCommand;
 	public byte fsState;
 	public byte fsStyle;
-	public short ___MISSING_ALIGNMENT__; 
 	public int dwData;
 	public int iString;
 	public static final int sizeof = 20;
