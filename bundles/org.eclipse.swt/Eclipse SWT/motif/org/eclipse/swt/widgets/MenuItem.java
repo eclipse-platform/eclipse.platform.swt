@@ -636,9 +636,16 @@ public void setAccelerator (int accelerator) {
 		} else {
 			keysym = wcsToMbcs ((char) keysym);
 		}
-		String key = "<Key>" + keysymName (keysym);
+		String key = ctrl + alt + shift + "<Key>" + keysymName (keysym);
+		StringBuffer allKeys = new StringBuffer (key);
+		allKeys.append (",Lock ");
+		allKeys.append (key);
+		allKeys.append (",Mod2 ");
+		allKeys.append (key);
+		allKeys.append (",Lock Mod2 ");
+		allKeys.append (key);
 		/* Use the character encoding for the default locale */
-		byte [] buffer = Converter.wcsToMbcs (null, ctrl + alt + shift + key, true);		
+		byte [] buffer = Converter.wcsToMbcs (null, allKeys.toString (), true);		
 		ptr = OS.XtMalloc (buffer.length);
 		if (ptr != 0) OS.memmove (ptr, buffer, buffer.length);
 	}
