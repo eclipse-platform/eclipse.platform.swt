@@ -1183,9 +1183,8 @@ void setToolTipText (int hwnd, String text) {
 	lpti.cbSize = TOOLINFO.sizeof;
 	lpti.uId = hwnd;
 	lpti.hwnd = handle;
-	if (text == null) {
-		OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
-	} else {
+	OS.SendMessage (toolTipHandle, OS.TTM_DELTOOL, 0, lpti);
+	if (text != null) {
 		lpti.uFlags = OS.TTF_IDISHWND | OS.TTF_SUBCLASS;
 		lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
 		OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
