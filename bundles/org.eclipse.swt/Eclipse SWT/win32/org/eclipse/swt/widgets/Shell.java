@@ -1794,6 +1794,36 @@ LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
+	LRESULT result = super.WM_SYSCOMMAND (wParam, lParam);
+	//This code is intentionally commented
+//	if (result != null) return result;
+//	/*
+//	* Feature in Windows.  When a window is minimized, the memory
+//	* for the working set of the process.  For applications that
+//	* use a lot of memory, when the window is restored, it can take
+//	* a long time (sometimes minutes) before the application becomes
+//	* responsive.   The fix is to intercept WM_SYSCOMMAND looking
+//	* for SC_MINIMIZE and use ShowWindow() with SW_SHOWMINIMIZED to
+//	* minimize the window rather than allowing the default window
+//	* proc to do it when more that 64Meg of memory is being used.
+//	* 
+//	* NOTE:  The default window proc activates the next top-level
+//	* window in the Z order while ShowWindow () with SW_SHOWMINIMIZED
+//	* does not.  There is no fix for this at this time.
+//	*/
+//	int cmd = wParam & 0xFFF0;
+//	switch (cmd) {
+//		case OS.SC_MINIMIZE:
+//			long memory = Runtime.getRuntime ().totalMemory ();
+//			if (memory > 64000000) {
+//				OS.ShowWindow (handle, OS.SW_SHOWMINIMIZED);
+//				return LRESULT.ZERO;
+//			}
+//	}
+	return result;
+}
+
 LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam,lParam);
 	if (result != null) return result;
