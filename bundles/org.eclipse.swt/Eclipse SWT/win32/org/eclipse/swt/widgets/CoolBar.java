@@ -568,7 +568,7 @@ void setItemSizes (Point [] sizes) {
 		rbBand.fMask = OS.RBBIM_CHILDSIZE;
 		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
 		
-		/* Now set the size fields we are currently modifying. */
+		/* Set the size fields we are currently modifying. */
 		rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
 		int width = sizes [i].x, height = sizes [i].y;
 		rbBand.cx = width;
