@@ -187,6 +187,23 @@ public void test_getIconDepth() {
 	warnUnimpl("Test test_getIconDepth not written");
 }
 
+public void test_getMonitors() {
+	Display display = new Display();
+	Monitor[] monitors = display.getMonitors();
+	assertNotNull(monitors);
+	assertTrue("at least one monitor should be returned", monitors.length >= 1);
+	for (int i = 0; i < monitors.length; i++)
+		assertTrue("monitor at index "+i+" should not be null", monitors[i] != null);
+	display.dispose();
+}
+
+public void test_getPrimaryMonitor() {
+	Display display = new Display();
+	Monitor monitor = display.getPrimaryMonitor();
+	assertNotNull(monitor);
+	display.dispose();
+}
+
 public void test_getShells() {
 	warnUnimpl("Test test_getShells not written");
 }
@@ -337,6 +354,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getDoubleClickTime");
 	methodNames.addElement("test_getFocusControl");
 	methodNames.addElement("test_getIconDepth");
+	methodNames.addElement("test_getMonitors");
+	methodNames.addElement("test_getPrimaryMonitor");
 	methodNames.addElement("test_getShells");
 	methodNames.addElement("test_getSyncThread");
 	methodNames.addElement("test_getSystemColorI");
@@ -385,6 +404,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getDoubleClickTime")) test_getDoubleClickTime();
 	else if (getName().equals("test_getFocusControl")) test_getFocusControl();
 	else if (getName().equals("test_getIconDepth")) test_getIconDepth();
+	else if (getName().equals("test_getMonitors")) test_getMonitors();
+	else if (getName().equals("test_getPrimaryMonitor")) test_getPrimaryMonitor();
 	else if (getName().equals("test_getShells")) test_getShells();
 	else if (getName().equals("test_getSyncThread")) test_getSyncThread();
 	else if (getName().equals("test_getSystemColorI")) test_getSystemColorI();
