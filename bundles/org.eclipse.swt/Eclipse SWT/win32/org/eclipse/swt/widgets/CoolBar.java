@@ -1,0 +1,567 @@
+package org.eclipse.swt.widgets;
+
+/*
+ * Licensed Materials - Property of IBM,
+ * (c) Copyright IBM Corp. 1998, 2001  All Rights Reserved
+ */
+
+import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+
+/**
+ * Instances of this class provide an area for dynamically
+ * positioning the items they contain.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
+ 
+public class CoolBar extends Composite {
+	
+	CoolItem [] items;
+	static final int ReBarProc;
+	static final byte [] ReBarClass = OS.REBARCLASSNAME;
+	static {
+		INITCOMMONCONTROLSEX icex = new INITCOMMONCONTROLSEX ();
+		icex.dwSize = INITCOMMONCONTROLSEX.sizeof;
+		icex.dwICC = OS.ICC_COOL_CLASSES;
+		OS.InitCommonControlsEx (icex);
+		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
+		lpWndClass.cbSize = WNDCLASSEX.sizeof;
+		OS.GetClassInfoEx (0, ReBarClass, lpWndClass);
+		ReBarProc = lpWndClass.lpfnWndProc;
+	}
+
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
+public CoolBar (Composite parent, int style) {
+	super (parent, checkStyle (style));
+}
+
+int callWindowProc (int msg, int wParam, int lParam) {
+	if (handle == 0) return 0;
+	return OS.CallWindowProc (ReBarProc, handle, msg, wParam, lParam);
+}
+
+static int checkStyle (int style) {
+	/*
+	* Even though it is legal to create this widget
+	* with scroll bars, they serve no useful purpose
+	* because they do not automatically scroll the
+	* widget's client area.  The fix is to clear
+	* the SWT style.
+	*/
+	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+}
+
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	int height = 0, width = 0;
+	RECT rect = new RECT ();
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_IDEALSIZE;
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETRECT, i, rect);
+		height = Math.max (height, rect.bottom - rect.top);
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		width += rbBand.cxIdeal;
+	}
+	if (count != 0) width += 4;
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	int border = getBorderWidth ();
+	width += border * 2;
+	height += border * 2;
+	return new Point (width, height);
+}
+
+void createHandle () {
+	super.createHandle ();
+	state &= ~CANVAS;
+	
+	/*
+	* Feature in Windows.  When the control is created,
+	* it does not use the default system font.  A new HFONT
+	* is created and destroyed when the control is destroyed.
+	* This means that a program that queries the font from
+	* this control, uses the font in another control and then
+	* destroys this control will have the font unexpectedly
+	* destroyed in the other control.  The fix is to assign
+	* the font ourselves each time the control is created.
+	* The control will not destroy a font that it did not
+	* create.
+	*/
+	int hFont = OS.GetStockObject (OS.SYSTEM_FONT);
+	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
+}
+
+void createItem (CoolItem item, int index) {
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
+	int id = 0;
+	while (id < items.length && items [id] != null) id++;
+	if (id == items.length) {
+		CoolItem [] newItems = new CoolItem [items.length + 4];
+		System.arraycopy (items, 0, newItems, 0, items.length);
+		items = newItems;
+	}
+	int hHeap = OS.GetProcessHeap ();
+	int lpText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 1);
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_TEXT | OS.RBBIM_STYLE | OS.RBBIM_ID;
+	rbBand.fStyle = OS.RBBS_VARIABLEHEIGHT | OS.RBBS_GRIPPERALWAYS;
+	rbBand.lpText = lpText;
+	rbBand.wID = id;
+	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
+		error (SWT.ERROR_ITEM_NOT_ADDED);
+	}
+	OS.HeapFree (hHeap, 0, lpText);
+	items [item.id = id] = item;
+}
+
+void createWidget () {
+	super.createWidget ();
+	items = new CoolItem [4];
+}
+
+void destroyItem (CoolItem item) {
+	int index = OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
+	/*
+	* Feature in Windows.  When Windows removed a rebar
+	* band, it makes the band child invisible.  The fix
+	* is to show the child.
+	*/		
+	Control control = item.control;
+	boolean wasVisible = control != null && control.getVisible ();
+	if (OS.SendMessage (handle, OS.RB_DELETEBAND, index, 0) == 0) {
+		error (SWT.ERROR_ITEM_NOT_REMOVED);
+	}
+	items [item.id] = null;
+	item.id = -1;
+	if (wasVisible) control.setVisible (true);	
+}
+
+/**
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
+public CoolItem getItem (int index) {
+	checkWidget ();
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_ID;
+	OS.SendMessage (handle, OS.RB_GETBANDINFO, index, rbBand);
+	return items [rbBand.wID];
+}
+
+/**
+ * Returns the number of items contained in the receiver.
+ *
+ * @return the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_COUNT - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
+public int getItemCount () {
+	checkWidget ();
+	return OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+}
+
+/**
+ * Returns an array of <code>CoolItems</code>s which are the
+ * items in the receiver in the order those items were added. 
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not effect the receiver. 
+ * </p>
+ *
+ * @return the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
+public CoolItem [] getItems () {
+	checkWidget ();
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	CoolItem [] result = new CoolItem [count];
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_ID;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		result [i] = items [rbBand.wID];
+	}
+	return result;
+}
+
+/**
+ * Searches the receiver's items, in the order they were
+ * added, starting at the first item (index 0) until an item
+ * is found that is equal to the argument, and returns the
+ * index of that item. If no item is found, returns -1.
+ *
+ * @param item the search item
+ * @return the index of the item
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int indexOf (CoolItem item) {
+	checkWidget ();
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return OS.SendMessage (handle, OS.RB_IDTOINDEX, item.id, 0);
+}
+
+void releaseWidget () {
+	for (int i=0; i<items.length; i++) {
+		CoolItem item = items [i];
+		if (item != null && !item.isDisposed ()) {
+			item.releaseWidget ();
+		}
+	}
+	items = null;
+}
+
+void setBackgroundPixel (int pixel) {
+	if (background == pixel) return;
+	background = pixel;
+	if (pixel == -1) pixel = defaultBackground ();
+	OS.SendMessage (handle, OS.RB_SETBKCOLOR, 0, pixel);
+	setItemColors (OS.SendMessage (handle, OS.RB_GETTEXTCOLOR, 0, 0), pixel);
+}
+
+void setForegroundPixel (int pixel) {
+	if (foreground == pixel) return;
+	foreground = pixel;
+	if (pixel == -1) pixel = defaultForeground ();
+	OS.SendMessage (handle, OS.RB_SETTEXTCOLOR, 0, pixel);
+	setItemColors (pixel, OS.SendMessage (handle, OS.RB_GETBKCOLOR, 0, 0));
+}
+
+void setItemColors (int foreColor, int backColor) {
+	int count = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	REBARBANDINFO rbBand = new REBARBANDINFO ();
+	rbBand.cbSize = REBARBANDINFO.sizeof;
+	rbBand.fMask = OS.RBBIM_COLORS;
+	rbBand.clrFore = foreColor;
+	rbBand.clrBack = backColor;
+	for (int i=0; i<count; i++) {
+		OS.SendMessage (handle, OS.RB_SETBANDINFO, i, rbBand);
+	}
+}
+
+int widgetStyle () {
+	int bits = super.widgetStyle () | OS.CCS_NODIVIDER | OS.CCS_NORESIZE;
+	bits |= OS.RBS_VARHEIGHT | OS.RBS_BANDBORDERS;
+	return bits;
+}
+
+byte [] windowClass () {
+	return ReBarClass;
+}
+
+int windowProc () {
+	return ReBarProc;
+}
+
+LRESULT WM_COMMAND (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  When the coolbar window
+	* proc processes WM_COMMAND, it forwards this
+	* message to the parent.  This is done so that
+	* children of the coolbar that send WM_COMMAND
+	* messages to their parents will notify not only
+	* the coolbar but also the parent of the coolbar,
+	* which is typically the application window and
+	* the window that is looking for this message.
+	* If the coolbar did not do this, applications
+	* would have to subclass the coolbar window to
+	* see WM_COMMAND messages. Because the coolbar
+	* window is subclassed, the WM_COMMAND message
+	* is delivered twice.  The fix is to avoid
+	* calling the coolbar window proc.
+	*/
+	LRESULT result = super.WM_COMMAND (wParam, lParam);
+	if (result != null) return result;
+	return LRESULT.ZERO;
+}
+
+LRESULT WM_ERASEBKGND (int wParam, int lParam) {
+	/*
+	* Feature in Windows.  For some reason, Windows
+	* does not fully erase the area that the cool bar
+	* occupies when the size of the cool bar grows.
+	* The fix is to erase the cool bar background.
+	*/
+	RECT rect = new RECT ();
+	OS.GetClientRect (handle, rect);
+	drawBackground (wParam, rect);
+	return null;
+}
+
+LRESULT wmNotifyChild (int wParam, int lParam) {
+	NMHDR hdr = new NMHDR ();
+	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
+	switch (hdr.code) {
+		case OS.RBN_HEIGHTCHANGE:
+			Point size = getSize ();
+			int border = getBorderWidth ();
+			int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
+			setSize (size.x, height + (border * 2));
+			break;
+	}
+	return super.wmNotifyChild (wParam, lParam);
+}
+
+/**
+ * Returns an array of zero-relative indices which map the order
+ * that the items in the receiver were added in (which is the
+ * order that they are returned by <code>getItems()</code>) to
+ * the order which they are currently being displayed.
+ * <p>
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not effect the receiver. 
+ * </p>
+ *
+ * @return the receiver's item order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
+public int [] getItemOrder () {
+	checkWidget ();
+	CoolItem [] items = getItems ();
+	int [] indices = new int [items.length];
+	for (int i = 0; i < items.length; i++) {
+		indices [i] = items [i].id;
+	}
+	return indices;
+}
+
+/**
+ * Returns an array of points whose x and y coordinates describe
+ * the widths and heights (respectively) of the items in the receiver
+ * in the order the items were added.
+ *
+ * @return the receiver's item sizes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Point [] getItemSizes () {
+	checkWidget ();	
+	CoolItem [] items = getItems ();
+	Point [] sizes = new Point [items.length];
+	for (int i = 0; i < items.length; i++) {
+		sizes [i] = items [i].getSize ();
+	}
+	return sizes;
+}
+
+/**
+ * Returns an array of ints which describe the zero-relative
+ * row number of the row which each of the items in the 
+ * receiver occurs in, in the order the items were added.
+ *
+ * @return the receiver's wrap indices
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public int [] getWrapIndices () {
+	checkWidget ();
+	CoolItem [] items = getItems ();
+	int [] indices = new int [items.length];
+	int count = 0;
+	for (int i = 0; i < items.length; i++) {
+		if (items [i].getWrap ()) {
+			indices [count] = i;
+			count++;
+		}
+	}
+	int [] answer = new int [count];
+	System.arraycopy(indices, 0, answer, 0, count);
+	return answer;
+}
+
+/**
+ * Sets the the order that the items in the receiver should 
+ * be displayed in to the given argument which is described
+ * in terms of the zero-relative ordering of when the items
+ * were added.
+ *
+ * @param itemOrder the new item order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_GET_ITEM - if the operation fails because of an operating system failure</li>
+ * </ul>
+ */
+void setItemOrder (int [] itemOrder) {
+	if (itemOrder == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int itemCount = OS.SendMessage (handle, OS.RB_GETBANDCOUNT, 0, 0);
+	if (itemOrder.length != itemCount) error (SWT.ERROR_INVALID_ARGUMENT);	
+	for (int i = 0; i < itemCount; i++) {
+		int currentIndex = OS.SendMessage (handle, OS.RB_IDTOINDEX, itemOrder [i], 0);
+		OS.SendMessage (handle, OS.RB_MOVEBAND, currentIndex, i);				
+	}
+}
+
+/**
+ * Sets the width and height of the areas in the receiver which
+ * are used to display its items to the ones specified by the
+ * argument, which is an array of points whose x and y coordinates
+ * describe the widths and heights (respectively) in the order the 
+ * items were added.
+ *
+ * @param sizes the new sizes for each of the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+void setItemSizes (Point [] sizes) {
+	if (sizes == null) error (SWT.ERROR_NULL_ARGUMENT);
+	CoolItem [] items = getItems ();
+	if (sizes.length != items.length) error (SWT.ERROR_INVALID_ARGUMENT);
+	for (int i = 0; i < items.length; i++) {
+		items [i].setSize(sizes [i]);
+	}
+}
+
+/**
+ * Sets the row that each of the receiver's items will be
+ * displayed in to the given array of ints which describe
+ * the zero-relative row number of the row for each item 
+ * in the order the items were added.
+ *
+ * @param indices the new wrap indices
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setWrapIndices (int [] indices) {
+	checkWidget ();
+	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	CoolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		items [i].setWrap (false);
+	}
+	for (int i = 0; i < indices.length; i++) {
+		int index = indices [i];
+		items [index].setWrap (true);
+	}
+}
+
+/**
+ * Sets the receiver's item order, wrap indices, and item
+ * sizes at once. This equivalent to calling the setter
+ * methods for each of these values individually.
+ *
+ * @param itemOrder the new item order
+ * @param wrapIndices the new wrap indices
+ * @param size the new item sizes
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setItemLayout (int [] itemOrder, int [] wrapIndices, Point [] sizes) {
+	checkWidget ();
+	setItemOrder (itemOrder);
+	setItemSizes (sizes);
+	setWrapIndices(wrapIndices);
+}
+
+}
