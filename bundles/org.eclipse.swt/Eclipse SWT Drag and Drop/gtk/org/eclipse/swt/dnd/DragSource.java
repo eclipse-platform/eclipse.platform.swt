@@ -332,7 +332,6 @@ void dragGetData(int /*long*/ widget, int /*long*/ context, int /*long*/ selecti
 	event.time = time; 
 	event.dataType = transferData; 
 	notifyListeners(DND.DragSetData, event);
-	if (event.data == null) return;
 		
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++) {
