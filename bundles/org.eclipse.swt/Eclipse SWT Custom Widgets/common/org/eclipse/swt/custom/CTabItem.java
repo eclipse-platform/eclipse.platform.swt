@@ -45,6 +45,7 @@ public class CTabItem extends Item {
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
 	int closeImageState = CTabFolder.NONE;
 	boolean showClose = false;
+	boolean showing = false;
 
 	// internal constants
 	static final int TOP_MARGIN = 2;
@@ -232,11 +233,11 @@ void drawSelected(GC gc ) {
 	}
 	
 	if (parent.single) {
-		if (!isShowing()) return;
+		if (!showing) return;
 	} else {
 		// if selected tab scrolled out of view or partially out of view
 		// just draw bottom line
-		if (!isShowing()){
+		if (!showing){
 			int x1 = Math.max(0, parent.borderLeft - 1);
 			int y1 = (parent.onBottom) ? y - 1 : y + height;
 			int x2 = size.x - parent.borderRight;
@@ -407,14 +408,21 @@ void drawSelected(GC gc ) {
 }
 void drawUnselected(GC gc) {
 	// Do not draw partial items
-	if (!isShowing()) return;
+	if (!showing) return;
 	
 	Rectangle clipping = gc.getClipping();
 	Rectangle bounds = getBounds();
 	if (!clipping.intersects(bounds)) return;
 	
 	// draw border
-	if (parent.indexOf(this) != parent.selectedIndex - 1) {
+	int nextVisible = -1;
+	for (int i = parent.indexOf(this)+1; i < parent.items.length; i++) {
+		if (parent.items[i].showing) {
+			nextVisible = i;
+			break;
+		}
+	}
+	if (nextVisible == -1 || nextVisible != parent.selectedIndex) {
 		gc.setForeground(CTabFolder.borderColor);
 		gc.drawLine(x + width - 1, y, x + width - 1, y + height);
 	}
@@ -573,20 +581,7 @@ public String getToolTipText () {
 */
 public boolean isShowing () {
 	checkWidget();
-	int index = parent.indexOf(this);
-	int rightEdge = parent.getRightItemEdge();
-	if (parent.single) {
-		if (index == parent.selectedIndex) {
-			return x <= rightEdge;
-		}
-		return false;
-	}
-	if (index < parent.firstIndex) return false;
-	if (parent.firstIndex == index) {
-		return x <= rightEdge;
-	}
-	int extra = parent.simple || index != parent.selectedIndex ? 0 : parent.curveWidth - 2*parent.curveIndent;
-	return x + width + extra <= rightEdge;
+	return showing;
 }
 void onPaint(GC gc, boolean isSelected) {
 	if (width == 0 || height == 0) return;
