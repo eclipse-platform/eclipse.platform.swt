@@ -676,6 +676,32 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 	return super. processEvent (eventNumber, int0, int1, int2);
 }
 
+int processKeyDown (int callData, int arg1, int int2) {
+	int result = super.processKeyDown (callData, arg1, int2);
+	/*
+	* Feature in GTK.  When an item is reselected using
+	* the space bar, GTK does not issue notification.
+	* The fix is to ignore the notification that is sent
+	* by GTK and look for the space key.
+	*/
+	int length = OS.gdk_event_key_get_length (callData);
+	if (length == 1) {
+		int string = OS.gdk_event_key_get_string (callData);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, string, length);
+		char [] unicode = Converter.mbcsToWcs (null, buffer);
+		switch (unicode [0]) {
+			case ' ':
+				GtkCList clist = new GtkCList (handle);
+				if (clist.focus_row != -1) {
+					postEvent (SWT.Selection);
+				}
+				break;
+		}
+	}
+	return result;
+}
+
 int processKeyUp (int callData, int arg1, int int2) {
 	int result = super.processKeyUp (callData, arg1, int2);
 	/*

@@ -550,6 +550,38 @@ int processCollapse (int int0, int int1, int int2) {
 	return 0;
 }
 
+int processKeyDown (int callData, int arg1, int int2) {
+	int result = super.processKeyDown (callData, arg1, int2);
+	/*
+	* Feature in GTK.  When an item is reselected using
+	* the space bar, GTK does not issue notification.
+	* The fix is to ignore the notification that is sent
+	* by GTK and look for the space key.
+	*/
+	int length = OS.gdk_event_key_get_length (callData);
+	if (length == 1) {
+		int string = OS.gdk_event_key_get_string (callData);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, string, length);
+		char [] unicode = Converter.mbcsToWcs (null, buffer);
+		switch (unicode [0]) {
+			case ' ':
+				GtkCList clist = new GtkCList (handle);
+				if (clist.focus_row != -1) {
+					Event event = new Event ();
+					int focus = OS.gtk_ctree_node_nth (handle, clist.focus_row);
+					if (focus != 0) {
+						int index = OS.gtk_ctree_node_get_row_data (handle, focus) - 1;
+						event.item = items [index];
+					}
+					postEvent (SWT.Selection, event);
+				}
+				break;
+		}
+	}
+	return result;
+}
+
 int processKeyUp (int callData, int arg1, int int2) {
 	int result = super.processKeyUp (callData, arg1, int2);
 	/*
@@ -568,6 +600,7 @@ int processKeyUp (int callData, int arg1, int int2) {
 	}
 	return result;
 }
+
 int processEvent (int eventNumber, int int0, int int1, int int2) {
 	if (eventNumber == 0) {
 		switch (OS.GDK_EVENT_TYPE (int0)) {
@@ -623,13 +656,13 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 			case OS.GDK_BUTTON_RELEASE: {
 				/*
 				* Feature in GTK.  When an item is reselected in a
-				* mulit-select tree, GTK does not issue notification.
+				* multi-select tree, GTK does not issue notification.
 				* The fix is to detect that the mouse was released over
 				* a selected item when no selection signal was set and
 				* issue a fake selection event.
 				* 
 				* Feature in GTK.  Double selection can only be implemented
-				* in a mouse up handler for a tree unlike the list,the event
+				* in a mouse up handler for a tree unlike the list, the event
 				* that caused the select signal is not included when the select
 				* signal is issued.
 				*/
@@ -685,7 +718,7 @@ int processEvent (int eventNumber, int int0, int int1, int int2) {
 		}
 		return 1;
 	}
-	return super. processEvent (eventNumber, int0, int1, int2);
+	return super.processEvent (eventNumber, int0, int1, int2);
 }
 
 int processExpand (int int0, int int1, int int2) {
