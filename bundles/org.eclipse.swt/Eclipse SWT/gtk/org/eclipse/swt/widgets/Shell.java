@@ -593,7 +593,6 @@ boolean resizedSinceLastLayout() {
 */
 public void open () {
 	checkWidget();
-	bringToTop ();
 	setVisible (true);
 }
 
