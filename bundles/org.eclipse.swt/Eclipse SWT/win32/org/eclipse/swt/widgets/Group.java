@@ -37,6 +37,11 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class Group extends Composite {
+	/*
+	 * Number of pixels between client area and border.
+	 */
+	static final int INSET = 3;
+	
 	static final int GroupProc;
 	static final TCHAR GroupClass = new TCHAR (0, OS.IsWinCE ? "BUTTON" : "SWT_GROUP", true);
 	static {
@@ -76,8 +81,6 @@ public class Group extends Composite {
 			}
 		}
 	}
-	
-	static final int INSET = 3; // number of pixels between client area and border
 
 /**
  * Constructs a new instance of this class given its parent
