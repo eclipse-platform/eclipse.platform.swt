@@ -62,8 +62,6 @@
 #define NO_GetClipboardFormatNameA
 #define NO_GetDIBColorTable
 #define NO_GetDIBits
-#define NO_GetFileTitleA
-#define NO_GetFileTitleW
 #define NO_GetFontLanguageInfo
 #define NO_GetIconInfo
 #define NO_GetKeyboardLayout
@@ -2153,44 +2151,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDoubleClickTime)
 	return (jint)GetDoubleClickTime();
 }
 #endif /* NO_GetDoubleClickTime */
-
-#ifndef NO_GetFileTitleA
-JNIEXPORT jshort JNICALL OS_NATIVE(GetFileTitleA)
-	(JNIEnv *env, jclass that, jbyteArray arg0, jbyteArray arg1, jshort arg2)
-{
-	jbyte *lparg0=NULL;
-	jbyte *lparg1=NULL;
-	jshort rc;
-
-	DEBUG_CALL("GetFileTitleA\n")
-
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	rc = (jshort)GetFileTitleA((LPSTR)lparg0, (LPSTR)lparg1, arg2);
-	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
-	return rc;
-}
-#endif /* NO_GetFileTitleA */
-
-#ifndef NO_GetFileTitleW
-JNIEXPORT jshort JNICALL OS_NATIVE(GetFileTitleW)
-	(JNIEnv *env, jclass that, jcharArray arg0, jcharArray arg1, jshort arg2)
-{
-	jchar *lparg0=NULL;
-	jchar *lparg1=NULL;
-	jshort rc;
-
-	DEBUG_CALL("GetFileTitleW\n")
-
-	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
-	rc = (jshort)GetFileTitleW((LPWSTR)lparg0, (LPWSTR)lparg1, arg2);
-	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
-	if (arg1) (*env)->ReleaseCharArrayElements(env, arg1, lparg1, 0);
-	return rc;
-}
-#endif /* NO_GetFileTitleW */
 
 #ifndef NO_GetFocus
 JNIEXPORT jint JNICALL OS_NATIVE(GetFocus)

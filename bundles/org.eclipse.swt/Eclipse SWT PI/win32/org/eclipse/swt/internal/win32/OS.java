@@ -1415,17 +1415,6 @@ public static final int GetKeyNameText (int lParam, TCHAR lpString, int nSize) {
 	return GetKeyNameTextA (lParam, lpString1, nSize);
 }
 
-public static final short GetFileTitle (TCHAR lpszFile, TCHAR lpszTitle, short cbBuf) {
-	if (IsUnicode) {
-		char [] lpszFile1 = lpszFile == null ? null : lpszFile.chars;
-		char [] lpszTitle1 = lpszTitle == null ? null : lpszTitle.chars;
-		return GetFileTitleW (lpszFile1, lpszTitle1, cbBuf);
-	}
-	byte [] lpszFile1 = lpszFile == null ? null : lpszFile.bytes;
-	byte [] lpszTitle1 = lpszTitle == null ? null : lpszTitle.bytes;
-	return GetFileTitleA (lpszFile1, lpszTitle1, cbBuf);
-}
-
 public static final int GetLocaleInfo (int Locale, int LCType, TCHAR lpLCData, int cchData) {
 	if (IsUnicode) {
 		char [] lpLCData1 = lpLCData == null ? null : lpLCData.chars;
@@ -2066,8 +2055,6 @@ public static final native int GetDIBColorTable (int hdc, int uStartIndex, int c
 public static final native int GetDIBits (int hdc, int hbmp, int uStartScan, int cScanLines, int lpvBits, byte[] lpbi, int uUsage);
 public static final native int GetDlgItem (int hDlg, int nIDDlgItem);
 public static final native int GetDoubleClickTime ();
-public static final native short GetFileTitleW (char [] lpszFile, char [] lpszTitle, short cbBuf);
-public static final native short GetFileTitleA (byte [] lpszFile, byte [] lpszTitle, short cbBuf);
 public static final native int GetFocus ();
 public static final native int GetFontLanguageInfo(int hdc);
 public static final native boolean GetIconInfo (int hIcon, ICONINFO piconinfo);
