@@ -4134,19 +4134,7 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 		return null;
 	}
 	
-	/* Process well known keys that are not system keys or mnemonics */
-	switch (wParam) {
-		case SWT.LF: 
-		case SWT.CR: {
-			if (!sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam)) {
-				return LRESULT.ONE;
-			}
-			// widget could be disposed at this point
-			return null;
-		}
-	}
-	
-	/* Call the window proc to determine whether is was a system key or mnemonic */
+	/* Call the window proc to determine whether it is a system key or mnemonic */
 	display.mnemonicKeyHit = true;
 	int result = callWindowProc (OS.WM_SYSCHAR, wParam, lParam);
 	boolean consumed = false;
