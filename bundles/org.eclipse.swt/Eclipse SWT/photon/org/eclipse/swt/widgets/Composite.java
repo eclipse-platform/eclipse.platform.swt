@@ -272,8 +272,8 @@ void resizeClientArea (int width, int height) {
 		verticalBar.setBounds (clientWidth, 0, vBarWidth, clientHeight);
 	}
 	args = new int [] {
-		OS.Pt_ARG_WIDTH, clientWidth, 0,
-		OS.Pt_ARG_HEIGHT, clientHeight, 0,
+		OS.Pt_ARG_WIDTH, Math.max (clientWidth, 0), 0,
+		OS.Pt_ARG_HEIGHT, Math.max (clientHeight, 0), 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
