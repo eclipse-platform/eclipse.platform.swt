@@ -1,4 +1,7 @@
-package org.eclipse.swt.examples.launcher;/* * (c) Copyright IBM Corp. 2000, 2001, 2002. * All Rights Reserved */import java.net.*;import org.eclipse.swt.graphics.*;
+package org.eclipse.swt.examples.launcher;/* * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
+ * This file is made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html */import java.net.*;import org.eclipse.swt.graphics.*;
 /** * ItemDescriptor collects information about a launch item. */
 class ItemDescriptor {
 	private String id;

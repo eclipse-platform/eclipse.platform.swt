@@ -1,8 +1,10 @@
 package org.eclipse.swt.examples.ole.win32;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
- * All Rights Reserved
+ * (c) Copyright IBM Corp. 2000, 2002.
+ * This file is made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
  */
 
 import java.io.*;import java.net.*;import java.text.*;import java.util.*;import org.eclipse.core.runtime.*;import org.eclipse.swt.*;import org.eclipse.swt.graphics.*;import org.eclipse.ui.plugin.*;
