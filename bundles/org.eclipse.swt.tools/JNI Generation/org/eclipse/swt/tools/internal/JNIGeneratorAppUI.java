@@ -446,7 +446,7 @@ void createClassesPanel(Composite panel) {
 				String[] flags = classEditorLt.getSelection();
 				classData.setFlags(flags);
 				item.setText(column, getFlagsString(classData.getFlags()));
-				item.setChecked(classData.isGenerate());
+				item.setChecked(classData.getGenerate());
 				MetaData metaData = app.getMetaData();
 				metaData.setMetaData(classData.getClazz(), classData);
 				classesLt.getColumn(column).pack();
@@ -600,7 +600,7 @@ void createMembersPanel(Composite panel) {
 			String[] flags = memberEditorLt.getSelection();
 			data.setFlags(flags);
 			item.setText(column, getFlagsString(data.getFlags()));
-			item.setChecked(data.isGenerate());
+			item.setChecked(data.getGenerate());
 			MetaData metaData = app.getMetaData();
 			if (data instanceof FieldData) {
 				FieldData fieldData = (FieldData)data;
@@ -964,7 +964,7 @@ void updateClasses() {
 		item.setData(classData);
 		item.setText(CLASS_NAME_COLUMN, getClassString(clazz));
 		item.setText(CLASS_FLAGS_COLUMN, getFlagsString(classData.getFlags()));
-		item.setChecked(classData.isGenerate());
+		item.setChecked(classData.getGenerate());
 	}
 	TableColumn[] columns = classesLt.getColumns();
 	for (int i = 0; i < columns.length; i++) {
@@ -1015,7 +1015,7 @@ void updateMembers() {
 			TableItem item = new TableItem(membersLt, SWT.NONE);
 			item.setData(methodData);
 			item.setText(METHOD_NAME_COLUMN, getMethodString(method));
-			item.setChecked(methodData.isGenerate());
+			item.setChecked(methodData.getGenerate());
 			item.setText(METHOD_FLAGS_COLUMN, getFlagsString(methodData.getFlags()));
 			item.setText(METHOD_ACCESSOR_COLUMN, methodData.getAccessor());
 			/*
@@ -1047,7 +1047,7 @@ void updateMembers() {
 			TableItem item = new TableItem(membersLt, SWT.NONE);
 			item.setData(fieldData);
 			item.setText(FIELD_NAME_COLUMN, getFieldString(field));
-			item.setChecked(fieldData.isGenerate());
+			item.setChecked(fieldData.getGenerate());
 			item.setText(FIELD_CAST_COLUMN, fieldData.getCast());
 			item.setText(FIELD_FLAGS_COLUMN, getFlagsString(fieldData.getFlags()));
 			item.setText(FIELD_ACCESSOR_COLUMN, fieldData.getAccessor());
