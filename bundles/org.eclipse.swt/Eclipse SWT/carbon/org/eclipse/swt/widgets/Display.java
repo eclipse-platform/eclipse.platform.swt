@@ -200,6 +200,8 @@ public class Display extends Device {
 	/* Double Click */
 	int lastTime, lastButton;
 	short lastGlobalMouseXPos, lastGlobalMouseYPos;
+	int fLastModifiers;
+	MacMouseEvent fLastMouseEvent;
 	
 	/* Current caret */
 	Caret currentCaret;
@@ -246,8 +248,6 @@ public class Display extends Device {
 	private boolean fInContextMenu;	// true while tracking context menu
 	public int fCurrentCursor;
 	private Shell fMenuRootShell;
-	int fLastModifiers;
-	MacMouseEvent fLastMouseEvent;
 	
 	private static boolean fgCarbonInitialized;
 	private static boolean fgInitCursorCalled;

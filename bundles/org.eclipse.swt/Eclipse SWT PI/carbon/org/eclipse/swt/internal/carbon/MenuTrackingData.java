@@ -11,7 +11,7 @@ public class MenuTrackingData {
 	public int menu; 
 	public short itemSelected; 
 	public short itemUnderMouse; 
-//    Rect itemRect; 
+//	Rect itemRect; 
 	public short top;
 	public short left;
 	public short bottom;
