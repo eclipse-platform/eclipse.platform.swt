@@ -1776,11 +1776,11 @@ static String convertToLf(String text) {
 		return 111;
 	}
 		
-	private int handleDataBrowserDataCallback(int cHandle, int colId, int rowID, int itemData) {
+	private int handleDataBrowserDataCallback(int cHandle, int rowID, int colID, int itemData) {
 		Widget widget= WidgetTable.get(cHandle);
 		if (widget instanceof List) {
 			List list= (List) widget;
-			list.handleItemCallback(cHandle, colId, rowID, itemData);
+			list.handleItemCallback(cHandle, colID, rowID, itemData);
 		}
 		return OS.kNoErr;
 	}
@@ -1848,10 +1848,13 @@ static String convertToLf(String text) {
 			Control focus= getFocusControl();
 			if (focus == null || focus.handle == 0)
 				return OS.eventNotHandledErr;
-
-			int w= OS.GetControlOwner(focus.handle);
-			if (w != OS.FrontWindow())	// its probably a standard dialog
-				return OS.eventNotHandledErr;
+				
+			int frontWindow= OS.FrontWindow();
+			if (findWidget(frontWindow) == null) {
+				int w= OS.GetControlOwner(focus.handle);
+				if (w != OS.FrontWindow())	// its probably a standard dialog
+					return OS.eventNotHandledErr;
+			}
 						
 			switch (eventKind) {
 			case OS.kEventRawKeyDown:
