@@ -1327,7 +1327,7 @@ public void setSelection (int [] indices) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, count, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
-	if (ids.length > 0) showIndex (ids [0] - 1);
+	if (count > 0) showIndex (ids [0] - 1);
 }
 
 /**
