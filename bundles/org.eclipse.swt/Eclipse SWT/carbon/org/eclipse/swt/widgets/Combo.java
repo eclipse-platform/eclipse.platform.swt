@@ -193,7 +193,7 @@ void createHandle () {
 		 * resource. Instead, you can build the menu and later stuff the MenuRef field in
 		 * the popup data information.                                                                         
 		 */
-		OS.CreatePopupButtonControl(window, null, 0, (short)-12345, true, (short)0, (short)0, 0, outControl);
+		OS.CreatePopupButtonControl(window, null, 0, (short)-12345, false, (short)0, (short)0, 0, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
 		int[] menuRef= new int[1];
@@ -340,7 +340,7 @@ public Point getSelection () {
 	} else {
 		short [] s = new short [2];
 		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
-		selection = new Point (s[0], s[2]);
+		selection = new Point (s[0], s[1]);
 	}
 	return selection;
 }
@@ -388,6 +388,19 @@ public int getTextLimit () {
     return LIMIT; // NEEDS WORK
 }
 
+void hookEvents () {
+	super.hookEvents ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		Display display = getDisplay ();
+		int commandProc = display.commandProc;
+		int [] mask = new int [] {
+			OS.kEventClassCommand, OS.kEventProcessCommand,
+		};
+		int menuTarget = OS.GetMenuEventTarget (menuHandle);
+		OS.InstallEventHandler (menuTarget, commandProc, mask.length / 2, mask, handle, null);		
+	}
+}
+	
 public int indexOf (String string) {
 	return indexOf (string, 0);
 }
@@ -403,7 +416,35 @@ public int indexOf (String string, int start) {
 	}
 	return -1;
 }
+	
+int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventProcessCommand (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in the modify
+	* event.  If this happens, end the processing of the
+	* Windows message by returning zero as the result of
+	* the window proc.
+	*/
+	sendEvent (SWT.Modify);
+	if (isDisposed ()) return OS.eventNotHandledErr;
+	postEvent (SWT.Selection);
+	return OS.eventNotHandledErr;
+}
 
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	if (keyCode [0] == 36) { //CR
+		sendEvent (SWT.DefaultSelection);
+		return OS.noErr;
+	}
+	return OS.eventNotHandledErr;
+}
+		
 public void paste () {
 	checkWidget ();
 	int[] scrap = new int [1];
