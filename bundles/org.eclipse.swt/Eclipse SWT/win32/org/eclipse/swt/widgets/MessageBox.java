@@ -151,8 +151,8 @@ public int open () {
 
 	int modalBits = 0;
 	if ((style & SWT.PRIMARY_MODAL) != 0) modalBits = OS.MB_APPLMODAL;
-	if ((style & SWT.APPLICATION_MODAL) != 0) modalBits = OS.MB_TASKMODAL;
-	if ((style & SWT.SYSTEM_MODAL) != 0) modalBits = OS.MB_SYSTEMMODAL;
+	if ((style & SWT.APPLICATION_MODAL) != 0) modalBits = OS.IsWinCE ? OS.MB_APPLMODAL : OS.MB_TASKMODAL;
+	if ((style & SWT.SYSTEM_MODAL) != 0) modalBits = OS.IsWinCE ? OS.MB_APPLMODAL : OS.MB_SYSTEMMODAL;
 
 	int bits = buttonBits | iconBits | modalBits;
 	
