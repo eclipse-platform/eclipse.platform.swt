@@ -308,8 +308,10 @@ public void setControl (Control control) {
 	}
 	int index = parent.indexOf (this);
 	if (index == -1) return;
-	Control newControl = control;
-	Control oldControl = this.control;
+	if (this.control != null && this.control.isDisposed ()) {
+		this.control = null;
+	}
+	Control oldControl = this.control, newControl = control;
 	int hwnd = parent.handle;
 	int hwndChild = 0;
 	if (newControl != null) hwndChild = control.handle;

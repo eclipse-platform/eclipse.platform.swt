@@ -313,6 +313,9 @@ public void setControl (Control control) {
 		if (control.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.parent != parent) error (SWT.ERROR_INVALID_PARENT);
 	}
+	if (this.control != null && this.control.isDisposed ()) {
+		this.control = null;
+	}
 	Control oldControl = this.control, newControl = control;
 	this.control = control;
 	int index = parent.indexOf (this);
