@@ -588,11 +588,11 @@ int kEventMenuClosed (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	closed = true;
 //	width = height = 0;
-	int count = OS.CountMenuItems (handle);
-	for (int i=0; i<count; i++) {
+//	int count = OS.CountMenuItems (handle);
+//	for (int i=0; i<count; i++) {
 //		MenuItem item = items [i];
 //		item.x = item.y = item.width = item.height = 0;
-	}
+//	}
 	sendEvent (SWT.Hide);
 	if (hooks (SWT.Hide)) {
 		getShell().update (true);
@@ -617,11 +617,11 @@ int kEventMenuCreateFrameView (int nextHandler, int theEvent, int userData) {
 int kEventMenuDrawItem (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuDrawItem (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	short [] index = new short [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
+//	short [] index = new short [1];
+//	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemIndex, OS.typeMenuItemIndex, null, 2, null, index);
 //	MenuItem item = items [index [0] - 1];
-	Rect rect = new Rect ();
-	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rect);
+//	Rect rect = new Rect ();
+//	OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rect);
 //	item.x = rect.left - x;
 //	item.y = rect.top - y;
 //	item.width = rect.right - rect.left;
@@ -690,19 +690,19 @@ int kEventMenuGetFrameBounds (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMenuGetFrameBounds (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
-	CGRect rect = new CGRect ();
-	OS.GetEventParameter (theEvent, OS.kEventParamBounds, OS.typeHIRect, null, CGRect.sizeof, null, rect);
+//	CGRect rect = new CGRect ();
+//	OS.GetEventParameter (theEvent, OS.kEventParamBounds, OS.typeHIRect, null, CGRect.sizeof, null, rect);
 //	x = (int) rect.x;
 //	y = (int) rect.y;
 //	width = (int) rect.width;
 //	height = (int) rect.height;
-	if (cascade != null) {
-		OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeHIRect, null, CGRect.sizeof, null, rect);
+//	if (cascade != null) {
+//		OS.GetEventParameter (theEvent, OS.kEventParamMenuItemBounds, OS.typeHIRect, null, CGRect.sizeof, null, rect);
 //		cascade.x = (int) rect.x - x;
 //		cascade.y = (int) rect.y - y;
 //		cascade.width = (int) rect.width;
 //		cascade.height = (int) rect.height;
-	}
+//	}
 	return result;
 }
 
