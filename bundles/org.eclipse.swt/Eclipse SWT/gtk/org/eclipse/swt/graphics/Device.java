@@ -52,7 +52,7 @@ public abstract class Device implements Drawable {
 	
 	/* X Warning and Error Handlers */
 	static Callback XErrorCallback, XIOErrorCallback;
-	static int XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
+	static int /*long*/ XErrorProc, XIOErrorProc, XNullErrorProc, XNullIOErrorProc;
 	static Device[] Devices = new Device[4];
 
 	/*
