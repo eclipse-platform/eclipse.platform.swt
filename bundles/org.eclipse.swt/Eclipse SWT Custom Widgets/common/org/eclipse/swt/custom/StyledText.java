@@ -1670,9 +1670,8 @@ public void addExtendedModifyListener(ExtendedModifyListener extendedModifyListe
 public void setKeyBinding(int key, int action) {
 	checkWidget(); 
 	
-	int modifiers = SWT.ALT | SWT.SHIFT | SWT.CTRL | SWT.COMMAND;
-	int keyValue = key & ~modifiers;
-	int modifierValue = key & ~keyValue;
+	int keyValue = key & SWT.KEY_MASK;
+	int modifierValue = key & SWT.MODIFIER_MASK;
 	char keyChar = (char)keyValue;
 
 	if (Character.isLetter(keyChar)) {
