@@ -161,13 +161,13 @@ void add (MenuItem item) {
 void bringToTop () {
 	/*
 	* This code is intentionally commented.  On some platforms,
-	* the NO_TRIM style creates a shell that will stay on top
+	* the ON_TOP style creates a shell that will stay on top
 	* of every other shell on the desktop.  Using SetWindowPos ()
 	* with HWND_TOP caused problems on Windows so this code is
 	* commented out until this functionality is specified and
 	* the problems are fixed.
 	*/
-//	if ((style & SWT.NO_TRIM) != 0) {
+//	if ((style & SWT.ON_TOP) != 0) {
 //		int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
 //		OS.SetWindowPos (handle, OS.HWND_TOP, 0, 0, 0, 0, flags);
 //	} else {
@@ -803,7 +803,8 @@ void setParent () {
 	* a menu bar, setParent () is needed to reset
 	* the parent.  Otherwise, the MDI child window
 	* will appear as a separate shell.  This is an
-	* undocumented and dangerous Windows feature.
+	* undocumented and possibly dangerous Windows
+	* feature.
 	*/
 	Display display = getDisplay ();
 	int hwndParent = parent.handle;
