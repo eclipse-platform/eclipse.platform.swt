@@ -432,6 +432,7 @@ void createHandle () {
 	*/
 //	if ((style & SWT.ON_TOP) != 0) display.lockActiveWindow = true;
 	super.createHandle ();
+	
 	/*
 	* The following code is intentionally commented.
 	*/
@@ -445,7 +446,16 @@ void createHandle () {
 		if ((style & SWT.NO_TRIM) == 0) {
 			if ((style & (SWT.BORDER | SWT.RESIZE)) == 0) bits |= OS.WS_BORDER;
 		}
+		/*
+		* Bug in Windows.  When the WS_CAPTION bits are cleared using
+		* SetWindowLong(), Windows does not resize the client area of
+		* the window to get rid of the caption until the first resize.
+		* The fix is to use SetWindowPos() with SWP_DRAWFRAME to force
+		* the frame to be redrawn and resized.
+		*/
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
+		int flags = OS.SWP_DRAWFRAME | OS.SWP_NOMOVE | OS.SWP_NOSIZE | OS.SWP_NOZORDER | OS.SWP_NOACTIVATE;
+		OS.SetWindowPos (handle, 0, 0, 0, 0, 0, flags);
 		if (OS.IsWinCE) setMaximized (true);
 		if (OS.IsPPC) {
 			psai = new SHACTIVATEINFO ();
