@@ -64,7 +64,7 @@ $(CDE_LIB): $(CDE_OBJS)
 	ld -b -z -o $@ $(CDE_OBJS) $(CDE_LIBS)
 
 install: all
-	cp *.sl $(OUTPUT_DIR)
+	cp *.so $(OUTPUT_DIR)
 
 clean:
 	rm -f *.o *.a *.so *.sl 
