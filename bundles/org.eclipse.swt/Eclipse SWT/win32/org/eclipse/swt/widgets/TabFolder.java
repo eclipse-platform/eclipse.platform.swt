@@ -160,7 +160,7 @@ int callWindowProc (int msg, int wParam, int lParam) {
 
 static int checkStyle (int style) {
 	style = checkBits (style, SWT.TOP, SWT.BOTTOM, 0, 0, 0, 0);
-	if (OS.IsPPC) style &= SWT.BOTTOM;
+	if (OS.IsPPC) style |= SWT.BOTTOM;
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
