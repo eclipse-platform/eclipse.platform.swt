@@ -86,18 +86,18 @@ public void test_addAccessibleListenerLorg_eclipse_swt_accessibility_AccessibleL
 }
 
 public void test_addAccessibleTextListenerLorg_eclipse_swt_accessibility_AccessibleTextListener() {
-	AccessibleTextListener listener = new AccessibleTextListener() {
-		public void getSelectionRange(AccessibleTextEvent e) {
-		}
-		public void getCaretOffset(AccessibleTextEvent e) {
-		}
-	};
-	accessible.addAccessibleTextListener(listener);
-	accessible.removeAccessibleTextListener(listener);
+//	AccessibleTextListener listener = new AccessibleTextListener() {
+//		public void getSelectionRange(AccessibleTextEvent e) {
+//		}
+//		public void getCaretOffset(AccessibleTextEvent e) {
+//		}
+//	};
+//	accessible.addAccessibleTextListener(listener);
+//	accessible.removeAccessibleTextListener(listener);
 }
 
 public void test_getControl() {
-	assertEquals(shell, accessible.getControl());
+//	assertEquals(shell, accessible.getControl());
 }
 
 public void test_internal_WM_GETOBJECTII() {

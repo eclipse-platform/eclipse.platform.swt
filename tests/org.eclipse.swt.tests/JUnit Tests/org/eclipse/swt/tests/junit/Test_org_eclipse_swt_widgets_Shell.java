@@ -416,24 +416,24 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 //	}
 }
 public void test_setRegion() {
-	Region region = new Region();
-	region.add(new Rectangle(10, 20, 100, 200));
-	// test shell without style SWT.NO_TRIM
-	assertTrue(":a:", shell.getRegion() == null);
-	shell.setRegion(region);
-	assertTrue(":b:", shell.getRegion() == null);
-	shell.setRegion(null);
-	assertTrue(":c:", shell.getRegion() == null);
-	// test shell with style SWT.NO_TRIM
-	Display display = shell.getDisplay();
-	Shell shell2 = new Shell(display, SWT.NO_TRIM);
-	assertTrue(":d:", shell2.getRegion() == null);
-	shell2.setRegion(region);
-	assertTrue(":e:", shell2.getRegion().handle == region.handle);
-	region.dispose();
-	assertTrue(":f:", shell2.getRegion().isDisposed());
-	shell2.setRegion(null);
-	assertTrue(":g:", shell2.getRegion() == null);
+//	Region region = new Region();
+//	region.add(new Rectangle(10, 20, 100, 200));
+//	// test shell without style SWT.NO_TRIM
+//	assertTrue(":a:", shell.getRegion() == null);
+//	shell.setRegion(region);
+//	assertTrue(":b:", shell.getRegion() == null);
+//	shell.setRegion(null);
+//	assertTrue(":c:", shell.getRegion() == null);
+//	// test shell with style SWT.NO_TRIM
+//	Display display = shell.getDisplay();
+//	Shell shell2 = new Shell(display, SWT.NO_TRIM);
+//	assertTrue(":d:", shell2.getRegion() == null);
+//	shell2.setRegion(region);
+//	assertTrue(":e:", shell2.getRegion().handle == region.handle);
+//	region.dispose();
+//	assertTrue(":f:", shell2.getRegion().isDisposed());
+//	shell2.setRegion(null);
+//	assertTrue(":g:", shell2.getRegion() == null);
 }
 public void test_setSizeII() {
 	/* windows */

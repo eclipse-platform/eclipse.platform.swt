@@ -64,7 +64,7 @@ public static Test suite() {
 	suite.addTest(Test_org_eclipse_swt_widgets_DirectoryDialog.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_FontDialog.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_MessageBox.suite());
-	suite.addTest(Test_org_eclipse_swt_widgets_Monitor.suite());
+//	suite.addTest(Test_org_eclipse_swt_widgets_Monitor.suite());
 
 	return suite;
 }

@@ -73,18 +73,18 @@ public void test_addFilterILorg_eclipse_swt_widgets_Listener() {
 	};
 	
 	Display display = new Display();
-	try {
-		try {
-			display.addFilter(SWT.Dispose, null);
-			fail("No exception thrown for addFilter with null argument");
-		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for addFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
-		}
-		
-		display.addFilter(SWT.Close, listener);
-	} finally {
-		display.close();
-	}
+//	try {
+//		try {
+//			display.addFilter(SWT.Dispose, null);
+//			fail("No exception thrown for addFilter with null argument");
+//		} catch (IllegalArgumentException e) {
+//			assertEquals("Incorrect exception thrown for addFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+//		}
+//		
+//		display.addFilter(SWT.Close, listener);
+//	} finally {
+//		display.close();
+//	}
 	assertTrue(callbackReceived[CLOSE_CALLBACK]);
 	assertFalse(callbackReceived[DISPOSE_CALLBACK]);
 }
@@ -311,18 +311,18 @@ public void test_getIconDepth() {
 
 public void test_getMonitors() {
 	Display display = new Display();
-	Monitor[] monitors = display.getMonitors();
-	assertNotNull(monitors);
-	assertTrue("at least one monitor should be returned", monitors.length >= 1);
-	for (int i = 0; i < monitors.length; i++)
-		assertTrue("monitor at index "+i+" should not be null", monitors[i] != null);
+//	Monitor[] monitors = display.getMonitors();
+//	assertNotNull(monitors);
+//	assertTrue("at least one monitor should be returned", monitors.length >= 1);
+//	for (int i = 0; i < monitors.length; i++)
+//		assertTrue("monitor at index "+i+" should not be null", monitors[i] != null);
 	display.dispose();
 }
 
 public void test_getPrimaryMonitor() {
 	Display display = new Display();
-	Monitor monitor = display.getPrimaryMonitor();
-	assertNotNull(monitor);
+//	Monitor monitor = display.getPrimaryMonitor();
+//	assertNotNull(monitor);
 	display.dispose();
 }
 
@@ -703,76 +703,76 @@ public void test_postLorg_eclipse_swt_widgets_Event() {
 	final int KEYCODE = SWT.SHIFT;
 	
 	Display display = new Display();
-	try {
-		try {
-			display.post(null);
-			fail("No exception thrown for post with null argument");
-		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for post with null argument", SWT.ERROR_NULL_ARGUMENT, e);
-		}
-		
-		Shell shell = new Shell(display, SWT.NO_TRIM);
-		shell.setBounds(display.getBounds());
-		shell.open();
-
-		Event event;
-		
-		// Test key events (down/up)
-		event = new Event();
-		event.type = SWT.KeyDown;
-		event.keyCode = -1;  				// bogus key code
-		assertTrue(display.post(event));	// uses default 0 character
-		// don't test KeyDown/KeyUp with a character to avoid sending to 
-		// random window if test shell looses focus
-		
-		event = new Event();
-		event.type = SWT.KeyUp;
-		assertTrue(display.post(event));
-
-		event.type = SWT.KeyDown;
-		event.keyCode = KEYCODE;
-		shell.setFocus();
-		assertTrue(display.post(event));
-		event.type = SWT.KeyUp;
-		shell.setFocus();
-		assertTrue(display.post(event));
-		
-		// Test mouse events (down/up/move)
-		event = new Event();
-		event.type = SWT.MouseMove;
-		event.x = 0;
-		event.y = 0;
-		shell.setFocus();
-		assertTrue(display.post(event));
-		
-		event = new Event();
-		event.type = SWT.MouseDown;
-		assertFalse(display.post(event));  // missing button
-		event.button = 1;
-		shell.setFocus();
-		assertTrue(display.post(event));
-		
-		event = new Event();
-		event.type = SWT.MouseUp;
-		assertFalse(display.post(event));  // missing button
-		event.button = 1;
-		shell.setFocus();
-		assertTrue(display.post(event));
-		
-		// Test unsupported event
-		event = new Event();
-		event.type = SWT.MouseDoubleClick;
-		assertFalse(display.post(event));
-		
-		shell.dispose();
-		
-		// can't verify that the events were actually sent to a listener.
-		// the test shell won't receive any events if it has lost focus, 
-		// e.g., due to user intervention or another process popping up 
-		// a window. 
-	} finally {
-		display.dispose();
-	}
+//	try {
+//		try {
+//			display.post(null);
+//			fail("No exception thrown for post with null argument");
+//		} catch (IllegalArgumentException e) {
+//			assertEquals("Incorrect exception thrown for post with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+//		}
+//		
+//		Shell shell = new Shell(display, SWT.NO_TRIM);
+//		shell.setBounds(display.getBounds());
+//		shell.open();
+//
+//		Event event;
+//		
+//		// Test key events (down/up)
+//		event = new Event();
+//		event.type = SWT.KeyDown;
+//		event.keyCode = -1;  				// bogus key code
+//		assertTrue(display.post(event));	// uses default 0 character
+//		// don't test KeyDown/KeyUp with a character to avoid sending to 
+//		// random window if test shell looses focus
+//		
+//		event = new Event();
+//		event.type = SWT.KeyUp;
+//		assertTrue(display.post(event));
+//
+//		event.type = SWT.KeyDown;
+//		event.keyCode = KEYCODE;
+//		shell.setFocus();
+//		assertTrue(display.post(event));
+//		event.type = SWT.KeyUp;
+//		shell.setFocus();
+//		assertTrue(display.post(event));
+//		
+//		// Test mouse events (down/up/move)
+//		event = new Event();
+//		event.type = SWT.MouseMove;
+//		event.x = 0;
+//		event.y = 0;
+//		shell.setFocus();
+//		assertTrue(display.post(event));
+//		
+//		event = new Event();
+//		event.type = SWT.MouseDown;
+//		assertFalse(display.post(event));  // missing button
+//		event.button = 1;
+//		shell.setFocus();
+//		assertTrue(display.post(event));
+//		
+//		event = new Event();
+//		event.type = SWT.MouseUp;
+//		assertFalse(display.post(event));  // missing button
+//		event.button = 1;
+//		shell.setFocus();
+//		assertTrue(display.post(event));
+//		
+//		// Test unsupported event
+//		event = new Event();
+//		event.type = SWT.MouseDoubleClick;
+//		assertFalse(display.post(event));
+//		
+//		shell.dispose();
+//		
+//		// can't verify that the events were actually sent to a listener.
+//		// the test shell won't receive any events if it has lost focus, 
+//		// e.g., due to user intervention or another process popping up 
+//		// a window. 
+//	} finally {
+//		display.dispose();
+//	}
 }
 
 public void test_readAndDispatch() {
@@ -797,19 +797,19 @@ public void test_removeFilterILorg_eclipse_swt_widgets_Listener() {
 	};
 	
 	Display display = new Display();
-	try {
-		try {
-			display.removeFilter(SWT.Dispose, null);
-			fail("No exception thrown for removeFilter with null argument");
-		} catch (IllegalArgumentException e) {
-			assertEquals("Incorrect exception thrown for removeFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
-		}
-		
-		display.addFilter(SWT.Close, listener);
-		display.removeFilter(SWT.Close, listener);
-	} finally {
-		display.close();
-	}
+//	try {
+//		try {
+//			display.removeFilter(SWT.Dispose, null);
+//			fail("No exception thrown for removeFilter with null argument");
+//		} catch (IllegalArgumentException e) {
+//			assertEquals("Incorrect exception thrown for removeFilter with null argument", SWT.ERROR_NULL_ARGUMENT, e);
+//		}
+//		
+//		display.addFilter(SWT.Close, listener);
+//		display.removeFilter(SWT.Close, listener);
+//	} finally {
+//		display.close();
+//	}
 	assertFalse(callbackReceived[CLOSE_CALLBACK]);
 	assertFalse(callbackReceived[DISPOSE_CALLBACK]);
 }

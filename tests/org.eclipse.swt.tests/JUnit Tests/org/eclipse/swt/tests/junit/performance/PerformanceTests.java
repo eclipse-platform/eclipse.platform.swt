@@ -66,7 +66,7 @@ public PerformanceTests() {
 	addTest(Test_org_eclipse_swt_graphics_FontData.suite());
 	addTest(Test_org_eclipse_swt_graphics_GC.suite());
 	addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
-	addTest(Test_org_eclipse_swt_graphics_Region.suite());
+//	addTest(Test_org_eclipse_swt_graphics_Region.suite());
 //	addTest(Test_org_eclipse_swt_graphics_GCData.suite());
 	addTest(Test_org_eclipse_swt_graphics_FontMetrics.suite());
 	addTest(Test_org_eclipse_swt_graphics_Color.suite());

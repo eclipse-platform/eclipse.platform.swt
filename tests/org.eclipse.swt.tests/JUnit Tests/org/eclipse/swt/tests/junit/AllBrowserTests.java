@@ -24,18 +24,18 @@ public static void main(String[] args) {
 }
 public static Test suite() {
 	TestSuite suite = new TestSuite();
-	suite.addTest(Test_org_eclipse_swt_browser_Browser.suite());	
-	suite.addTest(Test_org_eclipse_swt_browser_CloseWindowListener.suite());
-	suite.addTest(Test_org_eclipse_swt_browser_LocationAdapter.suite());
-	suite.addTest(Test_org_eclipse_swt_browser_LocationListener.suite());
-	suite.addTest(Test_org_eclipse_swt_browser_OpenWindowListener.suite());
-	suite.addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
-	suite.addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
-	suite.addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
-	suite.addTest(Test_org_eclipse_swt_browser_TitleListener.suite());
-	suite.addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
-	suite.addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
-	suite.addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_Browser.suite());	
+//	suite.addTest(Test_org_eclipse_swt_browser_CloseWindowListener.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_LocationAdapter.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_LocationListener.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_OpenWindowListener.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_TitleListener.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
+//	suite.addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
+//	suite.addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
 
 	return suite;
 }

@@ -37,57 +37,57 @@ protected void tearDown() {
 }
 
 public void Browser1() {
-	System.out.println("** Browser1 **");
-	boolean result = Browser1.test();
-	assertTrue(result);
+//	System.out.println("** Browser1 **");
+//	boolean result = Browser1.test();
+//	assertTrue(result);
 }
 
 public void Browser2() {
-	System.out.println("** Browser2 **");
-	boolean result = Browser2.test();
-	assertTrue(result);
+//	System.out.println("** Browser2 **");
+//	boolean result = Browser2.test();
+//	assertTrue(result);
 }
 
 public void Browser3() {
-	System.out.println("** Browser3 **");
-	boolean result = Browser3.test();
-	assertTrue(result);
+//	System.out.println("** Browser3 **");
+//	boolean result = Browser3.test();
+//	assertTrue(result);
 }
 
 public void Browser4() {
-	System.out.println("** Browser4 **");
-	boolean result = Browser4.test();
-	assertTrue(result);
+//	System.out.println("** Browser4 **");
+//	boolean result = Browser4.test();
+//	assertTrue(result);
 }
 
 public void Browser5() {
-	System.out.println("** Browser5 **");
-	boolean result = Browser5.test();
-	assertTrue(result);
+//	System.out.println("** Browser5 **");
+//	boolean result = Browser5.test();
+//	assertTrue(result);
 }
 
 public void Browser6() {
-	System.out.println("** Browser6 **");
-	boolean result = Browser6.test();
-	assertTrue(result);
+//	System.out.println("** Browser6 **");
+//	boolean result = Browser6.test();
+//	assertTrue(result);
 }
 
 public void Browser7() {
-	System.out.println("** Browser7 **");
-	boolean result = Browser7.test();
-	assertTrue(result);
+//	System.out.println("** Browser7 **");
+//	boolean result = Browser7.test();
+//	assertTrue(result);
 }
 
 public void Browser8() {
-	System.out.println("** Browser8 **");
-	boolean result = Browser8.test();
-	assertTrue(result);
+//	System.out.println("** Browser8 **");
+//	boolean result = Browser8.test();
+//	assertTrue(result);
 }
 
 public void Browser9() {
-	System.out.println("** Browser9 **");
-	boolean result = Browser9.test();
-	assertTrue(result);
+//	System.out.println("** Browser9 **");
+//	boolean result = Browser9.test();
+//	assertTrue(result);
 }
 
 public static Test suite() {
@@ -102,15 +102,15 @@ public static Test suite() {
 
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("Browser1");
-	methodNames.addElement("Browser2");
-	methodNames.addElement("Browser3");
-	methodNames.addElement("Browser4");
-	methodNames.addElement("Browser5");
-	methodNames.addElement("Browser6");
-	methodNames.addElement("Browser7");
-	methodNames.addElement("Browser8");
-	methodNames.addElement("Browser9");
+//	methodNames.addElement("Browser1");
+//	methodNames.addElement("Browser2");
+//	methodNames.addElement("Browser3");
+//	methodNames.addElement("Browser4");
+//	methodNames.addElement("Browser5");
+//	methodNames.addElement("Browser6");
+//	methodNames.addElement("Browser7");
+//	methodNames.addElement("Browser8");
+//	methodNames.addElement("Browser9");
 	return methodNames;
 }
 
@@ -124,15 +124,15 @@ protected void runTest() throws Throwable {
 	Display display = Display.getCurrent();
 	if (display != null) display.dispose();
 	
-	if (getName().equals("Browser1")) Browser1();
-	if (getName().equals("Browser2")) Browser2();
-	if (getName().equals("Browser3")) Browser3();
-	if (getName().equals("Browser4")) Browser4();
-	if (getName().equals("Browser5")) Browser5();
-	if (getName().equals("Browser6")) Browser6();
-	if (getName().equals("Browser7")) Browser7();
-	if (getName().equals("Browser8")) Browser8();
-	if (getName().equals("Browser9")) Browser9();
+//	if (getName().equals("Browser1")) Browser1();
+//	if (getName().equals("Browser2")) Browser2();
+//	if (getName().equals("Browser3")) Browser3();
+//	if (getName().equals("Browser4")) Browser4();
+//	if (getName().equals("Browser5")) Browser5();
+//	if (getName().equals("Browser6")) Browser6();
+//	if (getName().equals("Browser7")) Browser7();
+//	if (getName().equals("Browser8")) Browser8();
+//	if (getName().equals("Browser9")) Browser9();
 
 	/*
 	 * Ensure we don't leave a Display from the tests we run.

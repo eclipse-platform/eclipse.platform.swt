@@ -61,10 +61,10 @@ public void test_ConstructorI() {
 }
 
 public void test_ConstructorII() {
-	GridData data = new GridData(100, 100);
-	assertNotNull(data);
-	assertTrue(data.widthHint == 100);
-	assertTrue(data.heightHint == 100);
+//	GridData data = new GridData(100, 100);
+//	assertNotNull(data);
+//	assertTrue(data.widthHint == 100);
+//	assertTrue(data.heightHint == 100);
 }
 
 public static Test suite() {

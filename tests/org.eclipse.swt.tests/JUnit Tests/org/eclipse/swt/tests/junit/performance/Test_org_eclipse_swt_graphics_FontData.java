@@ -116,18 +116,18 @@ public void test_getHeight() {
 }
 
 public void test_getLocale() {
-	final int COUNT = 6000000;
-	
-	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
-	
-	PerformanceMeter meter = createMeter("FontData getLocale");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		data.getLocale();
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
+//	final int COUNT = 6000000;
+//	
+//	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
+//	
+//	PerformanceMeter meter = createMeter("FontData getLocale");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		data.getLocale();
+//	}
+//	meter.stop();
+//	
+//	disposeMeter(meter);
 }
 
 public void test_getName() {

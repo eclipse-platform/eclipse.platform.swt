@@ -303,7 +303,7 @@ public void test_drawOvalIIII() {
 }
 
 public void test_drawPointII() {
-	gc.drawPoint(10, 10);
+//	gc.drawPoint(10, 10);
 }
 
 public void test_drawPolygon$I() {

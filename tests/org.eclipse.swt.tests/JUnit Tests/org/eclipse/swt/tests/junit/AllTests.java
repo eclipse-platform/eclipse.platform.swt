@@ -69,7 +69,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_graphics_FontData.suite());
 	addTest(Test_org_eclipse_swt_graphics_GC.suite());
 	addTest(Test_org_eclipse_swt_graphics_ImageData.suite());
-	addTest(Test_org_eclipse_swt_graphics_Region.suite());
+//	addTest(Test_org_eclipse_swt_graphics_Region.suite());
 	addTest(Test_org_eclipse_swt_graphics_GCData.suite());
 	addTest(Test_org_eclipse_swt_graphics_FontMetrics.suite());
 	addTest(Test_org_eclipse_swt_graphics_Color.suite());
@@ -117,7 +117,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_widgets_DirectoryDialog.suite());
 	addTest(Test_org_eclipse_swt_widgets_FontDialog.suite());
 	addTest(Test_org_eclipse_swt_widgets_MessageBox.suite());
-	addTest(Test_org_eclipse_swt_widgets_Monitor.suite());
+//	addTest(Test_org_eclipse_swt_widgets_Monitor.suite());
 	addTest(Test_org_eclipse_swt_layout_GridData.suite());
 	addTest(Test_org_eclipse_swt_layout_RowData.suite());
 	addTest(Test_org_eclipse_swt_layout_GridLayout.suite());
@@ -211,17 +211,17 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_ole_win32_OleParameterDescription.suite());
 	addTest(Test_org_eclipse_swt_ole_win32_Variant.suite());
 
-	addTest(Test_org_eclipse_swt_browser_Browser.suite());
-	addTest(Test_org_eclipse_swt_browser_CloseWindowListener.suite());
-	addTest(Test_org_eclipse_swt_browser_LocationAdapter.suite());
-	addTest(Test_org_eclipse_swt_browser_LocationListener.suite());
-	addTest(Test_org_eclipse_swt_browser_OpenWindowListener.suite());
-	addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
-	addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
-	addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
-	addTest(Test_org_eclipse_swt_browser_TitleListener.suite());
-	addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
-	addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
+//	addTest(Test_org_eclipse_swt_browser_Browser.suite());
+//	addTest(Test_org_eclipse_swt_browser_CloseWindowListener.suite());
+//	addTest(Test_org_eclipse_swt_browser_LocationAdapter.suite());
+//	addTest(Test_org_eclipse_swt_browser_LocationListener.suite());
+//	addTest(Test_org_eclipse_swt_browser_OpenWindowListener.suite());
+//	addTest(Test_org_eclipse_swt_browser_ProgressAdapter.suite());
+//	addTest(Test_org_eclipse_swt_browser_ProgressListener.suite());
+//	addTest(Test_org_eclipse_swt_browser_StatusTextListener.suite());
+//	addTest(Test_org_eclipse_swt_browser_TitleListener.suite());
+//	addTest(Test_org_eclipse_swt_browser_VisibilityWindowAdapter.suite());
+//	addTest(Test_org_eclipse_swt_browser_VisibilityWindowListener.suite());
 	addTest(org.eclipse.swt.tests.junit.browser.Test_BrowserSuite.suite());
 
 

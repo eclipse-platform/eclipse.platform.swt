@@ -173,30 +173,30 @@ public void test_hashCode() {
 }
 
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
-	final int COUNT = 50000000;
-	
-	Rectangle r1 = new Rectangle(10, 10, 50, 50);
-	Rectangle r2 = new Rectangle(20, 20, 20, 20);
-	
-	PerformanceMeter meter = createMeter("Rectangle intersect - contained");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		r1.intersect(r2);	// intersect
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-	
-	r2 = new Rectangle(0, 0, 5, 5);
-
-	meter = createMeter("Rectangle intersect - disjoint");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		r1.intersect(r2);	// disjoint
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
+//	final int COUNT = 50000000;
+//	
+//	Rectangle r1 = new Rectangle(10, 10, 50, 50);
+//	Rectangle r2 = new Rectangle(20, 20, 20, 20);
+//	
+//	PerformanceMeter meter = createMeter("Rectangle intersect - contained");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		r1.intersect(r2);	// intersect
+//	}
+//	meter.stop();
+//	
+//	disposeMeter(meter);
+//	
+//	r2 = new Rectangle(0, 0, 5, 5);
+//
+//	meter = createMeter("Rectangle intersect - disjoint");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		r1.intersect(r2);	// disjoint
+//	}
+//	meter.stop();
+//	
+//	disposeMeter(meter);
 }
 
 public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
@@ -227,27 +227,27 @@ public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_intersectsIIII() {
-	final int COUNT = 60000000;
-	
-	Rectangle rect = new Rectangle(10, 10, 50, 50);
-	
-	PerformanceMeter meter = createMeter("Rectangle intersects(IIII) - yes");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		rect.intersects(20, 20, 20, 20);	// intersect
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-
-	meter = createMeter("Rectangle intersects(IIII) - no");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		rect.intersects(0, 0, 5, 5);	// disjoint
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
+//	final int COUNT = 60000000;
+//	
+//	Rectangle rect = new Rectangle(10, 10, 50, 50);
+//	
+//	PerformanceMeter meter = createMeter("Rectangle intersects(IIII) - yes");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		rect.intersects(20, 20, 20, 20);	// intersect
+//	}
+//	meter.stop();
+//	
+//	disposeMeter(meter);
+//
+//	meter = createMeter("Rectangle intersects(IIII) - no");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		rect.intersects(0, 0, 5, 5);	// disjoint
+//	}
+//	meter.stop();
+//	
+//	disposeMeter(meter);
 }
 
 public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {

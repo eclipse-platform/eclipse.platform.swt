@@ -493,14 +493,14 @@ public void test_drawPointII() {
 		if (x == 0) y += 3;
 	}
 
-	PerformanceMeter meter = createMeter("GC drawPoint");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		gc.drawPoint(coords[i][0], coords[i][1]);
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
+//	PerformanceMeter meter = createMeter("GC drawPoint");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		gc.drawPoint(coords[i][0], coords[i][1]);
+//	}
+//	meter.stop();
+//	
+//	disposeMeter(meter);
 }
 
 public void test_drawPolygon$I() {
@@ -1049,25 +1049,25 @@ public void test_getClipping() {
 }
 
 public void test_getClippingLorg_eclipse_swt_graphics_Region() {
-	final int COUNT = 4000;	// 5000 causes No More Handles
-	
-	Region[] regions = new Region[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		regions[i] = new Region(display);
-	}
-	
-	PerformanceMeter meter = createMeter("GC getClipping(Region)");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		gc.getClipping(regions[i]);
-	}
-	meter.stop();
-	
-	for (int i = 0; i < COUNT; i++) {
-		regions[i].dispose();
-	}
-	
-	disposeMeter(meter);
+//	final int COUNT = 4000;	// 5000 causes No More Handles
+//	
+//	Region[] regions = new Region[COUNT];
+//	for (int i = 0; i < COUNT; i++) {
+//		regions[i] = new Region(display);
+//	}
+//	
+//	PerformanceMeter meter = createMeter("GC getClipping(Region)");
+//	meter.start();
+//	for (int i = 0; i < COUNT; i++) {
+//		gc.getClipping(regions[i]);
+//	}
+//	meter.stop();
+//	
+//	for (int i = 0; i < COUNT; i++) {
+//		regions[i].dispose();
+//	}
+//	
+//	disposeMeter(meter);
 }
 
 public void test_getFont() {

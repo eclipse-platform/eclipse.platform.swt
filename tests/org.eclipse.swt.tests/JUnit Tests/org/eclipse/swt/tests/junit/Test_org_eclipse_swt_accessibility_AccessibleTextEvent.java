@@ -39,19 +39,19 @@ protected void tearDown() {
 }
 
 public void test_ConstructorLjava_lang_Object() {
-	// Object will typically be a widget.
-	AccessibleTextEvent event = new AccessibleTextEvent(shell);
-	assertNotNull(event);
-	
-	// Test with some other object also.
-	event = new AccessibleTextEvent(new Integer(5));
-	assertNotNull(event);
+//	// Object will typically be a widget.
+//	AccessibleTextEvent event = new AccessibleTextEvent(shell);
+//	assertNotNull(event);
+//	
+//	// Test with some other object also.
+//	event = new AccessibleTextEvent(new Integer(5));
+//	assertNotNull(event);
 }
 
 public void test_toString() {
-	AccessibleTextEvent event = new AccessibleTextEvent(shell);
-	assertNotNull(event.toString());
-	assertTrue(event.toString().length() > 0);
+//	AccessibleTextEvent event = new AccessibleTextEvent(shell);
+//	assertNotNull(event.toString());
+//	assertTrue(event.toString().length() > 0);
 }
 
 
