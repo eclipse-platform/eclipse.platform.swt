@@ -201,13 +201,13 @@ void destroyItem (CoolItem item) {
 	* is to show the child.
 	*/		
 	Control control = item.control;
+	boolean wasWrap = item.getWrap ();
 	boolean wasVisible = control != null && !control.isDisposed() && control.getVisible ();
 	if (OS.SendMessage (handle, OS.RB_DELETEBAND, index, 0) == 0) {
 		error (SWT.ERROR_ITEM_NOT_REMOVED);
 	}
 	items [item.id] = null;
 	item.id = -1;
-	if (wasVisible) control.setVisible (true);
 	index = 0;
 	while (index < originalItems.length) {
 		if (originalItems [index] == item) break;
@@ -218,6 +218,12 @@ void destroyItem (CoolItem item) {
 	System.arraycopy (originalItems, 0, newOriginals, 0, index);
 	System.arraycopy (originalItems, index + 1, newOriginals, index, length - index);
 	originalItems = newOriginals;
+	if (wasWrap) {
+		if (0 <= index && index < getItemCount ()) {
+			getItem (index).setWrap (true);
+		}
+	}
+	if (wasVisible) control.setVisible (true);
 }
 
 /**
