@@ -37,9 +37,7 @@ public class Tree extends Composite {
 	TreeItem [] items;
 	boolean selected, doubleSelected;
 	int check, uncheck;
-	
-	static int CHECK_WIDTH = 12;
-	static int CHECK_HEIGHT = 12;
+	int check_width, check_height;
 	static int CELL_SPACING = 1;
 
 	/*
@@ -190,28 +188,20 @@ void createHandle (int index) {
 	
 	handle = OS.gtk_ctree_new (1, 0);
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-
-	if ((style & SWT.CHECK) != 0) {
-		uncheck = createCheckPixmap(false);
-		check = createCheckPixmap(true);
-	}
 }
 
 int createCheckPixmap(boolean checked) {
 		/*
-		* This code is intentionally commented.  At this
-		* point, the item height has not been set for the
-		* widget so guess at a good width and height for
-		* the checked an unchecked images.
-		*/
-//		GtkCList clist = new GtkCList ();
-//		OS.memmove (clist, handle, GtkCList.sizeof);
-//		int height = clist.row_height + 1, width = height;
-		int width = CHECK_WIDTH, height = CHECK_HEIGHT;
+		 * The box will occupy the whole item width.
+		 */
+		GtkCList clist = new GtkCList ();
+		OS.memmove (clist, handle, GtkCList.sizeof);
+		check_height = clist.row_height-1;
+		check_width = check_height;
 
 		GdkVisual visual = new GdkVisual();
 		OS.memmove(visual, OS.gdk_visual_get_system(), GdkVisual.sizeof);
-		int pixmap = OS.gdk_pixmap_new(0, width, height, visual.depth);
+		int pixmap = OS.gdk_pixmap_new(0, check_width, check_height, visual.depth);
 		
 		int gc = OS.gdk_gc_new(pixmap);
 		
@@ -221,7 +211,7 @@ int createCheckPixmap(boolean checked) {
 		fgcolor.green = (short) 0xFFFF;
 		fgcolor.blue = (short) 0xFFFF;
 		OS.gdk_gc_set_foreground(gc, fgcolor);
-		OS.gdk_draw_rectangle(pixmap, gc, 1, 0,0, width,height);
+		OS.gdk_draw_rectangle(pixmap, gc, 1, 0,0, check_width,check_height);
 
 		fgcolor = new GdkColor();
 		fgcolor.pixel = 0;
@@ -230,15 +220,15 @@ int createCheckPixmap(boolean checked) {
 		fgcolor.blue = (short) 0;
 		OS.gdk_gc_set_foreground(gc, fgcolor);
 		
-		OS.gdk_draw_line(pixmap, gc, 0,0, 0,height-1);
-		OS.gdk_draw_line(pixmap, gc, 0,height-1, width-1,height-1);
-		OS.gdk_draw_line(pixmap, gc, width-1,height-1, width-1,0);
-		OS.gdk_draw_line(pixmap, gc, width-1,0, 0,0);
+		OS.gdk_draw_line(pixmap, gc, 0,0, 0,check_height-1);
+		OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,check_height-1);
+		OS.gdk_draw_line(pixmap, gc, check_width-1,check_height-1, check_width-1,0);
+		OS.gdk_draw_line(pixmap, gc, check_width-1,0, 0,0);
 
 		/* now the cross check */
 		if (checked) {
-			OS.gdk_draw_line(pixmap, gc, 0,0, width-1,height-1);
-			OS.gdk_draw_line(pixmap, gc, 0,height-1, width-1,0);
+			OS.gdk_draw_line(pixmap, gc, 0,0, check_width-1,check_height-1);
+			OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,0);
 		}
 		
 		OS.gdk_gc_destroy(gc);
@@ -638,8 +628,8 @@ int processMouseDown (int callData, int arg1, int int2) {
 				OS.memmove (ctree, handle, GtkCTree.sizeof);
 				int nX = ctree.hoffset + ctree.tree_indent * row_data.level - 2;
 				int nY = ctree.voffset + (ctree.row_height + 1) * row [0] + 2;
-				if (nX <= x && x <= nX + CHECK_WIDTH) {
-					if (nY <= y && y <= nY + CHECK_HEIGHT) {
+				if (nX <= x && x <= nX + check_width) {
+					if (nY <= y && y <= nY + check_height) {
 						byte [] spacing = new byte [1];
 						boolean [] is_leaf = new boolean [1], expanded = new boolean [1];
 						int [] pixmap = new int [1], mask = new int [1];
@@ -901,6 +891,11 @@ void showHandle() {
 	OS.gtk_widget_show (scrolledHandle);
 	OS.gtk_widget_show (handle);
 	OS.gtk_widget_realize (handle);
+	
+	if ((style & SWT.CHECK) != 0) {
+		uncheck = createCheckPixmap(false);
+		check = createCheckPixmap(true);
+	}
 }
 
 /**
