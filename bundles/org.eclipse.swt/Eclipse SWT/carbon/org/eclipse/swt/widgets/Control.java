@@ -1213,8 +1213,8 @@ void sort (int [] items) {
 	}
 }
 
-Point toControl (int x, int y) {
-//	checkWidget();
+public Point toControl (int x, int y) {
+	checkWidget();
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
@@ -1230,16 +1230,21 @@ public Point toControl (Point point) {
     return toControl (point.x, point.y);
 }
 
-public Point toDisplay (Point point) {
+public Point toDisplay (int x, int y) {
 	checkWidget();
-	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	Rect rect = new Rect ();
 	OS.GetControlBounds (handle, rect);
-	int x = point.x + rect.left; 
-	int y = point.y + rect.top; 
+	x += rect.left; 
+	y += rect.top; 
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
     return new Point (x + rect.left, y + rect.top);
+}
+
+public Point toDisplay (Point point) {
+	checkWidget();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return toDisplay (point.x, point.y);
 }
 
 int topHandle () {

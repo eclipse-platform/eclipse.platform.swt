@@ -2287,6 +2287,12 @@ void setZOrder (Control control, boolean above, boolean fixChildren) {
 		if (fixChildren) parent.moveBelow (topHandle1, topHandle2);
 	}
 }
+public Point toControl (int x, int y) {
+	checkWidget();
+	short [] root_x = new short [1], root_y = new short [1];
+	OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
+	return new Point (x - root_x [0], y - root_y [0]);
+}
 /**
  * Returns a point which is the result of converting the
  * argument, which is specified in display relative coordinates,
@@ -2305,9 +2311,13 @@ void setZOrder (Control control, boolean above, boolean fixChildren) {
 public Point toControl (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return toControl (point.x, point.y);
+}
+public Point toDisplay (int x, int y) {
+	checkWidget();
 	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (handle, (short) 0, (short) 0, root_x, root_y);
-	return new Point (point.x - root_x [0], point.y - root_y [0]);
+	OS.XtTranslateCoords (handle, (short) x, (short) y, root_x, root_y);
+	return new Point (root_x [0], root_y [0]);
 }
 /**
  * Returns a point which is the result of converting the
@@ -2327,9 +2337,7 @@ public Point toControl (Point point) {
 public Point toDisplay (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	short [] root_x = new short [1], root_y = new short [1];
-	OS.XtTranslateCoords (handle, (short) point.x, (short) point.y, root_x, root_y);
-	return new Point (root_x [0], root_y [0]);
+	return toDisplay (point.x, point.y);
 }
 boolean translateAccelerator (int key, int keysym, XKeyEvent xEvent) {
 	return menuShell ().translateAccelerator (key, keysym, xEvent);

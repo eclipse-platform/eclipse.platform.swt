@@ -697,6 +697,15 @@ public void setLayoutData (Object layoutData) {
 	this.layoutData = layoutData;
 }
 
+public Point toControl (int x, int y) {
+	checkWidget ();
+	int eventHandle = eventHandle ();
+	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
+	int [] origin_x = new int [1], origin_y = new int [1];
+	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	return new Point (x - origin_x [0], y - origin_y [0]);
+}
+
 /**
  * Returns a point which is the result of converting the
  * argument, which is specified in display relative coordinates,
@@ -715,12 +724,18 @@ public void setLayoutData (Object layoutData) {
 public Point toControl (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return toControl (point.x, point.y);
+}
+
+public Point toDisplay (int x, int y) {
+	checkWidget();
 	int eventHandle = eventHandle ();
 	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
-	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_origin (window, x, y);
-	return new Point (point.x - x[0], point.y - y[0]);
+	int [] origin_x = new int [1], origin_y = new int [1];
+	OS.gdk_window_get_origin (window, origin_x, origin_y);
+	return new Point (origin_x [0] + x, origin_y [0] + y);
 }
+
 /**
  * Returns a point which is the result of converting the
  * argument, which is specified in coordinates relative to
@@ -739,19 +754,8 @@ public Point toControl (Point point) {
 public Point toDisplay (Point point) {
 	checkWidget();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int eventHandle = eventHandle ();
-	int window = OS.GTK_WIDGET_WINDOW (eventHandle);
-	int [] x = new int [1], y = new int [1];
-	OS.gdk_window_get_origin (window, x, y);
-	return new Point (x [0] + point.x, y[0] + point.y);
+	return toDisplay (point.x, point.y);
 }
-
-//   ===  End of GEOMETRY Category  ===
-
-
-/*
- *   ==  ADD/REMOVE LISTENERS  ==
- */
  
 /**
  * Adds the listener to the collection of listeners who will

@@ -2289,7 +2289,32 @@ void subclass () {
  * argument, which is specified in display relative coordinates,
  * to coordinates relative to the receiver.
  * <p>
+ * @param x the x coordinate to be translated
+ * @param y the y coordinate to be translated
+ * @return the translated coordinates
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
+public Point toControl (int x, int y) {
+	checkWidget ();
+	POINT pt = new POINT ();
+	pt.x = x;  pt.y = y; 
+	OS.ScreenToClient (handle, pt);
+	return new Point (pt.x, pt.y);
+}
+
+/**
+ * Returns a point which is the result of converting the
+ * argument, which is specified in display relative coordinates,
+ * to coordinates relative to the receiver.
+ * <p>
  * @param point the point to be translated (must not be null)
+ * @return the translated coordinates
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -2302,9 +2327,30 @@ void subclass () {
 public Point toControl (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
+	return toControl (point.x, point.y);
+}
+
+/**
+ * Returns a point which is the result of converting the
+ * argument, which is specified in coordinates relative to
+ * the receiver, to display relative coordinates.
+ * <p>
+ * @param x the x coordinate to be translated
+ * @param y the y coordinate to be translated
+ * @return the translated coordinates
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
+public Point toDisplay (int x, int y) {
+	checkWidget ();
 	POINT pt = new POINT ();
-	pt.x = point.x;  pt.y = point.y; 
-	OS.ScreenToClient (handle, pt);
+	pt.x = x;  pt.y = y; 
+	OS.ClientToScreen (handle, pt);
 	return new Point (pt.x, pt.y);
 }
 
@@ -2314,6 +2360,7 @@ public Point toControl (Point point) {
  * the receiver, to display relative coordinates.
  * <p>
  * @param point the point to be translated (must not be null)
+ * @return the translated coordinates
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
@@ -2326,10 +2373,7 @@ public Point toControl (Point point) {
 public Point toDisplay (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	POINT pt = new POINT ();
-	pt.x = point.x;  pt.y = point.y; 
-	OS.ClientToScreen (handle, pt);
-	return new Point (pt.x, pt.y);
+	return toDisplay (point.x, point.y);
 }
 
 boolean translateAccelerator (MSG msg) {
