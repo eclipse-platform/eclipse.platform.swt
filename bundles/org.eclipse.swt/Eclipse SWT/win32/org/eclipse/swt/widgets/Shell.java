@@ -709,7 +709,7 @@ public void open () {
 	*/
 	MSG msg = new MSG ();
 	OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE);
-	if (!restoreFocus ()) traverseGroup (true);
+	restoreFocus ();
 }
 
 void releaseHandle () {
