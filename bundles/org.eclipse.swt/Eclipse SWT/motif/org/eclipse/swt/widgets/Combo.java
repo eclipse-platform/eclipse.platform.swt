@@ -1115,8 +1115,25 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 }
 public void setFont (Font font) {
 	checkWidget();
-	super.setFont (font);
 	
+	/*
+	* Bug in Motif. Setting the font in a combo widget that does
+	* not have any items causes a GP on UTF-8 locale.
+	* The fix is to add an item, change the font, then
+	* remove the added item at the end. 
+	*/
+	int [] argList1 = {OS.XmNitems, 0, OS.XmNitemCount, 0,};
+	OS.XtGetValues (handle, argList1, argList1.length / 2);
+	boolean fixString = OS.IsDBLocale && argList1 [3] == 0;
+	if (fixString) {
+		byte [] buffer = Converter.wcsToMbcs (getCodePage (), "string", true);
+		int xmString = OS.XmStringCreateLocalized (buffer);
+		OS.XmComboBoxAddItem (handle, xmString, -1, false);
+		OS.XmStringFree (xmString);
+	}
+	super.setFont (font);
+	if (fixString) OS.XtSetValues (handle, argList1, argList1.length / 2);	
+
 	/*
 	* Bug in Motif.  When a font is set in a combo box after the widget
 	* is realized, the combo box does not lay out properly.  For example,
@@ -1129,10 +1146,10 @@ public void setFont (Font font) {
 	* NOTE: This problem also occurs for simple combo boxes.
 	*/
 	if (OS.XtIsRealized (handle)) {
-		int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
-		OS.XtGetValues (handle, argList, argList.length / 2);
-		OS.XtResizeWidget (handle, argList [1], argList [3] + 1, argList [5]);
-		OS.XtResizeWidget (handle, argList [1], argList [3], argList [5]);
+		int [] argList2 = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
+		OS.XtGetValues (handle, argList2, argList2.length / 2);
+		OS.XtResizeWidget (handle, argList2 [1], argList2 [3] + 1, argList2 [5]);
+		OS.XtResizeWidget (handle, argList2 [1], argList2 [3], argList2 [5]);
 	}
 }
 void setForegroundPixel (int pixel) {
