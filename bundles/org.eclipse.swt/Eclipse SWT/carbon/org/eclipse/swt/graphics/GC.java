@@ -154,38 +154,34 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		OS.SetPort(port);
 		int oldRgn = OS.NewRgn();
 		OS.GetClip(oldRgn);
-		int clipRgn = data.visibleRgn;
+		int clipRgn = OS.NewRgn();
+		OS.CopyRgn(data.visibleRgn, clipRgn);
 		if (data.clipRgn != 0) {
-			clipRgn = OS.NewRgn();
-			OS.SectRgn(data.clipRgn, data.visibleRgn, clipRgn);
+			OS.SectRgn(data.clipRgn, clipRgn, clipRgn);
 		}
 		OS.SetClip(clipRgn);
-		Rect rect = new Rect();
-		OS.GetControlBounds(data.control, rect);
-		int left = rect.left + srcX;
-		int top = rect.top + srcY;
+		OS.DisposeRgn(clipRgn);
 		
 		/*
-		* Feature in the Macintosh.  The ScrollRect() function scrolls bits
-		* relative to the structure region of the window. Other Quickdraw
-		* functions such as MoveTo()/LineTo() draw relative to the content
-		* region. Graphics operations are always relative to the content
-		* region.  The fix is to offset the rectangle before calling
-		* ScrollRect().  		*/
-		Rect structRect = new Rect ();
-		OS.GetWindowBounds (window, (short)OS.kWindowContentRgn, structRect);
-		Rect contentRect = new Rect ();
-		OS.GetWindowBounds (window, (short)OS.kWindowStructureRgn, contentRect);
-		left += contentRect.left - structRect.left;
-		top += contentRect.top - structRect.top;
-		
-		OS.SetRect(rect, (short)left, (short)top, (short)(left + width), (short)(top + height));
+		* Feature in the Macintosh.  ScrollRect() only copies bits
+		* in the intersection of the source and destination rectangle
+		* and it does not damage any obscured area.  The fix is to
+		* copy bits for the whole control and damage obscured areas
+		* ourselves.		*/
+		Rect rect = new Rect();
+		OS.GetControlBounds(data.control, rect);
 		int invalRgn = OS.NewRgn();
 		OS.ScrollRect(rect, (short)deltaX, (short)deltaY, invalRgn);
+		int controlRgn = OS.NewRgn();
+		OS.RectRgn(controlRgn, rect);
+		OS.DiffRgn(controlRgn, data.visibleRgn, controlRgn);
+		OS.OffsetRgn(controlRgn, (short)deltaX, (short)deltaY);
+		OS.UnionRgn(invalRgn, controlRgn, invalRgn);
 		OS.InvalWindowRgn(window, invalRgn);
 		OS.DisposeRgn(invalRgn);
+		OS.DisposeRgn(controlRgn);
+		
 		OS.SetClip (oldRgn);
-		if (clipRgn != data.visibleRgn) OS.DisposeRgn(clipRgn);
 		OS.DisposeRgn(oldRgn);
 		OS.SetPort(currentPort[0]);
 	}
