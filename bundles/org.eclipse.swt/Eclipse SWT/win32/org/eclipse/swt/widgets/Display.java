@@ -1101,6 +1101,7 @@ public Control getFocusControl () {
  */
 public boolean getHighContrast () {
 	checkDevice ();
+	if (OS.IsWinCE) return false;
 	HIGHCONTRAST pvParam = new HIGHCONTRAST ();
 	pvParam.cbSize = HIGHCONTRAST.sizeof;
 	OS.SystemParametersInfo (OS.SPI_GETHIGHCONTRAST, 0, pvParam, 0);

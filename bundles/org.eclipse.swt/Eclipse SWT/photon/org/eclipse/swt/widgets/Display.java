@@ -1606,8 +1606,9 @@ protected void release () {
 			if (this == shell.display) shell.dispose ();
 		}
 	}
-	while (readAndDispatch ()) {};
 	if (tray != null) tray.dispose ();
+	tray = null;
+	while (readAndDispatch ()) {};
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {
 			if (disposeList [i] != null) disposeList [i].run ();

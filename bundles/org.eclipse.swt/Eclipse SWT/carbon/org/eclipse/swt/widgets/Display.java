@@ -1982,6 +1982,8 @@ protected void release () {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) shell.dispose ();
 	}
+	if (tray != null) tray.dispose ();
+	tray = null;
 	while (readAndDispatch ()) {};
 	if (disposeList != null) {
 		for (int i=0; i<disposeList.length; i++) {
