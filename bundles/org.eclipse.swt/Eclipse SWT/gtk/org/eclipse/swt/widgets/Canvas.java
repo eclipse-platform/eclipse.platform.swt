@@ -275,12 +275,6 @@ public void setCaret (Caret caret) {
 	}
 }
 
-public boolean setFocus () {
-	checkWidget ();
-	if ((style & SWT.NO_FOCUS) != 0) return false;
-	return super.setFocus ();
-}
-
 public void setFont (Font font) {
 	checkWidget();
 	if (caret != null) caret.setFont (font);
