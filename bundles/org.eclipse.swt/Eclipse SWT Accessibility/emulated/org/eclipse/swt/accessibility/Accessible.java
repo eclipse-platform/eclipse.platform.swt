@@ -34,7 +34,7 @@ public class Accessible {
 	Accessible (Control control, int widgetHandle) {
 		super ();
 		this.control = control;
-//		AccessibleFactory.registerAccessible (this, widgetHandle);
+		AccessibleFactory.registerAccessible (this, widgetHandle);
 	}	
 	
 	/**

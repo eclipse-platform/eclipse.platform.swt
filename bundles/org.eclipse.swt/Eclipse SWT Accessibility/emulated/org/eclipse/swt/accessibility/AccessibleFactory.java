@@ -75,8 +75,8 @@ class AccessibleFactory {
 		gTypeInfoCB_base_init  = new Callback (this, "gTypeInfo_base_init", 1);
 		GTypeInfo typeInfo = new GTypeInfo ();
 		typeInfo.base_init = gTypeInfoCB_base_init.getAddress ();
-		typeInfo.class_size = OS.ATK_OBJECT_FACTORY_CLASS_SIZE ();
-		typeInfo.instance_size = OS.ATK_OBJECT_FACTORY_SIZE ();
+		typeInfo.class_size = OS.AtkObjectFactoryClass_sizeof ();
+		typeInfo.instance_size = OS.AtkObjectFactory_sizeof ();
 		handle = OS.g_malloc (GTypeInfo.sizeof); 
 		OS.memmove (handle, typeInfo, GTypeInfo.sizeof); 
 		return OS.g_type_register_static (parent, name, handle, 0);

@@ -398,6 +398,30 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkImage
 }
 #endif
 
+#ifndef NO_AtkObjectFactory_1sizeof
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_AtkObjectFactory_1sizeof
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "AtkObjectFactory_1sizeof\n")
+	rc = (jint)sizeof(AtkObjectFactory);
+	NATIVE_EXIT(env, that, "AtkObjectFactory_1sizeof\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_AtkObjectFactoryClass_1sizeof
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_AtkObjectFactoryClass_1sizeof
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "AtkObjectFactoryClass_1sizeof\n")
+	rc = (jint)sizeof(AtkObjectFactoryClass);
+	NATIVE_EXIT(env, that, "AtkObjectFactoryClass_1sizeof\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_memmove__Lorg_eclipse_swt_internal_gtk_AtkActionIface_2I
 JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_AtkActionIface_2I)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
@@ -557,4 +581,3 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkAcce
 	NATIVE_EXIT(env, that, "memmove__ILorg_eclipse_swt_internal_gtk_GtkAccessible_2\n")
 }
 #endif
-
