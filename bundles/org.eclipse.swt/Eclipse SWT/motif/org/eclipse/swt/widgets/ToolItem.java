@@ -1129,7 +1129,7 @@ int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispa
 	*/
 //	OS.memmove (callData, xEvent, XButtonEvent.sizeof);
 //	parent.XPointerMotion (w, client_data, call_data, continue_to_dispatch);
-	parent.sendMouseEvent (SWT.MouseMove, 0, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
+	parent.sendMouseEvent (SWT.MouseMove, xEvent);
 
 	return 0;
 }

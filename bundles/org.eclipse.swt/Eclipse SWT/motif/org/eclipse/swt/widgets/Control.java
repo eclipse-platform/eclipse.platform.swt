@@ -1044,7 +1044,7 @@ int hoverProc (int id) {
 }
 int hoverProc (int id, boolean showTip) {
 	if (showTip) display.showToolTip (handle, toolTipText);
-	sendMouseEvent (SWT.MouseHover, 0);
+	sendMouseEvent (SWT.MouseHover);
 	return 0;
 }
 /**	 
@@ -1759,27 +1759,11 @@ boolean sendKeyEvent (int type, XKeyEvent xEvent) {
 	}
 	return event.doit;
 }
-void sendMouseEvent (int type, int button) {
-	int xDisplay = OS.XtDisplay (handle);
-	int xWindow = OS.XtWindow (handle);
+void sendMouseEvent (int type) {
+	int xDisplay = OS.XtDisplay (handle), xWindow = OS.XtWindow (handle);
 	int [] windowX = new int [1], windowY = new int [1], mask = new int [1], unused = new int [1];
 	OS.XQueryPointer (xDisplay, xWindow, unused, unused, unused, unused, windowX, windowY, mask);
-	Event event = new Event ();
-	event.x = windowX [0];
-	event.y = windowY [0];
-	setInputState (event, mask [0]);
-	postEvent (type, event);
-}
-void sendMouseEvent (int type, int button, XCrossingEvent xEvent) {
-	Event event = new Event ();
-	event.time = xEvent.time;
-	event.button = button;
-	event.x = xEvent.x;
-	event.y = xEvent.y;
-	int [] unused = new int [1], mask = new int [1];
-	OS.XQueryPointer (xEvent.display, xEvent.window, unused, unused, unused, unused, unused, unused, mask);
-	setInputState (event, mask [0]);
-	postEvent (type, event);
+	sendMouseEvent (type, 0, 0, windowX [0], windowY [0], mask [0]);
 }
 void sendMouseEvent (int type, int button, int time, int x, int y, int state) {
 	Event event = new Event ();
@@ -1789,6 +1773,24 @@ void sendMouseEvent (int type, int button, int time, int x, int y, int state) {
 	event.y = y;
 	setInputState (event, state);
 	postEvent (type, event);
+}
+void sendMouseEvent (int type, XButtonEvent xEvent) {
+	short [] x_root = new short [1], y_root = new short [1];
+	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
+	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
+	sendMouseEvent (type, xEvent.button, xEvent.time, x, y, xEvent.state);
+}
+void sendMouseEvent (int type, XCrossingEvent xEvent) {
+	short [] x_root = new short [1], y_root = new short [1];
+	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
+	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
+	sendMouseEvent (type, 0, xEvent.time, x, y, xEvent.state);
+}
+void sendMouseEvent (int type, XMotionEvent xEvent) {	
+	short [] x_root = new short [1], y_root = new short [1];
+	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
+	int x = xEvent.x_root - x_root [0], y = xEvent.y_root - y_root [0];
+	sendMouseEvent (type, 0, xEvent.time, x, y, xEvent.state);
 }
 /**
  * Sets the receiver's background color to the color specified
@@ -2789,7 +2791,7 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-	sendMouseEvent (SWT.MouseDown, xEvent.button, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
+	sendMouseEvent (SWT.MouseDown, xEvent);
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
 		postEvent (SWT.DragDetect);
 	}
@@ -2801,7 +2803,7 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	int lastTime = display.lastTime, eventTime = xEvent.time;
 	int lastButton = display.lastButton, eventButton = xEvent.button;
 	if (lastButton == eventButton && lastTime != 0 && Math.abs (lastTime - eventTime) <= clickTime) {
-		sendMouseEvent (SWT.MouseDoubleClick, eventButton, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
+		sendMouseEvent (SWT.MouseDoubleClick, xEvent);
 	}
 	display.lastTime = eventTime == 0 ? 1 : eventTime;
 	display.lastButton = eventButton;
@@ -2821,7 +2823,7 @@ int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispa
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
-	sendMouseEvent (SWT.MouseUp, xEvent.button, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
+	sendMouseEvent (SWT.MouseUp, xEvent);
 	return 0;
 }
 int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatch) {
@@ -2829,7 +2831,7 @@ int XEnterWindow (int w, int client_data, int call_data, int continue_to_dispatc
 	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
 	if (xEvent.mode != OS.NotifyNormal) return 0;
 	if (xEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseEnter, 0, xEvent);
+	sendMouseEvent (SWT.MouseEnter, xEvent);
 	return 0;
 }
 int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) {
@@ -3007,7 +3009,7 @@ int XLeaveWindow (int w, int client_data, int call_data, int continue_to_dispatc
 	OS.memmove (xEvent, call_data, XCrossingEvent.sizeof);
 	if (xEvent.mode != OS.NotifyNormal) return 0;
 	if (xEvent.subwindow != 0) return 0;
-	sendMouseEvent (SWT.MouseExit, 0, xEvent);
+	sendMouseEvent (SWT.MouseExit, xEvent);
 	return 0;
 }
 int XmNhelpCallback (int w, int client_data, int call_data) {
@@ -3018,7 +3020,7 @@ int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispa
 	display.addMouseHoverTimeOut (handle);
 	XMotionEvent xEvent = new XMotionEvent ();
 	OS.memmove (xEvent, call_data, XMotionEvent.sizeof);
-	sendMouseEvent (SWT.MouseMove, 0, xEvent.time, xEvent.x, xEvent.y, xEvent.state);
+	sendMouseEvent (SWT.MouseMove, xEvent);
 	return 0;
 }
 }

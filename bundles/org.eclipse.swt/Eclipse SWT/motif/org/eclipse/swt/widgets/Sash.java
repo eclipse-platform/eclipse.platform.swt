@@ -234,7 +234,10 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
 	if (xEvent.button != 1) return result;
-	startX = xEvent.x;  startY = xEvent.y;
+	short [] x_root = new short [1], y_root = new short [1];
+	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
+	startX = xEvent.x_root - x_root [0];
+	startY = xEvent.y_root - y_root [0];
 	int [] argList = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int border = argList [9], width = argList [5] + (border * 2), height = argList [7] + (border * 2);
@@ -243,8 +246,10 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
 	event.time = xEvent.time;
-	event.x = lastX;  event.y = lastY;
-	event.width = width;  event.height = height;
+	event.x = lastX;
+	event.y = lastY;
+	event.width = width;
+	event.height = height;
 	/*
 	 * It is possible (but unlikely) that client code could have disposed
 	 * the widget in the selection event.  If this happens end the processing
@@ -274,8 +279,10 @@ int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispa
 	/* The event must be sent because its doit flag is used. */
 	Event event = new Event ();
 	event.time = xEvent.time;
-	event.x = lastX;  event.y = lastY;
-	event.width = width;  event.height = height;
+	event.x = lastX;
+	event.y = lastY;
+	event.width = width;
+	event.height = height;
 	drawBand (lastX, lastY, width, height);
 	sendEvent (SWT.Selection, event);
 	/* widget could be disposed here */
@@ -290,7 +297,6 @@ int xFocusIn (XFocusChangeEvent xEvent) {
 	lastY = argList [3];
 	return result;
 }
-
 int xFocusOut (XFocusChangeEvent xEvent) {
 	int result = super.xFocusOut (xEvent);
 	if (handle == 0) return result;
@@ -357,8 +363,10 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 			/* The event must be sent because its doit flag is used. */
 			Event event = new Event ();
 			event.time = xEvent.time;
-			event.x = newX;  event.y = newY;
-			event.width = width;  event.height = height;
+			event.x = newX;
+			event.y = newY;
+			event.width = width;
+			event.height = height;
 			sendEvent (SWT.Selection, event);
 			if (ptrGrabResult == OS.GrabSuccess) OS.XUngrabPointer (xDisplay, OS.CurrentTime);
 					
@@ -390,6 +398,9 @@ int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispa
 	XMotionEvent xEvent = new XMotionEvent ();
 	OS.memmove (xEvent, call_data, XMotionEvent.sizeof);
 	if (!dragging || (xEvent.state & OS.Button1Mask) == 0) return result;
+	short [] x_root = new short [1], y_root = new short [1];
+	OS.XtTranslateCoords (handle, (short) 0, (short) 0, x_root, y_root);
+	int eventX = xEvent.x_root - x_root [0], eventY = xEvent.y_root - y_root [0];
 	int [] argList1 = {OS.XmNx, 0, OS.XmNy, 0, OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	int border = argList1 [9], x = ((short) argList1 [1]) - border, y = ((short) argList1 [3]) - border;
@@ -401,9 +412,9 @@ int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispa
 	int parentHeight = argList2 [3] + (parentBorder * 2);
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
-		newX = Math.min (Math.max (0, xEvent.x + x - startX - parentBorder), parentWidth - width);
+		newX = Math.min (Math.max (0, eventX + x - startX - parentBorder), parentWidth - width);
 	} else {
-		newY = Math.min (Math.max (0, xEvent.y + y - startY - parentBorder), parentHeight - height);
+		newY = Math.min (Math.max (0, eventY + y - startY - parentBorder), parentHeight - height);
 	}
 	if (newX == lastX && newY == lastY) return result;
 	drawBand (lastX, lastY, width, height);
@@ -411,8 +422,10 @@ int XPointerMotion (int w, int client_data, int call_data, int continue_to_dispa
 	Event event = new Event ();
 	event.detail = SWT.DRAG;
 	event.time = xEvent.time;
-	event.x = newX;  event.y = newY;
-	event.width = width;  event.height = height;
+	event.x = newX;
+	event.y = newY;
+	event.width = width;
+	event.height = height;
 	/*
 	 * It is possible (but unlikely) that client code could have disposed
 	 * the widget in the selection event.  If this happens end the processing
