@@ -165,10 +165,10 @@ $(KDE_LIB): $(KDE_OBJS)
 	ld -o $@ $(KDE_OBJS) $(KDE_LIBS)
 
 kde.o: kde.cpp
-	g++ $(KDE_CFLAGS) -o kde.o kde.cpp
+	$(CXX) $(CFLAGS) $(KDE_CFLAGS) -o kde.o kde.cpp
 
 kde_stats.o: kde_stats.cpp
-	gcc $(KDE_CFLAGS) -o kde_stats.o kde_stats.cpp
+	$(CXX) $(CFLAGS) $(KDE_CFLAGS) -o kde_stats.o kde_stats.cpp
 	
 #
 # Mozilla lib
