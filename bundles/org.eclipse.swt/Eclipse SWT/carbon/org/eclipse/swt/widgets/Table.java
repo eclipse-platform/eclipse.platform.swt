@@ -1593,14 +1593,13 @@ public void select (int index) {
  * </ul>
  */
 public void select (int start, int end) {
-	checkWidget();
+	checkWidget ();
 	checkItems (false);
-	if (start > end) return;
-	if (end < 0 || start >= itemCount) return;
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	if (itemCount == 0 || start >= itemCount) return;
 	start = Math.max (0, start);
-	end = Math.min (itemCount - 1, end);
+	end = Math.min (end, itemCount - 1);
 	int length = end - start + 1;
-	if (length <= 0) return;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = end - i + 1;
 	select (ids, length, false, false);
@@ -1624,24 +1623,20 @@ public void select (int start, int end) {
  * </ul>
  */
 public void select (int [] indices) {
-	checkWidget();
+	checkWidget ();
 	checkItems (false);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int [] ids = new int [length];
 	int count = 0;
 	for (int i=0; i<length; i++) {
 		int index = indices [length - i - 1];
 		if (index >= 0 && index < itemCount) {
-			if ((style & SWT.SINGLE) != 0) {
-				ids [0] = index + 1;
-				count = 1;
-			} else {
-				ids [count++] = index + 1;
-			}
+			ids [count++] = index + 1;
 		}
 	}
-	select (ids, count, false, false);
+	if (count > 0) select (ids, count, false, false);
 }
 
 void select (int [] ids, int count, boolean clear, boolean notify) {
@@ -1863,12 +1858,11 @@ public void setSelection (int start, int end) {
 	checkWidget ();
 	checkItems (false);
 	deselectAll ();
-	if (start > end) return;
-	if (end < 0 || start >= itemCount) return;
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	if (itemCount == 0 || start >= itemCount) return;
 	start = Math.max (0, start);
-	end = Math.min (itemCount - 1, end);
+	end = Math.min (end, itemCount - 1);
 	int length = end - start + 1;
-	if (length <= 0) return;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = end - i + 1;
 	select (ids, length, true, false);
@@ -1896,22 +1890,21 @@ public void setSelection (int [] indices) {
 	checkWidget ();
 	checkItems (false);
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	deselectAll ();
 	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int [] ids = new int [length];
 	int count = 0;
 	for (int i=0; i<length; i++) {
 		int index = indices [length - i - 1];
 		if (index >= 0 && index < itemCount) {
-			if ((style & SWT.SINGLE) != 0) {
-				ids [0] = index + 1;
-				count = 1;
-			} else {
-				ids [count++] = index + 1;
-			}
+			ids [count++] = index + 1;
 		}
 	}
-	select (ids, count, true, false);
-	if (count > 0) showIndex (ids [0] - 1);
+	if (count > 0) {
+		select (ids, count, true, false);
+		showIndex (ids [0] - 1);
+	}
 }
 
 /**
@@ -1934,27 +1927,24 @@ public void setSelection (int [] indices) {
  * @see Table#select(int)
  */
 public void setSelection (TableItem [] items) {
-	checkWidget();
+	checkWidget ();
 	checkItems (false);
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	int length = items.length;
-	if (length == 0) return;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int [] ids = new int [length];
 	int count = 0;
 	for (int i=0; i<length; i++) {
 		int index = indexOf (items [length - i - 1]);
 		if (index != -1) {
-			if ((style & SWT.SINGLE) != 0) {
-				ids [0] = index + 1;
-				count = 1;
-			} else {
-				ids [count++] = index + 1;
-			}
+			ids [count++] = index + 1;
 		}
 	}
-	select (ids, count, true, false);
-	if (count > 0) showIndex (ids [0] - 1);
+	if (count > 0) {
+		select (ids, count, true, false);
+		showIndex (ids [0] - 1);
+	}
 }
 
 /**

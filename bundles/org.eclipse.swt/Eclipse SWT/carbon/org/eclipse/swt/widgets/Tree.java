@@ -1164,8 +1164,13 @@ void setScrollWidth (TreeItem [] items, boolean set) {
 public void setSelection (TreeItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int[] ids = new int [items.length];
-	for (int i=0; i<items.length; i++) {
+	int length = items.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) {
+		deselectAll ();
+		return;
+	}
+	int[] ids = new int [length];
+	for (int i=0; i<length; i++) {
 		if (items [i] == null) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (items [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 		ids [i] = items [i].id;
@@ -1192,7 +1197,7 @@ public void setSelection (TreeItem [] items) {
 		OS.SetDataBrowserSelectionFlags (handle, selectionFlags [0]);
 	}
 	ignoreSelect = false;
-	if (items.length > 0) showItem (items [0], true);
+	if (length > 0) showItem (items [0], true);
 }
 
 /**
