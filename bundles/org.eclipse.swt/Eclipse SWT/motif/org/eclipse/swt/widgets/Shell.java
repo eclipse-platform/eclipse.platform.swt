@@ -825,14 +825,18 @@ int processSetFocus (int callData) {
 	int handle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
 	if (handle != shellHandle) return super.processSetFocus (callData);
 	if (xEvent.mode != OS.NotifyNormal) return 0;
-	if (xEvent.detail != OS.NotifyNonlinear) return 0;
-	switch (xEvent.type) {
-		case OS.FocusIn:
-			postEvent (SWT.Activate);
-			break;
-		case OS.FocusOut:
-			postEvent (SWT.Deactivate);
-			break;
+	switch (xEvent.detail) {
+		case OS.NotifyNonlinear:
+		case OS.NotifyNonlinearVirtual: {
+			switch (xEvent.type) {
+				case OS.FocusIn: 
+					postEvent (SWT.Activate);
+					break;
+				case OS.FocusOut:
+					postEvent (SWT.Deactivate);
+					break;
+			}
+		}
 	}
 	return 0;
 }
