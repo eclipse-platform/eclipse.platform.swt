@@ -63,6 +63,7 @@ public Group (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
+	style |= SWT.NO_FOCUS;
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
