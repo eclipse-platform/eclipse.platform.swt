@@ -162,7 +162,7 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 make_kde: $(KDE_LIB)
 
 $(KDE_LIB): $(KDE_OBJS)
-	ld -o $@ $(KDE_OBJS) $(KDE_LIBS)
+	$(LD) -o $@ $(KDE_OBJS) $(KDE_LIBS)
 
 kde.o: kde.cpp
 	$(CXX) $(CFLAGS) $(KDE_CFLAGS) -o kde.o kde.cpp
