@@ -19,7 +19,7 @@ public class OS {
 	public static final boolean IsDBLocale;
 	public static final boolean IsUnicode;
 	public static final int WIN32_MAJOR, WIN32_MINOR;
-	
+
 	/*
 	* Flags for Window API GetVersionEx
 	*/
@@ -73,6 +73,9 @@ public class OS {
 		}
 		IsDBLocale = index <= 0xFF;
 	}
+
+	/* Flag used on WinCE */
+	static final int SYS_COLOR_INDEX_FLAG = OS.IsWinCE ? 0x40000000 : 0x0;
 
 	/*
 	* NOTE:  There is a bug in JVM 1.2 where loading 
@@ -185,32 +188,32 @@ public class OS {
 	public static final int CF_USESTYLE = 0x80;
 	public static final int CLR_INVALID = 0xffffffff;
 	public static final int COLORONCOLOR = 0x3;
-	public static final int COLOR_3DDKSHADOW = 0x15;
-	public static final int COLOR_3DFACE = 0xf;
-	public static final int COLOR_3DHIGHLIGHT = 0x14;
-	public static final int COLOR_3DHILIGHT = 0x14;
-	public static final int COLOR_3DLIGHT = 0x16;
-	public static final int COLOR_3DSHADOW = 0x10;
-	public static final int COLOR_ACTIVECAPTION = 0x2;
-	public static final int COLOR_BTNFACE = 0xf;
-	public static final int COLOR_BTNHIGHLIGHT = 0x14;
-	public static final int COLOR_BTNSHADOW = 0x10;
-	public static final int COLOR_BTNTEXT = 0x12;
-	public static final int COLOR_CAPTIONTEXT = 0x9;
-	public static final int COLOR_GRADIENTACTIVECAPTION = 0x1b;
-	public static final int COLOR_GRADIENTINACTIVECAPTION = 0x1c;
-	public static final int COLOR_HIGHLIGHT = 0xd;
-	public static final int COLOR_HIGHLIGHTTEXT = 0xe;
-	public static final int COLOR_INACTIVECAPTION = 0x3;
-	public static final int COLOR_INACTIVECAPTIONTEXT = 0x13;
-	public static final int COLOR_INFOBK = 0x18;
-	public static final int COLOR_INFOTEXT = 0x17;
-	public static final int COLOR_MENU = 0x4;
-	public static final int COLOR_MENUTEXT = 0x7;
-	public static final int COLOR_SCROLLBAR = 0x0;
-	public static final int COLOR_WINDOW = 0x5;
-	public static final int COLOR_WINDOWFRAME = 0x6;
-	public static final int COLOR_WINDOWTEXT = 0x8;
+	public static final int COLOR_3DDKSHADOW = 0x15 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_3DFACE = 0xf | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_3DHIGHLIGHT = 0x14 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_3DHILIGHT = 0x14 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_3DLIGHT = 0x16 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_3DSHADOW = 0x10 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_ACTIVECAPTION = 0x2 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_BTNFACE = 0xf | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_BTNHIGHLIGHT = 0x14 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_BTNSHADOW = 0x10 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_BTNTEXT = 0x12 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_CAPTIONTEXT = 0x9 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_GRADIENTACTIVECAPTION = 0x1b | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_GRADIENTINACTIVECAPTION = 0x1c | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_HIGHLIGHT = 0xd | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_HIGHLIGHTTEXT = 0xe | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_INACTIVECAPTION = 0x3 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_INACTIVECAPTIONTEXT = 0x13 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_INFOBK = 0x18 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_INFOTEXT = 0x17 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_MENU = 0x4 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_MENUTEXT = 0x7 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_SCROLLBAR = 0x0 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_WINDOW = 0x5 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_WINDOWFRAME = 0x6 | SYS_COLOR_INDEX_FLAG;
+	public static final int COLOR_WINDOWTEXT = 0x8 | SYS_COLOR_INDEX_FLAG;
 	public static final int COMPLEXREGION = 0x3;
 	public static final int CP_ACP = 0x0;
 	public static final int CS_BYTEALIGNWINDOW = 0x2000;
