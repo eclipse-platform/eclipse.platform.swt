@@ -1732,28 +1732,28 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selectio
 	return rc;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selection_1get_1color
-	(JNIEnv *env, jclass that, jint arg0, jdoubleArray arg1)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selection_1get_1current_1color
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	jdouble *lparg1=NULL;
+	GdkColor _arg1, *lparg1=NULL;
 
-	DEBUG_CALL("gtk_1color_1selection_1get_1color\n")
+	DEBUG_CALL("gtk_1color_1selection_1get_1current_1color\n")
 
-	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
-	gtk_color_selection_get_color((GtkColorSelection *)arg0, (gdouble *)lparg1);
-	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
+	gtk_color_selection_get_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
+	if (arg1) setGdkColorFields(env, arg1, lparg1);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selection_1set_1color
-	(JNIEnv *env, jclass that, jint arg0, jdoubleArray arg1)
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1color_1selection_1set_1current_1color
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
 {
-	jdouble *lparg1=NULL;
+	GdkColor _arg1, *lparg1=NULL;
 
-	DEBUG_CALL("gtk_1color_1selection_1set_1color\n")
+	DEBUG_CALL("gtk_1color_1selection_1set_1current_1color\n")
 
-	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
-	gtk_color_selection_set_color((GtkColorSelection *)arg0, (gdouble *)lparg1);
-	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
+	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
+	gtk_color_selection_set_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
+	if (arg1) setGdkColorFields(env, arg1, lparg1);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1combo_1new
