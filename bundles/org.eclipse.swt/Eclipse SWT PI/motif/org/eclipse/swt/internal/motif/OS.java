@@ -604,6 +604,7 @@ public class OS {
 	public static final int XmNancestorSensitive = malloc ("ancestorSensitive");
 	public static final int XmNanimationStyle = malloc ("animationStyle");
 	public static final int XmNalignment = malloc ("alignment");
+	public static final int XmNallowShellResize = malloc ("allowShellResize");
 	public static final int XmNarrowDirection = malloc ("arrowDirection");
 	public static final int XmNblendModel = malloc ("blendModel");
 	public static final int XmNbottomAttachment = malloc ("bottomAttachment");

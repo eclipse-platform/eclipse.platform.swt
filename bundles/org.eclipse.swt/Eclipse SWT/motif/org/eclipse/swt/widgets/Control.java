@@ -2304,7 +2304,8 @@ public void setSize (Point size) {
  */
 public void setToolTipText (String string) {
 	checkWidget();
-	toolTipText = string;
+	Display display = getDisplay ();
+	display.setToolTipText (handle, toolTipText = string);
 }
 /**
  * Marks the receiver as visible if the argument is <code>true</code>,

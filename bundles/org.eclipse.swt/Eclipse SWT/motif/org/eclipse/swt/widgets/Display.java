@@ -1719,50 +1719,66 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	}
 	this.synchronizer = synchronizer;
 }
+void setToolTipText (int handle, String toolTipText) {
+	if (toolTipHandle == 0) return;
+	int shellHandle = OS.XtParent (toolTipHandle);
+	int shellParent = OS.XtParent (shellHandle);
+	if (handle != shellParent) return;
+	showToolTip (handle, toolTipText);
+}
 void showToolTip (int handle, String toolTipText) {
-	if (toolTipText == null || toolTipText.length () == 0 || toolTipHandle != 0) {
-		 return;
-	}
-	
-	/* Create the shell and tool tip widget */
-	int widgetClass = OS.OverrideShellWidgetClass ();
-	int [] argList1 = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
-	int shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList1, argList1.length / 2);
-	Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
-	Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-	int foregroundPixel = infoForeground.handle.pixel;
-	int backgroundPixel = infoBackground.handle.pixel;
+	int shellHandle = 0;
 	/* Use the character encoding for the default locale */
 	byte [] buffer = Converter.wcsToMbcs (null, toolTipText, true);
-	int [] argList2 = {
-		OS.XmNforeground, foregroundPixel, 
-		OS.XmNbackground, backgroundPixel,
-		OS.XmNalignment, OS.XmALIGNMENT_BEGINNING,
-	};
-	toolTipHandle = OS.XmCreateLabel (shellHandle, buffer, argList2, argList2.length / 2);
-	OS.XtManageChild (toolTipHandle);	
+	if (toolTipHandle != 0) {
+		shellHandle = OS.XtParent (toolTipHandle);
+		int shellParent = OS.XtParent (shellHandle);
+		if (handle != shellParent) return;
+		int xmString = OS.XmStringGenerate (buffer, null, OS.XmCHARSET_TEXT, null);
+		int [] argList = {OS.XmNlabelString, xmString};
+		OS.XtSetValues (toolTipHandle, argList, argList.length / 2);
+		if (xmString != 0) OS.XmStringFree (xmString);
+	} else {
+		int widgetClass = OS.OverrideShellWidgetClass ();
+		int [] argList1 = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
+		shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList1, argList1.length / 2);
+		Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
+		Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
+		int foregroundPixel = infoForeground.handle.pixel;
+		int backgroundPixel = infoBackground.handle.pixel;
+		int [] argList2 = {
+			OS.XmNforeground, foregroundPixel, 
+			OS.XmNbackground, backgroundPixel,
+			OS.XmNalignment, OS.XmALIGNMENT_BEGINNING,
+		};
+		toolTipHandle = OS.XmCreateLabel (shellHandle, buffer, argList2, argList2.length / 2);
+		OS.XtManageChild (toolTipHandle);
+	}
+	if (toolTipText == null || toolTipText.length () == 0) {
+		OS.XtPopdown (shellHandle);
+	} else {
+		/*
+		* Feature in X.  There is no way to query the size of a cursor.
+		* The fix is to use the default cursor size which is 16x16.
+		*/
+		int xWindow = OS.XDefaultRootWindow (xDisplay);
+		int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
+		OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, unused);
+		int x = rootX [0] + 16, y = rootY [0] + 16;
 		
-	/*
-	* Feature in X.  There is no way to query the size of a cursor.
-	* The fix is to use the default cursor size which is 16x16.
-	*/
-	int xWindow = OS.XDefaultRootWindow (xDisplay);
-	int [] rootX = new int [1], rootY = new int [1], unused = new int [1];
-	OS.XQueryPointer (xDisplay, xWindow, unused, unused, rootX, rootY, unused, unused, unused);
-	int x = rootX [0] + 16, y = rootY [0] + 16;
-	
-	/*
-	* Ensure that the tool tip is on the screen.
-	*/
-	int screen = OS.XDefaultScreen (xDisplay);
-	int width = OS.XDisplayWidth (xDisplay, screen);
-	int height = OS.XDisplayHeight (xDisplay, screen);
-	int [] argList4 = {OS.XmNwidth, 0, OS.XmNheight, 0};
-	OS.XtGetValues (toolTipHandle, argList4, argList4.length / 2);
-	x = Math.max (0, Math.min (x, width - argList4 [1]));
-	y = Math.max (0, Math.min (y, height - argList4 [3]));
-	OS.XtMoveWidget (shellHandle, x, y);
-	OS.XtPopup (shellHandle, OS.XtGrabNone);
+		/*
+		* Ensure that the tool tip is on the screen.
+		*/
+		int screen = OS.XDefaultScreen (xDisplay);
+		int width = OS.XDisplayWidth (xDisplay, screen);
+		int height = OS.XDisplayHeight (xDisplay, screen);
+		int [] argList4 = {OS.XmNwidth, 0, OS.XmNheight, 0};
+		OS.XtGetValues (toolTipHandle, argList4, argList4.length / 2);
+		x = Math.max (0, Math.min (x, width - argList4 [1]));
+		y = Math.max (0, Math.min (y, height - argList4 [3]));
+		OS.XtMoveWidget (shellHandle, x, y);
+		OS.XtPopup (shellHandle, OS.XtGrabNone);
+	}
 }
 /**
  * Causes the user-interface thread to <em>sleep</em> (that is,
