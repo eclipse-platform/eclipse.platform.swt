@@ -211,10 +211,10 @@ public void dispose () {
 }
 
 public void draw (GC gc, int x, int y) {
-	drawSelection(gc, x, y, -1, -1, null, null);
+	draw(gc, x, y, -1, -1, null, null);
 }
 
-public void drawSelection (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
+public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Color selectionForeground, Color selectionBackground) {
 	checkLayout();
 	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
