@@ -186,9 +186,6 @@ public CTabFolder(Composite parent, int style) {
 	tip.setLayout(layout);
 	Label label = new Label (tip, SWT.NONE);
 	label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
-	label.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
-	label.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
-	tip.setBackground(label.getBackground());
 	
 	// Add all listeners
 	Listener listener = new Listener() {
@@ -1832,13 +1829,15 @@ private void showToolTip (int x, int y) {
 		if (tooltip != null) {			
 			Label label = (Label) (tip.getChildren() [0]);
 			label.setText(tooltip);
+			Display display = tip.getDisplay();
+			label.setForeground (display.getSystemColor (SWT.COLOR_INFO_FOREGROUND));
+			label.setBackground (display.getSystemColor (SWT.COLOR_INFO_BACKGROUND));
 			tip.pack();
 			Point pt = new Point(item.x + item.width / 4, item.y + item.height + 2);
 			pt = toDisplay(pt);
 			/*
 			* Ensure that the tooltip is on the screen.
 			*/
-			Display display = tip.getDisplay();
 			Rectangle rect = display.getBounds();
 			Point size = tip.getSize();
 			pt.x = Math.max (0, Math.min (pt.x, rect.width - size.x));
