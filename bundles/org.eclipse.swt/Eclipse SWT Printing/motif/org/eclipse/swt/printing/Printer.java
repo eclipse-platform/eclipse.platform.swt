@@ -378,7 +378,7 @@ public Point getDPI() {
 		OS.memmove(buffer, pool, length);
 		OS.XtFree(pool);
 		int n = 0;
-		while (!Character.isWhitespace((char)buffer[n]) && n < buffer.length) n++;
+		while (!Compatibility.isWhitespace((char)buffer[n]) && n < buffer.length) n++;
 		resolution = new String(buffer, 0, n);
 	}
 	if (resolution.length() != 0) {

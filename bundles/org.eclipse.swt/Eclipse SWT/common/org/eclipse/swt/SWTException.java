@@ -68,6 +68,21 @@ public SWTException (int code, String message) {
 	this.code = code;
 }
 
+/**
+ *  Returns the string describing this SWTException object.
+ *  <p>
+ *  It is combined with the message string of the Throwable
+ *  which caused this SWTException (if this information is available).
+ *  </p>
+ *  @return the error message string of this SWTException object
+ */
+public String getMessage() {
+	if (throwable == null || throwable.getMessage() == null)
+		return super.getMessage();
+	else
+		return super.getMessage() + " (" + throwable.getMessage() + ")";
+}
+
 }
 
 

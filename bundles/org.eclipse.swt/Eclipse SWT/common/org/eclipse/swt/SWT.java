@@ -6,8 +6,6 @@ package org.eclipse.swt;
  */
 
 import org.eclipse.swt.internal.*;
-import java.util.ResourceBundle;
-import java.util.MissingResourceException;
 
 /**
  * This class provides access to a small number of SWT system-wide
@@ -1331,6 +1329,13 @@ public class SWT {
 	 */
 	public static final int ERROR_FAILED_EXEC = 46;
 	
+	/** 
+	 * SWT error constant indicating that an unsatisfied link
+	 * error occured while attempting to load a library.
+	 * (value is 47) 
+	 */
+	public static final int ERROR_FAILED_LOAD_LIBRARY = 47;
+	
 	/**
 	 * traversal event detail field value indicating that the ESC
 	 * key was pressed (value is 1<<1)
@@ -1649,46 +1654,45 @@ public class SWT {
  */
 static String findErrorText (int code) {
 	switch (code) {
-		case ERROR_UNSPECIFIED:			return "Unspecified error";
-		case ERROR_NO_HANDLES:			return "No more handles";
-		case ERROR_NO_MORE_CALLBACKS:		return "No more callbacks";
-		case ERROR_NULL_ARGUMENT:		return "Argument cannot be null";
-		case ERROR_INVALID_ARGUMENT:		return "Argument not valid";
-		case ERROR_INVALID_RANGE:		return "Index out of bounds";
-		case ERROR_CANNOT_BE_ZERO:		return "Argument cannot be zero";
-		case ERROR_CANNOT_GET_ITEM:		return "Cannot get item";
-		case ERROR_CANNOT_GET_SELECTION:	return "Cannot get selection";
-		case ERROR_CANNOT_GET_ITEM_HEIGHT:	return "Cannot get item height";
-		case ERROR_CANNOT_GET_TEXT:		return "Cannot get text";
-		case ERROR_CANNOT_SET_TEXT:		return "Cannot set text";
-		case ERROR_ITEM_NOT_ADDED:		return "Item not added";
-		case ERROR_ITEM_NOT_REMOVED:		return "Item not removed";
-		case ERROR_NOT_IMPLEMENTED:		return "Not implemented";
-		case ERROR_MENU_NOT_DROP_DOWN:	return "Menu must be a drop down";
-		case ERROR_THREAD_INVALID_ACCESS:	return "Invalid thread access";
-		case ERROR_WIDGET_DISPOSED:		return "Widget is disposed";
-		case ERROR_MENUITEM_NOT_CASCADE:	return "Menu item is not a CASCADE"; 
-		case ERROR_CANNOT_SET_SELECTION:	return "Cannot set selection"; 
-		case ERROR_CANNOT_SET_MENU:		return "Cannot set menu"; 
-		case ERROR_CANNOT_SET_ENABLED:	return "Cannot set the enabled state"; 
-		case ERROR_CANNOT_GET_ENABLED:	return "Cannot get the enabled state"; 
-		case ERROR_INVALID_PARENT:		return "Widget has the wrong parent"; 
-		case ERROR_MENU_NOT_BAR:		return "Menu is not a BAR"; 
-		case ERROR_CANNOT_GET_COUNT:		return "Cannot get count";
-		case ERROR_MENU_NOT_POP_UP:		return "Menu is not a POP_UP";
-		case ERROR_UNSUPPORTED_DEPTH:		return "Unsupported color depth";
-		case ERROR_IO:				return "i/o error";
-		case ERROR_INVALID_IMAGE:		return "Invalid image";
-		case ERROR_UNSUPPORTED_FORMAT:	return "Unsupported or unrecognized format";
-		case ERROR_INVALID_SUBCLASS:		return "Subclassing not allowed";
-		case ERROR_GRAPHIC_DISPOSED:		return "Graphic is disposed";
-		case ERROR_DEVICE_DISPOSED:		return "Device is disposed";
-		case ERROR_FAILED_EXEC:		return "Failed to execute runnable";
+		case ERROR_UNSPECIFIED:            return "Unspecified error";
+		case ERROR_NO_HANDLES:			   return "No more handles";
+		case ERROR_NO_MORE_CALLBACKS:      return "No more callbacks";
+		case ERROR_NULL_ARGUMENT:          return "Argument cannot be null";
+		case ERROR_INVALID_ARGUMENT:       return "Argument not valid";
+		case ERROR_INVALID_RANGE:          return "Index out of bounds";
+		case ERROR_CANNOT_BE_ZERO:         return "Argument cannot be zero";
+		case ERROR_CANNOT_GET_ITEM:        return "Cannot get item";
+		case ERROR_CANNOT_GET_SELECTION:   return "Cannot get selection";
+		case ERROR_CANNOT_GET_ITEM_HEIGHT: return "Cannot get item height";
+		case ERROR_CANNOT_GET_TEXT:        return "Cannot get text";
+		case ERROR_CANNOT_SET_TEXT:        return "Cannot set text";
+		case ERROR_ITEM_NOT_ADDED:         return "Item not added";
+		case ERROR_ITEM_NOT_REMOVED:       return "Item not removed";
+		case ERROR_NOT_IMPLEMENTED:        return "Not implemented";
+		case ERROR_MENU_NOT_DROP_DOWN:     return "Menu must be a drop down";
+		case ERROR_THREAD_INVALID_ACCESS:  return "Invalid thread access";
+		case ERROR_WIDGET_DISPOSED:        return "Widget is disposed";
+		case ERROR_MENUITEM_NOT_CASCADE:   return "Menu item is not a CASCADE"; 
+		case ERROR_CANNOT_SET_SELECTION:   return "Cannot set selection"; 
+		case ERROR_CANNOT_SET_MENU:        return "Cannot set menu"; 
+		case ERROR_CANNOT_SET_ENABLED:     return "Cannot set the enabled state"; 
+		case ERROR_CANNOT_GET_ENABLED:     return "Cannot get the enabled state"; 
+		case ERROR_INVALID_PARENT:         return "Widget has the wrong parent"; 
+		case ERROR_MENU_NOT_BAR:           return "Menu is not a BAR"; 
+		case ERROR_CANNOT_GET_COUNT:       return "Cannot get count";
+		case ERROR_MENU_NOT_POP_UP:        return "Menu is not a POP_UP";
+		case ERROR_UNSUPPORTED_DEPTH:      return "Unsupported color depth";
+		case ERROR_IO:                     return "i/o error";
+		case ERROR_INVALID_IMAGE:          return "Invalid image";
+		case ERROR_UNSUPPORTED_FORMAT:     return "Unsupported or unrecognized format";
+		case ERROR_INVALID_SUBCLASS:       return "Subclassing not allowed";
+		case ERROR_GRAPHIC_DISPOSED:       return "Graphic is disposed";
+		case ERROR_DEVICE_DISPOSED:        return "Device is disposed";
+		case ERROR_FAILED_EXEC:            return "Failed to execute runnable";
+		case ERROR_FAILED_LOAD_LIBRARY:    return "Unable to load library";
 	}
 	return "Unknown error";
 }
-
-private static ResourceBundle msgs = null;
 
 /**
  * Returns the NLS'ed message for the given argument.
@@ -1701,24 +1705,7 @@ private static ResourceBundle msgs = null;
  * </ul>
  */
 public static String getMessage(String key) {
-	String answer = key;
-	
-	if (key == null) {
-		error (ERROR_NULL_ARGUMENT);
-	}
-	if (msgs == null) {
-		try {
-			msgs = ResourceBundle.getBundle("org.eclipse.swt.SWTMessages");
-		} catch (MissingResourceException ex) {
-			answer = key + " (no resource bundle)";
-		}
-	}
-	if (msgs != null) {
-		try {
-			answer = msgs.getString(key);
-		} catch (MissingResourceException ex2) {}
-	}
-	return answer;
+	return Compatibility.getMessage(key);
 }
 	
 /**
@@ -1836,6 +1823,7 @@ public static void error (int code, Throwable throwable) {
 		case ERROR_NO_HANDLES: // fall through
 		
 		// SWT Failure/Limit (fatal, may occur only on some platforms)
+		case ERROR_FAILED_LOAD_LIBRARY:
 		case ERROR_NO_MORE_CALLBACKS:
 		case ERROR_NOT_IMPLEMENTED:
 		case ERROR_UNSPECIFIED: {

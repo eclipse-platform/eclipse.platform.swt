@@ -431,7 +431,7 @@ private static String[] parseCommand( String cmd ) {
 	int eIndex;
 	while (sIndex < cmd.length()) {
 		// Trim initial white space of argument.
-		while (sIndex < cmd.length() && Character.isWhitespace( cmd.charAt(sIndex) )) {
+		while (sIndex < cmd.length() && Compatibility.isWhitespace( cmd.charAt(sIndex) )) {
 			sIndex++;
 		}
 		if (sIndex < cmd.length()) {
@@ -457,7 +457,7 @@ private static String[] parseCommand( String cmd ) {
 			// else use white space for the delimiters.
 			else {
 				eIndex = sIndex;
-				while (eIndex < cmd.length() && !Character.isWhitespace( cmd.charAt(eIndex) )) {
+				while (eIndex < cmd.length() && !Compatibility.isWhitespace( cmd.charAt(eIndex) )) {
 					eIndex++;
 				}
 				args.add( cmd.substring( sIndex, eIndex ) );
@@ -526,7 +526,7 @@ static String gnome_getMimeValue(String mimeType, String key) {
 static boolean kde_init () {
 	try {
 		Callback.loadLibrary("swt-kde");
-	} catch (UnsatisfiedLinkError e) {
+	} catch (SWTError e) {
 		return false;
 	}
 
@@ -863,7 +863,7 @@ public String toString () {
 static boolean gnome_init () {
 	try {
 		Callback.loadLibrary("swt-gnome");
-	} catch (UnsatisfiedLinkError e) {
+	} catch (SWTError e) {
 		return false;
 	}
 	return true;
@@ -1033,7 +1033,7 @@ ImageData cde_getImageData() {
 static boolean cde_init( Display display ) {
 	try {
 		Callback.loadLibrary("swt-cde");
-	} catch (UnsatisfiedLinkError e) {
+	} catch (SWTError e) {
 		return false;
 	}
 

@@ -6,6 +6,7 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.Compatibility;
  
 /**
  * Instances of this class provide synchronization support
@@ -141,7 +142,7 @@ protected void syncExec (Runnable runnable) {
 			}
 		}
 		if (interrupted) {
-			Thread.currentThread ().interrupt ();
+			Compatibility.interrupt();
 		}
 		if (lock.throwable != null) {
 			SWT.error (SWT.ERROR_FAILED_EXEC, lock.throwable);

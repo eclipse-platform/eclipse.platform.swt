@@ -77,4 +77,19 @@ public SWTError (int code, String message) {
 	this.code = code;
 }
 
+/**
+ *  Returns the string describing this SWTError object.
+ *  <p>
+ *  It is combined with the message string of the Throwable
+ *  which caused this SWTError (if this information is available).
+ *  </p>
+ *  @return the error message string of this SWTError object
+ */
+public String getMessage() {
+	if (throwable == null || throwable.getMessage() == null)
+		return super.getMessage();
+	else
+		return super.getMessage() + " (" + throwable.getMessage() + ")";
+}
+
 }

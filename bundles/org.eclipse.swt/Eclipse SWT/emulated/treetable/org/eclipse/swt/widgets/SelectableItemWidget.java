@@ -7,6 +7,7 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.Compatibility;
 import java.io.*;
 
 import java.util.Enumeration;
@@ -949,7 +950,7 @@ int getItemCountTruncated(Rectangle rectangle) {
 	int startIndex;
 
 	startIndex = rectangle.y / itemHeight;
-	itemCount = (int) Math.ceil(((float) rectangle.y + rectangle.height) / itemHeight)-startIndex;
+	itemCount = (int) Compatibility.ceil(((float) rectangle.y + rectangle.height) / itemHeight)-startIndex;
 	return itemCount;
 }
 /**

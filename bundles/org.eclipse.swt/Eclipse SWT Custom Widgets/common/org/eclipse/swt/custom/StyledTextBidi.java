@@ -4,6 +4,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.internal.BidiUtil;
+import org.eclipse.swt.internal.Compatibility;
 import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.widgets.Control;
 import java.io.*;
@@ -558,14 +559,14 @@ private void prepareBoldText(String textline, int logicalStart, int length) {
 	// figure out what is before and after the substring
 	// so that the proper character shaping will occur
 	if (logicalStart != 0  
-		&& !Character.isWhitespace(textline.charAt(logicalStart - 1)) 
+		&& !Compatibility.isWhitespace(textline.charAt(logicalStart - 1)) 
 		&& isRightToLeft(logicalStart - 1)) {
 		// if the start of the substring is not the beginning of the 
 		// text line, check to see what is before the string
 		flags |= BidiUtil.LINKBEFORE;
 	}
 	if ((logicalStart + byteCount) != dx.length 
-		&& !Character.isWhitespace(textline.charAt(logicalStart + byteCount)) 
+		&& !Compatibility.isWhitespace(textline.charAt(logicalStart + byteCount)) 
 		&& isRightToLeft(logicalStart + byteCount)) {
 		// if the end of the substring is not the end of the text line,
 		// check to see what is after the substring

@@ -255,11 +255,11 @@ public static void loadLibrary (String name) {
 	/* No "r" until first revision */
 	if (REVISION > 0) newName += "r" + REVISION;
 	try {
-		System.loadLibrary (newName);
-	} catch (UnsatisfiedLinkError e) {
+		Compatibility.loadLibrary(newName);
+	} catch (SWTError e) {
 		try {
-			System.loadLibrary (name);
-		} catch (UnsatisfiedLinkError e2) {
+			Compatibility.loadLibrary(name);
+		} catch (SWTError e2) {
 			throw e;
 		}
 	}

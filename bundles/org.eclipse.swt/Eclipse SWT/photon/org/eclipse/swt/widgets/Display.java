@@ -1074,7 +1074,7 @@ String wrapText (String text, byte[] font, int width) {
 		boolean noLf = lineEnd == -1;
 		if (noLf) lineEnd = length;
 		int nextStart = lineEnd + 1;
-		while (lineEnd > lineStart + 1 && Character.isWhitespace (text.charAt (lineEnd - 1))) {
+		while (lineEnd > lineStart + 1 && Compatibility.isWhitespace (text.charAt (lineEnd - 1))) {
 			lineEnd--;
 		}
 		int wordStart = lineStart, wordEnd = lineStart;
@@ -1082,13 +1082,13 @@ String wrapText (String text, byte[] font, int width) {
 		while (i < lineEnd) {
 			int lastStart = wordStart, lastEnd = wordEnd;
 			wordStart = i;
-			while (i < lineEnd && !Character.isWhitespace (text.charAt (i))) {
+			while (i < lineEnd && !Compatibility.isWhitespace (text.charAt (i))) {
 				i++;
 			}
 			wordEnd = i - 1;
 			String line = text.substring (lineStart, wordEnd + 1);
 			int lineWidth = textWidth (line, font);
-			while (i < lineEnd && Character.isWhitespace (text.charAt (i))) {
+			while (i < lineEnd && Compatibility.isWhitespace (text.charAt (i))) {
 				i++;
 			}
 			if (lineWidth > width) {
