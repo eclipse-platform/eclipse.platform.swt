@@ -914,12 +914,14 @@ void init(Device device, int width, int height) {
 	int depth = OS.XDefaultDepthOfScreen(screen);
 	int screenNum = OS.XDefaultScreen(xDisplay);
 	int drawable = OS.XDefaultRootWindow(xDisplay);
-	int xGC = OS.XCreateGC(xDisplay, drawable, 0, null);
-	this.pixmap = OS.XCreatePixmap(xDisplay, drawable, width, height, depth);
+	int pixmap = OS.XCreatePixmap(xDisplay, drawable, width, height, depth);
+	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	/* Fill the bitmap with white */
+	int xGC = OS.XCreateGC(xDisplay, drawable, 0, null);
 	OS.XSetForeground(xDisplay, xGC, OS.XWhitePixel(xDisplay, screenNum));
 	OS.XFillRectangle(xDisplay, pixmap, xGC, 0, 0, width, height);
 	OS.XFreeGC(xDisplay, xGC);
+	this.pixmap = pixmap;
 }
 void init(Device device, ImageData image) {
 	if (device == null) device = Device.getDevice();
@@ -931,6 +933,7 @@ void init(Device device, ImageData image) {
 	int screenDepth = OS.XDefaultDepthOfScreen(OS.XDefaultScreenOfDisplay(xDisplay));
 	int visual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
 	int pixmap = OS.XCreatePixmap(xDisplay, drawable, image.width, image.height, screenDepth);
+	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int gc = OS.XCreateGC(xDisplay, pixmap, 0, null);
 	int[] transPixel = null;
 	if (image.transparentPixel != -1) transPixel = new int[]{image.transparentPixel};
