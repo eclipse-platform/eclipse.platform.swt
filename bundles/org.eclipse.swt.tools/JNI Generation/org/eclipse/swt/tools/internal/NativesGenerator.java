@@ -638,6 +638,10 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		String cast = paramData.getCast(); 
 		if (cast.length() != 0 && !cast.equals("()")) {
 			output(cast);
+		} else {
+			output("(");
+			output(name.substring(0, name.indexOf("_")));
+			output(" *)");
 		}
 		outputln("arg0;");
 		return;
