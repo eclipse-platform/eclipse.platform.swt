@@ -119,44 +119,29 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (!isVisible ()) return;
 	
 	/* Hide the caret */
-	boolean isVisible = (caret != null) && (caret.isVisible ());
+	boolean isVisible = caret != null && caret.isVisible ();
 	if (isVisible) caret.hideCaret ();
 	
-	int window = OS.GTK_WIDGET_WINDOW(paintHandle());
+//	/* Emit a NoExpose Event */
+//	int window = paintWindow ();
+//	int gc = OS.gdk_gc_new (window);
+//	OS.gdk_gc_set_exposures(gc, true);
+//	OS.gdk_draw_drawable(window, gc, window, x, y, x, y, width, height);
+//	OS.g_object_unref (gc);
+//
+//	/* Flush outstanding Exposes */
+//	int gdkEvent = 0;
+//	while ((gdkEvent = OS.gdk_event_get_graphics_expose(window)) != 0) {
+//		OS.gtk_widget_send_expose (handle, gdkEvent);
+//		GdkEventExpose event = new GdkEventExpose(gdkEvent);
+//		OS.gdk_event_free (gdkEvent);
+//		if (event.count == 0) break;
+//	}
+	update ();
 
-	/* Emit a NoExpose Event */
-	int gc = OS.gdk_gc_new (window);
-	OS.gdk_gc_set_exposures(gc, true);
-	OS.gdk_window_copy_area (window, gc, x, y, window, x, y, width, height);
-	OS.g_object_unref (gc);
-
-	/* Flush outstanding Exposes */
-	int eventHandle=0;
-	while ((eventHandle = OS.gdk_event_get_graphics_expose(window)) != 0) {
-		OS.gtk_widget_event(handle, eventHandle);
-		OS.gdk_event_free(eventHandle);	
-	}
-
-	/* Scroll the window */
-	int gc1 = OS.gdk_gc_new (window);
-	OS.gdk_gc_set_exposures(gc1, true);
-	OS.gdk_window_copy_area (window, gc1, destX, destY, window, x, y, width, height);
-	OS.g_object_unref (gc1);
-	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
-	if (disjoint) {
-		OS.gdk_window_clear_area(window, x, y, width, height);
-	} else {
-		if (deltaX != 0) {
-			int newX = destX - deltaX;
-			if (deltaX < 0) newX = destX + width;
-			OS.gdk_window_clear_area_e(window, newX, y, Math.abs (deltaX), height);
-		}
-		if (deltaY != 0) {
-			int newY = destY - deltaY;
-			if (deltaY < 0) newY = destY + height;
-			OS.gdk_window_clear_area_e (window, x, newY, width, Math.abs (deltaY));
-		}
-	}
+	GC gc = new GC (this);
+	gc.copyArea (x, y, width, height, destX, destY);
+	gc.dispose ();
 	
 	/* Show the caret */
 	if (isVisible) caret.showCaret ();
