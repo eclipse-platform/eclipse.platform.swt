@@ -774,19 +774,6 @@ public void setVisible (boolean visible) {
  *   ===  DESTRUCTION  ===
  */
 
-public void dispose () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-//	Display display = this.display;
-	Composite parent = this.parent;
-	super.dispose ();
-//	if (display != null) display.update ();
-	if (parent != null) {
-		Shell shell = parent.getShell ();
-		shell.bringToTop ();
-	}
-}
-
 void deregister () {
 	super.deregister ();
 	WidgetTable.remove (shellHandle);
