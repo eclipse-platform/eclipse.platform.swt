@@ -321,7 +321,7 @@ public Display getDisplay () {
 /**
  * Returns the bounds of the Rectangles being drawn.
  *
- * @return the bounds of the Rectangles being drawn
+ * @return the bounds of the Rectangles being drawn, expressed in terms of screen coordinates
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -653,7 +653,7 @@ public void setCursor(Cursor newCursor) {
 /**
  * Specify the rectangles that should be drawn.
  *
- * @param rectangles the bounds of the rectangles to be drawn
+ * @param rectangles the bounds of the rectangles to be drawn, expressed in terms of screen coordinates
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
