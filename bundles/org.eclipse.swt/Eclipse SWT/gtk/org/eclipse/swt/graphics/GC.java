@@ -1220,21 +1220,21 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	if (nw > naw) {
 		if (nh > nah) {
 			OS.gdk_draw_arc(drawable, handle, 1, nx, ny, naw, nah, 5760, 5760);
-			OS.gdk_draw_arc(drawable, handle, 1, nx, ny + nh - nah, naw, nah, 11520, 5760);
-			OS.gdk_draw_arc(drawable, handle, 1, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx + naw2, ny, nw - naw2 * 2, nh);
 			OS.gdk_draw_arc(drawable, handle, 1, nx + nw - naw, ny, naw, nah, 0, 5760);
-			OS.gdk_draw_rectangle(drawable, handle, 1, nx + naw2, ny, nw - naw, nh);
-			OS.gdk_draw_rectangle(drawable, handle, 1, nx, ny + nah2, naw2, nh - nah);
-			OS.gdk_draw_rectangle(drawable, handle, 1, nx + nw - naw2, ny + nah2, naw2, nh -nah);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx, ny + nah2, naw2, nh - nah2 * 2);
+			OS.gdk_draw_arc(drawable, handle, 1, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx + nw - naw2, ny + nah2, naw2, nh - nah2 * 2);
+			OS.gdk_draw_arc(drawable, handle, 1, nx, ny + nh - nah, naw, nah, 11520, 5760);
 		} else {
 			OS.gdk_draw_arc(drawable, handle, 1, nx, ny, naw, nh, 5760, 11520);
-			OS.gdk_draw_rectangle(drawable, handle, 1, nx + naw2, ny, nw - naw, nh);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx + naw2, ny, nw - naw2 * 2, nh);
 			OS.gdk_draw_arc(drawable, handle, 1, nx + nw - naw, ny, naw, nh, 17280, 11520);
 		}
 	} else {
 		if (nh > nah) {
 			OS.gdk_draw_arc(drawable, handle, 1, nx, ny, nw, nah, 0, 11520);
-			OS.gdk_draw_rectangle(drawable, handle, 1, nx, ny + nah2, nw, nh - nah);
+			OS.gdk_draw_rectangle(drawable, handle, 1, nx, ny + nah2, nw, nh - nah2 * 2);
 			OS.gdk_draw_arc(drawable, handle, 1, nx, ny + nh - nah, nw, nah, 11520, 11520);
 		} else {
 			OS.gdk_draw_arc(drawable, handle, 1, nx, ny, nw, nh, 0, 23040);
