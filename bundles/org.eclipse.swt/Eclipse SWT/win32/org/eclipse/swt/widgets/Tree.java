@@ -1117,7 +1117,9 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	* This is inconsistent with the list widget and
 	* other widgets in Windows.  The fix is to detect
 	* the case when an item is reselected and issue
-	* the notification.
+	* the notification.  The first part of this work
+	* around is to ensure that the user has selected
+	* an item.
 	*/
 	TVHITTESTINFO lpht = new TVHITTESTINFO ();
 	lpht.x = (short) (lParam & 0xFFFF);
@@ -1129,7 +1131,7 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		if (OS.GetCapture () != handle) OS.SetCapture (handle);
 		return new LRESULT (code);
 	}
-
+	
 	/* Look for check/uncheck */
 	if ((style & SWT.CHECK) != 0) {
 		if ((lpht.flags & OS.TVHT_ONITEMSTATEICON) != 0) {
@@ -1197,6 +1199,24 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	if (dragStarted && OS.GetCapture () != handle) OS.SetCapture (handle);
 	int hNewItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 
+	/*
+	* Feature in Windows.  When the old and new focused item
+	* are the same, Windows does not check to make sure that
+	* the item is actually selected, not just focused.  The
+	* fix is to force the item to draw selected by setting
+	* the state mask.  This is only necessary when the tree
+	* is single select.
+	*/
+	if ((style & SWT.SINGLE) != 0) {
+		if (hOldItem == hNewItem) {
+			tvItem.mask = OS.TVIF_STATE;
+			tvItem.state = OS.TVIS_SELECTED;
+			tvItem.stateMask = OS.TVIS_SELECTED;
+			tvItem.hItem = hNewItem;
+			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		}
+	}
+	
 	/* Reselect the last item that was unselected */
 	if ((style & SWT.MULTI) != 0) {
 		
