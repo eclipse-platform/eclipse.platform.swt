@@ -38,6 +38,8 @@ public final class GCData {
 	public int lineStyle = SWT.LINE_SOLID;
 	public byte[] dashes;
 	public boolean xorMode;
+	public int antialias = SWT.DEFAULT;
+	public int textAntialias = SWT.DEFAULT;
 
 	public int /*long*/ cairo;
 	public int /*long*/ matrix, inverseMatrix;

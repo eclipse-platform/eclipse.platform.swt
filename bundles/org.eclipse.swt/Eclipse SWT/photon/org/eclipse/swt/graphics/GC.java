@@ -1844,6 +1844,14 @@ public int getAlpha() {
 	return 0xFF;
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public int getAntialias() {
+    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    return SWT.DEFAULT;
+}
+
 /** 
  * Returns the background color.
  *
@@ -2155,6 +2163,14 @@ public int getStyle () {
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
+public int getTextAntialias() {
+    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    return SWT.DEFAULT;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void getTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -2270,6 +2286,21 @@ public boolean isDisposed() {
  */
 public void setAlpha(int alpha) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setAntialias(int antialias) {
+    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    switch (antialias) {
+        case SWT.DEFAULT: break;
+        case SWT.OFF: break;
+        case SWT.ON:
+            break;
+        default:
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+    }
 }
 
 /**
@@ -2766,6 +2797,20 @@ int getClipping(int widget, int topWidget, boolean clipChildren, boolean clipSib
 		return clip_tile;
 	}
 	return widget_tile;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setTextAntialias(int antialias) {
+    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    switch (antialias) {
+        case SWT.DEFAULT: break;
+        case SWT.OFF: break;
+        case SWT.ON: break;
+        default:
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+    }
 }
 
 /**

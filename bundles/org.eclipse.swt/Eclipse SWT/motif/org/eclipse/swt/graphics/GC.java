@@ -1932,6 +1932,14 @@ public int getAlpha() {
 	initCairo();
 	return (int)(Cairo.cairo_current_alpha(data.cairo) * 255);
 }
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public int getAntialias() {
+    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    if (data.cairo != 0) return SWT.ON;
+    return data.antialias;
+}
 /** 
  * Returns the background color.
  *
@@ -2590,6 +2598,13 @@ public int getStyle () {
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
+public int getTextAntialias() {
+    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    return data.textAntialias;
+}
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void getTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
@@ -2748,6 +2763,22 @@ public void setAlpha(int alpha) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	initCairo();
 	Cairo.cairo_set_alpha(data.cairo, alpha / 255f);
+}
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setAntialias(int antialias) {
+    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    switch (antialias) {
+        case SWT.DEFAULT: break;
+        case SWT.OFF: break;
+        case SWT.ON:
+            initCairo();
+            break;
+        default:
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+    }
+    data.antialias = antialias;
 }
 /**	 
  * Invokes platform specific functionality to allocate a new graphics context.
@@ -3285,6 +3316,20 @@ void setText(String string, int flags) {
 	data.text = string;
 	data.textWidth = data.textHeight = -1;
 	data.drawFlags = flags;
+}
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setTextAntialias(int antialias) {
+    if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+    switch (antialias) {
+        case SWT.DEFAULT: break;
+        case SWT.OFF: break;
+        case SWT.ON: break;
+        default:
+            SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+    }
+    data.textAntialias = antialias;
 }
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE

@@ -1053,9 +1053,17 @@ public void drawText (String string, int x, int y, int flags) {
 	if (data.updateClip) setCGClipping();
 	int length = string.length();
 	if (length == 0) return;
-	length = setString(string, flags);
 	OS.CGContextSaveGState(handle);
 	OS.CGContextScaleCTM(handle, 1, -1);
+	boolean mode = true;
+	switch (data.textAntialias) {
+		case SWT.DEFAULT:
+			if (data.window != 0 && data.control == 0) mode = false;
+			break;
+		case SWT.OFF: mode = false; break;
+	}
+	OS.CGContextSetShouldAntialias(handle, mode);
+	length = setString(string, flags);
 	if ((flags & SWT.DRAW_DELIMITER) != 0) {
 		int layout = data.layout;
 		int[] breakCount = new int[1];
@@ -1487,6 +1495,14 @@ public int getAlpha() {
 }
 
 /**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public int getAntialias() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.antialias;
+}
+
+/**
  * Returns the width of the specified character in the font
  * selected into the receiver. 
  * <p>
@@ -1755,6 +1771,14 @@ public int getStyle () {
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
+public int getTextAntialias() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.textAntialias;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void getTransform (Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	float[] cmt = data.transform; 
@@ -1861,6 +1885,26 @@ public void setAlpha(int alpha) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	data.alpha = alpha & 0xFF;
 	OS.CGContextSetAlpha(handle, data.alpha / 255f);
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
+public void setAntialias(int antialias) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	boolean mode = true;
+	switch (antialias) {
+		case SWT.DEFAULT:
+			/* Printer is off by default */
+			if (data.window != 0 && data.control == 0) mode = false;
+			break;
+		case SWT.OFF: mode = false; break;
+		case SWT.ON: mode = true; break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	data.antialias = antialias;
+	OS.CGContextSetShouldAntialias(handle, mode);
 }
 
 /**
@@ -2392,6 +2436,22 @@ int regionToRects(int message, int rgn, int r, int newRgn) {
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
+public void setTextAntialias(int antialias) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	switch (antialias) {
+		case SWT.DEFAULT:
+		case SWT.OFF:
+		case SWT.ON:
+			break;
+		default:
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	data.textAntialias = antialias;
+}
+
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void setTransform(Transform transform) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transform != null && transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2409,7 +2469,6 @@ public void setTransform(Transform transform) {
 	int clipRgn = data.clipRgn;
 	if (clipRgn != 0) {
 		int newRgn = OS.NewRgn();
-		Region region = new Region();
 		Callback callback = new Callback(this, "regionToRects", 4);
 		int proc = callback.getAddress();
 		if (proc != 0) {
