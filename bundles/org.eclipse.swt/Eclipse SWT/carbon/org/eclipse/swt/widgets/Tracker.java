@@ -766,7 +766,13 @@ public void setCursor (Cursor newCursor) {
 public void setRectangles (Rectangle [] rectangles) {
 	checkWidget ();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
-	this.rectangles = rectangles;
+	int length = rectangles.length;
+	this.rectangles = new Rectangle [length];
+	for (int i = 0; i < length; i++) {
+		Rectangle current = rectangles [i];
+		if (current == null) error (SWT.ERROR_NULL_ARGUMENT);
+		this.rectangles [i] = new Rectangle (current.x, current.y, current.width, current.height);
+	}
 	proportions = computeProportions (rectangles);
 }
 

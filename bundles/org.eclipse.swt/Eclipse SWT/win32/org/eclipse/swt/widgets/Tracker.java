@@ -787,6 +787,7 @@ public void setCursor(Cursor newCursor) {
 		if (inEvent) OS.SetCursor(clientCursor);
 	}
 }
+
 /**
  * Specifies the rectangles that should be drawn, expressed relative to the parent
  * widget.  If the parent is a Display then these are screen coordinates.
@@ -794,7 +795,7 @@ public void setCursor(Cursor newCursor) {
  * @param rectangles the bounds of the rectangles to be drawn
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the set of rectangles is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the set of rectangles is null or contains a null rectangle</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -804,7 +805,13 @@ public void setCursor(Cursor newCursor) {
 public void setRectangles (Rectangle [] rectangles) {
 	checkWidget ();
 	if (rectangles == null) error (SWT.ERROR_NULL_ARGUMENT);
-	this.rectangles = rectangles;
+	int length = rectangles.length;
+	this.rectangles = new Rectangle [length];
+	for (int i = 0; i < length; i++) {
+		Rectangle current = rectangles [i];
+		if (current == null) error (SWT.ERROR_NULL_ARGUMENT);
+		this.rectangles [i] = new Rectangle (current.x, current.y, current.width, current.height);
+	}
 	proportions = computeProportions (rectangles);
 }
 
