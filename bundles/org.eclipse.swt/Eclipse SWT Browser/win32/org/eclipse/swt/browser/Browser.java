@@ -267,11 +267,17 @@ public Browser(Composite parent, int style) {
 					if (doit) {
 						Variant variant = new Variant(browser.auto);
 						IDispatch iDispatch = variant.getDispatch();
-						variant.dispose();
 						Variant ppDisp = event.arguments[0];
 						int byref = ppDisp.getByRef();
 						if (byref != 0) COM.MoveMemory(byref, new int[] {iDispatch.getAddress()}, 4);
-						iDispatch.Release();
+						/*
+						* This code is intentionally commented.  A Variant constructed from an
+						* OleAutomation object does not increase its reference count.  The IDispatch
+						* obtained from this Variant did not increase the reference count for the
+						* OleAutomation instance either. 
+						*/
+						//variant.dispose();
+						//iDispatch.Release();
 					}
 					Variant cancel = event.arguments[1];
 					int pCancel = cancel.getByRef();
