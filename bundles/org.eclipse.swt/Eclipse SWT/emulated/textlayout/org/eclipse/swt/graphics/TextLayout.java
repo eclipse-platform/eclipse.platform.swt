@@ -89,9 +89,11 @@ void computeRuns (GC gc) {
 				}
 				case '\n':
 					run.lineBreak = true;
+					run.width = 0;
 					break;
 				case '\r':
 					run.lineBreak = true;
+					run.width = 0;
 					StyleItem next = allRuns[i + 1];
 					if (next.length != 0 && text.charAt(next.start) == '\n') {
 						run.length += 1;
@@ -164,7 +166,6 @@ void computeRuns (GC gc) {
 			lineCount++;
 		}
 	}
-	if (newGC) gc.dispose();
 	lineWidth = 0;
 	runs = new StyleItem[lineCount][];
 	lineOffset = new int[lineCount + 1];
@@ -178,6 +179,12 @@ void computeRuns (GC gc) {
 		lineWidth += run.width;
 		lineHeight = Math.max(run.height + lineSpacing, lineHeight);
 		if (run.lineBreak || i == allRuns.length - 1) {
+			if (lineRunCount == 1 && i == allRuns.length - 1) {
+				gc.setFont(getItemFont(run));
+				FontMetrics metrics = gc.getFontMetrics();
+				run.height = metrics.getHeight();
+				lineHeight = run.height + lineSpacing;
+			}
 			runs[line] = new StyleItem[lineRunCount];
 			System.arraycopy(lineRuns, 0, runs[line], 0, lineRunCount);
 			StyleItem lastRun = runs[line][lineRunCount - 1];
@@ -188,6 +195,7 @@ void computeRuns (GC gc) {
 			lineRunCount = lineWidth = lineHeight = 0;
 		}
 	}
+	if (newGC) gc.dispose();
 }
 
 public void dispose () {
@@ -435,7 +443,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 			leading = Math.max (leading, metrics.getLeading());
 			aveCharWidth += metrics.getAverageCharWidth();
 		}
-		metrics = FontMetrics.internal_new(ascent, descent, aveCharWidth / lineRuns.length, leading, height);
+		metrics = FontMetrics.motif_new(ascent, descent, aveCharWidth / lineRuns.length, leading, height);
 	}
 	gc.dispose();
 	return metrics;
