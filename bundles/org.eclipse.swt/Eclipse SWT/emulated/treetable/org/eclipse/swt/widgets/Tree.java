@@ -23,7 +23,7 @@ public class Tree extends Composite {
 	int headerImageHeight = 0;
 	TreeColumn resizeColumn;
 	int resizeColumnX = -1;
-	boolean inExpand = false;	/* enables item creation within Expand callback */
+	boolean inExpand = false;	/* for item creation within Expand callback */
 
 	Color connectorLineColor, gridLineColor, highlightShadowColor, normalShadowColor;
 	Color selectionBackgroundColor, selectionForegroundColor;
@@ -88,7 +88,6 @@ public class Tree extends Composite {
 
 public Tree (Composite parent, int style) {
 	super (parent, checkStyle (style | SWT.H_SCROLL | SWT.V_SCROLL | SWT.NO_REDRAW_RESIZE));
-	Display display = getDisplay ();
 	setForeground (display.getSystemColor (SWT.COLOR_LIST_FOREGROUND));
 	setBackground (display.getSystemColor (SWT.COLOR_LIST_BACKGROUND));
 	GC gc = new GC (this);
@@ -163,9 +162,11 @@ static int checkStyle (int style) {
  * -1 if the x lies to the right of the last column.
  */
 int computeColumnIntersect (int x, int startColumn) {
+	if (columns.length - 1 < startColumn) return -1;
+	int rightX = columns [startColumn].getX ();
 	for (int i = startColumn; i < columns.length; i++) {
-		int endX = columns [i].getX () + columns [i].width;
-		if (x <= endX) return i;
+		rightX += columns [i].width;
+		if (x <= rightX) return i;
 	}
 	return -1;
 }
@@ -175,9 +176,14 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if (wHint != SWT.DEFAULT) {
 		width = wHint;
 	} else {
-		for (int i = 0; i < items.length; i++) {
-			Rectangle itemBounds = items [i].getBounds ();
-			width = Math.max (width, itemBounds.x + itemBounds.width);
+		if (columns.length == 0) {
+			for (int i = 0; i < items.length; i++) {
+				Rectangle itemBounds = items [i].getBounds ();
+				width = Math.max (width, itemBounds.x + itemBounds.width);
+			}
+		} else {
+			TreeColumn lastColumn = columns [columns.length - 1];
+			width = lastColumn.getX () + lastColumn.width;
 		}
 	}
 	if (hHint != SWT.DEFAULT) {
@@ -189,7 +195,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return new Point (result.width, result.height);
 }
 void createItem (TreeColumn column, int index) {
-	/* insert column into the columns collection */
 	TreeColumn[] newColumns = new TreeColumn [columns.length + 1];
 	System.arraycopy (columns, 0, newColumns, 0, index);
 	newColumns [index] = column;
@@ -204,7 +209,6 @@ void createItem (TreeColumn column, int index) {
 	/* no visual update needed because column's initial width is 0 */
 }
 void createItem (TreeItem item, int index) {
-	/* insert item into the root items collection */
 	TreeItem[] newItems = new TreeItem [items.length + 1];
 	System.arraycopy (items, 0, newItems, 0, index);
 	newItems [index] = item;
@@ -236,7 +240,9 @@ void createItem (TreeItem item, int index) {
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
 	int redrawIndex = index;
-	if (redrawIndex > 0) redrawIndex--;
+	if (item.parentItem != null && item.parentItem.items.length == 1) {
+		redrawIndex--;
+	}
 	redrawFromItemDownwards (items [redrawIndex].availableIndex);
 }
 public void deselectAll () {
@@ -255,7 +261,7 @@ void destroyItem (TreeColumn column) {
 	System.arraycopy (columns, 0, newColumns, 0, index);
 	System.arraycopy (columns, index + 1, newColumns, index, newColumns.length - index);
 	columns = newColumns;
-	
+
 	/* ensure that column 0 always has left-alignment */
 	if (index == 0 && columns.length > 0) {
 		columns [0].style |= SWT.LEFT;
@@ -266,9 +272,10 @@ void destroyItem (TreeColumn column) {
 	for (int i = 0; i < items.length; i++) {
 		items [i].removeColumn (column, index);
 	}
-	
+
+	/* update horizontal scrollbar */
 	int lastColumnIndex = columns.length - 1;
-	if (lastColumnIndex < 0) {	/* no more columns */
+	if (lastColumnIndex < 0) {		/* no more columns */
 		updateHorizontalBar ();
 	} else {
 		int newWidth = 0;
@@ -291,10 +298,10 @@ void destroyItem (TreeColumn column) {
 }
 /*
  * Allows the Tree to update internal structures it has that may contain the
- * item that is about to be disposed.  The argument is not necessarily a root-level
- * item.
+ * item being destroyed.  The argument is not necessarily a root-level item.
  */
 void destroyItem (TreeItem item) {
+	/* availableItems array */
 	int availableIndex = item.availableIndex; 
 	if (availableIndex != -1) {
 		Rectangle bounds = item.getBounds ();
@@ -316,6 +323,7 @@ void destroyItem (TreeItem item) {
 		updateVerticalBar ();
 		updateHorizontalBar (0, -rightX);
 	}
+	/* selectedItems array */
 	if (item.isSelected ()) {
 		int selectionIndex = getSelectionIndex (item);
 		TreeItem[] newSelectedItems = new TreeItem [selectedItems.length - 1];
@@ -328,6 +336,7 @@ void destroyItem (TreeItem item) {
 			newSelectedItems.length - selectionIndex);
 		selectedItems = newSelectedItems;
 	}
+	/* root-level items array */
 	if (item.depth == 0) {
 		int index = item.getIndex ();
 		TreeItem[] newItems = new TreeItem [items.length - 1];
@@ -624,7 +633,6 @@ void doDispose () {
 	uncheckedImage.dispose ();
 	grayUncheckedImage.dispose ();
 	checkmarkImage.dispose ();
-	
 	availableItems = items = selectedItems = null;
 	columns = null;
 	focusItem = anchorItem = insertMarkItem = lastClickedItem = null;
@@ -846,7 +854,7 @@ void doMouseDoubleClick (Event event) {
 		return;
 	}
 	
-	if (!selectedItem.getHitBounds ().contains (event.x, event.y)) return;
+	if (!selectedItem.getHitBounds ().contains (event.x, event.y)) return;	/* considers x */
 	
 	Event newEvent = new Event ();
 	newEvent.item = selectedItem;
@@ -1155,7 +1163,7 @@ void doPaint (Event event) {
 	int startColumn = -1, endColumn = -1;
 	if (numColumns > 0) {
 		startColumn = computeColumnIntersect (clipping.x, 0);
-		if (startColumn != -1) {	/* the clip begins within a column's bounds */
+		if (startColumn != -1) {	/* the clip x is within a column's bounds */
 			endColumn = computeColumnIntersect (clipping.x + clipping.width, startColumn);
 			if (endColumn == -1) endColumn = numColumns - 1;
 		}
@@ -1163,7 +1171,7 @@ void doPaint (Event event) {
 		startColumn = endColumn = 0;
 	}
 
-	/* repaint grid lines if necessary */
+	/* repaint grid lines */
 	if (linesVisible) {
 		Color oldForeground = gc.getForeground ();
 		if (numColumns > 0 && startColumn != -1) {
@@ -1190,7 +1198,7 @@ void doPaint (Event event) {
 	int startIndex = (clipping.y - getHeaderHeight ()) / itemHeight + topIndex;
 	if (availableItems.length < startIndex) return;		/* no items to paint */
 	int endIndex = startIndex + Compatibility.ceil (clipping.height, itemHeight);
-	if (endIndex < 0) return;	/* no items to paint */
+	if (endIndex < 0) return;		/* no items to paint */
 	startIndex = Math.max (0, startIndex);
 	endIndex = Math.min (endIndex, availableItems.length - 1);
 	int current = 0;
@@ -1232,15 +1240,18 @@ void doPaint (Event event) {
 }
 void doResize (Event event) {
 	Rectangle clientArea = getClientArea ();
+	/* vertical scrollbar */
 	int value = (clientArea.height - getHeaderHeight ()) / itemHeight;
 	ScrollBar vBar = getVerticalBar ();
 	vBar.setThumb (value);
 	vBar.setPageIncrement (value);
 	topIndex = vBar.getSelection ();
+	/* horizontal scrollbar */
 	ScrollBar hBar = getHorizontalBar ();
 	hBar.setThumb (clientArea.width);
 	hBar.setPageIncrement (clientArea.width);
 	horizontalOffset = hBar.getSelection ();
+	/* header */
 	int headerHeight = Math.max (fontHeight, headerImageHeight) + 2 * getHeaderPadding ();
 	header.setSize (clientArea.width, headerHeight);
 }
@@ -1415,6 +1426,10 @@ public int getSelectionCount () {
 	checkWidget ();
 	return selectedItems.length;
 }
+/*
+ * Returns the index of the argument in the receiver's array of currently-
+ * selected items, or -1 if the item is not currently selected.
+ */
 int getSelectionIndex (TreeItem item) {
 	for (int i = 0; i < selectedItems.length; i++) {
 		if (selectedItems [i] == item) return i;
@@ -1491,7 +1506,7 @@ void headerDoMouseDown (Event event) {
 	for (int i = 0; i < columns.length; i++) {
 		TreeColumn column = columns [i]; 
 		int x = column.getX () + column.width;
-		/* if close to a column separator line then prepare for column resize */
+		/* if close to a column separator line then begin column resize */
 		if (Math.abs (x - event.x) <= TOLLERANCE_COLUMNRESIZE) {
 			if (!column.resizable) return;
 			resizeColumn = column;
@@ -1512,8 +1527,8 @@ void headerDoMouseExit () {
 	setCursor (null);	/* ensure that a column resize cursor does not escape */
 }
 void headerDoMouseMove (Event event) {
-	/* not currently resizing a column */
 	if (resizeColumn == null) {
+		/* not currently resizing a column */
 		for (int i = 0; i < columns.length; i++) {
 			TreeColumn column = columns [i]; 
 			int x = column.getX () + column.width;
@@ -1545,7 +1560,7 @@ void headerDoMouseMove (Event event) {
 	
 }
 void headerDoMouseUp (Event event) {
-	if (resizeColumn == null) return;
+	if (resizeColumn == null) return;	/* not resizing a column */
 	int newWidth = resizeColumnX - resizeColumn.getX ();
 	if (newWidth != resizeColumn.width) {
 		setCursor (null);
@@ -1567,40 +1582,40 @@ void headerDoPaint (Event event) {
 	int startColumn = -1, endColumn = -1;
 	if (numColumns > 0) {
 		startColumn = computeColumnIntersect (clipping.x, 0);
-		if (startColumn != -1) {	/* the click fell within a column's bounds */
+		if (startColumn != -1) {	/* the clip x is within a column's bounds */
 			endColumn = computeColumnIntersect (clipping.x + clipping.width, startColumn);
 			if (endColumn == -1) endColumn = numColumns - 1;
 		}
 	} else {
 		startColumn = endColumn = 0;
 	}
-	
+
 	/* paint the column header shadow that spans the full header width */
 	Rectangle paintBounds = new Rectangle (clipping.x, 0, clipping.width, getSize ().y);
 	headerPaintShadow (gc, paintBounds, true, false);
-	
-	/* if damage occurred to the right of the last column then finished */
+
+	/* if all damage is to the right of the last column then finished */
 	if (startColumn == -1) return;
 	
 	/* paint each of the column headers */
-	if (numColumns == 0) return;
+	if (numColumns == 0) return;	/* no headers to paint */
 	for (int i = startColumn; i <= endColumn; i++) {
 		Rectangle bounds = new Rectangle (columns [i].getX (), 0, columns [i].width, getClientArea ().height);
 		headerPaintShadow (gc, bounds, false, true);
 		columns [i].paint (gc);
 	}
 }
-void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHorizontalLines, boolean paintVerticalLines) {
+void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHLines, boolean paintVLines) {
 	gc.setClipping (bounds.x, bounds.y, bounds.width, getHeaderHeight ());
 	Color oldForeground = gc.getForeground ();
 	
 	/* draw highlight shadow */
 	gc.setForeground (highlightShadowColor);
-	if (paintHorizontalLines) {
+	if (paintHLines) {
 		int endX = bounds.x + bounds.width;
 		gc.drawLine (bounds.x, bounds.y, endX, bounds.y);
 	}
-	if (paintVerticalLines) {
+	if (paintVLines) {
 		gc.drawLine (bounds.x, bounds.y, bounds.x, bounds.y + bounds.height - 1);
 	}
 	
@@ -1610,14 +1625,14 @@ void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHorizontalLines, b
 
 	/* light inner shadow */
 	gc.setForeground (normalShadowColor);
-	if (paintHorizontalLines) {
+	if (paintHLines) {
 		gc.drawLine (
 			bottomShadowStart.x, bottomShadowStart.y,
 			bottomShadowStop.x, bottomShadowStop.y);
 	}
 	Point rightShadowStart = new Point (bounds.x + bounds.width - 2, bounds.y + 1);
 	Point rightShadowStop = new Point (rightShadowStart.x, bounds.height - 2);
-	if (paintVerticalLines) {
+	if (paintVLines) {
 		gc.drawLine (
 			rightShadowStart.x, rightShadowStart.y,
 			rightShadowStop.x, rightShadowStop.y);
@@ -1629,12 +1644,12 @@ void headerPaintShadow (GC gc, Rectangle bounds, boolean paintHorizontalLines, b
 	++bottomShadowStart.y;
 	++bottomShadowStop.y;
 	
-	if (paintHorizontalLines) {
+	if (paintHLines) {
 		gc.drawLine (
 			bottomShadowStart.x, bottomShadowStart.y,
 			bottomShadowStop.x, bottomShadowStop.y);
 	}
-	if (paintVerticalLines) {
+	if (paintVLines) {
 		gc.drawLine (
 			rightShadowStart.x + 1, rightShadowStart.y - 1,
 			rightShadowStop.x + 1, rightShadowStop.y + 1);
@@ -1823,14 +1838,14 @@ void redrawFromItemDownwards (int index) {
 }
 /*
  * Redraws the tree item at the specified index.  It is valid for this index to reside
- * beyond the last available item in the receiver.
+ * beyond the last available item.
  */
 void redrawItem (int itemIndex, boolean focusBoundsOnly) {
 	redrawItems (itemIndex, itemIndex, focusBoundsOnly);
 }
 /*
  * Redraws the tree between the start and end item indices inclusive.  It is valid
- * for the end index value to extend beyond the last available item in the receiver.
+ * for the end index value to extend beyond the last available item.
  */
 void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 	int startY = (startIndex - topIndex) * itemHeight + getHeaderHeight ();
@@ -1886,7 +1901,6 @@ public void removeTreeListener (TreeListener listener) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;
-	
 	TreeItem[] items = getAllItems ();
 	selectedItems = new TreeItem [items.length];
 	System.arraycopy (items, 0, selectedItems, 0, items.length);
@@ -1944,12 +1958,15 @@ public void setFont (Font value) {
 	gc.dispose ();
 	
 	if (header.isVisible ()) header.redraw ();
+	
+	/* update scrollbars */
 	updateHorizontalBar ();
 	ScrollBar vBar = getVerticalBar ();
 	int pageSize = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	vBar.setThumb (pageSize);
 	vBar.setPageIncrement (pageSize);
 	topIndex = vBar.getSelection ();
+
 	redraw ();
 }
 void setHeaderImageHeight (int value) {
@@ -1980,8 +1997,12 @@ public void setInsertMark (TreeItem item, boolean before) {
 	TreeItem oldInsertItem = insertMarkItem;
 	insertMarkItem = item;
 	insertMarkPrecedes = before;
-	if (oldInsertItem != null) redrawItem (oldInsertItem.availableIndex, true);
-	if (item != null && item != oldInsertItem) redrawItem (item.availableIndex, true);
+	if (oldInsertItem != null && oldInsertItem.availableIndex != -1) {
+		redrawItem (oldInsertItem.availableIndex, true);
+	}
+	if (item != null && item != oldInsertItem && item.availableIndex != -1) {
+		redrawItem (item.availableIndex, true);
+	}
 }
 public void setLinesVisible (boolean value) {
 	checkWidget ();
@@ -2000,7 +2021,7 @@ public void setSelection (TreeItem[] items) {
 	
 	/* remove null and duplicate items */
 	int index = 0;
-	selectedItems = new TreeItem [items.length];	/* assume all valid items initially */
+	selectedItems = new TreeItem [items.length];	/* assume all valid items */
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null && !item.isSelected ()) {
@@ -2008,7 +2029,7 @@ public void setSelection (TreeItem[] items) {
 		}
 	}
 	if (index != items.length) {
-		/* an invalid item was provided, so resize the array accordingly */
+		/* an invalid item was provided so resize the array accordingly */
 		TreeItem[] temp = new TreeItem [index];
 		System.arraycopy (selectedItems, 0, temp, 0, index);
 		selectedItems = temp;
@@ -2035,7 +2056,8 @@ public void setTopItem (TreeItem item) {
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
 
-	if (!item.isAvailable ()) item.expandAncestors ();
+	/* item must be available */
+	if (!item.isAvailable ()) item.parentItem.expandAncestors ();
 	
 	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
 	int index = Math.min (item.availableIndex, availableItems.length - visibleItemCount);
@@ -2076,11 +2098,12 @@ public void showItem (TreeItem item) {
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (item.parent != this) return;
 	
+	/* item must be available */
 	if (!item.isAvailable ()) item.parentItem.expandAncestors ();
 	
 	int index = item.availableIndex;
 	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
-	/* determine if item is already visible */
+	/* nothing to do if item is already in viewport */
 	if (topIndex <= index && index < topIndex + visibleItemCount) return;
 	
 	if (index <= topIndex) {
@@ -2099,19 +2122,21 @@ public void showSelection () {
 void updateColumnWidth (TreeColumn column, int width) {
 	int oldWidth = column.width;
 	column.width = width;
-
 	Rectangle bounds = getClientArea ();
+
 	ScrollBar hBar = getHorizontalBar ();
 	TreeColumn lastColumn = columns [columns.length - 1]; 
 	hBar.setMaximum (lastColumn.getX () + lastColumn.width);
 	hBar.setThumb (bounds.width);
 	hBar.setPageIncrement (bounds.width);
 	horizontalOffset = hBar.getSelection ();
+
 	int x = column.getX ();
 	redraw (x, 0, bounds.width - x, bounds.height, false);
 	if (getHeaderVisible ()) {
 		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
 	}
+
 	Event event = new Event ();
 	event.widget = column;
 	column.sendEvent (SWT.Resize, event);
@@ -2156,12 +2181,13 @@ void updateHorizontalBar () {
 /*
  * Update the horizontal bar, if needed, in response to an item change (eg.- created,
  * disposed, expanded, etc.).  newRightX is the new rightmost X value of the item,
- * rightXchange is the change that led to the item's rightmost X value becoming
+ * and rightXchange is the change that led to the item's rightmost X value becoming
  * newRightX (so oldRightX + rightXchange = newRightX)
  */
 void updateHorizontalBar (int newRightX, int rightXchange) {
 	/* the horizontal range is never affected by an item change if there are columns */
 	if (columns.length > 0) return;
+
 	newRightX += horizontalOffset;
 	ScrollBar hBar = getHorizontalBar ();
 	int maximum = hBar.getMaximum ();
@@ -2172,6 +2198,7 @@ void updateHorizontalBar (int newRightX, int rightXchange) {
 		hBar.setPageIncrement (pageSize);
 		return;
 	}
+
 	int previousRightX = newRightX - rightXchange;
 	if (previousRightX != maximum) return;	/* this is not the rightmost item */
 	updateHorizontalBar ();		/* must search for the new rightmost item */
@@ -2180,6 +2207,7 @@ void updateVerticalBar () {
 	ScrollBar vBar = getVerticalBar ();
 	int maximum = Math.max (1,availableItems.length);
 	if (maximum == vBar.getMaximum ()) return;
+
 	vBar.setMaximum (maximum);
 	int pageSize = Math.min (maximum, (getClientArea ().height - getHeaderHeight ()) / itemHeight);
 	vBar.setThumb (pageSize);
