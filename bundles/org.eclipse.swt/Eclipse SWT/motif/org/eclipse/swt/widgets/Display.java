@@ -1677,7 +1677,7 @@ void initializeNumLock () {
 	XModifierKeymap keymap = new XModifierKeymap ();
 	OS.memmove (keymap, keymapHandle, XModifierKeymap.sizeof);
 	for (int i = 0; i < 8 * keymap.max_keypermod; i++) {
-		int [] keymapCode = new int [1];
+		byte [] keymapCode = new byte [1];
 		OS.memmove (keymapCode, keymap.modifiermap + i, 1);
 		if (keymapCode [0] == numLockCode) {
 			int modIndex = i / keymap.max_keypermod;
