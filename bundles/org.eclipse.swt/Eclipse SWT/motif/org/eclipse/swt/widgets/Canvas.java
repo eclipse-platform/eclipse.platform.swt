@@ -7,6 +7,7 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 
@@ -233,6 +234,11 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	if (isFocus) caret.setFocus ();
 	return changed;
+}
+public void setFont (Font font) {
+	checkWidget();
+	super.setFont (font);
+	if (caret != null) caret.setFont (font);
 }
 void updateCaret () {
 	if (caret == null) return;
