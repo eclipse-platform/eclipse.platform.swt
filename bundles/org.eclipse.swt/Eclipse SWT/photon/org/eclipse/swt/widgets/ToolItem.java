@@ -161,6 +161,10 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+void click () {
+	click (handle);
+}
+
 int createArrowImage () {
 	short width = 5;
 	short height = 4;
@@ -461,6 +465,11 @@ void hookEvents () {
 		OS.PtAddCallback (arrow, OS.Pt_CB_ACTIVATE, windowProc, OS.Pt_CB_ACTIVATE);
 	}
 	OS.PtAddCallback (handle, OS.Pt_CB_LOST_FOCUS, windowProc,  OS.Pt_CB_LOST_FOCUS);
+}
+
+int hotkeyProc (int widget, int data, int info) {
+	if (setFocus ()) click ();
+	return OS.Pt_CONTINUE;
 }
 
 /**
@@ -866,17 +875,29 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
-	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	int ptr = OS.malloc (buffer.length);
-	OS.memmove (ptr, buffer, buffer.length);
+	char [] text = new char [string.length ()];
+	string.getChars (0, text.length, text, 0);
+	char mnemonic = fixMnemonic (text);
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
+	int ptr1 = OS.malloc (buffer.length);
+	OS.memmove (ptr1, buffer, buffer.length);
+	int ptr2 = 0;
+	if (mnemonic != 0) {
+		byte [] buffer2 = Converter.wcsToMbcs (null, new char []{mnemonic}, true);
+		ptr2 = OS.malloc (buffer2.length);
+		OS.memmove (ptr2, buffer2, buffer2.length);
+	}
+	replaceMnemonic (mnemonic, true, true);
 	int type = OS.Pt_Z_STRING;
 	if (image != null) type = OS.Pt_TEXT_IMAGE;
 	int [] args = {
-		OS.Pt_ARG_TEXT_STRING, ptr, 0,
+		OS.Pt_ARG_TEXT_STRING, ptr1, 0,
 		OS.Pt_ARG_LABEL_TYPE, type, 0,
+		OS.Pt_ARG_ACCEL_KEY, ptr2, 0,
 	};
 	OS.PtSetResources (button, args.length / 3, args);
-	if (ptr != 0) OS.free (ptr);
+	OS.free (ptr1);
+	OS.free (ptr2);
 	
 	/*
 	* Bug on Photon.  When a the text/image is set on a

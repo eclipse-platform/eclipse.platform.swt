@@ -246,6 +246,10 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
+	char [] text = new char [string.length ()];
+	string.getChars (0, text.length, text, 0);
+	char mnemonic = fixMnemonic (text);
+	byte [] buffer = Converter.wcsToMbcs (null, text, true);
 	int index = parent.indexOf (this);
 	int [] args = {OS.Pt_ARG_PG_PANEL_TITLES, 0, 0};
 	OS.PtGetResources (parent.handle, args.length / 3, args);
@@ -254,7 +258,6 @@ public void setText (String string) {
 	int newPtr = OS.malloc (count * 4);
 	int [] str = new int [1];
 	int [] address = new int [1];
-	byte [] buffer = Converter.wcsToMbcs (null, stripMnemonics (string), true);
 	for (int i=0; i<count; i++) {
 		if (i == index) {
 			str [0] = OS.malloc (buffer.length);

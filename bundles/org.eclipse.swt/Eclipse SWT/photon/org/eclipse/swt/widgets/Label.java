@@ -400,19 +400,9 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
-	char [] unicode = new char [string.length ()];
-	string.getChars (0, unicode.length, unicode, 0);
-	int i=0, j=0;
-	char mnemonic=0;
-	while (i < unicode.length) {
-		if ((unicode [j++] = unicode [i++]) == Mnemonic) {
-			if (i == unicode.length) {continue;}
-			if (unicode [i] == Mnemonic) {i++; continue;}
-			if (mnemonic == 0) mnemonic = unicode [i];
-			j--;
-		}
-	}
-	while (j < unicode.length) unicode [j++] = 0;
+	char [] text = new char [string.length ()];
+	string.getChars (0, text.length, text, 0);
+	char mnemonic = fixMnemonic (text);
 	/* Wrap the text if necessary, and convert to mbcs. */
 	byte [] buffer;
 	if ((style & SWT.WRAP) != 0) {
@@ -431,14 +421,13 @@ public void setText (String string) {
 		if ((style & SWT.BORDER) != 0) border = 2;
 		int width = args [4];
 		width -= (args [7] * 2) + args [10] + args [13] + border * 2;
-		if (mnemonic != '\0') string = new String (unicode);
-		string = display.wrapText (string, font, width);
+		string = display.wrapText (new String (text), font, width);
 		buffer = Converter.wcsToMbcs (null, string, true);
 	} else {
-		buffer = Converter.wcsToMbcs (null, unicode, true);
+		buffer = Converter.wcsToMbcs (null, text, true);
 	}
-	int ptr = OS.malloc (buffer.length);
-	OS.memmove (ptr, buffer, buffer.length);
+	int ptr1 = OS.malloc (buffer.length);
+	OS.memmove (ptr1, buffer, buffer.length);
 	int ptr2 = 0;
 	if (mnemonic != 0) {
 		byte [] buffer2 = Converter.wcsToMbcs (null, new char []{mnemonic}, true);
@@ -447,12 +436,12 @@ public void setText (String string) {
 	}
 	replaceMnemonic (mnemonic, true, true);
 	int [] args = {
-		OS.Pt_ARG_TEXT_STRING, ptr, 0,
+		OS.Pt_ARG_TEXT_STRING, ptr1, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_Z_STRING, 0,
 		OS.Pt_ARG_ACCEL_KEY, ptr2, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
-	OS.free (ptr);
+	OS.free (ptr1);
 	OS.free (ptr2);
 }
 

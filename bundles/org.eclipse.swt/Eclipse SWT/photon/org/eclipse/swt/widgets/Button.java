@@ -41,6 +41,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class Button extends Control {
+	String text = "";
 	Image image;
 
 /**
@@ -130,34 +131,7 @@ public void addSelectionListener (SelectionListener listener) {
 }
 
 void click () {
-	int rid = OS.PtWidgetRid (handle);
-	if (rid == 0) return;
-	PhEvent_t event = new PhEvent_t ();
-	event.emitter_rid = rid;
-	event.emitter_handle = handle;
-	event.collector_rid = rid;
-	event.collector_handle = handle;
-	event.flags = OS.Ph_EVENT_DIRECT;
-	event.processing_flags = OS.Ph_FAKE_EVENT;
-	event.type = OS.Ph_EV_BUT_PRESS;
-	event.num_rects = 1;
-	PhPointerEvent_t pe = new PhPointerEvent_t ();
-	pe.click_count = 1;
-	pe.buttons = OS.Ph_BUTTON_SELECT;
-	PhRect_t rect = new PhRect_t ();
-	int ptr = OS.malloc (PhEvent_t.sizeof + PhPointerEvent_t.sizeof + PhRect_t.sizeof);
-	OS.memmove (ptr, event, PhEvent_t.sizeof);
-	OS.memmove (ptr + PhEvent_t.sizeof,  rect, PhRect_t.sizeof);
-	OS.memmove (ptr + PhEvent_t.sizeof + PhRect_t.sizeof, pe, PhPointerEvent_t.sizeof);
-	OS.PtSendEventToWidget (handle, ptr);	
-	OS.PtFlush ();
-	event.type = OS.Ph_EV_BUT_RELEASE;
-	event.subtype = OS.Ph_EV_RELEASE_REAL;
-	OS.memmove (ptr, event, PhEvent_t.sizeof);
-	OS.memmove (ptr + PhEvent_t.sizeof,  rect, PhRect_t.sizeof);
-	OS.memmove (ptr + PhEvent_t.sizeof + PhRect_t.sizeof, pe, PhPointerEvent_t.sizeof);
-	OS.PtSendEventToWidget (handle, ptr);	
-	OS.free (ptr);
+	click (handle);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -359,44 +333,7 @@ String getNameText () {
 public String getText () {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) return "";
-	int [] args = {
-		OS.Pt_ARG_TEXT_STRING, 0, 0,
-		OS.Pt_ARG_ACCEL_KEY, 0, 0,
-	};
-	OS.PtGetResources (handle, args.length / 3, args);
-	if (args [1] == 0) return "";
-	int length = OS.strlen (args [1]);
-	byte [] buffer = new byte [length];
-	OS.memmove (buffer, args [1], length);
-	char [] result = Converter.mbcsToWcs (null, buffer);
-	int count = 0;
-	int mnemonic = 0;
-	if (args [4] != 0) {
-		int length2 = OS.strlen (args [4]);
-		if (length2 > 0) {
-			byte [] buffer2 = new byte [length2];
-			OS.memmove (buffer2, args [4], length2);
-			char [] result2 = Converter.mbcsToWcs (null, buffer2);
-			if (result2.length > 0) mnemonic = result2 [0];
-		}
-	}
-	if (mnemonic != 0) count++;
-	for (int i=0; i<result.length-1; i++)
-		if (result [i] == Mnemonic) count++;
-	char [] newResult = result;
-	if ((count != 0) || (mnemonic != 0)) {
-		newResult = new char [result.length + count];
-		int i = 0, j = 0;
-		while (i < result.length) {
-			if ((mnemonic != 0) && (result [i] == mnemonic)) {
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-				mnemonic = 0;
-			}
-			if ((newResult [j++] = result [i++]) == Mnemonic)
-				if (j < newResult.length) newResult [j++] = Mnemonic;
-		}
-	}
-	return new String (newResult);
+	return text;
 }
 
 void hookEvents () {
@@ -628,22 +565,13 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
+	text = string;
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
-	int i=0, j=0;
-	char mnemonic=0;
-	while (i < text.length) {
-		if ((text [j++] = text [i++]) == Mnemonic) {
-			if (i == text.length) {continue;}
-			if (text [i] == Mnemonic) {i++; continue;}
-			if (mnemonic == 0) mnemonic = text [i];
-			j--;
-		}
-	}
-	while (j < text.length) text [j++] = 0;
+	char mnemonic = fixMnemonic (text);
 	byte [] buffer = Converter.wcsToMbcs (null, text, true);
-	int ptr = OS.malloc (buffer.length);
-	OS.memmove (ptr, buffer, buffer.length);
+	int ptr1 = OS.malloc (buffer.length);
+	OS.memmove (ptr1, buffer, buffer.length);
 	int ptr2 = 0;
 	if (mnemonic != 0) {
 		byte [] buffer2 = Converter.wcsToMbcs (null, new char []{mnemonic}, true);
@@ -652,12 +580,12 @@ public void setText (String string) {
 	}
 	replaceMnemonic (mnemonic, true, true);
 	int [] args = {
-		OS.Pt_ARG_TEXT_STRING, ptr, 0,
+		OS.Pt_ARG_TEXT_STRING, ptr1, 0,
 		OS.Pt_ARG_LABEL_TYPE, OS.Pt_Z_STRING, 0,
 		OS.Pt_ARG_ACCEL_KEY, ptr2, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
-	OS.free (ptr);
+	OS.free (ptr1);
 	OS.free (ptr2);
 }
 

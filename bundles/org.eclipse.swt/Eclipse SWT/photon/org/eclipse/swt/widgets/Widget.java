@@ -74,8 +74,6 @@ public abstract class Widget {
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
 
-	static final char Mnemonic = '&';
-
 Widget () {
 	/* Do nothing */
 }
@@ -125,25 +123,6 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	if ((style & int4) != 0) style = (style & ~mask) | int4;
 	if ((style & int5) != 0) style = (style & ~mask) | int5;
 	return style;
-}
-
-/**
- * Returns the provided string without mnemonic indicators.
- * 
- * @param string the string to demangle
- */
-static String stripMnemonics (String string) {
-	char [] text = new char [string.length ()];
-	string.getChars (0, text.length, text, 0);
-	int j = 0;
-	for (int i = 0; i < text.length;) {
-		if ((text[j++] = text[i++]) == Mnemonic) {
-			if (i != text.length) {
-				if (text[i] == Mnemonic) i++; else j--;
-			}
-		}
-	}
-	return new String(text, 0, j);
 }
 
 void checkOrientation (Widget parent) {
@@ -313,6 +292,37 @@ public void addDisposeListener (DisposeListener listener) {
 	addListener (SWT.Dispose, typedListener);
 }
 
+void click (int widget) {
+	int rid = OS.PtWidgetRid (widget);
+	if (rid == 0) return;
+	PhEvent_t event = new PhEvent_t ();
+	event.emitter_rid = rid;
+	event.emitter_handle = widget;
+	event.collector_rid = rid;
+	event.collector_handle = widget;
+	event.flags = OS.Ph_EVENT_DIRECT;
+	event.processing_flags = OS.Ph_FAKE_EVENT;
+	event.type = OS.Ph_EV_BUT_PRESS;
+	event.num_rects = 1;
+	PhPointerEvent_t pe = new PhPointerEvent_t ();
+	pe.click_count = 1;
+	pe.buttons = OS.Ph_BUTTON_SELECT;
+	PhRect_t rect = new PhRect_t ();
+	int ptr = OS.malloc (PhEvent_t.sizeof + PhPointerEvent_t.sizeof + PhRect_t.sizeof);
+	OS.memmove (ptr, event, PhEvent_t.sizeof);
+	OS.memmove (ptr + PhEvent_t.sizeof,  rect, PhRect_t.sizeof);
+	OS.memmove (ptr + PhEvent_t.sizeof + PhRect_t.sizeof, pe, PhPointerEvent_t.sizeof);
+	OS.PtSendEventToWidget (widget, ptr);	
+	OS.PtFlush ();
+	event.type = OS.Ph_EV_BUT_RELEASE;
+	event.subtype = OS.Ph_EV_RELEASE_REAL;
+	OS.memmove (ptr, event, PhEvent_t.sizeof);
+	OS.memmove (ptr + PhEvent_t.sizeof,  rect, PhRect_t.sizeof);
+	OS.memmove (ptr + PhEvent_t.sizeof + PhRect_t.sizeof, pe, PhPointerEvent_t.sizeof);
+	OS.PtSendEventToWidget (widget, ptr);	
+	OS.free (ptr);
+}
+
 void createHandle (int index) {
 	/* Do nothing */
 }
@@ -425,6 +435,21 @@ static void error (int code) {
 
 boolean filters (int eventType) {
 	return display.filters (eventType);
+}
+
+char fixMnemonic (char [] buffer) {
+	int i=0, j=0;
+	char mnemonic=0;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == '&') {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == '&') {i++; continue;}
+			if (mnemonic == 0) mnemonic = buffer [i];
+			j--;
+		}
+	}
+	while (j < buffer.length) buffer [j++] = 0;
+	return mnemonic;
 }
 
 /**
