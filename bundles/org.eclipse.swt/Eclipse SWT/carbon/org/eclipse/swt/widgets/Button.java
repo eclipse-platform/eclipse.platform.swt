@@ -385,6 +385,7 @@ public void setBounds (int x, int y, int width, int height) {
 }
 
 void setDefault (boolean value) {
+int kControlPushButtonDefaultTag  = ('d'<<24) + ('f'<<16) + ('l'<<8) + 't';
 	if ((style & SWT.PUSH) == 0) return;
 	int window = OS.GetControlOwner (handle);
 	OS.SetWindowDefaultButton (window, value ? handle : 0);
