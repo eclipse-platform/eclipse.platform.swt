@@ -534,7 +534,7 @@ boolean mnemonicHit (char ch) {
 	int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, id [0], 0);
 	if (index == -1) return false;
 	OS.SendMessage (handle, OS.TB_SETHOTITEM, index, 0);
-	items [index].click (false);
+	items [id [0]].click (false);
 	return true;
 }
 
@@ -669,7 +669,6 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	return LRESULT.ZERO;
 }
 
-
 LRESULT WM_CHAR (int wParam, int lParam) {
 	LRESULT result = super.WM_CHAR (wParam, lParam);
 	if (result != null) return result;
@@ -678,7 +677,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 		int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, id [0], 0);
 		if (index != -1) {
 			OS.SendMessage (handle, OS.TB_SETHOTITEM, index, 0);
-			items [index].click (false);
+			items [id [0]].click (false);
 			return LRESULT.ZERO;
 		}
 	}
@@ -693,8 +692,12 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		case OS.VK_SPACE:
 			int index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
 			if (index != -1) {
-				items [index].click (wParam == OS.VK_RETURN);
-				return LRESULT.ZERO;
+				TBBUTTON lpButton = new TBBUTTON ();
+				int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
+				if (code != 0) {
+					items [lpButton.idCommand].click (wParam == OS.VK_RETURN);
+					return LRESULT.ZERO;
+				}
 			}
 	}
 	return result;
