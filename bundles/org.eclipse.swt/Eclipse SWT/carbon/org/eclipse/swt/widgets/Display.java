@@ -149,7 +149,7 @@ public class Display extends Device {
 	
 	/* Grabs */
 	Control grabControl;
-	boolean grabbing;
+	boolean grabbing, ignoreMouseUp;
 
 	/* Hover Help */
 	int helpString;
@@ -1814,6 +1814,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			} while (theControl [0] != 0);
 			if (theControl [0] == 0) widget = getWidget (theRoot [0]);
 			if (widget != null) {
+				if (ignoreMouseUp && OS.GetEventKind(theEvent) == OS.kEventMouseUp) return OS.noErr;
 				int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
 				return forward ? OS.noErr : result;
 			}
@@ -2253,6 +2254,7 @@ void runGrabs () {
 	short [] outResult = new short [1];
 	org.eclipse.swt.internal.carbon.Point outPt = new org.eclipse.swt.internal.carbon.Point ();
 	grabbing = true;
+	ignoreMouseUp = false;
 	try {
 		while (grabControl != null && !grabControl.isDisposed () && outResult [0] != OS.kMouseTrackingMouseUp) {
 			lastModifiers = OS.GetCurrentEventKeyModifiers ();
@@ -2260,7 +2262,7 @@ void runGrabs () {
 			int handle = grabControl.handle;
 			int window = OS.GetControlOwner (handle);
 			int port = OS.GetWindowPort (window);
-			OS.TrackMouseLocationWithOptions (port, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
+			OS.TrackMouseLocationWithOptions (port, OS.kTrackMouseLocationOptionDontConsumeMouseUp, OS.kEventDurationForever, outPt, outModifiers, outResult);
 			int type = 0, button = 0;
 			switch ((int)outResult [0]) {
 				case OS.kMouseTrackingMouseDown: {
@@ -2291,13 +2293,14 @@ void runGrabs () {
 				case OS.kMouseTrackingTimedOut: 				break;
 				case OS.kMouseTrackingMouseMoved: 				type = SWT.MouseMove; break;
 			}
-			if (type != 0) {	
+			if (type != 0) {
 				OS.GetControlBounds (handle, rect);
 				int x = outPt.h - rect.left;
 				int y = outPt.v - rect.top;
 				int chord = OS.GetCurrentEventButtonState ();
 				if (grabControl != null && !grabControl.isDisposed ()) {
 					grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
+					ignoreMouseUp = true;
 				}
 				//TEMPORARY CODE
 				if (grabControl != null && !grabControl.isDisposed ()) grabControl.update (true);

@@ -521,6 +521,7 @@ public class OS {
 	public static final int kThemeToolbarFont = 108;
 	public static final int kThemeViewsFont = 3;
 	public static final int kThemeWatchCursor = 7;
+	public static final int kTrackMouseLocationOptionDontConsumeMouseUp = 1;
 	public static final int kTransformSelected = 0x4000;
 	public static final int kUtilityWindowClass = 8;
     public static final int kWindowActivationScopeNone = 0;
