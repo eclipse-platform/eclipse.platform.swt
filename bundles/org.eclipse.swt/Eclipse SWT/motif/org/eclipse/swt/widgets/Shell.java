@@ -770,14 +770,23 @@ int processResize (int callData) {
 			OS.XtGetValues (scrolledHandle, argList, argList.length / 2);	
 			xEvent.x = root_x [0];  xEvent.y = root_y [0];
 			xEvent.width = argList [1];  xEvent.height = argList [3];
-			// fall through
+			// FALL THROUGH
 		}
 		case OS.ConfigureNotify:
 			if (!reparented) return 0;
 			if (oldX != xEvent.x || oldY != xEvent.y) sendEvent (SWT.Move);
 			if (oldWidth != xEvent.width || oldHeight != xEvent.height) {
-				sendEvent (SWT.Resize);
-				if (layout != null) layout (false);
+				XAnyEvent event = new XAnyEvent ();
+				display.resizeWindow = xEvent.window;
+				display.resizeWidth = xEvent.width;
+				display.resizeHeight = xEvent.height;
+				display.resizeCount = 0;
+				int checkResizeProc = display.checkResizeProc;
+				OS.XCheckIfEvent (xEvent.display, event, checkResizeProc, 0);
+				if (display.resizeCount == 0) {
+					sendEvent (SWT.Resize);
+					if (layout != null) layout (false);
+				}
 			}
 			if (xEvent.x != 0) oldX = xEvent.x;
 			if (xEvent.y != 0) oldY = xEvent.y;
@@ -1021,7 +1030,7 @@ public void setSize (int width, int height) {
 	if (!reparented) {
 		super.setSize(newWidth, newHeight);
 		return;
-	}	
+	}
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
 	OS.XtResizeWidget (shellHandle, newWidth, newHeight, 0);

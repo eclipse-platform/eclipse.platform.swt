@@ -231,6 +231,11 @@ public class Display extends Device {
 	int checkExposeProc, exposeCount;
 	XExposeEvent xExposeEvent  = new XExposeEvent ();
 	
+	/* Check Resize Proc */
+	Callback checkResizeCallback;
+	int checkResizeProc, resizeWidth, resizeHeight, resizeCount, resizeWindow;
+	XConfigureEvent xConfigureEvent = new XConfigureEvent ();
+	
 	/* Wake */
 	Callback wakeCallback;
 	int wakeProc, read_fd, write_fd, inputID;
@@ -353,6 +358,20 @@ int checkExposeProc (int display, int event, int window) {
 		case OS.Expose:
 		case OS.GraphicsExpose:
 			exposeCount++;
+			break;
+	}
+	return 0;
+}
+int checkResizeProc (int display, int event, int arg) {
+	OS.memmove (xConfigureEvent, event, XConfigureEvent.sizeof);
+	if (xConfigureEvent.window != resizeWindow) return 0;
+	switch (xConfigureEvent.type) {
+		case OS.ConfigureNotify:
+			int width = xConfigureEvent.width;
+			int height = xConfigureEvent.height;
+			if (width != resizeWidth || height != resizeHeight) {
+				resizeCount++;
+			}
 			break;
 	}
 	return 0;
@@ -1070,6 +1089,9 @@ void initializeDisplay () {
 	checkExposeCallback = new Callback (this, "checkExposeProc", 3);
 	checkExposeProc = checkExposeCallback.getAddress ();
 	if (checkExposeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	checkResizeCallback = new Callback (this, "checkResizeProc", 3);
+	checkResizeProc = checkResizeCallback.getAddress ();
+	if (checkResizeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	wakeCallback = new Callback (this, "wakeProc", 3);
 	wakeProc = wakeCallback.getAddress ();
 	if (wakeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1454,10 +1476,12 @@ void releaseDisplay () {
 	mouseHoverCallback.dispose ();
 	mouseHoverCallback = null;
 
-	/* Dispose window and expose callbacks */
+	/* Dispose window, expose and resize callbacks */
 	windowCallback.dispose (); windowCallback = null;
 	checkExposeCallback.dispose (); checkExposeCallback = null;
 	checkExposeProc = 0;
+	checkResizeCallback.dispose (); checkResizeCallback = null;
+	checkResizeProc = 0;
 	
 	/* Dispose the wake callback, id and pipe */
 	if (inputID != 0) OS.XtRemoveInput (inputID);
