@@ -38,7 +38,7 @@ public class MacEvent {
 		if (fData == null) {
 			fData= new int[6];
 			if (fEventRef != -1) {
-				//System.out.println("ConvertEventRefToEventRecord");
+				System.out.println("ConvertEventRefToEventRecord");
 				if (!OS.ConvertEventRefToEventRecord(fEventRef, fData))
 					System.out.println("MacEvent.convert: can't convert event");
 			}
@@ -145,13 +145,22 @@ public class MacEvent {
 	}
 		
 	public int getKeyCode() {
+		
+		if (fEventRef != -1) {
+			int[] keyCode= new int[1];
+			if (OS.GetEventParameter(fEventRef, OS.kEventParamKeyCode, OS.typeUInt32, null, null, keyCode) == OS.kNoErr)
+				return keyCode[0];
+		}
+		
+		System.out.println("MacEvent.getKeyCode: no EventRef");
+		
 		convert();
 		switch (fData[0]) {
 		case OS.keyDown:
 		case OS.autoKey:
 		case OS.keyUp:
 			int code= (fData[1] & OS.keyCodeMask) >> 8;
-			// System.out.println("kcode: " + code);
+			System.out.println(" kcode: " + code);
 			return code;
 		default:
 			System.out.println("MacEvent.getKeyCode: wrong event type");
@@ -192,21 +201,20 @@ public class MacEvent {
 			byte[] charCode= new byte[1];
 			if (OS.GetEventParameter(fEventRef, OS.kEventParamKeyMacCharCodes, OS.typeChar, null, null, charCode) == OS.kNoErr)	
 				return charCode[0];
-		} else {
-			System.out.println("MacEvent.getMacCharCodes: no EventRef");
-			
-			convert();
-			switch (fData[0]) {
-			case OS.keyDown:
-			case OS.autoKey:
-			case OS.keyUp:
-				byte b= (byte)(fData[1] & OS.charCodeMask);
-				//System.out.println("char: " + c);
-				return b;
-			default:
-				System.out.println("MacEvent.getMacCharCodes: wrong event type");
-				return 0;
-			}
+		}
+		System.out.println("MacEvent.getMacCharCodes: no EventRef");
+		
+		convert();
+		switch (fData[0]) {
+		case OS.keyDown:
+		case OS.autoKey:
+		case OS.keyUp:
+			byte b= (byte)(fData[1] & OS.charCodeMask);
+			//System.out.println("char: " + c);
+			return b;
+		default:
+			System.out.println("MacEvent.getMacCharCodes: wrong event type");
+			break;
 		}
 		return -1;
 	}
@@ -290,34 +298,31 @@ public class MacEvent {
 		return 0;
 	}
 	
-	public static void trackStateMask(int event) {
-		int eventClass= OS.GetEventClass(event);
-		if (eventClass == OS.kEventClassMouse) {
-			switch (OS.GetEventKind(event)) {				
-			case OS.kEventMouseDown:
-			case OS.kEventMouseDragged:
-			case OS.kEventMouseUp:
-				int chord= getMouseChord(event);
-				if (chord != -1) {
-					fgMouseButtonState= 0;
-					if ((chord & OS.kEventMouseButtonPrimary) != 0) {
-						int modifiers= getEventModifiers(event);
-						if (EMULATE_RIGHT_BUTTON && ((modifiers & OS.controlKey) != 0)) {
-							fgMouseButtonState |= SWT.BUTTON3;	
-						} else {
-							fgMouseButtonState |= SWT.BUTTON1;
-						}
-					}
-					if ((chord & OS.kEventMouseButtonSecondary) != 0)
-						fgMouseButtonState |= SWT.BUTTON3;
-					if ((chord & OS.kEventMouseButtonTertiary) != 0)
-						fgMouseButtonState |= SWT.BUTTON2;
-				}
-				break;			
-			case OS.kEventMouseMoved:
+	public static void trackStateMask(int event, int kind) {
+		switch (kind) {				
+		case OS.kEventMouseDown:
+		case OS.kEventMouseDragged:
+		case OS.kEventMouseUp:
+			int chord= getMouseChord(event);
+			if (chord != -1) {
 				fgMouseButtonState= 0;
-				break;
+				if ((chord & 1) != 0) {
+					int modifiers= getEventModifiers(event);
+					if (EMULATE_RIGHT_BUTTON && ((modifiers & OS.controlKey) != 0)) {
+						fgMouseButtonState |= SWT.BUTTON3;	
+					} else {
+						fgMouseButtonState |= SWT.BUTTON1;
+					}
+				}
+				if ((chord & 2) != 0)
+					fgMouseButtonState |= SWT.BUTTON3;
+				if ((chord & 4) != 0)
+					fgMouseButtonState |= SWT.BUTTON2;
 			}
-		}	
+			break;			
+		case OS.kEventMouseMoved:
+			fgMouseButtonState= 0;
+			break;
+		}
 	}
 }
