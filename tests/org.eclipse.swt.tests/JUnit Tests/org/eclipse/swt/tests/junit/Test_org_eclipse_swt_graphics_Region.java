@@ -93,9 +93,9 @@ public void test_add$I() {
 	reg.dispose();
 	
 	reg = new Region(display);
-	reg.add(new int[] {0,0, 5,5, 10,10, 5,20, 0,30});
+	reg.add(new int[] {0,0, 5,0, 10,10, 0,10});
 	box = reg.getBounds();
-	if (!box.equals(new Rectangle (0,0,10,30))) {
+	if (!box.equals(new Rectangle (0,0,10,10))) {
 		reg.dispose();
 		fail("add 3 failed");
 	}
@@ -685,10 +685,10 @@ public void test_subtract$I() {
 	catch (SWTException e) {
 	}
 	reg = new Region(display);
-	reg.add(new int[] {0,0, 50,0, 0,25, 50,25});
-	reg.subtract(new int[] {0,0, 50,0, 0,20, 50,20});
+	reg.add(new int[] {0,0, 50,0, 50,25, 0,25});
+	reg.subtract(new int[] {0,0, 50,0, 50,20, 0,20});
 	Rectangle box = reg.getBounds();
-	if (!box.equals(new Rectangle (0,20,59,5))) {
+	if (!box.equals(new Rectangle (0,20,50,5))) {
 		reg.dispose();
 		fail("subtract 1 failed");
 	}
@@ -909,6 +909,7 @@ public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_Device");
+	methodNames.addElement("test_add$I");
 	methodNames.addElement("test_addLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_addLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_containsII");
@@ -923,6 +924,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_intersectsLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_isEmpty");
+	methodNames.addElement("test_subtract$I");
 	methodNames.addElement("test_subtractLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_subtractLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_toString");
@@ -932,6 +934,7 @@ public static java.util.Vector methodNames() {
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_Device")) test_ConstructorLorg_eclipse_swt_graphics_Device();
+	else if (getName().equals("test_add$I")) test_add$I();
 	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Rectangle")) test_addLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Region")) test_addLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_containsII")) test_containsII();
@@ -946,6 +949,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_intersectsLorg_eclipse_swt_graphics_Rectangle")) test_intersectsLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_isEmpty")) test_isEmpty();
+	else if (getName().equals("test_subtract$I")) test_subtract$I();
 	else if (getName().equals("test_subtractLorg_eclipse_swt_graphics_Rectangle")) test_subtractLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_subtractLorg_eclipse_swt_graphics_Region")) test_subtractLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_toString")) test_toString();
