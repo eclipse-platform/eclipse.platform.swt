@@ -155,12 +155,12 @@ public Hashtable snapshot(String className, Hashtable snapshot) {
 		Method functionName = clazz.getMethod(className + "_GetFunctionName", new Class[]{int.class});
 		int count = ((Integer)functionCount.invoke(clazz, new Object[0])).intValue();
 		NativeFunction[] funcs = new NativeFunction[count];
-		Object[] arg = new Object[1];
+		Object[] index = new Object[1];
 		for (int i = 0; i < count; i++) {
-			arg[0] = new Integer(i);
-			int ncalls = ((Integer)functionCallCount.invoke(clazz, arg)).intValue();
-			String name = (String)functionName.invoke(clazz, arg);
-			funcs[i] = new NativeFunction(name, ncalls);
+			index[0] = new Integer(i);
+			int callCount = ((Integer)functionCallCount.invoke(clazz, index)).intValue();
+			String name = (String)functionName.invoke(clazz, index);
+			funcs[i] = new NativeFunction(name, callCount);
 		}
 		snapshot.put(className, funcs);
 	} catch (Throwable e) {
