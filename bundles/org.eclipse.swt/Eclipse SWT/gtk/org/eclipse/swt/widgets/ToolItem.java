@@ -200,7 +200,7 @@ void createHandle (int index) {
 			break;
 		case SWT.RADIO:
 			/*
-			*  This code is intentionally commented.  Because GTK
+			* This code is intentionally commented.  Because GTK
 			* enforces radio behavior in a button group a radio group
 			* is not created for each set of contiguous buttons, each
 			* radio button will not draw unpressed.  The fix is to use
@@ -511,13 +511,13 @@ void hookEvents () {
 	OS.g_signal_connect (handle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
 
 	/*
-	 * Feature in GTK.
-	 * Usually, GTK widgets propagate all events to their parent when they
-	 * are done their own processing.  However, in contrast to other widgets,
-	 * the buttons that make up the tool items, do not propagate the mouse
-	 * up/down events.
-	 * (It is interesting to note that they DO propagate mouse motion events.)
-	 */
+	* Feature in GTK.  Usually, GTK widgets propagate all events to their
+	* parent when they are done their own processing.  However, in contrast
+	* to other widgets, the buttons that make up the tool items, do not propagate
+	* the mouse up/down events. It is interesting to note that they DO propagate
+	* mouse motion events.  The fix is to explicitly forward mouse up/down events
+	* to the parent.
+	*/
 	int mask =
 		OS.GDK_EXPOSURE_MASK | OS.GDK_POINTER_MOTION_MASK |
 		OS.GDK_BUTTON_PRESS_MASK | OS.GDK_BUTTON_RELEASE_MASK | 
@@ -556,7 +556,7 @@ void releaseHandle () {
 }
 
 void releaseWidget () {
-	// reparent the control back to the toolbar
+	/* Reparent the control back to the toolbar */
 	if (control != null) setControl (null);
 	super.releaseWidget ();
 	parent = null;
@@ -588,12 +588,6 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
-}
-
-void resizeControl () {
-	if (control == null) return;
-	//FIXME - we should not use computeSize()
-	control.setSize (control.computeSize (OS.GTK_WIDGET_WIDTH (handle), SWT.DEFAULT));
 }
 
 void selectRadio () {
@@ -633,13 +627,15 @@ public void setControl (Control control) {
 	Control oldControl = this.control;
 	if (oldControl == newControl) return;
 	this.control = newControl;
+	int parentHandle = parent.parentingHandle ();
 	if (oldControl != null) {
-		OS.gtk_widget_reparent (oldControl.topHandle(), parent.parentingHandle ());
+		OS.gtk_widget_reparent (oldControl.topHandle(), parentHandle);
 	}
 	if (newControl != null) {
+		OS.gtk_widget_reparent (newControl.topHandle(), parentHandle);
+		newControl.setBounds (getBounds ());
 		OS.gtk_widget_reparent (newControl.topHandle(), handle);
 		OS.gtk_widget_hide (separatorHandle);
-		resizeControl ();
 	} else {
 		OS.gtk_widget_show (separatorHandle);
 	}
@@ -855,7 +851,11 @@ public void setWidth (int width) {
 	*/
 	int parentHandle = parent.parentingHandle ();
 	OS.gtk_container_resize_children (parentHandle);
-	resizeControl ();
+	if (control != null && !control.isDisposed ()) {
+		OS.gtk_widget_reparent (control.topHandle(), parentHandle);
+		control.setBounds (getBounds ());
+		OS.gtk_widget_reparent (control.topHandle(), handle);
+	}
 }
 
 static int checkStyle (int style) {
