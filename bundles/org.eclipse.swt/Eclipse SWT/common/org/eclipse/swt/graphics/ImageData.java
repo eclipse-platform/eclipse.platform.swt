@@ -484,7 +484,7 @@ public static ImageData internal_new(
 
 ImageData colorMaskImage(int pixel) {
 	ImageData mask = new ImageData(width, height, 1, bwPalette(),
-		1, null, 0, null, null, -1, -1, SWT.IMAGE_UNDEFINED,
+		2, null, 0, null, null, -1, -1, SWT.IMAGE_UNDEFINED,
 		0, 0, 0, 0);
 	int[] row = new int[width];
 	for (int y = 0; y < height; y++) {
