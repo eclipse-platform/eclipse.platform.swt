@@ -23,7 +23,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.Point
  */
 public class Test_org_eclipse_swt_graphics_Point extends SwtPerformanceTestCase {
-	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_Point(String name) {
 	super(name);
@@ -34,7 +33,9 @@ public static void main(String[] args) {
 }
 
 public void test_ConstructorII() {
-	PerformanceMeter meter = createMeter();
+	final int COUNT = 60000000;
+	
+	PerformanceMeter meter = createMeter("Point constr.");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new Point(500000, 700000);
@@ -45,11 +46,13 @@ public void test_ConstructorII() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 70000000;
+	
 	Point p1 = new Point (5, 3);
 	Point p2 = new Point (5, 3);
 	Point p3 = new Point (4, 6);
 	
-	PerformanceMeter meter = createMeter("equal");
+	PerformanceMeter meter = createMeter("Point equals - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		p1.equals(p2);	// equal
@@ -58,7 +61,7 @@ public void test_equalsLjava_lang_Object() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("not equal");
+	meter = createMeter("Point equals - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		p1.equals(p3);	// not equal
@@ -69,9 +72,11 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 500000000;
+	
 	Point point = new Point(5, 5);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Point hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		point.hashCode();

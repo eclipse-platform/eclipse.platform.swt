@@ -27,7 +27,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.Cursor
  */
 public class Test_org_eclipse_swt_graphics_Cursor extends SwtPerformanceTestCase {
-	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_Cursor(String name) {
 	super(name);
@@ -43,7 +42,9 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
-	PerformanceMeter meter = createMeter();
+	final int COUNT = 600000;
+	
+	PerformanceMeter meter = createMeter("Cursor constr.(Device,I)");
 	meter.start();
 	Cursor[] cursors = new Cursor [COUNT];
 	for (int i = 0; i < COUNT; i++) {
@@ -63,6 +64,8 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII() {
+	final int COUNT = 1000000;
+	
 	int numFormats = imageFormats.length;
 	String fileName = imageFilenames[0];
 	for (int i = 0; i < numFormats; i++) {
@@ -84,7 +87,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		if (mask != null && (source.depth == 1)) {
 			Cursor[] cursors = new Cursor[COUNT];
 			
-			PerformanceMeter meter = createMeter(format);
+			PerformanceMeter meter = createMeter("Cursor constr.(5 args) - " + format);
 			meter.start();
 			for (int j = 0; j < COUNT; j++) {
 				cursors[j] = new Cursor(display, source, mask, 0, 0);
@@ -100,12 +103,14 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	}
 }
 public void test_dispose() {
+	final int COUNT = 2000000;
+	
 	Cursor[] cursors = new Cursor [COUNT];
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i] = new Cursor(display, SWT.CURSOR_ARROW);
 	}
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("Cursor dispose - typical");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i].dispose();	// dispose
@@ -114,7 +119,7 @@ public void test_dispose() {
 	
     disposeMeter(meter);
     
-	meter = createMeter("disposed");
+	meter = createMeter("Cursor dispose - disposed");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i].dispose();	// dispose disposed
@@ -125,15 +130,17 @@ public void test_dispose() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 60000000;
+	
 	/* 
-	 * Note: Two cursors are only considered equal if their handles are equal.
-	 * So since Windows reuses cursor handles, and other platforms do not,
-	 * it does not make sense to test whether cursor.equals(sameCursor).
-	 */
+	* Note: Two cursors are only considered equal if their handles are equal.
+	* So since Windows reuses cursor handles, and other platforms do not,
+	* it does not make sense to test whether cursor.equals(sameCursor).
+	*/
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	Cursor otherCursor = new Cursor(display, SWT.CURSOR_CROSS);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Cursor equals");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.equals(otherCursor);
@@ -147,9 +154,11 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 600000000;
+	
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Cursor hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.hashCode();
@@ -162,9 +171,11 @@ public void test_hashCode() {
 }
 
 public void test_isDisposed() {
+	final int COUNT = 500000000;
+	
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("Cursor isDisposed - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.isDisposed();	// not disposed
@@ -175,7 +186,7 @@ public void test_isDisposed() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("disposed");
+	meter = createMeter("Cursor isDisposed - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.isDisposed();	// disposed
@@ -183,10 +194,6 @@ public void test_isDisposed() {
 	meter.stop();
 	
 	disposeMeter(meter);
-}
-
-public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
-	// do not test - Windows only
 }
 
 public static Test suite() {
@@ -207,7 +214,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_isDisposed");
-	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -218,7 +224,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
-	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
 
 /* custom */

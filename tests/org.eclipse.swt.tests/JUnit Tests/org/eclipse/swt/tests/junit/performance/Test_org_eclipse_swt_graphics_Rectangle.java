@@ -22,7 +22,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.Rectangle
  */
 public class Test_org_eclipse_swt_graphics_Rectangle extends SwtPerformanceTestCase {
-	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_Rectangle(String name) {
 	super(name);
@@ -33,7 +32,9 @@ public static void main(String[] args) {
 }
 
 public void test_ConstructorIIII() {
-	PerformanceMeter meter = createMeter();
+	final int COUNT = 40000000;
+	
+	PerformanceMeter meter = createMeter("Rectangle constr.");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new Rectangle(500000, 700000, 200000, 100000);
@@ -53,10 +54,12 @@ public void test_ConstructorIIII() {
  * </ul>
  */
 public void test_addLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 60000000;
+	
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Rectangle add");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.add(r2);
@@ -71,9 +74,11 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
  * arguments is inside the area specified by the receiver.
  */
 public void test_containsII() {
+	final int COUNT = 60000000;
+	
 	Rectangle r = new Rectangle(1, 2, 3, 4);
 
-	PerformanceMeter meter = createMeter("contains");
+	PerformanceMeter meter = createMeter("Rectangle contains(II) - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r.contains(2, 3);	// does contain
@@ -82,7 +87,7 @@ public void test_containsII() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("disjoint");
+	meter = createMeter("Rectangle contains(II) - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r.contains(9, 12);	// does not contain
@@ -101,11 +106,13 @@ public void test_containsII() {
  * </ul>
  */
 public void test_containsLorg_eclipse_swt_graphics_Point() {
+	final int COUNT = 60000000;
+	
 	Rectangle rect = new Rectangle(1, 2, 3, 4);
 	Point p1 = new Point(2, 3);
 	Point p2 = new Point(9, 10);
 	
-	PerformanceMeter meter = createMeter("contains");
+	PerformanceMeter meter = createMeter("Rectangle contains(Point) - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.contains(p1);		// does contain
@@ -114,7 +121,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("disjoint");
+	meter = createMeter("Rectangle contains(Point) - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.contains(p2);		// does not contain
@@ -125,10 +132,12 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 60000000;
+	
 	Rectangle r1 = new Rectangle(5, 4, 3, 2);
 	Rectangle r2 = new Rectangle(5, 4, 3, 2);
 	
-	PerformanceMeter meter = createMeter("equal");
+	PerformanceMeter meter = createMeter("Rectangle equals - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.equals(r2);	// equal
@@ -139,7 +148,7 @@ public void test_equalsLjava_lang_Object() {
 	
 	r2 = new Rectangle (2, 3, 4, 5);
 	
-	meter = createMeter("not equal");
+	meter = createMeter("Rectangle equals - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.equals(r2);	// not equal
@@ -150,8 +159,10 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 400000000;
+	
 	Rectangle rect = new Rectangle(5, 4, 3, 2);
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Rectangle hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.hashCode();
@@ -162,10 +173,12 @@ public void test_hashCode() {
 }
 
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 50000000;
+	
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
-	PerformanceMeter meter = createMeter("intersect");
+	PerformanceMeter meter = createMeter("Rectangle intersect - contained");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersect(r2);	// intersect
@@ -176,7 +189,7 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	
 	r2 = new Rectangle(0, 0, 5, 5);
 
-	meter = createMeter("disjoint");
+	meter = createMeter("Rectangle intersect - disjoint");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersect(r2);	// disjoint
@@ -187,10 +200,12 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 25000000;
+	
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
-	PerformanceMeter meter = createMeter("intersect");
+	PerformanceMeter meter = createMeter("Rectangle intersection - contained");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersection(r2);	// intersect
@@ -201,7 +216,7 @@ public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
 	
 	r2 = new Rectangle(0, 0, 5, 5);
 
-	meter = createMeter("disjoint");
+	meter = createMeter("Rectangle intersection - disjoint");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersection(r2);	// disjoint
@@ -212,9 +227,11 @@ public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_intersectsIIII() {
+	final int COUNT = 60000000;
+	
 	Rectangle rect = new Rectangle(10, 10, 50, 50);
 	
-	PerformanceMeter meter = createMeter("intersect");
+	PerformanceMeter meter = createMeter("Rectangle intersects(IIII) - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.intersects(20, 20, 20, 20);	// intersect
@@ -223,7 +240,7 @@ public void test_intersectsIIII() {
 	
 	disposeMeter(meter);
 
-	meter = createMeter("disjoint");
+	meter = createMeter("Rectangle intersects(IIII) - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.intersects(0, 0, 5, 5);	// disjoint
@@ -234,10 +251,12 @@ public void test_intersectsIIII() {
 }
 
 public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 40000000;
+	
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
-	PerformanceMeter meter = createMeter("intersect");
+	PerformanceMeter meter = createMeter("Rectangle intersects(Rectangle) - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersects(r2);	// intersect
@@ -248,7 +267,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	
 	r2 = new Rectangle(0, 0, 5, 5);
 
-	meter = createMeter("disjoint");
+	meter = createMeter("Rectangle intersects(Rectangle) - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersects(r2);	// disjoint
@@ -259,9 +278,11 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 }
 
 public void test_isEmpty() {
+	final int COUNT = 500000000;
+	
 	Rectangle rect = new Rectangle (10, 10, 0, 0);
 	
-	PerformanceMeter meter = createMeter("empty");
+	PerformanceMeter meter = createMeter("Rectangle isEmpty - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.isEmpty();		// empty
@@ -272,7 +293,7 @@ public void test_isEmpty() {
 
 	rect = new Rectangle (10, 10, 10, 10);
 	
-	meter = createMeter("not empty");
+	meter = createMeter("Rectangle isEmpty - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.isEmpty();		// not empty
@@ -283,10 +304,12 @@ public void test_isEmpty() {
 }
 
 public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
+	final int COUNT = 30000000;
+	
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
-	PerformanceMeter meter = createMeter("intersect");
+	PerformanceMeter meter = createMeter("Rectangle union - contained");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.union(r2);
@@ -297,7 +320,7 @@ public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
 	
 	r2 = new Rectangle(0, 0, 5, 5);
 
-	meter = createMeter("disjoint");
+	meter = createMeter("Rectangle union - disjoint");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.union(r2);	// disjoint

@@ -645,15 +645,9 @@ boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
 	* the opposite scroll bar is incorrectly made visible
 	* so that the next time the parent is resized (or another
 	* scroll bar operation is performed), the opposite scroll
-	* bar draws.  The fix is turn off redraw for the parent
-	* and hide both scroll bars.
+	* bar draws.  The fix is to hide both scroll bars.
 	*/
-	boolean fixRedraw = false;
-	if ((state & (DISABLED | HIDDEN)) != 0) {
-		fRedraw = false;
-		fixRedraw = OS.IsWindowVisible (hwnd) && parent.drawCount == 0;
-	}
-	if (fixRedraw) OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 0, 0);	
+	if ((state & (DISABLED | HIDDEN)) != 0) fRedraw = false;
 	boolean result = OS.SetScrollInfo (hwnd, flags, info, fRedraw);
 	
 	/*
@@ -704,8 +698,6 @@ boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw) {
 			OS.EnableScrollBar (hwnd, flags, OS.ESB_DISABLE_BOTH);
 		}
 	}
-
-	if (fixRedraw) OS.DefWindowProc (hwnd, OS.WM_SETREDRAW, 1, 0);
 	return result;
 }
 

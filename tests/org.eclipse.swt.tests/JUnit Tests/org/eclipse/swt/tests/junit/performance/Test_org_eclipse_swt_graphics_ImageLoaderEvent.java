@@ -23,7 +23,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.ImageLoaderEvent
  */
 public class Test_org_eclipse_swt_graphics_ImageLoaderEvent extends SwtPerformanceTestCase {
-	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_ImageLoaderEvent(String name) {
 	super(name);
@@ -34,9 +33,11 @@ public static void main(String[] args) {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_swt_graphics_ImageDataIZ() {
+	final int COUNT = 30000000;
+	
 	ImageLoader loader = new ImageLoader();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageLoaderEvent constr.");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new ImageLoaderEvent(loader, null, 0, true);

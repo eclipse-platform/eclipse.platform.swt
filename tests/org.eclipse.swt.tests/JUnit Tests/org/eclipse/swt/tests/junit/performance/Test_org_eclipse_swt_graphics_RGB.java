@@ -21,7 +21,6 @@ import org.eclipse.test.performance.PerformanceMeter;
  * @see org.eclipse.swt.graphics.RGB
  */
 public class Test_org_eclipse_swt_graphics_RGB extends SwtPerformanceTestCase {
-	static final int COUNT = 10000;
 
 public Test_org_eclipse_swt_graphics_RGB(String name) {
 	super(name);
@@ -32,7 +31,9 @@ public static void main(String[] args) {
 }
 
 public void test_ConstructorIII() {
-	PerformanceMeter meter = createMeter();
+	final int COUNT = 25000000;
+	
+	PerformanceMeter meter = createMeter("RGB constr.");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new RGB(50,150,250);
@@ -43,10 +44,12 @@ public void test_ConstructorIII() {
 }
 
 public void test_equalsLjava_lang_Object() {
+	final int COUNT = 25000000;
+	
 	RGB rgb1 = new RGB (0, 128, 255);
 	RGB rgb2 = new RGB (0, 128, 255);
 	
-	PerformanceMeter meter = createMeter("equal");
+	PerformanceMeter meter = createMeter("RGB equals - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rgb1.equals(rgb2);	// same
@@ -57,7 +60,7 @@ public void test_equalsLjava_lang_Object() {
 	
 	rgb2 = new RGB (128, 255, 0);
 	
-	meter = createMeter("not equal");
+	meter = createMeter("RGB equals - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rgb1.equals(rgb2);	// different
@@ -68,9 +71,11 @@ public void test_equalsLjava_lang_Object() {
 }
 
 public void test_hashCode() {
+	final int COUNT = 400000000;
+	
 	RGB rgb = new RGB (0, 128, 255);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("RGB hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rgb.hashCode();

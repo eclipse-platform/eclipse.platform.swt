@@ -23,7 +23,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.PaletteData
  */
 public class Test_org_eclipse_swt_graphics_PaletteData extends SwtPerformanceTestCase {
-	static final int COUNT = 1000;
 
 public Test_org_eclipse_swt_graphics_PaletteData(String name) {
 	super(name);
@@ -34,9 +33,11 @@ public static void main(String[] args) {
 }
 
 public void test_Constructor$Lorg_eclipse_swt_graphics_RGB() {
+	final int COUNT = 25000000;
+	
 	RGB[] rgb = new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255)};
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("PaletteData constr.($RGB)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new PaletteData(rgb);
@@ -47,7 +48,9 @@ public void test_Constructor$Lorg_eclipse_swt_graphics_RGB() {
 }
 
 public void test_ConstructorIII() {
-	PerformanceMeter meter = createMeter();
+	final int COUNT = 6000000;
+	
+	PerformanceMeter meter = createMeter("PaletteData constr.(III)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
@@ -58,10 +61,12 @@ public void test_ConstructorIII() {
 }
 
 public void test_getPixelLorg_eclipse_swt_graphics_RGB() {
+	final int COUNT = 50000000;
+	
 	RGB rgb = new RGB(0x32, 0x64, 0x96);
 	PaletteData data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("PaletteData getPixel");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getPixel(rgb);		
@@ -72,10 +77,12 @@ public void test_getPixelLorg_eclipse_swt_graphics_RGB() {
 }
 
 public void test_getRGBI() {
+	final int COUNT = 15000000;
+	
 	RGB rgb = new RGB(0x32, 0x64, 0x96);
 	PaletteData data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("PaletteData getRGB");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getRGB(0x326496);		
@@ -86,10 +93,12 @@ public void test_getRGBI() {
 }
 
 public void test_getRGBs() {
+	final int COUNT = 700000000;
+	
 	RGB rgb = new RGB(0x32, 0x64, 0x96);
 	PaletteData data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("PaletteData getRGBs");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getRGBs();		
