@@ -614,7 +614,6 @@ int Pt_CB_WEB_URL(int info) {
 	byte[] buffer = new byte[OS.strlen(cbinfo_t.cbdata) + 1];
 	OS.memmove(buffer, cbinfo_t.cbdata, buffer.length);
 	url = new String(Converter.mbcsToWcs(null, buffer));
-	System.out.println("URL "+url+" "+this);
 	LocationEvent event = new LocationEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
