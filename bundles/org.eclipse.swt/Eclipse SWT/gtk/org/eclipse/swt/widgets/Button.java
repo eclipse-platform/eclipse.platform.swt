@@ -42,8 +42,8 @@ import org.eclipse.swt.events.*;
  */
 public class Button extends Control {
 	int boxHandle, labelHandle, imageHandle, arrowHandle, groupHandle;
-	Image image;
 	boolean selected;
+	Image image;
 	String text;
 
 /**
