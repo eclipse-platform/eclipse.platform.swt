@@ -555,8 +555,7 @@ synchronized void createDisplay (DeviceData data) {
 //	}
 	OS.gtk_set_locale();
 	if (!OS.gtk_init_check (new int [] {0}, null)) {
-		SWT.error (SWT.ERROR_DEVICE_DISPOSED);
-		return;
+		SWT.error (SWT.ERROR_NO_HANDLES);
 	}
 	OS.gtk_widget_set_default_direction (OS.GTK_TEXT_DIR_LTR);
 	OS.gdk_rgb_init ();
