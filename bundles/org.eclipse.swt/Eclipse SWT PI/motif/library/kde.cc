@@ -17,11 +17,9 @@
 #include "swt.h"
 
 #include <kapp.h>
-#include <kservice.h>
+#include <kiconloader.h>
 #include <kmimetype.h>
 #include <krun.h>
-#include <kuserprofile.h>
-#include <kurl.h>
 #include <qstring.h>
 
 extern "C" {

@@ -18,7 +18,7 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 #    QT_HOME    - identifier namespace package (used by KDE)
 JAVA_HOME   = /bluebird/teamswt/swt-builddir/ive/bin
 MOTIF_HOME = /bluebird/teamswt/swt-builddir/motif21
-QT_HOME    = /usr/lib/qt-2.3.0
+QT_HOME    = /usr/lib/qt3
 
 
 # Define the various DLL (shared) libraries to be made.
@@ -41,7 +41,7 @@ KDE_PREFIX   = swt-kde
 KDE_DLL      = lib$(KDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 KDE_OBJ      = kde.o
 KDE_LIB      = -L/usr/lib  -L$(QT_HOME)/lib \
-	           -shared -lksycoca -lkdecore -lqt
+	           -shared  -lkdecore -lqt
 
 #
 # The following CFLAGS are for compiling both the SWT library and the GNOME
