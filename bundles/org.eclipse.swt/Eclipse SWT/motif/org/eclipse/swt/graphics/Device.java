@@ -68,8 +68,6 @@ public abstract class Device implements Drawable {
  * @see DeviceData
  */
 public Device(DeviceData data) {
-	create (data);
-	init ();
 	if (data != null) {
 		display_name = data.display_name;
 		application_name = data.application_name;
@@ -77,6 +75,8 @@ public Device(DeviceData data) {
 		tracking = data.tracking;
 		debug = data.debug;
 	}
+	create (data);
+	init ();
 	if (tracking) {
 		errors = new Error [128];
 		objects = new Object [128];
