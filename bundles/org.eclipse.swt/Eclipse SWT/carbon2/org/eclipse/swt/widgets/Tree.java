@@ -590,8 +590,8 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
 	display.ignoreFocus = false;
 	if (oldFocus != this) {
-		if (oldFocus != null) oldFocus.sendFocusEvent (false);
-		if (isEnabled ()) sendFocusEvent (true);
+		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (false);
+		if (!isDisposed () && isEnabled ()) sendFocusEvent (true);
 	}
 	return result;
 }

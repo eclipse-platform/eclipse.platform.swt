@@ -381,7 +381,7 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		display.ignoreFocus = true;
 		OS.ClearKeyboardFocus (shellHandle);
 		display.ignoreFocus = false;
-		savedFocus.sendFocusEvent (false);
+		if (savedFocus.isDisposed ()) savedFocus.sendFocusEvent (false);
 	}
 	Display display = getDisplay ();
 	display.updateMenuBar (null);
