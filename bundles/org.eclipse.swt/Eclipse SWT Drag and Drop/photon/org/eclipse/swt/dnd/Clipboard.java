@@ -25,7 +25,6 @@ import org.eclipse.swt.internal.photon.*;
 public class Clipboard {
 	
 	private Display display;
-	private final int MAX_RETRIES = 10;
 
 /**
  * Constructs a new instance of this class.  Creating an instance of a Clipboard
@@ -252,6 +251,19 @@ public void setContents(Object[] data, Transfer[] dataTypes) {
 		OS.free(clips[i].data);
 	}
 }
+
+/**
+ * 
+ * @return array of TransferData
+ * 
+ * @since 3.0
+ */
+public TransferData[] getAvailableTypes() {
+	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
+	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
+	return new TransferData[0];
+}
+
 /**
  * Returns a platform specific list of the data types currently available on the 
  * system clipboard.
@@ -267,7 +279,26 @@ public String[] getAvailableTypeNames() {
 	if (display == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
 	if (display.isDisposed()) DND.error(SWT.ERROR_DEVICE_DISPOSED);
 	
-	String[] types = new String[0];
+	PhClipHeader[] types = _getAvailableTypes();
+	String[] names = new String[types.length];
+	for (int i = 0; i < types.length; i++) {
+		byte[] buffer = new byte[8];
+		buffer[0] = types[i].type_0;
+		buffer[1] = types[i].type_1;
+		buffer[2] = types[i].type_2;
+		buffer[3] = types[i].type_3;
+		buffer[4] = types[i].type_4;
+		buffer[5] = types[i].type_5;
+		buffer[6] = types[i].type_6;
+		buffer[7] = types[i].type_7;
+		char [] unicode = Converter.mbcsToWcs (null, buffer);
+		names[i] = new String (unicode).trim();
+	}
+	return names;
+}
+
+private PhClipHeader[] _getAvailableTypes() {
+	PhClipHeader[] types = new PhClipHeader[0];
 	int ig = OS.PhInputGroup(0);
 	int cbdata = OS.PhClipboardPasteStart((short)ig);
 	if (cbdata == 0) return types;
@@ -277,20 +308,9 @@ public String[] getAvailableTypeNames() {
 		while ((pClipHeader = OS.PhClipboardPasteTypeN(cbdata, n++)) != 0) {
 			PhClipHeader clipHeader = new PhClipHeader();
 			OS.memmove(clipHeader, pClipHeader, PhClipHeader.sizeof);
-			byte[] buffer = new byte[8];
-			buffer[0] = clipHeader.type_0;
-			buffer[1] = clipHeader.type_1;
-			buffer[2] = clipHeader.type_2;
-			buffer[3] = clipHeader.type_3;
-			buffer[4] = clipHeader.type_4;
-			buffer[5] = clipHeader.type_5;
-			buffer[6] = clipHeader.type_6;
-			buffer[7] = clipHeader.type_7;
-			char [] unicode = Converter.mbcsToWcs (null, buffer);
-			
-			String[] newTypes = new String[types.length + 1];
+			PhClipHeader[] newTypes = new PhClipHeader[types.length + 1];
 			System.arraycopy(types, 0, newTypes, 0, types.length);
-			newTypes[types.length] = new String (unicode).trim();
+			newTypes[types.length] = clipHeader;
 			types = newTypes;
 		}
 	} finally {
