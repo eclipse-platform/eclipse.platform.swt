@@ -202,6 +202,8 @@ protected void checkSubclass() {
 public PrinterData open() {
 	PRINTDLG pd = new PRINTDLG();
 	pd.lStructSize = PRINTDLG.sizeof;
+	Control parent = getParent();
+	if (parent != null) pd.hwndOwner = parent.handle;
 	pd.Flags = OS.PD_USEDEVMODECOPIESANDCOLLATE;
 	if (printToFile) pd.Flags |= OS.PD_PRINTTOFILE;
 	switch (scope) {
