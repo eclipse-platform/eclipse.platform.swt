@@ -267,6 +267,8 @@ public String getFilterPath () {
  */
 public String open () {
 	boolean useChooserDialog = OS.gtk_check_version (2, 4, 10) == 0;
+	// TEMPORARY CODE - va_list in gtk_file_chooser_dialog_new crashes on AMD64
+	if (OS.PTR_SIZEOF == 8) useChooserDialog = false;
 	if (useChooserDialog) {
 		return openChooserDialog ();
 	} else {
