@@ -91,8 +91,8 @@ public class Display extends Device {
 
 	/* Events Dispatching and Callback */
 	Event [] eventQueue;
-	int windowProc2, windowProc3, windowProc4, windowProc5;
-	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
+	int windowProc2, windowProc3, windowProc4, windowProc5, keyProc;
+	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5, keyCallback;
 	EventTable eventTable;
 
 	/* Sync/Async Widget Communication */
@@ -1075,6 +1075,10 @@ protected void init () {
 }
 
 void initializeCallbacks () {
+	keyCallback = new Callback (this, "keyProc", 3);
+	keyProc = keyCallback.getAddress ();
+	if (keyProc == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
+	
 	windowCallback2 = new Callback (this, "windowProc", 2);
 	windowProc2 = windowCallback2.getAddress ();
 	if (windowProc2 == 0) SWT.error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1266,6 +1270,7 @@ protected void release () {
 }
 
 void releaseDisplay () {
+	keyCallback.dispose ();  keyCallback = null;
 	windowCallback2.dispose ();  windowCallback2 = null;
 	windowCallback3.dispose ();  windowCallback3 = null;
 	windowCallback4.dispose ();  windowCallback4 = null;
@@ -1299,7 +1304,7 @@ void releaseDisplay () {
 	mouseHoverCallback = null;
 
 	messages = null;  messageLock = null; thread = null;
-	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
+	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = keyProc = 0;
 	
 	if (defaultFont != 0) OS.pango_font_description_free (defaultFont);
 	defaultFont = 0;
@@ -1725,6 +1730,12 @@ public void wake () {
 	/* NOT IMPLEMENTED - Need to wake up the event loop */
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
+}
+
+int keyProc (int handle, int int0, int user_data) {
+	Widget widget = WidgetTable.get (user_data);
+	if (widget == null) return 0;
+	return widget.processIMEKey (int0);
 }
 
 int windowProc (int handle, int user_data) {

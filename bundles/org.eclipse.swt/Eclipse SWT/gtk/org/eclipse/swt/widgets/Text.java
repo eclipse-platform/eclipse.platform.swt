@@ -834,6 +834,13 @@ int processDefaultSelection (int int0, int int1, int int2) {
 	return 0;
 }
 
+int processIMEFocusIn () {
+	return 0;
+}
+int processIMEFocusOut () {
+	return 0;
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's text is modified.

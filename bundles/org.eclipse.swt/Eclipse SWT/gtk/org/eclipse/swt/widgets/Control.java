@@ -30,7 +30,7 @@ import org.eclipse.swt.accessibility.*;
  * </p>
  */
 public abstract class Control extends Widget implements Drawable {
-	int fixedHandle;
+	int fixedHandle, imHandle;
 	Composite parent;
 	Menu menu;
 	String toolTipText;
@@ -1662,8 +1662,91 @@ int processHelp (int int0, int int1, int int2) {
 	return 0;
 }
 
+int processFocusIn (int int0, int int1, int int2) {
+	sendEvent (SWT.FocusIn);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	processIMEFocusIn ();
+
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/	
+	Shell shell = _getShell ();
+	if (!shell.isDisposed ()) {
+		shell.setActiveControl (this);
+	}
+	return 0;
+}
+
+int processFocusOut (int int0, int int1, int int2) {
+	sendEvent (SWT.FocusOut);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	processIMEFocusOut ();
+	
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/
+	Shell shell = _getShell ();
+	if (!shell.isDisposed ()) {
+		Display display = shell.getDisplay ();
+		Control control = display.getFocusControl ();
+		if (control == null || shell != control.getShell () ) {
+			shell.setActiveControl (null);
+		}
+	}
+	return 0;
+}
+
+int processIMEFocusIn () {
+	if (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp))) return 0;
+ 	if (imHandle == 0) {
+		imHandle = OS.gtk_im_multicontext_new ();
+		if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_im_context_set_client_window (imHandle, paintWindow ());
+		Display display = getDisplay ();
+		int keyProc = display.keyProc;
+		OS.g_signal_connect (imHandle, "commit", keyProc, handle);
+	}
+	if (imHandle != 0) OS.gtk_im_context_focus_in (imHandle);
+	return 0;
+}
+
+int processIMEFocusOut () {
+	if (!(hooks (SWT.KeyDown) || hooks (SWT.KeyUp))) return 0;
+	if (imHandle != 0) OS.gtk_im_context_focus_out (imHandle);
+	return 0;
+}
+
+int processIMEKey (int str) {
+	if (str == 0) return 0;
+	int length = OS.strlen (str);
+	if (length == 0) return 0;
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, str, length);
+	char [] result = Converter.mbcsToWcs (null, buffer);
+	int index = 0;
+	while (index < result.length) {
+		if (result [index] == 0) break;
+		Event event = new Event ();
+		event.character = result [index];
+		postEvent (SWT.KeyDown, event);
+		index++;
+	}
+	return 0;
+}
+
 int processKeyDown (int callData, int arg1, int int2) {
 	if (!hasFocus ()) return 0;
+	if (imHandle != 0) {
+		if (OS.gtk_im_context_filter_keypress (imHandle, callData)) return 0;
+	}
 	if (translateTraversal (callData)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
@@ -1673,6 +1756,9 @@ int processKeyDown (int callData, int arg1, int int2) {
 
 int processKeyUp (int callData, int arg1, int int2) {
 	if (!hasFocus ()) return 0;
+	if (imHandle != 0) {
+		if (OS.gtk_im_context_filter_keypress (imHandle, callData)) return 0;
+	}
 	sendKeyEvent (SWT.KeyUp, callData);
 	return 0;
 }
@@ -1767,42 +1853,6 @@ int processMouseMove (int callData, int arg1, int int2) {
 		display.addMouseHoverTimeout (handle);
 	}
 	sendMouseEvent (SWT.MouseMove, 0, callData);
-	return 0;
-}
-
-int processFocusIn(int int0, int int1, int int2) {
-	Shell shell = _getShell ();
-	sendEvent (SWT.FocusIn);
-
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/	
-	if (!shell.isDisposed ()) {
-		shell.setActiveControl (this);
-	}
-	return 0;
-}
-
-int processFocusOut(int int0, int int1, int int2) {
-	Shell shell = _getShell ();
-	sendEvent (SWT.FocusOut);
-	
-	/*
-	* It is possible that the shell may be
-	* disposed at this point.  If this happens
-	* don't send the activate and deactivate
-	* events.
-	*/
-	if (!shell.isDisposed ()) {
-		Display display = shell.getDisplay ();
-		Control control = display.getFocusControl ();
-		if (control == null || shell != control.getShell () ) {
-			shell.setActiveControl (null);
-		}
-	}
 	return 0;
 }
 
@@ -1901,6 +1951,8 @@ void releaseHandle () {
 void releaseWidget () {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeout (handle);
+	if (imHandle != 0) OS.g_object_unref (imHandle);
+	imHandle = 0;
 	super.releaseWidget ();
 	toolTipText = null;
 	parent = null;

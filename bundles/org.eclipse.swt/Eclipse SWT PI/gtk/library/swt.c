@@ -2404,14 +2404,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1drag_1get_1data
 	gtk_drag_get_data((GtkWidget *)arg0, (GdkDragContext *)arg1, (GdkAtom)arg2, (guint32)arg3);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1drag_1get_1source_1info
-	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
-{
-	DEBUG_CALL("gtk_1drag_1get_1source_1info\n")
-
-	return (jint)gtk_drag_get_source_info((GdkDragContext *)arg0, (gboolean)arg1);
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1drawing_1area_1new
 	(JNIEnv *env, jclass that)
 {
@@ -2878,6 +2870,58 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1hseparator_1new
 	DEBUG_CALL("gtk_1hseparator_1new\n")
 
 	return (jint)gtk_hseparator_new();
+}
+
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1filter_1keypress
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1im_1context_1filter_1keypress\n")
+
+	return (jboolean)gtk_im_context_filter_keypress((GtkIMContext *)arg0, (GdkEventKey *)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1focus_1in
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1im_1context_1focus_1in\n")
+
+	gtk_im_context_focus_in((GtkIMContext *)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1focus_1out
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("gtk_1im_1context_1focus_1out\n")
+
+	gtk_im_context_focus_out((GtkIMContext *)arg0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1set_1client_1window
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1im_1context_1set_1client_1window\n")
+
+	gtk_im_context_set_client_window((GtkIMContext *)arg0, (GdkWindow *)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1set_1cursor_1location
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
+{
+	GdkRectangle _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("gtk_1im_1context_1set_1cursor_1location\n")
+
+	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	gtk_im_context_set_cursor_location((GtkIMContext *)arg0, lparg1);
+	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1multicontext_1new
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1im_1multicontext_1new\n")
+
+	return (jint)gtk_im_multicontext_new();
 }
 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1init_1check

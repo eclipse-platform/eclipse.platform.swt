@@ -635,6 +635,10 @@ int processIconify (int int0, int int1, int int2) {
 	return 0;
 }
 
+int processIMEKey (int str) {
+	return 0;
+}
+
 int processKeyDown (int arg0, int arg1, int int2) {
 	return 0;
 }

@@ -268,4 +268,14 @@ public boolean setFocus () {
 	return super.setFocus ();
 }
 
+void updateCaret () {
+	if (imHandle == 0) return;
+	GdkRectangle rect = new GdkRectangle ();
+	rect.x = caret.x;
+	rect.y = caret.y;
+	rect.width = caret.width;
+	rect.height = caret.height;
+	OS.gtk_im_context_set_cursor_location (imHandle, rect);
+}
+
 }

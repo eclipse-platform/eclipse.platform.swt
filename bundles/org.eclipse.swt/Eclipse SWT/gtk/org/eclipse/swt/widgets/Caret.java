@@ -315,6 +315,7 @@ public void setBounds (int x, int y, int width, int height) {
 	if (isFocus) hideCaret ();
 	this.x = x; this.y = y;
 	this.width = width; this.height = height;
+	parent.updateCaret ();
 	if (isFocus) showCaret ();
 }
 
