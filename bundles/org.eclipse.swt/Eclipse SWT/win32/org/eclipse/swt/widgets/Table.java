@@ -15,6 +15,13 @@ import org.eclipse.swt.events.*;
  * object that displays a list of images and strings and issue
  * notificiation when selected.
  * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>TableItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK, FULL_SELECTION, HIDE_SELECTION</dd>

@@ -28,6 +28,9 @@ import org.eclipse.swt.events.*;
  * The API documentation is careful to indicate either "the
  * receiver's list" or the "the receiver's text field" to 
  * distinguish between the two cases.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add children to it, or set a layout on it.
  * </p>
  * <dl>
  * <dt><b>Styles:</b></dt>
@@ -36,8 +39,7 @@ import org.eclipse.swt.events.*;
  * <dd>DefaultSelection, Modify, Selection</dd>
  * </dl>
  * <p>
- * IMPORTANT: This class is intended to be subclassed <em>only</em>
- * within the SWT implementation.
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
  *
  * @see List

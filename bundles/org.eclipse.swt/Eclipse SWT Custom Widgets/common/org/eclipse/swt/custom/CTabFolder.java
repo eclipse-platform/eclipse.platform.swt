@@ -11,6 +11,30 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.layout.*;
 
+/**
+ * Instances of this class implement the notebook user interface
+ * metaphor.  It allows the user to select a notebook page from
+ * set of pages.
+ * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>CTabItem</code>.
+ * <code>Control</code> children are created and then set into a
+ * tab item using <code>CTabItem#setControl</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to set a layout on it.
+ * </p><p>
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>TOP, BOTTOM, FLAT</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>Selection</dd>
+ * <dd>"CTabFolder"</dd>
+ * </dl>
+ * <p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
  
 public class CTabFolder extends Composite {
 	
@@ -238,16 +262,19 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener(SWT.Selection, typedListener);
 	addListener(SWT.DefaultSelection, typedListener);
 }
-/**	 
-* Adds the listener to receive events.
-* <p>
-*
-* @param listener the listener
-*
-* @exception SWTError <ul>
-* 		<li>ERROR_NULL_ARGUMENT when listener is null</li>
-*	</ul>
-*/
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when a tab item is closed.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ *
+ * @see CTabFolderListener
+ * @see #removeCTabFolderListener
+ */
 public void addCTabFolderListener(CTabFolderListener listener) {
 	if (listener == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	// add to array

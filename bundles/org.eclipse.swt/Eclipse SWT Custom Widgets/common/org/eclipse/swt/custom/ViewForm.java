@@ -394,8 +394,21 @@ public void setFont(Font f) {
 	
 	layout();
 }
+/**
+ * Sets the layout which is associated with the receiver to be
+ * the argument which may be null.
+ * <p>
+ * Note : ViewForm does not use a layout class to size and position its children.
+ * </p>
+ *
+ * @param the receiver's new layout or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setLayout (Layout layout) {
-	// no layout may be set on the ViewForm
 	return;
 }
 /**

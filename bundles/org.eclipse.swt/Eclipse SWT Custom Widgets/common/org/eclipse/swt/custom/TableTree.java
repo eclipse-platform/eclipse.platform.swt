@@ -17,7 +17,14 @@ import org.eclipse.swt.widgets.*;
  * that displays a hierarchy of items, and issues
  * notification when an item is selected.
  * A TableTree may be single or multi select.
- * 
+ * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>TableTreeItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  *	<dt><b>Styles:</b> <dd> SINGLE, MULTI, CHECK, FULL_SELECTION
  *	<dt><b>Events:</b> <dd> Selection, DefaultSelection, Collapse, Expand

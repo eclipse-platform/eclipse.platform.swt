@@ -13,9 +13,17 @@ import org.eclipse.swt.events.*;
 
 /**
  * Instances of this class implement the notebook user interface
- * metaphore.  It allows the user to select a notebook page from
+ * metaphor.  It allows the user to select a notebook page from
  * set of pages.
  * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>TabItem</code>.
+ * <code>Control</code> children are created and then set into a
+ * tab item using <code>TabItem#setControl</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>

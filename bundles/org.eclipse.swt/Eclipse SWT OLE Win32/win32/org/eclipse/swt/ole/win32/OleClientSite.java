@@ -30,6 +30,10 @@ import org.eclipse.swt.internal.win32.*;
  * <p>This object implements the OLE Interfaces IUnknown, IOleClientSite, IAdviseSink, 
  * IOleInPlaceSite
  *
+ * <p>Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  *	<dt><b>Styles</b> <dd>BORDER 
  *	<dt><b>Events</b> <dd>Dispose, Move, Resize

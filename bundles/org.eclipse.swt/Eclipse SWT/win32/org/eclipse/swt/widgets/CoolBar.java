@@ -12,6 +12,14 @@ import org.eclipse.swt.graphics.*;
 /**
  * Instances of this class provide an area for dynamically
  * positioning the items they contain.
+ * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>CoolItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>(none)</dd>

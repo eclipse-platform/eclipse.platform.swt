@@ -15,6 +15,13 @@ import org.eclipse.swt.events.*;
  * that displays a hierarchy of items and issue notificiation when an
  * item in the hierarchy is selected.
  * <p>
+ * The item children that may be added to instances of this class
+ * must be of type <code>TreeItem</code>.
+ * </p><p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add <code>Control</code> children to it,
+ * or set a layout on it.
+ * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>SINGLE, MULTI, CHECK</dd>

@@ -15,6 +15,9 @@ import org.eclipse.swt.widgets.*;
  * that combines a text field and a list and issues notificiation
  * when an item is selected from the list.
  * <p>
+ * Note that although this class is a subclass of <code>Composite</code>,
+ * it does not make sense to add children to it, or set a layout on it.
+ * </p>
  * <dl>
  * <dt><b>Styles:</b>
  * <dd>BORDER, READ_ONLY</dd>
