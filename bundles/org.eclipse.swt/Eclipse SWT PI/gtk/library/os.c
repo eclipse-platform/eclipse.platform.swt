@@ -648,6 +648,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GtkTargetPair_1sizeof)
 }
 #endif
 
+#ifndef NO_GtkTextIter_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GtkTextIter_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GtkTextIter_1sizeof\n")
+	rc = (jint)GtkTextIter_sizeof();
+	NATIVE_EXIT(env, that, "GtkTextIter_1sizeof\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GtkTreeIter_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GtkTreeIter_1sizeof)
 	(JNIEnv *env, jclass that)

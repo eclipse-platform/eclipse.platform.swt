@@ -361,6 +361,7 @@ public static final synchronized native int GtkRequisition_sizeof();
 public static final synchronized native int GtkSelectionData_sizeof();
 public static final synchronized native int GtkTargetEntry_sizeof();
 public static final synchronized native int GtkTargetPair_sizeof();
+public static final synchronized native int GtkTextIter_sizeof();
 public static final synchronized native int GtkTreeIter_sizeof();
 public static final synchronized native int PangoAttribute_sizeof();
 public static final synchronized native int PangoRectangle_sizeof();

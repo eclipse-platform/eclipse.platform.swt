@@ -39,7 +39,7 @@ public class Text extends Scrollable {
 	boolean doubleClick;
 	
 	static final int INNER_BORDER = 2;
-	static final int ITER_SIZEOF = 56;
+	static final int ITER_SIZEOF = OS.GtkTextIter_sizeof();
 	
 	public final static int LIMIT;
 	public final static String DELIMITER;
