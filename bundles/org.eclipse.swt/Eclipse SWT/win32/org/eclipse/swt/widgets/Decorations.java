@@ -490,8 +490,6 @@ public Button getDefaultButton () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @see #getImages
  */
 public Image getImage () {
 	checkWidget ();
@@ -522,8 +520,6 @@ public Image getImage () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @see #getImage
  * 
  * @since 3.0
  */
@@ -821,8 +817,6 @@ void setDefaultButton (Button button, boolean save) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
- * 
- * @see #setImages
  */
 public void setImage (Image image) {
 	checkWidget ();
@@ -831,51 +825,16 @@ public void setImage (Image image) {
 	setImages (image, null);
 }
 
-/**
- * Sets the receiver's images to the argument, which may
- * be an empty array. Images are typically displayed by the
- * window manager when the instance is marked as iconified,
- * and may also be displayed somewhere in the trim when the
- * instance is in normal or maximized states. Depending where
- * the icon is displayed, the platform chooses the icon with
- * the "best" size. It is expected that the array will contain
- * the same icon rendered at different resolutions.
- * 
- * @param images the new image array
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
- *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 3.0
- * 
- * @see #setImage
- */
-public void setImages (Image [] images) {
-	checkWidget ();
-	if (images == null) error (SWT.ERROR_INVALID_ARGUMENT);
-	for (int i = 0; i < images.length; i++) {
-		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-	}
-	this.images = images;
-	setImages (null, images);
-}
-
 void setImages (Image image, Image [] images) {
 	/*
-	 * Feature in WinCE.  WM_SETICON and WM_GETICON set the icon
-	 * for the window class, not the window instance.  This means
-	 * that it is possible to set an icon into a window and then
-	 * later free the icon, thus freeing the icon for every window.
-	 * The fix is to avoid the API.
-	 * 
-	 * On WinCE PPC, icons in windows are not displayed anyways.
-	 */
+	* Feature in WinCE.  WM_SETICON and WM_GETICON set the icon
+	* for the window class, not the window instance.  This means
+	* that it is possible to set an icon into a window and then
+	* later free the icon, thus freeing the icon for every window.
+	* The fix is to avoid the API.
+	* 
+	* On WinCE PPC, icons in windows are not displayed anyways.
+	*/
 	if (OS.IsWinCE) return;
 	if (smallImage != null) smallImage.dispose ();
 	if (largeImage != null) largeImage.dispose ();
@@ -935,18 +894,51 @@ void setImages (Image image, Image [] images) {
 	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_BIG, hLargeIcon);
 	
 	/*
-	 * Bug in Windows.  When WM_SETICON is used to remove an
-	 * icon from the window trimmings for a window with the
-	 * extended style bits WS_EX_DLGMODALFRAME, the window
-	 * trimmings do not redraw to hide the previous icon.
-	 * The fix is to force a redraw.
-	 */
+	* Bug in Windows.  When WM_SETICON is used to remove an
+	* icon from the window trimmings for a window with the
+	* extended style bits WS_EX_DLGMODALFRAME, the window
+	* trimmings do not redraw to hide the previous icon.
+	* The fix is to force a redraw.
+	*/
 	if (!OS.IsWinCE) {
 		if (hSmallIcon == 0 && hLargeIcon == 0 && (style & SWT.BORDER) != 0) {
 			int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
 			OS.RedrawWindow (handle, null, 0, flags);
 		}
 	}
+}
+
+/**
+ * Sets the receiver's images to the argument, which may
+ * be an empty array. Images are typically displayed by the
+ * window manager when the instance is marked as iconified,
+ * and may also be displayed somewhere in the trim when the
+ * instance is in normal or maximized states. Depending where
+ * the icon is displayed, the platform chooses the icon with
+ * the "best" size. It is expected that the array will contain
+ * the same icon rendered at different resolutions.
+ * 
+ * @param images the new image array
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setImages (Image [] images) {
+	checkWidget ();
+	if (images == null) error (SWT.ERROR_INVALID_ARGUMENT);
+	for (int i = 0; i < images.length; i++) {
+		if (images [i] == null || images [i].isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.images = images;
+	setImages (null, images);
 }
 
 /**
