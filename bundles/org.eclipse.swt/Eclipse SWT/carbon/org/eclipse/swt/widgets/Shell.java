@@ -500,7 +500,7 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	* right corner of the size in the region and to
 	* make these points transparent.
 	*/
-	if (region == null) return;
+	if (region == null || region.isDisposed ()) return;
 	boolean origin = region.contains (0, 0);
 	boolean limit = region.contains(rgnRect.right - 1, rgnRect.bottom - 1);
 	if (origin && limit) return;
@@ -776,7 +776,7 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 		layoutControl (false);
 		sendEvent (SWT.Resize);
 		if (layout != null) layout.layout (this, false);
-		if (region != null) {
+		if (region != null && !region.isDisposed()) {
 			OS.GetEventParameter (theEvent, OS.kEventParamCurrentBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rgnRect);
 			OS.SetRect (rgnRect, (short) 0, (short) 0, (short) (rgnRect.right - rgnRect.left), (short) (rgnRect.bottom - rgnRect.top));
 			OS.ReshapeCustomWindow (shellHandle);
@@ -846,7 +846,7 @@ int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 int kEventWindowGetRegion (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowGetRegion (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (region == null) return OS.eventNotHandledErr;
+	if (region == null || region.isDisposed ()) return OS.eventNotHandledErr;
 	short [] regionCode = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamWindowRegionCode , OS.typeWindowRegionCode , null, 2, null, regionCode);
 	int [] temp = new int [1];
@@ -906,7 +906,7 @@ int kEventWindowHidden (int nextHandler, int theEvent, int userData) {
 int kEventWindowHitTest (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowHitTest (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (region == null) return OS.eventNotHandledErr;
+	if (region == null || region.isDisposed ()) return OS.eventNotHandledErr;
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
@@ -1181,6 +1181,7 @@ public void setMinimized (boolean minimized) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (region == null) {
 		rgnRect = null;
 	} else {
