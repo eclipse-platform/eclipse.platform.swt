@@ -72,7 +72,7 @@ class StyledTextPrinter implements Runnable {
 	}
 	
 	public void run() {
-		if (printer.startJob("StyledText")) {
+		if (printer.startJob("Printing")) {
 			Rectangle clientArea = printer.getClientArea();
 			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
 			Point dpi = printer.getDPI();
