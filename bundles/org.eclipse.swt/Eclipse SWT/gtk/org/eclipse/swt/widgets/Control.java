@@ -77,6 +77,11 @@ GdkColor defaultBackground () {
 	return display.COLOR_WIDGET_BACKGROUND;
 }
 
+int defaultFont () {
+	Display display = getDisplay ();
+	return display.defaultFont;
+}
+
 GdkColor defaultForeground () {
 	Display display = getDisplay ();
 	return display.COLOR_WIDGET_FOREGROUND;
@@ -1983,8 +1988,7 @@ public void setFont (Font font) {
 	checkWidget();
 	int fontDesc;
 	if (font == null) {
-//		fontDesc = defaultFont ();
-		return;
+		fontDesc = defaultFont ();
 	} else {
 		if (font.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		fontDesc = font.handle;

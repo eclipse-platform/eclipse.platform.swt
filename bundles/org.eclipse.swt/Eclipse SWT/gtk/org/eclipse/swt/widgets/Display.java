@@ -110,7 +110,9 @@ public class Display extends Device {
 	Callback caretCallback;
 	int caretID, caretProc;
 	
-	Font systemFont;
+	/* Fonts */
+	int defaultFont;
+	
 	int textHighlightThickness = 1; /* for emulated widgets */
 		
 	/* Colors */
@@ -796,7 +798,7 @@ public Color getSystemColor (int id) {
 	return Color.gtk_new (this, gdkColor);
 }
 
-final void initializeSystemColors() {
+final void initializeSystemResources() {
 	int shellHandle = OS.gtk_window_new (OS.GTK_WINDOW_TOPLEVEL);
 	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_widget_realize (shellHandle);
@@ -804,6 +806,8 @@ final void initializeSystemColors() {
 	GdkColor gdkColor;
 	GtkStyle style = new GtkStyle();
 	OS.memmove (style, OS.gtk_widget_get_style (shellHandle));
+	
+	defaultFont = OS.pango_font_description_copy (style.font_desc);
 
 	gdkColor = new GdkColor();
 	gdkColor.pixel = style.black_pixel;
@@ -970,8 +974,7 @@ final void initializeSystemColors() {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	if (systemFont==null) systemFont = new Font(this, new FontData("fixed", 12, 0));
-	return systemFont;
+	return Font.gtk_new (this, defaultFont);
 }
 
 /**
@@ -987,7 +990,7 @@ public Thread getThread () {
 protected void init () {
 	super.init ();
 	initializeCallbacks ();
-	initializeSystemColors ();
+	initializeSystemResources ();
 }
 
 void initializeCallbacks () {
@@ -1198,6 +1201,9 @@ void releaseDisplay () {
 
 	messages = null;  messageLock = null; thread = null;
 	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
+	
+	if (defaultFont != 0) OS.pango_font_description_free (defaultFont);
+	defaultFont = 0;
 	
 	COLOR_WIDGET_DARK_SHADOW = COLOR_WIDGET_NORMAL_SHADOW = COLOR_WIDGET_LIGHT_SHADOW =
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = COLOR_WIDGET_BACKGROUND = COLOR_WIDGET_BORDER =

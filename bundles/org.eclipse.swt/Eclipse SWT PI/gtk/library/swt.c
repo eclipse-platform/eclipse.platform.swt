@@ -3945,6 +3945,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1context_1set_
 	pango_context_set_font_description((PangoContext *)arg0, (PangoFontDescription *)arg1);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1copy
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("pango_1font_1description_1copy\n")
+
+	return (jint)pango_font_description_copy((PangoFontDescription *)arg0);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_pango_1font_1description_1free
 	(JNIEnv *env, jclass that, jint arg0)
 {

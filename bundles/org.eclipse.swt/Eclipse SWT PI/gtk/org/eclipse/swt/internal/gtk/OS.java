@@ -620,6 +620,7 @@ public static final native int pango_context_get_language(int context);
 public static final native int pango_context_get_metrics(int context, int desc, int language);
 public static final native void pango_context_list_families(int context, int[] families, int[] n_families);
 public static final native void pango_context_set_font_description(int context, int descr);
+public static final native int pango_font_description_copy(int desc);
 public static final native void pango_font_description_free(int desc);
 public static final native int pango_font_description_from_string(byte[] str);
 public static final native int pango_font_description_get_family(int desc);
