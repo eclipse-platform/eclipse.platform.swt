@@ -37,7 +37,7 @@ import org.eclipse.swt.internal.carbon.Rect;
  * </p>
  */
 public class Group extends Composite {
-	String text;
+	String text = "";
 	
 /**
  * Constructs a new instance of this class given its parent
