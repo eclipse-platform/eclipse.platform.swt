@@ -440,16 +440,20 @@ void setStyleRange(StyleRange newStyle) {
 void replaceStyleRanges(int start, int length, StyleRange[] ranges) {
 	clearStyle(new StyleRange(start, length, null, null));
 	// find insert point
-	Point insertPt = getOverlappingStyles(0, start - 1);
-	int index;
-	if (insertPt == null) {
-		// insert new styles at beginning of array
-		index = 0;
-	} else {
-		// insert at x + y
-		index = insertPt.x + insertPt.y;
-	};
-	insertStyles(ranges, index);
+	int high = styleCount;
+	int low = -1;
+	int index = high;
+	while (high - low > 1) {
+		index = (high + low) / 2;
+		StyleRange style = styles[index];
+		if (start <= style.start) {
+			high = index;			
+		}
+		else {
+			low = index;
+		}
+	}
+	insertStyles(ranges, high);
 }
 /** 
  * Sets the array of styles and discards old styles.  Called by StyledText.
