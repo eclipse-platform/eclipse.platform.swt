@@ -2259,6 +2259,13 @@ boolean runDisposeWidgets () {
 	return true;
 }
 
+boolean runEventLoopTimers () {
+	allowTimers = false;
+	boolean result = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, false, null) == OS.noErr;
+	allowTimers = true;
+	return result;
+}
+
 void runGrabs () {
 	if (grabControl == null || grabbing) return;
 	Rect rect = new Rect ();
