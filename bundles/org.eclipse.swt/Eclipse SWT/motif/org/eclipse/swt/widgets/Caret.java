@@ -225,8 +225,6 @@ public boolean getVisible () {
 	return isVisible;
 }
 boolean hideCaret () {
-	Display display = getDisplay ();
-	if (display.currentCaret != this) return false;
 	if (!isShowing) return true;
 	isShowing = false;
 	return drawCaret ();
@@ -256,8 +254,8 @@ boolean isFocusCaret () {
 void killFocus () {
 	Display display = getDisplay ();
 	if (display.currentCaret != this) return;
-	if (isVisible) hideCaret ();
 	display.setCurrentCaret (null);
+	if (isVisible) hideCaret ();
 }
 void releaseChild () {
 	super.releaseChild ();
@@ -267,7 +265,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	Display display = getDisplay ();
 	if (display.currentCaret == this) {
-		if (isVisible) hideCaret ();
+		hideCaret ();
 		display.setCurrentCaret (null);
 	}
 	parent = null;
@@ -291,28 +289,13 @@ void releaseWidget () {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	boolean samePosition, sameExtent, showing;
-	samePosition = (this.x == x) && (this.y == y);
-	sameExtent = (this.width == width) && (this.height == height);
-	if ((samePosition) && (sameExtent)) return;
-	if (isShowing) hideCaret ();
+	if (this.x == x && this.y == y && this.width == width && this.height == height) return;
+	boolean isFocus = isFocusCaret ();
+	if (isFocus) hideCaret ();
 	this.x = x; this.y = y;
 	this.width = width; this.height = height;
-	if (sameExtent) {
-			moved = true;
-			if (isVisible ()) {
-				moved = false;
-				parent.updateCaret ();
-			}
-	} else {
-			resized = true;
-			if (isVisible ()) {
-				moved = false;
-				parent.updateCaret ();
-				resized = false;
-			}
-	}
-	if (isShowing) showCaret ();
+	parent.updateCaret ();
+	if (isFocus) showCaret ();
 }
 /**
  * Sets the receiver's size and location to the rectangular
@@ -379,9 +362,10 @@ public void setImage (Image image) {
 	if (image != null && image.isDisposed ()) {
 		error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (isShowing) hideCaret ();
+	boolean isFocus = isFocusCaret ();
+	if (isFocus) hideCaret ();
 	this.image = image;
-	if (isShowing) showCaret ();
+	if (isFocus) showCaret ();
 }
 /**
  * Sets the receiver's location to the point specified by
@@ -470,14 +454,15 @@ public void setSize (Point size) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible == isVisible) return;
-	if (isVisible = visible) {
+	isVisible = visible;
+	if (!isFocusCaret ()) return;
+	if (isVisible) {
 		showCaret ();
 	} else {
 		hideCaret ();
 	}
 }
 boolean showCaret () {
-	if (getDisplay ().currentCaret != this) return false;
 	if (isShowing) return true;
 	isShowing = true;
 	return drawCaret ();
