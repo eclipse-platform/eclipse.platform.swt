@@ -223,20 +223,24 @@ String openClassicDialog () {
 	if (response == OS.GTK_RESPONSE_OK) {
 		int /*long*/ fileNamePtr = OS.gtk_file_selection_get_filename (handle);
 		int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (fileNamePtr, -1, null, null, null);
-		int /*long*/ [] items_written = new int /*long*/ [1];
-		int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
-		int length = (int)/*64*/items_written [0];
-		char [] buffer = new char [length];
-		OS.memmove (buffer, utf16Ptr, length * 2);
-		String osAnswer = new String (buffer);
-		OS.g_free (utf16Ptr);
-		OS.g_free (utf8Ptr);
-		if (osAnswer != null) {
-			/* remove trailing separator, unless root directory */
-			if (!osAnswer.equals (SEPARATOR) && osAnswer.endsWith (SEPARATOR)) {
-				osAnswer = osAnswer.substring (0, osAnswer.length () - 1);
+		if (utf8Ptr != 0) {
+			int /*long*/ [] items_written = new int /*long*/ [1];
+			int /*long*/ utf16Ptr = OS.g_utf8_to_utf16 (utf8Ptr, -1, null, items_written, null);
+			if (utf16Ptr != 0) {
+				int length = (int)/*64*/items_written [0];
+				char [] buffer = new char [length];
+				OS.memmove (buffer, utf16Ptr, length * 2);
+				String osAnswer = new String (buffer);
+				if (osAnswer != null) {
+					/* remove trailing separator, unless root directory */
+					if (!osAnswer.equals (SEPARATOR) && osAnswer.endsWith (SEPARATOR)) {
+						osAnswer = osAnswer.substring (0, osAnswer.length () - 1);
+					}
+					answer = filterPath = osAnswer;
+				}
+				OS.g_free (utf16Ptr);
 			}
-			answer = filterPath = osAnswer;
+			OS.g_free (utf8Ptr);
 		}
 	}
 	OS.gtk_widget_destroy (handle);
