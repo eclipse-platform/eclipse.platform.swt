@@ -1725,7 +1725,11 @@ void showToolTip (int handle, String toolTipText) {
 		if (xmString != 0) OS.XmStringFree (xmString);
 	} else {
 		int widgetClass = OS.OverrideShellWidgetClass ();
-		int [] argList1 = {OS.XmNmwmDecorations, 0, OS.XmNborderWidth, 1};
+		int [] argList1 = {
+			OS.XmNmwmDecorations, 0,
+			OS.XmNborderWidth, 1,
+			OS.XmNallowShellResize, 1,
+		};
 		shellHandle = OS.XtCreatePopupShell (null, widgetClass, handle, argList1, argList1.length / 2);
 		Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
 		Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
