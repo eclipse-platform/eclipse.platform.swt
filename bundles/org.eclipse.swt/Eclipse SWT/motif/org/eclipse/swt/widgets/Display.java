@@ -242,6 +242,7 @@ public class Display extends Device {
 		{OS.XK_KP_7,		SWT.KEYPAD_7},
 		{OS.XK_KP_8,		SWT.KEYPAD_8},
 		{OS.XK_KP_9,		SWT.KEYPAD_9},
+		{OS.XK_KP_Equal,	SWT.KEYPAD_EQUAL},
 
 		/* Other keys */
 		{OS.XK_Caps_Lock,	SWT.CAPS_LOCK},

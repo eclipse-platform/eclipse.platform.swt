@@ -119,6 +119,7 @@ public class OS {
 	public static final int GDK_KP_Down = 0xFF99;
 	public static final int GDK_KP_End = 0xFF9C;
 	public static final int GDK_KP_Enter = 0xff8d;
+	public static final int GDK_KP_Equal = 0xffbd;
 	public static final int GDK_KP_Home = 0xFF95;
 	public static final int GDK_KP_Insert = 0xFF9E;
 	public static final int GDK_KP_Left = 0xFF96;

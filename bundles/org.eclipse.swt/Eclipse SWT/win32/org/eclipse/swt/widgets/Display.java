@@ -230,6 +230,7 @@ public class Display extends Device {
 		{OS.VK_NUMPAD7,		SWT.KEYPAD_7},
 		{OS.VK_NUMPAD8,		SWT.KEYPAD_8},
 		{OS.VK_NUMPAD9,		SWT.KEYPAD_9},
+//		{OS.VK_????,		SWT.KEYPAD_EQUAL},
 
 		/* Other keys */
 		{OS.VK_CAPITAL,		SWT.CAPS_LOCK},
