@@ -129,7 +129,7 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 	if (source == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (mask == null) {
 		if (source.getTransparencyType() != SWT.TRANSPARENCY_MASK) {
-			SWT.error(SWT.ERROR_NULL_ARGUMENT);
+			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		}
 		mask = source.getTransparencyMask();
 	}
