@@ -318,7 +318,7 @@ private int getMenuItemID(int hMenu, int index) {
 	MENUITEMINFO lpmii = new MENUITEMINFO();
 	lpmii.cbSize = MENUITEMINFO.sizeof;
 	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_SUBMENU | OS.MIIM_ID;
-	OS.GetMenuItemInfoA(hMenu, index, true, lpmii);
+	OS.GetMenuItemInfo(hMenu, index, true, lpmii);
 	if ((lpmii.fState & OS.MF_POPUP) == OS.MF_POPUP) {
 		id = lpmii.hSubMenu;
 	} else {
@@ -366,7 +366,7 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 	int byteCount = cch * TCHAR.sizeof;
 	int pszText = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	lpmii.cbSize = MENUITEMINFO.sizeof;
-	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_SUBMENU;
+	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_SUBMENU | OS.MIIM_DATA;
 	lpmii.dwTypeData = pszText;
 	lpmii.cch = cch;
 
@@ -380,7 +380,7 @@ private int InsertMenus(int hmenuShared, int lpMenuWidths) {
 			if (item != null) {
 				int index = item.getParent().indexOf(item);
 				lpmii.cch = cch;  // lpmii.cch gets updated by GetMenuItemInfo to indicate the 
-				                  // exact nuber of characters in name.  Reset it to our max size 
+				                  // exact number of characters in name.  Reset it to our max size 
 				                  // before each call.
 				if (OS.GetMenuItemInfo(hMenu, index, true, lpmii)) {
 					if (OS.InsertMenuItem(hmenuShared, newindex, true, lpmii)) {
