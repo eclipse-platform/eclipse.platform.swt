@@ -184,6 +184,7 @@ void createHandle (int index) {
 			separatorHandle = isVertical ? OS.gtk_hseparator_new() : OS.gtk_vseparator_new();
 			if (separatorHandle == 0) error (SWT.ERROR_NO_HANDLES);
 			OS.gtk_widget_set_size_request (separatorHandle, isVertical ? 15 : 6, isVertical ? 6 : 15);
+			OS.gtk_widget_set_size_request (handle, isVertical ? 15 : 6, isVertical ? 6 : 15);
 			OS.gtk_container_add (handle, separatorHandle);
 			break;
 		case SWT.DROP_DOWN:
