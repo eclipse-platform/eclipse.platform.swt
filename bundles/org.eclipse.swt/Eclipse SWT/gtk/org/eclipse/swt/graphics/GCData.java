@@ -19,7 +19,7 @@ import org.eclipse.swt.*;
  *
  * @private
  */
-public class GCData {
+public final class GCData {
 	public Image image;
 	public int drawable;
 	public int clipRgn;
