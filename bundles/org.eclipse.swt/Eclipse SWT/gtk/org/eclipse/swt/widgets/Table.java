@@ -467,6 +467,20 @@ void createItem (TableColumn column, int index) {
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
 	column.setFontDescription (getFontDescription ());
+	if (columnCount >= 1) {
+		for (int i=0; i<itemCount; i++) {
+			TableItem item = items [i];
+			if (item != null) {
+				Font [] cellFont = item.cellFont;
+				if (cellFont != null) {
+					Font [] temp = new Font [columnCount];
+					System.arraycopy (cellFont, 0, temp, 0, index);
+					System.arraycopy (cellFont, index, temp, index+1, columnCount-index-1);
+					item.cellFont = temp;
+				}
+			}
+		}
+	}
 }
 
 void createItem (TableItem item, int index) {
@@ -500,7 +514,7 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 			OS.gtk_tree_view_column_add_attribute (columnHandle, checkRenderer, OS.inconsistent, GRAYED_COLUMN);
 		}
 		/*
-		* Bug on GTK. Gtk renders the background on top of the checkbox.
+		* Bug in GTK. GTK renders the background on top of the checkbox.
 		* This only happens in version 2.2.1 and earlier. The fix is not to set the background.   
 		*/
 		if (OS.GTK_VERSION > OS.VERSION (2, 2, 1)) {
@@ -513,7 +527,7 @@ void createRenderers (int /*long*/ columnHandle, int modelIndex, boolean check, 
 	if (textRenderer == 0) error (SWT.ERROR_NO_HANDLES);
 	
 	/*
-	* Feature on GTK.  When a tree view column contains only one activatable
+	* Feature in GTK.  When a tree view column contains only one activatable
 	* cell renderer such as a toggle renderer, mouse clicks anywhere in a cell
 	* activate that renderer. The workaround is to set a second  cell renderer
 	* to be activatable.
@@ -747,6 +761,18 @@ void destroyItem (TableColumn column) {
 				OS.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_FOREGROUND, 0, -1);
 				OS.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_BACKGROUND, 0, -1);
 				OS.gtk_list_store_set (modelHandle, iter, modelIndex + CELL_FONT, 0, -1);
+				
+				Font [] cellFont = item.cellFont;
+				if (cellFont != null) {
+					if (columnCount == 1) {
+						item.cellFont = null;
+					} else {
+						Font [] temp = new Font [columnCount - 1];
+						System.arraycopy (cellFont, 0, temp, 0, index);
+						System.arraycopy (cellFont, index + 1, temp, index, columnCount - 1 - index);
+						item.cellFont = temp;
+					}
+				}
 			}
 		}
 		if (index == 0) {
