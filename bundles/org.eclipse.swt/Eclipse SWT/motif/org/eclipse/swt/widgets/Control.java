@@ -1915,7 +1915,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	setBounds (x, y, width, height);
+	setBounds (x, y, width, height, true, true);
 }
 /**
  * Sets the receiver's size and location to the rectangular
@@ -1938,7 +1938,7 @@ public void setBounds (int x, int y, int width, int height) {
 public void setBounds (Rectangle rect) {
 	checkWidget ();
 	if (rect == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setBounds (rect.x, rect.y, rect.width, rect.height, true, true);
+	setBounds (rect.x, rect.y, rect.width, rect.height);
 }
 /**
  * If the argument is <code>true</code>, causes the receiver to have
