@@ -519,6 +519,7 @@ void selectRadio () {
 /**
  * Sets the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:
+ * <code>SWT.MOD1 | SWT.MOD2 | 'T', SWT.MOD3 | SWT.F2</code>.
  * <code>SWT.CONTROL | SWT.SHIFT | 'T', SWT.ALT | SWT.F2</code>.
  *
  * @param accelerator an integer that is the bit-wise OR of masks and a key
