@@ -727,7 +727,7 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 	int depth = bits * planes;
 	
 	/* Determine the DIB palette */
-	boolean isDirect = depth <= 8;
+	boolean isDirect = depth > 8;
 	RGB[] rgbs = null;
 	if (!isDirect) {
 		int numColors = 1 << depth;
