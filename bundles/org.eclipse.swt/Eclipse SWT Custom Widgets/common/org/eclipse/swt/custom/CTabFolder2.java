@@ -130,6 +130,7 @@ public class CTabFolder2 extends Composite {
 	int expandImageState = NORMAL;
 	
 	boolean tipShowing;
+	int upCount = 0;
 	
 	// borders and shapes
 	boolean showHighlight =  false;
@@ -1735,6 +1736,7 @@ void onMouse(Event event) {
 		}
 		case SWT.MouseUp: {
 			if (event.button != 1) return;
+			if (upCount > 0) upCount++;
 			if (closeRect.contains(x, y)) {
 				closeImageState = HOT;
 				redraw(closeRect.x, closeRect.y, closeRect.width, closeRect.height, false);
@@ -1792,25 +1794,32 @@ void onMouse(Event event) {
 				redraw(expandRect.x, expandRect.y, expandRect.width, expandRect.height, false);
 				return;
 			}
-			if (single && items.length > 1) {
-				for (int i=0; i<items.length; i++) {
-					Rectangle bounds = items[i].getBounds();
-					if (bounds.contains(x, y)) {
-						Rectangle rect = new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);
-						rect.y += onBottom ? -HIGHLIGHT_HEADER :HIGHLIGHT_HEADER;
-						if (listListeners.length == 0) {
-							showList(rect, SWT.LEFT);
-						} else {
-							CTabFolderEvent e = new CTabFolderEvent(this);
-							e.widget = this;
-							e.time = event.time;
-							e.rect = rect;
-							for (int j = 0; j < listListeners.length; j++) {
-								listListeners[j].showList(e);
+			if (upCount == 0 && single && selectedIndex != -1) {
+				Rectangle bounds = items[selectedIndex].getBounds();
+				if (bounds.contains(x, y)) {
+					upCount = 1;
+					Display display = getDisplay();
+					int time = 3 * display.getDoubleClickTime() / 2;
+					display.timerExec (time, new Runnable() {
+						public void run () {
+							if (!isDisposed() && upCount == 1 && selectedIndex != -1) {
+								Rectangle rect = items[selectedIndex].getBounds();
+								rect.y += onBottom ? -HIGHLIGHT_HEADER :HIGHLIGHT_HEADER;
+								CTabFolderEvent e = new CTabFolderEvent(CTabFolder2.this);
+								e.widget = CTabFolder2.this;
+								e.time = (int)System.currentTimeMillis();
+								e.rect = rect;
+								if (listListeners.length == 0) {
+									showList(e.rect, SWT.LEFT);
+								} else {
+									for (int j = 0; j < listListeners.length; j++) {
+										listListeners[j].showList(e);
+									}
+								}
 							}
+							upCount = 0;
 						}
-						return;
-					}
+					});
 				}
 			}
 			break;
