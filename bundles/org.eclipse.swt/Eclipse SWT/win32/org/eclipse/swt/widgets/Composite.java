@@ -15,11 +15,17 @@ import org.eclipse.swt.graphics.*;
  * of containing other controls.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>NO_BACKGROUND, NO_FOCUS, NO_MERGE_PAINTS, NO_REDRAW_RESIZE</dd>
+ * <dd>NO_BACKGROUND, NO_FOCUS, NO_MERGE_PAINTS, NO_REDRAW_RESIZE, NO_RADIO_GROUP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
  * <p>
+ * Note: The <code>NO_BACKGROUND</code>, <code>NO_FOCUS</code>, <code>NO_MERGE_PAINTS</code>,
+ * and <code>NO_REDRAW_RESIZE</code> styles are intended for use with <code>Canvas</code>.
+ * They can be used with <code>Composite</code> if you are drawing your own, but their
+ * behavior is undefined if they are used with subclasses of <code>Composite</code> other
+ * than <code>Canvas</code>.
+ * </p><p>
  * This class may be subclassed by custom control implementors
  * who are building controls that are constructed from aggregates
  * of other controls.
@@ -66,6 +72,7 @@ Composite () {
  * @see SWT#NO_FOCUS
  * @see SWT#NO_MERGE_PAINTS
  * @see SWT#NO_REDRAW_RESIZE
+ * @see SWT#NO_RADIO_GROUP
  * @see Widget#getStyle
  */
 public Composite (Composite parent, int style) {

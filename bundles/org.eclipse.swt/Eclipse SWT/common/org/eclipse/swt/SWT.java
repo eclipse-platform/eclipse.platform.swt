@@ -431,6 +431,7 @@ public class SWT {
 	 * A tool window is a window intended to be used as a floating toolbar.
 	 * It typically has a title bar that is shorter than a normal title bar,
 	 * and the window title is typically drawn using a smaller font.
+	 * <br>Note that this is a <em>HINT</em>.
 	 * </p><p><b>Used By:</b><ul>
 	 * <li><code>Shell</code></li>
 	 * </ul></p>
@@ -692,7 +693,7 @@ public class SWT {
 	/**
 	 * style constant for preventing child radio group behavior (value is 1&lt;&lt;22)
 	 * <p><b>Used By:</b><ul>
-	 * <li><code>Canvas</code></li>
+	 * <li><code>Composite</code></li>
 	 * </ul></p>
 	 */
 	public static final int NO_RADIO_GROUP = 1 << 22;

@@ -16,7 +16,7 @@ import org.eclipse.swt.events.*;
  *  
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>LEFT, RIGHT, UP, DOWN</dd>
+ * <dd>LEFT, RIGHT, UP, DOWN, RESIZE</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Move</dd>
  * </dl>
@@ -67,6 +67,7 @@ public class Tracker extends Widget {
  * @see SWT#RIGHT
  * @see SWT#UP
  * @see SWT#DOWN
+ * @see SWT#RESIZE
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
