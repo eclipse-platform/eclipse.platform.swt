@@ -1302,13 +1302,14 @@ public void test_setColumnOrder$I() {
 		table.setColumnOrder(new int[1]);
 		fail("No exception thrown for invalid argument");
 	} catch (IllegalArgumentException ex) {}
-	table.dispose();
+	Table table2 = new Table(table.getParent(), SWT.NONE);
+	table2.dispose();
 	try {
-		table.getColumnOrder();
+		table2.getColumnOrder();
 		fail("No exception thrown for widget is Disposed");
 	} catch (SWTException ex) {}
 	try {
-		table.setColumnOrder(new int[0]);
+		table2.setColumnOrder(new int[0]);
 		fail("No exception thrown for widget is Disposed");
 	} catch (SWTException ex) {}
 }
@@ -1656,6 +1657,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_deselectII");
 	methodNames.addElement("test_getColumnCount");
 	methodNames.addElement("test_getColumnI");
+	methodNames.addElement("test_getColumnOrder");
 	methodNames.addElement("test_getColumns");
 	methodNames.addElement("test_getGridLineWidth");
 	methodNames.addElement("test_getHeaderHeight");
@@ -1683,6 +1685,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_selectAll");
 	methodNames.addElement("test_selectI");
 	methodNames.addElement("test_selectII");
+	methodNames.addElement("test_setColumnOrder$I");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setHeaderVisibleZ");
 	methodNames.addElement("test_setLinesVisibleZ");
@@ -1714,6 +1717,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_deselectII")) test_deselectII();
 	else if (getName().equals("test_getColumnCount")) test_getColumnCount();
 	else if (getName().equals("test_getColumnI")) test_getColumnI();
+	else if (getName().equals("test_getColumnOrder")) test_getColumnOrder();
 	else if (getName().equals("test_getColumns")) test_getColumns();
 	else if (getName().equals("test_getGridLineWidth")) test_getGridLineWidth();
 	else if (getName().equals("test_getHeaderHeight")) test_getHeaderHeight();
@@ -1741,6 +1745,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_selectAll")) test_selectAll();
 	else if (getName().equals("test_selectI")) test_selectI();
 	else if (getName().equals("test_selectII")) test_selectII();
+	else if (getName().equals("test_setColumnOrder$I")) test_setColumnOrder$I();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setHeaderVisibleZ")) test_setHeaderVisibleZ();
 	else if (getName().equals("test_setLinesVisibleZ")) test_setLinesVisibleZ();
