@@ -1,15 +1,10 @@
 package org.eclipse.swt.custom;
 
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.graphics.Font;
-import org.eclipse.swt.graphics.GC;
-import org.eclipse.swt.internal.BidiUtil;
-import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.widgets.Control;
-import java.io.*;
-import java.util.Enumeration;
-import java.util.Vector;
+import java.util.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * This class provides API for StyledText to implement bidirectional text
