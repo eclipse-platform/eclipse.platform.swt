@@ -1740,6 +1740,7 @@ public void setSelection (int [] indices) {
 		int focusIndex = indices [0];
 		if (focusIndex != -1) setFocusIndex (focusIndex);
 	}
+	showSelection ();
 }
 
 /**
@@ -1776,6 +1777,7 @@ public void setSelection (TableItem [] items) {
 		}
 	}
 	if (focusIndex != -1) setFocusIndex (focusIndex);
+	showSelection ();
 }
 
 boolean setTabGroupFocus () {
@@ -1802,6 +1804,7 @@ public void setSelection (int index) {
 	deselectAll ();
 	select (index);
 	if (index != -1) setFocusIndex (index);
+	showSelection ();
 }
 
 /**
@@ -1830,6 +1833,7 @@ public void setSelection (int start, int end) {
 	*/
 	int focusIndex = (style & SWT.SINGLE) != 0 ? end : start;
 	if (focusIndex != -1) setFocusIndex (focusIndex);
+	showSelection ();
 }
 
 /**
