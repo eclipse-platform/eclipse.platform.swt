@@ -126,6 +126,11 @@ public class Display extends Device {
 	static final int GROW_SIZE = 1024;
 	static final int SWT0 = ('s'<<24) + ('w'<<16) + ('t'<<8) + '0';
 	
+	/* Focus */
+	int focusEvent;
+	Control focusControl;
+	boolean ignoreFocus;
+
 	/* Menus */
 	Menu menuBar;
 	Menu [] menus, popups;
@@ -134,9 +139,6 @@ public class Display extends Device {
 	
 	/* Display Shutdown */
 	Runnable [] disposeList;
-	
-	/* Focus */
-	Control focusControl;
 
 	/* System Tray */
 	Tray tray;
@@ -170,9 +172,6 @@ public class Display extends Device {
 	
 	/* Insets */
 	Rect buttonInset, tabFolderNorthInset, tabFolderSouthInset, comboInset;
-	
-	/* Focus */
-	boolean ignoreFocus;
 	
 	/* Fonts */
 	boolean smallFonts;

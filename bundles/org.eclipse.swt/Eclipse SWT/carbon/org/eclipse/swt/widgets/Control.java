@@ -589,6 +589,7 @@ void fixFocus (Control focusControl) {
  */
 public boolean forceFocus () {
 	checkWidget();
+	if (display.focusEvent == SWT.FocusOut) return false;
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible ()/* || !isActive ()*/) return false;
@@ -1378,9 +1379,11 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 		* kEventControlSetFocusPart.
 		*/
 		Display display = this.display;
-		if (part [0] != OS.kControlFocusNoPart) display.focusControl = this;
-		sendFocusEvent (part [0] != OS.kControlFocusNoPart, false);
-		if (part [0] != OS.kControlFocusNoPart) display.focusControl = null;
+		display.focusControl = this;
+		display.focusEvent = part [0] != OS.kControlFocusNoPart ? SWT.FocusIn : SWT.FocusOut;
+		sendFocusEvent (display.focusEvent, false);
+		display.focusEvent = SWT.None;
+		display.focusControl = null;
 
 		// widget could be disposed at this point
 		if (isDisposed ()) return OS.noErr;
@@ -1934,12 +1937,12 @@ void resetVisibleRegion (int control) {
 	}
 }
 
-void sendFocusEvent (boolean focusIn, boolean post) {
+void sendFocusEvent (int event, boolean post) {
 	Shell shell = getShell ();
 	if (post) {
-		postEvent (focusIn ? SWT.FocusIn : SWT.FocusOut);
+		postEvent (event);
 	} else {
-		sendEvent (focusIn ? SWT.FocusIn : SWT.FocusOut);
+		sendEvent (event);
 	}
 	
 	/*
@@ -1949,7 +1952,7 @@ void sendFocusEvent (boolean focusIn, boolean post) {
 	* events.
 	*/
 	if (!shell.isDisposed ()) {
-		if (focusIn) {
+		if (event == SWT.FocusIn) {
 			shell.setActiveControl (this);
 		} else {
 			Display display = shell.display;
@@ -2244,8 +2247,10 @@ public void setEnabled (boolean enabled) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!enabled) {
-		control = display.getFocusControl ();
-		fixFocus = isFocusAncestor (control);
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
 	}
 	if (enabled) {
 		state &= ~DISABLED;
@@ -2621,8 +2626,10 @@ public void setVisible (boolean visible) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!visible) {
-		control = display.getFocusControl ();
-		fixFocus = isFocusAncestor (control);
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
 	}
 	setVisible (topHandle (), visible);
 	if (!visible) {

@@ -845,7 +845,7 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		OS.ClearKeyboardFocus (shellHandle);
 		display.ignoreFocus = false;
 		//TEMPORARY CODE - should be send, but causes a GP
-		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (false, true);
+		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, true);
 	}
 	display.setMenuBar (null);
 	return result;
