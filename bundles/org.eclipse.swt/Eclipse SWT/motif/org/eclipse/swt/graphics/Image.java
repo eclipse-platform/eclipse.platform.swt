@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -240,7 +240,7 @@ public Image(Device device, Image srcImage, int flag) {
 			int onePixel = oneColor.handle.pixel;
 			switch (srcXImage.bits_per_pixel) {
 				case 1:
-					/**
+					/*
 					 * Nothing we can reasonably do here except copy
 					 * the bitmap; we can't make it a higher color depth.
 					 * Short-circuit the rest of the code and return.

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -74,7 +74,6 @@ import org.eclipse.swt.events.*;
  * @see Scrollable#getHorizontalBar
  * @see Scrollable#getVerticalBar
  */
-
 public class ScrollBar extends Widget {
 	Scrollable parent;
 	

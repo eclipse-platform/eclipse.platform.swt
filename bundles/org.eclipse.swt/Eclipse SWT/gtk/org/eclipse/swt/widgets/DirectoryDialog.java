@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.*;
  * within the SWT implementation.
  * </p>
  */
-
 public class DirectoryDialog extends GtkFileDialog {
 	String message = "", filterPath = "";
 

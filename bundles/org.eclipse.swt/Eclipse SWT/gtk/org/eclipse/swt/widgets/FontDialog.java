@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -18,7 +18,6 @@ import org.eclipse.swt.graphics.*;
  * within the SWT implementation.
  * </p>
  */
-
 public class FontDialog extends Dialog {
 	FontData fontData;
 /**
@@ -87,7 +86,6 @@ public FontDialog (Shell parent, int style) {
  * 
  * @return the FontData for the selected font, or null
  */
-
 public FontData getFontData() {
 	return fontData;
 }

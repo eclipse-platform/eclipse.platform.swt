@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
  
@@ -223,7 +223,7 @@ void init(Device device, int red, int green, int blue) {
 		}
 		return;
 	}
-	/**
+	/*
 	 * 2. Allocation failed. Query the entire colormap and
 	 * find the closest match which can be allocated.
 	 * This should never occur on a truecolor display.
@@ -233,7 +233,7 @@ void init(Device device, int red, int green, int blue) {
 	int mapEntries = visual.map_entries;
 	XColor[] queried = new XColor[mapEntries];
 	int[] distances = new int[mapEntries];
-	/**
+	/*
 	 * Query all colors in the colormap and calculate the distance
 	 * from each to the desired color.
 	 */
@@ -247,7 +247,7 @@ void init(Device device, int red, int green, int blue) {
 		int b = blue - ((color.blue >> 8) & 0xFF);
 		distances[i] = r*r + g*g + b*b;
 	}
-	/**
+	/*
 	 * Try to allocate closest matching queried color.
 	 * The allocation can fail if the closest matching
 	 * color is allocated privately, so go through them
@@ -283,7 +283,7 @@ void init(Device device, int red, int green, int blue) {
 		/* The allocation failed; matching color is allocated privately */
 		distances[minIndex] = 0x30000;
 	}
-	/**
+	/*
 	 * 3. Couldn't allocate any of the colors in the colormap.
 	 * This means all colormap entries were allocated privately
 	 * by other applications. Give up and allocate black.

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -85,7 +85,6 @@ import org.eclipse.swt.graphics.*;
  * @see #sleep
  * @see #dispose
  */
-
 public class Display extends Device {
 
 	/* Events Dispatching and Callback */
@@ -554,7 +553,6 @@ public Rectangle getBounds () {
  *
  * @return the current display
  */
-
 public static synchronized Display getCurrent () {
 	Thread current = Thread.currentThread ();
 	for (int i=0; i<Displays.length; i++) {

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -27,7 +27,6 @@ import org.eclipse.swt.accessibility.*;
  * within the SWT implementation.
  * </p>
  */
-
 public abstract class Control extends Widget implements Drawable {
 	int fixedHandle;
 	Composite parent;
@@ -483,7 +482,6 @@ public void setLocation (Point location) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setLocation(int x, int y) {
 	checkWidget();
 	setBounds (x, y, 0, 0, true, false);
@@ -529,7 +527,6 @@ public Point getSize () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void setSize (Point size) {
 	checkWidget ();
 	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -574,7 +571,6 @@ public void setSize (int width, int height) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-
 public void moveAbove (Control control) {
 	checkWidget();
 	if (control != null) {
@@ -819,7 +815,6 @@ public void addHelpListener (HelpListener listener) {
  * @see KeyListener
  * @see #removeKeyListener
  */
-
 public void addKeyListener(KeyListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);

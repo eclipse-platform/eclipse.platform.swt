@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -1913,7 +1913,7 @@ public FontMetrics getFontMetrics() {
 					int avg = FontData.motif_new(xlfd).averageWidth / 10;
 					OS.XtFree(ptr);
 					if (avg == 0) {
-						/**
+						/*
 						 * Not all fonts have average character width encoded
 						 * in the xlfd. This one doesn't, so do it the hard
 						 * way by averaging all the character widths.
@@ -1977,7 +1977,7 @@ public FontMetrics getFontMetrics() {
 						int avg = FontData.motif_new(xlfd).averageWidth / 10;
 						OS.XFree(ptr);
 						if (avg == 0) {
-							/**
+							/*
 							 * Not all fonts have average character width encoded
 							 * in the xlfd. This one doesn't, so do it the hard
 							 * way by averaging all the character widths.

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -47,7 +47,6 @@ import org.eclipse.swt.events.*;
  *
  * @see List
  */
-
 public class Combo extends Composite {
 	int entryHandle, listHandle;
 	int glist;

@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -59,7 +59,6 @@ import org.eclipse.swt.events.*;
  *
  * @see ScrollBar
  */
-
 public class Slider extends Control {
 
 /**

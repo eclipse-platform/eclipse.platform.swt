@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -34,7 +34,6 @@ import org.eclipse.swt.events.*;
  * within the SWT implementation.
  * </p>
  */
-
 public class Button extends Control {
 	int boxHandle, labelHandle, pixmapHandle, arrowHandle;
 	Image image;

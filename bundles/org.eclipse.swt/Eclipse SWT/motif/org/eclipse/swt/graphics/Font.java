@@ -1,7 +1,7 @@
 package org.eclipse.swt.graphics;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -144,7 +144,7 @@ public boolean equals (Object object) {
  * Returns the code page for the specified font list.
  *
  * @return the code page for the font list
- */	
+ */
 static String getCodePage (int xDisplay, int fontList) {
 	int[] buffer = new int[1];
 	if (!OS.XmFontListInitFontContext(buffer, fontList)) return null;
@@ -230,7 +230,7 @@ static String getCodePage (int xDisplay, int fontList) {
 public FontData[] getFontData() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = device.xDisplay;
-	/**
+	/*
 	 * Create a font context to iterate over each element in the font list.
 	 * If a font context can not be created, return null.
 	 */
@@ -313,7 +313,7 @@ public FontData[] getFontData() {
 			fontData[i] = FontData.motif_new(xlfds[i]);
 		}
 	} catch (Exception e) {
-		/**
+		/*
 		 * Some font servers, for example, xfstt, do not pass
 		 * reasonable font properties to the client, so we
 		 * cannot construct a FontData for these. Return null.

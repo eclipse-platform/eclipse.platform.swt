@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -28,7 +28,6 @@ import org.eclipse.swt.graphics.*;
  *
  * @see Composite
  */
-
 public class Canvas extends Composite {
 	Caret caret;
 

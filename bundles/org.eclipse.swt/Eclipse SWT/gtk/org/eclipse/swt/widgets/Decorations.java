@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -83,7 +83,6 @@ import org.eclipse.swt.graphics.*;
  * @see Shell
  * @see SWT
  */
-
 public class Decorations extends Canvas {
 	String text;
 	Image image;
