@@ -454,6 +454,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	background = foreground = null;
 	font = null;
+	cellBackground = cellForeground = null;
+	cellFont = null;
 	parent = null;
 }
 
