@@ -323,15 +323,15 @@ public boolean open () {
 		cursorOrientation |= hStyle;
 	}
 
-	Point cursorPos;
-	int mask = OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK; 
-	boolean mouseDown = (state [0] & mask) != 0;
 	/*
 	 * The following is intentionally commented.  Since gtk does not currently
 	 * support pointer warping, the resize cursor cannot be adjusted.  If this
 	 * capability is added in the future then the following should be uncommented,
 	 * and the #adjustResizeCursor method can be copied from another platform.
 	 */
+//	Point cursorPos;
+//	int mask = OS.GDK_BUTTON1_MASK | OS.GDK_BUTTON2_MASK | OS.GDK_BUTTON3_MASK; 
+//	boolean mouseDown = (state [0] & mask) != 0;
 //	if (!mouseDown) {
 //		if ((style & SWT.RESIZE) != 0) {
 //			cursorPos = adjustResizeCursor (xDisplay, xWindow);

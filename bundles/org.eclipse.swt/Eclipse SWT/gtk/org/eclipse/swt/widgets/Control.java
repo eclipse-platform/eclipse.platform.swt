@@ -1876,7 +1876,6 @@ public int internal_new_GC (GCData data) {
 		if ((data.style & mask) == 0) {
 			data.style |= style & (mask | SWT.MIRRORED);
 		}
-		int fontHandle = fontHandle ();
 		data.drawable = window;
 		data.device = display;
 		data.background = getBackgroundColor ();
