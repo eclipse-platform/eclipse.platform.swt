@@ -208,7 +208,7 @@ public void append (String string) {
 	string = Display.withCrLf (string);
 	int length = OS.GetWindowTextLength (handle);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		string = verifyText (string, length, length);
+		string = verifyText (string, length, length, null);
 		if (string == null) return;
 	}
 	OS.SendMessage (handle, OS.EM_SETSEL, length, length);
@@ -824,7 +824,7 @@ public void insert (String string) {
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int [] start = new int [1], end = new int [1];
 		OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-		string = verifyText (string, start [0], end [0]);
+		string = verifyText (string, start [0], end [0], null);
 		if (string == null) return;
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
@@ -1350,7 +1350,7 @@ public void setText (String string) {
 	string = Display.withCrLf (string);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int length = OS.GetWindowTextLength (handle);
-		string = verifyText (string, 0, length);
+		string = verifyText (string, 0, length, null);
 		if (string == null) return;
 	}
 	TCHAR buffer = new TCHAR (getCodePage (), string, true);
@@ -1432,10 +1432,6 @@ public void setTopIndex (int index) {
 public void showSelection () {
 	checkWidget ();
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
-}
-
-String verifyText (String string, int start, int end) {
-	return verifyText (string, start, end, null);
 }
 
 String verifyText (String string, int start, int end, Event keyEvent) {
@@ -1563,7 +1559,7 @@ LRESULT WM_CLEAR (int wParam, int lParam) {
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 	if (start [0] == end [0]) return result;
-	String newText = verifyText ("", start [0], end [0]);
+	String newText = verifyText ("", start [0], end [0], null);
 	if (newText == null) return LRESULT.ZERO;
 	if (newText.length () != 0) {
 		result = new LRESULT (callWindowProc (OS.WM_CLEAR, 0, 0));	
@@ -1583,7 +1579,7 @@ LRESULT WM_CUT (int wParam, int lParam) {
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 	if (start [0] == end [0]) return result;
-	String newText = verifyText ("", start [0], end [0]);
+	String newText = verifyText ("", start [0], end [0], null);
 	if (newText == null) return LRESULT.ZERO;
 	if (newText.length () != 0) {
 		result = new LRESULT (callWindowProc (OS.WM_CUT, 0, 0));	
@@ -1684,7 +1680,7 @@ LRESULT WM_PASTE (int wParam, int lParam) {
 	if (oldText == null) return result;
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	String newText = verifyText (oldText, start [0], end [0]);
+	String newText = verifyText (oldText, start [0], end [0], null);
 	if (newText == null) return LRESULT.ZERO;
 	if (newText != oldText) {
 		newText = Display.withCrLf (newText);
@@ -1715,7 +1711,7 @@ LRESULT WM_UNDO (int wParam, int lParam) {
 	/* Verify the Undo operation */
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	String newText = verifyText (oldText, start [0], end [0]);
+	String newText = verifyText (oldText, start [0], end [0], null);
 	if (newText == null) return LRESULT.ZERO;
 	if (newText != oldText) {
 		newText = Display.withCrLf (newText);

@@ -196,7 +196,7 @@ public void append (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		int charCount = getCharCount ();
-		string = verifyText (string, charCount, charCount);
+		string = verifyText (string, charCount, charCount, null);
 		if (string == null) return;
 	}
 	setTXNText (OS.kTXNEndOffset, OS.kTXNEndOffset, string);
@@ -371,7 +371,7 @@ public void cut () {
 	Point oldSelection = getSelection ();
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		if (oldSelection.x != oldSelection.y) {
-			String newText = verifyText ("", oldSelection.x, oldSelection.y);
+			String newText = verifyText ("", oldSelection.x, oldSelection.y, null);
 			if (newText == null) return;
 			if (newText.length () != 0) {
 				setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, newText);
@@ -806,7 +806,7 @@ public void insert (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
 		Point selection = getSelection ();
-		string = verifyText (string, selection.x, selection.y);
+		string = verifyText (string, selection.x, selection.y, null);
 		if (string == null) return;
 	}
 	setTXNText (OS.kTXNUseCurrentSelection, OS.kTXNUseCurrentSelection, string);
@@ -1077,7 +1077,7 @@ boolean sendKeyEvent (int type, Event event) {
 			if (event.character != '\t' && event.character < 0x20) return true;
 			oldText = new String (new char [] {event.character});
 	}
-	String newText = verifyText (oldText, start, end);
+	String newText = verifyText (oldText, start, end, event);
 	if (newText == null) return false;
 	if (charCount - (end - start) + newText.length () > textLimit) {
 		return false;
@@ -1353,7 +1353,7 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
-		string = verifyText (string, 0, getCharCount ());
+		string = verifyText (string, 0, getCharCount (), null);
 		if (string == null) return;
 	}
 	setTXNText (OS.kTXNStartOffset, OS.kTXNEndOffset, string);
@@ -1505,11 +1505,16 @@ int traversalCode (int key, int theEvent) {
 	return bits;
 }
 
-String verifyText (String string, int start, int end) {
+String verifyText (String string, int start, int end, Event keyEvent) {
 	Event event = new Event ();
 	event.text = string;
 	event.start = start;
 	event.end = end;
+	if (keyEvent != null) {
+		event.character = keyEvent.character;
+		event.keyCode = keyEvent.keyCode;
+		event.stateMask = keyEvent.stateMask;
+	}
 	/*
 	 * It is possible (but unlikely), that application
 	 * code could have disposed the widget in the verify
