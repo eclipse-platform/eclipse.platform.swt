@@ -275,7 +275,7 @@ public Point getSize () {
 	checkWidget();
 	Rect rect = new Rect ();
 	OS.GetControlBounds (topHandle (), rect);
-	return new Point (rect.bottom - rect.top, rect.right - rect.left);
+	return new Point (rect.right - rect.left, rect.bottom - rect.top);
 }
 
 public String getToolTipText () {
