@@ -745,9 +745,13 @@ void destroyItem (TreeItem item) {
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
 	releaseItems (item.getItems (), tvItem);
 	releaseItem (item, tvItem);
-	ignoreDeselect = ignoreSelect = lockSelection = true;
+	if ((style & SWT.MULTI) != 0) {
+		ignoreDeselect = ignoreSelect = lockSelection = true;
+	}
 	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
-	ignoreDeselect = ignoreSelect = lockSelection = false;
+	if ((style & SWT.MULTI) != 0) {
+		ignoreDeselect = ignoreSelect = lockSelection = false;
+	}
 	if (fixRedraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.ValidateRect (handle, null);
