@@ -26,10 +26,12 @@ ifeq ($(SWT_PTR_CFLAGS),-DSWT_PTR_SIZE_64)
 # 64 bit path
 JAVA_HOME		= /bluebird/teamswt/swt-builddir/jdk1.5.0
 AWT_LIB_PATH	= $(JAVA_HOME)/jre/lib/amd64
+XTEST_LIB_PATH  = /usr/X11R6/lib64
 else
 # 32 bit path
 JAVA_HOME		= /bluebird/teamswt/swt-builddir/IBMJava2-141
 AWT_LIB_PATH	= $(JAVA_HOME)/jre/bin
+XTEST_LIB_PATH  = /usr/X11R6/lib
 endif
 
 #  mozilla source distribution folder
@@ -51,7 +53,7 @@ GNOME_LIB		= lib$(GNOME_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 MOZILLA_LIB 	= lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
-GTKLIBS = `pkg-config --libs gtk+-2.0 gthread-2.0` -L/usr/X11R6/lib -lXtst
+GTKLIBS = `pkg-config --libs gtk+-2.0 gthread-2.0` -L$(XTEST_LIB_PATH) -lXtst
 
 AWT_LIBS      = -L$(AWT_LIB_PATH) -ljawt -shared
 
