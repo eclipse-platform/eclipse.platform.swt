@@ -759,7 +759,7 @@ void hookEvents () {
 public int indexOf (String string) {
 	checkWidget();
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	return OS.PtListItemPos(handle, buffer) - 1;
+	return OS.PtListItemPos (handle, buffer) - 1;
 }
 
 /**
@@ -783,9 +783,23 @@ public int indexOf (String string) {
 public int indexOf (String string, int start) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	
-	// NOT DONE - start is ignored
-	return indexOf (string);
+	if (start == 0) return indexOf(string);
+	int [] args = new int [] {
+		OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0,
+		OS.Pt_ARG_ITEMS, 0, 0,
+	};
+	OS.PtGetResources (handle, args.length / 3, args);
+	int count = args [1];
+	if (!(0 <= start && start < count)) return -1;
+	int [] item = new int [1];
+	for (int index=start; index<count; index++) {
+		OS.memmove (item, args [4] + (index * 4), 4);
+		int length = OS.strlen (item [0]);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, item [0], length);
+		if (string.equals(new String (Converter.mbcsToWcs (null, buffer)))) return index;
+	}
+	return -1;
 }
 
 /**
@@ -868,12 +882,15 @@ public void remove (int start, int end) {
 	checkWidget();
 	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	if (!(0 < start && start <= end && end < args [1])) {
+	if (!(0 <= start && start <= end && end < args [1])) {
 		 error (SWT.ERROR_INVALID_RANGE);
 	}
 	int count = end - start + 1;
 	int result = OS.PtListDeleteItemPos (handle, count, start + 1);
 	if (result != 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if ((style & SWT.READ_ONLY) !=0) {
+		if (args [1] == count) OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, 0, 0);
+	}
 }
 
 /**
@@ -900,6 +917,9 @@ public void remove (int index) {
 	if (!(0 <= index && index < args [1])) error (SWT.ERROR_INVALID_RANGE);
 	int result = OS.PtListDeleteItemPos (handle, 1, index + 1);
 	if (result != 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if ((style & SWT.READ_ONLY) !=0) {
+		if (args [1] == 1) OS.PtSetResource (handle, OS.Pt_ARG_TEXT_STRING, 0, 0);
+	}
 }
 
 /**
