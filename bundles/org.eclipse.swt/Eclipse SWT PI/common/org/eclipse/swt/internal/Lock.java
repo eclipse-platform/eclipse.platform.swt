@@ -14,7 +14,7 @@ package org.eclipse.swt.internal;
  * Instance of this represent a recursive monitor.
  */
 public class Lock {
-	int count;
+	int count, waitCount;
 	Thread owner;
 
 /**
@@ -28,6 +28,7 @@ public int lock() {
 	synchronized (this) {
 		Thread current = Thread.currentThread();
 		if (owner != current) {
+			waitCount++;
 			while (count > 0) {
 				try {
 					wait();
@@ -35,6 +36,7 @@ public int lock() {
 					/* Wait forever, just like synchronized blocks */
 				}
 			}
+			--waitCount;
 			owner = current;
 		}
 		return ++count;
@@ -51,7 +53,7 @@ public void unlock() {
 		if (owner == current) {
 			if (--count == 0) {
 				owner = null;
-				notifyAll();
+				if (waitCount > 0) notifyAll();
 			}
 		}
 	}
