@@ -12,7 +12,7 @@ package org.eclipse.swt.tests.junit.performance;
 
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.tests.junit.SwtJunit;
+import org.eclipse.swt.tests.junit.performance.SwtJunit;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.test.performance.PerformanceMeter;
