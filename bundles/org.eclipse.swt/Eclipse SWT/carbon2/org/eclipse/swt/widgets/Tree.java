@@ -672,6 +672,19 @@ public void selectAll () {
 	ignoreSelect = false;
 }
 
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	/*
+	* Ensure that the selection is visible when the tree is resized
+	* from a zero size to a size that can show the selection.
+	*/
+	//TODO - optimize
+	Rectangle bounds = null;
+	if (resize && control == handle) bounds = getBounds ();
+	int result = super.setBounds (control, x, y, width, height, move, resize, events);
+	if (bounds != null && bounds.isEmpty ()) showSelection ();
+	return result;
+}
+
 public void setSelection (TreeItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -740,14 +753,14 @@ void showItem (TreeItem item, boolean scroll) {
 		//TODO - optimize
 		Rectangle treeRect = getClientArea ();
 		Rectangle itemRect = item.getBounds ();
-		if (treeRect.contains (itemRect.x, itemRect.y)) return;
-		OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		if (!itemRect.isEmpty() && treeRect.contains (itemRect.x, itemRect.y) && treeRect.contains (itemRect.x, itemRect.y + itemRect.height)) return;
+		OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) (OS.kDataBrowserRevealWithoutSelecting | OS.kDataBrowserRevealAndCenterInView));
 		int [] top = new int [1], left = new int [1];
 		OS.GetDataBrowserScrollPosition (handle, top, left);
 		OS.SetDataBrowserScrollPosition (handle, top [0], 0);
 		itemRect = item.getBounds ();
-		if (!treeRect.contains (itemRect.x, itemRect.y)) {
-			OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		if (!(treeRect.contains (itemRect.x, itemRect.y) && treeRect.contains (itemRect.x + itemRect.width, itemRect.y))) {
+			OS.SetDataBrowserScrollPosition (handle, top [0], left [0]);
 		}
 	}
 }
