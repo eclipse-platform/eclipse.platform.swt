@@ -168,9 +168,13 @@ void createHandle () {
 		}
 	}
 	
-	if (outControl [0] == 0) {
-		//OS.CreatePushButtonControl (window, null, 0, outControl);
-		OS.CreateBevelButtonControl(window, null, 0, (short)2, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
+	if ((style & SWT.PUSH) != 0) {
+		if ((style & SWT.FLAT) != 0) {
+			OS.CreateBevelButtonControl(window, null, 0, (short)2, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
+		} else {
+			OS.CreatePushButtonControl (window, null, 0, outControl);
+			//OS.CreateBevelButtonControl(window, null, 0, (short)2, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
+		}
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
 		if ((style & SWT.FLAT) == 0 ) {
@@ -267,6 +271,16 @@ int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlSetFocusPart (nextHandler, theEvent, userData);
+	if ((style & SWT.PUSH) != 0) {
+		short [] part = new short [1];
+		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
+		menuShell ().setDefaultButton ((part [0] != 0) ? this : null, false);	
+	}
+	return result;
+}
+
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -346,6 +360,13 @@ public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);
 }
 
+void setDefault (boolean value) {
+int kControlPushButtonDefaultTag  = ('d'<<24) + ('f'<<16) + ('l'<<8) + 't';
+	if ((style & SWT.PUSH) == 0) return;
+	int window = OS.GetControlOwner (handle);
+	OS.SetWindowDefaultButton (window, value ? handle : 0);
+ }
+
 public boolean setFocus () {
 	checkWidget ();
 	if ((style & SWT.ARROW) != 0) return false;
@@ -375,6 +396,7 @@ public void setImage (Image image) {
 		OS.CFRelease (ptr);
 	}
 	
+	// NEEDS WORK - Push button with image not supported
 	cIcon = createCIcon (image);
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
 	inContent.contentType = (short)OS.kControlContentCIconHandle;
