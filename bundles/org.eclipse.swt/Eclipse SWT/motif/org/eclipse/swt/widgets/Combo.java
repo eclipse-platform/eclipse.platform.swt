@@ -987,9 +987,7 @@ public void select (int index) {
 	} else {
 		int [] argList = {OS.XmNitemCount, 0};
 		OS.XtGetValues (handle, argList, argList.length / 2);
-		if (!(0 <= index && index < argList [1])) {
-			error (SWT.ERROR_INVALID_RANGE);
-		}
+		if (!(0 <= index && index < argList [1])) return;
 		int [] argList2 = {OS.XmNselectedPosition, index};
 		ignoreSelect = true;
 		OS.XtSetValues(handle, argList2, argList2.length / 2);
