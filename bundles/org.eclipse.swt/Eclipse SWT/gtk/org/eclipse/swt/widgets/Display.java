@@ -1960,6 +1960,8 @@ public int /*long*/ internal_new_GC (GCData data) {
 		}
 		data.device = this;
 		data.drawable = root;
+		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
+		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
 		data.font = defaultFont;
 	}
 	return gdkGC;
