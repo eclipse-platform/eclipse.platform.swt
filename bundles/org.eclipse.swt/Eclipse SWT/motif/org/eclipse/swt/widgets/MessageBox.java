@@ -149,7 +149,6 @@ public int open () {
 	boolean destroyContext;
 	Display appContext = Display.getCurrent ();
 	if (destroyContext = (appContext == null)) appContext = new Display ();
-	int display = appContext.xDisplay;
 	int parentHandle = appContext.shellHandle;
 	if (parent != null && parent.getDisplay () == appContext)
 		parentHandle = parent.shellHandle;
@@ -240,7 +239,7 @@ public int open () {
 void setButtons (int dialogHandle) {
 	
 	/* Get the button children */
-	int ok = OS.XmMessageBoxGetChild (dialogHandle, OS.XmDIALOG_OK_BUTTON);
+	OS.XmMessageBoxGetChild (dialogHandle, OS.XmDIALOG_OK_BUTTON);
 	int cancel = OS.XmMessageBoxGetChild (dialogHandle, OS.XmDIALOG_CANCEL_BUTTON);
 	int help = OS.XmMessageBoxGetChild (dialogHandle, OS.XmDIALOG_HELP_BUTTON);
 	OS.XtUnmanageChild (help);

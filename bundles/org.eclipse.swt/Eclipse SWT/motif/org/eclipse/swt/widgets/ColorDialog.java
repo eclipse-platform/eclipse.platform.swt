@@ -249,7 +249,6 @@ void initialize4BitColors() {
 }
 void initialize8BitColors() {
 	Display display = shell.getDisplay();	
-	int numColumns = colorGrid.length;
 	int numRows = colorGrid[0].length;
 	int iterationStep = 64;
 	int row = 0, column = 0;
@@ -273,7 +272,6 @@ void initialize8BitColors() {
 }
 void initialize16BitColors() {
 	Display display = shell.getDisplay();
-	int numColumns = colorGrid.length;
 	int numRows = colorGrid[0].length;
 	int iterationStep = 51;
 	int row = 0, column = 0;

@@ -348,7 +348,6 @@ public boolean open () {
 	checkWidget ();
 	if (rectangles == null) return false;
 	int xDisplay = display.xDisplay;
-	int color = OS.XWhitePixel (xDisplay, 0);
 	int xWindow = OS.XDefaultRootWindow (xDisplay);
 	if (parent != null) {
 		xWindow = OS.XtWindow (parent.handle);

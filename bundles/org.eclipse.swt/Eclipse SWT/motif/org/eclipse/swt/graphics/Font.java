@@ -197,8 +197,6 @@ static String getCodePage (int xDisplay, int fontList) {
 	int context = buffer[0];
 	XFontStruct fontStruct = new XFontStruct();
 	int fontListEntry;
-	int[] fontStructPtr = new int[1];
-	int[] fontNamePtr = new int[1];
 	String codePage = null;
 	/* Go through each entry in the font list */
 	while ((fontListEntry = OS.XmFontListNextEntry(context)) != 0) {

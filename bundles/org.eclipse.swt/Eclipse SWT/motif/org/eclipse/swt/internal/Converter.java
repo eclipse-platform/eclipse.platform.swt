@@ -154,7 +154,7 @@ public static char [] mbcsToWcs (String codePage, byte [] buffer) {
 				int [] outBuf = {ptr2};
 				int [] outBytesLeft = {outBytes};
 				OS.memmove (ptr1, buffer, inBytes);
-				int result = OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
+				OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
 				outBytes = outBuf [0] - ptr2;
 				wideCharStr = new char [outBytes / 2];
 				OS.memmove (wideCharStr, ptr2, outBytes);

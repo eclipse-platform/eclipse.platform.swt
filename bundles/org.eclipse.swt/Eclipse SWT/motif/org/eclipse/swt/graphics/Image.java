@@ -639,7 +639,7 @@ void createMask() {
 	int maskPixmap = OS.XCreatePixmap(xDisplay, drawable, maskImage.width, maskImage.height, 1);
 	XColor[] xcolors = device.xcolors;
 	int gc = OS.XCreateGC(xDisplay, maskPixmap, 0, null);
-	int error = Image.putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, xDisplay, visual, screenDepth, xcolors, null, true, maskPixmap, gc);
+	Image.putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, xDisplay, visual, screenDepth, xcolors, null, true, maskPixmap, gc);
 	OS.XFreeGC(xDisplay, gc);
 	this.mask = maskPixmap;
 }
