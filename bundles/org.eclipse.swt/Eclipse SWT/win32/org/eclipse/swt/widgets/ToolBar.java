@@ -95,6 +95,16 @@ public ToolBar (Composite parent, int style) {
 
 int callWindowProc (int msg, int wParam, int lParam) {
 	if (handle == 0) return 0;
+	/*
+	* Bug in Windows.  For some reason, during the processing
+	* of WM_SYSCHAR, the tool bar window proc does not call the
+	* default window proc causing mnemonics for the menu bar
+	* to be ignored.  The fix is to always call the default
+	* window proc for WM_SYSCHAR.
+	*/
+	if (msg == OS.WM_SYSCHAR) {
+		return OS.DefWindowProc (handle, msg, wParam, lParam);
+	}
 	return OS.CallWindowProc (ToolBarProc, handle, msg, wParam, lParam);
 }
 
