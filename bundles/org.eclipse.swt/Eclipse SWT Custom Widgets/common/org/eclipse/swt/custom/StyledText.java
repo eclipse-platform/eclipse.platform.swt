@@ -164,11 +164,12 @@ public class StyledText extends Canvas {
 	 * StyledText#print(Printer) API. The run() method may be 
 	 * invoked from any thread.
 	 */
-	class Printing implements Runnable {
+	static class Printing implements Runnable {
 		final static int LEFT = 0;						// left aligned header/footer segment
 		final static int CENTER = 1;					// centered header/footer segment
 		final static int RIGHT = 2;						// right aligned header/footer segment
 
+		StyledText parent;
 		Printer printer;
 		PrintRenderer renderer;
 		StyledTextPrintOptions printOptions;
@@ -201,7 +202,8 @@ public class StyledText extends Canvas {
 	 */		
 	Printing(StyledText parent, Printer printer, StyledTextPrintOptions printOptions) {
 		PrinterData data = printer.getPrinterData();
-		
+
+		this.parent = parent;
 		this.printer = printer;
 		this.printOptions = printOptions;
 		singleLine = parent.isSingleLine();
@@ -221,7 +223,7 @@ public class StyledText extends Canvas {
 			selection = parent.getSelectionRange();
 		}
 
-		displayFontData = getFont().getFontData()[0];
+		displayFontData = parent.getFont().getFontData()[0];
 		copyContent(parent.getContent());
 		cacheLineData(printerContent);
 	}
@@ -233,7 +235,7 @@ public class StyledText extends Canvas {
 	 * @param line line to cache bidi segments for. 
 	 */
 	void cacheBidiSegments(int lineOffset, String line) {
-		int[] segments = getBidiSegments(lineOffset, line);
+		int[] segments = parent.getBidiSegments(lineOffset, line);
 		
 		if (segments != null) {
 			bidiSegments.put(new Integer(lineOffset), segments);
@@ -247,7 +249,7 @@ public class StyledText extends Canvas {
 	 * @param line line to cache the background color for
 	 */
 	void cacheLineBackground(int lineOffset, String line) {
-		StyledTextEvent event = getLineBackgroundData(lineOffset, line);
+		StyledTextEvent event = parent.getLineBackgroundData(lineOffset, line);
 		
 		if (event != null) {
 			lineBackgrounds.put(new Integer(lineOffset), event);
@@ -272,7 +274,7 @@ public class StyledText extends Canvas {
 				printOptions.printTextFontStyle) {
 				cacheLineStyle(lineOffset, line);
 			}
-			if (isBidi()) {
+			if (parent.isBidi()) {
 				cacheBidiSegments(lineOffset, line);
 			}
 		}
@@ -285,7 +287,7 @@ public class StyledText extends Canvas {
 	 * @param line line to cache the styles for.
 	 */
 	void cacheLineStyle(int lineOffset, String line) {
-		StyledTextEvent event = getLineStyleData(lineOffset, line);
+		StyledTextEvent event = parent.getLineStyleData(lineOffset, line);
 		
 		if (event != null) {
 			StyleRange[] styles = event.styles;
@@ -422,7 +424,7 @@ public class StyledText extends Canvas {
 		renderer = new PrintRenderer(
 			printer, printerFont, gc, printerContent,
 			lineBackgrounds, lineStyles, bidiSegments, 
-			tabLength, clientArea);
+			parent.tabLength, clientArea);
 		if (printOptions.header != null) {
 			int lineHeight = renderer.getLineHeight();
 			clientArea.y += lineHeight * 2;
