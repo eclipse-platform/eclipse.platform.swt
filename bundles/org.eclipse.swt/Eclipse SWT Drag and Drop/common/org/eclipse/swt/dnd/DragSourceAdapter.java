@@ -21,17 +21,17 @@ package org.eclipse.swt.dnd;
 public class DragSourceAdapter implements DragSourceListener {
 	/**
 	 * This implementation of <code>dragStart</code> permits the drag operation to start.
-	 * For additional information see <code>DropTargetListener.dragStart</code>.
+	 * For additional information see <code>DragSourceListener.dragStart</code>.
 	 */
 	public void dragStart(DragSourceEvent event){};
 	/**
 	 * This implementation of <code>dragFinished</code> does nothing.
-	 * For additional information see <code>DropTargetListener.dragFinished</code>.
+	 * For additional information see <code>DragSourceListener.dragFinished</code>.
 	 */
 	public void dragFinished(DragSourceEvent event){};
 	/**
 	 * This implementation of <code>dragSetData</code> does nothing.
-	 * For additional information see <code>DropTargetListener.dragSetData</code>.
+	 * For additional information see <code>DragSourceListener.dragSetData</code>.
 	 */
 	public void dragSetData(DragSourceEvent event){};
 }
