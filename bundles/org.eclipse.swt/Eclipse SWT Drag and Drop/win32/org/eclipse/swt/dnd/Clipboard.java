@@ -62,7 +62,7 @@ public void dispose () {
 }
 
 /**
- *  Get the data from the clipboard.
+ *  Retrieve the data of the specified type currently available on the system clipboard.
  * 
  *  <code><pre>
  * 	Clipboard clipboard = new Clipboard(display);
@@ -76,6 +76,7 @@ public void dispose () {
  * </code></pre>
  * 
  * @param transfer the transfer agent for the type of data being requested
+ * 
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
 public Object getContents(Transfer transfer) {
@@ -105,7 +106,10 @@ public Object getContents(Transfer transfer) {
 	return transfer.nativeToJava(match);
 }
 /**
- * Set the data onto the clipboard.  
+ * Place data of the specified type on the system clipboard.  More than one type of
+ * data can be placed on the system clipboard at the same time.  Setting the data 
+ * clears any previous data of the same type from the system clipboard and also
+ * clears data of any other type currently on the system clipboard.
  * 
  * <p>NOTE: On some platforms, the data is immediately copied to the system
  * clipboard but on other platforms it is provided upon request.  As a result, if the 
