@@ -422,7 +422,8 @@ public Color getBackground (int columnIndex) {
 public Rectangle getBounds () {
 	checkWidget ();
 	if (!isAvailable()) return new Rectangle (0, 0, 0, 0);
-	return new Rectangle (getTextX (0), parent.getItemY (this), getTextPaintWidth (0), parent.itemHeight - 1);
+	int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
+	return new Rectangle (getTextX (0), parent.getItemY (this), textPaintWidth, parent.itemHeight - 1);
 }
 public Rectangle getBounds (int columnIndex) {
 	checkWidget ();
@@ -467,7 +468,8 @@ public Rectangle getBounds (int columnIndex) {
 Rectangle getCellBounds (int columnIndex) {
 	int y = parent.getItemY (this);
 	if (parent.columns.length == 0) {
-		int width = getTextX (0) + getTextPaintWidth (0) + parent.horizontalOffset;
+		int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
+		int width = getTextX (0) + textPaintWidth + parent.horizontalOffset;
 		return new Rectangle (-parent.horizontalOffset, y, width, parent.itemHeight);
 	}
 	TreeColumn column = parent.columns [columnIndex];
@@ -491,7 +493,7 @@ public boolean getChecked () {
 	return checked;
 }
 int getContentWidth (int columnIndex) {
-	int width = getTextPaintWidth (columnIndex);
+	int width = textWidths [columnIndex] + 2 * MARGIN_TEXT;
 	Image image = getImage (columnIndex);
 	if (image != null) {
 		width += Tree.MARGIN_IMAGE + image.getBounds ().width;
@@ -568,7 +570,7 @@ Rectangle getFocusBounds () {
 	int width;
 	TreeColumn[] columns = parent.columns;
 	if (columns.length == 0) {
-		width = getTextPaintWidth (0);
+		width = textWidths [0] + 2 * MARGIN_TEXT;
 	} else {
 		width = columns [0].width - parent.horizontalOffset - x - 2;
 	}
@@ -653,7 +655,8 @@ Rectangle getHitBounds () {
 		 * If there are no columns then this spans from the beginning of the receiver's
 		 * image or text to the end of its text.
 		 */
-		width = getFocusX () + getTextPaintWidth (0) - contentX; 
+		int textPaintWidth = textWidths [0] + 2 * MARGIN_TEXT;
+		width = getFocusX () + textPaintWidth - contentX; 
 	} else {
 		/* 
 		 * If there are columns then this spans from the beginning of the receiver's column 0
@@ -741,7 +744,8 @@ public TreeItem getParentItem () {
  * Returns the receiver's ideal width for the specified columnIndex.
  */
 int getPreferredWidth (int columnIndex) {
-	int result = getTextX (columnIndex) + getTextPaintWidth (columnIndex);
+	int textPaintWidth = textWidths [columnIndex] + 2 * MARGIN_TEXT;
+	int result = getTextX (columnIndex) + textPaintWidth;
 	result -= parent.columns [columnIndex].getX ();
 	return result;
 }
@@ -756,15 +760,6 @@ public String getText (int columnIndex) {
 	if (columnIndex == 0) return getText ();
 	if (texts [columnIndex] == null) return "";
 	return texts [columnIndex];
-}
-/*
- * Returns the full width required for painting the receiver's text for the specified
- * column, including the margins on the ends of the text. 
- */
-int getTextPaintWidth (int columnIndex) {
-	int result = textWidths [columnIndex];
-	if (result > 0) result += 2 * MARGIN_TEXT;
-	return result;
 }
 /*
  * Returns the x value where the receiver's text begins.
@@ -1339,7 +1334,7 @@ public void setForeground (int columnIndex, Color value) {
 	parent.redraw (
 		getTextX (columnIndex),
 		parent.getItemY (this),
-		getTextPaintWidth (columnIndex),
+		textWidths [columnIndex] + 2 * MARGIN_TEXT,
 		parent.itemHeight,
 		false);
 }
