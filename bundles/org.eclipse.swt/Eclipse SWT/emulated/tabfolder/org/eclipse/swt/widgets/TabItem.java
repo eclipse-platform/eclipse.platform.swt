@@ -71,7 +71,8 @@ public class TabItem extends Item {
  * @see Widget#getStyle
  */
 public TabItem (TabFolder parent, int style) {
-	this(parent, style, parent.getItemCount());
+	super (parent, style);
+	parent.createChild (this, parent.getItemCount());
 }
 
 /**
