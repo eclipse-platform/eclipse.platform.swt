@@ -776,9 +776,9 @@ void updateText (short menuIndex) {
 	int i=0, j=0;
 	while (i < buffer.length) {
 		if (accelerator != 0 && buffer [i] == '\t') break;
-		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+		if ((buffer [j++] = buffer [i++]) == '&') {
 			if (i == buffer.length) {continue;}
-			if (buffer [i] == Mnemonic) {i++; continue;}
+			if (buffer [i] == '&') {i++; continue;}
 			j--;
 		}
 	}

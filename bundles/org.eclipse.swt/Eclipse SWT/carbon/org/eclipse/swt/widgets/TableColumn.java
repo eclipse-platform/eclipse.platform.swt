@@ -416,15 +416,8 @@ public void setWidth (int width) {
 void updateHeader () {
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
-	int i=0, j=0;
-	while (i < buffer.length) {
-		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
-			if (i == buffer.length) {continue;}
-			if (buffer [i] == Mnemonic) {i++; continue;}
-			j--;
-		}
-	}
-	int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+	int length = fixMnemonic (buffer);
+	int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 	if (str == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
 	desc.version = OS.kDataBrowserListViewLatestHeaderDesc;

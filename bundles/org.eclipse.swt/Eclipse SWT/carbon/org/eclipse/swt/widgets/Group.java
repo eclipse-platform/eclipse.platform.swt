@@ -187,15 +187,8 @@ public void setText (String string) {
 	text = string;
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
-	int i=0, j=0;
-	while (i < buffer.length) {
-		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
-			if (i == buffer.length) {continue;}
-			if (buffer [i] == Mnemonic) {i++; continue;}
-			j--;
-		}
-	}
-	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+	int length = fixMnemonic (buffer);
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetControlTitleWithCFString (handle, ptr);
 	OS.CFRelease (ptr);

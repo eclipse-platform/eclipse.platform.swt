@@ -485,16 +485,9 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 			if (toolTipText != null && toolTipText.length () != 0) {
 				char [] buffer = new char [toolTipText.length ()];
 				toolTipText.getChars (0, buffer.length, buffer, 0);
-				int i=0, j=0;
-				while (i < buffer.length) {
-					if ((buffer [j++] = buffer [i++]) == Mnemonic) {
-						if (i == buffer.length) {continue;}
-						if (buffer [i] == Mnemonic) {i++; continue;}
-						j--;
-					}
-				}
+				int length = fixMnemonic (buffer);
 				if (display.helpString != 0) OS.CFRelease (display.helpString);
-		    	display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+		    	display.helpString = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, length);
 				HMHelpContentRec helpContent = new HMHelpContentRec ();
 				OS.memcpy (helpContent, ioHelpContent, HMHelpContentRec.sizeof);
 		        helpContent.version = OS.kMacHelpVersion;
@@ -1092,16 +1085,6 @@ void updateText () {
 	labelCIcon = 0;
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
 	if (text.length () > 0) {
-		char [] buffer = new char [text.length ()];
-		text.getChars (0, buffer.length, buffer, 0);
-		int i=0, j=0;
-		while (i < buffer.length) {
-			if ((buffer [j++] = buffer [i++]) == Mnemonic) {
-				if (i == buffer.length) {continue;}
-				if (buffer [i] == Mnemonic) {i++; continue;}
-				j--;
-			}
-		}
 		Font font = parent.getFont ();
 		GC gc = new GC (parent);
 		Point size = gc.stringExtent (text);

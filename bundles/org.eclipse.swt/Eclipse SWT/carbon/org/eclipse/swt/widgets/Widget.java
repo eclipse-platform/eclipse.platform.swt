@@ -74,7 +74,6 @@ public abstract class Widget {
 
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
-	static final char Mnemonic = '&';
 	
 	static final Rect EMPTY_RECT = new Rect ();
 
@@ -547,6 +546,18 @@ void error (int code) {
 
 boolean filters (int eventType) {
 	return display.filters (eventType);
+}
+
+int fixMnemonic (char [] buffer) {
+	int i=0, j=0;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == '&') {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == '&') {i++; continue;}
+			j--;
+		}
+	}
+	return j;
 }
 
 Rect getControlBounds (int control) {
