@@ -73,36 +73,36 @@ void releaseSynchronizer () {
 	syncThread = null;
 }
 
+RunnableLock removeFirst () {
+	synchronized (messageLock) {
+		if (messageCount == 0) return null;
+		RunnableLock lock = messages [0];
+		System.arraycopy (messages, 1, messages, 0, --messageCount);
+		messages [messageCount] = null;
+		if (messageCount == 0) messages = null;
+		return lock;
+	}
+}
+
 boolean runAsyncMessages () {
 	if (messageCount == 0) return false;
-	int listCount;
-	RunnableLock [] list;
-	synchronized (messageLock) {
-		listCount = messageCount;
-		list = messages;
-		messageCount = 0;
-		messages = null;
-	}
-	int index = 0;
-	while (index < listCount) {
-		RunnableLock lock = list [index];
-		if (lock == null) break;
-		synchronized (lock) {
-			syncThread = lock.thread;
-			try {
-				lock.run ();
-			} catch (Throwable t) {
-				lock.throwable = t;
-				SWT.error (SWT.ERROR_FAILED_EXEC, t);
-			} finally {
-				syncThread = null;
-				lock.notifyAll ();
-			}
+	RunnableLock lock = removeFirst ();
+	if (lock == null) return true;
+	synchronized (lock) {
+		syncThread = lock.thread;
+		try {
+			lock.run ();
+		} catch (Throwable t) {
+			lock.throwable = t;
+			SWT.error (SWT.ERROR_FAILED_EXEC, t);
+		} finally {
+			syncThread = null;
+			lock.notifyAll ();
 		}
-		index++;
 	}
 	return true;
 }
+
 
 /**
  * Causes the <code>run()</code> method of the runnable to
