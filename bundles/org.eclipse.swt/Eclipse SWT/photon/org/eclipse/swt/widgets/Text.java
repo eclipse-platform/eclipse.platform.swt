@@ -79,6 +79,7 @@ public void clearSelection () {
 	OS.PtTextSetSelection (handle, new int [] {0}, new int [] {0});
 }
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int parentHandle = parent.handle;
 	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
@@ -480,10 +481,10 @@ int processVerify (int info) {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (lastModifiedText != 0) {
-		OS.free (lastModifiedText);
-		lastModifiedText = 0;
-	}
+	if (lastModifiedText != 0) OS.free (lastModifiedText);
+	lastModifiedText = 0;
+	hiddenText = null;
+	textVerify = null;
 }
 
 public void removeModifyListener (ModifyListener listener) {

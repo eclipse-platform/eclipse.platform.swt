@@ -71,6 +71,7 @@ public void addMenuListener (MenuListener listener) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	int parentHandle = parent.topHandle ();
 	if ((style & SWT.BAR) != 0) {
 		int [] args = {
@@ -266,7 +267,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (parent != null) parent.remove (this);
 	parent = null;
-
+	cascade = null;
 }
 
 public void removeHelpListener (HelpListener listener) {

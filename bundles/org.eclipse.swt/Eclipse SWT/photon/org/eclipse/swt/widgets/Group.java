@@ -53,6 +53,7 @@ protected void checkSubclass () {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtPane;
 	int parentHandle = parent.handle;

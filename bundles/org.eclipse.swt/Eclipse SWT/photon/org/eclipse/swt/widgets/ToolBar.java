@@ -52,10 +52,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int parentHandle = parent.handle;
 	
 	int [] args = {
+//		OS.Pt_ARG_ORIENTATION, (style & SWT.WRAP) == 0 ? OS.Pt_HORIZONTAL : OS.Pt_VERTICAL, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (OS.PtToolbar (), parentHandle, args.length / 3, args);
@@ -146,6 +148,7 @@ void releaseWidget () {
 		ToolItem item = items [i];
 		if (item != null && !item.isDisposed ()) {
 			item.releaseWidget ();
+			item.releaseHandle ();
 		}
 	}
 	items = null;

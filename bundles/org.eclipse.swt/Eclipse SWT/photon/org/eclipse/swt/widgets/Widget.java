@@ -14,11 +14,14 @@ import java.util.EventListener;
 
 public abstract class Widget {
 	public int handle;
-	int style;
+	int style, state;
 	EventTable eventTable;
 	Object data;
 	String [] keys;
 	Object [] values;
+	
+	static final int DISPOSED		= 0x00000001;
+	static final int HANDLE			= 0x00000002;
 	
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT = 64;
@@ -176,7 +179,9 @@ void hookEvents () {
 }
 
 public boolean isDisposed () {
-	return handle == 0;
+	if (handle != 0) return false;
+	if ((state & HANDLE) != 0) return true;
+	return (state & DISPOSED) != 0;
 }
 
 boolean isValidSubclass () {
@@ -194,7 +199,9 @@ boolean isValidThread () {
 }
 
 boolean isValidWidget () {
-	return true /*handle != 0*/;
+	if (handle != 0) return true;
+	if ((state & HANDLE) != 0) return false;
+	return (state & DISPOSED) == 0;
 }
 
 public void notifyListeners (int eventType, Event event) {
@@ -321,14 +328,16 @@ void register () {
 
 void releaseHandle () {
 	handle = 0;
-//	state |= DISPOSED;
+	state |= DISPOSED;
 }
 
 void releaseWidget () {
 	sendEvent (SWT.Dispose);
-//	state |= DISPOSED;
+	deregister ();
 	eventTable = null;
 	data = null;
+	keys = null;
+	values = null;
 }
 
 public void removeListener (int eventType, Listener handler) {

@@ -112,6 +112,7 @@ void releaseWidget () {
 	menuBar = null;
 	menus = null;
 	image = null;
+	text = null;
 	super.releaseWidget ();
 }
 

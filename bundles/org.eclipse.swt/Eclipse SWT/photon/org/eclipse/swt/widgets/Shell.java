@@ -15,6 +15,7 @@ public class Shell extends Decorations {
 	int shellHandle;
 	Display display;
 	int modal, blockedList;
+	Control lastFocus;
 
 public Shell () {
 	this ((Display) null);
@@ -110,6 +111,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	if (handle != 0) {
 		int clazz = display.PtContainer;
 		int [] args = {
@@ -359,6 +361,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (blockedList != 0) OS.PtUnblockWindows (blockedList);
 	blockedList = 0;
+	lastFocus = null;
 	display = null;
 }
 

@@ -62,7 +62,7 @@ public static synchronized Widget remove (int handle) {
 	if (GetArgs [1] == 0) return null;
 	OS.memmove (ArgBuffer, GetArgs [1], 4);
 	if (ArgBuffer [0] == 0) return null;
-	int index = ArgBuffer [1] - 1;
+	int index = ArgBuffer [0] - 1;
 	Widget widget = null;
 	if (0 <= index && index < WidgetTable.length) {
 		widget = WidgetTable [index];

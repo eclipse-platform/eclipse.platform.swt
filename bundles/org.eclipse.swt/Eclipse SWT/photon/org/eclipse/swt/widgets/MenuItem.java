@@ -58,6 +58,7 @@ static int checkStyle (int style) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	int count = parent.getItemCount();
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	int parentHandle = parent.handle;
@@ -178,7 +179,7 @@ void releaseChild () {
 }
 
 void releaseWidget () {
-	if (menu != null) {
+	if (menu != null && !menu.isDisposed ()) {
 		menu.releaseWidget ();
 		menu.releaseHandle ();
 	}

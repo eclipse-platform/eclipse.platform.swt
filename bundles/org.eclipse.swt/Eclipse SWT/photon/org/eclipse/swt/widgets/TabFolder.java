@@ -89,6 +89,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	Display display = getDisplay ();
 	int clazz = display.PtPanelGroup;
 	int parentHandle = parent.handle;
@@ -300,7 +301,10 @@ void releaseWidget () {
 	int count = args [2];
 	for (int i=0; i<count; i++) {
 		TabItem item = items [i];
-		if (!item.isDisposed ()) item.releaseWidget ();
+		if (!item.isDisposed ()) {
+			item.releaseWidget ();
+			item.releaseHandle ();
+		}
 	}
 	items = null;
 	super.releaseWidget ();

@@ -45,6 +45,7 @@ protected void checkSubclass () {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	int count = parent.getItemCount();
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	int parentHandle = parent.handle;
@@ -199,6 +200,7 @@ void releaseWidget () {
 	control = null;
 	hotImage = null;
 	disabledImage = null;
+	toolTipText = null;
 }
 
 public void removeSelectionListener(SelectionListener listener) {

@@ -72,6 +72,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle (int index) {
+	state |= HANDLE;
 	int parentHandle = parent.handle;
 	createScrolledHandle (parentHandle);
 }
@@ -184,7 +185,7 @@ int processResize (int info) {
 	return OS.Pt_CONTINUE;
 }
 
-void releaseWidget () {
+void releaseChildren () {
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
 		Control child = children [i];
@@ -193,6 +194,10 @@ void releaseWidget () {
 			child.releaseHandle ();
 		}
 	}
+}
+
+void releaseWidget () {
+	releaseChildren ();
 	super.releaseWidget ();
 }
 

@@ -93,6 +93,12 @@ public boolean open () {
 	int result = OS.PhInitDrag (rid, OS.Ph_DRAG_KEY_MOTION | OS.Ph_TRACK_DRAG, rect1, null, input_group, null, null, null, null /*pos*/, null);
 	return result == 0;
 }
+void releaseWidget () {
+	super.releaseWidget ();
+	parent = null;
+	display = null;
+	rectangles = null;
+}
 public void removeControlListener (ControlListener listener) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
