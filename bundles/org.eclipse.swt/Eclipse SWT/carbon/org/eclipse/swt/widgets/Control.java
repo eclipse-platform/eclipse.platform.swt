@@ -299,11 +299,34 @@ void hookEvents () {
 
 public int internal_new_GC (GCData data) {
 	checkWidget();
-	return 0;
+	int context = 0;
+	if (data.paintEvent != 0) {
+		int inEvent = data.paintEvent;
+		int[] buffer = new int[1];
+		OS.GetEventParameter(inEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
+		context = buffer [0];
+	} else {
+	}
+	if (data != null) {
+		data.device = getDisplay ();
+//		data.foreground = getForegroundPixel ();
+//		data.background = getBackgroundPixel ();
+//		data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+//		data.hwnd = handle;
+		Rect rect = new Rect();
+		int wHandle = OS.GetControlOwner(handle);
+		int port = OS.GetWindowPort(wHandle);
+		OS.GetPortBounds(port, rect);
+		data.portRect = rect;
+	}
+	return context;
 }
 
-public void internal_dispose_GC (int xGC, GCData data) {
+public void internal_dispose_GC (int context, GCData data) {
 	checkWidget ();
+	if (data.paintEvent != 0) {
+	} else {
+	}
 }
 
 public boolean isEnabled () {
@@ -377,7 +400,35 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
+	/* Exit early - don't draw the background */
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
+		return OS.eventNotHandledErr;
+	}
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+
+	/* Retrieve the damage region */
+	int [] region = new int [1];	
+	OS.GetEventParameter(theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
+	Rect bounds = new Rect();
+	OS.GetRegionBounds(region [0], bounds);
+
+	GCData data = new GCData ();
+	data.paintEvent = theEvent;
+	GC gc = GC.carbon_new (this, data);
+	
+	/* Send the paint event */
+	Event event = new Event ();
+	event.gc = gc;
+	event.x = bounds.left;
+	event.y = bounds.top;
+	event.width = bounds.right - bounds.left;
+	event.height = bounds.bottom - bounds.top;
+//	gc.setClipping (Region.carbon_new (region [0]));
+	sendEvent (SWT.Paint, event);
+	event.gc = null;
+	gc.dispose ();
+
+	return result;
 }
 
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
