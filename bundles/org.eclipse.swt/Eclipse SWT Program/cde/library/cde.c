@@ -11,6 +11,7 @@
 
 #include "swt.h"
 #include "cde_structs.h"
+#include "cde_stats.h"
 
 #define CDE_NATIVE(func) Java_org_eclipse_swt_internal_cde_CDE_##func
 

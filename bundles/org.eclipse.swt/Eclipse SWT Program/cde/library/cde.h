@@ -21,6 +21,4 @@
 #include <Dt/Dts.h>
 #include <Dt/Action.h>
 
-#include "cde_stats.h"
-
 #endif /* INC_kde_H */

@@ -372,6 +372,7 @@ public void setMainClass(String str) {
 }
 
 public void setOutputDir(String str) {
+	if (str != null && !str.endsWith(File.separator)) str += File.separator; 
 	outputDir = str;
 }
 
