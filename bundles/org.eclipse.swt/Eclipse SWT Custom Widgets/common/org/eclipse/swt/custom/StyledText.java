@@ -630,8 +630,10 @@ public class StyledText extends Canvas {
 		
 				if (gc == null) {
 					gc = new GC(parent);
-					currentFont = gc.getFont().getFontData()[0];
 					caretWidth = getCaretWidth();
+					if (isBidi() == false) {
+						currentFont = gc.getFont().getFontData()[0];
+					}
 				}		
 				lineWidth[i] = contentWidth(line, lineOffset, gc, currentFont) + caretWidth;
 			}
@@ -667,7 +669,8 @@ public class StyledText extends Canvas {
 	 * @param lineOffset start offset of the line to measure, relative 
 	 * 	to the start of the document
 	 * @param gc the GC to use for measuring the line
-	 * @param currentFont the font currently set in gc. Cached for better performance.
+	 * @param currentFont the font currently set in gc. Cached for better 
+	 * 	performance. Null when running in a bidi locale.
 	 * @return the width of the given line
 	 */
 	int contentWidth(String line, int lineOffset, GC gc, FontData currentFont) {
@@ -3363,7 +3366,6 @@ int getOffsetAtMouseLocation(int x, int line) {
  */
 int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 	GC gc = new GC(this);
-	FontData currentFont = gc.getFont().getFontData()[0];
 	int offset;	
 	
 	lineXOffset += horizontalScrollOffset;
@@ -3372,6 +3374,7 @@ int getOffsetAtX(String line, int lineOffset, int lineXOffset) {
 		offset = bidi.getOffsetAtX(lineXOffset);
 	}		
 	else {
+		FontData currentFont = gc.getFont().getFontData()[0];
 		StyleRange[] styles = null;
 		StyledTextEvent event = getLineStyleData(lineOffset, line);
 					
