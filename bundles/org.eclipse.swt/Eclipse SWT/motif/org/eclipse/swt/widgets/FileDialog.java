@@ -215,6 +215,7 @@ public String getFileName () {
  * @return the relative paths of the files
  */
 public String [] getFileNames () {
+	if (cancel) return null;
 	if ((style & SWT.MULTI) != 0) return fileNames;
 	return new String [] {fileName};
 }
