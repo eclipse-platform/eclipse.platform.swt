@@ -125,32 +125,32 @@ public void test_selectAll() {
 	/* FUTURE: Should also add sub-nodes, and test both single and multi with those.
 	 * i.e. subitems[i] = new TableTreeItem(items[i], SWT.NONE); */
 
-	selectAll_helper("Empty table tree", 0, new TableTreeItem[] {});
+	selectAll_helper("Empty table tree", new TableTreeItem[] {});
 
 	int number = 8;
 	TableTreeItem[] items = new TableTreeItem[number];
 	for (int i = 0; i < number; i++) {
 		items[i] = new TableTreeItem(tableTree, SWT.NONE);
 	}
-	selectAll_helper("selectAll()", number, items);
+	selectAll_helper("selectAll()", items);
 
 	
 	/* Now run the same tests on a single-select TableTree. */
 	singleSelect();
-	selectAll_helper("Empty table tree", 0, new TableTreeItem[] {});
+	selectAll_helper("Empty table tree", new TableTreeItem[] {});
 
 	items = new TableTreeItem[number];
 	for (int i = 0; i < number; i++) {
 		items[i] = new TableTreeItem(tableTree, SWT.NONE);
 	}
-	selectAll_helper("selectAll()", 0, new TableTreeItem[] {});
+	selectAll_helper("selectAll()", new TableTreeItem[] {});
 }
 
 public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 	/* FUTURE: Should also add sub-nodes, and test both single and multi with those.
 	 * i.e. subitems[i] = new TableTreeItem(items[i], SWT.NONE); */
 
-	setSelection_helper("Select no items in empty table tree", new TableTreeItem[] {}, 0, new TableTreeItem[] {});
+	setSelection_helper("Select no items in empty table tree", new TableTreeItem[] {}, new TableTreeItem[] {});
 	try {
 		tableTree.setSelection((TableTreeItem[]) null);
 		fail("MULTI: No exception thrown for selecting null in empty table tree");
@@ -164,7 +164,7 @@ public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 		items[i] = new TableTreeItem(tableTree, 0);
 	}
 	
-	setSelection_helper("Select no items in table tree with items", new TableTreeItem[] {}, 0, new TableTreeItem[] {});
+	setSelection_helper("Select no items in table tree with items", new TableTreeItem[] {}, new TableTreeItem[] {});
 	try {
 		tableTree.setSelection((TableTreeItem[]) null);
 		fail("MULTI: No exception thrown for selecting null in table tree with items");
@@ -173,27 +173,27 @@ public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 	}
 
 	for (int i = 0; i < number; i++) {
-		setSelection_helper("Select item " + i, new TableTreeItem[] {items[i]}, 1, new TableTreeItem[] {items[i]});
+		setSelection_helper("Select item " + i, new TableTreeItem[] {items[i]}, new TableTreeItem[] {items[i]});
 	}
-	setSelection_helper("Select items", items, number, items);
-	setSelection_helper("Select tableTree.getItems()", tableTree.getItems(), number, tableTree.getItems());
-	setSelection_helper("Select 2 contiguous items", new TableTreeItem[] {items[0], items[1]}, 2, new TableTreeItem[] {items[0], items[1]});
-	setSelection_helper("Select 2 non-contiguous items", new TableTreeItem[] {items[3], items[6]}, 2, new TableTreeItem[] {items[3], items[6]});
-	setSelection_helper("Select 3 contiguous items", new TableTreeItem[] {items[2], items[3], items[4]}, 3, new TableTreeItem[] {items[2], items[3], items[4]});
-	setSelection_helper("Select 3 non-contiguous items", new TableTreeItem[] {items[2], items[5], items[7]}, 3, new TableTreeItem[] {items[2], items[5], items[7]});
-	setSelection_helper("Select 3 unordered contiguous items", new TableTreeItem[] {items[4], items[2], items[3]}, 3, new TableTreeItem[] {items[2], items[3], items[4]});
-	setSelection_helper("Select 3 unordered non-contiguous items", new TableTreeItem[] {items[5], items[2], items[7]}, 3, new TableTreeItem[] {items[2], items[5], items[7]});
-	setSelection_helper("Select 3 reverse-order contiguous items", new TableTreeItem[] {items[4], items[3], items[2]}, 3, new TableTreeItem[] {items[2], items[3], items[4]});
-	setSelection_helper("Select 3 reverse-order non-contiguous items", new TableTreeItem[] {items[7], items[5], items[2]}, 3, new TableTreeItem[] {items[2], items[5], items[7]});
-	setSelection_helper("Select same item twice", new TableTreeItem[] {items[0], items[4], items[0]}, 2, new TableTreeItem[] {items[0], items[4]});
-	setSelection_helper("Select same item multiple times", new TableTreeItem[] {items[4], items[4], items[4], items[4], items[4], items[4]}, 1, new TableTreeItem[] {items[4]});
-	setSelection_helper("Select multiple items multiple times", new TableTreeItem[] {items[4], items[0], items[2], items[4], items[4], items[0], items[4], items[2]}, 3, new TableTreeItem[] {items[0], items[2], items[4]});
+	setSelection_helper("Select items", items, items);
+	setSelection_helper("Select tableTree.getItems()", tableTree.getItems(), tableTree.getItems());
+	setSelection_helper("Select 2 contiguous items", new TableTreeItem[] {items[0], items[1]}, new TableTreeItem[] {items[0], items[1]});
+	setSelection_helper("Select 2 non-contiguous items", new TableTreeItem[] {items[3], items[6]}, new TableTreeItem[] {items[3], items[6]});
+	setSelection_helper("Select 3 contiguous items", new TableTreeItem[] {items[2], items[3], items[4]}, new TableTreeItem[] {items[2], items[3], items[4]});
+	setSelection_helper("Select 3 non-contiguous items", new TableTreeItem[] {items[2], items[5], items[7]}, new TableTreeItem[] {items[2], items[5], items[7]});
+	setSelection_helper("Select 3 unordered contiguous items", new TableTreeItem[] {items[4], items[2], items[3]}, new TableTreeItem[] {items[2], items[3], items[4]});
+	setSelection_helper("Select 3 unordered non-contiguous items", new TableTreeItem[] {items[5], items[2], items[7]}, new TableTreeItem[] {items[2], items[5], items[7]});
+	setSelection_helper("Select 3 reverse-order contiguous items", new TableTreeItem[] {items[4], items[3], items[2]}, new TableTreeItem[] {items[2], items[3], items[4]});
+	setSelection_helper("Select 3 reverse-order non-contiguous items", new TableTreeItem[] {items[7], items[5], items[2]}, new TableTreeItem[] {items[2], items[5], items[7]});
+	setSelection_helper("Select same item twice", new TableTreeItem[] {items[0], items[4], items[0]}, new TableTreeItem[] {items[0], items[4]});
+	setSelection_helper("Select same item multiple times", new TableTreeItem[] {items[4], items[4], items[4], items[4], items[4], items[4]}, new TableTreeItem[] {items[4]});
+	setSelection_helper("Select multiple items multiple times", new TableTreeItem[] {items[4], items[0], items[2], items[4], items[4], items[0], items[4], items[2]}, new TableTreeItem[] {items[0], items[2], items[4]});
 
 	
 	/* Now run the same tests on a single-select TableTree. */
 	singleSelect();
 	
-	setSelection_helper("Select no items in empty table tree", new TableTreeItem[] {}, 0, new TableTreeItem[] {});
+	setSelection_helper("Select no items in empty table tree", new TableTreeItem[] {}, new TableTreeItem[] {});
 	try {
 		tableTree.setSelection((TableTreeItem[]) null);
 		fail("SINGLE: No exception thrown for selecting null in empty table tree");
@@ -206,7 +206,7 @@ public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 		items[i] = new TableTreeItem(tableTree, 0);
 	}
 	
-	setSelection_helper("Select no items in table tree with items", new TableTreeItem[] {}, 0, new TableTreeItem[] {});
+	setSelection_helper("Select no items in table tree with items", new TableTreeItem[] {}, new TableTreeItem[] {});
 	try {
 		tableTree.setSelection((TableTreeItem[]) null);
 		fail("SINGLE: No exception thrown for selecting null in table tree with items");
@@ -215,21 +215,21 @@ public void test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem() {
 	}
 
 	for (int i = 0; i < number; i++) {
-		setSelection_helper("Select item " + i, new TableTreeItem[] {items[i]}, 1, new TableTreeItem[] {items[i]});
+		setSelection_helper("Select item " + i, new TableTreeItem[] {items[i]}, new TableTreeItem[] {items[i]});
 	}
-	setSelection_helper("Select items", items, 0, new TableTreeItem[] {});
-	setSelection_helper("Select tableTree.getItems()", tableTree.getItems(), 0, new TableTreeItem[] {});
-	setSelection_helper("Select 2 contiguous items", new TableTreeItem[] {items[0], items[1]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select 2 non-contiguous items", new TableTreeItem[] {items[3], items[6]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select 3 contiguous items", new TableTreeItem[] {items[2], items[3], items[4]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select 3 non-contiguous items", new TableTreeItem[] {items[2], items[5], items[7]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select 3 unordered contiguous items", new TableTreeItem[] {items[4], items[2], items[3]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select 3 unordered non-contiguous items", new TableTreeItem[] {items[5], items[2], items[7]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select 3 reverse-order contiguous items", new TableTreeItem[] {items[4], items[3], items[2]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select 3 reverse-order non-contiguous items", new TableTreeItem[] {items[7], items[5], items[2]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select same item twice", new TableTreeItem[] {items[0], items[4], items[0]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select same item multiple times", new TableTreeItem[] {items[4], items[4], items[4], items[4], items[4], items[4]}, 0, new TableTreeItem[] {});
-	setSelection_helper("Select multiple items multiple times", new TableTreeItem[] {items[4], items[0], items[2], items[4], items[4], items[0], items[4], items[2]}, 0, new TableTreeItem[] {});
+	setSelection_helper("Select items", items, new TableTreeItem[] {});
+	setSelection_helper("Select tableTree.getItems()", tableTree.getItems(), new TableTreeItem[] {});
+	setSelection_helper("Select 2 contiguous items", new TableTreeItem[] {items[0], items[1]}, new TableTreeItem[] {});
+	setSelection_helper("Select 2 non-contiguous items", new TableTreeItem[] {items[3], items[6]}, new TableTreeItem[] {});
+	setSelection_helper("Select 3 contiguous items", new TableTreeItem[] {items[2], items[3], items[4]}, new TableTreeItem[] {});
+	setSelection_helper("Select 3 non-contiguous items", new TableTreeItem[] {items[2], items[5], items[7]}, new TableTreeItem[] {});
+	setSelection_helper("Select 3 unordered contiguous items", new TableTreeItem[] {items[4], items[2], items[3]}, new TableTreeItem[] {});
+	setSelection_helper("Select 3 unordered non-contiguous items", new TableTreeItem[] {items[5], items[2], items[7]}, new TableTreeItem[] {});
+	setSelection_helper("Select 3 reverse-order contiguous items", new TableTreeItem[] {items[4], items[3], items[2]}, new TableTreeItem[] {});
+	setSelection_helper("Select 3 reverse-order non-contiguous items", new TableTreeItem[] {items[7], items[5], items[2]}, new TableTreeItem[] {});
+	setSelection_helper("Select same item twice", new TableTreeItem[] {items[0], items[4], items[0]}, new TableTreeItem[] {});
+	setSelection_helper("Select same item multiple times", new TableTreeItem[] {items[4], items[4], items[4], items[4], items[4], items[4]}, new TableTreeItem[] {});
+	setSelection_helper("Select multiple items multiple times", new TableTreeItem[] {items[4], items[0], items[2], items[4], items[4], items[0], items[4], items[2]}, new TableTreeItem[] {});
 }
 
 public void test_showItemLorg_eclipse_swt_custom_TableTreeItem() {
@@ -314,21 +314,21 @@ private void singleSelect() {
  * Used in test_selectAll.
  * Note: This method must be private or protected so that the auto-gen tool keeps it.
  */
-private void selectAll_helper(String message, int expectedCount, TableTreeItem[] expectedSelection) {
+private void selectAll_helper(String message, TableTreeItem[] expectedSelection) {
 	tableTree.selectAll();
 	message = (style == SWT.MULTI ? "MULTI" : "SINGLE") + ": " + message;
-	assertEquals(message, expectedCount, tableTree.getSelectionCount());
-	assertSame(message, expectedSelection, tableTree.getSelection());	
+	assertEquals(message, expectedSelection.length, tableTree.getSelectionCount());
+	assertSame(message, expectedSelection, tableTree.getSelection());
 }
 
 /*
  * Used in test_setSelection$Lorg_eclipse_swt_custom_TableTreeItem.
  * Note: This method must be private or protected so that the auto-gen tool keeps it.
  */
-private void setSelection_helper(String message, TableTreeItem[] itemsToSelect, int expectedCount, TableTreeItem[] expectedSelection) {
+private void setSelection_helper(String message, TableTreeItem[] itemsToSelect, TableTreeItem[] expectedSelection) {
 	tableTree.setSelection(itemsToSelect);
 	message = (style == SWT.MULTI ? "MULTI" : "SINGLE") + ": " + message;
-	assertEquals(message, expectedCount, tableTree.getSelectionCount());
+	assertEquals(message, expectedSelection.length, tableTree.getSelectionCount());
 	assertSame(message, expectedSelection, tableTree.getSelection());	
 }
 }
