@@ -517,6 +517,7 @@ public class OS {
 	public static final int LVCFMT_RIGHT = 0x1;
 	public static final int LVCF_FMT = 0x1;
 	public static final int LVCF_IMAGE = 0x10;
+	public static final int LVCFMT_JUSTIFYMASK = 0x3;
 	public static final int LVCF_TEXT = 0x4;
 	public static final int LVCF_WIDTH = 0x2;
 	public static final int LVHT_ONITEM = 0xe;
