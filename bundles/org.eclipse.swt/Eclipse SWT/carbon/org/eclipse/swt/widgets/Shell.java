@@ -1231,8 +1231,14 @@ public void setMaximized (boolean maximized) {
 	checkWidget();
 	super.setMaximized (maximized);
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	if (maximized) {
+		Rect rect = new Rect ();
+		int gdevice = OS.GetMainDevice ();
+		OS.GetAvailableWindowPositioningBounds (gdevice, rect);
+		pt.h = (short) (rect.right - rect.left);
+		pt.v = (short) (rect.bottom - rect.top);
+	}
 	short inPartCode = (short) (maximized ? OS.inZoomOut : OS.inZoomIn);
-	//FIXME - returns -50 errParam
 	OS.ZoomWindowIdeal (shellHandle, inPartCode, pt);
 }
 
