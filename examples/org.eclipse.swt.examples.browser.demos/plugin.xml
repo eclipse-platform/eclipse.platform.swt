@@ -27,7 +27,7 @@
       <view
             allowMultiple="false"
             class="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView"
-            icon="icons/sample.gif"
+            icon="icons/pawn.gif"
             category="org.eclipse.swt.examples.category"
             name="Browser Demo"
             id="org.eclipse.swt.examples.browser.demos.views.BrowserDemoView">
