@@ -553,9 +553,7 @@ public void setMinWidth(int width) {
 }
 
 private void vScroll() {
-	Control[] children = getChildren();
-	if (children.length == 0) return;
-	Control content = children[0];
+	if (content == null) return;
 	Point location = content.getLocation ();
 	ScrollBar vBar = getVerticalBar ();
 	int vSelection = vBar.getSelection ();
