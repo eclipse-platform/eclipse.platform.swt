@@ -28,6 +28,7 @@ public class FileDialog extends GtkFileDialog {
 	String [] filterExtensions = new String [0];
 	String filterPath;
 	String fileName = "";
+	String[] fileNames;
 	String fullPath = "";
 	
 /**
@@ -254,5 +255,42 @@ void interpretOsAnswer(String osAnswer) {
 	}
 	answer = fullPath = osAnswer;
 	fileName = answer.substring(separatorIndex+1);
+	if ((style&SWT.MULTI) == 0) {
+		fileNames = new String[] {fileName};
+	} else {
+		int namesPtr = OS.gtk_file_selection_get_selections(handle);
+		int namesPtr1 = namesPtr;
+		int[] namePtr = new int[1];
+		OS.memmove(namePtr, namesPtr1, 1);
+		int length=0;
+		while (namePtr[0] != 0) {
+			length++;
+			namesPtr1+=4;  // PROBLEM CODE: depend on address size
+			OS.memmove(namePtr, namesPtr1, 1);
+		}
+		fileNames = new String[length];
+		namePtr = new int[length];
+		OS.memmove(namePtr, namesPtr, length*4);
+		for (int i=0; i<length; i++) {
+			/*
+			 * NB:  We can not use the Converter here, because
+			 * the mount charset/iocharset is different than the locale!
+			 */
+			int bytesPtr = OS.g_filename_to_utf8(namePtr[i], -1, 0, 0, 0);
+			if (bytesPtr==0) continue;
+			// Careful! The size, not the length of the string
+			byte[] bytes = new byte[OS.strlen(bytesPtr)];
+			OS.memmove(bytes, bytesPtr, bytes.length);
+			fileNames[i] = new String(bytes);
+			/*
+			 * NB:  Unlike other similar functions (e.g., g_convert), the glib
+			 * documentation does not say the resulting UTF8 string should be
+			 * freed.  However, the strdup makes me believe the free is necessary.
+			 */
+			OS.g_free(bytesPtr);
+		}
+		OS.g_strfreev(namesPtr);
+	}
 }
+
 }
