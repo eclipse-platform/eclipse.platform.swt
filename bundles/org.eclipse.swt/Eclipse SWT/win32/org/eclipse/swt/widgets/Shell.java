@@ -932,6 +932,10 @@ void setBounds (int x, int y, int width, int height, int flags) {
  *
  * @param rect the clipping region.
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
+ * </ul>
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -942,6 +946,7 @@ void setBounds (int x, int y, int width, int height, int flags) {
  */
 public void setClipping(Region region) {
 	checkWidget ();
+	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.NO_TRIM) == 0) return;
 	OS.SetWindowRgn (handle, region.handle, true);
 }
