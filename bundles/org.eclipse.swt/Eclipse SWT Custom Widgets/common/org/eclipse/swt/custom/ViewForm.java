@@ -65,19 +65,31 @@ public class ViewForm extends Composite {
 	private Rectangle oldArea;
 	private static final int OFFSCREEN = -200;
 /**
-* Creates a ViewForm.
-* <p>
-*	This method creates a child widget using style bits
-* to select a particular look or set of properties. 
-*
-* @param parent	a composite widget (cannot be null)
-* @param style	the bitwise OR'ing of widget styles
-*
-* @exception SWTError <ul>
-*		<li> ERROR_THREAD_INVALID_ACCESS when called from the wrong thread </li>
-* 		<li> ERROR_ERROR_NULL_ARGUMENT when the parent is null </li>
-*	</ul>
-*/			
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see #getStyle
+ */		
 public ViewForm(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	
@@ -163,6 +175,13 @@ public Rectangle getClientArea() {
 }
 /**
 * Returns the content area.
+* 
+* @return the control in the content area of the pane or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public Control getContent() {
 	checkWidget();
@@ -171,6 +190,13 @@ public Control getContent() {
 /**
 * Returns Control that appears in the top center of the pane.
 * Typically this is a toolbar.
+* 
+* @return the control in the top center of the pane or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public Control getTopCenter() {
 	checkWidget();
@@ -179,6 +205,13 @@ public Control getTopCenter() {
 /**
 * Returns the Control that appears in the top left corner of the pane.
 * Typically this is a label such as CLabel.
+* 
+* @return the control in the top left corner of the pane or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public Control getTopLeft() {
 	checkWidget();
@@ -187,6 +220,13 @@ public Control getTopLeft() {
 /**
 * Returns the control in the top right corner of the pane.
 * Typically this is a Close button or a composite with a Menu and Close button.
+* 
+* @return the control in the top right corner of the pane or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public Control getTopRight() {
 	checkWidget();
@@ -378,6 +418,13 @@ private void onResize() {
 * Sets the content.
 * Setting the content to null will remove it from 
 * the pane - however, the creator of the content must dispose of the content.
+* 
+* @param c the control to be displayed in the content area or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public void setContent(Control content) {
 	checkWidget();
@@ -426,6 +473,13 @@ public void setLayout (Layout layout) {
 * Typically this is a toolbar.
 * The topCenter is optional.  Setting the topCenter to null will remove it from 
 * the pane - however, the creator of the topCenter must dispose of the topCenter.
+* 
+* @param c the control to be displayed in the top center or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public void setTopCenter(Control topCenter) {
 	checkWidget();
@@ -443,6 +497,13 @@ public void setTopCenter(Control topCenter) {
 * Typically this is a label such as CLabel.
 * The topLeft is optional.  Setting the top left control to null will remove it from 
 * the pane - however, the creator of the control must dispose of the control.
+* 
+* @param c the control to be displayed in the top left corner or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public void setTopLeft(Control c) {
 	checkWidget();
@@ -460,6 +521,14 @@ public void setTopLeft(Control c) {
 * Typically this is a Close button or a composite with a Menu and Close button.
 * The topRight is optional.  Setting the top right control to null will remove it from 
 * the pane - however, the creator of the control must dispose of the control.
+* 
+* @param c the control to be displayed in the top right corner or null
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+*    <li>ERROR_INVALID_ARGUMENT - if the control is not a child of this ViewForm</li>
+* </ul>
 */
 public void setTopRight(Control c) {
 	checkWidget();
@@ -472,6 +541,16 @@ public void setTopRight(Control c) {
 	this.topRight = c;
 	layout();
 }
+/**
+* Specify whether the border should be displayed or not.
+* 
+* @param show true if the border should be displayed
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
+*/
 public void setBorderVisible(boolean show) {
 	checkWidget();
 	if (showBorder == show) return;
@@ -495,6 +574,13 @@ public void setBorderVisible(boolean show) {
 * If true, the topCenter will always appear on a separate line by itself, otherwise the 
 * topCenter will appear in the top row if there is room and will be moved to the second row if
 * required.
+* 
+* @param show true if the topCenter will always appear on a separate line by itself
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public void setTopCenterSeparate(boolean show) {
 	checkWidget();

@@ -26,46 +26,130 @@ public class TableTreeItem extends Item {
 	boolean checked;
 
 /**
- * Create a new instance of a root item.
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>TableTree</code>)
+ * and a style value describing its behavior and appearance.
+ * The item is added to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
  *
- * @param parent the TableTree that contains this root item
- * @param style the bitwise OR'ing of widget styles
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#getStyle
  */
 public TableTreeItem(TableTree parent, int style) {
 	this (parent, style, parent.getItemCount());
 }
 
 /**
- * Create a new instance of a root item in the position
- * indicated by the specified index.
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>TableTree</code>,
+ * a style value describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
  *
- * @param parent the TableTree that contains this root item
- * @param style the bitwise OR'ing of widget styles
- * @param index specifies the position of this item in the TableTree
- * 	relative to other root items
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#getStyle
  */
 public TableTreeItem(TableTree parent, int style, int index) {
 	this (parent, null, style, index);
 }
 
 /**
- * Create a new instance of a sub item.
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>TableTreeItem</code>)
+ * and a style value describing its behavior and appearance.
+ * The item is added to the end of the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
  *
- * @param parent this item's parent in the hierarchy of TableTree items
- * @param style the bitwise OR'ing of widget styles
+ * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#getStyle
  */
 public TableTreeItem(TableTreeItem parent, int style) {
 	this (parent, style, parent.getItemCount());
 }
 
 /**
- * Create a new instance of a sub item in the position
- * indicated by the specified index.
+ * Constructs a new instance of this class given its parent
+ * (which must be a <code>TableTreeItem</code>),
+ * a style value describing its behavior and appearance, and the index
+ * at which to place it in the items maintained by its parent.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
  *
- * @param parent this item's parent in the hierarchy of TableTree items
- * @param style the bitwise OR'ing of widget styles
- * @param index specifies the position of this item in the TableTree
- * 	relative to other children of the same parent
+ * @param parentItem a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ * @param index the index to store the receiver in its parent
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see Widget#getStyle
  */
 public TableTreeItem(TableTreeItem parent, int style, int index) {
 	this (parent.getParent(), parent, style, index);
@@ -129,14 +213,15 @@ void addItem(TableTreeItem item, int index) {
 }
 
 /**
- * Gets the widget bounds at the specified index.
- * <p>
- * @return the widget bounds at the specified index
+ * Returns a rectangle describing the receiver's size and location
+ * relative to its parent.
  *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li> 
- *	</ul>
+ * @return the receiver's bounding rectangle
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Rectangle getBounds (int index) {
 	checkWidget();
@@ -147,15 +232,18 @@ public Rectangle getBounds (int index) {
 	}
 }
 /**
-* Gets the checked state.
-* <p>
-* @return the item checked state.
-*
-* @exception SWTError <ul>
-*		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
-*		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-*	</ul>
-*/
+ * Returns <code>true</code> if the receiver is checked,
+ * and false otherwise.  When the parent does not have
+ * the <code>CHECK style, return false.
+ * <p>
+ *
+ * @return the checked state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getChecked () {
 	checkWidget();
 	if (tableItem == null) {
@@ -163,20 +251,6 @@ public boolean getChecked () {
 	}
 	return tableItem.getChecked();
 }
-
-/**
- * Gets the Display.
- * <p>
- * This method gets the Display that is associated
- * with the widget.
- *
- * @return the widget data
- *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *	</ul>
- */
 public Display getDisplay () {
 	TableTree parent = this.parent;
 	if (parent == null) throw new SWTError (SWT.ERROR_WIDGET_DISPOSED);
@@ -184,9 +258,16 @@ public Display getDisplay () {
 }
 
 /**
- * Gets the expanded state of the widget.
+ * Returns <code>true</code> if the receiver is expanded,
+ * and false otherwise.
  * <p>
- * @return a boolean that is the expanded state of the widget
+ *
+ * @return the expanded state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public boolean getExpanded () {
 	checkWidget();
@@ -200,6 +281,11 @@ public boolean getExpanded () {
  * images of the tree, therefore getImage(0) will return null.
  *
  * @return the image at index 0
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Image getImage () {
 	checkWidget();
@@ -216,6 +302,11 @@ public Image getImage () {
  *
  * @param index the index of the image
  * @return the image at the specified index or null
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public Image getImage (int index) {
 	checkWidget();
@@ -229,9 +320,15 @@ int getIndent() {
 }
 
 /**
- * Gets the number of sub items.
- * <p>
- * @return the number of sub items
+ * Returns the number of items contained in the receiver
+ * that are direct item children of the receiver.
+ *
+ * @return the number of items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public int getItemCount () {
 	checkWidget();
@@ -239,9 +336,20 @@ public int getItemCount () {
 }
 
 /**
- * Gets the sub items.
+ * Returns an array of <code>TableTreeItem</code>s which are the
+ * direct item children of the receiver.
  * <p>
- * @return the sub items
+ * Note: This is not the actual structure used by the receiver
+ * to maintain its list of items, so modifying the array will
+ * not affect the receiver. 
+ * </p>
+ *
+ * @return the receiver's items
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableTreeItem[] getItems () {
 	checkWidget();
@@ -261,9 +369,14 @@ TableTreeItem getItem(TableItem tableItem) {
 }
 
 /**
- * Gets the parent.
- * <p>
- * @return the parent
+ * Returns the receiver's parent, which must be a <code>TableTree</code>.
+ *
+ * @return the receiver's parent
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableTree getParent () {
 	checkWidget();
@@ -271,26 +384,21 @@ public TableTree getParent () {
 }
 
 /**
- * Gets the parent item.
- * <p>
- * @return the parent item.
+ * Returns the receiver's parent item, which must be a
+ * <code>TableTreeItem</code> or null when the receiver is a
+ * root.
+ *
+ * @return the receiver's parent item
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public TableTreeItem getParentItem () {
 	checkWidget();
 	return parentItem;
 }
-
-/**
- * Gets the first item text.
- * <p>
- * @return the item text at index 0, which can be null
- *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_CANNOT_GET_TEXT when the operation fails</li>
- *	</ul>
- */
 public String getText () {
 	checkWidget();
 	return getText(0);
@@ -307,6 +415,11 @@ public String getText () {
  *
  * @param index the index of the item
  * @return the item text at the specified index, which can be null
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public String getText(int index) {
 	checkWidget();
@@ -328,6 +441,11 @@ boolean getVisible () {
  *
  * @param item the search item
  * @return the index of the item or -1 if the item is not found
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  *
  */
 public int indexOf (TableTreeItem item) {
@@ -411,7 +529,7 @@ void removeItem(TableTreeItem item) {
 * @exception SWTError <ul>
 *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
 *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-*	</ul>
+* </ul>
 */
 public void setChecked (boolean checked) {
 	checkWidget();
@@ -479,9 +597,14 @@ public void setImage (int index, Image image) {
  * images of the tree, therefore do nothing.
  *
  * @param image the new image or null
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *		<li>ERROR_NULL_ARGUMENT when string is null</li>
+ *	</ul>
  */
 public void setImage (Image image) {
-	checkWidget();
 	setImage(0, image);
 }
 
@@ -514,24 +637,6 @@ public void setText(int index, String text) {
 	texts[index] = text;
 	if (tableItem != null) tableItem.setText(index, text);
 }
-
-/**
- * Sets the widget text.
- * <p>
- *
- * The widget text for an item is the label of the
- * item or the label of the text specified by a column
- * number.
- *
- * @param index the column number
- * @param text the new text
- *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *		<li>ERROR_NULL_ARGUMENT when string is null</li>
- *	</ul>
- */
 public void setText (String string) {
 	setText(0, string);
 }
