@@ -347,7 +347,6 @@ void destroyItem (TreeItem item) {
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
-			Display display = getDisplay ();
 			display.releaseImageList (imageList);
 		}
 		imageList = null;
@@ -660,7 +659,7 @@ int imageIndex (Image image) {
 		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
 		if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 		Rectangle bounds = image.getBounds ();
-		imageList = getDisplay ().getImageList (new Point (bounds.width, bounds.height));
+		imageList = display.getImageList (new Point (bounds.width, bounds.height));
 		int index = imageList.indexOf (image);
 		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
@@ -716,7 +715,6 @@ void releaseWidget () {
 	items = null;
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_NORMAL, 0);
-		Display display = getDisplay ();
 		display.releaseImageList (imageList);
 	} else {
 		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
@@ -768,7 +766,6 @@ public void removeAll () {
 	}
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
-		Display display = getDisplay ();
 		display.releaseImageList (imageList);
 	}
 	imageList = null;

@@ -257,12 +257,6 @@ public Control getControl () {
 	return control;
 }
 
-public Display getDisplay () {
-	CoolBar parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns the receiver's parent, which must be a <code>CoolBar</code>.
  *

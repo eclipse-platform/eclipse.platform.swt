@@ -513,11 +513,6 @@ private int Drop(
 public Control getControl () {
 	return control;
 }
-
-public Display getDisplay () {
-	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	return control.getDisplay ();
-}
 private int getOperationFromKeyState(int grfKeyState) {
 	boolean ctrl = (grfKeyState & OS.MK_CONTROL) != 0;
 	boolean shift = (grfKeyState & OS.MK_SHIFT) != 0;

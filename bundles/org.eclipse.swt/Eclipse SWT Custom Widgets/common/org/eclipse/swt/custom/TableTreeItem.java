@@ -296,12 +296,6 @@ public boolean getGrayed () {
 	return tableItem.getGrayed();
 }
 
-public Display getDisplay () {
-	TableTree parent = this.parent;
-	if (parent == null) throw new SWTError (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is expanded,
  * and false otherwise.

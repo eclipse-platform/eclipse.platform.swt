@@ -126,7 +126,7 @@ protected void checkSubclass () {
 public Color getBackground () {
 	checkWidget ();
 	int pixel = (background == -1) ? parent.getBackgroundPixel() : background;
-	return Color.win32_new (getDisplay (), pixel);
+	return Color.win32_new (display, pixel);
 }
 
 /**
@@ -201,12 +201,6 @@ public boolean getChecked () {
 	return (result != 0) && (((lvItem.state >> 12) & 1) == 0);
 }
 
-public Display getDisplay () {
-	Table parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns the foreground color that the receiver will use to draw.
  *
@@ -223,7 +217,7 @@ public Display getDisplay () {
 public Color getForeground () {
 	checkWidget ();
 	int pixel = (foreground == -1) ? parent.getForegroundPixel() : foreground;
-	return Color.win32_new (getDisplay (), pixel);
+	return Color.win32_new (display, pixel);
 }
 
 /**

@@ -186,7 +186,6 @@ void click (boolean dropDown) {
 }
 
 Image createDisabledImage (Image image, Color color) {
-	Display display = getDisplay ();
 	if (OS.IsWinCE) {
 		return new Image (display, image, SWT.IMAGE_DISABLE);
 	}
@@ -262,12 +261,6 @@ public Control getControl () {
 public Image getDisabledImage () {
 	checkWidget();
 	return disabledImage;
-}
-
-public Display getDisplay () {
-	ToolBar parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 
 /**
@@ -752,7 +745,6 @@ void updateImages () {
 	ImageList hotImageList = parent.getHotImageList ();
 	ImageList disabledImageList = parent.getDisabledImageList();
 	if (info.iImage == OS.I_IMAGENONE) {
-		Display display = getDisplay ();
 		Rectangle bounds = image.getBounds ();
 		Point size = new Point (bounds.width, bounds.height);
 		if (imageList == null) imageList = display.getToolImageList (size);

@@ -1614,7 +1614,6 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 LRESULT WM_IME_CHAR (int wParam, int lParam) {
 
 	/* Process a DBCS character */
-	Display display = getDisplay ();
 	display.lastKey = 0;
 	display.lastAscii = wParam;
 	display.lastVirtual = display.lastNull = false;

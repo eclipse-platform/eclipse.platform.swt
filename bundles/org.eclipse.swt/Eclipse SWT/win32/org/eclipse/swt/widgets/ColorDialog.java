@@ -135,7 +135,7 @@ public RGB open () {
 	int lpfnHook = callback.getAddress ();
 	
 	/* Allocate the Custom Colors */
-	Display display = parent.getDisplay ();
+	Display display = parent.display;
 	if (display.lpCustColors == 0) {
 		int hHeap = OS.GetProcessHeap ();
 		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 16 * 4);

@@ -235,7 +235,7 @@ protected void checkSubclass () {
 public Color getBackground () {
 	checkWidget ();
 	int pixel = (background == -1) ? parent.getBackgroundPixel() : background;
-	return Color.win32_new (getDisplay (), pixel);
+	return Color.win32_new (display, pixel);
 }
 
 /**
@@ -287,12 +287,6 @@ public boolean getChecked () {
 	return (result != 0) && (((tvItem.state >> 12) & 1) == 0);
 }
 
-public Display getDisplay () {
-	Tree parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is expanded,
  * and false otherwise.
@@ -331,7 +325,7 @@ public boolean getExpanded () {
 public Color getForeground () {
 	checkWidget ();
 	int pixel = (foreground == -1) ? parent.getForegroundPixel() : foreground;
-	return Color.win32_new (getDisplay (), pixel);
+	return Color.win32_new (display, pixel);
 }
 
 /**

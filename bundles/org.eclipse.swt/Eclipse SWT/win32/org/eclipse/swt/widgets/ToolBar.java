@@ -352,7 +352,6 @@ void destroyItem (ToolItem item) {
 	item.id = -1;
 	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
 	if (count == 0) {
-		Display display = getDisplay ();
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
 			display.releaseToolImageList (imageList);
@@ -563,7 +562,6 @@ void releaseWidget () {
 		}
 	}
 	items = null;
-	Display display = getDisplay ();
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, 0);
 		display.releaseToolImageList (imageList);

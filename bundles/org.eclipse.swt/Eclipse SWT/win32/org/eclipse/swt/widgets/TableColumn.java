@@ -200,12 +200,6 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
-public Display getDisplay () {
-	Table parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 String getNameText () {
 	return getText ();
 }

@@ -280,12 +280,6 @@ public int getAccelerator () {
 	return accelerator;
 }
 
-public Display getDisplay () {
-	Menu parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically

@@ -1235,7 +1235,6 @@ boolean translateAccelerator (MSG msg) {
 			case OS.WM_CHAR:
 			case OS.WM_SYSCHAR:
 			case OS.WM_KEYDOWN:  {
-				Display display = getDisplay ();
 				if (msg.message == OS.WM_KEYDOWN) {
 					if (display.translateTraversal (msg, this)) return true;
 				} else {

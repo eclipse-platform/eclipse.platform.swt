@@ -99,7 +99,6 @@ import org.eclipse.swt.events.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	Display display;
 	Menu activeMenu;
 	int hIMC;
 	int [] brushes;
@@ -321,7 +320,7 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.getDisplay () : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0);
 }
 
 /**	 
@@ -543,11 +542,6 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, width, height);
 }
 
-public Display getDisplay () {
-	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return display;
-}
-
 public boolean getEnabled () {
 	checkWidget ();
 	return (state & DISABLED) == 0;
@@ -709,7 +703,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	activeMenu = null;
 	display.clearModal (this);
-	display = null;
 	if (lpstrTip != 0) {
 		int hHeap = OS.GetProcessHeap ();
 		OS.HeapFree (hHeap, 0, lpstrTip);

@@ -492,7 +492,6 @@ int defaultBackground () {
 }
 
 int defaultFont () {
-	Display display = getDisplay ();
 	return display.systemFont ();
 }
 
@@ -519,7 +518,6 @@ void drawBackground (int hDC) {
 }
 
 void drawBackground (int hDC, RECT rect) {
-	Display display = getDisplay ();
 	int hPalette = display.hPalette;
 	if (hPalette != 0) {
 		OS.SelectPalette (hDC, hPalette, false);
@@ -658,7 +656,7 @@ public Accessible getAccessible () {
  */
 public Color getBackground () {
 	checkWidget ();
-	return Color.win32_new (getDisplay (), getBackgroundPixel ());
+	return Color.win32_new (display, getBackgroundPixel ());
 }
 
 int getBackgroundPixel () {
@@ -721,22 +719,6 @@ int getCodePage () {
 }
 
 /**
- * Returns the display that the receiver was created on.
- *
- * @return the receiver's display
- *
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
-/**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
  * not selectable from the user interface and draws with an
@@ -770,7 +752,7 @@ public Font getFont () {
 	checkWidget ();	
 	int hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
 	if (hFont == 0) hFont = defaultFont ();
-	return Font.win32_new (getDisplay (), hFont);
+	return Font.win32_new (display, hFont);
 }
 
 /**
@@ -785,7 +767,7 @@ public Font getFont () {
  */
 public Color getForeground () {
 	checkWidget ();
-	return Color.win32_new (getDisplay (), getForegroundPixel ());
+	return Color.win32_new (display, getForegroundPixel ());
 }
 
 int getForegroundPixel () {
@@ -1013,7 +995,7 @@ public int internal_new_GC (GCData data) {
 	}
 	if (hDC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
-		data.device = getDisplay ();
+		data.device = display;
 		data.foreground = getForegroundPixel ();
 		data.background = getBackgroundPixel ();
 		data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
@@ -1045,7 +1027,6 @@ public void internal_dispose_GC (int hDC, GCData data) {
 }
 
 boolean isActive () {
-	Display display = getDisplay ();
 	Shell modal = display.getModalShell ();
 	if (modal != null && modal != this) {
 		if ((modal.style & SWT.PRIMARY_MODAL) != 0) {
@@ -1065,10 +1046,6 @@ boolean isActive () {
 		}
 	}
 	return getShell ().getEnabled ();
-}
-
-public boolean isDisposed () {
-	return handle == 0;
 }
 
 /**
@@ -1108,7 +1085,6 @@ public boolean isFocusControl () {
 }
 
 boolean isFocusAncestor () {
-	Display display = getDisplay ();
 	Control control = display.getFocusControl ();
 	while (control != null && control != this) {
 		control = control.parent;
@@ -1871,7 +1847,6 @@ void setCursor (int hwndCursor) {
 }
 
 void setDefaultFont () {
-	Display display = getDisplay ();
 	int hFont = display.systemFont ();
 	OS.SendMessage (handle, OS.WM_SETFONT, hFont, 0);
 }
@@ -2301,7 +2276,7 @@ void sort (int [] items) {
 
 void subclass () {
 	int oldProc = windowProc ();
-	int newProc = getDisplay ().windowProc;
+	int newProc = display.windowProc;
 	if (oldProc == newProc) return;
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, newProc);
 }
@@ -2407,7 +2382,6 @@ boolean translateMnemonic (char key) {
 	Event event = new Event ();
 	event.doit = mnemonicMatch (key);
 	event.detail = SWT.TRAVERSE_MNEMONIC;
-	Display display = getDisplay ();
 	display.lastKey = 0;
 	display.lastAscii = key;
 	display.lastVirtual = display.lastNull = false;
@@ -2536,7 +2510,6 @@ boolean translateTraversal (MSG msg) {
 	Event event = new Event ();
 	event.doit = doit;
 	event.detail = detail;
-	Display display = getDisplay ();
 	display.lastKey = lastKey;
 	display.lastAscii = lastAscii;
 	display.lastVirtual = lastVirtual;
@@ -2680,7 +2653,7 @@ boolean traverseReturn () {
 
 void unsubclass () {
 	int newProc = windowProc ();
-	int oldProc = getDisplay ().windowProc;
+	int oldProc = display.windowProc;
 	if (oldProc == newProc) return;
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, newProc);
 }
@@ -2873,7 +2846,6 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	/*
 	* Do not report a lead byte as a key pressed.
 	*/
-	Display display = getDisplay ();
 	if (!OS.IsUnicode && OS.IsDBLocale) {
 		byte lead = (byte) (wParam & 0xFF);
 		if (OS.IsDBCSLeadByte (lead)) return null;
@@ -2973,7 +2945,6 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 }
 
 LRESULT WM_CTLCOLOR (int wParam, int lParam) {
-	Display display = getDisplay ();
 	int hPalette = display.hPalette;
 	if (hPalette != 0) {
 		OS.SelectPalette (wParam, hPalette, false);
@@ -3074,7 +3045,6 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 }
 
 LRESULT WM_IME_CHAR (int wParam, int lParam) {
-	Display display = getDisplay ();
 	display.lastKey = 0;
 	display.lastAscii = wParam;
 	display.lastVirtual = display.lastNull = false;
@@ -3091,7 +3061,6 @@ LRESULT WM_IME_COMPOSITION (int wParam, int lParam) {
 LRESULT WM_INITMENUPOPUP (int wParam, int lParam) {
 	
 	/* Ignore WM_INITMENUPOPUP for an accelerator */
-	Display display = getDisplay ();
 	if (display.accelKeyHit) return null;
 
 	/*
@@ -3159,7 +3128,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	}
 	
 	/* Clear last key and last ascii because a new key has been typed */
-	Display display = getDisplay ();
 	display.lastAscii = display.lastKey = 0;
 	display.lastVirtual = display.lastNull = false;
 
@@ -3325,7 +3293,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 }
 
 LRESULT WM_KEYUP (int wParam, int lParam) {
-	Display display = getDisplay ();
 	
 	/* Check for hardware keys */
 	if (OS.IsWinCE) {
@@ -3425,7 +3392,6 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 
 LRESULT WM_KILLFOCUS (int wParam, int lParam) {
 	int code = callWindowProc (OS.WM_KILLFOCUS, wParam, lParam);
-	Display display = getDisplay ();
 	Shell shell = getShell ();
 	
 	/*
@@ -3632,8 +3598,7 @@ LRESULT WM_MENUCHAR (int wParam, int lParam) {
 	* stop Windows from beeping by closing the menu.
 	*/
 	int type = wParam >> 16;
-	if (type == 0 || type == OS.MF_SYSMENU) {	
-		Display display = getDisplay ();
+	if (type == 0 || type == OS.MF_SYSMENU) {
 		display.mnemonicKeyHit = false;
 		return new LRESULT (OS.MNC_CLOSE << 16);
 	}
@@ -3644,7 +3609,6 @@ LRESULT WM_MENUSELECT (int wParam, int lParam) {
 	int code = wParam >> 16;
 	Shell shell = getShell ();
 	if (code == -1 && lParam == 0) {
-		Display display = getDisplay ();
 		display.mnemonicKeyHit = true;
 		Menu menu = shell.activeMenu;
 		while (menu != null) {
@@ -3749,7 +3713,6 @@ LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
 
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	if (!OS.IsWinCE) {
-		Display display = getDisplay ();
 		boolean mouseEnter = hooks (SWT.MouseEnter) || display.filters (SWT.MouseEnter);
 		boolean mouseExit = hooks (SWT.MouseExit) || display.filters (SWT.MouseExit);
 		boolean mouseHover = hooks (SWT.MouseHover) || display.filters (SWT.MouseHover);
@@ -3772,7 +3735,6 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 			}
 		}
 	}
-	Display display = getDisplay ();
 	int pos = OS.GetMessagePos ();
 	if (pos != display.lastMouse) {
 		display.lastMouse = pos;
@@ -4005,7 +3967,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT WM_SYSCHAR (int wParam, int lParam) {
-	Display display = getDisplay ();
 
 	/* Set last key and last ascii because a new key has been typed */
 	display.lastAscii = display.lastKey = wParam;
@@ -4069,7 +4030,6 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 							if (text.length () > 0 && mnemonic == 0) {
 								char ch = text.charAt (0);
 								if (Character.toUpperCase (ch) == key) {
-									Display display = getDisplay ();
 									display.mnemonicKeyHit = false;
 									return LRESULT.ZERO;
 								}
@@ -4123,7 +4083,6 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 	}
 	
 	/* Clear last key and last ascii because a new key has been typed */
-	Display display = getDisplay ();
 	display.lastAscii = display.lastKey = 0;
 	display.lastVirtual = display.lastNull = false;
 

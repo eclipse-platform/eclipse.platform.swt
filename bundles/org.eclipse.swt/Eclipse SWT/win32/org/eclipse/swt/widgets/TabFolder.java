@@ -268,7 +268,6 @@ void destroyItem (TabItem item) {
 	if (count == 0) {
 		if (imageList != null) {
 			OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
-			Display display = getDisplay ();
 			display.releaseImageList (imageList);
 		}
 		imageList = null;
@@ -401,7 +400,7 @@ int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
 		Rectangle bounds = image.getBounds ();
-		imageList = getDisplay ().getImageList (new Point (bounds.width, bounds.height));
+		imageList = display.getImageList (new Point (bounds.width, bounds.height));
 		int index = imageList.indexOf (image);
 		if (index == -1) index = imageList.add (image);
 		int hImageList = imageList.getHandle ();
@@ -502,7 +501,6 @@ void releaseWidget () {
 	items = null;
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TCM_SETIMAGELIST, 0, 0);
-		Display display = getDisplay ();
 		display.releaseImageList (imageList);
 	}
 	imageList = null;

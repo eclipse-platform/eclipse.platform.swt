@@ -589,7 +589,6 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				* has a sibling that is currently on top.  The fix is to lock
 				* the z-order of the active window.
 				*/
-				Display display = getDisplay ();
 				display.lockActiveWindow = true;
 				int flags = OS.SWP_NOACTIVATE | OS.SWP_NOMOVE | OS.SWP_NOSIZE;
 				int hwndInsertAfter = hdr.code == OS.TTN_SHOW ? OS.HWND_TOPMOST : OS.HWND_NOTOPMOST;

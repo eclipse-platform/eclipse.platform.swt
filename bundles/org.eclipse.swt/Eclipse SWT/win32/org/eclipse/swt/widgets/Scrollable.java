@@ -210,11 +210,11 @@ int widgetStyle () {
 }
 
 TCHAR windowClass () {
-	return getDisplay ().windowClass;
+	return display.windowClass;
 }
 
 int windowProc () {
-	return getDisplay ().windowProc;
+	return display.windowProc;
 }
 
 LRESULT WM_HSCROLL (int wParam, int lParam) {

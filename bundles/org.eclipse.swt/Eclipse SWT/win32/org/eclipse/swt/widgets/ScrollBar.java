@@ -213,12 +213,6 @@ Rectangle getBounds () {
 	return new Rectangle (x, y, width, height);
 }
 
-public Display getDisplay () {
-	Scrollable parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically

@@ -654,7 +654,7 @@ boolean restoreFocus () {
 }
 
 void saveFocus () {
-	Control control = getDisplay ().getFocusControl ();
+	Control control = display.getFocusControl ();
 	if (control != null) setSavedFocus (control);
 }
 
@@ -943,10 +943,7 @@ public void setMenuBar (Menu menu) {
 			}
 		} 
 	} else {
-		if (menu != null) {
-			Display display = getDisplay ();
-			display.removeBar (menu);
-		}
+		if (menu != null) display.removeBar (menu);
 		menuBar = menu;
 		int hMenu = menuBar != null ? menuBar.handle: 0;
 		OS.SetMenu (handle, hMenu);
@@ -997,7 +994,6 @@ void setParent () {
 	* undocumented and possibly dangerous Windows
 	* feature.
 	*/
-	Display display = getDisplay ();
 	int hwndParent = parent.handle;
 	display.lockActiveWindow = true;
 	OS.SetParent (handle, hwndParent);
@@ -1122,7 +1118,6 @@ public void setVisible (boolean visible) {
 			OS.ShowWindow (handle, OS.SW_SHOW);
 		} else {
 			if (menuBar != null) {
-				Display display = getDisplay ();
 				display.removeBar (menuBar);
 				OS.DrawMenuBar (handle);
 			}
@@ -1316,7 +1311,6 @@ LRESULT WM_NCACTIVATE (int wParam, int lParam) {
 	LRESULT result  = super.WM_NCACTIVATE (wParam, lParam);
 	if (result != null) return result;
 	if (wParam == 0) {
-		Display display = getDisplay ();
 		if (display.lockActiveWindow) return LRESULT.ZERO;
 	}
 	return result;
@@ -1356,7 +1350,6 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam,lParam);
 	if (result != null) return result;
-	Display display = getDisplay ();
 	if (display.lockActiveWindow) {
 		WINDOWPOS lpwp = new WINDOWPOS ();
 		OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);

@@ -38,7 +38,6 @@ import org.eclipse.swt.events.*;
  */
 public class Tracker extends Widget {
 	Control parent;
-	Display display;
 	boolean tracking, stippled;
 	Rectangle [] rectangles, proportions;
 	int resizeCursor, clientCursor, cursorOrientation = SWT.NONE;
@@ -85,7 +84,6 @@ public class Tracker extends Widget {
 public Tracker (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;
-	display = parent.getDisplay ();
 }
 
 /**
@@ -341,10 +339,6 @@ void drawRectangles (Rectangle [] rects) {
 		OS.DeleteObject (hBitmap);
 	}
 	OS.ReleaseDC (hwndTrack, hDC);
-}
-
-public Display getDisplay () {
-	return display;
 }
 
 /**

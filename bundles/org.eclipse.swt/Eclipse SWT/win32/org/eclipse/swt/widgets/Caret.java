@@ -109,12 +109,6 @@ public Rectangle getBounds () {
 	return new Rectangle (x, y, width, height);
 }
 
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns the font that the receiver will use to paint textual information.
  *
@@ -129,7 +123,7 @@ public Font getFont () {
 	checkWidget();
 	if (font == null) {
 		int hFont = defaultFont ();
-		return Font.win32_new (getDisplay (), hFont);
+		return Font.win32_new (display, hFont);
 	}
 	return font;
 }

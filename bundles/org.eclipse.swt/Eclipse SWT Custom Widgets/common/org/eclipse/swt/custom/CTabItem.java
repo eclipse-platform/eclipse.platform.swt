@@ -142,10 +142,6 @@ public Control getControl () {
 	checkWidget();
 	return control;
 }
-public Display getDisplay() {
-	if (parent == null) SWT.error(SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay();
-}
 /**
  * Get the image displayed in the tab if the tab is disabled.
  * 

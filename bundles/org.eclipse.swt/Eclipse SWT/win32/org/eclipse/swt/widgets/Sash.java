@@ -168,11 +168,11 @@ public void removeSelectionListener(SelectionListener listener) {
 }
 
 TCHAR windowClass () {
-	return getDisplay ().windowClass;
+	return display.windowClass;
 }
 
 int windowProc () {
-	return getDisplay ().windowProc;
+	return display.windowProc;
 }
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {

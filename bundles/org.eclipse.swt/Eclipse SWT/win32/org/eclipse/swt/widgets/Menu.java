@@ -575,12 +575,6 @@ public MenuItem getDefaultItem () {
 	return null;
 }
 
-public Display getDisplay () {
-	Decorations parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -832,7 +826,6 @@ public boolean getVisible () {
 		return this == parent.menuShell ().menuBar;
 	}
 	if ((style & SWT.POP_UP) != 0) {
-		Display display = getDisplay ();
 		Menu [] popups = display.popups;
 		if (popups == null) return false;
 		for (int i=0; i<popups.length; i++) {
@@ -928,7 +921,6 @@ public boolean isVisible () {
 
 void redraw () {
 	if ((style & SWT.BAR) != 0) {
-		Display display = getDisplay ();
 		display.addBar (this);
 	} else {
 		update ();
@@ -939,14 +931,12 @@ void releaseChild () {
 	super.releaseChild ();
 	if (cascade != null) cascade.releaseMenu ();
 	if ((style & SWT.BAR) != 0) {
-		Display display = getDisplay ();
 		display.removeBar (this);
 		if (this == parent.menuBar) {
 			parent.setMenuBar (null);
 		}
 	} else {
 		if ((style & SWT.POP_UP) != 0) {
-			Display display = getDisplay ();
 			display.removePopup (this);
 		}
 	}
@@ -1141,7 +1131,6 @@ public void setLocation (Point location) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	Display display = getDisplay ();
 	if (visible) {
 		display.addPopup (this);
 	} else {
