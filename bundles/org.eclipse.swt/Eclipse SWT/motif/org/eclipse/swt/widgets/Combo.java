@@ -3,24 +3,7 @@ package org.eclipse.swt.widgets;
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
-*/
-
-/**
-*	The combo class represents a selectable user interface object
-* that combines a text field and a list and issues notificiation
-* when an item is selected from the list.
-*
-* Styles
-*
-*	SIMPLE,
-*	DROP_DOWN,
-*	READ_ONLY,
-*
-* Events
-*
-*	Selection
-*
-**/
+ */
 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;

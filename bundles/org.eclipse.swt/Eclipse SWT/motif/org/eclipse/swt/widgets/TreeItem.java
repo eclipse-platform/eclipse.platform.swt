@@ -24,8 +24,8 @@ import java.util.*;
  * </p>
  */
 public /*final*/ class TreeItem extends AbstractTreeItem {
-/** 
- * This class caches geometrical data for drawing.. 
+/*
+ * This class caches geometric data for drawing.
  * A description of the cached data follows:
  *
  *  |      1    ||      5        |  

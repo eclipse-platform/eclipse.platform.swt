@@ -3,22 +3,7 @@ package org.eclipse.swt.widgets;
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
-*/
-
-/**
-*	The canvas class implements a drawing area for
-* arbitrary graphics.
-*
-* Styles
-*
-*	NO_BACKGROUND,
-*	NO_FOCUS,
-*	MERGE_EXPOSES,
-*	RESIZE_REDRAW
-*
-* Events
-*
-**/
+ */
 
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;

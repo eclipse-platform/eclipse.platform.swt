@@ -1,5 +1,10 @@
 package org.eclipse.swt.graphics;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+ 
 /**
  * Instances of this class provide measurement information
  * about fonts including ascent, descent, height, leading
@@ -9,11 +14,6 @@ package org.eclipse.swt.graphics;
  *
  * @see GC#getFontMetrics
  */
-/*
- * (c) Copyright IBM Corp. 2000, 2001.
- * All Rights Reserved
- */
- 
 public final class FontMetrics {
 	int ascent, descent, averageCharWidth, leading, height;
 FontMetrics() {

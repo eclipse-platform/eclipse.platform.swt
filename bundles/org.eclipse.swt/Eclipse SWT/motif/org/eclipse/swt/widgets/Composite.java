@@ -3,19 +3,7 @@ package org.eclipse.swt.widgets;
 /*
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
-*/
-
-/**
-*	The composite class represents a user interface object
-* that contains other widgets.
-*
-* Styles
-*
-*	H_SCROLL, V_SCROLL
-*
-* Events
-*
-**/
+ */
 
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
