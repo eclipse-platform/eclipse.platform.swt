@@ -42,23 +42,23 @@ public class nsIProfile extends nsISupports {
 	}
 
 	public int GetProfileCount(int[] aProfileCount) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1,getAddress(), aProfileCount);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aProfileCount);
 	}
 
 	public int GetProfileList(int[] length, int[] profileNames) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), length, profileNames);
 	}
 
-	public int ProfileExists(char[] profileName, boolean[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), profileName, retVal);
+	public int ProfileExists(char[] profileName, boolean[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), profileName, _retval);
 	}
 
 	public int GetCurrentProfile(int[] aCurrentProfile) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4,getAddress(), aCurrentProfile);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aCurrentProfile);
 	}
 
 	public int SetCurrentProfile(char[] aCurrentProfile) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5,getAddress(), aCurrentProfile);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aCurrentProfile);
 	}
 
 	public static final int SHUTDOWN_PERSIST = 1;

@@ -41,12 +41,12 @@ public class nsIController extends nsISupports {
 		super(address);
 	}
 
-	public int IsCommandEnabled(byte[] command, boolean[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), command, retVal);
+	public int IsCommandEnabled(byte[] command, boolean[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), command, _retval);
 	}
 
-	public int SupportsCommand(byte[] command, boolean[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), command, retVal);
+	public int SupportsCommand(byte[] command, boolean[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), command, _retval);
 	}
 
 	public int DoCommand(byte[] command) {

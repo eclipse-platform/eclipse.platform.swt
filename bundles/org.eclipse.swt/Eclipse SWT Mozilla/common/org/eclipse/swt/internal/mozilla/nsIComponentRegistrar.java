@@ -54,38 +54,38 @@ public class nsIComponentRegistrar extends nsISupports {
 	}
 
 	public int UnregisterFactory(nsID aClass, int aFactory) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
 	public int RegisterFactoryLocation(nsID aClass, byte[] aClassName, byte[] aContractID, int aFile, byte[] aLoaderStr, byte[] aType) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
 	public int UnregisterFactoryLocation(nsID aClass, int aFile) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int IsCIDRegistered(nsID aClass, boolean[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int IsCIDRegistered(nsID aClass, boolean[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int IsContractIDRegistered(byte[] aContractID, boolean[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aContractID, retVal);
+	public int IsContractIDRegistered(byte[] aContractID, boolean[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int EnumerateCIDs(int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), retVal);
+	public int EnumerateCIDs(int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), _retval);
 	}
 
-	public int EnumerateContractIDs(int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), retVal);
+	public int EnumerateContractIDs(int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), _retval);
 	}
 
-	public int CIDToContractID(nsID aClass, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aClass, retVal);
+	public int CIDToContractID(nsID aClass, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aClass, _retval);
 	}
 
-	public int ContractIDToCID(byte[] aContractID, nsID[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int ContractIDToCID(byte[] aContractID, nsID[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 }

@@ -82,47 +82,47 @@ public class nsIBaseWindow extends nsISupports {
 	}
 
 	public int GetParentWidget(int[] aParentWidget) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11,getAddress(), aParentWidget);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aParentWidget);
 	}
 
 	public int SetParentWidget(int aParentWidget) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12,getAddress(), aParentWidget);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12, getAddress(), aParentWidget);
 	}
 
 	public int GetParentNativeWindow(int[] aParentNativeWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13,getAddress(), aParentNativeWindow);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), aParentNativeWindow);
 	}
 
 	public int SetParentNativeWindow(int aParentNativeWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 14,getAddress(), aParentNativeWindow);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 14, getAddress(), aParentNativeWindow);
 	}
 
 	public int GetVisibility(boolean[] aVisibility) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 15,getAddress(), aVisibility);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 15, getAddress(), aVisibility);
 	}
 
 	public int SetVisibility(boolean aVisibility) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 16,getAddress(), aVisibility);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 16, getAddress(), aVisibility);
 	}
 
 	public int GetEnabled(boolean[] aEnabled) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 17,getAddress(), aEnabled);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 17, getAddress(), aEnabled);
 	}
 
 	public int SetEnabled(boolean aEnabled) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 18,getAddress(), aEnabled);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 18, getAddress(), aEnabled);
 	}
 
 	public int GetBlurSuppression(boolean[] aBlurSuppression) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 19,getAddress(), aBlurSuppression);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 19, getAddress(), aBlurSuppression);
 	}
 
 	public int SetBlurSuppression(boolean aBlurSuppression) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 20,getAddress(), aBlurSuppression);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 20, getAddress(), aBlurSuppression);
 	}
 
 	public int GetMainWidget(int[] aMainWidget) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 21,getAddress(), aMainWidget);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 21, getAddress(), aMainWidget);
 	}
 
 	public int SetFocus() {
@@ -130,10 +130,10 @@ public class nsIBaseWindow extends nsISupports {
 	}
 
 	public int GetTitle(int[] aTitle) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 23,getAddress(), aTitle);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 23, getAddress(), aTitle);
 	}
 
 	public int SetTitle(char[] aTitle) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 24,getAddress(), aTitle);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 24, getAddress(), aTitle);
 	}
 }

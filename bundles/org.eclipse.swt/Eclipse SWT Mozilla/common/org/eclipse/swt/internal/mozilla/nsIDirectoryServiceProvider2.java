@@ -29,19 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDirectoryServiceProvider2 extends nsIDirectoryServiceProvider {
 
-    static final int LAST_METHOD_ID = nsIDirectoryServiceProvider.LAST_METHOD_ID + 1;
+	static final int LAST_METHOD_ID = nsIDirectoryServiceProvider.LAST_METHOD_ID + 1;
 
-    public static final String NS_IDIRECTORYSERVICEPROVIDER2_IID_STRING =
-        "2f977d4b-5485-11d4-87e2-0010a4e75ef2";
+	public static final String NS_IDIRECTORYSERVICEPROVIDER2_IID_STRING =
+		"2f977d4b-5485-11d4-87e2-0010a4e75ef2";
 
-    public static final nsID NS_IDIRECTORYSERVICEPROVIDER2_IID =
-        new nsID(NS_IDIRECTORYSERVICEPROVIDER2_IID_STRING);
+	public static final nsID NS_IDIRECTORYSERVICEPROVIDER2_IID =
+		new nsID(NS_IDIRECTORYSERVICEPROVIDER2_IID_STRING);
 
-    public nsIDirectoryServiceProvider2(int address) {
-        super(address);
-    }
+	public nsIDirectoryServiceProvider2(int address) {
+		super(address);
+	}
 
-    public int GetFiles(byte[] prop, int[] retVal) {
-        return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), prop, retVal);
-    }
+	public int GetFiles(byte[] prop, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), prop, _retval);
+	}
 }

@@ -57,12 +57,12 @@ public class nsIPref extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aFile);
 	}
 
-	public int GetBranch(byte[] aPrefRoot, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aPrefRoot, retVal);
+	public int GetBranch(byte[] aPrefRoot, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aPrefRoot, _retval);
 	}
 
-	public int GetDefaultBranch(byte[] aPrefRoot, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aPrefRoot, retVal);
+	public int GetDefaultBranch(byte[] aPrefRoot, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aPrefRoot, _retval);
 	}
 
 	public static final int ePrefInvalid = 0;
@@ -86,31 +86,31 @@ public class nsIPref extends nsISupports {
 	public static final int ePrefValuetypeMask = 224;
 
 	public int GetRoot(int[] aRoot) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7,getAddress(), aRoot);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aRoot);
 	}
 
-	public int GetPrefType(byte[] aPrefName, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aPrefName, retVal);
+	public int GetPrefType(byte[] aPrefName, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aPrefName, _retval);
 	}
 
-	public int GetBoolPref(byte[] aPrefName, boolean[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aPrefName, retVal);
+	public int GetBoolPref(byte[] aPrefName, boolean[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aPrefName, _retval);
 	}
 
 	public int SetBoolPref(byte[] aPrefName, int aValue) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aPrefName, aValue);
 	}
 
-	public int GetCharPref(byte[] aPrefName, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aPrefName, retVal);
+	public int GetCharPref(byte[] aPrefName, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aPrefName, _retval);
 	}
 
 	public int SetCharPref(byte[] aPrefName, byte[] aValue) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12, getAddress(), aPrefName, aValue);
 	}
 
-	public int GetIntPref(byte[] aPrefName, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), aPrefName, retVal);
+	public int GetIntPref(byte[] aPrefName, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), aPrefName, _retval);
 	}
 
 	public int SetIntPref(byte[] aPrefName, int aValue) {
@@ -129,8 +129,8 @@ public class nsIPref extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 17, getAddress(), aPrefName);
 	}
 
-	public int PrefIsLocked(byte[] aPrefName, boolean[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 18, getAddress(), aPrefName, retVal);
+	public int PrefIsLocked(byte[] aPrefName, boolean[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 18, getAddress(), aPrefName, _retval);
 	}
 
 	public int LockPref(byte[] aPrefName) {
@@ -161,20 +161,20 @@ public class nsIPref extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 25, getAddress(), aDomain, aObserver);
 	}
 
-	public int CopyCharPref(byte[] pref, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 26, getAddress(), pref, retVal);
+	public int CopyCharPref(byte[] pref, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 26, getAddress(), pref, _retval);
 	}
 
-	public int CopyDefaultCharPref(byte[] pref, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 27, getAddress(), pref, retVal);
+	public int CopyDefaultCharPref(byte[] pref, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 27, getAddress(), pref, _retval);
 	}
 
-	public int GetDefaultBoolPref(byte[] pref, boolean[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 28, getAddress(), pref, retVal);
+	public int GetDefaultBoolPref(byte[] pref, boolean[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 28, getAddress(), pref, _retval);
 	}
 
-	public int GetDefaultIntPref(byte[] pref, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 29, getAddress(), pref, retVal);
+	public int GetDefaultIntPref(byte[] pref, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 29, getAddress(), pref, _retval);
 	}
 
 	public int SetDefaultBoolPref(byte[] pref, boolean value) {
@@ -189,12 +189,12 @@ public class nsIPref extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 32, getAddress(), pref, value);
 	}
 
-	public int CopyUnicharPref(byte[] pref, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 33, getAddress(), pref, retVal);
+	public int CopyUnicharPref(byte[] pref, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 33, getAddress(), pref, _retval);
 	}
 
-	public int CopyDefaultUnicharPref(byte[] pref, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 34, getAddress(), pref, retVal);
+	public int CopyDefaultUnicharPref(byte[] pref, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 34, getAddress(), pref, _retval);
 	}
 
 	public int SetUnicharPref(byte[] pref, char[] value) {
@@ -205,24 +205,24 @@ public class nsIPref extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 36, getAddress(), pref, value);
 	}
 
-	public int GetLocalizedUnicharPref(byte[] pref, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 37, getAddress(), pref, retVal);
+	public int GetLocalizedUnicharPref(byte[] pref, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 37, getAddress(), pref, _retval);
 	}
 
-	public int GetDefaultLocalizedUnicharPref(byte[] pref, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 38, getAddress(), pref, retVal);
+	public int GetDefaultLocalizedUnicharPref(byte[] pref, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 38, getAddress(), pref, _retval);
 	}
 
-	public int GetFilePref(byte[] pref, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 39, getAddress(), pref, retVal);
+	public int GetFilePref(byte[] pref, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 39, getAddress(), pref, _retval);
 	}
 
 	public int SetFilePref(byte[] pref, int value, boolean setDefault) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 40, getAddress(), pref, value, setDefault);
 	}
 
-	public int GetFileXPref(byte[] pref, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 41, getAddress(), pref, retVal);
+	public int GetFileXPref(byte[] pref, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 41, getAddress(), pref, _retval);
 	}
 
 	public int SetFileXPref(byte[] pref, int value) {

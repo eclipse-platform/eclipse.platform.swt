@@ -27,35 +27,29 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsIURIContentListener  {
+public class nsIURIContentListener extends nsISupports {
 
-	static final int LAST_METHOD_ID = 8;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 8;
 
 	public static final String NS_IURICONTENTLISTENER_IID_STRING =
-		"94928AB3-8B63-11D3-989D-001083010E9B";
+		"94928AB3-8B63-11d3-989D-001083010E9B";
 
 	public static final nsID NS_IURICONTENTLISTENER_IID =
 		new nsID(NS_IURICONTENTLISTENER_IID_STRING);
 
-	private int address;
-
 	public nsIURIContentListener(int address) {
-		this.address = address;
+		super(address);
 	}
 
-	public int getAddress() {
-		return this.address;
+	public int OnStartURIOpen(int aURI, boolean[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aURI, _retval);
 	}
 
-	public int OnStartURIOpen(int aURI, int[] _retval) {
-		return XPCOM.VtblCall(0, getAddress(), aURI, _retval);
-	}
-	
 	public int DoContent(byte[] aContentType, boolean aIsContentPreferred, int aRequest, int[] aContentHandler, boolean[] _retval) {
 		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int IsPreferred(byte[] aContentType, byte[] aDesiredContentType, boolean[] _retval) {
+	public int IsPreferred(byte[] aContentType, int[] aDesiredContentType, boolean[] _retval) {
 		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
@@ -64,19 +58,18 @@ public class nsIURIContentListener  {
 	}
 
 	public int GetLoadCookie(int[] aLoadCookie) {
-		return XPCOM.VtblCall(4, getAddress(), aLoadCookie);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aLoadCookie);
 	}
 
 	public int SetLoadCookie(int aLoadCookie) {
-		return XPCOM.VtblCall(5, getAddress(), aLoadCookie);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aLoadCookie);
 	}
 
 	public int GetParentContentListener(int[] aParentContentListener) {
-		return XPCOM.VtblCall(5, getAddress(), aParentContentListener);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aParentContentListener);
 	}
-	
-	public int SetParentContentListener(int[] aParentContentListener) {
-		return XPCOM.VtblCall(5, getAddress(), aParentContentListener);
+
+	public int SetParentContentListener(int aParentContentListener) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aParentContentListener);
 	}
-	
 }

@@ -57,7 +57,7 @@ public class nsIMemory extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), immediate);
 	}
 
-	public int IsLowMemory(boolean[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), retVal);
+	public int IsLowMemory(boolean[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), _retval);
 	}
 }

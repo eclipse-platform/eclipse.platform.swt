@@ -28,19 +28,19 @@
 package org.eclipse.swt.internal.mozilla;
 
 public class nsIURI extends nsISupports {
-	
+
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 26;
-	
+
 	public static final String NS_IURI_IID_STRING =
 		"07a22cc0-0ce5-11d3-9331-00104ba0fd40";
 
 	public static final nsID NS_IURI_IID =
 		new nsID(NS_IURI_IID_STRING);
-		
+
 	public nsIURI(int address) {
 		super(address);
 	}
-	
+
 	public int GetSpec(int aSpec) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aSpec);
 	}
@@ -49,11 +49,11 @@ public class nsIURI extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aSpec);
 	}
 
-   public int GetPrePath(int aPrePath) {
+	public int GetPrePath(int aPrePath) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aPrePath);
 	}
 
-    public int GetScheme(int aScheme) {
+	public int GetScheme(int aScheme) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aScheme);
 	}
 
@@ -61,15 +61,15 @@ public class nsIURI extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aScheme);
 	}
 
-    public int GetUserPass(int aUserPass) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aUserPass);
-	}
-	
-    public int SetUserPass(int aUserPass) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aUserPass);
+	public int GetUserPass(int userPass) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), userPass);
 	}
 
-    public int GetUsername(int aUsername) {
+	public int SetUserPass(int userPass) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), userPass);
+	}
+
+	public int GetUsername(int aUsername) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aUsername);
 	}
 
@@ -77,23 +77,23 @@ public class nsIURI extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aUsername);
 	}
 
-    public int GetPassword(int aPassword) {
+	public int GetPassword(int aPassword) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aPassword);
 	}
 
 	public int SetPassword(int aPassword) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aPassword);
 	}
-	
-    public int GetHostPort(int aHostPort) {
+
+	public int GetHostPort(int aHostPort) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12, getAddress(), aHostPort);
 	}
 
-    public int SetHostPort(int aHostPort) {
+	public int SetHostPort(int aHostPort) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), aHostPort);
 	}
-	
-    public int GetHost(int aHost) {
+
+	public int GetHost(int aHost) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 14, getAddress(), aHost);
 	}
 
@@ -101,7 +101,7 @@ public class nsIURI extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 15, getAddress(), aHost);
 	}
 
-    public int GetPort(int[] aPort) {
+	public int GetPort(int[] aPort) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 16, getAddress(), aPort);
 	}
 
@@ -109,7 +109,7 @@ public class nsIURI extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 17, getAddress(), aPort);
 	}
 
-    public int GetPath(int aPath) {
+	public int GetPath(int aPath) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 18, getAddress(), aPath);
 	}
 
@@ -117,31 +117,31 @@ public class nsIURI extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 19, getAddress(), aPath);
 	}
 
-   	public int Equals(int other, boolean[] _retval) {
+	public int Equals(int other, boolean[] _retval) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 20, getAddress(), other, _retval);
 	}
 
-   	public int SchemeIs(byte[] scheme, boolean[] _retval) {
+	public int SchemeIs(byte[] scheme, boolean[] _retval) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 21, getAddress(), scheme, _retval);
 	}
 
-    public int Clone(int[] _retval) {
+	public int Clone(int[] _retval) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 22, getAddress(), _retval);
 	}
 
- 	public int Resolve(int relativePath, int[] _retval) {
+	public int Resolve(int relativePath, int _retval) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 23, getAddress(), relativePath, _retval);
 	}
 
-    public int GetAsciiSpec(int aAsciiSpec) {
+	public int GetAsciiSpec(int aAsciiSpec) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 24, getAddress(), aAsciiSpec);
 	}
 
-    public int GetAsciiHost(int aAsciiHost) {
+	public int GetAsciiHost(int aAsciiHost) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 25, getAddress(), aAsciiHost);
 	}
 
-    public int GetOriginCharset(int aOriginCharset) {
+	public int GetOriginCharset(int aOriginCharset) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 26, getAddress(), aOriginCharset);
 	}
 }

@@ -32,7 +32,7 @@ public class nsIWindowCreator extends nsISupports {
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
 
 	public static final String NS_IWINDOWCREATOR_IID_STRING =
-		"30465632-A777-44CC-90F9-8145475EF999";
+		"30465632-A777-44cc-90F9-8145475EF999";
 
 	public static final nsID NS_IWINDOWCREATOR_IID =
 		new nsID(NS_IWINDOWCREATOR_IID_STRING);

@@ -60,22 +60,22 @@ public class nsIEmbeddingSiteWindow extends nsISupports {
 	}
 
 	public int GetVisibility(boolean[] aVisibility) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4,getAddress(), aVisibility);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aVisibility);
 	}
 
 	public int SetVisibility(boolean aVisibility) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5,getAddress(), aVisibility);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aVisibility);
 	}
 
 	public int GetTitle(int[] aTitle) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6,getAddress(), aTitle);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aTitle);
 	}
 
 	public int SetTitle(char[] aTitle) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7,getAddress(), aTitle);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aTitle);
 	}
 
 	public int GetSiteWindow(int[] aSiteWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8,getAddress(), aSiteWindow);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aSiteWindow);
 	}
 }

@@ -42,27 +42,27 @@ public class nsIControllers extends nsISupports {
 	}
 
 	public int GetCommandDispatcher(int[] aCommandDispatcher) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1,getAddress(), aCommandDispatcher);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aCommandDispatcher);
 	}
 
 	public int SetCommandDispatcher(int aCommandDispatcher) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2,getAddress(), aCommandDispatcher);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aCommandDispatcher);
 	}
 
-	public int GetControllerForCommand(byte[] command, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), command, retVal);
+	public int GetControllerForCommand(byte[] command, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), command, _retval);
 	}
 
 	public int InsertControllerAt(int index, int controller) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), index, controller);
 	}
 
-	public int RemoveControllerAt(int index, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), index, retVal);
+	public int RemoveControllerAt(int index, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), index, _retval);
 	}
 
-	public int GetControllerAt(int index, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), index, retVal);
+	public int GetControllerAt(int index, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), index, _retval);
 	}
 
 	public int AppendController(int controller) {
@@ -73,15 +73,15 @@ public class nsIControllers extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), controller);
 	}
 
-	public int GetControllerId(int controller, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), controller, retVal);
+	public int GetControllerId(int controller, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), controller, _retval);
 	}
 
-	public int GetControllerById(int controllerID, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), controllerID, retVal);
+	public int GetControllerById(int controllerID, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), controllerID, _retval);
 	}
 
-	public int GetControllerCount(int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), retVal);
+	public int GetControllerCount(int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), _retval);
 	}
 }

@@ -58,18 +58,18 @@ public class nsIWebBrowserFocus extends nsISupports {
 	}
 
 	public int GetFocusedWindow(int[] aFocusedWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5,getAddress(), aFocusedWindow);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aFocusedWindow);
 	}
 
 	public int SetFocusedWindow(int aFocusedWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6,getAddress(), aFocusedWindow);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aFocusedWindow);
 	}
 
 	public int GetFocusedElement(int[] aFocusedElement) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7,getAddress(), aFocusedElement);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aFocusedElement);
 	}
 
 	public int SetFocusedElement(int aFocusedElement) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8,getAddress(), aFocusedElement);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aFocusedElement);
 	}
 }

@@ -42,15 +42,15 @@ public class nsIDocShellTreeItem extends nsISupports {
 	}
 
 	public int GetName(int[] aName) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1,getAddress(), aName);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aName);
 	}
 
 	public int SetName(char[] aName) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2,getAddress(), aName);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aName);
 	}
 
-	public int NameEquals(char[] name, boolean[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), name, retVal);
+	public int NameEquals(char[] name, boolean[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), name, _retval);
 	}
 
 	public static final int typeChrome = 0;
@@ -64,50 +64,50 @@ public class nsIDocShellTreeItem extends nsISupports {
 	public static final int typeAll = 2147483647;
 
 	public int GetItemType(int[] aItemType) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4,getAddress(), aItemType);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aItemType);
 	}
 
 	public int SetItemType(int aItemType) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5,getAddress(), aItemType);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aItemType);
 	}
 
 	public int GetParent(int[] aParent) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6,getAddress(), aParent);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aParent);
 	}
 
 	public int SetParent(int aParent) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7,getAddress(), aParent);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aParent);
 	}
 
 	public int GetSameTypeParent(int[] aSameTypeParent) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8,getAddress(), aSameTypeParent);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aSameTypeParent);
 	}
 
 	public int GetRootTreeItem(int[] aRootTreeItem) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9,getAddress(), aRootTreeItem);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aRootTreeItem);
 	}
 
 	public int GetSameTypeRootTreeItem(int[] aSameTypeRootTreeItem) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10,getAddress(), aSameTypeRootTreeItem);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aSameTypeRootTreeItem);
 	}
 
-	public int FindItemWithName(char[] name, int aRequestor, int[] retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), name, aRequestor, retVal);
+	public int FindItemWithName(char[] name, int aRequestor, int[] _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), name, aRequestor, _retval);
 	}
 
 	public int GetTreeOwner(int[] aTreeOwner) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12,getAddress(), aTreeOwner);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12, getAddress(), aTreeOwner);
 	}
 
 	public int SetTreeOwner(int aTreeOwner) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13,getAddress(), aTreeOwner);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), aTreeOwner);
 	}
 
 	public int GetChildOffset(int[] aChildOffset) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 14,getAddress(), aChildOffset);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 14, getAddress(), aChildOffset);
 	}
 
 	public int SetChildOffset(int aChildOffset) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 15,getAddress(), aChildOffset);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 15, getAddress(), aChildOffset);
 	}
 }

@@ -42,67 +42,67 @@ public class nsIDOMLocation extends nsISupports {
 	}
 
 	public int GetHash(int aHash) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1,getAddress(), aHash);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 1, getAddress(), aHash);
 	}
 
 	public int SetHash(int aHash) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2,getAddress(), aHash);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 2, getAddress(), aHash);
 	}
 
 	public int GetHost(int aHost) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3,getAddress(), aHost);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aHost);
 	}
 
 	public int SetHost(int aHost) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4,getAddress(), aHost);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aHost);
 	}
 
 	public int GetHostname(int aHostname) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5,getAddress(), aHostname);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aHostname);
 	}
 
 	public int SetHostname(int aHostname) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6,getAddress(), aHostname);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aHostname);
 	}
 
 	public int GetHref(int aHref) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7,getAddress(), aHref);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), aHref);
 	}
 
 	public int SetHref(int aHref) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8,getAddress(), aHref);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aHref);
 	}
 
 	public int GetPathname(int aPathname) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9,getAddress(), aPathname);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aPathname);
 	}
 
 	public int SetPathname(int aPathname) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10,getAddress(), aPathname);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aPathname);
 	}
 
 	public int GetPort(int aPort) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11,getAddress(), aPort);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aPort);
 	}
 
 	public int SetPort(int aPort) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12,getAddress(), aPort);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 12, getAddress(), aPort);
 	}
 
 	public int GetProtocol(int aProtocol) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13,getAddress(), aProtocol);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 13, getAddress(), aProtocol);
 	}
 
 	public int SetProtocol(int aProtocol) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 14,getAddress(), aProtocol);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 14, getAddress(), aProtocol);
 	}
 
 	public int GetSearch(int aSearch) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 15,getAddress(), aSearch);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 15, getAddress(), aSearch);
 	}
 
 	public int SetSearch(int aSearch) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 16,getAddress(), aSearch);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 16, getAddress(), aSearch);
 	}
 
 	public int Reload(boolean forceget) {
@@ -117,7 +117,7 @@ public class nsIDOMLocation extends nsISupports {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 19, getAddress(), url);
 	}
 
-	public int ToString(int retVal) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 20, getAddress(), retVal);
+	public int ToString(int _retval) {
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 20, getAddress(), _retval);
 	}
 }

@@ -66,7 +66,7 @@ public class nsIAppShell extends nsISupports {
 	}
 
 	public int DispatchNativeEvent(boolean aRealEvent, int aEvent) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
 	public int Exit() {

@@ -46,15 +46,15 @@ public class nsIPromptService extends nsISupports {
 	}
 
 	public int AlertCheck(int parent, char[] dialogTitle, char[] text, char[] checkMsg, boolean[] checkValue) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int Confirm(int parent, char[] dialogTitle, char[] text, boolean[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int Confirm(int parent, char[] dialogTitle, char[] text, boolean[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int ConfirmCheck(int parent, char[] dialogTitle, char[] text, char[] checkMsg, boolean[] checkValue, boolean[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int ConfirmCheck(int parent, char[] dialogTitle, char[] text, char[] checkMsg, boolean[] checkValue, boolean[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
 	public static final int BUTTON_POS_0 = 1;
@@ -81,23 +81,23 @@ public class nsIPromptService extends nsISupports {
 
 	public static final int STD_OK_CANCEL_BUTTONS = 513;
 
-	public int ConfirmEx(int parent, char[] dialogTitle, char[] text, int buttonFlags, char[] button0Title, char[] button1Title, char[] button2Title, char[] checkMsg, boolean[] checkValue, int[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int ConfirmEx(int parent, char[] dialogTitle, char[] text, int buttonFlags, char[] button0Title, char[] button1Title, char[] button2Title, char[] checkMsg, boolean[] checkValue, int[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int Prompt(int parent, char[] dialogTitle, char[] text, int[] value, char[] checkMsg, boolean[] checkValue, boolean[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int Prompt(int parent, char[] dialogTitle, char[] text, int[] value, char[] checkMsg, boolean[] checkValue, boolean[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int PromptUsernameAndPassword(int parent, char[] dialogTitle, char[] text, int[] username, int[] password, char[] checkMsg, boolean[] checkValue, boolean[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int PromptUsernameAndPassword(int parent, char[] dialogTitle, char[] text, int[] username, int[] password, char[] checkMsg, boolean[] checkValue, boolean[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int PromptPassword(int parent, char[] dialogTitle, char[] text, int[] password, char[] checkMsg, boolean[] checkValue, boolean[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int PromptPassword(int parent, char[] dialogTitle, char[] text, int[] password, char[] checkMsg, boolean[] checkValue, boolean[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 
-	public int Select(int parent, char[] dialogTitle, char[] text, int count, char[] selectList, int[] outSelection, boolean[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	public int Select(int parent, char[] dialogTitle, char[] text, int count, char[] selectList, int[] outSelection, boolean[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 	}
 }

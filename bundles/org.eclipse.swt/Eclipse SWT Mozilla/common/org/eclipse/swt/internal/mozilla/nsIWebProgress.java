@@ -70,10 +70,10 @@ public class nsIWebProgress extends nsISupports {
 	}
 
 	public int GetDOMWindow(int[] aDOMWindow) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3,getAddress(), aDOMWindow);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aDOMWindow);
 	}
 
 	public int GetIsLoadingDocument(boolean[] aIsLoadingDocument) {
-		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4,getAddress(), aIsLoadingDocument);
+		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), aIsLoadingDocument);
 	}
 }

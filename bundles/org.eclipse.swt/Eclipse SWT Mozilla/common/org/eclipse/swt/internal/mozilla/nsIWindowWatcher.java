@@ -32,7 +32,7 @@ public class nsIWindowWatcher extends nsISupports {
 	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 11;
 
 	public static final String NS_IWINDOWWATCHER_IID_STRING =
-		"002286A8-494B-43B3-8DDD-49E3FC50622B";
+		"002286a8-494b-43b3-8ddd-49e3fc50622b";
 
 	public static final nsID NS_IWINDOWWATCHER_IID =
 		new nsID(NS_IWINDOWWATCHER_IID_STRING);
@@ -52,35 +52,35 @@ public class nsIWindowWatcher extends nsISupports {
 	public int UnregisterNotification(int aObserver) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 3, getAddress(), aObserver);
 	}
-	
+
 	public int GetWindowEnumerator(int[] _retval) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 4, getAddress(), _retval);
 	}
-	
+
 	public int GetNewPrompter(int aParent, int[] _retval) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 5, getAddress(), aParent, _retval);
 	}
-	
+
 	public int GetNewAuthPrompter(int aParent, int[] _retval) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 6, getAddress(), aParent, _retval);
 	}
-	
+
 	public int SetWindowCreator(int creator) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 7, getAddress(), creator);
 	}
-	
+
 	public int GetChromeForWindow(int aWindow, int[] _retval) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 8, getAddress(), aWindow, _retval);
 	}
-	
+
 	public int GetWindowByName(char[] aTargetName, int aCurrentWindow, int[] _retval) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 9, getAddress(), aTargetName, aCurrentWindow, _retval);
 	}
-	
-	public int GetActiveWindow(int aActiveWindow) {
+
+	public int GetActiveWindow(int[] aActiveWindow) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 10, getAddress(), aActiveWindow);
 	}
-	
+
 	public int SetActiveWindow(int aActiveWindow) {
 		return XPCOM.VtblCall(super.LAST_METHOD_ID + 11, getAddress(), aActiveWindow);
 	}

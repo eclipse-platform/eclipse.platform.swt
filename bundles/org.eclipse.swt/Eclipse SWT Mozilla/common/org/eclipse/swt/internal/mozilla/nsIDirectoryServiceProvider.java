@@ -29,20 +29,19 @@ package org.eclipse.swt.internal.mozilla;
 
 public class nsIDirectoryServiceProvider extends nsISupports {
 
-    static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
+	static final int LAST_METHOD_ID = nsISupports.LAST_METHOD_ID + 1;
 
-    public static final String NS_IDIRECTORYSERVICEPROVIDER_IID_STRING =
-        "bbf8cab0-d43a-11d3-8cc2-00609792278c";
+	public static final String NS_IDIRECTORYSERVICEPROVIDER_IID_STRING =
+		"bbf8cab0-d43a-11d3-8cc2-00609792278c";
 
-    public static final nsID NS_IDIRECTORYSERVICEPROVIDER_IID =
-        new nsID(NS_IDIRECTORYSERVICEPROVIDER_IID_STRING);
+	public static final nsID NS_IDIRECTORYSERVICEPROVIDER_IID =
+		new nsID(NS_IDIRECTORYSERVICEPROVIDER_IID_STRING);
 
-    public nsIDirectoryServiceProvider(int address) {
-        super(address);
-    }
+	public nsIDirectoryServiceProvider(int address) {
+		super(address);
+	}
 
-    public int GetFile(byte[] prop, boolean[] persistent, int[] retVal) {
-        return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
-    }
+	public int GetFile(byte[] prop, boolean[] persistent, int[] _retval) {
+		return XPCOM.NS_ERROR_NOT_IMPLEMENTED;
+	}
 }
-
