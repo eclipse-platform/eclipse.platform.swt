@@ -74,6 +74,7 @@ public class OleClientSite extends Composite {
 	private RECT indent = new RECT();
 	private boolean inUpdate = false;
 	private boolean inInit = true;
+	private boolean inDispose = false;
 		
 	private static final String WORDPROGID = "Word.Document";
 
@@ -759,6 +760,7 @@ private int OnDataChange(int pFormatetc, int pStgmed) {
 	return COM.S_OK;
 }
 private void onDispose(Event e) {
+	inDispose = true;
 	doVerb(OLE.OLEIVERB_DISCARDUNDOSTATE);
 	deactivateInPlaceClient();
 	releaseObjectInterfaces(); // Note, must release object interfaces before releasing frame
@@ -777,6 +779,7 @@ private void onDispose(Event e) {
 	frame = null;
 }
 void onFocusIn(Event e) {
+	if (inDispose) return;
 	if (state != STATE_UIACTIVE) doVerb(OLE.OLEIVERB_SHOW);
 	if (objIOleInPlaceObject == null) return;
 	if (isFocusControl()) return;

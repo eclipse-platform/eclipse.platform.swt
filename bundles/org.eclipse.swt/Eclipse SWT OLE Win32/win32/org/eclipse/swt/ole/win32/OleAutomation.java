@@ -83,6 +83,13 @@ OleAutomation(IDispatch idispatch) {
 	if (idispatch == null) OLE.error(OLE.ERROR_INVALID_INTERFACE_ADDRESS);
 	objIDispatch = idispatch;
 	objIDispatch.AddRef();
+	
+	int[] ppv = new int[1];
+	int result = objIDispatch.GetTypeInfo(0, COM.LOCALE_USER_DEFAULT, ppv);
+	if (result == OLE.S_OK) {
+		objITypeInfo = new ITypeInfo(ppv[0]);
+		objITypeInfo.AddRef();
+	}
 }
 /**
  * Creates an OleAutomation object for the specified client.
