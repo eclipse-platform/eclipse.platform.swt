@@ -155,6 +155,6 @@ protected int[] getTypeIds(){
 	return new int[] {COM.CF_HDROP};
 }
 protected String[] getTypeNames(){
-	return new String[] {"CF_HDROP"};
+	return new String[] {"CF_HDROP"}; //$NON-NLS-1$
 }
 }

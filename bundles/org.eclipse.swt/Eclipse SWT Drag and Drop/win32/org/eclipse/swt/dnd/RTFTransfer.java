@@ -25,7 +25,7 @@ import org.eclipse.swt.internal.ole.win32.*;
  */
 public class RTFTransfer extends ByteArrayTransfer {
 
-	private static final String CF_RTF_NAME = "Rich Text Format";
+	private static final String CF_RTF_NAME = "Rich Text Format"; //$NON-NLS-1$
 	private static final int CF_RTF = registerType(CF_RTF_NAME);
 	private static RTFTransfer _instance = new RTFTransfer();
 	private static int CodePage = OS.GetACP ();
@@ -126,6 +126,6 @@ protected int[] getTypeIds(){
 	return new int[] {CF_RTF};
 }
 protected String[] getTypeNames(){
-	return new String[] {"CF_RTF"};
+	return new String[] {"CF_RTF"}; //$NON-NLS-1$
 }
 }

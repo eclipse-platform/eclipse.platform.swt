@@ -103,7 +103,7 @@ public class DragSource extends Widget {
 	
 	private int dataEffect;
 	
-	private static final String DRAGSOURCEID = "DragSource";
+	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
  * Creating an instance of a DragSource may cause system resources to be allocated depending on the platform.  
@@ -482,7 +482,7 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener (DND.DragEnd, listener);
 	removeListener (DND.DragSetData, listener);
 }
-private static int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	
+private static int CFSTR_PERFORMEDDROPEFFECT  = Transfer.registerType("Performed DropEffect");	 //$NON-NLS-1$
 private int SetData(int pFormatetc, int pmedium, int fRelease) {
 	if (pFormatetc == 0 || pmedium == 0) return COM.E_INVALIDARG;
 	FORMATETC formatetc = new FORMATETC();

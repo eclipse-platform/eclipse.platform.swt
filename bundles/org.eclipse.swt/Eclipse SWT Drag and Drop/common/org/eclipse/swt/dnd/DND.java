@@ -164,9 +164,9 @@ public class DND {
 	public static final int ERROR_CANNOT_SET_CLIPBOARD = 2002;
 	
 
-	static final String INIT_DRAG_MESSAGE =  "Can not initialize Drag";
-	static final String INIT_DROP_MESSAGE =  "Can not initialize Drop";
-	static final String CANNOT_SET_CLIPBOARD_MESSAGE =  "Can not set data in clipboard";
+	static final String INIT_DRAG_MESSAGE =  "Can not initialize Drag"; //$NON-NLS-1$
+	static final String INIT_DROP_MESSAGE =  "Can not initialize Drop"; //$NON-NLS-1$
+	static final String CANNOT_SET_CLIPBOARD_MESSAGE =  "Can not set data in clipboard"; //$NON-NLS-1$
 
 /**
  * Throws an appropriate exception based on the passed in error code.
@@ -207,17 +207,17 @@ public static void error (int code, int hresult) {
 		/* OS Failure/Limit (fatal, may occur only on some platforms) */
 		case DND.ERROR_CANNOT_INIT_DRAG:{
 			String msg = DND.INIT_DRAG_MESSAGE;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult; //$NON-NLS-1$
 			throw new SWTError (code, msg);
 		}
 		case DND.ERROR_CANNOT_INIT_DROP:{
 			String msg = DND.INIT_DROP_MESSAGE;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult; //$NON-NLS-1$
 			throw new SWTError (code, msg);
 		}
 		case DND.ERROR_CANNOT_SET_CLIPBOARD:{
 			String msg = DND.CANNOT_SET_CLIPBOARD_MESSAGE;
-			if (hresult != 0) msg += " result = "+hresult;
+			if (hresult != 0) msg += " result = "+hresult; //$NON-NLS-1$
 			throw new SWTError (code, msg);
 		}
 	}

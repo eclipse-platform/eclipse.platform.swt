@@ -118,6 +118,6 @@ protected int[] getTypeIds(){
 	return new int[] {COM.IsUnicode ? COM.CF_UNICODETEXT : COM.CF_TEXT};
 }
 protected String[] getTypeNames(){
-	return new String[] {COM.IsUnicode ? "CF_UNICODETEXT" : "CF_TEXT"};
+	return new String[] {COM.IsUnicode ? "CF_UNICODETEXT" : "CF_TEXT"};  //$NON-NLS-1$//$NON-NLS-2$
 }
 }

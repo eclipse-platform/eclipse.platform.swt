@@ -87,7 +87,7 @@ public class DropTarget extends Widget {
 	
 	private int iDataObject;
 	
-	private static final String DROPTARGETID = "DropTarget";
+	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
  * <code>Control</code>.
