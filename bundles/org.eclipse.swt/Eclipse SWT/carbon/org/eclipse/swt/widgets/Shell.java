@@ -104,7 +104,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized, drawing, reshape, update, activate;
+	boolean resized, moved, drawing, reshape, update, activate;
 	int invalRgn;
 	Control lastActive;
 	Region region;
@@ -821,6 +821,7 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 	int [] attributes = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamAttributes, OS.typeUInt32, null, attributes.length * 4, null, attributes);
 	if ((attributes [0] & OS.kWindowBoundsChangeOriginChanged) != 0) {
+		moved = true;
 		sendEvent (SWT.Move);
 	}
 	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
@@ -1359,6 +1360,9 @@ public void setVisible (boolean visible) {
 void setWindowVisible (boolean visible) {
 	if (OS.IsWindowVisible (shellHandle) == visible) return;
 	if (visible) {
+		if (!moved) {
+			sendEvent (SWT.Move);
+		}
 		if (!resized) {
 			sendEvent (SWT.Resize);
 			if (layout != null) layout.layout (this, false);
