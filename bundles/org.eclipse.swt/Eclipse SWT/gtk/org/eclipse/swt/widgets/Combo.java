@@ -1028,11 +1028,11 @@ void setItems (String [] items, boolean keepText, boolean keepSelection) {
 			OS.memmove (data, buffer, buffer.length);
 			glist = OS.g_list_append (glist, data);
 		}
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+		OS.g_signal_handlers_block_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_block_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 		OS.gtk_combo_set_popdown_strings (handle, glist);
-		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+		OS.g_signal_handlers_unblock_matched (entryHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+		OS.g_signal_handlers_unblock_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 		if (glist != 0) {
 			int count = OS.g_list_length (glist);
 			for (int i=0; i<count; i++) {
@@ -1094,9 +1094,9 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+	OS.g_signal_handlers_block_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 	OS.gtk_entry_set_text (entryHandle, buffer);
-	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
+	OS.g_signal_handlers_unblock_matched (listHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, SELECT_CHILD);
 }
 
 /**

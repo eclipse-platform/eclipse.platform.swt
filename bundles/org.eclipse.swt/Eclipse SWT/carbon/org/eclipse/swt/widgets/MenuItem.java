@@ -532,6 +532,7 @@ public void setAccelerator (int accelerator) {
 		}
 		inGlyph = keyGlyph (inKey);
 		int virtualKey = Display.untranslateKey (inKey);
+		if (inKey == ' ') virtualKey = 49;
 		if (virtualKey != 0) {
 			inSetVirtualKey = true;
 			inKey = virtualKey;
