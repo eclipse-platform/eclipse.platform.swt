@@ -451,9 +451,11 @@ protected void destroy () {
 }
 void destroyDisplay () {
 	/* 
-	* Bug in Motif. For some reason, XtAppCreateShell will GPF if called
-	* after a display has been closed. The fix is to destroy the XmDisplay
-	* associated with it.
+	* Bug in Motif. For some reason, XtAppCreateShell GP's when called
+	* after an application context has been destroyed.   The fix is to
+	* destroy the default XmDisplay associated with the X Display for
+	* the application context.  The following code fragment GP's without
+	* this work around:
 	* 
 	* int xContext = OS.XtCreateApplicationContext();
 	* int xDisplay = OS.XtOpenDisplay(xContext, null, null, null,  null, 0,  new int[1], null);
