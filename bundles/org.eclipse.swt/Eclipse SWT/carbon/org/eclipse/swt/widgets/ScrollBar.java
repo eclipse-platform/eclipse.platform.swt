@@ -322,6 +322,7 @@ public void setVisible (boolean visible) {
 	}
 	OS.HIViewSetVisible (handle, visible);
 	sendEvent (visible ? SWT.Show : SWT.Hide);
+	parent.layoutControl();
 }
 
 void setZOrder () {

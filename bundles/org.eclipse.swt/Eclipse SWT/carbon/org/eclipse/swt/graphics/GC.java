@@ -149,7 +149,7 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 	if (data.control != 0) {
 		int window = OS.GetControlOwner(data.control);
 		int port = OS.GetWindowPort(window);
-		
+
 		/* Calculate src and dest rectangles/regions */
 		Rect rect = new Rect();
 		OS.GetControlBounds(data.control, rect);		
@@ -171,15 +171,42 @@ public void copyArea(int srcX, int srcY, int width, int height, int destX, int d
 		OS.RectRgn(destRgn, destRect);
 		
 		/* Copy bits with appropriated clipping region */
-		int clipRgn = OS.NewRgn();
-		OS.CopyRgn(data.visibleRgn, clipRgn);
-		if (data.clipRgn != 0) {
-			OS.SectRgn(data.clipRgn, clipRgn, clipRgn);
+		if (!OS.EmptyRect(srcRect)) {
+			int clipRgn = data.visibleRgn;
+			if (data.clipRgn != 0) {
+				clipRgn = OS.NewRgn();
+				OS.SectRgn(data.clipRgn, clipRgn, clipRgn);
+			}
+
+			/*
+			* Feature in the Macintosh.  ScrollRect() only copies bits
+			* that are inside the specified rectangle.  This means that
+			* it is not possible to copy non overlaping bits without
+			* copying the bits in between the source and destination
+			* rectangles.  The fix is to check if the source and
+			* destination rectangles are disjoint and use CopyBits()
+			* instead.
+			*/
+			boolean disjoint = (destX + width < srcX) || (srcX + width < destX) || (destY + height < srcY) || (srcY + height < destY);
+			if (!disjoint && (deltaX == 0 || deltaY == 0)) {
+				int[] currentPort = new int[1];
+				OS.GetPort(currentPort);
+				OS.SetPort(port);
+				int oldClip = OS.NewRgn();
+				OS.GetClip(oldClip);
+				OS.SetClip(clipRgn);
+				OS.UnionRect(srcRect, destRect, rect);
+				OS.ScrollRect(rect, (short)deltaX, (short)deltaY, 0);
+				OS.SetClip(oldClip);
+				OS.SetPort(currentPort[0]);
+			} else {
+				int portBitMap = OS.GetPortBitMapForCopyBits (port);
+				OS.CopyBits(portBitMap, portBitMap, srcRect, destRect, (short)OS.srcCopy, clipRgn);
+				OS.QDFlushPortBuffer(port, destRgn);
+			}
+			
+			if (clipRgn != data.visibleRgn) OS.DisposeRgn(clipRgn);
 		}
-		int portBitMap = OS.GetPortBitMapForCopyBits (port);
-		OS.CopyBits(portBitMap, portBitMap, srcRect, destRect, (short)OS.srcCopy, clipRgn);
-		OS.QDFlushPortBuffer(port, destRgn);
-		OS.DisposeRgn(clipRgn);
 		
 		/* Invalidate src and obscured areas */
 		int invalRgn = OS.NewRgn();
