@@ -1316,9 +1316,6 @@ public void setTextLimit (int limit) {
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {
 	int code = super.traversalCode (key_sym, ke);
-	if (key_sym == OS.Pk_Up || key_sym == OS.Pk_Down) {
-		code &= ~(SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS);
-	}
 	if ((style & SWT.READ_ONLY) == 0) {
 		if (key_sym == OS.Pk_Up || key_sym == OS.Pk_Down) {
 			code &= ~(SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS);
