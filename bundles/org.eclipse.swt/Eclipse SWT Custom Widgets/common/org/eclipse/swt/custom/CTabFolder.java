@@ -17,9 +17,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 /**
-* DO NOT USE - UNDER CONSTRUCTION
-*
-* @ since 3.0
+* UNDER CONSTRUCTION
 */
 
 /**
