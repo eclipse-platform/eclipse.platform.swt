@@ -1265,7 +1265,6 @@ public void test_setSelection$I() {
 	table.setSelection(new int[] {number-1});
 	assertEquals(new int[] {number-1}, table.getSelectionIndices());
 
-	table.deselectAll();
 	table.setSelection(new int[] {number});
 	assertEquals(new int[] {}, table.getSelectionIndices());
 
