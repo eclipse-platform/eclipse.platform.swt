@@ -1175,6 +1175,25 @@ public void setItems (String [] items) {
 	list.setItems (items);
 }
 /**
+ * Sets the layout which is associated with the receiver to be
+ * the argument which may be null.
+ * <p>
+ * Note : No Layout can be set on this Control because it already
+ * manages the size and position its children
+ * </p>
+ *
+ * @param layout the receiver's new layout or null
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setLayout (Layout layout) {
+	checkWidget();
+	return;
+}
+/**
  * Sets the selection in the receiver's text field to the
  * range specified by the argument whose x coordinate is the
  * start of the selection and whose y coordinate is the end
