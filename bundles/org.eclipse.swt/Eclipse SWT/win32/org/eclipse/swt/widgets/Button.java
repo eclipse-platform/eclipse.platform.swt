@@ -163,7 +163,7 @@ void click () {
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
 	int border = getBorderWidth ();
-	int width = border * 2, height = border * 2;
+	int width = 0, height = 0;
 	if ((style & SWT.ARROW) != 0) {
 		if ((style & (SWT.UP | SWT.DOWN)) != 0) {
 			width += OS.GetSystemMetrics (OS.SM_CXVSCROLL);
@@ -172,8 +172,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width += OS.GetSystemMetrics (OS.SM_CXHSCROLL);
 			height += OS.GetSystemMetrics (OS.SM_CYHSCROLL);
 		}
-		if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-		if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
+		if (wHint != SWT.DEFAULT) width = wHint;
+		if (hHint != SWT.DEFAULT) height = hHint;
+		width += border * 2; height += border * 2;
 		return new Point (width, height);
 	}
 	int extra = 0;
@@ -215,8 +216,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
 		width += 12;  height += 10;
 	}
-	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
-	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	width += border * 2; height += border * 2;
 	return new Point (width, height);
 }
 
