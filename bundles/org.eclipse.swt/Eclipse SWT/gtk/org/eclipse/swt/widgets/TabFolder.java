@@ -494,18 +494,24 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 
 boolean mnemonicHit (char key) {
 	int itemCount = getItemCount ();
+	int selection = getSelectionIndex ();
 	for (int i=0; i<itemCount; i++) {
-		int /*long*/ labelHandle = items [i].labelHandle;
-		if (labelHandle != 0 && mnemonicHit (labelHandle, key)) return true;
+		if (i != selection) {
+			int /*long*/ labelHandle = items [i].labelHandle;
+			if (labelHandle != 0 && mnemonicHit (labelHandle, key)) return true;
+		}
 	}
 	return false;
 }
 
 boolean mnemonicMatch (char key) {
 	int itemCount = getItemCount ();
+	int selection = getSelectionIndex ();
 	for (int i=0; i<itemCount; i++) {
-		int /*long*/ labelHandle = items [i].labelHandle;
-		if (labelHandle != 0 && mnemonicMatch (labelHandle, key)) return true;
+		if (i != selection) {
+			int /*long*/ labelHandle = items [i].labelHandle;
+			if (labelHandle != 0 && mnemonicHit (labelHandle, key)) return true;
+		}
 	}
 	return false;
 }
