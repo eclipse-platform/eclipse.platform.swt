@@ -2016,7 +2016,11 @@ void setBackground (float [] color) {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	setBounds (topHandle (), x, y, width, height, true, true, true);
+	setBounds (x, y, Math.max (0, width), Math.max (0, height), true, true, true);
+}
+
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	return setBounds (topHandle (), x, y, width, height, move, resize, events);
 }
 
 /**
@@ -2304,7 +2308,7 @@ public void setLayoutData (Object layoutData) {
  */
 public void setLocation (int x, int y) {
 	checkWidget();
-	setBounds (topHandle (), x, y, 0, 0, true, false, true);
+	setBounds (x, y, 0, 0, true, false, true);
 }
 
 /**
@@ -2441,7 +2445,7 @@ boolean setRadioSelection (boolean value){
  */
 public void setSize (int width, int height) {
 	checkWidget();
-	setBounds (topHandle (), 0, 0, width, height, false, true, true);
+	setBounds (0, 0, Math.max (0, width), Math.max (0, height), false, true, true);
 }
 
 /**

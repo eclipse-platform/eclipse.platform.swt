@@ -1130,12 +1130,12 @@ public void selectAll () {
 	ignoreSelect = false;
 }
 
-int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	/*
 	* Ensure that the selection is visible when the tree is resized
 	* from a zero size to a size that can show the selection.
 	*/
-	int result = super.setBounds (control, x, y, width, height, move, resize, events);
+	int result = super.setBounds (x, y, width, height, move, resize, events);
 	if (showItem != null && !showItem.isDisposed ()) {
 		showItem (showItem , true);
 	}		 

@@ -527,7 +527,7 @@ void releaseChild () {
 	super.releaseChild ();
 	if (parent.horizontalBar == this) parent.horizontalBar = null;
 	if (parent.verticalBar == this) parent.verticalBar = null;
-	parent.layoutControl (true);
+	parent.resizeClientArea ();
 }
 
 void releaseHandle () {
@@ -763,7 +763,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	parent.setScrollbarVisible (this, visible);
+	parent.setScrollBarVisible (this, visible);
 }
 
 void setZOrder () {

@@ -400,8 +400,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
-int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	int result = super.setBounds (control, x, y, width, height, move, resize, events);
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds (x, y, width, height, move, resize, events);
 	if ((result & RESIZED) != 0) {
 		Rectangle rect = getClientArea ();
 		relayout (rect.width, rect.height);

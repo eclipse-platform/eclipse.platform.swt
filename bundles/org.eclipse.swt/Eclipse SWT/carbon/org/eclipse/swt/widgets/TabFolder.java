@@ -495,8 +495,8 @@ public void removeSelectionListener (SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
-int setBounds (int c, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	int result = super.setBounds(c, x, y, width, height, move, resize, events);
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds(x, y, width, height, move, resize, events);
 	if ((result & RESIZED) != 0) {
 		int index = OS.GetControl32BitValue (handle) - 1;
 		if (index != -1) {

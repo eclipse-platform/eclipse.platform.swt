@@ -483,7 +483,7 @@ void createHandle () {
 
 void createWidget () {
 	super.createWidget ();
-	layoutControl (false);
+	resizeBounds ();
 }
 
 void deregister () {
@@ -826,7 +826,7 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 	}
 	if ((attributes [0] & OS.kWindowBoundsChangeSizeChanged) != 0) {
 		resized = true;
-		layoutControl (false);
+		resizeBounds ();
 		sendEvent (SWT.Resize);
 		if (layout != null) layout.layout (this, false);
 		if (region != null && !region.isDisposed()) {
@@ -1000,12 +1000,12 @@ int kEventWindowUpdate (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-void layoutControl (boolean events) {
+void resizeBounds () {
 	Rect rect = new Rect ();
 	OS.GetWindowBounds (shellHandle, (short)  OS.kWindowContentRgn, rect);
 	int control = scrolledHandle != 0 ? scrolledHandle : handle;
 	setBounds (control, 0, 0, rect.right - rect.left, rect.bottom - rect.top, false, true, false);
-	super.layoutControl (events);
+	resizeClientArea ();
 }
 
 /**
@@ -1159,12 +1159,7 @@ void setActiveControl (Control control) {
 	}
 }
 
-public void setBounds (int x, int y, int width, int height) {
-	checkWidget ();
-	setBounds (x, y, Math.max (0, width), Math.max (0, height), true, true);
-}
-
-void setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
 	Rect rect = new Rect ();
 	if (!move) {
 		OS.GetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
@@ -1184,6 +1179,7 @@ void setBounds (int x, int y, int width, int height, boolean move, boolean resiz
 	}
 	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
 	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+	return 0;
 }
 
 public void setEnabled (boolean enabled) {
@@ -1221,11 +1217,6 @@ public void setMenuBar (Menu menu) {
  */
 public void setImeInputMode (int mode) {
 	checkWidget();
-}
-
-public void setLocation (int x, int y) {
-	checkWidget();
-	setBounds (x, y, 0, 0, true, false);
 }
 
 public void setMaximized (boolean maximized) {
@@ -1326,11 +1317,6 @@ public void setRegion (Region region) {
 	} else {
 		OS.ReshapeCustomWindow (shellHandle);
 	}
-}
-
-public void setSize (int width, int height) {
-	checkWidget();
-	setBounds (0, 0, Math.max (0, width), Math.max (0, height), false, true);
 }
 
 public void setText (String string) {

@@ -510,8 +510,8 @@ void resetVisibleRegion (int control) {
 	super.resetVisibleRegion (control);
 }
 
-int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	int result = super.setBounds(control, x, y, width, height, move, resize, events);
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds (x, y, width, height, move, resize, events);
 	if (layout != null && (result & RESIZED) != 0) layout.layout (this, false);
 	return result;
 }
@@ -541,6 +541,11 @@ public void setLayout (Layout layout) {
 	this.layout = layout;
 }
 
+boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
+	boolean changed = super.setScrollBarVisible (bar, visible);
+	if (changed && layout != null) layout.layout (this, false);
+	return changed;
+}
 
 boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();

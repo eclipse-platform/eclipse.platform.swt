@@ -595,16 +595,16 @@ public void setAlignment (int alignment) {
 	redraw ();
 }
 
-public void setBounds (int x, int y, int width, int height) {
-	checkWidget ();
-	/* Bug in MacOS X. When setting the height of a bevel button 
-	 * to a value less than 20, the button is drawn incorrectly.
-	 * The fix is to force the height to be greater than or equal to 20.
-	 */
-	if ((style & SWT.ARROW) == 0) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	/* 
+	* Bug in MacOS X. When setting the height of a bevel button 
+	* to a value less than 20, the button is drawn incorrectly.
+	* The fix is to force the height to be greater than or equal to 20.
+	*/
+	if (resize && (style & SWT.ARROW) == 0) {
 		height = Math.max (20, height);
 	}
-	super.setBounds (x, y, width, height);
+	return super.setBounds (x, y, width, height, move, resize, events);
 }
 
 void setDefault (boolean value) {

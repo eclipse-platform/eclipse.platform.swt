@@ -297,32 +297,6 @@ int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
-void layoutControl (boolean events) {
-	if (scrolledHandle == 0) return;
-	int vWidth = 0, hHeight = 0;
-	int [] outMetric = new int [1];
-	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
-	boolean isVisibleHBar = horizontalBar != null && horizontalBar.getVisible ();
-	boolean isVisibleVBar = verticalBar != null && verticalBar.getVisible ();
-	if (isVisibleHBar) hHeight = outMetric [0];
-	if (isVisibleVBar) vWidth = outMetric [0];
-	Rect rect = new Rect ();
-	OS.GetControlBounds (scrolledHandle, rect);
-	Rect inset = inset ();
-	int width = Math.max (0, rect.right - rect.left - vWidth - inset.left - inset.right);
-	int height = Math.max (0, rect.bottom - rect.top - hHeight - inset.top - inset.bottom);
-	setBounds (handle, inset.left, inset.top, width, height, true, true, false);
-	if (isVisibleHBar) {
-		setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true, false);
-	}
-	if (isVisibleVBar) {
-		setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
-	}
-	if (events) {
-		sendEvent (SWT.Resize);
-	}
-}
-
 void register () {
 	super.register ();
 	if (scrolledHandle != 0) display.addWidget (scrolledHandle, this);
@@ -346,30 +320,55 @@ void resetVisibleRegion (int control) {
 	super.resetVisibleRegion (control);
 }
 
-int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	int result = super.setBounds(control, x, y, width, height, move, resize, false);
+void resizeClientArea () {
+	if (scrolledHandle == 0) return;
+	int vWidth = 0, hHeight = 0;
+	int [] outMetric = new int [1];
+	OS.GetThemeMetric (OS.kThemeMetricScrollBarWidth, outMetric);
+	boolean isVisibleHBar = horizontalBar != null && horizontalBar.getVisible ();
+	boolean isVisibleVBar = verticalBar != null && verticalBar.getVisible ();
+	if (isVisibleHBar) hHeight = outMetric [0];
+	if (isVisibleVBar) vWidth = outMetric [0];
+	Rect rect = new Rect ();
+	OS.GetControlBounds (scrolledHandle, rect);
+	Rect inset = inset ();
+	int width = Math.max (0, rect.right - rect.left - vWidth - inset.left - inset.right);
+	int height = Math.max (0, rect.bottom - rect.top - hHeight - inset.top - inset.bottom);
+	setBounds (handle, inset.left, inset.top, width, height, true, true, false);
+	if (isVisibleHBar) {
+		setBounds (horizontalBar.handle, inset.left, inset.top + height, width, hHeight, true, true, false);
+	}
+	if (isVisibleVBar) {
+		setBounds (verticalBar.handle, inset.left + width, inset.top, vWidth, height, true, true, false);
+	}
+}
+
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds(x, y, width, height, move, resize, false);
 	if ((result & MOVED) != 0) {
 		if (events) sendEvent (SWT.Move);
 	}
 	if ((result & RESIZED) != 0) {
-		if (control == scrolledHandle) layoutControl (false);
+		resizeClientArea ();
 		if (events) sendEvent (SWT.Resize);
 	}
 	return result;
 }
 
-void setScrollbarVisible (ScrollBar bar, boolean visible) {
-	if (scrolledHandle == 0) return;
+boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
+	if (scrolledHandle == 0) return false;
 	if (visible) {
-		if ((bar.state & HIDDEN) == 0) return;
+		if ((bar.state & HIDDEN) == 0) return false;
 		bar.state &= ~HIDDEN;
 	} else {
-		if ((bar.state & HIDDEN) != 0) return;
+		if ((bar.state & HIDDEN) != 0) return false;
 		bar.state |= HIDDEN;
 	}
+	resizeClientArea ();
 	setVisible (bar.handle, visible);
-	layoutControl (true);
 	bar.sendEvent (visible ? SWT.Show : SWT.Hide);
+	sendEvent (SWT.Resize);
+	return true;
 }
 
 int topHandle () {

@@ -1213,8 +1213,8 @@ void setBackground (float [] color) {
 	OS.TXNSetBackground (txnObject, txnColor);
 }
 
-int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
-	int result = super.setBounds(control, x, y, width, height, move, resize, events);
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	int result = super.setBounds(x, y, width, height, move, resize, events);
 	if ((result & (RESIZED | MOVED)) != 0) setTXNBounds ();
 	return result;
 }
