@@ -38,16 +38,41 @@ protected Point computeSize(Composite composite, int wHint, int hHint, boolean f
 	} else {
 		width += (cArray.length - 1) * sashwidth;
 	}
+	// get the ratios
+	long[] ratios = new long[cArray.length];
+	long total = 0;
+	for (int i = 0; i < cArray.length; i++) {
+		Long ratio = (Long)cArray[i].getData(SashForm.LAYOUT_RATIO);
+		if (ratio != null) {
+			ratios[i] = ratio.longValue();
+		} else {
+			ratios[i] = ((200 << 16) + 999) / 1000;
+		}
+		total += ratios[i];
+	}
+	int maxIndex = 0;
+	int maxValue = 0;
 	for (int i = 0; i < cArray.length; i++) {
 		if (vertical) {
 			Point size = cArray[i].computeSize(wHint, SWT.DEFAULT, flushCache);
-			height += size.y;	
+			if (size.y > maxValue) {
+				maxIndex = i;
+				maxValue = size.y;
+			}
 			width = Math.max(width, size.x);
 		} else {
 			Point size = cArray[i].computeSize(SWT.DEFAULT, hHint, flushCache);
-			width += size.x;
+			if (size.x > maxValue) {
+				maxIndex = i;
+				maxValue = size.x;
+			}
 			height = Math.max(height, size.y);
 		}
+	}
+	if (vertical) {
+		height = (int)(total * maxValue / ratios[maxIndex]);
+	} else {
+		width = (int)(total * maxValue / ratios[maxIndex]);
 	}
 	if (wHint != SWT.DEFAULT) width = wHint;
 	if (hHint != SWT.DEFAULT) height = hHint;
