@@ -886,6 +886,21 @@ public boolean getHeaderVisible () {
 	return height [0] != 0;
 }
 
+public TreeItem getItem (int index) {
+	checkWidget ();
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	int i = 0;
+	TreeItem item = null;
+	while (item == null && i < items.length) {
+		TreeItem next = items [i++];
+		if (next != null && next.parentItem == null &&  next.index == index) {
+			item = next;
+		}
+	}
+	if (item == null) error (SWT.ERROR_INVALID_RANGE);
+	return item;
+}
+
 /**
  * Returns the item at the given point in the receiver
  * or null if no such item exists. The point is in the
@@ -1169,24 +1184,7 @@ void hookEvents () {
 	OS.SetDataBrowserCustomCallbacks (handle, custom);
 }
 
-/**
- * Searches the receiver's list starting at the first column
- * (index 0) until a column is found that is equal to the 
- * argument, and returns the index of that column. If no column
- * is found, returns -1.
- *
- * @param column the search column
- * @return the index of the column
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
-/*public*/ int indexOf (TreeColumn column) {
+public int indexOf (TreeColumn column) {
 	checkWidget ();
 	if (column == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (column.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -1196,7 +1194,7 @@ void hookEvents () {
 	return -1;
 }
 
-/*public*/ int indexOf (TreeItem item) {
+public int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);

@@ -544,6 +544,21 @@ public Rectangle getImageBounds (int index) {
 	return new Rectangle (x, y, width, height);
 }
 
+public TreeItem getItem (int index) {
+	checkWidget ();
+	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
+	int i = 0;
+	TreeItem item = null;
+	while (item == null && i < parent.items.length) {
+		TreeItem next = parent.items [i++];
+		if (next != null && next.parentItem == this &&  next.index == index) {
+			item = next;
+		}
+	}
+	if (item == null) error (SWT.ERROR_INVALID_RANGE);
+	return item;
+}
+
 /**
  * Returns the number of items contained in the receiver
  * that are direct item children of the receiver.
@@ -648,7 +663,7 @@ public String getText (int index) {
 	return "";
 }
 
-/*public*/ int indexOf (TreeItem item) {
+public int indexOf (TreeItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
