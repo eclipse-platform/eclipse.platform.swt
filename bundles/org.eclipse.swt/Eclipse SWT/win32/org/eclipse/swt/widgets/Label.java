@@ -95,6 +95,7 @@ int callWindowProc (int msg, int wParam, int lParam) {
 }
 
 static int checkStyle (int style) {
+	style |= SWT.NO_FOCUS;
 	if ((style & SWT.SEPARATOR) != 0) {
 		style = checkBits (style, SWT.VERTICAL, SWT.HORIZONTAL, 0, 0, 0, 0);
 		return checkBits (style, SWT.SHADOW_OUT, SWT.SHADOW_IN, SWT.SHADOW_NONE, 0, 0, 0);
@@ -314,11 +315,6 @@ public void setAlignment (int alignment) {
 	if ((style & SWT.RIGHT) != 0) bits |= OS.SS_RIGHT;
 	OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 	OS.InvalidateRect (handle, null, true);
-}
-
-public boolean setFocus () {
-	checkWidget();
-	return false;
 }
 
 /**

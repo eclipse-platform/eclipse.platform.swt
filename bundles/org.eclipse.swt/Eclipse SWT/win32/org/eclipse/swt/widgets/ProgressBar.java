@@ -83,6 +83,7 @@ int callWindowProc (int msg, int wParam, int lParam) {
 }
 
 static int checkStyle (int style) {
+	style |= SWT.NO_FOCUS;
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
@@ -170,11 +171,6 @@ void setBackgroundPixel (int pixel) {
 	background = pixel;
 	if (pixel == -1) pixel = OS.CLR_DEFAULT;
 	OS.SendMessage (handle, OS.PBM_SETBKCOLOR, 0, pixel);
-}
-
-public boolean setFocus () {
-	checkWidget();
-	return false;
 }
 
 void setForegroundPixel (int pixel) {
