@@ -518,7 +518,6 @@ static String gnome_getMimeValue(String mimeType, String key) {
 	int ptr = GNOME.gnome_mime_get_value(typeBuffer, keyBuffer);
 	if (ptr == 0) return null;
 	
-	StringBuffer stringBuffer = new StringBuffer();
 	int length = OS.strlen(ptr);
 	byte[] valueBuffer = new byte[length];
 	OS.memmove(valueBuffer, ptr, length);
@@ -618,7 +617,6 @@ static String kde_convertQStringAndFree (int qString) {
 	int qCString = KDE.QString_utf8 (qString);
 	int charString = KDE.QCString_data (qCString);
 	
-	StringBuffer stringBuffer = new StringBuffer ();
 	int length = KDE.strlen (charString);
 	byte[] buffer = new byte [length];
 	KDE.memmove (buffer, charString, length);
