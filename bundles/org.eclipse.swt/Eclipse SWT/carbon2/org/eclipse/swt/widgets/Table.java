@@ -908,6 +908,22 @@ public void selectAll () {
 	ignoreSelect = false;
 }
 
+int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
+	/*
+	* Ensure that the top item is visible when the tree is resized
+	* from a zero size to a size that can show the selection.
+	*/
+	//TODO - optimize
+	int index = -1;
+	if (resize && control == handle) {
+		Rectangle rect = getClientArea ();
+		if (rect.height < getItemHeight ()) index = getTopIndex ();
+	}
+	int result = super.setBounds (control, x, y, width, height, move, resize, events);
+	if (index != -1) showIndex (index);
+	return result;
+}
+
 public void setHeaderVisible (boolean show) {
 	checkWidget ();
 	int height = show ? headerHeight : 0;
@@ -996,7 +1012,7 @@ void showIndex (int index) {
 		OS.GetControlBounds (handle, rect);
 		OS.GetDataBrowserScrollBarInset (handle, inset);
 		OS.SetDataBrowserTableViewNamedColumnWidth (handle, id, (short)(rect.right - rect.left - inset.left - inset.right));
-		OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) (OS.kDataBrowserRevealWithoutSelecting | OS.kDataBrowserRevealAndCenterInView));
 		OS.SetDataBrowserTableViewNamedColumnWidth (handle, id, (short)width [0]);
 	}
 }
