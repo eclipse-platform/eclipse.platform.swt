@@ -63,7 +63,7 @@ public void test_getFontData() {
 }
 
 public void test_getRGB() {
-	warnUnimpl("Test test_getRGB not written");
+	// tested in test_setRGBLorg_eclipse_swt_graphics_RGB
 }
 
 public void test_open() {
@@ -83,7 +83,10 @@ public void test_setFontDataLorg_eclipse_swt_graphics_FontData() {
 }
 
 public void test_setRGBLorg_eclipse_swt_graphics_RGB() {
-	warnUnimpl("Test test_setRGBLorg_eclipse_swt_graphics_RGB not written");
+	RGB rgb = new RGB(255, 0, 0);
+	fontDialog.setRGB(rgb);
+	RGB rgb2 = fontDialog.getRGB();
+	assertEquals(rgb, rgb2);	
 }
 
 public static Test suite() {
