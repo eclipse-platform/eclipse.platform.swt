@@ -63,7 +63,7 @@ static int getDesktop(Display display) {
 	}
 	int desktop = DESKTOP_UNKNOWN;
 
-	if (isGnomeDesktop(display)) {
+	if (isGnomeDesktop()) {
 		if (gnome_init()) desktop = DESKTOP_GNOME;
 	}
 	// Save the desktop type on the display itself.
@@ -109,6 +109,7 @@ private static Program findProgram(Display display, String extension) {
 		for (int index = 0; index < mimeExts.size(); index++){
 			if (extension.equals(mimeExts.elementAt(index) )) {
 				name = mimeType;
+				break;
 			}
 		}
 	}			
@@ -225,14 +226,19 @@ private static Program[] getPrograms(Display display) {
 	return programList;
 }
 
-private static boolean isGnomeDesktop(Display display) {
-	/* disabled */
-	return false;
+private static boolean isGnomeDesktop() {
 	/*
-	byte[] name = Converter.wcsToMbcs(null, "_WIN_SUPPORTING_WM_CHECK", true);
-	int atome_set = OS.gdk_atom_intern(name, true);
-	return atome_set != 0;
+	* Bug in GTK.   gdk_atom_intern() ignores the only_if_exists
+	* argument.   It always creates a new atom if the requested
+	* one does not exist.  The workaround is to directly call
+	* XInternAtom(). 
+	* Note.  This introduces a dependency on X which is
+	* unwanted on GTK ports to non X platforms.  
 	*/
+	int display = OS.GDK_DISPLAY();
+	byte[] name = Converter.wcsToMbcs(null, "_WIN_SUPPORTING_WM_CHECK", true);
+	int atom = OS.XInternAtom(display, name, true);
+	return atom != OS.None;
 }
 
 /*
@@ -245,10 +251,7 @@ private static Hashtable gnome_getMimeInfo(Display display) {
 	Hashtable mimeInfo = new Hashtable();
 	int[] mimeData = new int[1];
 	int[] extensionData = new int[1];
-	boolean warnings = display.getWarnings();
-	display.setWarnings(false);
 	int mimeList = GNOME.gnome_vfs_get_registered_mime_types();
-	display.setWarnings(warnings);
 	int mimeElement = mimeList;
 	while (mimeElement != 0) {
 		OS.memmove (mimeData, mimeElement, 4);
@@ -264,9 +267,9 @@ private static Hashtable gnome_getMimeInfo(Display display) {
 			while (extensionElement != 0) {
 				OS.memmove(extensionData, extensionElement, 4);
 				int extensionPtr = extensionData[0];
-				int extension_length = OS.strlen(extensionPtr);
-				byte[] extensionBuffer = new byte[extension_length];
-				OS.memmove(extensionBuffer, extensionPtr, extension_length);
+				int extensionLength = OS.strlen(extensionPtr);
+				byte[] extensionBuffer = new byte[extensionLength];
+				OS.memmove(extensionBuffer, extensionPtr, extensionLength);
 				String extension = new String(Converter.mbcsToWcs(null, extensionBuffer));
 				extension = '.' + extension;
 				extensions.add(extension);
@@ -294,7 +297,7 @@ private static String gnome_getMimeTypeCommand(String mimeType, boolean gnomeExp
 		command = new String(Converter.mbcsToWcs(null, buffer));
 		gnomeExpectUri[0] = application.expects_uris == GNOME.GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS;
 		GNOME.gnome_vfs_mime_application_free(ptr);
-		}
+	}
 	return command;
 }
 
@@ -498,12 +501,13 @@ public int hashCode() {
 public String toString () {
 	return "Program {" + name + "}";
 }
+
 static boolean gnome_init () {
 	try {
 		Library.loadLibrary("swt-gnome");
+		return GNOME.gnome_vfs_init();
 	} catch (Throwable e) {
 		return false;
 	}
-	return true;
 }
 }

@@ -17,6 +17,30 @@
 #include "structs.h"
 #include <string.h>
 
+#ifndef NO_X_WINDOW
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#endif
+
+#ifndef NO_GDK_1DISPLAY
+/* SPECIAL */
+#ifndef NO_X_WINDOW
+extern Display *gdk_display;
+#endif
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1DISPLAY
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GDK_1DISPLAY\n")
+
+#ifndef NO_X_WINDOW
+	return (jint)gdk_display;
+#else
+	return 0;
+#endif
+}
+#endif
+
 #ifndef NO_GDK_1ROOT_1PARENT
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1ROOT_1PARENT
 	(JNIEnv *env, jclass that)
@@ -6814,6 +6838,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_strlen
 	DEBUG_CALL("strlen\n")
 
 	return (jint)strlen((const char *)arg0);
+}
+#endif
+
+#ifndef NO_XInternAtom
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_XInternAtom
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jboolean arg2)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("XInternAtom\n")
+	/* SPECIAL */
+#ifndef NO_X_WINDOW
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)XInternAtom((Display *)arg0, (char *)lparg1, (Bool)arg2);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
+#else
+	return 0;
+#endif
 }
 #endif
 

@@ -206,6 +206,7 @@ public class OS {
 	public static final int G_LOG_FLAG_FATAL = 0x2;
 	public static final int G_LOG_FLAG_RECURSION = 0x1;
 	public static final int G_LOG_LEVEL_MASK = 0xfffffffc;
+	public static final int None = 0;
 	public static final int PANGO_SCALE = 1024;
 	public static final int PANGO_STRETCH_NORMAL = 0x4;
 	public static final int PANGO_STYLE_ITALIC = 0x2;
@@ -285,6 +286,7 @@ public static final synchronized native int GTK_ENTRY_IM_CONTEXT(int widget);
 public static final synchronized native int GTK_TEXTVIEW_IM_CONTEXT(int widget);
 
 /** Native methods */
+public static final synchronized native int GDK_DISPLAY();
 public static final synchronized native int GDK_ROOT_PARENT();
 public static final synchronized native int GDK_TYPE_COLOR();
 public static final synchronized native int GDK_TYPE_PIXBUF();
@@ -868,5 +870,6 @@ public static final synchronized native void pango_tab_array_free(int tab_array)
 public static final synchronized native int pango_tab_array_new(int initial_size, boolean positions_in_pixels);
 public static final synchronized native void pango_tab_array_set_tab(int tab_array, int tab_index, int alignment, int location);
 public static final native int strlen(int str);
+public static final synchronized native int XInternAtom(int display, byte[] name, boolean ifExists);
 
 }
