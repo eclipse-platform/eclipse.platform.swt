@@ -155,7 +155,7 @@ protected OleClientSite(Composite parent, int style) {
  *
  * @exception SWTError
  * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *     <li>ERROR_ERROR_NULL_ARGUMENT when the parent is null</ul>
+ *     <li>ERROR_NULL_ARGUMENT when the parent is null</ul>
  * @exception SWTError
  * <ul><li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame
@@ -214,7 +214,7 @@ public OleClientSite(Composite parent, int style, File file) {
  *
  * @exception SWTError
  * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *     <li>ERROR_ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_NULL_ARGUMENT when the parent is null
  *     <li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
  *     <li>ERROR_INVALID_ARGUMENT when the parent is not an OleFrame
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
@@ -270,7 +270,7 @@ public OleClientSite(Composite parent, int style, String progId) {
  *
  * @exception SWTError
  * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *     <li>ERROR_ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_NULL_ARGUMENT when the parent is null
  *     <li>ERROR_INVALID_CLASSID when the progId does not map to a registered CLSID
  *     <li>ERROR_CANNOT_CREATE_OBJECT when failed to create OLE Object
  *     <li>ERROR_CANNOT_OPEN_FILE when failed to open file

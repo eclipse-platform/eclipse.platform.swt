@@ -68,7 +68,7 @@ final public class OleFrame extends Composite
  *
  * @exception SWTError
  * <ul><li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
- *     <li>ERROR_ERROR_NULL_ARGUMENT when the parent is null
+ *     <li>ERROR_NULL_ARGUMENT when the parent is null
  *     <li>ERROR_INTERFACES_NOT_INITIALIZED when unable to create callbacks for OLE Interfaces</ul>
  *
  */
