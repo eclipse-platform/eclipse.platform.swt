@@ -112,25 +112,25 @@ SWT_GNOME_FLAGS = -c -O -s \
 	    `gnome-config --cflags gnome`
 
 swt.o: swt.c swt.h
-	$(GCC) $(SWT_C_FLAGS) swt.c
+	$(CC) $(SWT_C_FLAGS) swt.c
 
 structs.o: structs.c
-	$(GCC) $(SWT_C_FLAGS) structs.c
+	$(CC) $(SWT_C_FLAGS) structs.c
 
 callback.o: callback.c
-	$(GCC) $(SWT_C_FLAGS) callback.c
+	$(CC) $(SWT_C_FLAGS) callback.c
 
 globals.o: globals.c
-	$(GCC) $(SWT_C_FLAGS) globals.c
+	$(CC) $(SWT_C_FLAGS) globals.c
 
 library.o: library.c
-	$(GCC) $(SWT_C_FLAGS) library.c
+	$(CC) $(SWT_C_FLAGS) library.c
 
 pixbuf.o: pixbuf.c
-	$(GCC) $(SWT_PIXBUF_FLAGS) pixbuf.c
+	$(CC) $(SWT_PIXBUF_FLAGS) pixbuf.c
 
 #gnome.o: gnome.c
-#	$(GCC) $(SWT_GNOME_FLAGS) gnome.c
+#	$(CC) $(SWT_GNOME_FLAGS) gnome.c
 
 clean:
 	rm -f *.o *.so
