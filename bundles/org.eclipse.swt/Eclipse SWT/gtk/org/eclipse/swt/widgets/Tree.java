@@ -194,9 +194,37 @@ public void addTreeListener(TreeListener listener) {
 
 int calculateWidth (int /*long*/ column, int /*long*/ iter) {
 	OS.gtk_tree_view_column_cell_set_cell_data (column, modelHandle, iter, false, false);
-	int [] width = new int [1];
-	OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
-	return width [0];
+	/*
+	 * Bug in GTK.  The width calculated by gtk_tree_view_column_cell_get_size 
+	 * always grows in size regardless of the text or images in the table.
+	 * The fix is to determine the column width from the cell renderers.
+	 */
+	// Code intentionally commented
+	//int [] width = new int [1];
+	//OS.gtk_tree_view_column_cell_get_size (column, null, null, null, width, null);
+	//return width [0];
+	
+	int width = 0;
+	int [] w = new int [1];
+	if (OS.gtk_tree_view_get_expander_column (handle) == column) {		
+			OS.gtk_widget_style_get (handle, OS.expander_size, w, 0);
+			width += w [0] + TreeItem.EXPANDER_EXTRA_PADDING;
+	}
+	OS.gtk_widget_style_get(handle, OS.focus_line_width, w, 0);
+	width += 2 * w [0];
+	int /*long*/ list = OS.gtk_tree_view_column_get_cell_renderers (column);
+	if (list == 0) return 0;
+	int /*long*/ temp = list;
+	while (temp != 0) {
+		int /*long*/ renderer = OS.g_list_data (temp);
+		if (renderer != 0) {
+			OS.gtk_cell_renderer_get_size (renderer, handle, null, null, null, w, null);
+			width += w [0];
+		}
+		temp = OS.g_list_next (temp);
+	}
+	OS.g_list_free (list);
+	return width;
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
