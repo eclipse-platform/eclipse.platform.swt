@@ -344,10 +344,10 @@ void dropDown (boolean drop) {
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
 	Rectangle listRect = list.getBounds ();
-	Point point = getParent().toDisplay (getLocation ());
+	Rectangle rect = getDisplay ().map (getParent (), null, getBounds());
 	Point comboSize = getSize();
 	int width = Math.max (comboSize.x, listRect.width + 2);
-	popup.setBounds (point.x, point.y + comboSize.y, width, listRect.height + 2);
+	popup.setBounds (rect.x, rect.y + comboSize.y, width, listRect.height + 2);
 	popup.setVisible (true);
 	list.setFocus();
 }
