@@ -619,7 +619,7 @@ void forceResize () {
 //				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
 //				if ((bits & OS.WS_CLIPSIBLINGS) == 0) wp.flags |= OS.SWP_NOCOPYBITS;
 //			}
-			SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
+			OS.SetWindowPos (wp.hwnd, 0, wp.x, wp.y, wp.cx, wp.cy, wp.flags);
 			lpwp [i] = null;
 			return;
 		}	
@@ -691,7 +691,9 @@ public int getBorderWidth () {
 
 /**
  * Returns a rectangle describing the receiver's size and location
- * relative to its parent (or its display if its parent is null).
+ * relative to its parent (or its display if its parent is null),
+ * unless the receiver is a shell. In this case, the location is
+ * relative to the display.
  *
  * @return the receiver's bounding rectangle
  *
@@ -799,7 +801,9 @@ public Object getLayoutData () {
 
 /**
  * Returns a point describing the receiver's location relative
- * to its parent (or its display if its parent is null).
+ * to its parent (or its display if its parent is null), unless
+ * the receiver is a shell. In this case, the point is 
+ * relative to the display. 
  *
  * @return the receiver's location
  *
@@ -1710,33 +1714,6 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
-static boolean SetWindowPos(int hWnd, int hWndInsertAfter, int X, int Y, int cx, int cy, int uFlags) {
-	if (OS.IsWinCE) {
-		/*
-		* Feature on Windows CE.  Calling SetWindowPos without SWP_NOSIZE triggers a WM_SIZE event
-		* even if the new size is the same as the current one.  This causes an infinite loop when
-		* SetWindowPos is called from within a WM_SIZE callback.  The workaround is to ignore the
-		* size information in this case. 
-		*/
-		if ((uFlags & OS.SWP_NOSIZE) == 0) {
-			RECT lpRect = new RECT();
-			OS.GetWindowRect(hWnd, lpRect);
-			if (cy == lpRect.bottom - lpRect.top && cx == lpRect.right - lpRect.left) {
-				/*
-				* Feature on Windows CE.  Calling SetWindowPos with SWP_DRAWFRAME triggers
-				* a WM_SIZE event even when SWP_NOSIZE is set and/or when the new size is the same
-				* as the current one.  This causes an infinite loop when SetWindowPos is called 
-				* from within a WM_SIZE callback.  The workaround is to not set SWP_DRAWFRAME in 
-				* this case. 
-				*/
-				uFlags &= ~OS.SWP_DRAWFRAME;
-				uFlags |= OS.SWP_NOSIZE;
-			}
-		}
-	}
-	return OS.SetWindowPos(hWnd, hWndInsertAfter, X, Y, cx, cy, uFlags);
-}
-
 boolean sendKeyEvent (int type, int msg, int wParam, int lParam) {
 	Event event = new Event ();
 	if (!setKeyState (event, type, wParam, lParam)) return true;
@@ -1849,7 +1826,9 @@ void setBackgroundPixel (int pixel) {
  * Sets the receiver's size and location to the rectangular
  * area specified by the arguments. The <code>x</code> and 
  * <code>y</code> arguments are relative to the receiver's
- * parent (or its display if its parent is null).
+ * parent (or its display if its parent is null), unless 
+ * the receiver is a shell. In this case, the <code>x</code>
+ * and <code>y</code> arguments are relative to the display.
  * <p>
  * Note: Attempting to set the width or height of the
  * receiver to a negative number will cause that
@@ -2135,7 +2114,9 @@ public void setLayoutData (Object layoutData) {
 /**
  * Sets the receiver's location to the point specified by
  * the arguments which are relative to the receiver's
- * parent (or its display if its parent is null).
+ * parent (or its display if its parent is null), unless 
+ * the receiver is a shell. In this case, the point is 
+ * relative to the display. 
  *
  * @param x the new x coordinate for the receiver
  * @param y the new y coordinate for the receiver
@@ -2160,8 +2141,10 @@ public void setLocation (int x, int y) {
 
 /**
  * Sets the receiver's location to the point specified by
- * the argument which is relative to the receiver's
- * parent (or its display if its parent is null).
+ * the arguments which are relative to the receiver's
+ * parent (or its display if its parent is null), unless 
+ * the receiver is a shell. In this case, the point is 
+ * relative to the display. 
  *
  * @param location the new location for the receiver
  *
@@ -4460,4 +4443,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 LRESULT wmScrollChild (int wParam, int lParam) {
 	return null;
 }
+
 }
+
