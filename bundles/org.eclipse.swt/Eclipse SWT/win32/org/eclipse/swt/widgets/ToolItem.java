@@ -829,9 +829,7 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			selectRadio ();
 		}
 	}
-	Event event = new Event ();
-	setInputState (event, SWT.Selection);
-	postEvent (SWT.Selection, event);
+	postEvent (SWT.Selection);
 	return null;
 }
 
