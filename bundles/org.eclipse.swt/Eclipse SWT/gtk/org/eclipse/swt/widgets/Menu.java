@@ -492,15 +492,24 @@ int GtkMenuPositionFunc (int menu, int x, int y, int push_in, int user_data) {
 }
 
 int gtk_hide (int widget) {
+	if ((style & SWT.POP_UP) != 0) {
+		Shell shell = getShell ();
+		shell.hasFocus = true;
+	}
 	sendEvent (SWT.Hide);
 	return 0;
 }
 
 int gtk_show (int widget) {
-	if ((style & SWT.POP_UP) != 0) return 0;
+	if ((style & SWT.POP_UP) != 0) {
+		Shell shell = getShell ();
+		shell.hasFocus = true;
+		return 0;
+	} 
 	sendEvent (SWT.Show);
 	return 0;
 }
+
 
 int gtk_show_help (int widget, int helpType) {
 	if (sendHelpEvent (helpType)) OS.gtk_menu_shell_deactivate (handle);

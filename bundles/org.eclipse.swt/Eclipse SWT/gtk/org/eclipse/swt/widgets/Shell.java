@@ -393,8 +393,13 @@ void adjustTrim () {
 void bringToTop (boolean force) {
 	if ((style & SWT.ON_TOP) != 0) return;
 	if (!OS.GTK_WIDGET_VISIBLE (shellHandle)) return; 
+	if (hasFocus) return;
 	Shell shell = display.getActiveShell ();
-	if (shell == this) return;
+	if (!force) {
+		if (shell == null) return;
+		int focusHandle = OS.gtk_window_get_focus (shell.shellHandle);
+		if (focusHandle == 0 || !OS.GTK_WIDGET_HAS_FOCUS (focusHandle)) return;
+	}
 	if (shell != null) shell.hasFocus = false;
 	OS.gtk_window_present (shellHandle);
 	hasFocus = true;
