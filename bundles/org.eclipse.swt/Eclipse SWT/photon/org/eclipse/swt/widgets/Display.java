@@ -852,8 +852,28 @@ public int getIconDepth () {
  * @since 3.0
  */
 public Monitor [] getMonitors () {
-	checkDevice ();
-	return new Monitor [] {getPrimaryMonitor ()};
+	checkDevice ();	
+	int cnt = OS.PhQueryRids (0, 0, 0, OS.Ph_GRAFX_REGION, 0, 0, null, null, 0);
+	int [] rids = new int [cnt];
+	cnt = OS.PhQueryRids (0, 0, 0, OS.Ph_GRAFX_REGION, 0, 0, null, rids, rids.length);
+	PhRect_t rect = new PhRect_t ();
+	Monitor [] monitors = new Monitor [cnt];
+	for (int i = 0; i < cnt; i++) {
+		Monitor monitor = new Monitor ();
+		monitor.handle = rids [i];
+		OS.PhWindowQueryVisible (OS.Ph_QUERY_CONSOLE, rids [i], OS.PhInputGroup (0), rect);
+		monitor.x = rect.ul_x;
+		monitor.y = rect.ul_y;
+		monitor.width = rect.lr_x - rect.ul_x + 1;
+		monitor.height = rect.lr_y - rect.ul_y + 1;
+		OS.PhWindowQueryVisible (OS.Ph_QUERY_WORKSPACE, rids [i], OS.PhInputGroup (0), rect);
+		monitor.clientX = rect.ul_x;
+		monitor.clientY = rect.ul_y;
+		monitor.clientWidth = rect.lr_x - rect.ul_x + 1;
+		monitor.clientHeight = rect.lr_y - rect.ul_y + 1;
+		monitors [i] = monitor;
+	}
+	return monitors;
 }
 
 /**
@@ -865,18 +885,19 @@ public Monitor [] getMonitors () {
  */
 public Monitor getPrimaryMonitor () {
 	checkDevice ();
-	Monitor monitor = new Monitor ();
-	Rectangle rect = getBounds ();
-	monitor.x = rect.x;
-	monitor.y = rect.y;
-	monitor.width = rect.width;
-	monitor.height = rect.height;
-	rect = getClientArea ();
-	monitor.clientX = rect.x;
-	monitor.clientY = rect.y;
-	monitor.clientWidth = rect.width;
-	monitor.clientHeight = rect.height;
-	return monitor;
+	/*
+	* Note.  Photon does not define a primary monitor.
+	* The workaround is to arbitrarily return the first
+	* monitor whose coordinates are (0, 0), or the first
+	* monitor returned by getMonitors().
+	*/
+	Monitor [] monitors = getMonitors ();
+	if (monitors.length == 1) return monitors [0];
+	for (int i = 0; i < monitors.length; i++) {
+		Monitor monitor = monitors [i];
+		if (monitor.x == 0 && monitor.y == 0) return monitor;
+	}
+	return monitors [0];
 }
 
 /**
