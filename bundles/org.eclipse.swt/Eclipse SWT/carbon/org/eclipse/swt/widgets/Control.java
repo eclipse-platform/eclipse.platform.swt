@@ -1013,7 +1013,6 @@ void hookEvents () {
  */
 public int internal_new_GC (GCData data) {
 	checkWidget();
-	int visibleRgn = 0;
 	int port = data != null ? data.port : 0;
 	if (port == 0) {
 		int window = OS.GetControlOwner (handle);
@@ -1022,41 +1021,38 @@ public int internal_new_GC (GCData data) {
 	int [] buffer = new int [1];
 	OS.CreateCGContextForPort (port, buffer);
 	int context = buffer [0];
-	if (context != 0) {
-		Rect rect = new Rect ();
-		Rect portRect = new Rect ();
-		OS.GetControlBounds (handle, rect);
-		OS.GetPortBounds (port, portRect);
-		if (data != null && data.paintEvent != 0) {
-			visibleRgn = data.visibleRgn;
+	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	int visibleRgn = 0;
+	if (data != null && data.paintEvent != 0) {
+		visibleRgn = data.visibleRgn;
+	} else {
+		if (getDrawCount (handle) > 0) {
+			visibleRgn = OS.NewRgn ();
 		} else {
-			if (getDrawCount (handle) > 0) {
-				visibleRgn = OS.NewRgn ();
-			} else {
-				visibleRgn = getVisibleRegion (handle, true);
-			}
-		}
-		OS.ClipCGContextToRegion (context, portRect, visibleRgn);
-		int portHeight = portRect.bottom - portRect.top;
-		OS.CGContextScaleCTM (context, 1, -1);
-		OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
-		if (data != null) {
-			data.portRect = portRect;
-			data.controlRect = rect;
+			visibleRgn = getVisibleRegion (handle, true);
 		}
 	}
-	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	Rect rect = new Rect ();
+	Rect portRect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	OS.GetPortBounds (port, portRect);
+	OS.ClipCGContextToRegion (context, portRect, visibleRgn);
+	int portHeight = portRect.bottom - portRect.top;
+	OS.CGContextScaleCTM (context, 1, -1);
+	OS.CGContextTranslateCTM (context, rect.left, -portHeight + rect.top);
 	if (data != null) {
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
 			data.style |= style & (mask | SWT.MIRRORED);
 		}
 		data.device = display;
-		data.foreground = foreground != null ? foreground : new float [] {0, 0, 0, 1};
 		data.background = background != null ? background : new float [] {1, 1, 1, 1};
+		data.foreground = foreground != null ? foreground : new float [] {0, 0, 0, 1};
 		data.font = font != null ? font : defaultFont ();
 		data.visibleRgn = visibleRgn;
 		data.control = handle;
+		data.portRect = portRect;
+		data.controlRect = rect;
 	
 		if (data.paintEvent == 0) {
 			if (gcs == null) gcs = new GCData [4];
