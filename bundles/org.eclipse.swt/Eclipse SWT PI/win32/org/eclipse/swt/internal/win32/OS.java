@@ -923,6 +923,7 @@ public class OS extends Platform {
 	public static final int PS_JOIN_ROUND = 0x0000;
 	public static final int PS_SOLID = 0x0;
 	public static final int PS_STYLE_MASK = 0xf;
+	public static final int PS_TYPE_MASK = 0x000f0000;
 	public static final int PS_USERSTYLE = 0x7;
 	public static final int R2_COPYPEN = 0xd;
 	public static final int R2_XORPEN = 0x7;
