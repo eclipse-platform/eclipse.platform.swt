@@ -2093,9 +2093,10 @@ int numpadKey (int key) {
  * Generate a low level system event.
  * 
  * <code>post</code> is used to generate low level keyboard
- * and mouse events. This enables automated UI testing which is
- * indistinguishable from an actual user. Regular applications
- * should not call this method.
+ * and mouse events. The intent is to enable automated UI
+ * testing by simulating the input from the user.  Most
+ * SWT applications should never need to call this method.
+ * 
  * <p>
  * <b>Event Types:</b>
  * <p>KeyDown, KeyUp
@@ -2132,13 +2133,6 @@ int numpadKey (int key) {
  * @exception SWTException <ul>
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
- * 
- * </p><p>
- * NOTE: This API is NOT finalized.
- * Use at your own risk, because it will most certainly change.
- * The only reason this API is being released at this time is so that 
- * other teams can try it out.
- * </p>
  *
  * @since 3.0
  * 
