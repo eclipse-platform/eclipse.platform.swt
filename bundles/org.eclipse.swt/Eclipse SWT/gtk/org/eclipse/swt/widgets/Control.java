@@ -2244,17 +2244,6 @@ void setInitialSize () {
 	display.setWarnings (warnings);
 }
 
-void setInputState (Event event, int gdkEvent) {
-	int [] state = new int [1];
-	OS.gdk_event_get_state (gdkEvent, state);
-	if ((state [0] & OS.GDK_MOD1_MASK)    != 0) event.stateMask |= SWT.ALT;
-	if ((state [0] & OS.GDK_SHIFT_MASK)   != 0) event.stateMask |= SWT.SHIFT;
-	if ((state [0] & OS.GDK_CONTROL_MASK) != 0) event.stateMask |= SWT.CONTROL;
-	if ((state [0] & OS.GDK_BUTTON1_MASK) != 0) event.stateMask |= SWT.BUTTON1;
-	if ((state [0] & OS.GDK_BUTTON2_MASK) != 0) event.stateMask |= SWT.BUTTON2;
-	if ((state [0] & OS.GDK_BUTTON3_MASK) != 0) event.stateMask |= SWT.BUTTON3;
-}
-
 /**
  * Sets the receiver's pop up menu to the argument.
  * All controls may optionally have a pop up

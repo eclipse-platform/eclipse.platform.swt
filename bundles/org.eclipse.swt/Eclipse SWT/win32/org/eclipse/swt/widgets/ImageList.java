@@ -245,7 +245,7 @@ public int size () {
 	for (int i=0; i<count; i++) {
 		if (images [i] != null) {
 			if (images [i].isDisposed ()) images [i] = null;
-			if (images [i] == null) result++;
+			if (images [i] != null) result++;
 		}
 	}
 	return result;
