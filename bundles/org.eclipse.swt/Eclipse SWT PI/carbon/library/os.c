@@ -188,6 +188,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(ATSUDrawText)
 }
 #endif
 
+#ifndef NO_ATSUFindFontFromName
+JNIEXPORT jint JNICALL OS_NATIVE(ATSUFindFontFromName)
+	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jintArray arg6)
+{
+	jbyte *lparg0=NULL;
+	jint *lparg6=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, ATSUFindFontFromName_FUNC);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	rc = (jint)ATSUFindFontFromName(lparg0, arg1, arg2, arg3, arg4, arg5, lparg6);
+	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, ATSUFindFontFromName_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUFindFontName
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUFindFontName)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jbyteArray arg6, jintArray arg7, jintArray arg8)

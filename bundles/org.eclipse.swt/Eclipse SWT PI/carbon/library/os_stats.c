@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 754;
-int OS_nativeFunctionCallCount[754];
+int OS_nativeFunctionCount = 755;
+int OS_nativeFunctionCallCount[755];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems", 
 	"AEGetNthPtr", 
@@ -28,6 +28,7 @@ char * OS_nativeFunctionNames[] = {
 	"ATSUDisposeStyle", 
 	"ATSUDisposeTextLayout", 
 	"ATSUDrawText", 
+	"ATSUFindFontFromName", 
 	"ATSUFindFontName", 
 	"ATSUGetFontIDs", 
 	"ATSUGetGlyphBounds__IIIIISII_3I", 

@@ -686,6 +686,7 @@ public static final native int ATSUCreateTextLayoutWithTextPtr(int iText, int iT
 public static final native int ATSUDisposeStyle(int iStyle);
 public static final native int ATSUDisposeTextLayout(int iTextLayout);
 public static final native int ATSUDrawText(int iTextLayout, int iLineOffset, int iLineLength, int iLocationX, int iLocationY);
+public static final native int ATSUFindFontFromName(byte[] iName, int iNameLength, int iFontNameCode, int iFontNamePlatform, int iFontNameScript, int iFontNameLanguage, int[] oFontID);
 public static final native int ATSUFindFontName(int iFontID, int iFontNameCode, int iFontNamePlatform, int iFontNameScript, int iFontNameLanguage, int iMaximumNameLength, byte[] oName, int[] oActualNameLength, int[] oFontNameIndex);
 public static final native int ATSUGetFontIDs(int[] oFontIDs, int iArraySize, int[] oFontCount);
 public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, int oGlyphBounds, int[] oActualNumberOfBounds);
