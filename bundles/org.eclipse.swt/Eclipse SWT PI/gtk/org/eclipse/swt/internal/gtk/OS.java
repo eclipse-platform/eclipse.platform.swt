@@ -302,6 +302,13 @@ public class OS {
 	public static final int GTK_RESPONSE_APPLY  = -10;
 	public static final int GTK_RESPONSE_HELP   = -11;
 	
+	/* The values for the GtkDialogFlags constants are specified in
+	 * the documentation, therefore there is no need to get them from the OS.
+	 */
+	public static final int GTK_DIALOG_MODAL               = 1<<0;
+	public static final int GTK_DIALOG_DESTROY_WITH_PARENT = 1<<1;
+	public static final int GTK_DIALOG_NO_SEPARATOR        = 1<<2;
+
 
 public static final native int GTK_TOOLBAR_CHILD_SPACE();
 public static final native int GTK_TOOLBAR_CHILD_BUTTON();
