@@ -1088,6 +1088,7 @@ void setKeyState (Event event, GdkEventKey keyEvent) {
 		switch (keyEvent.keyval) {
 			case OS.GDK_BackSpace:		event.character = '\b'; break;
 			case OS.GDK_Linefeed:		event.character = '\n'; break;
+			case OS.GDK_KP_Enter: 		event.character = '\r'; break;
 			case OS.GDK_Return: 		event.character = '\r'; break;
 			case OS.GDK_Delete:		event.character = 0x7F; break;
 			case OS.GDK_Cancel:
