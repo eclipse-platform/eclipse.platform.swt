@@ -264,14 +264,17 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	startX = pt.x - rect.left;
 	startY = pt.y - rect.top;
 	OS.MapWindowPoints (0, hwndTrack, rect, 2);
-	lastX = rect.left;  lastY = rect.top;
+	lastX = rect.left;
+	lastY = rect.top;
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.x = lastX;  event.y = lastY;
-	event.width = width;  event.height = height;
+	event.x = lastX;
+	event.y = lastY;
+	event.width = width;
+	event.height = height;
 	event.detail = SWT.DRAG;
 	
 	/*
@@ -312,8 +315,10 @@ LRESULT WM_LBUTTONUP (int wParam, int lParam) {
 	
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.x = lastX;  event.y = lastY;
-	event.width = width;  event.height = height;
+	event.x = lastX;
+	event.y = lastY;
+	event.width = width;
+	event.height = height;
 	drawBand (lastX, lastY, width, height);
 	sendEvent (SWT.Selection, event);
 	// widget could be disposed at this point
@@ -336,12 +341,12 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	int width = rect.right - rect.left;
 	int height = rect.bottom - rect.top;
 	OS.GetClientRect (hwndTrack, clientRect);
-	int clientWidth = clientRect.right - clientRect.left;
-	int clientHeight = clientRect.bottom - clientRect.top;
 	int newX = lastX, newY = lastY;
 	if ((style & SWT.VERTICAL) != 0) {
+		int clientWidth = clientRect.right - clientRect.left;
 		newX = Math.min (Math.max (0, pt.x - startX), clientWidth - width);
 	} else {
+		int clientHeight = clientRect.bottom - clientRect.top;
 		newY = Math.min (Math.max (0, pt.y - startY), clientHeight - height);
 	}
 	if (newX == lastX && newY == lastY) return result;
@@ -349,8 +354,10 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 
 	/* The event must be sent because doit flag is used */
 	Event event = new Event ();
-	event.x = newX;  event.y = newY;
-	event.width = width;  event.height = height;
+	event.x = newX;
+	event.y = newY;
+	event.width = width;
+	event.height = height;
 	event.detail = SWT.DRAG;
 	
 	/*
