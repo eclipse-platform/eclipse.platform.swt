@@ -1215,6 +1215,7 @@ public void moveAbove (Control control) {
 	int hwndAbove = OS.HWND_TOP;
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (parent != control.parent) return;
 		int hwnd = control.handle;
 		if (hwnd == 0 || hwnd == handle) return;
 		hwndAbove = OS.GetWindow (hwnd, OS.GW_HWNDPREV);
@@ -1255,6 +1256,7 @@ public void moveBelow (Control control) {
 	int hwndAbove = OS.HWND_BOTTOM;
 	if (control != null) {
 		if (control.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (parent != control.parent) return;
 		hwndAbove = control.handle;
 	}
 	if (hwndAbove == 0 || hwndAbove == handle) return;
