@@ -488,6 +488,8 @@ public class OS {
 	public static final int kThemeAliasArrowCursor = 2;
 	public static final int kThemeArrowButton = 4;
 	public static final int kThemeArrowCursor = 0;
+	public static final int kThemeArrowDown = 1;
+	public static final int kThemeArrow5pt = 1;
 	public static final int kThemeBrushDialogBackgroundActive = 1;
 	public static final int kThemeBrushDocumentWindowBackground = 15;
 	public static final int kThemeBrushPrimaryHighlightColor = -3;
@@ -807,6 +809,7 @@ public static final native void DrawText(byte[] textBuf, short firstByte, short 
 public static final native int DrawThemeButton(Rect inBounds, short inKind, ThemeButtonDrawInfo inNewInfo, ThemeButtonDrawInfo inPrevInfo, int inEraseProc, int inLabelProc, int inUserData);
 public static final native int DrawThemeEditTextFrame(Rect bounds, int state);
 public static final native int DrawThemeFocusRect(Rect bounds, boolean hasFocus);
+public static final native int DrawThemePopupArrow(Rect bounds,short orientation, short size, int state, int eraseProc, int eraseData); 
 public static final native int DrawThemeSeparator(Rect bounds, int state);
 public static final native int DrawThemeTextBox(int sHandle, short fontID, int state, boolean wrapToWidth, Rect bounds, short just, int context);
 public static final native int EmbedControl(int inControl, int inContainer);

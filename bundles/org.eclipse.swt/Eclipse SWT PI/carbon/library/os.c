@@ -2440,6 +2440,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeFocusRect)
 }
 #endif
 
+#ifndef NO_DrawThemePopupArrow
+JNIEXPORT jint JNICALL OS_NATIVE(DrawThemePopupArrow)
+	(JNIEnv *env, jclass that, jobject arg0, jshort arg1, jshort arg2, jint arg3, jint arg4, jint arg5)
+{
+	Rect _arg0, *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "DrawThemePopupArrow\n")
+	if (arg0) lparg0 = getRectFields(env, arg0, &_arg0);
+	rc = (jint)DrawThemePopupArrow(lparg0, (ThemeArrowOrientation)arg1, (ThemePopupArrowSize)arg2, (ThemeDrawState)arg3, (ThemeEraseUPP)arg4, (UInt32)arg5);
+	if (arg0) setRectFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "DrawThemePopupArrow\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_DrawThemeSeparator
 JNIEXPORT jint JNICALL OS_NATIVE(DrawThemeSeparator)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1)
