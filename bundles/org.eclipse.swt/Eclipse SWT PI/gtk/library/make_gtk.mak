@@ -21,7 +21,16 @@ SWT_VERSION=$(maj_ver)$(min_ver)
 # Define the installation directories for various products.
 # Your system may have these in a different place.
 #    JAVA_HOME   - IBM's version of Java
-JAVA_HOME   =/bluebird/teamswt/swt-builddir/IBMJava2-141
+
+ifeq ($(SWT_PTR_CFLAGS),-DSWT_PTR_SIZE_64)
+# 64 bit path
+JAVA_HOME		= /bluebird/teamswt/swt-builddir/jdk1.5.0
+AWT_LIB_PATH	= $(JAVA_HOME)/jre/lib/amd64
+else
+# 32 bit path
+JAVA_HOME		= /bluebird/teamswt/swt-builddir/IBMJava2-141
+AWT_LIB_PATH	= $(JAVA_HOME)/jre/bin
+endif
 
 #  mozilla source distribution folder
 MOZILLA_HOME = /mozilla/mozilla/1.6/linux_gtk2/mozilla/dist
@@ -44,7 +53,7 @@ MOZILLA_LIB 	= lib$(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 GTKCFLAGS = `pkg-config --cflags gtk+-2.0`
 GTKLIBS = `pkg-config --libs gtk+-2.0 gthread-2.0`
 
-AWT_LIBS      = -L$(JAVA_HOME)/jre/bin -ljawt -shared
+AWT_LIBS      = -L$(AWT_LIB_PATH) -ljawt -shared
 
 ATKCFLAGS = `pkg-config --cflags atk gtk+-2.0`
 ATKLIBS = `pkg-config --libs atk gtk+-2.0`
@@ -94,7 +103,7 @@ LIBS = -shared -fpic
 
 all: make_swt make_atk make_gnome make_awt make_mozilla
 
-all64: make_swt make_atk make_gnome
+all64: make_swt make_atk make_gnome make_awt
 
 #
 # SWT libs
