@@ -2323,6 +2323,9 @@ int getCodePage () {
 	return lpCs[1];
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public int getFillRule() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (OS.IsWinCE) return SWT.FILL_EVEN_ODD;
@@ -2904,6 +2907,9 @@ public void setClipping (Region region) {
 	setClipping(region != null ? region.handle : 0);
 }
 
+/**
+ * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
+ */
 public void setFillRule(int rule) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (OS.IsWinCE) return;

@@ -102,6 +102,21 @@ public void close() {
 	Gdip.GraphicsPath_CloseFigure(handle);
 }
 
+public boolean contains(float x, float y, GC gc, boolean outline) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	//TODO - should use GC transformation
+	gc.initGdip(outline, false);
+	int mode = OS.GetPolyFillMode(gc.handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
+	Gdip.GraphicsPath_SetFillMode(handle, mode);
+	if (outline) {
+		return Gdip.GraphicsPath_IsOutlineVisible(handle, x, y, gc.data.gdipPen, gc.data.gdipGraphics);
+	} else {
+		return Gdip.GraphicsPath_IsVisible(handle, x, y, gc.data.gdipGraphics);
+	}
+}
+
 public void curveTo(float cx1, float cy1, float cx2, float cy2, float x, float y) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	Gdip.GraphicsPath_AddBezier(handle, currentPoint.X, currentPoint.Y, cx1, cy1, cx2, cy2, x, y);
@@ -146,22 +161,6 @@ public void quadTo(float cx, float cy, float x, float y) {
 	Gdip.GraphicsPath_AddBezier(handle, currentPoint.X, currentPoint.Y, cx, cy, cx, cy, x, y);
 	Gdip.GraphicsPath_GetLastPoint(handle, currentPoint);
 }
-
-public boolean contains(float x, float y, GC gc, boolean outline) {
-	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (gc == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (gc.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	//TODO - should use GC transformation
-	gc.initGdip(outline, false);
-	int mode = OS.GetPolyFillMode(gc.handle) == OS.WINDING ? Gdip.FillModeWinding : Gdip.FillModeAlternate;
-	Gdip.GraphicsPath_SetFillMode(handle, mode);
-	if (outline) {
-		return Gdip.GraphicsPath_IsOutlineVisible(handle, x, y, gc.data.gdipPen, gc.data.gdipGraphics);
-	} else {
-		return Gdip.GraphicsPath_IsVisible(handle, x, y, gc.data.gdipGraphics);
-	}
-}
-
 public String toString() {
 	if (isDisposed()) return "Path {*DISPOSED*}";
 	return "Path {" + handle + "}";
