@@ -221,7 +221,6 @@ void createHandle (int index, boolean scrolled) {
 		socketHandle = OS.gtk_socket_new ();
 		if (socketHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, socketHandle);
-		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
 	}
 	if ((style & SWT.NO_REDRAW_RESIZE) != 0) {
 		OS.gtk_widget_set_redraw_on_allocate (handle, false);
@@ -491,6 +490,9 @@ int /*long*/ gtk_realize (int /*long*/ widget) {
 	if ((style & SWT.NO_BACKGROUND) != 0) {
 		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
 		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, false);
+	}
+	if (socketHandle != 0) {
+		embeddedHandle = OS.gtk_socket_get_id (socketHandle);
 	}
 	return result;
 }
