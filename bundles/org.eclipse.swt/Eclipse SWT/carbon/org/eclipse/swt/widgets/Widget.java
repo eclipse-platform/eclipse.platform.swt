@@ -964,6 +964,10 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+int kEventWindowDrawContent (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
 int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
@@ -981,6 +985,10 @@ int kEventWindowHitTest (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventWindowShown (int nextHandler, int theEvent, int userData) {
+	return OS.eventNotHandledErr;
+}
+
+int kEventWindowUpdate (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -1630,11 +1638,13 @@ int windowProc (int nextHandler, int theEvent, int userData) {
 		case OS.kEventWindowClose:				return kEventWindowClose (nextHandler, theEvent, userData);
 		case OS.kEventWindowCollapsed:			return kEventWindowCollapsed (nextHandler, theEvent, userData);
 		case OS.kEventWindowDeactivated:		return kEventWindowDeactivated (nextHandler, theEvent, userData);
+		case OS.kEventWindowDrawContent:		return kEventWindowDrawContent (nextHandler, theEvent, userData);
 		case OS.kEventWindowExpanded:			return kEventWindowExpanded (nextHandler, theEvent, userData);
+		case OS.kEventWindowGetRegion:			return kEventWindowGetRegion (nextHandler, theEvent, userData);
 		case OS.kEventWindowHidden:				return kEventWindowHidden (nextHandler, theEvent, userData);
+		case OS.kEventWindowHitTest:			return kEventWindowHitTest (nextHandler, theEvent, userData);
 		case OS.kEventWindowShown:				return kEventWindowShown (nextHandler, theEvent, userData);
-		case OS.kEventWindowGetRegion:		return kEventWindowGetRegion (nextHandler, theEvent, userData);
-		case OS.kEventWindowHitTest:				return kEventWindowHitTest (nextHandler, theEvent, userData);
+		case OS.kEventWindowUpdate:				return kEventWindowUpdate (nextHandler, theEvent, userData);
 	}
 	return OS.eventNotHandledErr;
 }

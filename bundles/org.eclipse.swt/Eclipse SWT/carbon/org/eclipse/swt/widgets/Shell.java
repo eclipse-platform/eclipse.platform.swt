@@ -103,7 +103,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class Shell extends Decorations {
 	int shellHandle, windowGroup;
-	boolean resized;
+	boolean resized, drawing, reshape;
 	Control lastActive;
 	Region region;
 	Rect rgnRect;
@@ -500,7 +500,7 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 	* right corner of the size in the region and to
 	* make these points transparent.
 	*/
-	if (region == null) return;
+	if (region == null || region.isDisposed ()) return;
 	boolean origin = region.contains (0, 0);
 	boolean limit = region.contains(rgnRect.right - 1, rgnRect.bottom - 1);
 	if (origin && limit) return;
@@ -707,11 +707,13 @@ void hookEvents () {
 		OS.kEventClassWindow, OS.kEventWindowClose,
 		OS.kEventClassWindow, OS.kEventWindowCollapsed,
 		OS.kEventClassWindow, OS.kEventWindowDeactivated,
+		OS.kEventClassWindow, OS.kEventWindowDrawContent,
 		OS.kEventClassWindow, OS.kEventWindowExpanded,
-		OS.kEventClassWindow, OS.kEventWindowHidden,
-		OS.kEventClassWindow, OS.kEventWindowShown,
-		OS.kEventClassWindow, OS.kEventWindowHitTest,
 		OS.kEventClassWindow, OS.kEventWindowGetRegion,
+		OS.kEventClassWindow, OS.kEventWindowHidden,
+		OS.kEventClassWindow, OS.kEventWindowHitTest,
+		OS.kEventClassWindow, OS.kEventWindowShown,
+		OS.kEventClassWindow, OS.kEventWindowUpdate,
 	};
 	int windowTarget = OS.GetWindowEventTarget (shellHandle);
 	OS.InstallEventHandler (windowTarget, windowProc, mask1.length / 2, mask1, shellHandle, null);
@@ -774,7 +776,7 @@ int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
 		layoutControl (false);
 		sendEvent (SWT.Resize);
 		if (layout != null) layout.layout (this, false);
-		if (region != null) {
+		if (region != null && !region.isDisposed()) {
 			OS.GetEventParameter (theEvent, OS.kEventParamCurrentBounds, OS.typeQDRectangle, null, Rect.sizeof, null, rgnRect);
 			OS.SetRect (rgnRect, (short) 0, (short) 0, (short) (rgnRect.right - rgnRect.left), (short) (rgnRect.bottom - rgnRect.top));
 			OS.ReshapeCustomWindow (shellHandle);
@@ -822,6 +824,17 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventWindowDrawContent (int nextHandler, int theEvent, int userData) {
+	drawing = true;
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	drawing = false;	
+	if (reshape) {
+		reshape = false;
+		OS.ReshapeCustomWindow (shellHandle);
+	}
+	return result;
+}
+
 int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowExpanded (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -833,7 +846,7 @@ int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
 int kEventWindowGetRegion (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowGetRegion (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (region == null) return OS.eventNotHandledErr;
+	if (region == null || region.isDisposed ()) return OS.eventNotHandledErr;
 	short [] regionCode = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamWindowRegionCode , OS.typeWindowRegionCode , null, 2, null, regionCode);
 	int [] temp = new int [1];
@@ -893,7 +906,7 @@ int kEventWindowHidden (int nextHandler, int theEvent, int userData) {
 int kEventWindowHitTest (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowHitTest (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (region == null) return OS.eventNotHandledErr;
+	if (region == null || region.isDisposed ()) return OS.eventNotHandledErr;
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
@@ -920,6 +933,11 @@ int kEventWindowShown (int nextHandler, int theEvent, int userData) {
 		}
 	}
 	return OS.eventNotHandledErr;
+}
+
+int kEventWindowUpdate (int nextHandler, int theEvent, int userData) {
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	return result;
 }
 
 void layoutControl (boolean events) {
@@ -1163,6 +1181,7 @@ public void setMinimized (boolean minimized) {
 public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
+	if (region != null && region.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	if (region == null) {
 		rgnRect = null;
 	} else {
@@ -1173,7 +1192,17 @@ public void setRegion (Region region) {
 		}
 	}
 	this.region = region;
-	OS.ReshapeCustomWindow (shellHandle);
+	/*
+	* Bug in the Macintosh.  Calling ReshapeCustomWindow() from a
+	* kEventWindowDrawContent handler originating from ShowWindow()
+	* will deadlock.  The fix is to detected this case and only call
+	* ReshapeCustomWindow() after the default handler is done.
+	*/
+	if (drawing) {
+		reshape = true;
+	} else {
+		OS.ReshapeCustomWindow (shellHandle);
+	}
 }
 
 public void setSize (int width, int height) {
