@@ -1766,7 +1766,9 @@ boolean sendMouseEvent (int type, XButtonEvent xEvent) {
 		Control control = this;
 		Shell shell = getShell ();
 		do {
-			if (!control.sendMouseEvent (type, button, count, detail, send, xEvent.time, x, y, xEvent.state)) return false;
+			if (!control.sendMouseEvent (type, button, count, detail, send, xEvent.time, x, y, xEvent.state)) {
+				return false;
+			}
 			if (control == shell) break;
 			control = control.parent;
 			OS.XtTranslateCoords (control.handle, (short) 0, (short) 0, x_root, y_root);
