@@ -474,17 +474,17 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 }
 
 boolean mnemonicHit (char key) {
+	int selection = getSelectionIndex ();
 	for (int i=0; i<items.length; i++) {
-		TabItem item = items [i];
-		if (item != null) {
-			char ch = findMnemonic (item.getText ());
-			if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {		
-				if (setFocus ()) {
-					int selection = OS.SendMessage (handle, OS.TCM_GETCURSEL, 0, 0);
-					if (i != selection) {
+		if (i != selection) {
+			TabItem item = items [i];
+			if (item != null) {
+				char ch = findMnemonic (item.getText ());
+				if (Character.toUpperCase (key) == Character.toUpperCase (ch)) {		
+					if (setFocus ()) {
 						setSelection (i, true);
+						return true;
 					}
-					return true;
 				}
 			}
 		}
@@ -643,7 +643,7 @@ String toolTipText (NMTTDISPINFO hdr) {
 
 boolean traversePage (boolean next) {
 	int count = getItemCount ();
-	if (count == 0) return false;
+	if (count <= 1) return false;
 	int index = getSelectionIndex ();
 	if (index == -1) {
 		index = 0;
