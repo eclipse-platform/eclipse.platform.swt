@@ -225,6 +225,18 @@ public void dispose() {
 	device = null;
 }
 
+public void getBounds(float[] bounds) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	CGRect rect = new CGRect();
+	OS.CGPathGetBoundingBox(handle, rect);
+	bounds[0] = rect.x;
+	bounds[1] = rect.y;
+	bounds[2] = rect.width;
+	bounds[3] = rect.height;
+}
+
 public void getCurrentPoint(float[] point) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);

@@ -103,6 +103,18 @@ public void curveTo(float cx1, float cy1, float cx2, float cy2, float x, float y
 	Cairo.cairo_curve_to(handle, cx1, cy1, cx2, cy2, x, y);
 }
 
+public void getBounds(float[] bounds) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (bounds == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (bounds.length < 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	double[] extents = new double[4];
+	Cairo.cairo_extents(handle, extents);
+	bounds[0] = (float)extents[0];
+	bounds[1] = (float)extents[1];
+	bounds[2] = (float)(extents[2] - extents[0]);
+	bounds[3] = (float)(extents[3] - extents[1]);
+}
+
 public void getCurrentPoint(float[] point) {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (point == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
