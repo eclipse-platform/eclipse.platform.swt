@@ -34,7 +34,6 @@ public class FileDialog extends Dialog {
 	String [] fileNames = new String [0];
 	String filterPath = "", fileName = "";
 	static final String FILTER = "*.*";
-	static int MAX_PATH = 260; // maximum file name size 256 + 3 chars for drive + 1 for null
 	static int BUFFER_SIZE = 1024 * 32;
 
 /**
@@ -190,7 +189,7 @@ public String open () {
 	* Copy the name into lpstrFile and ensure that the
 	* last byte is NULL and the buffer does not overrun.
 	*/
-	int nMaxFile = MAX_PATH;
+	int nMaxFile = OS.MAX_PATH;
 	if ((style & SWT.MULTI) != 0) nMaxFile = Math.max (nMaxFile, BUFFER_SIZE);
 	int byteCount = nMaxFile * TCHAR.sizeof;
 	int lpstrFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
@@ -204,7 +203,7 @@ public String open () {
 	if (filterPath == null) filterPath = "";
 	/* Use the character encoding for the default locale */
 	TCHAR path = new TCHAR (0, filterPath.replace ('/', '\\'), true);
-	int byteCount5 = MAX_PATH * TCHAR.sizeof;
+	int byteCount5 = OS.MAX_PATH * TCHAR.sizeof;
 	int lpstrInitialDir = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount5);
 	int byteCountDir = Math.min (path.length () * TCHAR.sizeof, byteCount5 - TCHAR.sizeof);
 	OS.MoveMemory (lpstrInitialDir, path, byteCountDir);

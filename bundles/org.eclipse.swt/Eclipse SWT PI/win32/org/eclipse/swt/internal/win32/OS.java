@@ -599,6 +599,7 @@ public class OS {
 	public static final int LVS_SHAREIMAGELISTS = 0x40;
 	public static final int LVS_SHOWSELALWAYS = 0x8;
 	public static final int LVS_SINGLESEL = 0x4;
+	public static final int MAX_PATH = 260;
 	public static final int MA_NOACTIVATE = 0x3;
 	public static final int MB_ABORTRETRYIGNORE = 0x2;
 	public static final int MB_APPLMODAL = 0x0;
