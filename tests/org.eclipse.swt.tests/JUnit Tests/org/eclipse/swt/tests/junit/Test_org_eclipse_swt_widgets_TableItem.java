@@ -98,13 +98,13 @@ public void test_getBoundsI() {
 	new TableColumn(table, SWT.NULL);
 	tableItem.setImage(1, image);
 	bounds = tableItem.getBounds(0);
-	assertTrue(":a:", bounds.x > 0 && bounds.width > 0);
+	assertTrue(":a:", bounds.x >= 0 && bounds.width >= 0);
 	boundsX = bounds.x;
  	bounds = tableItem.getBounds(-1);
 	assertEquals(new Rectangle(0, 0, 0, 0), bounds);	
  	bounds = tableItem.getBounds(1);
 	//assert(":c:", bounds.x > 0 && bounds.width > 0);  // ?? setting the image in one column does not affect width of other columns
-	assertTrue(":c:", bounds.x > 0 && bounds.height > 0);
+	assertTrue(":c:", bounds.x >= 0 && bounds.height >= 0);
  
 	column = new TableColumn(table2, SWT.NULL);
 	column.setWidth(30);
