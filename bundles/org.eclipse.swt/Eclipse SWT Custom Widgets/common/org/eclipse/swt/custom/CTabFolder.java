@@ -1743,9 +1743,32 @@ private void setSelection(int index, boolean notify) {
 	}
 }
 
+private Image scaleImage (Image image, int oldSize, int newSize) {
+	Display display = getDisplay();
+	Color foreground = getForeground();
+	Color black = display.getSystemColor(SWT.COLOR_BLACK);
+	Color background = getBackground();
+	PaletteData palette = new PaletteData(new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
+	ImageData imageData = new ImageData(newSize, newSize, 4, palette);
+	imageData.transparentPixel = 1;
+	Image temp = new Image(display, imageData);
+	GC gc = new GC(temp);
+	gc.setBackground(background);
+	gc.fillRectangle(0, 0, newSize, newSize);
+	gc.drawImage(image, 0, 0, oldSize, oldSize, 0, 0, newSize, newSize);
+	gc.dispose();
+	return temp;
+}
 private void updateCloseBar() {
-	int imageHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - 4;
-	if (imageHeight < 8) return;
+	//Temporary code - need a better way to determine toolBar trim
+	int toolbarTrim = 4;
+	String platform = SWT.getPlatform();
+	if ("photon".equals(platform)) toolbarTrim = 6; //$NON-NLS-1$
+	if ("gtk".equals(platform)) toolbarTrim = 8; //$NON-NLS-1$
+
+	int maxHeight = tabHeight - CTabItem.TOP_MARGIN - CTabItem.BOTTOM_MARGIN - toolbarTrim;
+	if (maxHeight < 3) return;
+	int imageHeight = (maxHeight < 9) ? 9 : maxHeight;
 	
 	if (closeImage != null && closeImage.getBounds().height == imageHeight) return;
 	
@@ -1774,7 +1797,7 @@ private void updateCloseBar() {
 	gc.fillRectangle(0, 0, imageHeight, imageHeight);
 	gc.setForeground(black);
 	
-	//draw an 8x7 'x' centered in image
+	//draw an 9x8 'x' centered in image
 	int h = (imageHeight / 2 )* 2;
 	int inset = (h - 8) / 2;
 	gc.drawLine( inset, inset, h - inset - 1, h - inset - 1);
@@ -1784,13 +1807,25 @@ private void updateCloseBar() {
 	
 	gc.dispose();
 	
+	if (maxHeight < imageHeight) {
+		//rescale image
+		Image temp = scaleImage(closeImage, imageHeight, maxHeight);
+		closeImage.dispose();
+		closeImage = temp;
+	}
 	closeItem.setImage(closeImage);
 	inactiveCloseItem.setImage(closeImage);
 }
 private void updateArrowBar() {
-	
-	int imageHeight = tabHeight - 6;
-	if (imageHeight < 10) return;
+	//Temporary code - need a better way to determine toolBar trim
+	int toolbarTrim = 4;
+	String platform = SWT.getPlatform();
+	if ("photon".equals(platform)) toolbarTrim = 6; //$NON-NLS-1$
+	if ("gtk".equals(platform)) toolbarTrim = 8; //$NON-NLS-1$
+
+	int maxHeight = tabHeight - toolbarTrim;
+	if (maxHeight < 3) return;
+	int imageHeight = (maxHeight < 9) ? 9 : maxHeight;
 	
 	if (arrowLeftImage != null && arrowLeftImage.getBounds().height == imageHeight) return;	
 	
@@ -1817,7 +1852,7 @@ private void updateArrowBar() {
 	gc.setBackground(background);
 	gc.fillRectangle(0, 0, 7, imageHeight);
 	gc.setBackground(black);
-	//draw a 10x5 '<' centered vertically in image
+	//draw a 9x5 '<' centered vertically in image
 	int h = (imageHeight / 2 )* 2;
 	int midpoint = h / 2 - 1;
 	int[] pointArr = new int[] {6, midpoint - 5,
@@ -1834,13 +1869,23 @@ private void updateArrowBar() {
 	gc.setBackground(background);
 	gc.fillRectangle(0, 0, 7, imageHeight);
 	gc.setBackground(black);
-	//draw a 10x5 '>' centered vertically in image
+	//draw a 9x5 '>' centered vertically in image
 	pointArr = new int[] {1, midpoint - 5, 
                                   6, midpoint,
 		                          1, midpoint + 5,};
 	gc.fillPolygon(pointArr);
 	gc.dispose();
 	
+	if (maxHeight < imageHeight) {
+		//rescale image
+		Image leftTemp = scaleImage(arrowLeftImage, imageHeight, maxHeight);
+		arrowLeftImage.dispose();
+		arrowLeftImage = leftTemp;
+		
+		Image rightTemp = scaleImage(arrowRightImage, imageHeight, maxHeight);
+		arrowRightImage.dispose();
+		arrowRightImage = rightTemp;
+	}
 	left.setImage(arrowLeftImage);
 	right.setImage(arrowRightImage);
 }
