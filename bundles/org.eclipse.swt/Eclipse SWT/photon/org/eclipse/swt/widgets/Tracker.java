@@ -598,6 +598,7 @@ public boolean open () {
 		}
 		OS.PtEventHandler (buffer);
 	}
+	OS.free (buffer);
 	if (!isDisposed ()) drawRectangles (rectangles);
 	tracking = false;
 	if (region != 0) OS.PtDestroyWidget (region);
