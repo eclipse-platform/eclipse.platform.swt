@@ -297,6 +297,15 @@ void createClassesPanel(Composite panel) {
 	classTextEditor.setEditor(classEditorTx);
 	Listener classTextListener = new Listener() {
 		public void handleEvent(Event e) {
+			if (e.type == SWT.Traverse) {
+				switch (e.detail) {
+					case SWT.TRAVERSE_ESCAPE:
+						classTextEditor.setItem(null);
+						break;
+					default:
+						return;
+				}
+			}
 			classEditorTx.setVisible(false);
 			TableItem item = classTextEditor.getItem();
 			if (item == null) return;
@@ -314,6 +323,7 @@ void createClassesPanel(Composite panel) {
 	};
 	classEditorTx.addListener(SWT.DefaultSelection, classTextListener);
 	classEditorTx.addListener(SWT.FocusOut, classTextListener);
+	classEditorTx.addListener(SWT.Traverse, classTextListener);
 	
 	final Shell floater = new Shell(shell, SWT.NO_TRIM);
 	floater.setLayout(new FillLayout());
@@ -330,8 +340,13 @@ void createClassesPanel(Composite panel) {
 	});
 	Listener classesListListener = new Listener() {
 		public void handleEvent(Event e) {
-			if (e.type == SWT.KeyDown) {
-				if (e.character != SWT.CR) return;
+			if (e.type == SWT.Traverse) {
+				switch (e.detail) {
+					case SWT.TRAVERSE_RETURN:
+						break;
+					default:
+						return;
+				}
 			}
 			floater.setVisible(false);
 			TableItem item = classListEditor.getItem();
@@ -351,7 +366,7 @@ void createClassesPanel(Composite panel) {
 	};
 	classEditorLt.addListener(SWT.DefaultSelection, classesListListener);
 	classEditorLt.addListener(SWT.FocusOut, classesListListener);
-	classEditorLt.addListener(SWT.KeyDown, classesListListener);
+	classEditorLt.addListener(SWT.Traverse, classesListListener);
 
 	classesLt.addListener(SWT.MouseDown, new Listener() {
 		public void handleEvent(Event e) {
@@ -412,6 +427,15 @@ void createMembersPanel(Composite panel) {
 	memberTextEditor.setEditor(memberEditorTx);
 	Listener memberTextListener = new Listener() {
 		public void handleEvent(Event e) {
+			if (e.type == SWT.Traverse) {
+				switch (e.detail) {
+					case SWT.TRAVERSE_ESCAPE:
+						memberTextEditor.setItem(null);
+						break;
+					default:
+						return;
+				}
+			}
 			memberEditorTx.setVisible(false);
 			TableItem item = memberTextEditor.getItem();
 			if (item == null) return;
@@ -456,6 +480,7 @@ void createMembersPanel(Composite panel) {
 	};
 	memberEditorTx.addListener(SWT.DefaultSelection, memberTextListener);
 	memberEditorTx.addListener(SWT.FocusOut, memberTextListener);
+	memberEditorTx.addListener(SWT.Traverse, memberTextListener);
 	
 	final Shell floater = new Shell(shell, SWT.NO_TRIM);
 	floater.setLayout(new FillLayout());
@@ -470,8 +495,13 @@ void createMembersPanel(Composite panel) {
 	});
 	Listener memberListListener = new Listener() {
 		public void handleEvent(Event e) {
-			if (e.type == SWT.KeyDown) {
-				if (e.character != SWT.CR) return;
+			if (e.type == SWT.Traverse) {
+				switch (e.detail) {
+					case SWT.TRAVERSE_RETURN:
+						break;
+					default:
+						return;
+				}
 			}
 			floater.setVisible(false);
 			TableItem item = memberListEditor.getItem();
@@ -496,7 +526,7 @@ void createMembersPanel(Composite panel) {
 	};
 	memberEditorLt.addListener(SWT.DefaultSelection, memberListListener);
 	memberEditorLt.addListener(SWT.FocusOut, memberListListener);
-	memberEditorLt.addListener(SWT.KeyDown, memberListListener);
+	memberEditorLt.addListener(SWT.Traverse, memberListListener);
 	
 	membersLt.addListener(SWT.MouseDown, new Listener() {
 		public void handleEvent(Event e) {
@@ -600,6 +630,15 @@ void createParametersPanel(Composite panel) {
 	paramTextEditor.setEditor(paramEditorTx);
 	Listener paramTextListener = new Listener() {
 		public void handleEvent(Event e) {
+			if (e.type == SWT.Traverse) {
+				switch (e.detail) {
+					case SWT.TRAVERSE_ESCAPE:
+						paramTextEditor.setItem(null);
+						break;
+					default:
+						return;
+				}
+			}
 			paramEditorTx.setVisible(false);
 			TableItem item = paramTextEditor.getItem();
 			if (item == null) return;
@@ -616,7 +655,8 @@ void createParametersPanel(Composite panel) {
 		}
 	};
 	paramEditorTx.addListener(SWT.DefaultSelection, paramTextListener);
-	paramEditorTx.addListener(SWT.FocusOut, paramTextListener); 
+	paramEditorTx.addListener(SWT.FocusOut, paramTextListener);
+	paramEditorTx.addListener(SWT.Traverse, paramTextListener);
 	
 	final Shell floater = new Shell(shell, SWT.NO_TRIM);
 	floater.setLayout(new FillLayout());
@@ -633,8 +673,13 @@ void createParametersPanel(Composite panel) {
 	});
 	Listener paramListListener = new Listener() {
 		public void handleEvent(Event e) {
-			if (e.type == SWT.KeyDown) {
-				if (e.character != SWT.CR) return;
+			if (e.type == SWT.Traverse) {
+				switch (e.detail) {
+					case SWT.TRAVERSE_RETURN:
+						break;
+					default:
+						return;
+				}
 			}
 			floater.setVisible(false);
 			TableItem item = paramListEditor.getItem();
@@ -653,7 +698,7 @@ void createParametersPanel(Composite panel) {
 	};
 	paramEditorLt.addListener(SWT.DefaultSelection, paramListListener);
 	paramEditorLt.addListener(SWT.FocusOut, paramListListener);
-	paramEditorLt.addListener(SWT.KeyDown, paramListListener);
+	paramEditorLt.addListener(SWT.Traverse, paramListListener);
 
 	paramsLt.addListener(SWT.MouseDown, new Listener() {
 		public void handleEvent(Event e) {
