@@ -763,7 +763,7 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 			} else {
 				int maxColors = 1 << bm.bmBitsPixel;
 				byte[] oldColors = new byte[maxColors * 4];
-				int numColors = OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
+				OS.GetDIBColorTable(srcHdc, 0, maxColors, oldColors);
 				int offset = srcImage.transparentPixel * 4;
 				byte[] newColors = new byte[oldColors.length];
 				transRed = transGreen = transBlue = 0xff;

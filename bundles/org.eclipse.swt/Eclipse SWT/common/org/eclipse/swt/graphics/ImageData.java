@@ -1281,7 +1281,6 @@ public void setPixels(int x, int y, int putWidth, byte[] pixels, int startIndex)
 	int mask;
 	int n = putWidth;
 	int i = startIndex;
-	int pixel;
 	int srcX = x, srcY = y;
 	if (depth == 1) {
 		index = (y * bytesPerLine) + (x >> 3);
@@ -2783,7 +2782,6 @@ static void blit(int op,
 			ap = apr += (sfy >>> 16) * alphaStride,
 			sfy = (sfy & 0xffff) + sfyi,
 			dp = dpr += dpryi) {
-		int lrerr = 0, lgerr = 0, lberr = 0;
 		for (int dx = destWidth, sfx = sfxi; dx > 0; --dx,
 				dp += dprxi,
 				sfx = (sfx & 0xffff) + sfxi) {

@@ -610,7 +610,6 @@ public void setImage (Image image) {
 		return;
 	}
 	int hMenu = parent.handle;
-	int hHeap = OS.GetProcessHeap ();
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_BITMAP;

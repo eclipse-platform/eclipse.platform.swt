@@ -1218,7 +1218,6 @@ public void setItems (String [] items) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	RECT rect = null;
-	boolean failed = false;
 	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
 	if ((style & SWT.H_SCROLL) != 0) {
 		rect = new RECT ();

@@ -799,7 +799,6 @@ int createDIBFromDDB(int hDC, int hBitmap, int width, int height) {
 		}
 	}
 	
-	int biClrUsed = 0;
 	boolean useBitfields = OS.IsWinCE && (depth == 16 || depth == 32);
 	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER();
 	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
@@ -973,7 +972,7 @@ public Color getBackground() {
 			red = color & 0xFF;
 		} else {
 			byte[] color = new byte[4];
-			int numColors = OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
+			OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
 			blue = color[0] & 0xFF;
 			green = color[1] & 0xFF;
 			red = color[2] & 0xFF;

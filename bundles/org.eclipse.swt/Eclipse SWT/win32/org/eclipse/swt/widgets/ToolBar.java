@@ -336,7 +336,7 @@ void destroyItem (ToolItem item) {
 		if (hotImageList != null) hotImageList.put (info.iImage, null);
 		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
 	}
-	int result = OS.SendMessage (handle, OS.TB_DELETEBUTTON, index, 0);
+	OS.SendMessage (handle, OS.TB_DELETEBUTTON, index, 0);
 	if (item.id == lastFocusId) lastFocusId = -1;
 	items [item.id] = null;
 	item.id = -1;
@@ -468,7 +468,7 @@ public ToolItem [] getItems () {
 	TBBUTTON lpButton = new TBBUTTON ();
 	ToolItem [] result = new ToolItem [count];
 	for (int i=0; i<count; i++) {
-		int code = OS.SendMessage (handle, OS.TB_GETBUTTON, i, lpButton);
+		OS.SendMessage (handle, OS.TB_GETBUTTON, i, lpButton);
 		result [i] = items [lpButton.idCommand];
 	}
 	return result;

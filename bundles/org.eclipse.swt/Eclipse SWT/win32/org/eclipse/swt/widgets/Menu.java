@@ -639,7 +639,7 @@ public MenuItem [] getItems () {
 		TBBUTTON lpButton = new TBBUTTON ();
 		MenuItem [] result = new MenuItem [count];
 		for (int i=0; i<count; i++) {
-			int code = OS.SendMessage (hwndCB, OS.TB_GETBUTTON, i, lpButton);
+			OS.SendMessage (hwndCB, OS.TB_GETBUTTON, i, lpButton);
 			result [i] = parent.findMenuItem (lpButton.idCommand);
 		}
 		return result;

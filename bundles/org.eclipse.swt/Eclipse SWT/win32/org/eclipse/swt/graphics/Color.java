@@ -273,7 +273,6 @@ void init(Device device, int red, int green, int blue) {
 				 ((entry[2] & 0xFF) << 16);
 	} else {
 		/* Found a free entry */
-		int offset = index * 4;
 		entry = new byte[] { (byte)(red & 0xFF), (byte)(green & 0xFF), (byte)(blue & 0xFF), 0 };
 		OS.SetPaletteEntries(hPal, index, 1, entry);
 	}

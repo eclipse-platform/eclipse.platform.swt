@@ -294,7 +294,7 @@ public void setText (String string) {
 	TCITEM tcItem = new TCITEM ();
 	tcItem.mask = OS.TCIF_TEXT;
 	tcItem.pszText = pszText;
-	int result = OS.SendMessage (hwnd, OS.TCM_SETITEM, index, tcItem);
+	OS.SendMessage (hwnd, OS.TCM_SETITEM, index, tcItem);
 	OS.HeapFree (hHeap, 0, pszText);
 }
 
