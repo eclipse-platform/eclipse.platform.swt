@@ -1383,7 +1383,7 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (!display.ignoreFocus) {
 		short [] part = new short [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-		sendFocusEvent (part [0] != OS.kControlFocusNoPart ? SWT.FocusIn : SWT.FocusOut, false);
+		sendFocusEvent (part [0] != OS.kControlFocusNoPart ? SWT.FocusIn : SWT.FocusOut);
 		// widget could be disposed at this point
 		if (isDisposed ()) return OS.noErr;
 	}
@@ -1924,7 +1924,7 @@ void resetVisibleRegion (int control) {
 	}
 }
 
-void sendFocusEvent (int type, boolean post) {
+void sendFocusEvent (int type) {
 	Display display = this.display;
 	Shell shell = getShell ();
 	/*
@@ -1935,11 +1935,7 @@ void sendFocusEvent (int type, boolean post) {
 	*/
 	display.focusControl = this;
 	display.focusEvent = type;
-	if (post) {
-		postEvent (type);
-	} else {
-		sendEvent (type);
-	}	
+	sendEvent (type);
 	/*
 	* It is possible that the shell may be
 	* disposed at this point.  If this happens

@@ -880,24 +880,35 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	//TEMPORARY CODE - should be send, but causes a GP
-	postEvent (SWT.Deactivate);
-	if (isDisposed ()) return result;
-	saveFocus ();
-	if (savedFocus != null) {
-		/*
-		* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
-		* the control that has focus gets two kEventControlSetFocus
-		* events indicating that focus was lost.  The fix is to ignore
-		* both of these and send the focus lost event explicitly.
-		*/
-		display.ignoreFocus = true;
-		OS.ClearKeyboardFocus (shellHandle);
-		display.ignoreFocus = false;
-		//TEMPORARY CODE - should be send, but causes a GP
-		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (SWT.FocusOut, true);
+	/*
+	* Bug in the Macintosh.  The default handler of kEventWindowDeactivated
+	* segment faults when DisposeWindow() is called in previous handlers.
+	* The fix is to use RetainWindow() so that the window does not get
+	* disposed until the handler returns.
+	*/
+	Display display = this.display;
+	OS.RetainWindow (shellHandle);
+	result = OS.CallNextEventHandler (nextHandler, theEvent);
+	sendEvent (SWT.Deactivate);
+	if (!isDisposed ()) {
+		saveFocus ();
+		if (savedFocus != null) {
+			/*
+			* Bug in the Macintosh.  When ClearKeyboardFocus() is called,
+			* the control that has focus gets two kEventControlSetFocus
+			* events indicating that focus was lost.  The fix is to ignore
+			* both of these and send the focus lost event explicitly.
+			*/
+			display.ignoreFocus = true;
+			OS.ClearKeyboardFocus (shellHandle);
+			display.ignoreFocus = false;
+			if (!savedFocus.isDisposed ()) {
+				savedFocus.sendFocusEvent (SWT.FocusOut);
+			}
+		}
 	}
 	display.setMenuBar (null);
+	OS.ReleaseWindow (shellHandle);
 	return result;
 }
 
@@ -1432,6 +1443,7 @@ void setWindowVisible (boolean visible) {
 		* calling HideWindow() when a shell is about to be disposed.
 		*/
 		if (!disposed) OS.HideWindow (shellHandle);
+		if (isDisposed ()) return;
 		int topHandle = topHandle ();
 		OS.SetControlVisibility (topHandle, false, false);
 		invalidateVisibleRegion (topHandle);
