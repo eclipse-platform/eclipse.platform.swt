@@ -176,7 +176,7 @@ class TableTab extends ScrollableTab {
 		linesVisibleButton.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
 				setWidgetLinesVisible ();
-			};
+			}
 		});
 	}
 	

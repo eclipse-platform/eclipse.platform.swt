@@ -90,7 +90,7 @@ class TabFolderTab extends Tab {
 			public void widgetSelected(SelectionEvent event) {
 				if (!((Button) event.widget).getSelection ()) return;
 				recreateExampleWidgets ();
-			};
+			}
 		};
 		topButton.addSelectionListener (selectionListener);
 		bottomButton.addSelectionListener (selectionListener);
