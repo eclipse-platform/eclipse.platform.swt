@@ -32,8 +32,12 @@ public class TypedEvent extends SWTEventObject {
 	public Widget widget;
 	
 	/**
-	 * the time that the event occurred
-	 */
+	 * the time that the event occurred.
+	 * 
+	 * NOTE: This field is an unsigned integer and should
+	 * be AND'ed with 0xFFFFFFFFL so that it can be treated
+	 * as a signed long.
+	 */	
 	public int time;
 	
 	/**
