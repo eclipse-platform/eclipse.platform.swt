@@ -72,7 +72,7 @@ public class DropTarget extends Widget {
 
 	private Control control;
 	private Listener controlListener;
-	private Transfer[] transferAgents;
+	private Transfer[] transferAgents = new Transfer[0];
 	private DragUnderEffect effect;
 	
 	// Track application selections
@@ -541,11 +541,11 @@ public void notifyListeners (int eventType, Event event) {
 
 private void onDispose(){
 	if (control == null) return;
-	if (transferAgents != null){
+	if (transferAgents.length != 0)
 		OS.gtk_drag_dest_unset(control.handle);
+	transferAgents = null;
 	if (controlListener != null)
 		control.removeListener(SWT.Dispose, controlListener);
-	}
 	control.setData(DROPTARGETID, null);
 	control = null;
 	controlListener = null;
@@ -616,7 +616,7 @@ public void removeDropListener(DropTargetListener listener) {
 public void setTransfer(Transfer[] transferAgents){
 	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	
-	if (this.transferAgents != null) {
+	if (this.transferAgents.length != 0) {
 		OS.gtk_drag_dest_unset(control.handle);
 	}
 	this.transferAgents = transferAgents;
