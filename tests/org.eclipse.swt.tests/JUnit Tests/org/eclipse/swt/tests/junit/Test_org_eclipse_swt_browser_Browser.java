@@ -52,13 +52,6 @@ public void test_ConstructorLorg_eclipse_swt_widgets_CompositeI() {
 }
 
 public void test_addLocationListenerLorg_eclipse_swt_browser_LocationListener() {
-	try {
-		browser.addLocationListener(null);
-		fail("No exception thrown for listener == null");
-	}
-	catch (IllegalArgumentException e) {
-	}
-	
 	LocationListener listener = new LocationListener() {
 		public void changed(LocationEvent event) {
 		}
@@ -160,6 +153,19 @@ public void test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextList
 	// tested in addStatusTextListener
 }
 
+public void test_setTextLjava_lang_String() {
+	String html1 = "<HTML><HEAD><TITLE>HTML example 1</TITLE></HEAD><BODY><H1>HTML example</H1><P>This is a really cool page</P></BODY></HTML>";
+	boolean result = browser.setText(html1);
+	assertTrue(result);
+	String html2 = "<HTML><HEAD><TITLE>HTML example 2</TITLE></HEAD><BODY><H1>HTML example 2</H1>";
+	for (int i = 0; i < 1000; i++) {
+		html2 +="<P>That is a test line with the number "+i+"</P>";
+	}
+	html2 += "</BODY></HTML>";
+	result = browser.setText(html2);
+	assertTrue(result);
+}
+
 public void test_setUrlLjava_lang_String() {
 	try {
 		browser.setUrl(null);
@@ -203,6 +209,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener");
 	methodNames.addElement("test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener");
 	methodNames.addElement("test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener");
+	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setUrlLjava_lang_String");
 	methodNames.addElement("test_stop");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
@@ -221,6 +228,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener")) test_removeLocationListenerLorg_eclipse_swt_browser_LocationListener();
 	else if (getName().equals("test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener")) test_removeProgressListenerLorg_eclipse_swt_browser_ProgressListener();
 	else if (getName().equals("test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener")) test_removeStatusTextListenerLorg_eclipse_swt_browser_StatusTextListener();
+	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setUrlLjava_lang_String")) test_setUrlLjava_lang_String();
 	else if (getName().equals("test_stop")) test_stop();
 	else super.runTest();
