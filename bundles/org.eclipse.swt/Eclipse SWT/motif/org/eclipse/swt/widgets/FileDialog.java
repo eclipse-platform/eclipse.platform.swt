@@ -241,8 +241,10 @@ public String open () {
 	if (destroyContext = (appContext == null)) appContext = new Display ();
 	int display = appContext.xDisplay;
 	int parentHandle = appContext.shellHandle;
-	if ((parent != null) && (parent.getDisplay () == appContext))
+	if ((parent != null) && (parent.getDisplay () == appContext)) {
+		parent.realizeWidget ();		/* Fix for bug 17507 */
 		parentHandle = parent.shellHandle;
+	}
 
 	/* Compute the dialog title */	
 	/*
@@ -334,11 +336,6 @@ public String open () {
 
 	OS.XtManageChild (dialog);
 
-	// fix for bug 17507
-	if (OS.IsAIX) {
-	    OS.XtRealizeWidget (parentHandle);
-	}
-	
 	//BOGUS - should be a pure OS message loop (no SWT AppContext)
 	while (OS.XtIsRealized (dialog) && OS.XtIsManaged (dialog))
 		if (!appContext.readAndDispatch ()) appContext.sleep ();
