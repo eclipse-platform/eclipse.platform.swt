@@ -445,6 +445,7 @@ public static final native int gtk_clist_get_text(int clist, int row, int column
 public static final native int gtk_clist_insert(int clist, int row, int[] text);
 public static final native void gtk_clist_moveto(int clist, int row, int column, float row_align, float col_align);
 public static final native int gtk_clist_new(int columns);
+public static final native int gtk_clist_optimal_column_width(int clist, int column);
 public static final native void gtk_clist_remove(int clist, int row);
 public static final native int gtk_clist_row_is_visible(int clist, int row);
 public static final native void gtk_clist_select_all(int clist);
