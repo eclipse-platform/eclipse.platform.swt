@@ -253,6 +253,9 @@ public class Display extends Device {
 	/* Fonts */
 	byte [] defaultFont;
 	byte [] TEXT_FONT, LIST_FONT, TITLE_FONT, GAUGE_FONT, GROUP_FONT;
+
+	/* System Cursors */
+	Cursor[] cursors = new Cursor [22];
 	
 	/* Images */
 	int nullImage;
@@ -1002,6 +1005,15 @@ public Color getSystemColor (int id) {
 	return Color.photon_new (this, color);
 }
 
+public Cursor getSystemCursor (int id) {
+	checkDevice ();
+	if (!(0 <= id && id < cursors.length)) return null;
+	if (cursors [id] == null) {
+		cursors [id] = new Cursor (this, id);
+	}
+	return cursors [id];
+}
+
 /**
  * Returns a reasonable font for applications to use.
  * On some platforms, this will match the "default font"
@@ -1678,7 +1690,13 @@ void releaseDisplay () {
 		OS.free(nullImage);
 		nullImage = 0;
 	}
-		
+
+	/* Release the System Cursors */
+	for (int i = 0; i < cursors.length; i++) {
+		if (cursors [i] != null) cursors [i].dispose ();
+	}
+	cursors = null;
+
 	/* Release references */
 	thread = null;
 	data = null;
