@@ -42,6 +42,7 @@ import org.eclipse.swt.events.*;
 public class CBanner extends Composite {	
 
 	Control left;
+	Control middle;
 	Control right;
 	int[] curve;
 	int curveStart;
@@ -50,6 +51,7 @@ public class CBanner extends Composite {
 	static final int CURVE_WIDTH = 50;
 	static final int CURVE_RIGHT = 30;
 	static final int CURVE_LEFT = 30;
+	static final int LEFT_MIDDLE_GAP = 8;
 	static final int BORDER_BOTTOM = 2;
 	static final int BORDER_TOP = 2;
 	static final int BORDER_LEFT = 2;
@@ -121,17 +123,20 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	if (right != null) {
 		 rightSize = right.computeSize(SWT.DEFAULT, hHint);
 	}
+	Point middleSize = new Point(0, 0);
+	if (middle != null) {
+		 middleSize = middle.computeSize(SWT.DEFAULT, hHint);
+	}
 	Point leftSize = new Point(0, 0);
 	if (left != null) {
-		if (wHint != SWT.DEFAULT) {
-			leftSize = left.computeSize(wHint - CURVE_WIDTH - rightSize.x, SWT.DEFAULT);
-		} else {
-			leftSize = left.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-		}
+		int width = wHint - rightSize.x - middleSize.x - CURVE_WIDTH/2 - BORDER_LEFT - BORDER_RIGHT;
+		if (middle != null) width -= LEFT_MIDDLE_GAP;
+		leftSize = left.computeSize((wHint != SWT.DEFAULT) ? width : SWT.DEFAULT, SWT.DEFAULT);
 	}
 	Point size = new Point(0, 0);
-	size.x = leftSize.x + CURVE_WIDTH + rightSize.x;
-	size.y = Math.max(leftSize.y + BORDER_STRIPE, rightSize.y);
+	size.x = leftSize.x + middleSize.x + CURVE_WIDTH/2 + rightSize.x;
+	if (left != null && middle != null) size.x += + LEFT_MIDDLE_GAP;
+	size.y = Math.max(Math.max(leftSize.y + BORDER_STRIPE, middleSize.y), rightSize.y);
 	
 	if (wHint != SWT.DEFAULT) size.x  = wHint;
 	if (hHint != SWT.DEFAULT) size.y = hHint;
@@ -156,6 +161,11 @@ public Control getLeft() {
 	return left;
 }
 
+public Control getMiddle() {
+	checkWidget();
+	return middle;
+}
+
 public Control getRight() {
 	checkWidget();
 	return right;
@@ -166,21 +176,31 @@ public void layout (boolean changed) {
 	Point size = getSize();
 	
 	Point rightSize = (right == null) ? new Point (0, 0) : right.computeSize(SWT.DEFAULT, SWT.DEFAULT);
-	int width = size.x - rightSize.x - CURVE_WIDTH - BORDER_LEFT - BORDER_RIGHT;
+	Point middleSize = (middle == null) ? new Point (0, 0) : middle.computeSize(SWT.DEFAULT, SWT.DEFAULT);
+	int width = size.x - rightSize.x - middleSize.x - CURVE_WIDTH/2 - BORDER_LEFT - BORDER_RIGHT;
+	if (middle != null) width -= LEFT_MIDDLE_GAP;
 	Point leftSize = (left == null) ? new Point (0, 0) : left.computeSize(width, SWT.DEFAULT);
 
 	int x = BORDER_LEFT;
 	int oldStart = curveStart;
 	Rectangle leftRect = null;
+	Rectangle middleRect = null;
 	Rectangle rightRect = null;
 	if(left != null) {
 		int height = size.y - BORDER_TOP - BORDER_BOTTOM - BORDER_STRIPE;
 		int y = (leftSize.y > height) ? BORDER_TOP : BORDER_TOP + (height - leftSize.y) / 2;
 		leftRect = new Rectangle(x, y, leftSize.x, Math.min(height, leftSize.y));
 		x += leftSize.x;
-		curveStart = x;
 	}
-	x += CURVE_WIDTH;
+	if (middle != null) {
+		if (left != null) x += LEFT_MIDDLE_GAP;
+		int height = size.y - BORDER_TOP - BORDER_BOTTOM;
+		int y = (middleSize.y > height) ? BORDER_TOP : BORDER_TOP + (height - middleSize.y) / 2;
+		middleRect = new Rectangle(x, y, middleSize.x, Math.min(size.y, middleSize.y));
+		x += middleSize.x;
+	}
+	curveStart = x - CURVE_WIDTH/4;
+	x += CURVE_WIDTH - CURVE_WIDTH/2;
 	if (right != null) {
 		int height = size.y - BORDER_TOP - BORDER_BOTTOM;
 		int y = (rightSize.y > height) ? BORDER_TOP : BORDER_TOP + (height - rightSize.y) / 2;
@@ -194,6 +214,7 @@ public void layout (boolean changed) {
 	}
 	update();
 	if (leftRect != null) left.setBounds(leftRect);
+	if (middleRect != null) middle.setBounds(middleRect);
 	if (rightRect != null) right.setBounds(rightRect);
 }
 private void onDispose() {
@@ -206,18 +227,15 @@ private void onPaint(GC gc) {
 	Point size = getSize();
 	// TODO Consider a way to not draw background
 	// under lines
-	gc.setBackground(getBackground());
+	Color background = getBackground();
+	gc.setBackground(background);
 	gc.fillRectangle(0, 0, size.x, size.y);
 	
-	int[] line1 = new int[curve.length+8];
-	int[] line2 = new int[curve.length+8];
+	int[] line1 = new int[curve.length+6];
+	int[] line2 = new int[curve.length+6];
 	int index = 0;
 	int x = curveStart;
 	int y = 0;
-	line1[index] = 0;
-	line2[index++] = 0;
-	line1[index] = size.y - BORDER_STRIPE;
-	line2[index++] = size.y - BORDER_STRIPE + 1;
 	line1[index] = x + 1;
 	line2[index++] = x + 1;
 	line1[index] = size.y - BORDER_STRIPE;
@@ -237,12 +255,19 @@ private void onPaint(GC gc) {
 	line1[index] = 0;
 	line2[index++] = 1;
 	
+	int x1 = Math.max(0, curveStart - 200);
 	Color border2 = new Color(getDisplay(), BORDER2);
+	gc.setForeground(background);
+	gc.setBackground(border2);
+	gc.fillGradientRectangle(x1, size.y - BORDER_STRIPE + 1, curveStart-x1+1, 1, false);
 	gc.setForeground(border2);
 	gc.drawPolyline(line2);
 	border2.dispose();
 	
 	Color border1 = new Color(getDisplay(), BORDER1);
+	gc.setForeground(background);
+	gc.setBackground(border1);
+	gc.fillGradientRectangle(x1, size.y - BORDER_STRIPE, curveStart-x1+1, 1, false);
 	gc.setForeground(border1);
 	gc.drawPolyline(line1);
 	border1.dispose();
@@ -281,6 +306,17 @@ public void setLeft(Control leftControl) {
 		left.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
 	}
 	left = leftControl;
+	layout();
+}
+public void setMiddle(Control middleControl) {
+	checkWidget();
+	if (middleControl != null && middleControl.getParent() != this) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (middle != null && !middle.isDisposed()) {
+		middle.setBounds(OFFSCREEN, OFFSCREEN, 0, 0);
+	}
+	middle = middleControl;
 	layout();
 }
 public void setRight(Control rightControl) {

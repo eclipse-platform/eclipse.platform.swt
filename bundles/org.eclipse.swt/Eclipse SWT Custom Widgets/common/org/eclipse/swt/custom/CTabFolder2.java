@@ -162,10 +162,10 @@ public class CTabFolder2 extends Composite {
 	static final int[] TOP_RIGHT_CORNER = new int[] {-5,0, -4,1, -3,1, -2,2, -1,3, -1,4, 0,5};
 	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-5, 1,-5, 1,-3, 2,-3, 2,-2, 3,-2, 3,-1, 5,-1, 5,0};
 	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-5,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-5};
-//	static final int[] TOP_LEFT_OUTSIDE_CORNER = new int[] {0,7, 1,7, 1,5, 2,4, 3,3, 4,2, 5,1, 7,1, 7,0};
-//	static final int[] TOP_RIGHT_OUTSIDE_CORNER = new int[] {-7,0, -7,1, -5,1, -4,2, -3,3, -2,4, -1,5, -1,7, 0,7};
-//	static final int[] BOTTOM_LEFT_OUTSIDE_CORNER = new int[] {0,-7, 1,-7, 1,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-1, 7,-1, 7,0};
-//	static final int[] BOTTOM_RIGHT_OUTSIDE_CORNER = new int[] {-7,0, -7,-1, -6,-1, -5,-2, -4,-3, -3,-4, -2,-5, -1,-6, -1,-7, 0,-7};
+	static final int[] TOP_LEFT_OUTSIDE_CORNER = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
+	static final int[] TOP_RIGHT_OUTSIDE_CORNER = new int[] {-6,0, -5,1, -4,1, -1,4, -1,5, 0,6};
+	static final int[] BOTTOM_LEFT_OUTSIDE_CORNER = new int[] {0,-6, 1,-5, 1,-4, 4,-1, 5,-1, 6,0};
+	static final int[] BOTTOM_RIGHT_OUTSIDE_CORNER = new int[] {-6,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-6};
 
 	static final int SELECTION_FOREGROUND = SWT.COLOR_TITLE_FOREGROUND;
 	static final int SELECTION_BACKGROUND = SWT.COLOR_TITLE_BACKGROUND;
@@ -613,7 +613,7 @@ void drawBorder(GC gc) {
 			shape = new int[left.length + right.length + 8];
 			int index = 0;
 			
-			shape[index++] = borderLeft;
+			shape[index++] = Math.max(0, borderLeft - 1);
 			shape[index++] = itemY + SELECTION_BORDER - 1;
 			shape[index++] = itemX;
 			shape[index++] = itemY + SELECTION_BORDER - 1;
@@ -650,7 +650,7 @@ void drawBorder(GC gc) {
 			shape = new int[left.length+right.length+8];
 			int index = 0;
 			
-			shape[index++] = borderLeft;
+			shape[index++] = Math.max(0, borderLeft - 1);
 			shape[index++] = itemY + itemH - SELECTION_BORDER;
 			shape[index++] = itemX;
 			shape[index++] = itemY + itemH - SELECTION_BORDER;
@@ -694,11 +694,58 @@ void drawBorder(GC gc) {
 		gc.drawLine(0, borderTop - 1, 0, size.y - tabHeight - borderBottom + SELECTION_BORDER - 1); // left
 		gc.drawLine(size.x - borderRight, borderTop - 1, size.x - borderRight, size.y - tabHeight - borderBottom + SELECTION_BORDER - 1); // right
 		gc.drawLine(0, borderTop - 1, size.x - borderRight, borderTop - 1); // top
+		if (single) {
+			int x = 0;
+			int y = size.y - borderBottom - tabHeight + SELECTION_BORDER;
+			int width = size.x - borderLeft - borderRight + 1;
+			int height = tabHeight - SELECTION_BORDER - 1;
+			int[] shape = new int[BOTTOM_LEFT_OUTSIDE_CORNER.length + BOTTOM_RIGHT_OUTSIDE_CORNER.length + 4];
+			int index = 0;
+			shape[index++] = x;
+			shape[index++] = y;
+			for (int i = 0; i < BOTTOM_LEFT_OUTSIDE_CORNER.length/2; i++) {
+				shape[index++] = x+BOTTOM_LEFT_OUTSIDE_CORNER[2*i];
+				shape[index++] = y+height+BOTTOM_LEFT_OUTSIDE_CORNER[2*i+1];
+			}
+			for (int i = 0; i < BOTTOM_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+				shape[index++] = x+width+BOTTOM_RIGHT_OUTSIDE_CORNER[2*i];
+				shape[index++] = y+height+BOTTOM_RIGHT_OUTSIDE_CORNER[2*i+1];
+			}
+			shape[index++] = x+width;
+			shape[index++] = y-1;
+			
+			gc.setForeground(border1Color);
+			gc.drawPolyline(shape);
+		}
 	} else {
 		gc.drawLine(borderLeft - 1, borderTop + tabHeight - SELECTION_BORDER, borderLeft - 1, size.y - borderBottom); // left
 		gc.drawLine(size.x - borderRight, borderTop + tabHeight - SELECTION_BORDER, size.x - borderRight, size.y - borderBottom); // right
 		gc.drawLine(borderLeft - 1, size.y - borderBottom, size.x - borderRight, size.y - borderBottom); //bottom
+		if (single) {
+			int x = 0;
+			int y = borderTop;
+			int width = size.x - borderLeft - borderRight + 1;
+			int height = tabHeight - SELECTION_BORDER - 1;
+			int[] shape = new int[TOP_LEFT_OUTSIDE_CORNER.length + TOP_RIGHT_OUTSIDE_CORNER.length + 4];
+			int index = 0;
+			shape[index++] = x;
+			shape[index++] = y+height;
+			for (int i = 0; i < TOP_LEFT_OUTSIDE_CORNER.length/2; i++) {
+				shape[index++] = x+TOP_LEFT_OUTSIDE_CORNER[2*i];
+				shape[index++] = y+TOP_LEFT_OUTSIDE_CORNER[2*i+1];
+			}
+			for (int i = 0; i < TOP_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+				shape[index++] = x+width+TOP_RIGHT_OUTSIDE_CORNER[2*i];
+				shape[index++] = y+TOP_RIGHT_OUTSIDE_CORNER[2*i+1];
+			}
+			shape[index++] = x+width;
+			shape[index++] = y+height+1;
+			
+			gc.setForeground(border1Color);
+			gc.drawPolyline(shape);
+		}
 	}
+	
 	if (borderRight == 1) return;
 	
 	// Draw drop shadow
@@ -747,54 +794,16 @@ void drawBorder(GC gc) {
 void drawChevron(GC gc) {
 	if (chevronRect.width == 0 || chevronRect.height == 0) return;
 	int x = chevronRect.x, y = chevronRect.y, width = chevronRect.width, height = chevronRect.height;
-//	int[] shape = null;
-//	if (onBottom) {
-//		shape = new int[BOTTOM_LEFT_CORNER.length + BOTTOM_RIGHT_CORNER.length+4];
-//		int index = 0;
-//		shape[index++] = x+2;
-//		shape[index++] = y;
-//		for (int i = 0; i < BOTTOM_LEFT_CORNER.length/2; i++) {
-//			shape[index++] = x+2+BOTTOM_LEFT_CORNER[2*i];
-//			shape[index++] = y+height+BOTTOM_LEFT_CORNER[2*i+1];
-//		}
-//		for (int i = 0; i < BOTTOM_RIGHT_CORNER.length/2; i++) {
-//			shape[index++] = x+width+BOTTOM_RIGHT_CORNER[2*i];
-//			shape[index++] = y+height+BOTTOM_RIGHT_CORNER[2*i+1];
-//		}
-//		shape[index++] = x+width;
-//		shape[index++] = y;
-//	} else {
-//		shape = new int[TOP_LEFT_CORNER.length+TOP_RIGHT_CORNER.length+4];
-//		int index = 0;
-//		shape[index++] = x+2;
-//		shape[index++] = y+height;
-//		for (int i = 0; i < TOP_LEFT_CORNER.length/2; i++) {
-//			shape[index++] = x+2+TOP_LEFT_CORNER[2*i];
-//			shape[index++] = y+TOP_LEFT_CORNER[2*i+1];
-//		}
-//		for (int i = 0; i < TOP_RIGHT_CORNER.length/2; i++) {
-//			shape[index++] = x+width+TOP_RIGHT_CORNER[2*i];
-//			shape[index++] = y+TOP_RIGHT_CORNER[2*i+1];
-//		}
-//		shape[index++] = x+width;
-//		shape[index++] = y+height;
-//	}
-//	// Shape is non-rectangular, fill in gaps with parent colours	
-//	Region r = new Region();
-//	r.add(chevronRect);
-//	r.subtract(shape);
-//	gc.setBackground(getParent().getBackground());
-//	fillRegion(gc, r);
-//	r.dispose();
-//	// draw shape
-//	drawSelectionBackground(gc, chevronRect.y, shape);
 	
-	gc.setBackground(getParent().getBackground());
-	gc.fillRectangle(chevronRect);
+	if (!single) {
+		gc.setBackground(getParent().getBackground());
+		gc.fillRectangle(chevronRect);
+	}
 	
 	// draw chevron (6x5)
 	int indent = (tabHeight - 5)/2;
-	gc.setForeground(selectionForeground);
+	Color color = single ? selectionForeground : getParent().getForeground();
+	gc.setForeground(color);
 	gc.drawLine(x+7,  y+indent,   x+9,  y+indent+2);
 	gc.drawLine(x+8,  y+indent+3, x+7,  y+indent+4);
 	gc.drawLine(x+8,  y+indent+2, x+8,  y+indent+2);
@@ -805,56 +814,16 @@ void drawChevron(GC gc) {
 void drawClose(GC gc) {
 	if (closeRect.width == 0 || closeRect.height == 0) return;
 	int x = closeRect.x, y = closeRect.y, width = closeRect.width, height = closeRect.height;
-//	int[] shape = null;
-//	if (onBottom) {
-//		shape = new int[BOTTOM_LEFT_CORNER.length+BOTTOM_RIGHT_CORNER.length+4];
-//		int index = 0;
-//		shape[index++] = x+2;
-//		shape[index++] = y;
-//		for (int i = 0; i < BOTTOM_LEFT_CORNER.length/2; i++) {
-//			shape[index++] = x+2+BOTTOM_LEFT_CORNER[2*i];
-//			shape[index++] = y+height+BOTTOM_LEFT_CORNER[2*i+1];
-//		}
-//		for (int i = 0; i < BOTTOM_RIGHT_CORNER.length/2; i++) {
-//			shape[index++] = x+width+BOTTOM_RIGHT_CORNER[2*i];
-//			shape[index++] = y+height+BOTTOM_RIGHT_CORNER[2*i+1];
-//		}
-//		shape[index++] = x+width;
-//		shape[index++] = y;
-//	} else {
-//		shape = new int[TOP_LEFT_CORNER.length+TOP_RIGHT_CORNER.length+4];
-//		int index = 0;
-//		shape[index++] = x+2;
-//		shape[index++] = y+height;
-//		for (int i = 0; i < TOP_LEFT_CORNER.length/2; i++) {
-//			shape[index++] = x+2+TOP_LEFT_CORNER[2*i];
-//			shape[index++] = y+TOP_LEFT_CORNER[2*i+1];
-//		}
-//		for (int i = 0; i < TOP_RIGHT_CORNER.length/2; i++) {
-//			shape[index++] = x+width+TOP_RIGHT_CORNER[2*i];
-//			shape[index++] = y+TOP_RIGHT_CORNER[2*i+1];
-//		}
-//		shape[index++] = x+width;
-//		shape[index++] = y+height;
-//	}
-//	
-//	// Shape is non-rectangular, fill in gaps with parent colours	
-//	Region r = new Region();
-//	r.add(closeRect);
-//	r.subtract(shape);
-//	gc.setBackground(getParent().getBackground());
-//	fillRegion(gc, r);
-//	r.dispose();
-//	
-//	// draw shape
-//	drawSelectionBackground(gc, y, shape);
 	
-	gc.setBackground(getParent().getBackground());
-	gc.fillRectangle(closeRect);
+	if (!single) {
+		gc.setBackground(getParent().getBackground());
+		gc.fillRectangle(closeRect);
+	}
 	
 	// draw X (6x5)
 	int indent = (tabHeight - 5)/2;
-	gc.setForeground(selectionForeground);
+	Color color = single ? selectionForeground : getParent().getForeground();
+	gc.setForeground(color);
 	gc.drawLine(x+6, y+indent,   x+10, y+indent+5);
 	gc.drawLine(x+7, y+indent,   x+11, y+indent+5);
 	gc.drawLine(x+6, y+indent+5, x+10, y+indent);
@@ -863,51 +832,11 @@ void drawClose(GC gc) {
 void drawExpand(GC gc) {
 	if (expandRect.width == 0 || expandRect.height == 0) return;
 	int x = expandRect.x, y = expandRect.y, width = expandRect.width, height = expandRect.height;
-//	int[] shape = null;
-//	if (onBottom) {
-//		shape = new int[BOTTOM_LEFT_CORNER.length+BOTTOM_RIGHT_CORNER.length+4];
-//		int index = 0;
-//		shape[index++] = x;
-//		shape[index++] = y;
-//		for (int i = 0; i < BOTTOM_LEFT_CORNER.length/2; i++) {
-//			shape[index++] = x+BOTTOM_LEFT_CORNER[2*i];
-//			shape[index++] = y+height+BOTTOM_LEFT_CORNER[2*i+1];
-//		}
-//		for (int i = 0; i < BOTTOM_RIGHT_CORNER.length/2; i++) {
-//			shape[index++] = x+width-2+BOTTOM_RIGHT_CORNER[2*i];
-//			shape[index++] = y+height+BOTTOM_RIGHT_CORNER[2*i+1];
-//		}
-//		shape[index++] = x+width-2;
-//		shape[index++] = y;
-//	} else {
-//		shape = new int[TOP_LEFT_CORNER.length+TOP_RIGHT_CORNER.length+4];
-//		int index = 0;
-//		shape[index++] = x;
-//		shape[index++] = y+height;
-//		for (int i = 0; i < TOP_LEFT_CORNER.length/2; i++) {
-//			shape[index++] = x+TOP_LEFT_CORNER[2*i];
-//			shape[index++] = y+TOP_LEFT_CORNER[2*i+1];
-//		}
-//		for (int i = 0; i < TOP_RIGHT_CORNER.length/2; i++) {
-//			shape[index++] = x+width-2+TOP_RIGHT_CORNER[2*i];
-//			shape[index++] = y+TOP_RIGHT_CORNER[2*i+1];
-//		}
-//		shape[index++] = x+width-2;
-//		shape[index++] = y+height;
-//	}
-//	// Shape is non-rectangular, fill in gaps with parent colours	
-//	Region r = new Region();
-//	r.add(expandRect);
-//	r.subtract(shape);
-//	gc.setBackground(getParent().getBackground());
-//	fillRegion(gc, r);
-//	r.dispose();
-//	// draw shape
-//	gc.setBackground(getBackground());
-//	gc.fillPolygon(shape);
 	
-	gc.setBackground(getParent().getBackground());
-	gc.fillRectangle(expandRect);
+	if (!single) {
+		gc.setBackground(getParent().getBackground());
+		gc.fillRectangle(expandRect);
+	}
 	
 	// draw triangle (7x4 or 4x7)
 	int indent = (tabHeight - 7)/2;
@@ -924,8 +853,9 @@ void drawExpand(GC gc) {
 	if (!expanded && !onBottom) {
 		points = new int[] {x+7,y+indent-2, x+11,y+indent+2, x+7,y+indent+6};
 	}
-	//gc.setBackground(getForeground());
-	gc.setBackground(selectionForeground);
+	
+	Color color = single ? selectionForeground : getParent().getForeground();
+	gc.setBackground(color);
 	gc.fillPolygon(points);
 }
 void drawSelectionBackground(GC gc, int y, int[] shape) {
@@ -1558,15 +1488,98 @@ void onPaint(Event event) {
 		// with the background color
 		if (selectedIndex != -1) {
 			CTabItem2 item = items[selectedIndex];
+			int[] shapeLeft = null;
+			int[] shapeRight = null;
+			if (onBottom) {
+				int x = 0;
+				int y = size.y-borderBottom-tabHeight+SELECTION_BORDER;
+				int width = item.x;
+				int height = tabHeight-SELECTION_BORDER;
+				if (borderRight > 0) height -= 1; // fill in behind border
+				shapeLeft = new int[BOTTOM_LEFT_OUTSIDE_CORNER.length+6];
+				int index = 0;
+				shapeLeft[index++] = x;
+				shapeLeft[index++] = y;
+				for (int i = 0; i < BOTTOM_LEFT_OUTSIDE_CORNER.length/2; i++) {
+					shapeLeft[index++] = x+BOTTOM_LEFT_OUTSIDE_CORNER[2*i];
+					shapeLeft[index++] = y+height+BOTTOM_LEFT_OUTSIDE_CORNER[2*i+1];
+				}
+				shapeLeft[index++] = x+width;
+				shapeLeft[index++] = y + height;
+				shapeLeft[index++] = x+width;
+				shapeLeft[index++] = y;
+				
+				x = item.x + item.width;
+				width = size.x - borderRight - x;
+				if (borderRight > 0) width += 1; // +1 overlap with border
+				shapeRight = new int[BOTTOM_RIGHT_OUTSIDE_CORNER.length+6];
+				index = 0;
+				shapeRight[index++] = x;
+				shapeRight[index++] = y;
+				shapeRight[index++] = x;
+				shapeRight[index++] = y+height;
+				for (int i = 0; i < BOTTOM_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+					shapeRight[index++] = x+width+BOTTOM_RIGHT_OUTSIDE_CORNER[2*i];
+					shapeRight[index++] = y+height+BOTTOM_RIGHT_OUTSIDE_CORNER[2*i+1];
+				}
+				shapeRight[index++] = x+width;
+				shapeRight[index++] = y;
+			} else { // tabs on top
+				int x = 0;
+				int y = borderTop;
+				int width = item.x;
+				int height = tabHeight-SELECTION_BORDER;
+				shapeLeft = new int[TOP_LEFT_OUTSIDE_CORNER.length+6];
+				int index = 0;
+				shapeLeft[index++] = x;
+				shapeLeft[index++] = y+height;
+				for (int i = 0; i < TOP_LEFT_OUTSIDE_CORNER.length/2; i++) {
+					shapeLeft[index++] = x+TOP_LEFT_OUTSIDE_CORNER[2*i];
+					shapeLeft[index++] = y+TOP_LEFT_OUTSIDE_CORNER[2*i+1];
+				}
+				shapeLeft[index++] = x+width;
+				shapeLeft[index++] = y;
+				shapeLeft[index++] = x+width;
+				shapeLeft[index++] = y+height;
+				
+				x = item.x + item.width;
+				width = size.x - borderRight - x;
+				if (borderRight > 0) width += 1; // +1 overlap with border
+				shapeRight = new int[TOP_RIGHT_OUTSIDE_CORNER.length+6];
+				index = 0;
+				shapeRight[index++] = x;
+				shapeRight[index++] = y+height;
+				shapeRight[index++] = x;
+				shapeRight[index++] = y;
+				for (int i = 0; i < TOP_RIGHT_OUTSIDE_CORNER.length/2; i++) {
+					shapeRight[index++] = x+width+TOP_RIGHT_OUTSIDE_CORNER[2*i];
+					shapeRight[index++] = y+TOP_RIGHT_OUTSIDE_CORNER[2*i+1];
+				}
+				shapeRight[index++] = x+width;
+				shapeRight[index++] = y+height;
+			}
+			// Shape is non-rectangular, fill in gaps with parent colours	
+			Region r = new Region();
 			int x = 0;
 			int y = onBottom ? size.y-borderBottom-tabHeight+SELECTION_BORDER: borderTop;
 			int width = item.x;
 			int height = tabHeight-SELECTION_BORDER;
-			gc.setBackground(background);
-			gc.fillRectangle(x, y, width, height);
+			r.add(new Rectangle(x, y, width, height));
+			r.subtract(shapeLeft);
+			gc.setBackground(getParent().getBackground());
+			fillRegion(gc, r);
+			r.subtract(r); // clear region
 			x = item.x + item.width;
 			width = size.x - borderRight - x;
-			gc.fillRectangle(x, y, width, height);
+			if (borderRight > 0) width += 1; // +1 overlap with border
+			r.add(new Rectangle(x, y, width, height));
+			r.subtract(shapeRight);
+			gc.setBackground(getParent().getBackground());
+			fillRegion(gc, r);
+			r.dispose();
+			gc.setBackground(background);
+			gc.fillPolygon(shapeLeft);
+			gc.fillPolygon(shapeRight);
 		}
 	} else {
 		// Fill in the empty space to the right of the last tab
@@ -2047,8 +2060,8 @@ boolean setItemLocation() {
 			if (item.x != oldX || item.y != oldY) changed = true;
 		}
 	} else {
-		int x = (expandRect.width == 0) ?  1 : borderLeft + expandRect.width;
-		if (borderLeft > 0) x -= 1;
+		int x = (expandRect.width == 0) ?  0 : borderLeft + expandRect.width;
+		if (expandRect.width != 0 && borderLeft > 0) x -= 1;
 		for (int i = topTabIndex - 1; i>=0; i--) { 
 			// if the first visible tab is not the first tab
 			CTabItem2 tab = items[i];
@@ -2059,8 +2072,8 @@ boolean setItemLocation() {
 			tab.y = y;
 		}
 		
-		x = (expandRect.width == 0) ? 1 : borderLeft + expandRect.width;
-		if (borderLeft > 0) x -= 1;
+		x = (expandRect.width == 0) ? 0 : borderLeft + expandRect.width;
+		if (expandRect.width != 0 && borderLeft > 0) x -= 1;
 		for (int i = topTabIndex; i < items.length; i++) {
 			// continue laying out remaining, visible items left to right 
 			CTabItem2 tab = items[i];
