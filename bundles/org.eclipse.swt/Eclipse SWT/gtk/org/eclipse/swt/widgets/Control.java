@@ -1333,6 +1333,14 @@ public void removeTraverseListener(TraverseListener listener) {
 	eventTable.unhook (SWT.Traverse, listener);
 }
 
+boolean filterKey (int keyval, int /*long*/ event) {
+	int /*long*/ imHandle = imHandle ();
+	if (imHandle != 0) {
+		return OS.gtk_im_context_filter_keypress (imHandle, event);
+	}
+	return false;
+}
+
 Menu [] findMenus (Control control) {
 	if (menu != null && this != control) return new Menu [] {menu};
 	return new Menu [0];
@@ -1801,15 +1809,17 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 
 int /*long*/ gtk_key_press_event (int /*long*/ widget, int /*long*/ event) {
 	if (!hasFocus ()) return 0;
-	int /*long*/ imHandle = imHandle ();
-	if (imHandle != 0) {
-		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 1;
-		// widget could be disposed at this point
-		if (isDisposed ()) return 0;
-	}
 	GdkEventKey gdkEvent = new GdkEventKey ();
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+	
 	if (translateMnemonic (gdkEvent.keyval, gdkEvent)) return 1;
+	// widget could be disposed at this point
+	if (isDisposed ()) return 0;
+	
+	if (filterKey (gdkEvent.keyval, event)) return 1;
+	// widget could be disposed at this point
+	if (isDisposed ()) return 0;	
+	
 	if (translateTraversal (gdkEvent)) return 1;
 	// widget could be disposed at this point
 	if (isDisposed ()) return 0;
