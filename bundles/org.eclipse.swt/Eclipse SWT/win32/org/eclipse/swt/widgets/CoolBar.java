@@ -914,7 +914,7 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
-	if (result != null || COMCTL32_MAJOR >= 6) return result;
+	if (result != null) return result;
 		
 	/*
 	* Feature in Windows.  For some reason, Windows
@@ -922,14 +922,17 @@ LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	* occupies when the size of the cool bar is larger
 	* than the space occupied by the cool bar items.
 	* The fix is to erase the cool bar background.
+	* 
+	* NOTE: On versions of Windows prior to XP, for
+	* some reason, the cool bar draws separators in
+	* WM_ERASEBKGND.  Therefore it is essential to run
+	* the cool bar window proc after the background has
+	* been erased.
+	* 
+	* On XP, this work around is unnecessary because
+	* the background is drawn using NM_CUSTOMDRAW.
 	*/
-	drawBackground (wParam);
-	
-	/*
-	* NOTE: The cool bar draws separators in WM_ERASEBKGND
-	* so it is essential to run the cool bar window proc
-	* after the background has been erased.
-	*/
+	if (COMCTL32_MAJOR < 6) drawBackground (wParam);
 	return null;
 }
 
@@ -1023,15 +1026,23 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			}
 			break;
 		case OS.NM_CUSTOMDRAW:
-			if (COMCTL32_MAJOR < 6 || background == -1) break;
-			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
-			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
-			switch (nmcd.dwDrawStage) {
-				case OS.CDDS_PREERASE:
-					return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
-				case OS.CDDS_POSTERASE :
-					drawBackground(nmcd.hdc);
-					break;
+			/*
+			* Bug in Windows.  On versions of Windows prior to XP,
+			* drawing the background color in NM_CUSTOMDRAW erases
+			* the separators.  The fix is to draw the background
+			* in WM_ERASEBKGND.
+			*/
+			if (COMCTL32_MAJOR < 6) break;
+			if (background != -1) {
+				NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
+				OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
+				switch (nmcd.dwDrawStage) {
+					case OS.CDDS_PREERASE:
+						return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
+					case OS.CDDS_POSTERASE :
+						drawBackground(nmcd.hdc);
+						break;
+				}
 			}
 			break;
 	}
