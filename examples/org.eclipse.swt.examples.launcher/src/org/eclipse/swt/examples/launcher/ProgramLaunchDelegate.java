@@ -5,10 +5,10 @@ package org.eclipse.swt.examples.launcher;
  * All Rights Reserved
  */
 
-import org.eclipse.core.runtime.IPluginDescriptor;import org.eclipse.core.runtime.IPluginRegistry;import org.eclipse.core.runtime.Platform;import org.eclipse.core.runtime.PluginVersionIdentifier;import org.eclipse.ui.IViewPart;import java.io.PrintWriter;import java.io.StringWriter;import java.lang.reflect.InvocationTargetException;import java.lang.reflect.Method;import java.util.Arrays;import java.util.Comparator;
+import org.eclipse.core.runtime.*;import org.eclipse.ui.IViewPart;import java.io.*;import java.lang.reflect.*;import java.util.*;
 
 /**
- * A launch delegate for running a standalone program embedded inside a plugin package
+ * A launch delegate for running a standalone program embedded inside a plugin package.
  */
 public class ProgramLaunchDelegate implements LaunchDelegate {
 	private String mainClassName;

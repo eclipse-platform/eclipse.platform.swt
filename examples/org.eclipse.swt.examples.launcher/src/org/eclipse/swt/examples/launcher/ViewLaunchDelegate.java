@@ -3,8 +3,8 @@ package org.eclipse.swt.examples.launcher;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-import org.eclipse.ui.IViewPart;import org.eclipse.ui.IWorkbenchPage;import org.eclipse.ui.IWorkbenchPart;import org.eclipse.ui.IWorkbenchPartSite;import java.io.PrintWriter;import java.io.StringWriter;
-/** * A launch delegate for starting an Eclipse view */
+import org.eclipse.ui.*;import java.io.*;
+/** * A launch delegate for starting an Eclipse view. */
 public class ViewLaunchDelegate implements LaunchDelegate {
 	private String pluginViewId;
 
