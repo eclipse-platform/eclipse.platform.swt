@@ -2423,11 +2423,9 @@ boolean translateTraversal (MSG msg) {
 		case OS.VK_DOWN:
 		case OS.VK_RIGHT: {
 			/*
-			* Note on WinCE SP.  There is no tab key on this platform.
-			* Focus may be modified by using the VK_UP and VK_DOWN
-			* keys but not with the VK_LEFT and VK_RIGHT keys.  The 
-			* workaround is to prevent VK_LEFT and VK_RIGHT from
-			* sending traversal events.			*/
+			* On WinCE SP there is no tab key.  Focus is assigned
+			* using only the VK_UP and VK_DOWN keys, not with VK_LEFT
+			* or VK_RIGHT.			*/
 			if (OS.IsSP) {
 				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) return false;
 			}
