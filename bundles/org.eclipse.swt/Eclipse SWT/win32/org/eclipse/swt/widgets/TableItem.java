@@ -223,6 +223,8 @@ public Rectangle getBounds (int index) {
 
 RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 	if (!getText && !getImage) return new RECT ();
+	int count = Math.max (1, parent.getColumnCount ());
+	if (0 > column || column > count - 1) return new RECT ();
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();
 	rect.top = column;
