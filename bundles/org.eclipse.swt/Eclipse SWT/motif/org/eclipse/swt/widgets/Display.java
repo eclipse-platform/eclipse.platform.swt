@@ -227,8 +227,8 @@ public class Display extends Device {
 	
 	/* Check Expose Proc */
 	Callback checkExposeCallback;
-	int checkExposeProc;
-	int exposeCount;
+	int checkExposeProc, exposeCount;
+	XExposeEvent xExposeEvent  = new XExposeEvent ();
 	
 	/* Wake */
 	Callback wakeCallback;
@@ -348,9 +348,8 @@ int caretProc (int clientData, int id) {
 	return 0;
 }
 int checkExposeProc (int display, int event, int window) {
-	XExposeEvent xEvent  = new XExposeEvent ();
-	OS.memmove (xEvent, event, XExposeEvent.sizeof);
-	if (xEvent.window == window) {
+	OS.memmove (xExposeEvent, event, XExposeEvent.sizeof);
+	if (xExposeEvent.window == window) {
 		if (xEvent.type == OS.Expose || xEvent.type == OS.GraphicsExpose) {
 			exposeCount++;
 		}
@@ -484,8 +483,8 @@ boolean filterEvent (XAnyEvent event) {
 	if (handle == 0) return false;
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return false;
-	if (!(widget instanceof Control)) return false;
-	Control control = (Control) widget;
+//	if (!(widget instanceof Control)) return false;
+//	Control control = (Control) widget;
 	
 	/* Get the unaffected character and keysym */
 	int oldState = keyEvent.state;
@@ -501,7 +500,7 @@ boolean filterEvent (XAnyEvent event) {
 	
 	/* Check for a mnemonic key */
 	if (key != 0) {
-		if (control.translateMnemonic (key, keyEvent)) return true;
+		if (widget.translateMnemonic (key, keyEvent)) return true;
 	}
 	
 	/* Check for a traversal key */
@@ -517,7 +516,7 @@ boolean filterEvent (XAnyEvent event) {
 		case OS.XK_Right:
 		case OS.XK_Page_Up:
 		case OS.XK_Page_Down:
-			if (control.translateTraversal (keysym, keyEvent)) return true;
+			if (widget.translateTraversal (keysym, keyEvent)) return true;
 	}
 
 	/* Answer false because the event was not processed */
