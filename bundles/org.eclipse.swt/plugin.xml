@@ -3,12 +3,13 @@
 <plugin
    id="org.eclipse.swt"
    name="SWT"
-   version="0.9"
+   version="2.0"
    provider-name="Object Technology International, Inc.">
 
 <!-- Runtime -->
+<!-- Runtime -->
 <runtime>
-   <library name="swt.jar">
+   <library name="$ws$/swt.jar">
       <export name="*"/>
    </library>
 </runtime>

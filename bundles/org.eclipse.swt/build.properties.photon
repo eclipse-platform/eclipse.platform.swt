@@ -1,5 +1,0 @@
-build.vaj.Eclipse\ SWT=Eclipse SWT/common,Eclipse SWT/emulated,Eclipse SWT/photon
-build.vaj.Eclipse\ SWT\ Drag\ and\ Drop=Eclipse SWT Drag and Drop/common,Eclipse SWT Drag and Drop/photon
-build.vaj.Eclipse\ SWT\ Printing=Eclipse SWT Printing/common,Eclipse SWT Printing/photon
-build.vaj.Eclipse\ SWT\ Program=Eclipse SWT Program/common,Eclipse SWT Program/photon
-build.includes=ws/photon

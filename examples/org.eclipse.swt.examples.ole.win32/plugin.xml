@@ -3,7 +3,7 @@
 <plugin
    id="org.eclipse.swt.examples.ole.win32"
    name="%plugin.SWTOLEExample.name"
-   version="0.9"
+   version="2.0"
    provider-name="Object Technology International, Inc."
    class="org.eclipse.swt.examples.ole.win32.OlePlugin">
 <!-- Required plugins -->
@@ -15,20 +15,21 @@
 </requires>
 
 <!-- Runtime -->
+<!-- Runtime -->
 <runtime>
    <library name="olewin32.jar"/>
 </runtime>
 
-<!-- Extension points -->
 <!-- Extensions -->
+<!-- Extension points -->
 <extension
       point="org.eclipse.ui.views">
    <view
          name="%view.OLEWebBrowserExample.name"
+         icon="icons/webbrowser_example.gif"
          category="org.eclipse.swt.examples.category"
          class="org.eclipse.swt.examples.ole.win32.OleBrowserView"
-         id="org.eclipse.swt.examples.ole.win32.browserView"
-         icon="icons/webbrowser_example.gif">
+         id="org.eclipse.swt.examples.ole.win32.browserView">
    </view>
 </extension>
 <extension
@@ -40,14 +41,16 @@
    </category>
    <item
          name="%launchitem.OLEWebBrowserExample.name"
+         icon="icons/webbrowser_example.gif"
          description="%launchitem.OLEWebBrowserExample.description"
          category="org.eclipse.swt.examples.launchWin32OnlyCategory"
-         id="org.eclipse.swt.examples.ole.win32.viewlauncher"
-         icon="icons/webbrowser_example.gif">
+         id="org.eclipse.swt.examples.ole.win32.viewlauncher">
       <view
-         viewId="org.eclipse.swt.examples.ole.win32.browserView"/>
+            viewId="org.eclipse.swt.examples.ole.win32.browserView">
+      </view>
       <source
-         zip="olewin32src.zip"/>
+            zip="olewin32src.zip">
+      </source>
    </item>
 </extension>
 </plugin>

@@ -3,7 +3,7 @@
 <plugin
    id="org.eclipse.swt.examples"
    name="%plugin.SWTStandaloneExampleSet.name"
-   version="0.9"
+   version="2.0"
    provider-name="Object Technology International, Inc."
    class="">
 <!-- Required plugins -->

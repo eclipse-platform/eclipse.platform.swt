@@ -3,7 +3,7 @@
 <plugin
    id="org.eclipse.swt.examples.paint"
    name="%plugin.SWTPaintExample.name"
-   version="0.9"
+   version="2.0"
    provider-name="Object Technology International, Inc."
    class="org.eclipse.swt.examples.paint.PaintPlugin">
 <!-- Required plugins -->
@@ -15,20 +15,21 @@
 </requires>
 
 <!-- Runtime -->
+<!-- Runtime -->
 <runtime>
    <library name="paint.jar"/>
 </runtime>
 
-<!-- Extension points -->
 <!-- Extensions -->
+<!-- Extension points -->
 <extension
       point="org.eclipse.ui.views">
    <view
          name="%view.PaintExample.name"
+         icon="icons/paint_example.gif"
          category="org.eclipse.swt.examples.category"
          class="org.eclipse.swt.examples.paint.PaintView"
-         id="org.eclipse.swt.examples.paint.view"
-         icon="icons/paint_example.gif">
+         id="org.eclipse.swt.examples.paint.view">
    </view>
 </extension>
 <extension
@@ -40,14 +41,16 @@
    </category>
    <item
          name="%launchitem.PaintExample.name"
+         icon="icons/paint_example.gif"
          description="%launchitem.PaintExample.description"
          category="org.eclipse.swt.examples.launchViewCategory"
-         icon="icons/paint_example.gif"
          id="org.eclipse.swt.examples.paint.viewlauncher">
       <view
-         viewId="org.eclipse.swt.examples.paint.view"/>
+            viewId="org.eclipse.swt.examples.paint.view">
+      </view>
       <source
-         zip="paintsrc.zip"/>
+            zip="paintsrc.zip">
+      </source>
    </item>
 </extension>
 </plugin>
