@@ -28,6 +28,11 @@ public class BidiText {
 
 /*
  * Not implemented.
+ */
+public static void addLanguageListener(int hwnd, Runnable runnable) {
+} 
+/*
+ * Not implemented.
  *
  * gc, renderBuffer, x, y & renderDx are input parameters
  */
@@ -49,6 +54,11 @@ public static byte[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 public static int getKeyboardLanguage() {
 	return 0;
 }
+/*
+ * Not implemented.
+ */
+public static void removeLanguageListener(int hwnd) {
+} 
 /*
  * Not implemented.
  */
