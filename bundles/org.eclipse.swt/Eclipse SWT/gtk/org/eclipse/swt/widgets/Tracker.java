@@ -381,7 +381,7 @@ public boolean open () {
 				}
 				// fall through
 			case OS.GDK_BUTTON_RELEASE:
-				OS.gdk_window_get_pointer (window, newX,newY, null);
+				OS.gdk_window_get_pointer (window, newX, newY, null);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					Rectangle [] oldRectangles = rectangles;
 					Rectangle [] rectsToErase = new Rectangle [rectangles.length];
@@ -390,8 +390,14 @@ public boolean open () {
 						rectsToErase [i] = new Rectangle (current.x, current.y, current.width, current.height);
 					}
 					Event event = new Event ();
-					event.x = newX [0];
-					event.y = newY [0];
+					if (parent == null) {
+						event.x = newX [0];
+						event.y = newY [0];
+					} else {
+						Point screenCoord = display.map (parent, null, newX [0], newY [0]);
+						event.x = screenCoord.x;
+						event.y = screenCoord.y;
+					}
 					if ((style & SWT.RESIZE) != 0) {
 						resizeRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Resize, event);
