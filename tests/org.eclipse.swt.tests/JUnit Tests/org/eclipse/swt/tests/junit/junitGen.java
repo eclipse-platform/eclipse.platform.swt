@@ -332,7 +332,8 @@ public class junitGen {
 		
 		void writeConstructor() throws IOException {
 			String name = getClassName(clazz);
-			writer.write(				"public " + name + "(String name) {" + lineSep +
+			writer.write(
+				"public " + name + "(String name) {" + lineSep +
 				"	super(name);" + lineSep +
 				"}"
 			);
