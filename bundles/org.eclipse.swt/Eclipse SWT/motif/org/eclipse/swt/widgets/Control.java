@@ -725,8 +725,7 @@ int getFontAscent (int font) {
 		if (buffer [0] == 0) { 
 			/* FontList contains a single font */
 			OS.memmove (fontStruct, fontPtr, XFontStruct.sizeof);
-			int fontAscent = Math.max (fontStruct.ascent, fontStruct.max_bounds_ascent);
-			if (fontAscent > ascent) ascent = fontAscent;
+			if (fontStruct.ascent > ascent) ascent = fontStruct.ascent;
 		} else {
 			/* FontList contains a fontSet */
 			int nFonts = OS.XFontsOfFontSet (fontPtr, fontStructPtr, fontNamePtr);
@@ -736,8 +735,7 @@ int getFontAscent (int font) {
 			/* Go through each fontStruct in the font set */
 			for (int i=0; i<nFonts; i++) { 
 				OS.memmove (fontStruct, fontStructs[i], XFontStruct.sizeof);
-				int fontAscent = Math.max (fontStruct.ascent, fontStruct.max_bounds_ascent);
-				if (fontAscent > ascent) ascent = fontAscent;
+				if (fontStruct.ascent > ascent) ascent = fontStruct.ascent;
 			}
 		}
 	}
@@ -768,9 +766,7 @@ int getFontHeight () {
 		if (buffer [0] == 0) { 
 			/* FontList contains a single font */
 			OS.memmove (fontStruct, fontPtr, XFontStruct.sizeof);
-			int fontAscent = Math.max (fontStruct.ascent, fontStruct.max_bounds_ascent);
-			int fontDescent = Math.max (fontStruct.descent, fontStruct.max_bounds_descent);
-			int fontHeight = fontAscent + fontDescent;
+			int fontHeight = fontStruct.ascent + fontStruct.descent;
 			if (fontHeight > height) height = fontHeight;
 		} else {
 			/* FontList contains a fontSet */
@@ -781,9 +777,7 @@ int getFontHeight () {
 			/* Go through each fontStruct in the font set */
 			for (int i=0; i<nFonts; i++) { 
 				OS.memmove (fontStruct, fontStructs[i], XFontStruct.sizeof);
-				int fontAscent = Math.max (fontStruct.ascent, fontStruct.max_bounds_ascent);
-				int fontDescent = Math.max (fontStruct.descent, fontStruct.max_bounds_descent);
-				int fontHeight = fontAscent + fontDescent;
+				int fontHeight = fontStruct.ascent + fontStruct.descent;
 				if (fontHeight > height) height = fontHeight;
 			}
 		}

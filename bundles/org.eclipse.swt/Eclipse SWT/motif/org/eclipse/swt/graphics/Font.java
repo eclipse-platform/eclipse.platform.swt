@@ -426,6 +426,7 @@ void init (Device device, FontData[] fds) {
 	if (device.setDPI) dpi = device.getDPI();
 	StringBuffer stringBuffer = new StringBuffer();
 	for (int i = 0; i < fds.length; i++) {
+		if (i != 0) stringBuffer.append(',');
 		FontData fd = fds[i];
 		int hRes = fd.horizontalResolution, vRes = fd.verticalResolution;
 		if (dpi != null) {

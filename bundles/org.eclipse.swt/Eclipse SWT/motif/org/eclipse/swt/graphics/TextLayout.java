@@ -388,7 +388,7 @@ int getFontHeigth(Font font) {
 		int fontPtr = OS.XmFontListEntryGetFont (fontListEntry, buffer);
 		if (buffer [0] == 0) {
 			OS.memmove (fontStruct, fontPtr, XFontStruct.sizeof);
-			int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+			int fontHeight = fontStruct.ascent + fontStruct.descent;
 			height = Math.max(height, fontHeight);
 		} else {
 			int nFonts = OS.XFontsOfFontSet (fontPtr, fontStructPtr, fontNamePtr);
@@ -396,7 +396,7 @@ int getFontHeigth(Font font) {
 			OS.memmove (fontStructs, fontStructPtr [0], nFonts * 4);
 			for (int i=0; i<nFonts; i++) {
 				OS.memmove (fontStruct, fontStructs[i], XFontStruct.sizeof);
-				int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+				int fontHeight = fontStruct.ascent + fontStruct.descent;
 				height = Math.max(height, fontHeight);
 			}
 		}

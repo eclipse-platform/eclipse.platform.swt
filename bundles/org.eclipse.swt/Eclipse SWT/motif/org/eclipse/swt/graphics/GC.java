@@ -1908,7 +1908,7 @@ int getFontHeight () {
 		if (buffer [0] == 0) {
 			/* FontList contains a single font */
 			OS.memmove (fontStruct, fontPtr, XFontStruct.sizeof);
-			int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+			int fontHeight = fontStruct.ascent + fontStruct.descent;
 			height = Math.max(height, fontHeight);
 		} else {
 			/* FontList contains a fontSet */
@@ -1919,7 +1919,7 @@ int getFontHeight () {
 			/* Go through each fontStruct in the font set */
 			for (int i=0; i<nFonts; i++) {
 				OS.memmove (fontStruct, fontStructs[i], XFontStruct.sizeof);
-				int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+				int fontHeight = fontStruct.ascent + fontStruct.descent;
 				height = Math.max(height, fontHeight);
 			}
 		}
@@ -1967,9 +1967,9 @@ public FontMetrics getFontMetrics() {
 		if (buffer[0] == 0) {
 			/* FontList contains a single font */
 			OS.memmove(fontStruct, fontPtr, XFontStruct.sizeof);
-			ascent = Math.max(ascent, fontStruct.max_bounds_ascent);
-			descent = Math.max(descent, fontStruct.max_bounds_descent);
-			int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+			ascent = Math.max(ascent, fontStruct.ascent);
+			descent = Math.max(descent, fontStruct.descent);
+			int fontHeight = fontStruct.ascent + fontStruct.descent;
 			height = Math.max(height, fontHeight);
 			/* Calculate average character width */
 			int propPtr = fontStruct.properties;
@@ -2036,9 +2036,9 @@ public FontMetrics getFontMetrics() {
 			/* Go through each fontStruct in the font set */
 			for (int i = 0; i < nFonts; i++) {
 				OS.memmove(fontStruct, fontStructs[i], XFontStruct.sizeof);
-				ascent = Math.max(ascent, fontStruct.max_bounds_ascent);
-				descent = Math.max(descent, fontStruct.max_bounds_descent);
-				int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+				ascent = Math.max(ascent, fontStruct.ascent);
+				descent = Math.max(descent, fontStruct.descent);
+				int fontHeight = fontStruct.ascent + fontStruct.descent;
 				height = Math.max(height, fontHeight);
 				/* Calculate average character width */
 				int propPtr = fontStruct.properties;
