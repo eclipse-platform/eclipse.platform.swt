@@ -2665,7 +2665,7 @@ public void setSelection (TreeItem[] items) {
 	selectedItems = new TreeItem [items.length];	/* initially assume all valid items */
 	for (int i = 0; i < items.length; i++) {
 		TreeItem item = items [i];
-		if (item != null && !item.isSelected ()) {
+		if (item != null && item.parent == this && !item.isSelected ()) {
 			selectedItems [index++] = item;
 		}
 	}
