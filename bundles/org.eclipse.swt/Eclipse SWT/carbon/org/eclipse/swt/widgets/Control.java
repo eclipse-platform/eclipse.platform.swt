@@ -546,7 +546,14 @@ public void internal_dispose_GC (int context, GCData data) {
 			data.visibleRgn = 0;
 		}
 	}
-	OS.CGContextFlush (context);
+	
+	/*
+	* This code is intentionaly commented. Use CGContextSynchronize
+	* instead of CGContextFlush to improve performance.
+	*/
+//	OS.CGContextFlush (context);
+	OS.CGContextSynchronize(context);
+	
 	OS.CGContextRelease (context);
 }
 
@@ -940,6 +947,7 @@ public void setBackground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	background = color != null ? color.handle : null;
+	setFontStyle (font);
 	redrawWidget (handle, false);
 }
 
@@ -1061,6 +1069,7 @@ public void setFont (Font font) {
 	}
 	this.font = font;
 	setFontStyle (font);
+	redrawWidget (handle, false);
 }
 
 void setFontStyle (Font font) {
@@ -1074,6 +1083,28 @@ void setFontStyle (Font font) {
 		fontStyle.flags |= OS.kControlUseThemeFontIDMask;
 		fontStyle.font = (short) defaultThemeFont ();
 	}
+	if (background != null) {
+		int red = (short) (background [0] * 255);
+		int green = (short) (background [1] * 255);
+		int blue = (short) (background [2] * 255);
+		fontStyle.backColor_red = (short) (red << 8 | red);
+		fontStyle.backColor_green = (short) (green << 8 | green);
+		fontStyle.backColor_blue = (short) (blue << 8 | blue);
+		fontStyle.flags |= OS.kControlUseBackColorMask;
+	} else {
+		fontStyle.flags &= ~OS.kControlUseBackColorMask;
+	}
+	if (foreground != null) {
+		int red = (short) (foreground [0] * 255);
+		int green = (short) (foreground [1] * 255);
+		int blue = (short) (foreground [2] * 255);
+		fontStyle.foreColor_red = (short) (red << 8 | red);
+		fontStyle.foreColor_green = (short) (green << 8 | green);
+		fontStyle.foreColor_blue = (short) (blue << 8 | blue);
+		fontStyle.flags |= OS.kControlUseForeColorMask;
+	} else {
+		fontStyle.flags &= ~OS.kControlUseForeColorMask;
+	}
 	OS.SetControlFontStyle (handle, fontStyle);
 }
 
@@ -1083,6 +1114,7 @@ public void setForeground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	foreground = color != null ? color.handle : null;
+	setFontStyle (font);
 	redrawWidget (handle, false);
 }
 

@@ -134,7 +134,9 @@ public class OS {
 	public static final int kControlUserPaneHitTestProcTag = ('h'<<24) + ('i'<<16) + ('t'<<8) + 't';
 	public static final int kControlUserPaneProc = 256;
 	public static final int kControlUserPaneTrackingProcTag = ('t'<<24) + ('r'<<16) + ('a'<<8) + 'k';
+	public static final int kControlUseBackColorMask = 16;
 	public static final int kControlUseFontMask = 0x1;
+	public static final int kControlUseForeColorMask = 8;
 	public static final int kControlUseSizeMask = 0x4;
 	public static final int kControlUseThemeFontIDMask = 0x80;
 	public static final int kControlUseFaceMask = 0x2;
