@@ -1007,6 +1007,7 @@ public static final native void memmove(int dest, byte[] src, int count);
 public static final native void memmove(int dest, char[] src, int count);
 public static final native void memmove(int dest, int[] src, int count);
 public static final native void memmove(Visual dest, int src, int count);
+public static final native void memmove(XAnyEvent dest, int src, int count);
 public static final native void memmove(XButtonEvent dest, int src, int count);
 public static final native void memmove(int dest, XButtonEvent src, int count);
 public static final native void memmove(XCharStruct dest, int src, int count);

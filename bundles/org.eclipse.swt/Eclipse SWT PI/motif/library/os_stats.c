@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 435;
-int OS_nativeFunctionCallCount[435];
+int OS_nativeFunctionCount = 436;
+int OS_nativeFunctionCallCount[436];
 char * OS_nativeFunctionNames[] = {
 	"CODESET", 
 	"Call", 
@@ -411,6 +411,7 @@ char * OS_nativeFunctionNames[] = {
 	"memmove__I_3II", 
 	"memmove__I_3SI", 
 	"memmove__Lorg_eclipse_swt_internal_motif_Visual_2II", 
+	"memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II", 
 	"memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II", 
 	"memmove__Lorg_eclipse_swt_internal_motif_XCharStruct_2II", 
 	"memmove__Lorg_eclipse_swt_internal_motif_XClientMessageEvent_2II", 

@@ -415,6 +415,7 @@ typedef enum {
 	memmove__I_3II_FUNC,
 	memmove__I_3SI_FUNC,
 	memmove__Lorg_eclipse_swt_internal_motif_Visual_2II_FUNC,
+	memmove__Lorg_eclipse_swt_internal_motif_XAnyEvent_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_motif_XButtonEvent_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_motif_XCharStruct_2II_FUNC,
 	memmove__Lorg_eclipse_swt_internal_motif_XClientMessageEvent_2II_FUNC,
