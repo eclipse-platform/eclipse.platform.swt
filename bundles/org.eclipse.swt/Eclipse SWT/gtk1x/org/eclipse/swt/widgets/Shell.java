@@ -470,9 +470,10 @@ boolean _setSize(int width, int height) {
 	return true;
 }
 
-// Unreliable FIXME
 boolean _setLocation (int x, int y) {
-	OS.gtk_widget_set_uposition (topHandle, x, y);
+	GtkWidget gtkWidget = new GtkWidget();
+	OS.memmove(gtkWidget, topHandle, GtkWidget.sizeof);
+	OS.gdk_window_move(gtkWidget.window, x, y);
 	return true;
 }
 
