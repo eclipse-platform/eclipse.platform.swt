@@ -718,104 +718,109 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 	if ((state & CANVAS) == 0) {
 		return super.WM_PAINT (wParam, lParam);
 	}
-	
-	/*
-	* This code is intentionally commented.  Don't exit
-	* early because the background must still be painted,
-	* even though no application code will be painting
-	* the widget.
-	*
-	* Do not uncomment this code.
-	*/
-//	if (!hooks (SWT.Paint)) return null;
-
-	/* Get the damage */
-	int [] lpRgnData = null;
-	boolean isComplex = false;
-	boolean exposeRegion = false;
-	if ((style & SWT.NO_MERGE_PAINTS) != 0) {
-		int rgn = OS.CreateRectRgn (0, 0, 0, 0);
-		isComplex = OS.GetUpdateRgn (handle, rgn, false) == OS.COMPLEXREGION;
-		if (isComplex) {
-			int nBytes = OS.GetRegionData (rgn, 0, null);
-			lpRgnData = new int [nBytes / 4];
-			exposeRegion = OS.GetRegionData (rgn, nBytes, lpRgnData) != 0;
-		}
-		OS.DeleteObject (rgn);
-	}
 
 	/* Set the clipping bits */
-	int oldBits = 0;
+	int oldBits = 0, newBits = 0;
 	if (!OS.IsWinCE) {
 		oldBits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		int newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;	
-		OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
+		newBits = oldBits | OS.WS_CLIPSIBLINGS | OS.WS_CLIPCHILDREN;	
+		if (newBits != oldBits) OS.SetWindowLong (handle, OS.GWL_STYLE, newBits);
 	}
 
-	/* Create the paint GC */
+	/* Paint the control and the background */
 	PAINTSTRUCT ps = new PAINTSTRUCT ();
-	GCData data = new GCData ();
-	data.ps = ps;
-	GC gc = GC.win32_new (this, data);
-	int hDC = gc.handle;
+	if (hooks (SWT.Paint)) {
+		
+		/* Get the damage */
+		int [] lpRgnData = null;
+		boolean isComplex = false;
+		boolean exposeRegion = false;
+		if ((style & SWT.NO_MERGE_PAINTS) != 0) {
+			int rgn = OS.CreateRectRgn (0, 0, 0, 0);
+			isComplex = OS.GetUpdateRgn (handle, rgn, false) == OS.COMPLEXREGION;
+			if (isComplex) {
+				int nBytes = OS.GetRegionData (rgn, 0, null);
+				lpRgnData = new int [nBytes / 4];
+				exposeRegion = OS.GetRegionData (rgn, nBytes, lpRgnData) != 0;
+			}
+			OS.DeleteObject (rgn);
+		}
 	
-	/* Send the paint event */
-	Event event = new Event ();
-	event.gc = gc;
-	if (isComplex && exposeRegion) {
-		RECT rect = new RECT ();
-		int count = lpRgnData [2];
-		for (int i=0; i<count; i++) {
-			OS.SetRect (rect,
-				lpRgnData [8 + (i << 2)],
-				lpRgnData [8 + (i << 2) + 1],
-				lpRgnData [8 + (i << 2) + 2],
-				lpRgnData [8 + (i << 2) + 3]);
+		/* Create the paint GC */
+		GCData data = new GCData ();
+		data.ps = ps;
+		GC gc = GC.win32_new (this, data);
+		int hDC = gc.handle;
+		
+		/* Send the paint event */
+		Event event = new Event ();
+		event.gc = gc;
+		if (isComplex && exposeRegion) {
+			RECT rect = new RECT ();
+			int count = lpRgnData [2];
+			for (int i=0; i<count; i++) {
+				OS.SetRect (rect,
+					lpRgnData [8 + (i << 2)],
+					lpRgnData [8 + (i << 2) + 1],
+					lpRgnData [8 + (i << 2) + 2],
+					lpRgnData [8 + (i << 2) + 3]);
+				if ((style & SWT.NO_BACKGROUND) == 0) {
+					drawBackground (hDC, rect);
+				}
+				event.x = rect.left;
+				event.y = rect.top;
+				event.width = rect.right - rect.left;
+				event.height = rect.bottom - rect.top;
+				event.count = count - 1 - i;
+				/*
+				* It is possible (but unlikely), that application
+				* code could have disposed the widget in the paint
+				* event.  If this happens, attempt to give back the
+				* paint GC anyways because this is a scarce Windows
+				* resource.
+				*/
+				sendEvent (SWT.Paint, event);
+				if (isDisposed ()) break;
+			}
+		} else {
 			if ((style & SWT.NO_BACKGROUND) == 0) {
+				RECT rect = new RECT ();
+				OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 				drawBackground (hDC, rect);
 			}
-			event.x = rect.left;
-			event.y = rect.top;
-			event.width = rect.right - rect.left;
-			event.height = rect.bottom - rect.top;
-			event.count = count - 1 - i;
-			/*
-			* It is possible (but unlikely), that application
-			* code could have disposed the widget in the paint
-			* event.  If this happens, attempt to give back the
-			* paint GC anyways because this is a scarce Windows
-			* resource.
-			*/
+			event.x = ps.left;
+			event.y = ps.top;
+			event.width = ps.right - ps.left;
+			event.height = ps.bottom - ps.top;
 			sendEvent (SWT.Paint, event);
-			if (isDisposed ()) break;
 		}
+		// widget could be disposed at this point
+	
+		/* Dispose the paint GC */
+		event.gc = null;
+		gc.dispose ();
 	} else {
+		int hDC = OS.BeginPaint (handle, ps);
 		if ((style & SWT.NO_BACKGROUND) == 0) {
 			RECT rect = new RECT ();
 			OS.SetRect (rect, ps.left, ps.top, ps.right, ps.bottom);
 			drawBackground (hDC, rect);
 		}
-		event.x = ps.left;
-		event.y = ps.top;
-		event.width = ps.right - ps.left;
-		event.height = ps.bottom - ps.top;
-		sendEvent (SWT.Paint, event);
+		OS.EndPaint (handle, ps);
 	}
-	// widget could be disposed at this point
 
-	/* Dispose the paint GC */
-	event.gc = null;
-	gc.dispose ();
-
+	/* Restore the clipping bits */
 	if (!OS.IsWinCE) { 
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the paint
-		* event.  If this happens, don't attempt to restore
-		* the style.
-		*/
-		if (!isDisposed ()) {
-			OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+		if (newBits != oldBits) {
+			/*
+			* It is possible (but unlikely), that application
+			* code could have disposed the widget in the paint
+			* event.  If this happens, don't attempt to restore
+			* the style.
+			*/
+			if (!isDisposed ()) {
+				OS.SetWindowLong (handle, OS.GWL_STYLE, oldBits);
+			}
 		}
 	}
 	return LRESULT.ZERO;
