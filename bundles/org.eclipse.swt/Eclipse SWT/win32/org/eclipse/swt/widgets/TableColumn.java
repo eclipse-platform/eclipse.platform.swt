@@ -291,8 +291,8 @@ public void pack () {
 			* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
 			* with LVM_SETCOLUMNWIDTH to resize the last column, the last
 			* column is expanded to fill the client area.  The fix is to
-			* insert and remove a temporary column last column for the
-			* duration of LVM_SETCOLUMNWIDTH.
+			* insert and remove a temporary last column for the duration
+			* of LVM_SETCOLUMNWIDTH.
 			*/
 			boolean fixWidth = index == parent.getColumnCount () - 1;
 			if (fixWidth) {
@@ -324,8 +324,8 @@ public void pack () {
 				* Feature in Windows.  When LVSCW_AUTOSIZE_USEHEADER is used
 				* with LVM_SETCOLUMNWIDTH to resize the last column, the last
 				* column is expanded to fill the client area.  The fix is to
-				* insert and remove a temporary column last column for the
-				* duration of LVM_SETCOLUMNWIDTH.
+				* insert and remove a temporary last column for the duration
+				* of LVM_SETCOLUMNWIDTH.
 				*/
 				boolean fixWidth = index == parent.getColumnCount () - 1;
 				if (fixWidth) {
