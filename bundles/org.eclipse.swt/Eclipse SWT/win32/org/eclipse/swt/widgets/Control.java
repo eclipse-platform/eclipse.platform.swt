@@ -3001,6 +3001,7 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_CHAR, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
+	// widget could be disposed at this point
 	return null;
 }
 
@@ -3167,11 +3168,15 @@ LRESULT WM_HSCROLL (int wParam, int lParam) {
 }
 
 LRESULT WM_IME_CHAR (int wParam, int lParam) {
+	Display display = this.display;
 	display.lastKey = 0;
 	display.lastAscii = wParam;
 	display.lastVirtual = display.lastNull = false;
-	sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam);
+	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
+		return LRESULT.ZERO;
+	}
 	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
+	// widget could be disposed at this point
 	display.lastKey = display.lastAscii = 0;
 	return LRESULT.ZERO;
 }
@@ -3418,10 +3423,12 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_KEYDOWN, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
+	// widget could be disposed at this point
 	return null;
 }
 
 LRESULT WM_KEYUP (int wParam, int lParam) {
+	Display display = this.display;
 	
 	/* Check for hardware keys */
 	if (OS.IsWinCE) {
@@ -3433,6 +3440,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 			/* Check the bit 30 to get the key state */
 			int type = (lParam & 0x40000000) != 0 ? SWT.HardKeyUp : SWT.HardKeyDown;
 			if (setInputState (event, type)) sendEvent (type, event);
+			// widget could be disposed at this point
 			return null;
 		}
 	}
@@ -3514,6 +3522,7 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 	if (!sendKeyEvent (SWT.KeyUp, OS.WM_KEYUP, wParam, lParam)) {
 		result = LRESULT.ZERO;
 	}
+	// widget could be disposed at this point
 	display.lastKey = display.lastAscii = 0;
 	display.lastVirtual = display.lastNull = false;
 	return result;
@@ -4080,6 +4089,7 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT WM_SYSCHAR (int wParam, int lParam) {
+	Display display = this.display;
 	display.lastAscii = wParam;
 	display.lastNull = false;
 
@@ -4092,6 +4102,7 @@ LRESULT WM_SYSCHAR (int wParam, int lParam) {
 	if (!display.mnemonicKeyHit) {
 		sendKeyEvent (SWT.KeyDown, OS.WM_SYSCHAR, wParam, lParam);
 	}
+	// widget could be disposed at this point
 	display.mnemonicKeyHit = false;
 	return new LRESULT (result);
 }
@@ -4302,6 +4313,7 @@ LRESULT WM_SYSKEYDOWN (int wParam, int lParam) {
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_SYSKEYDOWN, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
+	// widget could be disposed at this point
 	return null;
 }
 

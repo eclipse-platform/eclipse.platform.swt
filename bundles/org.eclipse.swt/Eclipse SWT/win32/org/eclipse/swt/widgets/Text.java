@@ -1756,14 +1756,13 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 LRESULT WM_IME_CHAR (int wParam, int lParam) {
 
 	/* Process a DBCS character */
+	Display display = this.display;
 	display.lastKey = 0;
 	display.lastAscii = wParam;
 	display.lastVirtual = display.lastNull = false;
 	if (!sendKeyEvent (SWT.KeyDown, OS.WM_IME_CHAR, wParam, lParam)) {
 		return LRESULT.ZERO;
 	}
-	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
-	display.lastKey = display.lastAscii = 0;
 
 	/*
 	* Feature in Windows.  The Windows text widget uses
@@ -1780,6 +1779,10 @@ LRESULT WM_IME_CHAR (int wParam, int lParam) {
 		OS.DispatchMessage (msg);
 	}
 	ignoreCharacter = false;
+	
+	sendKeyEvent (SWT.KeyUp, OS.WM_IME_CHAR, wParam, lParam);
+	// widget could be disposed at this point
+	display.lastKey = display.lastAscii = 0;
 	return new LRESULT (result);
 }
 
