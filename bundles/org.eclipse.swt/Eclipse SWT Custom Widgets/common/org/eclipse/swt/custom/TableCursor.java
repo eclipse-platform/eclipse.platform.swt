@@ -554,6 +554,34 @@ public void setVisible(boolean visible) {
 	super.setVisible(visible);
 }
 
+/**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the receiver's selection changes.
+ *
+ * @param listener the listener which should no longer be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener(SelectionListener)
+ * 
+ * @since 3.0
+ */
+public void removeSelectionListener(SelectionListener listener) {
+	checkWidget();
+	if (listener == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
+	removeListener(SWT.Selection, listener);
+	removeListener(SWT.DefaultSelection, listener);	
+}
+
 void resize() {
 	if (row == -1) {
 		setBounds(-200, -200, 0, 0);
