@@ -230,7 +230,7 @@ void createHandle (int index) {
 
 void createItem (TreeItem item, int iter, int index) {
 	int count = OS.gtk_tree_model_iter_n_children (modelHandle, iter);
-	if (index != -1) index = count;
+	if (index == -1) index = count;
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	int id = 0;
 	while (id < items.length && items [id] != null) id++;

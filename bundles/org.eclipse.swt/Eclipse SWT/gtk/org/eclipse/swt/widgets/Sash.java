@@ -36,7 +36,7 @@ import org.eclipse.swt.events.*;
 public class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
-	int cursor;
+	int defaultCursor;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -130,9 +130,9 @@ void createHandle (int index) {
 	OS.gtk_container_add (parentHandle, handle);
 	OS.gtk_widget_show (handle);
 	int type = (style & SWT.VERTICAL) != 0 ? OS.GDK_SB_H_DOUBLE_ARROW : OS.GDK_SB_V_DOUBLE_ARROW;
-	cursor = OS.gdk_cursor_new (type);
+	defaultCursor = OS.gdk_cursor_new (type);
 	int window = OS.GTK_WIDGET_WINDOW (handle);
-	if (window != 0) OS.gdk_window_set_cursor (window, cursor);
+	if (window != 0) OS.gdk_window_set_cursor (window, defaultCursor);
 }
 
 void drawBand (int x, int y, int width, int height) {
@@ -251,23 +251,22 @@ int gtk_motion_notify_event (int widget, int eventPtr) {
 	if (isDisposed ()) return 0;
 	if (event.doit) {
 		lastX = event.x;  lastY = event.y;
-//		OS.XmUpdateDisplay (handle);
 		drawBand (lastX, lastY, width, height);
 	}
 	return result;
 }
 
 int gtk_realize (int widget) {
-	int window = OS.GTK_WIDGET_WINDOW (handle);
-	if (window == 0 || cursor == 0) return 0;
-	OS.gdk_window_set_cursor (window, cursor);
-	return 0;	
+	int window = OS.GTK_WIDGET_WINDOW (paintHandle());
+	int gdkCursor = cursor != null && !cursor.isDisposed() ? cursor.handle : defaultCursor;
+	OS.gdk_window_set_cursor (window, gdkCursor);
+	return 0;
 }
 
 void releaseWidget () {
 	super.releaseWidget ();
-	if (cursor != 0) OS.gdk_cursor_destroy (cursor);
-	cursor = 0;
+	if (defaultCursor != 0) OS.gdk_cursor_destroy (defaultCursor);
+	defaultCursor = 0;
 }
 
 /**
@@ -295,4 +294,12 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+public void setCursor (Cursor cursor) {
+	checkWidget();
+	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+	this.cursor = cursor;
+	int gdkCursor = cursor != null ? cursor.handle : defaultCursor;
+	int window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+	if (window != 0) OS.gdk_window_set_cursor (window, gdkCursor);
+}
 }
