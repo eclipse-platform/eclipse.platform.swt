@@ -11,7 +11,7 @@
 
 int callback(int index, ...);
 
-#ifdef WIN32
+#if defined (WIN32) || defined (_WIN32_WCE)
 #include "windows.h"
 #define PLATFORM "win32"
 #define RETURN_TYPE LRESULT CALLBACK
