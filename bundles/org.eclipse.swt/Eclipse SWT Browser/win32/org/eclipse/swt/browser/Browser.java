@@ -198,7 +198,6 @@ public Browser(Composite parent, int style) {
 									int[] rgdispid = auto.getIDsOfNames(new String[] {"Document"}); //$NON-NLS-1$
 									Variant pVarResult = auto.getProperty(rgdispid[0]);
 									IDispatch dispatchDocument = pVarResult.getDispatch();
-									pVarResult.dispose();
 									int[] ppvObject = new int[1];
 									int result = dispatchDocument.QueryInterface(COM.IIDIPersistStreamInit, ppvObject);
 									if (result == OS.S_OK) {
@@ -208,6 +207,7 @@ public Browser(Composite parent, int style) {
 										}
 										persistStreamInit.Release();
 									}
+									pVarResult.dispose();
 									/*
 									* This code is intentionally commented.  The IDispatch obtained from a Variant
 									* did not increase the reference count for the enclosed interface.
