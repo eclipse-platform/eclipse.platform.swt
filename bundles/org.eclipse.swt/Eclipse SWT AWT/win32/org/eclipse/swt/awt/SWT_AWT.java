@@ -168,7 +168,7 @@ public static Frame new_Frame (final Composite parent) {
 		public void handleEvent (Event e) {
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
-					if (Library.JAVA_VERSION >= Library.JAVA_VERSION(1, 4, 0)) {
+					if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_ACTIVATED));
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_GAINED));
 					} else {
@@ -183,7 +183,7 @@ public static Frame new_Frame (final Composite parent) {
 		public void handleEvent (Event e) {
 			EventQueue.invokeLater(new Runnable () {
 				public void run () {
-					if (Library.JAVA_VERSION >= Library.JAVA_VERSION(1, 4, 0)) {
+					if (Library.JAVA_VERSION < Library.JAVA_VERSION(1, 4, 0)) {
 						frame.dispatchEvent (new WindowEvent (frame, WindowEvent.WINDOW_DEACTIVATED));
 						frame.dispatchEvent (new FocusEvent (frame, FocusEvent.FOCUS_LOST));
 					} else {
