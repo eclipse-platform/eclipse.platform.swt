@@ -1034,6 +1034,28 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
+		case OS.RBN_CHILDSIZE:
+			/*
+			* Bug in Windows.  When Windows sets the size of the rebar band
+			* child and the child is a combo box, the size of the drop down
+			* portion of the combo box is resized to zero.  The fix is to set
+			* the size of the control to the current size after the rebar has
+			* already resized it.  If the control is not a combo, this does
+			* nothing.  If the control is a combo, the drop down portion is
+			* recalculated.
+			*/
+			NMREBARCHILDSIZE lprbcs  = new NMREBARCHILDSIZE ();
+			OS.MoveMemory (lprbcs, lParam, NMREBARCHILDSIZE.sizeof);
+			if (lprbcs.uBand != -1) {
+				CoolItem item = items [lprbcs.wID];
+				Control control = item.control;
+				if (control != null) {
+					int width = lprbcs.rcChild_right - lprbcs.rcChild_left;
+					int height = lprbcs.rcChild_bottom - lprbcs.rcChild_top;
+					control.setBounds (lprbcs.rcChild_left, lprbcs.rcChild_top, width, height);
+				}
+			}
+			break;
 		case OS.RBN_HEIGHTCHANGE:
 			if (!ignoreResize) {
 				Point size = getSize ();
@@ -1045,13 +1067,13 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 		case OS.RBN_CHEVRONPUSHED:
 			NMREBARCHEVRON lpnm = new NMREBARCHEVRON ();
 			OS.MoveMemory (lpnm, lParam, NMREBARCHEVRON.sizeof);
-			CoolItem child = items [lpnm.wID];
-			if (child != null) {
+			CoolItem item = items [lpnm.wID];
+			if (item != null) {
 				Event event = new Event();
 				event.detail = SWT.ARROW;
 				event.x = lpnm.left;
 				event.y = lpnm.bottom;
-				child.postEvent (SWT.Selection, event);
+				item.postEvent (SWT.Selection, event);
 			}
 			break;
 		case OS.NM_CUSTOMDRAW:
