@@ -404,18 +404,23 @@ public void test_setTopItemLorg_eclipse_swt_widgets_TreeItem() {
 	for (int i = 0; i < 10; i++) {
 		TreeItem item = new TreeItem(tree, 0);	
 	}
+	tree.setSize(50,50);
+	shell.open();
 	tree.setTopItem(top);
 	for (int i = 0; i < 10; i++) {
 		TreeItem item = new TreeItem(tree, 0);	
 	}
 	TreeItem top2 = tree.getTopItem();
+	shell.setVisible(false);
 	assertEquals(top, top2);
 	try {
+		shell.setVisible(true);
 		tree.setTopItem(null);
 		fail("No exception thrown for item == null");
+	} catch (IllegalArgumentException e) {
+	} finally {
+		shell.setVisible (false);
 	}
-	catch (IllegalArgumentException e) {
-	}		
 }
 
 public void test_showItemLorg_eclipse_swt_widgets_TreeItem() {
