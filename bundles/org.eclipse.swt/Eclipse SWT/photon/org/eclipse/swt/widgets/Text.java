@@ -1362,6 +1362,7 @@ public void showSelection () {
 
 int traversalCode (int key_sym, PhKeyEvent_t ke) {
 	int code = super.traversalCode (key_sym, ke);
+	if ((style & SWT.READ_ONLY) != 0) return code;
 	if ((style & SWT.MULTI) != 0) {
 		code &= ~SWT.TRAVERSE_RETURN;
 		if (key_sym == OS.Pk_Tab && ke != null) {
