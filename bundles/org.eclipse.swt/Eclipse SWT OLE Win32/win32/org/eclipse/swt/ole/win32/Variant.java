@@ -532,6 +532,7 @@ void setData(int pData){
 			int[] ppvObject = new int[1];
 			OS.MoveMemory(ppvObject, pData + 8, 4);
 			dispatchData = new IDispatch(ppvObject[0]);
+			dispatchData.AddRef();
 			break;
 		}
 		case COM.VT_UNKNOWN : {
