@@ -74,6 +74,7 @@ public class Spinner extends Composite {
  * </ul>
  *
  * @see SWT#READ_ONLY
+ * @see SWT#WRAP
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
@@ -535,7 +536,6 @@ int getSelectionText () {
 
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
-	if (OS.IsUnicode) return mbcsPos;
 	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
 	if (mbcsSize == 0) return 0;
 	if (mbcsPos >= mbcsSize) return mbcsSize;
@@ -690,7 +690,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 			if (start [0] == end [0]) {
 				if (start [0] == 0) return true;
 				start [0] = start [0] - 1;
-				if (OS.IsDBLocale) {
+				if (!OS.IsUnicode && OS.IsDBLocale) {
 					int [] newStart = new int [1], newEnd = new int [1];
 					OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
 					OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
@@ -971,7 +971,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		index++;
 	}
 	event.doit = index == string.length ();
-	if (OS.IsDBLocale) {
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		event.start = mbcsToWcsPos (start);
 		event.end = mbcsToWcsPos (end);
 	}
@@ -1123,10 +1123,6 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 			if (OS.SendMessage (hwndText, OS.EM_CANUNDO, 0, 0) != 0) {
 				ignoreModify = true;
 				OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
-				if (OS.IsDBLocale) {
-					start [0] = mbcsToWcsPos (start [0]);
-					end [0] = mbcsToWcsPos (end [0]);
-				}
 				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
 				int length = OS.GetWindowTextLength (hwndText);
 				if (length != 0 && start [0] != end [0]) {

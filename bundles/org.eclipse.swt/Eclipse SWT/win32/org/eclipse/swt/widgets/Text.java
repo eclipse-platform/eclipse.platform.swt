@@ -573,7 +573,7 @@ public int getCaretPosition () {
 	int caretLine = OS.SendMessage (handle, OS.EM_LINEFROMCHAR, caretPos, 0);
 	int caret = end [0];
 	if (caretLine == startLine) caret = start [0];
-	if (OS.IsDBLocale) caret = mbcsToWcsPos (caret);
+	if (!OS.IsUnicode && OS.IsDBLocale) caret = mbcsToWcsPos (caret);
 	return caret;
 }
 
@@ -590,7 +590,7 @@ public int getCaretPosition () {
 public int getCharCount () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
-	if (OS.IsDBLocale) length = mbcsToWcsPos (length);
+	if (!OS.IsUnicode && OS.IsDBLocale) length = mbcsToWcsPos (length);
 	return length;
 }
 
@@ -741,7 +741,7 @@ public Point getSelection () {
 	checkWidget ();
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	if (OS.IsDBLocale) {
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start [0] = mbcsToWcsPos (start [0]);
 		end [0] = mbcsToWcsPos (end [0]);
 	}
@@ -776,13 +776,14 @@ public int getSelectionCount () {
  */
 public String getSelectionText () {
 	checkWidget ();
-	/*
-	* NOTE: The current implementation uses substring ()
-	* which can reference a potentially large character
-	* array.
-	*/
-	Point selection = getSelection ();
-	return getText ().substring (selection.x, selection.y);
+	int length = OS.GetWindowTextLength (handle);
+	if (length == 0) return "";
+	int [] start = new int [1], end = new int [1];
+	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
+	if (start [0] == end [0]) return "";
+	TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+	OS.GetWindowText (handle, buffer, length + 1);
+	return buffer.toString (start [0], end [0] - start [0]);
 }
 
 /**
@@ -863,7 +864,7 @@ public String getText (int start, int end) {
 	checkWidget ();
 	if (!(start <= end && 0 <= end)) return "";
 	int length = OS.GetWindowTextLength (handle);
-	if (OS.IsDBLocale) length = mbcsToWcsPos (length);
+	if (!OS.IsUnicode && OS.IsDBLocale) length = mbcsToWcsPos (length);
 	start = Math.max (0, start);
 	end = Math.min (end, length - 1);
 	/*
@@ -988,7 +989,6 @@ public void insert (String string) {
 
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
-	if (OS.IsUnicode) return mbcsPos;
 	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
 	byte [] buffer = new byte [128];
@@ -1179,7 +1179,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 					start [0] = start [0] - DELIMITER.length ();
 				} else {
 					start [0] = start [0] - 1;
-					if (OS.IsDBLocale) {
+					if (!OS.IsUnicode && OS.IsDBLocale) {
 						int [] newStart = new int [1], newEnd = new int [1];
 						OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 						OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
@@ -1409,7 +1409,7 @@ public void setOrientation (int orientation) {
  */
 public void setSelection (int start) {
 	checkWidget ();
-	if (OS.IsDBLocale) start = wcsToMbcsPos (start);
+	if (!OS.IsUnicode && OS.IsDBLocale) start = wcsToMbcsPos (start);
 	OS.SendMessage (handle, OS.EM_SETSEL, start, start);
 	OS.SendMessage (handle, OS.EM_SCROLLCARET, 0, 0);
 }
@@ -1440,7 +1440,7 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	if (OS.IsDBLocale) {
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start = wcsToMbcsPos (start);
 		end = wcsToMbcsPos (end);
 	}
@@ -1649,7 +1649,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.keyCode = keyEvent.keyCode;
 		event.stateMask = keyEvent.stateMask;
 	}
-	if (OS.IsDBLocale) {
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		event.start = mbcsToWcsPos (start);
 		event.end = mbcsToWcsPos (end);
 	}
@@ -1666,7 +1666,6 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 
 int wcsToMbcsPos (int wcsPos) {
 	if (wcsPos <= 0) return 0;
-	if (OS.IsUnicode) return wcsPos;
 	int cp = getCodePage ();
 	int wcsTotal = 0, mbcsTotal = 0;
 	byte [] buffer = new byte [128];
@@ -1959,10 +1958,17 @@ LRESULT wmClipboard (int msg, int wParam, int lParam) {
 		case OS.EM_UNDO:
 		case OS.WM_UNDO:
 			if (OS.SendMessage (handle, OS.EM_CANUNDO, 0, 0) != 0) {
-				OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 				ignoreModify = ignoreCharacter = true;
+				OS.SendMessage (handle, OS.EM_GETSEL, start, end);
 				callWindowProc (handle, msg, wParam, lParam);
-				newText = getSelectionText ();
+				int length = OS.GetWindowTextLength (handle);
+				if (length != 0 && start [0] != end [0]) {
+					TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+					OS.GetWindowText (handle, buffer, length + 1);
+					newText = buffer.toString (start [0], end [0] - start [0]);
+				} else {
+					newText = "";
+				}
 				callWindowProc (handle, msg, wParam, lParam);
 				ignoreModify = ignoreCharacter = false;
 			}

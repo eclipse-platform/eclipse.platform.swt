@@ -670,7 +670,7 @@ public Point getSelection () {
 	}
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.CB_GETEDITSEL, start, end);
-	if (OS.IsDBLocale) {
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start [0] = mbcsToWcsPos (start [0]);
 		end [0] = mbcsToWcsPos (end [0]);
 	}
@@ -692,17 +692,6 @@ public int getSelectionIndex () {
 	checkWidget ();
 	if (noSelection) return -1;
 	return OS.SendMessage (handle, OS.CB_GETCURSEL, 0, 0);
-}
-
-String getSelectionText () {
-//	checkWidget ();
-	/*
-	* NOTE: The current implementation uses substring ()
-	* which can reference a potentially large character
-	* array.
-	*/
-	Point selection = getSelection ();
-	return getText ().substring (selection.x, selection.y);
 }
 
 /**
@@ -872,7 +861,6 @@ public int indexOf (String string, int start) {
 
 int mbcsToWcsPos (int mbcsPos) {
 	if (mbcsPos <= 0) return 0;
-	if (OS.IsUnicode) return mbcsPos;
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText == 0) return mbcsPos;
 	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
@@ -1167,7 +1155,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 			if (start [0] == end [0]) {
 				if (start [0] == 0) return true;
 				start [0] = start [0] - 1;
-				if (OS.IsDBLocale) {
+				if (!OS.IsUnicode && OS.IsDBLocale) {
 					int [] newStart = new int [1], newEnd = new int [1];
 					OS.SendMessage (hwndText, OS.EM_SETSEL, start [0], end [0]);
 					OS.SendMessage (hwndText, OS.EM_GETSEL, newStart, newEnd);
@@ -1461,7 +1449,7 @@ public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int start = selection.x, end = selection.y;
-	if (OS.IsDBLocale) {
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		start = wcsToMbcsPos (start);
 		end = wcsToMbcsPos (end);
 	}
@@ -1618,7 +1606,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.keyCode = keyEvent.keyCode;
 		event.stateMask = keyEvent.stateMask;
 	}
-	if (OS.IsDBLocale) {
+	if (!OS.IsUnicode && OS.IsDBLocale) {
 		event.start = mbcsToWcsPos (start);
 		event.end = mbcsToWcsPos (end);
 	}
@@ -1635,7 +1623,6 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 
 int wcsToMbcsPos (int wcsPos) {
 	if (wcsPos <= 0) return 0;
-	if (OS.IsUnicode) return wcsPos;
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
 	if (hwndText == 0) return wcsPos;
 	int mbcsSize = OS.GetWindowTextLengthA (hwndText);
@@ -1901,7 +1888,14 @@ LRESULT wmClipboard (int hwndText, int msg, int wParam, int lParam) {
 				ignoreModify = true;
 				OS.SendMessage (hwndText, OS.EM_GETSEL, start, end);
 				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
-				newText = getSelectionText ();
+				int length = OS.GetWindowTextLength (hwndText);
+				if (length != 0 && start [0] != end [0]) {
+					TCHAR buffer = new TCHAR (getCodePage (), length + 1);
+					OS.GetWindowText (hwndText, buffer, length + 1);
+					newText = buffer.toString (start [0], end [0] - start [0]);
+				} else {
+					newText = "";
+				}
 				OS.CallWindowProc (EditProc, hwndText, msg, wParam, lParam);
 				ignoreModify = false;
 			}
