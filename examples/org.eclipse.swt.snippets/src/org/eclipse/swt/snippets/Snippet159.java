@@ -39,7 +39,11 @@ public class Snippet159 {
 			}
 			public void completed(ProgressEvent event) {
 				/* Set HTML title tag using JavaScript and DOM when page has been loaded */
-				browser.execute("document.title='"+newTitle+"'");
+				boolean result = browser.execute("document.title='"+newTitle+"'");
+				if (!result) {
+					/* Script may fail or may not be supported on certain platforms. */
+					System.out.println("Script was not executed.");
+				}
 			}
 		});
 		/* Load an HTML document */
