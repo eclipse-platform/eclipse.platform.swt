@@ -181,7 +181,15 @@ public DropTarget(Control control, int style) {
 	
 	this.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
-			unregisterDropTarget();
+			Display display = event.display;
+			display.asyncExec(new Runnable() {
+				public void run() {
+					if (DropTarget.this.control == null || 
+						DropTarget.this.control.isDisposed()) return;
+			
+					unregisterDropTarget();
+				}
+			});
 			onDispose();
 		}
 	});
