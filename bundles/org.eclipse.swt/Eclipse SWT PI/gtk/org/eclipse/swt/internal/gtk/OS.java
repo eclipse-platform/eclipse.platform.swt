@@ -532,9 +532,7 @@ public static final native void gtk_list_select_item(int list, int item);
 public static final native void gtk_main();
 public static final native int gtk_main_iteration();
 public static final native void gtk_main_quit();
-public static final native void gtk_menu_bar_insert(int menu_bar, int child, int position);
 public static final native int gtk_menu_bar_new();
-public static final native void gtk_menu_insert(int menu, int child, int position);
 public static final native int gtk_image_menu_item_new_with_label(byte[] label);
 public static final native int  gtk_image_menu_item_get_image(int menu_item);
 public static final native void gtk_image_menu_item_set_image(int menu_item, int image);
@@ -543,6 +541,7 @@ public static final native void gtk_menu_item_set_submenu(int menu_item, int sub
 public static final native int gtk_menu_new();
 public static final native void gtk_menu_popdown(int menu);
 public static final native void gtk_menu_popup(int menu, int parent_menu_shell, int parent_menu_item, int func, int data, int button, int activate_time);
+public static final native void gtk_menu_shell_insert(int menu_shell, int child, int position);
 public static final native int gtk_message_dialog_new(int parent, int flags, int type, int buttons, String message_format);
 public static final native void gtk_misc_set_alignment(int misc, float xalign, float yalign);
 public static final native int gtk_notebook_get_current_page(int notebook);

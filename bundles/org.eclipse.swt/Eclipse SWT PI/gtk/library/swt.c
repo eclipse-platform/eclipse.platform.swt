@@ -2700,28 +2700,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1main_1quit
 	gtk_main_quit();
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1bar_1insert
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	DEBUG_CALL("gtk_1menu_1bar_1insert\n")
-
-	gtk_menu_bar_insert((GtkMenuBar *)arg0, (GtkWidget *)arg1, (gint)arg2);
-}
-
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1bar_1new
 	(JNIEnv *env, jclass that)
 {
 	DEBUG_CALL("gtk_1menu_1bar_1new\n")
 
 	return (jint)gtk_menu_bar_new();
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1insert
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	DEBUG_CALL("gtk_1menu_1insert\n")
-
-	gtk_menu_insert((GtkMenu *)arg0, (GtkWidget *)arg1, (gint)arg2);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1separator_1menu_1item_1new
@@ -2800,6 +2784,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1popup
 	DEBUG_CALL("gtk_1menu_1popup\n")
 
 	gtk_menu_popup((GtkMenu *)arg0, (GtkWidget *)arg1, (GtkWidget *)arg2, (GtkMenuPositionFunc)arg3, (gpointer)arg4, (guint)arg5, (guint32)arg6);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1shell_1insert
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gtk_1menu_1shell_1insert\n")
+
+	gtk_menu_shell_insert((GtkMenuShell *)arg0, (GtkWidget *)arg1, (gint)arg2);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1message_1dialog_1new

@@ -240,11 +240,7 @@ void createHandle (int index) {
 	if ((style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		OS.gtk_check_menu_item_set_show_toggle (handle, true);
 	}
-	if ((parent.style & SWT.BAR) != 0) {
-		OS.gtk_menu_bar_insert (parent.handle, handle, index);
-	} else {
-		OS.gtk_menu_insert (parent.handle, handle, index);
-	}
+	OS.gtk_menu_shell_insert (parent.handle, handle, index);
 	OS.gtk_widget_show (handle);
 }
 
