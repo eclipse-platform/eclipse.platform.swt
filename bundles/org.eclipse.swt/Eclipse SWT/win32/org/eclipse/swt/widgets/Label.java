@@ -12,8 +12,8 @@ import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class represent a non-selectable
- * user interface object displays a string or image.
- * When the SEPARATOR is specified, displays a single
+ * user interface object that displays a string or image.
+ * When SEPARATOR is specified, displays a single
  * vertical or horizontal line.
  * <dl>
  * <dt><b>Styles:</b></dt>
