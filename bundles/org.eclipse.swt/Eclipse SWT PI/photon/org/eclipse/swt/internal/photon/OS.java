@@ -415,8 +415,10 @@ public class OS {
 	public static final int Pt_CB_TEXT_CHANGED = 0xfaa;
 	public static final int Pt_CB_TIMER_ACTIVATE = 0xa02a;
 	public static final int Pt_CB_UNREALIZED = 0x3f5;
+	public static final int Pt_CB_WEB_CLOSE_WINDOW = 0x18713;
 	public static final int Pt_CB_WEB_COMPLETE = 0x18704;
 	public static final int Pt_CB_WEB_DATA_REQ = 0x1870F;
+	public static final int Pt_CB_WEB_NEW_WINDOW = 0x18711;
 	public static final int Pt_CB_WEB_START = 0x1870B;
 	public static final int Pt_CB_WEB_STATUS = 0x18708;
 	public static final int Pt_CB_WEB_URL = 0x18706;
@@ -812,6 +814,7 @@ public static final native void memmove(PhClipHeader dest, int src, int size);
 public static final native void memmove(byte[] dest, PhClipHeader src, int size);
 public static final native void memmove(PtWebStatusCallback_t dest, int src, int size);
 public static final native void memmove(PtWebDataReqCallback_t dest, int src, int size);
+public static final native void memmove(PtWebWindowCallback_t dest, int src, int size);
 public static final native void memmove(int dest, PtWebClientData_t src, int size);
 public static final native void memset(int dest, int c, int length);
 public static final native int strdup(int string);

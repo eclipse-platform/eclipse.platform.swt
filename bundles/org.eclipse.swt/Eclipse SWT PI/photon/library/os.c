@@ -3690,6 +3690,19 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtWeb
 }
 #endif
 
+#ifndef NO_memmove__Lorg_eclipse_swt_internal_photon_PtWebWindowCallback_1t_2II
+JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_photon_PtWebWindowCallback_1t_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	PtWebWindowCallback_t _arg0, *lparg0=NULL;
+	NATIVE_ENTER(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtWebWindowCallback_1t_2II\n")
+	if (arg0) lparg0 = getPtWebWindowCallback_tFields(env, arg0, &_arg0);
+	memmove((void *)lparg0, (const void *)arg1, arg2);
+	if (arg0) setPtWebWindowCallback_tFields(env, arg0, lparg0);
+	NATIVE_EXIT(env, that, "memmove__Lorg_eclipse_swt_internal_photon_PtWebWindowCallback_1t_2II\n")
+}
+#endif
+
 #ifndef NO_memmove___3BII
 JNIEXPORT void JNICALL OS_NATIVE(memmove___3BII)
 	(JNIEnv *env, jclass that, jbyteArray arg0, jint arg1, jint arg2)

@@ -235,6 +235,14 @@ void setPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCa
 #define setPtWebStatusCallback_tFields(a,b,c)
 #endif
 
+#ifndef NO_PtWebWindowCallback_t
+PtWebWindowCallback_t *getPtWebWindowCallback_tFields(JNIEnv *env, jobject lpObject, PtWebWindowCallback_t *lpStruct);
+void setPtWebWindowCallback_tFields(JNIEnv *env, jobject lpObject, PtWebWindowCallback_t *lpStruct);
+#else
+#define getPtWebWindowCallback_tFields(a,b,c) NULL
+#define setPtWebWindowCallback_tFields(a,b,c)
+#endif
+
 #ifndef NO_utsname
 utsname *getutsnameFields(JNIEnv *env, jobject lpObject, utsname *lpStruct);
 void setutsnameFields(JNIEnv *env, jobject lpObject, utsname *lpStruct);

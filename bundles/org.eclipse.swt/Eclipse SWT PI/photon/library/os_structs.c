@@ -1618,6 +1618,43 @@ void setPtWebStatusCallback_tFields(JNIEnv *env, jobject lpObject, PtWebStatusCa
 }
 #endif
 
+#ifndef NO_PtWebWindowCallback_t
+typedef struct PtWebWindowCallback_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID size_w, size_h, flags;
+} PtWebWindowCallback_t_FID_CACHE;
+
+PtWebWindowCallback_t_FID_CACHE PtWebWindowCallback_tFc;
+
+void cachePtWebWindowCallback_tFields(JNIEnv *env, jobject lpObject)
+{
+	if (PtWebWindowCallback_tFc.cached) return;
+	PtWebWindowCallback_tFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	PtWebWindowCallback_tFc.size_w = (*env)->GetFieldID(env, PtWebWindowCallback_tFc.clazz, "size_w", "S");
+	PtWebWindowCallback_tFc.size_h = (*env)->GetFieldID(env, PtWebWindowCallback_tFc.clazz, "size_h", "S");
+	PtWebWindowCallback_tFc.flags = (*env)->GetFieldID(env, PtWebWindowCallback_tFc.clazz, "flags", "J");
+	PtWebWindowCallback_tFc.cached = 1;
+}
+
+PtWebWindowCallback_t *getPtWebWindowCallback_tFields(JNIEnv *env, jobject lpObject, PtWebWindowCallback_t *lpStruct)
+{
+	if (!PtWebWindowCallback_tFc.cached) cachePtWebWindowCallback_tFields(env, lpObject);
+	lpStruct->size.w = (*env)->GetShortField(env, lpObject, PtWebWindowCallback_tFc.size_w);
+	lpStruct->size.h = (*env)->GetShortField(env, lpObject, PtWebWindowCallback_tFc.size_h);
+	lpStruct->flags = (*env)->GetLongField(env, lpObject, PtWebWindowCallback_tFc.flags);
+	return lpStruct;
+}
+
+void setPtWebWindowCallback_tFields(JNIEnv *env, jobject lpObject, PtWebWindowCallback_t *lpStruct)
+{
+	if (!PtWebWindowCallback_tFc.cached) cachePtWebWindowCallback_tFields(env, lpObject);
+	(*env)->SetShortField(env, lpObject, PtWebWindowCallback_tFc.size_w, (jshort)lpStruct->size.w);
+	(*env)->SetShortField(env, lpObject, PtWebWindowCallback_tFc.size_h, (jshort)lpStruct->size.h);
+	(*env)->SetLongField(env, lpObject, PtWebWindowCallback_tFc.flags, (jlong)lpStruct->flags);
+}
+#endif
+
 #ifndef NO_utsname
 typedef struct utsname_FID_CACHE {
 	int cached;
