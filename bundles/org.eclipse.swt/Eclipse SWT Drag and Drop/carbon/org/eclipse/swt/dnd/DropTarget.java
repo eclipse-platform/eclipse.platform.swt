@@ -194,17 +194,10 @@ public DropTarget(Control control, int style) {
 				event.dataType = selectedDataType;
 				event.operations = dragOverEvent.operations;
 				event.detail  = selectedOperation;
-				
-				try {
-					notifyListeners(DND.DragOver, event);
-				} catch (Throwable e) {
-					event.dataType = null;
-					event.detail  = DND.DROP_NONE;
-				}
-				
-				effect.show(event.feedback, event.x, event.y);
-				
 				selectedDataType = null;
+				selectedOperation = DND.DROP_NONE;				
+				notifyListeners(DND.DragOver, event);
+				effect.show(event.feedback, event.x, event.y);
 				if (event.dataType != null) {
 					for (int i = 0; i < allowedTypes.length; i++) {
 						if (allowedTypes[i].type == event.dataType.type) {
@@ -213,8 +206,6 @@ public DropTarget(Control control, int style) {
 						}
 					}
 				}
-
-				selectedOperation = DND.DROP_NONE;
 				if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
 					selectedOperation = event.detail;
 				}
@@ -335,30 +326,20 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	event.widget = this;
 	event.time = (int)System.currentTimeMillis();
 	event.detail = DND.DROP_NONE;
-	try {
-		notifyListeners(DND.DragLeave, event);
-	} catch (Throwable e) {}
-		
+	notifyListeners(DND.DragLeave, event);		
 	event = new DNDEvent();
 	if (!setEventData(theDrag, event)) {
 		return OS.dragNotAcceptedErr;
 	}
 	keyOperation = -1;
-		
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, event.dataTypes.length);
-	
 	event.dataType = selectedDataType;
 	event.detail = selectedOperation;
-	try {
-		notifyListeners(DND.DropAccept, event);
-	} catch (Throwable e) {
-		event.detail = DND.DROP_NONE;
-		event.dataType = null;
-	}
-	
 	selectedDataType = null;
+	selectedOperation = DND.DROP_NONE;
+	notifyListeners(DND.DropAccept, event);
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
 			if (allowedDataTypes[i].type == event.dataType.type) {
@@ -367,17 +348,13 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 			}
 		}
 	}
-
-	selectedOperation = DND.DROP_NONE;
 	if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
 		selectedOperation = event.detail;
-	}
-	
+	}	
 	if (selectedOperation == DND.DROP_NONE) {
 		// this was not a successful drop
 		return OS.dragNotAcceptedErr;
 	}
-	
 	// ask drag source for dropped data
 	byte[][] data  = data = new byte[0][];
 	// locate all the items with data of the desired type 
@@ -415,16 +392,11 @@ private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
 	event.dataType = selectedDataType;
 	event.detail = selectedOperation;
 	event.data = object;
-	try	{
-		notifyListeners(DND.Drop, event);
-		selectedOperation = DND.DROP_NONE;
-		if ((allowedOperations & event.detail) == event.detail) {
-			selectedOperation = event.detail;
-		}
-	} catch (Throwable e) {
-		selectedOperation = DND.DROP_NONE;
-	} 
-
+	notifyListeners(DND.Drop, event);
+	selectedOperation = DND.DROP_NONE;
+	if ((allowedOperations & event.detail) == event.detail) {
+		selectedOperation = event.detail;
+	}
 	//notify source of action taken
 	int action = opToOsOp(selectedOperation);
 	OS.SetDragDropAction(theDrag, action);
@@ -444,9 +416,7 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 		event.widget = this;
 		event.time = (int)System.currentTimeMillis();
 		event.detail = DND.DROP_NONE;
-		try {
-			notifyListeners(DND.DragLeave, event);
-		} catch (Throwable e) {}
+		notifyListeners(DND.DragLeave, event);
 		return OS.noErr;
 	}
 	
@@ -485,19 +455,14 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 	}
 	
 	updateDragOverHover(DRAGOVER_HYSTERESIS, event);
-	
-	try {
-		notifyListeners(event.type, event);
-	} catch (Throwable e) {
-		OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
-		return OS.dragNotAcceptedErr;
-	}
+	selectedDataType = null;
+	selectedOperation = DND.DROP_NONE;
+	notifyListeners(event.type, event);
 
 	if (event.detail == DND.DROP_DEFAULT) {
 		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
 	}
 	
-	selectedDataType = null;
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
 			if (allowedDataTypes[i].type == event.dataType.type) {
@@ -507,7 +472,6 @@ private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, i
 		}
 	}
 
-	selectedOperation = DND.DROP_NONE;
 	if (selectedDataType != null && (allowedOperations & event.detail) != 0) {
 		selectedOperation = event.detail;
 	}

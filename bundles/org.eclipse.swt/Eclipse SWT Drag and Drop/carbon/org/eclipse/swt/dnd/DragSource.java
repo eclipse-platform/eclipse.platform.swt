@@ -218,11 +218,7 @@ private void drag(Event dragEvent) {
 	event.widget = this;	
 	event.time = dragEvent.time;
 	event.doit = true;
-	try {
-		notifyListeners(DND.DragStart, event);
-	} catch (Throwable e) {
-		return;
-	}
+	notifyListeners(DND.DragStart, event);
 	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
 	
 	int[] theDrag = new int[1];
@@ -232,9 +228,7 @@ private void drag(Event dragEvent) {
 		event.time = (int)System.currentTimeMillis();
 		event.doit = false;
 		event.detail = DND.DROP_NONE; 
-		try {
-			notifyListeners(DND.DragEnd, event);
-		} catch (Throwable e) {}
+		notifyListeners(DND.DragEnd, event);
 		return;
 	}
 	
@@ -262,11 +256,7 @@ private void drag(Event dragEvent) {
 			event.widget = this;
 			event.time = (int)System.currentTimeMillis(); 
 			event.dataType = transferData; 
-			try {
-				notifyListeners(DND.DragSetData, event);
-			} catch (Throwable e) {
-				continue;
-			}
+			notifyListeners(DND.DragSetData, event);
 			if (event.data == null) continue;
 			transferAgents[i].javaToNative(event.data, transferData);
 			if (transferData.result != OS.noErr || transferData.data == null) continue; 
@@ -284,41 +274,40 @@ private void drag(Event dragEvent) {
 		event.time = (int)System.currentTimeMillis();
 		event.doit = false;
 		event.detail = DND.DROP_NONE; 
-		try {
-			notifyListeners(DND.DragEnd, event);
-		} catch (Throwable e) {}
+		notifyListeners(DND.DragEnd, event);
 		return;
 	}
 	
-	int theRegion = OS.NewRgn();
-	OS.SetRectRgn(theRegion, (short)(pt.h-10), (short)(pt.v-10), (short)(pt.h+10), (short)(pt.v+10));
-	
-	int operations = opToOsOp(getStyle());
-	//set operations twice - local and not local
-	OS.SetDragAllowableActions(theDrag[0], operations, true);
-	// until the interaction with Finder is understood, only allow data to be
-	// transferred internally
-	OS.SetDragAllowableActions(theDrag[0], OS.kDragActionNothing, false);
-	
-	int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
-	
-	int operation = DND.DROP_NONE;
-	if (result == OS.noErr) { 
-		int[] outAction = new int[1];
-		OS.GetDragDropAction(theDrag[0], outAction);
-		operation = osOpToOp(outAction[0]);
-	}
-	
-	event = new DNDEvent();
-	event.widget = this;
-	event.time = (int)System.currentTimeMillis();
-	event.doit = result == OS.noErr;
-	event.detail = operation; 
+	int theRegion = 0;
 	try {
+		theRegion = OS.NewRgn();
+		OS.SetRectRgn(theRegion, (short)(pt.h-10), (short)(pt.v-10), (short)(pt.h+10), (short)(pt.v+10));
+		
+		int operations = opToOsOp(getStyle());
+		//set operations twice - local and not local
+		OS.SetDragAllowableActions(theDrag[0], operations, true);
+		// until the interaction with Finder is understood, only allow data to be
+		// transferred internally
+		OS.SetDragAllowableActions(theDrag[0], OS.kDragActionNothing, false);
+		
+		int result = OS.TrackDrag(theDrag[0], theEvent, theRegion);
+		
+		int operation = DND.DROP_NONE;
+		if (result == OS.noErr) { 
+			int[] outAction = new int[1];
+			OS.GetDragDropAction(theDrag[0], outAction);
+			operation = osOpToOp(outAction[0]);
+		}
+		
+		event = new DNDEvent();
+		event.widget = this;
+		event.time = (int)System.currentTimeMillis();
+		event.doit = result == OS.noErr;
+		event.detail = operation; 
 		notifyListeners(DND.DragEnd, event);
-	} catch (Throwable e) {}
-			
-	OS.DisposeRgn(theRegion);
+	} finally {	
+		if (theRegion != 0) OS.DisposeRgn(theRegion);
+	}
 	OS.DisposeDrag(theDrag[0]);
 }
 
