@@ -243,8 +243,8 @@ void drawSelected(GC gc ) {
 		// draw selected tab background and outline
 		shape = null;
 		if (this.parent.onBottom) {
-			int[] left = parent.simple ? new int[] {0, 0} :CTabFolder.BOTTOM_LEFT_CORNER;
-			int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
+			int[] left = parent.simple ? CTabFolder.SIMPLE_BOTTOM_LEFT_CORNER : CTabFolder.BOTTOM_LEFT_CORNER;
+			int[] right = parent.simple ? CTabFolder.SIMPLE_BOTTOM_RIGHT_CORNER : parent.curve;
 			shape = new int[left.length+right.length+8];
 			int index = 0;
 			shape[index++] = x; // first point repeated here because below we reuse shape to draw outline
@@ -264,8 +264,8 @@ void drawSelected(GC gc ) {
 			shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
 			shape[index++] = y - 1;
 		} else {
-			int[] left = parent.simple ? new int[] {0, 0} : CTabFolder.TOP_LEFT_CORNER;
-			int[] right = parent.simple ? new int[] {0, 0} : parent.curve;
+			int[] left = parent.simple ? CTabFolder.SIMPLE_TOP_LEFT_CORNER : CTabFolder.TOP_LEFT_CORNER;
+			int[] right = parent.simple ? CTabFolder.SIMPLE_TOP_RIGHT_CORNER : parent.curve;
 			shape = new int[left.length+right.length+8];
 			int index = 0;
 			shape[index++] = x; // first point repeated here because below we reuse shape to draw outline

@@ -196,6 +196,11 @@ public class CTabFolder extends Composite {
 	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-6, 1,-5, 1,-4, 4,-1, 5,-1, 6,0};
 	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-6,0, -5,-1, -4,-1, -1,-4, -1,-5, 0,-6};
 
+	static final int[] SIMPLE_TOP_LEFT_CORNER = new int[] {0,2, 1,1, 2,0};
+	static final int[] SIMPLE_TOP_RIGHT_CORNER = new int[] {-2,0, -1,1, 0,2};
+	static final int[] SIMPLE_BOTTOM_LEFT_CORNER = new int[] {0,-2, 1,-1, 2,0};
+	static final int[] SIMPLE_BOTTOM_RIGHT_CORNER = new int[] {-2,0, -1,-1, 0,-2};
+
 	static final int SELECTION_FOREGROUND = SWT.COLOR_LIST_FOREGROUND;
 	static final int SELECTION_BACKGROUND = SWT.COLOR_LIST_BACKGROUND;
 	static final int BORDER1_COLOR = SWT.COLOR_WIDGET_NORMAL_SHADOW;
@@ -453,8 +458,7 @@ public void addSelectionListener(SelectionListener listener) {
 void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 	// Don't perform anti-aliasing on Mac because the platform
 	// already does it.
-	// Don't perform anti-aliasing for simple style - no curves
-	if (simple || "carbon".equals(SWT.getPlatform())) return;
+	if ("carbon".equals(SWT.getPlatform())) return;
 	if (outerRGB != null) {
 		int index = 0;
 		boolean left = true;
@@ -1058,8 +1062,8 @@ void drawTabArea(Event event) {
 	
 	// Draw Tab Header
 	if (onBottom) {
-		int[] left = simple ? new int[] {0,0} : BOTTOM_LEFT_CORNER;
-		int[] right = simple ? new int[] {0,0} : BOTTOM_RIGHT_CORNER;
+		int[] left = simple ? SIMPLE_BOTTOM_LEFT_CORNER : BOTTOM_LEFT_CORNER;
+		int[] right = simple ? SIMPLE_BOTTOM_RIGHT_CORNER : BOTTOM_RIGHT_CORNER;
 		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
@@ -1077,8 +1081,8 @@ void drawTabArea(Event event) {
 		shape[index++] = x+width;
 		shape[index++] = y-highlight_header;
 	} else {
-		int[] left = simple ? new int[] {0,0} : TOP_LEFT_CORNER;
-		int[] right = simple ? new int[] {0,0} : TOP_RIGHT_CORNER;
+		int[] left = simple ? SIMPLE_TOP_LEFT_CORNER : TOP_LEFT_CORNER;
+		int[] right = simple ? SIMPLE_TOP_RIGHT_CORNER : TOP_RIGHT_CORNER;
 		shape = new int[left.length + right.length + 4];
 		int index = 0;
 		shape[index++] = x;
