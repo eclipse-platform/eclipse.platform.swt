@@ -1868,16 +1868,18 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				int [] action = new int [1];
 				OS.MoveMemory (action, lParam + NMHDR.sizeof, 4);
 				Event event = new Event ();
-				TreeItem item = items [tvItem.lParam];
 				/*
-				* Feature on Windows.  For some reason, Windows
-				* sometimes sends a TVM_ITEMEXPANDING message from
+				* Feature on Windows.  In some cases, a 
+				* TVM_ITEMEXPANDING message is sent from
 				* within a TVM_DELETEITEM message, for the node
 				* being destroyed.  The TreeItem has already been
-				* removed from the tree table and cannot be used
-				* anymore.  The workaround is to detect this case
-				* and return without sending any event. 
+				* removed from the items array and is no longer valid.
+				* The fix is to check for null. 
+				* 
+				* NOTE: This only happens on XP with the version 6.00 of
+				* COMCTL32.DLL,
 				*/
+				TreeItem item = items [tvItem.lParam];
 				if (item == null) break;
 				event.item = item;
 				/*
