@@ -1039,7 +1039,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				switch (nmcd.dwDrawStage) {
 					case OS.CDDS_PREERASE:
 						return new LRESULT (OS.CDRF_NOTIFYPOSTERASE);
-					case OS.CDDS_POSTERASE :
+					case OS.CDDS_POSTERASE:
 						drawBackground(nmcd.hdc);
 						break;
 				}
