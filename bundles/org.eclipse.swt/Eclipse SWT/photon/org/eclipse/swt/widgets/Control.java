@@ -1283,12 +1283,11 @@ int processMouse (int info) {
 				return OS.Pt_CONTINUE;
 			}
 			//TEMPORARY CODE
-//			if ((state & CANVAS) != 0) {
-//				return OS.Pt_CONTINUE;
-//			}
+//			if ((state & CANVAS) != 0) return OS.Pt_CONTINUE;
 			event.type = SWT.MouseUp;
 			break;
 		case OS.Ph_EV_PTR_MOTION_BUTTON:
+			if ((state & CANVAS) != 0) return OS.Pt_CONTINUE;
 		case OS.Ph_EV_PTR_MOTION_NOBUTTON:
 			event.type = SWT.MouseMove;
 			break;
