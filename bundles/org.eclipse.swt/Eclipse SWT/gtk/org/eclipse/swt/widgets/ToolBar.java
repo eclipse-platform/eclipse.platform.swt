@@ -141,6 +141,10 @@ public ToolItem getItem (int index) {
  * </ul>
  */
 public ToolItem getItem (Point point) {
+	ToolItem[] items = getItems();
+	for (int i=0; i<items.length; i++) {
+		if (items[i].getBounds().contains(point)) return items[i];
+	}
 	return null;
 }
 
