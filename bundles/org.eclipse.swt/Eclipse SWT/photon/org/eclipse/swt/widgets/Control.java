@@ -1884,18 +1884,38 @@ void sendPaintEvent (int damage) {
 	/* Send the paint event */
 	PhTile_t tile = new PhTile_t ();
 	OS.memmove (tile, damage, PhTile_t.sizeof);
-	if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
-		Event event = new Event ();
-		event.x = tile.rect_ul_x;
-		event.y = tile.rect_ul_y;
-		event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
-		event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-		Region region = Region.photon_new (tile.next);
-		GC gc = event.gc = new GC (this);
-		gc.setClipping (region);
-		sendEvent (SWT.Paint, event);
-		gc.dispose ();
-		event.gc = null;
+	boolean noMerge = (style & SWT.NO_MERGE_PAINTS) != 0 && (state & CANVAS) != 0;
+	if (tile.next != 0 && noMerge) {
+		while (tile.next != 0) {
+			OS.memmove (tile, tile.next, PhTile_t.sizeof);
+			if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
+				Event event = new Event ();
+				event.x = tile.rect_ul_x;
+				event.y = tile.rect_ul_y;
+				event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
+				event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
+				GC gc = event.gc = new GC (this);
+				gc.setClipping (event.x, event.y, event.width, event.height);
+				sendEvent (SWT.Paint, event);
+				if (isDisposed ()) break;
+				gc.dispose ();
+				event.gc = null;
+			}
+		}
+	} else {
+		if (tile.rect_ul_x != tile.rect_lr_x || tile.rect_ul_y != tile.rect_lr_y) {
+			Event event = new Event ();
+			event.x = tile.rect_ul_x;
+			event.y = tile.rect_ul_y;
+			event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
+			event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
+			Region region = Region.photon_new (tile.next);
+			GC gc = event.gc = new GC (this);
+			gc.setClipping (region);
+			sendEvent (SWT.Paint, event);
+			gc.dispose ();
+			event.gc = null;
+		}
 	}
 	OS.PhFreeTiles (damage);
 }
@@ -2201,7 +2221,9 @@ public void setSize (int width, int height) {
 public void setVisible (boolean visible) {
 	checkWidget ();
 	int topHandle = topHandle ();
-	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE);
+	int flags = visible ? 0 : OS.Pt_DELAY_REALIZE;
+	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_DELAY_REALIZE);
+	if (parent != null && !OS.PtWidgetIsRealized (parent.handle)) return;
 	if (visible == OS.PtWidgetIsRealized (topHandle)) return;
 	if (visible) {
 		sendEvent (SWT.Show);
