@@ -298,7 +298,7 @@ int processEvent (int widget, int data, int info) {
 	if (widget == shellHandle && data == SWT.Resize) {
 		return processShellResize (info);
 	}
-	return super.processEvent (widget, data, info);;
+	return super.processEvent (widget, data, info);
 }
 
 int processHotkey (int data, int info) {

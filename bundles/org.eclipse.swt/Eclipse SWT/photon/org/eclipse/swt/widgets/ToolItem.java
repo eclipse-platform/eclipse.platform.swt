@@ -228,7 +228,7 @@ int processEvent (int widget, int data, int info) {
 		postEvent (SWT.Selection, event);
 		return OS.Pt_CONTINUE;
 	}
-	return super.processEvent (widget, data, info);;
+	return super.processEvent (widget, data, info);
 }
 
 int processMouseEnter (int info) {
