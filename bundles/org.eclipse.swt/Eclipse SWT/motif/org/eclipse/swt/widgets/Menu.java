@@ -301,11 +301,6 @@ public MenuItem getDefaultItem () {
 	checkWidget();
 	return defaultItem;
 }
-public Display getDisplay () {
-	Decorations parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -521,7 +516,7 @@ public boolean getVisible () {
 	return OS.XtIsManaged (handle);
 }
 void hookEvents () {
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, HELP_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNmapCallback, windowProc, MAP_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNunmapCallback, windowProc, UNMAP_CALLBACK);
@@ -779,7 +774,6 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
 	if (visible) {
-		Display display = getDisplay ();
 		display.runDeferredEvents ();
 		sendEvent (SWT.Show);
 		if (getItemCount () != 0) {

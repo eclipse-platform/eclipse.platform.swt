@@ -130,7 +130,7 @@ public String open () {
 	if (destroyContext = (appContext == null)) appContext = new Display ();
 	int display = appContext.xDisplay;
 	int parentHandle = appContext.shellHandle;
-	if ((parent != null) && (parent.getDisplay () == appContext)) {
+	if ((parent != null) && (parent.display == appContext)) {
 		if (OS.IsAIX) parent.realizeWidget ();		/* Fix for bug 17507 */
 		parentHandle = parent.shellHandle;
 	}

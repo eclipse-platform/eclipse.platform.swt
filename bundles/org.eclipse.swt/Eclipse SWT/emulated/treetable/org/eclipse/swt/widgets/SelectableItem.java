@@ -91,7 +91,7 @@ void drawInsertMark(GC gc, Point position) {
 	if (parent.isInsertAfter()) {
 		insertMarkYOffset = selectionExtent.y - markerWidth;
 	}
-	gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_BLACK));
+	gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
 	gc.fillRectangle(position.x, position.y + insertMarkYOffset, selectionExtent.x, markerWidth);
 	gc.setBackground(parent.getBackground());
 }
@@ -136,17 +136,6 @@ public boolean getChecked() {
 	}
 	return checked;
 }
-/**
- * Answer the display of the receiver's parent widget.
- */
-public Display getDisplay() {
-	SelectableItemWidget parent = getSelectableParent();
-
-	if (parent == null) {
-		error(SWT.ERROR_WIDGET_DISPOSED);
-	}
-	return parent.getDisplay();
-}
 
 /**
  * Gets the grayed state.
@@ -185,8 +174,6 @@ SelectableItemWidget getSelectableParent() {
  * selection rectangle.
  */
 Color getSelectionBackgroundColor() {
-	Display display = getSelectableParent().getDisplay();	
-
 	return display.getSystemColor(SWT.COLOR_LIST_SELECTION);
 }
 /**
@@ -199,8 +186,6 @@ abstract Point getSelectionExtent();
  * selection rectangle.
  */
 Color getSelectionForegroundColor() {
-	Display display = getSelectableParent().getDisplay();	
-
 	return display.getSystemColor(SWT.COLOR_LIST_SELECTION_TEXT);
 }
 /**

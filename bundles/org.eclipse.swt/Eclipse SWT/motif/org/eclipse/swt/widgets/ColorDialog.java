@@ -230,7 +230,7 @@ void handleEvents(Event event) {
 	}	
 }
 void initialize4BitColors() {
-	Display display = shell.getDisplay();
+	Display display = shell.display;
 	
 	colorGrid[0][0] = new Color(display, 0, 0, 0);
 	colorGrid[0][1] = new Color(display, 255, 255, 255);
@@ -253,7 +253,7 @@ void initialize4BitColors() {
 	colorGrid[7][1] = new Color(display, 255, 0, 255);
 }
 void initialize8BitColors() {
-	Display display = shell.getDisplay();	
+	Display display = shell.display;
 	int numRows = colorGrid[0].length;
 	int iterationStep = 64;
 	int row = 0, column = 0;
@@ -276,7 +276,7 @@ void initialize8BitColors() {
 	}
 }
 void initialize16BitColors() {
-	Display display = shell.getDisplay();
+	Display display = shell.display;
 	int numRows = colorGrid[0].length;
 	int iterationStep = 51;
 	int row = 0, column = 0;
@@ -301,7 +301,7 @@ void initialize16BitColors() {
 	}
 }
 void initializeWidgets() {
-	Display display = shell.getDisplay();
+	Display display = shell.display;
 	if (rgb != null) {
 		Color selectionColor = new Color(display, rgb);
 		selectionCanvas.setBackground(selectionColor);
@@ -349,7 +349,8 @@ void mouseMove(Event event) {
  */
 public RGB open() {
 	shell = new Shell(parent, getStyle() | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
-	setColorDepth(shell.getDisplay().getDepth());
+	Display display = shell.display;
+	setColorDepth(display.getDepth());
 	createChildren();
 	installListeners();
 	openModal();
@@ -378,7 +379,8 @@ void openDialog() {
 	Point pt = dialog.computeSize(-1, -1, false);
 	
 	// Ensure that the width of the shell fits the display.
-	Rectangle displayRect = dialog.getDisplay().getBounds();
+	Display display = dialog.display;
+	Rectangle displayRect = display.getBounds();
 	int widthLimit = displayRect.width * 7 / 8;
 	int heightLimit = displayRect.height * 7 / 8;
 	if (pt.x > widthLimit) {
@@ -403,7 +405,7 @@ void openDialog() {
 	dialog.open();
 }
 void openModal() {
-	Display display = shell.getDisplay();
+	Display display = shell.display;
 	initializeWidgets();
 	openDialog();
 	while (shell.isDisposed() == false && shell.getVisible() == true) {

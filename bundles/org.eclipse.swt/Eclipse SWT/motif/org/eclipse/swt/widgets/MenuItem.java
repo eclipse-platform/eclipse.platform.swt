@@ -328,11 +328,6 @@ public int getAccelerator () {
 	checkWidget();
 	return accelerator;
 }
-public Display getDisplay () {
-	Menu parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -413,7 +408,7 @@ public boolean getSelection () {
 }
 void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNhelpCallback, windowProc, HELP_CALLBACK);
 	if ((style & SWT.CASCADE) != 0) {
 		OS.XtAddCallback (handle, OS.XmNactivateCallback, windowProc, ACTIVATE_CALLBACK);

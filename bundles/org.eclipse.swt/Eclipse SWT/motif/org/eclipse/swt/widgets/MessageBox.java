@@ -153,7 +153,7 @@ public int open () {
 	Display appContext = Display.getCurrent ();
 	if (destroyContext = (appContext == null)) appContext = new Display ();
 	int parentHandle = appContext.shellHandle;
-	if (parent != null && parent.getDisplay () == appContext)
+	if (parent != null && parent.display == appContext)
 		parentHandle = parent.shellHandle;
 
 	/* Compute the dialog title */	
@@ -388,7 +388,7 @@ void setMessage (int dialogHandle) {
 		OS.XtGetValues (label, argList, argList.length / 2);
 		int fontList = argList [1];
 		if (fontList != 0) {
-			Display display = parent.getDisplay ();
+			Display display = parent.display;
 			int xDisplay = display.xDisplay;
 			int screen = OS.XDefaultScreen (xDisplay);
 			int width = OS.XDisplayWidth (xDisplay, screen);

@@ -746,7 +746,7 @@ void initFaceNameList () {
  * preselect that font in the lists.
  */
 void initFonts () {
-	Display display = shell.getDisplay ();
+	Display display = shell.display;
 	// get all fonts available on the current display
 	addFonts (display.getFontList (null, false));
 	addFonts (display.getFontList (null, true));
@@ -878,7 +878,7 @@ public FontData open () {
 	fontSetList.setData (new Integer (0));
 	updateButtonEnablements ();
 	hookListeners ();
-	Display display = shell.getDisplay ();
+	Display display = shell.display;
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
@@ -906,7 +906,8 @@ void openDialog () {
 	Point pt = shell.computeSize (SWT.DEFAULT, SWT.DEFAULT, false);
 	
 	// Ensure that the width of the shell fits the display.
-	Rectangle displayRect = shell.getDisplay ().getBounds ();
+	Display display = shell.display;
+	Rectangle displayRect = display.getBounds ();
 	int widthLimit = displayRect.width * 7 / 8;
 	int heightLimit = displayRect.height * 7 / 8;
 	if (pt.x > widthLimit) {
@@ -1136,7 +1137,7 @@ void updateSampleColor () {
 		if (sampleColor.getRGB ().equals (rgb)) return;
 		sampleColor.dispose ();
 	}
-	sampleColor = new Color (getParent ().getDisplay (), rgb);
+	sampleColor = new Color (parent.display, rgb);
 	sampleLabel.setForeground (sampleColor);
 }
 
@@ -1154,8 +1155,7 @@ void updateSampleFont () {
 	if (sampleFont != null) sampleFont.dispose ();
 	int selectionIndex = Math.max (0, fontSetList.getSelectionIndex ());
 	fontData [selectionIndex] = selectionFontData;
-	Display display = shell.getDisplay ();
-	sampleFont = new Font (display, selectionFontData);
+	sampleFont = new Font (shell.display, selectionFontData);
 	sampleLabel.setFont (sampleFont);
 }
 

@@ -143,11 +143,6 @@ void createHandle (int index) {
 	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
-public Display getDisplay () {
-	Scrollable parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -328,7 +323,7 @@ public boolean getVisible () {
 	return OS.XtIsManaged (handle);
 }
 void hookEvents () {
-	int windowProc = getDisplay ().windowProc;
+	int windowProc = display.windowProc;
 	OS.XtAddCallback (handle, OS.XmNvalueChangedCallback, windowProc, VALUE_CHANGED_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNdragCallback, windowProc, DRAG_CALLBACK);
 	OS.XtAddCallback (handle, OS.XmNtoBottomCallback, windowProc, TO_BOTTOM_CALLBACK);
@@ -479,7 +474,6 @@ public void setMaximum (int value) {
 	checkWidget();
 	if (value < 0) return;
 	int [] argList = {OS.XmNmaximum, value};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -520,7 +514,6 @@ public void setMinimum (int value) {
 		argList [5] = argList [3] - value;
 	}
 	argList [1] = value;
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -560,7 +553,6 @@ public void setPageIncrement (int value) {
 public void setSelection (int selection) {
 	checkWidget();
 	int [] argList = {OS.XmNvalue, selection};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -584,7 +576,6 @@ public void setThumb (int value) {
 	checkWidget();
 	if (value < 1) return;
 	int [] argList = {OS.XmNsliderSize, value};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);
@@ -627,7 +618,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 		OS.XmNincrement, increment,
 		OS.XmNpageIncrement, pageIncrement,
 	};
-	Display display = getDisplay ();
 	boolean warnings = display.getWarnings ();
 	display.setWarnings (false);
 	OS.XtSetValues (handle, argList, argList.length / 2);

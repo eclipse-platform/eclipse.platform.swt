@@ -265,12 +265,6 @@ public int getAlignment () {
 Rectangle getBounds() {
 	return new Rectangle(bounds.x, bounds.y, bounds.width, bounds.height);	// copy the object to prevent changes
 }
-public Display getDisplay() {
-	if (parent == null) {		// access parent field directly to prevent endless recursion
-		error(SWT.ERROR_WIDGET_DISPOSED);
-	}
-	return parent.getDisplay();
-}
 /**
  * Answer the index of the receiver. Specifies the position of the
  * receiver relative to other columns in the parent.
