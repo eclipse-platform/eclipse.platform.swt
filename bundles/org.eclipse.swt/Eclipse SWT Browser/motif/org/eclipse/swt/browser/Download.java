@@ -168,23 +168,23 @@ int Release() {
 /* Note. The argument startTime is defined as a PRInt64. This translates into two java ints. */
 public int Init(int aSource, int aTarget, int aDisplayName, int aMIMEInfo, int startTime1, int startTime2, int aPersist) {
 	nsIURI source = new nsIURI(aSource);
-	int aSpec = XPCOM.nsCString_new();
+	int aSpec = XPCOM.nsEmbedCString_new();
 	source.GetHost(aSpec);
-	int length = XPCOM.nsCString_Length(aSpec);
-	int buffer = XPCOM.nsCString_get(aSpec);
+	int length = XPCOM.nsEmbedCString_Length(aSpec);
+	int buffer = XPCOM.nsEmbedCString_get(aSpec);
 	byte[] dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
-	XPCOM.nsCString_delete(aSpec);
+	XPCOM.nsEmbedCString_delete(aSpec);
 	String url = new String(dest);
 	
 	nsILocalFile target = new nsILocalFile(aTarget);
-	int aNativeTarget = XPCOM.nsCString_new();
+	int aNativeTarget = XPCOM.nsEmbedCString_new();
 	target.GetNativeLeafName(aNativeTarget);
-	length = XPCOM.nsCString_Length(aSpec);
-	buffer = XPCOM.nsCString_get(aSpec);
+	length = XPCOM.nsEmbedCString_Length(aSpec);
+	buffer = XPCOM.nsEmbedCString_get(aSpec);
 	dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
-	XPCOM.nsCString_delete(aNativeTarget);
+	XPCOM.nsEmbedCString_delete(aNativeTarget);
 	String file = new String(dest);
 	
 	Listener listener = new Listener() {

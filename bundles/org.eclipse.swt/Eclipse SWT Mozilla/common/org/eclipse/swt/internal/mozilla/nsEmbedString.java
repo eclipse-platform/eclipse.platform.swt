@@ -27,18 +27,18 @@
  * ***** END LICENSE BLOCK ***** */
 package org.eclipse.swt.internal.mozilla;
 
-public class nsString {
+public class nsEmbedString {
 	private int handle;
 	
-public nsString() {
-	handle = XPCOM.nsString_new();
+public nsEmbedString() {
+	handle = XPCOM.nsEmbedString_new();
 }
 
-public nsString(String string) {
+public nsEmbedString(String string) {
 	if (string != null) {
 	   char[] aString = new char[string.length() + 1];
 	   string.getChars(0, string.length(), aString, 0);
-	   handle = XPCOM.nsString_new(aString);
+	   handle = XPCOM.nsEmbedString_new(aString);
 	}   
 }
 
@@ -48,8 +48,8 @@ public int getAddress() {
 	
 public String toString() {
 	if (handle == 0) return null;
-	int length = XPCOM.nsString_Length(handle);
-	int buffer = XPCOM.nsString_get(handle);
+	int length = XPCOM.nsEmbedString_Length(handle);
+	int buffer = XPCOM.nsEmbedString_get(handle);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, buffer, length * 2);
 	return new String(dest);
@@ -57,7 +57,7 @@ public String toString() {
 	
 public void dispose() {
 	if (handle == 0) return;			
-	XPCOM.nsString_delete(handle);
+	XPCOM.nsEmbedString_delete(handle);
 	handle = 0; 	
 }	
 }

@@ -42,18 +42,26 @@ GNOMECFLAGS = `pkg-config --cflags gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-
 GNOMELIBS = `pkg-config --libs gnome-vfs-module-2.0 libgnome-2.0 libgnomeui-2.0`
 
 MOZILLACFLAGS = -O \
-	-fno-rtti	\
-	-Wall	\
+	-DXPCOM_GLUE=1 \
+	-DMOZILLA_STRICT_API=1 \
+	-fno-rtti \
+	-fno-exceptions \
+	-Wall \
+	-Wno-non-virtual-dtor \
+	-fPIC \
 	-I./ \
-	-I$(JAVA_HOME)	\
-	-include $(MOZILLA_HOME)/include/mozilla-config.h \
-	-I$(MOZILLA_HOME)/include \
-	-I$(MOZILLA_HOME)/include/xpcom \
-	-I$(MOZILLA_HOME)/include/string \
-	-I$(MOZILLA_HOME)/include/nspr \
-	-I$(MOZILLA_HOME)/include/embed_base \
-	-I$(MOZILLA_HOME)/include/gfx
-MOZILLALIBS = -L$(MOZILLA_HOME)/lib -lembed_base_s -lxpcom -s
+	-I$(GECKO_SDK)	\
+	-include $(GECKO_SDK)/mozilla-config.h \
+	-I$(GECKO_SDK)/nspr/include \
+	-I$(GECKO_SDK)/xpcom/include \
+	-I$(GECKO_SDK)/string/include \
+	-I$(GECKO_SDK)/embed_base/include \
+	-I$(GECKO_SDK)/embedstring/include
+MOZILLALIBS = -shared -Wl,--version-script=mozilla_exports -Bsymbolic \
+	-L$(GECKO_SDK)/embedstring/bin -lembedstring \
+	-L$(GECKO_SDK)/embed_base/bin -lembed_base_s \
+	-L$(GECKO_SDK)/xpcom/bin -lxpcomglue_s -lxpcom \
+	-L$(GECKO_SDK)/nspr/bin -lnspr4 -lplds4 -lplc4
 
 SWT_OBJECTS = swt.o callback.o
 AWT_OBJECTS = swt_awt.o
@@ -148,7 +156,7 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 make_mozilla:$(MOZILLA_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
-	$(CXX) $(LIBS) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
+	$(CXX) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
 
 xpcom.o: xpcom.cpp
 	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp	

@@ -128,12 +128,12 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 		_retval = arg4;
 	}
 	result[0] = 0;
-	int length = XPCOM.nsCRT_strlen_PRUnichar(aDefaultFile);
+	int length = XPCOM.strlen_PRUnichar(aDefaultFile);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aDefaultFile, length * 2);
 	String defaultFile = new String(dest);
 
-	length = XPCOM.nsCRT_strlen_PRUnichar(aSuggestedFileExtension);
+	length = XPCOM.strlen_PRUnichar(aSuggestedFileExtension);
 	dest = new char[length];
 	XPCOM.memmove(dest, aSuggestedFileExtension, length * 2);
 	String suggestedFileExtension = new String(dest);
@@ -152,7 +152,7 @@ public int PromptForSaveToFile(int arg0, int arg1, int arg2, int arg3, int arg4)
 		}
 		return XPCOM.NS_ERROR_FAILURE;
 	}
-	nsString path = new nsString(name);
+	nsEmbedString path = new nsEmbedString(name);
 	rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, result);
 	path.dispose();
 	if (rc != XPCOM.NS_OK) Browser.error(rc);

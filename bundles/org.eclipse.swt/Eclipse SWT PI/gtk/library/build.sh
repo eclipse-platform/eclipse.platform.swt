@@ -17,7 +17,7 @@ cd `dirname $0`
 makefile="make_linux.mak"
 CC=gcc
 LD=gcc
-MOZILLA_HOME=/mozilla/mozilla/1.6/linux_gtk2/mozilla/dist
+GECKO_SDK=/mozilla/mozilla/1.4/linux_gtk2/mozilla/dist/sdk
 MODEL=`uname -m`
 
 case $MODEL in
@@ -34,6 +34,6 @@ case $MODEL in
 		;;
 esac
 
-export CC LD JAVA_HOME AWT_LIB_PATH XTEST_LIB_PATH MOZILLA_HOME SWT_PTR_CFLAGS
+export CC LD JAVA_HOME AWT_LIB_PATH XTEST_LIB_PATH GECKO_SDK SWT_PTR_CFLAGS
 
 make -f $makefile ${1} ${2} ${3} ${4}

@@ -68,7 +68,6 @@ public class Browser extends Composite {
 	VisibilityWindowListener[] visibilityWindowListeners = new VisibilityWindowListener[0];
 
 	static nsIAppShell AppShell;
-	static AppFileLocProvider LocProvider; 
 	static WindowCreator WindowCreator;
 	static int BrowserCount;
 	static boolean mozilla;
@@ -137,7 +136,7 @@ public Browser(Composite parent, int style) {
 		}
 
 		int[] retVal = new int[1];
-		nsString path = new nsString(mozillaPath);
+		nsEmbedString path = new nsEmbedString(mozillaPath);
 		int rc = XPCOM.NS_NewLocalFile(path.getAddress(), true, retVal);
 		path.dispose();
 		if (rc != XPCOM.NS_OK) error(rc);
@@ -147,8 +146,6 @@ public Browser(Composite parent, int style) {
 		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), 0);
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
-			if (LocProvider != null) LocProvider.Release();
-			LocProvider = null;
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES, null, " [NS_InitEmbedding "+mozillaPath+" error "+rc+"]");
 		}
@@ -783,14 +780,14 @@ public String getUrl() {
 	byte[] dest = null;
 	if (aCurrentURI[0] != 0) {
 		nsIURI uri = new nsIURI(aCurrentURI[0]);
-		int aSpec = XPCOM.nsCString_new();
+		int aSpec = XPCOM.nsEmbedCString_new();
 		rc = uri.GetSpec(aSpec);
 		if (rc != XPCOM.NS_OK) error(rc);
-		int length = XPCOM.nsCString_Length(aSpec);
-		int buffer = XPCOM.nsCString_get(aSpec);
+		int length = XPCOM.nsEmbedCString_Length(aSpec);
+		int buffer = XPCOM.nsEmbedCString_get(aSpec);
 		dest = new byte[length];
 		XPCOM.memmove(dest, buffer, length);
-		XPCOM.nsCString_delete(aSpec);
+		XPCOM.nsEmbedCString_delete(aSpec);
 		uri.Release();
 	}
 	return dest != null ? new String(dest) : ""; //$NON-NLS-1$
@@ -1530,9 +1527,9 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 				* is about:blank.  The fix is to specify the file protocol.
 				*/
 				byte[] aString = "file:".getBytes(); //$NON-NLS-1$
-				int aSpec = XPCOM.nsCString_new(aString, aString.length);
+				int aSpec = XPCOM.nsEmbedCString_new(aString, aString.length);
 				rc = ioService.NewURI(aSpec, null, 0, result);
-				XPCOM.nsCString_delete(aSpec);
+				XPCOM.nsEmbedCString_delete(aSpec);
 				if (rc != XPCOM.NS_OK) error(rc);
 				if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
 				ioService.Release();
@@ -1564,14 +1561,14 @@ int OnStateChange(int aWebProgress, int aRequest, int aStateFlags, int aStatus) 
 				byte[] buffer = contentType.getBytes();
 				byte[] contentTypeBuffer = new byte[buffer.length + 1];
 				System.arraycopy(buffer, 0, contentTypeBuffer, 0, buffer.length);
-				int aContentType = XPCOM.nsCString_new(contentTypeBuffer, contentTypeBuffer.length);
+				int aContentType = XPCOM.nsEmbedCString_new(contentTypeBuffer, contentTypeBuffer.length);
 				rc = inputStreamChannel.SetContentType(aContentType);
-				XPCOM.nsCString_delete(aContentType);
+				XPCOM.nsEmbedCString_delete(aContentType);
 				if (rc != XPCOM.NS_OK) error(rc);
 				byte[] contentCharsetBuffer = "UTF-8".getBytes(); //$NON-NLS-1$
-				int aContentCharset = XPCOM.nsCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
+				int aContentCharset = XPCOM.nsEmbedCString_new(contentCharsetBuffer, contentCharsetBuffer.length);
 				rc = inputStreamChannel.SetContentCharset(aContentCharset);
-				XPCOM.nsCString_delete(aContentCharset);
+				XPCOM.nsEmbedCString_delete(aContentCharset);
 				if (rc != XPCOM.NS_OK) error(rc);
 				rc = inputStreamChannel.SetLoadGroup(loadGroup.getAddress());
 				if (rc != XPCOM.NS_OK) error(rc);
@@ -1718,13 +1715,13 @@ int OnLocationChange(int aWebProgress, int aRequest, int aLocation) {
 	topWindow.Release();
 	
 	nsIURI location = new nsIURI(aLocation);
-	int aSpec = XPCOM.nsCString_new();
+	int aSpec = XPCOM.nsEmbedCString_new();
 	location.GetSpec(aSpec);
-	int length = XPCOM.nsCString_Length(aSpec);
-	int buffer = XPCOM.nsCString_get(aSpec);
+	int length = XPCOM.nsEmbedCString_Length(aSpec);
+	int buffer = XPCOM.nsEmbedCString_get(aSpec);
 	byte[] dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
-	XPCOM.nsCString_delete(aSpec);
+	XPCOM.nsEmbedCString_delete(aSpec);
 
 	LocationEvent event = new LocationEvent(this);
 	event.display = getDisplay();
@@ -1742,7 +1739,7 @@ int OnStatusChange(int aWebProgress, int aRequest, int aStatus, int aMessage) {
 	StatusTextEvent event = new StatusTextEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	int length = XPCOM.nsCRT_strlen_PRUnichar(aMessage);
+	int length = XPCOM.strlen_PRUnichar(aMessage);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aMessage, length * 2);
 	event.text = new String(dest);
@@ -1762,7 +1759,7 @@ int SetStatus(int statusType, int status) {
 	StatusTextEvent event = new StatusTextEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	int length = XPCOM.nsCRT_strlen_PRUnichar(status);
+	int length = XPCOM.strlen_PRUnichar(status);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, status, length * 2);
 	String string = new String(dest);
@@ -1886,7 +1883,7 @@ int SetTitle(int aTitle) {
 	TitleEvent event = new TitleEvent(this);
 	event.display = getDisplay();
 	event.widget = this;
-	int length = XPCOM.nsCRT_strlen_PRUnichar(aTitle);
+	int length = XPCOM.strlen_PRUnichar(aTitle);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aTitle, length * 2);
 	event.title = new String(dest);
@@ -1957,14 +1954,14 @@ int OnStartURIOpen(int aURI, int retval) {
 	if (locationListeners.length == 0) return XPCOM.NS_OK;
 	
 	nsIURI location = new nsIURI(aURI);
-	int aSpec = XPCOM.nsCString_new();
+	int aSpec = XPCOM.nsEmbedCString_new();
 	location.GetSpec(aSpec);
-	int length = XPCOM.nsCString_Length(aSpec);
-	int buffer = XPCOM.nsCString_get(aSpec);
-	buffer = XPCOM.nsCString_get(aSpec);
+	int length = XPCOM.nsEmbedCString_Length(aSpec);
+	int buffer = XPCOM.nsEmbedCString_get(aSpec);
+	buffer = XPCOM.nsEmbedCString_get(aSpec);
 	byte[] dest = new byte[length];
 	XPCOM.memmove(dest, buffer, length);
-	XPCOM.nsCString_delete(aSpec);
+	XPCOM.nsEmbedCString_delete(aSpec);
 	
 	boolean doit = true;
 	if (request == 0) {
@@ -2013,7 +2010,7 @@ int SetParentContentListener(int aParentContentListener) {
 /* nsITooltipListener */
 
 int OnShowTooltip(int aXCoords, int aYCoords, int aTipText) {
-	int length = XPCOM.nsCRT_strlen_PRUnichar(aTipText);
+	int length = XPCOM.strlen_PRUnichar(aTipText);
 	char[] dest = new char[length];
 	XPCOM.memmove(dest, aTipText, length * 2);
 	String text = new String(dest);
