@@ -356,6 +356,10 @@ int getMargin (int index) {
 	return margin;
 }
 
+Control findThemeControl () {
+	return null;
+}
+
 /**
  * Returns the item that is currently displayed at the given,
  * zero-relative index. Throws an exception if the index is

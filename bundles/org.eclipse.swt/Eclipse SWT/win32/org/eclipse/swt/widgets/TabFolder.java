@@ -303,9 +303,7 @@ void drawThemeBackground (int hDC, RECT rect) {
 }
 
 Control findThemeControl () {
-	// TEMPORARY CODE
-	return null;
-	//return background == -1 ? this : null;	
+	return background == -1 ? this : null;	
 }
 
 public Rectangle getClientArea () {

@@ -986,8 +986,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				child.postEvent (SWT.Selection, event);
 			}
 			break;
-		case OS.NM_CUSTOMDRAW: 
-			if (background == -1) break;
+		case OS.NM_CUSTOMDRAW:			
+			if (findThemeControl() == null && background == -1) break;
 			NMCUSTOMDRAW nmcd = new NMCUSTOMDRAW ();
 			OS.MoveMemory (nmcd, lParam, NMCUSTOMDRAW.sizeof);
 			switch (nmcd.dwDrawStage) {
