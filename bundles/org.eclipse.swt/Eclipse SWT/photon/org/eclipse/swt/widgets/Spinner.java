@@ -82,11 +82,15 @@ protected void checkSubclass () {
 void createHandle (int index) {
 	state |= HANDLE;
 	int parentHandle = parent.parentingHandle ();
+	boolean hasBorder = (style & SWT.BORDER) != 0;
+	int textFlags = (style & SWT.READ_ONLY) != 0 ? 0 : OS.Pt_EDITABLE;
 	int [] args = new int [] {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		OS.Pt_ARG_NUMERIC_INCREMENT, 1, 0,
 		OS.Pt_ARG_NUMERIC_MIN, 0, 0,
 		OS.Pt_ARG_NUMERIC_MAX, 100, 0,
+		OS.Pt_ARG_TEXT_FLAGS, textFlags, OS.Pt_EDITABLE,
+		OS.Pt_ARG_FLAGS, hasBorder ? OS.Pt_HIGHLIGHTED : 0, OS.Pt_HIGHLIGHTED,
 	};
 	handle = OS.PtCreateWidget (display.PtNumericInteger, parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -178,14 +182,66 @@ void addVerifyListener (VerifyListener listener) {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	int width = 0, height = 0;
+	checkWidget ();	
+	int [] args = new int [] {
+		OS.Pt_ARG_TEXT_FONT, 0, 0,
+		OS.Pt_ARG_NUMERIC_MAX, 0, 0,
+		OS.Pt_ARG_NUMERIC_UPDOWN_WIDTH, 0, 0,
+	};
+	OS.PtGetResources (handle, args.length / 3, args);
+	int width = wHint;
+	int height = hHint;
+	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+		int ptr = args [1];	 
+		int length = OS.strlen (ptr);
+		byte [] font = new byte [length + 1];
+		OS.memmove (font, ptr, length);	
+		String string = String.valueOf (args [4]);	
+		PhRect_t rect = new PhRect_t ();
+		int size = string.length ();
+		char [] buffer = new char [size];
+		string.getChars (0, size, buffer, 0);	
+		OS.PfExtentWideText (rect, null, font, buffer, size * 2);
+		if (wHint == SWT.DEFAULT) width = rect.lr_x - rect.ul_x + 1;
+		if (hHint == SWT.DEFAULT) height = rect.lr_y - rect.ul_y + 1;
+	}
 	Rectangle trim = computeTrim (0, 0, width, height);
-	return new Point (trim.width, trim.height);
+	if (hHint == SWT.DEFAULT) {
+		trim.height = Math.max (trim.height, args [7] * 2);
+	}
+	return new Point (trim.width, trim.height);	
 }
 
-public Rectangle computeTrim (int x, int y, int width, int height) {
-	checkWidget ();
+public Rectangle computeTrim(int x, int y, int width, int height) {
+	int border = getBorderWidth ();
+	x -= border;
+	y -= border;
+	width += 2 * border;
+	height += 2 * border;
+	int [] args = new int [] {
+		OS.Pt_ARG_NUMERIC_SPACING, 0, 0,		// 1
+		OS.Pt_ARG_NUMERIC_UPDOWN_WIDTH, 0, 0,	// 4
+//		OS.Pt_ARG_NUMERIC_TEXT_BORDER, 0, 0,	// 7
+	};
+	OS.PtGetResources (handle, args.length / 3, args);
+	
+	/*
+	* Note: Pt_ARG_NUMERIC_TEXT_BORDER is defined in the
+	* documentation (default value 2) but is not defined
+	* in the include files on QNX 6.2.1.
+	*/
+	int textBorder = 2;
+	width += args [1] + args [4] + 2 * textBorder;
+	height += 2 * textBorder;
+	int textHandle = OS.PtWidgetChildBack (handle);
+	args = new int [] {
+		OS.Pt_ARG_MARGIN_WIDTH, 0, 0,		// 1
+		OS.Pt_ARG_MARGIN_LEFT, 0, 0,		// 4
+		OS.Pt_ARG_MARGIN_RIGHT, 0, 0,		// 7
+		OS.Pt_ARG_TEXT_CURSOR_WIDTH, 0, 0, 	// 10
+	};
+	OS.PtGetResources (textHandle, args.length / 3, args);
+	width += args [1] + args [4] + args [7] + args [10];	
 	return new Rectangle (x, y, width, height);
 }
 
@@ -202,6 +258,18 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
  */
 public void copy () {
 	checkWidget ();
+	int textHandle = OS.PtWidgetChildBack (handle);
+	if (textHandle != 0) {
+		int [] start = new int [1], end = new int [1];
+		int length = OS.PtTextGetSelection (textHandle, start, end);
+		if (length <= 0) return;
+		int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
+		OS.PtGetResources (textHandle, args.length / 3, args);
+		byte[] buffer = new byte[length + 1];
+		OS.memmove (buffer, args [1] + start [0], length);
+		int ig = OS.PhInputGroup (0);
+		OS.PhClipboardCopyString((short)ig, buffer);
+	}
 }
 
 /**
@@ -219,6 +287,34 @@ public void copy () {
 public void cut () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
+	int textHandle = OS.PtWidgetChildBack (handle);
+	if (textHandle != 0) {
+		int [] start = new int [1], end = new int [1];
+		int length = OS.PtTextGetSelection (handle, start, end);
+		if (length <= 0) return;
+		int [] args = {OS.Pt_ARG_TEXT_STRING, 0, 0};
+		OS.PtGetResources (textHandle, args.length / 3, args);
+		byte[] buffer = new byte[length + 1];
+		OS.memmove (buffer, args [1] + start [0], length);
+		int ig = OS.PhInputGroup (0);
+		OS.PhClipboardCopyString((short)ig, buffer);
+		buffer = new byte[0];
+		OS.PtTextModifyText (textHandle, start [0], end [0], start [0], buffer, buffer.length);
+	}
+}
+
+void deregister () {
+	super.deregister ();
+	int textHandle = OS.PtWidgetChildBack (handle);
+	WidgetTable.remove (textHandle);
+}
+
+int defaultBackground () {
+	return display.TEXT_BACKGROUND;
+}
+
+int defaultForeground () {
+	return display.TEXT_FOREGROUND;
 }
 
 /**
@@ -307,6 +403,10 @@ public int getSelection () {
 	return args [1];
 }
 
+boolean hasFocus () {
+	return OS.PtIsFocused (handle) != 0;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	int windowProc = display.windowProc;
@@ -328,6 +428,22 @@ void hookEvents () {
 public void paste () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) return;
+	int textHandle = OS.PtWidgetChildBack (handle);
+	if (textHandle != 0) {		
+		int ig = OS.PhInputGroup (0);
+		int ptr = OS.PhClipboardPasteString((short)ig);
+		if (ptr == 0) return;
+		int length = OS.strlen (ptr);
+		int [] start = new int [1], end = new int [1];
+		OS.PtTextGetSelection (handle, start, end);
+		if (start [0] == -1) {
+			int [] args = {OS.Pt_ARG_CURSOR_POSITION, 0, 0};
+			OS.PtGetResources (handle, args.length / 3, args);
+			start [0] = end [0] = args [1];	
+		}
+		OS.PtTextModifyText (handle, start [0], end [0], end [0], ptr, length);
+		OS.free(ptr);
+	}
 }
 
 int Pt_CB_NUMERIC_CHANGED (int widget, int info) {
@@ -345,6 +461,12 @@ int Pt_CB_NUMERIC_CHANGED (int widget, int info) {
 			break;	
 	}	
 	return OS.Pt_CONTINUE;
+}
+
+void register () {
+	super.register ();
+	int textHandle = OS.PtWidgetChildBack (handle);
+	WidgetTable.put (textHandle, this);
 }
 
 /**
@@ -508,6 +630,19 @@ public void setPageIncrement (int value) {
 public void setSelection (int value) {
 	checkWidget ();
 	OS.PtSetResource (handle, OS.Pt_ARG_NUMERIC_VALUE, value, 0);
+}
+
+boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
+	boolean translated = super.translateTraversal (key_sym, phEvent);
+	if (!translated && key_sym == OS.Pk_Return) {
+		postEvent (SWT.DefaultSelection);
+		return false;
+	}
+	return translated;
+}
+
+int widgetClass () {
+	return OS.PtNumericInteger ();
 }
 
 }

@@ -354,6 +354,8 @@ public class OS extends Platform {
 	public static final int Pt_ARG_NUMERIC_INCREMENT = 0xcf0b;
 	public static final int Pt_ARG_NUMERIC_MAX = 0xcf0e;
 	public static final int Pt_ARG_NUMERIC_MIN = 0xcf0d;
+	public static final int Pt_ARG_NUMERIC_SPACING = 0xcf19;
+	public static final int Pt_ARG_NUMERIC_UPDOWN_WIDTH = 0xcf0a;
 	public static final int Pt_ARG_NUMERIC_VALUE = 0xcf0c;
 	public static final int Pt_ARG_ORIENTATION = 0x520d;
 	public static final int Pt_ARG_OUTLINE_COLOR = 0x7e6;
@@ -375,6 +377,7 @@ public class OS extends Platform {
 	public static final int Pt_ARG_SEP_FLAGS = 0x7530;
 	public static final int Pt_ARG_SEP_TYPE = 0x7532;
 	public static final int Pt_ARG_SLIDER_SIZE = 0x714f;
+	public static final int Pt_ARG_TEXT_CURSOR_WIDTH = 0xbf2;
 	public static final int Pt_ARG_TEXT_FLAGS = 0xfa8;
 	public static final int Pt_ARG_TEXT_FONT = 0xbc2;
 	public static final int Pt_ARG_TEXT_STRING = 0xbc3;
