@@ -1527,6 +1527,15 @@ void setTopIndex(int index, boolean adjustScrollbar) {
 	super.setTopIndex(index, adjustScrollbar);
 	calculateWidestScrolledItem(indexDiff);
 }
+public void setTopItem(TreeItem item) {
+	checkWidget();
+	if (item == null) error(SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (item.isVisible() == false) {
+		item.makeVisible();
+	}
+	scrollExpandedItemsIntoView(item);
+}
 /**
  * Shows the item.  If the item is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled
@@ -1620,6 +1629,10 @@ public TreeItem getItem(Point point) {
 public int getSelectionCount() {
 	checkWidget();
 	return super.getSelectionCount();
+}
+public TreeItem getTopItem() {
+	checkWidget();
+	return (TreeItem)getVisibleItem(getTopIndex());
 }
 /**
  * Shows the selection.  If the selection is already showing in the receiver,

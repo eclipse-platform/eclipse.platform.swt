@@ -517,6 +517,18 @@ public int getSelectionCount () {
 	return display.treeSelectionLength;
 }
 
+public TreeItem getTopItem () {
+	checkWidget ();
+	int [] path = new int [1];
+	if (!OS.gtk_tree_view_get_path_at_pos (handle, 1, 1, path, null, null, null)) return null;
+	int iter = OS.g_malloc (OS.GtkTreeIter_sizeof());
+	OS.gtk_tree_model_get_iter (modelHandle, iter, path [0]);
+	int [] index = new int [1];
+	OS.gtk_tree_model_get (modelHandle, iter, 4, index, -1);
+	OS.g_free (iter);
+	OS.gtk_tree_path_free (path [0]);
+	return items [index [0]];
+}
 int gtk_changed (int widget) {
 	TreeItem item = getFocusItem ();
 	if (item != null) {
@@ -643,12 +655,6 @@ void hookEvents () {
 	if (checkRenderer != 0) {
 		OS.g_signal_connect (checkRenderer, OS.toggled, display.windowProc3, TOGGLED);
 	}
-}
-
-boolean isItemVisible (int path) {
-	GdkRectangle rect = new GdkRectangle ();
-	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
-	return !(rect.y == 0 && rect.height == 0);
 }
 
 int paintWindow () {
@@ -841,18 +847,25 @@ public void setSelection (TreeItem [] items) {
 		if (item.isDisposed ()) break;
 		if (first) {
 			int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
-			showItem (path);
+			showItem (path, true);
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
 			OS.gtk_tree_path_free (path);
 			first = false;
 		}
 		OS.gtk_tree_selection_select_iter (selection, item.handle);
-		if ((style & SWT.SINGLE) != 0) {
-			OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-			return;
-		}
+		if ((style & SWT.SINGLE) != 0) break;
 	}
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
+}
+
+public void setTopItem (TreeItem item) {
+	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
+	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
+	showItem (path, false);
+	int depth = OS.gtk_tree_path_get_depth (path);
+	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.0f, 0.5f);
+	OS.gtk_tree_path_free (path);
 }
 
 /**
@@ -876,8 +889,10 @@ public void showSelection () {
 	if (items.length != 0 && items [0] != null) showItem (items [0]);
 }
 
-void showItem (int path) {
-	if (isItemVisible (path)) return;
+void showItem (int path, boolean scroll) {
+	GdkRectangle rect = new GdkRectangle ();
+	OS.gtk_tree_view_get_cell_area (handle, path, 0, rect);
+	if (rect.y != 0 || rect.height != 0) return;
 	int depth = OS.gtk_tree_path_get_depth (path);
 	if (depth > 1) {
 		int [] indices = new int [depth - 1];
@@ -890,7 +905,9 @@ void showItem (int path) {
 		}
 		OS.gtk_tree_path_free (tempPath);		
 	}
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.5f);
+	if (scroll) {
+		OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.5f);
+	}
 }
 
 /**
@@ -916,7 +933,7 @@ public void showItem (TreeItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed ()) error(SWT.ERROR_INVALID_ARGUMENT);
 	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
-	showItem (path);
+	showItem (path, true);
 	OS.gtk_tree_path_free (path);
 }
 

@@ -601,6 +601,31 @@ public int getSelectionCount () {
 	return count;
 }
 
+/**
+ * Returns the item which is currently at the top of the receiver.
+ * This item can change when items are expanded, collapsed, scrolled
+ * or new items are added or removed.
+ *
+ * @return the item at the top of the receiver 
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
+public TreeItem getTopItem () {
+	checkWidget ();
+	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+	if (hItem == 0) return null;
+	TVITEM tvItem = new TVITEM ();
+	tvItem.mask = OS.TVIF_PARAM;
+	tvItem.hItem = hItem;
+	if (OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem) == 0) return null;
+	return items  [tvItem.lParam];
+}
+
 int imageIndex (Image image) {
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
@@ -1019,6 +1044,33 @@ public void setSelection (TreeItem [] items) {
 		}
 	}
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
+}
+
+/**
+ * Sets the item which is currently at the top of the receiver.
+ * This item can change when items are expanded, collapsed, scrolled
+ * or new items are added or removed.
+ *
+ * @param item the item to be shown
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the item is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the item has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Tree#getTopItem()
+ * 
+ * @since 2.1
+ */
+public void setTopItem (TreeItem item) {
+	checkWidget ();
+	if (item == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	if (item.isDisposed ()) SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, item.handle);
 }
 
 void showItem (int hItem) {
