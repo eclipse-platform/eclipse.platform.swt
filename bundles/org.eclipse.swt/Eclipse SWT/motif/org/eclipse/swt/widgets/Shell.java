@@ -351,6 +351,9 @@ void adjustTrim () {
 	if (OS.XtIsSubclass (shellHandle, OS.OverrideShellWidgetClass ())) {
 		return;
 	}
+	int [] argList = {OS.XmNoverrideRedirect, 0};
+	OS.XtGetValues (shellHandle, argList, argList.length / 2);
+	if (argList [1] != 0) return;
 	
 	/* Query the trim insets */
 	int shellWindow = OS.XtWindow (shellHandle);
@@ -537,6 +540,7 @@ void createHandle (int index) {
 		OS.XmNoverrideRedirect, (style & SWT.ON_TOP) != 0 ? 1 : 0,
 		OS.XmNtitle, ptr,
 	};
+	if ((style & SWT.ON_TOP) != 0) reparented = true;
 	byte [] appClass = display.appClass;
 	if (parent == null && (style & SWT.ON_TOP) == 0) {
 		int xDisplay = display.xDisplay;
