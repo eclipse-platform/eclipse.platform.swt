@@ -188,9 +188,10 @@ public boolean forceFocus () {
 	* is not set. This does not happen when the widget is a
 	* PtContainer. The fix is to set the flag before calling it.
 	*/
+	int flags = OS.PtWidgetFlags (handle);
 	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, OS.Pt_GETS_FOCUS, OS.Pt_GETS_FOCUS);
 	boolean result = super.forceFocus ();
-	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, 0, OS.Pt_GETS_FOCUS);
+	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, flags, OS.Pt_GETS_FOCUS);
 	return result;
 }
 
