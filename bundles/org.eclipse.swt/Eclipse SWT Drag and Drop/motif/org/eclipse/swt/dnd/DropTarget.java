@@ -138,7 +138,7 @@ public DropTarget(Control control, int style) {
 			switch (event.type) {
 				case SWT.Dispose: {
 					if (!DropTarget.this.isDisposed()){
-						DropTarget.this.dispose();
+						onDispose();
 					}
 					break;
 				}
@@ -181,15 +181,10 @@ public DropTarget(Control control, int style) {
 	
 	this.addListener (SWT.Dispose, new Listener () {
 		public void handleEvent (Event event) {
-			Display display = event.display;
-			display.asyncExec(new Runnable() {
-				public void run() {
-					if (DropTarget.this.control == null || 
-						DropTarget.this.control.isDisposed()) return;
+			if (DropTarget.this.control == null || 
+				DropTarget.this.control.isDisposed()) return;
 			
-					unregisterDropTarget();
-				}
-			});
+			unregisterDropTarget();
 			onDispose();
 		}
 	});
