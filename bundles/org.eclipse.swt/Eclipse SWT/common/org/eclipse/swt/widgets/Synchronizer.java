@@ -6,7 +6,8 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.*;
- 
+import org.eclipse.swt.internal.*;
+
 /**
  * Instances of this class provide synchronization support
  * for displays. A default instance is created automatically
@@ -141,7 +142,7 @@ protected void syncExec (Runnable runnable) {
 			}
 		}
 		if (interrupted) {
-			Thread.currentThread ().interrupt ();
+			Compatability.interrupt ();
 		}
 		if (lock.throwable != null) {
 			SWT.error (SWT.ERROR_FAILED_EXEC, lock.throwable);

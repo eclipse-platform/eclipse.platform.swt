@@ -1687,8 +1687,6 @@ static String findErrorText (int code) {
 	return "Unknown error";
 }
 
-private static ResourceBundle msgs = null;
-
 /**
  * Returns the NLS'ed message for the given argument.
  * 
@@ -1700,24 +1698,7 @@ private static ResourceBundle msgs = null;
  * </ul>
  */
 public static String getMessage(String key) {
-	String answer = key;
-	
-	if (key == null) {
-		error (ERROR_NULL_ARGUMENT);
-	}
-	if (msgs == null) {
-		try {
-			msgs = ResourceBundle.getBundle("org.eclipse.swt.SWTMessages");
-		} catch (MissingResourceException ex) {
-			answer = key + " (no resource bundle)";
-		}
-	}
-	if (msgs != null) {
-		try {
-			answer = msgs.getString(key);
-		} catch (MissingResourceException ex2) {}
-	}
-	return answer;
+	return Compatability.getMessage(key);
 }
 	
 /**

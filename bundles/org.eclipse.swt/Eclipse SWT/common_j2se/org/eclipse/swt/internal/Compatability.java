@@ -78,6 +78,8 @@ public static OutputStream newFileOutputStream (String filename) throws IOError 
 	return new FileOutputStream(filename);
 }
 
+private static ResourceBundle msgs = null;
+
 /**
  * Returns the NLS'ed message for the given argument.
  * 
@@ -107,6 +109,14 @@ public static String getMessage(String key) {
 		} catch (MissingResourceException ex2) {}
 	}
 	return answer;
+}
+	
+/**
+ * Interrupt the current thread. Note that this is not
+ * available on CLDC.
+ */
+public static void interrupt() {
+	Thread.currentThread ().interrupt ();
 }
 
 }

@@ -1,5 +1,6 @@
 package org.eclipse.swt.internal;
 
+
 import java.io.*;
 import org.eclipse.swt.*;
 
@@ -90,24 +91,47 @@ public static OutputStream newFileOutputStream (String filename) throws IOExcept
  * </ul>
  */
 public static String getMessage(String key) {
-	String answer = key;
-	
-	if (key == null) {
-		error (ERROR_NULL_ARGUMENT);
-	}
-	if (msgs == null) {
-		try {
-			msgs = ResourceBundle.getBundle("org.eclipse.swt.SWTMessages");
-		} catch (MissingResourceException ex) {
-			answer = key + " (no resource bundle)";
-		}
-	}
-	if (msgs != null) {
-		try {
-			answer = msgs.getString(key);
-		} catch (MissingResourceException ex2) {}
-	}
-	return answer;
+	if (key.equals( "SWT_Yes"))
+		return "Yes";
+	if (key.equals("SWT_No"))
+		return "No";
+	if (key.equals("SWT_OK")) 
+		return "OK";
+	if (key.equals("SWT_Cancel"))
+	 	return "Cancel";
+	if (key.equals("SWT_Abort"))
+	 	return "Abort";
+	if (key.equals("SWT_Retry"))
+	 	return "Retry";
+	if (key.equals("SWT_Ignore"))
+	 	return "Ignore";
+	if (key.equals("SWT_Sample"))
+	 	return "Sample";
+	if (key.equals("SWT_A_Sample_Text"))
+	 	return "A Sample Text";
+	if (key.equals("SWT_Selection"))
+	 	return "Selection";
+	if (key.equals("SWT_Current_Selection"))
+	 	return "Current Selection";
+	if (key.equals("SWT_Character_set"))
+	 	return "Character set";
+	if (key.equals("SWT_Font"))
+	 	return "Font";
+	if (key.equals("SWT_Extended_style"))
+	 	return "Extended style";
+	if (key.equals("SWT_Size"))
+	 	return "Size";
+	if (key.equals("SWT_Style"))
+	 	return "Style";
+	 	
+	return key;
+}
+
+/**
+ * Interrupt the current thread. Note that this is not
+ * available on CLDC.
+ */
+public static void interrupt() {
 }
 
 }
