@@ -1304,9 +1304,9 @@ public void removeAll () {
 			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
 			Display display = getDisplay ();
 			display.releaseImageList (imageList);
+			imageList = null;
 		}
 	}
-	imageList = null;
 	customDraw = false;
 	items = new TableItem [4];
 }
