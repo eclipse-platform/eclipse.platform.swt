@@ -7,7 +7,8 @@
 	<target name="init" depends="properties">
 		<property name="plugindir" value="../org.eclipse.swt"/>
 		<property name="bootclasspath" value=""/>
-		<taskdef name="swtreplace" classname="org.eclipse.swt.tools.internal.SwtReplace" classpath="./bin"/>
+		<taskdef name="swt.replace" classname="org.eclipse.swt.tools.internal.SwtReplace" classpath="./bin"/>
+		<taskdef name="swt.jnigen" classname="org.eclipse.swt.tools.internal.SwtJniGen" classpath="./bin;${plugindir}/bin"/>
 		
 	</target>
 
@@ -17,16 +18,24 @@
 		
 	<!-- Convert SWT 32 bit java source to 64 bit  -->
 	<target name="swt.64" depends="init">
-		<swtreplace from="int /*long*/" to="long /*int*/">
+		<swt.replace from="int /*long*/" to="long /*int*/">
 			<fileset dir="${plugindir}" includes="**/*.java"/>
-		</swtreplace>
+		</swt.replace>
 	</target>
 	
 	<!-- Convert SWT 64 bit java source to 32 bit  -->
 	<target name="swt.32" depends="init">
-		<swtreplace from="long /*int*/" to="int /*long*/">
+		<swt.replace from="long /*int*/" to="int /*long*/">
 			<fileset dir="${plugindir}" includes="**/*.java"/>
-		</swtreplace>
+		</swt.replace>
+	</target>
+
+	<!-- Output the C source code from the org.eclipse.swt project  -->
+	<target name="swt.jnigen" depends="init">
+		<!-- generate the C code from the (64 bit) SWT PI java classes -->
+		<!-- assumes the org.eclipse.swt project has been built and contain the 64 bit java classes  -->
+		<swt.jnigen mainclass="org.eclipse.swt.internal.gtk.OS" classpath="${basedir}/${plugindir}/bin" outputdir="${basedir}/${plugindir}/Eclipse SWT PI/gtk/library/"/>
+		<swt.jnigen mainclass="org.eclipse.swt.internal.accessibility.gtk.ATK" classpath="${basedir}/${plugindir}/bin" outputdir="${basedir}/${plugindir}/Eclipse SWT PI/gtk/library/"/>
 	</target>
 
 </project>

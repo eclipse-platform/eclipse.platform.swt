@@ -23,10 +23,14 @@ import org.eclipse.swt.internal.Platform;
 
 public class JNIGeneratorApp {
 
-	String mainClass, outputDir;
+	String mainClass, outputDir, classpath;
 	MetaData metaData;
 
 public JNIGeneratorApp() {
+}
+
+public String getClasspath() {
+	return classpath;
 }
 
 public String getMainClass() {
@@ -114,6 +118,10 @@ void generateAllMetaData() {
 		gen.setOutput(print);
 		gen.generate(getClasses());
 		print.flush();
+		if (!new File(getMetaDataDir()).exists()) {
+			System.out.println("Warning: Meta data output dir does not exist");
+			return;
+		}
 		if (out.size() > 0) output(out.toByteArray(), getMetaDataDir() + mainClass + ".properties");
 	} catch (Exception e) {
 		System.out.println("Problem");
@@ -140,7 +148,6 @@ boolean compare(InputStream is1, InputStream is2) throws IOException {
 }
 
 void output(byte[] bytes, String fileName) throws IOException {
-	System.out.println("file=" + fileName);
 	FileInputStream is = null;
 	try {
 		is = new FileInputStream(fileName);
@@ -170,7 +177,8 @@ String getPackageName(String className) {
 
 String[] getClassNames(String mainClassName) {
 	String pkgName = getPackageName(mainClassName);
-	String classpath = System.getProperty("java.class.path");
+	String classpath = getClasspath();
+	if (classpath == null) classpath = System.getProperty("java.class.path");
 	String pkgPath = pkgName.replace('.', File.separatorChar);
 	String pkgZipPath = pkgName.replace('.', '/');
 	ArrayList classes = new ArrayList();	
@@ -299,6 +307,10 @@ MetaData loadMetaData() {
 	return new MetaData(propeties);
 }
 
+public void setClasspath(String classpath) {
+	this.classpath = classpath;
+}
+
 public void setMainClass(String str) {
 	mainClass = str;
 	metaData = loadMetaData();
@@ -321,6 +333,7 @@ public static void main(String[] args) {
 	if (args.length > 0) {
 		gen.setMainClass(args[0]);
 		if (args.length > 1) gen.setOutputDir(args[1]);
+		if (args.length > 2) gen.setClasspath(args[2]);
 	} else {
 		gen.setMainClass(getDefaultMainClass());
 		gen.setOutputDir(getDefaultOutputDir());

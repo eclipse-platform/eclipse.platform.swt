@@ -815,8 +815,8 @@ LRESULT WM_PRINTCLIENT (int wParam, int lParam) {
 	LRESULT result = super.WM_PRINTCLIENT (wParam, lParam);
 	if (result != null) return result;
 	if ((state & CANVAS) != 0) {
-		forceResize ();
 		int nSavedDC = OS.SaveDC (wParam);
+		forceResize ();
 		RECT rect = new RECT ();
 		OS.GetClientRect (handle, rect);
 		if ((style & SWT.NO_BACKGROUND) == 0) {
