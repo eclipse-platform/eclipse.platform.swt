@@ -575,6 +575,9 @@ void setDefault (boolean value) {
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.ARROW) != 0) return;
+	if (image != null && image.isDisposed ()) {
+		error (SWT.ERROR_INVALID_ARGUMENT);
+	}
 	if (cIcon != 0) {
 		destroyCIcon(cIcon);
 		cIcon = 0;
