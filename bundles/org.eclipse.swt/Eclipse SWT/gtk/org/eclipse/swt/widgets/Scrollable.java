@@ -243,6 +243,7 @@ void setOrientation () {
 }
 
 boolean setScrollBarVisible (ScrollBar bar, boolean visible) {
+	if (scrolledHandle == 0) return false;
 	int [] hsp = new int [1], vsp = new int [1];
 	OS.gtk_scrolled_window_get_policy (scrolledHandle, hsp, vsp);
 	int policy = visible ? OS.GTK_POLICY_ALWAYS : OS.GTK_POLICY_NEVER;
