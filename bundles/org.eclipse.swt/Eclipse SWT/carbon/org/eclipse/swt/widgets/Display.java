@@ -175,6 +175,13 @@ public class Display extends Device {
 	int kchrPtr;
 	int [] kchrState = new int [1];
 
+	/* System Images */
+	int errorImage, infoImage, warningImage;
+	int errorImageData, infoImageData, warningImageData;
+	
+	/* System Cursors Cache */
+	Cursor [] cursors = new Cursor [SWT.CURSOR_HAND + 1];
+
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
 
@@ -516,6 +523,75 @@ protected void checkDevice () {
  */
 protected void checkSubclass () {
 	if (!Display.isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+int[] createImage (int type) {
+	int[] ref = new int [1];
+	int result = OS.GetIconRef (OS.kOnSystemDisk, OS.kSystemIconsCreator, type, ref);
+	if (result != OS.noErr) return null;
+	int[] family = new int [1];
+	result = OS.IconRefToIconFamily (ref [0], OS.kSelectorAlLAvailableData, family);
+	OS.ReleaseIconRef (ref [0]);
+	if (result != OS.noErr) return null;
+
+	int dataHandle = OS.NewHandle (0);
+	result = OS.GetIconFamilyData (family [0], OS.kLarge32BitData, dataHandle);
+	if (result != OS.noErr) {
+		OS.DisposeHandle (dataHandle);
+		OS.DisposeHandle (family [0]);
+		return null;
+	}
+	int maskHandle = OS.NewHandle (0);
+	result = OS.GetIconFamilyData (family [0], OS.kLarge8BitMask, maskHandle);
+	if (result != OS.noErr) {
+		OS.DisposeHandle (maskHandle);
+		OS.DisposeHandle (dataHandle);
+		OS.DisposeHandle (family [0]);
+		return null;
+	}	
+	int width = 32, height = 32;
+	int bpr = width * 4;
+	int dataSize = OS.GetHandleSize (dataHandle);
+	int data = OS.NewPtrClear (dataSize);
+	if (data == 0)  {
+		OS.DisposeHandle (maskHandle);
+		OS.DisposeHandle (dataHandle);
+		OS.DisposeHandle (family [0]);
+		return null;
+	}
+	OS.HLock (dataHandle);
+	OS.HLock (maskHandle);
+	int[] iconPtr = new int [1];
+	int[] maskPtr = new int [1];
+	OS.memcpy (iconPtr, dataHandle, 4);
+	OS.memcpy (maskPtr, maskHandle, 4);
+	OS.memcpy (data, iconPtr [0], dataSize);
+	int pixelCount = dataSize / 4;
+	for (int i = 0; i < pixelCount; i++) {
+		OS.memcpy (data + (i * 4), maskPtr [0] + i, 1);
+	}
+	OS.HUnlock (maskHandle);
+	OS.HUnlock (dataHandle);
+	OS.DisposeHandle (maskHandle);
+	OS.DisposeHandle (dataHandle);
+	OS.DisposeHandle (family [0]);
+
+	int provider = OS.CGDataProviderCreateWithData (0, data, dataSize, 0);
+	if (provider == 0) {
+		OS.DisposePtr (data);
+		return null;
+	}
+	int colorspace = OS.CGColorSpaceCreateDeviceRGB ();
+	if (colorspace == 0) {
+		OS.CGDataProviderRelease (provider);
+		OS.DisposePtr (data);
+		return null;
+	}
+	int cgImage = OS.CGImageCreate (width, height, 8, 32, bpr, colorspace, OS.kCGImageAlphaFirst, provider, null, false, 0);
+	OS.CGColorSpaceRelease (colorspace);
+	OS.CGDataProviderRelease (provider);
+	
+	return new int[] {cgImage, data};
 }
 
 int createOverlayWindow () {
@@ -1397,6 +1473,59 @@ public Color getSystemColor (int id) {
 	return Color.carbon_new (this, new float[]{red, green, blue, 1});
 }
 
+public Cursor getSystemCursor (int id) {
+	checkDevice ();
+	if (!(0 <= id && id < cursors.length)) return null;
+	if (cursors [id] == null) {
+		cursors [id] = new Cursor (this, id);
+	}
+	return cursors [id];
+}
+
+public Image getSystemImage (int id) {
+	int cgImage = 0;
+	int imageData = 0;
+	switch (id) {
+		case SWT.ICON_ERROR:	
+			if (errorImage == 0) {
+				int[] image = createImage (OS.kAlertStopIcon);
+				if (image != null) {
+					errorImage = image [0];
+					errorImageData = image [1];
+				}
+			}
+			cgImage = errorImage;
+			imageData = errorImageData;
+			break;
+		case SWT.ICON_INFORMATION:
+		case SWT.ICON_QUESTION:
+		case SWT.ICON_WORKING:
+			if (infoImage == 0) {
+				int[] image = createImage (OS.kAlertNoteIcon);
+				if (image != null) {
+					infoImage = image [0];
+					infoImageData = image [1];
+				}
+			}
+			cgImage = infoImage;
+			imageData = infoImageData;
+			break;
+		case SWT.ICON_WARNING:
+			if (warningImage == 0) {
+				int[] image = createImage (OS.kAlertCautionIcon);
+				if (image != null) {
+					warningImage = image [0];
+					warningImageData = image [1];
+				}
+			}
+			cgImage = warningImage;
+			imageData = warningImageData;
+			break;
+	}
+	if (cgImage == 0) return null;
+	return Image.carbon_new (this, SWT.ICON, cgImage, imageData);
+}
+
 public Tray getSystemTray () {
 	checkDevice ();
 	if (tray != null) return tray;
@@ -2133,6 +2262,23 @@ void releaseDisplay () {
 	grabControl = helpControl = currentControl = null;
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
+
+	/* Release the System Images */
+	if (errorImage != 0) OS.CGImageRelease (errorImage);
+	if (infoImage != 0) OS.CGImageRelease (infoImage);
+	if (warningImage != 0) OS.CGImageRelease (warningImage);
+	if (errorImageData != 0) OS.DisposePtr (errorImageData);
+	if (infoImageData != 0) OS.DisposePtr (infoImageData);
+	if (warningImageData != 0) OS.DisposePtr (warningImageData);
+	errorImage = infoImage = warningImage = 0;
+	errorImageData = infoImageData = warningImageData = 0;
+
+	/* Release the System Cursors */
+	for (int i = 0; i < cursors.length; i++) {
+		if (cursors [i] != null) cursors [i].dispose ();
+	}
+	cursors = null;
+
 	//NOT DONE - call terminate TXN if this is the last display 
 	//NOTE: - display create and dispose needs to be synchronized on all platforms
 //	 TXNTerminateTextension ();
