@@ -76,8 +76,7 @@ public class EventConsole {
 	
 	public void log (Event event) {
 		if (isActive && eventsFilter [event.type]) {
-			StringBuffer output = new StringBuffer ();
-			output.append ("Control: ");
+			StringBuffer output = new StringBuffer ("Control: ");
 			output.append (event.widget.toString ());
 			output.append (" Type: ");
 			output.append (EVENT_TYPES[event.type]);
