@@ -506,7 +506,7 @@ void createHandle (int index) {
 		OS.gtk_container_set_border_width (shellHandle, 1);
 		GdkColor color = new GdkColor ();
 		OS.gtk_style_get_black (OS.gtk_widget_get_style (shellHandle), color);
-		OS.gtk_widget_modify_bg (shellHandle, 0, color);
+		OS.gtk_widget_modify_bg (shellHandle,  OS.GTK_STATE_NORMAL, color);
 	}
 	int bits = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 	boolean modal = (style & bits) != 0;

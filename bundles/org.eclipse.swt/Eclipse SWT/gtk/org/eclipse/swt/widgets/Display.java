@@ -1232,79 +1232,79 @@ void initializeSystemResources () {
 	COLOR_WIDGET_DARK_SHADOW = gdkColor;
 	
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_dark (style, 0, gdkColor);
+	OS.gtk_style_get_dark (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_NORMAL_SHADOW = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (style, 0, gdkColor);
+	OS.gtk_style_get_bg (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_LIGHT_SHADOW = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_light (style, 0, gdkColor);
+	OS.gtk_style_get_light (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_HIGHLIGHT_SHADOW = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_fg (style, 0, gdkColor);
+	OS.gtk_style_get_fg (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (style, 0, gdkColor);
+	OS.gtk_style_get_bg (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_WIDGET_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_text (style, 0, gdkColor);
+	OS.gtk_style_get_text (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_TEXT_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_base (style, 0, gdkColor);
+	OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_TEXT_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_text (style, 0, gdkColor);
+	OS.gtk_style_get_text (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_LIST_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_base (style, 0, gdkColor);
+	OS.gtk_style_get_base (style, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_LIST_BACKGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_text (style, 3, gdkColor);
+	OS.gtk_style_get_text (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_LIST_SELECTION_TEXT = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_base (style, 3, gdkColor);
+	OS.gtk_style_get_base (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_LIST_SELECTION = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_fg (tooltipStyle, 0, gdkColor);
+	OS.gtk_style_get_fg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_INFO_FOREGROUND = gdkColor;
 
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (tooltipStyle, 0, gdkColor);
+	OS.gtk_style_get_bg (tooltipStyle, OS.GTK_STATE_NORMAL, gdkColor);
 	COLOR_INFO_BACKGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (style, 3, gdkColor);
+	OS.gtk_style_get_bg (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_TITLE_BACKGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_fg (style, 3, gdkColor);
+	OS.gtk_style_get_fg (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_TITLE_FOREGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_light (style, 3, gdkColor);
+	OS.gtk_style_get_light (style, OS.GTK_STATE_SELECTED, gdkColor);
 	COLOR_TITLE_BACKGROUND_GRADIENT = gdkColor;
 	
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_bg (style, 4, gdkColor);
+	OS.gtk_style_get_bg (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
 	COLOR_TITLE_INACTIVE_BACKGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_fg (style, 4, gdkColor);
+	OS.gtk_style_get_fg (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
 	COLOR_TITLE_INACTIVE_FOREGROUND = gdkColor;
 	
 	gdkColor = new GdkColor();
-	OS.gtk_style_get_light (style, 4, gdkColor);
+	OS.gtk_style_get_light (style, OS.GTK_STATE_INSENSITIVE, gdkColor);
 	COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT = gdkColor;
 
 	OS.gtk_widget_destroy (tooltipShellHandle);
@@ -2065,8 +2065,8 @@ void showIMWindow (Control control) {
 	int imHandle = control.imHandle ();
 	OS.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, null);
 	if (preeditString [0] != 0 && OS.strlen (preeditString [0]) > 0) {
-		OS.gtk_widget_modify_bg (preeditWindow, 0, control.getBackgroundColor ());
-		OS.gtk_widget_modify_fg (preeditLabel, 0, control.getForegroundColor ());		
+		OS.gtk_widget_modify_bg (preeditWindow,  OS.GTK_STATE_NORMAL, control.getBackgroundColor ());
+		OS.gtk_widget_modify_fg (preeditLabel,  OS.GTK_STATE_NORMAL, control.getForegroundColor ());		
 		OS.gtk_widget_modify_font (preeditLabel, control.getFontDescription ());
 		if (pangoAttrs [0] != 0) OS.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
 		OS.gtk_label_set_text (preeditLabel, preeditString [0]);
