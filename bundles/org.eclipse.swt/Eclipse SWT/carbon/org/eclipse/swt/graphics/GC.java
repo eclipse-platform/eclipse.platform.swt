@@ -1464,14 +1464,8 @@ public int getCharWidth(char ch) {
  */
 public Rectangle getClipping() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (data.clipRgn == 0) {
+	if (data.control == 0) {
 		int width = 0, height = 0;
-		if (data.control != 0) {
-			Rect bounds = new Rect();
-			OS.GetControlBounds(data.control, bounds);
-			width = bounds.right - bounds.left;
-			height = bounds.bottom - bounds.top;
-		}
 		if (data.image != null) {
 			int image = data.image.handle;
 			width = OS.CGImageGetWidth(image);
@@ -1480,9 +1474,25 @@ public Rectangle getClipping() {
 		return new Rectangle(0, 0, width, height);
 	}
 	Rect bounds = new Rect();
-	OS.GetRegionBounds(data.clipRgn, bounds);
+	OS.GetControlBounds(data.control, bounds);
+	if (data.clipRgn == 0 && data.visibleRgn == 0) {
+		int width = bounds.right - bounds.left;
+		int height = bounds.bottom - bounds.top;
+		return new Rectangle(0, 0, width, height);
+	}
+	int clipping = OS.NewRgn();
+	OS.RectRgn(clipping, bounds);
+	OS.OffsetRgn(clipping, (short)-bounds.left, (short)-bounds.top);
+	if (data.clipRgn != 0) OS.SectRgn(data.clipRgn, clipping, clipping);
+	if (data.visibleRgn != 0) {
+		OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
+		OS.SectRgn(data.visibleRgn, clipping, clipping);
+		OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
+	}
+	OS.GetRegionBounds(clipping, bounds);
 	int width = bounds.right - bounds.left;
 	int height = bounds.bottom - bounds.top;
+	OS.DisposeRgn(clipping);
 	return new Rectangle(bounds.left, bounds.top, width, height);
 }
 
@@ -1502,14 +1512,8 @@ public Rectangle getClipping() {
 public void getClipping(Region region) {	
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (data.clipRgn == 0) {
+	if (data.control == 0) {
 		int width = 0, height = 0;
-		if (data.control != 0) {
-			Rect bounds = new Rect();
-			OS.GetControlBounds(data.control, bounds);
-			width = bounds.right - bounds.left;
-			height = bounds.bottom - bounds.top;
-		}
 		if (data.image != null) {
 			int image = data.image.handle;
 			width = OS.CGImageGetWidth(image);
@@ -1518,7 +1522,17 @@ public void getClipping(Region region) {
 		OS.SetRectRgn(region.handle, (short) 0, (short) 0, (short) width, (short) height);
 		return;
 	}
-	OS.CopyRgn(data.clipRgn, region.handle);
+	Rect bounds = new Rect();
+	OS.GetControlBounds(data.control, bounds);
+	int clipping = region.handle;
+	OS.RectRgn(clipping, bounds);
+	OS.OffsetRgn(clipping, (short)-bounds.left, (short)-bounds.top);
+	if (data.clipRgn != 0) OS.SectRgn(data.clipRgn, clipping, clipping);
+	if (data.visibleRgn != 0) {
+		OS.OffsetRgn(data.visibleRgn, (short)-bounds.left, (short)-bounds.top);
+		OS.SectRgn(data.visibleRgn, clipping, clipping);
+		OS.OffsetRgn(data.visibleRgn, bounds.left, bounds.top);
+	}
 }
 
 /** 
