@@ -3075,10 +3075,12 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	* 
 	* NOTE: This code is avoiding a call to ToAscii ().
 	*/
-	for (int i=0; i<ACCENTS.length; i++) {
-		int value = OS.VkKeyScan (ACCENTS [i]);
-		if ((value & 0xFF) == wParam && (value & 0x600) == 0x600) {
-			return null;
+	if (!OS.IsWinCE) {
+		for (int i=0; i<ACCENTS.length; i++) {
+			int value = OS.VkKeyScan (ACCENTS [i]);
+			if ((value & 0xFF) == wParam && (value & 0x600) == 0x600) {
+				return null;
+			}
 		}
 	}
 	
