@@ -1216,6 +1216,15 @@ boolean translateMDIAccelerator (MSG msg) {
 				case OS.VK_F6:
 					if (traverseDecorations (true)) return true;
 			}
+			return false;
+		}
+		if (msg.message == OS.WM_SYSKEYDOWN) {
+			switch (msg.wParam) {
+				case OS.VK_F4:
+					OS.PostMessage (shell.handle, OS.WM_CLOSE, 0, 0);
+					return true;
+			}
+			return false;
 		}
 	}
 	return false;
@@ -1480,13 +1489,8 @@ LRESULT WM_SYSCOMMAND (int wParam, int lParam) {
 		int cmd = wParam & 0xFFF0;
 		switch (cmd) {
 			case OS.SC_CLOSE: {
-				if (lParam == 0) {
-					Shell shell = getShell ();
-					int hwndShell = shell.handle;
-					OS.PostMessage (hwndShell, OS.WM_SYSCOMMAND, wParam, lParam);
-					return LRESULT.ZERO;
-				}
-				break;
+				OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
+				return LRESULT.ZERO;
 			}
 			case OS.SC_NEXTWINDOW: {
 				traverseDecorations (true);
