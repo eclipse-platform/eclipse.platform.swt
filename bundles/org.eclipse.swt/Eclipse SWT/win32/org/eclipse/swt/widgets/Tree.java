@@ -214,6 +214,9 @@ int callWindowProc (int hwnd, int msg, int wParam, int lParam) {
 		case OS.WM_MBUTTONDOWN:
 		case OS.WM_RBUTTONDOWN:
 		case OS.WM_XBUTTONDOWN:
+			// Keep a local reference to display because the widget could be
+			// disposed during the call to CallWindowProc().
+			Display display = this.display;
 			display.ignoreMsgFilter = true;
 			int code = OS.CallWindowProc (TreeProc, hwnd, msg, wParam, lParam);
 			display.ignoreMsgFilter = false;
