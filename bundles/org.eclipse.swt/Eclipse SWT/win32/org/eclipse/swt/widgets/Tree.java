@@ -1090,6 +1090,11 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 }
 
 LRESULT WM_GETOBJECT (int wParam, int lParam) {
+	/*
+	* Ensure that there is an accessible object created for this
+	* control because support for checked item accessibility is
+	* temporarily implemented in the accessibility package.
+	*/
 	if ((style & SWT.CHECK) != 0) {
 		if (accessible == null) accessible = new_Accessible (this);
 	}
