@@ -6,11 +6,14 @@ package org.eclipse.swt.internal.awt.win32;
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
  */
+ 
+import java.lang.reflect.Method;
+import java.lang.reflect.Constructor;
 
 /* Win32, SUN AWT */
-import sun.awt.DrawingSurface;
-import sun.awt.windows.WDrawingSurfaceInfo;
 import sun.awt.windows.WEmbeddedFrame;
+//import sun.awt.DrawingSurface;
+//import sun.awt.windows.WDrawingSurfaceInfo;
 
 /* SWT Imports */
 import org.eclipse.swt.*;
@@ -29,8 +32,6 @@ import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.WindowEvent;
 import java.awt.event.FocusEvent;
-
-import java.lang.reflect.Constructor;
 
 public class SWT_AWT {
 
@@ -107,29 +108,34 @@ public static Panel new_Panel (final Composite parent) {
 }
 
 public static Shell new_Shell (Display display, final Canvas parent) {
-	DrawingSurface ds = (DrawingSurface)parent.getPeer();
-	WDrawingSurfaceInfo wds = (WDrawingSurfaceInfo)ds.getDrawingSurfaceInfo();
-	wds.lock ();
-	int handle = (int) wds.getHWnd ();
-	wds.unlock ();
-	
-// TEMPORARY CODE
-//	Integer hwnd = null;
-//	try {
-//		Object ds = parent.getPeer();
-//		Method method = ds.getClass().getDeclaredMethod("getDrawingSurfaceInfo", null);
-//		Object wds = method.invoke(ds, null);
-//		Class wdsClass = wds.getClass();
-//		method = wdsClass.getMethod("lock", null);
-//		method.invoke(wds, null);
-//		method = wdsClass.getMethod("wds.getHWnd", null);
-//		hwnd = (Integer)method.invoke(wds, null);
-//		method = wdsClass.getMethod("unlock", null);
-//		method.invoke(wds, null);
-//	} catch (Exception e) {
-//		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
-//	}
-//	int handle = hwnd.intValue();
+	/*
+	* As of JDK 1.4, the DrawingSurface and WDrawingSurfaceInfo no longer exist
+	* so that code that references these classes no longer compiles.  The fix is
+	* to use refection to invoke equivalent code that is commented below.  There
+	* is no fix at this time for the missing WDrawingSurfaceInfo functionality.
+	*/
+//	DrawingSurface ds = (DrawingSurface)parent.getPeer();
+//	WDrawingSurfaceInfo wds = (WDrawingSurfaceInfo)ds.getDrawingSurfaceInfo();
+//	wds.lock ();
+//	int handle = (int) wds.getHWnd ();
+//	wds.unlock ();
+	Integer hwnd = null;
+	try {
+		Object ds = parent.getPeer ();
+		Class drawingSurfaceClass = Class.forName ("sun.awt.DrawingSurface");
+		Method method = drawingSurfaceClass.getDeclaredMethod ("getDrawingSurfaceInfo", null);
+		Object wds = method.invoke (ds, null);
+		Class wDrawingSurfaceClass = Class.forName ("sun.awt.windows.WDrawingSurfaceInfo");
+		method = wDrawingSurfaceClass.getMethod ("lock", null);
+		method.invoke (wds, null);
+		method = wDrawingSurfaceClass.getMethod ("getHWnd", null);
+		hwnd = (Integer) method.invoke (wds, null);
+		method = wDrawingSurfaceClass.getMethod ("unlock", null);
+		method.invoke (wds, null);
+	} catch (Exception e) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
+	}
+	int handle = hwnd.intValue();
 
 	final Shell shell = Shell.win32_new (display, handle);
 	final Display newDisplay = shell.getDisplay ();
