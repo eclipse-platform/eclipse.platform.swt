@@ -1078,7 +1078,7 @@ void releaseWidget () {
 	} else {	
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
-			if (!item.isDisposed ()) item.releaseWidget ();
+			if (!item.isDisposed ()) item.releaseResources ();
 		}
 	}
 	customDraw = false;
@@ -1282,7 +1282,7 @@ public void removeAll () {
 		if (code == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
-			if (!item.isDisposed ()) item.releaseWidget ();
+			if (!item.isDisposed ()) item.releaseResources ();
 		}
 	}
 
