@@ -26,7 +26,7 @@ public class FileViewer {
 	private final static String DRIVE_B = "b:"+File.separator;
 
 	/* Important UI elements */ 	  
- 	private Display display;
+ 	/* package */ Display display;
 	private Shell   shell;
 	private Combo   combo;
 	private ToolBar toolBar;
@@ -365,7 +365,7 @@ public class FileViewer {
 	 */
 	private class TableUpdateWorker extends UpdateWorker {
 		public TableUpdateWorker() {
-			super(display);
+			super(FileViewer.this.display);
 		}
 		/**
 		 * Updates the table's contents
