@@ -241,25 +241,46 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createAcceleratorTable () {
 	hAccel = nAccel = 0;
-	if (menuBar == null || items == null) return;
+	int maxAccel;
+	if (menuBar == null || items == null) {
+		if (OS.IsWinCE) maxAccel = 1;
+		else return;
+	} else {
+		maxAccel = OS.IsWinCE ? items.length + 1 : items.length;
+	}
 	int size = ACCEL.sizeof;
 	ACCEL accel = new ACCEL ();
-	byte [] buffer1 = new byte [size];
-	byte [] buffer2 = new byte [items.length * size];
-	for (int i=0; i<items.length; i++) {
-		MenuItem item = items [i];
-		if (item != null && item.accelerator != 0) {
-			Menu parent = item.parent;
-			while (parent != null && parent != menuBar) {
-				parent = parent.getParentMenu ();
-			}
-			if (parent == menuBar) {
-				item.fillAccel (accel);
-				OS.MoveMemory (buffer1, accel, size);
-				System.arraycopy (buffer1, 0, buffer2, nAccel * size, size);
-				nAccel++;
+	byte [] buffer1 = new byte [size];	
+	byte [] buffer2 = new byte [maxAccel * size];
+	if (menuBar != null && items != null) {
+		for (int i=0; i<items.length; i++) {
+			MenuItem item = items [i];
+			if (item != null && item.accelerator != 0) {
+				Menu parent = item.parent;
+				while (parent != null && parent != menuBar) {
+					parent = parent.getParentMenu ();
+				}
+				if (parent == menuBar) {
+					item.fillAccel (accel);
+					OS.MoveMemory (buffer1, accel, size);
+					System.arraycopy (buffer1, 0, buffer2, nAccel * size, size);
+					nAccel++;
+				}
 			}
 		}
+	}
+	if (OS.IsWinCE) {
+		/* 
+		* Note on WinCE PPC.  Close Shell when user taps CTRL-Q.
+		* IDOK represents the "Done Button" which also closes
+		* the Shell.
+		*/
+		accel.fVirt = OS.FVIRTKEY | OS.FCONTROL;
+		accel.key = 'Q';
+		accel.cmd = OS.IDOK;
+		OS.MoveMemory (buffer1, accel, size);
+		System.arraycopy (buffer1, 0, buffer2, nAccel * size, size);
+		nAccel++;			
 	}
 	if (nAccel != 0) hAccel = OS.CreateAcceleratorTable (buffer2, nAccel);
 }
