@@ -170,15 +170,13 @@ public void dispose () {
 
 	int renderTable = data.renderTable;
 	if (renderTable != 0) OS.XmRenderTableFree(renderTable);
-	int xmString = data.xmString;
-	if (xmString != 0) 	OS.XmStringFree (xmString);	
 
 	/* Dispose the GC */
 	Device device = data.device;
 	if (drawable != null) drawable.internal_dispose_GC(handle, data);
 
 	data.display = data.drawable = data.colormap = data.fontList = 
-		data.clipRgn = data.renderTable = data.xmString = 0;
+		data.clipRgn = data.renderTable = 0;
 	drawable = null;
 	handle = 0;
 	data.image = null;
@@ -937,19 +935,15 @@ public void drawString (String string, int x, int y) {
 public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (string != data.string) {
-		if (data.xmString != 0) OS.XmStringFree(data.xmString);
-		byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-		int xmString = OS.XmStringCreate (buffer, OS.XmFONTLIST_DEFAULT_TAG);
-		data.string = string;
-		data.xmString = xmString;
-		data.stringWidth = data.stringHeight = -1;
-	}
+	byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
+	int xmString = OS.XmStringCreate (buffer, OS.XmFONTLIST_DEFAULT_TAG);
 	if (isTransparent) {
-		OS.XmStringDraw (data.display, data.drawable, data.fontList, data.xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
+		OS.XmStringDraw (data.display, data.drawable, data.fontList, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
 	} else {
-		OS.XmStringDrawImage (data.display, data.drawable, data.fontList, data.xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
+		OS.XmStringDrawImage (data.display, data.drawable, data.fontList, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
 	}			
+//	OS.XmStringDrawUnderline (display, drawable, fontList, xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null, 0);
+	OS.XmStringFree (xmString);
 }
 void createRenderTable() {
 	int xDisplay = data.display;
@@ -1097,7 +1091,7 @@ public void drawText (String string, int x, int y, int flags) {
 	string.getChars(0, text.length, text, 0);
 	if ((flags & SWT.DRAW_DELIMITER) != 0) parseTable[tableLength++] = device.crMapping;
 	if ((flags & SWT.DRAW_TAB) != 0) parseTable[tableLength++] = device.tabMapping;
-	if ((flags & SWT.DRAW_MNEMONIC) != 0) mnemonic = fixMnemonic(text);
+	if ((flags & SWT.DRAW_MNEMONIC) != 0) mnemonic = stripMnemonic(text);
 	
 	String codePage = getCodePage();
 	byte[] buffer = Converter.wcsToMbcs(codePage, text, true);
@@ -2437,12 +2431,8 @@ public void setFont (Font font) {
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.fontList = font.handle;
 	data.codePage = font.codePage;
-	int renderTable = data.renderTable;
-	if (renderTable != 0) OS.XmRenderTableFree(renderTable);
-	int xmString = data.xmString;
-	if (xmString != 0) 	OS.XmStringFree(xmString);	
-	data.xmString = data.renderTable = 0;
-	data.stringWidth = data.stringHeight = -1;
+	if (data.renderTable != 0) OS.XmRenderTableFree(data.renderTable);
+	data.renderTable = 0;
 }
 /**
  * Sets the foreground color. The foreground color is used
@@ -2561,23 +2551,16 @@ public void setXORMode(boolean xor) {
 public Point stringExtent(String string) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (data.stringWidth != -1) return new Point(data.stringWidth, data.stringHeight);
-	if (string.length () == 0) return new Point(data.stringWidth = 0, data.stringHeight = getFontHeight());
-	if (string != data.string) {
-		if (data.xmString != 0) OS.XmStringFree(data.xmString);
-		byte [] buffer = Converter.wcsToMbcs (getCodePage (), string, true);
-		int xmString = OS.XmStringCreate (buffer, OS.XmFONTLIST_DEFAULT_TAG);
-		data.string = string;
-		data.xmString = xmString;
-		data.stringWidth = data.stringHeight = -1;
-	}
-	int xmString = data.xmString;
+	if (string.length () == 0) return new Point(0, getFontHeight());
+	byte[] buffer = Converter.wcsToMbcs(getCodePage (), string, true);
+	int xmString = OS.XmStringCreate(buffer, OS.XmFONTLIST_DEFAULT_TAG);
 	int fontList = data.fontList;
 	int width = OS.XmStringWidth(fontList, xmString);
 	int height = OS.XmStringHeight(fontList, xmString);
-	return new Point(data.stringWidth = width, data.stringHeight = height);
+	OS.XmStringFree(xmString);
+	return new Point(width, height);
 }
-char fixMnemonic(char[] text) {
+char stripMnemonic(char[] text) {
 	char mnemonic=0;
 	int i=0, j=0;
 	while (i < text.length) {
@@ -2658,7 +2641,7 @@ public Point textExtent(String string, int flags) {
 	string.getChars(0, text.length, text, 0);	
 	if ((flags & SWT.DRAW_DELIMITER) != 0) parseTable[tableLength++] = device.crMapping;
 	if ((flags & SWT.DRAW_TAB) != 0) parseTable[tableLength++] = device.tabMapping;
-	if ((flags & SWT.DRAW_MNEMONIC) != 0) fixMnemonic(text);	
+	if ((flags & SWT.DRAW_MNEMONIC) != 0) stripMnemonic(text);	
 
 	byte[] buffer = Converter.wcsToMbcs(getCodePage(), text, true);
 	int xmString = OS.XmStringParseText(buffer, 0, OS.XmFONTLIST_DEFAULT_TAG, OS.XmCHARSET_TEXT, parseTable, tableLength, 0);
