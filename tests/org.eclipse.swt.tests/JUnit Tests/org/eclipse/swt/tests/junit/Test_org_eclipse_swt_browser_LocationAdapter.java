@@ -12,6 +12,9 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.browser.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.LocationAdapter
@@ -35,15 +38,21 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	warnUnimpl("Test test_Constructor not written");
+	LocationAdapter adapter = new LocationAdapter() {};
 }
 
 public void test_changedLorg_eclipse_swt_browser_LocationEvent() {
-	warnUnimpl("Test test_changedLorg_eclipse_swt_browser_LocationEvent not written");
+	Display display = Display.getCurrent();
+	Shell shell = new Shell(display);
+	Browser browser = new Browser(shell, SWT.NONE);
+	LocationAdapter adapter = new LocationAdapter() {	
+	};
+	browser.addLocationListener(adapter);
+	shell.close();
 }
 
 public void test_changingLorg_eclipse_swt_browser_LocationEvent() {
-	warnUnimpl("Test test_changingLorg_eclipse_swt_browser_LocationEvent not written");
+	// tested in test_changedLorg_eclipse_swt_browser_LocationEvent
 }
 
 

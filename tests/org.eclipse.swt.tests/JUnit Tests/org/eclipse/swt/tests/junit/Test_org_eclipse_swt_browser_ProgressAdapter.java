@@ -12,6 +12,9 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.browser.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.ProgressAdapter
@@ -35,11 +38,15 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	warnUnimpl("Test test_Constructor not written");
+	ProgressAdapter adapter = new ProgressAdapter() {};
 }
 
 public void test_changedLorg_eclipse_swt_browser_ProgressEvent() {
-	warnUnimpl("Test test_changedLorg_eclipse_swt_browser_ProgressEvent not written");
+	Display display = Display.getCurrent();
+	Shell shell = new Shell(display);
+	Browser browser = new Browser(shell, SWT.NONE);
+	browser.addProgressListener(new ProgressAdapter() {});
+	shell.close();
 }
 
 public void test_completedLorg_eclipse_swt_browser_ProgressEvent() {

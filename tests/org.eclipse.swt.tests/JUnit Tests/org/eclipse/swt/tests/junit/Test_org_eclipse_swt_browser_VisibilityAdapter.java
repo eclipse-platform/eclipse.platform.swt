@@ -12,6 +12,9 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.browser.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.VisibilityAdapter
@@ -35,15 +38,19 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	warnUnimpl("Test test_Constructor not written");
+	new VisibilityAdapter() {};
 }
 
 public void test_hideLorg_eclipse_swt_browser_VisibilityEvent() {
-	warnUnimpl("Test test_hideLorg_eclipse_swt_browser_VisibilityEvent not written");
+	Display display = Display.getCurrent();
+	Shell shell = new Shell(display);
+	Browser browser = new Browser(shell, SWT.NONE);
+	browser.addVisibilityListener(new VisibilityAdapter(){});
+	shell.close();
 }
 
 public void test_showLorg_eclipse_swt_browser_VisibilityEvent() {
-	warnUnimpl("Test test_showLorg_eclipse_swt_browser_VisibilityEvent not written");
+	// tested in test_hideLorg_eclipse_swt_browser_VisibilityEvent
 }
 
 

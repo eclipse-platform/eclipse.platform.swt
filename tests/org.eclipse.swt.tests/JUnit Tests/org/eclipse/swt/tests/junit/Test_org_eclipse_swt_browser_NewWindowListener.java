@@ -12,6 +12,9 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.browser.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.browser.NewWindowListener
@@ -35,7 +38,14 @@ protected void tearDown() {
 }
 
 public void test_newWindowLorg_eclipse_swt_browser_NewWindowEvent() {
-	warnUnimpl("Test test_newWindowLorg_eclipse_swt_browser_NewWindowEvent not written");
+	Display display = Display.getCurrent();
+	Shell shell = new Shell(display);
+	Browser browser = new Browser(shell, SWT.NONE);
+	browser.addNewWindowListener(new NewWindowListener() {
+		public void newWindow(NewWindowEvent event) {
+		}
+	});
+	shell.close();
 }
 
 
