@@ -115,7 +115,7 @@ protected int[] getTypeIds() {
 }
 
 protected String[] getTypeNames() {
-	return new String[]{RTF};
+	return new String[] {RTF};
 }
 
 }

@@ -54,11 +54,12 @@ public static TextTransfer getInstance () {
  * @param transferData an empty <code>TransferData</code> object; this
  *  object will be filled in on return with the platform specific format of the data
  */
-public void javaToNative (Object object, TransferData transferData){
+public void javaToNative (Object object, TransferData transferData) {
 	transferData.result = -1;
 	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
-
 	String string = (String)object;
+	if (string.length == 0) return;
+	
 	char[] chars = new char[string.length()];
 	string.getChars (0, chars.length, chars, 0);
 	switch (transferData.type) {
