@@ -96,6 +96,7 @@ public class CTabFolder extends Composite {
 	Color[] gradientColors;
 	int[] gradientPercents;
 	Color selectionForeground;
+	Color background;
 
 	// internal constants
 	private static final int DEFAULT_WIDTH = 64;
@@ -402,7 +403,7 @@ private void createArrowBar() {
 	// create arrow buttons for scrolling 
 	arrowBar = new ToolBar(this, SWT.FLAT);
 	arrowBar.setVisible(false);
-	arrowBar.setBackground(getBackground());
+	arrowBar.setBackground(background);
 	ToolItem scrollLeft = new ToolItem(arrowBar, SWT.PUSH);
 	scrollLeft.setEnabled(false);
 	ToolItem scrollRight = new ToolItem(arrowBar, SWT.PUSH);
@@ -421,7 +422,6 @@ private void createArrowBar() {
 	
 }
 private void createCloseBar() {
-	Color background = getBackground();
 	closeBar = new ToolBar(this, SWT.FLAT);
 	closeBar.setVisible(false);
 	if (gradientColors != null && gradientColors.length > 0) {
@@ -1309,8 +1309,7 @@ private void onResize() {
 
 public void setBackground (Color color) {
 	super.setBackground(color);
-	color = getBackground();
-	
+	background = color;
 	// init inactive close button
 	inactiveCloseBar.setBackground(color);
 	
@@ -1370,15 +1369,16 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 	}
 	
 	// Are these settings the same as before?
-	final Color background = getBackground();
 	if (backgroundImage == null) {
 		if ((gradientColors != null) && (colors != null) && 
 			(gradientColors.length == colors.length)) {
 			boolean same = false;
 			for (int i = 0; i < gradientColors.length; i++) {
-				same = (gradientColors[i] == colors[i]) ||
-					((gradientColors[i] == null) && (colors[i] == background)) ||
-					((gradientColors[i] == background) && (colors[i] == null));
+				if (gradientColors[i] == null) {
+					same = colors[i] == null;
+				} else {
+					same = gradientColors[i].equals(colors[i]);
+				}
 				if (!same) break;
 			}
 			if (same) {
@@ -1400,7 +1400,7 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 	} else {
 		gradientColors = new Color[colors.length];
 		for (int i = 0; i < colors.length; ++i)
-			gradientColors[i] = (colors[i] != null) ? colors[i] : background;
+			gradientColors[i] = colors[i];
 		gradientPercents = new int[percents.length];
 		for (int i = 0; i < percents.length; ++i)
 			gradientPercents[i] = percents[i];
