@@ -1427,7 +1427,9 @@ void setMenuBar (Menu menu) {
 
 public boolean sleep () {
 	checkDevice ();
-	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
+	//TEMPORARY CODE
+	return OS.ReceiveNextEvent (0, null, 50 / 1000.0, false, null) == OS.noErr;
+//	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
 }
 
 public void syncExec (Runnable runnable) {
