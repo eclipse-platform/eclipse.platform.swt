@@ -2287,41 +2287,20 @@ public void setRedraw (boolean redraw) {
 			setScrollWidth (null, true);
 
 			OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
+			int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
+			if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
 			if ((state & HIDDEN) != 0) {
 				state &= ~HIDDEN;
 				OS.ShowWindow (handle, OS.SW_HIDE);
 			} else {
-				
-				/*
-				* This code is intentionally commented.  The window proc
-				* for the table implements WM_SETREDRAW to invalidate
-				* and erase the table and the header.  This is undocumented
-				* behavior.  The commented code below shows what is actually
-				* happening and reminds us that we are relying on this
-				* undocumented behavior.
-				*/
-//				int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);	
-//				if (hwndHeader != 0) OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
-//				int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
-//				OS.RedrawWindow (handle, null, 0, flags);
-//				if (hwndHeader != 0) OS.RedrawWindow (hwndHeader, null, 0, flags);
-	
-				/*
-				* NOTE: The window proc for the table does not redraw the
-				* non-client area (ie. the border and scroll bars).  This 
-				* must be explicitly redrawn.  This code can be removed
-				* if we stop relying on the undocuemented behavior described
-				* above.
-				*/
 				if (OS.IsWinCE) {
 					OS.InvalidateRect (handle, null, false);
-					int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
 					if (hwndHeader != 0) {
-						OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
 						OS.InvalidateRect (hwndHeader, null, false);
 					}
 				} else {
-					OS.RedrawWindow (handle, null, 0, OS.RDW_FRAME | OS.RDW_INVALIDATE);
+					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE | OS.RDW_ALLCHILDREN;
+					OS.RedrawWindow (handle, null, 0, flags);
 				}
 			}
 		}
