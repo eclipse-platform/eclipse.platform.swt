@@ -220,6 +220,11 @@ public class Accessible {
 	public void setFocus(int childID) {
 		checkWidget();
 		int id = (childID == ACC.CHILDID_SELF) ? COM.CHILDID_SELF : childID + 1;
+		// TEMP CODE
+//		if (childID == ACC.CHILDID_SELF) {
+//			COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_WINDOW, id);
+//		}
+		// END TEMP
 		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, id);
 	}
 
@@ -701,20 +706,20 @@ public class Accessible {
 			event.childID = ACC.CHILDID_SELF;
 		} else {
 			if (control instanceof Tree) {
-				/* Currently our checkbox tree is emulated using state mask images,
-				 * so we need to specify 'checkbox' role for the items here. */
-
 				/* Tree item childIDs are pointers (not 1-based indices). */
 				event.childID = varChild_lVal;
 				
-				Tree tree = (Tree) control;
-				if ((tree.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
+				// TEMPORARY CODE
+				/* Currently our checkbox tree is emulated using state mask images,
+				 * so we need to specify 'checkbox' role for the items here. */
+				if ((control.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
 			} else if (control instanceof Table) {
+				event.childID = varChild_lVal - 1;
+				
+				// TEMPORARY CODE
 				/* Currently our checkbox table is emulated using state mask images,
 				 * so we need to specify 'checkbox' role for the items here. */
-				event.childID = varChild_lVal - 1;
-				Table table = (Table) control;
-				if ((table.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
+				if ((control.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
 			} else {
 				event.childID = varChild_lVal - 1;
 			}
@@ -807,12 +812,12 @@ public class Accessible {
 			event.childID = ACC.CHILDID_SELF;
 		} else {
 			if (control instanceof Tree) {
-				/* Currently our checkbox tree is emulated using state mask images,
-				 * so we need to determine if the item is 'checked' here. */
-
 				/* Tree item childIDs are pointers (not 1-based indices). */
 				event.childID = varChild_lVal;
 
+				// TEMPORARY CODE
+				/* Currently our checkbox tree is emulated using state mask images,
+				 * so we need to determine if the item is 'checked' here. */
 				int hwnd = control.handle;
 				TVITEM tvItem = new TVITEM ();
 				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
@@ -822,9 +827,11 @@ public class Accessible {
 				boolean checked = (result != 0) && (((tvItem.state >> 12) & 1) == 0);
 				if (checked) event.detail |= ACC.STATE_CHECKED;
 			} else if (control instanceof Table) {
+				event.childID = varChild_lVal - 1;
+				
+				// TEMPORARY CODE
 				/* Currently our checkbox table is emulated using state mask images,
 				 * so we need to determine if the item is 'checked' here. */
-				event.childID = varChild_lVal - 1;
 				Table table = (Table) control;
 				TableItem item = table.getItem(event.childID);
 				if (item != null) {
