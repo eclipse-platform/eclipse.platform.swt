@@ -1834,8 +1834,10 @@ boolean sendResize () {
  */
 public void setBackground (Color color) {
 	checkWidget();
-	int pixel = defaultBackground ();
-	if (color != null) {
+	int pixel;
+	if (color == null) {
+		pixel = defaultBackground ();
+	} else {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
@@ -1895,8 +1897,10 @@ public void setFont (Font font) {
  */
 public void setForeground (Color color) {
 	checkWidget();
-	int pixel = defaultForeground ();
-	if (color != null) {
+	int pixel;
+	if (color == null) {
+		pixel = defaultForeground ();
+	} else {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
