@@ -235,10 +235,22 @@ void createItem (TreeItem item, int index) {
 		availableItems [i].availableIndex = i;
 	}
 
-	updateVerticalBar ();
 	Rectangle bounds = item.getBounds ();
 	int rightX = bounds.x + bounds.width;
 	updateHorizontalBar (rightX, rightX);
+
+	/* 
+	 * If new item is above viewport then adjust topIndex and the vertical
+	 * scrollbar so that the current viewport items will not change.
+	 */
+	ScrollBar vBar = getVerticalBar ();
+	vBar.setMaximum (vBar.getMaximum () + 1);
+	if (item.availableIndex < topIndex) {
+		topIndex++;
+		vBar.setSelection (topIndex);
+		return;
+	}
+
 	int redrawIndex = index;
 	if (redrawIndex > 0 && item.isLastChild ()) redrawIndex--;
 	redrawFromItemDownwards (items [redrawIndex].availableIndex);

@@ -126,17 +126,35 @@ void addItem (TreeItem item, int index) {
 	System.arraycopy (items, index, newChildren, index + 1, items.length - index);
 	items = newChildren;
 
-	/* if item should be available immediately then update parent */
-	if (item.isAvailable ()) {
-		parent.makeAvailable (item);
-		parent.redrawFromItemDownwards (availableIndex);
-	} else {
+	if (!item.isAvailable ()) {
 		/* receiver will now need an expander box if this is its first child */
 		if (isAvailable () && items.length == 1) {
 			Rectangle bounds = getExpanderBounds ();
 			parent.redraw (bounds.x, bounds.y, bounds.width, bounds.height, false);
 		}
+		return;
 	}
+	
+	/* item should be available immediately so update parent */
+	parent.makeAvailable (item);
+	
+	Rectangle bounds = item.getBounds ();
+	int rightX = bounds.x + bounds.width;
+	parent.updateHorizontalBar (rightX, rightX);
+
+	/* 
+	 * If new item is above viewport then adjust topIndex and the vertical scrollbar
+	 * so that the current viewport items will not change. 
+	 */
+	ScrollBar vBar = parent.getVerticalBar ();
+	vBar.setMaximum (vBar.getMaximum () + 1);
+	if (item.availableIndex < parent.topIndex) {
+		parent.topIndex++;
+		vBar.setSelection (parent.topIndex);
+		return;
+	}
+	
+	parent.redrawFromItemDownwards (availableIndex);
 }
 static Tree checkNull (Tree tree) {
 	if (tree == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
