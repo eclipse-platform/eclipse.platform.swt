@@ -128,6 +128,15 @@ public class Accessible {
 		textListeners.addElement (listener);		
 	}
 	
+	/**
+	 * Gets the control for this Accessible object. 
+	 *
+	 * @since 3.0
+	 */
+	public Control getControl() {
+		return control;
+	}
+
 	/* checkWidget was copied from Widget, and rewritten to work in this package */
 	void checkWidget () {
 		if (!isValidThread ()) SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);

@@ -35,8 +35,10 @@ import org.eclipse.swt.widgets.Control;
  * @since 2.0
  */
 public class Accessible {
+	Control control;
 
 	Accessible(Control control) {
+		this.control = control;
 	}
 	
 	/**
@@ -196,6 +198,15 @@ public class Accessible {
 	 * @since 3.0
 	 */
 	public void removeAccessibleTextListener (AccessibleTextListener listener) {
+	}
+
+	/**
+	 * Gets the control for this Accessible object. 
+	 *
+	 * @since 3.0
+	 */
+	public Control getControl() {
+		return control;
 	}
 
 	/**

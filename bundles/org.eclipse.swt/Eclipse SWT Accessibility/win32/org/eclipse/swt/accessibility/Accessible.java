@@ -203,6 +203,15 @@ public class Accessible {
 	}
 	
 	/**
+	 * Gets the control for this Accessible object. 
+	 *
+	 * @since 3.0
+	 */
+	public Control getControl() {
+		return control;
+	}
+
+	/**
 	 * Invokes platform specific functionality to dispose an accessible object.
 	 * <p>
 	 * <b>IMPORTANT:</b> This method is <em>not</em> part of the public
