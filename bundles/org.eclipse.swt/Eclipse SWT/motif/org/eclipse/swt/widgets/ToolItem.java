@@ -832,6 +832,7 @@ int processMouseUp (int callData) {
 			if ((style & SWT.DROP_DOWN) != 0) {
 				if (xEvent.x > width - 12) event.detail = SWT.ARROW;
 			}
+			setInputState(event, xEvent);
 			postEvent (SWT.Selection, event);
 		}
 		setDrawPressed(set);
