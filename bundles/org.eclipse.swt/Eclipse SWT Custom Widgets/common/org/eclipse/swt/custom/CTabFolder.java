@@ -475,9 +475,9 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 		}
 		RGB from = lineRGB;
 		RGB to = outerRGB;
-		int red = from.red + 4*(to.red - from.red)/5;
-		int green = from.green + 4*(to.green - from.green)/5;
-		int blue = from.blue + 4*(to.blue - from.blue)/5;
+		int red = from.red + 2*(to.red - from.red)/3;
+		int green = from.green + 2*(to.green - from.green)/3;
+		int blue = from.blue + 2*(to.blue - from.blue)/3;
 		Color color = new Color(getDisplay(), red, green, blue);
 		gc.setForeground(color);
 		gc.drawPolyline(outer);
@@ -498,9 +498,9 @@ void antialias (int[] shape, RGB lineRGB, RGB innerRGB, RGB outerRGB, GC gc){
 		}
 		RGB from = lineRGB;
 		RGB to = innerRGB;
-		int red = from.red + 4*(to.red - from.red)/5;
-		int green = from.green + 4*(to.green - from.green)/5;
-		int blue = from.blue + 4*(to.blue - from.blue)/5;
+		int red = from.red + 2*(to.red - from.red)/3;
+		int green = from.green + 2*(to.green - from.green)/3;
+		int blue = from.blue + 2*(to.blue - from.blue)/3;
 		Color color = new Color(getDisplay(), red, green, blue);
 		gc.setForeground(color);
 		gc.drawPolyline(inner);
@@ -3459,16 +3459,16 @@ boolean updateTabHeight(boolean force){
 	oldSize = null;
 	if (onBottom) {
 		int d = tabHeight - 12;
-		curve = new int[]{0,13+d, 0,12+d, 3,12+d, 4,11+d, 6,11+d, 7,10+d, 8,10+d, 10,8+d, 11,8+d,
-				          12,7+d, 12+d,7,
-						  13+d,6, 14+d,6, 16+d,4, 17+d,4, 18+d,3, 20+d,3, 21+d,2, 25+d,2, 26+d,1}; 
+		curve = new int[]{0,13+d, 0,12+d, 2,12+d, 3,11+d, 5,11+d, 6,10+d, 7,10+d, 9,8+d, 10,8+d,
+				          11,7+d, 11+d,7,
+						  12+d,6, 13+d,6, 15+d,4, 16+d,4, 17+d,3, 19+d,3, 20+d,2, 22+d,2, 23+d,1}; 
 		curveWidth = 26+d;
 		curveIndent = curveWidth/3;	
 	} else {
 		int d = tabHeight - 12;
-		curve = new int[]{0,0, 0,1, 3,1, 4,2, 6,2, 7,3, 8,3, 10,5, 11,5,
-				          12,6, 12+d,6+d,
-				          13+d,7+d, 14+d,7+d, 16+d,9+d, 17+d,9+d, 18+d,10+d, 20+d,10+d, 21+d,11+d, 25+d,11+d, 26+d,12+d};
+		curve = new int[]{0,0, 0,1, 2,1, 3,2, 5,2, 6,3, 7,3, 9,5, 10,5,
+				          11,6, 11+d,6+d,
+				          12+d,7+d, 13+d,7+d, 15+d,9+d, 16+d,9+d, 17+d,10+d, 19+d,10+d, 20+d,11+d, 22+d,11+d, 23+d,12+d};
 		curveWidth = 26+d;
 		curveIndent = curveWidth/3;
 	}
