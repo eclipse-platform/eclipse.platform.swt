@@ -789,6 +789,7 @@ void releaseWidget () {
 		if (hIMC != 0) OS.ImmDestroyContext (hIMC);
 	}
 	lastActive = null;
+	region = null;
 }
 
 void remove (Menu menu) {
@@ -1012,17 +1013,16 @@ void setParent () {
  * @since 3.0
  *
  */
-public void setRegion(Region rgn) {
+public void setRegion (Region region) {
 	checkWidget ();
 	if ((style & SWT.NO_TRIM) == 0) return;
-	if (rgn == null) {
-		OS.SetWindowRgn (handle, 0, true);
-	} else {
-		int hRegion = OS.CreateRectRgn (0, 0, 0, 0);
-		OS.CombineRgn (hRegion, rgn.handle, hRegion, OS.RGN_OR);
-		OS.SetWindowRgn (handle, hRegion, true);
+	int hRegion = 0;
+	if (region != null) {
+		hRegion = OS.CreateRectRgn (0, 0, 0, 0);
+		OS.CombineRgn (hRegion, region.handle, hRegion, OS.RGN_OR);
 	}
-	region = rgn;
+	OS.SetWindowRgn (handle, hRegion, true);
+	this.region = region;
 }
 
 void setToolTipText (int hwnd, String text) {
