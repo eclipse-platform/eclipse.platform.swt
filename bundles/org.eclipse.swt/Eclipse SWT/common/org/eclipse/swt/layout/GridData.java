@@ -209,11 +209,11 @@ public final class GridData {
 	public int minimumHeight = 0;
 	
 	/**
-	 * exclude is used to stop a widget from being managed by the
-	 * layout.  If this value is <code>true</code>, the widget size and
-	 * position will not be managed by the layout.  If this value is 
-	 * <code>false</code>, then the size and position of the widget will
-	 * be modified by the layout.
+	 * exclude is used to stop a control from being layed out.
+	 * If this value is <code>true</code>, the size and position
+	 * of the control will not be managed by the layout.  If this
+	 * value is <code>false</code>, the size and position of the
+	 * control will be computed and assigned.
 	 * 
 	 * The default value is <code>false</code>.
 	 * 
