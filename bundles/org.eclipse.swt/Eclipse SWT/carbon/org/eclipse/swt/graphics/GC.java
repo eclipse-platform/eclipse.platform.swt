@@ -1841,7 +1841,8 @@ int setString(String string, int flags) {
 	int length = string.length();
 	char[] chars = new char[length];
 	string.getChars(0, length, chars, 0);
-	int breaks[] = null;
+	int breakCount = 0;
+	int[] breaks = null;
 	if ((flags & (SWT.DRAW_MNEMONIC | SWT.DRAW_DELIMITER)) != 0) {
 		int i=0, j=0;
 		while (i < chars.length) {
@@ -1853,13 +1854,13 @@ int setString(String string, int flags) {
 			} else if (c == '\n' && (flags & SWT.DRAW_DELIMITER) != 0) {
 				j--;
 				if (breaks == null) {
-					breaks = new int[1];
+					breaks = new int[4];
 				} else {
-					int[] newBreaks = new int[breaks.length + 1];
+					int[] newBreaks = new int[breaks.length + 4];
 					System.arraycopy(breaks, 0, newBreaks, 0, breaks.length);
 					breaks = newBreaks;
 				}
-				breaks[breaks.length - 1] = j;
+				breaks[breakCount++] = j;
 			}			
 		}
 		length = j;
@@ -1874,7 +1875,7 @@ int setString(String string, int flags) {
 	OS.memcpy(ptr, chars, length * 2);
 	OS.ATSUSetTextPointerLocation(layout, ptr, 0, length, length);
 	if ((flags & SWT.DRAW_DELIMITER) != 0 && breaks != null) {
-		for (int i=0; i<breaks.length; i++) {
+		for (int i=0; i<breakCount; i++) {
 			OS.ATSUSetSoftLineBreak(layout, breaks[i]);
 		}
 	}
