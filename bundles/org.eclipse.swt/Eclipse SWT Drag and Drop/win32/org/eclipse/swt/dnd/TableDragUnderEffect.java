@@ -42,8 +42,7 @@ private TableItem findItem(int x, int y){
 	
 	Rectangle area = table.getClientArea();
 	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		coordinates = new Point(x1, y);
-		coordinates = table.toControl(coordinates);
+		coordinates = new Point(x1, coordinates.y);
 		item = table.getItem(coordinates);
 		if (item != null) return item;
 	}
