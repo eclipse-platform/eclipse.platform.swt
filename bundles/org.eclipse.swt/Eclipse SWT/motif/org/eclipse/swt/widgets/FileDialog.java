@@ -242,7 +242,7 @@ public String open () {
 	int display = appContext.xDisplay;
 	int parentHandle = appContext.shellHandle;
 	if ((parent != null) && (parent.getDisplay () == appContext)) {
-		parent.realizeWidget ();		/* Fix for bug 17507 */
+		if (OS.IsAIX) parent.realizeWidget ();		/* Fix for bug 17507 */
 		parentHandle = parent.shellHandle;
 	}
 
