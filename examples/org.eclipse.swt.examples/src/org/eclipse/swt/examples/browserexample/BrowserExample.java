@@ -99,7 +99,7 @@ public BrowserExample(Composite parent) {
 		browser.setLayoutData(data);
 	} catch (SWTError e) {
 		/* Browser widget could not be instantiated */
-		Label label = new Label(parent, SWT.CENTER);
+		Label label = new Label(parent, SWT.CENTER | SWT.WRAP);
 		label.setText(getResourceString("BrowserNotCreated"));
 		label.setLayoutData(data);
 	}
