@@ -368,7 +368,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	}
 	COMBOBOXINFO pcbi = new COMBOBOXINFO ();
 	pcbi.cbSize = COMBOBOXINFO.sizeof;
-	if (((style & SWT.SIMPLE) == 0) && OS.GetComboBoxInfo (handle, pcbi)) {
+	if (((style & SWT.SIMPLE) == 0) && !OS.IsWinCE && OS.GetComboBoxInfo (handle, pcbi)) {
 		width += pcbi.itemLeft + (pcbi.buttonRight - pcbi.buttonLeft);
 		height = pcbi.buttonTop + (pcbi.buttonBottom - pcbi.buttonTop); 
 	} else {
