@@ -3192,33 +3192,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_LresultFromOb
 
 /*
  * Class:     org_eclipse_swt_internal_ole_win32_COM
- * Method:    NotifyWinEvent
- * Signature: (IIII)V
- */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_NotifyWinEvent
-  (JNIEnv *env, jclass that, jint event, jint hwnd, jint idObject, jint idChild)
-{
-    HMODULE hm;
-    FARPROC fp;
-
-#ifdef DEBUG_CALL_PRINTS
-    fprintf(stderr, "NotifyWinEvent\n");
-#endif
-
-    /*
-    *  NotifyWinEvent is a Win2000 and Win98 specific call
-    *  If you link it into swt.dll a system modal entry point not found dialog will
-    *  appear as soon as swt.dll is loaded. Here we check for the entry point and
-    *  only do the call if it exists.
-    */
-    if ((hm=GetModuleHandle("user32.dll")) && (fp=GetProcAddress(hm, "NotifyWinEvent"))) {
-        (fp)((DWORD)event, (HWND)hwnd, idObject, idChild);
-//		NotifyWinEvent((DWORD)event, (HWND)hwnd, idObject, idChild);
-	}
-}
-
-/*
- * Class:     org_eclipse_swt_internal_ole_win32_COM
  * Method:    VtblCall
  * Signature: (IIIIII)I
  */

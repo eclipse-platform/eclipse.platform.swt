@@ -5328,6 +5328,34 @@ JNIEXPORT jint JNICALL OS_NATIVE(MultiByteToWideChar__II_3BI_3CI)
 }
 #endif
 
+#ifndef NO_NotifyWinEvent
+JNIEXPORT jint JNICALL OS_NATIVE(NotifyWinEvent)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, NotifyWinEvent_FUNC);
+/*
+	rc = (jint)NotifyWinEvent((DWORD)arg0, (HWND)arg1, arg2, arg3);
+*/
+	{
+		static int initialized = 0;
+		static HMODULE hm = NULL;
+		static FARPROC fp = NULL;
+		rc = 0;
+		if (!initialized) {
+			if (!(hm = GetModuleHandle(NotifyWinEvent_LIB))) hm = LoadLibrary(NotifyWinEvent_LIB);
+			if (hm) fp = GetProcAddress(hm, "NotifyWinEvent");
+			initialized = 1;
+		}
+		if (fp) {
+			rc = (jint)fp((DWORD)arg0, (HWND)arg1, arg2, arg3);
+		}
+	}
+	OS_NATIVE_EXIT(env, that, NotifyWinEvent_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_OffsetRgn
 JNIEXPORT jint JNICALL OS_NATIVE(OffsetRgn)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)

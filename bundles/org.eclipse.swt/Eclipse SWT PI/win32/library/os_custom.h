@@ -21,6 +21,7 @@
 #define GetMonitorInfoA_LIB "user32.dll"
 #define GetMonitorInfoW_LIB "user32.dll"
 #define MonitorFromWindow_LIB "user32.dll"
+#define NotifyWinEvent_LIB "user32.dll"
 #define SetLayout_LIB "gdi32.dll"
 #define SetMenuInfo_LIB "user32.dll"
 

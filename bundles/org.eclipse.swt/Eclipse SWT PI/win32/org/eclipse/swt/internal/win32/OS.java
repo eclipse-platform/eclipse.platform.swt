@@ -402,6 +402,11 @@ public class OS {
 	public static final int ES_READONLY = 0x800;
 	public static final int ES_RIGHT = 0x2;
 	public static final int ETO_CLIPPED = 0x4;	
+	public static final int EVENT_OBJECT_FOCUS = 0x8005;
+	public static final int EVENT_OBJECT_LOCATIONCHANGE = 0x800B;
+//	public static final int EVENT_OBJECT_SELECTION = 0x8006;
+	public static final int EVENT_OBJECT_SELECTIONWITHIN = 0x8009;
+	public static final int EVENT_OBJECT_VALUECHANGE = 0x800E;
 	public static final int FALT = 0x10;
 	public static final int FCONTROL = 0x8;
 	public static final int FNERR_INVALIDFILENAME = 0x3002;
@@ -761,8 +766,10 @@ public class OS {
 	public static final int NULL_BRUSH = 0x5;
 	public static final int NULL_PEN = 0x8;
 	public static final int NUMRESERVED = 106;
+	public static final int OBJID_CARET = 0xFFFFFFF8;
 	public static final int OBJID_CLIENT = 0xFFFFFFFC;
 	public static final int OBJID_MENU = 0xFFFFFFFD;
+	public static final int OBJID_WINDOW = 0x00000000;
 	public static final int OBJ_FONT = 0x6;
 	public static final int OBJ_PEN = 0x1;
 	public static final int OBM_CHECKBOXES = 0x7ff7;
@@ -2522,6 +2529,7 @@ public static final native int MsgWaitForMultipleObjectsEx (int nCount, int pHan
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, byte [] lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int MultiByteToWideChar (int CodePage, int dwFlags, int lpMultiByteStr, int cchMultiByte, char [] lpWideCharStr, int cchWideChar);
 public static final native int NOTIFYICONDATA_sizeof ();
+public static final native int NotifyWinEvent (int event, int hwnd, int idObject, int idChild);
 public static final native int OffsetRgn (int hrgn, int nXOffset, int nYOffset);
 public static final native int OleInitialize (int pvReserved);
 public static final native void OleUninitialize ();
