@@ -57,9 +57,9 @@ public class Browser extends Composite {
 	ProgressListener[] progressListeners = new ProgressListener[0];
 	StatusTextListener[] statusTextListeners = new StatusTextListener[0];
 
-	static nsIAppShell appShell;
-	static AppFileLocProvider locProvider; 
-	static int browserCount;
+	static nsIAppShell AppShell;
+	static AppFileLocProvider LocProvider; 
+	static int BrowserCount;
 
 	/* Package Name */
 	static final String PACKAGE_PREFIX = "org.eclipse.swt.browser."; //$NON-NLS-1$
@@ -98,7 +98,7 @@ public Browser(Composite parent, int style) {
 	super(parent,style);
 	
 	int[] result = new int[1];
-	if (browserCount == 0) {
+	if (BrowserCount == 0) {
 		try {
 			Library.loadLibrary ("swt-mozilla"); //$NON-NLS-1$
 		} catch (UnsatisfiedLinkError e) {
@@ -112,8 +112,8 @@ public Browser(Composite parent, int style) {
 			SWT.error(SWT.ERROR_NO_HANDLES);
 		}
 
-		locProvider = new AppFileLocProvider();
-		locProvider.AddRef();
+		LocProvider = new AppFileLocProvider();
+		LocProvider.AddRef();
 
 		int[] retVal = new int[1];
 		int rc = XPCOM.NS_NewLocalFile(mozillaPath, true, retVal);
@@ -121,11 +121,11 @@ public Browser(Composite parent, int style) {
 		if (retVal[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_ERROR_NULL_POINTER));
 			
 		nsILocalFile localFile = new nsILocalFile(retVal[0]);
-		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), locProvider.getAddress());
+		rc = XPCOM.NS_InitEmbedding(localFile.getAddress(), LocProvider.getAddress());
 		localFile.Release();
 		if (rc != XPCOM.NS_OK) {
-			locProvider.Release();
-			locProvider = null;
+			LocProvider.Release();
+			LocProvider = null;
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES);
 		}
@@ -141,13 +141,13 @@ public Browser(Composite parent, int style) {
 		if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));		
 		componentManager.Release();
 		
-		appShell = new nsIAppShell(result[0]); 
-		rc = appShell.Create(null, null);
+		AppShell = new nsIAppShell(result[0]); 
+		rc = AppShell.Create(null, null);
 		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-		rc = appShell.Spinup();
+		rc = AppShell.Spinup();
 		if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
 	}
-	browserCount++;
+	BrowserCount++;
 	int rc = XPCOM.NS_GetComponentManager(result);
 	if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
 	if (result[0] == 0) throw new SWTError(XPCOM.errorMsg(XPCOM.NS_NOINTERFACE));
@@ -548,20 +548,26 @@ void onDispose() {
 	
 	Release();
 	webBrowser.Release();
-	
-	browserCount--;
-	if (browserCount == 0) {
-		if (appShell != null) {
-			// Shutdown the appshell service.
-			rc = appShell.Spindown();
-			if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
-			appShell.Release();
-			appShell = null;
-		}
-		locProvider.Release();
-		locProvider = null;
-		XPCOM.NS_TermEmbedding();
-	}
+
+	/*
+	* This code is intentionally commented.  It is not possible to reinitialize
+	* Mozilla once it has been terminated.  NS_InitEmbedding always fails after
+	* NS_TermEmbedding has been called.  The workaround is to call NS_InitEmbedding
+	* once and never call NS_TermEmbedding.
+	*/
+//	BrowserCount--;
+//	if (BrowserCount == 0) {
+//		if (AppShell != null) {
+//			// Shutdown the appshell service.
+//			rc = AppShell.Spindown();
+//			if (rc != XPCOM.NS_OK) throw new SWTError(XPCOM.errorMsg(rc));
+//			AppShell.Release();
+//			AppShell = null;
+//		}
+//		LocProvider.Release();
+//		LocProvider = null;
+//		XPCOM.NS_TermEmbedding();
+//	}
 }
 
 void onFocusGained(Event e) {
