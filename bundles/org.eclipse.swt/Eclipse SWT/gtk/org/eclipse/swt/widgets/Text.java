@@ -311,10 +311,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		xborder += property [0];
 		yborder += property [0];
 	}
-	int width = OS.PANGO_PIXELS (w [0]) + 2 * xborder;
-	int height = OS.PANGO_PIXELS (h [0]) + 2 * yborder;
+	int width = OS.PANGO_PIXELS (w [0]);
+	int height = OS.PANGO_PIXELS (h [0]);
 	width = wHint == SWT.DEFAULT ? width : wHint;
 	height = hHint == SWT.DEFAULT ? height : hHint;
+	width += 2 * xborder;
+	height += 2 * yborder;
 	Rectangle trim = computeTrim (0, 0, width, height);
 	return new Point (trim.width, trim.height);
 }
