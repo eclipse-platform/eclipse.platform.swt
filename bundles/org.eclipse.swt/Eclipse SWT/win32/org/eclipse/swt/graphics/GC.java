@@ -521,8 +521,10 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 }
 
 void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
+	int technology = OS.GetDeviceCaps(handle, OS.TECHNOLOGY);
+
 	/* Simple case: no stretching, entire icon */
-	if (simple) {
+	if (simple && technology != OS.DT_RASPRINTER) {
 		OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, OS.DI_NORMAL);
 		return;
 	}
@@ -554,7 +556,7 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 		simple = srcX == 0 && srcY == 0 &&
 			srcWidth == destWidth && srcHeight == destHeight &&
 			srcWidth == iconWidth && srcHeight == iconHeight;
-		if (simple)	{
+		if (simple && technology != OS.DT_RASPRINTER)	{
 			/* Simple case: no stretching, entire icon */
 			OS.DrawIconEx(handle, destX, destY, srcImage.handle, 0, 0, 0, 0, OS.DI_NORMAL);
 		} else {
@@ -598,19 +600,22 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 				OS.BitBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
 			}
 			
-			/* Select old bitmaps before creating the icon */			
-			OS.SelectObject(srcHdc, oldSrcBitmap);
-			OS.SelectObject(dstHdc, oldDestBitmap);
+			if (technology == OS.DT_RASPRINTER) {
+				OS.SelectObject(srcHdc, newIconInfo.hbmColor);
+				OS.SelectObject(dstHdc, srcIconInfo.hbmMask);
+				drawBitmapTransparentByClipping(srcHdc, dstHdc, 0, 0, destWidth, destHeight, destX, destY, destWidth, destHeight, true, destWidth, destHeight);	
+				OS.SelectObject(srcHdc, oldSrcBitmap);
+				OS.SelectObject(dstHdc, oldDestBitmap);
+			} else {
+				OS.SelectObject(srcHdc, oldSrcBitmap);
+				OS.SelectObject(dstHdc, oldDestBitmap);
+				int hIcon = OS.CreateIconIndirect(newIconInfo);
+				if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+				OS.DrawIconEx(handle, destX, destY, hIcon, destWidth, destHeight, 0, 0, OS.DI_NORMAL);
+				OS.DestroyIcon(hIcon);
+			}
 			
-			/* Create the new icon */
-			int hIcon = OS.CreateIconIndirect(newIconInfo);
-			if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-			
-			/* Draw the new icon */
-			OS.DrawIconEx(handle, destX, destY, hIcon, destWidth, destHeight, 0, 0, OS.DI_NORMAL);
-			
-			/* Destroy the new icon and hdc's*/
-			OS.DestroyIcon(hIcon);
+			/* Destroy the new icon src and mask and hdc's*/
 			OS.DeleteObject(newIconInfo.hbmMask);
 			OS.DeleteObject(newIconInfo.hbmColor);
 			OS.DeleteDC(dstHdc);
@@ -797,6 +802,43 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	OS.DeleteDC(srcHdc);
 }
 
+void drawBitmapTransparentByClipping(int srcHdc, int maskHdc, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, int imgWidth, int imgHeight) {
+	int rgn = OS.CreateRectRgn(0, 0, 0, 0);
+	for (int y=0; y<imgHeight; y++) {
+		for (int x=0; x<imgWidth; x++) {
+			if (OS.GetPixel(maskHdc, x, y) == 0) {
+				int tempRgn = OS.CreateRectRgn(x, y, x+1, y+1);
+				OS.CombineRgn(rgn, rgn, tempRgn, OS.RGN_OR);
+				OS.DeleteObject(tempRgn);
+			}
+		}
+	}
+	OS.OffsetRgn(rgn, destX, destY);
+	int clip = OS.CreateRectRgn(0, 0, 0, 0);
+	int result = OS.GetClipRgn(handle, clip);
+	if (result == 1) OS.CombineRgn(rgn, rgn, clip, OS.RGN_AND);
+	OS.SelectClipRgn(handle, rgn);
+	int rop2 = 0;
+	if (!OS.IsWinCE) {
+		rop2 = OS.GetROP2(handle);
+	} else {
+		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
+		OS.SetROP2 (handle, rop2);
+	}
+	int dwRop = rop2 == OS.R2_XORPEN ? OS.SRCINVERT : OS.SRCCOPY;
+	if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
+		int mode = 0;
+		if (!OS.IsWinCE) mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+		OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, dwRop);
+		if (!OS.IsWinCE) OS.SetStretchBltMode(handle, mode);
+	} else {
+		OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, dwRop);
+	}
+	OS.SelectClipRgn(handle, result == 1 ? clip : 0);
+	OS.DeleteObject(clip);
+	OS.DeleteObject(rgn);
+}
+
 void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
 
 	/* Get the HDC for the device */
@@ -896,27 +938,30 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 		OS.BitBlt(maskHdc, 0, 0, imgWidth, imgHeight, srcHdc, 0, 0, OS.SRCCOPY);
 		if (originalColors != null) OS.SetDIBColorTable(srcHdc, 0, 1 << bm.bmBitsPixel, originalColors);
 	
-		/* Draw the source bitmap transparently using invert/and mask/invert */
-		int tempHdc = OS.CreateCompatibleDC(hDC);
-		int tempBitmap = OS.CreateCompatibleBitmap(hDC, destWidth, destHeight);	
-		int oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
-		OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
-		if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
-			if (!OS.IsWinCE) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
-			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
-			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
-			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+		if (OS.GetDeviceCaps(handle, OS.TECHNOLOGY) == OS.DT_RASPRINTER) {
+			/* Most printers do not support BitBlt(), draw the source bitmap transparently using clipping */
+			drawBitmapTransparentByClipping(srcHdc, maskHdc, srcX, srcY, srcWidth, srcHeight, destX, destY, destWidth, destHeight, simple, imgWidth, imgHeight);
 		} else {
-			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCINVERT);
-			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, OS.SRCAND);
-			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCINVERT);
+			/* Draw the source bitmap transparently using invert/and mask/invert */
+			int tempHdc = OS.CreateCompatibleDC(hDC);
+			int tempBitmap = OS.CreateCompatibleBitmap(hDC, destWidth, destHeight);	
+			int oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
+			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
+			if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
+				if (!OS.IsWinCE) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
+				OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+				OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
+				OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+			} else {
+				OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCINVERT);
+				OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, OS.SRCAND);
+				OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCINVERT);
+			}
+			OS.BitBlt(handle, destX, destY, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
+			OS.SelectObject(tempHdc, oldTempBitmap);
+			OS.DeleteDC(tempHdc);
+			OS.DeleteObject(tempBitmap);
 		}
-		OS.BitBlt(handle, destX, destY, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
-	
-		/* Release resources */
-		OS.SelectObject(tempHdc, oldTempBitmap);
-		OS.DeleteDC(tempHdc);
-		OS.DeleteObject(tempBitmap);
 		OS.SelectObject(maskHdc, oldMaskBitmap);
 		OS.DeleteDC(maskHdc);
 		OS.DeleteObject(maskBitmap);
