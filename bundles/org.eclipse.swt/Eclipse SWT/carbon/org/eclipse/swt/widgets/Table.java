@@ -530,7 +530,7 @@ void destroyItem (TableColumn column) {
 		short [] width = new short [1];
 		OS.GetDataBrowserTableViewNamedColumnWidth (handle, column_id, width);
 		desc.minimumWidth = desc.maximumWidth = width [0];
-		int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, new char [0], 0);
+		int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, null, 0);
 		desc.titleString = str;
 		OS.SetDataBrowserListViewHeaderDesc (handle, column_id, desc);
 		OS.CFRelease (str);
