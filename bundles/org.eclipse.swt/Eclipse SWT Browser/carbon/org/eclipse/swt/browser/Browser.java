@@ -28,7 +28,7 @@ public void addLocationListener(LocationListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
 }
 
-public void addNewWindowListener(NewWindowListener listener) {
+public void addOpenWindowListener(OpenWindowListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);	
 }
@@ -80,7 +80,7 @@ public void removeLocationListener(LocationListener listener) {
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
 
-public void removeNewWindowListener(NewWindowListener listener) {
+public void removeOpenWindowListener(OpenWindowListener listener) {
 	checkWidget();
 	if (listener == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 }
