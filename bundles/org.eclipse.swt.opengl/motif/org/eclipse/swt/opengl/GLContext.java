@@ -67,8 +67,8 @@ public class GLContext {
 			0,
 			XGL.GLX_RGBA,
 			XGL.GLX_DOUBLEBUFFER,
-			XGL.GLX_DEPTH_SIZE,
-			depth,
+//			XGL.GLX_DEPTH_SIZE,
+//			depth,
 			0
 		};
 		int infoPtr = XGL.glXChooseVisual (xDisplay, screen, attrib);
@@ -139,11 +139,11 @@ public class GLContext {
 		}
 		gc = 0;
 		data.display = data.drawable = data.colormap = 0;
-		data.fontList = data.clipRgn = data.renderTable = 0;
+		/*data.fontList =*/ data.clipRgn = data.renderTable = 0;
 		drawable = null;
 		data.device = null;
 		data.image = null;
-		data.codePage = null;
+		//data.codePage = null;
 		data = null;
 	}
 
@@ -199,7 +199,7 @@ public class GLContext {
 	 * @param count
 	 */
 	public void loadBitmapFont (FontData fdata, Device device, int base, int startIndex, int length) {
-		/* Temporaly code, due some problems when running on UTF-8 loadBitmapFont ()
+		/* Temporary code, due some problems when running on UTF-8 loadBitmapFont ()
 		 * is restrict to works only for ascii. 
 		 * Note: en_US.ISO8859-1 also code be used.
 		 */
