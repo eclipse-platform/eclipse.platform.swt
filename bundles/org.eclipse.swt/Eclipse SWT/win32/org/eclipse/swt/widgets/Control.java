@@ -2908,9 +2908,10 @@ void update (boolean all) {
 	}
 }
 
-void updateFont (Font oldFont, Font newFont) {
-	Font font = getFont ();
-	if (font.equals (oldFont)) setFont (newFont);
+boolean updateFont (Font oldFont, Font newFont) {
+	boolean sameFont = getFont ().equals (oldFont);
+	if (!sameFont) setFont (newFont);
+	return !sameFont;
 }
 
 void updateLayout (boolean resize, boolean all) {
