@@ -1602,6 +1602,7 @@ int gtk_button_press_event (int widget, int event) {
 	Shell shell = _getShell ();
 	GdkEventButton gdkEvent = new GdkEventButton ();
 	OS.memmove (gdkEvent, event, GdkEventButton.sizeof);
+	if (gdkEvent.type == OS.GDK_3BUTTON_PRESS) return 0;
 	display.dragStartX = (int) gdkEvent.x;
 	display.dragStartY = (int) gdkEvent.y;
 	display.dragging = false;
