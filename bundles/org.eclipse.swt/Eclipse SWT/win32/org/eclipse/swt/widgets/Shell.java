@@ -567,7 +567,7 @@ public Rectangle getBounds () {
 
 /** 
  * Sets the region managed by the argument to the current
- * clipping region of the shell.
+ * shape of the shell.
  *
  * @param region the region to fill with the clipping region
  *
@@ -926,15 +926,11 @@ void setBounds (int x, int y, int width, int height, int flags) {
 }
 
 /**
- * Sets the area of the shell which can be changed
- * by drawing operations to the region specified
- * by the argument.
+ * Sets the shape of the shell to the region specified
+ * by the argument.  A null region will restore the default shape.
+ * Shell must be created with the style SWT.NO_TRIM.
  *
  * @param rect the clipping region.
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the region is null</li>
- * </ul>
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -946,9 +942,8 @@ void setBounds (int x, int y, int width, int height, int flags) {
  */
 public void setClipping(Region region) {
 	checkWidget ();
-	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.NO_TRIM) == 0) return;
-	OS.SetWindowRgn (handle, region.handle, true);
+	OS.SetWindowRgn (handle, region == null ? 0 : region.handle, true);
 }
 
 public void setEnabled (boolean enabled) {
