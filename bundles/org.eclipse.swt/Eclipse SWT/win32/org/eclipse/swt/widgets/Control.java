@@ -2944,6 +2944,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	LRESULT result = null;
 	switch (msg) {
 		case OS.WM_ACTIVATE:			result = WM_ACTIVATE (wParam, lParam); break;
+		case OS.WM_CAPTURECHANGED:		result = WM_CAPTURECHANGED (wParam, lParam); break;
 		case OS.WM_CHAR:				result = WM_CHAR (wParam, lParam); break;
 		case OS.WM_CLEAR:				result = WM_CLEAR (wParam, lParam); break;
 		case OS.WM_CLOSE:				result = WM_CLOSE (wParam, lParam); break;
@@ -3030,6 +3031,10 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 }
 
 LRESULT WM_ACTIVATE (int wParam, int lParam) {
+	return null;
+}
+
+LRESULT WM_CAPTURECHANGED (int wParam, int lParam) {
 	return null;
 }
 

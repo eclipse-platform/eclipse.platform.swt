@@ -1040,6 +1040,7 @@ public class OS {
 	public static final int TBN_FIRST = 0xfffffd44;
 	public static final int TBN_HOTITEMCHANGE = 0xFFFFFD37;
 	public static final int TBSTATE_CHECKED = 0x1;
+	public static final int TBSTATE_PRESSED = 0x02;
 	public static final int TBSTYLE_CUSTOMERASE = 0x2000;
 	public static final int TBSTYLE_DROPDOWN = 0x8;
 	public static final int TBSTATE_ENABLED = 0x4;
@@ -1304,6 +1305,7 @@ public class OS {
 	public static final int WM_ACTIVATEAPP = 0x1c;
 	public static final int WM_APP = 0x8000;
 	public static final int WM_CANCELMODE = 0x1f;
+	public static final int WM_CAPTURECHANGED = 0x0215;
 	public static final int WM_CHANGEUISTATE = 0x0127;
 	public static final int WM_CHAR = 0x102;
 	public static final int WM_CLEAR = 0x303;
