@@ -2829,6 +2829,21 @@ int XButtonPress (int w, int client_data, int call_data, int continue_to_dispatc
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+	switch (xEvent.button) {
+		case 4:
+		case 5:
+			Event event = new Event ();
+			event.detail = SWT.SCROLL_LINE;
+			event.count = xEvent.button == 4 ? 3 : -3;
+			sendEvent (SWT.MouseWheel, event);
+			return event.doit ? 0 : 1;
+		case 6:
+			xEvent.button = 4;
+			break;
+		case 7:
+			xEvent.button = 5;
+			break;
+	}
 	sendMouseEvent (SWT.MouseDown, xEvent);
 	if (xEvent.button == 2 && hooks (SWT.DragDetect)) {
 		Event event = new Event ();
@@ -2866,6 +2881,18 @@ int XButtonRelease (int w, int client_data, int call_data, int continue_to_dispa
 	display.hideToolTip ();
 	XButtonEvent xEvent = new XButtonEvent ();
 	OS.memmove (xEvent, call_data, XButtonEvent.sizeof);
+	switch (xEvent.button) {
+		case 4:
+		case 5:
+			/* Ignore mouse wheel for ButtonRelease */
+			return 0;
+		case 6:
+			xEvent.button = 4;
+			break;
+		case 7:
+			xEvent.button = 5;
+			break;
+	}
 	sendMouseEvent (SWT.MouseUp, xEvent);
 	return 0;
 }
