@@ -2276,15 +2276,10 @@ public void setToolTipText (String string) {
  */
 public void setVisible (boolean visible) {
 	checkWidget();
-	if (visible == false)
-		visible= visible;
     if (this.visible != visible) {
 	    this.visible= visible;
-		int topHandle = topHandle ();
-		if (OS.IsControlVisible(topHandle) != visible) {
-			OS.HIViewSetVisible(topHandle, visible);
-			sendEvent (visible ? SWT.Show : SWT.Hide);
-		}
+		OS.HIViewSetVisible(topHandle(), visible);
+		sendEvent (visible ? SWT.Show : SWT.Hide);
     }
 }
 void setZOrder (Control control, boolean above) {
