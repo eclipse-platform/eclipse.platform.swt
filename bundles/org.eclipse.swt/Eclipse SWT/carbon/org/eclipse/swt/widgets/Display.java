@@ -199,6 +199,7 @@ public class Display extends Device {
 
 	/* Double Click */
 	int lastTime, lastButton;
+	short lastGlobalMouseXPos, lastGlobalMouseYPos;
 	
 	/* Current caret */
 	Caret currentCaret;
@@ -782,7 +783,6 @@ int getLastEventTime () {
 //	return (int) (OS.GetLastUserEventTime () * 1000.0);
 	return (int) System.currentTimeMillis ();
 }
-
 /**
  * Returns an array containing all shells which have not been
  * disposed and have the receiver as their display.
@@ -2201,7 +2201,7 @@ static String convertToLf(String text) {
 		}
 		return OS.eventNotHandledErr;
 	}
-		
+	
 	private int handleMouseCallback(int nextHandler, int eRefHandle, int whichWindow) {
 		
 		int eventClass= OS.GetEventClass(eRefHandle);
@@ -2218,6 +2218,8 @@ static String convertToLf(String text) {
 		
 		MacEvent me= new MacEvent(eRefHandle);
 		org.eclipse.swt.internal.carbon.Point where= me.getWhere();
+		lastGlobalMouseXPos= where.h;
+		lastGlobalMouseYPos= where.v;
 		
 		// retrieve window and window part from event
 		if (whichWindow == 0) {

@@ -196,7 +196,7 @@ void createHandle (int index) {
 	handle= OS.NewControl(0, bounds, null, false, (short)(OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick), (short)0, (short)0, (short)OS.kControlUserPaneProc, 0);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	MacUtil.insertControl(handle, parentHandle, index);
-	OS.HIViewSetVisible(handle, false);
+	OS.HIViewSetVisible(handle, true);
 }
 void click (boolean dropDown, MacMouseEvent mmEvent) {
 	if ((style & SWT.RADIO) != 0) {
@@ -446,11 +446,16 @@ public int getWidth () {
 	return bounds.right - bounds.left;
 }
 boolean hasCursor () {
+	Display display= getDisplay();
 	org.eclipse.swt.internal.carbon.Point mp= new org.eclipse.swt.internal.carbon.Point();
-	OS.GetMouse(mp);
+	mp.h= display.lastGlobalMouseXPos;
+	mp.v= display.lastGlobalMouseYPos;
+	int wHandle= OS.GetControlOwner(handle);
 	Rect bounds= new Rect();
-	OS.GetControlBounds(handle, bounds);
-	OS.SetRect(bounds, (short)0, (short)0, (short)(bounds.right-bounds.left), (short)(bounds.bottom-bounds.top));
+	OS.GetWindowBounds(wHandle, (short)OS.kWindowContentRgn, bounds);
+	mp.h-= bounds.left;
+	mp.v-= bounds.top;
+	MacUtil.getControlBounds(handle, bounds);
 	return OS.PtInRect(mp, bounds);
 }
 void hookEvents () {
@@ -567,9 +572,6 @@ void setBounds (int x, int y, int width, int height) {
 	Rect bounds= new Rect();
 	OS.SetRect(bounds, (short)x, (short)y, (short)(x+width), (short)(y+height));
 	OS.SetControlBounds(handle, bounds);
-
-	if (parent.fGotSize)
-		OS.HIViewSetVisible(handle, true);
 }
 /**
  * Sets the control that is used to fill the bounds of

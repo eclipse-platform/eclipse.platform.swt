@@ -271,11 +271,15 @@ public class MacUtil {
 	
 	static org.eclipse.swt.graphics.Point toControl(int cHandle, org.eclipse.swt.graphics.Point point) {
 		Point mp= new Point();
-		OS.SetPt(mp, (short)point.x, (short)point.y);
+		mp.h= (short)point.x;
+		mp.v= (short)point.y;
 		// convert from screen to window coordinates
 		int wHandle= OS.GetControlOwner(cHandle);
-		int port= OS.GetWindowPort(wHandle);
-		OS.QDGlobalToLocalPoint(port, mp);
+		Rect bounds= new Rect();
+		OS.GetWindowBounds(wHandle, (short)OS.kWindowContentRgn, bounds);
+		mp.h-= bounds.left;
+		mp.v-= bounds.top;
+		// convert from window to control coordinates
 		CGPoint p= new CGPoint();
 		p.x= mp.h;
 		p.y= mp.v;
@@ -291,10 +295,13 @@ public class MacUtil {
 		p.y= point.y;
 		OS.HIViewConvertPoint(p, cHandle, getContentView(wHandle));
 		Point mp= new Point();
-		OS.SetPt(mp, (short)p.x, (short)p.y);
+		mp.h= (short)p.x;
+		mp.v= (short)p.y;
 		// convert from window to screen coordinates
-		int port= OS.GetWindowPort(wHandle);
-		OS.QDLocalToGlobalPoint(port, mp);
+		Rect bounds= new Rect();
+		OS.GetWindowBounds(wHandle, (short)OS.kWindowContentRgn, bounds);
+		mp.h+= bounds.left;
+		mp.v+= bounds.top;
 		return new org.eclipse.swt.graphics.Point(mp.h, mp.v);
 	}
 		

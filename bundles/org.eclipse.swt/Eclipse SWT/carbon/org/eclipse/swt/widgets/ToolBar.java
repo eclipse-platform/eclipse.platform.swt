@@ -36,9 +36,6 @@ import org.eclipse.swt.graphics.*;
 public class ToolBar extends Composite {
 	int itemCount;
 	ToolItem [] items;
-	// AW
-	boolean fGotSize= false;
-	// AW
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -388,7 +385,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 public void setBounds (int x, int y, int width, int height) {
-	fGotSize= true;
 	super.setBounds (x, y, width, height);
 	Rectangle rect = getClientArea ();
 	relayout (rect.width, rect.height);
@@ -402,7 +398,6 @@ public void setRedraw (boolean redraw) {
 	}
 }
 public void setSize (int width, int height) {
-	fGotSize= true;
 	super.setSize (width, height);
 	Rectangle rect = getClientArea ();
 	relayout (rect.width, rect.height);
