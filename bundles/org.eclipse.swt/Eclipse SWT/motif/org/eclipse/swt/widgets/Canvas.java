@@ -7,9 +7,9 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Instances of this class provide a surface for drawing
