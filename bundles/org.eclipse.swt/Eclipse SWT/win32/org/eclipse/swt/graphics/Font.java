@@ -87,6 +87,8 @@ public Font(Device device, FontData fd) {
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a font could not be created from the given font data</li>
  * </ul>
+ * 
+ * @since 2.1
  */
 public Font(Device device, FontData[] fds) {
 	if (device == null) device = Device.getDevice();
