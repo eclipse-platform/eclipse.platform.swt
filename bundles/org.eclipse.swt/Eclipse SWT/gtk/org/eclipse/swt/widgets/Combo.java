@@ -446,19 +446,20 @@ void hookEvents () {
 		OS.GDK_KEY_PRESS_MASK | OS.GDK_KEY_RELEASE_MASK;
 	int [] handles = new int [] {arrowHandle, entryHandle, listHandle};
 	for (int i=0; i<handles.length; i++) {
-		int handle = handles [i];
-		if (handle != 0) {
-			OS.gtk_widget_add_events (handle, mask);
-			OS.g_signal_connect (handle, OS.popup_menu, windowProc2, POPUP_MENU);
-			OS.g_signal_connect (handle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
-			OS.g_signal_connect (handle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
-			OS.g_signal_connect (handle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
-			OS.g_signal_connect (handle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
-			OS.g_signal_connect (handle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
-			OS.g_signal_connect (handle, OS.show_help, windowProc3, SHOW_HELP);
-			OS.g_signal_connect (handle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
-			OS.g_signal_connect (handle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
-			OS.g_signal_connect (handle, OS.event_after, windowProc3, EVENT_AFTER);
+		int eventHandle = handles [i];
+		if (eventHandle != 0) {
+			OS.gtk_widget_add_events (eventHandle, mask);
+			OS.g_signal_connect (eventHandle, OS.popup_menu, windowProc2, POPUP_MENU);
+			OS.g_signal_connect (eventHandle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
+			OS.g_signal_connect (eventHandle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
+			OS.g_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
+			OS.g_signal_connect (eventHandle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
+			OS.g_signal_connect (eventHandle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
+			OS.g_signal_connect (eventHandle, OS.show_help, windowProc3, SHOW_HELP);
+			OS.g_signal_connect (eventHandle, OS.focus, windowProc3, FOCUS);
+			OS.g_signal_connect (eventHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
+			OS.g_signal_connect (eventHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
+			OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
 		
 			/*
 			* Feature in GTK.  Events such as mouse move are propagated up
@@ -467,9 +468,9 @@ void hookEvents () {
 			* hook a signal after and stop the propagation using a negative
 			* event number to distinguish this case.
 			*/
-			OS.g_signal_connect_after (handle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
-			OS.g_signal_connect_after (handle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
-			OS.g_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
+			OS.g_signal_connect_after (eventHandle, OS.button_press_event, windowProc3, -BUTTON_PRESS_EVENT);
+			OS.g_signal_connect_after (eventHandle, OS.button_release_event, windowProc3, -BUTTON_RELEASE_EVENT);
+			OS.g_signal_connect_after (eventHandle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
 		}
 	}
 	int imContext = imContext ();

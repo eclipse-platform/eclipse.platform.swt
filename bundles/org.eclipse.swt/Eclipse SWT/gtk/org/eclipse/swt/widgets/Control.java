@@ -150,6 +150,7 @@ void hookEvents () {
 	OS.g_signal_connect (eventHandle, OS.motion_notify_event, windowProc3, MOTION_NOTIFY_EVENT);
 	OS.g_signal_connect (eventHandle, OS.key_press_event, windowProc3, KEY_PRESS_EVENT);
 	OS.g_signal_connect (eventHandle, OS.key_release_event, windowProc3, KEY_RELEASE_EVENT);
+	OS.g_signal_connect (eventHandle, OS.focus, windowProc3, FOCUS);
 	OS.g_signal_connect (eventHandle, OS.focus_in_event, windowProc3, FOCUS_IN_EVENT);
 	OS.g_signal_connect (eventHandle, OS.focus_out_event, windowProc3, FOCUS_OUT_EVENT);
 	OS.g_signal_connect (eventHandle, OS.event_after, windowProc3, EVENT_AFTER);
@@ -1656,6 +1657,11 @@ int gtk_expose_event (int widget, int eventPtr) {
 	gc.dispose ();
 	event.gc = null;
 	return 0;
+}
+
+int gtk_focus (int widget, int event) {
+	/* Stop GTK traversal for every widget */
+	return 1;
 }
 
 int gtk_focus_in_event (int widget, int event) {

@@ -240,6 +240,7 @@ public class OS {
 	public static final byte[] event = signal("event");
 	public static final byte[] event_after = signal("event_after");
 	public static final byte[] expose_event = signal("expose_event");
+	public static final byte[] focus = signal("focus");
 	public static final byte[] focus_in_event = signal("focus_in_event");
 	public static final byte[] focus_out_event = signal("focus_out_event");
 	public static final byte[] hide = signal("hide");

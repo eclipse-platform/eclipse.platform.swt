@@ -116,6 +116,7 @@ public abstract class Widget {
 	static final int UNMAP_EVENT = 37;
 	static final int UNREALIZE = 38;
 	static final int VALUE_CHANGED = 39;
+	static final int FOCUS = 40;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -550,6 +551,10 @@ int gtk_event_after (int widget, int event) {
 }
 
 int gtk_expose_event (int widget, int event) {
+	return 0;
+}
+
+int gtk_focus (int widget, int event) {
 	return 0;
 }
 
@@ -1174,6 +1179,7 @@ int windowProc (int handle, int arg0, int user_data) {
 		case EVENT: return gtk_event (handle, arg0);
 		case EVENT_AFTER: return gtk_event_after (handle, arg0);
 		case EXPOSE_EVENT: return gtk_expose_event (handle, arg0);
+		case FOCUS: return gtk_focus (handle, arg0);
 		case FOCUS_IN_EVENT: return gtk_focus_in_event (handle, arg0);
 		case FOCUS_OUT_EVENT: return gtk_focus_out_event (handle, arg0);
 		case KEY_PRESS_EVENT: return gtk_key_press_event (handle, arg0);
