@@ -565,12 +565,12 @@ public void setIncrement (int value) {
 }
 
 /**
- * Sets the maximum value that the receiver will allow.  This new
- * value will be ignored if it is not greater than the receiver's current
- * minimum value.  If the new maximum is applied then the receiver's selection
- * and/or thumb values will be adjusted if necessary to fall within its new range.
+ * Sets the maximum. If this value is negative or less than or
+ * equal to the minimum, the value is ignored. If necessary, first
+ * the thumb and then the selection are adjusted to fit within the
+ * new range.
  *
- * @param value the new maximum, which must be greater than the current minimum
+ * @param value the new maximum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -630,13 +630,12 @@ public void setMaximum (int value) {
 }
 
 /**
- * Sets the minimum value that the receiver will allow.  This new
- * value will be ignored if it is negative or is not less than the receiver's
- * current maximum value.  If the new minimum is applied then the receiver's
- * selection and/or thumb values will be adjusted if necessary to fall within its
- * new range.
+ * Sets the minimum value. If this value is negative or greater
+ * than or equal to the maximum, the value is ignored. If necessary,
+ * first the thumb and then the selection are adjusted to fit within
+ * the new range.
  *
- * @param value the new minimum, which must be nonnegative and less than the current maximum
+ * @param value the new minimum
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
