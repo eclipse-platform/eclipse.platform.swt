@@ -328,6 +328,7 @@ public Color getForeground (int index) {
 	if (cellForeground == null || cellForeground [index] == null) return getForeground ();
 	return cellForeground [index];
 }
+
 /**
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
@@ -488,7 +489,7 @@ void redraw (int propertyID) {
 	if (parent.drawCount != 0 && propertyID != Table.CHECK_COLUMN_ID) return;
 	int itemIndex = parent.indexOf (this);
 	int [] id = new int [] {itemIndex + 1};
-	OS.UpdateDataBrowserItems (parent.handle, 0, id.length, id, OS.kDataBrowserItemNoProperty, propertyID);
+	OS.UpdateDataBrowserItems (parent.handle, OS.kDataBrowserNoItem, id.length, id, OS.kDataBrowserItemNoProperty, propertyID);
 }
 
 void releaseChild () {
@@ -716,6 +717,7 @@ public void setForeground (int index, Color color){
 	cellForeground [index] = color;
 	redraw (OS.kDataBrowserNoItem);
 }
+
 /**
  * Sets the grayed state of the checkbox for this item.  This state change 
  * only applies if the Table was created with the SWT.CHECK style.
