@@ -341,6 +341,12 @@ int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
 }
 
+void enableWidget (boolean enabled) {
+	super.enableWidget (enabled);
+	OS.EnableWindow (hwndText, enabled);
+	OS.EnableWindow (hwndUpDown, enabled);
+}
+
 void deregister () {
 	super.deregister ();
 	display.removeControl (hwndText);
