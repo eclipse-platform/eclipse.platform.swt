@@ -105,7 +105,6 @@ public class Display extends Device {
 	Event [] eventQueue;
 	XKeyEvent keyEvent = new XKeyEvent ();
 	EventTable eventTable, filterTable;
-	boolean postFocusOut;
 	
 	/* Widget Table */
 	int freeSlot = 0;
@@ -113,6 +112,10 @@ public class Display extends Device {
 	Shell [] shellTable;
 	Widget [] widgetTable;
 	static final int GROW_SIZE = 1024;
+	
+	/* Focus */
+	int focusEvent;
+	boolean postFocusOut;
 	
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
 	Font defaultFont;

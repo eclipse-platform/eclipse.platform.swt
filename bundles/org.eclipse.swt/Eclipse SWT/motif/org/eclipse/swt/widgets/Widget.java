@@ -885,11 +885,16 @@ boolean XmProcessTraversal (int widget, int direction) {
 	* is to post focus events and run them when the handler
 	* has returned.
 	*/
+	Display display = this.display;
 	boolean oldFocusOut = display.postFocusOut;
 	display.postFocusOut = true;
 	boolean result = OS.XmProcessTraversal (widget, direction);
 	display.postFocusOut = oldFocusOut;
-	if (!display.postFocusOut) display.runFocusOutEvents ();
+	if (!display.postFocusOut) {
+		display.focusEvent = SWT.FocusOut;
+		display.runFocusOutEvents ();
+		display.focusEvent = SWT.None;
+	}
 	return result;
 }
 int hoverProc (int widget) {

@@ -151,6 +151,7 @@ void destroyItem (ToolItem item) {
 }
 public boolean forceFocus () {
 	checkWidget ();
+	if (display.focusEvent == SWT.FocusOut) return false;
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	shell.bringToTop (false);

@@ -547,6 +547,7 @@ int fontHandle () {
  */
 public boolean forceFocus () {
 	checkWidget();
+	if (display.focusEvent == SWT.FocusOut) return false;
 	Decorations shell = menuShell ();
 	shell.setSavedFocus (this);
 	shell.bringToTop (false);
@@ -2068,8 +2069,10 @@ public void setEnabled (boolean enabled) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!enabled) {
-		control = display.getFocusControl ();
-		fixFocus = isFocusAncestor (control);
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
 	}
 	enableWidget (enabled);
 	if (fixFocus) fixFocus (control);
@@ -2443,8 +2446,10 @@ public void setVisible (boolean visible) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!visible) {
-		control = display.getFocusControl ();
-		fixFocus = isFocusAncestor (control);	
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
 	}
 	OS.XtSetMappedWhenManaged (topHandle, visible);	
 	if (fixFocus) fixFocus (control);
@@ -3063,8 +3068,11 @@ int xFocusIn (XFocusChangeEvent xEvent) {
 		int focusHandle = OS.XtWindowToWidget (xEvent.display, xEvent.window);
 		OS.XmImSetFocusValues (focusHandle, null, 0);
 	} 
+	Display display = this.display;
+	display.focusEvent = SWT.FocusIn;
 	sendEvent (SWT.FocusIn);
 	// widget could be disposed at this point
+	display.focusEvent = SWT.None;
 	return 0;
 }
 int xFocusOut (XFocusChangeEvent xEvent) {
@@ -3095,12 +3103,15 @@ int xFocusOut (XFocusChangeEvent xEvent) {
 		}
 	}
 	
-	/* Set the focus out event */
+	/* Issue the focus out event */
 	if (display.postFocusOut) {
 		postEvent (SWT.FocusOut);
 	} else {
+		Display display = this.display;
+		display.focusEvent = SWT.FocusOut;
 		sendEvent (SWT.FocusOut);
 		// widget could be disposed at this point
+		display.focusEvent = SWT.None;
 	}
 
 	/* Restore XmNtraversalOn if it was focus was forced */
