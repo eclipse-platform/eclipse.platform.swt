@@ -217,7 +217,7 @@ void storePtr(int ptr, int selection, int target) {
 		}
 	}
 	if (index == -1) {
-		int[][] newConvertData = new int[convertData.length + 4][3];
+		int[][] newConvertData = new int[convertData.length][3];
 		System.arraycopy(convertData, 0, newConvertData, 0, convertData.length);
 		index = convertData.length;
 		convertData = newConvertData;
