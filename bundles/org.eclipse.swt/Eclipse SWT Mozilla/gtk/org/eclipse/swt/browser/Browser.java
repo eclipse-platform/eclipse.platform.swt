@@ -708,32 +708,18 @@ void disposeCOMInterfaces() {
 public boolean execute(String script) {
 	checkWidget();
 	if (script == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
-	int[] aContentDOMWindow = new int[1];
-	int rc = webBrowser.GetContentDOMWindow(aContentDOMWindow);
-	if (rc != XPCOM.NS_OK) error(rc);
-	if (aContentDOMWindow[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	
-	nsIDOMWindow domWindow = new nsIDOMWindow(aContentDOMWindow[0]);
+	String url = "javascript:"+script+";void(0);";//$NON-NLS-1$ //$NON-NLS-2$
 	int[] result = new int[1];
-	rc = domWindow.QueryInterface(nsIScriptGlobalObject.NS_ISCRIPTGLOBALOBJECT_IID, result);
+	int rc = webBrowser.QueryInterface(nsIWebNavigation.NS_IWEBNAVIGATION_IID, result);
 	if (rc != XPCOM.NS_OK) error(rc);
 	if (result[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	
-	nsIScriptGlobalObject scriptGlobalObject = new nsIScriptGlobalObject(result[0]);
-	int[] aContext = new int[1];
-	rc = scriptGlobalObject.GetContext(aContext);
-	if (rc != XPCOM.NS_OK) aContext[0] = rc;
-	if (aContext[0] == 0) error(XPCOM.NS_ERROR_NO_INTERFACE);
-	scriptGlobalObject.Release();
-	
-	nsIScriptContext scriptContext = new nsIScriptContext(aContext[0]);
-	nsEmbedString aScript = new nsEmbedString(script);
-	nsEmbedString aRetValue = new nsEmbedString();
-	boolean[] aIsUndefined = new boolean[1];
-	rc = scriptContext.EvaluateString(aScript.getAddress(), 0, 0, 0, 0, 0, aRetValue.getAddress(), aIsUndefined);
-	aScript.dispose();	
-	domWindow.Release();
+
+	nsIWebNavigation webNavigation = new nsIWebNavigation(result[0]);
+    char[] arg = url.toCharArray(); 
+    char[] c = new char[arg.length+1];
+    System.arraycopy(arg,0,c,0,arg.length);
+	rc = webNavigation.LoadURI(c, nsIWebNavigation.LOAD_FLAGS_NONE, 0, 0, 0);
+	webNavigation.Release();
 	return rc == XPCOM.NS_OK;
 }
 
@@ -1297,7 +1283,6 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
 public boolean setText(String html) {
 	checkWidget();
 	if (html == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	
 	/* Convert the String containing HTML to an array of
 	 * bytes with UTF-8 data.
 	 */
