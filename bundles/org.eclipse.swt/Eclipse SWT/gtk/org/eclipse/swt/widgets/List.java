@@ -126,7 +126,9 @@ public void add (String string) {
 public void add (String string, int index) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (index == -1) error (SWT.ERROR_ITEM_NOT_ADDED);
+	if (!(0 <= index && index <= OS.GTK_CLIST_ROWS (handle))) {
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
 	int ptr = OS.g_malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);

@@ -159,7 +159,7 @@ public void add (String string, int index) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (!(0 <= index && index <= getItemCount ())) {
-		error (SWT.ERROR_ITEM_NOT_ADDED);
+		error (SWT.ERROR_INVALID_RANGE);
 	}
 	String [] items = getItems ();
 	String [] newItems = new String [items.length + 1];
