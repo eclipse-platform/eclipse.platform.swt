@@ -123,6 +123,8 @@ void releaseWidget () {
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	imageHandle = tooltipsHandle = 0;
 	toolTipText = null;
+	if (handle != 0) OS.gtk_widget_destroy (handle);
+	handle = 0;
 }
 
 public void removeSelectionListener (SelectionListener listener) {
