@@ -149,7 +149,7 @@ public void addDragListener(DragSourceListener listener) {
 
 protected void checkSubclass () {
 	String name = getClass().getName ();
-	String validName = DropTarget.class.getName();
+	String validName = DragSource.class.getName();
 	if (!validName.equals(name)) {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
