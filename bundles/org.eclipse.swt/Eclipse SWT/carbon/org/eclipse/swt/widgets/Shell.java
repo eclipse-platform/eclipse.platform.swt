@@ -430,9 +430,6 @@ void createHandle () {
 	OS.CreateNewWindow (windowClass, attributes, rect, outWindow);
 	if (outWindow [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	shellHandle = outWindow [0];
-	if ((style & SWT.ON_TOP) != 0) {
-		OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
-	}
 	OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
 //	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
 	int [] theRoot = new int [1];
@@ -730,9 +727,7 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	//TEMPORARY CODE - Sending event from here causes a GP if Window is disposed (bug 34036)
-	//sendEvent (SWT.Deactivate);
-	postEvent (SWT.Deactivate);
+	sendEvent (SWT.Deactivate);
 	if (isDisposed ()) return result;
 	saveFocus ();
 	if (savedFocus != null) {
@@ -1053,8 +1048,15 @@ void setWindowVisible (boolean visible) {
 			OS.SetWindowModality (shellHandle, inModalKind, inUnavailableWindow);
 		}
 		OS.SetControlVisibility (topHandle (), true, false);
-		display.runDisposeWidgets ();
+		int [] scope = new int [1];
+		if ((style & SWT.ON_TOP) != 0) {
+			OS.GetWindowActivationScope (shellHandle, scope);
+	    	OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
+		}
 		OS.ShowWindow (shellHandle);
+		if ((style & SWT.ON_TOP) != 0) {
+			OS.SetWindowActivationScope (shellHandle, scope [0]);
+		}
 	} else {
     	OS.HideWindow (shellHandle);
 		OS.SetControlVisibility (topHandle (), false, false);

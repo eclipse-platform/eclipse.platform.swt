@@ -296,52 +296,50 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 }
 
 void addDisposeControl (int control) {
-	//TEMPORARY CODE
-//	if (Callback.getEntryCount () == 0) {
+	if (Callback.getEntryCount () == 0) {
 		OS.DisposeControl (control);
-//		return;
-//	}
-//	OS.SetControlVisibility (control, false, false);
-//	if (disposeControls == null) disposeControls = new int [4];
-//	int length = disposeControls.length;
-//	for (int i=0; i<length; i++) {
-//		if (disposeControls [i] == control) return;
-//	}
-//	int index = 0;
-//	while (index < length) {
-//		if (disposeControls [index] == 0) break;
-//		index++;
-//	}
-//	if (index == length) {
-//		int [] newControls = new int [length + 4];
-//		System.arraycopy (disposeControls, 0, newControls, 0, length);
-//		disposeControls = newControls;
-//	}
-//	disposeControls [index] = control;
+		return;
+	}
+	OS.SetControlVisibility (control, false, false);
+	if (disposeControls == null) disposeControls = new int [4];
+	int length = disposeControls.length;
+	for (int i=0; i<length; i++) {
+		if (disposeControls [i] == control) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (disposeControls [index] == 0) break;
+		index++;
+	}
+	if (index == length) {
+		int [] newControls = new int [length + 4];
+		System.arraycopy (disposeControls, 0, newControls, 0, length);
+		disposeControls = newControls;
+	}
+	disposeControls [index] = control;
 }
 
 void addDisposeWindow (int window) {
-	//TEMPORARY CODE
-//	if (Callback.getEntryCount () == 0) {
+	if (Callback.getEntryCount () == 0) {
 		OS.DisposeWindow (window);
-//		return;
-//	}
-//	if (disposeWindows == null) disposeWindows = new int [4];
-//	int length = disposeWindows.length;
-//	for (int i=0; i<length; i++) {
-//		if (disposeWindows [i] == window) return;
-//	}
-//	int index = 0;
-//	while (index < length) {
-//		if (disposeWindows [index] == 0) break;
-//		index++;
-//	}
-//	if (index == length) {
-//		int [] newWindows = new int [length + 4];
-//		System.arraycopy (disposeWindows, 0, newWindows, 0, length);
-//		disposeWindows = newWindows;
-//	}
-//	disposeWindows [index] = window;
+		return;
+	}
+	if (disposeWindows == null) disposeWindows = new int [4];
+	int length = disposeWindows.length;
+	for (int i=0; i<length; i++) {
+		if (disposeWindows [i] == window) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (disposeWindows [index] == 0) break;
+		index++;
+	}
+	if (index == length) {
+		int [] newWindows = new int [length + 4];
+		System.arraycopy (disposeWindows, 0, newWindows, 0, length);
+		disposeWindows = newWindows;
+	}
+	disposeWindows [index] = window;
 }
 
 void addFilter (int eventType, Listener listener) {
@@ -829,8 +827,9 @@ public static synchronized Display findDisplay (Thread thread) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-	int theWindow = OS.ActiveNonFloatingWindow ();
+	int theWindow = OS.FrontWindow ();
 	if (theWindow == 0) return null;
+	if (!OS.IsWindowActive (theWindow)) return null;
 	int [] theControl = new int [1];
 	OS.GetRootControl (theWindow, theControl);
 	Widget widget = WidgetTable.get (theControl [0]);
@@ -1049,7 +1048,7 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
-	int theWindow = OS.ActiveNonFloatingWindow ();
+	int theWindow = OS.GetUserFocusWindow ();
 	if (theWindow == 0) return null;
 	return getFocusControl (theWindow);
 }
@@ -1497,7 +1496,7 @@ int itemNotificationProc (int browser, int item, int message) {
 int keyboardProc (int nextHandler, int theEvent, int userData) {
 	Widget widget = WidgetTable.get (userData);
 	if (widget == null) {
-		int theWindow = OS.ActiveNonFloatingWindow ();
+		int theWindow = OS.GetUserFocusWindow ();
 		if (theWindow == 0) return OS.eventNotHandledErr;
 		int [] theControl = new int [1];
 		OS.GetKeyboardFocus (theWindow, theControl);
