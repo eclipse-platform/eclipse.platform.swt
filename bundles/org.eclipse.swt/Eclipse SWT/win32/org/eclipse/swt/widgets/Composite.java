@@ -217,6 +217,18 @@ public Layout getLayout () {
 	return layout;
 }
 
+/**
+ * Gets the last specified tabbing order for the control.
+ *
+ * @return tabList the ordered list of controls representing the tab order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @see #setTabList
+ */
 public Control [] getTabList () {
 	checkWidget ();
 	return _getTabList ();
@@ -324,7 +336,7 @@ public boolean setFocus () {
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  *
- * @param the receiver's new layout or null
+ * @param layout the receiver's new layout or null
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -336,6 +348,20 @@ public void setLayout (Layout layout) {
 	this.layout = layout;
 }
 
+/**
+ * Sets the tabbing order for the specified controls to
+ * match the order that they occur in the argument list.
+ *
+ * @param tabList the ordered list of controls representing the tab order; must not be null
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the tabList is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setTabList (Control [] tabList) {
 	checkWidget ();
 	if (tabList == null) error (SWT.ERROR_NULL_ARGUMENT);
