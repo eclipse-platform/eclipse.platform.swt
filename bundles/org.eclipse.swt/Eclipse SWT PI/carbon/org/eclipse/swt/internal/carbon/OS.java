@@ -99,6 +99,7 @@ public class OS {
 	public static final int kControlEditTextTextTag = ('t'<<24) + ('e'<<16) + ('x'<<8) + 't';
 	public static final int kControlEntireControl = 0;
 	public static final int kControlFocusNoPart = 0;
+	public static final int kControlFontStyleTag = ('f'<<24) + ('o'<<16) + ('n'<<8) + 't';
 	public static final int kControlGetsFocusOnClick = 1 << 8;
 	public static final int kControlGroupBoxTextTitleProc = 160;
 	public static final int kControlHandlesTracking = 1 << 5;
@@ -144,6 +145,7 @@ public class OS {
 	public static final int kControlUseBackColorMask = 16;
 	public static final int kControlUseFontMask = 0x1;
 	public static final int kControlUseForeColorMask = 8;
+	public static final int kControlUseJustMask = 0x0040;
 	public static final int kControlUseSizeMask = 0x4;
 	public static final int kControlUseThemeFontIDMask = 0x80;
 	public static final int kControlUseFaceMask = 0x2;
@@ -525,6 +527,10 @@ public class OS {
 	public static final int smSystemScript = -1;
 	public static final int srcCopy = 0;
 	public static final int srcOr = 1;
+	public static final int teFlushDefault = 0;
+	public static final int teCenter = 1;
+	public static final int teFlushRight = -1;
+	public static final int teFlushLeft = -2;
 	public static final int typeCGContextRef= ('c'<<24) + ('n'<<16) + ('t'<<8) + 'x';
 	public static final int typeChar = ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
 	public static final int typeControlPartCode = ('c'<<24) + ('p'<<16) + ('r'<<8) + 't';
@@ -756,6 +762,7 @@ public static final native int GetControl32BitMaximum(int cHandle);
 public static final native int GetControl32BitMinimum(int cHandle);
 public static final native int GetControl32BitValue(int cHandle);
 public static final native void GetControlBounds(int cHandle, Rect bounds);
+public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, ControlFontStyleRec inBuffer, int[] outActualSize);
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, Rect inBuffer, int[] outActualSize);
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, int[] inBuffer, int[] outActualSize);
 public static final native int GetControlData(int inControl, short inPart, int inTagName, int inBufferSize, short[] inBuffer, int[] outActualSize);

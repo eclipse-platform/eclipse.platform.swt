@@ -2689,6 +2689,25 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlBounds
 }
 #endif /* NO_GetControlBounds */
 
+#ifndef NO_GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jobject arg4, jintArray arg5)
+{
+	ControlFontStyleRec _arg4, *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetControlData__ISIILorg_eclipse_swt_internal_carbon_ControlFontStyleRec_2_3I\n")
+
+	if (arg4) lparg4 = getControlFontStyleRecFields(env, arg4, &_arg4);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)GetControlData((ControlRef)arg0, (ControlPartCode)arg1, (ResType)arg2, (Size)arg3, (void *)lparg4, (Size *)lparg5);
+	if (arg4) setControlFontStyleRecFields(env, arg4, lparg4);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetControlData__ISIILorg_eclipse_swt_internal_carbon_Rect_2_3I
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlData__ISIILorg_eclipse_swt_internal_carbon_Rect_2_3I
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jint arg2, jint arg3, jobject arg4, jintArray arg5)
