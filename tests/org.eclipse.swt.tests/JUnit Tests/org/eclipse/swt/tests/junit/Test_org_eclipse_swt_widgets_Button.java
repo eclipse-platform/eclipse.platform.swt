@@ -10,7 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.widgets.*;
@@ -282,6 +281,11 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setSelectionZ");
 	methodNames.addElement("test_setTextLjava_lang_String");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
+	methodNames.addElement("test_consistency_EnterSelection");
+	methodNames.addElement("test_consistency_SpaceSelection");
+	methodNames.addElement("test_consistency_MouseSelection");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -299,6 +303,107 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setSelectionZ")) test_setSelectionZ();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
+	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
+	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
+	else if (getName().equals("test_consistency_SpaceSelection")) test_consistency_SpaceSelection();
 	else super.runTest();
 }
+
+//custom
+
+protected void setUp(int style) {
+    super.setUp();
+    button = new Button(shell, style);
+    setWidget(button);
+}
+
+public void test_consistency_MenuDetect () {
+    consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+    tearDown();
+    setUp(SWT.CHECK);
+    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+    tearDown();
+    setUp(SWT.RADIO);
+    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+    tearDown();
+    setUp(SWT.TOGGLE);
+    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+    tearDown();
+    setUp(SWT.ARROW);
+    consistencyEvent(5, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+    
+}
+
+public void test_consistency_MouseSelection () {
+    consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+    tearDown();
+    setUp(SWT.CHECK);
+    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+    tearDown();
+    setUp(SWT.RADIO);
+    button.setSelection(true);
+    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+    tearDown();
+    setUp(SWT.TOGGLE);
+    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+    tearDown();
+    setUp(SWT.ARROW);
+    consistencyEvent(5, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_EnterSelection () {
+//    differences between push and the rest of the buttons
+//	  different across platforms
+//    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+    tearDown();
+    setUp(SWT.CHECK);
+    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+    tearDown();
+    setUp(SWT.RADIO);
+    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+    tearDown();
+    setUp(SWT.TOGGLE);
+    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+    tearDown();
+    setUp(SWT.ARROW);
+    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_SpaceSelection () {
+    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+    tearDown();
+    setUp(SWT.CHECK);
+    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+    tearDown();
+    setUp(SWT.RADIO);
+    button.setSelection(true);
+    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+    tearDown();
+    setUp(SWT.TOGGLE);
+    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+    tearDown();
+    //arrow does not produce a traverse mnemonic on xp
+    setUp(SWT.ARROW);
+    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_DragDetect () {
+    consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
+    tearDown();
+    setUp(SWT.CHECK);
+    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+    tearDown();
+    setUp(SWT.RADIO);
+    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+    tearDown();
+    setUp(SWT.TOGGLE);
+    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+    tearDown();
+    setUp(SWT.ARROW);
+    consistencyEvent(5, 5, 15, 15, ConsistencyUtility.MOUSE_DRAG);
+}
+
+
 }

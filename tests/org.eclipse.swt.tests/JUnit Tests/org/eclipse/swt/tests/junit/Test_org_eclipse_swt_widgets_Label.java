@@ -144,6 +144,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setFocus");
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextLjava_lang_String");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -157,9 +159,19 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setFocus")) test_setFocus();
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
 
 /* custom */
 Label label;
+
+public void test_consistency_MenuDetect () {
+    consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect () {
+    consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
+}
 }

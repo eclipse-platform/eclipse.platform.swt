@@ -11,6 +11,8 @@
 package org.eclipse.swt.tests.junit;
 
 
+import org.eclipse.swt.custom.CLabel;
+
 import junit.framework.*;
 import junit.textui.*;
 
@@ -31,6 +33,8 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	super.setUp();
+	label = new CLabel(shell, 0);
+	setWidget(label);
 }
 
 protected void tearDown() {
@@ -118,6 +122,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setImageLorg_eclipse_swt_graphics_Image");
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setToolTipTextLjava_lang_String");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -136,6 +142,19 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setImageLorg_eclipse_swt_graphics_Image")) test_setImageLorg_eclipse_swt_graphics_Image();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setToolTipTextLjava_lang_String")) test_setToolTipTextLjava_lang_String();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
+}
+
+/* custom */
+CLabel label;
+
+public void test_consistency_MenuDetect () {
+    consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect () {
+    consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 }

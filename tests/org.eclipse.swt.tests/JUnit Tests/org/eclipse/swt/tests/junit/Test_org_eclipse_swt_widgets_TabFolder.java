@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.util.Vector;
+
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
@@ -350,6 +352,12 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_setSelection$Lorg_eclipse_swt_widgets_TabItem");
 	methodNames.addElement("test_setSelectionI");
+	methodNames.addElement("test_consistency_KeySelection");
+	methodNames.addElement("test_consistency_MouseSelection");
+	methodNames.addElement("test_consistency_PgupSelection");
+	methodNames.addElement("test_consistency_PgdwnSelection");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -368,6 +376,12 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_setSelection$Lorg_eclipse_swt_widgets_TabItem")) test_setSelection$Lorg_eclipse_swt_widgets_TabItem();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
+	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
+	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
+	else if (getName().equals("test_consistency_PgdwnSelection")) test_consistency_PgdwnSelection();
+	else if (getName().equals("test_consistency_PgupSelection")) test_consistency_PgupSelection();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
 
@@ -380,4 +394,58 @@ private void makeCleanEnvironment() {
 	setWidget(tabFolder);
 }
 
+private void createTabFolder(Vector events) {
+	makeCleanEnvironment();
+	for (int i = 0; i < 3; i++) {
+		TabItem item = new TabItem(tabFolder, SWT.NONE);
+		item.setText("TabItem &" + i);
+		item.setToolTipText("TabItem ToolTip" + i);
+		Text itemText = new Text(tabFolder, SWT.MULTI | SWT.BORDER);
+		itemText.setText("\nText for TabItem " + i + "\n\n\n");
+		item.setControl(itemText);
+		hookExpectedEvents(item, getTestName(), events);
+	}
+	
+//	tabFolder.setSelection(new TabItem[] {tabFolder.getItem(0)});
+}
+
+public void test_consistency_KeySelection() {
+    Vector events = new Vector();
+    createTabFolder(events);
+    consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS, events, false);
+}
+
+public void test_consistency_MouseSelection() {
+    Vector events = new Vector();
+    createTabFolder(events);
+    consistencyPrePackShell();
+    consistencyEvent(tabFolder.getSize().x/2, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+}
+
+public void test_consistency_PgdwnSelection () {
+    Vector events = new Vector();
+    createTabFolder(events);
+    consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_DOWN, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
+}
+
+public void test_consistency_PgupSelection () {
+    Vector events = new Vector();
+    createTabFolder(events);
+    tabFolder.setSelection(2);
+    consistencyEvent(0, SWT.CTRL, 0, SWT.PAGE_UP, ConsistencyUtility.DOUBLE_KEY_PRESS, events, false);
+}
+
+public void test_consistency_MenuDetect () {
+    Vector events = new Vector();
+    createTabFolder(events);
+    tabFolder.setSelection(1);
+    consistencyEvent(50, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+}
+
+public void test_consistency_DragDetect () {
+    Vector events = new Vector();
+    createTabFolder(events);
+    tabFolder.setSelection(1);
+    consistencyEvent(50, 5, 70, 10, ConsistencyUtility.MOUSE_DRAG, events);
+}
 }

@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.util.Vector;
+
 import junit.framework.*;
 import junit.textui.*;
 
@@ -871,4 +873,177 @@ protected void setWidget(Widget w) {
 	control = (Control)w;
 	super.setWidget(w);
 }
+
+/* a different method in ConsistencyUtility is invoked depending on what method 
+ * equals
+ * ConsistencyUtility.MOUSE_CLICK:
+ * 			paramA is the x coordinate offset from control 				  
+ * 			paramB is the y coordinate offset from control
+ * 			paramC is the mouse button to click.
+ * 			paramD if it equals ConsistencyUtility.ESCAPE_MENU, then another click
+ * 			will be made on the border of the shell, to escape the menu that came up
+ * 			(ie right clicking in a text widget)
+ * 			invokes ConsistencyUtility.postClick(Display, Point, int)
+ * ConsistencyUtility.MOUSE_DOUBLECLICK
+ * 			paramA is the x coordinate offset from control 				  
+ * 			paramB is the y coordinate offset from control
+ * 			paramC is the mouse button to click.
+ * 			invokes ConsistencyUtility.postDoubleClick(Display, Point, int)
+ * ConsistencyUtility.MOUSE_DRAG:
+ * 			paramA is the x coordinate offset from control of the origin of drag
+ * 			paramB is the y coordinate offset from control of the origin of drag
+ * 			paramC is the x coordinate offset from control of the destination of drag
+ * 			paramD is the y coordinate offset from control of the destination of drag
+ * 			invokes ConsistencyUtility.postDrag(Display, Point, Point)
+ * ConsistencyUtility.KEY_PRESS:  
+ * 		 	paramA is the character to press
+ * 			paramB is the keyCode 
+ * 			invokes ConsistencyUtility.postKeyPress(Display, int, int)
+ * ConsistencyUtility.DOUBLE_KEY_PRESS:  
+ * 		 	paramA is the character to press and hold
+ * 			paramB is the keyCode 
+ * 			paramC is the second key to press while the first one is held (ie ctrl-a)
+ * 			paramD is the second keycode
+ * 			invokes ConsistencyUtility.postDoubleKeyPress(Display, int, int, int, int) 
+ * ConsistencyUtility.SELECTION:
+ * 			paramA is the x coordinate offset from control of the first click
+ * 			paramB is the y coordinate offset from control of the first click
+ * 			paramC is the x coordinate offset from control of the second click
+ * 			paramD is the y coordinate offset from control of the second click
+ * 			invokes ConsistencyUtility.postSelection(Display, Point, Point)
+ * ConsistencyUtility.SHELL_ICONIFY:
+ * 			paramA is the button to click with
+ * 			invokes ConsistencyUtility.postShellIconify(Display, Point, int)
+ */
+protected void consistencyEvent(final int paramA, final int paramB, 
+        						final int paramC, final int paramD,
+        						final int method, Vector events, boolean focus) {
+    if(fTestConsistency) {
+        final Display display = shell.getDisplay();
+        if(events == null) 
+            events = new Vector();
+        final String test = getTestName();
+        
+        shell.setLayout(new org.eclipse.swt.layout.FillLayout());
+        shell.setText("Parent");
+
+        shell.pack();
+    	shell.open();
+    	if(control instanceof Shell) {
+    	    ((Shell)control).pack();
+        	((Shell)control).open();
+    	}
+    	final Point[] pt = determineLocations(paramA, paramB, paramC, paramD, method);
+        if(focus && !control.setFocus())
+            control.forceFocus();
+        String[] expectedEvents = hookExpectedEvents(test, events);
+        new Thread() {
+            public void run() {
+                display.wake();
+                switch(method) {
+                	case ConsistencyUtility.MOUSE_CLICK:
+                		Assert.assertTrue(test, 
+                            ConsistencyUtility.postClick(display, pt[0], paramC));
+                		if(paramD == ConsistencyUtility.ESCAPE_MENU) {
+                		    Assert.assertTrue(test, 
+	                            ConsistencyUtility.postClick(display, pt[1], 1));
+                		}  
+                		break;
+                    case ConsistencyUtility.MOUSE_DOUBLECLICK:
+                        Assert.assertTrue(test, 
+                                ConsistencyUtility.postDoubleClick(display, pt[0], paramC));
+                    	break;
+                    case ConsistencyUtility.KEY_PRESS:
+                        Assert.assertTrue(test, 
+                            ConsistencyUtility.postKeyPress(display, paramA, paramB));
+                    	break;
+                    case ConsistencyUtility.DOUBLE_KEY_PRESS:
+                        Assert.assertTrue(test,
+                            ConsistencyUtility.postDoubleKeyPress(display, paramA, paramB, paramC, paramD));
+                    	break;
+                    case ConsistencyUtility.MOUSE_DRAG:
+                        Assert.assertTrue(test, 
+                            ConsistencyUtility.postDrag(display, 
+                                    pt[0], pt[1]));
+                        break;
+                    case ConsistencyUtility.SELECTION:
+
+                        Assert.assertTrue(test, 
+                            ConsistencyUtility.postSelection(display, 
+                                    pt[0], pt[1]));
+                        break;
+                    case ConsistencyUtility.SHELL_ICONIFY:
+                        if(SwtJunit.isCarbon)
+                            Assert.assertTrue(test,
+                                ConsistencyUtility.postShellIconify(display, pt[0], paramA));
+                        else
+                            Assert.assertTrue(test,
+                                ConsistencyUtility.postShellIconify(display, pt[1], paramA));
+                    	if(control instanceof Shell) {
+                    	    display.syncExec(new Thread() {
+                    	        public void run() {
+                    	            ((Shell)control).setMinimized(false);
+                    	        }});
+                    	} else
+                    	    fail("Iconifying a non shell control");
+                    	break;
+                }
+				display.asyncExec(new Thread() {
+				    public void run() {
+				        shell.dispose();
+				    }
+				});
+             }
+        }.start();
+
+        while(!shell.isDisposed()) {
+            if(!display.readAndDispatch()) display.sleep();
+        }
+        display.dispose();
+        setUp();        
+        String[] results = new String[events.size()];
+        events.copyInto(results);
+        assertEquals(test + " event ordering", expectedEvents, results);
+    }
+}
+
+protected void consistencyEvent(int paramA, int paramB, 
+								int paramC, int paramD,
+								int method, Vector events) {
+    consistencyEvent(paramA, paramB, paramC, paramD, method, events, true);
+}
+
+protected void consistencyEvent(int paramA, int paramB, 
+								int paramC, int paramD,
+								int method) {
+    consistencyEvent(paramA, paramB, paramC, paramD, method, null, true);
+}
+
+protected void consistencyPrePackShell() {
+    shell.setLayout(new org.eclipse.swt.layout.FillLayout());
+    shell.pack();
+}
+
+protected void consistencyPrePackShell(Shell shell) {
+    consistencyPrePackShell();
+    shell.pack();
+}
+
+
+protected Point[] determineLocations(int paramA, int paramB,
+        						     int paramC, int paramD, int method) {
+    Point[] array = new Point[2];
+    if(method >= ConsistencyUtility.MOUSE_CLICK)
+        array[0] = control.toDisplay(paramA, paramB);
+    if(method >= ConsistencyUtility.MOUSE_DRAG) 
+        array[1] = control.toDisplay(paramC, paramD);
+    if(method == ConsistencyUtility.MOUSE_CLICK && paramD == ConsistencyUtility.ESCAPE_MENU)
+        array[1] = shell.toDisplay(25, -10);
+    else if(method == ConsistencyUtility.SHELL_ICONIFY) {
+        array[0] = control.toDisplay(0,0);
+        array[1] = control.toDisplay(control.getSize().x -20, 0);
+    }
+    return array;
+}
+
 }

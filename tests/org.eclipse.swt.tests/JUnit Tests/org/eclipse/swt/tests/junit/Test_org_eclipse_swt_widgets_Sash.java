@@ -85,6 +85,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
+	methodNames.addElement("test_consistency_MouseSelection");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -93,9 +96,37 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_addSelectionListenerLorg_eclipse_swt_events_SelectionListener();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener")) test_removeSelectionListenerLorg_eclipse_swt_events_SelectionListener();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
+	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
 	else super.runTest();
 }
 
 /* custom */
 Sash sash;
+
+private void createSash() {
+    tearDown();
+    super.setUp();
+    Button b1 = new Button(shell, SWT.PUSH);
+    Sash sash = new Sash(shell, SWT.VERTICAL);
+    Button b2 = new Button(shell, SWT.PUSH);
+    setWidget(sash);
+}
+
+public void test_consistency_MenuDetect () {
+    createSash();
+    consistencyEvent(0, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect () {
+    createSash();
+    consistencyEvent(0, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
+}
+
+public void test_consistency_MouseSelection() {
+    createSash();
+    consistencyEvent(0, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
 }

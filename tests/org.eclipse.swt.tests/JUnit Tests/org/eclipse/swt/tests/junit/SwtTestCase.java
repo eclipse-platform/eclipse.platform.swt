@@ -42,6 +42,8 @@ public class SwtTestCase extends TestCase {
 
 	// make dialog open calls, operator must then close them
 	public static boolean fTestDialogOpen = false;
+	
+	public static boolean fTestConsistency = false;
 
 	// variable to keep track of the number of unimplemented methods
 	public static int unimplementedMethods;

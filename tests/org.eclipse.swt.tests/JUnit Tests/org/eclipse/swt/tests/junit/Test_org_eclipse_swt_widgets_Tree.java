@@ -10,9 +10,12 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.util.Vector;
+
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -520,6 +523,15 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setTopItemLorg_eclipse_swt_widgets_TreeItem");
 	methodNames.addElement("test_showItemLorg_eclipse_swt_widgets_TreeItem");
 	methodNames.addElement("test_showSelection");
+	methodNames.addElement("test_consistency_MouseSelection");
+	methodNames.addElement("test_consistency_KeySelection");
+	methodNames.addElement("test_consistency_SpaceSelection");
+	methodNames.addElement("test_consistency_EnterSelection");
+	methodNames.addElement("test_consistency_MouseExpand");
+	methodNames.addElement("test_consistency_KeyExpand");
+	methodNames.addElement("test_consistency_DoubleClick");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -547,6 +559,15 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setTopItemLorg_eclipse_swt_widgets_TreeItem")) test_setTopItemLorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_showItemLorg_eclipse_swt_widgets_TreeItem")) test_showItemLorg_eclipse_swt_widgets_TreeItem();
 	else if (getName().equals("test_showSelection")) test_showSelection();
+	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
+	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
+	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
+	else if (getName().equals("test_consistency_SpaceSelection")) test_consistency_SpaceSelection();
+	else if (getName().equals("test_consistency_MouseExpand")) test_consistency_MouseExpand();
+	else if (getName().equals("test_consistency_KeyExpand")) test_consistency_KeyExpand();
+	else if (getName().equals("test_consistency_DoubleClick")) test_consistency_DoubleClick();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
 
@@ -565,4 +586,79 @@ private void makeCleanEnvironment(boolean single) {
 	tree = new Tree(shell, single?SWT.SINGLE:SWT.MULTI);
 	setWidget(tree);
 }
+
+private void createTree(Vector events) {
+    makeCleanEnvironment(true);
+	tree.setLayoutData(new GridData(GridData.BEGINNING));
+	for (int i = 0; i < 3; i++) {
+		TreeItem item = new TreeItem(tree, SWT.NONE);
+		item.setText("TreeItem" + i);
+		for (int j = 0; j < 4; j++) {
+			TreeItem ti = new TreeItem(item, SWT.NONE);
+			ti.setText("TreeItem" + i + j);
+			hookExpectedEvents(ti, getTestName(), events);
+		}
+		hookExpectedEvents(item, getTestName(), events);
+	}
+}
+
+public void test_consistency_KeySelection() {
+    Vector events = new Vector();
+    createTree(events);
+    consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+}
+
+public void test_consistency_MouseSelection() {
+    Vector events = new Vector();
+    createTree(events);
+    consistencyEvent(30, 30, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+}
+
+public void test_consistency_MouseExpand() {
+    Vector events = new Vector();
+    createTree(events);
+    consistencyEvent(11, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+}
+
+public void test_consistency_KeyExpand() {
+    Vector events = new Vector();
+    createTree(events);
+    int code=SWT.ARROW_RIGHT;
+    if(SwtJunit.isGTK)
+        code = SWT.KEYPAD_ADD;
+    consistencyEvent(0, code, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+}
+
+public void test_consistency_DoubleClick () {
+    Vector events = new Vector();
+    createTree(events);
+    consistencyPrePackShell();
+    consistencyEvent(20, tree.getItemHeight()*2, 1, 0, 
+            	     ConsistencyUtility.MOUSE_DOUBLECLICK, events);
+}
+
+public void test_consistency_EnterSelection () {
+    Vector events = new Vector();
+    createTree(events);
+    consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+}
+
+public void test_consistency_SpaceSelection () {
+    Vector events = new Vector();
+    createTree(events);
+    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS, events);
+}
+
+public void test_consistency_MenuDetect () {
+    Vector events = new Vector();
+    createTree(events);
+    consistencyEvent(50, 25, 3, 0, ConsistencyUtility.MOUSE_CLICK, events);
+}
+
+public void test_consistency_DragDetect () {
+    Vector events = new Vector();
+    createTree(events);
+    consistencyEvent(30, 20, 50, 30, ConsistencyUtility.MOUSE_DRAG, events);
+}
+
 }

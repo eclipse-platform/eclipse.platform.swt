@@ -123,6 +123,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_scrollIIIIIIZ");
 	methodNames.addElement("test_setCaretLorg_eclipse_swt_widgets_Caret");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -132,6 +134,19 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_scrollIIIIIIZ")) test_scrollIIIIIIZ();
 	else if (getName().equals("test_setCaretLorg_eclipse_swt_widgets_Caret")) test_setCaretLorg_eclipse_swt_widgets_Caret();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
+
+/* custom*/
+
+public void test_consistency_MenuDetect() {
+    consistencyEvent(10, 10, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect() {
+    consistencyEvent(10, 10, 20, 20, ConsistencyUtility.MOUSE_DRAG);
+}
+
 }

@@ -1241,6 +1241,10 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setTopIndexI");
 	methodNames.addElement("test_showSelection");
+	methodNames.addElement("test_consistency_EnterSelection");
+	methodNames.addElement("test_consistency_Modify");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Scrollable.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -1294,6 +1298,10 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setTopIndexI")) test_setTopIndexI();
 	else if (getName().equals("test_showSelection")) test_showSelection();
+	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
+	else if (getName().equals("test_consistency_Modify")) test_consistency_Modify();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
 
@@ -1321,4 +1329,25 @@ protected void setWidget(Widget w) {
 	text = (Text)w;
 	super.setWidget(w);
 }
+
+public void test_consistency_EnterSelection () {
+    makeCleanEnvironment(true);
+    consistencyEvent(13, 10, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_Modify() {
+    makeCleanEnvironment(true);
+    consistencyEvent('a', 0, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_MenuDetect () {
+    makeCleanEnvironment(true);
+    consistencyEvent(10, 10, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect () {
+    makeCleanEnvironment(true);
+    consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
+}
+
 }

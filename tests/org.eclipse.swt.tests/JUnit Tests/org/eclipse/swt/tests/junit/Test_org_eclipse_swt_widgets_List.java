@@ -2315,6 +2315,12 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setSelectionII");
 	methodNames.addElement("test_setTopIndexI");
 	methodNames.addElement("test_showSelection");
+	methodNames.addElement("test_consistency_MouseSelection");
+	methodNames.addElement("test_consistency_KeySelection");
+	methodNames.addElement("test_consistency_SpaceSelection");
+	methodNames.addElement("test_consistency_DoubleClick");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Scrollable.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -2360,6 +2366,12 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setSelectionII")) test_setSelectionII();
 	else if (getName().equals("test_setTopIndexI")) test_setTopIndexI();
 	else if (getName().equals("test_showSelection")) test_showSelection();
+	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
+	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
+	else if (getName().equals("test_consistency_SpaceSelection")) test_consistency_SpaceSelection();
+	else if (getName().equals("test_consistency_DoubleClick")) test_consistency_DoubleClick();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
 
@@ -2463,5 +2475,41 @@ protected void select$I_helper(
 		expectedIndices, list.getSelectionIndices());
 
 	list.deselectAll();
+}
+
+private void add() {
+    list.add("this");
+    list.add("is");
+    list.add("SWT");
+}
+
+public void test_consistency_MouseSelection () {
+    add();
+    consistencyEvent(27, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_KeySelection () {
+    add();
+    consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_SpaceSelection () {
+    add();
+    consistencyEvent(' ', 32, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_DoubleClick () {
+    add();
+    consistencyEvent(27, 10, 1, 0, ConsistencyUtility.MOUSE_DOUBLECLICK);
+}
+
+public void test_consistency_MenuDetect () {
+    add();
+    consistencyEvent(27, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect () {
+    add();
+    consistencyEvent(20, 5, 30, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 }

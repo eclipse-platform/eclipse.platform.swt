@@ -215,4 +215,61 @@ private Widget widget;
 protected void setWidget(Widget w) {
 	widget = w;
 }
+
+protected void hookListeners(Widget w, int[] types, Listener listener) {
+    for (int i = 0; i < types.length; i++) {
+        w.addListener(types[i], listener);
+    }
+}
+
+protected String[] hookExpectedEvents(String type, final java.util.Vector events) {
+    return hookExpectedEvents(widget, type, events);
+}
+
+protected String[] hookExpectedEvents(Widget w, String type, final java.util.Vector events) {
+    String[] expectedEvents = (String[])ConsistencyUtility.eventOrdering.get(type);
+    hookExpectedEvents(w, expectedEvents, events);
+    return expectedEvents;
+}
+
+protected void hookExpectedEvents(Widget w, String[] types, final java.util.Vector events) {
+    hookListeners(w, ConsistencyUtility.convertEventNames(types), 
+	        new Listener() {
+	            public void handleEvent(Event e) {
+	                String temp = ConsistencyUtility.eventNames[e.type];
+	                if(e.type == SWT.Traverse)
+	                    temp += ":"+ConsistencyUtility.getTraversalType(e.detail);
+	                else if(e.type == SWT.Selection)
+	                    temp += ":"+ConsistencyUtility.getSelectionType(e.detail);
+                    events.add(temp);
+	                System.out.println(temp + e.widget);
+	            }
+	        });
+}
+
+protected String getTestName() {
+    String test = getName();
+    int index = test.lastIndexOf('_');
+    if(index != -1)
+        test = test.substring(index+1, test.length());
+    String clss = getClassName();
+    if((!test.equals("MenuDetect") || clss.equals("Table") || clss.equals("TableTree") || test.startsWith("Chevron")) &&
+       (!test.equals("DragDetect") || clss.equals("Tree") || clss.equals("TableTree") || test.startsWith("Chevron")) &&
+       (!test.equals("DoubleClick") || clss.equals("List")) &&
+       (!test.equals("KeySelection") || clss.equals("Slider") || clss.equals("Combo") || clss.equals("CCombo") || clss.equals("CTabFolder")) &&
+       (!test.equals("EnterSelection") || clss.equals("Button") || clss.equals("ToolBar") || clss.equals("CCombo")))
+        test = clss + test;
+    return test;
+}
+
+protected String getClassName() {
+    String clazz = getClass().getName();
+    int index = clazz.lastIndexOf('_');
+    if(index != -1)
+        clazz = clazz.substring(index+1, clazz.length());
+    return clazz;
+}
+
+
+
 }

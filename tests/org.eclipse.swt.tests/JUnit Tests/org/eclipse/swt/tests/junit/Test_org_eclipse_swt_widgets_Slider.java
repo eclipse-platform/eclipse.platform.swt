@@ -258,6 +258,12 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setSelectionI");
 	methodNames.addElement("test_setThumbI");
 	methodNames.addElement("test_setValuesIIIIII");
+	methodNames.addElement("test_consistency_ArrowSelection");
+	methodNames.addElement("test_consistency_KeySelection");
+	methodNames.addElement("test_consistency_TroughSelection");
+	methodNames.addElement("test_consistency_ThumbSelection");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -281,6 +287,12 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
 	else if (getName().equals("test_setThumbI")) test_setThumbI();
 	else if (getName().equals("test_setValuesIIIIII")) test_setValuesIIIIII();
+	else if (getName().equals("test_consistency_ArrowSelection")) test_consistency_ArrowSelection();
+	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
+	else if (getName().equals("test_consistency_TroughSelection")) test_consistency_TroughSelection();
+	else if (getName().equals("test_consistency_ThumbSelection")) test_consistency_ThumbSelection();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
 
@@ -905,5 +917,30 @@ return new int[][] {
 {123, 10, 100, 90, 10},
 {124, 10, 100, 90, 10},
 };
+}
+
+public void test_consistency_ArrowSelection() {
+    consistencyPrePackShell();
+    consistencyEvent(slider.getSize().x-10, 5, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_KeySelection () {
+    consistencyEvent(0, SWT.ARROW_RIGHT, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_ThumbSelection () {
+    consistencyEvent(25, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_TroughSelection () {
+    consistencyEvent(45, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_MenuDetect () {
+    consistencyEvent(27, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect () {
+    consistencyEvent(9, 5, 30, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 }

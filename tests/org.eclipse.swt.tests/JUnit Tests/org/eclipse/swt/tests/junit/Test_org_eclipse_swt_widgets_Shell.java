@@ -10,12 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.util.Vector;
+
 import junit.framework.*;
 import junit.textui.*;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.*;
 
 /**
@@ -268,6 +271,13 @@ public static Test suite() {
 }
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
+	//these must be run before the shell tests because of pr 79504
+	methodNames.addElement("test_consistency_Iconify");
+	methodNames.addElement("test_consistency_Close");
+	methodNames.addElement("test_consistency_Dispose");
+	methodNames.addElement("test_consistency_Open");
+	methodNames.addAll(Test_org_eclipse_swt_widgets_Decorations.methodNames()); // add superclass method names
+	
 	methodNames.addElement("test_Constructor");
 	methodNames.addElement("test_ConstructorI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_widgets_Display");
@@ -294,7 +304,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setRegionLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_setVisibleZ");
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_widgets_DisplayI");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Decorations.methodNames()); // add superclass method names
 	return methodNames;
 }
 protected void runTest() throws Throwable {
@@ -324,6 +333,10 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setRegionLorg_eclipse_swt_graphics_Region")) test_setRegionLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_setVisibleZ")) test_setVisibleZ();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_widgets_DisplayI")) test_win32_newLorg_eclipse_swt_widgets_DisplayI();
+	else if (getName().equals("test_consistency_Iconify")) test_consistency_Iconify();
+	else if (getName().equals("test_consistency_Close")) test_consistency_Close();
+	else if (getName().equals("test_consistency_Dispose")) test_consistency_Dispose();
+	else if (getName().equals("test_consistency_Open")) test_consistency_Open();
 	else super.runTest();
 }
 
@@ -520,4 +533,78 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 }
 
 Shell testShell;
+
+private void createShell() {
+    tearDown();
+    shell = new Shell();
+    testShell = new Shell(shell, SWT.DIALOG_TRIM | SWT.MIN);
+	testShell.setSize(100,300);
+	testShell.setText("Shell");
+    testShell.setLayout(new FillLayout());
+    setWidget(testShell);
+   
+}
+
+public void test_consistency_Open() {
+	if (fTestConsistency) {
+	    createShell();
+	    final Display display = shell.getDisplay();
+	    Vector events = new Vector();
+	    String[] temp = hookExpectedEvents(testShell, getTestName(), events);
+	    shell.pack();
+	    shell.open();
+	    testShell.pack();
+	    testShell.open();
+	    new Thread() {
+	        public void run() {
+	            display.asyncExec(new Thread() {
+				    public void run() {
+				        shell.dispose();
+				    }
+				});
+	    }}.start();
+	
+	    while(!shell.isDisposed()) {
+	        if(!display.readAndDispatch()) display.sleep();
+	    }
+	    display.dispose();
+	    setUp();        
+	    String[] results = new String[events.size()];
+	    events.copyInto(results);
+	    assertEquals(getTestName() + " event ordering", temp, results);
+	}
+}
+
+public void test_consistency_Iconify() {
+    createShell();
+    consistencyEvent(1, 0, 0, 0, ConsistencyUtility.SHELL_ICONIFY, null, false);
+}
+
+public void test_consistency_Close() {
+    createShell();
+    consistencyPrePackShell();
+    if(!SwtJunit.isCarbon)
+        consistencyEvent(0, SWT.ALT, 0, SWT.F4, ConsistencyUtility.DOUBLE_KEY_PRESS);
+    else
+        consistencyEvent(10, 10, 1, 0, ConsistencyUtility.MOUSE_CLICK);
+    createShell();
+}
+
+public void test_consistency_Dispose() {
+    createShell();
+
+    final Button button = new Button(testShell, SWT.PUSH);
+    button.setText("dispose");
+    button.addSelectionListener( new SelectionAdapter() {
+        public void widgetSelected(SelectionEvent se) {
+            button.dispose();
+            testShell.dispose();
+        }
+    });
+    Vector events = new Vector();
+    consistencyPrePackShell(testShell);
+    Point pt = button.getLocation();
+    consistencyEvent(pt.x, pt.y, 1, 0, ConsistencyUtility.MOUSE_CLICK, events);
+    createShell();
+}
 }

@@ -819,6 +819,11 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setTextLimitI");
 	methodNames.addElement("test_setTextLjava_lang_String");
+	methodNames.addElement("test_consistency_MouseSelection");
+	methodNames.addElement("test_consistency_KeySelection");
+	methodNames.addElement("test_consistency_EnterSelection");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Composite.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -860,6 +865,11 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
+	else if (getName().equals("test_consistency_MouseSelection")) test_consistency_MouseSelection();
+	else if (getName().equals("test_consistency_KeySelection")) test_consistency_KeySelection();
+	else if (getName().equals("test_consistency_EnterSelection")) test_consistency_EnterSelection();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
 
@@ -905,4 +915,44 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 	// only check the width - you can't set the height of a combo
 	assertTrue(combo.getSize().x == 32);
 }
+
+private void add() {
+    combo.add("this");
+    combo.add("is");
+    combo.add("SWT");
+}
+
+public void test_consistency_MouseSelection () {
+    add();
+    consistencyPrePackShell();
+    consistencyEvent(combo.getSize().x-10, 5, 30, combo.getItemHeight()*2, 
+            		 ConsistencyUtility.SELECTION);
+}
+
+public void test_consistency_KeySelection () {
+    add();
+    consistencyEvent(0, SWT.ARROW_DOWN, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_EnterSelection () {
+    add();
+    consistencyEvent(10, 13, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_MenuDetect () {
+    add();
+    consistencyPrePackShell();
+    //on arrow
+    consistencyEvent(combo.getSize().x-10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+    //on text
+    consistencyEvent(10, 5, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect () {
+    add();
+    consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
+}
+
+
+
 }

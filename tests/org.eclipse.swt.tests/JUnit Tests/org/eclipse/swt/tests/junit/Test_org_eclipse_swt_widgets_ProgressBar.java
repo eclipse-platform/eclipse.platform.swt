@@ -127,6 +127,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setMaximumI");
 	methodNames.addElement("test_setMinimumI");
 	methodNames.addElement("test_setSelectionI");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Control.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -140,6 +142,8 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setMaximumI")) test_setMaximumI();
 	else if (getName().equals("test_setMinimumI")) test_setMinimumI();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
 
@@ -605,6 +609,14 @@ return new int[][] {
 {123, 10, 100, 100, },
 {124, 10, 100, 100, },
 };
+}
+
+public void test_consistency_MenuDetect () {
+    consistencyEvent(10, 5, 3, 0, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect () {
+    consistencyEvent(10, 5, 20, 10, ConsistencyUtility.MOUSE_DRAG);
 }
 
 }

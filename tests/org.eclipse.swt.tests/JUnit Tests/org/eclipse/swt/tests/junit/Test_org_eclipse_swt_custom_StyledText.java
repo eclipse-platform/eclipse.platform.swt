@@ -4176,6 +4176,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setTopPixelI");
 	methodNames.addElement("test_setWordWrapZ");
 	methodNames.addElement("test_showSelection");
+	methodNames.addElement("test_consistency_Modify");
+	methodNames.addElement("test_consistency_MenuDetect");
+	methodNames.addElement("test_consistency_DragDetect");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
 	return methodNames;
 }
@@ -4282,6 +4285,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setTopPixelI")) test_setTopPixelI();
 	else if (getName().equals("test_setWordWrapZ")) test_setWordWrapZ();
 	else if (getName().equals("test_showSelection")) test_showSelection();
+	else if (getName().equals("test_consistency_Modify")) test_consistency_Modify();
+	else if (getName().equals("test_consistency_MenuDetect")) test_consistency_MenuDetect();
+	else if (getName().equals("test_consistency_DragDetect")) test_consistency_DragDetect();
 	else super.runTest();
 }
 /**
@@ -4349,6 +4355,18 @@ protected void testRtfCopy() {
 
 	clipboard.dispose();
 	text.removeLineStyleListener(listener);	
+}
+
+public void test_consistency_Modify() {
+    consistencyEvent('a', 0, 0, 0, ConsistencyUtility.KEY_PRESS);
+}
+
+public void test_consistency_MenuDetect () {
+    consistencyEvent(10, 10, 3, ConsistencyUtility.ESCAPE_MENU, ConsistencyUtility.MOUSE_CLICK);
+}
+
+public void test_consistency_DragDetect () {
+    consistencyEvent(30, 10, 50, 0, ConsistencyUtility.MOUSE_DRAG);
 }
 
 }

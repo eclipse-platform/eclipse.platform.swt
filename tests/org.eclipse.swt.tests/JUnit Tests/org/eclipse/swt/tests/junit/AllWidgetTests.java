@@ -38,7 +38,7 @@ public static Test suite() {
 	//suite.addTest(Test_org_eclipse_swt_widgets_Tracker.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Synchronizer.suite());
 	
-	suite.addTest(Test_org_eclipse_swt_widgets_Shell.suite());
+//	suite.addTest(Test_org_eclipse_swt_widgets_Shell.suite());
 	//suite.addTest(Test_org_eclipse_swt_widgets_Decorations.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Label.suite());
 	suite.addTest(Test_org_eclipse_swt_widgets_Button.suite());
