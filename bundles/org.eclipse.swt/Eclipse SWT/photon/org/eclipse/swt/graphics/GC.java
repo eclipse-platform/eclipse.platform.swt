@@ -1175,7 +1175,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y) {
-	drawText(string, x, y, false);
+	drawText(string, x, y, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
 /** 
@@ -1199,29 +1199,9 @@ public void drawText (String string, int x, int y) {
  * </ul>
  */
 public void drawText (String string, int x, int y, boolean isTransparent) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-
-	int drawFlags = OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP;
-	if (!isTransparent) drawFlags |= OS.Pg_BACK_FILL;
-	string = replaceTabs(string, 8);
-	byte[] buffer = Converter.wcsToMbcs(null, string, false);
-	PhRect_t rect = new PhRect_t();
-
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();	
-		setGCClipping();
-		OS.PgExtentMultiText(rect, null, data.font, buffer, buffer.length, 0);
-		rect.lr_x += (short)(x - rect.ul_x);
-		rect.lr_y += (short)(y - rect.ul_y);
-		rect.ul_x = (short)x;
-		rect.ul_y = (short)y;
-		OS.PgDrawMultiTextArea(buffer, buffer.length, rect, drawFlags, OS.Pg_TEXT_LEFT | OS.Pg_TEXT_TOP, 0);
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
+	int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB;
+	if (isTransparent) flags |= SWT.DRAW_TRANSPARENT;
+	drawText(string, x, y, flags);
 }
 
 /** 
@@ -1259,7 +1239,91 @@ public void drawText (String string, int x, int y, boolean isTransparent) {
  * </ul>
  */
 public void drawText (String string, int x, int y, int flags) {
-	drawText(string, x, y, (flags & SWT.DRAW_TRANSPARENT) != 0);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if ((flags & ~SWT.DRAW_TRANSPARENT) == 0) {
+		drawString(string, x, y, (flags & SWT.DRAW_TRANSPARENT) != 0);
+	} else {
+		drawText(string, x, y, flags, true);
+	}
+}
+
+Point drawText(String text, int x, int y, int flags, boolean draw) {
+	int length = text.length();
+	char[] buffer = new char[length];
+	text.getChars(0, length, buffer, 0);
+	
+	/* NOT DONE - tabstops */
+	int spaceWidth = stringExtent(" ").x;
+	int tabWidth = spaceWidth *8 + 1;
+	
+	boolean transparent = (flags & SWT.DRAW_TRANSPARENT) != 0;
+	int mnemonic = -1;
+	int start = 0, i = 0, j = 0;
+	int initialX = x, initialY = y;
+	int maxX = x, maxY = y;
+	while (i < length) {
+		char c = buffer[j] = buffer[i];
+		switch (c) {
+			case '\t': {
+				if ((flags & SWT.DRAW_TAB) == 0) break;
+				String string = new String(buffer, start, j - start);
+				if (draw) drawString(string, x, y, transparent);
+				Point extent = stringExtent(string);
+				x += extent.x + tabWidth;
+				maxX = Math.max(x, maxX);
+				maxY = Math.max(y + extent.y, maxY);
+				start = j + 1;
+				break;
+			}
+			case '\n': {
+				if ((flags & SWT.DRAW_DELIMITER) == 0) break;
+				String string = new String(buffer, start, j - start);
+				if (draw) drawString(string, x, y, transparent);
+				Point extent = stringExtent(string);
+				maxX = Math.max(x + extent.x, maxX);
+				x = initialX;
+				y += extent.y;
+				maxY = Math.max(y, maxY);
+				start = j + 1;
+				break;
+			}
+			case '&': {
+				if ((flags & SWT.DRAW_MNEMONIC) == 0) break;
+				if (i + 1 == length) break;
+				if (buffer[i + 1] == '&') {i++; break;}
+				if (mnemonic == -1) {
+					mnemonic = i + 1;
+					String string = new String(buffer, start, j - start);
+					if (draw) drawString(string, x, y, transparent);
+					Point extent = stringExtent(string);
+					x += extent.x;
+					start = mnemonic;
+					string = new String(buffer, start, 1);
+					if (draw) drawString(string, x, y, transparent);
+					extent = stringExtent(string);
+					int underlineY = y + extent.y - 1;
+					if (draw) drawLine(x, underlineY, x + extent.x, underlineY);
+					x += extent.x;
+					maxX = Math.max(x, maxX);
+					maxY = Math.max(y + extent.y, maxY);
+					start = j + 1;
+				}
+				j--;
+				break;
+			}
+		}
+		j++;
+		i++;
+	}
+	if (start != j) {
+		String string = new String(buffer, start, j - start);
+		if (draw) drawString(string, x, y, transparent);
+		Point extent = stringExtent(string);
+		maxX = Math.max(x + extent.x, maxX);
+		maxY = Math.max(y + extent.y, maxY);
+	}
+	return new Point(maxX - initialX, maxY - initialY);
 }
 
 /**
@@ -1940,26 +2004,6 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
-static String replaceTabs(String text, int spaces) {
-	int length = text.length();
-	int index = text.indexOf('\t', 0);
-	if (index == -1) return text;
-
-	int start = 0;
-	StringBuffer result = new StringBuffer();
-	StringBuffer spaceString = new StringBuffer();
-	while (spaces-- > 0) {
-		spaceString.append(' ');
-	}
-	while (index != -1 && index < length) {
-		result.append(text.substring(start, index));
-		result.append(spaceString);
-		index = text.indexOf('\t', start = index + 1);
-	}
-	if (index == -1) result.append(text.substring(start, length));
-	return result.toString();
-}
-
 /**
  * Sets the background color. The background color is used
  * for fill operations and as the background color when text
@@ -2384,27 +2428,7 @@ public Point stringExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string) {
-	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	PhRect_t rect = new PhRect_t();
-	string = replaceTabs(string, 8);
-	int size = string.length();
-	byte [] buffer = Converter.wcsToMbcs (null, string, false);
-
-	int flags = OS.PtEnter(0);
-	try {
-		int prevContext = setGC();
-		OS.PgExtentMultiText(rect, null, data.font, buffer, buffer.length, 0);
-		unsetGC(prevContext);
-	} finally {
-		if (flags >= 0) OS.PtLeave(flags);
-	}
-	
-	int width;
-	if (size == 0) width = 0;
-	else width = rect.lr_x - (rect.ul_x < 0 ? rect.ul_x : 0) + 1;
-	int height = rect.lr_y - rect.ul_y + 1;
-	return new Point(width, height);
+	return textExtent(string, SWT.DRAW_DELIMITER | SWT.DRAW_TAB);
 }
 
 /**
@@ -2439,7 +2463,13 @@ public Point textExtent(String string) {
  * </ul>
  */
 public Point textExtent(String string, int flags) {
-	return textExtent(string);
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if ((flags & ~SWT.DRAW_TRANSPARENT) == 0) {
+		return stringExtent(string);
+	} else {
+		return drawText(string, 0, 0, flags, false);
+	}
 }
 
 /**
