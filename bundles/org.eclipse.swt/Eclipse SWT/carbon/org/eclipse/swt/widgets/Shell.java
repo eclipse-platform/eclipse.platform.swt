@@ -354,8 +354,12 @@ public void addShellListener(ShellListener listener) {
 	addListener(SWT.Deiconify,typedListener);
 }
 
-void bringToTop () {
-	OS.SelectWindow (shellHandle);
+void bringToTop (boolean force) {
+	if (force) {
+		forceActive ();
+	} else {
+		setActive ();
+	}
 }
 
 /**

@@ -692,6 +692,8 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	Shell shell = getShell ();
+	shell.bringToTop (true);
 	/*
 	* Feature in the Macintosh.  For some reason, when the user
 	* clicks on the data browser, focus is assigned, then lost

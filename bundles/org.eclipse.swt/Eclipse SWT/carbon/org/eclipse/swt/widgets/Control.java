@@ -583,7 +583,7 @@ public boolean forceFocus () {
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible ()/* || !isActive ()*/) return false;
 	if (isFocusControl ()) return true;
-	shell.bringToTop ();
+	shell.bringToTop (false);
 	int [] features = new int [1];
 	OS.GetControlFeatures (handle, features);
 	if ((features [0] & OS.kControlSupportsFocus) == 0) return false;

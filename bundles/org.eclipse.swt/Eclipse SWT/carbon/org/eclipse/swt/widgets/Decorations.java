@@ -149,7 +149,7 @@ static int checkStyle (int style) {
 	return style;
 }
 
-void bringToTop () {
+void bringToTop (boolean force) {
 	moveAbove (null);
 }
 
