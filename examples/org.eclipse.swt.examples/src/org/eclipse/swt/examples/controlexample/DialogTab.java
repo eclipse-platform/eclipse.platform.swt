@@ -25,6 +25,7 @@ class DialogTab extends Tab {
 	
 	/* Style widgets added to the "Style" group */
 	Combo dialogCombo;
+	Button createButton;
 	Button okButton, cancelButton;
 	Button yesButton, noButton;
 	Button retryButton;
@@ -58,29 +59,32 @@ class DialogTab extends Tab {
 		 * supported for various dialogs.  Make sure the
 		 * control widget reflects only valid combinations.
 		 */
-		okButton.setEnabled (
-			!(yesButton.getSelection () || noButton.getSelection () || 
-				retryButton.getSelection () || abortButton.getSelection () ||
-					ignoreButton.getSelection ()));
-		cancelButton.setEnabled (
-			!(abortButton.getSelection () || ignoreButton.getSelection () ||
-				(yesButton.getSelection () != noButton.getSelection ())));
-		yesButton.setEnabled (
-			!(okButton.getSelection () || retryButton.getSelection () ||
-				abortButton.getSelection () || ignoreButton.getSelection () ||
-					(cancelButton.getSelection () && !yesButton.getSelection () && !noButton.getSelection ())));
-		noButton.setEnabled (
-			!(okButton.getSelection () || retryButton.getSelection () ||
-				abortButton.getSelection () || ignoreButton.getSelection () ||
-					(cancelButton.getSelection () && !yesButton.getSelection () && !noButton.getSelection ())));
-		retryButton.setEnabled (
-			!(okButton.getSelection() || yesButton.getSelection() || noButton.getSelection ()));
-		abortButton.setEnabled (
-			!(okButton.getSelection () || cancelButton.getSelection () ||
-				yesButton.getSelection () || noButton.getSelection ()));
-		ignoreButton.setEnabled (
-			!(okButton.getSelection () || cancelButton.getSelection () |
-				yesButton.getSelection () || noButton.getSelection ()));
+		boolean ok = okButton.getSelection ();
+		boolean cancel = cancelButton.getSelection ();
+		boolean yes = yesButton.getSelection ();
+		boolean no = noButton.getSelection ();
+		boolean abort = abortButton.getSelection ();
+		boolean retry = retryButton.getSelection ();
+		boolean ignore = ignoreButton.getSelection ();
+		
+		okButton.setEnabled (!(yes || no || retry || abort || ignore));
+		cancelButton.setEnabled (!(abort || ignore || (yes != no)));
+		yesButton.setEnabled (!(ok || retry || abort || ignore || (cancel && !yes && !no)));
+		noButton.setEnabled (!(ok || retry || abort || ignore || (cancel && !yes && !no)));
+		retryButton.setEnabled (!(ok || yes || no));
+		abortButton.setEnabled (!(ok || cancel || yes || no));
+		ignoreButton.setEnabled (!(ok || cancel || yes || no));
+		
+		createButton.setEnabled (
+				!(ok || cancel || yes || no || retry || abort || ignore) ||
+				ok ||
+				(ok && cancel) ||
+				(yes && no) ||
+				(yes && no && cancel) ||
+				(retry && cancel) ||
+				(abort && retry && ignore));
+		
+
 	}
 	
 	/**
@@ -251,9 +255,10 @@ class DialogTab extends Tab {
 		dialogCombo = new Combo (dialogStyleGroup, SWT.READ_ONLY);
 		dialogCombo.setItems (strings);
 		dialogCombo.setText (strings [0]);
+		dialogCombo.setVisibleItemCount(strings.length);
 	
 		/* Create the create dialog button */
-		Button createButton = new Button(dialogStyleGroup, SWT.NONE);
+		createButton = new Button(dialogStyleGroup, SWT.NONE);
 		createButton.setText (ControlExample.getResourceString("Create_Dialog"));
 		createButton.setLayoutData (new GridData(GridData.HORIZONTAL_ALIGN_CENTER));
 	
