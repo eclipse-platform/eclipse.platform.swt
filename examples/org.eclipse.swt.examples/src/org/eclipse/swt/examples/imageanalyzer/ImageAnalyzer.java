@@ -830,6 +830,8 @@ public class ImageAnalyzer {
 			}
 		} catch (SWTException e) {
 			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
+		} catch (SWTError e) {
+			showErrorDialog(bundle.getString("Loading_lc"), filename, e);
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
@@ -966,6 +968,8 @@ public class ImageAnalyzer {
 			
 		} catch (SWTException e) {
 			showErrorDialog(bundle.getString("Saving_lc"), fileName, e);
+		} catch (SWTError e) {
+			showErrorDialog(bundle.getString("Saving_lc"), fileName, e);
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
@@ -1030,6 +1034,8 @@ public class ImageAnalyzer {
 
 		} catch (SWTException e) {
 			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
+		} catch (SWTError e) {
+			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
 		} finally {
 			shell.setCursor(null);
 			imageCanvas.setCursor(crossCursor);
@@ -1082,6 +1088,8 @@ public class ImageAnalyzer {
 			loader.save(filename, filetype);
 			
 		} catch (SWTException e) {
+			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
+		} catch (SWTError e) {
 			showErrorDialog(bundle.getString("Saving_lc"), filename, e);
 		} finally {
 			shell.setCursor(null);
@@ -1921,13 +1929,19 @@ public class ImageAnalyzer {
 	/*
 	 * Open an error dialog displaying the specified information.
 	 */
-	void showErrorDialog(String operation, String filename, Exception e) {
+	void showErrorDialog(String operation, String filename, Throwable e) {
 		MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
 		String message = createMsg(bundle.getString("Error"), new String[] {operation, filename});
 		String errorMessage = "";
 		if (e != null) {
 			if (e instanceof SWTException) {
 				SWTException swte = (SWTException) e;
+				errorMessage = swte.getMessage();
+				if (swte.throwable != null) {
+					errorMessage += ":\n" + swte.throwable.toString();
+				}
+			} else if (e instanceof SWTError) {
+				SWTError swte = (SWTError) e;
 				errorMessage = swte.getMessage();
 				if (swte.throwable != null) {
 					errorMessage += ":\n" + swte.throwable.toString();
