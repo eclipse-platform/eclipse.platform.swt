@@ -3309,6 +3309,86 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNSetTXNObjectCo
 	return status;
 }
 
+//---- Scrap
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetCurrentScrap(JNIEnv *env, jclass zz, jintArray scrapref) {
+	jint *sa= (*env)->GetIntArrayElements(env, scrapref, 0);
+	jint status= RC(GetCurrentScrap((ScrapRef*)sa));
+	(*env)->ReleaseIntArrayElements(env, scrapref, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ClearCurrentScrap(JNIEnv *env, jclass zz) {
+	return (jint) RC(ClearCurrentScrap());
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorSize(JNIEnv *env, jclass zz,
+		jint scrapHandle, jint flavorType, jintArray sizeRef) {
+	jint *sa= (*env)->GetIntArrayElements(env, sizeRef, 0);
+	jint status= RC(GetScrapFlavorSize((ScrapRef)scrapHandle, (ScrapFlavorType) flavorType, (Size*)sa));
+	(*env)->ReleaseIntArrayElements(env, sizeRef, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorData(JNIEnv *env, jclass zz,
+		jint scrapHandle, jint flavorType, jintArray sizeRef, jbyteArray data) {
+	jint status;
+	jint *sa= NULL;
+	jbyte *sb= NULL;
+	if (sizeRef != NULL)
+		sa= (*env)->GetIntArrayElements(env, sizeRef, 0);
+	if (data != NULL)
+		sb= (*env)->GetByteArrayElements(env, data, 0);
+	status= RC(GetScrapFlavorData((ScrapRef)scrapHandle, (ScrapFlavorType) flavorType, (Size*)sa, (void*)sb));
+	if (sa != NULL)
+		(*env)->ReleaseIntArrayElements(env, sizeRef, sa, 0);
+	if (sb != NULL)
+		(*env)->ReleaseByteArrayElements(env, data, sb, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_PutScrapFlavor(JNIEnv *env, jclass zz,
+		jint scrapHandle, jint flavorType, jint flavorFlags, jbyteArray flavorData) {
+	jint status;
+	jbyte *sa= NULL;
+	int size= 0;
+	if (flavorData != NULL) {
+		size= (*env)->GetArrayLength(env, flavorData);
+		sa= (*env)->GetByteArrayElements(env, flavorData, 0);
+	}
+	status= RC(PutScrapFlavor((ScrapRef)scrapHandle, (ScrapFlavorType) flavorType, (ScrapFlavorFlags) flavorFlags,
+				size, (const void*)sa));
+	if (sa != NULL)
+		(*env)->ReleaseByteArrayElements(env, flavorData, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorCount(JNIEnv *env, jclass zz,
+		jint scrapHandle, jintArray infoCount) {
+	jint *sa= (*env)->GetIntArrayElements(env, infoCount, 0);
+	jint status= RC(GetScrapFlavorCount((ScrapRef)scrapHandle, (UInt32*)sa));
+	(*env)->ReleaseIntArrayElements(env, infoCount, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetScrapFlavorInfoList(JNIEnv *env, jclass zz,
+		jint scrapHandle, jintArray infoCount, jintArray info) {
+	jint status;
+	jint *sa= NULL;
+	jint *sb= NULL;
+	if (infoCount != NULL)
+		sa= (*env)->GetIntArrayElements(env, infoCount, 0);
+	if (info != NULL)
+		sb= (*env)->GetIntArrayElements(env, info, 0);
+		
+	status= RC(GetScrapFlavorInfoList((ScrapRef)scrapHandle, (UInt32*) sa, (ScrapFlavorInfo*) sb));
+	if (sa != NULL)
+		(*env)->ReleaseIntArrayElements(env, infoCount, sa, 0);
+	if (sb != NULL)
+		(*env)->ReleaseIntArrayElements(env, info, sb, 0);
+	return status;
+}
+
 //---- utilities
 
 static Point point(JNIEnv *env, jshortArray a) {

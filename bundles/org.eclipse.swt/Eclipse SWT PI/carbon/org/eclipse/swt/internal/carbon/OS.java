@@ -1128,6 +1128,18 @@ public class OS {
 	public static native void getHandleData(int handle, char[] data);
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
+	// Scrap
+	//////////////////////////////////////////////////////////////////////////////////////////////////
+
+	public static native int GetCurrentScrap(int[] scrapHandle);
+	public static native int GetScrapFlavorCount(int scrapHandle, int[] flavorCount);
+	public static native int GetScrapFlavorInfoList(int scrapHandle, int[] flavorCount, int[] info);
+	public static native int GetScrapFlavorSize(int scrapHandle, int flavorType, int[] size);
+	public static native int GetScrapFlavorData(int scrapHandle, int flavorType, int[] size, byte[] data);
+	public static native int PutScrapFlavor(int scrapHandle, int flavorType, int flavorFlags, byte[] data); 
+	public static native int ClearCurrentScrap();
+	 
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Misc
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 

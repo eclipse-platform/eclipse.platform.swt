@@ -9,6 +9,9 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.carbon.MacUtil;
+import org.eclipse.swt.internal.carbon.OS;
+
 
 /**
  * The <code>Clipboard</code> provides a mechanism for transferring data from one
@@ -118,8 +121,37 @@ public void dispose () {
  * @return the data obtained from the clipboard or null if no data of this type is available
  */
 public Object getContents(Transfer transfer) {
-	if (display.isDisposed() || !(transfer instanceof TextTransfer)) return null;
-	return display.getData("TextTransfer");
+	
+	if (display.isDisposed())
+		return null;
+	
+	int[] scrapHandle= new int[1];
+	OS.GetCurrentScrap(scrapHandle);
+	int scrap= scrapHandle[0];
+	
+	int[] flavorCount= new int[1];
+	OS.GetScrapFlavorCount(scrap, flavorCount);
+	
+	//System.out.println("Clipboard.getContents:");
+	if (flavorCount[0] > 0) {
+		int[] info= new int[flavorCount[0] * 2];
+		OS.GetScrapFlavorInfoList(scrap, flavorCount, info);
+		for (int i= 0; i < flavorCount[0]; i++) {
+			int flavorType= info[i*2];
+			String type= MacUtil.toString(flavorType);
+			//System.out.println("  " + i + ": Clipboard.getContents: " + type);
+			if ("TEXT".equals(type) && transfer instanceof TextTransfer) {
+				int[] size= new int[1];
+				OS.GetScrapFlavorSize(scrap, flavorType, size);
+				if (size[0] > 0) {
+					byte[] data= new byte[size[0]];
+					OS.GetScrapFlavorData(scrap, flavorType, size, data);
+					return new String(data, 0, size[0]);
+				}
+			}
+		}
+	}
+	return null;
 }
 /**
  * Place data of the specified type on the system clipboard.  More than one type of
@@ -169,10 +201,23 @@ public void setContents(Object[] data, Transfer[] transferAgents){
 	if (display.isDisposed() )
 		DND.error(DND.ERROR_CANNOT_SET_CLIPBOARD);
 	
+	/*
 	for (int i = 0; i < transferAgents.length; i++) {
-		if (transferAgents[i] instanceof TextTransfer && data[i] instanceof String){
-			display.setData("TextTransfer", data[i]);
-			return;
+		System.out.println("Clipboard.setContents: " + transferAgents[i]);
+	}
+	*/
+	
+	OS.ClearCurrentScrap();
+	int[] scrapHandle= new int[1];
+	OS.GetCurrentScrap(scrapHandle);
+	int scrap= scrapHandle[0];
+	
+	for (int i = 0; i < transferAgents.length; i++) {
+		if (transferAgents[i] instanceof TextTransfer && data[i] instanceof String) {
+			String s= (String) data[i];
+			int flavorType= ('T'<<24) + ('E'<<16) + ('X'<<8) + 'T';
+			if (OS.PutScrapFlavor(scrap, flavorType, 0, s.getBytes()) == OS.kNoErr)
+				return;
 		}
 	}
 }
