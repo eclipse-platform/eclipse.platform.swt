@@ -1118,7 +1118,7 @@ public void setSelection (TreeItem [] items) {
 		* are the same, Windows does not check to make sure that
 		* the item is actually selected, not just focused.  The
 		* fix is to force the item to draw selected by setting
-		* the state mask.
+		* the state mask, and to ensure that it is visible.
 		*/
 		if (hOldItem == hNewItem) {
 			TVITEM tvItem = new TVITEM ();
@@ -1127,6 +1127,7 @@ public void setSelection (TreeItem [] items) {
 			tvItem.stateMask = OS.TVIS_SELECTED;
 			tvItem.hItem = hNewItem;
 			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+			showItem (hNewItem);
 		}
 	}
 	if ((style & SWT.SINGLE) != 0) return;
