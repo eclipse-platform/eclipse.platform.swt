@@ -1,11 +1,15 @@
-package org.eclipse.swt.tests.junit;
-
-/*
- * (c) Copyright IBM Corp. 2000, 2002. All rights reserved.
- * This file is made available under the terms of the Common Public License v1.0
+/*******************************************************************************
+ * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
- */
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tests.junit;
+
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -116,7 +120,8 @@ public void test_getWidth(){
 	int testWidth = 42;
 	
 	assertTrue(":a: width=" + tableColumn.getWidth() + " should be=" + DEFAULT_WIDTH, tableColumn.getWidth() == DEFAULT_WIDTH);
-//	try {
+
+//	try {
 //		tableColumn.setWidth(-1);
 //		assertTrue("No exception thrown", false);
 //	}

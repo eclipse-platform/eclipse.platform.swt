@@ -1,10 +1,15 @@
-package org.eclipse.swt.examples.fileviewer;
-/*
- * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
- * This file is made available under the terms of the Common Public License v1.0
+/*******************************************************************************
+ * Copyright (c) 2000, 2003 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
  * which accompanies this distribution, and is available at
  * http://www.eclipse.org/legal/cpl-v10.html
- */
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.examples.fileviewer;
+
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.custom.*;
@@ -18,12 +23,14 @@ import org.eclipse.swt.widgets.*;
 import java.io.*;
 import java.text.*;
 import java.util.*;
-/**
+
+/**
  * File Viewer example
  */
 public class FileViewer { 
  	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_fileviewer");
-	private final static String DRIVE_A = "a:" + File.separator;
+
+	private final static String DRIVE_A = "a:" + File.separator;
 	private final static String DRIVE_B = "b:" + File.separator;
 
 	/* UI elements */ 	
@@ -133,7 +140,8 @@ public class FileViewer {
 		shell.open();
 		return shell;
 	}
-	/**
+
+	/**
 	 * Closes the main program.
 	 */
 	void close() {
@@ -315,7 +323,8 @@ public class FileViewer {
 		item.addSelectionListener(unimplementedListener);
 		item = new ToolItem(toolBar, SWT.PUSH);
 		item.setImage(iconCache.stockImages[iconCache.cmdPaste]);
-		item.setToolTipText(getResourceString("tool.Paste.tiptext"));		item.addSelectionListener(unimplementedListener);
+		item.setToolTipText(getResourceString("tool.Paste.tiptext"));
+		item.addSelectionListener(unimplementedListener);
 
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
@@ -823,7 +832,8 @@ public class FileViewer {
 		 * Sets the title to indicate the selected directory
 		 */
 		shell.setText(getResourceString("Title", new Object[] { currentDirectory.getPath() }));
-		/* Table view:
+
+		/* Table view:
 		 * Displays the contents of the selected directory.
 		 */
 		workerUpdate(dir, false);
