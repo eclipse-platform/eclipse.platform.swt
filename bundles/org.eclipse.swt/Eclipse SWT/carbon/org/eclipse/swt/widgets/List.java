@@ -1368,27 +1368,31 @@ public void setSelection (String [] items) {
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	int length = items.length;
 	if (length == 0) return;
+	int count = 0;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) {
 		String string = items [length - i - 1];
 		if ((style & SWT.SINGLE) != 0) {
 			int index = indexOf (string, 0);
 			if (index != -1) {
+				count = 1;
 				ids = new int [] {index + 1};
 				break;
 			}
 		} else {
 			int index = 0;
 			while ((index = indexOf (string, index)) != -1) {
-				int [] newIds = new int [ids.length + 4];
-				System.arraycopy (ids, 0, newIds, 0, ids.length);
-				newIds [ids.length] = index + 1;
-				ids = newIds;
+				if (count == ids.length) {
+					int [] newIds = new int [ids.length + 4];
+					System.arraycopy (ids, 0, newIds, 0, ids.length);
+					ids = newIds;
+				}
+				ids [count++] = index + 1;
 				index++;
 			}
 		}
 	}
-	select (ids, ids.length, true, false);
+	select (ids, count, true, false);
 	if (ids.length > 0) showIndex (ids [0] - 1);
 }
 
