@@ -725,18 +725,6 @@ void initAccessible() {
 	text.getAccessible().addAccessibleListener(accessibleAdapter);
 	list.getAccessible().addAccessibleListener(accessibleAdapter);
 	
-	arrow.getAccessible().addAccessibleListener(new AccessibleAdapter() {
-		public void getName(AccessibleEvent e) {
-			e.result = isDropped () ? "Close" : "Open"; //$NON-NLS-1$ //$NON-NLS-2$
-		}
-		public void getKeyboardShortcut(AccessibleEvent e) {
-			e.result = "Alt+Down Arrow"; //$NON-NLS-1$
-		}
-		public void getHelp(AccessibleEvent e) {
-			e.result = getToolTipText();
-		}
-	});
-
 	getAccessible().addAccessibleTextListener(new AccessibleTextAdapter() {
 		public void getCaretOffset(AccessibleTextEvent e) {
 			e.offset = text.getCaretPosition();
@@ -774,18 +762,6 @@ void initAccessible() {
 
 		public void getValue(AccessibleControlEvent e) {
 			e.result = getText();
-		}
-	});
-
-	text.getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
-		public void getRole(AccessibleControlEvent e) {
-			e.detail = text.getEditable() ? ACC.ROLE_TEXT : ACC.ROLE_LABEL;
-		}
-	});
-
-	arrow.getAccessible().addAccessibleControlListener(new AccessibleControlAdapter() {
-		public void getDefaultAction(AccessibleControlEvent e) {
-			e.result = isDropped () ? "Close" : "Open"; //$NON-NLS-1$ //$NON-NLS-2$
 		}
 	});
 }
