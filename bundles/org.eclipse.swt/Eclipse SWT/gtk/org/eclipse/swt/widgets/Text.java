@@ -906,9 +906,11 @@ int gtk_delete_range (int widget, int iter1, int iter2) {
 	}
 	if (newText.length () > 0) {
 		byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
 		OS.gtk_text_buffer_delete (bufferHandle, startIter, endIter);
 		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, DELETE_RANGE);
+		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 		OS.gtk_text_buffer_insert (bufferHandle, startIter, buffer, buffer.length);
 		OS.g_signal_handlers_unblock_matched (bufferHandle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
@@ -928,9 +930,11 @@ int gtk_delete_text (int widget, int start_pos, int end_pos) {
 		int [] pos = new int [1];
 		pos [0] = end_pos;
 		byte [] buffer = Converter.wcsToMbcs (null, newText, false);
+		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
 		OS.gtk_editable_insert_text (handle, buffer, buffer.length, pos);
 		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, INSERT_TEXT);
+		OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 		OS.gtk_editable_set_position (handle, pos [0]);
 	}
 	return 0;
