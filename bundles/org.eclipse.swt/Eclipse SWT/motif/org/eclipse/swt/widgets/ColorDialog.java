@@ -40,6 +40,7 @@ public class ColorDialog extends Dialog {
 	private Label sampleLabel, selectionLabel;
 	private Canvas sampleCanvas, selectionCanvas;
 	private Button okButton, cancelButton;
+	private int colorChooserWidth, colorChooserHeight;
 
 	private boolean okSelected;
 	private RGB rgb;
@@ -104,8 +105,8 @@ void createChildren() {
 	GridLayout layout = new GridLayout (2, false);
 	dialog.setLayout(layout);
 	
-	int colorChooserWidth = colorSwatchExtent * colorGrid.length - 1;
-	int colorChooserHeight = colorSwatchExtent * colorGrid[0].length - 1;
+	colorChooserWidth = colorSwatchExtent * colorGrid.length - 1;
+	colorChooserHeight = colorSwatchExtent * colorGrid[0].length - 1;
 	colorsCanvas = new Canvas(dialog, SWT.BORDER);
 	GridData data = new GridData ();
 	data.widthHint = colorChooserWidth;
@@ -328,6 +329,8 @@ void mouseDown(Event event) {
 void mouseMove(Event event) {
 	int swatchExtent = colorSwatchExtent;
 	// adjust for events received from moving over the Canvas' border
+	if (!(0 <= event.x && event.x <= colorChooserWidth)) return;
+	if (!(0 <= event.y && event.y <= colorChooserHeight)) return;
 	int xgrid = Math.min(colorGrid.length - 1, event.x / swatchExtent);
 	int ygrid = Math.min(colorGrid[0].length - 1, event.y / swatchExtent);
 	Color color = colorGrid[xgrid][ygrid];
