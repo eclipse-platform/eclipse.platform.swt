@@ -2065,7 +2065,7 @@ public boolean post(Event event) {
 				return OS.CGPostKeyboardEvent (0, vKey, type == SWT.KeyDown) == 0;
 			} else {
 				vKey = -1;
-				int code = -1, kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
+				int kchrPtr = OS.GetScriptManagerVariable ((short) OS.smKCHRCache);
 				int key = -1;
 				int [] state = new int [1];
 				int [] encoding = new int [1];

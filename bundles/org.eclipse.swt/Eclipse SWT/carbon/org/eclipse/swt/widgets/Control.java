@@ -500,7 +500,6 @@ void deregister () {
 }
 
 void destroyWidget () {
-	Display display = this.display;
 	int theControl = topHandle ();
 	releaseHandle ();
 	if (theControl != 0) {

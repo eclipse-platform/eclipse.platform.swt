@@ -146,7 +146,7 @@ void clear () {
 	cellForeground = cellBackground = null;
 	font = null;
 	cellFont = null;
-	int width = -1;
+	width = -1;
 }
 
 /**

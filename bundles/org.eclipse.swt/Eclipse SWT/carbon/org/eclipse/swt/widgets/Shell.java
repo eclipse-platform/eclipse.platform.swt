@@ -480,7 +480,6 @@ void deregister () {
 }
 
 void destroyWidget () {
-	Display display = this.display;
 	int theWindow = shellHandle;
 //	OS.HideWindow (shellHandle);
 	releaseHandle ();

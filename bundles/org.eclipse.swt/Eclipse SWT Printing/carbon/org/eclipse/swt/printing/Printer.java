@@ -68,7 +68,7 @@ public static PrinterData[] getPrinterList() {
 			result = new PrinterData[count];
 			for (int i=0; i<count; i++) {
 				String name = getString(OS.CFArrayGetValueAtIndex(printerList[0], i));
-				PrinterData data = result[i] = new PrinterData(DRIVER, name);
+				result[i] = new PrinterData(DRIVER, name);
 			}
 			OS.CFRelease(printerList[0]);
 		}
