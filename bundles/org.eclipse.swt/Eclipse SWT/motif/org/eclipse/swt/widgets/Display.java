@@ -1455,7 +1455,7 @@ void initializeList () {
 	int shellHandle, widgetHandle;
 	int widgetClass = OS.TopLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
-	widgetHandle = OS.XmCreateScrolledList (shellHandle, new byte [0], null, 0);
+	widgetHandle = OS.XmCreateScrolledList (shellHandle, new byte [1], null, 0);
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);
@@ -1564,7 +1564,7 @@ void initializeText () {
 	int shellHandle, widgetHandle;
 	int widgetClass = OS.TopLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
-	widgetHandle = OS.XmCreateScrolledText (shellHandle, new byte [0], null, 0);
+	widgetHandle = OS.XmCreateScrolledText (shellHandle, new byte [1], null, 0);
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);
