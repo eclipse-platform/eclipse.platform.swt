@@ -751,6 +751,15 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf16_1to_1utf8
 }
 #endif
 
+#ifndef NO_g_1utf8_1strlen
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf8_1strlen
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("g_1utf8_1strlen\n")
+	return  (jint)g_utf8_strlen((const gchar *)arg0, (gssize)arg1);
+}
+#endif
+
 #ifndef NO_g_1utf8_1to_1utf16__II_3I_3I_3I
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1utf8_1to_1utf16__II_3I_3I_3I
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3, jintArray arg4)
@@ -1156,6 +1165,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1flush
 	DEBUG_CALL("gdk_1flush\n")
 
 	gdk_flush();
+}
+#endif
+
+#ifndef NO_gdk_1free_1text_1list
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1free_1text_1list
+	(JNIEnv *env, jclass that, jint arg1)
+{
+	DEBUG_CALL("gdk_1free_1text_1list\n")
+
+	gdk_free_text_list((gchar **)arg1);
 }
 #endif
 
@@ -1705,6 +1724,56 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1screen_1width_1
 	DEBUG_CALL("gdk_1screen_1width_1mm\n")
 
 	return (jint)gdk_screen_width_mm();
+}
+#endif
+
+#ifndef NO_gdk_1utf8_1to_1compound_1text
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1utf8_1to_1compound_1text
+	(JNIEnv *env, jclass that, jbyteArray arg1, jintArray arg2, jintArray arg3, jintArray arg4, jintArray arg5)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg2=NULL;
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jboolean rc;
+	
+	DEBUG_CALL("gdk_1utf8_1to_1compound_1text\n")
+	
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+
+	rc = (jboolean)gdk_utf8_to_compound_text((const gchar *)lparg1, (GdkAtom *)lparg2, (gint *)lparg3, (guchar **)lparg4, (gint *)lparg5);
+
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	
+	return rc;
+}
+#endif
+
+#ifndef NO_gdk_1text_1property_1to_1utf8_1list
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1text_1property_1to_1utf8_1list
+	(JNIEnv *env, jclass that, jint arg1, jint arg2, jint arg3, jint arg4, jintArray arg5)
+{
+	jint *lparg5=NULL;
+	jint rc;
+	
+	DEBUG_CALL("gdk_1text_1property_1to_1utf8_1list\n")
+	
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+
+	rc = (jint)gdk_text_property_to_utf8_list((GdkAtom)arg1, arg2, (guchar *)arg3, arg4, (gchar ***)lparg5);
+	
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	
+	return rc;
 }
 #endif
 
