@@ -6873,7 +6873,10 @@ void scrollHorizontal(int pixels) {
 		}
 	}
 	horizontalScrollOffset += pixels;
+	int oldColumnX = columnX - pixels;
 	setCaretLocation();
+	// restore the original horizontal caret index
+	columnX = oldColumnX;
 }
 /**
  * Scrolls the widget horizontally and adjust the horizontal scroll
@@ -8231,7 +8234,10 @@ boolean setVerticalScrollOffset(int pixelOffset, boolean adjustScrollBar) {
 
 	verticalScrollOffset = pixelOffset;
 	calculateTopIndex();
+	int oldColumnX = columnX;
 	setCaretLocation();
+	// restore the original horizontal caret index
+	columnX = oldColumnX;
 	return true;
 }
 /**
