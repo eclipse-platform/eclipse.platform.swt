@@ -972,15 +972,6 @@ public void setSelection (TreeItem [] items) {
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 }
 
-boolean setTabGroupFocus () {
-	return setTabItemFocus ();
-}
-
-boolean setTabItemFocus () {
-	if (!isShowing ()) return false;
-	return forceFocus ();
-}
-
 /**
  * Shows the item.  If the item is already showing in the receiver,
  * this method simply returns.  Otherwise, the items are scrolled

@@ -420,10 +420,12 @@ public void setTabList (Control [] tabList) {
 
 boolean setTabGroupFocus () {
 	if (isTabItem ()) return setTabItemFocus ();
-	if ((state & CANVAS) != 0) {
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			if (setTabItemFocus ()) return true;
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) {
+			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
 		}
+		if (takeFocus && setTabItemFocus ()) return true;
 	}
 	Control [] children = _getChildren ();
 	for (int i=0; i<children.length; i++) {
@@ -438,13 +440,17 @@ boolean setTabGroupFocus () {
 }
 
 boolean setTabItemFocus () {
-	if (!isShowing ()) return false;
-	if ((state & CANVAS) != 0) {
-		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
-			return forceFocus ();
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) {
+			takeFocus = hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
+		}
+		if (takeFocus) {
+			if (!isShowing ()) return false;
+			if (forceFocus ()) return true;
 		}
 	}
-	return setFocus ();
+	return super.setTabItemFocus ();
 }
 
 String toolTipText (NMTTDISPINFO hdr) {

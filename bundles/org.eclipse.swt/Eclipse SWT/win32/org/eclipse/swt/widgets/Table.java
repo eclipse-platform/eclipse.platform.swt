@@ -1806,15 +1806,6 @@ public void setSelection (TableItem [] items) {
 	showSelection ();
 }
 
-boolean setTabGroupFocus () {
-	return setTabItemFocus ();
-}
-
-boolean setTabItemFocus () {
-	if (!isShowing ()) return false;
-	return forceFocus ();
-}
-
 /**
  * Selects the item at the given zero-relative index in the receiver. 
  * The current selected is first cleared, then the new item is selected.

@@ -2295,8 +2295,8 @@ boolean translateMnemonic (MSG msg) {
 
 boolean translateTraversal (MSG msg) {
 	int hwnd = msg.hwnd;
-	int detail = SWT.TRAVERSE_NONE;
 	int key = msg.wParam;
+	int detail = SWT.TRAVERSE_NONE;
 	boolean doit = true, all = false;
 	boolean lastVirtual = false;
 	int lastKey = key, lastAscii = 0;
@@ -3423,8 +3423,8 @@ LRESULT WM_MOUSELEAVE (int wParam, int lParam) {
 
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 	if (!OS.IsWinCE) {
-		boolean hooksMouseEnter = hooks (SWT.MouseEnter);
-		if (hooksMouseEnter || hooks (SWT.MouseExit) || hooks (SWT.MouseHover)) {
+		boolean hooksEnter = hooks (SWT.MouseEnter);
+		if (hooksEnter || hooks (SWT.MouseExit) || hooks (SWT.MouseHover)) {
 			TRACKMOUSEEVENT lpEventTrack = new TRACKMOUSEEVENT ();
 			lpEventTrack.cbSize = TRACKMOUSEEVENT.sizeof;
 			lpEventTrack.dwFlags = OS.TME_QUERY;
@@ -3434,7 +3434,7 @@ LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
 				lpEventTrack.dwFlags = OS.TME_LEAVE | OS.TME_HOVER;
 				lpEventTrack.hwndTrack = handle;
 				OS.TrackMouseEvent (lpEventTrack);
-				if (hooksMouseEnter) {
+				if (hooksEnter) {
 					Event event = new Event ();
 					event.x = (short) (lParam & 0xFFFF);
 					event.y = (short) (lParam >> 16);

@@ -1031,10 +1031,6 @@ public void setSelection (Point selection) {
 	OS.SendMessage (handle, OS.CB_SETEDITSEL, 0, bits);
 }
 
-boolean setTabGroupFocus () {
-	return setTabItemFocus ();
-}
-
 /**
  * Sets the contents of the receiver's text field to the
  * given string.

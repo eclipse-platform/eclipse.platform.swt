@@ -100,6 +100,11 @@ int callWindowProc (int msg, int wParam, int lParam) {
 
 static int checkStyle (int style) {
 	/*
+	* On Windows, only flat tool bars can be traversed.
+	*/
+	if ((style & SWT.FLAT) == 0) style |= SWT.NO_FOCUS;
+	
+	/*
 	* A vertical tool bar cannot wrap because TB_SETROWS
 	* fails when the toobar has TBSTYLE_WRAPABLE.
 	*/
@@ -604,15 +609,6 @@ void setImageList (ImageList imageList) {
 		hImageList = imageList.getHandle ();
 	}
 	OS.SendMessage (handle, OS.TB_SETIMAGELIST, 0, hImageList);
-}
-
-boolean setTabGroupFocus () {
-	return setTabItemFocus();
-}
-
-boolean setTabItemFocus () {
-	if (!isShowing ()) return false;
-	return forceFocus ();
 }
 
 int toolTipHandle () {
