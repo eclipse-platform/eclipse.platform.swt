@@ -4883,11 +4883,16 @@ void handleTextChanged(TextChangedEvent event) {
 		int startY = startLine * lineHeight - verticalScrollOffset;
 		GC gc = new GC(this);
 		Caret caret = getCaret();
-		boolean caretVisible = caret.getVisible();
+		boolean caretVisible = false;
 		
-		caret.setVisible(false);
+		if (caret != null) {
+			caretVisible = caret.getVisible();
+			caret.setVisible(false);
+		}
 		performPaint(gc, startLine, startY, lineHeight);
-		caret.setVisible(caretVisible);
+		if (caret != null) {		
+			caret.setVisible(caretVisible);
+		}
 		gc.dispose();
 	}
 }
