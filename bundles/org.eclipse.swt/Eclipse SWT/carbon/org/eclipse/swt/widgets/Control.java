@@ -162,6 +162,11 @@ void createWidget () {
 	setZOrder ();
 }
 
+Font defaultFont () {
+	Display display = getDisplay ();
+	return display.getSystemFont ();
+}
+
 void deregister () {
 	super.deregister ();
 	WidgetTable.remove (handle);
@@ -214,8 +219,7 @@ public boolean getEnabled () {
 
 public Font getFont () {
 	checkWidget();
-	if (font != null) return font;
-	return getDisplay ().getSystemFont ();
+	return (font != null) ? font : defaultFont ();
 }
 
 public Color getForeground () {
@@ -421,7 +425,7 @@ public int internal_new_GC (GCData data) {
 		data.device = display;
 		data.foreground = foreground != null ? foreground : display.getSystemColor (SWT.COLOR_BLACK).handle;
 		data.background = background != null ? background : display.getSystemColor (SWT.COLOR_WHITE).handle;
-		data.font = font != null ? font : display.getSystemFont ();
+		data.font = font != null ? font : defaultFont ();
 		data.visibleRgn = visibleRgn;
 		data.control = handle;
 	} else {
