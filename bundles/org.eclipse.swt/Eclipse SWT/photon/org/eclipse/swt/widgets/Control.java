@@ -939,6 +939,10 @@ public int internal_new_GC (GCData data) {
 	int phGC = OS.PgCreateGC(0); // NOTE: PgCreateGC ignores the parameter
 	if (phGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 
+	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	if ((data.style & mask) == 0) {
+		data.style |= style & (mask | SWT.MIRRORED);
+	}
 	int [] args = {OS.Pt_ARG_COLOR, 0, 0, OS.Pt_ARG_FILL_COLOR, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
 	data.device = getDisplay ();

@@ -147,7 +147,7 @@ public ViewForm(Composite parent, int style) {
  * @private
  */
 private static int checkStyle (int style) {
-	int mask = SWT.FLAT;
+	int mask = SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask | SWT.NO_REDRAW_RESIZE;
 }
 public Point computeSize(int wHint, int hHint, boolean changed) {

@@ -217,4 +217,34 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
+	LRESULT result  = super.WM_WINDOWPOSCHANGED (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  When a window with style WS_EX_LAYOUTRTL
+	* that contains a caret is resized, Windows does not move the
+	* caret in relation to the mirrored origin in the top right.
+	* The fix is to hide the caret in WM_WINDOWPOSCHANGING and
+	* show the caret in WM_WINDOWPOSCHANGED.
+	*/
+	boolean isFocus = (style & SWT.RIGHT_TO_LEFT) != 0 && caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.setFocus ();
+	return result;
+}
+
+LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+	LRESULT result  = super.WM_WINDOWPOSCHANGING (wParam, lParam);
+	if (result != null) return result;
+	/*
+	* Bug in Windows.  When a window with style WS_EX_LAYOUTRTL
+	* that contains a caret is resized, Windows does not move the
+	* caret in relation to the mirrored origin in the top right.
+	* The fix is to hide the caret in WM_WINDOWPOSCHANGING and
+	* show the caret in WM_WINDOWPOSCHANGED.
+	*/
+	boolean isFocus = (style & SWT.RIGHT_TO_LEFT) != 0 && caret != null && caret.isFocusCaret ();
+	if (isFocus) caret.killFocus ();
+	return result;
+}
+
 }

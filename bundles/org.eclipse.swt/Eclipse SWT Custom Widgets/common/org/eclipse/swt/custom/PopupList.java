@@ -31,8 +31,18 @@ public class PopupList {
 * Creates a PopupList above the specified shell.
 */
 public PopupList(Shell parent) {
-
-	shell = new Shell(parent, 0);
+	this (parent, 0);
+}
+/** 
+* Creates a PopupList above the specified shell.
+* 
+* @param parent a widget which will be the parent of the new instance (cannot be null)
+* @param style the style of widget to construct
+* 
+* @since 2.1.2 
+*/
+public PopupList(Shell parent, int style) {
+	shell = new Shell(parent, checkStyle(style));
 	
 	list = new List(shell, SWT.SINGLE | SWT.V_SCROLL);	
 
@@ -69,6 +79,10 @@ public PopupList(Shell parent) {
 		};
 	});
 	
+}
+private static int checkStyle (int style) {
+	int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+	return style & mask;
 }
 /**
 * Gets the widget font.

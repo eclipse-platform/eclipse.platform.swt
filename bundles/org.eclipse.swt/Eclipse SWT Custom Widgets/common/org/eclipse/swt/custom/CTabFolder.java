@@ -237,7 +237,7 @@ public CTabFolder(Composite parent, int style) {
 
 }
 private static int checkStyle (int style) {
-	int mask = SWT.TOP | SWT.BOTTOM | SWT.FLAT;
+	int mask = SWT.TOP | SWT.BOTTOM | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	style = style & mask;
 	// TOP and BOTTOM are mutually exlusive.
 	// TOP is the default
@@ -509,12 +509,13 @@ void destroyItem (CTabItem item) {
 	redrawTabArea(-1);
 }
 private void onKeyDown(Event e) {
-	if (e.keyCode == SWT.ARROW_LEFT) {
+	if (e.keyCode != SWT.ARROW_LEFT && e.keyCode != SWT.ARROW_RIGHT) return;
+	int leadKey = (getStyle() & SWT.MIRRORED) != 0 ? SWT.ARROW_RIGHT : SWT.ARROW_LEFT;
+	if (e.keyCode == leadKey) {
 		if (selectedIndex > 0) {
 			setSelection(selectedIndex - 1, true);
 		}
-	}
-	if (e.keyCode == SWT.ARROW_RIGHT) {
+	} else {
 		if (selectedIndex < items.length - 1) {
 			setSelection(selectedIndex + 1, true);
 		}

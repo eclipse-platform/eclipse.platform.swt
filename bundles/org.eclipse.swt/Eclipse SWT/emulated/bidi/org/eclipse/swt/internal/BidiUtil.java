@@ -33,6 +33,7 @@ public class BidiUtil {
 	public static final int CLASS_HEBREW = 2;
 	public static final int CLASS_ARABIC = 2;
 	public static final int CLASS_LOCALNUMBER = 4;
+	public static final int CLASS_LATINNUMBER = 5;	
 	public static final int REORDER = 0;				
 	public static final int LIGATE = 0;
 	public static final int GLYPHSHAPE = 0;
@@ -96,5 +97,10 @@ public static void removeLanguageListener(int hwnd) {
  */
 public static void setKeyboardLanguage(int language) {
 }
-
+/*
+ * Not implemented.
+ */
+public static boolean setOrientation(int hwnd, int orientation) {
+	return false;
+}
 }

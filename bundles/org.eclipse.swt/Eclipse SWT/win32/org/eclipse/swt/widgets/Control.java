@@ -338,9 +338,11 @@ public void addTraverseListener (TraverseListener listener) {
 
 abstract int callWindowProc (int msg, int wParam, int lParam);
 
-void checkOrientation (Widget parent) {
-	super.checkOrientation (parent);
-	if ((style & SWT.RIGHT_TO_LEFT) != 0) style |= SWT.MIRRORED;
+void checkMirrored () {
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
+		int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+		if ((bits & OS.WS_EX_LAYOUTRTL) != 0) style |= SWT.MIRRORED;
+	}
 }
 
 /**
@@ -485,6 +487,7 @@ void createWidget () {
 	register ();
 	subclass ();
 	setDefaultFont ();
+	checkMirrored ();
 }
 
 int defaultBackground () {
@@ -1013,6 +1016,16 @@ public int internal_new_GC (GCData data) {
 	}
 	if (hDC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+			if ((bits & OS.WS_EX_LAYOUTRTL) != 0) {
+				data.style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
+			} else {
+				data.style |= SWT.LEFT_TO_RIGHT;
+			}
+			data.layout = -1;
+		}
 		data.device = getDisplay ();
 		data.foreground = getForegroundPixel ();
 		data.background = getBackgroundPixel ();
@@ -2472,6 +2485,9 @@ boolean translateTraversal (MSG msg) {
 			if ((code & (OS.DLGC_WANTTAB | OS.DLGC_WANTALLKEYS)) != 0) {
 				if (next && OS.GetKeyState (OS.VK_CONTROL) >= 0) doit = false;
 			}
+			if (parent != null && (parent.style & SWT.MIRRORED) != 0) {
+				if (key == OS.VK_LEFT || key == OS.VK_RIGHT) next = !next;
+			}
 			detail = next ? SWT.TRAVERSE_TAB_NEXT : SWT.TRAVERSE_TAB_PREVIOUS;
 			break;
 		}
@@ -2816,6 +2832,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_NOTIFY:				result = WM_NOTIFY (wParam, lParam); break;
 		case OS.WM_PAINT:				result = WM_PAINT (wParam, lParam); break;
 		case OS.WM_PALETTECHANGED:		result = WM_PALETTECHANGED (wParam, lParam); break;
+		case OS.WM_PARENTNOTIFY:		result = WM_PARENTNOTIFY (wParam, lParam); break;
 		case OS.WM_PASTE:				result = WM_PASTE (wParam, lParam); break;
 		case OS.WM_PRINTCLIENT:		result = WM_PRINTCLIENT (wParam, lParam); break;
 		case OS.WM_QUERYENDSESSION:	result = WM_QUERYENDSESSION (wParam, lParam); break;
@@ -2839,6 +2856,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_TIMER:				result = WM_TIMER (wParam, lParam); break;
 		case OS.WM_UNDO:				result = WM_UNDO (wParam, lParam); break;
 		case OS.WM_VSCROLL:			result = WM_VSCROLL (wParam, lParam); break;
+		case OS.WM_WINDOWPOSCHANGED:	result = WM_WINDOWPOSCHANGED (wParam, lParam); break;
 		case OS.WM_WINDOWPOSCHANGING:	result = WM_WINDOWPOSCHANGING (wParam, lParam); break;
 	}
 	if (result != null) return result.value;
@@ -3872,6 +3890,10 @@ LRESULT WM_PALETTECHANGED (int wParam, int lParam) {
 	return null;
 }
 
+LRESULT WM_PARENTNOTIFY (int wParam, int lParam) {
+	return null;
+}
+
 LRESULT WM_PASTE (int wParam, int lParam) {
 	return null;
 }
@@ -4190,6 +4212,10 @@ LRESULT WM_VSCROLL (int wParam, int lParam) {
 	Control control = WidgetTable.get (lParam);
 	if (control == null) return null;
 	return control.wmScrollChild (wParam, lParam);
+}
+
+LRESULT WM_WINDOWPOSCHANGED (int wParam, int lParam) {
+	return null;
 }
 
 LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {

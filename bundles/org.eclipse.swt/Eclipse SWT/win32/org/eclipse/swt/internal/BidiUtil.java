@@ -37,7 +37,8 @@ public class BidiUtil {
 
 	// variables used for providing a listener mechanism for keyboard language 
 	// switching 
-	static Hashtable map = new Hashtable ();
+	static Hashtable languageMap = new Hashtable ();
+	static Hashtable keyMap = new Hashtable ();
 	static Hashtable oldProcMap = new Hashtable ();
 	/*
 	 * This code is intentionally commented.  In order
@@ -62,6 +63,7 @@ public class BidiUtil {
 	static final byte GCPCLASS_ARABIC = 2;
 	static final byte GCPCLASS_HEBREW = 2;	
 	static final byte GCPCLASS_LOCALNUMBER = 4;
+	static final byte GCPCLASS_LATINNUMBER = 5;
 	static final int GCPGLYPH_LINKBEFORE = 0x8000;
 	static final int GCPGLYPH_LINKAFTER = 0x4000;
 	// ExtTextOut constants
@@ -85,6 +87,7 @@ public class BidiUtil {
 	public static final int CLASS_HEBREW = GCPCLASS_ARABIC;
 	public static final int CLASS_ARABIC = GCPCLASS_HEBREW;
 	public static final int CLASS_LOCALNUMBER = GCPCLASS_LOCALNUMBER;
+	public static final int CLASS_LATINNUMBER = GCPCLASS_LATINNUMBER;
 	public static final int REORDER = GCP_REORDER;				
 	public static final int LIGATE = GCP_LIGATE;
 	public static final int GLYPHSHAPE = GCP_GLYPHSHAPE;
@@ -96,16 +99,14 @@ public class BidiUtil {
  * monitored.
  * <p>
  *
- * @param int the handle of the Control that is listening for keyboard language 
+ * @param hwnd the handle of the Control that is listening for keyboard language 
  *  changes
  * @param runnable the code that should be executed when a keyboard language change
  *  occurs
  */
-public static void addLanguageListener (int hwnd, Runnable runnable) {
-	map.put (new Integer (hwnd), runnable);
-	int oldProc = OS.GetWindowLong (hwnd, OS.GWL_WNDPROC);
-	oldProcMap.put (new Integer(hwnd), new Integer(oldProc));
-	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, callback.getAddress ());
+public static void addLanguageListener(int hwnd, Runnable runnable) {
+	languageMap.put(new Integer(hwnd), runnable);
+	subclass(hwnd);
 }
 /**
  * Proc used for OS.EnumSystemLanguageGroups call during isBidiPlatform test.
@@ -133,6 +134,10 @@ static int EnumSystemLanguageGroupsProc(int lpLangGrpId, int lpLangGrpIdString, 
  */
 public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x, int y) {
 	RECT rect = null;
+	if (OS.GetLayout (gc.handle) != 0) {
+		reverse(renderDx);
+		reverse(renderBuffer);
+	}
 	OS.ExtTextOutW(gc.handle, x, y, ETO_GLYPH_INDEX, rect, renderBuffer, renderBuffer.length, renderDx);
 }
 /**
@@ -158,6 +163,7 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 	int hHeap = OS.GetProcessHeap();
 	int[] lpCs = new int[8];
 	int cs = OS.GetTextCharset(gc.handle);
+	boolean isRightOriented = OS.GetLayout(gc.handle) != 0; 
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
 	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
 	int byteCount = textBuffer.length();
@@ -223,14 +229,15 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		if (dx != null) {
 			int [] dx2 = new int [result.nGlyphs];
 			OS.MoveMemory(dx2, result.lpDx, dx2.length * 4);
+			if (isRightOriented) { 
+				reverse(dx2);
+			} 
 			System.arraycopy (dx2, 0, dx, glyphCount, dx2.length);
 		}
 		if (order != null) {
 			int [] order2 = new int [length];
 			OS.MoveMemory(order2, result.lpOrder, order2.length * 4);
-			for (int j=0; j<length; j++) {
-				order2 [j] += glyphCount;
-			}
+			translateOrder(order2, glyphCount, isRightOriented);
 			System.arraycopy (order2, 0, order, offset, length);
 		}
 		if (classBuffer != null) {
@@ -240,6 +247,9 @@ public static char[] getRenderInfo(GC gc, String text, int[] order, byte[] class
 		}
 		char[] glyphBuffer2 = new char[result.nGlyphs];
 		OS.MoveMemory(glyphBuffer2, result.lpGlyphs, glyphBuffer2.length * 2);
+		if (isRightOriented) {
+			reverse(glyphBuffer2);
+		} 
 		System.arraycopy (glyphBuffer2, 0, glyphBuffer, glyphCount, glyphBuffer2.length);
 		glyphCount += glyphBuffer2.length;
 
@@ -286,6 +296,7 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 	OS.TranslateCharsetInfo(cs, lpCs, OS.TCI_SRCCHARSET);
 	TCHAR textBuffer = new TCHAR(lpCs[1], text, false);
 	int byteCount = textBuffer.length();
+	boolean isRightOriented = (OS.GetLayout(gc.handle) != 0); 
 
 	GCP_RESULTS result = new GCP_RESULTS();
 	result.lStructSize = GCP_RESULTS.sizeof;
@@ -325,9 +336,7 @@ public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuf
 		if (order != null) {
 			int [] order2 = new int [length];
 			OS.MoveMemory(order2, result.lpOrder, order2.length * 4);
-			for (int j=0; j<length; j++) {
-				order2 [j] += glyphCount;
-			}
+			translateOrder(order2, glyphCount, isRightOriented);
 			System.arraycopy (order2, 0, order, offset, length);
 		}
 		if (classBuffer != null) {
@@ -395,7 +404,7 @@ public static int getKeyboardLanguage() {
  *
  * @return integer array with an entry for each installed language
  */
-public static int[] getKeyboardLanguageList() {
+static int[] getKeyboardLanguageList() {
 	int maxSize = 10;
 	int[] tempList = new int[maxSize];
 	int size = OS.GetKeyboardLayoutList(maxSize, tempList);
@@ -469,11 +478,9 @@ public static boolean isKeyboardBidi() {
  *
  * @param hwnd the handle of the Control that is listening for keyboard language changes
  */
-public static void removeLanguageListener (int hwnd) {
-	map.remove (new Integer (hwnd));
-	Integer proc = (Integer)oldProcMap.remove (new Integer (hwnd));
-	if (proc == null) return;
-	OS.SetWindowLong (hwnd, OS.GWL_WNDPROC, proc.intValue());
+public static void removeLanguageListener(int hwnd) {
+	languageMap.remove(new Integer(hwnd));
+	unsubclass(hwnd);
 }		
 /**
  * Switch the keyboard language to the specified language type.  We do
@@ -512,10 +519,104 @@ public static void setKeyboardLanguage(int language) {
 			}
 		}
 	}
-
 }
 /**
- * Window proc to intercept keyboard language switch event (WS_INPUTLANGCHANGE).
+ * Sets the orientation (writing order) of the specified control. Text will 
+ * be right aligned for right to left writing order.
+ * <p>
+ * 
+ * @param hwnd the handle of the Control to change the orientation of
+ * @param orientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
+ * @return true if the orientation was changed, false if the orientation 
+ * 	could not be changed
+ */
+public static boolean setOrientation (int hwnd, int orientation) {
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) return false;
+	int bits = OS.GetWindowLong (hwnd, OS.GWL_EXSTYLE);
+	if ((orientation & SWT.RIGHT_TO_LEFT) != 0) {
+		bits |= OS.WS_EX_LAYOUTRTL; 
+	} else {
+		bits &= ~OS.WS_EX_LAYOUTRTL;
+	} 
+	OS.SetWindowLong (hwnd, OS.GWL_EXSTYLE, bits);
+	return true;
+}
+/**
+ * Override the window proc.
+ * 
+ * @param hwnd control to override the window proc of
+ */
+static void subclass(int hwnd) {
+	Integer key = new Integer(hwnd);
+	if (oldProcMap.get(key) == null) {
+		int oldProc = OS.GetWindowLong(hwnd, OS.GWL_WNDPROC);
+		oldProcMap.put(key, new Integer(oldProc));
+		OS.SetWindowLong(hwnd, OS.GWL_WNDPROC, callback.getAddress());
+	}
+}
+/**
+ *  Reverse the character array.  Used for right orientation.
+ * 
+ * @param charArray character array to reverse
+ */
+static void reverse(char[] charArray) {
+	int length = charArray.length;
+	for (int i = 0; i <= (length  - 1) / 2; i++) {
+		char tmp = charArray[i];
+		charArray[i] = charArray[length - 1 - i];
+		charArray[length - 1 - i] = tmp;
+	}
+}	
+/**
+ *  Reverse the integer array.  Used for right orientation.
+ * 
+ * @param intArray integer array to reverse
+ */
+static void reverse(int[] intArray) {
+	int length = intArray.length;
+	for (int i = 0; i <= (length  - 1) / 2; i++) {
+		int tmp = intArray[i];
+		intArray[i] = intArray[length - 1 - i];
+		intArray[length - 1 - i] = tmp;
+	}
+}	
+/**
+ * Adjust the order array so that it is relative to the start of the line.  Also reverse the order array if the orientation
+ * is to the right.
+ * 
+ * @param orderArray  integer array of order values to translate
+ * @param glyphCount  number of glyphs that have been processed for the current line
+ * @param isRightOriented  flag indicating whether or not current orientation is to the right
+*/
+static void translateOrder(int[] orderArray, int glyphCount, boolean isRightOriented) {
+	int maxOrder = 0;
+	int length = orderArray.length;
+	if (isRightOriented) {  
+		for (int i=0; i<length; i++) {
+			maxOrder = Math.max(maxOrder, orderArray[i]);
+		}	
+	} 
+	for (int i=0; i<length; i++) {
+		if (isRightOriented) orderArray[i] = maxOrder - orderArray[i]; 
+		orderArray [i] += glyphCount;
+	}
+}
+/**
+ * Remove the overridden the window proc.
+ * 
+ * @param hwnd control to remove the window proc override for
+ */
+static void unsubclass(int hwnd) {
+	Integer key = new Integer(hwnd);
+	if (languageMap.get(key) == null && keyMap.get(key) == null) {
+		Integer proc = (Integer) oldProcMap.remove(key);
+		if (proc == null) return;
+		OS.SetWindowLong(hwnd, OS.GWL_WNDPROC, proc.intValue());
+	}	
+}
+/**
+ * Window proc to intercept keyboard language switch event (WS_INPUTLANGCHANGE)
+ * and widget orientation changes.
  * Run the Control's registered runnable when the keyboard language is switched.
  * 
  * @param hwnd handle of the control that is listening for the keyboard language
@@ -523,13 +624,14 @@ public static void setKeyboardLanguage(int language) {
  * @param msg window message
  */
 static int windowProc (int hwnd, int msg, int wParam, int lParam) {
+	Integer key = new Integer (hwnd);
 	switch (msg) {
 		case 0x51 /*OS.WM_INPUTLANGCHANGE*/:
-			Runnable runnable = (Runnable) map.get (new Integer (hwnd));
+			Runnable runnable = (Runnable) languageMap.get (key);
 			if (runnable != null) runnable.run ();
 			break;
-		}
-	Integer oldProc = (Integer)oldProcMap.get(new Integer(hwnd));
+	}
+	Integer oldProc = (Integer)oldProcMap.get(key);
 	return OS.CallWindowProc (oldProc.intValue(), hwnd, msg, wParam, lParam);
 }
 

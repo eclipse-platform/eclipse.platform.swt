@@ -66,8 +66,7 @@ public GC(Drawable drawable) {
 	this(drawable, 0);
 }
 
-//3.0 API
-GC(Drawable drawable, int style) {
+public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
 	data.style = checkStyle(style);
@@ -1418,11 +1417,10 @@ public int getLineWidth() {
 	return data.lineWidth;
 }
 
-//3.0 API
-//public int getStyle () {
-//	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-//	return data.style;
-//}
+public int getStyle () {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.style;
+}
 
 /** 
  * Returns <code>true</code> if this GC is drawing in the mode

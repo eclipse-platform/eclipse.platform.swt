@@ -406,6 +406,8 @@ public boolean open () {
 	tracking = true;
 	Event event = new Event ();
 	MSG msg = new MSG ();
+	boolean isMirrored = parent != null && (parent.style & SWT.MIRRORED) != 0;
+
 	/*
 	* If this tracker is being created without a mouse drag then
 	* we need to create a transparent window that fills the screen
@@ -495,13 +497,21 @@ public boolean open () {
 					event.x = newX;
 					event.y = newY;
 					if ((style & SWT.RESIZE) != 0) {
-						resizeRectangles (newX - oldX, newY - oldY);
+						if (isMirrored) {
+						   resizeRectangles (oldX - newX, newY - oldY);
+						} else {
+						   resizeRectangles (newX - oldX, newY - oldY);
+						}
 						cursorPos = adjustResizeCursor ();
 						newX = cursorPos.x; newY = cursorPos.y;
 						inEvent = true;
 						sendEvent (SWT.Resize, event);
 					} else {
-						moveRectangles (newX - oldX, newY - oldY);
+						if (isMirrored) {
+							moveRectangles (oldX - newX, newY - oldY); 
+						} else { 
+							moveRectangles (newX - oldX, newY - oldY);
+						}
 						inEvent = true;
 						sendEvent (SWT.Move, event);
 					}
@@ -534,10 +544,10 @@ public boolean open () {
 						tracking = false;
 						break;
 					case OS.VK_LEFT:
-						xChange = -stepSize;
+						xChange = isMirrored ? stepSize : -stepSize;
 						break;
 					case OS.VK_RIGHT:
-						xChange = stepSize;
+						xChange = isMirrored ? -stepSize : stepSize;
 						break;
 					case OS.VK_UP:
 						yChange = -stepSize;

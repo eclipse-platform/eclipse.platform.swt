@@ -76,6 +76,7 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 	int lineEndSpaceWidth = getLineEndSpaceWidth();
 	int lineHeight = getLineHeight();
 	boolean wordWrap = parent.internalGetWordWrap();
+	boolean isRightOriented = (parent.getStyle() & SWT.MIRRORED) != 0;
 	
 	if (selectionEnd == selectionStart || selectionEnd < 0 || selectionStart > lineLength) {
 		return;
@@ -129,7 +130,7 @@ protected void drawLineSelectionBackground(String line, int lineOffset, StyleRan
 			// if the selection extends past this line, render an additional 
 			// whitespace background at the end of the line to represent the 
 			// selected line break
-			if (bidi != null && selectionEnd > 0 && bidi.isRightToLeft(selectionEnd - 1)) {
+			if (bidi != null && selectionEnd > 0 && (bidi.isRightToLeft(selectionEnd - 1) || (isRightOriented && bidi.isRightToLeft(selectionEnd - 1) == false))) {
 				int lineEndX = bidi.getTextWidth();
 				gc.fillRectangle(lineEndX - horizontalScrollOffset + leftMargin, paintY, lineEndSpaceWidth, lineHeight);
 			}

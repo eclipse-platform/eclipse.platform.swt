@@ -1291,6 +1291,11 @@ public int internal_new_GC (GCData data) {
 	int hDC = OS.GetDC (0);
 	if (hDC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= SWT.LEFT_TO_RIGHT;
+			data.layout = -1;
+		}
 		data.device = this;
 		data.hFont = systemFont ();
 	}
@@ -1410,6 +1415,184 @@ boolean isVirtualKey (int key) {
 		case OS.VK_CONTROL: return true;
 	}
 	return false;
+}
+
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ * 
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ * 
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param point to be mapped 
+ * @return point with mapped coordinates 
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li> 
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
+public Point map (Control from, Control to, Point point) {
+	checkDevice ();
+	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	return map (from, to, point.x, point.y);
+}
+
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ * 
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ * 
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param int x coordinates to be mapped
+ * @param int y coordinates to be mapped
+ * @return point with mapped coordinates
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
+public Point map (Control from, Control to, int x, int y) {
+	checkDevice ();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int hwndFrom = from != null ? from.handle : 0;
+	int hwndTo = to != null ? to.handle : 0;
+	POINT point = new POINT ();
+	point.x = x;
+	point.y = y;
+	OS.MapWindowPoints (hwndFrom, hwndTo, point, 1);
+	return new Point (point.x, point.y);
+}
+
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ * 
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ * 
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param rectangle to be mapped
+ * @return rectangle with mapped coordinates
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the rectangle is null</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
+public Rectangle map (Control from, Control to, Rectangle rectangle) {
+	checkDevice ();
+	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);	
+	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+}
+
+/**
+ * Maps a point from one coordinate system to another.
+ * When the control is null, coordinates are mapped to
+ * the display.
+ * <p>
+ * NOTE: On right-to-left platforms where the coordinate
+ * systems are mirrored, special care needs to be taken
+ * when mapping coordinates from one control to another
+ * to ensure the result is correctly mirrored.
+ * 
+ * Mapping a point that is the origin of a rectangle and
+ * then adding the width and height is not equivalent to
+ * mapping the rectangle.  When one control is mirrored
+ * and the other is not, adding the width and height to a
+ * point that was mapped causes the rectangle to extend
+ * in the wrong direction.  Mapping the entire rectangle
+ * instead of just one point causes both the origin and
+ * the corner of the rectangle to be mapped.
+ * </p>
+ * 
+ * @param from the source <code>Control</code> or <code>null</code>
+ * @param to the destination <code>Control</code> or <code>null</code>
+ * @param int x coordinates to be mapped
+ * @param int y coordinates to be mapped
+ * @param int width coordinates to be mapped
+ * @param int heigth coordinates to be mapped
+ * @return rectangle with mapped coordinates
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the Control from or the Control to have been disposed</li> 
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 2.1.2
+ */
+public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
+	checkDevice ();
+	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	int hwndFrom = from != null ? from.handle : 0;
+	int hwndTo = to != null ? to.handle : 0;
+	RECT rect = new RECT ();
+	rect.left = x;
+	rect.top  = y;
+	rect.right = x + width;
+	rect.bottom = y + height;
+	OS.MapWindowPoints (hwndFrom, hwndTo, rect, 2);
+	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
 int messageProc (int hwnd, int msg, int wParam, int lParam) {

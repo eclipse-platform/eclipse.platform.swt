@@ -19,12 +19,21 @@ import org.eclipse.swt.*;
  * Class <code>GC</code> is where all of the drawing capabilities that are 
  * supported by SWT are located. Instances are used to draw on either an 
  * <code>Image</code>, a <code>Control</code>, or directly on a <code>Display</code>.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
+ * </dl>
+ * 
  * <p>
  * Application code must explicitly invoke the <code>GC.dispose()</code> 
  * method to release the operating system resources managed by each instance
  * when those instances are no longer required. This is <em>particularly</em>
  * important on Windows95 and Windows98 where the operating system has a limited
  * number of device contexts available.
+ * </p>
+ * 
+ * <p>
+ * Note: Only one of LEFT_TO_RIGHT and RIGHT_TO_LEFT may be specified.
  * </p>
  *
  * @see org.eclipse.swt.events.PaintEvent
@@ -69,15 +78,51 @@ GC() {
  * </ul>
  */
 public GC(Drawable drawable) {
+	this(drawable, SWT.NONE);
+}
+
+/**	 
+ * Constructs a new instance of this class which has been
+ * configured to draw on the specified drawable. Sets the
+ * foreground and background color in the GC to match those
+ * in the drawable.
+ * <p>
+ * You must dispose the graphics context when it is no longer required. 
+ * </p>
+ * 
+ * @param drawable the drawable to draw on
+ * @param style the style of GC to construct
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the drawable is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if there is no current device</li>
+ *    <li>ERROR_INVALID_ARGUMENT
+ *          - if the drawable is an image that is not a bitmap or an icon
+ *          - if the drawable is an image or printer that is already selected
+ *            into another graphics context</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for gc creation</li>
+ * </ul>
+ *  
+ * @since 2.1.2
+ */
+public GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData ();
-	int hDC = drawable.internal_new_GC (data);
+	data.style = checkStyle(style);
+	int hDC = drawable.internal_new_GC(data);
 	Device device = data.device;
 	if (device == null) device = Device.getDevice();
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	data.device = device;
 	init (drawable, data, hDC);
 	if (device.tracking) device.new_Object(this);	
+}
+
+static int checkStyle(int style) {
+	if ((style & SWT.LEFT_TO_RIGHT) != 0) style &= ~SWT.RIGHT_TO_LEFT;
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
 /**
@@ -535,15 +580,24 @@ void drawIcon(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, i
 			newIconInfo.hbmColor = OS.CreateCompatibleBitmap(srcHdc, destWidth, destHeight);
 			if (newIconInfo.hbmColor == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			int oldDestBitmap = OS.SelectObject(dstHdc, newIconInfo.hbmColor);
-			if (!OS.IsWinCE) OS.SetStretchBltMode(dstHdc, OS.COLORONCOLOR);
-			OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCCOPY);
-
+			boolean stretch = !simple && (srcWidth != destWidth || srcHeight != destHeight);
+			if (stretch) {
+				if (!OS.IsWinCE) OS.SetStretchBltMode(dstHdc, OS.COLORONCOLOR);
+				OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcColorY, srcWidth, srcHeight, OS.SRCCOPY);
+			} else {
+				OS.BitBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcColorY, OS.SRCCOPY);
+			}
+			
 			/* Blt the mask bitmap */
 			OS.SelectObject(srcHdc, srcIconInfo.hbmMask);
 			newIconInfo.hbmMask = OS.CreateBitmap(destWidth, destHeight, 1, 1, null);
 			if (newIconInfo.hbmMask == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			OS.SelectObject(dstHdc, newIconInfo.hbmMask);
-			OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCCOPY);
+			if (stretch) {
+				OS.StretchBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCCOPY);
+			} else {
+				OS.BitBlt(dstHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCCOPY);
+			}
 			
 			/* Select old bitmaps before creating the icon */			
 			OS.SelectObject(srcHdc, oldSrcBitmap);
@@ -686,7 +740,6 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 	}
 	
 	/* Scale the foreground pixels with alpha */
-	if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
 	OS.MoveMemory(dibBM.bmBits, srcData, sizeInBytes);
 	/* 
 	* Bug in WinCE and Win98.  StretchBlt does not correctly stretch when
@@ -699,13 +752,23 @@ void drawBitmapAlpha(Image srcImage, int srcX, int srcY, int srcWidth, int srcHe
 		int tempHdc = OS.CreateCompatibleDC(handle);
 		int tempDib = createDIB(destWidth, destHeight);
 		int oldTempBitmap = OS.SelectObject(tempHdc, tempDib);
-		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
+			if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
+			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		} else {
+			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, OS.SRCCOPY);
+		}
 		OS.BitBlt(memHdc, 0, 0, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
 		OS.SelectObject(tempHdc, oldTempBitmap);
 		OS.DeleteObject(tempDib);
 		OS.DeleteDC(tempHdc);
 	} else {
-		OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
+			if (!OS.IsWinCE) OS.SetStretchBltMode(memHdc, OS.COLORONCOLOR);
+			OS.StretchBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		} else {
+			OS.BitBlt(memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, OS.SRCCOPY);
+		}
 	}
 	OS.MoveMemory(srcData, dibBM.bmBits, sizeInBytes);
 	
@@ -839,10 +902,16 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 		int tempBitmap = OS.CreateCompatibleBitmap(hDC, destWidth, destHeight);	
 		int oldTempBitmap = OS.SelectObject(tempHdc, tempBitmap);
 		OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, handle, destX, destY, OS.SRCCOPY);
-		if (!OS.IsWinCE) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
-		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
-		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
-		OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+		if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
+			if (!OS.IsWinCE) OS.SetStretchBltMode(tempHdc, OS.COLORONCOLOR);
+			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCAND);
+			OS.StretchBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, OS.SRCINVERT);
+		} else {
+			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCINVERT);
+			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, maskHdc, srcX, srcY, OS.SRCAND);
+			OS.BitBlt(tempHdc, 0, 0, destWidth, destHeight, srcHdc, srcX, srcY, OS.SRCINVERT);
+		}
 		OS.BitBlt(handle, destX, destY, destWidth, destHeight, tempHdc, 0, 0, OS.SRCCOPY);
 	
 		/* Release resources */
@@ -864,18 +933,21 @@ void drawBitmapTransparent(Image srcImage, int srcX, int srcY, int srcWidth, int
 void drawBitmap(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple, BITMAP bm, int imgWidth, int imgHeight) {
 	int srcHdc = OS.CreateCompatibleDC(handle);
 	int oldSrcBitmap = OS.SelectObject(srcHdc, srcImage.handle);
-	int mode = 0, rop2 = 0;
+	int rop2 = 0;
 	if (!OS.IsWinCE) {
 		rop2 = OS.GetROP2(handle);
-		mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
 	} else {
 		rop2 = OS.SetROP2 (handle, OS.R2_COPYPEN);
 		OS.SetROP2 (handle, rop2);
 	}
 	int dwRop = rop2 == OS.R2_XORPEN ? OS.SRCINVERT : OS.SRCCOPY;
-	OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, dwRop);
-	if (!OS.IsWinCE) {
-		OS.SetStretchBltMode(handle, mode);
+	if (!simple && (srcWidth != destWidth || srcHeight != destHeight)) {
+		int mode = 0;
+		if (!OS.IsWinCE) mode = OS.SetStretchBltMode(handle, OS.COLORONCOLOR);
+		OS.StretchBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, srcWidth, srcHeight, dwRop);
+		if (!OS.IsWinCE) OS.SetStretchBltMode(handle, mode);
+	} else {
+		OS.BitBlt(handle, destX, destY, destWidth, destHeight, srcHdc, srcX, srcY, dwRop);
 	}
 	OS.SelectObject(srcHdc, oldSrcBitmap);
 	OS.DeleteDC(srcHdc);
@@ -1835,6 +1907,29 @@ public int getLineWidth() {
 	return logPen.x;
 }
 
+/**
+ * Returns the receiver's style information.
+ * <p>
+ * Note that the value which is returned by this method <em>may
+ * not match</em> the value which was provided to the constructor
+ * when the receiver was created. This can occur when the underlying
+ * operating system does not support a particular combination of
+ * requested styles. 
+ * </p>
+ *
+ * @return the style bits
+ *  
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *   
+ * @since 2.1.2
+ */
+public int getStyle () {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.style;
+}
+
 /** 
  * Returns <code>true</code> if this GC is drawing in the mode
  * where the resulting color in the destination is the
@@ -1886,6 +1981,20 @@ void init(Drawable drawable, GCData data, int hDC) {
 		data.hNullBitmap = OS.SelectObject(hDC, image.handle);
 		image.memGC = this;
 	}
+	int layout = data.layout;
+	if (layout != -1) {
+		if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10))  {
+			if ((data.style & SWT.RIGHT_TO_LEFT) != 0) {
+				data.style |= SWT.MIRRORED;
+				layout = OS.LAYOUT_RTL;
+			}
+			int flags = OS.GetLayout(hDC);
+			if ((flags & OS.LAYOUT_RTL) != layout) {
+				flags &= ~OS.LAYOUT_RTL;
+				OS.SetLayout(hDC, flags | layout);
+			}
+		}	
+	}	
 	this.drawable = drawable;
 	this.data = data;
 	handle = hDC;

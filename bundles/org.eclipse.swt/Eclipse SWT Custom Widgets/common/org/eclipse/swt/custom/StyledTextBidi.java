@@ -31,6 +31,7 @@ class StyledTextBidi {
 	private int[] dx;				// distance between character cells. in visual order. renderPositions[iV + 1] = renderPositions[iV] + dx[iV]
 	private byte[] classBuffer;		// the character types in logical order, see BidiUtil for the possible types
 	private char[] glyphBuffer;		// the glyphs in visual order as they will be rendered on screen.
+	private boolean isRightOriented;// writing orientation
 
 	/** 
 	 * This class describes a text segment of a single direction, either 
@@ -106,6 +107,7 @@ class StyledTextBidi {
  */
 public StyledTextBidi(GC gc, int tabWidth, String text, StyleRange[] ranges, Font boldFont, int[] offsets) {
 	int length = text.length();
+	isRightOriented = (gc.getStyle() & SWT.MIRRORED) != 0;
 		
 	this.gc = gc;
 	bidiSegments = offsets;
@@ -155,6 +157,7 @@ public StyledTextBidi(GC gc, int tabWidth, String text, StyleRange[] ranges, Fon
  */
 public StyledTextBidi(GC gc, String text, int[] offsets) {
 	int length = text.length();		
+	isRightOriented = (gc.getStyle() & SWT.MIRRORED) != 0;	
 	this.gc = gc;
 	bidiSegments = offsets;
 	order = new int[length];
@@ -381,8 +384,6 @@ void fillBackground(int logicalStart, int length, int xOffset, int yOffset, int 
  */
 int[] getCaretOffsetAndDirectionAtX(int x) {
 	int lineLength = getTextLength();
-	int offset;
-	int direction;
 	
 	if (lineLength == 0) {
 		return new int[] {0, 0};
@@ -395,9 +396,16 @@ int[] getCaretOffsetAndDirectionAtX(int x) {
 	int visualOffset = getVisualOffsetAtX(x);
 	// figure out if the character was clicked on the right or left
 	int halfway = renderPositions[visualOffset] + dx[visualOffset] / 2;
-	boolean visualLeft = (x <= halfway);
-	offset = getLogicalOffset(visualOffset);
+	boolean visualLeft;
+	int offset = getLogicalOffset(visualOffset);
+	int direction;
 
+	if (isRightOriented) {
+		visualLeft = (x > halfway);
+	}
+	else {
+		visualLeft = (x <= halfway);
+	}
 	if (isRightToLeft(offset)) {
 		if (visualLeft) {
 			if (isLigated(gc)) {
@@ -413,23 +421,23 @@ int[] getCaretOffsetAndDirectionAtX(int x) {
 		}
 		else {
 			// position the caret as if the caret is to the left
-			// of the character at location x and the PREVIOUS key is
-			// pressed
-			direction = ST.COLUMN_PREVIOUS;
+			// of the character at location x and the PREVIOUS 
+			// key is pressed				
+		 	direction = ST.COLUMN_PREVIOUS;
 		}
 	}
 	else {
 		if (visualLeft) {
-			// position the caret as if the caret is to the right
-			// of the character at location x and the PREVIOUS key is
-			// pressed
-			direction = ST.COLUMN_PREVIOUS;
+			// position the caret as if the caret is to the left
+			// of the character at location x and the PREVIOUS 
+			// key is pressed				
+		 	direction = ST.COLUMN_PREVIOUS;
 		}
 		else {
-			// position the caret as if the caret is to the left
+			offset++;
+			// position the caret as if the caret is to the right
 			// of the character at location x and the NEXT key is
 			// pressed
-			offset++;
 			direction = ST.COLUMN_NEXT;
 		}
 	}
@@ -457,6 +465,7 @@ private Vector getDirectionRuns(int logicalStart, int length) {
 	int logicalEnd = logicalStart + length - 1;
 	int segmentLogicalStart = logicalStart;
 	int segmentLogicalEnd = segmentLogicalStart;
+	int checkSide = isRightOriented ? -1 : 1;  
 	 
 	if (logicalEnd < getTextLength()) {
 		int bidiSegmentIndex = 0;
@@ -481,8 +490,9 @@ private Vector getDirectionRuns(int logicalStart, int length) {
 					// is no direction change.
 					// If our segment type is LtoR, the order index for the next character will be one more if there is
 					// no direction change.
-					((isRightToLeftSegment && (order[segmentLogicalEnd + 1]+ 1 == order[segmentLogicalEnd])) ||
-					(isRightToLeftSegment == false && (order[segmentLogicalEnd + 1]- 1 == order[segmentLogicalEnd]))) &&
+				  	(order[segmentLogicalEnd + 1] == order[segmentLogicalEnd] || 	// treat ligatures as part of the direction segment
+  					(isRightToLeftSegment && (order[segmentLogicalEnd + 1] + checkSide == order[segmentLogicalEnd])) ||
+					(isRightToLeftSegment == false && (order[segmentLogicalEnd + 1] - checkSide == order[segmentLogicalEnd]))) &&
 					segmentLogicalEnd + 1 < bidiSegmentEnd) {
 				segmentLogicalEnd++;
 			}
@@ -555,7 +565,7 @@ int getLigatureStartOffset(int offset) {
  * @param visualOffset the visual offset
  * @return the logical offset of the character at <code>visualOffset</code>.
  */
-private int getLogicalOffset(int visualOffset) {
+int getLogicalOffset(int visualOffset) {
 	int logicalOffset = 0;
 	
 	while (logicalOffset < order.length && order[logicalOffset] != visualOffset) {
@@ -697,26 +707,29 @@ int getTextPosition(int logicalOffset, int direction) {
 	if (getTextLength() == 0 || logicalOffset < 0) {
 		return StyledText.XINSET;
 	}
+
+	boolean isRightToLeft = isRightToLeft(logicalOffset);
 	// at or past end of line?
 	if (logicalOffset >= order.length) {
 		logicalOffset = Math.min(logicalOffset, order.length - 1);
+		isRightToLeft = isRightToLeft(logicalOffset);
 		int visualOffset = order[logicalOffset];
-		if (isRightToLeft(logicalOffset)) {
-			caretX = renderPositions[visualOffset];
+		if ((!isRightOriented && !isRightToLeft) || (isRightOriented && isRightToLeft)) {
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
 		}
 		else {
-			caretX = renderPositions[visualOffset] + dx[visualOffset];
+			caretX = renderPositions[visualOffset];
 		}
 	}
 	else
 	// at beginning of line?
 	if (logicalOffset == 0) {
 		int visualOffset = order[logicalOffset];
-		if (isRightToLeft(logicalOffset)) {
-			caretX = renderPositions[visualOffset] + dx[visualOffset];
+		if ((!isRightOriented && !isRightToLeft) || (isRightOriented && isRightToLeft)) {
+			caretX = renderPositions[visualOffset];
 		}
 		else {
-			caretX = renderPositions[visualOffset];
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
 		}
 	}
 	else
@@ -733,14 +746,12 @@ int getTextPosition(int logicalOffset, int direction) {
 		// do not consider local numbers as R2L here, to determine position,
 		// because local numbers are navigated L2R and we want the caret to 
 		// be to the right of the number. see 1GK9API
-		if (isRightToLeft(logicalOffset - 1)) {
-			// moving from RtoL to LtoR
-			caretX = renderPositions[visualOffset];
-		}
-		else {
-			// moving from LtoR to RtoL
+		isRightToLeft = isRightToLeft(logicalOffset - 1);
+		if ((!isRightOriented && !isRightToLeft) || (isRightOriented && isRightToLeft)) {
 			caretX = renderPositions[visualOffset] + dx[visualOffset];
-		}
+		} else {
+			caretX = renderPositions[visualOffset];
+		}				
 	}
 	else
 	// consider local numbers as R2L in determining direction boundaries.
@@ -752,22 +763,21 @@ int getTextPosition(int logicalOffset, int direction) {
 		// consider local numbers as R2L here, to determine position, because
 		// we want to stay in L2R segment and place the cursor to the left of
 		// first L2R character. see 1GK9API
-		if (isRightToLeftInput(logicalOffset - 1)) {
-			// moving from LtoR to RtoL
+		isRightToLeft = isRightToLeft(logicalOffset - 1);
+		if ((!isRightOriented && !isRightToLeft) || (isRightOriented && isRightToLeft)) {
+			caretX = renderPositions[visualOffset] + dx[visualOffset];
+		} else {
+			caretX = renderPositions[visualOffset];
+		}				
+	}
+	else {
+		int visualOffset = order[logicalOffset];
+		if ((!isRightOriented && !isRightToLeft) || (isRightOriented && isRightToLeft)) {
 			caretX = renderPositions[visualOffset];
 		}
 		else {
-			// moving from RtoL to LtoR
 			caretX = renderPositions[visualOffset] + dx[visualOffset];
 		}
-	}
-	else
-	if (isRightToLeft(logicalOffset)) {
-		int visualOffset = order[logicalOffset];
-		caretX = renderPositions[visualOffset] + dx[visualOffset];
-	}
-	else {
-		caretX = renderPositions[order[logicalOffset]];
 	}
 	return caretX;
 }
@@ -784,6 +794,17 @@ int getTextWidth() {
 		width = renderPositions[renderPositions.length - 1] + dx[dx.length - 1];
 	}
 	return width;
+}
+/**
+ * Returns the visual offset of the character at the specified 
+ * logical offset.
+ * <p>
+ * 
+ * @param logicalOffset the logical offset
+ * @return the visual offset of the character at <code>logicalOffset</code>.
+ */
+int getVisualOffset(int logicalOffset) {
+	return order[logicalOffset];
 }
 /**
  * Returns the visual offset of the character at the specified x 
@@ -818,6 +839,23 @@ private int getVisualOffsetAtX(int x) {
 		}
 	}
 	return high;
+}
+/**
+ * Returns if the character at the given offset is a latin number.
+ * <p>
+ * 
+ * @param logicalIndex the index of the character 
+ * @return 
+ * 	true=the character at the specified index is a latin number
+ * 	false=the character at the specified index is not a latin number
+ */
+boolean isLatinNumber(int logicalIndex) {
+	boolean isLatinNumber = false;
+	
+	if (logicalIndex >= 0 && logicalIndex < classBuffer.length) {
+		isLatinNumber = classBuffer[logicalIndex] == BidiUtil.CLASS_LATINNUMBER;
+	}
+	return isLatinNumber;
 }
 /**
  * Returns if the character at the given offset is a local number.
@@ -968,7 +1006,6 @@ private void prepareFontStyledText(String textline, int logicalStart, int length
  */
 void redrawRange(Control parent, int logicalStart, int length, int xOffset, int yOffset, int height) {
 	Enumeration directionRuns;
-
 	if (logicalStart < 0 || logicalStart + length > getTextLength()) {
 		return;
 	}
@@ -976,8 +1013,22 @@ void redrawRange(Control parent, int logicalStart, int length, int xOffset, int 
 	while (directionRuns.hasMoreElements()) {
 		DirectionRun run = (DirectionRun) directionRuns.nextElement();
 		int startX = run.getRenderStartX();
+		int endX = run.getRenderStopX();
+		int runStartOffset = run.getVisualStart();
+		int runEndOffset = run.getVisualEnd();
 
-		parent.redraw(xOffset + startX, yOffset, run.getRenderStopX() - startX, height, true);
+		// expand the redraw area by one character in both directions.
+		// fixes bug 40019 		
+		if (runStartOffset > 0) {
+			startX = renderPositions[runStartOffset - 1];
+		}
+		else {
+			startX = 0;
+		}
+		if (runEndOffset < renderPositions.length - 1) {
+			endX = renderPositions[runEndOffset + 1] + dx[runEndOffset + 1];
+		}
+		parent.redraw(xOffset + startX, yOffset, endX - startX, height, true);
 	}				
 }
 /**
@@ -1009,6 +1060,18 @@ void setKeyboardLanguage(int logicalIndex) {
 		language = BidiUtil.KEYBOARD_NON_BIDI;
 	}
 	BidiUtil.setKeyboardLanguage(language);
+}
+/**
+ * Sets the orientation (writing order) of the specified control. Text will 
+ * be right aligned for right to left writing order.
+ * <p>
+ * 
+ * @param orientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
+ * @return true if the orientation was changed, false if the orientation 
+ * 	could not be changed
+ */
+static boolean setOrientation(Control control, int orientation) {
+	return BidiUtil.setOrientation(control.handle, orientation);
 }
 /**
  * Returns a string representation of the receiver.

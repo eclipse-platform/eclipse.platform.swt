@@ -298,12 +298,17 @@ void keyDown(Event event) {
 		case SWT.ARROW_DOWN :
 			setRowColumn(row + 1, column, true);
 			break;
-		case SWT.ARROW_LEFT :
-			setRowColumn(row, column - 1, true);
-			break;
-		case SWT.ARROW_RIGHT :
-			setRowColumn(row, column + 1, true);
-			break;
+        case SWT.ARROW_LEFT :
+        case SWT.ARROW_RIGHT :
+        	{	
+		        int leadKey = (getStyle() & SWT.RIGHT_TO_LEFT) != 0 ? SWT.ARROW_RIGHT : SWT.ARROW_LEFT;
+		        if (event.keyCode == leadKey) {
+		           setRowColumn(row, column - 1, true);
+		        } else {
+		           setRowColumn(row, column + 1, true);
+		        }
+		        break;
+        	}
 		case SWT.HOME :
 			setRowColumn(0, column, true);
 			break;

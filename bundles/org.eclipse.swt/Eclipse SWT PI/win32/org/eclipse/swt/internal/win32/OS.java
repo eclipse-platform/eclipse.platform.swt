@@ -333,6 +333,8 @@ public class OS {
 	public static final int EM_SETREADONLY = 0xcf;
 	public static final int EM_SETSEL = 0xb1;
 	public static final int EM_SETTABSTOPS = 0xcb;
+	public static final int EN_ALIGN_LTR_EC = 0x0700;
+	public static final int EN_ALIGN_RTL_EC = 0x0701;
 	public static final int EN_CHANGE = 0x300;
 	public static final int ERROR_NO_MORE_ITEMS = 0x103;
 	public static final int ESB_DISABLE_BOTH = 0x3;
@@ -454,6 +456,7 @@ public class OS {
 	public static final int KEY_NOTIFY = 0x10;
 	public static final int KEY_QUERY_VALUE = 0x1;
 	public static final int KEY_READ = 0x20019;
+	public static final int LAYOUT_RTL = 0x1;
 	public static final int LBN_DBLCLK = 0x2;
 	public static final int LBN_SELCHANGE = 0x1;
 	public static final int LBS_EXTENDEDSEL = 0x800;
@@ -962,6 +965,7 @@ public class OS {
 	public static final int TRANSPARENT = 0x1;
 	public static final int TTF_IDISHWND = 0x1;
 	public static final int TTF_SUBCLASS = 0x10;
+	public static final int TTF_RTLREADING = 0x4;
 	public static final int TTM_ADDTOOL = IsUnicode ? 0x432 : 0x404;
 	public static final int TTM_DELTOOL = IsUnicode ? 0x433 : 0x405;
 	public static final int TTM_SETMAXTIPWIDTH = 0x418;
@@ -1126,6 +1130,7 @@ public class OS {
 	public static final int WM_COMMAND = 0x111;
 	public static final int WM_CONTEXTMENU = 0x7b;
 	public static final int WM_COPY = 0x301;
+	public static final int WM_CREATE = 0x0001;	
 	public static final int WM_CTLCOLORBTN = 0x135;
 	public static final int WM_CTLCOLORDLG = 0x136;
 	public static final int WM_CTLCOLOREDIT = 0x133;
@@ -1178,6 +1183,7 @@ public class OS {
 	public static final int WM_NULL = 0x0;
 	public static final int WM_PAINT = 0xf;
 	public static final int WM_PALETTECHANGED = 0x311;
+	public static final int WM_PARENTNOTIFY = 0x0210;
 	public static final int WM_PASTE = 0x302;
 	public static final int WM_PRINTCLIENT = 0x0318;
 	public static final int WM_QUERYENDSESSION = 0x11;
@@ -1203,6 +1209,7 @@ public class OS {
 	public static final int WM_UNDO = 0x304;
 	public static final int WM_USER = 0x400;
 	public static final int WM_VSCROLL = 0x115;
+	public static final int WM_WINDOWPOSCHANGED = 0x47;
 	public static final int WM_WINDOWPOSCHANGING = 0x46;
 	public static final int WS_BORDER = 0x800000;
 	public static final int WS_CAPTION = 0xc00000;
@@ -1213,7 +1220,10 @@ public class OS {
 	public static final int WS_EX_CLIENTEDGE = 0x200;
 	public static final int WS_EX_DLGMODALFRAME = 0x1;
 	public static final int WS_EX_LAYOUTRTL = 0x00400000;
+	public static final int WS_EX_LEFTSCROLLBAR = 0x00004000;
 	public static final int WS_EX_NOINHERITLAYOUT = 0x00100000;
+	public static final int WS_EX_RIGHT = 0x00001000;
+	public static final int WS_EX_RTLREADING = 0x00002000;
 	public static final int WS_EX_STATICEDGE = 0x20000;
 	public static final int WS_EX_TOOLWINDOW = 0x80;
 	public static final int WS_EX_TOPMOST = 0x8;
@@ -2082,6 +2092,7 @@ public static final native int GetKeyNameTextW(int lParam, char [] lpString, int
 public static final native int GetKeyNameTextA(int lParam, byte [] lpString, int nSize);
 public static final native int GetLastActivePopup (int hWnd);
 public static final native int GetLastError ();
+public static final native int GetLayout (int hdc);
 /* returns the instance handle to the swt library */
 public static final native int GetLibraryHandle ();
 public static final native int GetLocaleInfoW (int Locale, int LCType, char [] lpLCData, int cchData);

@@ -679,6 +679,33 @@ int windowProc () {
 	return ScrollBarProc;
 }
 
+LRESULT WM_KEYDOWN (int wParam, int lParam) {
+ 	LRESULT result = super.WM_KEYDOWN (wParam, lParam);
+ 	if (result != null) return result;
+ 	if ((style & SWT.VERTICAL) != 0) return result;
+ 	
+ 	/*
+ 	* Bug in Windows.  When a horizontal scroll bar is mirrored,
+ 	* the native control does not correctly swap the arrow keys.
+ 	* The fix is to swap them before calling the scroll bar window
+ 	* proc.
+ 	* 
+ 	* NOTE: This fix is not ideal.  It breaks when the bug is fixed
+ 	* in the operating system.
+ 	*/
+	if ((style & SWT.MIRRORED) != 0) {
+	 	switch (wParam) {
+	 		case OS.VK_LEFT: 
+			case OS.VK_RIGHT: {
+				int key = wParam == OS.VK_LEFT ? OS.VK_RIGHT : OS.VK_LEFT;
+				int code = callWindowProc (OS.WM_KEYDOWN, key, lParam);
+	 			return new LRESULT (code);
+	 		}
+	 	}
+	}
+ 	return result;
+}
+ 
 LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 	
 	/*

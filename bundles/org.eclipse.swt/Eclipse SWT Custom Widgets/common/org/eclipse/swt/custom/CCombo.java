@@ -84,6 +84,7 @@ public CCombo (Composite parent, int style) {
 	
 	int listStyle = SWT.SINGLE | SWT.V_SCROLL;
 	if ((style & SWT.FLAT) != 0) listStyle |= SWT.FLAT;
+	if ((style & SWT.RIGHT_TO_LEFT) != 0) listStyle |= SWT.RIGHT_TO_LEFT;
 	list = new List (popup, listStyle);
 	
 	int arrowStyle = SWT.ARROW | SWT.DOWN;
@@ -134,7 +135,7 @@ public CCombo (Composite parent, int style) {
 	initAccessible();
 }
 static int checkStyle (int style) {
-	int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT;
+	int mask = SWT.BORDER | SWT.READ_ONLY | SWT.FLAT | SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 	return style & mask;
 }
 /**
@@ -341,15 +342,17 @@ void dropDown (boolean drop) {
 		text.setFocus();
 		return;
 	}
+
 	int index = list.getSelectionIndex ();
 	if (index != -1) list.setTopIndex (index);
 	Rectangle listRect = list.getBounds ();
-	Point point = getParent().toDisplay (getLocation ());
-	Point comboSize = getSize();
+	Display display = getDisplay ();
+	Rectangle rect = display.map (getParent (), null, getBounds ());
+	Point comboSize = getSize ();
 	int width = Math.max (comboSize.x, listRect.width + 2);
-	popup.setBounds (point.x, point.y + comboSize.y, width, listRect.height + 2);
+	popup.setBounds (rect.x, rect.y + comboSize.y, width, listRect.height + 2);
 	popup.setVisible (true);
-	list.setFocus();
+	list.setFocus ();
 }
 public Control [] getChildren () {
 	checkWidget();

@@ -1847,6 +1847,10 @@ public int internal_new_GC (GCData data) {
 	int gdkGC = OS.gdk_gc_new (window);
 	if (gdkGC == 0) error (SWT.ERROR_NO_HANDLES);	
 	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= style & (mask | SWT.MIRRORED);
+		}
 		int fontHandle = fontHandle ();
 		GtkStyle style = new GtkStyle ();
 		OS.memmove(style, OS.gtk_widget_get_style (fontHandle));

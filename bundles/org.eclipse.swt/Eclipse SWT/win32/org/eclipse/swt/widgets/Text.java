@@ -333,6 +333,7 @@ void createWidget () {
 	super.createWidget ();
 	doubleClick = true;
 	setTabStops (tabs = 8);
+	fixAlignment ();
 }
 
 /**
@@ -357,6 +358,42 @@ public void cut () {
 
 int defaultBackground () {
 	return OS.GetSysColor (OS.COLOR_WINDOW);
+}
+
+void fixAlignment () {
+	/*
+	* Feature in Windows.  When the edit control is not
+	* mirrored, it uses WS_EX_RIGHT, WS_EX_RTLREADING and
+	* WS_EX_LEFTSCROLLBAR to give the control a right to
+	* left appearance.  This causes the control to be lead
+	* aligned no matter what alignment was specified by
+	* the programmer.  For example, setting ES_RIGHT and
+	* WS_EX_LAYOUTRTL should cause the contents of the
+	* control to be left (trail) aligned in a mirrored world.
+	* When the orientation is changed by the user or
+	* specified by the programmer, WS_EX_RIGHT conflicts
+	* with the mirrored alignment.  The fix is to clear
+	* or set WS_EX_RIGHT to achieve the correct alignment
+	* according to the orientation and mirroring.
+	*/
+	if ((style & SWT.MIRRORED) != 0) return;
+	int bits = OS.GetWindowLong (handle, OS.GWL_EXSTYLE);
+	if ((style & SWT.LEFT_TO_RIGHT) != 0) {
+		if ((style & SWT.RIGHT) != 0) {
+			bits |= OS.WS_EX_RIGHT;
+		}
+		if ((style & SWT.LEFT) != 0) {
+			bits &=~ OS.WS_EX_RIGHT;
+		}
+	} else {
+		if ((style & SWT.RIGHT) != 0) {
+			bits &=~ OS.WS_EX_RIGHT;
+		}
+		if ((style & SWT.LEFT) != 0) {
+			bits |= OS.WS_EX_RIGHT;
+		}
+	}
+	OS.SetWindowLong (handle, OS.GWL_EXSTYLE, bits);
 }
 
 /**
@@ -1754,6 +1791,16 @@ LRESULT wmCommandChild (int wParam, int lParam) {
 			*/
 			sendEvent (SWT.Modify);
 			if (isDisposed ()) return LRESULT.ZERO;
+			break;
+		case OS.EN_ALIGN_LTR_EC:
+			style &= ~SWT.RIGHT_TO_LEFT;
+			style |= SWT.LEFT_TO_RIGHT;
+			fixAlignment ();
+			break;
+		case OS.EN_ALIGN_RTL_EC:
+			style &= ~SWT.LEFT_TO_RIGHT;
+			style |= SWT.RIGHT_TO_LEFT;
+			fixAlignment ();
 			break;
 	}
 	return super.wmCommandChild (wParam, lParam);
