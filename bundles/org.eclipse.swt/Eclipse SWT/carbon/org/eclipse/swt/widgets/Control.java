@@ -419,9 +419,12 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
 	if (menu != null && !menu.isDisposed ()) {
-		CGPoint pt = new CGPoint ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeHIPoint, null, pt.sizeof, null, pt);
-		menu.setLocation ((int) pt.x, (int) pt.y);
+		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.sizeof, null, pt);
+		Rect rect = new Rect ();
+		int window = OS.GetControlOwner (handle);
+		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+		menu.setLocation (pt.h + rect.left, pt.v + rect.top);
 		menu.setVisible (true);
 		return OS.noErr;
 	}
