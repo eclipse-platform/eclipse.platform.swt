@@ -10,7 +10,16 @@ package org.eclipse.swt.custom;
  * Use StyledTextPrintOptions to specify printing options for the
  * StyledText.print(Printer, StyledTextPrintOptions) API.
  * 
- * This class is experimental API and subject to change.
+ * The following example prints a right aligned page number in 
+ * the footer, sets the job name to "Example" and prints line 
+ * background colors but no other formatting:
+ * 
+ * StyledTextPrintOptions options = 
+ * 		new StyledTextPrintOptions(null, "\t\t<page>", "Example", ST.LINE_BACKGROUND);
+ * Runnable runnable = styledText.print(new Printer(), options);
+ * runnable.run();
+ *
+ * NOTE: This class is experimental API and subject to change.
  * 
  * @since 2.1
  */
