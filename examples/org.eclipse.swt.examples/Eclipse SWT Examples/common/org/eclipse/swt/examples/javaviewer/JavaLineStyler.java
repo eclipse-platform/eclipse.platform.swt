@@ -138,12 +138,14 @@ public void lineGetStyle(LineStyleEvent event) {
 
 public void parseBlockComments(String text) {
 	blockComments = new Vector();
-	StringBufferInputStream buffer = new StringBufferInputStream(text);
+	StringReader buffer = new StringReader(text);
 	int ch;
 	boolean blkComment = false;
 	int cnt = 0;
 	int[] offsets = new int[2];
 	boolean done = false;
+	
+	try {
 	while (!done) {
 		switch (ch = buffer.read()) {
 			case -1 : {
@@ -186,6 +188,9 @@ public void parseBlockComments(String text) {
 			}
 		}
 	}		
+	} catch(IOException e) {
+		// ignore errors
+	}
 }
 
 /**

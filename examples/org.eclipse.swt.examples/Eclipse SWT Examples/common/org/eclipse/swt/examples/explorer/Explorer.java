@@ -12,7 +12,7 @@ import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.dnd.*;
 import org.eclipse.swt.program.*;
 
-import java.util.*;
+import java.text.DateFormat;import java.util.*;
 import java.io.*;
 
 /**
@@ -1270,17 +1270,14 @@ void updateTable (final File root) {
 			File [] list = root.listFiles ();
 			if (list == null) list = new File [0];
 			sort (list);
+			DateFormat dateFormat = DateFormat.getDateTimeInstance(
+				DateFormat.MEDIUM, DateFormat.MEDIUM);
 			for (int i=0; i<list.length; i++) {
 				if (cancel) break;
 				final File file = list[i];
-				/*
-				* (the format of the date should be modified, using something similar to:
-				* parsing the date: g.MONTH+1+"/"+g.DAY_OF_MONTH+"/"+g.YEAR+" ||| "+
-				* Note: Deprecated: date.toLocaleString()
-				*/
 				Image image = null;
 				String [] strings = null;
-				String date = new Date(file.lastModified()).toLocaleString();
+				String date = dateFormat.format(new Date(file.lastModified()));
 				if (list[i].isDirectory ()) {
 					strings = new String [] {file.getName(), "", resExplorer.getString("File_folder"), date};
 					image = Images.Folder;
