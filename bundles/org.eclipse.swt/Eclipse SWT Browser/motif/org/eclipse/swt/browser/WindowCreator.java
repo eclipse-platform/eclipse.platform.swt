@@ -10,7 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.browser;
 
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.mozilla.*;
+import org.eclipse.swt.layout.*;
 import org.eclipse.swt.widgets.*;
 
 class WindowCreator {
@@ -115,19 +118,57 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 		src = Browser.findBrowser(shells[i], aParentNativeWindow[0]);
 		if (src != null) break;
 	}
-	WindowEvent event = new WindowEvent(src);
-	event.display = display;
-	event.widget = src;
-	for (int i = 0; i < src.openWindowListeners.length; i++)
-		src.openWindowListeners[i].open(event);
-	Browser browser = event.browser;
-	boolean doit = browser != null && !browser.isDisposed();
+	Browser browser;
+	boolean doit = false;
+	if ((chromeFlags & nsIWebBrowserChrome.CHROME_MODAL) != 0) {
+		/*
+		* Feature on Mozilla.  On platforms that lack a native dialog, Mozilla sends a
+		* requests for a new Browser instance in a modal window. e.g. on Windows, Mozilla
+		* brings up automatically a native Print Dialog in response to the javascript
+		* command window.print() whereas on Linux Mozilla requests a new modal window
+		* and a Browser to display an emulated HTML based print dialog. For this reason,
+		* modal requests are handled here and not exposed to the user.
+		*/
+		Shell shell = new Shell(src.getShell(), SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+		shell.setLayout(new FillLayout());
+		browser = new Browser(shell, SWT.NONE);
+		browser.addVisibilityWindowListener(new VisibilityWindowListener() {
+			public void hide(WindowEvent event) {
+			}
+			public void show(WindowEvent event) {
+				Browser browser = (Browser)event.widget;
+				Shell shell = browser.getShell();
+				if (event.location != null) shell.setLocation(event.location);
+				if (event.size != null) {
+					Point size = event.size;
+					shell.setSize(shell.computeSize(size.x, size.y));
+				}
+				shell.open();
+			}
+		});
+		browser.addCloseWindowListener(new CloseWindowListener() {
+			public void close(WindowEvent event) {
+				Browser browser = (Browser)event.widget;
+				Shell shell = browser.getShell();
+				shell.close();
+			}
+		});
+		doit = true;
+	} else {
+		WindowEvent event = new WindowEvent(src);
+		event.display = display;
+		event.widget = src;
+		for (int i = 0; i < src.openWindowListeners.length; i++)
+			src.openWindowListeners[i].open(event);
+		browser = event.browser;
+		doit = browser != null && !browser.isDisposed();
+	}
 	if (doit) {
 		int address = browser.webBrowserChrome.getAddress();
 		nsIWebBrowserChrome webBrowserChrome = new nsIWebBrowserChrome(address);
 		webBrowserChrome.AddRef();
 		XPCOM.memmove(_retval, new int[] {address}, 4);
-	}		
+	}	
 	return doit ? XPCOM.NS_OK : XPCOM.NS_ERROR_NOT_IMPLEMENTED;
 }
 }
