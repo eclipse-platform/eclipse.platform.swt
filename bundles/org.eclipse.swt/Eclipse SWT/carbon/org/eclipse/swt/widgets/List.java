@@ -503,19 +503,10 @@ public String [] getItems () {
  */
 public String [] getSelection () {
 	checkWidget();
-	    
-    int resultHandle= OS.NewHandle(0);
-	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
-		error (SWT.ERROR_CANNOT_GET_SELECTION);
-	
-	int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
-	String[] result= new String[itemCount];
-	if (itemCount > 0) {	
-		int resultIDs[]= new int[itemCount];
-		OS.getHandleData(resultHandle, resultIDs);
-		for (int i= 0; i < itemCount; i++)
-			result[i]= get(resultIDs[i]);
-	}
+	int[] ids= MacUtil.getSelectionIDs(handle, OS.kDataBrowserNoItem, false);
+	String[] result= new String[ids.length];
+	for (int i= 0; i < ids.length; i++)
+		result[i]= get(ids[i]);
 	return result;
 }
 /**
@@ -554,17 +545,9 @@ public int getSelectionCount () {
  */
 public int getSelectionIndex () {
 	checkWidget();
-
-    int resultHandle= OS.NewHandle(0);
-	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
-		error (SWT.ERROR_CANNOT_GET_SELECTION);
-	
-	int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
-	if (itemCount > 0) {	
-		int resultIDs[]= new int[1];
-		OS.getHandleData(resultHandle, resultIDs);
-		return getIndex(resultIDs[0]);
-	}
+	int[] ids= MacUtil.getSelectionIDs(handle, OS.kDataBrowserNoItem, false);
+	if (ids.length > 0)
+		return getIndex(ids[0]);
 	return -1;
 }
 /**
@@ -587,19 +570,10 @@ public int getSelectionIndex () {
  */
 public int [] getSelectionIndices () {
 	checkWidget();
-    
-    int resultHandle= OS.NewHandle(0);
-	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
-		error (SWT.ERROR_CANNOT_GET_SELECTION);
-	
-	int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
-	int[] result= new int[itemCount];
-	if (itemCount > 0) {	
-		int resultIDs[]= new int[itemCount];
-		OS.getHandleData(resultHandle, resultIDs);
-		for (int i= 0; i < itemCount; i++)
-			result[i]= getIndex(resultIDs[i]);
-	}
+    int[] ids= MacUtil.getSelectionIDs(handle, OS.kDataBrowserNoItem, false);
+	int[] result= new int[ids.length];
+	for (int i= 0; i < ids.length; i++)
+		result[i]= getIndex(ids[i]);
 	return result;
 }
 /**
@@ -1133,19 +1107,10 @@ public void setTopIndex (int index) {
  * </ul>
  */
 public void showSelection () {
-	checkWidget();
-	   
-	int resultHandle= OS.NewHandle(0);
-	if (OS.GetDataBrowserItems(handle, OS.kDataBrowserNoItem, false, OS.kDataBrowserItemIsSelected, resultHandle) != OS.kNoErr)
-		error (SWT.ERROR_CANNOT_GET_SELECTION);
-	
-	int itemCount= OS.GetHandleSize(resultHandle) / 4;	// sizeof(int)
-	if (itemCount > 0) {	
-		int resultIDs[]= new int[1];
-		OS.getHandleData(resultHandle, resultIDs);
-		if (resultIDs[0] != 0)
-			OS.RevealDataBrowserItem(handle, resultIDs[0], COL_ID, false);
-	}
+	checkWidget();	
+	int[] ids= MacUtil.getSelectionIDs(handle, OS.kDataBrowserNoItem, false);
+	if (ids.length > 0 && ids[0] != 0)
+		OS.RevealDataBrowserItem(handle, ids[0], COL_ID, false);
 }
 
 ////////////////////////////////////

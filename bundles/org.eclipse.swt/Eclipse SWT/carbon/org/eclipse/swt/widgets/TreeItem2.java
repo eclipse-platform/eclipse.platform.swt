@@ -297,7 +297,8 @@ public boolean getChecked () {
 
 public Display getDisplay () {
 	Tree2 parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (parent == null)
+		error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
 }
 
@@ -315,15 +316,7 @@ public Display getDisplay () {
  */
 public boolean getExpanded () {
 	checkWidget ();
-	/* AW
-	int hwnd = parent.handle;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.hItem = handle;
-	tvItem.mask = OS.TVIF_STATE;
-	OS.SendMessage (hwnd, OS.TVM_GETITEM, 0, tvItem);
-	return (tvItem.state & OS.TVIS_EXPANDED) != 0;
-	*/
-	return false;
+	return fIsOpen;
 }
 
 /**
@@ -472,6 +465,11 @@ void releaseHandle () {
 	handle = 0;
 }
 
+// AW
+void releaseResources() {
+}
+// AW
+
 void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
@@ -590,7 +588,7 @@ public void setExpanded (boolean expanded) {
 	if (expanded)
 		OS.OpenDataBrowserContainer(parent.handle, handle);
 	else
-		OS.CloseDataBrowserContainer(parent.handle, handle);		
+		OS.CloseDataBrowserContainer(parent.handle, handle);
 }
 
 /**
@@ -693,15 +691,28 @@ TreeItem2 (Tree2 parent) {
 }
 
 void addChild(TreeItem2 child) {
+	if (fChildren == null)
+		fChildren= new ArrayList();
+	fChildren.add(child);
 	if (fIsOpen) {
 		if (OS.AddDataBrowserItems(parent.handle, getContainerID(), 1, new int[] { child.handle }, 0) != OS.kNoErr) {
 			System.out.println("SWT.ERROR_ITEM_NOT_ADDED");
 			//error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
 	} else {
-		if (fChildren == null)
-			fChildren= new ArrayList();
-		fChildren.add(child);
+		update(OS.kDataBrowserItemIsContainerProperty);
+	}
+}
+
+void removeChild(TreeItem2 child) {
+	if (fChildren != null)
+		fChildren.remove(child);
+	if (fIsOpen) {
+		if (OS.RemoveDataBrowserItems(parent.handle, getContainerID(), 1, new int[] { child.handle }, 0) != OS.kNoErr) {
+			System.out.println("SWT.ERROR_ITEM_NOT_REMOVED");
+			//error (SWT.ERROR_ITEM_NOT_REMOVED);
+		}
+	} else {
 		update(OS.kDataBrowserItemIsContainerProperty);
 	}
 }

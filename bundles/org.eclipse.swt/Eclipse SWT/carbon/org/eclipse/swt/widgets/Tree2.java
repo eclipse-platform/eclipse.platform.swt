@@ -45,7 +45,8 @@ public class Tree2 extends Composite {
 	TreeItem2 [] items;
 	
 	// AW
-	static final int COL_ID= 12345;
+	static final int CHECK_COL_ID= 12345;
+	static final int COL_ID= 12346;
 	private static final int FIRST_ROW_ID= 1000;
 	
 	TreeItem2 fRoot;
@@ -154,13 +155,6 @@ public void addTreeListener(TreeListener listener) {
 	addListener (SWT.Collapse, typedListener);
 } 
 
-/* AW
-int callWindowProc (int msg, int wParam, int lParam) {
-	if (handle == 0) return 0;
-	return OS.CallWindowProc (TreeProc, handle, msg, wParam, lParam);
-}
-*/
-
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -214,12 +208,7 @@ void createHandle (int index) {
 	*/
 	state |= HANDLE;
 	state &= ~CANVAS;
-	
-	/* Set the checkbox image list */
-	/* AW
-	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
-	*/
-	
+		
 	int parentHandle = parent.handle;
 	int windowHandle= OS.GetControlOwner(parentHandle);
 	handle= OS.createDataBrowserControl(windowHandle);
@@ -228,7 +217,7 @@ void createHandle (int index) {
 	MacUtil.initLocation(handle);
 	
 	/* Single or Multiple Selection */
-	int mode= OS.kDataBrowserSelectOnlyOne;
+	int mode= OS.kDataBrowserSelectOnlyOne | OS.kDataBrowserNeverEmptySelectionSet;
 	if ((style & SWT.MULTI) != 0)
 		mode= OS.kDataBrowserDragSelect | OS.kDataBrowserCmdTogglesSelection;
 	OS.SetDataBrowserSelectionFlags(handle, mode);
@@ -240,17 +229,26 @@ void createHandle (int index) {
 	OS.SetDataBrowserHasScrollBars(handle, (style & SWT.H_SCROLL) != 0, (style & SWT.V_SCROLL) != 0);
 	if ((style & SWT.H_SCROLL) == 0)
 		OS.AutoSizeDataBrowserListViewColumns(handle);
+		
+	if ((style & SWT.CHECK) != 0) {
+		int checkColumnDesc= OS.newColumnDesc(CHECK_COL_ID, OS.kDataBrowserCheckboxType,
+						OS.kDataBrowserPropertyIsMutable,
+						(short)40, (short)40);
+		OS.AddDataBrowserListViewColumn(handle, checkColumnDesc, 1999);
+	}
 					
 	int columnDesc= OS.newColumnDesc(COL_ID, OS.kDataBrowserTextType, // OS.kDataBrowserIconAndTextType,
 					OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags,
 					(short)0, (short)300);
 	OS.AddDataBrowserListViewColumn(handle, columnDesc, 2000);
 	OS.SetDataBrowserListViewDisclosureColumn(handle, COL_ID, false);
-		
+	
+	/*
 	Display disp= getDisplay();
 	Font font= Font.carbon_new (disp, disp.getThemeFont(OS.kThemeSmallSystemFont));
 	if (OS.SetControlFontStyle(handle, font.handle.fID, font.handle.fSize, font.handle.fFace) != OS.kNoErr)
 		System.out.println("Tree2.setFont("+this+"): error");
+	*/
 }
 
 void createItem (TreeItem2 item, TreeItem2 itemParent, int hInsertAfter) {
@@ -325,6 +323,12 @@ public void deselectAll () {
 	}
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
 	*/
+	/*
+	int n= fData.size();
+	if (n <= 0) return;
+	int[] ids= getIds(0, n-1);
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsRemove);
+	*/
 }
 
 void destroyItem (TreeItem2 item) {
@@ -332,7 +336,9 @@ void destroyItem (TreeItem2 item) {
 	/* AW
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	releaseItems (new TreeItem2 [] {item}, tvItem);
+	*/
+	releaseItems (new TreeItem2 [] {item} /*, tvItem */);
+	/* AW
 	boolean fixRedraw = false;
 	if (drawCount == 0 && OS.IsWindowVisible (handle)) {
 		RECT rect = new RECT ();
@@ -344,6 +350,11 @@ void destroyItem (TreeItem2 item) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
 	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+	*/
+	TreeItem2 parent= item.getParentItem();
+	if (parent != null)
+		parent.removeChild(item);
+	/*
 	if (fixRedraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.ValidateRect (handle, null);
@@ -431,16 +442,7 @@ public TreeItem2 getItem (Point point) {
  */
 public int getItemCount () {
 	checkWidget ();
-	/* AW
-	int count = 0;
-	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	while (hItem != 0) {
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-		count++;
-	}
-	return count;
-	*/
-	return 0;
+	return fRoot.getItemCount();
 }
 
 /**
@@ -481,26 +483,7 @@ public int getItemHeight () {
  */
 public TreeItem2 [] getItems () {
 	checkWidget ();
-	int count = 0;
-	/* AW
-	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	while (hItem != 0) {
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, hItem);
-		count++;
-	}
-	int index = 0;
-	TreeItem2 [] result = new TreeItem2 [count];
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_PARAM;
-	tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-	while (tvItem.hItem != 0) {
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		result [index++] = items [tvItem.lParam];
-		tvItem.hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_NEXT, tvItem.hItem);
-	}
-	return result;
-	*/
-	return new TreeItem2[0];
+	return fRoot.getItems();
 }
 
 /**
@@ -538,59 +521,11 @@ public TreeItem2 getParentItem () {
  */
 public TreeItem2 [] getSelection () {
 	checkWidget ();
-	/* AW
-	if ((style & SWT.SINGLE) != 0) {
-		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-		if (hItem == 0) return new TreeItem2 [0];
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
-		tvItem.hItem = hItem;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return new TreeItem2 [0];
-		return new TreeItem2 [] {items [tvItem.lParam]};
-	}
-	int count = 0;
-	TreeItem2 [] guess = new TreeItem2 [8];
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
-	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	for (int i=0; i<items.length; i++) {
-		TreeItem2 item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				if (count < guess.length) guess [count] = item;
-				count++;
-			}
-		}
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
-	if (count == 0) return new TreeItem2 [0];
-	if (count == guess.length) return guess;
-	TreeItem2 [] result = new TreeItem2 [count];
-	if (count < guess.length) {
-		System.arraycopy (guess, 0, result, 0, count);
-		return result;
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	int index = 0;
-	for (int i=0; i<items.length; i++) {
-		TreeItem2 item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				result [index++] = item;
-			}
-		}
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
+	int[] ids= MacUtil.getSelectionIDs(handle, OS.kDataBrowserNoItem, true);
+	TreeItem2[] result= new TreeItem2[ids.length];
+	for (int i= 0; i < ids.length; i++)
+		result[i]= find(ids[i]);
 	return result;
-	*/
-	
-	return new TreeItem2 [0];
 }
 
 /**
@@ -605,34 +540,10 @@ public TreeItem2 [] getSelection () {
  */
 public int getSelectionCount () {
 	checkWidget ();
-	/* AW
-	if ((style & SWT.SINGLE) != 0) {
-		int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-		if (hItem == 0) return 0;
-		TVITEM tvItem = new TVITEM ();
-		tvItem.mask = OS.TVIF_STATE;
-		tvItem.hItem = hItem;
-		OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-		if ((tvItem.state & OS.TVIS_SELECTED) == 0) return 0;
-		return 1;
-	}
-	int count = 0;
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_STATE;
-	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	for (int i=0; i<items.length; i++) {
-		TreeItem2 item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) count++;
-		}
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
-	return count;
-	*/
-	return 0;
+	int[] result= new int[1];
+	if (OS.GetDataBrowserItemCount(handle, OS.kDataBrowserNoItem, true, OS.kDataBrowserItemIsSelected, result) != OS.kNoErr)
+		error (SWT.ERROR_CANNOT_GET_COUNT);
+	return result[0];
 }
 
 void hookEvents () {
@@ -642,8 +553,8 @@ void hookEvents () {
 				display.fDataBrowserCompareProc, display.fDataBrowserItemNotificationProc);
 }
 
+/* AW
 int imageIndex (Image image) {
-	/* AW
 	if (image == null) return OS.I_IMAGENONE;
 	if (imageList == null) {
 		int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_NORMAL, 0);
@@ -659,36 +570,37 @@ int imageIndex (Image image) {
 	int index = imageList.indexOf (image);
 	if (index != -1) return index;
 	return imageList.add (image);
-	*/
-	return 0;
 }
+*/
 
-/* AW
-void releaseItems (TreeItem2 [] nodes, TVITEM tvItem) {
+void releaseItems (TreeItem2 [] nodes /*, TVITEM tvItem */) {
 	for (int i=0; i<nodes.length; i++) {
 		TreeItem2 item = nodes [i];
 		TreeItem2 [] sons = item.getItems ();
 		if (sons.length != 0) {
-			releaseItems (sons, tvItem);
+			releaseItems (sons /*, tvItem */);
 		}
 		int hItem = item.handle;
+		/* AW
 		if (hItem == hAnchor) hAnchor = 0;
+		*/
 		if (!item.isDisposed ()) {
+			/* AW
 			tvItem.hItem = hItem;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			items [tvItem.lParam] = null;
+			*/
+			items [hItem - FIRST_ROW_ID] = null;
 			item.releaseResources ();
 		}
 	}
 }
-*/
+
 void releaseWidget () {
 	for (int i=0; i<items.length; i++) {
 		TreeItem2 item = items [i];
 		if (item != null && !item.isDisposed ()) {
-			/* AW
 			item.releaseResources ();
-			*/
 		}
 	}
 	/*
@@ -732,17 +644,19 @@ void releaseWidget () {
  */
 public void removeAll () {
 	checkWidget ();
-	/*
+	/* AW
 	ignoreDeselect = ignoreSelect = true;
 	int result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, OS.TVI_ROOT);
 	ignoreDeselect = ignoreSelect = false;
 	if (result == 0) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	*/
 	for (int i=0; i<items.length; i++) {
 		TreeItem2 item = items [i];
 		if (item != null && !item.isDisposed ()) {
 			item.releaseResources ();
 		}
 	}
+	/* AW
 	if (imageList != null) {
 		OS.SendMessage (handle, OS.TVM_SETIMAGELIST, 0, 0);
 		Display display = getDisplay ();
@@ -750,7 +664,9 @@ public void removeAll () {
 	}
 	imageList = null;
 	customDraw = false;
+	*/
 	items = new TreeItem2 [4];
+	/* AW
 	hAnchor = 0;
 	*/
 }
@@ -844,32 +760,8 @@ public void setInsertMark (TreeItem2 item, boolean before) {
 public void selectAll () {
 	checkWidget ();
 	if ((style & SWT.SINGLE) != 0) return;	
-	/* AW
-	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	if (hItem == 0) {
-		hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_ROOT, 0);
-		if (hItem != 0) {
-			ignoreSelect = true;
-			OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hItem);
-			ignoreSelect = false;
-			OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
-		}
-	}
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_STATE;
-	tvItem.state = OS.TVIS_SELECTED;
-	tvItem.stateMask = OS.TVIS_SELECTED;
-	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);	
-	for (int i=0; i<items.length; i++) {
-		TreeItem2 item = items [i];
-		if (item != null) {
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-		}
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
-	*/
+	int[] ids= MacUtil.getDataBrowserItems(handle, OS.kDataBrowserNoItem, 0, true);
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 }
 
 void setBackgroundPixel (int pixel) {
@@ -888,47 +780,6 @@ void setBackgroundPixel (int pixel) {
 	if (oldPixel != -1) OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, -1);
 	OS.SendMessage (handle, OS.TVM_SETBKCOLOR, 0, pixel);
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
-	*/
-}
-
-void setCheckboxImageList () {
-	if ((style & SWT.CHECK) == 0) return;
-	int count = 5;
-	/* AW
-	int height = OS.SendMessage (handle, OS.TVM_GETITEMHEIGHT, 0, 0), width = height;
-	int hImageList = OS.ImageList_Create (width, height, OS.ILC_COLOR, count, count);
-	int hDC = OS.GetDC (handle);
-	int memDC = OS.CreateCompatibleDC (hDC);
-	int hBitmap = OS.CreateCompatibleBitmap (hDC, width * count, height);
-	int hOldBitmap = OS.SelectObject (memDC, hBitmap);
-	RECT rect = new RECT ();
-	OS.SetRect (rect, 0, 0, width * count, height);
-	int hBrush = OS.CreateSolidBrush (getBackgroundPixel ());
-	OS.FillRect (memDC, rect, hBrush);
-	OS.DeleteObject (hBrush);
-	int oldFont = OS.SelectObject (hDC, defaultFont ());
-	TEXTMETRIC tm = new TEXTMETRIC ();
-	OS.GetTextMetrics (hDC, tm);
-	OS.SelectObject (hDC, oldFont);
-	int itemWidth = Math.min (tm.tmHeight, width);
-	int itemHeight = Math.min (tm.tmHeight, height);
-	int left = (width - itemWidth) / 2, top = (height - itemHeight) / 2 + 1;
-	OS.SetRect (rect, left + width, top, left + width + itemWidth, top + itemHeight);
-	OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_FLAT);
-	rect.left += width;  rect.right += width;
-	OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_FLAT);
-	rect.left += width;  rect.right += width;
-	OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-	rect.left += width;  rect.right += width;
-	OS.DrawFrameControl (memDC, rect, OS.DFC_BUTTON, OS.DFCS_BUTTONCHECK | OS.DFCS_CHECKED | OS.DFCS_INACTIVE | OS.DFCS_FLAT);
-	OS.SelectObject (memDC, hOldBitmap);
-	OS.DeleteDC (memDC);
-	OS.ReleaseDC (handle, hDC);
-	OS.ImageList_AddMasked (hImageList, hBitmap, 0);
-	OS.DeleteObject (hBitmap);
-	int hOldList = OS.SendMessage (handle, OS.TVM_GETIMAGELIST, OS.TVSIL_STATE, 0);
-	OS.SendMessage (handle, OS.TVM_SETIMAGELIST, OS.TVSIL_STATE, hImageList);
-	if (hOldList != 0) OS.ImageList_Destroy (hOldList);
 	*/
 }
 
@@ -992,100 +843,15 @@ public void setRedraw (boolean redraw) {
 public void setSelection (TreeItem2 [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-		
-	/* Select/deselect the first item */
-	/* AW
-	int hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	if (items.length == 0) {
-		if (hOldItem != 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE;
-			tvItem.stateMask = OS.TVIS_SELECTED;
-			tvItem.hItem = hOldItem;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-		}
-	} else {
-		int hNewItem = 0;
-		TreeItem2 item = items [0];
-		if (item != null) {
-			if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-			hAnchor = hNewItem = item.handle;
-		}
-		ignoreSelect = true;
-		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
-		ignoreSelect = false;
-		*/
-		/*
-		* Feature in Windows.  When the old and new focused item
-		* are the same, Windows does not check to make sure that
-		* the item is actually selected, not just focused.  The
-		* fix is to force the item to draw selected by setting
-		* the state mask.
-		*/
-		/* AW
-		if (hOldItem == hNewItem) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE;
-			tvItem.state = OS.TVIS_SELECTED;
-			tvItem.stateMask = OS.TVIS_SELECTED;
-			tvItem.hItem = hNewItem;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-		}
-	}
-	if ((style & SWT.SINGLE) != 0) return;
-	*/
-	
-	/* Select/deselect the rest of the items */
-	/* AW
-	TVITEM tvItem = new TVITEM ();
-	tvItem.mask = OS.TVIF_STATE;
-	tvItem.stateMask = OS.TVIS_SELECTED;
-	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
-	for (int i=0; i<this.items.length; i++) {
-		TreeItem2 item = this.items [i];
-		if (item != null) {
-			int index = 0;
-			while (index < items.length) {
-				if (items [index] == item) break;
-				index++;
-			}
-			tvItem.hItem = item.handle;
-			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				if (index == items.length) {
-					tvItem.state = 0;
-					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-				}
-			} else {
-				if (index != items.length) {
-					tvItem.state = OS.TVIS_SELECTED;
-					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-				}
-			}
-		}
-	}
-	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
-	*/
+	int[] ids= new int[items.length];
+	for (int i= 0; i < items.length; i++)
+		ids[i]= items[i].handle;
+	OS.SetDataBrowserSelectedItems(handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 }
 
 void showItem (int hItem) {
-	/*
-	* Bug in Windows.  When TVM_ENSUREVISIBLE is used to ensure
-	* that an item is visible and the client area of the tree is
-	* smaller that the size of one item, TVM_ENSUREVISIBLE makes
-	* the next item in the tree visible by making it the top item
-	* instead of making the desired item visible.  The fix is to
-	* detect the case when the client area is too small and make
-	* the desired visible item be the top item in the tree.
-	*/
-	/* AW
-	if (OS.SendMessage (handle, OS.TVM_GETVISIBLECOUNT, 0, 0) == 0) {
-		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_FIRSTVISIBLE, hItem);
-	} else {
-		OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, hItem);
-	}
-	*/
+	if (OS.RevealDataBrowserItem(handle, hItem, COL_ID, false) != OS.kNoErr)
+		System.out.println("Tree2.RevealDataBrowserItem");
 }
 
 /**
@@ -1130,10 +896,9 @@ public void showItem (TreeItem2 item) {
  */
 public void showSelection () {
 	checkWidget ();
-	/* AW
-	int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	if (hItem != 0) showItem (hItem);
-	*/
+	int[] ids= MacUtil.getSelectionIDs(handle, OS.kDataBrowserNoItem, true);
+	if (ids.length > 0 && ids[0] != 0)
+		OS.RevealDataBrowserItem(handle, ids[0], COL_ID, false);
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1724,6 +1489,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 
 	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
 		//processEvent (type, new MacEvent(eRefHandle));
+		
+		selectAll ();
+		
 		return OS.eventNotHandledErr;
 	}
 	
@@ -1771,6 +1539,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				OS.SetDataBrowserItemDataItemID(itemData, parent.handle);
 			break;
 			
+		case CHECK_COL_ID:	// our column
+			//OS.SetDataBrowserItemDataButtonValue(itemData, OS.kThemeButtonOn);
+			OS.SetDataBrowserItemDataButtonValue(itemData, (short)(item % 3));
+			break;
+			
 		case COL_ID:	// our column
 			ti.updateContent(itemData);
 			break;
@@ -1798,14 +1571,44 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			return OS.kNoErr;
 		}
 		
+		Event event= null;
+		
 		switch (message) {
 			
 		case OS.kDataBrowserContainerOpened:	/* Container is open */
+			event= new Event ();
+			event.item= ti;
+			/*
+			* It is possible (but unlikely), that application
+			* code could have disposed the widget in the expand
+			* or collapse event.  If this happens, end the
+			* processing of the Windows message by returning
+			* zero as the result of the window proc.
+			*/
+			sendEvent (SWT.Expand, event);
+			//if (isDisposed ()) return LRESULT.ZERO;
 			ti.open();
 			break;
 					
-		case OS.kDataBrowserContainerClosed:	/* Container is closed (y'all come back now!) */		
+		case OS.kDataBrowserContainerClosing:	/* Container is about to be closed */
+			int[] ids= MacUtil.getSelectionIDs(handle, ti.handle, true);
+			if (ids.length > 0 && ids[0] != 0)
+				OS.SetDataBrowserSelectedItems(handle, 1, new int[] { ti.handle }, OS.kDataBrowserItemsAssign);
+			break;
+			
+		case OS.kDataBrowserContainerClosed:	/* Container is closed */		
 			ti.close();
+			event= new Event ();
+			event.item= ti;
+			/*
+			* It is possible (but unlikely), that application
+			* code could have disposed the widget in the expand
+			* or collapse event.  If this happens, end the
+			* processing of the Windows message by returning
+			* zero as the result of the window proc.
+			*/
+			sendEvent (SWT.Collapse, event);
+			//if (isDisposed ()) return LRESULT.ZERO;
 			break;
 		}
 		
