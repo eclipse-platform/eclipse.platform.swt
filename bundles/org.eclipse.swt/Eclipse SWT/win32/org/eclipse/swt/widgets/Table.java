@@ -2127,13 +2127,13 @@ boolean setScrollWidth (TableItem item, boolean force) {
 			}
 		} else {
 			/*
-			* Bug in Windows.  When the table is dislaying check boxes without
-			* icons the width computed by LVM_SETCOLUMNWIDTH with LVSCW_AUTOSIZE
-			* is too small causing the longest item to be truncated with '...'.
-			* The fix is to increase the size by a small amount.
+			* Bug in Windows.  When the table has no icons, the width that is
+			* computed by LVM_SETCOLUMNWIDTH with LVSCW_AUTOSIZE is too small,
+			* causing the long items to be truncated with '...'.  The fix is
+			* to increase the size by a small amount.
 			*/
 			OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, OS.LVSCW_AUTOSIZE);
-			if ((style & SWT.CHECK) != 0 && imageList != null) {
+			if (imageList == null) {
 				int width = OS.SendMessage (handle, OS.LVM_GETCOLUMNWIDTH, 0, 0);
 				OS.SendMessage (handle, OS.LVM_SETCOLUMNWIDTH, 0, width + 2);
 			}
