@@ -1938,8 +1938,16 @@ public boolean readAndDispatch () {
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	int status = OS.XtAppPending (xtContext);
 	if (status == 0) {
-		OS.XtAppAddTimeOut (xtContext, 1, 0, 0);
-		OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
+		if (getMessageCount () == 0) {
+			/*
+			* Force Xt work procs that were added by native
+			* widgets to run by calling XtAppProcessEvent().
+			* Ensure that XtAppProcessEvent() does not block
+			* by adding a time out.
+			*/
+			OS.XtAppAddTimeOut (xtContext, 1, 0, 0);
+			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
+		}
 	} else {
 		if ((status & OS.XtIMTimer) != 0) {
 			OS.XtAppProcessEvent (xtContext, OS.XtIMTimer);
