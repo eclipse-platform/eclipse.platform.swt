@@ -96,6 +96,7 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (parentHandle, handle);
 		OS.gtk_entry_set_editable (handle, (style & SWT.READ_ONLY) == 0);
+		OS.gtk_entry_set_has_frame (handle, (style & SWT.BORDER) == 0);
 	} else {
 		fixedHandle = OS.gtk_fixed_new ();
 		if (fixedHandle == 0) error (SWT.ERROR_NO_HANDLES);

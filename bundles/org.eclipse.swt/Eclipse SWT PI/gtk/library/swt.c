@@ -2584,6 +2584,14 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1edi
 	gtk_entry_set_editable((GtkEntry *)arg0, (gboolean)arg1);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1has_1frame
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	DEBUG_CALL("gtk_1entry_1set_1has_1frame\n")
+
+	gtk_entry_set_has_frame((GtkEntry *)arg0, (gboolean)arg1);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1entry_1set_1invisible_1char
 	(JNIEnv *env, jclass that, jint arg0, jchar arg1)
 {

@@ -547,6 +547,7 @@ public static final native boolean gtk_entry_get_visibility(int entry);
 public static final native int gtk_entry_new();
 public static final native void gtk_entry_set_editable(int entry, boolean editable);
 public static final native void gtk_entry_set_invisible_char(int entry, char ch);
+public static final native void gtk_entry_set_has_frame(int entry, boolean setting);
 public static final native void gtk_entry_set_max_length(int entry, int max);
 public static final native void gtk_entry_set_text(int entry, byte[] text);
 public static final native void gtk_entry_set_visibility(int entry, boolean visible);
