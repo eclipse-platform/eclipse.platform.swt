@@ -865,13 +865,13 @@ int XExposure (int w, int client_data, int call_data, int continue_to_dispatch) 
 	gc.setClipping (region);
 	XRectangle rect = new XRectangle ();
 	OS.XClipBox (damagedRegion, rect);
+	OS.XDestroyRegion (damagedRegion);
+	damagedRegion = 0;
 	event.x = rect.x;  event.y = rect.y;
 	event.width = rect.width;  event.height = rect.height;
 	sendEvent (SWT.Paint, event);
 	gc.dispose ();
 	event.gc = null;
-	OS.XDestroyRegion (damagedRegion);
-	damagedRegion = 0;
 	return 0;
 }
 int xFocusIn (XFocusChangeEvent xEvent) {

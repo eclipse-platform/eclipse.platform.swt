@@ -62,6 +62,8 @@ public class Table extends SelectableItemWidget {
 	private TableColumn defaultColumn;					// Default column that is created as soon as the table is created.
 														// Fix for 1FUSJY5
 	private int fontHeight;								// font height, avoid use GC.stringExtend for each pain
+	
+	private boolean ignoreRedraw;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -1037,9 +1039,11 @@ int getPreferredColumnWidth(int columnIndex) {
 	int headerWidth;
 	
 	if (columnIndex != TableColumn.FILL) {
-		while (tableItems.hasMoreElements() == true) {
-			tableItem = (TableItem) tableItems.nextElement();
-			width = Math.max(width, tableItem.getPreferredWidth(columnIndex));
+		if ((parent.getStyle() & SWT.VIRTUAL) == 0) {
+			while (tableItems.hasMoreElements() == true) {
+				tableItem = (TableItem) tableItems.nextElement();
+				width = Math.max(width, tableItem.getPreferredWidth(columnIndex));
+			}
 		}
 		headerWidth = getHeader().getPreferredWidth(columnIndex);
 		if (width < headerWidth) {
@@ -1737,6 +1741,21 @@ TableItem paintItems(Event event, int topPaintIndex, int bottomPaintIndex, Vecto
 		
 	topPaintIndex += getTopIndex();
 	bottomPaintIndex += getTopIndex();
+
+	if ((getStyle () & SWT.VIRTUAL) != 0) {
+		for (int i = topPaintIndex; i <= bottomPaintIndex; i++) {
+			paintItem = (TableItem) getVisibleItem(i);
+			Event dataEvent = new Event();
+			dataEvent.item = paintItem;
+			ignoreRedraw = true;
+			sendEvent(SWT.SetData, dataEvent);
+			if (isDisposed()) return null;
+			//widget could be disposed at this point
+			ignoreRedraw = false;
+			calculateItemHeight(paintItem);
+		}
+	}
+	
 	for (int i = topPaintIndex; i <= bottomPaintIndex; i++) {
 		paintItem = (TableItem) getVisibleItem(i);
 		paintXPosition = paintItem.getSelectionX();
@@ -1846,6 +1865,16 @@ public void remove(int indices[]) {
 			last = index;
 		}
 	}
+}
+public void redraw () {
+	checkWidget();
+	if (ignoreRedraw) return;
+	super.redraw();
+}
+public void redraw (int x, int y, int width, int height, boolean all) {
+	checkWidget();
+	if (ignoreRedraw) return;
+	super.redraw(x, y, width, height, all);
 }
 /**
  * Removes the item from the receiver at the given
@@ -2480,6 +2509,16 @@ public void setHeaderVisible(boolean headerVisible) {
 		resizeVerticalScrollbar();
 		redraw();
 	}
+}
+public void setItemCount (int count) {
+	checkWidget();
+	setRedraw (false);
+	removeAll();
+	int itemCount = Math.max(0, count);
+	for (int i=0; i<itemCount; i++) {
+		new TableItem (this, SWT.NONE, i);
+	}
+	setRedraw (true);
 }
 /**
  * Set the vector that stores the items of the receiver 
