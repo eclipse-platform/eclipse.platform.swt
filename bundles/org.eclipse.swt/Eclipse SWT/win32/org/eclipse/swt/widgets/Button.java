@@ -673,7 +673,7 @@ int widgetStyle () {
 	if ((style & SWT.PUSH) != 0) return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
 	if ((style & SWT.CHECK) != 0) return bits | OS.BS_CHECKBOX | OS.WS_TABSTOP;
 	if ((style & SWT.RADIO) != 0) return bits | OS.BS_RADIOBUTTON;
-	if ((style & SWT.TOGGLE) != 0) return bits | OS.BS_PUSHLIKE | OS.BS_CHECKBOX;
+	if ((style & SWT.TOGGLE) != 0) return bits | OS.BS_PUSHLIKE | OS.BS_CHECKBOX | OS.WS_TABSTOP;
 	return bits | OS.BS_PUSHBUTTON | OS.WS_TABSTOP;
 }
 
