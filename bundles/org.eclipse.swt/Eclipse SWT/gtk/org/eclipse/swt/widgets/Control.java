@@ -1925,7 +1925,7 @@ void sendKeyEvent (int type, int gdkEvent) {
 	OS.memmove (keyEvent, gdkEvent, GdkEventKey.sizeof);
 	int time = keyEvent.time;
 	int length = keyEvent.length;
-	if (length == 0) {
+	if (length <= 1) {
 		Event event = new Event ();
 		event.time = time;
 		setInputState (event, gdkEvent);
@@ -1942,8 +1942,18 @@ void sendKeyEvent (int type, int gdkEvent) {
 //			case OS.GDK_Clear:			event.character = 0xB; break;
 //			case OS.GDK_Pause:			event.character = 0x13; break;
 //			case OS.GDK_Scroll_Lock:	event.character = 0x14; break;
-			default:
-				if (event.keyCode == 0) event.character = (char) OS.gdk_keyval_to_unicode (keyEvent.keyval);
+			default: {
+				if (event.keyCode == 0) {
+					int key = keyEvent.keyval;
+					if ((keyEvent.state & OS.GDK_CONTROL_MASK) != 0 && (0 <= key && key <= 0x7F)) {
+						if ('a'  <= key && key <= 'z') key -= 'a' - 'A';
+						if (64 <= key && key <= 95) key -= 64;
+						event.character = (char) key;
+					} else {
+						event.character = (char) OS.gdk_keyval_to_unicode (key);
+					}
+				}
+			}
 		}
 		postEvent (type, event);
 	} else {
