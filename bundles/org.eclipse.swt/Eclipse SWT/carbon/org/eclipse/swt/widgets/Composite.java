@@ -171,6 +171,16 @@ void drawWidget (int control) {
 	}
 }
 
+void enableWidget (boolean enabled) {
+	//NOT DONE - take into account current scroll bar state
+	if ((state & CANVAS) != 0) {
+		if (horizontalBar != null) horizontalBar.enableWidget (enabled);
+		if (verticalBar != null) verticalBar.enableWidget (enabled);
+		return;
+	}
+	super.enableWidget (enabled);
+}
+
 public Control [] getChildren () {
 	checkWidget();
 	return _getChildren ();
@@ -215,7 +225,7 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	if ((state & CANVAS) != 0) {
-		if (!OS.IsControlEnabled (topHandle ())) return result;
+		if (!isEnabled ()) return result;
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 			int [] theControl = new int [1];
 			int window = OS.GetControlOwner (handle);

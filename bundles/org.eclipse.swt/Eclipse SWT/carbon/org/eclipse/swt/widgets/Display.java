@@ -169,6 +169,16 @@ public class Display extends Device {
 		if (OS.GetCurrentProcess (psn) == OS.noErr) {
 			OS.SetFrontProcess (psn);
 		}
+		/*
+		* Feature in the Macintosh.  In order to get the standard
+		* application menu to appear on the menu bar, an application
+		* must manipulate the menu bar.  If the application does not
+		* install a menu bar, the application menu will not appear.
+		* The fix is to use ClearMenuBar() to manipulate the menu
+		* bar before any application has had a chance install a menu
+		* bar.
+		*/
+		OS.ClearMenuBar ();
 	}
 	
 /*
@@ -540,7 +550,9 @@ public Control getCursorControl () {
 			if (widget != null) {
 				if (widget instanceof Control) {
 					Control control = (Control) widget;
-					return control.isEnabledModal () ? control : null;
+					if (control.isEnabled ()) {
+						return control.isEnabledModal () ? control : null;
+					}
 				}
 			}
 			OS.GetSuperControl (theControl [0], theControl);
@@ -966,10 +978,24 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			while (theControl [0] != 0 && !OS.IsControlEnabled (theControl [0])) {				
 				OS.GetSuperControl (theControl [0], theControl);
 			}
+			Widget widget = null;
+			boolean forward = false;
 			if (theControl [0] == 0) theControl [0] = theRoot [0];
-			Widget widget = WidgetTable.get (theControl [0]);
+			do {
+				widget = WidgetTable.get (theControl [0]);
+				if (widget != null) {
+					if (widget instanceof Control) {
+						Control control = (Control) widget;
+						if (control.isEnabled ()) break;
+						forward = true;
+					}
+				}
+				OS.GetSuperControl (theControl [0], theControl);
+			} while (theControl [0] != 0);
+			if (theControl [0] == 0) widget = WidgetTable.get (theRoot [0]);
 			if (widget != null) {
-				return userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
+				int result = userData != 0 ? widget.mouseProc (nextHandler, theEvent, userData) : OS.eventNotHandledErr;
+				return forward ? OS.noErr : result;
 			}
 			break;
 		}
@@ -1165,10 +1191,12 @@ boolean runEnterExit () {
 						if (widget.isTrimHandle (theControl [0])) break;
 						if (widget instanceof Control) {
 							Control cursorControl = (Control) widget;
-							if (cursorControl.isEnabledModal ()) {
-								control = cursorControl;
+							if (cursorControl.isEnabled ()) {
+								if (cursorControl.isEnabledModal ()) {
+									control = cursorControl;
+								}
+								break;
 							}
-							break;
 						}
 					}
 					OS.GetSuperControl (theControl [0], theControl);

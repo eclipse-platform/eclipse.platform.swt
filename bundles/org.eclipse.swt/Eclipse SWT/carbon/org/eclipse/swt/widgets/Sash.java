@@ -64,7 +64,7 @@ void drawWidget (int control) {
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (!OS.IsControlEnabled (handle)) return OS.noErr;
+	if (!isEnabled ()) return OS.noErr;
 	return result;
 }
 

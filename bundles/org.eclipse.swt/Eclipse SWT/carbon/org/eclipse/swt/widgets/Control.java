@@ -193,6 +193,15 @@ void destroyWidget () {
 	}
 }
 
+void enableWidget (boolean enabled) {
+	int topHandle = topHandle ();
+	if (enabled) {
+		OS.EnableControl (topHandle);
+	} else {
+		OS.DisableControl (topHandle);
+	}
+}
+
 Cursor findCursor () {
 	if (cursor != null) return cursor;
 	return parent.findCursor ();
@@ -229,7 +238,7 @@ public Accessible getAccessible () {
 	
 public Color getBackground () {
 	checkWidget();
-	//WRONG
+	//NOT DONE - get default colors
 	if (background == null) return getDisplay ().getSystemColor (SWT.COLOR_WHITE);
 	return Color.carbon_new (getDisplay (), background);
 }
@@ -268,7 +277,7 @@ public Font getFont () {
 
 public Color getForeground () {
 	checkWidget();
-	//WRONG
+	//NOT DONE - get default colors
 	if (foreground == null) return getDisplay ().getSystemColor (SWT.COLOR_BLACK);
 	return Color.carbon_new (getDisplay (), foreground);
 }
@@ -499,12 +508,12 @@ public void internal_dispose_GC (int context, GCData data) {
 
 public boolean isEnabled () {
 	checkWidget();
-	return OS.IsControlEnabled (topHandle ());
+	return getEnabled () && parent.isEnabled ();
 }
 
 boolean isEnabledModal () {
-	Display display = getDisplay ();
 	//NOT DONE - fails for multiple APP MODAL shells
+	Display display = getDisplay ();
 	Shell [] shells = display.getShells ();
 	for (int i = 0; i < shells.length; i++) {
 		Shell modal = shells [i];
@@ -958,7 +967,7 @@ public void setCursor (Cursor cursor) {
 	checkWidget();
 	if (cursor != null && cursor.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
 	this.cursor = cursor;
-	if (!OS.IsControlEnabled (topHandle ())) return;
+	if (!isEnabled ()) return;
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (where);
 	int [] theWindow = new int [1];
@@ -1011,21 +1020,20 @@ public void setEnabled (boolean enabled) {
 	if (enabled) {
 		if ((state & DISABLED) == 0) return;
 		state &= ~DISABLED;
-		OS.EnableControl (topHandle ());
 	} else {
 		if ((state & DISABLED) != 0) return;
-		/*
-		* Feature in the Macintosh.  If the receiver has focus,
-		* disabling the receiver causes no cotnrol to have focus. 
-		* The fix is to assign focus to the first ancestor control
-		* that takes focus.  If no control will take focus, clear
-		* the focus control.
-		*/
-		boolean fixFocus = isFocusAncestor ();
 		state |= DISABLED;
-		OS.DisableControl (topHandle ());
-		if (fixFocus) fixFocus ();
 	}
+	/*
+	* Feature in the Macintosh.  If the receiver has focus,
+	* disabling the receiver causes no control to have focus. 
+	* The fix is to assign focus to the first ancestor control
+	* that takes focus.  If no control will take focus, clear
+	* the focus control.
+	*/
+	boolean fixFocus = !enabled && isFocusAncestor ();
+	enableWidget (enabled);
+	if (fixFocus) fixFocus ();
 }
 
 public boolean setFocus () {

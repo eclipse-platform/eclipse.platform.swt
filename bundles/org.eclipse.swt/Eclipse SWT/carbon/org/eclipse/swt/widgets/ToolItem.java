@@ -200,7 +200,7 @@ public Image getDisabledImage () {
 
 public boolean getEnabled () {
 	checkWidget();
-	return OS.IsControlEnabled(handle);
+	return (state & DISABLED) == 0;
 }
 
 public Display getDisplay () {
@@ -526,8 +526,12 @@ public void setControl (Control control) {
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (enabled) {
+		if ((state & DISABLED) == 0) return;
+		state &= ~DISABLED;
 		OS.EnableControl (handle);
 	} else {
+		if ((state & DISABLED) != 0) return;
+		state |= DISABLED;
 		OS.DisableControl (handle);
 	}
 }

@@ -85,6 +85,14 @@ void destroyWidget () {
 	}
 }
 
+void enableWidget (boolean enabled) {
+	if (enabled) {
+		OS.EnableControl (handle);
+	} else {
+		OS.DisableControl (handle);
+	}
+}
+
 void createHandle () {
 	Display display = getDisplay ();
 	int actionProc = display.actionProc;
@@ -181,7 +189,7 @@ void hookEvents () {
 
 public boolean isEnabled () {
 	checkWidget();
-	return OS.IsControlEnabled (handle);
+	return getEnabled () && parent.isEnabled ();
 }
 
 boolean isTrimHandle (int trimHandle) {

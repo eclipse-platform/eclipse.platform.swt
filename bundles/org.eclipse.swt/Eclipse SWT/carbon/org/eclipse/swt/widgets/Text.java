@@ -413,7 +413,7 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	if (!OS.IsControlEnabled (topHandle ())) return OS.noErr;
+	if (!isEnabled ()) return OS.noErr;
 	int window = OS.GetControlOwner (handle);
 	OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart);
 	EventRecord iEvent = new EventRecord ();
