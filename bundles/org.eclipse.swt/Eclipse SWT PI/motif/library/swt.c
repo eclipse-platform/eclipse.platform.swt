@@ -8195,6 +8195,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_write
  * Method:    FD_SETSIZE
  * Signature: ()I
  */
+/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1SETSIZE
   (JNIEnv *env, jclass that)
 {
@@ -8204,12 +8205,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_FD_1SETSIZE
 
   return FD_SETSIZE;
 }
+*/
 
 /*
  * Class:     org_eclipse_swt_internal_motif_OS
  * Method:    NFDBITS
  * Signature: ()I
  */
+/*
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_NFDBITS
   (JNIEnv *env, jclass that)
 {
@@ -8218,6 +8221,17 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_NFDBITS
 #endif
 
   return NFDBITS;
+}
+*/
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_motif_OS_fd_1set_1sizeof
+  (JNIEnv *env, jclass that)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "NFDBITS\n");
+#endif
+
+  return sizeof(fd_set);
 }
 
 /*

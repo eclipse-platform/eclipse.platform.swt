@@ -1359,8 +1359,9 @@ public static final native int select (int n, byte [] readfds, byte [] writefds,
 public static final native void FD_ZERO (byte [] fd_set);
 public static final native void FD_SET (int fd, byte [] fd_set);
 public static final native boolean FD_ISSET (int fd, byte [] fd_set);
-public static final native int FD_SETSIZE ();
-public static final native int NFDBITS ();
+//public static final native int FD_SETSIZE ();
+//public static final native int NFDBITS ();
+public static final native int fd_set_sizeof ();
 public static final synchronized native int ConnectionNumber (int display);
 public static final synchronized native int XtAppAddInput (int app_context, int source, int condition, int proc, int client_data);
 public static final synchronized native void XtRemoveInput (int id);

@@ -1090,7 +1090,7 @@ void initializeDisplay () {
 	read_fd = filedes [0];  write_fd = filedes [1];
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
 	inputID = OS.XtAppAddInput (xtContext, read_fd, OS.XtInputReadMask, wakeProc, 0);
-	fd_set = new byte [4 * OS.FD_SETSIZE() / OS.NFDBITS()];
+	fd_set = new byte [OS.fd_set_sizeof ()];
 
 	/*
 	* Use dynamic Drag and Drop Protocol styles.
