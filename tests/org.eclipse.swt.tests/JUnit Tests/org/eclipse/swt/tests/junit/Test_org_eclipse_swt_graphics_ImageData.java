@@ -13,6 +13,7 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.ImageData
@@ -36,11 +37,51 @@ protected void tearDown() {
 }
 
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
-	warnUnimpl("Test test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData not written");
+	// Tested in test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B.
 }
 
 public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
-	warnUnimpl("Test test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B not written");
+	// illegal argument, width < 0
+	try {
+		new ImageData(-1, 1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 4, new byte[] {});
+		fail("No exception thrown for width < 0");
+	} catch (IllegalArgumentException e) {
+	}
+
+	// illegal argument, height < 0
+	try {
+		new ImageData(1, -1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 4, new byte[] {});
+		fail("No exception thrown for height < 0");
+	} catch (IllegalArgumentException e) {
+	}
+
+	// illegal argument, depth != 1, 2, 4, 8, 16, 24 or 32
+	try {
+		new ImageData(1, 1, 7, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 4, new byte[] {});
+		fail("No exception thrown for depth != 1, 2, 4, 8, 16, 24 or 32");
+	} catch (IllegalArgumentException e) {
+	}
+
+	// illegal argument, palette is null
+	try {
+		new ImageData(1, 1, 8, null, 4, new byte[] {});
+		fail("No exception thrown for null palette");
+	} catch (IllegalArgumentException e) {
+	}
+
+	// illegal argument, data is null
+	try {
+		new ImageData(1, 1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 4, null);
+		fail("No exception thrown for null data");
+	} catch (IllegalArgumentException e) {
+	}
+
+	// illegal argument, scanlinePad == 0
+	try {
+		new ImageData(1, 1, 8, new PaletteData(new RGB[] {new RGB(0, 0, 0)}), 0, new byte[] {});
+		fail("No exception thrown for scanlinePad == 0");
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_ConstructorLjava_io_InputStream() {
