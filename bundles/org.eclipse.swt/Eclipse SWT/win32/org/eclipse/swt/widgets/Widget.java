@@ -1012,7 +1012,7 @@ boolean setKeyState (Event event, int type, int wParam, int lParam) {
 	* Feature in Windows.  When the user presses Ctrl+Backspace
 	* or Ctrl+Enter, Windows sends a WM_CHAR with Delete (0x7F)
 	* and '\n' instead of '\b' and '\r'.  This is the correct
-	* platform behavior but is not portable.  The fix is detect
+	* platform behavior but is not portable.  The fix is to detect
 	* these cases and convert the character.
 	*/
 	switch (display.lastAscii) {

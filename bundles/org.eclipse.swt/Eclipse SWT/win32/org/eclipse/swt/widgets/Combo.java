@@ -82,7 +82,7 @@ public class Combo extends Composite {
 	static int EditProc, ListProc;
 	
 	static final int ComboProc;
-	static final TCHAR ComboClass = new TCHAR (0,"COMBOBOX", true);
+	static final TCHAR ComboClass = new TCHAR (0, "COMBOBOX", true);
 	static {
 		WNDCLASS lpWndClass = new WNDCLASS ();
 		OS.GetClassInfo (0, ComboClass, lpWndClass);

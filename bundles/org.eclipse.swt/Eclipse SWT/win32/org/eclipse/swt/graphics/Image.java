@@ -1823,7 +1823,7 @@ public boolean isDisposed() {
  * these cases. For example:
  * <pre>
  *    Button b = new Button();
- *    image.setBackground(b.getBackground());>
+ *    image.setBackground(b.getBackground());
  *    b.setImage(image);
  * </pre>
  * </p><p>
