@@ -1214,3 +1214,9 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pointer_1ungrab
 {
   gdk_pointer_ungrab((guint32) time);
 }
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1set_1override_1redirect
+  (JNIEnv *env, jclass that, jint window, jint override_redirect)
+{
+  gdk_window_set_override_redirect((GdkWindow*)window, (gboolean)override_redirect);
+}
