@@ -4386,6 +4386,22 @@ fail:
 }
 #endif
 
+#ifndef NO_GetDataBrowserPropertyFlags
+JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserPropertyFlags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetDataBrowserPropertyFlags_FUNC);
+	if (arg2) if ((lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL)) == NULL) goto fail;
+	rc = (jint)GetDataBrowserPropertyFlags((ControlRef)arg0, (DataBrowserPropertyID)arg1, (DataBrowserPropertyFlags *)lparg2);
+fail:
+	if (arg2 && lparg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	OS_NATIVE_EXIT(env, that, GetDataBrowserPropertyFlags_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetDataBrowserScrollBarInset
 JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserScrollBarInset)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -8706,6 +8722,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetApplicationDockTileImage)
 }
 #endif
 
+#ifndef NO_SetAutomaticControlDragTrackingEnabledForWindow
+JNIEXPORT jint JNICALL OS_NATIVE(SetAutomaticControlDragTrackingEnabledForWindow)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetAutomaticControlDragTrackingEnabledForWindow_FUNC);
+	rc = (jint)SetAutomaticControlDragTrackingEnabledForWindow((WindowRef)arg0, (Boolean)arg1);
+	OS_NATIVE_EXIT(env, that, SetAutomaticControlDragTrackingEnabledForWindow_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_SetBevelButtonContentInfo
 JNIEXPORT jint JNICALL OS_NATIVE(SetBevelButtonContentInfo)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1)
@@ -9142,6 +9170,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserListViewHeaderDesc)
 fail:
 	if (arg2 && lparg2) setDataBrowserListViewHeaderDescFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, SetDataBrowserListViewHeaderDesc_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetDataBrowserPropertyFlags
+JNIEXPORT jint JNICALL OS_NATIVE(SetDataBrowserPropertyFlags)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, SetDataBrowserPropertyFlags_FUNC);
+	rc = (jint)SetDataBrowserPropertyFlags((ControlRef)arg0, (DataBrowserPropertyID)arg1, (DataBrowserPropertyFlags)arg2);
+	OS_NATIVE_EXIT(env, that, SetDataBrowserPropertyFlags_FUNC);
 	return rc;
 }
 #endif

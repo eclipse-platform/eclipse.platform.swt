@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 796;
-int OS_nativeFunctionCallCount[796];
+int OS_nativeFunctionCount = 799;
+int OS_nativeFunctionCallCount[799];
 char * OS_nativeFunctionNames[] = {
 	"AECountItems",
 	"AEGetNthPtr",
@@ -335,6 +335,7 @@ char * OS_nativeFunctionNames[] = {
 	"GetDataBrowserListViewDisclosureColumn",
 	"GetDataBrowserListViewHeaderBtnHeight",
 	"GetDataBrowserListViewHeaderDesc",
+	"GetDataBrowserPropertyFlags",
 	"GetDataBrowserScrollBarInset",
 	"GetDataBrowserScrollPosition",
 	"GetDataBrowserSelectionAnchor",
@@ -638,6 +639,7 @@ char * OS_nativeFunctionNames[] = {
 	"SendBehind",
 	"SendEventToEventTarget",
 	"SetApplicationDockTileImage",
+	"SetAutomaticControlDragTrackingEnabledForWindow",
 	"SetBevelButtonContentInfo",
 	"SetClip",
 	"SetControl32BitMaximum",
@@ -672,6 +674,7 @@ char * OS_nativeFunctionNames[] = {
 	"SetDataBrowserListViewDisclosureColumn",
 	"SetDataBrowserListViewHeaderBtnHeight",
 	"SetDataBrowserListViewHeaderDesc",
+	"SetDataBrowserPropertyFlags",
 	"SetDataBrowserScrollPosition",
 	"SetDataBrowserSelectedItems",
 	"SetDataBrowserSelectionFlags",

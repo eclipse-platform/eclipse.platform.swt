@@ -223,6 +223,7 @@ public class OS extends Platform {
 	public static final int kDataBrowserLatestCustomCallbacks = 0;
 	public static final int kDataBrowserListView = ('l'<<24) + ('s'<<16) + ('t'<<8) + 'v';
 	public static final int kDataBrowserListViewLatestHeaderDesc = 0;
+	public static final int kDataBrowserListViewMovableColumn = 1 << OS.kDataBrowserViewSpecificFlagsOffset + 1;
 	public static final int kDataBrowserListViewSelectionColumn = 1 << OS.kDataBrowserViewSpecificFlagsOffset;
 	public static final int kDataBrowserListViewSortableColumn = 1 << 18;
 	public static final int kDataBrowserNeverEmptySelectionSet = 1 << 6;
@@ -1012,9 +1013,10 @@ public static final native int GetDataBrowserItemState(int browser, int item, in
 public static final native int GetDataBrowserListViewDisclosureColumn(int browser, int [] column, boolean [] expandableRows);
 public static final native int GetDataBrowserListViewHeaderBtnHeight(int browser, short [] height);
 public static final native int GetDataBrowserListViewHeaderDesc(int browser, int column, DataBrowserListViewHeaderDesc desc);
+public static final native int GetDataBrowserPropertyFlags(int browser, int property, int [] flags);
+public static final native int GetDataBrowserTableViewColumnPosition(int browser,int column,int[] position);
 public static final native int GetDataBrowserTableViewItemID(int browser, int row, int [] item);
 public static final native int GetDataBrowserTableViewItemRow(int browser, int item, int [] row);                         
-public static final native int GetDataBrowserTableViewColumnPosition(int browser, int column, int [] position);
 public static final native int GetDataBrowserTableViewNamedColumnWidth(int browser, int column, short [] width);
 public static final native int GetDataBrowserTableViewRowHeight(int browser, short [] height);
 public static final native int GetDataBrowserScrollBarInset(int browser, Rect insetRect);
@@ -1315,6 +1317,7 @@ public static final native void SelectWindow(int wHandle);
 public static final native void SendBehind(int window, int behindWindow);
 public static final native int SendEventToEventTarget(int theEvent, int theTarget);
 public static final native int SetApplicationDockTileImage(int inImage);
+public static final native int SetAutomaticControlDragTrackingEnabledForWindow (int inWindow, boolean inTracks);
 public static final native int SetBevelButtonContentInfo(int inButton, ControlButtonContentInfo inContent);
 public static final native void SetClip(int rgnHandle);
 public static final native void SetControl32BitMaximum(int cHandle, int maximum);
@@ -1349,6 +1352,7 @@ public static final native int SetDataBrowserItemDataText(int itemRef, int sHand
 public static final native int SetDataBrowserListViewDisclosureColumn(int cHandle, int colID, boolean b);
 public static final native int SetDataBrowserListViewHeaderBtnHeight(int cHandle, short height);
 public static final native int SetDataBrowserListViewHeaderDesc(int browser, int column, DataBrowserListViewHeaderDesc desc);
+public static final native int SetDataBrowserPropertyFlags(int browser, int property, int flags);
 public static final native int SetDataBrowserScrollPosition(int cHandle, int top, int left);
 public static final native int SetDataBrowserSelectedItems(int cHandle, int numItems, int[] items, int operation);
 public static final native int SetDataBrowserSelectionFlags(int cHandle, int selectionFlags);
