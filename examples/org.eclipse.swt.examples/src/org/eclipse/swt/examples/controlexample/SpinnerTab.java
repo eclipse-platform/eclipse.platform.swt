@@ -26,7 +26,7 @@ class SpinnerTab extends RangeTab {
 	Button readOnlyButton, wrapButton;
 	
 	/* Scale widgets added to the "Control" group */
-	Scale incrementScale, pageIncrementScale;
+	Scale incrementScale, pageIncrementScale, digitsScale;
 
 	/**
 	 * Creates the Tab within a given instance of ControlExample.
@@ -42,6 +42,7 @@ class SpinnerTab extends RangeTab {
 		super.createControlWidgets ();
 		createIncrementGroup ();
 		createPageIncrementGroup ();
+		createDigitsGroup ();
 	}
 	
 	/**
@@ -155,6 +156,37 @@ class SpinnerTab extends RangeTab {
 	}
 	
 	/**
+	 * Create a group of widgets to control the digits
+	 * attribute of the example widget.
+	 */
+	void createDigitsGroup() {
+	
+		/* Create the group */
+		Group digitsGroup = new Group (controlGroup, SWT.NONE);
+		digitsGroup.setLayout (new GridLayout ());
+		digitsGroup.setText (ControlExample.getResourceString("Digits"));
+		digitsGroup.setLayoutData (new GridData (GridData.FILL_HORIZONTAL));
+	
+		/* Create the scale widget */
+		digitsScale = new Scale (digitsGroup, SWT.NONE);
+		digitsScale.setMaximum (50);
+		digitsScale.setSelection (0);
+		digitsScale.setPageIncrement (10);
+		digitsScale.setIncrement (5);
+
+		GridData data = new GridData (GridData.FILL_HORIZONTAL);
+		data.widthHint = 100;
+		digitsScale.setLayoutData (data);
+	
+		/* Add the listeners */
+		digitsScale.addSelectionListener (new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent e) {		
+				setWidgetDigits ();
+			}
+		});
+	}
+	
+	/**
 	 * Creates the tab folder page.
 	 *
 	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
@@ -215,6 +247,7 @@ class SpinnerTab extends RangeTab {
 		wrapButton.setSelection ((spinner1.getStyle () & SWT.WRAP) != 0);
 		setWidgetIncrement ();
 		setWidgetPageIncrement ();
+		setWidgetDigits ();
 	}
 
 	/**
@@ -243,6 +276,13 @@ class SpinnerTab extends RangeTab {
 	 */
 	void setWidgetPageIncrement () {
 		spinner1.setPageIncrement (pageIncrementScale.getSelection ());
+	}
+	
+	/**
+	 * Sets the digits of the "Example" widgets.
+	 */
+	void setWidgetDigits () {
+		spinner1.setDigits (digitsScale.getSelection ());
 	}
 	
 	/**
