@@ -892,7 +892,7 @@ public int getItemHeight() {
  * Answer the number of pixels that should be added to the item height.
  */
 int getItemPadding() {
-	return getGridLineWidth() + Display.textHighlightThickness + 1;
+	return getGridLineWidth() + getDisplay().textHighlightThickness + 1;
 }
 /**
  * Returns an array of <code>TableItem</code>s which are the items

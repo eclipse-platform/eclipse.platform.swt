@@ -985,7 +985,7 @@ public int getItemHeight() {
  * Answer the number of pixels that should be added to the item height.
  */
 int getItemPadding() {
-	return 2 + Display.textHighlightThickness;
+	return 2 + getDisplay().textHighlightThickness;
 }
 /**
  * Answer the item that most recently received the input focus.
