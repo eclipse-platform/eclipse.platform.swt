@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.printing;
 
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
-// AW import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
 
 /**
  * Instances of this class allow the user to select
@@ -26,7 +25,7 @@ import org.eclipse.swt.widgets.*;
  */
 public class PrintDialog extends Dialog {
 	int scope = PrinterData.ALL_PAGES;
-	int startPage = -1, endPage = -1;
+	int startPage = 1, endPage = 1;
 	boolean printToFile = false;
 
 /**
@@ -49,6 +48,7 @@ public class PrintDialog extends Dialog {
 public PrintDialog (Shell parent) {
 	this (parent, SWT.PRIMARY_MODAL);
 }
+
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -81,6 +81,7 @@ public PrintDialog (Shell parent, int style) {
 	super (parent, style);
 	checkSubclass ();
 }
+
 /**
  * Makes the receiver visible and brings it to the front
  * of the display.
@@ -93,11 +94,86 @@ public PrintDialog (Shell parent, int style) {
  * </ul>
  */
 public PrinterData open() {
-	/* Return the first printer in the list */
-	PrinterData[] printers = Printer.getPrinterList();
-	if (printers.length > 0) return printers[0];
+	int[] buffer = new int[1];
+	if (OS.PMCreateSession(buffer) == OS.noErr) {
+		int printSession = buffer[0];
+		if (OS.PMCreatePrintSettings(buffer) == OS.noErr) {
+			int printSettings = buffer[0];
+			OS.PMSessionDefaultPrintSettings(printSession, printSettings);
+			if (OS.PMCreatePageFormat(buffer) == OS.noErr) {
+				int pageFormat = buffer[0];
+				OS.PMSessionDefaultPageFormat(printSession, pageFormat);
+				OS.PMSessionSetDestination(printSession, printSettings, (short) (printToFile ? OS.kPMDestinationFile : OS.kPMDestinationPrinter), 0, 0);
+				if (scope == PrinterData.PAGE_RANGE) {
+					OS.PMSetFirstPage(printSettings, startPage, false);
+					OS.PMSetLastPage(printSettings, endPage, false);
+					OS.PMSetPageRange(printSettings, startPage, endPage);
+				} else {
+					OS.PMSetPageRange(printSettings, 1, OS.kPMPrintAllPages);
+				}
+				boolean[] accepted = new boolean [1];
+				OS.PMSessionPageSetupDialog(printSession, pageFormat, accepted);	
+				if (accepted[0]) {		
+					OS.PMSessionPrintDialog(printSession, printSettings, pageFormat, accepted);
+					if (accepted[0]) {
+						String name = Printer.getCurrentPrinterName(printSession);
+						PrinterData data = new PrinterData(Printer.DRIVER, name);
+						short[] destType = new short[1];
+						OS.PMSessionGetDestinationType(printSession, printSettings, destType);
+						if (destType [0] == OS.kPMDestinationFile) {
+							data.printToFile = true;
+							OS.PMSessionCopyDestinationLocation(printSession, printSettings, buffer);
+							int fileName = OS.CFURLCopyFileSystemPath(buffer[0],OS.kCFURLPOSIXPathStyle);
+							OS.CFRelease(buffer[0]);
+							data.fileName = Printer.getString(fileName);
+							OS.CFRelease(fileName);
+						}
+						OS.PMGetCopies(printSettings, buffer);
+						data.copyCount = buffer[0];						
+						OS.PMGetFirstPage(printSettings, buffer);
+						data.startPage = buffer[0];
+						OS.PMGetLastPage(printSettings, buffer);
+						data.endPage = buffer[0];
+						OS.PMGetPageRange(printSettings, null, buffer);
+						if (data.startPage == 1 && data.endPage == OS.kPMPrintAllPages) {
+							data.scope = PrinterData.ALL_PAGES;
+						} else {
+							data.scope = PrinterData.PAGE_RANGE;
+						}
+						boolean[] collate = new boolean[1];
+						OS.PMGetCollate(printSettings, collate);
+						data.collate = collate[0];
+						
+						/* Serialize settings */
+						int[] flatSettings = new int[1];
+						OS.PMFlattenPrintSettings(printSettings, flatSettings);
+						int[] flatFormat = new int[1];
+						OS.PMFlattenPageFormat(pageFormat, flatFormat);
+						int settingsLength = OS.GetHandleSize (flatSettings[0]);
+						int formatLength = OS.GetHandleSize (flatFormat[0]);
+						byte[] otherData = data.otherData = new byte[settingsLength + formatLength + 8];
+						int offset = 0;
+						offset = Printer.packData(flatSettings[0], otherData, offset);
+						offset = Printer.packData(flatFormat[0], otherData, offset);
+						OS.DisposeHandle(flatSettings[0]);
+						OS.DisposeHandle(flatFormat[0]);
+						
+						scope = data.scope;
+						startPage = data.startPage;
+						endPage = data.endPage;
+						printToFile = data.printToFile;
+						return data;
+					}
+				}
+				OS.PMRelease(pageFormat);
+			}
+			OS.PMRelease(printSettings);
+		}
+		OS.PMRelease(printSession);
+	}
 	return null;
 }
+
 /**
  * Returns the print job scope that the user selected
  * before pressing OK in the dialog. This will be one
@@ -116,6 +192,7 @@ public PrinterData open() {
 public int getScope() {
 	return scope;
 }
+
 /**
  * Sets the scope of the print job. The user will see this
  * setting when the dialog is opened. This can have one of
@@ -134,6 +211,7 @@ public int getScope() {
 public void setScope(int scope) {
 	this.scope = scope;
 }
+
 /**
  * Returns the start page setting that the user selected
  * before pressing OK in the dialog.
@@ -147,6 +225,7 @@ public void setScope(int scope) {
 public int getStartPage() {
 	return startPage;
 }
+
 /**
  * Sets the start page that the user will see when the dialog
  * is opened.
@@ -160,6 +239,7 @@ public int getStartPage() {
 public void setStartPage(int startPage) {
 	this.startPage = startPage;
 }
+
 /**
  * Returns the end page setting that the user selected
  * before pressing OK in the dialog.
@@ -173,6 +253,7 @@ public void setStartPage(int startPage) {
 public int getEndPage() {
 	return endPage;
 }
+
 /**
  * Sets the end page that the user will see when the dialog
  * is opened.
@@ -186,6 +267,7 @@ public int getEndPage() {
 public void setEndPage(int endPage) {
 	this.endPage = endPage;
 }
+
 /**
  * Returns the 'Print to file' setting that the user selected
  * before pressing OK in the dialog.
@@ -195,6 +277,7 @@ public void setEndPage(int endPage) {
 public boolean getPrintToFile() {
 	return printToFile;
 }
+
 /**
  * Sets the 'Print to file' setting that the user will see
  * when the dialog is opened.
@@ -204,6 +287,7 @@ public boolean getPrintToFile() {
 public void setPrintToFile(boolean printToFile) {
 	this.printToFile = printToFile;
 }
+
 protected void checkSubclass() {
 }
 }
