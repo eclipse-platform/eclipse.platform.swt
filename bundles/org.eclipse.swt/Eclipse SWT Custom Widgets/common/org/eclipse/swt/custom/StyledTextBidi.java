@@ -943,12 +943,14 @@ private void prepareFontStyledText(String textline, int logicalStart, int length
 	}
 	int[] dxArray = new int[byteCount];
 	int[] orderArray = new int[byteCount];	
-	BidiUtil.getRenderInfo(gc, text, orderArray, classArray, dxArray, flags, new int[] {0, text.length()});
-	// update the existing dx array with the new dx values based on the bold font
+	char[] boldGlyphBuffer;
+	boldGlyphBuffer = BidiUtil.getRenderInfo(gc, text, orderArray, classArray, dxArray, flags, new int[] {0, text.length()});
+	// update the existing dx/glyph arrays with the new values based on the bold font
 	for (int i = 0; i < dxArray.length; i++) {
-		int dxValue = dxArray[orderArray[i]];
+		int index = orderArray[i];
 		int visualIndex = renderIndexes[i];
-		dx[visualIndex] = dxValue;
+		dx[visualIndex] = dxArray[index];
+		glyphBuffer[visualIndex] = boldGlyphBuffer[index];
 	}
 }
 /** 
