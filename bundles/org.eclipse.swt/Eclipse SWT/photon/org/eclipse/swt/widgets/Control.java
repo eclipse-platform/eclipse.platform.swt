@@ -2202,6 +2202,7 @@ public void setVisible (boolean visible) {
 	checkWidget ();
 	int topHandle = topHandle ();
 	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, visible ? 0 : OS.Pt_DELAY_REALIZE, OS.Pt_DELAY_REALIZE);
+	if (visible == OS.PtWidgetIsRealized (topHandle)) return;
 	if (visible) {
 		sendEvent (SWT.Show);
 		OS.PtRealizeWidget (topHandle);
