@@ -1942,6 +1942,7 @@ static synchronized void register (Display display) {
  * @see #destroy
  */
 protected void release () {
+	sendEvent (SWT.Dispose, new Event ());
 	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1953,7 +1954,7 @@ protected void release () {
 			if (disposeList [i] != null) disposeList [i].run ();
 		}
 	}
-	disposeList = null;	
+	disposeList = null;
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
 	releaseDisplay ();
