@@ -2072,6 +2072,7 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				postEvent (SWT.DefaultSelection, event);
 			}
 			if (hooks (SWT.DefaultSelection)) return LRESULT.ONE;
+			break;
 		}
 		case OS.TVN_SELCHANGEDA:
 		case OS.TVN_SELCHANGEDW: {
@@ -2146,22 +2147,27 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				if (item == null) break;
 				Event event = new Event ();
 				event.item = item;
-				/*
-				* It is possible (but unlikely), that application
-				* code could have disposed the widget in the expand
-				* or collapse event.  If this happens, end the
-				* processing of the Windows message by returning
-				* zero as the result of the window proc.
-				*/
 				int [] action = new int [1];
 				OS.MoveMemory (action, lParam + NMHDR.sizeof, 4);
-				if (action [0] == OS.TVE_EXPAND) {
-					sendEvent (SWT.Expand, event);
-					if (isDisposed ()) return LRESULT.ZERO;
-				}
-				if (action [0] == OS.TVE_COLLAPSE) {
-					sendEvent (SWT.Collapse, event);
-					if (isDisposed ()) return LRESULT.ZERO;
+				switch (action [0]) {
+					case OS.TVE_EXPAND:
+						/*
+						* Bug in Windows.  When the numeric keypad asterisk
+						* key is used to expand every item in the tree, Windows
+						* sends TVN_ITEMEXPANDING to items in the tree that
+						* have already been expanded.  The fix is to detect
+						* that the item is already expanded and ignore the
+						* notification.
+						*/
+						if ((tvItem.state & OS.TVIS_EXPANDED) == 0) {
+							sendEvent (SWT.Expand, event);
+							if (isDisposed ()) return LRESULT.ZERO;
+						}
+						break;
+					case OS.TVE_COLLAPSE:
+						sendEvent (SWT.Collapse, event);
+						if (isDisposed ()) return LRESULT.ZERO;
+						break;
 				}
 			}
 			break;
