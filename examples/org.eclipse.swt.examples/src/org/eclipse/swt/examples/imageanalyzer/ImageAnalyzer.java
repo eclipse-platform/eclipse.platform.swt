@@ -1175,16 +1175,6 @@ public class ImageAnalyzer {
 		} else {
 			imageCanvas.setBackground(null);
 		}
-		// Fill the image canvas with the background color.
-		Rectangle clientArea = imageCanvas.getClientArea();
-		imageCanvasGC.fillRectangle(
-			clientArea.x,
-			clientArea.y,
-			clientArea.width,
-			clientArea.height);
-		if (image != null) {
-			imageCanvas.redraw();
-		}
 	}
 	
 	/*
