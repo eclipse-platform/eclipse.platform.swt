@@ -39,14 +39,13 @@ public RGB getRGB () {
 int fontProc (int nextHandler, int theEvent, int userData) {
 	int kind = OS.GetEventKind (theEvent);
 	switch (kind) {
+		case OS.kEventFontPanelClosed:
+			open = false;
+			break;
 		case OS.kEventFontSelection:
+			if (fontData == null) fontData = new FontData();
 			short [] fontFamily = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamFMFontFamily, OS.typeSInt16, null, 2, null, fontFamily);
-			short [] fontStyle = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamFMFontStyle, OS.typeSInt16, null, 2, null, fontStyle);
-			short [] fontSize = new short [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamFMFontSize, OS.typeSInt16, null, 2, null, fontSize);
-			if (fontFamily [0] != 0 && fontSize [0] != 0) {
+			if (OS.GetEventParameter (theEvent, OS.kEventParamFMFontFamily, OS.typeSInt16, null, 2, null, fontFamily) == OS.noErr) {
 				byte[] buffer = new byte[256];
 				OS.FMGetFontFamilyName(fontFamily [0], buffer);
 				int length = buffer[0] & 0xFF;
@@ -54,25 +53,29 @@ int fontProc (int nextHandler, int theEvent, int userData) {
 				for (int i=0; i<length; i++) {
 					chars[i]= (char)buffer[i+1];
 				}
-				String name = new String(chars);
+				fontData.setName (new String(chars));
+			}
+			short [] fontStyle = new short [1];
+			if (OS.GetEventParameter (theEvent, OS.kEventParamFMFontStyle, OS.typeSInt16, null, 2, null, fontStyle) == OS.noErr) {
 				int style = SWT.NORMAL;
 				if ((fontStyle [0] & OS.bold) != 0) style |= SWT.BOLD;
 				if ((fontStyle [0] & OS.italic) != 0) style |= SWT.ITALIC;
-				fontData = new FontData(name, fontSize [0], style);
+				fontData.setStyle (style);
+			}
+			short [] fontSize = new short [1];
+			if (OS.GetEventParameter (theEvent, OS.kEventParamFMFontSize, OS.typeSInt16, null, 2, null, fontSize) == OS.noErr) {
+				fontData.setHeight (fontSize [0]);
 			}
 			// NEEDS WORK - color not supported in native dialog for Carbon
 			RGBColor color = new RGBColor ();
 			int [] actualSize = new int [1];
-			OS.GetEventParameter (theEvent, OS.kEventParamFontColor, OS.typeRGBColor, null, RGBColor.sizeof, actualSize, color);
-			if (actualSize [0] == RGBColor.sizeof) {
+			if (OS.GetEventParameter (theEvent, OS.kEventParamFontColor, OS.typeRGBColor, null, RGBColor.sizeof, actualSize, color) == OS.noErr) {
 				int red = (color.red >> 8) & 0xFF;
 				int green = (color.green >> 8) & 0xFF;
 				int blue =	(color.blue >> 8) & 0xFF;
 				rgb = new RGB(red, green, blue);
 			}
 			break;
-		case OS.kEventFontPanelClosed:
-			open = false;
 	}
 	return OS.noErr;
 }
