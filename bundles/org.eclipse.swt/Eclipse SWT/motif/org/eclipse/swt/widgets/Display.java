@@ -565,7 +565,7 @@ void createDisplay (DeviceData data) {
 	* found.	*/
 	int ptr1 = 0, ptr2 = 0; 
 	if (OS.IsLinux && OS.IsDBLocale) {
-		String resource = "*fontList: -*-fixed-medium-r-*-*-*-120-*-*-*-*-*-*:";
+		String resource = "*fontList: -*-*-medium-r-*-*-*-120-*-*-*-*-*-*:";
 		byte [] buffer = Converter.wcsToMbcs (null, resource, true);
 		ptr1 = OS.XtMalloc (buffer.length);
 		if (ptr1 != 0) OS.memmove (ptr1, buffer, buffer.length);
@@ -1310,13 +1310,22 @@ void initializeLabel () {
 	int shellHandle, widgetHandle;
 	int widgetClass = OS.TopLevelShellWidgetClass ();
 	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
-	widgetHandle = OS.XmCreateLabel (shellHandle, null, null, 0);
+		
+	/* 
+	 * Bug in Motif. When running on UTF-8 Motif  becomes unstable 
+	 * (causing GPs) if the first label widget is create without a XmString.
+	 * The fix is to create the Label with a non-emptyXmString.
+	 */
+	byte [] buffer = Converter.wcsToMbcs(null, "string", true);
+	int xmString = OS.XmStringCreateLocalized(buffer);
+	int [] argList1 = {OS.XmNlabelType, OS.XmSTRING, OS.XmNlabelString, xmString};
+	widgetHandle = OS.XmCreateLabel (shellHandle, null, argList1, argList1.length / 2);
 	OS.XtManageChild (widgetHandle);
 	OS.XtSetMappedWhenManaged (shellHandle, false);
 	OS.XtRealizeWidget (shellHandle);
-	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNfontList, 0};
-	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
-	labelForeground = argList [1];  labelBackground = argList [3]; 
+	int [] argList2 = {OS.XmNforeground, 0, OS.XmNbackground, 0, OS.XmNfontList, 0};
+	OS.XtGetValues (widgetHandle, argList2, argList2.length / 2);
+	labelForeground = argList2 [1];  labelBackground = argList2 [3]; 
 	/*
 	 * Feature in Motif. Querying the font list from the widget and
 	 * then destroying the shell (and the widget) could cause the
@@ -1324,8 +1333,9 @@ void initializeLabel () {
 	 * the font list, then to free it when the display is disposed.
 	 */
   
-	labelFont = Font.motif_new (this, OS.XmFontListCopy (argList [5]));
+	labelFont = Font.motif_new (this, OS.XmFontListCopy (argList2 [5]));
 	OS.XtDestroyWidget (shellHandle);
+	OS.XmStringFree (xmString);
 }
 void initializeList () {
 	int shellHandle, widgetHandle;
