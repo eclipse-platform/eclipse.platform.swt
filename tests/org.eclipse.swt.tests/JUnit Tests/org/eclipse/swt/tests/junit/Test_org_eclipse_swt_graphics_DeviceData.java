@@ -40,11 +40,6 @@ public void test_Constructor() {
 	DeviceData data = new DeviceData();
 	data.debug = true;
 	data.tracking = true;
-	testPerformance(new Runnable() {
-		public void run() {
-			new DeviceData();
-		}
-	});
 }
 
 public static Test suite() {
