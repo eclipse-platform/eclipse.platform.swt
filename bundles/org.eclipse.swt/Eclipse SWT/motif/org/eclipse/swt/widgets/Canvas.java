@@ -237,7 +237,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 }
 void updateCaret () {
 	if (caret == null) return;
-	if (!IsDBLocale) return;
+	if (!OS.IsDBLocale) return;
 	short [] point = getIMECaretPos ();
 	int ptr = OS.XtMalloc (4);
 	OS.memmove (ptr, point, 4);

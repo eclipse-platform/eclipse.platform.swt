@@ -814,7 +814,7 @@ void hookEvents () {
 	}
 }
 int imeHeight () {
-	if (!IsDBLocale) return 0;
+	if (!OS.IsDBLocale) return 0;
 //	realizeWidget ();
 	int [] argList1 = {OS.XmNheight, 0};
 	OS.XtGetValues (shellHandle, argList1, argList1.length / 2);

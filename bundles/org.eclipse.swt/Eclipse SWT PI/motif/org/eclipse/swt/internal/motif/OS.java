@@ -18,6 +18,7 @@ public class OS {
 
 	/* OS and locale Constants*/
 	public static final boolean IsAIX, IsSunOS, IsLinux;
+	public static final boolean IsDBLocale;
 	static {
 		
 		/* Initialize the OS flags and locale constants */
@@ -28,6 +29,7 @@ public class OS {
 		if (osName.equals ("Solaris")) isSunOS = true;
 		if (osName.equals ("SunOS")) isSunOS = true;
 		IsAIX = isAIX;  IsSunOS = isSunOS;  IsLinux = isLinux;
+		IsDBLocale = OS.MB_CUR_MAX () != 1;
 	}
 	public static final int CODESET = OS.IsLinux ? 14 : 49;
 	public static final int LC_CTYPE = OS.IsAIX ? 1 : 0;

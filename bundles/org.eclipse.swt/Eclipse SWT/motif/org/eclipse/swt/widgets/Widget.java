@@ -68,11 +68,6 @@ public abstract class Widget {
 	/* Global widget variables */
 	static final char Mnemonic = '&';
 
-	/* DBCS flags */
-	static final boolean IsDBLocale;
-	static {
-		IsDBLocale = OS.MB_CUR_MAX () != 1;
-	}
 Widget () {
 	/* Do nothing */
 }
