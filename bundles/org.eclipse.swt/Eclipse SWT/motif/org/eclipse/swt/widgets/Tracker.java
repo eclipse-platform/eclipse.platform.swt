@@ -272,20 +272,16 @@ public boolean open () {
 				OS.XQueryPointer (xDisplay, xWindow, unused, unused, newX, newY, unused, unused, unused);
 				if (oldX [0] != newX [0] || oldY [0] != newY [0]) {
 					drawRectangles ();
-					if ((style & SWT.RESIZE) != 0) {
-						resizeRectangles(newX [0] - oldX [0], newY [0] - oldY [0]);
-					} else {
-						moveRectangles(newX [0] - oldX [0], newY [0] - oldY [0]);
-					}
 					Event event = new Event();
 					event.x = newX [0];
 					event.y = newY [0];
 					if ((style & SWT.RESIZE) != 0) {
+						resizeRectangles(newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Resize, event);
 					} else {
+						moveRectangles(newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Move, event);
 					}
-
 					/*
 					 * It is possible (but unlikely) that application code
 					 * could have disposed the widget in the move event.
@@ -320,31 +316,36 @@ public boolean open () {
 							cancelled = true;
 							break;
 						case OS.XK_Left:
-							xChange = -stepSize;
+							if ((useAllDirections() | (style & SWT.LEFT) != 0)) {
+								xChange = -stepSize;
+							}
 							break;
 						case OS.XK_Right:
-							xChange = stepSize;
+							if ((useAllDirections() | (style & SWT.RIGHT) != 0)) {
+								xChange = stepSize;
+							}
 							break;
 						case OS.XK_Up:
-							yChange = -stepSize;
+							if ((useAllDirections() | (style & SWT.UP) != 0)) {
+								yChange = -stepSize;
+							}
 							break;
 						case OS.XK_Down:
-							yChange = stepSize;
+							if ((useAllDirections() | (style & SWT.DOWN) != 0)) {
+								yChange = stepSize;
+							}
 							break;
 					}
 					if (xChange != 0 || yChange != 0) {
 						drawRectangles ();
-						if ((style & SWT.RESIZE) != 0) {
-							resizeRectangles(xChange, yChange);
-						} else {
-							moveRectangles(xChange, yChange);
-						}
 						Event event = new Event();
 						event.x = oldX[0] + xChange;
 						event.y = oldY[0] + yChange;
 						if ((style & SWT.RESIZE) != 0) {
+							resizeRectangles(xChange, yChange);
 							sendEvent (SWT.Resize,event);
 						} else {
+							moveRectangles(xChange, yChange);
 							sendEvent (SWT.Move,event);
 						}
 						/*
@@ -438,5 +439,8 @@ public void setRectangles (Rectangle [] rectangles) {
 public void setStippled (boolean stippled) {
 	checkWidget();
 	this.stippled = stippled;
+}
+boolean useAllDirections() {
+	return ((SWT.LEFT | SWT.RIGHT | SWT.UP | SWT.DOWN) & style) == 0;
 }
 }
