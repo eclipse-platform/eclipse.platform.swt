@@ -11,15 +11,16 @@
 package org.eclipse.swt.internal.motif;
 
  
-public class XmDropFinishCallback {
-	public int   reason;           // the reason callback was called
-	public int   event;            // event structure that triggered callback
-	public int   timeStamp;        // time at which drop completed
-	public byte  operation;        // current operation
-	public byte  operations;       // supported operations
-	public byte  dropSiteStatus;   // valid, invalid or none
-	public byte  dropAction;       // drop, cancel, help or interrupt
-	public byte  completionStatus; // success or failure
-
-	public static final int sizeof = 17;
+public class XmDropProcCallbackStruct {
+	public int reason;
+	public int event;
+	public int timeStamp;
+	public int dragContext;
+	public short x;
+	public short y;
+	public byte dropSiteStatus;
+	public byte operation;
+	public byte operations;
+	public byte dropAction;
+	public static final int sizeof = 24;
 }

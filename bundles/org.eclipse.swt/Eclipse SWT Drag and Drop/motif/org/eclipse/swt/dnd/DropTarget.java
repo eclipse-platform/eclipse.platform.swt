@@ -86,7 +86,7 @@ public class DropTarget extends Widget {
 	
 	// workaround - The data required in the transferProc callback is not available 
 	// so store it from the dropProc callback 
-	private XmDropProcCallback droppedEventData;
+	private XmDropProcCallbackStruct droppedEventData;
 	private int dropTransferObject;
 	
 	// workaround - The DND operation can time out so temporarily set the
@@ -461,8 +461,8 @@ private void dragProcCallback(int widget, int client_data, int call_data) {
 
 private void dropProcCallback(int widget, int client_data, int call_data) {
 	if (call_data == 0) return;
-	droppedEventData = new XmDropProcCallback();
-	OS.memmove(droppedEventData, call_data, XmDropProcCallback.sizeof);	
+	droppedEventData = new XmDropProcCallbackStruct();
+	OS.memmove(droppedEventData, call_data, XmDropProcCallbackStruct.sizeof);	
 	
 	if (droppedEventData.dropSiteStatus == OS.XmDROP_SITE_INVALID) {
 		int[] args = new int[] {OS.XmNtransferStatus, OS.XmTRANSFER_FAILURE, OS.XmNnumDropTransfers, 0};

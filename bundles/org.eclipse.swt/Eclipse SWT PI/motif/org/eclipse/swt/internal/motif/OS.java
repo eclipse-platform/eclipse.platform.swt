@@ -876,7 +876,7 @@ public static final native void memmove(XMotionEvent dest, int src, int count);
 public static final native void memmove(XmAnyCallbackStruct dest, int src, int count);
 public static final native void memmove(XmDragProcCallbackStruct dest, int src, int count);
 public static final native void memmove(XmDropFinishCallbackStruct dest, int src, int count);
-public static final native void memmove(XmDropProcCallback dest, int src, int count);
+public static final native void memmove(XmDropProcCallbackStruct dest, int src, int count);
 public static final native void memmove(XmTextBlockRec dest, int src, int count);
 public static final native void memmove(XmTextVerifyCallbackStruct dest, int src, int count);
 public static final native void memmove(byte[] dest, int src, int count);
