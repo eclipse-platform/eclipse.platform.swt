@@ -235,7 +235,7 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 }
 
 public void test_dispose() {
-	final int COUNT = 2000;	// 4000 causes No More Handles
+	final int COUNT = 3000;	// 4000 causes No More Handles
 
 	Image[] images = new Image [COUNT];
 	GC[] gcs = new GC [COUNT];
@@ -1049,23 +1049,18 @@ public void test_getClipping() {
 }
 
 public void test_getClippingLorg_eclipse_swt_graphics_Region() {
-	final int COUNT = 4000;	// 5000 causes No More Handles
-	
-	Region[] regions = new Region[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		regions[i] = new Region(display);
-	}
+	final int COUNT = 1200000;
+
+	Region region = new Region(display);
 	
 	PerformanceMeter meter = createMeter("GC getClipping(Region)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		gc.getClipping(regions[i]);
+		gc.getClipping(region);
 	}
 	meter.stop();
 	
-	for (int i = 0; i < COUNT; i++) {
-		regions[i].dispose();
-	}
+	region.dispose();
 	
 	disposeMeter(meter);
 }
