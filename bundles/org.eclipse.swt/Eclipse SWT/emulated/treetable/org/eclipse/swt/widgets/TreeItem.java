@@ -410,9 +410,6 @@ int getContentX (int columnIndex) {
 		contentX += expanderWidth * depth;
 	}
 	contentX += parent.expanderBounds.width;
-	if (items.length == 0) {
-		contentX += Compatibility.floor (parent.expanderBounds.width, 2);
-	}
 	return contentX + Tree.MARGIN_IMAGE + INDENT_HIERARCHY;
 }
 public boolean getExpanded () {
