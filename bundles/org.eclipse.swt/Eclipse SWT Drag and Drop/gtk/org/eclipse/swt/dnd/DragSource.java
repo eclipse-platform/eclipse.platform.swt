@@ -99,18 +99,21 @@ public class DragSource extends Widget {
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
 
+	private int targetList;
+	
+	//workaround - remember action performed for DragEnd
+	private boolean moveData = false;
+	
 	private static final String DRAGSOURCEID = "DragSource"; //$NON-NLS-1$
 		
-	static Callback DragGetData;
-	static Callback DragEnd;
-	static Callback DragDataDelete;
+	private static Callback DragGetData;
+	private static Callback DragEnd;
+	private static Callback DragDataDelete;
 	static {
 		DragGetData = new Callback(DragSource.class, "DragGetData", 6);	
 		DragEnd = new Callback(DragSource.class, "DragEnd", 3);
 		DragDataDelete = new Callback(DragSource.class, "DragDataDelete", 3);
 	}
-	int targetList;
-	boolean movePerformed;
 	
 /**
  * Creates a new <code>DragSource</code> to handle dragging from the specified <code>Control</code>.
@@ -140,10 +143,14 @@ public class DragSource extends Widget {
 public DragSource(Control control, int style) {
 	super (control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DRAGSOURCEID) != null)
+	if (DragGetData == null || DragEnd == null || DragDataDelete == null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+	}
+	if (control.getData(DRAGSOURCEID) != null) {
+		DND.error(DND.ERROR_CANNOT_INIT_DRAG);
+	}
 	control.setData(DRAGSOURCEID, this);
-	
+
 	byte[] buffer = Converter.wcsToMbcs(null, "drag_data_get", true);
 	OS.g_signal_connect(control.handle, buffer, DragGetData.getAddress(), 0);	
 	buffer = Converter.wcsToMbcs(null, "drag_end", true);
@@ -175,27 +182,35 @@ public DragSource(Control control, int style) {
 	});
 }
 
+static int checkStyle (int style) {
+	if (style == SWT.NONE) return DND.DROP_MOVE;
+	return style;
+}
+
+static int DragDataDelete(int widget, int context, int data){
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	return source.dragDataDelete(widget, context, data);
+}
+
+static int DragEnd(int widget, int context, int data){
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	return source.dragEnd(widget, context, data);
+}
+	
+static int DragGetData(int widget, int context, int selection_data,  int info, int time, int data){
+	DragSource source = FindDragSource(widget);
+	if (source == null) return 0;
+	return source.dragGetData(widget, context, selection_data, info, time, data);
+}
+
 static DragSource FindDragSource(int handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
 	if (widget == null) return null;
 	return (DragSource)widget.getData(DRAGSOURCEID);
-}
-static int DragEnd(int widget, int context, int data){
-	DragSource source = FindDragSource(widget);
-	if (source == null) return 0;
-	return source.dragEnd(widget, context, data);
-}	
-static int DragGetData(int widget, int context, int selection_data,  int info, int time, int data){
-	DragSource source = FindDragSource(widget);
-	if (source == null) return 0;
-	return source.dragGetData(widget, context, selection_data, info, time, data);
-}
-static int DragDataDelete(int widget, int context, int data){
-	DragSource source = FindDragSource(widget);
-	if (source == null) return 0;
-	return source.dragDataDelete(widget, context, data);
 }
 
 /**
@@ -235,27 +250,12 @@ public void addDragListener(DragSourceListener listener) {
 	addListener (DND.DragEnd, typedListener);
 }
 
-static int checkStyle (int style) {
-	if (style == SWT.NONE) return DND.DROP_MOVE;
-	return style;
-}
-
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DragSource.class.getName();
 	if (!validName.equals(name)) {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
-}
-
-/**
- * Returns the Control which is registered for this DragSource.  This is the control that the 
- * user clicks in to initiate dragging.
- *
- * @return the Control which is registered for this DragSource
- */
-public Control getControl () {
-	return control;
 }
 
 private void drag(Event dragEvent) {
@@ -268,8 +268,7 @@ private void drag(Event dragEvent) {
 	} catch (Throwable e) {
 		event.doit = false;
 	}
-	if (!event.doit) return;
-	if (transferAgents == null || transferAgents.length == 0) return;
+	if (!event.doit || transferAgents == null || transferAgents.length == 0) return;
 	if (targetList == 0) return;
 	
 	int actions = opToOsOp(getStyle());
@@ -289,27 +288,27 @@ int dragEnd(int widget, int context, int data){
 	OS.gdk_pointer_ungrab(OS.GDK_CURRENT_TIME); 
 	OS.gdk_keyboard_ungrab(OS.GDK_CURRENT_TIME);
 	
-	int op = DND.DROP_NONE;
+	int operation = DND.DROP_NONE;
 	if (context != 0) {
 		GdkDragContext gdkDragContext = new GdkDragContext ();
 		OS.memmove(gdkDragContext, context, GdkDragContext.sizeof);
 		if (gdkDragContext.dest_window != 0) { //NOTE: if dest_window is 0, drag was aborted
-			op = osOpToOp(gdkDragContext.action);
-			if (movePerformed) op = DND.DROP_MOVE;
+			operation = osOpToOp(gdkDragContext.action);
+			if (moveData) operation = DND.DROP_MOVE;
 		}
 	}	
 	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
-	event.doit = op != 0;
-	event.detail = op; 
+	//event.time = ???
+	event.doit = operation != 0;
+	event.detail = operation; 
 	
 	try {
 		notifyListeners(DND.DragEnd, event);
-	} catch (Throwable e) {
-		return 0;
-	}
-	movePerformed = false;
+	} catch (Throwable e) {}
+
+	moveData = false;
 	return 1;	
 }	
 
@@ -318,16 +317,17 @@ int dragGetData(int widget, int context, int selection_data,  int info, int time
 	GtkSelectionData gtkSelectionData = new GtkSelectionData();
 	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
 	if (gtkSelectionData.target == 0) return 0;
-	TransferData tdata = new TransferData();
-	tdata.type = gtkSelectionData.target;
-	tdata.pValue = gtkSelectionData.data;
-	tdata.length = gtkSelectionData.length;
-	tdata.format = gtkSelectionData.format;
+	
+	TransferData transferData = new TransferData();
+	transferData.type = gtkSelectionData.target;
+	transferData.pValue = gtkSelectionData.data;
+	transferData.length = gtkSelectionData.length;
+	transferData.format = gtkSelectionData.format;
 		
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = time; 
-	event.dataType = tdata; 
+	event.dataType = transferData; 
 	try {
 		notifyListeners(DND.DragSetData, event);
 	} catch (Throwable e) {
@@ -337,19 +337,31 @@ int dragGetData(int widget, int context, int selection_data,  int info, int time
 		
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++) {
-		transfer = transferAgents[i];
-		if (transfer.isSupportedType(event.dataType)) break;
+		if (transferAgents[i].isSupportedType(transferData)) {
+			transfer = transferAgents[i];
+			break;
+		}
 	}
 	if (transfer == null) return 0;
-	transfer.javaToNative(event.data, event.dataType);
-	if (event.dataType.result == 0) return 0;
-	
-	OS.gtk_selection_data_set(selection_data, event.dataType.type, event.dataType.format, event.dataType.pValue, event.dataType.length);
-	return 1;	
+	transfer.javaToNative(event.data, transferData);
+	if (transferData.result != 1) return transferData.result;
+	OS.gtk_selection_data_set(selection_data, transferData.type, transferData.format, transferData.pValue, transferData.length);
+	return transferData.result;	
 }
+
 int dragDataDelete(int widget, int context, int data){
-	movePerformed = true;
+	moveData = true;
 	return 1;
+}
+
+/**
+ * Returns the Control which is registered for this DragSource.  This is the control that the 
+ * user clicks in to initiate dragging.
+ *
+ * @return the Control which is registered for this DragSource
+ */
+public Control getControl () {
+	return control;
 }
 
 /**
@@ -362,10 +374,10 @@ public Transfer[] getTransfer(){
 }
 
 private void onDispose() {
-	if (control == null)
-		return;
-	if (targetList != 0) 
+	if (control == null) return;
+	if (targetList != 0) {
 		OS.gtk_target_list_unref(targetList);
+	}
 	targetList = 0;
 	if (controlListener != null) {
 		control.removeListener(SWT.Dispose, controlListener);
@@ -389,6 +401,7 @@ private int opToOsOp(int operation){
 	
 	return osOperation;
 }
+
 private int osOpToOp(int osOperation){
 	int operation = DND.DROP_NONE;
 	
@@ -425,6 +438,7 @@ public void removeDragListener(DragSourceListener listener) {
 	removeListener (DND.DragSetData, listener);
 	removeListener (DND.DragEnd, listener);
 }
+
 /**
  * Specifies the list of data types that can be transferred by this DragSource.
  * The application must be able to provide data to match each of these types when
