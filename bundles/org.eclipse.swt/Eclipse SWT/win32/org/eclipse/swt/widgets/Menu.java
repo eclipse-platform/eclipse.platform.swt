@@ -835,6 +835,41 @@ public Shell getShell () {
 }
 
 /**
+ * Returns a point describing the receiver's size. The
+ * x coordinate of the result is the width of the receiver.
+ * The y coordinate of the result is the height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public Point getSize () {
+	checkWidget ();
+	if ((style & SWT.BAR) != 0) {
+		MENUBARINFO info = new MENUBARINFO ();
+		info.cbSize = MENUBARINFO.sizeof;
+		int hWnd = parent.getShell ().handle;
+		OS.GetMenuBarInfo (hWnd, OS.OBJID_MENU, 0, info);
+		int width = info.right - info.left;
+		int height = info.bottom - info.top;
+		return new Point (width, height);
+	}
+	int count = GetMenuItemCount (handle);
+	if (count == 0) return new Point (0, 0);
+	RECT rect = new RECT ();
+	int hWnd = parent.handle;
+	OS.GetMenuItemRect (hWnd, handle, count - 1, rect);
+	OS.MapWindowPoints (0, parent.handle, rect, 2);
+	int width = rect.right + 4;
+	int height =  rect.bottom + 4;
+	return new Point (width, height);
+}
+
+/**
  * Returns <code>true</code> if the receiver is visible, and
  * <code>false</code> otherwise.
  * <p>
