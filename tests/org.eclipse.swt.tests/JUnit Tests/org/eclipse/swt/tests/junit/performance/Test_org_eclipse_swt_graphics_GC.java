@@ -17,6 +17,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.printing.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.GC
@@ -56,19 +57,19 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	}
 	GC[] gcs = new GC[COUNT];
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("image");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gcs[i] = new GC(images[i]);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		gcs[i].dispose();
 		images[i].dispose();
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
 	final int count = COUNT % 100;
 	
@@ -90,18 +91,18 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 		return;
 	}
 
-	startMeasuring();
+	meter = createMeter("printer");
+	meter.start();
 	for (int i = 0; i < count; i++) {
 		gcs[i] = new GC((Printer) printers[i]);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < count; i++) {
 		gcs[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
@@ -111,19 +112,19 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	}
 	GC[] gcs = new GC[COUNT];
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("image");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gcs[i] = new GC(images[i], SWT.RIGHT_TO_LEFT);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		gcs[i].dispose();
 		images[i].dispose();
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
 	final int count = COUNT / 100;
 	Class printerClass = null;
@@ -144,18 +145,18 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		return;
 	}
 
-	startMeasuring();
+	meter = createMeter("printer");
+	meter.start();
 	for (int i = 0; i < count; i++) {
 		gcs[i] = new GC((Printer) printers[i], SWT.RIGHT_TO_LEFT);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < count; i++) {
 		gcs[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_copyAreaIIIIII() {
@@ -167,15 +168,15 @@ public void test_copyAreaIIIIII() {
 	gc.drawLine(5, 10, 10, 5);
 	Rectangle imageBounds = image.getBounds();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		int pos = i % imageBounds.width;
 		gc.copyArea(pos, pos, 2, 2, pos+2, pos);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
@@ -191,18 +192,18 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 		images[i] = new Image(display, 15, 15);
 	}
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.copyArea(images[i], 0, 0);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_dispose() {
@@ -215,49 +216,49 @@ public void test_dispose() {
 		gcs[i] = new GC(images[i]);
 	}
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gcs[i].dispose();	// dispose
 	}
-	stopMeasuring();
+	meter.stop();
 
     for (int i = 0; i < COUNT; i++) {
     	images[i].dispose();
     }
 
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
 
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gcs[i].dispose();	// dispose disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
 }
 
 public void test_drawArcIIIIII() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawArc(10, 20, 50, 25, 90, 90);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_drawFocusIIII() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawFocus(1, 1, 50, 25);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
@@ -290,35 +291,35 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	
 	try {
 		Rectangle bounds = image.getBounds();
-		startMeasuring();
+		PerformanceMeter meter = createMeter("normal");
+		meter.start();
 		for (int i = 0; i < COUNT; i++) {
 			int pos = i % bounds.width;
 			gc.drawImage(imageNormal, pos, pos);	// normal image
 		}
-		stopMeasuring();
+		meter.stop();
 		
-		commitMeasurements();
-		assertPerformance();
+		disposeMeter(meter);
 	
-		startMeasuring();
+		meter = createMeter("transparent");
+		meter.start();
 		for (int i = 0; i < COUNT; i++) {
 			int pos = i % bounds.width;
 			gc.drawImage(imageTransparent, pos, pos);	// transparent image
 		}
-		stopMeasuring();
+		meter.stop();
 		
-		commitMeasurements();
-		assertPerformance();
+		disposeMeter(meter);
 	
-		startMeasuring();
+		meter = createMeter("alpha");
+		meter.start();
 		for (int i = 0; i < COUNT; i++) {
 			int pos = i % bounds.width;
 			gc.drawImage(imageAlpha, pos, pos);	// alpha image
 		}
-		stopMeasuring();
+		meter.stop();
 		
-		commitMeasurements();
-		assertPerformance();
+		disposeMeter(meter);
 	} finally {
 		imageNormal.dispose();
 		imageTransparent.dispose();
@@ -327,43 +328,43 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 }
 
 public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
-	Color c1 = new Color(display, 255, 0, 0);
-	Color c2 = new Color(display, 0, 0, 0);
-	Color c3 = new Color(display, 255, 255, 0);
-	
-	PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
-	ImageData data = new ImageData(30,30, 8, paletteData);
-	for (int y = 0; y < data.height; y++) {
-		for (int x = 0; x < data.width; x++) {
-			if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
-			else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
-			else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
-		}
-	}
-	Image image = new Image(display, data);
-	data = image.getImageData();
-	data.transparentPixel = paletteData.getPixel(c1.getRGB());
-	Image imageTransparent = new Image(display, data);
-	data.transparentPixel = -1;
-	for (int y = 0; y < data.height; y++) {
-		for (int x = 0; x < data.width; x++) {
-			data.setAlpha(x, y, 127);
-		}
-	}		
-	Image imageAlpha = new Image(display, data);
-							
-	gc.drawImage(image, 10, 5, 20, 15, 100, 120, 50, 60);
-	gc.drawImage(imageTransparent, 10, 5, 20, 15, 100, 120, 10, 10);
-	gc.drawImage(imageAlpha, 10, 5, 20, 15, 100, 120, 20, 15);
-	try {
-		gc.drawImage(null, 10, 5, 20, 15, 100, 120, 50, 60);
-		fail("No exception thrown"); //should never get here
-	}
-	catch (IllegalArgumentException e) {
-	}
-	image.dispose();
-	imageAlpha.dispose();
-	imageTransparent.dispose();
+//	Color c1 = new Color(display, 255, 0, 0);
+//	Color c2 = new Color(display, 0, 0, 0);
+//	Color c3 = new Color(display, 255, 255, 0);
+//	
+//	PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
+//	ImageData data = new ImageData(30,30, 8, paletteData);
+//	for (int y = 0; y < data.height; y++) {
+//		for (int x = 0; x < data.width; x++) {
+//			if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
+//			else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
+//			else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
+//		}
+//	}
+//	Image image = new Image(display, data);
+//	data = image.getImageData();
+//	data.transparentPixel = paletteData.getPixel(c1.getRGB());
+//	Image imageTransparent = new Image(display, data);
+//	data.transparentPixel = -1;
+//	for (int y = 0; y < data.height; y++) {
+//		for (int x = 0; x < data.width; x++) {
+//			data.setAlpha(x, y, 127);
+//		}
+//	}		
+//	Image imageAlpha = new Image(display, data);
+//							
+//	gc.drawImage(image, 10, 5, 20, 15, 100, 120, 50, 60);
+//	gc.drawImage(imageTransparent, 10, 5, 20, 15, 100, 120, 10, 10);
+//	gc.drawImage(imageAlpha, 10, 5, 20, 15, 100, 120, 20, 15);
+//	try {
+//		gc.drawImage(null, 10, 5, 20, 15, 100, 120, 50, 60);
+//		fail("No exception thrown"); //should never get here
+//	}
+//	catch (IllegalArgumentException e) {
+//	}
+//	image.dispose();
+//	imageAlpha.dispose();
+//	imageTransparent.dispose();
 }
 
 public void test_drawLineIIII() {

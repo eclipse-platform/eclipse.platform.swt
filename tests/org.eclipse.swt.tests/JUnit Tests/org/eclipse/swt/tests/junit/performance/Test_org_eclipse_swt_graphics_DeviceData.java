@@ -14,6 +14,7 @@ package org.eclipse.swt.tests.junit.performance;
 import junit.framework.*;
 import junit.textui.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.DeviceData
@@ -32,14 +33,14 @@ public static void main(String[] args) {
 }
 
 public void test_Constructor() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new DeviceData();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public static Test suite() {

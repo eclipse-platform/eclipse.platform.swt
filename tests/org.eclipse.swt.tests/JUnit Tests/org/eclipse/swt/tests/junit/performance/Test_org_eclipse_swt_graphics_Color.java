@@ -15,6 +15,7 @@ import junit.textui.*;
 
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.Color
@@ -40,36 +41,36 @@ protected void setUp() throws Exception {
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 	Color[] colors = new Color [COUNT];
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		colors[i] = new Color(display, 102, 255, 3);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	for (int i = 0; i < COUNT; i++) {
 		colors[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_RGB() {
 	Color[] colors = new Color [COUNT];
 	RGB rgb = new RGB(102, 255, 3);
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		colors[i] = new Color(display, rgb);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	for (int i = 0; i < COUNT; i++) {
 		colors[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_dispose() {
@@ -78,149 +79,154 @@ public void test_dispose() {
 		colors[i] = new Color(display, 255,0,128);
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		colors[i].dispose();	// dispose
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
-    
-	startMeasuring();
+	disposeMeter(meter);
+	
+	meter = createMeter("already disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		colors[i].dispose();	// dispose disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
 }
 
 public void test_equalsLjava_lang_Object() {
 	Color color1 = new Color(display, 0, 128, 255);
 	Color color2 = new Color(display, 0, 128, 255);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color1.equals(color2);	// equal
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	color1.dispose();
 	color2.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 		
 	color1 = new Color(display, 0, 128, 255);
 	color2 = new Color(display, 128, 255, 0);
 	
-	startMeasuring();
+	meter = createMeter("not equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color1.equals(color2);	// not equal
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	color1.dispose();
 	color2.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getBlue() {
 	Color color = new Color(display, 128, 64, 255);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.getBlue();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	color.dispose();
-	commitMeasurements();
-	assertPerformance();
+	
+	disposeMeter(meter);
 }
 
 public void test_getGreen() {
 	Color color = new Color(display, 128, 64, 255);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.getGreen();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	color.dispose();
-	commitMeasurements();
-	assertPerformance();
+	
+	disposeMeter(meter);
 }
 
 public void test_getRGB() {
 	Color color = new Color(display, 128, 64, 255);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.getRGB();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	color.dispose();
-	commitMeasurements();
-	assertPerformance();
+	
+	disposeMeter(meter);
 }
 
 public void test_getRed() {
 	Color color = new Color(display, 128, 64, 255);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.getRed();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	color.dispose();
-	commitMeasurements();
-	assertPerformance();
+	
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
 	Color color = new Color(display, 128, 64, 255);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.hashCode();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	color.dispose();
-	commitMeasurements();
-	assertPerformance();
+
+	disposeMeter(meter);
 }
 
 public void test_isDisposed() {
 	Color color = new Color(display, 128, 128, 128);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.isDisposed();	// not disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	color.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.isDisposed();	// disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {

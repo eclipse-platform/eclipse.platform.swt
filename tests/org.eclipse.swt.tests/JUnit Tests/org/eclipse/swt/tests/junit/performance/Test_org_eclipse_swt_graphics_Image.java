@@ -19,6 +19,7 @@ import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.Image
@@ -44,18 +45,18 @@ protected void setUp() throws Exception {
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 	Image[] images = new Image[COUNT];
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, 100, 100); 
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose(); 
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI() {
@@ -77,62 +78,62 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	
 	Image[] images = new Image[COUNT];
 	
-	startMeasuring();	// COPY
+	PerformanceMeter meter = createMeter("copy");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, image, SWT.IMAGE_COPY); 
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose(); 
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();	// DISABLE
+	meter = createMeter("disable");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, image, SWT.IMAGE_DISABLE); 
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose(); 
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();	// GRAY
+	meter = createMeter("gray");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, image, SWT.IMAGE_GRAY);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose(); 
 	}
 	
-	commitMeasurements();
-	assertPerformance();	
+	disposeMeter(meter);	
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
 	Image[] images = new Image[COUNT];
 	Rectangle rectangle = new Rectangle(0, 0, 100, 100);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, rectangle);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData() {
@@ -151,18 +152,18 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		e1.printStackTrace();
 	}
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, imageData[0]);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose();
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData() {
@@ -182,18 +183,18 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		e1.printStackTrace();
 	}
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, imageData, imageData1);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose();
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {
@@ -210,18 +211,18 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 			String pathName = getPath(fileName + "." + format);
 			Image[] images = new Image[COUNT];
 			
-			startMeasuring();
+			PerformanceMeter meter = createMeter(pathName);
+			meter.start();
 			for (int j = 0; j < COUNT; j++) {
 				images[j] = new Image(display, pathName);
 			}
-			stopMeasuring();
+			meter.stop();
 
 			for (int j = 0; j < COUNT; j++) {
 				images[j].dispose();
 			}
 			
-			commitMeasurements();
-			assertPerformance();
+			disposeMeter(meter);
 		}
 	}
 }
@@ -232,23 +233,23 @@ public void test_dispose() {
 		images[i] = new Image(display, 100, 100);
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose();	// dispose
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
     
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i].dispose();	// dispose disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
 }
 
 public void test_equalsLjava_lang_Object() {
@@ -256,95 +257,95 @@ public void test_equalsLjava_lang_Object() {
 	Image image1 = new Image(display, imageData);
 	Image image2 = new Image(display, imageData);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image1.equals(image2);	// equal
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	image1.dispose();
 	image2.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 		
 	image1 = new Image(display, imageData);
 	image2 = new Image(display, 8, 8);
 	
-	startMeasuring();
+	meter = createMeter("not equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image1.equals(image2);	// not equal
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	image1.dispose();
 	image2.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getBackground() {
 	Image image = new Image(display, 100, 100);
 	image.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.getBackground();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	image.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getBounds() {
 	Image image = new Image(display, 10, 20);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.getBounds();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	image.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getImageData() {
 	ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	Image image = new Image(display, imageData);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.getImageData();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	image.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
 	ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	Image image = new Image(display, imageData);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.hashCode();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	image.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
@@ -362,25 +363,25 @@ public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
 public void test_isDisposed() {
 	Image image = new Image(display, 10, 10);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.isDisposed();	// not disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	image.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.isDisposed();	// disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
@@ -388,17 +389,17 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color1 = display.getSystemColor(SWT.COLOR_GREEN);
 	Color color2 = display.getSystemColor(SWT.COLOR_RED);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT / 2; i++) {
 		image.setBackground(color1);
 		image.setBackground(color2);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	image.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceII() {

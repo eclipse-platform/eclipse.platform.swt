@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit.performance;
 
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -33,14 +34,14 @@ public static void main(String[] args) {
 }
 
 public void test_ConstructorII() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new Point(500000, 700000);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_equalsLjava_lang_Object() {
@@ -48,36 +49,36 @@ public void test_equalsLjava_lang_Object() {
 	Point p2 = new Point (5, 3);
 	Point p3 = new Point (4, 6);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		p1.equals(p2);	// equal
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("not equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		p1.equals(p3);	// not equal
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
 	Point point = new Point(5, 5);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		point.hashCode();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public static Test suite() {

@@ -14,10 +14,13 @@ package org.eclipse.swt.tests.junit.performance;
 import java.io.*;
 import java.net.URL;
 
+import junit.framework.TestCase;
+
 import org.eclipse.swt.internal.*;
 import org.eclipse.test.performance.*;
 
-public class SwtPerformanceTestCase extends PerformanceTestCase {
+
+public class SwtPerformanceTestCase extends TestCase {
 	// used to specify verbose mode, if true unimplemented warning messages will 
 	// be written to System.out
 	public static boolean verbose = false;
@@ -67,5 +70,23 @@ protected String getPath(String fileName) {
 		System.out.println("Resolved file name for " + fileName + " = " + urlPath);
 	}
 	return urlPath;
+}
+
+protected PerformanceMeter createMeter() {
+	return createMeter(null);
+}
+protected PerformanceMeter createMeter(String id) {
+	Performance performance = Performance.getDefault();
+	String scenarioId = performance.getDefaultScenarioId(this);
+	if (id != null) scenarioId += ": " + id;
+	return performance.createPerformanceMeter(scenarioId);
+}
+protected void disposeMeter(PerformanceMeter meter) {
+	try {
+		meter.commit();
+		Performance.getDefault().assertPerformance(meter);
+	} finally {
+		meter.dispose();
+	}
 }
 }

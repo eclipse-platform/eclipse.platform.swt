@@ -12,6 +12,7 @@ package org.eclipse.swt.tests.junit.performance;
 
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -35,67 +36,67 @@ public static void main(String[] args) {
 public void test_Constructor$Lorg_eclipse_swt_graphics_RGB() {
 	RGB[] rgb = new RGB[] {new RGB(0, 0, 0), new RGB(255, 255, 255)};
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new PaletteData(rgb);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorIII() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getPixelLorg_eclipse_swt_graphics_RGB() {
 	RGB rgb = new RGB(0x32, 0x64, 0x96);
 	PaletteData data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getPixel(rgb);		
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getRGBI() {
 	RGB rgb = new RGB(0x32, 0x64, 0x96);
 	PaletteData data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getRGB(0x326496);		
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getRGBs() {
 	RGB rgb = new RGB(0x32, 0x64, 0x96);
 	PaletteData data = new PaletteData(0xff0000, 0x00ff00, 0x0000ff);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getRGBs();		
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public static Test suite() {

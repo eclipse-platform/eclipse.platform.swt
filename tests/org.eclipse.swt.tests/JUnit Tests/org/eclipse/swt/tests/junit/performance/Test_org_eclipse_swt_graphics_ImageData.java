@@ -15,6 +15,7 @@ import java.io.*;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -44,13 +45,13 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	PaletteData paletteData = new PaletteData(new RGB[] {new RGB(0, 0, 0)});
 	for (int i = 0; i < validDepths.length; i++) {
-		startMeasuring();
+		PerformanceMeter meter = createMeter("" + validDepths[i]);
+		meter.start();
 		for (int j = 0; j < COUNT; j++) {
 			new ImageData(100, 100, validDepths[i], paletteData);
 		}
-		stopMeasuring();
-		commitMeasurements();
-		assertPerformance();
+		meter.stop();
+		disposeMeter(meter);
 	};
 }
 
@@ -60,13 +61,13 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	
 	for (int i = 0; i < validDepths.length; i++) {
-		startMeasuring();
+		PerformanceMeter meter = createMeter("" + validDepths[i]);
+		meter.start();
 		for (int j = 0; j < COUNT; j++) {
 			new ImageData(100, 100, validDepths[i], paletteData, 1, data);
 		}
-		stopMeasuring();
-		commitMeasurements();
-		assertPerformance();
+		meter.stop();
+		disposeMeter(meter);
 	}
 }
 
@@ -86,14 +87,14 @@ public void test_ConstructorLjava_lang_String() {
 			String format = imageFormats[i];
 			String fullName = getPath(fileName + "." + format);
 			
-			startMeasuring();
+			PerformanceMeter meter = createMeter(fullName);
+			meter.start();
 			for (int j = 0; j < COUNT; j++) {
 				new ImageData(fullName);
 			}
-			stopMeasuring();
+			meter.stop();
 			
-			commitMeasurements();
-			assertPerformance();
+			disposeMeter(meter);
 		}
 	}
 }
@@ -114,27 +115,27 @@ public void test_clone() {
 		e.printStackTrace();
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.clone();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getAlphaII() {
 	imageData.setAlpha(0, 0, 0xAA);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getAlpha(0, 0);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getAlphasIII$BI() {
@@ -143,27 +144,27 @@ public void test_getAlphasIII$BI() {
 	byte[] alphaData = new byte[20];
 	imageData.setAlphas(0, 1, values.length, values, 0);
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getAlphas(0, 1, 10, alphaData, 10);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getPixelII() {
 	imageData.setPixel(0, 0, 0xAA);
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getPixel(0, 0);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getPixelsIII$BI() {
@@ -171,14 +172,14 @@ public void test_getPixelsIII$BI() {
 	PaletteData paletteData = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 8, paletteData);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getPixels(0, 1, 10, pixelData, 10);		
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getPixelsIII$II() {
@@ -186,28 +187,28 @@ public void test_getPixelsIII$II() {
 	PaletteData paletteData = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, paletteData);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getPixels(0, 1, 10, pixelData, 10);		
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getRGBs() {
 	RGB[] rgbs = new RGB[]{new RGB(0, 0, 0), new RGB(255, 255, 255)};
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 8, new PaletteData(rgbs));
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getRGBs();		
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getTransparencyMask() {
@@ -227,14 +228,14 @@ public void test_getTransparencyMask() {
 		e1.printStackTrace();
 	}
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getTransparencyMask();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getTransparencyType() {
@@ -254,14 +255,14 @@ public void test_getTransparencyType() {
 		e1.printStackTrace();
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getTransparencyType();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII() {
@@ -282,25 +283,25 @@ public void test_scaledToII() {
 	imageData = new ImageData(imageDimension, imageDimension, 1, new PaletteData(rgbs), 1, pixelData);
 	int newHeight = imageDimension * 10;
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.scaledTo(imageDimension, newHeight);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_setAlphaIII() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setAlpha(0, 0, 0xAA);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_setAlphasIII$BI() {
@@ -311,25 +312,25 @@ public void test_setAlphasIII$BI() {
 	imageData.setAlphas(0, 1, values.length - OFFSET, values, OFFSET);
 	int putWidth = values.length - OFFSET;
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setAlphas(0, 1, putWidth, values, OFFSET);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_setPixelIII() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setPixel(0, 0, 0xAA);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_setPixelsIII$BI() {
@@ -337,14 +338,14 @@ public void test_setPixelsIII$BI() {
 	byte[] values = new byte[]{0x1, 0x2, 0x3, 0xF, (byte)0xFF};
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 8, new PaletteData(0xFF0000, 0xFF00, 0xFF));	
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setPixels(0, 1, values.length - OFFSET, values, OFFSET);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_setPixelsIII$II() {
@@ -353,14 +354,14 @@ public void test_setPixelsIII$II() {
 	int[] values = new int[]{0, 0xFF, 0xFFAA, 0xFF00AA00};
 	imageData.setPixels(0, 1, values.length - OFFSET, values, OFFSET);
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setPixels(0, 1, values.length - OFFSET, values, OFFSET);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public static Test suite() {

@@ -16,6 +16,7 @@ import junit.textui.*;
 
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.FontMetrics
@@ -59,101 +60,100 @@ public void test_equalsLjava_lang_Object() {
 	gc.setFont(oldFont);
 	newFont.dispose();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("equals");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm1.equals(fm1);	// same
 	}
-	stopMeasuring();
+	meter.stop();
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("not equals");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm1.equals(fm2);	// different
 	}
-	stopMeasuring();
+	meter.stop();
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getAscent() {
 	FontMetrics fm = gc.getFontMetrics();
 	
-	startMeasuring();
-	for (int i = 0; i < COUNT; i++) {
+	PerformanceMeter meter = createMeter();
+	meter.start();	for (int i = 0; i < COUNT; i++) {
 		fm.getAscent();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getAverageCharWidth() {
 	FontMetrics fm = gc.getFontMetrics();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.getAverageCharWidth();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getDescent() {
 	FontMetrics fm = gc.getFontMetrics();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.getDescent();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getHeight() {
 	FontMetrics fm = gc.getFontMetrics();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.getHeight();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getLeading() {
 	FontMetrics fm = gc.getFontMetrics();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.getLeading();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
 	FontMetrics fm = gc.getFontMetrics();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.hashCode();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC() {

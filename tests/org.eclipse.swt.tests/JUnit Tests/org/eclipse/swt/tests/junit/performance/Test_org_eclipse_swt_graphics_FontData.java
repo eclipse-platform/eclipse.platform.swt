@@ -16,6 +16,7 @@ import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.tests.junit.SwtJunit;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.FontData
@@ -34,38 +35,39 @@ public static void main(String[] args) {
 }
 
 public void test_Constructor() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new FontData();
 	}
-	stopMeasuring();
-	commitMeasurements();
-	assertPerformance();
+	meter.stop();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLjava_lang_String() {
 	FontData fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	String fdString = fd.toString();
-	startMeasuring();
+	
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new FontData(fdString);
 	}
-	stopMeasuring();
-	commitMeasurements();
-	assertPerformance();
+	meter.stop();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLjava_lang_StringII() {
 	FontData fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	String fdString = fd.toString();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	}
-	stopMeasuring();
-	commitMeasurements();
-	assertPerformance();
+	meter.stop();
+	disposeMeter(meter);
 
 }
 
@@ -74,142 +76,142 @@ public void test_equalsLjava_lang_Object() {
 	FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	FontData fd3 = new FontData(SwtJunit.testFontName, 12, SWT.NORMAL);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fd1.equals(fd2);	// equal	
 	}
-	stopMeasuring();
-	commitMeasurements();
-	assertPerformance();
+	meter.stop();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("not equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fd1.equals(fd3);	// not equal
 	}
-	stopMeasuring();
-	commitMeasurements();
-	assertPerformance();
+	meter.stop();
+	disposeMeter(meter);
 }
 
 public void test_getHeight() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getHeight();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getLocale() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getLocale();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getName() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getName();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getStyle() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getStyle();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.hashCode();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
 }
 
 public void test_setHeightI() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.setHeight(12);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_setLocaleLjava_lang_String() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	String localeString = Locale.ENGLISH.toString();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.setLocale(localeString);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_setNameLjava_lang_String() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	String name = "name";
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.setName(name);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_setStyleI() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	int style = SWT.ITALIC | SWT.BOLD;
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.setStyle(style);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 

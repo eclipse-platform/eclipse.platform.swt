@@ -15,6 +15,7 @@ import junit.framework.*;
 import junit.textui.*;
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.ImageLoaderEvent
@@ -35,14 +36,14 @@ public static void main(String[] args) {
 public void test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_swt_graphics_ImageDataIZ() {
 	ImageLoader loader = new ImageLoader();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new ImageLoaderEvent(loader, null, 0, true);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public static Test suite() {

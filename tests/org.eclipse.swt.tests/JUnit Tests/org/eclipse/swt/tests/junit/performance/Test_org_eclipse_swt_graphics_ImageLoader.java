@@ -18,6 +18,7 @@ import junit.textui.*;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.ImageLoader
@@ -46,41 +47,41 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 		};
 	};
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.addImageLoaderListener(loaderListener);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_hasListeners() {
 	ImageLoader loader = new ImageLoader();
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("no listeners");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.hasListeners();	// no listeners
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	loader.addImageLoaderListener(new ImageLoaderListener() {
 		public void imageDataLoaded(ImageLoaderEvent e) {
 		};
 	});
 	
-	startMeasuring();
+	meter = createMeter("has listeners");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.hasListeners();	// has listener
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_loadLjava_io_InputStream() {
@@ -94,14 +95,14 @@ public void test_loadLjava_lang_String() {
 	ImageLoader loader = new ImageLoader();
 	String fileName = getPath(imageFilenames[0] + "." + imageFormats[0]);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.load(fileName);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent() {
@@ -114,14 +115,14 @@ public void test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent() {
 			});
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.notifyListeners(event);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderListener() {
@@ -134,14 +135,14 @@ public void test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderL
 		loader.addImageLoaderListener(listeners[i]);
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.removeImageLoaderListener(listeners[i]);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_saveLjava_io_OutputStreamI() {
@@ -175,14 +176,14 @@ public void test_saveLjava_io_OutputStreamI() {
 		for (int i = 0; i < imageFormats.length; i++) {
 			if (imageFormats[i].equals(filetype)) {
 
-				startMeasuring();
+				PerformanceMeter meter = createMeter("" + i);
+				meter.start();
 				for (int j = 0; j < COUNT; j++) {
 					loader.save(outStream, i);
 				}
-				stopMeasuring();
+				meter.stop();
 				
-				commitMeasurements();
-				assertPerformance();
+				disposeMeter(meter);
 				
 				break;
 			}
@@ -218,32 +219,32 @@ public void test_saveLjava_lang_StringI() {
 	OutputStream outStream = new ByteArrayOutputStream();
 	
 	try {
-		startMeasuring();	// gif
+		PerformanceMeter meter = createMeter("gif");
+		meter.start();
 		for (int i = 0; i < COUNT; i++) {
 			loader.save(outStream, SWT.IMAGE_GIF);
 		}
-		stopMeasuring();
+		meter.stop();
 		
-		commitMeasurements();
-		assertPerformance();
+		disposeMeter(meter);
 	
-		startMeasuring();	// ico
+		meter = createMeter("ico");
+		meter.start();
 		for (int i = 0; i < COUNT; i++) {
 			loader.save(outStream, SWT.IMAGE_ICO);
 		}
-		stopMeasuring();
+		meter.stop();
 		
-		commitMeasurements();
-		assertPerformance();
+		disposeMeter(meter);
 		
-		startMeasuring();	// jpg
+		meter = createMeter("jpg");
+		meter.start();
 		for (int i = 0; i < COUNT; i++) {
 			loader.save(outStream, SWT.IMAGE_JPEG);
 		}
-		stopMeasuring();
+		meter.stop();
 		
-		commitMeasurements();
-		assertPerformance();
+		disposeMeter(meter);
 	} finally {
 		try {
 			outStream.close();

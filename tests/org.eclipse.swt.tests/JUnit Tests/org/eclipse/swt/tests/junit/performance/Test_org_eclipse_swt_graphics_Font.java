@@ -15,6 +15,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.tests.junit.SwtJunit;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -46,138 +47,138 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 	data[0] = new FontData (SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC); 
 	Font[] fonts = new Font[COUNT];
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i] = new Font(display, data);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_FontData() {
 	FontData data = new FontData (SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 	Font[] fonts = new Font[COUNT];
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i] = new Font(display, data);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII() {
 	Font[] fonts = new Font[COUNT];
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("no name");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		// valid font with no name
 		fonts[i] = new Font(display, "", 10, SWT.NORMAL);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 		
-	startMeasuring();
+	meter = createMeter("unknown name");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		// valid font with unknown name
 		fonts[i] = new Font(display, "bad-font", 10, SWT.NORMAL);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("0 height");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		// valid font with 0 height
 		fonts[i] = new Font(display, SwtJunit.testFontName, 0, SWT.NORMAL);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
-	startMeasuring();
+	meter = createMeter("10 pt");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		// valid normal 10-point font
 		fonts[i] = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
-	startMeasuring();
+	meter = createMeter("100 pt");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		// valid normal 100-point font
 		fonts[i] = new Font(display, SwtJunit.testFontName, 100, SWT.NORMAL);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("bold italic");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		// valid bold italic 10-point font
 		fonts[i] = new Font(display, SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
-	startMeasuring();
+	meter = createMeter("null device");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		// device == null (valid)
 		fonts[i] = new Font(null, SwtJunit.testFontName, 10, SWT.NORMAL);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();
 	}
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_dispose() {
@@ -186,108 +187,108 @@ public void test_dispose() {
 		fonts[i] = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();	// dispose
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
     
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fonts[i].dispose();	// dispose disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
 }
 
 public void test_equalsLjava_lang_Object() {
 	// Fonts are only equal if their handles are the same
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter("equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.equals(font);	// same
 	}
-	stopMeasuring();
+	meter.stop();
 
 	font.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	Font otherFont = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
 
-	startMeasuring();
+	meter = createMeter("not equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.equals(otherFont);	// different
 	}
-	stopMeasuring();
+	meter.stop();
 
 	font.dispose();
 	otherFont.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getFontData() {
 	Font font = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.getFontData();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	font.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
 	Font font = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.hashCode();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	font.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_isDisposed() {
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.isDisposed();	// not disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	font.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.isDisposed();	// disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {

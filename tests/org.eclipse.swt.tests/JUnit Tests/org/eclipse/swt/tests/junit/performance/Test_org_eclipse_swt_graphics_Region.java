@@ -15,6 +15,7 @@ import junit.textui.*;
 
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.Region
@@ -40,33 +41,35 @@ protected void setUp() throws Exception {
 public void test_Constructor() {
 	Region[] regions = new Region [COUNT];
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		regions[i] = new Region ();
 	}
-	stopMeasuring();
+	meter.stop();
+	
 	for (int i = 0; i < COUNT; i++) {
 		regions[i].dispose();
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_Device() {
 	Region[] regions = new Region [COUNT];
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		regions[i] = new Region (display);
 	}
-	stopMeasuring();
+	meter.stop();
+	
 	for (int i = 0; i < COUNT; i++) {
 		regions[i].dispose();
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_add$I() {
@@ -76,16 +79,16 @@ public void test_add$I() {
 		toAdd[i] = new int[] {i,i, i,i, i+1,i+1, i+1,i+1};
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.add(toAdd[i]);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_addLorg_eclipse_swt_graphics_Rectangle() {
@@ -95,16 +98,16 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 		toAdd[i] = new Rectangle (i, i, i+1, i+1);
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.add(toAdd[i]);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_addLorg_eclipse_swt_graphics_Region() {
@@ -116,49 +119,49 @@ public void test_addLorg_eclipse_swt_graphics_Region() {
 		regions[i] = newRegion;
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.add(regions[i]);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	for (int i = 0; i < COUNT; i++) {
 		regions[i].dispose();
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_containsII() {
 	Region region = new Region (display);
 	region.add(new Rectangle (30,30,30,30));
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("contained");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.contains(50, 50);	// contained
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	region = new Region (display);
 	region.add(new Rectangle (30,30,30,30));
 
-	startMeasuring();
+	meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.contains(20, 20);	// not contained
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_containsLorg_eclipse_swt_graphics_Point() {
@@ -166,30 +169,30 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 	Point point = new Point (20,20);
 	region.add(new Rectangle (30,30,30,30));
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("contained");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.contains(point);	// contained
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	region = new Region (display);
 	region.add(new Rectangle (30,30,30,30));
 
-	startMeasuring();
+	meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.contains(point);	// not contained
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_dispose() {
@@ -199,23 +202,23 @@ public void test_dispose() {
 		regions[i].add(new Rectangle(i, i, i+5, i+5));
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		regions[i].dispose();	// dispose
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
     
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		regions[i].dispose();	// dispose disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
 }
 
 public void test_equalsLjava_lang_Object() {
@@ -227,65 +230,65 @@ public void test_equalsLjava_lang_Object() {
 	Region region1 = new Region(display);
 	region1.add(rect);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region1.equals(region1);	// identical
 	}
-	stopMeasuring();
+	meter.stop();
 
 	region1.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	region1 = new Region(display);
 	region1.add(rect);
 	Region region2 = new Region(display);
 	region2.add(rect);
 	
-	startMeasuring();
+	meter = createMeter("not equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region1.equals(region2);	// unique
 	}
-	stopMeasuring();
+	meter.stop();
 
 	region1.dispose();
 	region2.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_getBounds() {
 	Region region = new Region(display);
 	region.add(new Rectangle(10,10,20,20));
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.getBounds();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
 	Region region = new Region(display);
 	region.add(new Rectangle(10,10,20,20));
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.hashCode();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
@@ -293,31 +296,31 @@ public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	region.add(new Rectangle(10,10,20,20));
 	Rectangle rect = new Rectangle(0,0,5,5);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.intersect(rect);	// disjoint
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
 	region = new Region(display);
 	region.add(new Rectangle(10,10,20,20));
 	rect = new Rectangle(20,20,5,5);
 	
-	startMeasuring();
+	meter = createMeter("intersect");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.intersect(rect);	// intersects
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_intersectLorg_eclipse_swt_graphics_Region() {
@@ -326,63 +329,63 @@ public void test_intersectLorg_eclipse_swt_graphics_Region() {
 	Region region2 = new Region(display);
 	region2.add(new Rectangle(0,0,5,5));
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region1.intersect(region2);	// disjoint
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region1.dispose();
 	region2.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
 	region1 = new Region(display);
 	region1.add(new Rectangle(10,10,20,20));
 	region2 = new Region(display);
 	region2.add(new Rectangle(20,20,5,5));
 	
-	startMeasuring();
+	meter = createMeter("intersect");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region1.intersect(region2);	// intersects
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region1.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_intersectsIIII() {
 	Region region = new Region(display);
 	region.add(new Rectangle(10,10,20,20));
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.intersects(0,0,5,5);		// disjoint
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
 	region = new Region(display);
 	region.add(new Rectangle(10,10,20,20));
 	
-	startMeasuring();
+	meter = createMeter("intersect");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.intersects(20,20,5,5);	// intersects
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
@@ -390,82 +393,82 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	region.add(new Rectangle(10,10,20,20));
 	Rectangle rect = new Rectangle (0,0,5,5);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.intersects(rect);	// disjoint
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
 	region = new Region(display);
 	region.add(new Rectangle(10,10,20,20));
 	rect = new Rectangle (20,20,5,5);
 	
-	startMeasuring();
+	meter = createMeter("intersect");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.intersects(rect);	// intersects
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_isDisposed() {
 	Region region = new Region(display);
 	region.add(new Rectangle(10,10,10,10));
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.isDisposed();	// not disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.isDisposed();	// disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_isEmpty() {
 	Region region = new Region (display);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("empty");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.isEmpty();		// empty
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
 	region.dispose();
 	region = new Region (display);
 	region.add(new Rectangle(10,10,10,10));
 	
-	startMeasuring();
+	meter = createMeter("not empty");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.isEmpty();		// not empty
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_subtract$I() {
@@ -476,16 +479,16 @@ public void test_subtract$I() {
 		toSubtract[i] = new int[] {i,i, i,i, i+1,i+1, i+1,i+1};
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.subtract(toSubtract[i]);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_subtractLorg_eclipse_swt_graphics_Rectangle() {
@@ -496,16 +499,16 @@ public void test_subtractLorg_eclipse_swt_graphics_Rectangle() {
 		toSubtract[i] = new Rectangle (i, i, i+1, i+1);
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.subtract(toSubtract[i]);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_subtractLorg_eclipse_swt_graphics_Region() {
@@ -518,19 +521,19 @@ public void test_subtractLorg_eclipse_swt_graphics_Region() {
 		regions[i] = newRegion;
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.subtract(regions[i]);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	region.dispose();
 	for (int i = 0; i < COUNT; i++) {
 		regions[i].dispose();
 	}
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {

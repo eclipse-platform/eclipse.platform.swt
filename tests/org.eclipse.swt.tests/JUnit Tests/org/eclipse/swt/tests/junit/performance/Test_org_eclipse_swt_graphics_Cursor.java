@@ -19,6 +19,7 @@ import junit.textui.TestRunner;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.Cursor
@@ -42,19 +43,19 @@ protected void setUp() throws Exception {
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	Cursor[] cursors = new Cursor [COUNT];
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i] = new Cursor(display, SWT.CURSOR_ARROW);
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i].dispose();
 	}
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII() {
@@ -82,16 +83,19 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		ImageData mask = source.getTransparencyMask();
 		if (mask != null && (source.depth == 1)) {
 			Cursor[] cursors = new Cursor[COUNT];
-			startMeasuring();
+			
+			PerformanceMeter meter = createMeter(format);
+			meter.start();
 			for (int j = 0; j < COUNT; j++) {
 				cursors[j] = new Cursor(display, source, mask, 0, 0);
 			}
-			stopMeasuring();
+			meter.stop();
+			
 			for (int j = 0; j < COUNT; j++) {
 				cursors[j].dispose();
 			}
-			commitMeasurements();
-			assertPerformance();
+			
+			disposeMeter(meter);
 		}
 	}
 }
@@ -101,23 +105,23 @@ public void test_dispose() {
 		cursors[i] = new Cursor(display, SWT.CURSOR_ARROW);
 	}
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i].dispose();	// dispose
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
     
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i].dispose();	// dispose disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-    commitMeasurements();
-    assertPerformance();
+    disposeMeter(meter);
 }
 
 public void test_equalsLjava_lang_Object() {
@@ -129,55 +133,56 @@ public void test_equalsLjava_lang_Object() {
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	Cursor otherCursor = new Cursor(display, SWT.CURSOR_CROSS);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.equals(otherCursor);
 	}
-	stopMeasuring();
+	meter.stop();
 
 	cursor.dispose();
 	otherCursor.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.hashCode();
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	cursor.dispose();
-	commitMeasurements();
-	assertPerformance();
+	
+	disposeMeter(meter);
 }
 
 public void test_isDisposed() {
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("not disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.isDisposed();	// not disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
 	cursor.dispose();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("disposed");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.isDisposed();	// disposed
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {

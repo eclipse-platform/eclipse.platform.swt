@@ -14,6 +14,7 @@ import junit.framework.*;
 import junit.textui.*;
 
 import org.eclipse.swt.graphics.*;
+import org.eclipse.test.performance.PerformanceMeter;
 
 /**
  * Automated Performance Test Suite for class org.eclipse.swt.graphics.Rectangle
@@ -32,14 +33,14 @@ public static void main(String[] args) {
 }
 
 public void test_ConstructorIIII() {
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new Rectangle(500000, 700000, 200000, 100000);
 	}
-	stopMeasuring();
+	meter.stop();
 
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 /**
@@ -55,14 +56,14 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.add(r2);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 /**
@@ -72,23 +73,23 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 public void test_containsII() {
 	Rectangle r = new Rectangle(1, 2, 3, 4);
 
-	startMeasuring();
+	PerformanceMeter meter = createMeter("contains");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r.contains(2, 3);	// does contain
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r.contains(9, 12);	// does not contain
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 /**
@@ -104,206 +105,206 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 	Point p1 = new Point(2, 3);
 	Point p2 = new Point(9, 10);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("contains");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.contains(p1);		// does contain
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
-	startMeasuring();
+	meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.contains(p2);		// does not contain
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_equalsLjava_lang_Object() {
 	Rectangle r1 = new Rectangle(5, 4, 3, 2);
 	Rectangle r2 = new Rectangle(5, 4, 3, 2);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.equals(r2);	// equal
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	r2 = new Rectangle (2, 3, 4, 5);
 	
-	startMeasuring();
+	meter = createMeter("not equal");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.equals(r2);	// not equal
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_hashCode() {
 	Rectangle rect = new Rectangle(5, 4, 3, 2);
-	startMeasuring();
+	PerformanceMeter meter = createMeter();
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.hashCode();
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("intersect");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersect(r2);	// intersect
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	r2 = new Rectangle(0, 0, 5, 5);
 
-	startMeasuring();
+	meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersect(r2);	// disjoint
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("intersect");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersection(r2);	// intersect
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	r2 = new Rectangle(0, 0, 5, 5);
 
-	startMeasuring();
+	meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersection(r2);	// disjoint
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_intersectsIIII() {
 	Rectangle rect = new Rectangle(10, 10, 50, 50);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("intersect");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.intersects(20, 20, 20, 20);	// intersect
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
-	startMeasuring();
+	meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.intersects(0, 0, 5, 5);	// disjoint
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("intersect");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersects(r2);	// intersect
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	r2 = new Rectangle(0, 0, 5, 5);
 
-	startMeasuring();
+	meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.intersects(r2);	// disjoint
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_isEmpty() {
 	Rectangle rect = new Rectangle (10, 10, 0, 0);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("empty");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.isEmpty();		// empty
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 
 	rect = new Rectangle (10, 10, 10, 10);
 	
-	startMeasuring();
+	meter = createMeter("not empty");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		rect.isEmpty();		// not empty
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(10, 10, 50, 50);
 	Rectangle r2 = new Rectangle(20, 20, 20, 20);
 	
-	startMeasuring();
+	PerformanceMeter meter = createMeter("intersect");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.union(r2);
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 	
 	r2 = new Rectangle(0, 0, 5, 5);
 
-	startMeasuring();
+	meter = createMeter("disjoint");
+	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		r1.union(r2);	// disjoint
 	}
-	stopMeasuring();
+	meter.stop();
 	
-	commitMeasurements();
-	assertPerformance();
+	disposeMeter(meter);
 }
 
 public static Test suite() {
