@@ -1955,6 +1955,66 @@ public class ImageAnalyzer {
 	}
 	
 	/*
+	 * Open a dialog asking the user for more information on the type of BMP file to save.
+	 */
+	int showBMPDialog() {
+		final int [] bmpType = new int[1];
+		bmpType[0] = SWT.IMAGE_BMP;
+		SelectionListener radioSelected = new SelectionAdapter () {
+			public void widgetSelected (SelectionEvent event) {
+				Button radio = (Button) event.widget;
+				if (radio.getSelection()) bmpType[0] = ((Integer)radio.getData()).intValue();
+			};
+		};
+		// need to externalize strings
+		final Shell dialog = new Shell(shell, SWT.DIALOG_TRIM);
+
+		dialog.setText(bundle.getString("Save_as_type"));
+		dialog.setLayout(new GridLayout());
+		
+		Label label = new Label(dialog, SWT.NONE);
+		label.setText(bundle.getString("Save_as_type_label"));
+		
+		Button radio = new Button(dialog, SWT.RADIO);
+		radio.setText(bundle.getString("Save_as_type_no_compress"));
+		radio.setSelection(true);
+		radio.setData(new Integer(SWT.IMAGE_BMP));
+		radio.addSelectionListener(radioSelected);
+
+		radio = new Button(dialog, SWT.RADIO);
+		radio.setText(bundle.getString("Save_as_type_rle_compress"));
+		radio.setData(new Integer(SWT.IMAGE_BMP_RLE));
+		radio.addSelectionListener(radioSelected);
+		
+		radio = new Button(dialog, SWT.RADIO);
+		radio.setText(bundle.getString("Save_as_type_os2"));
+		radio.setData(new Integer(SWT.IMAGE_BMP_OS2));
+		radio.addSelectionListener(radioSelected);
+
+		label = new Label(dialog, SWT.SEPARATOR | SWT.HORIZONTAL);
+		label.setLayoutData(new GridData(GridData.FILL_HORIZONTAL));
+		
+		Button ok = new Button(dialog, SWT.PUSH);
+		ok.setText(bundle.getString("OK"));
+		GridData data = new GridData();
+		data.horizontalAlignment = SWT.CENTER;
+		data.widthHint = 75;
+		ok.setLayoutData(data);
+		ok.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				dialog.close();
+			}
+		});
+		
+		dialog.pack();
+		dialog.open();
+		while (!dialog.isDisposed()) {
+			if (!display.readAndDispatch()) display.sleep();
+		}
+		return bmpType[0];
+	}	
+	
+	/*
 	 * Return a String describing how to analyze the bytes
 	 * in the hex dump.
 	 */
@@ -2062,9 +2122,13 @@ public class ImageAnalyzer {
 	/*
 	 * Return a String describing the specified image file type.
 	 */
-	static String fileTypeString(int filetype) {
+	String fileTypeString(int filetype) {
 		if (filetype == SWT.IMAGE_BMP)
 			return "BMP";
+		if (filetype == SWT.IMAGE_BMP_RLE)
+			return "RLE" + imageData.depth + " BMP";
+		if (filetype == SWT.IMAGE_BMP_OS2)
+			return "OS/2 BMP";
 		if (filetype == SWT.IMAGE_GIF)
 			return "GIF";
 		if (filetype == SWT.IMAGE_ICO)
@@ -2081,10 +2145,11 @@ public class ImageAnalyzer {
 	 * Note that this is not a very robust way to determine image type,
 	 * and it is only to be used in the absence of any better method.
 	 */
-	static int determineFileType(String filename) {
+	int determineFileType(String filename) {
 		String ext = filename.substring(filename.lastIndexOf('.') + 1);
-		if (ext.equalsIgnoreCase("bmp"))
-			return SWT.IMAGE_BMP;
+		if (ext.equalsIgnoreCase("bmp")) {
+			return showBMPDialog();
+		}
 		if (ext.equalsIgnoreCase("gif"))
 			return SWT.IMAGE_GIF;
 		if (ext.equalsIgnoreCase("ico"))
