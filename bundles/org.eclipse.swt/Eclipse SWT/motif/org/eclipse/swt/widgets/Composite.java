@@ -189,20 +189,6 @@ void createHandle (int index) {
 		focusHandle = OS.XmCreateDrawingArea (handle, null, argList, argList.length / 2);
 		if (focusHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	if ((style & SWT.EMBEDDED) != 0) {
-		Shell shell = getShell ();
-		if (shell.focusProxy == 0) {
-			int [] argList = {OS.XmNx, -1, OS.XmNy, -1, OS.XmNwidth, 1, OS.XmNheight, 1};
-			int focusProxy = OS.XmCreateDrawingArea (shell.shellHandle, null, argList, argList.length / 2);
-			if (focusProxy == 0) error (SWT.ERROR_NO_HANDLES);
-			shell.focusProxy = focusProxy;
-			OS.XtSetMappedWhenManaged (focusProxy, false);
-			OS.XtManageChild (focusProxy);
-			OS.XtSetMappedWhenManaged (focusProxy, true);
-		}
-		if (!OS.XtIsRealized (handle)) shell.realizeWidget ();
-		embeddedHandle = OS.XtWindow (handle);
-	}
 }
 void createScrolledHandle (int topHandle) {
 	int [] argList = {OS.XmNancestorSensitive, 1};
@@ -438,6 +424,12 @@ void manageChildren () {
 	if (focusHandle != 0) {
 		OS.XtConfigureWidget(focusHandle, 0, 0, 1, 1, 0);
 		OS.XtSetMappedWhenManaged (focusHandle, true);
+	}
+	if ((style & SWT.EMBEDDED) != 0) {
+		Shell shell = getShell ();
+		shell.createFocusProxy ();
+		if (!OS.XtIsRealized (handle)) shell.realizeWidget ();
+		embeddedHandle = OS.XtWindow (handle);
 	}
 }
 Point minimumSize () {
