@@ -24,29 +24,33 @@ class ImageList {
 			CREATE_FLAGS = OS.ILC_MASK | OS.ILC_COLOR;
 		} else {
 			int flags = OS.ILC_MASK;
-			int hDC = OS.GetDC (0);
-			int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
-			int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
-			OS.ReleaseDC (0, hDC);
-			int depth = bits * planes;
-			switch (depth) {
-				case 4:
-					flags |= OS.ILC_COLOR4;
-					break;
-				case 8:
-					flags |= OS.ILC_COLOR8;
-					break;
-				case 16:
-					flags |= OS.ILC_COLOR16;
-					break;
-				case 24:
-					flags |= OS.ILC_COLOR24;
-					break;
-				case 32:
-					flags |= OS.ILC_COLOR32;
-					break;
-				default:
-					flags |= OS.ILC_COLOR;
+			if (OS.COMCTL32_MAJOR >= 6) {
+				flags |= OS.ILC_COLOR32;
+			} else {
+				int hDC = OS.GetDC (0);
+				int bits = OS.GetDeviceCaps (hDC, OS.BITSPIXEL);
+				int planes = OS.GetDeviceCaps (hDC, OS.PLANES);
+				OS.ReleaseDC (0, hDC);
+				int depth = bits * planes;
+				switch (depth) {
+					case 4:
+						flags |= OS.ILC_COLOR4;
+						break;
+					case 8:
+						flags |= OS.ILC_COLOR8;
+						break;
+					case 16:
+						flags |= OS.ILC_COLOR16;
+						break;
+					case 24:
+						flags |= OS.ILC_COLOR24;
+						break;
+					case 32:
+						flags |= OS.ILC_COLOR32;
+						break;
+					default:
+						flags |= OS.ILC_COLOR;
+				}
 			}
 			CREATE_FLAGS = flags;
 		}
@@ -67,48 +71,12 @@ public int add (Image image) {
 		if (images [index] == null) break;
 		index++;
 	}
-	int [] cx = new int [1], cy = new int [1];
 	if (count == 0) {
 		Rectangle rect = image.getBounds();
-		cx [0] = rect.width;
-		cy [0] = rect.height;
+		int [] cx = new int []{rect.width}, cy = new int []{rect.height};
 		OS.ImageList_SetIconSize (handle, cx [0], cy [0]);
 	}
-	int hImage = image.handle;
-	OS.ImageList_GetIconSize (handle, cx, cy);
-	switch (image.type) {
-		case SWT.BITMAP: {
-			int hBitmap = copyBitmap (hImage, cx [0], cy [0]);
-			int background = -1;
-			Color color = image.getBackground ();
-			if (color != null) background = color.handle;
-			if (index == count) {
-				if (background != -1) {
-					OS.ImageList_AddMasked (handle, hBitmap, background);
-				} else {
-					int hMask = createMask (hBitmap, cx [0], cy [0], background);
-					OS.ImageList_Add (handle, hBitmap, hMask);
-					OS.DeleteObject (hMask);
-				}
-			} else {
-				int hMask = createMask (hBitmap, cx [0], cy [0], background);
-				OS.ImageList_Replace (handle, index, hBitmap, hMask);
-				OS.DeleteObject (hMask);
-			}
-			OS.DeleteObject (hBitmap);
-			break;
-		}
-		case SWT.ICON: {
-			if (OS.IsWinCE) {	
-				OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hImage);
-			} else {
-				int hIcon = copyIcon (hImage, cx [0], cy [0]);
-				OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hIcon);
-				OS.DestroyIcon (hIcon);
-			}
-			break;
-		}
-	}
+	set(index, image, count);
 	if (index == images.length) {
 		Image [] newImages = new Image [images.length + 4];
 		System.arraycopy (images, 0, newImages, 0, images.length);
@@ -149,24 +117,169 @@ int copyIcon (int hImage, int width, int height) {
 	return hIcon != 0 ? hIcon : hImage;
 }
 
-int createMask (int hBitmap, int width, int height, int background) {
-	int hMask = OS.CreateBitmap (width, height, 1, 1, null);
+int copyWithAlpha (int hBitmap, int background, byte[] alphaData, int destWidth, int destHeight) {
+	BITMAP bm = new BITMAP ();
+	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
+	int srcWidth = bm.bmWidth;
+	int srcHeight = bm.bmHeight;
+	
+	/* Create resources */
+	int hdc = OS.GetDC (0);
+	int srcHdc = OS.CreateCompatibleDC (hdc);
+	int oldSrcBitmap = OS.SelectObject (srcHdc, hBitmap);
+	int memHdc = OS.CreateCompatibleDC (hdc);
+	BITMAPINFOHEADER bmiHeader = new BITMAPINFOHEADER ();
+	bmiHeader.biSize = BITMAPINFOHEADER.sizeof;
+	bmiHeader.biWidth = Math.max (srcWidth, destWidth);
+	bmiHeader.biHeight = -Math.max (srcHeight, destHeight);
+	bmiHeader.biPlanes = 1;
+	bmiHeader.biBitCount = 32;
+	bmiHeader.biCompression = OS.BI_RGB;
+	byte []	bmi = new byte[BITMAPINFOHEADER.sizeof];
+	OS.MoveMemory (bmi, bmiHeader, BITMAPINFOHEADER.sizeof);
+	int [] pBits = new int [1];
+	int memDib = OS.CreateDIBSection (0, bmi, OS.DIB_RGB_COLORS, pBits, 0, 0);
+	if (memDib == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	int oldMemBitmap = OS.SelectObject (memHdc, memDib);
+
+	BITMAP dibBM = new BITMAP ();
+	OS.GetObject (memDib, BITMAP.sizeof, dibBM);
+	int sizeInBytes = dibBM.bmWidthBytes * dibBM.bmHeight;
+
+ 	/* Get the foreground pixels */
+ 	OS.BitBlt (memHdc, 0, 0, srcWidth, srcHeight, srcHdc, 0, 0, OS.SRCCOPY);
+ 	byte[] srcData = new byte [sizeInBytes];
+	OS.MoveMemory (srcData, dibBM.bmBits, sizeInBytes);
+	
+	/* Merge the alpha channel in place */
+	if (alphaData != null) {
+		int spinc = dibBM.bmWidthBytes - srcWidth * 4;
+		int ap = 0, sp = 3;
+		for (int y = 0; y < srcHeight; ++y) {
+			for (int x = 0; x < srcWidth; ++x) {
+				srcData [sp] = alphaData [ap++];
+				sp += 4;
+			}
+			sp += spinc;
+		}
+	} else {
+		byte transRed = (byte)(background & 0xFF);
+		byte transGreen = (byte)((background >> 8) & 0xFF);
+		byte transBlue = (byte)((background >> 16) & 0xFF);
+		final int spinc = dibBM.bmWidthBytes - srcWidth * 4;
+		int sp = 3;
+		for (int y = 0; y < srcHeight; ++y) {
+			for (int x = 0; x < srcWidth; ++x) {
+				srcData [sp] = (srcData[sp-1] == transRed && srcData[sp-2] == transGreen && srcData[sp-3] == transBlue) ? 0 : (byte)255;
+				sp += 4;
+			}
+			sp += spinc;
+		}
+	}
+	OS.MoveMemory (dibBM.bmBits, srcData, sizeInBytes);
+	
+	/* Stretch */
+	if (srcWidth != destWidth || srcHeight != destHeight) {
+		OS.SetStretchBltMode (memHdc, OS.COLORONCOLOR);
+		OS.StretchBlt (memHdc, 0, 0, destWidth, destHeight, memHdc, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+	}
+	
+	/* Free resources */
+	OS.SelectObject (memHdc, oldMemBitmap);
+	OS.DeleteDC (memHdc);
+	OS.SelectObject (srcHdc, oldSrcBitmap);
+	OS.DeleteDC (srcHdc);
+	OS.ReleaseDC (0, hdc);
+	return memDib;
+}
+
+int createMask (int hBitmap, int destWidth, int destHeight, int background, int transparentPixel) {
+	BITMAP bm = new BITMAP ();
+	OS.GetObject (hBitmap, BITMAP.sizeof, bm);
+	int srcWidth = bm.bmWidth;
+	int srcHeight = bm.bmHeight;
+	int hMask = OS.CreateBitmap (destWidth, destHeight, 1, 1, null);
 	int hDC = OS.GetDC (0);
 	int hdc1 = OS.CreateCompatibleDC (hDC);
 	if (background != -1) {
 		OS.SelectObject (hdc1, hBitmap);
+		
+		/*
+		* If the image has a palette with multiple entries having
+		* the same color and one of those entries is the transparentPixel,
+		* only the first entry becomes transparent. To avoid this
+		* problem, temporarily change the image palette to a palette
+		* where the transparentPixel is white and everything else is
+		* black. 
+		*/
+		boolean isDib = bm.bmBits != 0;
+		byte[] originalColors = null;
+		if (transparentPixel != -1 && isDib && bm.bmBitsPixel <= 8) {
+			int maxColors = 1 << bm.bmBitsPixel;
+			byte[] oldColors = new byte[maxColors * 4];
+			OS.GetDIBColorTable(hdc1, 0, maxColors, oldColors);
+			int offset = transparentPixel * 4;
+			byte[] newColors = new byte[oldColors.length];
+			newColors[offset] = (byte)0xFF;
+			newColors[offset+1] = (byte)0xFF;
+			newColors[offset+2] = (byte)0xFF;
+			OS.SetDIBColorTable(hdc1, 0, maxColors, newColors);
+			originalColors = oldColors;
+			OS.SetBkColor (hdc1, 0xFFFFFF);
+		} else {
+			OS.SetBkColor (hdc1, background);
+		}
+		
 		int hdc2 = OS.CreateCompatibleDC (hDC);
 		OS.SelectObject (hdc2, hMask);
-		OS.SetBkColor (hdc1, background);
-		OS.BitBlt (hdc2, 0, 0, width, height, hdc1, 0, 0, OS.SRCCOPY);
+		if (destWidth != srcWidth || destHeight != srcHeight) {
+			if (!OS.IsWinCE) OS.SetStretchBltMode (hdc2, OS.COLORONCOLOR);
+			OS.StretchBlt (hdc2, 0, 0, destWidth, destHeight, hdc1, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		} else {
+			OS.BitBlt (hdc2, 0, 0, destWidth, destHeight, hdc1, 0, 0, OS.SRCCOPY);
+		}
 		OS.DeleteDC (hdc2);
+
+		/* Put back the original palette */
+		if (originalColors != null) OS.SetDIBColorTable(hdc1, 0, 1 << bm.bmBitsPixel, originalColors);
 	} else {
 		int hOldBitmap = OS.SelectObject (hdc1, hMask);
-		OS.PatBlt (hdc1, 0, 0, width, height, OS.BLACKNESS);
+		OS.PatBlt (hdc1, 0, 0, destWidth, destHeight, OS.BLACKNESS);
 		OS.SelectObject (hdc1, hOldBitmap);
 	}
 	OS.ReleaseDC (0, hDC);
 	OS.DeleteDC (hdc1);
+	return hMask;
+}
+
+int createMaskFromAlpha (ImageData data, int destWidth, int destHeight) {
+	int srcWidth = data.width;
+	int srcHeight = data.height;
+	ImageData mask = ImageData.internal_new (srcWidth, srcHeight, 1, 
+			new PaletteData(new RGB [] {new RGB (0, 0, 0), new RGB (0xff, 0xff, 0xff)}), 
+			2, null, 1, null, null, -1, -1, -1, 0, 0, 0, 0);
+	int ap = 0;
+	for (int y = 0; y < mask.height; y++) {
+		for (int x = 0; x < mask.width; x++) {
+			mask.setPixel (x, y, (data.alphaData [ap++] & 0xff) <= 127 ? 1 : 0);
+		}
+	}
+	int hMask = OS.CreateBitmap (srcWidth, srcHeight, 1, 1, mask.data);
+	if (srcWidth != destWidth || srcHeight != destHeight) {
+		int hdc = OS.GetDC (0);
+		int hdc1 = OS.CreateCompatibleDC (hdc);
+		OS.SelectObject (hdc1, hMask);
+		int hdc2 = OS.CreateCompatibleDC (hdc);
+		int hMask2 = OS.CreateBitmap (destWidth, destHeight, 1, 1, null);
+		OS.SelectObject (hdc2, hMask2);
+		if (!OS.IsWinCE) OS.SetStretchBltMode(hdc2, OS.COLORONCOLOR);
+		OS.StretchBlt (hdc2, 0, 0, destWidth, destHeight, hdc1, 0, 0, srcWidth, srcHeight, OS.SRCCOPY);
+		OS.DeleteDC (hdc1);
+		OS.DeleteDC (hdc2);
+		OS.ReleaseDC (0, hdc);
+		OS.DeleteObject(hMask);
+		hMask = hMask2;
+	}
 	return hMask;
 }
 
@@ -204,34 +317,7 @@ public int indexOf (Image image) {
 public void put (int index, Image image) {
 	int count = OS.ImageList_GetImageCount (handle);
 	if (!(0 <= index && index < count)) return;
-	if (image != null) {
-		int [] cx = new int [1], cy = new int [1];
-		OS.ImageList_GetIconSize (handle, cx, cy);
-		int hImage = image.handle;
-		switch (image.type) {
-			case SWT.BITMAP: {
-				int background = -1;
-				Color color = image.getBackground ();
-				if (color != null) background = color.handle;
-				int hBitmap = copyBitmap (hImage, cx [0], cy [0]);
-				int hMask = createMask (hBitmap, cx [0], cy [0], background);
-				OS.ImageList_Replace (handle, index, hBitmap, hMask);
-				OS.DeleteObject (hBitmap);
-				OS.DeleteObject (hMask);
-				break;
-			}
-			case SWT.ICON: {
-				if (OS.IsWinCE) {
-					OS.ImageList_ReplaceIcon (handle, index, hImage);
-				} else {
-					int hIcon = copyIcon (hImage, cx [0], cy [0]);
-					OS.ImageList_ReplaceIcon (handle, index, hIcon);
-					OS.DestroyIcon (hIcon);
-				}
-				break;
-			}
-		}
-	}
+	if (image != null) set(index, image, count);
 	images [index] = image;
 }
 
@@ -245,6 +331,60 @@ public void remove (int index) {
 
 int removeRef() {
 	return --refCount;
+}
+
+void set(int index, Image image, int count) {
+	int hImage = image.handle;
+	int [] cx = new int [1], cy = new int [1];
+	OS.ImageList_GetIconSize (handle, cx, cy);
+	switch (image.type) {
+		case SWT.BITMAP: {
+			/*
+			* Note that the image size has to match the image list icon size. 
+			*/
+			int hBitmap = 0, hMask = 0;
+			ImageData data = image.getImageData ();
+			switch (data.getTransparencyType ()) {
+				case SWT.TRANSPARENCY_ALPHA:
+					if (OS.COMCTL32_MAJOR >= 6) {
+						hBitmap = copyWithAlpha (hImage, -1, data.alphaData, cx [0], cy [0]);
+					} else {
+						hBitmap = copyBitmap (hImage, cx [0], cy [0]);
+						hMask = createMaskFromAlpha (data, cx [0], cy [0]);
+					}
+					break;
+				case SWT.TRANSPARENCY_PIXEL:
+					int background = -1;
+					Color color = image.getBackground ();
+					if (color != null) background = color.handle;
+					hBitmap = copyBitmap (hImage, cx [0], cy [0]);
+					hMask = createMask (hImage, cx [0], cy [0], background, data.transparentPixel);
+					break;
+				case SWT.TRANSPARENCY_NONE:
+				default:
+					hBitmap = copyBitmap (hImage, cx [0], cy [0]);
+					break;
+			}
+			if (index == count) {
+				OS.ImageList_Add (handle, hBitmap, hMask);
+			} else {
+				OS.ImageList_Replace (handle, index, hBitmap, hMask);
+			}
+			if (hMask != 0) OS.DeleteObject (hMask);
+			if (hBitmap != hImage) OS.DeleteObject (hBitmap);
+			break;
+		}
+		case SWT.ICON: {
+			if (OS.IsWinCE) {	
+				OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hImage);
+			} else {
+				int hIcon = copyIcon (hImage, cx [0], cy [0]);
+				OS.ImageList_ReplaceIcon (handle, index == count ? -1 : index, hIcon);
+				OS.DestroyIcon (hIcon);
+			}
+			break;
+		}
+	}
 }
 
 public int size () {
