@@ -1577,17 +1577,21 @@ boolean translateTraversal (MSG msg) {
 	switch (msg.wParam) {
 		case OS.VK_RETURN:
 		case OS.VK_ESCAPE:
-			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
-				return false;
+			if ((style & SWT.DROP_DOWN) != 0) {
+				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+					return false;
+				}
 			}
 	}
 	return super.translateTraversal (msg);
 }
 
 boolean traverseEscape () {
-	if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
-		OS.SendMessage (handle, OS.CB_SHOWDROPDOWN, 0, 0);
-		return true;
+	if ((style & SWT.DROP_DOWN) != 0) {
+		if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) != 0) {
+			OS.SendMessage (handle, OS.CB_SHOWDROPDOWN, 0, 0);
+			return true;
+		}
 	}
 	return super.traverseEscape ();
 }
@@ -1862,9 +1866,11 @@ LRESULT wmChar (int hwnd, int wParam, int lParam) {
 		case SWT.CR:
 			postEvent (SWT.DefaultSelection);
 			// FALL THROUGH
-		case SWT.ESC: 
-			if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
-				return LRESULT.ZERO;
+		case SWT.ESC:
+			if ((style & SWT.DROP_DOWN) != 0) {
+				if (OS.SendMessage (handle, OS.CB_GETDROPPEDSTATE, 0, 0) == 0) {
+					return LRESULT.ZERO;
+				}
 			}
 	}
 	return result;
