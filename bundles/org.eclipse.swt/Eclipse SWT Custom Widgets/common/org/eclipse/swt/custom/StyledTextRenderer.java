@@ -286,11 +286,11 @@ private int drawText(String text, int startOffset, int length, int paintX, int p
 			tabIndex = endOffset;
 		}
 		if (tabIndex != i) {
-			String tabSegment = text.substring(i, tabIndex);
 			if (bidi != null) {
 				bidi.drawBidiText(i, tabIndex - i, leftMargin - horizontalScrollOffset, paintY);
 			}
 			else {
+				String tabSegment = text.substring(i, tabIndex);
 				gc.drawString(tabSegment, paintX - horizontalScrollOffset + leftMargin, paintY, true);
 				paintX += gc.stringExtent(tabSegment).x;
 				if (tabIndex != endOffset && tabWidth > 0) {
