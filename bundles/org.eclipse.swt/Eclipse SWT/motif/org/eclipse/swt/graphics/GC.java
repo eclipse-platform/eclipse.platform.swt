@@ -1449,21 +1449,21 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 	if (nw > naw) {
 		if (nh > nah) {
 			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, naw, nah, 5760, 5760);
-			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny, nw - naw, nah2);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny, nw - naw2 * 2, nah2);
 			OS.XFillArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nah, 0, 5760);
-			OS.XFillRectangle(xDisplay, xDrawable, handle, nx, ny + nah2, nw, nh - nah);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx, ny + nah2, nw, nh - nah2 * 2);
 			OS.XFillArc(xDisplay, xDrawable, handle, nx + nw - naw, ny + nh - nah, naw, nah, 17280, 5760);
-			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny + nh - nah2, nw - naw, nah2);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny + nh - nah2, nw - naw2 * 2, nah2);
 			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, naw, nah, 11520, 5760);
 		} else {
 			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, naw, nh, 5760, 11520);
-			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny, nw - naw, nh);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx + naw2, ny, nw - naw2 * 2, nh);
 			OS.XFillArc(xDisplay, xDrawable, handle, nx + nw - naw, ny, naw, nh, 17280, 11520);
 		}
 	} else {
 		if (nh > nah) {
 			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, nw, nah, 0, 11520);
-			OS.XFillRectangle(xDisplay, xDrawable, handle, nx, ny + nah2, nw, nh - nah);
+			OS.XFillRectangle(xDisplay, xDrawable, handle, nx, ny + nah2, nw, nh - nah2 * 2);
 			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny + nh - nah, nw, nah, 11520, 11520);
 		} else {
 			OS.XFillArc(xDisplay, xDrawable, handle, nx, ny, nw, nh, 0, 23040);
