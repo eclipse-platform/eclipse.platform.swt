@@ -364,7 +364,7 @@ void createHandle () {
 	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 0, OS.kTXNStartOffset, OS.kTXNEndOffset);
 }
 
-ScrollBar createScrollBar (int type) {
+ScrollBar createScrollBar (int style) {
 	return createStandardBar (style);
 }
 
