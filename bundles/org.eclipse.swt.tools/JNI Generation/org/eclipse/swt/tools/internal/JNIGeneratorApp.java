@@ -269,7 +269,7 @@ String[] getClassNames(String mainClassName) {
 							classes.add(className);
 						}
 					} else {
-						System.out.println("SUBDIR NOT DONE=" + f);
+						throw new Error("SUBDIR NOT DONE=" + f);
 					}					
 				}
 			}
