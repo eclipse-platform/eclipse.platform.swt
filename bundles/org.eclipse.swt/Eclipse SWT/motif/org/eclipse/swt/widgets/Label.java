@@ -109,7 +109,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	int [] argList = {OS.XmNlabelType, 0};
 	OS.XtGetValues (handle, argList, argList.length / 2);
 	int labelType = argList [1];
-	if (labelType == OS.XmSTRING && (style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+	if (labelType == OS.XmSTRING && (style & SWT.WRAP) != 0) {
 		/* If we are wrapping text, calculate the height based on wHint. */
 		int [] argList4 = {
 			OS.XmNmarginTop, 0,     /* 1 */
@@ -118,12 +118,18 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			OS.XmNmarginWidth, 0,   /* 7 */
 		};
 		OS.XtGetValues (handle, argList4, argList4.length / 2);
-		int unavailable = 2 * (argList4 [7] + getBorderWidth());
-		String string = display.wrapText (text, font, wHint - unavailable);
+		String string = text;
+		if (wHint != SWT.DEFAULT) {
+			int unavailable = 2 * (argList4 [7] + getBorderWidth());
+			string = display.wrapText (string, font, wHint - unavailable);
+		}
 		GC gc = new GC(this);
 		Point extent = gc.textExtent(string);
 		gc.dispose();
 		height = extent.y + argList4 [1] + argList4 [3] + argList4 [5] * 2 + border * 2;
+		if (wHint == SWT.DEFAULT) {
+			width += extent.x + 2 * argList4 [7];
+		}
 	} else {
 		/* If we are not wrapping, ask the widget for its geometry. */
 		XtWidgetGeometry result = new XtWidgetGeometry ();
