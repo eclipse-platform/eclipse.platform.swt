@@ -715,7 +715,7 @@ abstract class Tab {
 				}
 			};
 			for (int i = 0; i < EVENT_NAMES.length; i++) {
-				if (eventsFilter [i]) widget.addListener (i + 1, listener);
+				if (eventsFilter [i]) widget.addListener (i, listener);
 			}
 		}
 	}
@@ -724,7 +724,7 @@ abstract class Tab {
 	 * Logs an untyped event to the event console.
 	 */
 	void log(Event event) {
-		String toString = EVENT_NAMES[event.type - 1] + ": ";
+		String toString = EVENT_NAMES[event.type] + " ["+event.type+"]: ";
 		switch (event.type) {
 			case SWT.KeyDown:
 			case SWT.KeyUp: toString += new KeyEvent (event).toString (); break;
@@ -734,6 +734,7 @@ abstract class Tab {
 			case SWT.MouseEnter:
 			case SWT.MouseExit:
 			case SWT.MouseDoubleClick:
+			case SWT.MouseWheel: 
 			case SWT.MouseHover: toString += new MouseEvent (event).toString (); break;
 			case SWT.Paint: toString += new PaintEvent (event).toString (); break;
 			case SWT.Move:
