@@ -2311,5 +2311,4 @@ public static final native boolean WaitMessage ();
 public static final native int WideCharToMultiByte (int CodePage, int dwFlags, char [] lpWideCharStr, int cchWideChar, byte [] lpMultiByteStr, int cchMultiByte, byte [] lpDefaultChar, boolean [] lpUsedDefaultChar);
 public static final native int WindowFromDC (int lpPoint);
 public static final native int WindowFromPoint (POINT lpPoint);
-
-public static final native boolean TransparentImage (int hdcDest, int DstX, int DstY, int DstCx, int DstCy,int hSrc, int SrcX, int SrcY, int SrcCx, int SrcCy, int TransparentColor);}
+}

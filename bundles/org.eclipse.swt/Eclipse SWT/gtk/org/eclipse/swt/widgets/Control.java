@@ -1565,7 +1565,7 @@ int processMouseMove (int callData, int arg1, int int2) {
 
 int processFocusIn(int int0, int int1, int int2) {
 	Shell shell = _getShell ();
-	postEvent (SWT.FocusIn);
+	sendEvent (SWT.FocusIn);
 
 	/*
 	* It is possible that the shell may be
@@ -1581,7 +1581,7 @@ int processFocusIn(int int0, int int1, int int2) {
 
 int processFocusOut(int int0, int int1, int int2) {
 	Shell shell = _getShell ();
-	postEvent (SWT.FocusOut);
+	sendEvent (SWT.FocusOut);
 	
 	/*
 	* It is possible that the shell may be
