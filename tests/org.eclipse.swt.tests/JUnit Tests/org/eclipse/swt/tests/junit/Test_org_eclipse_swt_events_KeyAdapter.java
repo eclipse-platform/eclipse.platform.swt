@@ -10,6 +10,8 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import junit.framework.*;
+import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.events.KeyAdapter
@@ -22,6 +24,9 @@ public Test_org_eclipse_swt_events_KeyAdapter(String name) {
 	super(name);
 }
 
+public static void main(String[] args) {
+	TestRunner.run(suite());
+}
 
 protected void setUp() {
 }
@@ -39,6 +44,17 @@ public void test_keyPressedLorg_eclipse_swt_events_KeyEvent() {
 
 public void test_keyReleasedLorg_eclipse_swt_events_KeyEvent() {
 	warnUnimpl("Test test_keyReleasedLorg_eclipse_swt_events_KeyEvent not written");
+}
+
+
+public static Test suite() {
+	TestSuite suite = new TestSuite();
+	java.util.Vector methodNames = methodNames();
+	java.util.Enumeration e = methodNames.elements();
+	while (e.hasMoreElements()) {
+		suite.addTest(new Test_org_eclipse_swt_events_KeyAdapter((String)e.nextElement()));
+	}
+	return suite;
 }
 
 public static java.util.Vector methodNames() {
