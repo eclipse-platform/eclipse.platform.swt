@@ -14,6 +14,7 @@ import org.eclipse.swt.events.*;
 public class MenuItem extends Item {
 	Menu parent, menu;
 	int accelerator;
+	boolean enabled = true;
 	
 public MenuItem (Menu parent, int style) {
 	this (parent, style, parent.getItemCount());
@@ -109,9 +110,16 @@ public Display getDisplay () {
 public boolean getEnabled () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
-	OS.PtGetResources (handle, args.length / 3, args);
-	return (args [1] & OS.Pt_BLOCKED) == 0;
+	/*
+	* Bug in Photon. The Pt_BLOCKED flag of a menu item is cleared
+	* when its parent menu is realized. The fix is to remember
+	* the menu item state and reset it when the menu item is
+	* realized.
+	*/
+//	int [] args = {OS.Pt_ARG_FLAGS, 0, 0};
+//	OS.PtGetResources (handle, args.length / 3, args);
+//	return (args [1] & OS.Pt_BLOCKED) == 0;
+	return enabled;
 }
 
 public Menu getMenu () {
@@ -144,9 +152,12 @@ void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	int windowProc = getDisplay ().windowProc;
 	if ((style & SWT.CASCADE) != 0) {
-		OS.PtAddCallback (handle, OS.Pt_CB_ARM, windowProc, SWT.Show);
+		OS.PtAddCallback (handle, OS.Pt_CB_ARM, windowProc, SWT.Arm);
 	}
 	OS.PtAddCallback (handle, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
+	if ((parent.style & SWT.BAR) == 0) {
+		OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, SWT.Show);
+	}
 }
 
 public boolean isEnabled () {
@@ -154,8 +165,7 @@ public boolean isEnabled () {
 }
 
 int processActivate (int info) {
-	processShow (info);
-	return OS.Pt_CONTINUE;
+	return processArm (info);
 }
 
 int processSelection (int info) {
@@ -171,10 +181,56 @@ int processSelection (int info) {
 }
 
 int processShow (int info) {
-	if (menu != null) {		
+	/*
+	* Bug in Photon. The Pt_BLOCKED flag of a menu item is cleared
+	* when its parent menu is realized. The fix is to remember
+	* the menu item state and reset it when the menu item is
+	* realized.
+	*/
+	int [] args = {
+		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
+		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
+	};
+	OS.PtSetResources (handle, args.length / 3, args);
+	return OS.Pt_CONTINUE;
+}
+
+int processArm(int info) {
+	if (menu != null) {
 		int menuHandle = menu.handle;
-		OS.PtPositionMenu (menuHandle, null);
-		OS.PtRealizeWidget (menuHandle);
+		if (!OS.PtWidgetIsRealized (menuHandle)) {
+			if ((parent.style & SWT.BAR) == 0) {
+				int [] args = {OS.Pt_ARG_MENU_FLAGS, OS.Pt_MENU_CHILD, OS.Pt_MENU_CHILD};
+				OS.PtSetResources (menuHandle, args.length / 3, args);
+			}
+			OS.PtReParentWidget (menuHandle, handle);
+			
+			/*
+			* Bug in Photon. PtPositionMenu does not position the menu
+			* properly when the menu is a direct child a menu bar item.
+			* The fix is to position the menu ourselfs.
+			*/
+			if ((parent.style & SWT.BAR) != 0) {
+				PhPoint_t pt = new PhPoint_t ();
+				short [] x = new short [1], y = new short [1];
+				OS.PtGetAbsPosition (handle, x, y);
+				pt.x = x [0];
+				pt.y = y [0];
+				int [] args = {OS.Pt_ARG_HEIGHT, 0, 0};
+				OS.PtGetResources (handle, args.length / 3, args);
+				pt.y += args [1];
+				int ptr = OS.malloc (PhPoint_t.sizeof);
+				OS.memmove (ptr, pt, PhPoint_t.sizeof);
+				args = new int [] {OS.Pt_ARG_POS, ptr, 0};
+				OS.PtSetResources (menuHandle, args.length / 3, args);
+				OS.free (ptr);
+			} else {
+				OS.PtPositionMenu (menuHandle, null);
+			}
+			
+			menu.sendEvent (SWT.Show);
+			OS.PtRealizeWidget (menuHandle);
+		}
 	}
 	return OS.Pt_CONTINUE;
 }
@@ -263,6 +319,7 @@ public void setAccelerator (int accelerator) {
 public void setEnabled (boolean enabled) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	this.enabled = enabled;
 	int [] args = {
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_BLOCKED, OS.Pt_BLOCKED,
 		OS.Pt_ARG_FLAGS, enabled ? 0 : OS.Pt_GHOST, OS.Pt_GHOST,
@@ -298,26 +355,17 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 	if (oldMenu != null) {
 		oldMenu.cascade = null;
-		int menuHandle = oldMenu.handle;
-		int shellHandle = oldMenu.parent.topHandle ();
 		if ((parent.style & SWT.BAR) == 0) {
 			int [] args = {OS.Pt_ARG_BUTTON_TYPE, OS.Pt_MENU_TEXT, 0};
 			OS.PtSetResources (handle, args.length / 3, args);
-			args = new int [] {OS.Pt_ARG_MENU_FLAGS, 0, OS.Pt_MENU_CHILD};
-			OS.PtSetResources (menuHandle, args.length / 3, args);
 		}
-		OS.PtReParentWidget (menuHandle, shellHandle);
 	}
 	if (menu != null) {
 		menu.cascade = this;
-		int menuHandle = menu.handle;
 		if ((parent.style & SWT.BAR) == 0) {
 			int [] args = {OS.Pt_ARG_BUTTON_TYPE, OS.Pt_MENU_RIGHT, 0};
 			OS.PtSetResources (handle, args.length / 3, args);		
-			args = new int [] {OS.Pt_ARG_MENU_FLAGS, OS.Pt_MENU_CHILD, OS.Pt_MENU_CHILD};
-			OS.PtSetResources (menuHandle, args.length / 3, args);					
 		}
-		OS.PtReParentWidget (menuHandle, handle);
 	}
 }
 

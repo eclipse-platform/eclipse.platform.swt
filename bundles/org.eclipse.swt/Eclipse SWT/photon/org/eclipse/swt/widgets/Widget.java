@@ -239,6 +239,10 @@ int processActivate (int info) {
 	return OS.Pt_CONTINUE;
 }
 
+int processArm (int info) {
+	return OS.Pt_CONTINUE;
+}
+
 int processDefaultSelection (int info) {
 	return OS.Pt_CONTINUE;
 }
@@ -266,7 +270,7 @@ int processKey (int info) {
 int processEvent (int widget, int data, int info) {
 	switch (data) {
 		case SWT.Activate:			return processActivate (info);
-//		case SWT.Arm:				return processArm (info);
+		case SWT.Arm:				return processArm (info);
 //		case SWT.Dispose:			return processDispose (info);
 		case SWT.DefaultSelection:	return processDefaultSelection (info);
 		case SWT.FocusIn:			return processFocusIn (info);

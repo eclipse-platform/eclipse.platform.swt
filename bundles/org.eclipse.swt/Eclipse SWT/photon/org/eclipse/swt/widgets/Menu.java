@@ -213,7 +213,6 @@ public boolean getVisible () {
 
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
-	OS.PtAddCallback (handle, OS.Pt_CB_REALIZED, windowProc, SWT.Show);
 	OS.PtAddCallback (handle, OS.Pt_CB_UNREALIZED, windowProc, SWT.Hide);
 }
 
@@ -248,20 +247,13 @@ public boolean isVisible () {
 }
 
 int processHide (int info) {
+	if (cascade != null) {
+		int [] args = {OS.Pt_ARG_MENU_FLAGS, 0, OS.Pt_MENU_CHILD};
+		OS.PtSetResources (handle, args.length / 3, args);
+		int shellHandle = parent.topHandle ();
+		OS.PtReParentWidget (handle, shellHandle);
+	}
 	sendEvent (SWT.Hide);
-	return OS.Pt_CONTINUE;
-}
-
-int processShow (int info) {
-	sendEvent (SWT.Show);
-
-	/*
-	* Bug in Photon.  If menu items are created in the event above,
-	* the menu will not layout properly.  The fix is to force
-	* the menu to relayout itself again.
-	*/
-	OS.PtExtentWidgetFamily (handle);
-
 	return OS.Pt_CONTINUE;
 }
 
@@ -348,6 +340,7 @@ public void setVisible (boolean visible) {
 		int [] args = {OS.Pt_ARG_POS, ptr, 0};
 		OS.PtSetResources (handle, args.length / 3, args);
 		OS.free (ptr);
+		sendEvent (SWT.Show);
 		OS.PtRealizeWidget (handle);
 	} else {
 		OS.PtUnrealizeWidget(handle);
