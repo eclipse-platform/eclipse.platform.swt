@@ -1303,7 +1303,7 @@ public class SWT {
 	 * information see the comment in <code>Widget.checkSubclass()</code>
 	 * (value is 43) 
 	 *
-	 * @see Widget#checkSubclass
+	 * @see org.eclipse.swt.widgets.Widget#checkSubclass
 	 */
 	public static final int ERROR_INVALID_SUBCLASS = 43;
 

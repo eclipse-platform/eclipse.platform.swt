@@ -21,7 +21,7 @@ import org.eclipse.swt.*;
  * number of device contexts available.
  * </p>
  *
- * @see PaintEvent
+ * @see org.eclipse.swt.events.PaintEvent
  */
 
 public final class GC {
@@ -310,7 +310,7 @@ public void drawArc (int x, int y, int width, int height, int startAngle, int en
  * @param width the width of the rectangle
  * @param height the height of the rectangle
  *
- * @see drawRectangle
+ * @see #drawRectangle
  */	 
 public void drawFocus (int x, int y, int width, int height) {
 	RECT rect = new RECT();
