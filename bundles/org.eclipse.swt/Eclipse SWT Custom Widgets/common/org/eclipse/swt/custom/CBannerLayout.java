@@ -166,7 +166,6 @@ protected void layout(Composite composite, boolean flushCache) {
 		banner.redraw(oldStart - CBanner.CURVE_TAIL, 0, banner.curveStart + banner.curve_width - oldStart + CBanner.CURVE_TAIL + 5, size.y, false);
 	}
 	banner.curveRect = new Rectangle(banner.curveStart, 0, banner.curve_width, size.y);
-	banner.update();
 	if (bottomRect != null) bottom.setBounds(bottomRect);
 	if (rightRect != null) right.setBounds(rightRect);
 	if (leftRect != null) left.setBounds(leftRect);
