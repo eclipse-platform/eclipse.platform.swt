@@ -124,11 +124,11 @@ public void test_getChecked() {
 }
 
 public void test_getFont() {
-	warnUnimpl("Test test_getFont not written");
+	// tested in test_setFontLorg_eclipse_swt_graphics_Font
 }
 
 public void test_getFontI() {
-	warnUnimpl("Test test_getFontI not written");
+	// tested in test_setFontILorg_eclipse_swt_graphics_Font
 }
 
 public void test_getForeground() {
@@ -265,12 +265,43 @@ public void test_setCheckedZ() {
 	assertEquals(false, ti.getChecked());
 	t.dispose();
 }
+
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	warnUnimpl("Test test_setFontLorg_eclipse_swt_graphics_Font not written");
+	Font font = tableItem.getFont();
+	tableItem.setFont(font);
+	assertEquals(font, tableItem.getFont());
+	
+	font = new Font(tableItem.getDisplay(), SwtJunit.testFontName, 10, SWT.NORMAL);
+	tableItem.setFont(font);
+	assertEquals(font, tableItem.getFont());
+
+	tableItem.setFont(null);
+	font.dispose();
+	try {
+		tableItem.setFont(font);
+		tableItem.setFont(null);
+		fail("No exception thrown for disposed font");
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_setFontILorg_eclipse_swt_graphics_Font() {
-	warnUnimpl("Test test_setFontILorg_eclipse_swt_graphics_Font not written");
+	Font font = tableItem.getFont(0);
+	tableItem.setFont(0, font);
+	assertEquals(font, tableItem.getFont(0));
+	
+	font = new Font(tableItem.getDisplay(), SwtJunit.testFontName, 10, SWT.NORMAL);
+	tableItem.setFont(0, font);
+	assertEquals(font, tableItem.getFont(0));
+
+	tableItem.setFont(0, null);
+	font.dispose();
+	try {
+		tableItem.setFont(0, font);
+		tableItem.setFont(0, null);
+		fail("No exception thrown for disposed font");
+	} catch (IllegalArgumentException e) {
+	}
 }
 
 public void test_setForegroundILorg_eclipse_swt_graphics_Color() {
