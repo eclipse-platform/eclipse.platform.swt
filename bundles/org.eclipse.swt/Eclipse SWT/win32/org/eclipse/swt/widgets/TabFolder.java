@@ -183,29 +183,23 @@ protected void checkSubclass () {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
+	Point size = super.computeSize (wHint, hHint, changed);
 	RECT insetRect = new RECT (), itemRect = new RECT ();
 	OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 0, insetRect);
-	int width = insetRect.left - insetRect.right, height = 0;
+	int width = insetRect.left - insetRect.right;
 	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
 	if (count != 0) {
 		OS.SendMessage (handle, OS.TCM_GETITEMRECT, count - 1, itemRect);
 		width = Math.max (width, itemRect.right - insetRect.right);
 	}
-	Point size = null;
-	if (layout != null) {
-		size = layout.computeSize (this, wHint, hHint, changed);
-	} else {
-		size = minimumSize (wHint, hHint, changed);
-	}
-	if (size.x == 0) size.x = DEFAULT_WIDTH;
-	if (size.y == 0) size.y = DEFAULT_HEIGHT;
-	if (wHint != SWT.DEFAULT) size.x = wHint;
-	if (hHint != SWT.DEFAULT) size.y = hHint;
-	width = Math.max (width, size.x);
-	height = Math.max (height, size.y);
-	Rectangle trim = computeTrim (0, 0, width, height);
-	width = trim.width;  height = trim.height;
-	return new Point (width, height);
+	RECT rect = new RECT ();
+	OS.SetRect (rect, 0, 0, width, size.y);
+	OS.SendMessage (handle, OS.TCM_ADJUSTRECT, 1, rect);
+	int border = getBorderWidth ();
+	rect.left -= border;  rect.right += border;
+	width = rect.right - rect.left;
+	size.x = Math.max (width, size.x);
+	return size;
 }
 
 public Rectangle computeTrim (int x, int y, int width, int height) {

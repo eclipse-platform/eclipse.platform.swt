@@ -145,6 +145,31 @@ protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 
+public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget ();
+	Point size = super.computeSize (wHint, hHint, changed);
+	int length = OS.GetWindowTextLength (handle);
+	if (length != 0) {
+		/*
+		* If the group has text, and the text is wider than the
+		* client area, pad the width so the text is not clipped.
+		*/
+		TCHAR buffer1 = new TCHAR (getCodePage (), length + 1);
+		OS.GetWindowText (handle, buffer1, length + 1);
+		int newFont, oldFont = 0;
+		int hDC = OS.GetDC (handle);
+		newFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
+		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
+		RECT rect = new RECT ();
+		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
+		OS.DrawText (hDC, buffer1, length, rect, flags);
+		if (newFont != 0) OS.SelectObject (hDC, oldFont);
+		OS.ReleaseDC (handle, hDC);
+		size.x = Math.max (size.x, rect.right - rect.left + CLIENT_INSET * 6);
+	}
+	return size;
+}
+
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget ();
 	Rectangle trim = super.computeTrim (x, y, width, height);
@@ -154,25 +179,11 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	TEXTMETRIC tm = OS.IsUnicode ? (TEXTMETRIC) new TEXTMETRICW () : new TEXTMETRICA ();
 	OS.GetTextMetrics (hDC, tm);
-	int textWidth = 0;
-	int length = OS.GetWindowTextLength (handle);
-	if (length != 0) {
-		/*
-		* If the group has text, and the text is wider than the
-		* client area, pad the width so the text is not clipped.
-		*/
-		TCHAR buffer1 = new TCHAR (getCodePage (), length + 1);
-		OS.GetWindowText (handle, buffer1, length + 1);
-		RECT rect = new RECT ();
-		int flags = OS.DT_CALCRECT | OS.DT_SINGLELINE;
-		OS.DrawText (hDC, buffer1, length, rect, flags);
-		textWidth = rect.right - rect.left + CLIENT_INSET * 4;
-	}
 	if (newFont != 0) OS.SelectObject (hDC, oldFont);
 	OS.ReleaseDC (handle, hDC);
 	trim.x -= CLIENT_INSET;
 	trim.y -= tm.tmHeight;
-	trim.width = Math.max (trim.width, textWidth) + CLIENT_INSET * 2;
+	trim.width += CLIENT_INSET * 2;
 	trim.height += tm.tmHeight + CLIENT_INSET;
 	return trim;
 }
