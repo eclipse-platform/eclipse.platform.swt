@@ -138,6 +138,13 @@ public int getSelection () {
 	return selection;
 }
 
+int gtk_realize (int widget) {
+	int result = super.gtk_realize (widget);
+	if (result != 0) return result;
+	updateBar (selection, minimum, maximum);
+	return 0;
+}
+
 void releaseWidget () {
 	super.releaseWidget ();
 	if (timerId != 0) OS.gtk_timeout_remove (timerId);
@@ -208,6 +215,9 @@ int timerProc (int widget) {
 }
 
 void updateBar (int selection, int minimum, int maximum) {
+	if ((style & SWT.INDETERMINATE ) != 0) return;
+	if ((OS.GTK_WIDGET_FLAGS (handle) & OS.GTK_REALIZED) == 0) return;
+
 	double fraction = minimum == maximum ? 1 : (double)(selection - minimum) / (maximum - minimum);
 	OS.gtk_progress_bar_set_fraction (handle, fraction);
 	/*
