@@ -14,6 +14,8 @@ public class WidgetTable {
 	static int GrowSize = 1024;
 	static int [] IndexTable = new int [GrowSize];
 	static Widget [] WidgetTable = new Widget [GrowSize];
+	static final int SWT0 = ('s'<<24) + ('w'<<16) + ('t'<<8) + '0';
+	static int [] Property = new int [1];
 	static {
 		for (int i=0; i<GrowSize-1; i++) IndexTable [i] = i + 1;
 		IndexTable [GrowSize - 1] = -1;
@@ -21,7 +23,9 @@ public class WidgetTable {
 	
 public static synchronized Widget get (int handle) {
 	if (handle == 0) return null;
-	int index = OS.GetControlReference (handle) - 1;
+	Property [0] = 0;
+	OS.GetControlProperty (handle, SWT0, SWT0, 4, null, Property);
+	int index = Property [0] - 1;
 	if (0 <= index && index < WidgetTable.length) return WidgetTable [index];
 	return null;
 }
@@ -41,7 +45,8 @@ public synchronized static void put (int handle, Widget widget) {
 		IndexTable = newIndexTable;
 		WidgetTable = newWidgetTable;
 	}
-	OS.SetControlReference (handle, FreeSlot + 1);
+	Property [0] = FreeSlot + 1;
+	OS.SetControlProperty (handle, SWT0, SWT0, 4, Property);
 	int oldSlot = FreeSlot;
 	FreeSlot = IndexTable [oldSlot];
 	IndexTable [oldSlot] = -2;
@@ -51,13 +56,17 @@ public synchronized static void put (int handle, Widget widget) {
 public static synchronized Widget remove (int handle) {
 	if (handle == 0) return null;
 	Widget widget = null;
-	int index = OS.GetControlReference (handle) - 1;
+	Property [0] = 0;
+	OS.GetControlProperty (handle, SWT0, SWT0, 4, null, Property);
+	int index = Property [0] - 1;
 	if (0 <= index && index < WidgetTable.length) {
 		widget = WidgetTable [index];
 		WidgetTable [index] = null;
 		IndexTable [index] = FreeSlot;
 		FreeSlot = index;
-		OS.SetControlReference (handle, 0);	
+		Property [0] = 0;
+		OS.SetControlProperty (handle, SWT0, SWT0, 4, Property);
+
 	}
 	return widget;
 }

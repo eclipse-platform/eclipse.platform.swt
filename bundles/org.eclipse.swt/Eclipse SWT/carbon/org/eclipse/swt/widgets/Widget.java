@@ -286,7 +286,6 @@ int getClipping (int control) {
 	int window = OS.GetControlOwner (control);
 	int port = OS.GetWindowPort (window);
 	OS.GetPortVisibleRegion (port, visibleRgn);
-	Rect rect = new Rect();
 	short [] count = new short [1];
 	int [] outControl = new int [1];
 	int tempControl = control, lastControl = 0;

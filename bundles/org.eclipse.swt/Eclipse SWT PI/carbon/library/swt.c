@@ -2512,6 +2512,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlOwner
 }
 #endif /* NO_GetControlOwner */
 
+#ifndef NO_GetControlProperty
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlProperty
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetControlProperty\n")
+
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)GetControlProperty((ControlRef)arg0, arg1, arg2, arg3, (UInt32 *)lparg4, (void *)lparg5);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetControlReference
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetControlReference
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5697,6 +5716,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlPopupMe
 	SetControlPopupMenuHandle((ControlRef)arg0, (MenuRef)arg1);
 }
 #endif /* NO_SetControlPopupMenuHandle */
+
+#ifndef NO_SetControlProperty
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlProperty
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("SetControlProperty\n")
+
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)SetControlProperty((ControlRef)arg0, arg1, arg2, arg3, (const void *)lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif
 
 #ifndef NO_SetControlReference
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlReference

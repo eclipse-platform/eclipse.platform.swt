@@ -85,7 +85,6 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 void createHandle () {
-	Display display = getDisplay ();
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
@@ -108,6 +107,15 @@ void createHandle () {
 	OS.AddDataBrowserListViewColumn (handle, column, 0);
 	//NOT DONE
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)300);
+
+	/*
+	* Feature in the Macintosh.  Scroll bars are not created until
+	* the widget has a minimum size.  The fix is to force the scroll
+	* bars to be created by temporarily giving the widget a size and
+	* then restoring it to zero.
+	*/
+	OS.SizeControl (handle, (short) 0xFF, (short) 0xFF);
+	OS.SizeControl (handle, (short) 0, (short) 0);
 }
 
 void createWidget () {
@@ -115,9 +123,8 @@ void createWidget () {
 	items = new String [4];
 }
 
-ScrollBar createScrollBar (int type) {
-	//NOT DONE
-	return null;
+ScrollBar createScrollBar (int style) {
+	return createStandardBar (style);
 }
 
 int defaultThemeFont () {	

@@ -64,7 +64,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	Display display = getDisplay ();
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
@@ -100,6 +99,15 @@ void createHandle () {
 	OS.AddDataBrowserListViewColumn (handle, column, position);
 	OS.SetDataBrowserListViewDisclosureColumn (handle, COLUMN_ID, true);
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)300);
+
+	/*
+	* Feature in the Macintosh.  Scroll bars are not created until
+	* the widget has a minimum size.  The fix is to force the scroll
+	* bars to be created by temporarily giving the widget a size and
+	* then restoring it to zero.
+	*/
+	OS.SizeControl (handle, (short) 0xFF, (short) 0xFF);
+	OS.SizeControl (handle, (short) 0, (short) 0);
 }
 
 void createItem (TreeItem item, TreeItem parentItem, int index) {
@@ -135,6 +143,10 @@ void createItem (TreeItem item, TreeItem parentItem, int index) {
 			error (SWT.ERROR_ITEM_NOT_ADDED);
 		}
 	}
+}
+
+ScrollBar createScrollBar (int style) {
+	return createStandardBar (style);
 }
 
 void createWidget () {
@@ -191,7 +203,6 @@ public TreeItem getItem (Point point) {
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) point.x, (short) point.y);
 	Rect rect = new Rect ();
-	int [] id = new int [1];
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
@@ -448,7 +459,6 @@ public void removeTreeListener(TreeListener listener) {
 
 public void setInsertMark (TreeItem item, boolean before) {
 	checkWidget ();
-	int hItem = 0;
 	if (item != null) {
 		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 	}

@@ -671,6 +671,7 @@ public static final native int GetControlData(int inControl, short inPart, int i
 public static final native int GetControlEventTarget(int cHandle);
 public static final native int GetControlFeatures(int inControl, int[] outFeatures);
 public static final native int GetControlOwner(int cHandle);
+public static final native int GetControlProperty(int control, int  propertyCreator, int propertyTag, int bufferSize, int[] actualSize,  int[] propertyBuffer);
 public static final native int GetControlReference(int cHandle);
 public static final native int GetControlRegion(int cHandle, short inPart, int rgnHandle);
 public static final native short GetControlValue(int cHandle);
@@ -909,6 +910,7 @@ public static final native int SetControlData(int inControl, int inPart, int inT
 public static final native int SetControlData(int inControl, int inPart, int inTagName, int inSize, byte[] inData);
 public static final native int SetControlFontStyle(int inControl, ControlFontStyleRec inStyle);
 public static final native void SetControlPopupMenuHandle(int cHandle, int popupMenuHandle);
+public static final native int SetControlProperty(int control, int propertyCreator, int propertyTag, int propertySize, int[] propertyData);
 public static final native void SetControlReference(int cHandle, int data);
 public static final native int SetControlTitleWithCFString(int cHandle, int sHandle);
 public static final native void SetControlViewSize(int cHandle, int viewSize);

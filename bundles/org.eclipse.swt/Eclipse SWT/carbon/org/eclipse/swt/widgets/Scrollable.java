@@ -32,9 +32,24 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 }
 
 ScrollBar createScrollBar (int type) {
-	//TEMPOARY CODE
-	if ((state & CANVAS) == 0) return null;
     return new ScrollBar (this, type);
+}
+
+ScrollBar createStandardBar (int style) {
+	short [] count = new short [1];
+	OS.CountSubControls (handle, count);
+	if (count [0] == 0) return null;
+	int [] outControl = new int [1];
+	int index = (style & SWT.HORIZONTAL) != 0 ? 1 : 2;
+	int status = OS.GetIndexedSubControl (handle, (short)index, outControl);
+	if (status != OS.noErr) return null;
+	ScrollBar bar = new ScrollBar ();
+	bar.parent = this;
+	bar.style = style;
+	bar.handle = outControl [0];
+	bar.register ();
+	bar.hookEvents ();
+	return bar;
 }
 
 void createWidget () {

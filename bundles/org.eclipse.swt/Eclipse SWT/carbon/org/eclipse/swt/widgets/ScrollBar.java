@@ -21,6 +21,10 @@ public class ScrollBar extends Widget {
 	int increment = 1;
 	int pageIncrement = 10;
 
+ScrollBar () {
+	/* Do nothing */
+}
+
 ScrollBar (Scrollable parent, int style) {
 	super (parent, checkStyle (style));
 	this.parent = parent;

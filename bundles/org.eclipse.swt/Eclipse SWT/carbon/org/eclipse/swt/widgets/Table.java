@@ -59,7 +59,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 void createHandle () {
-	Display display = getDisplay ();
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
 	OS.CreateDataBrowserControl (window, null, OS.kDataBrowserListView, outControl);
@@ -98,6 +97,15 @@ void createHandle () {
 	OS.AddDataBrowserListViewColumn (handle, column, position);
 	//NOT DONE
 	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)300);
+	
+	/*
+	* Feature in the Macintosh.  Scroll bars are not created until
+	* the widget has a minimum size.  The fix is to force the scroll
+	* bars to be created by temporarily giving the widget a size and
+	* then restoring it to zero.
+	*/
+	OS.SizeControl (handle, (short) 0xFF, (short) 0xFF);
+	OS.SizeControl (handle, (short) 0, (short) 0);
 }
 
 void createItem (TableColumn column, int index) {
@@ -151,6 +159,10 @@ void createItem (TableItem item, int index) {
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;
 	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+}
+
+ScrollBar createScrollBar (int style) {
+	return createStandardBar (style);
 }
 
 void createWidget () {
@@ -292,7 +304,6 @@ public TableItem getItem (Point point) {
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
 	OS.SetPt (pt, (short) point.x, (short) point.y);
 	Rect rect = new Rect ();
-	int [] id = new int [1];
 	for (int i=0; i<itemCount; i++) {
 		OS.GetDataBrowserItemPartBounds (handle, i, COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect);
 		if (OS.PtInRect (pt, rect)) return items [i];
