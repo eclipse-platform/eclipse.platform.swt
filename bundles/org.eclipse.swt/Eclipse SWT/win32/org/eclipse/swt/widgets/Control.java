@@ -3074,12 +3074,15 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 	if (wParam != handle) return null;
 	
 	/*
-	* Feature in WM2003.  SHRecognizeGesture sends a WM_CONTEXTMENU
-	* notification even when the flag SHRG_NOTIFY_PARENT is not set.
-	* This behaviour is undocumented and causes the context menu to be 
-	* displayed twice on this platform.  Previous WinCE versions 
-	* don't support WM_CONTEXTMENU notifications.  The workaround
-	* is to ignore WM_CONTEXTMENU notifications on all WinCE platforms.
+	* Feature in Windows.  SHRecognizeGesture() sends an undocumented
+	* WM_CONTEXTMENU notification when the flag SHRG_NOTIFY_PARENT is
+	* not set.  This causes the context menu to be displayed twice,
+	* once by the caller of SHRecognizeGesture() and once from this
+	* method.  The fix is to ignore WM_CONTEXTMENU notifications on
+	* all WinCE platforms.
+	* 
+	* NOTE: This only happens on WM2003.  Previous WinCE versions did
+	* not support WM_CONTEXTMENU.
 	*/
 	if (OS.IsWinCE) return null;
 	
