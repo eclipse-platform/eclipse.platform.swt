@@ -43,6 +43,12 @@ import java.awt.event.FocusEvent;
  */
 public class SWT_AWT {
 
+	/**
+	 * The name of the embedded Frame class. The default class name
+	 * for the platform will be used if <code>null</code>. 
+	 */
+	public static String embeddedFrameClass;
+
 static boolean loaded;
 static final boolean JDK1_3;
 
@@ -89,7 +95,8 @@ public static Frame new_Frame (final Composite parent) {
 	 */
 	Class clazz = null;
 	try {
-		clazz = Class.forName("sun.awt.windows.WEmbeddedFrame");
+		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.windows.WEmbeddedFrame";
+		clazz = Class.forName(embeddedFrameClass);
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
 	}

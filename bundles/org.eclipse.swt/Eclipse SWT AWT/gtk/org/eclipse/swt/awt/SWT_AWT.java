@@ -34,6 +34,8 @@ import java.awt.event.ComponentEvent;
 
 public class SWT_AWT {
 
+	public static String embeddedFrameClass;
+
 static boolean loaded;
 
 static native final int /*long*/ getAWTHandle (Canvas canvas);
@@ -58,7 +60,8 @@ public static Frame new_Frame (final Composite parent) {
 	 */
 	Class clazz = null;
 	try {
-		clazz = Class.forName("sun.awt.X11.XEmbeddedFrame");
+		String className = embeddedFrameClass != null ? embeddedFrameClass : "sun.awt.X11.XEmbeddedFrame";
+		clazz = Class.forName(className);
 	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
 	}
