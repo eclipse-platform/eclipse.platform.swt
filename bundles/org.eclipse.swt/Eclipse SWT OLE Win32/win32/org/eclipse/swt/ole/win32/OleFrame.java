@@ -9,6 +9,7 @@ import org.eclipse.swt.internal.ole.win32.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.win32.*;
+import org.eclipse.swt.internal.*;
 import java.util.Enumeration;
 import java.util.Vector;
 
@@ -67,6 +68,8 @@ final public class OleFrame extends Composite
 	}
 	
 	private static String CHECK_FOCUS = "OLE_CHECK_FOCUS";
+	private static String HHOOK = "OLE_HHOOK";
+	private static String CALLBACK = "OLE_CALLBACK";
 	
 /**
  * Create an OleFrame child widget using style bits
@@ -106,20 +109,21 @@ public OleFrame(Composite parent, int style) {
 	this.AddRef();
 	
 	// Check for focus change
-	checkFocus(getDisplay());
+	Display display = getDisplay();
+	initCheckFocus(display);
+	initMsgHook(display);
 }
-private static void checkFocus (final Display display) {
-	Object polling = display.getData(CHECK_FOCUS);
-	if (polling != null) return;
+private static void initCheckFocus (final Display display) {
+	if (display.getData(CHECK_FOCUS) != null) return;
 	display.setData(CHECK_FOCUS, CHECK_FOCUS);
 	final int time = 50;
 	final Runnable[] timer = new Runnable[1];
 	final Control[] lastFocus = new Control[1];
 	timer[0] = new Runnable() {
 		public void run() {
-			Event event = new Event();
 			Control currentFocus = display.getFocusControl();
 			if (lastFocus[0] != currentFocus) {
+				Event event = new Event();
 				if (lastFocus[0] instanceof OleFrame) {
 					if (!lastFocus [0].isDisposed()) {
 						OleFrame frame = (OleFrame) lastFocus[0];
@@ -150,6 +154,58 @@ private static void checkFocus (final Display display) {
 		}
 	};
 	display.timerExec(time, timer[0]);
+}
+private static void initMsgHook(Display display) {
+	if (display.getData(HHOOK) != null) return;
+	final Callback callback = new Callback(OleFrame.class, "getMsgProc", 3);
+	int address = callback.getAddress();
+	int threadId = OS.GetCurrentThreadId();
+	final int hHook = OS.SetWindowsHookEx(OS.WH_GETMESSAGE, address, 0, threadId);
+	if (hHook == 0) {
+		callback.dispose();
+		return;
+	}
+	display.setData(HHOOK, new Integer(hHook));
+	display.setData(CALLBACK, callback);
+	display.disposeExec(new Runnable() {
+		public void run() {
+			if (hHook != 0) OS.UnhookWindowsHookEx(hHook);
+			if (callback != null) callback.dispose();
+		}
+	});
+}
+static int getMsgProc(int code, int wParam, int lParam) {
+	Display display = Display.getCurrent();
+	if (display == null) return 0;
+	Integer hHook = (Integer)display.getData(HHOOK);
+	if (hHook == null) return 0;
+	if (code < 0) {
+		return OS.CallNextHookEx(hHook.intValue(), code, wParam, lParam);
+	}
+	MSG msg = new MSG();
+	OS.MoveMemory(msg, lParam, MSG.sizeof);
+	int message = msg.message;
+	if (OS.WM_KEYFIRST <= message && message <= OS.WM_KEYLAST) {		
+		if (display != null) {
+			Widget widget = null;
+			int hwnd = msg.hwnd;
+			while (hwnd != 0) {
+				widget = display.findWidget (hwnd);
+				if (widget != null) break;
+				hwnd = OS.GetParent (hwnd);
+			}
+			if (widget != null && widget instanceof OleClientSite) {
+				OleClientSite site = (OleClientSite)widget;
+				if (site.handle == hwnd) {
+					OleFrame frame = site.frame;
+					if (frame.translateOleAccelerator(msg)) {
+						return 0;
+					}
+				}
+			}
+		}
+	}
+	return OS.CallNextHookEx(hHook.intValue(), code, wParam, lParam);
 }
 /**
  * Increment the count of references to this instance
@@ -619,7 +675,22 @@ private void setMenubar(Menu bar){
 public void setWindowMenus(MenuItem[] windowMenus){
 	windowMenuItems = windowMenus;
 }
+private boolean translateOleAccelerator(MSG msg) {
+	if (objIOleInPlaceActiveObject == null) return false;
+	return objIOleInPlaceActiveObject.TranslateAccelerator(msg) != OLE.S_FALSE;
+}
 private int TranslateAccelerator(int lpmsg, int wID){
-	return COM.E_NOTIMPL;
+	if (menubar == null || menubar.isDisposed() | !menubar.isEnabled()) return COM.S_FALSE;
+	if (wID < 0) return COM.S_FALSE;
+	
+	Shell shell = menubar.getShell();
+	int hwnd = shell.handle;
+	int hAccel = OS.SendMessage (hwnd, OS.WM_APP+1, 0, 0);
+	if (hAccel == 0) return COM.S_FALSE;
+	
+	MSG msg = new MSG();
+	OS.MoveMemory(msg, lpmsg, MSG.sizeof);
+	int result = OS.TranslateAccelerator(hwnd, hAccel, msg );
+	return result == 0 ? COM.S_FALSE : COM.S_OK;
 }
 }
