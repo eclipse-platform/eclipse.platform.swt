@@ -1478,7 +1478,7 @@ void initializeImages () {
 int inputProc (int data, int rcvid, int message, int size) {
 	if (embedded) {
 		runDeferredEvents ();
-		if (runAsyncMessages ()) wakeThread ();
+		if (runAsyncMessages (false)) wakeThread ();
 	}
 	return OS.Pt_CONTINUE;
 }
@@ -1914,7 +1914,7 @@ public boolean readAndDispatch () {
 	OS.PtAppRemoveWorkProc (app_context, id);
 	boolean result = true;
 	if (idle) {
-		result = runAsyncMessages ();
+		result = runAsyncMessages (false);
 	} else {
 		runDeferredEvents ();
 	}
@@ -2100,8 +2100,8 @@ public void removeListener (int eventType, Listener listener) {
 	eventTable.unhook (eventType, listener);
 }
 
-boolean runAsyncMessages () {
-	return synchronizer.runAsyncMessages ();
+boolean runAsyncMessages (boolean all) {
+	return synchronizer.runAsyncMessages (all);
 }
 
 boolean runDeferredEvents () {
@@ -2313,7 +2313,7 @@ public void setSynchronizer (Synchronizer synchronizer) {
 	checkDevice ();
 	if (synchronizer == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (this.synchronizer != null) {
-		this.synchronizer.runAsyncMessages();
+		this.synchronizer.runAsyncMessages(true);
 	}
 	this.synchronizer = synchronizer;
 }
