@@ -1742,11 +1742,9 @@ static int[] init(Device device, Image image, ImageData i) {
 			if (hIcon == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 			OS.DeleteObject(hBitmap);
 			OS.DeleteObject(hMask);
-			if (image != null) {
-				image.handle = hIcon;
-				image.type = SWT.ICON;
-				if (OS.IsWinCE) image.data = i;
-			}
+			image.handle = hIcon;
+			image.type = SWT.ICON;
+			if (OS.IsWinCE) image.data = i;
 		}
 	} else {
 		if (image == null) {
