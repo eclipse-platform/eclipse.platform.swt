@@ -559,6 +559,34 @@ int controlProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
+static String convertToLf(String text) {
+	char Cr = '\r';
+	char Lf = '\n';
+	int length = text.length ();
+	if (length == 0) return text;
+	
+	/* Check for an LF or CR/LF.  Assume the rest of the string 
+	 * is formated that way.  This will not work if the string 
+	 * contains mixed delimiters. */
+	int i = text.indexOf (Lf, 0);
+	if (i == -1 || i == 0) return text;
+	if (text.charAt (i - 1) != Cr) return text;
+
+	/* The string is formatted with CR/LF.
+	 * Create a new string with the LF line delimiter. */
+	i = 0;
+	StringBuffer result = new StringBuffer ();
+	while (i < length) {
+		int j = text.indexOf (Cr, i);
+		if (j == -1) j = length;
+		String s = text.substring (i, j);
+		result.append (s);
+		i = j + 2;
+		result.append (Lf);
+	}
+	return result.toString ();
+}
+
 void clearMenuFlags () {
 	if (menus == null) return;
 	for (int i=0; i<menus.length; i++) {

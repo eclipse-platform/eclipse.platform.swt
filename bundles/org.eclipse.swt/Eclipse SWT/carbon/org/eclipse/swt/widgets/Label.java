@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.ATSTrapezoid;
 import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 
@@ -111,30 +112,53 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			height = r.height;
 		} else {
 			width = DEFAULT_WIDTH;
-			height = DEFAULT_HEIGHT;
-			if (text.length () != 0) {
-				int [] ptr = new int [1];
-				int [] actualSize = new int [1];
-				OS.GetControlData (handle, (short)0 , OS.kControlStaticTextCFStringTag, 4, ptr, actualSize);
-				if (ptr [0] != 0) {
-					org.eclipse.swt.internal.carbon.Point bounds = new org.eclipse.swt.internal.carbon.Point ();
-					short [] baseLine = new short [1];
-					boolean wrap = false;
+			Font font = getFont ();
+			FontInfo info = new FontInfo ();
+			OS.FetchFontInfo(font.id, font.size, font.style, info);
+			int fontHeight = info.ascent + info.descent;
+			height = fontHeight;
+			int length = text.length (); 
+			if (length != 0) {
+				String string = Display.convertToLf (text);
+				int [] layout = new int [1];
+				OS.ATSUCreateTextLayout (layout);
+				if (layout [0] == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+				int [] atsuiStyle = new int [1];
+				OS.ATSUCreateStyle (atsuiStyle);
+				if (atsuiStyle [0] == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+				int ptr1 = OS.NewPtr (16);
+				OS.memcpy (ptr1, new int [] {font.handle}, 4); 
+				OS.memcpy (ptr1 + 4, new int [] {OS.X2Fix (font.size)}, 4);
+				int [] tags = new int [] {OS.kATSUFontTag, OS.kATSUSizeTag};
+				int [] sizes = new int [] {4, 4};
+				int [] values = new int [] {ptr1, ptr1 + 4};
+				OS.ATSUSetAttributes (atsuiStyle [0], tags.length, tags, sizes, values);
+				OS.DisposePtr (ptr1);
+				int ptr2 = OS.NewPtr (length * 2);
+				OS.memcpy (ptr2, string, length * 2);
+				OS.ATSUSetTextPointerLocation (layout [0], ptr2, 0, length, length);
+				OS.ATSUSetRunStyle (layout [0], atsuiStyle [0], 0, length);
+				height = 0;
+				width = wHint != SWT.DEFAULT ? wHint : 0;
+				int [] breakCount = new int [1];
+				ATSTrapezoid trapezoid = new ATSTrapezoid();
+				int start = 0, index = 0;
+				do {
+					index = string.indexOf ('\n', start);
+					int end = index == -1 ? length : index;
 					if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
-						wrap = true;
-						bounds.h = (short) wHint;
+						OS.ATSUBatchBreakLines (layout [0], start, end - start, OS.X2Fix (wHint), breakCount);
+						height += (breakCount [0] + (index == -1 ? 1 : 0)) * fontHeight;
+					} else {
+						OS.ATSUGetGlyphBounds (layout [0], 0, 0, start, end - start, (short) OS.kATSUseDeviceOrigins, 1, trapezoid, null);
+						width = Math.max (width, OS.Fix2Long (trapezoid.upperRight_x) - OS.Fix2Long (trapezoid.upperLeft_x));
+						height += OS.Fix2Long (trapezoid.lowerRight_y) - OS.Fix2Long (trapezoid.upperRight_y);
 					}
-					// NEEDS work - only works for default font
-					OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemeSystemFont, OS.kThemeStateActive, wrap, bounds, baseLine);
-					width = bounds.h;
-					height = bounds.v;
-					OS.CFRelease (ptr [0]);
-				}
-			} else {
-				Font font = getFont ();
-				FontInfo info = new FontInfo ();
-				OS.FetchFontInfo(font.id, font.size, font.style, info);
-				height = info.ascent + info.descent;
+					start = index + 1;
+				} while (index != -1);
+				OS.ATSUDisposeStyle (atsuiStyle [0]);
+				OS.ATSUDisposeTextLayout (layout [0]);
+				OS.DisposePtr (ptr2);
 			}
 		}
 	}

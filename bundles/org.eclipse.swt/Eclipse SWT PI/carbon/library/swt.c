@@ -152,6 +152,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSFontGetPostScr
 }
 #endif
 
+#ifndef NO_ATSUBatchBreakLines
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSUBatchBreakLines
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
+{
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUBatchBreakLines\n")
+
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)ATSUBatchBreakLines((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (UniCharCount)arg2, (ATSUTextMeasurement)arg3, (ItemCount *)lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_ATSUCreateStyle
 JNIEXPORT jint JNICALL OS_NATIVE(ATSUCreateStyle)
 	(JNIEnv *env, jclass that, jintArray arg0)
@@ -267,6 +283,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSUGetGlyphBound
 	rc = (jint)ATSUGetGlyphBounds((ATSUTextLayout)arg0, (ATSUTextMeasurement)arg1, (ATSUTextMeasurement)arg2, (UniCharArrayOffset)arg3, (UniCharCount)arg4, (UInt16)arg5, (ItemCount)arg6, (ATSTrapezoid *)lparg7, (ItemCount *)lparg8);
 	if (arg7) setATSTrapezoidFields(env, arg7, lparg7);
 	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_ATSUGetSoftLineBreaks
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_ATSUGetSoftLineBreaks
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jintArray arg4, jintArray arg5)
+{
+	jint *lparg4=NULL;
+	jint *lparg5=NULL;
+	jint rc;
+
+	DEBUG_CALL("ATSUGetSoftLineBreaks\n")
+
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	rc = (jint)ATSUGetSoftLineBreaks((ATSUTextLayout)arg0, (UniCharArrayOffset)arg1, (UniCharCount)arg2, (ItemCount)arg3, (UniCharArrayOffset *)lparg4, (ItemCount *)lparg5);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	return rc;
 }
 #endif

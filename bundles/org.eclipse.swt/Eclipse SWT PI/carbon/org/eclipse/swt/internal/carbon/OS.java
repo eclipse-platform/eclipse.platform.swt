@@ -546,6 +546,7 @@ public static final native int AECountItems(AEDesc theAEDescList, int[] theCount
 public static final native int AEGetNthPtr(AEDesc theAEDescList, int index, int desiredType, int[] theAEKeyword, int[] typeCode, int dataPtr, int maximumSize, int[] actualSize);
 public static final native int AEProcessAppleEvent(EventRecord theEventRecord);
 public static final native int ATSFontGetPostScriptName(int iFont, int iOptions, int[] oName); 
+public static final native int ATSUBatchBreakLines(int iTextLayout, int iRangeStart, int iRangeLength, int iLineWidth, int[] oBreakCount);
 public static final native int ATSUCreateStyle(int[] oStyle);
 public static final native int ATSUCreateTextLayout(int[] oTextLayout);
 public static final native int ATSUCreateTextLayoutWithTextPtr(int iText, int iTextOffset, int iTextLength, int iTextTotalLength, int iNumberOfRuns, int[] iRunLengths, int[] iStyles, int[] oTextLayout);
@@ -554,6 +555,7 @@ public static final native int ATSUDisposeTextLayout(int iTextLayout);
 public static final native int ATSUDrawText(int iTextLayout, int iLineOffset, int iLineLength, int iLocationX, int iLocationY);
 public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, int oGlyphBounds, int[] oActualNumberOfBounds);
 public static final native int ATSUGetGlyphBounds(int iTextLayout, int iTextBasePointX, int iTextBasePointY, int iBoundsCharStart, int iBoundsCharLength, short iTypeOfBounds, int iMaxNumberOfBounds, ATSTrapezoid oGlyphBounds, int[] oActualNumberOfBounds);
+public static final native int ATSUGetSoftLineBreaks(int iTextLayout, int iRangeStart, int iRangeLength, int iMaximumBreaks, int[] oBreaks, int[] oBreakCount);
 public static final native int ATSUSetAttributes(int iStyle, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue); 
 public static final native int ATSUSetFontFeatures(int iStyle, int iFeatureCount,  short[] iType, short[] iSelector);
 public static final native int ATSUSetLayoutControls(int iTextLayout, int iAttributeCount, int[] iTag, int[] iValueSize, int[] iValue);
