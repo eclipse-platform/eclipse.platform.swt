@@ -2344,7 +2344,6 @@ public static final native boolean SetCursorPos (int X, int Y);
 public static final native int SetDIBColorTable (int hdc, int uStartIndex, int cEntries, byte[] pColors);
 public static final native int SetFocus (int hWnd);
 public static final native boolean SetForegroundWindow (int hWnd);
-public static final native int SetLayout (int hdc, int dwLayout);
 public static final native boolean SetMenu (int hWnd, int hMenu);
 public static final native boolean SetMenuDefaultItem (int hMenu, int uItem, int fByPos);
 public static final native boolean SetMenuInfo (int hmenu, MENUINFO lpcmi);
