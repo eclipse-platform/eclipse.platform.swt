@@ -33,8 +33,10 @@ public static void main(String[] args) {
 	Display display = new Display();
 	Shell shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	Canvas canvas = new Canvas(shell, SWT.NONE);
-	DropTarget target = new DropTarget(canvas, DND.DROP_DEFAULT | DND.DROP_LINK);
+	final Table control = new Table(shell, SWT.NONE);
+	TableItem item = new TableItem(control, SWT.NONE);
+	item.setText("Drag data over this site to see the native transfer type.");
+	DropTarget target = new DropTarget(control, DND.DROP_DEFAULT | DND.DROP_COPY | DND.DROP_LINK | DND.DROP_MOVE);
 	target.setTransfer(new Transfer[] {Snippet83.getInstance()});
 	target.addDropListener(new DropTargetAdapter() {
 		public void dragEnter(DropTargetEvent event) {			
@@ -42,13 +44,26 @@ public static void main(String[] args) {
 			if ((event.operations & DND.DROP_COPY) != 0) ops += "Copy;";
 			if ((event.operations & DND.DROP_MOVE) != 0) ops += "Move;";
 			if ((event.operations & DND.DROP_LINK) != 0) ops += "Link;";
-			System.out.println("Allowed Operations are "+ops);
+			control.removeAll();
+			TableItem item1 = new TableItem(control,SWT.NONE);
+			item1.setText("Allowed Operations are "+ops);
+			
+			if (event.detail == DND.DROP_DEFAULT) {
+				if ((event.operations & DND.DROP_COPY) != 0) {
+					event.detail = DND.DROP_COPY;
+				} else if ((event.operations & DND.DROP_LINK) != 0) {
+					event.detail = DND.DROP_LINK;
+				} else if ((event.operations & DND.DROP_MOVE) != 0) {
+					event.detail = DND.DROP_MOVE;
+				}
+			}
 			
 			TransferData[] data = event.dataTypes;
 			for (int i = 0; i < data.length; i++) {
 				int id = data[i].type;
 				String name = getNameFromId(id);
-				System.out.println("Data type is "+id+" "+name);
+				TableItem item2 = new TableItem(control,SWT.NONE);
+				item2.setText("Data type is "+id+" "+name);
 			}
 		}
 	});
@@ -66,8 +81,8 @@ public static Snippet83 getInstance () {
 	return _instance;
 }
 Snippet83() {
-	ids = new int[50000];
-	names = new String[50000];
+	ids = new int[80000];
+	names = new String[80000];
 	for (int i = 0; i < ids.length; i++) {
 		ids[i] = i;
 		names[i] = getNameFromId(i);
