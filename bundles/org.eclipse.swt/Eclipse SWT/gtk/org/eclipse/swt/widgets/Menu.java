@@ -132,12 +132,13 @@ void createHandle (int index) {
 	state |= HANDLE;
 	if ((style & SWT.BAR) != 0) {
 		handle = OS.gtk_menu_bar_new ();
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		int parentHandle = parent.fixedHandle;
 		OS.gtk_container_add (parentHandle, handle);
 	} else {
 		handle = OS.gtk_menu_new ();
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
 void createWidget (int index) {
