@@ -486,6 +486,7 @@ public boolean open () {
 							drawRectangles (rectangles);
 						}
 						cursorPos = adjustResizeCursor (xDisplay, xWindow);
+						newX [0] = cursorPos.x;  newY [0] = cursorPos.y;
 					} else {
 						moveRectangles (newX [0] - oldX [0], newY [0] - oldY [0]);
 						sendEvent (SWT.Move, event);
@@ -525,9 +526,8 @@ public boolean open () {
 							drawRectangles (rectsToErase);
 							drawRectangles (rectangles);
 						}
-						cursorPos = adjustMoveCursor (xDisplay, xWindow);
 					}
-					oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
+					oldX [0] = newX [0];  oldY [0] = newY [0];
 				}
 				tracking = anyEvent.type != OS.ButtonRelease;
 				break;
