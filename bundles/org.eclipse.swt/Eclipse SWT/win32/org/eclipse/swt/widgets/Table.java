@@ -37,7 +37,7 @@ public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
 	ImageList imageList;
-	boolean ignoreSelect, dragStarted, ignoreResize;
+	boolean ignoreSelect, dragStarted, ignoreResize, mouseDown;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
 	static {
@@ -1461,6 +1461,7 @@ LRESULT sendMouseDownEvent (int type, int button, int msg, int wParam, int lPara
 			fakeMouseUp = (pinfo.flags & OS.LVHT_ONITEMSTATEICON) == 0;
 		}
 		if (fakeMouseUp) {
+			mouseDown = false;
 			sendMouseEvent (SWT.MouseUp, button, msg, wParam, lParam);
 		}
 	}
@@ -2075,6 +2076,8 @@ LRESULT WM_LBUTTONDBLCLK (int wParam, int lParam) {
 }
 
 LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
+	mouseDown = true;
+	
 	/*
 	* Feature in Windows.  For some reason, capturing
 	* the mouse after processing the mouse event for the
@@ -2116,6 +2119,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	}
 	
 	return result;
+}
+
+LRESULT WM_LBUTTONUP (int wParam, int lParam) {
+	mouseDown = false;
+	return super.WM_LBUTTONUP (wParam, lParam);
 }
 
 LRESULT WM_MOUSEHOVER (int wParam, int lParam) {
@@ -2332,11 +2340,15 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						boolean isFocus = (pnmlv.uNewState & OS.LVIS_FOCUSED) != 0;
 						int index = OS.SendMessage (handle, OS.LVM_GETNEXTITEM, -1, OS.LVNI_FOCUSED);
 						if ((style & SWT.MULTI) != 0) {
-							if (!isFocus && index == pnmlv.iItem) {
-								if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
-									boolean isSelected = (pnmlv.uNewState & OS.LVIS_SELECTED) != 0;
-									boolean wasSelected = (pnmlv.uOldState & OS.LVIS_SELECTED) != 0;
-									isFocus = isSelected != wasSelected;
+							if (OS.GetKeyState (OS.VK_CONTROL) < 0) {
+								if (!isFocus) {
+									if (index == pnmlv.iItem) {
+										boolean isSelected = (pnmlv.uNewState & OS.LVIS_SELECTED) != 0;
+										boolean wasSelected = (pnmlv.uOldState & OS.LVIS_SELECTED) != 0;
+										isFocus = isSelected != wasSelected;
+									}
+								} else {
+									isFocus = mouseDown;
 								}
 							}
 						}
@@ -2344,12 +2356,11 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 						if (isFocus) {
 							Event event = new Event();
 							if (index != -1) {
-								int itemState = OS.SendMessage (handle, OS.LVM_GETITEMSTATE, index, OS.LVIS_SELECTED);
-								if ((itemState & OS.LVIS_SELECTED) != 0) event.item = items [index];
 								/*
 								* This code is intentionally commented.
 								*/
 //								OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+								event.item = items [index];
 							}
 							postEvent (SWT.Selection, event);
 						}
