@@ -283,9 +283,7 @@ int getClipping (int control) {
 	int [] outControl = new int [1];
 	int tempControl = control, lastControl = 0;
 	while (tempControl != 0) {
-		OS.GetControlBounds (tempControl, rect);
-		if (WidgetTable.get (tempControl) instanceof Button) rect.bottom += 1; // NOT DONE
-		OS.RectRgn (tempRgn, rect);
+		OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
 		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
 		if (OS.EmptyRgn (visibleRgn)) break;
 		OS.CountSubControls (tempControl, count);
@@ -294,9 +292,7 @@ int getClipping (int control) {
 			int child = outControl [0];
 			if (child == lastControl) break;
 			if (!OS.IsControlVisible (child)) continue;
-			OS.GetControlBounds (child, rect);
-			if (WidgetTable.get (child) instanceof Button) rect.bottom += 1; // NOT DONE
-			OS.RectRgn (tempRgn, rect);
+			OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
 			OS.UnionRgn (tempRgn, childRgn, childRgn);
 		}
 		lastControl = tempControl;

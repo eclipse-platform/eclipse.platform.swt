@@ -285,15 +285,6 @@ public boolean getVisible () {
     return OS.IsWindowVisible (shellHandle);
 }
 
-int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-
-	//BUG - shell draws on top of TXNObject
-	return super.kEventControlDraw (nextHandler, theEvent, userData);
-
-	//FIX? = causes pixerl corruption but stops shell drawing on top of TXNObject
-//	return OS.noErr;
-}
-
 int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowActivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
