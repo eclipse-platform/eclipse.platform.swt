@@ -658,7 +658,7 @@ void hookEvents () {
 public int indexOf (String string) {
 	checkWidget();
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	return OS.PtListItemPos(handle, buffer) - 1;
+	return OS.PtListItemPos (handle, buffer) - 1;
 }
 
 /**
@@ -863,7 +863,7 @@ public void remove (int start, int end) {
 	checkWidget();
 	int [] args = new int [] {OS.Pt_ARG_LIST_ITEM_COUNT, 0, 0};
 	OS.PtGetResources (handle, args.length / 3, args);
-	if (!(0 < start && start <= end && end < args [1])) {
+	if (!(0 <= start && start <= end && end < args [1])) {
 		 error (SWT.ERROR_INVALID_RANGE);
 	}
 	int count = end - start + 1;
