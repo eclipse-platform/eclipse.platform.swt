@@ -2436,6 +2436,9 @@ boolean translateTraversal (MSG msg) {
 	Control control = this;
 	do {
 		if (control.traverse (event)) return true;
+		if (!event.doit && control.hooks (SWT.Traverse)) {
+			return false;
+		}
 		if (control == shell) return false;
 		control = control.parent;
 	} while (all && control != null);
