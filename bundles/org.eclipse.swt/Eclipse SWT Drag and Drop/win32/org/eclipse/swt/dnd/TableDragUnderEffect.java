@@ -18,7 +18,7 @@ import org.eclipse.swt.internal.win32.OS;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
-	int currentEffect = DND.FEEDBACK_NONE;
+	private int currentEffect = DND.FEEDBACK_NONE;
 	private int[] selection = new int[0];
 	private TableItem scrollItem;
 	private long scrollBeginTime;
@@ -43,20 +43,20 @@ void show(int effect, int x, int y) {
 	currentEffect = effect;
 }
 private TableItem findItem(int x, int y){
-	if (table == null) return null;
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
+	Rectangle area = table.getClientArea();
+	if (!area.contains(coordinates)) return null;
+	
 	TableItem item = table.getItem(coordinates);
 	if (item != null) return item;
-	
-	Rectangle area = table.getClientArea();
+	// Scan across the width of the table
 	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		coordinates = new Point(x1, coordinates.y);
-		item = table.getItem(coordinates);
+		Point pt = new Point(x1, coordinates.y);
+		item = table.getItem(pt);
 		if (item != null) return item;
 	}
 	return null;
-
 }
 private void setDragUnderEffect(int effect, TableItem item) {	
 	if ((effect & DND.FEEDBACK_SELECT) != 0) {
@@ -100,17 +100,17 @@ private void scroll(TableItem item, int x, int y) {
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
 	Rectangle area = table.getClientArea();
-	TableItem showItem = null;
-	int itemIndex = table.indexOf(item);
+	int top = table.getTopIndex();
+	int newTop = -1;
 	// scroll if two lines from top or bottom
 	int scroll_width = 2*table.getItemHeight();
 	if (coordinates.y < area.y + scroll_width) {
-		showItem = table.getItem(Math.max(0, itemIndex - 1));
+		newTop = Math.max(0, top - 1);
 	} else if (coordinates.y > area.y + area.height - scroll_width) {
-		showItem = table.getItem(Math.min(table.getItemCount() - 1, itemIndex + 1));
+		newTop = Math.min(table.getItemCount() - 1, top + 1);
 	}
-	if (showItem != null) {
-		table.showItem(showItem);
+	if (newTop != -1 && newTop != top) {
+		table.setTopIndex(newTop);
 	}		
 }
 }
