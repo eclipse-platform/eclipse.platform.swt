@@ -800,6 +800,11 @@ static boolean isValidClass (Class clazz) {
 	return name.substring (0, index + 1).equals (PACKAGE_PREFIX);
 }
 
+public int getDismissalAlignment () {
+	checkDevice ();
+	return SWT.RIGHT;
+}
+
 /**
  * Returns the longest duration, in milliseconds, between
  * two mouse button clicks that will be considered a

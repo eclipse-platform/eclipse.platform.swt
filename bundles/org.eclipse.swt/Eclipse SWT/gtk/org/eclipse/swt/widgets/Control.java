@@ -2457,9 +2457,9 @@ public void setVisible (boolean visible) {
 		* not respond to a mnemonic.  The fix is to unrealize
 		* the widget hierarchy every time a widget is hidden.
 		* 
-		* Note: Controls who have an IM context associated can 
-		* not call unrealize because it will force the widget to be 
-		* remapped.
+		* Note: Controls who have an IM context associated cannot
+		* call gtk_widget_unrealize() because it forces the widget to
+		* be remapped.
 		*/
 		int imHandle = imHandle ();
 		if (imHandle == 0) OS.gtk_widget_unrealize (topHandle);
