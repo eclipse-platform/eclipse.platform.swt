@@ -550,7 +550,6 @@ public Shell [] getShells () {
  * @see Decorations#setDefaultButton
 */
 public void open () {
-	checkWidget();
 	setVisible (true);
 }
 
