@@ -147,7 +147,7 @@ gnome_stats.o: gnome_stats.c gnome_stats.h
 make_mozilla:$(MOZILLA_LIB)
 
 $(MOZILLA_LIB): $(MOZILLA_OBJECTS)
-	$(CXX) $(LIBS) $(MOZILLALIBS) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) 
+	$(CXX) $(LIBS) -o $(MOZILLA_LIB) $(MOZILLA_OBJECTS) $(MOZILLALIBS)
 
 xpcom.o: xpcom.cpp
 	$(CXX) $(MOZILLACFLAGS) -c xpcom.cpp	
