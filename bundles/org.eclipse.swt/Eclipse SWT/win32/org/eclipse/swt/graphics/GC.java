@@ -956,6 +956,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
  */
 public void drawString (String string, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, false);
 	OS.TextOut (handle, x, y, buffer, buffer.length);
 }
@@ -982,6 +983,7 @@ public void drawString (String string, int x, int y) {
  */
 public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	byte [] buffer = Converter.wcsToMbcs (getCodePage(), string, false);
 	if (isTransparent) {
 		int oldBkMode = OS.SetBkMode(handle, OS.TRANSPARENT);
@@ -1012,6 +1014,7 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
  */
 public void drawText (String string, int x, int y) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
 	byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
@@ -1040,6 +1043,7 @@ public void drawText (String string, int x, int y) {
  */
 public void drawText (String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	RECT rect = new RECT();
 	OS.SetRect(rect, x, y, 0x7FFF, 0x7FFF);
 	byte [] buffer = Converter.wcsToMbcs(getCodePage(), string, false);
