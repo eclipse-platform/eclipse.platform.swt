@@ -376,7 +376,7 @@ int asciiKey (int key) {
 /**
  * Adds the listener to the collection of listeners who will
  * be notifed when an event of the given type occurs anywhere
- * in this display. When the event does occur, the listener is
+ * in a widget. When the event does occur, the listener is
  * notified by sending it the <code>handleEvent()</code> message.
  *
  * @param eventType the type of event to listen for
@@ -2652,7 +2652,7 @@ void releaseToolDisabledImageList (ImageList list) {
 /**
  * Removes the listener from the collection of listeners who will
  * be notifed when an event of the given type occurs anywhere in
- * this display.
+ * a widget.
  *
  * @param eventType the type of event to listen for
  * @param listener the listener which should no longer be notified when the event occurs
