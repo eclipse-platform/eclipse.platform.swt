@@ -554,9 +554,9 @@ public void setImage (Image image) {
 	super.setImage (image);
 	if ((style & SWT.PUSH) == 0) return;
 	if (image != null) {
-		int pixmap = OS.gtk_pixmap_new (image.pixmap, image.mask);
-		OS.gtk_image_menu_item_set_image (handle, pixmap);
-		OS.gtk_widget_show (pixmap);
+		int imageHandle = OS.gtk_image_new_from_pixmap (image.pixmap, image.mask);
+		OS.gtk_image_menu_item_set_image (handle, imageHandle);
+		OS.gtk_widget_show (imageHandle);
 	} else {
 		OS.gtk_image_menu_item_set_image (handle, 0);
 	}

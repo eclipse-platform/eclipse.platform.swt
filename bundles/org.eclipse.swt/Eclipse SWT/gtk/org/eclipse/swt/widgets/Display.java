@@ -122,9 +122,6 @@ public class Display extends Device {
 	int mouseHoverId, mouseHoverHandle, mouseHoverProc;
 	Callback mouseHoverCallback;
 	
-	/* Pixmaps */
-	int nullPixmap;
-	
 	/* Fonts */
 	int defaultFont;
 	
@@ -874,9 +871,6 @@ void initializeSystemResources () {
 	OS.gtk_widget_set_name (tooltipShellHandle, gtk_tooltips);
 	OS.gtk_widget_realize (tooltipShellHandle);
 
-	nullPixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), 1, 1, -1);
-	if (nullPixmap == 0) error (SWT.ERROR_NO_HANDLES);	
-
 	GdkColor gdkColor;
 	GtkStyle style = new GtkStyle();
 	OS.memmove (style, OS.gtk_widget_get_style (shellHandle));	
@@ -1296,9 +1290,6 @@ void releaseDisplay () {
 
 	messages = null;  messageLock = null; thread = null;
 	messagesSize = windowProc2 = windowProc3 = windowProc4 = windowProc5 = 0;
-	
-	if (nullPixmap != 0) OS.g_object_unref (nullPixmap);
-	nullPixmap = 0;
 	
 	if (defaultFont != 0) OS.pango_font_description_free (defaultFont);
 	defaultFont = 0;

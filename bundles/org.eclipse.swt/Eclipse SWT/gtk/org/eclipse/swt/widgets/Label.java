@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class Label extends Control {
-	int frameHandle, labelHandle, pixmapHandle;
+	int frameHandle, labelHandle, imageHandle;
 	Image image;
 	String text;
 
@@ -148,11 +148,10 @@ void createHandle (int index) {
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = OS.gtk_label_new_with_mnemonic (null);
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		Display display = getDisplay ();
-		pixmapHandle = OS.gtk_pixmap_new (display.nullPixmap, 0);
-		if (pixmapHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		imageHandle = OS.gtk_image_new ();
+		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		OS.gtk_container_add (handle, labelHandle);
-		OS.gtk_container_add (handle, pixmapHandle);
+		OS.gtk_container_add (handle, imageHandle);
 		OS.gtk_widget_show (handle);
 		OS.gtk_widget_show (labelHandle);		
 	}
@@ -176,19 +175,19 @@ void createHandle (int index) {
 	if ((style & SWT.LEFT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
-		OS.gtk_misc_set_alignment (pixmapHandle, 0.0f, 0.5f);
+		OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
 		return;
 	}
 	if ((style & SWT.CENTER) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
-		OS.gtk_misc_set_alignment (pixmapHandle, 0.5f, 0.5f);
+		OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
 		return;
 	}
 	if ((style & SWT.RIGHT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
-		OS.gtk_misc_set_alignment (pixmapHandle, 1.0f, 0.5f);
+		OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
 		return;
 	}
 }
@@ -202,7 +201,7 @@ void deregister () {
 	super.deregister ();
 	if (frameHandle != 0) WidgetTable.remove (frameHandle);
 	if (labelHandle != 0) WidgetTable.remove (labelHandle);
-	if (pixmapHandle != 0) WidgetTable.remove (pixmapHandle);
+	if (imageHandle != 0) WidgetTable.remove (imageHandle);
 }
 
 int eventHandle () {
@@ -274,12 +273,12 @@ void register () {
 	super.register ();
 	if (frameHandle != 0) WidgetTable.put (frameHandle, this);
 	if (labelHandle != 0) WidgetTable.put (labelHandle, this);
-	if (pixmapHandle != 0) WidgetTable.put (pixmapHandle, this);
+	if (imageHandle != 0) WidgetTable.put (imageHandle, this);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
-	frameHandle = pixmapHandle = labelHandle = 0;
+	frameHandle = imageHandle = labelHandle = 0;
 }
 
 void releaseWidget () {
@@ -315,19 +314,19 @@ public void setAlignment (int alignment) {
 	if ((style & SWT.LEFT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
-		OS.gtk_misc_set_alignment (pixmapHandle, 0.0f, 0.5f);
+		OS.gtk_misc_set_alignment (imageHandle, 0.0f, 0.5f);
 		return;
 	}
 	if ((style & SWT.CENTER) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
-		OS.gtk_misc_set_alignment (pixmapHandle, 0.5f, 0.5f);
+		OS.gtk_misc_set_alignment (imageHandle, 0.5f, 0.5f);
 		return;
 	}
 	if ((style & SWT.RIGHT) != 0) {
 		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
-		OS.gtk_misc_set_alignment (pixmapHandle, 1.0f, 0.5f);
+		OS.gtk_misc_set_alignment (imageHandle, 1.0f, 0.5f);
 		return;
 	}
 }
@@ -336,7 +335,7 @@ void setBackgroundColor (GdkColor color) {
 	super.setBackgroundColor (color);
 	OS.gtk_widget_modify_bg (fixedHandle, 0, color);
 	if (labelHandle != 0) OS.gtk_widget_modify_bg (labelHandle, 0, color);
-	if (pixmapHandle != 0) OS.gtk_widget_modify_bg (pixmapHandle, 0, color);
+	if (imageHandle != 0) OS.gtk_widget_modify_bg (imageHandle, 0, color);
 }
 
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
@@ -376,14 +375,14 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 void setFontDescription (int font) {
 	super.setFontDescription (font);
 	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
-	if (pixmapHandle != 0) OS.gtk_widget_modify_font (pixmapHandle, font);
+	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
 	super.setForegroundColor (color);
 	OS.gtk_widget_modify_fg (fixedHandle, 0, color);
 	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle, 0, color);
-	if (pixmapHandle != 0) OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
+	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle, 0, color);
 }
 
 /**
@@ -402,19 +401,16 @@ void setForegroundColor (GdkColor color) {
  */
 public void setImage (Image image) {
 	checkWidget ();
-	Image oldImage = this.image;
 	this.image = image;
 	if ((style & SWT.SEPARATOR) != 0) return;
 	OS.gtk_widget_hide (labelHandle);
 	if (image != null) {
-		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
-		OS.gtk_widget_show (pixmapHandle);
+		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		OS.gtk_widget_show (imageHandle);
 	} else {
-		Display display = getDisplay ();
-		OS.gtk_pixmap_set (pixmapHandle, display.nullPixmap, 0);
-		OS.gtk_widget_hide (pixmapHandle);
+		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
+		OS.gtk_widget_hide (imageHandle);
 	}
-	if (oldImage == image) OS.gtk_widget_queue_draw (pixmapHandle);
 }
 
 /**
@@ -442,7 +438,7 @@ public void setText (String string) {
 	char [] chars = fixMnemonic (string);
 	byte [] buffer = Converter.wcsToMbcs (null, chars);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
-	OS.gtk_widget_hide (pixmapHandle);
+	OS.gtk_widget_hide (imageHandle);
 	if (string.length () != 0) {
 		OS.gtk_widget_show (labelHandle);
 	} else {

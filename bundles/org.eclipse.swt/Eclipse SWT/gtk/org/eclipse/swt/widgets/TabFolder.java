@@ -202,10 +202,9 @@ void createItem (TabItem item, int index) {
 	if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 	int labelHandle = OS.gtk_label_new_with_mnemonic (null);
 	if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	Display display = getDisplay ();
-	int pixmapHandle = OS.gtk_pixmap_new (display.nullPixmap, 0);
-	if (pixmapHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_container_add (boxHandle, pixmapHandle);
+	int imageHandle = OS.gtk_image_new ();
+	if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	OS.gtk_container_add (boxHandle, imageHandle);
 	OS.gtk_container_add (boxHandle, labelHandle);
 	int pageHandle = OS.gtk_fixed_new ();
 	if (pageHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -218,7 +217,7 @@ void createItem (TabItem item, int index) {
 	item.state |= HANDLE;
 	item.handle = boxHandle;
 	item.labelHandle = labelHandle;
-	item.pixmapHandle = pixmapHandle;
+	item.imageHandle = imageHandle;
 	item.pageHandle = pageHandle;
 	System.arraycopy (items, index, items, index + 1, itemCount++ - index);
 	items [index] = item;

@@ -26,7 +26,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class TabItem extends Item {
-	int labelHandle, pixmapHandle, pageHandle;
+	int labelHandle, imageHandle, pageHandle;
 	Control control;
 	TabFolder parent;
 	String toolTipText;
@@ -169,7 +169,7 @@ void releaseChild () {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	pageHandle = labelHandle = pixmapHandle = 0;
+	pageHandle = labelHandle = imageHandle = 0;
 }
 
 void releaseWidget () {
@@ -210,27 +210,24 @@ public void setControl (Control control) {
 
 void setFontDescription (int font) {
 	OS.gtk_widget_modify_font (labelHandle, font);
-	OS.gtk_widget_modify_font (pixmapHandle, font);
+	OS.gtk_widget_modify_font (imageHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
 	OS.gtk_widget_modify_fg (labelHandle, 0, color);
-	OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
+	OS.gtk_widget_modify_fg (imageHandle, 0, color);
 }
 
 public void setImage (Image image) {
 	checkWidget ();
-	Image oldImage = this.image;
 	super.setImage (image);
 	if (image != null) {
-		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
-		OS.gtk_widget_show (pixmapHandle);
+		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		OS.gtk_widget_show (imageHandle);
 	} else {
-		Display display = getDisplay ();
-		OS.gtk_pixmap_set (pixmapHandle, display.nullPixmap, 0);
-		OS.gtk_widget_hide (pixmapHandle);
+		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
+		OS.gtk_widget_hide (imageHandle);
 	}
-	if (oldImage == image) OS.gtk_widget_queue_draw (pixmapHandle);
 	parent.fixPage ();
 }
 

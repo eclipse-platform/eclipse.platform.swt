@@ -30,7 +30,7 @@ import org.eclipse.swt.events.*;
  * </p>
  */
 public class ToolItem extends Item {
-	int boxHandle, arrowHandle, separatorHandle, labelHandle, pixmapHandle;
+	int boxHandle, arrowHandle, separatorHandle, labelHandle, imageHandle;
 	ToolBar parent;
 	Control control;
 	Image hotImage, disabledImage;
@@ -162,10 +162,9 @@ void createHandle (int index) {
 		if (boxHandle == 0) error (SWT.ERROR_NO_HANDLES);
 		labelHandle = OS.gtk_label_new_with_mnemonic (null);
 		if (labelHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		Display display = getDisplay ();
-		pixmapHandle = OS.gtk_pixmap_new (display.nullPixmap, 0);
-		if (pixmapHandle == 0) error (SWT.ERROR_NO_HANDLES);
-		OS.gtk_container_add (boxHandle, pixmapHandle);
+		imageHandle = OS.gtk_image_new ();
+		if (imageHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (boxHandle, imageHandle);
 		OS.gtk_container_add (boxHandle, labelHandle);
 		OS.gtk_widget_show (boxHandle);
 	}	
@@ -472,8 +471,8 @@ int processMouseUp (int callData, int arg1, int int2) {
 
 int processMouseEnter (int int0, int int1, int int2) {
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
-	if (drawHotImage && pixmapHandle != 0) {
-		OS.gtk_pixmap_set (pixmapHandle, hotImage.pixmap, hotImage.mask);
+	if (drawHotImage && imageHandle != 0) {
+		OS.gtk_image_set_from_pixmap (imageHandle, hotImage.pixmap, hotImage.mask);
 	}
 	return 0;
 }
@@ -481,8 +480,8 @@ int processMouseEnter (int int0, int int1, int int2) {
 int processMouseExit (int int0, int int1, int int2) {
 	if (drawHotImage) {
 		drawHotImage = false;
-		if (pixmapHandle != 0 && image != null) {
-			OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
+		if (imageHandle != 0 && image != null) {
+			OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
 		}	
 	}
 	return 0;
@@ -532,8 +531,7 @@ int processSelection  (int int0, int int1, int int2) {
 
 void releaseHandle () {
 	super.releaseHandle ();
-	boxHandle = arrowHandle = separatorHandle = 
-		labelHandle = pixmapHandle = 0;
+	boxHandle = arrowHandle = separatorHandle = labelHandle = imageHandle = 0;
 }
 
 void releaseWidget () {
@@ -660,13 +658,13 @@ public void setEnabled (boolean enabled) {
 void setFontDescription (int font) {
 	OS.gtk_widget_modify_font (handle, font);
 	if (labelHandle != 0) OS.gtk_widget_modify_font (labelHandle, font);
-	if (pixmapHandle != 0) OS.gtk_widget_modify_font (pixmapHandle, font);
+	if (imageHandle != 0) OS.gtk_widget_modify_font (imageHandle, font);
 }
 
 void setForegroundColor (GdkColor color) {
 	OS.gtk_widget_modify_fg (handle, 0, color);
 	if (labelHandle != 0) OS.gtk_widget_modify_fg (labelHandle, 0, color);
-	if (pixmapHandle != 0) OS.gtk_widget_modify_fg (pixmapHandle, 0, color);
+	if (imageHandle != 0) OS.gtk_widget_modify_fg (imageHandle, 0, color);
 }
 
 /**
@@ -695,18 +693,15 @@ public void setHotImage (Image image) {
 public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
-	Image oldImage = this.image;
 	super.setImage (image);
-	if (pixmapHandle == 0) return;
+	if (imageHandle == 0) return;
 	if (image != null) {
-		OS.gtk_pixmap_set (pixmapHandle, image.pixmap, image.mask);
-		OS.gtk_widget_show (pixmapHandle);
+		OS.gtk_image_set_from_pixmap (imageHandle, image.pixmap, image.mask);
+		OS.gtk_widget_show (imageHandle);
 	} else {
-		Display display = getDisplay ();
-		OS.gtk_pixmap_set (pixmapHandle, display.nullPixmap, 0);
-		OS.gtk_widget_hide (pixmapHandle);
+		OS.gtk_image_set_from_pixmap (imageHandle, 0, 0);
+		OS.gtk_widget_hide (imageHandle);
 	}
-	if (oldImage == image) OS.gtk_widget_queue_draw (pixmapHandle);
 }
 
 /**

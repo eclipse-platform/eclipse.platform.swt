@@ -2987,6 +2987,30 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1image_1menu_1it
 	gtk_image_menu_item_set_image((GtkImageMenuItem*)arg0, (GtkWidget*)arg1);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1image_1new
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("gtk_1image_1new\n")
+
+	return (jint)gtk_image_new();
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1image_1new_1from_1pixmap
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1image_1new_1from_1pixmap\n")
+
+	return (jint)gtk_image_new_from_pixmap((GdkPixmap *)arg0, (GdkBitmap *)arg1);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1image_1set_1from_1pixmap
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("gtk_1image_1set_1from_1pixmap\n")
+
+	gtk_image_set_from_pixmap((GtkImage *)arg0, (GdkPixmap *)arg1, (GdkBitmap *)arg2);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1menu_1item_1remove_1submenu
 	(JNIEnv *env, jclass that, jint arg0)
 {
@@ -3167,22 +3191,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1object_1sink
 	DEBUG_CALL("gtk_1object_1sink\n")
 
 	gtk_object_sink((GtkObject *)arg0);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1pixmap_1new
-	(JNIEnv *env, jclass that, jint arg0, jint arg1)
-{
-	DEBUG_CALL("gtk_1pixmap_1new\n")
-
-	return (jint)gtk_pixmap_new((GdkPixmap *)arg0, (GdkBitmap *)arg1);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1pixmap_1set
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
-{
-	DEBUG_CALL("gtk_1pixmap_1set\n")
-
-	gtk_pixmap_set((GtkPixmap *)arg0, (GdkPixmap *)arg1, (GdkBitmap *)arg2);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1progress_1bar_1new
