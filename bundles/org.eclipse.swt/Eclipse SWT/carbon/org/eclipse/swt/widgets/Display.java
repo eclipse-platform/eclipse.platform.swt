@@ -7,12 +7,15 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import java.util.ArrayList;
+import java.util.Iterator;
+
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.carbon.*;
 
-/**
+/**L
  * Instances of this class are responsible for managing the
  * connection between SWT and the underlying operating
  * system. Their most important function is to implement
@@ -213,11 +216,12 @@ public class Display extends Device {
 
 	private int fMenuId= 5000;
 	
+	// Callbacks
+	private ArrayList fCallbacks;
 	// callback procs
 	int fApplicationProc;
 	int fWindowProc;
 	int fMenuProc;
-	//int fControlProc;
 	int fControlActionProc;
 	int fUserPaneDrawProc;
 	int fUserPaneHitTestProc;
@@ -439,6 +443,13 @@ protected void destroy () {
 	destroyDisplay ();
 }
 void destroyDisplay () {
+	// dispose Callbacks
+	Iterator iter= fCallbacks.iterator();
+	while (iter.hasNext()) {
+		Callback cb= (Callback) iter.next();
+		cb.dispose();
+	}
+	fCallbacks= null;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
@@ -857,12 +868,22 @@ protected void init () {
 	super.init ();
 	
 	/* Create the callbacks */
-	//fApplicationProc= OS.NewApplicationCallbackUPP(this, "handleApplicationCallback");
-	//if (fApplicationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	Callback cb= new Callback(this, "handleApplicationCallback", 3);
-	fApplicationProc= cb.getAddress();
-		
-	int[] mask2= new int[] {
+	timerProc= createCallback("timerProc", 2);
+	caretProc= createCallback("caretProc", 2);
+	mouseHoverProc= createCallback("mouseHoverProc", 2);
+
+	fWindowProc= createCallback("handleWindowCallback", 3);
+	fControlActionProc= createCallback("handleControlAction", 2);
+	fUserPaneDrawProc= createCallback("handleUserPaneDraw", 2);
+	fUserPaneHitTestProc= createCallback("handleUserPaneHitTest", 2);
+	fDataBrowserDataProc= createCallback("handleDataBrowserDataCallback", 5);
+	fDataBrowserCompareProc= createCallback("handleDataBrowserCompareCallback", 4);
+	fDataBrowserItemNotificationProc= createCallback("handleDataBrowserItemNotificationCallback", 3);
+	fMenuProc= createCallback("handleMenuCallback", 3);
+	
+	// create standard event handler
+	fApplicationProc= createCallback("handleApplicationCallback", 3);
+	int[] mask= new int[] {
 		OS.kEventClassCommand, OS.kEventProcessCommand,
 		
 		//OS.kEventClassAppleEvent, OS.kAEQuitApplication,
@@ -880,65 +901,12 @@ protected void init () {
 		SWT_USER_EVENT, 54321,
 		SWT_USER_EVENT, 54322,
 	};
-	if (OS.InstallEventHandler(OS.GetApplicationEventTarget(), fApplicationProc, mask2, 0) != OS.kNoErr)
+	if (OS.InstallEventHandler(OS.GetApplicationEventTarget(), fApplicationProc, mask, 0) != OS.kNoErr)
 		error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	//fWindowProc= OS.NewWindowCallbackUPP(this, "handleWindowCallback");
-	//if (fWindowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "handleWindowCallback", 3);
-	fWindowProc= cb.getAddress();
-
-	//timerProc = OS.NewEventLoopTimerUPP(this, "timerProc");
-	//if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "timerProc", 2);
-	timerProc= cb.getAddress();
-
-	//caretProc = OS.NewEventLoopTimerUPP2(this, "caretProc");
-	//if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "caretProc", 2);
-	caretProc= cb.getAddress();
 	
-	//fControlActionProc= OS.NewControlActionUPP(this, "handleControlAction");
-	//if (fControlActionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "handleControlAction", 2);
-	fControlActionProc= cb.getAddress();
-	
-	//fUserPaneDrawProc= OS.NewControlUserPaneDrawUPP(this, "handleUserPaneDraw");
-	//if (fUserPaneDrawProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "handleUserPaneDraw", 2);
-	fUserPaneDrawProc= cb.getAddress();
-	
-	//fUserPaneHitTestProc= OS.NewUserPaneHitTestUPP(this, "handleUserPaneHitTest");
-	//if (fUserPaneHitTestProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "handleUserPaneHitTest", 3);
-	fUserPaneHitTestProc= cb.getAddress();
-	
-	//fDataBrowserDataProc= OS.NewDataBrowserDataCallbackUPP(this, "handleDataBrowserDataCallback");
-	//if (fDataBrowserDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "handleDataBrowserDataCallback", 5);
-	fDataBrowserDataProc= cb.getAddress();
-	//fDataBrowserCompareProc= OS.NewDataBrowserCompareCallbackUPP(this, "handleDataBrowserCompareCallback");
-	//if (fDataBrowserCompareProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "handleDataBrowserCompareCallback", 4);
-	fDataBrowserCompareProc= cb.getAddress();
-	//fDataBrowserItemNotificationProc= OS.NewDataBrowserItemNotificationCallbackUPP(this, "handleDataBrowserItemNotificationCallback");
-	//if (fDataBrowserItemNotificationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "handleDataBrowserItemNotificationCallback", 3);
-	fDataBrowserItemNotificationProc= cb.getAddress();
-	
-	//fMenuProc= OS.NewMenuCallbackUPP(this, "handleMenuCallback");
-	//if (fMenuProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "handleMenuCallback", 3);
-	fMenuProc= cb.getAddress();
-	
-	//int textInputProc= OS.NewTextCallbackUPP(this, "handleTextCallback");
-	//if (textInputProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "handleTextCallback", 3);
-	int textInputProc= cb.getAddress();
-	
-	int[] mask= new int[] {
-		// OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
-		
+	int textInputProc= createCallback("handleTextCallback", 3);
+	mask= new int[] {
 		OS.kEventClassKeyboard, OS.kEventRawKeyDown,
 		OS.kEventClassKeyboard, OS.kEventRawKeyRepeat,
 		OS.kEventClassKeyboard, OS.kEventRawKeyUp,
@@ -946,11 +914,7 @@ protected void init () {
 	if (OS.InstallEventHandler(OS.GetUserFocusEventTarget(), textInputProc, mask, 0) != OS.kNoErr)
 		error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	//mouseHoverProc = OS.NewEventLoopTimerUPP3(this, "mouseHoverProc");
-	//if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	cb= new Callback(this, "mouseHoverProc", 2);
-	mouseHoverProc= cb.getAddress();
-
+	
 	buttonFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallSystemFont));
 	buttonShadowThickness= 1;
 
@@ -1193,12 +1157,6 @@ protected void release () {
 	super.release ();
 }
 void releaseDisplay () {
-
-	/* Destroy the hidden Override shell parent */
-	/* AW
-	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
-	shellHandle = 0;
-	*/
 	
 	/* Dispose the caret callback */
 	/* AW
@@ -1206,10 +1164,6 @@ void releaseDisplay () {
 	*/
 	if (caretID != 0) OS.RemoveEventLoopTimer(caretID);
 	caretID = caretProc = 0;
-	/* AW
-	caretCallback.dispose ();
-	caretCallback = null;
-	*/
 	
 	/* Dispose the timer callback */
 	if (timerIDs != null) {
@@ -1792,18 +1746,22 @@ static String convertToLf(String text) {
 		return windowProc(cHandle, SWT.Paint, new MacControlEvent(cHandle, fUpdateRegion));
 	}
 		
-	private int handleUserPaneHitTest(int cHandle, int x, int y) {
+	private int handleUserPaneHitTest(int cHandle, int where) {
 		Widget w= WidgetTable.get(cHandle);
 		if (w instanceof Text || w instanceof Combo)
 			return 112;
 		return 111;
 	}
-		
-	private int handleDataBrowserDataCallback(int cHandle, int rowID, int colID, int itemData, int setData) {
+	
+	private int handleDataBrowserDataCallback(int cHandle, int item, int property, int itemData, int setValue) {
 		Widget widget= WidgetTable.get(cHandle);
 		if (widget instanceof List) {
 			List list= (List) widget;
-			return list.handleItemCallback(rowID, colID, itemData);
+			return list.handleItemCallback(item, property, itemData);
+		}
+		if (widget instanceof Tree2) {
+			Tree2 tree= (Tree2) widget;
+			return tree.handleItemCallback(item, property, itemData, setValue);
 		}
 		return OS.kNoErr;
 	}
@@ -1814,11 +1772,23 @@ static String convertToLf(String text) {
 			List list= (List) widget;
 			return list.handleCompareCallback(item1ID, item2ID, sortID);
 		}
+		if (widget instanceof Tree2) {
+			Tree2 tree= (Tree2) widget;
+			return tree.handleCompareCallback(item1ID, item2ID, sortID);
+		}
 		return OS.kNoErr;
 	}
 	
 	private int handleDataBrowserItemNotificationCallback(int cHandle, int item, int message) {
-//		System.out.println("handleDataBrowserItemNotificationCallback: " + message);
+		Widget widget= WidgetTable.get(cHandle);
+		if (widget instanceof List) {
+			List list= (List) widget;
+			return list.handleItemNotificationCallback(item, message);
+		}
+		if (widget instanceof Tree2) {
+			Tree2 tree= (Tree2) widget;
+			return tree.handleItemNotificationCallback(item, message);
+		}
 //		if (message == 14) {	// selection changed
 //			windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, item, false));
 //		}
@@ -2331,8 +2301,8 @@ static String convertToLf(String text) {
 			
 		Color infoForeground = getSystemColor (SWT.COLOR_INFO_FOREGROUND);
 		Color infoBackground = getSystemColor (SWT.COLOR_INFO_BACKGROUND);
-		OS.RGBBackColor(infoBackground.handle);
-		OS.RGBForeColor(infoForeground.handle);
+		MacUtil.RGBBackColor(infoBackground.handle);
+		MacUtil.RGBForeColor(infoForeground.handle);
 		
 		MacRect bounds= new MacRect();
 		OS.GetWindowBounds(wHandle, OS.kWindowContentRgn, bounds.getData());
@@ -2377,5 +2347,16 @@ static String convertToLf(String text) {
 			else
 				OS.SetCursor(cursor);
 		}
+	}
+	
+	private int createCallback(String method, int argCount) {
+		Callback cb= new Callback(this, method, argCount);
+		if (fCallbacks == null)
+			fCallbacks= new ArrayList();
+		fCallbacks.add(cb);
+		int proc= cb.getAddress();
+		if (proc == 0)
+			error (SWT.ERROR_NO_MORE_CALLBACKS);
+		return proc;
 	}
 }
