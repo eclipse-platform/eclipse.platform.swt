@@ -1182,7 +1182,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XInternAtom)
 	jbyte *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, XInternAtom_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	rc = (jint)XInternAtom((Display *)arg0, (char *)lparg1, (Bool)arg2);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, XInternAtom_FUNC);
@@ -1209,7 +1209,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XListProperties)
 	jint *lparg2=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, XListProperties_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	rc = (jint)XListProperties((Display *)arg0, (Window)arg1, (int *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, XListProperties_FUNC);
@@ -1227,10 +1227,10 @@ JNIEXPORT jint JNICALL OS_NATIVE(XQueryTree)
 	jint *lparg5=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, XQueryTree_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
-	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
+	if (arg5) CHECK_NULL(lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL));
 	rc = (jint)XQueryTree((Display *)arg0, (Window)arg1, (Window *)lparg2, (Window *)lparg3, (Window **)lparg4, (unsigned int *)lparg5);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
@@ -1248,7 +1248,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(XReconfigureWMWindow)
 	XWindowChanges _arg4, *lparg4=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, XReconfigureWMWindow_FUNC);
-	if (arg4) lparg4 = getXWindowChangesFields(env, arg4, &_arg4);
+	if (arg4) CHECK_NULL(lparg4 = getXWindowChangesFields(env, arg4, &_arg4));
 	rc = (jint)XReconfigureWMWindow((Display *)arg0, (Window)arg1, arg2, arg3, lparg4);
 	if (arg4) setXWindowChangesFields(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, XReconfigureWMWindow_FUNC);
@@ -1390,8 +1390,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1from_1uri)
 	jint *lparg2=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1filename_1from_1uri_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	rc = (jint)g_filename_from_uri((const char *)arg0, (char **)lparg1, (GError **)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -1409,9 +1409,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1from_1utf8)
 	jint *lparg4=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1filename_1from_1utf8_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	rc = (jint)g_filename_from_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)lparg2, (gsize *)lparg3, (GError **)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -1428,7 +1428,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1to_1uri)
 	jint *lparg2=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1filename_1to_1uri_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	rc = (jint)g_filename_to_uri((const char *)arg0, (const char *)arg1, (GError **)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, g_1filename_1to_1uri_FUNC);
@@ -1445,9 +1445,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1filename_1to_1utf8)
 	jint *lparg4=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1filename_1to_1utf8_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	rc = (jint)g_filename_to_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)lparg2, (gsize *)lparg3, (GError **)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -1636,9 +1636,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1locale_1from_1utf8)
 	jint *lparg4=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1locale_1from_1utf8_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	rc = (jint)g_locale_from_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)lparg2, (gsize *)lparg3, (GError **)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -1657,9 +1657,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1locale_1to_1utf8)
 	jint *lparg4=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1locale_1to_1utf8_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	rc = (jint)g_locale_to_utf8((const gchar *)arg0, (gssize)arg1, (gsize *)lparg2, (gsize *)lparg3, (GError **)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -1685,7 +1685,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1log_1remove_1handler)
 {
 	jbyte *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, g_1log_1remove_1handler_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	g_log_remove_handler((gchar *)lparg0, (gint)arg1);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1log_1remove_1handler_FUNC);
@@ -1699,7 +1699,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1log_1set_1handler)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1log_1set_1handler_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)g_log_set_handler((gchar *)lparg0, (GLogLevelFlags)arg1, (GLogFunc)arg2, (gpointer)arg3);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1log_1set_1handler_FUNC);
@@ -1786,7 +1786,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(g_1main_1context_1prepare)
 	jint *lparg1=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, g_1main_1context_1prepare_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 	rc = (jboolean)g_main_context_prepare((GMainContext *)arg0, lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, g_1main_1context_1prepare_FUNC);
@@ -1801,7 +1801,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1main_1context_1query)
 	jint *lparg2=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1main_1context_1query_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	rc = (jint)g_main_context_query((GMainContext *)arg0, arg1, lparg2, (GPollFD *)arg3, arg4);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, g_1main_1context_1query_FUNC);
@@ -1848,8 +1848,8 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1object_1get)
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, g_1object_1get_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	g_object_get((GObject *)arg0, (const gchar *)lparg1, lparg2, arg3);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
@@ -1899,7 +1899,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BFI)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, g_1object_1set__I_3BFI_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1object_1set__I_3BFI_FUNC);
@@ -1912,7 +1912,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BII)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, g_1object_1set__I_3BII_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1object_1set__I_3BII_FUNC);
@@ -1925,7 +1925,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BJI)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, g_1object_1set__I_3BJI_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1object_1set__I_3BJI_FUNC);
@@ -1938,7 +1938,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1object_1set__I_3BZI)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, g_1object_1set__I_3BZI_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	g_object_set((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1object_1set__I_3BZI_FUNC);
@@ -1972,7 +1972,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1quark_1from_1string)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1quark_1from_1string_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)g_quark_from_string((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1quark_1from_1string_FUNC);
@@ -1987,7 +1987,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1signal_1connect)
 	jbyte *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1signal_1connect_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	rc = (jint)g_signal_connect((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1signal_1connect_FUNC);
@@ -2002,7 +2002,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1signal_1connect_1after)
 	jbyte *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1signal_1connect_1after_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	rc = (jint)g_signal_connect_after((gpointer)arg0, (const gchar *)lparg1, (GCallback)arg2, (gpointer)arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1signal_1connect_1after_FUNC);
@@ -2016,7 +2016,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1emit_1by_1name__I_3B)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, g_1signal_1emit_1by_1name__I_3B_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1signal_1emit_1by_1name__I_3B_FUNC);
@@ -2029,7 +2029,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1emit_1by_1name__I_3BI)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, g_1signal_1emit_1by_1name__I_3BI_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1, arg2);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1signal_1emit_1by_1name__I_3BI_FUNC);
@@ -2042,7 +2042,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1emit_1by_1name__I_3BII)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, g_1signal_1emit_1by_1name__I_3BII_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1signal_1emit_1by_1name__I_3BII_FUNC);
@@ -2056,8 +2056,8 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1emit_1by_1name__I_3B_3B)
 	jbyte *lparg1=NULL;
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, g_1signal_1emit_1by_1name__I_3B_3B_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1, lparg2);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
@@ -2118,7 +2118,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1signal_1lookup)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1signal_1lookup_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)g_signal_lookup((const gchar *)lparg0, arg1);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1signal_1lookup_FUNC);
@@ -2132,7 +2132,7 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1stop_1emission_1by_1name)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, g_1signal_1stop_1emission_1by_1name_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	g_signal_stop_emission_by_name((gpointer)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, g_1signal_1stop_1emission_1by_1name_FUNC);
@@ -2258,7 +2258,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1type_1from_1name)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1type_1from_1name_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)g_type_from_name(lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, g_1type_1from_1name_FUNC);
@@ -2331,7 +2331,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1type_1register_1static)
 	jbyte *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, g_1type_1register_1static_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	rc = (jint)g_type_register_static((GType)arg0, lparg1, (const GTypeInfo *)arg2, (GTypeFlags)arg3);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, g_1type_1register_1static_FUNC);
@@ -2351,17 +2351,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1utf16_1to_1utf8)
 	OS_NATIVE_ENTER(env, that, g_1utf16_1to_1utf8_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
-		if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
-		if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
-		if (arg4) lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL);
+		if (arg0) CHECK_NULL(lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL));
+		if (arg2) CHECK_NULL(lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL));
+		if (arg3) CHECK_NULL(lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL));
+		if (arg4) CHECK_NULL(lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL));
 	} else
 #endif
 	{
-		if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
-		if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-		if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-		if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+		if (arg0) CHECK_NULL(lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL));
+		if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+		if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+		if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	}
 	rc = (jint)g_utf16_to_utf8((const gunichar2 *)lparg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
 #ifdef JNI_VERSION_1_2
@@ -2430,15 +2430,15 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1to_1utf16__II_3I_3I_3I)
 	OS_NATIVE_ENTER(env, that, g_1utf8_1to_1utf16__II_3I_3I_3I_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
-		if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
-		if (arg4) lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL);
+		if (arg2) CHECK_NULL(lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL));
+		if (arg3) CHECK_NULL(lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL));
+		if (arg4) CHECK_NULL(lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL));
 	} else
 #endif
 	{
-		if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-		if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-		if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+		if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+		if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+		if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	}
 	rc = (jint)g_utf8_to_utf16((const gchar *)arg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
 #ifdef JNI_VERSION_1_2
@@ -2470,17 +2470,17 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1utf8_1to_1utf16___3BI_3I_3I_3I)
 	OS_NATIVE_ENTER(env, that, g_1utf8_1to_1utf16___3BI_3I_3I_3I_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
-		if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
-		if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
-		if (arg4) lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL);
+		if (arg0) CHECK_NULL(lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL));
+		if (arg2) CHECK_NULL(lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL));
+		if (arg3) CHECK_NULL(lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL));
+		if (arg4) CHECK_NULL(lparg4 = (*env)->GetPrimitiveArrayCritical(env, arg4, NULL));
 	} else
 #endif
 	{
-		if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-		if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-		if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-		if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+		if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
+		if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+		if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+		if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	}
 	rc = (jint)g_utf8_to_utf16((const gchar *)lparg0, (glong)arg1, (glong *)lparg2, (glong *)lparg3, (GError **)lparg4);
 #ifdef JNI_VERSION_1_2
@@ -2511,11 +2511,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1atom_1intern)
 	OS_NATIVE_ENTER(env, that, gdk_1atom_1intern_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+		if (arg0) CHECK_NULL(lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL));
 	} else
 #endif
 	{
-		if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+		if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	}
 	rc = (jint)gdk_atom_intern((const gchar *)lparg0, arg1);
 #ifdef JNI_VERSION_1_2
@@ -2562,11 +2562,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1bitmap_1create_1from_1data)
 	OS_NATIVE_ENTER(env, that, gdk_1bitmap_1create_1from_1data_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+		if (arg1) CHECK_NULL(lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL));
 	} else
 #endif
 	{
-		if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+		if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	}
 	rc = (jint)gdk_bitmap_create_from_data((GdkWindow *)arg0, (const gchar *)lparg1, (gint)arg2, (gint)arg3);
 #ifdef JNI_VERSION_1_2
@@ -2589,7 +2589,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1color_1white)
 	GdkColor _arg1, *lparg1=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gdk_1color_1white_FUNC);
-	if (arg1) lparg1 = &_arg1;
+	if (arg1) CHECK_NULL(lparg1 = &_arg1);
 	rc = (jboolean)gdk_color_white((GdkColormap *)arg0, (GdkColor *)lparg1);
 	if (arg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1color_1white_FUNC);
@@ -2604,7 +2604,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1colormap_1alloc_1color)
 	GdkColor _arg1, *lparg1=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gdk_1colormap_1alloc_1color_FUNC);
-	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL(lparg1 = getGdkColorFields(env, arg1, &_arg1));
 	rc = (jboolean)gdk_colormap_alloc_color((GdkColormap *)arg0, (GdkColor *)lparg1, (gboolean)arg2, (gboolean)arg3);
 	if (arg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1colormap_1alloc_1color_FUNC);
@@ -2618,7 +2618,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1colormap_1free_1colors)
 {
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1colormap_1free_1colors_FUNC);
-	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkColorFields(env, arg1, &_arg1));
 	gdk_colormap_free_colors((GdkColormap *)arg0, (GdkColor *)lparg1, (gint)arg2);
 	if (arg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1colormap_1free_1colors_FUNC);
@@ -2643,7 +2643,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1colormap_1query_1color)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1colormap_1query_1color_FUNC);
-	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkColorFields(env, arg2, &_arg2));
 	gdk_colormap_query_color((GdkColormap *)arg0, (gulong)arg1, (GdkColor *)lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gdk_1colormap_1query_1color_FUNC);
@@ -2680,8 +2680,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1cursor_1new_1from_1pixmap)
 	GdkColor _arg3, *lparg3=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1cursor_1new_1from_1pixmap_FUNC);
-	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
-	if (arg3) lparg3 = getGdkColorFields(env, arg3, &_arg3);
+	if (arg2) CHECK_NULL(lparg2 = getGdkColorFields(env, arg2, &_arg2));
+	if (arg3) CHECK_NULL(lparg3 = getGdkColorFields(env, arg3, &_arg3));
 	rc = (jint)gdk_cursor_new_from_pixmap((GdkPixmap *)arg0, (GdkPixmap *)arg1, (GdkColor *)lparg2, (GdkColor *)lparg3, (gint)arg4, (gint)arg5);
 	if (arg3) setGdkColorFields(env, arg3, lparg3);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
@@ -2737,8 +2737,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1draw_1layout_1with_1colors)
 	GdkColor _arg5, *lparg5=NULL;
 	GdkColor _arg6, *lparg6=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1draw_1layout_1with_1colors_FUNC);
-	if (arg5) lparg5 = getGdkColorFields(env, arg5, &_arg5);
-	if (arg6) lparg6 = getGdkColorFields(env, arg6, &_arg6);
+	if (arg5) CHECK_NULL_VOID(lparg5 = getGdkColorFields(env, arg5, &_arg5));
+	if (arg6) CHECK_NULL_VOID(lparg6 = getGdkColorFields(env, arg6, &_arg6));
 	gdk_draw_layout_with_colors((GdkDrawable *)arg0, (GdkGC *)arg1, (gint)arg2, (gint)arg3, (PangoLayout *)arg4, lparg5, lparg6);
 	if (arg6) setGdkColorFields(env, arg6, lparg6);
 	if (arg5) setGdkColorFields(env, arg5, lparg5);
@@ -2764,11 +2764,11 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1draw_1lines)
 	OS_NATIVE_ENTER(env, that, gdk_1draw_1lines_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
+		if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL));
 	} else
 #endif
 	{
-		if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+		if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	}
 	gdk_draw_lines((GdkDrawable *)arg0, (GdkGC *)arg1, (GdkPoint *)lparg2, (gint)arg3);
 #ifdef JNI_VERSION_1_2
@@ -2801,11 +2801,11 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1draw_1polygon)
 	OS_NATIVE_ENTER(env, that, gdk_1draw_1polygon_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg3) lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL);
+		if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetPrimitiveArrayCritical(env, arg3, NULL));
 	} else
 #endif
 	{
-		if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+		if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 	}
 	gdk_draw_polygon((GdkDrawable *)arg0, (GdkGC *)arg1, (gint)arg2, (GdkPoint *)lparg3, (gint)arg4);
 #ifdef JNI_VERSION_1_2
@@ -2851,13 +2851,13 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1drawable_1get_1size)
 	OS_NATIVE_ENTER(env, that, gdk_1drawable_1get_1size_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
-		if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL));
+		if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL));
 	} else
 #endif
 	{
-		if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-		if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+		if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	}
 	gdk_drawable_get_size((GdkDrawable *)arg0, (gint *)lparg1, (gint *)lparg2);
 #ifdef JNI_VERSION_1_2
@@ -2950,8 +2950,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1event_1get_1coords)
 	jdouble *lparg2=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gdk_1event_1get_1coords_FUNC);
-	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL));
 	rc = (jboolean)gdk_event_get_coords((GdkEvent *)arg0, (gdouble *)lparg1, (gdouble *)lparg2);
 	if (arg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
@@ -2980,8 +2980,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1event_1get_1root_1coords)
 	jdouble *lparg2=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gdk_1event_1get_1root_1coords_FUNC);
-	if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetDoubleArrayElements(env, arg2, NULL));
 	rc = (jboolean)gdk_event_get_root_coords((GdkEvent *)arg0, (gdouble *)lparg1, (gdouble *)lparg2);
 	if (arg2) (*env)->ReleaseDoubleArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseDoubleArrayElements(env, arg1, lparg1, 0);
@@ -2997,7 +2997,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1event_1get_1state)
 	jint *lparg1=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gdk_1event_1get_1state_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 	rc = (jboolean)gdk_event_get_state((GdkEvent *)arg0, (GdkModifierType *)lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gdk_1event_1get_1state_FUNC);
@@ -3063,7 +3063,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1gc_1get_1values)
 {
 	GdkGCValues _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1gc_1get_1values_FUNC);
-	if (arg1) lparg1 = &_arg1;
+	if (arg1) CHECK_NULL_VOID(lparg1 = &_arg1);
 	gdk_gc_get_values((GdkGC *)arg0, (GdkGCValues *)lparg1);
 	if (arg1) setGdkGCValuesFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1gc_1get_1values_FUNC);
@@ -3088,7 +3088,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1gc_1set_1background)
 {
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1gc_1set_1background_FUNC);
-	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkColorFields(env, arg1, &_arg1));
 	gdk_gc_set_background((GdkGC *)arg0, (GdkColor *)lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1gc_1set_1background_FUNC);
 }
@@ -3120,7 +3120,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1gc_1set_1clip_1rectangle)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1gc_1set_1clip_1rectangle_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
 	gdk_gc_set_clip_rectangle((GdkGC *)arg0, (GdkRectangle *)lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1gc_1set_1clip_1rectangle_FUNC);
 }
@@ -3144,11 +3144,11 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1gc_1set_1dashes)
 	OS_NATIVE_ENTER(env, that, gdk_1gc_1set_1dashes_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg2) lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL);
+		if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetPrimitiveArrayCritical(env, arg2, NULL));
 	} else
 #endif
 	{
-		if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+		if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	}
 	gdk_gc_set_dashes((GdkGC *)arg0, (gint)arg1, (gint8 *)lparg2, (gint)arg3);
 #ifdef JNI_VERSION_1_2
@@ -3189,7 +3189,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1gc_1set_1foreground)
 {
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1gc_1set_1foreground_FUNC);
-	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkColorFields(env, arg1, &_arg1));
 	gdk_gc_set_foreground((GdkGC *)arg0, (GdkColor *)lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1gc_1set_1foreground_FUNC);
 }
@@ -3241,7 +3241,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1gc_1set_1values)
 {
 	GdkGCValues _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1gc_1set_1values_FUNC);
-	if (arg1) lparg1 = getGdkGCValuesFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkGCValuesFields(env, arg1, &_arg1));
 	gdk_gc_set_values((GdkGC *)arg0, (GdkGCValues *)lparg1, (GdkGCValuesMask)arg2);
 	OS_NATIVE_EXIT(env, that, gdk_1gc_1set_1values_FUNC);
 }
@@ -3303,10 +3303,10 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1keymap_1translate_1keyboard_1state)
 	jint *lparg7=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gdk_1keymap_1translate_1keyboard_1state_FUNC);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
-	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
-	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
-	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
+	if (arg5) CHECK_NULL(lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL));
+	if (arg6) CHECK_NULL(lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL));
+	if (arg7) CHECK_NULL(lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL));
 	rc = (jboolean)gdk_keymap_translate_keyboard_state((GdkKeymap*)arg0, arg1, (GdkModifierType)arg2, arg3, (guint*)lparg4, (gint*)lparg5, (gint*)lparg6, (GdkModifierType *)lparg7);
 	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
 	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
@@ -3370,7 +3370,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1pango_1layout_1get_1clip_1region)
 	jint *lparg3=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1pango_1layout_1get_1clip_1region_FUNC);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 	rc = (jint)gdk_pango_layout_get_clip_region((PangoLayout *)arg0, arg1, arg2, lparg3, arg4);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, gdk_1pango_1layout_1get_1clip_1region_FUNC);
@@ -3433,8 +3433,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1pixbuf_1render_1pixmap_1and_1mask)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1pixbuf_1render_1pixmap_1and_1mask_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	gdk_pixbuf_render_pixmap_and_mask((GdkPixbuf *)arg0, (GdkDrawable **)lparg1, (GdkBitmap **)lparg2, arg3);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -3552,10 +3552,10 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1property_1get)
 	jint *lparg9=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gdk_1property_1get_FUNC);
-	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
-	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
-	if (arg8) lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL);
-	if (arg9) lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL);
+	if (arg6) CHECK_NULL(lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL));
+	if (arg7) CHECK_NULL(lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL));
+	if (arg8) CHECK_NULL(lparg8 = (*env)->GetIntArrayElements(env, arg8, NULL));
+	if (arg9) CHECK_NULL(lparg9 = (*env)->GetIntArrayElements(env, arg9, NULL));
 	rc = (jboolean)gdk_property_get((GdkWindow *)arg0, (GdkAtom)arg1, (GdkAtom)arg2, arg3, arg4, arg5, (GdkAtom *)lparg6, (gint *)lparg7, (gint *)lparg8, (guchar **)lparg9);
 	if (arg9) (*env)->ReleaseIntArrayElements(env, arg9, lparg9, 0);
 	if (arg8) (*env)->ReleaseIntArrayElements(env, arg8, lparg8, 0);
@@ -3594,7 +3594,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1region_1get_1clipbox)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1region_1get_1clipbox_FUNC);
-	if (arg1) lparg1 = &_arg1;
+	if (arg1) CHECK_NULL_VOID(lparg1 = &_arg1);
 	gdk_region_get_clipbox((GdkRegion *)arg0, (GdkRectangle *)lparg1);
 	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1region_1get_1clipbox_FUNC);
@@ -3608,8 +3608,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1region_1get_1rectangles)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1region_1get_1rectangles_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	gdk_region_get_rectangles((GdkRegion *)arg0, (GdkRectangle **)lparg1, (gint *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -3668,7 +3668,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1region_1polygon)
 	jint *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1region_1polygon_FUNC);
-	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL));
 	rc = (jint)gdk_region_polygon((GdkPoint *)lparg0, arg1, (GdkFillRule)arg2);
 	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gdk_1region_1polygon_FUNC);
@@ -3683,7 +3683,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1region_1rect_1in)
 	GdkRectangle _arg1, *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1region_1rect_1in_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
 	rc = (jint)gdk_region_rect_in((GdkRegion *)arg0, (GdkRectangle *)lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1region_1rect_1in_FUNC);
 	return rc;
@@ -3697,7 +3697,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1region_1rectangle)
 	GdkRectangle _arg0, *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1region_1rectangle_FUNC);
-	if (arg0) lparg0 = getGdkRectangleFields(env, arg0, &_arg0);
+	if (arg0) CHECK_NULL(lparg0 = getGdkRectangleFields(env, arg0, &_arg0));
 	rc = (jint)gdk_region_rectangle(lparg0);
 	if (arg0) setGdkRectangleFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, gdk_1region_1rectangle_FUNC);
@@ -3731,7 +3731,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1region_1union_1with_1rect)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1region_1union_1with_1rect_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
 	gdk_region_union_with_rect((GdkRegion *)arg0, (GdkRectangle *)lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1region_1union_1with_1rect_FUNC);
 }
@@ -3811,7 +3811,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1screen_1get_1monitor_1geometry)
 {
 	GdkRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1screen_1get_1monitor_1geometry_FUNC);
-	if (arg2) lparg2 = getGdkRectangleFields(env, arg2, &_arg2);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkRectangleFields(env, arg2, &_arg2));
 /*
 	gdk_screen_get_monitor_geometry((GdkScreen *)arg0, arg1, lparg2);
 */
@@ -3934,7 +3934,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1set_1program_1class)
 {
 	jbyte *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1set_1program_1class_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	gdk_set_program_class(lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gdk_1set_1program_1class_FUNC);
@@ -3948,7 +3948,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1text_1property_1to_1utf8_1list)
 	jint *lparg4=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1text_1property_1to_1utf8_1list_FUNC);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	rc = (jint)gdk_text_property_to_utf8_list((GdkAtom)arg0, arg1, (guchar *)arg2, arg3, (gchar ***)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	OS_NATIVE_EXIT(env, that, gdk_1text_1property_1to_1utf8_1list_FUNC);
@@ -3979,11 +3979,11 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gdk_1utf8_1to_1compound_1text)
 	jint *lparg4=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gdk_1utf8_1to_1compound_1text_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	rc = (jboolean)gdk_utf8_to_compound_text((const gchar *)lparg0, (GdkAtom *)lparg1, (gint *)lparg2, (guchar **)lparg3, (gint *)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -4025,8 +4025,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1at_1pointer)
 	jint *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1window_1at_1pointer_FUNC);
-	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL));
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 	rc = (jint)gdk_window_at_pointer((gint *)lparg0, (gint *)lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
@@ -4041,7 +4041,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1begin_1paint_1rect)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1window_1begin_1paint_1rect_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
 	gdk_window_begin_paint_rect((GdkWindow *)arg0, (GdkRectangle *)lparg1);
 	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1window_1begin_1paint_1rect_FUNC);
@@ -4118,7 +4118,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1get_1frame_1extents)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1window_1get_1frame_1extents_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
 	gdk_window_get_frame_extents((GdkWindow *)arg0, (GdkRectangle *)lparg1);
 	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1window_1get_1frame_1extents_FUNC);
@@ -4133,9 +4133,9 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1get_1internal_1paint_1info)
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1window_1get_1internal_1paint_1info_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 	gdk_window_get_internal_paint_info((GdkWindow *)arg0, (GdkDrawable **)lparg1, (gint *)lparg2, (gint *)lparg3);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
@@ -4152,8 +4152,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1get_1origin)
 	jint *lparg2=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1window_1get_1origin_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	rc = (jint)gdk_window_get_origin((GdkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -4183,9 +4183,9 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1get_1pointer)
 	jint *lparg3=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1window_1get_1pointer_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 	rc = (jint)gdk_window_get_pointer((GdkWindow *)arg0, (gint *)lparg1, (gint *)lparg2, (GdkModifierType *)lparg3);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
@@ -4201,7 +4201,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1get_1user_1data)
 {
 	jint *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1window_1get_1user_1data_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 	gdk_window_get_user_data((GdkWindow *)arg0, (gpointer *)lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gdk_1window_1get_1user_1data_FUNC);
@@ -4224,7 +4224,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gdk_1window_1invalidate_1rect)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gdk_1window_1invalidate_1rect_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
 	gdk_window_invalidate_rect((GdkWindow *)arg0, (GdkRectangle *)lparg1, (gboolean)arg2);
 	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1window_1invalidate_1rect_FUNC);
@@ -4280,7 +4280,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gdk_1window_1new)
 	GdkWindowAttr _arg1, *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gdk_1window_1new_FUNC);
-	if (arg1) lparg1 = getGdkWindowAttrFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL(lparg1 = getGdkWindowAttrFields(env, arg1, &_arg1));
 	rc = (jint)gdk_window_new((GdkWindow *)arg0, lparg1, arg2);
 	if (arg1) setGdkWindowAttrFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gdk_1window_1new_FUNC);
@@ -4688,11 +4688,11 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1cell_1renderer_1get_1size)
 	jint *lparg5=NULL;
 	jint *lparg6=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1cell_1renderer_1get_1size_FUNC);
-	if (arg2) lparg2 = getGdkRectangleFields(env, arg2, &_arg2);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
-	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
-	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkRectangleFields(env, arg2, &_arg2));
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL_VOID(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
+	if (arg5) CHECK_NULL_VOID(lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL));
+	if (arg6) CHECK_NULL_VOID(lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL));
 	gtk_cell_renderer_get_size((GtkCellRenderer *)arg0, (GtkWidget *)arg1, (GdkRectangle *)lparg2, (gint *)lparg3, (gint *)lparg4, (gint *)lparg5, (gint *)lparg6);
 	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
@@ -4770,7 +4770,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1check_1menu_1item_1new_1with_1label)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1check_1menu_1item_1new_1with_1label_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_check_menu_item_new_with_label((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1check_1menu_1item_1new_1with_1label_FUNC);
@@ -4853,7 +4853,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1color_1selection_1dialog_1new)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1color_1selection_1dialog_1new_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_color_selection_dialog_new((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1color_1selection_1dialog_1new_FUNC);
@@ -4867,7 +4867,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1color_1selection_1get_1current_1color)
 {
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1color_1selection_1get_1current_1color_FUNC);
-	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkColorFields(env, arg1, &_arg1));
 	gtk_color_selection_get_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
 	if (arg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gtk_1color_1selection_1get_1current_1color_FUNC);
@@ -4880,7 +4880,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1color_1selection_1set_1current_1color)
 {
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1color_1selection_1set_1current_1color_FUNC);
-	if (arg1) lparg1 = getGdkColorFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkColorFields(env, arg1, &_arg1));
 	gtk_color_selection_set_current_color((GtkColorSelection *)arg0, (GdkColor *)lparg1);
 	if (arg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gtk_1color_1selection_1set_1current_1color_FUNC);
@@ -5000,7 +5000,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1dialog_1add_1button)
 	const char *lparg1= NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1dialog_1add_1button_FUNC);
-	if (arg1) lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetStringUTFChars(env, arg1, NULL));
 	rc = (jint)gtk_dialog_add_button((GtkDialog *)arg0, (const gchar *)lparg1, (gint)arg2);
 	if (arg1) (*env)->ReleaseStringUTFChars(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gtk_1dialog_1add_1button_FUNC);
@@ -5192,8 +5192,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1editable_1get_1selection_1bounds)
 	jint *lparg2=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gtk_1editable_1get_1selection_1bounds_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	rc = (jboolean)gtk_editable_get_selection_bounds((GtkEditable *)arg0, (gint *)lparg1, (gint *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -5209,8 +5209,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1editable_1insert_1text)
 	jbyte *lparg1=NULL;
 	jint *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1editable_1insert_1text_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 	gtk_editable_insert_text((GtkEditable *)arg0, (gchar *)lparg1, (gint)arg2, (gint *)lparg3);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -5402,7 +5402,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1entry_1set_1text)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1entry_1set_1text_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_entry_set_text((GtkEntry *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1entry_1set_1text_FUNC);
@@ -5464,7 +5464,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1file_1chooser_1dialog_1new)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1dialog_1new_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 /*
 	rc = (jint)gtk_file_chooser_dialog_new(lparg0, arg1, arg2, arg3, arg4, arg5, arg6, arg7);
 */
@@ -5582,7 +5582,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1chooser_1set_1current_1folder)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1current_1folder_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 /*
 	gtk_file_chooser_set_current_folder(arg0, lparg1);
 */
@@ -5611,7 +5611,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1chooser_1set_1current_1name)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1current_1name_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 /*
 	gtk_file_chooser_set_current_name(arg0, lparg1);
 */
@@ -5666,7 +5666,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1chooser_1set_1filename)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1file_1chooser_1set_1filename_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 /*
 	gtk_file_chooser_set_filename(arg0, lparg1);
 */
@@ -5721,7 +5721,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1filter_1add_1pattern)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1file_1filter_1add_1pattern_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 /*
 	gtk_file_filter_add_pattern(arg0, lparg1);
 */
@@ -5779,7 +5779,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1file_1filter_1set_1name)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1file_1filter_1set_1name_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 /*
 	gtk_file_filter_set_name(arg0, lparg1);
 */
@@ -5843,7 +5843,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1file_1selection_1new)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1file_1selection_1new_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_file_selection_new((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1file_1selection_1new_FUNC);
@@ -5922,7 +5922,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1font_1selection_1dialog_1new)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1font_1selection_1dialog_1new_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_font_selection_dialog_new((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1font_1selection_1dialog_1new_FUNC);
@@ -5937,7 +5937,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1font_1selection_1dialog_1set_1font_1na
 	jbyte *lparg1=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gtk_1font_1selection_1dialog_1set_1font_1name_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	rc = (jboolean)gtk_font_selection_dialog_set_font_name((GtkFontSelectionDialog *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1font_1selection_1dialog_1set_1font_1name_FUNC);
@@ -5964,7 +5964,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1frame_1new)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1frame_1new_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_frame_new((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1frame_1new_FUNC);
@@ -5978,7 +5978,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1frame_1set_1label)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1frame_1set_1label_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_frame_set_label((GtkFrame *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1frame_1set_1label_FUNC);
@@ -6024,7 +6024,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1get_1current_1event_1state)
 	jint *lparg0=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gtk_1get_1current_1event_1state_FUNC);
-	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL));
 	rc = (jboolean)gtk_get_current_event_state((GdkModifierType*)lparg0);
 	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1get_1current_1event_1state_FUNC);
@@ -6155,7 +6155,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1icon_1factory_1lookup_1default)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1icon_1factory_1lookup_1default_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_icon_factory_lookup_default(lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1icon_1factory_1lookup_1default_FUNC);
@@ -6215,9 +6215,9 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1im_1context_1get_1preedit_1string)
 	jint *lparg2=NULL;
 	jint *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1im_1context_1get_1preedit_1string_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 	gtk_im_context_get_preedit_string((GtkIMContext *)arg0, (gchar **)lparg1, (PangoAttrList **)lparg2, (gint *)lparg3);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
@@ -6264,7 +6264,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1im_1context_1set_1cursor_1location)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1im_1context_1set_1cursor_1location_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
 	gtk_im_context_set_cursor_location((GtkIMContext *)arg0, (GdkRectangle *)lparg1);
 	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gtk_1im_1context_1set_1cursor_1location_FUNC);
@@ -6300,7 +6300,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1image_1menu_1item_1new_1with_1label)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1image_1menu_1item_1new_1with_1label_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_image_menu_item_new_with_label(lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1image_1menu_1item_1new_1with_1label_FUNC);
@@ -6360,8 +6360,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1init_1check)
 	jint *lparg1=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gtk_1init_1check_FUNC);
-	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL));
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 	rc = (jboolean)gtk_init_check((int *)lparg0, (char ***)lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
@@ -6389,7 +6389,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1label_1new)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1label_1new_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_label_new((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1label_1new_FUNC);
@@ -6404,7 +6404,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1label_1new_1with_1mnemonic)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1label_1new_1with_1mnemonic_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_label_new_with_mnemonic((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1label_1new_1with_1mnemonic_FUNC);
@@ -6458,7 +6458,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1label_1set_1text_1with_1mnemonic)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1label_1set_1text_1with_1mnemonic_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_label_set_text_with_mnemonic((GtkLabel *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1label_1set_1text_1with_1mnemonic_FUNC);
@@ -6482,7 +6482,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1list_1item_1new_1with_1label)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1list_1item_1new_1with_1label_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_list_item_new_with_label(lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1list_1item_1new_1with_1label_FUNC);
@@ -6527,7 +6527,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1list_1store_1newv)
 	jint *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1list_1store_1newv_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 	rc = (jint)gtk_list_store_newv((gint)arg0, (GType *)lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1list_1store_1newv_FUNC);
@@ -6571,7 +6571,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1list_1store_1set__IIILorg_eclipse_swt_inte
 {
 	GdkColor _arg3, *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-	if (arg3) lparg3 = getGdkColorFields(env, arg3, &_arg3);
+	if (arg3) CHECK_NULL_VOID(lparg3 = getGdkColorFields(env, arg3, &_arg3));
 	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
 	if (arg3) setGdkColorFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
@@ -6594,7 +6594,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1list_1store_1set__III_3BI)
 {
 	jbyte *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1list_1store_1set__III_3BI_FUNC);
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL));
 	gtk_list_store_set((GtkListStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1list_1store_1set__III_3BI_FUNC);
@@ -6746,7 +6746,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1message_1dialog_1new)
 	const char *lparg4= NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1message_1dialog_1new_FUNC);
-	if (arg4) lparg4 = (*env)->GetStringUTFChars(env, arg4, NULL);
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetStringUTFChars(env, arg4, NULL));
 	rc = (jint)gtk_message_dialog_new((GtkWindow *)arg0, (GtkDialogFlags)arg1, (GtkMessageType)arg2, (GtkButtonsType)arg3, (const gchar *)lparg4);
 	if (arg4) (*env)->ReleaseStringUTFChars(env, arg4, lparg4);
 	OS_NATIVE_EXIT(env, that, gtk_1message_1dialog_1new_FUNC);
@@ -6901,8 +6901,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1paint_1handle)
 	GdkRectangle _arg4, *lparg4=NULL;
 	jbyte *lparg6=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1paint_1handle_FUNC);
-	if (arg4) lparg4 = getGdkRectangleFields(env, arg4, &_arg4);
-	if (arg6) lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL);
+	if (arg4) CHECK_NULL_VOID(lparg4 = getGdkRectangleFields(env, arg4, &_arg4));
+	if (arg6) CHECK_NULL_VOID(lparg6 = (*env)->GetByteArrayElements(env, arg6, NULL));
 	gtk_paint_handle((GtkStyle *)arg0, (GdkWindow *)arg1, arg2, arg3, lparg4, (GtkWidget *)arg5, lparg6, arg7, arg8, arg9, arg10, arg11);
 	if (arg6) (*env)->ReleaseByteArrayElements(env, arg6, lparg6, 0);
 	if (arg4) setGdkRectangleFields(env, arg4, lparg4);
@@ -7031,7 +7031,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1radio_1menu_1item_1new_1with_1label)
 	jbyte *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1radio_1menu_1item_1new_1with_1label_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	rc = (jint)gtk_radio_menu_item_new_with_label((GSList *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1radio_1menu_1item_1new_1with_1label_FUNC);
@@ -7087,7 +7087,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1parse_1string)
 {
 	jbyte *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1rc_1parse_1string_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	gtk_rc_parse_string(lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1rc_1parse_1string_FUNC);
@@ -7124,7 +7124,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1rc_1style_1set_1bg)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1rc_1style_1set_1bg_FUNC);
-	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkColorFields(env, arg2, &_arg2));
 	gtk_rc_style_set_bg((GtkRcStyle *)arg0, arg1, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1rc_1style_1set_1bg_FUNC);
 }
@@ -7189,8 +7189,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1scrolled_1window_1get_1policy)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1scrolled_1window_1get_1policy_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	gtk_scrolled_window_get_policy((GtkScrolledWindow *)arg0, (GtkPolicyType *)lparg1, (GtkPolicyType *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -7414,7 +7414,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1base)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1style_1get_1base_FUNC);
-	if (arg2) lparg2 = &_arg2;
+	if (arg2) CHECK_NULL_VOID(lparg2 = &_arg2);
 	gtk_style_get_base((GtkStyle *)arg0, arg1, lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1style_1get_1base_FUNC);
@@ -7427,7 +7427,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1bg)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1style_1get_1bg_FUNC);
-	if (arg2) lparg2 = &_arg2;
+	if (arg2) CHECK_NULL_VOID(lparg2 = &_arg2);
 	gtk_style_get_bg((GtkStyle *)arg0, arg1, lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1style_1get_1bg_FUNC);
@@ -7440,7 +7440,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1black)
 {
 	GdkColor _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1style_1get_1black_FUNC);
-	if (arg1) lparg1 = &_arg1;
+	if (arg1) CHECK_NULL_VOID(lparg1 = &_arg1);
 	gtk_style_get_black((GtkStyle *)arg0, lparg1);
 	if (arg1) setGdkColorFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gtk_1style_1get_1black_FUNC);
@@ -7453,7 +7453,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1dark)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1style_1get_1dark_FUNC);
-	if (arg2) lparg2 = &_arg2;
+	if (arg2) CHECK_NULL_VOID(lparg2 = &_arg2);
 	gtk_style_get_dark((GtkStyle *)arg0, arg1, lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1style_1get_1dark_FUNC);
@@ -7466,7 +7466,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1fg)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1style_1get_1fg_FUNC);
-	if (arg2) lparg2 = &_arg2;
+	if (arg2) CHECK_NULL_VOID(lparg2 = &_arg2);
 	gtk_style_get_fg((GtkStyle *)arg0, arg1, lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1style_1get_1fg_FUNC);
@@ -7491,7 +7491,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1light)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1style_1get_1light_FUNC);
-	if (arg2) lparg2 = &_arg2;
+	if (arg2) CHECK_NULL_VOID(lparg2 = &_arg2);
 	gtk_style_get_light((GtkStyle *)arg0, arg1, lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1style_1get_1light_FUNC);
@@ -7504,7 +7504,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1style_1get_1text)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1style_1get_1text_FUNC);
-	if (arg2) lparg2 = &_arg2;
+	if (arg2) CHECK_NULL_VOID(lparg2 = &_arg2);
 	gtk_style_get_text((GtkStyle *)arg0, arg1, lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1style_1get_1text_FUNC);
@@ -7584,8 +7584,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1delete)
 	jbyte *lparg1=NULL;
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1delete_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	gtk_text_buffer_delete((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextIter *)lparg2);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -7600,8 +7600,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1get_1bounds)
 	jbyte *lparg1=NULL;
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1get_1bounds_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	gtk_text_buffer_get_bounds((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextIter *)lparg2);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -7627,7 +7627,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1get_1end_1iter)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1get_1end_1iter_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_text_buffer_get_end_iter((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1buffer_1get_1end_1iter_FUNC);
@@ -7652,7 +7652,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1get_1iter_1at_1line)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1get_1iter_1at_1line_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_text_buffer_get_iter_at_line((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (gint)arg2);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1buffer_1get_1iter_1at_1line_FUNC);
@@ -7665,7 +7665,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1get_1iter_1at_1mark)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1get_1iter_1at_1mark_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_text_buffer_get_iter_at_mark((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextMark *)arg2);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1buffer_1get_1iter_1at_1mark_FUNC);
@@ -7678,7 +7678,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1get_1iter_1at_1offset)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1get_1iter_1at_1offset_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_text_buffer_get_iter_at_offset((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (gint)arg2);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1buffer_1get_1iter_1at_1offset_FUNC);
@@ -7717,8 +7717,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1text_1buffer_1get_1selection_1bounds)
 	jbyte *lparg2=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1get_1selection_1bounds_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	rc = (jboolean)gtk_text_buffer_get_selection_bounds((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextIter *)lparg2);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -7735,8 +7735,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1text_1buffer_1get_1text)
 	jbyte *lparg2=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1get_1text_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	rc = (jint)gtk_text_buffer_get_text((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (GtkTextIter *)lparg2, (gboolean)arg3);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -7751,7 +7751,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1insert__II_3BI)
 {
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1insert__II_3BI_FUNC);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	gtk_text_buffer_insert((GtkTextBuffer *)arg0, (GtkTextIter *)arg1, (const gchar *)lparg2, (gint)arg3);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1buffer_1insert__II_3BI_FUNC);
@@ -7765,8 +7765,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1insert__I_3B_3BI)
 	jbyte *lparg1=NULL;
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1insert__I_3B_3BI_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	gtk_text_buffer_insert((GtkTextBuffer *)arg0, (GtkTextIter *)lparg1, (const gchar *)lparg2, (gint)arg3);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -7780,7 +7780,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1move_1mark)
 {
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1move_1mark_FUNC);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	gtk_text_buffer_move_mark((GtkTextBuffer *)arg0, (GtkTextMark *)arg1, (const GtkTextIter *)lparg2);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1buffer_1move_1mark_FUNC);
@@ -7793,7 +7793,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1paste_1clipboard)
 {
 	jbyte *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1paste_1clipboard_FUNC);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
 	gtk_text_buffer_paste_clipboard((GtkTextBuffer *)arg0, (GtkClipboard *)arg1, (GtkTextIter *)lparg2, (gboolean)arg3);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1buffer_1paste_1clipboard_FUNC);
@@ -7806,7 +7806,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1place_1cursor)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1place_1cursor_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_text_buffer_place_cursor((GtkTextBuffer *)arg0, (const GtkTextIter *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1buffer_1place_1cursor_FUNC);
@@ -7819,7 +7819,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1buffer_1set_1text)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1buffer_1set_1text_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_text_buffer_set_text((GtkTextBuffer *)arg0, (const gchar *)lparg1, (gint)arg2);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1buffer_1set_1text_FUNC);
@@ -7833,7 +7833,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1text_1iter_1get_1line)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1iter_1get_1line_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_text_iter_get_line((const GtkTextIter *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1iter_1get_1line_FUNC);
@@ -7848,7 +7848,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1text_1iter_1get_1offset)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1iter_1get_1offset_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_text_iter_get_offset((const GtkTextIter *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1iter_1get_1offset_FUNC);
@@ -7863,8 +7863,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1view_1buffer_1to_1window_1coords)
 	jint *lparg4=NULL;
 	jint *lparg5=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1view_1buffer_1to_1window_1coords_FUNC);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
-	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg4) CHECK_NULL_VOID(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
+	if (arg5) CHECK_NULL_VOID(lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL));
 	gtk_text_view_buffer_to_window_coords((GtkTextView *)arg0, (GtkTextWindowType)arg1, (gint)arg2, (gint)arg3, (gint *)lparg4, (gint *)lparg5);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
@@ -7903,8 +7903,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1view_1get_1iter_1location)
 	jbyte *lparg1=NULL;
 	GdkRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1view_1get_1iter_1location_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = getGdkRectangleFields(env, arg2, &_arg2);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkRectangleFields(env, arg2, &_arg2));
 	gtk_text_view_get_iter_location((GtkTextView *)arg0, (const GtkTextIter *)lparg1, (GdkRectangle *)lparg2);
 	if (arg2) setGdkRectangleFields(env, arg2, lparg2);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -7919,8 +7919,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1view_1get_1line_1at_1y)
 	jbyte *lparg1=NULL;
 	jint *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1view_1get_1line_1at_1y_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 	gtk_text_view_get_line_at_y((GtkTextView *)arg0, (GtkTextIter *)lparg1, (gint)arg2, (gint *)lparg3);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -7934,7 +7934,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1text_1view_1get_1visible_1rect)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1view_1get_1visible_1rect_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
 	gtk_text_view_get_visible_rect((GtkTextView *)arg0, (GdkRectangle *)lparg1);
 	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1view_1get_1visible_1rect_FUNC);
@@ -7982,7 +7982,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1text_1view_1scroll_1to_1iter)
 	jbyte *lparg1=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gtk_1text_1view_1scroll_1to_1iter_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	rc = (jboolean)gtk_text_view_scroll_to_iter((GtkTextView *)arg0, (GtkTextIter *)lparg1, (gdouble)arg2, (gboolean)arg3, (gdouble)arg4, (gdouble)arg5);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1text_1view_1scroll_1to_1iter_FUNC);
@@ -8103,8 +8103,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1toolbar_1insert_1widget)
 	jbyte *lparg2=NULL;
 	jbyte *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1toolbar_1insert_1widget_FUNC);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL));
 	gtk_toolbar_insert_widget((GtkToolbar *)arg0, (GtkWidget *)arg1, (const char *)lparg2, (const char *)lparg3, (gint)arg4);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
@@ -8173,8 +8173,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tooltips_1set_1tip)
 	jbyte *lparg2=NULL;
 	jbyte *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tooltips_1set_1tip_FUNC);
-	if (arg2) lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetByteArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL));
 	gtk_tooltips_set_tip((GtkTooltips *)arg0, (GtkWidget *)arg1, (const gchar *)lparg2, (const gchar *)lparg3);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseByteArrayElements(env, arg2, lparg2, 0);
@@ -8188,7 +8188,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1model_1get__III_3II)
 {
 	jint *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1model_1get__III_3II_FUNC);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 	gtk_tree_model_get((GtkTreeModel *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1model_1get__III_3II_FUNC);
@@ -8201,7 +8201,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1model_1get__III_3JI)
 {
 	jlong *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1model_1get__III_3JI_FUNC);
-	if (arg3) lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL);
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetLongArrayElements(env, arg3, NULL));
 	gtk_tree_model_get((GtkTreeModel *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
 	if (arg3) (*env)->ReleaseLongArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1model_1get__III_3JI_FUNC);
@@ -8403,7 +8403,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1path_1new_1from_1string___3B)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1path_1new_1from_1string___3B_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)gtk_tree_path_new_from_string((const gchar *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1path_1new_1from_1string___3B_FUNC);
@@ -8430,7 +8430,7 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1selection_1get_1selected)
 	jint *lparg1=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1selection_1get_1selected_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 	rc = (jboolean)gtk_tree_selection_get_selected((GtkTreeSelection *)arg0, (GtkTreeModel **)lparg1, (GtkTreeIter *)arg2);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1selection_1get_1selected_FUNC);
@@ -8445,7 +8445,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1selection_1get_1selected_1rows)
 	jint *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1selection_1get_1selected_1rows_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 /*
 	rc = (jint)gtk_tree_selection_get_selected_rows((GtkTreeSelection *)arg0, (GtkTreeModel **)lparg1);
 */
@@ -8579,7 +8579,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1store_1newv)
 	jint *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1store_1newv_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 	rc = (jint)gtk_tree_store_newv(arg0, (GType *)lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1store_1newv_FUNC);
@@ -8623,7 +8623,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1store_1set__IIILorg_eclipse_swt_inte
 {
 	GdkColor _arg3, *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
-	if (arg3) lparg3 = getGdkColorFields(env, arg3, &_arg3);
+	if (arg3) CHECK_NULL_VOID(lparg3 = getGdkColorFields(env, arg3, &_arg3));
 	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
 	if (arg3) setGdkColorFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I_FUNC);
@@ -8646,7 +8646,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1store_1set__III_3BI)
 {
 	jbyte *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1store_1set__III_3BI_FUNC);
-	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL));
 	gtk_tree_store_set((GtkTreeStore *)arg0, (GtkTreeIter *)arg1, arg2, lparg3, arg4);
 	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1store_1set__III_3BI_FUNC);
@@ -8671,7 +8671,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1add_1attribute)
 {
 	const char *lparg2= NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1add_1attribute_FUNC);
-	if (arg2) lparg2 = (*env)->GetStringUTFChars(env, arg2, NULL);
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetStringUTFChars(env, arg2, NULL));
 	gtk_tree_view_column_add_attribute((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (const gchar *)lparg2, (gint)arg3);
 	if (arg2) (*env)->ReleaseStringUTFChars(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1add_1attribute_FUNC);
@@ -8686,8 +8686,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1column_1cell_1get_1positio
 	jint *lparg3=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1cell_1get_1position_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 /*
 	rc = (jboolean)gtk_tree_view_column_cell_get_position((GtkTreeViewColumn *)arg0, (GtkCellRenderer *)arg1, (gint *)lparg2, (gint *)lparg3);
 */
@@ -8723,11 +8723,11 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1cell_1get_1size)
 	jint *lparg4=NULL;
 	jint *lparg5=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1cell_1get_1size_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
-	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL_VOID(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
+	if (arg5) CHECK_NULL_VOID(lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL));
 	gtk_tree_view_column_cell_get_size((GtkTreeViewColumn *)arg0, (GdkRectangle *)lparg1, (gint *)lparg2, (gint *)lparg3, (gint *)lparg4, (gint *)lparg5);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
@@ -8928,7 +8928,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1set_1title)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1column_1set_1title_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_tree_view_column_set_title((GtkTreeViewColumn *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1view_1column_1set_1title_FUNC);
@@ -8985,7 +8985,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1get_1cell_1area)
 {
 	GdkRectangle _arg3, *lparg3=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1get_1cell_1area_FUNC);
-	if (arg3) lparg3 = getGdkRectangleFields(env, arg3, &_arg3);
+	if (arg3) CHECK_NULL_VOID(lparg3 = getGdkRectangleFields(env, arg3, &_arg3));
 	gtk_tree_view_get_cell_area((GtkTreeView *)arg0, (GtkTreePath *)arg1, (GtkTreeViewColumn *)arg2, (GdkRectangle *)lparg3);
 	if (arg3) setGdkRectangleFields(env, arg3, lparg3);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1view_1get_1cell_1area_FUNC);
@@ -9011,8 +9011,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1get_1cursor)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1get_1cursor_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	gtk_tree_view_get_cursor((GtkTreeView *)arg0, (GtkTreePath **)lparg1, (GtkTreeViewColumn **)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -9054,10 +9054,10 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1get_1path_1at_1pos)
 	jint *lparg6=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1get_1path_1at_1pos_FUNC);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
-	if (arg5) lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL);
-	if (arg6) lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL);
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
+	if (arg5) CHECK_NULL(lparg5 = (*env)->GetIntArrayElements(env, arg5, NULL));
+	if (arg6) CHECK_NULL(lparg6 = (*env)->GetIntArrayElements(env, arg6, NULL));
 	rc = (jboolean)gtk_tree_view_get_path_at_pos((GtkTreeView *)arg0, (gint)arg1, (gint)arg2, (GtkTreePath **)lparg3, (GtkTreeViewColumn **)lparg4, (gint *)lparg5, (gint *)lparg6);
 	if (arg6) (*env)->ReleaseIntArrayElements(env, arg6, lparg6, 0);
 	if (arg5) (*env)->ReleaseIntArrayElements(env, arg5, lparg5, 0);
@@ -9098,7 +9098,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1get_1visible_1rect)
 {
 	GdkRectangle _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1get_1visible_1rect_FUNC);
-	if (arg1) lparg1 = getGdkRectangleFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkRectangleFields(env, arg1, &_arg1));
 	gtk_tree_view_get_visible_rect((GtkTreeView *)arg0, lparg1);
 	if (arg1) setGdkRectangleFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gtk_1tree_1view_1get_1visible_1rect_FUNC);
@@ -9228,8 +9228,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1tree_1to_1widget_1coords)
 	jint *lparg3=NULL;
 	jint *lparg4=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1tree_1to_1widget_1coords_FUNC);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL_VOID(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	gtk_tree_view_tree_to_widget_coords((GtkTreeView *)arg0, (gint)arg1, (gint)arg2, (gint *)lparg3, (gint *)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -9254,8 +9254,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1widget_1to_1tree_1coords)
 	jint *lparg3=NULL;
 	jint *lparg4=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1tree_1view_1widget_1to_1tree_1coords_FUNC);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg3) CHECK_NULL_VOID(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL_VOID(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	gtk_tree_view_widget_to_tree_coords((GtkTreeView *)arg0, arg1, arg2, lparg3, lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -9317,7 +9317,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1add_1accelerator)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1add_1accelerator_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_widget_add_accelerator((GtkWidget *)arg0, (const gchar *)lparg1, (GtkAccelGroup *)arg2, (guint)arg3, (GdkModifierType)arg4, arg5);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1widget_1add_1accelerator_FUNC);
@@ -9365,7 +9365,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1widget_1create_1pango_1layout__I_3B)
 	jbyte *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1create_1pango_1layout__I_3B_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	rc = (jint)gtk_widget_create_pango_layout((GtkWidget *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1widget_1create_1pango_1layout__I_3B_FUNC);
@@ -9575,7 +9575,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1modify_1base)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1modify_1base_FUNC);
-	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkColorFields(env, arg2, &_arg2));
 	gtk_widget_modify_base((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1widget_1modify_1base_FUNC);
@@ -9588,7 +9588,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1modify_1bg)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1modify_1bg_FUNC);
-	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkColorFields(env, arg2, &_arg2));
 	gtk_widget_modify_bg((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1widget_1modify_1bg_FUNC);
@@ -9601,7 +9601,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1modify_1fg)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1modify_1fg_FUNC);
-	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkColorFields(env, arg2, &_arg2));
 	gtk_widget_modify_fg((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1widget_1modify_1fg_FUNC);
@@ -9634,7 +9634,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1modify_1text)
 {
 	GdkColor _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1modify_1text_FUNC);
-	if (arg2) lparg2 = getGdkColorFields(env, arg2, &_arg2);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkColorFields(env, arg2, &_arg2));
 	gtk_widget_modify_text((GtkWidget *)arg0, (GtkStateType)arg1, (GdkColor *)lparg2);
 	if (arg2) setGdkColorFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1widget_1modify_1text_FUNC);
@@ -9707,7 +9707,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1set_1name)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1set_1name_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_widget_set_name((GtkWidget *)arg0, (const char *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1widget_1set_1name_FUNC);
@@ -9790,7 +9790,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1size_1allocate)
 {
 	GtkAllocation _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1size_1allocate_FUNC);
-	if (arg1) lparg1 = getGtkAllocationFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGtkAllocationFields(env, arg1, &_arg1));
 	gtk_widget_size_allocate((GtkWidget *)arg0, (GtkAllocation *)lparg1);
 	if (arg1) setGtkAllocationFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gtk_1widget_1size_1allocate_FUNC);
@@ -9803,7 +9803,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1size_1request)
 {
 	GtkRequisition _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1size_1request_FUNC);
-	if (arg1) lparg1 = getGtkRequisitionFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGtkRequisitionFields(env, arg1, &_arg1));
 	gtk_widget_size_request((GtkWidget *)arg0, (GtkRequisition *)lparg1);
 	if (arg1) setGtkRequisitionFields(env, arg1, lparg1);
 	OS_NATIVE_EXIT(env, that, gtk_1widget_1size_1request_FUNC);
@@ -9817,8 +9817,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1style_1get__I_3B_3II)
 	jbyte *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1style_1get__I_3B_3II_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, arg3);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -9833,8 +9833,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1widget_1style_1get__I_3B_3JI)
 	jbyte *lparg1=NULL;
 	jlong *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1widget_1style_1get__I_3B_3JI_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetLongArrayElements(env, arg2, NULL));
 	gtk_widget_style_get((GtkWidget *)arg0, (const gchar *)lparg1, lparg2, arg3);
 	if (arg2) (*env)->ReleaseLongArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
@@ -9915,8 +9915,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1get_1position)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1window_1get_1position_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	gtk_window_get_position((GtkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -9931,8 +9931,8 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1get_1size)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1window_1get_1size_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	gtk_window_get_size((GtkWindow *)arg0, (gint *)lparg1, (gint *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -10038,7 +10038,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1set_1geometry_1hints)
 {
 	GdkGeometry _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1window_1set_1geometry_1hints_FUNC);
-	if (arg2) lparg2 = getGdkGeometryFields(env, arg2, &_arg2);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getGdkGeometryFields(env, arg2, &_arg2));
 	gtk_window_set_geometry_hints((GtkWindow *)arg0, (GtkWidget *)arg1, lparg2, arg3);
 	if (arg2) setGdkGeometryFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, gtk_1window_1set_1geometry_1hints_FUNC);
@@ -10071,7 +10071,7 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1set_1title)
 {
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, gtk_1window_1set_1title_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	gtk_window_set_title((GtkWindow *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, gtk_1window_1set_1title_FUNC);
@@ -10114,7 +10114,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GInterf
 {
 	GInterfaceInfo _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I_FUNC);
-	if (arg1) lparg1 = getGInterfaceInfoFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGInterfaceInfoFields(env, arg1, &_arg1));
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GInterfaceInfo_2I_FUNC);
 }
@@ -10136,7 +10136,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GTypeIn
 {
 	GTypeInfo _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I_FUNC);
-	if (arg1) lparg1 = getGTypeInfoFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGTypeInfoFields(env, arg1, &_arg1));
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GTypeInfo_2I_FUNC);
 }
@@ -10148,7 +10148,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GdkEven
 {
 	GdkEventButton _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I_FUNC);
-	if (arg1) lparg1 = getGdkEventButtonFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGdkEventButtonFields(env, arg1, &_arg1));
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GdkEventButton_2I_FUNC);
 }
@@ -10180,7 +10180,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_GtkTarg
 {
 	GtkTargetEntry _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I_FUNC);
-	if (arg1) lparg1 = getGtkTargetEntryFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getGtkTargetEntryFields(env, arg1, &_arg1));
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_GtkTargetEntry_2I_FUNC);
 }
@@ -10202,7 +10202,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_PangoAt
 {
 	PangoAttribute _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I_FUNC);
-	if (arg1) lparg1 = getPangoAttributeFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getPangoAttributeFields(env, arg1, &_arg1));
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_PangoAttribute_2I_FUNC);
 }
@@ -10214,7 +10214,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XClient
 {
 	XClientMessageEvent _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I_FUNC);
-	if (arg1) lparg1 = getXClientMessageEventFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getXClientMessageEventFields(env, arg1, &_arg1));
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XClientMessageEvent_2I_FUNC);
 }
@@ -10226,7 +10226,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XCrossi
 {
 	XCrossingEvent _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I_FUNC);
-	if (arg1) lparg1 = getXCrossingEventFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getXCrossingEventFields(env, arg1, &_arg1));
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XCrossingEvent_2I_FUNC);
 }
@@ -10238,7 +10238,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XExpose
 {
 	XExposeEvent _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I_FUNC);
-	if (arg1) lparg1 = getXExposeEventFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getXExposeEventFields(env, arg1, &_arg1));
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XExposeEvent_2I_FUNC);
 }
@@ -10250,7 +10250,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__ILorg_eclipse_swt_internal_gtk_XFocusC
 {
 	XFocusChangeEvent _arg1, *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I_FUNC);
-	if (arg1) lparg1 = getXFocusChangeEventFields(env, arg1, &_arg1);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getXFocusChangeEventFields(env, arg1, &_arg1));
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 	OS_NATIVE_EXIT(env, that, memmove__ILorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2I_FUNC);
 }
@@ -10264,11 +10264,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3BI)
 	OS_NATIVE_ENTER(env, that, memmove__I_3BI_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL));
 	} else
 #endif
 	{
-		if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	}
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -10291,11 +10291,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3CI)
 	OS_NATIVE_ENTER(env, that, memmove__I_3CI_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL));
 	} else
 #endif
 	{
-		if (arg1) lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetCharArrayElements(env, arg1, NULL));
 	}
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -10318,11 +10318,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3DI)
 	OS_NATIVE_ENTER(env, that, memmove__I_3DI_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL));
 	} else
 #endif
 	{
-		if (arg1) lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetDoubleArrayElements(env, arg1, NULL));
 	}
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -10345,11 +10345,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3II)
 	OS_NATIVE_ENTER(env, that, memmove__I_3II_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL));
 	} else
 #endif
 	{
-		if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
 	}
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -10372,11 +10372,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__I_3JI)
 	OS_NATIVE_ENTER(env, that, memmove__I_3JI_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL));
 	} else
 #endif
 	{
-		if (arg1) lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetLongArrayElements(env, arg1, NULL));
 	}
 	memmove((void *)arg0, (const void *)lparg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -10407,7 +10407,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GTypeQue
 {
 	GTypeQuery _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGTypeQueryFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GTypeQuery_2II_FUNC);
@@ -10420,7 +10420,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkColor
 {
 	GdkColor _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkColorFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkColor_2II_FUNC);
@@ -10433,7 +10433,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkDragC
 {
 	GdkDragContext _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkDragContextFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkDragContext_2II_FUNC);
@@ -10446,7 +10446,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 {
 	GdkEventButton _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventButtonFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventButton_2II_FUNC);
@@ -10459,7 +10459,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 {
 	GdkEventCrossing _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventCrossingFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventCrossing_2II_FUNC);
@@ -10472,7 +10472,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 {
 	GdkEventExpose _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventExposeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventExpose_2II_FUNC);
@@ -10485,7 +10485,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 {
 	GdkEventFocus _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventFocusFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventFocus_2II_FUNC);
@@ -10498,7 +10498,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 {
 	GdkEventKey _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventKeyFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventKey_2II_FUNC);
@@ -10511,7 +10511,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 {
 	GdkEventMotion _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventMotionFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventMotion_2II_FUNC);
@@ -10524,7 +10524,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 {
 	GdkEventVisibility _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventVisibilityFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventVisibility_2II_FUNC);
@@ -10537,7 +10537,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 {
 	GdkEventWindowState _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventWindowStateFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEventWindowState_2II_FUNC);
@@ -10550,7 +10550,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent
 {
 	GdkEvent _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkEventFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkEvent_2II_FUNC);
@@ -10573,7 +10573,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GdkRecta
 {
 	GdkRectangle _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGdkRectangleFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GdkRectangle_2II_FUNC);
@@ -10606,7 +10606,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkBorde
 {
 	GtkBorder _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGtkBorderFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkBorder_2II_FUNC);
@@ -10659,7 +10659,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkSelec
 {
 	GtkSelectionData _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGtkSelectionDataFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkSelectionData_2II_FUNC);
@@ -10672,7 +10672,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_GtkTarge
 {
 	GtkTargetPair _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setGtkTargetPairFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_GtkTargetPair_2II_FUNC);
@@ -10695,7 +10695,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoAtt
 {
 	PangoAttribute _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setPangoAttributeFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoAttribute_2II_FUNC);
@@ -10708,7 +10708,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoIte
 {
 	PangoItem _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoItem_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setPangoItemFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoItem_2II_FUNC);
@@ -10721,7 +10721,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLay
 {
 	PangoLayoutLine _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutLine_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setPangoLayoutLineFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutLine_2II_FUNC);
@@ -10734,7 +10734,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLay
 {
 	PangoLayoutRun _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setPangoLayoutRunFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLayoutRun_2II_FUNC);
@@ -10747,7 +10747,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_PangoLog
 {
 	PangoLogAttr _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setPangoLogAttrFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_PangoLogAttr_2II_FUNC);
@@ -10760,7 +10760,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XCrossin
 {
 	XCrossingEvent _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXCrossingEventFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XCrossingEvent_2II_FUNC);
@@ -10773,7 +10773,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XExposeE
 {
 	XExposeEvent _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXExposeEventFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XExposeEvent_2II_FUNC);
@@ -10786,7 +10786,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XFocusCh
 {
 	XFocusChangeEvent _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXFocusChangeEventFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XFocusChangeEvent_2II_FUNC);
@@ -10799,7 +10799,7 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove__Lorg_eclipse_swt_internal_gtk_XVisibil
 {
 	XVisibilityEvent _arg0, *lparg0=NULL;
 	OS_NATIVE_ENTER(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II_FUNC);
-	if (arg0) lparg0 = &_arg0;
+	if (arg0) CHECK_NULL_VOID(lparg0 = &_arg0);
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 	if (arg0) setXVisibilityEventFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, memmove__Lorg_eclipse_swt_internal_gtk_XVisibilityEvent_2II_FUNC);
@@ -10814,11 +10814,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3BII)
 	OS_NATIVE_ENTER(env, that, memmove___3BII_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL));
 	} else
 #endif
 	{
-		if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	}
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -10841,11 +10841,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3CII)
 	OS_NATIVE_ENTER(env, that, memmove___3CII_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL));
 	} else
 #endif
 	{
-		if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL));
 	}
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -10868,11 +10868,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3III)
 	OS_NATIVE_ENTER(env, that, memmove___3III_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL));
 	} else
 #endif
 	{
-		if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL));
 	}
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -10894,14 +10894,14 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3I_3BI)
 	jint *lparg0=NULL;
 	jbyte *lparg1=NULL;
 	OS_NATIVE_ENTER(env, that, memmove___3I_3BI_FUNC);
-	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL));
 	} else
 #endif
 	{
-		if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL));
 	}
 	memmove((void *)lparg0, (const void *)lparg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -10925,11 +10925,11 @@ JNIEXPORT void JNICALL OS_NATIVE(memmove___3JII)
 	OS_NATIVE_ENTER(env, that, memmove___3JII_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL));
 	} else
 #endif
 	{
-		if (arg0) lparg0 = (*env)->GetLongArrayElements(env, arg0, NULL);
+		if (arg0) CHECK_NULL_VOID(lparg0 = (*env)->GetLongArrayElements(env, arg0, NULL));
 	}
 	memmove((void *)lparg0, (const void *)arg1, (size_t)arg2);
 #ifdef JNI_VERSION_1_2
@@ -11040,8 +11040,8 @@ JNIEXPORT jint JNICALL OS_NATIVE(pango_1attr_1shape_1new)
 	PangoRectangle _arg1, *lparg1=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, pango_1attr_1shape_1new_FUNC);
-	if (arg0) lparg0 = getPangoRectangleFields(env, arg0, &_arg0);
-	if (arg1) lparg1 = getPangoRectangleFields(env, arg1, &_arg1);
+	if (arg0) CHECK_NULL(lparg0 = getPangoRectangleFields(env, arg0, &_arg0));
+	if (arg1) CHECK_NULL(lparg1 = getPangoRectangleFields(env, arg1, &_arg1));
 	rc = (jint)pango_attr_shape_new(lparg0, lparg1);
 	if (arg1) setPangoRectangleFields(env, arg1, lparg1);
 	if (arg0) setPangoRectangleFields(env, arg0, lparg0);
@@ -11129,8 +11129,8 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1context_1list_1families)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, pango_1context_1list_1families_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	pango_context_list_families((PangoContext *)arg0, (PangoFontFamily ***)lparg1, (int *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -11189,11 +11189,11 @@ JNIEXPORT jint JNICALL OS_NATIVE(pango_1font_1description_1from_1string)
 	OS_NATIVE_ENTER(env, that, pango_1font_1description_1from_1string_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg0) lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL);
+		if (arg0) CHECK_NULL(lparg0 = (*env)->GetPrimitiveArrayCritical(env, arg0, NULL));
 	} else
 #endif
 	{
-		if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+		if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	}
 	rc = (jint)pango_font_description_from_string((const char *)lparg0);
 #ifdef JNI_VERSION_1_2
@@ -11277,11 +11277,11 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1font_1description_1set_1family)
 	OS_NATIVE_ENTER(env, that, pango_1font_1description_1set_1family_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL));
 	} else
 #endif
 	{
-		if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	}
 	pango_font_description_set_family((PangoFontDescription *)arg0, (const char *)lparg1);
 #ifdef JNI_VERSION_1_2
@@ -11379,8 +11379,8 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1font_1family_1list_1faces)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, pango_1font_1family_1list_1faces_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	pango_font_family_list_faces((PangoFontFamily *)arg0, (PangoFontFace ***)lparg1, (int *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -11453,7 +11453,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(pango_1language_1from_1string)
 	jbyte *lparg0=NULL;
 	jint rc;
 	OS_NATIVE_ENTER(env, that, pango_1language_1from_1string_FUNC);
-	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL));
 	rc = (jint)pango_language_from_string((const char *)lparg0);
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, JNI_ABORT);
 	OS_NATIVE_EXIT(env, that, pango_1language_1from_1string_FUNC);
@@ -11538,8 +11538,8 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1get_1log_1attrs)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, pango_1layout_1get_1log_1attrs_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	pango_layout_get_log_attrs((PangoLayout*)arg0, (PangoLogAttr **)lparg1, (int *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -11554,8 +11554,8 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1get_1size)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, pango_1layout_1get_1size_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	pango_layout_get_size((PangoLayout *)arg0, (int *)lparg1, (int *)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
@@ -11617,7 +11617,7 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1index_1to_1pos)
 {
 	PangoRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, pango_1layout_1index_1to_1pos_FUNC);
-	if (arg2) lparg2 = getPangoRectangleFields(env, arg2, &_arg2);
+	if (arg2) CHECK_NULL_VOID(lparg2 = getPangoRectangleFields(env, arg2, &_arg2));
 	pango_layout_index_to_pos((PangoLayout*)arg0, arg1, lparg2);
 	if (arg2) setPangoRectangleFields(env, arg2, lparg2);
 	OS_NATIVE_EXIT(env, that, pango_1layout_1index_1to_1pos_FUNC);
@@ -11653,8 +11653,8 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1iter_1get_1line_1extents)
 	PangoRectangle _arg1, *lparg1=NULL;
 	PangoRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, pango_1layout_1iter_1get_1line_1extents_FUNC);
-	if (arg1) lparg1 = getPangoRectangleFields(env, arg1, &_arg1);
-	if (arg2) lparg2 = getPangoRectangleFields(env, arg2, &_arg2);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getPangoRectangleFields(env, arg1, &_arg1));
+	if (arg2) CHECK_NULL_VOID(lparg2 = getPangoRectangleFields(env, arg2, &_arg2));
 	pango_layout_iter_get_line_extents((PangoLayoutIter*)arg0, lparg1, lparg2);
 	if (arg2) setPangoRectangleFields(env, arg2, lparg2);
 	if (arg1) setPangoRectangleFields(env, arg1, lparg1);
@@ -11705,8 +11705,8 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1line_1get_1extents)
 	PangoRectangle _arg1, *lparg1=NULL;
 	PangoRectangle _arg2, *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, pango_1layout_1line_1get_1extents_FUNC);
-	if (arg1) lparg1 = getPangoRectangleFields(env, arg1, &_arg1);
-	if (arg2) lparg2 = getPangoRectangleFields(env, arg2, &_arg2);
+	if (arg1) CHECK_NULL_VOID(lparg1 = getPangoRectangleFields(env, arg1, &_arg1));
+	if (arg2) CHECK_NULL_VOID(lparg2 = getPangoRectangleFields(env, arg2, &_arg2));
 	pango_layout_line_get_extents((PangoLayoutLine*)arg0, (PangoRectangle *)lparg1, (PangoRectangle *)lparg2);
 	if (arg2) setPangoRectangleFields(env, arg2, lparg2);
 	if (arg1) setPangoRectangleFields(env, arg1, lparg1);
@@ -11722,8 +11722,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(pango_1layout_1line_1x_1to_1index)
 	jint *lparg3=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, pango_1layout_1line_1x_1to_1index_FUNC);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg2) CHECK_NULL(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
 	rc = (jboolean)pango_layout_line_x_to_index((PangoLayoutLine*)arg0, arg1, (int *)lparg2, (int *)lparg3);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
@@ -11812,11 +11812,11 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1layout_1set_1text)
 	OS_NATIVE_ENTER(env, that, pango_1layout_1set_1text_FUNC);
 #ifdef JNI_VERSION_1_2
 	if (IS_JNI_1_2) {
-		if (arg1) lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetPrimitiveArrayCritical(env, arg1, NULL));
 	} else
 #endif
 	{
-		if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+		if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL));
 	}
 	pango_layout_set_text((PangoLayout *)arg0, (const char *)lparg1, (int)arg2);
 #ifdef JNI_VERSION_1_2
@@ -11859,8 +11859,8 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(pango_1layout_1xy_1to_1index)
 	jint *lparg4=NULL;
 	jboolean rc;
 	OS_NATIVE_ENTER(env, that, pango_1layout_1xy_1to_1index_FUNC);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	if (arg3) CHECK_NULL(lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL));
+	if (arg4) CHECK_NULL(lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL));
 	rc = (jboolean)pango_layout_xy_to_index((PangoLayout *)arg0, arg1, arg2, (int *)lparg3, (int *)lparg4);
 	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
@@ -11898,8 +11898,8 @@ JNIEXPORT void JNICALL OS_NATIVE(pango_1tab_1array_1get_1tabs)
 	jint *lparg1=NULL;
 	jint *lparg2=NULL;
 	OS_NATIVE_ENTER(env, that, pango_1tab_1array_1get_1tabs_FUNC);
-	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	if (arg1) CHECK_NULL_VOID(lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL));
+	if (arg2) CHECK_NULL_VOID(lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL));
 	pango_tab_array_get_tabs((PangoTabArray *)arg0, (PangoTabAlign **)lparg1, (int **)lparg2);
 	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);

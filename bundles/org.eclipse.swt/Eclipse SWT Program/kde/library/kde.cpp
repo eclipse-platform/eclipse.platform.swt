@@ -336,7 +336,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QCString_1new)
 	jbyte *lparg0=NULL;
 	jint rc;
 	KDE_NATIVE_ENTER(env, that, QCString_1new_FUNC);
-	if (arg0) lparg0 = env->GetByteArrayElements(arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = env->GetByteArrayElements(arg0, NULL));
 	rc = (jint)new QCString((char *)lparg0);
 	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
 	KDE_NATIVE_EXIT(env, that, QCString_1new_FUNC);
@@ -466,7 +466,7 @@ JNIEXPORT jint JNICALL KDE_NATIVE(QString_1new)
 	jbyte *lparg0=NULL;
 	jint rc;
 	KDE_NATIVE_ENTER(env, that, QString_1new_FUNC);
-	if (arg0) lparg0 = env->GetByteArrayElements(arg0, NULL);
+	if (arg0) CHECK_NULL(lparg0 = env->GetByteArrayElements(arg0, NULL));
 	rc = (jint)new QString((char *)lparg0);
 	if (arg0) env->ReleaseByteArrayElements(arg0, lparg0, 0);
 	KDE_NATIVE_EXIT(env, that, QString_1new_FUNC);
@@ -510,9 +510,9 @@ JNIEXPORT jint JNICALL KDE_NATIVE(XpmReadFileToPixmap)
 	jint *lparg4=NULL;
 	jint rc;
 	KDE_NATIVE_ENTER(env, that, XpmReadFileToPixmap_FUNC);
-	if (arg2) lparg2 = env->GetByteArrayElements(arg2, NULL);
-	if (arg3) lparg3 = env->GetIntArrayElements(arg3, NULL);
-	if (arg4) lparg4 = env->GetIntArrayElements(arg4, NULL);
+	if (arg2) CHECK_NULL(lparg2 = env->GetByteArrayElements(arg2, NULL));
+	if (arg3) CHECK_NULL(lparg3 = env->GetIntArrayElements(arg3, NULL));
+	if (arg4) CHECK_NULL(lparg4 = env->GetIntArrayElements(arg4, NULL));
 /*
 	rc = (jint)XpmReadFileToPixmap((Display *)arg0, (Window)arg1, (char *)lparg2, (Pixmap *)lparg3, (Pixmap *)lparg4, (XpmAttributes *)arg5);
 */
@@ -569,8 +569,8 @@ JNIEXPORT jint JNICALL KDE_NATIVE(sigaction)
 	jbyte *lparg2=NULL;
 	jint rc;
 	KDE_NATIVE_ENTER(env, that, sigaction_FUNC);
-	if (arg1) lparg1 = env->GetByteArrayElements(arg1, NULL);
-	if (arg2) lparg2 = env->GetByteArrayElements(arg2, NULL);
+	if (arg1) CHECK_NULL(lparg1 = env->GetByteArrayElements(arg1, NULL));
+	if (arg2) CHECK_NULL(lparg2 = env->GetByteArrayElements(arg2, NULL));
 	rc = (jint)sigaction(arg0, (struct sigaction *)lparg1, (struct sigaction *)lparg2);
 	if (arg2) env->ReleaseByteArrayElements(arg2, lparg2, 0);
 	if (arg1) env->ReleaseByteArrayElements(arg1, lparg1, 0);
