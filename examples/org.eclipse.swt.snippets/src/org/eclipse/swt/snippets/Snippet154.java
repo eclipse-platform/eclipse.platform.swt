@@ -36,9 +36,24 @@ public class Snippet154 {
 
 		Composite composite = new Composite(shell, SWT.NO_BACKGROUND | SWT.EMBEDDED);
 		
+		/*
+		* Set a Windows specific AWT property that prevents heavyweight
+		* components from erasing their background. Note that this
+		* is a global property and cannot be scoped. It might not be
+		* suitable for your application.
+		*/
+		try {
+			System.setProperty("sun.awt.noerasebackground","true");
+		} catch (NoSuchMethodError error) {}
+
 		/* Create and setting up frame */
 		Frame frame = SWT_AWT.new_Frame(composite);
-		Panel panel = new Panel(new BorderLayout());
+		Panel panel = new Panel(new BorderLayout()) {
+			public void update(java.awt.Graphics g) {
+				/* Do not erase the background */ 
+				paint(g);
+			}
+		};
 		frame.add(panel);
 		JRootPane root = new JRootPane();
 		panel.add(root);
