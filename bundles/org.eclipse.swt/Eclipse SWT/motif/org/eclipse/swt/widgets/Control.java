@@ -578,6 +578,7 @@ int inputContext () {
 	return getShell ().inputContext ();
 }
 public int internal_new_GC (GCData data) {
+	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!OS.XtIsRealized (handle)) {
 		Shell shell = getShell ();
 		shell.realizeWidget ();
