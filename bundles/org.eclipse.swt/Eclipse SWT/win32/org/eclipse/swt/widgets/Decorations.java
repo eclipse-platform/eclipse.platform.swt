@@ -490,6 +490,8 @@ public Button getDefaultButton () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #getImages
  */
 public Image getImage () {
 	checkWidget ();
@@ -498,13 +500,17 @@ public Image getImage () {
 
 /**
  * Returns the receiver's images if they had previously been 
- * set using <code>setImages()</code>. The images are typically
+ * set using <code>setImages()</code>. Images are typically
  * displayed by the window manager when the instance is
  * marked as iconified, and may also be displayed somewhere
  * in the trim when the instance is in normal or maximized
- * states.
+ * states. Depending where the icon is displayed, the platform
+ * chooses the icon with the "best" size. It is expected that
+ * the array will contain the same icon rendered at different
+ * resolutions.
+ * 
  * <p>
- * Note: This method will return null if called before
+ * Note: This method will return an empty array if called before
  * <code>setImages()</code> is called. It does not provide
  * access to a window manager provided, "default" image
  * even if one exists.
@@ -516,6 +522,10 @@ public Image getImage () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #getImage
+ * 
+ * @since 3.0
  */
 public Image [] getImages () {
 	checkWidget ();
@@ -800,7 +810,12 @@ void setDefaultButton (Button button, boolean save) {
  * be null. The image is typically displayed by the window
  * manager when the instance is marked as iconified, and
  * may also be displayed somewhere in the trim when the
- * instance is in normal or maximized states.
+ * instance is in normal or maximized states. This image,
+ * along with any other images that may have been supplied
+ * by <code>setImages()</code>, is provided to the window
+ * manager. Depending on the requirements of the window
+ * manager and the platform, this image may be given
+ * priority over the other images. 
  * 
  * @param image the new image (or null)
  *
@@ -811,6 +826,8 @@ void setDefaultButton (Button button, boolean save) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #setImages
  */
 public void setImage (Image image) {
 	checkWidget ();
@@ -819,6 +836,31 @@ public void setImage (Image image) {
 	setImages (image, images);
 }
 
+/**
+ * Sets the receiver's images to the argument, which may
+ * be an empty array. Images are typically displayed by the
+ * window manager when the instance is marked as iconified,
+ * and may also be displayed somewhere in the trim when the
+ * instance is in normal or maximized states. Depending where
+ * the icon is displayed, the platform chooses the icon with
+ * the "best" size. It is expected that the array will contain
+ * the same icon rendered at different resolutions.
+ * 
+ * @param images the new image array
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the array of images is null</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if one of the images has been disposed</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ * 
+ * @see #setImage
+ */
 public void setImages (Image [] images) {
 	checkWidget ();
 	if (images == null) error (SWT.ERROR_INVALID_ARGUMENT);
@@ -881,6 +923,7 @@ void setImages (Image image, Image [] images) {
 				break;
 		}
 	}
+	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hSmallIcon);
 	if (largeIcon != null) {
 		switch (largeIcon.type) {
 			case SWT.BITMAP:
@@ -894,7 +937,6 @@ void setImages (Image image, Image [] images) {
 				break;
 		}
 	}
-	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_SMALL, hSmallIcon);
 	OS.SendMessage (handle, OS.WM_SETICON, OS.ICON_BIG, hLargeIcon);
 	
 	/*

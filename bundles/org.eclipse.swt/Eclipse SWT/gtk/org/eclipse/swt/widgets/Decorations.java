@@ -481,17 +481,17 @@ void setImages (Image image, Image [] images) {
 	}
 	int pixbufs = 0;
 	for (int i = 0; i < images.length; i++) {
-		Image img = images [i];
+		Image icon = images [i];
 		int [] w = new int [1], h = new int [1];
-		OS.gdk_drawable_get_size (img.pixmap, w, h);
+		OS.gdk_drawable_get_size (icon.pixmap, w, h);
 		int width = w [0], height = h [0]; 	
-		boolean hasMask = img.mask != 0;
+		boolean hasMask = icon.mask != 0;
 		int pixbuf = OS.gdk_pixbuf_new (OS.GDK_COLORSPACE_RGB, hasMask, 8, width, height);
 		if (pixbuf == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 		int colormap = OS.gdk_colormap_get_system ();
-		OS.gdk_pixbuf_get_from_drawable (pixbuf, img.pixmap, colormap, 0, 0, 0, 0, width, height);
+		OS.gdk_pixbuf_get_from_drawable (pixbuf, icon.pixmap, colormap, 0, 0, 0, 0, width, height);
 		if (hasMask) {
-			int gdkMaskImagePtr = OS.gdk_drawable_get_image (img.mask, 0, 0, width, height);
+			int gdkMaskImagePtr = OS.gdk_drawable_get_image (icon.mask, 0, 0, width, height);
 			if (gdkMaskImagePtr == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 			int stride = OS.gdk_pixbuf_get_rowstride (pixbuf);
 			int pixels = OS.gdk_pixbuf_get_pixels (pixbuf);

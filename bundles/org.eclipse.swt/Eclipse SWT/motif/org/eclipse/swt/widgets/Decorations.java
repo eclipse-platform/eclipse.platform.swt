@@ -341,6 +341,8 @@ void releaseWidget () {
 	menuBar = null;
 	menus = null;
 	super.releaseWidget ();
+	image = null;
+	images = null;
 	defaultButton = saveDefault = null;
 	label = null;
 }
