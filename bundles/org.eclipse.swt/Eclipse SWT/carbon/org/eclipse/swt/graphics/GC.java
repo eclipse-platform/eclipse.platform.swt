@@ -685,6 +685,20 @@ public void drawOval(int x, int y, int width, int height) {
 	flush();
 }
 
+public void drawPath(Path path) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (data.updateClip) setCGClipping();
+	OS.CGContextBeginPath(handle);
+	OS.CGContextSaveGState(handle);
+	float offset = (data.lineWidth % 2) == 1 ? 0.5f : 0f;
+	OS.CGContextTranslateCTM(handle, offset, offset);
+	OS.CGContextAddPath(handle, path.handle);
+	OS.CGContextRestoreGState(handle);
+	OS.CGContextStrokePath(handle);
+	flush();
+}
+
 /** 
  * Draws a pixel, using the foreground color, at the specified
  * point (<code>x</code>, <code>y</code>).
@@ -1242,6 +1256,16 @@ public void fillOval(int x, int y, int width, int height) {
 	flush();
 }
 
+public void fillPath(Path path) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path.handle == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (data.updateClip) setCGClipping();
+	OS.CGContextBeginPath(handle);
+	OS.CGContextAddPath(handle, path.handle);
+	OS.CGContextEOFillPath(handle);
+	flush();
+}
+
 /** 
  * Fills the interior of the closed polygon which is defined by the
  * specified array of integer coordinates, using the receiver's
@@ -1438,6 +1462,11 @@ public Color getBackground() {
 	return Color.carbon_new (data.device, data.background);
 }
 
+public int getAlpha() {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	return data.alpha;
+}
+
 /**
  * Returns the width of the specified character in the font
  * selected into the receiver. 
@@ -1517,6 +1546,7 @@ public void getClipping(Region region) {
 		OS.SetRectRgn(clipping, (short)0, (short)0, (short)width, (short)height);
 	} else {
 		OS.CopyRgn(data.clipRgn, clipping);
+		if (!isIdentity(data.transform)) return;
 	}
 	if (data.paintEvent != 0 && data.visibleRgn != 0) {
 		if (bounds == null) bounds = new Rect();
@@ -1660,6 +1690,12 @@ public int getStyle () {
 	return data.style;
 }
 
+public void getTransform (Transform transform) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	float[] cmt = data.transform; 
+	transform.setElements(cmt[0], cmt[1], cmt[2], cmt[3], cmt[4], cmt[5]);
+}
+
 /** 
  * Returns <code>true</code> if this GC is drawing in the mode
  * where the resulting color in the destination is the
@@ -1748,6 +1784,17 @@ public boolean isDisposed() {
 	return handle == 0;
 }
 
+boolean isIdentity(float[] transform) {
+	return transform[0] == 1 && transform[1] == 0 && transform[2] == 0
+	 	&& transform[3] == 1 && transform[4] == 0 && transform[5] == 0;
+}
+
+public void setAlpha(int alpha) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	data.alpha = alpha & 0xFF;
+	OS.CGContextSetAlpha(handle, data.alpha / 255f);
+}
+
 /**
  * Sets the background color. The background color is used
  * for fill operations and as the background color when text
@@ -1769,6 +1816,22 @@ public void setBackground(Color color) {
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	data.background = color.handle;
 	OS.CGContextSetFillColor(handle, color.handle);
+}
+
+void setClipping(int clipRgn) {
+	if (clipRgn == 0) {
+		if (data.clipRgn != 0) {
+			OS.DisposeRgn(data.clipRgn);
+			data.clipRgn = 0;
+		} else {
+			return;
+		}
+	} else {
+		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
+		OS.CopyRgn(clipRgn, data.clipRgn);
+	}
+	data.updateClip = true;
+	setCGClipping();
 }
 
 /**
@@ -1795,9 +1858,20 @@ public void setClipping(int x, int y, int width, int height) {
 		y = y + height;
 		height = -height;
 	}
-	if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
-	OS.SetRectRgn(data.clipRgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
-	data.updateClip = true;
+	int clipRgn = OS.NewRgn();
+	OS.SetRectRgn(clipRgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
+	setClipping(clipRgn);
+	OS.DisposeRgn(clipRgn);
+}
+
+public void setClipping(Path path) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (path != null && path.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	setClipping(0);
+	if (path != null) {
+		OS.CGContextAddPath(handle, path.handle);
+		OS.CGContextEOClip(handle);
+	}
 }
 
 /**
@@ -1811,17 +1885,13 @@ public void setClipping(int x, int y, int width, int height) {
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public void setClipping(Rectangle r) {
+public void setClipping(Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (r == null) {
-		if (data.clipRgn != 0) {
-			OS.DisposeRgn(data.clipRgn);
-			data.clipRgn = 0;
-			data.updateClip = true;
-		}
-		return;
+	if (rect == null) {
+		setClipping(0);
+	} else {
+		setClipping(rect.x, rect.y, rect.width, rect.height);
 	}
-	setClipping (r.x, r.y, r.width, r.height);
 }
 
 /**
@@ -1831,24 +1901,17 @@ public void setClipping(Rectangle r) {
  *
  * @param region the clipping region.
  *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the font has been disposed</li>
+ * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public void setClipping(Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (region == null) {
-		if (data.clipRgn != 0) {
-			OS.DisposeRgn(data.clipRgn);
-			data.clipRgn = 0;
-		} else {
-			return;
-		}
-	} else {
-		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
-		OS.CopyRgn(region.handle, data.clipRgn);
-	}
-	data.updateClip = true;
+	if (region != null && region.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	setClipping(region != null ? region.handle : 0);
 }
 
 void setCGClipping () {
@@ -2163,6 +2226,61 @@ public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	//NOT DONE
 	data.xorMode = xor;
+}
+
+int regionToRects(int message, int rgn, int r, int newRgn) {
+	if (message == OS.kQDRegionToRectsMsgParse) {
+		Rect rect = new Rect();
+		OS.memcpy(rect, r, Rect.sizeof);
+		CGPoint point = new CGPoint(); 
+		int polyRgn = OS.NewRgn();
+		OS.OpenRgn();
+		point.x = rect.left;
+		point.y = rect.top;
+		OS.CGPointApplyAffineTransform(point, data.inverseTransform, point);
+		OS.MoveTo((short)Math.round(point.x), (short)Math.round(point.y));
+		point.x = rect.right;
+		point.y = rect.top;
+		OS.CGPointApplyAffineTransform(point, data.inverseTransform, point);
+		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
+		point.x = rect.right;
+		point.y = rect.bottom;
+		OS.CGPointApplyAffineTransform(point, data.inverseTransform, point);
+		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
+		point.x = rect.left;
+		point.y = rect.bottom;
+		OS.CGPointApplyAffineTransform(point, data.inverseTransform, point);
+		OS.LineTo((short)Math.round(point.x), (short)Math.round(point.y));
+		OS.CloseRgn(polyRgn);
+		OS.UnionRgn(newRgn, polyRgn, newRgn);
+		OS.DisposeRgn(polyRgn);
+	}
+	return 0;
+}
+
+public void setTransform(Transform transform) {
+	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (transform == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (transform.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	OS.CGContextConcatCTM(handle, data.inverseTransform);
+	OS.CGContextConcatCTM(handle, transform.handle);
+	System.arraycopy(transform.handle, 0, data.transform, 0, data.transform.length);
+	System.arraycopy(transform.handle, 0, data.inverseTransform, 0, data.inverseTransform.length);
+	OS.CGAffineTransformInvert(data.inverseTransform, data.inverseTransform);
+	//TODO - rounds off problems
+	int clipRgn = data.clipRgn;
+	if (clipRgn != 0) {
+		int newRgn = OS.NewRgn();
+		Region region = new Region();
+		Callback callback = new Callback(this, "regionToRects", 4);
+		int proc = callback.getAddress();
+		if (proc != 0) {
+			OS.QDRegionToRects(clipRgn, OS.kQDParseRegionFromTopLeft, proc, newRgn);
+			callback.dispose();
+		}
+		OS.DisposeRgn(clipRgn);
+		data.clipRgn = newRgn;
+	}
 }
 
 /**

@@ -30,6 +30,9 @@ public final class GCData {
 	public Image image;
 	public float[] foreground;
 	public float[] background;
+	public int alpha = 0xFF;
+	public float[] transform = new float[]{1, 0, 0, 1, 0, 0};
+	public float[] inverseTransform = new float[]{1, 0, 0, 1, 0, 0};
 	public int clipRgn;
 	public int lineWidth = 1;
 	public int lineStyle = SWT.LINE_SOLID;
