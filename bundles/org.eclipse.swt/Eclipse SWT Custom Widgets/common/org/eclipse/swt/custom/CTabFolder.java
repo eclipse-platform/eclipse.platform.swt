@@ -1418,6 +1418,20 @@ public int getTabHeight(){
 	return tabHeight - 1; // -1 for line drawn across top of tab
 }
 /**
+ * Returns the position of the tab.  Possible values are SWT.TOP or SWT.BOTTOM.
+ * 
+ * @return the position of the tab
+ * 
+ * @exception SWTError <ul>
+ *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
+ *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
+ *	</ul>
+ */
+public int getTabPosition(){
+	checkWidget();
+	return onBottom ? SWT.BOTTOM : SWT.TOP;
+}
+/**
  * Returns the control in the top right corner of the tab folder. 
  * Typically this is a close button or a composite with a menu and close button.
  *
@@ -3105,6 +3119,7 @@ public void setTabHeight(int height) {
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if the position value is not either SWT.TOP or SWT.BOTTOM</li>
  * </ul>
  * 
  * UNDER CONSTRUCTION
@@ -3112,17 +3127,11 @@ public void setTabHeight(int height) {
  */
 public void setTabPosition(int position) {
 	checkWidget();
-	int mask = SWT.TOP | SWT.BOTTOM;
-	position = position & mask;
-	if ((position & mask) == 0) return;
-	
-	// TOP and BOTTOM are mutually exlusive.
-	// TOP is the default
-	if ((position & SWT.TOP) != 0) 
-		position = position & ~SWT.BOTTOM | SWT.TOP;
-
-	if (onBottom != ((position & SWT.BOTTOM) != 0)) {
-		onBottom = (position & SWT.BOTTOM) != 0;
+	if (position != SWT.TOP && position != SWT.BOTTOM) {
+		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	if (onBottom != (position == SWT.BOTTOM)) {
+		onBottom = position == SWT.BOTTOM;
 		borderTop = onBottom ? borderLeft : 0;
 		borderBottom = onBottom ? 0 : borderRight;
 		updateTabHeight(tabHeight, true);
