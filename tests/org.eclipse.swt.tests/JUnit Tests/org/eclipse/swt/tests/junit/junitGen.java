@@ -378,13 +378,14 @@ public class junitGen {
 			Constructor[] constructors = getFilteredConstructors(clazz);
 			for (int i = 0; i < constructors.length; i++) {
 				writeMethod(constructors[i]);
-				writer.write(lineSep);
+				if (i < constructors.length - 1) writer.write(lineSep);
 			}
 			
 			Method[] methods = getFilteredMethods(clazz);
+			if (constructors.length > 0 && methods.length > 0) writer.write(lineSep);
 			for (int i = 0; i < methods.length; i++) {
 				writeMethod(methods[i]);
-				writer.write(lineSep);
+				if (i < methods.length - 1) writer.write(lineSep);
 			}
 		}
 		
