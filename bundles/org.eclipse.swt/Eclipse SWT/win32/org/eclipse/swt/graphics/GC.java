@@ -450,11 +450,11 @@ public void drawFocus (int x, int y, int width, int height) {
  *    <li>ERROR_NULL_ARGUMENT - if the image is null</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the image has been disposed</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the given coordinates are outside the bounds of the image</li>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
  */
 public void drawImage(Image image, int x, int y) {
@@ -489,11 +489,11 @@ public void drawImage(Image image, int x, int y) {
  *    <li>ERROR_INVALID_ARGUMENT - if any of the width or height arguments are negative.
  *    <li>ERROR_INVALID_ARGUMENT - if the source rectangle is not contained within the bounds of the source image</li>
  * </ul>
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES - if no handles are available to perform the operation</li>
  * </ul>
  */
 public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight) {

@@ -639,7 +639,7 @@ public void setGrayed (boolean grayed) {
  * <p>
  * @param expanded the new expanded state.
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -725,7 +725,7 @@ public void setForeground (Color color) {
  *
  * @param image the new image or null
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -752,10 +752,9 @@ public void setImage (int index, Image image) {
  *
  * @param image the new image or null
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *		<li>ERROR_NULL_ARGUMENT when string is null</li>
  *	</ul>
  */
 public void setImage (Image image) {
@@ -773,10 +772,12 @@ public void setImage (Image image) {
  * @param index the column number
  * @param text the new text
  *
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ * </ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *		<li>ERROR_NULL_ARGUMENT when string is null</li>
  *	</ul>
  */
 public void setText(int index, String text) {

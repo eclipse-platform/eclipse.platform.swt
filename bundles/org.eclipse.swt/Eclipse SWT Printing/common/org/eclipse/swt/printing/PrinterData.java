@@ -127,10 +127,8 @@ public final class PrinterData extends DeviceData {
 	/**
 	 * Constructs an instance of this class that can be
 	 * used to print to the default printer.
-	 *
-	 * @exception SWTError <ul>
-	 *    <li>ERROR_NO_HANDLES - if an error occurred constructing the default printer data</li>
-	 * </ul>
+	 * 
+	 * @see Printer#getDefaultPrinterData
 	 */
 	public PrinterData() {
 	}
@@ -141,10 +139,6 @@ public final class PrinterData extends DeviceData {
 	 *
 	 * @param driver the printer driver for the printer
 	 * @param name the name of the printer
-	 *
-	 * @exception SWTError <ul>
-	 *    <li>ERROR_NO_HANDLES - if there are no valid printers
-	 * </ul>
 	 *
 	 * @see #driver
 	 * @see #name

@@ -463,7 +463,7 @@ static Program kde_getProgram(Display display, String mimeType) {
  * @param extension the program extension
  * @return the program or <code>null</code>
  *
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when extension is null</li>
  *	</ul>
  */
@@ -603,7 +603,7 @@ static Program[] getPrograms(Display display) {
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
  *	</ul>
  */
@@ -660,7 +660,7 @@ public boolean equals(Object other) {
  * @param fileName the file or program name
  * @return <code>true</code> if the file is launched, otherwise <code>false</code>
  * 
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when fileName is null</li>
  *	</ul>
  */

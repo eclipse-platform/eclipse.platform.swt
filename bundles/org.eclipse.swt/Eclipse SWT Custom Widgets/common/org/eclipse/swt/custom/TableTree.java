@@ -224,7 +224,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
  * If an item is selected, it is deselected.
  * If an item is not selected, it remains unselected.
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
  *	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
  * </ul>
@@ -282,10 +282,9 @@ public int getItemCount () {
  *
  * @return the height of one item in the widget
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
  *	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
- *	<li>ERROR_CANNOT_GET_ITEM_HEIGHT when the operation fails
  * </ul>
  */
 public int getItemHeight () {
@@ -313,10 +312,9 @@ public TableTreeItem [] getItems () {
  *
  * @return the selected items in the widget
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_CANNOT_GET_SELECTION when the operation fails</li>
  *	</ul>
  */
 public TableTreeItem [] getSelection () {
@@ -337,10 +335,9 @@ public TableTreeItem [] getSelection () {
  *
  * @return the number of selected items in the widget
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- * 		<li>ERROR_CANNOT_GET_COUNT when the operation fails</li>
  *	</ul>
  */
 public int getSelectionCount () {
@@ -587,10 +584,9 @@ void onMouseDown(Event event) {
  * This operation will fail when an item
  * could not be removed in the OS.
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
  * 	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
- * 	<li>ERROR_ITEM_NOT_REMOVED when the operation fails
  * </ul>
  */
 public void removeAll () {
@@ -666,7 +662,7 @@ public void removeTreeListener (TreeListener listener) {
  * <p>
  * If the receiver is single-select, do nothing.
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
  *	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
  * </ul>
@@ -780,7 +776,7 @@ public void showItem (TableTreeItem item) {
  * the top index of the widget is changed such
  * that selection becomes visible.
  *
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *	<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread
  *	<li>ERROR_WIDGET_DISPOSED when the widget has been disposed
  * </ul>

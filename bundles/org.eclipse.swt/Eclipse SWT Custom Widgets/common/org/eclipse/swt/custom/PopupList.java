@@ -91,7 +91,7 @@ private static int checkStyle (int style) {
 * <p>
 * @return the widget font
 *
-* @exception SWTError <ul>
+* @exception SWTException <ul>
 *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
 *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
 *	</ul>
@@ -107,10 +107,9 @@ public Font getFont () {
 *
 * @return the items in the widget
 *
-* @exception SWTError <ul>
+* @exception SWTException <ul>
 *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
 *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-* 		<li>ERROR_CANNOT_GET_ITEM when the operation fails</li>
 *	</ul>
 */
 public String[] getItems () {
@@ -197,7 +196,7 @@ public String open (Rectangle rect) {
 *
 * @param string the text of the item
 *
-* @exception SWTError <ul>
+* @exception SWTException <ul>
 *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
 *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
 *	</ul>
@@ -225,7 +224,7 @@ public void select(String string) {
 *
 * @param font the new font (or null)
 * 
-* @exception SWTError <ul>
+* @exception SWTException <ul>
 *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
 *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
 *	</ul>
@@ -245,12 +244,13 @@ public void setFont (Font font) {
 *
 * This operation will fail when an item is null
 * or could not be added in the OS.
-*
-* @exception SWTError <ul>
+* 
+* @exception IllegalArgumentException <ul>
+*    <li>ERROR_NULL_ARGUMENT - when items is null</li>
+* </ul>
+* @exception SWTException <ul>
 *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
 *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
-*		<li>ERROR_NULL_ARGUMENT when items is null</li>
-*		<li>ERROR_ITEM_NOT_ADDED when the operation fails</li>
 *	</ul>
 */
 public void setItems (String[] strings) {

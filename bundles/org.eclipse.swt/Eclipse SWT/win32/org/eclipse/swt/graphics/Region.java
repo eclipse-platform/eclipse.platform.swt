@@ -57,11 +57,11 @@ public Region () {
  *
  * @param device the device on which to allocate the region
  *
-* @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
- * </ul>
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
+ * </ul>
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for region creation</li>
  * </ul>
  *
  * @see #dispose

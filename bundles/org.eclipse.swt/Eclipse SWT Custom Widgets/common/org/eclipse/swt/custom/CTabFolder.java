@@ -388,7 +388,7 @@ static void fillRegion(GC gc, Region region) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -416,8 +416,7 @@ public void addCTabFolder2Listener(CTabFolder2Listener listener) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
- * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -451,8 +450,7 @@ public void addCTabFolderListener(CTabFolderListener listener) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
- * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -1190,8 +1188,7 @@ public Rectangle getClientArea() {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_INVALID_RANGE - if the index is out of range</li>
  * </ul>
- * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -1208,7 +1205,7 @@ public CTabItem getItem (int index) {
  * @param pt the point in coordinates relative to the CTabFolder
  * @return the item at a point or null
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -1230,7 +1227,7 @@ public CTabItem getItem (Point pt) {
  * 
  * @return the number of tabs in the folder
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -1244,7 +1241,7 @@ public int getItemCount(){
  * 
  * @return the tab items
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -1392,7 +1389,7 @@ int getRightItemEdge (){
  * 
  * @return the selected tab item
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -1440,7 +1437,7 @@ public Color getSelectionForeground() {
  * 
  * @return the index of the selected tab item or -1
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -1488,7 +1485,7 @@ public int getStyle() {
  * 
  * @return the height of the tab
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -1503,7 +1500,7 @@ public int getTabHeight(){
  * 
  * @return the position of the tab
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -1518,7 +1515,7 @@ public int getTabPosition(){
  *
  * @return the control in the top right corner of the tab folder or null
  * 
- * @exception  SWTError <ul>
+ * @exception  SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -1565,7 +1562,7 @@ public boolean getUnselectedImageVisible() {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -2300,7 +2297,7 @@ void redrawTabs() {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -2339,7 +2336,7 @@ public void removeCTabFolder2Listener(CTabFolder2Listener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -2376,7 +2373,7 @@ public void removeCTabFolderListener(CTabFolderListener listener) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -2413,7 +2410,7 @@ public void setBackground (Color color) {
  *                 of the widget at which the color should change.  The size of the percents array must be one 
  *                 less than the size of the colors array.
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -2445,7 +2442,7 @@ void setBackground(Color[] colors, int[] percents) {
  * 
  * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal. 
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -3104,7 +3101,7 @@ public void setMRUVisible(boolean show) {
  *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
  * </ul>
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *    <li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  * </ul>
@@ -3208,7 +3205,7 @@ public void setSelectionBackground (Color color) {
  *                 of the widget at which the color should change.  The size of the percents array must be one 
  *                 less than the size of the colors array.
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
@@ -3238,7 +3235,7 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
  * 
  * @param vertical indicate the direction of the gradient.  True is vertical and false is horizontal. 
  * 
- * @exception SWTError <ul>
+ * @exception SWTException <ul>
  *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>

@@ -43,7 +43,7 @@ Program () {
  * @param extension the program extension
  * @return the program or <code>null</code>
  *
- * @exception SWTError <ul>
+ * @exception IllegalArgumentException <ul>
  *		<li>ERROR_NULL_ARGUMENT when extension is null</li>
  *	</ul>
  */
