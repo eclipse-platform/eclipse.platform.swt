@@ -819,7 +819,7 @@ int gtk_changed (int widget) {
 	return 0;
 }
 
-int gtk_commit (int imcontext, int text) {
+int gtk_commit (int imContext, int text) {
 	if (text == 0) return 0;
 	int length = OS.strlen (text);
 	if (length == 0) return 0;
@@ -828,18 +828,18 @@ int gtk_commit (int imcontext, int text) {
 	char [] chars = Converter.mbcsToWcs (null, buffer);
 	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
 	if (newChars == null) return 0;
-	OS.g_signal_handlers_block_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
+	OS.g_signal_handlers_block_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
 	int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
 	int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
-	OS.g_signal_handlers_unblock_matched (imcontext, mask, id, 0, 0, 0, handle);
+	OS.g_signal_handlers_unblock_matched (imContext, mask, id, 0, 0, 0, handle);
 	if (newChars == chars) {
-		OS.g_signal_emit_by_name (imcontext, OS.commit, text);
+		OS.g_signal_emit_by_name (imContext, OS.commit, text);
 	} else {
 		buffer = Converter.wcsToMbcs (null, newChars, true);
-		OS.g_signal_emit_by_name (imcontext, OS.commit, buffer);
+		OS.g_signal_emit_by_name (imContext, OS.commit, buffer);
 	}
-	OS.g_signal_handlers_unblock_matched (imcontext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
-	OS.g_signal_handlers_block_matched (imcontext, mask, id, 0, 0, 0, handle);
+	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
+	OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);
 	return 0;
 }
 
@@ -920,14 +920,9 @@ int gtk_key_press_event (int widget, int event) {
 	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
 	if (gdkEvent.time == lastEventTime) return 0;
 	lastEventTime = gdkEvent.time;
-	int imHandle = imContext ();
-	if (imHandle != 0) {
-		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
-		int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
-		OS.g_signal_handlers_block_matched (imHandle, mask, id, 0, 0, 0, handle);
-		boolean filtered = OS.gtk_im_context_filter_keypress (imHandle, event);
-		OS.g_signal_handlers_unblock_matched (imHandle, mask, id, 0, 0, 0, handle);
-		if (filtered) return 1;
+	int imContext = imContext ();
+	if (imContext != 0) {
+		if (OS.gtk_im_context_filter_keypress (imContext, event)) return 1;
 	}
 	return super.gtk_key_press_event (widget, event);
 }
@@ -949,7 +944,12 @@ void hookEvents () {
 		OS.g_signal_connect (bufferHandle, OS.delete_range, windowProc4, DELETE_RANGE);
 	}
 	int imContext = imContext ();
-	if (imContext != 0) OS.g_signal_connect (imContext, OS.commit, windowProc3, COMMIT);
+	if (imContext != 0) {
+		OS.g_signal_connect (imContext, OS.commit, windowProc3, COMMIT);
+		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
+		int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
+		OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, handle);
+	}
 }
 
 int imContext () {

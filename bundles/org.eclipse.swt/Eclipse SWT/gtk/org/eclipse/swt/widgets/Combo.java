@@ -55,6 +55,7 @@ import org.eclipse.swt.events.*;
  */
 public class Combo extends Composite {
 	int arrowHandle, entryHandle, listHandle;
+	int lastEventTime = 0;
 	String [] items = new String [0];
 	static final int INNER_BORDER = 2;
 	/**
@@ -407,6 +408,8 @@ void deregister () {
 	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
 	WidgetTable.remove (entryHandle);
 	WidgetTable.remove (listHandle);
+	int imContext = imContext ();
+	if (imContext != 0) WidgetTable.remove (imContext);
 }
 
 int fontHandle () {
@@ -467,6 +470,17 @@ void hookEvents () {
 			OS.g_signal_connect_after (handle, OS.motion_notify_event, windowProc3, -MOTION_NOTIFY_EVENT);
 		}
 	}
+	int imContext = imContext ();
+	if (imContext != 0) {
+		OS.g_signal_connect (imContext, OS.commit, windowProc3, COMMIT);
+		int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
+		int blockMask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
+		OS.g_signal_handlers_block_matched (imContext, blockMask, id, 0, 0, 0, entryHandle);
+	}	
+}
+
+int imContext () {
+	return OS.GTK_ENTRY_IM_CONTEXT (entryHandle);
 }
 
 /**
@@ -722,6 +736,46 @@ int gtk_changed (int widget) {
 	return 0;
 }
 
+int gtk_commit (int imContext, int text) {
+	if (text == 0) return 0;
+	int length = OS.strlen (text);
+	if (length == 0) return 0;
+	byte [] buffer = new byte [length];
+	OS.memmove (buffer, text, length);
+	char [] chars = Converter.mbcsToWcs (null, buffer);
+	char [] newChars = sendIMKeyEvent (SWT.KeyDown, null, chars);
+	if (newChars == null) return 0;
+	OS.g_signal_handlers_block_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
+	int id = OS.g_signal_lookup (OS.commit, OS.gtk_im_context_get_type ());
+	int mask =  OS.G_SIGNAL_MATCH_DATA | OS.G_SIGNAL_MATCH_ID;
+	OS.g_signal_handlers_unblock_matched (imContext, mask, id, 0, 0, 0, entryHandle);
+	if (newChars == chars) {
+		OS.g_signal_emit_by_name (imContext, OS.commit, text);
+	} else {
+		buffer = Converter.wcsToMbcs (null, newChars, true);
+		OS.g_signal_emit_by_name (imContext, OS.commit, buffer);
+	}
+	OS.g_signal_handlers_unblock_matched (imContext, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, COMMIT);
+	OS.g_signal_handlers_block_matched (imContext, mask, id, 0, 0, 0, entryHandle);
+	return 0;
+}
+
+int gtk_key_press_event (int widget, int event) {
+	if (widget != entryHandle) {
+		return super.gtk_key_press_event (widget, event);
+	}
+	if (!hasFocus ()) return 0;
+	GdkEventKey gdkEvent = new GdkEventKey ();
+	OS.memmove (gdkEvent, event, GdkEventKey.sizeof);
+	if (gdkEvent.time == lastEventTime) return 0;
+	lastEventTime = gdkEvent.time;
+	int imContext = imContext ();
+	if (imContext != 0) {
+		if (OS.gtk_im_context_filter_keypress (imContext, event)) return 1;
+	}
+	return super.gtk_key_press_event (widget, event);
+}
+
 int gtk_select_child (int list, int widget) {
 	postEvent (SWT.Selection);
 	return 0;
@@ -804,6 +858,8 @@ void register () {
 	if (arrowHandle != 0) WidgetTable.put (arrowHandle, this);
 	WidgetTable.put (entryHandle, this);
 	WidgetTable.put (listHandle, this);
+	int imContext = imContext ();
+	if (imContext != 0) WidgetTable.put (imContext, this);
 }
 
 void releaseHandle () {
@@ -1185,10 +1241,10 @@ boolean translateTraversal (GdkEventKey keyEvent) {
 	switch (key) {
 		case OS.GDK_KP_Enter:
 		case OS.GDK_Return: {
-			int imHandle = OS.GTK_ENTRY_IM_CONTEXT (entryHandle);
-			if (imHandle != 0) {
+			int imContext = imContext (); 
+			if (imContext != 0) {
 				int [] preeditString = new int [1];
-				OS.gtk_im_context_get_preedit_string (imHandle, preeditString, null, null);
+				OS.gtk_im_context_get_preedit_string (imContext, preeditString, null, null);
 				if (preeditString [0] != 0) {
 					int lenght = OS.strlen (preeditString [0]);
 					OS.g_free (preeditString [0]);
