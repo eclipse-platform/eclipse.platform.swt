@@ -508,6 +508,11 @@ public Browser(Composite parent, int style) {
 	Variant variant = new Variant(true);
 	auto.setProperty(RegisterAsBrowser, variant);
 	variant.dispose();
+	
+	variant = new Variant(false);
+	int[] rgdispid = auto.getIDsOfNames(new String[] {"RegisterAsDropTarget"}); //$NON-NLS-1$
+	auto.setProperty(rgdispid[0], variant);
+	variant.dispose();
 }
 
 /**	 
