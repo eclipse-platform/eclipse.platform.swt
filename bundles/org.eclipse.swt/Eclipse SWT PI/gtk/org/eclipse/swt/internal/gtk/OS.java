@@ -998,5 +998,7 @@ public static final native void  gtk_window_set_destroy_with_parent (int window,
 public static final native void gdk_window_get_internal_paint_info(int window, int[] drawable, int[] x_offset, int[] y_offset);
 public static final native int gtk_dialog_run(int dialog);
 public static final native void gtk_file_selection_set_select_multiple(int filesel, boolean select_multiple);
-
+public static final native int gtk_file_selection_get_selections(int filesel);
+public static final native void g_strfreev(int string_array);
+public static final native int g_filename_to_utf8(int opsysstring, int len, int bytes_read, int bytes_written, int error);
 }

@@ -271,6 +271,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection
 	return (jint)gtk_file_selection_get_filename((GtkFileSelection*)filesel);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection_1get_1selections
+  (JNIEnv *env, jclass that, jint filesel)
+{
+    return (jint)gtk_file_selection_get_selections((GtkFileSelection*)filesel);
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1file_1selection_1complete
   (JNIEnv *env, jclass that, jint filesel, jbyteArray pattern)
 {
@@ -420,4 +426,3 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1window_1set_1de
 {
     gtk_window_set_destroy_with_parent((GtkWindow*)window, (gboolean)setting);
 }
-

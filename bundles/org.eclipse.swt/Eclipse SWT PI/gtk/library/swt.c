@@ -1798,4 +1798,20 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1style_1set_1yth
   ((GtkStyle*)style)->ythickness = ythickness;
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1strfreev
+  (JNIEnv *env, jclass that, jint string_array)
+{
+  g_strfreev ((gchar**)string_array);
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1filename_1to_1utf8
+  (JNIEnv *env, jclass that, jint opsysstring, jint len, jint bytes_read, jint bytes_written, jint error)
+{
+  return (jint) g_filename_to_utf8 ((const gchar*) opsysstring,
+                                    (gssize) len,
+                                    (gsize*) bytes_read,
+                                    (gsize*) bytes_written,
+                                    (GError**) error);
+}
+
 
