@@ -364,9 +364,9 @@ void destroyItem (TreeColumn column) {
 		}
 	}
 	for (int i = index; i < columns.length; i++) {
-		Event event = new Event ();
-		event.widget = columns [i];
-		columns [i].sendEvent (SWT.Move, event);
+		if (!columns [i].isDisposed ()) {
+			columns [i].sendEvent (SWT.Move);
+		}
 	}
 }
 /*
@@ -374,6 +374,8 @@ void destroyItem (TreeColumn column) {
  * item being destroyed.  The argument is not necessarily a root-level item.
  */
 void destroyItem (TreeItem item) {
+	if (item == focusItem) reassignFocus ();
+
 	/* availableItems array */
 	int availableIndex = item.availableIndex; 
 	if (availableIndex != -1) {
@@ -426,7 +428,6 @@ void destroyItem (TreeItem item) {
 		System.arraycopy (items, index + 1, newItems, index, newItems.length - index);
 		items = newItems;
 	}
-	if (item == focusItem) reassignFocus ();
 	if (item == anchorItem) anchorItem = null;
 	if (item == insertMarkItem) insertMarkItem = null;
 }
@@ -2909,13 +2910,11 @@ void updateColumnWidth (TreeColumn column, int width) {
 		header.redraw (x, 0, bounds.width - x, getHeaderHeight (), false);
 	}
 
-	Event event = new Event ();
-	event.widget = column;
-	column.sendEvent (SWT.Resize, event);
+	column.sendEvent (SWT.Resize);
 	for (int i = column.getIndex () + 1; i < columns.length; i++) {
-		event = new Event ();
-		event.widget = columns [i];
-		columns [i].sendEvent (SWT.Move, event);
+		if (!columns [i].isDisposed ()) {
+			columns [i].sendEvent (SWT.Move);
+		}
 	}
 }
 /*
