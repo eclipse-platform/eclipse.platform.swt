@@ -133,8 +133,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = getHeaderHeight();
 		height += OS.GTK_CLIST_ROW_HEIGHT (handle) * getItemCount();
 		height += 2 * st.ythickness;
-		height += hScrollBarWidth();
-		// FIXME - check for border
+		int hBarHandle = OS.GTK_SCROLLED_WINDOW_HSCROLLBAR(scrolledHandle);
+		GtkRequisition requisition = new GtkRequisition();
+		OS.gtk_widget_size_request(hBarHandle, requisition);
+		height += requisition.height + OS.GTK_SCROLLED_WINDOW_SCROLLBAR_SPACING(scrolledHandle);
 	}
 	
 	/* Compute the width based on the items */
@@ -144,9 +146,10 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	} else {
 		width = 2 * st.xthickness;
 		int count = getColumnCount();
-		for (int i = 0; i<count; i++) width += getColumn(i).getWidth();
+		for (int i = 0; i<count; i++) {
+			width += OS.gtk_clist_optimal_column_width(handle, i);
+		}
 		width += vScrollBarWidth();
-		// FIXME - check for border
 	}
 	
 	/* In no event will we request ourselves smaller than the minimum OS size */
@@ -538,13 +541,9 @@ public int getGridLineWidth () {
  */
 public int getHeaderHeight () {
 	checkWidget ();
-	//  Gtk returns height of 1 when the header is not visible 
 	if ( !OS.GTK_CLIST_SHOW_TITLES (handle) ) return 0;
-	int header = OS.gtk_clist_get_column_widget (handle, 0);
-	if (header == 0) return 0;
-	GtkRequisition req = new GtkRequisition();
-	OS.gtk_widget_size_request(header, req);
-	return req.height;
+	OS.gtk_widget_size_request(handle, new GtkRequisition());
+	return OS.GTK_CLIST_COLUMN_TITLE_AREA_HEIGHT(handle);
 }
 
 /**
