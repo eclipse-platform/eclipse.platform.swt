@@ -35,7 +35,7 @@
   			<arg line="-o ${destdir}/${SWT_DLL}" />
   			<arg line="-framework JavaVM" />
   			<arg line="-framework Carbon" />
-  			<arg line="OS.c" />
+  			<arg line="swt.c" />
 		</exec>
 		
 	</target>
