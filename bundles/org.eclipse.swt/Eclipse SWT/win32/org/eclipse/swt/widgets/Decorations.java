@@ -185,8 +185,10 @@ void bringToTop () {
 }
 
 static int checkStyle (int style) {
-	if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
-		style |= SWT.TITLE;
+	if (!OS.IsWinCE) {
+		if ((style & (SWT.MENU | SWT.MIN | SWT.MAX | SWT.CLOSE)) != 0) {
+			style |= SWT.TITLE;
+		}
 	}
 	/*
 	* Bug in Windows.  If WS_MINIMIZEBOX or WS_MAXIMIZEBOX
@@ -1108,8 +1110,10 @@ int widgetStyle () {
 	* Feature in Windows.  Both WS_SYSMENU and WS_CAPTION
 	* must be set in order to get a system menu.
 	*/
-	if ((style & SWT.CLOSE) != 0) {
-		bits |= OS.WS_SYSMENU | OS.WS_CAPTION;
+	if (!OS.IsWinCE) {
+		if ((style & SWT.CLOSE) != 0) {
+			bits |= OS.WS_SYSMENU | OS.WS_CAPTION;
+		}
 	}
 	
 	return bits;

@@ -1068,10 +1068,10 @@ public class OS {
 	public static final int WM_WINDOWPOSCHANGING = 0x46;
 	public static final int WS_BORDER = 0x800000;
 	public static final int WS_CAPTION = 0xc00000;
-	public static final int WS_EX_CAPTIONOKBTN = 0x80000000;
 	public static final int WS_CHILD = 0x40000000;
 	public static final int WS_CLIPCHILDREN = 0x2000000;
 	public static final int WS_CLIPSIBLINGS = 0x4000000;
+	public static final int WS_EX_CAPTIONOKBTN = 0x80000000;
 	public static final int WS_EX_CLIENTEDGE = 0x200;
 	public static final int WS_EX_DLGMODALFRAME = 0x1;
 	public static final int WS_EX_STATICEDGE = 0x20000;

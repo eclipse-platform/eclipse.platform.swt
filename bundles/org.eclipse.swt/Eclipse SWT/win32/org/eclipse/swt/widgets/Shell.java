@@ -373,9 +373,7 @@ void createHandle () {
 		}
 		OS.SetWindowLong (handle, OS.GWL_STYLE, bits);
 		
-		if (OS.IsWinCE) {
-			if (parent != null) setMaximized (true);
-		}
+		if (OS.IsWinCE) setMaximized (true);
 	}
 	if (OS.IsDBLocale) {
 		hIMC = OS.ImmCreateContext ();
@@ -903,6 +901,9 @@ void updateModal () {
 int widgetExtStyle () {
 	int bits = super.widgetExtStyle ();
 	if ((style & SWT.ON_TOP) != 0) bits |= OS.WS_EX_TOPMOST;
+	if (OS.IsWinCE) {
+		if ((style & SWT.CLOSE) != 0) bits |= OS.WS_EX_CAPTIONOKBTN;
+	}
 	return bits;
 }
 
@@ -912,17 +913,17 @@ int widgetStyle () {
 	if (handle != 0) return bits | OS.WS_CHILD;
 	bits &= ~OS.WS_CHILD;
 	/*
-	* Feature on WinCE: calling createWindowEx with the style OVERLAPPED
+	* Feature on WinCE:  calling createWindowEx with the style OVERLAPPED
 	* and the field hwndParent causes the window to become a child of hwndParent
-	* (not owned by). The workaround is to set the style WS_POPUP for shells
+	* (not owned by).  The workaround is to set the style WS_POPUP for shells
 	* with a parent.
+	* Feature on WinCE PPC 2000:  extended style WS_EX_CAPTIONOKBTN cannot be
+	* set with style WS_CAPTION.  The workaround is to set the style WS_POPUP
+	* even for shells with no parent.
 	* The WS_POPUP style in combination with CW_USEDEFAULT causes the window 
 	* to be of size 0 and will need to be resized.
 	*/
-	if (OS.IsWinCE) {
-		if (parent != null) return bits | OS.WS_POPUP;
-	}
-	return bits | OS.WS_OVERLAPPED | OS.WS_CAPTION;
+	return bits | (OS.IsWinCE ? OS.WS_POPUP : OS.WS_OVERLAPPED | OS.WS_CAPTION);
 }
 
 LRESULT WM_ACTIVATE (int wParam, int lParam) {
@@ -947,6 +948,21 @@ LRESULT WM_CLOSE (int wParam, int lParam) {
 		return LRESULT.ZERO;
 	}
 	return super.WM_CLOSE (wParam, lParam);
+}
+
+LRESULT WM_COMMAND (int wParam, int lParam) {
+	/*
+	* Note on WinCE PPC:  close the Shell when the "Done Button" has
+	* been pressed.
+	*/
+	if (OS.IsWinCE) {
+		int loWord = wParam & 0xFFFF;
+		if (loWord == OS.IDOK) {
+			OS.PostMessage (handle, OS.WM_CLOSE, 0, 0);
+			return LRESULT.ZERO;			
+		}
+	}
+	return super.WM_COMMAND (wParam, lParam);
 }
 
 LRESULT WM_DESTROY (int wParam, int lParam) {
