@@ -1600,12 +1600,6 @@ int gtk_button_press_event (int widget, int event) {
 	display.dragStartX = (int) gdkEvent.x;
 	display.dragStartY = (int) gdkEvent.y;
 	display.dragging = false;
-	int result = 0;
-	if (gdkEvent.button == 3 && gdkEvent.type == OS.GDK_BUTTON_PRESS) {
-		if (showMenu ((int)gdkEvent.x_root, (int)gdkEvent.y_root)) {
-			result = 1;
-		}
-	}
 	int button = gdkEvent.button;
 	int type = gdkEvent.type != OS.GDK_2BUTTON_PRESS ? SWT.MouseDown : SWT.MouseDoubleClick;
 	sendMouseEvent (type, button, event);
@@ -1619,7 +1613,7 @@ int gtk_button_press_event (int widget, int event) {
 	if (!shell.isDisposed ()) {
 		shell.setActiveControl (this);
 	}
-	return result;
+	return 0;
 }
 
 int gtk_button_release_event (int widget, int event) {
@@ -1653,6 +1647,14 @@ int gtk_event_after (int widget, int gdkEvent) {
 	GdkEvent event = new GdkEvent ();
 	OS.memmove (event, gdkEvent, GdkEventButton.sizeof);
 	switch (event.type) {
+		case OS.GDK_BUTTON_PRESS: {
+			GdkEventButton gdkEventButton = new GdkEventButton ();
+			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+			if (gdkEventButton.button == 3) {
+				showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
+			}
+			break;
+		}
 		case OS.GDK_FOCUS_CHANGE: {
 			GdkEventFocus gdkEventFocus = new GdkEventFocus ();
 			OS.memmove (gdkEventFocus, gdkEvent, GdkEventFocus.sizeof);
@@ -1778,7 +1780,8 @@ int gtk_motion_notify_event (int widget, int event) {
 int gtk_popup_menu (int widget) {
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_pointer (0, x, y, null);
-	return showMenu (x [0], y [0]) ? 1 : 0;
+	showMenu (x [0], y [0]);
+	return 0;
 }
 
 int gtk_preedit_changed (int imcontext) {

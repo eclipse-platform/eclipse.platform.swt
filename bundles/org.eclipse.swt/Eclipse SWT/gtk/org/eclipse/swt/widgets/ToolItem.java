@@ -475,6 +475,22 @@ int gtk_enter_notify_event (int widget, int event) {
 	return 0;
 }
 
+int gtk_event_after (int widget, int gdkEvent) {
+	GdkEvent event = new GdkEvent ();
+	OS.memmove (event, gdkEvent, GdkEvent.sizeof);
+	switch (event.type) {
+		case OS.GDK_BUTTON_PRESS: {
+			GdkEventButton gdkEventButton = new GdkEventButton ();
+			OS.memmove (gdkEventButton, gdkEvent, GdkEventButton.sizeof);
+			if (gdkEventButton.button == 3) {
+				parent.showMenu ((int) gdkEventButton.x_root, (int) gdkEventButton.y_root);
+			}
+			break;
+		}
+	}	
+	return 0;
+}
+
 int gtk_leave_notify_event (int widget, int event) {
 	if (drawHotImage) {
 		drawHotImage = false;
@@ -511,6 +527,7 @@ void hookEvents () {
 	OS.gtk_widget_add_events (handle, mask);
 	OS.g_signal_connect (handle, OS.button_press_event, windowProc3, BUTTON_PRESS_EVENT);
 	OS.g_signal_connect (handle, OS.button_release_event, windowProc3, BUTTON_RELEASE_EVENT);
+	OS.g_signal_connect (handle, OS.event_after, windowProc3, EVENT_AFTER);
 }
 
 /**
