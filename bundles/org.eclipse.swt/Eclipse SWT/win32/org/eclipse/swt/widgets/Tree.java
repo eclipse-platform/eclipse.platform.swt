@@ -513,6 +513,7 @@ public TreeItem [] getSelection () {
 		return new TreeItem [] {items [tvItem.lParam]};
 	}
 	int count = 0;
+	TreeItem [] guess = new TreeItem [8];
 	TVITEM tvItem = new TVITEM ();
 	tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
@@ -522,20 +523,29 @@ public TreeItem [] getSelection () {
 		if (item != null) {
 			tvItem.hItem = item.handle;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-			if ((tvItem.state & OS.TVIS_SELECTED) != 0) count++;
+			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+				if (count < guess.length) guess [count] = item;
+				count++;
+			}
 		}
 	}
+	OS.SetWindowLong (handle, OS.GWL_WNDPROC, oldProc);
+	if (count == 0) return new TreeItem [0];
+	if (count == guess.length) return guess;
 	TreeItem [] result = new TreeItem [count];
-	if (count != 0) {
-		int index = 0;
-		for (int i=0; i<items.length; i++) {
-			TreeItem item = items [i];
-			if (item != null) {
-				tvItem.hItem = item.handle;
-				OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
-				if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-					result [index++] = item;
-				}
+	if (count < guess.length) {
+		System.arraycopy (guess, 0, result, 0, count);
+		return result;
+	}
+	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
+	int index = 0;
+	for (int i=0; i<items.length; i++) {
+		TreeItem item = items [i];
+		if (item != null) {
+			tvItem.hItem = item.handle;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
+				result [index++] = item;
 			}
 		}
 	}
