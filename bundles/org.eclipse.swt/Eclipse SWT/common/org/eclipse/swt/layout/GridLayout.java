@@ -88,9 +88,26 @@ public final class GridLayout extends Layout {
 	int [] pixelRowHeights;
 	int [] expandableColumns;
 	int [] expandableRows;
+	
+/**
+ * Constructs a new instance of this class.
+ */
 public GridLayout() {
-	super();
 }
+
+/**
+ * Constructs a new instance of this class given the
+ * number of columns, and whether or not the columns
+ * should be forced to have the same width.
+ *
+ * @param numColumns the number of columns in the grid
+ * @param makeColumnsEqualWidth whether or not the columns will have equal width
+ */
+public GridLayout(int numColumns, boolean makeColumnsEqualWidth) {
+	this.numColumns = numColumns;
+	this.makeColumnsEqualWidth = makeColumnsEqualWidth;
+}
+
 void adjustGridDimensions(Composite composite, boolean flushCache) {
 	// Ensure that controls that span more than one row or column have enough space.
 	for (int row = 0; row < grid.size(); row++) {
