@@ -691,13 +691,13 @@ public void setText (String string) {
 	super.setText (string);
 	if ((style & (SWT.ARROW | SWT.SEPARATOR)) != 0) return;
 	/*
-	 * Bug in Linux.  In certain contexts setting the label of a
-	 * CHECK or RADIO menu item to the empty string can cause a
-	 * GP.  The fix is to set the menu label to a space in such
-	 * cases since it displays equivalently.
-	 */
+	* Bug in Linux.  In certain contexts setting the label of a
+	* CHECK or RADIO menu item to the empty string can cause a
+	* GP.  The fix is to set the menu label to a space in such
+	* cases since it displays equivalently.
+	*/
 	if (OS.IsLinux && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
-		if (string.equals ("")) string = " ";
+		if (string.length () == 0) string = " ";
 	}
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
