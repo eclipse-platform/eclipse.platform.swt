@@ -134,17 +134,39 @@ void onPaint(GC gc, boolean isSelected) {
 	int index = parent.indexOf(this);
 	
 	if (isSelected) {
-		// draw a background image behind the text
+		final Rectangle bounds;
+		if (index == parent.topTabIndex) {
+			bounds = new Rectangle(x + 1, y, width - 2, height);
+		} else {
+			bounds = new Rectangle(x + 2, y, width - 3, height);
+		}
 		if (parent.backgroundImage != null) {
-			if (index == parent.topTabIndex){
-				Rectangle imageRect = parent.backgroundImage.getBounds();
-				gc.drawImage(parent.backgroundImage, 0, 0, imageRect.width, imageRect.height, 
-				                                   x + 1, y, width - 2, height);
+			// draw a background image behind the text
+			Rectangle imageRect = parent.backgroundImage.getBounds();
+			gc.drawImage(parent.backgroundImage, 0, 0, imageRect.width, imageRect.height,
+				bounds.x, bounds.y, bounds.width, bounds.height);
+		} else if (parent.gradientColors != null) {
+			// draw a gradient behind the text
+			final Color oldBackground = gc.getBackground();
+			if (parent.gradientColors.length == 1) {
+				if (parent.gradientColors[0] != null) gc.setBackground(parent.gradientColors[0]);
+				gc.fillRectangle(bounds.x, bounds.y, bounds.width, bounds.height);
 			} else {
-				Rectangle imageRect = parent.backgroundImage.getBounds();
-				gc.drawImage(parent.backgroundImage, 0, 0, imageRect.width, imageRect.height, 
-				                                   x + 2, y, width - 3, height);
+				final Color oldForeground = gc.getForeground();
+				Color lastColor = parent.gradientColors[0];
+				if (lastColor == null) lastColor = oldBackground;
+				for (int i = 0, pos = 0; i < parent.gradientPercents.length; ++i) {
+					gc.setForeground(lastColor);
+					lastColor = parent.gradientColors[i + 1];
+					if (lastColor == null) lastColor = oldBackground;
+					gc.setBackground(lastColor);
+					final int gradientWidth = (parent.gradientPercents[i] * bounds.width / 100) - pos;
+					gc.fillGradientRectangle(bounds.x + pos, bounds.y, gradientWidth, bounds.height, false);
+					pos += gradientWidth;
+				}
+				gc.setForeground(oldForeground);
 			}
+			gc.setBackground(oldBackground);
 		}
 
 		// draw tab lines

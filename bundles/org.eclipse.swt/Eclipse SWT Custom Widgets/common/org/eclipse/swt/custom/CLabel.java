@@ -53,7 +53,6 @@ public class CLabel extends Canvas {
 	private String appToolTipText;
 	
 	private Image backgroundImage;
-	private Image gradientImage;
 	private Color[] gradientColors;
 	private int[] gradientPercents;
 
@@ -192,10 +191,6 @@ private void paintBorder(GC gc, Rectangle r) {
 	}
 }
 private void onDispose(DisposeEvent event) {
-	if (gradientImage != null) {
-		gradientImage.dispose();
-	}
-	gradientImage = null;
 	gradientColors = null;
 	gradientPercents = null;
 	backgroundImage = null;
@@ -209,12 +204,12 @@ private void onPaint(PaintEvent event) {
 	
 	boolean shortenText = false;
 	String t = text;
-	Image i = image;
+	Image img = image;
 	int availableWidth = rect.width - 2*hIndent;
-	Point extent = getTotalSize(i, t);
+	Point extent = getTotalSize(img, t);
 	if (extent.x > availableWidth) {
-		i = null;
-		extent = getTotalSize(i, t);
+		img = null;
+		extent = getTotalSize(img, t);
 		if (extent.x > availableWidth) {
 			shortenText = true;
 		}
@@ -225,7 +220,7 @@ private void onPaint(PaintEvent event) {
 	// shorten the text
 	if (shortenText) {
 		t = shortenText(gc, text, availableWidth);
-		extent = getTotalSize(i, t);
+		extent = getTotalSize(img, t);
 		if (appToolTipText == null) {
 			super.setToolTipText(text);
 		}
@@ -243,28 +238,52 @@ private void onPaint(PaintEvent event) {
 	}
 	
 	// draw a background image behind the text
-	if (backgroundImage != null) {
-		Rectangle imageRect = backgroundImage.getBounds();
-		try {
+	try {
+		if (backgroundImage != null) {
+			// draw a background image behind the text
+			Rectangle imageRect = backgroundImage.getBounds();
 			gc.drawImage(backgroundImage, 0, 0, imageRect.width, imageRect.height,
-			                              0, 0, rect.width, rect.height);
-		} catch(SWTException e) {
+				0, 0, rect.width, rect.height);
+		} else if (gradientColors != null) {
+			// draw a gradient behind the text
+			final Color oldBackground = gc.getBackground();
+			if (gradientColors.length == 1) {
+				if (gradientColors[0] != null) gc.setBackground(gradientColors[0]);
+				gc.fillRectangle(0, 0, rect.width, rect.height);
+			} else {
+				final Color oldForeground = gc.getForeground();
+				Color lastColor = gradientColors[0];
+				if (lastColor == null) lastColor = oldBackground;
+				for (int i = 0, pos = 0; i < gradientPercents.length; ++i) {
+					gc.setForeground(lastColor);
+					lastColor = gradientColors[i + 1];
+					if (lastColor == null) lastColor = oldBackground;
+					gc.setBackground(lastColor);
+					final int gradientWidth = (gradientPercents[i] * rect.width / 100) - pos;
+					gc.fillGradientRectangle(pos, 0, gradientWidth, rect.height, false);
+					pos += gradientWidth;
+				}
+				gc.setForeground(oldForeground);
+			}
+			gc.setBackground(oldBackground);
+		} else {
 			gc.setBackground(getBackground());
 			gc.fillRectangle(rect);
 		}
-	} else {
+	} catch (SWTException e) {
 		gc.setBackground(getBackground());
 		gc.fillRectangle(rect);
 	}
+
 	// draw border
 	int style = getStyle();
 	if ((style & SWT.SHADOW_IN) != 0 || (style & SWT.SHADOW_OUT) != 0) {
 		paintBorder(gc, rect);
 	}
 	// draw the image		
-	if (i != null) {
-		Rectangle imageRect = i.getBounds();
-		gc.drawImage(i, 0, 0, imageRect.width, imageRect.height, 
+	if (img != null) {
+		Rectangle imageRect = img.getBounds();
+		gc.drawImage(img, 0, 0, imageRect.width, imageRect.height, 
 		                x, (rect.height-imageRect.height)/2, imageRect.width, imageRect.height);
 		x += imageRect.width + GAP;
 	}
@@ -308,113 +327,68 @@ public void setAlignment(int align) {
  *                 of the widget at which the color should change.  The size of the percents array must be one 
  *                 less than the size of the colors array.
  */
-public void setBackground(Color[] colors, int[] percents) {
+public void setBackground(Color[] colors, int[] percents) {	
 	if (colors != null) {
-		if (percents == null || percents.length != colors.length - 1) 
+		if (percents == null || percents.length != colors.length - 1) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		}
+		if (getDisplay().getDepth() < 15) {
+			// Don't use gradients on low color displays
+			colors = new Color[] { colors[0] };
+			percents = new int[] { };
+		}
 		for (int i = 0; i < percents.length; i++) {
-			if (percents[i] < 0 || percents[i] > 100)
+			if (percents[i] < 0 || percents[i] > 100) {
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-			if (i > 0 && percents[i] < percents[i-1])
+			}
+			if (i > 0 && percents[i] < percents[i-1]) {
 				SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+			}
 		}
 	}
 	
 	// Are these settings the same as before?
-	if (gradientImage == null && gradientColors == null && colors == null) {
-		if (backgroundImage != null) {
-			backgroundImage = null;
-			redraw();
-		}
-		return;
-	}
-	if (gradientColors != null && colors != null 
-	    && gradientColors.length == colors.length) {
-		boolean same = false;
-		for (int i = 0; i < gradientColors.length; i++) {
-			same = gradientColors[i].equals(colors[i]);
-			if (!same) break;
-		}
-		if (same) {
-			for (int i = 0; i < gradientPercents.length; i++) {
-				same = gradientPercents[i] == percents[i];
+	final Color background = getBackground();
+	if (backgroundImage == null) {
+		if ((gradientColors != null) && (colors != null) && 
+			(gradientColors.length == colors.length)) {
+			boolean same = false;
+			for (int i = 0; i < gradientColors.length; i++) {
+				same = (gradientColors[i] == colors[i]) ||
+					((gradientColors[i] == null) && (colors[i] == background)) ||
+					((gradientColors[i] == background) && (colors[i] == null));
 				if (!same) break;
 			}
-		}
-		if (same) return;
-	}
-	
-	// Cleanup
-	if (gradientImage != null) {
-		gradientImage.dispose();
-	}
-	gradientImage = null;
-	gradientColors = null;
-	gradientPercents = null;
-	backgroundImage = null;
-	
-	// Draw gradient onto an image
-	if (colors != null) {
-		Color[] colorsCopy = null;
-		Display display = getDisplay();
-		if (display.getDepth() < 15) {
-			colorsCopy = new Color[]{colors[0]};
-		} else {
-			colorsCopy = colors;
-		}
-		
-		int x = 0; int y = 0;
-		int width = 100; int height = 10;
-		Image temp = new Image(display, width, height);
-		GC gc = new GC(temp);
-		if (colorsCopy.length == 1) {
-			gc.setBackground(colorsCopy[0]);
-			gc.fillRectangle(temp.getBounds());
-		}
-		int start = 0;
-		int end = 0;
-		for (int j = 0; j < colorsCopy.length - 1; j++) {
-			Color startColor = colorsCopy[j];
-			if (startColor == null) startColor = getBackground();
-			RGB rgb1 = startColor.getRGB();
-			Color endColor = colorsCopy[j+1];
-			if (endColor == null) endColor = getBackground();
-			RGB rgb2   = endColor.getRGB();
-			start = end;
-			end = (width) * percents[j] / 100;
-			int range = Math.max(1, end - start);
-			for (int k = 0; k < (end - start); k++) {
-				int r = rgb1.red + k*(rgb2.red - rgb1.red)/range;
-				r = (rgb2.red > rgb1.red) ? Math.min(r, rgb2.red) : Math.max(r, rgb2.red);
-				int g = rgb1.green + k*(rgb2.green - rgb1.green)/range;
-				g = (rgb2.green > rgb1.green) ? Math.min(g, rgb2.green) : Math.max(g, rgb2.green);
-				int b = rgb1.blue + k*(rgb2.blue - rgb1.blue)/range;
-				b = (rgb2.blue > rgb1.blue) ? Math.min(b, rgb2.blue) : Math.max(b, rgb2.blue);
-				Color color = new Color(display, r, g, b); 
-				gc.setBackground(color);					
-				gc.fillRectangle(start + k,y,1,height);
-				gc.setBackground(getBackground());
-				color.dispose();
+			if (same) {
+				for (int i = 0; i < gradientPercents.length; i++) {
+					same = gradientPercents[i] == percents[i];
+					if (!same) break;
+				}
 			}
+			if (same) return;
 		}
-		gc.dispose();
-		gradientImage = temp;
-		gradientColors = colorsCopy;
-		gradientPercents = percents;
-		backgroundImage = temp;
+	} else {
+		backgroundImage = null;
 	}
-	
+	// Store the new settings
+	if (colors == null) {
+		gradientColors = null;
+		gradientPercents = null;
+	} else {
+		gradientColors = new Color[colors.length];
+		for (int i = 0; i < colors.length; ++i)
+			gradientColors[i] = (colors[i] != null) ? colors[i] : background;
+		gradientPercents = new int[percents.length];
+		for (int i = 0; i < percents.length; ++i)
+			gradientPercents[i] = percents[i];
+	}
+	// Refresh with the new settings
 	redraw();
 }
 public void setBackground(Image image) {
-	if (image == backgroundImage) return;
-	
-	if (gradientImage != null) {
-		gradientImage.dispose();
-		gradientImage = null;
-		gradientColors = null;
-		gradientPercents = null;
-	}
+	if (image == backgroundImage) return;	
+	gradientColors = null;
+	gradientPercents = null;
 	backgroundImage = image;
 	redraw();
 	
