@@ -2356,7 +2356,12 @@ int numpadKey (int key) {
  * and mouse events. The intent is to enable automated UI
  * testing by simulating the input from the user.  Most
  * SWT applications should never need to call this method.
- * 
+ * <p>
+ * Note that this operation can fail when the operating system
+ * fails to generate the event for any reason.  For example,
+ * this can happen when there is no such key or mouse button
+ * or when the system event queue is full.
+ * </p>
  * <p>
  * <b>Event Types:</b>
  * <p>KeyDown, KeyUp
