@@ -1302,6 +1302,7 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ event) {
 	*/
 	if (!OS.GTK_WIDGET_HAS_FOCUS (handle)) {
 		OS.gtk_widget_grab_focus (handle);
+		// widget may be disposed at this point
 		if (isDisposed ()) return 0;
 	}
 	int border = getBorderWidth ();
