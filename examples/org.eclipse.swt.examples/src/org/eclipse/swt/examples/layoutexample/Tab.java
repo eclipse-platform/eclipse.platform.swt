@@ -232,6 +232,7 @@ abstract class Tab {
 		code.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent e) {
 				final Shell shell = new Shell ();	
+				shell.setText (LayoutExample.getResourceString ("Generated_Code"));
 				shell.setLayout (new FillLayout ());
 				final StyledText text = new StyledText (shell, SWT.BORDER | SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 				String layoutCode = generateCode ().toString ();
