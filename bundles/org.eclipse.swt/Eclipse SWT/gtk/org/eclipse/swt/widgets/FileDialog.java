@@ -181,7 +181,10 @@ int okFunc (int widget, int callData) {
 public String open () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
 	int handle = OS.gtk_file_selection_new (titleBytes);
-	
+	if (parent!=null) {
+		OS.gtk_window_set_modal(handle, true);
+		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	}	
 	/* Calculate the fully-specified file name and convert to bytes */
 	StringBuffer stringBuffer = new StringBuffer ();
 	char separator = System.getProperty ("file.separator").charAt (0);

@@ -121,7 +121,10 @@ public RGB open () {
 	byte [] titleBytes;
 	titleBytes = Converter.wcsToMbcs (null, title, true);
 	handle = OS.gtk_color_selection_dialog_new (titleBytes);
-	OS.gtk_widget_hide (OS.GTK_COLOR_SELECTION_OK_BUTTON(handle));
+	if (parent!=null) {
+		OS.gtk_window_set_modal(handle, true);
+		OS.gtk_window_set_transient_for(handle, parent.topHandle());
+	}	OS.gtk_widget_hide (OS.GTK_COLOR_SELECTION_OK_BUTTON(handle));
 	if (rgb != null) {
 		double [] color = new double [4];
 		color [0] = (double)rgb.red / 256;
