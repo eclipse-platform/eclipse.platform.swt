@@ -862,10 +862,24 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	if (result != null) return result;
 	int hittest = lParam & 0xFFFF;
 	if (hittest == OS.HTMENU) return null;
+	/*
+	* Get the current location of the cursor,
+	* not the location of the cursor when the
+	* WM_MOUSEACTIVATE was generated.  This is
+	* strictly incorrect but is necessary in
+	* order to support Activate and Deactivate
+	* events for embedded widgets that have
+	* their own event loop.  In that case, the
+	* cursor location reported by GetMessagePos
+	* is the one for our event loop, not the
+	* embedded widget's event loop.
+	*/
 	POINT pt = new POINT ();
-	int pos = OS.GetMessagePos ();
-	pt.x = (short) (pos & 0xFFFF);
-	pt.y = (short) (pos >> 16);
+	if (!OS.GetCursorPos (pt)) {
+		int pos = OS.GetMessagePos ();
+		pt.x = (short) (pos & 0xFFFF);
+		pt.y = (short) (pos >> 16);
+	}
 	int hwnd = OS.WindowFromPoint (pt);
 	if (hwnd == 0) return null;
 	Control control = display.findControl (hwnd);

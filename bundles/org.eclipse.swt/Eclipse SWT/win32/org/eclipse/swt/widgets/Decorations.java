@@ -929,6 +929,9 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		* Windows message by returning zero as the result of
 		* the window proc.
 		*/
+		Shell shell = getShell ();
+		shell.setActiveControl (null);
+		if (isDisposed ()) return LRESULT.ZERO;
 		sendEvent (SWT.Deactivate);
 		if (isDisposed ()) return LRESULT.ZERO;
 		saveFocus ();
