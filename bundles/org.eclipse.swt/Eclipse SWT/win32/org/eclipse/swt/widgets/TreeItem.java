@@ -349,12 +349,12 @@ RECT getBounds (int index, boolean getText, boolean getImage, boolean full) {
 			if (images != null && images [index] != null) {
 				Point size = parent.getImageSize ();
 				if (getImage) {
-					rect.right = rect.left + size.x;
+					rect.right = Math.min (rect.left + size.x, rect.right);
 				} else {
 					rect.left = Math.min (rect.left + size.x, rect.right);
 				}
 			} else {
-				rect.right = rect.left;
+				if (getImage) rect.right = rect.left;
 			}
 		}
 	}		
