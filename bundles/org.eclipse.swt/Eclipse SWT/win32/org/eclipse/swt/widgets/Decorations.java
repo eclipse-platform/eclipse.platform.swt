@@ -1220,14 +1220,27 @@ int windowProc (int msg, int wParam, int lParam) {
 LRESULT WM_ACTIVATE (int wParam, int lParam) {
 	LRESULT result = super.WM_ACTIVATE (wParam, lParam);
 	if (result != null) return result;
-	/*
-	* When the high word of lParam is non-zero, the activation
-	* state of the window is being changed while the widnow is
-	* minimized. If this is the case, do not report activation
-	* events or save and restore the focus.
-	*/
-	if ((wParam >> 16) != 0) return result;
-	if ((wParam & 0xFFFF) == 0) {
+	if ((wParam & 0xFFFF) != 0) {
+		/*
+		* When the high word of wParam is non-zero, the activation
+		* state of the window is being changed while the window is
+		* minimized. If this is the case, do not report activation
+		* events or restore the focus.
+		*/
+		if ((wParam >> 16) != 0) return result;
+		/*
+		* It is possible (but unlikely), that application
+		* code could have disposed the widget in the activate
+		* event.  If this happens, end the processing of the
+		* Windows message by returning zero as the result of
+		* the window proc.
+		*/
+		sendEvent (SWT.Activate);
+		if (isDisposed ()) return LRESULT.ZERO;
+		if (restoreFocus ()) return LRESULT.ZERO;	
+		if (traverseGroup (true)) return LRESULT.ZERO;
+	
+	} else {
 		/*
 		* It is possible (but unlikely), that application
 		* code could have disposed the widget in the deactivate
@@ -1241,18 +1254,6 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 		sendEvent (SWT.Deactivate);
 		if (isDisposed ()) return LRESULT.ZERO;
 		saveFocus ();
-	} else {
-		/*
-		* It is possible (but unlikely), that application
-		* code could have disposed the widget in the activate
-		* event.  If this happens, end the processing of the
-		* Windows message by returning zero as the result of
-		* the window proc.
-		*/
-		sendEvent (SWT.Activate);
-		if (isDisposed ()) return LRESULT.ZERO;
-		if (restoreFocus ()) return LRESULT.ZERO;	
-		if (traverseGroup (true)) return LRESULT.ZERO;
 	}
 	return result;
 }
