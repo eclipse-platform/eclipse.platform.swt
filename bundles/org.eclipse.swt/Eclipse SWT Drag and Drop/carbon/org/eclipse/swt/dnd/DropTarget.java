@@ -81,6 +81,13 @@ public class DropTarget extends Widget {
  * @param style the bitwise OR'ing of allowed operations; this may be a combination of any of 
  *		   DND.DROP_NONE, DND.DROP_COPY, DND.DROP_MOVE, DND.DROP_LINK
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_INIT_DROP - unable to initiate drop target</li>
+ * </ul>
+ * 
  * @see DropTarget#dispose
  * @see DropTarget#checkSubclass
  * @see DND#DROP_NONE
@@ -231,6 +238,7 @@ public void removeDropListener(DropTargetListener listener) {
  *
  * @param transferAgents a list of Transfer objects which define the types of data that can be
  *						 dropped on this target
+ * 
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if transferAgents is null</li>
  * </ul>

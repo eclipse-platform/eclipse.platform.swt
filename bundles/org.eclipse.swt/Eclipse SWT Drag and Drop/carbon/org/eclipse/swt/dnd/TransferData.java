@@ -39,7 +39,7 @@ public class TransferData {
 	 * into a platform specific value.
 	 * (Warning: This field is platform dependent)
 	 * 
- 	 * <p>The value of result is  if the conversion was successfully.  The value of 
+ 	 * <p>The value of result is 0 if the conversion was successfully.  The value of 
 	 * result is an error code if the conversion failed.</p>
 	 */
 	public int result;

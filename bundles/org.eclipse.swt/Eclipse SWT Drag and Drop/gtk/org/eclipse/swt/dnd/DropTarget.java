@@ -546,7 +546,7 @@ private int osOpToOp(int osOperation){
 	return operation;
 }
 
-/**	 
+/**
  * Removes the listener from the collection of listeners who will
  * be notified when a drag and drop operation is in progress.
  *

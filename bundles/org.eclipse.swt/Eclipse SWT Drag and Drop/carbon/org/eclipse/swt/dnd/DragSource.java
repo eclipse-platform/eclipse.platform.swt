@@ -107,6 +107,8 @@ public class DragSource extends Widget {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
  *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * @exception SWTError <ul>
+ *    <li>ERROR_CANNOT_INIT_DRAG - unable to initiate drag source</li>
  * </ul>
  *
  * @see DragSource#dispose
