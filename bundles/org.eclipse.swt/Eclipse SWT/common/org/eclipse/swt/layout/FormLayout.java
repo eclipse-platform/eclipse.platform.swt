@@ -206,6 +206,13 @@ Point computeSize (Control control, boolean flushCache) {
 	return control.computeSize (data.width, data.height, flushCache);
 }
 
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+
 /**
  * Computes the preferred height of the form with
  * respect to the preferred height of the control.
@@ -274,12 +281,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	}
 	return move ? null : new Point (width, height);
 }
-String getName () {
-	String string = getClass ().getName ();
-	int index = string.lastIndexOf ('.');
-	if (index == -1) return string;
-	return string.substring (index + 1, string.length ());
-}
+
 public String toString () {
  	String string =  getName ()+" {";
  	if (marginWidth != 0) string += "marginWidth="+marginWidth+" ";

@@ -206,6 +206,13 @@ Point computeSize (Control control, boolean flushCache) {
 	return control.computeSize (wHint, hHint, flushCache);
 }
 
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle clientArea = composite.getClientArea ();
 	if (type == SWT.HORIZONTAL) {
@@ -408,12 +415,7 @@ Point layoutVertical (Composite composite, boolean move, boolean wrap, int heigh
 	}
 	return new Point (x + maxWidth + marginRight + marginWidth, maxY);
 }
-String getName () {
-	String string = getClass ().getName ();
-	int index = string.lastIndexOf ('.');
-	if (index == -1) return string;
-	return string.substring (index + 1, string.length ());
-}
+
 public String toString () {
  	String string = getName ()+" {";
  	string += "type="+((type != SWT.HORIZONTAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL")+" ";

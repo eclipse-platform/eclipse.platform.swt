@@ -126,6 +126,13 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	return new Point (width, height);
 }
 
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle rect = composite.getClientArea ();
 	Control [] children = composite.getChildren ();
@@ -165,12 +172,7 @@ protected void layout (Composite composite, boolean flushCache) {
 		}
 	}
 }
-String getName () {
-	String string = getClass ().getName ();
-	int index = string.lastIndexOf ('.');
-	if (index == -1) return string;
-	return string.substring (index + 1, string.length ());
-}
+
 public String toString () {
  	String string = getName ()+" {";
  	string += "type="+((type == SWT.VERTICAL) ? "SWT.VERTICAL" : "SWT.HORIZONTAL")+" ";

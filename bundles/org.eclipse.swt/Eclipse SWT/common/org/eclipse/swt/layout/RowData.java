@@ -54,12 +54,14 @@ public RowData (int width, int height) {
 public RowData (Point point) {
 	this (point.x, point.y);
 }
+
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');
 	if (index == -1) return string;
 	return string.substring (index + 1, string.length ());
 }
+
 public String toString () {
 	String string = getName ()+" {";
 	if (width != SWT.DEFAULT) string += "width="+width+" ";

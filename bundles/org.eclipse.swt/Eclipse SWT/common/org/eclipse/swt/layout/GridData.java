@@ -381,17 +381,17 @@ public GridData (int width, int height) {
 	this.widthHint = width;
 	this.heightHint = height;
 }
-boolean isItemData() {
-	return isItemData;
-}
-boolean isSpacerData() {
-	return !isItemData;
-}
 String getName () {
 	String string = getClass ().getName ();
 	int index = string.lastIndexOf ('.');
 	if (index == -1) return string;
 	return string.substring (index + 1, string.length ());
+}
+boolean isItemData() {
+	return isItemData;
+}
+boolean isSpacerData() {
+	return !isItemData;
 }
 public String toString () {
 	String hAlign = "";

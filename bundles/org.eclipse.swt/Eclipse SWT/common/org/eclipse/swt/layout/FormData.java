@@ -152,6 +152,13 @@ FormAttachment getLeftAttachment (int spacing) {
 	return cacheLeft;
 }	
 
+String getName () {
+	String string = getClass ().getName ();
+	int index = string.lastIndexOf ('.');
+	if (index == -1) return string;
+	return string.substring (index + 1, string.length ());
+}
+
 FormAttachment getRightAttachment (int spacing) {
 	if (cacheRight != null) return cacheRight;
 	if (isVisited) return cacheRight = new FormAttachment (0, cacheWidth);
@@ -221,12 +228,7 @@ FormAttachment getTopAttachment (int spacing) {
 	isVisited = false;
 	return cacheTop;
 }
-String getName () {
-	String string = getClass ().getName ();
-	int index = string.lastIndexOf ('.');
-	if (index == -1) return string;
-	return string.substring (index + 1, string.length ());
-}
+
 public String toString () {
  	String string = getName()+" {";
 	if (height != SWT.DEFAULT) string += "height="+height+" ";
