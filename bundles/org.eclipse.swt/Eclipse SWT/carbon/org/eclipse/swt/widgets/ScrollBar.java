@@ -101,7 +101,7 @@ void createHandle () {
 	int actionProc = display.actionProc;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.scrolledHandle);
-	OS.CreateScrollBarControl (window, null, 0, 0, 100, 10, true, actionProc, outControl);
+	OS.CreateScrollBarControl (window, null, 0, 0, 90, 10, true, actionProc, outControl);
 	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	handle = outControl [0];
 }
@@ -134,7 +134,9 @@ public int getIncrement () {
 
 public int getMaximum () {
 	checkWidget();
-    return OS.GetControl32BitMaximum (handle);
+	int maximum = OS.GetControl32BitMaximum (handle);
+	int viewSize = OS.GetControlViewSize (handle);
+    return maximum + viewSize;
 }
 
 public int getMinimum () {
@@ -271,7 +273,7 @@ public void setMaximum (int value) {
 	int minimum = OS.GetControl32BitMinimum (handle);
 	int viewSize = OS.GetControlViewSize (handle);
 	if (value - minimum - viewSize < 0) return;
-	OS.SetControl32BitMaximum (handle, value);
+	OS.SetControl32BitMaximum (handle, value - viewSize);
 }
 
 public void setMinimum (int value) {
@@ -311,7 +313,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
 	OS.SetControl32BitMinimum (handle, minimum);
-	OS.SetControl32BitMaximum (handle, maximum);
+	OS.SetControl32BitMaximum (handle, maximum - thumb);
 	OS.SetControlViewSize (handle, thumb);
 	OS.SetControl32BitValue (handle, selection);
 	increment = increment;
