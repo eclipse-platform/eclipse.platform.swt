@@ -8,7 +8,7 @@ package org.eclipse.swt.custom;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-
+import org.eclipse.swt.events.*;
 /**
 *
 * A TableTreeEditor is a manager for a Control that appears above a cell in a TableTree
@@ -77,6 +77,7 @@ public class TableTreeEditor extends ControlEditor {
 	TableTreeItem item;
 	int column = -1;
 	Listener columnListener;
+	TreeAdapter treeListener;
 /**
 * Creates a TableEditor for the specified Table.
 *
@@ -86,6 +87,29 @@ public class TableTreeEditor extends ControlEditor {
 public TableTreeEditor (TableTree tableTree) {
 	super(tableTree.getTable());
 	this.tableTree = tableTree;
+
+	treeListener = new TreeAdapter () {
+		final Runnable runnable = new Runnable() {
+			public void run() {
+				if (TableTreeEditor.this.tableTree.isDisposed() || editor == null) return;
+				resize();
+				editor.setVisible(true);
+			}
+		};
+		public void treeCollapsed(TreeEvent e) {
+			if (editor == null) return;
+			editor.setVisible(false);
+			Display display = TableTreeEditor.this.tableTree.getDisplay();
+			display.asyncExec(runnable);
+		}
+		public void treeExpanded(TreeEvent e) {
+			if (editor == null) return;
+			editor.setVisible(false);
+			Display display = TableTreeEditor.this.tableTree.getDisplay();
+			display.asyncExec(runnable);
+		}
+	};
+	tableTree.addTreeListener(treeListener);
 	
 	columnListener = new Listener() {
 		public void handleEvent(Event e) {
@@ -95,8 +119,7 @@ public TableTreeEditor (TableTree tableTree) {
 
 }
 Rectangle computeBounds () {
-	if (item == null || column == -1 || item.isDisposed()) return new Rectangle(0, 0, 0, 0);
-	
+	if (item == null || column == -1 || item.isDisposed() || item.tableItem == null) return new Rectangle(0, 0, 0, 0);
 	Rectangle cell = item.getBounds(column);
 	Rectangle editorRect = new Rectangle(cell.x, cell.y, minimumWidth, cell.height);
 	Rectangle area = tableTree.getClientArea();
@@ -125,7 +148,10 @@ Rectangle computeBounds () {
  * Table and the editor Control are <b>not</b> disposed.
  */
 public void dispose () {
-	
+
+	if (treeListener != null) 
+		tableTree.removeTreeListener(treeListener);
+	treeListener = null;	
 	Table table = tableTree.getTable();
 	if (this.column > -1 && this.column < table.getColumnCount()){
 		TableColumn tableColumn = table.getColumn(this.column);
