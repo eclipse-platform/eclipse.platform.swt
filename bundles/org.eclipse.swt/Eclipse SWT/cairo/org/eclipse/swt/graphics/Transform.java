@@ -14,7 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 
-public class Transform {
+public class Transform extends Resource {
 	/**
 	 * the handle to the OS transform resource
 	 * (Warning: This field is platform dependent)

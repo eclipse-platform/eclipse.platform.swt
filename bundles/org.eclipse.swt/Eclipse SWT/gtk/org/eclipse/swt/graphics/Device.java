@@ -21,7 +21,7 @@ import org.eclipse.swt.internal.gtk.*;
  * can have a graphics context (GC) created for them, and they
  * can be drawn on by sending messages to the associated GC.
  */
-public abstract class Device implements Drawable {
+public abstract class Device extends Resource implements Drawable {
 	/**
 	 * the handle to the X Display
 	 */

@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
-public class Path {
+public class Path extends Resource {
 	
 	/**
 	 * the handle to the OS path resource

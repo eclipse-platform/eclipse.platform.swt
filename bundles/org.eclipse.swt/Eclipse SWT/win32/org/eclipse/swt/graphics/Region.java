@@ -25,7 +25,7 @@ import org.eclipse.swt.*;
  * </p>
  */
 
-public final class Region {
+public final class Region extends Resource {
 	
 	/**
 	 * the OS resource for the region

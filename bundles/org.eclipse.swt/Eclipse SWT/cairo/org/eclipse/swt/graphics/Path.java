@@ -14,7 +14,7 @@ import org.eclipse.swt.*;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.cairo.*;
 
-public class Path {
+public class Path extends Resource {
 	
 	/**
 	 * the handle to the OS path resource

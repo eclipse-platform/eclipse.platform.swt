@@ -63,7 +63,7 @@ import java.io.*;
  * @see ImageData
  * @see ImageLoader
  */
-public final class Image implements Drawable {
+public final class Image extends Resource implements Drawable {
 	/**
 	 * specifies whether the receiver is a bitmap or an icon
 	 * (one of <code>SWT.BITMAP</code>, <code>SWT.ICON</code>)

@@ -45,7 +45,7 @@ import org.eclipse.swt.*;
  *
  * @see org.eclipse.swt.events.PaintEvent
  */
-public final class GC {
+public final class GC extends Resource {
 	/**
 	 * the handle to the OS device context
 	 * (Warning: This field is platform dependent)

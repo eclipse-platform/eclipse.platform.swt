@@ -27,7 +27,7 @@ import org.eclipse.swt.*;
  * @see RGB
  * @see Device#getSystemColor
  */
-public final class Color {
+public final class Color extends Resource {
 
 	/**
 	 * the handle to the OS color resource 

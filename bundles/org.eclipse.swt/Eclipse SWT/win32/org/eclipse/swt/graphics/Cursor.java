@@ -39,7 +39,7 @@ import org.eclipse.swt.*;
  * </p>
  */
 
-public final class Cursor {
+public final class Cursor extends Resource {
 	
 	/**
 	 * the handle to the OS cursor resource

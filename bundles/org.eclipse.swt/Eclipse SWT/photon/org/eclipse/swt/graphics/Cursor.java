@@ -38,7 +38,7 @@ import org.eclipse.swt.*;
  * Note: Only one of the above styles may be specified.
  * </p>
  */
-public final class Cursor {
+public final class Cursor extends Resource {
 
 	/**
 	 * the type to the OS cursor resource

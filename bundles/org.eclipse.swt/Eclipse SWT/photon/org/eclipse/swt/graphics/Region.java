@@ -24,7 +24,7 @@ import org.eclipse.swt.*;
  * when those instances are no longer required.
  * </p>
  */
-public final class Region {
+public final class Region extends Resource {
 
 	/**
 	 * the OS resource for the region

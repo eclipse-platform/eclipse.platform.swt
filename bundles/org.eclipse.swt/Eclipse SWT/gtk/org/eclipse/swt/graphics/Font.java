@@ -28,7 +28,7 @@ import org.eclipse.swt.internal.gtk.*;
  *
  * @see FontData
  */
-public final class Font {
+public final class Font extends Resource {
 	/**
 	 * the handle to the OS font resource
 	 * (Warning: This field is platform dependent)

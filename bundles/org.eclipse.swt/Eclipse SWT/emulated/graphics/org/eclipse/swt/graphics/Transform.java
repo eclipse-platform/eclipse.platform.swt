@@ -15,7 +15,7 @@ import org.eclipse.swt.*;
 /**
  * WARNING API STILL UNDER CONSTRUCTION AND SUBJECT TO CHANGE
  */
-public class Transform {
+public class Transform extends Resource {
 	/**
 	 * the handle to the OS path resource
 	 * (Warning: This field is platform dependent)
