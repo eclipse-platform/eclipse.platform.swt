@@ -13,11 +13,11 @@ import org.eclipse.swt.events.*;
 /**
  * Instances of this class represent the "windows"
  * which the desktop or "window manager" is managing.
- * Instances which do not have a parent (that is, they
- * are built using the constructor which takes a 
+ * Instances that do not have a parent (that is, they
+ * are built using the constructor, which takes a 
  * <code>Display</code> as the argument) are described
- * as <em>top level</em> shells. Instances which do have
- * a parent, are described as <em>secondary</em> or
+ * as <em>top level</em> shells. Instances that do have
+ * a parent are described as <em>secondary</em> or
  * <em>dialog</em> shells.
  * <p>
  * Instances are always displayed in one of the maximized, 
@@ -46,16 +46,22 @@ import org.eclipse.swt.events.*;
  * </li>
  * </ul>
  * </p>
+ * <p>
  * Note: The styles supported by this class must be treated
  * as <em>HINT</em>s, since the window manager for the
  * desktop on which the instance is visible has ultimate
- * control over the appearance and behavior of decorations.
- * For example, some window managers only support resizable
- * windows and will always assume the RESIZE style, even if
- * it is not set.
+ * control over the appearance and behavior of decorations
+ * and modality. For example, some window managers only
+ * support resizable windows and will always assume the
+ * RESIZE style, even if it is not set. In addition, if a
+ * modality style is not supported, it is "upgraded" to a
+ * more restrictive modality style that is supported. For
+ * example, if <code>PRIMARY_MODAL</code> is not supported,
+ * it would be upgraded to <code>APPLICATION_MODAL</code>.
  * <dl>
  * <dt><b>Styles:</b></dt>
  * <dd>BORDER, CLOSE, MIN, MAX, NO_TRIM, RESIZE, TITLE</dd>
+ * <dd>APPLICATION_MODAL, MODELESS, PRIMARY_MODAL, SYSTEM_MODAL</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Activate, Close, Deactivate, Deiconify, Iconify</dd>
  * </dl>
@@ -75,6 +81,7 @@ import org.eclipse.swt.events.*;
  * is, <code>TITLE | CLOSE | BORDER</code>)
  * </dd>
  * </dl>
+ * </p>
  * <p>
  * IMPORTANT: This class is not intended to be subclassed.
  * </p>
@@ -82,7 +89,6 @@ import org.eclipse.swt.events.*;
  * @see Decorations
  * @see SWT
  */
-
 public class Shell extends Decorations {
 	Display display;
 	Menu activeMenu;

@@ -97,6 +97,7 @@ public ColorDialog(Shell parent) {
  */
 public ColorDialog(Shell parent, int style) {
 	super(parent, style | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
+	checkSubclass ();
 }
 
 void createChildren() {

@@ -78,6 +78,7 @@ public FontDialog (Shell parent) {
  */
 public FontDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 int cancelFunc (int widget, int callData) {
 	OS.gtk_widget_destroy (callData);

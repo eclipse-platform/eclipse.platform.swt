@@ -78,6 +78,7 @@ public FontDialog (Shell parent) {
  */
 public FontDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 /**
  * Returns a FontData object describing the font that was

@@ -26,7 +26,6 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class ColorDialog extends Dialog {
-	
 	RGB rgb;
 	
 /**
@@ -80,6 +79,7 @@ public ColorDialog (Shell parent) {
  */
 public ColorDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 
 int CCHookProc (int hdlg, int uiMsg, int lParam, int lpData) {

@@ -87,6 +87,7 @@ public FileDialog (Shell parent) {
  */
 public FileDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 int cancelFunc (int widget, int callData) {
 	cancel = true;

@@ -79,6 +79,7 @@ public DirectoryDialog (Shell parent) {
  */
 public DirectoryDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 
 /**

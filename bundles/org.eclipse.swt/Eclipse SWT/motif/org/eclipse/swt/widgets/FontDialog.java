@@ -108,6 +108,7 @@ public FontDialog(Shell parent) {
  */
 public FontDialog(Shell parent, int style) {
 	super(parent, style | SWT.TITLE | SWT.BORDER | SWT.APPLICATION_MODAL);
+	checkSubclass ();
 }
 
 /**

@@ -91,6 +91,7 @@ public FileDialog (Shell parent) {
  */
 public FileDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 
 int cancelPressed (int widget, int client, int call) {

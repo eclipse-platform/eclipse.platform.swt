@@ -89,6 +89,7 @@ public MessageBox (Shell parent) {
  */
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (style));
+	checkSubclass ();
 }
 int activate (int widget, int client, int call) {
 	OS.XtUnmanageChild (widget);

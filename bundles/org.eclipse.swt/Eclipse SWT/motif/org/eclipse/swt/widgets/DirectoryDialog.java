@@ -79,6 +79,7 @@ public DirectoryDialog (Shell parent) {
  */
 public DirectoryDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 int activate (int widget, int client, int call) {
 	cancel = client == OS.XmDIALOG_CANCEL_BUTTON;

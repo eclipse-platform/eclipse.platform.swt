@@ -86,6 +86,7 @@ public MessageBox (Shell parent) {
  */
 public MessageBox (Shell parent, int style) {
 	super (parent, checkStyle (style));
+	checkSubclass ();
 }
 static int checkStyle (int style) {
 	if ((style & (SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL)) == 0) style |= SWT.APPLICATION_MODAL;

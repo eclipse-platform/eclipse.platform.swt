@@ -78,6 +78,7 @@ public ColorDialog (Shell parent) {
  */
 public ColorDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 
 /**

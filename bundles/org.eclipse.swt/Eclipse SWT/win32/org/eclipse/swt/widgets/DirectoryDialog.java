@@ -81,6 +81,7 @@ public DirectoryDialog (Shell parent) {
  */
 public DirectoryDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 
 int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {

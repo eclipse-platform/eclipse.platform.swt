@@ -76,6 +76,7 @@ public PrintDialog (Shell parent) {
  */
 public PrintDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 
 /**

@@ -15,14 +15,43 @@ import org.eclipse.swt.widgets.*;
  * that are not accessible. A <code>Dialog</code> is not
  * a <code>Widget</code>.
  * <p>
+ * This class can also be used as the abstract superclass
+ * for user-designed dialogs. Such dialogs usually consist
+ * of a Shell with child widgets. The basic template for a
+ * user-defined dialog typically looks something like this:
+ * <code>
+ * public class MyDialog extends Dialog {
+ *	Object result;
+ *		
+ *	public MyDialog (Shell parent, int style) {
+ *		super (parent, style);
+ *	}
+ *	public MyDialog (Shell parent) {
+ *		this (parent, 0); // your default style bits go here (not the Shell's style bits)
+ *	}
+ *	public Object open () {
+ *		Shell parent = getParent();
+ *		Shell shell = new Shell(parent, SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL);
+ *		shell.setText(getText());
+ *		// Your code goes here (widget creation, set result, etc).
+ *		shell.open();
+ *		Display display = parent.getDisplay();
+ *		while (!shell.isDisposed()) {
+ *			if (!display.readAndDispatch()) display.sleep();
+ *		}
+ *		return result;
+ *	}
+ * }
+ * </code>
+ * <p>
  * Note: The <em>modality</em> styles supported by this class
  * must be treated as <em>HINT</em>s, because not all are
- * supported by every subclass. If a modality style is
- * not supported, it is "upgraded" to a more restrictive modality
+ * supported by every subclass on every platform. If a modality style
+ * is not supported, it is "upgraded" to a more restrictive modality
  * style that is supported.  For example, if <code>PRIMARY_MODAL</code>
  * is not supported by a particular dialog, it would be upgraded to 
  * <code>APPLICATION_MODAL</code>. In addition, as is the case
- * for shells,  the window manager for the desktop on which the
+ * for shells, the window manager for the desktop on which the
  * instance is visible has ultimate control over the appearance
  * and behavior of the instance, including its modality.
  * <dl>
@@ -36,7 +65,6 @@ import org.eclipse.swt.widgets.*;
  */
 
 public abstract class Dialog {
-
 	int style;
 	Shell parent;
 	String title;
@@ -60,7 +88,6 @@ public abstract class Dialog {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
 public Dialog (Shell parent) {
@@ -94,11 +121,9 @@ public Dialog (Shell parent) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
- *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
  * </ul>
  */
 public Dialog (Shell parent, int style) {
-	checkSubclass ();
 	checkParent (parent);
 	this.parent = parent;
 	this.style = style;

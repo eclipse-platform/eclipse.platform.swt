@@ -74,6 +74,7 @@ public PrintDialog (Shell parent) {
  */
 public PrintDialog (Shell parent, int style) {
 	super (parent, style);
+	checkSubclass ();
 }
 /**
  * Makes the receiver visible and brings it to the front
