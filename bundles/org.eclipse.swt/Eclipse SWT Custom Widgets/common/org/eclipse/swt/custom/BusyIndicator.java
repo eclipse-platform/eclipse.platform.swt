@@ -22,15 +22,23 @@ public class BusyIndicator {
  * Runs the given <code>Runnable</code> while providing
  * busy feedback using this busy indicator.
  * 
- * @param the display on which the busy feedback should be
+ * @param display the display on which the busy feedback should be
  *        displayed.  If the display is null, the Display for the current
  *        thread will be used.  If there is no Display for the current thread,
  *        the runnable code will be executed and no busy feedback will be displayed.
- * @param the runnable for which busy feedback is to be shown
+ * @param runnable the runnable for which busy feedback is to be shown.
+ *        Must not be null.
+ * 
+* @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the runnable is null</li>
+ * </ul>
+ * 
  * @see #showWhile
  */
 
 public static void showWhile(Display display, Runnable runnable) {
+	if (runnable == null)
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (display == null) {
 		display = Display.getCurrent();
 		if (display == null) {
