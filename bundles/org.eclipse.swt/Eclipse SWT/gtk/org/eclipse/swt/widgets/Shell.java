@@ -307,6 +307,7 @@ public Shell (Shell parent, int style) {
 
 static int checkStyle (int style) {
 	style = Decorations.checkStyle (style);
+	if ((style & SWT.ON_TOP) != 0) style &= ~SWT.SHELL_TRIM;
 	int mask = SWT.SYSTEM_MODAL | SWT.APPLICATION_MODAL | SWT.PRIMARY_MODAL;
 	int bits = style & ~mask;
 	if ((style & SWT.SYSTEM_MODAL) != 0) return bits | SWT.SYSTEM_MODAL;
