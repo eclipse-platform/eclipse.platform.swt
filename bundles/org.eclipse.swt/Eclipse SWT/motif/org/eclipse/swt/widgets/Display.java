@@ -148,6 +148,10 @@ public class Display extends Device {
 	Callback timerCallback;
 	int timerProc;
 	
+	/* Widget Timers */
+	Callback windowTimerCallback;
+	int windowTimerProc;
+	
 	/* Key Mappings. */
 	static int [] [] KeyTable = {
 		
@@ -1174,6 +1178,9 @@ void initializeDisplay () {
 	windowCallback = new Callback (this, "windowProc", 4);
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	windowTimerCallback = new Callback (this, "windowTimerProc", 2);
+	windowTimerProc = windowTimerCallback.getAddress ();
+	if (windowTimerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	timerCallback = new Callback (this, "timerProc", 2);
 	timerProc = timerCallback.getAddress ();
 	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1578,6 +1585,11 @@ void releaseDisplay () {
 	timerProc = 0;
 	timerCallback.dispose ();
 	timerCallback = null;
+	
+	/* Dispose the window timer callback */
+	windowTimerProc = 0;
+	windowTimerCallback.dispose ();
+	windowTimerCallback = null;
 	
 	/* Dispose the mouse hover callback */
 	if (mouseHoverID != 0) OS.XtRemoveTimeOut (mouseHoverID);
@@ -2120,6 +2132,11 @@ int wakeProc (int closure, int source, int id) {
 	/* Read a single byte from the wake up pipe */
 	while (OS.read (read_fd, wake_buffer, 1) != 1);
 	return 0;
+}
+int windowTimerProc (int handle, int id) {
+	Widget widget = WidgetTable.get (handle);
+	if (widget == null) return 0;
+	return widget.processTimer (id);
 }
 int windowProc (int handle, int clientData, int callData, int unused) {
 	Widget widget = WidgetTable.get (handle);

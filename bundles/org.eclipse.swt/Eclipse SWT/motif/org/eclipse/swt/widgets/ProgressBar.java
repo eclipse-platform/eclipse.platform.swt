@@ -29,6 +29,8 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ProgressBar extends Control {
+	int timerId;
+	static final int DELAY = 100;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -112,6 +114,18 @@ void createHandle (int index) {
 	};
 	handle = OS.XmCreateScrollBar (parentHandle, null, argList, argList.length / 2);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	if ((style & SWT.INDETERMINATE) != 0) createTimer ();
+}
+void createTimer () {
+	Display display = getDisplay ();
+	int xDisplay = display.xDisplay;
+	int windowTimerProc = display.windowTimerProc;
+	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
+	timerId = OS.XtAppAddTimeOut (xtContext, DELAY, windowTimerProc, handle);
+}
+void destroyTimer () {
+	if (timerId != 0) OS.XtRemoveTimeOut (timerId);
+	timerId = 0;
 }
 void disableButtonPress () {
 	int xWindow = OS.XtWindow (handle);
@@ -177,6 +191,14 @@ public int getSelection () {
 	if (sliderSize == 1 && background == defaultBackground()) sliderSize = 0;
 	return minimum + sliderSize;
 }
+int processTimer (int id) {
+	int minimum = getMinimum ();
+	int range = getMaximum () - minimum + 1;
+	int value = getSelection () - minimum + 1;
+	setSelection (minimum + (value % range));	
+	createTimer ();
+	return 0;
+}
 void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	if (enabled) disableButtonPress ();
@@ -184,6 +206,10 @@ void propagateWidget (boolean enabled) {
 void realizeChildren () {
 	super.realizeChildren ();
 	disableButtonPress ();
+}
+void releaseWidget () {
+	super.releaseWidget ();
+	destroyTimer ();
 }
 /**
  * Sets the maximum value which the receiver will allow

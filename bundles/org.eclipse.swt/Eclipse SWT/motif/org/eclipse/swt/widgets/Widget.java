@@ -598,6 +598,9 @@ int processSetFocus (int callData) {
 int processShow (int callData) {
 	return 0;
 }
+int processTimer (int id) {
+	return 0;
+}
 int processVerify (int callData) {
 	return 0;
 }
