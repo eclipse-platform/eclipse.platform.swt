@@ -663,7 +663,7 @@ void setClientWindow (int window) {
 			}
 		}
 	} else {
-		OS.XtUnregisterDrawable (xDisplay, clientWindow);
+		if (clientWindow != 0) OS.XtUnregisterDrawable (xDisplay, clientWindow);
 		clientWindow = 0;
 	}
 	display.setWarnings (warnings);
