@@ -281,6 +281,11 @@ class CoolBarTab extends Tab {
 				// Lazy create the menu.
 				Shell shell = tabFolderPage.getShell();
 				menu = new Menu(shell);
+				menu.addMenuListener(new MenuAdapter() {
+					public void menuHidden(MenuEvent e) {
+						visible = false;
+					}
+				});
 				for (int i = 0; i < 9; ++i) {
 					final String text = ControlExample.getResourceString("DropDownData_" + i);
 					if (text.length() != 0) {
