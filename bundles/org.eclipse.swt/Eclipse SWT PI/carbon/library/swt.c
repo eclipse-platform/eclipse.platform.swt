@@ -6134,7 +6134,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetDataBrowserTab
 {
 	DEBUG_CALL("SetDataBrowserTableViewHiliteStyle\n")
 
-	return (jint)SetDataBrowserTableViewHiliteStyle(arg0, arg1);
+	return (jint)SetDataBrowserTableViewHiliteStyle((ControlRef)arg0, (DataBrowserTableViewHiliteStyle)arg1);
 }
 #endif
 
