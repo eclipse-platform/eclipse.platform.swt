@@ -98,13 +98,13 @@ public void unhook (int eventType, Listener listener) {
 	}
 }
 
-public void unhook (int eventType, SWTEventListener handler) {
+public void unhook (int eventType, SWTEventListener listener) {
 	if (types == null) return;
 	for (int i=0; i<types.length; i++) {
 		if (types [i] == eventType) {
 			if (listeners [i] instanceof TypedListener) {
-				TypedListener listener = (TypedListener) listeners [i];
-				if (listener.getEventListener () == handler) {
+				TypedListener typedListener = (TypedListener) listeners [i];
+				if (typedListener.getEventListener () == listener) {
 					remove (i);
 					return;
 				}
