@@ -32,8 +32,8 @@ public class FileDialog extends Dialog {
 	String [] filterExtensions = new String [0];
 	String [] fileNames;
 	String fileName = "";
-	String filterPath = "";
-	String fullPath = "";
+	String filterPath;
+	String fullPath;
 	boolean cancel = false;
 	static final String FILTER = "*";
 
@@ -102,101 +102,6 @@ int cancelPressed (int widget, int client, int call) {
 	cancel = true;
 	OS.XtUnmanageChild (widget);
 	return 0;
-}
-void extractValues() {
-	filterPath = fullPath = "";
-	int [] argList = {OS.XmNdirectory, 0, OS.XmNdirSpec, 0};
-	OS.XtGetValues (dialog, argList, argList.length / 2);
-	
-	int xmString1 = argList [1];
-	int ptr = OS.XmStringUnparse (
-		xmString1,
-		null,
-		OS.XmCHARSET_TEXT,
-		OS.XmCHARSET_TEXT,
-		null,
-		0,
-		OS.XmOUTPUT_ALL);
-	if (ptr != 0) {
-		int length = OS.strlen (ptr);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, ptr, length);
-		OS.XtFree (ptr);
-		/* Use the character encoding for the default locale */
-		filterPath = new String (Converter.mbcsToWcs (null, buffer));
-	}
-	OS.XmStringFree (xmString1);
-	if (filterPath.endsWith("/")) {
-		filterPath = filterPath.substring (0, filterPath.length() - 1);
-	}
-	
-	int xmString2 = argList [3];
-	ptr = OS.XmStringUnparse (
-		xmString2,
-		null,
-		OS.XmCHARSET_TEXT,
-		OS.XmCHARSET_TEXT,
-		null,
-		0,
-		OS.XmOUTPUT_ALL);
-	if (ptr != 0) {
-		int length = OS.strlen (ptr);
-		byte [] buffer = new byte [length];
-		OS.memmove (buffer, ptr, length);
-		OS.XtFree (ptr);
-		/* Use the character encoding for the default locale */
-		fullPath = new String (Converter.mbcsToWcs (null, buffer)).trim();
-	}
-	OS.XmStringFree (xmString2);
-	
-	if ((style & SWT.MULTI) != 0) {
-		int fileList = OS.XmFileSelectionBoxGetChild (dialog, OS.XmDIALOG_LIST);
-		if (fileList == 0) return;
-		int [] argList2 = {OS.XmNselectedItems, 0, OS.XmNselectedItemCount, 0};
-		OS.XtGetValues (fileList, argList2, argList2.length / 2);
-		int items = argList2 [1], itemCount = argList2 [3];
-		int [] buffer1 = new int [1];
-		fileNames = new String [itemCount];
-		boolean match = false;
-		for (int i = 0; i < itemCount; i++) {
-			OS.memmove (buffer1, items, 4);
-			ptr = buffer1 [0];
-			int address = OS.XmStringUnparse (
-				ptr,
-				null,
-				OS.XmCHARSET_TEXT,
-				OS.XmCHARSET_TEXT,
-				null,
-				0,
-				OS.XmOUTPUT_ALL);
-			if (address != 0) {
-				int length = OS.strlen (address);
-				byte [] buffer = new byte [length];
-				OS.memmove (buffer, address, length);
-				OS.XtFree (address);
-				/* Use the character encoding for the default locale */
-				String fullFilename = new String (Converter.mbcsToWcs (null, buffer));
-				int index = fullFilename.lastIndexOf ('/');
-				fileNames [i] = fullFilename.substring (index + 1, fullFilename.length ());
-				if (fullFilename.equals (fullPath)) match = true;
-			}
-			items += 4;
-		}
-		if (match) {
-			fileName = fileNames [0];
-		} else {
-			/* The user has modified the text field such that it doesn't match any
-			 * of the selected files, so use this value instead
-			 */
-			int index = fullPath.lastIndexOf ('/');
-			fileName = fullPath.substring (index + 1, fullPath.length ());
-			fileNames = new String [] {fileName};
-		}
-	} else {
-		int index = fullPath.lastIndexOf ('/');
-		fileName = fullPath.substring (index + 1, fullPath.length ());
-		fileNames = new String [] {fileName};
-	}
 }
 /**
  * Returns the path of the first file that was
@@ -294,22 +199,117 @@ int itemSelected (int widget, int client, int call) {
 }
 
 int okPressed (int widget, int client, int call) {
-	extractValues();
+	String fullPath = null, fileName = null;
+	String [] fileNames = null;
+
+	int [] argList = {OS.XmNdirSpec, 0, OS.XmNdirectory, 0};
+	OS.XtGetValues (dialog, argList, argList.length / 2);
 	
-	// preferred case, a file is selected
-	if (!fileName.equals("")) {
-		OS.XtUnmanageChild (widget);
-		return 0;
+	int xmString1 = argList [1];
+	int ptr = OS.XmStringUnparse (
+		xmString1,
+		null,
+		OS.XmCHARSET_TEXT,
+		OS.XmCHARSET_TEXT,
+		null,
+		0,
+		OS.XmOUTPUT_ALL);
+	if (ptr != 0) {
+		int length = OS.strlen (ptr);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, ptr, length);
+		OS.XtFree (ptr);
+		/* Use the character encoding for the default locale */
+		fullPath = new String (Converter.mbcsToWcs (null, buffer)).trim();
 	}
+	OS.XmStringFree (xmString1);
 	
-	// no file selected, so go into the current directory
-	int [] argList1 = {OS.XmNdirMask, 0};
-	OS.XtGetValues (dialog, argList1, argList1.length / 2);
-	int directoryHandle = argList1[1];
-	int [] argList2 = {OS.XmNpattern,directoryHandle};
-	OS.XtSetValues (dialog, argList2, argList2.length / 2);
-	OS.XmStringFree (directoryHandle);
+	if ((style & SWT.MULTI) != 0) {
+		int fileList = OS.XmFileSelectionBoxGetChild (dialog, OS.XmDIALOG_LIST);
+		if (fileList == 0) return 0;
+		int [] argList2 = {OS.XmNselectedItems, 0, OS.XmNselectedItemCount, 0};
+		OS.XtGetValues (fileList, argList2, argList2.length / 2);
+		int items = argList2 [1], itemCount = argList2 [3];
+		int [] buffer1 = new int [1];
+		fileNames = new String [itemCount];
+		boolean match = false;
+		for (int i = 0; i < itemCount; i++) {
+			OS.memmove (buffer1, items, 4);
+			ptr = buffer1 [0];
+			int address = OS.XmStringUnparse (
+				ptr,
+				null,
+				OS.XmCHARSET_TEXT,
+				OS.XmCHARSET_TEXT,
+				null,
+				0,
+				OS.XmOUTPUT_ALL);
+			if (address != 0) {
+				int length = OS.strlen (address);
+				byte [] buffer = new byte [length];
+				OS.memmove (buffer, address, length);
+				OS.XtFree (address);
+				/* Use the character encoding for the default locale */
+				String fullFilename = new String (Converter.mbcsToWcs (null, buffer));
+				int index = fullFilename.lastIndexOf ('/');
+				fileNames [i] = fullFilename.substring (index + 1, fullFilename.length ());
+				if (fullFilename.equals (fullPath)) match = true;
+			}
+			items += 4;
+		}
+		if (match) {
+			fileName = fileNames [0];
+		} else {
+			/* The user has modified the text field such that it doesn't match any
+			 * of the selected files, so use this value instead
+			 */
+			int index = fullPath.lastIndexOf ('/');
+			fileName = fullPath.substring (index + 1, fullPath.length ());
+			fileNames = new String [] {fileName};
+		}
+	} else {
+		int index = fullPath.lastIndexOf ('/');
+		fileName = fullPath.substring (index + 1, fullPath.length ());
+		fileNames = new String [] {fileName};
+	}
+
+	// if no file selected then go into the current directory
+	if (fileName.equals("")) {
+		int [] argList1 = {OS.XmNdirMask, 0};
+		OS.XtGetValues (dialog, argList1, argList1.length / 2);
+		int directoryHandle = argList1[1];
+		int [] argList2 = {OS.XmNpattern,directoryHandle};
+		OS.XtSetValues (dialog, argList2, argList2.length / 2);
+		OS.XmStringFree (directoryHandle);
+		return 0;
+	}		
 	
+	int xmString2 = argList [3];
+	ptr = OS.XmStringUnparse (
+		xmString2,
+		null,
+		OS.XmCHARSET_TEXT,
+		OS.XmCHARSET_TEXT,
+		null,
+		0,
+		OS.XmOUTPUT_ALL);
+	if (ptr != 0) {
+		int length = OS.strlen (ptr);
+		byte [] buffer = new byte [length];
+		OS.memmove (buffer, ptr, length);
+		OS.XtFree (ptr);
+		/* Use the character encoding for the default locale */
+		filterPath = new String (Converter.mbcsToWcs (null, buffer));
+	}
+	OS.XmStringFree (xmString2);
+	if (filterPath.endsWith("/")) {
+		filterPath = filterPath.substring (0, filterPath.length() - 1);
+	}
+
+	this.fullPath = fullPath;
+	this.fileName = fileName;
+	this.fileNames = fileNames;
+	OS.XtUnmanageChild (widget);
 	return 0;
 }
 
@@ -454,11 +454,6 @@ public String open () {
 	okCallback.dispose ();
 	cancelCallback.dispose ();
 	if (selectCallback != null) selectCallback.dispose ();
-
-	if (cancel) {
-		fileNames = null;
-		return null;
-	}
 	return fullPath;
 }
 
