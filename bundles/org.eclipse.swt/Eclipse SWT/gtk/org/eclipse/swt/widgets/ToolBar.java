@@ -118,7 +118,7 @@ static int checkStyle (int style) {
 	* Feature in GTK.  It is not possible to create
 	* a toolbar that wraps.  Therefore, no matter what 
 	* style bits are specified,	clear the WRAP bits so 
-	* that the SWT style will match the Windows widget.
+	* that the style matches the behavior.
 	*/
 	if ((style & SWT.WRAP) != 0) style &= ~SWT.WRAP;
 	/*
