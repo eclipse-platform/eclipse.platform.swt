@@ -30,7 +30,7 @@ class WrappedContent implements StyledTextContent {
 	final static int WRAP_LINE_LENGTH = 0;
 	final static int WRAP_LINE_WIDTH = 1;
 	    
-    StyledText parent;
+    StyledTextRenderer renderer;
 	StyledTextContent logicalContent;
 	int[][] visualLines; 				 // start and length of each visual line
 	int visualLineCount = 0;
@@ -38,13 +38,13 @@ class WrappedContent implements StyledTextContent {
 /**
  * Create a new instance.
  * 
- * @param styledText StyledText widget that displays the lines
- * 	wrapped by the new instance.
+ * @param renderer <class>StyledTextRenderer</class> that renders 
+ * 	the lines wrapped by the new instance.
  * @param logicalContent StyledTextContent that provides the line 
  * 	data.
  */
-WrappedContent(StyledText styledText, StyledTextContent logicalContent) {
-    parent = styledText;
+WrappedContent(StyledTextRenderer renderer, StyledTextContent logicalContent) {
+    this.renderer = renderer;
     this.logicalContent = logicalContent;
 }
 /**
@@ -460,15 +460,15 @@ private int textWidth(String line, int logicalLineOffset, int visualLineOffset, 
 		// while wrapping a line, the logcial line styles may contain 
 		// style ranges that don't apply (i.e., completely on the previous/next
 		// visual line). Therefore we need to filter the logical lines.
-		styles = parent.getVisualLineStyleData(styles, logicalLineOffset + visualLineOffset, visualLineLength);
+		styles = renderer.getVisualLineStyleData(styles, logicalLineOffset + visualLineOffset, visualLineLength);
 	}
-	if (parent.isBidi()) {
+	if (renderer.isBidi()) {
 		String wrappedLine = line.substring(visualLineOffset, visualLineOffset + visualLineLength);
-		StyledTextBidi bidi = parent.getStyledTextBidi(wrappedLine, logicalLineOffset + visualLineOffset, gc, styles);
+		StyledTextBidi bidi = renderer.getStyledTextBidi(wrappedLine, logicalLineOffset + visualLineOffset, gc, styles);
 		width = bidi.getTextWidth();
 	}				
 	else {
-		width = parent.textWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc, fontData);
+		width = renderer.textWidth(line, logicalLineOffset, visualLineOffset, visualLineLength, styles, startX, gc, fontData);
 	}
 	return width;
 }
@@ -569,7 +569,7 @@ private int[] wrapLine(String line, int logicalLineOffset, int visualLineOffset,
 private int wrapLineRange(int startLine, int endLine, int visualLineIndex) {
 	int emptyLineCount = 0;
 		
-	visualLineIndex = wrapLineRange(startLine, endLine, visualLineIndex, parent.getClientArea().width);
+	visualLineIndex = wrapLineRange(startLine, endLine, visualLineIndex, renderer.getClientArea().width);
 	// is there space left for more visual lines? can happen if there are fewer
 	// visual lines for a given logical line than before
 	for (int i = visualLineIndex; i < visualLines.length; i++, emptyLineCount++) {
@@ -597,7 +597,7 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex) {
  * @return index of last wrapped line
  */
 private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int width) {
-    GC gc = new GC(parent);
+    GC gc = renderer.getGC();
     FontData fontData = gc.getFont().getFontData()[0];
 	int numChars = Math.max(1, width / gc.getFontMetrics().getAverageCharWidth());
 
@@ -618,12 +618,12 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
 			continue;
    		}
 		StyleRange[] styles = null;
-		StyledTextEvent event = parent.getLineStyleData(lineOffset, line);
+		StyledTextEvent event = renderer.getLineStyleData(lineOffset, line);
 		int startOffset = 0;
 		int startX = 0;
 				
 		if (event != null) {
-			styles = parent.filterLineStyles(event.styles);
+			styles = renderer.filterLineStyles(event.styles);
 		}
 		while (startOffset < lineLength) {	
 		    int[] result = wrapLine(line, lineOffset, startOffset, startX, width, numChars, styles, gc, fontData);
@@ -634,7 +634,7 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
 			visualLineIndex++;
 		}
 	}
-	gc.dispose();
+	renderer.disposeGC(gc);
 	return visualLineIndex;
 }
 /**
@@ -642,7 +642,7 @@ private int wrapLineRange(int startLine, int endLine, int visualLineIndex, int w
  * StyledText widget
  */
 void wrapLines() {
-	wrapLines(parent.getClientArea().width);	
+	wrapLines(renderer.getClientArea().width);
 }
 /**
  * Wrap all logical lines at the given width.
