@@ -831,6 +831,9 @@ public TableItem getItem(int index) {
  */
 public TableItem getItem(Point point) {
 	checkWidget();
+	if (point == null)  {
+		error(SWT.ERROR_NULL_ARGUMENT);
+	}
 	int headerHeight = getHeaderHeight();
 	TableColumn column = getColumnAtX(point.x);
 	TableItem item = null;
