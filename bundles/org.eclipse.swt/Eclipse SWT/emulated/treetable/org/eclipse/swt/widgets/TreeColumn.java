@@ -398,11 +398,11 @@ void paint (GC gc) {
  */
 public void pack () {
 	checkWidget ();
+	if (parent.availableItemsCount == 0) return;
 	TreeItem[] availableItems = parent.availableItems;
-	if (availableItems.length == 0) return;
 	int index = getIndex ();
 	int newWidth = getPreferredWidth ();
-	for (int i = 0; i < availableItems.length; i++) {
+	for (int i = 0; i < parent.availableItemsCount; i++) {
 		newWidth = Math.max (newWidth, availableItems [i].getPreferredWidth (index));
 	}
 	if (newWidth != width) parent.updateColumnWidth (this, newWidth);

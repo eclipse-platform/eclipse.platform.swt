@@ -521,7 +521,7 @@ public void dispose () {
 		} else {
 			startIndex = availableIndex;
 		}
-		endIndex = parent.availableItems.length - 1;
+		endIndex = parent.availableItemsCount - 1;
 	}
 
 	/* for performance do this upfront for whole descendent chain */
@@ -1562,7 +1562,7 @@ public void removeAll () {
 	checkWidget ();
 	if (items.length == 0) return;
 
-	int lastAvailableIndex = parent.availableItems.length - 1;
+	int lastAvailableIndex = parent.availableItemsCount - 1;
 	/* for performance do this upfront for whole descendent chain */
 	TreeItem focusItem = parent.focusItem; 
 	if (focusItem != null && focusItem.hasAncestor (this)) {
@@ -1705,7 +1705,7 @@ public void setExpanded (boolean value) {
 
 		TreeItem[] availableDescendents = computeAvailableDescendents ();
 		int descendentsCount = availableDescendents.length;
-		if (availableIndex != parent.availableItems.length - 1) {
+		if (availableIndex != parent.availableItemsCount - 1) {
 			/* the receiver is not the last available item */
 			Rectangle clientArea = parent.getClientArea ();
 			int y = parent.getItemY (this) + parent.itemHeight;
