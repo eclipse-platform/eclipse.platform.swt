@@ -512,9 +512,13 @@ public Point getLocation () {
 }
 
 public Point getSize () {
-	int [] width = new int [1], height = new int [1];
-	OS.gtk_window_get_size (shellHandle, width, height);
-	return new Point (width [0] + trimWidth (), height [0] + trimHeight ());
+	int width = OS.GTK_WIDGET_WIDTH (scrolledHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (scrolledHandle);
+	if (menuBar != null)  {
+		int barHandle = menuBar.handle;
+		height += OS.GTK_WIDGET_HEIGHT (barHandle);
+	}
+	return new Point (width + trimWidth (), height + trimHeight ());
 }
 
 public Display getDisplay () {
@@ -919,12 +923,6 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if (visible) {
 		sendEvent (SWT.Show);
-		
-		//TEMPORARY CODE
-		int [] width = new int [1], height = new int [1];
-		OS.gtk_window_get_size (shellHandle, width, height);
-		resizeBounds (width [0], height [0], true);
-		
 		// NOT DONE - gtk_widget_show_now dispatches events.
 		OS.gtk_widget_show_now (shellHandle);
 		adjustTrim ();
@@ -1011,9 +1009,13 @@ public void forceActive () {
 public Rectangle getBounds () {
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
-	int [] width = new int [1], height = new int [1];
-	OS.gtk_window_get_size (shellHandle, width, height);
-	return new Rectangle (x [0], y [0], width [0] + trimWidth (), height [0] + trimHeight ());
+	int width = OS.GTK_WIDGET_WIDTH (scrolledHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (scrolledHandle);
+	if (menuBar != null)  {
+		int barHandle = menuBar.handle;
+		height += OS.GTK_WIDGET_HEIGHT (barHandle);
+	}
+	return new Rectangle (x [0], y [0], width + trimWidth (), height + trimHeight ());
 }
 
 void releaseHandle () {
