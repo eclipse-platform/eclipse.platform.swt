@@ -870,8 +870,8 @@ public int internal_new_GC (GCData data) {
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		data.device = this;
-		data.background = getSystemColor (SWT.COLOR_WHITE).handle;
-		data.foreground = getSystemColor (SWT.COLOR_BLACK).handle;
+		data.background = new float [] {0, 0, 0, 1};
+		data.foreground = new float [] {1, 1, 1, 1};
 		data.font = getSystemFont ();
 	}
 	return context;

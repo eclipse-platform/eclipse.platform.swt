@@ -286,8 +286,9 @@ public Accessible getAccessible () {
 public Color getBackground () {
 	checkWidget();
 	//NOT DONE - get default colors
-	if (background == null) return getDisplay ().getSystemColor (SWT.COLOR_WHITE);
-	return Color.carbon_new (getDisplay (), background);
+	Display display = getDisplay ();
+	if (background == null) return display.getSystemColor (SWT.COLOR_WHITE);
+	return Color.carbon_new (display, background);
 }
 
 public int getBorderWidth () {
@@ -325,8 +326,9 @@ public Font getFont () {
 public Color getForeground () {
 	checkWidget();
 	//NOT DONE - get default colors
-	if (foreground == null) return getDisplay ().getSystemColor (SWT.COLOR_BLACK);
-	return Color.carbon_new (getDisplay (), foreground);
+	Display display = getDisplay ();
+	if (foreground == null) return display.getSystemColor (SWT.COLOR_BLACK);
+	return Color.carbon_new (display, foreground);
 }
 
 public Object getLayoutData () {
@@ -521,8 +523,8 @@ public int internal_new_GC (GCData data) {
 	if (data != null) {
 		Display display = getDisplay ();
 		data.device = display;
-		data.foreground = foreground != null ? foreground : display.getSystemColor (SWT.COLOR_BLACK).handle;
-		data.background = background != null ? background : display.getSystemColor (SWT.COLOR_WHITE).handle;
+		data.foreground = foreground != null ? foreground : new float [] {0, 0, 0, 1};
+		data.background = background != null ? background : new float [] {1, 1, 1, 1};
 		data.font = font != null ? font : defaultFont ();
 		data.visibleRgn = visibleRgn;
 		data.control = handle;
