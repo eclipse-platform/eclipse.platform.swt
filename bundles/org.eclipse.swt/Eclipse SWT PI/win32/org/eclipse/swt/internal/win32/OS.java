@@ -15,6 +15,7 @@ public class OS {
 	public static final boolean IsWin32s;
 	public static final boolean IsWin95;
 	public static final boolean IsWinNT;
+	public static final boolean IsWinXP;
 	public static final boolean IsWinCE;
 	public static final boolean IsPPC;
 	public static final boolean IsHPC;
@@ -70,12 +71,14 @@ public class OS {
 		IsWin32s = info.dwPlatformId == VER_PLATFORM_WIN32s;
 		IsWin95 = info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
 		IsWinNT = info.dwPlatformId == VER_PLATFORM_WIN32_NT;
+		IsWinXP = (info.dwPlatformId == VER_PLATFORM_WIN32_NT) && 
+			(info.dwMajorVersion == 5) && (info.dwMinorVersion == 1);
 		IsWinCE = info.dwPlatformId == VER_PLATFORM_WIN32_CE;
 		IsPPC = IsPPC();
 		IsHPC = IsWinCE && !IsPPC; 	
 		WIN32_MAJOR = info.dwMajorVersion;
 		WIN32_MINOR = info.dwMinorVersion;
-
+		
 		// TEMPORARY CODE
 		if (MBCS != null) {
 			IsUnicode = false;

@@ -1025,6 +1025,20 @@ LRESULT WM_ACTIVATE (int wParam, int lParam) {
 			}
 		}
 	}
+	if (OS.IsWinXP) {
+		/*
+		* Feature in WinXP.  When a Shell is deactivated, the
+		* IME composition window does not go away. This causes
+		* repaint issues.  The fix is to close the IME ourselves
+		* when the Shell is deactivated.
+		* 
+		* Note.  When the Shell is reactivated, the text in the
+		* composition window has been lost.
+		*/
+		if ((wParam & 0xFFFF) == 0 && OS.IsDBLocale && hIMC != 0) {
+			OS.ImmSetOpenStatus(hIMC, false);
+		}
+	}
 	return super.WM_ACTIVATE (wParam, lParam);
 }
 
