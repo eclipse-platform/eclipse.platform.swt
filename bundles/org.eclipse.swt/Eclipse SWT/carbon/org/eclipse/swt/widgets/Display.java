@@ -2526,22 +2526,21 @@ public boolean readAndDispatch () {
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
 	if (status == OS.noErr) {
 		events = true;
-
-//		String text = null;
-//		if (focusCombo != null && !focusCombo.isDisposed ()) {
-//			text = focusCombo.getText();
-//		}
-
 		int eventClass = OS.GetEventClass (outEvent [0]);
 		int eventKind = OS.GetEventKind (outEvent [0]);
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
 
-//		if (focusCombo != null && !focusCombo.isDisposed ()) {
-//			if (!focusCombo.getText ().equals (text)) {
-//				focusCombo.postEvent (SWT.Selection);
-//			}
-//		}
+		/*
+		* Feature in the Macintosh.  HIComboBox does not send any
+		* notification when the selection changes.  The fix is to
+		* detect if the combo text has changed after every event
+		* has been dispatched.  This is only necessary when the
+		* combo has focus. 
+		*/
+		if (focusCombo != null && !focusCombo.isDisposed ()) {
+			focusCombo.checkSelection ();
+		}
 
 		/*
 		* Feature in the Macintosh.  When an indeterminate progress

@@ -58,6 +58,8 @@ import org.eclipse.swt.internal.carbon.Rect;
  */
 public class Combo extends Composite {
 	int menuHandle;
+	int textLimit = LIMIT;
+	String lastText = "";
 
 	/**
 	 * the operating system limit for the number of characters
@@ -129,8 +131,7 @@ public Combo (Composite parent, int style) {
  */
 public void add (String string) {
 	checkWidget ();
-	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);	
-	
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, buffer.length, buffer, 0);
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
@@ -176,7 +177,6 @@ public void add (String string, int index) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int count = getItemCount ();
 	if (0 > index || index > count) error (SWT.ERROR_INVALID_RANGE);
-	
 	char [] buffer = new char [string.length ()];
 	string.getChars (0, buffer.length, buffer, 0);
 	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
@@ -249,6 +249,32 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 
+/**
+ * Adds the listener to the collection of listeners who will
+ * be notified when the receiver's text is verified, by sending
+ * it one of the messages defined in the <code>VerifyListener</code>
+ * interface.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #removeVerifyListener
+ */
+void addVerifyListener (VerifyListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	TypedListener typedListener = new TypedListener (listener);
+	addListener (SWT.Verify, typedListener);
+}
+
 static int checkStyle (int style) {
 	/*
 	* Feature in Windows.  It is not possible to create
@@ -277,6 +303,25 @@ static int checkStyle (int style) {
 	return style;
 }
 
+void checkSelection () {
+	if ((style & SWT.READ_ONLY) != 0) return;
+	String text = getText ();
+	if (!text.equals (lastText)) {
+		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+			String newText = verifyText (text, 0, lastText.length (), null);
+			if (newText == null) {
+				setText (lastText, false);
+				return;
+			}
+		}
+		lastText = text;
+		sendEvent (SWT.Modify);
+		if (isDisposed ()) return;
+		int index = indexOf (text);
+		if (index != -1) postEvent (SWT.Selection);
+	}
+}
+
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
@@ -300,9 +345,7 @@ protected void checkSubclass () {
  */
 public void clearSelection () {
 	checkWidget();
-	if ((style & SWT.READ_ONLY) != 0) {
-		OS.SetControl32BitValue (handle, 0);
-	} else {
+	if ((style & SWT.READ_ONLY) == 0) {
 		short [] selection = new short [2];
 		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, selection, null);
 		selection [1] = selection [0];
@@ -398,51 +441,30 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  */
 public void copy () {
 	checkWidget ();
-	int [] str = new int [1];
-	short start, end;
-	if ((style & SWT.READ_ONLY) != 0) {
-		// NEEDS WORK - getting whole text, not just selection
-		int index = OS.GetControlValue (handle);
-		if (OS.CopyMenuItemTextAsCFString(menuHandle, (short)index, str) != OS.noErr) return;
-		start = 0; end = (short)OS.CFStringGetLength (str [0]);
-		if (start >= end) {
-			OS.CFRelease (str [0]);
-			return;
-		}
-	} else {
-		short [] s = new short [2];
-		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
-		if (s [0] >= s [1]) return;
-		start = s [0]; end = s [1];
-		if (OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, str, null) != OS.noErr) return;
-	}
-	CFRange range = new CFRange ();
-	range.location = start;
-	range.length = end - start;
-	int encoding = OS.CFStringGetSystemEncoding ();
-	int [] size = new int [1];
-	OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, null, 0, size);
-	byte [] buffer = new byte [size [0]];
-	OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, buffer, size [0], size);
-	OS.CFRelease (str [0]);
-	
-	OS.ClearCurrentScrap();
-	int[] scrap = new int [1];
+	Point selection = getSelection ();
+	if (selection.x == selection.y) return;
+	copy (getText (selection.x, selection.y));
+}
+
+void copy (char [] buffer) {
+	if (buffer.length == 0) return;
+	OS.ClearCurrentScrap ();
+	int [] scrap = new int [1];
 	OS.GetCurrentScrap (scrap);
-	OS.PutScrapFlavor(scrap [0], OS.kScrapFlavorTypeText, 0, buffer.length, buffer);
+	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeUnicode, 0, buffer.length * 2, buffer);
 }
 
 void createHandle () {
-	// NEEDS WORK - SIMPLE
 	if ((style & SWT.READ_ONLY) != 0) {
 		int [] outControl = new int [1];
 		int window = OS.GetControlOwner (parent.handle);
-		/* From ControlDefinitions.h:
-		 * 
-		 * Passing in a menu ID of -12345 causes the popup not to try and get the menu from a
-		 * resource. Instead, you can build the menu and later stuff the MenuRef field in
-		 * the popup data information.                                                                         
-		 */
+		/*
+		* From ControlDefinitions.h:
+		*
+		* Passing in a menu ID of -12345 causes the popup not to try and get the menu from a
+		* resource. Instead, you can build the menu and later stuff the MenuRef field in
+		* the popup data information.                                                                         
+		*/
 		OS.CreatePopupButtonControl(window, null, 0, (short)-12345, false, (short)0, (short)0, 0, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
@@ -486,67 +508,26 @@ void createHandle () {
  * @since 2.1
  */
 public void cut () {
-	//NEEDS WORK - Modify/Verify
 	checkWidget ();
-	int [] str = new int [1];
-	short start, end;
-	if ((style & SWT.READ_ONLY) != 0) {
-		// NEEDS WORK - getting whole text, not just selection
-		int index = OS.GetControlValue (handle);
-		if (OS.CopyMenuItemTextAsCFString(menuHandle, (short)index, str) != OS.noErr) return;
-		start = 0; end = (short)OS.CFStringGetLength (str [0]);
-		if (start >= end) {
-			OS.CFRelease (str [0]);
-			return;
-		}
-	} else {
-		short [] s = new short [2];
-		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
-		if (s [0] >= s [1]) return;
-		start = s [0]; end = s [1];
-		if (OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, str, null) != OS.noErr) return;
+	if ((style & SWT.READ_ONLY) != 0) return;
+	Point selection = getSelection ();
+	if (selection.x == selection.y) return;
+	int start = selection.x, end = selection.y;
+	String text = getText ();
+	String leftText = text.substring (0, start);
+	String rightText = text.substring (end, text.length ());
+	String newText = "";
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		newText = verifyText (newText, start, end, null);
+		if (newText == null) return;
 	}
-	CFRange range = new CFRange ();
-	range.location = start;
-	range.length = end - start;
-	int encoding = OS.CFStringGetSystemEncoding ();
-	int [] size = new int [1];
-	OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, null, 0, size);
-	byte [] buffer = new byte [size [0]];
-	OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, buffer, size [0], size);
-
-	OS.ClearCurrentScrap();
-	int[] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeText, 0, buffer.length, buffer);
-	
-	// delete selection
-	if ((style & SWT.READ_ONLY) != 0) {
-		// NEEDS WORK
-	} else {
-		byte [] newBuffer;
-		range.location = 0;
-		range.length = start;
-		size = new int [1];
-		OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, null, 0, size);
-		byte [] preBuffer = new byte [size [0]];
-		OS.CFStringGetBytes(str [0], range, encoding, (byte)'?', true, preBuffer, size [0], size);
-		range.location = end;
-		range.length = OS.CFStringGetLength (str [0]) - end;
-		size = new int [1];
-		OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, null, 0, size);
-		byte [] postBuffer = new byte [size [0]];
-		OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, postBuffer, size [0], size);
-		newBuffer = new byte [preBuffer.length + postBuffer.length];
-		System.arraycopy(preBuffer, 0, newBuffer, 0, preBuffer.length);
-		System.arraycopy(postBuffer, 0, newBuffer, preBuffer.length, postBuffer.length);
-		int ptr = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, newBuffer, newBuffer.length, encoding, true);
-		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
-		OS.CFRelease (ptr);
-		sendEvent (SWT.Modify);
-	}
-	
-	OS.CFRelease (str [0]);
+	char [] buffer = new char [newText.length ()];
+	newText.getChars (0, buffer.length, buffer, 0);
+	copy (buffer);
+	setText (leftText + newText + rightText, false);
+	start += newText.length ();
+	setSelection (new Point (start, start));
+	sendEvent (SWT.Modify);
 }
 
 /**
@@ -564,7 +545,7 @@ public void cut () {
 public void deselect (int index) {
 	checkWidget ();
 	if (index == -1) return;
-	// NEEDS WORK
+	//TODO - not supported by the OS
 }
 
 /**
@@ -583,7 +564,7 @@ public void deselect (int index) {
  */
 public void deselectAll () {
 	checkWidget ();
-	// NEEDS WORK
+	//TODO - not supported by the OS
 }
 
 /**
@@ -664,7 +645,8 @@ public int getItemCount () {
  */
 public int getItemHeight () {
 	checkWidget ();
-	return 26; // NEEDS WORK
+	//TODO - not supported by the OS
+	return 26;
 }
 
 /**
@@ -727,16 +709,13 @@ public int getOrientation () {
  */
 public Point getSelection () {
 	checkWidget ();
-	Point selection;
 	if ((style & SWT.READ_ONLY) != 0) {
-		// NEEDS WORK
-		selection = new Point(0, 0);
+		return new Point (0, getCharCount ());
 	} else {
-		short [] s = new short [2];
-		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
-		selection = new Point (s[0], s[1]);
+		short [] selection = new short [2];
+		OS.GetControlData (handle, (short) OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, selection, null);
+		return new Point (selection [0], selection [1]);
 	}
-	return selection;
 }
 
 /**
@@ -752,14 +731,11 @@ public Point getSelection () {
  */
 public int getSelectionIndex () {
 	checkWidget ();
-	int index;
 	if ((style & SWT.READ_ONLY) != 0) {
-		index = OS.GetControlValue (handle) - 1;
+		return OS.GetControlValue (handle) - 1;
 	} else {
-		// NEEDS WORK
-    	index = indexOf(getText ());
+		return indexOf (getText ());
 	}
-	return index;
 }
 
 /**
@@ -775,23 +751,32 @@ public int getSelectionIndex () {
  */
 public String getText () {
 	checkWidget ();
-	int [] ptr = new int [1];
+	return new String (getText (0, -1));
+}
+
+char []  getText (int start, int end) {
 	int result;
+	int [] ptr = new int [1];
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = OS.GetControlValue (handle) - 1;
-		result = OS.CopyMenuItemTextAsCFString(menuHandle, (short)(index+1), ptr);
+		result = OS.CopyMenuItemTextAsCFString (menuHandle, (short)(index+1), ptr);
 	} else {
 		int [] actualSize = new int [1];
 		result = OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
 	}
-	if (result != OS.noErr) return "";
-	int length = OS.CFStringGetLength (ptr [0]);
-	char [] buffer= new char [length];
+	if (result != OS.noErr) return new char [0];
 	CFRange range = new CFRange ();
-	range.length = length;
+	range.location = start;
+	if (end == -1) {
+		int length = OS.CFStringGetLength (ptr [0]);
+		range.length = length - start;
+	} else {
+		range.length = end - start + 1;
+	}
+	char [] buffer= new char [range.length];
 	OS.CFStringGetCharacters (ptr [0], range, buffer);
 	OS.CFRelease (ptr [0]);
-	return new String (buffer);
+	return buffer;
 }
 
 /**
@@ -809,7 +794,8 @@ public String getText () {
  */
 public int getTextHeight () {
 	checkWidget();
-	return 26; // NEEDS WORK
+	//TODO - not supported by the OS
+	return 26;
 }
 
 /**
@@ -827,7 +813,7 @@ public int getTextHeight () {
  */
 public int getTextLimit () {
 	checkWidget();
-    return LIMIT; // NEEDS WORK
+    return textLimit;
 }
 
 /**
@@ -846,7 +832,6 @@ public int getTextLimit () {
 public int getVisibleItemCount () {
 	checkWidget ();
 	if ((style & SWT.READ_ONLY) != 0) {
-		//TODO
 		return getItemCount ();
 	} else {
 		int [] buffer = new int [1];
@@ -920,6 +905,33 @@ public int indexOf (String string, int start) {
 	return -1;
 }
 
+String getClipboardText () {
+	int[] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	int [] size = new int [1];
+	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeUnicode, size) != OS.noErr || size [0] == 0) return "";
+	char [] buffer = new char [size [0]];
+	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeUnicode, size, buffer) != OS.noErr) return "";
+	return new String (buffer);
+}
+
+int getCharCount () {
+//	checkWidget ();
+	int [] ptr = new int [1];
+	int result;
+	if ((style & SWT.READ_ONLY) != 0) {
+		int index = OS.GetControlValue (handle) - 1;
+		result = OS.CopyMenuItemTextAsCFString(menuHandle, (short)(index+1), ptr);
+	} else {
+		int [] actualSize = new int [1];
+		result = OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr, actualSize);
+	}
+	if (result != OS.noErr) return 0;
+	int length = OS.CFStringGetLength (ptr [0]);
+	OS.CFRelease (ptr [0]);
+	return length;
+}
+
 Rect getInset () {
 	return display.comboInset;
 }
@@ -984,6 +996,14 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	result = OS.CallNextEventHandler (nextHandler, theEvent);
+	lastText = getText ();
+	return result;
+}
+
 /**
  * Pastes text from clipboard.
  * <p>
@@ -1000,50 +1020,21 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
  */
 public void paste () {
 	checkWidget ();
-	//NEEDS WORK - Modify/Verify
-	int[] scrap = new int [1];
-	OS.GetCurrentScrap (scrap);
-	int [] size = new int [1];
-	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeText, size) != OS.noErr || size [0] == 0) return;
-	byte [] buffer = new byte[size [0]];
-	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeText, size, buffer) != OS.noErr) return;
-	if ((style & SWT.READ_ONLY) != 0) {
-		String string = new String (buffer); //??
-		int index = indexOf (string);
-		if (index != -1) select(index);
-	} else {
-		byte [] newBuffer;
-		int encoding = OS.CFStringGetSystemEncoding ();
-		int[] ptrOld = new int [1];
-		if (OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptrOld, null) == OS.noErr) {
-			short [] s = new short [2];
-			OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
-			CFRange range = new CFRange ();
-			range.location = 0;
-			range.length = s [0];
-			size = new int [1];
-			OS.CFStringGetBytes (ptrOld [0], range, encoding, (byte)'?', true, null, 0, size);
-			byte [] preBuffer = new byte [size [0]];
-			OS.CFStringGetBytes(ptrOld [0], range, encoding, (byte)'?', true, preBuffer, size [0], size);
-			range.location = s [1];
-			range.length = OS.CFStringGetLength (ptrOld [0]) - s [1];
-			size = new int [1];
-			OS.CFStringGetBytes (ptrOld [0], range, encoding, (byte)'?', true, null, 0, size);
-			byte [] postBuffer = new byte [size [0]];
-			OS.CFStringGetBytes(ptrOld [0], range, encoding, (byte)'?', true, postBuffer, size [0], size);
-			newBuffer = new byte [preBuffer.length + buffer.length + postBuffer.length];
-			System.arraycopy(preBuffer, 0, newBuffer, 0, preBuffer.length);
-			System.arraycopy(buffer, 0, newBuffer, preBuffer.length, buffer.length);
-			System.arraycopy(postBuffer, 0, newBuffer, preBuffer.length + buffer.length, postBuffer.length);
-			OS.CFRelease (ptrOld [0]);
-		} else {
-			newBuffer = buffer;
-		}
-		int ptr = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, newBuffer, newBuffer.length, encoding, true);
-		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
-		OS.CFRelease (ptr);
-		sendEvent (SWT.Modify);
+	if ((style & SWT.READ_ONLY) != 0) return;
+	Point selection = getSelection ();
+	int start = selection.x, end = selection.y;
+	String text = getText ();
+	String leftText = text.substring (0, start);
+	String rightText = text.substring (end, text.length ());
+	String newText = getClipboardText ();
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		newText = verifyText (newText, start, end, null);
+		if (newText == null) return;
 	}
+	setText (leftText + newText + rightText, false);
+	start += newText.length ();
+	setSelection (new Point (start, start));
+	sendEvent (SWT.Modify);
 }
 
 void releaseWidget () {
@@ -1122,9 +1113,8 @@ public void remove (int start, int end) {
 			OS.SetControl32BitValue (handle, 0);
 		}
 	} else {
-		// NEEDS WORK
 		for (int i=newEnd; i>=start; i--) {
-			OS.HIComboBoxRemoveItemAtIndex(handle, i);
+			OS.HIComboBoxRemoveItemAtIndex (handle, i);
 		}
 	}
 }
@@ -1151,16 +1141,9 @@ public void remove (int start, int end) {
 public void remove (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	// NEEDS WORK
-	int count = getItemCount ();
-	for (int i=0; i<count; i++) {
-		String s = getItem (i);
-		if (string.equals (s)) {
-			remove (i);
-			return;
-		}
-	}
-	error (SWT.ERROR_INVALID_ARGUMENT);
+	int index = indexOf (string, 0);
+	if (index == -1) error (SWT.ERROR_INVALID_ARGUMENT);
+	remove (index);
 }
 
 /**
@@ -1178,7 +1161,6 @@ public void removeAll () {
 		OS.DeleteMenuItems (menuHandle, (short)1, count);
 		OS.SetControl32BitValue (handle, 0);
 	} else {
-		// NEEDS WORK
 		if (count > 0) {
 			for (int i=count-1; i>=0; i--) {
   				OS.HIComboBoxRemoveItemAtIndex (handle, i);
@@ -1237,6 +1219,30 @@ public void removeSelectionListener (SelectionListener listener) {
 }
 
 /**
+ * Removes the listener from the collection of listeners who will
+ * be notified when the control is verified.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see VerifyListener
+ * @see #addVerifyListener
+ */
+void removeVerifyListener (VerifyListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Verify, listener);
+}
+
+/**
  * Selects the item at the given zero-relative index in the receiver's 
  * list.  If the item at the index was already selected, it remains
  * selected. Indices that are out of range are ignored.
@@ -1250,18 +1256,14 @@ public void removeSelectionListener (SelectionListener listener) {
  */
 public void select (int index) {
 	checkWidget ();
-	//NEEDS WORK Modify/Verify
 	int count = getItemCount ();
 	if (0 <= index && index < count) {
 		if ((style & SWT.READ_ONLY) != 0) {
-			OS.SetControl32BitValue (handle, index+1);
+			OS.SetControl32BitValue (handle, index + 1);
+			sendEvent (SWT.Modify);
 		} else {
-			int[] ptr = new int[1];
-			if (OS.HIComboBoxCopyTextItemAtIndex (handle, index, ptr) != OS.noErr) return;
-			OS.SetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptr);
-			OS.CFRelease (ptr [0]);		
+			setText (getItem (index), true);
 		}
-		sendEvent (SWT.Modify);
 	}	
 }
 
@@ -1270,8 +1272,46 @@ boolean sendKeyEvent (int type, Event event) {
 		return false;
 	}
 	if (type != SWT.KeyDown) return true;
-	if (event.character == 0) return true;
 	if ((style & SWT.READ_ONLY) != 0) return true;
+	if (event.character == 0) return true;
+	String oldText = "", newText = "";
+	if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+		int charCount = getCharCount ();
+		Point selection = getSelection ();
+		int start = selection.x, end = selection.y;
+		switch (event.character) {
+			case SWT.BS:
+				if (start == end) {
+					if (start == 0) return true;
+					start = Math.max (0, start - 1);
+				}
+				break;
+			case SWT.DEL:
+				if (start == end) {
+					if (start == charCount) return true;
+					end = Math.min (end + 1, charCount);
+				}
+				break;
+			case SWT.CR:
+				return true;
+			default:
+				if (event.character != '\t' && event.character < 0x20) return true;
+				oldText = new String (new char [] {event.character});
+		}
+		newText = verifyText (oldText, start, end, event);
+		if (newText == null) return false;
+		if (charCount - (end - start) + newText.length () > textLimit) {
+			return false;
+		}
+		if (newText != oldText) {
+			String text = getText ();
+			String leftText = text.substring (0, start);
+			String rightText = text.substring (end, text.length ());
+			setText (leftText + newText + rightText, false);
+			start += newText.length ();
+			setSelection (new Point (start, start));
+		}
+	}
 	/*
 	* Post the modify event so that the character will be inserted
 	* into the widget when the modify event is delivered.  Normally,
@@ -1279,7 +1319,7 @@ boolean sendKeyEvent (int type, Event event) {
 	* because this method is called from the event loop.
 	*/
 	postEvent (SWT.Modify);
-	return true;
+	return newText == oldText;
 }
 /**
  * Sets the text of the item in the receiver's list at the given
@@ -1400,9 +1440,7 @@ public void setOrientation (int orientation) {
 public void setSelection (Point selection) {
 	checkWidget ();
 	if (selection == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.READ_ONLY) != 0) {
-		// NEEDS WORK
-	} else {
+	if ((style & SWT.READ_ONLY) == 0) {
 		short [] s = new short [] {(short)selection.x, (short)selection.y };
 		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s);
 	}
@@ -1431,19 +1469,32 @@ public void setSelection (Point selection) {
  */
 public void setText (String string) {
 	checkWidget ();
-	//NEEDS WORK - Modify/Verify
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setText (string, true);
+}
+
+void setText (String string, boolean notify) {
+	if (notify) {
+		if (hooks (SWT.Verify) || filters (SWT.Verify)) {
+			string = verifyText (string, 0, getCharCount (), null);
+			if (string == null) return;
+		}
+	}
 	if ((style & SWT.READ_ONLY) != 0) {
 		int index = indexOf (string);
-		if (index != -1) select(index);
+		if (index != -1 && index == getSelectionIndex ()) {
+			select (index);
+			if (notify) sendEvent (SWT.Modify);
+		}
 	} else {
 		char [] buffer = new char [string.length ()];
 		string.getChars (0, buffer.length, buffer, 0);
 		int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-		if (ptr == 0) return;	
+		if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+		lastText = string;
 		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
 		OS.CFRelease (ptr);
-		sendEvent (SWT.Modify);
+		if (notify) sendEvent (SWT.Modify);
 	}
 }
 
@@ -1464,7 +1515,7 @@ public void setText (String string) {
 public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
-	// NEEDS WORK
+	textLimit = limit;
 }
 
 /**
@@ -1488,6 +1539,27 @@ public void setVisibleItemCount (int count) {
 	} else {
 		OS.SetControlData (handle, OS.kControlEntireControl, OS.kHIComboBoxNumVisibleItemsTag, 4, new int[] {count});
 	}
+}
+
+String verifyText (String string, int start, int end, Event keyEvent) {
+	Event event = new Event ();
+	event.text = string;
+	event.start = start;
+	event.end = end;
+	if (keyEvent != null) {
+		event.character = keyEvent.character;
+		event.keyCode = keyEvent.keyCode;
+		event.stateMask = keyEvent.stateMask;
+	}
+	/*
+	 * It is possible (but unlikely), that application
+	 * code could have disposed the widget in the verify
+	 * event.  If this happens, answer null to cancel
+	 * the operation.
+	 */
+	sendEvent (SWT.Verify, event);
+	if (!event.doit || isDisposed ()) return null;
+	return event.text;
 }
 
 }
