@@ -4,31 +4,32 @@ package org.eclipse.swt.dnd;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 
 	private Tree tree;
-	private TreeItem currentItem = null;
 	private int currentEffect = DND.FEEDBACK_NONE;
+	private TreeItem currentItem;
 	private TreeItem[] selection = new TreeItem[0];
+	private TreeItem dropSelection = null;
 
 TreeDragUnderEffect(Tree tree) {
 	this.tree = tree;
 }
 void show(int effect, int x, int y) {
-	TreeItem item = null;
-	if (effect != DND.FEEDBACK_NONE) item = findItem(x, y);
+	TreeItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect != effect && currentEffect == DND.FEEDBACK_NONE) {
+	if (effect == currentEffect && item == currentItem) return;
+	currentItem = item;
+	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
 		selection = tree.getSelection();
-		tree.setSelection(new TreeItem[0]);
+		tree.deselectAll();
 	}
-	boolean restoreSelection = currentEffect != effect && effect == DND.FEEDBACK_NONE;
+	int previousEffect = currentEffect;
 	setDragUnderEffect(effect, item);
-	if (restoreSelection) {
+	if (previousEffect != DND.FEEDBACK_NONE && currentEffect == DND.FEEDBACK_NONE) {
 		tree.setSelection(selection);
 		selection = new TreeItem[0];
 	}
@@ -42,6 +43,7 @@ private TreeItem findItem(int x , int y){
 	TreeItem item = tree.getItem(coordinates);
 	if (item != null) return item;
 
+	// Scan across the width of the tree.
 	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
 		coordinates = new Point(x1, coordinates.y);
 		item = tree.getItem(coordinates);
@@ -72,27 +74,17 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 			if (currentEffect == DND.FEEDBACK_INSERT_AFTER ||
 			    currentEffect == DND.FEEDBACK_INSERT_BEFORE) {
 				tree.setInsertMark(null, false);
-				currentEffect = DND.FEEDBACK_NONE;
-				currentItem = null;
 			}
-			if (currentEffect != effect || currentItem != item) { 
-				setDropSelection(item); 
-				currentEffect = DND.FEEDBACK_SELECT;
-				currentItem = item;
-			}
+			setDropSelection(item); 
+			currentEffect = DND.FEEDBACK_SELECT;
 			break;
 		case DND.FEEDBACK_INSERT_AFTER:
 		case DND.FEEDBACK_INSERT_BEFORE:
 			if (currentEffect == DND.FEEDBACK_SELECT) {
 				setDropSelection(null);
-				currentEffect = DND.FEEDBACK_NONE;
-				currentItem = null;
 			}
-			if (currentEffect != effect || currentItem != item) { 
-				tree.setInsertMark(item, effect == DND.FEEDBACK_INSERT_BEFORE);
-				currentEffect = effect;
-				currentItem = item;
-			}
+			tree.setInsertMark(item, effect == DND.FEEDBACK_INSERT_BEFORE);
+			currentEffect = effect;
 			break;			
 		default :
 			if (currentEffect == DND.FEEDBACK_INSERT_AFTER ||
@@ -103,16 +95,13 @@ private void setDragUnderEffect(int effect, TreeItem item) {
 				setDropSelection(null);
 			}
 			currentEffect = DND.FEEDBACK_NONE;
-			currentItem = null;
 			break;
 	}
 }
-private void setDropSelection (TreeItem item) {
-	if (item == null) {
-		tree.setSelection(new TreeItem[0]);
-	} else {
-		tree.setSelection(new TreeItem[]{item});
-	}
+private void setDropSelection (TreeItem item) {	
+	if (item == dropSelection) return;
+	if (dropSelection != null) tree.deselectAll();
+	dropSelection = item;
+	if (dropSelection != null) tree.setSelection(new TreeItem[]{dropSelection});
 }
-
 }

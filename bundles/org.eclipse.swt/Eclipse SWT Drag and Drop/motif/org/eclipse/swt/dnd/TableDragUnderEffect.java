@@ -10,24 +10,26 @@ import org.eclipse.swt.widgets.*;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
-	private TableItem currentItem;
 	private TableItem[] selection = new TableItem[0];
-	private int currentEffect = DND.FEEDBACK_NONE;
+	int currentEffect = DND.FEEDBACK_NONE;
+	private TableItem currentItem;
+	private TableItem dropSelection;
 	
 TableDragUnderEffect(Table table) {
 	this.table = table;
 }
 void show(int effect, int x, int y) {
-	TableItem item = null;
-	if (effect != DND.FEEDBACK_NONE) item = findItem(x, y);
+	TableItem item = findItem(x, y);
 	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect != effect && currentEffect == DND.FEEDBACK_NONE) {
+	if (effect == currentEffect && item == currentItem) return;
+	currentItem = item;
+	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
 		selection = table.getSelection();
-		table.setSelection(new TableItem[0]);
+		table.deselectAll();
 	}
-	boolean restoreSelection = currentEffect != effect && effect == DND.FEEDBACK_NONE;
+	int previousEffect = currentEffect;
 	setDragUnderEffect(effect, item);
-	if (restoreSelection) {
+	if (previousEffect != DND.FEEDBACK_NONE && currentEffect == DND.FEEDBACK_NONE) {
 		table.setSelection(selection);
 		selection = new TableItem[0];
 	}
@@ -50,14 +52,23 @@ private TableItem findItem(int x, int y){
 
 }
 private void setDragUnderEffect(int effect, TableItem item) {	
-	if (currentItem != item) {
-		if (item == null) {
-			table.setSelection(new TableItem[0]);
-		} else {
-			table.setSelection(new TableItem[] {item});
-		}
-		currentItem = item;
+	switch (effect) {				
+		case DND.FEEDBACK_SELECT:
+			setDropSelection(item); 
+			currentEffect = DND.FEEDBACK_SELECT;
+			break;		
+		default:
+			if (currentEffect == DND.FEEDBACK_SELECT) {
+				setDropSelection(null);
+			}
+			currentEffect = DND.FEEDBACK_NONE;
+			break;
 	}
-	currentEffect = effect;
+}
+private void setDropSelection (TableItem item) {
+	if (item == dropSelection) return;
+	if (dropSelection != null) table.deselectAll();
+	dropSelection = item;
+	if (dropSelection != null) table.setSelection(new TableItem[]{dropSelection});
 }
 }
