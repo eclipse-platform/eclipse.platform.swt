@@ -235,14 +235,23 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		} else {
 			byte [] buffer = new byte [size + 1];
 			OS.memmove (buffer, ptr, size);
-			int xmString = OS.XmStringParseText (	
-				buffer,
-				0,
-				OS.XmFONTLIST_DEFAULT_TAG, 
-				OS.XmCHARSET_TEXT, 
-				null,
-				0,
-				0);
+			int xmString;
+			if ((style & SWT.SINGLE) != 0) {
+				xmString = OS.XmStringParseText (
+					buffer,
+					0,
+					OS.XmFONTLIST_DEFAULT_TAG,
+					OS.XmCHARSET_TEXT,
+					null,
+					0,
+					0);
+			} else {
+				xmString = OS.XmStringGenerate (
+					buffer,
+					OS.XmFONTLIST_DEFAULT_TAG,
+					OS.XmCHARSET_TEXT,
+					null);
+			}
 			int fontList = font.handle;
 			if (hHint == SWT.DEFAULT) {
 				if ((style & SWT.SINGLE) != 0) {
@@ -1132,6 +1141,11 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	* back.  The fix is to detect this case and scroll the
 	* text back.
 	*/
+//	inset := self inset.
+//	nWidth := self dimensionAt: XmNwidth.
+//	self noWarnings: [super resizeWidget].
+//	nWidth > inset x ifTrue: [^self].
+//	self showPosition: self topCharacter
 	return changed;
 }
 /**
