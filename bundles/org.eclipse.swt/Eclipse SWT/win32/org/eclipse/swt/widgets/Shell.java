@@ -1170,12 +1170,12 @@ int widgetExtStyle () {
 	int bits = super.widgetExtStyle () & ~OS.WS_EX_MDICHILD;
 	/*
 	* Bug in Windows 98 and NT.  Creating a window with the
-	* WS_EX_TOPMOST extendes style can result in a dialog shell
+	* WS_EX_TOPMOST extended style can result in a dialog shell
 	* being moved behind its parent.  The exact case where this
 	* happens is a shell with two dialog shell children where
 	* each dialog child has another hidden dialog child with
 	* the WS_EX_TOPMOST extended style.  Clicking on either of
-	* the visible dialog causes them to become active but move
+	* the visible dialogs causes them to become active but move
 	* to the back, behind the parent shell.  The fix is to
 	* disallow the WS_EX_TOPMOST extended style on Windows 98
 	* and NT.

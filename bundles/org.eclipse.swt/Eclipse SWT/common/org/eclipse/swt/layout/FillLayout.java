@@ -79,6 +79,8 @@ public final class FillLayout extends Layout {
 	 * and the edge of its neighbouring cell.
 	 *
 	 * The default value is 0.
+	 * 
+	 * @since 3.0
 	 */
 	public int spacing = 0;
 	
