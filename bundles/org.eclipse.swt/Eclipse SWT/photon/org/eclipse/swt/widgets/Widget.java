@@ -773,7 +773,8 @@ void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 			if (accelText.length > 0) {
 				char key = Character.toLowerCase (accelText [0]);
 				if (normal) {
-					OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+					//TEMPORARY CODE
+//					OS.PtRemoveHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
 				}
 				if (alt) {
 					OS.PtRemoveHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
@@ -784,7 +785,8 @@ void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 	if (mnemonic == 0) return;
 	char key = Character.toLowerCase ((char)mnemonic);
 	if (normal) {
-		OS.PtAddHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
+		//TEMPORARY CODE
+//		OS.PtAddHotkeyHandler (handle, key, 0, (short)0, SWT.Activate, display.windowProc);
 	}
 	if (alt) {
 		OS.PtAddHotkeyHandler (handle, key, OS.Pk_KM_Alt, (short)0, SWT.Activate, display.windowProc);
