@@ -26,15 +26,11 @@ import org.eclipse.swt.internal.carbon.MacFont;
 public final class GCData {
 	public Device device;
 	public Image image;
-	//public int display;
-	//public int drawable;
 	public int foreground = -1;
 	public int background = -1;
 	public MacFont font;
-	//public int colormap;
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;
-	//public int renderTable;
 	// AW
 	public int controlHandle;
 	// AW

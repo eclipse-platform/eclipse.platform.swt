@@ -77,19 +77,10 @@ public Composite (Composite parent, int style) {
 	super (parent, style);
 }
 Control [] _getChildren () {
-	/* AW
-	int [] argList = {OS.XmNchildren, 0, OS.XmNnumChildren, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	int ptr = argList [1], count = argList [3];
-	*/
 	short[] cnt= new short[1];
 	OS.CountSubControls(handle, cnt);
 	int count= cnt[0];
 	if (count == 0) return new Control [0];
-	/* AW
-	int [] handles = new int [count];
-	OS.memmove (handles, ptr, count * 4);
-    */
 	int handles[]= new int[count];
 	int[] outHandle= new int[1];
 	
@@ -181,7 +172,6 @@ void createScrolledHandle (int topHandle) {
     scrolledHandle= createScrollView(topHandle, style);
 	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
 
-	Display display = getDisplay ();
 	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
         /* AW
 		int thickness = display.buttonShadowThickness;

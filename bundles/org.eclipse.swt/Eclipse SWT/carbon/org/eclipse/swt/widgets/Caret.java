@@ -31,7 +31,7 @@ public /*final*/ class Caret extends Widget {
 	int x, y, width, height;
 	boolean moved, resized;
 	boolean isVisible, isShowing;
-	int blinkRate = Display.ticksToMS(OS.GetCaretTime());
+	int blinkRate = (OS.GetCaretTime() * 1000) / 60;
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -323,7 +323,7 @@ void releaseWidget () {
  */
 public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
-	boolean samePosition, sameExtent, showing;
+	boolean samePosition, sameExtent;
 	samePosition = (this.x == x) && (this.y == y);
 	sameExtent = (this.width == width) && (this.height == height);
 	if ((samePosition) && (sameExtent)) return;

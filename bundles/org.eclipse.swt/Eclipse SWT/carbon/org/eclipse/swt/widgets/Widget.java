@@ -10,7 +10,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 /**
@@ -806,7 +805,6 @@ void sendEvent (int eventType, Event event) {
 	event.type = eventType;
 	event.widget = this;
 	if (event.time == 0) {
-		Display display = getDisplay ();
 		event.time = (int)(OS.GetLastUserEventTime() * 1000.0);
 	}
 	eventTable.sendEvent (event);

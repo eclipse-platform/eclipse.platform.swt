@@ -8,7 +8,6 @@ package org.eclipse.swt.graphics;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.carbon.*;
  
 /**
  * Instances of this class describe operating system fonts.

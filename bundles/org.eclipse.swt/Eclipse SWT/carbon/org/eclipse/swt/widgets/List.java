@@ -9,12 +9,10 @@ package org.eclipse.swt.widgets;
 
 import java.util.*;
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
-
+import org.eclipse.swt.internal.carbon.*;
 
 /** 
  * Instances of this class represent a selectable user interface
@@ -226,12 +224,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
-	Display display = getDisplay ();
+	/* AW
 	int border = getBorderWidth ();
 	int trimX = x - border;
 	int trimY = y - border;
 	int trimWidth = width + (border * 2);
 	int trimHeight = height + (border * 2);
+	*/
 	if (horizontalBar != null) {
         /* AW
 		int [] argList = {OS.XmNheight, 0};
@@ -394,12 +393,12 @@ public void deselect (int start, int end) {
 	* Note:  We rely on the fact that XmListDeselectPos ()
 	* fails silently when the indices are out of range.
 	*/
+	/* AW
 	for (int i=start; i<=end; i++) {
 		int index = i + 1;
-        /* AW
-		if (index != 0) OS.XmListDeselectPos (handle, index);
-        */
+ 		if (index != 0) OS.XmListDeselectPos (handle, index);
 	}
+	*/
 }
 /**
  * Deselects the items at the given zero-relative indices in the receiver.
@@ -425,12 +424,12 @@ public void deselect (int [] indices) {
 	* Note:  We rely on the fact that XmListDeselectPos ()
 	* fails silently when the indices are out of range.
 	*/
+	/* AW
 	for (int i=0; i<indices.length; i++) {
 		int index = indices [i] + 1;
-        /* AW
-		if (index != 0) OS.XmListDeselectPos (handle, index);
-        */
+ 		if (index != 0) OS.XmListDeselectPos (handle, index);
 	}
+	*/
 }
 /**
  * Deselects all selected items in the receiver.
@@ -965,7 +964,9 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget();
 	if (start > end) return;
+	/* AW
 	int count = end - start + 1;
+	*/
 	/*
 	* Feature in Motif.  An index out of range handled
 	* correctly by the list widget but causes an unwanted
@@ -1196,14 +1197,14 @@ public void select (int start, int end) {
 	* Note:  We rely on the fact that XmListSelectPos ()
 	* fails silently when the indices are out of range.
 	*/
+	/* AW
 	for (int i=start; i<=end; i++) {
 		int index = i + 1;
-        /* AW
 		if ((index != 0) && !OS.XmListPosSelected (handle, index)) {
 			OS.XmListSelectPos (handle, index, false);
 		}
-        */
 	}
+	*/
     /* AW
 	if (oldPolicy == OS.XmEXTENDED_SELECT) {
 		argList [1] = OS.XmEXTENDED_SELECT;
@@ -1454,7 +1455,9 @@ public void setItems (String [] items) {
 	}
 	if (index < items.length) error (SWT.ERROR_ITEM_NOT_ADDED);
     */
+    /* AW
 	int oldSize= fData.size();
+	*/
 	fData.clear();
 	for (int i= 0; i < items.length; i++)
 		fData.add(items[i]);

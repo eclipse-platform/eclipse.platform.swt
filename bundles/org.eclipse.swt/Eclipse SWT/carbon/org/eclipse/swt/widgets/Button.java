@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent a selectable user interface object that
@@ -180,7 +179,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 void createHandle (int index) {
 	state |= HANDLE;
+	/* AW
 	int borderWidth = (style & SWT.BORDER) != 0 ? 1 : 0;
+	*/
 	int parentHandle = parent.handle;
 
 	/* ARROW button */
@@ -225,8 +226,8 @@ void createHandle (int index) {
 		* push button look.  The fix is to set the shadow
 		* thickness when ever this resource is changed.
 		*/
-		Display display = getDisplay ();
         /* AW
+		Display display = getDisplay ();
 		int thickness = display.buttonShadowThickness;
 		int [] argList = {
 			OS.XmNancestorSensitive, 1,
@@ -619,8 +620,8 @@ void setBitmap (Image image) {
 	bitmap = disabled = null;
 	if (image != null) {
 		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		Display display = getDisplay ();
         /* AW
+		Display display = getDisplay ();
 		switch (image.type) {
 			case SWT.BITMAP:
 				labelPixmap = image.pixmap;

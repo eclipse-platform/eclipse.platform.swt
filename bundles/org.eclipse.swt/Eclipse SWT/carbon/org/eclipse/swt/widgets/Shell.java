@@ -7,11 +7,10 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Instances of this class represent the "windows"
@@ -933,7 +932,7 @@ void hookEvents () {
 		// up and dragged events are handled by the application because
 		// we need to get these events even if the mouse is outside of the window.
 		OS.kEventClassMouse, OS.kEventMouseDown,
-		OS.kEventClassMouse, OS.kEventMouseMoved,
+		//OS.kEventClassMouse, OS.kEventMouseMoved,
 	};
 	OS.InstallEventHandler(ref, display.fWindowProc, mask, shellHandle);
 }
@@ -1464,11 +1463,11 @@ int topHandle () {
 }
 int trimHeight () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
+    /* AW
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
 	hasResize = (style & SWT.RESIZE) != 0;
 	hasBorder = (style & SWT.BORDER) != 0;
-    /* AW
 	if (hasTitle) {
 		if (hasResize) return display.titleResizeTrimHeight;
 		if (hasBorder) return display.titleBorderTrimHeight;
@@ -1481,11 +1480,11 @@ int trimHeight () {
 }
 int trimWidth () {
 	if ((style & SWT.NO_TRIM) != 0) return 0;
+    /* AW
 	boolean hasTitle = false, hasResize = false, hasBorder = false;
 	hasTitle = (style & (SWT.MIN | SWT.MAX | SWT.TITLE | SWT.MENU)) != 0;
 	hasResize = (style & SWT.RESIZE) != 0;
 	hasBorder = (style & SWT.BORDER) != 0;
-    /* AW
 	if (hasTitle) {
 		if (hasResize) return display.titleResizeTrimWidth;
 		if (hasBorder) return display.titleBorderTrimWidth;

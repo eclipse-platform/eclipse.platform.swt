@@ -7,8 +7,6 @@ package org.eclipse.swt.internal;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
-
 /**
  * This class implements the conversions between unicode characters
  * and the <em>platform supported</em> representation for characters.
@@ -51,6 +49,7 @@ static byte[] getAsciiBytes (String str) {
 	return buffer;
 }
 
+/* AW
 static String getAsciiString (byte [] buffer) {
 	int length = buffer.length;
 	char [] chars = new char [length];
@@ -59,6 +58,7 @@ static String getAsciiString (byte [] buffer) {
 	}
 	return new String (chars);
 }
+*/
 
 /**
  * Converts an array of bytes representing the platform's encoding,

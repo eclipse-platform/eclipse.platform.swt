@@ -7,7 +7,6 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -179,14 +178,7 @@ public void setBounds (int x, int y, int width, int height) {
 	checkWidget();
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	/*
-	if (width < 0 || height < 0) {
-		System.out.println("Canvas.setBounds("+this+"): " + new Rectangle(x, y, width, height));
-		if (width == -5)
-			new Exception().printStackTrace();
-	} else
-	*/
-		super.setBounds (x, y, width, height);
+	super.setBounds (x, y, width, height);
 	if (isFocus) caret.setFocus ();
 }
 /**

@@ -7,7 +7,6 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
@@ -125,8 +124,8 @@ void createHandle (int index) {
 	* behavior is unwanted.  The fix is to create a parent for
 	* the list that will disallow geometry requests.
 	*/
-	int border = (style & SWT.BORDER) != 0 ? 1 : 0;
     /* AW
+	int border = (style & SWT.BORDER) != 0 ? 1 : 0;
 	int [] argList1 = {
 		OS.XmNancestorSensitive, 1,
 		OS.XmNborderWidth, border,

@@ -7,7 +7,6 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -151,13 +150,14 @@ public void addControlListener (ControlListener listener) {
 }
 
 Point adjustMoveCursor (int xDisplay, int xWindow) {
-	final int unused[] = new int[1];
 	int actualX[] = new int[1];
 	int actualY[] = new int[1];
 	
+	/* AW
 	Rectangle bounds = computeBounds ();
 	int newX = bounds.x + bounds.width / 2;
 	int newY = bounds.y;
+	*/
 	
 	/* AW
 	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, newX, newY);
@@ -173,6 +173,7 @@ Point adjustMoveCursor (int xDisplay, int xWindow) {
 	return new Point (actualX[0], actualY[0]);
 }
 Point adjustResizeCursor (int xDisplay, int xWindow) {
+	/* AW
 	int newX, newY;
 	Rectangle bounds = computeBounds ();
 
@@ -191,8 +192,8 @@ Point adjustResizeCursor (int xDisplay, int xWindow) {
 	} else {
 		newY = bounds.y + bounds.height / 2;
 	}
-
-	final int unused[] = new int[1];
+	*/
+	
 	int actualX[] = new int[1];
 	int actualY[] = new int[1];
 	/* AW

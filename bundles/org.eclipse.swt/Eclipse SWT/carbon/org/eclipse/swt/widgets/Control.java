@@ -7,12 +7,11 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.*;
-import org.eclipse.swt.internal.carbon.*;
-import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.accessibility.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -568,8 +567,8 @@ int getBackgroundPixel () {
  */
 public int getBorderWidth () {
 	checkWidget();
-	int topHandle = topHandle ();
     /* AW
+	int topHandle = topHandle ();
 	int [] argList = {OS.XmNborderWidth, 0};
 	OS.XtGetValues (topHandle, argList, argList.length / 2);
 	return argList [1];
@@ -895,8 +894,8 @@ public String getToolTipText () {
  */
 public boolean getVisible () {
 	checkWidget();
-	int topHandle = topHandle ();
     /* AW
+	int topHandle = topHandle ();
 	int [] argList = {OS.XmNmappedWhenManaged, 0};
 	OS.XtGetValues (topHandle, argList, argList.length / 2);
 	return argList [1] != 0;
@@ -1315,63 +1314,42 @@ int processMouseUp (Object callData) {
 int processPaint (Object callData) {
 	if (!hooks (SWT.Paint)) return 0;
 	
+	/*
 	if (!fVisible || fDrawCount > 0) {
 		System.out.println("Control.processPaint: premature exit");
 		return 0;
 	}
-	
-	// AW
-	// calculate damage rect for this Control
-	MacControlEvent me= (MacControlEvent) callData;
-	int updateRegion= me.getDamageRegionHandle();
-
-	MacRect bounds= new MacRect();
-	OS.GetControlBounds(me.getControlHandle(), bounds.getData());
-	int x= bounds.getX();
-	int y= bounds.getY();
-	int contentRgn= OS.NewRgn();
-	OS.RectRgn(contentRgn, bounds.getData());
-	if (updateRegion != 0)
-		OS.SectRgn(contentRgn, updateRegion, contentRgn);
-	OS.GetRegionBounds(contentRgn, bounds.getData());
-	Rectangle r= bounds.toRectangle();
-	OS.DisposeRgn(contentRgn);		
-	r.x-= x;
-	r.y-= y;
-	// AW
-	
-	Event event = new Event ();
+	*/
     /* AW
 	event.count = xEvent.count;
 	event.time = OS.XtLastTimestampProcessed (xDisplay);
-	event.x = xEvent.x;  event.y = xEvent.y;
-	event.width = xEvent.width;  event.height = xEvent.height;
     */
-	event.x = r.x;  event.y = r.y;
-	event.width = r.width;  event.height = r.height;
-	GC gc = event.gc = new GC (this);
-    /* AW
-	XRectangle rect = new XRectangle ();
-	rect.x = (short) xEvent.x;  rect.y = (short) xEvent.y;
-	rect.width = (short) xEvent.width;  rect.height = (short) xEvent.height;
-	OS.XSetClipRectangles (xDisplay, gc.handle, 0, 0, rect, 1, OS.Unsorted);
-    */
-	gc.carbon_focus();
-	
-	// erase background
-	if ((state & CANVAS) != 0) {
-		if ((style & SWT.NO_BACKGROUND) == 0) {
-			gc.fillRectangle(r);
+    
+	GC gc= new GC (this);
+	MacControlEvent me= (MacControlEvent) callData;
+	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
+	if (r == null || !r.isEmpty()) {
+		Event event = new Event ();
+		event.gc = gc;
+		event.x = r.x;  event.y = r.y;
+		event.width = r.width;  event.height = r.height;
+				
+		// erase background
+		if ((state & CANVAS) != 0) {
+			if ((style & SWT.NO_BACKGROUND) == 0) {
+				gc.fillRectangle(r);
+			}
 		}
+		
+		sendEvent (SWT.Paint, event);
+		event.gc = null;
 	}
 	
-	sendEvent (SWT.Paint, event);
+	gc.carbon_unfocus ();
 	
-	if (!gc.isDisposed ()) {
-		gc.carbon_unfocus ();
+	if (!gc.isDisposed ())
 		gc.dispose ();
-	}
-	event.gc = null;
+
 	return 0;
 }
 int processResize (Object callData) {
@@ -2671,7 +2649,7 @@ public void update () {
 		OS.XtDispatchEvent (event);
 	}
     */
-	Display.processAllUpdateEvents(handle);
+	getDisplay().update();
 }
 
 //////////////////////////////////////////////////////////////////////

@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
  */
  
 import org.eclipse.swt.*;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.layout.*;
 
@@ -879,7 +878,6 @@ void setSizeItemsSorted (Enumeration itemsEnum) {
 	}
 	Integer[] sortedItems = new Integer [items.size ()];
 	items.copyInto (sortedItems);
-	int index = 0;
 	sort (sortedItems);
 	String[] sortedItemStrings = new String [items.size ()];
 	for (int i = 0; i < sortedItemStrings.length; i++) {

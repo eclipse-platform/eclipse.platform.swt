@@ -7,7 +7,6 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -476,7 +475,9 @@ void setDefaultButton (Button button, boolean save) {
  */
 public void setImage (Image image) {
 	checkWidget();
+	/* AW
 	int pixmap = 0, mask = 0;
+	*/
 	if (image != null) {
 		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
         /* AW
@@ -572,8 +573,10 @@ public void setMenuBar (Menu menu) {
 	* before the call to XmMainWindowSetAreas () or the new
 	* menu will not be layed out properly.
 	*/
+	/* AW
 	int newHandle = (menu != null) ? menu.handle : 0;
 	int oldHandle = (menuBar != null) ? menuBar.handle : 0;
+	*/
 	menuBar = menu;
     /* AW
 	int hHandle = (horizontalBar != null) ? horizontalBar.handle : 0;

@@ -8,7 +8,6 @@ package org.eclipse.swt.graphics;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.*;
 
 /**
@@ -100,7 +99,7 @@ public Device(DeviceData data) {
 	
 	/* Initialize the system font slot */
 	Font font = getSystemFont ();
-	FontData fd = font.getFontData ()[0];
+	//FontData fd = font.getFontData ()[0];
 	systemFont = font.handle;
 	/* AW
 	characterSetName = fd.characterSetName;
@@ -290,6 +289,7 @@ public Point getDPI () {
  */
 public FontData [] getFontList (String faceName, boolean scalable) {	
 	checkDevice ();
+	/* AW
 	String xlfd;
 	if (faceName == null) {
 		xlfd = "-*-*-*-*-*-*-*-*-*-*-*-*-*-*";
@@ -301,6 +301,7 @@ public FontData [] getFontList (String faceName, boolean scalable) {
 			xlfd = "-" + faceName + "-*-*-*-*-*-*-*-*-*-*-*-*";
 		}
 	}
+	*/
 	/* Use the character encoding for the default locale */
 	/* AW
 	byte [] buffer1 = Converter.wcsToMbcs (null, xlfd, true);

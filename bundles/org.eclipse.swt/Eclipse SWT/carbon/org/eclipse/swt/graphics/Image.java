@@ -233,7 +233,9 @@ public Image(Device device, Image srcImage, int flag) {
 		flag= SWT.IMAGE_COPY;
 	// AW
 		
+	/* AW
 	int xDisplay = device.xDisplay;
+	*/
 	this.type = srcImage.type;
 	this.mask = 0;
 	MacRect bounds= new MacRect();
@@ -725,7 +727,7 @@ void createMask() {
 	XColor[] xcolors = device.xcolors;
 	*/
 	XColor[] xcolors = null;
-	int error = Image.putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, screenDepth, xcolors, null, true, maskPixmap);
+	Image.putImage(maskImage, 0, 0, maskImage.width, maskImage.height, 0, 0, maskImage.width, maskImage.height, screenDepth, xcolors, null, true, maskPixmap);
 	this.mask = maskPixmap;
 }
 /**
@@ -850,8 +852,8 @@ public ImageData getImageData() {
 	Rectangle srcBounds = getBounds();
 	int width = srcBounds.width;
 	int height = srcBounds.height;
-	int xDisplay = device.xDisplay;
     /* AW
+	int xDisplay = device.xDisplay;
 	int xSrcImagePtr = OS.XGetImage(xDisplay, pixmap, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
 	if (xSrcImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
     */
@@ -1415,6 +1417,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 			return SWT.ERROR_NO_HANDLES;
 		}
 		*/
+		/* AW code never executed because isMask == true
 		int foreground = 1, background = 0;
 		if (!isMask) {
 			foreground = 0;
@@ -1427,6 +1430,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 					destRedMask, destGreenMask, destBlueMask, destReds, destGreens, destBlues);
 			}
 		}
+		*/
 		/* AW
 		XImage xImage = new XImage();
 		OS.memmove(xImage, xImagePtr, XImage.sizeof);
@@ -1554,10 +1558,10 @@ public void setBackground(Color color) {
 	if (transparentPixel == -1) return;
 	/* Generate the mask if necessary. */
 	if (mask == 0) createMask();
+    /* AW
 	Rectangle bounds = getBounds();
 	int[] unused = new int[1];
 	int[] depth = new int[1];
-    /* AW
 	int xDisplay = device.xDisplay;
  	OS.XGetGeometry(xDisplay, pixmap, unused, unused, unused, unused, unused, unused, depth);
 	int drawable = OS.XDefaultRootWindow(xDisplay);
