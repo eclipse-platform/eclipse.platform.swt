@@ -528,8 +528,9 @@ Decorations menuShell () {
 
 int kEventControlContextualMenuClick (int nextHandler, int theEvent, int userData) {
 	if (menu != null && !menu.isDisposed ()) {
+		int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.sizeof, null, pt);
+		OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
 		Rect rect = new Rect ();
 		int window = OS.GetControlOwner (handle);
 		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
@@ -857,8 +858,9 @@ boolean sendMouseEvent (int type, int theEvent) {
 boolean sendMouseEvent (int type, short button, int theEvent) {
 	Event event = new Event ();
 	event.type = type;
+	int sizeof = org.eclipse.swt.internal.carbon.Point.sizeof;
 	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, pt.sizeof, null, pt);
+	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, sizeof, null, pt);
 	Rect rect = new Rect ();
 	int window = OS.GetControlOwner (handle);
 	OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);

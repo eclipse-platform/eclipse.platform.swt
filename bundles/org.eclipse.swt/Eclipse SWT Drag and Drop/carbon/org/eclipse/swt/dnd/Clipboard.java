@@ -10,7 +10,6 @@ package org.eclipse.swt.dnd;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.carbon.OS;
-import org.eclipse.swt.internal.carbon.CFRange;
 
 public class Clipboard {
 	

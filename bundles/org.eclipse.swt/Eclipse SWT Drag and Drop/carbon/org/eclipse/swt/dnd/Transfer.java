@@ -7,9 +7,6 @@ package org.eclipse.swt.dnd;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
  
-import org.eclipse.swt.internal.Converter;
-import org.eclipse.swt.widgets.Display;
-
 /**
  * <code>Transfer</code> provides a mechanism for converting between a java 
  * representation of data and a platform specific representation of data and 
