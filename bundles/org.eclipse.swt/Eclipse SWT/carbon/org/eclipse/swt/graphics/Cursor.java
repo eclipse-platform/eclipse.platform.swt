@@ -148,7 +148,17 @@ public Cursor(Device device, int style) {
 		case SWT.CURSOR_HELP: 			handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZEALL: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZENESW: 		handle = OS.kThemeCrossCursor; break;
-		case SWT.CURSOR_SIZENS: 		break;
+		case SWT.CURSOR_SIZENS: {
+			org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
+			cursor.data = SIZENS_SOURCE;
+			cursor.mask = SIZENS_MASK;
+			cursor.hotSpot_h = 7;
+			cursor.hotSpot_v = 7;
+			handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
+			if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+			OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);	
+	 		break;
+		}
 		case SWT.CURSOR_SIZENWSE: 		handle = OS.kThemeCrossCursor; break;
 		case SWT.CURSOR_SIZEWE: 		handle = OS.kThemeResizeLeftRightCursor; break;
 		case SWT.CURSOR_SIZEN: 		handle = OS.kThemeCrossCursor; break;
@@ -165,21 +175,6 @@ public Cursor(Device device, int style) {
 		default:
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	
-	/*
-	 * Mac OS X does not provide a native Size NS cursor.
-	 * Create a Size NS cursor.
-	 */
-	 if (style == SWT.CURSOR_SIZENS) {
-		org.eclipse.swt.internal.carbon.Cursor cursor = new org.eclipse.swt.internal.carbon.Cursor();
-		cursor.data = SIZENS_SOURCE;
-		cursor.mask = SIZENS_MASK;
-		cursor.hotSpot_h = 7;
-		cursor.hotSpot_v = 7;
-		handle = OS.NewPtrClear(org.eclipse.swt.internal.carbon.Cursor.sizeof);
-		if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);	
-	 }
 }
 
 /**	 
@@ -255,7 +250,7 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	}
 	cursor.hotSpot_h = (short)Math.min(16, hotspotX);
 	cursor.hotSpot_v = (short)Math.min(16, hotspotY);
-	handle = OS.NewPtrClear(org.eclipse.swt.internal.carbon.Cursor.sizeof);
+	handle = OS.NewPtr(org.eclipse.swt.internal.carbon.Cursor.sizeof);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.memcpy(handle, cursor, org.eclipse.swt.internal.carbon.Cursor.sizeof);
 }

@@ -221,7 +221,7 @@ public Image(Device device, Image srcImage, int flag) {
 
 	/* Create the image */
 	int dataSize = height * bpr;
-	data = OS.NewPtrClear(dataSize);
+	data = OS.NewPtr(dataSize);
 	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
 	if (provider == 0) {
@@ -655,7 +655,7 @@ void init(Device device, int width, int height) {
 	/* Create the image */
 	int bpr = width * 4;
 	int dataSize = height * bpr;
-	data = OS.NewPtrClear(dataSize);
+	data = OS.NewPtr(dataSize);
 	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
 	if (provider == 0) {
@@ -688,7 +688,7 @@ void init(Device device, ImageData image) {
 	
 	/* Create the image */
 	int dataSize = width * height * 4;
-	data = OS.NewPtrClear(width * height * 4);
+	data = OS.NewPtr(width * height * 4);
 	if (data == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int provider = OS.CGDataProviderCreateWithData(0, data, dataSize, 0);
 	if (provider == 0) {

@@ -288,8 +288,8 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	short[] style = new short[1];
 	short[] size = new short[1];
 	byte[] buffer = new byte[256];
-	int familyIter = OS.NewPtrClear(16 * 4);
-	int fontIter = OS.NewPtrClear(16 * 4);
+	int familyIter = OS.NewPtr(16 * 4);
+	int fontIter = OS.NewPtr(16 * 4);
 	OS.FMCreateFontFamilyIterator(0, 0, 0, familyIter);
 	while (OS.FMGetNextFontFamily(familyIter, fontFamily) != OS.kFMIterationCompleted) {
 		OS.FMGetFontFamilyName(fontFamily[0], buffer);

@@ -134,7 +134,7 @@ int createCIcon (Image image) {
 	
 	/* Create the icon */
 	int iconSize = PixMap.sizeof + BitMap.sizeof * 2 + 4 + maskSize;
-	int iconHandle = OS.NewHandleClear(iconSize);
+	int iconHandle = OS.NewHandle(iconSize);
 	if (iconHandle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.HLock(iconHandle);
 	int[] iconPtr = new int[1];
@@ -457,10 +457,13 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	int [] theControl = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	int [] region = new int [1];	
+	OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, region);
 	int clipRgn = getClipping (theControl [0]);
 	int oldRgn = OS.NewRgn ();
 	OS.GetClip (oldRgn);
 //	OS.SectRgn(oldRgn, clipRgn, clipRgn);
+	OS.SectRgn(region [0], clipRgn, clipRgn);
 	OS.SetClip (clipRgn);
 	drawWidget (theControl [0]);
 	int result = OS.CallNextEventHandler (nextHandler, theEvent);
