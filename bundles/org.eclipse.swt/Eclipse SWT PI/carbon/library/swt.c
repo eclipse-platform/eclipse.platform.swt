@@ -5663,6 +5663,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RepositionWindow
 }
 #endif
 
+#ifndef NO_RetainEvent
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RetainEvent
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("RetainEvent\n")
+
+	return (jint)RetainEvent((EventRef)arg0);
+}
+#endif /* NO_RetainEvent */
+
 #ifndef NO_RetainMenu
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_RetainMenu
 	(JNIEnv *env, jclass that, jint arg0)

@@ -420,6 +420,10 @@ protected boolean isListening (int eventType) {
 	return hooks (eventType);
 }
 
+boolean isTrimHandle (int trimHandle) {
+	return false;
+}
+
 boolean isValidSubclass () {
 	return Display.isValidClass (getClass ());
 }

@@ -12,8 +12,8 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.CGRect;
-import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.HICommand;
+import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.RGBColor;
 
 import org.eclipse.swt.*;
@@ -25,6 +25,9 @@ public class Display extends Device {
 	int textHighlightThickness = 4;
 	
 	/* Windows and Events */
+	int [] wakeEvent;
+	static final int WAKE_CLASS = 0;
+	static final int WAKE_KIND = 0;
 	Event [] eventQueue;
 	Callback actionCallback, commandCallback, controlCallback;
 	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, helpCallback;
@@ -48,7 +51,8 @@ public class Display extends Device {
 	int [] timerIds;
 	Runnable [] timerList;
 	Callback timerCallback;
-	int timerProc;	
+	int timerProc;
+	boolean allowTimers;
 		
 	/* Current caret */
 	Caret currentCaret;
@@ -271,6 +275,7 @@ public void beep () {
 }
 
 int caretProc (int id, int clientData) {
+	if (!allowTimers) return 0;
 	if (currentCaret == null) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
@@ -379,6 +384,9 @@ protected void create (DeviceData data) {
 
 void createDisplay (DeviceData data) {
 	queue = OS.GetCurrentEventQueue ();
+	wakeEvent = new int [1];
+	OS.CreateEvent (0, WAKE_CLASS, WAKE_KIND, 0.0, OS.kEventAttributeUserEvent, wakeEvent);
+	OS.RetainEvent (wakeEvent [0]);
 	OS.TXNInitTextension (0, 0, 0);
 }
 
@@ -480,8 +488,7 @@ int getCaretBlinkTime () {
 	return OS.GetCaretTime () * 1000 / 60;
 }
 
-public Control getCursorControl () {
-	checkDevice ();
+Control getCursorControl (boolean includeTrim) {
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetGlobalMouse (where);
 	int [] theWindow = new int [1];
@@ -499,6 +506,9 @@ public Control getCursorControl () {
 	if (theControl [0] != 0) {
 		do {
 			Widget widget = WidgetTable.get (theControl [0]);
+			if (!includeTrim && widget != null) {
+				if (widget.isTrimHandle (theControl [0])) return null;
+			}
 			if (widget != null && widget instanceof Control) {
 				Control control = (Control) widget;
 				if (control.getEnabled ()) return control;
@@ -509,6 +519,11 @@ public Control getCursorControl () {
 	Widget widget = WidgetTable.get (theRoot [0]);
 	if (widget != null && widget instanceof Control) return (Control) widget;
 	return null;
+}
+
+public Control getCursorControl () {
+	checkDevice ();
+	return getCursorControl (true);
 }
 
 public Point getCursorLocation () {
@@ -968,18 +983,20 @@ int mouseHoverProc (int id, int handle) {
 
 public boolean readAndDispatch () {
 	checkDevice ();
-	runEnterExit ();
-	int [] outEvent = new int [1];
+	if (runTimers () || runEnterExit ()) return true;
+	allowTimers = true;
+	int [] outEvent  = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
+	allowTimers = false;
 	if (status == OS.noErr) {
-		if (!(OS.GetEventKind (outEvent [0]) == 0 && OS.GetEventClass (outEvent [0]) == 0)) {
-			OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
-			OS.ReleaseEvent (outEvent [0]);
-			runPopups ();
-			runDeferredEvents ();
-			runGrabs ();
-			return true;
-		}
+		int eventClass = OS.GetEventClass (outEvent [0]);
+		int eventKind = OS.GetEventKind (outEvent [0]);
+		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
+		OS.ReleaseEvent (outEvent [0]);
+		runPopups ();
+		runDeferredEvents ();
+		runGrabs ();
+		if (eventClass != WAKE_CLASS || eventKind != WAKE_KIND) return true;
 	}
 	return runAsyncMessages ();
 }
@@ -1048,6 +1065,8 @@ void releaseDisplay () {
 	grabControl = helpControl = currentControl = null;
 	if (helpString != 0) OS.CFRelease (helpString);
 	helpString = 0;
+	if (wakeEvent [0] != 0) OS.ReleaseEvent (wakeEvent [0]);
+	wakeEvent = null;	
 	//NOT DONE - call terminate TXN if this is the last display 
 	//NOTE: - display create and dispose needs to be synchronized on all platforms
 //	 TXNTerminateTextension ();
@@ -1094,88 +1113,27 @@ boolean runAsyncMessages () {
 }
 
 boolean runEnterExit () {
-	//OPTIMIZE - get rid of garbage, use hittest from mouse proc
-	Control control = null;
-	CGPoint inPoint = null;
-	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
-	OS.GetGlobalMouse (where);
-	int [] theWindow = new int [1];
-	if (OS.FindWindow (where, theWindow) == OS.inContent) {
-		if (theWindow [0] != 0) {
-			Rect windowRect = new Rect ();
-			OS.GetWindowBounds (theWindow [0], (short) OS.kWindowContentRgn, windowRect);
-			inPoint = new CGPoint ();
-			inPoint.x = where.h - windowRect.left;
-			inPoint.y = where.v - windowRect.top;
-			int [] theRoot = new int [1];
-			OS.GetRootControl (theWindow [0], theRoot);
-			int [] theControl = new int [1];
-			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
-			Widget widget = null;
-			if (theControl [0] != 0) {
-				do {
-					widget = WidgetTable.get (theControl [0]);
-					if (widget != null && widget instanceof Control) {
-						if (((Control) widget).getEnabled ()) break;
-					}
-					OS.GetSuperControl (theControl [0], theControl);
-				} while (theControl [0] != 0);
-			}
-			if (widget == null) widget = WidgetTable.get (theRoot [0]);
-			if (widget != null && widget instanceof Control) {
-				control = (Control) widget;
-			}
-		}
-	}
+	//OPTIMIZE - use OS calls, no garbage, widget already hit tested in mouse move
 	boolean eventSent = false;
+	Control control = getCursorControl (false);
 	if (control != currentControl) {
-		int chord = 0, modifiers = 0;
 		if (currentControl != null && !currentControl.isDisposed ()) {
 			eventSent = true;
-			chord = OS.GetCurrentEventButtonState ();
-			modifiers = OS.GetCurrentEventKeyModifiers ();
-			int controlHandle = currentControl.handle;
-			if (inPoint == null) {
-				inPoint = new CGPoint ();
-				Rect windowRect = new Rect ();
-				int window = OS.GetControlOwner (controlHandle);
-				OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, windowRect);
-				inPoint.x = where.h - windowRect.left;
-				inPoint.y = where.v - windowRect.top;
-			}
-			Rect controlRect = new Rect ();
-			OS.GetControlBounds (controlHandle, controlRect);
-			int x = (int) inPoint.x - controlRect.left;
-			int y = (int) inPoint.y - controlRect.top;
-			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)x, (short)y, modifiers);
+			Point point = getCursorLocation ();
+			int chord = OS.GetCurrentEventButtonState ();
+			int modifiers = OS.GetCurrentEventKeyModifiers ();
+			Point pt = currentControl.toControl (point);
+			currentControl.sendMouseEvent (SWT.MouseExit, (short)0, chord, (short)pt.x, (short)pt.y, modifiers);
 			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 			mouseHoverID = 0;
 		}
 		if ((currentControl = control) != null) {
-			int controlHandle = currentControl.handle;
-			if (!eventSent) {
-				eventSent = true;
-				chord = OS.GetCurrentEventButtonState ();
-				modifiers = OS.GetCurrentEventKeyModifiers ();
-				if (inPoint == null) {
-					inPoint = new CGPoint ();
-					Rect windowRect = new Rect ();
-					int window = OS.GetControlOwner (controlHandle);
-					OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, windowRect);
-					inPoint.x = where.h - windowRect.left;
-					inPoint.y = where.v - windowRect.top;
-				}
-			}
-			Rect controlRect = new Rect ();
-			OS.GetControlBounds (controlHandle, controlRect);
-			int x = (int) inPoint.x - controlRect.left;
-			int y = (int) inPoint.y - controlRect.top;
-			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)x, (short)y, modifiers);
-			org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
-			OS.SetPt (localPoint, (short) inPoint.x, (short) inPoint.y);
-			boolean [] cursorWasSet = new boolean [1];
-			OS.HandleControlSetCursor (currentControl.handle, localPoint, (short) modifiers, cursorWasSet);
-			if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
+			eventSent = true;
+			Point point = getCursorLocation ();
+			int chord = OS.GetCurrentEventButtonState ();
+			int modifiers = OS.GetCurrentEventKeyModifiers ();
+			Point controlPt = currentControl.toControl (point);
+			currentControl.sendMouseEvent (SWT.MouseEnter, (short)0, chord, (short)controlPt.x, (short)controlPt.y, modifiers);
 			if (mouseHoverID != 0) OS.RemoveEventLoopTimer (mouseHoverID);
 			int [] id = new int [1], outDelay = new int [1];
 			OS.HMGetTagDelay (outDelay);
@@ -1183,6 +1141,16 @@ boolean runEnterExit () {
 			OS.InstallEventLoopTimer (eventLoop, outDelay [0] / 1000.0, 0.0, mouseHoverProc, 0, id);
 			mouseHoverID = id [0];
 		}
+	}
+	if (control != null) {
+		Point point = getCursorLocation ();
+		int modifiers = OS.GetCurrentEventKeyModifiers ();
+		Point windowPt = control.getShell ().toControl (point);
+		org.eclipse.swt.internal.carbon.Point localPoint = new org.eclipse.swt.internal.carbon.Point ();
+		OS.SetPt (localPoint, (short) windowPt.x, (short) windowPt.y);
+		boolean [] cursorWasSet = new boolean [1];
+		OS.HandleControlSetCursor (control.handle, localPoint, (short) modifiers, cursorWasSet);
+		if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 	}
 	return eventSent;
 }
@@ -1294,6 +1262,23 @@ boolean runPopups () {
 		result = true;
 	}
 	popups = null;
+	return result;
+}
+
+boolean runTimers () {
+	if (timerList == null || timerIds == null) return false;
+	boolean result = false;
+	for (int i=0; i<timerList.length; i++) {
+		if (timerIds [i] == -1) {
+			Runnable runnable = timerList [i];
+			timerList [i] = null;
+			timerIds [i] = 0;
+			if (runnable != null) {
+				runnable.run ();
+				result = true;
+			}
+		}
+	}
 	return result;
 }
 
@@ -1498,10 +1483,15 @@ public void timerExec (int milliseconds, Runnable runnable) {
 int timerProc (int id, int index) {
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
-		Runnable runnable = timerList [index];
-		timerList [index] = null;
-		timerIds [index] = 0;
-		if (runnable != null) runnable.run ();
+		if (allowTimers) {
+			Runnable runnable = timerList [index];
+			timerList [index] = null;
+			timerIds [index] = 0;
+			if (runnable != null) runnable.run ();
+		} else {
+			timerIds [index] = -1;
+			OS.PostEventToQueue (queue, wakeEvent [0], (short) OS.kEventPriorityStandard);
+		}
 	}
 	return 0;
 }
@@ -1559,9 +1549,7 @@ void updateMenuBar (Shell shell) {
 public void wake () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
-	int [] event = new int [1];
-	OS.CreateEvent (0, 0, 0, 0.0, OS.kEventAttributeUserEvent, event);
-	OS.PostEventToQueue (queue, event [0], (short) OS.kEventPriorityStandard);
+	OS.PostEventToQueue (queue, wakeEvent [0], (short) OS.kEventPriorityStandard);
 }
 
 int windowProc (int nextHandler, int theEvent, int userData) {

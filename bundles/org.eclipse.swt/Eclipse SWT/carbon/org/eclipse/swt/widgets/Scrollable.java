@@ -131,7 +131,13 @@ Rect inset () {
 		return rect;
 	}
 	return EMPTY_RECT;
-} 
+}
+
+boolean isTrimHandle (int trimHandle) {
+	if (horizontalBar != null && horizontalBar.handle == trimHandle) return true;
+	if (verticalBar != null && verticalBar.handle == trimHandle) return true;
+	return trimHandle == scrolledHandle;
+}
 
 void layoutControl () {
 	if (scrolledHandle != 0) {

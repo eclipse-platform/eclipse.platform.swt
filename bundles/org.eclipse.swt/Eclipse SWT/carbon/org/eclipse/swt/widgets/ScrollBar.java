@@ -186,6 +186,10 @@ public boolean isEnabled () {
 	return OS.IsControlEnabled (handle);
 }
 
+boolean isTrimHandle (int trimHandle) {
+	return handle == trimHandle;
+}
+
 public boolean isVisible () {
 	checkWidget();
 	return OS.HIViewIsVisible (handle);
