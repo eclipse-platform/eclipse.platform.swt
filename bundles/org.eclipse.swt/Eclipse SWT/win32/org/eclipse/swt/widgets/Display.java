@@ -917,7 +917,7 @@ public Point getCursorLocation () {
 }
 
 /**
- * Returns the maximum allowed size of cursors on this display.
+ * Returns the maximum recommended cursor size.
  *
  * @return the maximum cursor size
  *
