@@ -120,6 +120,9 @@ public class Display extends Device {
 	/* Display Shutdown */
 	Runnable [] disposeList;
 	
+	/* Drag origin */
+	int dragStartX, dragStartY;
+
 	/* Timers */
 	int [] timerIds;
 	Runnable [] timerList;

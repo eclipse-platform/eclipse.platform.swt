@@ -560,7 +560,10 @@ int Pt_CB_OUTBOUND (int widget, int info) {
 		OS.PhInitDrag (rid, flags, rect, null, input_group, null, null, null, pos, null);
 		
 		/* Post drag detect event */
-		postEvent (SWT.DragDetect);
+		Event event = new Event ();
+		event.x = display.dragStartX;
+		event.y = display.dragStartY;
+		postEvent (SWT.DragDetect, event);
 	}
 	return OS.Pt_CONTINUE;
 }
