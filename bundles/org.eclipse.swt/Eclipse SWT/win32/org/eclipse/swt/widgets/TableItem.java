@@ -224,6 +224,7 @@ RECT getBounds (int row, int column, boolean getText, boolean getImage) {
 	if (!getText && !getImage) return new RECT ();
 	int count = Math.max (1, parent.getColumnCount ());
 	if (0 > column || column > count - 1) return new RECT ();
+	if (parent.fixScrollWidth) parent.setScrollWidth (null, true);
 	int gridWidth = parent.getLinesVisible () ? Table.GRID_WIDTH : 0;
 	int hwnd = parent.handle;
 	RECT rect = new RECT ();

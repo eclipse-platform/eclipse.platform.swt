@@ -736,9 +736,9 @@ void createItem (TableItem item, int index) {
 		items = newItems;
 	}
 	LVITEM lvItem = new LVITEM ();
+	lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
 	lvItem.iItem = index;
 	lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-	lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
 	/*
 	* Bug in Windows.  Despite the fact that the image list
 	* index has never been set for the item, Windows always
