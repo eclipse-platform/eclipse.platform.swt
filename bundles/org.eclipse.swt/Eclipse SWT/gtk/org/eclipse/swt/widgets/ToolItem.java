@@ -465,6 +465,16 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
+int processMouseDown (int callData, int arg1, int int2) {
+	/*
+	 * FIXME.  The following line of code is wrong:
+	 * the pointer position is relative to item, not the toolbar.
+	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
+	 */
+	parent.processMouseDown (callData, arg1, int2);
+	return 0;
+}
+
 int processMouseUp (int callData, int arg1, int int2) {
 	/*
 	 * FIXME.  The following line of code is wrong:
@@ -473,15 +483,9 @@ int processMouseUp (int callData, int arg1, int int2) {
 	 */
 	parent.processMouseUp (callData, arg1, int2);
 	return 0;
-}int processMouseDown (int callData, int arg1, int int2) {
-	/*
-	 * FIXME.  The following line of code is wrong:
-	 * the pointer position is relative to item, not the toolbar.
-	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
-	 */
-	parent.processMouseDown (callData, arg1, int2);
-	return 0;
-}int processMouseEnter (int int0, int int1, int int2) {
+}
+
+int processMouseEnter (int int0, int int1, int int2) {
 	drawHotImage = (parent.style & SWT.FLAT) != 0 && hotImage != null;
 	if ( drawHotImage && (currentpixmap != 0) ) { 
 		OS.gtk_pixmap_set (currentpixmap, hotImage.pixmap, hotImage.mask);
@@ -802,12 +806,4 @@ public void setWidth (int width) {
 static int checkStyle (int style) {
 	return checkBits (style, SWT.PUSH, SWT.CHECK, SWT.RADIO, SWT.SEPARATOR, SWT.DROP_DOWN, 0);
 }
-int processMouseUp (int callData, int arg1, int int2) {
-	/*
-	 * FIXME.  The following line of code is wrong:
-	 * the pointer position is relative to item, not the toolbar.
-	 * The fix requires patching the GdkEvent, and will be in when we have the new PI.
-	 */
-	parent.processMouseUp (callData, arg1, int2);
-	return 0;
-}}
+}
