@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 814;
-int OS_nativeFunctionCallCount[814];
+int OS_nativeFunctionCount = 816;
+int OS_nativeFunctionCallCount[816];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -409,6 +409,8 @@ char * OS_nativeFunctionNames[] = {
 	"gtk_1hscale_1new", 
 	"gtk_1hscrollbar_1new", 
 	"gtk_1hseparator_1new", 
+	"gtk_1icon_1factory_1lookup_1default", 
+	"gtk_1icon_1set_1render_1icon", 
 	"gtk_1im_1context_1filter_1keypress", 
 	"gtk_1im_1context_1focus_1in", 
 	"gtk_1im_1context_1focus_1out", 

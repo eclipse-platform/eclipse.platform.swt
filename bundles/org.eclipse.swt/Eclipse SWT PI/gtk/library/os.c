@@ -4844,6 +4844,33 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1hseparator_1new)
 }
 #endif
 
+#ifndef NO_gtk_1icon_1factory_1lookup_1default
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1icon_1factory_1lookup_1default)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1icon_1factory_1lookup_1default_FUNC);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)gtk_icon_factory_lookup_default(lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1icon_1factory_1lookup_1default_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_gtk_1icon_1set_1render_1icon
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1icon_1set_1render_1icon)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4, jint arg5, jint arg6)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1icon_1set_1render_1icon_FUNC);
+	rc = (jint)gtk_icon_set_render_icon((GtkIconSet *)arg0, (GtkStyle *)arg1, (GtkTextDirection)arg2, (GtkStateType)arg3, (GtkIconSize)arg4, (GtkWidget *)arg5, (const char *)arg6);
+	OS_NATIVE_EXIT(env, that, gtk_1icon_1set_1render_1icon_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1im_1context_1filter_1keypress
 JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1im_1context_1filter_1keypress)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
