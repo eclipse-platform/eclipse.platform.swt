@@ -1,7 +1,7 @@
 package org.eclipse.swt.widgets;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2001.
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
  * All Rights Reserved
  */
 
@@ -168,6 +168,9 @@ void createItem (CoolItem item, int index) {
 	rbBand.cbSize = REBARBANDINFO.sizeof;
 	rbBand.fMask = OS.RBBIM_TEXT | OS.RBBIM_STYLE | OS.RBBIM_ID;
 	rbBand.fStyle = OS.RBBS_VARIABLEHEIGHT | OS.RBBS_GRIPPERALWAYS;
+	if ((item.style & SWT.DROP_DOWN) != 0) {
+		rbBand.fStyle |= OS.RBBS_USECHEVRON;
+	}
 	rbBand.lpText = lpText;
 	rbBand.wID = id;
 	if (OS.SendMessage (handle, OS.RB_INSERTBAND, index, rbBand) == 0) {
@@ -361,7 +364,7 @@ public Point [] getItemSizes () {
 }
 
 /**
- * Returns whether or not the coolbar is 'locked'. When a coolbar
+ * Returns whether or not the reciever is 'locked'. When a coolbar
  * is locked, its items cannot be repositioned.
  *
  * @return true if the coolbar is locked, false otherwise
@@ -370,6 +373,8 @@ public Point [] getItemSizes () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 2.0
  */
 public boolean getLocked () {
 	checkWidget ();
@@ -558,6 +563,12 @@ void setItemSizes (Point [] sizes) {
 		OS.SendMessage (handle, OS.RB_GETBANDBORDERS, i, rect);
 		REBARBANDINFO rbBand = new REBARBANDINFO ();
 		rbBand.cbSize = REBARBANDINFO.sizeof;
+	
+		/* Get the child size fields first so we don't overwrite them. */
+		rbBand.fMask = OS.RBBIM_CHILDSIZE;
+		OS.SendMessage (handle, OS.RB_GETBANDINFO, i, rbBand);
+		
+		/* Now set the size fields we are currently modifying. */
 		rbBand.fMask = OS.RBBIM_CHILDSIZE | OS.RBBIM_SIZE | OS.RBBIM_IDEALSIZE;
 		int width = sizes [i].x, height = sizes [i].y;
 		rbBand.cx = width;
@@ -568,7 +579,7 @@ void setItemSizes (Point [] sizes) {
 }
 
 /**
- * Sets whether the reciever is 'locked' or not. When a coolbar
+ * Sets whether or not the reciever is 'locked'. When a coolbar
  * is locked, its items cannot be repositioned.
  *
  * @param locked lock the coolbar if true, otherwise unlock the coolbar
@@ -577,6 +588,8 @@ void setItemSizes (Point [] sizes) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @since 2.0
  */
 public void setLocked (boolean locked) {
 	checkWidget ();
@@ -688,6 +701,20 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			int border = getBorderWidth ();
 			int height = OS.SendMessage (handle, OS.RB_GETBARHEIGHT, 0, 0);
 			setSize (size.x, height + (border * 2));
+			break;
+		case OS.RBN_CHEVRONPUSHED:
+			NMREBARCHEVRON lpnm = new NMREBARCHEVRON ();
+			OS.MoveMemory (lpnm, lParam, NMREBARCHEVRON.sizeof);
+			CoolItem child = items [lpnm.wID];
+			if (child != null) {
+				Event event = new Event();
+				event.detail = SWT.ARROW;
+				Point pt = toDisplay(new Point(lpnm.left, lpnm.bottom)); // maybe should be in control coords?
+				event.x = pt.x;  // point at the bottom left of the chevron, where the menu should be popped up
+				event.y = pt.y;
+				child.postEvent (SWT.Selection, event);
+				// should I return null here? read doc
+			}
 			break;
 	}
 	return super.wmNotifyChild (wParam, lParam);
