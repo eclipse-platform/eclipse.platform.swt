@@ -2862,7 +2862,7 @@ public void setVisible (boolean visible) {
 			OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);
 			fixFocus (control);
 			if (isDisposed ()) return;
-			OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
+			OS.GTK_WIDGET_SET_FLAGS (topHandle, flags);
 		}
 		OS.gtk_widget_hide (topHandle);
 		if (enableWindow != 0) OS.gdk_window_hide (enableWindow);
