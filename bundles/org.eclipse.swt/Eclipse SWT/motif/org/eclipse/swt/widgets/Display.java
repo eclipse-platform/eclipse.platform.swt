@@ -1427,6 +1427,7 @@ public Point [] getIconSizes () {
 	return new Point [] {min, max};
 }
 int getLastEventTime () {
+//	checkDevice ();
 	return OS.XtLastTimestampProcessed (xDisplay);
 }
 int getMessageCount () {
