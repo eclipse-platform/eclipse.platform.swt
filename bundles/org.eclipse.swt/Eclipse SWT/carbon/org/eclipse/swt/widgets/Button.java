@@ -688,7 +688,9 @@ public void setText (String string) {
 }
 
 int traversalCode (int key, int theEvent) {
-	return super.traversalCode (key, theEvent) | SWT.TRAVERSE_MNEMONIC;
+	int code = super.traversalCode (key, theEvent);
+	if ((style & SWT.PUSH) != 0) return code;
+	return code | SWT.TRAVERSE_ARROW_NEXT | SWT.TRAVERSE_ARROW_PREVIOUS;
 }
 
 }

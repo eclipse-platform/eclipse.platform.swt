@@ -586,9 +586,9 @@ public boolean forceFocus () {
 	shell.bringToTop (false);
 	int [] features = new int [1];
 	OS.GetControlFeatures (handle, features);
-	if ((features [0] & OS.kControlSupportsFocus) == 0) return false;
 	int window = OS.GetControlOwner (handle);
-	return OS.SetKeyboardFocus (window, handle, (short)OS.kControlFocusNextPart) == OS.noErr;
+	OS.SetKeyboardFocus (window, handle, (short) OS.kControlFocusNextPart);
+	return hasFocus ();
 }
 
 /**
@@ -2759,11 +2759,6 @@ boolean translateTraversal (int key, int theEvent) {
 }
 
 int traversalCode (int key, int theEvent) {
-	int [] features = new int [1];
-	OS.GetControlFeatures (handle, features);
-	if ((features [0] & (OS.kControlSupportsEmbedding | OS.kControlSupportsFocus)) == 0) {
-		return 0;
-	}
 	int code = SWT.TRAVERSE_RETURN | SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS;
 	Shell shell = getShell ();
 	if (shell.parent != null) code |= SWT.TRAVERSE_ESCAPE;
