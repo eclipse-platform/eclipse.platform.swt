@@ -10,8 +10,6 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-
-import org.eclipse.swt.internal.win32.OS;
 import org.eclipse.swt.internal.ole.win32.*;
 
 /**
@@ -29,12 +27,13 @@ import org.eclipse.swt.internal.ole.win32.*;
  */
 public class RTFTransfer extends ByteArrayTransfer {
 
-	private static final String CF_RTF_NAME = "Rich Text Format"; //$NON-NLS-1$
-	private static final int CF_RTF = registerType(CF_RTF_NAME);
 	private static RTFTransfer _instance = new RTFTransfer();
-	private static int CodePage = OS.GetACP ();
+	private static final String CF_RTF = "Rich Text Format"; //$NON-NLS-1$
+	private static final int CF_RTFID = registerType(CF_RTF);
+	private static int CodePage = COM.GetACP();
 
 private RTFTransfer() {}
+
 /**
  * Returns the singleton instance of the RTFTransfer class.
  *
@@ -54,35 +53,34 @@ public static RTFTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) {
-		transferData.result = COM.E_FAIL;
+	transferData.result = COM.E_FAIL;
+	if (object == null || !(object instanceof String)) return;
+	if (!isSupportedType(transferData)) {
+		// did not match the TYMED
+		transferData.stgmedium = new STGMEDIUM();
+		transferData.result = COM.DV_E_TYMED;
 		return;
 	}
 	// CF_RTF is stored as a null terminated byte array
-	if (isSupportedType(transferData)) {
-		String string = (String)object;
-		int count = string.length ();
-		char [] buffer = new char [count + 1];
-		string.getChars (0, count, buffer, 0);
-		int cchMultiByte = OS.WideCharToMultiByte (CodePage, 0, buffer, -1, null, 0, null, null);
-		if (cchMultiByte == 0) {
-			transferData.stgmedium = new STGMEDIUM();
-			transferData.result = COM.DV_E_STGMEDIUM;
-			return;
-		}
-		int lpMultiByteStr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
-		OS.WideCharToMultiByte (CodePage, 0, buffer, -1, lpMultiByteStr, cchMultiByte, null, null);
+	String string = (String)object;
+	int count = string.length();
+	if (count == 0) return;
+	char[] chars = new char[count + 1];
+	string.getChars(0, count, chars, 0);
+	int cchMultiByte = COM.WideCharToMultiByte(CodePage, 0, chars, -1, null, 0, null, null);
+	if (cchMultiByte == 0) {
 		transferData.stgmedium = new STGMEDIUM();
-		transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
-		transferData.stgmedium.unionField = lpMultiByteStr;
-		transferData.stgmedium.pUnkForRelease = 0;
-		transferData.result = COM.S_OK;
+		transferData.result = COM.DV_E_STGMEDIUM;
 		return;
 	}
-	
-	// did not match the TYMED
+	int lpMultiByteStr = COM.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, cchMultiByte);
+	COM.WideCharToMultiByte(CodePage, 0, chars, -1, lpMultiByteStr, cchMultiByte, null, null);
 	transferData.stgmedium = new STGMEDIUM();
-	transferData.result = COM.DV_E_TYMED;
+	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
+	transferData.stgmedium.unionField = lpMultiByteStr;
+	transferData.stgmedium.pUnkForRelease = 0;
+	transferData.result = COM.S_OK;
+	return;
 }
 
 /**
@@ -96,11 +94,7 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) {
-		transferData.result = COM.E_FAIL;
-		return null;
-	}
-	
+	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) return null;
 	IDataObject data = new IDataObject(transferData.pIDataObject);
 	data.AddRef();
 	STGMEDIUM stgmedium = new STGMEDIUM();
@@ -109,27 +103,28 @@ public Object nativeToJava(TransferData transferData){
 	transferData.result = data.GetData(formatetc, stgmedium);
 	data.Release();	
 	if (transferData.result != COM.S_OK) return null;
-
 	int hMem = stgmedium.unionField;
-	int lpMultiByteStr = COM.GlobalLock(hMem);
-	if (lpMultiByteStr != 0) {
+	try {
+		int lpMultiByteStr = COM.GlobalLock(hMem);
+		if (lpMultiByteStr == 0) return null;
 		try {
-			int cchWideChar  = OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
-			if (cchWideChar != 0) {
-				char[] lpWideCharStr = new char [cchWideChar - 1];
-				OS.MultiByteToWideChar (CodePage, OS.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
-				return new String(lpWideCharStr);
-			}
+			int cchWideChar  = COM.MultiByteToWideChar (CodePage, COM.MB_PRECOMPOSED, lpMultiByteStr, -1, null, 0);
+			if (cchWideChar == 0) return null;
+			char[] lpWideCharStr = new char [cchWideChar - 1];
+			COM.MultiByteToWideChar (CodePage, COM.MB_PRECOMPOSED, lpMultiByteStr, -1, lpWideCharStr, lpWideCharStr.length);
+			return new String(lpWideCharStr);
 		} finally {
 			COM.GlobalUnlock(hMem);
 		}
+	} finally {
+		COM.GlobalFree(hMem);
 	}
-	return null;
 }
 protected int[] getTypeIds(){
-	return new int[] {CF_RTF};
+	return new int[] {CF_RTFID};
 }
 protected String[] getTypeNames(){
-	return new String[] {"CF_RTF"}; //$NON-NLS-1$
+	return new String[] {CF_RTF}; 
 }
+
 }

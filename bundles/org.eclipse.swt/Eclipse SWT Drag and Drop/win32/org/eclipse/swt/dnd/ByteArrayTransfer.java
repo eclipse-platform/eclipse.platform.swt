@@ -59,7 +59,7 @@ import org.eclipse.swt.internal.win32.*;
  * 			// write data to a byte array and then ask super to convert to pMedium
  * 			ByteArrayOutputStream out = new ByteArrayOutputStream();
  * 			DataOutputStream writeOut = new DataOutputStream(out);
- * 			for (int i = 0, length = myTypes.length; i < length;  i++){
+ * 			for (int i = 0, length = myTypes.length; i &lt length;  i++){
  * 				byte[] buffer = myTypes[i].fileName.getBytes();
  * 				writeOut.writeInt(buffer.length);
  * 				writeOut.write(buffer);
@@ -118,7 +118,7 @@ import org.eclipse.swt.internal.win32.*;
  */
 public abstract class ByteArrayTransfer extends Transfer {
 
-public TransferData[] getSupportedTypes(){
+public TransferData[] getSupportedTypes() {
 	int[] types = getTypeIds();
 	TransferData[] data = new TransferData[types.length];
 	for (int i = 0; i < types.length; i++) {
@@ -157,32 +157,26 @@ public boolean isSupportedType(TransferData transferData){
  * @param transferData an empty <code>TransferData</code> object; this
  *  object will be filled in on return with the platform specific format of the data
  */
-protected void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof byte[])) {
-		transferData.result = COM.E_FAIL;
-		return;
-	}
-
-	byte[] data = (byte[])object;
-	
-	if (isSupportedType(transferData)) {
-		// Allocate the memory because the caller (DropTarget) has not handed it in
-		// The caller of this method must release the data when it is done with it.
-		int size = data.length;
-		int newPtr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, size);
-		OS.MoveMemory(newPtr, data, size);
-		
+protected void javaToNative (Object object, TransferData transferData) {
+	transferData.result = COM.E_FAIL;
+	if (object == null || !(object instanceof byte[])) return;
+	if (!isSupportedType(transferData)) {
+		// did not match the TYMED
 		transferData.stgmedium = new STGMEDIUM();
-		transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
-		transferData.stgmedium.unionField = newPtr;
-		transferData.stgmedium.pUnkForRelease = 0;
-		transferData.result = COM.S_OK;
+		transferData.result = COM.DV_E_TYMED;
 		return;
 	}
-	
-	// did not match the TYMED
+	// Allocate the memory because the caller (DropTarget) has not handed it in
+	// The caller of this method must release the data when it is done with it.
+	byte[] data = (byte[])object;
+	int size = data.length;
+	int newPtr = OS.GlobalAlloc(OS.GMEM_FIXED | OS.GMEM_ZEROINIT, size);
+	OS.MoveMemory(newPtr, data, size);	
 	transferData.stgmedium = new STGMEDIUM();
-	transferData.result = COM.DV_E_TYMED;
+	transferData.stgmedium.tymed = COM.TYMED_HGLOBAL;
+	transferData.stgmedium.unionField = newPtr;
+	transferData.stgmedium.pUnkForRelease = 0;
+	transferData.result = COM.S_OK;
 }
 
 /**
@@ -197,27 +191,17 @@ protected void javaToNative (Object object, TransferData transferData){
  * @return a java <code>byte[]</code> containing the converted data if the 
  * conversion was successful; otherwise null
  */
-protected Object nativeToJava(TransferData transferData){
-	
-	if (!isSupportedType(transferData) || transferData.pIDataObject == 0) {
-		transferData.result = COM.E_FAIL;
-		return null;
-	}
+protected Object nativeToJava(TransferData transferData) {
+	if (!isSupportedType(transferData) || transferData.pIDataObject == 0)  return null;
 	
 	IDataObject data = new IDataObject(transferData.pIDataObject);
 	data.AddRef();
-	
 	FORMATETC formatetc = transferData.formatetc;
-
 	STGMEDIUM stgmedium = new STGMEDIUM();
 	stgmedium.tymed = COM.TYMED_HGLOBAL;	
 	transferData.result = data.GetData(formatetc, stgmedium);
 	data.Release();
-		
-	if (transferData.result != COM.S_OK) {
-		return null;
-	}
-	
+	if (transferData.result != COM.S_OK) return null;
 	int hMem = stgmedium.unionField;
 	int size = OS.GlobalSize(hMem);
 	byte[] buffer = new byte[size];
@@ -225,7 +209,6 @@ protected Object nativeToJava(TransferData transferData){
 	OS.MoveMemory(buffer, ptr, size);
 	OS.GlobalUnlock(hMem);	
 	OS.GlobalFree(hMem);
-		
 	return buffer;
 }
 }

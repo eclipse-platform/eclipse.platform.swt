@@ -96,7 +96,7 @@ abstract protected String[] getTypeNames();
  * @param transferData an empty TransferData object; this object will be 
  * filled in on return with the platform specific representation of the data
  */
- abstract protected void javaToNative (Object object, TransferData transferData);     
+abstract protected void javaToNative (Object object, TransferData transferData);
 
 /**
  * Converts a platform specific representation of data to a java representation.
@@ -108,7 +108,7 @@ abstract protected String[] getTypeNames();
  * successful; otherwise null.  The type of Object that is returned is dependant 
  * on the <code>Transfer</code> subclass
  */
- abstract protected Object nativeToJava(TransferData transferData); 
+abstract protected Object nativeToJava(TransferData transferData);
 
 /**
  * Registers a name for a data type and returns the associated unique identifier.
@@ -122,9 +122,9 @@ abstract protected String[] getTypeNames();
  *
  * @param formatName the name of a data type
  *
- * @return the unique identifier associated with htis data type
+ * @return the unique identifier associated with this data type
  */
-public static int registerType(String formatName){
+public static int registerType(String formatName) {
 	// Look name up in the registry
 	// If name is not in registry, add it and return assigned value.
 	// If name already exists in registry, return its assigned value
