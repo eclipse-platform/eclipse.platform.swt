@@ -124,6 +124,7 @@ protected void drawLineBreakSelection(String line, int lineOffset, int paintX, i
  * </ul>
  */
 protected int[] getBidiSegments(int lineOffset, String lineText) {
+	if (!parent.isBidi()) return null;
 	return parent.getBidiSegments(lineOffset, lineText);
 }
 /**
