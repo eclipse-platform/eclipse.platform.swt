@@ -250,12 +250,19 @@ public String[] getAvailableTypeNames() {
 	int[] atoms = new int[gtkSelectionData.length * 8 / gtkSelectionData.format];
 	OS.memmove(atoms, gtkSelectionData.data, gtkSelectionData.length);
 	String[] result = new String[atoms.length];
+	int count = 0;
 	for (int i = 0; i < atoms.length; i++) {
 		int pName = OS.gdk_atom_name(atoms[i]);
+		if (pName == 0) continue;
 		buffer = new byte [OS.strlen(pName)];
 		OS.memmove (buffer, pName, buffer.length);
 		OS.g_free (pName);
-		result[i] = new String (Converter.mbcsToWcs (null, buffer));
+		result[count++] = new String (Converter.mbcsToWcs (null, buffer));
+	}
+	if (count < atoms.length) {
+		String[] temp = new String[count];
+		System.arraycopy(result, 0, temp, 0, count);
+		result = temp;
 	}
 	OS.gtk_selection_data_free(selection_data);
 	return result;
