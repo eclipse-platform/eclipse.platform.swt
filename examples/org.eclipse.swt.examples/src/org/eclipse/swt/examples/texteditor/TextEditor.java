@@ -247,7 +247,7 @@ void handleCutCopy() {
 			style.start = style.start - startX;
 			if (!cachedStyles.isEmpty()) {
 				StyleRange lastStyle = (StyleRange)cachedStyles.lastElement();
-				if (lastStyle.similarTo(style)) {
+				if (lastStyle.similarTo(style) && lastStyle.start + lastStyle.length == style.start) {
 					lastStyle.length++;
 				} else {
 					cachedStyles.addElement(style);
