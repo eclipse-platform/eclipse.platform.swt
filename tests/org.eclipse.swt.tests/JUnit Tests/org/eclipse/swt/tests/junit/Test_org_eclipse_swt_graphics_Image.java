@@ -12,7 +12,6 @@ package org.eclipse.swt.tests.junit;
 
 
 import java.io.*;
-import java.net.URL;
 
 import junit.framework.*;
 import junit.textui.*;
@@ -379,9 +378,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 			image.dispose();
 			fail("No exception thrown for invalid file name");
 		} catch (SWTException e) {
-// Causes failure
-// TODO: Find out why
-//			assertEquals("Incorrect exception thrown for invalid file name", SWT.ERROR_UNSUPPORTED_FORMAT, e);
+			assertEquals("Incorrect exception thrown for invalid file name", SWT.ERROR_UNSUPPORTED_FORMAT, e);
 		}
 	
 		int numFormats = SwtTestCase.imageFormats.length;
@@ -411,15 +408,11 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 			image.dispose();
 			fail("No exception thrown for invalid file name");
 		} catch (SWTException e) {
-//			 Causes failure
-//			 TODO: Find out why
-//			assertEquals("Incorrect exception thrown for invalid image file name", SWT.ERROR_INVALID_IMAGE, e);
+			assertEquals("Incorrect exception thrown for invalid image file name", SWT.ERROR_INVALID_IMAGE, e);
 		}		
 	
 		// create valid images
-//		 Causes failure
-//		 TODO: Find out why
-/*		for (int j = 0; j < displays.length; j++) {
+		for (int j = 0; j < displays.length; j++) {
 			Display tempDisplay = displays[j];
 			int numFileNames = SwtTestCase.imageFilenames.length;
 			for (int k=0; k<numFileNames; k++) {
@@ -431,7 +424,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 					image.dispose();
 				}
 			}
-		}*/
+		}
 	}
 }
 
@@ -729,15 +722,14 @@ void getImageData2(int depth, PaletteData palette) {
 	image.dispose();
 }
 String getPath(String fileName) {
-	final String packageName = "org/eclipse/swt/tests/junit/";
-	String pathName = packageName + fileName;
-	URL url = SwtTestCase.class.getClassLoader().getResource(pathName);
+	String urlPath;
 	
-	if (url != null) {
-		pathName = url.getFile();
-		return pathName.replaceAll("%20", " ");
-	} else {
-		return null;
-	}	
+	String pluginPath = System.getProperty("PLUGIN_PATH");
+	System.out.println("PLUGIN_PATH <"+pluginPath+">");
+	if (pluginPath == null) urlPath = getClass().getClassLoader().getResource(fileName).getFile();
+	else urlPath = pluginPath + "/data/" + fileName;
+	
+	System.out.println("Resolved file name for " + fileName + " = " + urlPath);
+	return urlPath;
 }
 }
