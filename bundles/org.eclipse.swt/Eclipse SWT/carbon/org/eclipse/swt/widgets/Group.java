@@ -188,7 +188,6 @@ public String getText () {
 public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.ARROW) != 0) return;
 	text = string;
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
