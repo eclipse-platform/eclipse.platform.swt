@@ -7203,13 +7203,12 @@ public void setSelection(int start, int end) {
 }
 /** 
  * Sets the selection. The new selection may not be visible. Call showSelection to scroll 
- * the selection into view.
- * <p>
+ * the selection into view. 	A negative length places the caret at the visual start of the 
+ * selection. <p>
  *
- * @param start offset of the first selected character, start >= 0 must be true.
- * @param length number of characters to select, 0 <= start + length <= getCharCount() 
- * 	must be true.
- * 	A negative length places the caret at the visual start of the selection.
+ * @param start offset of the first selected character
+ * @param length number of characters to select
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
