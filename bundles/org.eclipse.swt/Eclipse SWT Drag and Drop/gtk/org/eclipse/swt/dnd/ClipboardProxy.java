@@ -159,8 +159,8 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			if (activeClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKCLIPBOARD);
 			clipboardData = data;
 			clipboardDataTypes = dataTypes;
-			int getFuncProc = getFunc.getAddress();
-			int clearFuncProc = clearFunc.getAddress();
+			int /*long*/ getFuncProc = getFunc.getAddress();
+			int /*long*/ clearFuncProc = clearFunc.getAddress();
 			if (!OS.gtk_clipboard_set_with_data(Clipboard.GTKCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, 0)) {
 				return false;
 			}
@@ -170,8 +170,8 @@ boolean setData(Clipboard owner, Object[] data, Transfer[] dataTypes, int clipbo
 			if (activePrimaryClipboard != null) OS.gtk_clipboard_clear(Clipboard.GTKPRIMARYCLIPBOARD);
 			primaryClipboardData = data;
 			primaryClipboardDataTypes = dataTypes;
-			int getFuncProc = getFunc.getAddress();
-			int clearFuncProc = clearFunc.getAddress();
+			int /*long*/ getFuncProc = getFunc.getAddress();
+			int /*long*/ clearFuncProc = clearFunc.getAddress();
 			if (!OS.gtk_clipboard_set_with_data(Clipboard.GTKPRIMARYCLIPBOARD, pTargetsList, entries.length, getFuncProc, clearFuncProc, 0)) {
 				return false;
 			}
