@@ -1026,6 +1026,7 @@ LRESULT WM_PAINT (int wParam, int lParam) {
 		/* Create the paint GC */
 		GCData data = new GCData ();
 		data.ps = ps;
+		data.hwnd = handle;
 		GC gc = GC.win32_new (this, data);
 		
 		/* Send the paint event */
