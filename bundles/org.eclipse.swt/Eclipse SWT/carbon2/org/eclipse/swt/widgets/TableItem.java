@@ -17,7 +17,8 @@ public class TableItem extends Item {
 	Table parent;
 	String [] strings;
 	Image [] images;
-	boolean checked;
+	boolean checked, grayed;
+	Color foreground, background;
 	
 public TableItem (Table parent, int style) {
 	super (parent, style);
@@ -37,8 +38,7 @@ protected void checkSubclass () {
 
 public Color getBackground () {
 	checkWidget ();
-	//NOT DONE
-	return getDisplay ().getSystemColor (SWT.COLOR_WHITE);
+	return background != null ? background : parent.getBackground ();
 }
 
 public Rectangle getBounds (int index) {
@@ -61,15 +61,13 @@ public Display getDisplay () {
 
 public Color getForeground () {
 	checkWidget ();
-	//NOT DONE
-	return getDisplay ().getSystemColor (SWT.COLOR_BLACK);
+	return foreground != null ? foreground : parent.getForeground ();
 }
 
 public boolean getGrayed () {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return false;
-	//NOT DONE
-	return false;
+	return grayed;
 }
 
 public Image getImage (int index) {
@@ -118,6 +116,7 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	background = foreground = null;
 	parent = null;
 }
 
@@ -126,7 +125,8 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	//NOT DONE
+	background = color;
+//	redraw ();
 }
 
 public void setChecked (boolean checked) {
@@ -144,13 +144,15 @@ public void setForeground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	//NOT DONE
+	foreground = color;
+//	redraw ();
 }
 
 public void setGrayed (boolean grayed) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
-	//NOT DONE
+	this.grayed = grayed;
+//	redraw ();
 }
 
 public void setImage (Image [] images) {
