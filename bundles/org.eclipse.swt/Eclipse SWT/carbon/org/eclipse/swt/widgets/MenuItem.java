@@ -33,12 +33,8 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
-	int id; // AW , accelerator;
-	
-	// AW
-	private int fCIconHandle;
-	private int fAccelerator;
-	// AW
+	int id, accelerator;
+	private int cIconHandle;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -254,7 +250,7 @@ void fillAccel (ACCEL accel) {
  */
 public int getAccelerator () {
 	checkWidget ();
-	return fAccelerator;
+	return accelerator;
 }
 
 public Display getDisplay () {
@@ -377,19 +373,17 @@ void releaseWidget () {
 	}
 	menu = null;
 	super.releaseWidget ();
-	if (fAccelerator != 0) {
+	if (accelerator != 0) {
 		parent.destroyAcceleratorTable ();
 	}
-	fAccelerator = 0;
+	accelerator = 0;
 	Decorations shell = parent.parent;
 	shell.remove (this);
 	parent = null;
-	if (fCIconHandle != 0) {
-		
-		Image.disposeCIcon(fCIconHandle);
-		fCIconHandle= 0;
+	if (cIconHandle != 0) {
+		Image.disposeCIcon(cIconHandle);
+		cIconHandle= 0;
     }
-
 }
 
 /**
@@ -479,7 +473,7 @@ public void removeSelectionListener (SelectionListener listener) {
 public void setAccelerator (int accelerator) {
 	checkWidget ();
 	
-	this.fAccelerator = accelerator;
+	this.accelerator = accelerator;
 	parent.destroyAcceleratorTable ();
 		
 	int hMenu= parent.handle;
@@ -532,15 +526,15 @@ public void setImage (Image image) {
 	super.setImage (image);
 	
 	if (MacUtil.USE_MENU_ICONS) {
-		if (fCIconHandle != 0)
-			Image.disposeCIcon(fCIconHandle);
-		fCIconHandle= Image.carbon_createCIcon(image);
-		if (fCIconHandle != 0) {
+		if (cIconHandle != 0)
+			Image.disposeCIcon(cIconHandle);
+		cIconHandle= Image.carbon_createCIcon(image);
+		if (cIconHandle != 0) {
 			int hMenu = parent.handle;
 			short[] index= new short[1];
 			OS.GetIndMenuItemWithCommandID(hMenu, id, 1, null, index);
 			if (index[0] >= 1) {
-				OS.SetMenuItemIconHandle(hMenu, index[0], (byte)4, fCIconHandle);
+				OS.SetMenuItemIconHandle(hMenu, index[0], (byte)4, cIconHandle);
 			} else
 				error (SWT.ERROR_CANNOT_SET_TEXT);
 		}
