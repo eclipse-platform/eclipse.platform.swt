@@ -30,7 +30,7 @@ import org.eclipse.swt.accessibility.*;
  * </p>
  */
 public abstract class Control extends Widget implements Drawable {
-	int fixedHandle, imHandle;
+	int fixedHandle;
 	Composite parent;
 	Menu menu;
 	String toolTipText;
@@ -92,6 +92,7 @@ GdkColor defaultForeground () {
 void deregister () {
 	super.deregister ();
 	if (fixedHandle != 0) WidgetTable.remove (fixedHandle);
+	int imHandle = imHandle ();
 	if (imHandle != 0) WidgetTable.remove (imHandle);
 }
 
@@ -132,7 +133,14 @@ void hookEvents () {
 	OS.g_signal_connect_after (eventHandle, OS.enter_notify_event, windowProc3, ENTER_NOTIFY_EVENT);
 	OS.g_signal_connect_after (eventHandle, OS.leave_notify_event, windowProc3, LEAVE_NOTIFY_EVENT);
 	OS.g_signal_connect_after (eventHandle, OS.expose_event, windowProc3, EXPOSE_EVENT);
-	
+	int imHandle = imHandle ();
+	if (imHandle != 0) {
+		int topHandle = topHandle ();
+		OS.g_signal_connect (handle, OS.map_event, windowProc3, MAP_EVENT);
+		OS.g_signal_connect (topHandle, OS.hide, windowProc2, HIDE);
+		OS.g_signal_connect (imHandle, OS.commit, windowProc3, COMMIT);
+		OS.g_signal_connect (imHandle, OS.preedit_changed, windowProc2, PREEDIT_CHANGED);
+	}
 	/*
 	* Feature in GTK.  Events such as mouse move are propagate up
 	* the widget hierarchy and are seen by the parent.  This is the
@@ -1367,6 +1375,10 @@ GdkColor getFgColor () {
 	return color;
 }
 
+Point getIMCaretPos () {
+	return new Point (0, 0);
+}
+
 GdkColor getTextColor () {
 	int fontHandle = fontHandle ();
 	GtkStyle style = new GtkStyle ();
@@ -1615,7 +1627,10 @@ int gtk_focus_out_event (int widget, int event) {
 	if (handle == 0) return 0;
 	if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) {
 		int imHandle = imHandle ();
-		if (imHandle != 0) OS.gtk_im_context_focus_out (imHandle);
+		if (imHandle != 0) {
+			OS.gtk_im_context_focus_out (imHandle);
+			OS.gtk_im_context_reset (imHandle);
+		}
 	}
 	
 	/*
@@ -1635,8 +1650,15 @@ int gtk_focus_out_event (int widget, int event) {
 	return 0;
 }
 
+int gtk_hide (int widget) {
+	int imHandle = imHandle ();
+	if (imHandle != 0) OS.gtk_im_context_reset (imHandle);
+	return 0;	
+}
+
 int gtk_key_press_event (int widget, int event) {
 	if (!hasFocus ()) return 0;
+	int imHandle = imHandle ();
 	if (imHandle != 0) {
 		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 0;
 	}
@@ -1651,6 +1673,7 @@ int gtk_key_press_event (int widget, int event) {
 
 int gtk_key_release_event (int widget, int event) {
 	if (!hasFocus ()) return 0;
+	int imHandle = imHandle ();
 	if (imHandle != 0) {
 		if (OS.gtk_im_context_filter_keypress (imHandle, event)) return 0;
 	}
@@ -1669,6 +1692,12 @@ int gtk_leave_notify_event (int widget, int event) {
 	if (gdkEvent.subwindow != 0) return 0;
 	sendMouseEvent (SWT.MouseExit, 0, event);
 	return 0;
+}
+
+int gtk_map_event (int widget, int event) {
+	int imHandle = imHandle ();
+	if (imHandle != 0) OS.gtk_im_context_set_client_window (imHandle, paintWindow ());
+	return 0;	
 }
 
 int gtk_motion_notify_event (int widget, int event) {
@@ -1699,20 +1728,15 @@ int gtk_popup_menu (int widget) {
 	return 0;
 }
 
-int gtk_show_help (int widget, int helpType) {
-	sendHelpEvent (helpType);
+int gtk_preedit_changed (int imcontext) {
+	Display display = getDisplay ();
+	display.showIMWindow (this);
 	return 0;
 }
 
-int imHandle () {
- 	if (imHandle != 0)  return imHandle;
-	imHandle = OS.gtk_im_multicontext_new ();
-	if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	OS.gtk_im_context_set_client_window (imHandle, paintWindow ());
-	WidgetTable.put (imHandle, this);
-	Display display = getDisplay ();
-	OS.g_signal_connect (imHandle, OS.commit, display.windowProc3, COMMIT);
-	return imHandle;
+int gtk_show_help (int widget, int helpType) {
+	sendHelpEvent (helpType);
+	return 0;
 }
 
 /**	 
@@ -1757,6 +1781,10 @@ public int internal_new_GC (GCData data) {
 		data.font = style.font_desc;
 	}	
 	return gdkGC;
+}
+
+int imHandle () {
+	return 0;
 }
 
 /**	 
@@ -1894,6 +1922,8 @@ Decorations menuShell () {
 void register () {
 	super.register ();
 	if (fixedHandle != 0) WidgetTable.put (fixedHandle, this);
+	int imHandle = imHandle ();
+	if (imHandle != 0) WidgetTable.put (imHandle, this);
 }
 
 
@@ -1963,8 +1993,6 @@ void releaseWidget () {
 	Display display = getDisplay ();
 	display.removeMouseHoverTimeout (handle);
 	super.releaseWidget ();
-	if (imHandle != 0) OS.g_object_unref (imHandle);
-	imHandle = 0;
 	toolTipText = null;
 	parent = null;
 	menu = null;

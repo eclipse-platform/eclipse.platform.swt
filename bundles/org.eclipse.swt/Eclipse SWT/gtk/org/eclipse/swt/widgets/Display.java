@@ -95,6 +95,9 @@ public class Display extends Device {
 	Callback windowCallback2, windowCallback3, windowCallback4, windowCallback5;
 	EventTable eventTable, filterTable;
 
+	/* Input method resources */
+	int preeditWindow, preeditLabel;
+
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
 	Thread thread;
@@ -1315,6 +1318,9 @@ void releaseDisplay () {
 	windowCallback4.dispose ();  windowCallback4 = null;
 	windowCallback5.dispose ();  windowCallback5 = null;
 	
+	/* Dispose preedit window */
+	if (preeditWindow != 0) OS.gtk_widget_destroy (preeditWindow);
+
 	/* Dispose GtkTreeView callbacks */
 	treeSelectionCallback.dispose (); treeSelectionCallback = null;
 	treeSelectionProc = 0;
@@ -1611,6 +1617,39 @@ public void setSynchronizer (Synchronizer synchronizer) {
 		this.synchronizer.runAsyncMessages();
 	}
 	this.synchronizer = synchronizer;
+}
+
+void showIMWindow (Control control) {
+	if (preeditWindow == 0) { 
+		preeditWindow = OS.gtk_window_new (OS.GTK_WINDOW_POPUP);
+		if (preeditWindow == 0) error (SWT.ERROR_NO_HANDLES);
+		preeditLabel = OS.gtk_label_new (null);
+		if (preeditLabel == 0) error (SWT.ERROR_NO_HANDLES);
+		OS.gtk_container_add (preeditWindow, preeditLabel);
+		OS.gtk_widget_show (preeditLabel);
+	}
+	int [] preeditString = new int [1];
+	int [] pangoAttrs = new int [1];
+	int imHandle = control.imHandle ();
+	OS.gtk_im_context_get_preedit_string (imHandle, preeditString, pangoAttrs, null);
+	int length;
+	if (preeditString [0] != 0 && (length = OS.strlen (preeditString [0])) > 0) {
+		OS.gtk_widget_modify_bg (preeditWindow, 0, control.getBackgroundColor ());
+		OS.gtk_widget_modify_fg (preeditWindow, 0, control.getForegroundColor ());		
+		OS.gtk_widget_modify_font (preeditLabel, control.getFontDescription ());
+		if (pangoAttrs [0] != 0) OS.gtk_label_set_attributes (preeditLabel, pangoAttrs[0]);
+		OS.gtk_label_set_text (preeditLabel, preeditString [0]);
+		Point point = control.toDisplay (control.getIMCaretPos ());
+		OS.gtk_window_move (preeditWindow, point.x, point.y);		
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (preeditLabel, requisition);
+		OS.gtk_window_resize (preeditWindow, requisition.width, requisition.height);
+		OS.gtk_widget_show (preeditWindow);
+	} else {
+		OS.gtk_widget_hide (preeditWindow);
+	}		
+	if (preeditString [0] != 0) OS.g_free (preeditString [0]);
+	if (pangoAttrs [0] != 0) OS.pango_attr_list_unref (pangoAttrs [0]);	
 }
 
 /**

@@ -35,7 +35,7 @@ import org.eclipse.swt.graphics.*;
  * @see Canvas
  */
 public class Composite extends Scrollable {
-	int radioHandle;
+	int radioHandle, imHandle;
 	Layout layout;
 	Control[] tabList;
 
@@ -187,6 +187,10 @@ void createScrolledHandle (int parentHandle) {
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	OS.gtk_fixed_set_has_window (handle, true);
 	OS.GTK_WIDGET_SET_FLAGS(handle, OS.GTK_CAN_FOCUS);
+	if ((state & CANVAS) != 0 && (style & SWT.NO_FOCUS) == 0) {
+		imHandle = OS.gtk_im_multicontext_new ();
+		if (imHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	}
 	if (isScrolled) {
 		OS.gtk_container_add (parentHandle, fixedHandle);
 		OS.gtk_container_add (fixedHandle, scrolledHandle);
@@ -376,6 +380,10 @@ boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp) || hooks (SWT.Traverse);
 }
 
+int imHandle () {
+	return imHandle;
+}
+
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 
@@ -529,7 +537,10 @@ void releaseHandle () {
 
 void releaseWidget () {
 	releaseChildren ();
+	if (imHandle != 0) OS.gtk_im_context_reset (imHandle);
 	super.releaseWidget ();
+	if (imHandle != 0) OS.g_object_unref (imHandle);
+	imHandle = 0;
 	layout = null;
 }
 

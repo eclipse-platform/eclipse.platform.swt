@@ -898,10 +898,6 @@ void hookEvents () {
 	}
 }
 
-int imHandle () {
-	return 0;
-}
-
 /**
  * Inserts a string.
  * <p>
@@ -1387,6 +1383,31 @@ public void showSelection () {
 	OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
 	mark = OS.gtk_text_buffer_get_insert (bufferHandle);
 	OS.gtk_text_view_scroll_mark_onscreen (handle, mark);
+}
+
+boolean translateTraversal (GdkEventKey keyEvent) {
+	int key = keyEvent.keyval;
+	switch (key) {
+		case OS.GDK_KP_Enter:
+		case OS.GDK_Return: {
+			int imHandle;
+			if ((style & SWT.SINGLE) != 0) {
+				imHandle = OS.GTK_ENTRY_IM_CONTEXT (handle);
+			} else {
+				imHandle = OS.GTK_TEXTVIEW_IM_CONTEXT (handle);
+			}			
+			if (imHandle != 0) {
+				int [] preeditString = new int [1];
+				OS.gtk_im_context_get_preedit_string (imHandle, preeditString, null, null);
+				if (preeditString [0] != 0) {
+					int lenght = OS.strlen (preeditString [0]);
+					OS.g_free (preeditString [0]);
+					if (lenght != 0) return false;
+				}
+			}
+		}
+	}
+	return super.translateTraversal (keyEvent);
 }
 
 int traversalCode (int key, GdkEventKey event) {

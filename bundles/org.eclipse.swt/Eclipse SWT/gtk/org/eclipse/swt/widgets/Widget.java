@@ -91,18 +91,19 @@ public abstract class Widget {
 	static final int MNEMONIC_ACTIVATE = 23;
 	static final int MOTION_NOTIFY_EVENT = 24;
 	static final int POPUP_MENU = 25;
-	static final int ROW_ACTIVATED = 26;
-	static final int ROW_COLLAPSED = 27;
-	static final int ROW_EXPANDED = 28;
-	static final int SELECT = 29;
-	static final int SELECT_CHILD = 30;
-	static final int SHOW = 31;
-	static final int SHOW_HELP = 32;
-	static final int SIZE_ALLOCATE = 33;
-	static final int SWITCH_PAGE = 34;
-	static final int TOGGLED = 35;
-	static final int UNMAP_EVENT = 38;
-	static final int VALUE_CHANGED = 39;
+	static final int PREEDIT_CHANGED = 26;
+	static final int ROW_ACTIVATED = 27;
+	static final int ROW_COLLAPSED = 28;
+	static final int ROW_EXPANDED = 29;
+	static final int SELECT = 30;
+	static final int SELECT_CHILD = 31;
+	static final int SHOW = 32;
+	static final int SHOW_HELP = 33;
+	static final int SIZE_ALLOCATE = 34;
+	static final int SWITCH_PAGE = 35;
+	static final int TOGGLED = 36;
+	static final int UNMAP_EVENT = 37;
+	static final int VALUE_CHANGED = 38;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -544,6 +545,10 @@ int gtk_motion_notify_event (int widget, int event) {
 }
 
 int gtk_popup_menu (int widget) {
+	return 0;
+}
+
+int gtk_preedit_changed (int imcontext) {
 	return 0;
 }
 
@@ -1078,6 +1083,7 @@ int windowProc (int handle, int user_data) {
 		case CLICKED: return gtk_clicked (handle);
 		case HIDE: return gtk_hide (handle);
 		case POPUP_MENU: return gtk_popup_menu (handle);
+		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);
 		case SELECT: return gtk_select (handle);
 		case SHOW: return gtk_show (handle);
 		case VALUE_CHANGED: return gtk_value_changed (handle);

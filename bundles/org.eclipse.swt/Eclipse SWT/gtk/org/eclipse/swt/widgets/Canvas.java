@@ -7,6 +7,7 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
+import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
@@ -87,6 +88,11 @@ public Canvas (Composite parent, int style) {
 public Caret getCaret () {
 	checkWidget();
 	return caret;
+}
+
+Point getIMCaretPos () {
+	if (caret == null) return super.getIMCaretPos ();
+	return new Point (caret.x, caret.y);
 }
 
 int gtk_expose_event (int widget, int event) {
@@ -268,12 +274,14 @@ public boolean setFocus () {
 }
 
 void updateCaret () {
+	int imHandle = imHandle ();
 	if (imHandle == 0) return;
 	GdkRectangle rect = new GdkRectangle ();
 	rect.x = caret.x;
 	rect.y = caret.y;
 	rect.width = caret.width;
 	rect.height = caret.height;
+	OS.gtk_im_context_reset (imHandle);	
 	OS.gtk_im_context_set_cursor_location (imHandle, rect);
 }
 
