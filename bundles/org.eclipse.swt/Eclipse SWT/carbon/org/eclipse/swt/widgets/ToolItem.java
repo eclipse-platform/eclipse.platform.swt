@@ -253,10 +253,6 @@ void createWidget () {
 	toolTipText = "";
 }
 
-int defaultThemeFont () {	
-	return OS.kThemeToolbarFont;
-}
-
 void deregister () {
 	super.deregister ();
 	display.removeWidget (handle);
@@ -860,7 +856,7 @@ void setFontStyle (Font font) {
 //		fontStyle.size = font.size;
 //	} else {
 //		fontStyle.flags |= OS.kControlUseThemeFontIDMask;
-//		fontStyle.font = (short) defaultThemeFont ();
+//		fontStyle.font = (short) parent.defaultThemeFont ();
 //	}
 //	OS.SetControlFontStyle (labelHandle, fontStyle);
 	updateText ();
