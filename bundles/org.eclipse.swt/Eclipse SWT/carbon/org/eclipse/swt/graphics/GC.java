@@ -370,8 +370,8 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 			MacRect ib= new MacRect(srcX, srcY, srcWidth, srcHeight);
 			fRect.set(destX, destY, destWidth, destHeight);
 		
-			OS.RGBBackColor(0x00FFFFFF);
-			OS.RGBForeColor(0x00000000);
+			OS.RGBBackColor((short)0xFFFF, (short)0xFFFF, (short)0xFFFF);
+			OS.RGBForeColor((short)0x0000, (short)0x0000, (short)0x0000);
 
 			if (srcImage.alpha != -1 || srcImage.alphaData != null) {
 				
@@ -419,7 +419,7 @@ public void drawLine (int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	try {
 		if (focus(true, null)) {
-			installForeColor(data.foreground);
+			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
 			OS.MoveTo((short)x1, (short)y1);
 			OS.LineTo((short)x2, (short)y2);
@@ -461,7 +461,7 @@ public void drawOval(int x, int y, int width, int height) {
 	}
 	try {
 		if (focus(true, null)) {
-			installForeColor(data.foreground);
+			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
 			fRect.set(x, y, width+1, height+1);
 			OS.FrameOval(fRect.getData());
@@ -570,7 +570,7 @@ public void drawPolyline(int[] pointArray) {
 				OS.LineTo((short)pointArray[i], (short)pointArray[i+1]);
 			OS.ClosePoly();
 			
-			installForeColor(data.foreground);
+			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
 			OS.FramePoly(poly);
 		}
@@ -608,7 +608,7 @@ public void drawRectangle (int x, int y, int width, int height) {
 	}
 	try {
 		if (focus(true, null)) {
-			installForeColor(data.foreground);
+			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
 			fRect.set(x, y, width+1, height+1);
 			OS.FrameRect(fRect.getData());
@@ -668,7 +668,7 @@ public void drawRoundRectangle (int x, int y, int width, int height, int arcWidt
 	}
 	try {
 		if (focus(true, null)) {
-			installForeColor(data.foreground);
+			MacUtil.RGBForeColor(data.foreground);
 			OS.PenSize((short) fLineWidth, (short) fLineWidth);
 			fRect.set(x, y, width+1, height+1);
 			OS.FrameRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
@@ -735,12 +735,12 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	try {
 		if (focus(true, null)) {
 			installFont();
-			installForeColor(data.foreground);
+			MacUtil.RGBForeColor(data.foreground);
 			if (isTransparent) {
 				OS.TextMode(OS.srcOr);
 			} else {
 				if ((data.background & 0xff000000) == 0) {
-					OS.RGBBackColor(data.background);
+					MacUtil.RGBBackColor(data.background);
 					OS.TextMode(OS.srcCopy);
 				} else {
 					//System.out.println("GC.drawString: " + Integer.toHexString(data.background));
@@ -874,12 +874,12 @@ public void drawText (String string, int x, int y, int flags) {
 	try {
 		if (focus(true, null)) {
 			installFont();
-			installForeColor(data.foreground);
+			MacUtil.RGBForeColor(data.foreground);
 			if ((flags & SWT.DRAW_TRANSPARENT) != 0) {
 				OS.TextMode(OS.srcOr);
 			} else {
 				if ((data.background & 0xff000000) == 0) {
-					OS.RGBBackColor(data.background);
+					MacUtil.RGBBackColor(data.background);
 					OS.TextMode(OS.srcCopy);
 				} else {
 					//System.out.println("GC.drawText: " + Integer.toHexString(data.background));
@@ -1030,7 +1030,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
 			/* AW
 			OS.XFillRectangle(xDisplay, data.drawable, handle, x, y, width, height);
 			*/
-			installForeColor(data.foreground);
+			MacUtil.RGBForeColor(data.foreground);
 			fRect.set(x, y, width, height);
 			OS.PaintRect(fRect.getData());
 			return;
@@ -1128,7 +1128,7 @@ public void fillOval (int x, int y, int width, int height) {
 	try {
 		if (focus(true, null)) {
 			if ((data.background & 0xff000000) == 0) {
-				OS.RGBForeColor(data.background);
+				MacUtil.RGBForeColor(data.background);
 				fRect.set(x, y, width, height);
 				OS.PaintOval(fRect.getData());
 			} else {
@@ -1183,7 +1183,7 @@ public void fillPolygon(int[] pointArray) {
 				OS.LineTo((short)pointArray[i], (short)pointArray[i+1]);
 			OS.ClosePoly();
 			
-			installForeColor(data.background);
+			MacUtil.RGBForeColor(data.background);
 			OS.PaintPoly(poly);
 		}
 	} finally {
@@ -1221,7 +1221,7 @@ public void fillRectangle (int x, int y, int width, int height) {
 		if (focus(true, null)) {
 			fRect.set(x, y, width, height);
 			if ((data.background & 0xFF000000) == 0) {
-				OS.RGBForeColor(data.background);
+				MacUtil.RGBForeColor(data.background);
 				OS.PaintRect(fRect.getData());
 			} else {
 				short depth= getCurrentScreenDepth();
@@ -1279,7 +1279,7 @@ public void fillRoundRectangle (int x, int y, int width, int height, int arcWidt
 	try {
 		if (focus(true, null)) {
 			if ((data.background & 0xff000000) == 0) {
-				OS.RGBForeColor(data.background);
+				MacUtil.RGBForeColor(data.background);
 				fRect.set(x, y, width, height);
 				OS.PaintRoundRect(fRect.getData(), (short)arcWidth, (short)arcHeight);
 			} else {
@@ -2125,23 +2125,7 @@ public String toString () {
 		fDamageRgn= 0;
 		OS.UnlockPortBits(handle);
 	}
-	
-	private void installForeColor(int color) {
-		if ((color & 0xff000000) == 0) {
-			OS.RGBForeColor(color);
-		} else {
-			OS.RGBForeColor(0xFFFFFF);	// white
-		}
-	}
-	
-	private void installBackColor(int color) {
-		if ((color & 0xff000000) == 0) {
-			OS.RGBBackColor(color);
-		} else {
-			OS.RGBBackColor(0xFFFFFF);	// white
-		}
-	}
-	
+		
 	private short getCurrentScreenDepth() {
 		int gd= OS.GetGDevice();
 		if (gd != 0) {
