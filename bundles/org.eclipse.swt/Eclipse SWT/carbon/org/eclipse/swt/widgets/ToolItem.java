@@ -285,7 +285,7 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
 		int state = OS.IsControlEnabled(control) && OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
 		Rect rect = new Rect ();
 		OS.GetControlBounds (handle, rect);
-		if ((style & SWT.SEPARATOR) != 0) {
+		if ((style & SWT.SEPARATOR) != 0 && this.control == null) {
 			rect.top += 2;
 			rect.bottom -= 2;
 			OS.DrawThemeSeparator (rect, state);
@@ -812,6 +812,7 @@ public void setControl (Control control) {
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
+	redrawWidget (handle, false);
 }
 
 /**
