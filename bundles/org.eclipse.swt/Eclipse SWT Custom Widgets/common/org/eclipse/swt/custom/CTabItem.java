@@ -227,7 +227,7 @@ void drawSelected(GC gc ) {
 	int rightTabEdge = parent.getRightItemEdge();
 	// if selected tab scrolled out of view or partially out of view
 	// just draw bottom line
-	if (!parent.single && parent.selectedIndex != parent.topTabIndex && x + width > rightTabEdge){
+	if (!parent.single && parent.selectedIndex != parent.firstIndex && x + width > rightTabEdge){
 		int x1 = Math.max(0, parent.borderLeft - 1);
 		int y1 = (parent.onBottom) ? y - 1 : y + height;
 		int x2 = size.x - parent.borderRight;
@@ -391,7 +391,7 @@ void drawSelected(GC gc ) {
 void drawUnselected(GC gc) {
 	int rightTabEdge = parent.getRightItemEdge();
 	// Do not draw partial items
-	if (parent.items[parent.topTabIndex] != this && x + width > rightTabEdge){
+	if (parent.items[parent.firstIndex] != this && x + width > rightTabEdge){
 		return;
 	}
 	if (background != null || bgImage != null || gradientColors != null) {
@@ -407,7 +407,7 @@ void drawUnselected(GC gc) {
 			}
 		}
 		int[] shape = null;
-		if (index == parent.topTabIndex) {
+		if (index == parent.firstIndex) {
 			if (parent.borderLeft != 0) x1 += 1;
 			int[] left = parent.onBottom ? CTabFolder.BOTTOM_LEFT_CORNER : CTabFolder.TOP_LEFT_CORNER;
 			shape = new int[left.length+6];
