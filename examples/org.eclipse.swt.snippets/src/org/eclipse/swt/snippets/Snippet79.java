@@ -43,27 +43,26 @@ public static MyTransfer getInstance () {
 }
 
 public void javaToNative (Object object, TransferData transferData) {
-	if (object == null || !(object instanceof MyType [])) return;
-	if (isSupportedType (transferData)) {
-		MyType [] myTypes = (MyType []) object;
-		try {
-			// write data to a byte array and then ask super to convert to pMedium
-			ByteArrayOutputStream out = new ByteArrayOutputStream ();
-			DataOutputStream writeOut = new DataOutputStream (out);
-			for (int i = 0, length = myTypes.length; i < length; i++) {
-				byte [] buffer = myTypes [i].fileName.getBytes ();
-				writeOut.writeInt (buffer.length);
-				writeOut.write (buffer);
-				writeOut.writeLong (myTypes [i].fileLength);
-				writeOut.writeLong (myTypes [i].lastModified);
-			}
-			byte [] buffer = out.toByteArray ();
-			writeOut.close ();
-
-			super.javaToNative (buffer, transferData);
-		}
-		catch (IOException e) {}
+	if (!checkMyType(object) || !isSupportedType (transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
 	}
+	MyType [] myTypes = (MyType []) object;
+	try {
+		// write data to a byte array and then ask super to convert to pMedium
+		ByteArrayOutputStream out = new ByteArrayOutputStream ();
+		DataOutputStream writeOut = new DataOutputStream (out);
+		for (int i = 0, length = myTypes.length; i < length; i++) {
+			byte [] buffer = myTypes [i].fileName.getBytes ();
+			writeOut.writeInt (buffer.length);
+			writeOut.write (buffer);
+			writeOut.writeLong (myTypes [i].fileLength);
+			writeOut.writeLong (myTypes [i].lastModified);
+		}
+		byte [] buffer = out.toByteArray ();
+		writeOut.close ();
+		super.javaToNative (buffer, transferData);
+	}
+	catch (IOException e) {}
 }
 
 public Object nativeToJava (TransferData transferData) {
@@ -105,6 +104,27 @@ protected String [] getTypeNames () {
 
 protected int [] getTypeIds () {
 	return new int [] {MYTYPEID};
+}
+
+boolean checkMyType(Object object) {
+	if (object == null || 
+		!(object instanceof MyType[]) || 
+		((MyType[])object).length == 0) {
+		return false;
+	}
+	MyType[] myTypes = (MyType[])object;
+	for (int i = 0; i < myTypes.length; i++) {
+		if (myTypes[i] == null || 
+			myTypes[i].fileName == null || 
+			myTypes[i].fileName.length() == 0) {
+			return false;
+		}
+	}
+	return true;
+}
+
+protected boolean validate(Object object) {
+	return checkMyType(object);
 }
 }
 

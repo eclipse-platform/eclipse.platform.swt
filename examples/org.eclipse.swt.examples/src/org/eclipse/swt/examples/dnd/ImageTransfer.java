@@ -31,9 +31,9 @@ public static ImageTransfer getInstance () {
 }
 
 public void javaToNative (Object object, TransferData transferData) {
-	if (object == null || !(object instanceof ImageData)) return;	
-	if (!isSupportedType(transferData)) return;
-	
+	if (!checkImage(object) || !isSupportedType(transferData)) {
+		DND.error(DND.ERROR_INVALID_DATA);
+	}
 	ImageData imdata = (ImageData)object;
 	try {
 		// write data to a byte array and then ask super to convert to pMedium
@@ -72,5 +72,11 @@ protected String[] getTypeNames(){
 }
 protected int[] getTypeIds(){
 	return new int[] {TYPEID};
+}
+boolean checkImage(Object object) {
+	return (object != null  && object instanceof ImageData);
+}
+protected boolean validate(Object object) {
+	return checkImage(object);
 }
 }
