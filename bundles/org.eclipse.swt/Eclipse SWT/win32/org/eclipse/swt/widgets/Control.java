@@ -3348,10 +3348,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 	* result of a modifier such as Shift key and MapVirtualKey() always
 	* returns the unshifted key.  The fix is to peek for a WM_DEADCHAR
 	* and avoid issuing the event. 
-	* 
-	* NOTE: On Windows 95 and NT, a call to ToAscii(), clears the
-	* accented state such that the next WM_CHAR loses the accent.
-	* This makes is critical that the accent key is detected.
 	*/
 	if (OS.IsWinNT) {
 		if ((mapKey & 0x80000000) != 0) return null;
@@ -3409,6 +3405,14 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 		* down.
 		*/
 		if (OS.VK_NUMPAD0 <= display.lastKey && display.lastKey <= OS.VK_DIVIDE) {
+			/*
+			* Feature in Windows.  Calling to ToAscii() or ToUnicode(), clears
+			* the accented state such that the next WM_CHAR loses the accent.
+			* This makes is critical that the accent key is detected.  Also,
+			* these functions clear the character that is entered using the
+			* special Windows keypad sequence when NumLock is down (ie. typing 
+			* ALT+0231 should gives 'c' with a cedilla when NumLock is down).
+			*/
 			if (display.asciiKey (display.lastKey) != 0) return null;
 			display.lastAscii = display.numpadKey (display.lastKey);
 		}
