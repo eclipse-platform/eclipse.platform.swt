@@ -55,6 +55,7 @@ public static int getFontBidiAttributes(GC gc) {
  *	order & dx are output parameters
  */
 public static void getOrderInfo(GC gc, String text, int[] order, byte[] classBuffer, int flags, int [] offsets) {
+}
 /*
  *  Not implemented. Returns null.
  *
