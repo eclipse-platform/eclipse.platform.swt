@@ -173,19 +173,19 @@ void createHandle (int index) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	if ((style & SWT.WRAP) != 0) OS.gtk_label_set_line_wrap (labelHandle, true);
 	if ((style & SWT.LEFT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
+		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
 		OS.gtk_misc_set_alignment (pixmapHandle, 0.0f, 0.5f);
 		return;
 	}
 	if ((style & SWT.CENTER) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
+		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
 		OS.gtk_misc_set_alignment (pixmapHandle, 0.5f, 0.5f);
 		return;
 	}
 	if ((style & SWT.RIGHT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
+		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
 		OS.gtk_misc_set_alignment (pixmapHandle, 1.0f, 0.5f);
 		return;
@@ -312,19 +312,19 @@ public void setAlignment (int alignment) {
 	style &= ~(SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	style |= alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER);
 	if ((style & SWT.LEFT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.5f);
+		OS.gtk_misc_set_alignment (labelHandle, 0.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_LEFT);
 		OS.gtk_misc_set_alignment (pixmapHandle, 0.0f, 0.5f);
 		return;
 	}
 	if ((style & SWT.CENTER) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.5f);
+		OS.gtk_misc_set_alignment (labelHandle, 0.5f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_CENTER);
 		OS.gtk_misc_set_alignment (pixmapHandle, 0.5f, 0.5f);
 		return;
 	}
 	if ((style & SWT.RIGHT) != 0) {
-		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.5f);
+		OS.gtk_misc_set_alignment (labelHandle, 1.0f, 0.0f);
 		OS.gtk_label_set_justify (labelHandle, OS.GTK_JUSTIFY_RIGHT);
 		OS.gtk_misc_set_alignment (pixmapHandle, 1.0f, 0.5f);
 		return;
