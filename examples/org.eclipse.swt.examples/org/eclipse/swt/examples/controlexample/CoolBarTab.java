@@ -400,7 +400,8 @@ class CoolBarTab extends Tab {
 				/* Display the pop-up menu at the lower left corner of the arrow button.
 				 * Dispose the menu when the user is done with it.
 				 */
-				menu.setLocation (event.x, event.y);
+				pt = coolBar.toDisplay(new Point(event.x, event.y));
+				menu.setLocation (pt.x, pt.y);
 				menu.setVisible (true);
 				Display display = coolBar.getDisplay ();
 				while (menu.isVisible ()) {

@@ -111,7 +111,9 @@ public CoolItem (CoolBar parent, int style, int index) {
  * <p>
  * If <code>widgetSelected</code> is called when the mouse is over
  * the drop-down arrow (or 'chevron') portion of the cool item,
- * the event object detail field contains the value <code>SWT.ARROW</code>.
+ * the event object detail field contains the value <code>SWT.ARROW</code>,
+ * and the x and y fields in the event object represent the point at
+ * the bottom left of the chevron, where the menu should be popped up.
  * <code>widgetDefaultSelected</code> is not called.
  * </p>
  *

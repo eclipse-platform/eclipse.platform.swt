@@ -709,11 +709,9 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if (child != null) {
 				Event event = new Event();
 				event.detail = SWT.ARROW;
-				Point pt = toDisplay(new Point(lpnm.left, lpnm.bottom)); // maybe should be in control coords?
-				event.x = pt.x;  // point at the bottom left of the chevron, where the menu should be popped up
-				event.y = pt.y;
+				event.x = lpnm.left;
+				event.y = lpnm.bottom;
 				child.postEvent (SWT.Selection, event);
-				// should I return null here? read doc
 			}
 			break;
 	}
