@@ -230,6 +230,7 @@ public void clearSelection () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
+	checkWidget();
 	TXNLongRect oTextRect = new TXNLongRect ();
 	OS.TXNGetRectBounds (txnObject, null, null, oTextRect);
 	int width = oTextRect.right - oTextRect.left;
@@ -321,14 +322,6 @@ void createHandle () {
 		OS.HIViewAddSubview (handle, scrollBar [0]);
 	}
 	
-	/*
-	* Bug in the Macintosh.  The caret height is too small until some text is set in the
-	* TXNObject.  The fix is to temporary change the text.
-	*/
-	char [] buffer = new char [] {' '};
-	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 2, OS.kTXNStartOffset, OS.kTXNEndOffset);
-	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 0, OS.kTXNStartOffset, OS.kTXNEndOffset);
-	
 	/* Configure the TXNOBject */
 	int ptr = OS.NewPtr (Rect.sizeof);
 	Rect rect = new Rect ();
@@ -347,6 +340,14 @@ void createHandle () {
 	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
 	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
 	OS.DisposePtr (ptr);
+
+	/*
+	* Bug in the Macintosh.  The caret height is too small until some text is set in the
+	* TXNObject.  The fix is to temporary change the text.
+	*/
+	char [] buffer = new char [] {' '};
+	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 2, OS.kTXNStartOffset, OS.kTXNEndOffset);
+	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 0, OS.kTXNStartOffset, OS.kTXNEndOffset);
 }
 
 ScrollBar createScrollBar (int type) {
