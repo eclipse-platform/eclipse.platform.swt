@@ -749,7 +749,7 @@ void removeItemFromRow(CoolItem item, int rowIndex, boolean disposed) {
  * been properly layed out for the given width.
  */
 int layoutItems () {
-	int y = 0, width = getSize().x;
+	int y = 0, width = getClientArea().width;
 	wrapItems(width);
 	int rowSpacing = (style & SWT.FLAT) != 0 ? 0 : ROW_SPACING; 
 	for (int row = 0; row < items.length; row++) {
