@@ -806,6 +806,10 @@ LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
 		return result;
 	}
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if (OS.COMCTL32_MAJOR >= 6 && OS.IsAppThemed ()) {
+		OS.InvalidateRect (handle, null, true);
+		return result;
+	}
 	if ((bits & OS.TCS_MULTILINE) != 0) {
 		OS.InvalidateRect (handle, null, true);
 		return result;
