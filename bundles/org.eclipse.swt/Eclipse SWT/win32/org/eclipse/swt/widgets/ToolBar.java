@@ -576,6 +576,16 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
+void removeControl (Control control) {
+	super.removeControl (control);
+	for (int i=0; i<items.length; i++) {
+		ToolItem item = items [i];
+		if (item != null && item.control == control) {
+			item.setControl (null);
+		}
+	}
+}
+
 void setBounds (int x, int y, int width, int height, int flags) {
 	/*
 	* Feature in Windows.  For some reason, when a tool bar is

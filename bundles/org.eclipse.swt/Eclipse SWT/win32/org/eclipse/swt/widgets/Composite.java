@@ -173,6 +173,35 @@ void createHandle () {
 	state |= CANVAS;
 }
 
+void fixChildren (Shell newShell, Shell oldShell, Decorations newDecorations, Decorations oldDecorations) {
+	super.fixChildren (newShell, oldShell, newDecorations, oldDecorations);
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		children [i].fixChildren (newShell, oldShell, newDecorations, oldDecorations);
+	}
+}
+
+void fixTabList (Control control) {
+	if (tabList == null) return;
+	int count = 0;
+	for (int i=0; i<tabList.length; i++) {
+		if (tabList [i] == control) count++;
+	}
+	if (count == 0) return;
+	Control [] newList = null;
+	int length = tabList.length - count;
+	if (length != 0) {
+		newList = new Control [length];
+		int index = 0;
+		for (int i=0; i<tabList.length; i++) {
+			if (tabList [i] != control) {
+				newList [index++] = tabList [i];
+			}
+		}
+	}
+	tabList = newList;
+}
+
 /**
  * Returns an array containing the receiver's children.
  * <p>
@@ -321,6 +350,19 @@ void releaseChildren () {
 	}
 }
 
+void releaseWidget () {
+	releaseChildren ();
+	super.releaseWidget ();
+	layout = null;
+	tabList = null;
+	lpwp = null;
+}
+
+void removeControl (Control control) {
+	fixTabList (control);
+	resizeChildren ();
+}
+
 void resizeChildren () {
 	if (lpwp == null) return;
 	do {
@@ -362,14 +404,6 @@ boolean resizeChildren (boolean defer, WINDOWPOS [] pwp) {
 	}
 	if (defer) return OS.EndDeferWindowPos (hdwp);
 	return true;
-}
-
-void releaseWidget () {
-	releaseChildren ();
-	super.releaseWidget ();
-	layout = null;
-	tabList = null;
-	lpwp = null;
 }
 
 public boolean setFocus () {

@@ -610,6 +610,16 @@ void releaseWidget () {
 	super.releaseWidget();
 }
 
+void removeControl (Control control) {
+	super.removeControl (control);
+	for (int i=0; i<items.length; i++) {
+		CoolItem item = items [i];
+		if (item != null && item.control == control) {
+			item.setControl (null);
+		}
+	}
+}
+
 void setBackgroundPixel (int pixel) {
 	if (background == pixel) return;
 	background = pixel;

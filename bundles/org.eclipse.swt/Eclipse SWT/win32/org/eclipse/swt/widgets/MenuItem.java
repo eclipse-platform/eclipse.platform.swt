@@ -262,6 +262,28 @@ void fillAccel (ACCEL accel) {
 	if ((accelerator & SWT.CONTROL) != 0) accel.fVirt |= OS.FCONTROL;
 }
 
+void fixMenus (Decorations newParent) {
+	if (menu != null) menu.fixMenus (newParent);
+	int oldId = this.id;
+	parent.parent.remove (this);
+	newParent.add (this);
+	if ((OS.IsPPC || OS.IsSP) && parent.hwndCB != 0) {
+		int hwndCB = this.parent.hwndCB;
+		TBBUTTONINFO info = new TBBUTTONINFO ();
+		info.cbSize = TBBUTTONINFO.sizeof;
+		info.dwMask = OS.TBIF_COMMAND;
+		info.idCommand = id;
+		OS.SendMessage (hwndCB, OS.TB_SETBUTTONINFO, oldId, info);
+	} else {
+		int hMenu = parent.handle;
+		MENUITEMINFO info = new MENUITEMINFO ();
+		info.cbSize = MENUITEMINFO.sizeof;
+		info.fMask = OS.MIIM_ID | OS.MIIM_DATA;
+		info.wID = info.dwItemData = id;
+		OS.SetMenuItemInfo (hMenu, oldId, false, info);
+	}
+}
+
 /**
  * Return the widget accelerator.  An accelerator is the bit-wise
  * OR of zero or more modifier masks and a key. Examples:

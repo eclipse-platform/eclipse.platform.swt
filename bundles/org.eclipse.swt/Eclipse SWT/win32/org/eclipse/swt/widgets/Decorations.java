@@ -381,6 +381,25 @@ MenuItem findMenuItem (int id) {
 	return null;
 }
 
+void fixDecorations (Decorations newDecorations, Control control) {
+	if (this == newDecorations) return;
+	if (control == savedFocus) savedFocus = null;
+	if (control == defaultButton) defaultButton = null;
+	if (control == saveDefault) saveDefault = null;
+	if (menus == null) return;
+	if (control.menu != null && menu.parentControl == null) {
+		control.setMenu (null);
+	}
+	for (int i=0; i<menus.length; i++) {
+		Menu menu = menus [i];
+		if (menu != null && menu.parentControl == control) {
+			menu.fixMenus (newDecorations);
+			destroyAccelerators ();
+			return;
+		}
+	}
+}
+
 public Rectangle getBounds () {
 	checkWidget ();
 	if (!OS.IsWinCE) {

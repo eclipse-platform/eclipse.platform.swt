@@ -45,6 +45,9 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade;
 	Decorations parent;
+	Control parentControl;
+	
+	/* Resource ID for SHMENUBARINFO */
 	static final int ID_PPC = 100;
 	
 	/* SmartPhone SoftKeyBar resource ids */
@@ -76,6 +79,7 @@ public class Menu extends Widget {
  */
 public Menu (Control parent) {
 	this (checkNull (parent).menuShell (), SWT.POP_UP);
+	parentControl = parent;
 }
 
 /**
@@ -556,6 +560,16 @@ void destroyWidget () {
 	} else {
 		if (hMenu != 0) OS.DestroyMenu (hMenu);
 	}
+}
+
+void fixMenus (Decorations newParent) {
+	MenuItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		items [i].fixMenus (newParent);
+	}
+	parent.remove (this);
+	newParent.add (this);
+	this.parent = newParent;
 }
 
 /**

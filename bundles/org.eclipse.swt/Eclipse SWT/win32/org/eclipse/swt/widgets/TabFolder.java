@@ -507,6 +507,15 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
+void removeControl (Control control) {
+	super.removeControl (control);
+	int count = OS.SendMessage (handle, OS.TCM_GETITEMCOUNT, 0, 0);
+	for (int i=0; i<count; i++) {
+		TabItem item = items [i];
+		if (item.control == control) item.setControl (null);
+	}
+}
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the receiver's selection changes.

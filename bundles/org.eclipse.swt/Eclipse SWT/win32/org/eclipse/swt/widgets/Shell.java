@@ -514,6 +514,14 @@ Cursor findCursor () {
 	return cursor;
 }
 
+void fixShell (Shell newShell, Control control) {
+	if (this == newShell) return;
+	if (control == lastActive) setActiveControl (null);
+	if (toolTipHandle != 0) {
+		setToolTipText (control.handle, null);
+	}
+}
+
 /**
  * Moves the receiver to the top of the drawing order for
  * the display on which it was created (so that all other
@@ -720,6 +728,10 @@ public void open () {
 	MSG msg = new MSG ();
 	OS.PeekMessage (msg, 0, 0, 0, OS.PM_NOREMOVE);
 	restoreFocus ();
+}
+
+void releaseChild () {
+	/* Do nothing */
 }
 
 void releaseHandle () {
