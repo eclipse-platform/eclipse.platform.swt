@@ -981,7 +981,8 @@ void resizeBounds (int width, int height, boolean notify) {
 	}
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = 0;
 	if (move) {
 		int [] x_pos = new int [1], y_pos = new int [1];
 		OS.gtk_window_get_position (shellHandle, x_pos, y_pos);
@@ -991,6 +992,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 			oldX = x;
 			oldY = y;
 			sendEvent(SWT.Move);
+			result |= MOVED;
 		}
 	}
 	if (resize) {
@@ -1001,10 +1003,11 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		if (changed) {
 			oldWidth = width;
 			oldHeight = height;
+			result |= RESIZED;
 		}
 		resizeBounds (width, height, changed);
 	}
-	return move || resize;
+	return result;
 }
 
 void setCursor (int /*long*/ cursor) {

@@ -496,7 +496,7 @@ void resizeHandle (int width, int height) {
 	OS.gtk_widget_size_request (handle, requisition);
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int /*long*/ topHandle = topHandle ();
 	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
 	OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
@@ -538,9 +538,16 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if ((flags & OS.GTK_VISIBLE) == 0) {
 		OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);	
 	}
-	if (!sameOrigin) sendEvent (SWT.Move);
-	if (!sameExtent) sendEvent (SWT.Resize);
-	return !sameOrigin || !sameExtent;
+	int result = 0;
+	if (move && !sameOrigin) {
+		sendEvent (SWT.Move);
+		result |= MOVED;
+	}
+	if (resize && !sameExtent) {
+		sendEvent (SWT.Resize);
+		result |= RESIZED;
+	}
+	return result;
 }
 
 /**

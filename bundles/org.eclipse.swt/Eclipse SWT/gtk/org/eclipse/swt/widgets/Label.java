@@ -383,7 +383,7 @@ void setBackgroundColor (GdkColor color) {
 	if (imageHandle != 0) setBackgroundColor(imageHandle, color);
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	/*
 	* Bug in GTK.  For some reason, when the label is
 	* wrappable and its container is resized, it does not
@@ -398,7 +398,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	*/
 	boolean fixWrap = resize && labelHandle != 0 && (style & SWT.WRAP) != 0;
 	if (fixWrap) OS.gtk_widget_set_size_request (labelHandle, -1, -1);
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	int result = super.setBounds (x, y, width, height, move, resize);
 	/*
 	* Bug in GTK.  For some reason, when the label is
 	* wrappable and its container is resized, it does not
@@ -410,7 +410,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	* This part of the fix forces the label to be
 	* resized so that it will draw wrapped.
 	*/
-	if (fixWrap) {
+	if (fixWrap && (result & RESIZED) != 0) {
 		int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
 		int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
@@ -418,7 +418,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (widgetHandle, requisition);
 	}
-	return changed;
+	return result;
 }
 
 void setFontDescription (int /*long*/ font) {

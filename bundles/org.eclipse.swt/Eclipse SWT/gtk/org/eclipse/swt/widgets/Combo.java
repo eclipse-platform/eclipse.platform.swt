@@ -1195,7 +1195,7 @@ void setBackgroundColor (GdkColor color) {
 	if (listHandle != 0) OS.gtk_widget_modify_base (listHandle, 0, color);
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight () : height;
 	return super.setBounds (x, y, width, newHeight, move, resize);
 }

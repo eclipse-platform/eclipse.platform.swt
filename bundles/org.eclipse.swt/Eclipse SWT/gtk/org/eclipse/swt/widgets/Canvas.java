@@ -234,12 +234,12 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	if (isFocus) caret.setFocus ();
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean isFocus = caret != null && caret.isFocusCaret ();
 	if (isFocus) caret.killFocus ();
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
+	int result = super.setBounds (x, y, width, height, move, resize);
 	if (isFocus) caret.setFocus ();
-	return changed;
+	return result;
 }
 
 /**

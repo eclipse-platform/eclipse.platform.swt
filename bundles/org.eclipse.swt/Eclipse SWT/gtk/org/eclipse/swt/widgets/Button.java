@@ -553,15 +553,15 @@ void setBackgroundColor (GdkColor color) {
 	if (imageHandle != 0) setBackgroundColor(imageHandle, color);
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) { 
-	boolean result = super.setBounds (x, y, width, height, move, resize);
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) { 
+	int result = super.setBounds (x, y, width, height, move, resize);
 	/*
 	* Feature in GTK, GtkCheckButton and GtkRadioButton allocate
 	* only the minimum size necessary for its child. This causes the child
 	* alignment to fail. The fix is to set the child size to all available space
 	* excluding trimmings.
 	*/
-	if (resize && result && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+	if ((result & RESIZED) != 0 && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
 		int childHeight = 0, buttonWidth = 0, buttonHeight = 0;
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (handle, requisition);

@@ -708,10 +708,10 @@ void resizeHandle (int width, int height) {
 	if (socketHandle != 0) OS.gtk_widget_set_size_request (socketHandle, width, height);
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	boolean changed = super.setBounds (x, y, width, height, move, resize);
-	if (changed && resize && layout != null) layout.layout (this, false);
-	return changed;
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds (x, y, width, height, move, resize);
+	if ((result & RESIZED) != 0 && layout != null) layout.layout (this, false);
+	return result;
 }
 
 public boolean setFocus () {

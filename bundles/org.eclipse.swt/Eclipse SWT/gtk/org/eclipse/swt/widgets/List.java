@@ -1168,8 +1168,8 @@ void setBackgroundColor (GdkColor color) {
 	OS.gtk_widget_modify_base (handle, 0, color);
 }
 
-boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	boolean result = super.setBounds (x, y, width, height, move, resize);
+int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
+	int result = super.setBounds (x, y, width, height, move, resize);
 	/*
 	* Bug on GTK.  The tree view sometimes does not get a paint
 	* event or resizes to a one pixel square when resized in a new
