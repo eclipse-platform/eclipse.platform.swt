@@ -39,6 +39,11 @@ public class MacUtil {
 	
 	public static int OSEmbedControl(int controlHandle, int parentControlHandle) {
 		if (JAGUAR) {
+			/* 
+			 * in Jaguar it is no longer possible to use EmbedControl for rearranging children in a composite.
+			 * The fix is to temporarily move a child to its root control fisrt and then to its
+			 * new position.
+			 */
 			int[] root= new int[1];
 			int wHandle= OS.GetControlOwner(parentControlHandle);
 			OS.GetRootControl(wHandle, root);
@@ -276,6 +281,13 @@ public class MacUtil {
 		return ((s.charAt(0) & 0xff) << 24) | ((s.charAt(1) & 0xff) << 16) | ((s.charAt(2) & 0xff) << 8) | (s.charAt(3) & 0xff);
 	}
 
+	/**
+	 * Create a new control and embed it in the given parent control.
+	 */
+	public static int newControl(int parentControlHandle, short procID) {
+		return newControl(parentControlHandle, -1, (short)0, (short)0, (short)0, procID);
+	}
+	
 	/**
 	 * Create a new control and embed it in the given parent control.
 	 */
