@@ -22,6 +22,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
+ * <dd>(none)</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Selection</dd>
  * </dl>
