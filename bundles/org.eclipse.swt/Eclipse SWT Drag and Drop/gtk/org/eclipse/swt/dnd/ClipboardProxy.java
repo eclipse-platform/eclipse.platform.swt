@@ -1,5 +1,10 @@
 package org.eclipse.swt.dnd;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
+ * All Rights Reserved
+ */
+ 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.Converter;

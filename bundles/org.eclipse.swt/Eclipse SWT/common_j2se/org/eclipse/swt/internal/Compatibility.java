@@ -1,5 +1,10 @@
 package org.eclipse.swt.internal;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
+ * All Rights Reserved
+ */
+ 
 import java.io.*;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;

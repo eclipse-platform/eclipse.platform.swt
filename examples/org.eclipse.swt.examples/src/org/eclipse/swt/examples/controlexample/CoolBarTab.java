@@ -1,4 +1,10 @@
 package org.eclipse.swt.examples.controlexample;
+
+/*
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
+ * All Rights Reserved
+ */
+ 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;

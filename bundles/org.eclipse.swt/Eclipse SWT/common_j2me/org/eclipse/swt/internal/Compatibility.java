@@ -1,5 +1,10 @@
 package org.eclipse.swt.internal;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
+ * All Rights Reserved
+ */
+ 
 import org.eclipse.swt.SWT;
 import java.io.*;
 

@@ -1,5 +1,10 @@
 package org.eclipse.swt.internal;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001, 2002.
+ * All Rights Reserved
+ */
+ 
 /**
  * This class is the cross-platform version of the
  * java.util.EventObject class.
