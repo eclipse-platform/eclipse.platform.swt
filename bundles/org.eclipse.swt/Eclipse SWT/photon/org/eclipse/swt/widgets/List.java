@@ -449,6 +449,7 @@ public int getItemHeight () {
 	OS.PtGetResources (handle, args.length / 3, args);
 	if (args [4] == 0) {
 		int ptr = OS.malloc(1);
+		OS.memset(ptr, 0, 1);
 		PhRect_t rect = new PhRect_t ();
 		OS.PfExtentText(rect, null, args [7], ptr, 1);
 		OS.free(ptr);

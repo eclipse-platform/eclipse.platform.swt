@@ -451,6 +451,7 @@ void createHandle (int index) {
 		int windowState = OS.Ph_WM_STATE_ISFOCUS;
 		if ((style & SWT.ON_TOP) != 0) windowState = OS.Ph_WM_STATE_ISFRONT;
 		int titlePtr = OS.malloc (1);
+		OS.memset(titlePtr, 0, 1);
 		int [] args = {
 			OS.Pt_ARG_WIDTH, width, 0,
 			OS.Pt_ARG_HEIGHT, height, 0,

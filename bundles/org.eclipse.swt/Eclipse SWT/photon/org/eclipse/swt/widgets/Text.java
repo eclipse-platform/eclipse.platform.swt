@@ -982,7 +982,7 @@ int Pt_CB_MODIFY_VERIFY (int widget, int info) {
 				OS.memmove(textVerify.text, buffer2, length);
 			} else {
 				int ptr = OS.malloc (length);
-				OS.memmove (ptr, buffer2, buffer2.length);
+				OS.memmove (ptr, buffer2, length);
 				textVerify.new_insert += length - textVerify.length;
 				textVerify.text = ptr;
 				textVerify.length = length;

@@ -2176,6 +2176,7 @@ public void setClipping (Region region) {
 		clipRects = clipRectsCount = 0;
 	} else if (region.handle == Region.EMPTY_REGION) {
 		clipRects = OS.malloc(PhRect_t.sizeof);
+		OS.memset(clipRects, 0, PhRect_t.sizeof);
 		clipRectsCount = 1;
 	} else {
 		int[] clip_rects_count = new int[1];
@@ -2342,6 +2343,7 @@ void setGCClipping() {
 		clip_rects_count[0] = 1;
 		OS.free(clip_rects);
 		clip_rects = OS.malloc(PhRect_t.sizeof);
+		OS.memset(clip_rects, 0, PhRect_t.sizeof);
 	}
 	OS.PgSetClipping((short)clip_rects_count[0], clip_rects);
 	OS.free(clip_rects);

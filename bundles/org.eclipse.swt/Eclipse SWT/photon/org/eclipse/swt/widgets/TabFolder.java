@@ -206,6 +206,7 @@ void createItem (TabItem item, int index) {
 	for (int i=0; i<=count; i++) {
 		if (i == index) {
 			str [0] = OS.malloc (1);
+			OS.memset(str [0], 0, 1);
 		} else {
 			OS.memmove (address, oldPtr + (j++ * 4), 4);
 			str [0] = OS.strdup (address [0]);

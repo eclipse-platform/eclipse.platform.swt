@@ -246,6 +246,7 @@ void drawWidget (int widget, int damage) {
 				clip_rects_count [0] = 1;
 				OS.free (clip_rects);
 				clip_rects = OS.malloc (PhRect_t.sizeof);
+				OS.memset(clip_rects, 0, PhRect_t.sizeof);
 			}
 			OS.PgSetMultiClip (clip_rects_count[0], clip_rects);
 			OS.free (clip_rects);
