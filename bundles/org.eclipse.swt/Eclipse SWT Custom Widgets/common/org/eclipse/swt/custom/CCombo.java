@@ -81,19 +81,19 @@ public CCombo (Composite parent, int style) {
 		}
 	};
 	
-	int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Activate, SWT.Deactivate};
-	for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
-	
-	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse};
-	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
-	
-	int [] listEvents = {SWT.MouseUp, SWT.Selection};
-	for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
-	
-	int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize, SWT.Activate, SWT.Deactivate};
+	int [] comboEvents = {SWT.Dispose, SWT.Move, SWT.Resize};
 	for (int i=0; i<comboEvents.length; i++) this.addListener (comboEvents [i], listener);
 	
-	int [] arrowEvents = {SWT.MouseDown};
+	int [] popupEvents = {SWT.Close, SWT.Paint, SWT.Deactivate};
+	for (int i=0; i<popupEvents.length; i++) popup.addListener (popupEvents [i], listener);
+	
+	int [] textEvents = {SWT.KeyDown, SWT.KeyUp, SWT.Modify, SWT.MouseDown, SWT.MouseUp, SWT.Traverse, SWT.FocusIn, SWT.FocusOut};
+	for (int i=0; i<textEvents.length; i++) text.addListener (textEvents [i], listener);
+	
+	int [] listEvents = {SWT.MouseUp, SWT.Selection, SWT.Traverse, SWT.KeyDown, SWT.KeyUp, SWT.FocusIn, SWT.FocusOut};
+	for (int i=0; i<listEvents.length; i++) list.addListener (listEvents [i], listener);
+	
+	int [] arrowEvents = {SWT.MouseDown, SWT.FocusIn, SWT.FocusOut};
 	for (int i=0; i<arrowEvents.length; i++) arrow.addListener (arrowEvents [i], listener);
 	
 }
@@ -185,8 +185,31 @@ public void addSelectionListener(SelectionListener listener) {
 	addListener (SWT.DefaultSelection,typedListener);
 }
 void arrowEvent (Event event) {
-	if (event.type != SWT.MouseDown || event.button != 1) return;
-	dropDown (!isDropped ());
+	switch (event.type) {
+		case SWT.FocusIn: {
+			if (hasFocus) return;
+			hasFocus = true;
+			if (getEditable ()) text.selectAll ();
+			Event e = new Event();
+			e.time = event.time;
+			notifyListeners(SWT.FocusIn, e);
+			break;
+		}
+		case SWT.FocusOut: {
+			Control focusControl = getDisplay ().getFocusControl();
+			if (focusControl == list || focusControl == text) return;
+			hasFocus = false;
+			Event e = new Event();
+			e.time = event.time;
+			notifyListeners(SWT.FocusOut, e);
+			break;
+		}
+		case SWT.MouseDown: {
+			if (event.button != 1) return;
+			dropDown (!isDropped ());
+			break;
+		}
+	}
 }
 /**
 * Clears the current selection.
@@ -204,38 +227,18 @@ public void clearSelection () {
 void comboEvent (Event event) {
 	switch (event.type) {
 		case SWT.Dispose:
-			if (popup != null && !popup.isDisposed ())
-				popup.dispose ();
+			if (popup != null && !popup.isDisposed ()) popup.dispose ();
 			popup = null;  
 			text = null;  
 			list = null;  
 			arrow = null;
 			break;
-			
 		case SWT.Move:
 			dropDown(false);
 			break;
 		case SWT.Resize:
 			internalLayout();
 			break;
-		case SWT.Activate: {
-			if (hasFocus) return;
-			hasFocus = true;
-			if (getEditable ()) text.selectAll ();
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.FocusIn, e);
-			break;
-		}
-		case SWT.Deactivate: {
-			Control focusControl = getDisplay ().getFocusControl();
-			if (focusControl == list) return;
-			hasFocus = false;
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.FocusOut, e);
-			break;
-		}
 	}
 }
 
@@ -531,9 +534,30 @@ void internalLayout () {
 }
 void listEvent (Event event) {
 	switch (event.type) {
+		case SWT.FocusIn: {
+			if (hasFocus) return;
+			hasFocus = true;
+			if (getEditable ()) text.selectAll ();
+			Event e = new Event();
+			e.time = event.time;
+			notifyListeners(SWT.FocusIn, e);
+			break;
+		}
+		case SWT.FocusOut: {
+			Control focusControl = getDisplay ().getFocusControl();
+			if (focusControl == text || focusControl == arrow) return;
+			hasFocus = false;
+			Event e = new Event();
+			e.time = event.time;
+			notifyListeners(SWT.FocusOut, e);
+			break;
+		}
 		case SWT.MouseUp: {
 			if (event.button != 1) return;
 			dropDown (false);
+			Event e = new Event();
+			e.time = event.time;
+			notifyListeners(SWT.DefaultSelection, e);
 			break;
 		}
 		case SWT.Selection: {
@@ -544,15 +568,62 @@ void listEvent (Event event) {
 			list.setSelection(index);
 			Event e = new Event();
 			e.time = event.time;
-			e.x = event.x;
-			e.y = event.y;
-			e.width = event.width;
-			e.height = event.height;
-			e.detail = event.detail;
+			e.stateMask = event.stateMask;
 			e.doit = event.doit;
 			notifyListeners(SWT.Selection, e);
 			event.doit = e.doit;
 			break;
+		}
+		case SWT.Traverse: {
+			switch (event.detail) {
+				case SWT.TRAVERSE_TAB_NEXT:
+				case SWT.TRAVERSE_RETURN:
+				case SWT.TRAVERSE_ESCAPE:
+				case SWT.TRAVERSE_ARROW_PREVIOUS:
+				case SWT.TRAVERSE_ARROW_NEXT:
+					event.doit = false;
+					break;
+			}
+			Event e = new Event();
+			e.time = event.time;
+			e.detail = event.detail;
+			e.doit = event.doit;
+			e.keyCode = event.keyCode;
+			notifyListeners(SWT.Traverse, e);
+			event.doit = e.doit;
+			break;
+		}
+		case SWT.KeyUp: {		
+			Event e = new Event();
+			e.time = event.time;
+			e.character = event.character;
+			e.keyCode = event.keyCode;
+			e.stateMask = event.stateMask;
+			notifyListeners(SWT.KeyUp, e);
+			break;
+		}
+		case SWT.KeyDown: {
+			if (event.character == SWT.ESC) { 
+				// escape key cancels popup list
+				dropDown (false);
+			}
+			if (event.character == SWT.CR || event.character == '\t') {
+				// Enter and Tab cause default selection
+				dropDown (false);
+				Event e = new Event();
+				e.time = event.time;
+				e.stateMask = event.stateMask;
+				notifyListeners(SWT.DefaultSelection, e);
+			}
+			
+			Event e = new Event();
+			e.time = event.time;
+			e.character = event.character;
+			e.keyCode = event.keyCode;
+			e.stateMask = event.stateMask;
+			notifyListeners(SWT.KeyDown, e);
+			break;
+			
 		}
 	}
 }
@@ -568,14 +639,6 @@ void popupEvent(Event event) {
 		case SWT.Close:
 			event.doit = false;
 			dropDown (false);
-			break;
-		case SWT.Activate:
-			if (hasFocus) return;
-			hasFocus = true;
-			if (getEditable ()) text.selectAll ();
-			Event e = new Event();
-			e.time = event.time;
-			notifyListeners(SWT.FocusIn, e);
 			break;
 		case SWT.Deactivate:
 			dropDown (false);
@@ -881,11 +944,35 @@ public void setVisible (boolean visible) {
 }
 void textEvent (Event event) {
 	switch (event.type) {
+		case SWT.FocusIn: {
+			if (hasFocus) return;
+			hasFocus = true;
+			if (getEditable ()) text.selectAll ();
+			Event e = new Event();
+			e.time = event.time;
+			notifyListeners(SWT.FocusIn, e);
+			break;
+		}
+		case SWT.FocusOut: {
+			Control focusControl = getDisplay ().getFocusControl();
+			if (focusControl == list || focusControl == arrow) return;
+			hasFocus = false;
+			Event e = new Event();
+			e.time = event.time;
+			notifyListeners(SWT.FocusOut, e);
+			break;
+		}
 		case SWT.KeyDown: {
 			
 			if (event.character == SWT.ESC) { // escape key cancels popup list
 				dropDown (false);
-				return;
+			}
+			if (event.character == SWT.CR || event.character == '\t') {
+				dropDown (false);
+				Event e = new Event();
+				e.time = event.time;
+				e.stateMask = event.stateMask;
+				notifyListeners(SWT.DefaultSelection, e);
 			}
 			if (event.keyCode == SWT.ARROW_UP || event.keyCode == SWT.ARROW_DOWN) {
 				int oldIndex = getSelectionIndex ();
@@ -898,11 +985,13 @@ void textEvent (Event event) {
 				if (oldIndex != getSelectionIndex ()) {
 					Event e = new Event();
 					e.time = event.time;
+					e.stateMask = event.stateMask;
 					notifyListeners(SWT.Selection, e);
 				}
 			}
 			
-			// Further work : Need to add support for incremental search in pop up list as characters typed in text widget
+			// Further work : Need to add support for incremental search in 
+			// pop up list as characters typed in text widget
 						
 			Event e = new Event();
 			e.time = event.time;
@@ -945,18 +1034,11 @@ void textEvent (Event event) {
 		}
 		case SWT.Traverse: {		
 			switch (event.detail) {
-				case SWT.TRAVERSE_RETURN:
 				case SWT.TRAVERSE_TAB_NEXT:
-					// allow "return" and "tab" to have their usual effect
-					break;
-				case SWT.TRAVERSE_ESCAPE:
-					// escape key is used to close the list so
-					// do not use it for traversal
-					event.doit = false;
-					break;
 				case SWT.TRAVERSE_ARROW_PREVIOUS:
 				case SWT.TRAVERSE_ARROW_NEXT:
-					// arrow keys are used to manipulate the list contents so
+					// The tab key causes default selection and
+					// the arrow keys are used to manipulate the list contents so
 					// do not use them for traversal.
 					event.doit = false;
 					break;
