@@ -44,6 +44,34 @@ class FormLayoutTab extends Tab {
 	}
 	
 	/**
+	 * Returns the constant for the alignment for an
+	 * attachment given a string.
+	 */
+	int alignmentConstant (String align) {
+		if (align.equals("LEFT")) return SWT.LEFT;
+		if (align.equals("RIGHT")) return SWT.RIGHT;
+		if (align.equals("TOP")) return SWT.TOP;
+		if (align.equals("BOTTOM")) return SWT.BOTTOM;
+		if (align.equals("CENTER")) return SWT.CENTER;
+		return SWT.DEFAULT;
+	}
+	
+	/**
+	 * Returns a string representing the alignment for an
+	 * attachment given a constant.
+	 */
+	String alignmentString (int align) {
+		switch (align) {
+			case SWT.LEFT: return "LEFT";
+			case SWT.RIGHT: return "RIGHT";
+			case SWT.TOP: return "TOP";
+			case SWT.BOTTOM: return "BOTTOM";
+			case SWT.CENTER: return "CENTER";
+		}
+		return "DEFAULT";
+	}
+	
+	/**
 	 * Update the attachment field in case the type of control
 	 * has changed. 
 	 */
@@ -57,19 +85,6 @@ class FormLayoutTab extends Tab {
 		String index = oldAttach.substring (i, oldAttach.indexOf (','));
 		return controlType + index + "," + newAttach.offset + ":" + alignmentString (newAttach.alignment);
 	}
-	
-	String alignmentString (int align) {
-		switch (align) {
-			case SWT.LEFT: return "LEFT";
-			case SWT.RIGHT: return "RIGHT";
-			case SWT.TOP: return "TOP";
-			case SWT.BOTTOM: return "BOTTOM";
-			case SWT.CENTER: return "CENTER";
-		}
-		return "DEFAULT";
-	}
-	
-
 	
 	/**
 	 * Creates the widgets in the "child" group.
@@ -233,19 +248,6 @@ class FormLayoutTab extends Tab {
 	 * Creates the control widgets.
 	 */
 	void createControlWidgets () {
-		/* FormLayoutTab needs a different FocusListener because of
-		 * the tab order of the controls. There are only two combo
-		 * boxes for the marginHeight and marginWidth so a tab from
-		 * the latter will not generate a focusGained event. */
-		FocusListener focusListener = new FocusAdapter () {
-			public void focusGained (FocusEvent e) {
-				resetEditors ();
-			};
-			public void focusLost (FocusEvent e) {
-				resetEditors ();
-			};
-		};
-		
 		/* Controls the margins and spacing of the FormLayout */
 		String [] marginValues = new String [] {"0","3","5","10"};
 		Group marginGroup = new Group (controlGroup, SWT.NONE);
@@ -258,7 +260,6 @@ class FormLayoutTab extends Tab {
 		marginHeight.setItems (marginValues);
 		marginHeight.select (0);
 		marginHeight.addSelectionListener (selectionListener);
-		marginHeight.addFocusListener (focusListener);
 		marginHeight.addTraverseListener (traverseListener);
 		GridData data = new GridData ();
 		data.widthHint = 60;
@@ -268,7 +269,6 @@ class FormLayoutTab extends Tab {
 		marginWidth.setItems (marginValues);
 		marginWidth.select (0);
 		marginWidth.addSelectionListener (selectionListener);
-		marginWidth.addFocusListener (focusListener);
 		marginWidth.addTraverseListener (traverseListener);
 		data = new GridData ();
 		data.widthHint = 60;
@@ -485,15 +485,6 @@ class FormLayoutTab extends Tab {
 			}
 			return new FormAttachment (position, offset);		
 		}
-	}
-	
-	int alignmentConstant (String align) {
-		if (align.equals("LEFT")) return SWT.LEFT;
-		if (align.equals("RIGHT")) return SWT.RIGHT;
-		if (align.equals("TOP")) return SWT.TOP;
-		if (align.equals("BOTTOM")) return SWT.BOTTOM;
-		if (align.equals("CENTER")) return SWT.CENTER;
-		return SWT.DEFAULT;
 	}
 	
 	/**

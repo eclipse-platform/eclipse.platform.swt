@@ -17,24 +17,23 @@ import java.util.ResourceBundle;
  */
 public class HelloWorld4 {
 	private static ResourceBundle resHello = ResourceBundle.getBundle("examples_helloworld");
-	public static Display display;
-	private static Shell shell;
-
+	
 public static void main (String [] args) {
-	display = new Display ();
-	new HelloWorld4 ().open ();
+	Display display = new Display ();
+	Shell shell = new HelloWorld4 ().open (display);
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
 
-public void open () {
+public Shell open (Display display) {
 	Shell shell = new Shell (display);
 	shell.setLayout(new FillLayout());
 	Label label = new Label (shell, SWT.CENTER);
 	label.setText (resHello.getString("Hello_world"));
 	shell.pack ();
 	shell.open ();
+	return shell;
 }
 }

@@ -19,7 +19,7 @@ import java.util.*;
  */
 class IconCache {
 	// Stock images
-	public static final int
+	public final int
 		shellIcon = 0,
 		iconClosedDrive = 1,
 		iconClosedFolder = 2,
@@ -35,7 +35,7 @@ class IconCache {
 		cmdRefresh = 12,
 		cmdRename = 13,
 		cmdSearch = 14;
-	public static final String[] stockImageLocations = {
+	public final String[] stockImageLocations = {
 		"generic_example.gif",
 		"icon_ClosedDrive.gif",
 		"icon_ClosedFolder.gif",
@@ -52,21 +52,21 @@ class IconCache {
 		"cmd_Rename.gif",
 		"cmd_Search.gif"
 	};
-	public static Image stockImages[];
+	public Image stockImages[];
 	
 	// Stock cursors
-	public static final int
+	public final int
 		cursorDefault = 0,
 		cursorWait = 1;
-	public static Cursor stockCursors[];
+	public Cursor stockCursors[];
 	// Cached icons
-	private static Hashtable iconCache; /* map Program to Image */
+	private Hashtable iconCache; /* map Program to Image */		public IconCache() {	}
 	/**
 	 * Loads the resources
 	 * 
 	 * @param display the display
 	 */
-	public static void initResources(Display display) {
+	public void initResources(Display display) {
 		if (stockImages == null) {
 			stockImages = new Image[stockImageLocations.length];
 				
@@ -91,7 +91,7 @@ class IconCache {
 	/**
 	 * Frees the resources
 	 */
-	public static void freeResources() {
+	public void freeResources() {
 		if (stockImages != null) {
 			for (int i = 0; i < stockImages.length; ++i) {
 				final Image image = stockImages[i];
@@ -112,7 +112,7 @@ class IconCache {
 	 * @param display the display
 	 * @param path the relative path to the icon
 	 */
-	private static Image createStockImage(Display display, String path) {
+	private Image createStockImage(Display display, String path) {
 		try {
 			InputStream stream = IconCache.class.getResourceAsStream(path);
 			if (stream != null) {
@@ -131,7 +131,7 @@ class IconCache {
 	 *
 	 * @param program the Program
 	 */
-	public static Image getIconFromProgram(Program program) {
+	public Image getIconFromProgram(Program program) {
 		Image image = (Image) iconCache.get(program);
 		if (image == null) {
 			ImageData imageData = program.getImageData();

@@ -12,8 +12,6 @@ import java.io.*;import java.text.*;import java.util.*;import org.eclipse.sw
  */
 public class HoverHelp {
 	private static ResourceBundle resourceBundle = ResourceBundle.getBundle("examples_hoverhelp");;
-	public static Display display;
-	private static Shell shell;
 	
 	static final int
 		hhiInformation = 0,
@@ -28,10 +26,10 @@ public class HoverHelp {
 	 * Runs main program.
 	 */
 	public static void main (String [] args) {
-		display = new Display();
-		new HoverHelp().open();
+		Display display = new Display();
+		Shell shell = new HoverHelp().open(display);
 		// Event loop
-		while (! shell.isDisposed()) {
+		while (shell != null && ! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
 		}
 		// Cleanup
@@ -42,7 +40,7 @@ public class HoverHelp {
 	/**
 	 * Opens the main program.
 	 */
-	public void open() {		
+	public Shell open(Display display) {		
 		// Load the images
 		Class clazz = HoverHelp.class;
 		try {
@@ -56,21 +54,20 @@ public class HoverHelp {
 					images[i] = new Image(display, source, mask);
 				}
 			}	
-		} catch (Throwable ex) {
+		} catch (Exception ex) {
 			System.err.println(getResourceString("error.CouldNotLoadResources",
 				new Object[] { ex.getMessage() }));
-			display.dispose();
-			return;
+			return null;
 		}
 
 		// Create the window
 		Shell shell = new Shell();
 		createPartControl(shell);
-		shell.addShellListener(new ShellAdapter() {
-			public void shellClosed(ShellEvent e) {
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
 				/* Free resources */
 				if (images != null) {
-					for (int i = 0; i < images.length; ++i) {
+					for (int i = 0; i < images.length; i++) {
 						final Image image = images[i];
 						if (image != null) image.dispose();
 					}
@@ -80,6 +77,7 @@ public class HoverHelp {
 		});
 		shell.pack();
 		shell.open();
+		return shell;
 	}
 
 	/**

@@ -56,11 +56,6 @@ abstract class Tab {
 			resetEditors ();
 		};
 	};
-	FocusListener focusListener = new FocusAdapter () {
-		public void focusGained (FocusEvent e) {
-			resetEditors ();
-		};
-	};
 		
 	TraverseListener traverseListener = new TraverseListener () {
 		public void keyTraversed (TraverseEvent e) {
@@ -145,7 +140,6 @@ abstract class Tab {
 		gridData.heightHint = 150;
 		table.setLayoutData (gridData);
 		table.addTraverseListener (traverseListener);
-		table.addFocusListener (focusListener);
 		
 		/* Add columns to the table */
 		String [] columnHeaders = getLayoutDataFieldNames ();

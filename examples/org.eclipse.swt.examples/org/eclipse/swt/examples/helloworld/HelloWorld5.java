@@ -18,21 +18,19 @@ import java.util.ResourceBundle;
  */
 public class HelloWorld5 {
 	private static ResourceBundle resHello = ResourceBundle.getBundle("examples_helloworld");
-	public static Display display;
-	private static Shell shell;	
 
 public static void main (String [] args) {
-	display = new Display ();
-	new HelloWorld5 ().open ();
+	Display display = new Display ();
+	Shell shell = new HelloWorld5 ().open (display);
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
 
-public void open () {
+public Shell open (Display display) {
 	final Color red = new Color(display, 0xFF, 0, 0);
-	shell = new Shell (display);
+	final Shell shell = new Shell (display);
 	shell.addPaintListener(new PaintListener () {
 		public void paintControl(PaintEvent event){
 			GC gc = event.gc;
@@ -42,11 +40,12 @@ public void open () {
 			gc.drawString(resHello.getString("Hello_world"), rect.x + 20, rect.y + 20);
 		}
 	});
-	shell.addShellListener (new ShellAdapter () {
-		public void shellClosed (ShellEvent e) {
+	shell.addDisposeListener (new DisposeListener () {
+		public void widgetDisposed (DisposeEvent e) {
 			red.dispose();
 		}
 	});
 	shell.open ();
+	return shell;
 }
 }

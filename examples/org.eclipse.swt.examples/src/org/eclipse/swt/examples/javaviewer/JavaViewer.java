@@ -18,7 +18,6 @@ import java.text.*;
 /**
  */
 public class JavaViewer {  
-	public static Display display;
 	Shell shell;
 	StyledText text;
 	JavaLineStyler lineStyler = new JavaLineStyler();
@@ -59,7 +58,7 @@ void createMenuBar () {
 
 }
 
-void createShell () {
+void createShell (Display display) {
 	shell = new Shell (display);
 	shell.setText (resources.getString("Window_title"));	
 	GridLayout layout = new GridLayout();
@@ -94,17 +93,20 @@ void displayError(String msg) {
 }
 
 public static void main (String [] args) {
-	display = new Display();
+	Display display = new Display();
 	JavaViewer example = new JavaViewer ();
-	example.open ();
-	example.run ();
+	Shell shell = example.open (display);
+	while (!shell.isDisposed ())
+		if (!display.readAndDispatch ()) display.sleep ();
+	display.dispose ();
 }
 
-public void open () {
-	createShell ();
+public Shell open (Display display) {
+	createShell (display);
 	createMenuBar ();
 	createStyledText ();
 	shell.open ();
+	return shell;
 }
 
 void openFile() {	
@@ -165,13 +167,4 @@ void openFile() {
 void menuFileExit () {
 	shell.close ();
 }
-
-public void run () {
-	Display display = shell.getDisplay ();
-	while (!shell.isDisposed ())
-		if (!display.readAndDispatch ()) display.sleep ();
-	display.dispose ();
-}
-
-
 }

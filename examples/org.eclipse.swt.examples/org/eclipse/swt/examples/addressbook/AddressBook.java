@@ -24,8 +24,7 @@ import java.util.ResourceBundle;
 public class AddressBook {
 
 	private static ResourceBundle resAddressBook = ResourceBundle.getBundle("examples_addressbook");
-	public static Display display;
-	private static Shell shell;
+	private Shell shell;
 	
 	private Table table;
 	private SearchDialog searchDialog;
@@ -44,19 +43,19 @@ public class AddressBook {
 												 resAddressBook.getString("Fax")};
 	
 public static void main(String[] args) {
-	display = new Display();
+	Display display = new Display();
 	AddressBook application = new AddressBook();
-	application.open();
+	Shell shell = application.open(display);
 	while(!shell.isDisposed()){
 		if(!display.readAndDispatch())
 			display.sleep();
 	}
 	display.dispose();
 }
-public void open() {
+public Shell open(Display display) {
 	shell = new Shell(display);
 	shell.setLayout(new FillLayout());
-	shell.addShellListener(new ShellAdapter(){
+	shell.addShellListener(new ShellAdapter() {
 		public void shellClosed(ShellEvent e) {
 			e.doit = closeAddressBook();
 		}
@@ -98,6 +97,7 @@ public void open() {
 
 	shell.setSize(table.computeSize(SWT.DEFAULT, SWT.DEFAULT).x, 300);
 	shell.open();
+	return shell;
 }
 
 private boolean closeAddressBook() {

@@ -142,7 +142,6 @@ class RowLayoutTab extends Tab {
 		marginRight.select (1);
 		marginRight.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
 		marginRight.addSelectionListener (selectionListener);
-		marginRight.addFocusListener (focusListener);
 		marginRight.addTraverseListener (traverseListener);
 		new Label (marginGroup, SWT.NONE).setText ("marginLeft");
 		marginLeft = new Combo (marginGroup, SWT.NONE);
@@ -150,7 +149,6 @@ class RowLayoutTab extends Tab {
 		marginLeft.select (1);
 		marginLeft.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
 		marginLeft.addSelectionListener (selectionListener);
-		marginLeft.addFocusListener (focusListener);
 		marginLeft.addTraverseListener(traverseListener);
 		new Label (marginGroup, SWT.NONE).setText ("marginTop");
 		marginTop = new Combo (marginGroup, SWT.NONE);
@@ -158,7 +156,6 @@ class RowLayoutTab extends Tab {
 		marginTop.select (1);
 		marginTop.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
 		marginTop.addSelectionListener (selectionListener);
-		marginTop.addFocusListener (focusListener);
 		marginTop.addTraverseListener(traverseListener);
 		new Label (marginGroup, SWT.NONE).setText ("marginBottom");
 		marginBottom = new Combo (marginGroup, SWT.NONE);
@@ -166,7 +163,6 @@ class RowLayoutTab extends Tab {
 		marginBottom.select (1);
 		marginBottom.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
 		marginBottom.addSelectionListener (selectionListener);
-		marginBottom.addFocusListener (focusListener);
 		marginBottom.addTraverseListener(traverseListener);
 		new Label (marginGroup, SWT.NONE).setText ("spacing");
 		spacing = new Combo (marginGroup, SWT.NONE);
@@ -174,7 +170,6 @@ class RowLayoutTab extends Tab {
 		spacing.select (1);
 		spacing.setLayoutData (new GridData(GridData.FILL_HORIZONTAL));
 		spacing.addSelectionListener (selectionListener);
-		spacing.addFocusListener (focusListener);
 		spacing.addTraverseListener(traverseListener);
 		
 		/* Controls other parameters of the RowLayout */
@@ -186,7 +181,6 @@ class RowLayoutTab extends Tab {
 		wrap.setText ("wrap");
 		wrap.setSelection (true);
 		wrap.addSelectionListener (selectionListener);
-		wrap.addFocusListener (focusListener);
 		pack = new Button (specGroup, SWT.CHECK);
 		pack.setText ("pack");
 		pack.setSelection (true);

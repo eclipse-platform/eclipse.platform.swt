@@ -18,8 +18,8 @@ import java.text.MessageFormat;
 
 public class ImageAnalyzer {
 	static ResourceBundle bundle = ResourceBundle.getBundle("examples_images");
-	public static Display display;
-	static Shell shell;
+	Display display;
+	Shell shell;
 	Canvas imageCanvas, paletteCanvas;
 	Label typeLabel, sizeLabel, depthLabel, transparentPixelLabel,
 		timeToLoadLabel, screenSizeLabel, backgroundPixelLabel,
@@ -125,16 +125,17 @@ public class ImageAnalyzer {
 		}
 	}
 	public static void main(String [] args) {
-		display = new Display();
+		Display display = new Display();
 		ImageAnalyzer imageAnalyzer = new ImageAnalyzer();
-		imageAnalyzer.open();
+		Shell shell = imageAnalyzer.open(display);
 		
 		while (!shell.isDisposed())
 			if (!display.readAndDispatch()) display.sleep();
 		display.dispose();
 	}
-	public void open() {
+	public Shell open(Display dpy) {
 		// Create a window and set its title.
+		this.display = dpy;
 		shell = new Shell(display);
 		shell.setText(bundle.getString("Image_analyzer"));
 		
@@ -144,8 +145,8 @@ public class ImageAnalyzer {
 				resizeShell(event);
 			}
 		});
-		shell.addShellListener(new ShellAdapter() {
-			public void shellClosed(ShellEvent event) {
+		shell.addDisposeListener(new DisposeListener() {
+			public void widgetDisposed(DisposeEvent e) {
 				if (animate && animateThread != null) {
 					// Stop the animation and wait for the
 					// thread to die before disposing the shell.
@@ -190,6 +191,7 @@ public class ImageAnalyzer {
 		
 		// Open the window
 		shell.open();
+		return shell;
 	}
 	void createWidgets() {
 		// Add the widgets to the shell in a grid layout.

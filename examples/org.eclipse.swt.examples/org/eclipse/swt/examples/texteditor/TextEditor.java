@@ -17,11 +17,11 @@ import java.io.*;
 /**
  */
 public class TextEditor {  
-	public static Display display;
 	Shell shell;
 	ToolBar toolBar;
-	StyledText text;	
+	StyledText text;
 
+	Images images = new Images();
 	Vector cachedStyles = new Vector();
 	Color RED = null; 
 	Color BLUE = null; 
@@ -127,18 +127,18 @@ void createMenuBar () {
 	editItem.setMenu (createEditMenu ());
 }
 
-void createShell () {
+void createShell (Display display) {
 	shell = new Shell (display);
 	shell.setText (resources.getString("Window_title"));	
-	Images.loadAll (display);
+	images.loadAll (display);
 	GridLayout layout = new GridLayout();
 	layout.numColumns = 1;
 	shell.setSize(500, 300);
 	shell.setLayout(layout);
-	shell.addShellListener (new ShellAdapter () {
-		public void shellClosed (ShellEvent e) {
+	shell.addDisposeListener (new DisposeListener () {
+		public void widgetDisposed (DisposeEvent e) {
 			if (font != null) font.dispose();
-			Images.freeAll ();
+			images.freeAll ();
 			RED.dispose();
 			GREEN.dispose();
 			BLUE.dispose();
@@ -172,7 +172,7 @@ void createToolBar() {
 	toolBar = new ToolBar(shell, SWT.NULL);
 	
 	ToolItem item = new ToolItem(toolBar, SWT.CHECK);
-	item.setImage(Images.Bold);
+	item.setImage(images.Bold);
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
 			bold(((ToolItem)event.widget).getSelection());
@@ -182,21 +182,21 @@ void createToolBar() {
 	item = new ToolItem(toolBar, SWT.SEPARATOR);
 
 	item = new ToolItem(toolBar, SWT.PUSH);
-	item.setImage(Images.Red);
+	item.setImage(images.Red);
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
 			fgColor(SWT.COLOR_RED);
 		}
 	});
 	item = new ToolItem(toolBar, SWT.PUSH);
-	item.setImage(Images.Green);
+	item.setImage(images.Green);
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
 			fgColor(SWT.COLOR_GREEN);
 		}
 	});
 	item = new ToolItem(toolBar, SWT.PUSH);
-	item.setImage(Images.Blue);
+	item.setImage(images.Blue);
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
 			fgColor(SWT.COLOR_BLUE);
@@ -206,7 +206,7 @@ void createToolBar() {
 	item = new ToolItem(toolBar, SWT.SEPARATOR);
 
 	item = new ToolItem(toolBar, SWT.PUSH);
-	item.setImage(Images.Erase);
+	item.setImage(images.Erase);
 	item.addSelectionListener(new SelectionAdapter() {
 		public void widgetSelected(SelectionEvent event) {
 			clear();
@@ -291,24 +291,21 @@ void handleVerifyKey(VerifyEvent event) {
 }
 
 public static void main (String [] args) {
-	display = new Display ();
+	Display display = new Display ();
 	TextEditor example = new TextEditor ();
-	example.open ();
-	example.run ();
+	Shell shell = example.open (display);
+	while (!shell.isDisposed ())
+		if (!display.readAndDispatch ()) display.sleep ();
+	display.dispose ();
 }
 
-public void open () {
-	createShell ();
+public Shell open (Display display) {
+	createShell (display);
 	createMenuBar ();
 	createToolBar ();
 	createStyledText ();
 	shell.open ();
-}
-
-void run () {
-	while (!shell.isDisposed ())
-		if (!display.readAndDispatch ()) display.sleep ();
-	display.dispose ();
+	return shell;
 }
 
 void setFont() {

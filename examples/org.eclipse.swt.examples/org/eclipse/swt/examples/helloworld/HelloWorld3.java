@@ -16,19 +16,17 @@ import java.util.ResourceBundle;
  */
 public class HelloWorld3 {
 	private static ResourceBundle resHello = ResourceBundle.getBundle("examples_helloworld");
-	public static Display display;
-	private static Shell shell;
 	
 public static void main (String [] args) {
 	Display display = new Display ();
-	new HelloWorld3 ().open ();
+	Shell shell = new HelloWorld3 ().open (display);
 	while (!shell.isDisposed ()) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	}
 	display.dispose ();
 }
 
-public void open () {
+public Shell open (Display display) {
 	final Shell shell = new Shell (display);
 	final Label label = new Label (shell, SWT.CENTER);
 	label.setText (resHello.getString("Hello_world"));
@@ -40,5 +38,6 @@ public void open () {
 	});
 	shell.pack();
 	shell.open ();
+	return shell;
 }
 }

@@ -24,9 +24,9 @@ public class FileViewer {
 	private final static String DRIVE_A = "a:" + File.separator;
 	private final static String DRIVE_B = "b:" + File.separator;
 
-	/* UI elements */ 	  
- 	public static Display display;
-	private static Shell   shell;
+	/* UI elements */ 	
+	private Display display; 
+	private Shell shell;
 	private ToolBar toolBar;
 
 	private Label numObjectsLabel;
@@ -53,6 +53,7 @@ public class FileViewer {
 	private Combo combo;
 
 	/* Tree view */
+	private IconCache iconCache = new IconCache();
 	private static final String TREEITEMDATA_FILE = "TreeItem.file";
 		// File: File associated with tree item
 	private static final String TREEITEMDATA_IMAGEEXPANDED = "TreeItem.imageExpanded";
@@ -107,8 +108,9 @@ public class FileViewer {
 	 * Runs main program.
 	 */
 	public static void main (String [] args) {
-		display = new Display ();
-		new FileViewer().open();
+		Display display = new Display ();
+		FileViewer application = new FileViewer();
+		Shell shell = application.open(display);
 		while (! shell.isDisposed()) {
 			if (! display.readAndDispatch()) display.sleep();
 		}
@@ -118,20 +120,22 @@ public class FileViewer {
 	/**
 	 * Opens the main program.
 	 */
-	public void open() {		
+	public Shell open(Display display) {		
 		// Create the window
-		IconCache.initResources(display);
+		this.display = display;
+		iconCache.initResources(display);
 		shell = new Shell();
 		createShellContents();
 		notifyRefreshFiles(null);
-		shell.addShellListener(new ShellAdapter() {
-			public void shellClosed(ShellEvent e) {
+		shell.addDisposeListener(new DisposeListener () {
+			public void widgetDisposed(DisposeEvent e) {
 				// Cleanup
 				workerStop();
-				IconCache.freeResources();
+				iconCache.freeResources();
 			}
-		}); 
+		});
 		shell.open();
+		return shell;
 	}
 	/**
 	 * Closes the main program.
@@ -178,7 +182,7 @@ public class FileViewer {
 	 */
 	private void createShellContents() {
 		shell.setText(getResourceString("Title", new Object[] { "" }));	
-		shell.setImage(IconCache.stockImages[IconCache.shellIcon]);
+		shell.setImage(iconCache.stockImages[iconCache.shellIcon]);
 		Menu bar = new Menu(shell, SWT.BAR);
 		shell.setMenuBar(bar);
 		createFileMenu(bar);
@@ -280,7 +284,7 @@ public class FileViewer {
 		toolBar.setLayoutData(layoutData);
 		ToolItem item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(IconCache.stockImages[IconCache.cmdParent]);
+		item.setImage(iconCache.stockImages[iconCache.cmdParent]);
 		item.setToolTipText(getResourceString("tool.Parent.tiptext"));
 		item.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
@@ -288,7 +292,7 @@ public class FileViewer {
 			}
 		});
 		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(IconCache.stockImages[IconCache.cmdRefresh]);
+		item.setImage(iconCache.stockImages[iconCache.cmdRefresh]);
 		item.setToolTipText(getResourceString("tool.Refresh.tiptext"));
 		item.addSelectionListener(new SelectionAdapter () {
 			public void widgetSelected(SelectionEvent e) {
@@ -306,34 +310,34 @@ public class FileViewer {
 
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(IconCache.stockImages[IconCache.cmdCut]);
+		item.setImage(iconCache.stockImages[iconCache.cmdCut]);
 		item.setToolTipText(getResourceString("tool.Cut.tiptext"));
 		item.addSelectionListener(unimplementedListener);
 		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(IconCache.stockImages[IconCache.cmdCopy]);
+		item.setImage(iconCache.stockImages[iconCache.cmdCopy]);
 		item.setToolTipText(getResourceString("tool.Copy.tiptext"));
 		item.addSelectionListener(unimplementedListener);
 		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(IconCache.stockImages[IconCache.cmdPaste]);
+		item.setImage(iconCache.stockImages[iconCache.cmdPaste]);
 		item.setToolTipText(getResourceString("tool.Paste.tiptext"));		item.addSelectionListener(unimplementedListener);
 
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(IconCache.stockImages[IconCache.cmdDelete]);
+		item.setImage(iconCache.stockImages[iconCache.cmdDelete]);
 		item.setToolTipText(getResourceString("tool.Delete.tiptext"));
 		item.addSelectionListener(unimplementedListener);
 		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(IconCache.stockImages[IconCache.cmdRename]);
+		item.setImage(iconCache.stockImages[iconCache.cmdRename]);
 		item.setToolTipText(getResourceString("tool.Rename.tiptext"));
 		item.addSelectionListener(unimplementedListener);
 
 		item = new ToolItem(toolBar, SWT.SEPARATOR);
 		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(IconCache.stockImages[IconCache.cmdSearch]);
+		item.setImage(iconCache.stockImages[iconCache.cmdSearch]);
 		item.setToolTipText(getResourceString("tool.Search.tiptext"));
 		item.addSelectionListener(unimplementedListener);
 		item = new ToolItem(toolBar, SWT.PUSH);
-		item.setImage(IconCache.stockImages[IconCache.cmdPrint]);
+		item.setImage(iconCache.stockImages[iconCache.cmdPrint]);
 		item.setToolTipText(getResourceString("tool.Print.tiptext"));
 		item.addSelectionListener(unimplementedListener);
 	}
@@ -508,10 +512,10 @@ public class FileViewer {
 	 * @param item the TreeItem to fill in
 	 */
 	private void treeExpandItem(TreeItem item) {
-		shell.setCursor(IconCache.stockCursors[IconCache.cursorWait]);
+		shell.setCursor(iconCache.stockCursors[iconCache.cursorWait]);
 		final Object stub = item.getData(TREEITEMDATA_STUB);
 		if (stub == null) treeRefreshItem(item, true);
-		shell.setCursor(IconCache.stockCursors[IconCache.cursorDefault]);
+		shell.setCursor(iconCache.stockCursors[iconCache.cursorDefault]);
 	}
 	
 	/**
@@ -658,10 +662,10 @@ public class FileViewer {
 	 */
 	private void treeInitFolder(TreeItem item, File folder) {
 		item.setText(folder.getName());
-		item.setImage(IconCache.stockImages[IconCache.iconClosedFolder]);
+		item.setImage(iconCache.stockImages[iconCache.iconClosedFolder]);
 		item.setData(TREEITEMDATA_FILE, folder);
-		item.setData(TREEITEMDATA_IMAGEEXPANDED, IconCache.stockImages[IconCache.iconOpenFolder]);
-		item.setData(TREEITEMDATA_IMAGECOLLAPSED, IconCache.stockImages[IconCache.iconClosedFolder]);
+		item.setData(TREEITEMDATA_IMAGEEXPANDED, iconCache.stockImages[iconCache.iconOpenFolder]);
+		item.setData(TREEITEMDATA_IMAGECOLLAPSED, iconCache.stockImages[iconCache.iconClosedFolder]);
 	}
 
 	/**
@@ -672,10 +676,10 @@ public class FileViewer {
 	 */
 	private void treeInitVolume(TreeItem item, File volume) {
 		item.setText(volume.getPath());
-		item.setImage(IconCache.stockImages[IconCache.iconClosedDrive]);
+		item.setImage(iconCache.stockImages[iconCache.iconClosedDrive]);
 		item.setData(TREEITEMDATA_FILE, volume);
-		item.setData(TREEITEMDATA_IMAGEEXPANDED, IconCache.stockImages[IconCache.iconOpenDrive]);
-		item.setData(TREEITEMDATA_IMAGECOLLAPSED, IconCache.stockImages[IconCache.iconClosedDrive]);
+		item.setData(TREEITEMDATA_IMAGEEXPANDED, iconCache.stockImages[iconCache.iconOpenDrive]);
+		item.setData(TREEITEMDATA_IMAGECOLLAPSED, iconCache.stockImages[iconCache.iconClosedDrive]);
 	}
 
 	/**
@@ -947,7 +951,7 @@ public class FileViewer {
 		File[] files = deferredRefreshFiles;
 		deferredRefreshFiles = null;
 
-		shell.setCursor(IconCache.stockCursors[IconCache.cursorWait]);
+		shell.setCursor(iconCache.stockCursors[iconCache.cursorWait]);
 
 		/* Table view:
 		 * Refreshes information about any files in the list and their children.
@@ -1007,7 +1011,7 @@ public class FileViewer {
 		currentDirectory = null;
 		notifySelectedDirectory(dir);
 
-		shell.setCursor(IconCache.stockCursors[IconCache.cursorDefault]);
+		shell.setCursor(iconCache.stockCursors[iconCache.cursorDefault]);
 	}
 
 	/**
@@ -1500,7 +1504,6 @@ public class FileViewer {
 	 */
 	private void workerExecute() {
 		File[] dirList;
-		
 		// Clear existing information
 		display.syncExec(new Runnable() {
 			public void run() {
@@ -1512,11 +1515,11 @@ public class FileViewer {
 			}
 		});
 		dirList = getDirectoryList(workerStateDir);
-
+		
 		for (int i = 0; (! workerCancelled) && (i < dirList.length); i++) {
 			final File theFile = dirList[i];
 			workerAddFileDetails(dirList[i]);
-
+			
 			final boolean doIncrementalRefresh = ((i & 127) == 127);
 			if (doIncrementalRefresh) display.syncExec(new Runnable() {
 				public void run () {
@@ -1551,7 +1554,7 @@ public class FileViewer {
 		if (file.isDirectory()) {
 			typeString = getResourceString("filetype.Folder");
 			sizeString = "";
-			iconImage = IconCache.stockImages[IconCache.iconClosedFolder];
+			iconImage = iconCache.stockImages[iconCache.iconClosedFolder];
 		} else {
 			sizeString = getResourceString("filesize.KB",
 				new Object[] { new Long((file.length() + 512) / 1024) });
@@ -1562,14 +1565,14 @@ public class FileViewer {
 				Program program = Program.findProgram(extension);
 				if (program != null) {
 					typeString = program.getName();
-					iconImage = IconCache.getIconFromProgram(program);
+					iconImage = iconCache.getIconFromProgram(program);
 				} else {
 					typeString = getResourceString("filetype.Unknown", new Object[] { extension.toUpperCase() });
-					iconImage = IconCache.stockImages[IconCache.iconFile];
+					iconImage = iconCache.stockImages[iconCache.iconFile];
 				}
 			} else {
 				typeString = getResourceString("filetype.None");
-				iconImage = IconCache.stockImages[IconCache.iconFile];
+				iconImage = iconCache.stockImages[iconCache.iconFile];
 			}
 		}
 		final String[] strings = new String[] { nameString, sizeString, typeString, dateString };

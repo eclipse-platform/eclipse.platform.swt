@@ -51,7 +51,7 @@ class GridLayoutTab extends Tab {
 	 * Creates the widgets in the "child" group.
 	 */
 	void createChildWidgets () {
-		/* Create the SelectionListener */
+		/* Create the TraverseListener */
 		final TraverseListener traverseListener = new TraverseListener () {
 			public void keyTraversed (TraverseEvent e) {
 				if (e.detail == SWT.TRAVERSE_RETURN || e.detail == SWT.TRAVERSE_TAB_NEXT)
@@ -230,7 +230,6 @@ class GridLayoutTab extends Tab {
 		data.widthHint = 60;
 		marginHeight.setLayoutData (data);
 		marginHeight.addSelectionListener (selectionListener);
-		marginHeight.addFocusListener (focusListener);
 		marginHeight.addTraverseListener (traverseListener);
 		new Label (marginGroup, SWT.NONE).setText ("marginWidth");
 		marginWidth = new Combo (marginGroup, SWT.NONE);
@@ -240,7 +239,6 @@ class GridLayoutTab extends Tab {
 		data.widthHint = 60;
 		marginWidth.setLayoutData (data);
 		marginWidth.addSelectionListener (selectionListener);
-		marginWidth.addFocusListener (focusListener);
 		marginWidth.addTraverseListener (traverseListener);
 		new Label (marginGroup, SWT.NONE).setText ("horizontalSpacing");
 		horizontalSpacing = new Combo (marginGroup, SWT.NONE);
@@ -250,7 +248,6 @@ class GridLayoutTab extends Tab {
 		data.widthHint = 60;
 		horizontalSpacing.setLayoutData (data);
 		horizontalSpacing.addSelectionListener (selectionListener);
-		horizontalSpacing.addFocusListener (focusListener);
 		horizontalSpacing.addTraverseListener (traverseListener);
 		new Label (marginGroup, SWT.NONE).setText ("verticalSpacing");
 		verticalSpacing = new Combo (marginGroup, SWT.NONE);
@@ -260,7 +257,6 @@ class GridLayoutTab extends Tab {
 		data.widthHint = 60;
 		verticalSpacing.setLayoutData (data);
 		verticalSpacing.addSelectionListener (selectionListener);
-		verticalSpacing.addFocusListener (focusListener);
 		verticalSpacing.addTraverseListener (traverseListener);
         
         /* Controls the columns in the GridLayout */
@@ -275,7 +271,6 @@ class GridLayoutTab extends Tab {
 		numColumns.setText ("1");
 		numColumns.addSelectionListener (selectionListener);
 		numColumns.addTraverseListener (traverseListener);
-		numColumns.addFocusListener (focusListener);
        	data = new GridData ();
        	data.widthHint = 15;
        	numColumns.setLayoutData (data);
@@ -287,7 +282,6 @@ class GridLayoutTab extends Tab {
 		data.horizontalSpan = 2;
 		data.horizontalIndent = 14;
 		makeColumnsEqualWidth.setLayoutData (data);
-		makeColumnsEqualWidth.addFocusListener (focusListener);
 
 		/* Add common controls */
 		super.createControlWidgets ();
