@@ -28,7 +28,7 @@ import org.eclipse.swt.widgets.*;
  * <ul>
  * <li>foreground color 
  * <li>background color
- * <li>font style (bold, regular)
+ * <li>font style (bold, italic, bold-italic, regular)
  * </ul>
  * <p>
  * In addition to text style attributes, the background color of a line may 
