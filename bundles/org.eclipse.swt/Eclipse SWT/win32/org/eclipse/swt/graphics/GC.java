@@ -286,12 +286,16 @@ public void dispose() {
 	* happen when a GC is disposed and the user has 
 	* not caused new pens or brushes to be allocated.
 	*/
-	int nullPen = OS.GetStockObject(OS.NULL_PEN);
-	int oldPen = OS.SelectObject(handle, nullPen);
-	OS.DeleteObject(oldPen);
-	int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
-	int oldBrush = OS.SelectObject(handle, nullBrush);
-	OS.DeleteObject(oldBrush);
+	if (data.foreground != -1) {
+		int nullPen = OS.GetStockObject(OS.NULL_PEN);
+		int oldPen = OS.SelectObject(handle, nullPen);
+		OS.DeleteObject(oldPen);
+	}
+	if (data.background != -1) {
+		int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
+		int oldBrush = OS.SelectObject(handle, nullBrush);
+		OS.DeleteObject(oldBrush);
+	}
 	
 	/*
 	* Put back the original bitmap into the device context.
@@ -2144,6 +2148,7 @@ public void setBackground (Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (OS.GetBkColor(handle) == color.handle) return;
+	data.background = color.handle;
 	OS.SetBkColor (handle, color.handle);
 	int newBrush = OS.CreateSolidBrush (color.handle);
 	int oldBrush = OS.SelectObject (handle, newBrush);
@@ -2254,6 +2259,7 @@ public void setForeground (Color color) {
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (OS.GetTextColor(handle) == color.handle) return;
+	data.foreground = color.handle;
 	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
 	LOGPEN logPen = new LOGPEN();
 	OS.GetObject(hPen, LOGPEN.sizeof, logPen);
