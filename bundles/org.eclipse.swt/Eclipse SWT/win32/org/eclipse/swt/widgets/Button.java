@@ -209,7 +209,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		height = Math.max (height, CheckHeight + 3);
 	}
 	if ((style & (SWT.PUSH | SWT.TOGGLE)) != 0) {
-		width += 10;  height += 7;
+		width += 12;  height += 10;
 	}
 	if (wHint != SWT.DEFAULT) width = wHint + (border * 2);
 	if (hHint != SWT.DEFAULT) height = hHint + (border * 2);
