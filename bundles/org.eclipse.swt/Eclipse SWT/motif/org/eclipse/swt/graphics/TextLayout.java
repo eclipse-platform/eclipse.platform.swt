@@ -15,11 +15,6 @@ import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
 
 public final class TextLayout {
-
-	final public static int MOVEMENT_CHAR = 1;
-	final public static int MOVEMENT_CLUSTER = 2;
-	final public static int MOVEMENT_WORD = 4;
-
 	Device device;
 	Font font;
 	String text;
@@ -551,7 +546,7 @@ public int getNextOffset (int offset, int movement) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (offset == length) return length;
-	if ((movement & (MOVEMENT_CHAR | MOVEMENT_CLUSTER)) != 0) return offset + 1;
+	if ((movement & (SWT.MOVEMENT_CHAR | SWT.MOVEMENT_CLUSTER)) != 0) return offset + 1;
 	int lineEnd = 0;
 	for (int i=1; i<lineOffset.length; i++) {
 		if (lineOffset[i] > offset) {
@@ -641,7 +636,7 @@ public int getPreviousOffset (int offset, int movement) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (offset == 0) return 0;
-	if ((movement & (MOVEMENT_CHAR | MOVEMENT_CLUSTER)) != 0) return offset - 1;
+	if ((movement & (SWT.MOVEMENT_CHAR | SWT.MOVEMENT_CLUSTER)) != 0) return offset - 1;
 	int lineStart = 0;
 	for (int i=0; i<lineOffset.length-1; i++) {
 		int lineEnd = lineOffset[i+1];

@@ -2462,6 +2462,27 @@ public class SWT {
 	 */
 	public static final int TRANSPARENCY_PIXEL = 1 << 2;
 
+	/**
+	 * The character movement type (value is 1&lt;&lt;0).
+	 * 
+	 * @since 3.0
+	 */	
+	public static final int MOVEMENT_CHAR = 1 << 0;
+
+	/**
+	 * The cluster movement type (value is 1&lt;&lt;1).
+	 * 
+	 * @since 3.0
+	 */
+	public static final int MOVEMENT_CLUSTER = 1 << 1;
+
+	/**
+	 * The word movement type (value is 1&lt;&lt;2).
+	 * 
+	 * @since 3.0
+	 */	
+	public static final int MOVEMENT_WORD = 1 << 2;
+
 /**
  * Answers a concise, human readable description of the error code.
  *

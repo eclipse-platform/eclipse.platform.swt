@@ -15,10 +15,6 @@ import org.eclipse.swt.internal.carbon.*;
 import org.eclipse.swt.*;
 
 public final class TextLayout {
-
-	final public static int MOVEMENT_CHAR = 1;
-	final public static int MOVEMENT_CLUSTER = 2;
-	final public static int MOVEMENT_WORD = 4;
 	
 	static class StyleItem {
 		TextStyle style;
@@ -465,19 +461,19 @@ int _getOffset (int offset, int movement, boolean forward) {
 	int[] newOffset = new int[1];
 	int type = OS.kATSUByCharacter;
 	switch (movement) {
-		case MOVEMENT_CLUSTER: type = OS.kATSUByCharacterCluster; break;
-		case MOVEMENT_WORD: type = OS.kATSUByWord; break;
+		case SWT.MOVEMENT_CLUSTER: type = OS.kATSUByCharacterCluster; break;
+		case SWT.MOVEMENT_WORD: type = OS.kATSUByWord; break;
 	}
 	if (forward) {
 		OS.ATSUNextCursorPosition(layout, offset, type, newOffset);
-		if (movement == MOVEMENT_WORD) {
+		if (movement == SWT.MOVEMENT_WORD) {
 			while (newOffset[0] < length && Compatibility.isWhitespace(text.charAt(newOffset[0]))) {
 				newOffset[0]++;
 			}
 		}
 	} else {
 		OS.ATSUPreviousCursorPosition(layout, offset, type, newOffset);
-		if (movement == MOVEMENT_WORD) {
+		if (movement == SWT.MOVEMENT_WORD) {
 			while (newOffset[0] > 0 && !Compatibility.isWhitespace(text.charAt(newOffset[0] - 1))) {
 				newOffset[0]--;
 			}

@@ -2477,7 +2477,7 @@ void doBackspace() {
 		else {
 			String lineText = content.getLine(line);
 			TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
-			int start = layout.getPreviousOffset(caretOffset - lineOffset, TextLayout.MOVEMENT_CHAR);
+			int start = layout.getPreviousOffset(caretOffset - lineOffset, SWT.MOVEMENT_CHAR);
 			renderer.disposeTextLayout(layout); 
 			event.start = start + lineOffset;
 			event.end = caretOffset;
@@ -3404,7 +3404,7 @@ int getClusterNext(int offset, int lineIndex) {
 	int lineOffset = content.getOffsetAtLine(lineIndex);	
 	TextLayout layout = renderer.getTextLayout(line, lineOffset);
 	offset -= lineOffset;
-	offset = layout.getNextOffset(offset, TextLayout.MOVEMENT_CLUSTER);
+	offset = layout.getNextOffset(offset, SWT.MOVEMENT_CLUSTER);
 	offset += lineOffset;
 	renderer.disposeTextLayout(layout);
 	return offset;
@@ -3414,7 +3414,7 @@ int getClusterPrevious(int offset, int lineIndex) {
 	int lineOffset = content.getOffsetAtLine(lineIndex);	
 	TextLayout layout = renderer.getTextLayout(line, lineOffset);
 	offset -= lineOffset;
-	offset = layout.getPreviousOffset(offset, TextLayout.MOVEMENT_CLUSTER);
+	offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_CLUSTER);
 	offset += lineOffset;
 	renderer.disposeTextLayout(layout);
 	return offset;
@@ -4528,7 +4528,7 @@ int getWordEnd(int offset) {
 	else {
 		TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
 		offset -= lineOffset;
-		offset = layout.getNextOffset(offset, TextLayout.MOVEMENT_WORD);
+		offset = layout.getNextOffset(offset, SWT.MOVEMENT_WORD);
 		offset += lineOffset;
 		renderer.disposeTextLayout(layout);
 	}
@@ -4609,7 +4609,7 @@ int getWordStart(int offset) {
 	else {
 		TextLayout layout = renderer.getTextLayout(lineText, lineOffset);
 		offset -= lineOffset;
-		offset = layout.getPreviousOffset(offset, TextLayout.MOVEMENT_WORD);
+		offset = layout.getPreviousOffset(offset, SWT.MOVEMENT_WORD);
 		offset += lineOffset;
 		renderer.disposeTextLayout(layout); 
 	}

@@ -27,11 +27,6 @@ import org.eclipse.swt.*;
  */
 
 public final class TextLayout {
-
-	final public static int MOVEMENT_CHAR = 1;
-	final public static int MOVEMENT_CLUSTER = 2;
-	final public static int MOVEMENT_WORD = 4;
-	
 	Device device;
 	Font font;
 	String text, segmentsText;
@@ -913,7 +908,7 @@ public int getNextOffset (int offset, int movement) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (offset == length) return length;
-	if ((movement & MOVEMENT_CHAR) != 0) return offset + 1;
+	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset + 1;
 	length = segmentsText.length();
 	offset = translateOffset(offset);
 	int[] ppSp = new int[1];
@@ -953,11 +948,11 @@ public int getNextOffset (int offset, int movement) {
 			if (run.tab) return untranslateOffset(offset);
 			if (run.lineBreak && !run.softBreak) return untranslateOffset(offset);
 			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
-			if (((movement & MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
+			if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
 				return untranslateOffset(offset);
 			}
 			breakRun(run);
-			if ((movement & MOVEMENT_WORD) != 0) {
+			if ((movement & SWT.MOVEMENT_WORD) != 0) {
 				if (properties.langid != lastLangID) {
 					OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 					if (!logAttr.fWhiteSpace) return untranslateOffset(offset);
@@ -967,8 +962,8 @@ public int getNextOffset (int offset, int movement) {
 			while (run.start <= offset && offset < run.start + run.length) {
 				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 				if (!logAttr.fInvalid) {
-					if ((movement & MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return untranslateOffset(offset);
-					if ((movement & MOVEMENT_WORD) != 0) {
+					if ((movement & SWT.MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return untranslateOffset(offset);
+					if ((movement & SWT.MOVEMENT_WORD) != 0) {
 						if (properties.fNeedsWordBreaking) {
 							if (logAttr.fWordStop) return untranslateOffset(offset);
 						} else {
@@ -1102,7 +1097,7 @@ public int getPreviousOffset (int offset, int movement) {
 	int length = text.length();
 	if (!(0 <= offset && offset <= length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	if (offset == 0) return 0;
-	if ((movement & MOVEMENT_CHAR) != 0) return offset - 1;
+	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset - 1;
 	length = segmentsText.length();
 	offset = translateOffset(offset);
 	int[] ppSp = new int[1];
@@ -1141,10 +1136,10 @@ public int getPreviousOffset (int offset, int movement) {
 		if (run.start <= offset && offset < run.start + run.length) {
 			if (run.lineBreak && !run.softBreak) return untranslateOffset(run.start + run.length);
 			OS.MoveMemory(properties, scripts[run.analysis.eScript], SCRIPT_PROPERTIES.sizeof);
-			if (((movement & MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
+			if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && !properties.fNeedsCaretInfo) {
 				return untranslateOffset(offset);
 			}
-			if ((movement & MOVEMENT_WORD) != 0) {
+			if ((movement & SWT.MOVEMENT_WORD) != 0) {
 				if (properties.langid != lastLangID) {
 					if (!previousWhitespace) return untranslateOffset(offset + 1);
 				}
@@ -1154,8 +1149,8 @@ public int getPreviousOffset (int offset, int movement) {
 			while (run.start <= offset && offset < run.start + run.length) {
 				OS.MoveMemory(logAttr, run.psla + ((offset - run.start) * SCRIPT_LOGATTR.sizeof), SCRIPT_LOGATTR.sizeof);
 				if (!logAttr.fInvalid) {
-					if ((movement & MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return untranslateOffset(offset);
-					if ((movement & MOVEMENT_WORD) != 0) {
+					if ((movement & SWT.MOVEMENT_CLUSTER) != 0 && logAttr.fCharStop) return untranslateOffset(offset);
+					if ((movement & SWT.MOVEMENT_WORD) != 0) {
 						if (properties.fNeedsWordBreaking) {
 							if (logAttr.fWordStop) return untranslateOffset(offset);
 						} else {

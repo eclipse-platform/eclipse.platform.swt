@@ -15,10 +15,6 @@ import org.eclipse.swt.internal.gtk.*;
 import org.eclipse.swt.*;
 
 public final class TextLayout {
-
-	final public static int MOVEMENT_CHAR = 1;
-	final public static int MOVEMENT_CLUSTER = 2;
-	final public static int MOVEMENT_WORD = 4;
 	
 	static class StyleItem {
 		TextStyle style;
@@ -389,7 +385,7 @@ int _getOffset (int offset, int movement, boolean forward) {
 		if (offset == 0) return 0;
 	}
 	int step = forward ? 1 : -1;
-	if ((movement & MOVEMENT_CHAR) != 0) return offset + step;
+	if ((movement & SWT.MOVEMENT_CHAR) != 0) return offset + step;
 	int /*long*/[] attrs = new int /*long*/[1];
 	int[] nAttrs = new int[1];
 	OS.pango_layout_get_log_attrs(layout, attrs, nAttrs);
@@ -408,8 +404,8 @@ int _getOffset (int offset, int movement, boolean forward) {
 	}
 	while (0 < offset && offset < length) {
 		OS.memmove(logAttr, attrs[0] + offset * PangoLogAttr.sizeof, PangoLogAttr.sizeof);
-		if (((movement & MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) break; 
-		if (((movement & MOVEMENT_WORD) != 0) && (logAttr.is_word_start || logAttr.is_sentence_end)) break;
+		if (((movement & SWT.MOVEMENT_CLUSTER) != 0) && logAttr.is_cursor_position) break; 
+		if (((movement & SWT.MOVEMENT_WORD) != 0) && (logAttr.is_word_start || logAttr.is_sentence_end)) break;
 		offset += step;
 		if (segments != null && segments.length > 2) {
 			for (int j = 0; j < segments.length; j++) {
