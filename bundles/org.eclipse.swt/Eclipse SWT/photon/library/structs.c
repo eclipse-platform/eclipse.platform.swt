@@ -1201,4 +1201,107 @@ void setPhCursorDef_tFields(JNIEnv *env, jobject lpObject, PhCursorDef_t *lpStru
 	(*env)->SetShortField(env, lpObject, lpCache->hdr_len, lpStruct->hdr.len);
 }
 
+void cachePgDisplaySettings_tFids(JNIEnv *env, jobject lpObject, PPgDisplaySettings_t_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->reserved = (*env)->GetFieldID(env, lpCache->clazz, "reserved", "[I");
+	lpCache->flags = (*env)->GetFieldID(env, lpCache->clazz, "flags", "I");
+	lpCache->refresh = (*env)->GetFieldID(env, lpCache->clazz, "refresh", "I");
+	lpCache->yres = (*env)->GetFieldID(env, lpCache->clazz, "yres", "I");
+	lpCache->xres = (*env)->GetFieldID(env, lpCache->clazz, "xres", "I");
+	lpCache->mode = (*env)->GetFieldID(env, lpCache->clazz, "mode", "I");
+	lpCache->cached = 1;
+}
+
+void getPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettings_t *lpStruct, PPgDisplaySettings_t_FID_CACHE lpCache)
+{
+	jintArray reserved = (*env)->GetObjectField(env, lpObject, lpCache->reserved);
+    if (reserved) {
+        jint *reserved1 = (*env)->GetIntArrayElements(env, reserved, NULL);
+        memcpy(reserved1, lpStruct->reserved, sizeof (lpStruct->reserved));
+        (*env)->ReleaseIntArrayElements(env, reserved, reserved1, JNI_ABORT);
+	}
+	lpStruct->flags = (*env)->GetIntField(env, lpObject, lpCache->flags);
+	lpStruct->refresh = (*env)->GetIntField(env, lpObject, lpCache->refresh);
+	lpStruct->yres = (*env)->GetIntField(env, lpObject, lpCache->yres);
+	lpStruct->xres = (*env)->GetIntField(env, lpObject, lpCache->xres);
+	lpStruct->mode = (*env)->GetIntField(env, lpObject, lpCache->mode);
+}
+
+void setPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettings_t *lpStruct, PPgDisplaySettings_t_FID_CACHE lpCache)
+{
+	jintArray reserved = (*env)->GetObjectField(env, lpObject, lpCache->reserved);
+    if (reserved) {
+        jint *reserved1 = (*env)->GetIntArrayElements(env, reserved, NULL);
+        memcpy(reserved1, lpStruct->reserved, sizeof (lpStruct->reserved));
+        (*env)->ReleaseIntArrayElements(env, reserved, reserved1, 0);
+	}
+	(*env)->SetIntField(env, lpObject, lpCache->flags, lpStruct->flags);
+	(*env)->SetIntField(env, lpObject, lpCache->refresh, lpStruct->refresh);
+	(*env)->SetIntField(env, lpObject, lpCache->yres, lpStruct->yres);
+	(*env)->SetIntField(env, lpObject, lpCache->xres, lpStruct->xres);
+	(*env)->SetIntField(env, lpObject, lpCache->mode, lpStruct->mode);
+}
+
+void cachePgVideoModeInfo_tFids(JNIEnv *env, jobject lpObject, PPgVideoModeInfo_t_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->refresh_rates = (*env)->GetFieldID(env, lpCache->clazz, "refresh_rates", "[B");
+	lpCache->mode_capabilities6 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities6", "I");
+	lpCache->mode_capabilities5 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities5", "I");
+	lpCache->mode_capabilities4 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities4", "I");
+	lpCache->mode_capabilities3 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities3", "I");
+	lpCache->mode_capabilities2 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities2", "I");
+	lpCache->mode_capabilities1 = (*env)->GetFieldID(env, lpCache->clazz, "mode_capabilities1", "I");
+	lpCache->type = (*env)->GetFieldID(env, lpCache->clazz, "type", "I");
+	lpCache->bytes_per_scanline = (*env)->GetFieldID(env, lpCache->clazz, "bytes_per_scanline", "S");
+	lpCache->bits_per_pixel = (*env)->GetFieldID(env, lpCache->clazz, "bits_per_pixel", "S");
+	lpCache->height = (*env)->GetFieldID(env, lpCache->clazz, "height", "S");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->clazz, "width", "S");
+	lpCache->cached = 1;
+}
+
+void getPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct, PPgVideoModeInfo_t_FID_CACHE lpCache)
+{
+	jbyteArray refresh_rates = (*env)->GetObjectField(env, lpObject, lpCache->refresh_rates);
+    if (refresh_rates) {
+        jbyte *refresh_rates1 = (*env)->GetByteArrayElements(env, refresh_rates, NULL);
+        memcpy(lpStruct->refresh_rates, refresh_rates1, sizeof(lpStruct->refresh_rates));
+        (*env)->ReleaseByteArrayElements(env, refresh_rates, refresh_rates1, JNI_ABORT);
+	}
+	lpStruct->mode_capabilities6 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities6);
+	lpStruct->mode_capabilities5 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities5);
+	lpStruct->mode_capabilities4 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities4);
+	lpStruct->mode_capabilities3 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities3);
+	lpStruct->mode_capabilities2 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities2);
+	lpStruct->mode_capabilities1 = (*env)->GetIntField(env, lpObject, lpCache->mode_capabilities1);
+	lpStruct->type = (*env)->GetIntField(env, lpObject, lpCache->type);
+	lpStruct->bytes_per_scanline = (*env)->GetShortField(env, lpObject, lpCache->bytes_per_scanline);
+	lpStruct->bits_per_pixel = (*env)->GetShortField(env, lpObject, lpCache->bits_per_pixel);
+	lpStruct->height = (*env)->GetShortField(env, lpObject, lpCache->height);
+	lpStruct->width = (*env)->GetShortField(env, lpObject, lpCache->width);
+}
+
+void setPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct, PPgVideoModeInfo_t_FID_CACHE lpCache)
+{
+	jbyteArray refresh_rates = (*env)->GetObjectField(env, lpObject, lpCache->refresh_rates);
+    if (refresh_rates) {
+        jbyte *refresh_rates1 = (*env)->GetByteArrayElements(env, refresh_rates, NULL);
+        memcpy(refresh_rates1, lpStruct->refresh_rates, sizeof(lpStruct->refresh_rates));
+        (*env)->ReleaseByteArrayElements(env, refresh_rates, refresh_rates1, 0);
+	}
+	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities6, lpStruct->mode_capabilities6);
+	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities5, lpStruct->mode_capabilities5);
+	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities4, lpStruct->mode_capabilities4);
+	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities3, lpStruct->mode_capabilities3);
+	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities2, lpStruct->mode_capabilities2);
+	(*env)->SetIntField(env, lpObject, lpCache->mode_capabilities1, lpStruct->mode_capabilities1);
+	(*env)->SetIntField(env, lpObject, lpCache->type, lpStruct->type);
+	(*env)->SetShortField(env, lpObject, lpCache->bytes_per_scanline, lpStruct->bytes_per_scanline);
+	(*env)->SetShortField(env, lpObject, lpCache->bits_per_pixel, lpStruct->bits_per_pixel);
+	(*env)->SetShortField(env, lpObject, lpCache->height, lpStruct->height);
+	(*env)->SetShortField(env, lpObject, lpCache->width, lpStruct->width);
+}
 

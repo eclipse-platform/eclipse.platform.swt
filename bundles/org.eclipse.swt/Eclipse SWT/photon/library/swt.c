@@ -6345,3 +6345,159 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PtInflateBalloon
 	return result;
 }
 
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PgDisplaySettings_t;I)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	
+    PgDisplaySettings_t object, *src1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePgDisplaySettings_tFids(env, src, &PGLOB(PgDisplaySettings_tFc));
+        getPgDisplaySettings_tFields(env, src, src1, &PGLOB(PgDisplaySettings_tFc));
+    }
+    memmove((void *)dest, (void *)src1, count);
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/photon/PgDisplaySettings_t;II)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2II
+  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	PgDisplaySettings_t object, *dest1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PgDisplaySettings_1t_2II\n");
+#endif
+
+    memmove((void *)&object, (void *)src, count);
+    if (dest) {
+        dest1=&object;
+        cachePgDisplaySettings_tFids(env, dest, &PGLOB(PgDisplaySettings_tFc));
+        setPgDisplaySettings_tFields(env, dest, dest1, &PGLOB(PgDisplaySettings_tFc));
+    }
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (ILorg/eclipse/swt/internal/photon/PgVideoModeInfo_t;I)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__ILorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2I
+  (JNIEnv *env, jobject that, jint dest, jobject src, jint count)
+{
+	DECL_GLOB(pGlob)
+	
+    PgVideoModeInfo_t object, *src1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__ILorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2I\n");
+#endif
+
+    if (src) {
+        src1=&object;
+        cachePgVideoModeInfo_tFids(env, src, &PGLOB(PgVideoModeInfo_tFc));
+        getPgVideoModeInfo_tFields(env, src, src1, &PGLOB(PgVideoModeInfo_tFc));
+    }
+    memmove((void *)dest, (void *)src1, count);
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    memmove
+ * Signature: (Lorg/eclipse/swt/internal/photon/PgVideoModeInfo_t;II)V
+ */
+/*
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_photon_OS_memmove__Lorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2II
+  (JNIEnv *env, jobject that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	PgVideoModeInfo_t object, *dest1=NULL;
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "memmove__Lorg_eclipse_swt_internal_photon_PgVideoModeInfo_1t_2II\n");
+#endif
+
+    memmove((void *)&object, (void *)src, count);
+    if (dest) {
+        dest1=&object;
+        cachePgVideoModeInfo_tFids(env, dest, &PGLOB(PgVideoModeInfo_tFc));
+        setPgVideoModeInfo_tFields(env, dest, dest1, &PGLOB(PgVideoModeInfo_tFc));
+    }
+}
+*/
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PgGetVideoMode
+ * Signature: (Lorg/eclipse/swt/internal/photon/PgDisplaySettings_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgGetVideoMode
+  (JNIEnv *env, jobject that, jobject settings)
+{
+	DECL_GLOB(pGlob)
+    PgDisplaySettings_t settings1, *lpSettings1=NULL;
+	jint result;
+	
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PgGetVideoMode\n");
+#endif
+
+	if (settings) {
+        lpSettings1 = &settings1;
+        cachePgDisplaySettings_tFids(env, settings, &PGLOB(PgDisplaySettings_tFc));
+        getPgDisplaySettings_tFields(env, settings, lpSettings1, &PGLOB(PgDisplaySettings_tFc));
+    }
+    result = (jint)PgGetVideoMode(lpSettings1);
+
+    if (settings) {
+        setPgDisplaySettings_tFields(env, settings, lpSettings1, &PGLOB(PgDisplaySettings_tFc));
+    }
+	return result;
+}
+
+/*
+ * Class:     org_eclipse_swt_internal_photon_OS
+ * Method:    PgGetVideoModeInfo
+ * Signature: (ILorg/eclipse/swt/internal/photon/PgVideoModeInfo_t;)I
+ */
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_photon_OS_PgGetVideoModeInfo
+  (JNIEnv *env, jobject that, jint mode_number, jobject mode_info)
+{
+	DECL_GLOB(pGlob)	
+    PgVideoModeInfo_t mode_info1, *lpmode_info1=NULL;
+	jint result;
+	
+#ifdef DEBUG_CALL_PRINTS
+    fprintf(stderr, "PgGetVideoModeInfo\n");
+#endif
+
+	if (mode_info) {
+        lpmode_info1 = &mode_info1;
+        cachePgVideoModeInfo_tFids(env, mode_info, &PGLOB(PgVideoModeInfo_tFc));
+        getPgVideoModeInfo_tFields(env, mode_info, lpmode_info1, &PGLOB(PgVideoModeInfo_tFc));
+    }
+    result = (jint)PgGetVideoModeInfo(mode_number, lpmode_info1);
+
+    if (mode_info) {
+        setPgVideoModeInfo_tFields(env, mode_info, lpmode_info1, &PGLOB(PgVideoModeInfo_tFc));
+    }
+	return result;
+}
+

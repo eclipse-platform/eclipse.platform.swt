@@ -2924,4 +2924,13 @@ public static final native void PgSetFillTransPat (byte [] pat);
 
 public static final native int PtInflateBalloon (int win, int me, int position, byte [] string, byte [] font, int fill, int text_color);
 
+//public static final native void memmove (PgDisplaySettings_t dest, int src, int size);
+//public static final native void memmove (int dest, PgDisplaySettings_t src, int size);
+
+//public static final native void memmove (PgVideoModeInfo_t dest, int src, int size);
+//public static final native void memmove (int dest, PgVideoModeInfo_t src, int size);
+
+public static final native void PgGetVideoMode (PgDisplaySettings_t settings);
+public static final native void PgGetVideoModeInfo (short mode_number, PgVideoModeInfo_t mode_info);
+
 }

@@ -94,6 +94,13 @@ void dispose_Object (Object object) {
 
 public Rectangle getBounds () {
 	checkDevice ();
+	PgDisplaySettings_t settings = new PgDisplaySettings_t ();
+	OS.PgGetVideoMode (settings);
+	return new Rectangle (0, 0, settings.xres, settings.yres);
+}
+
+public Rectangle getClientArea () {
+	checkDevice ();
 	PhRect_t rect = new PhRect_t ();
 	OS.PhWindowQueryVisible (OS.Ph_QUERY_GRAPHICS, 0, 1, rect);
 	int width = rect.lr_x - rect.ul_x + 1;
@@ -101,14 +108,13 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.ul_x, rect.ul_y, width, height);
 }
 
-public Rectangle getClientArea () {
-	return getBounds ();
-}
-
 public int getDepth () {
 	checkDevice ();
-	//NOT DONE
-	return 32;
+	PgDisplaySettings_t settings = new PgDisplaySettings_t ();
+	OS.PgGetVideoMode (settings);
+	PgVideoModeInfo_t mode_info = new PgVideoModeInfo_t ();
+	OS.PgGetVideoModeInfo ((short) settings.mode, mode_info);
+	return mode_info.bits_per_pixel;
 }
 
 public DeviceData getDeviceData () {

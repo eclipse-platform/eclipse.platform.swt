@@ -39,7 +39,9 @@
 	PtColorSelectInfo_t_FID_CACHE PtColorSelectInfo_tFc; \
 	PhRegion_t_FID_CACHE PhRegion_tFc; \
 	PtContainerCallback_t_FID_CACHE PtContainerCallback_tFc; \
-	PhCursorDef_t_FID_CACHE PhCursorDef_tFc;
+	PhCursorDef_t_FID_CACHE PhCursorDef_tFc; \
+	PgDisplaySettings_t_FID_CACHE PgDisplaySettings_tFc; \
+	PgVideoModeInfo_t_FID_CACHE PgVideoModeInfo_tFc;
 
 /* PhPoint_t struct */
 typedef struct PhPoint_t_FID_CACHE {
@@ -325,5 +327,28 @@ typedef PhCursorDef_t_FID_CACHE *PPhCursorDef_t_FID_CACHE;
 void cachePhCursorDef_tFids(JNIEnv *env, jobject lpObject, PPhCursorDef_t_FID_CACHE lpCache);
 void getPhCursorDef_tFields(JNIEnv *env, jobject lpObject, PhCursorDef_t *lpStruct, PPhCursorDef_t_FID_CACHE lpCache);
 void setPhCursorDef_tFields(JNIEnv *env, jobject lpObject, PhCursorDef_t *lpStruct, PPhCursorDef_t_FID_CACHE lpCache);
+
+/* PgDisplaySettings_t struct */
+typedef struct PgDisplaySettings_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID reserved, flags, refresh, yres, xres, mode;
+} PgDisplaySettings_t_FID_CACHE;
+typedef PgDisplaySettings_t_FID_CACHE *PPgDisplaySettings_t_FID_CACHE;
+
+void cachePgDisplaySettings_tFids(JNIEnv *env, jobject lpObject, PPgDisplaySettings_t_FID_CACHE lpCache);
+void getPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettings_t *lpStruct, PPgDisplaySettings_t_FID_CACHE lpCache);
+void setPgDisplaySettings_tFields(JNIEnv *env, jobject lpObject, PgDisplaySettings_t *lpStruct, PPgDisplaySettings_t_FID_CACHE lpCache);
+
+typedef struct PgVideoModeInfo_t_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID refresh_rates, mode_capabilities6, mode_capabilities5, mode_capabilities4, mode_capabilities3, mode_capabilities2, mode_capabilities1, type, bytes_per_scanline, bits_per_pixel, height, width;
+} PgVideoModeInfo_t_FID_CACHE;
+typedef PgVideoModeInfo_t_FID_CACHE *PPgVideoModeInfo_t_FID_CACHE;
+
+void cachePgVideoModeInfo_tFids(JNIEnv *env, jobject lpObject, PPgVideoModeInfo_t_FID_CACHE lpCache);
+void getPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct, PPgVideoModeInfo_t_FID_CACHE lpCache);
+void setPgVideoModeInfo_tFields(JNIEnv *env, jobject lpObject, PgVideoModeInfo_t *lpStruct, PPgVideoModeInfo_t_FID_CACHE lpCache);
 
 #endif // INC_structs_H
