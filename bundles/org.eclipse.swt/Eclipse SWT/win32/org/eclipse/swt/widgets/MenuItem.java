@@ -951,8 +951,16 @@ LRESULT wmMeasureChild (int wParam, int lParam) {
 	MEASUREITEMSTRUCT struct = new MEASUREITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, MEASUREITEMSTRUCT.sizeof);
 	if (image != null) {
+		/*
+		* Feature in Windows.  On Windows 98, it is necessary
+		* to add 4 pixels to the width of the image or the image
+		* and text are too close.  On other Windows platforms,
+		* this causes the text of the longest item to touch the
+		* accelerator text.  The fix is to add only 2 pixels in
+		* this case.
+		*/
 		Rectangle rect = image.getBounds ();
-		struct.itemWidth = rect.width + 4;
+		struct.itemWidth = rect.width + (OS.IsWin95 ? 4 : 2);
 		struct.itemHeight = rect.height + 4;
 	}
 	OS.MoveMemory (lParam, struct, MEASUREITEMSTRUCT.sizeof);	
