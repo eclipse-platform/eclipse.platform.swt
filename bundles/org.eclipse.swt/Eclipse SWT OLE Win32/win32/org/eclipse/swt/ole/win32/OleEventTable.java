@@ -62,4 +62,10 @@ void unhook (int eventType, OleListener handler) {
 		}
 	}
 }
+boolean hasEntries() {
+	for (int i=0; i<types.length; i++) {
+		if (types[i] != 0) return true;
+	}
+	return false;
+}
 }

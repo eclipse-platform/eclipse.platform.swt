@@ -112,7 +112,10 @@ private int Invoke(int dispIdMember, int riid, int lcid, int dwFlags, int pDispP
 		
 	OleEvent event = new OleEvent();
 	event.arguments = eventInfo;
-	notifyListener(dispIdMember,event);
+	try {
+		notifyListener(dispIdMember,event);
+	} catch (Throwable t) {
+	}
 
 	return COM.S_OK;
 }
@@ -167,5 +170,8 @@ void removeListener(int eventID, OleListener listener) {
 	if (listener == null) OLE.error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (eventID, listener);
+}
+boolean hasListeners() {
+	return eventTable.hasEntries();
 }
 }
