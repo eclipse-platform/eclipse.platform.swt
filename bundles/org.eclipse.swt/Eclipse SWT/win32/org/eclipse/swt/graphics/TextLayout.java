@@ -10,6 +10,7 @@
  *******************************************************************************/
 package org.eclipse.swt.graphics;
 
+import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 
@@ -73,15 +74,16 @@ public class TextLayout {
 
 		/* ScriptBreak */
 		int psla;
+
+		int fallbackFont;
 	
 	void free() {
 		int hHeap = OS.GetProcessHeap();
-		/* This code is intentionaly commented. */
-//		if (psc != 0) {
-//			OS.ScriptFreeCache (psc);
-//			OS.HeapFree(hHeap, 0, psc);
-//			psc = 0;
-//		}
+		if (psc != 0) {
+			OS.ScriptFreeCache (psc);
+			OS.HeapFree(hHeap, 0, psc);
+			psc = 0;
+		}
 		if (glyphs != 0) {
 			OS.HeapFree(hHeap, 0, glyphs);
 			glyphs = 0;
@@ -106,6 +108,10 @@ public class TextLayout {
 		if (psla != 0) {
 			OS.HeapFree(hHeap, 0, psla);
 			psla = 0;
+		}
+		if (fallbackFont != 0) {
+			OS.DeleteObject(fallbackFont);
+			fallbackFont = 0;
 		}
 		width = 0;
 		height = 0;
@@ -167,11 +173,7 @@ void computeRuns (GC gc) {
 	allRuns = itemize();
 	for (int i=0; i<allRuns.length - 1; i++) {
 		StyleItem run = allRuns[i];
-		Font font = null;
-		if (run.style != null) font = run.style.font;
-		if (font == null) font = this.font;
-		if (font == null) font = device.getSystemFont();
-		OS.SelectObject(srcHdc, font.handle);
+		OS.SelectObject(srcHdc, getItemFont(run));
 		shape(srcHdc, run);
 	}
 	SCRIPT_LOGATTR logAttr = new SCRIPT_LOGATTR();
@@ -260,11 +262,7 @@ void computeRuns (GC gc) {
 					newRun.analysis = run.analysis;
 					run.free();
 					run.length = start;
-					Font font = null;
-					if (run.style != null) font = run.style.font;
-					if (font == null) font = this.font;
-					if (font == null) font = device.getSystemFont();
-					OS.SelectObject(srcHdc, font.handle);
+					OS.SelectObject(srcHdc, getItemFont(run));
 					shape (srcHdc, run);
 					shape (srcHdc, newRun);
 					StyleItem[] newAllRuns = new StyleItem[allRuns.length + 1];
@@ -423,11 +421,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 					} else {
 						if (run.style != null && run.style.background != null) {
 							int bg = run.style.background.handle;
-							Font font = null;
-							if (run.style != null) font = run.style.font;
-							if (font == null) font = this.font;
-							if (font == null) font = device.getSystemFont();
-							OS.SelectObject(hdc, font.handle);
+							OS.SelectObject(hdc, getItemFont(run));
 							OS.GetTextMetrics(hdc, lptm);
 							int drawRunY = drawY + (baseline - lptm.tmAscent);
 							int hBrush = OS.CreateSolidBrush (bg);
@@ -475,11 +469,7 @@ public void draw (GC gc, int x, int y, int selectionStart, int selectionEnd, Col
 						if (run.style != null && run.style.foreground != null) fg = run.style.foreground.handle;
 					}
 					OS.SetTextColor(hdc, fg);
-					Font font = null;
-					if (run.style != null) font = run.style.font;
-					if (font == null) font = this.font;
-					if (font == null) font = device.getSystemFont();
-					OS.SelectObject(hdc, font.handle);
+					OS.SelectObject(hdc, getItemFont(run));
 					OS.GetTextMetrics(hdc, lptm);
 					int drawRunY = drawY + (baseline - lptm.tmAscent);
 					OS.ScriptTextOut(hdc, run.psc, drawX, drawRunY, 0, null, run.analysis , 0, 0, run.glyphs, run.glyphCount, run.advances, null, run.goffsets);
@@ -676,6 +666,17 @@ public Font getFont () {
 	return font;
 }
 
+int getItemFont(StyleItem item) {
+	if (item.fallbackFont != 0) return item.fallbackFont;
+	if (item.style != null && item.style.font != null) {
+		return item.style.font.handle;
+	}
+	if (this.font != null) {
+		return this.font.handle;
+	}
+	return device.getSystemFont().handle;
+}
+
 /**
  * Returns the embedding level at given character offset
  * 
@@ -769,9 +770,9 @@ public FontMetrics getLineMetrics (int lineIndex) {
 	computeRuns(null);
 	if (!(0 <= lineIndex && lineIndex < runs.length)) SWT.error(SWT.ERROR_INVALID_RANGE);
 	int hdc = device.internal_new_GC(null);
-	Font font = this.font != null ? this.font : device.getSystemFont();
 	TEXTMETRIC lptm = OS.IsUnicode ? (TEXTMETRIC)new TEXTMETRICW() : new TEXTMETRICA();
 	if (text.length() == 0) {
+		Font font = this.font != null ? this.font : device.getSystemFont();
 		OS.SelectObject(hdc, font.handle);
 		OS.GetTextMetrics(hdc, lptm);
 	} else {
@@ -779,9 +780,7 @@ public FontMetrics getLineMetrics (int lineIndex) {
 		StyleItem[] lineRuns = runs[lineIndex];
 		for (int i = 0; i<lineRuns.length; i++) {
 			StyleItem run = lineRuns[i];
-			Font runFont = run.style != null ? run.style.font : null;
-			if (runFont == null) runFont = font;
-			OS.SelectObject(hdc, runFont.handle);
+			OS.SelectObject(hdc, getItemFont(run));
 			OS.GetTextMetrics(hdc, lptm);
 			ascent = Math.max (ascent, lptm.tmAscent);
 			descent = Math.max (descent, lptm.tmDescent);
@@ -1546,35 +1545,114 @@ public void setWidth (int width) {
 	this.wrapWidth = width;
 }
 
+boolean shape (int hdc, StyleItem run, char[] chars, int[] glyphCount, int maxGlyphs) {
+	int hr = OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, glyphCount);
+	run.glyphCount = glyphCount[0];
+	if (hr != OS.USP_E_SCRIPT_NOT_IN_FONT) {
+		SCRIPT_FONTPROPERTIES fp = new SCRIPT_FONTPROPERTIES ();
+		fp.cBytes = SCRIPT_FONTPROPERTIES.sizeof;
+		OS.ScriptGetFontProperties(hdc, run.psc, fp);
+		short[] glyphs = new short[glyphCount[0]];
+		OS.MoveMemory(glyphs, run.glyphs, glyphs.length * 2);
+		int i;
+		for (i = 0; i < glyphs.length; i++) {
+			if (glyphs[i] == fp.wgDefault) break;
+		}
+		if (i == glyphs.length) return true;
+	}
+	if (run.psc != 0) {
+		OS.ScriptFreeCache(run.psc);
+		glyphCount[0] = 0;
+		OS.MoveMemory(run.psc, glyphCount, 4);
+	}
+	run.glyphCount = 0;
+	return false;
+}
+
 /* 
  * Generate glyphs for one Run.
  */
-void shape (int hdc, StyleItem run) {
-	int[] buffer = new int[1];
-	char[] chars = new char[run.length];
+void shape (final int hdc, final StyleItem run) {
+	final int[] buffer = new int[1];
+	final char[] chars = new char[run.length];
 	segmentsText.getChars(run.start, run.start + run.length, chars, 0);
-	int MAX_GLYPHS = (chars.length * 3 / 2) + 16;
-	int hHeap = OS.GetProcessHeap();
-	int pGlyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_GLYPHS * 2);
-	int pClusters = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_GLYPHS * 2);
-	int psva = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, MAX_GLYPHS * SCRIPT_VISATTR_SIZEOF);
+	final int maxGlyphs = (chars.length * 3 / 2) + 16;
+	final int hHeap = OS.GetProcessHeap();
+	run.glyphs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
+	run.clusters = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * 2);
+	run.visAttrs = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, maxGlyphs * SCRIPT_VISATTR_SIZEOF);
 	run.psc = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, 4);
-	OS.ScriptShape(hdc, run.psc, chars, chars.length, MAX_GLYPHS, run.analysis, pGlyphs, pClusters, psva, buffer);
-	//TODO
-//	if (hr == E_OUTOFMEMORY)
-//	if (hr == USP_E_SCRIPT_NOT_IN_FONT)
-	device.addScriptCache(run.psc);
-	run.glyphs = pGlyphs;
-	run.glyphCount = buffer[0];
-	run.clusters = pClusters;
-	run.visAttrs = psva;
+	if (!shape(hdc, run, chars, buffer,  maxGlyphs)) {
+		final int script = run.analysis.eScript;
+		final int hFont = OS.GetCurrentObject(hdc, OS.OBJ_FONT);
+		final LOGFONT logFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+		OS.GetObject(hFont, LOGFONT.sizeof, logFont);
+		LOGFONT cachedLogFont = device.logFontsCache != null ? device.logFontsCache[script] : null;
+		if (cachedLogFont != null) {
+			cachedLogFont.lfHeight = logFont.lfHeight;
+			cachedLogFont.lfWeight = logFont.lfWeight;
+			cachedLogFont.lfItalic = logFont.lfItalic;
+			cachedLogFont.lfWidth = logFont.lfWidth;
+			int newFont = OS.CreateFontIndirect(cachedLogFont);
+			OS.SelectObject(hdc, newFont);
+			int hr = OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
+			run.glyphCount = buffer[0];
+			run.fallbackFont = newFont;
+		} else {
+			final LOGFONT newLogFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+			int[] ppSp = new int[1];
+			int[] piNumScripts = new int[1];
+			OS.ScriptGetProperties(ppSp, piNumScripts);
+			int[] scripts = new int[piNumScripts[0]];
+			OS.MoveMemory(scripts, ppSp[0], scripts.length * 4);
+			if (device.logFontsCache == null) 	device.logFontsCache = new LOGFONT[piNumScripts[0]];
+			SCRIPT_PROPERTIES properties = new SCRIPT_PROPERTIES();
+			OS.MoveMemory(properties, scripts[script], SCRIPT_PROPERTIES.sizeof);
+			int charSet = properties.fAmbiguousCharSet ? OS.DEFAULT_CHARSET : properties.bCharSet;
+			Object object = new Object () {
+				public int EnumFontFamExProc(int lpelfe, int lpntme, int FontType, int lParam) {
+					OS.MoveMemory(newLogFont, lpelfe, LOGFONT.sizeof);
+					if (FontType == OS.RASTER_FONTTYPE) return 1;
+					newLogFont.lfHeight = logFont.lfHeight;
+					newLogFont.lfWeight = logFont.lfWeight;
+					newLogFont.lfItalic = logFont.lfItalic;
+					newLogFont.lfWidth = logFont.lfWidth;
+					int newFont = OS.CreateFontIndirect(newLogFont);
+					OS.SelectObject(hdc, newFont);
+					if (shape(hdc, run, chars, buffer, maxGlyphs)) {
+						run.fallbackFont = newFont;
+						LOGFONT cacheLogFont = OS.IsUnicode ? (LOGFONT)new LOGFONTW () : new LOGFONTA ();
+						OS.MoveMemory(cacheLogFont, lpelfe, LOGFONT.sizeof);
+						device.logFontsCache[script] = cacheLogFont;
+						return 0;
+					}
+					OS.SelectObject(hdc, hFont);
+					OS.DeleteObject(newFont);
+					return 1;
+				}
+			};
+			Callback callback = new Callback(object, "EnumFontFamExProc", 4);
+			int address = callback.getAddress();
+			if (address == 0) SWT.error(SWT.ERROR_NO_MORE_CALLBACKS);
+			newLogFont.lfCharSet = (byte)charSet;
+			OS.EnumFontFamiliesEx(hdc, newLogFont, address, 0, 0);
+			callback.dispose();
+			if (run.fallbackFont == 0) {
+				OS.ScriptShape(hdc, run.psc, chars, chars.length, maxGlyphs, run.analysis, run.glyphs, run.clusters, run.visAttrs, buffer);
+				device.logFontsCache[script] = logFont;
+				run.glyphCount = buffer[0];
+			}		
+		}
+	}
+
+	/* This code is intentionaly commented. */
+//	device.addScriptCache(run.psc);
+
 	int[] abc = new int[3];
-	int pGoffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * GOFFSET_SIZEOF);
-	int piAdvances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * 4);
-	OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, piAdvances, pGoffsets, abc);
+	run.advances = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * 4);
+	run.goffsets = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, run.glyphCount * GOFFSET_SIZEOF);
+	OS.ScriptPlace(hdc, run.psc, run.glyphs, run.glyphCount, run.visAttrs, run.analysis, run.advances, run.goffsets, abc);
 	OS.ScriptCacheGetHeight(hdc, run.psc, buffer);
-	run.advances = piAdvances;
-	run.goffsets = pGoffsets;
 	run.width = abc[0] + abc[1] + abc[2];
 	run.height = buffer[0];
 }
