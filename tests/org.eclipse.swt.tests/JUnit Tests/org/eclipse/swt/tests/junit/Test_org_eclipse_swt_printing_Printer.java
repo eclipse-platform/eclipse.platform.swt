@@ -13,6 +13,9 @@ package org.eclipse.swt.tests.junit;
 
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.printing.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.printing.Printer
@@ -38,11 +41,60 @@ protected void tearDown() {
 }
 
 public void test_Constructor() {
-	warnUnimpl("Test test_Constructor not written");
+	boolean exceptionThrown = false;
+	String detail = "";
+	if (Printer.getDefaultPrinterData() == null) {
+		/* There aren't any printers, so verify that the
+		 * constructor throws an ERROR_NO_HANDLES SWTError.
+		 */
+		try {
+			new Printer();
+		}
+		catch (SWTError ex) {
+			if (ex.code == SWT.ERROR_NO_HANDLES) exceptionThrown = true;
+		}
+		assertTrue("ERROR_NO_HANDLES not thrown", exceptionThrown);
+	} else {
+		/* There is at least a default printer, so verify that
+		 * the constructor does not throw any exceptions.
+		 */
+		try {
+			new Printer();
+		} catch (Throwable ex) {
+			exceptionThrown = true;
+			detail = ex.getMessage();
+		}
+		assertFalse("Exception thrown: " + detail, exceptionThrown);
+	}
 }
 
 public void test_ConstructorLorg_eclipse_swt_printing_PrinterData() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_printing_PrinterData not written");
+	boolean exceptionThrown = false;
+	String detail = "";
+	PrinterData data = Printer.getDefaultPrinterData();
+	if (data == null) {
+		/* There aren't any printers, so verify that the
+		 * constructor throws an ERROR_NO_HANDLES SWTError.
+		 */
+		try {
+			new Printer(data);
+		}
+		catch (SWTError ex) {
+			if (ex.code == SWT.ERROR_NO_HANDLES) exceptionThrown = true;
+		}
+		assertTrue("ERROR_NO_HANDLES not thrown", exceptionThrown);
+	} else {
+		/* There is at least a default printer, so verify that
+		 * the constructor does not throw any exceptions.
+		 */
+		try {
+			new Printer(data);
+		} catch (Throwable ex) {
+			exceptionThrown = true;
+			detail = ex.getMessage();
+		}
+		assertFalse("Exception thrown: " + detail, exceptionThrown);
+	}
 }
 
 public void test_cancelJob() {
@@ -50,7 +102,12 @@ public void test_cancelJob() {
 }
 
 public void test_computeTrimIIII() {
-	warnUnimpl("Test test_computeTrimIIII not written");
+	PrinterData data = Printer.getDefaultPrinterData();
+	// if there aren't any printers, don't do this test
+	if (data == null) return;
+	Printer printer = new Printer(data);
+	Rectangle trim = printer.computeTrim(0, 0, 10, 10);
+	assertTrue("trim width or height is incorrect", trim.width >= 10 && trim.height >= 10);
 }
 
 public void test_endJob() {
@@ -62,27 +119,61 @@ public void test_endPage() {
 }
 
 public void test_getBounds() {
-	warnUnimpl("Test test_getBounds not written");
+	PrinterData data = Printer.getDefaultPrinterData();
+	// if there aren't any printers, don't do this test
+	if (data == null) return;
+	Printer printer = new Printer(data);
+	Rectangle bounds = printer.getBounds();
+	assertTrue("bounds width or height is zero", bounds.width > 0 && bounds.height > 0);
 }
 
 public void test_getClientArea() {
-	warnUnimpl("Test test_getClientArea not written");
+	PrinterData data = Printer.getDefaultPrinterData();
+	// if there aren't any printers, don't do this test
+	if (data == null) return;
+	Printer printer = new Printer(data);
+	Rectangle clientArea = printer.getClientArea();
+	assertTrue("clientArea width or height is zero", clientArea.width > 0 && clientArea.height > 0);
 }
 
 public void test_getDPI() {
-	warnUnimpl("Test test_getDPI not written");
+	PrinterData data = Printer.getDefaultPrinterData();
+	// if there aren't any printers, don't do this test
+	if (data == null) return;
+	Printer printer = new Printer(data);
+	Point dpi = printer.getDPI();
+	assertTrue("dpi x or y is zero", dpi.x > 0 && dpi.y > 0);
 }
 
 public void test_getDefaultPrinterData() {
-	warnUnimpl("Test test_getDefaultPrinterData not written");
+	// Tested in test_getPrinterData.
 }
 
 public void test_getPrinterData() {
-	warnUnimpl("Test test_getPrinterData not written");
+	PrinterData data = Printer.getDefaultPrinterData();
+	// if there aren't any printers, don't do this test
+	if (data == null) return;
+	Printer printer = new Printer(data);
+	assertTrue("getPrinterData != data used in constructor",
+			data == printer.getPrinterData());
 }
 
 public void test_getPrinterList() {
-	warnUnimpl("Test test_getPrinterList not written");
+	PrinterData data = Printer.getDefaultPrinterData();
+	if (data == null) {
+		/* If there aren't any printers, verify that the
+		 * printer list is empty.
+		 */
+		PrinterData list[] = Printer.getPrinterList();
+		assertTrue("printer list contains items even though there are no printers",
+				list.length == 0);
+	} else {
+		/* If there is at least a default printer, verify
+		 * that the printer list is not empty.
+		 */
+		PrinterData list[] = Printer.getPrinterList();
+		assertTrue("printer list is empty", list.length > 0);
+	}
 }
 
 public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
