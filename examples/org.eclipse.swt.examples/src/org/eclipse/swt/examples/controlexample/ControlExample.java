@@ -66,6 +66,7 @@ public class ControlExample {
 			new DialogTab (this),
 			new GroupTab (this),
 			new LabelTab (this),
+			new LinkTab (this),
 			new ListTab (this),
 			new MenuTab (this),
 			new ProgressBarTab (this),
