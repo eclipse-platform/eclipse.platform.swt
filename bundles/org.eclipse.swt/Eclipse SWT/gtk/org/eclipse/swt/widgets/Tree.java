@@ -656,7 +656,10 @@ int gtk_test_expand_row (int tree, int iter, int path) {
 	Event event = new Event ();
 	event.item = items [index [0]];
 	sendEvent (SWT.Expand, event);
-	return 0;
+	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+	OS.gtk_tree_view_expand_row (handle, path, false);
+	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, TEST_EXPAND_ROW);
+	return 1;
 }
 
 int gtk_toggled (int renderer, int pathStr) {
