@@ -960,11 +960,9 @@ public int internal_new_GC (GCData data) {
 		data.drawable = xWindow;
 		data.foreground = argList [1];
 		data.background = argList [3];
-		data.fontList = fontList;
-		data.colormap = argList [5];
 		*/
-		data.foreground = foreground;
-		data.background = background;
+		data.foreground = getForegroundPixel();
+		data.background = getBackgroundPixel();
 		data.font = font.handle;
 		data.controlHandle = handle;
 	}
