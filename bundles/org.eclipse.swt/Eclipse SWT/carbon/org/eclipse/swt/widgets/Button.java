@@ -46,7 +46,6 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
-	if (false) return new Point (100, 50);
 	if ((style & SWT.ARROW) != 0) {
 		return new Point (25, 25);
 	}
