@@ -645,32 +645,39 @@ final void redrawHandle (int x, int y, int width, int height, int widgetHandle, 
 	OS.XClearArea (display, window, x, y, width, height, true);
 	*/
 	
-	MacRect br= new MacRect();
-	OS.GetControlBounds(widgetHandle, br.getData());
-    if (!br.isEmpty()) {
-        x+= br.getX();
-        y+= br.getY();
-        if (width == 0)
-        	width= br.getWidth();
-        else
-			width+= 1; // AW strange workaround for Caret
-        if (height == 0)
-			height= br.getHeight();
-                
-        int rgn= OS.NewRgn();
-        OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
-                
-        int region= OS.NewRgn();
-        if (MacUtil.getVisibleRegion(widgetHandle, region, all) == OS.kNoErr) {
-        
-            OS.SectRgn(region, rgn, region);
-        
-            OS.InvalWindowRgn(OS.GetControlOwner(widgetHandle), region);
-        }
-        
-        OS.DisposeRgn(rgn);
-        OS.DisposeRgn(region);
-    }
+	if (false) {
+		int rgn= OS.NewRgn();
+		OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
+		OS.HIViewSetNeedsDisplayInRegion(widgetHandle, rgn, true);
+		OS.DisposeRgn(rgn);
+	} else {
+		MacRect br= new MacRect();
+		OS.GetControlBounds(widgetHandle, br.getData());
+	    if (!br.isEmpty()) {
+	        x+= br.getX();
+	        y+= br.getY();
+	        if (width == 0)
+	        	width= br.getWidth();
+	        else
+				width+= 1; // AW strange workaround for Caret
+	        if (height == 0)
+				height= br.getHeight();
+	                
+	        int rgn= OS.NewRgn();
+	        OS.RectRgn(rgn, new MacRect(x, y, width, height).getData());
+	                
+	        int region= OS.NewRgn();
+	        if (MacUtil.getVisibleRegion(widgetHandle, region, all) == OS.kNoErr) {
+	        
+	            OS.SectRgn(region, rgn, region);
+	        
+	            OS.InvalWindowRgn(OS.GetControlOwner(widgetHandle), region);
+	        }
+	        
+	        OS.DisposeRgn(rgn);
+	        OS.DisposeRgn(region);
+	    }
+	}
 }
 void register () {
 	if (handle == 0) return;

@@ -619,12 +619,18 @@ public Rectangle getBounds () {
 	int borders = argList [9] * 2;
 	return new Rectangle ((short) argList [1], (short) argList [3], argList [5] + borders, argList [7] + borders);
     */
-    MacRect br= new MacRect();
-	short[] bounds= br.getData();
-	short[] pbounds= new short[4];
-	internalGetControlBounds(topHandle, br);
-	OS.GetControlBounds(parent.handle, pbounds);
-	return new Rectangle(bounds[1]-pbounds[1], bounds[0]-pbounds[0], bounds[3]-bounds[1], bounds[2]-bounds[0]);
+    if (MacUtil.USE_FRAME) {
+		MacRect br= new MacRect();
+		internalGetControlBounds(topHandle, br);
+		return br.toRectangle();
+   } else {
+	    MacRect br= new MacRect();
+		short[] bounds= br.getData();
+		short[] pbounds= new short[4];
+		internalGetControlBounds(topHandle, br);
+		OS.GetControlBounds(parent.handle, pbounds);
+		return new Rectangle(bounds[1]-pbounds[1], bounds[0]-pbounds[0], bounds[3]-bounds[1], bounds[2]-bounds[0]);
+    }
 }
 Point getClientLocation () {
     /* AW
@@ -771,11 +777,16 @@ public Point getLocation () {
 	checkWidget();
 	int topHandle= topHandle ();
 	MacRect br= new MacRect();
-	short[] bounds= br.getData();
-	short[] pbounds= new short[4];
-	internalGetControlBounds(topHandle, br);
-	OS.GetControlBounds(parent.handle, pbounds);
-	return new Point(bounds[1]-pbounds[1], bounds[0]-pbounds[0]);
+    if (MacUtil.USE_FRAME) {
+		internalGetControlBounds(topHandle, br);
+		return br.getLocation();
+    } else {
+		short[] bounds= br.getData();
+		short[] pbounds= new short[4];
+		internalGetControlBounds(topHandle, br);
+		OS.GetControlBounds(parent.handle, pbounds);
+		return new Point(bounds[1]-pbounds[1], bounds[0]-pbounds[0]);
+    }
 }
 /**
  * Returns the receiver's pop up menu if it has one, or null
@@ -863,12 +874,12 @@ public Shell getShell () {
 public Point getSize () {
 	checkWidget();
 	int topHandle = topHandle ();
-    /* AW
+	/*
 	int [] argList = {OS.XmNwidth, 0, OS.XmNheight, 0, OS.XmNborderWidth, 0};
 	OS.XtGetValues (topHandle, argList, argList.length / 2);
 	int borders = argList [5] * 2;
 	return new Point (argList [1] + borders, argList [3] + borders);
-    */
+	*/
 	MacRect bounds= new MacRect();
 	internalGetControlBounds(topHandle, bounds);
 	return bounds.getSize();
@@ -1407,13 +1418,15 @@ int processPaint (Object callData) {
 	Rectangle r= gc.carbon_focus(me.getDamageRegionHandle());
 	if (r == null || !r.isEmpty()) {
 				
-		// erase background
-		//if ((state & CANVAS) != 0) {
-			if ((style & SWT.NO_BACKGROUND) == 0) {
-				//gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
-				gc.fillRectangle(r);
-			}
-		//}
+		if (!MacUtil.HIVIEW) {
+			// erase background
+			//if ((state & CANVAS) != 0) {
+				if ((style & SWT.NO_BACKGROUND) == 0) {
+					//gc.setBackground(getDisplay().getSystemColor(SWT.COLOR_YELLOW));
+					gc.fillRectangle(r);
+				}
+			//}
+		}
 		
 		if (hooks (SWT.Paint)) {
 			Event event = new Event();
@@ -1904,7 +1917,12 @@ public void setBounds (int x, int y, int width, int height) {
 	short[] pbounds= new short[4];
 	internalGetControlBounds(topHandle, br);
 	OS.GetControlBounds(parent.handle, pbounds);
-	boolean sameOrigin = (bounds[1]-pbounds[1]) == x && (bounds[0]-pbounds[0]) == y;
+	boolean sameOrigin;
+	if (MacUtil.USE_FRAME) {
+		sameOrigin = bounds[1] == x && bounds[0] == y;
+	} else {
+		sameOrigin = (bounds[1]-pbounds[1]) == x && (bounds[0]-pbounds[0]) == y;
+	}
 	boolean sameExtent = (bounds[3]-bounds[1]) == width && (bounds[2]-bounds[0]) == height;
 	if (sameOrigin && sameExtent) return;
 	internalSetBounds(topHandle, br, pbounds[1]+x, pbounds[0]+y, width, height);
@@ -2153,13 +2171,18 @@ public void setLocation (int x, int y) {
 	OS.XtMoveWidget (topHandle, x, y);
 	if (!sameOrigin) sendEvent (SWT.Move);
     */
-	int topHandle = topHandle ();
+ 	int topHandle = topHandle ();
 	MacRect br= new MacRect();
 	short[] bounds= br.getData();
 	short[] pbounds= new short[4];
 	internalGetControlBounds(topHandle, br);
 	OS.GetControlBounds(parent.handle, pbounds);
-	boolean sameOrigin = (x == (bounds[1]-pbounds[1])) && (y == (bounds[0]-pbounds[0]));
+	boolean sameOrigin;
+	if (MacUtil.USE_FRAME) {
+		sameOrigin = (x == bounds[1]) && (y == bounds[0]);
+	} else {
+		sameOrigin = (x == (bounds[1]-pbounds[1])) && (y == (bounds[0]-pbounds[0]));
+	}
 	if (sameOrigin) return;
 	internalSetBounds(topHandle, br, pbounds[1]+x, pbounds[0]+y, bounds[3]-bounds[1], bounds[2]-bounds[0]);
 	sendEvent (SWT.Move);
@@ -2262,15 +2285,17 @@ public void setRedraw (boolean redraw) {
 	checkWidget();
 	if (redraw) {
 		if (--fDrawCount == 0) {
-			if (fVisible) {
-				OS.SetControlVisibility(topHandle(), true, true);
-			}
+			OS.HIViewSetDrawingEnabled(topHandle(), true);
+//			if (fVisible) {
+//				OS.SetControlVisibility(topHandle(), true, true);
+//			}
 		}
 	} else {
 		if (fDrawCount++ == 0) {
-			if (fVisible) {
-				OS.SetControlVisibility(topHandle(), false, false);
-			}
+			OS.HIViewSetDrawingEnabled(topHandle(), false);
+//			if (fVisible) {
+//				OS.SetControlVisibility(topHandle(), false, false);
+//			}
 		}
 	}
 }
@@ -2386,25 +2411,26 @@ public void setVisible (boolean visible) {
     if (visible != fVisible) {
 	    fVisible= visible;
 	    
-	    if (fDrawCount == 0) {
+//	    if (fDrawCount == 0) {
 			int topHandle = topHandle ();
 			if (OS.IsControlVisible(topHandle) != visible) {
 				if (visible) {
-					OS.SetControlVisibility(topHandle, true, false);
+					OS.HIViewSetVisible(topHandle, true);
+					//OS.SetControlVisibility(topHandle, true, false);
 					sendEvent (SWT.Show);
-					redraw();
+					//redraw();
 				} else {
-					OS.SetControlVisibility(topHandle, false, true);
+					//OS.SetControlVisibility(topHandle, false, true);
+					OS.HIViewSetVisible(topHandle, false);
 					sendEvent (SWT.Hide);
 				}
 			}
-	    }
+//	    }
     }
 }
 void setZOrder (Control control, boolean above) {
 	
-	if (control != null && control.parent != parent)
-		return;
+	if (control != null && control.parent != parent) return;
 	
 	int thisHandle= topHandle();
 	if (parent == null)
@@ -2414,36 +2440,8 @@ void setZOrder (Control control, boolean above) {
 	if (control != null)
 		otherHandle= control.topHandle();
 		
-	int pos= 0;
-	short[] cnt= new short[1];
-	OS.CountSubControls(destHandle, cnt);
-	int count= cnt[0];
-	int children[]= new int[count];
-	int[] outHandle= new int[1];
-	int to= 0;
-	for (int i= 0; i < count; i++) {
-		if (OS.GetIndexedSubControl(destHandle, (short)(i+1), outHandle) == 0) {
-			int h= outHandle[0];
-			if (h == otherHandle)
-				pos= to;
-			if (h != thisHandle)
-				children[to++]= h;
-		} else
-			error (SWT.ERROR_CANNOT_GET_ITEM);
-	}
-	
-	if (control == null) {
-		if (above) pos= to;
-	} else {
-		if (above) pos++;
-	}
-
-	for (int z= children.length-1; z > pos; z--)
-		children[z]= children[z-1];
-	children[pos]= thisHandle;
-		
-	for (int i= 0; i < children.length; i++)
-		MacUtil.OSEmbedControl(children[i], destHandle);
+	// AW: doesn't handle reparenting case yet!
+	OS.HIViewSetZOrder(thisHandle, above ? OS.kHIViewZOrderAbove : OS.kHIViewZOrderBelow, otherHandle);
 }
 /**
  * Returns a point which is the result of converting the
@@ -2495,6 +2493,36 @@ public Point toDisplay (Point point) {
     */
 	return MacUtil.toDisplay(handle, point);
 }
+/* AW
+boolean translateMnemonic (char key, XKeyEvent xEvent) {
+	if (!isVisible () || !isEnabled ()) return false;
+	boolean doit = mnemonicMatch (key);
+	if (hooks (SWT.Traverse)) {
+		Event event = new Event();
+		event.doit = doit;
+		event.detail = SWT.TRAVERSE_MNEMONIC;
+		event.time = xEvent.time;
+		setKeyState (event, xEvent);
+		sendEvent (SWT.Traverse, event);
+		doit = event.doit;
+	}
+	if (doit) return mnemonicHit (key);
+	return false;
+}
+boolean translateMnemonic (int key, XKeyEvent xEvent) {
+	if (xEvent.state != OS.Mod1Mask) {
+		if (xEvent.state != 0 || !(this instanceof Button)) {
+			return false;
+		}
+	}
+	Decorations shell = menuShell ();
+	if (shell.isVisible () && shell.isEnabled ()) {
+		char ch = mbcsToWcs ((char) key);
+		return ch != 0 && shell.translateMnemonic (ch, xEvent);
+	}
+	return false;
+}
+*/
 boolean translateTraversal (MacEvent mEvent) {
 	
 	int kind= mEvent.getKind();
@@ -2779,34 +2807,52 @@ public void update () {
 	 * Sets the bounds of the given control.
 	 */
 	private void internalSetBounds(int hndl, MacRect oldBounds, int x, int y, int width, int height) {
-	
-		int wHandle= OS.GetControlOwner(hndl);
-		OS.InvalWindowRect(wHandle, oldBounds.getData());
-		
-		MacRect newBounds= new MacRect(x, y, width, height);
-		handleResize(hndl, newBounds);
-		OS.InvalWindowRect(wHandle, newBounds.getData());
+		if (MacUtil.USE_FRAME) {
+			MacRect newBounds= new MacRect(x, y, width, height);
+			handleResize(hndl, newBounds);
+		} else {
+			int wHandle= OS.GetControlOwner(hndl);
+			OS.InvalWindowRect(wHandle, oldBounds.getData());
+			
+			MacRect newBounds= new MacRect(x, y, width, height);
+			handleResize(hndl, newBounds);
+			OS.InvalWindowRect(wHandle, newBounds.getData());
+		}
 	}
 	
 	/**
 	 * subclasses can override if a resize must trigger some internal layout.
 	 */
 	void handleResize(int hndl, MacRect bounds) {
-		OS.SetControlBounds(hndl, bounds.getData());
+		if (MacUtil.USE_FRAME)
+			OS.HIViewSetFrame(hndl, bounds.getX(), bounds.getY(), bounds.getWidth(), bounds.getHeight());
+		else
+			OS.SetControlBounds(hndl, bounds.getData());
 	}
 	
 	/**
 	 * subclasses can override.
 	 */
 	void internalGetControlBounds(int hndl, MacRect bounds) {
-		OS.GetControlBounds(hndl, bounds.getData());
+		if (MacUtil.USE_FRAME) {
+			float[] f= new float[4];
+			OS.HIViewGetFrame(hndl, f);
+			bounds.set((int)f[0], (int)f[1], (int)f[2], (int)f[3]);
+		} else {
+			OS.GetControlBounds(hndl, bounds.getData());
+		}
 	}
 
 	/**
 	 * Hook (overwritten in Text and Combo)
 	 */
 	/*
-	int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
+	final int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
+		
+		MacEvent mEvent= new MacEvent(eRefHandle);
+		if (translateTraversal(mEvent))
+			return 0;
+
 		processEvent (type, new MacEvent(eRefHandle));
 		return OS.kNoErr;
 	}
