@@ -714,8 +714,8 @@ private void layoutButtons() {
 		if (item == null) {
 			closeBar.setVisible(false);
 		} else {
-			int x = item.x + item.width - size.x - 2;
-			int y = item.y + 1 + (item.height - 2 - size.y) / 2; // +1 for white line across top of tab
+			int x = item.x + item.width - CTabItem.RIGHT_MARGIN - size.x + 2;
+			int y = item.y + CTabItem.TOP_MARGIN - 1;
 			closeBar.setLocation(x, y);
 			if (scrollBar.isVisible()) {
 				Rectangle scrollRect = scrollBar.getBounds();
@@ -1322,8 +1322,7 @@ private void initCloseButtonImages() {
 	inactiveCloseItem.setDisabledImage(closeImage);
 	inactiveCloseItem.setImage(closeImage);
 	
-	int height = getTabHeight();
-	Point size = closeBar.computeSize(SWT.DEFAULT, height);
+	Point size = closeBar.computeSize(SWT.DEFAULT, SWT.DEFAULT);
 	closeBar.setSize(size);
 	inactiveCloseBar.setSize(size);
 }
@@ -1475,8 +1474,9 @@ private void onMouseMove(Event event) {
 	if (item == null || item == getSelection()) return;
 
 	Point closeRect = inactiveCloseBar.getSize();
-	int x = itemRect.x + itemRect.width - closeRect.x - 2;
-	int y = itemRect.y + 1 + (itemRect.height - 2 - closeRect.y)/2;
+	int x = itemRect.x + itemRect.width - CTabItem.RIGHT_MARGIN - closeRect.x + 2;
+	int y = itemRect.y + CTabItem.TOP_MARGIN - 1;
+			
 	if (scrollBar.isVisible()) {
 		Rectangle scrollArea = scrollBar.getBounds();
 		scrollArea.width += BORDER_RIGHT;

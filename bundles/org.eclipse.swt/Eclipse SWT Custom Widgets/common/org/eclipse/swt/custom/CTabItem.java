@@ -18,8 +18,8 @@ public class CTabItem extends Item {
 	private Image disabledImage;
 	
 	// internal constants
-	private static final int LEFT_MARGIN = 5;
-	private static final int RIGHT_MARGIN = 5;	
+	static final int LEFT_MARGIN = 5;
+	static final int RIGHT_MARGIN = 5;	
 	static final int TOP_MARGIN = 4;
 	static final int BOTTOM_MARGIN = 4;
 	private static final int INTERNAL_SPACING = 2;
