@@ -28,6 +28,7 @@ public abstract class Control extends Widget implements Drawable {
 	int drawCount;
 	Menu menu;
 	float [] foreground, background;
+	Font font;
 	Cursor cursor;
 
 Control () {
@@ -209,7 +210,8 @@ public boolean getEnabled () {
 
 public Font getFont () {
 	checkWidget();
-	return null;
+	if (font != null) return font;
+	return getDisplay ().getSystemFont ();
 }
 
 public Color getForeground () {
@@ -340,7 +342,7 @@ public int internal_new_GC (GCData data) {
 		data.device = display;
 		data.foreground = foreground != null ? foreground : display.getSystemColor (SWT.COLOR_BLACK).handle;
 		data.background = background != null ? background : display.getSystemColor (SWT.COLOR_WHITE).handle;
-//		data.font = ;
+		data.font = font != null ? font : display.getSystemFont ();
 		data.visibleRgn = visibleRgn;
 		data.control = handle;
 	} else {
@@ -796,6 +798,10 @@ public boolean setFocus () {
 
 public void setFont (Font font) {
 	checkWidget();
+	if (font != null) { 
+		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.font = font;
 }
 
 public void setForeground (Color color) {

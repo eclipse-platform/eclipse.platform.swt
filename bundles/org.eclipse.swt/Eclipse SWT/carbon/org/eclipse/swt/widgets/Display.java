@@ -535,25 +535,25 @@ public Color getSystemColor (int id) {
 	checkDevice ();
 	//NOT DONE
 	switch (id) {
-		case SWT.COLOR_INFO_FOREGROUND: 					return Color.carbon_new (this, new float [] {0, 0, 0});
-		case SWT.COLOR_INFO_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF, 0xFF, 0xE1});
+		case SWT.COLOR_INFO_FOREGROUND: 					return Color.carbon_new (this, new float [] {0x00 / 255f, 0x00 / 255f, 0x00 / 255f});
+		case SWT.COLOR_INFO_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f});
 		case SWT.COLOR_TITLE_FOREGROUND:					return super.getSystemColor (SWT.COLOR_WHITE);
 		case SWT.COLOR_TITLE_BACKGROUND:					return super.getSystemColor (SWT.COLOR_DARK_BLUE);
 		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			return super.getSystemColor (SWT.COLOR_BLUE);
 		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			return super.getSystemColor (SWT.COLOR_BLACK);
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			return super.getSystemColor (SWT.COLOR_DARK_GRAY);
 		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_GRAY);
-		case SWT.COLOR_WIDGET_DARK_SHADOW:					return Color.carbon_new (this, new float [] {0x33, 0x33, 0x33});
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				return Color.carbon_new (this, new float [] {0x66, 0x66, 0x66});
-		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				return Color.carbon_new (this, new float [] {0x99, 0x99, 0x99});
-		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:			return Color.carbon_new (this, new float [] {0xCC, 0xCC, 0xCC});
-		case SWT.COLOR_WIDGET_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF, 0xFF, 0xFF});
+		case SWT.COLOR_WIDGET_DARK_SHADOW:					return Color.carbon_new (this, new float [] {0x33 / 255f, 0x33 / 255f, 0x33 / 255f});
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				return Color.carbon_new (this, new float [] {0x66 / 255f, 0x66 / 255f, 0x66 / 255f});
+		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				return Color.carbon_new (this, new float [] {0x99 / 255f, 0x99 / 255f, 0x99 / 255f});
+		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:			return Color.carbon_new (this, new float [] {0xCC / 255f, 0xCC / 255f, 0xCC / 255f});
+		case SWT.COLOR_WIDGET_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xFF / 255f});
 		case SWT.COLOR_WIDGET_FOREGROUND:
-		case SWT.COLOR_WIDGET_BORDER: 						return Color.carbon_new (this, new float [] {0x00, 0x00, 0x00});
-		case SWT.COLOR_LIST_FOREGROUND: 					return Color.carbon_new (this, new float [] {0x00, 0x00, 0x00});
-		case SWT.COLOR_LIST_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF, 0xFF, 0xFF});
-		case SWT.COLOR_LIST_SELECTION: 					return Color.carbon_new (this, new float [] {0x66, 0x66, 0xCC});
-		case SWT.COLOR_LIST_SELECTION_TEXT: 				return Color.carbon_new (this, new float [] {0xFF, 0xFF, 0xFF});
+		case SWT.COLOR_WIDGET_BORDER: 						return Color.carbon_new (this, new float [] {0x00 / 255f, 0x00 / 255f, 0x00 / 255f});
+		case SWT.COLOR_LIST_FOREGROUND: 					return Color.carbon_new (this, new float [] {0x00 / 255f, 0x00 / 255f, 0x00 / 255f});
+		case SWT.COLOR_LIST_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xFF / 255f});
+		case SWT.COLOR_LIST_SELECTION: 					return Color.carbon_new (this, new float [] {0x66 / 255f, 0x66 / 255f, 0xCC / 255f});
+		case SWT.COLOR_LIST_SELECTION_TEXT: 				return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xFF / 255f});
 		default:
 			return super.getSystemColor (id);	
 	}

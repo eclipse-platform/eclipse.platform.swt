@@ -1298,8 +1298,6 @@ void init(Drawable drawable, GCData data, int context) {
 	OS.ATSUCreateStyle(buffer);
 	if (buffer[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	data.style = buffer[0];
-	Font font = data.font;
-	if (font != null) setFont(font);
 	
 	int ptr = OS.NewPtr(4);
 	buffer[0] = context;
@@ -1323,6 +1321,9 @@ void init(Drawable drawable, GCData data, int context) {
 	this.drawable = drawable;
 	this.data = data;
 	handle = context;
+
+	Font font = data.font;
+	if (font != null) setFont(font);
 }
 
 /**

@@ -2760,6 +2760,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetDblTime
 }
 #endif /* NO_GetDblTime */
 
+#ifndef NO_GetDefFontSize
+JNIEXPORT jshort JNICALL OS_NATIVE(GetDefFontSize)
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("GetDefFontSize\n")
+
+	return (jshort)GetDefFontSize();
+}
+#endif
+
 #ifndef NO_GetEventClass
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetEventClass
 	(JNIEnv *env, jclass that, jint arg0)

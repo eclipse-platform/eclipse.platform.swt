@@ -96,9 +96,6 @@ public Device(DeviceData data) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
-
-	/* Initialize the system font slot */
-	systemFont = getSystemFont ();
 }
 
 protected void checkDevice () {
@@ -364,6 +361,16 @@ protected void init () {
 	COLOR_MAGENTA = new Color (this, 0xFF,0,0xFF);
 	COLOR_CYAN = new Color (this, 0,0xFF,0xFF);
 	COLOR_WHITE = new Color (this, 0xFF,0xFF,0xFF);
+	
+	/* Initialize the system font slot */
+	short id = OS.GetAppFont();
+	short style = (short)0; 
+	short size = OS.GetDefFontSize();
+	int[] font = new int[1];
+	if (OS.FMGetFontFromFontFamilyInstance(id, style, font, null) != 0) {
+		SWT.error(SWT.ERROR_NO_HANDLES);
+	}
+	systemFont = Font.carbon_new (this, font[0], id, style, size);
 }
 
 /**	 
