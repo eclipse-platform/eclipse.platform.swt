@@ -923,9 +923,19 @@ LRESULT WM_SETREDRAW (int wParam, int lParam) {
 	* that the rebar will redraw and children of the rebar will
 	* also redraw.  The fix is to call both the rebar window proc
 	* and the default window proc.
+	* 
+	* NOTE: The rebar control can resize itself in WM_SETREDRAW.
+	* When redraw is turned off by the default window proc, this
+	* can leave pixel corruption in the parent.  The fix is to
+	* detect the size change and damage the previous area in the
+	* parent.
 	*/
+	Rectangle rect = getBounds ();
 	int code = callWindowProc (OS.WM_SETREDRAW, wParam, lParam);
 	OS.DefWindowProc (handle, OS.WM_SETREDRAW, wParam, lParam);
+	if (!rect.equals (getBounds ())) {
+		parent.redraw (rect.x, rect.y, rect.width, rect.height, true);
+	}
 	return new LRESULT (code);
 }
 
