@@ -401,6 +401,7 @@ void generateGetFields(Class clazz) {
 		}
 	}
 }
+
 void generateGetFunction(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output(clazzName);

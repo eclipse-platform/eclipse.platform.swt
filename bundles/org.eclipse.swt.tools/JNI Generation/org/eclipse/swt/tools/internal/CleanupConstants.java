@@ -64,7 +64,7 @@ public void generate(Field field) {
 			output(" = ");
 			output(getFieldValue(field));
 			output(";");
-			outputDelimiter();
+			outputln();
 			usedCount++;
 			return;
 		}
