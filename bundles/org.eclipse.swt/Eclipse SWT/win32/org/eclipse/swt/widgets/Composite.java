@@ -1207,10 +1207,10 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
-	Control [] children = _getChildren ();
-	for (int i=0; i<children.length; i++) {
-		int hwndChild = children [i].handle;
+	int hwndChild = OS.GetWindow (handle, OS.GW_CHILD);
+	while (hwndChild != 0) {
 		OS.SendMessage (hwndChild, OS.WM_SYSCOLORCHANGE, 0, 0);
+		hwndChild = OS.GetWindow (hwndChild, OS.GW_HWNDNEXT);
 	}
 	return null;
 }
