@@ -54,7 +54,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	// NEEDS WORK - empty string
 	if ((style & SWT.ARROW) != 0) {
-		int width = 10, height = 10;
+		int width = 20, height = 20;
 		if (wHint != SWT.DEFAULT) width = wHint;
 		if (hHint != SWT.DEFAULT) height = hHint;
 		return new Point (width, height);
@@ -112,13 +112,16 @@ void createHandle () {
 	int window = OS.GetControlOwner (parent.handle);
 				
 	if ((style & SWT.ARROW) != 0) {
-		short orientation = OS.kControlPopupArrowOrientationEast;
-		if ((style & SWT.UP) != 0) orientation = (short) OS.kControlPopupArrowOrientationNorth;
-		if ((style & SWT.DOWN) != 0) orientation = (short) OS.kControlPopupArrowOrientationSouth;
-		if ((style & SWT.LEFT) != 0) orientation = (short) OS.kControlPopupArrowOrientationWest;
-		OS.CreatePopupArrowControl (window, null, orientation, (short)OS.kControlPopupArrowSizeNormal, outControl);
+		int orientation = OS.kThemeDisclosureRight;
+		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureRight; // NEEDS WORK
+		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
+		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
+		OS.CreateBevelButtonControl(window, null, 0, (short)0, (short)OS.kControlBehaviorPushbutton, 0, (short)0, (short)0, (short)0, outControl);
 		if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
 		handle = outControl [0];
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kControlBevelButtonKindTag, 2, new short [] {(short)(OS.kThemeDisclosureButton)});
+		OS.SetControl32BitMaximum (handle, 2);
+		OS.SetControl32BitValue (handle, orientation);
 	}
 	
 	if ((style & SWT.CHECK) != 0) {
@@ -275,7 +278,11 @@ public void setAlignment (int alignment) {
 		if ((style & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT)) == 0) return; 
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
-		//NEEDS WORK
+		int orientation = OS.kThemeDisclosureRight;
+		if ((style & SWT.UP) != 0) orientation = OS.kThemeDisclosureRight; // NEEDS WORK
+		if ((style & SWT.DOWN) != 0) orientation = OS.kThemeDisclosureDown;
+		if ((style & SWT.LEFT) != 0) orientation = OS.kThemeDisclosureLeft;
+		OS.SetControl32BitValue (handle, orientation);
 		return;
 	}
 	if ((alignment & (SWT.LEFT | SWT.RIGHT | SWT.CENTER)) == 0) return;
@@ -329,7 +336,7 @@ public void setImage (Image image) {
 	if (image == null) {
 		ControlButtonContentInfo inContent = new ControlButtonContentInfo();
 		inContent.contentType = (short)OS.kControlContentTextOnly;
-		OS.SetBevelButtonContentInfo(handle, inContent);
+		OS.SetBevelButtonContentInfo (handle, inContent);
 		displayImage = false;
 		return;
 	}
@@ -340,7 +347,7 @@ public void setImage (Image image) {
 		OS.SetControlTitleWithCFString (handle, ptr);
 		OS.CFRelease (ptr);
 	}
-	cIcon = createCIcon(image);
+	cIcon = createCIcon (image);
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
 	inContent.contentType = (short)OS.kControlContentCIconHandle;
 	inContent.iconRef = cIcon;
