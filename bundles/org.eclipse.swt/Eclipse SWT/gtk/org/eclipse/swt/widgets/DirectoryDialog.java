@@ -118,6 +118,15 @@ public String open () {
 }
 String openChooserDialog () {
 	byte [] titleBytes = Converter.wcsToMbcs (null, title, true);
+	/*
+	* Feature in gtk.  If the hicolor theme is not installed then a warning
+	* is displayed whenever a GtkFileChooser is created.  The workaround is
+	* to turn off the display of warnings during GtkFileChooser creation.
+	* http://bugzilla.gnome.org/show_bug.cgi?id=149931 . 
+	*/
+	Display display = parent.getDisplay (); 
+	boolean oldWarnings = display.getWarnings ();
+	display.setWarnings (false);
 	int /*long*/ handle = OS.gtk_file_chooser_dialog_new (
 		titleBytes,
 		parent.topHandle (),
@@ -125,6 +134,7 @@ String openChooserDialog () {
 		OS.GTK_STOCK_CANCEL (), OS.GTK_RESPONSE_CANCEL,
 		OS.GTK_STOCK_OK (), OS.GTK_RESPONSE_OK,
 		0);
+	display.setWarnings (oldWarnings);
 	if (filterPath != null && filterPath.length () > 0) {
 		StringBuffer stringBuffer = new StringBuffer ();
 		/* filename must be a full path */
