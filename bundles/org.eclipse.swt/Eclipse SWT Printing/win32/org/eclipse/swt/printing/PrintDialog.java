@@ -217,19 +217,21 @@ public PrinterData open() {
 	pd.nToPage = (short) endPage;
 	if (OS.PrintDlg(pd)) {
 		/* Get driver and device from the DEVNAMES struct */
-		int size = OS.GlobalSize(pd.hDevNames);
-		int ptr = OS.GlobalLock(pd.hDevNames);
+		int hMem = pd.hDevNames;
+		/* Ensure size is a multiple of 2 bytes on UNICODE platforms */
+		int size = OS.GlobalSize(hMem) / TCHAR.sizeof * TCHAR.sizeof;
+		int ptr = OS.GlobalLock(hMem);
 		short[] offsets = new short[4];
 		OS.MoveMemory(offsets, ptr, 2 * offsets.length);
 		TCHAR buffer = new TCHAR(0, size);
 		OS.MoveMemory(buffer, ptr, size);	
-		OS.GlobalUnlock(ptr);
+		OS.GlobalUnlock(hMem);
 
 		int driverOffset = offsets[0];
 		int i = 0;
 		while (driverOffset + i < size) {
 			if (buffer.tcharAt(driverOffset + i) == 0) break;
-			else i++;
+			i++;
 		}
 		String driver = buffer.toString(driverOffset, i);
 
@@ -237,7 +239,7 @@ public PrinterData open() {
 		i = 0;
 		while (deviceOffset + i < size) {
 			if (buffer.tcharAt(deviceOffset + i) == 0) break;
-			else i++;
+			i++;
 		}
 		String device = buffer.toString(deviceOffset, i);	
 
@@ -245,7 +247,7 @@ public PrinterData open() {
 		i = 0;
 		while (outputOffset + i < size) {
 			if (buffer.tcharAt(outputOffset + i) == 0) break;
-			else i++;
+			i++;
 		}
 		String output = buffer.toString(outputOffset, i);
 		
@@ -264,11 +266,12 @@ public PrinterData open() {
 		data.collate = (pd.Flags & OS.PD_COLLATE) != 0;
 
 		/* Bulk-save the printer-specific settings in the DEVMODE struct */
-		ptr = OS.GlobalLock(pd.hDevMode);
-		size = OS.GlobalSize(ptr);
+		hMem = pd.hDevMode;
+		size = OS.GlobalSize(hMem);
+		ptr = OS.GlobalLock(hMem);
 		data.otherData = new byte[size];
 		OS.MoveMemory(data.otherData, ptr, size);
-		OS.GlobalUnlock(ptr);
+		OS.GlobalUnlock(hMem);
 
 		return data;
 	}
