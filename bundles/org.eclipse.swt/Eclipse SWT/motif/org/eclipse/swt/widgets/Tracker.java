@@ -270,6 +270,7 @@ void drawRectangles () {
 	OS.XFreeGC (xDisplay, gc);
 }
 public Display getDisplay () {
+	checkWidget ();
 	return display;
 }
 /**
@@ -541,7 +542,8 @@ void resizeRectangles (int xChange, int yChange) {
 }
 
 public void setCursor (Cursor value) {
-	cursor = value.handle;
+	checkWidget ();
+	if (value != null) cursor = value.handle;
 }
 /**
  * Specify the rectangles that should be drawn.
