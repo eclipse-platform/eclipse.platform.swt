@@ -1674,7 +1674,6 @@ public void remove (int start, int end) {
 		System.arraycopy (items, index, items, start, count - index);
 		for (int i=count-(index-start); i<count; i++) items [i] = null;
 		if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
-		if (count - index == 0) setTableEmpty ();
 	}
 }
 
