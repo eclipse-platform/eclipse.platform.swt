@@ -67,27 +67,9 @@ public abstract class Widget {
 	static final int DEFAULT_HEIGHT	= 64;
 	static final char Mnemonic = '&';
 
-	/* Windows, DBCS and COMCTL32.DLL flags */
-	static final boolean IsWinNT, IsDBLocale;
-	static final int WIN32_MAJOR, WIN32_MINOR;
+	/* COMCTL32.DLL flags */
 	static final int COMCTL32_MAJOR, COMCTL32_MINOR;
 	static {
-
-		/* Get the Windows version */
-		int version = OS.GetVersion ();
-		IsWinNT = (version & 0x80000000) == 0;
-		WIN32_MAJOR = version & 0x00FF;
-		WIN32_MINOR = (version & 0xFFFF) >> 8;
-
-		/* Get the DBCS flag */
-		boolean isDBLocale = false;
-		for (int i = 0; i <= 0xFF; i++) {
-			if (OS.IsDBCSLeadByte ((byte) i)) {
-				isDBLocale = true;
-				break;
-			}
-		}
-		IsDBLocale = isDBLocale;
 
 		/* Get the COMCTL32.DLL version */
 		DLLVERSIONINFO dvi = new DLLVERSIONINFO ();
@@ -664,9 +646,14 @@ void postEvent (int eventType, Event event) {
 	event.type = eventType;
 	event.widget = this;
 	if (event.time == 0) {
-		event.time = OS.GetMessageTime ();
+		if (OS.IsWinCE) {
+			event.time = OS.GetTickCount ();
+		} else {
+			event.time = OS.GetMessageTime ();
+		}
 	}
-	getDisplay ().postEvent (event);
+	Display display = getDisplay ();
+	display.postEvent (event);
 }
 
 /*
@@ -844,7 +831,11 @@ void sendEvent (int eventType, Event event) {
 	event.widget = this;
 	event.type = eventType;
 	if (event.time == 0) {
-		event.time = OS.GetMessageTime ();
+		if (OS.IsWinCE) {
+			event.time = OS.GetTickCount ();
+		} else {
+			event.time = OS.GetMessageTime ();
+		}
 	}
 	eventTable.sendEvent (event);
 }

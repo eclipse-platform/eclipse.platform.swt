@@ -41,9 +41,8 @@ public class Tree extends Composite {
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, TreeClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, TreeClass, lpWndClass);
 		TreeProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -1256,9 +1255,15 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 				*/
 //				OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 				OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-				int flags = OS.RDW_UPDATENOW | OS.RDW_INVALIDATE;
-				OS.RedrawWindow (handle, rect1, 0, flags);
-				OS.RedrawWindow (handle, rect2, 0, flags);
+				if (OS.IsWinCE) {
+					OS.InvalidateRect (handle, rect1, false);
+					OS.InvalidateRect (handle, rect2, false);
+					OS.UpdateWindow (handle);
+				} else {
+					int flags = OS.RDW_UPDATENOW | OS.RDW_INVALIDATE;
+					OS.RedrawWindow (handle, rect1, 0, flags);
+					OS.RedrawWindow (handle, rect2, 0, flags);
+				} 
 			}
 		}
 
@@ -1417,7 +1422,8 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 			if ((lpht.flags & OS.TVHT_ONITEM) == 0) break;
 			// fall through
 		case OS.NM_RETURN:
-		case OS.TVN_SELCHANGED:
+		case OS.TVN_SELCHANGEDA:
+		case OS.TVN_SELCHANGEDW:
 			if (!ignoreSelect) {
 				TVITEM tvItem = null;
 				if (code == OS.TVN_SELCHANGED) {
@@ -1455,13 +1461,15 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				return LRESULT.ONE;
 			}
 			break;
-		case OS.TVN_SELCHANGING:
+		case OS.TVN_SELCHANGINGA:
+		case OS.TVN_SELCHANGINGW:
 			if (!ignoreSelect && !ignoreDeselect) {
 				hAnchor = 0;
 				if ((style & SWT.MULTI) != 0) deselectAll ();
 			}
 			break;
-		case OS.TVN_ITEMEXPANDING:
+		case OS.TVN_ITEMEXPANDINGA:
+		case OS.TVN_ITEMEXPANDINGW:
 			if (!ignoreExpand) {
 				TVITEM tvItem = new TVITEM ();
 				int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
@@ -1487,8 +1495,10 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				}
 			}
 			break;
-		case OS.TVN_BEGINDRAG:
-		case OS.TVN_BEGINRDRAG:
+		case OS.TVN_BEGINDRAGA:
+		case OS.TVN_BEGINDRAGW:
+		case OS.TVN_BEGINRDRAGA:
+		case OS.TVN_BEGINRDRAGW:
 			TVITEM tvItem = new TVITEM ();
 			int offset = NMHDR.sizeof + 4 + TVITEM.sizeof;
 			OS.MoveMemory (tvItem, lParam + offset, TVITEM.sizeof);

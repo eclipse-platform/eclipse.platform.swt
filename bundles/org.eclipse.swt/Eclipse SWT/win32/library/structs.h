@@ -27,15 +27,97 @@
 #include <windows.h>
 #include <winuser.h>
 #include <commctrl.h>
+#include <commdlg.h>
 #include <oaidl.h>
 #include <shlobj.h>
 #include <ole2.h>
 #include <olectl.h>
 #include <objbase.h>
-#include <richedit.h>
 #include <shlwapi.h>
+#include <shellapi.h>
+
+#ifdef _WIN32_WCE
+#ifndef _WIN32_WCE_NO_PRINTING
+	// Escape helpers
+//	int StartDoc(LPCTSTR lpszDocName);  // old Win3.0 version
+//	int StartDoc(LPDOCINFO lpDocInfo);
+//	int StartPage();
+//	int EndPage();
+//	int SetAbortProc(BOOL (CALLBACK* lpfn)(HDC, int));
+	int AbortDoc(HDC hDC);
+//	int EndDoc();
+#endif // _WIN32_WCE_NO_PRINTING
+#endif // _WIN32_WCE
 
 /* All globals to be declared in globals.h */
+#ifdef _WIN32_WCE
+#define FID_CACHE_GLOBALS \
+	MULTI_QI_FID_CACHE MultiqiFc; \
+	OLEINPLACEFRAMEINFO_FID_CACHE OleinplaceframeinfoFc; \
+	CAUUID_FID_CACHE CauuidFc; \
+	HDLAYOUT_FID_CACHE HdlayoutFc; \
+	TYPEATTR_FID_CACHE TypeattrFc; \
+	FORMATETC_FID_CACHE FormatetcFc; \
+	GUID_FID_CACHE GuidFc; \
+	COSERVERINFO_FID_CACHE CoserverinfoFc; \
+	STGMEDIUM_FID_CACHE StgmediumFc; \
+	EXCEPINFO_FID_CACHE ExcepinfoFc; \
+	DVTARGETDEVICE_FID_CACHE DvtargetdeviceFc; \
+	DISPPARAMS_FID_CACHE DispparamsFc; \
+	CONTROLINFO_FID_CACHE ControlinfoFc; \
+	STATSTG_FID_CACHE StatstgFc; \
+	LICINFO_FID_CACHE LicinfoFc; \
+	TVHITTESTINFO_FID_CACHE TvhittestinfoFc; \
+	WINDOWPOS_FID_CACHE WindowposFc; \
+	ACCEL_FID_CACHE AccelFc; \
+	DRAWITEMSTRUCT_FID_CACHE DrawitemstructFc; \
+	NMLISTVIEW_FID_CACHE NmlistviewFc; \
+	TEXTMETRIC_FID_CACHE TextmetricFc; \
+	RECT_FID_CACHE RectFc; \
+	LOGBRUSH_FID_CACHE LogbrushFc; \
+	SCROLLINFO_FID_CACHE ScrollinfoFc; \
+	MEASUREITEMSTRUCT_FID_CACHE MeasureitemstructFc; \
+	CREATESTRUCT_FID_CACHE CreatestructFc; \
+	OPENFILENAME_FID_CACHE OpenfilenameFc; \
+	LVITEM_FID_CACHE LvitemFc; \
+	TVITEM_FID_CACHE TvitemFc; \
+	LVHITTESTINFO_FID_CACHE LvhittestinfoFc; \
+	NMTVCUSTOMDRAW_FID_CACHE NmtvcustomdrawFc; \
+	HDITEM_FID_CACHE HditemFc; \
+	NMTOOLBAR_FID_CACHE NmtoolbarFc; \
+	TBBUTTON_FID_CACHE TbbuttonFc; \
+	REBARBANDINFO_FID_CACHE RebarbandinfoFc; \
+	POINT_FID_CACHE PointFc; \
+	TBBUTTONINFO_FID_CACHE TbbuttoninfoFc; \
+	NMHDR_FID_CACHE NmhdrFc; \
+	SIZE_FID_CACHE SizeFc; \
+	INITCOMMONCONTROLSEX_FID_CACHE InitcommoncontrolsexFc; \
+	DLLVERSIONINFO_FID_CACHE DllversioninfoFc; \
+	BITMAP_FID_CACHE BitmapFc; \
+	PAINTSTRUCT_FID_CACHE PaintstructFc; \
+	MENUITEMINFO_FID_CACHE MenuiteminfoFc; \
+	ICONINFO_FID_CACHE IconinfoFc; \
+	WNDCLASS_FID_CACHE WndclassFc; \
+	LOGPEN_FID_CACHE LogpenFc; \
+	COMPOSITIONFORM_FID_CACHE CompositionformFc; \
+	LVCOLUMN_FID_CACHE LvcolumnFc; \
+	BROWSEINFO_FID_CACHE BrowseinfoFc; \
+	TVINSERTSTRUCT_FID_CACHE TvinsertstructFc; \
+	LOGFONT_FID_CACHE LogfontFc; \
+	DIBSECTION_FID_CACHE DibsectionFc; \
+	NMHEADER_FID_CACHE NmheaderFc; \
+	TCITEM_FID_CACHE TcitemFc; \
+	PRINTDLG_FID_CACHE PrintdlgFc; \
+	MSG_FID_CACHE MsgFc; \
+	FUNCDESC1_FID_CACHE Funcdesc1Fc; \
+	FUNCDESC2_FID_CACHE Funcdesc2Fc; \
+	VARDESC1_FID_CACHE Vardesc1Fc; \
+	VARDESC2_FID_CACHE Vardesc2Fc; \
+	CHOOSECOLOR_FID_CACHE ChoosecolorFc; \
+    OSVERSIONINFO_FID_CACHE OsversioninfoFc; \
+	FILETIME_FID_CACHE FiletimeFc; \
+	SHELLEXECUTEINFO_FID_CACHE ShellexecuteinfoFc;
+#else
 #define FID_CACHE_GLOBALS \
 	MULTI_QI_FID_CACHE MultiqiFc; \
 	OLEINPLACEFRAMEINFO_FID_CACHE OleinplaceframeinfoFc; \
@@ -63,7 +145,6 @@
 	TEXTMETRIC_FID_CACHE TextmetricFc; \
 	RECT_FID_CACHE RectFc; \
 	LOGBRUSH_FID_CACHE LogbrushFc; \
-	CHOOSECOLOR_FID_CACHE ChoosecolorFc; \
 	TOOLINFO_FID_CACHE ToolinfoFc; \
 	SCROLLINFO_FID_CACHE ScrollinfoFc; \
 	MEASUREITEMSTRUCT_FID_CACHE MeasureitemstructFc; \
@@ -86,12 +167,11 @@
 	SIZE_FID_CACHE SizeFc; \
 	INITCOMMONCONTROLSEX_FID_CACHE InitcommoncontrolsexFc; \
 	DLLVERSIONINFO_FID_CACHE DllversioninfoFc; \
-	MSGFILTER_FID_CACHE MsgfilterFc; \
 	BITMAP_FID_CACHE BitmapFc; \
 	PAINTSTRUCT_FID_CACHE PaintstructFc; \
 	MENUITEMINFO_FID_CACHE MenuiteminfoFc; \
 	ICONINFO_FID_CACHE IconinfoFc; \
-	WNDCLASSEX_FID_CACHE WndclassexFc; \
+	WNDCLASS_FID_CACHE WndclassFc; \
 	MENUINFO_FID_CACHE MenuinfoFc; \
 	LOGPEN_FID_CACHE LogpenFc; \
 	COMPOSITIONFORM_FID_CACHE CompositionformFc; \
@@ -114,13 +194,19 @@
 	VARDESC2_FID_CACHE Vardesc2Fc; \
 	GCP_RESULTS_FID_CACHE GCP_RESULTSFc; \
 	TRIVERTEX_FID_CACHE TrivertexFc; \
-	GRADIENT_RECT_FID_CACHE GradientrectFc;
+	GRADIENT_RECT_FID_CACHE GradientrectFc; \
+	CHOOSECOLOR_FID_CACHE ChoosecolorFc; \
+    OSVERSIONINFO_FID_CACHE OsversioninfoFc; \
+	FILETIME_FID_CACHE FiletimeFc; \
+	SHELLEXECUTEINFO_FID_CACHE ShellexecuteinfoFc;
 
 /*	PARAFORMAT_FID_CACHE ParaformatFc; \*/
 /*	CHARFORMAT_FID_CACHE CharformatFc; \*/
 /*	CHARFORMAT2_FID_CACHE Charformat2Fc; \*/
 /*	SHFILEINFO_FID_CACHE ShfileinfoFc; \*/
 /*	EXTLOGPEN_FID_CACHE ExtlogpenFc; \*/
+#endif
+
 	
 /* ----------- fid and class caches  ----------- */
 /**
@@ -136,18 +222,227 @@
  *
  */
 
-/* ----------- fid cache structures  ----------- */
+#ifndef _WIN32_WCE
+
+/* CHOOSEFONT struct */
+typedef struct CHOOSEFONT_FID_CACHE {    
+    int cached;
+    jclass choosefontClass;
+    jfieldID lStructSize, hwndOwner, hDC, lpLogFont, \
+             iPointSize, Flags, rgbColors, lCustData, lpfnHook, \
+             lpTemplateName, hInstance, lpszStyle, nFontType, \
+             ___MISSING_ALIGNMENT__, nSizeMin, nSizeMax;
+
+} CHOOSEFONT_FID_CACHE;
+typedef CHOOSEFONT_FID_CACHE *PCHOOSEFONT_FID_CACHE;
+void cacheChoosefontFids(JNIEnv *env, jobject lpChoosefont, PCHOOSEFONT_FID_CACHE lpCache);
+void getChoosefontFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpChoosefont, CHOOSEFONT_FID_CACHE *lpChoosefontFc);
+void setChoosefontFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpChoosefont, CHOOSEFONT_FID_CACHE *lpChoosefontFc);
+
+/* DOCINFO struct */
+typedef struct DOCINFO_FID_CACHE {
+    int cached;
+    jclass docinfoClass;
+    jfieldID cbSize, lpszDocName, lpszOutput, lpszDatatype, fwType;
+} DOCINFO_FID_CACHE;
+typedef DOCINFO_FID_CACHE *PDOCINFO_FID_CACHE;
+void cacheDocinfoFids(JNIEnv *env, jobject lpDocinfo, PDOCINFO_FID_CACHE lpCache);
+void getDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, PDOCINFO_FID_CACHE lpDocinfoFc);
+void setDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, PDOCINFO_FID_CACHE lpDocinfoFc);
+
+/* GRADIENT_RECT struct */
+typedef struct GRADIENT_RECT_FID_CACHE {
+    int cached;
+    jclass gradientrectClass;
+    jfieldID UpperLeft, LowerRight;
+} GRADIENT_RECT_FID_CACHE;
+typedef GRADIENT_RECT_FID_CACHE *PGRADIENT_RECT_FID_CACHE;
+void cacheGradientrectFids(JNIEnv *env, jobject lpGradientrect, PGRADIENT_RECT_FID_CACHE lpCache);
+void getGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc);
+void setGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc);
+
+/* HELPINFO struct */
+typedef struct HELPINFO_FID_CACHE {
+    int cached;
+    jclass helpinfoClass;
+    jfieldID cbSize, iContextType, iCtrlId, hItemHandle, dwContextId, x, y;
+} HELPINFO_FID_CACHE;
+typedef HELPINFO_FID_CACHE *PHELPINFO_FID_CACHE;
+void cacheHelpinfoFids(JNIEnv *env, jobject lpHelpinfo, PHELPINFO_FID_CACHE lpCache);
+void getHelpinfoFields(JNIEnv *env, jobject lpObject, HELPINFO *lpHelpinfo, HELPINFO_FID_CACHE *lpHelpinfoFc);
+void setHelpinfoFields(JNIEnv *env, jobject lpObject, HELPINFO *lpHelpinfo, HELPINFO_FID_CACHE *lpHelpinfoFc);
+
+/* MENUINFO struct */
+#ifdef USE_2000_CALLS
+typedef struct MENUINFO_FID_CACHE {    
+    int cached;
+    jclass menuinfoClass;
+    jfieldID cbSize, fMask, dwStyle, cyMax, hbrBack, dwContextHelpID, dwMenuData;
+} MENUINFO_FID_CACHE;
+typedef MENUINFO_FID_CACHE *PMENUINFO_FID_CACHE;
+void cacheMenuinfoFids(JNIEnv *env, jobject lpMenuinfo, PMENUINFO_FID_CACHE lpCache);
+void getMenuinfoFields(JNIEnv *env, jobject lpObject, MENUINFO *lpMenuinfo, MENUINFO_FID_CACHE *lpMenuinfoFc);
+void setMenuinfoFields(JNIEnv *env, jobject lpObject, MENUINFO *lpMenuinfo, MENUINFO_FID_CACHE *lpMenuinfoFc);
+#endif
+
+/* NMTTDISPINFO struct */
+typedef struct NMTTDISPINFO_FID_CACHE {
+    int cached;
+    jclass nmttdispinfoClass;
+    jfieldID hwndFrom, idFrom, code, lpszText, pad0, pad1, pad2, pad3, \
+             pad4, pad5, pad6, pad7, pad8, pad9, pad10, pad11, pad12, \
+             pad13, pad14, pad15, pad16, pad17, pad18, pad19, hinst, \
+             uFlags, lParam;
+} NMTTDISPINFO_FID_CACHE;
+typedef NMTTDISPINFO_FID_CACHE *PNMTTDISPINFO_FID_CACHE;
+void cacheNmttdispinfoFids(JNIEnv *env, jobject lpNmttdispinfo, PNMTTDISPINFO_FID_CACHE lpCache);
+void getNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
+void setNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
+void getNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
+void setNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
+
+/* PAGESETUPDLG struct */
+typedef struct PAGESETUPDLG_FID_CACHE {
+    int cached;
+    jclass pagesetupdlgClass;
+    jfieldID lStructSize, hwndOwner, hDevMode, hDevNames, Flags, \
+             ptPaperSize_x, ptPaperSize_y, rtMinMargin_left, rtMinMargin_top, \
+             rtMinMargin_right, rtMinMargin_bottom, rtMargin_left, rtMargin_top, \
+             rtMargin_right, rtMargin_bottom, hInstance, lCustData, lpfnPageSetupHook, \
+             lpfnPagePaintHook, lpPageSetupTemplateName, hPageSetupTemplate;
+} PAGESETUPDLG_FID_CACHE;
+typedef PAGESETUPDLG_FID_CACHE *PPAGESETUPDLG_FID_CACHE;
+void cachePagesetupdlgFids(JNIEnv *env, jobject lpPagesetupdlg, PPAGESETUPDLG_FID_CACHE lpCache);
+void getPagesetupdlgFields(JNIEnv *env, jobject lpObject, PAGESETUPDLG *lpPagesetupdlg, PAGESETUPDLG_FID_CACHE *lpPagesetupdlgFc);
+void setPagesetupdlgFields(JNIEnv *env, jobject lpObject, PAGESETUPDLG *lpPagesetupdlg, PAGESETUPDLG_FID_CACHE *lpPagesetupdlgFc);
+
+/* TOOLINFO struct */
+typedef struct TOOLINFO_FID_CACHE {
+    int cached;
+    jclass toolinfoClass;
+    jfieldID cbSize, uFlags, hwnd, uId, left, top, right, bottom, \
+             hinst, lpszText, lParam;
+} TOOLINFO_FID_CACHE;
+typedef TOOLINFO_FID_CACHE *PTOOLINFO_FID_CACHE;
+void cacheToolinfoFids(JNIEnv *env, jobject lpToolinfo, PTOOLINFO_FID_CACHE lpCache);
+void getToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc);
+void setToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc);
+
+/* TRACKMOUSEEVENT struct */
+typedef struct TRACKMOUSEEVENT_FID_CACHE {
+    int cached;
+    jclass trackmouseeventClass;
+    jfieldID cbSize, dwFlags, hwndTrack, dwHoverTime;
+} TRACKMOUSEEVENT_FID_CACHE;
+typedef TRACKMOUSEEVENT_FID_CACHE *PTRACKMOUSEEVENT_FID_CACHE;
+void cacheTrackmouseeventFids(JNIEnv *env, jobject lpTrackmouseevent, PTRACKMOUSEEVENT_FID_CACHE lpCache);
+void getTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc);
+void setTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc);
+
+/* TRIVERTEX struct */
+typedef struct TRIVERTEX_FID_CACHE {
+    int cached;
+    jclass trivertexClass;
+    jfieldID x, y, Red, Green, Blue, Alpha;
+} TRIVERTEX_FID_CACHE;
+typedef TRIVERTEX_FID_CACHE *PTRIVERTEX_FID_CACHE;
+void cacheTrivertexFids(JNIEnv *env, jobject lpTrivertex, PTRIVERTEX_FID_CACHE lpCache);
+void getTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc);
+void setTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc);
+
+/* WINDOWPLACEMENT struct */
+typedef struct WINDOWPLACEMENT_FID_CACHE {
+    int cached;
+    jclass windowplacementClass;
+    jfieldID length, flags, showCmd, ptMinPosition_x, ptMinPosition_y, ptMaxPosition_x, ptMaxPosition_y,
+        left, top, right, bottom;
+} WINDOWPLACEMENT_FID_CACHE;
+typedef WINDOWPLACEMENT_FID_CACHE *PWINDOWPLACEMENT_FID_CACHE;
+void cacheWindowplacementFids(JNIEnv *env, jobject lpWindowplacement, PWINDOWPLACEMENT_FID_CACHE lpCache);
+void getWindowplacementFields(JNIEnv *env, jobject lpObject, WINDOWPLACEMENT *lpWindowplacement, WINDOWPLACEMENT_FID_CACHE *lpWindowplacementFc);
+void setWindowplacementFields(JNIEnv *env, jobject lpObject, WINDOWPLACEMENT *lpWindowplacement, WINDOWPLACEMENT_FID_CACHE *lpWindowplacementFc);
+
+/* DROPFILES struct */
+typedef struct DROPFILES_FID_CACHE {
+    int cached;
+    jclass dropfilesClass;
+    jfieldID pFiles, pt_x, pt_y, fNC, fWide;
+} DROPFILES_FID_CACHE;
+typedef DROPFILES_FID_CACHE *PDROPFILES_FID_CACHE;
+void cacheDropfilesFids(JNIEnv *env, jobject lpDropfiles, PDROPFILES_FID_CACHE lpCache);
+void getDropfilesFields(JNIEnv *env, jobject lpObject, DROPFILES *lpDropfiles, DROPFILES_FID_CACHE *lpDropfilesFc);
+void setDropfilesFields(JNIEnv *env, jobject lpObject, DROPFILES *lpDropfiles, DROPFILES_FID_CACHE *lpDropfilesFc);
+
+/* OLECMD struct */
+typedef struct OLECMD_FID_CACHE {
+    int cached;
+    jclass olecmdClass;
+    jfieldID cmdID, cmdf;
+} OLECMD_FID_CACHE;
+typedef OLECMD_FID_CACHE *POLECMD_FID_CACHE;
+void cacheOlecmdFids(JNIEnv *env, jobject lpOlecmd, POLECMD_FID_CACHE lpCache);
+void getOlecmdFields(JNIEnv *env, jobject lpObject, OLECMD *lpOlecmd, OLECMD_FID_CACHE *lpOlecmdFc);
+void setOlecmdFields(JNIEnv *env, jobject lpObject, OLECMD *lpOlecmd, OLECMD_FID_CACHE *lpOlecmdFc);
+
+/* OLECMDTEXT struct */
+typedef struct OLECMDTEXT_FID_CACHE {
+    int cached;
+    jclass olecmdtextClass;
+    jfieldID cmdtextf, cwActual, cwBuf, rgwz;
+} OLECMDTEXT_FID_CACHE;
+typedef OLECMDTEXT_FID_CACHE *POLECMDTEXT_FID_CACHE;
+void cacheOlecmdtextFids(JNIEnv *env, jobject lpOlecmdtext, POLECMDTEXT_FID_CACHE lpCache);
+void getOlecmdtextFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpOlecmdtext, OLECMDTEXT_FID_CACHE *lpOlecmdtextFc);
+void setOlecmdtextFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpOlecmdtext, OLECMDTEXT_FID_CACHE *lpOlecmdtextFc);
+
+/* GCP_RESULTS struct */
+typedef struct GCP_RESULTS_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID nMaxFit, nGlyphs, lpGlyphs, lpClass, lpCaretPos, lpDx, lpOrder, lpOutString, lStructSize;
+} GCP_RESULTS_FID_CACHE;
+typedef GCP_RESULTS_FID_CACHE *PGCP_RESULTS_FID_CACHE;
+void cacheGCP_RESULTSFids(JNIEnv *env, jobject lpObject, PGCP_RESULTS_FID_CACHE lpCache);
+void getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
+void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
+
+#endif
+
+/* OSVERSIONINFO struct */
+typedef struct OSVERSIONINFO_FID_CACHE {
+    
+    int cached;
+    jclass osversioninfoClass;
+    jfieldID dwOSVersionInfoSize, dwMajorVersion, dwMinorVersion, dwBuildNumber, dwPlatformId;
+    jfieldID szCSDVersion;
+
+} OSVERSIONINFO_FID_CACHE, *POSVERSIONINFO_FID_CACHE;
+void cacheOsversioninfoFids(JNIEnv *env, jobject lpOsversioninfo, POSVERSIONINFO_FID_CACHE lpCache);
+void getOsversioninfoFields(JNIEnv *env, jobject lpObject, OSVERSIONINFO *lpOsversioninfo, OSVERSIONINFO_FID_CACHE *lpOsversioninfoFc);
+void setOsversioninfoFields(JNIEnv *env, jobject lpObject, OSVERSIONINFO *lpOsversioninfo, OSVERSIONINFO_FID_CACHE *lpOsversioninfoFc);
+
+typedef OSVERSIONINFO_FID_CACHE *POSVERSIONINFO_FID_CACHE;
 
 /* CALLBACK struct */
 typedef struct CALLBACK_FID_CACHE {
-
     int cached;
     jclass callbackClass;
     jfieldID object, method, signature, isStatic;
-
 } CALLBACK_FID_CACHE;
-
 typedef CALLBACK_FID_CACHE *PCALLBACK_FID_CACHE;
+
+/* WNDCLASS struct */
+typedef struct WNDCLASS_FID_CACHE {
+    int cached;
+    jclass wndclassClass;
+    jfieldID style, lpfnWndProc, cbClsExtra, \
+             cbWndExtra, hInstance, hIcon, hCursor, \
+             hbrBackground, lpszMenuName, lpszClassName;
+} WNDCLASS_FID_CACHE;
+typedef WNDCLASS_FID_CACHE *PWNDCLASS_FID_CACHE;
+void cacheWndclassFids(JNIEnv *env, jobject lpWndclass, PWNDCLASS_FID_CACHE lpCache);
+void getWndclassFields(JNIEnv *env, jobject lpObject, WNDCLASS *lpWndclass, WNDCLASS_FID_CACHE *lpWndclassFc);
+void setWndclassFields(JNIEnv *env, jobject lpObject, WNDCLASS *lpWndclass, WNDCLASS_FID_CACHE *lpWndclassFc);
 
 /* ACCEL struct */
 typedef struct ACCEL_FID_CACHE {
@@ -237,19 +532,6 @@ typedef struct CHOOSECOLOR_FID_CACHE {
 
 typedef CHOOSECOLOR_FID_CACHE *PCHOOSECOLOR_FID_CACHE;
 
-/* CHOOSEFONT struct */
-typedef struct CHOOSEFONT_FID_CACHE {
-    
-    int cached;
-    jclass choosefontClass;
-    jfieldID lStructSize, hwndOwner, hDC, lpLogFont, \
-             iPointSize, Flags, rgbColors, lCustData, lpfnHook, \
-             lpTemplateName, hInstance, lpszStyle, nFontType, \
-             ___MISSING_ALIGNMENT__, nSizeMin, nSizeMax;
-
-} CHOOSEFONT_FID_CACHE;
-
-typedef CHOOSEFONT_FID_CACHE *PCHOOSEFONT_FID_CACHE;
 
 /* COMPOSITIONFORM struct */
 typedef struct COMPOSITIONFORM_FID_CACHE {
@@ -302,16 +584,6 @@ typedef struct DLLVERSIONINFO_FID_CACHE {
 
 typedef DLLVERSIONINFO_FID_CACHE *PDLLVERSIONINFO_FID_CACHE;
 
-/* DOCINFO struct */
-typedef struct DOCINFO_FID_CACHE {
-    
-    int cached;
-    jclass docinfoClass;
-    jfieldID cbSize, lpszDocName, lpszOutput, lpszDatatype, fwType;
-
-} DOCINFO_FID_CACHE;
-
-typedef DOCINFO_FID_CACHE *PDOCINFO_FID_CACHE;
 
 /* DRAWITEMSTRUCT struct */
 typedef struct DRAWITEMSTRUCT_FID_CACHE {
@@ -325,17 +597,6 @@ typedef struct DRAWITEMSTRUCT_FID_CACHE {
 } DRAWITEMSTRUCT_FID_CACHE;
 
 typedef DRAWITEMSTRUCT_FID_CACHE *PDRAWITEMSTRUCT_FID_CACHE;
-
-/* GRADIENT_RECT struct */
-typedef struct GRADIENT_RECT_FID_CACHE {
-    
-    int cached;
-    jclass gradientrectClass;
-    jfieldID UpperLeft, LowerRight;
-
-} GRADIENT_RECT_FID_CACHE;
-
-typedef GRADIENT_RECT_FID_CACHE *PGRADIENT_RECT_FID_CACHE;
 
 /* HDITEM struct */
 typedef struct HDITEM_FID_CACHE {
@@ -359,17 +620,6 @@ typedef struct HDLAYOUT_FID_CACHE {
 } HDLAYOUT_FID_CACHE;
 
 typedef HDLAYOUT_FID_CACHE *PHDLAYOUT_FID_CACHE;
-
-/* HELPINFO struct */
-typedef struct HELPINFO_FID_CACHE {
-    
-    int cached;
-    jclass helpinfoClass;
-    jfieldID cbSize, iContextType, iCtrlId, hItemHandle, dwContextId, x, y;
-
-} HELPINFO_FID_CACHE;
-
-typedef HELPINFO_FID_CACHE *PHELPINFO_FID_CACHE;
 
 /* ICONINFO struct */
 typedef struct ICONINFO_FID_CACHE {
@@ -498,18 +748,6 @@ typedef struct MEASUREITEMSTRUCT_FID_CACHE {
 
 typedef MEASUREITEMSTRUCT_FID_CACHE *PMEASUREITEMSTRUCT_FID_CACHE;
 
-/* MENUINFO struct */
-typedef struct MENUINFO_FID_CACHE {
-    
-    int cached;
-    jclass menuinfoClass;
-    jfieldID cbSize, fMask, dwStyle, cyMax, hbrBack, dwContextHelpID, dwMenuData;
-
-} MENUINFO_FID_CACHE;
-
-typedef MENUINFO_FID_CACHE *PMENUINFO_FID_CACHE;
-
-
 /*  struct MENUITEMINFO*/
 typedef struct MENUITEMINFO_FID_CACHE {
     
@@ -537,17 +775,6 @@ typedef struct MSG_FID_CACHE {
 } MSG_FID_CACHE;
 
 typedef MSG_FID_CACHE *PMSG_FID_CACHE;
-
-/* MSGFILTER struct */
-typedef struct MSGFILTER_FID_CACHE {
-    
-    int cached;
-    jclass msgfilterClass;
-    jfieldID hwndFrom, idFrom, code, msg, wParam, lParam;
-
-} MSGFILTER_FID_CACHE;
-
-typedef MSGFILTER_FID_CACHE *PMSGFILTER_FID_CACHE;
 
 /* NMHDR struct */
 typedef struct NMHDR_FID_CACHE {
@@ -596,19 +823,6 @@ typedef struct NMTOOLBAR_FID_CACHE {
 
 typedef NMTOOLBAR_FID_CACHE *PNMTOOLBAR_FID_CACHE;
 
-/* NMTTDISPINFO struct */
-typedef struct NMTTDISPINFO_FID_CACHE {
-    
-    int cached;
-    jclass nmttdispinfoClass;
-    jfieldID hwndFrom, idFrom, code, lpszText, pad0, pad1, pad2, pad3, \
-             pad4, pad5, pad6, pad7, pad8, pad9, pad10, pad11, pad12, \
-             pad13, pad14, pad15, pad16, pad17, pad18, pad19, hinst, \
-             uFlags, lParam;
-
-} NMTTDISPINFO_FID_CACHE;
-
-typedef NMTTDISPINFO_FID_CACHE *PNMTTDISPINFO_FID_CACHE;
 
 /* NMTVCUSTOMDRAW struct */
 typedef struct NMTVCUSTOMDRAW_FID_CACHE {
@@ -650,20 +864,6 @@ typedef struct PAINTSTRUCT_FID_CACHE {
 
 typedef PAINTSTRUCT_FID_CACHE *PPAINTSTRUCT_FID_CACHE;
 
-/* PAGESETUPDLG struct */
-typedef struct PAGESETUPDLG_FID_CACHE {
-    
-    int cached;
-    jclass pagesetupdlgClass;
-    jfieldID lStructSize, hwndOwner, hDevMode, hDevNames, Flags, \
-             ptPaperSize_x, ptPaperSize_y, rtMinMargin_left, rtMinMargin_top, \
-             rtMinMargin_right, rtMinMargin_bottom, rtMargin_left, rtMargin_top, \
-             rtMargin_right, rtMargin_bottom, hInstance, lCustData, lpfnPageSetupHook, \
-             lpfnPagePaintHook, lpPageSetupTemplateName, hPageSetupTemplate;
-
-} PAGESETUPDLG_FID_CACHE;
-
-typedef PAGESETUPDLG_FID_CACHE *PPAGESETUPDLG_FID_CACHE;
 
 /* PARAFORMAT struct */
 /*
@@ -801,39 +1001,8 @@ typedef struct TEXTMETRIC_FID_CACHE {
 
 typedef TEXTMETRIC_FID_CACHE *PTEXTMETRIC_FID_CACHE;
 
-/* TOOLINFO struct */
-typedef struct TOOLINFO_FID_CACHE {
-    
-    int cached;
-    jclass toolinfoClass;
-    jfieldID cbSize, uFlags, hwnd, uId, left, top, right, bottom, \
-             hinst, lpszText, lParam;
 
-} TOOLINFO_FID_CACHE;
 
-typedef TOOLINFO_FID_CACHE *PTOOLINFO_FID_CACHE;
-
-/* TRACKMOUSEEVENT struct */
-typedef struct TRACKMOUSEEVENT_FID_CACHE {
-
-    int cached;
-    jclass trackmouseeventClass;
-    jfieldID cbSize, dwFlags, hwndTrack, dwHoverTime;
-
-} TRACKMOUSEEVENT_FID_CACHE;
-
-typedef TRACKMOUSEEVENT_FID_CACHE *PTRACKMOUSEEVENT_FID_CACHE;
-
-/* TRIVERTEX struct */
-typedef struct TRIVERTEX_FID_CACHE {
-    
-    int cached;
-    jclass trivertexClass;
-    jfieldID x, y, Red, Green, Blue, Alpha;
-
-} TRIVERTEX_FID_CACHE;
-
-typedef TRIVERTEX_FID_CACHE *PTRIVERTEX_FID_CACHE;
 
 /* TVHITTESTINFO struct */
 typedef struct TVHITTESTINFO_FID_CACHE {
@@ -870,17 +1039,6 @@ typedef struct TVITEM_FID_CACHE {
 
 typedef TVITEM_FID_CACHE *PTVITEM_FID_CACHE;
 
-/* WINDOWPLACEMENT struct */
-typedef struct WINDOWPLACEMENT_FID_CACHE {
-    
-    int cached;
-    jclass windowplacementClass;
-    jfieldID length, flags, showCmd, ptMinPosition_x, ptMinPosition_y, ptMaxPosition_x, ptMaxPosition_y,
-        left, top, right, bottom;
-
-} WINDOWPLACEMENT_FID_CACHE;
-
-typedef WINDOWPLACEMENT_FID_CACHE *PWINDOWPLACEMENT_FID_CACHE;
 
 /* WINDOWPOS struct */
 typedef struct WINDOWPOS_FID_CACHE {
@@ -893,19 +1051,6 @@ typedef struct WINDOWPOS_FID_CACHE {
 
 typedef WINDOWPOS_FID_CACHE *PWINDOWPOS_FID_CACHE;
 
-/* WNDCLASSEX struct */
-typedef struct WNDCLASSEX_FID_CACHE {
-    
-    int cached;
-    jclass wndclassexClass;
-    jfieldID cbSize, style, lpfnWndProc, cbClsExtra, \
-             cbWndExtra, hInstance, hIcon, hCursor, \
-             hbrBackground, lpszMenuName, lpszClassName, \
-             hIconSm;
-
-} WNDCLASSEX_FID_CACHE;
-
-typedef WNDCLASSEX_FID_CACHE *PWNDCLASSEX_FID_CACHE;
 
 /* SHFILEINFO struct */
 /*
@@ -966,16 +1111,6 @@ typedef struct DISPPARAMS_FID_CACHE {
 
 typedef DISPPARAMS_FID_CACHE *PDISPPARAMS_FID_CACHE;
 
-/* DROPFILES struct */
-typedef struct DROPFILES_FID_CACHE {
-    
-    int cached;
-    jclass dropfilesClass;
-    jfieldID pFiles, pt_x, pt_y, fNC, fWide;
-
-} DROPFILES_FID_CACHE;
-
-typedef DROPFILES_FID_CACHE *PDROPFILES_FID_CACHE;
 
 /* DVASPECTINFO struct */
 typedef struct DVASPECTINFO_FID_CACHE {
@@ -1078,27 +1213,7 @@ typedef struct MULTI_QI_FID_CACHE {
 
 typedef MULTI_QI_FID_CACHE *PMULTI_QI_FID_CACHE;
 
-/* OLECMD struct */
-typedef struct OLECMD_FID_CACHE {
-    
-    int cached;
-    jclass olecmdClass;
-    jfieldID cmdID, cmdf;
 
-} OLECMD_FID_CACHE;
-
-typedef OLECMD_FID_CACHE *POLECMD_FID_CACHE;
-
-/* OLECMDTEXT struct */
-typedef struct OLECMDTEXT_FID_CACHE {
-    
-    int cached;
-    jclass olecmdtextClass;
-    jfieldID cmdtextf, cwActual, cwBuf, rgwz;
-
-} OLECMDTEXT_FID_CACHE;
-
-typedef OLECMDTEXT_FID_CACHE *POLECMDTEXT_FID_CACHE;
 
 /* OLEINPLACEFRAMEINFO struct */
 typedef struct OLEINPLACEFRAMEINFO_FID_CACHE {
@@ -1235,27 +1350,17 @@ typedef struct VARDESC2_FID_CACHE {
 
 typedef VARDESC2_FID_CACHE *PVARDESC2_FID_CACHE;
 
-/* GCP_RESULTS struct */
-typedef struct GCP_RESULTS_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID nMaxFit, nGlyphs, lpGlyphs, lpClass, lpCaretPos, lpDx, lpOrder, lpOutString, lStructSize;
-} GCP_RESULTS_FID_CACHE;
-
-typedef GCP_RESULTS_FID_CACHE *PGCP_RESULTS_FID_CACHE;
 
 
 /* ----------- ole cache function prototypes  ----------- */
 
 void cacheGuidFids(JNIEnv *env, jobject lpGuid, PGUID_FID_CACHE lpCache);
-void cacheOlecmdFids(JNIEnv *env, jobject lpOlecmd, POLECMD_FID_CACHE lpCache);
 void cacheDvtargetdeviceFids(JNIEnv *env, jobject lpDvtargetdevice, PDVTARGETDEVICE_FID_CACHE lpCache);
 void cacheOleinplaceframeinfoFids(JNIEnv *env, jobject lpOleinplaceframeinfo, POLEINPLACEFRAMEINFO_FID_CACHE lpCache);
 void cacheFormatetcFids(JNIEnv *env, jobject lpFormatetc, PFORMATETC_FID_CACHE lpCache);
 void cacheOleverbFids(JNIEnv *env, jobject lpOleverb, POLEVERB_FID_CACHE lpCache);
 void cacheTypedescFids(JNIEnv *env, jobject lpTypedesc, PTYPEDESC_FID_CACHE lpCache);
 void cacheIdldescFids(JNIEnv *env, jobject lpIdldesc, PIDLDESC_FID_CACHE lpCache);
-void cacheOlecmdtextFids(JNIEnv *env, jobject lpOlecmdtext, POLECMDTEXT_FID_CACHE lpCache);
 void cacheFiletimeFids(JNIEnv *env, jobject lpFiletime, PFILETIME_FID_CACHE lpCache);
 void cacheControlinfoFids(JNIEnv *env, jobject lpControlinfo, PCONTROLINFO_FID_CACHE lpCache);
 void cacheStgmediumFids(JNIEnv *env, jobject lpStgmedium, PSTGMEDIUM_FID_CACHE lpCache);
@@ -1268,7 +1373,6 @@ void cacheFuncdesc1Fids(JNIEnv *env, jobject lpFuncdesc, PFUNCDESC1_FID_CACHE lp
 void cacheFuncdesc2Fids(JNIEnv *env, jobject lpFuncdesc, PFUNCDESC2_FID_CACHE lpCache);
 void cacheVardesc1Fids(JNIEnv *env, jobject lpVardesc, PVARDESC1_FID_CACHE lpCache);
 void cacheVardesc2Fids(JNIEnv *env, jobject lpVardesc, PVARDESC2_FID_CACHE lpCache);
-void cacheGCP_RESULTSFids(JNIEnv *env, jobject lpObject, PGCP_RESULTS_FID_CACHE lpCache);
 
 /* ----------- cache function prototypes  ----------- */
 
@@ -1281,19 +1385,14 @@ void cacheCharformatFids(JNIEnv *env, jobject lpCharformat, PCHARFORMAT_FID_CACH
 void cacheCharformat2Fids(JNIEnv *env, jobject lpCharformat2, PCHARFORMAT2_FID_CACHE lpCache);
 */
 void cacheChoosecolorFids(JNIEnv *env, jobject lpChoosecolor, PCHOOSECOLOR_FID_CACHE lpCache);
-void cacheChoosefontFids(JNIEnv *env, jobject lpChoosefont, PCHOOSEFONT_FID_CACHE lpCache);
 void cacheCompositionformFids(JNIEnv *env, jobject lpCompositionform, PCOMPOSITIONFORM_FID_CACHE lpCache);
 void cacheCoserverinfoFids(JNIEnv *env, jobject lpCoservinfo, PCOSERVERINFO_FID_CACHE lpCache);
 void cacheCreatestructFids(JNIEnv *env, jobject lpCreatestruct, PCREATESTRUCT_FID_CACHE lpCache);
 void cacheDibsectionFids(JNIEnv *env, jobject lpDibsection, PDIBSECTION_FID_CACHE lpCache);
 void cacheDllversioninfoFids(JNIEnv *env, jobject lpDllversioninfo, PDLLVERSIONINFO_FID_CACHE lpCache);
-void cacheDocinfoFids(JNIEnv *env, jobject lpDocinfo, PDOCINFO_FID_CACHE lpCache);
 void cacheDrawitemstructFids(JNIEnv *env, jobject lpDrawitemstruct, PDRAWITEMSTRUCT_FID_CACHE lpCache);
-void cacheDropfilesFids(JNIEnv *env, jobject lpDropfiles, PDROPFILES_FID_CACHE lpCache);
-void cacheGradientrectFids(JNIEnv *env, jobject lpGradientrect, PGRADIENT_RECT_FID_CACHE lpCache);
 void cacheHditemFids(JNIEnv *env, jobject lpHditem, PHDITEM_FID_CACHE lpCache);
 void cacheHdlayoutFids(JNIEnv *env, jobject lpHdlayout, PHDLAYOUT_FID_CACHE lpCache);
-void cacheHelpinfoFids(JNIEnv *env, jobject lpHelpinfo, PHELPINFO_FID_CACHE lpCache);
 void cacheIconinfoFids(JNIEnv *env, jobject lpIconinfo, PICONINFO_FID_CACHE lpCache);
 void cacheInitcommoncontrolsexFids(JNIEnv *env, jobject lpInitcommoncontrolsex, PINITCOMMONCONTROLSEX_FID_CACHE lpCache);
 void cacheLogbrushFids(JNIEnv *env, jobject lpLogbrush, PLOGBRUSH_FID_CACHE lpCache);
@@ -1305,20 +1404,16 @@ void cacheExtlogpenFids(JNIEnv *env, jobject lpExtlogpen, PEXTLOGPEN_FID_CACHE l
 void cacheLvcolumnFids(JNIEnv *env, jobject lpLVColumn, PLVCOLUMN_FID_CACHE lpCache);
 void cacheLvhittestinfoFids(JNIEnv *env, jobject lpLvhittestinfo, PLVHITTESTINFO_FID_CACHE lpCache);
 void cacheLvitemFids(JNIEnv *env, jobject lpLVItem, PLVITEM_FID_CACHE lpCache);
-void cacheMenuinfoFids(JNIEnv *env, jobject lpMenuinfo, PMENUINFO_FID_CACHE lpCache);
 void cacheMeasureitemstructFids(JNIEnv *env, jobject lpMeasureitemstruct, PMEASUREITEMSTRUCT_FID_CACHE lpCache);
 void cacheMenuiteminfoFids(JNIEnv *env, jobject lpMenuiteminfo, PMENUITEMINFO_FID_CACHE lpCache);
 void cacheMsgFids(JNIEnv *env, jobject lpMsg, PMSG_FID_CACHE lpCache);
-void cacheMsgfilterFids(JNIEnv *env, jobject lpMsgfilter, PMSGFILTER_FID_CACHE lpCache);
 void cacheMulti_qiFids(JNIEnv *env, jobject lpMulti_qi, PMULTI_QI_FID_CACHE lpCache);
 void cacheNmhdrFids(JNIEnv *env, jobject lpNmhdr, PNMHDR_FID_CACHE lpCache);
 void cacheNmheaderFids(JNIEnv *env, jobject lpNmheader, PNMHEADER_FID_CACHE lpCache);
 void cacheNmlistviewFids(JNIEnv *env, jobject lpNmlistview, PNMLISTVIEW_FID_CACHE lpCache);
 void cacheNmtoolbarFids(JNIEnv *env, jobject lpNmtoolbar, PNMTOOLBAR_FID_CACHE lpCache);
-void cacheNmttdispinfoFids(JNIEnv *env, jobject lpNmttdispinfo, PNMTTDISPINFO_FID_CACHE lpCache);
 void cacheNmtvcustomdrawFids(JNIEnv *env, jobject lpNmtvcustomdraw, PNMTVCUSTOMDRAW_FID_CACHE lpCache);
 void cacheOpenfilenameFids(JNIEnv *env, jobject lpOpenfilename, POPENFILENAME_FID_CACHE lpCache);
-void cachePagesetupdlgFids(JNIEnv *env, jobject lpPagesetupdlg, PPAGESETUPDLG_FID_CACHE lpCache);
 void cachePaintstructFids(JNIEnv *env, jobject lpPaint, PPAINTSTRUCT_FID_CACHE lpCache);
 /*
 void cacheParaformatFids(JNIEnv *env, jobject lpParaformat, PPARAFORMAT_FID_CACHE lpCache);
@@ -1334,15 +1429,10 @@ void cacheTbbuttonFids(JNIEnv *env, jobject lpTbbutton, PTBBUTTON_FID_CACHE lpCa
 void cacheTbbuttoninfoFids(JNIEnv *env, jobject lpTbbuttoninfo, PTBBUTTONINFO_FID_CACHE lpCache);
 void cacheTcitemFids(JNIEnv *env, jobject lpTcitem, PTCITEM_FID_CACHE lpCache);
 void cacheTextmetricFids(JNIEnv *env, jobject lpTextmetric, PTEXTMETRIC_FID_CACHE lpCache);
-void cacheToolinfoFids(JNIEnv *env, jobject lpToolinfo, PTOOLINFO_FID_CACHE lpCache);
-void cacheTrackmouseeventFids(JNIEnv *env, jobject lpTrackmouseevent, PTRACKMOUSEEVENT_FID_CACHE lpCache);
-void cacheTrivertexFids(JNIEnv *env, jobject lpTrivertex, PTRIVERTEX_FID_CACHE lpCache);
 void cacheTvhittestinfoFids(JNIEnv *env, jobject lpTvhittestinfo, PTVHITTESTINFO_FID_CACHE lpCache);
 void cacheTvinsertstructFids(JNIEnv *env, jobject lpTvinsertstruct, PTVINSERTSTRUCT_FID_CACHE lpCache);
 void cacheTvitemFids(JNIEnv *env, jobject lpTvitem, PTVITEM_FID_CACHE lpCache);
-void cacheWindowplacementFids(JNIEnv *env, jobject lpWindowplacement, PWINDOWPLACEMENT_FID_CACHE lpCache);
 void cacheWindowposFids(JNIEnv *env, jobject lpWindowpos, PWINDOWPOS_FID_CACHE lpCache);
-void cacheWndclassexFids(JNIEnv *env, jobject lpWndclassex, PWNDCLASSEX_FID_CACHE lpCache);
 /*
 *void cacheShfileinfoFids(JNIEnv *env, jobject lpShfileinfo, PSHFILEINFO_FID_CACHE lpCache);
 */
@@ -1384,8 +1474,6 @@ void setCharformat2Fields(JNIEnv *env, jobject lpObject, CHARFORMAT2 *lpCharform
 */
 void getChoosecolorFields(JNIEnv *env, jobject lpObject, CHOOSECOLOR *lpChoosecolor, CHOOSECOLOR_FID_CACHE *lpChoosecolorFc);
 void setChoosecolorFields(JNIEnv *env, jobject lpObject, CHOOSECOLOR *lpChoosecolor, CHOOSECOLOR_FID_CACHE *lpChoosecolorFc);
-void getChoosefontFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpChoosefont, CHOOSEFONT_FID_CACHE *lpChoosefontFc);
-void setChoosefontFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpChoosefont, CHOOSEFONT_FID_CACHE *lpChoosefontFc);
 void getCompositionformFields(JNIEnv *env, jobject lpObject, COMPOSITIONFORM *lpCompositionform, COMPOSITIONFORM_FID_CACHE *lpCompositionformFc);
 void setCompositionformFields(JNIEnv *env, jobject lpObject, COMPOSITIONFORM *lpCompositionform, COMPOSITIONFORM_FID_CACHE *lpCompositionformFc);
 void getCreatestructFields(JNIEnv *env, jobject lpObject, CREATESTRUCT *lpCreatestruct, PCREATESTRUCT_FID_CACHE lpCreatestructFc);
@@ -1394,18 +1482,12 @@ void getDibsectionFields(JNIEnv *env, jobject lpObject, DIBSECTION *lpDibsection
 void setDibsectionFields(JNIEnv *env, jobject lpObject, DIBSECTION *lpDibsection, DIBSECTION_FID_CACHE *lpDibsectionFc);
 void getDllversioninfoFields(JNIEnv *env, jobject lpObject, DLLVERSIONINFO *lpDllversioninfo, DLLVERSIONINFO_FID_CACHE *lpDllversioninfoFc);
 void setDllversioninfoFields(JNIEnv *env, jobject lpObject, DLLVERSIONINFO *lpDllversioninfo, DLLVERSIONINFO_FID_CACHE *lpDllversioninfoFc);
-void getDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, PDOCINFO_FID_CACHE lpDocinfoFc);
-void setDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, PDOCINFO_FID_CACHE lpDocinfoFc);
 void getDrawitemstructFields(JNIEnv *env, jobject lpObject, DRAWITEMSTRUCT *lpDrawitemstruct, PDRAWITEMSTRUCT_FID_CACHE lpDrawitemstructFc);
 void setDrawitemstructFields(JNIEnv *env, jobject lpObject, DRAWITEMSTRUCT *lpDrawitemstruct, PDRAWITEMSTRUCT_FID_CACHE lpDrawitemstructFc);
-void getGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc);
-void setGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc);
 void getHditemFields(JNIEnv *env, jobject lpObject, HDITEM *lpHditem, HDITEM_FID_CACHE *lpHditemFc);
 void setHditemFields(JNIEnv *env, jobject lpObject, HDITEM *lpHditem, HDITEM_FID_CACHE *lpHditemFc);
 void getHdlayoutFields(JNIEnv *env, jobject lpObject, HDLAYOUT *lpHdlayout, HDLAYOUT_FID_CACHE *lpHdlayoutFc);
 void setHdlayoutFields(JNIEnv *env, jobject lpObject, HDLAYOUT *lpHdlayout, HDLAYOUT_FID_CACHE *lpHdlayoutFc);
-void getHelpinfoFields(JNIEnv *env, jobject lpObject, HELPINFO *lpHelpinfo, HELPINFO_FID_CACHE *lpHelpinfoFc);
-void setHelpinfoFields(JNIEnv *env, jobject lpObject, HELPINFO *lpHelpinfo, HELPINFO_FID_CACHE *lpHelpinfoFc);
 void getIconinfoFields(JNIEnv *env, jobject lpObject, ICONINFO *lpIconinfo, PICONINFO_FID_CACHE lpIconinfoFc);
 void setIconinfoFields(JNIEnv *env, jobject lpObject, ICONINFO *lpIconinfo, PICONINFO_FID_CACHE lpIconinfoFc);
 void getInitcommoncontrolsexFields(JNIEnv *env, jobject lpObject, INITCOMMONCONTROLSEX *lpInitcommoncontrolsex, INITCOMMONCONTROLSEX_FID_CACHE *lpInitcommoncontrolsexFc);
@@ -1430,16 +1512,10 @@ void getLvitemFields(JNIEnv *env, jobject lpObject, LVITEM *lpLvitem, LVITEM_FID
 void setLvitemFields(JNIEnv *env, jobject lpObject, LVITEM *lpLvitem, LVITEM_FID_CACHE *lpLvitemFc);
 void getMeasureitemstructFields(JNIEnv *env, jobject lpObject, MEASUREITEMSTRUCT *lpMeasureitemstruct, MEASUREITEMSTRUCT_FID_CACHE *lpMeasureitemstructFc);
 void setMeasureitemstructFields(JNIEnv *env, jobject lpObject, MEASUREITEMSTRUCT *lpMeasureitemstruct, MEASUREITEMSTRUCT_FID_CACHE *lpMeasureitemstructFc);
-#ifdef USE_2000_CALLS
-void getMenuinfoFields(JNIEnv *env, jobject lpObject, MENUINFO *lpMenuinfo, MENUINFO_FID_CACHE *lpMenuinfoFc);
-void setMenuinfoFields(JNIEnv *env, jobject lpObject, MENUINFO *lpMenuinfo, MENUINFO_FID_CACHE *lpMenuinfoFc);
-#endif
 void getMenuiteminfoFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpMenuiteminfo, MENUITEMINFO_FID_CACHE *lpMenuiteminfoFc);
 void setMenuiteminfoFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpMenuiteminfo, MENUITEMINFO_FID_CACHE *lpMenuiteminfoFc);
 void getMsgFields(JNIEnv *env, jobject lpObject, MSG *lpMsg, MSG_FID_CACHE *lpMsgFc);
 void setMsgFields(JNIEnv *env, jobject lpObject, MSG *lpMsg, MSG_FID_CACHE *lpMsgFc);
-void getMsgfilterFields(JNIEnv *env, jobject lpObject, MSGFILTER *lpMsgfilter, MSGFILTER_FID_CACHE *lpMsgfilterFc);
-void setMsgfilterFields(JNIEnv *env, jobject lpObject, MSGFILTER *lpMsgfilter, MSGFILTER_FID_CACHE *lpMsgfilterFc);
 void getNmhdrFields(JNIEnv *env, jobject lpObject, NMHDR *lpNmhdr, NMHDR_FID_CACHE *lpNmhdrFc);
 void setNmhdrFields(JNIEnv *env, jobject lpObject, NMHDR *lpNmhdr, NMHDR_FID_CACHE *lpNmhdrFc);
 void getNmheaderFields(JNIEnv *env, jobject lpObject, NMHEADER *lpNmheader, NMHEADER_FID_CACHE *lpNmheaderFc);
@@ -1448,16 +1524,10 @@ void getNmlistviewFields(JNIEnv *env, jobject lpObject, NMLISTVIEW *lpNmlistview
 void setNmlistviewFields(JNIEnv *env, jobject lpObject, NMLISTVIEW *lpNmlistview, NMLISTVIEW_FID_CACHE *lpNmlistviewFc);
 void getNmtoolbarFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpNmtoolbar, NMTOOLBAR_FID_CACHE *lpNmtoolbarFc);
 void setNmtoolbarFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpNmtoolbar, NMTOOLBAR_FID_CACHE *lpNmtoolbarFc);
-void getNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
-void setNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
-void getNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
-void setNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc);
 void getNmtvcustomdrawFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpNmtvcustomdraw, NMTVCUSTOMDRAW_FID_CACHE *lpNmtvcustomdrawFc);
 void setNmtvcustomdrawFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpNmtvcustomdraw, NMTVCUSTOMDRAW_FID_CACHE *lpNmtvcustomdrawFc);
 void getOpenfilenameFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpOpenfilename, OPENFILENAME_FID_CACHE *lpOpenfilenameFc);
 void setOpenfilenameFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpOpenfilename, OPENFILENAME_FID_CACHE *lpOpenfilenameFc);
-void getPagesetupdlgFields(JNIEnv *env, jobject lpObject, PAGESETUPDLG *lpPagesetupdlg, PAGESETUPDLG_FID_CACHE *lpPagesetupdlgFc);
-void setPagesetupdlgFields(JNIEnv *env, jobject lpObject, PAGESETUPDLG *lpPagesetupdlg, PAGESETUPDLG_FID_CACHE *lpPagesetupdlgFc);
 void getPaintstructFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpPaint, PAINTSTRUCT_FID_CACHE *lpPaintFc);
 void setPaintstructFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpPaint, PAINTSTRUCT_FID_CACHE *lpPaintFc);
 /*
@@ -1486,24 +1556,14 @@ void getTextmetricFieldsW(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpTextmetr
 void setTextmetricFieldsW(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc);
 void getTextmetricFieldsA(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc);
 void setTextmetricFieldsA(JNIEnv *env, jobject lpObject, TEXTMETRIC *lpTextmetric, TEXTMETRIC_FID_CACHE *lpTextmetricFc);
-void getToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc);
-void setToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc);
-void getTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc);
-void setTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc);
-void getTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc);
-void setTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc);
 void getTvhittestinfoFields(JNIEnv *env, jobject lpObject, TVHITTESTINFO *lpTvhittestinfo, TVHITTESTINFO_FID_CACHE *lpTvhittestinfoFc);
 void setTvhittestinfoFields(JNIEnv *env, jobject lpObject, TVHITTESTINFO *lpTvhittestinfo, TVHITTESTINFO_FID_CACHE *lpTvhittestinfoFc);
 void getTvinsertstructFields(JNIEnv *env, jobject lpObject, TVINSERTSTRUCT *lpTvinsertstruct, TVINSERTSTRUCT_FID_CACHE *lpTvinsertstructFc);
 void setTvinsertstructFields(JNIEnv *env, jobject lpObject, TVINSERTSTRUCT *lpTvinsertstruct, TVINSERTSTRUCT_FID_CACHE *lpTvinsertstructFc);
 void getTvitemFields(JNIEnv *env, jobject lpObject, TVITEM *lpTvitem, TVITEM_FID_CACHE *lpTvitemFc);
 void setTvitemFields(JNIEnv *env, jobject lpObject, TVITEM *lpTvitem, TVITEM_FID_CACHE *lpTvitemFc);
-void getWindowplacementFields(JNIEnv *env, jobject lpObject, WINDOWPLACEMENT *lpWindowplacement, WINDOWPLACEMENT_FID_CACHE *lpWindowplacementFc);
-void setWindowplacementFields(JNIEnv *env, jobject lpObject, WINDOWPLACEMENT *lpWindowplacement, WINDOWPLACEMENT_FID_CACHE *lpWindowplacementFc);
 void getWindowposFields(JNIEnv *env, jobject lpObject, WINDOWPOS *lpWindowpos, WINDOWPOS_FID_CACHE *lpWindowposFc);
 void setWindowposFields(JNIEnv *env, jobject lpObject, WINDOWPOS *lpWindowpos, WINDOWPOS_FID_CACHE *lpWindowposFc);
-void getWndclassexFields(JNIEnv *env, jobject lpObject, WNDCLASSEX *lpWndclassex, WNDCLASSEX_FID_CACHE *lpWndclassexFc);
-void setWndclassexFields(JNIEnv *env, jobject lpObject, WNDCLASSEX *lpWndclassex, WNDCLASSEX_FID_CACHE *lpWndclassexFc);
 /*
 void getShfileinfoFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpShfileinfo, SHFILEINFO_FID_CACHE *lpShfileinfoFc);
 void setShfileinfoFields(JNIEnv *env, jobject lpObject, SHFILEINFO *lpShfileinfo, SHFILEINFO_FID_CACHE *lpShfileinfoFc);
@@ -1518,8 +1578,6 @@ void getCoserverinfoFields(JNIEnv *env, jobject lpObject, COSERVERINFO *lpCoserv
 void setCoserverinfoFields(JNIEnv *env, jobject lpObject, COSERVERINFO *lpCoserverinfo, COSERVERINFO_FID_CACHE *lpCoserverinfoFc);
 void getDispparamsFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpDispparams, DISPPARAMS_FID_CACHE *lpDispparamsFc);
 void setDispparamsFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpDispparams, DISPPARAMS_FID_CACHE *lpDispparamsFc);
-void getDropfilesFields(JNIEnv *env, jobject lpObject, DROPFILES *lpDropfiles, DROPFILES_FID_CACHE *lpDropfilesFc);
-void setDropfilesFields(JNIEnv *env, jobject lpObject, DROPFILES *lpDropfiles, DROPFILES_FID_CACHE *lpDropfilesFc);
 void getDvaspectinfoFields(JNIEnv *env, jobject lpObject, DVASPECTINFO *lpDvaspectinfo, DVASPECTINFO_FID_CACHE *lpDvaspectinfoFc);
 void setDvaspectinfoFields(JNIEnv *env, jobject lpObject, DVASPECTINFO *lpDvaspectinfo, DVASPECTINFO_FID_CACHE *lpDvaspectinfoFc);
 void getDvtargetdeviceFields(JNIEnv *env, jobject lpObject, DVTARGETDEVICE *lpDvtargetdevice, DVTARGETDEVICE_FID_CACHE *lpDvtargetdeviceFc);
@@ -1538,10 +1596,6 @@ void getLicinfoFields(JNIEnv *env, jobject lpObject, LICINFO *lpLicinfo, LICINFO
 void setLicinfoFields(JNIEnv *env, jobject lpObject, LICINFO *lpLicinfo, LICINFO_FID_CACHE *lpLicinfoFc);
 void getMulti_qiFields(JNIEnv *env, jobject lpObject, MULTI_QI *lpMulti_qi, MULTI_QI_FID_CACHE *lpMulti_qiFc);
 void setMulti_qiFields(JNIEnv *env, jobject lpObject, MULTI_QI *lpMulti_qi, MULTI_QI_FID_CACHE *lpMulti_qiFc);
-void getOlecmdFields(JNIEnv *env, jobject lpObject, OLECMD *lpOlecmd, OLECMD_FID_CACHE *lpOlecmdFc);
-void setOlecmdFields(JNIEnv *env, jobject lpObject, OLECMD *lpOlecmd, OLECMD_FID_CACHE *lpOlecmdFc);
-void getOlecmdtextFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpOlecmdtext, OLECMDTEXT_FID_CACHE *lpOlecmdtextFc);
-void setOlecmdtextFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpOlecmdtext, OLECMDTEXT_FID_CACHE *lpOlecmdtextFc);
 void getOleinplaceframeinfoFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAMEINFO *lpOleinplaceframeinfo, OLEINPLACEFRAMEINFO_FID_CACHE *lpOleinplaceframeinfoFc);
 void setOleinplaceframeinfoFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAMEINFO *lpOleinplaceframeinfo, OLEINPLACEFRAMEINFO_FID_CACHE *lpOleinplaceframeinfoFc);
 void getOleverbFields(JNIEnv *env, jobject lpObject, OLEVERB *lpOleverb, OLEVERB_FID_CACHE *lpOleverbFc);
@@ -1562,8 +1616,18 @@ void getVardesc1Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDES
 void setVardesc1Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDESC1_FID_CACHE *lpVardescFc);
 void getVardesc2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDESC2_FID_CACHE *lpVardescFc);
 void setVardesc2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDESC2_FID_CACHE *lpVardescFc);
-void getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
-void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache);
+
+/* SHELLEXECUTEINFO struct */
+typedef struct SHELLEXECUTEINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hProcess, hIcon, dwHotKey, hkeyClass, lpClass, lpIDList, hInstApp, nShow, lpDirectory, lpParameters, lpFile, lpVerb, hwnd, fMask, cbSize;
+} SHELLEXECUTEINFO_FID_CACHE;
+typedef SHELLEXECUTEINFO_FID_CACHE *PSHELLEXECUTEINFO_FID_CACHE;
+
+void cacheShellexecuteinfoFids(JNIEnv *env, jobject lpObject, PSHELLEXECUTEINFO_FID_CACHE lpCache);
+void getShellexecuteinfoFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct, PSHELLEXECUTEINFO_FID_CACHE lpCache);
+void setShellexecuteinfoFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct, PSHELLEXECUTEINFO_FID_CACHE lpCache);
 
 
 #endif // INC_structs_H

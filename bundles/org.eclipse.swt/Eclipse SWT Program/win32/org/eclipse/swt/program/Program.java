@@ -65,10 +65,13 @@ public static Program findProgram (String extension) {
 public static String [] getExtensions () {
 	String [] extensions = new String [1024];
 	/* Use the character encoding for the default locale */
-	TCHAR key = new TCHAR (0, 1024);
-	int index = 0, count = 0;
-	while (OS.RegEnumKey (OS.HKEY_CLASSES_ROOT, index, key, key.length ()) != OS.ERROR_NO_MORE_ITEMS) {
-		String extension = key.toString (0, key.strlen ());
+	TCHAR lpName = new TCHAR (0, 1024);
+	int [] lpcName = new int [] {lpName.length ()};
+	FILETIME ft = new FILETIME ();
+	int dwIndex = 0, count = 0;
+	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {
+		String extension = lpName.toString (0, lpcName [0]);
+		lpcName [0] = lpName.length ();
 		if (extension.length () > 0 && extension.charAt (0) == '.') {
 			if (count == extensions.length) {
 				String [] newExtensions = new String [extensions.length + 1024];
@@ -77,7 +80,7 @@ public static String [] getExtensions () {
 			}
 			extensions [count++] = extension;
 		}
-		index++;
+		dwIndex++;
 	}
 	if (count != extensions.length) {
 		String [] newExtension = new String [count];
@@ -98,7 +101,7 @@ static String getKeyValue (String string) {
 	int [] lpcbData = new int [1];
 	if (OS.RegQueryValueEx (phkResult [0], null, 0, null, null, lpcbData) == 0) {
 		/* Use the character encoding for the default locale */
-		TCHAR lpData = new TCHAR (0, lpcbData [0]);
+		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
 		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
 			result = lpData.toString (0, lpData.length () - 1);
 		}
@@ -138,10 +141,13 @@ static Program getProgram (String key) {
 public static Program [] getPrograms () {
 	Program [] programs = new Program [1024];
 	/* Use the character encoding for the default locale */
-	TCHAR key = new TCHAR (0, 1024);
-	int index = 0, count = 0;
-	while (OS.RegEnumKey (OS.HKEY_CLASSES_ROOT, index, key, key.length ()) != OS.ERROR_NO_MORE_ITEMS) {
-		String path = key.toString (0, key.strlen ());
+	TCHAR lpName = new TCHAR (0, 1024);
+	int [] lpcName = new int [] {lpName.length ()};
+	FILETIME ft = new FILETIME ();
+	int dwIndex = 0, count = 0;
+	while (OS.RegEnumKeyEx (OS.HKEY_CLASSES_ROOT, dwIndex, lpName, lpcName, null, null, null, ft) != OS.ERROR_NO_MORE_ITEMS) {	
+		String path = lpName.toString (0, lpcName [0]);
+		lpcName [0] = lpName.length ();
 		Program program = getProgram (path);
 		if (program != null) {
 			if (count == programs.length) {
@@ -151,7 +157,7 @@ public static Program [] getPrograms () {
 			}
 			programs [count++] = program;
 		}
-		index++;
+		dwIndex++;
 	}
 	if (count != programs.length) {
 		Program [] newPrograms = new Program [count];
@@ -175,10 +181,35 @@ public static Program [] getPrograms () {
  */
 public static boolean launch (String fileName) {
 	if (fileName == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
+	
 	/* Use the character encoding for the default locale */
-	TCHAR OPEN = new TCHAR (0, "open", true);
-	TCHAR lpFile = new TCHAR (0, fileName, true);
-	return OS.ShellExecute (0, OPEN, lpFile, null, null, OS.SW_SHOW) > 32;
+	int hHeap = OS.GetProcessHeap ();
+	TCHAR buffer1 = new TCHAR (0, "open", true);
+	int byteCount1 = buffer1.length () * TCHAR.sizeof;
+	int lpVerb = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount1);
+	OS.MoveMemory (lpVerb, buffer1, byteCount1);
+	TCHAR buffer2 = new TCHAR (0, fileName, true);
+	int byteCount2 = buffer2.length () * TCHAR.sizeof;
+	int lpFile = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount2);
+	OS.MoveMemory (lpFile, buffer2, byteCount2);
+	
+	SHELLEXECUTEINFO info = new SHELLEXECUTEINFO ();
+	info.cbSize = SHELLEXECUTEINFO.sizeof;
+	info.lpVerb = lpVerb;
+	info.lpFile = lpFile;
+	info.nShow = OS.SW_SHOW;
+	
+	boolean result = OS.ShellExecuteEx (info);
+		
+	if (lpVerb != 0) OS.HeapFree (hHeap, 0, lpVerb);	
+	if (lpFile != 0) OS.HeapFree (hHeap, 0, lpFile);
+	
+	return result;
+	
+	/* Use the character encoding for the default locale */
+//	TCHAR OPEN = new TCHAR (0, "open", true);
+//	TCHAR lpFile = new TCHAR (0, fileName, true);
+//	return OS.ShellExecute (0, OPEN, lpFile, null, null, OS.SW_SHOW) > 32;
 }
 
 /**

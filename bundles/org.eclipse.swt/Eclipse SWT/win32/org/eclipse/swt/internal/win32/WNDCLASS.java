@@ -4,8 +4,7 @@ package org.eclipse.swt.internal.win32;
  * (c) Copyright IBM Corp. 2000, 2001.
  * All Rights Reserved
  */
-public class WNDCLASSEX {
-	public int cbSize; 
+public class WNDCLASS {
 	public int style; 
 	public int lpfnWndProc; 
 	public int cbClsExtra; 
@@ -16,6 +15,5 @@ public class WNDCLASSEX {
 	public int hbrBackground; 
 	public int lpszMenuName; 
 	public int lpszClassName; 
-	public int hIconSm;
-	public static final int sizeof = 48;
+	public static final int sizeof = 40;
 }

@@ -30,9 +30,8 @@ public class Scale extends Control {
 	static final int TrackBarProc;
 	static final TCHAR TrackBarClass = new TCHAR (0, OS.TRACKBAR_CLASS, true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, TrackBarClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, TrackBarClass, lpWndClass);
 		TrackBarProc = lpWndClass.lpfnWndProc;
 	}
 

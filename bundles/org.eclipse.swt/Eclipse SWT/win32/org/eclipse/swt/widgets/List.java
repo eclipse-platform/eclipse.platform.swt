@@ -31,9 +31,8 @@ public class List extends Scrollable {
 	static final int ListProc;
 	static final TCHAR ListClass = new TCHAR (0, "LISTBOX", true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, ListClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, ListClass, lpWndClass);
 		ListProc = lpWndClass.lpfnWndProc;
 	}
 

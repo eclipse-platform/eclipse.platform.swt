@@ -61,9 +61,8 @@ public class Slider extends Control {
 	static final int ScrollBarProc;
 	static final TCHAR ScrollBarClass = new TCHAR (0, "SCROLLBAR", true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, ScrollBarClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, ScrollBarClass, lpWndClass);
 		ScrollBarProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -349,6 +348,7 @@ public void setEnabled (boolean enabled) {
 	checkWidget ();
 	int flags = OS.ESB_DISABLE_BOTH;
 	if (enabled) flags = OS.ESB_ENABLE_BOTH;
+	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	OS.EnableScrollBar (handle, OS.SB_CTL, flags);
 	state &= ~DISABLED;
 	if (!enabled) state |= DISABLED;
@@ -405,6 +405,7 @@ public void setMaximum (int value) {
 	* the application has disabled the scroll bar.
 	*/
 	if ((state & DISABLED) != 0) {
+		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 		OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
 	}
 	
@@ -451,6 +452,7 @@ public void setMinimum (int value) {
 	* the application has disabled the scroll bar.
 	*/
 	if ((state & DISABLED) != 0) {
+		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 		OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
 	}
 	
@@ -543,6 +545,7 @@ public void setThumb (int value) {
 	* the application has disabled the scroll bar.
 	*/
 	if ((state & DISABLED) != 0) {
+		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 		OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
 	}
 	
@@ -608,6 +611,7 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	* the application has disabled the scroll bar.
 	*/
 	if ((state & DISABLED) != 0) {
+		if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 		OS.EnableScrollBar (handle, OS.SB_CTL, OS.ESB_DISABLE_BOTH);
 	}
 	

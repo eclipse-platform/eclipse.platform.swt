@@ -41,9 +41,8 @@ public class CoolBar extends Composite {
 		icex.dwSize = INITCOMMONCONTROLSEX.sizeof;
 		icex.dwICC = OS.ICC_COOL_CLASSES;
 		OS.InitCommonControlsEx (icex);
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, ReBarClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, ReBarClass, lpWndClass);
 		ReBarProc = lpWndClass.lpfnWndProc;
 	}
 

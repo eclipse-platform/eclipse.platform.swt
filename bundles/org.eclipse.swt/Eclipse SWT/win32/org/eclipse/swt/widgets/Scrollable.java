@@ -101,6 +101,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	RECT rect = new RECT ();
 	OS.SetRect (rect, x, y, x + width, y + height);
 	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	boolean hasMenu = ((bits & OS.WS_CHILD) == 0) && (OS.GetMenu (handle) != 0);
 	OS.AdjustWindowRectEx (rect, bits, hasMenu, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
 

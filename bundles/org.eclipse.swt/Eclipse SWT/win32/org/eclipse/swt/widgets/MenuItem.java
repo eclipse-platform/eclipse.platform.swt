@@ -490,7 +490,7 @@ public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	if ((WIN32_MAJOR << 16 | WIN32_MINOR) < (4 << 16 | 10)) {
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		return;
 	}
 	int hMenu = parent.handle;
@@ -564,14 +564,12 @@ public void setMenu (Menu menu) {
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_ID;
-	int index = 0, count = OS.GetMenuItemCount (hMenu);
-	while (index < count) {
-		if (OS.GetMenuItemInfo (hMenu, index, true, info) && (info.wID == id)) {
-			break;
-		}
+	int index = 0;
+	while (OS.GetMenuItemInfo (hMenu, index, true, info)) {
+		if (info.wID == id) break;
 		index++;
 	}
-	if (index == count) return;
+	if (info.wID != id) return;
 	int cch = 128;
 	int hHeap = OS.GetProcessHeap ();
 	int byteCount = cch * TCHAR.sizeof;
@@ -586,7 +584,9 @@ public void setMenu (Menu menu) {
 		info.hSubMenu = menu.handle;
 	}
 	OS.RemoveMenu (hMenu, index, OS.MF_BYPOSITION);
-	success = OS.InsertMenuItem (hMenu, index, true, info);
+//	success = OS.InsertMenuItem (hMenu, index, true, info);
+	success = OS.InsertMenu (hMenu, index, OS.MF_BYPOSITION, id, null); 
+	if (success) success = OS.SetMenuItemInfo (hMenu, index, true, info);
 	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
 	if (!success) error (SWT.ERROR_CANNOT_SET_MENU);
 	parent.destroyAcceleratorTable ();
@@ -716,7 +716,8 @@ LRESULT wmMeasureChild (int wParam, int lParam) {
 				OS.GetObject (hImage, BITMAP.sizeof, bm);
 				break;
 			case SWT.ICON:
-				ICONINFO info = new ICONINFO ();
+				ICONINFO info = new ICONINFO ();		
+				if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetIconInfo (hImage, info);
 				int hBitmap = info.hbmColor;
 				if (hBitmap == 0) hBitmap = info.hbmMask;

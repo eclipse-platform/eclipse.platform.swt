@@ -33,9 +33,8 @@ public class Label extends Control {
 	static final int LabelProc;
 	static final TCHAR LabelClass = new TCHAR (0, "STATIC", true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, LabelClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, LabelClass, lpWndClass);
 		LabelProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -116,6 +115,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					break;
 				case SWT.ICON: {
 					ICONINFO info = new ICONINFO ();
+					if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 					OS.GetIconInfo (hImage, info);
 					int hBitmap = info.hbmColor;
 					if (hBitmap == 0) hBitmap = info.hbmMask;

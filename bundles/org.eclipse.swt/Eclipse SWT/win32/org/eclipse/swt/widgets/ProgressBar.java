@@ -28,9 +28,8 @@ public class ProgressBar extends Control {
 	static final int ProgressBarProc;
 	static final TCHAR ProgressBarClass = new TCHAR (0, OS.PROGRESS_CLASS, true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, ProgressBarClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, ProgressBarClass, lpWndClass);
 		ProgressBarProc = lpWndClass.lpfnWndProc;
 	}
 

@@ -36,16 +36,15 @@ public class Text extends Scrollable {
 	* to stop the compiler from inlining.
 	*/
 	static {
-		LIMIT = IsWinNT ? 0x7FFFFFFF : 0x7FFF;
+		LIMIT = OS.IsWinNT ? 0x7FFFFFFF : 0x7FFF;
 		DELIMITER = "\r\n";
 	}
 	
 	static final int EditProc;
 	static final TCHAR EditClass = new TCHAR (0, "EDIT", true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, EditClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, EditClass, lpWndClass);
 		EditProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -434,7 +433,7 @@ public int getCaretPosition () {
 	int caretLine = OS.SendMessage (handle, OS.EM_LINEFROMCHAR, caretPos, 0);
 	int caret = end [0];
 	if (caretLine == startLine) caret = start [0];
-	if (IsDBLocale) caret = mbcsToWcsPos (caret);
+	if (OS.IsDBLocale) caret = mbcsToWcsPos (caret);
 	return caret;
 }
 
@@ -451,7 +450,7 @@ public int getCaretPosition () {
 public int getCharCount () {
 	checkWidget ();
 	int length = OS.GetWindowTextLength (handle);
-	if (IsDBLocale) length = mbcsToWcsPos (length);
+	if (OS.IsDBLocale) length = mbcsToWcsPos (length);
 	return length;
 }
 
@@ -599,7 +598,7 @@ public Point getSelection () {
 	checkWidget ();
 	int [] start = new int [1], end = new int [1];
 	OS.SendMessage (handle, OS.EM_GETSEL, start, end);
-	if (IsDBLocale) {
+	if (OS.IsDBLocale) {
 		start [0] = mbcsToWcsPos (start [0]);
 		end [0] = mbcsToWcsPos (end [0]);
 	}
@@ -1023,7 +1022,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 					start [0] = start [0] - DELIMITER.length ();
 				} else {
 					start [0] = start [0] - 1;
-					if (IsDBLocale) {
+					if (OS.IsDBLocale) {
 						int [] newStart = new int [1], newEnd = new int [1];
 						OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 						OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
@@ -1043,7 +1042,7 @@ boolean sendKeyEvent (int type, int msg, int wParam, int lParam, Event event) {
 					end [0] = end [0] + DELIMITER.length ();
 				} else {
 					end [0] = end [0] + 1;
-					if (IsDBLocale) {
+					if (OS.IsDBLocale) {
 						int [] newStart = new int [1], newEnd = new int [1];
 						OS.SendMessage (handle, OS.EM_SETSEL, start [0], end [0]);
 						OS.SendMessage (handle, OS.EM_GETSEL, newStart, newEnd);
@@ -1173,7 +1172,7 @@ public void setFont (Font font) {
  */
 public void setSelection (int start) {
 	checkWidget ();
-	if (IsDBLocale) start = wcsToMbcsPos (start);
+	if (OS.IsDBLocale) start = wcsToMbcsPos (start);
 	OS.SendMessage (handle, OS.EM_SETSEL, start, start);
 }
 
@@ -1206,7 +1205,7 @@ public void setSelection (int start) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
-	if (IsDBLocale) {
+	if (OS.IsDBLocale) {
 		start = wcsToMbcsPos (start);
 		end = wcsToMbcsPos (end);
 	}
@@ -1423,7 +1422,7 @@ String verifyText (String string, int start, int end, Event keyEvent) {
 		event.keyCode = keyEvent.keyCode;
 		event.stateMask = keyEvent.stateMask;
 	}
-	if (IsDBLocale) {
+	if (OS.IsDBLocale) {
 		event.start = mbcsToWcsPos (start);
 		event.end = mbcsToWcsPos (end);
 	}

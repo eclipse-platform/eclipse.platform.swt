@@ -148,6 +148,9 @@ protected void checkSubclass () {
 
 Image createDisabledImage (Image image, Color color) {
 	Display display = getDisplay ();
+	if (OS.IsWinCE) {
+		return new Image (display, image, SWT.IMAGE_DISABLE);
+	}
 	Rectangle rect = image.getBounds ();
 	Image disabled = new Image (display, rect);
 	GC gc = new GC (disabled);

@@ -27,8 +27,6 @@ public class MENUITEMINFO {
 	* that the correct struct size is used for the Windows platform.
 	*/
 	static {
-		int version = OS.GetVersion ();
-		int WIN32_MAJOR = version & 0x00FF, WIN32_MINOR = (version & 0xFFFF) >> 8;
-		sizeof = (WIN32_MAJOR << 16 | WIN32_MINOR) < (4 << 16 | 10) ? 44 : 48;
+		sizeof = (OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10) ? 44 : 48;
 	}
 }

@@ -130,7 +130,7 @@ void createHandle () {
 }
 
 void createItem (MenuItem item, int index) {
-	int count = OS.GetMenuItemCount (handle);
+	int count = GetMenuItemCount (handle);
 	if (!(0 <= index && index <= count)) error (SWT.ERROR_INVALID_RANGE);
 	parent.add (item);
 	/*
@@ -139,16 +139,17 @@ void createItem (MenuItem item, int index) {
 	* to use SetMenuItemInfo () to set the text at a later time.
 	* The fix is to insert the item with an empty string.
 	*/
-	int hHeap = OS.GetProcessHeap ();
-	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
-	MENUITEMINFO info = new MENUITEMINFO ();
-	info.cbSize = MENUITEMINFO.sizeof;
-	info.fMask = OS.MIIM_ID | OS.MIIM_TYPE;
-	info.wID = item.id;
-	info.fType = item.widgetStyle ();
-	info.dwTypeData = pszText;
-	boolean success = OS.InsertMenuItem (handle, index, true, info);
-	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+//	int hHeap = OS.GetProcessHeap ();
+//	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, TCHAR.sizeof);
+//	MENUITEMINFO info = new MENUITEMINFO ();
+//	info.cbSize = MENUITEMINFO.sizeof;
+//	info.fMask = OS.MIIM_ID | OS.MIIM_TYPE;
+//	info.wID = item.id;
+//	info.fType = item.widgetStyle ();
+//	info.dwTypeData = pszText;
+//	boolean success = OS.InsertMenuItem (handle, index, true, info);
+//	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+	boolean success = OS.InsertMenu (handle, index, OS.MF_BYPOSITION, item.id, null); 
 	if (!success) {
 		parent.remove (item);
 		error (SWT.ERROR_ITEM_NOT_ADDED);
@@ -208,6 +209,7 @@ void destroyWidget () {
  */
 public MenuItem getDefaultItem () {
 	checkWidget ();
+	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	int id = OS.GetMenuDefaultItem (handle, OS.MF_BYCOMMAND, OS.GMDI_USEDISABLED);
 	if (id == -1) return null;
 	MENUITEMINFO info = new MENUITEMINFO ();
@@ -281,7 +283,8 @@ public MenuItem getItem (int index) {
  */
 public int getItemCount () {
 	checkWidget ();
-	return OS.GetMenuItemCount (handle);
+//	return OS.GetMenuItemCount (handle);
+	return GetMenuItemCount (handle);
 }
 
 /**
@@ -302,18 +305,36 @@ public int getItemCount () {
  */
 public MenuItem [] getItems () {
 	checkWidget ();
-	int count = OS.GetMenuItemCount (handle);
-	MenuItem [] items = new MenuItem [count];
-	if (items.length == 0) return items;
+	int index = 0;
+	int length = OS.IsWinCE ? 4 : OS.GetMenuItemCount (handle);
+	MenuItem [] items = new MenuItem [length];
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_ID;
-	for (int i=0; i<count; i++) {
-		if (OS.GetMenuItemInfo (handle, i, true, info)) {
-			items [i] = parent.findMenuItem (info.wID);
+	while (OS.GetMenuItemInfo (handle, index, true, info)) {
+		if (index == items.length) {
+			MenuItem [] newItems = new MenuItem [index + 4];
+			System.arraycopy (newItems, 0, items, 0, index);
+			items = newItems;
 		}
+		items [index++] = parent.findMenuItem (info.wID);
 	}
-	return items;
+	if (index == items.length) return items;
+	MenuItem [] result = new MenuItem [index];
+	System.arraycopy (result, 0, items, 0, index);
+	return result;
+}
+
+int GetMenuItemCount (int handle) {
+	checkWidget ();
+	if (OS.IsWinCE) {
+		int count = 0;
+		MENUITEMINFO info = new MENUITEMINFO ();
+		info.cbSize = MENUITEMINFO.sizeof;
+		while (OS.GetMenuItemInfo (handle, count, true, info)) count++;
+		return count;
+	}
+	return OS.GetMenuItemCount (handle);
 }
 
 String getNameText () {
@@ -441,14 +462,13 @@ public boolean getVisible () {
 public int indexOf (MenuItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int count = OS.GetMenuItemCount (handle);
+	int index = 0;
 	MENUITEMINFO info = new MENUITEMINFO ();
 	info.cbSize = MENUITEMINFO.sizeof;
 	info.fMask = OS.MIIM_ID;
-	for (int i=0; i<count; i++) {
-		if (OS.GetMenuItemInfo (handle, i, true, info)) {
-			if (info.wID == item.id) return i;
-		}
+	while (OS.GetMenuItemInfo (handle, index, true, info)) {
+		if (info.wID == item.id) return index;
+		index++;
 	}
 	return -1;
 }
@@ -500,7 +520,7 @@ void redraw () {
 		OS.DrawMenuBar (parent.handle);
 		return;
 	}
-	if ((WIN32_MAJOR << 16 | WIN32_MINOR) < (4 << 16 | 10)) {
+	if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) < (4 << 16 | 10)) {
 		return;
 	}
 	boolean hasCheck = false, hasImage = false;
@@ -517,12 +537,14 @@ void redraw () {
 	MENUINFO lpcmi = new MENUINFO ();
 	lpcmi.cbSize = MENUINFO.sizeof;
 	lpcmi.fMask = OS.MIM_STYLE;
+	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	OS.GetMenuInfo (handle, lpcmi);
 	if (hasImage && !hasCheck) {
 		lpcmi.dwStyle |= OS.MNS_CHECKORBMP;
 	} else {
 		lpcmi.dwStyle &= ~OS.MNS_CHECKORBMP;
 	}
+	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	OS.SetMenuInfo (handle, lpcmi);
 }
 
@@ -620,6 +642,7 @@ public void setDefaultItem (MenuItem item) {
 		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
 		command = item.id;
 	}
+	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	OS.SetMenuDefaultItem (handle, command, OS.MF_BYCOMMAND);
 	redraw ();
 }
@@ -710,7 +733,7 @@ public void setVisible (boolean visible) {
 	* the menu is zero and issue a fake WM_MENUSELECT.
 	*/
 	boolean success = OS.TrackPopupMenu (handle, flags, nX, nY, 0, hwndParent, null);
-	if (!success && OS.GetMenuItemCount (handle) == 0) {
+	if (!success && GetMenuItemCount (handle) == 0) {
 		OS.SendMessage (hwndParent, OS.WM_MENUSELECT, 0xFFFF0000, 0);
 	}
 }

@@ -208,6 +208,7 @@ public Image(Device device, Image srcImage, int flag) {
 					}
 					break;
 				case SWT.ICON:
+					if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 					handle = OS.CopyImage(srcImage.handle, OS.IMAGE_ICON, r.width, r.height, 0);
 					if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);			
 					break;
@@ -308,6 +309,7 @@ public Image(Device device, Image srcImage, int flag) {
 				case SWT.ICON:
 					/* Get icon information */
 					ICONINFO iconInfo = new ICONINFO();
+					if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 					if (!OS.GetIconInfo(srcImage.handle, iconInfo))
 						SWT.error(SWT.ERROR_INVALID_IMAGE);
 					int hdcMask = OS.CreateCompatibleDC(hDC);
@@ -783,6 +785,7 @@ public Color getBackground() {
 	int red = 0, green = 0, blue = 0;
 	if (bm.bmBitsPixel <= 8)  {
 		byte[] color = new byte[4];
+		if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 		int numColors = OS.GetDIBColorTable(hdcMem, transparentPixel, 1, color);
 		blue = color[0] & 0xFF;
 		green = color[1] & 0xFF;
@@ -837,6 +840,7 @@ public Rectangle getBounds() {
 			return new Rectangle(0, 0, bm.bmWidth, bm.bmHeight);
 		case SWT.ICON:
 			ICONINFO info = new ICONINFO();
+			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetIconInfo(handle, info);
 			int hBitmap = info.hbmColor;
 			if (hBitmap == 0) hBitmap = info.hbmMask;
@@ -872,7 +876,8 @@ public ImageData getImageData() {
 	int depth, width, height;
 	switch (type) {
 		case SWT.ICON: {
-			ICONINFO info = new ICONINFO();
+			ICONINFO info = new ICONINFO();		
+			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetIconInfo(handle, info);
 			/* Get the basic BITMAP information */
 			int hBitmap = info.hbmColor;
@@ -936,12 +941,14 @@ public ImageData getImageData() {
 			/* Find the size of the image and allocate data */
 			int imageSize;
 			/* Call with null lpBits to get the image size */
+			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, 0, bmi, OS.DIB_RGB_COLORS);
 			imageSize = (bmi[20] & 0xFF) | ((bmi[21] & 0xFF) << 8) | ((bmi[22] & 0xFF) << 16) | ((bmi[23] & 0xFF) << 24);
 			byte[] data = new byte[imageSize];
 			/* Get the bitmap data */
 			int hHeap = OS.GetProcessHeap();
-			int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
+			int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);	
+			if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 			OS.GetDIBits(hBitmapDC, hBitmap, 0, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
 			OS.MoveMemory(data, lpvBits, imageSize);
 			/* Calculate the palette */
@@ -969,6 +976,7 @@ public ImageData getImageData() {
 			if (info.hbmColor == 0) {
 				/* Do the bottom half of the mask */
 				maskData = new byte[imageSize];
+				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, hBitmap, height, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
 				OS.MoveMemory(maskData, lpvBits, imageSize);
 			} else {
@@ -1012,10 +1020,12 @@ public ImageData getImageData() {
 				bmi[47] = 0;
 				OS.SelectObject(hBitmapDC, info.hbmMask);
 				/* Call with null lpBits to get the image size */
+				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, 0, bmi, OS.DIB_RGB_COLORS);
 				imageSize = (bmi[20] & 0xFF) | ((bmi[21] & 0xFF) << 8) | ((bmi[22] & 0xFF) << 16) | ((bmi[23] & 0xFF) << 24);
 				maskData = new byte[imageSize];
 				int lpvMaskBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
+				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, info.hbmMask, 0, height, lpvMaskBits, bmi, OS.DIB_RGB_COLORS);
 				OS.MoveMemory(maskData, lpvMaskBits, imageSize);	
 				OS.HeapFree(hHeap, 0, lpvMaskBits);
@@ -1139,6 +1149,7 @@ public ImageData getImageData() {
 				imageSize = dib.biSizeImage;
 			} else {
 				/* Call with null lpBits to get the image size */
+				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, handle, 0, height, 0, bmi, OS.DIB_RGB_COLORS);
 				imageSize = (bmi[20] & 0xFF) | ((bmi[21] & 0xFF) << 8) | ((bmi[22] & 0xFF) << 16) | ((bmi[23] & 0xFF) << 24);
 			}
@@ -1148,7 +1159,8 @@ public ImageData getImageData() {
 				OS.MoveMemory(data, bm.bmBits, imageSize);
 			} else {
 				int hHeap = OS.GetProcessHeap();
-				int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);
+				int lpvBits = OS.HeapAlloc(hHeap, OS.HEAP_ZERO_MEMORY, imageSize);		
+				if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetDIBits(hBitmapDC, handle, 0, height, lpvBits, bmi, OS.DIB_RGB_COLORS);
 				OS.MoveMemory(data, lpvBits, imageSize);
 				OS.HeapFree(hHeap, 0, lpvBits);
@@ -1158,6 +1170,7 @@ public ImageData getImageData() {
 			if (isDib) {
 				if (depth <= 8) {
 					byte[] colors = new byte[numColors * 4];
+					if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 					OS.GetDIBColorTable(hBitmapDC, 0, numColors, colors);
 					RGB[] rgbs = new RGB[numColors];
 					int colorIndex = 0;
@@ -1596,11 +1609,13 @@ public void setBackground(Color color) {
 	OS.SelectObject(hdcMem, handle);
 	int maxColors = 1 << bm.bmBitsPixel;
 	byte[] colors = new byte[maxColors * 4];
+	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	int numColors = OS.GetDIBColorTable(hdcMem, 0, maxColors, colors);
 	int offset = transparentPixel * 4;
 	colors[offset] = (byte)color.getBlue();
 	colors[offset + 1] = (byte)color.getGreen();
 	colors[offset + 2] = (byte)color.getRed();
+	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	OS.SetDIBColorTable(hdcMem, 0, numColors, colors);
 	OS.DeleteDC(hdcMem);
 	

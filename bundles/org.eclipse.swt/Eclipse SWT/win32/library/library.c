@@ -15,9 +15,13 @@
 
 unsigned int OpenLibrary(char *name)
 {
+#ifndef _WIN32_WCE
 	UINT prevMode = SetErrorMode(SEM_NOOPENFILEERRORBOX | SEM_FAILCRITICALERRORS);
+#endif
 	HINSTANCE handle = LoadLibrary ((LPCSTR)name);
+#ifndef _WIN32_WCE
 	SetErrorMode(prevMode);
+#endif
 	return (unsigned int)handle;
 }
 

@@ -164,9 +164,11 @@ public static native String getPlatform ();
  */
 static String getOS () {
 	String name = System.getProperty("os.name");
-	if (name.regionMatches(true, 0, "win", 0, 3)) return "win32";
-	if (name.regionMatches(true, 0, "sun", 0, 3)) return "solaris";
-	return name.toLowerCase();
+	if (name == null) return "unknown";
+	name = name.toLowerCase ();
+	if (name.indexOf ("win") == 0) return "win32";
+	if (name.indexOf ("sun") == 0) return "solaris";
+	return name;
 }
 
 /**
@@ -216,7 +218,7 @@ public static final native synchronized boolean getEnabled ();
  * @param ignore true if callbacks should not be invoked
  */
 static final void ignoreCallbacks (boolean ignore) {
-	setEnabled(!ignore);
+	setEnabled (!ignore);
 } 
 
 /*
@@ -239,8 +241,9 @@ public static void loadLibrary () {
  * @param name the name of the library to load
  */
 public static void loadLibrary (String name) {
-	/* Include os name to support same window system on 
-	 * different operating systems 
+	/*
+     * Include OS name to support same window system
+     * on different operating systems.
 	 */
 	String newName = name + "-" + getOS () + "-" + MAJOR_VERSION;
 

@@ -205,6 +205,7 @@ public String open () {
 	*/
 	byte [] buffer2 = new byte [name.length + 1];
 	System.arraycopy (name, 0, buffer2, 0, name.length);
+	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	if (OS.GetFileTitle (buffer2, null, (short) 0) < 0) {
 		name = new byte [0];
 	}

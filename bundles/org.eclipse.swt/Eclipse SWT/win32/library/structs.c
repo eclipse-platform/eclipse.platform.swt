@@ -23,6 +23,774 @@
  *
  *
  */
+ 
+/* ============================ BEGIN WIN32 ONLY ============================= */
+#ifndef _WIN32_WCE
+
+void getPrintdlgFields(JNIEnv *env, jobject lpObject, PRINTDLG *lpPrintdlg, PRINTDLG_FID_CACHE *lpPrintdlgFc)
+{
+    lpPrintdlg->lStructSize = (*env)->GetIntField(env,lpObject,lpPrintdlgFc->lStructSize);
+    lpPrintdlg->hwndOwner = (HWND)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hwndOwner);
+    lpPrintdlg->hDevMode = (HANDLE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hDevMode);
+    lpPrintdlg->hDevNames = (HANDLE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hDevNames);
+    lpPrintdlg->hDC = (HDC)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hDC);
+    lpPrintdlg->Flags = (*env)->GetIntField(env,lpObject,lpPrintdlgFc->Flags);
+    lpPrintdlg->nFromPage = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nFromPage);
+    lpPrintdlg->nToPage = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nToPage);
+    lpPrintdlg->nMinPage = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nMinPage);
+    lpPrintdlg->nMaxPage = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nMaxPage);
+    lpPrintdlg->nCopies = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nCopies);
+    lpPrintdlg->hInstance = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hInstance);
+    lpPrintdlg->lCustData = (*env)->GetIntField(env,lpObject,lpPrintdlgFc->lCustData);
+    lpPrintdlg->lpfnPrintHook = (LPPRINTHOOKPROC)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->lpfnPrintHook);
+    lpPrintdlg->lpfnSetupHook = (LPSETUPHOOKPROC)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->lpfnSetupHook);
+    lpPrintdlg->lpPrintTemplateName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->lpPrintTemplateName);
+    lpPrintdlg->lpSetupTemplateName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->lpSetupTemplateName);
+    lpPrintdlg->hPrintTemplate = (HANDLE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hPrintTemplate);
+    lpPrintdlg->hSetupTemplate = (HANDLE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hSetupTemplate);
+}
+
+void setPrintdlgFields(JNIEnv *env, jobject lpObject, PRINTDLG *lpPrintdlg, PRINTDLG_FID_CACHE *lpPrintdlgFc)
+{
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lStructSize, lpPrintdlg->lStructSize);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hwndOwner, (jint)lpPrintdlg->hwndOwner);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hDevMode, (jint)lpPrintdlg->hDevMode);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hDevNames, (jint)lpPrintdlg->hDevNames);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hDC, (jint)lpPrintdlg->hDC);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->Flags, lpPrintdlg->Flags);
+    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nFromPage, lpPrintdlg->nFromPage);
+    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nToPage, lpPrintdlg->nToPage);
+    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nMinPage, lpPrintdlg->nMinPage);
+    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nMaxPage, lpPrintdlg->nMaxPage);
+    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nCopies, lpPrintdlg->nCopies);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hInstance, (jint)lpPrintdlg->hInstance);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lCustData, lpPrintdlg->lCustData);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lpfnPrintHook, (jint)lpPrintdlg->lpfnPrintHook);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lpfnSetupHook, (jint)lpPrintdlg->lpfnSetupHook);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lpPrintTemplateName, (jint)lpPrintdlg->lpPrintTemplateName);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lpSetupTemplateName, (jint)lpPrintdlg->lpSetupTemplateName);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hPrintTemplate, (jint)lpPrintdlg->hPrintTemplate);
+    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hSetupTemplate, (jint)lpPrintdlg->hSetupTemplate);
+}
+
+void setNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
+{
+    jint *lpInt;
+
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom, (jint)lpNmttdispinfo->hdr.hwndFrom);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->idFrom, lpNmttdispinfo->hdr.idFrom);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->code, lpNmttdispinfo->hdr.code);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lpszText, (jint)lpNmttdispinfo->lpszText);
+    lpInt = (jint *)lpNmttdispinfo->szText;
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad0, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad1, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad2, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad3, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad4, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad5, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad6, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad7, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad8, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad9, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad10, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad11, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad12, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad13, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad14, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad15, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad16, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad17, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad18, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad19, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hinst, (jint)lpNmttdispinfo->hinst);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->uFlags, lpNmttdispinfo->uFlags);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lParam, lpNmttdispinfo->lParam);
+}
+
+void setNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
+{
+    jint *lpInt;
+
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom, (jint)lpNmttdispinfo->hdr.hwndFrom);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->idFrom, lpNmttdispinfo->hdr.idFrom);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->code, lpNmttdispinfo->hdr.code);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lpszText, (jint)lpNmttdispinfo->lpszText);
+    lpInt = (jint *)lpNmttdispinfo->szText;
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad0, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad1, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad2, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad3, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad4, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad5, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad6, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad7, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad8, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad9, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad10, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad11, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad12, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad13, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad14, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad15, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad16, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad17, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad18, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad19, *lpInt++);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hinst, (jint)lpNmttdispinfo->hinst);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->uFlags, lpNmttdispinfo->uFlags);
+    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lParam, lpNmttdispinfo->lParam);
+}
+
+void cacheTrackmouseeventFids(JNIEnv *env, jobject lpTrackmouseevent, PTRACKMOUSEEVENT_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->trackmouseeventClass = (*env)->GetObjectClass(env,lpTrackmouseevent);
+    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->trackmouseeventClass,"cbSize","I");
+    lpCache->dwFlags = (*env)->GetFieldID(env,lpCache->trackmouseeventClass,"dwFlags","I");
+    lpCache->hwndTrack = (*env)->GetFieldID(env,lpCache->trackmouseeventClass,"hwndTrack","I");
+    lpCache->dwHoverTime = (*env)->GetFieldID(env,lpCache->trackmouseeventClass,"dwHoverTime","I");
+    lpCache->cached = 1;
+}
+
+void getTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc)
+{
+    lpTrackmouseevent->cbSize = (*env)->GetIntField(env,lpObject,lpTrackmouseeventFc->cbSize);
+    lpTrackmouseevent->dwFlags = (*env)->GetIntField(env,lpObject,lpTrackmouseeventFc->dwFlags);
+    lpTrackmouseevent->hwndTrack = (HWND)(*env)->GetIntField(env,lpObject,lpTrackmouseeventFc->hwndTrack);
+    lpTrackmouseevent->dwHoverTime = (*env)->GetIntField(env,lpObject,lpTrackmouseeventFc->dwHoverTime);
+}
+
+void setTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc)
+{
+    (*env)->SetIntField(env,lpObject,lpTrackmouseeventFc->cbSize, lpTrackmouseevent->cbSize);
+    (*env)->SetIntField(env,lpObject,lpTrackmouseeventFc->dwFlags, lpTrackmouseevent->dwFlags);
+    (*env)->SetIntField(env,lpObject,lpTrackmouseeventFc->hwndTrack, (jint)lpTrackmouseevent->hwndTrack);
+    (*env)->SetIntField(env,lpObject,lpTrackmouseeventFc->dwHoverTime, lpTrackmouseevent->dwHoverTime);
+}
+
+void cacheDocinfoFids(JNIEnv *env, jobject lpDocinfo, PDOCINFO_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->docinfoClass = (*env)->GetObjectClass(env,lpDocinfo);
+    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->docinfoClass,"cbSize","I");
+    lpCache->lpszDocName = (*env)->GetFieldID(env,lpCache->docinfoClass,"lpszDocName","I");
+    lpCache->lpszOutput = (*env)->GetFieldID(env,lpCache->docinfoClass,"lpszOutput","I");
+    lpCache->lpszDatatype = (*env)->GetFieldID(env,lpCache->docinfoClass,"lpszDatatype","I");
+    lpCache->fwType = (*env)->GetFieldID(env,lpCache->docinfoClass,"fwType","I");
+    lpCache->cached = 1;
+}
+
+void getDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, DOCINFO_FID_CACHE *lpDocinfoFc)
+{
+    lpDocinfo->cbSize = (*env)->GetIntField(env,lpObject,lpDocinfoFc->cbSize);
+    lpDocinfo->lpszDocName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpDocinfoFc->lpszDocName);
+    lpDocinfo->lpszOutput = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpDocinfoFc->lpszOutput);
+    lpDocinfo->lpszDatatype = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpDocinfoFc->lpszDatatype);
+    lpDocinfo->fwType = (*env)->GetIntField(env,lpObject,lpDocinfoFc->fwType);
+}
+
+void setDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, DOCINFO_FID_CACHE *lpDocinfoFc)
+{
+    (*env)->SetIntField(env,lpObject,lpDocinfoFc->cbSize, (jint)lpDocinfo->cbSize);
+    (*env)->SetIntField(env,lpObject,lpDocinfoFc->lpszDocName, (jint)lpDocinfo->lpszDocName);
+    (*env)->SetIntField(env,lpObject,lpDocinfoFc->lpszOutput, (jint)lpDocinfo->lpszOutput);
+    (*env)->SetIntField(env,lpObject,lpDocinfoFc->lpszDatatype, (jint)lpDocinfo->lpszDatatype);
+    (*env)->SetIntField(env,lpObject,lpDocinfoFc->fwType, lpDocinfo->fwType);
+}
+
+void cacheGradientrectFids(JNIEnv *env, jobject lpGradientrect, PGRADIENT_RECT_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->gradientrectClass = (*env)->GetObjectClass(env,lpGradientrect);
+    lpCache->UpperLeft = (*env)->GetFieldID(env,lpCache->gradientrectClass,"UpperLeft","I");
+    lpCache->LowerRight = (*env)->GetFieldID(env,lpCache->gradientrectClass,"LowerRight","I");
+    lpCache->cached = 1;
+}
+
+void getGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc)
+{
+	lpGradientrect->UpperLeft = (*env)->GetIntField(env,lpObject,lpGradientrectFc->UpperLeft);
+	lpGradientrect->LowerRight = (*env)->GetIntField(env,lpObject,lpGradientrectFc->LowerRight);
+}
+
+void setGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc)
+{
+    (*env)->SetIntField(env,lpObject,lpGradientrectFc->UpperLeft, (jint)lpGradientrect->UpperLeft);
+    (*env)->SetIntField(env,lpObject,lpGradientrectFc->LowerRight, (jint)lpGradientrect->LowerRight);
+}
+
+void cacheHelpinfoFids(JNIEnv *env, jobject lpHelpinfo, PHELPINFO_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->helpinfoClass = (*env)->GetObjectClass(env,lpHelpinfo);
+    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->helpinfoClass,"cbSize","I");
+    lpCache->iContextType = (*env)->GetFieldID(env,lpCache->helpinfoClass,"iContextType","I");
+    lpCache->iCtrlId = (*env)->GetFieldID(env,lpCache->helpinfoClass,"iCtrlId","I");
+    lpCache->hItemHandle = (*env)->GetFieldID(env,lpCache->helpinfoClass,"hItemHandle","I");
+    lpCache->dwContextId = (*env)->GetFieldID(env,lpCache->helpinfoClass,"dwContextId","I");
+    lpCache->x = (*env)->GetFieldID(env,lpCache->helpinfoClass,"x","I");
+    lpCache->y = (*env)->GetFieldID(env,lpCache->helpinfoClass,"y","I");
+    lpCache->cached = 1;
+}
+
+void getHelpinfoFields(JNIEnv *env, jobject lpObject, HELPINFO *lpHelpinfo, HELPINFO_FID_CACHE *lpHelpinfoFc)
+{
+    lpHelpinfo->cbSize = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->cbSize);
+    lpHelpinfo->iContextType = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->iContextType);
+    lpHelpinfo->iCtrlId = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->iCtrlId);
+    lpHelpinfo->hItemHandle = (HANDLE)(*env)->GetIntField(env,lpObject,lpHelpinfoFc->hItemHandle);
+    lpHelpinfo->dwContextId = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->dwContextId);
+    lpHelpinfo->MousePos.x = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->x);
+    lpHelpinfo->MousePos.y = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->y);
+}
+
+void setHelpinfoFields(JNIEnv *env, jobject lpObject, HELPINFO *lpHelpinfo, HELPINFO_FID_CACHE *lpHelpinfoFc)
+{
+    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->cbSize, lpHelpinfo->cbSize);
+    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->iContextType, lpHelpinfo->iContextType);
+    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->iCtrlId, lpHelpinfo->iCtrlId);
+    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->hItemHandle, (jint)lpHelpinfo->hItemHandle);
+    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->dwContextId, lpHelpinfo->dwContextId);
+    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->x, lpHelpinfo->MousePos.x);
+    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->y, lpHelpinfo->MousePos.y);
+}
+
+#ifdef USE_2000_CALLS
+void cacheMenuinfoFids(JNIEnv *env, jobject lpMenuinfo, PMENUINFO_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->menuinfoClass = (*env)->GetObjectClass(env,lpMenuinfo);
+    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->menuinfoClass,"cbSize","I");
+    lpCache->fMask = (*env)->GetFieldID(env,lpCache->menuinfoClass,"fMask","I");
+    lpCache->dwStyle = (*env)->GetFieldID(env,lpCache->menuinfoClass,"dwStyle","I");
+    lpCache->cyMax = (*env)->GetFieldID(env,lpCache->menuinfoClass,"cyMax","I");
+    lpCache->hbrBack = (*env)->GetFieldID(env,lpCache->menuinfoClass,"hbrBack","I");
+    lpCache->dwContextHelpID = (*env)->GetFieldID(env,lpCache->menuinfoClass,"dwContextHelpID","I");
+    lpCache->dwMenuData = (*env)->GetFieldID(env,lpCache->menuinfoClass,"dwMenuData","I");
+    lpCache->cached = 1;
+}
+
+void getMenuinfoFields(JNIEnv *env, jobject lpObject, MENUINFO *lpMenuinfo, MENUINFO_FID_CACHE *lpMenuinfoFc)
+{
+    lpMenuinfo->cbSize = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->cbSize);
+    lpMenuinfo->fMask = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->fMask);
+    lpMenuinfo->dwStyle = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->dwStyle);
+    lpMenuinfo->cyMax = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->cyMax);
+    lpMenuinfo->hbrBack = (HBRUSH)(*env)->GetIntField(env,lpObject,lpMenuinfoFc->hbrBack);
+    lpMenuinfo->dwContextHelpID = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->dwContextHelpID);
+    lpMenuinfo->dwMenuData = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->dwMenuData);
+}
+
+void setMenuinfoFields(JNIEnv *env, jobject lpObject, MENUINFO *lpMenuinfo, MENUINFO_FID_CACHE *lpMenuinfoFc)
+{
+    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->cbSize, lpMenuinfo->cbSize);
+    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->fMask, lpMenuinfo->fMask);
+    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->dwStyle, lpMenuinfo->dwStyle);
+    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->cyMax, lpMenuinfo->cyMax);
+    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->hbrBack, (jint)lpMenuinfo->hbrBack);
+    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->dwContextHelpID, lpMenuinfo->dwContextHelpID);
+    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->dwMenuData, lpMenuinfo->dwMenuData);
+}
+#endif
+
+void cacheNmttdispinfoFids(JNIEnv *env, jobject lpNmttdispinfo, PNMTTDISPINFO_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->nmttdispinfoClass = (*env)->GetObjectClass(env,lpNmttdispinfo);
+    lpCache->hwndFrom = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"hwndFrom","I");
+    lpCache->idFrom = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"idFrom","I");
+    lpCache->lpszText = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"lpszText","I");
+    lpCache->code = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"code","I");
+    lpCache->pad0 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad0","I");
+    lpCache->pad1 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad1","I");
+    lpCache->pad2 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad2","I");
+    lpCache->pad3 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad3","I");
+    lpCache->pad4 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad4","I");
+    lpCache->pad5 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad5","I");
+    lpCache->pad6 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad6","I");
+    lpCache->pad7 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad7","I");
+    lpCache->pad8 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad8","I");
+    lpCache->pad9 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad9","I");
+    lpCache->pad10 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad10","I");
+    lpCache->pad11 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad11","I");
+    lpCache->pad12 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad12","I");
+    lpCache->pad13 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad13","I");
+    lpCache->pad14 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad14","I");
+    lpCache->pad15 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad15","I");
+    lpCache->pad16 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad16","I");
+    lpCache->pad17 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad17","I");
+    lpCache->pad18 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad18","I");
+    lpCache->pad19 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad19","I");
+    lpCache->hinst = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"hinst","I");
+    lpCache->uFlags = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"uFlags","I");
+#ifndef _WIN32_WCE
+    lpCache->lParam = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"lParam","I");
+#endif
+    lpCache->cached = 1;
+}
+
+void getNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
+{
+    jint *lpInt;
+
+    lpNmttdispinfo->hdr.hwndFrom = (HWND)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom);
+    lpNmttdispinfo->hdr.idFrom = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->idFrom);
+    lpNmttdispinfo->hdr.code = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->code);
+    lpNmttdispinfo->lpszText = (LPTSTR)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lpszText);
+    lpInt = (jint *)lpNmttdispinfo->szText;
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad0);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad1);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad2);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad3);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad4);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad5);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad6);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad7);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad8);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad9);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad10);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad11);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad12);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad13);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad14);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad15);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad16);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad17);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad18);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad19);
+    lpNmttdispinfo->hinst = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hinst);
+    lpNmttdispinfo->uFlags = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->uFlags);
+#ifndef _WIN32_WCE
+    lpNmttdispinfo->lParam = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lParam);
+#endif
+}
+void getNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
+{
+    jint *lpInt;
+
+    lpNmttdispinfo->hdr.hwndFrom = (HWND)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom);
+    lpNmttdispinfo->hdr.idFrom = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->idFrom);
+    lpNmttdispinfo->hdr.code = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->code);
+    lpNmttdispinfo->lpszText = (LPTSTR)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lpszText);
+    lpInt = (jint *)lpNmttdispinfo->szText;
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad0);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad1);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad2);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad3);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad4);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad5);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad6);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad7);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad8);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad9);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad10);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad11);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad12);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad13);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad14);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad15);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad16);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad17);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad18);
+    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad19);
+    lpNmttdispinfo->hinst = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hinst);
+    lpNmttdispinfo->uFlags = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->uFlags);
+#ifndef _WIN32_WCE
+    lpNmttdispinfo->lParam = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lParam);
+#endif
+}
+
+void cachePagesetupdlgFids(JNIEnv *env, jobject lpPagesetupdlg, PPAGESETUPDLG_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->pagesetupdlgClass = (*env)->GetObjectClass(env,lpPagesetupdlg);
+    lpCache->lStructSize = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lStructSize","I");
+    lpCache->hwndOwner = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hwndOwner","I");
+    lpCache->hDevMode = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hDevMode","I");
+    lpCache->hDevNames = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hDevNames","I");
+    lpCache->Flags = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"Flags","I");
+    lpCache->ptPaperSize_x = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"ptPaperSize_x","I");
+    lpCache->ptPaperSize_y = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"ptPaperSize_y","I");
+    lpCache->rtMinMargin_left = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMinMargin_left","I");
+    lpCache->rtMinMargin_top = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMinMargin_top","I");
+    lpCache->rtMinMargin_right = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMinMargin_right","I");
+    lpCache->rtMinMargin_bottom = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMinMargin_bottom","I");
+    lpCache->rtMargin_left = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMargin_left","I");
+    lpCache->rtMargin_top = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMargin_top","I");
+    lpCache->rtMargin_right = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMargin_right","I");
+    lpCache->rtMargin_bottom = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMargin_bottom","I");
+    lpCache->hInstance = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hInstance","I");
+    lpCache->lCustData = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lCustData","I");
+    lpCache->lpfnPageSetupHook = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lpfnPageSetupHook","I");
+    lpCache->lpfnPagePaintHook = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lpfnPagePaintHook","I");
+    lpCache->lpPageSetupTemplateName = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lpPageSetupTemplateName","I");
+    lpCache->hPageSetupTemplate = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hPageSetupTemplate","I");
+    lpCache->cached = 1;
+}
+
+void getPagesetupdlgFields(JNIEnv *env, jobject lpObject, PAGESETUPDLG *lpPagesetupdlg, PAGESETUPDLG_FID_CACHE *lpPagesetupdlgFc)
+{
+    lpPagesetupdlg->lStructSize = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lStructSize);
+    lpPagesetupdlg->hwndOwner = (HWND)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hwndOwner);
+    lpPagesetupdlg->hDevMode = (HGLOBAL)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hDevMode);
+    lpPagesetupdlg->hDevNames = (HGLOBAL)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hDevNames);
+    lpPagesetupdlg->Flags = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->Flags);
+    lpPagesetupdlg->ptPaperSize.x = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->ptPaperSize_x);
+    lpPagesetupdlg->ptPaperSize.y = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->ptPaperSize_y);
+    lpPagesetupdlg->rtMinMargin.left = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_left);
+    lpPagesetupdlg->rtMinMargin.top = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_top);
+    lpPagesetupdlg->rtMinMargin.right = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_right);
+    lpPagesetupdlg->rtMinMargin.bottom = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_bottom);
+    lpPagesetupdlg->rtMargin.left = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_left);
+    lpPagesetupdlg->rtMargin.top = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_top);
+    lpPagesetupdlg->rtMargin.right = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_right);
+    lpPagesetupdlg->rtMargin.bottom = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_bottom);
+    lpPagesetupdlg->hInstance = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hInstance);
+    lpPagesetupdlg->lCustData = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lCustData);
+    lpPagesetupdlg->lpfnPageSetupHook = (LPPAGESETUPHOOK)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lpfnPageSetupHook);
+    lpPagesetupdlg->lpfnPagePaintHook = (LPPAGEPAINTHOOK)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lpfnPagePaintHook);
+    lpPagesetupdlg->lpPageSetupTemplateName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lpPageSetupTemplateName);
+    lpPagesetupdlg->hPageSetupTemplate = (HGLOBAL)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hPageSetupTemplate);
+}
+
+void setPagesetupdlgFields(JNIEnv *env, jobject lpObject, PAGESETUPDLG *lpPagesetupdlg, PAGESETUPDLG_FID_CACHE *lpPagesetupdlgFc)
+{
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lStructSize, lpPagesetupdlg->lStructSize);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hwndOwner, (jint)lpPagesetupdlg->hwndOwner);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hDevMode, (jint)lpPagesetupdlg->hDevMode);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hDevNames, (jint)lpPagesetupdlg->hDevNames);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->Flags, lpPagesetupdlg->Flags);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->ptPaperSize_x, lpPagesetupdlg->ptPaperSize.x);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->ptPaperSize_y, lpPagesetupdlg->ptPaperSize.y);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_left, lpPagesetupdlg->rtMinMargin.left);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_top, lpPagesetupdlg->rtMinMargin.top);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_right, lpPagesetupdlg->rtMinMargin.right);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_bottom, lpPagesetupdlg->rtMinMargin.bottom);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_left, lpPagesetupdlg->rtMargin.left);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_top, lpPagesetupdlg->rtMargin.top);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_right, lpPagesetupdlg->rtMargin.right);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_bottom, lpPagesetupdlg->rtMargin.bottom);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hInstance, (jint)lpPagesetupdlg->hInstance);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lCustData, lpPagesetupdlg->lCustData);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lpfnPageSetupHook, (jint)lpPagesetupdlg->lpfnPageSetupHook);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lpfnPagePaintHook, (jint)lpPagesetupdlg->lpfnPagePaintHook);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lpPageSetupTemplateName, (jint)lpPagesetupdlg->lpPageSetupTemplateName);
+    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hPageSetupTemplate, (jint)lpPagesetupdlg->hPageSetupTemplate);
+}
+
+void cacheToolinfoFids(JNIEnv *env, jobject lpToolinfo, PTOOLINFO_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->toolinfoClass = (*env)->GetObjectClass(env,lpToolinfo);
+    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->toolinfoClass,"cbSize","I");
+    lpCache->uFlags = (*env)->GetFieldID(env,lpCache->toolinfoClass,"uFlags","I");
+    lpCache->hwnd = (*env)->GetFieldID(env,lpCache->toolinfoClass,"hwnd","I");
+    lpCache->uId = (*env)->GetFieldID(env,lpCache->toolinfoClass,"uId","I");
+    lpCache->left = (*env)->GetFieldID(env,lpCache->toolinfoClass,"left","I");
+    lpCache->top = (*env)->GetFieldID(env,lpCache->toolinfoClass,"top","I");
+    lpCache->right = (*env)->GetFieldID(env,lpCache->toolinfoClass,"right","I");
+    lpCache->bottom = (*env)->GetFieldID(env,lpCache->toolinfoClass,"bottom","I");
+    lpCache->hinst = (*env)->GetFieldID(env,lpCache->toolinfoClass,"hinst","I");
+    lpCache->lpszText = (*env)->GetFieldID(env,lpCache->toolinfoClass,"lpszText","I");
+    lpCache->lParam = (*env)->GetFieldID(env,lpCache->toolinfoClass,"lParam","I");
+    lpCache->cached = 1;
+}
+
+void getToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc)
+{
+    lpToolinfo->cbSize = (*env)->GetIntField(env,lpObject,lpToolinfoFc->cbSize);
+    lpToolinfo->uFlags = (*env)->GetIntField(env,lpObject,lpToolinfoFc->uFlags);
+    lpToolinfo->hwnd = (HWND)(*env)->GetIntField(env,lpObject,lpToolinfoFc->hwnd);
+    lpToolinfo->uId = (*env)->GetIntField(env,lpObject,lpToolinfoFc->uId);
+    lpToolinfo->rect.left = (*env)->GetIntField(env,lpObject,lpToolinfoFc->left);
+    lpToolinfo->rect.top = (*env)->GetIntField(env,lpObject,lpToolinfoFc->top);
+    lpToolinfo->rect.right = (*env)->GetIntField(env,lpObject,lpToolinfoFc->right);
+    lpToolinfo->rect.bottom = (*env)->GetIntField(env,lpObject,lpToolinfoFc->bottom);
+    lpToolinfo->hinst = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpToolinfoFc->hinst);
+    lpToolinfo->lpszText = (LPTSTR)(*env)->GetIntField(env,lpObject,lpToolinfoFc->lpszText);
+    lpToolinfo->lParam = (*env)->GetIntField(env,lpObject,lpToolinfoFc->lParam);
+}
+
+void setToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc)
+{
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->cbSize, lpToolinfo->cbSize);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->uFlags, lpToolinfo->uFlags);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->hwnd, (jint)lpToolinfo->hwnd);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->uId, lpToolinfo->uId);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->left, lpToolinfo->rect.left);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->top, lpToolinfo->rect.top);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->right, lpToolinfo->rect.right);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->bottom, lpToolinfo->rect.bottom);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->hinst, (jint)lpToolinfo->hinst);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->lpszText, (jint)lpToolinfo->lpszText);
+    (*env)->SetIntField(env,lpObject,lpToolinfoFc->lParam, lpToolinfo->lParam);
+}
+
+void cacheTrivertexFids(JNIEnv *env, jobject lpTrivertex, PTRIVERTEX_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->trivertexClass = (*env)->GetObjectClass(env,lpTrivertex);
+    lpCache->x = (*env)->GetFieldID(env,lpCache->trivertexClass,"x","I");
+    lpCache->y = (*env)->GetFieldID(env,lpCache->trivertexClass,"y","I");
+    lpCache->Red = (*env)->GetFieldID(env,lpCache->trivertexClass,"Red","S");
+    lpCache->Green = (*env)->GetFieldID(env,lpCache->trivertexClass,"Green","S");
+    lpCache->Blue = (*env)->GetFieldID(env,lpCache->trivertexClass,"Blue","S");
+    lpCache->Alpha = (*env)->GetFieldID(env,lpCache->trivertexClass,"Alpha","S");
+    lpCache->cached = 1;
+}
+
+void getTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc)
+{
+	lpTrivertex->x = (*env)->GetIntField(env,lpObject,lpTrivertexFc->x);
+	lpTrivertex->y = (*env)->GetIntField(env,lpObject,lpTrivertexFc->y);
+	lpTrivertex->Red = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Red);
+	lpTrivertex->Green = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Green);
+	lpTrivertex->Blue = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Blue);
+	lpTrivertex->Alpha = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Alpha);
+}
+
+void setTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc)
+{
+    (*env)->SetIntField(env,lpObject,lpTrivertexFc->x, (jint)lpTrivertex->x);
+    (*env)->SetIntField(env,lpObject,lpTrivertexFc->y, (jint)lpTrivertex->y);
+    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Red, (jshort)lpTrivertex->Red);
+    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Green, (jshort)lpTrivertex->Green);
+    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Blue, (jshort)lpTrivertex->Blue);
+    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Alpha, (jshort)lpTrivertex->Alpha);
+}
+
+void cacheWindowplacementFids(JNIEnv *env, jobject lpWindowplacement, PWINDOWPLACEMENT_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->windowplacementClass = (*env)->GetObjectClass(env,lpWindowplacement);
+    lpCache->length = (*env)->GetFieldID(env,lpCache->windowplacementClass,"length","I");
+    lpCache->flags = (*env)->GetFieldID(env,lpCache->windowplacementClass,"flags","I");
+    lpCache->showCmd = (*env)->GetFieldID(env,lpCache->windowplacementClass,"showCmd","I");
+    lpCache->ptMinPosition_x = (*env)->GetFieldID(env,lpCache->windowplacementClass,"ptMinPosition_x","I");
+    lpCache->ptMinPosition_y = (*env)->GetFieldID(env,lpCache->windowplacementClass,"ptMinPosition_y","I");
+    lpCache->ptMaxPosition_x = (*env)->GetFieldID(env,lpCache->windowplacementClass,"ptMaxPosition_x","I");
+    lpCache->ptMaxPosition_y = (*env)->GetFieldID(env,lpCache->windowplacementClass,"ptMaxPosition_y","I");
+    lpCache->left = (*env)->GetFieldID(env,lpCache->windowplacementClass,"left","I");
+    lpCache->top = (*env)->GetFieldID(env,lpCache->windowplacementClass,"top","I");
+    lpCache->right = (*env)->GetFieldID(env,lpCache->windowplacementClass,"right","I");
+    lpCache->bottom = (*env)->GetFieldID(env,lpCache->windowplacementClass,"bottom","I");
+    lpCache->cached = 1;
+}
+
+void getWindowplacementFields(JNIEnv *env, jobject lpObject, WINDOWPLACEMENT *lpWindowplacement, WINDOWPLACEMENT_FID_CACHE *lpWindowplacementFc)
+{
+    lpWindowplacement->length = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->length);
+    lpWindowplacement->flags = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->flags);
+    lpWindowplacement->showCmd = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->showCmd);
+    lpWindowplacement->ptMinPosition.x = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->ptMinPosition_x);
+    lpWindowplacement->ptMinPosition.y = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->ptMinPosition_y);
+    lpWindowplacement->ptMaxPosition.x = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->ptMaxPosition_x);
+    lpWindowplacement->ptMaxPosition.y = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->ptMaxPosition_y);
+    lpWindowplacement->rcNormalPosition.left = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->left);
+    lpWindowplacement->rcNormalPosition.top = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->top);
+    lpWindowplacement->rcNormalPosition.right = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->right);
+    lpWindowplacement->rcNormalPosition.bottom = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->bottom);
+}
+
+void setWindowplacementFields(JNIEnv *env, jobject lpObject, WINDOWPLACEMENT *lpWindowplacement, WINDOWPLACEMENT_FID_CACHE *lpWindowplacementFc)
+{
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->length, lpWindowplacement->length);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->flags, lpWindowplacement->flags);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->showCmd, lpWindowplacement->showCmd);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->ptMinPosition_x, lpWindowplacement->ptMinPosition.x);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->ptMinPosition_y, lpWindowplacement->ptMinPosition.y);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->ptMaxPosition_x, lpWindowplacement->ptMaxPosition.x);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->ptMaxPosition_y, lpWindowplacement->ptMaxPosition.y);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->left, lpWindowplacement->rcNormalPosition.left);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->top, lpWindowplacement->rcNormalPosition.top);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->right, lpWindowplacement->rcNormalPosition.right);
+    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->bottom, lpWindowplacement->rcNormalPosition.bottom);
+}
+
+void cacheDropfilesFids(JNIEnv *env, jobject lpDropfiles, PDROPFILES_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->dropfilesClass = (*env)->GetObjectClass(env,lpDropfiles);
+    lpCache->pFiles = (*env)->GetFieldID(env,lpCache->dropfilesClass,"pFiles","I");
+    lpCache->pt_x = (*env)->GetFieldID(env,lpCache->dropfilesClass,"pt_x","I");
+    lpCache->pt_y = (*env)->GetFieldID(env,lpCache->dropfilesClass,"pt_y","I");
+    lpCache->fNC = (*env)->GetFieldID(env,lpCache->dropfilesClass,"fNC","I");
+    lpCache->fWide = (*env)->GetFieldID(env,lpCache->dropfilesClass,"fWide","I");
+    lpCache->cached = 1;
+}
+
+void getDropfilesFields(JNIEnv *env, jobject lpObject, DROPFILES *lpDropfiles, DROPFILES_FID_CACHE *lpDropfilesFc)
+{
+    lpDropfiles->pFiles = (*env)->GetIntField(env,lpObject,lpDropfilesFc->pFiles);
+    lpDropfiles->pt.x = (*env)->GetIntField(env,lpObject,lpDropfilesFc->pt_x);
+    lpDropfiles->pt.y = (*env)->GetIntField(env,lpObject,lpDropfilesFc->pt_y);
+    lpDropfiles->fNC = (*env)->GetIntField(env,lpObject,lpDropfilesFc->fNC);
+    lpDropfiles->fWide = (*env)->GetIntField(env,lpObject,lpDropfilesFc->fWide);
+}
+
+void setDropfilesFields(JNIEnv *env, jobject lpObject, DROPFILES *lpDropfiles, DROPFILES_FID_CACHE *lpDropfilesFc)
+{
+    (*env)->SetIntField(env,lpObject,lpDropfilesFc->pFiles, (jint)lpDropfiles->pFiles);
+    (*env)->SetIntField(env,lpObject,lpDropfilesFc->pt_x, lpDropfiles->pt.x);
+    (*env)->SetIntField(env,lpObject,lpDropfilesFc->pt_y, lpDropfiles->pt.y);
+    (*env)->SetIntField(env,lpObject,lpDropfilesFc->fNC, lpDropfiles->fNC);
+    (*env)->SetIntField(env,lpObject,lpDropfilesFc->fWide, lpDropfiles->fWide);
+}
+
+void cacheOlecmdtextFids(JNIEnv *env, jobject lpOlecmdtext, POLECMDTEXT_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->olecmdtextClass = (*env)->GetObjectClass(env,lpOlecmdtext);
+    lpCache->cmdtextf = (*env)->GetFieldID(env,lpCache->olecmdtextClass,"cmdtextf","I");
+    lpCache->cwActual = (*env)->GetFieldID(env,lpCache->olecmdtextClass,"cwActual","I");
+    lpCache->cwBuf = (*env)->GetFieldID(env,lpCache->olecmdtextClass,"cwBuf","I");
+    lpCache->rgwz = (*env)->GetFieldID(env,lpCache->olecmdtextClass,"rgwz","S");
+    lpCache->cached = 1;
+}
+
+void getOlecmdtextFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpOlecmdtext, OLECMDTEXT_FID_CACHE *lpOlecmdtextFc)
+{
+    
+    lpOlecmdtext->cmdtextf = (*env)->GetIntField(env,lpObject,lpOlecmdtextFc->cmdtextf);
+    lpOlecmdtext->cwActual = (*env)->GetIntField(env,lpObject,lpOlecmdtextFc->cwActual);
+    lpOlecmdtext->cwBuf = (*env)->GetIntField(env,lpObject,lpOlecmdtextFc->cwBuf);
+    lpOlecmdtext->rgwz[0] = (*env)->GetShortField(env,lpObject,lpOlecmdtextFc->rgwz);;
+}
+
+void setOlecmdtextFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpOlecmdtext, OLECMDTEXT_FID_CACHE *lpOlecmdtextFc)
+{
+    (*env)->SetIntField(env,lpObject,lpOlecmdtextFc->cmdtextf, lpOlecmdtext->cmdtextf);
+    (*env)->SetIntField(env,lpObject,lpOlecmdtextFc->cwActual, lpOlecmdtext->cwActual);
+    (*env)->SetIntField(env,lpObject,lpOlecmdtextFc->cwBuf, lpOlecmdtext->cwBuf);
+    (*env)->SetShortField(env,lpObject,lpOlecmdtextFc->rgwz, lpOlecmdtext->rgwz[0]);
+}
+
+void cacheChoosefontFids(JNIEnv *env, jobject lpChoosefont, PCHOOSEFONT_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->choosefontClass = (*env)->GetObjectClass(env,lpChoosefont);
+    lpCache->lStructSize = (*env)->GetFieldID(env,lpCache->choosefontClass,"lStructSize","I");
+    lpCache->hwndOwner = (*env)->GetFieldID(env,lpCache->choosefontClass,"hwndOwner","I");
+    lpCache->hDC = (*env)->GetFieldID(env,lpCache->choosefontClass,"hDC","I");
+    lpCache->lpLogFont = (*env)->GetFieldID(env,lpCache->choosefontClass,"lpLogFont","I");
+    lpCache->iPointSize = (*env)->GetFieldID(env,lpCache->choosefontClass,"iPointSize","I");
+    lpCache->Flags = (*env)->GetFieldID(env,lpCache->choosefontClass,"Flags","I");
+    lpCache->rgbColors = (*env)->GetFieldID(env,lpCache->choosefontClass,"rgbColors","I");
+    lpCache->lCustData = (*env)->GetFieldID(env,lpCache->choosefontClass,"lCustData","I");
+    lpCache->lpfnHook = (*env)->GetFieldID(env,lpCache->choosefontClass,"lpfnHook","I");
+    lpCache->lpTemplateName = (*env)->GetFieldID(env,lpCache->choosefontClass,"lpTemplateName","I");
+    lpCache->hInstance = (*env)->GetFieldID(env,lpCache->choosefontClass,"hInstance","I");
+    lpCache->lpszStyle = (*env)->GetFieldID(env,lpCache->choosefontClass,"lpszStyle","I");
+    lpCache->nFontType = (*env)->GetFieldID(env,lpCache->choosefontClass,"nFontType","S");
+    lpCache->___MISSING_ALIGNMENT__ = (*env)->GetFieldID(env,lpCache->choosefontClass,"___MISSING_ALIGNMENT__","S");
+    lpCache->nSizeMin = (*env)->GetFieldID(env,lpCache->choosefontClass,"nSizeMin","I");
+    lpCache->nSizeMax = (*env)->GetFieldID(env,lpCache->choosefontClass,"nSizeMax","I");
+    lpCache->cached = 1;
+}
+void getChoosefontFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpChoosefont, CHOOSEFONT_FID_CACHE *lpChoosefontFc)
+{
+    lpChoosefont->lStructSize = (*env)->GetIntField(env,lpObject,lpChoosefontFc->lStructSize);
+    lpChoosefont->hwndOwner = (HWND)(*env)->GetIntField(env,lpObject,lpChoosefontFc->hwndOwner);
+    lpChoosefont->hDC = (HDC)(*env)->GetIntField(env,lpObject,lpChoosefontFc->hDC);
+    lpChoosefont->lpLogFont = (LPLOGFONT)(*env)->GetIntField(env,lpObject,lpChoosefontFc->lpLogFont);
+    lpChoosefont->iPointSize = (*env)->GetIntField(env,lpObject,lpChoosefontFc->iPointSize);
+    lpChoosefont->Flags = (*env)->GetIntField(env,lpObject,lpChoosefontFc->Flags);
+    lpChoosefont->rgbColors = (*env)->GetIntField(env,lpObject,lpChoosefontFc->rgbColors);
+    lpChoosefont->lCustData = (*env)->GetIntField(env,lpObject,lpChoosefontFc->lCustData);
+    lpChoosefont->lpfnHook = (LPCFHOOKPROC)(*env)->GetIntField(env,lpObject,lpChoosefontFc->lpfnHook);
+    lpChoosefont->lpTemplateName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpChoosefontFc->lpTemplateName);
+    lpChoosefont->hInstance = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpChoosefontFc->hInstance);
+    lpChoosefont->lpszStyle = (LPTSTR)(*env)->GetIntField(env,lpObject,lpChoosefontFc->lpszStyle);
+    lpChoosefont->nFontType = (*env)->GetShortField(env,lpObject,lpChoosefontFc->nFontType);
+    lpChoosefont->___MISSING_ALIGNMENT__ = (*env)->GetShortField(env,lpObject,lpChoosefontFc->___MISSING_ALIGNMENT__);
+    lpChoosefont->nSizeMin = (*env)->GetIntField(env,lpObject,lpChoosefontFc->nSizeMin);
+    lpChoosefont->nSizeMax = (*env)->GetIntField(env,lpObject,lpChoosefontFc->nSizeMax);
+}
+
+void setChoosefontFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpChoosefont, CHOOSEFONT_FID_CACHE *lpChoosefontFc)
+{
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lStructSize, lpChoosefont->lStructSize);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->hwndOwner, (jint)lpChoosefont->hwndOwner);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->hDC, (jint)lpChoosefont->hDC);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lpLogFont, (jint)lpChoosefont->lpLogFont);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->iPointSize, lpChoosefont->iPointSize);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->Flags, lpChoosefont->Flags);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->rgbColors, lpChoosefont->rgbColors);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lCustData, lpChoosefont->lCustData);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lpfnHook, (jint)lpChoosefont->lpfnHook);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lpTemplateName, (jint)lpChoosefont->lpTemplateName);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->hInstance, (jint)lpChoosefont->hInstance);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lpszStyle, (jint)lpChoosefont->lpszStyle);
+    (*env)->SetShortField(env,lpObject,lpChoosefontFc->nFontType, lpChoosefont->nFontType);
+    (*env)->SetShortField(env,lpObject,lpChoosefontFc->___MISSING_ALIGNMENT__, lpChoosefont->___MISSING_ALIGNMENT__);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->nSizeMin, lpChoosefont->nSizeMin);
+    (*env)->SetIntField(env,lpObject,lpChoosefontFc->nSizeMax, lpChoosefont->nSizeMax);
+}
+
+void cacheOlecmdFids(JNIEnv *env, jobject lpOlecmd, POLECMD_FID_CACHE lpCache)
+{
+    if (lpCache->cached) return;
+    lpCache->olecmdClass = (*env)->GetObjectClass(env,lpOlecmd);
+    lpCache->cmdID = (*env)->GetFieldID(env,lpCache->olecmdClass,"cmdID","I");
+    lpCache->cmdf = (*env)->GetFieldID(env,lpCache->olecmdClass,"cmdf","I");
+    lpCache->cached = 1;
+}
+
+void getOlecmdFields(JNIEnv *env, jobject lpObject, OLECMD *lpOlecmd, OLECMD_FID_CACHE *lpOlecmdFc)
+{
+    lpOlecmd->cmdID = (*env)->GetIntField(env,lpObject,lpOlecmdFc->cmdID);
+    lpOlecmd->cmdf = (*env)->GetIntField(env,lpObject,lpOlecmdFc->cmdf);
+}
+
+void setOlecmdFields(JNIEnv *env, jobject lpObject, OLECMD *lpOlecmd, OLECMD_FID_CACHE *lpOlecmdFc)
+{
+    (*env)->SetIntField(env,lpObject,lpOlecmdFc->cmdID, lpOlecmd->cmdID);
+    (*env)->SetIntField(env,lpObject,lpOlecmdFc->cmdf, lpOlecmd->cmdf);
+}
+
+void cacheGCP_RESULTSFids(JNIEnv *env, jobject lpObject, PGCP_RESULTS_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->nMaxFit = (*env)->GetFieldID(env, lpCache->clazz, "nMaxFit", "I");
+	lpCache->nGlyphs = (*env)->GetFieldID(env, lpCache->clazz, "nGlyphs", "I");
+	lpCache->lpGlyphs = (*env)->GetFieldID(env, lpCache->clazz, "lpGlyphs", "I");
+	lpCache->lpClass = (*env)->GetFieldID(env, lpCache->clazz, "lpClass", "I");
+	lpCache->lpCaretPos = (*env)->GetFieldID(env, lpCache->clazz, "lpCaretPos", "I");
+	lpCache->lpDx = (*env)->GetFieldID(env, lpCache->clazz, "lpDx", "I");
+	lpCache->lpOrder = (*env)->GetFieldID(env, lpCache->clazz, "lpOrder", "I");
+	lpCache->lpOutString = (*env)->GetFieldID(env, lpCache->clazz, "lpOutString", "I");
+	lpCache->lStructSize = (*env)->GetFieldID(env, lpCache->clazz, "lStructSize", "I");
+	lpCache->cached = 1;
+}
+
+void getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache)
+{
+	lpStruct->nMaxFit = (*env)->GetIntField(env, lpObject, lpCache->nMaxFit);
+	lpStruct->nGlyphs = (*env)->GetIntField(env, lpObject, lpCache->nGlyphs);
+	lpStruct->lpGlyphs = (LPWSTR)(*env)->GetIntField(env, lpObject, lpCache->lpGlyphs);
+	lpStruct->lpClass = (LPSTR)(*env)->GetIntField(env, lpObject, lpCache->lpClass);
+	lpStruct->lpCaretPos = (int  *)(*env)->GetIntField(env, lpObject, lpCache->lpCaretPos);
+	lpStruct->lpDx = (int  *)(*env)->GetIntField(env, lpObject, lpCache->lpDx);
+	lpStruct->lpOrder = (UINT  *)(*env)->GetIntField(env, lpObject, lpCache->lpOrder);
+	lpStruct->lpOutString = (LPTSTR)(*env)->GetIntField(env, lpObject, lpCache->lpOutString);
+	lpStruct->lStructSize = (*env)->GetIntField(env, lpObject, lpCache->lStructSize);
+}
+
+void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache)
+{
+	(*env)->SetIntField(env, lpObject, lpCache->nMaxFit, lpStruct->nMaxFit);
+	(*env)->SetIntField(env, lpObject, lpCache->nGlyphs, lpStruct->nGlyphs);
+	(*env)->SetIntField(env, lpObject, lpCache->lpGlyphs, (int)lpStruct->lpGlyphs);
+	(*env)->SetIntField(env, lpObject, lpCache->lpClass, (int)lpStruct->lpClass);
+	(*env)->SetIntField(env, lpObject, lpCache->lpCaretPos, (int)lpStruct->lpCaretPos);
+	(*env)->SetIntField(env, lpObject, lpCache->lpDx, (int)lpStruct->lpDx);
+	(*env)->SetIntField(env, lpObject, lpCache->lpOrder, (int)lpStruct->lpOrder);
+	(*env)->SetIntField(env, lpObject, lpCache->lpOutString, (int)lpStruct->lpOutString);
+	(*env)->SetIntField(env, lpObject, lpCache->lStructSize, lpStruct->lStructSize);
+}
+#endif
+
 void cacheAccelFids(JNIEnv *env, jobject lpAccel, PACCEL_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
@@ -183,29 +951,6 @@ void cacheChoosecolorFids(JNIEnv *env, jobject lpChoosecolor, PCHOOSECOLOR_FID_C
     lpCache->cached = 1;
 }
 
-void cacheChoosefontFids(JNIEnv *env, jobject lpChoosefont, PCHOOSEFONT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->choosefontClass = (*env)->GetObjectClass(env,lpChoosefont);
-    lpCache->lStructSize = (*env)->GetFieldID(env,lpCache->choosefontClass,"lStructSize","I");
-    lpCache->hwndOwner = (*env)->GetFieldID(env,lpCache->choosefontClass,"hwndOwner","I");
-    lpCache->hDC = (*env)->GetFieldID(env,lpCache->choosefontClass,"hDC","I");
-    lpCache->lpLogFont = (*env)->GetFieldID(env,lpCache->choosefontClass,"lpLogFont","I");
-    lpCache->iPointSize = (*env)->GetFieldID(env,lpCache->choosefontClass,"iPointSize","I");
-    lpCache->Flags = (*env)->GetFieldID(env,lpCache->choosefontClass,"Flags","I");
-    lpCache->rgbColors = (*env)->GetFieldID(env,lpCache->choosefontClass,"rgbColors","I");
-    lpCache->lCustData = (*env)->GetFieldID(env,lpCache->choosefontClass,"lCustData","I");
-    lpCache->lpfnHook = (*env)->GetFieldID(env,lpCache->choosefontClass,"lpfnHook","I");
-    lpCache->lpTemplateName = (*env)->GetFieldID(env,lpCache->choosefontClass,"lpTemplateName","I");
-    lpCache->hInstance = (*env)->GetFieldID(env,lpCache->choosefontClass,"hInstance","I");
-    lpCache->lpszStyle = (*env)->GetFieldID(env,lpCache->choosefontClass,"lpszStyle","I");
-    lpCache->nFontType = (*env)->GetFieldID(env,lpCache->choosefontClass,"nFontType","S");
-    lpCache->___MISSING_ALIGNMENT__ = (*env)->GetFieldID(env,lpCache->choosefontClass,"___MISSING_ALIGNMENT__","S");
-    lpCache->nSizeMin = (*env)->GetFieldID(env,lpCache->choosefontClass,"nSizeMin","I");
-    lpCache->nSizeMax = (*env)->GetFieldID(env,lpCache->choosefontClass,"nSizeMax","I");
-    lpCache->cached = 1;
-}
-
 void cacheCompositionformFids(JNIEnv *env, jobject lpCompositionform, PCOMPOSITIONFORM_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
@@ -281,18 +1026,6 @@ void cacheDllversioninfoFids(JNIEnv *env, jobject lpDllversioninfo, PDLLVERSIONI
     lpCache->cached = 1;
 }
 
-void cacheDocinfoFids(JNIEnv *env, jobject lpDocinfo, PDOCINFO_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->docinfoClass = (*env)->GetObjectClass(env,lpDocinfo);
-    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->docinfoClass,"cbSize","I");
-    lpCache->lpszDocName = (*env)->GetFieldID(env,lpCache->docinfoClass,"lpszDocName","I");
-    lpCache->lpszOutput = (*env)->GetFieldID(env,lpCache->docinfoClass,"lpszOutput","I");
-    lpCache->lpszDatatype = (*env)->GetFieldID(env,lpCache->docinfoClass,"lpszDatatype","I");
-    lpCache->fwType = (*env)->GetFieldID(env,lpCache->docinfoClass,"fwType","I");
-    lpCache->cached = 1;
-}
-
 void cacheDrawitemstructFids(JNIEnv *env, jobject lpDrawitemstruct, PDRAWITEMSTRUCT_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
@@ -309,15 +1042,6 @@ void cacheDrawitemstructFids(JNIEnv *env, jobject lpDrawitemstruct, PDRAWITEMSTR
     lpCache->right = (*env)->GetFieldID(env,lpCache->drawitemstructClass,"right","I");
     lpCache->bottom = (*env)->GetFieldID(env,lpCache->drawitemstructClass,"bottom","I");
     lpCache->itemData = (*env)->GetFieldID(env,lpCache->drawitemstructClass,"itemData","I");
-    lpCache->cached = 1;
-}
-
-void cacheGradientrectFids(JNIEnv *env, jobject lpGradientrect, PGRADIENT_RECT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->gradientrectClass = (*env)->GetObjectClass(env,lpGradientrect);
-    lpCache->UpperLeft = (*env)->GetFieldID(env,lpCache->gradientrectClass,"UpperLeft","I");
-    lpCache->LowerRight = (*env)->GetFieldID(env,lpCache->gradientrectClass,"LowerRight","I");
     lpCache->cached = 1;
 }
 
@@ -343,20 +1067,6 @@ void cacheHdlayoutFids(JNIEnv *env, jobject lpHdlayout, PHDLAYOUT_FID_CACHE lpCa
     lpCache->hdlayoutClass = (*env)->GetObjectClass(env,lpHdlayout);
     lpCache->prc = (*env)->GetFieldID(env,lpCache->hdlayoutClass,"prc","I");
     lpCache->pwpos = (*env)->GetFieldID(env,lpCache->hdlayoutClass,"pwpos","I");
-    lpCache->cached = 1;
-}
-
-void cacheHelpinfoFids(JNIEnv *env, jobject lpHelpinfo, PHELPINFO_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->helpinfoClass = (*env)->GetObjectClass(env,lpHelpinfo);
-    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->helpinfoClass,"cbSize","I");
-    lpCache->iContextType = (*env)->GetFieldID(env,lpCache->helpinfoClass,"iContextType","I");
-    lpCache->iCtrlId = (*env)->GetFieldID(env,lpCache->helpinfoClass,"iCtrlId","I");
-    lpCache->hItemHandle = (*env)->GetFieldID(env,lpCache->helpinfoClass,"hItemHandle","I");
-    lpCache->dwContextId = (*env)->GetFieldID(env,lpCache->helpinfoClass,"dwContextId","I");
-    lpCache->x = (*env)->GetFieldID(env,lpCache->helpinfoClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->helpinfoClass,"y","I");
     lpCache->cached = 1;
 }
 
@@ -525,20 +1235,6 @@ void cacheMeasureitemstructFids(JNIEnv *env, jobject lpMeasureitemstruct, PMEASU
     lpCache->cached = 1;
 }
 
-void cacheMenuinfoFids(JNIEnv *env, jobject lpMenuinfo, PMENUINFO_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->menuinfoClass = (*env)->GetObjectClass(env,lpMenuinfo);
-    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->menuinfoClass,"cbSize","I");
-    lpCache->fMask = (*env)->GetFieldID(env,lpCache->menuinfoClass,"fMask","I");
-    lpCache->dwStyle = (*env)->GetFieldID(env,lpCache->menuinfoClass,"dwStyle","I");
-    lpCache->cyMax = (*env)->GetFieldID(env,lpCache->menuinfoClass,"cyMax","I");
-    lpCache->hbrBack = (*env)->GetFieldID(env,lpCache->menuinfoClass,"hbrBack","I");
-    lpCache->dwContextHelpID = (*env)->GetFieldID(env,lpCache->menuinfoClass,"dwContextHelpID","I");
-    lpCache->dwMenuData = (*env)->GetFieldID(env,lpCache->menuinfoClass,"dwMenuData","I");
-    lpCache->cached = 1;
-}
-
 void cacheMenuiteminfoFids(JNIEnv *env, jobject lpMenuiteminfo, PMENUITEMINFO_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
@@ -555,7 +1251,9 @@ void cacheMenuiteminfoFids(JNIEnv *env, jobject lpMenuiteminfo, PMENUITEMINFO_FI
     lpCache->dwTypeData = (*env)->GetFieldID(env,lpCache->menuiteminfoClass,"dwTypeData","I");
     lpCache->cch = (*env)->GetFieldID(env,lpCache->menuiteminfoClass,"cch", "I");
 #ifdef USE_2000_CALLS
+#ifndef _WIN32_WCE
     lpCache->hbmpItem = (*env)->GetFieldID(env,lpCache->menuiteminfoClass,"hbmpItem", "I");
+#endif
 #endif
     lpCache->cached = 1;
 }
@@ -571,19 +1269,6 @@ void cacheMsgFids(JNIEnv *env, jobject lpMsg, PMSG_FID_CACHE lpCache)
     lpCache->time = (*env)->GetFieldID(env,lpCache->msgClass,"time","I");
     lpCache->x = (*env)->GetFieldID(env,lpCache->msgClass,"x","I");
     lpCache->y = (*env)->GetFieldID(env,lpCache->msgClass,"y","I");
-    lpCache->cached = 1;
-}
-
-void cacheMsgfilterFids(JNIEnv *env, jobject lpMsgfilter, PMSGFILTER_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->msgfilterClass = (*env)->GetObjectClass(env,lpMsgfilter);
-    lpCache->hwndFrom = (*env)->GetFieldID(env,lpCache->msgfilterClass,"hwndFrom","I");
-    lpCache->idFrom = (*env)->GetFieldID(env,lpCache->msgfilterClass,"idFrom","I");
-    lpCache->code = (*env)->GetFieldID(env,lpCache->msgfilterClass,"code","I");
-    lpCache->msg = (*env)->GetFieldID(env,lpCache->msgfilterClass,"msg","I");
-    lpCache->wParam = (*env)->GetFieldID(env,lpCache->msgfilterClass,"wParam","I");
-    lpCache->lParam = (*env)->GetFieldID(env,lpCache->msgfilterClass,"lParam","I");
     lpCache->cached = 1;
 }
 
@@ -652,40 +1337,6 @@ void cacheNmtoolbarFids(JNIEnv *env, jobject lpNmtoolbar, PNMTOOLBAR_FID_CACHE l
     lpCache->cached = 1;
 }
 
-void cacheNmttdispinfoFids(JNIEnv *env, jobject lpNmttdispinfo, PNMTTDISPINFO_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->nmttdispinfoClass = (*env)->GetObjectClass(env,lpNmttdispinfo);
-    lpCache->hwndFrom = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"hwndFrom","I");
-    lpCache->idFrom = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"idFrom","I");
-    lpCache->lpszText = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"lpszText","I");
-    lpCache->code = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"code","I");
-    lpCache->pad0 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad0","I");
-    lpCache->pad1 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad1","I");
-    lpCache->pad2 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad2","I");
-    lpCache->pad3 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad3","I");
-    lpCache->pad4 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad4","I");
-    lpCache->pad5 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad5","I");
-    lpCache->pad6 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad6","I");
-    lpCache->pad7 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad7","I");
-    lpCache->pad8 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad8","I");
-    lpCache->pad9 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad9","I");
-    lpCache->pad10 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad10","I");
-    lpCache->pad11 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad11","I");
-    lpCache->pad12 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad12","I");
-    lpCache->pad13 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad13","I");
-    lpCache->pad14 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad14","I");
-    lpCache->pad15 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad15","I");
-    lpCache->pad16 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad16","I");
-    lpCache->pad17 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad17","I");
-    lpCache->pad18 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad18","I");
-    lpCache->pad19 = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"pad19","I");
-    lpCache->hinst = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"hinst","I");
-    lpCache->uFlags = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"uFlags","I");
-    lpCache->lParam = (*env)->GetFieldID(env,lpCache->nmttdispinfoClass,"lParam","I");
-    lpCache->cached = 1;
-}
-
 void cacheNmtvcustomdrawFids(JNIEnv *env, jobject lpNmtvcustomdraw, PNMTVCUSTOMDRAW_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
@@ -750,33 +1401,6 @@ void cachePaintstructFids(JNIEnv *env, jobject lpPaint, PPAINTSTRUCT_FID_CACHE l
     lpCache->cached = 1;
 }
 
-void cachePagesetupdlgFids(JNIEnv *env, jobject lpPagesetupdlg, PPAGESETUPDLG_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->pagesetupdlgClass = (*env)->GetObjectClass(env,lpPagesetupdlg);
-    lpCache->lStructSize = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lStructSize","I");
-    lpCache->hwndOwner = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hwndOwner","I");
-    lpCache->hDevMode = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hDevMode","I");
-    lpCache->hDevNames = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hDevNames","I");
-    lpCache->Flags = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"Flags","I");
-    lpCache->ptPaperSize_x = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"ptPaperSize_x","I");
-    lpCache->ptPaperSize_y = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"ptPaperSize_y","I");
-    lpCache->rtMinMargin_left = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMinMargin_left","I");
-    lpCache->rtMinMargin_top = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMinMargin_top","I");
-    lpCache->rtMinMargin_right = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMinMargin_right","I");
-    lpCache->rtMinMargin_bottom = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMinMargin_bottom","I");
-    lpCache->rtMargin_left = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMargin_left","I");
-    lpCache->rtMargin_top = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMargin_top","I");
-    lpCache->rtMargin_right = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMargin_right","I");
-    lpCache->rtMargin_bottom = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"rtMargin_bottom","I");
-    lpCache->hInstance = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hInstance","I");
-    lpCache->lCustData = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lCustData","I");
-    lpCache->lpfnPageSetupHook = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lpfnPageSetupHook","I");
-    lpCache->lpfnPagePaintHook = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lpfnPagePaintHook","I");
-    lpCache->lpPageSetupTemplateName = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"lpPageSetupTemplateName","I");
-    lpCache->hPageSetupTemplate = (*env)->GetFieldID(env,lpCache->pagesetupdlgClass,"hPageSetupTemplate","I");
-    lpCache->cached = 1;
-}
 /*
 void cacheParaformatFids(JNIEnv *env, jobject lpParaformat, PPARAFORMAT_FID_CACHE lpCache)
 {
@@ -879,12 +1503,14 @@ void cacheRebarbandinfoFids(JNIEnv *env, jobject lpRebarbandinfo, PREBARBANDINFO
     lpCache->cx = (*env)->GetFieldID(env,lpCache->rebarbandinfoClass,"cx","I");
     lpCache->hbmBack = (*env)->GetFieldID(env,lpCache->rebarbandinfoClass,"hbmBack","I");
     lpCache->wID = (*env)->GetFieldID(env,lpCache->rebarbandinfoClass,"wID","I");
+#ifndef _WIN32_WCE
     lpCache->cyChild = (*env)->GetFieldID(env,lpCache->rebarbandinfoClass,"cyChild","I");
     lpCache->cyMaxChild = (*env)->GetFieldID(env,lpCache->rebarbandinfoClass,"cyMaxChild","I");
     lpCache->cyIntegral = (*env)->GetFieldID(env,lpCache->rebarbandinfoClass,"cyIntegral","I");
     lpCache->cxIdeal = (*env)->GetFieldID(env,lpCache->rebarbandinfoClass,"cxIdeal","I");
     lpCache->lParam = (*env)->GetFieldID(env,lpCache->rebarbandinfoClass,"lParam","I");
     lpCache->cxHeader = (*env)->GetFieldID(env,lpCache->rebarbandinfoClass,"cxHeader","I");
+#endif
     lpCache->cached = 1;
 }
 
@@ -993,48 +1619,6 @@ void cacheTextmetricFids(JNIEnv *env, jobject lpTextmetric, PTEXTMETRIC_FID_CACH
     lpCache->cached = 1;
 }
 
-void cacheToolinfoFids(JNIEnv *env, jobject lpToolinfo, PTOOLINFO_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->toolinfoClass = (*env)->GetObjectClass(env,lpToolinfo);
-    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->toolinfoClass,"cbSize","I");
-    lpCache->uFlags = (*env)->GetFieldID(env,lpCache->toolinfoClass,"uFlags","I");
-    lpCache->hwnd = (*env)->GetFieldID(env,lpCache->toolinfoClass,"hwnd","I");
-    lpCache->uId = (*env)->GetFieldID(env,lpCache->toolinfoClass,"uId","I");
-    lpCache->left = (*env)->GetFieldID(env,lpCache->toolinfoClass,"left","I");
-    lpCache->top = (*env)->GetFieldID(env,lpCache->toolinfoClass,"top","I");
-    lpCache->right = (*env)->GetFieldID(env,lpCache->toolinfoClass,"right","I");
-    lpCache->bottom = (*env)->GetFieldID(env,lpCache->toolinfoClass,"bottom","I");
-    lpCache->hinst = (*env)->GetFieldID(env,lpCache->toolinfoClass,"hinst","I");
-    lpCache->lpszText = (*env)->GetFieldID(env,lpCache->toolinfoClass,"lpszText","I");
-    lpCache->lParam = (*env)->GetFieldID(env,lpCache->toolinfoClass,"lParam","I");
-    lpCache->cached = 1;
-}
-
-void cacheTrackmouseeventFids(JNIEnv *env, jobject lpTrackmouseevent, PTRACKMOUSEEVENT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->trackmouseeventClass = (*env)->GetObjectClass(env,lpTrackmouseevent);
-    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->trackmouseeventClass,"cbSize","I");
-    lpCache->dwFlags = (*env)->GetFieldID(env,lpCache->trackmouseeventClass,"dwFlags","I");
-    lpCache->hwndTrack = (*env)->GetFieldID(env,lpCache->trackmouseeventClass,"hwndTrack","I");
-    lpCache->dwHoverTime = (*env)->GetFieldID(env,lpCache->trackmouseeventClass,"dwHoverTime","I");
-    lpCache->cached = 1;
-}
-
-void cacheTrivertexFids(JNIEnv *env, jobject lpTrivertex, PTRIVERTEX_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->trivertexClass = (*env)->GetObjectClass(env,lpTrivertex);
-    lpCache->x = (*env)->GetFieldID(env,lpCache->trivertexClass,"x","I");
-    lpCache->y = (*env)->GetFieldID(env,lpCache->trivertexClass,"y","I");
-    lpCache->Red = (*env)->GetFieldID(env,lpCache->trivertexClass,"Red","S");
-    lpCache->Green = (*env)->GetFieldID(env,lpCache->trivertexClass,"Green","S");
-    lpCache->Blue = (*env)->GetFieldID(env,lpCache->trivertexClass,"Blue","S");
-    lpCache->Alpha = (*env)->GetFieldID(env,lpCache->trivertexClass,"Alpha","S");
-    lpCache->cached = 1;
-}
-
 void cacheTvhittestinfoFids(JNIEnv *env, jobject lpTvhittestinfo, PTVHITTESTINFO_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
@@ -1082,24 +1666,6 @@ void cacheTvitemFids(JNIEnv *env, jobject lpTvitem, PTVITEM_FID_CACHE lpCache)
     lpCache->cached = 1;
 }
 
-void cacheWindowplacementFids(JNIEnv *env, jobject lpWindowplacement, PWINDOWPLACEMENT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->windowplacementClass = (*env)->GetObjectClass(env,lpWindowplacement);
-    lpCache->length = (*env)->GetFieldID(env,lpCache->windowplacementClass,"length","I");
-    lpCache->flags = (*env)->GetFieldID(env,lpCache->windowplacementClass,"flags","I");
-    lpCache->showCmd = (*env)->GetFieldID(env,lpCache->windowplacementClass,"showCmd","I");
-    lpCache->ptMinPosition_x = (*env)->GetFieldID(env,lpCache->windowplacementClass,"ptMinPosition_x","I");
-    lpCache->ptMinPosition_y = (*env)->GetFieldID(env,lpCache->windowplacementClass,"ptMinPosition_y","I");
-    lpCache->ptMaxPosition_x = (*env)->GetFieldID(env,lpCache->windowplacementClass,"ptMaxPosition_x","I");
-    lpCache->ptMaxPosition_y = (*env)->GetFieldID(env,lpCache->windowplacementClass,"ptMaxPosition_y","I");
-    lpCache->left = (*env)->GetFieldID(env,lpCache->windowplacementClass,"left","I");
-    lpCache->top = (*env)->GetFieldID(env,lpCache->windowplacementClass,"top","I");
-    lpCache->right = (*env)->GetFieldID(env,lpCache->windowplacementClass,"right","I");
-    lpCache->bottom = (*env)->GetFieldID(env,lpCache->windowplacementClass,"bottom","I");
-    lpCache->cached = 1;
-}
-
 void cacheWindowposFids(JNIEnv *env, jobject lpWindowpos, PWINDOWPOS_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
@@ -1114,22 +1680,20 @@ void cacheWindowposFids(JNIEnv *env, jobject lpWindowpos, PWINDOWPOS_FID_CACHE l
     lpCache->cached = 1;
 }
 
-void cacheWndclassexFids(JNIEnv *env, jobject lpWndclassex, PWNDCLASSEX_FID_CACHE lpCache)
+void cacheWndclassFids(JNIEnv *env, jobject lpWndclass, PWNDCLASS_FID_CACHE lpCache)
 {
     if (lpCache->cached) return;
-    lpCache->wndclassexClass = (*env)->GetObjectClass(env,lpWndclassex);
-    lpCache->cbSize = (*env)->GetFieldID(env,lpCache->wndclassexClass,"cbSize","I");
-    lpCache->style = (*env)->GetFieldID(env,lpCache->wndclassexClass,"style","I");
-    lpCache->lpfnWndProc = (*env)->GetFieldID(env,lpCache->wndclassexClass,"lpfnWndProc","I");
-    lpCache->cbClsExtra = (*env)->GetFieldID(env,lpCache->wndclassexClass,"cbClsExtra","I");
-    lpCache->cbWndExtra = (*env)->GetFieldID(env,lpCache->wndclassexClass,"cbWndExtra","I");
-    lpCache->hInstance = (*env)->GetFieldID(env,lpCache->wndclassexClass,"hInstance","I");
-    lpCache->hIcon = (*env)->GetFieldID(env,lpCache->wndclassexClass,"hIcon","I");
-    lpCache->hCursor = (*env)->GetFieldID(env,lpCache->wndclassexClass,"hCursor","I");
-    lpCache->hbrBackground = (*env)->GetFieldID(env,lpCache->wndclassexClass,"hbrBackground","I");
-    lpCache->lpszMenuName = (*env)->GetFieldID(env,lpCache->wndclassexClass,"lpszMenuName","I");
-    lpCache->lpszClassName = (*env)->GetFieldID(env,lpCache->wndclassexClass,"lpszClassName","I");
-    lpCache->hIconSm = (*env)->GetFieldID(env,lpCache->wndclassexClass,"hIconSm","I");
+    lpCache->wndclassClass = (*env)->GetObjectClass(env,lpWndclass);
+    lpCache->style = (*env)->GetFieldID(env,lpCache->wndclassClass,"style","I");
+    lpCache->lpfnWndProc = (*env)->GetFieldID(env,lpCache->wndclassClass,"lpfnWndProc","I");
+    lpCache->cbClsExtra = (*env)->GetFieldID(env,lpCache->wndclassClass,"cbClsExtra","I");
+    lpCache->cbWndExtra = (*env)->GetFieldID(env,lpCache->wndclassClass,"cbWndExtra","I");
+    lpCache->hInstance = (*env)->GetFieldID(env,lpCache->wndclassClass,"hInstance","I");
+    lpCache->hIcon = (*env)->GetFieldID(env,lpCache->wndclassClass,"hIcon","I");
+    lpCache->hCursor = (*env)->GetFieldID(env,lpCache->wndclassClass,"hCursor","I");
+    lpCache->hbrBackground = (*env)->GetFieldID(env,lpCache->wndclassClass,"hbrBackground","I");
+    lpCache->lpszMenuName = (*env)->GetFieldID(env,lpCache->wndclassClass,"lpszMenuName","I");
+    lpCache->lpszClassName = (*env)->GetFieldID(env,lpCache->wndclassClass,"lpszClassName","I");
     lpCache->cached = 1;
 }
 
@@ -1192,18 +1756,6 @@ void cacheDispparamsFids(JNIEnv *env, jobject lpDispparams, PDISPPARAMS_FID_CACH
     lpCache->rgdispidNamedArgs = (*env)->GetFieldID(env,lpCache->dispparamsClass,"rgdispidNamedArgs","I");
     lpCache->cArgs = (*env)->GetFieldID(env,lpCache->dispparamsClass,"cArgs","I");
     lpCache->cNamedArgs = (*env)->GetFieldID(env,lpCache->dispparamsClass,"cNamedArgs","I");
-    lpCache->cached = 1;
-}
-
-void cacheDropfilesFids(JNIEnv *env, jobject lpDropfiles, PDROPFILES_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->dropfilesClass = (*env)->GetObjectClass(env,lpDropfiles);
-    lpCache->pFiles = (*env)->GetFieldID(env,lpCache->dropfilesClass,"pFiles","I");
-    lpCache->pt_x = (*env)->GetFieldID(env,lpCache->dropfilesClass,"pt_x","I");
-    lpCache->pt_y = (*env)->GetFieldID(env,lpCache->dropfilesClass,"pt_y","I");
-    lpCache->fNC = (*env)->GetFieldID(env,lpCache->dropfilesClass,"fNC","I");
-    lpCache->fWide = (*env)->GetFieldID(env,lpCache->dropfilesClass,"fWide","I");
     lpCache->cached = 1;
 }
 
@@ -1310,26 +1862,6 @@ void cacheMulti_qiFids(JNIEnv *env, jobject lpMulti_qi, PMULTI_QI_FID_CACHE lpCa
     lpCache->pIID = (*env)->GetFieldID(env,lpCache->multi_qiClass,"pIID","I");
     lpCache->pItf = (*env)->GetFieldID(env,lpCache->multi_qiClass,"pItf","I");
     lpCache->hr = (*env)->GetFieldID(env,lpCache->multi_qiClass,"hr","I");
-    lpCache->cached = 1;
-}
-
-void cacheOlecmdFids(JNIEnv *env, jobject lpOlecmd, POLECMD_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->olecmdClass = (*env)->GetObjectClass(env,lpOlecmd);
-    lpCache->cmdID = (*env)->GetFieldID(env,lpCache->olecmdClass,"cmdID","I");
-    lpCache->cmdf = (*env)->GetFieldID(env,lpCache->olecmdClass,"cmdf","I");
-    lpCache->cached = 1;
-}
-
-void cacheOlecmdtextFids(JNIEnv *env, jobject lpOlecmdtext, POLECMDTEXT_FID_CACHE lpCache)
-{
-    if (lpCache->cached) return;
-    lpCache->olecmdtextClass = (*env)->GetObjectClass(env,lpOlecmdtext);
-    lpCache->cmdtextf = (*env)->GetFieldID(env,lpCache->olecmdtextClass,"cmdtextf","I");
-    lpCache->cwActual = (*env)->GetFieldID(env,lpCache->olecmdtextClass,"cwActual","I");
-    lpCache->cwBuf = (*env)->GetFieldID(env,lpCache->olecmdtextClass,"cwBuf","I");
-    lpCache->rgwz = (*env)->GetFieldID(env,lpCache->olecmdtextClass,"rgwz","S");
     lpCache->cached = 1;
 }
 
@@ -1526,22 +2058,6 @@ void cacheVardesc2Fids(JNIEnv *env, jobject lpVardesc, PVARDESC2_FID_CACHE lpCac
     lpCache->filler = (*env)->GetFieldID(env,lpCache->vardescClass,"filler","S");
     lpCache->varkind = (*env)->GetFieldID(env,lpCache->vardescClass,"varkind","I");
     lpCache->cached = 1;
-}
-
-void cacheGCP_RESULTSFids(JNIEnv *env, jobject lpObject, PGCP_RESULTS_FID_CACHE lpCache)
-{
-	if (lpCache->cached) return;
-	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
-	lpCache->nMaxFit = (*env)->GetFieldID(env, lpCache->clazz, "nMaxFit", "I");
-	lpCache->nGlyphs = (*env)->GetFieldID(env, lpCache->clazz, "nGlyphs", "I");
-	lpCache->lpGlyphs = (*env)->GetFieldID(env, lpCache->clazz, "lpGlyphs", "I");
-	lpCache->lpClass = (*env)->GetFieldID(env, lpCache->clazz, "lpClass", "I");
-	lpCache->lpCaretPos = (*env)->GetFieldID(env, lpCache->clazz, "lpCaretPos", "I");
-	lpCache->lpDx = (*env)->GetFieldID(env, lpCache->clazz, "lpDx", "I");
-	lpCache->lpOrder = (*env)->GetFieldID(env, lpCache->clazz, "lpOrder", "I");
-	lpCache->lpOutString = (*env)->GetFieldID(env, lpCache->clazz, "lpOutString", "I");
-	lpCache->lStructSize = (*env)->GetFieldID(env, lpCache->clazz, "lStructSize", "I");
-	lpCache->cached = 1;
 }
     
 /* ----------- swt getters and setters  ----------- */
@@ -1834,46 +2350,6 @@ void setChoosecolorFields(JNIEnv *env, jobject lpObject, CHOOSECOLOR *lpChooseco
     (*env)->SetIntField(env,lpObject,lpChoosecolorFc->lpTemplateName, (jint)lpChoosecolor->lpTemplateName);
 }
 
-void getChoosefontFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpChoosefont, CHOOSEFONT_FID_CACHE *lpChoosefontFc)
-{
-    lpChoosefont->lStructSize = (*env)->GetIntField(env,lpObject,lpChoosefontFc->lStructSize);
-    lpChoosefont->hwndOwner = (HWND)(*env)->GetIntField(env,lpObject,lpChoosefontFc->hwndOwner);
-    lpChoosefont->hDC = (HDC)(*env)->GetIntField(env,lpObject,lpChoosefontFc->hDC);
-    lpChoosefont->lpLogFont = (LPLOGFONT)(*env)->GetIntField(env,lpObject,lpChoosefontFc->lpLogFont);
-    lpChoosefont->iPointSize = (*env)->GetIntField(env,lpObject,lpChoosefontFc->iPointSize);
-    lpChoosefont->Flags = (*env)->GetIntField(env,lpObject,lpChoosefontFc->Flags);
-    lpChoosefont->rgbColors = (*env)->GetIntField(env,lpObject,lpChoosefontFc->rgbColors);
-    lpChoosefont->lCustData = (*env)->GetIntField(env,lpObject,lpChoosefontFc->lCustData);
-    lpChoosefont->lpfnHook = (LPCFHOOKPROC)(*env)->GetIntField(env,lpObject,lpChoosefontFc->lpfnHook);
-    lpChoosefont->lpTemplateName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpChoosefontFc->lpTemplateName);
-    lpChoosefont->hInstance = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpChoosefontFc->hInstance);
-    lpChoosefont->lpszStyle = (LPTSTR)(*env)->GetIntField(env,lpObject,lpChoosefontFc->lpszStyle);
-    lpChoosefont->nFontType = (*env)->GetShortField(env,lpObject,lpChoosefontFc->nFontType);
-    lpChoosefont->___MISSING_ALIGNMENT__ = (*env)->GetShortField(env,lpObject,lpChoosefontFc->___MISSING_ALIGNMENT__);
-    lpChoosefont->nSizeMin = (*env)->GetIntField(env,lpObject,lpChoosefontFc->nSizeMin);
-    lpChoosefont->nSizeMax = (*env)->GetIntField(env,lpObject,lpChoosefontFc->nSizeMax);
-}
-
-void setChoosefontFields(JNIEnv *env, jobject lpObject, CHOOSEFONT *lpChoosefont, CHOOSEFONT_FID_CACHE *lpChoosefontFc)
-{
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lStructSize, lpChoosefont->lStructSize);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->hwndOwner, (jint)lpChoosefont->hwndOwner);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->hDC, (jint)lpChoosefont->hDC);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lpLogFont, (jint)lpChoosefont->lpLogFont);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->iPointSize, lpChoosefont->iPointSize);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->Flags, lpChoosefont->Flags);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->rgbColors, lpChoosefont->rgbColors);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lCustData, lpChoosefont->lCustData);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lpfnHook, (jint)lpChoosefont->lpfnHook);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lpTemplateName, (jint)lpChoosefont->lpTemplateName);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->hInstance, (jint)lpChoosefont->hInstance);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->lpszStyle, (jint)lpChoosefont->lpszStyle);
-    (*env)->SetShortField(env,lpObject,lpChoosefontFc->nFontType, lpChoosefont->nFontType);
-    (*env)->SetShortField(env,lpObject,lpChoosefontFc->___MISSING_ALIGNMENT__, lpChoosefont->___MISSING_ALIGNMENT__);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->nSizeMin, lpChoosefont->nSizeMin);
-    (*env)->SetIntField(env,lpObject,lpChoosefontFc->nSizeMax, lpChoosefont->nSizeMax);
-}
-
 void getCompositionformFields(JNIEnv *env, jobject lpObject, COMPOSITIONFORM *lpCompositionform, COMPOSITIONFORM_FID_CACHE *lpCompositionformFc)
 {
     lpCompositionform->dwStyle = (*env)->GetIntField(env,lpObject,lpCompositionformFc->dwStyle);
@@ -2004,24 +2480,6 @@ void setDllversioninfoFields(JNIEnv *env, jobject lpObject, DLLVERSIONINFO *lpDl
     (*env)->SetIntField(env,lpObject,lpDllversioninfoFc->dwPlatformID, lpDllversioninfo->dwPlatformID);
 }
 
-void getDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, DOCINFO_FID_CACHE *lpDocinfoFc)
-{
-    lpDocinfo->cbSize = (*env)->GetIntField(env,lpObject,lpDocinfoFc->cbSize);
-    lpDocinfo->lpszDocName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpDocinfoFc->lpszDocName);
-    lpDocinfo->lpszOutput = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpDocinfoFc->lpszOutput);
-    lpDocinfo->lpszDatatype = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpDocinfoFc->lpszDatatype);
-    lpDocinfo->fwType = (*env)->GetIntField(env,lpObject,lpDocinfoFc->fwType);
-}
-
-void setDocinfoFields(JNIEnv *env, jobject lpObject, DOCINFO *lpDocinfo, DOCINFO_FID_CACHE *lpDocinfoFc)
-{
-    (*env)->SetIntField(env,lpObject,lpDocinfoFc->cbSize, (jint)lpDocinfo->cbSize);
-    (*env)->SetIntField(env,lpObject,lpDocinfoFc->lpszDocName, (jint)lpDocinfo->lpszDocName);
-    (*env)->SetIntField(env,lpObject,lpDocinfoFc->lpszOutput, (jint)lpDocinfo->lpszOutput);
-    (*env)->SetIntField(env,lpObject,lpDocinfoFc->lpszDatatype, (jint)lpDocinfo->lpszDatatype);
-    (*env)->SetIntField(env,lpObject,lpDocinfoFc->fwType, lpDocinfo->fwType);
-}
-
 void getDrawitemstructFields(JNIEnv *env, jobject lpObject, DRAWITEMSTRUCT *lpDrawitemstruct, DRAWITEMSTRUCT_FID_CACHE *lpDrawitemstructFc)
 {
     lpDrawitemstruct->CtlType = (*env)->GetIntField(env,lpObject,lpDrawitemstructFc->CtlType);
@@ -2052,18 +2510,6 @@ void setDrawitemstructFields(JNIEnv *env, jobject lpObject, DRAWITEMSTRUCT *lpDr
     (*env)->SetIntField(env,lpObject,lpDrawitemstructFc->right, lpDrawitemstruct->rcItem.right);
     (*env)->SetIntField(env,lpObject,lpDrawitemstructFc->bottom, lpDrawitemstruct->rcItem.bottom);
     (*env)->SetIntField(env,lpObject,lpDrawitemstructFc->itemData, lpDrawitemstruct->itemData);
-}
-
-void getGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc)
-{
-	lpGradientrect->UpperLeft = (*env)->GetIntField(env,lpObject,lpGradientrectFc->UpperLeft);
-	lpGradientrect->LowerRight = (*env)->GetIntField(env,lpObject,lpGradientrectFc->LowerRight);
-}
-
-void setGradientrectFields(JNIEnv *env, jobject lpObject, GRADIENT_RECT *lpGradientrect, GRADIENT_RECT_FID_CACHE *lpGradientrectFc)
-{
-    (*env)->SetIntField(env,lpObject,lpGradientrectFc->UpperLeft, (jint)lpGradientrect->UpperLeft);
-    (*env)->SetIntField(env,lpObject,lpGradientrectFc->LowerRight, (jint)lpGradientrect->LowerRight);
 }
 
 void getHditemFields(JNIEnv *env, jobject lpObject, HDITEM *lpHditem, HDITEM_FID_CACHE *lpHditemFc)
@@ -2102,28 +2548,6 @@ void setHdlayoutFields(JNIEnv *env, jobject lpObject, HDLAYOUT *lpHdlayout, HDLA
 {
     (*env)->SetIntField(env,lpObject,lpHdlayoutFc->prc, (jint)lpHdlayout->prc);
     (*env)->SetIntField(env,lpObject,lpHdlayoutFc->pwpos, (jint)lpHdlayout->pwpos);
-}
-
-void getHelpinfoFields(JNIEnv *env, jobject lpObject, HELPINFO *lpHelpinfo, HELPINFO_FID_CACHE *lpHelpinfoFc)
-{
-    lpHelpinfo->cbSize = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->cbSize);
-    lpHelpinfo->iContextType = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->iContextType);
-    lpHelpinfo->iCtrlId = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->iCtrlId);
-    lpHelpinfo->hItemHandle = (HANDLE)(*env)->GetIntField(env,lpObject,lpHelpinfoFc->hItemHandle);
-    lpHelpinfo->dwContextId = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->dwContextId);
-    lpHelpinfo->MousePos.x = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->x);
-    lpHelpinfo->MousePos.y = (*env)->GetIntField(env,lpObject,lpHelpinfoFc->y);
-}
-
-void setHelpinfoFields(JNIEnv *env, jobject lpObject, HELPINFO *lpHelpinfo, HELPINFO_FID_CACHE *lpHelpinfoFc)
-{
-    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->cbSize, lpHelpinfo->cbSize);
-    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->iContextType, lpHelpinfo->iContextType);
-    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->iCtrlId, lpHelpinfo->iCtrlId);
-    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->hItemHandle, (jint)lpHelpinfo->hItemHandle);
-    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->dwContextId, lpHelpinfo->dwContextId);
-    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->x, lpHelpinfo->MousePos.x);
-    (*env)->SetIntField(env,lpObject,lpHelpinfoFc->y, lpHelpinfo->MousePos.y);
 }
 
 void getIconinfoFields(JNIEnv *env, jobject lpObject, ICONINFO *lpIconinfo, ICONINFO_FID_CACHE *lpIconinfoFc)
@@ -2492,30 +2916,6 @@ void setMeasureitemstructFields(JNIEnv *env, jobject lpObject, MEASUREITEMSTRUCT
     (*env)->SetIntField(env,lpObject,lpMeasureitemstructFc->itemData, lpMeasureitemstruct->itemData);
 }
 
-#ifdef USE_2000_CALLS
-void getMenuinfoFields(JNIEnv *env, jobject lpObject, MENUINFO *lpMenuinfo, MENUINFO_FID_CACHE *lpMenuinfoFc)
-{
-    lpMenuinfo->cbSize = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->cbSize);
-    lpMenuinfo->fMask = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->fMask);
-    lpMenuinfo->dwStyle = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->dwStyle);
-    lpMenuinfo->cyMax = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->cyMax);
-    lpMenuinfo->hbrBack = (HBRUSH)(*env)->GetIntField(env,lpObject,lpMenuinfoFc->hbrBack);
-    lpMenuinfo->dwContextHelpID = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->dwContextHelpID);
-    lpMenuinfo->dwMenuData = (*env)->GetIntField(env,lpObject,lpMenuinfoFc->dwMenuData);
-}
-
-void setMenuinfoFields(JNIEnv *env, jobject lpObject, MENUINFO *lpMenuinfo, MENUINFO_FID_CACHE *lpMenuinfoFc)
-{
-    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->cbSize, lpMenuinfo->cbSize);
-    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->fMask, lpMenuinfo->fMask);
-    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->dwStyle, lpMenuinfo->dwStyle);
-    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->cyMax, lpMenuinfo->cyMax);
-    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->hbrBack, (jint)lpMenuinfo->hbrBack);
-    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->dwContextHelpID, lpMenuinfo->dwContextHelpID);
-    (*env)->SetIntField(env,lpObject,lpMenuinfoFc->dwMenuData, lpMenuinfo->dwMenuData);
-}
-#endif
-
 void getMenuiteminfoFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpMenuiteminfo, MENUITEMINFO_FID_CACHE *lpMenuiteminfoFc)
 {
     lpMenuiteminfo->cbSize = (*env)->GetIntField(env,lpObject,lpMenuiteminfoFc->cbSize);
@@ -2530,7 +2930,9 @@ void getMenuiteminfoFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpMenuit
     lpMenuiteminfo->dwTypeData = (LPTSTR)(*env)->GetIntField(env,lpObject,lpMenuiteminfoFc->dwTypeData);
     lpMenuiteminfo->cch = (*env)->GetIntField(env,lpObject,lpMenuiteminfoFc->cch);
 #ifdef USE_2000_CALLS
+#ifndef _WIN32_WCE
     lpMenuiteminfo->hbmpItem = (HBITMAP)(*env)->GetIntField(env,lpObject,lpMenuiteminfoFc->hbmpItem);
+#endif
 #endif
 }
 
@@ -2548,7 +2950,9 @@ void setMenuiteminfoFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpMenuit
     (*env)->SetIntField(env,lpObject,lpMenuiteminfoFc->dwTypeData, (jint)lpMenuiteminfo->dwTypeData);
     (*env)->SetIntField(env,lpObject,lpMenuiteminfoFc->cch, lpMenuiteminfo->cch);
 #ifdef USE_2000_CALLS
+#ifndef _WIN32_WCE
     (*env)->SetIntField(env,lpObject,lpMenuiteminfoFc->hbmpItem, (jint)lpMenuiteminfo->hbmpItem);
+#endif
 #endif
 }
 
@@ -2572,26 +2976,6 @@ void setMsgFields(JNIEnv *env, jobject lpObject, MSG *lpMsg, MSG_FID_CACHE *lpMs
     (*env)->SetIntField(env,lpObject,lpMsgFc->time, lpMsg->time);
     (*env)->SetIntField(env,lpObject,lpMsgFc->x, lpMsg->pt.x);
     (*env)->SetIntField(env,lpObject,lpMsgFc->y, lpMsg->pt.y);
-}
-
-void getMsgfilterFields(JNIEnv *env, jobject lpObject, MSGFILTER *lpMsgfilter, MSGFILTER_FID_CACHE *lpMsgfilterFc)
-{
-    lpMsgfilter->nmhdr.hwndFrom = (HWND)(*env)->GetIntField(env,lpObject,lpMsgfilterFc->hwndFrom);
-    lpMsgfilter->nmhdr.idFrom = (*env)->GetIntField(env,lpObject,lpMsgfilterFc->idFrom);
-    lpMsgfilter->nmhdr.code = (*env)->GetIntField(env,lpObject,lpMsgfilterFc->code);
-    lpMsgfilter->msg = (*env)->GetIntField(env,lpObject,lpMsgfilterFc->msg);
-    lpMsgfilter->wParam = (*env)->GetIntField(env,lpObject,lpMsgfilterFc->lParam);
-    lpMsgfilter->wParam = (*env)->GetIntField(env,lpObject,lpMsgfilterFc->wParam);
-}
-
-void setMsgfilterFields(JNIEnv *env, jobject lpObject, MSGFILTER *lpMsgfilter, MSGFILTER_FID_CACHE *lpMsgfilterFc)
-{
-    (*env)->SetIntField(env,lpObject,lpMsgfilterFc->hwndFrom, (jint)lpMsgfilter->nmhdr.hwndFrom);
-    (*env)->SetIntField(env,lpObject,lpMsgfilterFc->idFrom, lpMsgfilter->nmhdr.idFrom);
-    (*env)->SetIntField(env,lpObject,lpMsgfilterFc->code, lpMsgfilter->nmhdr.code);
-    (*env)->SetIntField(env,lpObject,lpMsgfilterFc->msg, (jint)lpMsgfilter->msg);
-    (*env)->SetIntField(env,lpObject,lpMsgfilterFc->wParam, (jint)lpMsgfilter->wParam);
-    (*env)->SetIntField(env,lpObject,lpMsgfilterFc->lParam, (jint)lpMsgfilter->lParam);
 }
 
 void getNmhdrFields(JNIEnv *env, jobject lpObject, NMHDR *lpNmhdr, NMHDR_FID_CACHE *lpNmhdrFc)
@@ -2672,10 +3056,12 @@ void getNmtoolbarFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpNmtoolbar, N
     lpNmtoolbar->tbButton.iString = (*env)->GetIntField(env,lpObject,lpNmtoolbarFc->iString);
     lpNmtoolbar->cchText = (*env)->GetIntField(env,lpObject,lpNmtoolbarFc->cchText);
     lpNmtoolbar->pszText = (LPTSTR)(*env)->GetIntField(env,lpObject,lpNmtoolbarFc->pszText);
+#ifndef _WIN32_WCE
     lpNmtoolbar->rcButton.left = (*env)->GetIntField(env,lpObject,lpNmtoolbarFc->left);
     lpNmtoolbar->rcButton.top = (*env)->GetIntField(env,lpObject,lpNmtoolbarFc->top);
     lpNmtoolbar->rcButton.right = (*env)->GetIntField(env,lpObject,lpNmtoolbarFc->right);
     lpNmtoolbar->rcButton.bottom = (*env)->GetIntField(env,lpObject,lpNmtoolbarFc->bottom);
+#endif
 }
 
 void setNmtoolbarFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpNmtoolbar, NMTOOLBAR_FID_CACHE *lpNmtoolbarFc)
@@ -2692,145 +3078,14 @@ void setNmtoolbarFields(JNIEnv *env, jobject lpObject, NMTOOLBAR *lpNmtoolbar, N
     (*env)->SetIntField(env,lpObject,lpNmtoolbarFc->iString, lpNmtoolbar->tbButton.iString);
     (*env)->SetIntField(env,lpObject,lpNmtoolbarFc->cchText, lpNmtoolbar->cchText);
     (*env)->SetIntField(env,lpObject,lpNmtoolbarFc->pszText, (jint)lpNmtoolbar->pszText);
+#ifndef _WIN32_WCE
     (*env)->SetIntField(env,lpObject,lpNmtoolbarFc->left, lpNmtoolbar->rcButton.left);
     (*env)->SetIntField(env,lpObject,lpNmtoolbarFc->top, lpNmtoolbar->rcButton.top);
     (*env)->SetIntField(env,lpObject,lpNmtoolbarFc->right, lpNmtoolbar->rcButton.right);
     (*env)->SetIntField(env,lpObject,lpNmtoolbarFc->bottom, lpNmtoolbar->rcButton.bottom);
+#endif
 }
 
-void getNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
-{
-    jint *lpInt;
-
-    lpNmttdispinfo->hdr.hwndFrom = (HWND)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom);
-    lpNmttdispinfo->hdr.idFrom = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->idFrom);
-    lpNmttdispinfo->hdr.code = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->code);
-    lpNmttdispinfo->lpszText = (LPTSTR)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lpszText);
-    lpInt = (jint *)lpNmttdispinfo->szText;
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad0);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad1);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad2);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad3);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad4);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad5);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad6);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad7);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad8);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad9);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad10);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad11);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad12);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad13);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad14);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad15);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad16);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad17);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad18);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad19);
-    lpNmttdispinfo->hinst = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hinst);
-    lpNmttdispinfo->uFlags = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->uFlags);
-    lpNmttdispinfo->lParam = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lParam);
-}
-void getNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
-{
-    jint *lpInt;
-
-    lpNmttdispinfo->hdr.hwndFrom = (HWND)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom);
-    lpNmttdispinfo->hdr.idFrom = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->idFrom);
-    lpNmttdispinfo->hdr.code = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->code);
-    lpNmttdispinfo->lpszText = (LPTSTR)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lpszText);
-    lpInt = (jint *)lpNmttdispinfo->szText;
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad0);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad1);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad2);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad3);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad4);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad5);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad6);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad7);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad8);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad9);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad10);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad11);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad12);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad13);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad14);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad15);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad16);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad17);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad18);
-    *lpInt++ = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->pad19);
-    lpNmttdispinfo->hinst = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->hinst);
-    lpNmttdispinfo->uFlags = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->uFlags);
-    lpNmttdispinfo->lParam = (*env)->GetIntField(env,lpObject,lpNmttdispinfoFc->lParam);
-}
-
-void setNmttdispinfoFieldsA(JNIEnv *env, jobject lpObject, NMTTDISPINFO *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
-{
-    jint *lpInt;
-
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom, (jint)lpNmttdispinfo->hdr.hwndFrom);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->idFrom, lpNmttdispinfo->hdr.idFrom);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->code, lpNmttdispinfo->hdr.code);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lpszText, (jint)lpNmttdispinfo->lpszText);
-    lpInt = (jint *)lpNmttdispinfo->szText;
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad0, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad1, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad2, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad3, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad4, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad5, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad6, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad7, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad8, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad9, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad10, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad11, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad12, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad13, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad14, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad15, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad16, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad17, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad18, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad19, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hinst, (jint)lpNmttdispinfo->hinst);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->uFlags, lpNmttdispinfo->uFlags);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lParam, lpNmttdispinfo->lParam);
-}
-void setNmttdispinfoFieldsW(JNIEnv *env, jobject lpObject, NMTTDISPINFOW *lpNmttdispinfo, NMTTDISPINFO_FID_CACHE *lpNmttdispinfoFc)
-{
-    jint *lpInt;
-
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hwndFrom, (jint)lpNmttdispinfo->hdr.hwndFrom);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->idFrom, lpNmttdispinfo->hdr.idFrom);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->code, lpNmttdispinfo->hdr.code);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lpszText, (jint)lpNmttdispinfo->lpszText);
-    lpInt = (jint *)lpNmttdispinfo->szText;
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad0, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad1, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad2, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad3, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad4, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad5, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad6, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad7, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad8, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad9, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad10, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad11, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad12, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad13, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad14, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad15, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad16, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad17, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad18, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->pad19, *lpInt++);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->hinst, (jint)lpNmttdispinfo->hinst);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->uFlags, lpNmttdispinfo->uFlags);
-    (*env)->SetIntField(env,lpObject,lpNmttdispinfoFc->lParam, lpNmttdispinfo->lParam);
-}
 
 void getNmtvcustomdrawFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpNmtvcustomdraw, NMTVCUSTOMDRAW_FID_CACHE *lpNmtvcustomdrawFc)
 {
@@ -2848,7 +3103,9 @@ void getNmtvcustomdrawFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpNm
     lpNmtvcustomdraw->nmcd.lItemlParam = (*env)->GetIntField(env,lpObject,lpNmtvcustomdrawFc->lItemlParam);
     lpNmtvcustomdraw->clrText = (*env)->GetIntField(env,lpObject,lpNmtvcustomdrawFc->clrText);
     lpNmtvcustomdraw->clrTextBk = (*env)->GetIntField(env,lpObject,lpNmtvcustomdrawFc->clrTextBk);
+#ifndef _WIN32_WCE
     lpNmtvcustomdraw->iLevel = (*env)->GetIntField(env,lpObject,lpNmtvcustomdrawFc->iLevel);
+#endif
 }
 
 void setNmtvcustomdrawFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpNmtvcustomdraw, NMTVCUSTOMDRAW_FID_CACHE *lpNmtvcustomdrawFc)
@@ -2867,7 +3124,9 @@ void setNmtvcustomdrawFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpNm
     (*env)->SetIntField(env,lpObject,lpNmtvcustomdrawFc->lItemlParam, lpNmtvcustomdraw->nmcd.lItemlParam);
     (*env)->SetIntField(env,lpObject,lpNmtvcustomdrawFc->clrText, lpNmtvcustomdraw->clrText);
     (*env)->SetIntField(env,lpObject,lpNmtvcustomdrawFc->clrTextBk, lpNmtvcustomdraw->clrTextBk);
+#ifndef _WIN32_WCE
     (*env)->SetIntField(env,lpObject,lpNmtvcustomdrawFc->iLevel, lpNmtvcustomdraw->iLevel);
+#endif
 }
 
 void getOpenfilenameFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpOpenfilename, OPENFILENAME_FID_CACHE *lpOpenfilenameFc)
@@ -2916,56 +3175,6 @@ void setOpenfilenameFields(JNIEnv *env, jobject lpObject, OPENFILENAME *lpOpenfi
     (*env)->SetIntField(env,lpObject,lpOpenfilenameFc->lCustData, lpOpenfilename->lCustData);
     (*env)->SetIntField(env,lpObject,lpOpenfilenameFc->lpfnHook, (jint)lpOpenfilename->lpfnHook);
     (*env)->SetIntField(env,lpObject,lpOpenfilenameFc->lpTemplateName, (jint)lpOpenfilename->lpTemplateName);
-}
-
-void getPagesetupdlgFields(JNIEnv *env, jobject lpObject, PAGESETUPDLG *lpPagesetupdlg, PAGESETUPDLG_FID_CACHE *lpPagesetupdlgFc)
-{
-    lpPagesetupdlg->lStructSize = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lStructSize);
-    lpPagesetupdlg->hwndOwner = (HWND)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hwndOwner);
-    lpPagesetupdlg->hDevMode = (HGLOBAL)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hDevMode);
-    lpPagesetupdlg->hDevNames = (HGLOBAL)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hDevNames);
-    lpPagesetupdlg->Flags = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->Flags);
-    lpPagesetupdlg->ptPaperSize.x = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->ptPaperSize_x);
-    lpPagesetupdlg->ptPaperSize.y = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->ptPaperSize_y);
-    lpPagesetupdlg->rtMinMargin.left = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_left);
-    lpPagesetupdlg->rtMinMargin.top = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_top);
-    lpPagesetupdlg->rtMinMargin.right = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_right);
-    lpPagesetupdlg->rtMinMargin.bottom = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_bottom);
-    lpPagesetupdlg->rtMargin.left = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_left);
-    lpPagesetupdlg->rtMargin.top = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_top);
-    lpPagesetupdlg->rtMargin.right = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_right);
-    lpPagesetupdlg->rtMargin.bottom = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_bottom);
-    lpPagesetupdlg->hInstance = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hInstance);
-    lpPagesetupdlg->lCustData = (*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lCustData);
-    lpPagesetupdlg->lpfnPageSetupHook = (LPPAGESETUPHOOK)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lpfnPageSetupHook);
-    lpPagesetupdlg->lpfnPagePaintHook = (LPPAGEPAINTHOOK)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lpfnPagePaintHook);
-    lpPagesetupdlg->lpPageSetupTemplateName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->lpPageSetupTemplateName);
-    lpPagesetupdlg->hPageSetupTemplate = (HGLOBAL)(*env)->GetIntField(env,lpObject,lpPagesetupdlgFc->hPageSetupTemplate);
-}
-
-void setPagesetupdlgFields(JNIEnv *env, jobject lpObject, PAGESETUPDLG *lpPagesetupdlg, PAGESETUPDLG_FID_CACHE *lpPagesetupdlgFc)
-{
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lStructSize, lpPagesetupdlg->lStructSize);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hwndOwner, (jint)lpPagesetupdlg->hwndOwner);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hDevMode, (jint)lpPagesetupdlg->hDevMode);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hDevNames, (jint)lpPagesetupdlg->hDevNames);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->Flags, lpPagesetupdlg->Flags);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->ptPaperSize_x, lpPagesetupdlg->ptPaperSize.x);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->ptPaperSize_y, lpPagesetupdlg->ptPaperSize.y);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_left, lpPagesetupdlg->rtMinMargin.left);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_top, lpPagesetupdlg->rtMinMargin.top);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_right, lpPagesetupdlg->rtMinMargin.right);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMinMargin_bottom, lpPagesetupdlg->rtMinMargin.bottom);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_left, lpPagesetupdlg->rtMargin.left);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_top, lpPagesetupdlg->rtMargin.top);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_right, lpPagesetupdlg->rtMargin.right);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->rtMargin_bottom, lpPagesetupdlg->rtMargin.bottom);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hInstance, (jint)lpPagesetupdlg->hInstance);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lCustData, lpPagesetupdlg->lCustData);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lpfnPageSetupHook, (jint)lpPagesetupdlg->lpfnPageSetupHook);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lpfnPagePaintHook, (jint)lpPagesetupdlg->lpfnPagePaintHook);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->lpPageSetupTemplateName, (jint)lpPagesetupdlg->lpPageSetupTemplateName);
-    (*env)->SetIntField(env,lpObject,lpPagesetupdlgFc->hPageSetupTemplate, (jint)lpPagesetupdlg->hPageSetupTemplate);
 }
 
 void getPaintstructFields(JNIEnv *env, jobject lpObject, PAINTSTRUCT *lpPaint, PAINTSTRUCT_FID_CACHE *lpPaintstructFc)
@@ -3094,52 +3303,6 @@ void setPointFields(JNIEnv *env, jobject lpObject, POINT *lpPoint, POINT_FID_CAC
     (*env)->SetIntField(env,lpObject,lpPointFc->y, lpPoint->y);
 }
 
-void getPrintdlgFields(JNIEnv *env, jobject lpObject, PRINTDLG *lpPrintdlg, PRINTDLG_FID_CACHE *lpPrintdlgFc)
-{
-    lpPrintdlg->lStructSize = (*env)->GetIntField(env,lpObject,lpPrintdlgFc->lStructSize);
-    lpPrintdlg->hwndOwner = (HWND)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hwndOwner);
-    lpPrintdlg->hDevMode = (HANDLE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hDevMode);
-    lpPrintdlg->hDevNames = (HANDLE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hDevNames);
-    lpPrintdlg->hDC = (HDC)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hDC);
-    lpPrintdlg->Flags = (*env)->GetIntField(env,lpObject,lpPrintdlgFc->Flags);
-    lpPrintdlg->nFromPage = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nFromPage);
-    lpPrintdlg->nToPage = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nToPage);
-    lpPrintdlg->nMinPage = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nMinPage);
-    lpPrintdlg->nMaxPage = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nMaxPage);
-    lpPrintdlg->nCopies = (*env)->GetShortField(env,lpObject,lpPrintdlgFc->nCopies);
-    lpPrintdlg->hInstance = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hInstance);
-    lpPrintdlg->lCustData = (*env)->GetIntField(env,lpObject,lpPrintdlgFc->lCustData);
-    lpPrintdlg->lpfnPrintHook = (LPPRINTHOOKPROC)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->lpfnPrintHook);
-    lpPrintdlg->lpfnSetupHook = (LPSETUPHOOKPROC)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->lpfnSetupHook);
-    lpPrintdlg->lpPrintTemplateName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->lpPrintTemplateName);
-    lpPrintdlg->lpSetupTemplateName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->lpSetupTemplateName);
-    lpPrintdlg->hPrintTemplate = (HANDLE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hPrintTemplate);
-    lpPrintdlg->hSetupTemplate = (HANDLE)(*env)->GetIntField(env,lpObject,lpPrintdlgFc->hSetupTemplate);
-}
-
-void setPrintdlgFields(JNIEnv *env, jobject lpObject, PRINTDLG *lpPrintdlg, PRINTDLG_FID_CACHE *lpPrintdlgFc)
-{
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lStructSize, lpPrintdlg->lStructSize);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hwndOwner, (jint)lpPrintdlg->hwndOwner);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hDevMode, (jint)lpPrintdlg->hDevMode);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hDevNames, (jint)lpPrintdlg->hDevNames);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hDC, (jint)lpPrintdlg->hDC);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->Flags, lpPrintdlg->Flags);
-    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nFromPage, lpPrintdlg->nFromPage);
-    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nToPage, lpPrintdlg->nToPage);
-    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nMinPage, lpPrintdlg->nMinPage);
-    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nMaxPage, lpPrintdlg->nMaxPage);
-    (*env)->SetShortField(env,lpObject,lpPrintdlgFc->nCopies, lpPrintdlg->nCopies);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hInstance, (jint)lpPrintdlg->hInstance);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lCustData, lpPrintdlg->lCustData);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lpfnPrintHook, (jint)lpPrintdlg->lpfnPrintHook);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lpfnSetupHook, (jint)lpPrintdlg->lpfnSetupHook);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lpPrintTemplateName, (jint)lpPrintdlg->lpPrintTemplateName);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->lpSetupTemplateName, (jint)lpPrintdlg->lpSetupTemplateName);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hPrintTemplate, (jint)lpPrintdlg->hPrintTemplate);
-    (*env)->SetIntField(env,lpObject,lpPrintdlgFc->hSetupTemplate, (jint)lpPrintdlg->hSetupTemplate);
-}
-
 void getRebarbandinfoFields(JNIEnv *env, jobject lpObject, REBARBANDINFO *lpRebarbandinfo, REBARBANDINFO_FID_CACHE *lpRebarbandinfoFc)
 {
     lpRebarbandinfo->cbSize = (*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->cbSize);
@@ -3156,12 +3319,14 @@ void getRebarbandinfoFields(JNIEnv *env, jobject lpObject, REBARBANDINFO *lpReba
     lpRebarbandinfo->cx = (*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->cx);
     lpRebarbandinfo->hbmBack = (HBITMAP)(*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->hbmBack);
     lpRebarbandinfo->wID = (*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->wID);
+#ifndef _WIN32_WCE
     lpRebarbandinfo->cyChild = (*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->cyChild);
     lpRebarbandinfo->cyMaxChild = (*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->cyMaxChild);
     lpRebarbandinfo->cyIntegral = (*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->cyIntegral);
     lpRebarbandinfo->cxIdeal = (*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->cxIdeal);
     lpRebarbandinfo->lParam = (*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->lParam);
     lpRebarbandinfo->cxHeader = (*env)->GetIntField(env,lpObject,lpRebarbandinfoFc->cxHeader);
+#endif
 }
 
 void setRebarbandinfoFields(JNIEnv *env, jobject lpObject, REBARBANDINFO *lpRebarbandinfo, REBARBANDINFO_FID_CACHE *lpRebarbandinfoFc)
@@ -3180,12 +3345,14 @@ void setRebarbandinfoFields(JNIEnv *env, jobject lpObject, REBARBANDINFO *lpReba
     (*env)->SetIntField(env,lpObject,lpRebarbandinfoFc->cx, lpRebarbandinfo->cx);
     (*env)->SetIntField(env,lpObject,lpRebarbandinfoFc->hbmBack, (jint)lpRebarbandinfo->hbmBack);
     (*env)->SetIntField(env,lpObject,lpRebarbandinfoFc->wID, lpRebarbandinfo->wID);
+#ifndef _WIN32_WCE
     (*env)->SetIntField(env,lpObject,lpRebarbandinfoFc->cyChild, lpRebarbandinfo->cyChild);
     (*env)->SetIntField(env,lpObject,lpRebarbandinfoFc->cyMaxChild, lpRebarbandinfo->cyMaxChild);
     (*env)->SetIntField(env,lpObject,lpRebarbandinfoFc->cyIntegral, lpRebarbandinfo->cyIntegral);
     (*env)->SetIntField(env,lpObject,lpRebarbandinfoFc->cxIdeal, lpRebarbandinfo->cxIdeal);
     (*env)->SetIntField(env,lpObject,lpRebarbandinfoFc->lParam, lpRebarbandinfo->lParam);
     (*env)->SetIntField(env,lpObject,lpRebarbandinfoFc->cxHeader, lpRebarbandinfo->cxHeader);
+#endif
 }
 
 void getRectFields(JNIEnv *env, jobject lpObject, RECT *lpRect, RECT_FID_CACHE *lpRectFc)
@@ -3402,72 +3569,6 @@ void setTextmetricFieldsW(JNIEnv *env, jobject lpObject, TEXTMETRICW *lpTextmetr
     (*env)->SetByteField(env,lpObject,lpTextmetricFc->tmCharSet, lpTextmetric->tmCharSet);
 }
 
-void getToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc)
-{
-    lpToolinfo->cbSize = (*env)->GetIntField(env,lpObject,lpToolinfoFc->cbSize);
-    lpToolinfo->uFlags = (*env)->GetIntField(env,lpObject,lpToolinfoFc->uFlags);
-    lpToolinfo->hwnd = (HWND)(*env)->GetIntField(env,lpObject,lpToolinfoFc->hwnd);
-    lpToolinfo->uId = (*env)->GetIntField(env,lpObject,lpToolinfoFc->uId);
-    lpToolinfo->rect.left = (*env)->GetIntField(env,lpObject,lpToolinfoFc->left);
-    lpToolinfo->rect.top = (*env)->GetIntField(env,lpObject,lpToolinfoFc->top);
-    lpToolinfo->rect.right = (*env)->GetIntField(env,lpObject,lpToolinfoFc->right);
-    lpToolinfo->rect.bottom = (*env)->GetIntField(env,lpObject,lpToolinfoFc->bottom);
-    lpToolinfo->hinst = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpToolinfoFc->hinst);
-    lpToolinfo->lpszText = (LPTSTR)(*env)->GetIntField(env,lpObject,lpToolinfoFc->lpszText);
-    lpToolinfo->lParam = (*env)->GetIntField(env,lpObject,lpToolinfoFc->lParam);
-}
-
-void setToolinfoFields(JNIEnv *env, jobject lpObject, TOOLINFO *lpToolinfo, TOOLINFO_FID_CACHE *lpToolinfoFc)
-{
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->cbSize, lpToolinfo->cbSize);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->uFlags, lpToolinfo->uFlags);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->hwnd, (jint)lpToolinfo->hwnd);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->uId, lpToolinfo->uId);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->left, lpToolinfo->rect.left);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->top, lpToolinfo->rect.top);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->right, lpToolinfo->rect.right);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->bottom, lpToolinfo->rect.bottom);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->hinst, (jint)lpToolinfo->hinst);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->lpszText, (jint)lpToolinfo->lpszText);
-    (*env)->SetIntField(env,lpObject,lpToolinfoFc->lParam, lpToolinfo->lParam);
-}
-
-void getTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc)
-{
-    lpTrackmouseevent->cbSize = (*env)->GetIntField(env,lpObject,lpTrackmouseeventFc->cbSize);
-    lpTrackmouseevent->dwFlags = (*env)->GetIntField(env,lpObject,lpTrackmouseeventFc->dwFlags);
-    lpTrackmouseevent->hwndTrack = (HWND)(*env)->GetIntField(env,lpObject,lpTrackmouseeventFc->hwndTrack);
-    lpTrackmouseevent->dwHoverTime = (*env)->GetIntField(env,lpObject,lpTrackmouseeventFc->dwHoverTime);
-}
-
-void setTrackmouseeventFields(JNIEnv *env, jobject lpObject, TRACKMOUSEEVENT *lpTrackmouseevent, TRACKMOUSEEVENT_FID_CACHE *lpTrackmouseeventFc)
-{
-    (*env)->SetIntField(env,lpObject,lpTrackmouseeventFc->cbSize, lpTrackmouseevent->cbSize);
-    (*env)->SetIntField(env,lpObject,lpTrackmouseeventFc->dwFlags, lpTrackmouseevent->dwFlags);
-    (*env)->SetIntField(env,lpObject,lpTrackmouseeventFc->hwndTrack, (jint)lpTrackmouseevent->hwndTrack);
-    (*env)->SetIntField(env,lpObject,lpTrackmouseeventFc->dwHoverTime, lpTrackmouseevent->dwHoverTime);
-}
-
-void getTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc)
-{
-	lpTrivertex->x = (*env)->GetIntField(env,lpObject,lpTrivertexFc->x);
-	lpTrivertex->y = (*env)->GetIntField(env,lpObject,lpTrivertexFc->y);
-	lpTrivertex->Red = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Red);
-	lpTrivertex->Green = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Green);
-	lpTrivertex->Blue = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Blue);
-	lpTrivertex->Alpha = (*env)->GetShortField(env,lpObject,lpTrivertexFc->Alpha);
-}
-
-void setTrivertexFields(JNIEnv *env, jobject lpObject, TRIVERTEX *lpTrivertex, TRIVERTEX_FID_CACHE *lpTrivertexFc)
-{
-    (*env)->SetIntField(env,lpObject,lpTrivertexFc->x, (jint)lpTrivertex->x);
-    (*env)->SetIntField(env,lpObject,lpTrivertexFc->y, (jint)lpTrivertex->y);
-    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Red, (jshort)lpTrivertex->Red);
-    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Green, (jshort)lpTrivertex->Green);
-    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Blue, (jshort)lpTrivertex->Blue);
-    (*env)->SetShortField(env,lpObject,lpTrivertexFc->Alpha, (jshort)lpTrivertex->Alpha);
-}
-
 void getTvhittestinfoFields(JNIEnv *env, jobject lpObject, TVHITTESTINFO *lpTvhittestinfo, TVHITTESTINFO_FID_CACHE *lpTvhittestinfoFc)
 {
     lpTvhittestinfo->pt.x = (*env)->GetIntField(env,lpObject,lpTvhittestinfoFc->x);
@@ -3568,66 +3669,32 @@ void setWindowposFields(JNIEnv *env, jobject lpObject, WINDOWPOS *lpWindowpos, W
     (*env)->SetIntField(env,lpObject,lpWindowposFc->flags, lpWindowpos->flags);
 }
 
-void getWindowplacementFields(JNIEnv *env, jobject lpObject, WINDOWPLACEMENT *lpWindowplacement, WINDOWPLACEMENT_FID_CACHE *lpWindowplacementFc)
+void getWndclassFields(JNIEnv *env, jobject lpObject, WNDCLASS *lpWndclass, WNDCLASS_FID_CACHE *lpWndclassFc)
 {
-    lpWindowplacement->length = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->length);
-    lpWindowplacement->flags = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->flags);
-    lpWindowplacement->showCmd = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->showCmd);
-    lpWindowplacement->ptMinPosition.x = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->ptMinPosition_x);
-    lpWindowplacement->ptMinPosition.y = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->ptMinPosition_y);
-    lpWindowplacement->ptMaxPosition.x = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->ptMaxPosition_x);
-    lpWindowplacement->ptMaxPosition.y = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->ptMaxPosition_y);
-    lpWindowplacement->rcNormalPosition.left = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->left);
-    lpWindowplacement->rcNormalPosition.top = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->top);
-    lpWindowplacement->rcNormalPosition.right = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->right);
-    lpWindowplacement->rcNormalPosition.bottom = (*env)->GetIntField(env,lpObject,lpWindowplacementFc->bottom);
+    lpWndclass->style = (*env)->GetIntField(env,lpObject,lpWndclassFc->style);
+    lpWndclass->lpfnWndProc = (WNDPROC)(*env)->GetIntField(env,lpObject,lpWndclassFc->lpfnWndProc);
+    lpWndclass->cbClsExtra = (*env)->GetIntField(env,lpObject,lpWndclassFc->cbClsExtra);
+    lpWndclass->cbWndExtra = (*env)->GetIntField(env,lpObject,lpWndclassFc->cbWndExtra);
+    lpWndclass->hInstance = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpWndclassFc->hInstance);
+    lpWndclass->hIcon = (HICON)(*env)->GetIntField(env,lpObject,lpWndclassFc->hIcon);
+    lpWndclass->hCursor = (HICON)(*env)->GetIntField(env,lpObject,lpWndclassFc->hCursor);
+    lpWndclass->hbrBackground = (HBRUSH)(*env)->GetIntField(env,lpObject,lpWndclassFc->hbrBackground);
+    lpWndclass->lpszMenuName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpWndclassFc->lpszMenuName);
+    lpWndclass->lpszClassName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpWndclassFc->lpszClassName);
 }
 
-void setWindowplacementFields(JNIEnv *env, jobject lpObject, WINDOWPLACEMENT *lpWindowplacement, WINDOWPLACEMENT_FID_CACHE *lpWindowplacementFc)
+void setWndclassFields(JNIEnv *env, jobject lpObject, WNDCLASS *lpWndclass, WNDCLASS_FID_CACHE *lpWndclassFc)
 {
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->length, lpWindowplacement->length);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->flags, lpWindowplacement->flags);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->showCmd, lpWindowplacement->showCmd);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->ptMinPosition_x, lpWindowplacement->ptMinPosition.x);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->ptMinPosition_y, lpWindowplacement->ptMinPosition.y);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->ptMaxPosition_x, lpWindowplacement->ptMaxPosition.x);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->ptMaxPosition_y, lpWindowplacement->ptMaxPosition.y);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->left, lpWindowplacement->rcNormalPosition.left);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->top, lpWindowplacement->rcNormalPosition.top);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->right, lpWindowplacement->rcNormalPosition.right);
-    (*env)->SetIntField(env,lpObject,lpWindowplacementFc->bottom, lpWindowplacement->rcNormalPosition.bottom);
-}
-
-void getWndclassexFields(JNIEnv *env, jobject lpObject, WNDCLASSEX *lpWndclassex, WNDCLASSEX_FID_CACHE *lpWndclassexFc)
-{
-    lpWndclassex->cbSize = (*env)->GetIntField(env,lpObject,lpWndclassexFc->cbSize);
-    lpWndclassex->style = (*env)->GetIntField(env,lpObject,lpWndclassexFc->style);
-    lpWndclassex->lpfnWndProc = (WNDPROC)(*env)->GetIntField(env,lpObject,lpWndclassexFc->lpfnWndProc);
-    lpWndclassex->cbClsExtra = (*env)->GetIntField(env,lpObject,lpWndclassexFc->cbClsExtra);
-    lpWndclassex->cbWndExtra = (*env)->GetIntField(env,lpObject,lpWndclassexFc->cbWndExtra);
-    lpWndclassex->hInstance = (HINSTANCE)(*env)->GetIntField(env,lpObject,lpWndclassexFc->hInstance);
-    lpWndclassex->hIcon = (HICON)(*env)->GetIntField(env,lpObject,lpWndclassexFc->hIcon);
-    lpWndclassex->hCursor = (HICON)(*env)->GetIntField(env,lpObject,lpWndclassexFc->hCursor);
-    lpWndclassex->hbrBackground = (HBRUSH)(*env)->GetIntField(env,lpObject,lpWndclassexFc->hbrBackground);
-    lpWndclassex->lpszMenuName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpWndclassexFc->lpszMenuName);
-    lpWndclassex->lpszClassName = (LPCTSTR)(*env)->GetIntField(env,lpObject,lpWndclassexFc->lpszClassName);
-    lpWndclassex->hIconSm = (HICON)(*env)->GetIntField(env,lpObject,lpWndclassexFc->hIconSm);
-}
-
-void setWndclassexFields(JNIEnv *env, jobject lpObject, WNDCLASSEX *lpWndclassex, WNDCLASSEX_FID_CACHE *lpWndclassexFc)
-{
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->cbSize, lpWndclassex->cbSize);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->style, lpWndclassex->style);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->lpfnWndProc, (jint)lpWndclassex->lpfnWndProc);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->cbClsExtra, lpWndclassex->cbClsExtra);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->cbWndExtra, lpWndclassex->cbWndExtra);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->hInstance, (jint)lpWndclassex->hInstance);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->hIcon, (jint)lpWndclassex->hIcon);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->hCursor, (jint)lpWndclassex->hCursor);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->hbrBackground, (jint)lpWndclassex->hbrBackground);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->lpszMenuName, (jint)lpWndclassex->lpszMenuName);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->lpszClassName, (jint)lpWndclassex->lpszClassName);
-    (*env)->SetIntField(env,lpObject,lpWndclassexFc->hIconSm, (jint)lpWndclassex->hIconSm);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->style, lpWndclass->style);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->lpfnWndProc, (jint)lpWndclass->lpfnWndProc);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->cbClsExtra, lpWndclass->cbClsExtra);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->cbWndExtra, lpWndclass->cbWndExtra);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->hInstance, (jint)lpWndclass->hInstance);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->hIcon, (jint)lpWndclass->hIcon);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->hCursor, (jint)lpWndclass->hCursor);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->hbrBackground, (jint)lpWndclass->hbrBackground);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->lpszMenuName, (jint)lpWndclass->lpszMenuName);
+    (*env)->SetIntField(env,lpObject,lpWndclassFc->lpszClassName, (jint)lpWndclass->lpszClassName);
 }
     
 /*
@@ -3781,24 +3848,6 @@ void setDispparamsFields(JNIEnv *env, jobject lpObject, DISPPARAMS *lpDispparams
     (*env)->SetIntField(env,lpObject,lpDispparamsFc->cNamedArgs, lpDispparams->cNamedArgs);
 }
 
-void getDropfilesFields(JNIEnv *env, jobject lpObject, DROPFILES *lpDropfiles, DROPFILES_FID_CACHE *lpDropfilesFc)
-{
-    lpDropfiles->pFiles = (*env)->GetIntField(env,lpObject,lpDropfilesFc->pFiles);
-    lpDropfiles->pt.x = (*env)->GetIntField(env,lpObject,lpDropfilesFc->pt_x);
-    lpDropfiles->pt.y = (*env)->GetIntField(env,lpObject,lpDropfilesFc->pt_y);
-    lpDropfiles->fNC = (*env)->GetIntField(env,lpObject,lpDropfilesFc->fNC);
-    lpDropfiles->fWide = (*env)->GetIntField(env,lpObject,lpDropfilesFc->fWide);
-}
-
-void setDropfilesFields(JNIEnv *env, jobject lpObject, DROPFILES *lpDropfiles, DROPFILES_FID_CACHE *lpDropfilesFc)
-{
-    (*env)->SetIntField(env,lpObject,lpDropfilesFc->pFiles, (jint)lpDropfiles->pFiles);
-    (*env)->SetIntField(env,lpObject,lpDropfilesFc->pt_x, lpDropfiles->pt.x);
-    (*env)->SetIntField(env,lpObject,lpDropfilesFc->pt_y, lpDropfiles->pt.y);
-    (*env)->SetIntField(env,lpObject,lpDropfilesFc->fNC, lpDropfiles->fNC);
-    (*env)->SetIntField(env,lpObject,lpDropfilesFc->fWide, lpDropfiles->fWide);
-}
-
 void getDvaspectinfoFields(JNIEnv *env, jobject lpObject, DVASPECTINFO *lpDvaspectinfo, DVASPECTINFO_FID_CACHE *lpDvaspectinfoFc)
 {
     lpDvaspectinfo->cb = (*env)->GetIntField(env,lpObject,lpDvaspectinfoFc->cb);
@@ -3917,35 +3966,6 @@ void setMulti_qiFields(JNIEnv *env, jobject lpObject, MULTI_QI *lpMulti_qi, MULT
     (*env)->SetIntField(env,lpObject,lpMulti_qiFc->pIID, (jint)lpMulti_qi->pIID);
     (*env)->SetIntField(env,lpObject,lpMulti_qiFc->pItf, (jint)lpMulti_qi->pItf);
     (*env)->SetIntField(env,lpObject,lpMulti_qiFc->hr, (jint)lpMulti_qi->hr);
-}
-
-void getOlecmdFields(JNIEnv *env, jobject lpObject, OLECMD *lpOlecmd, OLECMD_FID_CACHE *lpOlecmdFc)
-{
-    lpOlecmd->cmdID = (*env)->GetIntField(env,lpObject,lpOlecmdFc->cmdID);
-    lpOlecmd->cmdf = (*env)->GetIntField(env,lpObject,lpOlecmdFc->cmdf);
-}
-
-void setOlecmdFields(JNIEnv *env, jobject lpObject, OLECMD *lpOlecmd, OLECMD_FID_CACHE *lpOlecmdFc)
-{
-    (*env)->SetIntField(env,lpObject,lpOlecmdFc->cmdID, lpOlecmd->cmdID);
-    (*env)->SetIntField(env,lpObject,lpOlecmdFc->cmdf, lpOlecmd->cmdf);
-}
-
-void getOlecmdtextFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpOlecmdtext, OLECMDTEXT_FID_CACHE *lpOlecmdtextFc)
-{
-    
-    lpOlecmdtext->cmdtextf = (*env)->GetIntField(env,lpObject,lpOlecmdtextFc->cmdtextf);
-    lpOlecmdtext->cwActual = (*env)->GetIntField(env,lpObject,lpOlecmdtextFc->cwActual);
-    lpOlecmdtext->cwBuf = (*env)->GetIntField(env,lpObject,lpOlecmdtextFc->cwBuf);
-    lpOlecmdtext->rgwz[0] = (*env)->GetShortField(env,lpObject,lpOlecmdtextFc->rgwz);;
-}
-
-void setOlecmdtextFields(JNIEnv *env, jobject lpObject, OLECMDTEXT *lpOlecmdtext, OLECMDTEXT_FID_CACHE *lpOlecmdtextFc)
-{
-    (*env)->SetIntField(env,lpObject,lpOlecmdtextFc->cmdtextf, lpOlecmdtext->cmdtextf);
-    (*env)->SetIntField(env,lpObject,lpOlecmdtextFc->cwActual, lpOlecmdtext->cwActual);
-    (*env)->SetIntField(env,lpObject,lpOlecmdtextFc->cwBuf, lpOlecmdtext->cwBuf);
-    (*env)->SetShortField(env,lpObject,lpOlecmdtextFc->rgwz, lpOlecmdtext->rgwz[0]);
 }
 
 void getOleinplaceframeinfoFields(JNIEnv *env, jobject lpObject, OLEINPLACEFRAMEINFO *lpOleinplaceframeinfo, OLEINPLACEFRAMEINFO_FID_CACHE *lpOleinplaceframeinfoFc)
@@ -4259,28 +4279,117 @@ void setVardesc2Fields(JNIEnv *env, jobject lpObject, VARDESC *lpVardesc, VARDES
     (*env)->SetIntField(env,lpObject,lpVardescFc->varkind, (jint)lpVardesc->varkind);    
 }
 
-void getGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache)
+void cacheOsversioninfoFids(JNIEnv *env, jobject lpOsversioninfo, POSVERSIONINFO_FID_CACHE lpCache)
 {
-	lpStruct->nMaxFit = (*env)->GetIntField(env, lpObject, lpCache->nMaxFit);
-	lpStruct->nGlyphs = (*env)->GetIntField(env, lpObject, lpCache->nGlyphs);
-	lpStruct->lpGlyphs = (LPWSTR)(*env)->GetIntField(env, lpObject, lpCache->lpGlyphs);
-	lpStruct->lpClass = (LPSTR)(*env)->GetIntField(env, lpObject, lpCache->lpClass);
-	lpStruct->lpCaretPos = (int  *)(*env)->GetIntField(env, lpObject, lpCache->lpCaretPos);
-	lpStruct->lpDx = (int  *)(*env)->GetIntField(env, lpObject, lpCache->lpDx);
-	lpStruct->lpOrder = (UINT  *)(*env)->GetIntField(env, lpObject, lpCache->lpOrder);
-	lpStruct->lpOutString = (LPTSTR)(*env)->GetIntField(env, lpObject, lpCache->lpOutString);
-	lpStruct->lStructSize = (*env)->GetIntField(env, lpObject, lpCache->lStructSize);
+    if (lpCache->cached) return;
+    lpCache->osversioninfoClass = (*env)->GetObjectClass(env,lpOsversioninfo);
+    lpCache->dwOSVersionInfoSize = (*env)->GetFieldID(env,lpCache->osversioninfoClass,"dwOSVersionInfoSize","I");
+    lpCache->dwMajorVersion = (*env)->GetFieldID(env,lpCache->osversioninfoClass,"dwMajorVersion","I");
+    lpCache->dwMinorVersion = (*env)->GetFieldID(env,lpCache->osversioninfoClass,"dwMinorVersion","I");
+    lpCache->dwBuildNumber = (*env)->GetFieldID(env,lpCache->osversioninfoClass,"dwBuildNumber","I");
+    lpCache->dwPlatformId = (*env)->GetFieldID(env,lpCache->osversioninfoClass,"dwPlatformId","I");
+//	lpCache->szCSDVersion = (*env)->GetFieldID(env,lpCache->osversioninfoClass,"szCSDVersion","[C");
+    lpCache->cached = 1;
 }
 
-void setGCP_RESULTSFields(JNIEnv *env, jobject lpObject, GCP_RESULTS *lpStruct, PGCP_RESULTS_FID_CACHE lpCache)
+void getOsversioninfoFields(JNIEnv *env, jobject lpObject, OSVERSIONINFO *lpOsversioninfo, OSVERSIONINFO_FID_CACHE *lpOsversioninfoFc)
 {
-	(*env)->SetIntField(env, lpObject, lpCache->nMaxFit, lpStruct->nMaxFit);
-	(*env)->SetIntField(env, lpObject, lpCache->nGlyphs, lpStruct->nGlyphs);
-	(*env)->SetIntField(env, lpObject, lpCache->lpGlyphs, (int)lpStruct->lpGlyphs);
-	(*env)->SetIntField(env, lpObject, lpCache->lpClass, (int)lpStruct->lpClass);
-	(*env)->SetIntField(env, lpObject, lpCache->lpCaretPos, (int)lpStruct->lpCaretPos);
-	(*env)->SetIntField(env, lpObject, lpCache->lpDx, (int)lpStruct->lpDx);
-	(*env)->SetIntField(env, lpObject, lpCache->lpOrder, (int)lpStruct->lpOrder);
-	(*env)->SetIntField(env, lpObject, lpCache->lpOutString, (int)lpStruct->lpOutString);
-	(*env)->SetIntField(env, lpObject, lpCache->lStructSize, lpStruct->lStructSize);
+    lpOsversioninfo->dwOSVersionInfoSize = (*env)->GetIntField(env,lpObject,lpOsversioninfoFc->dwOSVersionInfoSize);
+    lpOsversioninfo->dwMajorVersion = (*env)->GetIntField(env,lpObject,lpOsversioninfoFc->dwMajorVersion);
+    lpOsversioninfo->dwMinorVersion = (*env)->GetIntField(env,lpObject,lpOsversioninfoFc->dwMinorVersion);
+    lpOsversioninfo->dwBuildNumber = (*env)->GetIntField(env,lpObject,lpOsversioninfoFc->dwBuildNumber);
+    lpOsversioninfo->dwPlatformId = (*env)->GetIntField(env,lpObject,lpOsversioninfoFc->dwPlatformId);
+/*
+	{
+	jcharArray szCSDVersion = (*env)->GetObjectField(env, lpObject, lpOsversioninfoFc->szCSDVersion);
+    if (szCSDVersion) {
+        jchar *szCSDVersion1 = (*env)->GetCharArrayElements(env, szCSDVersion, NULL);
+        memcpy(lpOsversioninfo->szCSDVersion, szCSDVersion1, 128 * ??);
+        (*env)->ReleaseCharArrayElements(env, szCSDVersion, szCSDVersion1, JNI_ABORT);
+	}
+	}
+*/
+//	lpOsversioninfo->szCSDVersion = (*env)->GetIntField(env,lpObject,lpOsversioninfoFc->szCSDVersion);
 }
+
+void setOsversioninfoFields(JNIEnv *env, jobject lpObject, OSVERSIONINFO *lpOsversioninfo, OSVERSIONINFO_FID_CACHE *lpOsversioninfoFc)
+{
+    (*env)->SetIntField(env,lpObject,lpOsversioninfoFc->dwOSVersionInfoSize, lpOsversioninfo->dwOSVersionInfoSize);
+    (*env)->SetIntField(env,lpObject,lpOsversioninfoFc->dwMajorVersion, lpOsversioninfo->dwMajorVersion);
+    (*env)->SetIntField(env,lpObject,lpOsversioninfoFc->dwMinorVersion, lpOsversioninfo->dwMinorVersion);
+    (*env)->SetIntField(env,lpObject,lpOsversioninfoFc->dwBuildNumber, lpOsversioninfo->dwBuildNumber);
+    (*env)->SetIntField(env,lpObject,lpOsversioninfoFc->dwPlatformId, lpOsversioninfo->dwPlatformId); 
+/*
+	{
+	jcharArray szCSDVersion = (*env)->GetObjectField(env, lpObject, lpOsversioninfoFc->szCSDVersion);
+    if (szCSDVersion) {
+        jchar *szCSDVersion1 = (*env)->GetCharArrayElements(env, szCSDVersion, NULL);
+        memcpy(szCSDVersion1, lpOsversioninfo->szCSDVersion, 128 * ??);
+        (*env)->ReleaseCharArrayElements(env, szCSDVersion, szCSDVersion1, JNI_ABORT);
+	}
+	}
+*/
+//	(*env)->SetIntField(env,lpObject,lpOsversioninfoFc->szCSDVersion, lpOsversioninfo->szCSDVersion);
+}
+
+void cacheShellexecuteinfoFids(JNIEnv *env, jobject lpObject, PSHELLEXECUTEINFO_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	lpCache->clazz = (*env)->GetObjectClass(env, lpObject);
+	lpCache->hProcess = (*env)->GetFieldID(env, lpCache->clazz, "hProcess", "I");
+	lpCache->hIcon = (*env)->GetFieldID(env, lpCache->clazz, "hIcon", "I");
+	lpCache->dwHotKey = (*env)->GetFieldID(env, lpCache->clazz, "dwHotKey", "I");
+	lpCache->hkeyClass = (*env)->GetFieldID(env, lpCache->clazz, "hkeyClass", "I");
+	lpCache->lpClass = (*env)->GetFieldID(env, lpCache->clazz, "lpClass", "I");
+	lpCache->lpIDList = (*env)->GetFieldID(env, lpCache->clazz, "lpIDList", "I");
+	lpCache->hInstApp = (*env)->GetFieldID(env, lpCache->clazz, "hInstApp", "I");
+	lpCache->nShow = (*env)->GetFieldID(env, lpCache->clazz, "nShow", "I");
+	lpCache->lpDirectory = (*env)->GetFieldID(env, lpCache->clazz, "lpDirectory", "I");
+	lpCache->lpParameters = (*env)->GetFieldID(env, lpCache->clazz, "lpParameters", "I");
+	lpCache->lpFile = (*env)->GetFieldID(env, lpCache->clazz, "lpFile", "I");
+	lpCache->lpVerb = (*env)->GetFieldID(env, lpCache->clazz, "lpVerb", "I");
+	lpCache->hwnd = (*env)->GetFieldID(env, lpCache->clazz, "hwnd", "I");
+	lpCache->fMask = (*env)->GetFieldID(env, lpCache->clazz, "fMask", "I");
+	lpCache->cbSize = (*env)->GetFieldID(env, lpCache->clazz, "cbSize", "I");
+	lpCache->cached = 1;
+}
+
+void getShellexecuteinfoFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct, PSHELLEXECUTEINFO_FID_CACHE lpCache)
+{
+	lpStruct->hProcess = (*env)->GetIntField(env, lpObject, lpCache->hProcess);
+	lpStruct->hIcon = (*env)->GetIntField(env, lpObject, lpCache->hIcon);
+	lpStruct->dwHotKey = (*env)->GetIntField(env, lpObject, lpCache->dwHotKey);
+	lpStruct->hkeyClass = (*env)->GetIntField(env, lpObject, lpCache->hkeyClass);
+	lpStruct->lpClass = (*env)->GetIntField(env, lpObject, lpCache->lpClass);
+	lpStruct->lpIDList = (*env)->GetIntField(env, lpObject, lpCache->lpIDList);
+	lpStruct->hInstApp = (*env)->GetIntField(env, lpObject, lpCache->hInstApp);
+	lpStruct->nShow = (*env)->GetIntField(env, lpObject, lpCache->nShow);
+	lpStruct->lpDirectory = (*env)->GetIntField(env, lpObject, lpCache->lpDirectory);
+	lpStruct->lpParameters = (*env)->GetIntField(env, lpObject, lpCache->lpParameters);
+	lpStruct->lpFile = (*env)->GetIntField(env, lpObject, lpCache->lpFile);
+	lpStruct->lpVerb = (*env)->GetIntField(env, lpObject, lpCache->lpVerb);
+	lpStruct->hwnd = (*env)->GetIntField(env, lpObject, lpCache->hwnd);
+	lpStruct->fMask = (*env)->GetIntField(env, lpObject, lpCache->fMask);
+	lpStruct->cbSize = (*env)->GetIntField(env, lpObject, lpCache->cbSize);
+}
+
+void setShellexecuteinfoFields(JNIEnv *env, jobject lpObject, SHELLEXECUTEINFO *lpStruct, PSHELLEXECUTEINFO_FID_CACHE lpCache)
+{
+	(*env)->SetIntField(env, lpObject, lpCache->hProcess, lpStruct->hProcess);
+	(*env)->SetIntField(env, lpObject, lpCache->hIcon, lpStruct->hIcon);
+	(*env)->SetIntField(env, lpObject, lpCache->dwHotKey, lpStruct->dwHotKey);
+	(*env)->SetIntField(env, lpObject, lpCache->hkeyClass, lpStruct->hkeyClass);
+	(*env)->SetIntField(env, lpObject, lpCache->lpClass, lpStruct->lpClass);
+	(*env)->SetIntField(env, lpObject, lpCache->lpIDList, lpStruct->lpIDList);
+	(*env)->SetIntField(env, lpObject, lpCache->hInstApp, lpStruct->hInstApp);
+	(*env)->SetIntField(env, lpObject, lpCache->nShow, lpStruct->nShow);
+	(*env)->SetIntField(env, lpObject, lpCache->lpDirectory, lpStruct->lpDirectory);
+	(*env)->SetIntField(env, lpObject, lpCache->lpParameters, lpStruct->lpParameters);
+	(*env)->SetIntField(env, lpObject, lpCache->lpFile, lpStruct->lpFile);
+	(*env)->SetIntField(env, lpObject, lpCache->lpVerb, lpStruct->lpVerb);
+	(*env)->SetIntField(env, lpObject, lpCache->hwnd, lpStruct->hwnd);
+	(*env)->SetIntField(env, lpObject, lpCache->fMask, lpStruct->fMask);
+	(*env)->SetIntField(env, lpObject, lpCache->cbSize, lpStruct->cbSize);
+}
+
+

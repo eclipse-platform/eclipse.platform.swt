@@ -36,9 +36,8 @@ public class ToolBar extends Composite {
 	static final int ToolBarProc;
 	static final TCHAR ToolBarClass = new TCHAR (0, OS.TOOLBARCLASSNAME, true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, ToolBarClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, ToolBarClass, lpWndClass);
 		ToolBarProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -147,7 +146,13 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 		*/
 //		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.DefWindowProc (handle, OS.WM_SETREDRAW, 1, 0);
-		OS.RedrawWindow (handle, null, 0, OS.RDW_INVALIDATE | OS.RDW_UPDATENOW);
+		if (OS.IsWinCE) {
+			OS.InvalidateRect (handle, null, false);
+			OS.UpdateWindow (handle);
+		} else {
+			int uFlags = OS.RDW_INVALIDATE | OS.RDW_UPDATENOW;
+			OS.RedrawWindow (handle, null, 0, uFlags);
+		}
 	}
 	
 	/*
@@ -603,42 +608,6 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
 	if (result != null) return result;
 	return LRESULT.ZERO;
-}
-
-LRESULT WM_NOTIFY (int wParam, int lParam) {
-	/*
-	* Bug in Windows NT.  For some reason, Windows NT requests a
-	* UNICODE tool tip string instead of a DBCS string by sending
-	* TTN_GETDISPINFOW instead of TTN_GETDISPINFOA.  This is not
-	* correct because the control is created as a DBCS control and
-	* expects to process TTN_GETDISPINFOA.  TTN_GETDISPINFOA is
-	* never sent on NT.  The fix is to handle TTN_GETDISPINFOW and
-	* give the control a UNICODE string.
-	*/
-	if (IsWinNT) {
-		NMHDR hdr = new NMHDR ();
-		OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
-		if (hdr.code == OS.TTN_GETDISPINFOW) {
-			NMTTDISPINFO lpnmtdi = new NMTTDISPINFO ();
-			OS.MoveMemory (lpnmtdi, lParam, NMTTDISPINFO.sizeof);
-			String string = null;
-			int index = hdr.idFrom;
-			if (0 <= index && index < items.length) {
-				ToolItem item = items [index];
-				if (item != null) string = item.toolTipText;
-			}
-			if (string != null && string.length () != 0) {
-				string = Display.withCrLf (string);
-				int length = string.length ();
-				char [] buffer = new char [length + 1];
-				string.getChars (0, length, buffer, 0);
-				getShell ().setToolTipText (lpnmtdi, buffer);
-				OS.MoveMemory (lParam, lpnmtdi, NMTTDISPINFO.sizeof);
-			}
-			return LRESULT.ZERO;
-		}
-	}
-	return super.WM_NOTIFY (wParam, lParam);
 }
 
 LRESULT WM_SIZE (int wParam, int lParam) {

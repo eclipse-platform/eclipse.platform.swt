@@ -12,7 +12,6 @@
  */
 
 #include <malloc.h>
-#include <assert.h>
 #include <memory.h>
 #include <jni.h>
 #include "globals.h"
@@ -83,7 +82,6 @@ static void CreateLibGlobals(JNIEnv * env)
 	if (!globs)
 	{
 		jclass hExcClass = (*env)->FindClass(env, "java/lang/OutOfMemoryError");
-		assert(hExcClass);
 		(*env)->ThrowNew(env, hExcClass, "Unable to allocate globals in onLoad");
 		return;
 	}

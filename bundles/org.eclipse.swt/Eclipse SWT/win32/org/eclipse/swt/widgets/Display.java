@@ -255,10 +255,12 @@ int asciiKey (int key) {
 	
 	/* Get the current keyboard. */
 	for (int i=0; i<keyboard.length; i++) keyboard [i] = 0;
+	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	if (!OS.GetKeyboardState (keyboard)) return 0;
 	
 	/* Translate the key to ASCII using the current keyboard. */
 	short [] result = new short [1];
+	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
 	return 0;
 }
@@ -1044,16 +1046,12 @@ public int internal_new_GC (GCData data) {
  * @see #create
  */
 protected void init () {
-	super.init ();
+//	super.init ();
 		
 	/* Create the callbacks */
 	windowCallback = new Callback (this, "windowProc", 4);
 	windowProc = windowCallback.getAddress ();
 	if (windowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);	
-
-	/* Remember the current procsss and thread */
-	threadId = OS.GetCurrentThreadId ();
-	processId = OS.GetCurrentProcessId ();
 	
 	/* Use the character encoding for the default locale */
 	windowClass = new TCHAR (0, WindowName + windowClassCount++, true);
@@ -1061,9 +1059,8 @@ protected void init () {
 	/* Register the SWT window class */
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
-	WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-	lpWndClass.cbSize = WNDCLASSEX.sizeof;
-	if (OS.GetClassInfoEx (hInstance, windowClass, lpWndClass)) {
+	WNDCLASS lpWndClass = new WNDCLASS ();
+	if (OS.GetClassInfo (hInstance, windowClass, lpWndClass)) {
 		OS.UnregisterClass (windowClass, hInstance);
 	}
 	lpWndClass.hInstance = hInstance;
@@ -1073,9 +1070,15 @@ protected void init () {
 	int byteCount = windowClass.length () * TCHAR.sizeof;
 	int lpszClassName = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
 	lpWndClass.lpszClassName = lpszClassName;
-	OS.MoveMemory (lpszClassName, windowClass, byteCount); 
-	OS.RegisterClassEx (lpWndClass);
-	OS.HeapFree (hHeap, 0, lpszClassName);
+	OS.MoveMemory (lpszClassName, windowClass, byteCount);
+	OS.RegisterClass (lpWndClass);
+//	OS.HeapFree (hHeap, 0, lpszClassName);
+
+	super.init ();
+	
+	/* Remember the current procsss and thread */
+	threadId = OS.GetCurrentThreadId ();
+	processId = OS.GetCurrentProcessId ();
 }
 
 /**	 
@@ -1236,9 +1239,8 @@ void releaseDisplay () {
 	/* Unregister the SWT Window class */
 	int hHeap = OS.GetProcessHeap ();
 	int hInstance = OS.GetModuleHandle (null);
-	WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-	lpWndClass.cbSize = WNDCLASSEX.sizeof;
-	OS.GetClassInfoEx (0, windowClass, lpWndClass);
+	WNDCLASS lpWndClass = new WNDCLASS ();
+	OS.GetClassInfo (0, windowClass, lpWndClass);
 	int ptr = lpWndClass.lpszClassName;
 	OS.UnregisterClass (windowClass, hInstance);
 	OS.HeapFree (hHeap, 0, ptr);
@@ -1533,6 +1535,7 @@ int shiftedKey (int key) {
 
 	/* Translate aKey to ASCII using the virtual keyboard. */
 	short [] result = new short [1];
+	if (OS.IsWinCE) error (SWT.ERROR_NOT_IMPLEMENTED);
 	if (OS.ToAscii (key, key, keyboard, result, 0) == 1) return result [0];
 	return 0;
 }
@@ -1552,6 +1555,15 @@ int shiftedKey (int key) {
  */
 public boolean sleep () {
 	checkDevice ();
+	if (OS.IsWinCE) {
+		OS.GetMessage (msg, 0, 0, 0);
+		if (!filterMessage (msg)) {
+			OS.TranslateMessage (msg);
+			OS.DispatchMessage (msg);
+		}
+		runDeferredEvents ();
+		return true;
+	}
 	return OS.WaitMessage ();
 }
 

@@ -86,6 +86,7 @@ public int add (Image image) {
 			if (count == 0) {
 				BITMAP bm = new BITMAP ();
 				ICONINFO info = new ICONINFO ();
+				if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 				OS.GetIconInfo (hImage, info);
 				int hBitmap = info.hbmColor;
 				if (hBitmap == 0) hBitmap = info.hbmMask;
@@ -124,7 +125,7 @@ int copyBitmap (int hImage, int width, int height) {
 	int hdc2 = OS.CreateCompatibleDC (hDC);
 	int hBitmap = OS.CreateCompatibleBitmap (hDC, width, height);
 	OS.SelectObject (hdc2, hBitmap);
-	OS.SetStretchBltMode(hdc2, OS.COLORONCOLOR);
+	if (!OS.IsWinCE) OS.SetStretchBltMode(hdc2, OS.COLORONCOLOR);
 	OS.StretchBlt (hdc2, 0, 0, width, height, hdc1, 0, 0, bm.bmWidth, bm.bmHeight, OS.SRCCOPY);
 	OS.DeleteDC (hdc1);
 	OS.DeleteDC (hdc2);
@@ -133,8 +134,9 @@ int copyBitmap (int hImage, int width, int height) {
 }
 
 int copyIcon (int hImage, int width, int height) {
+	if (OS.IsWinCE) SWT.error(SWT.ERROR_NOT_IMPLEMENTED);
 	int hIcon = OS.CopyImage (hImage, OS.IMAGE_ICON, width, height, OS.LR_DEFAULTCOLOR);
-	return hIcon;
+	return hIcon != 0 ? hIcon : hImage;
 }
 
 int createMask (int hBitmap, int width, int height, int background) {

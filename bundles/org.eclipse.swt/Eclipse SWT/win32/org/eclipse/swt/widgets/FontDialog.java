@@ -104,6 +104,8 @@ public FontData getFontData() {
  * </ul>
  */
 public FontData open () {
+	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
+	
 	/* Get the owner HWND for the dialog */
 	int hwndOwner = 0;
 	if (parent != null) hwndOwner = parent.handle;

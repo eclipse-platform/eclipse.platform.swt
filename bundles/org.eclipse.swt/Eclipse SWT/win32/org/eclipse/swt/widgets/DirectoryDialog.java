@@ -97,7 +97,8 @@ int BrowseCallbackProc (int hwnd, int uMsg, int lParam, int lpData) {
 				OS.SetWindowText (hwnd, buffer);
 			}
 			break;
-		case OS.BFFM_VALIDATEFAILED:
+		case OS.BFFM_VALIDATEFAILEDA:
+		case OS.BFFM_VALIDATEFAILEDW:
 			/* Use the character encoding for the default locale */
 			TCHAR buffer = new TCHAR (0, 256);
 			int byteCount = buffer.length () * TCHAR.sizeof;
@@ -142,6 +143,7 @@ public String getMessage () {
  * </ul>
  */
 public String open () {
+	if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 	
 	/* Initialize OLE */
 	OS.OleInitialize (0);

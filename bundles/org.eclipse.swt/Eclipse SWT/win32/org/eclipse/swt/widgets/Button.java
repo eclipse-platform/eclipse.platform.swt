@@ -44,9 +44,8 @@ public class Button extends Control {
 			CheckWidth = bitmap.bmWidth / 4;
 			CheckHeight =  bitmap.bmHeight / 3;
 		}
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, ButtonClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, ButtonClass, lpWndClass);
 		ButtonProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -192,6 +191,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 					BITMAP bm = new BITMAP ();
 					ICONINFO info = new ICONINFO ();
 					int hImage = image.handle;
+					if (OS.IsWinCE) SWT.error (SWT.ERROR_NOT_IMPLEMENTED);
 					OS.GetIconInfo (hImage, info);
 					int hBitmap = info.hbmColor;
 					if (hBitmap == 0) hBitmap = info.hbmMask;

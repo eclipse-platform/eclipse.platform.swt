@@ -33,9 +33,8 @@ public class Group extends Composite {
 	static final int GroupProc;
 	static final TCHAR GroupClass = new TCHAR (0, "BUTTON", true);
 	static {
-		WNDCLASSEX lpWndClass = new WNDCLASSEX ();
-		lpWndClass.cbSize = WNDCLASSEX.sizeof;
-		OS.GetClassInfoEx (0, GroupClass, lpWndClass);
+		WNDCLASS lpWndClass = new WNDCLASS ();
+		OS.GetClassInfo (0, GroupClass, lpWndClass);
 		GroupProc = lpWndClass.lpfnWndProc;
 	}
 
@@ -284,9 +283,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 		POINT pt = new POINT ();
 		pt.x = (short) (lParam & 0xFFFF);
 		pt.y = (short) (lParam >> 16);
-		if (OS.DragDetect (handle, pt)) {
-			sendEvent (SWT.DragDetect);
-			// widget could be disposed at this point
+		if (!OS.IsWinCE) {
+			if (OS.DragDetect (handle, pt)) {
+				sendEvent (SWT.DragDetect);
+				// widget could be disposed at this point
+			}
 		}
 	}
 	return LRESULT.ZERO;
