@@ -5,10 +5,8 @@ package org.eclipse.swt.widgets;
  * All Rights Reserved
  */
 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import java.util.Vector;
 
 /**
  * Instances of this class provide an area for dynamically
@@ -32,8 +30,10 @@ import java.util.Vector;
  * </p>
  */
 public class CoolBar extends Composite {
-	Vector rows;
+	CoolItem[][] items = new CoolItem[0][0];
 	Cursor hoverCursor, dragCursor;
+	CoolItem dragging = null;
+	int mouseXOffset, itemXOffset;
 	static final int ROW_SPACING = 2;
 		
 /**
@@ -65,40 +65,75 @@ public class CoolBar extends Composite {
  * @see Widget#getStyle
  */
 public CoolBar (Composite parent, int style) {
-	super (parent, style);
-	rows = new Vector(5);
-	rows.addElement(new Vector(10));
-	hoverCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEWE);
-	dragCursor = new Cursor(getDisplay(), SWT.CURSOR_SIZEALL);
+	super (parent, checkStyle(style));
+	Display display = getDisplay();
+	hoverCursor = new Cursor(display, SWT.CURSOR_SIZEWE);
+	dragCursor = new Cursor(display, SWT.CURSOR_SIZEALL);
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Paint:		
-					processPaint(event.gc);	
-					break;
-				case SWT.Dispose:
-					rows = null;
-					hoverCursor.dispose();
-					dragCursor.dispose();					
-					break;
+				case SWT.Dispose:		onDispose();		break;
+				case SWT.MouseDown:	onMouseDown(event);	break;
+				case SWT.MouseExit:	onMouseExit();		break;
+				case SWT.MouseMove:	onMouseMove(event);	break;
+				case SWT.MouseUp:		onMouseUp(event);	break;
+				case SWT.Paint:		onPaint(event);		break;
 			}
 		}
 	};
-	addListener(SWT.Paint, listener);
-	addListener(SWT.Dispose, listener);
+	int[] events = new int[] { 
+		SWT.Dispose, 
+		SWT.MouseDown,
+		SWT.MouseExit, 
+		SWT.MouseMove, 
+		SWT.MouseUp, 
+		SWT.Paint 
+	};
+	for (int i = 0; i < events.length; i++) {
+		addListener(events[i], listener);	
+	}
+}
+private static int checkStyle (int style) {
+	return (style | SWT.NO_REDRAW_RESIZE);
 }
 protected void checkSubclass () {
 	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
 }
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget();
-	int width = wHint, height = hHint;
-	if (wHint == SWT.DEFAULT) width = 0x7FFFFFFF;
-	if (hHint == SWT.DEFAULT) height = 0x7FFFFFFF;
-	Point extent = layout (width, false);
-	if (wHint != SWT.DEFAULT) extent.x = wHint;
-	if (hHint != SWT.DEFAULT) extent.y = hHint;
-	return extent;
+	int width = 0, height = 0;
+	for (int row = 0; row < items.length; row++) {
+		int rowWidth = 0, rowHeight = 0;
+		for (int i = 0; i < items[row].length; i++) {
+			rowWidth += items[row][i].preferredWidth;
+			rowHeight = Math.max(rowHeight, items[row][i].getSize().y);
+		}
+		height += rowHeight;
+		if (row > 0) height += ROW_SPACING;
+		width = Math.max(width, rowWidth);
+	}
+	if (width == 0) width = DEFAULT_WIDTH;
+	if (height == 0) height = DEFAULT_HEIGHT;
+	if (wHint != SWT.DEFAULT) width = wHint;
+	if (hHint != SWT.DEFAULT) height = hHint;
+	int border = getBorderWidth();
+	width += 2 * border;
+	height += 2 * border;
+	return new Point(width, height);
+}
+CoolItem getGrabbedItem(int x, int y) {
+	for (int row = 0; row < items.length; row++) {
+		for (int i = 0; i < items[row].length; i++) {
+			CoolItem item = items[row][i];
+			Rectangle bounds = item.getBounds();
+			bounds.width = CoolItem.MINIMUM_WIDTH;
+			if (bounds.x > x) break;
+			if (bounds.y > y) return null;
+			if (bounds.contains(x, y)) {
+				return item;	
+			}	
+		}	
+	}
+	return null;
 }
 /**
  * Returns the item at the given, zero-relative index in the
@@ -121,12 +156,11 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 public CoolItem getItem (int index) {
 	checkWidget();
 	if (index < 0) error (SWT.ERROR_INVALID_RANGE);
-	for (int i = 0; i < rows.size(); i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		if (row.size() > index) {
-			return (CoolItem) row.elementAt(index);			
+	for (int row = 0; row < items.length; row++) {
+		if (items[row].length > index) {
+			return items[row][index];			
 		} else {
-			index -= row.size();
+			index -= items[row].length;
 		}
 	}
 	error (SWT.ERROR_INVALID_RANGE);
@@ -148,9 +182,8 @@ public CoolItem getItem (int index) {
 public int getItemCount () {
 	checkWidget();
 	int itemCount = 0;
-	for (int i = 0; i < rows.size(); i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		itemCount += row.size();
+	for (int row = 0; row < items.length; row++) {
+		itemCount += items[row].length;
 	}
 	return itemCount;
 }
@@ -176,45 +209,20 @@ public int getItemCount () {
 public CoolItem [] getItems () {
 	checkWidget();
 	CoolItem [] result = new CoolItem [getItemCount()];
-	int index = 0;
-	for (int i = 0; i < rows.size(); i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		for (int j = 0; j < row.size(); j++) {
-			result[index] = (CoolItem) row.elementAt(j);
-			index++;	
-		}
+	int offset = 0;
+	for (int row = 0; row < items.length; row++) {
+		System.arraycopy(items[row], 0, result, offset, items[row].length);
+		offset += items[row].length;
 	}
 	return result;
 }
-int getRowHeight (int rowIndex) {
-	Vector row = (Vector) rows.elementAt(rowIndex);
-	int height = 0;
-	for (int i = 0; i < row.size(); i++) {
-		CoolItem item = (CoolItem) row.elementAt(i);
-		int itemHeight = item.getSize().y;
-		height = Math.max(height, itemHeight);
-	}
-	return height;
-}
-int getRowIndex (CoolItem item) {
-	for (int i = 0; i < rows.size(); i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		for (int j = 0; j < row.size(); j++) {
-			CoolItem next = (CoolItem) row.elementAt(j);
-			if (next.equals(item)) return i;		
+Point findItem (CoolItem item) {
+	for (int row = 0; row < items.length; row++) {
+		for (int i = 0; i < items[row].length; i++) {
+			if (items[row][i].equals(item)) return new Point(i, row);		
 		}
 	}
-	return -1;
-}
-Vector getRow (CoolItem item) {
-	for (int i = 0; i < rows.size(); i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		for (int j = 0; j < row.size(); j++) {
-			CoolItem next = (CoolItem) row.elementAt(j);
-			if (next.equals(item)) return row;		
-		}
-	}
-	return null;
+	return new Point(-1, -1);
 }
 /**
  * Searches the receiver's items, in the order they were
@@ -239,11 +247,9 @@ public int indexOf (CoolItem item) {
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
 	int answer = 0;
-	for (int i = 0; i < rows.size(); i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		for (int j = 0; j < row.size(); j++) {
-			CoolItem next = (CoolItem) row.elementAt(j);
-			if (next.equals(item)) {
+	for (int row = 0; row < items.length; row++) {
+		for (int i = 0; i < items[row].length; i++) {
+			if (items[row][i].equals(item)) {
 				return answer;		
 			} else {
 				answer++;
@@ -256,28 +262,26 @@ public int indexOf (CoolItem item) {
  * Insert the item into the row. Adjust the x and width values
  * appropriately.
  */
-void insertItemIntoRow(CoolItem item, Vector row, int x_root, int rowY) {
+void insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
 	int barWidth = getSize().x;
-	int height = item.getSize().y;
-	if (row.size() == 0) {
-		item.setBounds(0, rowY, barWidth, height);		
-		row.addElement(item);
-		return;
-	}
-	
+	int rowY = items[rowIndex][0].getBounds().y;
 	int x = Math.max(0, x_root - toDisplay(new Point(0, 0)).x);
 	
 	/* Find the insertion index and add the item. */
 	int index;
-	for (index = 0; index < row.size(); index++) {
-		CoolItem next = (CoolItem) row.elementAt(index);
-		if (x < next.getBounds().x) break;
+	for (index = 0; index < items[rowIndex].length; index++) {
+		if (x < items[rowIndex][index].getBounds().x) break;
 	}
-	row.insertElementAt(item, index);
+	int oldLength = items[rowIndex].length;
+	CoolItem[] newRow = new CoolItem[oldLength + 1];
+	System.arraycopy(items[rowIndex], 0, newRow, 0, index);
+	newRow[index] = item;
+	System.arraycopy(items[rowIndex], index, newRow, index + 1, oldLength - index);
+	items[rowIndex] = newRow;
 
 	/* Adjust the width of the item to the left. */
 	if (index > 0) {
-		CoolItem left = (CoolItem) row.elementAt(index - 1);
+		CoolItem left = items[rowIndex][index - 1];
 		Rectangle leftBounds = left.getBounds();
 		int newWidth = x - leftBounds.x;
 		if (newWidth < CoolItem.MINIMUM_WIDTH) {
@@ -289,9 +293,9 @@ void insertItemIntoRow(CoolItem item, Vector row, int x_root, int rowY) {
 	}
 	
 	/* Set the item's bounds. */
-	int width = 0;
-	if (index < row.size() - 1) {
-		CoolItem right = (CoolItem) row.elementAt(index + 1);
+	int width = 0, height = item.getSize().y;
+	if (index < items[rowIndex].length - 1) {
+		CoolItem right = items[rowIndex][index + 1];
 		width = right.getBounds().x - x;
 		if (width < CoolItem.MINIMUM_WIDTH) {
 			moveRight(right, CoolItem.MINIMUM_WIDTH - width);
@@ -304,66 +308,97 @@ void insertItemIntoRow(CoolItem item, Vector row, int x_root, int rowY) {
 		item.setBounds(x, rowY, width, height);
 		if (x + width > barWidth) moveLeft(item, x + width - barWidth); 
 	}
-	item.requestedWidth = width;
+	Rectangle bounds = item.getBounds();
+	item.requestedWidth = bounds.width;
+	redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
 }
 void createItem (CoolItem item, int index) {
-	int itemCount = getItemCount();
+	int itemCount = getItemCount(), row = 0;
 	if (!(0 <= index && index <= itemCount)) error (SWT.ERROR_INVALID_RANGE);
 	item.id = itemCount;
-	if (index < itemCount) {
-		for (int i = 0; i < rows.size(); i++) {
-			Vector row = (Vector) rows.elementAt(i);
-			if (row.size() > index) {
-				row.insertElementAt(item, index);
-				return;
-			} else {
-				index -= row.size();
-			}
-		}
-	} else {
-		Vector lastRow = (Vector) rows.lastElement();
-		lastRow.addElement(item);	
+	if (items.length == 0) {
+		items = new CoolItem[1][1];
+		items[0][0] = item;	
 	}
+	else {
+		int i = index;
+		/* find the row to insert into */
+		if (index < itemCount) {
+			while (i > items[row].length) {
+				i -= items[row].length;
+				row++;
+			}   
+		}
+		else {
+			row = items.length - 1;
+			i = items[row].length;	
+		}
+		int oldLength = items[row].length;
+		CoolItem[] newRow = new CoolItem[oldLength + 1];
+		System.arraycopy(items[row], 0, newRow, 0, i);
+		newRow[index] = item;
+		System.arraycopy(items[row], i, newRow, i + 1, oldLength - i);
+		items[row] = newRow;
+	}
+	item.requestedWidth = CoolItem.MINIMUM_WIDTH;
+	relayout();
+}
+void destroyItem(CoolItem item) {
+	int row = findItem(item).y;
+	if (row == -1) return;
+	Rectangle bounds = item.getBounds();
+	removeItemFromRow(item, row);
+	redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
+	
+	Control control = item.getControl();
+	if (control != null && !control.isDisposed()) {
+		control.setVisible(false);
+	}
+	
+	/* Fix the id of each remaining item. */
+	for (row = 0; row < items.length; row++) {
+		for (int i = 0; i < items[row].length; i++) {
+			CoolItem next = items[row][i];
+			if (next.id > item.id) --next.id; 	
+		}	
+	}
+	relayout();	
 }
 void moveDown(CoolItem item, int x_root) {
-	int oldRowIndex = getRowIndex(item);
-	Vector oldRowItems = (Vector) rows.elementAt(oldRowIndex);	
-	if (oldRowIndex == rows.size() - 1 && oldRowItems.size() == 1) {
+	int oldRowIndex = findItem(item).y;
+	if (oldRowIndex == items.length - 1 && items[oldRowIndex].length == 1) {
 		/* This is the only item in the bottom row, don't move it. */
 		return;
 	}
-	
-	int newRowIndex = (oldRowItems.size() == 1) ? oldRowIndex : oldRowIndex + 1;
-	removeItemFromRow(item, oldRowItems);
-	
-	int newRowY = ROW_SPACING;
-	for (int i = 0; i < newRowIndex; i++) {
-		newRowY += getRowHeight(i) + ROW_SPACING;	
-	}
-	
-	if (newRowIndex == rows.size()) {
+	int newRowIndex = (items[oldRowIndex].length == 1) ? oldRowIndex : oldRowIndex + 1;
+	removeItemFromRow(item, oldRowIndex);
+	Rectangle old = item.getBounds();
+	redraw(old.x, old.y, CoolItem.MINIMUM_WIDTH, old.height, false);
+	if (newRowIndex == items.length) {
 		/* Create a new bottom row for the item. */
-		Vector newRow = new Vector(10);
-		insertItemIntoRow(item, newRow, x_root, newRowY);
-		rows.addElement(newRow);
-		adjustItemHeights(oldRowIndex);
-		return;
+		CoolItem[][] newRows = new CoolItem[items.length + 1][];
+		System.arraycopy(items, 0, newRows, 0, items.length);
+		int row = items.length;
+		newRows[row] = new CoolItem[1];
+		newRows[row][0] = item;
+		items = newRows;
 	}
-	
-	Vector newRowItems = (Vector) rows.elementAt(newRowIndex);
-	insertItemIntoRow(item, newRowItems, x_root, newRowY);
-	adjustItemHeights(oldRowIndex);
+	else {	
+		insertItemIntoRow(item, newRowIndex, x_root);
+	}
+	relayout();
 }
 void moveLeft(CoolItem item, int pixels) {
-	Vector row = getRow(item);
-	int index = row.indexOf(item);
+	Point point = findItem(item);
+	int row = point.y;
+	int index = point.x;
 	if (index == 0) return;	
 	Rectangle bounds = item.getBounds();
 	int min = index * CoolItem.MINIMUM_WIDTH;
 	int x = Math.max(min, bounds.x - pixels);
-	CoolItem left = (CoolItem) row.elementAt(index - 1);
+	CoolItem left = items[row][index - 1];
 	Rectangle leftBounds = left.getBounds();
-	if (leftBounds.x + CoolItem.MINIMUM_WIDTH >= x) {
+	if (leftBounds.x + CoolItem.MINIMUM_WIDTH > x) {
 		int shift = leftBounds.x + CoolItem.MINIMUM_WIDTH - x;
 		moveLeft(left, shift);
 		leftBounds = left.getBounds();
@@ -374,22 +409,28 @@ void moveLeft(CoolItem item, int pixels) {
 	int width = bounds.width + (bounds.x - x);
 	item.setBounds(x, bounds.y, width, bounds.height);
 	item.requestedWidth = width;
+
+	int damagedWidth = bounds.x - x + CoolItem.MINIMUM_WIDTH;
+	if (damagedWidth > CoolItem.MINIMUM_WIDTH) {
+		redraw(x, bounds.y, damagedWidth, bounds.height, false);
+	}
 }
 void moveRight(CoolItem item, int pixels) {
-	Vector row = getRow(item);
-	int index = row.indexOf(item);
+	Point point = findItem(item);
+	int row = point.y;
+	int index = point.x;
 	if (index == 0) return;	
 	Rectangle bounds = item.getBounds();
-	int minSpaceOnRight = (row.size() - index) * CoolItem.MINIMUM_WIDTH;
+	int minSpaceOnRight = (items[row].length - index) * CoolItem.MINIMUM_WIDTH;
 	int max = getBounds().width - minSpaceOnRight;
 	int x = Math.min(max, bounds.x + pixels);	
 	int width = 0;
-	if (index + 1 == row.size()) {
+	if (index + 1 == items[row].length) {
 		width = getBounds().width - x;
 	} else {
-		CoolItem right = (CoolItem) row.elementAt(index + 1);
+		CoolItem right = items[row][index + 1];
 		Rectangle rightBounds = right.getBounds();
-		if (x + CoolItem.MINIMUM_WIDTH >= rightBounds.x) {
+		if (x + CoolItem.MINIMUM_WIDTH > rightBounds.x) {
 			int shift = x + CoolItem.MINIMUM_WIDTH - rightBounds.x;
 			moveRight(right, shift);
 			rightBounds = right.getBounds();
@@ -398,154 +439,272 @@ void moveRight(CoolItem item, int pixels) {
 	}
 	item.setBounds(x, bounds.y, width, bounds.height);
 	item.requestedWidth = width;
-	CoolItem left = (CoolItem) row.elementAt(index - 1);
+	CoolItem left = items[row][index - 1];
 	Rectangle leftBounds = left.getBounds();
 	int leftWidth = x - leftBounds.x;
 	left.setBounds(leftBounds.x, leftBounds.y, leftWidth, leftBounds.height);
 	left.requestedWidth = leftWidth;
+	
+	int damagedWidth = x - bounds.x + CoolItem.MINIMUM_WIDTH + CoolItem.MARGIN_WIDTH;
+	if (x - bounds.x > 0) {
+		redraw(bounds.x - CoolItem.MARGIN_WIDTH, bounds.y, damagedWidth, bounds.height, false);
+	}
 }
 void moveUp(CoolItem item, int x_root) {
-	int oldRowIndex = getRowIndex(item);
-	Vector oldRowItems = (Vector) rows.elementAt(oldRowIndex);
-	if (oldRowIndex == 0 && oldRowItems.size() == 1) {
+	Point point = findItem(item);
+	int oldRowIndex = point.y;
+	if (oldRowIndex == 0 && items[oldRowIndex].length == 1) {
 		/* This is the only item in the top row, don't move it. */
 		return;
 	}
-	
-	removeItemFromRow(item, oldRowItems);
-	int newRowIndex = oldRowIndex - 1;
-	int newRowY = ROW_SPACING;
-	for (int i = 0; i < newRowIndex; i++) {
-		newRowY += getRowHeight(i) + ROW_SPACING;	
-	}
-	
+	removeItemFromRow(item, oldRowIndex);
+	Rectangle old = item.getBounds();
+	redraw(old.x, old.y, CoolItem.MINIMUM_WIDTH, old.height, false);
+	int newRowIndex = Math.max(0, oldRowIndex - 1);
 	if (oldRowIndex == 0) {
 		/* Create a new top row for the item. */
-		Vector newRow = new Vector(10);
-		insertItemIntoRow(item, newRow, x_root, newRowY);
-		rows.insertElementAt(newRow, 0);
-		adjustItemHeights(0);
+		CoolItem[][] newRows = new CoolItem[items.length + 1][];
+		System.arraycopy(items, 0, newRows, 1, items.length);
+		newRows[0] = new CoolItem[1];
+		newRows[0][0] = item;
+		items = newRows;
+	}
+	else {
+		insertItemIntoRow(item, newRowIndex, x_root);
+	}
+	relayout();
+}
+void onDispose() {
+	hoverCursor.dispose();
+	dragCursor.dispose();
+}
+void onMouseDown(Event event) {
+	dragging = getGrabbedItem(event.x, event.y);
+	if (dragging != null) {
+		mouseXOffset = event.x;
+		itemXOffset = mouseXOffset - dragging.getBounds().x;
+		setCursor(dragCursor);
+	}
+}
+void onMouseExit() {
+	if (dragging == null) setCursor(null);
+}
+void onMouseMove(Event event) {
+	CoolItem grabbed = getGrabbedItem(event.x, event.y);
+	if (dragging != null) {
+		int left_root = toDisplay(new Point(event.x, event.y)).x - itemXOffset;
+		Rectangle bounds = dragging.getBounds();
+		if (event.y < bounds.y) {
+			moveUp(dragging, left_root);
+		} 
+		else if (event.y > bounds.y + bounds.height){
+			moveDown(dragging, left_root);
+		}		
+		else if (event.x < mouseXOffset) {
+			int distance = Math.min(mouseXOffset, bounds.x + itemXOffset) - event.x;
+			if (distance > 0) moveLeft(dragging, distance);
+		}
+		else if (event.x > mouseXOffset) {
+			int distance = event.x - Math.max(mouseXOffset, bounds.x + itemXOffset);
+			if (distance > 0) moveRight(dragging, distance);
+		}
+		mouseXOffset = event.x;
 		return;
 	}
-	
-	Vector newRowItems = (Vector) rows.elementAt(newRowIndex);
-	insertItemIntoRow(item, newRowItems, x_root, newRowY);
-	adjustItemHeights(newRowIndex);
+	if (grabbed != null) {
+		setCursor(hoverCursor);
+	}
+	else {
+		setCursor(null);	
+	}
 }
-void processPaint (GC gc) {
-	if (rows.size() == 0) return;
+void onMouseUp(Event event) {
+	dragging = null;
+	if (getGrabbedItem(event.x, event.y) != null) {
+		setCursor(hoverCursor);
+	}
+	else {
+		setCursor(null);	
+	}	
+}
+void onPaint(Event event) {
+	GC gc = event.gc;
+	if (items.length == 0) return;
 	Display display = getDisplay();
-	int y = getRowHeight(0) + ROW_SPACING;
-	int stopX = getBounds().width;
 	Color shadowColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	Color highlightColor = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-	for (int i = 1; i < rows.size(); i++) {
-		gc.setForeground(shadowColor);
-		gc.drawLine(0, y, stopX, y);	
-		gc.setForeground(highlightColor);
-		gc.drawLine(0, y + 1, stopX, y + 1);
-		y += getRowHeight(i) + ROW_SPACING;
+	Color lightShadowColor = display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
+
+	int y = 0;
+	int stopX = getBounds().width;
+	for (int row = 0; row < items.length; row++) {
+		Rectangle bounds = new Rectangle(0, 0, 0, 0);
+		for (int i = 0; i < items[row].length; i++) {
+			bounds = items[row][i].getBounds();
+			if (!gc.getClipping().intersects(bounds)) continue;
+			int grabberHeight = bounds.height - (2 * CoolItem.MARGIN_HEIGHT) - 1;
+	
+			/* Draw separator. */
+			gc.setForeground(shadowColor);
+			gc.drawLine(bounds.x, bounds.y, bounds.x, bounds.y + bounds.height - 1);
+			gc.setForeground(highlightColor);
+			gc.drawLine(bounds.x + 1, bounds.y, bounds.x + 1, bounds.y + bounds.height - 1);
+		
+			/* Draw grabber. */
+			gc.setForeground(shadowColor);
+			gc.drawRectangle(
+				bounds.x + CoolItem.MARGIN_WIDTH, 
+				bounds.y + CoolItem.MARGIN_HEIGHT, 
+				2, 
+				grabberHeight);
+			gc.setForeground(highlightColor);
+			gc.drawLine(
+				bounds.x + CoolItem.MARGIN_WIDTH, 
+				bounds.y + CoolItem.MARGIN_HEIGHT + 1, 
+				bounds.x + CoolItem.MARGIN_WIDTH, 
+				bounds.y + CoolItem.MARGIN_HEIGHT + grabberHeight - 1);
+			gc.drawLine(
+				bounds.x + CoolItem.MARGIN_WIDTH, 
+				bounds.y + CoolItem.MARGIN_HEIGHT, 
+				bounds.x + CoolItem.MARGIN_WIDTH + 1, 
+				bounds.y + CoolItem.MARGIN_HEIGHT);
+		}
+		if (row + 1 < items.length) {
+			/* Draw row separator. */
+			int separatorY = bounds.y + bounds.height;
+			gc.setForeground(shadowColor);
+			gc.drawLine(0, separatorY, stopX, separatorY);	
+			gc.setForeground(highlightColor);
+			gc.drawLine(0, separatorY + 1, stopX, separatorY + 1);			
+		}
 	}
 	gc.setForeground(getForeground());
-	gc.setBackground(getBackground());
+	gc.setBackground(getBackground());	
 }
 /**
  * Remove the item from the row. Adjust the x and width values
  * appropriately.
  */
-void removeItemFromRow(CoolItem item, Vector row) {
-	int index = row.indexOf(item);
-	row.removeElementAt(index);
-	if (row.size() == 0) {
-		rows.removeElement(row);
+void removeItemFromRow(CoolItem item, int rowIndex) {
+	int index = findItem(item).x;
+	int newLength = items[rowIndex].length - 1;
+	Rectangle itemBounds = item.getBounds();
+	if (newLength > 0) {
+		CoolItem[] newRow = new CoolItem[newLength];
+		System.arraycopy(items[rowIndex], 0, newRow, 0, index);
+		System.arraycopy(items[rowIndex], index + 1, newRow, index, newRow.length - index);
+		items[rowIndex] = newRow;
+	}
+	else {
+		CoolItem[][] newRows = new CoolItem[items.length - 1][];
+		System.arraycopy(items, 0, newRows, 0, rowIndex);
+		System.arraycopy(items, rowIndex + 1, newRows, rowIndex, newRows.length - rowIndex);
+		items = newRows;
 		return;
-	}	
+	}
 	if (index == 0) {
-		CoolItem first = (CoolItem) row.elementAt(0);
+		CoolItem first = items[rowIndex][0];
 		Rectangle bounds = first.getBounds();
 		int width = bounds.x + bounds.width;
 		first.setBounds(0, bounds.y, width, bounds.height);
 		first.requestedWidth = width;
+		redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
 	} else {
-		CoolItem previous = (CoolItem) row.elementAt(index - 1);
+		CoolItem previous = items[rowIndex][index - 1];
 		Rectangle bounds = previous.getBounds();
-		int width = bounds.width + item.getSize().x;
+		int width = bounds.width + itemBounds.width;
 		previous.setBounds(bounds.x, bounds.y, width, bounds.height);
 		previous.requestedWidth = width;
 	}
 }
 /**
- * Update the children to reflect a change in y values.
+ * Return the height of the bar after it has
+ * been properly layed out for the given width.
  */
-void adjustItemHeights(int startIndex) {
-	int y = ROW_SPACING;
-	for (int i = 0; i < rows.size(); i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		int rowHeight = getRowHeight(i);
-		if (i >= startIndex) {
-			for (int j = 0; j < row.size(); j++) {
-				CoolItem child = (CoolItem) row.elementAt(j);
-				Rectangle bounds = child.getBounds();
-				if (bounds.y != y || bounds.height != rowHeight) {
-					child.setBounds(bounds.x, y, bounds.width, rowHeight);
-				}
+int layout (int width) {
+	int y = 0, maxWidth = 0;
+	for (int row = 0; row < items.length; row++) {
+		int count = items[row].length;
+		int available = width - count * CoolItem.MINIMUM_WIDTH;
+		if (available < 0) available = count * CoolItem.MINIMUM_WIDTH;
+		int x = 0;
+
+		/* determine the height of the row */
+		int rowHeight = 0;
+		for (int i = 0; i < items[row].length; i++) {
+			CoolItem item = items[row][i];
+			if (item.control != null) {
+				rowHeight = Math.max(rowHeight, item.control.getSize().y);
 			}
 		}
-		y += ROW_SPACING + rowHeight;
-	}
-	Point size = getSize();
-	if (size.y != y) super.setSize(size.x, y);
-}
-Point layout (int width, boolean resize) {
-	int y = ROW_SPACING, maxWidth = 0;
-	for (int i = 0; i < rows.size(); i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		int count = row.size();
-		if (count > 0) {
-			int available = width - count * CoolItem.MINIMUM_WIDTH;
-			if (available < 0) available = count * CoolItem.MINIMUM_WIDTH;
-			int x = 0, rowHeight = getRowHeight(i);
-			for (int j = 0; j < count; j++) {
-				CoolItem child = (CoolItem) row.elementAt(j);
-				int newWidth = available + CoolItem.MINIMUM_WIDTH;
-				if (j + 1 < count) {
-					newWidth = Math.min(newWidth, child.requestedWidth);
-					available -= (newWidth - CoolItem.MINIMUM_WIDTH);
+		rowHeight += 2 * CoolItem.MARGIN_HEIGHT;
+		if (row > 0) y += ROW_SPACING;
+	
+		/* lay the items out */
+		for (int i = 0; i < count; i++) {
+			CoolItem child = items[row][i];
+			int newWidth = available + CoolItem.MINIMUM_WIDTH;
+			if (i + 1 < count) {
+				newWidth = Math.min(newWidth, child.requestedWidth);
+				available -= (newWidth - CoolItem.MINIMUM_WIDTH);
+			}
+			Rectangle oldBounds = child.getBounds();
+			Rectangle newBounds = new Rectangle(x, y, newWidth, rowHeight);
+			if (!oldBounds.equals(newBounds)) {
+				child.setBounds(newBounds.x, newBounds.y, newBounds.width, newBounds.height);
+				Rectangle damage = new Rectangle(0, 0, 0, 0);
+				/* Cases are in descending order from most area to redraw to least. */
+				if (oldBounds.y != newBounds.y) {
+					damage = newBounds;
+					damage.add(oldBounds);
+					/* Redraw the row separator as well. */
+					damage.y -= ROW_SPACING;
+					damage.height += 2 * ROW_SPACING;
 				}
-				if (resize) child.setBounds(x, y, newWidth, rowHeight);
-				x += resize ? newWidth : child.preferredWidth;
-			}		
-			maxWidth = Math.max(maxWidth, x);
-			y += ROW_SPACING + rowHeight;
+				else if (oldBounds.height != newBounds.height) {
+					/* 
+					 * Draw from the bottom of the gripper to the bottom of the new area.
+					 * (Bottom of the gripper is -3 from the bottom of the item).
+					 */
+					damage.y = newBounds.y + Math.min(oldBounds.height, newBounds.height) - 3;
+					damage.height = newBounds.y + newBounds.height + ROW_SPACING;
+					damage.x = oldBounds.x;
+					damage.width = oldBounds.width;
+				}
+				else if (oldBounds.x != newBounds.x) {
+					/* Redraw only the difference between the separators. */
+					damage.x = Math.min(oldBounds.x, newBounds.x);
+					damage.width = Math.abs(oldBounds.x - newBounds.x) + CoolItem.MINIMUM_WIDTH;
+					damage.y = oldBounds.y;
+					damage.height = oldBounds.height;
+				}
+				redraw(damage.x, damage.y, damage.width, damage.height, false);
+			}
+			x += newWidth;
 		}
+		maxWidth = Math.max(maxWidth, x);
+		y += rowHeight;
 	}
-	return new Point(maxWidth, y);
+	return y;
 }
 void relayout() {
-	int width = getSize().x;
-	int height = layout(width, true).y;
-	super.setSize(width, height);
-}
-public void setBackground (Color color) {
-	super.setBackground (color);
-	CoolItem[] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
-		items[i].composite.setBackground (color);	
-	}
+	Point size = getSize();
+	int height = layout(size.x);
+	height += 2 * getBorderWidth();
+	if (height != size.y) super.setSize(size.x, height);
 }
 public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);
-	layout(width, true);
+	layout(width);
 }
 public void setSize (int width, int height) {
 	super.setSize (width, height);
-	layout (width, true);
+	layout (width);
 }
 CoolItem getChild (int id) {
-	for (int i = 0; i < rows.size(); i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		for (int j = 0; j < row.size(); j++) {
-			CoolItem child = (CoolItem) row.elementAt(j);
+	for (int row = 0; row < items.length; row++) {
+		for (int i = 0; i < items[row].length; i++) {
+			CoolItem child = items[row][i];
 			if (child.id == id) return child;
 		}
 	}
@@ -583,16 +742,16 @@ public int[] getItemOrder () {
 }
 void setItemOrder (int[] itemOrder) {
 	if (itemOrder == null) error(SWT.ERROR_NULL_ARGUMENT);
-	CoolItem[] items = getItems();
-	if (itemOrder.length != items.length) error(SWT.ERROR_INVALID_ARGUMENT);
-	Vector row = new Vector(items.length);
-	for (int i = 0; i < itemOrder.length; i++) {
+	int count = getItemCount();
+	if (itemOrder.length != count) error(SWT.ERROR_INVALID_ARGUMENT);
+	CoolItem[] row = new CoolItem[count];
+	for (int i = 0; i < count; i++) {
 		CoolItem child = getChild(itemOrder[i]);
 		if (child == null) error(SWT.ERROR_INVALID_ARGUMENT);
-		row.addElement(child);
+		row[i] = child;
 	}
-	rows = new Vector(1);
-	rows.addElement(row);
+	items = new CoolItem[1][count];
+	items[0] = row;
 }
 /**
  * Returns an array of points whose x and y coordinates describe
@@ -638,12 +797,12 @@ void setItemSizes (Point[] sizes) {
  */
 public int[] getWrapIndices () {
 	checkWidget();
-	int[] data = new int[rows.size() - 1];
-	int itemIndex = 0;
-	for (int i = 0; i < rows.size() - 1; i++) {
-		Vector row = (Vector) rows.elementAt(i);
-		itemIndex += row.size();
-		data[i] = itemIndex;
+	if (items.length <= 1) return new int[]{};
+	int[] data = new int[items.length - 1];
+	int i = 0, nextWrap = items[0].length;
+	for (int row = 1; row < items.length; row++) {
+		data[i++] = nextWrap;
+		nextWrap += items[row].length;
 	}
 	return data;
 }
@@ -663,24 +822,23 @@ public int[] getWrapIndices () {
 public void setWrapIndices (int[] data) {
 	checkWidget();
 	if (data == null) error(SWT.ERROR_NULL_ARGUMENT);
-	CoolItem[] items = getItems();
-	rows = new Vector(5);
+	if (items.length == 0) return;
+
+	CoolItem[] allItems = getItems();
+	items = new CoolItem[0][];
+	CoolItem[][] newItems;
+	CoolItem[] row;
 	int itemIndex = 0;
-	for (int i = 0; i < data.length; i++) {
-		int nextWrap = data[i];
-		Vector row = new Vector(10);
-		while (itemIndex < nextWrap) {
-			row.addElement(items[itemIndex]);
-			itemIndex++;
-		}
-		rows.addElement(row);
+	for (int i = 0; i <= data.length; i++) {
+		int nextWrap = (i < data.length) ? data[i] : allItems.length;
+		row = new CoolItem[nextWrap - itemIndex];
+		System.arraycopy(allItems, itemIndex, row, 0, row.length); 
+		itemIndex += row.length;
+		newItems = new CoolItem[items.length + 1][];
+		System.arraycopy(items, 0, newItems, 0, items.length);
+		newItems[items.length] = row;
+		items = newItems;
 	}
-	Vector row = new Vector(10);
-	while (itemIndex < items.length) {
-		row.addElement(items[itemIndex]);
-		itemIndex++;
-	}
-	rows.addElement(row);
 	relayout();
 }
 /**
