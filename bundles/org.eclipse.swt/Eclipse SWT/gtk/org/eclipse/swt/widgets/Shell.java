@@ -86,7 +86,7 @@ import org.eclipse.swt.events.*;
 
 public class Shell extends Decorations {
 	Display display;
-	int shellHandle, vboxHandle;
+	int vboxHandle;
 	int modal;
 	int accelGroup;
 	Rectangle lastClientArea;
@@ -321,9 +321,9 @@ void closeWidget () {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	shellHandle = OS.gtk_window_new((parent==null)? OS.GTK_WINDOW_TOPLEVEL:OS.GTK_WINDOW_DIALOG);
-	if (shellHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
-	if (parent!=null) OS.gtk_window_set_transient_for(shellHandle, parent.topHandle());
+	topHandle = OS.gtk_window_new((parent==null)? OS.GTK_WINDOW_TOPLEVEL:OS.GTK_WINDOW_DIALOG);
+	if (topHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	if (parent!=null) OS.gtk_window_set_transient_for(topHandle, parent.topHandle());
 	
 	vboxHandle = OS.gtk_vbox_new(false,0);
 	if (vboxHandle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
@@ -334,19 +334,19 @@ void createHandle (int index) {
 	handle = OS.gtk_drawing_area_new();
 	if (handle == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	accelGroup = OS.gtk_accel_group_new ();
-	OS.gtk_window_add_accel_group (shellHandle, accelGroup);
-	OS.gtk_window_set_title (shellHandle, new byte [1]);
+	OS.gtk_window_add_accel_group (topHandle, accelGroup);
+	OS.gtk_window_set_title (topHandle, new byte [1]);
 }
 
 void configure () {
-	OS.gtk_container_add (shellHandle, vboxHandle);
+	OS.gtk_container_add (topHandle, vboxHandle);
 	OS.gtk_box_pack_end(vboxHandle, eventBoxHandle, true,true,0);
 	OS.gtk_container_add (eventBoxHandle, fixedHandle);
 	OS.gtk_fixed_put(fixedHandle, handle, (short)0,(short)0);
 }
 
 void showHandle() {
-	OS.gtk_widget_realize (shellHandle);  // careful: NOT show
+	OS.gtk_widget_realize (topHandle);  // careful: NOT show
 	_setStyle();
 	
 	OS.gtk_widget_realize (vboxHandle);
@@ -364,15 +364,14 @@ void showHandle() {
 
 void hookEvents () {
 	super.hookEvents ();
-	signal_connect(shellHandle, "map_event",     SWT.Deiconify, 3);
-	signal_connect(shellHandle, "unmap_event",   SWT.Iconify, 3);
-	signal_connect(shellHandle, "size_allocate", SWT.Resize, 3);
-	signal_connect(shellHandle, "delete_event",  SWT.Dispose, 3);
+	signal_connect(topHandle, "map_event",     SWT.Deiconify, 3);
+	signal_connect(topHandle, "unmap_event",   SWT.Iconify, 3);
+	signal_connect(topHandle, "size_allocate", SWT.Resize, 3);
+	signal_connect(topHandle, "delete_event",  SWT.Dispose, 3);
 }
 
 void register () {
 	super.register ();
-	WidgetTable.put (shellHandle, this);
 	WidgetTable.put (vboxHandle, this);
 }
 
@@ -381,7 +380,7 @@ private void _setStyle() {
 	   ((style&SWT.PRIMARY_MODAL)     != 0) ||
 	   ((style&SWT.APPLICATION_MODAL) != 0) ||
 	   ((style&SWT.SYSTEM_MODAL)      != 0));
-	OS.gtk_window_set_modal(shellHandle, modal);
+	OS.gtk_window_set_modal(topHandle, modal);
 	
 	int decorations = 0;
 	if ((style & SWT.NO_TRIM) == 0) {
@@ -400,7 +399,7 @@ private void _setStyle() {
 		if ((style & SWT.RESIZE) != 0) decorations |= OS.GDK_DECOR_BORDER;
 	}
 	GtkWidget widget = new GtkWidget();
-	OS.memmove(widget, shellHandle, GtkWidget.sizeof);
+	OS.memmove(widget, topHandle, GtkWidget.sizeof);
 	int w = widget.window;
 	// PANIC - this must absolutely never happen, so it's not NO_HANDLES actually
 	if (w == 0) error(SWT.ERROR_NO_HANDLES);
@@ -412,7 +411,7 @@ void _connectChild (int h) {
 }
 
 int topHandle () {
-	return shellHandle;
+	return topHandle;
 }
 
 int parentingHandle() {
@@ -420,7 +419,7 @@ int parentingHandle() {
 }
 
 boolean isMyHandle(int h) {
-	if (h == shellHandle)    return true;
+	if (h == topHandle)    return true;
 	if (h == vboxHandle)     return true;
 	if (h == eventBoxHandle) return true;
 	if (h == fixedHandle)    return true;
@@ -435,7 +434,7 @@ boolean isMyHandle(int h) {
 
 public Point _getLocation() {
 	GtkWidget widget = new GtkWidget();
-	OS.memmove (widget, shellHandle, GtkWidget.sizeof);
+	OS.memmove (widget, topHandle, GtkWidget.sizeof);
 	int [] x = new int [1], y = new int [1];
 	OS.gdk_window_get_origin(widget.window, x,y);
 	return new Point(x[0], y[0]);
@@ -447,7 +446,7 @@ public Rectangle _getClientArea () {
 }
 
 boolean _setSize(int width, int height) {
-	boolean differentExtent = UtilFuncs.setSize(shellHandle, width,height);
+	boolean differentExtent = UtilFuncs.setSize(topHandle, width,height);
 	Point clientSize = UtilFuncs.getSize(eventBoxHandle);
 	UtilFuncs.setSize(fixedHandle, clientSize.x, clientSize.y);
 	UtilFuncs.setSize(handle,      clientSize.x, clientSize.y);
@@ -456,7 +455,7 @@ boolean _setSize(int width, int height) {
 
 // Unreliable
 boolean _setLocation (int x, int y) {
-	OS.gtk_widget_set_uposition (shellHandle, x, y);
+	OS.gtk_widget_set_uposition (topHandle, x, y);
 	return true;
 }
 
@@ -464,7 +463,7 @@ void setInitialSize() {
 	int width  = OS.gdk_screen_width () * 5 / 8;
 	int height = OS.gdk_screen_height () * 5 / 8;
 	_setSize(width, height);
-	OS.gtk_window_set_policy (shellHandle, 1,1,0);
+	OS.gtk_window_set_policy (topHandle, 1,1,0);
 }
 
 public Display getDisplay () {
@@ -480,7 +479,7 @@ public Display getDisplay () {
  */
 Control getFocusControl() {
 	GtkWindow shell = new GtkWindow();
-	OS.memmove(shell, shellHandle, GtkWindow.sizeof);
+	OS.memmove(shell, topHandle, GtkWindow.sizeof);
 	int focusHandle = shell.focus_widget;
 	if (focusHandle==0) return null;
 	return (Control)this.getDisplay().findWidget(focusHandle);
@@ -739,7 +738,7 @@ public void setMinimized (boolean minimized) {
 	 * At least we can force a deiconify
 	 */
 	GtkWidget w = new GtkWidget();
-	OS.memmove(w, shellHandle, w.sizeof);
+	OS.memmove(w, topHandle, w.sizeof);
 	OS.gdk_window_show(w.window);
 }
 
@@ -764,17 +763,16 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
 	byte [] buffer = Converter.wcsToMbcs (null, string, true);
-	OS.gtk_window_set_title (shellHandle, buffer);
+	OS.gtk_window_set_title (topHandle, buffer);
 }
 public void setVisible (boolean visible) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (visible) {
-		OS.gtk_widget_show_now (shellHandle);
+		OS.gtk_widget_show_now (topHandle);
 		display.update();
 		sendEvent (SWT.Show);
 	} else {	
-		OS.gtk_widget_hide (shellHandle);
+		OS.gtk_widget_hide (topHandle);
 		sendEvent (SWT.Hide);
 	}
 }
@@ -786,13 +784,12 @@ public void setVisible (boolean visible) {
 
 void deregister () {
 	super.deregister ();
-	WidgetTable.remove (shellHandle);
 	WidgetTable.remove (vboxHandle);
 }
 
 void releaseHandle () {
 	super.releaseHandle ();
-	shellHandle = vboxHandle = 0;
+	vboxHandle = 0;
 }
 
 void releaseShells () {
