@@ -1790,6 +1790,10 @@ public boolean sleep () {
  *
  * @param runnable code to run on the user-interface thread.
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
+ * </ul>
+ *
  * @see #asyncExec
  */
 public void syncExec (Runnable runnable) {

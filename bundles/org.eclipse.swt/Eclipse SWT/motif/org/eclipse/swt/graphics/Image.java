@@ -40,7 +40,7 @@ import java.io.*;
  *    // allocate as many of these colors as you wish by
  *    // using the Color constructor Color(RGB), then
  *    // create the image:
- *    Image i = new Image(device, data);</code>
+ *    Image i = new Image(device, data);
  * </pre>
  * <p>
  * Applications which require even greater control over the image

@@ -289,15 +289,19 @@ public Control getControl () {
 	return control;
 }
 /**
-* Gets the disabled image.
-* <p>
-* @return the image
-*
-* @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
-*	when called from the wrong thread
-* @exception SWTError(ERROR_WIDGET_DISPOSED)
-*	when the widget has been disposed
-*/
+ * Returns the receiver's disabled image if it has one, or null
+ * if it does not.
+ * <p>
+ * The disabled image is displayed when the receiver is disabled.
+ * </p>
+ *
+ * @return the receiver's disabled image
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public Image getDisabledImage () {
 	checkWidget();
 	return disabledImage;
