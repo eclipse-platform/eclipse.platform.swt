@@ -1105,6 +1105,7 @@ public class OS {
 	public static final int WH_GETMESSAGE = 0x3;
 	public static final int WH_MSGFILTER = 0xFFFFFFFF;
 	public static final int WHEEL_DELTA = 120;
+	public static final int WHEEL_PAGESCROLL = 0xFFFFFFFF;
 	public static final int WM_ACTIVATE = 0x6;
 	public static final int WM_APP = 0x8000;
 	public static final int WM_CANCELMODE = 0x1f;
