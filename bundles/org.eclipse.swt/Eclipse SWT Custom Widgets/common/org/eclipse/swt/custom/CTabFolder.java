@@ -1560,6 +1560,7 @@ public void showItem (CTabItem item) {
 	if (index < topTabIndex) {
 		topTabIndex = index;
 		setItemsLocation();
+		redrawTabArea(-1);
 		return;
 	}
 	Rectangle area = super.getClientArea();
@@ -1573,6 +1574,7 @@ public void showItem (CTabItem item) {
 	while (item.x + item.width > width && index != topTabIndex) {
 		topTabIndex++;
 		setItemsLocation();
+		redrawTabArea(-1);
 		width = areaWidth;
 		if (scroll_leftVisible() || scroll_rightVisible()) {
 			width -=  scrollWidth;
