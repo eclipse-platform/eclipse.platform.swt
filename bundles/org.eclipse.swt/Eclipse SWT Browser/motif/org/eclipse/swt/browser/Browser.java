@@ -132,8 +132,7 @@ public Browser(Composite parent, int style) {
 			SWT.error(SWT.ERROR_NO_HANDLES);
 		}
 		
-		String mozillaPath = XPCOM.PR_GetEnv(XPCOM.MOZILLA_FIVE_HOME);
-		if (mozillaPath == null) mozillaPath = GRE.mozillaPath;
+		String mozillaPath = GRE.mozillaPath;
 		if (mozillaPath == null) {
 			dispose();
 			SWT.error(SWT.ERROR_NO_HANDLES);
