@@ -321,8 +321,18 @@ void createClassesPanel(Composite panel) {
 	classEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
 	classEditorLt.setItems(ClassData.getAllFlags());
 	floater.pack();
+	floater.addListener(SWT.Close, new Listener() {
+		public void handleEvent(Event e) {
+			classListEditor.setItem(null);
+			e.doit = false;
+			floater.setVisible(false);
+		}
+	});
 	Listener classesListListener = new Listener() {
 		public void handleEvent(Event e) {
+			if (e.type == SWT.KeyDown) {
+				if (e.character != SWT.CR) return;
+			}
 			floater.setVisible(false);
 			TableItem item = classListEditor.getItem();
 			if (item == null) return;
@@ -341,6 +351,7 @@ void createClassesPanel(Composite panel) {
 	};
 	classEditorLt.addListener(SWT.DefaultSelection, classesListListener);
 	classEditorLt.addListener(SWT.FocusOut, classesListListener);
+	classEditorLt.addListener(SWT.KeyDown, classesListListener);
 
 	classesLt.addListener(SWT.MouseDown, new Listener() {
 		public void handleEvent(Event e) {
@@ -450,8 +461,18 @@ void createMembersPanel(Composite panel) {
 	floater.setLayout(new FillLayout());
 	memberListEditor = new FlagsEditor(membersLt);
 	memberEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
+	floater.addListener(SWT.Close, new Listener() {
+		public void handleEvent(Event e) {
+			memberListEditor.setItem(null);
+			e.doit = false;
+			floater.setVisible(false);
+		}
+	});
 	Listener memberListListener = new Listener() {
 		public void handleEvent(Event e) {
+			if (e.type == SWT.KeyDown) {
+				if (e.character != SWT.CR) return;
+			}
 			floater.setVisible(false);
 			TableItem item = memberListEditor.getItem();
 			if (item == null) return;
@@ -475,6 +496,7 @@ void createMembersPanel(Composite panel) {
 	};
 	memberEditorLt.addListener(SWT.DefaultSelection, memberListListener);
 	memberEditorLt.addListener(SWT.FocusOut, memberListListener);
+	memberEditorLt.addListener(SWT.KeyDown, memberListListener);
 	
 	membersLt.addListener(SWT.MouseDown, new Listener() {
 		public void handleEvent(Event e) {
@@ -602,8 +624,18 @@ void createParametersPanel(Composite panel) {
 	paramEditorLt = new List(floater, SWT.MULTI | SWT.BORDER);
 	paramEditorLt.setItems(ParameterData.getAllFlags());
 	floater.pack();
+	floater.addListener(SWT.Close, new Listener() {
+		public void handleEvent(Event e) {
+			paramListEditor.setItem(null);
+			e.doit = false;
+			floater.setVisible(false);
+		}
+	});
 	Listener paramListListener = new Listener() {
 		public void handleEvent(Event e) {
+			if (e.type == SWT.KeyDown) {
+				if (e.character != SWT.CR) return;
+			}
 			floater.setVisible(false);
 			TableItem item = paramListEditor.getItem();
 			if (item == null) return;
@@ -621,6 +653,7 @@ void createParametersPanel(Composite panel) {
 	};
 	paramEditorLt.addListener(SWT.DefaultSelection, paramListListener);
 	paramEditorLt.addListener(SWT.FocusOut, paramListListener);
+	paramEditorLt.addListener(SWT.KeyDown, paramListListener);
 
 	paramsLt.addListener(SWT.MouseDown, new Listener() {
 		public void handleEvent(Event e) {
