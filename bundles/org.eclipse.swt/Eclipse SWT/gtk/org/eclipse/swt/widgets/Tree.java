@@ -763,6 +763,11 @@ int processMouseDown (int int0, int int1, int int2) {
 			}
 		}
 	}
+	GdkEvent gdkEvent = new GdkEvent ();
+	OS.memmove (gdkEvent, int0, GdkEvent.sizeof);
+	if (gdkEvent.type == OS.GDK_2BUTTON_PRESS) {
+		if (hooks (SWT.DefaultSelection)) return 1;
+	}
 	return result;
 }
 
