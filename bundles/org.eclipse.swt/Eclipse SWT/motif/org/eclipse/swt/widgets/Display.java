@@ -1719,10 +1719,13 @@ void showToolTip (int handle, String toolTipText) {
 		0,
 		OS.XmFONTLIST_DEFAULT_TAG, 
 		OS.XmCHARSET_TEXT, 
-		null,
-		0,
+		parseTable,
+		parseTable.length,
 		0);
-	int [] argList3 = {OS.XmNlabelString, xmString};
+	int [] argList3 = {
+		OS.XmNalignment, OS.XmALIGNMENT_BEGINNING,
+		OS.XmNlabelString, xmString,
+	};
 	OS.XtSetValues (toolTipHandle, argList3, argList3.length / 2);
 	if (xmString != 0) OS.XmStringFree (xmString);	
 		
