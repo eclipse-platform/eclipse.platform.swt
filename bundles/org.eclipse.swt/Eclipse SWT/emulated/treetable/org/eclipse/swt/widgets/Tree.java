@@ -535,7 +535,7 @@ void headerOnMouseDown (Event event) {
 		if (event.x < x) {
 			Event newEvent = new Event ();
 			newEvent.widget = column;
-			postEvent (SWT.Selection, newEvent);
+			column.postEvent (SWT.Selection, newEvent);
 			return;
 		}
 	}
