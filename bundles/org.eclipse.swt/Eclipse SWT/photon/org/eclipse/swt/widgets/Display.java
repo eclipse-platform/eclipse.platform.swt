@@ -102,7 +102,7 @@ public class Display extends Device {
 	
 	/* Deferred Events */
 	Event [] eventQueue;
-	EventTable eventTable;
+	EventTable eventTable, filterTable;
 	
 	/* Events Dispatching and Callback */
 	Callback windowCallback, drawCallback, workCallback, inputCallback, hotkeyCallback;
@@ -311,6 +311,35 @@ public Display (DeviceData data) {
 
 /**
  * Adds the listener to the collection of listeners who will
+ * be notifed when an event of the given type occurs anywhere
+ * in SWT. When the event does occur, the listener is notified
+ * by sending it the <code>handleEvent()</code> message.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #removeFilter
+ * @see #removeListener
+ * 
+ * @since 2.1 
+ */
+public void addFilter (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (filterTable == null) filterTable = new EventTable ();
+	filterTable.hook (eventType, listener);
+}
+
+/**
+ * Adds the listener to the collection of listeners who will
  * be notifed when an event of the given type occurs. When the
  * event does occur in the display, the listener is notified by
  * sending it the <code>handleEvent()</code> message.
@@ -513,6 +542,16 @@ public static synchronized Display findDisplay (Thread thread) {
 	return null;
 }
 
+boolean filterEvent (Event event) {
+	if (filterTable != null) filterTable.sendEvent (event);
+	return false;
+}
+
+boolean filters (int eventType) {
+	if (filterTable == null) return false;
+	return filterTable.hooks (eventType);
+}
+
 /**
  * Given the operating system handle for a widget, returns
  * the instance of the <code>Widget</code> subclass which
@@ -702,6 +741,10 @@ public Control getFocusControl () {
 		}
 	}
 	return null;
+}
+
+int getLastEventTime () {
+	return (int) System.currentTimeMillis ();
 }
 
 /**
@@ -1369,6 +1412,34 @@ void releaseDisplay () {
 
 /**
  * Removes the listener from the collection of listeners who will
+ * be notifed when an event of the given type occurs anywhere in SWT.
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should no longer be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #addFilter
+ * @see #addListener
+ * 
+ * @since 2.1 
+ */
+public void removeFilter (int eventType, Listener listener) {
+	checkDevice ();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (filterTable == null) return;
+	filterTable.unhook (eventType, listener);
+	if (filterTable.size () == 0) filterTable = null;
+}
+
+/**
+ * Removes the listener from the collection of listeners who will
  * be notifed when an event of the given type occurs.
  *
  * @param eventType the type of event to listen for
@@ -1434,14 +1505,16 @@ boolean runDeferredEvents () {
 }
 
 void sendEvent (int eventType, Event event) {
-	if (eventTable == null) return;
+	if (eventTable == null && filterTable == null) {
+		return;
+	}
 	if (event == null) event = new Event ();
 	event.display = this;
 	event.type = eventType;
-	if (event.time == 0) {
-		event.time = (int) System.currentTimeMillis ();
+	if (event.time == 0) event.time = getLastEventTime ();
+	if (!filterEvent (event)) {
+		if (eventTable != null) eventTable.sendEvent (event);
 	}
-	eventTable.sendEvent (event);
 }
 
 /**

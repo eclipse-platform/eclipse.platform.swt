@@ -916,8 +916,7 @@ int processVerify (int info) {
 		OS.free (lastModifiedText);
 		lastModifiedText = 0;
 	}
-	super.processVerify (info);
-	if (echoCharacter == '\0' && !hooks (SWT.Verify)) return 0;
+	if (echoCharacter == '\0' && !hooks (SWT.Verify) && !filters (SWT.Verify)) return 0;
 	PtCallbackInfo_t cbinfo = new PtCallbackInfo_t ();
 	OS.memmove (cbinfo, info, PtCallbackInfo_t.sizeof);
 	PtTextCallback_t textVerify = new PtTextCallback_t ();
@@ -974,7 +973,7 @@ int processVerify (int info) {
 	}
 	OS.memmove (cbinfo.cbdata, textVerify, PtTextCallback_t.sizeof);
 	textVerify = null;
-	return 0;
+	return OS.Pt_CONTINUE;
 }
 
 void register () {

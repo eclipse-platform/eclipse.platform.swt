@@ -1886,7 +1886,7 @@ public boolean setFocus () {
 }
 
 void sendPaintEvent (int damage) {
-	if (!hooks(SWT.Paint)) return;
+	if (!hooks(SWT.Paint) && !filters (SWT.Paint)) return;
 	
 	/* Translate the damage to widget coordinates */
 	short [] widgetX = new short [1];

@@ -387,6 +387,11 @@ static void error (int code) {
 	SWT.error(code);
 }
 
+boolean filters (int eventType) {
+	Display display = getDisplay ();
+	return display.filters (eventType);
+}
+
 /**
  * Returns the application defined widget data associated
  * with the receiver, or null if it has not been set. The
@@ -563,21 +568,12 @@ public void notifyListeners (int eventType, Event event) {
 	sendEvent (eventType, event);
 }
 
-void postEvent (int eventType, Event event) {
-	if (eventTable == null) return;
-	Display display = getDisplay ();
-	event.type = eventType;
-	event.widget = this;
-	event.display = display;
-	if (event.time == 0) {
-		event.time = (int) System.currentTimeMillis ();
-	}
-	display.postEvent (event);
+void postEvent (int eventType) {
+	sendEvent (eventType, null, false);
 }
 
-void postEvent (int eventType) {
-	if (eventTable == null) return;
-	postEvent (eventType, new Event ());
+void postEvent (int eventType, Event event) {
+	sendEvent (eventType, event, false);
 }
 
 int processActivate (int info) {
@@ -817,26 +813,38 @@ void replaceMnemonic (int mnemonic, boolean normal, boolean alt) {
 	}
 }
 
-void sendEvent (int eventType, Event event) {
-	if (eventTable == null) return;
-	Display display = getDisplay ();
-	event.widget = this;
-	event.type = eventType;
-	event.display = display;
-	if (event.time == 0) {
-		event.time = (int) System.currentTimeMillis ();
+void sendEvent (Event event) {
+	Display display = event.display;
+	if (!display.filterEvent (event)) {
+		if (eventTable != null) eventTable.sendEvent (event);
 	}
-	eventTable.sendEvent (event);
 }
 
 void sendEvent (int eventType) {
-	if (eventTable == null) return;
-	sendEvent (eventType, new Event ());
+	sendEvent (eventType, null, true);
 }
 
-void sendEvent (Event event) {
-	if (eventTable == null) return;
-	eventTable.sendEvent (event);
+void sendEvent (int eventType, Event event) {
+	sendEvent (eventType, event, true);
+}
+
+void sendEvent (int eventType, Event event, boolean send) {
+	Display display = getDisplay ();
+	if (eventTable == null && !display.filters (eventType)) {
+		return;
+	}
+	if (event == null) event = new Event ();
+	event.type = eventType;
+	event.display = display;
+	event.widget = this;
+	if (event.time == 0) {
+		event.time = display.getLastEventTime ();
+	}
+	if (send) {
+		sendEvent (event);
+	} else {
+		display.postEvent (event);
+	}
 }
 
 /**
