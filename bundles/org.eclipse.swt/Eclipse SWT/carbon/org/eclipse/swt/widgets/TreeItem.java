@@ -37,6 +37,7 @@ public class TreeItem extends Item {
 	int id, index = -1, width = -1;
 	boolean checked, grayed;
 	Color foreground, background;
+	Font font;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -297,6 +298,23 @@ public boolean getExpanded () {
 }
 
 /**
+ * Returns the font that the receiver will use to paint textual information for this item.
+ *
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @since 3.0
+ */
+public Font getFont () {
+	checkWidget ();
+	return font != null ? font : parent.getFont ();
+}
+
+/**
  * Returns the foreground color that the receiver will use to draw.
  *
  * @return the receiver's foreground color
@@ -415,6 +433,7 @@ void releaseChild () {
 void releaseWidget () {
 	super.releaseWidget ();
 	background = foreground = null;
+	font = null;
 	parentItem = null;
 	parent = null;
 	id = 0;
@@ -486,6 +505,32 @@ public void setExpanded (boolean expanded) {
 		OS.CloseDataBrowserContainer (parent.handle, id);
 	}
 	parent.ignoreExpand = false;
+}
+
+/**
+ * Sets the font that the receiver will use to paint textual information
+ * for this item to the font specified by the argument, or to the default font
+ * for that kind of control if the argument is null.
+ *
+ * @param font the new font (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setFont (Font font) {
+	checkWidget ();
+	if (font != null && font.isDisposed ()) {
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	}
+	this.font = font;
+	redraw ();
 }
 
 /**

@@ -418,6 +418,8 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		gc.drawImage (image, 0, 0, bounds.width, bounds.height, x, y + (height - bounds.height) / 2, bounds.width, bounds.height);
 		x += bounds.width + 2;
 	}
+	Font font = item.getFont ();
+	gc.setFont (font);
 	Point extent = gc.stringExtent (item.text);
 	if ((itemState & OS.kDataBrowserItemIsSelected) != 0) {
 		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
