@@ -55,6 +55,10 @@ public class SwtTestCase extends TestCase {
 	// used to specify verbose mode, if true unimplemented warning messages will 
 	// be written to System.out
 	public static boolean verbose = false;
+
+	// allow specific image formats to be tested
+	public static String[] imageFormats = new String[] {"bmp", "jpg", "gif", "png"};
+	public static String[] imageFilenames = new String[] {"folder", "folderOpen", "target"};
 	
 public SwtTestCase(String name) {
 	super(name);

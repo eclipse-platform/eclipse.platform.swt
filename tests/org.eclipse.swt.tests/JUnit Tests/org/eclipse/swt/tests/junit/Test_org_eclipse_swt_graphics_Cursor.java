@@ -10,11 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+
+import java.io.*;
+
 import junit.framework.*;
-import junit.textui.*;
-import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
+import junit.textui.TestRunner;
+
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.Display;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Cursor
@@ -22,6 +26,9 @@ import org.eclipse.swt.graphics.*;
  * @see org.eclipse.swt.graphics.Cursor
  */
 public class Test_org_eclipse_swt_graphics_Cursor extends SwtTestCase {
+
+/* custom */
+Display display;
 
 public Test_org_eclipse_swt_graphics_Cursor(String name) {
 	super(name);
@@ -136,11 +143,24 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII() {
 	// Test new Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY)
-	ImageLoader loader = new ImageLoader();
-	ImageData source = loader.load(SwtTestCase.class.getResourceAsStream("dot.gif"))[0];
-	ImageData mask = source.getTransparencyMask();
-	Cursor cursor = new Cursor(display, source, mask, 0, 0);
-	cursor.dispose();
+	int numFormats = SwtTestCase.imageFormats.length;
+	String fileName = SwtTestCase.imageFilenames[0];
+	for (int i=0; i<numFormats; i++) {
+		String format = SwtTestCase.imageFormats[i];
+		ImageLoader loader = new ImageLoader();
+		InputStream stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+		ImageData source = loader.load(stream)[0];
+		ImageData mask = source.getTransparencyMask();
+		if (mask != null && (source.depth == 1)) {
+			Cursor cursor = new Cursor(display, source, mask, 0, 0);
+			cursor.dispose();
+		}
+		try {
+			stream.close();
+		} catch (IOException e) {
+			// continue;
+		}
+	}
 }
 public void test_dispose() {
 	// tested in test_isDisposed
@@ -226,7 +246,4 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
-
-/* custom */
-Display display;
 }

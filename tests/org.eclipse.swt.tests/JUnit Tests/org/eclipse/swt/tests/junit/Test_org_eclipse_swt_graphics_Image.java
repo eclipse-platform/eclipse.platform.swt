@@ -10,10 +10,14 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+
+import java.io.*;
+
 import junit.framework.*;
-import junit.textui.*;
-import org.eclipse.swt.widgets.*;
+import junit.textui.TestRunner;
+
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.widgets.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Image
@@ -21,6 +25,8 @@ import org.eclipse.swt.graphics.*;
  * @see org.eclipse.swt.graphics.Image
  */
 public class Test_org_eclipse_swt_graphics_Image extends SwtTestCase {
+
+Display display;
 
 public Test_org_eclipse_swt_graphics_Image(String name) {
 	super(name);
@@ -42,12 +48,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceII not written");
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream not written");
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI not written");
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String not written");
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle not written");
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData() {
@@ -58,12 +64,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData not written");
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI not written");
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream not written");
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle not written");
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String not written");
 }
 
 public void test_dispose() {
@@ -82,7 +88,7 @@ public void test_getBounds() {
 	warnUnimpl("Test test_getBounds not written");
 }
 
-public void test_getImageData() {
+public void test_getImageData() {	
 	getImageData1();
 	getImageData2(24, new PaletteData(0xff0000, 0xff00, 0xff));		
 	getImageData2(32, new PaletteData(0xff0000, 0xff00, 0xff));
@@ -92,12 +98,12 @@ public void test_hashCode() {
 	warnUnimpl("Test test_hashCode not written");
 }
 
-public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
-	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
-}
-
 public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
 	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
+}
+
+public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
+	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
 }
 
 public void test_isDisposed() {
@@ -148,7 +154,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceII");
 	return methodNames;
 }
-
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceII();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream();
@@ -170,19 +175,27 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceII")) test_win32_newLorg_eclipse_swt_graphics_DeviceII();
 }
-/* custom */
-Display display;
+
 /** Test implementation **/
 
 void getImageData1() {
-	ImageLoader loader = new ImageLoader();
-	ImageData data1 = loader.load(SwtTestCase.class.getResourceAsStream("dot.gif"))[0];
-
-	Image image = new Image(display, data1);
-	ImageData data2 = image.getImageData();
-	
-	assertEquals("Image width should be the same", data1.width, data2.width);
-	assertEquals("Image height should be the same", data1.height, data2.height);
+	int numFormats = SwtTestCase.imageFormats.length;
+	String fileName = SwtTestCase.imageFilenames[0];
+	for (int i=0; i<numFormats; i++) {
+		String format = SwtTestCase.imageFormats[i];
+		ImageLoader loader = new ImageLoader();
+		InputStream stream = SwtTestCase.class.getResourceAsStream(fileName + "." + format);
+		ImageData data1 = loader.load(stream)[0];
+		Image image = new Image(display, data1);
+		ImageData data2 = image.getImageData();
+		assertEquals("Image width should be the same", data1.width, data2.width);
+		assertEquals("Image height should be the same", data1.height, data2.height);
+		try {
+			stream.close();
+		} catch (IOException e) {
+			// continue;
+		}
+	}
 }
 
 /*

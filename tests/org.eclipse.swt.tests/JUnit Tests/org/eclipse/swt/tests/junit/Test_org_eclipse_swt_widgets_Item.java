@@ -10,10 +10,13 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.io.*;
+
 import junit.framework.*;
-import junit.textui.*;
+import junit.textui.TestRunner;
+
+import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Item
@@ -114,23 +117,24 @@ protected void runTest() throws Throwable {
 
 /* custom */
 Item item;
-protected Image[] images = new Image [3];
+Image[] images = new Image [SwtTestCase.imageFormats.length*SwtTestCase.imageFilenames.length];
 
 private void loadImages() {
-	java.io.InputStream in1 = this.getClass().getResourceAsStream("folder.bmp");
-	java.io.InputStream in2 = this.getClass().getResourceAsStream("folderOpen.bmp");
-	java.io.InputStream in3 = this.getClass().getResourceAsStream("target.bmp");
-	Display display = shell.getDisplay();
-		
-	images [0] = new Image (display, in1);
-	images [1] = new Image (display, in2);
-	images [2] = new Image (display, in3);
-	
-	try {
-		in1.close();
-		in2.close();
-		in3.close();
-	} catch (java.io.IOException e) {
+	int numFormats = SwtTestCase.imageFormats.length;
+	int numFiles = SwtTestCase.imageFilenames.length;
+	for (int i=0; i<numFormats; i++) {
+		String format = SwtTestCase.imageFormats[i];
+		int index = i*numFiles;
+		for (int j=0; j<numFiles; j++){
+			String fileName = SwtTestCase.imageFilenames[j];
+			InputStream  resource = this.getClass().getResourceAsStream(fileName + "." + format);
+			images [index+j] = new Image (shell.getDisplay(), resource);
+			try {
+				resource.close();
+			} catch (IOException e) {
+				// continue;
+			}
+		}
 	}
 }
 protected void setWidget(Widget widget) {

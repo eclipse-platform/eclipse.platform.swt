@@ -10,11 +10,15 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
+import java.io.*;
+
 import junit.framework.*;
-import junit.textui.*;
-import org.eclipse.swt.*;
+import junit.textui.TestRunner;
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.graphics.Rectangle;
 import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.widgets.Decorations
@@ -251,7 +255,7 @@ protected void runTest() throws Throwable {
 
 /* custom */
 Decorations decorations;
-Image[] images = new Image [3];
+Image[] images = new Image [SwtTestCase.imageFormats.length*SwtTestCase.imageFilenames.length];
 
 protected void setWidget(Widget w) {
 	if (!decorations.isDisposed())
@@ -262,9 +266,22 @@ protected void setWidget(Widget w) {
 
 // this method must be private or protected so the auto-gen tool keeps it
 private void loadImages() {
-	images [0] = new Image (shell.getDisplay(), this.getClass().getResourceAsStream("folder.bmp"));
-	images [1] = new Image (shell.getDisplay(), this.getClass().getResourceAsStream("folderOpen.bmp"));
-	images [2] = new Image (shell.getDisplay(), this.getClass().getResourceAsStream("target.bmp"));
+	int numFormats = SwtTestCase.imageFormats.length;
+	int numFiles = SwtTestCase.imageFilenames.length;
+	for (int i=0; i<numFormats; i++) {
+		String format = SwtTestCase.imageFormats[i];
+		int index = i*numFiles;
+		for (int j=0; j<numFiles; j++){
+			String fileName = SwtTestCase.imageFilenames[j];
+			InputStream  resource = this.getClass().getResourceAsStream(fileName + "." + format);
+			images [index+j] = new Image (shell.getDisplay(), resource);
+			try {
+				resource.close();
+			} catch (IOException e) {
+				// continue;
+			}
+		}
+	}
 }
 
 // this method must be private or protected so the auto-gen tool keeps it
