@@ -1075,21 +1075,26 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget ();
 	int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
-	int index = end;
-	while (index >= start) {
+	int index = start;
+	while (index <= end) {
 		ignoreSelect = true;
-		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, index, 0);
+		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, start, 0);
 		ignoreSelect = false;
 		if (code == 0) break;
 		
 		// BUG - disposed callback could remove an item
 		items [index].releaseWidget ();
-		--index;
+		index++;
 	}
-	int first = index + 1, last = end + 1;
-	System.arraycopy (items, last, items, first, count - last);
-	for (int i=count-(last-first); i<count; i++) items [i] = null;
-	if (first > start) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	System.arraycopy (items, index, items, start, count - index);
+	for (int i=count-(index-start); i<count; i++) items [i] = null;
+	if (index <= end) {
+		if (0 <= index && index < count) {
+			error (SWT.ERROR_ITEM_NOT_REMOVED);
+		} else {
+			error (SWT.ERROR_INVALID_RANGE);
+		}
+	}
 }
 
 /**

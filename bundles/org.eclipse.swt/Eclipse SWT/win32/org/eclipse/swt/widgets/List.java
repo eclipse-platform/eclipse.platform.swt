@@ -727,6 +727,7 @@ public void remove (int [] indices) {
 	int [] newIndices = new int [indices.length];
 	System.arraycopy (indices, 0, newIndices, 0, indices.length);
 	sort (newIndices);
+	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	int topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT rect = null;
 	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
@@ -737,7 +738,7 @@ public void remove (int [] indices) {
 		if (newFont != 0) oldFont = OS.SelectObject (hDC, newFont);
 	}
 	byte [] buffer = null;
-	int i = 0, count = 0, last = -1;
+	int i = 0, topCount = 0, last = -1;
 	while (i < newIndices.length) {
 		int index = newIndices [i];
 		if (index != last || i == 0) {
@@ -755,7 +756,7 @@ public void remove (int [] indices) {
 				OS.DrawText (hDC, buffer, -1, rect, flags);
 				newWidth = Math.max (newWidth, rect.right - rect.left);
 			}
-			if (index < topIndex) count++;
+			if (index < topIndex) topCount++;
 			last = index;
 		}
 		i++;
@@ -765,11 +766,15 @@ public void remove (int [] indices) {
 		OS.ReleaseDC (handle, hDC);
 		setScrollWidth (newWidth, false);
 	}
-	if (count > 0) {
-		topIndex -= count;
+	if (topCount > 0) {
+		topIndex -= topCount;
 		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	}
-	if (i < newIndices.length) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if (i < newIndices.length) {
+		int index = newIndices [i];
+		if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 }
 
 /**
@@ -834,6 +839,7 @@ public void remove (int index) {
 public void remove (int start, int end) {
 	checkWidget ();
 	if (start > end) return;
+	int count = OS.SendMessage (handle, OS.LB_GETCOUNT, 0, 0);
 	int topIndex = OS.SendMessage (handle, OS.LB_GETTOPINDEX, 0, 0);
 	RECT rect = null;
 	int hDC = 0, oldFont = 0, newFont = 0, newWidth = 0;
@@ -871,7 +877,10 @@ public void remove (int start, int end) {
 		topIndex -= end - start + 1;
 		OS.SendMessage (handle, OS.LB_SETTOPINDEX, topIndex, 0);
 	}
-	if (index <= end) error (SWT.ERROR_ITEM_NOT_REMOVED);
+	if (index <= end) {
+		if (0 <= index && index < count) error (SWT.ERROR_ITEM_NOT_REMOVED);
+		error (SWT.ERROR_INVALID_RANGE);
+	}
 }
 
 /**
