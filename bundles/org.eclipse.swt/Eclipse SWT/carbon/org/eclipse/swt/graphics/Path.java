@@ -201,9 +201,9 @@ public boolean contains(float x, float y, GC gc, boolean outline) {
 		OS.CGContextStrokePath(context);
 	} else {
 		if (data.fillRule == SWT.FILL_WINDING) {
-			OS.CGContextFillPath(handle);
+			OS.CGContextFillPath(context);
 		} else {
-			OS.CGContextEOFillPath(handle);
+			OS.CGContextEOFillPath(context);
 		}
 	}
 	OS.CGContextRelease(context);
