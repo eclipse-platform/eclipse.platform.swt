@@ -7,7 +7,6 @@ package org.eclipse.swt.printing;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
 /**
@@ -32,8 +31,6 @@ import org.eclipse.swt.graphics.*;
  */
 public final class Printer extends Device {
 	PrinterData data;
-	int printContext, xScreen, xDrawable;
-	int defaultFontList;
 
 /**
  * Returns an array of <code>PrinterData</code> objects
