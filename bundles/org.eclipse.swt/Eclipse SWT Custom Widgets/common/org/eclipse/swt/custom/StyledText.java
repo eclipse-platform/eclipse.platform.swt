@@ -4310,6 +4310,18 @@ public String getSelectionText() {
 	checkWidget();
 	return content.getTextRange(selection.x, selection.y - selection.x);
 }
+
+public int getStyle() {
+	int style = super.getStyle();
+	style &= ~(SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT | SWT.MIRRORED);
+	if (isMirrored()) {
+		style |= SWT.RIGHT_TO_LEFT | SWT.MIRRORED;
+	} else {
+		style |= SWT.LEFT_TO_RIGHT;
+	}
+	return style;
+}
+
 /**
  * Returns the text segments that should be treated as if they 
  * had a different direction than the surrounding text.
@@ -7533,27 +7545,35 @@ void setMouseWordSelectionAnchor() {
 	}
 }
 /**
- * Sets the widget orientation (writing order). Text will be right aligned  
- * for right to left writing order.
+ * Sets the orientation of the receiver, which must be one
+ * of the constants <code>SWT.LEFT_TO_RIGHT</code> or <code>SWT.LEFT_TO_RIGHT</code>.
  * <p>
+ *
+ * @param orientation new orientation bit
+ * @return <code>true</code> if the orientation was changed and <code>false</code> otherwise.
  * 
- * @param newOrientation one of SWT.RIGHT_TO_LEFT or SWT.LEFT_TO_RIGHT
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1.2
  */
-void setOrientation(int orientation) {
+public boolean setOrientation(int orientation) {
 	if ((orientation & (SWT.RIGHT_TO_LEFT | SWT.LEFT_TO_RIGHT)) == 0) { 
-		return;
+		return false;
 	}
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && (orientation & SWT.LEFT_TO_RIGHT) != 0) {
-		return;	
+		return false;	
 	}
 	if ((orientation & SWT.RIGHT_TO_LEFT) != 0 && isMirrored()) {
-		return;	
+		return false;	
 	} 
 	if ((orientation & SWT.LEFT_TO_RIGHT) != 0 && isMirrored() == false) {
-		return;
+		return false;
 	}
 	if (StyledTextBidi.setOrientation(this, orientation) == false) {
-		return;
+		return false;
 	}
 	isMirrored = (orientation & SWT.RIGHT_TO_LEFT) != 0;
 	isBidi = StyledTextBidi.isBidiPlatform() || isMirrored();
@@ -7567,6 +7587,7 @@ void setOrientation(int orientation) {
 	keyActionMap.clear();
 	createKeyBindings();
 	super.redraw();
+	return true;
 }
 /**
  * Adjusts the maximum and the page size of the scroll bars to 
