@@ -501,14 +501,6 @@ void createHandle (int index) {
 	OS.gtk_window_set_modal (shellHandle, modal);
 }
 
-void destroyWidget () {
-	if (clippingRgn != 0) {
-		OS.gdk_region_destroy (clippingRgn);
-		clippingRgn = 0;
-	}
-	super.destroyWidget ();
-}
-
 boolean hasBorder () {
 	return false;
 }
@@ -1195,6 +1187,8 @@ void releaseWidget () {
 	super.releaseWidget ();
 	if (tooltipsHandle != 0) OS.g_object_unref (tooltipsHandle);
 	tooltipsHandle = 0;
+	if (clippingRgn != 0)  OS.gdk_region_destroy (clippingRgn);
+	clippingRgn = 0;
 	lastActive = null;
 }
 
