@@ -87,35 +87,37 @@ public abstract class Widget {
 	static final int FOCUS_IN_EVENT = 16;
 	static final int FOCUS_OUT_EVENT = 17;
 	static final int HIDE = 18;
-	static final int INSERT_TEXT = 19;
-	static final int KEY_PRESS_EVENT = 20;
-	static final int KEY_RELEASE_EVENT = 21;
-	static final int LEAVE_NOTIFY_EVENT = 22;
-	static final int MAP = 23;
-	static final int MAP_EVENT = 24;
-	static final int MNEMONIC_ACTIVATE = 25;
-	static final int MOTION_NOTIFY_EVENT = 26;
-	static final int MOVE_FOCUS = 27;
-	static final int POPUP_MENU = 28;
-	static final int PREEDIT_CHANGED = 29;
-	static final int REALIZE = 30;
-	static final int ROW_ACTIVATED = 31;
-	static final int SCROLL_CHILD = 32;
-	static final int SELECT = 33;
-	static final int SHOW = 34;
-	static final int SHOW_HELP = 35;
-	static final int SIZE_ALLOCATE = 36;
-	static final int STYLE_SET = 37;
-	static final int SWITCH_PAGE = 38;
-	static final int TEST_COLLAPSE_ROW = 39;
-	static final int TEST_EXPAND_ROW = 40;
-	static final int TOGGLED = 41;
-	static final int UNMAP = 42;
-	static final int UNMAP_EVENT = 43;
-	static final int UNREALIZE = 44;
-	static final int VALUE_CHANGED = 45;
-	static final int VISIBILITY_NOTIFY_EVENT = 46;
-	static final int WINDOW_STATE_EVENT = 47;
+	static final int INPUT = 19;
+	static final int INSERT_TEXT = 20;
+	static final int KEY_PRESS_EVENT = 21;
+	static final int KEY_RELEASE_EVENT = 22;
+	static final int LEAVE_NOTIFY_EVENT = 23;
+	static final int MAP = 24;
+	static final int MAP_EVENT = 25;
+	static final int MNEMONIC_ACTIVATE = 26;
+	static final int MOTION_NOTIFY_EVENT = 27;
+	static final int MOVE_FOCUS = 28;
+	static final int OUTPUT = 29;
+	static final int POPUP_MENU = 30;
+	static final int PREEDIT_CHANGED = 31;
+	static final int REALIZE = 32;
+	static final int ROW_ACTIVATED = 33;
+	static final int SCROLL_CHILD = 34;
+	static final int SELECT = 35;
+	static final int SHOW = 36;
+	static final int SHOW_HELP = 37;
+	static final int SIZE_ALLOCATE = 38;
+	static final int STYLE_SET = 39;
+	static final int SWITCH_PAGE = 40;
+	static final int TEST_COLLAPSE_ROW = 41;
+	static final int TEST_EXPAND_ROW = 42;
+	static final int TOGGLED = 43;
+	static final int UNMAP = 44;
+	static final int UNMAP_EVENT = 45;
+	static final int UNREALIZE = 46;
+	static final int VALUE_CHANGED = 47;
+	static final int VISIBILITY_NOTIFY_EVENT = 48;
+	static final int WINDOW_STATE_EVENT = 49;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -471,7 +473,7 @@ String getName () {
 //	if (index == -1) return string;	
 	String string = getClass ().getName ();
 	int index = string.length ();
-	while ((--index > 0) && (string.charAt (index) != '.'));
+	while ((--index > 0) && (string.charAt (index) != '.')) {}
 	return string.substring (index + 1, string.length ());
 }
 
@@ -577,6 +579,10 @@ int /*long*/ gtk_hide (int /*long*/ widget) {
 	return 0;
 }
 
+int /*long*/ gtk_input (int /*long*/ widget, int /*long*/ arg1) {
+	return 0;
+}
+
 int /*long*/ gtk_insert_text (int /*long*/ widget, int /*long*/ new_text, int /*long*/ new_text_length, int /*long*/ position) {
 	return 0;
 }
@@ -614,6 +620,10 @@ int /*long*/ gtk_motion_notify_event (int /*long*/ widget, int /*long*/ event) {
 }
 
 int /*long*/ gtk_move_focus (int /*long*/ widget, int /*long*/ event) {
+	return 0;
+}
+
+int /*long*/ gtk_output (int /*long*/ widget) {
 	return 0;
 }
 
@@ -1277,6 +1287,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ user_data) {
 		case CLICKED: return gtk_clicked (handle);
 		case HIDE: return gtk_hide (handle);
 		case MAP: return gtk_map (handle);
+		case OUTPUT: return gtk_output (handle);
 		case POPUP_MENU: return gtk_popup_menu (handle);
 		case PREEDIT_CHANGED: return gtk_preedit_changed (handle);
 		case REALIZE: return gtk_realize (handle);
@@ -1313,6 +1324,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 		case FOCUS_OUT_EVENT: return gtk_focus_out_event (handle, arg0);
 		case KEY_PRESS_EVENT: return gtk_key_press_event (handle, arg0);
 		case KEY_RELEASE_EVENT: return gtk_key_release_event (handle, arg0);
+		case INPUT: return gtk_input (handle, arg0);
 		case LEAVE_NOTIFY_EVENT: return gtk_leave_notify_event (handle, arg0);
 		case MAP_EVENT: return gtk_map_event (handle, arg0);
 		case MNEMONIC_ACTIVATE: return gtk_mnemonic_activate (handle, arg0);
