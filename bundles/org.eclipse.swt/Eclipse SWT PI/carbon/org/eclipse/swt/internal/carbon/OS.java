@@ -1094,7 +1094,7 @@ public class OS {
 	public static final int kControlSupportsFocus         = 1 << 2;
 	//public static final int kControlWantsIdle             = 1 << 3;
 	//public static final int kControlWantsActivate         = 1 << 4;
-	//public static final int kControlHandlesTracking       = 1 << 5;
+	public static final int kControlHandlesTracking       = 1 << 5;
 	//public static final int kControlSupportsDataAccess    = 1 << 6;
 	//public static final int kControlHasSpecialBackground  = 1 << 7;
 	public static final int kControlGetsFocusOnClick      = 1 << 8;
@@ -1112,6 +1112,7 @@ public class OS {
 	
 	public static final int kControlUserPaneDrawProcTag= ('d'<<24) + ('r'<<16) + ('a'<<8) + 'w';
 	public static final int kControlUserPaneHitTestProcTag= ('h'<<24) + ('i'<<16) + ('t'<<8) + 't';
+	public static final int kControlUserPaneTrackingProcTag= ('t'<<24) + ('r'<<16) + ('a'<<8) + 'k';
 	
 	// StaticText
 	public static final int kControlStaticTextCFStringTag= ('c'<<24) + ('f'<<16) + ('s'<<8) + 't';
@@ -1368,6 +1369,7 @@ public class OS {
 	public static native int HIViewSetVisible(int inView, boolean inVisible);
 	public static native int HIViewChangeAttributes(int inView, int inAttrsToSet, int inAttrsToClear);
 	public static native int HIViewFindByID(int inStartView, int inID, int[] outControl);
+	public static native int HIViewGetViewForMouseEvent(int inView, int inEvent, int[] outView);
 
 	// HIComboBox
   		public static final short kHIComboBoxEditTextPart=  5;

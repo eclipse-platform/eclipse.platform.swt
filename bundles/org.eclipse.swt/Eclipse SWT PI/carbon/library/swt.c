@@ -844,16 +844,13 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMouseLocation(
 	return status;
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackMouseLocation(JNIEnv *env, jclass zz, jint portHandle, jshortArray loc, jshortArray part) {
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TrackMouseLocation(JNIEnv *env, jclass zz,
+			jint portHandle, jshortArray loc, jshortArray part) {
 	jshort *sa= (*env)->GetShortArrayElements(env, loc, 0);
-	jshort *sb= NULL;
-	jint status;
-	if (part != NULL)
-		sb= (*env)->GetShortArrayElements(env, part, 0);
-	status= RC(TrackMouseLocation((GrafPtr) portHandle, (Point*) sa, sb));
+	jshort *sb= (*env)->GetShortArrayElements(env, part, 0);
+	jint status= RC(TrackMouseLocation((GrafPtr) portHandle, (Point*) sa, sb));
 	(*env)->ReleaseShortArrayElements(env, loc, sa, 0);
-	if (sb != NULL)
-		(*env)->ReleaseShortArrayElements(env, part, sb, 0);
+	(*env)->ReleaseShortArrayElements(env, part, sb, 0);
 	return status;
 }
 
@@ -865,7 +862,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetGlobalMouse(JN
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateEvent(JNIEnv *env, jclass zz,
 			jint allocator, jint classID, jint kind, jdouble when, jint flags, jintArray eventRef) {
-        jint *sa= (*env)->GetIntArrayElements(env, eventRef, 0);
+	jint *sa= (*env)->GetIntArrayElements(env, eventRef, 0);
 	jint status= RC(CreateEvent((CFAllocatorRef)allocator, classID, kind, (EventTime)when, (EventAttributes)flags, (EventRef*) sa));
 	(*env)->ReleaseIntArrayElements(env, eventRef, sa, 0);
 	return status;
@@ -3484,6 +3481,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewFindByID(JN
 	jint *sa= (*env)->GetIntArrayElements(env, outControl, 0);
 	jint status= RC(HIViewFindByID((HIViewRef) inStartView, (HIViewID) kHIViewWindowContentID, (HIViewRef*) sa));
 	(*env)->ReleaseIntArrayElements(env, outControl, sa, 0);
+	return status;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_HIViewGetViewForMouseEvent(JNIEnv *env, jclass zz,
+			jint inView, jint inEvent, jintArray outView) {
+	jint *sa= (*env)->GetIntArrayElements(env, outView, 0);
+	jint status= RC(HIViewGetViewForMouseEvent((HIViewRef) inView, (EventRef) inEvent, (HIViewRef*) sa));
+	(*env)->ReleaseIntArrayElements(env, outView, sa, 0);
 	return status;
 }
 
