@@ -79,7 +79,8 @@ public class SelectionEvent extends TypedEvent {
 
 	/**
 	 * A flag indicating whether the operation should be allowed.
-	 * Setting this field to <code>false</code> will cancel the operation.
+	 * Setting this field to <code>false</code> will cancel the
+	 * operation, depending on the widget.
 	 */
 	public boolean doit;
 	
