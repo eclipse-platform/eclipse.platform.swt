@@ -9,6 +9,7 @@ package org.eclipse.swt.tests.junit;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
 
@@ -276,11 +277,17 @@ public void test_setEnabledZ() {
 }
 
 public void test_setLocationII() {
-	warnUnimpl("Test test_setLocationII not written");
+	menu.setLocation(0,0);
 }
 
 public void test_setLocationLorg_eclipse_swt_graphics_Point() {
-	warnUnimpl("Test test_setLocationLorg_eclipse_swt_graphics_Point not written");
+	menu.setLocation(new Point(0,0));
+	try {
+		menu.setLocation(null);
+		fail("No exception thrown for null argument");
+	}
+	catch (IllegalArgumentException e) {
+	}	
 }
 
 /**
