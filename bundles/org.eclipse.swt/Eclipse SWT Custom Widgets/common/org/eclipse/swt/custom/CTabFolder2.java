@@ -2294,9 +2294,9 @@ public void showItem (CTabItem2 item) {
 	setLastItem(index);
 }
 void showList () {
-	final Shell shell = new Shell(getShell(), SWT.ON_TOP);
+	final Shell shell = new Shell(getShell(), SWT.BORDER | SWT.ON_TOP);
 	shell.setLayout(new FillLayout());
-	final Table table = new Table(shell, SWT.BORDER);
+	final Table table = new Table(shell, SWT.NONE);
 	table.setBackground(selectionBackground);
 	table.setForeground(selectionForeground);
 	for (int i = 0; i < items.length; i++) {
