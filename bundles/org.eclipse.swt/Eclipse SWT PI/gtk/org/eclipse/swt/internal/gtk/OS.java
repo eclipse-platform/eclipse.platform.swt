@@ -360,6 +360,7 @@ public static final synchronized native int gdk_x11_drawable_get_xid(int drawabl
 public static final synchronized native int GDK_ROOT_PARENT();
 public static final synchronized native int GDK_TYPE_COLOR();
 public static final synchronized native int GDK_TYPE_PIXBUF();
+public static final synchronized native boolean GTK_IS_BUTTON(int obj);
 public static final synchronized native boolean GTK_IS_CELL_RENDERER_PIXBUF(int obj);
 public static final synchronized native boolean GTK_IS_IMAGE_MENU_ITEM(int obj);
 public static final synchronized native int GTK_WIDGET_FLAGS(int wid);

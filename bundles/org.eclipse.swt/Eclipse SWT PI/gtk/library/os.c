@@ -54,6 +54,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GDK_1TYPE_1PIXBUF)
 }
 #endif
 
+#ifndef NO_GTK_1IS_1BUTTON
+JNIEXPORT jboolean JNICALL OS_NATIVE(GTK_1IS_1BUTTON)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "GTK_1IS_1BUTTON\n")
+	rc = (jboolean)GTK_IS_BUTTON(arg0);
+	NATIVE_EXIT(env, that, "GTK_1IS_1BUTTON\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GTK_1IS_1CELL_1RENDERER_1PIXBUF
 JNIEXPORT jboolean JNICALL OS_NATIVE(GTK_1IS_1CELL_1RENDERER_1PIXBUF)
 	(JNIEnv *env, jclass that, jint arg0)
