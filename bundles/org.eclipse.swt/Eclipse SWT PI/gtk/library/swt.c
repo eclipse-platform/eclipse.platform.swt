@@ -3814,6 +3814,36 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1range_1get_1adj
 }
 #endif
 
+#ifndef NO_gtk_1range_1set_1increments
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1range_1set_1increments
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2)
+{
+	DEBUG_CALL("gtk_1range_1set_1increments\n")
+
+	gtk_range_set_increments((GtkRange *)arg0, (gdouble)arg1, (gdouble)arg2);
+}
+#endif
+
+#ifndef NO_gtk_1range_1set_1range
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1range_1set_1range
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jdouble arg2)
+{
+	DEBUG_CALL("gtk_1range_1set_1range\n")
+
+	gtk_range_set_range((GtkRange *)arg0, (gdouble)arg1, (gdouble)arg2);
+}
+#endif
+
+#ifndef NO_gtk_1range_1set_1value
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1range_1set_1value
+	(JNIEnv *env, jclass that, jint arg0, jdouble arg1)
+{
+	DEBUG_CALL("gtk_1range_1set_1value\n")
+
+	gtk_range_set_value((GtkRange *)arg0, (gdouble)arg1);
+}
+#endif
+
 #ifndef NO_gtk_1rc_1style_1set_1xthickness
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1rc_1style_1set_1xthickness
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

@@ -571,7 +571,7 @@ public void setPageIncrement (int value) {
  */
 public void setSelection (int value) {
 	checkWidget ();
-	value = Math.min(value, getMaximum() - getThumb());
+	value = Math.min (value, getMaximum() - getThumb());
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_set_value (handle, value);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
@@ -593,16 +593,16 @@ public void setSelection (int value) {
  */
 public void setThumb (int value) {
 	checkWidget ();
-	int maximum = getMaximum();
-	if (value < 1 || value > maximum - getMinimum()) return;
+	if (value < 1) return;
 	GtkAdjustment adjustment = new GtkAdjustment ();
 	OS.memmove (adjustment, handle);
-	adjustment.page_size = (float) value;
+	if (value > adjustment.upper - adjustment.lower) return;
+	adjustment.page_size = (double) value;
+	adjustment.value = Math.min (adjustment.value, adjustment.upper - value);
 	OS.memmove (handle, adjustment);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (handle);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	if (getSelection() + value > maximum) setSelection (maximum - value);
 }
 
 /**
@@ -641,14 +641,12 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	adjustment.step_increment = increment;
 	adjustment.page_increment = pageIncrement;
 	adjustment.page_size = thumb;
-	adjustment.value = selection;
+	adjustment.value = Math.min (Math.max (selection, minimum), maximum - thumb);
 	OS.memmove (handle, adjustment);
 	OS.g_signal_handlers_block_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
 	OS.gtk_adjustment_changed (handle);
 	OS.gtk_adjustment_value_changed (handle);
 	OS.g_signal_handlers_unblock_matched (handle, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, VALUE_CHANGED);
-	if (minimum > getSelection()) setSelection (minimum);
-	if (maximum < selection + thumb) setSelection (maximum - thumb);
 }
 
 /**
