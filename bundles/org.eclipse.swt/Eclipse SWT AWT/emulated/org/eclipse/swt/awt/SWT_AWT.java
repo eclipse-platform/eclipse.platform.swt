@@ -8,7 +8,7 @@
  * Contributors:
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
-package org.eclipse.swt.internal.awt;
+package org.eclipse.swt.awt;
 
 import java.awt.Canvas;
 import java.awt.Frame;

@@ -10,6 +10,8 @@
     <classpathentry kind="src" path="Eclipse SWT PI/common_j2se"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/common"/>
     <classpathentry kind="src" path="Eclipse SWT Accessibility/emulated"/>
+    <classpathentry kind="src" path="Eclipse SWT AWT/common"/>
+    <classpathentry kind="src" path="Eclipse SWT AWT/emulated"/>
     <classpathentry kind="src" path="Eclipse SWT Custom Widgets/common"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/common"/>
     <classpathentry kind="src" path="Eclipse SWT Drag and Drop/carbon"/>
