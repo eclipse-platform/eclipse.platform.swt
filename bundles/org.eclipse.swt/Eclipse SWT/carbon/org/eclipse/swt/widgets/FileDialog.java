@@ -337,9 +337,7 @@ public String open () {
 }
 
 private int eventProc(int selector, int params, int callBackUD) {
-	
-	System.out.println("FileDialog.eventProc: selector: " + selector);
-	
+	//System.out.println("FileDialog.eventProc: selector: " + selector);
 	switch (selector) {
 	case OS.kNavCBNewLocation:
 		// NavCustomControl()
@@ -352,11 +350,7 @@ private int eventProc(int selector, int params, int callBackUD) {
 
 private int filterProc(int theItem, int info, int callBackUD, int filterMode) {
 	/* AEDesc *theItem, void *info, void *callBackUD, NavFilterModes filterMode */
-	System.out.println("FileDialog.filterProc: UD: " + callBackUD);
-	
-	
-	
-	
+	//System.out.println("FileDialog.filterProc: UD: " + callBackUD);
 	return 1;
 }
 
