@@ -1192,6 +1192,10 @@ public void showSelection () {
 		return 0;
 	}
 	
+	int handleItemNotificationCallback(int item, int message) {
+		return OS.kNoErr;
+	}
+	
 	/**
 	 * Returns string value of row with the given ID
 	 */
