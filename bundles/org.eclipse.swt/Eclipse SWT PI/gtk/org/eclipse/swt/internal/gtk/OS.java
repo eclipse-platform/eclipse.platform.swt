@@ -927,4 +927,5 @@ public static final native void memmove(GtkAllocation dest, int src);
 public static final native void gtk_widget_set_redraw_on_allocate(int widget, boolean redraw);
 public static final native int gdk_pointer_grab(int window, boolean owner_events, int event_mask, int confine_to, int cursor, int time);
 public static final native int gdk_pointer_ungrab(int time);
+public static final native int g_signal_connect_swapped(int instance, byte[] detailed_sigal, int c_handler, int data);
 }
