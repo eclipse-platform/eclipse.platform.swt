@@ -251,7 +251,13 @@ public static byte [] wcsToMbcs (String codePage, char [] buffer, boolean termin
 				int [] outBuf = {ptr2};
 				int [] outBytesLeft = {outBytes};
 				OS.memmove (ptr1, buffer, inBytes);
-				int result = OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
+				while (inBytesLeft [0] > 0) {
+					OS.iconv (cd, inBuf, inBytesLeft, outBuf, outBytesLeft);
+					if (inBytesLeft [0] != 0) {
+						inBuf [0] += 2;
+						inBytesLeft [0] -= 2;
+					}
+				}
 				outBytes = outBuf [0] - ptr2;
 				mbcs = new byte [outBytes];
 				OS.memmove (mbcs, ptr2, outBytes);
