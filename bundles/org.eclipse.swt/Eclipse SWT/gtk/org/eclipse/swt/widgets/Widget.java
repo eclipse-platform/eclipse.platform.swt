@@ -184,7 +184,7 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
  * strongly platform specific. No support is provided for
  * user-written classes which are implemented in this fashion.
  * </p><p>
- * The ability to subclass outside of the allowed SWT classes,
+ * The ability to subclass outside of the allowed SWT classes
  * is intended purely to enable those not on the SWT development
  * team to implement patches in order to get around specific
  * limitations in advance of when those limitations can be
@@ -750,8 +750,29 @@ public void removeListener (int eventType, Listener handler) {
 }
 
 /**
-* Warning: API under construction.
-*/
+ * Removes the listener from the collection of listeners who will
+ * be notifed when an event of the given type occurs.
+ * <p>
+ * <b>IMPORTANT:</b> This method is <em>not</em> part of the SWT
+ * public API. It is marked public only so that it can be shared
+ * within the packages provided by SWT. It should never be
+ * referenced from application code.
+ * </p>
+ *
+ * @param eventType the type of event to listen for
+ * @param listener the listener which should no longer be notified when the event occurs
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see Listener
+ * @see #addListener
+ */
 protected void removeListener (int eventType, SWTEventListener handler) {
 	checkWidget ();
 	if (handler == null) error (SWT.ERROR_NULL_ARGUMENT);

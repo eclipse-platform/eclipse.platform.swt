@@ -118,9 +118,6 @@ Control [] _getChildren () {
 	System.arraycopy (children, 0, newChildren, 0, j);
 	return newChildren;
 }
-/**
-* Computes the preferred size.
-*/
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	Point size;

@@ -124,9 +124,6 @@ void click () {
 	OS.XtCallActionProc (handle, ARM_AND_ACTIVATE, new XAnyEvent (), null, 0);
     */
 }
-/**
-* Computes the preferred size.
-*/
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int border = getBorderWidth ();

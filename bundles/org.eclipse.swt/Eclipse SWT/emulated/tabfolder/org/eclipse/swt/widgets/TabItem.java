@@ -324,16 +324,6 @@ public void setControl (Control control) {
 	}
 	if (oldControl != null) oldControl.setVisible (false);
 }
-/**
- * Sets the image.
- * <p>
- * @param image the new image (or null)
- *
- * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
- *	when called from the wrong thread
- * @exception SWTError(ERROR_WIDGET_DISPOSED)
- *	when the widget has been disposed
- */
 public void setImage (Image image) {
 	checkWidget();
 	Image oldImage = this.image;
