@@ -320,6 +320,44 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringCreateWit
 }
 #endif /* NO_CFStringCreateWithCharacters */
 
+#ifndef NO_CFStringGetBytes
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringGetBytes
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jbyte arg3, jboolean arg4, jbyteArray arg5, jint arg6, jintArray arg7)
+{
+	CFRange _arg1, *lparg1=NULL;
+	jbyte *lparg5=NULL;
+	jint *lparg7=NULL;
+	jint rc;
+
+	DEBUG_CALL("CFStringGetBytes\n")
+
+	if (arg1) lparg1 = getCFRangeFields(env, arg1, &_arg1);
+	if (arg5) lparg5 = (*env)->GetByteArrayElements(env, arg5, NULL);
+	if (arg7) lparg7 = (*env)->GetIntArrayElements(env, arg7, NULL);
+	rc = (jint)CFStringGetBytes((CFStringRef)arg0, (CFRange)*lparg1, (CFStringEncoding)arg2, (UInt8)arg3, (Boolean)arg4, (UInt8 *)lparg5, (CFIndex)arg6, (CFIndex *)lparg7);
+	if (arg1) setCFRangeFields(env, arg1, lparg1);
+	if (arg5) (*env)->ReleaseByteArrayElements(env, arg5, lparg5, 0);
+	if (arg7) (*env)->ReleaseIntArrayElements(env, arg7, lparg7, 0);
+	return rc;
+}
+#endif
+
+#ifndef NO_CFStringCreateWithBytes
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringCreateWithBytes
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3, jboolean arg4)
+{
+	jbyte *lparg1=NULL;
+	jint rc;
+
+	DEBUG_CALL("CFStringCreateWithBytes\n")
+
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	rc = (jint)CFStringCreateWithBytes((CFAllocatorRef)arg0, (const UInt8 *)lparg1, (CFIndex)arg2, (CFStringEncoding)arg3, (Boolean)arg4);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	return rc;
+}
+#endif
+
 #ifndef NO_CFStringGetCharacters
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringGetCharacters
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jcharArray arg2)
@@ -346,6 +384,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringGetLength
 	return (jint)CFStringGetLength((CFStringRef)arg0);
 }
 #endif /* NO_CFStringGetLength */
+
+#ifndef NO_CFStringGetSystemEncoding
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFStringGetSystemEncoding
+	(JNIEnv *env, jclass that)
+{
+	DEBUG_CALL("CFStringGetSystemEncoding\n")
+
+	return (jint)CFStringGetSystemEncoding();
+}
+#endif
 
 #ifndef NO_CFURLCopyFileSystemPath
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CFURLCopyFileSystemPath
