@@ -342,6 +342,7 @@ public class OS {
 	public static final int ES_CENTER = 0x1;
 	public static final int ES_MULTILINE = 0x4;
 	public static final int ES_NOHIDESEL = 0x100;
+	public static final int ES_PASSWORD = 0x20;
 	public static final int ES_READONLY = 0x800;
 	public static final int ES_RIGHT = 0x2;
 	public static final int FALT = 0x10;
