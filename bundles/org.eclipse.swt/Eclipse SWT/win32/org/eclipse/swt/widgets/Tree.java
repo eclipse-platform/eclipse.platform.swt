@@ -1574,7 +1574,7 @@ LRESULT WM_RBUTTONDOWN (int wParam, int lParam) {
 	if (lpht.hItem != 0 && (lpht.flags & (OS.TVHT_ONITEMICON | OS.TVHT_ONITEMLABEL)) != 0) {
 		if ((wParam & (OS.MK_CONTROL | OS.MK_SHIFT)) == 0) {
 			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE | OS.TVIF_PARAM;
+			tvItem.mask = OS.TVIF_STATE;
 			tvItem.stateMask = OS.TVIS_SELECTED;
 			tvItem.hItem = lpht.hItem;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
