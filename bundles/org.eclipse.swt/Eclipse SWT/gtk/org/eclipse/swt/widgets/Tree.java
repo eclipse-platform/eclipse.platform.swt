@@ -415,7 +415,7 @@ public TreeItem getItem (Point point) {
 		if (OS.gtk_tree_model_iter_n_children (modelHandle, iter) > 0) {
 			int[] buffer = new int [1];
 			GdkRectangle rect = new GdkRectangle ();
-			OS.gtk_tree_view_get_cell_area (handle, path [0], columnHandle, rect);	
+			OS.gtk_tree_view_get_cell_area (handle, path [0], columnHandle, rect);
 			OS.gtk_widget_style_get (handle, OS.expander_size, buffer, 0);
 			int expanderSize = buffer [0] + TreeItem.EXPANDER_EXTRA_PADDING;
 			overExpander = rect.x - 1 <= point.x && point.x < rect.x + expanderSize;
