@@ -946,6 +946,17 @@ int processPaint (int callData) {
 	}
 	return 0;
 }
+void propagateWidget (boolean enabled) {
+	propagateHandle (enabled, handle);
+	/*
+	* ToolItems never participate in focus traversal when
+	* either enabled or disabled.
+	*/
+	if (enabled) {
+		int [] argList = {OS.XmNtraversalOn, 0};
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
+}
 /**
  * Returns the provided string without mnemonic indicators.
  * 

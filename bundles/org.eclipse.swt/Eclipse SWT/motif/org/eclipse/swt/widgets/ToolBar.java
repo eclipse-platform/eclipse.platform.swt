@@ -321,6 +321,12 @@ int [] layout (int nWidth, int nHeight, boolean resize) {
 		return layoutHorizontal (nWidth, nHeight, resize);
 	}
 }
+void propagateWidget (boolean enabled) {
+	super.propagateWidget (enabled);
+	for (int i=0; i<itemCount; i++) {
+		items [i].propagateWidget (enabled);
+	}
+}
 void relayout () {
 	if (drawCount > 0) return;
 	Rectangle rect = getClientArea ();

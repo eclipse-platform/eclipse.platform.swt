@@ -451,6 +451,13 @@ int processPaint (int callData) {
 	gc.dispose();
 	return 0;
 }
+void propagateWidget (boolean enabled) {
+	super.propagateWidget (enabled);
+	CoolItem [] items = getItems ();
+	for (int i=0; i<items.length; i++) {
+		items [i].propagateWidget (enabled);
+	}
+}
 /**
  * Remove the item from the row. Adjust the x and width values
  * appropriately.

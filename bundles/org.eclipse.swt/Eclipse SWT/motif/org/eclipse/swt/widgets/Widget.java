@@ -601,6 +601,37 @@ int processShow (int callData) {
 int processVerify (int callData) {
 	return 0;
 }
+void propagateHandle (boolean enabled, int widgetHandle) {
+	int xDisplay = OS.XtDisplay (widgetHandle);
+	if (xDisplay == 0) return;
+	int xWindow = OS.XtWindow (widgetHandle);
+	if (xWindow == 0) return;
+	/*
+	* Get the event mask from the widget.  The event mask
+	* returned by XtBuildEventMask () includes the masks
+	* associated with all callbacks and event handlers
+	* that have been hooked on the widget.
+	*/
+	int event_mask = OS.XtBuildEventMask (widgetHandle);
+	int do_not_propagate_mask = 
+		OS.KeyPressMask | OS.KeyReleaseMask | OS.ButtonPressMask | 
+		OS.ButtonReleaseMask | OS.PointerMotionMask;
+	if (!enabled) {
+		/*
+		* Attempting to propogate EnterWindowMask and LeaveWindowMask
+		* causes an X error so these must be specially cleared out from
+		* the event mask, not included in the propogate mask.
+		*/
+		event_mask &= ~(do_not_propagate_mask | OS.EnterWindowMask | OS.LeaveWindowMask);
+		do_not_propagate_mask = 0;
+	}
+	XSetWindowAttributes attributes = new XSetWindowAttributes ();
+	attributes.event_mask = event_mask;
+	attributes.do_not_propagate_mask = do_not_propagate_mask;
+	OS.XChangeWindowAttributes (xDisplay, xWindow, OS.CWDontPropagate | OS.CWEventMask, attributes);
+	int [] argList = {OS.XmNtraversalOn, enabled ? 1 : 0};
+	OS.XtSetValues (widgetHandle, argList, argList.length / 2);
+}
 void register () {
 	if (handle == 0) return;
 	WidgetTable.put (handle, this);

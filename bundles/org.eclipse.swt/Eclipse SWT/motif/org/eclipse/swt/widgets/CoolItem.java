@@ -322,6 +322,17 @@ int processPaint (int callData) {
 	OS.XFreeGC(xDisplay, xGC);
 	return 0;
 }
+void propagateWidget (boolean enabled) {
+	propagateHandle (enabled, handle);
+	/*
+	* CoolItems never participate in focus traversal when
+	* either enabled or disabled.
+	*/
+	if (enabled) {
+		int [] argList = {OS.XmNtraversalOn, 0};
+		OS.XtSetValues (handle, argList, argList.length / 2);
+	}
+}
 /**
  * Sets the control which is associated with the receiver
  * to the argument.

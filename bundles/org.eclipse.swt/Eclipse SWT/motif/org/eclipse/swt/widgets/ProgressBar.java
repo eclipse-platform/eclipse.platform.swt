@@ -180,7 +180,7 @@ void propagateWidget (boolean enabled) {
 	super.propagateWidget (enabled);
 	/*
 	* ProgressBars never participate in focus traversal when
-	* either enabled or disabled.  Also, when enabled
+	* either enabled or disabled.
 	*/
 	if (enabled) {
 		disableTraversal ();
