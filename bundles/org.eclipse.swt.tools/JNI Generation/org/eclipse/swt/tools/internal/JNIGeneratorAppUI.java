@@ -12,8 +12,6 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.*;
 import java.lang.reflect.*;
-import java.util.Arrays;
-import java.util.Comparator;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
@@ -69,31 +67,14 @@ void generateStructsHeader () {
 	StructsGenerator gen = new StructsGenerator();
 	gen.setMetaData(app.getMetaData());
 	Class[] classes = getSelectedClasses();
-	Arrays.sort(classes, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((Class)a).getName().compareTo(((Class)b).getName());
-		}
-	});
-	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		gen.generateHeaderFile(clazz);
-	}
+	gen.generateHeaderFile(classes);
 }
 
 void generateStructs () {
 	StructsGenerator gen = new StructsGenerator();
 	gen.setMetaData(app.getMetaData());
 	Class[] classes = getSelectedClasses();
-	Arrays.sort(classes, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((Class)a).getName().compareTo(((Class)b).getName());
-		}
-	});
-	for (int i = 0; i < classes.length; i++) {
-		Class clazz = classes[i];
-		gen.generateSourceFile(clazz);
-		gen.outputDelimiter();
-	}
+	gen.generateSourceFile(classes);
 }
 
 void generateSizeof () {

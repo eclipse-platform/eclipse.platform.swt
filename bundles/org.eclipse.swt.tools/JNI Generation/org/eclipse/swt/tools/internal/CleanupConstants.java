@@ -38,12 +38,7 @@ public void generate(Class clazz) {
 }
 
 public void generate(Field[] fields) {
-	Arrays.sort(fields, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((Field)a).getName().compareTo(((Field)b).getName());
-		}
-	});
-	
+	sort(fields);
 	for (int i = 0; i < fields.length; i++) {
 		Field field = fields[i];
 		if ((field.getModifiers() & Modifier.FINAL) == 0) continue;

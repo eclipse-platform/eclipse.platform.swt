@@ -176,6 +176,49 @@ static boolean isUnique(Method method, int modifierMask) {
 	return true;
 }
 
+static void sort(Method[] methods) {
+	Arrays.sort(methods, new Comparator() {
+		public int compare(Object a, Object b) {
+			Method mth1 = (Method)a;
+			Method mth2 = (Method)b;
+			int result = mth1.getName().compareTo(mth2.getName());
+			return result != 0 ? result : getFunctionName(mth1).compareTo(getFunctionName(mth2));
+		}
+	});
+}
+
+static void sort(Field[] fields) {
+	Arrays.sort(fields, new Comparator() {
+		public int compare(Object a, Object b) {
+			return ((Field)a).getName().compareTo(((Field)b).getName());
+		}
+	});
+}
+
+static void sort(Class[] classes) {
+	Arrays.sort(classes, new Comparator() {
+		public int compare(Object a, Object b) {
+			return ((Class)a).getName().compareTo(((Class)b).getName());
+		}
+	});	
+}
+
+static String toC(String str) {
+	StringBuffer buf = new StringBuffer();
+	for (int i = 0; i < str.length(); i++) {
+		char c = str.charAt(i);
+		switch (c) {
+			case '_': buf.append("_1"); break;
+			case ';': buf.append("_2"); break;
+			case '[': buf.append("_3"); break;
+			case '.': buf.append("_"); break;
+			case '/': buf.append("_"); break;
+			default: buf.append(c);
+		}
+	}
+	return buf.toString();
+}
+
 public String getDelimiter() {
 	return delimiter;
 }
@@ -198,22 +241,8 @@ public void generateMetaData(String key) {
 	outputDelimiter();
 }
 
-public void generateNativeMacro(Class clazz) {
-	output("#define ");
-	output(getClassName(clazz));
-	output("_NATIVE(func) Java_");
-	output(toC(clazz.getName()));
-	output("_##func");
-	outputDelimiter();
-	outputDelimiter();
-}
-
 public void generate(Class[] classes) {
-	Arrays.sort(classes, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((Class)a).getName().compareTo(((Class)b).getName());
-		}
-	});	
+	sort(classes);
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
 		generate(clazz);
@@ -238,33 +267,6 @@ public void setOutput(PrintStream output) {
 
 public void setMetaData(MetaData data) {
 	metaData = data;
-}
-
-static void sort(Method[] methods) {
-	Arrays.sort(methods, new Comparator() {
-		public int compare(Object a, Object b) {
-			Method mth1 = (Method)a;
-			Method mth2 = (Method)b;
-			int result = mth1.getName().compareTo(mth2.getName());
-			return result != 0 ? result : getFunctionName(mth1).compareTo(getFunctionName(mth2));
-		}
-	});
-}
-
-static String toC(String str) {
-	StringBuffer buf = new StringBuffer();
-	for (int i = 0; i < str.length(); i++) {
-		char c = str.charAt(i);
-		switch (c) {
-			case '_': buf.append("_1"); break;
-			case ';': buf.append("_2"); break;
-			case '[': buf.append("_3"); break;
-			case '.': buf.append("_"); break;
-			case '/': buf.append("_"); break;
-			default: buf.append(c);
-		}
-	}
-	return buf.toString();
 }
 
 }

@@ -17,7 +17,6 @@ import java.util.Enumeration;
 import java.util.Properties;
 import java.util.zip.*;
 import java.util.Arrays;
-import java.util.Comparator;
 
 import org.eclipse.swt.internal.Platform;
 
@@ -234,11 +233,7 @@ String[] getClassNames(String mainClassName) {
 public Class[] getClasses() {
 	if (mainClass == null) return new Class[0];
 	String[] classNames = getClassNames(mainClass);
-	Arrays.sort(classNames, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((String)a).compareTo((String)b);
-		}
-	});
+	Arrays.sort(classNames);
 	String packageName = getPackageName(mainClass);
 	Class[] classes = new Class[classNames.length];
 	for (int i = 0; i < classNames.length; i++) {

@@ -11,7 +11,6 @@
 package org.eclipse.swt.tools.internal;
 
 import java.lang.reflect.*;
-import java.util.*;
 
 public class ConstantsGenerator extends JNIGenerator {
 
@@ -21,12 +20,7 @@ public void generate(Class clazz) {
 }
 
 public void generate(Field[] fields) {
-	Arrays.sort(fields, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((Field)a).getName().compareTo(((Field)b).getName());
-		}
-	});
-	
+	sort(fields);
 	output("int main() {");
 	outputDelimiter();
 	for (int i = 0; i < fields.length; i++) {

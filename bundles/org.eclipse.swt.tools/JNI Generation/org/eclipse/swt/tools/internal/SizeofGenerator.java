@@ -11,7 +11,6 @@
 package org.eclipse.swt.tools.internal;
 
 import java.lang.reflect.*;
-import java.util.*;
 
 public class SizeofGenerator extends JNIGenerator {
 
@@ -36,12 +35,7 @@ public void generate(Class clazz) {
 }
 
 public void generate(Field[] fields) {
-	Arrays.sort(fields, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((Field)a).getName().compareTo(((Field)b).getName());
-		}
-	});
-	
+	sort(fields);	
 	for (int i = 0; i < fields.length; i++) {
 		Field field = fields[i];
 		if ((field.getModifiers() & Modifier.FINAL) == 0) continue;
@@ -64,7 +58,7 @@ public static void main(String[] args) {
 		return;
 	}
 	try {
-		ConstantsGenerator gen = new ConstantsGenerator();
+		SizeofGenerator gen = new SizeofGenerator();
 		for (int i = 0; i < args.length; i++) {
 			String clazzName = args[i];
 			Class clazz = Class.forName(clazzName);

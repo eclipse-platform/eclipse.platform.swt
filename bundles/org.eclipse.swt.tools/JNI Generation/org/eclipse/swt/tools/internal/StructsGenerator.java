@@ -23,33 +23,6 @@ public void generate(Class clazz) {
 	generateSourceFile(clazz);
 }
 
-public void generateHeaderFile(Class clazz) {
-	generateSourceStart(clazz);
-	generatePrototypes(clazz);
-	generateBlankMacros(clazz);
-	generateSourceEnd(clazz);	
-	outputDelimiter();
-}
-
-void sort(Class[] classes) {
-	Arrays.sort(classes, new Comparator() {
-		public int compare(Object a, Object b) {
-			if (a == b) return 0;
-			Class class1 = (Class)a;
-			Class class2 = (Class)b;
-			Class tempClass = class1;
-			while ((tempClass = tempClass.getSuperclass()) != Object.class) {
-				if (tempClass == class2) return 1;
-			}
-			tempClass = class2;
-			while ((tempClass = tempClass.getSuperclass()) != Object.class) {
-				if (tempClass == class1) return -1;
-			}
-			return class1.getName().compareTo(class2.getName());
-		}
-	});
-}
-
 public void generateExcludes(Class[] classes) {
 	HashSet excludes = new HashSet();
 	for (int i = 0; i < classes.length; i++) {
@@ -80,9 +53,17 @@ public void generateExcludes(Class[] classes) {
 	}
 }
 
+public void generateHeaderFile(Class clazz) {
+	generateSourceStart(clazz);
+	generatePrototypes(clazz);
+	generateBlankMacros(clazz);
+	generateSourceEnd(clazz);	
+	outputDelimiter();
+}
+
 public void generateHeaderFile(Class[] classes) {
 	if (classes.length == 0) return;
-	sort(classes);
+	sortStructs(classes);
 	generateMetaData("swt_copyright");
 	generateMetaData("swt_includes");
 	generateExcludes(classes);
@@ -90,11 +71,7 @@ public void generateHeaderFile(Class[] classes) {
 		Class clazz = classes[i];
 		ClassData classData = getMetaData().getMetaData(clazz);
 		if (classData.getFlag("no_gen")) continue;
-		generateSourceStart(clazz);
-		generatePrototypes(clazz);
-		generateBlankMacros(clazz);
-		generateSourceEnd(clazz);
-		outputDelimiter();
+		generateHeaderFile(clazz);
 	}
 }
 
@@ -106,42 +83,36 @@ public void generateSourceFile(Class clazz) {
 	outputDelimiter();
 	generateFunctions(clazz);
 	generateSourceEnd(clazz);
+	outputDelimiter();
 }
 
 public void generateSourceFile(Class[] classes) {
 	if (classes.length == 0) return;
-	sort(classes);
+	sortStructs(classes);
 	generateMetaData("swt_copyright");
 	generateMetaData("swt_includes");
 	for (int i = 0; i < classes.length; i++) {
 		Class clazz = classes[i];
 		ClassData classData = getMetaData().getMetaData(clazz);
 		if (classData.getFlag("no_gen")) continue;
-		generateSourceStart(clazz);
-		generateFIDsStructure(clazz);
-		outputDelimiter();
-		generateGlobalVar(clazz);
-		outputDelimiter();
-		generateFunctions(clazz);
-		generateSourceEnd(clazz);
-		outputDelimiter();
+		generateSourceFile(clazz);
 	}
 }
 
-public void generateSourceStart(Class clazz) {
+void generateSourceStart(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("#ifndef NO_");
 	output(clazzName);
 	outputDelimiter();
 }
 
-public void generateSourceEnd(Class clazz) {
+void generateSourceEnd(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("#endif");
 	outputDelimiter();
 }
 
-public void generateGlobalVar(Class clazz) {
+void generateGlobalVar(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output(clazzName);
 	output("_FID_CACHE ");
@@ -150,7 +121,7 @@ public void generateGlobalVar(Class clazz) {
 	outputDelimiter();
 }
 
-public void generateBlankMacros(Class clazz) {
+void generateBlankMacros(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("#else");
 	outputDelimiter();
@@ -168,7 +139,7 @@ public void generateBlankMacros(Class clazz) {
 	outputDelimiter();
 }
 
-public void generatePrototypes(Class clazz) {
+void generatePrototypes(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output(clazzName);
 	output(" *get");
@@ -191,7 +162,7 @@ public void generatePrototypes(Class clazz) {
 	outputDelimiter();
 }
 
-public void generateFIDsStructure(Class clazz) {
+void generateFIDsStructure(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("typedef struct ");
 	output(clazzName);
@@ -219,7 +190,7 @@ public void generateFIDsStructure(Class clazz) {
 	outputDelimiter();
 }
 
-public void generateCacheFunction(Class clazz) {
+void generateCacheFunction(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("void cache");
 	output(clazzName);
@@ -375,7 +346,7 @@ void generateGetFields(Class clazz) {
 		}
 	}
 }
-public void generateGetFunction(Class clazz) {
+void generateGetFunction(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output(clazzName);
 	output(" *get");
@@ -507,7 +478,7 @@ void generateSetFields(Class clazz) {
 	}
 }
 
-public void generateSetFunction(Class clazz) {
+void generateSetFunction(Class clazz) {
 	String clazzName = getClassName(clazz);
 	output("void set");
 	output(clazzName);
@@ -528,7 +499,7 @@ public void generateSetFunction(Class clazz) {
 	outputDelimiter();
 }
 
-public void generateFunctions(Class clazz) {
+void generateFunctions(Class clazz) {
 	generateCacheFunction(clazz);
 	outputDelimiter();
 	generateGetFunction(clazz);
@@ -542,6 +513,25 @@ boolean ignoreField(Field field) {
 		((mods & Modifier.PUBLIC) == 0) ||
 		((mods & Modifier.FINAL) != 0) ||
 		((mods & Modifier.STATIC) != 0);
+}
+
+void sortStructs(Class[] classes) {
+	Arrays.sort(classes, new Comparator() {
+		public int compare(Object a, Object b) {
+			if (a == b) return 0;
+			Class class1 = (Class)a;
+			Class class2 = (Class)b;
+			Class tempClass = class1;
+			while ((tempClass = tempClass.getSuperclass()) != Object.class) {
+				if (tempClass == class2) return 1;
+			}
+			tempClass = class2;
+			while ((tempClass = tempClass.getSuperclass()) != Object.class) {
+				if (tempClass == class1) return -1;
+			}
+			return class1.getName().compareTo(class2.getName());
+		}
+	});
 }
 
 public static void main(String[] args) {

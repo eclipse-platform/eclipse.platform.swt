@@ -91,6 +91,48 @@ public void generate(Method[] methods) {
 	}
 }
 
+public void generate(Method method) {
+	MethodData methodData = getMetaData().getMetaData(method);
+	if (methodData.getFlag("no_gen")) return;
+	Class returnType = method.getReturnType();
+	Class[] paramTypes = method.getParameterTypes();
+	String function = getFunctionName(method);
+	
+	if (!(returnType == Void.TYPE || returnType.isPrimitive())) {
+		output("Warnning: bad return type. :" + method);
+		outputDelimiter();
+		return;
+	}
+	
+	generateSourceStart(function);
+	generateFunctionPrototype(method, function, paramTypes, returnType);
+	generateFunctionBody(method, methodData, function, paramTypes, returnType);
+	generateSourceEnd(function);
+	outputDelimiter();
+}
+
+public void setEnterExitMacro(boolean enterExitMacro) {
+	this.enterExitMacro = enterExitMacro;
+}
+
+public void setNativeMacro(boolean nativeMacro) {
+	this.nativeMacro = nativeMacro;
+}
+
+public void setUseCritical(boolean useCritical) {
+	this.useCritical = useCritical;
+}
+
+void generateNativeMacro(Class clazz) {
+	output("#define ");
+	output(getClassName(clazz));
+	output("_NATIVE(func) Java_");
+	output(toC(clazz.getName()));
+	output("_##func");
+	outputDelimiter();
+	outputDelimiter();
+}
+
 void generateGetParameter(int i, Class paramType, ParameterData paramData) {
 	if (paramType.isPrimitive()) return;
 	output("\tif (arg" + i);
@@ -454,40 +496,8 @@ void generateSourceEnd(String function) {
 	outputDelimiter();
 }
 
-public void generate(Method method) {
-	MethodData methodData = getMetaData().getMetaData(method);
-	if (methodData.getFlag("no_gen")) return;
-	Class returnType = method.getReturnType();
-	Class[] paramTypes = method.getParameterTypes();
-	String function = getFunctionName(method);
-	
-	if (!(returnType == Void.TYPE || returnType.isPrimitive())) {
-		output("Warnning: bad return type. :" + method);
-		outputDelimiter();
-		return;
-	}
-	
-	generateSourceStart(function);
-	generateFunctionPrototype(method, function, paramTypes, returnType);
-	generateFunctionBody(method, methodData, function, paramTypes, returnType);
-	generateSourceEnd(function);
-	outputDelimiter();
-}
-
 boolean isUnique(Method method) {
 	return isUnique(method, Modifier.NATIVE);
-}
-
-public void setEnterExitMacro(boolean enterExitMacro) {
-	this.enterExitMacro = enterExitMacro;
-}
-
-public void setNativeMacro(boolean nativeMacro) {
-	this.nativeMacro = nativeMacro;
-}
-
-public void setUseCritical(boolean useCritical) {
-	this.useCritical = useCritical;
 }
 
 public static void main(String[] args) {
@@ -498,7 +508,6 @@ public static void main(String[] args) {
 	}
 	try {
 		NativesGenerator gen = new NativesGenerator();
-		gen.setNativeMacro(true);
 		for (int i = 0; i < args.length; i++) {
 			String clazzName = args[i];
 			Class clazz = Class.forName(clazzName);

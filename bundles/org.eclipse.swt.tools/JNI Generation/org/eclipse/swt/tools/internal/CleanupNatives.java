@@ -57,12 +57,7 @@ public void generate(Class clazz) {
 }
 
 public void generate(Method[] methods) {
-	Arrays.sort(methods, new Comparator() {
-		public int compare(Object a, Object b) {
-			return ((Method)a).getName().compareTo(((Method)b).getName());
-		}
-	});
-	
+	sort(methods);	
 	for (int i = 0; i < methods.length; i++) {
 		Method method = methods[i];
 		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
