@@ -224,6 +224,7 @@ public class OS {
 	public static final int CB_SHOWDROPDOWN = 0x14f;
 	public static final int CCM_FIRST = 0x2000;
 	public static final int CCM_SETBKCOLOR = 0x2001;
+	public static final int CCM_SETVERSION = 0x2007;
 	public static final int CCS_NODIVIDER = 0x40;
 	public static final int CCS_NORESIZE = 0x4;
 	public static final int CC_ANYCOLOR = 0x100;

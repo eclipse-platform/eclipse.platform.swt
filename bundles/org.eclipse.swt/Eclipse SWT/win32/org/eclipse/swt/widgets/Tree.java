@@ -173,7 +173,7 @@ int callWindowProc (int msg, int wParam, int lParam) {
 boolean checkScroll (int hItem) {
 	/*
 	* Feature in Windows.  If redraw is turned off using WM_SETREDRAW 
-	* a tree item that is not a child the first root is selected or
+	* and a tree item that is not a child of the first root is selected or
 	* scrolled using TVM_SELECTITEM or TVM_ENSUREVISIBLE, then scrolling
 	* does not occur.  The fix is to detect this case, and make sure
 	* that redraw is temporarly enabled.
@@ -219,6 +219,20 @@ void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
 	
+	/*
+	* Feature in Windows.  In version 5.8 of COMCTL32.DLL,
+	* if the font is changed for an item, the bounds for the
+	* item are not updated, causing the text to be clipped.
+	* The fix is to detect the version of COMCTL32.DLL, and
+	* if it is one of the versions with the problem, then
+	* use version 5.00 of the control (a version that does
+	* not have the problem).  This is the recomended work
+	* around from the MSDN.
+	*/
+	if (OS.COMCTL32_MAJOR < 6) {
+		OS.SendMessage (handle, OS.CCM_SETVERSION, 5, 0);
+	}
+
 	/* Set the checkbox image list */
 	if ((style & SWT.CHECK) != 0) setCheckboxImageList ();
 	

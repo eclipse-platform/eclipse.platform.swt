@@ -630,6 +630,7 @@ public void setFont (Font font){
 	}
 	if (this.font == hFont) return;
 	this.font = hFont;
+
 	/*
 	* Bug in Windows.  When the font is changed for an item,
 	* the bounds for the item are not updated, causing the text
