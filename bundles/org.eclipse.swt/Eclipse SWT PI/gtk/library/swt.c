@@ -106,6 +106,16 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1IS_1CELL_1R
 }
 #endif
 
+#ifndef NO_GTK_1IS_1IMAGE_1MENU_1ITEM
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1IS_1IMAGE_1MENU_1ITEM
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("GTK_1IS_1IMAGE_1MENU_1ITEM\n")
+
+	return (jboolean)GTK_IS_IMAGE_MENU_ITEM(arg0);
+}
+#endif
+
 #ifndef NO_GTK_1SCROLLED_1WINDOW_1HSCROLLBAR
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1SCROLLED_1WINDOW_1HSCROLLBAR
 	(JNIEnv *env, jclass that, jint arg0)

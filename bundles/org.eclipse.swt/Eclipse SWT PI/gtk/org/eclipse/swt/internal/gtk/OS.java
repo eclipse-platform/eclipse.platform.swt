@@ -291,6 +291,7 @@ public static final synchronized native int GDK_ROOT_PARENT();
 public static final synchronized native int GDK_TYPE_COLOR();
 public static final synchronized native int GDK_TYPE_PIXBUF();
 public static final synchronized native boolean GTK_IS_CELL_RENDERER_PIXBUF(int obj);
+public static final synchronized native boolean GTK_IS_IMAGE_MENU_ITEM(int obj);
 public static final synchronized native int GTK_WIDGET_FLAGS(int wid);
 public static final synchronized native boolean GTK_WIDGET_HAS_DEFAULT(int wid);
 public static final synchronized native boolean GTK_WIDGET_HAS_FOCUS(int wid);

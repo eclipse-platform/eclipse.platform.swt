@@ -610,7 +610,7 @@ public void setImage (Image image) {
 	checkWidget();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setImage (image);
-	if ((style & SWT.PUSH) == 0) return;
+	if (!OS.GTK_IS_IMAGE_MENU_ITEM (handle)) return;
 	if (image != null) {
 		int imageHandle = OS.gtk_image_new_from_pixmap (image.pixmap, image.mask);
 		OS.gtk_image_menu_item_set_image (handle, imageHandle);
