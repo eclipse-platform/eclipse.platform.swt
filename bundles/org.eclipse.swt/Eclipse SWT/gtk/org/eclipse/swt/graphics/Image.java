@@ -762,53 +762,36 @@ void init(Device device, ImageData image) {
 	if (pixbuf == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int stride = OS.gdk_pixbuf_get_rowstride(pixbuf);
 	int /*long*/ data = OS.gdk_pixbuf_get_pixels(pixbuf);
-	if (palette.isDirect) {
-		int redMask = palette.redMask;
-		int greenMask = palette.greenMask;
-		int blueMask = palette.blueMask;
-		int redShift = palette.redShift;
-		int greenShift = palette.greenShift;
-		int blueShift = palette.blueShift;
-		int[] pixels = new int[width];
-		byte[] rgbPixels = new byte[stride];
-		for (int y=0; y<height; y++) {
-			image.getPixels(0, y, width, pixels, 0);
-			for (int x=0; x<width; x++) {
-				int pixel = pixels[x];
-				int offset = x*3;
-				int r = pixel & redMask;
-				r = (redShift < 0) ? r >>> -redShift : r << redShift;
-				int g = pixel & greenMask;
-				g = (greenShift < 0) ? g >>> -greenShift : g << greenShift;
-				int b = pixel & blueMask;
-				b = (blueShift < 0) ? b >>> -blueShift : b << blueShift;
-				rgbPixels[offset] = (byte)r;
-				rgbPixels[offset + 1] = (byte)g;
-				rgbPixels[offset + 2] = (byte)b;
+	byte[] buffer = image.data;
+	if (!palette.isDirect || image.depth != 24 || stride != image.bytesPerLine || palette.redMask != 0xFF0000 || palette.greenMask != 0xFF00 || palette.blueMask != 0xFF) {
+		buffer = new byte[stride * height];
+		if (palette.isDirect) {
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, palette.redMask, palette.greenMask, palette.blueMask,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0, 
+				buffer, 24, stride, ImageData.MSB_FIRST, 0, 0, width, height, 0xFF0000, 0xFF00, 0xFF,
+				false, false);
+		} else {
+			RGB[] rgbs = palette.getRGBs();
+			int length = rgbs.length;
+			byte[] srcReds = new byte[length];
+			byte[] srcGreens = new byte[length];
+			byte[] srcBlues = new byte[length];
+			for (int i = 0; i < rgbs.length; i++) {
+				RGB rgb = rgbs[i];
+				if (rgb == null) continue;
+				srcReds[i] = (byte)rgb.red;
+				srcGreens[i] = (byte)rgb.green;
+				srcBlues[i] = (byte)rgb.blue;
 			}
-			OS.memmove(data + (stride * y), rgbPixels, rgbPixels.length);
-		}
-	} else {
-		RGB[] rgbs = palette.colors;
-		byte[] pixels = new byte[width];
-		byte[] rgbPixels = new byte[stride];
-		for (int y=0; y<height; y++) {
-			image.getPixels(0, y, width, pixels, 0);
-			for (int x=0; x<width; x++) {
-				int pixel = pixels[x] & 0xFF;
-				int r = 0, g = 0, b = 0;
-				if (pixel < rgbs.length) {
-					RGB rgb = rgbs[pixel];
-					r = rgb.red; g = rgb.green; b = rgb.blue;
-				}
-				int offset = x*3;
-				rgbPixels[offset] = (byte)r;
-				rgbPixels[offset + 1] = (byte)g;
-				rgbPixels[offset + 2] = (byte)b;
-			}
-			OS.memmove(data + (stride * y), rgbPixels, rgbPixels.length);
+			ImageData.blit(ImageData.BLIT_SRC,
+				image.data, image.depth, image.bytesPerLine, image.getByteOrder(), 0, 0, width, height, srcReds, srcGreens, srcBlues,
+				ImageData.ALPHA_OPAQUE, null, 0, 0, 0,
+				buffer, 24, stride, ImageData.MSB_FIRST, 0, 0, width, height, 0xFF0000, 0xFF00, 0xFF,
+				false, false);
 		}
 	}
+	OS.memmove(data, buffer, buffer.length);
 	int /*long*/ pixmap = OS.gdk_pixmap_new (OS.GDK_ROOT_PARENT(), width, height, -1);
 	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int /*long*/ gdkGC = OS.gdk_gc_new(pixmap);
