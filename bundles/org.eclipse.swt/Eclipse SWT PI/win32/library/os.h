@@ -124,6 +124,7 @@
 #define NO_CreateDCA
 #define NO_CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONTA_2
 #define NO_CreateFontIndirectA__I
+#define NO_CreatePolygonRgn
 #define NO_CreateWindowExA
 #define NO_DefFrameProcA
 #define NO_DefFrameProcW
