@@ -33,6 +33,7 @@ public class OS {
 	public static final int inZoomIn = 7;
 	public static final int inZoomOut = 8;
 	public static final int italic = 2;
+	public static final int k3ARGBPixelFormat = 0x00000020;
 	public static final int kAEQuitApplication = ('q'<<24) + ('u'<<16) + ('i'<<8) + 't';
 	public static final int kAlertCautionAlert = 2;
 	public static final int kAlertNoteAlert = 1;
@@ -685,6 +686,7 @@ public static final native void DisposeRgn(int rgnHandle);
 public static final native void DisposeWindow(int wHandle);
 public static final native int DMGetNextScreenDevice(int theDevice, boolean activeOnly);
 public static final native int DMGetFirstScreenDevice(boolean activeOnly);
+public static final native void DrawControlInCurrentPort(int inControl);
 public static final native void DrawMenuBar();
 public static final native void DrawText(byte[] textBuf, short firstByte, short byteCount);
 public static final native int DrawThemeButton(Rect inBounds, short inKind, ThemeButtonDrawInfo inNewInfo, ThemeButtonDrawInfo inPrevInfo, int inEraseProc, int inLabelProc, int inUserData);

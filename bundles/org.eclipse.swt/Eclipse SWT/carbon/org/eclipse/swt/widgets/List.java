@@ -129,16 +129,29 @@ void createHandle () {
 
 	/*
 	* Feature in the Macintosh.  Scroll bars are not created until
-	* the widget has a minimum size.  The fix is to force the scroll
-	* bars to be created by temporarily giving the widget a size and
-	* then restoring it to zero.
-	* 
-	* NOTE: The widget must be visible and SizeControl() must be used
-	* to resize the widget to a minimim size or the widget will not
-	* create the scroll bars.  This work around currently flashes.
+	* the data browser needs to draw them.  The fix is to force the scroll
+	* bars to be created by temporarily giving the widget a size, drawing
+	* it on a offscreen buffer to avoid flashes and then restoring it to
+	* size zero.
 	*/
-	OS.SizeControl (handle, (short) 0xFF, (short) 0xFF);
-	OS.SizeControl (handle, (short) 0, (short) 0);
+	int size = 50;
+	Rect rect = new Rect ();
+	rect.right = rect.bottom = (short) size;
+	OS.SetControlBounds (handle, rect);
+	int bpl = size * 4;
+	int [] gWorld = new int [1];
+	int data = OS.NewPtr (bpl * size);
+	OS.NewGWorldFromPtr (gWorld, OS.k3ARGBPixelFormat, rect, 0, 0, 0, data, bpl);
+	int [] curPort = new int [1];
+	int [] curGWorld = new int [1];
+	OS.GetGWorld (curPort, curGWorld);	
+	OS.SetGWorld (gWorld [0], curGWorld [0]);
+	OS.DrawControlInCurrentPort (handle);
+	OS.SetGWorld (curPort [0], curGWorld [0]);
+	OS.DisposeGWorld (gWorld [0]);
+	OS.DisposePtr (data);
+	rect.right = rect.bottom = (short) 0;
+	OS.SetControlBounds (handle, rect);
 }
 
 void createWidget () {

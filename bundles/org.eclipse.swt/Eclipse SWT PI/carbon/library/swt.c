@@ -2016,6 +2016,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DMGetFirstScreenD
 }
 #endif /* NO_DMGetFirstScreenDevice */
 
+#ifndef NO_DrawControlInCurrentPort
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawControlInCurrentPort
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("DrawControlInCurrentPort\n")
+
+	DrawControlInCurrentPort((ControlRef)arg0);
+}
+#endif
+
 #ifndef NO_DrawMenuBar
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawMenuBar
 	(JNIEnv *env, jclass that)
