@@ -1267,6 +1267,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 		case OS.HTERROR:
 		case OS.HTTRANSPARENT:
 		case OS.HTNOWHERE:
+			break;
 		default: {
 			Control control = display.getFocusControl ();
 			if (control != null) {
@@ -1282,6 +1283,7 @@ LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 					return new LRESULT (OS.MA_NOACTIVATE);
 				}
 			}
+			break;
 		}
 	}
 	if (hittest == OS.HTMENU) return null;
