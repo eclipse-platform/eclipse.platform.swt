@@ -1743,9 +1743,9 @@ void register () {
  */
 public void redraw () {
 	checkWidget();
-	int topHandle = topHandle ();
-	int width = OS.GTK_WIDGET_WIDTH (topHandle);
-	int height = OS.GTK_WIDGET_HEIGHT (topHandle);
+	int paintHandle = paintHandle ();
+	int width = OS.GTK_WIDGET_WIDTH (paintHandle);
+	int height = OS.GTK_WIDGET_HEIGHT (paintHandle);
 	redrawWidget (0, 0, width, height, true);
 }
 /**
@@ -1777,7 +1777,6 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 }
 
 void redrawWidget (int x, int y, int width, int height, boolean all) {
-	//?? TRANSLATE COORDINATES
 	int window = paintWindow ();
 	GdkRectangle rect = new GdkRectangle ();
 	rect.x = x;
