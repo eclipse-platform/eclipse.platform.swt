@@ -1833,20 +1833,12 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public void copy(){
+public void copy() {
 	checkWidget();
 	int length = selection.y - selection.x;
 	if (length > 0) {
-		RTFTransfer rtfTransfer = RTFTransfer.getInstance();
-		TextTransfer plainTextTransfer = TextTransfer.getInstance();
-		RTFWriter rtfWriter = new RTFWriter(selection.x, length);
-		TextWriter plainTextWriter = new TextWriter(selection.x, length);
-		String rtfText = getPlatformDelimitedText(rtfWriter);
-		String plainText = getPlatformDelimitedText(plainTextWriter);
 		try {
-			clipboard.setContents(
-				new String[]{rtfText, plainText}, 
-				new Transfer[]{rtfTransfer, plainTextTransfer});
+			setClipboardContent(selection.x, length);
 		}
 		catch (SWTError error) {
 			// Copy to clipboard failed. This happens when another application 
@@ -2040,8 +2032,24 @@ void createCaretBitmaps() {
  */
 public void cut(){
 	checkWidget();
-	if (selection.y > selection.x) {
-		copy();
+	int length = selection.y - selection.x;
+	
+	if (length > 0) {
+		try {
+			setClipboardContent(selection.x, length);
+		}
+		catch (SWTError error) {
+			// Copy to clipboard failed. This happens when another application 
+			// is accessing the clipboard while we copy. Ignore the error.
+			// Fixes 1GDQAVN
+			// Rethrow all other errors. Fixes bug 17578.
+			if (error.code != DND.ERROR_CANNOT_SET_CLIPBOARD) {
+				throw error;
+			}
+			// Abort cut operation if copy to clipboard fails.
+			// Fixes bug 21030.
+			return;
+		}
 		doDelete();
 	}
 }
@@ -6339,6 +6347,29 @@ public void setCaretOffset(int offset) {
 		setBidiKeyboardLanguage();	
 	}
 }	
+/**
+ * Copies the specified text range to the clipboard.  The text will be placed
+ * in the clipboard in plain text format and RTF format.
+ * <p>
+ *
+ * @param start start index of the text
+ * @param length length of text to place in clipboard
+ * 
+ * @exception SWTError, see Clipboard.setContents
+ * @see org.eclipse.swt.dnd.Clipboard.setContents
+ */
+void setClipboardContent(int start, int length) throws SWTError {
+	RTFTransfer rtfTransfer = RTFTransfer.getInstance();
+	TextTransfer plainTextTransfer = TextTransfer.getInstance();
+	RTFWriter rtfWriter = new RTFWriter(start, length);
+	TextWriter plainTextWriter = new TextWriter(start, length);
+	String rtfText = getPlatformDelimitedText(rtfWriter);
+	String plainText = getPlatformDelimitedText(plainTextWriter);
+
+	clipboard.setContents(
+		new String[]{rtfText, plainText}, 
+		new Transfer[]{rtfTransfer, plainTextTransfer});
+}
 /**
  * Sets the content implementation to use for text storage.
  * <p>
