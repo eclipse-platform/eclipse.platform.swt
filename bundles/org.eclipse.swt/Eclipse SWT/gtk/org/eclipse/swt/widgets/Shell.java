@@ -90,7 +90,12 @@ public class Shell extends Decorations {
 	int modal;
 	int accelGroup;
 	Rectangle lastClientArea;
-	boolean hasFocus=false;
+	boolean hasFocus;
+
+/*
+ *   ===  CONSTRUCTORS  ===
+ */
+
 /**
  * Constructs a new instance of this class. This is equivalent
  * to calling <code>Shell((Display) null)</code>.
@@ -251,6 +256,9 @@ public Shell (Shell parent) {
 public Shell (Shell parent, int style) {
 	this (null, parent, style);
 }
+
+
+
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when operations are performed on the receiver,
@@ -271,8 +279,7 @@ public Shell (Shell parent, int style) {
  * @see #removeShellListener
  */
 public void addShellListener (ShellListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Close,typedListener);
@@ -497,8 +504,7 @@ Control getFocusControl() {
  * @see SWT
  */
 public int getImeInputMode () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return SWT.NONE;
 }
 
@@ -512,8 +518,7 @@ public int getImeInputMode () {
 * @exception SWTError(ERROR_THREAD_INVALID_ACCESS)
 */	
 public int getModal () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	return modal;
 }
 
@@ -532,8 +537,7 @@ Shell _getShell () {
  * </ul>
  */
 public Shell [] getShells () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	int count = 0;
 	Shell [] shells = display.getShells ();
 	for (int i=0; i<shells.length; i++) {
@@ -662,8 +666,7 @@ int processPaint (int callData, int int2, int int3) {
  * @see #addShellListener
  */
 public void removeShellListener (ShellListener listener) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Close, listener);
@@ -690,8 +693,7 @@ public void removeShellListener (ShellListener listener) {
  * @see SWT
  */
 public void setImeInputMode (int mode) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	checkWidget();
 }
 
 public void setMaximized (boolean maximized) {
@@ -722,13 +724,25 @@ public void setMenuBar (Menu menu) {
 		OS.gtk_box_pack_start (vboxHandle, menuHandle, false, false, 0);
 	}
 }
+
 public void setMinimized (boolean minimized) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-//	GtkWidget widget = new GtkWidget ();
-//	OS.memmove (widget, shellHandle, GtkWidget.sizeof);
-//	OS.gdk_window_set_functions (widget.window, OS.GDK_FUNC_MINIMIZE);
+	checkWidget();
+	
+	/*
+	 * In GDK, there is no way to iconify a shell.
+	 * If we wanted it really badly, on pure X this is done
+	 * by sending a client message - see ICCCM L.4.1.4.
+	 */
+	if (minimized) return;
+	
+	/*
+	 * At least we can force a deiconify
+	 */
+	GtkWidget w = new GtkWidget();
+	OS.memmove(w, shellHandle, w.sizeof);
+	OS.gdk_window_show(w.window);
 }
+
 /**
 * Set the modal state.
 * <p>
