@@ -1119,4 +1119,24 @@ public void setTextLimit (int limit) {
 	OS.gtk_entry_set_max_length (entryHandle, limit);
 }
 
+boolean translateTraversal (GdkEventKey keyEvent) {
+	int key = keyEvent.keyval;
+	switch (key) {
+		case OS.GDK_KP_Enter:
+		case OS.GDK_Return: {
+			int imHandle = OS.GTK_ENTRY_IM_CONTEXT (entryHandle);
+			if (imHandle != 0) {
+				int [] preeditString = new int [1];
+				OS.gtk_im_context_get_preedit_string (imHandle, preeditString, null, null);
+				if (preeditString [0] != 0) {
+					int lenght = OS.strlen (preeditString [0]);
+					OS.g_free (preeditString [0]);
+					if (lenght != 0) return false;
+				}
+			}
+		}
+	}
+	return super.translateTraversal (keyEvent);
+}
+
 }
