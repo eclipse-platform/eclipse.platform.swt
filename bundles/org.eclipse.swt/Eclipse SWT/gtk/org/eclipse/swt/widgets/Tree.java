@@ -941,7 +941,7 @@ public void setTopItem (TreeItem item) {
 	int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	showItem (path, false);
 	int depth = OS.gtk_tree_path_get_depth (path);
-	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.0f, 0.5f);
+	OS.gtk_tree_view_scroll_to_cell (handle, path, 0, depth != 1, 0.5f, 0.0f);
 	OS.gtk_tree_path_free (path);
 }
 
