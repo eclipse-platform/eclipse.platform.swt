@@ -612,7 +612,7 @@ public static final native int SetMenuTitleWithCFString(int mHandle, int sHandle
 public static final native void SetOrigin(short h, short v);
 public static final native void SetPort(int pHandle);
 public static final native void SetPortWindowPort(int wHandle);
-public static final native void SetPt(Point p, short v, short h);
+public static final native void SetPt(Point p, short h, short v);
 public static final native void SetRect(Rect r, short left, short top, short right, short bottom);
 public static final native void SetRectRgn(int rgnHandle, short left, short top, short right, short bottom);
 public static final native int SetRootMenu(int mHandle);
