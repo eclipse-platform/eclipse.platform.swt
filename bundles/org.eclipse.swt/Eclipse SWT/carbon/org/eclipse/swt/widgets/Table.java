@@ -309,7 +309,6 @@ void createItem (TableColumn column, int index) {
 	}
 	System.arraycopy (columns, index, columns, index + 1, columnCount++ - index);
 	columns [index] = column;
-	//TODO - optimize
 	if (columnCount > 1) {
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
@@ -489,7 +488,6 @@ void destroyItem (TableColumn column) {
 		if (columns [index] == column) break;
 		index++;
 	}
-	//TODO - optimize
 	if (columnCount > 1) {
 		for (int i=0; i<itemCount; i++) {
 			TableItem item = items [i];
@@ -497,7 +495,7 @@ void destroyItem (TableColumn column) {
 			if (images != null) {
 				Image [] temp = new Image [columnCount - 1];
 				System.arraycopy (images, 0, temp, 0, index);
-				System.arraycopy (images, index +1, temp, index, columnCount - 1 - index);
+				System.arraycopy (images, index + 1, temp, index, columnCount - 1 - index);
 				items [i].images = temp;
 			}
 			String [] strings = item.strings;
