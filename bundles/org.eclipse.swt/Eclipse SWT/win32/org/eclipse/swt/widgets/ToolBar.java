@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.*;
  * </p>
  */
 public class ToolBar extends Composite {
+	int lastFocusId;
 	ToolItem [] items;
 	ImageList imageList, disabledImageList, hotImageList;
 	static final int ToolBarProc;
@@ -309,6 +310,7 @@ void createItem (ToolItem item, int index) {
 void createWidget () {
 	super.createWidget ();
 	items = new ToolItem [4];
+	lastFocusId = -1;
 }
 
 void destroyItem (ToolItem item) {
@@ -332,6 +334,7 @@ void destroyItem (ToolItem item) {
 		if (disabledImageList != null) disabledImageList.put (info.iImage, null);
 	}
 	int result = OS.SendMessage (handle, OS.TB_DELETEBUTTON, index, 0);
+	if (item.id == lastFocusId) lastFocusId = -1;
 	items [item.id] = null;
 	item.id = -1;
 	int count = OS.SendMessage (handle, OS.TB_BUTTONCOUNT, 0, 0);
@@ -694,11 +697,44 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 			if (index != -1) {
 				TBBUTTON lpButton = new TBBUTTON ();
 				int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
+				if (code != 0) return LRESULT.ZERO;
+			}
+	}
+	return result;
+}
+
+LRESULT WM_KEYUP (int wParam, int lParam) {
+	LRESULT result = super.WM_KEYUP (wParam, lParam);
+	if (result != null) return result;
+	switch (wParam) {
+		case OS.VK_RETURN:
+		case OS.VK_SPACE:
+			int index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
+			if (index != -1) {
+				TBBUTTON lpButton = new TBBUTTON ();
+				int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
 				if (code != 0) {
 					items [lpButton.idCommand].click (wParam == OS.VK_RETURN);
 					return LRESULT.ZERO;
 				}
 			}
+	}
+	return result;
+}
+
+LRESULT WM_KILLFOCUS (int wParam, int lParam) {
+	int index = OS.SendMessage (handle, OS.TB_GETHOTITEM, 0, 0);
+	TBBUTTON lpButton = new TBBUTTON ();
+	int code = OS.SendMessage (handle, OS.TB_GETBUTTON, index, lpButton);
+	if (code != 0) lastFocusId = lpButton.idCommand;
+	return super.WM_KILLFOCUS (wParam, lParam);
+}
+
+LRESULT WM_SETFOCUS (int wParam, int lParam) {
+	LRESULT result = super.WM_SETFOCUS (wParam, lParam);
+	if (lastFocusId != -1 && handle == OS.GetFocus ()) {
+		int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, lastFocusId, 0); 
+		OS.SendMessage (handle, OS.TB_SETHOTITEM, index, 0);
 	}
 	return result;
 }
