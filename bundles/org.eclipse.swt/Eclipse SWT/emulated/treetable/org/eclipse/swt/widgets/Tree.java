@@ -320,7 +320,7 @@ void destroyItem (TreeItem item) {
 			newSelectedItems.length - selectionIndex);
 		selectedItems = newSelectedItems;
 	}
-	if (item.isRoot ()) {
+	if (item.depth == 0) {
 		int index = item.getIndex ();
 		TreeItem[] newItems = new TreeItem [items.length - 1];
 		System.arraycopy (items, 0, newItems, 0, index);
@@ -1718,7 +1718,7 @@ void reassignFocus () {
 	if (focusItem == null) return;
 	
 	/* reassign to current focus' parent item if it has one */
-	if (!focusItem.isRoot ()) {
+	if (focusItem.parentItem != null) {
 		TreeItem item = focusItem.getParentItem ();
 		setFocusItem (item, false);
 		showItem (item);

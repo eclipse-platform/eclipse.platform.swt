@@ -10,6 +10,7 @@ public class TreeItem extends Item {
 	TreeItem[] items = new TreeItem [0];
 	/* index in parent's flat list of available (though not necessarily visible) items */
 	int availableIndex = -1;
+	int depth = 0;
 	boolean checked, grayed, expanded;
 
 	String[] texts = new String [1];
@@ -48,6 +49,7 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	super (checkNull (parentItem).parent, style);
 	this.parentItem = parentItem;
 	parent = parentItem.getParent ();
+	depth = parentItem.depth + 1;
 	int validItemIndex = parentItem.getItemCount ();
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
 	parentItem.addItem (this, index);
@@ -365,19 +367,15 @@ int getContentX (int columnIndex) {
 	}
 	
 	int x = parent.getCellPadding () - parent.horizontalOffset;
-	if (!isRoot ()) {
+	if (parentItem != null) {
 		int expanderWidth = parent.expanderBounds.width + INDENT_HIERARCHY;
-		x += expanderWidth * getDepth ();
+		x += expanderWidth * depth;
 	}
 	x += parent.expanderBounds.width;
 	if (items.length == 0) {
 		x += Compatibility.floor (parent.expanderBounds.width, 2);
 	}
 	return x + Tree.MARGIN_IMAGE + INDENT_HIERARCHY;
-}
-int getDepth () {
-	if (parentItem == null) return 0;
-	return 1 + parentItem.getDepth ();
 }
 public boolean getExpanded () {
 	checkWidget ();
@@ -391,9 +389,9 @@ Rectangle getExpanderBounds () {
 	int itemHeight = parent.getItemHeight ();
 	int x = parent.getCellPadding () - parent.horizontalOffset;
 	int y = parent.getItemY (this);
-	if (!isRoot ()) {
+	if (parentItem != null) {
 		int expanderWidth = parent.expanderBounds.width + INDENT_HIERARCHY;
-		x += expanderWidth * getDepth ();
+		x += expanderWidth * depth;
 	}
 	return new Rectangle (
 		x, y + (itemHeight - parent.expanderBounds.height) / 2,
@@ -628,9 +626,6 @@ boolean isLastChild () {
 	}
 	return getIndex () == parent.getItemCount () - 1;
 }
-boolean isRoot () {
-	return parentItem == null;
-}
 boolean isSelected () {
 	return parent.getSelectionIndex (this) != -1;
 }
@@ -711,7 +706,7 @@ void paint (GC gc, TreeColumn column, boolean paintCellContent) {
 		}
 		
 		/* Do not draw this line iff this is the very first item in the tree */ 
-		if (!isRoot () || getIndex () != 0) {
+		if (parentItem != null || getIndex () != 0) {
 			gc.drawLine (lineX, y, lineX, y2);
 		}
 
