@@ -369,11 +369,12 @@ public void setTabList (Control [] tabList) {
 		Control control = tabList [i];
 		if (control == null) error (SWT.ERROR_INVALID_ARGUMENT);
 		if (control.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-		Shell shell = control.getShell ();
-		while (control != shell && control != this) {
-			control = control.parent;
-		}
-		if (control != this) error (SWT.ERROR_INVALID_PARENT);
+//		Shell shell = control.getShell ();
+//		while (control != shell && control != this) {
+//			control = control.parent;
+//		}
+//		if (control != this) error (SWT.ERROR_INVALID_PARENT);
+		if (control.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}
 	/*
 	* This code is intentionally commented.  It is

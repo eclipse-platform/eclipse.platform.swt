@@ -663,7 +663,7 @@ LRESULT WM_GETDLGCODE (int wParam, int lParam) {
 	/*
 	* Return DLGC_BUTTON so that mnemonics will be
 	* processed without needing to press the ALT key
-	* when the tab folder has focus.
+	* when the widget has focus.
 	*/
 	if (result != null) return result;
 	return new LRESULT (OS.DLGC_BUTTON);

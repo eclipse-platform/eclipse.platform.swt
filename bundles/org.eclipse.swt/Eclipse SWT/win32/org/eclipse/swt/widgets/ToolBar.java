@@ -650,6 +650,17 @@ int windowProc () {
 	return ToolBarProc;
 }
 
+LRESULT WM_GETDLGCODE (int wParam, int lParam) {
+	LRESULT result = super.WM_GETDLGCODE (wParam, lParam);
+	/*
+	* Return DLGC_BUTTON so that mnemonics will be
+	* processed without needing to press the ALT key
+	* when the widget has focus.
+	*/
+	if (result != null) return result;
+	return new LRESULT (OS.DLGC_BUTTON);
+}
+
 LRESULT WM_COMMAND (int wParam, int lParam) {
 	/*
 	* Feature in Windows.  When the toolbar window
@@ -670,21 +681,6 @@ LRESULT WM_COMMAND (int wParam, int lParam) {
 	LRESULT result = super.WM_COMMAND (wParam, lParam);
 	if (result != null) return result;
 	return LRESULT.ZERO;
-}
-
-LRESULT WM_CHAR (int wParam, int lParam) {
-	LRESULT result = super.WM_CHAR (wParam, lParam);
-	if (result != null) return result;
-	int [] id = new int [1];
-	if (OS.SendMessage (handle, OS.TB_MAPACCELERATOR, wParam, id) != 0) {
-		int index = OS.SendMessage (handle, OS.TB_COMMANDTOINDEX, id [0], 0);
-		if (index != -1) {
-			OS.SendMessage (handle, OS.TB_SETHOTITEM, index, 0);
-			items [id [0]].click (false);
-			return LRESULT.ZERO;
-		}
-	}
-	return result;
 }
 
 LRESULT WM_KEYDOWN (int wParam, int lParam) {
