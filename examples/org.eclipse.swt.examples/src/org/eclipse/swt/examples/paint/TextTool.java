@@ -95,6 +95,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 			label.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, false, false));
 			final Text field = new Text(dialog, SWT.SINGLE | SWT.BORDER);
 			field.setText(drawText);
+			field.selectAll();
 			field.setLayoutData(new GridData(SWT.FILL, SWT.CENTER, true, false));
 			Composite buttons = new Composite(dialog, SWT.NONE);
 			GridLayout layout = new GridLayout(2, true);
@@ -117,6 +118,7 @@ public class TextTool extends BasicPaintSession implements PaintTool {
 					dialog.dispose();
 				}
 			});
+			dialog.setDefaultButton(ok);
 			dialog.pack();
 			dialog.open();
 			Display display = dialog.getDisplay();

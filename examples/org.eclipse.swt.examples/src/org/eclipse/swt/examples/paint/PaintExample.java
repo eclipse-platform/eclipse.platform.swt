@@ -60,7 +60,7 @@ public class PaintExample {
 	static final int Default_fill = None_fill;
 	static final int Default_linestyle = Solid_linestyle;
 	
-	static final Tool[] tools = {
+	public static final Tool[] tools = {
 		new Tool(Pencil_tool, "Pencil", "tool", SWT.RADIO),
 		new Tool(Airbrush_tool, "Airbrush", "tool", SWT.RADIO),
 		new Tool(Line_tool, "Line", "tool", SWT.RADIO),
