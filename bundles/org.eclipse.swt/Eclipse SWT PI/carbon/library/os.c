@@ -1490,6 +1490,27 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(ConvertEventRefToEventRecord)
 }
 #endif
 
+#ifndef NO_ConvertFromPStringToUnicode
+JNIEXPORT jint JNICALL OS_NATIVE(ConvertFromPStringToUnicode)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jintArray arg3, jcharArray arg4)
+{
+	jbyte *lparg1=NULL;
+	jint *lparg3=NULL;
+	jchar *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "ConvertFromPStringToUnicode\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
+	rc = (jint)ConvertFromPStringToUnicode((TextToUnicodeInfo)arg0, (ConstStr255Param)lparg1, arg2, lparg3, lparg4);
+	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "ConvertFromPStringToUnicode\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CopyBits
 JNIEXPORT void JNICALL OS_NATIVE(CopyBits)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jobject arg3, jshort arg4, jint arg5)
@@ -2036,6 +2057,21 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateTabsControl)
 }
 #endif
 
+#ifndef NO_CreateTextToUnicodeInfoByEncoding
+JNIEXPORT jint JNICALL OS_NATIVE(CreateTextToUnicodeInfoByEncoding)
+	(JNIEnv *env, jclass that, jint arg0, jintArray arg1)
+{
+	jint *lparg1=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "CreateTextToUnicodeInfoByEncoding\n")
+	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
+	rc = (jint)CreateTextToUnicodeInfoByEncoding((TextEncoding)arg0, (TextToUnicodeInfo *)lparg1);
+	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
+	NATIVE_EXIT(env, that, "CreateTextToUnicodeInfoByEncoding\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_CreateUserPaneControl
 JNIEXPORT jint JNICALL OS_NATIVE(CreateUserPaneControl)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jintArray arg3)
@@ -2236,6 +2272,21 @@ JNIEXPORT void JNICALL OS_NATIVE(DisposeRgn)
 	NATIVE_ENTER(env, that, "DisposeRgn\n")
 	DisposeRgn((RgnHandle)arg0);
 	NATIVE_EXIT(env, that, "DisposeRgn\n")
+}
+#endif
+
+#ifndef NO_DisposeTextToUnicodeInfo
+JNIEXPORT jint JNICALL OS_NATIVE(DisposeTextToUnicodeInfo)
+	(JNIEnv *env, jclass that, jintArray arg0)
+{
+	jint *lparg0=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "DisposeTextToUnicodeInfo\n")
+	if (arg0) lparg0 = (*env)->GetIntArrayElements(env, arg0, NULL);
+	rc = (jint)DisposeTextToUnicodeInfo((TextToUnicodeInfo *)lparg0);
+	if (arg0) (*env)->ReleaseIntArrayElements(env, arg0, lparg0, 0);
+	NATIVE_EXIT(env, that, "DisposeTextToUnicodeInfo\n")
+	return rc;
 }
 #endif
 
@@ -3429,7 +3480,7 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetDataBrowserSelectionFlags)
 	jint rc;
 	NATIVE_ENTER(env, that, "GetDataBrowserSelectionFlags\n")
 	if (arg1) lparg1 = (*env)->GetIntArrayElements(env, arg1, NULL);
-	rc = (jint)GetDataBrowserSelectionFlags((ControlRef)arg0, (DataBrowserSelectionFlags *)lparg1);
+	rc = (jint)GetDataBrowserSelectionFlags((ControlRef)arg0, lparg1);
 	if (arg1) (*env)->ReleaseIntArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "GetDataBrowserSelectionFlags\n")
 	return rc;
@@ -8399,6 +8450,24 @@ JNIEXPORT jint JNICALL OS_NATIVE(UpdateDataBrowserItems)
 	rc = (jint)UpdateDataBrowserItems((ControlRef)arg0, (DataBrowserItemID)arg1, (UInt32)arg2, (const DataBrowserItemID *)lparg3, (DataBrowserPropertyID)arg4, (DataBrowserPropertyID)arg5);
 	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
 	NATIVE_EXIT(env, that, "UpdateDataBrowserItems\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_UpgradeScriptInfoToTextEncoding
+JNIEXPORT jint JNICALL OS_NATIVE(UpgradeScriptInfoToTextEncoding)
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jshort arg2, jbyteArray arg3, jintArray arg4)
+{
+	jbyte *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "UpgradeScriptInfoToTextEncoding\n")
+	if (arg3) lparg3 = (*env)->GetByteArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)UpgradeScriptInfoToTextEncoding(arg0, arg1, arg2, lparg3, lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseByteArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "UpgradeScriptInfoToTextEncoding\n")
 	return rc;
 }
 #endif
