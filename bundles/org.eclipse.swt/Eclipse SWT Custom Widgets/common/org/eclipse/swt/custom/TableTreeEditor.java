@@ -107,15 +107,13 @@ public TableTreeEditor (TableTree tableTree) {
 		};
 		public void treeCollapsed(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
-			Display display = TableTreeEditor.this.tableTree.getDisplay();
 			editor.setVisible(false);
-			display.asyncExec(runnable);
+			e.display.asyncExec(runnable);
 		}
 		public void treeExpanded(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
-			Display display = TableTreeEditor.this.tableTree.getDisplay();
 			editor.setVisible(false);
-			display.asyncExec(runnable);
+			e.display.asyncExec(runnable);
 		}
 	};
 	tableTree.addTreeListener(treeListener);

@@ -104,15 +104,13 @@ public TreeEditor (Tree tree) {
 		};
 		public void treeCollapsed(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
-			Display display = TreeEditor.this.tree.getDisplay();
 			editor.setVisible(false);
-			display.asyncExec(runnable);
+			e.display.asyncExec(runnable);
 		}
 		public void treeExpanded(TreeEvent e) {
 			if (editor == null || editor.isDisposed ()) return;
-			Display display = TreeEditor.this.tree.getDisplay();
 			editor.setVisible(false);
-			display.asyncExec(runnable);
+			e.display.asyncExec(runnable);
 		}
 	};
 	tree.addTreeListener(treeListener);
