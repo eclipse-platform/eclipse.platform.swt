@@ -15,13 +15,14 @@ package org.eclipse.swt.widgets;
 class RunnableLock {
 	Runnable runnable;
 	Thread thread;
+	Throwable throwable;
 	
 RunnableLock (Runnable runnable) {
 	this.runnable = runnable;
 }
 
 boolean done () {
-	return runnable == null;
+	return runnable == null || throwable != null;
 }
 
 void run () {

@@ -1323,6 +1323,13 @@ public class SWT {
 	 */
 	public static final int ERROR_DEVICE_DISPOSED = 45;
 	
+	/** 
+	 * SWT error constant indicating that an exception happened
+	 * when executing a runnable.
+	 * (value is 46) 
+	 */
+	public static final int ERROR_FAILED_EXEC = 46;
+	
 	/**
 	 * traversal event detail field value indicating that the ESC
 	 * key was pressed (value is 1<<1)
@@ -1675,6 +1682,7 @@ static String findErrorText (int code) {
 		case ERROR_INVALID_SUBCLASS:		return "Subclassing not allowed";
 		case ERROR_GRAPHIC_DISPOSED:		return "Graphic is disposed";
 		case ERROR_DEVICE_DISPOSED:		return "Device is disposed";
+		case ERROR_FAILED_EXEC:		return "Failed to execute runnable";
 	}
 	return "Unknown error";
 }
@@ -1804,6 +1812,7 @@ public static void error (int code, Throwable throwable) {
 		case ERROR_INVALID_IMAGE:
 		case ERROR_UNSUPPORTED_DEPTH:
 		case ERROR_UNSUPPORTED_FORMAT:
+		case ERROR_FAILED_EXEC:
 		case ERROR_IO: {
 			SWTException exception = new SWTException (code);
 			exception.throwable = throwable;
