@@ -6634,6 +6634,7 @@ public void setCaret(Caret caret) {
  */
 public void setBackground(Color color) {
 	checkWidget();
+	super.setBackground(color);
 	background = color;
 	redraw();
 }
@@ -6981,6 +6982,7 @@ public void setFont(Font font) {
  */
 public void setForeground(Color color) {
 	checkWidget();
+	super.setForeground(color);
 	foreground = color;
 	redraw();
 }
