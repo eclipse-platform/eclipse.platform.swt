@@ -9,8 +9,10 @@ package org.eclipse.swt.widgets;
  
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.DataBrowserCallbacks;
-import org.eclipse.swt.internal.carbon.Rect;
+import org.eclipse.swt.internal.carbon.DataBrowserCustomCallbacks;
 import org.eclipse.swt.internal.carbon.DataBrowserListViewColumnDesc;
+import org.eclipse.swt.internal.carbon.RGBColor;
+import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
@@ -18,6 +20,7 @@ import org.eclipse.swt.graphics.*;
 
 public class Tree extends Composite {
 	TreeItem [] items;
+	GC paintGC;
 	int anchorFirst, anchorLast;
 	boolean ignoreSelect, ignoreExpand;
 	static final int CHECK_COLUMN_ID = 1024;
@@ -59,8 +62,40 @@ static int checkStyle (int style) {
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget ();
-	//NOT DONE
-	return new Point (200, 200);
+	int width = 0;
+	if (wHint == SWT.DEFAULT) {
+		TreeItem [] items = getItems ();
+		GC gc = new GC (this);
+		for (int i=0; i<items.length; i++) {
+			Rectangle rect = items [i].getBounds ();
+			width = Math.max (width, rect.width);
+		}
+		gc.dispose ();
+		width = width * 2;
+	} else {
+		width = wHint;
+	}
+	if (width <= 0) width = DEFAULT_WIDTH;
+	int height = 0;
+	if (hHint == SWT.DEFAULT) {
+		height = getItemCount () * getItemHeight ();
+	} else {
+		height = hHint;
+	}
+	if (height <= 0) height = DEFAULT_HEIGHT;
+	Rectangle rect = computeTrim (0, 0, width, height);
+	return new Point (rect.width, rect.height);
+}
+
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
+	Rect rect = new Rect ();
+	OS.GetDataBrowserScrollBarInset (handle, rect);
+	x -= rect.left;
+	y -= rect.top;
+	width += (rect.left + rect.right) * 3;
+	height += rect.top + rect.bottom;
+	return new Rectangle (x, y, width, height);
 }
 
 void createHandle () {
@@ -91,7 +126,8 @@ void createHandle () {
 	DataBrowserListViewColumnDesc column = new DataBrowserListViewColumnDesc ();
 	column.headerBtnDesc_version = OS.kDataBrowserListViewLatestHeaderDesc;
 	column.propertyDesc_propertyID = COLUMN_ID;
-	column.propertyDesc_propertyType = OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
+//	column.propertyDesc_propertyType = OS.kDataBrowserTextType; // OS.kDataBrowserIconAndTextType
+	column.propertyDesc_propertyType = OS.kDataBrowserCustomType;
 	column.propertyDesc_propertyFlags = OS.kDataBrowserListViewSelectionColumn | OS.kDataBrowserDefaultPropertyFlags;
 	//NOT DONE
 	column.headerBtnDesc_maximumWidth = 0x7FFF;
@@ -105,6 +141,10 @@ void createHandle () {
 	* the widget has a minimum size.  The fix is to force the scroll
 	* bars to be created by temporarily giving the widget a size and
 	* then restoring it to zero.
+	* 
+	* NOTE: The widget must be visible and SizeControl() must be used
+	* to resize the widget to a minimim size or the widget will not
+	* create the scroll bars.  This work around currently flashes.
 	*/
 	OS.SizeControl (handle, (short) 0xFF, (short) 0xFF);
 	OS.SizeControl (handle, (short) 0, (short) 0);
@@ -196,13 +236,105 @@ void destroyItem (TreeItem item) {
 	item.index = -1;
 }
 
+int drawItemProc (int browser, int id, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
+	int index = id - 1;
+	if (!(0 <= index && index < items.length)) return OS.noErr;
+	TreeItem item = items [index];
+
+//	if (false) {
+//		int [] port = new int [1], gdh = new int [1];
+//		OS.GetGWorld (port, gdh);
+//		byte [] buffer = item.text.getBytes();
+//		Rect rect = new Rect ();
+//		OS.memcpy (rect, theRect, Rect.sizeof);
+//		Display display = getDisplay ();
+//		Color foreground = null, background = null;
+//		if ((itemState & OS.kDataBrowserItemIsSelected) != 0)  {
+//			foreground = display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT);
+//			background = display.getSystemColor (SWT.COLOR_LIST_SELECTION);
+//		} else {
+//			foreground = display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+//			background = display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+//		}
+//		int red = (short) (background.handle [0] * 255);
+//		int green = (short) (background.handle [1] * 255);
+//		int blue = (short) (background.handle [2] * 255);
+//		RGBColor color = new RGBColor ();
+//		color.red = (short) (red << 8 | red);
+//		color.green = (short) (green << 8 | green);
+//		color.blue = (short) (blue << 8 | blue);
+//		OS.RGBForeColor (color);
+//		OS.PaintRect (rect);
+//		red = (short) (foreground.handle [0] * 255);
+//		green = (short) (foreground.handle [1] * 255);
+//		blue = (short) (foreground.handle [2] * 255);
+//		color.red = (short) (red << 8 | red);
+//		color.green = (short) (green << 8 | green);
+//		color.blue = (short) (blue << 8 | blue);
+//		OS.RGBForeColor (color);
+//		OS.MoveTo (rect.left, (short)(rect.top + 13));
+//		OS.DrawText (buffer, (short) 0, (short) buffer.length);
+//		OS.SetGWorld (port [0], gdh [0]);
+////		System.out.println("x=" + rect.left + " y=" + rect.top + " width=" + (rect.right - rect.left) + " height=" + (rect.bottom - rect.top));
+//		return OS.noErr;
+//	} 
+
+	Rect rect = new Rect ();
+	OS.memcpy (rect, theRect, Rect.sizeof);
+//	System.out.println("x=" + rect.left + " y=" + rect.top + " width=" + (rect.right - rect.left) + " height=" + (rect.bottom - rect.top));
+	int x = rect.left;
+	int y = rect.top;
+	int width = rect.right - rect.left;
+	int height = rect.bottom - rect.top;
+	Rect controlRect = new Rect ();
+	OS.GetControlBounds (handle, controlRect);
+	x -= controlRect.left;
+	y -= controlRect.top;
+	GC gc = paintGC == null ? new GC (this) :  paintGC;
+	int clip = OS.NewRgn ();
+	OS.GetClip (clip);
+	OS.OffsetRgn (clip, (short)-controlRect.left, (short)-controlRect.top);
+	gc.setClipping (Region.carbon_new (clip));
+	OS.DisposeRgn (clip);
+	Display display = getDisplay ();
+	Color foreground = item.foreground != null ? item.foreground : display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
+	Color background = item.background != null ? item.background : display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
+	gc.setForeground (foreground);
+	gc.setBackground (background);
+	gc.fillRectangle (x, y, width, height);
+	Image image = item.image;
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		gc.drawImage (image, 0, 0, bounds.width, bounds.height, x, y, bounds.width, height);
+		x += bounds.width + 2;
+	}
+	Point extent = gc.stringExtent (item.text);
+	if ((itemState & OS.kDataBrowserItemIsSelected) != 0) {
+		gc.setForeground (display.getSystemColor (SWT.COLOR_LIST_SELECTION_TEXT));
+		gc.setBackground (display.getSystemColor (SWT.COLOR_LIST_SELECTION));
+		gc.fillRectangle (x, y, extent.x, height);
+	}
+	gc.drawString (item.text, x, y + (Math.max (0, (height - extent.y) / 2)));
+	if (paintGC == null) gc.dispose ();
+	return OS.noErr;
+}
+
+public Rectangle getClientArea () {
+	checkWidget();
+	Rect rect = new Rect (), inset = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	OS.GetDataBrowserScrollBarInset (handle, inset);
+	return new Rectangle (inset.left, inset.top, rect.right - rect.left + inset.right, rect.bottom - rect.top + inset.bottom);
+}
+
 public TreeItem getItem (Point point) {
 	checkWidget ();
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
-	//OPTIMIZE
-	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
-	OS.SetPt (pt, (short) point.x, (short) point.y);
 	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
+	OS.SetPt (pt, (short) (point.x + rect.left), (short) (point.y + rect.top));
+	//OPTIMIZE
 	for (int i=0; i<items.length; i++) {
 		TreeItem item = items [i];
 		if (item != null) {
@@ -290,6 +422,13 @@ public int getSelectionCount () {
 	return count [0];
 }
 
+int hitTestProc (int browser, int id, int property, int theRect, int mouseRect) {
+//	int index = id - 1;
+//	if (!(0 <= index && index < items.length)) return 0;
+//	TreeItem item = items [index];
+	return 1;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	Display display= getDisplay();
@@ -299,6 +438,13 @@ void hookEvents () {
 	callbacks.v1_itemDataCallback = display.itemDataProc;
 	callbacks.v1_itemNotificationCallback = display.itemNotificationProc;
 	OS.SetDataBrowserCallbacks (handle, callbacks);
+	DataBrowserCustomCallbacks custom = new DataBrowserCustomCallbacks ();
+	custom.version = OS.kDataBrowserLatestCustomCallbacks;
+	OS.InitDataBrowserCustomCallbacks (custom);
+	custom.v1_drawItemCallback = display.drawItemProc;
+	custom.v1_hitTestCallback = display.hitTestProc;
+	custom.v1_trackingCallback = display.trackingProc;
+	OS.SetDataBrowserCustomCallbacks (handle, custom);
 }
 
 int itemDataProc (int browser, int id, int property, int itemData, int setValue) {
@@ -321,16 +467,16 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 			}
 			break;
 		}
-		case COLUMN_ID: {
-			String text = item.text;
-			char [] buffer = new char [text.length ()];
-			text.getChars (0, buffer.length, buffer, 0);
-			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
-			if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-			OS.SetDataBrowserItemDataText (itemData, ptr);
-			OS.CFRelease (ptr);
-			break;
-		}
+//		case COLUMN_ID: {
+//			String text = item.text;
+//			char [] buffer = new char [text.length ()];
+//			text.getChars (0, buffer.length, buffer, 0);
+//			int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, buffer.length);
+//			if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+//			OS.SetDataBrowserItemDataText (itemData, ptr);
+//			OS.CFRelease (ptr);
+//			break;
+//		}
 		case OS.kDataBrowserItemIsContainerProperty: {
 			for (int i=0; i<items.length; i++) {
 				if (items [i] != null && items [i].parentItem == item) {
@@ -411,12 +557,43 @@ int itemNotificationProc (int browser, int id, int message) {
 				}
 			}
 			OS.AddDataBrowserItems (handle, id, ids.length, ids, 0);
-			//BUG - items that are added in the expand callback should draw checked but don't
-//			OS.UpdateDataBrowserItems (handle, id, ids.length, ids, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
 			break;
 		}
 	}
 	return OS.noErr;
+}
+
+int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	GC currentGC = paintGC;
+	if (currentGC == null) paintGC = new GC (this);
+	int result = super.kEventControlDraw (nextHandler, theEvent, userData);
+	if (currentGC == null) {
+		paintGC.dispose ();
+		paintGC = null;
+	}
+	return result;
+}
+
+int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	/*
+	* Feature in the Macintosh.  For some reason, when the user
+	* clicks on the data browser, focus is assigned, then lost
+	* and then reassigned causing kEvenControlSetFocusPart events.
+	* The fix is to ignore kEvenControlSetFocusPart when the user
+	* clicks and send the focus events from kEventMouseDown.
+	*/
+	Display display = getDisplay ();
+	Control oldFocus = display.getFocusControl ();
+	display.ignoreFocus = true;
+	result = OS.CallNextEventHandler (nextHandler, theEvent);
+	display.ignoreFocus = false;
+	if (oldFocus != this) {
+		if (oldFocus != null) oldFocus.sendFocusEvent (false);
+		if (isEnabled ()) sendFocusEvent (true);
+	}
+	return result;
 }
 
 void releaseWidget () {
@@ -485,6 +662,7 @@ public void setSelection (TreeItem [] items) {
 	ignoreSelect = true;
 	OS.SetDataBrowserSelectedItems (handle, ids.length, ids, OS.kDataBrowserItemsAssign);
 	ignoreSelect = false;
+	if (items.length > 0) showItem (items [0], true);
 }
 
 public void showItem (TreeItem item) {
@@ -511,9 +689,29 @@ void showItem (TreeItem item, boolean scroll) {
 	for (int i=path.length-1; i>=0; --i) {
 		path [i].setExpanded (true);
 	}
-	int options = OS.kDataBrowserRevealWithoutSelecting;
-	if (scroll)  options |= OS.kDataBrowserRevealAndCenterInView;
-	OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte)options);
+//	if (scroll) {
+//		short [] width = new short [1];
+//		OS.GetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, width);
+//		Rect rect = new Rect (), inset = new Rect ();
+//		OS.GetControlBounds (handle, rect);
+//		OS.GetDataBrowserScrollBarInset (handle, inset);
+//		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)(rect.right - rect.left - inset.left - inset.right));
+//		OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+//		OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short)width [0]);
+//	}
+	if (scroll) {
+		Rectangle treeRect = getClientArea ();
+		Rectangle itemRect = item.getBounds ();
+		if (treeRect.contains (itemRect.x, itemRect.y)) return;
+		OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		int [] top = new int [1], left = new int [1];
+		OS.GetDataBrowserScrollPosition (handle, top, left);
+		OS.SetDataBrowserScrollPosition (handle, top [0], 0);
+		itemRect = item.getBounds ();
+		if (!treeRect.contains (itemRect.x, itemRect.y)) {
+			OS.RevealDataBrowserItem (handle, item.id, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		}
+	}
 }
 
 public void showSelection () {
@@ -521,6 +719,13 @@ public void showSelection () {
 	//OPTIMIZE
 	TreeItem [] selection = getSelection ();
 	if (selection.length > 0) showItem (selection [0], true);
+}
+
+int trackingProc (int browser, int id, int property, int theRect, int startPt, int modifiers) {
+//	int index = id - 1;
+//	if (!(0 <= index && index < items.length)) return 0;
+//	TreeItem item = items [index];
+	return 1;
 }
 
 }

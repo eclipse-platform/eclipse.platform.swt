@@ -53,9 +53,42 @@ protected void checkSubclass () {
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
-	checkWidget ();
-	//NOT DONE
-	return new Point (100, 100);
+	checkWidget();
+	int width = 0;
+	if (wHint == SWT.DEFAULT) {
+		GC gc = new GC (this);
+		for (int i=0; i<itemCount; i++) {
+			//NOT DONE - take into account the icon
+//			Rectangle rect = items [i].getBounds ();
+//			width = Math.max (width, rect.width);
+			Point extent = gc.stringExtent (items [i].text);
+			width = Math.max (width, extent.x);
+		}
+		gc.dispose ();
+	} else {
+		width = wHint;
+	}
+	if (width <= 0) width = DEFAULT_WIDTH;
+	int height = 0;
+	if (hHint == SWT.DEFAULT) {
+		height = itemCount * getItemHeight ();
+	} else {
+		height = hHint;
+	}
+	if (height <= 0) height = DEFAULT_HEIGHT;
+	Rectangle rect = computeTrim (0, 0, width, height);
+	return new Point (rect.width, rect.height);
+}
+
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget();
+	Rect rect = new Rect ();
+	OS.GetDataBrowserScrollBarInset (handle, rect);
+	x -= rect.left;
+	y -= rect.top;
+	width += (rect.left + rect.right) * 3;
+	height += rect.top + rect.bottom;
+	return new Rectangle (x, y, width, height);
 }
 
 void createHandle () {
@@ -184,14 +217,17 @@ int defaultThemeFont () {
 
 public void deselect (int index) {
 	checkWidget();
-	ignoreSelect = true;
-	int [] id = new int [] {index + 1};
-	OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsRemove);
-	ignoreSelect = false;
+	if (0 <= index && index < itemCount) {
+		ignoreSelect = true;
+		int [] id = new int [] {index + 1};
+		OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsRemove);
+		ignoreSelect = false;
+	}
 }
 
 public void deselect (int start, int end) {
 	checkWidget();
+	//NOT DONE - check range
 	int length = end - start + 1;
 	if (length <= 0) return;
 	int [] ids = new int [length];
@@ -204,6 +240,7 @@ public void deselect (int start, int end) {
 public void deselect (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	//NOT DONE - check range
 	int length = indices.length;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = indices [length - i - 1] + 1;
@@ -237,7 +274,9 @@ void destroyItem (TableColumn column) {
 			item.setImage (columnCount - 1, null);
 		}
 	}
-	if (columnCount > 1) {
+	if (columnCount == 1) {
+		//NOT DONE - reassign COLUMN_ID when last column deleted
+	} else {
 		if (OS.RemoveDataBrowserTableViewColumn (handle, column.id) != OS.noErr) {
 			error (SWT.ERROR_ITEM_NOT_REMOVED);
 		}
@@ -259,6 +298,14 @@ void destroyItem (TableItem item) {
 	System.arraycopy (items, index + 1, items, index, --itemCount - index);
 	items [itemCount] = null;
 	OS.UpdateDataBrowserItems (handle, 0, 0, null, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+}
+
+public Rectangle getClientArea () {
+	checkWidget();
+	Rect rect = new Rect (), inset = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	OS.GetDataBrowserScrollBarInset (handle, inset);
+	return new Rectangle (inset.left, inset.top, rect.right - rect.left + inset.right, rect.bottom - rect.top + inset.bottom);
 }
 
 public TableColumn getColumn (int index) {
@@ -553,6 +600,62 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	return result;
 }
 
+int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	/*
+	* Feature in the Macintosh.  For some reason, when the user hits an
+	* up or down arrow to traverse the items in a Data Browser, the item
+	* scrolls to the left such that the white space that is normally
+	* visible to the right of the every item is scrolled out of view.
+	* The fix is to do the arrow traversal in Java and not call the
+	* default handler.
+	*/
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	switch (keyCode [0]) {
+		case 125: { /* Down */
+			int index = getSelectionIndex ();
+			setSelection (Math.min (itemCount - 1, index + 1));
+			return OS.noErr;
+		}
+		case 126: { /* Up*/
+			int index = getSelectionIndex ();
+			setSelection (Math.max (0, index - 1));
+			return OS.noErr;
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
+int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKeyRepeat (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	/*
+	* Feature in the Macintosh.  For some reason, when the user hits an
+	* up or down arrow to traverse the items in a Data Browser, the item
+	* scrolls to the left such that the white space that is normally
+	* visible to the right of the every item is scrolled out of view.
+	* The fix is to do the arrow traversal in Java and not call the
+	* default handler.
+	*/
+	int [] keyCode = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
+	switch (keyCode [0]) {
+		case 125: { /* Down */
+			int index = getSelectionIndex ();
+			setSelection (Math.min (itemCount - 1, index + 1));
+			return OS.noErr;
+		}
+		case 126: { /* Up*/
+			int index = getSelectionIndex ();
+			setSelection (Math.max (0, index - 1));
+			return OS.noErr;
+		}
+	}
+	return OS.eventNotHandledErr;
+}
+
 void releaseWidget () {
 	for (int i=0; i<columnCount; i++) {
 		TableColumn column = columns [i];
@@ -624,15 +727,18 @@ public void removeSelectionListener(SelectionListener listener) {
 
 public void select (int index) {
 	checkWidget();
-	int [] id = new int [] {index + 1};
-	ignoreSelect = true;
-	int operation = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserItemsAssign: OS.kDataBrowserItemsAdd;
-	OS.SetDataBrowserSelectedItems (handle, id.length, id, operation);
-	ignoreSelect = false;
+	if (0 <- index && index < itemCount) {
+		int [] id = new int [] {index + 1};
+		ignoreSelect = true;
+		int operation = (style & SWT.SINGLE) != 0 ? OS.kDataBrowserItemsAssign: OS.kDataBrowserItemsAdd;
+		OS.SetDataBrowserSelectedItems (handle, id.length, id, operation);
+		ignoreSelect = false;
+	}
 }
 
 public void select (int start, int end) {
 	checkWidget();
+	//NOT DONE - check range
 	int length = end - start + 1;
 	if (length <= 0) return;
 	int [] ids = new int [length];
@@ -646,6 +752,7 @@ public void select (int start, int end) {
 public void select (int [] indices) {
 	checkWidget();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	//NOT DONE - check range
 	int length = indices.length;
 	int [] ids = new int [length];
 	for (int i=0; i<length; i++) ids [i] = indices [length - i - 1] + 1;
@@ -675,11 +782,13 @@ public void setLinesVisible (boolean show) {
 
 public void setSelection (int index) {
 	checkWidget();
-	int [] id = new int [] {index + 1};
-	ignoreSelect = true;
-	OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsAssign);
-	ignoreSelect = false;
-	showIndex (id [0] - 1);
+	if (0 < index && index < itemCount) {
+		int [] id = new int [] {index + 1};
+		ignoreSelect = true;
+		OS.SetDataBrowserSelectedItems (handle, id.length, id, OS.kDataBrowserItemsAssign);
+		ignoreSelect = false;
+		showIndex (id [0] - 1);
+	}
 }
 
 public void setSelection (int start, int end) {
@@ -740,10 +849,18 @@ public void setTopIndex (int index) {
 }
 
 void showIndex (int index) {
-	OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
-    int [] top = new int [1], left = new int [1];
-    OS.GetDataBrowserScrollPosition (handle, top, left);
-    OS.SetDataBrowserScrollPosition (handle, top [0], 0);
+	if (0 <= index && index < itemCount) {
+		//NOT DONE - doesn't work for SWT.CHECK
+		int id = columnCount == 0 ? COLUMN_ID : columns [0].id;
+		short [] width = new short [1];
+		OS.GetDataBrowserTableViewNamedColumnWidth (handle, id, width);
+		Rect rect = new Rect (), inset = new Rect ();
+		OS.GetControlBounds (handle, rect);
+		OS.GetDataBrowserScrollBarInset (handle, inset);
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, id, (short)(rect.right - rect.left - inset.left - inset.right));
+		OS.RevealDataBrowserItem (handle, index + 1, COLUMN_ID, (byte) OS.kDataBrowserRevealWithoutSelecting);
+		OS.SetDataBrowserTableViewNamedColumnWidth (handle, id, (short)width [0]);
+	}
 }
 
 public void showItem (TableItem item) {

@@ -7,7 +7,8 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -17,6 +18,7 @@ public class TreeItem extends Item {
 	TreeItem parentItem;
 	int id, index = -1;
 	boolean checked;
+	Color foreground, background;
 
 public TreeItem (Tree parent, int style) {
 	super (parent, style);
@@ -57,8 +59,7 @@ protected void checkSubclass () {
 
 public Color getBackground () {
 	checkWidget ();
-	//NOT DONE
-	return getDisplay ().getSystemColor (SWT.COLOR_WHITE);
+	return background != null ? background : getDisplay ().getSystemColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
 public Rectangle getBounds () {
@@ -66,7 +67,15 @@ public Rectangle getBounds () {
 	Rect rect = new Rect();
 	OS.GetDataBrowserItemPartBounds (parent.handle, id, Tree.COLUMN_ID, OS.kDataBrowserPropertyEnclosingPart, rect);
 	int x = rect.left, y = rect.top;
-	int width = rect.right - rect.left;
+	int width = 0;
+	if (image != null) {
+		Rectangle bounds = image.getBounds ();
+		width += bounds.width + 2;
+	}
+	GC gc = new GC (parent);
+	Point extent = gc.stringExtent (text);
+	gc.dispose ();
+	width += extent.x;
 	int height = rect.bottom - rect.top;
 	OS.GetControlBounds (parent.handle, rect);
 	x -= rect.left;
@@ -95,8 +104,7 @@ public boolean getExpanded () {
 
 public Color getForeground () {
 	checkWidget ();
-	//NOT DONE
-	return getDisplay ().getSystemColor (SWT.COLOR_BLACK);
+	return foreground != null ? foreground : getDisplay ().getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
 public boolean getGrayed () {
@@ -144,15 +152,15 @@ public void setBackground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	//NOT DONE
+	background = color;
+	redraw ();
 }
 
 public void setChecked (boolean checked) {
 	checkWidget ();
 	if ((parent.style & SWT.CHECK) == 0) return;
 	this.checked = checked;
-	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
-	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	redraw ();
 }
 
 public void setExpanded (boolean expanded) {
@@ -171,7 +179,8 @@ public void setForeground (Color color) {
 	if (color != null && color.isDisposed ()) {
 		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 	}
-	//NOT DONE
+	foreground = color;
+	redraw ();
 }
 
 public void setGrayed (boolean grayed) {
@@ -183,16 +192,20 @@ public void setGrayed (boolean grayed) {
 public void setImage (Image image) {
 	checkWidget ();
 	super.setImage (image);
-	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
-	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+	redraw ();
 }
 
 public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	super.setText (string);
+	redraw ();
+}
+
+void redraw () {
 	int parentID = parentItem == null ? OS.kDataBrowserNoItem : parentItem.id;
 	OS.UpdateDataBrowserItems (parent.handle, parentID, 1, new int[] {id}, OS.kDataBrowserItemNoProperty, OS.kDataBrowserNoItem);
+
 }
 
 }

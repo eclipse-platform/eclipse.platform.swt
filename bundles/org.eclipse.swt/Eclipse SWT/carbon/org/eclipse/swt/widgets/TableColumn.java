@@ -41,6 +41,7 @@ public void addControlListener(ControlListener listener) {
 	addListener (SWT.Resize,typedListener);
 	addListener (SWT.Move,typedListener);
 }
+
 public void addSelectionListener (SelectionListener listener) {
 	checkWidget ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -166,7 +167,7 @@ public void setText (String string) {
 	if (str == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	DataBrowserListViewHeaderDesc desc = new DataBrowserListViewHeaderDesc ();
 	desc.version = OS.kDataBrowserListViewLatestHeaderDesc;
-	//NOT DONE - GP's
+	//NOT DONE - for some reason this call GP's
 //	OS.GetDataBrowserListViewHeaderDesc (parent.handle, id, desc);
 	desc.maximumWidth = 0x7FFF;
 	desc.titleString = str;
