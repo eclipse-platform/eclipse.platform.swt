@@ -587,6 +587,9 @@ public ImageData getImageData() {
 	int dataSize = height * bpr;
 	byte[] srcData = new byte[dataSize];
 	OS.memcpy(srcData, data, dataSize);
+	for (int i = 0; i < srcData.length; i+= 4) {
+		srcData[i] = 0;
+	}
 	
 	PaletteData palette = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 	ImageData data = new ImageData(width, height, bpp, palette);

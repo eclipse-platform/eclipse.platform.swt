@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
  
+import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.ControlButtonContentInfo;
 import org.eclipse.swt.internal.carbon.HMHelpContentRec;
@@ -280,7 +281,7 @@ void drawBackground (int control) {
 }
 
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
-	if ((style & (SWT.DROP_DOWN | SWT.SEPARATOR)) != 0) {
+	if (control == handle && (style & (SWT.DROP_DOWN | SWT.SEPARATOR)) != 0) {
 		int state = OS.IsControlEnabled(control) && OS.IsControlActive (control) ? OS.kThemeStateActive : OS.kThemeStateInactive;
 		Rect rect = new Rect ();
 		OS.GetControlBounds (handle, rect);
@@ -948,7 +949,9 @@ public void setSelection (boolean selected) {
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	int transform = selected ? OS.kTransformSelected : 0;
 	OS.SetControlData (iconHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
-	OS.SetControlData (labelHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
+	if (image == null) {
+		OS.SetControlData (labelHandle, OS.kControlEntireControl, OS.kControlIconTransformTag, 2, new short [] {(short)transform});
+	}
 	redrawWidget (handle, true);
 }
 
@@ -1072,16 +1075,18 @@ void updateText () {
 	if (text.length () > 0) {
 		Font font = parent.getFont ();
 		GC gc = new GC (parent);
-		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC;
+		int flags = SWT.DRAW_DELIMITER | SWT.DRAW_TAB | SWT.DRAW_MNEMONIC | SWT.DRAW_TRANSPARENT;
 		Point size = gc.textExtent (text, flags);
 		gc.dispose ();
 		Image image = new Image (display, size.x, size.y);
 		gc = new GC (image);
+		Color foreground = parent.getForeground();
+		gc.setForeground(foreground);
 		gc.setFont (font);
 		gc.drawText (text, 0, 0, flags);
 		gc.dispose ();
 		ImageData data = image.getImageData ();
-		data.transparentPixel = 0xFFFFFFFF;
+		data.transparentPixel = 0xFFFFFF;
 		image.dispose ();
 		image = new Image (display, data, data.getTransparencyMask());
 		labelCIcon = createCIcon (image);
