@@ -51,7 +51,6 @@ public class OleControlSite extends OleClientSite
 		
 	// supporting information for the Control COM object
 	private CONTROLINFO currentControlInfo;
-	private String licenseInfo;
 	private int[] sitePropertyIds = new int[0];
 	private Variant[] sitePropertyValues = new Variant[0];
 	
