@@ -46,7 +46,7 @@ public class Tree extends Composite {
 	int hwndParent, hwndHeader, hAnchor;
 	ImageList imageList;
 	boolean dragStarted, gestureCompleted;
-	boolean ignoreSelect, ignoreExpand, ignoreDeselect;
+	boolean ignoreSelect, ignoreExpand, ignoreDeselect, ignoreResize;
 	boolean lockSelection, oldSelected, newSelected;
 	boolean linesVisible, customDraw;
 	static final int INSET = 3;
@@ -1834,7 +1834,10 @@ void setScrollWidth () {
 	SetWindowPos (hwndHeader, OS.HWND_TOP, pos.x - left, pos.y, pos.cx + left, pos.cy, OS.SWP_NOACTIVATE);
 	int w = pos.cx + (count == 0 ? 0 : OS.GetSystemMetrics (OS.SM_CXVSCROLL));
 	int h = rect.bottom - rect.top - pos.cy;
+	boolean oldIgnore = ignoreResize;
+	ignoreResize = true;
 	SetWindowPos (handle, 0, pos.x - left, pos.y + pos.cy, w + left, h, OS.SWP_NOACTIVATE | OS.SWP_NOZORDER);
+	ignoreResize = oldIgnore;
 }
 
 /**
@@ -2246,6 +2249,24 @@ int windowProc () {
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
 	if (hwndParent != 0 && hwnd == hwndParent) {
 		switch (msg) {
+			case OS.WM_MOVE: {
+				sendEvent (SWT.Move);
+				return 0;
+			}
+			case OS.WM_SIZE: {
+				setScrollWidth ();
+				if (ignoreResize) return 0;
+				setResizeChildren (false);
+				int code = callWindowProc (hwnd, OS.WM_SIZE, wParam, lParam);
+				sendEvent (SWT.Resize);
+				if (isDisposed ()) return 0;
+				if (layout != null) {
+					markLayout (false, false);
+					updateLayout (false, false);
+				}
+				setResizeChildren (true);
+				return 0;
+			}
 			case OS.WM_COMMAND:
 			case OS.WM_NOTIFY:
 			case OS.WM_SYSCOLORCHANGE: {
@@ -2262,7 +2283,7 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				OS.SetScrollInfo (hwndParent, OS.SB_VERT, info, true);
 				return code;
 			}
-			case OS.WM_HSCROLL:
+			case OS.WM_HSCROLL: {
 				/*
 				* Bug on WinCE.  lParam should be NULL when the message is not sent
 				* by a scroll bar control, but it contains the handle to the window.
@@ -2273,8 +2294,6 @@ int windowProc (int hwnd, int msg, int wParam, int lParam) {
 				if (horizontalBar != null && (lParam == 0 || lParam == hwndParent)) {
 					wmScroll (horizontalBar, true, hwndParent, OS.WM_HSCROLL, wParam, lParam);
 				}
-				//FALL THROUGH
-			case OS.WM_SIZE: {
 				setScrollWidth ();
 				break;
 			}
@@ -2925,6 +2944,11 @@ LRESULT WM_LBUTTONDOWN (int wParam, int lParam) {
 	return new LRESULT (code);
 }
 
+LRESULT WM_MOVE (int wParam, int lParam) {
+	if (ignoreResize) return null;
+	return super.WM_MOVE (wParam, lParam);
+}
+
 LRESULT WM_NOTIFY (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
@@ -3107,6 +3131,11 @@ LRESULT WM_SETFOCUS (int wParam, int lParam) {
 	*/
 	OS.InvalidateRect (handle, null, false);
 	return result;
+}
+
+LRESULT WM_SIZE (int wParam, int lParam) {
+	if (ignoreResize) return null;
+	return super.WM_SIZE (wParam, lParam);
 }
 
 LRESULT WM_SYSCOLORCHANGE (int wParam, int lParam) {
