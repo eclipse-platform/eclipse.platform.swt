@@ -70,6 +70,8 @@ public class CTabFolder extends Composite {
 	 * 
 	 * NOTE This field is badly named and can not be fixed for backwards compatability.
 	 * It should not be capitalized.
+	 * 
+	 * @deprecated This field is no longer used.  See setMinimumCharacters(int)
 	 */
 	public int MIN_TAB_WIDTH = 4;
 	
@@ -108,6 +110,7 @@ public class CTabFolder extends Composite {
 	boolean simple = true;
 	int fixedTabHeight = SWT.DEFAULT;
 	int tabHeight;
+	int minChars = 5;
 	
 	/* item management */
 	CTabItem items[] = new CTabItem[0];
@@ -511,9 +514,9 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	GC gc = new GC(this);
 	for (int i = 0; i < items.length; i++) {
 		if (single) {
-			tabW = Math.max(tabW, items[i].preferredWidth(gc, true));
+			tabW = Math.max(tabW, items[i].preferredWidth(gc, true, false));
 		} else {
-			tabW += items[i].preferredWidth(gc, i == selectedIndex);
+			tabW += items[i].preferredWidth(gc, i == selectedIndex, false);
 			if (!simple && i == selectedIndex) tabW += curveWidth - curveIndent;
 		}
 	}
@@ -1323,6 +1326,14 @@ public boolean getMinimized() {
 public boolean getMinimizeVisible() {
 	checkWidget();
 	return showMin;
+}
+/** 
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public int getMinimumCharacters() {
+	checkWidget();
+	return minChars;
 }
 /**
  * Returns <code>true</code> if the receiver is maximized,
@@ -2707,7 +2718,7 @@ boolean setItemSize() {
 		if (selectedIndex != -1) {
 			CTabItem tab = items[selectedIndex];
 			GC gc = new GC(this);
-			int width = tab.preferredWidth(gc, true);
+			int width = tab.preferredWidth(gc, true, false);
 			gc.dispose();
 			width = Math.min(width, getRightItemEdge() - borderLeft);
 			if (tab.height != tabHeight || tab.width != width) {
@@ -2730,10 +2741,8 @@ boolean setItemSize() {
 	widths = new int[items.length];
 	GC gc = new GC(this);
 	for (int i = 0; i < items.length; i++) {
-		widths[i] = items[i].preferredWidth(gc, i == selectedIndex);
-	}
-	gc.dispose();
-	
+		widths[i] = items[i].preferredWidth(gc, i == selectedIndex, false);
+	}	
 	if (items.length > 0) {
 		int totalWidth = 0;
 		int tabAreaWidth = size.x - borderLeft - borderRight - 3;
@@ -2750,19 +2759,20 @@ boolean setItemSize() {
 			firstIndex = 0;
 		} else {
 			// try to compress items
-			int minWidth = MIN_TAB_WIDTH * tabHeight;
 			totalWidth = 0;
 			int large = 0;
+			int[] minWidths = new int[items.length];
 			for (int i = 0 ; i < count; i++) {
-				totalWidth += Math.min(widths[i], minWidth);
-				if (widths[i] > minWidth) large++;
+				minWidths[i] = items[i].preferredWidth(gc, i == selectedIndex, true);
+				totalWidth += Math.min(widths[i], minWidths[i]);
+				if (widths[i] > minWidths[i]) large++;
 			}
 			if (totalWidth > tabAreaWidth) {
 				//  maximum compression required and a chevron
 				showChevron = items.length > 1;
 				if (showChevron) tabAreaWidth -= 3 *BUTTON_SIZE/2; 
-				minWidth = Math.min(tabAreaWidth, MIN_TAB_WIDTH * tabHeight);
 				for (int i = 0; i < count; i++) {
+					int minWidth = Math.min(tabAreaWidth, minWidths[i]);
 					widths[i] = Math.min(widths[i], minWidth);
 				}
 			} else {
@@ -2773,8 +2783,8 @@ boolean setItemSize() {
 					totalWidth = 0;
 					large = 0;
 					for (int i = 0 ; i < count; i++) {
-						totalWidth += Math.min(widths[i], minWidth + extra);
-						if (widths[i] > minWidth + extra) large++;
+						totalWidth += Math.min(widths[i], minWidths[i] + extra);
+						if (widths[i] > minWidths[i] + extra) large++;
 					}
 					if (totalWidth >= tabAreaWidth) {
 						extra--;
@@ -2784,7 +2794,7 @@ boolean setItemSize() {
 					extra++;
 				}
 				for (int i = 0; i < items.length; i++) {
-					widths[i] = Math.min(widths[i], minWidth + extra);
+					widths[i] = Math.min(widths[i], minWidths[i] + extra);
 				}	
 			}
 		}
@@ -2809,6 +2819,7 @@ boolean setItemSize() {
 			}
 		}
 	}
+	gc.dispose();
 	return changed;
 }
 void setLastIndex(int index) {
@@ -2873,6 +2884,18 @@ public void setMinimized(boolean minimize) {
 	if (minimize && this.maximized) setMaximized(false);
 	this.minimized = minimize;
 	redraw(minRect.x, minRect.y, minRect.width, minRect.height, false);
+}
+
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public void setMinimumCharacters(int count) {
+	checkWidget ();
+	if (count < 0) SWT.error(SWT.ERROR_INVALID_RANGE);
+	if (minChars == count) return;
+	minChars = count;
+	if (updateItems()) redrawTabs();
 }
 /**
  * Set the selection to the tab at the specified item.
