@@ -156,10 +156,11 @@ void createHandle (int index) {
 	switch (style & bits) {
 		case SWT.ARROW:
 			int alignment = OS.GTK_ARROW_UP;
+			boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 			if ((style & SWT.UP) != 0) alignment = OS.GTK_ARROW_UP;
 			if ((style & SWT.DOWN) != 0) alignment = OS.GTK_ARROW_DOWN;
-			if ((style & SWT.LEFT) != 0) alignment = OS.GTK_ARROW_LEFT;
-			if ((style & SWT.RIGHT) != 0) alignment = OS.GTK_ARROW_RIGHT;
+            if ((style & SWT.LEFT) != 0) alignment = isRTL? OS.GTK_ARROW_RIGHT : OS.GTK_ARROW_LEFT;
+            if ((style & SWT.RIGHT) != 0) alignment = isRTL? OS.GTK_ARROW_LEFT : OS.GTK_ARROW_RIGHT;
 			handle = OS.gtk_button_new ();
 			if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 			arrowHandle = OS.gtk_arrow_new (alignment, OS.GTK_SHADOW_OUT);
@@ -496,11 +497,12 @@ public void setAlignment (int alignment) {
 		style &= ~(SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		style |= alignment & (SWT.UP | SWT.DOWN | SWT.LEFT | SWT.RIGHT);
 		int arrow_type = OS.GTK_ARROW_UP;
+		boolean isRTL = (style & SWT.RIGHT_TO_LEFT) != 0;
 		switch (alignment) {
 			case SWT.UP: arrow_type = OS.GTK_ARROW_UP; break;
 			case SWT.DOWN: arrow_type = OS.GTK_ARROW_DOWN; break;
-			case SWT.LEFT: arrow_type = OS.GTK_ARROW_LEFT; break;
-			case SWT.RIGHT: arrow_type = OS.GTK_ARROW_RIGHT; break;
+			case SWT.LEFT: arrow_type = isRTL? OS.GTK_ARROW_RIGHT : OS.GTK_ARROW_LEFT; break;
+			case SWT.RIGHT: arrow_type = isRTL? OS.GTK_ARROW_LEFT : OS.GTK_ARROW_RIGHT; break;
 		}
 		OS.gtk_arrow_set (arrowHandle, arrow_type, OS.GTK_SHADOW_OUT);
 		return;
@@ -533,6 +535,34 @@ void setBackgroundColor (GdkColor color) {
 	OS.gtk_widget_modify_bg (fixedHandle, 0, color);
 	if (labelHandle != 0) OS.gtk_widget_modify_bg (labelHandle, 0, color);
 	if (imageHandle != 0) OS.gtk_widget_modify_bg (imageHandle, 0, color);
+}
+
+boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) { 
+	boolean result = super.setBounds (x, y, width, height, move, resize);
+	/*
+	* Feature in GTK, GtkCheckButton and GtkRadioButton allocate
+	* only the minimum size necessary for its child. This causes the child
+	* alignment to fail. The fix is to set the child size to all available space
+	* excluding trimmings.
+	*/
+	if (result && (style & (SWT.CHECK | SWT.RADIO)) != 0) {
+		int childHeight = 0, buttonWidth = 0, buttonHeight = 0;
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (handle, requisition);
+		buttonWidth = requisition.width;
+		buttonHeight = requisition.height;
+		OS.gtk_widget_size_request (boxHandle, requisition);
+		childHeight = requisition.height;
+		OS.gtk_widget_set_size_request (handle, -1, -1);
+		OS.gtk_widget_set_size_request (boxHandle, -1, -1);
+		OS.gtk_widget_size_request (handle, requisition);
+		int trim = requisition.width;
+		OS.gtk_widget_size_request (boxHandle, requisition);
+		trim -= requisition.width;
+		OS.gtk_widget_set_size_request (handle, buttonWidth, buttonHeight);
+		OS.gtk_widget_set_size_request (boxHandle, Math.max (1, width - trim), childHeight);
+	}
+	return result;
 }
 	
 void setFontDescription (int font) {
