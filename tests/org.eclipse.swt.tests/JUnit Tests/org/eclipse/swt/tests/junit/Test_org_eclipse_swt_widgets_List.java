@@ -1720,19 +1720,19 @@ public void test_setSelectionII() {
 		list.removeAll();
 		list.setSelection(-2, -1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
-		list.setSelection(-1, 0);
-		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
+		assertEquals(list.getFocusIndex(), -1);
 		list.setSelection(0, 1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
-		list.setSelection(1, 0);
+		assertEquals(list.getFocusIndex(), -1);
+		list.setSelection(-1, 0);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
+		assertEquals(list.getFocusIndex(), -1);
 		list.setSelection(0, -1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
+		assertEquals(list.getFocusIndex(), -1);
+		list.setSelection(1, 0);
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
 	}
 	
 	setSingleList();
@@ -1779,19 +1779,19 @@ public void test_setSelectionII() {
 		list.removeAll();
 		list.setSelection(-2, -1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
-		list.setSelection(-1, 0);
-		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
+		assertEquals(list.getFocusIndex(), -1);
 		list.setSelection(0, 1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
-		list.setSelection(1, 0);
+		assertEquals(list.getFocusIndex(), -1);
+		list.setSelection(-1, 0);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
+		assertEquals(list.getFocusIndex(), -1);
 		list.setSelection(0, -1);
 		assertEquals(list.getSelectionIndices(), new int[0]);
-		assertEquals(list.getFocusIndex(), 0);
+		assertEquals(list.getFocusIndex(), -1);
+		list.setSelection(1, 0);
+		assertEquals(list.getSelectionIndices(), new int[0]);
+		assertEquals(list.getFocusIndex(), -1);
 	}
 }
 
