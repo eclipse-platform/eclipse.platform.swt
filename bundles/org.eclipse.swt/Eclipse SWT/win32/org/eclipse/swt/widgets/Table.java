@@ -463,8 +463,10 @@ void createHandle () {
 	* not have the problem).  This is the recomended work
 	* around from the MSDN.
 	*/
-	if (OS.COMCTL32_MAJOR < 6) {
-		OS.SendMessage (handle, OS.CCM_SETVERSION, 5, 0);
+	if (!OS.IsWinCE) {
+		if (OS.COMCTL32_MAJOR < 6) {
+			OS.SendMessage (handle, OS.CCM_SETVERSION, 5, 0);
+		}
 	}
 	
 	/* 
