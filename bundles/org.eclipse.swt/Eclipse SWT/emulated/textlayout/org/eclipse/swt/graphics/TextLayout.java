@@ -76,6 +76,7 @@ public TextLayout (Device device) {
 	styles = new StyleItem[2];
 	styles[0] = new StyleItem();
 	styles[1] = new StyleItem();
+	text = ""; //$NON-NLS-1$
 	if (device.tracking) device.new_Object(this);
 }
 
@@ -1251,7 +1252,7 @@ public void setDescent (int descent) {
  */
 public void setFont (Font font) {
 	checkLayout ();
-	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	if (this.font == font) return;
 	if (font != null && font.equals(this.font)) return;
 	freeRuns();
