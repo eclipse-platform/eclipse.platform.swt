@@ -691,7 +691,7 @@ char [] fixMnemonic (String string) {
 	char [] text = new char [length];
 	string.getChars (0, length, text, 0);
 	int i = 0, j = 0;
-	char [] result = new char [length * 2 + 1];
+	char [] result = new char [length * 2];
 	while (i < length) {
 		switch (text [i]) {
 			case '&':

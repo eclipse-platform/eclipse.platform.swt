@@ -804,7 +804,7 @@ public void setText (String string) {
 	super.setText (string);
 	if (labelHandle == 0) return;
 	char [] chars = fixMnemonic (string);
-	byte [] buffer = Converter.wcsToMbcs (null, chars, false);
+	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	if (string.length () != 0) {
 		OS.gtk_widget_show (labelHandle);

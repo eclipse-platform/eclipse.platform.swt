@@ -650,7 +650,7 @@ public void setText (String string) {
 	if ((style & SWT.ARROW) != 0) return;
 	text = string;
 	char [] chars = fixMnemonic (string);
-	byte [] buffer = Converter.wcsToMbcs (null, chars, false);
+	byte [] buffer = Converter.wcsToMbcs (null, chars, true);
 	OS.gtk_label_set_text_with_mnemonic (labelHandle, buffer);
 	OS.gtk_widget_hide (imageHandle);
 	OS.gtk_widget_show (labelHandle);
