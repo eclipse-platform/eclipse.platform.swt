@@ -41,7 +41,9 @@ public class ATK extends OS {
 	public static final int ATK_ROLE_SEPARATOR = 49;
 	public static final int ATK_ROLE_SLIDER = 50;
 	public static final int ATK_ROLE_TABLE = 54;
+	public static final int ATK_ROLE_TABLE_CELL = 55;
 	public static final int ATK_ROLE_TABLE_COLUMN_HEADER = 56;
+	public static final int ATK_ROLE_TABLE_ROW_HEADER = 57;
 	public static final int ATK_ROLE_TEXT = 60;
 	public static final int ATK_ROLE_TOOL_BAR = 62;
 	public static final int ATK_ROLE_TOOL_TIP = 63;
