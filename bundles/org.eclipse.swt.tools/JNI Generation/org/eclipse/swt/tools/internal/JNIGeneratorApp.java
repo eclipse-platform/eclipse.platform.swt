@@ -143,7 +143,11 @@ void generateSWT_C() {
 		gen.setOutput(print);
 		gen.generate(getNativesClasses());
 		print.flush();
-		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + ".c");
+		String extention = ".c";
+		if (metaData.getMetaData(Class.forName(mainClass)).getFlag("cpp")) {
+			extention = ".cpp";
+		}
+		if (out.size() > 0) output(out.toByteArray(), outputDir + outputName + extention);
 	} catch (Exception e) {
 		System.out.println("Problem");
 		e.printStackTrace(System.out);

@@ -22,7 +22,7 @@ public MethodData(Method method, String str) {
 }
 
 public static String[] getAllFlags() {
-	return new String[]{"no_gen", "address", "const", "dynamic"};
+	return new String[]{"no_gen", "address", "const", "dynamic", "cpp", "new", "delete"};
 }
 
 public Method getMethod() {

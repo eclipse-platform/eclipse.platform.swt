@@ -16,7 +16,7 @@ import java.util.Iterator;
 
 public class NativesGenerator extends JNIGenerator {
 	
-boolean nativeMacro, enterExitMacro;
+boolean nativeMacro, enterExitMacro, isCPP;
 
 public NativesGenerator() {
 	enterExitMacro = true;
@@ -42,10 +42,20 @@ public void generate(Class clazz) {
 	if (classData.getFlag("no_gen")) return;
 	generateMetaData("swt_copyright");
 	generateMetaData("swt_includes");
+	isCPP = classData.getFlag("cpp");
+	if (isCPP) {
+		output("extern \"C\" {");
+		outputDelimiter();
+		outputDelimiter();
+	}
 	generateNativeMacro(clazz);
 	Method[] methods = clazz.getDeclaredMethods();
 	generateExcludes(methods);
 	generate(methods);
+	if (isCPP) {
+		output("}");
+		outputDelimiter();
+	}
 }
 
 public void generateExcludes(Method[] methods) {
@@ -130,19 +140,36 @@ void generateNativeMacro(Class clazz) {
 
 void generateGetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
 	if (paramType.isPrimitive()) return;
-	output("\tif (arg" + i);
-	output(") lparg" + i);
+	String iStr = String.valueOf(i);
+	output("\tif (arg");
+	output(iStr);
+	output(") lparg");
+	output(iStr);
 	output(" = ");
 	if (paramType.isArray()) {
 		Class componentType = paramType.getComponentType();
 		if (componentType.isPrimitive()) {
 			if (critical) {
-				output("(*env)->GetPrimitiveArrayCritical(env, arg" + i);
+				if (isCPP) {
+					output("env->GetPrimitiveArrayCritical(arg");
+				} else {
+					output("(*env)->GetPrimitiveArrayCritical(env, arg");
+				}
+				output(iStr);
 				output(", NULL);");
 			} else {
-				output("(*env)->Get");
+				if (isCPP) {
+					output("env->Get");
+				} else {
+					output("(*env)->Get");
+				}
 				output(getTypeSignature1(componentType));
-				output("ArrayElements(env, arg" + i);
+				if (isCPP) {
+					output("ArrayElements(arg");
+				} else {
+					output("ArrayElements(env, arg");
+				}
+				output(iStr);
 				output(", NULL);");
 			}
 		} else {
@@ -150,21 +177,34 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData, boole
 		}
 	} else if (paramType == String.class) {
 		if (paramData.getFlag("unicode")) {
-			output("(*env)->GetStringChars(env, arg" + i);
+			if (isCPP) {
+				output("env->GetStringChars(arg");
+			} else {
+				output("(*env)->GetStringChars(env, arg");
+			}
+			output(iStr);
 			output(", NULL);");
 		} else {
-			output("(*env)->GetStringUTFChars(env, arg" + i);
+			if (isCPP) {
+				output("env->GetStringUTFChars(arg");
+			} else {
+				output("(*env)->GetStringUTFChars(env, arg");
+			}
+			output(iStr);
 			output(", NULL);");
 		}
 	} else {
 		if (paramData.getFlag("no_in")) {
-			output("&_arg" + i);
+			output("&_arg");
+			output(iStr);
 			output(";");
 		} else {
 			output("get");
 			output(getClassName(paramType));
-			output("Fields(env, arg" + i);
-			output(", &_arg" + i);
+			output("Fields(env, arg");
+			output(iStr);
+			output(", &_arg");
+			output(iStr);
 			output(");");
 		}
 	}
@@ -173,19 +213,36 @@ void generateGetParameter(int i, Class paramType, ParameterData paramData, boole
 
 void generateSetParameter(int i, Class paramType, ParameterData paramData, boolean critical) {
 	if (paramType.isPrimitive()) return;
+	String iStr = String.valueOf(i);
 	if (paramType.isArray()) {
-		output("\tif (arg" + i);
+		output("\tif (arg");
+		output(iStr);
 		output(") ");
 		Class componentType = paramType.getComponentType();
 		if (componentType.isPrimitive()) {
 			if (critical) {
-				output("(*env)->ReleasePrimitiveArrayCritical(env, arg" + i);
+				if (isCPP) {
+					output("env->ReleasePrimitiveArrayCritical(arg");
+				} else {
+					output("(*env)->ReleasePrimitiveArrayCritical(env, arg");
+				}
+				output(iStr);
 			} else {
-				output("(*env)->Release");
+				if (isCPP) {
+					output("env->Release");
+				} else {
+					output("(*env)->Release");
+				}
 				output(getTypeSignature1(componentType));
-				output("ArrayElements(env, arg" + i);
+				if (isCPP) {
+					output("ArrayElements(arg");
+				} else {
+					output("ArrayElements(env, arg");
+				}
+				output(iStr);
 			}
-			output(", lparg" + i);
+			output(", lparg");
+			output(iStr);
 			output(", ");
 			if (paramData.getFlag("no_out")) {
 				output("JNI_ABORT");
@@ -198,24 +255,38 @@ void generateSetParameter(int i, Class paramType, ParameterData paramData, boole
 		}
 		outputDelimiter();
 	} else if (paramType == String.class) {
-		output("\tif (arg" + i);
+		output("\tif (arg");
+		output(iStr);
 		output(") ");
 		if (paramData.getFlag("unicode")) {
-			output("(*env)->ReleaseStringChars(env, arg" + i);
+			if (isCPP) {
+				output("env->ReleaseStringChars(arg");
+			} else {
+				output("(*env)->ReleaseStringChars(env, arg");
+			}
 		} else {
-			output("(*env)->ReleaseStringUTFChars(env, arg" + i);
+			if (isCPP) {
+				output("env->ReleaseStringUTFChars(arg");
+			} else {
+				output("(*env)->ReleaseStringUTFChars(env, arg");
+			}
 		}
-		output(", lparg" + i);
+		output(iStr);
+		output(", lparg");
+		output(iStr);
 		output(");");
 		outputDelimiter();
 	} else {
 		if (!paramData.getFlag("no_out")) {
-			output("\tif (arg" + i);
+			output("\tif (arg");
+			output(iStr);
 			output(") ");
 			output("set");
 			output(getClassName(paramType));
-			output("Fields(env, arg" + i);
-			output(", lparg" + i);
+			output("Fields(env, arg");
+			output(iStr);
+			output(", lparg");
+			output(iStr);
 			output(");");
 			outputDelimiter();
 		}
@@ -496,7 +567,7 @@ void generateFunctionCallLeftSide(Method method, MethodData methodData, Class re
 	}
 	if (methodData.getFlag("address")) {
 		output("&");
-	}	
+	}
 }
 
 void generateFunctionCallRightSide(Method method, MethodData methodData, Class[] paramTypes, int paramStart) {
@@ -517,10 +588,15 @@ void generateFunctionCallRightSide(Method method, MethodData methodData, Class[]
 }
 
 void generateFunctionCall(Method method, MethodData methodData, Class[] paramTypes, Class returnType, boolean needsReturn) {
-	generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
-	/*
-	* 
-	*/
+	String copy = (String)methodData.getParam("copy");
+	boolean makeCopy = copy.length() != 0 && isCPP && returnType != Void.TYPE;
+	if (makeCopy) {
+		output("\t");
+		output(copy);
+		output(" temp = ");
+	} else {
+		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
+	}
 	int paramStart = 0;
 	if (method.getName().equalsIgnoreCase("call")) {
 		output("(");
@@ -540,11 +616,82 @@ void generateFunctionCall(Method method, MethodData methodData, Class[] paramTyp
 		output(getTypeSignature2(returnType));
 		output(" (STDMETHODCALLTYPE *)())(*(int **)arg1)[arg0])");
 		paramStart = 1;
+	} else if (methodData.getFlag("cpp")) {
+		output("(");
+		ParameterData paramData = getMetaData().getMetaData(method, 0);
+		if (paramData.getFlag("struct")) output("*");
+		String cast = paramData.getCast(); 
+		if (cast.length() != 0 && !cast.equals("()")) {
+			output(cast);
+		}
+		output("arg0)->");
+		String accessor = methodData.getAccessor();
+		if (accessor.length() != 0) {
+			output(accessor);
+		} else {
+			int index = -1;
+			String name = method.getName();
+			if ((index = name.indexOf('_')) != -1) {
+				output(name.substring(index + 1, name.length()));
+			} else {
+				output(name);
+			}
+		}
+		paramStart = 1;
+	} else if (methodData.getFlag("new")) {
+		output("new ");
+		String accessor = methodData.getAccessor();
+		if (accessor.length() != 0) {
+			output(accessor);
+		} else {
+			int index = -1;
+			String name = method.getName();
+			if ((index = name.indexOf('_')) != -1) {
+				output(name.substring(0, index));
+			} else {
+				output(name);
+			}
+		}
+	} else if (methodData.getFlag("delete")) {
+		output("delete ");
+		ParameterData paramData = getMetaData().getMetaData(method, 0);
+		String cast = paramData.getCast(); 
+		if (cast.length() != 0 && !cast.equals("()")) {
+			output(cast);
+		}
+		output("arg0;");
+		outputDelimiter();
+		return;
 	} else {
-		output(method.getName());
+		String accessor = methodData.getAccessor();
+		if (accessor.length() != 0) {
+			output(accessor);
+		} else {
+			output(method.getName());
+		}
 	}
 	generateFunctionCallRightSide(method, methodData, paramTypes, paramStart);
 	outputDelimiter();
+	if (makeCopy) {
+		output("\t{");
+		outputDelimiter();
+		output("\t\t");
+		output(copy);
+		output("* copy = new ");
+		output(copy);
+		output("();");
+		outputDelimiter();
+		output("\t\t*copy = temp;");
+		outputDelimiter();
+		output("\t\trc = ");
+		output("(");
+		output(getTypeSignature2(returnType));
+		output(")");
+		output("copy;");
+		outputDelimiter();
+		output("\t}");
+		outputDelimiter();
+	}
 }
 
 void generateReturn(Method method, Class returnType, boolean needsReturn) {
@@ -573,9 +720,7 @@ void generateFunctionBody(Method method, MethodData methodData, String function,
 	output("{");
 	outputDelimiter();
 	
-	/*
-	* 
-	*/
+	/* Custom GTK memmoves. */
 	boolean isGTKmemove = method.getName().equals("memmove") && paramTypes.length == 2 && returnType == Void.TYPE;
 	if (isGTKmemove) {
 		generateGTKmemmove(method, function, paramTypes);
