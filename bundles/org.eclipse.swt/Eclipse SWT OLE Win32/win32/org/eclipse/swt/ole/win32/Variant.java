@@ -62,7 +62,6 @@ public Variant(float val) {
  *
  */
  public Variant(int val) {
-
 	type = COM.VT_I4;
 	intData = val;
 }
@@ -142,7 +141,6 @@ public Variant(short val) {
  *
  */
 public Variant(boolean val) {
-
 	type = COM.VT_BOOL;
 	booleanData = val;
 }
@@ -159,6 +157,9 @@ public Variant(boolean val) {
  *		ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into an OleAutomation object
  */
 public OleAutomation getAutomation() {
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
 	if (type == COM.VT_DISPATCH) {
 		return new OleAutomation(dispatchData);
 	}
@@ -198,6 +199,9 @@ public OleAutomation getAutomation() {
  *		ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into an IDispatch object
  */
 public IDispatch getDispatch() {
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
 	if (type == COM.VT_DISPATCH) {
 		return dispatchData;
 	}
@@ -235,8 +239,12 @@ public IDispatch getDispatch() {
  *
  */
 public boolean getBoolean() {
-	if (type == COM.VT_BOOL)
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_BOOL) {
 		return booleanData;
+	}
 
 	// try to coerce the value to the desired type
 	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -265,8 +273,12 @@ public boolean getBoolean() {
  *
  */
 public int getByRef() {
-	if ((type & COM.VT_BYREF)== COM.VT_BYREF)
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if ((type & COM.VT_BYREF)== COM.VT_BYREF) {
 		return byRefPtr;
+	}
 		
 	return 0;
 }
@@ -333,8 +345,12 @@ void getData(int pData){
  * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a float</ul>
  */
 public float getFloat() {
-	if (type == COM.VT_R4)
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_R4) {
 		return floatData;
+	}
 
 	// try to coerce the value to the desired type
 	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -367,8 +383,12 @@ public float getFloat() {
  * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a int</ul>
  */
 public int getInt() {
-	if (type == COM.VT_I4)
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_I4) {
 		return intData;
+	}
 		
 	// try to coerce the value to the desired type
 	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -400,8 +420,12 @@ public int getInt() {
  * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a short</ul>
  */
 public short getShort() {
-	if (type == COM.VT_I2)
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_I2) {
 		return shortData;
+	}
 		
 	// try to coerce the value to the desired type
 	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -434,8 +458,12 @@ public short getShort() {
  * <ul><li>ERROR_CANNOT_CHANGE_VARIANT_TYPE when type of Variant can not be coerced into a String</ul>
  */
 public String getString() {
-	if (type == COM.VT_BSTR)
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_BSTR) {
 		return stringData;
+	}
 
 	// try to coerce the value to the desired type
 	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -483,8 +511,12 @@ public short getType() {
  *			an IUnknown object</ul>
  */
 public IUnknown getUnknown() {
-	if (type == COM.VT_UNKNOWN)
+	if (type == COM.VT_EMPTY) {
+		OLE.error(OLE.ERROR_CANNOT_CHANGE_VARIANT_TYPE, -1);
+	}
+	if (type == COM.VT_UNKNOWN) {
 		return unknownData;
+	}
 
 	// try to coerce the value to the desired type
 	int oldPtr = OS.GlobalAlloc(COM.GMEM_FIXED | COM.GMEM_ZEROINIT, sizeof);
@@ -542,6 +574,10 @@ void setData(int pData){
 		case COM.VT_DISPATCH : {
 			int[] ppvObject = new int[1];
 			OS.MoveMemory(ppvObject, pData + 8, 4);
+			if (ppvObject[0] == 0) {
+				type = COM.VT_EMPTY;
+				break;
+			}
 			dispatchData = new IDispatch(ppvObject[0]);
 			dispatchData.AddRef();
 			break;
@@ -549,6 +585,10 @@ void setData(int pData){
 		case COM.VT_UNKNOWN : {
 			int[] ppvObject = new int[1];
 			OS.MoveMemory(ppvObject, pData + 8, 4);
+			if (ppvObject[0] == 0) {
+				type = COM.VT_EMPTY;
+				break;
+			}
 			unknownData = new IUnknown(ppvObject[0]);
 			unknownData.AddRef();
 			break;
@@ -562,7 +602,10 @@ void setData(int pData){
 			// get the address of the memory in which the string resides
 			int[] hMem = new int[1];
 			OS.MoveMemory(hMem, pData + 8, 4);
-
+			if (hMem[0] == 0) {
+				type = COM.VT_EMPTY;
+				break;
+			}
 			// Get the size of the string from the OS - the size is expressed in number
 			// of bytes - each unicode character is 2 bytes.
 			int size = COM.SysStringByteLen(hMem[0]);
@@ -571,6 +614,8 @@ void setData(int pData){
 				char[] buffer = new char[(size + 1) /2]; // add one to avoid rounding errors
 				COM.MoveMemory(buffer, hMem[0], size);
 				stringData = new String(buffer);
+			} else {
+				stringData = "";
 			}
 			break;
 	
