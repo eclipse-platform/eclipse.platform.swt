@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.internal.carbon.*;
 
 public  class MessageBox extends Dialog {

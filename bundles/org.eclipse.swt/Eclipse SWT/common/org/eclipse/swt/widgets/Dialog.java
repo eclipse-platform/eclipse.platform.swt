@@ -8,7 +8,6 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * This class is the abstract superclass of the classes

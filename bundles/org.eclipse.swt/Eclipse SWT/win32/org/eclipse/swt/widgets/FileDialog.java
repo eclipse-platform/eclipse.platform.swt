@@ -9,7 +9,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class allow the user to navigate

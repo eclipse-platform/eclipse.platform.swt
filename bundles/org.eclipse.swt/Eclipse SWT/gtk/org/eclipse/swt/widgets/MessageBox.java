@@ -9,7 +9,6 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.gtk.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class are used used to inform or warn the user.

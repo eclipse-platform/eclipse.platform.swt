@@ -11,7 +11,6 @@ import org.eclipse.swt.internal.win32.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Compatibility;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class allow the user to select a font

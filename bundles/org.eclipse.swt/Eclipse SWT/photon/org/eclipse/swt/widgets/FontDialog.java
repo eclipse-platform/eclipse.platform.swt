@@ -11,7 +11,6 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
 
 /**
  * Instances of this class allow the user to select a font
