@@ -1468,8 +1468,8 @@ public Monitor getPrimaryMonitor () {
  */
 public Shell [] getShells () {
 	checkDevice ();
-	int length = 4, index = 0;
-	Shell [] result = new Shell [length];
+	int index = 0;
+	Shell [] result = new Shell [16];
 	for (int i = 0; i < widgetTable.length; i++) {
 		Widget widget = widgetTable [i];
 		if (widget != null && widget instanceof Shell) {
@@ -1480,7 +1480,7 @@ public Shell [] getShells () {
 			}
 			if (j == index) {
 				if (index == result.length) {
-					Shell [] newResult = new Shell [index + 4];
+					Shell [] newResult = new Shell [index + 16];
 					System.arraycopy (result, 0, newResult, 0, index);
 					result = newResult;
 				}
@@ -1488,7 +1488,7 @@ public Shell [] getShells () {
 			}
 		}
 	}
-	if (index == length) return result;
+	if (index == result.length) return result;
 	Shell [] newResult = new Shell [index];
 	System.arraycopy (result, 0, newResult, 0, index);
 	return newResult;
