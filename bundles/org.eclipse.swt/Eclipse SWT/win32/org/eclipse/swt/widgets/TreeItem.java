@@ -966,7 +966,7 @@ public void setFont (int index, Font font) {
 		tvItem.pszText = OS.LPSTR_TEXTCALLBACK;
 		OS.SendMessage (hwnd, OS.TVM_SETITEM, 0, tvItem);
 	} else {
-		redraw (index, false, true);
+		redraw (index, true, false);
 	}
 }
 
@@ -1044,7 +1044,7 @@ public void setForeground (int index, Color color){
 	}
 	if (cellForeground [index] == pixel) return;
 	cellForeground [index] = pixel;
-	redraw (index, false, true);
+	redraw (index, true, false);
 }
 
 /**
