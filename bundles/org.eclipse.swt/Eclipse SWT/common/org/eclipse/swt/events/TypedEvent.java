@@ -61,6 +61,7 @@ public TypedEvent(Event e) {
 	this.display = e.display;
 	this.widget = e.widget;
 	this.time = e.time;
+	this.data = e.data;
 }
 
 }
