@@ -45,7 +45,7 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	for (int i = 0; i < getItemCount(); i++) {
 		width += getItemBounds(i).width;
 		if (height == 0) {
-			height = getBounds(i).height;
+			height = getItemBounds(i).height;
 		}
 	}
 	if (width == 0) {
@@ -84,7 +84,7 @@ void drawHighlightShadow(GC gc, int itemIndex) {
  * @param itemIndex - specifies the item to draw
  */
 void drawLowlightShadows(GC gc, int itemIndex) {
-	Rectangle bounds = getBounds(itemIndex);
+	Rectangle bounds = getItemBounds(itemIndex);
 	Point bottomShadowStart = new Point(bounds.x + 1, bounds.height - 2);
 	Point bottomShadowStop = new Point(bottomShadowStart.x + bounds.width - 2, bottomShadowStart.y);	
 	Point rightShadowStart = null;
@@ -222,7 +222,7 @@ String getText(int itemIndex) {
  * @param itemIndex - item that should be drawn
  */
 void paint(GC gc, int itemIndex) {
-	Rectangle bounds = getBounds(itemIndex);
+	Rectangle bounds = getItemBounds(itemIndex);
 	// draw header background
 	gc.fillRectangle(bounds.x, bounds.y + 1, bounds.width, bounds.height - 3);
 	
@@ -279,7 +279,7 @@ void paint(Event event) {
  * @param itemIndex - specifies the header item that should be redrawn
  */
 void redraw(int itemIndex) {
-	Rectangle bounds = getBounds(itemIndex);
+	Rectangle bounds = getItemBounds(itemIndex);
 
 	if (bounds != null) {
 		redraw(bounds.x, 0, bounds.width, bounds.height, false);
@@ -319,7 +319,7 @@ void setHeaderHeight() {
  *	> 0 = item width increased. < 0 = item width decreased
  */
 void widthChange(int itemIndex, int widthDiff) {
-	Rectangle bounds = getBounds(itemIndex);
+	Rectangle bounds = getItemBounds(itemIndex);
 	Rectangle headerBounds = getBounds();
 	
 	if (bounds != null) {
