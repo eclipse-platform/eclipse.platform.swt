@@ -913,7 +913,7 @@ int gtk_delete_text (int widget, int start_pos, int end_pos) {
 		OS.g_signal_stop_emission_by_name (handle, OS.delete_text);
 		return 0;
 	}
-	if (newText != "") {
+	if (newText.length () > 0) {
 		int [] pos = new int [1];
 		pos [0] = end_pos;
 		byte [] buffer = Converter.wcsToMbcs (null, newText, false);
