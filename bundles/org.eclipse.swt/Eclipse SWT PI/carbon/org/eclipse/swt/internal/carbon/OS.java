@@ -487,6 +487,7 @@ public static final native int CreateBevelButtonControl(int window, Rect boundsR
 public static final native int CreateCheckBoxControl(int window, Rect boundsRect, int title, int initialValue, boolean autoToggle, int[] outControl);
 public static final native int CreateDataBrowserControl(int window, Rect boundsRect, int style,int[] outControl);
 public static final native int CreateEvent(int allocator, int inClassID, int kind, double when, int flags, int[] outEventRef);
+public static final native int CreateGroupBoxControl(int window, Rect boundsRect, int title, boolean primary, int[] outControl);
 public static final native int CreateNewMenu(short menuID, int menuAttributes, int[] outMenuRef);
 public static final native int CreateNewWindow(int windowClass, int attributes, Rect bounds, int[] wHandle);
 public static final native int CreatePopupArrowControl(int window, Rect boundsRect, short orientation, short size, int[] outControl);

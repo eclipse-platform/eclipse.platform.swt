@@ -1,0 +1,181 @@
+package org.eclipse.swt.widgets;
+
+/*
+ * Copyright (c) 2000, 2002 IBM Corp.  All rights reserved.
+ * This file is made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ */
+
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
+
+/**
+ * Instances of this class provide an etched border
+ * with an optional title.
+ * <p>
+ * Shadow styles are hints and may not be honoured
+ * by the platform.  To create a group with the
+ * default shadow style for the platform, do not
+ * specify a shadow style.
+ * <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>SHADOW_ETCHED_IN, SHADOW_ETCHED_OUT, SHADOW_IN, SHADOW_OUT, SHADOW_NONE</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd>(none)</dd>
+ * </dl>
+ * <p>
+ * Note: Only one of the above styles may be specified.
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
+public class Group extends Composite {
+	String text;
+	
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * lists the style constants that are applicable to the class.
+ * Style bits are also inherited from superclasses.
+ * </p>
+ *
+ * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param style the style of control to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see SWT#SHADOW_ETCHED_IN
+ * @see SWT#SHADOW_ETCHED_OUT
+ * @see SWT#SHADOW_IN
+ * @see SWT#SHADOW_OUT
+ * @see SWT#SHADOW_NONE
+ * @see Widget#checkSubclass
+ * @see Widget#getStyle
+ */
+public Group (Composite parent, int style) {
+	super (parent, checkStyle (style));
+}
+
+static int checkStyle (int style) {
+	/*
+	* Even though it is legal to create this widget
+	* with scroll bars, they serve no useful purpose
+	* because they do not automatically scroll the
+	* widget's client area.  The fix is to clear
+	* the SWT style.
+	*/
+	return style & ~(SWT.H_SCROLL | SWT.V_SCROLL);
+}
+
+protected void checkSubclass () {
+	if (!isValidSubclass ()) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+public Rectangle computeTrim (int x, int y, int width, int height) {
+	checkWidget ();
+	Rect bounds = new Rect ();
+	OS.GetControlBounds (handle, bounds);
+	//NEEDS WORK
+	int h = 8;
+	int v = 22;
+	if (bounds.right - bounds.left != 0 && bounds.bottom - bounds.top != 0) {
+		int rgnHandle = OS.NewRgn();
+		OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
+		Rect clientArea = new Rect ();
+		OS.GetRegionBounds (rgnHandle, clientArea);
+		OS.DisposeRgn (rgnHandle);
+		h = bounds.right - bounds.left - clientArea.right + clientArea.left;
+		v = bounds.bottom - bounds.top - clientArea.bottom + clientArea.top;
+	}
+	return new Rectangle (x - h, y - v, width + h, height + v);
+}
+
+void createHandle () {
+	int [] outControl = new int [1];
+	int window = OS.GetControlOwner (parent.handle);
+	OS.CreateGroupBoxControl (window, null, 0, true, outControl);
+	if (outControl [0] == 0) error (SWT.ERROR_NO_HANDLES);
+	handle = outControl [0];
+	OS.HIViewAddSubview (parent.handle, handle);
+	OS.HIViewSetZOrder (handle, OS.kHIViewZOrderBelow, 0);
+}
+
+public Rectangle getClientArea () {
+	checkWidget();
+	int rgnHandle = OS.NewRgn();
+	OS.GetControlRegion (handle, (short)OS.kControlContentMetaPart, rgnHandle);
+	Rect bounds = new Rect ();
+	OS.GetRegionBounds (rgnHandle, bounds);
+	OS.DisposeRgn (rgnHandle);
+	return new Rectangle ((int)bounds.left, (int)bounds.top, bounds.right - bounds.left, bounds.bottom - bounds.top);
+}
+
+/**
+ * Returns the receiver's text, which is the string that the
+ * is used as the <em>title</em>. If the text has not previously
+ * been set, returns an empty string.
+ *
+ * @return the text
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public String getText () {
+	checkWidget ();
+	return text;
+}
+
+/**
+ * Sets the receiver's text, which is the string that will
+ * be displayed as the receiver's <em>title</em>, to the argument,
+ * which may not be null. 
+ *
+ * @param text the new text
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void setText (String string) {
+	checkWidget();
+	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if ((style & SWT.ARROW) != 0) return;
+	text = string;
+	char [] buffer = new char [text.length ()];
+	text.getChars (0, buffer.length, buffer, 0);
+	int i=0, j=0;
+	while (i < buffer.length) {
+		if ((buffer [j++] = buffer [i++]) == Mnemonic) {
+			if (i == buffer.length) {continue;}
+			if (buffer [i] == Mnemonic) {i++; continue;}
+			j--;
+		}
+	}
+	int ptr = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
+	if (ptr == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
+	OS.SetControlTitleWithCFString (handle, ptr);
+	OS.CFRelease (ptr);
+}
+
+}
