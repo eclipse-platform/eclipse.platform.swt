@@ -2444,7 +2444,7 @@ void draw(int x, int y, int width, int height, boolean clearBackground) {
 		Color background = getBackground();
 		Color foreground = getForeground();
 		GC gc = new GC(this);
-		FontData currentFontData = gc.getFont().getFontData()[0];
+		FontData fontData = gc.getFont().getFontData()[0];
 	
 		if (isSingleLine()) {
 			lineCount = 1;
@@ -2454,7 +2454,7 @@ void draw(int x, int y, int width, int height, boolean clearBackground) {
 		}
 		for (int i = startLine; paintY < endY && i < lineCount; i++, paintY += lineHeight) {
 			String line = content.getLine(i);
-			drawLine(line, i, paintY, gc, background, foreground, currentFontData, clearBackground);
+			drawLine(line, i, paintY, gc, background, foreground, fontData, clearBackground);
 		}
 		gc.dispose();	
 	}
