@@ -1162,30 +1162,9 @@ public int getOffset (int x, int y, int[] trailing) {
 			case SWT.RIGHT: x -= wrapWidth - lineWidth[line]; break;
 		}
 	}
-	StyleItem[] lineRuns = runs[line];	
-	boolean isRTL = (orientation & SWT.RIGHT_TO_LEFT) != 0; 
-	if (x < 0) {
-		StyleItem firstRun = lineRuns[0];
-		if (firstRun.analysis.fRTL ^ isRTL) {
-			if (trailing != null) trailing[0] = 1;
-			return untranslateOffset(firstRun.start + firstRun.length - 1);
-		} else {
-			if (trailing != null) trailing[0] = 0; 
-			return untranslateOffset(firstRun.start);
-		}
-	}
-	if (x > lineWidth[line]) {
-		int index = lineRuns.length - 1;
-		if (line == lineCount - 1 && lineRuns.length > 1) index--;
-		StyleItem lastRun = lineRuns[index];
-		if (lastRun.analysis.fRTL ^ isRTL) {
-			if (trailing != null) trailing[0] = 0; 
-			return untranslateOffset(lastRun.start);
-		} else {
-			if (trailing != null) trailing[0] = 1;
-			return untranslateOffset(lastRun.start + lastRun.length - 1);
-		}
-	}	
+	StyleItem[] lineRuns = runs[line];
+	if (x >= lineWidth[line]) x = lineWidth[line] - 1;
+	if (x < 0) x = 0;
 	int width = 0;
 	for (int i = 0; i < lineRuns.length; i++) {
 		StyleItem run = lineRuns[i];
