@@ -11,6 +11,7 @@
 package org.eclipse.swt.printing;
 
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.*;
 
 /**
