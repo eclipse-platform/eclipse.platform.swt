@@ -944,10 +944,9 @@ public void setSelection (TreeItem [] items) {
 		if (item.isDisposed ()) break;
 		int path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 		showItem (path, first);
+		OS.gtk_tree_selection_select_iter (selection, item.handle);
 		if ((style & SWT.SINGLE) != 0) {
 			OS.gtk_tree_view_set_cursor (handle, path, 0, false);
-		} else {
-			OS.gtk_tree_selection_select_iter (selection, item.handle);
 		}
 		OS.gtk_tree_path_free (path);
 		first = false;
