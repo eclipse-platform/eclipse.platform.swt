@@ -161,8 +161,9 @@ public void add (String string, int index) {
 		error (SWT.ERROR_INVALID_RANGE);
 	}
 	String [] newItems = new String [items.length + 1];
-	System.arraycopy (items, 0, newItems, 0, items.length);
+	System.arraycopy (items, 0, newItems, 0, index);
 	newItems [index] = string;
+	System.arraycopy (items, index, newItems, index + 1, items.length - index);
 	setItems (newItems, true, true);
 }
 
