@@ -2527,6 +2527,7 @@ public boolean setParent (Composite parent) {
 	OS.gtk_widget_reparent (topHandle, newParent);
 	OS.gtk_fixed_move (newParent, topHandle, x, y);
 	this.parent = parent;
+	setZOrder (null, false);
 	return true;
 }
 

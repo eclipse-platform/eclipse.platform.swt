@@ -2900,6 +2900,8 @@ public boolean setParent (Composite parent) {
 	}
 	if (OS.SetParent (handle, parent.handle) == 0) return false;
 	this.parent = parent;
+	int flags = OS.SWP_NOSIZE | OS.SWP_NOMOVE | OS.SWP_NOACTIVATE; 
+	OS.SetWindowPos (handle, OS.HWND_BOTTOM, 0, 0, 0, 0, flags);
 	return true;
 }
 
