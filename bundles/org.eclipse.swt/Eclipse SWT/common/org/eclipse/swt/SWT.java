@@ -208,6 +208,12 @@ public class SWT {
 	 * hardware key up event type (value is 34)
 	 */
 	public static final int HardKeyUp = 34;
+	
+	/**
+	 * access accessibility event type (value is 35)
+	 */
+	public static final int AccessAccessibility = 35;
+	
 
 	/* Event Details */
 	

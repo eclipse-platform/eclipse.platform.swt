@@ -3258,7 +3258,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_CoGetInstance
 /*
  * Class:     org_eclipse_swt_internal_ole_win32_COM
  * Method:    CreateStdAccessibleObject
- * Signature: ()I
+ * Signature: (IILorg/eclipse/swt/internal/ole/win32/GUID;[I)I
  */
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_ole_win32_COM_CreateStdAccessibleObject
   (JNIEnv *env, jclass that, jint hwnd, jint idObject, jobject riidInterface, jintArray ppvObject)

@@ -69,7 +69,7 @@ public ImageLoaderEvent(ImageLoader source, ImageData imageData, int incrementCo
  * Returns a string containing a concise, human-readable
  * description of the receiver.
  *
- * @return a string representation of the point
+ * @return a string representation of the event
  */
 public String toString () {
 	return "ImageLoaderEvent {source=" + source + " imageData=" + imageData + " incrementCount=" + incrementCount + " endOfImage=" + endOfImage + "}";

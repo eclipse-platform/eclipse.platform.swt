@@ -1,5 +1,10 @@
 package org.eclipse.swt.internal.ole.win32;
 
+/*
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
+ */
+
 import org.eclipse.swt.ole.win32.*;
 
 public class IAccessible extends IDispatch {

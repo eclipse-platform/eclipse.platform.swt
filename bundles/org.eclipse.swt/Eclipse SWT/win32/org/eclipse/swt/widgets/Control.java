@@ -10,7 +10,7 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 
-import org.eclipse.swt.internal.ole.win32.*;
+import org.eclipse.swt.accessibility.*;
 
 /**
  * Control is the abstract superclass of all windowed user interface classes.
@@ -2816,11 +2816,11 @@ LRESULT WM_GETFONT (int wParam, int lParam) {
 	return null;
 }
 
-public LRESULT WM_GETOBJECT (int wParam, int lParam) {
-	if (lParam == COM.OBJID_CLIENT) {
-		//System.out.println("WM_GETOBJECT");
-	}
-	return null;
+LRESULT WM_GETOBJECT (int wParam, int lParam) {
+	Event event = new Event ();
+	event.data = new int [] {lParam, wParam};
+	sendEvent (SWT.AccessAccessibility, event);
+	return new LRESULT(event.detail);
 }
 
 LRESULT WM_HELP (int wParam, int lParam) {
