@@ -28,6 +28,8 @@ import org.eclipse.swt.events.*;
 public class Sash extends Control {
 	boolean dragging;
 	int startX, startY, lastX, lastY;
+	final static int INCREMENT = 1;
+	final static int PAGE_INCREMENT = 9;
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -61,10 +63,6 @@ public Sash (Composite parent, int style) {
 	super (parent, checkStyle (style));
 }
 
-static int checkStyle (int style) {
-	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
-}
-
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when the control is selected, by sending
@@ -96,6 +94,10 @@ public void addSelectionListener (SelectionListener listener) {
 	TypedListener typedListener = new TypedListener (listener);
 	addListener (SWT.Selection,typedListener);
 	addListener (SWT.DefaultSelection,typedListener);
+}
+
+static int checkStyle (int style) {
+	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
 }
 
 public Point computeSize (int wHint, int hHint, boolean changed) {
@@ -170,7 +172,7 @@ int processMouse (int info) {
 
 	int x = pe.pos_x + ev.translation_x;
 	int y = pe.pos_y + ev.translation_y;
-	PhArea_t area = new PhArea_t();
+	PhArea_t area = new PhArea_t ();
 	OS.PtWidgetArea (handle, area);
 	Event event = new Event ();
 	int width = event.width = area.size_w;
@@ -283,6 +285,7 @@ int processPaint (int damage) {
 	sendPaintEvent (damage);
 	return OS.Pt_CONTINUE;
 }
+
 /**
  * Removes the listener from the collection of listeners who will
  * be notified when the control is selected.
@@ -306,6 +309,67 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Selection, listener);
 	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+
+int traversalCode (int key_sym, PhKeyEvent_t ke) {
+	return 0;
+}
+
+boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
+	boolean result = super.translateTraversal (key_sym, phEvent);
+	if (!result) {
+		switch (key_sym) {
+			case OS.Pk_Left:
+			case OS.Pk_Right:
+			case OS.Pk_Up:
+			case OS.Pk_Down:
+				
+				/* Calculate the new x or y position */
+				if ((phEvent.button_state & OS.Ph_BUTTON_SELECT) != 0) return result;
+				int step = (phEvent.key_mods & OS.Pk_KM_Ctrl) != 0 ? INCREMENT : PAGE_INCREMENT;
+				int x = 0, y = 0;
+				if ((style & SWT.VERTICAL) != 0) {
+					if (key_sym == OS.Pk_Up || key_sym == OS.Pk_Down) break;
+					x = key_sym == OS.Pk_Left ? -step : step;
+				} else {
+					if (key_sym == OS.Pk_Left || key_sym == OS.Pk_Right) break;
+					y = key_sym == OS.Pk_Up ? -step : step;
+				}				
+				PhArea_t area = new PhArea_t ();
+				OS.PtWidgetArea (handle, area);
+				x += area.pos_x;
+				y += area.pos_y;
+				int width = area.size_w;
+				int height = area.size_h;
+				Rectangle r = parent.getClientArea ();
+				int clientWidth = r.width;
+				int clientHeight = r.height;
+				int newX = lastX, newY = lastY;
+				if ((style & SWT.VERTICAL) != 0) {
+					newX = Math.min (Math.max (0, x - startX), clientWidth - width);
+				} else {
+					newY = Math.min (Math.max (0, y - startY), clientHeight - height);
+				}
+				if (newX == lastX && newY == lastY) return result;
+			
+				/* The event must be sent because doit flag is used */
+				Event event = new Event ();
+				event.x = newX;  event.y = newY;
+				event.width = width;  event.height = height;
+				
+				/*
+				* It is possible (but unlikely), that application
+				* code could have disposed the widget in the selection
+				* event.  If this happens, end the processing of the
+				* Windows message by returning zero as the result of
+				* the window proc.
+				*/
+				sendEvent (SWT.Selection, event);
+				if (isDisposed ()) return true;
+				return result;
+		}
+	}
+	return result;
 }
 
 }
