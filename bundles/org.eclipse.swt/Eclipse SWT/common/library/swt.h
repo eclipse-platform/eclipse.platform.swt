@@ -32,6 +32,10 @@ extern int IS_JNI_1_2;
 #define NewSWT_PTRArray NewIntArray
 #define CallStaticSWT_PTRMethodV CallStaticIntMethodV
 #define CallSWT_PTRMethodV CallIntMethodV
+#define CallStaticSWT_PTRMethod CallStaticIntMethod
+#define CallSWT_PTRMethod CallIntMethod
+#define GetSWT_PTRArrayElements GetIntArrayElements
+#define ReleaseSWT_PTRArrayElements ReleaseIntArrayElements
 #define SWT_PTRArray jintArray
 #define SWT_PTR jint
 #define SWT_PTR_SIGNATURE "I"
@@ -43,6 +47,10 @@ extern int IS_JNI_1_2;
 #define NewSWT_PTRArray NewLongArray
 #define CallStaticSWT_PTRMethodV CallStaticLongMethodV
 #define CallSWT_PTRMethodV CallLongMethodV
+#define CallStaticSWT_PTRMethod CallStaticLongMethod
+#define CallSWT_PTRMethod CallLongMethod
+#define GetSWT_PTRArrayElements GetLongArrayElements
+#define ReleaseSWT_PTRArrayElements ReleaseLongArrayElements
 #define SWT_PTRArray jlongArray
 #define SWT_PTR jlong
 #define SWT_PTR_SIGNATURE "J"

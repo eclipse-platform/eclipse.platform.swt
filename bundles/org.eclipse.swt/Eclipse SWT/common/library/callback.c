@@ -302,16 +302,16 @@ SWT_PTR callback(int index, ...)
 	if (isArrayBased) {
 		int i;
 		jint argCount = (*env)->GetIntField(env, callback, argCountID);
-		jintArray javaArray = (*env)->NewIntArray(env, argCount);
-		jint *elements = (*env)->GetIntArrayElements(env, javaArray, NULL);
+		jintArray javaArray = (*env)->NewSWT_PTRArray(env, argCount);
+		jint *elements = (*env)->GetSWT_PTRArrayElements(env, javaArray, NULL);
 		for (i=0; i<argCount; i++) {
 			elements[i] = va_arg(vl, SWT_PTR); 
 		}
-		(*env)->ReleaseIntArrayElements(env, javaArray, elements, 0);
+		(*env)->ReleaseSWT_PTRArrayElements(env, javaArray, elements, 0);
 		if (isStatic) {
-			result = (*env)->CallStaticIntMethod(env, javaObject, mid, javaArray);
+			result = (*env)->CallStaticSWT_PTRMethod(env, javaObject, mid, javaArray);
 		} else {
-			result = (*env)->CallIntMethod(env, javaObject, mid, javaArray);
+			result = (*env)->CallSWT_PTRMethod(env, javaObject, mid, javaArray);
 		}
 		(*env)->DeleteLocalRef(env, javaArray);
 	} else {
