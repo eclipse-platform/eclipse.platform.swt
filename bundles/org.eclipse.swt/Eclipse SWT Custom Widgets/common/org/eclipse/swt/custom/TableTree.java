@@ -728,11 +728,7 @@ public void setSelection (TableTreeItem[] items) {
 	checkWidget ();
 	if (items == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int length = items.length;
-	if (length == 0) {
-		deselectAll();
-		return;
-	}
-	if ((table.getStyle() & SWT.SINGLE) != 0 && length > 1) {
+	if (length == 0 || ((table.getStyle() & SWT.SINGLE) != 0 && length > 1)) {
 		deselectAll();
 		return;
 	}
