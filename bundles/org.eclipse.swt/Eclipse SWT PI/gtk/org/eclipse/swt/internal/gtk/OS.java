@@ -156,29 +156,52 @@ public class OS {
 	public static final int GDK_KEY_PRESS = 8;
 	public static final int GDK_KEY_RELEASE = 9;
 	public static final int GDK_NO_EXPOSE = 30;
-	public static final int GDK_EXPOSURE_MASK = 1 << 1;
-	public static final int GDK_POINTER_MOTION_MASK = 1 << 2;
+
+	/* The values for the GdkModifierType constants are specified in the
+	 * documentation, therefore there is no need to get them from the OS.
+	 */
+	public static final int GDK_SHIFT_MASK    = 1 << 0;
+	public static final int GDK_LOCK_MASK	    = 1 << 1;
+	public static final int GDK_CONTROL_MASK  = 1 << 2;
+	public static final int GDK_MOD1_MASK	    = 1 << 3;
+	public static final int GDK_MOD2_MASK	    = 1 << 4;
+	public static final int GDK_MOD3_MASK	    = 1 << 5;
+	public static final int GDK_MOD4_MASK	    = 1 << 6;
+	public static final int GDK_MOD5_MASK	    = 1 << 7;
+	public static final int GDK_BUTTON1_MASK  = 1 << 8;
+	public static final int GDK_BUTTON2_MASK  = 1 << 9;
+	public static final int GDK_BUTTON3_MASK  = 1 << 10;
+	public static final int GDK_BUTTON4_MASK  = 1 << 11;
+	public static final int GDK_BUTTON5_MASK  = 1 << 12;
+	public static final int GDK_RELEASE_MASK  = 1 << 30;
+	public static final int GDK_MODIFIER_MASK = GDK_RELEASE_MASK | 0x1fff;
+
+	/* The values for the GdkEventMask constants are specified in the
+	 * documentation, therefore there is no need to get them from the OS.
+	 */
+	public static final int GDK_EXPOSURE_MASK       	= 1 << 1;
+	public static final int GDK_POINTER_MOTION_MASK 	= 1 << 2;
 	public static final int GDK_POINTER_MOTION_HINT_MASK = 1 << 3;
-	public static final int GDK_BUTTON_MOTION_MASK = 1 << 4;
-	public static final int GDK_BUTTON1_MOTION_MASK = 1 << 5;
-	public static final int GDK_BUTTON2_MOTION_MASK = 1 << 6;
-	public static final int GDK_BUTTON3_MOTION_MASK = 1 << 7;
-	public static final int GDK_BUTTON_PRESS_MASK = 1 << 8;
-	public static final int GDK_BUTTON_RELEASE_MASK = 1 << 9;
-	public static final int GDK_KEY_PRESS_MASK = 1 << 10;
-	public static final int GDK_KEY_RELEASE_MASK = 1 << 11;
-	public static final int GDK_ENTER_NOTIFY_MASK = 1 << 12;
-	public static final int GDK_LEAVE_NOTIFY_MASK = 1 << 13;
-	public static final int GDK_FOCUS_CHANGE_MASK = 1 << 14;
-	public static final int GDK_SHIFT_MASK = 1 << 0;
-	public static final int GDK_LOCK_MASK = 1 << 1;
-	public static final int GDK_CONTROL_MASK = 1 << 2;
-	public static final int GDK_MOD1_MASK = 1 << 3;
-	public static final int GDK_BUTTON1_MASK = 1 << 8;
-	public static final int GDK_BUTTON2_MASK = 1 << 9;
-	public static final int GDK_BUTTON3_MASK = 1 << 10;
-	public static final int GDK_RELEASE_MASK = 1 << 13;
-	public static final int GDK_MODIFIER_MASK = 0x3fff;
+	public static final int GDK_BUTTON_MOTION_MASK    	= 1 << 4;
+	public static final int GDK_BUTTON1_MOTION_MASK    	= 1 << 5;
+	public static final int GDK_BUTTON2_MOTION_MASK    	= 1 << 6;
+	public static final int GDK_BUTTON3_MOTION_MASK    	= 1 << 7;
+	public static final int GDK_BUTTON_PRESS_MASK     	= 1 << 8;
+	public static final int GDK_BUTTON_RELEASE_MASK     = 1 << 9;
+	public static final int GDK_KEY_PRESS_MASK       	= 1 << 10;
+	public static final int GDK_KEY_RELEASE_MASK     	= 1 << 11;
+	public static final int GDK_ENTER_NOTIFY_MASK    	= 1 << 12;
+	public static final int GDK_LEAVE_NOTIFY_MASK    	= 1 << 13;
+	public static final int GDK_FOCUS_CHANGE_MASK 		= 1 << 14;
+	public static final int GDK_STRUCTURE_MASK			= 1 << 15;
+	public static final int GDK_PROPERTY_CHANGE_MASK	= 1 << 16;
+	public static final int GDK_VISIBILITY_NOTIFY_MASK	= 1 << 17;
+	public static final int GDK_PROXIMITY_IN_MASK		= 1 << 18;
+	public static final int GDK_PROXIMITY_OUT_MASK		= 1 << 19;
+	public static final int GDK_SUBSTRUCTURE_MASK		= 1 << 20;
+	public static final int GDK_SCROLL_MASK           	= 1 << 21;
+	public static final int GDK_ALL_EVENTS_MASK			= 0x3FFFFE;
+	
 	public static final int GDK_INCLUDE_INFERIORS = 1;
 	public static final int GDK_DECOR_ALL = 1 << 0;
 	public static final int GDK_DECOR_BORDER = 1 << 1;
@@ -248,6 +271,16 @@ public class OS {
 	public static final int GTK_PROGRESS_RIGHT_TO_LEFT = 1;
 	public static final int GTK_PROGRESS_BOTTOM_TO_TOP = 2;
 	public static final int GTK_PROGRESS_TOP_TO_BOTTOM = 3;
+	
+	/* The values for the GdkGrabStatus constants are specified in
+	 * the documentation, therefore there is no need to get them from the OS.
+	 */
+	public static final int GDK_GRAB_SUCCESS = 0;
+	public static final int GDK_GRAB_ALREADY_GRABBED = 1;
+	public static final int GDK_GRAB_INVALID_TIME = 2;
+	public static final int GDK_GRAB_NOT_VIEWABLE = 3;
+	public static final int GDK_GRAB_FROZEN = 4;
+	
 
 public static final native int GTK_TOOLBAR_CHILD_SPACE();
 public static final native int GTK_TOOLBAR_CHILD_BUTTON();
@@ -892,4 +925,6 @@ public static final native void gtk_scrolled_window_set_shadow_type(int scrolled
 public static final native void gtk_widget_queue_resize(int widget);
 public static final native void memmove(GtkAllocation dest, int src);
 public static final native void gtk_widget_set_redraw_on_allocate(int widget, boolean redraw);
+public static final native int gdk_pointer_grab(int window, boolean owner_events, int event_mask, int confine_to, int cursor, int time);
+public static final native int gdk_pointer_ungrab(int time);
 }

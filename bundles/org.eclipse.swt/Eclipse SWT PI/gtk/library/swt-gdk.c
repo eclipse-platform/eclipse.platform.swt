@@ -1191,3 +1191,20 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pango_1context_
 {
 	return (jint)gdk_pango_context_get();
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pointer_1grab
+  (JNIEnv *env, jclass that, jint window, jboolean owner_events, jint event_mask, jint confine_to, jint cursor, jint time)
+{
+	return (jint)gdk_pointer_grab((GdkWindow*) window,
+	                             (gboolean) owner_events,
+	                             (GdkEventMask) event_mask,
+	                             (GdkWindow*) confine_to,
+	                             (GdkCursor*) cursor,
+	                             (guint32) time);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pointer_1ungrab
+  (JNIEnv *env, jclass that, jint time)
+{
+  gdk_pointer_ungrab((guint32) time);
+}
