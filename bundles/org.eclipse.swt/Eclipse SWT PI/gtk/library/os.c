@@ -5406,6 +5406,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1view_1column_1get_1spacing)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1column_1get_1visible
+JNIEXPORT jboolean JNICALL OS_NATIVE(gtk_1tree_1view_1column_1get_1visible)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jboolean rc;
+	NATIVE_ENTER(env, that, "gtk_1tree_1view_1column_1get_1visible\n")
+	rc = (jboolean)gtk_tree_view_column_get_visible((GtkTreeViewColumn *)arg0);
+	NATIVE_EXIT(env, that, "gtk_1tree_1view_1column_1get_1visible\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1column_1get_1width
 JNIEXPORT jint JNICALL OS_NATIVE(gtk_1tree_1view_1column_1get_1width)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -5520,6 +5532,16 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1set_1title)
 	gtk_tree_view_column_set_title((GtkTreeViewColumn *)arg0, (const gchar *)lparg1);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, 0);
 	NATIVE_EXIT(env, that, "gtk_1tree_1view_1column_1set_1title\n")
+}
+#endif
+
+#ifndef NO_gtk_1tree_1view_1column_1set_1visible
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1column_1set_1visible)
+	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
+{
+	NATIVE_ENTER(env, that, "gtk_1tree_1view_1column_1set_1visible\n")
+	gtk_tree_view_column_set_visible((GtkTreeViewColumn *)arg0, arg1);
+	NATIVE_EXIT(env, that, "gtk_1tree_1view_1column_1set_1visible\n")
 }
 #endif
 

@@ -254,6 +254,9 @@ public boolean getResizable () {
  */
 public int getWidth () {
 	checkWidget();
+	if (!OS.gtk_tree_view_column_get_visible (handle)) {
+		return 0;
+	} 
 	return OS.gtk_tree_view_column_get_width (handle);
 }
 
@@ -329,6 +332,7 @@ public void pack () {
 	boolean resizable = OS.gtk_tree_view_column_get_resizable (handle);
 	OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_AUTOSIZE);
 	OS.gtk_tree_view_column_set_resizable (handle, resizable);
+	OS.gtk_tree_view_column_set_visible (handle, true);
 }
 
 void register () {
@@ -500,7 +504,12 @@ public void setText (String string) {
 public void setWidth (int width) {
 	checkWidget();
 	OS.gtk_tree_view_column_set_sizing (handle, OS.GTK_TREE_VIEW_COLUMN_FIXED);
-	OS.gtk_tree_view_column_set_fixed_width (handle, Math.max (1, width));
+	if (width > 0) {
+		OS.gtk_tree_view_column_set_fixed_width (handle, width);
+		OS.gtk_tree_view_column_set_visible (handle, true);
+	} else {
+		OS.gtk_tree_view_column_set_visible (handle, false);
+	}
 }
 
 }

@@ -770,6 +770,7 @@ public static final synchronized native void gtk_tree_view_column_clear(int tree
 public static final synchronized native int gtk_tree_view_column_get_cell_renderers(int tree_column);
 public static final synchronized native boolean gtk_tree_view_column_get_resizable(int column);
 public static final synchronized native int gtk_tree_view_column_get_spacing(int tree_column);
+public static final synchronized native boolean gtk_tree_view_column_get_visible(int column);
 public static final synchronized native int gtk_tree_view_column_get_width(int column);
 public static final synchronized native int gtk_tree_view_column_new();
 public static final synchronized native void gtk_tree_view_column_pack_start(int tree_column, int cell_renderer, boolean expand);
@@ -781,6 +782,7 @@ public static final synchronized native void gtk_tree_view_column_set_fixed_widt
 public static final synchronized native void gtk_tree_view_column_set_resizable(int column, boolean resizable);
 public static final synchronized native void gtk_tree_view_column_set_sizing(int column, int type);
 public static final synchronized native void gtk_tree_view_column_set_title(int tree_column, byte[] title);
+public static final synchronized native void gtk_tree_view_column_set_visible (int tree_column, boolean visible);
 public static final synchronized native void gtk_tree_view_column_set_widget(int tree_column, int widget);
 public static final synchronized native void gtk_tree_view_set_drag_dest_row(int view, int path, int pos);
 public static final synchronized native boolean gtk_tree_view_expand_row(int view, int path, boolean open_all);
