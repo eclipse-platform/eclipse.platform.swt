@@ -1758,10 +1758,12 @@ public void setForeground(Color color) {
  */
 public void setLineStyle(int lineStyle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	GdkGCValues values = new GdkGCValues();
+	OS.gdk_gc_get_values(handle, values);
 	switch (lineStyle) {
 		case SWT.LINE_SOLID:
-			this.data.lineStyle = lineStyle;
-			OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+			data.lineStyle = lineStyle;
+			OS.gdk_gc_set_line_attributes(handle, values.line_width, OS.GDK_LINE_SOLID, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
 			return;
 		case SWT.LINE_DASH:
 			OS.gdk_gc_set_dashes(handle, 0, new byte[] {6, 2}, 2);
@@ -1779,7 +1781,7 @@ public void setLineStyle(int lineStyle) {
 			SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
 	data.lineStyle = lineStyle;
-	OS.gdk_gc_set_line_attributes(handle, 0, OS.GDK_LINE_ON_OFF_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
+	OS.gdk_gc_set_line_attributes(handle, values.line_width, OS.GDK_LINE_ON_OFF_DASH, OS.GDK_CAP_BUTT, OS.GDK_JOIN_MITER);
 }
 
 /** 
