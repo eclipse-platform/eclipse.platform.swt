@@ -1948,6 +1948,10 @@ public void setBackground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
+	setBackgroundPixel (pixel);
+}
+
+void setBackgroundPixel (int pixel) {
 	OS.PtSetResource (handle, OS.Pt_ARG_FILL_COLOR, pixel, 0);
 }
 
@@ -1977,13 +1981,17 @@ public void setFont (Font font) {
 	}
 	int ptr = OS.malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);
+	setFont (ptr);
+	OS.free (ptr);
+}
+
+void setFont (int font) {
 	int [] args = {
-		OS.Pt_ARG_TEXT_FONT, ptr, 0,
-		OS.Pt_ARG_LIST_FONT, ptr, 0,
-		OS.Pt_ARG_TITLE_FONT, ptr, 0,
+		OS.Pt_ARG_TEXT_FONT, font, 0,
+		OS.Pt_ARG_LIST_FONT, font, 0,
+		OS.Pt_ARG_TITLE_FONT, font, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
-	OS.free (ptr);
 }
 
 /**
@@ -2010,6 +2018,10 @@ public void setForeground (Color color) {
 		if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		pixel = color.handle;
 	}
+	setForegroundPixel (pixel);
+}
+
+void setForegroundPixel (int pixel) {
 	OS.PtSetResource (handle, OS.Pt_ARG_COLOR, pixel, 0);
 }
 

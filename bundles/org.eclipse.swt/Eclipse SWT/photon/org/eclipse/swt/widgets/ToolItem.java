@@ -560,6 +560,16 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook (SWT.DefaultSelection,listener);	
 }
 
+void setBackgroundPixel (int pixel) {
+	OS.PtSetResource (handle, OS.Pt_ARG_FILL_COLOR, pixel, 0);
+	if (button != 0 && button != handle) {
+		OS.PtSetResource (button, OS.Pt_ARG_FILL_COLOR, pixel, 0);
+	}
+	if (arrow != 0) {
+		OS.PtSetResource (arrow, OS.Pt_ARG_FILL_COLOR, pixel, 0);
+	}
+}
+
 /**
  * Sets the control that is used to fill the bounds of
  * the item when the items is a <code>SEPARATOR</code>.
@@ -638,6 +648,28 @@ public void setEnabled (boolean enabled) {
 	int topHandle = topHandle ();
 	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
 	OS.PtSetResource (topHandle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
+}
+
+void setFont (int font) {
+	int [] args = {
+		OS.Pt_ARG_TEXT_FONT, font, 0,
+		OS.Pt_ARG_LIST_FONT, font, 0,
+		OS.Pt_ARG_TITLE_FONT, font, 0,
+	};
+	OS.PtSetResources (handle, args.length / 3, args);
+	if (button != 0 && button != handle) {
+		OS.PtSetResources (button, args.length / 3, args);
+	}
+}
+
+void setForegroundPixel (int pixel) {
+	OS.PtSetResource (handle, OS.Pt_ARG_COLOR, pixel, 0);
+	if (button != 0 && button != handle) {
+		OS.PtSetResource (button, OS.Pt_ARG_COLOR, pixel, 0);
+	}
+	if (arrow != 0) {
+		OS.PtSetResource (arrow, OS.Pt_ARG_COLOR, pixel, 0);
+	}
 }
 
 /**

@@ -361,6 +361,15 @@ void releaseWidget () {
 	super.releaseWidget ();
 }
 
+void setBackgroundPixel (int pixel) {
+	super.setBackgroundPixel (pixel);
+	ToolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		ToolItem item = items[i];
+		item.setBackgroundPixel (pixel);
+	}
+}
+
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	boolean changed = super.setBounds (x, y, width, height, move, resize);
 	if (changed && resize) {
@@ -369,6 +378,24 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		OS.PtSetResources (handle, args.length / 3, args);
 	}
 	return changed;
+}
+
+void setFont (int font) {
+	super.setFont (font);
+	ToolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		ToolItem item = items[i];
+		item.setFont (font);
+	}
+}
+
+void setForegroundPixel (int pixel) {
+	super.setForegroundPixel (pixel);
+	ToolItem [] items = getItems ();
+	for (int i = 0; i < items.length; i++) {
+		ToolItem item = items[i];
+		item.setForegroundPixel (pixel);
+	}
 }
 
 boolean setTabGroupFocus () {
