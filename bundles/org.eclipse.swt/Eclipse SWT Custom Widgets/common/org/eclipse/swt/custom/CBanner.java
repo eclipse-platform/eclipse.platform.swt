@@ -54,18 +54,21 @@ public class CBanner extends Composite {
 	static final int BORDER_TOP = 2;
 	static final int BORDER_LEFT = 2;
 	static final int BORDER_RIGHT = 2;
-	static final int BORDER_STRIPE = 3;
+	static final int BORDER_STRIPE = 2;
 	
-	static final int FOREGROUND = SWT.COLOR_TITLE_BACKGROUND;
-	static final int BACKGROUND = SWT.COLOR_TITLE_BACKGROUND_GRADIENT;
+	static RGB BORDER1 = null;
+	static RGB BORDER2 = null;
 	
 		
 public CBanner(Composite parent, int style) {
 	super(parent, checkStyle(style));
-
-	Display display = getDisplay();
-	setForeground(display.getSystemColor(FOREGROUND));
-	setBackground(display.getSystemColor(BACKGROUND));
+	
+	if (BORDER1 == null) {
+		BORDER1 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_DARK_SHADOW).getRGB();
+	}
+	if (BORDER2 == null) {
+		BORDER2 = getDisplay().getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW).getRGB();
+	}
 	
 	addPaintListener(new PaintListener() {
 		public void paintControl(PaintEvent event) {
@@ -201,47 +204,48 @@ private void onDispose() {
 private void onPaint(GC gc) {
 	if (curve == null) updateCurve();
 	Point size = getSize();
-	int[] shape = new int[curve.length+12];
+	// TODO Consider a way to not draw background
+	// under lines
+	gc.setBackground(getBackground());
+	gc.fillRectangle(0, 0, size.x, size.y);
+	
+	int[] line1 = new int[curve.length+8];
+	int[] line2 = new int[curve.length+8];
 	int index = 0;
 	int x = curveStart;
 	int y = 0;
-	shape[index++] = 0;
-	shape[index++] = size.y - BORDER_STRIPE;
-	shape[index++] = x + 1;
-	shape[index++] = size.y - BORDER_STRIPE;
+	line1[index] = 0;
+	line2[index++] = 0;
+	line1[index] = size.y - BORDER_STRIPE;
+	line2[index++] = size.y - BORDER_STRIPE + 1;
+	line1[index] = x + 1;
+	line2[index++] = x + 1;
+	line1[index] = size.y - BORDER_STRIPE;
+	line2[index++] = size.y - BORDER_STRIPE + 1;
 	for (int i = 0; i < curve.length/2; i++) {
-		shape[index++]=x+curve[2*i];
-		shape[index++]=y+curve[2*i+1];
+		line1[index]=x+curve[2*i];
+		line2[index++]=x+curve[2*i];
+		line1[index]=y+curve[2*i+1];
+		line2[index++]=y+curve[2*i+1]+1;
 	}
-	shape[index++] = x + CURVE_WIDTH;
-	shape[index++] = 0;
-	shape[index++] = size.x;
-	shape[index++] = 0;
-	shape[index++] = size.x;
-	shape[index++] = size.y;
-	shape[index++] = 0;
-	shape[index++] = size.y;
+	line1[index] = x + CURVE_WIDTH;
+	line2[index++] = x + CURVE_WIDTH;
+	line1[index] = 0;
+	line2[index++] = 1;
+	line1[index] = size.x;
+	line2[index++] = size.x;
+	line1[index] = 0;
+	line2[index++] = 1;
 	
-	gc.setBackground(getForeground());
-	gc.fillPolygon(shape);
+	Color border2 = new Color(getDisplay(), BORDER2);
+	gc.setForeground(border2);
+	gc.drawPolyline(line2);
+	border2.dispose();
 	
-	shape = new int[curve.length+8];
-	index = 0;
-	shape[index++] = 0;
-	shape[index++] = size.y - BORDER_STRIPE;
-	shape[index++] = x + 1;
-	shape[index++] = size.y - BORDER_STRIPE;
-	for (int i = 0; i < curve.length/2; i++) {
-		shape[index++]=x+curve[2*i];
-		shape[index++]=y+curve[2*i+1];
-	}
-	shape[index++] = x + CURVE_WIDTH;
-	shape[index++] = 0;
-	shape[index++] = 0;
-	shape[index++] = 0;
-	
-	gc.setBackground(getBackground());
-	gc.fillPolygon(shape);
+	Color border1 = new Color(getDisplay(), BORDER1);
+	gc.setForeground(border1);
+	gc.drawPolyline(line1);
+	border1.dispose();
 }
 
 private void onResize() {
@@ -249,22 +253,11 @@ private void onResize() {
 	layout();
 }
 
-public void setBackground (Color color) {
-	if (color == null) color = getDisplay().getSystemColor(BACKGROUND);
-	super.setBackground(color);
-	redraw();
-}
-
-public void setForeground (Color color) {
-	if (color == null) color = getDisplay().getSystemColor(FOREGROUND);
-	super.setForeground(color);
-	redraw();
-}
 /**
  * Sets the layout which is associated with the receiver to be
  * the argument which may be null.
  * <p>
- * Note : ViewForm does not use a layout class to size and position its children.
+ * Note : CBanner does not use a layout class to size and position its children.
  * </p>
  *
  * @param the receiver's new layout or null
@@ -313,11 +306,13 @@ void updateCurve () {
 	for (int i = 0; i < curve.length/2; i++) {
 		if (curve[2*i+1] > size.y - BORDER_STRIPE) {
 			index = i;
+		} else {
+			break;
 		}
 	}
-	if (index > 0) {
-		int[] newCurve = new int[curve.length - 2*(index-1)];
-		System.arraycopy(curve, 2*(index-1), newCurve, 0, newCurve.length);
+	if (index > -1) {
+		int[] newCurve = new int[curve.length - 2*(index+1)];
+		System.arraycopy(curve, 2*(index+1), newCurve, 0, newCurve.length);
 		curve = newCurve;
 	}
 }
