@@ -339,9 +339,11 @@ public Cursor(Device device, ImageData source, int hotspotX, int hotspotY) {
 	int hMask = result[1];
 	/* Create the icon */
 	ICONINFO info = new ICONINFO();
-	info.fIcon = true;
+	info.fIcon = false;
 	info.hbmColor = hBitmap;
 	info.hbmMask = hMask;
+	info.xHotspot = hotspotX;
+	info.yHotspot = hotspotY;
 	handle = OS.CreateIconIndirect(info);
 	if (handle == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	OS.DeleteObject(hBitmap);
