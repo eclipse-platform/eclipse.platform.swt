@@ -442,7 +442,11 @@ public void setTabList (Control [] tabList) {
 }
 
 int traversalCode(int key, int event) {
-	return SWT.TRAVERSE_ESCAPE;
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) != 0) return 0;
+		if (hooks (SWT.KeyDown) || hooks (SWT.KeyUp)) return 0;
+	}
+	return super.traversalCode (key, event);
 }
 
 }
