@@ -421,19 +421,6 @@ public void setText (String string) {
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
 	text = string;
-
-	/* Strip out mnemonic marker symbols, and remember the mnemonic. */
-	char [] unicode = new char [string.length ()];
-	string.getChars (0, unicode.length, unicode, 0);
-	int i=0, j=0, mnemonic=0;
-	while (i < unicode.length) {
-		if ((unicode [j++] = unicode [i++]) == Mnemonic) {
-			if (i == unicode.length) {continue;}
-			if (unicode [i] == Mnemonic) {i++; continue;}
-			if (mnemonic == 0) mnemonic = unicode [i];
-			j--;
-		}
-	}
 	redrawWidget (0, 0, 0, 0, false);
 }
 }
