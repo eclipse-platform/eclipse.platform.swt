@@ -14,15 +14,37 @@ set path=%JAVA_HOME%;%path%
 rem ********
 rem MSVC 6.0
 rem ********
-rem call k:\dev\products\msvc60\vc98\bin\vcvars32.bat
+call k:\dev\products\msvc60\vc98\bin\vcvars32.bat
 
-rem ****** 
-rem MS-SDK
-rem ******
-rem set Mssdk=j:\teamswt\swt-builddir\mssdk
-rem call %mssdk%\setenv.bat
+rem *****************
+rem MS-SDK WinCE
+rem *****************
+set WCEROOT=k:\dev\products\wince.sdk
 
-call j:\j9\tools\config\ppcarm.bat
+rem **********************************************************
+rem By default, build library for ARM Pocket PC
+rem 'Experiment' with other targets: an example is provided
+rem for ARM HPC 2000. Set the flag CFG to the value "hpc2000"
+rem to build for ARM HPC 2000.
+rem **********************************************************
+IF "%CFG%"=="hpc2000" GOTO HPC2000
+
+:POCKETPC
+set OSVERSION=WCE300
+set PLATFORM=MS Pocket PC
+set PATH=%WCEROOT%\bin;%WCEROOT%\%OSVERSION%\bin;%path%
+set INCLUDE=%WCEROOT%\%OSVERSION%\%PLATFORM%\include;%WCEROOT%\%OSVERSION%\%PLATFORM%\MFC\include;%WCEROOT%\%OSVERSION%\%PLATFORM%\ATL\include;
+set LIB=%WCEROOT%\%OSVERSION%\%PLATFORM%\lib\arm;%WCEROOT%\%OSVERSION%\%PLATFORM%\MFC\lib\arm;%WCEROOT%\%OSVERSION%\%PLATFORM%\ATL\lib\arm;
+
+GOTO MAKE
+
+:HPC2000
+set OSVERSION=WCE300
+set PLATFORM=hpc2000
+set PATH=%WCEROOT%\bin;%WCEROOT%\%OSVERSION%\bin;%path%
+set INCLUDE=%WCEROOT%\%OSVERSION%\%PLATFORM%\include;%WCEROOT%\%OSVERSION%\%PLATFORM%\MFC\include;%WCEROOT%\%OSVERSION%\%PLATFORM%\ATL\include;
+set LIB=%WCEROOT%\%OSVERSION%\%PLATFORM%\lib\arm;%WCEROOT%\%OSVERSION%\%PLATFORM%\MFC\lib\arm;%WCEROOT%\%OSVERSION%\%PLATFORM%\ATL\lib\arm;
 
 :MAKE
+Title Environment %OSVERSION% %PLATFORM%
 nmake -f make_wince.mak %1 %2 %3 %4
