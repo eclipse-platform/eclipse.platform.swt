@@ -409,6 +409,9 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		int labelWidth = OS.GTK_WIDGET_WIDTH (handle);
 		int labelHeight = OS.GTK_WIDGET_HEIGHT (handle);
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
+		int widgetHandle = frameHandle != 0 ? frameHandle : handle;
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (widgetHandle, requisition);
 	}
 	return changed;
 }
