@@ -254,8 +254,7 @@ public Cursor(Device device, int style) {
  *    <li>ERROR_NULL_ARGUMENT - if the source is null</li>
  *    <li>ERROR_NULL_ARGUMENT - if the mask is null and the source does not have a mask</li>
  *    <li>ERROR_INVALID_ARGUMENT - if the source and the mask are not the same 
- *          size, or either is not of depth one, or if the hotspot is outside 
- *          the bounds of the image</li>
+ *          size, or if the hotspot is outside the bounds of the image</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES - if a handle could not be obtained for cursor creation</li>
@@ -276,14 +275,14 @@ public Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int
 	if (mask.width != source.width || mask.height != source.height) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	/* Check color depths */
-	if (mask.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (source.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	/* Convert depth to 1 */
+	mask = ImageData.convertMask(mask);
+	source = ImageData.convertMask(source);
 
 	/* Make sure source and mask scanline pad is 2 */
 	byte[] sourceData = ImageData.convertPad(source.data, source.width, source.height, source.depth, source.scanlinePad, 2);

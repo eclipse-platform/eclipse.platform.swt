@@ -559,10 +559,8 @@ public Image(Device device, ImageData data) {
 /**
  * Constructs an instance of this class, whose type is 
  * <code>SWT.ICON</code>, from the two given <code>ImageData</code>
- * objects. The two images must be the same size, and the mask image
- * must have a color depth of 1. Pixel transparency in either image
- * will be ignored. If either image is an icon to begin with, an
- * exception is thrown.
+ * objects. The two images must be the same size. Pixel transparency
+ * in either image will be ignored.
  * <p>
  * The mask image should contain white wherever the icon is to be visible,
  * and black wherever the icon is to be transparent. In addition,
@@ -577,9 +575,7 @@ public Image(Device device, ImageData data) {
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if device is null and there is no current device</li>
  *    <li>ERROR_NULL_ARGUMENT - if either the source or mask is null </li>
- *    <li>ERROR_INVALID_ARGUMENT - if source and mask are different sizes or
- *          if the mask is not monochrome, or if either the source or mask
- *          is already an icon</li>
+ *    <li>ERROR_INVALID_ARGUMENT - if source and mask are different sizes</li>
  * </ul>
  * @exception SWTError <ul>
  *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
@@ -593,38 +589,7 @@ public Image(Device device, ImageData source, ImageData mask) {
 	if (source.width != mask.width || source.height != mask.height) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	if (mask.depth != 1) {
-		/*
-		 * Feature in Windows. 1-bit DIB sections are buggy on Win98, so we
-		 * create 4-bit DIBs when given a 1-bit ImageData. In order to allow
-		 * users to draw on the masks, we must also support 4-bit masks in
-		 * icon creation by converting them into 1-bit masks.
-		 */
-		if (mask.depth != 4) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		PaletteData palette = new PaletteData(new RGB[] {new RGB(0, 0, 0), new RGB(255,255,255)});
-		ImageData tempMask = new ImageData(mask.width, mask.height, 1, palette);
-		/* Find index of black in mask palette */
-		RGB[] rgbs = mask.getRGBs();
-		int blackIndex = 0;
-		while (blackIndex < rgbs.length) {
-			if (rgbs[blackIndex].equals(palette.colors[0])) break;
-			blackIndex++;
-		}
-		if (blackIndex == rgbs.length) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-		int[] pixels = new int[mask.width];
-		for (int y = 0; y < mask.height; y++) {
-			mask.getPixels(0, y, mask.width, pixels, 0);
-			for (int i = 0; i < pixels.length; i++) {
-				if (pixels[i] == blackIndex) {
-					pixels[i] = 0;
-				} else {
-					pixels[i] = 1;
-				}
-			}
-			tempMask.setPixels(0, y, mask.width, pixels, 0);
-		}
-		mask = tempMask;
-	}
+	mask = ImageData.convertMask(mask);
 	init(device, this, source, mask);
 	if (device.tracking) device.new_Object(this);	
 }

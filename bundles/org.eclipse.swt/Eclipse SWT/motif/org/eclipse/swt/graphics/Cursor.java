@@ -174,14 +174,14 @@ public Cursor (Device device, ImageData source, ImageData mask, int hotspotX, in
 	if (mask.width != source.width || mask.height != source.height) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
-	/* Check depths */
-	if (mask.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	if (source.depth != 1) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	/* Check the hotspots */
 	if (hotspotX >= source.width || hotspotX < 0 ||
 		hotspotY >= source.height || hotspotY < 0) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	}
+	/* Convert depth to 1 */
+	source = ImageData.convertMask(source);
+	mask = ImageData.convertMask(mask);
 	byte[] sourceData = new byte[source.data.length];
 	byte[] maskData = new byte[mask.data.length];
 	/* Swap the bits in each byte and convert to appropriate scanline pad */
