@@ -322,7 +322,7 @@ LRESULT WM_NCHITTEST (int wParam, int lParam) {
 }
 
 LRESULT WM_MOUSEMOVE (int wParam, int lParam) {
-	LRESULT result = super.WM_SIZE (wParam, lParam);
+	LRESULT result = super.WM_MOUSEMOVE (wParam, lParam);
 	if (result != null) return result;
 	/*
 	* Feature in Windows.  In version 6.00 of COMCTL32.DLL,
