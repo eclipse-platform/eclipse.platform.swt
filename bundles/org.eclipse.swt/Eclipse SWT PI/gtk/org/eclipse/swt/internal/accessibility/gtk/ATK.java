@@ -72,6 +72,14 @@ public class ATK extends OS {
 	public static final int ATK_TEXT_BOUNDARY_LINE_END = 6;
 	public static final int ATK_XY_WINDOW = 1;
 	
+	/** Signals */
+	public static final byte[] selection_changed = OS.signal ("selection_changed");
+	public static final byte[] text_changed_insert = OS.signal ("text_changed::insert");
+	public static final byte[] text_changed_delete = OS.signal ("text_changed::delete");
+	public static final byte[] text_caret_moved = OS.signal ("text_caret_moved");
+	public static final byte[] text_selection_changed = OS.signal ("text_selection_changed");
+	
+	/** Native methods */
 	public static final synchronized native int ATK_ACTION_GET_IFACE (int obj);
 	public static final synchronized native int ATK_COMPONENT_GET_IFACE(int atkHandle);
 	public static final synchronized native int ATK_OBJECT_FACTORY_CLASS (int klass);

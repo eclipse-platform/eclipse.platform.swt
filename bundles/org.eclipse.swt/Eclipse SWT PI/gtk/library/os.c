@@ -650,6 +650,19 @@ JNIEXPORT jint JNICALL OS_NATIVE(g_1signal_1connect_1after)
 }
 #endif
 
+#ifndef NO_g_1signal_1emit_1by_1name__I_3B
+JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1emit_1by_1name__I_3B)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1)
+{
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "g_1signal_1emit_1by_1name__I_3B\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	NATIVE_EXIT(env, that, "g_1signal_1emit_1by_1name__I_3B\n")
+}
+#endif
+
 #ifndef NO_g_1signal_1emit_1by_1name__I_3BI
 JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1emit_1by_1name__I_3BI)
 	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2)
@@ -660,6 +673,19 @@ JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1emit_1by_1name__I_3BI)
 	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1, arg2);
 	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
 	NATIVE_EXIT(env, that, "g_1signal_1emit_1by_1name__I_3BI\n")
+}
+#endif
+
+#ifndef NO_g_1signal_1emit_1by_1name__I_3BII
+JNIEXPORT void JNICALL OS_NATIVE(g_1signal_1emit_1by_1name__I_3BII)
+	(JNIEnv *env, jclass that, jint arg0, jbyteArray arg1, jint arg2, jint arg3)
+{
+	jbyte *lparg1=NULL;
+	NATIVE_ENTER(env, that, "g_1signal_1emit_1by_1name__I_3BII\n")
+	if (arg1) lparg1 = (*env)->GetByteArrayElements(env, arg1, NULL);
+	g_signal_emit_by_name((gpointer)arg0, (const gchar *)lparg1, arg2, arg3);
+	if (arg1) (*env)->ReleaseByteArrayElements(env, arg1, lparg1, JNI_ABORT);
+	NATIVE_EXIT(env, that, "g_1signal_1emit_1by_1name__I_3BII\n")
 }
 #endif
 

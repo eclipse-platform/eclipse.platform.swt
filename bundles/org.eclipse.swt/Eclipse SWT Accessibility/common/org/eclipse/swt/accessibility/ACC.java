@@ -64,4 +64,7 @@ public class ACC {
 	public static final int CHILDID_SELF = -1;
 	public static final int CHILDID_NONE = -2;
 	public static final int CHILDID_MULTIPLE = -3;
+	
+	public static final int TEXT_INSERT = 0;
+	public static final int TEXT_DELETE = 1;
 }
