@@ -814,6 +814,7 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	OS.GetWindowActivationScope (shellHandle, outScope); 
 	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
 	display.setMenuBar (menuBar);
+	if (menuBar != null) OS.DrawMenuBar ();
 	activate = true;
 	sendEvent (SWT.Activate);
 	if (isDisposed ()) return result;
