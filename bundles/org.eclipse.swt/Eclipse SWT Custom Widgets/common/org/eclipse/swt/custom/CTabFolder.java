@@ -1899,25 +1899,19 @@ void onMouse(Event event) {
 				chevronImageState = HOT;
 				redraw(chevronRect.x, chevronRect.y, chevronRect.width, chevronRect.height, false);
 				if (!selected) return;
-				Rectangle rect = new Rectangle(chevronRect.x, onBottom ? getSize().y - borderBottom - highlight_header - tabHeight : borderTop, chevronRect.width, tabHeight + highlight_header);
-				if (single && selectedIndex != -1){
-					rect = items[selectedIndex].getBounds();
-					rect.height += highlight_header;
-					if (onBottom) rect.y -= highlight_header;
-				}
 				CTabFolderEvent e = new CTabFolderEvent(this);
 				e.widget = this;
 				e.time = event.time;
-				e.x = rect.x;
-				e.y = rect.y;
-				e.width = rect.width;
-				e.height = rect.height;
+				e.x = chevronRect.x;
+				e.y = chevronRect.y;
+				e.width = chevronRect.width;
+				e.height = chevronRect.height;
 				e.doit = true;
 				for (int i = 0; i < folderListeners.length; i++) {
 					folderListeners[i].showList(e);
 				}
 				if (e.doit && !isDisposed()) {
-					showList(rect, single ? SWT.LEFT : SWT.RIGHT);
+					showList(chevronRect);
 				}
 				return;
 			}
@@ -3262,7 +3256,7 @@ public void showItem (CTabItem item) {
 		setLastIndex(index);
 	}
 }
-void showList (Rectangle rect, int alignment) {
+void showList (Rectangle rect) {
 	if (items.length == 0) return;
 	// if all items are showing, no list is required
 	int lastIndex = getLastIndex();
@@ -3289,10 +3283,6 @@ void showList (Rectangle rect, int alignment) {
 			}
 		});
 	}
-	// Code commented due to bug 53404
-	//Point size = menu.getSize();
-	//int x = alignment == SWT.LEFT ? rect.x : rect.x + rect.width - size.x;
-	//int y = onBottom ? rect.y - size.y : rect.y + rect.height;
 	int x = rect.x;
 	int y = rect.y + rect.height;
 	Point location = getDisplay().map(this, null, x, y);
@@ -3394,15 +3384,15 @@ boolean updateTabHeight(int oldHeight, boolean force){
 		int d = tabHeight - 12;
 		curve = new int[]{0,13+d, 0,12+d, 3,12+d, 4,11+d, 6,11+d, 7,10+d, 8,10+d, 10,8+d, 11,8+d,
 				          12,7+d, 12+d,7,
-						  13+d,6, 14+d,6, 16+d,4, 17+d,4, 18+d,3, 20+d,3, 21+d,2, 24+d,2, 25+d,1}; 
-		curveWidth = 24+d;
-		curveIndent = curveWidth/2 - 5;	
+						  13+d,6, 14+d,6, 16+d,4, 17+d,4, 18+d,3, 20+d,3, 21+d,2, 25+d,2, 26+d,1}; 
+		curveWidth = 26+d;
+		curveIndent = curveWidth/3;	
 	} else {
 		int d = tabHeight - 12;
 		curve = new int[]{0,0, 0,1, 3,1, 4,2, 6,2, 7,3, 8,3, 10,5, 11,5,
 				          12,6, 12+d,6+d,
-				          13+d,7+d, 14+d,7+d, 16+d,9+d, 17+d,9+d, 18+d,10+d, 20+d,10+d, 21+d,11+d, 24+d,11+d, 25+d,12+d};
-		curveWidth = 24+d;
+				          13+d,7+d, 14+d,7+d, 16+d,9+d, 17+d,9+d, 18+d,10+d, 20+d,10+d, 21+d,11+d, 25+d,11+d, 26+d,12+d};
+		curveWidth = 26+d;
 		curveIndent = curveWidth/3;
 	}
 	notifyListeners(SWT.Resize, new Event());
