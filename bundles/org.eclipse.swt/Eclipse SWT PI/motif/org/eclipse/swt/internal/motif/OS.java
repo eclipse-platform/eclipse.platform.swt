@@ -78,6 +78,7 @@ public class OS {
 	public static final int CWStackMode = 0x40;
 	public static final int CWWidth = 0x4;
 	public static final int CapButt = 0x1;
+	public static final int CapProjecting = 3;
 	public static final int CapRound = 0x2;
 	public static final int ClientMessage = 33;
 	public static final int Complex = 0;
@@ -99,8 +100,10 @@ public class OS {
 	public static final int FocusOut = 10;
 	public static final int ForgetGravity = 0;
 	public static final int GCBackground = 0x8;
+	public static final int GCCapStyle = 1 << 6;
 	public static final int GCForeground = 0x4;
 	public static final int GCFunction = 0x1;
+	public static final int GCJoinStyle = 1 << 7;
 	public static final int GCLineWidth = 0x10;
 	public static final int GXand = 0x1;
 	public static final int GXcopy = 0x3;
@@ -114,6 +117,8 @@ public class OS {
 	public static final int IsUnviewable = 0x1;
 	public static final int IsViewable = 0x2;
 	public static final int JoinMiter = 0x0;
+	public static final int JoinRound = 0x1;
+	public static final int JoinBevel = 0x2;
 	public static final int KeyPress = 2;
 	public static final int KeyPressMask = 1 << 0;
 	public static final int KeyRelease = 3;
