@@ -228,7 +228,6 @@ public boolean getStippled () {
 }
 
 void moveRectangles(int xChange, int yChange) {
-	Rectangle boundingRectangle = computeBounds();
 	for (int i = 0; i < rectangles.length; i++) {
 		rectangles [i].x += xChange;
 		rectangles [i].y += yChange;
@@ -281,7 +280,7 @@ public boolean open () {
 					Event event = new Event();
 					event.x = newX [0];
 					event.y = newY [0];
-					if ((style | SWT.RESIZE) != 0) {
+					if ((style & SWT.RESIZE) != 0) {
 						sendEvent (SWT.Resize, event);
 					} else {
 						sendEvent (SWT.Move, event);
@@ -343,7 +342,7 @@ public boolean open () {
 						Event event = new Event();
 						event.x = oldX[0] + xChange;
 						event.y = oldY[0] + yChange;
-						if ((style | SWT.RESIZE) != 0) {
+						if ((style & SWT.RESIZE) != 0) {
 							sendEvent (SWT.Resize,event);
 						} else {
 							sendEvent (SWT.Move,event);
@@ -356,12 +355,12 @@ public boolean open () {
 						 */
 						if (isDisposed()) return false;
 						drawRectangles ();
-						Rectangle boundingRectangle = computeBounds();
-						newX [0] = boundingRectangle.x + boundingRectangle.width / 2;
+						Rectangle bounds = computeBounds();
+						newX [0] = bounds.x + bounds.width / 2;
 						if ((style & SWT.RESIZE) != 0) {
-							newY [0] = boundingRectangle.y + boundingRectangle.height / 2;
+							newY [0] = bounds.y + bounds.height / 2;
 						} else {
-							newY [0] = boundingRectangle.y;
+							newY [0] = bounds.y;
 						}
 						OS.XWarpPointer (xDisplay, SWT.NONE, xWindow, 0, 0, 0, 0, newX [0], newY [0]);
 						/*
@@ -406,10 +405,10 @@ public void removeControlListener (ControlListener listener) {
 	eventTable.unhook (SWT.Move, listener);
 }
 void resizeRectangles(int xChange, int yChange) {
-	Rectangle boundingRectangle = computeBounds();
+	Rectangle bounds = computeBounds();
 	for (int i = 0; i < rectangles.length; i++) {
-		rectangles [i].width += rectangles [i].width * xChange / Math.max (1, boundingRectangle.width);
-		rectangles [i].height += rectangles [i].height * yChange / Math.max (1, boundingRectangle.height);
+		rectangles [i].width += rectangles [i].width * xChange / Math.max (1, bounds.width);
+		rectangles [i].height += rectangles [i].height * yChange / Math.max (1, bounds.height);
 	}
 }
 /**
