@@ -190,6 +190,16 @@ protected Point computeSize (Composite composite, int wHint, int hHint, boolean 
 	return size;
 }
 
+Point computeSize (Control control, boolean flushCache) {
+	int wHint = SWT.DEFAULT, hHint = SWT.DEFAULT;
+	FormData data = (FormData) control.getLayoutData ();
+	if (data != null) {
+		wHint = data.width;
+		hHint = data.height;
+	}
+	return control.computeSize (wHint, hHint, flushCache);
+}
+
 /**
  * Computes the preferred height of the form with
  * respect to the preferred height of the control.
@@ -210,16 +220,6 @@ int computeWidth (FormData data) {
 	return width.solveY (data.cacheWidth);
 }
 
-Point getSize (Control control, boolean flushCache) {
-	int wHint = SWT.DEFAULT, hHint = SWT.DEFAULT;
-	FormData data = (FormData) control.getLayoutData ();
-	if (data != null) {
-		wHint = data.width;
-		hHint = data.height;
-	}
-	return control.computeSize (wHint, hHint, flushCache);
-}
-
 protected void layout (Composite composite, boolean flushCache) {
 	Rectangle rect = composite.getClientArea ();
 	int x = rect.x + marginWidth;
@@ -233,7 +233,7 @@ Point layout (Composite composite, boolean move, int x, int y, int width, int he
 	Control [] children = composite.getChildren ();
 	for (int i = 0; i < children.length; i++) {
 		Control child = children [i];
-		Point pt = getSize (child, flushCache);
+		Point pt = computeSize (child, flushCache);
 		FormData data = (FormData) child.getLayoutData ();
 		if (data == null) {
 			child.setLayoutData (data = new FormData ());
