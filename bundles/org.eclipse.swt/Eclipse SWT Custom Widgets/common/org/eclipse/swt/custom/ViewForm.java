@@ -487,10 +487,6 @@ public void setLayout (Layout layout) {
 	checkWidget();
 	return;
 }
-/**
- * UNDER CONSTRUCTION
- * @since 3.0
- */
 void setSelectionBackground (Color color) {
 	checkWidget();
 	if (selectionBackground == color) return;

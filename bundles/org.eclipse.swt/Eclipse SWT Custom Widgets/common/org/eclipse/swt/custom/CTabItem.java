@@ -21,7 +21,7 @@ import org.eclipse.swt.widgets.*;
  * 
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>(none)</dd>
+ * <dd>SWT.CLOSE</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
