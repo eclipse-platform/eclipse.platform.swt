@@ -267,13 +267,6 @@ public class OS {
 	public static native int GetUserFocusWindow();
 	
 	public static native int GetCurrentEventLoop();
-	public static native int NewEventLoopTimerUPP(Object target, String method);
-	public static native int NewEventLoopTimerUPP2(Object target, String method);
-	public static native int NewEventLoopTimerUPP3(Object target, String method);
-	public static native int NewTextCallbackUPP(Object target, String method);
-	//public static native int NewMouseMovedCallbackUPP(Object target, String method);
-	public static native int NewWindowCallbackUPP(Object target, String method);
-	public static native int NewApplicationCallbackUPP(Object target, String method);
 
 	public static native int InstallEventLoopTimer(int inEventLoop, double inFireDelay, 
 			double inInterval, int inTimerProc, int inTimerData, int[] outTimer);
@@ -743,7 +736,6 @@ public class OS {
 
 	public static native int CreateNewMenu(int menuID, int menuAttributes, int[] menuRef);
 	public static native void DisposeMenu(int mHandle);
-	public static native int NewMenuCallbackUPP(Object target, String method);
 	public static native int InitContextualMenus();
 
 	public static native void InsertMenu(int mHandle, short beforeID);
@@ -881,12 +873,9 @@ public class OS {
 	public static final int kEventControlBoundsChanged	= 154;
 	public static native void SetControlAction(int cHandle, int actionProc);
 
-	public static native int NewControlCallbackUPP(Object target, String method);
 	public static native int NewControl(int windowHandle, boolean initiallyVisible, short initial, short min, short max, short procID);
 	public static native void DisposeControl(int cHandle);
-	
-	//public static native int CreatePushButtonWithIconControl(int wHandle, int ciconHandle, int sHandle, int[] outControl);
-	
+		
 	public static native int GetRootControl(int windowHandle, int[] cHandle);
 	public static native int CreateRootControl(int windowHandle, int[] cHandle);
 	public static native int EmbedControl(int cHandle, int parentControlHandle);
@@ -934,9 +923,9 @@ public class OS {
 	public static native int GetControlData(int cHandle, short part, int tag, int[] data);
 	public static native int SetControlData(int cHandle, short part, int tag, int data);
 	public static native int SetControlData(int cHandle, short part, int tag, short[] data);
-	public static native int NewControlActionUPP(Object target, String method);
-	public static native int NewControlUserPaneDrawUPP(Object target, String method);
-	public static native int NewUserPaneHitTestUPP(Object target, String method);
+	//public static native int NewControlActionUPP(Object target, String method);
+	//public static native int NewControlUserPaneDrawUPP(Object target, String method);
+	//public static native int NewUserPaneHitTestUPP(Object target, String method);
 	public static native short HandleControlKey(int cHandle, short keyCode, char charCode, int modifiers);
 	public static native int SetControlFontStyle(int cHandle, short font, short size, short style);
 	public static native int SetUpControlBackground(int cHandle, short depth, boolean isColorDevice);
@@ -987,9 +976,9 @@ public class OS {
 	
 	public static native int AutoSizeDataBrowserListViewColumns(int cHandle);
 	
-	public static native int NewDataBrowserDataCallbackUPP(Object target, String method);
-	public static native int NewDataBrowserCompareCallbackUPP(Object target, String method);
-	public static native int NewDataBrowserItemNotificationCallbackUPP(Object target, String method);
+	//public static native int NewDataBrowserDataCallbackUPP(Object target, String method);
+	//public static native int NewDataBrowserCompareCallbackUPP(Object target, String method);
+	//public static native int NewDataBrowserItemNotificationCallbackUPP(Object target, String method);
 	
 	public static native void setDataBrowserCallbacks(int cHandle, int dataCallbackUPP,
 										int compareCallbackUPP, int itemNotificationCallbackUPP);

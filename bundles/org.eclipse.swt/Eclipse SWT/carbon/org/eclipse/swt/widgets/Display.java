@@ -9,6 +9,7 @@ package org.eclipse.swt.widgets;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
+import org.eclipse.swt.internal.Callback;
 import org.eclipse.swt.internal.carbon.*;
 
 /**
@@ -374,7 +375,7 @@ public void beep () {
 	checkDevice ();
 	OS.SysBeep((short)100);
 }
-int caretProc (int clientData, int id) {
+int caretProc (int id, int clientData) {
 	if (id != caretID) {
 		return 0;
 	}
@@ -856,8 +857,10 @@ protected void init () {
 	super.init ();
 	
 	/* Create the callbacks */
-	fApplicationProc= OS.NewApplicationCallbackUPP(this, "handleApplicationCallback");
-	if (fApplicationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//fApplicationProc= OS.NewApplicationCallbackUPP(this, "handleApplicationCallback");
+	//if (fApplicationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	Callback cb= new Callback(this, "handleApplicationCallback", 3);
+	fApplicationProc= cb.getAddress();
 		
 	int[] mask2= new int[] {
 		OS.kEventClassCommand, OS.kEventProcessCommand,
@@ -880,41 +883,59 @@ protected void init () {
 	if (OS.InstallEventHandler(OS.GetApplicationEventTarget(), fApplicationProc, mask2, 0) != OS.kNoErr)
 		error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	fWindowProc= OS.NewWindowCallbackUPP(this, "handleWindowCallback");
-	if (fWindowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//fWindowProc= OS.NewWindowCallbackUPP(this, "handleWindowCallback");
+	//if (fWindowProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "handleWindowCallback", 3);
+	fWindowProc= cb.getAddress();
 
-	timerProc = OS.NewEventLoopTimerUPP(this, "timerProc");
-	if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//timerProc = OS.NewEventLoopTimerUPP(this, "timerProc");
+	//if (timerProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "timerProc", 2);
+	timerProc= cb.getAddress();
 
-	caretProc = OS.NewEventLoopTimerUPP2(this, "caretProc");
-	if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//caretProc = OS.NewEventLoopTimerUPP2(this, "caretProc");
+	//if (caretProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "caretProc", 2);
+	caretProc= cb.getAddress();
 	
-	fControlActionProc= OS.NewControlActionUPP(this, "handleControlAction");
-	if (fControlActionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//fControlActionProc= OS.NewControlActionUPP(this, "handleControlAction");
+	//if (fControlActionProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "handleControlAction", 2);
+	fControlActionProc= cb.getAddress();
 	
-	fUserPaneDrawProc= OS.NewControlUserPaneDrawUPP(this, "handleUserPaneDraw");
-	if (fUserPaneDrawProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//fUserPaneDrawProc= OS.NewControlUserPaneDrawUPP(this, "handleUserPaneDraw");
+	//if (fUserPaneDrawProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "handleUserPaneDraw", 2);
+	fUserPaneDrawProc= cb.getAddress();
 	
-	fUserPaneHitTestProc= OS.NewUserPaneHitTestUPP(this, "handleUserPaneHitTest");
-	if (fUserPaneHitTestProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//fUserPaneHitTestProc= OS.NewUserPaneHitTestUPP(this, "handleUserPaneHitTest");
+	//if (fUserPaneHitTestProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "handleUserPaneHitTest", 3);
+	fUserPaneHitTestProc= cb.getAddress();
 	
-	fDataBrowserDataProc= OS.NewDataBrowserDataCallbackUPP(this, "handleDataBrowserDataCallback");
-	if (fDataBrowserDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	fDataBrowserCompareProc= OS.NewDataBrowserCompareCallbackUPP(this, "handleDataBrowserCompareCallback");
-	if (fDataBrowserCompareProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	fDataBrowserItemNotificationProc= OS.NewDataBrowserItemNotificationCallbackUPP(this, "handleDataBrowserItemNotificationCallback");
-	if (fDataBrowserItemNotificationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//fDataBrowserDataProc= OS.NewDataBrowserDataCallbackUPP(this, "handleDataBrowserDataCallback");
+	//if (fDataBrowserDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "handleDataBrowserDataCallback", 5);
+	fDataBrowserDataProc= cb.getAddress();
+	//fDataBrowserCompareProc= OS.NewDataBrowserCompareCallbackUPP(this, "handleDataBrowserCompareCallback");
+	//if (fDataBrowserCompareProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "handleDataBrowserCompareCallback", 4);
+	fDataBrowserCompareProc= cb.getAddress();
+	//fDataBrowserItemNotificationProc= OS.NewDataBrowserItemNotificationCallbackUPP(this, "handleDataBrowserItemNotificationCallback");
+	//if (fDataBrowserItemNotificationProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "handleDataBrowserItemNotificationCallback", 3);
+	fDataBrowserItemNotificationProc= cb.getAddress();
 	
-	fMenuProc= OS.NewMenuCallbackUPP(this, "handleMenuCallback");
-	if (fMenuProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//fMenuProc= OS.NewMenuCallbackUPP(this, "handleMenuCallback");
+	//if (fMenuProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "handleMenuCallback", 3);
+	fMenuProc= cb.getAddress();
 	
-	/*
-	fControlProc= OS.NewControlCallbackUPP(this, "handleControlCallback");
-	if (fControlProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
-	*/
+	//int textInputProc= OS.NewTextCallbackUPP(this, "handleTextCallback");
+	//if (textInputProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "handleTextCallback", 3);
+	int textInputProc= cb.getAddress();
 	
-	int textInputProc= OS.NewTextCallbackUPP(this, "handleTextCallback");
-	if (textInputProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	int[] mask= new int[] {
 		// OS.kEventClassTextInput, OS.kEventTextInputUnicodeForKeyEvent,
 		
@@ -925,8 +946,10 @@ protected void init () {
 	if (OS.InstallEventHandler(OS.GetUserFocusEventTarget(), textInputProc, mask, 0) != OS.kNoErr)
 		error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
-	mouseHoverProc = OS.NewEventLoopTimerUPP3(this, "mouseHoverProc");
-	if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	//mouseHoverProc = OS.NewEventLoopTimerUPP3(this, "mouseHoverProc");
+	//if (mouseHoverProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	cb= new Callback(this, "mouseHoverProc", 2);
+	mouseHoverProc= cb.getAddress();
 
 	buttonFont = Font.carbon_new (this, getThemeFont(OS.kThemeSmallSystemFont));
 	buttonShadowThickness= 1;
@@ -1056,7 +1079,7 @@ static boolean isValidClass (Class clazz) {
 	int index = name.lastIndexOf ('.');
 	return name.substring (0, index + 1).equals (PACKAGE_PREFIX);
 }
-int mouseHoverProc (int handle, int id) {
+int mouseHoverProc (int id, int handle) {
 	if (mouseHoverID != 0) OS.RemoveEventLoopTimer(mouseHoverID);
 	mouseHoverID = mouseHoverHandle = 0;
 	Widget widget = WidgetTable.get (handle);
@@ -1639,7 +1662,7 @@ public void timerExec (int milliseconds, Runnable runnable) {
 		timerList [index] = runnable;
 	}
 }
-int timerProc (int index, int id) {
+int timerProc (int id, int index) {
 	if (id != 0)
 		OS.RemoveEventLoopTimer(id);
 	if (timerList == null) return 0;
@@ -1761,12 +1784,12 @@ static String convertToLf(String text) {
 	
 	//---- callbacks
 	
-	private void handleControlAction(int cHandle, short partCode) {
-		windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, partCode, true));
+	private int handleControlAction(int cHandle, int partCode) {
+		return windowProc(cHandle, SWT.Selection, new MacControlEvent(cHandle, partCode, true));
 	}
 
-	private void handleUserPaneDraw(int cHandle, short partCode) {
-		windowProc(cHandle, SWT.Paint, new MacControlEvent(cHandle, fUpdateRegion));
+	private int handleUserPaneDraw(int cHandle, int partCode) {
+		return windowProc(cHandle, SWT.Paint, new MacControlEvent(cHandle, fUpdateRegion));
 	}
 		
 	private int handleUserPaneHitTest(int cHandle, int x, int y) {
@@ -1776,7 +1799,7 @@ static String convertToLf(String text) {
 		return 111;
 	}
 		
-	private int handleDataBrowserDataCallback(int cHandle, int rowID, int colID, int itemData) {
+	private int handleDataBrowserDataCallback(int cHandle, int rowID, int colID, int itemData, int setData) {
 		Widget widget= WidgetTable.get(cHandle);
 		if (widget instanceof List) {
 			List list= (List) widget;
@@ -1802,7 +1825,7 @@ static String convertToLf(String text) {
 		return OS.kNoErr;
 	}
 	
-	private int handleMenuCallback(int eHandle, int mHandle) {
+	private int handleMenuCallback(int nextHandler, int eHandle, int mHandle) {
 		switch (OS.GetEventKind(eHandle)) {
 		case OS.kEventMenuPopulate:
 		case OS.kEventMenuOpening:
@@ -1826,16 +1849,7 @@ static String convertToLf(String text) {
 		return OS.kNoErr;
 	}
 	
-	/*
-	private int handleControlCallback(int eHandle, int cHandle) {
-		Widget w= findWidget(cHandle);
-		if (w instanceof Scrollable)
-			((Scrollable)w).handleResizeScrollView(cHandle);
-		return OS.kNoErr;
-	}
-	*/
-		
-	private int handleTextCallback(int nextHandler, int eRefHandle) {
+	private int handleTextCallback(int nextHandler, int eRefHandle, int userData) {
 		
 		int eventClass= OS.GetEventClass(eRefHandle);
 		int eventKind= OS.GetEventKind(eRefHandle);

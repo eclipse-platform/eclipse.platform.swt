@@ -39,39 +39,6 @@ static int checkStatus(int line, int rc) {
     return rc;
 }
 
-
-// callbacks
-struct Closure {
-	JNIEnv *env;
-	jobject target;
-	jmethodID action;
-};
-
-static struct Closure *createClosure(JNIEnv *env, jobject target, jstring method, const char *signature) {
-	const char *name;
-	jclass clazz;
-	struct Closure *closure= malloc(sizeof(struct Closure));
-	closure->env= env;
-	closure->target= (*env)->NewGlobalRef(env, target);
-	clazz= (*env)->GetObjectClass(env, target);
-	name= (*env)->GetStringUTFChars(env, method, NULL);
-	closure->action= (*env)->GetMethodID(env, clazz, name, signature);
-	if (closure->action == 0) {
-		fprintf(stderr, "can't find method: %s%s\n", name, signature);
-	}
-	(*env)->ReleaseStringUTFChars(env, method, name);
-
-	return closure;
-}
-
-//---- callback.c
-
-#define PLATFORM "carbon"
-
-JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_Callback_getPlatform(JNIEnv *env, jclass that) {
-	return (*env)->NewStringUTF(env, PLATFORM);
-}
-
 //---- fonts
 
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_FMGetFontFamilyFromName(JNIEnv *env, jclass zz,
@@ -272,72 +239,6 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlPopupMe
 }
 
 //---- DataBrowser
-
-static struct Closure *gDataBrowserDataCallbackClosure;
-static OSStatus dataBrowserDataCallback(ControlRef browser, DataBrowserItemID item, DataBrowserPropertyID property,
-								DataBrowserItemDataRef itemData, Boolean setValue) {
-	if (gDataBrowserDataCallbackClosure != NULL) {
-		JNIEnv *env= gDataBrowserDataCallbackClosure->env;
-		return (*env)->CallIntMethod(env, gDataBrowserDataCallbackClosure->target, gDataBrowserDataCallbackClosure->action,
-						(jint)browser, (jint)item, (jint)property, (jint)itemData);
-	}
-	return noErr;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewDataBrowserDataCallbackUPP(JNIEnv *env, jclass zz,
-					jobject target, jstring method) {
-					
-	if (gDataBrowserDataCallbackClosure != NULL)
-		return 0;
-	gDataBrowserDataCallbackClosure= createClosure(env, target, method, "(IIII)I");
-	return (jint) NewDataBrowserItemDataUPP(dataBrowserDataCallback);
-}
-
-///////////////////
-
-static struct Closure *gDataBrowserCompareCallbackClosure;
-static OSStatus dataBrowserCompareCallback(ControlRef browser, DataBrowserItemID item1ID, DataBrowserItemID item2ID,
-								DataBrowserItemDataRef itemData, DataBrowserPropertyID sortID) {
-	if (gDataBrowserCompareCallbackClosure != NULL) {
-		JNIEnv *env= gDataBrowserCompareCallbackClosure->env;
-		return (*env)->CallIntMethod(env, gDataBrowserCompareCallbackClosure->target, gDataBrowserCompareCallbackClosure->action,
-						(jint)browser, (jint)item1ID, (jint)item2ID, (jint)sortID);
-	}
-	return noErr;
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewDataBrowserCompareCallbackUPP(JNIEnv *env, jclass zz,
-					jobject target, jstring method) {
-					
-	if (gDataBrowserCompareCallbackClosure != NULL)
-		return 0;
-	gDataBrowserCompareCallbackClosure= createClosure(env, target, method, "(IIII)I");
-	return (jint) NewDataBrowserCompareUPP(dataBrowserCompareCallback);
-}
-
-///////////////////
-
-static struct Closure *gDataBrowserItemNotificationCallbackClosure;
-static void dataBrowserItemNotificationCallback(ControlRef browser, DataBrowserItemID item, DataBrowserItemNotification message) {
-	if (gDataBrowserItemNotificationCallbackClosure != NULL) {
-		JNIEnv *env= gDataBrowserItemNotificationCallbackClosure->env;
-		(*env)->CallIntMethod(env, gDataBrowserItemNotificationCallbackClosure->target, gDataBrowserItemNotificationCallbackClosure->action,
-						(jint)browser, (jint)item, (jint)message);
-	}
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewDataBrowserItemNotificationCallbackUPP(JNIEnv *env, jclass zz,
-					jobject target, jstring method) {
-					
-	if (gDataBrowserItemNotificationCallbackClosure != NULL) {
-		fprintf(stderr, "NewDataBrowserItemNotificationCallbackUPP: can't install more than one callback\n");
-		exit(-1);
-	}
-	gDataBrowserItemNotificationCallbackClosure= createClosure(env, target, method, "(III)I");
-	return (jint) NewDataBrowserItemNotificationUPP(dataBrowserItemNotificationCallback);
-}
-
-///////////////////
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_createDataBrowserControl(JNIEnv *env, jclass zz, jint wHandle) {
 	ControlRef controlRef;
@@ -2570,136 +2471,14 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetUpControlBackg
 	return (jint) RC(SetUpControlBackground((ControlRef) cHandle, depth, isColorDevice));
 }
 
-// ControlDraw callback
-static struct Closure *gControlDrawClosure;
-static pascal void userPaneDrawProc(ControlRef theControl, SInt16 thePart) {
-	if (gControlDrawClosure != NULL) {
-		JNIEnv *env= gControlDrawClosure->env;
-		(*env)->CallVoidMethod(env, gControlDrawClosure->target, gControlDrawClosure->action, (jint)theControl, (jshort)thePart);
-	}
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControlUserPaneDrawUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gControlDrawClosure != NULL)
-		return 0;
-	gControlDrawClosure= createClosure(env, target, method, "(IS)V");
-	return (jint) NewControlUserPaneDrawUPP(userPaneDrawProc);
-}
-
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_HandleControlKey(JNIEnv *env, jclass zz,
 			jint cHandle, jshort inKeyCode, jchar inCharCode, jint modifiers) {
 	return (ControlPartCode) HandleControlKey((ControlRef)cHandle, (SInt16)inKeyCode, (SInt16)inCharCode, (EventModifiers) modifiers);
 }
 
-// ActionProc callback
-static struct Closure *gControlActionClosure;
-static void controlActionProc(ControlRef theControl, ControlPartCode partCode) {
-	//fprintf(stderr, "callback: %ld %d\n", theControl, partCode);
-	if (gControlActionClosure != NULL) {
-		JNIEnv *env= gControlActionClosure->env;
-		(*env)->CallVoidMethod(env, gControlActionClosure->target, gControlActionClosure->action, (jint)theControl, (jshort)partCode);
-	}
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControlActionUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gControlActionClosure != NULL)
-		return 0;
-	gControlActionClosure= createClosure(env, target, method, "(IS)V");
-	return (jint) NewControlActionUPP(controlActionProc);
-}
-
-// Quit callback
-/*
-static pascal OSErr QuitAppleEventHandler(const AppleEvent *appleEvt, AppleEvent *reply, long refcon) {
-	struct Closure *closure= (struct Closure*) refcon;
-	JNIEnv *env= closure->env;
-	(*env)->CallVoidMethod(env, closure->target, closure->action);
-	return noErr;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_installQuitHandler(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	AEInstallEventHandler(kCoreEventClass, kAEQuitApplication, NewAEEventHandlerUPP(QuitAppleEventHandler),
-					   (long)createClosure(env, target, method, "()V"), false);
-}
-*/
-
-// Timer CallBack
-
-static struct Closure *gTimerClosure;
-static void EventLoopTimerProc(EventLoopTimerRef inTimer, void *inUserData) {
-	if (gTimerClosure != NULL) {
-		JNIEnv *env= gTimerClosure->env;
-		(*env)->CallIntMethod(env, gTimerClosure->target, gTimerClosure->action, (jint)inUserData, (jint)inTimer);
-	}
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewEventLoopTimerUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gTimerClosure != NULL)
-		return 0;
-	gTimerClosure= createClosure(env, target, method, "(II)I");
-	return (jint) NewEventLoopTimerUPP(EventLoopTimerProc);
-}
-
-// Caret Timer CallBack
-static struct Closure *gTimerClosure2;
-static void EventLoopTimerProc2(EventLoopTimerRef inTimer, void *inUserData) {
-	if (gTimerClosure2 != NULL) {
-		JNIEnv *env= gTimerClosure2->env;
-		(*env)->CallIntMethod(env, gTimerClosure2->target, gTimerClosure2->action, (jint)inUserData, (jint)inTimer);
-	}
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewEventLoopTimerUPP2(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gTimerClosure2 != NULL)
-		return 0;
-	gTimerClosure2= createClosure(env, target, method, "(II)I");
-	return (jint) NewEventLoopTimerUPP(EventLoopTimerProc2);
-}
-
-// Caret Timer CallBack
-static struct Closure *gTimerClosure3;
-static void EventLoopTimerProc3(EventLoopTimerRef inTimer, void *inUserData) {
-	if (gTimerClosure3 != NULL) {
-		JNIEnv *env= gTimerClosure3->env;
-		(*env)->CallIntMethod(env, gTimerClosure3->target, gTimerClosure3->action, (jint)inUserData, (jint)inTimer);
-	}
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewEventLoopTimerUPP3(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gTimerClosure3 != NULL)
-		return 0;
-	gTimerClosure3= createClosure(env, target, method, "(II)I");
-	return (jint) NewEventLoopTimerUPP(EventLoopTimerProc3);
-}
-
-// Menu Callback
-static struct Closure *gMenuClosure;
-static OSStatus MenuCallbackProc(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData) {
-	if (gMenuClosure != NULL) {
-		JNIEnv *env= gMenuClosure->env;
-		return (*env)->CallIntMethod(env, gMenuClosure->target, gMenuClosure->action, (jint)theEvent, (jint)userData);
-	}
-	return noErr;	 // Report success      
-} 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewMenuCallbackUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gMenuClosure != NULL)
-		return 0;
-	gMenuClosure= createClosure(env, target, method, "(II)I");
-	return (jint) NewEventHandlerUPP(MenuCallbackProc);
-}
-
-// Control Callback
-static struct Closure *gControlClosure;
-static OSStatus ControlCallbackProc(EventHandlerCallRef nextHandler, EventRef theEvent, void *userData) {
-	if (gControlClosure != NULL) {
-		JNIEnv *env= gControlClosure->env;
-		return (*env)->CallIntMethod(env, gControlClosure->target, gControlClosure->action, (jint)theEvent, (jint)userData);
-	}
-	return noErr;	 // Report success      
-} 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewControlCallbackUPP(JNIEnv *env, jclass zz, jobject target, jstring method) {
-	if (gControlClosure != NULL)
-		return 0;
-	gControlClosure= createClosure(env, target, method, "(II)I");
-	return (jint) NewEventHandlerUPP(ControlCallbackProc);
-}
 
 // User Pane hit test Callback
+/*
 static struct Closure *gUserPaneHitTestClosure;
 static pascal ControlPartCode UserPaneHitTestProc(ControlRef theControl, Point where) {
 	if (gUserPaneHitTestClosure != NULL) {
@@ -2716,83 +2495,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewUserPaneHitTes
 	gUserPaneHitTestClosure= createClosure(env, target, method, "(III)I");
 	return (jint) NewControlUserPaneHitTestUPP(UserPaneHitTestProc);
 }
-
-// Text Callback
-static struct Closure *gTextClosure;
-static OSStatus TextCallbackProc(EventHandlerCallRef nextHandler, EventRef eventRef, void *userData) {
-	if (gTextClosure != NULL) {
-		JNIEnv *env= gTextClosure->env;
-		return (*env)->CallIntMethod(env, gTextClosure->target, gTextClosure->action, (jint)nextHandler, (jint)eventRef);
-	}
-	return 0;
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewTextCallbackUPP(JNIEnv *env, jclass zz,
-					jobject target, jstring method) {
-	if (gTextClosure != NULL)
-		return 0;
-	gTextClosure= createClosure(env, target, method, "(II)I");
-	return (jint) NewEventHandlerUPP(TextCallbackProc);
-}
-
-// Mouse Moved Callback
-/*
-static struct Closure *gMouseMovedClosure;
-static OSStatus MouseMovedCallbackProc(EventHandlerCallRef nextHandler, EventRef eventRef, void *userData) {
-	if (gMouseMovedClosure != NULL) {
-		JNIEnv *env= gMouseMovedClosure->env;
-		return (*env)->CallIntMethod(env, gMouseMovedClosure->target, gMouseMovedClosure->action, (jint)nextHandler, (jint)eventRef);
-	}
-	return 0;
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewMouseMovedCallbackUPP(JNIEnv *env, jclass zz,
-					jobject target, jstring method) {
-	if (gMouseMovedClosure != NULL) {
-		fprintf(stderr, "NewMouseMovedCallbackUPP: can't install more than one callback\n");
-		exit(-1);
-	}
-	gMouseMovedClosure= createClosure(env, target, method, "(II)I");
-	return (jint) NewEventHandlerUPP(MouseMovedCallbackProc);
-}
 */
-
-// Window Callback
-static struct Closure *gWindowClosure;
-static OSStatus WindowCallbackProc(EventHandlerCallRef nextHandler, EventRef eventRef, void *userData) {
-	if (gWindowClosure != NULL) {
-		JNIEnv *env= gWindowClosure->env;
-		return (*env)->CallIntMethod(env, gWindowClosure->target, gWindowClosure->action, (jint)nextHandler, (jint)eventRef, (jint)userData);
-	}
-	return 0;
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewWindowCallbackUPP(JNIEnv *env, jclass zz,
-					jobject target, jstring method) {
-	if (gWindowClosure != NULL) {
-		fprintf(stderr, "NewWindowCallbackUPP: can't install more than one callback\n");
-		exit(-1);
-	}
-	gWindowClosure= createClosure(env, target, method, "(III)I");
-	return (jint) NewEventHandlerUPP(WindowCallbackProc);
-}
-
-// Application Callback
-static struct Closure *gApplicationClosure;
-static OSStatus ApplicationCallbackProc(EventHandlerCallRef nextHandler, EventRef eventRef, void *userData) {
-	if (gWindowClosure != NULL) {
-		JNIEnv *env= gApplicationClosure->env;
-		return (*env)->CallIntMethod(env, gApplicationClosure->target, gApplicationClosure->action, (jint)nextHandler,
-                                (jint)eventRef, (jint)userData);
-	}
-	return 0;
-}
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewApplicationCallbackUPP(JNIEnv *env, jclass zz,
-					jobject target, jstring method) {
-	if (gApplicationClosure != NULL) {
-		fprintf(stderr, "NewApplicationCallbackUPP: can't install more than one callback\n");
-		exit(-1);
-	}
-	gApplicationClosure= createClosure(env, target, method, "(III)I");
-	return (jint) NewEventHandlerUPP(ApplicationCallbackProc);
-}
 
 /*
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_RunApplicationEventLoop(JNIEnv *env, jclass zz) {
