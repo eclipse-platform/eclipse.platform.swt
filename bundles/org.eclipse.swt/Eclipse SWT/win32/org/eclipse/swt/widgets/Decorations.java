@@ -89,13 +89,13 @@ import org.eclipse.swt.graphics.*;
  */
 
 public class Decorations extends Canvas {
-	Image image;
+	Image image, icon;
 	Menu menuBar;
 	Menu [] menus;
 	MenuItem [] items;
 	Control savedFocus;
 	Button defaultButton, saveDefault;
-	int swFlags, hAccel, nAccel, hIcon;
+	int swFlags, hAccel, nAccel;
 	
 	/*
 	* The start value for WM_COMMAND id's.
@@ -630,10 +630,9 @@ void releaseWidget () {
 	}
 	menus = null;
 	super.releaseWidget ();
-	if (hIcon != 0) OS.DestroyIcon (hIcon);
-	hIcon = 0;
+	if (icon != null) icon.dispose ();
+	icon = image = null;
 	items = null;
-	image = null;
 	savedFocus = null;
 	defaultButton = saveDefault = null;
 	if (hAccel != 0 && hAccel != -1) OS.DestroyAcceleratorTable (hAccel);
@@ -768,34 +767,15 @@ public void setImage (Image image) {
 		return;
 	}
 	int hImage = 0;
+	if (icon != null) icon.dispose ();
+	icon = null;
 	if (image != null) {
-		if (hIcon != 0) OS.DestroyIcon (hIcon);
-		hIcon = 0;
 		switch (image.type) {
 			case SWT.BITMAP:
-				/* Copy the bitmap in case it's a DIB */
-				int hBitmap = image.handle;
-				BITMAP bm = new BITMAP ();
-				OS.GetObject (hBitmap, BITMAP.sizeof, bm);
-				byte [] lpvBits = new byte [(bm.bmWidth + 15) / 16 * 2 * bm.bmHeight];
-				int hMask = OS.CreateBitmap (bm.bmWidth, bm.bmHeight, 1, 1, lpvBits);
-				int hDC = OS.GetDC (handle);
-				int hdcMem = OS.CreateCompatibleDC (hDC);
-				int hColor = OS.CreateCompatibleBitmap (hDC, bm.bmWidth, bm.bmHeight);
-				OS.SelectObject (hdcMem, hColor);
-				int hdcBmp = OS.CreateCompatibleDC (hDC);
-				OS.SelectObject (hdcBmp, hBitmap);
-				OS.BitBlt (hdcMem, 0, 0, bm.bmWidth, bm.bmHeight, hdcBmp, 0, 0, OS.SRCCOPY);
-				ICONINFO info = new ICONINFO ();
-				info.fIcon = true;
-				info.hbmMask = hMask;
-				info.hbmColor = hColor;
-				hImage = hIcon = OS.CreateIconIndirect (info);
-				OS.DeleteObject (hMask);
-				OS.DeleteObject(hColor);
-				OS.DeleteDC (hdcBmp);
-				OS.DeleteDC (hdcMem);
-				OS.ReleaseDC (handle, hDC);
+				ImageData data = image.getImageData ();
+				ImageData mask = data.getTransparencyMask ();
+				icon = new Image (display, data, mask);
+				hImage = icon.handle;
 				break;
 			case SWT.ICON:
 				hImage = image.handle;
@@ -815,7 +795,7 @@ public void setImage (Image image) {
 	* The fix is to force a redraw.
 	*/
 	if (!OS.IsWinCE) {
-		if (hIcon == 0 && (style & SWT.BORDER) != 0) {
+		if (icon == null && (style & SWT.BORDER) != 0) {
 			int flags = OS.RDW_FRAME | OS.RDW_INVALIDATE;
 			OS.RedrawWindow (handle, null, 0, flags);
 		}
