@@ -276,25 +276,18 @@ public void dispose() {
 	if (handle == 0) return;
 	if (data.device.isDisposed()) return;
 	
-	/*
-	* The only way for pens and brushes to get
-	* selected into the HDC is for the receiver to
-	* create them. When we are destroying the
-	* hDC we also destroy any pens and brushes that
-	* we have allocated. This code assumes that it 
-	* is OK to delete stock objects. This will 
-	* happen when a GC is disposed and the user has 
-	* not caused new pens or brushes to be allocated.
-	*/
-	if (data.foreground != -1) {
+	/* Select stock pen and brush objects and free resources */
+	if (data.hPen != 0) {
 		int nullPen = OS.GetStockObject(OS.NULL_PEN);
-		int oldPen = OS.SelectObject(handle, nullPen);
-		OS.DeleteObject(oldPen);
+		OS.SelectObject(handle, nullPen);
+		OS.DeleteObject(data.hPen);
+		data.hPen = 0;
 	}
-	if (data.background != -1) {
+	if (data.hBrush != 0) {
 		int nullBrush = OS.GetStockObject(OS.NULL_BRUSH);
-		int oldBrush = OS.SelectObject(handle, nullBrush);
-		OS.DeleteObject(oldBrush);
+		OS.SelectObject(handle, nullBrush);
+		OS.DeleteObject(data.hBrush);
+		data.hBrush = 0;
 	}
 	
 	/*
@@ -2035,14 +2028,18 @@ void init(Drawable drawable, GCData data, int hDC) {
 	int foreground = data.foreground;
 	if (foreground != -1 && OS.GetTextColor(hDC) != foreground) {
 		OS.SetTextColor(hDC, foreground);
-		int hPen = OS.CreatePen(OS.PS_SOLID, 0, foreground);
-		OS.SelectObject(hDC, hPen);
+		int newPen = OS.CreatePen(OS.PS_SOLID, 0, foreground);
+		OS.SelectObject(hDC, newPen);
+		if (data.hPen != 0) OS.DeleteObject(data.hPen);
+		data.hPen = newPen;
 	}
 	int background = data.background;
 	if (background != -1 && OS.GetBkColor(hDC) != background) {
 		OS.SetBkColor(hDC, background);
-		int hBrush = OS.CreateSolidBrush(background);
-		OS.SelectObject(hDC, hBrush);
+		int newBrush = OS.CreateSolidBrush(background);
+		OS.SelectObject(hDC, newBrush);
+		if (data.hBrush != 0) OS.DeleteObject (data.hBrush);
+		data.hBrush = newBrush;
 	}
 	int hFont = data.hFont;
 	if (hFont != 0) OS.SelectObject (hDC, hFont);
@@ -2149,8 +2146,9 @@ public void setBackground (Color color) {
 	data.background = color.handle;
 	OS.SetBkColor (handle, color.handle);
 	int newBrush = OS.CreateSolidBrush (color.handle);
-	int oldBrush = OS.SelectObject (handle, newBrush);
-	OS.DeleteObject (oldBrush);
+	OS.SelectObject (handle, newBrush);
+	if (data.hBrush != 0) OS.DeleteObject (data.hBrush);
+	data.hBrush = newBrush;
 }
 
 /**
@@ -2261,10 +2259,11 @@ public void setForeground (Color color) {
 	int hPen = OS.GetCurrentObject(handle, OS.OBJ_PEN);
 	LOGPEN logPen = new LOGPEN();
 	OS.GetObject(hPen, LOGPEN.sizeof, logPen);
-	OS.SetTextColor (handle, color.handle);
-	int newPen = OS.CreatePen (logPen.lopnStyle, logPen.x, color.handle);
-	int oldPen = OS.SelectObject (handle, newPen);
-	OS.DeleteObject (oldPen);
+	OS.SetTextColor(handle, color.handle);
+	int newPen = OS.CreatePen(logPen.lopnStyle, logPen.x, color.handle);
+	OS.SelectObject(handle, newPen);
+	if (data.hPen != 0) OS.DeleteObject(data.hPen);
+	data.hPen = newPen;
 }
 
 /** 
@@ -2297,8 +2296,9 @@ public void setLineStyle(int lineStyle) {
 	if (logPen.lopnStyle == style) return;
 	OS.SetBkMode (handle, style == OS.PS_SOLID ? OS.OPAQUE : OS.TRANSPARENT);
 	int newPen = OS.CreatePen(style, logPen.x, logPen.lopnColor);
-	int oldPen = OS.SelectObject(handle, newPen);
-	OS.DeleteObject(oldPen);
+	OS.SelectObject(handle, newPen);
+	if (data.hPen != 0) OS.DeleteObject(data.hPen);
+	data.hPen = newPen;
 }
 
 /** 
@@ -2320,8 +2320,9 @@ public void setLineWidth(int lineWidth) {
 	OS.GetObject(hPen, LOGPEN.sizeof, logPen);
 	if (logPen.x == lineWidth) return;
 	int newPen = OS.CreatePen(logPen.lopnStyle, lineWidth, logPen.lopnColor);
-	int oldPen = OS.SelectObject(handle, newPen);
-	OS.DeleteObject(oldPen);
+	OS.SelectObject(handle, newPen);
+	if (data.hPen != 0) OS.DeleteObject(data.hPen);
+	data.hPen = newPen;
 }
 
 /** 

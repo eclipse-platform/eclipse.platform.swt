@@ -30,6 +30,8 @@ public final class GCData {
 	public Image image;
 	public int foreground = -1;
 	public int background = -1;
+	public int hPen;
+	public int hBrush;
 	public int hFont;
 	public int hNullBitmap;
 	public int hwnd;
