@@ -2290,7 +2290,7 @@ void setGCClipping() {
 	/* NOTE: PgSetRegion resets the clipping rectangle */
 	OS.PgSetMultiClip(data.clipRectsCount, data.clipRects);	
 
-	if (widget == 0) return;
+	if (widget == 0 || data.paint) return;
 	
 	int clip_tile = getClipping(widget, data.topWidget, true, true, null);
 	int[] clip_rects_count = new int[1];

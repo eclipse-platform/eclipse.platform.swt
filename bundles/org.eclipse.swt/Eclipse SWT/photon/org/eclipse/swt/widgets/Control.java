@@ -514,7 +514,11 @@ int drawProc (int widget, int damage) {
 				event.y = tile.rect_ul_y;
 				event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
 				event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
-				GC gc = event.gc = new GC (this);
+				GCData data = new GCData();
+				if (OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1)))) {
+					data.paint = true;
+				}
+				GC gc = event.gc = GC.photon_new (this, data);
 				gc.setClipping (event.x, event.y, event.width, event.height);
 				sendEvent (SWT.Paint, event);
 				if (isDisposed ()) break;
@@ -530,7 +534,11 @@ int drawProc (int widget, int damage) {
 			event.width = tile.rect_lr_x - tile.rect_ul_x + 1;
 			event.height = tile.rect_lr_y - tile.rect_ul_y + 1;
 			Region region = Region.photon_new (tile.next);
-			GC gc = event.gc = new GC (this);
+			GCData data = new GCData();
+			if (OS.QNX_MAJOR > 6 || (OS.QNX_MAJOR == 6 && (OS.QNX_MINOR > 2 || (OS.QNX_MINOR == 2 && OS.QNX_MICRO >= 1)))) {
+				data.paint = true;
+			}
+			GC gc = event.gc = GC.photon_new (this, data);
 			gc.setClipping (region);
 			sendEvent (SWT.Paint, event);
 			gc.dispose ();
