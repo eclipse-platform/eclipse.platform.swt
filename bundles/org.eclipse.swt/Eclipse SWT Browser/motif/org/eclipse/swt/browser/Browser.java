@@ -55,6 +55,8 @@ public class Browser extends Composite {
 	int refCount = 0;
 	int request;
 	String html;
+	Point location;
+	Point size;
 
 	/* External Listener management */
 	CloseWindowListener[] closeWindowListeners = new CloseWindowListener[0];
@@ -1623,6 +1625,7 @@ int DestroyBrowserWindow() {
 }
    	
 int SizeBrowserTo(int aCX, int aCY) {
+	size = new Point(aCX, aCY);
 	return XPCOM.NS_OK;
 }
 
@@ -1643,6 +1646,7 @@ int ExitModalEventLoop(int aStatus) {
 /* nsIEmbeddingSiteWindow */ 
    
 int SetDimensions(int flags, int x, int y, int cx, int cy) {
+	if (flags == nsIEmbeddingSiteWindow.DIM_FLAGS_POSITION) location = new Point(x, y);
 	return XPCOM.NS_OK;   	
 }	
 
@@ -1663,8 +1667,12 @@ int SetVisibility(int value) {
 	event.display = getDisplay();
 	event.widget = this;
 	if (value == 1) {
+		event.location = location;
+		event.size = size;
 		for (int i = 0; i < visibilityListeners.length; i++)
 			visibilityListeners[i].show(event);
+		location = null;
+		size = null;
 	} else {
 		for (int i = 0; i < visibilityListeners.length; i++)
 			visibilityListeners[i].hide(event);
