@@ -2663,6 +2663,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GetROP2)
 }
 #endif
 
+#ifndef NO_GetRandomRgn
+JNIEXPORT jint JNICALL OS_NATIVE(GetRandomRgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "GetRandomRgn\n")
+	rc = (jint)GetRandomRgn((HDC)arg0, (HRGN)arg1, arg2);
+	NATIVE_EXIT(env, that, "GetRandomRgn\n")
+	return rc;
+}
+#endif
+
 #ifndef NO_GetRegionData
 JNIEXPORT jint JNICALL OS_NATIVE(GetRegionData)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2)
@@ -4710,6 +4722,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(MultiByteToWideChar__II_3BI_3CI)
 	if (arg4) (*env)->ReleasePrimitiveArrayCritical(env, arg4, lparg4, 0);
 	if (arg2) (*env)->ReleasePrimitiveArrayCritical(env, arg2, lparg2, JNI_ABORT);
 	NATIVE_EXIT(env, that, "MultiByteToWideChar__II_3BI_3CI\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_OffsetRgn
+JNIEXPORT jint JNICALL OS_NATIVE(OffsetRgn)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "OffsetRgn\n")
+	rc = (jint)OffsetRgn((HRGN)arg0, arg1, arg2);
+	NATIVE_EXIT(env, that, "OffsetRgn\n")
 	return rc;
 }
 #endif

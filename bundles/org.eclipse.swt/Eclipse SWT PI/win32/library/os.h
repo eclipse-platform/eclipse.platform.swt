@@ -193,6 +193,7 @@
 #define NO_GetOpenFileNameA
 #define NO_GetProfileStringA
 #define NO_GetProfileStringW
+#define NO_GetRandomRgn
 #define NO_GetROP2
 #define NO_GetSaveFileNameA
 #define NO_GetTextCharset

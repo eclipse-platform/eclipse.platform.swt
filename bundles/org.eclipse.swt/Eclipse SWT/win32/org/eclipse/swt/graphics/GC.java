@@ -1884,10 +1884,26 @@ public void getClipping (Region region) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (region == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
 	int result = OS.GetClipRgn (handle, region.handle);
-	if (result == 1) return;
-	RECT rect = new RECT();
-	OS.GetClipBox(handle, rect);
-	OS.SetRectRgn(region.handle, rect.left, rect.top, rect.right, rect.bottom);
+	if (result != 1) {
+		RECT rect = new RECT();
+		OS.GetClipBox(handle, rect);
+		OS.SetRectRgn(region.handle, rect.left, rect.top, rect.right, rect.bottom);
+	}
+	if (!OS.IsWinCE) {
+		int hwnd = data.hwnd;
+		if (hwnd != 0 && data.ps != null) {
+			int sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
+			if (OS.GetRandomRgn (handle, sysRgn, OS.SYSRGN) == 1) {
+				if (OS.IsWinNT) {
+					POINT pt = new POINT();
+					OS.MapWindowPoints(0, hwnd, pt, 1);
+					OS.OffsetRgn(sysRgn, pt.x, pt.y);
+				}
+				OS.CombineRgn (region.handle, sysRgn, region.handle, OS.RGN_AND);
+			}
+			OS.DeleteObject(sysRgn);
+		}
+	}
 }
 
 int getCodePage () {
@@ -2125,10 +2141,11 @@ public int hashCode () {
  */
 public boolean isClipped() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.hwnd != 0 && data.ps != null) return true;
 	int region = OS.CreateRectRgn(0, 0, 0, 0);
 	int result = OS.GetClipRgn(handle, region);
 	OS.DeleteObject(region);
-	return (result > 0);
+	return result > 0;
 }
 
 /**
@@ -2209,9 +2226,9 @@ public void setClipping (Rectangle rect) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (rect == null) {
 		OS.SelectClipRgn (handle, 0);
-		return;
+	} else {
+		setClipping (rect.x, rect.y, rect.width, rect.height);
 	}
-	setClipping (rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
