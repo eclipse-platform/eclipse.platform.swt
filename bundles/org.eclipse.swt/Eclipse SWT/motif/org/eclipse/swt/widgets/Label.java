@@ -386,6 +386,7 @@ public void setFont (Font font) {
 			OS.XmNlabelString, xmString,
 		};
 		OS.XtSetValues (handle, argList2, argList2.length / 2);
+		OS.XmStringFree (xmString);
 	}
 	super.setFont (font);
 	if (fixString) OS.XtSetValues (handle, argList1, argList1.length / 2);	
