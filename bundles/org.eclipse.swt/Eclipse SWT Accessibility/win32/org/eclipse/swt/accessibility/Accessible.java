@@ -353,19 +353,7 @@ public class Accessible {
 	 */
 	public void setFocus(int childID) {
 		checkWidget();
-		int id;
-		if (childID == ACC.CHILDID_SELF) id = COM.CHILDID_SELF;
-		else if (control instanceof Tree) {
-			/*
-			* Feature of Windows:
-			* In versions of Windows prior to XP, the childID of a tree item
-			* is the tree item handle. On XP, the childID is a 1-based index.
-			*/
-			id = childID;
-			if (OS.COMCTL32_MAJOR >= 6) id++;
-		}
-		else id = childID + 1; // All other childIDs are 1-based indices
-		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, id);
+		COM.NotifyWinEvent (COM.EVENT_OBJECT_FOCUS, control.handle, COM.OBJID_CLIENT, childIDToOs(childID));
 	}
 
 	/**
@@ -508,10 +496,8 @@ public class Accessible {
 		if (childID == ACC.CHILDID_NONE) {
 			return iaccessible.accHitTest(xLeft, yTop, pvarChild);
 		}
-		if (childID == ACC.CHILDID_SELF) childID = COM.CHILDID_SELF;
-		else if (!(control instanceof Tree)) childID++; // Tree item childIDs are pointers (not 1-based indices)
 		COM.MoveMemory(pvarChild, new short[] { COM.VT_I4 }, 2);
-		COM.MoveMemory(pvarChild + 8, new int[] { childID }, 4);
+		COM.MoveMemory(pvarChild + 8, new int[] { childIDToOs(childID) }, 4);
 		return COM.S_OK;
 	}
 	
@@ -534,9 +520,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
-		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
-		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
+		event.childID = osToChildID(varChild_lVal);
 		event.x = osLeft;
 		event.y = osTop;
 		event.width = osWidth;
@@ -578,9 +562,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
-		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
-		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
+		event.childID = osToChildID(varChild_lVal);
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
 			listener.getChild(event);
@@ -639,9 +621,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
-		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
-		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
+		event.childID = osToChildID(varChild_lVal);
 		event.result = osDefaultAction;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
@@ -675,9 +655,7 @@ public class Accessible {
 		}
 		
 		AccessibleEvent event = new AccessibleEvent(this);
-		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
-		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
-		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
+		event.childID = osToChildID(varChild_lVal);
 		event.result = osDescription;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -703,7 +681,7 @@ public class Accessible {
 			if (pvt[0] == COM.VT_I4) {
 				int[] pChild = new int[1];
 				COM.MoveMemory(pChild, pvarChild + 8, 4);
-				osChild = (pChild[0] == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : pChild[0] - 1;
+				osChild = osToChildID(pChild[0]);
 			}
 		}
 
@@ -730,7 +708,7 @@ public class Accessible {
 			return COM.S_OK;
 		}
 		COM.MoveMemory(pvarChild, new short[] { COM.VT_I4 }, 2);
-		COM.MoveMemory(pvarChild + 8, new int[] { childID + 1 }, 4);
+		COM.MoveMemory(pvarChild + 8, new int[] { childIDToOs(childID) }, 4);
 		return COM.S_OK;
 	}
 	
@@ -755,9 +733,7 @@ public class Accessible {
 		}
 
 		AccessibleEvent event = new AccessibleEvent(this);
-		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
-		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
-		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
+		event.childID = osToChildID(varChild_lVal);
 		event.result = osHelp;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -799,9 +775,7 @@ public class Accessible {
 		}
 
 		AccessibleEvent event = new AccessibleEvent(this);
-		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
-		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
-		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
+		event.childID = osToChildID(varChild_lVal);
 		event.result = osKeyboardShortcut;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -835,9 +809,7 @@ public class Accessible {
 		}
 
 		AccessibleEvent event = new AccessibleEvent(this);
-		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
-		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
-		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
+		event.childID = osToChildID(varChild_lVal);
 		event.result = osName;
 		for (int i = 0; i < accessibleListeners.size(); i++) {
 			AccessibleListener listener = (AccessibleListener) accessibleListeners.elementAt(i);
@@ -877,27 +849,14 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
+		event.childID = osToChildID(varChild_lVal);
 		event.detail = osToRole(osRole);
-		if (varChild_lVal == COM.CHILDID_SELF) {
-			event.childID = ACC.CHILDID_SELF;
-		} else {
-			if (control instanceof Tree) {
-				/* Tree item childIDs are pointers (not 1-based indices). */
-				event.childID = varChild_lVal;
-				
-				// TEMPORARY CODE
-				/* Currently our checkbox tree is emulated using state mask images,
-				 * so we need to specify 'checkbox' role for the items here. */
+		// TEMPORARY CODE
+		/* Currently our checkbox table and tree are emulated using state mask
+		 * images, so we need to specify 'checkbox' role for the items. */
+		if (varChild_lVal != COM.CHILDID_SELF) {
+			if (control instanceof Tree || control instanceof Table) {
 				if ((control.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
-			} else if (control instanceof Table) {
-				event.childID = varChild_lVal - 1;
-				
-				// TEMPORARY CODE
-				/* Currently our checkbox table is emulated using state mask images,
-				 * so we need to specify 'checkbox' role for the items here. */
-				if ((control.getStyle() & SWT.CHECK) != 0) event.detail = ACC.ROLE_CHECKBUTTON;
-			} else {
-				event.childID = varChild_lVal - 1;
 			}
 		}
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
@@ -923,7 +882,7 @@ public class Accessible {
 			if (pvt[0] == COM.VT_I4) {
 				int[] pChild = new int[1];
 				COM.MoveMemory(pChild, pvarChildren + 8, 4);
-				osChild = (pChild[0] == COM.CHILDID_SELF) ? ACC.CHILDID_SELF : pChild[0] - 1;
+				osChild = osToChildID(pChild[0]);
 			} else if (pvt[0] == COM.VT_UNKNOWN) {
 				osChild = ACC.CHILDID_MULTIPLE;
 				/* Should get IEnumVARIANT from punkVal field... need better API here... */
@@ -959,7 +918,7 @@ public class Accessible {
 			return COM.S_OK;
 		}
 		COM.MoveMemory(pvarChildren, new short[] { COM.VT_I4 }, 2);
-		COM.MoveMemory(pvarChildren + 8, new int[] { childID + 1 }, 4);
+		COM.MoveMemory(pvarChildren + 8, new int[] { childIDToOs(childID) }, 4);
 		return COM.S_OK;
 	}
 	
@@ -984,17 +943,13 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
+		event.childID = osToChildID(varChild_lVal);
 		event.detail = osToState(osState);
-		if (varChild_lVal == COM.CHILDID_SELF) {
-			event.childID = ACC.CHILDID_SELF;
-		} else {
+		// TEMPORARY CODE
+		/* Currently our checkbox table and tree are emulated using state mask
+		 * images, so we need to determine if the item state is 'checked'. */
+		if (varChild_lVal != COM.CHILDID_SELF) {
 			if (control instanceof Tree) {
-				/* Tree item childIDs are pointers (not 1-based indices). */
-				event.childID = varChild_lVal;
-
-				// TEMPORARY CODE
-				/* Currently our checkbox tree is emulated using state mask images,
-				 * so we need to determine if the item is 'checked' here. */
 				int hwnd = control.handle;
 				TVITEM tvItem = new TVITEM ();
 				tvItem.mask = OS.TVIF_HANDLE | OS.TVIF_STATE;
@@ -1008,18 +963,11 @@ public class Accessible {
 				boolean checked = (result != 0) && (((tvItem.state >> 12) & 1) == 0);
 				if (checked) event.detail |= ACC.STATE_CHECKED;
 			} else if (control instanceof Table) {
-				event.childID = varChild_lVal - 1;
-				
-				// TEMPORARY CODE
-				/* Currently our checkbox table is emulated using state mask images,
-				 * so we need to determine if the item is 'checked' here. */
 				Table table = (Table) control;
 				TableItem item = table.getItem(event.childID);
 				if (item != null) {
 					if (item.getChecked()) event.detail |= ACC.STATE_CHECKED;
 				}
-			} else {
-				event.childID = varChild_lVal - 1;
 			}
 		}
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
@@ -1053,9 +1001,7 @@ public class Accessible {
 		}
 
 		AccessibleControlEvent event = new AccessibleControlEvent(this);
-		if (varChild_lVal == COM.CHILDID_SELF) event.childID = ACC.CHILDID_SELF;
-		else if (control instanceof Tree) event.childID = varChild_lVal; // Tree item childIDs are pointers
-		else event.childID = varChild_lVal - 1; // All other childIDs are 1-based indices
+		event.childID = osToChildID(varChild_lVal);
 		event.result = osValue;
 		for (int i = 0; i < accessibleControlListeners.size(); i++) {
 			AccessibleControlListener listener = (AccessibleControlListener) accessibleControlListeners.elementAt(i);
@@ -1128,7 +1074,7 @@ public class Accessible {
 				for (int i = 0; i < nextItems.length; i++) {
 					Object child = variants[enumIndex];
 					if (child instanceof Integer) {
-						nextItems[i] = new Integer(((Integer)child).intValue() + 1);
+						nextItems[i] = new Integer(childIDToOs(((Integer)child).intValue()));
 					} else {
 						nextItems[i] = child;
 					}
@@ -1198,6 +1144,34 @@ public class Accessible {
 		
 		enumIndex = 0;
 		return COM.S_OK;
+	}
+	
+	int childIDToOs(int childID) {
+		if (childID == ACC.CHILDID_SELF) return COM.CHILDID_SELF;
+		/*
+		* Feature of Windows:
+		* In Windows XP, tree item ids are 1-based indices. Previous versions
+		* of Windows use the tree item handle for the accessible child ID.
+		* For backward compatibility, we still take a handle childID for tree
+		* items on XP. All other childIDs are 1-based indices.
+		*/
+		if (!(control instanceof Tree)) return childID + 1;
+		if (OS.COMCTL32_MAJOR < 6) return childID;
+		return OS.SendMessage (control.handle, OS.TVM_MAPHTREEITEMTOACCID, childID, 0);
+	}
+
+	int osToChildID(int osChildID) {
+		if (osChildID == COM.CHILDID_SELF) return ACC.CHILDID_SELF;
+		/*
+		* Feature of Windows:
+		* In Windows XP, tree item ids are 1-based indices. Previous versions
+		* of Windows use the tree item handle for the accessible child ID.
+		* For backward compatibility, we still take a handle childID for tree
+		* items on XP. All other childIDs are 1-based indices.
+		*/
+		if (!(control instanceof Tree)) return osChildID - 1;
+		if (OS.COMCTL32_MAJOR < 6) return osChildID;
+		return OS.SendMessage (control.handle, OS.TVM_MAPACCIDTOHTREEITEM, osChildID, 0);
 	}
 	
 	int stateToOs(int state) {
