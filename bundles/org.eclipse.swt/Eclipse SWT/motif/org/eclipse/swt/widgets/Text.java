@@ -19,7 +19,7 @@ import org.eclipse.swt.events.*;
  * <p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>MULTI, SINGLE, READ_ONLY, WRAP</dd>
+ * <dd>CENTER, LEFT, MULTI, SINGLE, RIGHT, READ_ONLY, WRAP</dd>
  * <dt><b>Events:</b></dt>
  * <dd>DefaultSelection, Modify, Verify</dd>
  * </dl>
@@ -413,7 +413,7 @@ public int getCaretLineNumber () {
 	return getLineNumber (OS.XmTextGetInsertionPosition (handle));
 }
 /**
- * Gets the location of the caret.
+ * Gets the location the caret.
  * <p>
  * The location of the caret is returned.
  * </p>

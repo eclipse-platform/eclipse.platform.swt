@@ -472,19 +472,17 @@ public boolean isDisposed () {
 	return (state & DISPOSED) != 0;
 }
 /**
- * Return the listening state.
- * <p>
- * Returns true if there is a listener, listening for the eventType.
- * Otherwise, returns false.
+ * Returns <code>true</code> if there are any listeners
+ * for the specified event type associated with the receiver,
+ * and <code>false</code> otherwise.
  *
  * @param	eventType the type of event
- * @return	true if the event is hooked
+ * @return true if the event is hooked
  *
- * @exception SWTError <ul>
- *		<li>ERROR_THREAD_INVALID_ACCESS when called from the wrong thread</li>
- *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
- *		<li>ERROR_NULL_ARGUMENT when the name is null</li>
- *	</ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 protected boolean isListening (int eventType) {
 	checkWidget();

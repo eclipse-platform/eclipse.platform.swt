@@ -17,7 +17,7 @@ import org.eclipse.swt.graphics.*;
  * typically in the form of a bar.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>SMOOTH, HORIZONTAL, VERTICAL</dd>
+ * <dd>SMOOTH, HORIZONTAL, VERTICAL, INDETERMINATE</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>

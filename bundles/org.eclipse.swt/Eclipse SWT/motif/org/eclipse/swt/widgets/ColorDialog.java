@@ -194,6 +194,7 @@ void drawColor(int xIndex, int yIndex, Color color, GC gc) {
  * Returns the currently selected color in the receiver.
  *
  * @return the RGB value for the selected color, may be null
+ *
  * @see PaletteData#getRGBs
  */
 public RGB getRGB() {

@@ -36,7 +36,6 @@ public class TabItem extends Item {
 	static final int ICON_MARGIN = 6;
 	static final int SHADOW_WIDTH = 2;				// width of the tab shadow
 	static final int DEFAULT_TEXT_WIDTH = 36;		// preferred text width if there is no text. 
-													// Used for preferred item width calculation
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>TabFolder</code>) and a style value
@@ -339,8 +338,20 @@ public void setImage (Image image) {
 	}
 }
 /**
- * Sets the receiver's text.
- *
+ * Sets the receiver's text.  The string may include
+ * the mnemonic character.
+ * </p>
+ * <p>
+ * Mnemonics are indicated by an '&amp' that causes the next
+ * character to be the mnemonic.  When the user presses a
+ * key sequence that matches the mnemonic, a selection
+ * event occurs. On most platforms, the mnemonic appears
+ * underlined but may be emphasised in a platform specific
+ * manner.  The mnemonic indicator character '&amp' can be
+ * escaped by doubling it in the string, causing a single
+ *'&amp' to be displayed.
+ * </p>
+ * 
  * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
@@ -350,6 +361,7 @@ public void setImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
  */
 public void setText (String string) {
 	checkWidget();

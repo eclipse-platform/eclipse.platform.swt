@@ -17,12 +17,14 @@ import org.eclipse.swt.graphics.*;
  * menu items.
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>BAR, DROP_DOWN, POP_UP</dd>
+ * <dd>BAR, DROP_DOWN, POP_UP, NO_RADIO_GROUP</dd>
+ * <dd>LEFT_TO_RIGHT, RIGHT_TO_LEFT</dd>
  * <dt><b>Events:</b></dt>
  * <dd>Help, Hide, Show </dd>
  * </dl>
  * <p>
  * Note: Only one of BAR, DROP_DOWN and POP_UP may be specified.
+ * Only one of LEFT_TO_RIGHT or RIGHT_TO_LEFT may be specified.
  * </p><p>
  * IMPORTANT: This class is <em>not</em> intended to be subclassed.
  * </p>
@@ -312,6 +314,8 @@ public Display getDisplay () {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #isEnabled
  */
 public boolean getEnabled () {
 	checkWidget();
@@ -726,6 +730,26 @@ public void setLocation (int x, int y) {
 	OS.XtSetValues (handle, argList, argList.length / 2);
 	hasLocation = true;
 }
+/**
+ * Sets the receiver's location to the point specified by
+ * the arguments which are relative to the display.
+ * <p>
+ * Note:  This is different from most widgets where the
+ * location of the widget is relative to the parent.
+ * </p>
+ *
+ * @param location the new location for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
 public void setLocation (Point location) {
 	checkWidget();
 	if (location == null) error (SWT.ERROR_NULL_ARGUMENT);

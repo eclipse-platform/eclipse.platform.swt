@@ -481,6 +481,18 @@ static synchronized void checkDisplay (Thread thread) {
 		}
 	}
 }
+/**
+ * Checks that this class can be subclassed.
+ * <p>
+ * IMPORTANT: See the comment in <code>Widget.checkSubclass()</code>.
+ * </p>
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_INVALID_SUBCLASS - if this class is not an allowed subclass</li>
+ * </ul>
+ *
+ * @see Widget#checkSubclass
+ */
 protected void checkSubclass () {
 	if (!Display.isValidClass (getClass ())) {
 		error (SWT.ERROR_INVALID_SUBCLASS);
@@ -531,6 +543,18 @@ String convertToLf(String text) {
 	}
 	return result.toString ();
 }
+/**
+ * Creates the device in the operating system.  If the device
+ * does not have a handle, this method may do nothing depending
+ * on the device.
+ * <p>
+ * This method is called before <code>init</code>.
+ * </p>
+ *
+ * @param data the DeviceData which describes the receiver
+ *
+ * @see #init
+ */
 protected void create (DeviceData data) {
 	checkSubclass ();
 	checkDisplay (thread = Thread.currentThread ());
@@ -605,6 +629,16 @@ synchronized static void deregister (Display display) {
 		if (display == Displays [i]) Displays [i] = null;
 	}
 }
+/**
+ * Destroys the device in the operating system and releases
+ * the device's handle.  If the device does not have a handle,
+ * this method may do nothing depending on the device.
+ * <p>
+ * This method is called after <code>release</code>.
+ * </p>
+ * @see #dispose
+ * @see #release
+ */
 protected void destroy () {
 	if (this == Default) Default = null;
 	deregister (this);
@@ -932,6 +966,22 @@ public Object getData () {
 	checkDevice ();
 	return data;
 }
+/**
+ * Returns the button dismissal alignment, one of <code>LEFT</code> or <code>RIGHT</code>.
+ * The button dismissal alignment is the ordering that should be used when positioning the
+ * default dismissal button for a dialog.  For example, in a dialog that contains an OK and
+ * CANCEL button, on platforms where the button dismissal alignment is <code>LEFT</code>, the
+ * button ordering should be OK/CANCEL.  When button dismissal alignment is <code>RIGHT</code>,
+ * the button ordering should be CANCEL/OK.
+ *
+ * @return the button dismissal order
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
 public int getDismissalAlignment () {
 	checkDevice ();
 	return SWT.LEFT;
@@ -1138,6 +1188,15 @@ void hideToolTip () {
 	}
 	toolTipHandle = 0;
 }
+/**
+ * Initializes any internal resources needed by the
+ * device.
+ * <p>
+ * This method is called after <code>create</code>.
+ * </p>
+ * 
+ * @see #create
+ */
 protected void init () {
 	super.init ();
 	initializeDisplay ();
@@ -1633,6 +1692,30 @@ static synchronized void register (Display display) {
 	newDisplays [Displays.length] = display;
 	Displays = newDisplays;
 }
+/**
+ * Releases any internal resources back to the operating
+ * system and clears all fields except the device handle.
+ * <p>
+ * Disposes all shells which are currently open on the display. 
+ * After this method has been invoked, all related related shells
+ * will answer <code>true</code> when sent the message
+ * <code>isDisposed()</code>.
+ * </p><p>
+ * When a device is destroyed, resources that were acquired
+ * on behalf of the programmer need to be returned to the
+ * operating system.  For example, if the device allocated a
+ * font to be used as the system font, this font would be
+ * freed in <code>release</code>.  Also,to assist the garbage
+ * collector and minimize the amount of memory that is not
+ * reclaimed when the programmer keeps a reference to a
+ * disposed device, all fields except the handle are zero'd.
+ * The handle is needed by <code>destroy</code>.
+ * </p>
+ * This method is called before <code>destroy</code>.
+ * 
+ * @see #dispose
+ * @see #destroy
+ */
 protected void release () {
 	sendEvent (SWT.Dispose, new Event ());
 	Shell [] shells = WidgetTable.shells ();
@@ -1880,6 +1963,20 @@ void sendEvent (int eventType, Event event) {
 		if (eventTable != null) eventTable.sendEvent (event);
 	}
 }
+/**
+ * Sets the location of the on-screen pointer relative to the top left corner
+ * of the screen.  <b>Note: It is typically considered bad practice for a
+ * program to move the on-screen pointer location.</b>
+ *
+ * @param x the new x coordinate for the cursor
+ * @param y the new y coordinate for the cursor
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.1
+ */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
 	int xWindow = OS.XDefaultRootWindow (xDisplay);	
@@ -1890,12 +1987,14 @@ public void setCursorLocation (int x, int y) {
  * of the screen.  <b>Note: It is typically considered bad practice for a
  * program to move the on-screen pointer location.</b>
  *
- * @param point new position 
- * @since 2.0
+ * @param point new position
+ * 
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null
  * </ul>
+ * 
+ * @since 2.0
  */
 public void setCursorLocation (Point point) {
 	checkDevice ();

@@ -24,7 +24,7 @@ import org.eclipse.swt.graphics.*;
  * </p><p>
  * <dl>
  * <dt><b>Styles:</b></dt>
- * <dd>FLAT, WRAP, RIGHT, HORIZONTAL, VERTICAL</dd>
+ * <dd>FLAT, WRAP, RIGHT, HORIZONTAL, VERTICAL, SHADOW_OUT</dd>
  * <dt><b>Events:</b></dt>
  * <dd>(none)</dd>
  * </dl>
@@ -65,6 +65,7 @@ public class ToolBar extends Composite {
  * @see SWT#WRAP
  * @see SWT#RIGHT
  * @see SWT#HORIZONTAL
+ * @see SWT#SHADOW_OUT
  * @see SWT#VERTICAL
  * @see Widget#checkSubclass
  * @see Widget#getStyle

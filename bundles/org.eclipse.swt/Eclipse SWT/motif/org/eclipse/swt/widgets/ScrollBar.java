@@ -150,12 +150,14 @@ public Display getDisplay () {
  * not selectable from the user interface and draws with an
  * inactive or "grayed" look.
  *
- * @return the enabled state
+ * @return the receiver's enabled state
  *
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @see #isEnabled
  */
 public boolean getEnabled () {
 	checkWidget();
