@@ -455,6 +455,7 @@ void createWidget (int index) {
 	super.createWidget (index);
 	setZOrder ();
 	realizeWidget ();
+	setDefaultFont ();
 }
 
 int defaultBackground () {
@@ -530,12 +531,14 @@ public Font getFont () {
 		OS.Pt_ARG_TEXT_FONT, 0, 0,
 		OS.Pt_ARG_LIST_FONT, 0, 0,
 		OS.Pt_ARG_TITLE_FONT, 0, 0,
+		OS.Pt_ARG_GAUGE_FONT, 0, 0,
 	};
 	OS.PtGetResources (handle, args.length / 3, args);
 	byte [] font;
 	int ptr = args [1];
 	if (ptr == 0) ptr = args [4];
 	if (ptr == 0) ptr = args [7];
+	if (ptr == 0) ptr = args [11];
 	if (ptr == 0) {
 		font = defaultFont ();
 	} else {
@@ -1973,6 +1976,11 @@ void setBackgroundPixel (int pixel) {
 	OS.PtSetResource (handle, OS.Pt_ARG_FILL_COLOR, pixel, 0);
 }
 
+void setDefaultFont () {
+	Display display = getDisplay ();
+	if (display.defaultFont != null) setFont (defaultFont ());
+}
+
 /**
  * Sets the font that the receiver will use to paint textual information
  * to the font specified by the argument, or to the default font for that
@@ -1992,13 +2000,17 @@ public void setFont (Font font) {
 	checkWidget();
 	byte[] buffer;
 	if (font != null) {
-		if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+		if (font.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		buffer = font.handle;
 	} else {
-		buffer = defaultFont();
+		buffer = defaultFont ();
 	}
-	int ptr = OS.malloc (buffer.length);
-	OS.memmove (ptr, buffer, buffer.length);
+	setFont (buffer);
+}
+
+void setFont (byte [] font) {
+	int ptr = OS.malloc (font.length);
+	OS.memmove (ptr, font, font.length);
 	setFont (ptr);
 	OS.free (ptr);
 }
@@ -2008,6 +2020,7 @@ void setFont (int font) {
 		OS.Pt_ARG_TEXT_FONT, font, 0,
 		OS.Pt_ARG_LIST_FONT, font, 0,
 		OS.Pt_ARG_TITLE_FONT, font, 0,
+		OS.Pt_ARG_GAUGE_FONT, font, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
 }

@@ -141,10 +141,10 @@ public FontData open () {
 	int fontPtr = OS.PtFontSelection (parentHandle, null, title, font, OS.PHFONT_ALL_SYMBOLS, flags, null);
 
 	if (fontPtr != 0) {
-		int length = OS.strlen(fontPtr);
-		font = new byte[length];
-		OS.memmove(font, fontPtr, length);
-		fontData = FontData.photon_new(font);
+		int length = OS.strlen (fontPtr);
+		font = new byte [length + 1];
+		OS.memmove (font, fontPtr, length);
+		fontData = FontData.photon_new (font);
 	}
 	return fontData;
 }

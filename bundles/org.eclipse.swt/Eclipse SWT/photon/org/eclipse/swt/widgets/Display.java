@@ -111,7 +111,7 @@ public class Display extends Device {
 
 	/* Sync/Async Widget Communication */
 	Synchronizer synchronizer = new Synchronizer (this);
-	Thread thread = Thread.currentThread ();
+	Thread thread;
 	
 	/* Display Shutdown */
 	Runnable [] disposeList;
@@ -230,7 +230,8 @@ public class Display extends Device {
 	int INFO_FOREGROUND, INFO_BACKGROUND, TEXT_FOREGROUND, TEXT_BACKGROUND;
 	
 	/* Fonts */
-	byte [] TEXT_FONT, LIST_FONT;
+	byte [] defaultFont;
+	byte [] TEXT_FONT, LIST_FONT, TITLE_FONT, GAUGE_FONT, GROUP_FONT;
 	
 	/* Images */
 	int nullImage;
@@ -366,10 +367,10 @@ protected void checkDevice () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 }
 
-synchronized void checkDisplay () {
+static synchronized void checkDisplay (Thread thread) {
 	for (int i=0; i<Displays.length; i++) {
 		if (Displays [i] != null && Displays [i].thread == thread) {
-			error (SWT.ERROR_THREAD_INVALID_ACCESS);
+			SWT.error (SWT.ERROR_THREAD_INVALID_ACCESS);
 		}
 	}
 }
@@ -425,7 +426,7 @@ String convertToLf (String text) {
 
 protected void create (DeviceData data) {
 	checkSubclass ();
-	checkDisplay ();
+	checkDisplay (thread = Thread.currentThread ());
 	createDisplay (data);
 	register ();
 	if (Default == null) Default = this;
@@ -816,7 +817,8 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.photon_new (this, TEXT_FONT);
+	byte [] font = defaultFont != null ? defaultFont : TEXT_FONT;
+	return Font.photon_new (this, font);
 }
 
 /**
@@ -1036,20 +1038,43 @@ void initializeWidgetColors () {
 }
 
 void initializeWidgetFonts () {
+	String property = System.getProperty ("swt.system.font");
+	if (property != null) {
+		defaultFont = Converter.wcsToMbcs (null, property, true);
+		TEXT_FONT = LIST_FONT = GAUGE_FONT = TITLE_FONT = defaultFont;
+		GROUP_FONT = Converter.wcsToMbcs (null, property + "b", true);
+		return;
+	}
 	OS.PtSetParentWidget (0);
+	
 	int shellHandle = OS.PtCreateWidget (OS.PtWindow (), 0, 0, null);
+	int [] args = new int [] {OS.Pt_ARG_TITLE_FONT, 0, 0};
+	OS.PtGetResources (shellHandle, args.length / 3, args);
+	int length = OS.strlen (args [1]);
+	GROUP_FONT = TITLE_FONT = new byte [length + 1];
+	OS.memmove (TITLE_FONT, args [1], length);
+	
 	int listHandle = OS.PtCreateWidget (OS.PtList (), shellHandle, 0, null);
-	int [] args = {OS.Pt_ARG_LIST_FONT, 0, 0};
+	args = new int [] {OS.Pt_ARG_LIST_FONT, 0, 0};
 	OS.PtGetResources (listHandle, args.length / 3, args);
-	int count = OS.strlen (args [1]);
-	LIST_FONT = new byte [count + 1];
-	OS.memmove (LIST_FONT, args [1], count);
+	length = OS.strlen (args [1]);
+	LIST_FONT = new byte [length + 1];
+	OS.memmove (LIST_FONT, args [1], length);
+
 	int textHandle = OS.PtCreateWidget (OS.PtText (), shellHandle, 0, null);
 	args = new int [] {OS.Pt_ARG_TEXT_FONT, 0, 0};
 	OS.PtGetResources (textHandle, args.length / 3, args);
-	count = OS.strlen (args [1]);
-	TEXT_FONT = new byte [count + 1];
-	OS.memmove (TEXT_FONT, args [1], count);
+	length = OS.strlen (args [1]);
+	TEXT_FONT = new byte [length + 1];
+	OS.memmove (TEXT_FONT, args [1], length);
+	
+	int scrollHandle = OS.PtCreateWidget (OS.PtScrollbar (), shellHandle, 0, null);
+	args = new int [] {OS.Pt_ARG_GAUGE_FONT, 0, 0};
+	OS.PtGetResources (scrollHandle, args.length / 3, args);
+	length = OS.strlen (args [1]);
+	GAUGE_FONT = new byte [length + 1];
+	OS.memmove (GAUGE_FONT, args [1], length);
+	
 	OS.PtDestroyWidget (shellHandle);
 }
 

@@ -179,6 +179,11 @@ void createScrollBars () {
 	}
 }
 
+byte [] defaultFont () {
+	Display display = getDisplay ();
+	return display.TITLE_FONT;
+}
+
 void createScrolledHandle (int parentHandle) {
 	int etches = OS.Pt_ALL_ETCHES | OS.Pt_ALL_OUTLINES;
 	int [] args = new int [] {

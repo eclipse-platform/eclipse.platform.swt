@@ -2035,7 +2035,7 @@ public int hashCode () {
 void init(Drawable drawable, GCData data, int context) {
 	if (data.foreground == -1) data.foreground = DefaultFore;
 	if (data.background == -1) data.background = DefaultBack;
-	if (data.font == null) data.font = Font.DefaultFont;
+	if (data.font == null) data.font = data.device.systemFont;
 	dirtyBits = DIRTY_FOREGROUND | DIRTY_BACKGROUND | DIRTY_FONT;
 
 	Image image = data.image;
@@ -2236,7 +2236,7 @@ public void setClipping (Region region) {
 public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font != null && font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.font = font == null ? Font.DefaultFont : font.handle;
+	data.font = font == null ? data.device.systemFont : font.handle;
 	dirtyBits |= DIRTY_FONT;
 }
 

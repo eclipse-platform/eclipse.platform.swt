@@ -134,6 +134,11 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
+byte [] defaultFont () {
+	Display display = getDisplay ();
+	return display.TITLE_FONT;
+}
+
 void drawBand (int x, int y, int width, int height) {
 	if (parent == null) return;
 	if (parent.isDisposed ()) return;

@@ -109,13 +109,18 @@ protected void checkSubclass () {
 void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
-	int clazz = display.PtPane;
+	int clazz = display.PtContainer;
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	handle = OS.PtCreateWidget (clazz, parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+}
+
+byte [] defaultFont () {
+	Display display = getDisplay ();
+	return display.GROUP_FONT;
 }
 
 /**
@@ -189,7 +194,7 @@ int processPaint (int damage) {
 public void setText (String string) {	
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
-	int flags = OS.Pt_SHOW_TITLE | OS.Pt_ETCH_TITLE_AREA | OS.Pt_GRADIENT_TITLE_AREA;
+	int flags = OS.Pt_SHOW_TITLE | OS.Pt_ETCH_TITLE_AREA;
 	byte [] buffer = Converter.wcsToMbcs (null, stripMnemonics (string), true);
 	int ptr = OS.malloc (buffer.length);
 	OS.memmove (ptr, buffer, buffer.length);

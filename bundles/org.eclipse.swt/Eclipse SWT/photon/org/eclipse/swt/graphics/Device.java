@@ -28,6 +28,8 @@ public abstract class Device implements Drawable {
 
 	boolean disposed;
 	
+	byte[] systemFont;
+
 	/*
 	* TEMPORARY CODE. When a graphics object is
 	* created and the device parameter is null,
@@ -78,6 +80,9 @@ public Device(DeviceData data) {
 		errors = new Error [128];
 		objects = new Object [128];
 	}
+
+	/* Initialize the system font slot */
+	systemFont = getSystemFont ().handle;
 }
 
 protected void checkDevice () {
@@ -372,7 +377,7 @@ public Color getSystemColor (int id) {
  */
 public Font getSystemFont () {
 	checkDevice ();
-	return Font.photon_new (this, Font.DefaultFont);
+	return Font.photon_new (this, systemFont);
 }
 
 /**

@@ -36,14 +36,6 @@ public final class Font {
 	 * the device where this font was created
 	 */
 	Device device;
-	
-	static final byte[] DefaultFontName;
-	static final byte[] DefaultFont;
-
-	static {
-		DefaultFontName = Converter.wcsToMbcs(null, "TextFont", true);
-		DefaultFont = Converter.wcsToMbcs(null, "TextFont09", true);
-	}
 
 Font() {
 }
@@ -189,22 +181,32 @@ public boolean isDisposed() {
 }
 
 void init(Device device, String name, int height, int style, byte[] stem) {
-	if (height < 0) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (height < 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	this.device = device;
 	if (stem != null) {
 		handle = stem;
 	} else {
-		byte[] description = (name == null) ? null : Converter.wcsToMbcs(null, name, true);
+		byte[] description = Converter.wcsToMbcs(null, name, true);
 		int osStyle = 0;
 		if ((style & SWT.BOLD) != 0) osStyle |= OS.PF_STYLE_BOLD;
 		if ((style & SWT.ITALIC) != 0) osStyle |= OS.PF_STYLE_ITALIC;
 		byte[] buffer = new byte[OS.MAX_FONT_TAG];
 		handle = OS.PfGenerateFontName(description, osStyle, height, buffer);
-		if (handle == null) handle = OS.PfGenerateFontName(DefaultFontName, osStyle, height, buffer);
+		if (handle == null) {
+			byte[] defaultFont = device.systemFont;
+			int fontID = OS.PfDecomposeStemToID(defaultFont);
+			if (fontID != 0) {
+				int desc = OS.PfFontDescription(fontID);
+				int length = OS.strlen(desc);
+				byte[] defaultFontName = new byte[length + 1];
+				OS.memmove(defaultFontName, desc, length);
+				OS.PfFreeFont(fontID);
+				handle = OS.PfGenerateFontName(defaultFontName, osStyle, height, buffer);
+			}
+			if (handle == null) handle = defaultFont;
+		}
 	}
-	if (handle == null) handle = DefaultFont;
-	FontQueryInfo info = new FontQueryInfo();
-	if (OS.PfQueryFontInfo(handle, info) == 0) handle = info.font;
+	if (handle == null)SWT.error(SWT.ERROR_NO_HANDLES);
 }
 
 public static Font photon_new(Device device, byte[] stem) {

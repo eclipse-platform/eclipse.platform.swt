@@ -256,6 +256,11 @@ void createHandle (int index) {
 	}
 }
 
+void createWidget (int index) {
+	super.createWidget (index);
+	setDefaultFont ();
+}
+
 void deregister () {
 	super.deregister ();
 	if ((style & SWT.DROP_DOWN) != 0) {
@@ -627,6 +632,11 @@ public void setControl (Control control) {
 	}
 }
 
+void setDefaultFont () {
+	Display display = getDisplay ();
+	if (display.defaultFont != null) setFont (parent.defaultFont ());
+}
+
 /**
  * Sets the receiver's disabled image to the argument, which may be
  * null indicating that no disabled image should be displayed.
@@ -694,11 +704,19 @@ boolean setFocus () {
 	return OS.PtIsFocused(focusHandle) != 0;
 }
 
+void setFont (byte [] font) {
+	int ptr = OS.malloc (font.length);
+	OS.memmove (ptr, font, font.length);
+	setFont (ptr);
+	OS.free (ptr);
+}
+
 void setFont (int font) {
 	int [] args = {
 		OS.Pt_ARG_TEXT_FONT, font, 0,
 		OS.Pt_ARG_LIST_FONT, font, 0,
 		OS.Pt_ARG_TITLE_FONT, font, 0,
+		OS.Pt_ARG_GAUGE_FONT, font, 0,
 	};
 	OS.PtSetResources (handle, args.length / 3, args);
 	if ((style & SWT.DROP_DOWN) != 0) {

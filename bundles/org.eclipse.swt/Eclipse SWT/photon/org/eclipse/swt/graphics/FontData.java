@@ -84,56 +84,6 @@ FontData(byte[] stem) {
 		if ((flags & OS.PF_STYLE_BOLD) != 0) style |= SWT.BOLD;
 		if ((flags & OS.PF_STYLE_ITALIC) != 0) style |= SWT.ITALIC;
 		OS.PfFreeFont(fontID);
-		return;
-	}
-	/*
-	* For some reason, PfDecomposeStemToID sometimes fails to decompose
-	* a valid stem (e.g. TextFont09bi).
-	*/
-	FontQueryInfo info = new FontQueryInfo();
-	if (OS.PfQueryFontInfo(stem, info) == 0) {
-		this.stem = info.font;
-		char[] chars = Converter.mbcsToWcs(null, info.desc);
-		int index = 0;
-		while (index < chars.length) {
-			if (chars[index] == 0) break;
-			index++;
-		}
-		name = new String(chars, 0, index);
-		if ((info.style & OS.PHFONT_INFO_PLAIN) != 0) style = SWT.NORMAL;
-		else if ((info.style & OS.PHFONT_INFO_BOLD) != 0) style = SWT.BOLD;
-		else if ((info.style & OS.PHFONT_INFO_ITALIC) != 0) style = SWT.ITALIC;
-		else if ((info.style & OS.PHFONT_INFO_BLDITC) != 0) style = SWT.BOLD | SWT.ITALIC;
-		else style = SWT.NORMAL;
-		/*
-		* For some reason, PfQueryFontInfo sometimes does not
-		* set the size of the font.  In that case, the size is
-		* parsed from the stem.
-		*/
-		if (info.size != 0) {
-			height = info.size;
-		} else {
-			chars = Converter.mbcsToWcs(null, this.stem);
-			index = 0;
-			while (index < chars.length) {
-				if (chars[index] == 0) break;
-				index++;
-			}
-			String fontName = new String(chars, 0, index);
-			int end = fontName.length();
-			for (int i = end - 1; i >= 0; i--) {
-				if (Character.isDigit(fontName.charAt(i))) break;
-				end--;
-			}
-			int start = end;
-			for (int i = end - 1; i >= 0; i--) {
-				if (!Character.isDigit(fontName.charAt(i))) break;
-				start--;
-			}
-			try {
-				height = Integer.parseInt(fontName.substring(start, end));
-			} catch (NumberFormatException e) {}
-		}
 	}
 }
 

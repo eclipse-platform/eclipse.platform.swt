@@ -461,6 +461,11 @@ public void cut () {
 	OS.PtTextModifyText (handle, start [0], end [0], start [0], buffer, buffer.length);
 }
 
+byte [] defaultFont () {
+	Display display = getDisplay ();
+	return display.TEXT_FONT;
+}
+
 void deregister () {
 	super.deregister ();
 	int child = OS.PtWidgetChildBack (handle);

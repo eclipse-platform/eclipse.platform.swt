@@ -112,6 +112,11 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
+byte [] defaultFont () {
+	Display display = getDisplay ();
+	return display.GAUGE_FONT;
+}
+
 int processPaint (int damage) {
 	OS.PtSuperClassDraw (OS.PtProgress (), handle, damage);
 	return super.processPaint (damage);

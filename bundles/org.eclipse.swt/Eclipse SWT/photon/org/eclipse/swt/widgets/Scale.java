@@ -141,6 +141,11 @@ void createHandle (int index) {
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
+byte [] defaultFont () {
+	Display display = getDisplay ();
+	return display.GAUGE_FONT;
+}
+
 /**
  * Returns the amount that the receiver's value will be
  * modified by when the up/down (or right/left) arrows
