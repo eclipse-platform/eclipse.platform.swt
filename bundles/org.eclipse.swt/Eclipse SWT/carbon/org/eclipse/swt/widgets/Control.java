@@ -529,7 +529,7 @@ boolean isTabItem () {
 
 public boolean isVisible () {
 	checkWidget();
-	return OS.IsControlVisible (topHandle ());
+	return OS.IsControlVisible (topHandle ()) && getShell ().isVisible ();
 }
 
 Decorations menuShell () {
