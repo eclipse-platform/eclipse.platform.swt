@@ -28,7 +28,7 @@ import org.eclipse.swt.graphics.*;
  * no longer maximized.
  * </li><li>
  * When an instance is in the <em>normal</em> state (neither
- * maximized or minimized), it's appearance is controlled by
+ * maximized or minimized), its appearance is controlled by
  * the style constants which were specified when it was created
  * and the restrictions of the window manager (see below).
  * </li><li>

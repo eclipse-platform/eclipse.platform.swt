@@ -2127,7 +2127,7 @@ public void setLinesVisible(boolean drawGridLines) {
 	}
 }
 /**
- * Set whether the receiver and it's children should be
+ * Set whether the receiver and its children should be
  * drawn or not.
  * @param redraw -
  *	true = redraw the receiver and its children
