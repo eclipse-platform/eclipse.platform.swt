@@ -1164,17 +1164,20 @@ void releaseWidget () {
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 
 	/*
-	* Feature in Windows.  When there are a large number
+	* Feature in Windows 98.  When there are a large number
 	* of columns and items in a table (>1000) where each
 	* of the subitems in the table has a string, it is much
 	* faster to delete each item with LVM_DELETEITEM rather
 	* than using LVM_DELETEALLITEMS.  The fix is to detect
-	* this case and delete the items, one by one.
+	* this case and delete the items, one by one.  The fact
+	* that the fix is only necessary on Windows 98 was
+	* confirmed using version 5.81 of COMCTL32.DLL on both
+	* Windows 98 and NT.
 	*
 	* NOTE: LVM_DELETEALLITEMS is also sent by the table
 	* when the table is destroyed.
 	*/	
-	if (columnCount > 1) {
+	if (OS.IsWin95 && columnCount > 1) {
 		/* Turn off redraw and leave it off */
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		for (int i=itemCount-1; i>=0; --i) {
@@ -1345,17 +1348,20 @@ public void removeAll () {
 	int itemCount = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
 	
 	/*
-	* Feature in Windows.  When there are a large number
+	* Feature in Windows 98.  When there are a large number
 	* of columns and items in a table (>1000) where each
 	* of the subitems in the table has a string, it is much
 	* faster to delete each item with LVM_DELETEITEM rather
 	* than using LVM_DELETEALLITEMS.  The fix is to detect
-	* this case and delete the items, one by one.
+	* this case and delete the items, one by one.  The fact
+	* that the fix is only necessary on Windows 98 was
+	* confirmed using version 5.81 of COMCTL32.DLL on both
+	* Windows 98 and NT.
 	*
 	* NOTE: LVM_DELETEALLITEMS is also sent by the table
 	* when the table is destroyed.
 	*/	
-	if (columnCount > 1) {
+	if (OS.IsWin95 && columnCount > 1) {
 		boolean redraw = drawCount == 0 && OS.IsWindowVisible (handle);
 		if (redraw) OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 		int index = itemCount - 1;
