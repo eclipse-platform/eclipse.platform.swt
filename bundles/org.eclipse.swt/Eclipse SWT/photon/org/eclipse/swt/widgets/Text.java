@@ -177,6 +177,21 @@ public void cut () {
 	OS.PtTextModifyText (handle, start [0], end [0], start [0], buffer, buffer.length);
 }
 
+void deregister () {
+	super.deregister ();
+	
+	/*
+	* Bug in Photon. Even though the Pt_CB_GOT_FOCUS callback
+	* is added to the multi-line text, the widget parameter
+	* in the callback is a child of the multi-line text. The fix
+	* is to register that child so that the lookup in the widget
+	* table will find the muti-line text. 
+	*/
+	if ((style & SWT.MULTI) == 0) return;
+	int child = OS.PtWidgetChildBack (handle);
+	WidgetTable.remove (child);
+}
+
 public int getCaretLineNumber () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -410,6 +425,24 @@ public void paste () {
 	OS.free(ptr);
 }
 
+int processEvent (int widget, int data, int info) {
+	
+	/*
+	* Bug in Photon. Even though the Pt_CB_GOT_FOCUS callback
+	* is added to the multi-line text, the widget parameter
+	* in the callback is a child of the multi-line text. The fix
+	* is to register that child so that the lookup in the widget
+	* table will find the muti-line text and avoid multiple 
+	* Pt_CB_LOST_FOCUS callbacks.
+	*/
+	if ((style & SWT.MULTI) != 0) {
+		if (widget != handle && data == SWT.FocusOut) {
+			return OS.Pt_CONTINUE;
+		}
+	}
+	return super.processEvent (widget, data, info);
+}
+
 int processModify (int info) {
 	if (lastModifiedText != 0) {
 		OS.free (lastModifiedText);
@@ -482,6 +515,21 @@ int processVerify (int info) {
 	OS.memmove (cbinfo.cbdata, textVerify, PtTextCallback_t.sizeof);
 	textVerify = null;
 	return 0;
+}
+
+void register () {
+	super.register ();
+
+	/*
+	* Bug in Photon. Even though the Pt_CB_GOT_FOCUS callback
+	* is added to the multi-line text, the widget parameter
+	* in the callback is a child of the multi-line text. The fix
+	* is to register that child so that the lookup in the widget
+	* table will find the muti-line text. 
+	*/
+	if ((style & SWT.MULTI) == 0) return;
+	int child = OS.PtWidgetChildBack (handle);
+	WidgetTable.put (child, this);
 }
 
 void releaseWidget () {

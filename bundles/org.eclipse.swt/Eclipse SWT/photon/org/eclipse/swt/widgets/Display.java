@@ -1020,7 +1020,7 @@ public void wake () {
 int windowProc (int handle, int data, int info) {
 	Widget widget = WidgetTable.get (handle);
 	if (widget == null) return OS.Pt_CONTINUE;
-	return widget.processEvent (data, info);
+	return widget.processEvent (handle, data, info);
 }
 
 int workProc (int data) {

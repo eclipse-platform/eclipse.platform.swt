@@ -186,6 +186,23 @@ public void clearSelection () {
 	OS.PtTextSetSelection (handle, new int [] {0}, new int [] {0});
 }
 
+void deregister () {
+	super.deregister ();
+	int child = OS.PtWidgetChildBack (handle);
+	WidgetTable.remove (child);
+}
+
+int focusHandle () {
+
+	/*
+	* Fetuare in Photon. The combo box does not receive
+	* Pt_CB_GOT_FOCUS and Pt_CB_LOST_FOCUS callbacks itself.
+	* Only the internal PtText receives them. The fix is to
+	* add these callbacks in the internal PtText.
+	*/
+	return OS.PtWidgetChildBack (handle);
+}
+
 public String getItem (int index) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -356,6 +373,12 @@ int processSelection (int info) {
 		postEvent(SWT.Selection);
 	}
 	return OS.Pt_CONTINUE;
+}
+
+void register () {
+	super.register ();
+	int child = OS.PtWidgetChildBack (handle);
+	WidgetTable.put (child, this);
 }
 
 public void remove (int start, int end) {

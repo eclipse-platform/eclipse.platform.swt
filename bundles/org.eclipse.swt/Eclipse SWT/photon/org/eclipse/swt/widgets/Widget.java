@@ -263,7 +263,7 @@ int processKey (int info) {
 	return OS.Pt_CONTINUE;
 }
 
-int processEvent (int data, int info) {
+int processEvent (int widget, int data, int info) {
 	switch (data) {
 		case SWT.Activate:			return processActivate (info);
 //		case SWT.Arm:				return processArm (info);
@@ -287,7 +287,6 @@ int processEvent (int data, int info) {
 		case SWT.Show:				return processShow (info);
 		case SWT.Selection:			return processSelection (info);
 		case SWT.Verify:			return processVerify (info);
-		case -1:					return processShellResize (info);
 	}
 	return OS.Pt_CONTINUE;
 }
@@ -317,10 +316,6 @@ int processResize (int info) {
 }
 
 int processShow (int info) {
-	return OS.Pt_CONTINUE;
-}
-
-int processShellResize (int info) {
 	return OS.Pt_CONTINUE;
 }
 

@@ -286,7 +286,7 @@ void hookEvents () {
 	super.hookEvents ();
 	int windowProc = getDisplay ().windowProc;
 	OS.PtAddCallback (shellHandle, OS.Pt_CB_WINDOW, windowProc, SWT.Move);
-	OS.PtAddCallback (shellHandle, OS.Pt_CB_RESIZE, windowProc, -1);
+	OS.PtAddCallback (shellHandle, OS.Pt_CB_RESIZE, windowProc, SWT.Resize);
 }
 
 public void open () {
@@ -294,6 +294,13 @@ public void open () {
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
 	bringToTop ();
 	setVisible (true);
+}
+
+int processEvent (int widget, int data, int info) {
+	if (widget == shellHandle && data == SWT.Resize) {
+		return processShellResize (info);
+	}
+	return super.processEvent (widget, data, info);;
 }
 
 int processHotkey (int data, int info) {

@@ -301,14 +301,19 @@ boolean hasFocus () {
 
 void hookEvents () {
 	int windowProc = getDisplay ().windowProc;
+	int focusHandle = focusHandle ();
 	OS.PtAddFilterCallback (handle, OS.Ph_EV_KEY, windowProc, SWT.KeyDown);
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BUT_PRESS, windowProc, SWT.MouseDown);
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BUT_RELEASE, windowProc, SWT.MouseUp);
 	OS.PtAddEventHandler (handle, OS.Ph_EV_PTR_MOTION, windowProc, SWT.MouseMove);
 	OS.PtAddEventHandler (handle, OS.Ph_EV_BOUNDARY, windowProc, SWT.MouseEnter);	
-	OS.PtAddCallback (handle, OS.Pt_CB_GOT_FOCUS, windowProc, SWT.FocusIn);
-	OS.PtAddCallback (handle, OS.Pt_CB_LOST_FOCUS, windowProc, SWT.FocusOut);
+	OS.PtAddCallback (focusHandle, OS.Pt_CB_GOT_FOCUS, windowProc, SWT.FocusIn);
+	OS.PtAddCallback (focusHandle, OS.Pt_CB_LOST_FOCUS, windowProc, SWT.FocusOut);
 	OS.PtAddCallback (handle, OS.Pt_CB_MENU, windowProc, SWT.Show);
+}
+
+int focusHandle () {
+	return handle;
 }
 
 public int internal_new_GC (GCData data) {
