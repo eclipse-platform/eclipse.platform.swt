@@ -526,5 +526,11 @@ public void setWidth(int width) {
 			redrawX - 2, 0, 
 			2, parent.getClientArea().height, false);	// redraw 2 pixels wide to redraw item focus rectangle and grid line
 	}
+	
+	sendEvent(SWT.Resize, new Event ());	
+	int count = parent.getColumnCount();
+	for (int i = index + 1; i < count; i++) {
+		parent.getColumn(i).sendEvent(SWT.Move, new Event ());
+	}
 }
 }
