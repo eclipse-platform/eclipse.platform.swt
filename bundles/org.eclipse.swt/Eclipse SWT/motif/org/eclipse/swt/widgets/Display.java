@@ -133,8 +133,9 @@ public class Display extends Device {
 	XColor COLOR_LIST_FOREGROUND, COLOR_LIST_BACKGROUND, COLOR_LIST_SELECTION, COLOR_LIST_SELECTION_TEXT;
 	Color COLOR_INFO_BACKGROUND;
 	
-	/* System Images */
+	/* System Images and Masks */
 	int errorImage, infoImage, questionImage, warningImage, workingImage;
+	int errorMask, infoMask, questionMask, warningMask, workingMask;
 
 	/* Initial Guesses for Shell Trimmings. */
 	int leftBorderWidth = 2, rightBorderWidth = 2;
@@ -701,8 +702,18 @@ int createImage (String name) {
 	if (pixmap == OS.XmUNSPECIFIED_PIXMAP) {
 		buffer = Converter.wcsToMbcs (null, "default_" + name, true);
 		pixmap = OS.XmGetPixmap (screen, buffer, fgPixel, bgPixel);
+		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) error (SWT.ERROR_NO_HANDLES);
 	}
 	return pixmap;
+}
+int createMask (int pixbuf) {
+	int [] unused = new int [1];  int [] width = new int [1];  int [] height = new int [1];
+ 	OS.XGetGeometry (xDisplay, pixbuf, unused, unused, unused, width, height, unused, unused);
+	int mask = OS.XCreatePixmap (xDisplay, pixbuf, width [0], height [0], 1);
+	int gc = OS.XCreateGC (xDisplay, mask, 0, null);
+	OS.XCopyPlane (xDisplay, pixbuf, mask, gc, 0, 0, width [0], height [0], 0, 0, 1);
+	OS.XFreeGC (xDisplay, gc);
+	return mask;
 }
 synchronized static void deregister (Display display) {
 	for (int i=0; i<Displays.length; i++) {
@@ -1550,50 +1561,56 @@ public Font getSystemFont () {
 }
 public Image getSystemImage (int style) {
 	int image = 0;
+	int mask = 0;
 	switch (style) {
 		case SWT.ICON_ERROR: {
 			if (errorImage == 0) {
 				errorImage = createImage ("xm_error");
+				errorMask = createMask (errorImage);
 			}
 			image = errorImage;
+			mask = errorMask;
 			break;
 		}
 		case SWT.ICON_INFORMATION: {
 			if (infoImage == 0) {
 				infoImage = createImage ("xm_information");
+				infoMask = createMask (infoImage);
 			}
 			image = infoImage;
+			mask = infoMask;
 			break;
 		}
 		case SWT.ICON_QUESTION: {
 			if (questionImage == 0) {
 				questionImage = createImage ("xm_question");
+				questionMask = createMask (questionImage);
 			}
 			image = questionImage;
+			mask = questionMask;
 			break;
 		}
 		case SWT.ICON_WARNING: {
 			if (warningImage == 0) {
 				warningImage = createImage ("xm_warning");
+				warningMask = createMask (warningImage);
 			}
 			image = warningImage;
+			mask = warningMask;
 			break;
 		}
 		case SWT.ICON_WORKING: {
 			if (workingImage == 0) {
 				workingImage = createImage ("xm_working");
+				workingMask = createMask (workingImage);
 			}
 			image = workingImage;
+			mask = workingMask;
 			break;
 		}
 		default: return null;
 	}
-	if (image == OS.XmUNSPECIFIED_PIXMAP) error (SWT.ERROR_NO_HANDLES);
-	Image temp = Image.motif_new (this, SWT.ICON, image, 0);
-	ImageData data = temp.getImageData ();
-	temp.dispose ();
-	data.transparentPixel = data.palette.getPixel (new RGB (255,255,255));
-	return new Image (this, data);
+	return Image.motif_new (this, SWT.ICON, image, mask);
 }
 public Tray getSystemTray () {
 	if (tray != null) return tray;
@@ -2326,11 +2343,26 @@ protected void release () {
 void releaseDisplay () {
 	/* destroy the System Images */
 	int screen = OS.XDefaultScreenOfDisplay (xDisplay);
-	if (errorImage != 0) OS.XmDestroyPixmap (screen, errorImage);
-	if (infoImage != 0) OS.XmDestroyPixmap (screen, infoImage);
-	if (questionImage != 0) OS.XmDestroyPixmap (screen, questionImage);
-	if (warningImage != 0) OS.XmDestroyPixmap (screen, warningImage);
-	if (workingImage != 0) OS.XmDestroyPixmap (screen, workingImage);
+	if (errorImage != 0) {
+		OS.XmDestroyPixmap (screen, errorImage);
+		OS.XmDestroyPixmap (screen, errorMask);
+	}
+	if (infoImage != 0) {
+		OS.XmDestroyPixmap (screen, infoImage);
+		OS.XmDestroyPixmap (screen, infoMask);
+	}
+	if (questionImage != 0) {
+		OS.XmDestroyPixmap (screen, questionImage);
+		OS.XmDestroyPixmap (screen, questionMask);
+	}
+	if (warningImage != 0) {
+		OS.XmDestroyPixmap (screen, warningImage);
+		OS.XmDestroyPixmap (screen, warningMask);
+	}
+	if (workingImage != 0) {
+		OS.XmDestroyPixmap (screen, workingImage);
+		OS.XmDestroyPixmap (screen, workingMask);
+	}
 
 	/* Destroy the hidden Override shell parent */
 	if (shellHandle != 0) OS.XtDestroyWidget (shellHandle);
