@@ -1951,6 +1951,26 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeWindow
 }
 #endif /* NO_DisposeWindow */
 
+#ifndef NO_DMGetNextScreenDevice
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DMGetNextScreenDevice
+	(JNIEnv *env, jclass that, jint theDevice, jboolean activeOnly)
+{
+	DEBUG_CALL("DMGetNextScreenDevice\n")
+
+	return (jint)DMGetNextScreenDevice((GDHandle) theDevice, (Boolean) activeOnly);
+}
+#endif /* NO_DMGetNextScreenDevice */
+
+#ifndef NO_DMGetFirstScreenDevice
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_DMGetFirstScreenDevice
+	(JNIEnv *env, jclass that, jboolean activeOnly)
+{
+	DEBUG_CALL("DMGetFirstScreenDevice\n")
+
+	return (jint)DMGetFirstScreenDevice((Boolean) activeOnly);
+}
+#endif /* NO_DMGetFirstScreenDevice */
+
 #ifndef NO_DrawMenuBar
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DrawMenuBar
 	(JNIEnv *env, jclass that)
@@ -3537,6 +3557,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuFont
 	return rc;
 }
 #endif /* NO_GetMenuFont */
+
+#ifndef NO_GetMenuHeight
+JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuHeight
+	(JNIEnv *env, jclass that, jint menu)
+{
+	DEBUG_CALL("GetMenuHeight\n")
+
+	return (jshort)GetMenuHeight((MenuRef)menu);
+}
+#endif /* NO_GetMenuHeight */
 
 #ifndef NO_GetMenuID
 JNIEXPORT jshort JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuID
