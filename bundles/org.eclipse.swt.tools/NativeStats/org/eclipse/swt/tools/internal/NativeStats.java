@@ -12,51 +12,124 @@ package org.eclipse.swt.tools.internal;
 
 import java.io.PrintStream;
 import java.lang.reflect.Method;
+import java.util.Enumeration;
+import java.util.Hashtable;
 
 /**
  * Instructions on how to use the NativeStats tool with a standlaone SWT example:
  * 
- * Compile the SWT native libraries defining the NATIVE_STATS flag.
+ * 1) Compile the SWT native libraries defining the NATIVE_STATS flag.
+ * 2) Add the following code around the sections of interest to dump the
+ * native calls done in that section.
  * 
+ * NativeStats stats = new NativeStats();
+ * ...
+ * <code section>
+ * ...
+ * starts.dumpDiff(System.out);
+ * 
+ * 3) Or add the following code at given points to dump a snapshot of
+ * the native calls done until that point.
+ * 
+ * new NativeStats().dumpSnapshot(System.out); 
  */
 public class NativeStats {
 	
-public void dump(PrintStream ps) {
-	dump("OS", ps);
-	dump("ATK", ps);
-	dump("CDE", ps);
-	dump("GNOME", ps);
-	dump("GTK", ps);
-	dump("KDE", ps);
-	dump("XPCOM", ps);
-	dump("COM", ps);
+	Hashtable snapshot;
+	
+	final static String[] classes = new String[]{"OS", "ATK", "CDE", "GNOME", "GTK", "KDE", "XPCOM", "COM"};
+
+public NativeStats() {
+	snapshot = snapshot();
+}
+	
+public Hashtable diff() {
+	Hashtable newSnapshot = snapshot();
+	Enumeration keys = newSnapshot.keys();
+	while (keys.hasMoreElements()) {
+		String className = (String)keys.nextElement();
+		NativeFunction[] newFuncs = (NativeFunction[])newSnapshot.get(className);
+		NativeFunction[] funcs = (NativeFunction[])snapshot.get(className);
+		if (funcs != null) {
+			for (int i = 0; i < newFuncs.length; i++) {
+				newFuncs[i].subtract(funcs[i]);
+			}
+		}
+	}
+	return newSnapshot;
 }
 
-public void dump(String className, PrintStream ps) {
+public void dumpDiff(PrintStream ps) {
+	dump(diff(), ps);
+}
+
+public void dumpSnapshot(PrintStream ps) {
+	dump(snapshot(), ps);
+}
+
+public void dumpSnapshot(String className, PrintStream ps) {
+	Hashtable snapshot = new Hashtable();
+	snapshot(className, snapshot);
+	dump(className, (NativeFunction[])snapshot.get(className), ps);
+}
+
+public void dump(Hashtable snapshot, PrintStream ps) {
+	Enumeration keys = snapshot.keys();
+	while (keys.hasMoreElements()) {
+		String className = (String)keys.nextElement();
+		dump(className, (NativeFunction[])snapshot.get(className), ps);
+	}
+}
+	
+void dump(String className, NativeFunction[] funcs, PrintStream ps) {
+	if (funcs == null) return;
+	ps.println(className);
+	for (int i = 0; i < funcs.length; i++) {
+		NativeFunction func = funcs[i];
+		if (func.getCallCount() > 0) {
+			ps.print("\t");
+			ps.print(func.getName());
+			ps.print("=");
+			ps.print(func.getCallCount());
+			ps.println();
+		}
+	}
+}
+
+public void reset() {
+	snapshot = snapshot(); 
+}
+
+public Hashtable snapshot() {
+	Hashtable snapshot = new Hashtable();
+	for (int i = 0; i < classes.length; i++) {
+		String className = classes[i];
+		snapshot(className, snapshot);
+	}
+	return snapshot;
+}
+
+public Hashtable snapshot(String className, Hashtable snapshot) {
 	try {
 		Class clazz = getClass();
 		Method functionCount = clazz.getMethod(className + "_GetFunctionCount", new Class[0]);
 		Method functionCallCount = clazz.getMethod(className + "_GetFunctionCallCount", new Class[]{int.class});
 		Method functionName = clazz.getMethod(className + "_GetFunctionName", new Class[]{int.class});
 		int count = ((Integer)functionCount.invoke(clazz, new Object[0])).intValue();
-		ps.println(className);
+		NativeFunction[] funcs = new NativeFunction[count];
 		Object[] arg = new Object[1];
 		for (int i = 0; i < count; i++) {
 			arg[0] = new Integer(i);
 			int ncalls = ((Integer)functionCallCount.invoke(clazz, arg)).intValue();
-			if (ncalls > 0) {
-				ps.print("\t");
-				ps.print(functionName.invoke(clazz, arg));
-				ps.print("=");
-				ps.print(ncalls);
-				ps.println();
-			}
-		}		
+			String name = (String)functionName.invoke(clazz, arg);
+			funcs[i] = new NativeFunction(name, ncalls);
+		}
+		snapshot.put(className, funcs);
 	} catch (Throwable e) {
 //		e.printStackTrace(System.out);
 	}
+	return snapshot;
 }
-
 	
 public static final native int OS_GetFunctionCount();
 public static final native String OS_GetFunctionName(int index);
