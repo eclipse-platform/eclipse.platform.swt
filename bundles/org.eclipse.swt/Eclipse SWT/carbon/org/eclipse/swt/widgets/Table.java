@@ -874,9 +874,11 @@ int drawItemProc (int browser, int id, int property, int itemState, int theRect,
 		imageBounds = image.getBounds ();
 		itemWidth += imageBounds.width + 2;
 	}
-	TableColumn column = columns [columnIndex];
-	if ((column.style & SWT.CENTER) != 0) x += (width - itemWidth) / 2;
-	if ((column.style & SWT.RIGHT) != 0) x += width - itemWidth;
+	if (columnCount != 0) {
+		TableColumn column = columns [columnIndex];
+		if ((column.style & SWT.CENTER) != 0) x += (width - itemWidth) / 2;
+		if ((column.style & SWT.RIGHT) != 0) x += width - itemWidth;
+	}
 	if (image != null) {
 		gc.drawImage (image, 0, 0, imageBounds.width, imageBounds.height, x, y + (height - imageBounds.height) / 2, imageBounds.width, imageBounds.height);
 		x += imageBounds.width + 2;
