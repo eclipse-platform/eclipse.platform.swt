@@ -701,12 +701,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 				int code = callWindowProc (OS.WM_KEYDOWN, key, lParam);
 	 			return new LRESULT (code);
 	 		}
-			case OS.VK_UP: 
-			case OS.VK_DOWN: {
-				int key = wParam == OS.VK_UP ? OS.VK_DOWN : OS.VK_UP;
-				int code = callWindowProc (OS.WM_KEYDOWN, key, lParam);
-				return new LRESULT (code);
-	 		}
 	 	}
 	}
  	return result;
