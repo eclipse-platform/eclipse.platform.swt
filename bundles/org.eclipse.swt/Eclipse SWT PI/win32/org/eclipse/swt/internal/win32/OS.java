@@ -2172,7 +2172,7 @@ public static final native int GetLibraryHandle ();
 public static final native int GetLocaleInfoW (int Locale, int LCType, char [] lpLCData, int cchData);
 public static final native int GetLocaleInfoA (int Locale, int LCType, byte [] lpLCData, int cchData);
 public static final native int GetMenu (int hWnd);
-public static final native void GetMenuBarInfo (int hWnd, int idObject, int idItem, MENUBARINFO pmbi);
+public static final native boolean GetMenuBarInfo (int hWnd, int idObject, int idItem, MENUBARINFO pmbi);
 public static final native int GetMenuDefaultItem (int hMenu, int fByPos, int gmdiFlags);
 public static final native boolean GetMenuInfo (int hmenu, MENUINFO lpcmi);
 public static final native int GetMenuItemCount (int hMenu);
