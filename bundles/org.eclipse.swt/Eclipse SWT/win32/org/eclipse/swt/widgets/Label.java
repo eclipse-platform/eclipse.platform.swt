@@ -444,20 +444,20 @@ int windowProc () {
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
 	LRESULT result = super.WM_ERASEBKGND (wParam, lParam);
 	if (result != null) return result;
-	if ((style & SWT.SEPARATOR) == 0) {
-		/*
-		* Bug in Windows.  When a label has the SS_BITMAP
-		* or SS_ICON style, the label does not draw the
-		* background.  The fix is to draw the background
-		* when the label is showing a bitmap or icon.
-		*
-		* NOTE: SS_BITMAP and SS_ICON are not single bit
-		* masks so it is necessary to test for all of the
-		* bits in these masks.
-		*/
-		int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
-		if ((bits & OS.SS_BITMAP) != OS.SS_BITMAP &&
-			(bits & OS.SS_ICON) != OS.SS_ICON) return result;
+	if ((style & SWT.SEPARATOR) != 0) return LRESULT.ONE;
+	/*
+	* Bug in Windows.  When a label has the SS_BITMAP
+	* or SS_ICON style, the label does not draw the
+	* background.  The fix is to draw the background
+	* when the label is showing a bitmap or icon.
+	*
+	* NOTE: SS_BITMAP and SS_ICON are not single bit
+	* masks so it is necessary to test for all of the
+	* bits in these masks.
+	*/
+	int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+	if ((bits & OS.SS_BITMAP) != OS.SS_BITMAP && (bits & OS.SS_ICON) != OS.SS_ICON) {
+		return result;
 	}
 	drawBackground (wParam);
 	return LRESULT.ONE;
@@ -515,9 +515,10 @@ LRESULT WM_SIZE (int wParam, int lParam) {
 }
 
 LRESULT wmDrawChild (int wParam, int lParam) {
-	if ((style & SWT.SHADOW_NONE) != 0) return null;
 	DRAWITEMSTRUCT struct = new DRAWITEMSTRUCT ();
 	OS.MoveMemory (struct, lParam, DRAWITEMSTRUCT.sizeof);
+	drawBackground (struct.hDC);
+	if ((style & SWT.SHADOW_NONE) != 0) return null;
 	RECT rect = new RECT ();
 	int lineWidth = OS.GetSystemMetrics (OS.SM_CXBORDER);
 	int flags = OS.EDGE_ETCHED;
@@ -526,11 +527,11 @@ LRESULT wmDrawChild (int wParam, int lParam) {
 		int bottom = struct.top + Math.max (lineWidth * 2, (struct.bottom - struct.top) / 2);
 		OS.SetRect (rect, struct.left, struct.top, struct.right, bottom);
 		OS.DrawEdge (struct.hDC, rect, flags, OS.BF_BOTTOM);
-		return null;
+	} else {
+		int right = struct.left + Math.max (lineWidth * 2, (struct.right - struct.left) / 2);
+		OS.SetRect (rect, struct.left, struct.top, right, struct.bottom);
+		OS.DrawEdge (struct.hDC, rect, flags, OS.BF_RIGHT);
 	}
-	int right = struct.left + Math.max (lineWidth * 2, (struct.right - struct.left) / 2);
-	OS.SetRect (rect, struct.left, struct.top, right, struct.bottom);
-	OS.DrawEdge (struct.hDC, rect, flags, OS.BF_RIGHT);
 	return null;
 }
 
