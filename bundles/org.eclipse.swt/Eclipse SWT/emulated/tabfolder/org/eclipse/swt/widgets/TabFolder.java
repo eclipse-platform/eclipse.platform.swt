@@ -799,11 +799,13 @@ Point minimumSize (int wHint, int hHint, boolean flushCache) {
 }
 boolean mnemonicHit (char key) {
 	for (int i = 0; i < items.length; i++) {
-		char mnemonic = getMnemonic (items[i].getText ());
-		if (mnemonic != '\0') {
-			if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
-				setSelection(i, true);
-				return true;
+		if (i != selectedIndex) {
+			char mnemonic = getMnemonic (items[i].getText ());
+			if (mnemonic != '\0') {
+				if (Character.toUpperCase (key) == Character.toUpperCase (mnemonic)) {
+					setSelection(i, true);
+					return true;
+				}
 			}
 		}
 	}
