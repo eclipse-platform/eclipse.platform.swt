@@ -385,6 +385,30 @@ int getIndent() {
 }
 
 /**
+ * Returns the item at the given, zero-relative index in the
+ * receiver. Throws an exception if the index is out of range.
+ *
+ * @param index the index of the item to return
+ * @return the item at the given index
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_RANGE - if the index is not between 0 and the number of elements in the list minus 1 (inclusive)</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public TableTreeItem getItem (int index) {
+	checkWidget();
+	int count = items.length;
+	if (!(0 <= index && index < count)) SWT.error (SWT.ERROR_INVALID_RANGE);
+	return items [index];
+}
+
+/**
  * Returns the number of items contained in the receiver
  * that are direct item children of the receiver.
  *
