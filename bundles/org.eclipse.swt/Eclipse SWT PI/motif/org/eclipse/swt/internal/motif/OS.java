@@ -685,6 +685,7 @@ public class OS {
 	public static final int XmNarrowSize = malloc ("arrowSize", 2);
 	public static final int XmNarrowSpacing = malloc ("arrowSpacing", 2);
 	public static final int XmNborderWidth = malloc ("borderWidth", 2);
+	public static final int XmNchildHorizontalSpacing = malloc ("childHorizontalSpacing", 2);
 	public static final int XmNheight = malloc ("height", 2);
 	public static final int XmNhighlightThickness = malloc ("highlightThickness", 2);
 	public static final int XmNlistMarginHeight = malloc ("listMarginHeight", 2);
@@ -716,7 +717,6 @@ public class OS {
 	public static final int XmNcancelCallback = malloc ("cancelCallback", 4);
 	public static final int XmNcancelLabelString = malloc ("cancelLabelString", 4);
 	public static final int XmNcascadingCallback = malloc ("cascadingCallback", 4);
-	public static final int XmNchildHorizontalSpacing = malloc ("childHorizontalSpacing", 4);
 	public static final int XmNchildren = malloc ("children", 4);
 	public static final int XmNclientData = malloc ("clientData", 4);
 	public static final int XmNcolormap = malloc ("colormap", 4);
