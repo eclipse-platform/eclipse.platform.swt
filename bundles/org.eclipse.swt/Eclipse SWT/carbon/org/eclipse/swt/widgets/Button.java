@@ -183,6 +183,11 @@ public String getText () {
 int kEventControlHit (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlHit (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
+	}
 	postEvent (SWT.Selection);
 	return OS.eventNotHandledErr;
 }
@@ -193,6 +198,17 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
+}
+
+void selectRadio () {
+	int index = 0;
+	Control [] children = parent._getChildren ();
+	while (index < children.length && children [index] != this) index++;
+	int i = index - 1;
+	while (i >= 0 && children [i].setRadioSelection (false)) --i;
+	int j = index + 1;
+	while (j < children.length && children [j].setRadioSelection (false)) j++;
+	setSelection (true);
 }
 
 public void setAlignment (int alignment) {
@@ -253,6 +269,15 @@ public void setImage (Image image) {
 	//inContent.iconRef = iconRef [0];
 	//OS.SetBevelButtonContentInfo (handle, inContent);
 	//OS.HIViewSetNeedsDisplay (handle, true);
+}
+
+boolean setRadioSelection (boolean value){
+	if ((style & SWT.RADIO) == 0) return false;
+	if (getSelection () != value) {
+		setSelection (value);
+		postEvent (SWT.Selection);
+	}
+	return true;
 }
 
 public void setSelection (boolean selected) {

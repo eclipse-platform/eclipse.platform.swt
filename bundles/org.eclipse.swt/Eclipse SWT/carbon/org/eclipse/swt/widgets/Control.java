@@ -711,6 +711,10 @@ public void setRedraw (boolean redraw) {
 	}
 }
 
+boolean setRadioSelection (boolean value){
+	return false;
+}
+
 public void setSize (int width, int height) {
 	checkWidget();
 	width = Math.max (0, width);
