@@ -535,7 +535,7 @@ void headerOnMouseDown (Event event) {
 		if (event.x < x) {
 			Event newEvent = new Event ();
 			newEvent.widget = column;
-			sendEvent (SWT.Selection, newEvent);
+			postEvent (SWT.Selection, newEvent);
 			return;
 		}
 	}
@@ -867,7 +867,7 @@ void onArrowDown (int stateMask) {
 		showItem (availableItems [newFocusIndex]);
 		Event newEvent = new Event ();
 		newEvent.item = this;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	if ((style & SWT.SINGLE) != 0) {
@@ -896,7 +896,7 @@ void onArrowDown (int stateMask) {
 		showItem (availableItems [newFocusIndex]);
 		Event newEvent = new Event ();
 		newEvent.item = this;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	/* SWT.MULTI */
@@ -936,7 +936,7 @@ void onArrowDown (int stateMask) {
 	showItem (availableItems [newFocusIndex]);
 	Event newEvent = new Event ();
 	newEvent.item = this;
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 }
 void onArrowLeft (int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
@@ -982,7 +982,7 @@ void onArrowLeft (int stateMask) {
 	showItem (parentItem);
 	Event newEvent = new Event ();
 	newEvent.item = this;
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 }
 void onArrowRight (int stateMask) {
 	if ((stateMask & SWT.CTRL) != 0) {
@@ -1036,7 +1036,7 @@ void onArrowRight (int stateMask) {
 	showItem (children [0]);
 	Event newEvent = new Event ();
 	newEvent.item = children [0];
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 }
 void onArrowUp (int stateMask) {
 	if ((stateMask & (SWT.SHIFT | SWT.CTRL)) == 0) {
@@ -1050,7 +1050,7 @@ void onArrowUp (int stateMask) {
 		showItem (item);
 		Event newEvent = new Event ();
 		newEvent.item = item;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	if ((style & SWT.SINGLE) != 0) {
@@ -1079,7 +1079,7 @@ void onArrowUp (int stateMask) {
 		showItem (item);
 		Event newEvent = new Event ();
 		newEvent.item = item;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	/* SWT.MULTI */
@@ -1119,13 +1119,13 @@ void onArrowUp (int stateMask) {
 	showItem (item);
 	Event newEvent = new Event ();
 	newEvent.item = item;
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 }
 void onCR () {
 	if (focusItem == null) return;
 	Event event = new Event ();
 	event.item = focusItem;
-	sendEvent (SWT.DefaultSelection, event);
+	postEvent (SWT.DefaultSelection, event);
 }
 void onDispose () {
 	if (isDisposed ()) return;
@@ -1155,7 +1155,7 @@ void onEnd (int stateMask) {
 		showItem (item);
 		Event newEvent = new Event ();
 		newEvent.item = item;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	if ((style & SWT.SINGLE) != 0) {
@@ -1174,7 +1174,7 @@ void onEnd (int stateMask) {
 		showItem (item);
 		Event newEvent = new Event ();
 		newEvent.item = item;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	/* SWT.MULTI */
@@ -1209,7 +1209,7 @@ void onEnd (int stateMask) {
 	showItem (selectedItem);
 	Event newEvent = new Event ();
 	newEvent.item = selectedItem;
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 }
 void onFocusIn () {
 	if (items.length == 0) return;
@@ -1229,7 +1229,7 @@ void onFocusIn () {
 	redrawItem (initialFocus.availableIndex, true);
 	Event newEvent = new Event ();
 	newEvent.item = initialFocus;
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 	return;
 }
 void onFocusOut () {
@@ -1248,7 +1248,7 @@ void onHome (int stateMask) {
 		showItem (item);
 		Event newEvent = new Event ();
 		newEvent.item = item;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	if ((style & SWT.SINGLE) != 0) {
@@ -1266,7 +1266,7 @@ void onHome (int stateMask) {
 		showItem (item);
 		Event newEvent = new Event ();
 		newEvent.item = item;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	/* SWT.MULTI */
@@ -1301,7 +1301,7 @@ void onHome (int stateMask) {
 	showItem (selectedItem);
 	Event newEvent = new Event ();
 	newEvent.item = selectedItem;
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 }
 void onKeyDown (Event event) {
 	if (focusItem == null) return;
@@ -1358,7 +1358,7 @@ void onKeyDown (Event event) {
 				showItem (item);
 				Event newEvent = new Event ();
 				newEvent.item = this;
-				sendEvent (SWT.Selection, newEvent);
+				postEvent (SWT.Selection, newEvent);
 				return;
 			}
 		}
@@ -1375,7 +1375,7 @@ void onKeyDown (Event event) {
 				showItem (item);
 				Event newEvent = new Event ();
 				newEvent.item = this;
-				sendEvent (SWT.Selection, newEvent);
+				postEvent (SWT.Selection, newEvent);
 				return;
 			}
 		}
@@ -1402,7 +1402,7 @@ void onMouseDoubleClick (Event event) {
 	
 	Event newEvent = new Event ();
 	newEvent.item = selectedItem;
-	sendEvent (SWT.DefaultSelection, newEvent);
+	postEvent (SWT.DefaultSelection, newEvent);
 }
 void onMouseDown (Event event) {
 	if (!isFocusControl ()) setFocus ();
@@ -1437,7 +1437,7 @@ void onMouseDown (Event event) {
 		Event newEvent = new Event ();
 		newEvent.item = selectedItem;
 		newEvent.detail = SWT.CHECK;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	
@@ -1453,7 +1453,7 @@ void onMouseDown (Event event) {
 				redrawItem (selectedItem.availableIndex, true);
 				Event newEvent = new Event ();
 				newEvent.item = selectedItem;
-				sendEvent (SWT.Selection, newEvent);
+				postEvent (SWT.Selection, newEvent);
 				return;
 			}
 			if ((event.stateMask & (SWT.CTRL | SWT.SHIFT)) == 0) {
@@ -1462,7 +1462,7 @@ void onMouseDown (Event event) {
 				redrawItem (selectedItem.availableIndex, true);
 				Event newEvent = new Event ();
 				newEvent.item = selectedItem;
-				sendEvent (SWT.Selection, newEvent);
+				postEvent (SWT.Selection, newEvent);
 				return;
 			}
 		}
@@ -1471,7 +1471,7 @@ void onMouseDown (Event event) {
 			/* fire a selection event, though the selection did not change */
 			Event newEvent = new Event ();
 			newEvent.item = selectedItem;
-			sendEvent (SWT.Selection, newEvent);
+			postEvent (SWT.Selection, newEvent);
 			return;
 		}
 	}
@@ -1497,7 +1497,7 @@ void onMouseDown (Event event) {
 					true);
 				Event newEvent = new Event ();
 				newEvent.item = selectedItem;
-				sendEvent (SWT.Selection, newEvent);
+				postEvent (SWT.Selection, newEvent);
 				return;
 			}
 			selectItem (selectedItem, (event.stateMask & SWT.CTRL) != 0);
@@ -1505,7 +1505,7 @@ void onMouseDown (Event event) {
 			redrawItem (selectedItem.availableIndex, true);
 			Event newEvent = new Event ();
 			newEvent.item = selectedItem;
-			sendEvent (SWT.Selection, newEvent);
+			postEvent (SWT.Selection, newEvent);
 			return;
 		}
 		/* button 3 */
@@ -1515,7 +1515,7 @@ void onMouseDown (Event event) {
 			redrawItem (selectedItem.availableIndex, true);
 			Event newEvent = new Event ();
 			newEvent.item = selectedItem;
-			sendEvent (SWT.Selection, newEvent);
+			postEvent (SWT.Selection, newEvent);
 			return;
 		}
 	}
@@ -1527,7 +1527,7 @@ void onMouseDown (Event event) {
 		redrawItem (selectedItem.availableIndex, true);
 		Event newEvent = new Event ();
 		newEvent.item = selectedItem;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	if ((event.stateMask & SWT.SHIFT) != 0) {
@@ -1549,7 +1549,7 @@ void onMouseDown (Event event) {
 			true);
 		Event newEvent = new Event ();
 		newEvent.item = selectedItem;
-		sendEvent (SWT.Selection, newEvent);
+		postEvent (SWT.Selection, newEvent);
 		return;
 	}
 	selectItem (selectedItem, false);
@@ -1557,7 +1557,7 @@ void onMouseDown (Event event) {
 	redrawItem (selectedItem.availableIndex, true);
 	Event newEvent = new Event ();
 	newEvent.item = selectedItem;
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 }
 void onMouseUp (Event event) {
 	int index = (event.y - getHeaderHeight ()) / itemHeight + topIndex;
@@ -1650,7 +1650,7 @@ void onPageDown (int stateMask) {
 	showItem (selectedItem);
 	Event newEvent = new Event ();
 	newEvent.item = selectedItem;
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 }
 void onPageUp (int stateMask) {
 	int visibleItemCount = (getClientArea ().height - getHeaderHeight ()) / itemHeight;
@@ -1732,7 +1732,7 @@ void onPageUp (int stateMask) {
 	showItem (selectedItem);
 	Event newEvent = new Event ();
 	newEvent.item = selectedItem;
-	sendEvent (SWT.Selection, newEvent);
+	postEvent (SWT.Selection, newEvent);
 }
 void onPaint (Event event) {
 	GC gc = event.gc;
@@ -1902,15 +1902,14 @@ void onSpace () {
 	showItem (focusItem);
 	Event event = new Event ();
 	event.item = focusItem;
-	sendEvent (SWT.Selection, event);
-	if (isDisposed ()) return;
+	postEvent (SWT.Selection, event);
 	if ((style & SWT.CHECK) == 0) return;
 	
 	/* SWT.CHECK */
 	event = new Event ();
 	event.item = focusItem;
 	event.detail = SWT.CHECK;
-	sendEvent (SWT.Selection, event);
+	postEvent (SWT.Selection, event);
 }
 /*
  * The current focus item is about to become unavailable, so reassign focus.
