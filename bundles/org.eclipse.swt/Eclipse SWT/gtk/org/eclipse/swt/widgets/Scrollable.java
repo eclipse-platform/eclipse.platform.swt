@@ -231,11 +231,6 @@ int hScrollBarWidth() {
 	return requisition.height + spacing;
 }
 
-boolean isTabGroup() {
-	if ((state & CANVAS) != 0) return true;
-	return super.isTabGroup();
-}
-
 void setOrientation () {
 	if ((style & SWT.RIGHT_TO_LEFT) != 0) {
 		if (scrolledHandle != 0) {

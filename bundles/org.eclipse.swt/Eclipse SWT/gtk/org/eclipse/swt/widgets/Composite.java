@@ -462,6 +462,11 @@ int imHandle () {
 	return imHandle;
 }
 
+boolean isTabGroup() {
+	if ((state & CANVAS) != 0) return true;
+	return super.isTabGroup();
+}
+
 /**
  * If the receiver has a layout, asks the layout to <em>lay out</em>
  * (that is, set the size and location of) the receiver's children. 
