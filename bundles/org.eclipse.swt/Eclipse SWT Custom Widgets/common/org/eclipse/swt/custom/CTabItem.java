@@ -150,7 +150,6 @@ void drawClose(GC gc) {
 	int y = closeRect.y + indent;
 	y += parent.onBottom ? -1 : 1;
 	
-	int index = parent.indexOf(this);
 	Color closeBorder = display.getSystemColor(CTabFolder.BUTTON_BORDER);
 	switch (closeImageState) {
 		case CTabFolder.NORMAL: {
@@ -439,15 +438,23 @@ public Control getControl () {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @deprecated
+ * @deprecated the disabled image is not used
  */
 public Image getDisabledImage(){
 	checkWidget();
 	return disabledImage;
 }
 /**
- * UNDER CONSTRUCTION
- * @since 3.0
+ * Returns the font that the receiver will use to paint textual information.
+ *
+ * @return the receiver's font
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ *  @since 3.0
  */
 public Font getFont() {
 	checkWidget();
@@ -488,10 +495,19 @@ public String getToolTipText () {
 	return toolTipText;
 }
 /**
-* UNDER CONSTRUCTION
+* Returns true if the item will be rendered in the visible area of the CTabFolder. Returns false otherwise.
+* 
+*  @return true if the item will be rendered in the visible area of the CTabFolder. Returns false otherwise.
+* 
+*  @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
 * @since 3.0
 */
 public boolean isShowing () {
+	checkWidget();
 	int index = parent.indexOf(this);
 	int rightEdge = parent.getRightItemEdge();
 	if (parent.single) {
@@ -615,7 +631,7 @@ public void setControl (Control control) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * @deprecated
+ * @deprecated This image is not used
  */
 public void setDisabledImage (Image image) {
 	checkWidget();
@@ -639,7 +655,6 @@ public void setDisabledImage (Image image) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * UNDER CONSTRUCTION
  * @since 3.0
  */
 public void setFont (Font font){
@@ -666,22 +681,6 @@ public void setImage (Image image) {
 	}
 	parent.redraw();
 }
-/**
- * Set the widget text.
- * <p>
- * This method sets the widget label.  The label may include
- * mnemonic characters but must not contain line delimiters.
- *
- * @param string the new label for the widget
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- */
 public void setText (String string) {
 	checkWidget();
 	if (string == null) SWT.error (SWT.ERROR_NULL_ARGUMENT);
