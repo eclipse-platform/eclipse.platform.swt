@@ -139,6 +139,7 @@ public DropTarget(Control control, int style) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
 	}
 	control.setData(DROPTARGETID, this);
+	
 	byte[] buffer = Converter.wcsToMbcs(null, "drag_motion", true); //$NON-NLS-1$
 	OS.g_signal_connect(control.handle, buffer, Drag_Motion.getAddress(), 0);
 	buffer = Converter.wcsToMbcs(null, "drag_leave", true); //$NON-NLS-1$
@@ -151,13 +152,16 @@ public DropTarget(Control control, int style) {
 	// Dispose listeners	
 	controlListener = new Listener(){
 		public void handleEvent(Event event){
-			DropTarget.this.dispose();
+			if (!DropTarget.this.isDisposed()){
+				DropTarget.this.dispose();
+			}
 		}
 	};
-	control.addListener(SWT.Dispose, controlListener);	
+	control.addListener(SWT.Dispose, controlListener);
+		
 	this.addListener(SWT.Dispose, new Listener(){
 		public void handleEvent(Event event){
-			DropTarget.this.onDispose();
+			onDispose();
 		}	
 	});
 
@@ -318,7 +322,8 @@ private int drag_data_received ( int widget, int context, int x, int y, int data
 		keyOperation = -1;
 		return 0;
 	}
-
+	keyOperation = -1;
+	
 	int allowedOperations = event.operations;
 	
 	// Get data in a Java format	
@@ -338,6 +343,9 @@ private int drag_data_received ( int widget, int context, int x, int y, int data
 			}
 		}
 	}
+	if (object == null) {
+		selectedOperation = DND.DROP_NONE;
+	}
 	
 	event.detail = selectedOperation;
 	event.dataType = transferData;
@@ -352,19 +360,18 @@ private int drag_data_received ( int widget, int context, int x, int y, int data
 		selectedOperation = DND.DROP_NONE;
 	}
 	
-	keyOperation = -1;
-	//Terminate DND and indicate if a move operation occurred
+	//notify source of action taken
 	OS.gtk_drag_finish(context, selectedOperation != DND.DROP_NONE, selectedOperation== DND.DROP_MOVE, time); 			
 	return 1;	
 }
 
 private int drag_drop(int widget, int context, int x, int y, int time) {
-	updateDragOverHover(0, null);
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
-		 return 0;
+		return 0;
 	}
+	keyOperation = -1;
 	
 	int allowedOperations = event.operations;
 	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
@@ -383,7 +390,7 @@ private int drag_drop(int widget, int context, int x, int y, int time) {
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
 			if (allowedDataTypes[i].type == event.dataType.type) {
-				selectedDataType = event.dataType;
+				selectedDataType = allowedDataTypes[i];
 				break;
 			}
 		}
@@ -399,16 +406,18 @@ private int drag_drop(int widget, int context, int x, int y, int time) {
 		return 0;
 	}
 
+	// ask drag source for dropped data
 	OS.gtk_drag_get_data(widget, context, selectedDataType.type, time);
 	return 1;
 }
 
 private int drag_leave ( int widget, int context, int time){
-	if (keyOperation == -1) return 1;
-	
 	updateDragOverHover(0, null);
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
-					
+	
+	if (keyOperation == -1) return 1;
+	keyOperation = -1;
+	
 	DNDEvent event = new DNDEvent();
 	event.widget = this;
 	event.time = (int)(long)time;
@@ -416,14 +425,17 @@ private int drag_leave ( int widget, int context, int time){
 	try {
 		notifyListeners(DND.DragLeave, event);
 	} catch (Throwable e) {}
-	
-	keyOperation = -1;
 	return 1;
 }
 
 private int drag_motion ( int widget, int context, int x, int y, int time){
 	int oldKeyOperation = keyOperation;
 	
+	if (oldKeyOperation == -1) { //drag enter
+		selectedDataType = null;
+		selectedOperation = DND.DROP_NONE;
+	}
+		
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
@@ -436,16 +448,15 @@ private int drag_motion ( int widget, int context, int x, int y, int time){
 	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
 
 	if (oldKeyOperation == -1) {
-		selectedDataType = null;
-		selectedOperation = DND.DROP_NONE;
 		event.type = DND.DragEnter;
 	} else {
-		event.dataType = selectedDataType;
 		if (keyOperation == oldKeyOperation) {
 			event.type = DND.DragOver;
+			event.dataType = selectedDataType;
 			event.detail = selectedOperation;
 		} else {
 			event.type = DND.DragOperationChanged;
+			event.dataType = selectedDataType;
 		}
 	}
 	
@@ -466,7 +477,7 @@ private int drag_motion ( int widget, int context, int x, int y, int time){
 	if (event.dataType != null) {
 		for (int i = 0; i < allowedDataTypes.length; i++) {
 			if (allowedDataTypes[i].type == event.dataType.type) {
-				selectedDataType = event.dataType;
+				selectedDataType = allowedDataTypes[i];
 				break;
 			}
 		}
@@ -494,7 +505,7 @@ private int drag_motion ( int widget, int context, int x, int y, int time){
 			break;
 	}
 	
-	if (event.type == DND.DragEnter) {
+	if (oldKeyOperation == -1) {
 		dragOverHeartbeat.run();
 	}
 	return 1;
