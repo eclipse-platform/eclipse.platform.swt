@@ -26,37 +26,9 @@ public Scrollable (Composite parent, int style) {
 	super (parent, style);
 }
 
-int actionProc (int theControl, int partCode) {
-	if (handle == theControl || scrolledHandle == theControl) {
-		return super.actionProc (theControl, partCode);
-	}
-	if (horizontalBar != null && horizontalBar.handle == theControl) {
-		return horizontalBar.actionProc (theControl, partCode);
-	}
-	if (verticalBar != null && verticalBar.handle == theControl) {
-		return verticalBar.actionProc (theControl, partCode);
-	}
-	return OS.eventNotHandledErr;
-}
-
 public Rectangle computeTrim (int x, int y, int width, int height) {
 	checkWidget();
 	return new Rectangle (x, y, width, height);
-}
-
-int controlProc (int nextHandler, int theEvent, int userData) {
-	int [] theControl = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	if (handle == theControl [0] || scrolledHandle == theControl [0]) {
-		return super.controlProc (nextHandler, theEvent, userData);
-	}
-	if (horizontalBar != null && horizontalBar.handle == theControl [0]) {
-		return horizontalBar.controlProc (nextHandler, theEvent, userData);
-	}
-	if (verticalBar != null && verticalBar.handle == theControl [0]) {
-		return verticalBar.controlProc (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
 }
 
 ScrollBar createScrollBar (int type) {
@@ -169,6 +141,7 @@ void register () {
 	super.register ();
 	if (scrolledHandle != 0) WidgetTable.put (scrolledHandle, this);
 }
+
 void releaseHandle () {
 	super.releaseHandle ();
 	scrolledHandle = 0;

@@ -389,6 +389,11 @@ public void open () {
 	if (!restoreFocus ()) traverseGroup (true);
 }
 
+void releaseHandle () {
+	super.releaseHandle ();
+	shellHandle = 0;
+}
+
 public void removeShellListener(ShellListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);

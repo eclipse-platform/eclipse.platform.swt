@@ -174,7 +174,7 @@ void releaseChild () {
 void releaseWidget () {
 	super.releaseWidget ();
 	if (cIcon != 0) {
-		destroyCIcon(cIcon);
+		destroyCIcon (cIcon);
 		cIcon = 0;
 	}
 	control = null;

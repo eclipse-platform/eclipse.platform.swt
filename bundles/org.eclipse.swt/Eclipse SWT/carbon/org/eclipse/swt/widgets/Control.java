@@ -40,10 +40,6 @@ public Control (Composite parent, int style) {
 	createWidget ();
 }
 
-int actionProc (int theControl, int partCode) {
-	return 0;
-}
-
 public void addControlListener(ControlListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -114,21 +110,6 @@ public void addTraverseListener (TraverseListener listener) {
 	addListener (SWT.Traverse,typedListener);
 }
 
-int controlProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventControlActivate:				return kEventControlActivate (nextHandler, theEvent, userData);
-		case OS.kEventControlBoundsChanged:		return kEventControlBoundsChanged (nextHandler, theEvent, userData);
-		case OS.kEventControlClick:				return kEventControlClick (nextHandler, theEvent, userData);
-		case OS.kEventControlContextualMenuClick:	return kEventControlContextualMenuClick (nextHandler, theEvent, userData);
-		case OS.kEventControlDeactivate:			return kEventControlDeactivate (nextHandler, theEvent, userData);
-		case OS.kEventControlDraw:					return kEventControlDraw (nextHandler, theEvent, userData);
-		case OS.kEventControlHit:					return kEventControlHit (nextHandler, theEvent, userData);
-		case OS.kEventControlSetFocusPart:			return kEventControlSetFocusPart (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
 public Point computeSize (int wHint, int hHint) {
 	return computeSize (wHint, hHint, true);
 }
@@ -178,14 +159,12 @@ void createHandle () {
 }
 
 void createWidget () {
-	createHandle ();
-	register ();
-	hookEvents ();
+	super.createWidget ();
 	setZOrder ();
 }
 
 void deregister () {
-	if (handle == 0) return;
+	super.deregister ();
 	WidgetTable.remove (handle);
 }
 
@@ -222,39 +201,6 @@ public Rectangle getBounds () {
 	OS.GetControlBounds (topHandle, rect);
 	toControl (topHandle, rect);
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
-}
-
-int getClipping (int control) {
-	int visibleRgn = OS.NewRgn (), childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
-	Rect rect = new Rect();
-	OS.GetControlBounds (control, rect);
-	OS.RectRgn (visibleRgn, rect);
-	short [] count = new short [1];
-	int [] outControl = new int [1];
-	int tempControl = control, lastControl = 0;
-	while (tempControl != 0) {
-		OS.GetControlBounds (tempControl, rect);
-		OS.RectRgn (tempRgn, rect);
-		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
-		if (OS.EmptyRgn (visibleRgn)) break;
-		OS.CountSubControls (tempControl, count);
-		for (int i = 0; i < count [0]; i++) {
-			OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
-			int child = outControl [0];
-			if (child == lastControl) break;
-			if (!OS.IsControlVisible (child)) continue;
-			OS.GetControlBounds (child, rect);
-			OS.RectRgn (tempRgn, rect);
-			OS.UnionRgn (tempRgn, childRgn, childRgn);
-		}
-		lastControl = tempControl;
-		OS.GetSuperControl (tempControl, outControl);
-		tempControl = outControl [0];
-	}
-	OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
-	OS.DisposeRgn (childRgn);
-	OS.DisposeRgn (tempRgn);
-	return visibleRgn;
 }
 
 public Display getDisplay () {
@@ -349,6 +295,7 @@ boolean hasFocus () {
 }
 
 void hookEvents () {
+	super.hookEvents ();
 	Display display = getDisplay ();
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {
@@ -463,49 +410,8 @@ public boolean isVisible () {
 	return OS.HIViewIsVisible (topHandle ());
 }
 
-int menuProc (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int mouseProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventMouseDown: 		return kEventMouseDown (nextHandler, theEvent, userData);
-		case OS.kEventMouseUp: 		return kEventMouseUp (nextHandler, theEvent, userData);
-		case OS.kEventMouseDragged:	return kEventMouseDragged (nextHandler, theEvent, userData);
-//		case OS.kEventMouseEntered:		return kEventMouseEntered (nextHandler, theEvent, userData);
-//		case OS.kEventMouseExited:		return kEventMouseExited (nextHandler, theEvent, userData);
-		case OS.kEventMouseMoved:		return kEventMouseMoved (nextHandler, theEvent, userData);
-		case OS.kEventMouseWheelMoved:	return kEventMouseWheelMoved (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
 Decorations menuShell () {
 	return parent.menuShell ();
-}
-
-int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
-	return OS.noErr;
-}
-
-int itemNotificationProc (int browser, int item, int message) {
-	return OS.noErr;
-}
-
-int keyboardProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventRawKeyDown:				return kEventRawKeyDown (nextHandler, theEvent, userData);
-		case OS.kEventRawKeyModifiersChanged:	return kEventRawKeyModifiersChanged (nextHandler, theEvent, userData);
-		case OS.kEventRawKeyRepeat:			return kEventRawKeyRepeat (nextHandler, theEvent, userData);
-		case OS.kEventRawKeyUp:				return kEventRawKeyUp (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlActivate (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
 }
 
 int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
@@ -519,10 +425,6 @@ int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
 		sendEvent (SWT.Resize);
 		if (isDisposed ()) return OS.noErr;
 	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -542,11 +444,17 @@ int kEventControlDeactivate (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventControlDraw (int nextHandler, int theEvent, int userData) {
-	/* Exit early - don't draw the background */
-	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) {
-		return OS.eventNotHandledErr;
-	}
+	int [] theControl = new int [1];
+	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
+	int clipRgn = getClipping (theControl [0]);
+	int oldRgn = OS.NewRgn ();
+	OS.GetClip (oldRgn);
+	OS.SetClip (clipRgn);
 	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	OS.SetClip (oldRgn);
+	OS.DisposeRgn (clipRgn);	
+	if (theControl [0] != handle) return result;
+	if (!hooks (SWT.Paint) && !filters (SWT.Paint)) return result;
 
 	/* Retrieve the damage region */
 	int [] region = new int [1];	
@@ -571,10 +479,6 @@ int kEventControlDraw (int nextHandler, int theEvent, int userData) {
 	gc.dispose ();
 
 	return result;
-}
-
-int kEventControlHit (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
 }
 
 int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
@@ -616,10 +520,6 @@ int kEventMouseUp (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-int kEventMouseWheelMoved (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
 int kEventRawKeyUp (int nextHandler, int theEvent, int userData) {
 	if (!sendKeyEvent (SWT.KeyUp, theEvent)) return OS.noErr;
 	return OS.eventNotHandledErr;
@@ -652,38 +552,6 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 		//HELP KEY
 	}
 	if (!sendKeyEvent (SWT.KeyDown, theEvent)) return OS.noErr;
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowBoundsChanged (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowClose (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowExpanded (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowFocusAcquired (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
-int kEventWindowFocusRelinquish (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
@@ -735,8 +603,13 @@ public void redraw (int x, int y, int width, int height, boolean all) {
 }
 
 void register () {
-	if (handle == 0) return;
+	super.register ();
 	WidgetTable.put (handle, this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	handle = 0;
 }
 
 void releaseWidget () {
@@ -818,10 +691,6 @@ public void removeTraverseListener(TraverseListener listener) {
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (eventTable == null) return;
 	eventTable.unhook (SWT.Traverse, listener);
-}
-
-int scrollBarActionProc (int theControl, int partCode) {
-	return OS.eventNotHandledErr;
 }
 
 boolean sendKeyEvent (int type, int theEvent) {
@@ -1123,10 +992,6 @@ Rect toRoot (int control, Rect rect) {
 	return rect;
 }
 
-int toolItemProc (int nextHandler, int theEvent, int userData) {
-	return OS.eventNotHandledErr;
-}
-
 int topHandle () {
 	return handle;
 }
@@ -1189,21 +1054,6 @@ boolean traverseMnemonic (Event event) {
 
 public void update () {
 	checkWidget();
-}
-
-int windowProc (int nextHandler, int theEvent, int userData) {
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventWindowActivated:			return kEventWindowActivated (nextHandler, theEvent, userData);	
-		case OS.kEventWindowBoundsChanged:		return kEventWindowBoundsChanged (nextHandler, theEvent, userData);
-		case OS.kEventWindowClose:				return kEventWindowClose (nextHandler, theEvent, userData);
-		case OS.kEventWindowCollapsed:			return kEventWindowCollapsed (nextHandler, theEvent, userData);
-		case OS.kEventWindowDeactivated:		return kEventWindowDeactivated (nextHandler, theEvent, userData);
-		case OS.kEventWindowExpanded:			return kEventWindowExpanded (nextHandler, theEvent, userData);
-		case OS.kEventWindowFocusAcquired:		return kEventWindowFocusAcquired (nextHandler, theEvent, userData);
-		case OS.kEventWindowFocusRelinquish:	return kEventWindowFocusRelinquish (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
 }
 
 }

@@ -143,13 +143,8 @@ static int untranslateKey (int key) {
 }
 
 int actionProc (int theControl, int partCode) {
-	Control control = WidgetTable.get (theControl);
-	if (control != null) return control.actionProc (theControl, partCode);
-	//FIXME - don't auto forward do parent for scroll bar case
-	int [] parentControl = new int [1];
-	OS.GetSuperControl (theControl, parentControl);
-	Control parent = WidgetTable.get (parentControl [0]);
-	if (parent != null) return parent.actionProc (theControl, partCode);
+	Widget widget = WidgetTable.get (theControl);
+	if (widget != null) return widget.actionProc (theControl, partCode);
 	return OS.noErr;
 }
 
@@ -293,13 +288,8 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 }
 
 int controlProc (int nextHandler, int theEvent, int userData) {
-	Control control = WidgetTable.get (userData);
-	if (control == null) {
-		int [] theControl = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-		control = WidgetTable.get (theControl [0]);
-	}
-	if (control != null) return control.controlProc (nextHandler, theEvent, userData);
+	Widget widget = WidgetTable.get (userData);
+	if (widget != null) return widget.controlProc (nextHandler, theEvent, userData);
 	return OS.eventNotHandledErr;
 }
 
@@ -402,8 +392,8 @@ public Shell getActiveShell () {
 	if (theWindow == 0) return null;
 	int [] theControl = new int [1];
 	OS.GetRootControl (theWindow, theControl);
-	Control control = WidgetTable.get (theControl [0]);
-	if (control instanceof Shell) return (Shell) control;
+	Widget widget = WidgetTable.get (theControl [0]);
+	if (widget instanceof Shell) return (Shell) widget;
 	return null;
 }
 
@@ -433,12 +423,17 @@ public Control getCursorControl () {
 	OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
 	if (theControl [0] != 0) {
 		do {
-			Control control = WidgetTable.get (theControl [0]);
-			if (control != null && control.getEnabled ()) return control;
+			Widget widget = WidgetTable.get (theControl [0]);
+			if (widget != null && widget instanceof Control) {
+				Control control = (Control) widget;
+				if (control.getEnabled ()) return control;
+			}
 			OS.GetSuperControl (theControl [0], theControl);
 		} while (theControl [0] != 0);
 	}
-	return WidgetTable.get (theRoot [0]);
+	Widget widget = WidgetTable.get (theRoot [0]);
+	if (widget != null && widget instanceof Control) return (Control) widget;
+	return null;
 }
 
 public Point getCursorLocation () {
@@ -479,7 +474,15 @@ public Control getFocusControl () {
 	if (theWindow == 0) return null;
 	int [] theControl = new int [1];
 	OS.GetKeyboardFocus (theWindow, theControl);
-	return WidgetTable.get (theControl [0]);
+	do {
+		Widget widget = WidgetTable.get (theControl [0]);
+		if (widget != null && widget instanceof Control) {
+			Control control = (Control) widget;
+			if (control.getEnabled ()) return control;
+		}
+		OS.GetSuperControl (theControl [0], theControl);
+	} while (theControl [0] != 0);
+	return null;
 }
 
 int getLastEventTime () {
@@ -646,20 +649,20 @@ boolean isValidThread () {
 }
 
 int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
-	Control control = WidgetTable.get (browser);
-	if (control != null) return control.itemDataProc (browser, item, property, itemData,  setValue);
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.itemDataProc (browser, item, property, itemData, setValue);
 	return OS.noErr;
 }
 
 int itemNotificationProc (int browser, int item, int message) {
-	Control control = WidgetTable.get (browser);
-	if (control != null) return control.itemNotificationProc (browser, item, message);
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.itemNotificationProc (browser, item, message);
 	return OS.noErr;
 }
 
 int keyboardProc (int nextHandler, int theEvent, int userData) {
-	Control control = WidgetTable.get (userData);
-	if (control == null) {
+	Widget widget = WidgetTable.get (userData);
+	if (widget == null) {
 		int theWindow = OS.FrontWindow ();
 		if (theWindow == 0) return OS.eventNotHandledErr;
 		int [] theControl = new int [1];
@@ -668,9 +671,9 @@ int keyboardProc (int nextHandler, int theEvent, int userData) {
 		if (theControl [0] == 0) {
 			OS.GetRootControl (theWindow, theControl);
 		}
-		control = WidgetTable.get (theControl [0]);
+		widget = WidgetTable.get (theControl [0]);
 	}
-	if (control != null) return control.keyboardProc (nextHandler, theEvent, userData);
+	if (widget != null) return widget.keyboardProc (nextHandler, theEvent, userData);
 	return OS.eventNotHandledErr;
 }
 
@@ -698,8 +701,8 @@ void postEvent (Event event) {
 	
 int menuProc (int nextHandler, int theEvent, int userData) {
 	if (userData != 0) {
-		Control control = WidgetTable.get (userData);
-		if (control != null) return control.menuProc (nextHandler, theEvent, userData);
+		Widget widget = WidgetTable.get (userData);
+		if (widget != null) return widget.menuProc (nextHandler, theEvent, userData);
 	} else {
 		int [] theMenu = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, theMenu);
@@ -714,7 +717,7 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 	org.eclipse.swt.internal.carbon.Point where = new org.eclipse.swt.internal.carbon.Point ();
 	OS.GetEventParameter (theEvent, OS.kEventParamMouseLocation, OS.typeQDPoint, null, where.sizeof, null, where);
 	int [] theWindow = new int [1];
-	short part = OS.FindWindow (where, theWindow);
+	int part = OS.FindWindow (where, theWindow);
 	switch (part) {
 		case OS.inMenuBar: {
 			int eventKind = OS.GetEventKind (theEvent);
@@ -734,9 +737,10 @@ int mouseProc (int nextHandler, int theEvent, int userData) {
 			OS.GetRootControl (theWindow [0], theRoot);
 			int [] theControl = new int [1];
 			OS.HIViewGetSubviewHit (theRoot [0], inPoint, true, theControl);
-			Control control = WidgetTable.get (theControl [0]);
-			if (control != null && control.handle == theControl [0]) {
-				return control.mouseProc (nextHandler, theEvent, userData);
+			Widget widget = WidgetTable.get (theControl [0]);
+//			if (control != null && control.handle == theControl [0]) {
+			if (widget != null) {
+				return widget.mouseProc (nextHandler, theEvent, userData);
 			}
 			break;
 		}
@@ -903,7 +907,7 @@ void runGrabs () {
 			int oldState = OS.GetCurrentEventButtonState ();
 			OS.TrackMouseLocationWithOptions (0, 0, OS.kEventDurationForever, outPt, outModifiers, outResult);
 			int type = 0, button = 0;
-			switch (outResult [0]) {
+			switch ((int)outResult [0]) {
 				case OS.kMouseTrackingMouseDown: {
 					type = SWT.MouseDown;
 					int newState = OS.GetCurrentEventButtonState ();
@@ -1165,15 +1169,15 @@ public void wake () {
 }
 
 int windowProc (int nextHandler, int theEvent, int userData) {
-	Control control = WidgetTable.get (userData);
-	if (control == null) {
+	Widget widget = WidgetTable.get (userData);
+	if (widget == null) {
 		int [] theWindow = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
 		int [] theRoot = new int [1];
 		OS.GetRootControl (theWindow [0], theRoot);
-		control = WidgetTable.get (theRoot [0]);
+		widget = WidgetTable.get (theRoot [0]);
 	}
-	if (control != null)  return control.windowProc (nextHandler, theEvent, userData); 
+	if (widget != null)  return widget.windowProc (nextHandler, theEvent, userData); 
 	return OS.eventNotHandledErr;
 }
 

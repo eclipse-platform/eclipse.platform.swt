@@ -62,21 +62,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 	return extent;
 }
 
-int controlProc (int nextHandler, int theEvent, int userData) {
-	int [] theControl = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeControlRef, null, 4, null, theControl);
-	if (handle == theControl [0]) {
-		return super.controlProc (nextHandler, theEvent, userData);
-	}
-	for (int i=0; i<items.length; i++) {
-		ToolItem item = items [i];
-		if (item != null && item.handle == theControl [0]) {
-			return item.controlProc (nextHandler, theEvent, userData);
-		}
-	}
-	return OS.eventNotHandledErr;
-}
-
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
@@ -214,17 +199,6 @@ int [] layoutVertical (int width, int height, boolean resize) {
 		maxY = Math.max (maxY, y);
 	}
 	return new int [] {cols, x + maxWidth, maxY};
-}
-
-int menuProc (int nextHandler, int theEvent, int userData) {
-	int [] theMenu = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamDirectObject, OS.typeMenuRef, null, 4, null, theMenu);
-	for (int i=0; i<itemCount; i++) {
-		if (items [i].menuHandle == theMenu [0]) {
-			return items [i].menuProc (nextHandler, theEvent, userData);
-		}
-	}
-	return OS.eventNotHandledErr;
 }
 
 int [] layout (int nWidth, int nHeight, boolean resize) {

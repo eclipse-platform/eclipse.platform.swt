@@ -79,17 +79,6 @@ void destroyWidget () {
 	}
 }
 
-int controlProc (int nextHandler, int theEvent, int userData) {
-	dragging = false;
-	int status = OS.CallNextEventHandler (nextHandler, theEvent);
-	if (dragging) {
-		Event event = new Event ();
-		sendEvent (SWT.Selection, event);
-	}
-	dragging = false;
-	return status;
-}
-
 Point computeSize (int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int [] outMetric = new int [1];
@@ -118,9 +107,13 @@ void createHandle () {
 }
 
 void createWidget () {
-	createHandle ();
-	hookEvents ();
+	super.createWidget ();
 	setZOrder ();
+}
+
+void deregister () {
+	super.deregister ();
+	WidgetTable.remove (handle);
 }
 
 public Display getDisplay () {
@@ -177,6 +170,7 @@ public boolean getVisible () {
 }
 
 void hookEvents () {
+	super.hookEvents ();
 	Display display = getDisplay ();
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {
@@ -196,6 +190,30 @@ public boolean isVisible () {
 	return OS.HIViewIsVisible (handle);
 }
 
+int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	int clipRgn = getClipping (handle);
+	int oldRgn = OS.NewRgn ();
+	OS.GetClip (oldRgn);
+	OS.SetClip (clipRgn);
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	OS.SetClip (oldRgn);
+	OS.DisposeRgn (clipRgn);	
+	return result;
+}
+
+int kEventMouseDown (int nextHandler, int theEvent, int userData) {
+	int status = super.kEventMouseDown (nextHandler, theEvent, userData);
+	if (status == OS.noErr) return status;
+	dragging = false;
+	status = OS.CallNextEventHandler (nextHandler, theEvent);
+	if (dragging) {
+		Event event = new Event ();
+		sendEvent (SWT.Selection, event);
+	}
+	dragging = false;
+	return status;
+}
+
 public void removeSelectionListener(SelectionListener listener) {
 	checkWidget();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
@@ -204,9 +222,19 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
 
+void register () {
+	super.register ();
+	WidgetTable.put (handle, this);
+}
+
 void releaseChild () {
 	super.releaseChild ();
-	//NOT DONE
+	//NOT DONE - layout parent
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	handle = 0;
 }
 
 void releaseWidget () {

@@ -13,66 +13,66 @@ public class WidgetTable {
 	static int FreeSlot = 0;
 	static int GrowSize = 1024;
 	static int [] IndexTable = new int [GrowSize];
-	static Control [] ControlTable = new Control [GrowSize];
+	static Widget [] WidgetTable = new Widget [GrowSize];
 	static {
 		for (int i=0; i<GrowSize-1; i++) IndexTable [i] = i + 1;
 		IndexTable [GrowSize - 1] = -1;
 	}
 	
-public static synchronized Control get (int handle) {
+public static synchronized Widget get (int handle) {
 	if (handle == 0) return null;
 	int index = OS.GetControlReference (handle) - 1;
-	if (0 <= index && index < ControlTable.length) return ControlTable [index];
+	if (0 <= index && index < WidgetTable.length) return WidgetTable [index];
 	return null;
 }
 
-public synchronized static void put (int handle, Control control) {
+public synchronized static void put (int handle, Widget widget) {
 	if (handle == 0) return;
 	if (FreeSlot == -1) {
 		int length = (FreeSlot = IndexTable.length) + GrowSize;
 		int [] newIndexTable = new int [length];
-		Control [] newControlTable = new Control [length];
+		Widget [] newWidgetTable = new Widget [length];
 		System.arraycopy (IndexTable, 0, newIndexTable, 0, FreeSlot);
-		System.arraycopy (ControlTable, 0, newControlTable, 0, FreeSlot);
+		System.arraycopy (WidgetTable, 0, newWidgetTable, 0, FreeSlot);
 		for (int i=FreeSlot; i<length-1; i++) {
 			newIndexTable [i] = i + 1;
 		}
 		newIndexTable [length - 1] = -1;
 		IndexTable = newIndexTable;
-		ControlTable = newControlTable;
+		WidgetTable = newWidgetTable;
 	}
 	OS.SetControlReference (handle, FreeSlot + 1);
 	int oldSlot = FreeSlot;
 	FreeSlot = IndexTable [oldSlot];
 	IndexTable [oldSlot] = -2;
-	ControlTable [oldSlot] = control;
+	WidgetTable [oldSlot] = widget;
 }
 
-public static synchronized Control remove (int handle) {
+public static synchronized Widget remove (int handle) {
 	if (handle == 0) return null;
-	Control control = null;
+	Widget widget = null;
 	int index = OS.GetControlReference (handle) - 1;
-	if (0 <= index && index < ControlTable.length) {
-		control = ControlTable [index];
-		ControlTable [index] = null;
+	if (0 <= index && index < WidgetTable.length) {
+		widget = WidgetTable [index];
+		WidgetTable [index] = null;
 		IndexTable [index] = FreeSlot;
 		FreeSlot = index;
 		OS.SetControlReference (handle, 0);	
 	}
-	return control;
+	return widget;
 }
 
 public static synchronized Shell [] shells () {
       int count = 0;
-      for (int i= 0; i < ControlTable.length; i++) {
-            if (ControlTable[i] instanceof Shell) count++;
+      for (int i= 0; i < WidgetTable.length; i++) {
+            if (WidgetTable[i] instanceof Shell) count++;
       }
       int index= 0;
       Shell [] result = new Shell [count];
-      for (int i= 0; i < ControlTable.length; i++) {
-            Control control = ControlTable [i];
-            if (control != null && control instanceof Shell) {
-                  result [index++]= (Shell) control;
+      for (int i= 0; i < WidgetTable.length; i++) {
+            Widget widget = WidgetTable [i];
+            if (widget != null && widget instanceof Shell) {
+                  result [index++]= (Shell) widget;
             }
       }
       return result;
@@ -80,8 +80,8 @@ public static synchronized Shell [] shells () {
 
 public static synchronized int size () {
 	int length = 0;
-	for (int i=0; i<ControlTable.length; i++) {
-		if (ControlTable [i] != null) length++;
+	for (int i=0; i<WidgetTable.length; i++) {
+		if (WidgetTable [i] != null) length++;
 	}
 	return length;
 }

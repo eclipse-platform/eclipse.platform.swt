@@ -122,11 +122,6 @@ void createItem (MenuItem item, int index) {
 	}
 }
 
-void createWidget () {
-	createHandle ();
-	hookEvents ();
-}
-
 void destroyItem (MenuItem item) {
 	short [] outIndex = new short [1];
 	if (OS.GetIndMenuItemWithCommandID (handle, item.id, 1, null, outIndex) != OS.noErr) {
@@ -250,6 +245,7 @@ public boolean getVisible () {
 }
 
 void hookEvents () {
+	super.hookEvents ();
 	Display display = getDisplay ();
 	int menuProc = display.menuProc;
 	int [] mask = new int [] {
@@ -291,15 +287,6 @@ public boolean isEnabled () {
 public boolean isVisible () {
 	checkWidget ();
 	return getVisible ();
-}
-
-int menuProc (int nextHandler, int theEvent, int userData) {	
-	int eventKind = OS.GetEventKind (theEvent);
-	switch (eventKind) {
-		case OS.kEventMenuOpening:	return kEventMenuOpening (nextHandler, theEvent, userData);
-		case OS.kEventMenuClosed:	return kEventMenuClosed (nextHandler, theEvent, userData);
-	}
-	return OS.eventNotHandledErr;
 }
 
 void releaseChild () {

@@ -7,8 +7,6 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.carbon.OS;
-
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 
@@ -33,6 +31,7 @@ boolean blinkCaret () {
 }
 
 void createWidget () {
+	super.createWidget ();
 	Display display = parent.getDisplay ();
 	blinkRate = display.getCaretBlinkTime ();
 	isVisible = true;

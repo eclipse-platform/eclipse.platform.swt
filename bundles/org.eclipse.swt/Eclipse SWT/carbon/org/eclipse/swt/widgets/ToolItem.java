@@ -101,16 +101,6 @@ Point computeSize () {
 	return new Point (width, height);
 }
 
-int controlProc (int nextHandler, int theEvent, int userData) {
-	if ((style & SWT.RADIO) != 0) {
-		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
-			selectRadio ();
-		}
-	}
-	postEvent (SWT.Selection);
-	return OS.eventNotHandledErr;
-}
-
 void createHandle () {
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.handle);
@@ -165,9 +155,14 @@ void createHandle () {
 }
 
 void createWidget () {
-	createHandle ();
-	hookEvents ();
+	super.createWidget ();
+	setZOrder ();
 	toolTipText = "";
+}
+
+void deregister () {
+	super.deregister ();
+	WidgetTable.remove (handle);
 }
 
 void destroyWidget () {
@@ -246,14 +241,16 @@ public int getWidth () {
 }
 
 void hookEvents () {
+	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
 	Display display = getDisplay ();
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {
+		OS.kEventClassControl, OS.kEventControlDraw,
 		OS.kEventClassControl, OS.kEventControlHit,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
-	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, parent.handle, null);	
+	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);	
 }
 
 public boolean isEnabled () {
@@ -261,15 +258,48 @@ public boolean isEnabled () {
 	return getEnabled () && parent.isEnabled ();
 }
 
-int menuProc (int nextHandler, int theEvent, int userData) {
+int kEventControlDraw (int nextHandler, int theEvent, int userData) {
+	int clipRgn = getClipping (handle);
+	int oldRgn = OS.NewRgn ();
+	OS.GetClip (oldRgn);
+	OS.SetClip (clipRgn);
+	int result = OS.CallNextEventHandler (nextHandler, theEvent);
+	OS.SetClip (oldRgn);
+	OS.DisposeRgn (clipRgn);	
+	return result;
+}
+
+int kEventControlHit (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlHit (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if ((style & SWT.RADIO) != 0) {
+		if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
+			selectRadio ();
+		}
+	}
+	postEvent (SWT.Selection);
+	return OS.eventNotHandledErr;
+}
+
+int kEventMenuOpening (int nextHandler, int theEvent, int userData) {
 	//HIDE THE MENU
 	OS.SetControl32BitValue (handle, 0);
 	return OS.eventNotHandledErr;
 }
 
+void register () {
+	super.register ();
+	WidgetTable.put (handle, this);
+}
+
 void releaseChild () {
 	super.releaseChild ();
 	parent.destroyItem (this);
+}
+
+void releaseHandle () {
+	super.releaseHandle ();
+	handle = 0;
 }
 
 void releaseWidget () {
@@ -401,6 +431,10 @@ public void setWidth (int width) {
 	if (control != null && !control.isDisposed ()) {
 		control.setBounds (getBounds ());
 	}
+}
+
+void setZOrder () {
+	OS.HIViewAddSubview (parent.handle, handle);
 }
 
 void updateImage () {
