@@ -111,9 +111,15 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 		if (boldRanges != null) {
 			Font normalFont = gc.getFont();
 			gc.setFont(boldFont);
-			for (int i = 0; i < boldRanges.length; i += 2) {
-				int rangeStart = boldRanges[i];
-				int rangeLength = boldRanges[i + 1];
+			// If the font supports characters shaping, break up the bold ranges based on 
+			// the specified bidi segments.  Each bidi segment will be treated separately 
+			// for bold purposes.
+			int[] segmentedBoldRanges;
+			if (isCharacterShaped(gc)) segmentedBoldRanges = segmentedRangesFor(boldRanges);
+			else segmentedBoldRanges = boldRanges;
+			for (int i = 0; i < segmentedBoldRanges.length; i += 2) {
+				int rangeStart = segmentedBoldRanges[i];
+				int rangeLength = segmentedBoldRanges[i + 1];
 				prepareBoldText(text, rangeStart, rangeLength);
 			}
 			gc.setFont(normalFont);
@@ -634,6 +640,56 @@ private int[] getRenderIndexesFor(int start, int length) {
 	return positions;
 }
 /**
+ * Break up the given ranges such that each range is fully contained within a bidi
+ * segment.
+ */
+int[] segmentedRangesFor(int[] ranges) {
+	if ((bidiSegments == null) || (bidiSegments.length == 0)) return ranges;
+	Vector newRanges = new Vector();
+	int j=0;
+	int startSegment;
+	int endSegment;
+	for (int i=0; i<ranges.length; i+=2) {
+		int start = ranges[i];
+		int end = start+ranges[i+1];
+		startSegment=-1;
+		endSegment=-1;
+		boolean done = false;
+		while (j<bidiSegments.length && !done) {
+			if (bidiSegments[j]<=start) {
+				startSegment=j;
+			}
+			if (bidiSegments[j]>=end) {
+				endSegment=j-1;
+				j--;
+			}
+			done = (startSegment != -1) && (endSegment != -1);
+			if (!done) j++;
+		}
+		if (startSegment == endSegment) {
+			// range is within one segment
+			newRanges.addElement(new Integer(start));
+			newRanges.addElement(new Integer(end-start));
+		} else {
+			// range spans multiple segments
+			newRanges.addElement(new Integer(start));
+			newRanges.addElement(new Integer(bidiSegments[startSegment+1]-start));
+			startSegment++;
+			for (int k=startSegment; k<endSegment; k++) {
+				newRanges.addElement(new Integer(bidiSegments[k]));
+				newRanges.addElement(new Integer(bidiSegments[k+1]-bidiSegments[k]));
+			}
+			newRanges.addElement(new Integer(bidiSegments[endSegment]));
+			newRanges.addElement(new Integer(end-bidiSegments[endSegment]));
+		}	
+	}
+	int[] intArray = new int[newRanges.size()];
+	for (int i=0; i<newRanges.size(); i++) {
+		intArray[i]=((Integer)newRanges.elementAt(i)).intValue();
+	}
+	return intArray;
+}
+/**
  * Returns the number of characters in the line.
  * <p>
  * 
@@ -760,10 +816,13 @@ private void prepareBoldText(String textline, int logicalStart, int length) {
 	int flags = 0;
 	String text = textline.substring(logicalStart, logicalStart + length);
 
-	// figure out what is before and after the substring
-	// so that the proper character shaping will occur
+	// Figure out what is before and after the substring so that the proper character 
+	// shaping will occur.  Character shaping will not occur across bidi segments, so
+	// if the bold text starts or ends on a bidi segment, do not process the text
+	// for character shaping.
 	if (logicalStart != 0  
 		&& isCharacterShaped(gc) 
+		&& !isStartOfBidiSegment(logicalStart)
 		&& !Compatibility.isWhitespace(textline.charAt(logicalStart - 1)) 
 		&& isRightToLeft(logicalStart - 1)) {
 		// if the start of the substring is not the beginning of the 
@@ -772,6 +831,7 @@ private void prepareBoldText(String textline, int logicalStart, int length) {
 	}
 	if ((logicalStart + byteCount) != dx.length 
 		&& isCharacterShaped(gc) 
+		&& !isStartOfBidiSegment(logicalStart + length)
 		&& !Compatibility.isWhitespace(textline.charAt(logicalStart + byteCount)) 
 		&& isRightToLeft(logicalStart + byteCount)) {
 		// if the end of the substring is not the end of the text line,
