@@ -260,6 +260,10 @@ void columnMouseDown(Event event) {
 	TableItem hitItem;
 	TableColumn hitColumn = getColumnAtX (event.x);
 
+	// only react to button one clicks. fixes bug 6770
+	if (event.button != 1) {
+		return;
+	}
 	if (isFocusControl () == false) {
 		forceFocus ();
 	}
@@ -1265,6 +1269,10 @@ boolean hasFirstColumnImage() {
 void headerMouseDown(Event event) {
 	TableColumn column = getColumnAtX(event.x);
 
+	// only react to button one clicks. fixes bug 6770
+	if (event.button != 1) {
+		return;
+	}
 	if (isColumnResize(event) == true) {
 		startColumnResize(event);
 	}
