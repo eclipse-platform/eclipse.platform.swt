@@ -235,14 +235,25 @@ void createHandle (int index) {
 		OS.gtk_button_set_relief (handle, relief [0]);
 	}
 	OS.GTK_WIDGET_UNSET_FLAGS (handle, OS.GTK_CAN_FOCUS);
-	OS.gtk_toolbar_insert_widget (parent.handle, handle, null, null, index);
-	setForegroundColor (parent.getForegroundColor ());
-	setFontDescription (parent.getFontDescription ());
+//	This code is intentionally commented.
+//	int /*long*/ fontHandle = parent.fontHandle ();
+//	GdkColor color = new GdkColor ();
+//	int /*long*/ style = OS.gtk_widget_get_style (fontHandle);
+//	OS.gtk_style_get_fg (style, OS.GTK_STATE_NORMAL, color);
+//	int /*long*/ font = OS.gtk_style_get_font_desc (style);
+//	setForegroundColor (color);
+//	setFontDescription (font);
+	if ((parent.state & FOREGROUND) != 0) {
+		setForegroundColor (parent.getForegroundColor());
+	}
+	if ((parent.state & FONT) != 0) {
+		setFontDescription (parent.getFontDescription());
+	}
 }
 
 void createWidget (int index) {
 	super.createWidget (index);
-	showWidget ();
+	showWidget (index);
 	parent.layoutItems ();
 }
 
@@ -923,11 +934,12 @@ public void setWidth (int width) {
 	parent.layoutItems ();
 }
 
-void showWidget () {
+void showWidget (int index) {
 	if (handle != 0) OS.gtk_widget_show (handle);
 	if (boxHandle != 0) OS.gtk_widget_show (boxHandle);
 	if (separatorHandle != 0) OS.gtk_widget_show (separatorHandle);
 	if (arrowBoxHandle != 0) OS.gtk_widget_show (arrowBoxHandle);
 	if (arrowHandle != 0) OS.gtk_widget_show (arrowHandle);
+	OS.gtk_toolbar_insert_widget (parent.handle, handle, null, null, index);
 }
 }

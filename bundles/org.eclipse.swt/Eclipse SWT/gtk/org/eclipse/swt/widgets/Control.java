@@ -2467,6 +2467,7 @@ boolean sendMouseEvent (int type, int button, int count, int detail, boolean sen
  */
 public void setBackground (Color color) {
 	checkWidget();
+	if (((state & BACKGROUND) == 0) && color == null) return;
 	GdkColor gdkColor = null;
 	if (color != null) {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2480,7 +2481,14 @@ public void setBackground (Color color) {
 		GdkColor oldColor = getBackgroundColor ();
 		set = oldColor.pixel != gdkColor.pixel;
 	}
-	if (set) setBackgroundColor (gdkColor);
+	if (set) {
+		if (color == null) {
+			state &= ~BACKGROUND;
+		} else {
+			state |= BACKGROUND;
+		}
+		setBackgroundColor (gdkColor);
+	}
 }
 
 void setBackgroundColor (int /*long*/ handle, GdkColor color) {
@@ -2669,6 +2677,7 @@ public boolean setFocus () {
  */
 public void setFont (Font font) {
 	checkWidget();
+	if (((state & FONT) == 0) && font == null) return;
 	this.font = font;
 	int /*long*/ fontDesc;
 	if (font == null) {
@@ -2676,6 +2685,11 @@ public void setFont (Font font) {
 	} else {
 		if (font.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		fontDesc = font.handle;
+	}
+	if (font == null) {
+		state &= ~FONT;
+	} else {
+		state |= FONT;
 	}
 	setFontDescription (fontDesc);
 }
@@ -2701,6 +2715,7 @@ void setFontDescription (int /*long*/ font) {
  */
 public void setForeground (Color color) {
 	checkWidget();
+	if (((state & FOREGROUND) == 0) && color == null) return;
 	GdkColor gdkColor = null;
 	if (color != null) {
 		if (color.isDisposed ()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -2714,7 +2729,14 @@ public void setForeground (Color color) {
 		GdkColor oldColor = getForegroundColor ();
 		set = oldColor.pixel != gdkColor.pixel;
 	}
-	if (set) setForegroundColor (gdkColor);
+	if (set) {
+		if (color == null) {
+			state &= ~FOREGROUND;
+		} else {
+			state |= FOREGROUND;
+		}
+		setForegroundColor (gdkColor);
+	}
 }
 
 void setForegroundColor (GdkColor color) {
