@@ -19,6 +19,18 @@
 
 #define OS_NATIVE(func) Java_org_eclipse_swt_internal_gtk_OS_##func
 
+#ifndef NO_Call
+JNIEXPORT jint JNICALL OS_NATIVE(Call)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, Call_FUNC);
+	rc = (jint)((jint (*)())arg0)(arg1, arg2);
+	OS_NATIVE_EXIT(env, that, Call_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GDK_1DISPLAY
 JNIEXPORT jint JNICALL OS_NATIVE(GDK_1DISPLAY)
 	(JNIEnv *env, jclass that)
@@ -1204,6 +1216,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(XSendEvent)
 	OS_NATIVE_ENTER(env, that, XSendEvent_FUNC);
 	rc = (jint)XSendEvent((Display *)arg0, (Window)arg1, arg2, arg3, (XEvent *)arg4);
 	OS_NATIVE_EXIT(env, that, XSendEvent_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XSetErrorHandler
+JNIEXPORT jint JNICALL OS_NATIVE(XSetErrorHandler)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XSetErrorHandler_FUNC);
+	rc = (jint)XSetErrorHandler((XErrorHandler)arg0);
+	OS_NATIVE_EXIT(env, that, XSetErrorHandler_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_XSetIOErrorHandler
+JNIEXPORT jint JNICALL OS_NATIVE(XSetIOErrorHandler)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, XSetIOErrorHandler_FUNC);
+	rc = (jint)XSetIOErrorHandler((XIOErrorHandler)arg0);
+	OS_NATIVE_EXIT(env, that, XSetIOErrorHandler_FUNC);
 	return rc;
 }
 #endif

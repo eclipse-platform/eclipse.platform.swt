@@ -25,6 +25,7 @@ extern char* OS_nativeFunctionNames[];
 #endif
 
 typedef enum {
+	Call_FUNC,
 	GDK_1DISPLAY_FUNC,
 	GDK_1PIXMAP_1XID_FUNC,
 	GDK_1ROOT_1PARENT_FUNC,
@@ -124,6 +125,8 @@ typedef enum {
 	XQueryTree_FUNC,
 	XReconfigureWMWindow_FUNC,
 	XSendEvent_FUNC,
+	XSetErrorHandler_FUNC,
+	XSetIOErrorHandler_FUNC,
 	XSetInputFocus_FUNC,
 	XSynchronize_FUNC,
 	XTestFakeButtonEvent_FUNC,

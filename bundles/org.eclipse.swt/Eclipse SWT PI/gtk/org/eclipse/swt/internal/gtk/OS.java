@@ -471,6 +471,7 @@ public static final int VisibilityChangeMask = 1 << 16;
 public static final int VisibilityFullyObscured = 2;
 public static final int VisibilityNotify = 15;
 public static final int SYSTEM_TRAY_REQUEST_DOCK = 0;
+public static final synchronized native int Call(int /*long*/ proc, int /*long*/ arg1, int /*long*/ arg2);
 public static final native boolean GDK_WINDOWING_X11();
 public static final native int /*long*/ GDK_PIXMAP_XID(int /*long*/ pixmap);
 public static final synchronized native boolean XCheckMaskEvent(int /*long*/ display, int /*long*/ event_mask, int /*long*/ event_return);
@@ -486,6 +487,8 @@ public static final synchronized native int XKeysymToKeycode(int /*long*/ displa
 public static final synchronized native int /*long*/ XListProperties(int /*long*/ display, int /*long*/ window, int[] num_prop_return);
 public static final synchronized native int XReconfigureWMWindow(int /*long*/ display, int /*long*/ window, int screen, int valueMask, XWindowChanges values);
 public static final synchronized native int XSendEvent(int /*long*/ display, int /*long*/ w, boolean propogate, int /*long*/ event_mask, int /*long*/ event_send);
+public static final synchronized native int /*long*/ XSetIOErrorHandler(int /*long*/ handler);
+public static final synchronized native int /*long*/ XSetErrorHandler(int /*long*/ handler);
 public static final synchronized native int XSetInputFocus(int /*long*/ display, int /*long*/ window, int revert, int time);
 public static final synchronized native int /*long*/ XSynchronize(int /*long*/ display, boolean onoff);
 public static final synchronized native void XTestFakeButtonEvent(int /*long*/ display, int button, boolean is_press, int /*long*/ delay);

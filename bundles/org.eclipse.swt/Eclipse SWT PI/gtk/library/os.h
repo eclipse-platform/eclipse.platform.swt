@@ -53,6 +53,8 @@
 #define NO_XSendEvent
 #define NO_XSetInputFocus
 #define NO_XSynchronize
+#define NO_XSetErrorHandler
+#define NO_XSetIOErrorHandler
 #define NO_XTestFakeButtonEvent
 #define NO_XTestFakeKeyEvent
 #define NO_XTestFakeMotionEvent

@@ -18,9 +18,10 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 890;
-int OS_nativeFunctionCallCount[890];
+int OS_nativeFunctionCount = 893;
+int OS_nativeFunctionCallCount[893];
 char * OS_nativeFunctionNames[] = {
+	"Call", 
 	"GDK_1DISPLAY", 
 	"GDK_1PIXMAP_1XID", 
 	"GDK_1ROOT_1PARENT", 
@@ -120,6 +121,8 @@ char * OS_nativeFunctionNames[] = {
 	"XQueryTree", 
 	"XReconfigureWMWindow", 
 	"XSendEvent", 
+	"XSetErrorHandler", 
+	"XSetIOErrorHandler", 
 	"XSetInputFocus", 
 	"XSynchronize", 
 	"XTestFakeButtonEvent", 
