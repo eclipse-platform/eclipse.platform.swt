@@ -182,14 +182,18 @@ static void addLanguageListener(Control control, Runnable runnable) {
  * <p>
  * 
  * @return the direction of the active keyboard language. SWT.LEFT (for L2R
- *  language) or SWT.RIGHT (for R2L language).
+ *  language) or SWT.RIGHT (for R2L language) or SWT.DEFAULT if no R2L languages
+ * are installed.
  */
 static int getKeyboardLanguageDirection() {
 	int language = BidiUtil.getKeyboardLanguage();
 	if (language == BidiUtil.KEYBOARD_BIDI) {
 		return SWT.RIGHT;
 	}
-	return SWT.LEFT;
+	if (BidiUtil.isKeyboardBidi()) {
+		return SWT.LEFT;
+	}
+	return SWT.DEFAULT;
 }
 /**
  * Removes the keyboard language listener for the specified window.

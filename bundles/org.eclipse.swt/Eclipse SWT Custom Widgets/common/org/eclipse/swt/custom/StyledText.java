@@ -6273,6 +6273,11 @@ void setBidiCaretDirection() {
 		return;
 	}
 	caretDirection = direction;
+	if (direction == SWT.DEFAULT) {
+		caret.setImage(null);
+		caret.setSize(caret.getSize().x, lineHeight);
+	} 
+	else 
 	if (caretDirection == SWT.LEFT) {
 		caret.setImage(leftCaretBitmap);			
 	} 
@@ -6295,7 +6300,6 @@ void setBidiCaretLocation(StyledTextBidi bidi) {
 	int offsetInLine = caretOffset - lineStartOffset;
 	GC gc = null;
 	
-	setBidiCaretDirection();		
 	if (bidi == null) {
 		gc = new GC(this);
 		bidi = getStyledTextBidi(lineText, lineStartOffset, gc);
@@ -6309,6 +6313,7 @@ void setBidiCaretLocation(StyledTextBidi bidi) {
 		caretX -= (getCaretWidth() - 1);
 	}
 	if (caret != null) {
+		setBidiCaretDirection();		
 		caret.setLocation(
 			caretX, 
 			caretLine * lineHeight - verticalScrollOffset + topMargin);

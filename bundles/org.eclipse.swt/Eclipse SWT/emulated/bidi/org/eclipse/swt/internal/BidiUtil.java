@@ -47,7 +47,7 @@ public static void drawGlyphs(GC gc, char[] renderBuffer, int[] renderDx, int x,
 public static boolean isBidiPlatform() {
 	return false;
 }
-/*
+/* * Not implemented. */public static boolean isKeyboardBidi() {	return false;}/*
  * Not implemented.
  */
 public static int getFontBidiAttributes(GC gc) {
