@@ -42,21 +42,13 @@ public class CTabItem extends Item {
 	Rectangle closeRect = new Rectangle(0, 0, 0, 0);
 	int closeImageState = CTabFolder.NONE;
 	boolean showClose = false;
-	
-	// TEMPORARY CODE
+
 	// internal constants
-	public static /*final*/ int LEFT_MARGIN = 7;
-	public static /*final*/ int RIGHT_MARGIN = 6;
-	public static /*final*/ int RIGHT_FOCUS_MARGIN = 4;
-	public static /*final*/ int LEFT_SIMPLE_IMAGE_MARGIN = 3;
-	public static /*final*/ int RIGHT_SIMPLE_CLOSE_MARGIN = 2;
-	public static /*final*/ int LEFT_SIMPLE_MARGIN = 4;
-	public static /*final*/ int RIGHT_SIMPLE_MARGIN = 4;
-	public static /*final*/ int TOP_MARGIN = 2;
-	public static /*final*/ int BOTTOM_MARGIN = 2;
-	public static /*final*/ int INTERNAL_SPACING = 2;
+	static final int TOP_MARGIN = 2;
+	static final int BOTTOM_MARGIN = 2;
+	static final int INTERNAL_SPACING = 2;
 	static final int FLAGS = SWT.DRAW_TRANSPARENT | SWT.DRAW_MNEMONIC;
-	static final String ellipsis = "..."; //$NON-NLS-1$
+	static final String ELLIPSIS = "..."; //$NON-NLS-1$
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -129,18 +121,18 @@ static int checkStyle(int style) {
 static String shortenText(GC gc, String text, int width) {
 	if (gc.textExtent(text, FLAGS).x <= width) return text;
 	
-	int ellipseWidth = gc.textExtent(ellipsis, FLAGS).x;
+	int ellipseWidth = gc.textExtent(ELLIPSIS, FLAGS).x;
 	int length = text.length();
 	int end = length - 1;
 	while (end > 0) {
 		text = text.substring(0, end);
 		int l1 = gc.textExtent(text, FLAGS).x;
 		if (l1 + ellipseWidth <= width) {
-			return text + ellipsis;
+			return text + ELLIPSIS;
 		}
 		end--;
 	}
-	return text + ellipsis;
+	return text + ELLIPSIS;
 }
 public void dispose() {
 	if (isDisposed ()) return;
@@ -222,7 +214,8 @@ void drawClose(GC gc) {
 }
 void drawSelected(GC gc ) {
 	Point size = parent.getSize();
-	int rightEdge = Math.min (x+width, parent.getRightItemEdge());
+	int deadspace = parent.simple || parent.single ? 0 : parent.curveWidth - parent.curveIndent;
+	int rightEdge = Math.min (x + width - deadspace, parent.getRightItemEdge() - deadspace);
 	if (parent.single) {
 		if (!isShowing()) return;
 	} else {
@@ -261,12 +254,12 @@ void drawSelected(GC gc ) {
 				shape[index++] = y + height + left[2*i+1] - 1;
 			}
 			for (int i = 0; i < right.length/2; i++) {
-				shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - CTabFolder.CURVE_WIDTH/2 - CTabFolder.CURVE_INDENT + right[2*i];
+				shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - parent.curveIndent + right[2*i];
 				shape[index++] = parent.simple ? y + height + right[2*i+1] - 1 : y + right[2*i+1] - 2;
 			}
-			shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
+			shape[index++] = parent.simple ? rightEdge : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y - 1;
-			shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
+			shape[index++] = parent.simple ? rightEdge : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y - 1;
 		} else {
 			int[] left = parent.simple ? CTabFolder.SIMPLE_TOP_LEFT_CORNER : CTabFolder.TOP_LEFT_CORNER;
@@ -282,12 +275,12 @@ void drawSelected(GC gc ) {
 				shape[index++] = y + left[2*i+1];
 			}
 			for (int i = 0; i < right.length/2; i++) {
-				shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - CTabFolder.CURVE_WIDTH/2 - CTabFolder.CURVE_INDENT + right[2*i];
+				shape[index++] = parent.simple ? rightEdge + right[2*i] : rightEdge - parent.curveIndent + right[2*i];
 				shape[index++] = y + right[2*i+1];
 			}
-			shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
+			shape[index++] = parent.simple ? rightEdge : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y + height + 1;
-			shape[index++] = parent.simple ? rightEdge : rightEdge + CTabFolder.CURVE_INDENT;
+			shape[index++] = parent.simple ? rightEdge : rightEdge + parent.curveWidth - parent.curveIndent;
 			shape[index++] = y + height + 1;
 		}
 		parent.drawBackground(gc, shape, true);
@@ -320,7 +313,6 @@ void drawSelected(GC gc ) {
 		Rectangle imageBounds = image.getBounds();
 		// only draw image if it won't overlap with close button
 		int maxImageWidth = rightEdge - xDraw - marginRight(true);
-		if (!parent.simple) maxImageWidth -= CTabFolder.CURVE_INDENT;
 		if (closeRect.width > 0) maxImageWidth -= closeRect.width + INTERNAL_SPACING;
 		if (closeRect.width == 0 || imageBounds.width < maxImageWidth) {
 			int imageX = xDraw;
@@ -337,7 +329,6 @@ void drawSelected(GC gc ) {
 	
 	// draw Text
 	int textWidth = rightEdge - xDraw - marginRight(true);
-	if (!parent.simple) textWidth -= CTabFolder.CURVE_INDENT;
 	if (closeRect.width > 0) textWidth -= closeRect.width + INTERNAL_SPACING;
 	if (textWidth > 0) {
 		Font gcFont = gc.getFont();
@@ -357,12 +348,12 @@ void drawSelected(GC gc ) {
 		gc.setFont(gcFont);
 		
 		// draw a Focus rectangle
-		if (parent.isFocusControl()) {
-			Display display = getDisplay();
-			gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
-			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
-			gc.drawFocus(xDraw-1, textY-1, extent.x+2, extent.y+2);
-		}
+//		if (parent.isFocusControl()) {
+//			Display display = getDisplay();
+//			gc.setBackground(display.getSystemColor(SWT.COLOR_BLACK));
+//			gc.setForeground(display.getSystemColor(SWT.COLOR_WHITE));
+//			gc.drawFocus(xDraw-1, textY-1, extent.x+2, extent.y+2);
+//		}
 	}
 	if (parent.showClose || showClose) drawClose(gc);
 }
@@ -375,10 +366,10 @@ void drawUnselected(GC gc) {
 		int index = parent.indexOf(this);
 		if (!parent.simple && !parent.single && parent.selectedIndex != -1) {
 			if (parent.selectedIndex + 1 == index) {
-				x1 -= CTabFolder.CURVE_WIDTH/2;
+				x1 -= parent.curveWidth/2;
 			}
 			if (parent.selectedIndex - 1 == index) {
-				x2 += CTabFolder.CURVE_WIDTH/2;
+				x2 += parent.curveWidth/2;
 			}
 		}
 		int[] shape = null;
@@ -448,7 +439,7 @@ void drawUnselected(GC gc) {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public Color getBackground() {
+Color getBackground() {
 	checkWidget();
 	if (background != null) return background;
 	return parent.getBackground();
@@ -468,15 +459,6 @@ public Rectangle getBounds () {
 	//checkWidget();
 	return new Rectangle(x, y, width, height);
 }
-/**
- * UNDER CONSTRUCTION
- * @since 3.0
- */
-public Rectangle getCloseBounds() {
-	checkWidget();
-	return new Rectangle(closeRect.x, closeRect.y, closeRect.width, closeRect.height);
-}
-
 /**
 * Gets the control that is displayed in the content are of the tab item.
 *
@@ -520,7 +502,7 @@ public Font getFont() {
  * UNDER CONSTRUCTION
  * @since 3.0
  */
-public Color getForeground() {
+Color getForeground() {
 	checkWidget();
 	if (foreground != null) return foreground;
 	return parent.getForeground();
@@ -577,14 +559,10 @@ public boolean isShowing () {
 	return (x + width < parent.getRightItemEdge());
 }
 int marginLeft(boolean isSelected) {
-	boolean hasImage = getImage() != null && (isSelected || parent.showUnselectedImage);
-	return parent.simple ? (hasImage ? LEFT_SIMPLE_IMAGE_MARGIN : LEFT_SIMPLE_MARGIN) : LEFT_MARGIN;
+	return 4;
 }
 int marginRight(boolean isSelected) {
-	boolean hasClose = (parent.showClose || showClose) && (isSelected || parent.showUnselectedClose);
-	return parent.simple ?
-		(hasClose ? RIGHT_SIMPLE_CLOSE_MARGIN : RIGHT_SIMPLE_MARGIN) :
-		(hasClose ? RIGHT_MARGIN : RIGHT_MARGIN + RIGHT_FOCUS_MARGIN);
+	return 4;
 }
 void onPaint(GC gc, boolean isSelected) {
 	if (width == 0 || height == 0) return;
@@ -609,16 +587,8 @@ int preferredHeight(GC gc) {
 	return h + TOP_MARGIN + BOTTOM_MARGIN;
 }
 int preferredWidth(GC gc, boolean isSelected) {
-	CTabFolderEvent e = new CTabFolderEvent(this);
-	e.widget = this;
-	e.time = (int)System.currentTimeMillis();
-	e.doit = true;
-	e.x = e.y = e.width = e.height = 0;
-	e.item = this;
-	for (int j = 0; j < parent.folderListeners.length; j++) {
-		parent.folderListeners[j].getTabSize(e);
-	}
-	if (!e.doit) return e.width;
+	// NOTE: preferred width does not include the "dead space" caused
+	// by the curve.
 	if (isDisposed()) return 0;
 	int w = 0;
 	Image image = getImage();
@@ -643,7 +613,6 @@ int preferredWidth(GC gc, boolean isSelected) {
 			w += CTabFolder.BUTTON_SIZE;
 		}
 	}
-	if (!parent.simple && isSelected) w += CTabFolder.CURVE_INDENT;
 	return w + marginLeft(isSelected) + marginRight(isSelected);
 }
 /**
@@ -662,11 +631,11 @@ int preferredWidth(GC gc, boolean isSelected) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * UNDER CONSTRUCTION
+ * UNDER CONSTRUCTION - NOT BEING USED BY ECLIPSE - SHOULD BE REMOVED
  * @since 3.0
  * 
  */
-public void setBackground(Color color){
+void setBackground(Color color){
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -703,10 +672,10 @@ public void setBackground(Color color){
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- * UNDER CONSTRUCTION
+ * UNDER CONSTRUCTION - NOT BEING USED BY ECLIPSE - SHOULD BE REMOVED
  * @since 3.0
  */
-public void setBackground(Color[] colors, int[] percents) {
+void setBackground(Color[] colors, int[] percents) {
 	setBackground(colors, percents, false);
 }
 /**
@@ -736,10 +705,10 @@ public void setBackground(Color[] colors, int[] percents) {
  *		<li>ERROR_WIDGET_DISPOSED when the widget has been disposed</li>
  *	</ul>
  *
- * UNDER CONSTRUCTION
+ * UNDER CONSTRUCTION - NOT BEING USED BY ECLIPSE - SHOULD BE REMOVED
  * @since 3.0
  */
-public void setBackground(Color[] colors, int[] percents, boolean vertical) {
+void setBackground(Color[] colors, int[] percents, boolean vertical) {
 	checkWidget();
 	if (colors != null) {
 		if (percents == null || percents.length != colors.length - 1) {
@@ -821,10 +790,10 @@ public void setBackground(Color[] colors, int[] percents, boolean vertical) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * UNDER CONSTRUCTION
+ * UNDER CONSTRUCTION - NOT BEING USED BY ECLIPSE - SHOULD BE REMOVED
  * @since 3.0
  */
-public void setBackground(Image image) {
+void setBackground(Image image) {
 	checkWidget();
 	if (image != null && image.isDisposed ()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);
@@ -940,11 +909,11 @@ public void setFont (Font font){
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  * 
- * UNDER CONSTRUCTION
+ * UNDER CONSTRUCTION - NOT BEING USED BY ECLIPSE - SHOULD BE REMOVED
  * @since 3.0
  * 
  */
-public void setForeground (Color color){
+void setForeground (Color color){
 	checkWidget ();
 	if (color != null && color.isDisposed ()) {
 		SWT.error(SWT.ERROR_INVALID_ARGUMENT);

@@ -48,14 +48,4 @@ public void restore(CTabFolderEvent event);
  * 
  */
 public void showList(CTabFolderEvent event);
-
-/**
- * 
- */
-public void drawTabs(CTabFolderEvent event);
-
-/**
- * 
- */
-public void getTabSize(CTabFolderEvent event);
 }

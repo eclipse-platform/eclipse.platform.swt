@@ -31,24 +31,12 @@ public class CTabFolderEvent extends TypedEvent {
  	public boolean doit;
 
 	/**
-	* DO NOT USE FIELD - UNDER CONSTRUCTION
 	* @ since 3.0
 	*/
  	public int x;
 	public int y;
 	public int width;
 	public int height;
- 	
- 	/**
-	 * the graphics context to use when painting
-	 * that is configured to use the colors, font and
-	 * damaged region of the control.  It is valid
-	 * only during the paint and must not be disposed
-	 * 
-	 * DO NOT USE FIELD - UNDER CONSTRUCTION
-	 * @ since 3.0
-	 */
- 	public GC gc;
 
 /**
  * Constructs a new instance of this class.
@@ -71,10 +59,9 @@ public String toString() {
 		+ " item=" + item
 		+ " doit=" + doit
 		+ " x=" + x
-		+ " x=" + y
-		+ " x=" + width
-		+ " x=" + height
-		+ " gc=" + gc
+		+ " y=" + y
+		+ " width=" + width
+		+ " height=" + height
 		+ "}";
 }
 }
