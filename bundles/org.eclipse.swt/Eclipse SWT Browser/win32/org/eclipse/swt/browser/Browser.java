@@ -71,10 +71,16 @@ public class Browser extends Composite {
 	static final short CSC_NAVIGATEFORWARD = 1;
 	static final short CSC_NAVIGATEBACK = 2;
 	static final int INET_E_DEFAULT_ACTION = 0x800C0011;
-	static final int URLPOLICY_ALLOW = 0;
-	static final int URLPOLICY_DISALLOW = 3;
+	static final int URLPOLICY_ALLOW = 0x00;
+	static final int URLPOLICY_DISALLOW = 0x03;
+	static final int URLZONE_LOCAL_MACHINE = 0;
 	static final int URLZONE_INTRANET = 1;
-
+	static final int URLACTION_ACTIVEX_MIN = 0x00001200;
+	static final int URLACTION_ACTIVEX_MAX = 0x000013ff;
+	static final int URLACTION_JAVA_MIN = 0x00001C00;
+	static final int URLPOLICY_JAVA_LOW = 0x00030000;
+	static final int URLACTION_JAVA_MAX = 0x00001Cff;
+	
 	static final int DISPID_AMBIENT_DLCONTROL = -5512;
 	static final int DLCTL_DLIMAGES = 0x00000010;
 	static final int DLCTL_VIDEOS = 0x00000020;
@@ -133,12 +139,6 @@ public Browser(Composite parent, int style) {
 		dispose();
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
-	/*
-	* Feature on IE.  Executing certain ActiveX controls such as the Java or Flash plugin from within
-	* a java VM can cause the application to crash.  The workaround is to disallow all ActiveX controls.
-	*/
-	Variant download = new Variant(DLCTL_NO_RUNACTIVEXCTLS | DLCTL_DLIMAGES | DLCTL_VIDEOS | DLCTL_BGSOUNDS);
-	site.setSiteProperty(DISPID_AMBIENT_DLCONTROL, download);
 	
 	site.doVerb(OLE.OLEIVERB_INPLACEACTIVATE);
 	auto = new OleAutomation(site);

@@ -293,6 +293,16 @@ int GetSecuritySite(int ppSite) {
 }
 
 int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {
+	int cnt = OS.wcslen(pwszUrl);
+	char[] buffer = new char[cnt];
+	/* 
+	* Note.  pwszUrl is unicode on both unicode and ansi platforms.
+	* The nbr of chars is multiplied by the constant 2 and not by TCHAR.sizeof since
+	* TCHAR.sizeof returns 1 on ansi platforms.
+	*/
+	OS.MoveMemory(buffer, pwszUrl, cnt * 2);
+	String url = new String(buffer);
+	
 	/*
 	* Feature in IE 6 sp1.  HTML rendered in memory
 	* does not enable local links but the exact same
@@ -301,7 +311,23 @@ int MapUrlToZone(int pwszUrl, int pdwZone, int dwFlags) {
 	* to return URLZONE_INTRANET instead of the default
 	* value URLZONE_LOCAL_MACHINE.
 	*/
-	COM.MoveMemory(pdwZone, new int[] {Browser.URLZONE_INTRANET}, 4);
+	int zone = Browser.URLZONE_INTRANET;
+	
+	/*
+	* Note.  Some ActiveX plugins crash when executing
+	* inside the embedded explorer itself running into
+	* a JVM.  The current workaround is to detect when
+	* such ActiveX is about to be started and refuse
+	* to execute it.
+	* ActiveX blocked in an object tag:
+	* - Shockwave director plugin (mime: application/x-director)
+	* - Java plugin
+	*/
+	if (url.startsWith("http://download.macromedia.com/pub/shockwave/cabs/director/sw.cab") || //$NON-NLS-1$
+		(url.startsWith("http://java.sun.com/products/plugin/autodl/jinstall") && url.indexOf(".cab") != -1)) { //$NON-NLS-1$ //$NON-NLS-2$
+		zone = Browser.URLZONE_LOCAL_MACHINE;
+	}
+	COM.MoveMemory(pdwZone, new int[] {zone}, 4);
 	return COM.S_OK;
 }
 
@@ -310,7 +336,52 @@ int GetSecurityId(int pwszUrl, int pbSecurityId, int pcbSecurityId, int dwReserv
 }
 
 int ProcessUrlAction(int pwszUrl, int dwAction, int pPolicy, int cbPolicy, int pContext, int cbContext, int dwFlags, int dwReserved) {
-	COM.MoveMemory(pPolicy, new int[] {Browser.URLPOLICY_ALLOW}, 4);
+	/*
+	* Feature in IE 6 sp1.  HTML rendered in memory
+	* containing an OBJECT tag referring to a local file
+	* brings up a warning dialog asking the user whether
+	* it should proceed or not.  The workaround is to
+	* set the policy to URLPOLICY_ALLOW in this case (dwAction
+	* value of 0x1406).
+	* 
+	* Feature in IE. Security Patches and user settings
+	* affect the way the embedded web control behaves.  The current
+	* approach is to consider the content trusted and allow
+	* all URLs by default.
+	*/
+	int policy = Browser.URLPOLICY_ALLOW;
+	/*
+	* Note. The URLACTION_JAVA flags refer to the applet tag that normally resolve to
+	* the Microsoft VM, not to the java OBJECT tag that resolves to the
+	* Sun plugin. Return URLPOLICY_JAVA_LOW to authorize applets instead of
+	* URLPOLICY_ALLOW that is interpreted as URLPOLICY_JAVA_PROHIBIT in this
+	* context. 
+	*/
+	if (dwAction >= Browser.URLACTION_JAVA_MIN && dwAction <= Browser.URLACTION_JAVA_MAX) {
+		policy = Browser.URLPOLICY_JAVA_LOW;
+	}
+	if (dwAction >= Browser.URLACTION_ACTIVEX_MIN && dwAction <= Browser.URLACTION_ACTIVEX_MAX) {
+		int cnt = OS.wcslen(pwszUrl);
+		char[] buffer = new char[cnt];
+		/* 
+		* Note.  pwszUrl is unicode on both unicode and ansi platforms.
+		* The nbr of chars is multiplied by the constant 2 and not by TCHAR.sizeof since
+		* TCHAR.sizeof returns 1 on ansi platforms.
+		*/
+		OS.MoveMemory(buffer, pwszUrl, cnt * 2);
+		String url = new String(buffer);
+		/*
+		* Note.  Some ActiveX plugins crash when executing
+		* inside the embedded explorer itself running into
+		* a JVM.  The current workaround is to detect when
+		* such ActiveX is about to be started and refuse
+		* to execute it.
+		* ActiveX blocked based on URL extension:
+		* - Shockwave director plugin (mime: application/x-director)
+		*/
+		if (url.endsWith(".dcr")) policy = Browser.URLPOLICY_DISALLOW; //$NON-NLS-1$
+	}
+	if (cbPolicy >= 4) COM.MoveMemory(pPolicy, new int[] {policy}, 4);
 	return COM.S_OK;
 }
 
