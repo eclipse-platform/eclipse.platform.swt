@@ -1088,6 +1088,11 @@ public void removeVisibilityWindowListener(VisibilityWindowListener listener) {
 /**
  * Renders HTML.
  * 
+ * <p>
+ * The html parameter is Unicode encoded since it is a java <code>String</code>.
+ * As a result, the HTML meta tag charset should not be set. The charset is implied
+ * by the <code>String</code> itself.
+ * 
  * @param html the HTML content to be rendered
  *
  * @return true if the operation was successful and false otherwise.
