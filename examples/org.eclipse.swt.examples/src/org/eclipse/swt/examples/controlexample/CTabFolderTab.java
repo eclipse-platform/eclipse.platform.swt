@@ -273,7 +273,7 @@ class CTabFolderTab extends Tab {
 	 * Sets the header visible state of the "Example" widgets.
 	 */
 	void setSimpleTabs () {
-		tabFolder1.setSimpleTab (setSimpleTabButton.getSelection ());
+		tabFolder1.setSimple (setSimpleTabButton.getSelection ());
 	}
 	
 	/**
