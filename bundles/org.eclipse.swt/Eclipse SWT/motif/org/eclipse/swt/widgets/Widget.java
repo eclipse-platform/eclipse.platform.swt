@@ -725,7 +725,7 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 	if (xEvent.keycode != 0) {
 		byte [] buffer = new byte [1];
 		int [] keysym = new int [1];
-		int length = OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
+		OS.XLookupString (xEvent, buffer, buffer.length, keysym, null);
 		/*
 		* Bug in MOTIF.  On Solaris only, XK_F11 and XK_F12 are not
 		* translated correctly by XLookupString().  They are mapped
@@ -736,11 +736,11 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			switch (keysym [0]) {
 				case 0x1005FF10: 
 					keysym [0] = OS.XK_F11;
-					length = 0;
+					buffer [0] = 0;
 					break;
 				case 0x1005FF11:
 					keysym [0] = OS.XK_F12;
-					length = 0;
+					buffer [0] = 0;
 					break;
 			}
 			/*
@@ -751,7 +751,7 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			*/
 			keysym [0] &= 0xFFFF;
 		}
-		if (length == 0) {
+		if (buffer [0] == 0) {
 			event.keyCode = Display.translateKey (keysym [0]);
 			/*
 			* If translateKey () could not find a translation for the keysym
@@ -761,6 +761,12 @@ void setKeyState (Event event, XKeyEvent xEvent) {
 			if (event.keyCode == 0) {
 				switch (keysym [0]) {
 					case OS.XK_ISO_Left_Tab: event.character = '\t'; break;
+					/*
+					* Bug in Motif.  When CTRL+space is pressed XLookupString
+					* does not fill buffer [0] with anything, so we fill in
+					* the event's character here.
+					*/
+					case OS.XK_space: event.character = ' '; break;
 				}
 			}
 		} else {
