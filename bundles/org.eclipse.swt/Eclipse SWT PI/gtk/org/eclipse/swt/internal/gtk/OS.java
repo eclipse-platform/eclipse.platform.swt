@@ -314,6 +314,7 @@ public class OS {
 	public static final byte[] show = signal("show");
 	public static final byte[] show_help = signal("show_help");
 	public static final byte[] size_allocate = signal("size_allocate");
+	public static final byte[] style_set = signal("style_set");
 	public static final byte[] switch_page = signal("switch_page");
 	public static final byte[] test_collapse_row = signal("test_collapse_row");
 	public static final byte[] test_expand_row = signal("test_expand_row");

@@ -467,10 +467,27 @@ int /*long*/ gtk_focus_out_event (int /*long*/ widget, int /*long*/ event) {
 	return (state & CANVAS) != 0 ? 1 : result;
 }
 
+int /*long*/ gtk_realize (int /*long*/ widget) {
+	int /*long*/ result = super.gtk_realize (widget);
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, false);
+	}
+	return result;
+}
+
 int /*long*/ gtk_scroll_child (int /*long*/ widget, int /*long*/ scrollType, int /*long*/ horizontal) {
 	/* Stop GTK scroll child signal for canvas */
 	OS.g_signal_stop_emission_by_name (widget, OS.scroll_child);
 	return 1;
+}
+
+int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
+	if ((style & SWT.NO_BACKGROUND) != 0) {
+		int /*long*/ window = OS.GTK_WIDGET_WINDOW (paintHandle ());
+		if (window != 0) OS.gdk_window_set_back_pixmap (window, 0, false);
+	}
+	return 0;
 }
 
 boolean hasBorder () {
@@ -483,6 +500,9 @@ void hookEvents () {
 		OS.gtk_widget_add_events (handle, OS.GDK_POINTER_MOTION_HINT_MASK);
 		if (scrolledHandle != 0) {
 			OS.g_signal_connect (scrolledHandle, OS.scroll_child, display.windowProc4, SCROLL_CHILD);
+		}
+		if ((style & SWT.NO_BACKGROUND) != 0) {
+			OS.g_signal_connect (handle, OS.style_set, display.windowProc3, STYLE_SET);
 		}
 	}
 }

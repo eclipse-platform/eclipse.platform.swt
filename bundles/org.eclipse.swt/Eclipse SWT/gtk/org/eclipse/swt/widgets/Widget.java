@@ -100,14 +100,15 @@ public abstract class Widget {
 	static final int SHOW = 32;
 	static final int SHOW_HELP = 33;
 	static final int SIZE_ALLOCATE = 34;
-	static final int SWITCH_PAGE = 35;
-	static final int TEST_COLLAPSE_ROW = 36;
-	static final int TEST_EXPAND_ROW = 37;
-	static final int TOGGLED = 38;
-	static final int UNMAP_EVENT = 39;
-	static final int UNREALIZE = 40;
-	static final int VALUE_CHANGED = 41;
-	static final int WINDOW_STATE_EVENT = 42;
+	static final int STYLE_SET = 35;
+	static final int SWITCH_PAGE = 36;
+	static final int TEST_COLLAPSE_ROW = 37;
+	static final int TEST_EXPAND_ROW = 38;
+	static final int TOGGLED = 39;
+	static final int UNMAP_EVENT = 40;
+	static final int UNREALIZE = 41;
+	static final int VALUE_CHANGED = 42;
+	static final int WINDOW_STATE_EVENT = 43;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -630,6 +631,10 @@ int /*long*/ gtk_show_help (int /*long*/ widget, int /*long*/ helpType) {
 }
 
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
+	return 0;
+}
+
+int /*long*/ gtk_style_set (int /*long*/ widget, int /*long*/ previousStyle) {
 	return 0;
 }
 
@@ -1194,6 +1199,7 @@ int /*long*/ windowProc (int /*long*/ handle, int /*long*/ arg0, int /*long*/ us
 		case MOTION_NOTIFY_EVENT: return gtk_motion_notify_event (handle, arg0);
 		case SHOW_HELP: return gtk_show_help (handle, arg0);
 		case SIZE_ALLOCATE: return gtk_size_allocate (handle, arg0);
+		case STYLE_SET: return gtk_style_set (handle, arg0);
 		case TOGGLED: return gtk_toggled (handle, arg0);
 		case UNMAP_EVENT: return gtk_unmap_event (handle, arg0);
 		case WINDOW_STATE_EVENT: return gtk_window_state_event (handle, arg0);
