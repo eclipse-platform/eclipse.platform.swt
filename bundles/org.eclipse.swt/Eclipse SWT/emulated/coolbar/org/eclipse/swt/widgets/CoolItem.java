@@ -49,6 +49,7 @@ public class CoolItem extends Item {
 	static final int MINIMUM_WIDTH = (2 * MARGIN_WIDTH) + GRABBER_WIDTH;
 
 	ToolBar chevron;
+	boolean wrap;
 	Image arrowImage = null;
 	
 /**
@@ -212,7 +213,7 @@ public Point computeSize (int wHint, int hHint) {
 	int width = wHint, height = hHint;
 	if (wHint == SWT.DEFAULT) width = 32;
 	if (hHint == SWT.DEFAULT) height = 32;
-	width += MINIMUM_WIDTH + MARGIN_WIDTH;
+	width += 2 * MINIMUM_WIDTH;
 	height += 2 * MARGIN_HEIGHT;
 	return new Point (width, height);
 }
@@ -366,7 +367,7 @@ public Point getSize () {
 }
 int internalGetMinimumWidth () {
 	int width = minimumSize.x;
-	width += MINIMUM_WIDTH + MARGIN_WIDTH;
+	width += 2 * MINIMUM_WIDTH;
 	if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 		width += CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 	}
@@ -416,7 +417,7 @@ void setBounds (int x, int y, int width, int height) {
 	itemBounds.height = height;
 	if (control != null) {
 		int controlHeight = Math.min (height, control.getSize().y);
-		int controlWidth = width - MINIMUM_WIDTH - MARGIN_WIDTH;
+		int controlWidth = width - (2 * MINIMUM_WIDTH);
 		if ((style & SWT.DROP_DOWN) != 0 && width < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
@@ -460,7 +461,7 @@ public void setControl (Control control) {
 		control.setBounds (
 			bounds.x + MINIMUM_WIDTH, 
 			bounds.y + MARGIN_HEIGHT, 
-			bounds.width - MINIMUM_WIDTH - MARGIN_WIDTH, 
+			bounds.width - (2 * MINIMUM_WIDTH), 
 			bounds.height - (2 * MARGIN_HEIGHT));	
 		control.setVisible(true);
 	}
@@ -565,7 +566,7 @@ public void setSize (int width, int height) {
 	if (!ideal) preferredWidth = newWidth;
 	itemBounds.height = height;
 	if (control != null) {
-		int controlWidth = newWidth - MINIMUM_WIDTH - MARGIN_WIDTH;
+		int controlWidth = newWidth - (2 * MINIMUM_WIDTH);
 		if ((style & SWT.DROP_DOWN) != 0 && newWidth < preferredWidth) {
 			controlWidth -= CHEVRON_IMAGE_WIDTH + CHEVRON_HORIZONTAL_TRIM + CHEVRON_LEFT_MARGIN;
 		}
