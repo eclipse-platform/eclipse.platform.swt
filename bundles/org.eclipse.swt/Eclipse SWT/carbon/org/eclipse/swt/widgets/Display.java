@@ -1497,8 +1497,8 @@ public boolean readAndDispatch () {
 		int eventKind = OS.GetEventKind (outEvent [0]);
 		OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
-		runDeferredEvents ();
 		runPopups ();
+		runDeferredEvents ();
 		runGrabs ();
 		/*
 		* Feature in the Macintosh.  When an indeterminate progress
@@ -1872,6 +1872,7 @@ boolean runPopups () {
 		System.arraycopy (popups, 1, popups, 0, --length);
 		popups [length] = null;
 		clearMenuFlags ();
+		runDeferredEvents ();
 		menu._setVisible (true);
 		clearMenuFlags ();
 		result = true;
