@@ -549,7 +549,13 @@ public void setVisible (boolean visible) {
 }
 
 void setZOrder () {
-	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
+	if (scrolledHandle != 0) {
+		OS.HIViewAddSubview (scrolledHandle, handle);
+		/* Place the parent at (0, 0) in the child */
+		Rect rect = new Rect ();
+		OS.GetControlBounds (scrolledHandle, rect);
+		OS.MoveControl (handle, (short) rect.left, (short) rect.top);
+	}
 }
 
 }

@@ -1086,7 +1086,11 @@ void setZOrder () {
 	int topHandle = topHandle ();
 	int parentHandle = parent.handle;
 	OS.HIViewAddSubview (parentHandle, topHandle);
-//	OS.EmbedControl (topHandle, parentHandle);
+	//OS.EmbedControl (topHandle, parentHandle);
+	/* Place the child at (0, 0) in the parent */
+	Rect rect = new Rect ();
+	OS.GetControlBounds (parentHandle, rect);
+	OS.MoveControl (topHandle, (short) rect.left, (short) rect.top);
 }
 
 void sort (int [] items) {

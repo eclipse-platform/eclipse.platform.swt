@@ -511,6 +511,10 @@ public void setWidth (int width) {
 
 void setZOrder () {
 	OS.HIViewAddSubview (parent.handle, handle);
+	/* Place the child at (0, 0) in the parent */
+	Rect rect = new Rect ();
+	OS.GetControlBounds (parent.handle, rect);
+	OS.MoveControl (handle, (short) rect.left, (short) rect.top);
 }
 
 void updateImage () {

@@ -8,6 +8,7 @@ package org.eclipse.swt.widgets;
  */
 
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.Rect;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -303,7 +304,13 @@ public void setTabList (Control [] tabList) {
 
 void setZOrder () {
 	super.setZOrder ();
-	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
+	if (scrolledHandle != 0) {
+		OS.HIViewAddSubview (scrolledHandle, handle);
+		/* Place the child at (0, 0) in the parent */
+		Rect rect = new Rect ();
+		OS.GetControlBounds (scrolledHandle, rect);
+		OS.MoveControl (handle, (short) rect.left, (short) rect.top);
+	}
 }
 
 }
