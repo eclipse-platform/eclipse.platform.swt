@@ -314,7 +314,7 @@ private void open() {
 	table.setHeaderVisible(true);	
 	table.setMenu(createPopUpMenu());	
 	table.addSelectionListener(new SelectionAdapter() {
-		public void widgetDoubleSelected(SelectionEvent e) {
+		public void widgetDefaultSelected(SelectionEvent e) {
 			TableItem[] items = table.getSelection();
 			if (items.length > 0) editEntry(items[0]);
 		}
