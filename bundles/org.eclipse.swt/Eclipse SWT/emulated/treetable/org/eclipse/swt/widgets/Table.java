@@ -442,9 +442,10 @@ void doDispose() {
 	Vector items = getItemVector();
 	
 	super.doDispose();
-	while (items.size() > 0) {								// TableItem objects are removed from vector during dispose()
-		((TableItem) items.lastElement()).dispose();
+	for (int i = items.size() - 1; i >= 0; i--) {
+		((TableItem) items.elementAt(i)).dispose();
 	}
+	setItemVector(null);
 	items = getColumnVector();
 	while (items.size() > 0) {								// TableColumn objects are removed from vector during dispose()
 		((TableColumn) items.lastElement()).dispose();
@@ -1840,7 +1841,7 @@ public void removeAll() {
 
 	setRedraw(false);
 	setRemovingAll(true);
-	for (int i = 0; i < items.size(); i++) {
+	for (int i = items.size() - 1; i >= 0; i--) {
 		((TableItem) items.elementAt(i)).dispose();
 	}
 	setItemVector(new Vector());
@@ -1915,21 +1916,18 @@ void removeColumnVisual(TableColumn column) {
  * @param item - item that should be removed from the receiver
  */
 void removeItem(TableItem item) {
+	if (isRemovingAll() == true) return;
+	
 	Vector items = getItemVector();
 	int index = items.indexOf(item);
-
-	if (index != -1) {
-		if (isRemovingAll() == false) {
-			removingItem(item);	
-		}			
+	if (index != -1) {		
+		removingItem(item);				
 		items.removeElementAt(index);
 		for (int i = index; i < items.size(); i++) {
 			TableItem anItem = (TableItem) items.elementAt(i);
 			anItem.setIndex(anItem.getIndex() - 1);
 		}		
-		if (isRemovingAll() == false) {
-			removedItem(item);
-		}			
+		removedItem(item);		
 	}
 }
 /**
