@@ -1453,6 +1453,16 @@ JNIEXPORT void JNICALL OS_NATIVE(ClosePoly)
 }
 #endif
 
+#ifndef NO_CloseRgn
+JNIEXPORT void JNICALL OS_NATIVE(CloseRgn)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	NATIVE_ENTER(env, that, "CloseRgn\n")
+	CloseRgn((RgnHandle)arg0);
+	NATIVE_EXIT(env, that, "CloseRgn\n")
+}
+#endif
+
 #ifndef NO_CollapseWindow
 JNIEXPORT jint JNICALL OS_NATIVE(CollapseWindow)
 	(JNIEnv *env, jclass that, jint arg0, jboolean arg1)
@@ -6013,6 +6023,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(OpenPoly)
 }
 #endif
 
+#ifndef NO_OpenRgn
+JNIEXPORT void JNICALL OS_NATIVE(OpenRgn)
+	(JNIEnv *env, jclass that)
+{
+	NATIVE_ENTER(env, that, "OpenRgn\n")
+	OpenRgn();
+	NATIVE_EXIT(env, that, "OpenRgn\n")
+}
+#endif
+
 #ifndef NO_PaintOval
 JNIEXPORT void JNICALL OS_NATIVE(PaintOval)
 	(JNIEnv *env, jclass that, jobject arg0)
@@ -6487,6 +6507,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(RepositionWindow)
 	NATIVE_ENTER(env, that, "RepositionWindow\n")
 	rc = (jint)RepositionWindow((WindowRef)arg0, (WindowRef)arg1, arg2);
 	NATIVE_EXIT(env, that, "RepositionWindow\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_ReshapeCustomWindow
+JNIEXPORT jint JNICALL OS_NATIVE(ReshapeCustomWindow)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc;
+	NATIVE_ENTER(env, that, "ReshapeCustomWindow\n")
+	rc = (jint)ReshapeCustomWindow((WindowRef)arg0);
+	NATIVE_EXIT(env, that, "ReshapeCustomWindow\n")
 	return rc;
 }
 #endif
@@ -7192,17 +7224,32 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetEventLoopTimerNextFireTime)
 }
 #endif
 
-#ifndef NO_SetEventParameter
-JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter)
+#ifndef NO_SetEventParameter__IIII_3C
+JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIII_3C)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jcharArray arg4)
 {
 	jchar *lparg4=NULL;
 	jint rc;
-	NATIVE_ENTER(env, that, "SetEventParameter\n")
+	NATIVE_ENTER(env, that, "SetEventParameter__IIII_3C\n")
 	if (arg4) lparg4 = (*env)->GetCharArrayElements(env, arg4, NULL);
 	rc = (jint)SetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (UInt32)arg3, (const void *)lparg4);
 	if (arg4) (*env)->ReleaseCharArrayElements(env, arg4, lparg4, 0);
-	NATIVE_EXIT(env, that, "SetEventParameter\n")
+	NATIVE_EXIT(env, that, "SetEventParameter__IIII_3C\n")
+	return rc;
+}
+#endif
+
+#ifndef NO_SetEventParameter__IIII_3S
+JNIEXPORT jint JNICALL OS_NATIVE(SetEventParameter__IIII_3S)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jshortArray arg4)
+{
+	jshort *lparg4=NULL;
+	jint rc;
+	NATIVE_ENTER(env, that, "SetEventParameter__IIII_3S\n")
+	if (arg4) lparg4 = (*env)->GetShortArrayElements(env, arg4, NULL);
+	rc = (jint)SetEventParameter((EventRef)arg0, (EventParamName)arg1, (EventParamType)arg2, (UInt32)arg3, (const void *)lparg4);
+	if (arg4) (*env)->ReleaseShortArrayElements(env, arg4, lparg4, 0);
+	NATIVE_EXIT(env, that, "SetEventParameter__IIII_3S\n")
 	return rc;
 }
 #endif

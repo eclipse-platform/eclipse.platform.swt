@@ -61,6 +61,37 @@ Region(Device device, int handle) {
 }
 
 /**
+ * Adds the given polygon to the collection of rectangles
+ * the receiver maintains to describe its area.
+ *
+ * @param pointArray points that describe the polygon to merge with the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ *
+ * @since 3.0
+*
+ */
+public void add (int[] pointArray) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (pointArray.length < 2) return;
+	int polyRgn = OS.NewRgn();
+	OS.OpenRgn();
+	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
+	for (int i = 0; i < pointArray.length / 2; i++) {
+		OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
+	}
+	OS.CloseRgn(polyRgn);
+	OS.UnionRgn(handle, polyRgn, handle);
+	OS.DisposeRgn(polyRgn);
+}
+
+/**
  * Adds the given rectangle to the collection of rectangles
  * the receiver maintains to describe its area.
  *
@@ -310,6 +341,35 @@ public boolean isDisposed() {
 public boolean isEmpty() {
 	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return OS.EmptyRgn(handle);
+}
+
+/**
+ * Subtracts the given polygon from the collection of rectangles
+ * the receiver maintains to describe its area.
+ *
+ * param pointArray points that describe the polygon to merge with the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_GRAPHIC_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void subtract (int[] pointArray) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	int polyRgn = OS.NewRgn();
+	OS.OpenRgn();
+	OS.MoveTo((short)pointArray[0], (short)pointArray[1]);
+	for (int i = 0; i < pointArray.length / 2; i++) {
+		OS.LineTo((short)pointArray[2 * i], (short)pointArray[2 * i + 1]);
+	}
+	OS.CloseRgn(polyRgn);
+	OS.DiffRgn(handle, polyRgn, handle);
+	OS.DisposeRgn(polyRgn);
 }
 
 public void subtract(Rectangle rect) {
