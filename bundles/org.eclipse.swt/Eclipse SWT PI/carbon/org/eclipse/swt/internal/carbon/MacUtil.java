@@ -26,7 +26,7 @@ public class MacUtil {
 	public final static boolean HIVIEW= false;
 	
 	static final char MNEMONIC = '&';
-	
+		
 	static {
 		DEBUG= false;
 		USE_MENU_ICONS= true;
@@ -160,75 +160,7 @@ public class MacUtil {
 	public static void addControl(int controlHandle, int parentControlHandle) {
 		insertControl(controlHandle, parentControlHandle, -1);
 	}
-	
-	public static int OSEmbedControl(int controlHandle, int parentControlHandle) {
-		if (true) {
-			/* 
-			 * in Jaguar it is no longer possible to use EmbedControl for rearranging children in a composite.
-			 * The fix is to temporarily move a child to its root control fisrt and then to its
-			 * new position.
-			 */
-			int[] root= new int[1];
-			int wHandle= OS.GetControlOwner(parentControlHandle);
-			OS.GetRootControl(wHandle, root);
-			int rc= OS.EmbedControl(controlHandle, root[0]);
-			if (rc != OS.kNoErr)
-				return rc;
-		}
-		return OS.EmbedControl(controlHandle, parentControlHandle);
-	}
-	
-	/**
-	 * Inserts the given child at position in the parent.
-	 * If pos is out of range the child is added at the end.
-	 */
-	public static void embedControl(int controlHandle, int parentControlHandle, int pos) {
 		
-		int n= countSubControls(parentControlHandle);
-		
-		// add at end
-		if (OSEmbedControl(controlHandle, parentControlHandle) != OS.kNoErr)
-			System.out.println("MacUtil.embedControl: could not embed control in parent");
-			
-		if (pos < 0 || pos > n)
-			pos= n;
-		
-		int[] outControl= new int[1];
-		for (int i= 0; i < pos; i++) {
-			if (OS.GetIndexedSubControl(parentControlHandle, (short)(n-pos+1), outControl) == 0)
-				if (OSEmbedControl(outControl[0], parentControlHandle) != OS.kNoErr)
-					System.out.println("MacUtil.embedControl: couldn't move control to end");
-		}
-		
-		// verify correct position
-		n++;
-		for (int i= 0; i < n; i++) {
-			int index= (n-i);
-			int[] outHandle= new int[1];
-			if (OS.GetIndexedSubControl(parentControlHandle, (short)index, outHandle) == 0) {	// indices are 1 based
-				if (outHandle[0] == controlHandle) {
-					if (i != pos)
-						System.out.println("MacUtil.embedControl: creation at position nyi (is: "+i+" should: "+ pos+")");
-					return;
-				}
-			}
-		}
-		System.out.println("MacUtil.embedControl: new child not found");
-	}
-	
-	public static void embedControl(int controlHandle, int parentControlHandle) {
-		embedControl(controlHandle, parentControlHandle, -1);
-	}
-	
-	public static int createSeparator(int parentHandle, int style) {
-  		int handle= MacUtil.newControl(parentHandle, (short)0, (short)0, (short)100, OS.kControlSeparatorLineProc);
-		if ((style & SWT.HORIZONTAL) != 0)
-			OS.SizeControl(handle, (short) 20, (short) 1);
-		else
-			OS.SizeControl(handle, (short) 1, (short) 20);	
-		return handle;
-	}
-	
 	public static int getVisibleRegion(int cHandle, int result, boolean includingTop) {
 		int tmpRgn= OS.NewRgn();
 		
@@ -291,6 +223,8 @@ public class MacUtil {
 		return 0;
 	}
 
+	//////////////////////////////////////////////////////////////////////
+	
 	public static Point toControl(int cHandle, Point point) {
 		MacPoint mp= new MacPoint(point);
 		
@@ -424,34 +358,42 @@ public class MacUtil {
 	 * Create a new control and embed it in the given parent control.
 	 */
 	public static int newControl(int parentControlHandle, int pos, short init, short min, short max, short procID) {
-		int windowHandle= OS.GetControlOwner(parentControlHandle);
-		int controlHandle= OS.NewControl(windowHandle, false, init, min, max, procID);
-		embedControl(controlHandle, parentControlHandle, pos);
-		initLocation(controlHandle);
-		OS.ShowControl(controlHandle);
+		int controlHandle;
+		if (HIVIEW) {
+			controlHandle= OS.NewControl(0, false, init, min, max, procID);
+			insertControl(controlHandle, parentControlHandle, pos);
+			OS.HIViewSetVisible(controlHandle, true);
+			OS.HIViewSetNeedsDisplay(controlHandle, true);
+		} else {
+			int windowHandle= OS.GetControlOwner(parentControlHandle);
+			controlHandle= OS.NewControl(windowHandle, false, init, min, max, procID);
+			insertControl(controlHandle, parentControlHandle, pos);
+			initLocation(controlHandle);
+			OS.HIViewSetVisible(controlHandle, true);
+		}
+
 		return controlHandle;
 	}
 	
 	public static int createDrawingArea(int parentControlHandle, int pos, boolean visible, int width, int height, int border) {
-		int windowHandle= OS.GetControlOwner(parentControlHandle);
 		int features= OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
-		int controlHandle= OS.NewControl(windowHandle, false, (short)features, (short)0, (short)0, OS.kControlUserPaneProc);
-		OS.SizeControl(controlHandle, (short)width, (short)height);
-		embedControl(controlHandle, parentControlHandle, pos);
-		initLocation(controlHandle);
-		if (visible)
-			OS.ShowControl(controlHandle);
+		int controlHandle;
+		if (HIVIEW) {
+			controlHandle= OS.NewControl(0, false, (short)features, (short)0, (short)0, OS.kControlUserPaneProc);
+			OS.SizeControl(controlHandle, (short)width, (short)height);
+			insertControl(controlHandle, parentControlHandle, pos);
+			OS.HIViewSetVisible(controlHandle, visible);
+			OS.HIViewSetNeedsDisplay(controlHandle, true);
+		} else {
+			int windowHandle= OS.GetControlOwner(parentControlHandle);
+			controlHandle= OS.NewControl(windowHandle, false, (short)features, (short)0, (short)0, OS.kControlUserPaneProc);
+			OS.SizeControl(controlHandle, (short)width, (short)height);
+			insertControl(controlHandle, parentControlHandle, pos);
+			initLocation(controlHandle);
+			OS.HIViewSetVisible(controlHandle, visible);
+		}
 		return controlHandle;
-	}
-	
-	/*
-	public static int createDrawingArea(int parentControlHandle, boolean visible, int width, int height, int border) {
-		return createDrawingArea(parentControlHandle, -1, visible, width, height, border);
-	}
-	public static int createDrawingArea(int parentControlHandle, int width, int height, int border) {
-		return createDrawingArea(parentControlHandle, true, width, height, border);
-	}
-	*/
+	}	
 	
 	public static void initLocation(int cHandle) {
 		int parent= getSuperControl(cHandle);
