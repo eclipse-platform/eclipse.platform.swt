@@ -17,7 +17,7 @@ import org.eclipse.swt.events.*;
  * <dt><b>Styles:</b>
  * <dd>BORDER</dd>
  * <dt><b>Events:</b>
- * <dd>DoubleClick, FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDown, MouseEnter,
+ * <dd>FocusIn, FocusOut, Help, KeyDown, KeyUp, MouseDoubleClick, MouseDown, MouseEnter,
  *     MouseExit, MouseHover, MouseUp, MouseMove, Move, Paint, Resize</dd>
  * </dl>
  * <p>
