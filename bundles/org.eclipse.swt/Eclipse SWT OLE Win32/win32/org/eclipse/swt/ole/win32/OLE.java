@@ -387,7 +387,8 @@ static String getKeyValue (TCHAR key) {
 		/* Use the character encoding for the default locale */
 		TCHAR lpData = new TCHAR (0, lpcbData [0] / TCHAR.sizeof);
 		if (OS.RegQueryValueEx (phkResult [0], null, 0, null, lpData, lpcbData) == 0) {
-			result = lpData.toString (0, lpData.length () - 1);
+			int length = Math.max(0, lpData.length () - 1);
+			result = lpData.toString (0, length);
 		}
 	}
 	if (phkResult [0] != 0) OS.RegCloseKey (phkResult [0]);
