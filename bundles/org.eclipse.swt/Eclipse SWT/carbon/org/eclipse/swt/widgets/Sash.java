@@ -15,7 +15,6 @@ import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.events.*;
 
 public class Sash extends Control {
-
 	Cursor sizeCursor;
 
 public Sash (Composite parent, int style) {
@@ -60,6 +59,13 @@ void createHandle () {
 
 void drawWidget (int control) {
 	drawBackground (handle, background);
+}
+
+int kEventControlClick (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventControlClick (nextHandler, theEvent, userData);
+	if (result == OS.noErr) return result;
+	if (!OS.IsControlEnabled (handle)) return OS.noErr;
+	return result;
 }
 
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
