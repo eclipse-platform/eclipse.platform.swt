@@ -3393,12 +3393,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
-		case OS.LVN_ODCACHEHINT:
-			if ((style & SWT.VIRTUAL) != 0) {
-				NMLVCACHEHINT pCachehint  = new NMLVCACHEHINT ();
-				OS.MoveMemory (pCachehint, lParam, NMLVCACHEHINT.sizeof);
-			}
-			break;
 		case OS.LVN_ODFINDITEMA:
 		case OS.LVN_ODFINDITEMW: {
 			if ((style & SWT.VIRTUAL) != 0) {

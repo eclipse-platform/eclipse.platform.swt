@@ -2489,43 +2489,6 @@ void setNMLISTVIEWFields(JNIEnv *env, jobject lpObject, NMLISTVIEW *lpStruct)
 }
 #endif
 
-#ifndef NO_NMLVCACHEHINT
-typedef struct NMLVCACHEHINT_FID_CACHE {
-	int cached;
-	jclass clazz;
-	jfieldID iFrom, iTo;
-} NMLVCACHEHINT_FID_CACHE;
-
-NMLVCACHEHINT_FID_CACHE NMLVCACHEHINTFc;
-
-void cacheNMLVCACHEHINTFields(JNIEnv *env, jobject lpObject)
-{
-	if (NMLVCACHEHINTFc.cached) return;
-	cacheNMHDRFields(env, lpObject);
-	NMLVCACHEHINTFc.clazz = (*env)->GetObjectClass(env, lpObject);
-	NMLVCACHEHINTFc.iFrom = (*env)->GetFieldID(env, NMLVCACHEHINTFc.clazz, "iFrom", "I");
-	NMLVCACHEHINTFc.iTo = (*env)->GetFieldID(env, NMLVCACHEHINTFc.clazz, "iTo", "I");
-	NMLVCACHEHINTFc.cached = 1;
-}
-
-NMLVCACHEHINT *getNMLVCACHEHINTFields(JNIEnv *env, jobject lpObject, NMLVCACHEHINT *lpStruct)
-{
-	if (!NMLVCACHEHINTFc.cached) cacheNMLVCACHEHINTFields(env, lpObject);
-	getNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
-	lpStruct->iFrom = (*env)->GetIntField(env, lpObject, NMLVCACHEHINTFc.iFrom);
-	lpStruct->iTo = (*env)->GetIntField(env, lpObject, NMLVCACHEHINTFc.iTo);
-	return lpStruct;
-}
-
-void setNMLVCACHEHINTFields(JNIEnv *env, jobject lpObject, NMLVCACHEHINT *lpStruct)
-{
-	if (!NMLVCACHEHINTFc.cached) cacheNMLVCACHEHINTFields(env, lpObject);
-	setNMHDRFields(env, lpObject, (NMHDR *)lpStruct);
-	(*env)->SetIntField(env, lpObject, NMLVCACHEHINTFc.iFrom, (jint)lpStruct->iFrom);
-	(*env)->SetIntField(env, lpObject, NMLVCACHEHINTFc.iTo, (jint)lpStruct->iTo);
-}
-#endif
-
 #ifndef NO_NMLVCUSTOMDRAW
 typedef struct NMLVCUSTOMDRAW_FID_CACHE {
 	int cached;

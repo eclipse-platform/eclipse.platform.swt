@@ -5998,20 +5998,6 @@ fail:
 }
 #endif
 
-#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCACHEHINT_2II
-JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCACHEHINT_2II)
-	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
-{
-	NMLVCACHEHINT _arg0, *lparg0=NULL;
-	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCACHEHINT_2II_FUNC);
-	if (arg0) if ((lparg0 = &_arg0) == NULL) goto fail;
-	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
-fail:
-	if (arg0 && lparg0) setNMLVCACHEHINTFields(env, arg0, lparg0);
-	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCACHEHINT_2II_FUNC);
-}
-#endif
-
 #ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II)
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
