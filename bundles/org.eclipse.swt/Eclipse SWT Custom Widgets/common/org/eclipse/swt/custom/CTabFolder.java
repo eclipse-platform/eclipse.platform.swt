@@ -1141,24 +1141,30 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 	
 	// Draw gradient onto an image
 	if (colors != null) {
+		Color[] colorsCopy = null;
+		Display display = getDisplay();
+		if (display.getDepth() < 15) {
+			colorsCopy = new Color[]{colors[0]};
+		} else {
+			colorsCopy = colors;
+		}
+		
 		int x = 0; int y = 0;
 		int width = 100; int height = 10;
-		
-		Display display = getDisplay();
 		Image temp = new Image(display, width, height);
 		GC gc = new GC(temp);
 		int start = 0;
 		int end = 0;
 		Color background = getBackground();
-		if (colors.length == 1) {
-			gc.setBackground(colors[0]);
+		if (colorsCopy.length == 1) {
+			gc.setBackground(colorsCopy[0]);
 			gc.fillRectangle(temp.getBounds());
 		}
-		for (int j = 0; j < colors.length - 1; j++) {
-			Color startColor = colors[j];
+		for (int j = 0; j < colorsCopy.length - 1; j++) {
+			Color startColor = colorsCopy[j];
 			if (startColor == null) startColor = getBackground();
 			RGB rgb1 = startColor.getRGB();
-			Color endColor = colors[j+1];
+			Color endColor = colorsCopy[j+1];
 			if (endColor == null) endColor = getBackground();
 			RGB rgb2   = endColor.getRGB();
 			start = end;
@@ -1180,11 +1186,11 @@ public void setSelectionBackground(Color[] colors, int[] percents) {
 		}
 		gc.dispose();
 		gradientImage = temp;
-		gradientColors = colors;
+		gradientColors = colorsCopy;
 		gradientPercents = percents;
 		backgroundImage = temp;
 		
-		Color closeBackground = colors[colors.length - 1];
+		Color closeBackground = colorsCopy[colorsCopy.length - 1];
 		if (closeBackground == null){
 			closeBackground = background;
 		}
