@@ -37,13 +37,15 @@ public static TextTransfer getInstance () {
  * On a successful conversion, the transferData.result field will be set as follows:
  * <ul>
  * <li>Windows: OLE.S_OK
- * <li>Motif: 0
+ * <li>Motif: 1
+ * <li>GTK: 1
  * </ul>
  * If this transfer agent is unable to perform the conversion,
  * the transferData.result field will be set to a failure value as follows:
  * <ul>
  * <li>Windows: OLE.DV_E_TYMED
- * <li>Motif: 1
+ * <li>Motif: 0
+ * <li>GTK: 0
  * </ul></p>
  *
  * @param object a Java String containing the data to be transferred
