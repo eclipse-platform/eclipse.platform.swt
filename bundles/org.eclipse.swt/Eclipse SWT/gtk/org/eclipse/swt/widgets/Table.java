@@ -1967,16 +1967,26 @@ public void selectAll () {
 
 void selectFocusIndex (int index) {
 	/*
-	 * Note that this method both selects and sets the focus to the
-	 * specified index, so any previous selection in the list will be lost.
-	 * gtk does not provide a way to just set focus to a specified list item.
-	 */
+	* Note that this method both selects and sets the focus to the
+	* specified index, so any previous selection in the list will be lost.
+	* gtk does not provide a way to just set focus to a specified list item.
+	*/
 	if (!(0 <= index && index < itemCount))  return;
 	TableItem item = _getItem (index);
 	int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, item.handle);
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_view_set_cursor (handle, path, 0, false);
+	/*
+	* Bug in GTK. For some reason, when an event loop is run from
+	* within a key pressed handler and a dialog is displayed that
+	* contains a GtkTreeView,  gtk_tree_view_set_cursor() does
+	* not set the cursor or select the item.  The fix is to select the
+	* item with gtk_tree_selection_select_iter() as well.
+	* 
+	* NOTE: This happens in GTK 2.2.1 and is fixed in GTK 2.2.4.
+	*/
+	OS.gtk_tree_selection_select_iter (selection, item.handle);
 	OS.g_signal_handlers_unblock_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	OS.gtk_tree_path_free (path);
 }
