@@ -748,7 +748,7 @@ abstract class Tab {
 			case SWT.Activate:
 			case SWT.Deactivate: toString += new ShellEvent (event).toString (); break;
 			case SWT.Show:
-			case SWT.Hide: toString += new MenuEvent (event).toString (); break;
+			case SWT.Hide: toString += (event.widget instanceof Menu) ? new MenuEvent (event).toString () : event.toString(); break;
 			case SWT.Modify: toString += new ModifyEvent (event).toString (); break;
 			case SWT.Verify: toString += new VerifyEvent (event).toString (); break;
 			case SWT.Help: toString += new HelpEvent (event).toString (); break;
