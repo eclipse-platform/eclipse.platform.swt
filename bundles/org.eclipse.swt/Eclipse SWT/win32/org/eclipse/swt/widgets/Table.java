@@ -3250,20 +3250,24 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 			case OS.HDN_BEGINTRACKA:
 			case OS.HDN_DIVIDERDBLCLICKW:
 			case OS.HDN_DIVIDERDBLCLICKA: {
+				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+				if (count == 1 && columns [0] == null) return LRESULT.ONE;
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				TableColumn column = columns [phdn.iItem];
-				if (column == null || !column.getResizable ()) {
+				if (column != null && !column.getResizable ()) {
 					return LRESULT.ONE;
 				}
 				break;
 			}
 			case OS.HDN_BEGINDRAG: {
+				int count = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+				if (count == 1 && columns [0] == null) return LRESULT.ONE;
 				NMHEADER phdn = new NMHEADER ();
 				OS.MoveMemory (phdn, lParam, NMHEADER.sizeof);
 				if (phdn.iItem != -1) {
 					TableColumn column = columns [phdn.iItem];
-					if (column == null || !column.getMoveable ()) {
+					if (column != null && !column.getMoveable ()) {
 						OS.ReleaseCapture ();
 						return LRESULT.ONE;
 					}
