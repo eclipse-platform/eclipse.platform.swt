@@ -26,14 +26,19 @@ import org.eclipse.swt.events.*;
 public class CoolItem extends Item {
 	Control control;
 	CoolBar parent;
-	int preferredWidth, requestedWidth;
+	int preferredWidth = -1, requestedWidth;
+	Point minimumSize = new Point (MINIMUM_WIDTH, 2 * MARGIN_HEIGHT);
 	Rectangle itemBounds = new Rectangle(0, 0, 0, 0);
 	
 	static final int MARGIN_WIDTH = 4;
 	static final int MARGIN_HEIGHT = 2;
 	static final int GRABBER_WIDTH = 2;
+	static final int CHEVRON_WIDTH = (3 * MARGIN_WIDTH) + 2; //wider enough for drawing the double arrow
 	static final int MINIMUM_WIDTH = (2 * MARGIN_WIDTH) + GRABBER_WIDTH;
 
+	ToolBar chevron;
+	Image arrowImage = null;
+	
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>CoolBar</code>) and a style value
@@ -101,7 +106,7 @@ public CoolItem (CoolBar parent, int style) {
  * @see Widget#getStyle
  */
 public CoolItem (CoolBar parent, int style, int index) {
-	super(parent, 0);
+	super(parent, style);
 	this.parent = parent;
 	parent.createItem (this, index);
 }
@@ -187,6 +192,47 @@ public void dispose () {
 	super.dispose ();
 	parent = null;
 	control = null;
+	if (arrowImage != null) arrowImage.dispose();
+	arrowImage = null;
+}
+
+Image getArrowImage () {
+	
+	if (arrowImage != null) return arrowImage;
+	int height = itemBounds.height - 10; //remove the border space
+	int width = CHEVRON_WIDTH - 7;
+	
+	Display display = getDisplay ();
+	Color foreground = control.getForeground ();
+	Color black = display.getSystemColor (SWT.COLOR_BLACK);
+	Color background = control.getBackground ();
+	
+	PaletteData palette = new PaletteData (new RGB[]{foreground.getRGB(), background.getRGB(), black.getRGB()});
+	ImageData imageData = new ImageData (width, height, 4, palette);
+	imageData.transparentPixel = 1;
+	arrowImage = new Image (display, imageData);
+		
+	GC gc = new GC (arrowImage);
+	gc.setBackground (background);
+	gc.fillRectangle (0, 0, width, height);
+	gc.setForeground (black);
+	
+	int startX = 0 ;
+	int startY = height / 6; 
+	int step = MARGIN_WIDTH / 2;	
+	gc.drawLine (startX, startY, startX + step, startY + step);
+	gc.drawLine (startX, startY + (2 * step), startX + step, startY + step);
+	startX++;
+	gc.drawLine (startX, startY, startX + step, startY + step);
+	gc.drawLine (startX, startY + (2 * step), startX + step, startY + step);
+	startX += 2;
+	gc.drawLine (startX, startY, startX + step, startY + step);
+	gc.drawLine (startX, startY + (2 * step), startX + step, startY + step);
+	startX++;
+	gc.drawLine (startX, startY, startX + step, startY + step);
+	gc.drawLine (startX, startY + (2 * step), startX + step, startY + step);
+	gc.dispose ();
+	return arrowImage;
 }
 /**
  * Returns a rectangle describing the receiver's size and location
@@ -223,6 +269,29 @@ public Display getDisplay () {
 	return parent.getDisplay ();
 }
 /**
+ * Returns the minimum size that the cool item can
+ * be resized to using the cool item's gripper.
+ * 
+ * @return a point containing the minimum width and height of the cool item, in pixels
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ */
+public Point getMinimumSize () {
+	checkWidget();
+	return minimumSize;
+}
+/**
+ * @deprecated use getMinimumSize
+ */
+public int getMinimumWidth () {
+	return getMinimumSize().x;
+}
+/**
  * Returns the receiver's parent, which must be a <code>CoolBar</code>.
  *
  * @return the receiver's parent
@@ -236,9 +305,76 @@ public CoolBar getParent () {
 	checkWidget();
 	return parent;
 }
+public Point getPreferredSize () {
+	checkWidget();
+	int height = getSize().y;
+	return new Point(preferredWidth, height + (2 * MARGIN_HEIGHT));
+}
 public Point getSize () {
 	checkWidget();
 	return new Point (itemBounds.width, itemBounds.height);
+}
+int internalGetMinimumWidth(){
+	int width = minimumSize.x;
+	width += MINIMUM_WIDTH + MARGIN_WIDTH;
+	if (width < preferredWidth) {
+		width += CHEVRON_WIDTH;
+	}
+	return width;
+}
+/**
+ *  Called on the chevron is select
+ */
+void onSelection (Event ev) {
+	Rectangle bounds = chevron.getBounds();
+	Event event = new Event();
+	event.detail = SWT.ARROW;
+	event.x = bounds.x;
+	event.y = bounds.y + bounds.height;
+	postEvent (SWT.Selection, event);
+}
+/**
+ * Removes the listener from the collection of listeners that
+ * will be notified when the control is selected.
+ *
+ * @param listener the listener which should be notified
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ *
+ * @see SelectionListener
+ * @see #addSelectionListener
+ * 
+ * @since 2.0
+ */
+public void removeSelectionListener(SelectionListener listener) {
+	checkWidget();
+	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
+	if (eventTable == null) return;
+	eventTable.unhook (SWT.Selection, listener);
+	eventTable.unhook (SWT.DefaultSelection,listener);	
+}
+void setBounds (int x, int y, int width, int height) {
+	itemBounds.x = x;
+	itemBounds.y = y;
+	itemBounds.width = width;
+	itemBounds.height = height;
+	if (control != null) {
+		int controlHeight = Math.min (height, control.getSize().y);
+		int controlWidth = width - MINIMUM_WIDTH - MARGIN_WIDTH;
+		if (width < preferredWidth) controlWidth -= CHEVRON_WIDTH;
+		control.setBounds (
+			x + MINIMUM_WIDTH, 
+			y + MARGIN_HEIGHT, 
+			controlWidth, 
+			controlHeight);
+	}
+	updateChevron();
 }
 /**
  * Sets the control which is associated with the receiver
@@ -273,59 +409,12 @@ public void setControl (Control control) {
 			bounds.height - (2 * MARGIN_HEIGHT));
 			
 		control.setVisible(true);
+		if (preferredWidth == -1) {
+			Point size = control.computeSize (SWT.DEFAULT, SWT.DEFAULT, false);
+			preferredWidth = size.x;
+		}
 	}
 }
-public void setSize (int width, int height) {
-	checkWidget();
-	int newWidth = Math.max (width, MINIMUM_WIDTH);
-	itemBounds.width = preferredWidth = requestedWidth = newWidth;
-	itemBounds.height = height;
-	if (control != null) {
-		int controlWidth = newWidth - MINIMUM_WIDTH - MARGIN_WIDTH;
-		int controlHeight = height - (2 * MARGIN_HEIGHT);
-		control.setSize(controlWidth, controlHeight);
-	}
-	parent.relayout();
-}
-public void setSize (Point size) {
-	checkWidget();
-	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
-	setSize (size.x, size.y);
-}
-/**
- * Returns the minimum size that the cool item can
- * be resized to using the cool item's gripper.
- * 
- * @return a point containing the minimum width and height of the cool item, in pixels
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- */
-public Point getMinimumSize () {
-	return new Point (0, 0);
-}
-/**
- * Sets the minimum size that the cool item can
- * be resized to using the cool item's gripper.
- * 
- * @param size a point representing the minimum width and height of the cool item, in pixels
- * 
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- * 
- * @since 2.0
- */
-public void setMinimumSize (Point size) {
-	checkWidget ();
-	setMinimumSize (size.x, size.y);
-}
-
 /**
  * Sets the minimum size that the cool item can
  * be resized to using the cool item's gripper.
@@ -342,12 +431,25 @@ public void setMinimumSize (Point size) {
  */
 public void setMinimumSize (int width, int height) {
 	checkWidget ();
+	setMinimumSize(new Point(width, height));
 }
 /**
- * @deprecated use getMinimumSize
+ * Sets the minimum size that the cool item can
+ * be resized to using the cool item's gripper.
+ * 
+ * @param size a point representing the minimum width and height of the cool item, in pixels
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
  */
-public int getMinimumWidth () {
-	return getMinimumSize().x;
+public void setMinimumSize (Point size) {
+	checkWidget ();
+	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);	
+	minimumSize = size;
 }
 /**
  * @deprecated use setMinimumSize
@@ -355,25 +457,6 @@ public int getMinimumWidth () {
 public void setMinimumWidth (int width) {
 	checkWidget ();
 	setMinimumSize (width, getMinimumSize().y);
-}
-void setBounds (int x, int y, int width, int height) {
-	itemBounds.x = x;
-	itemBounds.y = y;
-	itemBounds.width = width;
-	itemBounds.height = height;
-	if (control != null) {
-		int controlHeight = Math.min(height, control.getSize().y);
-		control.setBounds(
-			x + MINIMUM_WIDTH, 
-			y + MARGIN_HEIGHT, 
-			width - MINIMUM_WIDTH - MARGIN_WIDTH, 
-			controlHeight);
-	}
-}
-public Point getPreferredSize () {
-	checkWidget();
-	int height = getSize().y;
-	return new Point(preferredWidth, height + (2 * MARGIN_HEIGHT));
 }
 public void setPreferredSize (int width, int height) {
 	checkWidget();
@@ -387,30 +470,53 @@ public void setPreferredSize (Point size) {
 	if (size == null) error(SWT.ERROR_NULL_ARGUMENT);
 	setPreferredSize(size.x, size.y);
 }
-/**
- * Removes the listener from the collection of listeners that
- * will be notified when the control is selected.
- *
- * @param listener the listener which should be notified
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
- * @exception SWTException <ul>
- *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
- *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
- * </ul>
- *
- * @see SelectionListener
- * @see #addSelectionListener
- * 
- * @since 2.0
- */
-public void removeSelectionListener(SelectionListener listener) {
+public void setSize (int width, int height) {
 	checkWidget();
-	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (eventTable == null) return;
-	eventTable.unhook (SWT.Selection, listener);
-	eventTable.unhook (SWT.DefaultSelection,listener);	
+	int newWidth = Math.max (width, MINIMUM_WIDTH);
+	itemBounds.width = requestedWidth = newWidth;
+	if (preferredWidth == -1) preferredWidth = newWidth;
+	itemBounds.height = height;
+	if (control != null) {
+		int controlWidth = newWidth - MINIMUM_WIDTH - MARGIN_WIDTH;
+		int controlHeight = height - (2 * MARGIN_HEIGHT);
+		control.setSize(controlWidth, controlHeight);
+	}
+	parent.relayout();
+}
+public void setSize (Point size) {
+	checkWidget();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setSize (size.x, size.y);
+}
+void updateChevron() {
+	if (control != null) {
+		int width = itemBounds.width;
+		if (width < preferredWidth) {
+			int height = Math.min (control.getSize ().y, itemBounds.height);
+			if (chevron == null) {
+				chevron = new ToolBar (parent, SWT.FLAT);
+				ToolItem toolItem = new ToolItem (chevron, SWT.PUSH);
+				if (height > 6) {
+					toolItem.setImage (getArrowImage ());
+				}	
+				toolItem.addListener (SWT.Selection, new Listener() {
+					public void handleEvent (Event event) {
+						CoolItem.this.onSelection (event);
+					}
+				});
+			}
+			chevron.setBounds (
+				itemBounds.x + width - MARGIN_WIDTH - CHEVRON_WIDTH,
+				itemBounds.y + MARGIN_HEIGHT,
+				CHEVRON_WIDTH,
+				height);
+			
+		} else {
+			if (chevron != null) {
+				chevron.dispose ();
+				chevron = null;
+			}
+		}
+	}
 }
 }

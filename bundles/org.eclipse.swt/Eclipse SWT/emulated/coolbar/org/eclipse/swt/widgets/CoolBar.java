@@ -35,10 +35,10 @@ public class CoolBar extends Composite {
 	Cursor hoverCursor, dragCursor;
 	CoolItem dragging = null;
 	int mouseXOffset, itemXOffset;
-	Point click = new Point(0, 0);
 	static final int ROW_SPACING = 2;
 	static final int CLICK_DISTANCE = 3;
-		
+
+	boolean isLocked = false;	
 /**
  * Constructs a new instance of this class given its parent
  * and a style value describing its behavior and appearance.
@@ -75,12 +75,13 @@ public CoolBar (Composite parent, int style) {
 	Listener listener = new Listener() {
 		public void handleEvent(Event event) {
 			switch (event.type) {
-				case SWT.Dispose:      onDispose();        break;
-				case SWT.MouseDown:    onMouseDown(event); break;
-				case SWT.MouseExit:    onMouseExit();      break;
-				case SWT.MouseMove:    onMouseMove(event); break;
-				case SWT.MouseUp:      onMouseUp(event);   break;
-				case SWT.Paint:        onPaint(event);     break;
+				case SWT.Dispose:      		onDispose();        		break;
+				case SWT.MouseDown:    		onMouseDown(event);			break;
+				case SWT.MouseExit:    		onMouseExit();      		break;
+				case SWT.MouseMove:    		onMouseMove(event); 		break;
+				case SWT.MouseUp:      		onMouseUp(event);   		break;
+				case SWT.MouseDoubleClick:	onMouseDoubleClick(event); 	break;
+				case SWT.Paint:        		onPaint(event);     		break;
 			}
 		}
 	};
@@ -90,6 +91,7 @@ public CoolBar (Composite parent, int style) {
 		SWT.MouseExit, 
 		SWT.MouseMove, 
 		SWT.MouseUp, 
+		SWT.MouseDoubleClick,
 		SWT.Paint 
 	};
 	for (int i = 0; i < events.length; i++) {
@@ -284,9 +286,9 @@ void insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
 		CoolItem left = items[rowIndex][index - 1];
 		Rectangle leftBounds = left.getBounds();
 		int newWidth = x - leftBounds.x;
-		if (newWidth < CoolItem.MINIMUM_WIDTH) {
-			x += CoolItem.MINIMUM_WIDTH - newWidth;
-			newWidth = CoolItem.MINIMUM_WIDTH;
+		if (newWidth < left.internalGetMinimumWidth()) {
+			x += left.internalGetMinimumWidth() - newWidth;
+			newWidth = left.internalGetMinimumWidth();
 		}
 		left.setBounds(leftBounds.x, leftBounds.y, newWidth, leftBounds.height);
 		left.requestedWidth = newWidth;
@@ -297,20 +299,20 @@ void insertItemIntoRow(CoolItem item, int rowIndex, int x_root) {
 	if (index < items[rowIndex].length - 1) {
 		CoolItem right = items[rowIndex][index + 1];
 		width = right.getBounds().x - x;
-		if (width < CoolItem.MINIMUM_WIDTH) {
-			moveRight(right, CoolItem.MINIMUM_WIDTH - width);
+		if (width < right.internalGetMinimumWidth()) {
+			moveRight(right, right.internalGetMinimumWidth() - width);
 			width = right.getBounds().x - x;
 		}
 		item.setBounds(x, rowY, width, height);
-		if (width < CoolItem.MINIMUM_WIDTH) moveLeft(item, CoolItem.MINIMUM_WIDTH - width);
+		if (width < item.internalGetMinimumWidth()) moveLeft(item, item.internalGetMinimumWidth() - width);
 	} else {
-		width = Math.max(CoolItem.MINIMUM_WIDTH, barWidth - x);
+		width = Math.max(item.internalGetMinimumWidth(), barWidth - x);
 		item.setBounds(x, rowY, width, height);
 		if (x + width > barWidth) moveLeft(item, x + width - barWidth); 
 	}
 	Rectangle bounds = item.getBounds();
 	item.requestedWidth = bounds.width;
-	redraw(bounds.x, bounds.y, CoolItem.MINIMUM_WIDTH, bounds.height, false);
+	redraw(bounds.x, bounds.y, item.internalGetMinimumWidth(), bounds.height, false);
 }
 void createItem (CoolItem item, int index) {
 	int itemCount = getItemCount(), row = 0;
@@ -335,7 +337,7 @@ void createItem (CoolItem item, int index) {
 		int oldLength = items[row].length;
 		CoolItem[] newRow = new CoolItem[oldLength + 1];
 		System.arraycopy(items[row], 0, newRow, 0, i);
-		newRow[index] = item;
+		newRow[i] = item;
 		System.arraycopy(items[row], i, newRow, i + 1, oldLength - i);
 		items[row] = newRow;
 	}
@@ -402,16 +404,19 @@ void moveLeft(CoolItem item, int pixels) {
 	int index = point.x;
 	if (index == 0) return;	
 	Rectangle bounds = item.getBounds();
-	int min = index * CoolItem.MINIMUM_WIDTH;
-	int x = Math.max(min, bounds.x - pixels);
+	int minSpaceOnLeft = 0;
+	for (int i = 0; i < index; i++) {
+		minSpaceOnLeft += items[row][i].internalGetMinimumWidth();
+	}
+	int x = Math.max(minSpaceOnLeft, bounds.x - pixels);
 	CoolItem left = items[row][index - 1];
 	Rectangle leftBounds = left.getBounds();
-	if (leftBounds.x + CoolItem.MINIMUM_WIDTH > x) {
-		int shift = leftBounds.x + CoolItem.MINIMUM_WIDTH - x;
+	if (leftBounds.x + left.internalGetMinimumWidth() > x) {
+		int shift = leftBounds.x + left.internalGetMinimumWidth() - x;
 		moveLeft(left, shift);
 		leftBounds = left.getBounds();
 	}
-	int leftWidth = Math.max(CoolItem.MINIMUM_WIDTH, leftBounds.width - pixels);
+	int leftWidth = Math.max(left.internalGetMinimumWidth(), leftBounds.width - pixels);
 	left.setBounds(leftBounds.x, leftBounds.y, leftWidth, leftBounds.height);
 	left.requestedWidth = leftWidth;
 	int width = bounds.width + (bounds.x - x);
@@ -429,7 +434,10 @@ void moveRight(CoolItem item, int pixels) {
 	int index = point.x;
 	if (index == 0) return;	
 	Rectangle bounds = item.getBounds();
-	int minSpaceOnRight = (items[row].length - index) * CoolItem.MINIMUM_WIDTH;
+	int minSpaceOnRight = 0;
+	for (int i = index; i < items[row].length; i++) {
+		minSpaceOnRight += items[row][i].internalGetMinimumWidth(); 
+	}
 	int max = getBounds().width - minSpaceOnRight;
 	int x = Math.min(max, bounds.x + pixels);	
 	int width = 0;
@@ -438,8 +446,8 @@ void moveRight(CoolItem item, int pixels) {
 	} else {
 		CoolItem right = items[row][index + 1];
 		Rectangle rightBounds = right.getBounds();
-		if (x + CoolItem.MINIMUM_WIDTH > rightBounds.x) {
-			int shift = x + CoolItem.MINIMUM_WIDTH - rightBounds.x;
+		if (x + item.internalGetMinimumWidth() > rightBounds.x) {
+			int shift = x + item.internalGetMinimumWidth() - rightBounds.x;
 			moveRight(right, shift);
 			rightBounds = right.getBounds();
 		}
@@ -491,19 +499,19 @@ void onDispose() {
 	dragCursor.dispose();
 }
 void onMouseDown(Event event) {
+	if (isLocked) return;	
 	dragging = getGrabbedItem(event.x, event.y);
 	if (dragging != null) {
 		mouseXOffset = event.x;
 		itemXOffset = mouseXOffset - dragging.getBounds().x;
 		setCursor(dragCursor);
 	}
-	click.x = event.x;
-	click.y = event.y;
 }
 void onMouseExit() {
 	if (dragging == null) setCursor(null);
 }
 void onMouseMove(Event event) {
+	if (isLocked) return;
 	CoolItem grabbed = getGrabbedItem(event.x, event.y);
 	if (dragging != null) {
 		int left_root = toDisplay(new Point(event.x, event.y)).x - itemXOffset;
@@ -533,57 +541,66 @@ void onMouseMove(Event event) {
 	}
 }
 void onMouseUp(Event event) {
+	setCursor(null);
+	dragging = null;
+}
+void onMouseDoubleClick(Event event) {
+	if (isLocked) return;	
 	dragging = null;
 	CoolItem target = getGrabbedItem(event.x, event.y);
 	if (target == null) {
 		setCursor(null);
 		return;	
 	}
-	int xDelta = Math.abs(click.x - event.x), yDelta = Math.abs(click.y - event.y);
-	if (xDelta <= CLICK_DISTANCE && yDelta <= CLICK_DISTANCE) {
-		Point location = findItem(target);
-		int row = location.y;
-		int index = location.x;
-		if (items[row].length > 1) {
-			Point size = target.getSize();
-			int maxSize = getSize().x - (items[row].length - 1) * CoolItem.MINIMUM_WIDTH;
-			if (size.x == maxSize) {
-				/* The item is at its maximum width. It should be resized to its minimum width. */
-				int distance = size.x - CoolItem.MINIMUM_WIDTH;
-				if (index + 1 < items[row].length) {
-					/* There is an item to the right. Maximize it. */
-					CoolItem right = items[row][index + 1];
-					moveLeft(right, distance);
-				}
-				else {
-					/* There is no item to the right. Move the item all the way right. */
-					moveRight(target, distance);
-				}
+
+	Point location = findItem(target);
+	int row = location.y;
+	int index = location.x;
+	if (items[row].length > 1) {
+		Point size = target.getSize();
+		int maxSize = getSize().x;
+		for (int i = 0; i < items[row].length; i++) {
+			if (i != index) {
+				maxSize -= items[row][i].internalGetMinimumWidth();	
 			}
-			else if (size.x < target.preferredWidth) {
-				/* The item is less than its preferredWidth. Resize to preferredWidth. */
-				int distance = target.preferredWidth - size.x;
-				if (index + 1 < items[row].length) {
-					CoolItem right = items[row][index + 1];
-					moveRight(right, distance);	
-					distance = target.preferredWidth - target.getSize().x;
-				}
-				if (distance > 0) {
-					moveLeft(target, distance);
-				}
+		}
+		if (size.x == maxSize) {
+			/* The item is at its maximum width. It should be resized to its minimum width. */
+			int distance = size.x - target.internalGetMinimumWidth();
+			if (index + 1 < items[row].length) {
+				/* There is an item to the right. Maximize it. */
+				CoolItem right = items[row][index + 1];
+				moveLeft(right, distance);
 			}
 			else {
-				/* The item is at its minimum width. Maximize it. */
-				for (int i = 0; i < items[row].length; i++) {
-					if (i != index) items[row][i].requestedWidth = CoolItem.MINIMUM_WIDTH;	
-				}
-				target.requestedWidth = getDisplay().getBounds().width;
-				layoutItems();
+				/* There is no item to the right. Move the item all the way right. */
+				moveRight(target, distance);
 			}
-			target = getGrabbedItem(event.x, event.y);
-			if (target != null) setCursor(hoverCursor);
-			else setCursor(null);
 		}
+		else if (size.x < target.preferredWidth) {
+			/* The item is less than its preferredWidth. Resize to preferredWidth. */
+			int distance = target.preferredWidth - size.x;
+			if (index + 1 < items[row].length) {
+				CoolItem right = items[row][index + 1];
+				moveRight(right, distance);	
+				distance = target.preferredWidth - target.getSize().x;
+			}
+			if (distance > 0) {
+				moveLeft(target, distance);
+			}
+		}
+		else {
+			/* The item is at its minimum width. Maximize it. */
+			for (int i = 0; i < items[row].length; i++) {
+				if (i != index) {
+					CoolItem item = items[row][i];
+					item.requestedWidth = Math.max(item.internalGetMinimumWidth(), CoolItem.MINIMUM_WIDTH); 
+				}
+			}
+			target.requestedWidth = maxSize;
+			layoutItems();
+		}
+		setCursor(hoverCursor);
 	}
 }
 void onPaint(Event event) {
@@ -610,23 +627,25 @@ void onPaint(Event event) {
 			gc.drawLine(bounds.x + 1, bounds.y, bounds.x + 1, bounds.y + bounds.height - 1);
 		
 			/* Draw grabber. */
-			gc.setForeground(shadowColor);
-			gc.drawRectangle(
-				bounds.x + CoolItem.MARGIN_WIDTH, 
-				bounds.y + CoolItem.MARGIN_HEIGHT, 
-				2, 
-				grabberHeight);
-			gc.setForeground(highlightColor);
-			gc.drawLine(
-				bounds.x + CoolItem.MARGIN_WIDTH, 
-				bounds.y + CoolItem.MARGIN_HEIGHT + 1, 
-				bounds.x + CoolItem.MARGIN_WIDTH, 
-				bounds.y + CoolItem.MARGIN_HEIGHT + grabberHeight - 1);
-			gc.drawLine(
-				bounds.x + CoolItem.MARGIN_WIDTH, 
-				bounds.y + CoolItem.MARGIN_HEIGHT, 
-				bounds.x + CoolItem.MARGIN_WIDTH + 1, 
-				bounds.y + CoolItem.MARGIN_HEIGHT);
+			if (!isLocked) {
+				gc.setForeground(shadowColor);
+				gc.drawRectangle(
+					bounds.x + CoolItem.MARGIN_WIDTH, 
+					bounds.y + CoolItem.MARGIN_HEIGHT, 
+					2, 
+					grabberHeight);
+				gc.setForeground(highlightColor);
+				gc.drawLine(
+					bounds.x + CoolItem.MARGIN_WIDTH, 
+					bounds.y + CoolItem.MARGIN_HEIGHT + 1, 
+					bounds.x + CoolItem.MARGIN_WIDTH, 
+					bounds.y + CoolItem.MARGIN_HEIGHT + grabberHeight - 1);
+				gc.drawLine(
+					bounds.x + CoolItem.MARGIN_WIDTH, 
+					bounds.y + CoolItem.MARGIN_HEIGHT, 
+					bounds.x + CoolItem.MARGIN_WIDTH + 1, 
+					bounds.y + CoolItem.MARGIN_HEIGHT);
+			}	
 		}
 		if (row + 1 < items.length) {
 			/* Draw row separator. */
@@ -861,7 +880,7 @@ void setItemSizes (Point[] sizes) {
  */
 public boolean getLocked () {
 	checkWidget ();
-	return false; // currently cannot lock an emulated coolbar
+	return isLocked;
 }
 /**
  * Returns an array of ints which describe the zero-relative
@@ -899,7 +918,11 @@ public int[] getWrapIndices () {
  */
 public void setLocked (boolean locked) {
 	checkWidget ();
-	// currently cannot lock an emulated coolbar
+	if (isLocked != locked) {
+		redraw();
+	}
+	isLocked = locked;
+	
 }
 /**
  * Sets the row that each of the receiver's items will be
