@@ -17,7 +17,6 @@ import java.lang.reflect.Method;
 import org.eclipse.swt.*;
 import org.eclipse.swt.internal.Library;
 import org.eclipse.swt.graphics.Rectangle;
-import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
