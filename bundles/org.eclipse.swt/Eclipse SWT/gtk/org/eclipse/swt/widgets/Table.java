@@ -1683,11 +1683,14 @@ public void select (int index) {
  * </ul>
  */
 public void select (int start, int end) {
-	checkWidget();
+	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)) return;
+	if (itemCount == 0 || start >= itemCount) return;
+	start = Math.max (0, start);
+	end = Math.min (end, itemCount - 1);
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
 	for (int index=start; index<=end; index++) {
-		if (index < 0 || index >= itemCount) continue;
 		OS.gtk_tree_selection_select_iter (selection, items [index].handle);
 		if ((style & SWT.SINGLE) != 0) {
 			int /*long*/ path = OS.gtk_tree_model_get_path (modelHandle, items[index].handle);
@@ -1716,11 +1719,13 @@ public void select (int start, int end) {
  * </ul>
  */
 public void select (int [] indices) {
-	checkWidget();
+	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	int /*long*/ selection = OS.gtk_tree_view_get_selection (handle);
 	OS.g_signal_handlers_block_matched (selection, OS.G_SIGNAL_MATCH_DATA, 0, 0, 0, 0, CHANGED);
-	for (int i=0; i<indices.length; i++) {
+	for (int i=0; i<length; i++) {
 		int index = indices [i];
 		if (index < 0 || index >= itemCount) continue;
 		OS.gtk_tree_selection_select_iter (selection, items [index].handle);
@@ -1925,6 +1930,13 @@ public void setSelection (int index) {
  */
 public void setSelection (int start, int end) {
 	checkWidget ();
+	if (end < 0 || start > end || ((style & SWT.SINGLE) != 0 && start != end)
+			|| itemCount == 0 || start >= itemCount) {
+		deselectAll();
+		return;
+	}
+	start = Math.max (0, start);
+	end = Math.min (end, itemCount - 1);
 	if ((style & SWT.MULTI) != 0) deselectAll ();
 	select (start, end);
 	showSelection ();
@@ -1951,6 +1963,8 @@ public void setSelection (int [] indices) {
 	checkWidget ();
 	if (indices == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
+	int length = indices.length;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	select (indices);
 	showSelection ();
 }
@@ -1975,12 +1989,11 @@ public void setSelection (int [] indices) {
  * @see Table#select(int)
  */
 public void setSelection (TableItem [] items) {
-	checkWidget();
+	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	deselectAll ();
 	int length = items.length;
-	if (length == 0) return;
-	if ((style & SWT.SINGLE) != 0) length = 1;
+	if (length == 0 || ((style & SWT.SINGLE) != 0 && length > 1)) return;
 	for (int i=length-1; i>=0; --i) {
 		int index = indexOf (items [i]);
 		if (index != -1) select (index);
