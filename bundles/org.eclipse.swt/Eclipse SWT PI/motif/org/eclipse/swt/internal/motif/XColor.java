@@ -13,7 +13,9 @@ package org.eclipse.swt.internal.motif;
  
 public class XColor {
 	public int pixel;
-	public short red, green, blue;
+	public short red;
+	public short green;
+	public short blue;
 	public byte flags;
 	public byte pad;
 	public static final int sizeof = 12;
