@@ -39,13 +39,73 @@ public final class Printer extends Device {
 
 	static String APP_NAME = "SWT_Printer";
 	
-	public static String XDefaultPrintServer = ":1";
-//	static {
-//		/* Read the default print server name from
-//		 * the XPRINTER environment variable.
-//		 */
-//		XDefaultPrintServer = ":1";
-//	}
+static DeviceData checkNull (PrinterData data) {
+	if (data == null) data = new PrinterData();
+	if (data.application_name == null) {
+		data.application_name = APP_NAME;
+	}
+	if (data.application_class == null) {
+		data.application_class = APP_NAME;
+	}
+	if (data.name == null || data.driver == null) {
+		PrinterData defaultData = getDefaultPrinterData();
+		if (defaultData == null) SWT.error(SWT.ERROR_NO_HANDLES);
+		data.name = defaultData.name;
+		data.driver = defaultData.driver;
+	}
+	return data;
+}	
+
+/**
+ * Returns a <code>PrinterData</code> object representing
+ * the default printer or <code>null</code> if there is no 
+ * printer available on the System.
+ *
+ * @return the default printer data or null
+ * 
+ * @since 2.1
+ */
+public static PrinterData getDefaultPrinterData() {
+	PrinterData[] list = getEnvPrinterList();
+	PrinterData defaultPrinter = getEnvDefaultPrinter(list);
+	if (defaultPrinter != null) return defaultPrinter;
+	if (list.length != 0) return list[0];	
+	return null;
+}
+
+/**
+ * Returns the default printer <code>PrinterData</code> specified
+ * by XPRINTER.
+ *
+ * @return the default printer data or <code>null</code>
+ */
+static PrinterData getEnvDefaultPrinter(PrinterData[] serverList) {
+	String[] printerNames = new String[]{"XPRINTER", "PDPRINTER", "LPDEST", "PRINTER"};
+	for (int i = 0; i < printerNames.length; i++) {
+		int ptr = OS.getenv(Converter.wcsToMbcs(null, printerNames[i], true));
+		if (ptr != 0) {
+			int length = OS.strlen(ptr);
+			byte[] buffer = new byte[length];
+			OS.memmove(buffer, ptr, length);
+			String defaultPrinter = new String(Converter.mbcsToWcs(null, buffer));
+			int index = defaultPrinter.indexOf("@");
+			if (index != -1) {
+				String name = defaultPrinter.substring(0, index);
+				String driver = defaultPrinter.substring(index + 1);
+				return new PrinterData(driver, name);
+			} else {
+				for (int j = 0; j < serverList.length; j++) {
+					PrinterData printerData = serverList[j];
+					if (defaultPrinter.equals(printerData.name)) {
+						return new PrinterData(printerData.driver, defaultPrinter);
+					}
+				}
+			}					
+		}	
+	}
+	return null;
+}
+
 /**
  * Returns an array of <code>PrinterData</code> objects
  * representing all available printers.
@@ -53,30 +113,72 @@ public final class Printer extends Device {
  * @return the list of available printers
  */
 public static PrinterData[] getPrinterList() {
-	// TEMPORARY CODE
-	if (true) return new PrinterData[0];
-	
-	/* Connect to the default X print server */
-	byte [] buffer = Converter.wcsToMbcs(null, XDefaultPrintServer, true);
-	int xtContext = OS.XtCreateApplicationContext ();
-	int pdpy =  OS.XtOpenDisplay (xtContext, buffer, null, null, 0, 0, new int [] {0}, 0);
-	if (pdpy == 0) {
-		/* no print server */
-		return new PrinterData[0];
+	PrinterData[] list = getEnvPrinterList();
+	/* Ensure that default printer data occurs in the printer list */	 
+	PrinterData data = getEnvDefaultPrinter(list);	 
+	if (data == null) return list;
+	for (int i = 0; i < list.length; i++) {
+		PrinterData printerData = list[i];
+		if (printerData.name.equals(data.name) && printerData.driver.equals(data.driver)) {
+			return list;
+		}
 	}
+	PrinterData[] newList = new PrinterData[list.length + 1];
+	System.arraycopy(list, 0, newList, 1, list.length);
+	newList[0] = data;
+	return newList;
+}	
+
+/**
+ * Returns a array of <code> PrinterData</code> objects
+ * representing all available printers for all Xprint
+ * servers specified in XPSERVERLIST.
+ * 
+ * Note: The default printer define by XPRINTER may not be
+ * included in the list.
+ * 
+ * @return the list of printer for all servers
+ */
+static PrinterData[] getEnvPrinterList() {
+	String[] serverList = getXPServerList();
+	PrinterData[] printerList = new PrinterData[0];
+	for (int i = 0; i < serverList.length; i++) {
+		PrinterData[] printers = getEnvPrinterList(serverList[i]);
+		if (printers.length != 0) {
+			PrinterData[] newPrinterList = new PrinterData [printerList.length + printers.length];
+			System.arraycopy(printerList, 0, newPrinterList, 0, printerList.length);
+			System.arraycopy(printers, 0, newPrinterList, printerList.length, printers.length);
+			printerList = newPrinterList;
+		}	
+	} 
+	return printerList;
+}
+
+/**
+ * Returns a array of <code> PrinterData</code> objects
+ * representing all available printers for a specific 
+ * XPrint server
+ * 
+ * @param server the XPrint server name
+ * @return the list of printers for a given XPrint server
+ */
+static PrinterData[] getEnvPrinterList(String server) {
+	byte[] buffer = Converter.wcsToMbcs(null, server, true);
+	int pdpy = OS.XOpenDisplay (buffer);
+	if (pdpy == 0) return new PrinterData[0];
 
 	/* Get the list of printers */
-	int [] listCount = new int[1];
-	int plist = OS.XpGetPrinterList(pdpy, null, listCount);
-	int printerCount = listCount[0];
+	int[] count = new int[1];
+	int plist = OS.XpGetPrinterList(pdpy, null, count);
+	int printerCount = count[0];
 	if (plist == 0 || printerCount == 0) {
-		/* no printers */
-		//OS.XCloseDisplay(pdpy);
-		return new PrinterData[0];
+		OS.XCloseDisplay(pdpy);
+		if (plist != 0) OS.XpFreePrinterList(plist);
+		return new PrinterData[0];		
 	}
     
 	/* Copy the printer names into PrinterData objects */
-	int [] stringPointers = new int [printerCount * 2];
+	int[] stringPointers = new int[printerCount * 2];
 	OS.memmove(stringPointers, plist, printerCount * 2 * 4);
 	PrinterData printerList[] = new PrinterData[printerCount];
 	for (int i = 0; i < printerCount; i++) {
@@ -86,34 +188,44 @@ public static PrinterData[] getPrinterList() {
 			int length = OS.strlen(address);
 			buffer = new byte [length];
 			OS.memmove(buffer, address, length);
-			/* Use the character encoding for the default locale */
 			name = new String(Converter.mbcsToWcs(null, buffer));
 		}
-		printerList[i] = new PrinterData(XDefaultPrintServer, name);
+		printerList[i] = new PrinterData(server, name);
 	}
-	OS.XpFreePrinterList(plist);
-	OS.XtDestroyApplicationContext (xtContext);
+	OS.XCloseDisplay(pdpy);	
+	OS.XpFreePrinterList(plist);	
 	return printerList;
 }
 
-/*
- * Returns a <code>PrinterData</code> object representing
- * the default printer.
- *
- * @exception SWTError <ul>
- *    <li>ERROR_NO_HANDLES - if an error occurred constructing the default printer data</li>
- * </ul>
- *
- * @return the default printer data
+/**
+ * Returns the value of XPSERVERLIST.
+ * 
+ *  @return the value of the XPSERVERLIST variable from the environment
  */
-static PrinterData getDefaultPrinterData() {
-	/* Use the first printer in the list as the default */
-	PrinterData[] list = getPrinterList();
-	if (list.length == 0) {
-		/* no printers */
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
-	return list[0];
+static String[] getXPServerList() {
+	byte[] name = Converter.wcsToMbcs(null, "XPSERVERLIST", true);
+	int ptr = OS.getenv(name);
+	String[] serversList = new String[0];
+	if (ptr != 0) {
+		int length = OS.strlen(ptr);
+		byte[] buffer1 = new byte[length];
+		OS.memmove(buffer1, ptr, length);
+		char[] buffer2 = Converter.mbcsToWcs(null, buffer1);
+		int i = 0;
+		while (i < buffer2.length) {
+			if (buffer2[i] != ' ') {
+				int start = i;
+				while (++i < buffer2.length && buffer2[i] != ' ');
+				String server = new String(buffer2, start, i - start);
+				String[] newServerList = new String[serversList.length + 1];
+				System.arraycopy(serversList, 0, newServerList, 0, serversList.length);
+				newServerList[serversList.length] = server;
+				serversList = newServerList;
+			}
+			i++;
+		}		
+	}	
+	return serversList;
 }
 
 /**
@@ -129,7 +241,7 @@ static PrinterData getDefaultPrinterData() {
  * @see #dispose
  */
 public Printer() {
-	this(getDefaultPrinterData());
+	this(null);
 }
 
 /**
@@ -149,32 +261,23 @@ public Printer() {
  * @see #dispose
  */
 public Printer(PrinterData data) {
-	super(data);
+	super(checkNull(data));
 }
 
 protected void create(DeviceData deviceData) {
 	data = (PrinterData)deviceData;
-
-	/* Open the display for the X print server */	
-	String display_name = null;
-	String application_name = APP_NAME;
-	String application_class = APP_NAME;
-	if (data != null) {
-//		if (data.display_name != null) display_name = data.display_name;
-		if (data.driver != null) display_name = data.driver;
-		if (data.application_name != null) application_name = data.application_name;
-		if (data.application_class != null) application_class = data.application_class;
-	}
 	/* Use the character encoding for the default locale */
 	byte [] displayName = null, appName = null, appClass = null;
-	if (display_name != null) displayName = Converter.wcsToMbcs (null, display_name, true);
-	if (application_name != null) appName = Converter.wcsToMbcs (null, application_name, true);
-	if (application_class != null) appClass = Converter.wcsToMbcs (null, application_class, true);
-	
-	xtContext = OS.XtCreateApplicationContext ();
-	xDisplay =  OS.XtOpenDisplay (xtContext, displayName, appName, appClass, 0, 0, new int [] {0}, 0);
+	displayName = Converter.wcsToMbcs(null, data.driver, true);
+	appName = Converter.wcsToMbcs(null, data.application_name, true);
+	appClass = Converter.wcsToMbcs(null, data.application_class, true);
+
+	/* Open the display for the X print server */		
+	xtContext = OS.XtCreateApplicationContext();
+	if (xtContext == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	xDisplay =  OS.XtOpenDisplay(xtContext, displayName, appName, appClass, 0, 0, new int[]{0}, 0);
 	if (xDisplay == 0) {
-		/* no print server */
+		OS.XtDestroyApplicationContext(xtContext);
 		SWT.error(SWT.ERROR_NO_HANDLES);
 	}
 }
@@ -182,30 +285,42 @@ protected void create(DeviceData deviceData) {
 protected void init() {
 	super.init();
 	
-	/* Create the printContext for the printer */
 	/* Use the character encoding for the default locale */
-	byte[] name = Converter.wcsToMbcs(null, data.name, true);
-	printContext = OS.XpCreateContext(xDisplay, name);
-	if (printContext == OS.None) {
-		/* can't create print context */
-		//OS.XCloseDisplay(xDisplay);
-		SWT.error(SWT.ERROR_NO_HANDLES);
-	}
+	byte[] buffer = Converter.wcsToMbcs(null, data.name, true);
+
+	/*
+	 * Bug in Xp. If the printer name is not valid, Xp will
+	 * cause a segmentation fault. The fix is to check if the
+	 * printer name is valid before calling XpCreateContext().	 */
+	int[] count = new int[1];
+	int plist = OS.XpGetPrinterList(xDisplay, buffer, count);
+	if (plist != 0) OS.XpFreePrinterList(plist);
+	if (count[0] == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+
+	/* Create the printContext for the printer */
+	printContext = OS.XpCreateContext(xDisplay, buffer);
 
 	/* Set the printContext into the display */
-	OS.XpSetContext(xDisplay, printContext); 
+	OS.XpSetContext(xDisplay, printContext);
 
 	/* Get the printer's screen */
 	xScreen = OS.XpGetScreenOfContext(xDisplay, printContext);
-	
-	/* Initialize Motif */
-	int widgetClass = OS.TopLevelShellWidgetClass();
-	int shellHandle = OS.XtAppCreateShell(null, null, widgetClass, xDisplay, null, 0);
-	OS.XtDestroyWidget(shellHandle);
-	
+	if (xScreen == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+
+	/* Initialize the xDrawable */
+	XRectangle rect = new XRectangle();
+	short[] width = new short[1];
+	short[] height = new short[1];
+	OS.XpGetPageDimensions(xDisplay, printContext, width, height, rect);
+	xDrawable = OS.XCreateWindow(xDisplay, OS.XRootWindowOfScreen(xScreen), 
+		0, 0, rect.width, rect.height, 0,
+		OS.CopyFromParent, OS.CopyFromParent, OS.CopyFromParent, 0, 0);
+	if (xDrawable == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+
 	/* Initialize the default font */
 	/* Use the character encoding for the default locale */
-	byte [] buffer = Converter.wcsToMbcs(null, "-*-courier-medium-r-*-*-*-120-*-*-*-*-*-*", true);
+	Point dpi = getDPI();
+	buffer = Converter.wcsToMbcs(null, "-*-courier-medium-r-*-*-*-120-"+dpi.x+"-"+dpi.y+"-*-*-iso8859-1", true);
 	int fontListEntry = OS.XmFontListEntryLoad(xDisplay, buffer, OS.XmFONT_IS_FONTSET, OS.XmFONTLIST_DEFAULT_TAG);
 	if (fontListEntry == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	int defaultFontList = OS.XmFontListAppendEntry(0, fontListEntry);
@@ -233,16 +348,22 @@ protected void destroy() {
  * @private
  */
 public int internal_new_GC(GCData data) {
-	if (xDrawable == 0) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	int xGC = OS.XCreateGC(xDisplay, xDrawable, 0, null);
 	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		data.device = this;
 		data.display = xDisplay;
-		data.drawable = xDrawable; // not valid until after startJob
+		data.drawable = xDrawable;
 		data.fontList = defaultFont.handle;
 		data.codePage = defaultFont.codePage;
 		data.colormap = OS.XDefaultColormapOfScreen(xScreen);
+		int defaultGC = OS.XDefaultGCOfScreen(xScreen);
+		if (defaultGC != 0) {
+			XGCValues values = new XGCValues();
+			OS.XGetGCValues(xDisplay, defaultGC, OS.GCBackground | OS.GCForeground, values);
+			data.foreground = values.foreground;
+			data.background = values.background;
+		}	
 	}
 	return xGC;
 }
@@ -292,15 +413,6 @@ public boolean startJob(String jobName) {
 	byte [] buffer = Converter.wcsToMbcs(null, "*job-name: " + jobName, true);
 	OS.XpSetAttributes(xDisplay, printContext, OS.XPJobAttr, buffer, OS.XPAttrMerge);
 	OS.XpStartJob(xDisplay, OS.XPSpool);
-
-	/* Create the xDrawable */
-	XRectangle rect = new XRectangle();
-	short [] width = new short [1];
-	short [] height = new short [1];
-	OS.XpGetPageDimensions(xDisplay, printContext, width, height, rect);
-	xDrawable = OS.XCreateWindow(xDisplay, OS.XRootWindowOfScreen(xScreen), 
-		0, 0, rect.width, rect.height, 0,
-		OS.CopyFromParent, OS.CopyFromParent, OS.CopyFromParent, 0, 0);
 	return true;
 }
 
@@ -457,7 +569,7 @@ public Rectangle getClientArea() {
 	checkDevice();
 	XRectangle rect = new XRectangle();
 	OS.XpGetPageDimensions(xDisplay, printContext, new short [1], new short [1], rect);
-	return new Rectangle(0, 0, rect.width, rect.height);
+	return new Rectangle(rect.x, rect.y, rect.width, rect.height);
 }
 
 /**
