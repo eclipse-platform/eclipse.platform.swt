@@ -11,6 +11,38 @@
 <h1>
 Eclipse Platform Build Notes<br>
 SWT</h1>
+SWT Build 1.0 133 - August 28, 2001
+
+<h2>
+<a NAME="Problem reports fixed"></a>Problem reports fixed</h2>
+
+<blockquote>
+1GJ3LXQ: SWT:ALL - Repainting problem when adding control buttons to the toolbar
+<br>1GIRFSB: ITPUI:WINNT - Navigator toolbars showing wrong images
+<br>1GJ50PX: SWT:ALL - StyledText - bidi - mixed text and numbers display problem
+<br>1GJ50IY: SWT:ALL - StyledText - in bidi caret floats when horizontal scroll
+<br>1GIZ5DB: SWT:ALL - StyledText - Bidi Support
+<br>H7G1ZWY: SWT:WIN98 - JTextField and JTextArea do not function correctly when hosted in an SWT
+</blockquote>
+
+<h2>
+<a NAME="StyledText Bidi Support"></a>StyledText Bidi Support</h2>
+
+<p>Support should be transparent to Eclipse application developers.  Bidirectional text will automatically be supported 
+in all editors that use the StyledText widget on Windows bidi platforms.  There are still some open issues.  
+Please see "PR 1GIZ5G3: SWT:ALL - StyledText - Bidi Support Open Issues"	for more information and before you open bidi PRs against the StyledText widget.
+
+<p><b>NOTE:</b> There is a problem when you specify Courier as the font for the Java Editor, save the workspace, and then 
+use the non-bidi workspace on a bidi platform (or vice versa).  The font does not get mapped correctly when you move 
+to the different bidi-language platform (i.e., Eclipse thinks the font is something different than what SWT thinks the font 
+is) and this leads to characters being incorrectly rendered in the JavaEditor.  To fix the problem, change the Jave 
+Editor font to something other than Courier, then change the font back or do not use the same workspace on bidi and 
+non-bidi platforms.  The problem has only been seen with respect to the Courier font, but it may also occur for other 
+fonts.  See "PR 1GHP2LB: SWT:WIN - Font is wrong when starting Eclipse in different language (bidi vs. non-bidi) versions" for more information.
+	
+<h1>
+Eclipse Platform Build Notes<br>
+SWT</h1>
 SWT Build 1.0 132 - August 21, 2001
 
 <h2>
