@@ -46,7 +46,7 @@ public final class Cursor {
 	public int handle;
 
 	/**
-	 * The device where this image was created.
+	 * The device where this cursor was created.
 	 */
 	Device device;
 	
