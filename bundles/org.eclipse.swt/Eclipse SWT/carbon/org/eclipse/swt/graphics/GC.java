@@ -1523,7 +1523,9 @@ public void getClipping(Region region) {
 			width = OS.CGImageGetWidth(image);
 			height = OS.CGImageGetHeight(image);
 		}
-		OS.SetRectRgn(region.handle, (short) 0, (short) 0, (short) width, (short) height);
+		int clipping = region.handle;
+		OS.SetRectRgn(clipping, (short) 0, (short) 0, (short) width, (short) height);
+		if (data.clipRgn != 0) OS.SectRgn(data.clipRgn, clipping, clipping);
 		return;
 	}
 	Rect bounds = new Rect();
