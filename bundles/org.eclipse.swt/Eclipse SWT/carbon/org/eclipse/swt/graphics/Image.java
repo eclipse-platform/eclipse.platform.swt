@@ -77,7 +77,8 @@ public final class Image implements Drawable {
 			height= h;
 			depth= d;
 			bits_per_pixel= d;
-			bytes_per_line= (((width*depth-1)/(8*DEFAULT_SCANLINE_PAD))+1)*DEFAULT_SCANLINE_PAD;
+			bytes_per_line= rowBytes(width, depth);
+			//bytes_per_line= (((width*depth-1)/(8*DEFAULT_SCANLINE_PAD))+1)*DEFAULT_SCANLINE_PAD;
 			switch (d) {
 			case 16:
 				red_mask= 0x7C00;
@@ -277,7 +278,10 @@ public Image(Device device, Image srcImage, int flag) {
 			return;
 		case SWT.IMAGE_DISABLE:
 			/* Get src image data */
-			XImage srcXImage = new XImage(width, height, OS.GetPixDepth(srcImage.pixmap));
+			int dd= OS.GetPixDepth(srcImage.pixmap);
+			if (dd < 0)
+				dd= 1;
+			XImage srcXImage = new XImage(width, height, dd);
             /* AW
 			int srcXImagePtr = OS.XGetImage(xDisplay, srcImage.pixmap, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
 			OS.memmove(srcXImage, srcXImagePtr, XImage.sizeof);
@@ -290,7 +294,7 @@ public Image(Device device, Image srcImage, int flag) {
             /* AW
 			int destPixmap = OS.XCreatePixmap(xDisplay, drawable, width, height, srcXImage.depth);
 			*/
-			int destPixmap = OS.NewPixMap((short)width, (short)height, (short)srcXImage.depth, (short)4, null, null, null);			
+			int destPixmap = createPixMap((short)width, (short)height, (short)srcXImage.depth, null, null, null, null);			
 			XImage destXImage = new XImage(width, height, srcXImage.depth);
 			/* AW
 			int destXImagePtr = OS.XGetImage(xDisplay, drawable, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
@@ -722,7 +726,7 @@ void createMask() {
 	/* AW
 	int maskPixmap = OS.XCreatePixmap(xDisplay, drawable, maskImage.width, maskImage.height, 1);
 	*/
-	int maskPixmap = OS.NewPixMap((short)maskImage.width, (short)maskImage.height, (short)1, (short)4, null, null, null);
+	int maskPixmap = createBitMap(maskImage.width, maskImage.height, null);
 	/* AW
 	XColor[] xcolors = device.xcolors;
 	*/
@@ -738,15 +742,8 @@ void createMask() {
 public void dispose () {
 	if (pixmap == 0) return;
 	if (device.isDisposed()) return;
-    /* AW
-	int xDisplay = device.xDisplay;
-	if (pixmap != 0) OS.XFreePixmap (xDisplay, pixmap);
-	*/
 	if (pixmap != 0) OS.DisposePixMap(pixmap);
-	/* AW
-	if (mask != 0) OS.XFreePixmap (xDisplay, mask);
-	*/
-	if (mask != 0) OS.DisposePixMap(mask);
+	if (mask != 0) DisposeBitMap(mask);
 	device = null;
 	memGC = null;
 	pixmap = mask = 0;
@@ -756,11 +753,8 @@ public void dispose () {
  */
 void destroyMask() {
 	if (mask == 0) return;
-    /* AW
-	OS.XFreePixmap (device.xDisplay, mask);
-    */
-	OS.DisposePixMap(mask);
-	mask = 0;
+	DisposeBitMap(mask);
+	mask= 0;
 }
 /**
  * Compares the argument to the receiver, and returns true
@@ -857,7 +851,10 @@ public ImageData getImageData() {
 	int xSrcImagePtr = OS.XGetImage(xDisplay, pixmap, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
 	if (xSrcImagePtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
     */
-	XImage xSrcImage = new XImage((short)width, (short)height, OS.GetPixDepth(pixmap));
+    int dd= OS.GetPixDepth(pixmap);
+    if (dd < 0)
+    	dd= 1;
+	XImage xSrcImage = new XImage((short)width, (short)height, dd);
     /* AW
 	OS.memmove(xSrcImage, xSrcImagePtr, XImage.sizeof);
     */
@@ -870,7 +867,8 @@ public ImageData getImageData() {
     /* AW
 	OS.memmove(srcData, xSrcImage.data, length);
     */
-	OS.copyPixmapData(srcData, pixmap, length);
+	if (OS.copyPixmapData(srcData, pixmap, length) != OS.kNoErr)
+		System.out.println("Image.getImageData: copyPixmapData error");
 	
 	switch (xSrcImage.depth) {
 		case 1:
@@ -1000,12 +998,16 @@ public ImageData getImageData() {
 		int xMaskPtr = OS.XGetImage(xDisplay, mask, 0, 0, width, height, OS.AllPlanes, OS.ZPixmap);
 		if (xMaskPtr == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 		*/
-		XImage xMask = new XImage((short)width, (short)height, OS.GetPixDepth(mask));
+		int ddd= OS.GetPixDepth(mask);
+		//if (ddd < 0)
+			ddd= 1;
+		XImage xMask = new XImage((short)width, (short)height, ddd);
 		/* AW
 		OS.memmove(xMask, xMaskPtr, XImage.sizeof);
 		*/
 		data.maskData = new byte[xMask.bytes_per_line * xMask.height];
-		OS.copyPixmapData(data.maskData, mask, data.maskData.length);
+		if (OS.copyPixmapData(data.maskData, mask, data.maskData.length) != OS.kNoErr)
+			System.out.println("Image.getImageData: copyPixmapData error");
 		/* AW
 		OS.memmove(data.maskData, xMask.data, data.maskData.length);
 		OS.XDestroyImage(xMaskPtr);
@@ -1129,8 +1131,7 @@ void init(Device device, int width, int height) {
 	int drawable = OS.XDefaultRootWindow(xDisplay);
 	int pixmap = OS.XCreatePixmap(xDisplay, drawable, width, height, depth);
 	*/
-	int pixmap = OS.NewPixMap((short)width, (short)height, (short)depth, (short)4, null, null, null);
-	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int pixmap = createPixMap(width, height, depth, null, null, null, null);
 
 	/* Fill the bitmap with white */
     /* AW
@@ -1170,21 +1171,14 @@ void init(Device device, ImageData image) {
 	int visual = OS.XDefaultVisual(xDisplay, OS.XDefaultScreen(xDisplay));
 	int pixmap = OS.XCreatePixmap(xDisplay, drawable, image.width, image.height, screenDepth);
 	*/
-	int pixmap = OS.NewPixMap((short)image.width, (short)image.height, (short)screenDepth, (short)4, null, null, null);
-	if (pixmap == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int pixmap = createPixMap(image.width, image.height, screenDepth, null, null, null, null);
 	/* AW
 	int gc = OS.XCreateGC(xDisplay, pixmap, 0, null);
 	*/
 	int[] transPixel = null;
 	if (image.transparentPixel != -1) transPixel = new int[]{image.transparentPixel};
 	int error = putImage(image, 0, 0, image.width, image.height, 0, 0, image.width, image.height, screenDepth, null /* AW device.xcolors */, transPixel, false, pixmap);
-	/* AW
-	OS.XFreeGC(xDisplay, gc);
-	*/
 	if (error != 0) {
-		/* AW
-		OS.XFreePixmap (xDisplay, pixmap);
-		*/
 		OS.DisposePixMap(pixmap);
 		SWT.error(error);
 	}
@@ -1194,7 +1188,7 @@ void init(Device device, ImageData image) {
 		/* AW
 		int mask = OS.XCreatePixmap(xDisplay, drawable, image.width, image.height, 1);
 		*/
-		int mask = OS.NewPixMap((short)image.width, (short)image.height, (short)1, (short)4, null, null, null);
+		int mask = createBitMap(image.width, image.height, null);
 		/* AW
 		gc = OS.XCreateGC(xDisplay, mask, 0, null);
 		*/
@@ -1203,12 +1197,8 @@ void init(Device device, ImageData image) {
 		OS.XFreeGC(xDisplay, gc);
 		*/
 		if (error != 0) {
-			/* AW
-			OS.XFreePixmap (xDisplay, pixmap);
-			OS.XFreePixmap (xDisplay, mask);
-			*/
 			OS.DisposePixMap(pixmap);
-			OS.DisposePixMap(mask);
+			DisposeBitMap(mask);
 			SWT.error(error);
 		}
 		this.mask = mask;
@@ -1457,7 +1447,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 		OS.XSetBackground(display, gc, values.background);
 		OS.XDestroyImage(xImagePtr);
 		*/
-		OS.setPixMapData(drawable, buf);
+		OS.setBitMapData(drawable, buf);
 		return 0;
 	}
 	
@@ -1514,7 +1504,7 @@ static int putImage(ImageData image, int srcX, int srcY, int srcWidth, int srcHe
 	OS.XPutImage(display, drawable, gc, xImagePtr, 0, 0, destX, destY, destWidth, destHeight);
 	OS.XDestroyImage(xImagePtr);
 	*/
-	OS.setPixMapData(drawable, buf);
+	OS.setBitMapData(drawable, buf);
 	return 0;
 }
 /**
@@ -1589,4 +1579,204 @@ public String toString () {
 	if (isDisposed()) return "Image {*DISPOSED*}";
 	return "Image {" + pixmap + "}";
 }
+
+////////////////////////////////////////////////////////
+// Mac stuff
+////////////////////////////////////////////////////////
+
+	private static int rowBytes(int width, int depth) {
+		return (((width*depth-1)/(8*DEFAULT_SCANLINE_PAD))+1)*DEFAULT_SCANLINE_PAD;
+	}
+
+	private static int createBitMap(int width, int height, byte[] data) {
+		int rowBytes= rowBytes(width, 1);
+		if (rowBytes > 0x3fff) {
+			System.out.println("Image.createBitMap: rowBytes >= 0x4000");
+			return 0;
+		}
+		int bitmap= OS.NewBitMap((short)width, (short)height, (short)rowBytes);
+		if (bitmap == 0)
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		if (data != null) {
+			OS.setBitMapData(bitmap, data);
+		} else {
+			OS.initBitMapData(bitmap, rowBytes * height, (byte)0);
+		}
+		return bitmap;
+	}
+	
+	private static int createPixMap(int width, int height, int depth,
+					short[] reds, short[] greens, short[] blues, byte[] data) {
+		int rowBytes= rowBytes(width, depth);
+		if (rowBytes > 0x3fff) {
+			System.out.println("Image.createPixMap: rowBytes >= 0x4000");
+			return 0;
+		}
+		int pixmap= NewPixMap(width, height, depth, rowBytes);
+		if (pixmap == 0)
+			SWT.error(SWT.ERROR_NO_HANDLES);
+		if (data != null) {
+			OS.setBitMapData(pixmap, data);
+		} else {
+			OS.initBitMapData(pixmap, rowBytes * height, (byte)0);
+		}
+		
+		if (depth > 8) {
+		} else {
+			OS.setColorTable(pixmap, 1 << depth, reds, greens, blues);
+		}
+
+		return pixmap;
+	}
+	
+	private static int NewPixMap(int w, int h, int depth, int rowBytes) {
+		
+		int pixelType= 0, pixelSize= 0, cmpSize= 0, cmpCount= 0, pixelFormat= 0;
+		
+		pixelFormat= depth;
+		
+		switch (depth) {
+		case 1:
+		case 2:
+		case 4:
+		case 8:
+			pixelType= OS.Indexed;
+			pixelSize= depth;
+			cmpCount= 1;
+			cmpSize= depth;
+			break;
+		
+		case 16:
+		case 24:
+		case 32:
+			pixelType= OS.RGBDirect;
+			pixelSize= depth;
+			if (depth == 16)
+				cmpSize= 5;
+			else
+				cmpSize= 8;
+			cmpCount= 3;
+			break;
+			
+		default:
+			break;
+		}
+		
+		return OS.NewPixMap((short)w, (short)h, (short)rowBytes,
+				(short)pixelType, (short)pixelSize,
+				(short)cmpSize, (short)cmpCount, (short)pixelFormat);
+	}
+	
+	public static void DisposeBitMap(int bitmapHandle) {
+
+		if (bitmapHandle == 0) {
+			System.out.println("Image.DisposeBitMap: bitmapHandle == 0");
+			return;
+		}
+
+		if ((OS.getRowBytes(bitmapHandle) & 0x8000) != 0) {	// Pixmap
+			System.out.println("Image.DisposeBitMap: warning: bitmap is pixmap");
+		}
+		
+		int baseAddr= OS.getBaseAddr(bitmapHandle);
+		if (baseAddr != 0)
+			OS.DisposePtr(baseAddr);
+		
+		OS.DisposeHandle(bitmapHandle);
+	}
+	
+	//private static int fgIconCount;
+	
+	public static int carbon_createCIcon(Image image) {
+		if (image == null)
+			return 0;
+		
+		Rectangle r= image.getBounds();
+		short w= (short)r.width;
+		short h= (short)r.height;
+
+		int pm= image.pixmap;
+		
+		if (pm != 0 && OS.GetPixDepth(pm) > 8) {
+			
+			//System.out.println("reduce depth");
+		
+			ImageData id= image.getImageData();
+			
+			int[] values= new int[256];
+			int fill= 0;
+		
+			short depth= 8;
+			int bytesPerRow= rowBytes(w, depth);
+			byte[] data= new byte[bytesPerRow*h];
+		
+			short[] reds= new short[256];
+			short[] greens= new short[256];
+			short[] blues= new short[256];
+	
+			for (int y= 0; y < h; y++) {
+				for (int x= 0; x < w; x++) {
+					int index= -1;
+					int value= id.getPixel(x, y);
+					int i;
+					for (i= 0; i < fill; i++) {
+						if (value == values[i]) {
+							index= i;
+							break;
+						}
+					}
+					if (i >= fill) {
+						index= fill++;
+						values[index]= value;
+						reds[index]= (short)((value >> 16) & 0xFF);
+						greens[index]= (short)((value >> 8) & 0xFF); 
+						blues[index]= (short)(value & 0xFF); 
+					}
+					if (index >= 0)
+						data[y*bytesPerRow+x]= (byte)index;
+				}
+			}
+			pm= NewPixMap(w, h, depth, bytesPerRow);
+			OS.setColorTable(pm, 256, reds, greens, blues);
+			OS.setBitMapData(pm, data);
+		} else {
+			System.out.println("---> CIcon: can use pixmap");
+		}
+		
+		if (pm != 0) {
+			
+			int mask= image.mask;
+			if (mask == 0) {
+				//System.out.println("---> creating mask");
+				int rowBytes= rowBytes(w, 1);
+				mask= OS.NewBitMap(w, h, (short)rowBytes);
+				OS.initBitMapData(mask, rowBytes*h, (byte)0xff);
+			}
+			
+			int icon= OS.NewCIcon(pm, mask);
+			
+			if (mask != image.mask)
+				DisposeBitMap(mask);
+			
+			//System.out.println("CIcons: " + fgIconCount++);
+			
+			return icon;
+		}
+		return 0; 
+	}
+	
+	public static void DisposeCIcon(int iconHandle) {
+		
+		int iconData= OS.getCIconIconData(iconHandle);
+		if (iconData != 0)
+			OS.DisposeHandle(iconData);
+			
+		int colorTable= OS.getCIconColorTable(iconHandle);
+		if (colorTable != 0)
+			OS.DisposeHandle(colorTable);
+				
+		OS.DisposeHandle(iconHandle);
+		
+		//fgIconCount--;
+	}
 }

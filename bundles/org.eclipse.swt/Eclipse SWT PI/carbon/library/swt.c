@@ -1310,111 +1310,149 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_KillPoly(JNIEnv *
 	KillPoly((PolyPtr *)polyHandle);
 }
 
+//---- BitMap
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewBitMap(JNIEnv *env, jclass zz,
+			jshort width, jshort height, jshort rowBytes) {
+	
+	BitMap *bm, **bmh= (BitMap**) NewHandleClear(sizeof(BitMap));
+	if (bmh == NULL)
+		return 0;
+		
+	bm= *bmh;
+	bm->baseAddr= NULL;
+	bm->rowBytes= rowBytes;
+	bm->bounds.top= 0;
+	bm->bounds.left= 0;
+	bm->bounds.bottom= height;
+	bm->bounds.right= width;
+	
+	return (jint) bmh;
+}
+
 //---- PixMap
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewPixMap(JNIEnv *env, jclass zz,
-			jshort width, jshort height, jshort depth, jshort pad, jshortArray reds, jshortArray greens, jshortArray blues) {
+			jshort width, jshort height, jshort rowbytes,
+			jshort pixelType, jshort pixelSize, jshort cmpSize, jshort cmpCount, jshort pixelFormat) {
 			
-	int i, n, rowbytes, dataSize;
-	PixMapHandle pmh;
-	PixMap *pm;
-	ColorTable *ct;
-	void *data;
-
-	rowbytes= (((width*depth-1)/(8*pad))+1)*pad;
+	PixMapHandle pmh= NewPixMap();
+	PixMap *pm= *pmh;
 	
-	//fprintf(stderr, "OS.NewPixMap: w:%d h:%d d:%d row:%d pad:%d\n", width, height, depth, rowbytes, pad);
-	
-	if (rowbytes >= 0x4000)
-		fprintf(stderr, "**** OS.NewPixMap: rowBytes >= 0x4000\n");
-		
-	pmh= NewPixMap();
-	HLock((Handle)pmh);
-	
-	pm= *pmh;
-
-	dataSize= rowbytes * height;
-	data= NewPtr(dataSize);
-	
-	if (depth >= 16) {
-		memset(data, 0xff, dataSize);	// white
-	} else
-		memset(data, 0x00, dataSize);	
-
-	pm->baseAddr= data;
-	pm->rowBytes= rowbytes;
-	//if (depth > 1)
-		pm->rowBytes|= 0x8000;	// mark as PixMap
+	pm->baseAddr= NULL;
+	pm->rowBytes= rowbytes | 0x8000;	// mark as PixMap
 	pm->bounds.top= 0;
 	pm->bounds.left= 0;
 	pm->bounds.bottom= height;
 	pm->bounds.right= width;
-	
-	if ((pm->rowBytes & 0x8000) == 0) {	// is Bitmap??
-		HUnlock((Handle)pmh);
-		return (jint) pmh;
-	}
-	
 	pm->pmVersion= baseAddr32;	// 32 Bit clean
 	pm->packType= 0;
 	pm->packSize= 0;
 	pm->hRes= 0x00480000;
 	pm->vRes= 0x00480000;
-	
-	if (depth > 8) {
-		pm->pixelType= RGBDirect;
-		pm->pixelSize= depth;
-		if (depth == 24 || depth == 32) {
-			pm->cmpSize= 8;
-		} else {
-			pm->cmpSize= 5;
-		}
-		pm->cmpCount= 3;
-		pm->pixelFormat= depth;
-	
-		pm->pmTable= NULL;
-	} else {
-		pm->pixelType= 0;
-		pm->pixelSize= depth;
-		pm->cmpCount= 1;
-		pm->cmpSize= depth;
-		pm->pixelFormat= depth;
-		
-		n= 1 << depth;
-		
-		pm->pmTable= (ColorTable**) NewHandleClear(sizeof(ColorTable)+sizeof(ColorSpec)*n);
-		ct= *pm->pmTable;
-		ct->ctSize= n;
-		ct->ctFlags= 0;
-		ct->ctSeed= GetCTSeed();
-		
-		if (reds != 0 && greens != 0 && blues != 0) {
-		
-		    jsize length= (*env)->GetArrayLength(env, reds);
-
-			jshort *r= (*env)->GetShortArrayElements(env, reds, 0);
-			jshort *g= (*env)->GetShortArrayElements(env, greens, 0);
-			jshort *b= (*env)->GetShortArrayElements(env, blues, 0);
-
-			for (i= 0; i < length; i++) {
-				ColorSpec *cs= &ct->ctTable[i];
-				cs->value= i;
-				cs->rgb.red= r[i]*257;
-				cs->rgb.green= g[i]*257;
-				cs->rgb.blue= b[i]*257;
-			}
-
-			(*env)->ReleaseShortArrayElements(env, reds, r, 0);
-			(*env)->ReleaseShortArrayElements(env, greens, g, 0);
-			(*env)->ReleaseShortArrayElements(env, blues, b, 0);
-		}
-	}
-	
+	pm->pixelType= pixelType;
+	pm->pixelSize= pixelSize;
+	pm->cmpCount= cmpCount;
+	pm->cmpSize= cmpSize;
+	pm->pixelFormat= pixelFormat;
+	pm->pmTable= NULL;
 	pm->pmExt= NULL;
 
-	HUnlock((Handle)pmh);
-
 	return (jint) pmh;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getRowBytes(JNIEnv *env, jclass zz, jint pHandle) {
+	BitMap **bmh= (BitMap**) pHandle;
+	BitMap *bm= *bmh;
+	return (jint) bm->rowBytes;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getBaseAddr(JNIEnv *env, jclass zz, jint pHandle) {
+	BitMap **bmh= (BitMap**) pHandle;
+	BitMap *bm= *bmh;
+	return (jint) bm->baseAddr;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setColorTable(JNIEnv *env, jclass zz,
+			jint pixMapHandle, jint n, jshortArray reds, jshortArray greens, jshortArray blues) {
+				
+	PixMapHandle ph= (PixMapHandle) pixMapHandle;
+	PixMap *pm= *ph;
+	ColorTable *ct;
+	
+	if (pm->pmTable != NULL) {
+		DisposeHandle((Handle)pm->pmTable);
+	}
+	
+	pm->pmTable= (ColorTable**) NewHandleClear(sizeof(ColorTable)+sizeof(ColorSpec)*n);
+	ct= *pm->pmTable;
+	ct->ctSize= n;
+	ct->ctFlags= 0;
+	ct->ctSeed= GetCTSeed();
+	
+	if (reds != 0 && greens != 0 && blues != 0) {
+		int i;
+		
+	    jsize length= (*env)->GetArrayLength(env, reds);
+
+		jshort *r= (*env)->GetShortArrayElements(env, reds, 0);
+		jshort *g= (*env)->GetShortArrayElements(env, greens, 0);
+		jshort *b= (*env)->GetShortArrayElements(env, blues, 0);
+
+		for (i= 0; i < length; i++) {
+			ColorSpec *cs= &ct->ctTable[i];
+			cs->value= i;
+			cs->rgb.red= r[i]*257;
+			cs->rgb.green= g[i]*257;
+			cs->rgb.blue= b[i]*257;
+		}
+
+		(*env)->ReleaseShortArrayElements(env, reds, r, 0);
+		(*env)->ReleaseShortArrayElements(env, greens, g, 0);
+		(*env)->ReleaseShortArrayElements(env, blues, b, 0);
+	}
+}
+			
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_initBitMapData(JNIEnv *env, jclass zz,
+				jint bitMapHandle, jint dataSize, jbyte value) {
+	BitMap **bmh= (BitMap**) bitMapHandle;
+	BitMap *bm= *bmh;
+	if (bm->baseAddr != NULL)
+		DisposePtr(bm->baseAddr);
+	bm->baseAddr= NewPtr(dataSize);
+	memset(bm->baseAddr, value, dataSize);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setBitMapData(JNIEnv *env, jclass zz,
+				jint bitMapHandle, jbyteArray bitMapData) {
+	BitMap **bmh= (BitMap**) bitMapHandle;
+	BitMap *bm= *bmh;
+	
+	jbyte *sa= (*env)->GetByteArrayElements(env, bitMapData, 0);
+	jsize dataSize= (*env)->GetArrayLength(env, bitMapData);
+	
+	if (bm->baseAddr != NULL)
+		DisposePtr(bm->baseAddr);
+	bm->baseAddr= NewPtr(dataSize);	
+	memcpy(bm->baseAddr, (const void*)sa, dataSize);
+	
+	(*env)->ReleaseByteArrayElements(env, bitMapData, sa, 0);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposePixMap(JNIEnv *env, jclass zz, jint pixMapHandle) {
+	PixMapHandle ph= (PixMapHandle) pixMapHandle;
+	PixMap *pm= *ph;
+	
+	if (pm->baseAddr != NULL) {
+		DisposePtr(pm->baseAddr);
+		pm->baseAddr= NULL;
+	}
+	
+	if ((pm->rowBytes & 0x8000) != 0) {	// Pixmap
+		DisposePixMap(ph);
+	} else {	// Bitmap
+		fprintf(stderr, "OS.DisposePixMap: warning: pixmap is bitmap\n");
+	}
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_duplicatePixMap(JNIEnv *env, jclass zz, jint srcPixmap) {
@@ -1462,24 +1500,29 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_duplicatePixMap(J
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_copyPixmapData(JNIEnv *env, jclass zz,
 		jbyteArray data, jint pixmap, jint length) {
 		
-	PixMapHandle srch;
-	PixMap *src;
-	jbyte *sa;
+	PixMapHandle pmh;
+	PixMap *pm;
+	jint rc= -1;
 
-	srch= (PixMapHandle) pixmap;
-	HLock((Handle)srch);
-	src= *srch;
+	pmh= (PixMapHandle) pixmap;
+	HLock((Handle)pmh);
+	pm= *pmh;
 	
-    sa= (*env)->GetByteArrayElements(env, data, 0);
+	if (pm->baseAddr != NULL) {
+   		int l= GetPtrSize(pm->baseAddr);
+   		if (l == length) {
+  			jbyte *sa= (*env)->GetByteArrayElements(env, data, 0);
+ 			memcpy(sa, pm->baseAddr, length);
+			(*env)->ReleaseByteArrayElements(env, data, sa, 0);
+			rc= 0;
+   		} else {
+   			fprintf(stderr, "OS.copyPixmapData: wrong lengths: %d %d\n", l, length);
+   		}
+	}
 	
-	if (src->baseAddr != NULL)
-		memcpy(sa, src->baseAddr, length);
+	HUnlock((Handle)pmh);
 	
-	(*env)->ReleaseByteArrayElements(env, data, sa, 0);
-	
-	HUnlock((Handle)srch);
-	
-	return 0;
+	return rc;
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getRGB(JNIEnv *env, jclass zz,
@@ -1509,15 +1552,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getRGB(JNIEnv *en
 	HUnlock((Handle)srch);
 	
 	return value;
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposePixMap(JNIEnv *env, jclass zz, jint pixMapHandle) {
-	PixMapHandle ph= (PixMapHandle) pixMapHandle;
-	void *data= (**ph).baseAddr;
-	if (data != NULL)
-		DisposePtr(data);
-	(**ph).baseAddr= NULL;
-	DisposePixMap(ph);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetPixBounds(JNIEnv *env, jclass zz, jint pHandle, jshortArray bounds) {
@@ -1570,127 +1604,84 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getBitMapForCopyB
 	return (jint) (*ph);
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_setPixMapData(JNIEnv *env, jclass zz,
-				jint pixMapHandle, jbyteArray pixMapData) {
-	PixMapHandle ph= (PixMapHandle) pixMapHandle;
-	
-	jbyte *sa= (*env)->GetByteArrayElements(env, pixMapData, 0);
-        jsize dataSize= (*env)->GetArrayLength(env, pixMapData);
-	
-	void *data= (**ph).baseAddr;
-	if (data != NULL)
-		DisposePtr(data);
-	data= NewPtr(dataSize);	
-	(**ph).baseAddr= data;
-	memcpy(data, (const void*)sa, dataSize);
-	
-	(*env)->ReleaseByteArrayElements(env, pixMapData, sa, 0);
-}
-
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewCIcon(JNIEnv *env, jclass zz, jint pixMapHandle, jint maskHandle) {
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_NewCIcon(JNIEnv *env, jclass zz,
+					jint pixMapHandle, jint maskHandle) {
 	CIcon *icon;
 	CIconHandle cih;
-	PixMap *ph;
-	BitMap *mh;
+	PixMap *ph= NULL;
+	BitMap *mh= NULL;
 	int pixmapRowbytes, pixmapWidth, pixmapHeight, pixmapSize;
 	int maskRowbytes, maskHeight, maskSize;
 	Size ctsize;
-	int pad= 4;
-			
-	if (pixMapHandle == 0) {
-		fprintf(stderr, "**** NewCIcon: pixmap handle == 0\n");
+	int size;
+	
+	if (pixMapHandle == 0)
 		return 0;
-	}
-
-	if (maskHandle == 0) {
-		// fprintf(stderr, "**** NewCIcon: mask handle == 0\n");
-		return 0;
-	}
-
 	ph= *((PixMap**) pixMapHandle);
-	if (ph == NULL) {
-		fprintf(stderr, "**** OS.NewCIcon: pixmap == NULL\n");
+	if (ph == NULL)
 		return 0;
-	}
-		
-	if (ph->pixelSize > 8 || ph->pmTable == 0) {
-		fprintf(stderr, "**** OS.NewCIcon: can't create CIcon from Pixmap with depth > 8\n");
-		return 0;
-	}
-
+	
+	// calculate the CIcon size
+	
 	pixmapRowbytes= ph->rowBytes & 0x3fff;
 	pixmapHeight= ph->bounds.bottom - ph->bounds.top;
 	pixmapWidth= ph->bounds.right - ph->bounds.left;
 	pixmapSize= pixmapRowbytes * pixmapHeight;
 
-	if (maskHandle == 0) {
-	
-		maskRowbytes= (((pixmapWidth*1-1)/(8*pad))+1)*pad;
-		maskHeight= pixmapHeight;
-		maskSize= maskRowbytes * maskHeight;
-			
-	} else {
-		mh= *((BitMap**) maskHandle);
-		if (mh == NULL) {
-			fprintf(stderr, "**** OS.NewCIcon: mask bitmap == NULL\n");
-			return 0;
-		}
-		maskRowbytes= mh->rowBytes;
-		maskHeight= mh->bounds.bottom - mh->bounds.top;
-		maskSize= maskRowbytes * maskHeight;
-	}
+	mh= *((BitMap**) maskHandle);
+	if (mh == NULL)
+		return 0;
+
+	maskRowbytes= mh->rowBytes & 0x3fff;
+	maskHeight= mh->bounds.bottom - mh->bounds.top;
+	maskSize= maskRowbytes * maskHeight;
 				
+	// allocate the CIcon
 	cih= (CIconHandle) NewHandleClear(sizeof(CIcon) + maskSize);
-	if (cih == NULL) {
-		fprintf(stderr, "**** OS.NewCIcon: cih is 0\n");
+	if (cih == NULL)
 		return 0;
-	}
-	
 	icon= *cih;
-	if (icon == NULL) {
-		fprintf(stderr, "**** OS.NewCIcon: icon is NULL\n");
+	if (icon == NULL)
 		return 0;
-	}
-		
+	
+	// copy the pixmap
 	memcpy(&icon->iconPMap, ph, sizeof(PixMap));
-
-	icon->iconData= NewHandle(pixmapSize);
-	if (icon->iconData == 0) {
-		fprintf(stderr, "**** OS.NewCIcon: iconData handle is NULL\n");
-		return 0;
-	}
-
-	memcpy(*icon->iconData, ph->baseAddr, pixmapSize);
 	icon->iconPMap.baseAddr= 0;	// this is documented nowhere!
+
+	// allocate the handle for the pixmap's data
+	icon->iconData= NewHandle(pixmapSize);
+	if (icon->iconData == 0)
+		return 0;
 	
-	// copy ctable
-	ctsize= GetHandleSize((Handle)ph->pmTable);
-	if (ctsize > 0) {
-		Handle h= NewHandle(ctsize);
-		memcpy(*h, *ph->pmTable, ctsize);
-		ph->pmTable= (ColorTable**) h;
+	// copy the pixmap's data
+	memcpy(*icon->iconData, ph->baseAddr, pixmapSize);
+	
+	// copy ctable (if any)
+	if (ph->pmTable != NULL) {
+		ctsize= GetHandleSize((Handle)ph->pmTable);
+		if (ctsize > 0) {
+			Handle h= NewHandle(ctsize);
+			memcpy(*h, *ph->pmTable, ctsize);
+			icon->iconPMap.pmTable= (ColorTable**) h;
+		}
 	}
 
-	if (mh != NULL) {
-		memcpy(&icon->iconMask, mh, sizeof(BitMap));
-		// copy mask data to end of CIcon
-		memcpy(&icon->iconMaskData, icon->iconMask.baseAddr, maskSize);
-	} else {
-		icon->iconMask.rowBytes= maskRowbytes;
-		icon->iconMask.bounds.left= 0;
-		icon->iconMask.bounds.top= 0;
-		icon->iconMask.bounds.right= pixmapWidth;
-		icon->iconMask.bounds.bottom= pixmapHeight;
-		memset(&icon->iconMaskData, 0xff, maskSize);
-	}
+	memcpy(&icon->iconMask, mh, sizeof(BitMap));
+	// copy mask data to end of CIcon
+	memcpy(&icon->iconMaskData, icon->iconMask.baseAddr, maskSize);
 	icon->iconMask.baseAddr= 0;
-	
+		
 	return (jint) cih;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeCIcon(JNIEnv *env, jclass zz, jint cIconHandle) {
-	//DisposeCIcon((CIconHandle) cIconHandle);
-	//fprintf(stderr, "OS.DisposeCIcon: disabled\n");  FIXME
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getCIconIconData(JNIEnv *env, jclass zz, jint cIconHandle) {
+	CIcon *icon= *((CIconHandle) cIconHandle);
+	return (jint) icon->iconData;
+}
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_getCIconColorTable(JNIEnv *env, jclass zz, jint cIconHandle) {
+	CIcon *icon= *((CIconHandle) cIconHandle);
+	return (jint) icon->iconPMap.pmTable;
 }
 
 //---- GWorlds
@@ -2250,6 +2241,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_CalcMenuSize(JNIE
 	CalcMenuSize((MenuRef) mHandle);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetMenuItemIconHandle(JNIEnv *env, jclass zz,
+	jint mHandle, jshort index, jbyte type, jint icon) {
+	return RC(SetMenuItemIconHandle((MenuRef) mHandle, (SInt16)index, (UInt8)type, (Handle)icon));
+}
+
 //---- Control Manager
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlAction(JNIEnv *env, jclass zz, jint cHandle, jint actionProc) {
@@ -2539,12 +2535,31 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__I
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetControlData__ISI_3S(JNIEnv *env, jclass zz,
 		jint cHandle, jshort partCode, jint tag, jshortArray data) {
-        jshort *sa= (*env)->GetShortArrayElements(env, data, 0);
+	jshort *sa= (*env)->GetShortArrayElements(env, data, 0);
 	jsize length= (*env)->GetArrayLength(env, data);
 	jint status= (jint) RC(SetControlData((ControlRef) cHandle, partCode, tag, sizeof(short)*length, (Ptr) sa));
 	(*env)->ReleaseShortArrayElements(env, data, sa, 0);
 	return status;
 }
+
+/*
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreatePushButtonWithIconControl(JNIEnv *env, jclass zz,
+
+	jint wHandle, jint ciconHandle, jint sHandle, jintArray outControl)
+{
+	ControlButtonContentInfo *info= (ControlButtonContentInfo*) malloc(sizeof(ControlButtonContentInfo));
+	jint status;
+	jint *sa= (*env)->GetIntArrayElements(env, outControl, 0);
+	
+	info->contentType= 130; // kControlContentCIconHandle;
+	info->u.cIconHandle= (CIconHandle) ciconHandle;
+	
+	//status= (jint) RC(CreatePushButtonControl((WindowRef) wHandle, &NULL_RECT, (CFStringRef) sHandle, (ControlRef*)sa));
+	status= (jint) RC(CreatePushButtonWithIconControl((WindowRef) wHandle, &NULL_RECT, (CFStringRef) 0, info, 6, (ControlRef*)sa));
+	(*env)->ReleaseIntArrayElements(env, outControl, sa, 0);
+	return status;
+}
+*/
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_SetBevelButtonContentInfo(JNIEnv *env, jclass zz,
 		jint cHandle, jshort controlContentType, jint controlContent) {
@@ -3126,6 +3141,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_TXNGetData(JNIEnv
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposeHandle(JNIEnv *env, jclass zz, jint handle) {
 	DisposeHandle((Handle)handle);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS_DisposePtr(JNIEnv *env, jclass zz, jint ptr) {
+	DisposePtr((void*)ptr);
 }
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetHandleSize(JNIEnv *env, jclass zz, jint handle) {

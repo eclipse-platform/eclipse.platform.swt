@@ -406,13 +406,29 @@ public class OS {
 	public static native void PaintPoly(int polyHandle);
 	public static native void KillPoly(int polyHandle);
 	
+	// BitMaps
+	public static native int NewBitMap(short w, short h, short rowBytes);
+	
+	public static native int getRowBytes(int bmHandle);
+	public static native int getBaseAddr(int bmHandle);
+
     // PixMaps
-	public static native int NewPixMap(short w, short h, short depth, short pad, short[] reds, short[] greens, short[] blues);
+	public static final short Indexed= 0;
+	public static final short RGBDirect= 16;
+	
+	public static native int NewPixMap(short w, short h, short rowBytes,
+			short pixelType, short pixelSize, short cmpSize, short cmpCount, short pixelFormat);
+	public static native void DisposePixMap(int pHandle);
+	
+	public static native void initBitMapData(int pixMapHandle, int dataSize, byte value);
+	public static native void setBitMapData(int pixMapHandle, byte[] data);
+	public static native void setColorTable(int pixMapHandle, int slots,
+									short[] reds, short[] greens, short[] blues);
+
 	public static native int duplicatePixMap(int srcPixmap);
 	public static native int copyPixmapData(byte[] srcData, int pixmap, int length);
 	public static native int getRGB(int pixmap, int srcPixel);
 
-	public static native void DisposePixMap(int pHandle);
 	public static native void GetPixBounds(int pHandle, short[] bounds);
 	public static native short GetPixDepth(int pHandle);
 	public static native void CopyBits(int srcPixMapHandle, int dstPixMapHandle, short[] srcRect, short[] dstRect,
@@ -424,9 +440,11 @@ public class OS {
 
 	public static native int GetPortBitMapForCopyBits(int portHandle);
 	public static native int getBitMapForCopyBits(int pixMapHandle);
-	public static native void setPixMapData(int pixMapHandle, byte[] data);
+	
+	// CIcon
 	public static native int NewCIcon(int pixmapHandle, int maskHandle);
-	public static native void DisposeCIcon(int cIconHandle);
+	public static native int getCIconIconData(int iconHandle);
+	public static native int getCIconColorTable(int iconHandle);
 
 	// GWorlds
 	public static native int NewGWorldFromPtr(int[] offscreenGWorld, int pHandle);
@@ -741,6 +759,7 @@ public class OS {
 	public static native int GetMenuFont(int mHandle, short[] fontID, short[] size);
 	public static native short GetMenuWidth(int mHandle);
 	public static native void CalcMenuSize(int mHandle);
+	public static native int SetMenuItemIconHandle(int mHandle, short item, byte iconType, int iconHandle);
 
 	/////////////////////////////////////////////////////////////////////////////////////////////////////////
 	// Control Manager
@@ -826,6 +845,8 @@ public class OS {
 	public static native int NewControlCallbackUPP(Object target, String method);
 	public static native int NewControl(int windowHandle, boolean initiallyVisible, short initial, short min, short max, short procID);
 	public static native void DisposeControl(int cHandle);
+	
+	//public static native int CreatePushButtonWithIconControl(int wHandle, int ciconHandle, int sHandle, int[] outControl);
 	
 	public static native int GetRootControl(int windowHandle, int[] cHandle);
 	public static native int CreateRootControl(int windowHandle, int[] cHandle);
@@ -1140,6 +1161,8 @@ public class OS {
 	public static native int GetHandleSize(int handle);
 	public static native void DisposeHandle(int handle);
 	public static native void getHandleData(int handle, char[] data);
+	
+	public static native void DisposePtr(int ptr);
 
 	//////////////////////////////////////////////////////////////////////////////////////////////////
 	// Scrap
