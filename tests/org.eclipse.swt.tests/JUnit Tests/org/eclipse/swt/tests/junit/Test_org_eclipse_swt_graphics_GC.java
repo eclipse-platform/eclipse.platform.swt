@@ -1,10 +1,8 @@
 package org.eclipse.swt.tests.junit;
 
 /*
- * (c) Copyright IBM Corp. 2000, 2002. All rights reserved.
- * This file is made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
+ * (c) Copyright IBM Corp. 2000, 2001.
+ * All Rights Reserved
  */
 
 import org.eclipse.swt.*;
@@ -21,6 +19,8 @@ import junit.textui.*;
 public class Test_org_eclipse_swt_graphics_GC extends SwtTestCase {
 
 Display display;
+Shell shell;
+GC gc;
 
 public Test_org_eclipse_swt_graphics_GC(String name) {
 	super(name);
@@ -32,9 +32,15 @@ public static void main(String[] args) {
 
 protected void setUp() {
 	display = new Display();
+	shell = new Shell(display);
+	shell.setBounds(0,30,240,290);
+	shell.open();
+	gc = new GC(shell);
 }
 
 protected void tearDown() {
+	gc.dispose();
+	shell.dispose();
 	display.dispose();
 }
 
@@ -62,24 +68,87 @@ public void test_drawFocusIIII() {
 	warnUnimpl("Test test_drawFocusIIII not written");
 }
 
-public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
-	warnUnimpl("Test test_drawImageLorg_eclipse_swt_graphics_ImageII not written");
+public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {		
+		Color c1 = new Color(display, 255, 0, 0);
+		Color c2 = new Color(display, 0, 0, 0);
+		Color c3 = new Color(display, 255, 255, 0);
+		
+		PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
+		ImageData data = new ImageData(30,30, 8, paletteData);
+		for (int y = 0; y < data.height; y++) {
+			for (int x = 0; x < data.width; x++) {
+				if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
+				else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
+				else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
+			}
+		}
+		Image image = new Image(display, data);
+		data = image.getImageData();
+		data.transparentPixel = paletteData.getPixel(c1.getRGB());
+		Image imageTransparent = new Image(display, data);
+		data.transparentPixel = -1;
+		for (int y = 0; y < data.height; y++) {
+			for (int x = 0; x < data.width; x++) {
+				data.setAlpha(x, y, 127);
+			}
+		}		
+		Image imageAlpha = new Image(display, data);
+								
+		gc.drawImage(image, 100, 100);
+		gc.drawImage(imageTransparent, 130, 100);
+		gc.drawImage(imageAlpha, 160, 100);
+		try {
+			gc.drawImage(null, 100, 100);
+			fail("No exception thrown"); //should never get here
+		}
+		catch (IllegalArgumentException e) {
+		}	
 }
 
-public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
-	warnUnimpl("Test test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII not written");
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {		
+		Color c1 = new Color(display, 255, 0, 0);
+		Color c2 = new Color(display, 0, 0, 0);
+		Color c3 = new Color(display, 255, 255, 0);
+		
+		PaletteData paletteData = new PaletteData(new RGB[] {c1.getRGB(), c2.getRGB(), c3.getRGB()});
+		ImageData data = new ImageData(30,30, 8, paletteData);
+		for (int y = 0; y < data.height; y++) {
+			for (int x = 0; x < data.width; x++) {
+				if (x > y) data.setPixel(x, y, paletteData.getPixel(c1.getRGB()));
+				else if (x < y) data.setPixel(x, y, paletteData.getPixel(c2.getRGB()));
+				else data.setPixel(x, y, paletteData.getPixel(c3.getRGB()));
+			}
+		}
+		Image image = new Image(display, data);
+		data = image.getImageData();
+		data.transparentPixel = paletteData.getPixel(c1.getRGB());
+		Image imageTransparent = new Image(display, data);
+		data.transparentPixel = -1;
+		for (int y = 0; y < data.height; y++) {
+			for (int x = 0; x < data.width; x++) {
+				data.setAlpha(x, y, 127);
+			}
+		}		
+		Image imageAlpha = new Image(display, data);
+								
+		gc.drawImage(image, 10, 5, 20, 15, 100, 120, 50, 60);
+		gc.drawImage(imageTransparent, 10, 5, 20, 15, 100, 120, 10, 10);
+		gc.drawImage(imageAlpha, 10, 5, 20, 15, 100, 120, 20, 15);
+		try {
+			gc.drawImage(null, 10, 5, 20, 15, 100, 120, 50, 60);
+			fail("No exception thrown"); //should never get here
+		}
+		catch (IllegalArgumentException e) {
+		}
 }
 
 public void test_drawLineIIII() {
-	warnUnimpl("Test test_drawLineIIII not written");
 }
 
 public void test_drawOvalIIII() {
-	warnUnimpl("Test test_drawOvalIIII not written");
 }
 
 public void test_drawPolygon$I() {
-	warnUnimpl("Test test_drawPolygon$I not written");
 }
 
 public void test_drawPolyline$I() {
