@@ -35,7 +35,7 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public /*final*/ class Label extends Control {
 	String text = "";
-	Image image, bitmap, disabled;
+	Image image, disabled;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -263,9 +263,19 @@ int processPaint (Object callData) {
 		
 		gc.fillRectangle(0, 0, r.width, r.height);
 		
+		boolean enabled= OS.IsControlEnabled(handle);
+		
 		if (image != null) {
 			Rectangle imageBounds= image.getBounds();
-			gc.drawImage(image, (w-imageBounds.width) / 2, (h-imageBounds.height) / 2);
+			Image im;
+			if (enabled)
+				im= image;
+			else {
+				if (disabled == null)
+					disabled = new Image (getDisplay(), image, SWT.IMAGE_DISABLE);
+				im= disabled;
+			}			
+			gc.drawImage(im, (w-imageBounds.width) / 2, (h-imageBounds.height) / 2);
 		} else {
 			int sHandle= OS.CFStringCreateWithCharacters(MacUtil.removeMnemonics(text));
 			boolean wrap= (style & SWT.WRAP) != 0;
@@ -274,10 +284,7 @@ int processPaint (Object callData) {
 				just= 2;
 			else if ((style & SWT.CENTER) != 0)
 				just= 1;
-			if (OS.IsControlEnabled(handle))
-				OS.RGBForeColor(0x000000);
-			else
-				OS.RGBForeColor(0x808080);
+			OS.RGBForeColor(enabled ? 0x000000 : 0x808080);
 			gc.installFont();
 			bounds.set(borderWidth, borderWidth, w-2*borderWidth, h-2*borderWidth);
 			OS.DrawThemeTextBox(sHandle, OS.kThemeCurrentPortFont, OS.kThemeStateActive, wrap, bounds.getData(), just, 0);
@@ -313,16 +320,8 @@ void propagateWidget (boolean enabled) {
 }
 void releaseWidget () {
 	super.releaseWidget ();
-    /* AW
-	int [] argList = {
-		OS.XmNlabelPixmap, OS.XmUNSPECIFIED_PIXMAP,
-		OS.XmNlabelInsensitivePixmap, OS.XmUNSPECIFIED_PIXMAP,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-    */
-	if (bitmap != null) bitmap.dispose ();
 	if (disabled != null) disabled.dispose ();
-	image = bitmap = disabled = null;
+	image = disabled = null;
 }
 /* AW
 int separatorType () {
@@ -356,65 +355,6 @@ public void setAlignment (int alignment) {
 		redrawWidget (0, 0, 0, 0, false);
 	}
 }
-/* AW
-void setBackgroundPixel (int pixel) {
-	super.setBackgroundPixel (pixel);
-	int [] argList = {OS.XmNlabelType, 0};
-	OS.XtGetValues (handle, argList, argList.length / 2);
-	if (argList [1] == OS.XmPIXMAP) setBitmap (image);
-}
-*/
-void setBitmap (Image image) {
-	/* AW
-	int labelPixmap = OS.XmUNSPECIFIED_PIXMAP;
-	int labelInsensitivePixmap = OS.XmUNSPECIFIED_PIXMAP;
-	*/
-	if (bitmap != null) bitmap.dispose ();
-	if (disabled != null) disabled.dispose ();
-	bitmap = disabled = null;
-	if (image != null) {
-		if (image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
-		Display display = getDisplay ();
-		switch (image.type) {
-			case SWT.BITMAP:
-				/* AW
-				labelPixmap = image.pixmap;
-				*/
-				disabled = new Image (display, image, SWT.IMAGE_DISABLE);
-				/* AW
-				labelInsensitivePixmap = disabled.pixmap;
-				*/
-				break;
-			case SWT.ICON:
-				Rectangle rect = image.getBounds ();
-				bitmap = new Image (display, rect.width, rect.height);
-				GC gc = new GC (bitmap);
-				gc.setBackground (getBackground ());
-				gc.fillRectangle (rect);
-				gc.drawImage (image, 0, 0);
-				gc.dispose ();
-				/* AW
-				labelPixmap = bitmap.pixmap;
-				*/
-				disabled = new Image (display, bitmap, SWT.IMAGE_DISABLE);
-				/* AW
-				labelInsensitivePixmap = disabled.pixmap;
-				*/
-				break;
-			default:
-				error (SWT.ERROR_NOT_IMPLEMENTED);
-		}
-	}
-	/* AW
-	int [] argList = {
-		OS.XmNlabelType, OS.XmPIXMAP,
-		OS.XmNlabelPixmap, labelPixmap,
-		OS.XmNlabelInsensitivePixmap, labelInsensitivePixmap,
-	};
-	OS.XtSetValues (handle, argList, argList.length / 2);
-	*/
-	redrawWidget (0, 0, 0, 0, false);
-}
 public void setBounds (int x, int y, int width, int height) {
 	super.setBounds (x, y, width, height);
 	if ((style & SWT.WRAP) != 0) setText (text);
@@ -439,7 +379,11 @@ public void setFont (Font font) {
  */
 public void setImage (Image image) {
 	checkWidget();
-	setBitmap (this.image = image);
+	this.image = image;
+	if (disabled != null) disabled.dispose ();
+	disabled = null;
+	if (image != null && image.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	redrawWidget (0, 0, 0, 0, false);
 }
 public void setSize (int width, int height) {
 	super.setSize (width, height);
