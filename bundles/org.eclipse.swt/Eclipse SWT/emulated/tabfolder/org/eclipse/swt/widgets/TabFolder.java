@@ -719,25 +719,27 @@ void itemChanged(TabItem item) {
 void keyDown(Event event) {
 	int count = items.length;
 	if (count <= 1) return;
-	if (event.keyCode == SWT.ARROW_RIGHT) {
-		if (selectedIndex < items.length - 1) {
-			setSelection(selectedIndex + 1, true);
-		}
-	}
-	if (event.keyCode == SWT.ARROW_LEFT) {
-		if (selectedIndex > 0) {
-			setSelection(selectedIndex - 1, true);
-		}
-	}
-	if (event.keyCode == SWT.HOME) {
-		if (selectedIndex > 0) {
-			setSelection(0, true);
-		}
-	}
-	if (event.keyCode == SWT.END) {
-		if (selectedIndex < count - 1) {
-			setSelection(count - 1, true);
-		}
+	switch (event.keyCode) {
+		case SWT.ARROW_RIGHT:
+			if (selectedIndex < items.length - 1) {
+				setSelection(selectedIndex + 1, true);
+			}
+			break;
+		case SWT.ARROW_LEFT:
+			if (selectedIndex > 0) {
+				setSelection(selectedIndex - 1, true);
+			}
+			break;
+		case SWT.HOME:
+			if (selectedIndex > 0) {
+				setSelection(0, true);
+			}
+			break;
+		case SWT.END:
+			if (selectedIndex < count - 1) {
+				setSelection(count - 1, true);
+			}
+			break;
 	}
 }
 /**
@@ -1142,8 +1144,6 @@ void traversal(Event event) {
 		case SWT.TRAVERSE_MNEMONIC:
 		case SWT.TRAVERSE_PAGE_NEXT:
 		case SWT.TRAVERSE_PAGE_PREVIOUS:
-		case SWT.TRAVERSE_ARROW_NEXT:
-		case SWT.TRAVERSE_ARROW_PREVIOUS: 
 			event.doit = true;
 	}
 }
