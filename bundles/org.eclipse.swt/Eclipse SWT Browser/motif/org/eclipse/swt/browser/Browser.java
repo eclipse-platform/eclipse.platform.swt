@@ -116,7 +116,7 @@ public Browser(Composite parent, int style) {
 	
 	if (!IsLinux) {
 		dispose();
-		SWT.error(SWT.ERROR_NO_HANDLES);		
+		SWT.error(SWT.ERROR_NO_HANDLES, null, " [Unsupported platform]"); //$NON-NLS-1$
 	}
 
 	int /*long*/[] result = new int /*long*/[1];
