@@ -254,7 +254,7 @@ String parse (String string) {
 	int length = string.length ();
 	offsets = new Point [length / 4];
 	ids = new String [length / 4];
-	mnemonics = new int [length / 4];
+	mnemonics = new int [length / 4 + 1];
 	StringBuffer result = new StringBuffer ();
 	char [] buffer = new char [length];
 	string.getChars (0, string.length (), buffer, 0);
