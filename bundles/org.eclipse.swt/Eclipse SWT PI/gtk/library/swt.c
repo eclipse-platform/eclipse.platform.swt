@@ -5877,17 +5877,3 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1tree_1path_1new
 	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
 	return rc;
 }
-
-
-/*
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_TREE_1VIEW_1HEADER_1HEIGHT
-	(JNIEnv *env, jclass that, jint arg0)
-{
-	DEBUG_CALL("TREE_1VIEW_1HEADER_1HEIGHT\n")
-
-	return (jint) TREE_VIEW_HEADER_HEIGHT( ((GtkTreeView*)arg0) );
-}
-*/
-
-
-
