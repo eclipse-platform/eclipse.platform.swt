@@ -28,7 +28,7 @@ public class Callback {
 	Object object;
 	String method, signature;
 	int argCount;
-	int /*PTR*/ address;
+	int /*long*/ address;
 	boolean isStatic, isArrayBased;
 
 	/* Load the SWT library */
@@ -111,7 +111,7 @@ static final native int PTR_sizeof ();
  *
  * @param callback the callback to bind
  */
-static native synchronized int /*PTR*/ bind (Callback callback);
+static native synchronized int /*long*/ bind (Callback callback);
 
 /**
  * Releases the native level resources associated with the callback,
@@ -132,7 +132,7 @@ public void dispose () {
  *
  * @return the callback address
  */
-public int /*PTR*/ getAddress () {
+public int /*long*/ getAddress () {
 	return address;
 }
 
