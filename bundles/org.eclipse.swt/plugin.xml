@@ -7,7 +7,7 @@
    provider-name="OTI">
 
 <runtime>
-  <library name="$ws$/swt0108.jar" >
+  <library name="swt0108.jar" >
      <export name = "*"/>
   </library>
 </runtime>
