@@ -377,7 +377,11 @@ private void createCloseBar() {
 	Color background = getBackground();
 	closeBar = new ToolBar(this, SWT.FLAT);
 	closeBar.setVisible(false);
-	closeBar.setBackground(background);
+	if (gradientColors != null && gradientColors.length > 0) {
+		closeBar.setBackground(gradientColors[gradientColors.length - 1]);
+	} else {
+		closeBar.setBackground(background);
+	}
 	ToolItem closeItem = new ToolItem(closeBar, SWT.PUSH);
 	
 	inactiveCloseBar = new ToolBar(this, SWT.FLAT);
@@ -1188,6 +1192,13 @@ public void setSelection(int index) {
 	if (showClose) {
 		inactiveCloseBar.setVisible(false);
 		inactiveItem = null;
+		if (arrowBar.isVisible()) {
+			Rectangle arrowRect = arrowBar.getBounds();
+			arrowRect.width += borderRight;
+			closeBar.setVisible(!arrowRect.contains(closeBar.getLocation()));
+		} else {
+			closeBar.setVisible(true);
+		}
 	}
 	
 	int oldIndex = selectedIndex;
