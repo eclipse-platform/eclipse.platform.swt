@@ -2315,6 +2315,11 @@ public void setRedraw (boolean redraw) {
 				*/
 				if (OS.IsWinCE) {
 					OS.InvalidateRect (handle, null, false);
+					int hwndHeader = OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+					if (hwndHeader != 0) {
+						OS.SendMessage (hwndHeader, OS.WM_SETREDRAW, 1, 0);
+						OS.InvalidateRect (hwndHeader, null, false);
+					}
 				} else {
 					OS.RedrawWindow (handle, null, 0, OS.RDW_FRAME | OS.RDW_INVALIDATE);
 				}
