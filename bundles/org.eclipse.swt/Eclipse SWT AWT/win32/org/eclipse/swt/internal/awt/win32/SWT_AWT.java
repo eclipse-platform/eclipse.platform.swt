@@ -15,7 +15,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Constructor;
 
 /* Win32, SUN AWT */
-import sun.awt.windows.WEmbeddedFrame;
+//import sun.awt.windows.WEmbeddedFrame;
 //import sun.awt.DrawingSurface;
 //import sun.awt.windows.WDrawingSurfaceInfo;
 
@@ -31,6 +31,7 @@ import org.eclipse.swt.graphics.Rectangle;
 /* AWT Imports */
 import java.awt.EventQueue;
 import java.awt.Canvas;
+import java.awt.Frame;
 import java.awt.Panel;
 import java.awt.Dimension;
 import java.awt.event.ComponentAdapter;
@@ -50,23 +51,29 @@ public static Panel new_Panel (final Composite parent) {
 	 * 
 	 * final WEmbeddedFrame frame = new WEmbeddedFrame(handle);
 	 */
+	Class clazz = null;
+	try {
+		clazz = Class.forName("sun.awt.windows.WEmbeddedFrame");
+	} catch (Throwable e) {
+		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);		
+	}
 	Constructor constructor = null;
 	try {
-		constructor = WEmbeddedFrame.class.getConstructor (new Class [] {int.class});
-	} catch (Exception e1) {
+		constructor = clazz.getConstructor (new Class [] {int.class});
+	} catch (Throwable e1) {
 		try {
-			constructor = WEmbeddedFrame.class.getConstructor (new Class [] {long.class});
-		} catch (Exception e2) {
+			constructor = clazz.getConstructor (new Class [] {long.class});
+		} catch (Throwable e2) {
 			SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e2);
 		}
 	}
-	 WEmbeddedFrame value = null;
+	Object value = null;
 	try {
-		value = (WEmbeddedFrame) constructor.newInstance (new Object [] {new Integer (handle)});
-	} catch (Exception e) {
+		value = constructor.newInstance (new Object [] {new Integer (handle)});
+	} catch (Throwable e) {
 		SWT.error (SWT.ERROR_NOT_IMPLEMENTED, e);
 	}
-	final WEmbeddedFrame frame = value;
+	final Frame frame = (Frame) value;
 	
 	Panel panel = new Panel ();
 	frame.add (panel);
