@@ -576,6 +576,7 @@ public void setBackground (int index, Color color) {
 public void setChecked (boolean checked) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
+	if (this.checked == checked) return;
 	setChecked (checked, false);
 }
 
@@ -752,6 +753,7 @@ public void setForeground (int index, Color color){
 public void setGrayed (boolean grayed) {
 	checkWidget();
 	if ((parent.style & SWT.CHECK) == 0) return;
+	if (this.grayed == grayed) return;
 	this.grayed = grayed;
 	redraw ();
 }
