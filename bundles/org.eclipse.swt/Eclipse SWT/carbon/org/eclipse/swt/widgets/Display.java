@@ -14,6 +14,7 @@ import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.CGRect;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.HICommand;
+import org.eclipse.swt.internal.carbon.RGBColor;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -615,29 +616,32 @@ public Thread getSyncThread () {
 public Color getSystemColor (int id) {
 	checkDevice ();
 	//NOT DONE
+	
+	RGBColor rgb = new RGBColor ();
 	switch (id) {
-		case SWT.COLOR_INFO_FOREGROUND: 					return Color.carbon_new (this, new float [] {0x00 / 255f, 0x00 / 255f, 0x00 / 255f, 1});
-		case SWT.COLOR_INFO_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
-		case SWT.COLOR_TITLE_FOREGROUND:					return super.getSystemColor (SWT.COLOR_WHITE);
-		case SWT.COLOR_TITLE_BACKGROUND:					return super.getSystemColor (SWT.COLOR_DARK_BLUE);
-		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT:			return super.getSystemColor (SWT.COLOR_BLUE);
-		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:			return super.getSystemColor (SWT.COLOR_BLACK);
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND:			return super.getSystemColor (SWT.COLOR_DARK_GRAY);
-		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT:	return super.getSystemColor (SWT.COLOR_GRAY);
-		case SWT.COLOR_WIDGET_DARK_SHADOW:					return Color.carbon_new (this, new float [] {0x33 / 255f, 0x33 / 255f, 0x33 / 255f, 1});
-		case SWT.COLOR_WIDGET_NORMAL_SHADOW:				return Color.carbon_new (this, new float [] {0x66 / 255f, 0x66 / 255f, 0x66 / 255f, 1});
+		case SWT.COLOR_INFO_FOREGROUND: 						return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_INFO_BACKGROUND: 						return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xE1 / 255f, 1});
+		case SWT.COLOR_TITLE_FOREGROUND:						OS.GetThemeTextColor((short)OS.kThemeTextColorDocumentWindowTitleActive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_TITLE_BACKGROUND:						OS.GetThemeBrushAsColor((short)-5/*undocumented darker highlight color*/, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_TITLE_BACKGROUND_GRADIENT: 	OS.GetThemeBrushAsColor((short)OS.kThemeBrushPrimaryHighlightColor, (short)getDepth(), true, rgb) ; break;
+		case SWT.COLOR_TITLE_INACTIVE_FOREGROUND:	OS.GetThemeTextColor((short)OS.kThemeTextColorDocumentWindowTitleInactive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND: 	OS.GetThemeBrushAsColor((short)OS.kThemeBrushSecondaryHighlightColor, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT: OS.GetThemeBrushAsColor((short)OS.kThemeBrushSecondaryHighlightColor, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_WIDGET_DARK_SHADOW:				return Color.carbon_new (this, new float [] {0x33 / 255f, 0x33 / 255f, 0x33 / 255f, 1});
+		case SWT.COLOR_WIDGET_NORMAL_SHADOW:			return Color.carbon_new (this, new float [] {0x66 / 255f, 0x66 / 255f, 0x66 / 255f, 1});
 		case SWT.COLOR_WIDGET_LIGHT_SHADOW: 				return Color.carbon_new (this, new float [] {0x99 / 255f, 0x99 / 255f, 0x99 / 255f, 1});
-		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:			return Color.carbon_new (this, new float [] {0xCC / 255f, 0xCC / 255f, 0xCC / 255f, 1});
-		case SWT.COLOR_WIDGET_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xFF / 255f, 1});
-		case SWT.COLOR_WIDGET_FOREGROUND:
-		case SWT.COLOR_WIDGET_BORDER: 						return Color.carbon_new (this, new float [] {0x00 / 255f, 0x00 / 255f, 0x00 / 255f, 1});
-		case SWT.COLOR_LIST_FOREGROUND: 					return Color.carbon_new (this, new float [] {0x00 / 255f, 0x00 / 255f, 0x00 / 255f, 1});
-		case SWT.COLOR_LIST_BACKGROUND: 					return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xFF / 255f, 1});
-		case SWT.COLOR_LIST_SELECTION_TEXT: 				return Color.carbon_new (this, new float [] {0xFF / 255f, 0xFF / 255f, 0xFF / 255f, 1});
-		case SWT.COLOR_LIST_SELECTION: 					return Color.carbon_new (this, new float [] {0x66 / 255f, 0x66 / 255f, 0xCC / 255f, 1});
+		case SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW:		return Color.carbon_new (this, new float [] {0xCC / 255f, 0xCC / 255f, 0xCC / 255f, 1});
+		case SWT.COLOR_WIDGET_BACKGROUND: 					OS.GetThemeBrushAsColor((short)OS.kThemeBrushButtonFaceActive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_WIDGET_FOREGROUND:					OS.GetThemeTextColor((short)OS.kThemeTextColorPushButtonActive, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_WIDGET_BORDER: 							return super.getSystemColor (SWT.COLOR_BLACK);
+		case SWT.COLOR_LIST_FOREGROUND: 						OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_LIST_BACKGROUND: 						OS.GetThemeBrushAsColor((short)OS.kThemeBrushListViewBackground, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_LIST_SELECTION_TEXT: 					OS.GetThemeTextColor((short)OS.kThemeTextColorListView, (short)getDepth(), true, rgb); break;
+		case SWT.COLOR_LIST_SELECTION:								OS.GetThemeBrushAsColor((short)OS.kThemeBrushPrimaryHighlightColor, (short)getDepth(), true, rgb); break;
 		default:
 			return super.getSystemColor (id);	
 	}
+	return new Color (this, (rgb.red >> 8) & 0xFF, (rgb.green >> 8) & 0xFF, (rgb.blue >> 8) & 0xFF);
 }
 
 public Thread getThread () {
@@ -1456,9 +1460,7 @@ void updateMenuBar (Shell shell) {
 	* current menu bar.  The fix is to disable each individual menu
 	* item.
 	*/
-	Menu menu = null;
 	if (menuBar != null) {
-		int theMenu = menuBar.handle;
 		MenuItem [] items = menuBar.getItems ();
 		for (int i=0; i<items.length; i++) {
 			if (items [i].getEnabled ()) items [i]._setEnabled (true);

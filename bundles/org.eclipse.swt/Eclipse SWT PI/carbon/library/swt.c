@@ -3695,6 +3695,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetSuperControl
 }
 #endif /* NO_GetSuperControl */
 
+#ifndef NO_GetThemeBrushAsColor
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeBrushAsColor
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jboolean arg2, jobject arg3)
+{
+	RGBColor _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetThemeBrushAsColor\n")
+
+	if (arg3) lparg3 = getRGBColorFields(env, arg3, &_arg3);
+	rc = (jint)GetThemeBrushAsColor(arg0, arg1, arg2, (RGBColor*)lparg3);
+	if (arg3) setRGBColorFields(env, arg3, lparg3);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetThemeDrawingState
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeDrawingState
 	(JNIEnv *env, jclass that, jintArray arg0)
@@ -3748,6 +3764,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeMetric
 	return rc;
 }
 #endif /* NO_GetThemeMetric */
+
+#ifndef NO_GetThemeTextColor
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeTextColor
+	(JNIEnv *env, jclass that, jshort arg0, jshort arg1, jboolean arg2, jobject arg3)
+{
+	RGBColor _arg3, *lparg3=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetThemeTextColor\n")
+
+	if (arg3) lparg3 = getRGBColorFields(env, arg3, &_arg3);
+	rc = (jint)GetThemeTextColor(arg0, arg1, arg2, (RGBColor *)lparg3);
+	if (arg3) setRGBColorFields(env, arg3, lparg3);
+	return rc;
+}
+#endif
 
 #ifndef NO_GetThemeTextDimensions
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetThemeTextDimensions

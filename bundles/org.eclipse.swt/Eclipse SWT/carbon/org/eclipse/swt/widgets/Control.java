@@ -747,7 +747,6 @@ void releaseWidget () {
 		menu.dispose ();
 	}
 	menu = null;
-	deregister ();
 	parent = null;
 	layoutData = null;
 }

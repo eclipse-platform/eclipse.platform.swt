@@ -389,6 +389,11 @@ public class OS {
 	public static final int kThemeArrowCursor = 0;
 	public static final int kThemeBrushDialogBackgroundActive = 1;
 	public static final int kThemeBrushDocumentWindowBackground = 15;
+	public static final int kThemeBrushPrimaryHighlightColor = -3;
+	public static final int kThemeBrushSecondaryHighlightColor = -4;
+	public static final int kThemeBrushButtonFaceActive = 29;
+	public static final int kThemeBrushFocusHighlight = 19;
+	public static final int kThemeBrushListViewBackground = 10; 
 	public static final int kThemeButtonOff = 0;
 	public static final int kThemeButtonOn = 1;
 	public static final int kThemeCheckBox = 1;
@@ -426,6 +431,10 @@ public class OS {
 	public static final int kThemeStateInactive = 0;
 	public static final int kThemeStatePressed = 2;
 	public static final int kThemeSystemFont = 0;
+	public static final int kThemeTextColorDocumentWindowTitleActive = 23;
+	public static final int kThemeTextColorDocumentWindowTitleInactive = 24;
+	public static final int kThemeTextColorListView = 22;
+	public static final int kThemeTextColorPushButtonActive = 12;
 	public static final int kThemeToolbarFont = 108;
 	public static final int kThemeViewsFont = 3;
 	public static final int kThemeWatchCursor = 7;
@@ -759,9 +768,11 @@ public static final native int GetScrapFlavorData(int scrap, int flavorType, int
 public static final native int GetScrapFlavorInfoList(int scrap, int[] infoCount, int[] info);
 public static final native int GetScrapFlavorSize(int scrap, int flavorType, int[] byteCount);
 public static final native int GetSuperControl(int cHandle, int[] parentHandle);
+public static final native int GetThemeBrushAsColor(short inBrush, short inDepth, boolean inColorDev, RGBColor outColor);
 public static final native int GetThemeDrawingState(int[] state);
 public static final native int GetThemeFont(short themeFontId, short scriptCode, byte[] fontName, short[] fontSize, byte[] style);
 public static final native int GetThemeMetric(int inMetric, int [] outMetric);
+public static final native int GetThemeTextColor(short inColor, short inDepth, boolean inColorDev, RGBColor outColor);
 public static final native int GetThemeTextDimensions(int sHandle, short fontID, int state, boolean wrapToWidth, Point ioBounds, short[] baseLine);
 public static final native int GetUserFocusEventTarget();
 public static final native int GetWRefCon(int wHandle);
