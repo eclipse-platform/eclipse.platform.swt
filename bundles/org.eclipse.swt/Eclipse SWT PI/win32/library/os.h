@@ -230,6 +230,8 @@
 #define NO_GetOpenFileNameA
 #define NO_GetProfileStringA
 #define NO_GetProfileStringW
+#define NO_GetPropA
+#define NO_GetPropW
 #define NO_GetRandomRgn
 #define NO_GetROP2
 #define NO_GetSaveFileNameA
@@ -242,6 +244,8 @@
 #define NO_GetWindowTextA
 #define NO_GetWindowTextLengthA
 #define NO_GetWorldTransform
+#define NO_GlobalAddAtomA
+#define NO_GlobalAddAtomW
 #define NO_GradientFill
 #define NO_IIDFromString
 #define NO_ImmGetCompositionFontA
@@ -303,6 +307,8 @@
 #define NO_RegisterClassA
 #define NO_RegisterClipboardFormatA
 #define NO_RegisterWindowMessageA
+#define NO_RemovePropA
+#define NO_RemovePropW
 #define NO_SetLayout
 #define NO_Shell_1NotifyIconA
 #define NO_SHBrowseForFolderA
@@ -340,6 +346,8 @@
 #define NO_SetMenuDefaultItem
 #define NO_SetMenuInfo
 #define NO_SetMenuItemInfoA
+#define NO_SetPropA
+#define NO_SetPropW
 #define NO_SetStretchBltMode
 #define NO_SetTextAlign
 #define NO_SetWindowLongA

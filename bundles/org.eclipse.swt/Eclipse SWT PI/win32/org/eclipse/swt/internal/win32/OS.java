@@ -1807,6 +1807,11 @@ public static final int GetProfileString (TCHAR lpAppName, TCHAR lpKeyName, TCHA
 	return GetProfileStringA (lpAppName1, lpKeyName1, lpDefault1, lpReturnedString1, nSize);
 }
 
+public static int GetProp (int hWnd, int lpString) {
+	if (IsUnicode) return GetPropW (hWnd, lpString);
+	return GetPropA (hWnd, lpString);
+}
+
 public static final boolean GetSaveFileName (OPENFILENAME lpofn) {
 	if (IsUnicode) return GetSaveFileNameW (lpofn);
 	return GetSaveFileNameA (lpofn);
@@ -1848,6 +1853,15 @@ public static final int GetWindowText (int hWnd, TCHAR lpString, int nMaxCount) 
 public static final int GetWindowTextLength (int hWnd) {
 	if (IsUnicode) return GetWindowTextLengthW (hWnd);
 	return GetWindowTextLengthA (hWnd);
+}
+
+public static final int GlobalAddAtom (TCHAR lpString) {
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return GlobalAddAtomW (lpString1);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return GlobalAddAtomA (lpString1);
 }
 
 public static final boolean ImmGetCompositionFont (int hIMC, LOGFONT lplf) {
@@ -2077,6 +2091,11 @@ public static final int RegQueryValueEx (int hKey, TCHAR lpValueName, int lpRese
 	return RegQueryValueExA (hKey, lpValueName1, lpReserved, lpType, lpData1, lpcbData);
 }
 
+public static final int RemoveProp  (int hWnd, int lpString){
+	if (IsUnicode) return RemovePropW (hWnd, lpString);
+	return RemovePropA (hWnd, lpString);
+}
+
 public static final int SendMessage (int hWnd, int Msg, int wParam, TCHAR lParam) {
 	if (IsUnicode) {
 		char [] lParam1 = lParam == null ? null : lParam.chars;
@@ -2194,6 +2213,11 @@ public static final int SendMessage (int hWnd, int Msg, int wParam, HDLAYOUT lPa
 public static final boolean SetMenuItemInfo (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii) {
 	if (IsUnicode) return SetMenuItemInfoW (hMenu, uItem, fByPosition, lpmii);
 	return SetMenuItemInfoA (hMenu, uItem, fByPosition, lpmii);
+}
+
+public static boolean SetProp (int hWnd, int lpString, int hData) {
+	if (IsUnicode) return SetPropW (hWnd, lpString, hData);
+	return SetPropA (hWnd, lpString, hData);
 }
 
 public static final int SetWindowLong (int hWnd, int nIndex, int dwNewLong) {
@@ -2506,6 +2530,8 @@ public static final native int GetProcAddress (int hModule, byte [] lpProcName);
 public static final native int GetProcessHeap ();
 public static final native int GetProfileStringW (char [] lpAppName, char [] lpKeyName, char [] lpDefault, char [] lpReturnedString, int nSize);
 public static final native int GetProfileStringA (byte [] lpAppName, byte [] lpKeyName, byte [] lpDefault, byte [] lpReturnedString, int nSize);
+public static final native int GetPropW (int hWnd, int lpString);
+public static final native int GetPropA (int hWnd, int lpString);
 public static final native int GetRandomRgn (int hdc, int hrgn, int iNum);
 public static final native int GetRegionData (int hRgn, int dwCount, int [] lpRgnData);
 public static final native int GetRgnBox (int hrgn, RECT lprc);
@@ -2540,6 +2566,8 @@ public static final native int GetWindowTextLengthW (int hWnd);
 public static final native int GetWindowTextLengthA (int hWnd);
 public static final native int GetWindowThreadProcessId (int hWnd, int [] lpdwProcessId);
 public static final native boolean GetWorldTransform(int hdc, float[] lpXform);
+public static final native int GlobalAddAtomW (char [] lpString);
+public static final native int GlobalAddAtomA (byte [] lpString);
 public static final native int GlobalAlloc (int uFlags, int dwBytes);
 public static final native int GlobalFree (int hMem);
 public static final native int GlobalLock (int hMem);
@@ -2732,7 +2760,9 @@ public static final native int RegQueryValueExA (int hKey, byte[] lpValueName, i
 public static final native boolean ReleaseCapture ();
 public static final native int ReleaseDC (int hWnd, int hDC);
 public static final native boolean RemoveMenu (int hMenu, int uPosition, int uFlags);
-public static final native boolean  RestoreDC(int hdc, int nSavedDC);
+public static final native int RemovePropA (int hWnd, int lpString);
+public static final native int RemovePropW (int hWnd, int lpString);
+public static final native boolean RestoreDC(int hdc, int nSavedDC);
 public static final native boolean RoundRect (int hdc, int nLeftRect, int nTopRect, int nRightRect, int nBottomRect, int nWidth, int nHeight);
 public static final native int SaveDC(int hdc);
 public static final native boolean ScreenToClient (int hWnd, POINT lpPoint);
@@ -2825,6 +2855,8 @@ public static final native boolean SetRectRgn (int hrgn, int nLeftRect, int nTop
 public static final native int SetROP2 (int hdc, int fnDrawMode);
 public static final native boolean SetScrollInfo (int hwnd, int flags, SCROLLINFO info, boolean fRedraw);
 public static final native int SetStretchBltMode(int hdc, int iStretchMode);
+public static final native boolean SetPropW (int hWnd, int lpString, int hData);
+public static final native boolean SetPropA (int hWnd, int lpString, int hData);
 public static final native int SetTextAlign(int hdc, int fMode);
 public static final native int SetTextColor (int hdc, int colorRef);
 public static final native int SetTimer (int hWnd, int nIDEvent, int Elapse, int lpTimerFunc);

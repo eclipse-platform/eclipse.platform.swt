@@ -3603,6 +3603,30 @@ fail:
 }
 #endif
 
+#ifndef NO_GetPropA
+JNIEXPORT jint JNICALL OS_NATIVE(GetPropA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetPropA_FUNC);
+	rc = (jint)GetPropA((HWND)arg0, (LPCTSTR)arg1);
+	OS_NATIVE_EXIT(env, that, GetPropA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GetPropW
+JNIEXPORT jint JNICALL OS_NATIVE(GetPropW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GetPropW_FUNC);
+	rc = (jint)GetPropW((HWND)arg0, (LPCWSTR)arg1);
+	OS_NATIVE_EXIT(env, that, GetPropW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GetROP2
 JNIEXPORT jint JNICALL OS_NATIVE(GetROP2)
 	(JNIEnv *env, jclass that, jint arg0)
@@ -4169,6 +4193,38 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(GetWorldTransform)
 fail:
 	if (arg1 && lparg1) (*env)->ReleaseFloatArrayElements(env, arg1, lparg1, 0);
 	OS_NATIVE_EXIT(env, that, GetWorldTransform_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GlobalAddAtomA
+JNIEXPORT jint JNICALL OS_NATIVE(GlobalAddAtomA)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GlobalAddAtomA_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)GlobalAddAtomA((LPCTSTR)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, GlobalAddAtomA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_GlobalAddAtomW
+JNIEXPORT jint JNICALL OS_NATIVE(GlobalAddAtomW)
+	(JNIEnv *env, jclass that, jcharArray arg0)
+{
+	jchar *lparg0=NULL;
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, GlobalAddAtomW_FUNC);
+	if (arg0) if ((lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL)) == NULL) goto fail;
+	rc = (jint)GlobalAddAtomW((LPCWSTR)lparg0);
+fail:
+	if (arg0 && lparg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, GlobalAddAtomW_FUNC);
 	return rc;
 }
 #endif
@@ -7244,6 +7300,30 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(RemoveMenu)
 }
 #endif
 
+#ifndef NO_RemovePropA
+JNIEXPORT jint JNICALL OS_NATIVE(RemovePropA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RemovePropA_FUNC);
+	rc = (jint)RemovePropA((HWND)arg0, (LPCTSTR)arg1);
+	OS_NATIVE_EXIT(env, that, RemovePropA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RemovePropW
+JNIEXPORT jint JNICALL OS_NATIVE(RemovePropW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, RemovePropW_FUNC);
+	rc = (jint)RemovePropW((HWND)arg0, (LPCWSTR)arg1);
+	OS_NATIVE_EXIT(env, that, RemovePropW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_RestoreDC
 JNIEXPORT jboolean JNICALL OS_NATIVE(RestoreDC)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)
@@ -8803,6 +8883,30 @@ JNIEXPORT jint JNICALL OS_NATIVE(SetPixel)
 	OS_NATIVE_ENTER(env, that, SetPixel_FUNC);
 	rc = (jint)SetPixel((HDC)arg0, arg1, arg2, arg3);
 	OS_NATIVE_EXIT(env, that, SetPixel_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetPropA
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetPropA)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetPropA_FUNC);
+	rc = (jboolean)SetPropA((HWND)arg0, (LPCTSTR)arg1, (HANDLE)arg2);
+	OS_NATIVE_EXIT(env, that, SetPropA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_SetPropW
+JNIEXPORT jboolean JNICALL OS_NATIVE(SetPropW)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	jboolean rc = 0;
+	OS_NATIVE_ENTER(env, that, SetPropW_FUNC);
+	rc = (jboolean)SetPropW((HWND)arg0, (LPCWSTR)arg1, (HANDLE)arg2);
+	OS_NATIVE_EXIT(env, that, SetPropW_FUNC);
 	return rc;
 }
 #endif

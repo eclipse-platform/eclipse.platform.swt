@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 615;
-int OS_nativeFunctionCallCount[615];
+int OS_nativeFunctionCount = 623;
+int OS_nativeFunctionCallCount[623];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc",
 	"ActivateKeyboardLayout",
@@ -237,6 +237,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetProcessHeap",
 	"GetProfileStringA",
 	"GetProfileStringW",
+	"GetPropA",
+	"GetPropW",
 	"GetROP2",
 	"GetRandomRgn",
 	"GetRegionData",
@@ -273,6 +275,8 @@ char * OS_nativeFunctionNames[] = {
 	"GetWindowTextW",
 	"GetWindowThreadProcessId",
 	"GetWorldTransform",
+	"GlobalAddAtomA",
+	"GlobalAddAtomW",
 	"GlobalAlloc",
 	"GlobalFree",
 	"GlobalLock",
@@ -465,6 +469,8 @@ char * OS_nativeFunctionNames[] = {
 	"ReleaseCapture",
 	"ReleaseDC",
 	"RemoveMenu",
+	"RemovePropA",
+	"RemovePropW",
 	"RestoreDC",
 	"RoundRect",
 	"SHBrowseForFolderA",
@@ -564,6 +570,8 @@ char * OS_nativeFunctionNames[] = {
 	"SetPaletteEntries",
 	"SetParent",
 	"SetPixel",
+	"SetPropA",
+	"SetPropW",
 	"SetROP2",
 	"SetRect",
 	"SetRectRgn",
