@@ -13,7 +13,6 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
  
-import org.eclipse.swt.internal.Converter;
 import org.eclipse.swt.internal.Library;
 
 public class OS {
@@ -231,8 +230,15 @@ public class OS {
 	public static final byte[] unmap_event = signal("unmap_event");
 	public static final byte[] value_changed = signal("value_changed");
 	
-static byte[] signal (String name) {
-	return Converter.wcsToMbcs(null, name, true);
+static byte [] signal (String name) {
+	int length = name.length ();
+	char [] chars = new char [length];
+	name.getChars (0, length, chars, 0);
+	byte [] buffer = new byte [length + 1];
+	for (int i=0; i<length; i++) {
+		buffer [i] = (byte) chars [i];
+	}
+	return buffer;
 }
 
 /** Object private fields accessors */
