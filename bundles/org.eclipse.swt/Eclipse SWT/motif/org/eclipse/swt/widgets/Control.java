@@ -2746,7 +2746,8 @@ void update (boolean all) {
 		int window = OS.XtWindow (handle);
 		if (window == 0) return;
 		int event = OS.XtMalloc (XEvent.sizeof);
-		OS.XSync (display, false);  OS.XSync (display, false);
+		OS.XSync (display, false);
+		OS.XSync (display, false);
 		while (OS.XCheckWindowEvent (display, window, OS.ExposureMask, event)) {
 			OS.XtDispatchEvent (event);
 		}

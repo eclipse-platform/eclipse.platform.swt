@@ -2934,7 +2934,8 @@ public void update () {
 	int mask = OS.ExposureMask | OS.ResizeRedirectMask |
 		OS.StructureNotifyMask | OS.SubstructureNotifyMask |
 		OS.SubstructureRedirectMask;
-	OS.XSync (xDisplay, false); OS.XSync (xDisplay, false);
+	OS.XSync (xDisplay, false);
+	OS.XSync (xDisplay, false);
 	while (OS.XCheckMaskEvent (xDisplay, mask, event)) OS.XtDispatchEvent (event);
 	OS.XtFree (event);
 }

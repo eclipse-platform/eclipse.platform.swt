@@ -1335,6 +1335,8 @@ public void setVisible (boolean visible) {
 
 	/* Show the shell */
 	if (visible) {
+		sendEvent (SWT.Show);
+		if (isDisposed ()) return;
 
 		/* Map the widget */
 		OS.XtSetMappedWhenManaged (shellHandle, true);
@@ -1351,11 +1353,9 @@ public void setVisible (boolean visible) {
 		*/
 		do {
 			display.update ();
+			if (isDisposed ()) return;
 		} while (!isVisible ());
 		adjustTrim ();
-		
-		sendEvent (SWT.Show);
-		if (isDisposed ()) return;
 		
 		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.APPLICATION_MODAL;
 		if ((style & mask) != 0) {
