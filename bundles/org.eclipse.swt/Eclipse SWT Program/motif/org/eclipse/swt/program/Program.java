@@ -30,6 +30,12 @@ public final class Program {
 	String command;
 	Display display;
 
+	/* Gnome specific
+	 * true if command expects a URI
+	 * false if expects a path
+	 */
+	boolean gnomeExpectUri;
+
 	static private final String   cdeShell = "Program_CDE_SHELL";  // hidden shell used for DtAppInitialize and DtActionInvoke
 	static private final String[] cdeIconExt = { ".m.pm",   ".l.pm",   ".s.pm",   ".t.pm" };
 	static private final String[] cdeMaskExt = { ".m_m.bm", ".l_m.bm", ".s_m.bm", ".t_m.bm" };
@@ -38,7 +44,7 @@ public final class Program {
 	static final int DESKTOP_UNKNOWN = 0;
 	static final int DESKTOP_KDE = 1;		// Linux
 	static final int DESKTOP_GNOME = 2;		// Linux
-    static final int DESKTOP_CDE = 3;		// Solaris
+	static final int DESKTOP_CDE = 3;		// Solaris
 	
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -47,7 +53,7 @@ Program () {
 }
 
 /* Determine the desktop for the given display. */
-static int getDesktop( Display display ) {
+static int getDesktop(Display display) {
 	if (display == null) return DESKTOP_UNKNOWN;
 	
 	// If the desktop type for this display is already known, return it.
@@ -55,18 +61,23 @@ static int getDesktop( Display display ) {
 	if (desktopValue != null) {
 		return desktopValue.intValue();
 	}
-	
+	int desktop = DESKTOP_UNKNOWN;
+
+	if (isGnomeDesktop(display)) {
+		if (gnome_init()) desktop = DESKTOP_GNOME;
+		// Save the desktop type on the display itself.
+		display.setData( desktopData, new Integer(desktop) );
+		return desktop;
+	}
+
+	int xDisplay = display.xDisplay;
+	/* Use the character encoding for the default locale */
+	byte[] cdeName   = Converter.wcsToMbcs (null, "_DT_SM_PREFERENCES", true);
+	byte[] kdeName   = Converter.wcsToMbcs (null, "KWIN_RUNNING", true);
 	// Obtain the atoms for the various window manager signature properties.
 	// On CDE, the atom below may exist without DTWM running. If the atom 
 	// below is defined, the CDE database exists and the available
 	// applications can be queried.
-	int desktop = DESKTOP_UNKNOWN;
-	int xDisplay = display.xDisplay;
-	/* Use the character encoding for the default locale */
-	byte[] gnomeName = Converter.wcsToMbcs (null, "GNOME_NAME_SERVER", true);
-	byte[] cdeName   = Converter.wcsToMbcs (null, "_DT_SM_PREFERENCES", true);
-	byte[] kdeName   = Converter.wcsToMbcs (null, "KWIN_RUNNING", true);
-	int gnome = OS.XInternAtom( xDisplay, gnomeName, true );
 	int cde   = OS.XInternAtom( xDisplay, cdeName, true );
 	int kde   = OS.XInternAtom( xDisplay, kdeName, true );
 	
@@ -82,9 +93,6 @@ static int getDesktop( Display display ) {
 	// A given WM (desktop) is active if the property exists on the root window.
 	for (int index = 0; desktop == DESKTOP_UNKNOWN && index < property.length; index++) {
 		if (property[ index ] == OS.None) continue; // do not match atoms that do not exist
-		if (property[ index ] == gnome) {
-			if (gnome_init()) desktop = DESKTOP_GNOME;		
-		}
 		if (property[ index ] == cde) {
 			if (cde_init( display )) desktop = DESKTOP_CDE;
 		}	
@@ -144,8 +152,12 @@ private static Program findProgram( Display display, String extension ) {
 	if (name == null) return null;
 
 	// Get the corresponding command for the mime type.
+	boolean[] gnomeExpectUri = null;
+	if (desktop == DESKTOP_GNOME) {
+		gnomeExpectUri = new boolean[1];
+		command = gnome_getMimeTypeCommand( name, gnomeExpectUri );
+	}
 	if (desktop == DESKTOP_KDE)   command = kde_getMimeTypeCommand( name );
-	if (desktop == DESKTOP_GNOME) command = gnome_getMimeValue( name, "open" );
 	if (desktop == DESKTOP_CDE)   command = cde_getAction( name );
 	if (command == null) return null;
 	
@@ -153,6 +165,7 @@ private static Program findProgram( Display display, String extension ) {
 	Program program   = new Program ();
 	program.name      = name;
 	program.command   = command;
+	if (desktop == DESKTOP_GNOME) program.gnomeExpectUri = gnomeExpectUri[0];
 	program.extension = extension;
 	program.display   = display;
 	return program;
@@ -224,6 +237,8 @@ private static Program[] getPrograms( Display display ) {
 			
 	// Create a list of programs with commands.
 	Vector programs = new Vector();
+	boolean[] gnomeExpectUri = null;
+	if (desktop == DESKTOP_GNOME) gnomeExpectUri = new boolean[1];
 	Iterator keys = mimeInfo.keySet().iterator();
 	while (keys.hasNext()) {
 		String mimeType  = (String) keys.next();
@@ -233,13 +248,14 @@ private static Program[] getPrograms( Display display ) {
 			extension = (String) mimeExts.elementAt( 0 );
 		}
 		String command = null;
+		if (desktop == DESKTOP_GNOME) command = gnome_getMimeTypeCommand( mimeType, gnomeExpectUri);
 		if (desktop == DESKTOP_KDE)   command = kde_getMimeTypeCommand( mimeType );
-		if (desktop == DESKTOP_GNOME) command = gnome_getMimeValue( mimeType, "open" );
 		if (desktop == DESKTOP_CDE)   command = cde_getAction( mimeType );
 		if (command != null) {
 			Program program   = new Program ();
 			program.name      = mimeType;
 			program.command   = command;
+			if (desktop == DESKTOP_GNOME) program.gnomeExpectUri = gnomeExpectUri[0];
 			program.extension = extension;
 			program.display   = display;
 			programs.addElement( program );
@@ -254,179 +270,71 @@ private static Program[] getPrograms( Display display ) {
 	return programList;
 }
 
+
+private static boolean isGnomeDesktop(Display display) {
+	int xDisplay = display.xDisplay;
+	byte[] name = Converter.wcsToMbcs(null, "_WIN_SUPPORTING_WM_CHECK", true);
+	int atom_set = OS.XInternAtom(xDisplay, name, true);
+	return atom_set != OS.None;
+}
 /*
  * Obtain the registered mime type information and
  * return it in a map. The key of each entry
  * in the map is the mime type name. The value is
  * a vector of the associated file extensions.
  */
-  
 private static Hashtable gnome_getMimeInfo() {
 	Hashtable mimeInfo = new Hashtable();
-	
-	// Extract the mime info from the system directory.
-	String mimeDirectory = gnome_getDataDirectory ("mime-info");
-	gnome_getMimeInfoFromDirectory( mimeInfo, new File( mimeDirectory ) );
-	
-	// Append the mime info from the user's directory (if it exists).
-	String userDirectory = gnome_getHomeDirectory();
-	if (userDirectory != null) {
-		userDirectory = userDirectory + File.separator + ".gnome" + File.separator + "mime-info";
-		gnome_getMimeInfoFromDirectory( mimeInfo, new File( userDirectory ) );
+	int[] mimeData = new int[1];
+	int[] extensionData = new int[1];
+	int mimeList = GNOME.gnome_vfs_get_registered_mime_types();
+	int mimeElement = mimeList;
+	while (mimeElement != 0) {
+		OS.memmove (mimeData, mimeElement, 4);
+		int mimePtr = mimeData[0];
+		int mimeLength = OS.strlen(mimePtr);
+		byte[] mimeTypeBuffer = new byte[mimeLength];
+		OS.memmove(mimeTypeBuffer, mimePtr, mimeLength);
+		String mimeType = new String(Converter.mbcsToWcs(null, mimeTypeBuffer));
+		int extensionList = GNOME.gnome_vfs_mime_get_extensions_list(mimePtr);
+		if (extensionList != 0) {
+			Vector extensions = new Vector();
+			int extensionElement = extensionList;
+			while (extensionElement != 0) {
+				OS.memmove(extensionData, extensionElement, 4);
+				int extensionPtr = extensionData[0];
+				int extension_length = OS.strlen(extensionPtr);
+				byte[] extensionBuffer = new byte[extension_length];
+				OS.memmove(extensionBuffer, extensionPtr, extension_length);
+				String extension = new String(Converter.mbcsToWcs(null, extensionBuffer));
+				extension = '.' + extension;
+				extensions.add(extension);
+				extensionElement = GNOME.g_list_next(extensionElement); 
+			}
+			GNOME.gnome_vfs_mime_extensions_list_free(extensionList);
+			if (extensions.size() > 0) mimeInfo.put(mimeType, extensions);
+		}
+		mimeElement = GNOME.g_list_next(mimeElement);
 	}
-
+	if (mimeList != 0) GNOME.gnome_vfs_mime_registered_mime_type_list_free(mimeList);
 	return mimeInfo;
 }
 
-// Given a map and a directory, find all of the 
-// mime information files (*.mime) and parse them for
-// relavent mime type information. Each entry in the
-// map corresponds to one mime type, and its
-// associated file extensions.
-
-private static void gnome_getMimeInfoFromDirectory( Hashtable info, File directory ) {
-	// For each entry in the given directory (if it exists)
-	if (directory.exists()) {
-		File[] files = directory.listFiles();
-		for (int i = 0; i < files.length; i++) {
-		
-			// If the entry is a subdirectory, process it and
-			// merge the mime type into the given map.
-			if (files[i].isDirectory()) {
-				gnome_getMimeInfoFromDirectory( info, files[i] );
-			}
-		
-			// else if the entry is a mime info file (*.mime)
-			else if (files[i].getName().endsWith(".mime")) {
-				try {
-					// Parse the mime file and merge the info
-					// into the given map.
-					FileReader in = new FileReader( files[i] );
-					BufferedReader reader = new BufferedReader( in );
-					gnome_parseMimeFile( info, reader );
-					reader.close();
-					in.close();
-				}
-				catch (IOException e) {
-					// Ignore file exceptions silently. If we
-					// can't read it, the info is not available.
-				}
-			}
+private static String gnome_getMimeTypeCommand(String mimeType, boolean gnomeExpectUri[]) {
+	String command = null;
+	GnomeVFSMimeApplication application = new GnomeVFSMimeApplication();
+	byte[] mimeTypeBuffer = Converter.wcsToMbcs(null, mimeType+'\0');
+	int ptr = GNOME.gnome_vfs_mime_get_default_application(mimeTypeBuffer);
+	if (ptr != 0) {
+		GNOME.memmove(application, ptr, GnomeVFSMimeApplication.sizeof);
+		int	length = OS.strlen(application.command);
+		byte[] buffer = new byte[length];
+		OS.memmove(buffer, application.command, length);
+		command = new String(Converter.mbcsToWcs(null, buffer));
+		gnomeExpectUri[0] = application.expects_uris == GNOME.GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS;
+		GNOME.gnome_vfs_mime_application_free(ptr);
 		}
-	}
-}
-
-private static void gnome_parseMimeFile( Hashtable info, BufferedReader reader ) {
-	Vector  mimeExts = null;
-	String  mimeType = null;
-	boolean saveType = false;
-	String  line     = "#";
-	while (line != null) {
-		
-		// Determine if the line contains a mime type name.
-		boolean newType = (line.length() > 0 && Compatibility.isLetter( line.charAt(0) ));
-				  
-		// If there is valid data on this line to be processed
-		String data = line.trim();
-		if (data.length() > 0 && data.charAt(0) != '#') {
-			
-			// If this line defines a new mime type
-			if (newType) {
-				
-				// If a previous mime type has not be saved yet
-				if (mimeType != null) {
-					// Save the type and process this line again.
-					saveType = true;
-				}
-				// else initialize the mime type info
-				else {
-					int colon = data.indexOf( ':' );
-					if (colon != -1) {
-						mimeType = data.substring( 0, colon );
-					}
-					else {
-						mimeType = data;
-					}
-					mimeExts = new Vector();
-				}
-			}
-			
-			// else if the line defines a list of extensions
-			else if (data.indexOf( "ext" ) == 0 && mimeType != null) {
-				
-				// Get the extensions defined on the line
-				String exts = "";
-				int colon = data.indexOf( ':' );
-				if ((colon != -1) && ((colon+1) < data.length())) {
-					exts = data.substring( (colon+1) ).trim();
-				}
-				
-				// While there are extensions to be processed (use space as separator)
-				exts = exts.replace( '\t', ' ' );
-				exts = exts.replace( ',', ' ' );
-				while (exts.length() != 0) {
-					// Extract the next entension from the list
-					String newExt;
-					int  space = exts.indexOf( ' ' );
-					if (space != -1) {
-						newExt = exts.substring( 0, space );
-						exts = exts.substring( space ).trim();
-					}
-					else {
-						newExt = exts;
-						exts = "";
-					}
-					
-					// Prefix an extension with a period.
-					if (newExt.charAt(0) != '.') {
-						newExt = "." + newExt;
-					}
-					mimeExts.addElement( newExt );
-				} 
-			}
-			
-			// else if the line defines a list of regular expressions
-			else if (data.indexOf( "regex" ) == 0 && mimeType != null) {
-				// Do nothing with these right now.
-			}
-		}
-		
-		
-		// If the current mime type is still being processed
-		if (!saveType) {
-			// Get the next line			
-			try {
-				line = reader.readLine();
-			}
-			catch (IOException e) {
-				line = null;
-			}
-		}
-		
-		// If the current type should be saved or if the end
-		// of the file was reached
-		if (saveType || (line == null)) {
-			// If there is a mime type to be saved
-			if (mimeType != null) {
-			
-				// If the mime type does not exist in the map, add it.
-				Vector prevExts = (Vector) info.get( mimeType );
-				if (prevExts == null) {
-					info.put( mimeType, mimeExts );
-				}
-		
-				// else append the new list of extensions.
-				else {
-					for (int i = 0; i < mimeExts.size(); i++) {
-						prevExts.add( mimeExts.elementAt( i ) );
-					}
-				}
-			}
-			mimeType = null;
-			mimeExts = null;
-			saveType = false;
-		}
-	}
+	return command;
 }
 
 // Private method for parsing a command line into its arguments.
@@ -476,55 +384,6 @@ private static String[] parseCommand( String cmd ) {
 		strings[ index ] = (String) args.elementAt( index );
 	}
 	return strings;
-}
-
-
-static String gnome_getDataDirectory(String dirName) {
-	/* Use the character encoding for the default locale */
-	byte [] nameBuffer = Converter.wcsToMbcs (null, dirName, true);
-	int ptr = GNOME.gnome_datadir_file(nameBuffer);
-	if (ptr == 0) return null;
-	int length = OS.strlen(ptr);
-	byte[] dirBuffer = new byte[length];
-	OS.memmove(dirBuffer, ptr, length);
-	/* Use the character encoding for the default locale */
-	return new String(Converter.mbcsToWcs(null, dirBuffer));
-}
-
-static String gnome_getHomeDirectory() {
-	int ptr = GNOME.g_get_home_dir();
-	if (ptr == 0) return null;
-	int length = OS.strlen(ptr);
-	byte[] homeDirBuffer = new byte[length];
-	OS.memmove(homeDirBuffer, ptr, length);
-	/* Use the character encoding for the default locale */
-	return new String(Converter.mbcsToWcs(null, homeDirBuffer));
-}
-
-static String gnome_getMimeType(String name) {
-	/* Use the character encoding for the default locale */
-	byte [] nameBuffer = Converter.wcsToMbcs (null, name, true);
-	int ptr = GNOME.gnome_mime_type(nameBuffer);
-	if (ptr == 0) return null;
-	int length = OS.strlen(ptr);
-	byte[] mimeBuffer = new byte[length];
-	OS.memmove(mimeBuffer, ptr, length);
-	/* Use the character encoding for the default locale */
-	return new String(Converter.mbcsToWcs(null, mimeBuffer));
-}
-
-static String gnome_getMimeValue(String mimeType, String key) {
-	/* Use the character encoding for the default locale */
-	byte [] typeBuffer = Converter.wcsToMbcs (null, mimeType, true);
-	byte [] keyBuffer = Converter.wcsToMbcs (null, key, true);
-	int ptr = GNOME.gnome_mime_get_value(typeBuffer, keyBuffer);
-	if (ptr == 0) return null;
-	
-	int length = OS.strlen(ptr);
-	byte[] valueBuffer = new byte[length];
-	OS.memmove(valueBuffer, ptr, length);
-	/* Use the character encoding for the default locale */
-	return new String(Converter.mbcsToWcs(null, valueBuffer));
 }
 
 static boolean kde_init () {
@@ -711,6 +570,11 @@ public boolean execute (String fileName) {
 		}
 		
 		case DESKTOP_GNOME: {
+			if (gnomeExpectUri) {
+				/* convert the given path into a URL */
+				fileName = "file://" + fileName;
+			}
+
 			// Parse the command into its individual arguments.
 			String[]  args = parseCommand( command );
 			int       fileArg = -1;
@@ -784,12 +648,7 @@ public ImageData getImageData () {
 		}
 		
 		case DESKTOP_GNOME: {
-			String fakeFileName = "file" + extension;
-			String mime = gnome_getMimeType(fakeFileName);
-			if (mime == null) return null;
-			iconPath = gnome_getMimeValue(mime, "icon-filename");
-			if (iconPath == null) return null;
-			break;
+			return null;
 		}
 		
 		case DESKTOP_CDE: {
@@ -808,7 +667,7 @@ public ImageData getImageData () {
 		/* Use the character encoding for the default locale */
 		byte [] iconName = Converter.wcsToMbcs (null, iconPath, true);
 		int pixmap = OS.XmGetPixmap( screen, iconName, fgPixel, bgPixel );
-    	if (pixmap == OS.XmUNSPECIFIED_PIXMAP) return null;
+		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) return null;
 		Image image = Image.motif_new (display, SWT.BITMAP, pixmap, 0);
 		ImageData imageData = image.getImageData ();
 		
@@ -884,16 +743,16 @@ static boolean gnome_init () {
 static String cde_getAttribute(String dataType, String attrName) {
 	/* Use the character encoding for the default locale */
 	byte [] dataTypeBuf = Converter.wcsToMbcs (null, dataType, true);
-    byte [] attrNameBuf = Converter.wcsToMbcs (null, attrName, true);
-    byte [] optNameBuf  = null;
+	byte [] attrNameBuf = Converter.wcsToMbcs (null, attrName, true);
+	byte [] optNameBuf  = null;
 	int attrValue = CDE.DtDtsDataTypeToAttributeValue( dataTypeBuf, attrNameBuf, optNameBuf );
 	if (attrValue == 0) return null;
-    int length = OS.strlen(attrValue);
-    byte[] attrValueBuf = new byte[length];
-    OS.memmove(attrValueBuf, attrValue, length);
-    CDE.DtDtsFreeAttributeValue( attrValue );
+	int length = OS.strlen(attrValue);
+	byte[] attrValueBuf = new byte[length];
+	OS.memmove(attrValueBuf, attrValue, length);
+	CDE.DtDtsFreeAttributeValue( attrValue );
 	/* Use the character encoding for the default locale */
-    return new String(Converter.mbcsToWcs(null, attrValueBuf));
+	return new String(Converter.mbcsToWcs(null, attrValueBuf));
 }
 
 /* CDE - Get Default Action of Data Type
@@ -932,10 +791,10 @@ static String cde_getAction(String dataType) {
  */
 
 static String cde_getExtension(String dataType) {
-    String fileExt = cde_getAttribute( dataType, CDE.DtDTS_DA_NAME_TEMPLATE );
-    if (fileExt == null || fileExt.indexOf( "%s." ) == -1) return null;
-    int dot = fileExt.indexOf( "." );
-    return fileExt.substring( dot );
+	String fileExt = cde_getAttribute( dataType, CDE.DtDTS_DA_NAME_TEMPLATE );
+	if (fileExt == null || fileExt.indexOf( "%s." ) == -1) return null;
+	int dot = fileExt.indexOf( "." );
+	return fileExt.substring( dot );
 }
 
 /* CDE - Get Data Types
@@ -954,26 +813,26 @@ static Hashtable cde_getDataTypeInfo() {
 		index = 0; 
 		int dataType = CDE.listElementAt( dataTypeList, index++ );
 		while (dataType != 0) {
-    		int length = OS.strlen(dataType);
-    		byte[] dataTypeBuf = new byte[length];
-    		OS.memmove(dataTypeBuf, dataType, length);
+			int length = OS.strlen(dataType);
+			byte[] dataTypeBuf = new byte[length];
+			OS.memmove(dataTypeBuf, dataType, length);
 			/* Use the character encoding for the default locale */
-     		String dataTypeName = new String(Converter.mbcsToWcs(null, dataTypeBuf));
+			String dataTypeName = new String(Converter.mbcsToWcs(null, dataTypeBuf));
      		
-	   		// The data type is valid if it is not an action, and it has an extension and an action.
-      		String extension = cde_getExtension( dataTypeName );
-   			if (!CDE.DtDtsDataTypeIsAction( dataTypeBuf ) &&
+			// The data type is valid if it is not an action, and it has an extension and an action.
+			String extension = cde_getExtension( dataTypeName );
+			if (!CDE.DtDtsDataTypeIsAction( dataTypeBuf ) &&
 				extension != null && cde_getAction( dataTypeName ) != null) {
 				Vector exts = new Vector();
 				exts.addElement( extension );
 				dataTypeInfo.put( dataTypeName, exts );
-	   		}
+			}
 			dataType = CDE.listElementAt( dataTypeList, index++ );
 		}
 		CDE.DtDtsFreeDataTypeNames( dataTypeList );
 	}
 	
-    return dataTypeInfo;
+	return dataTypeInfo;
 }
 
 /* CDE - Get Image Data
@@ -993,30 +852,30 @@ ImageData cde_getImageData() {
 	int fgPixel = OS.XWhitePixel( display.xDisplay, OS.XDefaultScreen( xDisplay ) );
 	int bgPixel = OS.XBlackPixel( display.xDisplay, OS.XDefaultScreen( xDisplay ) );
 	
-    String icon = cde_getAttribute( name, CDE.DtDTS_DA_ICON );
-    byte [] iconName;
-    byte [] maskName = null;
-    int    pixmap = 0;
-    for (int index = 0; index < cdeIconExt.length && pixmap == 0; index++) {
+	String icon = cde_getAttribute( name, CDE.DtDTS_DA_ICON );
+	byte [] iconName;
+	byte [] maskName = null;
+	int    pixmap = 0;
+	for (int index = 0; index < cdeIconExt.length && pixmap == 0; index++) {
 		/* Use the character encoding for the default locale */
-    	iconName = Converter.wcsToMbcs (null, icon + cdeIconExt[ index ], true);
-    	maskName = Converter.wcsToMbcs (null, icon + cdeMaskExt[ index ], true);
+		iconName = Converter.wcsToMbcs (null, icon + cdeIconExt[ index ], true);
+		maskName = Converter.wcsToMbcs (null, icon + cdeMaskExt[ index ], true);
 		pixmap = OS.XmGetPixmap( screen, iconName, fgPixel, bgPixel );
-    	if (pixmap == OS.XmUNSPECIFIED_PIXMAP) pixmap = 0;
+		if (pixmap == OS.XmUNSPECIFIED_PIXMAP) pixmap = 0;
    }
     
-    if (pixmap != 0) {
-    	int type = SWT.ICON;
-    	// When creating the mask pixmap, do not use the screen's white and black
-    	// pixel for the foreground and background respectively, because on some
-    	// X servers (e.g., Solaris) pixel 0 is white and pixel 1 is black. Passing
-    	// (screen, name, whitePixel, blackPixel, 1) to get the mask pixmap will
-    	// result in an inverted mask. Instead explicitly use 1 (FG) and 0 (BG).
-   		int mask = OS.XmGetPixmapByDepth( screen, maskName, 1, 0, 1 );
-    	if (mask == OS.XmUNSPECIFIED_PIXMAP) {
-    		type = SWT.BITMAP;
-    		mask = 0;
-    	}
+	if (pixmap != 0) {
+		int type = SWT.ICON;
+		// When creating the mask pixmap, do not use the screen's white and black
+		// pixel for the foreground and background respectively, because on some
+		// X servers (e.g., Solaris) pixel 0 is white and pixel 1 is black. Passing
+		// (screen, name, whitePixel, blackPixel, 1) to get the mask pixmap will
+		// result in an inverted mask. Instead explicitly use 1 (FG) and 0 (BG).
+		int mask = OS.XmGetPixmapByDepth( screen, maskName, 1, 0, 1 );
+		if (mask == OS.XmUNSPECIFIED_PIXMAP) {
+			type = SWT.BITMAP;
+			mask = 0;
+		}
 		Image image = Image.motif_new (display, type, pixmap, mask );
 		ImageData imageData = image.getImageData();
 		
@@ -1027,8 +886,8 @@ ImageData cde_getImageData() {
 		OS.XmDestroyPixmap( screen, pixmap );
 		if (mask != 0) OS.XmDestroyPixmap( screen, mask ); 
 		return imageData;		
-    }
-    return null;	
+	}
+	return null;	
 }
 
 /* CDE - Initialize

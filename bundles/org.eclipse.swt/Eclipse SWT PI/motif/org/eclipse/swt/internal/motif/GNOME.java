@@ -9,12 +9,15 @@ package org.eclipse.swt.internal.motif;
  
 public class GNOME extends OS {
 
-public static final native int g_get_home_dir();
-public static final native int gnome_datadir_file(byte[] fileName);
-public static final native void gnome_desktop_entry_free(int entry);
-public static final native int gnome_desktop_entry_load(byte[] fileName);
-public static final native int gnome_mime_get_value(byte[] mimeType, byte[] key);
-public static final native int gnome_mime_type(byte[] fileName);
-public static final native int gnome_pixmap_file(byte[] fileName);
+public static final int GNOME_VFS_MIME_APPLICATION_ARGUMENT_TYPE_URIS = 0;
+
+public static final synchronized native int g_list_next(int list);
+public static final synchronized native int gnome_vfs_get_registered_mime_types();
+public static final synchronized native void gnome_vfs_mime_application_free(int application);
+public static final synchronized native void gnome_vfs_mime_extensions_list_free(int list);
+public static final synchronized native int gnome_vfs_mime_get_default_application(byte[] mimeType);
+public static final synchronized native int gnome_vfs_mime_get_extensions_list(int mime_type);
+public static final synchronized native void gnome_vfs_mime_registered_mime_type_list_free(int list);
+public static final synchronized native void memmove (GnomeVFSMimeApplication dest, int src, int count);
 
 }
