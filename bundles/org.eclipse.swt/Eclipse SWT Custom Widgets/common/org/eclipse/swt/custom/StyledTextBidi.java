@@ -18,7 +18,6 @@ import java.util.Vector;
  */
 class StyledTextBidi {
 	private GC gc;
-	private int tabWidth;			// tab width in number of spaces. used to calculate tab stops
 	private int[] bidiSegments;		// bidi direction segments specified to explicitly render separately
 	private int[] renderPositions;	// x position where characters of the line get rendered at.
 									// in visual order
@@ -97,7 +96,6 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 	int length = text.length();
 		
 	this.gc = gc;
-	this.tabWidth = tabWidth;
 	bidiSegments = offsets;
 	renderPositions = new int[length];
 	order = new int[length];
@@ -124,7 +122,7 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 			}
 			gc.setFont(normalFont);
 		}
-		calculateTabStops(text);
+		calculateTabStops(text, tabWidth);
 		calculateRenderPositions();
 	}
 }
@@ -186,8 +184,9 @@ private void calculateRenderPositions() {
  * 
  * @param text the original line text (not reordered) containing 
  * 	tab characters.
+ * @param tabWidth number of spaces that one tab character represents
  */
-private void calculateTabStops(String text) {
+private void calculateTabStops(String text, int tabWidth) {
 	int tabIndex = text.indexOf('\t', 0);
 	int logicalIndex = 0;
 	int x = StyledText.XINSET;
