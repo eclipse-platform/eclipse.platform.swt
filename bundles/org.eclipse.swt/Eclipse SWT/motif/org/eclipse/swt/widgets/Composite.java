@@ -168,39 +168,22 @@ protected void checkSubclass () {
 }
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
-	int parentHandle = parent.handle;
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) == 0) {
-		int border = (style & SWT.BORDER) != 0 ? 1 : 0;
-		int [] argList = {
-			OS.XmNancestorSensitive, 1,
-			OS.XmNborderWidth, border,
-			OS.XmNmarginWidth, 0,
-			OS.XmNmarginHeight, 0,
-			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
-			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
-		};
-		handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
-		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
-	} else {
-		createScrolledHandle (parentHandle);
-	}
-	if ((style & SWT.NO_FOCUS) == 0) {
-		int [] argList = {OS.XmNtraversalOn, 0};
-		focusHandle = OS.XmCreateDrawingArea (handle, null, argList, argList.length / 2);
-		if (focusHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	}
+	boolean scroll = (style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0;
+	createHandle (index, parent.handle, scroll);
 }
-void createScrolledHandle (int topHandle) {
-	int [] argList = {OS.XmNancestorSensitive, 1};
-	scrolledHandle = OS.XmCreateMainWindow (topHandle, null, argList, argList.length / 2);
-	if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL | SWT.BORDER)) != 0) {
+void createHandle (int index, int parentHandle, boolean scroll) {
+	if (scroll) {
+		int [] argList = {OS.XmNancestorSensitive, 1};
+		scrolledHandle = OS.XmCreateMainWindow (parentHandle, null, argList, argList.length / 2);
+		if (scrolledHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	}
+	if ((style & (SWT.H_SCROLL | SWT.V_SCROLL)) != 0) {
 		int [] argList1 = {
 			OS.XmNmarginWidth, 3,
 			OS.XmNmarginHeight, 3, 
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNshadowType, OS.XmSHADOW_IN,
-			OS.XmNshadowThickness, (style & SWT.BORDER) != 0 ? display.buttonShadowThickness : 0,
+			OS.XmNshadowThickness, hasBorder () ? display.buttonShadowThickness : 0,
 		};
 		formHandle = OS.XmCreateForm (scrolledHandle, null, argList1, argList1.length / 2);
 		if (formHandle == 0) error (SWT.ERROR_NO_HANDLES);
@@ -215,16 +198,26 @@ void createScrolledHandle (int topHandle) {
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 		};
 		handle = OS.XmCreateDrawingArea (formHandle, null, argList2, argList2.length / 2);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	} else {
-		int [] argList3 = {
+		int border = hasBorder () ? 1 : 0;
+		int [] argList = {
+			OS.XmNancestorSensitive, 1,
+			OS.XmNborderWidth, border,
 			OS.XmNmarginWidth, 0,
 			OS.XmNmarginHeight, 0,
 			OS.XmNresizePolicy, OS.XmRESIZE_NONE,
 			OS.XmNtraversalOn, (style & SWT.NO_FOCUS) != 0 ? 0 : 1,
 		};
-		handle = OS.XmCreateDrawingArea (scrolledHandle, null, argList3, argList3.length / 2);
+		if (scrolledHandle != 0) parentHandle = scrolledHandle;
+		handle = OS.XmCreateDrawingArea (parentHandle, null, argList, argList.length / 2);
+		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 	}
-	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
+	if ((style & SWT.NO_FOCUS) == 0) {
+		int [] argList = {OS.XmNtraversalOn, 0};
+		focusHandle = OS.XmCreateDrawingArea (handle, null, argList, argList.length / 2);
+		if (focusHandle == 0) error (SWT.ERROR_NO_HANDLES);
+	}
 }
 int defaultBackground () {
 	return display.compositeBackground;
@@ -354,6 +347,9 @@ public Control [] getTabList () {
 		}
 	}
 	return tabList;
+}
+boolean hasBorder () {
+	return (style & SWT.BORDER) != 0;
 }
 void hookEvents () {
 	super.hookEvents ();
