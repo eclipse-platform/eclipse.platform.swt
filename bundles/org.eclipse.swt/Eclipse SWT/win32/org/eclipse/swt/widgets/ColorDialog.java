@@ -37,7 +37,7 @@ public class ColorDialog extends Dialog {
 /**
  * Constructs a new instance of this class given only its parent.
  *
- * @param parent a composite control which will be the parent of the new instance (cannot be null)
+ * @param parent a composite control which will be the parent of the new instance
  *
  * @exception IllegalArgumentException <ul>
  *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
