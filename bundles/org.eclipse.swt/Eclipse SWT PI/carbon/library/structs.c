@@ -98,6 +98,64 @@ void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct
 }
 #endif /* NO_ATSTrapezoid */
 
+#ifndef NO_AlertStdCFStringAlertParamRec
+typedef struct AlertStdCFStringAlertParamRec_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID version, movable, helpButton, defaultText, cancelText, otherText, defaultButton, cancelButton, position, flags;
+} AlertStdCFStringAlertParamRec_FID_CACHE;
+
+AlertStdCFStringAlertParamRec_FID_CACHE AlertStdCFStringAlertParamRecFc;
+
+void cacheAlertStdCFStringAlertParamRecFids(JNIEnv *env, jobject lpObject)
+{
+	if (AlertStdCFStringAlertParamRecFc.cached) return;
+	AlertStdCFStringAlertParamRecFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	AlertStdCFStringAlertParamRecFc.version = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "version", "I");
+	AlertStdCFStringAlertParamRecFc.movable = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "movable", "Z");
+	AlertStdCFStringAlertParamRecFc.helpButton = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "helpButton", "Z");
+	AlertStdCFStringAlertParamRecFc.defaultText = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "defaultText", "I");
+	AlertStdCFStringAlertParamRecFc.cancelText = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "cancelText", "I");
+	AlertStdCFStringAlertParamRecFc.otherText = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "otherText", "I");
+	AlertStdCFStringAlertParamRecFc.defaultButton = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "defaultButton", "S");
+	AlertStdCFStringAlertParamRecFc.cancelButton = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "cancelButton", "S");
+	AlertStdCFStringAlertParamRecFc.position = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "position", "S");
+	AlertStdCFStringAlertParamRecFc.flags = (*env)->GetFieldID(env, AlertStdCFStringAlertParamRecFc.clazz, "flags", "I");
+	AlertStdCFStringAlertParamRecFc.cached = 1;
+}
+
+AlertStdCFStringAlertParamRec *getAlertStdCFStringAlertParamRecFields(JNIEnv *env, jobject lpObject, AlertStdCFStringAlertParamRec *lpStruct)
+{
+	if (!AlertStdCFStringAlertParamRecFc.cached) cacheAlertStdCFStringAlertParamRecFids(env, lpObject);
+	lpStruct->version = (UInt32)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.version);
+	lpStruct->movable = (Boolean)(*env)->GetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.movable);
+	lpStruct->helpButton = (Boolean)(*env)->GetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.helpButton);
+	lpStruct->defaultText = (CFStringRef)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.defaultText);
+	lpStruct->cancelText = (CFStringRef)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.cancelText);
+	lpStruct->otherText = (CFStringRef)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.otherText);
+	lpStruct->defaultButton = (SInt16)(*env)->GetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.defaultButton);
+	lpStruct->cancelButton = (SInt16)(*env)->GetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.cancelButton);
+	lpStruct->position = (UInt16)(*env)->GetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.position);
+	lpStruct->flags = (OptionBits)(*env)->GetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.flags);
+	return lpStruct;
+}
+
+void setAlertStdCFStringAlertParamRecFields(JNIEnv *env, jobject lpObject, AlertStdCFStringAlertParamRec *lpStruct)
+{
+	if (!AlertStdCFStringAlertParamRecFc.cached) cacheAlertStdCFStringAlertParamRecFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.version, (jint)lpStruct->version);
+	(*env)->SetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.movable, (jboolean)lpStruct->movable);
+	(*env)->SetBooleanField(env, lpObject, AlertStdCFStringAlertParamRecFc.helpButton, (jboolean)lpStruct->helpButton);
+	(*env)->SetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.defaultText, (jint)lpStruct->defaultText);
+	(*env)->SetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.cancelText, (jint)lpStruct->cancelText);
+	(*env)->SetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.otherText, (jint)lpStruct->otherText);
+	(*env)->SetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.defaultButton, (jshort)lpStruct->defaultButton);
+	(*env)->SetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.cancelButton, (jshort)lpStruct->cancelButton);
+	(*env)->SetShortField(env, lpObject, AlertStdCFStringAlertParamRecFc.position, (jshort)lpStruct->position);
+	(*env)->SetIntField(env, lpObject, AlertStdCFStringAlertParamRecFc.flags, (jint)lpStruct->flags);
+}
+#endif /* NO_AlertStdCFStringAlertParamRec */
+
 #ifndef NO_BitMap
 typedef struct BitMap_FID_CACHE {
 	int cached;

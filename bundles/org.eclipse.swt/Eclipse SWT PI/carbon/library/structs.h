@@ -27,6 +27,14 @@ void setATSTrapezoidFields(JNIEnv *env, jobject lpObject, ATSTrapezoid *lpStruct
 #define setATSTrapezoidFields(a,b,c)
 #endif /* NO_ATSTrapezoid */
 
+#ifndef NO_AlertStdCFStringAlertParamRec
+AlertStdCFStringAlertParamRec *getAlertStdCFStringAlertParamRecFields(JNIEnv *env, jobject lpObject, AlertStdCFStringAlertParamRec *lpStruct);
+void setAlertStdCFStringAlertParamRecFields(JNIEnv *env, jobject lpObject, AlertStdCFStringAlertParamRec *lpStruct);
+#else
+#define getAlertStdCFStringAlertParamRecFields(a,b,c) NULL
+#define setAlertStdCFStringAlertParamRecFields(a,b,c)
+#endif /* NO_AlertStdCFStringAlertParamRec */
+
 #ifndef NO_BitMap
 BitMap *getBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct);
 void setBitMapFields(JNIEnv *env, jobject lpObject, BitMap *lpStruct);

@@ -1408,22 +1408,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateRootControl
 }
 #endif /* NO_CreateRootControl */
 
-#ifndef NO_CreateStandardAlert
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStandardAlert
-	(JNIEnv *env, jclass that, jshort arg0, jint arg1, jint arg2, jint arg3, jintArray arg4)
-{
-	jint *lparg4=NULL;
-	jint rc;
-
-	DEBUG_CALL("CreateStandardAlert\n")
-
-	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
-	rc = (jint)CreateStandardAlert((AlertType)arg0, (CFStringRef)arg1, (CFStringRef)arg2, (const AlertStdCFStringAlertParamRec *)arg3, (DialogRef *)lparg4);
-	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
-	return rc;
-}
-#endif /* NO_CreateStandardAlert */
-
 #ifndef NO_CreateScrollBarControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateScrollBarControl
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2, jint arg3, jint arg4, jint arg5, jboolean arg6, jint arg7, jintArray arg8)
@@ -1480,6 +1464,25 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateSliderContr
 	return rc;
 }
 #endif NO_CreateSliderControl
+
+#ifndef NO_CreateStandardAlert
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStandardAlert
+	(JNIEnv *env, jclass that, jshort arg0, jint arg1, jint arg2, jobject arg3, jintArray arg4)
+{
+	AlertStdCFStringAlertParamRec _arg3, *lparg3=NULL;
+	jint *lparg4=NULL;
+	jint rc;
+
+	DEBUG_CALL("CreateStandardAlert\n")
+
+	if (arg3) lparg3 = getAlertStdCFStringAlertParamRecFields(env, arg3, &_arg3);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	rc = (jint)CreateStandardAlert((AlertType)arg0, (CFStringRef)arg1, (CFStringRef)arg2, (const AlertStdCFStringAlertParamRec *)lparg3, (DialogRef *)lparg4);
+	if (arg3) setAlertStdCFStringAlertParamRecFields(env, arg3, lparg3);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	return rc;
+}
+#endif
 
 #ifndef NO_CreateStaticTextControl
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_CreateStaticTextControl
