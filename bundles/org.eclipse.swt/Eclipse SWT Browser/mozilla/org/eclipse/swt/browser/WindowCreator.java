@@ -154,6 +154,12 @@ int CreateChromeWindow(int parent, int chromeFlags, int _retval) {
 			src.openWindowListeners[i].open(event);
 		browser = event.browser;
 		doit = browser != null && !browser.isDisposed();
+		if (doit) {
+			browser.addressBar = (chromeFlags & nsIWebBrowserChrome.CHROME_LOCATIONBAR) != 0;
+			browser.menuBar = (chromeFlags & nsIWebBrowserChrome.CHROME_MENUBAR) != 0;
+			browser.statusBar = (chromeFlags & nsIWebBrowserChrome.CHROME_STATUSBAR) != 0;
+			browser.toolBar = (chromeFlags & nsIWebBrowserChrome.CHROME_TOOLBAR) != 0;
+		}
 	}
 	if (doit) {
 		int address = browser.webBrowserChrome.getAddress();

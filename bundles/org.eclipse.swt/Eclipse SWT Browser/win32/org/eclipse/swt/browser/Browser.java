@@ -40,6 +40,8 @@ public class Browser extends Composite {
 	boolean forward;
 	Point location;
 	Point size;
+	boolean addressBar = true, menuBar = true, statusBar = true, toolBar = true;
+	
 	int globalDispatch;
 	String html;
 
@@ -57,6 +59,9 @@ public class Browser extends Composite {
 	static final int DocumentComplete = 0x103;
 	static final int NavigateComplete2 = 0xfc;
 	static final int NewWindow2 = 0xfb;
+	static final int OnMenuBar = 0x100;
+	static final int OnStatusBar = 0x101;
+	static final int OnToolBar = 0xff;
 	static final int OnVisible = 0xfe;
 	static final int ProgressChange = 0x6c;
 	static final int RegisterAsBrowser = 0x228;
@@ -65,6 +70,7 @@ public class Browser extends Composite {
 	static final int WindowClosing = 0x107;
 	static final int WindowSetHeight = 0x10b;
 	static final int WindowSetLeft = 0x108;
+	static final int WindowSetResizable = 0x106;
 	static final int WindowSetTop = 0x109;
 	static final int WindowSetWidth = 0x10a;
 
@@ -164,7 +170,7 @@ public Browser(Composite parent, int style) {
 	OleListener listener = new OleListener() {
 		public void handleEvent(OleEvent event) {
 			switch (event.type) {
-				case BeforeNavigate2 : {
+				case BeforeNavigate2: {
 					Variant varResult = event.arguments[1];
 					String url = varResult.getString();
 					LocationEvent newEvent = new LocationEvent(Browser.this);
@@ -181,7 +187,7 @@ public Browser(Composite parent, int style) {
 				   }					
 					break;
 				}
-				case CommandStateChange : {
+				case CommandStateChange: {
 					boolean enabled = false;
 					Variant varResult = event.arguments[0];
 					int command = varResult.getInt();
@@ -297,7 +303,7 @@ public Browser(Composite parent, int style) {
 					if (globalDispatch == 0) globalDispatch = dispatch.getAddress();
 					break;
 				}
-				case NewWindow2 : {
+				case NewWindow2: {
 					WindowEvent newEvent = new WindowEvent(Browser.this);
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
@@ -325,13 +331,30 @@ public Browser(Composite parent, int style) {
 					COM.MoveMemory(pCancel, new short[]{doit ? COM.VARIANT_FALSE : COM.VARIANT_TRUE}, 2);
 					break;
 				}
-				case OnVisible : {
+				case OnMenuBar: {
+					Variant arg0 = event.arguments[0];
+					menuBar = arg0.getBoolean();
+					break;
+				}
+				case OnStatusBar: {
+					Variant arg0 = event.arguments[0];
+					statusBar = arg0.getBoolean();
+					break;
+				}
+				case OnVisible: {
 					Variant arg1 = event.arguments[0];
 					boolean visible = arg1.getBoolean();
 					WindowEvent newEvent = new WindowEvent(Browser.this);
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
 					if (visible) {
+						int[] rgdispid = auto.getIDsOfNames(new String[] { "AddressBar" }); //$NON-NLS-1$
+						Variant pVarResult = auto.getProperty(rgdispid[0]);
+						if (pVarResult != null && pVarResult.getType() == OLE.VT_BOOL) addressBar = pVarResult.getBoolean();
+						newEvent.addressBar = addressBar;
+						newEvent.menuBar = menuBar;
+						newEvent.statusBar = statusBar;
+						newEvent.toolBar = toolBar;
 						for (int i = 0; i < visibilityWindowListeners.length; i++) {
 							newEvent.location = location;
 							newEvent.size = size;
@@ -345,7 +368,7 @@ public Browser(Composite parent, int style) {
 					}
 					break;
 				}
-				case ProgressChange : {
+				case ProgressChange: {
 					Variant arg1 = event.arguments[0];
 					int nProgress = arg1.getType() != OLE.VT_I4 ? 0 : arg1.getInt(); // may be -1
 					Variant arg2 = event.arguments[1];
@@ -361,7 +384,7 @@ public Browser(Composite parent, int style) {
 					}
 					break;
 				}
-				case StatusTextChange : {
+				case StatusTextChange: {
 					Variant arg1 = event.arguments[0];
 					if (arg1.getType() == OLE.VT_BSTR) {
 						String text = arg1.getString();
@@ -374,7 +397,7 @@ public Browser(Composite parent, int style) {
 					}
 					break;
 				}
-				case TitleChange : {
+				case TitleChange: {
 					Variant arg1 = event.arguments[0];
 					if (arg1.getType() == OLE.VT_BSTR) {
 						String title = arg1.getString();
@@ -387,7 +410,7 @@ public Browser(Composite parent, int style) {
 					}
 					break;
 				}
-				case WindowClosing : {
+				case WindowClosing: {
 					WindowEvent newEvent = new WindowEvent(Browser.this);
 					newEvent.display = getDisplay();
 					newEvent.widget = Browser.this;
@@ -399,25 +422,25 @@ public Browser(Composite parent, int style) {
 					dispose();
 					break;
 				}
-				case WindowSetHeight : {
+				case WindowSetHeight: {
 					if (size == null) size = new Point(0, 0);
 					Variant arg1 = event.arguments[0];
 					size.y = arg1.getInt();
 					break;
 				}
-				case WindowSetLeft : {
+				case WindowSetLeft: {
 					if (location == null) location = new Point(0, 0);
 					Variant arg1 = event.arguments[0];
 					location.x = arg1.getInt();
 					break;
 				}
-				case WindowSetTop : {
+				case WindowSetTop: {
 					if (location == null) location = new Point(0, 0);
 					Variant arg1 = event.arguments[0];
 					location.y = arg1.getInt();
 					break;
 				}
-				case WindowSetWidth : {
+				case WindowSetWidth: {
 					if (size == null) size = new Point(0, 0);
 					Variant arg1 = event.arguments[0];
 					size.x = arg1.getInt();
@@ -439,6 +462,8 @@ public Browser(Composite parent, int style) {
 	site.addEventListener(DocumentComplete, listener);
 	site.addEventListener(NavigateComplete2, listener);
 	site.addEventListener(NewWindow2, listener);
+	site.addEventListener(OnMenuBar, listener);
+	site.addEventListener(OnStatusBar, listener);
 	site.addEventListener(OnVisible, listener);
 	site.addEventListener(ProgressChange, listener);
 	site.addEventListener(StatusTextChange, listener);

@@ -15,6 +15,8 @@ import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 
 /**
+ * WARNING 3.1 API STILL UNDER CONSTRUCTION
+ * 
  * A <code>WindowEvent</code> is sent by a {@link Browser} when
  * a new window needs to be created or when an existing window needs to be
  * closed. This notification occurs when a javascript command such as
@@ -105,6 +107,42 @@ public class WindowEvent extends TypedEvent {
 	 * It is <code>null</code> if no size has been requested.
 	 */
 	public Point size;
+	
+	/**
+	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
+	 * display an address bar.
+	 * 
+	 * UNDER CONSTRUCTION
+	 * @since 3.1
+	 */
+	public boolean addressBar;
+
+	/**
+	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
+	 * display a menu bar.
+	 * 
+	 * UNDER CONSTRUCTION
+	 * @since 3.1
+	 */
+	public boolean menuBar;
+	
+	/**
+	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
+	 * display a status bar.
+	 * 
+	 * UNDER CONSTRUCTION
+	 * @since 3.1
+	 */
+	public boolean statusBar;
+	
+	/**
+	 * Specifies whether the <code>Shell</code> hosting the <code>Browser</code> should
+	 * display a tool bar.
+	 * 
+	 * UNDER CONSTRUCTION
+	 * @since 3.1
+	 */
+	public boolean toolBar;
 	
 WindowEvent(Widget w) {
 	super(w);

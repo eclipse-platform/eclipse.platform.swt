@@ -53,6 +53,7 @@ public class Browser extends Composite {
 	String html;
 	Point location;
 	Point size;
+	boolean addressBar, menuBar, statusBar, toolBar;
 	Shell tip = null;
 
 	/* External Listener management */
@@ -1835,6 +1836,10 @@ int SetVisibility(int aVisibility) {
 	if (aVisibility == 1) {
 		event.location = location;
 		event.size = size;
+		event.addressBar = addressBar;
+		event.menuBar = menuBar;
+		event.statusBar = statusBar;
+		event.toolBar = toolBar;
 		for (int i = 0; i < visibilityWindowListeners.length; i++)
 			visibilityWindowListeners[i].show(event);
 		location = null;

@@ -134,6 +134,9 @@ public class COM extends OS {
 	//public static final GUID IIDIViewObject = IIDFromString("{0000010D-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	public static final GUID IIDIViewObject2 = IIDFromString("{00000127-0000-0000-C000-000000000046}"); //$NON-NLS-1$
 	
+	public static final GUID CGID_Explorer = IIDFromString("{000214D0-0000-0000-C000-000000000046}"); //$NON-NLS-1$
+
+
 	//public static final int ADVF_DATAONSTOP = 64;
 	//public static final int ADVF_NODATA = 1;
 	//public static final int ADVF_ONLYONCE = 2;
@@ -231,6 +234,7 @@ public class COM extends OS {
 	public static final int E_INVALIDARG = -2147024809;
 	public static final int E_NOINTERFACE = -2147467262;  //QueryInterface did not recognize the requested interface.
 	public static final int E_NOTIMPL = -2147467263;  //Member function contains no implementation.
+	public static final int E_NOTSUPPORTED = 0x80040100;
 	//public static final int E_NOTLICENSED = -2147221230;
 	//public static final int E_OUTOFMEMORY = -2147024882;  //Function failed to allocate necessary memory.
 	//public static final int E_POINTER = -2147467261;

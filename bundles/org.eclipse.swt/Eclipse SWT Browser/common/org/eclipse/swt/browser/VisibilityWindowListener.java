@@ -63,6 +63,18 @@ public void hide(WindowEvent event);
  * The client area of the <code>Shell</code> hosting the
  * <code>Browser</code> should be large enough to accomodate that size.
  * It is <code>null</code> if no size is set.
+ * <li>(in) addressBar <code>true</code> if the <code>Shell</code> 
+ * hosting the <code>Browser</code> should display an address bar or
+ * <code>false</code> otherwise
+ * <li>(in) menuBar <code>true</code> if the <code>Shell</code> 
+ * hosting the <code>Browser</code> should display a menu bar or
+ * <code>false</code> otherwise
+ * <li>(in) statusBar <code>true</code> if the <code>Shell</code> 
+ * hosting the <code>Browser</code> should display a status bar or
+ * <code>false</code> otherwise
+ * <li>(in) toolBar <code>true</code> if the <code>Shell</code> 
+ * hosting the <code>Browser</code> should display a tool bar or
+ * <code>false</code> otherwise
  * </ul>
  *
  * @param event the <code>WindowEvent</code> that specifies the

@@ -21,6 +21,7 @@ class WebSite extends OleControlSite {
 	COMObject iDocHostShowUI;
 	COMObject iServiceProvider;
 	COMObject iInternetSecurityManager;
+	COMObject iOleCommandTarget;
 
 public WebSite(Composite parent, int style, String progId) {
 	super(parent, style, progId);		
@@ -74,6 +75,13 @@ protected void createCOMInterfaces () {
 		public int method9(int[] args) {return SetZoneMapping(args[0], args[1], args[2]);}
 		public int method10(int[] args) {return GetZoneMappings(args[0], args[1], args[2]);}
 	};
+	iOleCommandTarget = new COMObject(new int[]{2, 0, 0, 4, 5}) {
+		public int method0(int[] args) {return QueryInterface(args[0], args[1]);}
+		public int method1(int[] args) {return AddRef();}
+		public int method2(int[] args) {return Release();}		
+		public int method3(int[] args) {return QueryStatus(args[0], args[1], args[2], args[3]);}		
+		public int method4(int[] args) {return Exec(args[0], args[1], args[2], args[3], args[4]);}
+	};
 }
 
 protected void disposeCOMInterfaces() {
@@ -93,6 +101,10 @@ protected void disposeCOMInterfaces() {
 	if (iInternetSecurityManager != null) {
 		iInternetSecurityManager.dispose();
 		iInternetSecurityManager = null;
+	}
+	if (iOleCommandTarget != null) {
+		iOleCommandTarget.dispose();
+		iOleCommandTarget = null;
 	}
 }
 
@@ -119,6 +131,11 @@ protected int QueryInterface(int riid, int ppvObject) {
 	}
 	if (COM.IsEqualGUID(guid, COM.IIDIServiceProvider)) {
 		COM.MoveMemory(ppvObject, new int[] {iServiceProvider.getAddress()}, 4);
+		AddRef();
+		return COM.S_OK;
+	}
+	if (COM.IsEqualGUID(guid, COM.IIDIOleCommandTarget)) {
+		COM.MoveMemory(ppvObject, new int[] {iOleCommandTarget.getAddress()}, 4);
 		AddRef();
 		return COM.S_OK;
 	}
@@ -436,4 +453,29 @@ int SetZoneMapping(int dwZone, int lpszPattern, int dwFlags) {
 int GetZoneMappings(int dwZone, int ppenumString, int dwFlags) {
 	return COM.E_NOTIMPL;
 }
+
+/* IOleCommandTarget */
+int QueryStatus(int pguidCmdGroup, int cCmds, int prgCmds, int pCmdText) {
+	return COM.E_NOTSUPPORTED;
+}
+
+int Exec(int pguidCmdGroup, int nCmdID, int nCmdExecOpt, int pvaIn, int pvaOut) {
+	/*
+	* Bug in Internet Explorer.  OnToolBar TRUE is also fired when any of the 
+	* address bar or menu bar are requested but not the tool bar.  A workaround
+	* has been posted by a Microsoft developer on the public webbrowser_ctl
+	* newsgroup. The workaround is to implement the IOleCommandTarget interface
+	* to test the argument of an undocumented command.
+	*/
+	if (pguidCmdGroup != 0) {
+		GUID guid = new GUID();
+		COM.MoveMemory(guid, pguidCmdGroup, GUID.sizeof);
+		if (nCmdID == 1 && COM.IsEqualGUID(guid, COM.CGID_Explorer) && ((nCmdExecOpt & 0xFFFF) == 0xA)) {
+			Browser browser = (Browser)getParent().getParent();
+			browser.toolBar = (nCmdExecOpt & 0xFFFF0000) != 0;
+		}
+	}
+	return COM.E_NOTSUPPORTED;
+}
+
 }
