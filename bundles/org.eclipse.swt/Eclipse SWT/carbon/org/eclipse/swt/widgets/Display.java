@@ -1589,46 +1589,12 @@ public void update () {
 		* disposed and there are outstandings kEventWindowUpdate events
 		* in the event queue.  Dispatching these events will cause a
 		* segment fault.  The fix is to dispatch events to visible
-		* window only.
+		* windows only.
 		*/
 		int [] theWindow = new int [1];
 		OS.GetEventParameter (outEvent [0], OS.kEventParamDirectObject, OS.typeWindowRef, null, 4, null, theWindow);
 		if (OS.IsWindowVisible (theWindow [0])) OS.SendEventToEventTarget (outEvent [0], OS.GetEventDispatcherTarget ());
 		OS.ReleaseEvent (outEvent [0]);
-	}
-}
-
-void updateMenuBar () {
-	updateMenuBar (getActiveShell ());
-}
-
-void updateMenuBar (Shell shell) {
-	if (shell == null) shell = getActiveShell ();
-	boolean modal = false;
-	int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
-	Shell menuShell = shell;
-	while (menuShell != null) {
-		if (menuShell.menuBar != null) break;
-		if ((menuShell.style & mask) != 0) modal = true;
-		menuShell = (Shell) menuShell.parent;
-	}
-	/*
-	* Feature in the Macintosh.  For some reason, when a modal shell
-	* is active, DisableMenuItem() when called with zero (indicating
-	* that the entire menu is to be disabled) will not disable the
-	* current menu bar.  The fix is to disable each individual menu
-	* item.
-	*/
-	if (menuBar != null) {
-		MenuItem [] items = menuBar.getItems ();
-		for (int i=0; i<items.length; i++) {
-			if (items [i].getEnabled ()) items [i]._setEnabled (true);
-		}
-	}
-	setMenuBar (menuShell != null ? menuShell.menuBar : null);
-	if (menuBar != null && (modal || menuShell != shell)) {
-		MenuItem [] items = menuBar.getItems ();
-		for (int i=0; i<items.length; i++) items [i]._setEnabled (false);
 	}
 }
 

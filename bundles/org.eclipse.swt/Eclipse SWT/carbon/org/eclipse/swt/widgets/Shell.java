@@ -336,7 +336,7 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	OS.GetWindowActivationScope (shellHandle, outScope); 
 	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
 	Display display = getDisplay ();
-	display.updateMenuBar (this);
+	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
 	restoreFocus ();
 	return result;
@@ -390,7 +390,7 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (false);
 	}
 	Display display = getDisplay ();
-	display.updateMenuBar (null);
+	display.setMenuBar (null);
 	return result;
 }
 
@@ -528,6 +528,15 @@ public void setBounds (int x, int y, int width, int height) {
 	Rect rect = new Rect ();
 	OS.SetRect (rect, (short) x, (short) y, (short) (x + width), (short) (y + height));
 	OS.SetWindowBounds (shellHandle, (short) OS.kWindowStructureRgn, rect);
+}
+
+public void setMenuBar (Menu menu) {
+	checkWidget();
+	super.setMenuBar (menu);
+	Display display = getDisplay ();
+	if (display.getActiveShell () == this) {
+		display.setMenuBar (menuBar);
+	}
 }
 
 public void setImeInputMode (int mode) {
