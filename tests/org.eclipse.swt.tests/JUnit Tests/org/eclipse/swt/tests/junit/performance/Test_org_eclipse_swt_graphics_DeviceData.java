@@ -34,7 +34,7 @@ public static void main(String[] args) {
 public void test_Constructor() {
 	final int COUNT = 40000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("DeviceData constr.");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new DeviceData();

@@ -47,7 +47,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteData() {
 	PaletteData paletteData = new PaletteData(new RGB[] {new RGB(0, 0, 0)});
 	for (int i = 0; i < validDepths.length; i++) {
 		if (validDepths[i] % 8 == 0) count /= 2;
-		PerformanceMeter meter = createMeter("" + validDepths[i]);
+		PerformanceMeter meter = createMeter("ImageData constr.(II,PaletteData) - " + validDepths[i]);
 		meter.start();
 		for (int j = 0; j < count; j++) {
 			new ImageData(100, 100, validDepths[i], paletteData);
@@ -65,7 +65,7 @@ public void test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B() {
 	int[] validDepths = {1, 2, 4, 8, 16, 24, 32};
 	
 	for (int i = 0; i < validDepths.length; i++) {
-		PerformanceMeter meter = createMeter("" + validDepths[i]);
+		PerformanceMeter meter = createMeter("ImageData constr.(II,PaletteData,I$B) - " + validDepths[i]);
 		meter.start();
 		for (int j = 0; j < COUNT; j++) {
 			new ImageData(100, 100, validDepths[i], paletteData, 1, data);
@@ -93,7 +93,7 @@ public void test_ConstructorLjava_lang_String() {
 			String format = imageFormats[i];
 			String fullName = getPath(fileName + "." + format);
 			
-			PerformanceMeter meter = createMeter(fileName + "." + format);
+			PerformanceMeter meter = createMeter("ImageData constr.(String) - " + fileName + "." + format);
 			meter.start();
 			for (int j = 0; j < COUNT; j++) {
 				new ImageData(fullName);
@@ -123,7 +123,7 @@ public void test_clone() {
 		e.printStackTrace();
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData clone");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.clone();
@@ -138,7 +138,7 @@ public void test_getAlphaII() {
 	
 	imageData.setAlpha(0, 0, 0xAA);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData getAlpha");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getAlpha(0, 0);
@@ -156,7 +156,7 @@ public void test_getAlphasIII$BI() {
 	byte[] alphaData = new byte[20];
 	imageData.setAlphas(0, 1, values.length, values, 0);
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData getAlphas");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getAlphas(0, 1, 10, alphaData, 10);
@@ -171,7 +171,7 @@ public void test_getPixelII() {
 	
 	imageData.setPixel(0, 0, 0xAA);
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData getPixel");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getPixel(0, 0);
@@ -188,7 +188,7 @@ public void test_getPixelsIII$BI() {
 	PaletteData paletteData = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 8, paletteData);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData getPixels(III$BI)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getPixels(0, 1, 10, pixelData, 10);		
@@ -205,7 +205,7 @@ public void test_getPixelsIII$II() {
 	PaletteData paletteData = new PaletteData(0xFF0000, 0xFF00, 0xFF);
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 32, paletteData);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData getPixels(III$II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getPixels(0, 1, 10, pixelData, 10);		
@@ -221,7 +221,7 @@ public void test_getRGBs() {
 	RGB[] rgbs = new RGB[]{new RGB(0, 0, 0), new RGB(255, 255, 255)};
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 8, new PaletteData(rgbs));
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData getRGBs");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getRGBs();		
@@ -250,7 +250,7 @@ public void test_getTransparencyMask() {
 		e1.printStackTrace();
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData getTransparencyMask");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getTransparencyMask();
@@ -279,7 +279,7 @@ public void test_getTransparencyType() {
 		e1.printStackTrace();
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData getTransparencyType");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.getTransparencyType();
@@ -299,7 +299,7 @@ public void test_scaledToII() {
 	imageData = new ImageData(imageDimension, imageDimension, 1, new PaletteData(rgbs), 1, pixelData);
 	int newHeight = imageDimension * 10;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData scaledTo");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.scaledTo(imageDimension, newHeight);
@@ -312,7 +312,7 @@ public void test_scaledToII() {
 public void test_setAlphaIII() {
 	final int COUNT = 80000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData setAlpha");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setAlpha(0, 0, 0xAA);
@@ -332,7 +332,7 @@ public void test_setAlphasIII$BI() {
 	imageData.setAlphas(0, 1, values.length - OFFSET, values, OFFSET);
 	int putWidth = values.length - OFFSET;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData setAlphas");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setAlphas(0, 1, putWidth, values, OFFSET);
@@ -345,7 +345,7 @@ public void test_setAlphasIII$BI() {
 public void test_setPixelIII() {
 	final int COUNT = 50000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData setPixel");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setPixel(0, 0, 0xAA);
@@ -362,7 +362,7 @@ public void test_setPixelsIII$BI() {
 	byte[] values = new byte[]{0x1, 0x2, 0x3, 0xF, (byte)0xFF};
 	imageData = new ImageData(IMAGE_DIMENSION, IMAGE_DIMENSION, 8, new PaletteData(0xFF0000, 0xFF00, 0xFF));	
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData setPixels(III$BI)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setPixels(0, 1, values.length - OFFSET, values, OFFSET);
@@ -380,7 +380,7 @@ public void test_setPixelsIII$II() {
 	int[] values = new int[]{0, 0xFF, 0xFFAA, 0xFF00AA00};
 	imageData.setPixels(0, 1, values.length - OFFSET, values, OFFSET);
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageData setPixels(III$II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		imageData.setPixels(0, 1, values.length - OFFSET, values, OFFSET);

@@ -42,7 +42,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceIII() {
 	
 	Color[] colors = new Color [COUNT];
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Color constr.(Device,III)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		colors[i] = new Color(display, 102, 255, 3);
@@ -62,7 +62,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	Color[] colors = new Color [COUNT];
 	RGB rgb = new RGB(102, 255, 3);
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Color constr.(Device,RGB)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		colors[i] = new Color(display, rgb);
@@ -80,7 +80,7 @@ public void test_dispose() {
 	
 	int count = 20000000; 
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("Color dispose - typical");
 	meter.start();
 	for (int i = 0; i < count; i++) {
 		/*
@@ -99,7 +99,7 @@ public void test_dispose() {
 	Color disposedColor = new Color (display, 255, 0, 128);
 	disposedColor.dispose();
 
-	meter = createMeter("already disposed");
+	meter = createMeter("Color dispose - disposed");
 	meter.start();
 	for (int i = 0; i < count; i++) {
 		disposedColor.dispose();	// dispose disposed
@@ -115,7 +115,7 @@ public void test_equalsLjava_lang_Object() {
 	Color color1 = new Color(display, 0, 128, 255);
 	Color color2 = new Color(display, 0, 128, 255);
 	
-	PerformanceMeter meter = createMeter("equal");
+	PerformanceMeter meter = createMeter("Color equals - equal");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color1.equals(color2);	// equal
@@ -130,7 +130,7 @@ public void test_equalsLjava_lang_Object() {
 	color1 = new Color(display, 0, 128, 255);
 	color2 = new Color(display, 128, 255, 0);
 	
-	meter = createMeter("not equal");
+	meter = createMeter("Color equals - different");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color1.equals(color2);	// not equal
@@ -148,7 +148,7 @@ public void test_getBlue() {
 	
 	Color color = new Color(display, 128, 64, 255);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Color getBlue");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.getBlue();
@@ -165,7 +165,7 @@ public void test_getGreen() {
 	
 	Color color = new Color(display, 128, 64, 255);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Color getGreen");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.getGreen();
@@ -182,7 +182,7 @@ public void test_getRGB() {
 	
 	Color color = new Color(display, 128, 64, 255);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Color getRGB");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.getRGB();
@@ -199,7 +199,7 @@ public void test_getRed() {
 	
 	Color color = new Color(display, 128, 64, 255);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Color getRed");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.getRed();
@@ -216,7 +216,7 @@ public void test_hashCode() {
 	
 	Color color = new Color(display, 128, 64, 255);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Color hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.hashCode();
@@ -233,7 +233,7 @@ public void test_isDisposed() {
 	
 	Color color = new Color(display, 128, 128, 128);
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("Color isDisposed - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.isDisposed();	// not disposed
@@ -244,7 +244,7 @@ public void test_isDisposed() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("disposed");
+	meter = createMeter("Color isDisposed - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		color.isDisposed();	// disposed

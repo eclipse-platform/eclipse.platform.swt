@@ -44,7 +44,7 @@ protected void setUp() throws Exception {
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 	final int COUNT = 600000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Cursor constr.(Device,I)");
 	meter.start();
 	Cursor[] cursors = new Cursor [COUNT];
 	for (int i = 0; i < COUNT; i++) {
@@ -87,7 +87,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		if (mask != null && (source.depth == 1)) {
 			Cursor[] cursors = new Cursor[COUNT];
 			
-			PerformanceMeter meter = createMeter(format);
+			PerformanceMeter meter = createMeter("Cursor constr.(5 args) - " + format);
 			meter.start();
 			for (int j = 0; j < COUNT; j++) {
 				cursors[j] = new Cursor(display, source, mask, 0, 0);
@@ -110,7 +110,7 @@ public void test_dispose() {
 		cursors[i] = new Cursor(display, SWT.CURSOR_ARROW);
 	}
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("Cursor dispose - typical");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i].dispose();	// dispose
@@ -119,7 +119,7 @@ public void test_dispose() {
 	
     disposeMeter(meter);
     
-	meter = createMeter("disposed");
+	meter = createMeter("Cursor dispose - disposed");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursors[i].dispose();	// dispose disposed
@@ -140,7 +140,7 @@ public void test_equalsLjava_lang_Object() {
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	Cursor otherCursor = new Cursor(display, SWT.CURSOR_CROSS);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Cursor equals");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.equals(otherCursor);
@@ -158,7 +158,7 @@ public void test_hashCode() {
 	
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Cursor hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.hashCode();
@@ -175,7 +175,7 @@ public void test_isDisposed() {
 	
 	Cursor cursor = new Cursor(display, SWT.CURSOR_WAIT);
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("Cursor isDisposed - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.isDisposed();	// not disposed
@@ -186,7 +186,7 @@ public void test_isDisposed() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("disposed");
+	meter = createMeter("Cursor isDisposed - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		cursor.isDisposed();	// disposed

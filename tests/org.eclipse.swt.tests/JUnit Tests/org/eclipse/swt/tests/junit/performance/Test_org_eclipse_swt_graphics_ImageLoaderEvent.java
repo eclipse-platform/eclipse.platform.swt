@@ -37,7 +37,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_ImageLoaderLorg_eclipse_sw
 	
 	ImageLoader loader = new ImageLoader();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageLoaderEvent constr.");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new ImageLoaderEvent(loader, null, 0, true);

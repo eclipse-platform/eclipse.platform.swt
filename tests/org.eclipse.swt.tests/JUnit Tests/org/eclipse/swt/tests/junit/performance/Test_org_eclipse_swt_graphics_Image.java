@@ -46,7 +46,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 	
 	Image[] images = new Image[COUNT];
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image constr.(Device,II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, 100, 100); 
@@ -80,7 +80,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	
 	Image[] images = new Image[COUNT];
 	
-	PerformanceMeter meter = createMeter("copy");
+	PerformanceMeter meter = createMeter("Image constr.(Device,Image,I) - copy");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, image, SWT.IMAGE_COPY); 
@@ -93,7 +93,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("disable");
+	meter = createMeter("Image constr.(Device,Image,I) - disable");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, image, SWT.IMAGE_DISABLE); 
@@ -106,7 +106,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("gray");
+	meter = createMeter("Image constr.(Device,Image,I) - gray");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, image, SWT.IMAGE_GRAY);
@@ -126,7 +126,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	Image[] images = new Image[COUNT];
 	Rectangle rectangle = new Rectangle(0, 0, 100, 100);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image constr.(Device,Rectangle)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, rectangle);
@@ -157,7 +157,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		e1.printStackTrace();
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image constr.(Device,ImageData)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -191,7 +191,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 		e1.printStackTrace();
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image constr.(Device,ImageData,ImageData)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		images[i] = new Image(display, imageData, imageData1);
@@ -221,7 +221,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 			String pathName = getPath(fileName + "." + format);
 			Image[] images = new Image[COUNT];
 			
-			PerformanceMeter meter = createMeter(fileName + "." + format);
+			PerformanceMeter meter = createMeter("Image constr.(Device,String) - " + fileName + "." + format);
 			meter.start();
 			for (int j = 0; j < COUNT; j++) {
 				images[j] = new Image(display, pathName);
@@ -248,7 +248,7 @@ public void test_dispose() {
 	Image disposedImage = new Image (display, 100, 100);
 	disposedImage.dispose();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image dispose - disposed");
 
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
@@ -266,7 +266,7 @@ public void test_equalsLjava_lang_Object() {
 	Image image1 = new Image(display, imageData);
 	Image image2 = new Image(display, imageData);
 	
-	PerformanceMeter meter = createMeter("equal");
+	PerformanceMeter meter = createMeter("Image equals - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image1.equals(image2);	// equal
@@ -281,7 +281,7 @@ public void test_equalsLjava_lang_Object() {
 	image1 = new Image(display, imageData);
 	image2 = new Image(display, 8, 8);
 	
-	meter = createMeter("not equal");
+	meter = createMeter("Image equals - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image1.equals(image2);	// not equal
@@ -300,7 +300,7 @@ public void test_getBackground() {
 	Image image = new Image(display, 100, 100);
 	image.setBackground(display.getSystemColor(SWT.COLOR_GREEN));
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image getBackground");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.getBackground();
@@ -317,7 +317,7 @@ public void test_getBounds() {
 	
 	Image image = new Image(display, 10, 20);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image getBounds");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.getBounds();
@@ -335,7 +335,7 @@ public void test_getImageData() {
 	ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	Image image = new Image(display, imageData);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image getImageData");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.getImageData();
@@ -353,7 +353,7 @@ public void test_hashCode() {
 	ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
 	Image image = new Image(display, imageData);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.hashCode();
@@ -370,7 +370,7 @@ public void test_isDisposed() {
 	
 	Image image = new Image(display, 10, 10);
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("Image isDisposed - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.isDisposed();	// not disposed
@@ -381,7 +381,7 @@ public void test_isDisposed() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("disposed");
+	meter = createMeter("Image isDisposed - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		image.isDisposed();	// disposed
@@ -398,7 +398,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	Color color1 = display.getSystemColor(SWT.COLOR_GREEN);
 	Color color2 = display.getSystemColor(SWT.COLOR_RED);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Image setBackground");
 	meter.start();
 	for (int i = 0; i < COUNT / 2; i++) {
 		image.setBackground(color1);

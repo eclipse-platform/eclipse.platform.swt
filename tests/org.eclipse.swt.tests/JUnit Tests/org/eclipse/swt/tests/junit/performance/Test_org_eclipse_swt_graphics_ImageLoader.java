@@ -47,7 +47,7 @@ public void test_addImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderList
 		};
 	};
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageLoader addImageLoaderListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.addImageLoaderListener(loaderListener);
@@ -62,7 +62,7 @@ public void test_hasListeners() {
 	
 	ImageLoader loader = new ImageLoader();
 	
-	PerformanceMeter meter = createMeter("no listeners");
+	PerformanceMeter meter = createMeter("ImageLoader hasListeners - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.hasListeners();	// no listeners
@@ -76,7 +76,7 @@ public void test_hasListeners() {
 		};
 	});
 	
-	meter = createMeter("has listeners");
+	meter = createMeter("ImageLoader hasListeners - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.hasListeners();	// has listener
@@ -99,7 +99,7 @@ public void test_loadLjava_lang_String() {
 	ImageLoader loader = new ImageLoader();
 	String fileName = getPath(imageFilenames[0] + "." + imageFormats[0]);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageLoader load(String)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.load(fileName);
@@ -119,7 +119,7 @@ public void test_notifyListenersLorg_eclipse_swt_graphics_ImageLoaderEvent() {
 			public void imageDataLoaded(ImageLoaderEvent e) {}
 	});
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageLoader notifyListeners");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.notifyListeners(event);
@@ -141,7 +141,7 @@ public void test_removeImageLoaderListenerLorg_eclipse_swt_graphics_ImageLoaderL
 		loader.addImageLoaderListener(listeners[i]);
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("ImageLoader removeImageLoaderListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		loader.removeImageLoaderListener(listeners[i]);
@@ -184,7 +184,7 @@ public void test_saveLjava_io_OutputStreamI() {
 		for (int i = 0; i < imageFormats.length; i++) {
 			if (imageFormats[i].equals(filetype)) {
 
-				PerformanceMeter meter = createMeter("" + i);
+				PerformanceMeter meter = createMeter("ImageLoader save(OutputStream,I) - " + i);
 				meter.start();
 				for (int j = 0; j < COUNT; j++) {
 					loader.save(outStream, i);

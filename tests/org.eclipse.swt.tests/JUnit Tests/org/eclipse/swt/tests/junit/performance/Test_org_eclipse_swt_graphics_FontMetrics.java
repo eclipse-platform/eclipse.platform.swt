@@ -61,7 +61,7 @@ public void test_equalsLjava_lang_Object() {
 	gc.setFont(oldFont);
 	newFont.dispose();
 	
-	PerformanceMeter meter = createMeter("equals");
+	PerformanceMeter meter = createMeter("FontMetrics equals - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm1.equals(fm1);	// same
@@ -70,7 +70,7 @@ public void test_equalsLjava_lang_Object() {
 
 	disposeMeter(meter);
 	
-	meter = createMeter("not equals");
+	meter = createMeter("FontMetrics equals - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm1.equals(fm2);	// different
@@ -85,7 +85,7 @@ public void test_getAscent() {
 	
 	FontMetrics fm = gc.getFontMetrics();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontMetrics getAscent");
 	meter.start();	for (int i = 0; i < COUNT; i++) {
 		fm.getAscent();
 	}
@@ -99,7 +99,7 @@ public void test_getAverageCharWidth() {
 	
 	FontMetrics fm = gc.getFontMetrics();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontMetrics getAverageCharWidth");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.getAverageCharWidth();
@@ -114,7 +114,7 @@ public void test_getDescent() {
 	
 	FontMetrics fm = gc.getFontMetrics();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontMetrics getDescent");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.getDescent();
@@ -129,7 +129,7 @@ public void test_getHeight() {
 	
 	FontMetrics fm = gc.getFontMetrics();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontMetrics getHeight");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.getHeight();
@@ -144,7 +144,7 @@ public void test_getLeading() {
 	
 	FontMetrics fm = gc.getFontMetrics();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontMetrics getLeading");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.getLeading();
@@ -159,7 +159,7 @@ public void test_hashCode() {
 	
 	FontMetrics fm = gc.getFontMetrics();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontMetrics hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fm.hashCode();

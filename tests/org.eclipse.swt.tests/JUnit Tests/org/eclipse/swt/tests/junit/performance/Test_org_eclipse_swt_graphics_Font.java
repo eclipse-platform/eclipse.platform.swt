@@ -47,7 +47,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Device$Lorg_eclipse_swt_gr
 	FontData[] data = new FontData [1];
 	data[0] = new FontData (SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC); 
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Font constr.(Device,$FontData");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -67,7 +67,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	
 	FontData data = new FontData (SwtJunit.testFontName, 10, SWT.BOLD | SWT.ITALIC);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Font constr.(Device,FontData)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -85,7 +85,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII() {
 	final int COUNT = 150000;
 	
-	PerformanceMeter meter = createMeter("no name");
+	PerformanceMeter meter = createMeter("Font constr.(Device,String,II) - no name");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -100,7 +100,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 
 	disposeMeter(meter);
 		
-	meter = createMeter("unknown name");
+	meter = createMeter("Font constr.(Device,String,II) - unknown");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -115,7 +115,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 
 	disposeMeter(meter);
 	
-	meter = createMeter("0 height");
+	meter = createMeter("Font constr.(Device,String,II) - 0 height");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -130,7 +130,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 
 	disposeMeter(meter);
 
-	meter = createMeter("10 pt");
+	meter = createMeter("Font constr.(Device,String,II) - 10 pt");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -145,7 +145,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 
 	disposeMeter(meter);
 
-	meter = createMeter("100 pt");
+	meter = createMeter("Font constr.(Device,String,II) - 100 pt");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -160,7 +160,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 
 	disposeMeter(meter);
 	
-	meter = createMeter("bold italic");
+	meter = createMeter("Font constr.(Device,String,II) - BI");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -175,7 +175,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_StringII(
 
 	disposeMeter(meter);
 
-	meter = createMeter("null device");
+	meter = createMeter("Font constr.(Device,String,II) - null dev");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		/*
@@ -202,7 +202,7 @@ public void test_dispose() {
 	Font disposedFont = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	disposedFont.dispose();
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Font dispose - disposed");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		disposedFont.dispose();
@@ -218,7 +218,7 @@ public void test_equalsLjava_lang_Object() {
 	// Fonts are only equal if their handles are the same
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 
-	PerformanceMeter meter = createMeter("equal");
+	PerformanceMeter meter = createMeter("Font equals - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.equals(font);	// same
@@ -232,7 +232,7 @@ public void test_equalsLjava_lang_Object() {
 	font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	Font otherFont = new Font(display, SwtJunit.testFontName, 20, SWT.NORMAL);
 
-	meter = createMeter("not equal");
+	meter = createMeter("Font equals - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.equals(otherFont);	// different
@@ -250,7 +250,7 @@ public void test_getFontData() {
 	
 	Font font = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Font getFontData");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.getFontData();
@@ -267,7 +267,7 @@ public void test_hashCode() {
 	
 	Font font = new Font(display, SwtJunit.testFontName, 40, SWT.BOLD | SWT.ITALIC);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Font hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.hashCode();
@@ -284,7 +284,7 @@ public void test_isDisposed() {
 	
 	Font font = new Font(display, SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("Font isDisposed - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.isDisposed();	// not disposed
@@ -295,7 +295,7 @@ public void test_isDisposed() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("disposed");
+	meter = createMeter("Font isDisposed - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		font.isDisposed();	// disposed

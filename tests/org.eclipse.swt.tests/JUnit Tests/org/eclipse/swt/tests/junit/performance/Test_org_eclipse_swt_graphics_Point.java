@@ -35,7 +35,7 @@ public static void main(String[] args) {
 public void test_ConstructorII() {
 	final int COUNT = 60000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Point constr.");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new Point(500000, 700000);
@@ -52,7 +52,7 @@ public void test_equalsLjava_lang_Object() {
 	Point p2 = new Point (5, 3);
 	Point p3 = new Point (4, 6);
 	
-	PerformanceMeter meter = createMeter("equal");
+	PerformanceMeter meter = createMeter("Point equals - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		p1.equals(p2);	// equal
@@ -61,7 +61,7 @@ public void test_equalsLjava_lang_Object() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("not equal");
+	meter = createMeter("Point equals - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		p1.equals(p3);	// not equal
@@ -76,7 +76,7 @@ public void test_hashCode() {
 	
 	Point point = new Point(5, 5);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("Point hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		point.hashCode();

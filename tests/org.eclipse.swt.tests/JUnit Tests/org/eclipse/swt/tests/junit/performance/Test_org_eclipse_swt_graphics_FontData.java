@@ -36,7 +36,7 @@ public static void main(String[] args) {
 public void test_Constructor() {
 	final int COUNT = 6000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData constr.()");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new FontData();
@@ -51,7 +51,7 @@ public void test_ConstructorLjava_lang_String() {
 	FontData fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	String fdString = fd.toString();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData constr.(String)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new FontData(fdString);
@@ -66,7 +66,7 @@ public void test_ConstructorLjava_lang_StringII() {
 	FontData fd = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	String fdString = fd.toString();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData constr.(String,II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
@@ -83,7 +83,7 @@ public void test_equalsLjava_lang_Object() {
 	FontData fd2 = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	FontData fd3 = new FontData(SwtJunit.testFontName, 12, SWT.NORMAL);
 	
-	PerformanceMeter meter = createMeter("equal");
+	PerformanceMeter meter = createMeter("FontData equals - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fd1.equals(fd2);	// equal	
@@ -91,7 +91,7 @@ public void test_equalsLjava_lang_Object() {
 	meter.stop();
 	disposeMeter(meter);
 	
-	meter = createMeter("not equal");
+	meter = createMeter("FontData equals - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		fd1.equals(fd3);	// not equal
@@ -105,7 +105,7 @@ public void test_getHeight() {
 	
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData getHeight");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getHeight();
@@ -120,7 +120,7 @@ public void test_getLocale() {
 	
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData getLocale");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getLocale();
@@ -135,7 +135,7 @@ public void test_getName() {
 	
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData getName");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getName();
@@ -150,7 +150,7 @@ public void test_getStyle() {
 	
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData getStyle");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.getStyle();
@@ -165,7 +165,7 @@ public void test_hashCode() {
 	
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.hashCode();
@@ -181,7 +181,7 @@ public void test_setHeightI() {
 	
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData setHeight");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.setHeight(12);
@@ -197,7 +197,7 @@ public void test_setLocaleLjava_lang_String() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	String localeString = Locale.ENGLISH.toString();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData setLocale");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.setLocale(localeString);
@@ -213,7 +213,7 @@ public void test_setNameLjava_lang_String() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	String name = "name";
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData setName");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.setName(name);
@@ -229,7 +229,7 @@ public void test_setStyleI() {
 	FontData data = new FontData(SwtJunit.testFontName, 10, SWT.NORMAL);
 	int style = SWT.ITALIC | SWT.BOLD;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("FontData setStyle");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		data.setStyle(style);

@@ -58,7 +58,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	}
 	GC[] gcs = new GC[count];
 	
-	PerformanceMeter meter = createMeter("image");
+	PerformanceMeter meter = createMeter("GC constr.(Drawable) - image");
 	meter.start();
 	for (int i = 0; i < count; i++) {
 		gcs[i] = new GC(images[i]);
@@ -92,7 +92,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 		return;
 	}
 
-	meter = createMeter("printer");
+	meter = createMeter("GC constr.(Drawable) - printer");
 	meter.start();
 	for (int i = 0; i < count; i++) {
 		gcs[i] = new GC((Printer) printers[i]);
@@ -116,7 +116,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 	}
 	GC[] gcs = new GC[count];
 	
-	PerformanceMeter meter = createMeter("image");
+	PerformanceMeter meter = createMeter("GC constr.(Drawable,I) - image");
 	meter.start();
 	for (int i = 0; i < count; i++) {
 		gcs[i] = new GC(images[i], SWT.RIGHT_TO_LEFT);
@@ -150,7 +150,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
 		return;
 	}
 
-	meter = createMeter("printer");
+	meter = createMeter("GC constr.(Drawable,I) - printer");
 	meter.start();
 	for (int i = 0; i < count; i++) {
 		gcs[i] = new GC((Printer) printers[i], SWT.RIGHT_TO_LEFT);
@@ -185,7 +185,7 @@ public void test_copyAreaIIIIII() {
 	gc.drawLine(5, 5, 10, 10);
 	gc.drawLine(5, 10, 10, 5);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC copyArea(IIIIII)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.copyArea(5, 5, 10, 10, coords[i][0], coords[i][1]);
@@ -220,7 +220,7 @@ public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
 		images[i] = new Image(display, 15, 15);
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC copyArea(Image,II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.copyArea(images[i], coords[i][0], coords[i][1]);
@@ -244,7 +244,7 @@ public void test_dispose() {
 		gcs[i] = new GC(images[i]);
 	}
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("GC dispose - typical");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gcs[i].dispose();	// dispose
@@ -257,7 +257,7 @@ public void test_dispose() {
 
     disposeMeter(meter);
 
-	meter = createMeter("disposed");
+	meter = createMeter("GC dispose - disposed");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gcs[i].dispose();	// dispose disposed
@@ -280,7 +280,7 @@ public void test_drawArcIIIIII() {
 		if (x == 0) y += 3;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawArc");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawArc(coords[i][0], coords[i][1], 50, 25, 90, 90);
@@ -303,7 +303,7 @@ public void test_drawFocusIIII() {
 		if (x == 0) y += 3;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawFocus");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawFocus(coords[i][0], coords[i][1], 30, 20);
@@ -354,7 +354,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	gc.drawImage(imageAlpha, 160, 100);
 	
 	try {
-		PerformanceMeter meter = createMeter("normal");
+		PerformanceMeter meter = createMeter("GC drawImage - normal");
 		meter.start();
 		for (int i = 0; i < count; i++) {
 			gc.drawImage(imageNormal, coords[i][0], coords[i][1]);	// normal image
@@ -365,7 +365,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	
 		count /= 100;
 		
-		meter = createMeter("transparent");
+		meter = createMeter("GC drawImage - transparent");
 		Performance performance = Performance.getDefault();
 		performance.tagAsGlobalSummary(meter, "GC.drawImage() transparent * " + count, Dimension.CPU_TIME);
 		meter.start();
@@ -378,7 +378,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 	
 		count *= 10;
 		
-		meter = createMeter("alpha");
+		meter = createMeter("GC drawImage - alpha");
 		meter.start();
 		for (int i = 0; i < count; i++) {
 			gc.drawImage(imageAlpha, coords[i][0], coords[i][1]);	// alpha image
@@ -447,7 +447,7 @@ public void test_drawLineIIII() {
 		if (x == 0) y += 3;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawLine");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawLine(coords[i][0],coords[i][1], coords[i][2],coords[i][3]);
@@ -470,7 +470,7 @@ public void test_drawOvalIIII() {
 		if (x == 0) y += 3;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawOval");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawOval(coords[i][0], coords[i][1], 20, 30);				
@@ -493,7 +493,7 @@ public void test_drawPointII() {
 		if (x == 0) y += 3;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawPoint");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawPoint(coords[i][0], coords[i][1]);
@@ -516,7 +516,7 @@ public void test_drawPolygon$I() {
 		if (x == 0) y += 3;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawPolygon");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawPolygon(coords[i]);				
@@ -539,7 +539,7 @@ public void test_drawPolyline$I() {
 		if (x == 0) y += 3;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawPolyline");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawPolyline(coords[i]);				
@@ -562,7 +562,7 @@ public void test_drawRectangleIIII() {
 		if (x == 0) y += 3;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawRectangle(IIII)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawRectangle(coords[i][0], coords[i][1], 20, 30);				
@@ -585,7 +585,7 @@ public void test_drawRectangleLorg_eclipse_swt_graphics_Rectangle() {
 		if (x == 0) y += 3;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawRectangle(Rectangle)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawRectangle(coords[i]);
@@ -608,7 +608,7 @@ public void test_drawRoundRectangleIIIIII() {
 		if (x == 0) y += 3;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawRoundRectangle");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawRoundRectangle(coords[i][0], coords[i][1], 20, 30, 3, 3);				
@@ -632,7 +632,7 @@ public void test_drawStringLjava_lang_StringII() {
 		if (x == 0) y += 3;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawString(String,II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawString(STRING, coords[i][0], coords[i][1]);				
@@ -643,7 +643,7 @@ public void test_drawStringLjava_lang_StringII() {
 }
 
 public void test_drawStringLjava_lang_StringIIZ() {
-	final int COUNT = 600000;
+	final int COUNT = 750000;
 	final String STRING = "test string";
 	
 	// precompute points
@@ -656,7 +656,7 @@ public void test_drawStringLjava_lang_StringIIZ() {
 		if (x == 0) y += 3;
 	}
 	
-	PerformanceMeter meter = createMeter("transparent");
+	PerformanceMeter meter = createMeter("GC drawString(String,IIZ) - transparent");
 	Performance performance = Performance.getDefault();
 	performance.tagAsGlobalSummary(meter, "GC.drawString () transparent * " + COUNT, Dimension.CPU_TIME);
 	meter.start();
@@ -667,7 +667,7 @@ public void test_drawStringLjava_lang_StringIIZ() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("not transparent");
+	meter = createMeter("GC drawString(String,IIZ) - opaque");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawString(STRING, coords[i][0], coords[i][1], false);				
@@ -691,7 +691,7 @@ public void test_drawTextLjava_lang_StringII() {
 		if (x == 0) y += 3;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC drawText(String,II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawText(STRING, coords[i][0], coords[i][1], true);				
@@ -715,7 +715,7 @@ public void test_drawTextLjava_lang_StringIII() {
 		if (x == 0) y += 3;
 	}
 	
-	PerformanceMeter meter = createMeter("transparent");
+	PerformanceMeter meter = createMeter("GC drawText(String,III) - transparent");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.DRAW_TRANSPARENT);				
@@ -724,7 +724,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	
 	disposeMeter(meter);
 
-	meter = createMeter("delimiter");
+	meter = createMeter("GC drawText(String,III) - delimiter");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.DRAW_DELIMITER);				
@@ -733,7 +733,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	
 	disposeMeter(meter);
 
-	meter = createMeter("mnemonic");
+	meter = createMeter("GC drawText(String,III) - mnemonic");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.DRAW_MNEMONIC);				
@@ -742,7 +742,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	
 	disposeMeter(meter);
 
-	meter = createMeter("tab");
+	meter = createMeter("GC drawText(String,III) - tab");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.DRAW_TAB);				
@@ -751,7 +751,7 @@ public void test_drawTextLjava_lang_StringIII() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("no flags");
+	meter = createMeter("GC drawText(String,III) - no flags");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawText(STRING, coords[i][0], coords[i][1], SWT.NONE);				
@@ -774,7 +774,7 @@ public void test_drawTextLjava_lang_StringIIZ() {
 		if (x == 0) y += 3;
 	}
 	
-	PerformanceMeter meter = createMeter("transparent");
+	PerformanceMeter meter = createMeter("GC drawText(String,IIZ) - transparent");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawText("test string", coords[i][0], coords[i][1], true);				
@@ -783,7 +783,7 @@ public void test_drawTextLjava_lang_StringIIZ() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("not transparent");
+	meter = createMeter("GC drawText(String,IIZ) - opaque");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.drawText("test string", coords[i][0], coords[i][1], false);				
@@ -798,7 +798,7 @@ public void test_equalsLjava_lang_Object() {
 	
 	GC gc1 = new GC(display);
 	
-	PerformanceMeter meter = createMeter("equal");
+	PerformanceMeter meter = createMeter("GC equals - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc1.equals(gc1);	// equal
@@ -812,7 +812,7 @@ public void test_equalsLjava_lang_Object() {
 	gc1 = new GC(display);
 	Color gc2 = new Color(display, 128, 255, 0);
 	
-	meter = createMeter("not equal");
+	meter = createMeter("GC equals - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc1.equals(gc2);	// not equal
@@ -838,7 +838,7 @@ public void test_fillArcIIIIII() {
 		if (x == 0) y += 10;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC fillArc");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.fillArc(coords[i][0], coords[i][1], 20, 10, 90, 90);
@@ -861,7 +861,7 @@ public void test_fillGradientRectangleIIIIZ() {
 		if (x == 0) y += 10;
 	}
 	
-	PerformanceMeter meter = createMeter("vertical");
+	PerformanceMeter meter = createMeter("GC fillGradientRectangle(IIIIZ) - vert");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.fillGradientRectangle(coords[i][0], coords[i][1], 20, 10, true);				
@@ -870,7 +870,7 @@ public void test_fillGradientRectangleIIIIZ() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("horizontal");
+	meter = createMeter("GC fillGradientRectangle(IIIIZ) - horiz");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.fillGradientRectangle(coords[i][0], coords[i][1], 20, 10, false);				
@@ -893,7 +893,7 @@ public void test_fillOvalIIII() {
 		if (x == 0) y += 10;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC fillOval");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.fillOval(coords[i][0], coords[i][1], 20, 10);				
@@ -916,7 +916,7 @@ public void test_fillPolygon$I() {
 		if (x == 0) y += 10;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC fillPolygon");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.fillPolygon(coords[i]);				
@@ -939,7 +939,7 @@ public void test_fillRectangleIIII() {
 		if (x == 0) y += 10;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC fillRectangle(IIII)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.fillRectangle(coords[i][0], coords[i][1], 20, 10);				
@@ -962,7 +962,7 @@ public void test_fillRectangleLorg_eclipse_swt_graphics_Rectangle() {
 		if (x == 0) y += 10;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC fillRectangle(Rectangle)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.fillRectangle(coords[i]);
@@ -985,7 +985,7 @@ public void test_fillRoundRectangleIIIIII() {
 		if (x == 0) y += 3;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC fillRoundRectangle");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.fillRoundRectangle(coords[i][0], coords[i][1], 20, 30, 3, 3);				
@@ -998,7 +998,7 @@ public void test_fillRoundRectangleIIIIII() {
 public void test_getAdvanceWidthC() {
 	final int COUNT = 2200000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getAdvanceWidthC");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getAdvanceWidth('a');
@@ -1011,7 +1011,7 @@ public void test_getAdvanceWidthC() {
 public void test_getBackground() {
 	final int COUNT = 15000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getBackground");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getBackground();
@@ -1025,7 +1025,7 @@ public void test_getCharWidthC() {
 	final int COUNT = 700000;
 	final char CHAR = 'a';
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getCharWidthC");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getCharWidth(CHAR);
@@ -1038,7 +1038,7 @@ public void test_getCharWidthC() {
 public void test_getClipping() {
 	final int COUNT = 1200000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getClipping()");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getClipping();
@@ -1056,7 +1056,7 @@ public void test_getClippingLorg_eclipse_swt_graphics_Region() {
 		regions[i] = new Region(display);
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getClipping(Region)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getClipping(regions[i]);
@@ -1073,7 +1073,7 @@ public void test_getClippingLorg_eclipse_swt_graphics_Region() {
 public void test_getFont() {
 	final int COUNT = 2000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getFont");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getFont();
@@ -1086,7 +1086,7 @@ public void test_getFont() {
 public void test_getFontMetrics() {
 	final int COUNT = 1500000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getFontMetrics");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getFontMetrics();
@@ -1099,7 +1099,7 @@ public void test_getFontMetrics() {
 public void test_getForeground() {
 	final int COUNT = 15000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getForeground");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getForeground();
@@ -1112,7 +1112,7 @@ public void test_getForeground() {
 public void test_getLineStyle() {
 	final int COUNT = 1200000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getLineStyle");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getLineStyle();
@@ -1125,7 +1125,7 @@ public void test_getLineStyle() {
 public void test_getLineWidth() {
 	final int COUNT = 1200000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getLineWidth");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getLineWidth();
@@ -1138,7 +1138,7 @@ public void test_getLineWidth() {
 public void test_getStyle() {
 	final int COUNT = 250000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getStyle");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getStyle();
@@ -1151,7 +1151,7 @@ public void test_getStyle() {
 public void test_getXORMode() {
 	final int COUNT = 25000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC getXORMode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.getXORMode();
@@ -1164,7 +1164,7 @@ public void test_getXORMode() {
 public void test_hashCode() {
 	final int COUNT = 500000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC hashCode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.hashCode();
@@ -1177,7 +1177,7 @@ public void test_hashCode() {
 public void test_isClipped() {
 	final int COUNT = 1000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC isClipped");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.isClipped();
@@ -1192,7 +1192,7 @@ public void test_isDisposed() {
 	
 	GC gc = new GC(display);
 	
-	PerformanceMeter meter = createMeter("not disposed");
+	PerformanceMeter meter = createMeter("GC isDisposed - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.isDisposed();	// not disposed
@@ -1203,7 +1203,7 @@ public void test_isDisposed() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("disposed");
+	meter = createMeter("GC isDisposed - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.isDisposed();	// disposed
@@ -1217,7 +1217,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	final int COUNT = 22000000;
 	
 	final Color color = display.getSystemColor(SWT.COLOR_RED);
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC setBackground");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.setBackground(color);
@@ -1277,7 +1277,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 	final int COUNT = 25000000;
 	
 	final Color color = display.getSystemColor(SWT.COLOR_RED);
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC setForeground");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.setForeground(color);
@@ -1302,7 +1302,7 @@ public void test_setLineStyleI() {
 		}
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC setLineStyle");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.setLineStyle(styles[i]);
@@ -1321,7 +1321,7 @@ public void test_setLineWidthI() {
 		widths[i] = i % 10 + 1;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC setLineWidth");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.setLineWidth(widths[i]);
@@ -1340,7 +1340,7 @@ public void test_setXORModeZ() {
 		values[i] = (i % 2 == 0);
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC setXORMode");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.setXORMode(values[i]);
@@ -1354,7 +1354,7 @@ public void test_stringExtentLjava_lang_String() {
 	final int COUNT = 1500000;
 	final String STRING = "test \t\nstring";
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC stringExtent");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.stringExtent(STRING);
@@ -1367,7 +1367,7 @@ public void test_textExtentLjava_lang_String() {
 	final int COUNT = 200000;
 	final String STRING = "test \t\nstring";
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter("GC textExtent(String)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.textExtent(STRING);
@@ -1380,7 +1380,7 @@ public void test_textExtentLjava_lang_StringI() {
 	final int COUNT = 300000;
 	final String STRING = "\t\r\na&bc&";
 	
-	PerformanceMeter meter = createMeter("transparent");
+	PerformanceMeter meter = createMeter("GC textExtent(String,I) - transparent");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.textExtent(STRING, SWT.DRAW_TRANSPARENT);				
@@ -1389,7 +1389,7 @@ public void test_textExtentLjava_lang_StringI() {
 	
 	disposeMeter(meter);
 
-	meter = createMeter("delimiter");
+	meter = createMeter("GC textExtent(String,I) - delimiter");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.textExtent(STRING, SWT.DRAW_DELIMITER);				
@@ -1398,7 +1398,7 @@ public void test_textExtentLjava_lang_StringI() {
 	
 	disposeMeter(meter);
 
-	meter = createMeter("mnemonic");
+	meter = createMeter("GC textExtent(String,I) - mnemonic");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.textExtent("\t\r\na&bc&", SWT.DRAW_MNEMONIC);				
@@ -1407,7 +1407,7 @@ public void test_textExtentLjava_lang_StringI() {
 	
 	disposeMeter(meter);
 
-	meter = createMeter("tab");
+	meter = createMeter("GC textExtent(String,I) - tab");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.textExtent("\t\r\na&bc&", SWT.DRAW_TAB);				
@@ -1416,7 +1416,7 @@ public void test_textExtentLjava_lang_StringI() {
 	
 	disposeMeter(meter);
 	
-	meter = createMeter("no flags");
+	meter = createMeter("GC textExtent(String,I) - no flags");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		gc.textExtent("\t\r\na&bc&", SWT.NONE);				

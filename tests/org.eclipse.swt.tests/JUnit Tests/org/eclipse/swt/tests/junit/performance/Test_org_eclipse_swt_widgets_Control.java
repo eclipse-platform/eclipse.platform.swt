@@ -54,7 +54,7 @@ public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
 		listeners[i] = new ControlAdapter() {}; 
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "addControlListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.addControlListener(listeners[i]);
@@ -71,7 +71,7 @@ public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
 		listeners[i] = new FocusAdapter() {}; 
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "addFocusListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.addFocusListener(listeners[i]);
@@ -90,7 +90,7 @@ public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
 		};
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "addHelpListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.addHelpListener(listeners[i]);
@@ -107,7 +107,7 @@ public void test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
 		listeners[i] = new KeyAdapter() {}; 
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "addKeyListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.addKeyListener(listeners[i]);
@@ -124,7 +124,7 @@ public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
 		listeners[i] = new MouseAdapter() {}; 
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "addMouseListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.addMouseListener(listeners[i]);
@@ -143,7 +143,7 @@ public void test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener()
 		};
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "addMouseMoveListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.addMouseMoveListener(listeners[i]);
@@ -160,7 +160,7 @@ public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener
 		listeners[i] = new MouseTrackAdapter() {}; 
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "addMouseTrackListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.addMouseTrackListener(listeners[i]);
@@ -179,7 +179,7 @@ public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
 		}; 
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "addPaintListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.addPaintListener(listeners[i]);
@@ -199,7 +199,7 @@ public void test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
 		}; 
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "addTraverseListener");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.addTraverseListener(listeners[i]);
@@ -210,7 +210,7 @@ public void test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
 
 public void test_computeSizeII() {
 	final int COUNT = 90000;
-	PerformanceMeter meter = createMeter("preferred size");
+	PerformanceMeter meter = createMeter(getTypeString() + "computeSize(II) - preferred");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.computeSize(SWT.DEFAULT, SWT.DEFAULT);
@@ -222,7 +222,7 @@ public void test_computeSizeII() {
 	size.x *= 2;
 	size.y *= 2;
 	
-	meter = createMeter("specify width");
+	meter = createMeter(getTypeString() + "computeSize(II) - spec. width");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.computeSize(size.x, SWT.DEFAULT);
@@ -230,7 +230,7 @@ public void test_computeSizeII() {
 	meter.stop();
 	disposeMeter(meter);
 
-	meter = createMeter("specify height");
+	meter = createMeter(getTypeString() + "computeSize(II) - spec. height");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.computeSize(SWT.DEFAULT, size.y);
@@ -242,7 +242,7 @@ public void test_computeSizeII() {
 public void test_computeSizeIIZ() {
 	final int COUNT = 90000;
 	
-	PerformanceMeter meter = createMeter("preferred size");
+	PerformanceMeter meter = createMeter(getTypeString() + "computeSize(IIZ) - preferred");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.computeSize(SWT.DEFAULT, SWT.DEFAULT, false);
@@ -254,7 +254,7 @@ public void test_computeSizeIIZ() {
 	size.x *= 2;
 	size.y *= 2;
 	
-	meter = createMeter("specify width");
+	meter = createMeter(getTypeString() + "computeSize(IIZ) - spec. width");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.computeSize(size.x, SWT.DEFAULT, false);
@@ -262,7 +262,7 @@ public void test_computeSizeIIZ() {
 	meter.stop();
 	disposeMeter(meter);
 
-	meter = createMeter("specify height");
+	meter = createMeter(getTypeString() + "computeSize(IIZ) - spec. height");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.computeSize(SWT.DEFAULT, size.y, false);
@@ -274,7 +274,7 @@ public void test_computeSizeIIZ() {
 public void test_forceFocus() {
 	final int COUNT = 2000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "forceFocus");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.forceFocus();
@@ -286,7 +286,7 @@ public void test_forceFocus() {
 public void test_getAccessible() {
 	final int COUNT = 50000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getAccessible");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getAccessible();
@@ -300,7 +300,7 @@ public void test_getBackground() {
 	
 	control.setBackground(control.getDisplay().getSystemColor(SWT.COLOR_RED));
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getBackground");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getBackground();
@@ -312,7 +312,7 @@ public void test_getBackground() {
 public void test_getBorderWidth() {
 	final int COUNT = 4500000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getBorderWidth");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getBorderWidth();
@@ -326,7 +326,7 @@ public void test_getBounds() {
 	
 	control.setBounds(10,20,30,40);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getBounds");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getBounds();
@@ -340,7 +340,7 @@ public void test_getEnabled() {
 	
 	control.setEnabled(true);
 	
-	PerformanceMeter meter = createMeter("enabled");
+	PerformanceMeter meter = createMeter("getEnabled - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getEnabled();
@@ -350,7 +350,7 @@ public void test_getEnabled() {
 	
 	control.setEnabled(false);
 
-	meter = createMeter("disabled");
+	meter = createMeter("getEnabled - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getEnabled();
@@ -362,7 +362,7 @@ public void test_getEnabled() {
 public void test_getFont() {
 	final int COUNT = 800000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getFont");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getFont();
@@ -376,7 +376,7 @@ public void test_getForeground() {
 	
 	control.setForeground(control.getDisplay().getSystemColor(SWT.COLOR_RED));
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getForeground");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getForeground();
@@ -390,7 +390,7 @@ public void test_getLocation() {
 	
 	control.setBounds(10,20,30,40);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getLocation");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getLocation();
@@ -402,7 +402,7 @@ public void test_getLocation() {
 public void test_getMenu() {
 	final int COUNT = 50000000;
 	
-	PerformanceMeter meter = createMeter("no menu");
+	PerformanceMeter meter = createMeter(getTypeString() + "getMenu - none");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getMenu();
@@ -413,7 +413,7 @@ public void test_getMenu() {
 	Menu menu = new Menu(control.getShell());
 	control.setMenu(menu);
 	
-	meter = createMeter("menu");
+	meter = createMeter(getTypeString() + "getMenu - typical");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getMenu();
@@ -425,7 +425,7 @@ public void test_getMenu() {
 public void test_getMonitor() {
 	final int COUNT = 1200000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getMonitor");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getMonitor();
@@ -437,7 +437,7 @@ public void test_getMonitor() {
 public void test_getParent() {
 	final int COUNT = 50000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getParent");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getParent();
@@ -449,7 +449,7 @@ public void test_getParent() {
 public void test_getShell() {
 	final int COUNT = 30000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getShell");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getShell();
@@ -463,7 +463,7 @@ public void test_getSize() {
 	
 	control.setBounds(10,20,30,40);
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getSize");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getSize();
@@ -477,7 +477,7 @@ public void test_getToolTipText() {
 	
 	control.setToolTipText("Tool tip text");
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getToolTipText");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getToolTipText();
@@ -489,7 +489,7 @@ public void test_getToolTipText() {
 public void test_getVisible() {
 	final int COUNT = 9000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "getVisible");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.getVisible();
@@ -503,7 +503,7 @@ public void test_isEnabled() {
 	
 	control.setEnabled(true);
 	
-	PerformanceMeter meter = createMeter("enabled");
+	PerformanceMeter meter = createMeter(getTypeString() + "isEnabled - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.isEnabled();
@@ -513,7 +513,7 @@ public void test_isEnabled() {
 	
 	control.setEnabled(false);
 	
-	meter = createMeter("disabled");
+	meter = createMeter(getTypeString() + "isEnabled - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.isEnabled();
@@ -527,7 +527,7 @@ public void test_isFocusControl() {
 	
 	control.getParent().setFocus();
 	
-	PerformanceMeter meter = createMeter("not focused");
+	PerformanceMeter meter = createMeter(getTypeString() + "isFocusControl - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.isFocusControl();
@@ -537,7 +537,7 @@ public void test_isFocusControl() {
 
 	control.setFocus();
 	
-	meter = createMeter("focused");
+	meter = createMeter(getTypeString() + "isFocusControl - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.isFocusControl();
@@ -549,7 +549,7 @@ public void test_isFocusControl() {
 public void test_isReparentable() {
 	final int COUNT = 45000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "isReparentable");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.isReparentable();
@@ -563,7 +563,7 @@ public void test_isVisible() {
 	
 	control.getShell().setVisible(false);
 	
-	PerformanceMeter meter = createMeter("not visible");
+	PerformanceMeter meter = createMeter(getTypeString() + "isVisible - no");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.isVisible();
@@ -574,7 +574,7 @@ public void test_isVisible() {
 	control.getShell().setVisible(true);
 	control.setVisible(true);
 
-	meter = createMeter("visible");
+	meter = createMeter(getTypeString() + "isVisible - yes");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.isVisible();
@@ -597,7 +597,7 @@ public void test_moveAboveLorg_eclipse_swt_widgets_Control() {
 		controls[i+2] = button;
 		controls[i+3] = control;
 	}
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "moveAbove");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.moveAbove(controls[i]);
@@ -620,7 +620,7 @@ public void test_moveBelowLorg_eclipse_swt_widgets_Control() {
 		controls[i+2] = button;
 		controls[i+3] = control;
 	}
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "moveBelow");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.moveBelow(controls[i]);
@@ -634,7 +634,7 @@ public void test_moveBelowLorg_eclipse_swt_widgets_Control() {
 public void test_pack() {
 	final int COUNT = 12000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "pack()");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.pack();
@@ -646,7 +646,7 @@ public void test_pack() {
 public void test_packZ() {
 	final int COUNT = 12000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "pack(Z)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.pack(false);
@@ -658,7 +658,7 @@ public void test_packZ() {
 public void test_redraw() {
 	final int COUNT = 10000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "redraw()");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.redraw();
@@ -672,7 +672,7 @@ public void test_redrawIIIIZ() {
 	
 	Rectangle bounds = control.getBounds();
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "redraw(IIIIZ)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.redraw(bounds.x, bounds.y, bounds.width, bounds.height, true);
@@ -730,7 +730,7 @@ public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 		colors[i+3] = blue;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setBackground");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setBackground(colors[i]);
@@ -753,7 +753,7 @@ public void test_setBoundsIIII() {
 		heights[i] = 40;	heights[i+1] = 10;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setBounds(IIII)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setBounds(xs[i], ys[i], widths[i], heights[i]);
@@ -773,7 +773,7 @@ public void test_setBoundsLorg_eclipse_swt_graphics_Rectangle() {
 		rectangles[i+1] = rectangle2;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setBounds(Rectangle)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setBounds(rectangles[i]);
@@ -791,7 +791,7 @@ public void test_setCaptureZ() {
 		capture[i+1] = false;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setCapture");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setCapture(capture[i]);
@@ -813,7 +813,7 @@ public void test_setCursorLorg_eclipse_swt_graphics_Cursor() {
 		cursors[i+3] = size;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setCursor");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setCursor(cursors[i]);
@@ -831,7 +831,7 @@ public void test_setEnabledZ() {
 		capture[i+1] = false;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setEnabled");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setEnabled(capture[i]);
@@ -843,7 +843,7 @@ public void test_setEnabledZ() {
 public void test_setFocus() {
 	final int COUNT = 10000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setFocus");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setFocus();
@@ -867,7 +867,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 		fonts[i+3] = font2;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setFont");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setFont(fonts[i]);
@@ -891,7 +891,7 @@ public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
 		colors[i+3] = blue;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setForeground");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setForeground(colors[i]);
@@ -910,7 +910,7 @@ public void test_setLocationII() {
 		ys[i] = 20;			ys[i+1] = 30;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setLocation(II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setLocation(xs[i], ys[i]);
@@ -930,7 +930,7 @@ public void test_setLocationLorg_eclipse_swt_graphics_Point() {
 		points[i + 1] = point2;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setLocation(Point)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setLocation(points[i]);
@@ -954,7 +954,7 @@ public void test_setMenuLorg_eclipse_swt_widgets_Menu () {
 		menus[i+3] = menu2;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setMenu");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setMenu(menus[i]);
@@ -972,7 +972,7 @@ public void test_setRedrawZ() {
 		capture[i+1] = false;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setRedraw");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setRedraw(capture[i]);
@@ -991,7 +991,7 @@ public void test_setSizeII() {
 		heights[i] = 40;	heights[i+1] = 10;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setSize(II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setSize(widths[i], heights[i]);
@@ -1011,7 +1011,7 @@ public void test_setSizeLorg_eclipse_swt_graphics_Point() {
 		points[i + 1] = point2;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setSize(Point)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setSize(points[i]);
@@ -1031,7 +1031,7 @@ public void test_setToolTipTextLjava_lang_String() {
 		strings[3] = "the second tool tip";
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setToolTipText");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setToolTipText(strings[i]);
@@ -1049,7 +1049,7 @@ public void test_setVisibleZ() {
 		capture[i+1] = false;
 	}
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "setVisible");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.setVisible(capture[i]);
@@ -1061,7 +1061,7 @@ public void test_setVisibleZ() {
 public void test_toControlII() {
 	final int COUNT = 4000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "toControl(II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.toControl(20, 30);
@@ -1079,7 +1079,7 @@ public void test_toControlLorg_eclipse_swt_graphics_Point() {
 		points[i] = point;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "toControl(Point)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.toControl(points[i]);
@@ -1091,7 +1091,7 @@ public void test_toControlLorg_eclipse_swt_graphics_Point() {
 public void test_toDisplayII() {
 	final int COUNT = 4000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "toDisplay(II)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.toDisplay(20, 30);
@@ -1109,7 +1109,7 @@ public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
 		points[i] = point;
 	}
 
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "toDisplay(Point)");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.toDisplay(points[i]);
@@ -1121,7 +1121,7 @@ public void test_toDisplayLorg_eclipse_swt_graphics_Point() {
 public void test_traverseI() {
 	final int COUNT = 3000000;
 	
-	PerformanceMeter meter = createMeter("TRAVERSE_ARROW_NEXT");
+	PerformanceMeter meter = createMeter(getTypeString() + "traverse - TRAVERSE_ARROW_NEXT");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_ARROW_NEXT);
@@ -1129,7 +1129,7 @@ public void test_traverseI() {
 	meter.stop();
 	disposeMeter(meter);
 	
-	meter = createMeter("TRAVERSE_ARROW_PREVIOUS");
+	meter = createMeter(getTypeString() + "traverse - TRAVERSE_ARROW_PREVIOUS");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_ARROW_PREVIOUS);
@@ -1137,7 +1137,7 @@ public void test_traverseI() {
 	meter.stop();
 	disposeMeter(meter);
 	
-	meter = createMeter("TRAVERSE_ESCAPE");
+	meter = createMeter(getTypeString() + "traverse - TRAVERSE_ESCAPE");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_ESCAPE);
@@ -1145,7 +1145,7 @@ public void test_traverseI() {
 	meter.stop();
 	disposeMeter(meter);
 	
-	meter = createMeter("TRAVERSE_MNEMONIC");
+	meter = createMeter(getTypeString() + "traverse - TRAVERSE_MNEMONIC");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_MNEMONIC);
@@ -1153,7 +1153,7 @@ public void test_traverseI() {
 	meter.stop();
 	disposeMeter(meter);
 	
-	meter = createMeter("TRAVERSE_NONE");
+	meter = createMeter(getTypeString() + "traverse - TRAVERSE_NONE");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_NONE);
@@ -1161,7 +1161,7 @@ public void test_traverseI() {
 	meter.stop();
 	disposeMeter(meter);
 	
-	meter = createMeter("TRAVERSE_PAGE_NEXT");
+	meter = createMeter(getTypeString() + "traverse - TRAVERSE_PAGE_NEXT");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_PAGE_NEXT);
@@ -1169,7 +1169,7 @@ public void test_traverseI() {
 	meter.stop();
 	disposeMeter(meter);
 	
-	meter = createMeter("TRAVERSE_PAGE_PREVIOUS");
+	meter = createMeter(getTypeString() + "traverse - TRAVERSE_PAGE_PREVIOUS");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_PAGE_PREVIOUS);
@@ -1177,7 +1177,7 @@ public void test_traverseI() {
 	meter.stop();
 	disposeMeter(meter);
 	
-	meter = createMeter("TRAVERSE_RETURN");
+	meter = createMeter(getTypeString() + "traverse - TRAVERSE_RETURN");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_RETURN);
@@ -1185,7 +1185,7 @@ public void test_traverseI() {
 	meter.stop();
 	disposeMeter(meter);
 
-	meter = createMeter("TRAVERSE_TAB_NEXT");
+	meter = createMeter(getTypeString() + "traverse - TRAVERSE_TAB_NEXT");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_TAB_NEXT);
@@ -1193,7 +1193,7 @@ public void test_traverseI() {
 	meter.stop();
 	disposeMeter(meter);
 
-	meter = createMeter("TRAVERSE_TAB_PREVIOUS");
+	meter = createMeter(getTypeString() + "traverse - TRAVERSE_TAB_PREVIOUS");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.traverse(SWT.TRAVERSE_TAB_PREVIOUS);
@@ -1205,7 +1205,7 @@ public void test_traverseI() {
 public void test_update() {
 	final int COUNT = 2000000;
 	
-	PerformanceMeter meter = createMeter();
+	PerformanceMeter meter = createMeter(getTypeString() + "update");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.update();
@@ -1376,9 +1376,16 @@ protected void runTest() throws Throwable {
 /* custom */
 	Control control;
 	boolean eventOccurred;
+	String typeString = "";
 
 protected void setWidget(Widget w) {
 	control = (Control)w;
 	super.setWidget(w);
+	String fullName = control.getClass().getName();
+	typeString = fullName.substring(fullName.lastIndexOf(".") + 1) + " ";
+}
+
+private String getTypeString() {
+	return typeString;
 }
 }
