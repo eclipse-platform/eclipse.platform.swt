@@ -350,7 +350,6 @@ public static final native boolean GTK_WIDGET_NO_WINDOW(int wid);
 public static final native boolean GTK_WIDGET_SENSITIVE(int wid);
 public static final native boolean GTK_WIDGET_IS_SENSITIVE(int wid);
 public static final native boolean GTK_WIDGET_TOPLEVEL(int wid);
-public static final native boolean GTK_WIDGET_REALISED(int wid);
 public static final native boolean GTK_WIDGET_MAPPED(int wid);
 public static final native boolean GTK_WIDGET_VISIBLE(int wid);
 public static final native boolean GTK_WIDGET_DRAWABLE(int wid);

@@ -90,12 +90,6 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1TOP
 	return (jboolean) GTK_WIDGET_TOPLEVEL((GtkWidget*)wid);
 }
 
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1REALISED
-  (JNIEnv *env, jclass that, jint wid)
-{
-	return (jboolean) GTK_WIDGET_REALISED((GtkWidget*)wid);
-}
-
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_GTK_1WIDGET_1VISIBLE
   (JNIEnv *env, jclass that, jint wid)
 {
