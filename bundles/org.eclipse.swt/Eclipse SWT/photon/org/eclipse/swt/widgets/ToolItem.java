@@ -505,6 +505,11 @@ int Pt_CB_ACTIVATE (int widget, int info) {
 	Event event = new Event ();
 	if (widget == arrow) {
 		event.detail = SWT.ARROW;
+		int topHandle = topHandle ();
+		PhArea_t area = new PhArea_t ();
+		OS.PtWidgetArea (topHandle, area);
+		event.x = area.pos_x;
+		event.y = area.pos_y + area.size_h;
 	} else {
 		if ((style & SWT.RADIO) != 0) {
 			if ((parent.getStyle () & SWT.NO_RADIO_GROUP) == 0) {
