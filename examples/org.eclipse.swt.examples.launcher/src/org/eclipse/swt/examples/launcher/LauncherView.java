@@ -18,7 +18,7 @@ public class LauncherView extends ViewPart {
 	
 	private Tree launchTree;
 	private Text descriptionText;
-	private Button importButton;
+	//private Button importButton;
 	private Button runButton;
 
 	/**
@@ -82,15 +82,15 @@ public class LauncherView extends ViewPart {
 			}
 		});
 		
-		importButton = new Button(launchGroup, SWT.PUSH);
-		importButton.setText(LauncherPlugin.getResourceString("view.importButton.text"));
-		importButton.addSelectionListener(new SelectionListener() {
-			public void widgetSelected(SelectionEvent event) {
-				importItem(getSelectedItem());
-			}
-			public void widgetDefaultSelected(SelectionEvent event) {
-			}
-		});
+		//importButton = new Button(launchGroup, SWT.PUSH);
+		//importButton.setText(LauncherPlugin.getResourceString("view.importButton.text"));
+		//importButton.addSelectionListener(new SelectionListener() {
+		//	public void widgetSelected(SelectionEvent event) {
+		//		importItem(getSelectedItem());
+		//	}
+		//	public void widgetDefaultSelected(SelectionEvent event) {
+		//	}
+		//});
 		
 
 		Group descriptionGroup = new Group(parent, SWT.NULL);
@@ -121,7 +121,7 @@ public class LauncherView extends ViewPart {
 		workbenchShell = null;
 		launchTree = null;
 		descriptionText = null;
-		importButton = null;
+		//importButton = null;
 		runButton = null;		
 		super.dispose();
 	}
@@ -220,14 +220,14 @@ public class LauncherView extends ViewPart {
 		if (itemDescriptor == null) {
 			description = LauncherPlugin.getResourceString("launchitem.Null.description");
 			if (runButton != null) runButton.setEnabled(false);
-			if (importButton != null) importButton.setEnabled(false);
+			//if (importButton != null) importButton.setEnabled(false);
 		} else {
 			description = itemDescriptor.getDescription();
 			if (description == null)
 				description = LauncherPlugin.getResourceString("launchitem.Missing.description");
 				
 			if (runButton != null) runButton.setEnabled(itemDescriptor.getLaunchDelegate() != null);
-			if (importButton != null) importButton.setEnabled(itemDescriptor.getSourceCodePath() != null);
+			//if (importButton != null) importButton.setEnabled(itemDescriptor.getSourceCodePath() != null);
 		}
 		descriptionText.setText(description);
 	}
