@@ -420,6 +420,18 @@ public boolean open () {
 	int window = display.createOverlayWindow ();
 	OS.ShowWindow (window);
 	drawRectangles (window, false);
+	
+	// if exactly one of UP/DOWN is specified as a style then set the cursor
+	// orientation accordingly (the same is done for LEFT/RIGHT styles below)
+	int vStyle = style & (SWT.UP | SWT.DOWN);
+	if (vStyle == SWT.UP || vStyle == SWT.DOWN) {
+		cursorOrientation |= vStyle;
+	}
+	int hStyle = style & (SWT.LEFT | SWT.RIGHT);
+	if (hStyle == SWT.LEFT || hStyle == SWT.RIGHT) {
+		cursorOrientation |= hStyle;
+	}
+	
 	Point cursorPos;
 	if (OS.StillDown ()) {
 		org.eclipse.swt.internal.carbon.Point pt = new org.eclipse.swt.internal.carbon.Point ();
