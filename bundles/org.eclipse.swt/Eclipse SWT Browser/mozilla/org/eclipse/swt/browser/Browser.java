@@ -1818,6 +1818,32 @@ int FocusPrevElement() {
 /* nsIContextMenuListener */
 
 int OnShowContextMenu(int aContextFlags, int aEvent, int aNode) {
+	nsIDOMEvent domEvent = new nsIDOMEvent(aEvent);
+	int[] result = new int[1];
+	int rc = domEvent.QueryInterface(nsIDOMMouseEvent.NS_IDOMMOUSEEVENT_IID, result);
+	if (rc != XPCOM.NS_OK) error(rc);
+	if (result[0] == 0) error(XPCOM.NS_NOINTERFACE);
+
+	nsIDOMMouseEvent domMouseEvent = new nsIDOMMouseEvent(result[0]);
+	int[] aScreenX = new int[1], aScreenY = new int[1];
+	rc = domMouseEvent.GetScreenX(aScreenX);
+	if (rc != XPCOM.NS_OK) error(rc);
+	rc = domMouseEvent.GetScreenY(aScreenY);
+	if (rc != XPCOM.NS_OK) error(rc);
+	domMouseEvent.Release();
+	
+	Event event = new Event();
+	event.x = aScreenX[0];
+	event.y = aScreenY[0];
+	notifyListeners(SWT.MenuDetect, event);
+	if (!event.doit) return XPCOM.NS_OK;
+	Menu menu = getMenu();
+	if (menu != null && !menu.isDisposed ()) {
+		if (aScreenX[0] != event.x || aScreenY[0] != event.y) {
+			menu.setLocation (event.x, event.y);
+		}
+		menu.setVisible (true);
+	}
 	return XPCOM.NS_OK;     	
 }
 
