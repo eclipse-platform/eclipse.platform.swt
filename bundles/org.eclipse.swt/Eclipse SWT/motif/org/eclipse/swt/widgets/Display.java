@@ -248,6 +248,10 @@ public class Display extends Device {
 	int wakeProc, read_fd, write_fd, inputID;
 	byte [] wake_buffer = new byte [1];
 	
+	/* Sleep */
+	Callback sleepCallback;
+	int sleepProc, sleepID;
+	
 	/* Display Data */
 	Object data;
 	String [] keys;
@@ -1107,6 +1111,9 @@ void initializeDisplay () {
 	wakeCallback = new Callback (this, "wakeProc", 3);
 	wakeProc = wakeCallback.getAddress ();
 	if (wakeProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	sleepCallback = new Callback (this, "sleepProc", 2);
+	sleepProc = sleepCallback.getAddress ();
+	if (sleepProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	
 	/* Create and install the pipe used to wake up from sleep */
 	int [] filedes = new int [2];
@@ -1505,6 +1512,11 @@ void releaseDisplay () {
 	wakeProc = 0;
 	OS.close (read_fd);
 	OS.close (write_fd);
+	
+	/* Dispose the sleep callback and id */
+	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
+	sleepCallback.dispose (); sleepCallback = null;
+	sleepProc = 0;
 		
 	/* Free the font lists */
 	if (buttonFont != 0) OS.XmFontListFree (buttonFont);
@@ -1795,7 +1807,19 @@ void showToolTip (int handle, String toolTipText) {
 public boolean sleep () {
 	checkDevice ();
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
-	return OS.XtAppPeekEvent (xtContext, xEvent);
+	/*
+	* Bug in Xt.  Under certain circumstances Xt waits
+	* forever looking for X events, ignoring alternate
+	* inputs.  The fix is to never sleep forever.
+	*/
+	sleepID = OS.XtAppAddTimeOut (xtContext, 100, sleepProc, 0);
+	boolean result = OS.XtAppPeekEvent (xtContext, xEvent);
+	if (sleepID != 0) OS.XtRemoveTimeOut (sleepID);
+	return result;
+}
+int sleepProc (int data, int id) {
+	sleepID = 0;
+	return 0;
 }
 /**
  * Causes the <code>run()</code> method of the runnable to
