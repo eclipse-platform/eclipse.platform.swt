@@ -718,6 +718,13 @@ public class SWT {
 	
 	/**
 	 * style constant for left to right orientation (value is 1&lt;&lt;25)
+	 * <p>
+	 * When orientation is not explicitly specified, orientation is
+	 * inherited.  This means that children will be assigned the
+	 * orientation of their parent.  To override this behavior and
+	 * force an orientation for a child, explicitly set the orientation
+	 * of the child when that child is created.
+	 * </p>
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
@@ -729,6 +736,13 @@ public class SWT {
 	
 	/**
 	 * style constant for right to left orientation (value is 1&lt;&lt;26)
+	 * <p>
+	 * When orientation is not explicitly specified, orientation is
+	 * inherited.  This means that children will be assigned the
+	 * orientation of their parent.  To override this behavior and
+	 * force an orientation for a child, explicitly set the orientation
+	 * of the child when that child is created.
+	 * </p>
 	 * <p><b>Used By:</b><ul>
 	 * <li><code>Control</code></li>
 	 * <li><code>Menu</code></li>
