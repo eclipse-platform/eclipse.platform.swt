@@ -182,7 +182,7 @@ int createCheckPixmap(boolean checked) {
 			OS.gdk_draw_line(pixmap, gc, 0,check_height-1, check_width-1,0);
 		}
 		
-		OS.gdk_gc_destroy(gc);
+		OS.g_object_unref(gc);
 		return pixmap;
 }
 
@@ -844,8 +844,8 @@ void releaseWidget () {
 	}
 	items = null;
 	itemBeingSelected = null;
-	if (check != 0) OS.gdk_pixmap_unref (check);
-	if (uncheck != 0) OS.gdk_pixmap_unref (uncheck);
+	if (check != 0) OS.g_object_unref (check);
+	if (uncheck != 0) OS.g_object_unref (uncheck);
 	check = uncheck = 0;
 	super.releaseWidget ();
 }

@@ -22,6 +22,41 @@ public class OS {
 	
 		
 	public static final int GDK_NONE = 0;
+	
+	/* GIF-like animation overlay modes for frames */
+	public final static int GDK_PIXBUF_FRAME_RETAIN = 0;
+	public final static int GDK_PIXBUF_FRAME_DISPOSE = 1;
+	public final static int GDK_PIXBUF_FRAME_REVERT = 2;
+	
+	/* Alpha compositing mode */
+	public final static int GDK_PIXBUF_ALPHA_BILEVEL = 0;
+	public final static int GDK_PIXBUF_ALPHA_FULL = 1;
+
+	/* Interpolation modes */
+	public final static int GDK_INTERP_NEAREST = 0;
+	public final static int GDK_INTERP_TILES = 1;
+	public final static int GDK_INTERP_BILINEAR = 2;
+	public final static int GDK_INTERP_HYPER = 3;
+
+	/* GdkGC set values mask */
+	public static final int GDK_GC_FOREGROUND    = 1 << 0;
+	public static final int GDK_GC_BACKGROUND    = 1 << 1;
+	public static final int GDK_GC_FONT          = 1 << 2;
+	public static final int GDK_GC_FUNCTION      = 1 << 3;
+	public static final int GDK_GC_FILL          = 1 << 4;
+	public static final int GDK_GC_TILE          = 1 << 5;
+	public static final int GDK_GC_STIPPLE       = 1 << 6;
+	public static final int GDK_GC_CLIP_MASK     = 1 << 7;
+	public static final int GDK_GC_SUBWINDOW     = 1 << 8;
+	public static final int GDK_GC_TS_X_ORIGIN   = 1 << 9;
+	public static final int GDK_GC_TS_Y_ORIGIN   = 1 << 10;
+	public static final int GDK_GC_CLIP_X_ORIGIN = 1 << 11;
+	public static final int GDK_GC_CLIP_Y_ORIGIN = 1 << 12;
+	public static final int GDK_GC_EXPOSURES     = 1 << 13;
+	public static final int GDK_GC_LINE_WIDTH    = 1 << 14;
+	public static final int GDK_GC_LINE_STYLE    = 1 << 15;
+	public static final int GDK_GC_CAP_STYLE     = 1 << 16;
+	public static final int GDK_GC_JOIN_STYLE    = 1 << 17;
 
 	/* For Display.KeyTable: */
 	/* Keyboard and mouse masks */
@@ -79,6 +114,7 @@ public class OS {
 	public static final int GDK_COPY = 0;
 	public static final int GDK_INVERT = 1;
 	public static final int GDK_XOR = 2;
+	public static final int GDK_AND = 4;
 	public static final int GDK_STIPPLED = 2;
 	public static final int GDK_LINE_SOLID = 0;
 	public static final int GDK_LINE_ON_OFF_DASH = 1;
@@ -226,8 +262,6 @@ public static final native int GTK_TOOLBAR_CHILD_WIDGET();
 	public static final int G_LOG_LEVEL_MASK = ~(G_LOG_FLAG_RECURSION | G_LOG_FLAG_FATAL);
 
 
-
-
 /*
  *         Native methods.
  */
@@ -336,6 +370,7 @@ public static final native int g_list_nth(int list, int n);
 public static final native int g_list_nth_data(int list, int n);
 public static final native void g_list_free(int list);
 public static final native int g_malloc(int size);
+public static final native void g_object_unref(int object);
 public static final native int g_list_append(int list, int data);
 public static final native int g_slist_length(int list);
 public static final native int g_slist_nth(int list, int n);
@@ -344,6 +379,8 @@ public static final native int g_strdup(byte[] str);
 public static final native int gdk_colormap_get_system();
 public static final native void gdk_colors_free(int colormap, int[] pixels, int npixels, int planes);
 public static final native boolean gdk_color_alloc(int colormap, GdkColor color);
+public static final native boolean gdk_colormap_alloc_color(int colormap, GdkColor color, boolean writeable, boolean best_match);
+public static final native void gdk_colormap_free_colors(int colormap, GdkColor colors, int ncolors);
 public static final native int gdk_cursor_new(int cursor_type);
 public static final native int gdk_bitmap_create_from_data(int window, byte[] data, int width, int height);
 public static final native int gdk_cursor_new_from_pixmap(int source, int mask, GdkColor fg, GdkColor bg, int x, int y);
@@ -356,10 +393,12 @@ public static final native void gdk_font_unref(int font);
 public static final native boolean gdk_font_equal(int fonta, int fontb);
 public static final native int gdk_char_width(int font, byte character);
 public static final native void gdk_gc_get_values(int gc, GdkGCValues values);
+public static final native void gdk_gc_set_values(int gc, GdkGCValues values, int values_mask);
 public static final native void gdk_gc_set_font(int gc, int font);
 public static final native void gdk_gc_set_foreground(int gc, GdkColor color);
 public static final native void gdk_gc_set_background(int gc, GdkColor color);
 public static final native void gdk_gc_set_clip_mask(int gc, int mask);
+public static final native void gdk_gc_set_clip_origin(int gc, int x, int y);
 public static final native void gdk_gc_set_clip_rectangle(int gc, GdkRectangle rectangle);
 public static final native void gdk_gc_set_clip_region(int gc, int region);
 public static final native void gdk_gc_set_line_attributes(int gc, int line_width, int line_style, int cap_style, int join_style);
@@ -367,15 +406,13 @@ public static final native void gdk_gc_set_dashes(int gc, int dash_offset, byte[
 public static final native void gdk_gc_set_function(int gc, int function);
 public static final native void gdk_draw_line(int drawable, int gc, int x1, int y1, int x2, int y2);
 public static final native void gdk_draw_arc(int drawable, int gc, int filled, int x, int y, int width, int height, int angle1, int angle2);
+public static final native void gdk_draw_drawable(int drawable, int gc, int src, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
 public static final native void gdk_draw_rectangle(int drawable, int gc, int filled, int x, int y, int width, int height);
 public static final native void gdk_draw_pixmap(int drawable, int gc, int src, int xsrc, int ysrc, int xdest, int ydest, int width, int height);
-public static final native void gdk_draw_lines(int drawable, int gc, short[] points, int npoints);
-public static final native void gdk_draw_polygon(int drawable, int gc, int filled, short[] points, int npoints);
+public static final native void gdk_draw_lines(int drawable, int gc, int[] points, int npoints);
+public static final native void gdk_draw_polygon(int drawable, int gc, int filled, int[] points, int npoints);
 public static final native void gdk_draw_string(int drawable, int font, int gc, int x, int y, byte[] string);
-public static final native void gdk_gc_unref(int gc);
 public static final native int gdk_gc_new(int window);
-public static final native void gdk_gc_destroy(int gc);
-public static final native void gdk_bitmap_unref(int pixmap);
 public static final native boolean gdk_color_white(int colormap, GdkColor color);
 public static final native int gdk_image_get(int window, int x, int y, int width, int height);
 public static final native int gdk_image_get_pixel(int image, int x, int y);
@@ -408,12 +445,11 @@ public static final native void gdk_gc_set_subwindow(int gc, int mode);
 public static final native void gdk_gc_set_fill(int gc, int fill);
 public static final native int gdk_atom_intern(byte[] atom_name, int only_if_exists);
 public static final native int gdk_event_get();
-public static final native void gdk_pixmap_unref(int pixmap);
 public static final native void gdk_region_get_clipbox(int region, GdkRectangle rectangle);
 public static final native int gdk_region_new();
-public static final native int gdk_region_union_with_rect(int region, GdkRectangle rect);
-public static final native int gdk_regions_subtract(int source1, int source2);
-public static final native int gdk_regions_union(int source1, int source2);
+public static final native void gdk_region_union_with_rect(int region, GdkRectangle rect);
+public static final native void gdk_region_subtract(int source1, int source2);
+public static final native void gdk_region_union(int source1, int source2);
 public static final native void gdk_region_destroy(int region);
 public static final native int gdk_pixmap_new(int window, int width, int height, int depth);
 public static final native boolean gdk_region_point_in(int region, int x, int y);
@@ -434,6 +470,7 @@ public static final native void gdk_window_move  (int window, int x, int y);
 public static final native int gdk_window_at_pointer(int[] win_x, int[] win_y);
 public static final native int GDK_CURRENT_TIME();
 public static final native int gdk_screen_width_mm();
+public static final native int gdk_drawable_get_image(int drawable, int x, int y, int width, int height);
 public static final native void gdk_drawable_get_size(int drawable, int[] width, int[] height);
 public static final native int  gdk_drawable_get_depth(int drawable);
 public static final native void gdk_window_raise(int window);
@@ -724,10 +761,46 @@ public static final native int pango_font_metrics_get_ascent(int metrics);
 public static final native int pango_font_metrics_get_descent(int metrics);
 public static final native int pango_font_metrics_get_approximate_char_width(int metrics);
 
+/* GdkColorspace enumeration */
+/* R/G/B additive color space */
+public static final native int GDK_COLORSPACE_RGB();
 
+/* GdkPixbuf accessors */
 
+public static final native int gdk_pixbuf_get_colorspace (int pixbuf);
+public static final native int gdk_pixbuf_get_n_channels (int pixbuf);
+public static final native boolean gdk_pixbuf_get_has_alpha (int pixbuf);
+public static final native int gdk_pixbuf_get_bits_per_sample (int pixbuf);
+public static final native int gdk_pixbuf_get_pixels (int pixbuf);
+public static final native int gdk_pixbuf_get_width (int pixbuf);
+public static final native int gdk_pixbuf_get_height (int pixbuf);
+public static final native int gdk_pixbuf_get_rowstride (int pixbuf);
 
+/* PIXBUF CREATION FROM DATA IN MEMORY */
 
+public static final native int gdk_pixbuf_new (int colorspace, boolean has_alpha, int bits_per_sample, int width, int height);
+public static final native int gdk_pixbuf_copy(int source);
+public static final native int gdk_pixbuf_add_alpha (int pixbuf, boolean substitute_color, byte r, byte g, byte b);
+public static final native int gdk_pixbuf_new_from_data (byte[] data, int colorspace, boolean has_alpha, int bits_per_sample, int width, int height, int rowstride, int destroy_fn, int destroy_fn_data);
+public static final native int gdk_pixbuf_new_from_xpm_data (int pdata);
+
+/* PIXBUF CREATION - FILE LOADING */
+
+public static final native int gdk_pixbuf_new_from_file (byte[] filename);
+
+/* RENDERING TO A DRAWABLE */
+
+public static final native void gdk_pixbuf_render_to_drawable_alpha (int pixbuf, int drawable, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int alpha_mode, int alpha_threshold, int dither, int x_dither, int y_dither);
+public static final native void gdk_pixbuf_render_to_drawable (int pixbuf, int drawable, int gc, int src_x, int src_y, int dest_x, int dest_y, int width, int height, int dither, int x_dither, int y_dither);
+
+/* SCALING */
+
+public static final native void gdk_pixbuf_scale (int src, int dest, int dest_x, int dest_y, int dest_width, int dest_height, double offset_x, double offset_y, double scale_x, double scale_y, int interp_type);
+public static final native void gdk_pixbuf_composite (int src, int dest, int dest_x, int dest_y, int dest_width, int dest_height, double offset_x, double offset_y, double scale_x, double scale_y,  int interp_type, int overall_alpha);
+public static final native void gdk_pixbuf_composite_color (int src, int dest, int dest_x, int dest_y,  int dest_width, int dest_height, double offset_x, double offset_y, double scale_x,double scale_y, int interp_type, int overall_alpha, int check_x, int check_y, int check_size, int color1, int color2);
+public static final native int gdk_pixbuf_scale_simple (int src, int dest_width, int dest_height, int interp_type);
+public static final native int gdk_pixbuf_composite_color_simple (int src,int dest_width, int dest_height, int interp_type, int overall_alpha, int check_size, int color1, int color2);
+public static final native int gdk_pixbuf_get_from_drawable (int dest, int src, int cmap, int src_x, int src_y, int dest_x, int dest_y, int width, int height);
 
 /* Other */
 
@@ -745,6 +818,7 @@ public static final native void memmove(int dest, int[] src, int size);
 
 
 /* Read memmoves */
+static final native void memmove(GdkImage dest, int src);
 static final native void memmove(GdkVisual dest, int src);
 static final native void memmove(GdkFont dest, int src);
 static final native void memmove(GdkColor dest, int src);

@@ -30,7 +30,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGdkColorFids(env, dest, &PGLOB(GdkColorFc));
-		setGdkColorFields(env, dest, src, &PGLOB(GdkColorFc));
+		setGdkColorFields(env, dest, (GdkColor *)src, &PGLOB(GdkColorFc));
 	}
 }
 
@@ -40,7 +40,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGdkEventExposeFids(env, dest, &PGLOB(GdkEventExposeFc));
-		setGdkEventExposeFields(env, dest, src, &PGLOB(GdkEventExposeFc));
+		setGdkEventExposeFields(env, dest, (GdkEventExpose *)src, &PGLOB(GdkEventExposeFc));
 	}
 }
 
@@ -50,7 +50,17 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGdkVisualFids(env, dest, &PGLOB(GdkVisualFc));
-		setGdkVisualFields(env, dest, src, &PGLOB(GdkVisualFc));
+		setGdkVisualFields(env, dest, (GdkVisual *)src, &PGLOB(GdkVisualFc));
+	}
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclipse_swt_internal_gtk_GdkImage_2I
+  (JNIEnv *env, jclass that, jobject dest, jint src, jint count)
+{
+	DECL_GLOB(pGlob)
+	if (dest) {
+		cacheGdkImageFids(env, dest, &PGLOB(GdkImageFc));
+		setGdkImageFields(env, dest, (GdkImage *)src, &PGLOB(GdkImageFc));
 	}
 }
 
@@ -62,7 +72,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkStyleClassFids(env, dest, &PGLOB(GtkStyleClassFc));
-		setGtkStyleClassFields(env, dest, src, &PGLOB(GtkStyleClassFc));
+		setGtkStyleClassFields(env, dest, (GtkStyleClass *)src, &PGLOB(GtkStyleClassFc));
 	}
 }
 
@@ -72,7 +82,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkAllocationFids(env, dest, &PGLOB(GtkAllocationFc));
-		setGtkAllocationFields(env, dest, src, &PGLOB(GtkAllocationFc));
+		setGtkAllocationFields(env, dest, (GtkAllocation *)src, &PGLOB(GtkAllocationFc));
 	}
 }
 
@@ -82,7 +92,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkComboFids(env, dest, &PGLOB(GtkComboFc));
-		setGtkComboFields(env, dest, src, &PGLOB(GtkComboFc));
+		setGtkComboFields(env, dest, (GtkCombo *)src, &PGLOB(GtkComboFc));
 	}
 }
 
@@ -92,7 +102,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkCListFids(env, dest, &PGLOB(GtkCListFc));
-		setGtkCListFields(env, dest, src, &PGLOB(GtkCListFc));
+		setGtkCListFields(env, dest, (GtkCList *)src, &PGLOB(GtkCListFc));
 	}
 }
 
@@ -102,7 +112,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkCTreeFids(env, dest, &PGLOB(GtkCTreeFc));
-		setGtkCTreeFields(env, dest, src, &PGLOB(GtkCTreeFc));
+		setGtkCTreeFields(env, dest, (GtkCTree *)src, &PGLOB(GtkCTreeFc));
 	}
 }
 
@@ -112,7 +122,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkRequisitionFids(env, dest, &PGLOB(GtkRequisitionFc));
-		setGtkRequisitionFields(env, dest, src, &PGLOB(GtkRequisitionFc));
+		setGtkRequisitionFields(env, dest, (GtkRequisition *)src, &PGLOB(GtkRequisitionFc));
 	}
 }
 
@@ -122,7 +132,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkStyleFids(env, dest, &PGLOB(GtkStyleFc));
-		setGtkStyleFields(env, dest, src, &PGLOB(GtkStyleFc));
+		setGtkStyleFields(env, dest, (GtkStyle *)src, &PGLOB(GtkStyleFc));
 	}
 }
 
@@ -132,7 +142,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkAdjustmentFids(env, dest, &PGLOB(GtkAdjustmentFc));
-		setGtkAdjustmentFields(env, dest, src, &PGLOB(GtkAdjustmentFc));
+		setGtkAdjustmentFields(env, dest, (GtkAdjustment *)src, &PGLOB(GtkAdjustmentFc));
 	}
 }
 
@@ -142,7 +152,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkCListRowFids(env, dest, &PGLOB(GtkCListRowFc));
-		setGtkCListRowFields(env, dest, src, &PGLOB(GtkCListRowFc));
+		setGtkCListRowFields(env, dest, (GtkCListRow *)src, &PGLOB(GtkCListRowFc));
 	}
 }
 
@@ -152,7 +162,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkCListColumnFids(env, dest, &PGLOB(GtkCListColumnFc));
-		setGtkCListColumnFields(env, dest, src, &PGLOB(GtkCListColumnFc));
+		setGtkCListColumnFields(env, dest, (GtkCListColumn *)src, &PGLOB(GtkCListColumnFc));
 	}
 }
 
@@ -162,7 +172,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__Lorg_eclips
 	DECL_GLOB(pGlob)
 	if (dest) {
 		cacheGtkCTreeRowFids(env, dest, &PGLOB(GtkCTreeRowFc));
-		setGtkCTreeRowFields(env, dest, src, &PGLOB(GtkCTreeRowFc));
+		setGtkCTreeRowFields(env, dest, (GtkCTreeRow *)src, &PGLOB(GtkCTreeRowFc));
 	}
 }
 
@@ -174,7 +184,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	DECL_GLOB(pGlob)
 	if (src) {
 		cacheGtkAdjustmentFids(env, src, &PGLOB(GtkAdjustmentFc));
-		getGtkAdjustmentFields(env, src, dest, &PGLOB(GtkAdjustmentFc));
+		getGtkAdjustmentFields(env, src, (GtkAdjustment *)dest, &PGLOB(GtkAdjustmentFc));
 	}
 }
 
@@ -185,7 +195,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	DECL_GLOB(pGlob)
 	if (src) {
 		cacheGtkCListColumnFids(env, src, &PGLOB(GtkCListColumnFc));
-		getGtkCListColumnFields(env, src, dest, &PGLOB(GtkCListColumnFc));
+		getGtkCListColumnFields(env, src, (GtkCListColumn *)dest, &PGLOB(GtkCListColumnFc));
 	}
 }
 
@@ -195,7 +205,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_memmove__ILorg_eclip
 	DECL_GLOB(pGlob)
 	if (src) {
 		cacheGtkStyleFids(env, src, &PGLOB(GtkStyleFc));
-		getGtkStyleFields(env, src, dest, &PGLOB(GtkStyleFc));
+		getGtkStyleFields(env, src, (GtkStyle *)dest, &PGLOB(GtkStyleFc));
 	}
 }
 

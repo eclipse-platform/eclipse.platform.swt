@@ -25,6 +25,7 @@ GdkFont_FID_CACHE GdkFontFc;
 GdkGCValues_FID_CACHE GdkGCValuesFc;
 GdkRectangle_FID_CACHE GdkRectangleFc;
 GdkVisual_FID_CACHE GdkVisualFc;
+GdkImage_FID_CACHE GdkImageFc;
 
 GtkAdjustment_FID_CACHE GtkAdjustmentFc;
 GtkAllocation_FID_CACHE GtkAllocationFc;
@@ -69,10 +70,10 @@ void cacheGdkEventExposeFids(JNIEnv *env, jobject lpGdkEventExpose, PGdkEventExp
 	if (lpCache->cached) return;
 
 	lpCache->GdkEventExposeClass = (*env)->GetObjectClass(env, lpGdkEventExpose);
-	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "x", "S");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "y", "S");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "width", "S");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "height", "S");
+	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "x", "I");
+	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "y", "I");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "width", "I");
+	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "height", "I");
 	lpCache->region = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "region", "I");
 	lpCache->count = (*env)->GetFieldID(env, lpCache->GdkEventExposeClass, "count", "I");
 
@@ -130,10 +131,10 @@ void cacheGdkRectangleFids(JNIEnv *env, jobject lpGdkRectangle, PGdkRectangle_FI
 	if (lpCache->cached) return;
 
 	lpCache->GdkRectangleClass = (*env)->GetObjectClass(env, lpGdkRectangle);
-	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "x", "S");
-	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "y", "S");
-	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "width", "S");
-	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "height", "S");
+	lpCache->x = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "x", "I");
+	lpCache->y = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "y", "I");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "width", "I");
+	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkRectangleClass, "height", "I");
 
 	lpCache->cached = 1;
 };
@@ -157,6 +158,27 @@ void cacheGdkVisualFids(JNIEnv *env, jobject lpGdkVisual, PGdkVisual_FID_CACHE l
 	lpCache->blue_mask = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "blue_mask", "I");
 	lpCache->blue_shift = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "blue_shift", "I");
 	lpCache->blue_prec = (*env)->GetFieldID(env, lpCache->GdkVisualClass, "blue_prec", "I");
+
+	lpCache->cached = 1;
+};
+
+void cacheGdkImageFids(JNIEnv *env, jobject lpGdkImage, PGdkImage_FID_CACHE lpCache)
+{
+	if (lpCache->cached) return;
+	
+	lpCache->GdkImageClass = (*env)->GetObjectClass(env, lpGdkImage);
+	lpCache->type = (*env)->GetFieldID(env, lpCache->GdkImageClass, "type", "I");
+	lpCache->visual = (*env)->GetFieldID(env, lpCache->GdkImageClass, "visual", "I");
+	lpCache->byte_order = (*env)->GetFieldID(env, lpCache->GdkImageClass, "byte_order", "I");
+	lpCache->width = (*env)->GetFieldID(env, lpCache->GdkImageClass, "width", "I");
+	lpCache->height = (*env)->GetFieldID(env, lpCache->GdkImageClass, "height", "I");
+	lpCache->depth = (*env)->GetFieldID(env, lpCache->GdkImageClass, "depth", "S");
+	lpCache->bpp = (*env)->GetFieldID(env, lpCache->GdkImageClass, "bpp", "S");
+	lpCache->bpl = (*env)->GetFieldID(env, lpCache->GdkImageClass, "bpl", "S");
+	lpCache->bits_per_pixel = (*env)->GetFieldID(env, lpCache->GdkImageClass, "bits_per_pixel", "S");
+	lpCache->mem = (*env)->GetFieldID(env, lpCache->GdkImageClass, "mem", "I");
+	lpCache->colormap = (*env)->GetFieldID(env, lpCache->GdkImageClass, "colormap", "I");
+	lpCache->windowing_data = (*env)->GetFieldID(env, lpCache->GdkImageClass, "windowing_data", "I");
 
 	lpCache->cached = 1;
 };
@@ -603,21 +625,21 @@ void setGdkColorFields(JNIEnv *env, jobject lpObject, GdkColor *lpGdkColor, GdkC
 void getGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventExpose_FID_CACHE *lpGdkEventExposeFc)
 {
 	GdkEventExpose *lpGdkEventExpose = (GdkEventExpose*)lpGdkEvent;
-	lpGdkEventExpose->area.x = (*env)->GetShortField(env, lpObject, lpGdkEventExposeFc->x);
-	lpGdkEventExpose->area.y = (*env)->GetShortField(env, lpObject, lpGdkEventExposeFc->y);
-	lpGdkEventExpose->area.width = (*env)->GetShortField(env, lpObject, lpGdkEventExposeFc->width);
-	lpGdkEventExpose->area.height = (*env)->GetShortField(env, lpObject, lpGdkEventExposeFc->height);
-	lpGdkEventExpose->region = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->region);
+	lpGdkEventExpose->area.x = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->x);
+	lpGdkEventExpose->area.y = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->y);
+	lpGdkEventExpose->area.width = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->width);
+	lpGdkEventExpose->area.height = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->height);
+	lpGdkEventExpose->region = (GdkRegion *)(*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->region);
 	lpGdkEventExpose->count = (*env)->GetIntField(env, lpObject, lpGdkEventExposeFc->count);
 }
 
 void setGdkEventExposeFields(JNIEnv *env, jobject lpObject, GdkEvent *lpGdkEvent, GdkEventExpose_FID_CACHE *lpGdkEventExposeFc)
 {
 	GdkEventExpose *lpGdkEventExpose = (GdkEventExpose*)lpGdkEvent;
-	(*env)->SetShortField(env, lpObject, lpGdkEventExposeFc->x, (jshort)lpGdkEventExpose->area.x);
-	(*env)->SetShortField(env, lpObject, lpGdkEventExposeFc->y, (jshort)lpGdkEventExpose->area.y);
-	(*env)->SetShortField(env, lpObject, lpGdkEventExposeFc->width, (jshort)lpGdkEventExpose->area.width);
-	(*env)->SetShortField(env, lpObject, lpGdkEventExposeFc->height, (jshort)lpGdkEventExpose->area.height);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->x, (jshort)lpGdkEventExpose->area.x);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->y, (jshort)lpGdkEventExpose->area.y);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->width, (jshort)lpGdkEventExpose->area.width);
+	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->height, (jshort)lpGdkEventExpose->area.height);
 	(*env)->SetIntField(env, lpObject, lpGdkEventExposeFc->count, (jint)lpGdkEventExpose->count);
 }
 
@@ -693,18 +715,18 @@ void setGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpGdkGCVal
 
 void getGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpGdkRectangle, GdkRectangle_FID_CACHE *lpGdkRectangleFc)
 {
-	lpGdkRectangle->x = (*env)->GetShortField(env, lpObject, lpGdkRectangleFc->x);
-	lpGdkRectangle->y = (*env)->GetShortField(env, lpObject, lpGdkRectangleFc->y);
-	lpGdkRectangle->width = (*env)->GetShortField(env, lpObject, lpGdkRectangleFc->width);
-	lpGdkRectangle->height = (*env)->GetShortField(env, lpObject, lpGdkRectangleFc->height);
+	lpGdkRectangle->x = (*env)->GetIntField(env, lpObject, lpGdkRectangleFc->x);
+	lpGdkRectangle->y = (*env)->GetIntField(env, lpObject, lpGdkRectangleFc->y);
+	lpGdkRectangle->width = (*env)->GetIntField(env, lpObject, lpGdkRectangleFc->width);
+	lpGdkRectangle->height = (*env)->GetIntField(env, lpObject, lpGdkRectangleFc->height);
 }
 
 void setGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpGdkRectangle, GdkRectangle_FID_CACHE *lpGdkRectangleFc)
 {
-	(*env)->SetShortField(env, lpObject, lpGdkRectangleFc->x, (jshort)lpGdkRectangle->x);
-	(*env)->SetShortField(env, lpObject, lpGdkRectangleFc->y, (jshort)lpGdkRectangle->y);
-	(*env)->SetShortField(env, lpObject, lpGdkRectangleFc->width, (jshort)lpGdkRectangle->width);
-	(*env)->SetShortField(env, lpObject, lpGdkRectangleFc->height, (jshort)lpGdkRectangle->height);
+	(*env)->SetIntField(env, lpObject, lpGdkRectangleFc->x, (jshort)lpGdkRectangle->x);
+	(*env)->SetIntField(env, lpObject, lpGdkRectangleFc->y, (jshort)lpGdkRectangle->y);
+	(*env)->SetIntField(env, lpObject, lpGdkRectangleFc->width, (jshort)lpGdkRectangle->width);
+	(*env)->SetIntField(env, lpObject, lpGdkRectangleFc->height, (jshort)lpGdkRectangle->height);
 }
 
 void getGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpGdkVisual, GdkVisual_FID_CACHE *lpGdkVisualFc)
@@ -741,6 +763,38 @@ void setGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpGdkVisual, G
 	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->blue_mask, (jint)lpGdkVisual->blue_mask);
 	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->blue_shift, (jint)lpGdkVisual->blue_shift);
 	(*env)->SetIntField(env, lpObject, lpGdkVisualFc->blue_prec, (jint)lpGdkVisual->blue_prec);
+}
+
+void getGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpGdkImage, GdkImage_FID_CACHE *lpGdkImageFc)
+{
+	lpGdkImage->type = (*env)->GetIntField(env, lpObject, lpGdkImageFc->type);
+	lpGdkImage->visual = (GdkVisual *)(*env)->GetIntField(env, lpObject, lpGdkImageFc->visual);
+	lpGdkImage->byte_order = (*env)->GetIntField(env, lpObject, lpGdkImageFc->byte_order);
+	lpGdkImage->width = (*env)->GetIntField(env, lpObject, lpGdkImageFc->width);
+	lpGdkImage->height = (*env)->GetIntField(env, lpObject, lpGdkImageFc->height);
+	lpGdkImage->depth = (*env)->GetShortField(env, lpObject, lpGdkImageFc->depth);
+	lpGdkImage->bpp = (*env)->GetShortField(env, lpObject, lpGdkImageFc->bpp);
+	lpGdkImage->bpl = (*env)->GetShortField(env, lpObject, lpGdkImageFc->bpl);
+	lpGdkImage->bits_per_pixel = (*env)->GetShortField(env, lpObject, lpGdkImageFc->bits_per_pixel);
+	lpGdkImage->mem = (gpointer)(*env)->GetIntField(env, lpObject, lpGdkImageFc->mem);
+	lpGdkImage->colormap = (GdkColormap *)(*env)->GetIntField(env, lpObject, lpGdkImageFc->colormap);
+	lpGdkImage->windowing_data = (gpointer)(*env)->GetIntField(env, lpObject, lpGdkImageFc->windowing_data);
+}
+
+void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpGdkImage, GdkImage_FID_CACHE *lpGdkImageFc)
+{
+	(*env)->SetIntField(env, lpObject, lpGdkImageFc->type, (jint)lpGdkImage->type);
+	(*env)->SetIntField(env, lpObject, lpGdkImageFc->visual, (jint)lpGdkImage->visual);
+	(*env)->SetIntField(env, lpObject, lpGdkImageFc->byte_order, (jint)lpGdkImage->byte_order);
+	(*env)->SetIntField(env, lpObject, lpGdkImageFc->width, (jint)lpGdkImage->width);
+	(*env)->SetIntField(env, lpObject, lpGdkImageFc->height, (jint)lpGdkImage->height);
+	(*env)->SetShortField(env, lpObject, lpGdkImageFc->depth, (jshort)lpGdkImage->depth);
+	(*env)->SetShortField(env, lpObject, lpGdkImageFc->bpp, (jshort)lpGdkImage->bpp);
+	(*env)->SetShortField(env, lpObject, lpGdkImageFc->bpl, (jshort)lpGdkImage->bpl);
+	(*env)->SetShortField(env, lpObject, lpGdkImageFc->bits_per_pixel, (jshort)lpGdkImage->bits_per_pixel);
+	(*env)->SetIntField(env, lpObject, lpGdkImageFc->mem, (jint)lpGdkImage->mem);
+	(*env)->SetIntField(env, lpObject, lpGdkImageFc->colormap, (jint)lpGdkImage->colormap);
+	(*env)->SetIntField(env, lpObject, lpGdkImageFc->windowing_data, (jint)lpGdkImage->windowing_data);
 }
 
 void getGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpGtkAllocation, GtkAllocation_FID_CACHE *lpGtkAllocationFc)

@@ -124,11 +124,10 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1rect_1i
 	return rc;
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1union_1with_1rect
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1union_1with_1rect
   (JNIEnv *env, jclass that, jint region, jobject rect)
 {
 	DECL_GLOB(pGlob)
-	jint rc;
 	GdkRectangle rect_struct, *rect1 = NULL;
 	if (rect) {
 		rect1 = &rect_struct;
@@ -139,19 +138,18 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1union_1
 	if (rect) {
 		setGdkRectangleFields(env, rect, rect1, &PGLOB(GdkRectangleFc));
 	}
-	return 0;
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1regions_1union
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1union
   (JNIEnv *env, jclass that, jint source1, jint source2)
 {
-	return (jint)gdk_regions_union((GdkRegion*)source1, (GdkRegion*)source2);
+	gdk_region_union((GdkRegion*)source1, (GdkRegion*)source2);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1regions_1subtract
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1region_1subtract
   (JNIEnv *env, jclass that, jint source1, jint source2)
 {
-	return (jint)gdk_regions_subtract((GdkRegion*)source1, (GdkRegion*)source2);
+	gdk_region_subtract((GdkRegion*)source1, (GdkRegion*)source2);
 }
 
 
@@ -161,18 +159,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1new
   (JNIEnv *env, jclass that, jint window)
 {
 	return (jint)gdk_gc_new((GdkWindow*)window);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1unref
-  (JNIEnv *env, jclass that, jint gc)
-{
-	gdk_gc_unref((GdkGC*)gc);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1destroy
-  (JNIEnv *env, jclass that, jint gc)
-{
-	gdk_gc_destroy((GdkGC*)gc);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1get_1values
@@ -186,6 +172,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1get_1values
 		getGdkGCValuesFields(env, values, values1, &PGLOB(GdkGCValuesFc));
 	}
 	gdk_gc_get_values((GdkGC*)gc, (GdkGCValues*)values1);
+	if (values) {
+		setGdkGCValuesFields(env, values, values1, &PGLOB(GdkGCValuesFc));
+	}
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1set_1values
+  (JNIEnv *env, jclass that, jint gc, jobject values, jint values_mask)
+{
+	DECL_GLOB(pGlob)
+	GdkGCValues values_struct, *values1 = NULL;
+	if (values) {
+		values1 = &values_struct;
+		cacheGdkGCValuesFids(env, values, &PGLOB(GdkGCValuesFc));
+		getGdkGCValuesFields(env, values, values1, &PGLOB(GdkGCValuesFc));
+	}
+	gdk_gc_set_values((GdkGC*)gc, (GdkGCValues*)values1, values_mask);
 	if (values) {
 		setGdkGCValuesFields(env, values, values1, &PGLOB(GdkGCValuesFc));
 	}
@@ -251,6 +253,12 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1set_1clip_1
   (JNIEnv *env, jclass that, jint gc, jint mask)
 {
 	gdk_gc_set_clip_mask((GdkGC*)gc, (GdkBitmap*)mask);
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1set_1clip_1origin
+  (JNIEnv *env, jclass that, jint gc, jint x, jint y)
+{
+	gdk_gc_set_clip_origin((GdkGC*)gc, x, y);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1gc_1set_1clip_1rectangle
@@ -328,15 +336,15 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1arc
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1polygon
-  (JNIEnv *env, jclass that, jint drawable, jint gc, jint filled, jshortArray points, jint npoints)
+  (JNIEnv *env, jclass that, jint drawable, jint gc, jint filled, jintArray points, jint npoints)
 {
-	jshort *points1 = NULL;
+	jint *points1 = NULL;
 	if (points) {
-		points1 = (*env)->GetShortArrayElements(env, points, NULL);
+		points1 = (*env)->GetIntArrayElements(env, points, NULL);
 	}
 	gdk_draw_polygon((GdkDrawable*)drawable, (GdkGC*)gc, (gint)filled, (GdkPoint*)points1, (gint)npoints);
 	if (points) {
-		(*env)->ReleaseShortArrayElements(env, points, points1, 0);
+		(*env)->ReleaseIntArrayElements(env, points, points1, 0);
 	}
 }
 
@@ -360,16 +368,22 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1pixmap
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1lines
-  (JNIEnv *env, jclass that, jint drawable, jint gc, jshortArray points, jint npoints)
+  (JNIEnv *env, jclass that, jint drawable, jint gc, jintArray points, jint npoints)
 {
-	jshort *points1 = NULL;
+	jint *points1 = NULL;
 	if (points) {
-		points1 = (*env)->GetShortArrayElements(env, points, NULL);
+		points1 = (*env)->GetIntArrayElements(env, points, NULL);
 	}
 	gdk_draw_lines((GdkDrawable*)drawable, (GdkGC*)gc, (GdkPoint*)points1, (gint)npoints);
 	if (points) {
-		(*env)->ReleaseShortArrayElements(env, points, points1, 0);
+		(*env)->ReleaseIntArrayElements(env, points, points1, 0);
 	}
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1draw_1drawable
+  (JNIEnv *env, jclass that, jint drawable, jint gc, jint src, jint xsrc, jint ysrc, jint xdest, jint ydest, jint width, jint height)
+{
+	gdk_draw_drawable((GdkDrawable*)drawable, (GdkGC*)gc, (GdkDrawable*)src, xsrc, ysrc, xdest, ydest, width, height);
 }
 
 
@@ -396,19 +410,6 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1bitmap_1create_
 	}
 	return rc;
 }
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixmap_1unref
-  (JNIEnv *env, jclass that, jint pixmap)
-{
-	gdk_pixmap_unref((GdkPixmap*)pixmap);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1bitmap_1unref
-  (JNIEnv *env, jclass that, jint pixmap)
-{
-	gdk_bitmap_unref((GdkBitmap*)pixmap);
-}
-
 
 /*  ***** GdkRGB *****  */
 
@@ -564,8 +565,8 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1font_1ref
 JNIEXPORT jstring JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1font_1full_1name_1get
   (JNIEnv *env, jclass that, jint font)
 {
-  gchar *name = gdk_font_full_name_get ((GdkFont*)font);
-  return NewStringUTF (env, name);
+  gchar *name = (gchar *)gdk_font_full_name_get ((GdkFont*)font);
+  return (jstring)NewStringUTF (env, name);
 }
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1font_1unref
@@ -866,6 +867,12 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1drawable_1get_1
   return (jint)gdk_drawable_get_depth((GdkDrawable*)drawable);
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1drawable_1get_1image
+  (JNIEnv *env, jclass that, jint drawable, jint x, jint y, jint width, jint height)
+{
+  return (jint)gdk_drawable_get_image((GdkDrawable*)drawable, x, y, width, height);
+}
+
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1origin
   (JNIEnv *env, jclass that, jint window, jintArray x, jintArray y)
 {
@@ -1076,6 +1083,41 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1CURRENT_1TIME
   return (jint) GDK_CURRENT_TIME;
 }
 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1colormap_1alloc_1color
+  (JNIEnv *env, jclass that, jint colormap, jobject color, jboolean writeable, jboolean best_match)
+{
+	DECL_GLOB(pGlob)
+	GdkColor color_struct, *color1 = NULL;
+	jboolean rc;
+	
+	if (color) {
+		color1 = &color_struct;
+		cacheGdkColorFids(env, color, &PGLOB(GdkColorFc));
+		getGdkColorFields(env, color, color1, &PGLOB(GdkColorFc));
+	}
+	rc = gdk_colormap_alloc_color((GdkColormap*)colormap, (GdkColor*)color1, (gboolean)writeable, (gboolean)best_match);
+	if (color) {
+		setGdkColorFields(env, color, color1, &PGLOB(GdkColorFc));
+	}
+	return rc;
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1colormap_1free_1colors
+  (JNIEnv *env, jclass that, jint colormap, jobject color, jint ncolors)
+{
+	DECL_GLOB(pGlob)
+	GdkColor color_struct, *color1 = NULL;
+	
+	if (color) {
+		color1 = &color_struct;
+		cacheGdkColorFids(env, color, &PGLOB(GdkColorFc));
+		getGdkColorFields(env, color, color1, &PGLOB(GdkColorFc));
+	}
+	gdk_colormap_free_colors((GdkColormap*)colormap, (GdkColor*)color1, (gint)ncolors);
+	if (color) {
+		setGdkColorFields(env, color, color1, &PGLOB(GdkColorFc));
+	}
+}
 
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1frame_1extents
   (JNIEnv *env, jclass that, jint window, jobject rectangle)

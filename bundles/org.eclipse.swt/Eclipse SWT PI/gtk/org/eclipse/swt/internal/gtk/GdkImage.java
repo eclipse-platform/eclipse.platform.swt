@@ -13,16 +13,27 @@ package org.eclipse.swt.internal.gtk;
  * this distribution shall govern.
  */
 
-public class GdkEventExpose {
-	public int x;
-	public int y;
+public class GdkImage {
+//	GObject parent_instance;
+    //public int parent_instance_g_type_instance;
+    //public int parent_instance_ref_count;
+    //public int parent_instance_qdata; 
+	public int type;
+	public int visual;
+	public int byte_order;
 	public int width;
 	public int height;
-	public int region;
-	public int count;
+	public short depth;
+	public short bpp;
+	public short bpl;
+	public short bits_per_pixel;
+	public int mem;
+	public int colormap;
+	public int windowing_data;
+	public static final int sizeof = 52;
 	
-	GdkEventExpose() {};
-	public  GdkEventExpose(int ptr) {
+	private GdkImage () {}
+	public GdkImage (int ptr) {
 		OS.memmove(this, ptr);
 	}
 }

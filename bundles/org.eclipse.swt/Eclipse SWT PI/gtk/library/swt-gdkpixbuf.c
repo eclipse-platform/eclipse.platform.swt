@@ -16,99 +16,99 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_get_colorspace
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1get_1colorspace
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1colorspace
   (JNIEnv *env, jclass cl, jint pixbuf)
 {
     return (jint) gdk_pixbuf_get_colorspace((GdkPixbuf*)pixbuf);
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_get_n_channels
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1get_1n_1channels
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1n_1channels
   (JNIEnv *env, jclass cl, jint pixbuf)
 {
     return (jint) gdk_pixbuf_get_n_channels((GdkPixbuf*)pixbuf);
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_get_has_alpha
  * Signature: (I)Z
  */
-JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1get_1has_1alpha
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1has_1alpha
   (JNIEnv *env, jclass cl, jint pixbuf)
 {
     return (jboolean) gdk_pixbuf_get_has_alpha((GdkPixbuf*)pixbuf);
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_get_bits_per_sample
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1get_1bits_1per_1sample
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1bits_1per_1sample
   (JNIEnv *env, jclass cl, jint pixbuf)
 {
     return (jint) gdk_pixbuf_get_bits_per_sample((GdkPixbuf*)pixbuf);
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_get_pixels
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1get_1pixels
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1pixels
   (JNIEnv *env, jclass cl, jint pixbuf)
 {
     return (jint) gdk_pixbuf_get_pixels((GdkPixbuf*)pixbuf);
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_get_width
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1get_1width
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1width
   (JNIEnv *env, jclass cl, jint pixbuf)
 {
     return (jint) gdk_pixbuf_get_width((GdkPixbuf*)pixbuf);
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_get_height
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1get_1height
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1height
   (JNIEnv *env, jclass cl, jint pixbuf)
 {
     return (jint) gdk_pixbuf_get_height((GdkPixbuf*)pixbuf);
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_get_rowstride
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1get_1rowstride
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1rowstride
   (JNIEnv *env, jclass cl, jint pixbuf)
 {
     return (jint) gdk_pixbuf_get_rowstride((GdkPixbuf*)pixbuf);
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_new
  * Signature: (IZIII)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1new
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1new
   (JNIEnv *env, jclass cl,
    jint colorspace,
    jboolean hasAlpha,
@@ -124,22 +124,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_copy
  * Signature: (I)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1copy
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1copy
   (JNIEnv *env, jclass cl, jint source) {
     return (jint)gdk_pixbuf_copy ((GdkPixbuf*) source);
 }
 
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_render_to_drawable
  * Signature: (IIIIIIIIIIII)V
  */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1render_1to_1drawable
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1render_1to_1drawable
   (JNIEnv *env, jclass cl,
    jint pixbuf,
    jint drawable,
@@ -163,11 +163,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1
 
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_render_to_drawable_alpha
  * Signature: (IIIIIIIIIIIII)V
  */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1render_1to_1drawable_1alpha
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1render_1to_1drawable_1alpha
   (JNIEnv *env, jclass cl,
    jint pixbuf,
    jint drawable,
@@ -192,11 +192,11 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1
 }
 
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_scale
  * Signature: (IIIIIIDDDDI)V
  */
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1scale
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1scale
   (JNIEnv *env, jclass cl,
    jint source, jint dest,
    jint dest_x, jint dest_y,
@@ -213,12 +213,18 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1
     );
 }
 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1scale_1simple
+  (JNIEnv *env, jclass cl, jint source, jint dest_width, jint dest_height, jint interp_type)
+{
+    return (jint)gdk_pixbuf_scale_simple ((GdkPixbuf*)source, dest_width, dest_height, interp_type);
+}
+
 /*
- * Class:     org_eclipse_swt_internal_gtk_GDKPIXBUF
+ * Class:     org_eclipse_swt_internal_gtk_OS
  * Method:    gdk_pixbuf_get_from_drawable
  * Signature: (IIIIIIIII)I
  */
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1get_1from_1drawable
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1get_1from_1drawable
   (JNIEnv *env, jclass cl,
    jint dest, jint src, jint cmap,
    jint src_x, jint src_y,
@@ -234,8 +240,15 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_gdk_1pixbuf_1
 	width, height);
 }
 
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_GDKPIXBUF_GDK_1COLORSPACE_1RGB
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_GDK_1COLORSPACE_1RGB
   (JNIEnv *env, jclass cl)
 {
    return (jint)GDK_COLORSPACE_RGB;
 }
+
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1pixbuf_1add_1alpha
+  (JNIEnv *env, jclass cl, jint pixbuf, jboolean substitute_color, jbyte r, jbyte g, jbyte b)
+{
+   return (jint)gdk_pixbuf_add_alpha((GdkPixbuf *)pixbuf, (gboolean)substitute_color, r, g, b);
+}
+

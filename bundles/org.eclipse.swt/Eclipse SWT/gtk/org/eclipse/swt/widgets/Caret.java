@@ -111,7 +111,7 @@ boolean drawCaret () {
 	int nWidth = width;
 	if (nWidth <= 0) nWidth = 2;
 	OS.gdk_draw_rectangle(window, gc, 1, x, y, nWidth, height);
-	OS.gdk_gc_destroy(gc);
+	OS.g_object_unref(gc);
 	return true;
 }
 /**

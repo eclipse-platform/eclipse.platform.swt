@@ -1125,7 +1125,7 @@ public boolean forceFocus () {
  */
 public Color getBackground () {
 	checkWidget();
-	return Color.gtk_new (_getBackgroundGdkColor());
+	return Color.gtk_new (getDisplay (), _getBackgroundGdkColor());
 }
 
 /*
@@ -1227,7 +1227,7 @@ int _getFontHandle () {
  */
 public Color getForeground () {
 	checkWidget();
-	return Color.gtk_new (_getForegroundGdkColor());
+	return Color.gtk_new (getDisplay (), _getForegroundGdkColor());
 }
 
 /*
@@ -1376,18 +1376,17 @@ public boolean getVisible () {
 public int internal_new_GC (GCData data) {
 	if (data == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (paintHandle() == 0) error(SWT.ERROR_UNSPECIFIED);
-	
-	// Create the GC with default values for this control
-
 	int window = OS.GTK_WIDGET_WINDOW(paintHandle());
-	int gc = OS.gdk_gc_new(window);
-	
-	OS.gdk_gc_set_font(gc, _getFontHandle());
-	OS.gdk_gc_set_background(gc, _getBackgroundGdkColor());
-	OS.gdk_gc_set_foreground(gc, _getForegroundGdkColor());
-	
-	data.drawable = window;
-	return gc;
+	int gdkGC = OS.gdk_gc_new(window);
+	if (gdkGC == 0) error(SWT.ERROR_NO_HANDLES);	
+	if (data != null) {
+		data.drawable = window;
+		data.device = getDisplay ();
+		data.background = _getBackgroundGdkColor ();
+		data.foreground = _getForegroundGdkColor ();
+//		OS.gdk_gc_set_font(gc, _getFontHandle ());
+	}	
+	return gdkGC;
 }
 
 /**	 
@@ -1405,9 +1404,8 @@ public int internal_new_GC (GCData data) {
  *
  * @private
  */
-public void internal_dispose_GC (int xGC, GCData data) {
-	if(xGC == 0) error(SWT.ERROR_NO_HANDLES);
-	OS.gdk_gc_unref(xGC);
+public void internal_dispose_GC (int gdkGC, GCData data) {
+	OS.g_object_unref(gdkGC);
 }
 
 /**

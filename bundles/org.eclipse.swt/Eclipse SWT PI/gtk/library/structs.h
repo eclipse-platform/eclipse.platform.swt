@@ -91,6 +91,15 @@ typedef struct GdkVisual_FID_CACHE {
 
 typedef GdkVisual_FID_CACHE *PGdkVisual_FID_CACHE;
 
+
+typedef struct GdkImage_FID_CACHE {
+	int cached;
+	jclass GdkImageClass;
+	jfieldID type, visual, byte_order, width, height, depth, bpp, bpl, bits_per_pixel, mem, colormap, windowing_data;
+} GdkImage_FID_CACHE;
+
+typedef GdkImage_FID_CACHE *PGdkImage_FID_CACHE;
+
 /* GTK */
 
 typedef struct GtkAdjustment_FID_CACHE {
@@ -244,6 +253,7 @@ void cacheGdkFontFids(JNIEnv *env, jobject lpGdkFont, PGdkFont_FID_CACHE lpCache
 void cacheGdkGCValuesFids(JNIEnv *env, jobject lpGdkGCValues, PGdkGCValues_FID_CACHE lpCache);
 void cacheGdkRectangleFids(JNIEnv *env, jobject lpGdkRectangle, PGdkRectangle_FID_CACHE lpCache);
 void cacheGdkVisualFids(JNIEnv *env, jobject lpGdkVisual, PGdkVisual_FID_CACHE lpCache);
+void cacheGdkImageFids(JNIEnv *env, jobject lpGdkImage, PGdkImage_FID_CACHE lpCache);
 
 void cacheGtkAdjustmentFids(JNIEnv *env, jobject lpGtkAdjustment, PGtkAdjustment_FID_CACHE lpCache);
 void cacheGtkComboFids(JNIEnv *env, jobject lpGtkCombo, PGtkCombo_FID_CACHE lpCache);
@@ -277,6 +287,8 @@ void getGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpGdkRec
 void setGdkRectangleFields(JNIEnv *env, jobject lpObject, GdkRectangle *lpGdkRectangle, GdkRectangle_FID_CACHE *lpGdkRectangleFc);
 void getGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpGdkVisual, GdkVisual_FID_CACHE *lpGdkVisualFc);
 void setGdkVisualFields(JNIEnv *env, jobject lpObject, GdkVisual *lpGdkVisual, GdkVisual_FID_CACHE *lpGdkVisualFc);
+void getGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpGdkImage, GdkImage_FID_CACHE *lpGdkImageFc);
+void setGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpGdkImage, GdkImage_FID_CACHE *lpGdkImageFc);
 void getGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpGtkAllocation, GtkAllocation_FID_CACHE *lpGtkAllocationFc);
 void setGtkAllocationFields(JNIEnv *env, jobject lpObject, GtkAllocation *lpGtkAllocation, GtkAllocation_FID_CACHE *lpGtkAllocationFc);
 void getGtkCListFields(JNIEnv *env, jobject lpObject, GtkCList *lpGtkCList, GtkCList_FID_CACHE *lpGtkCListFc);
@@ -306,6 +318,7 @@ extern GdkFont_FID_CACHE GdkFontFc;
 extern GdkGCValues_FID_CACHE GdkGCValuesFc;
 extern GdkRectangle_FID_CACHE GdkRectangleFc;
 extern GdkVisual_FID_CACHE GdkVisualFc;
+extern GdkImage_FID_CACHE GdkImageFc;
 
 extern GtkAdjustment_FID_CACHE GtkAdjustmentFc;
 extern GtkAllocation_FID_CACHE GtkAllocationFc;

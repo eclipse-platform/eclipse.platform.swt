@@ -134,7 +134,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	int gc = OS.gdk_gc_new (window);
 	OS.gdk_gc_set_exposures(gc, true);
 	OS.gdk_window_copy_area (window, gc, x, y, window, x, y, width, height);
-	OS.gdk_gc_destroy (gc);
+	OS.g_object_unref (gc);
 
 	/* Flush outstanding Exposes */
 	int eventHandle=0;
@@ -147,7 +147,7 @@ public void scroll (int destX, int destY, int x, int y, int width, int height, b
 	int gc1 = OS.gdk_gc_new (window);
 	OS.gdk_gc_set_exposures(gc1, true);
 	OS.gdk_window_copy_area (window, gc1, destX, destY, window, x, y, width, height);
-	OS.gdk_gc_destroy (gc1);
+	OS.g_object_unref (gc1);
 	boolean disjoint = (destX + width < x) || (x + width < destX) || (destY + height < y) || (y + height < destY);
 	if (disjoint) {
 		OS.gdk_window_clear_area(window, x, y, width, height);

@@ -550,7 +550,6 @@ void postEvent (int eventType, Event event) {
 }
 
 int processEvent (int eventNumber, int int0, int int1, int int2) {
-	System.out.println("event: "+eventNumber+" in "+this);
 	switch (eventNumber) {
 		case SWT.Arm:				return processArm           	(int0, int1, int2);
 		case SWT.Collapse:			return processCollapse      	(int0, int1, int2);

@@ -1639,6 +1639,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1free
 	g_free((gpointer)mem);
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_g_1object_1unref
+  (JNIEnv *env, jclass that, jint object)
+{
+#ifdef DEBUG_CALL_PRINTS
+	fprintf(stderr, "g_object_unref");
+#endif
+
+	g_object_unref((gpointer)object);
+}
+
 /*
  * Class:	org_eclipse_swt_internal_gtk_OS
  * Method:	g_strdup

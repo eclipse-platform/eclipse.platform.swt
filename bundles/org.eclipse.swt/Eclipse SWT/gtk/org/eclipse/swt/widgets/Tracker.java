@@ -343,7 +343,7 @@ private void drawRectangles () {
 		Rectangle rect = rectangles [i];
 		OS.gdk_draw_rectangle(xWindow, gc, 0, rect.x, rect.y, rect.width, rect.height);
 	}
-	OS.gdk_gc_destroy(gc);
+	OS.g_object_unref(gc);
 }
 /*
  * Wait for an event to show up.

@@ -319,8 +319,8 @@ void drawBand (int x, int y, int width, int height) {
 		drawing = true;
 	drawX=x;drawY=y;
 	OS.gdk_draw_rectangle(window, gc, 1, x, y, width, height);	
-	OS.gdk_bitmap_unref(stipplePixmap);
-	OS.gdk_gc_destroy(gc);
+	OS.g_object_unref(stipplePixmap);
+	OS.g_object_unref(gc);
 }
 static int checkStyle (int style) {
 	return checkBits (style, SWT.HORIZONTAL, SWT.VERTICAL, 0, 0, 0, 0);
