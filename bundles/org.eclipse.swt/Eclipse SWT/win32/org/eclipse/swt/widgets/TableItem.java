@@ -406,7 +406,7 @@ public Rectangle getImageBounds (int index) {
 	* value even when the subitem does not contain an image.  The
 	* fix is to set the width to zero.
 	*/
-	if (index != 0 && images != null & images [index] == null) {
+	if (index != 0 && images != null && images [index] == null) {
 		width = 0;
 	}
 
