@@ -23,14 +23,7 @@ Table Of Contents</h3>
 <h3>
 99.1 Known Issues</h3>
 <h4>
-99.1.1 Wheel Mouse</h4>
-
-SWT does not directly handle the extended messages sent by the wheel mouse.
-If the correct driver is installed for the wheel mouse, the extended messages are mapped to 
-cursor operations that are supported.
-
-<h4>
-99.1.2 Available Colors on 8-bit Linux</h4>
+99.1.1 Available Colors on 8-bit Linux</h4>
 
 Typically, in Gnome Linux installs running with 8 bitplain visuals (i.e. 256 color mode), before the 
 Eclipse application is started, you already do not have any free colors.  This may mean that Eclipse
@@ -38,14 +31,14 @@ is unable to allocate the default widget background color causing it to display 
 The functionality,  however, is not affected.
 
 <h4>
-99.1.3 Motif Accelerators</h4>
+99.1.2 Motif Accelerators</h4>
 
 Keyboard accelerators on motif are sensitive to the state of all modifier keys such as the Caps Lock, 
 Num Lock and Scroll Lock keys.  For example, Ctrl 'S' is not the same as Ctrl 'S' with the Num Lock key on.  
 If keyboard accelerators appear to not be working, please check the state of all other modifier keys.
 
 <h4>
-99.1.4 XInitThreads and Linux</h4>
+99.1.3 XInitThreads and Linux</h4>
 
 SWT makes use of the XInitThreads system function to allow graphics routines to
 be invoked from non-user-interface threads. However, the implementation of XInitThreads
@@ -68,27 +61,27 @@ on Linux has several issues, which cause the following SWT problems:
 </dl>
 
 <h4>
-99.1.5 Disposing in a Focus Event</h4>
+99.1.4 Disposing in a Focus Event</h4>
 
 Applications should not dispose widgets in focus changing events.  Doing so  on Motif may cause Eclipse to terminate,
 since Motif accesses the disposed widget within their internal focus change event handler.
 Similar but less serious issues exist on Windows such that occasionally an SWT exception can be thrown.
 
 <h4>
-99.1.6 List and ComboBox on Windows NT</h4>
+99.1.5 List and ComboBox on Windows NT</h4>
 
 On Windows NT only, you should avoid creating items in a List or ComboBox with strings longer than 1000 characters.
 Doing so may result in a General Protection Fault.  This has been fixed in more recent versions of Windows.
 
 <h4>
-99.1.7 BiDi Support</h4>
+99.1.6 BiDi Support</h4>
 
 The StyledText widget now provides bidirectional language support for Hebrew and Arabic locales.
 Currently, this support is available only on win32, and has several known problems. It should be
 considered to be a preliminary implementation only.
 
 <h4>
-99.1.8 Cursor constructor arguments</h4>
+99.1.7 Cursor constructor arguments</h4>
 
 In the constructor <code>Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY)</code>,
 when both a source and mask argument are specified (i.e. mask is not null), the meaning of the two arguments is
@@ -97,7 +90,7 @@ mask image. This problem was discovered too late in the development cycle to be 
 fix this in a future release, potentially by introducing a new more general constructor.
 
 <h4>
-99.1.9 Use of the "&" character in TabFolder</h4>
+99.1.8 Use of the "&" character in TabFolder</h4>
 
 The "&" character is not currently supported in TabFolder labels. Doing so on win32, will cause the
 character which follows the "&" to be underlined as if it was a mnemonic, even though mnemonics are
@@ -105,14 +98,14 @@ not available for TabFolders. On other platforms, the "&" character will be disp
 for portability reasons, it should be avoided.
 
 <h4>
-99.1.10  ToolBar on Windows</h4>
+99.1.9  ToolBar on Windows</h4>
 
 On Windows, you must create all tool bars with the FLAT style bit set. If you do not do this,
 the "hot" (rollover) images of <em>all</em> toolbars may display incorrectly.
 This will be fixed in a future release.
 
 <h4>
-99.1.11  Non ASCII strings on Linux</h4>
+99.1.10  Non ASCII strings on Linux</h4>
 
 On Linux RedHat 6.2 only, you will not be able to display text that contains non
 ASCII characters. This limitation is not present on Linux RedHat 7.1 or higher.
