@@ -11,7 +11,8 @@
 # between the two license versions, the terms of the LGPL accompanying
 # this distribution shall govern.
 #
-# Contributors: 
+# Contributors:
+#    Kevin Cornell (Rational Software Corporation)
 #    Tom Tromey    (Red Hat, Inc.)
 #**********************************************************************
 
