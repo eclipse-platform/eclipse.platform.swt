@@ -737,6 +737,7 @@ int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
 		oldX = x [0];
 		oldY = y [0];
 		sendEvent (SWT.Move);
+		// widget could be disposed at this point
 	}
 	return 0;
 }
