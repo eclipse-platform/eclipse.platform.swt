@@ -1,0 +1,101 @@
+/*******************************************************************************
+ * Copyright (c) 2000, 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.snippets;
+ 
+/*
+ * Drag and Drop example snippet: drag leaf items in a tree
+ *
+ * For a list of all SWT example snippets see
+ * http://dev.eclipse.org/viewcvs/index.cgi/%7Echeckout%7E/platform-swt-home/dev.html#snippets
+ */
+import org.eclipse.swt.*;
+import org.eclipse.swt.dnd.*;
+import org.eclipse.swt.layout.*;
+import org.eclipse.swt.widgets.*;
+
+public class Snippet91 {
+
+public static void main (String [] args) {
+	
+	Display display = Display.getDefault ();
+	final Shell shell = new Shell (display);
+	shell.setLayout(new FillLayout());
+	final Tree tree = new Tree(shell, SWT.BORDER);
+	for (int i = 0; i < 3; i++) {
+		TreeItem item = new TreeItem(tree, SWT.NONE);
+		item.setText("item "+i);
+		for (int j = 0; j < 3; j++) {
+			TreeItem subItem = new TreeItem(item, SWT.NONE);
+			subItem.setText("item "+i+" "+j);
+			for (int k = 0; k < 3; k++) {
+				TreeItem subsubItem = new TreeItem(subItem, SWT.NONE);
+				subsubItem.setText("item "+i+" "+j+" "+k);
+			}
+		}
+	}
+	
+	Transfer[] types = new Transfer[] {TextTransfer.getInstance()};
+	int operations = DND.DROP_MOVE | DND.DROP_COPY | DND.DROP_LINK;
+	
+	final DragSource source = new DragSource (tree, operations);
+	source.setTransfer(types);
+	final TreeItem[] dragSourceItem = new TreeItem[1];
+	source.addDragListener (new DragSourceListener () {
+		public void dragStart(DragSourceEvent event) {
+			TreeItem[] selection = tree.getSelection();
+			if (selection.length > 0 && selection[0].getItemCount() == 0) {
+				event.doit = true;
+				dragSourceItem[0] = selection[0];
+			} else {
+				event.doit = false;
+			}
+		};
+		public void dragSetData (DragSourceEvent event) {
+			event.data = dragSourceItem[0].getText();
+		}
+		public void dragFinished(DragSourceEvent event) {
+			if (event.detail == DND.DROP_MOVE)
+				dragSourceItem[0].dispose();
+				dragSourceItem[0] = null;
+		}
+	});
+
+	DropTarget target = new DropTarget(tree, operations);
+	target.setTransfer(types);
+	target.addDropListener (new DropTargetAdapter() {
+		public void dragOver(DropTargetEvent event) {
+			event.feedback = DND.FEEDBACK_EXPAND | DND.FEEDBACK_SCROLL | DND.FEEDBACK_SELECT;
+		}
+		public void drop(DropTargetEvent event) {
+			if (event.data == null) {
+				event.detail = DND.DROP_NONE;
+				return;
+			}
+			String text = (String)event.data;
+			if (event.item == null) {
+				TreeItem item = new TreeItem(tree, SWT.NONE);
+				item.setText(text);
+			} else {
+				TreeItem parent = (TreeItem)event.item;
+				TreeItem item = new TreeItem(parent, SWT.NONE);
+				item.setText(text);
+			}
+		}
+	});
+
+	shell.setSize (400, 400);
+	shell.open ();
+	while (!shell.isDisposed ()) {
+		if (!display.readAndDispatch ()) display.sleep ();
+	}
+	display.dispose ();
+}
+}
