@@ -194,6 +194,11 @@ void destroyWidget () {
 void draw (int control) {
 }
 
+Cursor findCursor () {
+	if (cursor != null) return cursor;
+	return parent.findCursor ();
+}
+
 public boolean forceFocus () {
 	checkWidget();
 	int window = OS.GetControlOwner (handle);
@@ -606,6 +611,7 @@ int kEventMouseDragged (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventMouseMoved (int nextHandler, int theEvent, int userData) {
+	updateCursor (findCursor ());
 	sendMouseEvent (SWT.MouseMove, theEvent);
 	return OS.eventNotHandledErr;
 }
@@ -868,22 +874,6 @@ public void setCursor (Cursor cursor) {
 	this.cursor = cursor;
 }
 
-void setCursor (int cursor) {
-	switch (cursor) {
-		case OS.kThemePointingHandCursor:
-		case OS.kThemeArrowCursor:
-		case OS.kThemeSpinningCursor:
-		case OS.kThemeCrossCursor:
-		case OS.kThemeWatchCursor:
-		case OS.kThemeIBeamCursor:
-		case OS.kThemeNotAllowedCursor:
-			OS.SetThemeCursor (cursor);
-			break;
-		default:
-			OS.SetCursor (cursor);
-	}
-}
-
 public void setEnabled (boolean enabled) {
 	checkWidget();
 	if (enabled) {
@@ -1133,6 +1123,23 @@ public void update () {
 	checkWidget();
 	Display display = getDisplay ();
 	display.update ();
+}
+
+void updateCursor (Cursor cursor) {
+	int cursorHandle = cursor != null ? cursor.handle : OS.kThemeArrowCursor;
+	switch (cursorHandle) {
+		case OS.kThemePointingHandCursor:
+		case OS.kThemeArrowCursor:
+		case OS.kThemeSpinningCursor:
+		case OS.kThemeCrossCursor:
+		case OS.kThemeWatchCursor:
+		case OS.kThemeIBeamCursor:
+		case OS.kThemeNotAllowedCursor:
+			OS.SetThemeCursor (cursorHandle);
+			break;
+		default:
+			OS.SetCursor (cursorHandle);
+	}
 }
 
 }

@@ -557,6 +557,14 @@ public void showSelection () {
 	OS.TXNShowSelection (txnObject, false);
 }
 
+void updateCursor (Cursor cursor) {
+	if (cursor != null) {
+		super.updateCursor (cursor);
+	} else {
+		OS.TXNAdjustCursor (txnObject, 0);
+	}
+}
+
 String verifyText (String string, int start, int end) {
 	Event event = new Event ();
 	event.text = string;

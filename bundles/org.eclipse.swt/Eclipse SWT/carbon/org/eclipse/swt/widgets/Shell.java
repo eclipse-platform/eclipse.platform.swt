@@ -207,6 +207,10 @@ void destroyWidget () {
 	if (theWindow != 0) OS.DisposeWindow (theWindow);
 }
 
+Cursor findCursor () {
+	return cursor;
+}
+
 public void forceActive () {
 	checkWidget ();
 	OS.SetFrontProcess (new int [] {0, OS.kCurrentProcess});
