@@ -135,8 +135,9 @@ public class StyledText extends Canvas {
 	PaletteData caretPalette = null;	
 	int lastCaretDirection = SWT.NULL;
 	
-	//TEMPORARY CODE	
-	Runnable updater = null;	
+	// optimization flag for non-Windows platforms	
+	boolean drawDirect = false;
+	
 	/**
 	 * The Printing class implements printing of a range of text.
 	 * An instance of <class>Printing </class> is returned in the 
@@ -4596,8 +4597,29 @@ void handlePaint(Event event) {
 	int topLineOffset = topIndex * lineHeight - verticalScrollOffset;
 	int startY = paintYFromTopLine + topLineOffset;	// adjust y position for pixel based scrolling
 	int renderHeight = event.y + event.height - startY;
-	int paintY = topMargin;
+	Rectangle clientArea = getClientArea();
+	
+	// Check if there is work to do. clientArea.width should never be 0
+	// if we receive a paint event but we never want to try and create 
+	// an Image with 0 width.
+	if (clientArea.width == 0 || event.height == 0) {		
+		return;
+	}
+	performPaint(event.gc, startLine, startY, renderHeight);	
+}	
+/**
+ * Render the specified area.  Broken out as its own method to support
+ * direct drawing.
+ * <p>
+ *
+ * @param gc
+ * @param startLine
+ * @param startY
+ * @param renderHeight
+ */
+void performPaint(GC gc,int startLine,int startY, int renderHeight)	{
 	int lineCount = content.getLineCount();
+	int paintY = topMargin;	
 	Rectangle clientArea = getClientArea();
 	Color background = getBackground();
 	Color foreground = getForeground();
@@ -4606,10 +4628,9 @@ void handlePaint(Event event) {
 	Font font;
 	FontData fontData;
 	
-	// Check if there is work to do. clientArea.width should never be 0
-	// if we receive a paint event but we never want to try and create 
-	// an Image with 0 width.
-	if (clientArea.width == 0 || event.height == 0) {		
+	// Check if there is work to do. We never want to try and create 
+	// an Image with 0 width or 0 height.
+	if (clientArea.width == 0 || renderHeight == 0) {		
 		return;
 	}
 	if (isSingleLine()) {
@@ -4618,33 +4639,47 @@ void handlePaint(Event event) {
 			startLine = 1;
 		}
 	}
-	font = event.gc.getFont();
+	font = gc.getFont();
 	fontData = font.getFontData()[0];
-	lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
-	lineGC = new GC(lineBuffer);	
-	lineGC.setFont(font);
-	lineGC.setForeground(foreground);
-	lineGC.setBackground(background);
-	for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
-		String line = content.getLine(i);
-		renderer.drawLine(line, i, paintY, lineGC, background, foreground, fontData, true);
-	}
-	if (paintY < renderHeight) {
+	// Do double buffering on direct draw operations only
+	if (drawDirect || SWT.getPlatform().equals("win32")) {
+		lineBuffer = new Image(getDisplay(), clientArea.width, renderHeight);
+		lineGC = new GC(lineBuffer);	
+		lineGC.setFont(font);
+		lineGC.setForeground(foreground);
 		lineGC.setBackground(background);
-		lineGC.setForeground(background);
-		lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
+		for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
+			String line = content.getLine(i);
+			renderer.drawLine(line, i, paintY, lineGC, background, foreground, fontData, true);
+		}
+		if (paintY < renderHeight) {
+			lineGC.setBackground(background);
+			lineGC.setForeground(background);
+			lineGC.fillRectangle(0, paintY, clientArea.width, renderHeight - paintY);
+		}
+		gc.drawImage(lineBuffer, 0, startY);
+		lineGC.dispose();
+		lineBuffer.dispose();
+	} else {
+		for (int i = startLine; paintY < renderHeight && i < lineCount; i++, paintY += lineHeight) {
+			String line = content.getLine(i);
+			renderer.drawLine(line, i, paintY + startY, gc, background, foreground, fontData, true);
+		}
+		if (paintY < renderHeight) {
+			gc.setBackground(background);
+			gc.setForeground(background);
+			gc.fillRectangle(0, paintY + startY, clientArea.width, renderHeight - paintY);
+		}
 	}
-	event.gc.drawImage(lineBuffer, 0, startY);
-	lineGC.dispose();
-	lineBuffer.dispose();
+	
 	// clear the margin background
-	event.gc.setBackground(background);
-	event.gc.fillRectangle(0, 0, clientArea.width, topMargin);
-	event.gc.fillRectangle(0, 0, leftMargin, renderHeight);	
-	event.gc.fillRectangle(
+	gc.setBackground(background);
+	gc.fillRectangle(0, 0, clientArea.width, topMargin);
+	gc.fillRectangle(0, 0, leftMargin, renderHeight);	
+	gc.fillRectangle(
 		0, clientArea.height - bottomMargin, 
 		clientArea.width, bottomMargin);
-	event.gc.fillRectangle(
+	gc.fillRectangle(
 		clientArea.width - rightMargin, 0, 
 		rightMargin, renderHeight);
 }
@@ -4748,7 +4783,10 @@ void handleTextChanging(TextChangingEvent event) {
 		redrawMultiLineChange(textChangeY, event.newLineCount, event.replaceLineCount);
 	}
 	else {
-		super.redraw(leftMargin, textChangeY, getClientArea().width - leftMargin - rightMargin, lineHeight, true);
+		// Optimization for non-Windows platforms.  Do direct drawing during typing.
+		if (drawDirect == false) {
+			super.redraw(leftMargin, textChangeY, getClientArea().width - leftMargin - rightMargin, lineHeight, true);
+		}
 	}
 	// notify default line styler about text change
 	if (defaultLineStyler != null) {
@@ -4785,19 +4823,6 @@ void handleTraverse(Event event) {
  * Scrolls the widget vertically.
  */
 void handleVerticalScroll(Event event) {
-	//TEMPORARY CODE		
-	if (event.detail == SWT.DRAG && !SWT.getPlatform().equals("win32")) {	
-		if (updater != null) return;
-		updater = new Runnable(){
-			public void run(){
-				if (isDisposed()) return;
-				setVerticalScrollOffset(getVerticalBar().getSelection(), false);
-				updater = null;
-			}
-		};	
-		getDisplay().timerExec(100, updater); 
-		return;
-	}
 	setVerticalScrollOffset(getVerticalBar().getSelection(), false);
 }
 /** 
@@ -5063,6 +5088,10 @@ void modifyContent(Event event, boolean updateCaret) {
 			styledTextEvent.end = event.start + event.text.length();
 			styledTextEvent.text = content.getTextRange(event.start, replacedLength);
 		}
+		// Optimization for non-Windows platforms.  Do direct drawing during typing.
+		if (SWT.getPlatform().equals("win32") == false) {
+			drawDirect = (event.text.length() == 1) || (replacedLength == 1);
+		}
 		content.replaceTextRange(event.start, replacedLength, event.text);
 		// set the caret position prior to sending the modify event.
 		// fixes 1GBB8NJ
@@ -5084,6 +5113,15 @@ void modifyContent(Event event, boolean updateCaret) {
 				showCaret();
 			}
 		}		
+		// Optimization for non-Windows platforms.  Do direct drawing during typing.
+		if (drawDirect) {
+			int startLine = content.getLineAtOffset(event.start);
+			int startY = startLine * lineHeight - verticalScrollOffset;
+			GC gc = new GC(this);
+			performPaint(gc, startLine, startY, lineHeight);
+			drawDirect = false;
+			gc.dispose();
+		}
 		notifyListeners(SWT.Modify, event);		
 		if (isListening(ExtendedModify)) {
 			notifyListeners(ExtendedModify, styledTextEvent);
