@@ -1963,8 +1963,12 @@ public void getClipping (Region region) {
 		OS.SetRectRgn(region.handle, rect.left, rect.top, rect.right, rect.bottom);
 	}
 	if (!OS.IsWinCE) {
+		int flags = 0;
+		if ((OS.WIN32_MAJOR << 16 | OS.WIN32_MINOR) >= (4 << 16 | 10)) {
+			flags =  OS.GetLayout(handle);
+		}
 		int hwnd = data.hwnd;
-		if (hwnd != 0 && data.ps != null) {
+		if (hwnd != 0 && data.ps != null && (flags & OS.LAYOUT_RTL) == 0) {
 			int sysRgn = OS.CreateRectRgn (0, 0, 0, 0);
 			if (OS.GetRandomRgn (handle, sysRgn, OS.SYSRGN) == 1) {
 				if (OS.IsWinNT) {
