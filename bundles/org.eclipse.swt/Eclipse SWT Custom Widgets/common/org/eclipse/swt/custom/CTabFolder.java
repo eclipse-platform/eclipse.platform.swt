@@ -2085,9 +2085,12 @@ void onMouse(Event event) {
 					}
 					if (e.doit) {
 						item.dispose();
-						CTabItem nextItem = getItem(new Point(event.x, event.y));
+						Display display = getDisplay();
+						Point pt = display.getCursorLocation();
+						pt = display.map(null, this, pt.x, pt.y);
+						CTabItem nextItem = getItem(pt);
 						if (nextItem != null) {
-							if (nextItem.closeRect.contains(event.x, event.y)) {
+							if (nextItem.closeRect.contains(pt)) {
 								if (nextItem.closeImageState != SELECTED && nextItem.closeImageState != HOT) {
 									nextItem.closeImageState = HOT;
 									redraw(nextItem.closeRect.x, nextItem.closeRect.y, nextItem.closeRect.width, nextItem.closeRect.height, false);
