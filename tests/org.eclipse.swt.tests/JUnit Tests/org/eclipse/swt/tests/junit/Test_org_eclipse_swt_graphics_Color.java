@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Color
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.Color
  */
 public class Test_org_eclipse_swt_graphics_Color extends SwtTestCase {
-
-Display display;
 
 public Test_org_eclipse_swt_graphics_Color(String name) {
 	super(name);
@@ -196,6 +193,12 @@ public void test_getGreen() {
 	}
 }
 
+public void test_getRGB() {
+	Color color = new Color(display, 12, 34, 56);
+	assertNotNull(color.getRGB());
+	assertEquals(new RGB(12, 34, 56), color.getRGB());
+}
+
 public void test_getRed() {
 	// Test Color.getRed()
 	Color color = new Color(display, 1, 2, 4);
@@ -204,12 +207,6 @@ public void test_getRed() {
 	} finally {
 		color.dispose();
 	}
-}
-
-public void test_getRGB() {
-	Color color = new Color(display, 12, 34, 56);
-	assertNotNull(color.getRGB());
-	assertEquals(new RGB(12, 34, 56), color.getRGB());
 }
 
 public void test_hashCode() {
@@ -260,8 +257,8 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_getBlue");
 	methodNames.addElement("test_getGreen");
-	methodNames.addElement("test_getRed");
 	methodNames.addElement("test_getRGB");
+	methodNames.addElement("test_getRed");
 	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_toString");
@@ -275,11 +272,14 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getBlue")) test_getBlue();
 	else if (getName().equals("test_getGreen")) test_getGreen();
-	else if (getName().equals("test_getRed")) test_getRed();
 	else if (getName().equals("test_getRGB")) test_getRGB();
+	else if (getName().equals("test_getRed")) test_getRed();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
+
+/* custom */
+Display display;
 }

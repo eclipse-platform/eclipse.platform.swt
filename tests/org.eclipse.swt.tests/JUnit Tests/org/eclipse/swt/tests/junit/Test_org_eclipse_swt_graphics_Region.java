@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
-import junit.framework.*;
-import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Region
@@ -23,8 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.Region
  */
 public class Test_org_eclipse_swt_graphics_Region extends SwtTestCase {
-	
-	Display display;
 
 public Test_org_eclipse_swt_graphics_Region(String name) {
 	super(name);
@@ -42,7 +39,7 @@ protected void tearDown() {
 	display.dispose();
 }
 
-public void test_Constructor(){
+public void test_Constructor() {
 	// test Region()
 	Region reg = new Region(display);
 	if (reg.isDisposed()) {
@@ -51,7 +48,11 @@ public void test_Constructor(){
 	reg.dispose();
 }
 
-public void test_addLorg_eclipse_swt_graphics_Rectangle(){
+public void test_ConstructorLorg_eclipse_swt_graphics_Device() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_Device not written");
+}
+
+public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 	Region reg = new Region(display);
 	// add a rectangle
 	reg.add(new Rectangle(0, 0, 100, 50));
@@ -75,7 +76,7 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle(){
 	}
 }
 
-public void test_addLorg_eclipse_swt_graphics_Region(){
+public void test_addLorg_eclipse_swt_graphics_Region() {
 	Region reg1 = new Region(display);
 	// make a second region and add it to the first one
 	Region reg2 = new Region(display);
@@ -111,7 +112,7 @@ public void test_addLorg_eclipse_swt_graphics_Region(){
 	}
 }
 
-public void test_containsII(){
+public void test_containsII() {
 	Rectangle rect1 = new Rectangle(10,10,200,100);
 	Point pointInRect1 = new Point(10,10);
 	Rectangle rect2 = new Rectangle(50,50,1000,1000);
@@ -150,7 +151,7 @@ public void test_containsII(){
 	reg.dispose();
 }
 
-public void test_containsLorg_eclipse_swt_graphics_Point(){
+public void test_containsLorg_eclipse_swt_graphics_Point() {
 	Rectangle rect1 = new Rectangle(10,10,200,100);
 	Point pointInRect1 = new Point(10,10);
 	Rectangle rect2 = new Rectangle(50,50,1000,1000);
@@ -189,7 +190,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point(){
 	reg.dispose();
 }
 
-public void test_dispose(){
+public void test_dispose() {
 	Region reg = new Region(display);
 	reg.add(new Rectangle(1,1,50,100));
 	if (reg.isDisposed()) {
@@ -205,7 +206,7 @@ public void test_dispose(){
 	}
 }
 
-public void test_equalsLjava_lang_Object(){
+public void test_equalsLjava_lang_Object() {
 	Rectangle rect1 = new Rectangle(25, 100, 200, 780);
 	Rectangle rect2 = new Rectangle(30, 105, 205, 785);
 	
@@ -251,7 +252,7 @@ public void test_equalsLjava_lang_Object(){
 	reg2.dispose();
 }
 
-public void test_getBounds(){
+public void test_getBounds() {
 	Region reg = new Region(display);
 	reg.dispose();
 	
@@ -287,7 +288,7 @@ public void test_getBounds(){
 	reg.dispose();
 }
 
-public void test_hashCode(){
+public void test_hashCode() {
 	Region reg1 = new Region(display);
 	Region reg2 = new Region(display);
 		
@@ -319,7 +320,15 @@ public void test_hashCode(){
 	reg2.dispose();
 }
 
-public void test_intersectsIIII(){
+public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
+	warnUnimpl("Test test_intersectLorg_eclipse_swt_graphics_Rectangle not written");
+}
+
+public void test_intersectLorg_eclipse_swt_graphics_Region() {
+	warnUnimpl("Test test_intersectLorg_eclipse_swt_graphics_Region not written");
+}
+
+public void test_intersectsIIII() {
 	Rectangle rect1 = new Rectangle(10,20,50,30);
 	Rectangle rectInter1 = new Rectangle(59,49,10,20);
 	Rectangle rectNotInter1 = new Rectangle(0,5,10,15);
@@ -373,7 +382,7 @@ public void test_intersectsIIII(){
 	reg.dispose();
 }
 
-public void test_intersectsLorg_eclipse_swt_graphics_Rectangle(){
+public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle rect1 = new Rectangle(10,20,50,30);
 	Rectangle rectInter1 = new Rectangle(59,49,10,20);
 	Rectangle rectNotInter1 = new Rectangle(0,5,10,15);
@@ -427,11 +436,11 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle(){
 	reg.dispose();
 }
 
-public void test_isDisposed(){
+public void test_isDisposed() {
 	// test in dispose()
 }
 
-public void test_isEmpty(){
+public void test_isEmpty() {
 	Region reg = new Region(display);
 	Rectangle emptyRect1 = new Rectangle(10,20,0,200);
 	Rectangle emptyRect2 = new Rectangle(10,20,10,0);
@@ -463,11 +472,15 @@ public void test_isEmpty(){
 	reg.dispose();	
 }
 
-public void test_win32_newI(){
-	// not part of public api
+public void test_subtractLorg_eclipse_swt_graphics_Rectangle() {
+	warnUnimpl("Test test_subtractLorg_eclipse_swt_graphics_Rectangle not written");
 }
 
-public void test_toString(){
+public void test_subtractLorg_eclipse_swt_graphics_Region() {
+	warnUnimpl("Test test_subtractLorg_eclipse_swt_graphics_Region not written");
+}
+
+public void test_toString() {
 	Region reg = new Region(display);
 	
 	String s = reg.toString();
@@ -491,6 +504,10 @@ public void test_toString(){
 	}				
 }
 
+public void test_win32_newLorg_eclipse_swt_graphics_DeviceI() {
+	warnUnimpl("Test test_win32_newLorg_eclipse_swt_graphics_DeviceI not written");
+}
+
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
@@ -503,6 +520,7 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_Constructor");
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_Device");
 	methodNames.addElement("test_addLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_addLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_containsII");
@@ -511,16 +529,21 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_hashCode");
+	methodNames.addElement("test_intersectLorg_eclipse_swt_graphics_Rectangle");
+	methodNames.addElement("test_intersectLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_intersectsIIII");
 	methodNames.addElement("test_intersectsLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_isEmpty");
-	methodNames.addElement("test_win32_newI");
+	methodNames.addElement("test_subtractLorg_eclipse_swt_graphics_Rectangle");
+	methodNames.addElement("test_subtractLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_toString");
+	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceI");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_Constructor")) test_Constructor();
+	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_Device")) test_ConstructorLorg_eclipse_swt_graphics_Device();
 	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Rectangle")) test_addLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Region")) test_addLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_containsII")) test_containsII();
@@ -529,11 +552,18 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_hashCode")) test_hashCode();
+	else if (getName().equals("test_intersectLorg_eclipse_swt_graphics_Rectangle")) test_intersectLorg_eclipse_swt_graphics_Rectangle();
+	else if (getName().equals("test_intersectLorg_eclipse_swt_graphics_Region")) test_intersectLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_intersectsIIII")) test_intersectsIIII();
 	else if (getName().equals("test_intersectsLorg_eclipse_swt_graphics_Rectangle")) test_intersectsLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_isEmpty")) test_isEmpty();
-	else if (getName().equals("test_win32_newI")) test_win32_newI();
+	else if (getName().equals("test_subtractLorg_eclipse_swt_graphics_Rectangle")) test_subtractLorg_eclipse_swt_graphics_Rectangle();
+	else if (getName().equals("test_subtractLorg_eclipse_swt_graphics_Region")) test_subtractLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_toString")) test_toString();
+	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
+
+/* custom */
+	Display display;
 }

@@ -36,7 +36,7 @@ protected void setUp() {
 protected void tearDown() {
 }
 
-public void test_ConstructorII(){
+public void test_ConstructorII() {
 	// Test new Point (int x, int y)
 	Point p = new Point(3, 4);
 	assertEquals(3, p.x);
@@ -51,7 +51,7 @@ public void test_ConstructorII(){
 	assertEquals(700000, p.y);
 }
 
-public void test_equalsLjava_lang_Object(){
+public void test_equalsLjava_lang_Object() {
 	Point p1 = new Point(5, 5);
 	Point p2 = new Point(5, 5);
 	assertTrue("Points should be equal", p1.equals(p2));
@@ -64,13 +64,13 @@ public void test_equalsLjava_lang_Object(){
 	assertTrue("Points should not be equal", !p1.equals(p2));
 }
 
-public void test_hashCode(){
+public void test_hashCode() {
 	Point p1 = new Point(5, 5);
 	Point p2 = new Point(5, 5);
 	assertTrue("Points should have the same hashCode", p1.hashCode() == p2.hashCode());
 }
 
-public void test_toString(){
+public void test_toString() {
 	Point p = new Point(3, 4);
 	assertNotNull(p.toString());
 	assertTrue(p.toString().length() > 0);

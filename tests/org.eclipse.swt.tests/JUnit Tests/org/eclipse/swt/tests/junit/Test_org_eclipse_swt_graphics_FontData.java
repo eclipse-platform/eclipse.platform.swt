@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.*;
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.FontData
@@ -96,6 +95,10 @@ public void test_equalsLjava_lang_Object() {
 
 public void test_getHeight() {
 	// Font.getHeight() tested in test_setHeightI
+}
+
+public void test_getLocale() {
+	warnUnimpl("Test test_getLocale not written");
 }
 
 public void test_getName() {
@@ -224,6 +227,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLjava_lang_StringII");
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_getHeight");
+	methodNames.addElement("test_getLocale");
 	methodNames.addElement("test_getName");
 	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_hashCode");
@@ -241,6 +245,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorLjava_lang_StringII")) test_ConstructorLjava_lang_StringII();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getHeight")) test_getHeight();
+	else if (getName().equals("test_getLocale")) test_getLocale();
 	else if (getName().equals("test_getName")) test_getName();
 	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_hashCode")) test_hashCode();

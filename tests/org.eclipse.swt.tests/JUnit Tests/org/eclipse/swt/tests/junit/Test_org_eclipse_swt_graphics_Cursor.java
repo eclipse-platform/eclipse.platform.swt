@@ -10,12 +10,11 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
+import junit.framework.*;
+import junit.textui.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.swt.graphics.*;
-import junit.framework.*;
-import junit.textui.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Cursor
@@ -23,8 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.Cursor
  */
 public class Test_org_eclipse_swt_graphics_Cursor extends SwtTestCase {
-
-Display display;
 
 public Test_org_eclipse_swt_graphics_Cursor(String name) {
 	super(name);
@@ -133,6 +130,10 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceI() {
 	}
 }
 
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII not written");
+}
+
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII() {
 	// Test new Cursor(Device device, ImageData source, ImageData mask, int hotspotX, int hotspotY)
 	ImageLoader loader = new ImageLoader();
@@ -204,6 +205,7 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceI");
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII");
 	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_equalsLjava_lang_Object");
@@ -215,6 +217,7 @@ public static java.util.Vector methodNames() {
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceI")) test_ConstructorLorg_eclipse_swt_graphics_DeviceI();
+	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataII();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageDataII();
 	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
@@ -223,4 +226,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceI")) test_win32_newLorg_eclipse_swt_graphics_DeviceI();
 }
+
+/* custom */
+Display display;
 }

@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.RGB

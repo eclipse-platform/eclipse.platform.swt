@@ -11,10 +11,10 @@
 package org.eclipse.swt.tests.junit;
 
 
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.FontMetrics
@@ -22,10 +22,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.FontMetrics
  */
 public class Test_org_eclipse_swt_graphics_FontMetrics extends SwtTestCase {
-
-	Display display;
-	Shell shell;
-	GC gc;
 
 public Test_org_eclipse_swt_graphics_FontMetrics(String name) {
 	super(name);
@@ -121,4 +117,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC")) test_win32_newLorg_eclipse_swt_internal_win32_TEXTMETRIC();
 }
+
+/* custom */
+	Display display;
+	Shell shell;
+	GC gc;
 }

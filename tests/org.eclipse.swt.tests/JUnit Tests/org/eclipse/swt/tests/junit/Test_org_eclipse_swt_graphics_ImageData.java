@@ -51,10 +51,6 @@ public void test_ConstructorLjava_lang_String() {
 	warnUnimpl("Test test_ConstructorLjava_lang_String not written");
 }
 
-public void test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII() {
-	warnUnimpl("Test test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII not written");
-}
-
 public void test_clone() {
 	warnUnimpl("Test test_clone not written");
 }
@@ -89,6 +85,10 @@ public void test_getTransparencyMask() {
 
 public void test_getTransparencyType() {
 	warnUnimpl("Test test_getTransparencyType not written");
+}
+
+public void test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII() {
+	warnUnimpl("Test test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII not written");
 }
 
 public void test_scaledToII() {
@@ -130,7 +130,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B");
 	methodNames.addElement("test_ConstructorLjava_io_InputStream");
 	methodNames.addElement("test_ConstructorLjava_lang_String");
-	methodNames.addElement("test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII");
 	methodNames.addElement("test_clone");
 	methodNames.addElement("test_getAlphaII");
 	methodNames.addElement("test_getAlphasIII$BI");
@@ -140,6 +139,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getRGBs");
 	methodNames.addElement("test_getTransparencyMask");
 	methodNames.addElement("test_getTransparencyType");
+	methodNames.addElement("test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII");
 	methodNames.addElement("test_scaledToII");
 	methodNames.addElement("test_setAlphaIII");
 	methodNames.addElement("test_setAlphasIII$BI");
@@ -153,7 +153,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B")) test_ConstructorIIILorg_eclipse_swt_graphics_PaletteDataI$B();
 	else if (getName().equals("test_ConstructorLjava_io_InputStream")) test_ConstructorLjava_io_InputStream();
 	else if (getName().equals("test_ConstructorLjava_lang_String")) test_ConstructorLjava_lang_String();
-	else if (getName().equals("test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII")) test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII();
 	else if (getName().equals("test_clone")) test_clone();
 	else if (getName().equals("test_getAlphaII")) test_getAlphaII();
 	else if (getName().equals("test_getAlphasIII$BI")) test_getAlphasIII$BI();
@@ -163,6 +162,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getRGBs")) test_getRGBs();
 	else if (getName().equals("test_getTransparencyMask")) test_getTransparencyMask();
 	else if (getName().equals("test_getTransparencyType")) test_getTransparencyType();
+	else if (getName().equals("test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII")) test_internal_newIIILorg_eclipse_swt_graphics_PaletteDataI$BI$B$BIIIIIII();
 	else if (getName().equals("test_scaledToII")) test_scaledToII();
 	else if (getName().equals("test_setAlphaIII")) test_setAlphaIII();
 	else if (getName().equals("test_setAlphasIII$BI")) test_setAlphasIII$BI();

@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.GC
@@ -22,10 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.GC
  */
 public class Test_org_eclipse_swt_graphics_GC extends SwtTestCase {
-
-Display display;
-Shell shell;
-GC gc;
 
 public Test_org_eclipse_swt_graphics_GC(String name) {
 	super(name);
@@ -53,12 +48,16 @@ public void test_ConstructorLorg_eclipse_swt_graphics_Drawable() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_Drawable not written");
 }
 
-public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
-	warnUnimpl("Test test_copyAreaLorg_eclipse_swt_graphics_ImageII not written");
+public void test_ConstructorLorg_eclipse_swt_graphics_DrawableI() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DrawableI not written");
 }
 
 public void test_copyAreaIIIIII() {
 	warnUnimpl("Test test_copyAreaIIIIII not written");
+}
+
+public void test_copyAreaLorg_eclipse_swt_graphics_ImageII() {
+	warnUnimpl("Test test_copyAreaLorg_eclipse_swt_graphics_ImageII not written");
 }
 
 public void test_dispose() {
@@ -73,7 +72,7 @@ public void test_drawFocusIIII() {
 	warnUnimpl("Test test_drawFocusIIII not written");
 }
 
-public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {		
+public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 		Color c1 = new Color(display, 255, 0, 0);
 		Color c2 = new Color(display, 0, 0, 0);
 		Color c3 = new Color(display, 255, 255, 0);
@@ -110,7 +109,7 @@ public void test_drawImageLorg_eclipse_swt_graphics_ImageII() {
 		}	
 }
 
-public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {		
+public void test_drawImageLorg_eclipse_swt_graphics_ImageIIIIIIII() {
 		Color c1 = new Color(display, 255, 0, 0);
 		Color c2 = new Color(display, 0, 0, 0);
 		Color c3 = new Color(display, 255, 255, 0);
@@ -182,6 +181,10 @@ public void test_drawStringLjava_lang_StringIIZ() {
 
 public void test_drawTextLjava_lang_StringII() {
 	warnUnimpl("Test test_drawTextLjava_lang_StringII not written");
+}
+
+public void test_drawTextLjava_lang_StringIII() {
+	warnUnimpl("Test test_drawTextLjava_lang_StringIII not written");
 }
 
 public void test_drawTextLjava_lang_StringIIZ() {
@@ -260,6 +263,10 @@ public void test_getLineWidth() {
 	warnUnimpl("Test test_getLineWidth not written");
 }
 
+public void test_getStyle() {
+	warnUnimpl("Test test_getStyle not written");
+}
+
 public void test_getXORMode() {
 	warnUnimpl("Test test_getXORMode not written");
 }
@@ -320,8 +327,16 @@ public void test_textExtentLjava_lang_String() {
 	warnUnimpl("Test test_textExtentLjava_lang_String not written");
 }
 
+public void test_textExtentLjava_lang_StringI() {
+	warnUnimpl("Test test_textExtentLjava_lang_StringI not written");
+}
+
 public void test_toString() {
 	warnUnimpl("Test test_toString not written");
+}
+
+public void test_win32_newILorg_eclipse_swt_graphics_GCData() {
+	warnUnimpl("Test test_win32_newILorg_eclipse_swt_graphics_GCData not written");
 }
 
 public void test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData() {
@@ -340,8 +355,9 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_Drawable");
-	methodNames.addElement("test_copyAreaLorg_eclipse_swt_graphics_ImageII");
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DrawableI");
 	methodNames.addElement("test_copyAreaIIIIII");
+	methodNames.addElement("test_copyAreaLorg_eclipse_swt_graphics_ImageII");
 	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_drawArcIIIIII");
 	methodNames.addElement("test_drawFocusIIII");
@@ -357,6 +373,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_drawStringLjava_lang_StringII");
 	methodNames.addElement("test_drawStringLjava_lang_StringIIZ");
 	methodNames.addElement("test_drawTextLjava_lang_StringII");
+	methodNames.addElement("test_drawTextLjava_lang_StringIII");
 	methodNames.addElement("test_drawTextLjava_lang_StringIIZ");
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_fillArcIIIIII");
@@ -376,6 +393,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getForeground");
 	methodNames.addElement("test_getLineStyle");
 	methodNames.addElement("test_getLineWidth");
+	methodNames.addElement("test_getStyle");
 	methodNames.addElement("test_getXORMode");
 	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_isClipped");
@@ -391,14 +409,17 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setXORModeZ");
 	methodNames.addElement("test_stringExtentLjava_lang_String");
 	methodNames.addElement("test_textExtentLjava_lang_String");
+	methodNames.addElement("test_textExtentLjava_lang_StringI");
 	methodNames.addElement("test_toString");
+	methodNames.addElement("test_win32_newILorg_eclipse_swt_graphics_GCData");
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData");
 	return methodNames;
 }
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_Drawable")) test_ConstructorLorg_eclipse_swt_graphics_Drawable();
-	else if (getName().equals("test_copyAreaLorg_eclipse_swt_graphics_ImageII")) test_copyAreaLorg_eclipse_swt_graphics_ImageII();
+	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DrawableI")) test_ConstructorLorg_eclipse_swt_graphics_DrawableI();
 	else if (getName().equals("test_copyAreaIIIIII")) test_copyAreaIIIIII();
+	else if (getName().equals("test_copyAreaLorg_eclipse_swt_graphics_ImageII")) test_copyAreaLorg_eclipse_swt_graphics_ImageII();
 	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_drawArcIIIIII")) test_drawArcIIIIII();
 	else if (getName().equals("test_drawFocusIIII")) test_drawFocusIIII();
@@ -414,6 +435,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_drawStringLjava_lang_StringII")) test_drawStringLjava_lang_StringII();
 	else if (getName().equals("test_drawStringLjava_lang_StringIIZ")) test_drawStringLjava_lang_StringIIZ();
 	else if (getName().equals("test_drawTextLjava_lang_StringII")) test_drawTextLjava_lang_StringII();
+	else if (getName().equals("test_drawTextLjava_lang_StringIII")) test_drawTextLjava_lang_StringIII();
 	else if (getName().equals("test_drawTextLjava_lang_StringIIZ")) test_drawTextLjava_lang_StringIIZ();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_fillArcIIIIII")) test_fillArcIIIIII();
@@ -433,6 +455,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getForeground")) test_getForeground();
 	else if (getName().equals("test_getLineStyle")) test_getLineStyle();
 	else if (getName().equals("test_getLineWidth")) test_getLineWidth();
+	else if (getName().equals("test_getStyle")) test_getStyle();
 	else if (getName().equals("test_getXORMode")) test_getXORMode();
 	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_isClipped")) test_isClipped();
@@ -448,7 +471,14 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setXORModeZ")) test_setXORModeZ();
 	else if (getName().equals("test_stringExtentLjava_lang_String")) test_stringExtentLjava_lang_String();
 	else if (getName().equals("test_textExtentLjava_lang_String")) test_textExtentLjava_lang_String();
+	else if (getName().equals("test_textExtentLjava_lang_StringI")) test_textExtentLjava_lang_StringI();
 	else if (getName().equals("test_toString")) test_toString();
+	else if (getName().equals("test_win32_newILorg_eclipse_swt_graphics_GCData")) test_win32_newILorg_eclipse_swt_graphics_GCData();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData")) test_win32_newLorg_eclipse_swt_graphics_DrawableLorg_eclipse_swt_graphics_GCData();
 }
+
+/* custom */
+Display display;
+Shell shell;
+GC gc;
 }

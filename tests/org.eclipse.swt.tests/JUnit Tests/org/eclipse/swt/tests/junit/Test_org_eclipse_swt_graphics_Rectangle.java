@@ -10,10 +10,9 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Rectangle
@@ -36,7 +35,7 @@ protected void setUp() {
 protected void tearDown() {
 }
 
-public void test_ConstructorIIII(){
+public void test_ConstructorIIII() {
 	// Test new Rectangle (int x, int y, int width, int height)
 	Rectangle r = new Rectangle(3, 4, 5, 6);
 	assertEquals(3, r.x);
@@ -66,7 +65,7 @@ public void test_ConstructorIIII(){
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
  */
-public void test_addLorg_eclipse_swt_graphics_Rectangle(){
+public void test_addLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
 	r1.add(r2);
@@ -96,7 +95,7 @@ public void test_addLorg_eclipse_swt_graphics_Rectangle(){
  * Returns <code>true</code> if the point specified by the
  * arguments is inside the area specified by the receiver.
  */
-public void test_containsII(){
+public void test_containsII() {
 	Rectangle r = new Rectangle(1, 2, 3, 4);
 	assertTrue("Rectangle should contain point (1, 2)", r.contains(1, 2));
 
@@ -123,7 +122,7 @@ public void test_containsII(){
  *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
  * </ul>
  */
-public void test_containsLorg_eclipse_swt_graphics_Point(){
+public void test_containsLorg_eclipse_swt_graphics_Point() {
 	Rectangle r = new Rectangle(1, 2, 3, 4);
 	assertTrue("Rectangle should contain Point(1, 2)", r.contains(new Point(1, 2)));
 
@@ -148,7 +147,7 @@ public void test_containsLorg_eclipse_swt_graphics_Point(){
 	}
 }
 
-public void test_equalsLjava_lang_Object(){
+public void test_equalsLjava_lang_Object() {
 	Rectangle r1 = new Rectangle(5, 4, 3, 2);
 	Rectangle r2 = new Rectangle(5, 4, 3, 2);
 	assertTrue("Rectangles should be equal", r1.equals(r2));
@@ -166,21 +165,17 @@ public void test_equalsLjava_lang_Object(){
 	assertTrue("Rectangles should not be equal", !r1.equals(r2));
 }
 
-public void test_hashCode(){
+public void test_hashCode() {
 	Rectangle r1 = new Rectangle(5, 4, 3, 2);
 	Rectangle r2 = new Rectangle(5, 4, 3, 2);
 	assertTrue("Rectangles should have the same hashCode", r1.hashCode() == r2.hashCode());
 }
 
-/**
- * Returns a new rectangle which represents the intersection
- * of the receiver and the given rectangle. 
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
- * </ul>
- */
-public void test_intersectionLorg_eclipse_swt_graphics_Rectangle(){
+public void test_intersectLorg_eclipse_swt_graphics_Rectangle() {
+	warnUnimpl("Test test_intersectLorg_eclipse_swt_graphics_Rectangle not written");
+}
+
+public void test_intersectionLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
 	assertEquals("Rectangle intersection incorrect", new Rectangle(3, 3, 1, 2), r1.intersection(r2));
@@ -198,15 +193,11 @@ public void test_intersectionLorg_eclipse_swt_graphics_Rectangle(){
 	}
 }
 
-/**
- * Returns <code>true</code> if the given rectangle intersects
- * with the receiver and <code>false</code> otherwise.
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
- * </ul>
- */
-public void test_intersectsLorg_eclipse_swt_graphics_Rectangle(){
+public void test_intersectsIIII() {
+	warnUnimpl("Test test_intersectsIIII not written");
+}
+
+public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(2, 3, 7, 8);
 	assertTrue("Rectangle(1, 2, 3, 4) should intersect Rectangle(2, 3, 7, 8)", r1.intersects(r2));
@@ -231,17 +222,7 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle(){
 	}
 }
 
-/**
- * Returns <code>true</code> if the receiver does not cover any
- * area in the (x, y) coordinate plane, and <code>false</code> if
- * the receiver does cover some area in the plane.
- * <p>
- * A rectangle is considered to <em>cover area</em> in the 
- * (x, y) coordinate plane if both its width and height are 
- * non-zero.
- * </p>
- */
-public void test_isEmpty(){
+public void test_isEmpty() {
 	Rectangle r = new Rectangle(1, 2, 0, 0);
 	assertTrue("Rectangle is empty", r.isEmpty());
 
@@ -252,22 +233,14 @@ public void test_isEmpty(){
 	assertTrue("Rectangle is not empty", !r.isEmpty());
 }
 
-public void test_toString(){
+public void test_toString() {
 	Rectangle r = new Rectangle(3, 4, 5, 6);
 	assertNotNull(r.toString());
 	assertTrue(r.toString().length() > 0);
 	assertEquals("Rectangle {3, 4, 5, 6}", r.toString());
 }
 
-/**
- * Returns a new rectangle which represents the union of
- * the receiver and the given rectangle.
- *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the argument is null</li>
- * </ul>
- */
-public void test_unionLorg_eclipse_swt_graphics_Rectangle(){
+public void test_unionLorg_eclipse_swt_graphics_Rectangle() {
 	Rectangle r1 = new Rectangle(1, 2, 3, 4);
 	Rectangle r2 = new Rectangle(3, 3, 2, 2);
 	assertEquals("Rectangle union incorrect", new Rectangle(1, 2, 4, 4), r1.union(r2));
@@ -302,7 +275,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_containsLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_hashCode");
+	methodNames.addElement("test_intersectLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_intersectionLorg_eclipse_swt_graphics_Rectangle");
+	methodNames.addElement("test_intersectsIIII");
 	methodNames.addElement("test_intersectsLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_isEmpty");
 	methodNames.addElement("test_toString");
@@ -316,7 +291,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_containsLorg_eclipse_swt_graphics_Point")) test_containsLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_hashCode")) test_hashCode();
+	else if (getName().equals("test_intersectLorg_eclipse_swt_graphics_Rectangle")) test_intersectLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_intersectionLorg_eclipse_swt_graphics_Rectangle")) test_intersectionLorg_eclipse_swt_graphics_Rectangle();
+	else if (getName().equals("test_intersectsIIII")) test_intersectsIIII();
 	else if (getName().equals("test_intersectsLorg_eclipse_swt_graphics_Rectangle")) test_intersectsLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_isEmpty")) test_isEmpty();
 	else if (getName().equals("test_toString")) test_toString();

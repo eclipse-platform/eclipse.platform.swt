@@ -10,11 +10,10 @@
  *******************************************************************************/
 package org.eclipse.swt.tests.junit;
 
-
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.graphics.*;
 import junit.framework.*;
 import junit.textui.*;
+import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.*;
 
 /**
  * Automated Test Suite for class org.eclipse.swt.graphics.Image
@@ -22,8 +21,6 @@ import junit.textui.*;
  * @see org.eclipse.swt.graphics.Image
  */
 public class Test_org_eclipse_swt_graphics_Image extends SwtTestCase {
-
-Display display;
 
 public Test_org_eclipse_swt_graphics_Image(String name) {
 	super(name);
@@ -45,12 +42,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceII() {
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceII not written");
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI not written");
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream not written");
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle not written");
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String not written");
 }
 
 public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData() {
@@ -61,12 +58,12 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData not written");
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream not written");
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI not written");
 }
 
-public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() {
-	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String not written");
+public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle() {
+	warnUnimpl("Test test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle not written");
 }
 
 public void test_dispose() {
@@ -85,7 +82,7 @@ public void test_getBounds() {
 	warnUnimpl("Test test_getBounds not written");
 }
 
-public void test_getImageData() {	
+public void test_getImageData() {
 	getImageData1();
 	getImageData2(24, new PaletteData(0xff0000, 0xff00, 0xff));		
 	getImageData2(32, new PaletteData(0xff0000, 0xff00, 0xff));
@@ -95,12 +92,12 @@ public void test_hashCode() {
 	warnUnimpl("Test test_hashCode not written");
 }
 
-public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
-	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
-}
-
 public void test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData() {
 	warnUnimpl("Test test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData not written");
+}
+
+public void test_internal_new_GCLorg_eclipse_swt_graphics_GCData() {
+	warnUnimpl("Test test_internal_new_GCLorg_eclipse_swt_graphics_GCData not written");
 }
 
 public void test_isDisposed() {
@@ -131,48 +128,50 @@ public static Test suite() {
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceII");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String");
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData");
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData");
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI");
+	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_getBackground");
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getImageData");
 	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_internal_new_GCLorg_eclipse_swt_graphics_GCData");
 	methodNames.addElement("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData");
+	methodNames.addElement("test_internal_new_GCLorg_eclipse_swt_graphics_GCData");
 	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_toString");
 	methodNames.addElement("test_win32_newLorg_eclipse_swt_graphics_DeviceII");
 	return methodNames;
 }
+
 protected void runTest() throws Throwable {
 	if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceII")) test_ConstructorLorg_eclipse_swt_graphics_DeviceII();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_io_InputStream();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String();
+	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData();
+	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData();
+	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI();
+	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getBackground")) test_getBackground();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getImageData")) test_getImageData();
 	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_internal_new_GCLorg_eclipse_swt_graphics_GCData")) test_internal_new_GCLorg_eclipse_swt_graphics_GCData();
 	else if (getName().equals("test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData")) test_internal_dispose_GCILorg_eclipse_swt_graphics_GCData();
+	else if (getName().equals("test_internal_new_GCLorg_eclipse_swt_graphics_GCData")) test_internal_new_GCLorg_eclipse_swt_graphics_GCData();
 	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_toString")) test_toString();
 	else if (getName().equals("test_win32_newLorg_eclipse_swt_graphics_DeviceII")) test_win32_newLorg_eclipse_swt_graphics_DeviceII();
 }
-
+/* custom */
+Display display;
 /** Test implementation **/
 
 void getImageData1() {
@@ -217,5 +216,4 @@ void getImageData2(int depth, PaletteData palette) {
 	gc.dispose();
 	image.dispose();
 }
-
 }
