@@ -923,7 +923,7 @@ public int internal_new_GC (GCData data) {
  * @private
  */
 public void internal_dispose_GC (int hDC, GCData data) {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	checkWidget ();
 	if (data == null || data.ps == null) {
 		OS.ReleaseDC (handle, hDC);
 	} else {

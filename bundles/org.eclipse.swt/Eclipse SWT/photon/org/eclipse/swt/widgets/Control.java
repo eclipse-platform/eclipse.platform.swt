@@ -478,6 +478,7 @@ int processKey (int info) {
 		}
 	}
 						
+	/* Determine if this is a traverse event */
 	if ((ke.key_flags & (OS.Pk_KF_Key_Down | OS.Pk_KF_Key_Repeat)) != 0) {
 		
 		/*
@@ -948,28 +949,24 @@ public void setForeground (Color color) {
 void setKeyState(Event event, PhKeyEvent_t ke) {
 	int key_mods = ke.key_mods;
 	int button_state = ke.button_state;
-	if ((key_mods & OS.Pk_KM_Alt) != 0) {
-		if (event.type != SWT.KeyDown || event.keyCode != SWT.ALT) {
-			event.stateMask |= SWT.ALT;
-		}
-	}
-	if ((key_mods & OS.Pk_KM_Shift) != 0) {
-		if (event.type != SWT.KeyDown || event.keyCode != SWT.SHIFT) {
-			event.stateMask |= SWT.SHIFT;
-		}
-	}
-	if ((key_mods & OS.Pk_KM_Ctrl) != 0) {
-		if (event.type != SWT.KeyDown || event.keyCode != SWT.CONTROL) {
-			event.stateMask |= SWT.CONTROL;
-		}
-	}
+	if ((key_mods & OS.Pk_KM_Alt) != 0) event.stateMask |= SWT.ALT;
+	if ((key_mods & OS.Pk_KM_Shift) != 0) event.stateMask |= SWT.SHIFT;
+	if ((key_mods & OS.Pk_KM_Ctrl) != 0) event.stateMask |= SWT.CONTROL;
 	if ((button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
-	if (event.type == SWT.KeyUp) {	
-		if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
-		if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
-		if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
+	switch (event.type) {
+		case SWT.KeyDown:
+		case SWT.Traverse:
+			if (event.keyCode == SWT.ALT) event.stateMask &= ~SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask &= ~SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask &= ~SWT.CONTROL;
+			break;
+		case SWT.KeyUp:
+			if (event.keyCode == SWT.ALT) event.stateMask |= SWT.ALT;
+			if (event.keyCode == SWT.SHIFT) event.stateMask |= SWT.SHIFT;
+			if (event.keyCode == SWT.CONTROL) event.stateMask |= SWT.CONTROL;
+			break;
 	}
 }
 
@@ -1013,14 +1010,18 @@ void setMouseState(int type, Event event, PhPointerEvent_t pe) {
 	if ((button_state & OS.Ph_BUTTON_SELECT) != 0) event.stateMask |= SWT.BUTTON1;
 	if ((button_state & OS.Ph_BUTTON_ADJUST) != 0) event.stateMask |= SWT.BUTTON2;
 	if ((button_state & OS.Ph_BUTTON_MENU) != 0) event.stateMask |= SWT.BUTTON3;
-	if (type == OS.Ph_EV_BUT_PRESS) {
-		if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask &= ~SWT.BUTTON1;
-		if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask &= ~SWT.BUTTON2;
-		if (buttons == OS.Ph_BUTTON_MENU) event.stateMask &= ~SWT.BUTTON3;
-	} else if (type == OS.Ph_EV_BUT_RELEASE || type == OS.Ph_EV_DRAG) {
-		if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask |= SWT.BUTTON1;
-		if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask |= SWT.BUTTON2;
-		if (buttons == OS.Ph_BUTTON_MENU) event.stateMask |= SWT.BUTTON3;
+	switch (type) {
+		case OS.Ph_EV_BUT_PRESS:
+			if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask &= ~SWT.BUTTON1;
+			if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask &= ~SWT.BUTTON2;
+			if (buttons == OS.Ph_BUTTON_MENU) event.stateMask &= ~SWT.BUTTON3;
+			break;
+		case OS.Ph_EV_BUT_RELEASE:
+		case OS.Ph_EV_DRAG:
+			if (buttons == OS.Ph_BUTTON_SELECT) event.stateMask |= SWT.BUTTON1;
+			if (buttons == OS.Ph_BUTTON_ADJUST) event.stateMask |= SWT.BUTTON2;
+			if (buttons == OS.Ph_BUTTON_MENU) event.stateMask |= SWT.BUTTON3;
+			break;
 	}
 }
 
