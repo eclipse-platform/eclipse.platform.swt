@@ -51,6 +51,13 @@ public class SWT {
 	/* Widget Event Constants */
 	
 	/**
+	 * The null event type (value is 0).
+	 * 
+	 * @since 3.0
+	 */
+	public static final int None = 0;
+	
+	/**
 	 * The key down event type (value is 1).
 	 */
 	public static final int KeyDown = 1;

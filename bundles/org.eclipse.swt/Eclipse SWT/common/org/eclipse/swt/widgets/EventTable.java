@@ -11,8 +11,8 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.*;
 import org.eclipse.swt.internal.SWTEventListener;
-
 
 /**
  * Instances of this class implement a simple
@@ -76,6 +76,7 @@ public void sendEvent (Event event) {
 	level++;
 	try {
 		for (int i=0; i<types.length; i++) {
+			if (event.type == SWT.None) return;
 			if (types [i] == event.type) {
 				Listener listener = listeners [i];
 				if (listener != null) listener.handleEvent (event);
