@@ -968,6 +968,8 @@ public void setImage (Image image) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * 
+ * @deprecated this functionality is not supported on most platforms
  */
 public void setImageIndent (int indent) {
 	checkWidget();
