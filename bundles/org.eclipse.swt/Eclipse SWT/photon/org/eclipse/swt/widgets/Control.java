@@ -330,7 +330,9 @@ public int internal_new_GC (GCData data) {
 	data.device = getDisplay ();
 	data.widget = handle;
 	data.topWidget = topHandle ();
-	if (data.topWidget == OS.PtFindDisjoint (handle)) data.topWidget = handle;
+	if (data.topWidget == OS.PtFindDisjoint (handle)) {
+		data.topWidget = handle;
+	}
 	data.foreground = args [1];
 	data.background = args [4];
 	data.font = getFont ().handle;
