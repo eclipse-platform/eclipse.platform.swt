@@ -423,7 +423,6 @@ void createItem (MenuItem item, int index) {
 		lpButton.idCommand = item.id;
 		lpButton.fsStyle = (byte) OS.TBSTYLE_AUTOSIZE;
 		if ((item.style & SWT.CASCADE) != 0) lpButton.fsStyle |= OS.TBSTYLE_DROPDOWN | 0x80;
-		if ((item.style & SWT.CHECK) != 0) lpButton.fsStyle |= OS.BTNS_CHECK;
 		if ((item.style & SWT.SEPARATOR) != 0) lpButton.fsStyle = (byte) OS.BTNS_SEP;
 		lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
 		lpButton.iBitmap = OS.I_IMAGENONE;
