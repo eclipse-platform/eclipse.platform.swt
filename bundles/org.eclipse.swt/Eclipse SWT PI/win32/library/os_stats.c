@@ -14,8 +14,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 574;
-int OS_nativeFunctionCallCount[574];
+int OS_nativeFunctionCount = 576;
+int OS_nativeFunctionCallCount[576];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc", 
 	"ActivateKeyboardLayout", 
@@ -434,6 +434,8 @@ char * OS_nativeFunctionNames[] = {
 	"RegisterClassW", 
 	"RegisterClipboardFormatA", 
 	"RegisterClipboardFormatW", 
+	"RegisterWindowMessageA", 
+	"RegisterWindowMessageW", 
 	"ReleaseCapture", 
 	"ReleaseDC", 
 	"RemoveMenu", 

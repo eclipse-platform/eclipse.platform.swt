@@ -1915,6 +1915,15 @@ public static final int RegisterClipboardFormat (TCHAR lpszFormat) {
 	return RegisterClipboardFormatA (lpszFormat1);
 }
 
+public static final int RegisterWindowMessage (TCHAR lpString) {
+	if (IsUnicode) {
+		char [] lpString1 = lpString == null ? null : lpString.chars;
+		return RegisterWindowMessageW (lpString1);
+	}
+	byte [] lpString1 = lpString == null ? null : lpString.bytes;
+	return RegisterWindowMessageA (lpString1);
+}
+
 public static final int RegOpenKeyEx (int hKey, TCHAR lpSubKey, int ulOptions, int samDesired, int[] phkResult) {
 	if (IsUnicode) {
 		char [] lpSubKey1 = lpSubKey == null ? null : lpSubKey.chars;
@@ -2539,6 +2548,8 @@ public static final native boolean RedrawWindow (int hWnd, RECT lprcUpdate, int 
 public static final native int RegCloseKey (int hKey);
 public static final native int RegisterClassW (WNDCLASS lpWndClass);
 public static final native int RegisterClassA (WNDCLASS lpWndClass);
+public static final native int RegisterWindowMessageW (char [] lpString);
+public static final native int RegisterWindowMessageA (byte [] lpString);
 public static final native int RegEnumKeyExW (int hKey, int dwIndex, char [] lpName, int [] lpcName, int [] lpReserved, char [] lpClass, int [] lpcClass, FILETIME lpftLastWriteTime);
 public static final native int RegisterClipboardFormatA (byte[] lpszFormat); 
 public static final native int RegisterClipboardFormatW (char[] lpszFormat); 

@@ -6500,6 +6500,36 @@ JNIEXPORT jint JNICALL OS_NATIVE(RegisterClipboardFormatW)
 }
 #endif
 
+#ifndef NO_RegisterWindowMessageA
+JNIEXPORT jint JNICALL OS_NATIVE(RegisterWindowMessageA)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, RegisterWindowMessageA_FUNC);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)RegisterWindowMessageA((LPTSTR)lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, RegisterWindowMessageA_FUNC);
+	return rc;
+}
+#endif
+
+#ifndef NO_RegisterWindowMessageW
+JNIEXPORT jint JNICALL OS_NATIVE(RegisterWindowMessageW)
+	(JNIEnv *env, jclass that, jcharArray arg0)
+{
+	jchar *lparg0=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, RegisterWindowMessageW_FUNC);
+	if (arg0) lparg0 = (*env)->GetCharArrayElements(env, arg0, NULL);
+	rc = (jint)RegisterWindowMessageW((LPWSTR)lparg0);
+	if (arg0) (*env)->ReleaseCharArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, RegisterWindowMessageW_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_ReleaseCapture
 JNIEXPORT jboolean JNICALL OS_NATIVE(ReleaseCapture)
 	(JNIEnv *env, jclass that)
