@@ -2149,6 +2149,36 @@ public void test_setHorizontalIndexI(){
 	assertTrue(":i:", text.getHorizontalIndex() == 1);
 }
 
+public void test_setHorizontalPixelI(){
+	text.setHorizontalPixel(-1);
+	assertTrue(":a:", text.getHorizontalPixel() == 0);
+	text.setHorizontalPixel(1);	
+	assertTrue(":b:", text.getHorizontalPixel() == 0);
+	
+	text.setText("Line0");
+	text.setHorizontalPixel(-1);
+	assertTrue(":c:", text.getHorizontalPixel() == 0);
+	text.setHorizontalPixel(1);	
+	assertTrue(":d:", text.getHorizontalPixel() == 1);
+	text.setHorizontalPixel(500);
+	assertTrue(":e:", text.getHorizontalPixel() > 0);
+	text.setHorizontalPixel(-1);	
+	assertTrue(":f:", text.getHorizontalPixel() == 0);
+	text.setHorizontalPixel(25);	
+	assertTrue(":g:", text.getHorizontalPixel() == 25);	
+
+	text.setText("");
+	text.setHorizontalPixel(2);
+	assertTrue(":h:", text.getHorizontalPixel() == 0);
+
+	// make sure the widget can be scrolled
+	shell.open();
+	text.setSize(10, 50);	
+	text.setText("Line0");
+	text.setHorizontalPixel(5);	
+	assertTrue(":i:", text.getHorizontalPixel() == 5);
+}
+
 public void test_setLineBackgroundIILorg_eclipse_swt_graphics_Color(){
 	StyleRange[] styles;
 	String textString = "";
@@ -3352,24 +3382,56 @@ public void test_setTextLimitI(){
 }
 
 public void test_setTopIndexI(){
+	text.setTopIndex(-1);
+	assertTrue(":a:", text.getTopIndex() == 0);
+	text.setTopIndex(1);
+	assertTrue(":b:", text.getTopIndex() == 0);
+
 	text.setText("Line0\r\n");
 
 	text.setTopIndex(-2);
-	assertTrue(":a:", text.getTopIndex() == 0);
+	assertTrue(":c:", text.getTopIndex() == 0);
 	text.setTopIndex(-1);
-	assertTrue(":b:", text.getTopIndex() == 0);
+	assertTrue(":d:", text.getTopIndex() == 0);
 	text.setTopIndex(1);
-	assertTrue(":c:", text.getTopIndex() == 1);
+	assertTrue(":e:", text.getTopIndex() == 1);
 	text.setTopIndex(2);
-	assertTrue(":d:", text.getTopIndex() == 2);
-	text.setTopIndex(0);
-	assertTrue(":e:", text.getTopIndex() == 0);
-	text.setTopIndex(3);
 	assertTrue(":f:", text.getTopIndex() == 2);
+	text.setTopIndex(0);
+	assertTrue(":g:", text.getTopIndex() == 0);
+	text.setTopIndex(3);
+	assertTrue(":h:", text.getTopIndex() == 2);
 
 	text.setText("");
 	text.setTopIndex(2);
-	assertTrue(":g:", text.getTopIndex() == 0);
+	assertTrue(":i:", text.getTopIndex() == 0);
+}
+public void test_setTopPixelI(){
+	int lineHeight = text.getLineHeight();
+	
+	text.setTopPixel(-1);
+	assertTrue(":a:", text.getTopPixel() == 0);
+	text.setTopPixel(1);
+	assertTrue(":b:", text.getTopPixel() == 0);
+
+	text.setText("Line0\r\n");
+	
+	text.setTopPixel(-2);
+	assertTrue(":c:", text.getTopPixel() == 0);
+	text.setTopPixel(-1);
+	assertTrue(":d:", text.getTopPixel() == 0);
+	text.setTopPixel(1);
+	assertTrue(":e:", text.getTopPixel() == 1);
+	text.setTopPixel(2 * lineHeight);
+	assertTrue(":f:", text.getTopPixel() == 2 * lineHeight);
+	text.setTopPixel(0);
+	assertTrue(":g:", text.getTopPixel() == 0);
+	text.setTopPixel(3 * lineHeight);
+	assertTrue(":h:", text.getTopPixel() == 2 * lineHeight);
+
+	text.setText("");
+	text.setTopPixel(2 * lineHeight);
+	assertTrue(":i:", text.getTopPixel() == 0);
 }
 public void test_setWordWrapZ(){
 	String testString = "Line1\nLine2";
@@ -3480,6 +3542,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setEditableZ");
 	methodNames.addElement("test_setFontLorg_eclipse_swt_graphics_Font");
 	methodNames.addElement("test_setHorizontalIndexI");
+	methodNames.addElement("test_setHorizontalPixelI");	
 	methodNames.addElement("test_setLineBackgroundIILorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setSelectionI");
 	methodNames.addElement("test_setSelectionLorg_eclipse_swt_graphics_Point");
@@ -3491,6 +3554,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setTextLjava_lang_String");
 	methodNames.addElement("test_setTextLimitI");
 	methodNames.addElement("test_setTopIndexI");
+	methodNames.addElement("test_setTopPixelI");	
 	methodNames.addElement("test_setWordWrapZ");
 	methodNames.addElement("test_showSelection");
 	methodNames.addAll(Test_org_eclipse_swt_widgets_Canvas.methodNames()); // add superclass method names
@@ -3568,6 +3632,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setEditableZ")) test_setEditableZ();
 	else if (getName().equals("test_setFontLorg_eclipse_swt_graphics_Font")) test_setFontLorg_eclipse_swt_graphics_Font();
 	else if (getName().equals("test_setHorizontalIndexI")) test_setHorizontalIndexI();
+	else if (getName().equals("test_setHorizontalPixelI")) test_setHorizontalPixelI();	
 	else if (getName().equals("test_setLineBackgroundIILorg_eclipse_swt_graphics_Color")) test_setLineBackgroundIILorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setSelectionI")) test_setSelectionI();
 	else if (getName().equals("test_setSelectionLorg_eclipse_swt_graphics_Point")) test_setSelectionLorg_eclipse_swt_graphics_Point();
@@ -3579,6 +3644,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setTextLjava_lang_String")) test_setTextLjava_lang_String();
 	else if (getName().equals("test_setTextLimitI")) test_setTextLimitI();
 	else if (getName().equals("test_setTopIndexI")) test_setTopIndexI();
+	else if (getName().equals("test_setTopPixelI")) test_setTopPixelI();
 	else if (getName().equals("test_setWordWrapZ")) test_setWordWrapZ();
 	else if (getName().equals("test_showSelection")) test_showSelection();
 	else super.runTest();
