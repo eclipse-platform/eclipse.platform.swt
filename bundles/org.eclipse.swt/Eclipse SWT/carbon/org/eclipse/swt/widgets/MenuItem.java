@@ -34,7 +34,7 @@ import org.eclipse.swt.internal.carbon.*;
  */
 public class MenuItem extends Item {
 	Menu parent, menu;
-	int id, accelerator;
+	int accelerator;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -118,16 +118,17 @@ public MenuItem (Menu parent, int style, int index) {
 }
 
 public void _setEnabled (boolean enabled) {
-	short [] outIndex = new short [1];
-	OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex);
+	int index = parent.indexOf (this);
+	if (index == -1) return;
 	int outMenuRef [] = new int [1];
-	OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef);
+	short menuIndex = (short) (index + 1);
+	OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef);
 	if (enabled) {
 		if (outMenuRef [0] != 0) OS.EnableMenuItem (outMenuRef [0], (short) 0);
-		OS.EnableMenuCommand (parent.handle, id);
+		OS.EnableMenuItem (parent.handle, menuIndex);
 	} else {
 		if (outMenuRef [0] != 0) OS.DisableMenuItem (outMenuRef [0], (short) 0);
-		OS.DisableMenuCommand (parent.handle, id);
+		OS.DisableMenuItem (parent.handle, menuIndex);
 	}
 }
 
@@ -241,12 +242,6 @@ public int getAccelerator () {
 	return accelerator;
 }
 
-public Display getDisplay () {
-	Menu parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 /**
  * Returns <code>true</code> if the receiver is enabled, and
  * <code>false</code> otherwise. A disabled control is typically
@@ -323,10 +318,10 @@ public Menu getParent () {
 public boolean getSelection () {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
-	char [] outMark = new char [1];
-	if (OS.GetMenuCommandMark (parent.handle, id, outMark) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_GET_SELECTION);
-	}
+	int index = parent.indexOf (this);
+	if (index == -1) return false;
+	short [] outMark = new short [1];
+	OS.GetItemMark (parent.handle, (short) (index + 1), outMark);
 	return outMark [0] != 0;
 }
 
@@ -416,10 +411,9 @@ void releaseChild () {
 }
 
 void releaseWidget () {
-	Display display = getDisplay ();
 	if (menu != null) {
 		menu.releaseWidget ();
-		menu.destroyWidget (display);
+		menu.destroyWidget ();
 	} else {
 		if ((parent.style & SWT.BAR) != 0) {
 //			short [] outIndex = new short [1];
@@ -437,7 +431,6 @@ void releaseWidget () {
 	super.releaseWidget ();
 	accelerator = 0;
 	if (this == parent.defaultItem) parent.defaultItem = null;
-	display.removeMenuItem (this);
 	parent = null;
 }
 
@@ -541,10 +534,8 @@ void selectRadio () {
  */
 public void setAccelerator (int accelerator) {
 	checkWidget ();
-	short [] outIndex = new short [1];
-	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.noErr) {
-		return;
-	}
+	int index = parent.indexOf (this);
+	if (index == -1) return;
 	boolean update = (this.accelerator == 0 && accelerator != 0) || (this.accelerator != 0 && accelerator == 0);
 	this.accelerator = accelerator;
 	boolean inSetVirtualKey = false;
@@ -566,10 +557,11 @@ public void setAccelerator (int accelerator) {
 		if ((accelerator & SWT.COMMAND) != 0) inModifiers &= ~OS.kMenuNoCommandModifier;
 		if ((accelerator & SWT.ALT) != 0) inModifiers |= OS.kMenuOptionModifier;
 	}
-	OS.SetMenuItemModifiers (parent.handle, outIndex [0], (byte)inModifiers);
-	OS.SetMenuItemCommandKey (parent.handle, outIndex [0], inSetVirtualKey, (char)inKey);
-	OS.SetMenuItemKeyGlyph (parent.handle, outIndex [0], (short)inGlyph);
-	if (update) updateText ();
+	short menuIndex = (short) (index + 1);
+	OS.SetMenuItemModifiers (parent.handle, menuIndex, (byte)inModifiers);
+	OS.SetMenuItemCommandKey (parent.handle, menuIndex, inSetVirtualKey, (char)inKey);
+	OS.SetMenuItemKeyGlyph (parent.handle, menuIndex, (short)inGlyph);
+	if (update) updateText (menuIndex);
 }
 
 /**
@@ -611,12 +603,12 @@ public void setEnabled (boolean enabled) {
 public void setImage (Image image) {
 	checkWidget ();
 	if ((style & SWT.SEPARATOR) != 0) return;
+	int index = parent.indexOf (this);
+	if (index == -1) return;
 	super.setImage (image);
-	short [] outIndex = new short [1];
-	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.noErr) return;
 	int imageHandle = image != null ? image.handle : 0;
 	byte type = image != null ? (byte)OS.kMenuCGImageRefType : (byte)OS.kMenuNoIcon;
-	OS.SetMenuItemIconHandle (parent.handle, outIndex [0], type, imageHandle);
+	OS.SetMenuItemIconHandle (parent.handle, (short) (index + 1), type, imageHandle);
 }
 
 /**
@@ -663,10 +655,9 @@ public void setMenu (Menu menu) {
 	this.menu = menu;
 	
 	/* Update the menu in the OS */
-	short [] outIndex = new short [1];
-	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_SET_MENU);
-	}
+	int index = parent.indexOf (this);
+	if (index == -1) return;
+	short menuIndex = (short) (index + 1);
 	int outMenuRef [] = new int [1];
 	if (menu == null) {
 		if ((parent.style & SWT.BAR) != 0) {
@@ -689,13 +680,13 @@ public void setMenu (Menu menu) {
 		}
 		outMenuRef [0] = menu.handle;
 		int [] outString = new int [1];
-		if (OS.CopyMenuItemTextAsCFString (parent.handle, outIndex [0], outString) != OS.noErr) {
+		if (OS.CopyMenuItemTextAsCFString (parent.handle, menuIndex, outString) != OS.noErr) {
 			error (SWT.ERROR_CANNOT_SET_MENU);
 		}
 		OS.SetMenuTitleWithCFString (outMenuRef [0], outString [0]);
 		OS.CFRelease (outString [0]);
 	}
-	if (OS.SetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outMenuRef [0]) != OS.noErr) {
+	if (OS.SetMenuItemHierarchicalMenu (parent.handle, menuIndex, outMenuRef [0]) != OS.noErr) {
 		error (SWT.ERROR_CANNOT_SET_MENU);
 	}
 }
@@ -725,10 +716,10 @@ boolean setRadioSelection (boolean value) {
 public void setSelection (boolean selected) {
 	checkWidget ();
 	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
+	int index = parent.indexOf (this);
+	if (index == -1) return;
 	int inMark = selected ? ((style & SWT.RADIO) != 0) ? OS.diamondMark : OS.checkMark : 0;
-	if (OS.SetMenuCommandMark (parent.handle, id, (char) inMark) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_SET_SELECTION);
-	}
+	OS.SetItemMark (parent.handle, (short) (index + 1), (short) inMark);
 }
 
 /**
@@ -772,16 +763,14 @@ public void setText (String string) {
 	checkWidget ();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	int index = parent.indexOf (this);
+	if (index == -1) return;
 	super.setText (string);
-	updateText ();
+	updateText ((short) (index + 1));
 }
 
-void updateText () {
+void updateText (short menuIndex) {
 	if ((style & SWT.SEPARATOR) != 0) return;
-	short [] outIndex = new short [1];
-	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.noErr) {
-		error (SWT.ERROR_CANNOT_SET_TEXT);
-	}
 	char [] buffer = new char [text.length ()];
 	text.getChars (0, buffer.length, buffer, 0);
 	int i=0, j=0;
@@ -795,9 +784,9 @@ void updateText () {
 	}
 	int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
 	if (str == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
-	OS.SetMenuItemTextWithCFString (parent.handle, outIndex [0], str);
+	OS.SetMenuItemTextWithCFString (parent.handle, menuIndex, str);
 	int [] outHierMenu = new int [1];
-	OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outHierMenu);
+	OS.GetMenuItemHierarchicalMenu (parent.handle, menuIndex, outHierMenu);
 	if (outHierMenu [0] != 0) OS.SetMenuTitleWithCFString (outHierMenu [0], str);
 	OS.CFRelease (str);
 }

@@ -63,10 +63,25 @@ GC() {
  * </ul>
  */
 public GC(Drawable drawable) {
+	this(drawable, 0);
+}
+
+//3.0 API
+GC(Drawable drawable, int style) {
 	if (drawable == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	GCData data = new GCData();
+	data.style = checkStyle(style);
 	int gdkGC = drawable.internal_new_GC(data);
+	Device device = data.device;
+	if (device == null) device = Device.getDevice();
+	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	data.device = device;
 	init(drawable, data, gdkGC);
+}
+
+static int checkStyle (int style) {
+	if ((style & SWT.LEFT_TO_RIGHT) != 0) style &= ~SWT.RIGHT_TO_LEFT;
+	return style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT);
 }
 
 /**	 
@@ -132,6 +147,7 @@ public void copyArea(Image image, int x, int y) {
  */
 public void copyArea(int srcX, int srcY, int width, int height, int destX, int destY) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	if (width <= 0 || height <= 0) return;
 	int deltaX = destX - srcX, deltaY = destY - srcY;
 	if (deltaX == 0 && deltaY == 0) return;
@@ -312,6 +328,7 @@ public void dispose() {
  */
 public void drawArc(int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -330,6 +347,7 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
     OS.CGContextAddArc(handle, 0, 0, 1, -startAngle * (float)Math.PI / 180,  -endAngle * (float)Math.PI / 180, true);
     OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -351,8 +369,10 @@ public void drawArc(int x, int y, int width, int height, int startAngle, int end
  */
 public void drawFocus(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	//NOT DONE
 //	drawRectangle (x, y, width - 1, height - 1);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /**
@@ -425,7 +445,8 @@ public void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeig
 }
 
 void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, int destX, int destY, int destWidth, int destHeight, boolean simple) {
- 	int imageHandle = srcImage.handle;
+	if (data.updateClip) setCGClipping();
+	int imageHandle = srcImage.handle;
  	int imgWidth = OS.CGImageGetWidth(imageHandle);
  	int imgHeight = OS.CGImageGetHeight(imageHandle);
  	if (simple) {
@@ -457,14 +478,17 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
 		int alphaInfo = OS.CGImageGetAlphaInfo(imageHandle);
 		int data = srcImage.data + (srcY * bpr) + srcX * 4;
 		int provider = OS.CGDataProviderCreateWithData(0, data, srcHeight * bpr, 0);
-		if (provider == 0) SWT.error(SWT.ERROR_NO_HANDLES);
-		int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, false, 0);
-		OS.CGDataProviderRelease(provider);
-		if (subImage == 0) SWT.error(SWT.ERROR_NO_HANDLES);
- 		OS.CGContextDrawImage(handle, rect, subImage);
- 		OS.CGImageRelease(subImage);
+		if (provider != 0) {
+			int subImage = OS.CGImageCreate(srcWidth, srcHeight, bpc, bpp, bpr, colorspace, alphaInfo, provider, null, false, 0);
+			OS.CGDataProviderRelease(provider);
+			if (subImage != 0) {
+		 		OS.CGContextDrawImage(handle, rect, subImage);
+ 				OS.CGImageRelease(subImage);
+			}
+		}
  	}
  	OS.CGContextRestoreGState(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -482,6 +506,7 @@ void drawImage(Image srcImage, int srcX, int srcY, int srcWidth, int srcHeight, 
  */
 public void drawLine(int x1, int y1, int x2, int y2) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	/*
 	* Feature in Quartz.  Drawing a one-pixel line produces no output.  The
 	* fix is to fill a one-pixel rectangle instead.
@@ -495,12 +520,13 @@ public void drawLine(int x1, int y1, int x2, int y2) {
 		OS.CGContextSetFillColor(handle, data.foreground);
 		OS.CGContextFillRect(handle, rect);
 		OS.CGContextSetFillColor(handle, data.background);
-		return;
+	} else {
+		OS.CGContextBeginPath(handle);
+		OS.CGContextMoveToPoint(handle, x1+0.5f, y1+0.5f);
+		OS.CGContextAddLineToPoint(handle, x2+0.5f, y2+0.5f);
+		OS.CGContextStrokePath(handle);
 	}
-	OS.CGContextBeginPath(handle);
-	OS.CGContextMoveToPoint(handle, x1+0.5f, y1+0.5f);
-	OS.CGContextAddLineToPoint(handle, x2+0.5f, y2+0.5f);
-	OS.CGContextStrokePath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -526,6 +552,7 @@ public void drawLine(int x1, int y1, int x2, int y2) {
  */
 public void drawOval(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -542,6 +569,7 @@ public void drawOval(int x, int y, int width, int height) {
     OS.CGContextAddArc(handle, 0, 0, 1, 0, (float)(2 *Math.PI), true);
     OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -564,6 +592,7 @@ public void drawOval(int x, int y, int width, int height) {
 public void drawPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (data.updateClip) setCGClipping();
 	float[] points = new float[pointArray.length];
 	for (int i=0; i<points.length; i++) {
 		points[i] = pointArray[i];
@@ -572,6 +601,7 @@ public void drawPolygon(int[] pointArray) {
 	OS.CGContextAddLines(handle, points, points.length / 2);
 	OS.CGContextClosePath(handle);
 	OS.CGContextStrokePath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -594,6 +624,7 @@ public void drawPolygon(int[] pointArray) {
 public void drawPolyline(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (data.updateClip) setCGClipping();
 	float[] points = new float[pointArray.length];
 	for (int i=0; i<points.length; i++) {
 		points[i] = pointArray[i];
@@ -601,6 +632,7 @@ public void drawPolyline(int[] pointArray) {
 	OS.CGContextBeginPath(handle);
 	OS.CGContextAddLines(handle, points, points.length / 2);
 	OS.CGContextStrokePath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -620,6 +652,7 @@ public void drawPolyline(int[] pointArray) {
  */
 public void drawRectangle(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -634,6 +667,7 @@ public void drawRectangle(int x, int y, int width, int height) {
 	rect.width = width;
 	rect.height = height;
 	OS.CGContextStrokeRect(handle, rect);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -678,6 +712,7 @@ public void drawRectangle(Rectangle rect) {
  */
 public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	if (arcWidth == 0 || arcHeight == 0) {
 		drawRectangle(x, y, width, height);
     	return;
@@ -696,6 +731,7 @@ public void drawRoundRectangle(int x, int y, int width, int height, int arcWidth
 	OS.CGContextClosePath(handle);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextStrokePath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -743,6 +779,7 @@ public void drawString (String string, int x, int y) {
 public void drawString(String string, int x, int y, boolean isTransparent) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (string == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (data.updateClip) setCGClipping();
 	int length = string.length();
 	if (length == 0) return;
 	OS.CGContextSaveGState(handle);
@@ -768,6 +805,7 @@ public void drawString(String string, int x, int y, boolean isTransparent) {
 		OS.CGContextShowTextAtPoint(handle, x, -(y + data.fontAscent), buffer, buffer.length);
 	}
 	OS.CGContextRestoreGState(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -912,6 +950,7 @@ public boolean equals(Object object) {
  */
 public void fillArc(int x, int y, int width, int height, int startAngle, int endAngle) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -932,6 +971,7 @@ public void fillArc(int x, int y, int width, int height, int startAngle, int end
     OS.CGContextClosePath(handle);
     OS.CGContextRestoreGState(handle);
 	OS.CGContextFillPath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /**
@@ -1007,6 +1047,7 @@ public void fillGradientRectangle(int x, int y, int width, int height, boolean v
  */
 public void fillOval(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1024,6 +1065,7 @@ public void fillOval(int x, int y, int width, int height) {
     OS.CGContextClosePath(handle);
     OS.CGContextRestoreGState(handle);
 	OS.CGContextFillPath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -1048,6 +1090,7 @@ public void fillOval(int x, int y, int width, int height) {
 public void fillPolygon(int[] pointArray) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (pointArray == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (data.updateClip) setCGClipping();
 	float[] points = new float[pointArray.length];
 	for (int i=0; i<points.length; i++) {
 		points[i] = pointArray[i];
@@ -1056,6 +1099,7 @@ public void fillPolygon(int[] pointArray) {
 	OS.CGContextAddLines(handle, points, points.length / 2);
 	OS.CGContextClosePath(handle);
 	OS.CGContextFillPath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -1075,6 +1119,7 @@ public void fillPolygon(int[] pointArray) {
  */
 public void fillRectangle(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	if (width < 0) {
 		x = x + width;
 		width = -width;
@@ -1089,6 +1134,7 @@ public void fillRectangle(int x, int y, int width, int height) {
 	rect.width = width;
 	rect.height = height;
 	OS.CGContextFillRect(handle, rect);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /** 
@@ -1131,6 +1177,7 @@ public void fillRectangle(Rectangle rect) {
  */
 public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth, int arcHeight) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+	if (data.updateClip) setCGClipping();
 	if (arcWidth == 0 || arcHeight == 0) {
 		fillRectangle(x, y, width, height);
     	return;
@@ -1149,6 +1196,7 @@ public void fillRoundRectangle(int x, int y, int width, int height, int arcWidth
 	OS.CGContextClosePath(handle);
 	OS.CGContextRestoreGState(handle);
 	OS.CGContextFillPath(handle);
+	if (data.control != 0 && data.paintEvent == 0) OS.CGContextSynchronize(handle);
 }
 
 /**
@@ -1370,6 +1418,12 @@ public int getLineWidth() {
 	return data.lineWidth;
 }
 
+//3.0 API
+//public int getStyle () {
+//	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
+//	return data.style;
+//}
+
 /** 
  * Returns <code>true</code> if this GC is drawing in the mode
  * where the resulting color in the destination is the
@@ -1499,7 +1553,7 @@ public void setClipping(int x, int y, int width, int height) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
 	OS.SetRectRgn(data.clipRgn, (short)x, (short)y, (short)(x + width), (short)(y + height));
-	setCGClipping();
+	data.updateClip = true;
 }
 
 /**
@@ -1526,7 +1580,7 @@ public void setClipping(Rectangle r) {
 		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
 		OS.SetRectRgn(data.clipRgn, (short)r.x, (short)r.y, (short)(r.x + r.width), (short)(r.y + r.height));
 	}
-	setCGClipping();
+	data.updateClip = true;
 }
 
 /**
@@ -1553,10 +1607,11 @@ public void setClipping(Region region) {
 		if (data.clipRgn == 0) data.clipRgn = OS.NewRgn();
 		OS.CopyRgn(region.handle, data.clipRgn);
 	}
-	setCGClipping();
+	data.updateClip = true;
 }
 
 void setCGClipping () {
+	data.updateClip = false;
 	if (data.control == 0) {
 		OS.CGContextScaleCTM(handle, 1, -1);
 		if (data.clipRgn != 0) {
@@ -1575,13 +1630,12 @@ void setCGClipping () {
 		int window = OS.GetControlOwner(data.control);
 		port = OS.GetWindowPort(window);
 	}
-	Rect rect = new Rect();
-	OS.GetControlBounds(data.control, rect);
-	Rect portRect = new Rect();
-	OS.GetPortBounds(port, portRect);
-	int portHeight = portRect.bottom - portRect.top;
-	OS.CGContextTranslateCTM(handle, -rect.left, portHeight - rect.top);
+	Rect portRect = data.portRect;
+	Rect rect = data.controlRect;
+	OS.CGContextTranslateCTM(handle, -rect.left, (portRect.bottom - portRect.top) - rect.top);
 	OS.CGContextScaleCTM(handle, 1, -1);
+	OS.GetPortBounds(port, portRect);
+	OS.GetControlBounds(data.control, rect);
 	if (data.clipRgn != 0) { 
 		int rgn = OS.NewRgn();
 		OS.CopyRgn(data.clipRgn, rgn);
@@ -1593,7 +1647,7 @@ void setCGClipping () {
 		OS.ClipCGContextToRegion(handle, portRect, data.visibleRgn);
 	}
 	OS.CGContextScaleCTM(handle, 1, -1);
-	OS.CGContextTranslateCTM(handle, rect.left, -portHeight + rect.top);
+	OS.CGContextTranslateCTM(handle, rect.left, -(portRect.bottom - portRect.top) + rect.top);
 }
 
 /** 

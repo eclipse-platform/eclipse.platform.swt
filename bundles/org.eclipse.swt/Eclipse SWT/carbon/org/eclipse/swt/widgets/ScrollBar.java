@@ -83,6 +83,7 @@ import org.eclipse.swt.graphics.*;
  */
 public class ScrollBar extends Widget {
 	int handle;
+	int visibleRgn;
 	Scrollable parent;
 	boolean dragging;
 	int increment = 1;
@@ -175,7 +176,8 @@ int actionProc (int theControl, int partCode) {
 	return 0;
 }
 
-void destroyWidget (Display display) {
+void destroyWidget () {
+	Display display = this.display;
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {
@@ -192,7 +194,6 @@ void enableWidget (boolean enabled) {
 }
 
 void createHandle () {
-	Display display = getDisplay ();
 	int actionProc = display.actionProc;
 	int [] outControl = new int [1];
 	int window = OS.GetControlOwner (parent.scrolledHandle);
@@ -209,12 +210,6 @@ void createWidget () {
 void deregister () {
 	super.deregister ();
 	WidgetTable.remove (handle);
-}
-
-public Display getDisplay () {
-	Scrollable parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 
 int getDrawCount (int control) {
@@ -396,15 +391,30 @@ public boolean getVisible () {
 	return (state & HIDDEN) == 0;
 }
 
+int getVisibleRegion (int control, boolean clipChildren) {
+	if (visibleRgn == 0) {
+		visibleRgn = OS.NewRgn ();
+		calculateVisibleRegion (control, visibleRgn, clipChildren);
+	}
+	int result = OS.NewRgn ();
+	OS.CopyRgn (visibleRgn, result);
+	return result;
+}
+
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int controlProc = display.controlProc;
 	int [] mask = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
 	};
 	int controlTarget = OS.GetControlEventTarget (handle);
 	OS.InstallEventHandler (controlTarget, controlProc, mask.length / 2, mask, handle, null);
+}
+
+
+void invalidateVisibleRegion (int control) {
+	resetVisibleRegion (control);
+	parent.resetVisibleRegion (control);
 }
 
 /**
@@ -507,7 +517,16 @@ void releaseHandle () {
 
 void releaseWidget () {
 	super.releaseWidget ();
+	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
+	visibleRgn = 0;
 	parent = null;
+}
+
+void resetVisibleRegion (int control) {
+	if (visibleRgn != 0) {
+		OS.DisposeRgn (visibleRgn);
+		visibleRgn = 0;
+	}
 }
 
 /**
@@ -719,8 +738,8 @@ public void setVisible (boolean visible) {
 		state |= HIDDEN;
 	}
 	setVisible (handle, visible);
-	sendEvent (visible ? SWT.Show : SWT.Hide);
 	parent.layoutControl (true);
+	sendEvent (visible ? SWT.Show : SWT.Hide);
 }
 
 void setZOrder () {

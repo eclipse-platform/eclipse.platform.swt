@@ -70,7 +70,7 @@ public class Sash extends Control {
 public Sash (Composite parent, int style) {
 	super (parent, checkStyle (style));
 	int cursorStyle = (style & SWT.VERTICAL) != 0 ? SWT.CURSOR_SIZEWE : SWT.CURSOR_SIZENS;
-	sizeCursor = new Cursor (getDisplay (), cursorStyle);
+	sizeCursor = new Cursor (display, cursorStyle);
 }
 
 /**
@@ -146,7 +146,7 @@ int kEventControlClick (int nextHandler, int theEvent, int userData) {
 int kEventControlSetCursor (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlSetCursor (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	setCursor (sizeCursor.handle);
+	display.setCursor (sizeCursor.handle);
 	return OS.noErr;
 }
 
@@ -255,4 +255,9 @@ public void removeSelectionListener(SelectionListener listener) {
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);
 }
+
+int traversalCode (int key, int theEvent) {
+	return 0;
+}
+
 }

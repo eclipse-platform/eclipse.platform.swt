@@ -39,6 +39,7 @@ import org.eclipse.swt.graphics.*;
 public class ToolItem extends Item {
 	int handle, iconHandle, labelHandle, arrowHandle;
 	int cIcon, labelCIcon, arrowCIcon;
+	int visibleRgn;
 	ToolBar parent;
 	Image hotImage, disabledImage;
 	String toolTipText;
@@ -270,7 +271,8 @@ void deregister () {
 	if (arrowHandle != 0) WidgetTable.remove (arrowHandle);
 }
 
-void destroyWidget (Display display) {
+void destroyWidget () {
+	Display display = this.display;
 	int theControl = handle;
 	releaseHandle ();
 	if (theControl != 0) {
@@ -371,12 +373,6 @@ public boolean getEnabled () {
 	return (state & DISABLED) == 0;
 }
 
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
-
 int getDrawCount (int control) {
 	return parent.getDrawCount (control);
 }
@@ -472,8 +468,17 @@ public int getWidth () {
 	return rect.right - rect.left;
 }
 
+int getVisibleRegion (int control, boolean clipChildren) {
+	if (visibleRgn == 0) {
+		visibleRgn = OS.NewRgn ();
+		calculateVisibleRegion (control, visibleRgn, false);
+	}
+	int result = OS.NewRgn ();
+	OS.CopyRgn (visibleRgn, result);
+	return result;
+}
+
 int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentProvided, int ioHelpContent) {
-	Display display = getDisplay ();
     switch (inRequest) {
 		case OS.kHMSupplyContent: {
 			int [] contentProvided = new int [] {OS.kHMContentNotProvided};
@@ -520,7 +525,6 @@ int helpProc (int inControl, int inGlobalMouse, int inRequest, int outContentPro
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display = getDisplay ();
 	int controlProc = display.controlProc;
 	int [] mask1 = new int [] {
 		OS.kEventClassControl, OS.kEventControlDraw,
@@ -549,6 +553,11 @@ void hookEvents () {
 	}
 	int helpProc = display.helpProc;
 	OS.HMInstallControlContentCallback (handle, helpProc);
+}
+
+void invalidateVisibleRegion (int control) {
+	resetVisibleRegion (control);
+	parent.resetVisibleRegion (control);
 }
 
 /**
@@ -617,7 +626,6 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	* NOTE: No mouse move events are sent while tracking.  There is no
 	* fix for this at this time.
 	*/
-	Display display = getDisplay ();
 	display.grabControl = null;
 	display.runDeferredEvents ();
 	tracking = false;
@@ -681,6 +689,8 @@ void releaseWidget () {
 	if (labelCIcon != 0) destroyCIcon (labelCIcon);
 	if (arrowCIcon != 0) destroyCIcon (arrowCIcon);
 	cIcon = labelCIcon = arrowCIcon = 0;
+	if (visibleRgn != 0) OS.DisposeRgn (visibleRgn);
+	visibleRgn = 0;
 	parent = null;
 	control = null;
 	toolTipText = null;
@@ -710,6 +720,13 @@ public void removeSelectionListener(SelectionListener listener) {
 	if (eventTable == null) return;
 	eventTable.unhook(SWT.Selection, listener);
 	eventTable.unhook(SWT.DefaultSelection,listener);	
+}
+
+void resetVisibleRegion (int control) {
+	if (visibleRgn != 0) {
+		OS.DisposeRgn (visibleRgn);
+		visibleRgn = 0;
+	}
 }
 
 void selectRadio () {
@@ -1050,7 +1067,6 @@ void updateImage () {
 void updateArrow () {
 	if (arrowCIcon != 0) destroyCIcon (arrowCIcon);
 	arrowCIcon = 0;
-	Display display = getDisplay ();
 	Image image = new Image (display, 7, 4);
 	GC gc = new GC (image);
 	int startX = 0, startY = 0;
@@ -1062,7 +1078,7 @@ void updateArrow () {
 	ImageData data = image.getImageData ();
 	data.transparentPixel = 0xFFFFFFFF;
 	image.dispose ();
-	image = new Image (getDisplay (), data, data.getTransparencyMask());
+	image = new Image (display, data, data.getTransparencyMask());
 	arrowCIcon = createCIcon (image);
 	image.dispose ();
 	ControlButtonContentInfo inContent = new ControlButtonContentInfo ();
@@ -1090,7 +1106,6 @@ void updateText () {
 		GC gc = new GC (parent);
 		Point size = gc.stringExtent (text);
 		gc.dispose ();
-		Display display = getDisplay ();
 		Image image = new Image (display, size.x, size.y);
 		gc = new GC (image);
 		gc.setFont (font);

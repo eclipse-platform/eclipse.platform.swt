@@ -12,8 +12,10 @@ package org.eclipse.swt.widgets;
 
 
 import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.RGBColor;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.EventRecord;
+import org.eclipse.swt.internal.carbon.TXNBackground;
 import org.eclipse.swt.internal.carbon.TXNLongRect;
 
 import org.eclipse.swt.*;
@@ -182,7 +184,7 @@ public void addVerifyListener (VerifyListener listener) {
  * @param string the string to be appended
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the string is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -302,7 +304,6 @@ void createHandle () {
 	if ((style & SWT.H_SCROLL) != 0) iFrameOptions |= OS.kTXNWantHScrollBarMask;
 	if ((style & SWT.V_SCROLL) != 0) iFrameOptions |= OS.kTXNWantVScrollBarMask;
 	if ((style & SWT.SINGLE) != 0) iFrameOptions |= OS.kTXNSingleLineOnlyMask;
-	if ((style & SWT.READ_ONLY) != 0) iFrameOptions |= OS.kTXNReadOnlyMask;
 	if ((style & SWT.WRAP) != 0) iFrameOptions |= OS.kTXNAlwaysWrapAtViewEdgeMask;
 	int [] oTXNObject = new int [1], oTXNFrameID = new int[1];
 	OS.TXNNewObject (0, window, null, iFrameOptions, OS.kTXNTextEditStyleFrameType, OS.kTXNUnicodeTextFile, OS.kTXNSystemDefaultEncoding, oTXNObject, oTXNFrameID, 0);
@@ -318,16 +319,33 @@ void createHandle () {
 		OS.GetIndexedSubControl (theRoot [0], (short) i, scrollBar);
 		OS.HIViewRemoveFromSuperview (scrollBar [0]);
 		OS.HIViewAddSubview (handle, scrollBar [0]);
-	}	
+	}
+	
+	/*
+	* Bug in the Macintosh.  The caret height is too small until some text is set in the
+	* TXNObject.  The fix is to temporary change the text.
+	*/
+	char [] buffer = new char [] {' '};
+	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 2, OS.kTXNStartOffset, OS.kTXNEndOffset);
+	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, 0, OS.kTXNStartOffset, OS.kTXNEndOffset);
 	
 	/* Configure the TXNOBject */
-	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNDisableDragAndDropTag}, new int [] {1});
-	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
 	int ptr = OS.NewPtr (Rect.sizeof);
 	Rect rect = new Rect ();
 	OS.SetRect (rect, (short) 1, (short) 1, (short) 1, (short) 1);
 	OS.memcpy (ptr, rect, Rect.sizeof);
-	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNMarginsTag}, new int [] {ptr});
+	int [] tags = new int [] {
+		OS.kTXNDisableDragAndDropTag,
+		OS.kTXNIOPrivilegesTag,
+		OS.kTXNMarginsTag,
+	};
+	int [] datas = new int [] {
+		1,
+		(style & SWT.READ_ONLY) != 0 ? 1 : 0,
+		ptr,
+	};
+	OS.TXNSetTXNObjectControls (txnObject, false, tags.length, tags, datas);
+	OS.TXNSetFrameBounds (txnObject, 0, 0, 0, 0, txnFrameID);
 	OS.DisposePtr (ptr);
 }
 
@@ -342,9 +360,6 @@ ScrollBar createScrollBar (int type) {
  * clipboard and then deleted from the widget.
  * </p>
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -368,7 +383,7 @@ public void cut () {
 }
 
 void drawBackground (int control) {
-	drawFocus (control, hasFocus (), hasBorder (), inset ());
+	drawFocus (control, hasFocus (), hasBorder (), getParentBackground (), inset ());
 }
 
 void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
@@ -384,9 +399,6 @@ void drawWidget (int control, int damageRgn, int visibleRgn, int theEvent) {
  *
  * @return the line number
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -850,14 +862,14 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 	if (result == OS.noErr) return result;
 	short [] part = new short [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-	drawFocusClipped (handle, part [0] != 0, hasBorder (), inset ());
+	drawFocusClipped (handle, part [0] != 0, hasBorder (), getParentBackground (), inset ());
 	OS.TXNDraw (txnObject, 0);
 	OS.TXNFocus (txnObject, part [0] != 0);
 	return OS.noErr;
 }
 
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
+int kEventRawKey (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKey (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	int [] modifiers = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
@@ -880,32 +892,20 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 		int [] keyCode = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 		switch (keyCode [0]) {
+			/*
+			* Feature in the Macintosh.  Tab and Return characters are inserted into a
+			* single line TXN Object.  While this may be correct platform behavior, it is
+			* unexpected.  The fix is to avoid calling the default handler. 
+			*/
 			case 36: { /* Return */
-				/*
-				* Bug in the Macintosh.  When the default handler calls TXNKeyDown()
-				* for a single line TXN Object, it does not check for the return key
-				* or the default button.  The result is that a garbage character (the
-				* CR) is entered into the TXN Object.  The fix is to temporarily take
-				* focus away from the TXN Object, call the default handler to process
-				* the return key and reset the focus.
-				*/
-				OS.TXNFocus (txnObject, false);
-				result = OS.CallNextEventHandler (nextHandler, theEvent);
-				OS.TXNFocus (txnObject, true);
 				postEvent (SWT.DefaultSelection);
-				break;
+				return OS.noErr;
 			}
 			case 48: { /* Tab */
-				/*
-				* Feature in the Macintosh.  Tab characters are inserted into a single
-				* line TXN Object.  While this may be correct platform behavior, it is
-				* unexpected.  The fix is to avoid calling the default handler. 
-				*/
 				return OS.noErr;
 			}
 		}
 	}
-	if ((style & SWT.READ_ONLY) != 0) return OS.noErr;
 	return result;
 }
 
@@ -1007,6 +1007,28 @@ public void removeVerifyListener (VerifyListener listener) {
 	eventTable.unhook (SWT.Verify, listener);
 }
 
+void resetVisibleRegion (int control) {
+	super.resetVisibleRegion (control);
+	
+	/*
+	* Bug in the Macintosh.  For some reason, the TXN object draws when
+	* kTXNVisibilityTag is not set causing pixel corruption.  The fix is
+	* to make the TXN frame small so that nothing is drawn.
+	*/
+	Rect rect = new Rect ();
+	OS.GetControlBounds (handle, rect);
+	Rect inset = inset ();
+	rect.left += inset.left;
+	rect.top += inset.top;
+	rect.right -= inset.right;
+	if (OS.IsControlVisible (handle)) {
+		rect.bottom -= inset.bottom;
+	} else {
+		rect.bottom = rect.top;
+	}
+	OS.TXNSetFrameBounds (txnObject, rect.top, rect.left, rect.bottom, rect.right, txnFrameID);
+}
+
 /**
  * Selects all the text in the receiver.
  *
@@ -1066,6 +1088,18 @@ boolean sendKeyEvent (int type, Event event) {
 	*/
 	postEvent (SWT.Modify);
 	return newText == oldText;
+}
+
+void setBackground (float [] color) {
+	TXNBackground txnColor = new TXNBackground (); 
+	txnColor.bgType = OS.kTXNBackgroundTypeRGB;
+	int red = (short) (color == null ? 0xff : color [0] * 255);
+	int green = (short) (color == null ? 0xff : color [1] * 255);
+	int blue = (short) (color == null ? 0xff : color [2] * 255);
+	txnColor.bg_red = (short) (red << 8 | red);
+	txnColor.bg_green = (short) (green << 8 | green);
+	txnColor.bg_blue = (short) (blue << 8 | blue);
+	OS.TXNSetBackground (txnObject, txnColor);
 }
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -1137,6 +1171,50 @@ public void setEditable (boolean editable) {
 	} else {
 		style |= SWT.READ_ONLY;
 	}
+	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int [] {OS.kTXNIOPrivilegesTag}, new int [] {((style & SWT.READ_ONLY) != 0) ? 1 : 0});
+}
+
+void setForeground (float [] color) {
+	int ptr2 = OS.NewPtr (OS.kTXNQDFontColorAttributeSize);
+	RGBColor rgb;
+	if (color == null) {	
+		rgb = new RGBColor ();
+	} else {
+		rgb = toRGBColor (foreground);
+	}
+	OS.memcpy (ptr2, rgb, RGBColor.sizeof);
+	int [] attribs = new int [] {
+		OS.kTXNQDFontColorAttribute,
+		OS.kTXNQDFontColorAttributeSize,
+		ptr2,
+	};
+	int ptr1 = OS.NewPtr (attribs.length * 4);
+	OS.memcpy (ptr1, attribs, attribs.length * 4);
+	OS.TXNSetTypeAttributes (txnObject, attribs.length / 3, ptr1, 0, 0);
+	OS.DisposePtr (ptr1);
+	OS.DisposePtr (ptr2);
+}
+
+void setFontStyle (Font font) {
+	int [] attribs = new int [] {
+		OS.kTXNQDFontSizeAttribute,
+		OS.kTXNQDFontSizeAttributeSize,
+		font == null ? OS.kTXNDefaultFontSize : OS.X2Fix (font.size),
+		OS.kTXNQDFontStyleAttribute,
+		OS.kTXNQDFontStyleAttributeSize,
+		font == null ? OS.kTXNDefaultFontStyle : font.style,
+		OS.kTXNQDFontFamilyIDAttribute,
+		OS.kTXNQDFontFamilyIDAttributeSize,
+		font == null ? OS.kTXNDefaultFontName : font.id,
+	};
+	int ptr = OS.NewPtr (attribs.length * 4);
+	OS.memcpy (ptr, attribs, attribs.length * 4);
+	boolean readOnly = (style & SWT.READ_ONLY) != 0;
+	int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
+	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
+	OS.TXNSetTypeAttributes (txnObject, attribs.length / 3, ptr, 0, 0);
+	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
+	OS.DisposePtr (ptr);
 }
 
 /**
@@ -1320,8 +1398,12 @@ void setTXNBounds () {
 
 void setTXNText (int iStartOffset, int iEndOffset, String string) {
 	char [] buffer = new char [string.length ()];
-	string.getChars (0, buffer.length, buffer, 0);	
+	string.getChars (0, buffer.length, buffer, 0);
+	boolean readOnly = (style & SWT.READ_ONLY) != 0;
+	int [] tag = new int [] {OS.kTXNIOPrivilegesTag};
+	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {0});
 	OS.TXNSetData (txnObject, OS.kTXNUnicodeTextData, buffer, buffer.length * 2, iStartOffset, iEndOffset);
+	if (readOnly) OS.TXNSetTXNObjectControls (txnObject, false, 1, tag, new int [] {1});
 }
 
 /**
@@ -1383,11 +1465,6 @@ public void setTopIndex (int index) {
 //	OS.TXNSetSelection (txnObject, oStartOffset [0], oEndOffset [0]);
 }
 
-public void setVisible (boolean visible) {
-	super.setVisible (visible);
-	OS.TXNSetTXNObjectControls (txnObject, false, 1, new int[] {OS.kTXNVisibilityTag}, new int[] {visible ? -1 : 0});
-}
-
 /**
  * Shows the selection.
  * <p>
@@ -1396,9 +1473,6 @@ public void setVisible (boolean visible) {
  * lines are scrolled until the selection is visible.
  * </p>
  * 
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -1407,6 +1481,23 @@ public void setVisible (boolean visible) {
 public void showSelection () {
 	checkWidget();
 	OS.TXNShowSelection (txnObject, false);
+}
+
+int traversalCode (int key, int theEvent) {
+	int bits = super.traversalCode (key, theEvent);
+	if ((style & SWT.READ_ONLY) != 0) return bits;
+	if ((style & SWT.MULTI) != 0) {
+		bits &= ~SWT.TRAVERSE_RETURN;
+		if (key == 48 /* Tab */ && theEvent != 0) {
+			int [] modifiers = new int [1];
+			OS.GetEventParameter (theEvent, OS.kEventParamKeyModifiers, OS.typeUInt32, null, 4, null, modifiers);
+			boolean next = (modifiers [0] & OS.shiftKey) == 0;
+			if (next && (modifiers [0] & OS.controlKey) == 0) {
+				bits &= ~(SWT.TRAVERSE_TAB_NEXT | SWT.TRAVERSE_TAB_PREVIOUS);
+			}
+		}
+	}
+	return bits;
 }
 
 String verifyText (String string, int start, int end) {

@@ -288,12 +288,10 @@ ScrollBar createScrollBar (int style) {
 }
 
 Color defaultBackground () {
-	Display display = getDisplay ();
 	return display.getSystemColor (SWT.COLOR_LIST_BACKGROUND);
 }
 
 Color defaultForeground () {
-	Display display = getDisplay ();
 	return display.getSystemColor (SWT.COLOR_LIST_FOREGROUND);
 }
 
@@ -360,7 +358,7 @@ public void deselect (int start, int end) {
  * @param indices the array of indices for the items to deselect
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the set of indices is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -664,7 +662,6 @@ public int getTopIndex () {
 
 void hookEvents () {
 	super.hookEvents ();
-	Display display= getDisplay();
 	DataBrowserCallbacks callbacks = new DataBrowserCallbacks ();
 	callbacks.version = OS.kDataBrowserLatestCallbacks;
 	OS.InitDataBrowserCallbacks (callbacks);
@@ -690,22 +687,6 @@ int itemDataProc (int browser, int id, int property, int itemData, int setValue)
 	return OS.noErr;
 }
 
-int kEventControlBoundsChanged (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventControlBoundsChanged (nextHandler, theEvent, userData);
-	/*
-	* This code is intentionally commented.  Setting the column
-	* width to be the size of the client are causes the initial
-	* value of the veritcal scroll bar to be wrong and causes
-	* '...' to appear in strings that are too long, even though
-	* a horizontal scroll bar is present.
-	*/
-//	Rect rect = new Rect (), inset = new Rect ();
-//	OS.GetControlBounds (handle, rect);
-//	OS.GetDataBrowserScrollBarInset (handle, inset);
-//	OS.SetDataBrowserTableViewNamedColumnWidth (handle, COLUMN_ID, (short) (rect.right - rect.left + inset.right));
-	return result;
-}
-
 int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventMouseDown (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -716,32 +697,35 @@ int kEventMouseDown (int nextHandler, int theEvent, int userData) {
 	* The fix is to ignore kEvenControlSetFocusPart when the user
 	* clicks and send the focus events from kEventMouseDown.
 	*/
-	Display display = getDisplay ();
 	Control oldFocus = display.getFocusControl ();
 	display.ignoreFocus = true;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
 	display.ignoreFocus = false;
 	if (oldFocus != this) {
-		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (false);
-		if (!isDisposed () && isEnabled ()) sendFocusEvent (true);
+		if (oldFocus != null && !oldFocus.isDisposed ()) oldFocus.sendFocusEvent (false, false);
+		if (!isDisposed () && isEnabled ()) sendFocusEvent (true, false);
 	}
 	return result;
 }
 
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
+int kEventRawKey (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKey (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	/*
-	* Feature in the Macintosh.  For some reason, when the user hits an
-	* up or down arrow to traverse the items in a Data Browser, the item
-	* scrolls to the left such that the white space that is normally
-	* visible to the right of the every item is scrolled out of view.
-	* The fix is to do the arrow traversal in Java and not call the
-	* default handler.
-	*/
 	int [] keyCode = new int [1];
 	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
 	switch (keyCode [0]) {
+		case 36: { /* Return */
+			postEvent (SWT.DefaultSelection);
+			break;
+		}
+		/*
+		* Feature in the Macintosh.  For some reason, when the user hits an
+		* up or down arrow to traverse the items in a Data Browser, the item
+		* scrolls to the left such that the white space that is normally
+		* visible to the right of the every item is scrolled out of view.
+		* The fix is to do the arrow traversal in Java and not call the
+		* default handler.
+		*/
 		case 125: { /* Down */
 			int index = getSelectionIndex ();
 			setSelection (Math.min (itemCount - 1, index + 1), true);
@@ -753,35 +737,7 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 			return OS.noErr;
 		}
 	}
-	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyRepeat (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKeyRepeat (nextHandler, theEvent, userData);
-	if (result == OS.noErr) return result;
-	/*
-	* Feature in the Macintosh.  For some reason, when the user hits an
-	* up or down arrow to traverse the items in a Data Browser, the item
-	* scrolls to the left such that the white space that is normally
-	* visible to the right of the every item is scrolled out of view.
-	* The fix is to do the arrow traversal in Java and not call the
-	* default handler.
-	*/
-	int [] keyCode = new int [1];
-	OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-	switch (keyCode [0]) {
-		case 125: { /* Down */
-			int index = getSelectionIndex ();
-			setSelection (Math.min (itemCount - 1, index + 1));
-			return OS.noErr;
-		}
-		case 126: { /* Up*/
-			int index = getSelectionIndex ();
-			setSelection (Math.max (0, index - 1));
-			return OS.noErr;
-		}
-	}
-	return OS.eventNotHandledErr;
+	return result;
 }
 
 int itemNotificationProc (int browser, int id, int message) {
@@ -1118,7 +1074,7 @@ public void select (int start, int end) {
  * @param indices the array of indices for the items to select
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the set of indices is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1313,7 +1269,7 @@ public void setSelection (int start, int end) {
  * @param indices the indices of the items to select
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the set of indices is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -1347,7 +1303,7 @@ public void setSelection (int [] indices) {
  * @param items the array of items
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the set of items is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

@@ -435,9 +435,6 @@ void createHandle () {
  * clipboard and then deleted from the widget.
  * </p>
  *
- * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
- * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -778,7 +775,6 @@ public int getTextLimit () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.READ_ONLY) != 0) {
-		Display display = getDisplay ();
 		int commandProc = display.commandProc;
 		int [] mask = new int [] {
 			OS.kEventClassCommand, OS.kEventProcessCommand,
@@ -840,7 +836,6 @@ public int indexOf (String string, int start) {
 }
 
 Rect getInset () {
-	Display display = getDisplay ();
 	return display.comboInset;
 }
 
@@ -874,33 +869,6 @@ int kEventProcessCommand (int nextHandler, int theEvent, int userData) {
 	if (isDisposed ()) return OS.eventNotHandledErr;
 	postEvent (SWT.Selection);
 	return OS.eventNotHandledErr;
-}
-
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	/*
-	* Bug in the Macintosh.  When the default handler calls TXNKeyDown()
-	* for a single line TXN Object, it does not check for the return key
-	* or the default button.  The result is that a garbage character (the
-	* CR) is entered into the TXN Object.  The fix is to temporarily take
-	* focus away from the TXN Object, call the default handler to process
-	* the return key and reset the focus.
-	*/
-	if ((style & SWT.SINGLE) != 0) {
-		int [] keyCode = new int [1];
-		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
-		switch (keyCode [0]) {
-			case 36: //CR KEY
-				Display display = getDisplay ();
-				display.ignoreFocus = true;
-				int window = OS.GetControlOwner (handle);
-				OS.SetKeyboardFocus(window, handle, (short)OS.kControlFocusNoPart);
-				int result = OS.CallNextEventHandler (nextHandler, theEvent);
-				OS.SetKeyboardFocus(window, handle, (short)OS.kHIComboBoxEditTextPart);
-				display.ignoreFocus = false;
-				return result;
-		}
-	}
-	return super.kEventRawKeyDown (nextHandler, theEvent, userData);
 }
 
 /**

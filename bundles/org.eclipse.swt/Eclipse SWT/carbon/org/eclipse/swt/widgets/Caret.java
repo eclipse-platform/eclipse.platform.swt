@@ -83,7 +83,6 @@ boolean blinkCaret () {
 
 void createWidget () {
 	super.createWidget ();
-	Display display = parent.getDisplay ();
 	blinkRate = display.getCaretBlinkTime ();
 	isVisible = true;
 	if (parent.getCaret () == null) {
@@ -109,7 +108,7 @@ boolean drawCaret () {
 	OS.GetPort (currentPort);
 	OS.SetPort (port);
 	int oldClip = OS.NewRgn ();
-	int visibleRgn = getVisibleRegion (parentHandle, true);
+	int visibleRgn = parent.getVisibleRegion (parentHandle, true);
 	OS.GetClip (oldClip);
 	OS.SetClip (visibleRgn);
 	Rect rect = new Rect ();
@@ -148,12 +147,6 @@ public Rectangle getBounds () {
 		return new Rectangle (x, y, rect.width, rect.height);
 	}
 	return new Rectangle (x, y, width, height);
-}
-
-public Display getDisplay () {
-	Composite parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
 }
 
 /**
@@ -285,12 +278,10 @@ public boolean isVisible () {
 }
 
 boolean isFocusCaret () {
-	Display display = getDisplay ();
 	return this == display.currentCaret;
 }
 
 void killFocus () {
-	Display display = getDisplay ();
 	if (display.currentCaret != this) return;
 	display.setCurrentCaret (null);
 	if (isVisible) hideCaret ();
@@ -303,7 +294,6 @@ void releaseChild () {
 
 void releaseWidget () {
 	super.releaseWidget ();
-	Display display = getDisplay ();
 	if (display.currentCaret == this) {
 		hideCaret ();
 		display.setCurrentCaret (null);
@@ -359,7 +349,6 @@ public void setBounds (Rectangle rect) {
 }
 
 void setFocus () {
-	Display display = getDisplay ();
 	if (display.currentCaret == this) return;
 	display.setCurrentCaret (this);
 	if (isVisible) showCaret ();

@@ -1718,3 +1718,45 @@ void setTXNLongRectFields(JNIEnv *env, jobject lpObject, TXNLongRect *lpStruct)
 	(*env)->SetIntField(env, lpObject, TXNLongRectFc.right, (jint)lpStruct->right);
 }
 #endif /* NO_TXNLongRect */
+
+#ifndef NO_TXNBackground
+typedef struct TXNBackground_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID bgType, bg_red, bg_green, bg_blue;
+} TXNBackground_FID_CACHE;
+
+TXNBackground_FID_CACHE TXNBackgroundFc;
+
+void cacheTXNBackgroundFids(JNIEnv *env, jobject lpObject)
+{
+	if (TXNBackgroundFc.cached) return;
+	TXNBackgroundFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	TXNBackgroundFc.bgType = (*env)->GetFieldID(env, TXNBackgroundFc.clazz, "bgType", "I");
+	TXNBackgroundFc.bg_red = (*env)->GetFieldID(env, TXNBackgroundFc.clazz, "bg_red", "S");
+	TXNBackgroundFc.bg_green = (*env)->GetFieldID(env, TXNBackgroundFc.clazz, "bg_green", "S");
+	TXNBackgroundFc.bg_blue = (*env)->GetFieldID(env, TXNBackgroundFc.clazz, "bg_blue", "S");
+	TXNBackgroundFc.cached = 1;
+}
+
+TXNBackground *getTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStruct)
+{
+	if (!TXNBackgroundFc.cached) cacheTXNBackgroundFids(env, lpObject);
+	lpStruct->bgType = (*env)->GetIntField(env, lpObject, TXNBackgroundFc.bgType);
+	lpStruct->bg.color.red = (*env)->GetShortField(env, lpObject, TXNBackgroundFc.bg_red);
+	lpStruct->bg.color.green = (*env)->GetShortField(env, lpObject, TXNBackgroundFc.bg_green);
+	lpStruct->bg.color.blue = (*env)->GetShortField(env, lpObject, TXNBackgroundFc.bg_blue);
+	return lpStruct;
+}
+
+void setTXNBackgroundFields(JNIEnv *env, jobject lpObject, TXNBackground *lpStruct)
+{
+	if (!TXNBackgroundFc.cached) cacheTXNBackgroundFids(env, lpObject);
+	(*env)->SetIntField(env, lpObject, TXNBackgroundFc.bgType, (jint)lpStruct->bgType);
+	(*env)->SetShortField(env, lpObject, TXNBackgroundFc.bg_red, (jshort)lpStruct->bg.color.red);
+	(*env)->SetShortField(env, lpObject, TXNBackgroundFc.bg_green, (jshort)lpStruct->bg.color.green);
+	(*env)->SetShortField(env, lpObject, TXNBackgroundFc.bg_blue, (jshort)lpStruct->bg.color.blue);
+}
+#endif /* NO_TXNBackground */
+
+

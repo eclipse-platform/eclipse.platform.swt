@@ -231,7 +231,7 @@ public FontData open () {
 	rgb = null;
 	open = true;
 	OS.FPShowHideFontPanel ();	
-	Display display = parent.getDisplay ();
+	Display display = parent.display;
 	while (!parent.isDisposed() && open) {
 		if (!display.readAndDispatch ()) display.sleep ();
 	};

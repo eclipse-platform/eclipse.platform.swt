@@ -832,6 +832,10 @@ public int internal_new_GC (GCData data) {
 	OS.CGContextTranslateCTM(context, 0, -height);
 	OS.CGContextSetShouldSmoothFonts(context, false);
 	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= SWT.LEFT_TO_RIGHT;
+		}
 		data.device = device;
 		data.background = device.COLOR_WHITE.handle;
 		data.foreground = device.COLOR_BLACK.handle;

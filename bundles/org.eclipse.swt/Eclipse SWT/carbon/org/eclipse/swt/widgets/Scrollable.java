@@ -125,6 +125,7 @@ ScrollBar createStandardBar (int style) {
 	ScrollBar bar = new ScrollBar ();
 	bar.parent = this;
 	bar.style = style;
+	bar.display = display;
 	bar.handle = outControl [0];
 	bar.register ();
 	bar.hookEvents ();
@@ -202,7 +203,6 @@ boolean hasBorder () {
 void hookEvents () {
 	super.hookEvents ();
 	if ((state & CANVAS) != 0 && scrolledHandle != 0) {
-		Display display = getDisplay ();
 		int controlProc = display.controlProc;
 		int [] mask = new int [] {
 			OS.kEventClassControl, OS.kEventControlDraw,
@@ -334,6 +334,12 @@ void releaseWidget () {
 	if (verticalBar != null) verticalBar.releaseResources ();
 	horizontalBar = verticalBar = null;
 	super.releaseWidget ();
+}
+
+void resetVisibleRegion (int control) {
+	if (verticalBar != null) verticalBar.resetVisibleRegion (control);
+	if (horizontalBar != null) horizontalBar.resetVisibleRegion (control);
+	super.resetVisibleRegion (control);
 }
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {

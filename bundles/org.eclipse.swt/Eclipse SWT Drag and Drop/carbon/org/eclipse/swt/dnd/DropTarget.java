@@ -13,6 +13,8 @@ package org.eclipse.swt.dnd;
 
 import org.eclipse.swt.*;
 import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.internal.*;
+import org.eclipse.swt.internal.carbon.*;
 
 /**
  *
@@ -67,13 +69,40 @@ import org.eclipse.swt.widgets.*;
  */
 public class DropTarget extends Widget {
 
-	// info for registering as a droptarget	
 	private Control control;
 	private Listener controlListener;
 	private Transfer[] transferAgents = new Transfer[0];
-//	private DragUnderEffect effect;
+	private DragUnderEffect effect;
 
+	// Track application selections
+	private TransferData selectedDataType;
+	private int selectedOperation;
+	
+	// workaround - There is no event for "operation changed" so track operation based on key state
+	private int keyOperation = -1;
+	
+	// workaround - Simulate events when mouse is not moving
+	private long dragOverStart;
+	private Runnable dragOverHeartbeat;
+	private DNDEvent dragOverEvent;
+	
+	// workaround - OS events are relative to the application, not the control.
+	// Track which control is the current target to determine when drag and
+	// drop enters or leaves a widget.
+	private static DropTarget CurrentDropTarget = null;
+	
 	private static final String DROPTARGETID = "DropTarget"; //$NON-NLS-1$
+	private static final int DRAGOVER_HYSTERESIS = 50;
+	
+	private static Callback DragTrackingHandler;
+	private static Callback DragReceiveHandler;
+	
+	static {
+		DragTrackingHandler = new Callback(DropTarget.class, "DragTrackingHandler", 4); //$NON-NLS-1$
+		DragReceiveHandler = new Callback(DropTarget.class, "DragReceiveHandler", 3); //$NON-NLS-1$
+		OS.InstallTrackingHandler(DragTrackingHandler.getAddress(), 0, null);
+		OS.InstallReceiveHandler(DragReceiveHandler.getAddress(), 0, null);
+	}
 
 /**
  * Creates a new <code>DropTarget</code> to allow data to be dropped on the specified 
@@ -105,8 +134,12 @@ public class DropTarget extends Widget {
 public DropTarget(Control control, int style) {
 	super(control, checkStyle(style));
 	this.control = control;
-	if (control.getData(DROPTARGETID) != null)
+	if (DragTrackingHandler == null || DragTrackingHandler == null) {
 		DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	}
+	if (control.getData(DROPTARGETID) != null) {
+		DND.error(DND.ERROR_CANNOT_INIT_DROP);
+	}
 	control.setData(DROPTARGETID, this);
 
 	controlListener = new Listener () {
@@ -123,16 +156,120 @@ public DropTarget(Control control, int style) {
 			onDispose();
 		}
 	});
+	
+	// Drag under effect
+	if (control instanceof Tree) {
+		effect = new TreeDragUnderEffect((Tree)control);
+	} else if (control instanceof Table) {
+		effect = new TableDragUnderEffect((Table)control);
+	} else {
+		effect = new NoDragUnderEffect(control);
+	}
 
-//	if (control instanceof Tree) {
-//		effect = new TreeDragUnderEffect((Tree)control);
-//	} else if (control instanceof Table) {
-//		effect = new TableDragUnderEffect((Table)control);
-//	} else {
-//		effect = new NoDragUnderEffect(control);
-//	}
+	dragOverHeartbeat = new Runnable() {
+		public void run() {
+			if (DropTarget.this.control.isDisposed() || dragOverStart == 0) return;
+			long time = System.currentTimeMillis();
+			int delay = DRAGOVER_HYSTERESIS;
+			if (time < dragOverStart) {
+				delay = (int)(dragOverStart - time);
+			} else {	
+				int allowedOperations = dragOverEvent.operations;
+				TransferData[] allowedTypes = dragOverEvent.dataTypes;
+				//pass a copy of data types in to listeners in case application modifies it
+				TransferData[] dataTypes = new TransferData[allowedTypes.length];
+				System.arraycopy(allowedTypes, 0, dataTypes, 0, dataTypes.length);
+	
+				DNDEvent event = new DNDEvent();
+				event.widget = dragOverEvent.widget;
+				event.x = dragOverEvent.x;
+				event.y = dragOverEvent.y;
+				event.time = (int)time;
+				event.feedback = DND.FEEDBACK_SELECT;
+				event.dataTypes = dataTypes;
+				event.dataType = selectedDataType;
+				event.operations = dragOverEvent.operations;
+				event.detail  = selectedOperation;
+				
+				try {
+					notifyListeners(DND.DragOver, event);
+				} catch (Throwable e) {
+					event.dataType = null;
+					event.detail  = DND.DROP_NONE;
+				}
+				
+				effect.show(event.feedback, event.x, event.y);
+				
+				selectedDataType = null;
+				if (event.dataType != null) {
+					for (int i = 0; i < allowedTypes.length; i++) {
+						if (allowedTypes[i].type == event.dataType.type) {
+							selectedDataType = event.dataType;
+							break;
+						}
+					}
+				}
+
+				selectedOperation = DND.DROP_NONE;
+				if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
+					selectedOperation = event.detail;
+				}
+			}
+			DropTarget.this.control.getDisplay().timerExec(delay, dragOverHeartbeat);
+		}
+	};
 }
 
+static int checkStyle (int style) {
+	if (style == SWT.NONE) return DND.DROP_MOVE;
+	return style;
+}
+
+private static int DragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
+	DropTarget target = FindDropTarget(theWindow, theDrag);
+	if (target == null) return OS.noErr;
+	return target.dragReceiveHandler(theWindow, handlerRefCon, theDrag);   
+}
+
+private static int DragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDrag) {
+	if (message == OS.kDragTrackingLeaveHandler || message == OS.kDragTrackingEnterHandler) {
+		CurrentDropTarget = null;
+		return OS.noErr;
+	}
+	DropTarget target = FindDropTarget(theWindow, theDrag);
+	if (CurrentDropTarget != null) {
+		if (target == null || CurrentDropTarget.control.handle != target.control.handle) {
+			CurrentDropTarget.dragTrackingHandler(OS.kDragTrackingLeaveWindow, theWindow, handlerRefCon, theDrag);
+			CurrentDropTarget = target;
+			message = OS.kDragTrackingEnterWindow;
+		}
+	} else {
+		CurrentDropTarget = target;
+		message = OS.kDragTrackingEnterWindow;
+	}
+	if (target == null) return OS.noErr;
+	return target.dragTrackingHandler(message, theWindow, handlerRefCon, theDrag);   
+}
+
+private static DropTarget FindDropTarget(int theWindow, int theDrag) {
+	Display display = Display.findDisplay(Thread.currentThread());
+	if (display == null || display.isDisposed()) return null;
+	Point mouse = new Point();
+	OS.GetDragMouse(theDrag, mouse, null);
+	int[] theRoot = new int[1];
+	OS.GetRootControl(theWindow, theRoot);
+	int[] theControl = new int[1];
+	Rect rect = new Rect();
+	OS.GetWindowBounds (theWindow, (short) OS.kWindowContentRgn, rect);
+	CGPoint inPoint = new CGPoint();
+	inPoint.x = mouse.h - rect.left;
+	inPoint.y = mouse.v - rect.top;
+	OS.HIViewGetSubviewHit(theRoot[0], inPoint, true, theControl);
+	if (!OS.IsControlEnabled(theControl[0])) return null;				
+	Widget widget = display.findWidget(theControl[0]);
+	if (widget == null) return null;
+	return (DropTarget)widget.getData(DROPTARGETID);
+}
 /**
  * Adds the listener to the collection of listeners who will
  * be notified when a drag and drop operation is in progress, by sending
@@ -176,17 +313,221 @@ public void addDropListener(DropTargetListener listener) {
 	addListener (DND.DropAccept, typedListener);
 }
 
-static int checkStyle (int style) {
-	if (style == SWT.NONE) return DND.DROP_MOVE;
-	return style;
-}
-
 protected void checkSubclass () {
 	String name = getClass().getName ();
 	String validName = DropTarget.class.getName();
 	if (!validName.equals(name)) {
 		DND.error (SWT.ERROR_INVALID_SUBCLASS);
 	}
+}
+
+private int dragReceiveHandler(int theWindow, int handlerRefCon, int theDrag) {
+	updateDragOverHover(0, null);
+	effect.show(DND.FEEDBACK_NONE, 0, 0);
+
+	if (keyOperation == -1) return OS.dragNotAcceptedErr;
+
+	DNDEvent event = new DNDEvent();
+	event.widget = this;
+	event.time = (int)System.currentTimeMillis();
+	event.detail = DND.DROP_NONE;
+	try {
+		notifyListeners(DND.DragLeave, event);
+	} catch (Throwable e) {}
+		
+	event = new DNDEvent();
+	if (!setEventData(theDrag, event)) {
+		return OS.dragNotAcceptedErr;
+	}
+	keyOperation = -1;
+		
+	int allowedOperations = event.operations;
+	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
+	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, event.dataTypes.length);
+	
+	event.dataType = selectedDataType;
+	event.detail = selectedOperation;
+	try {
+		notifyListeners(DND.DropAccept, event);
+	} catch (Throwable e) {
+		event.detail = DND.DROP_NONE;
+		event.dataType = null;
+	}
+	
+	selectedDataType = null;
+	if (event.dataType != null) {
+		for (int i = 0; i < allowedDataTypes.length; i++) {
+			if (allowedDataTypes[i].type == event.dataType.type) {
+				selectedDataType = allowedDataTypes[i];
+				break;
+			}
+		}
+	}
+
+	selectedOperation = DND.DROP_NONE;
+	if (selectedDataType != null && (event.detail & allowedOperations) != 0) {
+		selectedOperation = event.detail;
+	}
+	
+	if (selectedOperation == DND.DROP_NONE) {
+		// this was not a successful drop
+		return OS.dragNotAcceptedErr;
+	}
+	
+	// ask drag source for dropped data
+	byte[][] data  = data = new byte[0][];
+	// locate all the items with data of the desired type 
+	short[] numItems = new short[1];
+	OS.CountDragItems(theDrag, numItems);
+	for (short i = 0; i < numItems[0]; i++) {
+		int[] theItemRef = new int[1];
+		OS.GetDragItemReferenceNumber(theDrag, (short) (i+1), theItemRef);
+		int[] size = new int[1];
+		OS.GetFlavorDataSize(theDrag, theItemRef[0], selectedDataType.type, size);
+		if (size[0] > 0) {
+			byte[] buffer = new byte[size[0]];
+			OS.GetFlavorData(theDrag, theItemRef[0], selectedDataType.type, buffer, size, 0);
+			byte[][] newData = new byte[data.length + 1][];
+			System.arraycopy(data, 0, newData, 0, data.length);
+			newData[data.length] = buffer;
+			data = newData;
+		}
+	}
+	// Get Data in a Java format
+	Object object = null;
+	for (int i = 0; i < transferAgents.length; i++) {
+		Transfer transfer = transferAgents[i];
+		if (transfer.isSupportedType(selectedDataType)) {
+			selectedDataType.data = data;
+			object = transfer.nativeToJava(selectedDataType);
+			break;
+		}
+	}
+	
+	if (object == null) {
+		selectedOperation = DND.DROP_NONE;
+	}
+		
+	event.dataType = selectedDataType;
+	event.detail = selectedOperation;
+	event.data = object;
+	try	{
+		notifyListeners(DND.Drop, event);
+		selectedOperation = DND.DROP_NONE;
+		if ((allowedOperations & event.detail) == event.detail) {
+			selectedOperation = event.detail;
+		}
+	} catch (Throwable e) {
+		selectedOperation = DND.DROP_NONE;
+	} 
+
+	//notify source of action taken
+	int action = opToOsOp(selectedOperation);
+	OS.SetDragDropAction(theDrag, action);
+	return (selectedOperation == DND.DROP_NONE) ? OS.dragNotAcceptedErr : OS.noErr;
+}
+
+private int dragTrackingHandler(int message, int theWindow, int handlerRefCon, int theDrag) {
+	
+	if (message == OS.kDragTrackingLeaveWindow) {
+		updateDragOverHover(0, null);
+		effect.show(DND.FEEDBACK_NONE, 0, 0);
+		OS.SetThemeCursor(OS.kThemeArrowCursor);
+		if (keyOperation == -1) return OS.dragNotAcceptedErr;
+		keyOperation = -1;
+		
+		DNDEvent event = new DNDEvent();
+		event.widget = this;
+		event.time = (int)System.currentTimeMillis();
+		event.detail = DND.DROP_NONE;
+		try {
+			notifyListeners(DND.DragLeave, event);
+		} catch (Throwable e) {}
+		return OS.noErr;
+	}
+	
+	int oldKeyOperation = keyOperation;
+	
+	if (message == OS.kDragTrackingEnterWindow) {
+		selectedDataType = null;
+		selectedOperation = 0;
+	}
+	
+	DNDEvent event = new DNDEvent();
+	if (!setEventData(theDrag, event)) {
+		keyOperation = -1;
+		OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
+		return OS.dragNotAcceptedErr;
+	}
+	
+	int allowedOperations = event.operations;
+	TransferData[] allowedDataTypes = new TransferData[event.dataTypes.length];
+	System.arraycopy(event.dataTypes, 0, allowedDataTypes, 0, allowedDataTypes.length);
+	
+	switch (message) {
+		case OS.kDragTrackingEnterWindow:
+			event.type = DND.DragEnter;
+			break;
+		case OS.kDragTrackingInWindow:
+			if (keyOperation == oldKeyOperation) {
+				event.type = DND.DragOver;
+				event.dataType = selectedDataType;
+				event.detail = selectedOperation;
+			}else {
+				event.type = DND.DragOperationChanged;
+				event.dataType = selectedDataType;
+			}
+			break;
+	}
+	
+	updateDragOverHover(DRAGOVER_HYSTERESIS, event);
+	
+	try {
+		notifyListeners(event.type, event);
+	} catch (Throwable e) {
+		OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
+		return OS.dragNotAcceptedErr;
+	}
+
+	if (event.detail == DND.DROP_DEFAULT) {
+		event.detail = (allowedOperations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+	}
+	
+	selectedDataType = null;
+	if (event.dataType != null) {
+		for (int i = 0; i < allowedDataTypes.length; i++) {
+			if (allowedDataTypes[i].type == event.dataType.type) {
+				selectedDataType = allowedDataTypes[i];
+				break;
+			}
+		}
+	}
+
+	selectedOperation = DND.DROP_NONE;
+	if (selectedDataType != null && (allowedOperations & event.detail) != 0) {
+		selectedOperation = event.detail;
+	}
+	
+	effect.show(event.feedback, event.x, event.y);
+
+	switch (selectedOperation) {
+		case DND.DROP_COPY:
+			OS.SetThemeCursor(OS.kThemeCopyArrowCursor);
+			break;
+		case DND.DROP_LINK:
+			OS.SetThemeCursor(OS.kThemeAliasArrowCursor);
+			break;
+		case DND.DROP_MOVE:
+			OS.SetThemeCursor(OS.kThemeArrowCursor);
+			break;
+		default:
+			OS.SetThemeCursor(OS.kThemeNotAllowedCursor);
+	}
+  	
+  	if (message == OS.kDragTrackingEnterWindow) {
+		dragOverHeartbeat.run();		
+	}
+	return OS.noErr;
 }
 
 /**
@@ -199,9 +540,15 @@ public Control getControl () {
 	return control;
 }
 
-public Display getDisplay () {
-	if (control == null) DND.error(SWT.ERROR_WIDGET_DISPOSED);
-	return control.getDisplay ();
+private int getOperationFromKeyState(int theDrag) {
+	short[] modifiers = new short[1];
+	OS.GetDragModifiers(theDrag, modifiers, null, null);
+	boolean option = (modifiers[0] & OS.optionKey) == OS.optionKey;
+	boolean command = (modifiers[0] & OS.cmdKey) == OS.cmdKey;
+	if (option && command) return DND.DROP_LINK;
+	if (option) return DND.DROP_COPY;
+	if (command) return DND.DROP_MOVE;
+	return DND.DROP_DEFAULT; 
 }
 
 /**
@@ -222,6 +569,37 @@ private void onDispose () {
 	control.setData(DROPTARGETID, null);
 	transferAgents = null;
 	control = null;
+}
+
+private int opToOsOp(int operation) {
+	int osOperation = 0;
+	if ((operation & DND.DROP_COPY) != 0){
+		osOperation |= OS.kDragActionCopy;
+	}
+	if ((operation & DND.DROP_LINK) != 0) {
+		osOperation |= OS.kDragActionAlias;
+	}
+	if ((operation & DND.DROP_MOVE) != 0) {
+		osOperation |= OS.kDragActionDelete;
+	}
+	return osOperation;
+}
+
+private int osOpToOp(int osOperation){
+	int operation = 0;
+	if ((osOperation & OS.kDragActionCopy) != 0){
+		operation |= DND.DROP_COPY;
+	}
+	if ((osOperation & OS.kDragActionAlias) != 0) {
+		operation |= DND.DROP_LINK;
+	}
+	if ((osOperation & OS.kDragActionDelete) != 0) {
+		operation |= DND.DROP_MOVE;
+	}
+	if (osOperation == OS.kDragActionAll) {
+		operation = DND.DROP_COPY | DND.DROP_MOVE | DND.DROP_LINK;
+	}
+	return operation;
 }
 
 /**
@@ -251,6 +629,100 @@ public void removeDropListener(DropTargetListener listener) {
 	removeListener (DND.DropAccept, listener);
 }
 
+private boolean setEventData(int theDrag, DNDEvent event) {
+	if (theDrag == 0) return false;
+	
+	// get allowed operations
+	int style = getStyle();
+	int[] outActions = new int[1];
+	OS.GetDragAllowableActions(theDrag, outActions);
+	int operations = osOpToOp(outActions[0]) & style;
+	if (operations == DND.DROP_NONE) return false;
+	
+	//get current operation
+	int operation =  getOperationFromKeyState(theDrag);
+	keyOperation = operation;
+	if (operation == DND.DROP_DEFAULT) {
+		 if ((style & DND.DROP_DEFAULT) == 0) {
+			operation = (operations & DND.DROP_MOVE) != 0 ? DND.DROP_MOVE : DND.DROP_NONE;
+		 }
+	} else {
+		if ((operation & operations) == 0) operation = DND.DROP_NONE;
+	}
+	
+	// get allowed transfer types
+	short[] numItems = new short[1];
+	OS.CountDragItems(theDrag, numItems);
+	int[] flavors = new int[10];
+	int index = -1;
+	//Get a unique list of flavors
+	for (short i = 0; i < numItems[0]; i++) {
+		int[] theItemRef = new int[1];
+		OS.GetDragItemReferenceNumber(theDrag, (short) (i+1), theItemRef);
+		short[] numFlavors = new short[1];
+		OS.CountDragItemFlavors(theDrag, theItemRef[0], numFlavors);
+		int[] theType = new int[1];
+		for (int j = 0; j < numFlavors.length; j++) {
+			theType[0] = 0;
+			if (OS.GetFlavorType(theDrag, theItemRef[0], (short) (j+1), theType) == OS.noErr) {
+				boolean unique = true;
+				for (int k = 0; k < flavors.length; k++) {
+					if (flavors[k] == theType[0]) {
+						unique = false;
+						break;
+					}
+				}
+				if (unique) {
+					if (index == flavors.length - 1) {
+						int[] temp = new int[flavors.length + 10];
+						System.arraycopy(flavors, 0, temp, 0, flavors.length);
+						flavors = temp;
+					}
+					flavors[++index] = theType[0];
+				}
+			}
+		}
+	}
+	if (index == -1) return false;
+	
+	TransferData[] dataTypes = new TransferData[index+1];
+	index = -1;
+	for (int i = 0; i < dataTypes.length; i++) {
+		if (flavors[i] != 0) {
+			TransferData data = new TransferData();
+			data.type = flavors[i];
+			for (int j = 0; j < transferAgents.length; j++) {
+				if (transferAgents[j].isSupportedType(data)) {
+					dataTypes[++index] = data;
+					break;
+				}
+			}
+		}
+	}
+	if (index == -1) return false;
+	
+	if (index < dataTypes.length - 1) {
+		TransferData[] temp = new TransferData[index + 1];
+		System.arraycopy(dataTypes, 0, temp, 0, index + 1);
+		dataTypes = temp;
+	}
+
+	Point mouse = new Point();
+	OS.GetDragMouse(theDrag, mouse, null);
+	
+	event.widget = this;
+	event.x = mouse.h;
+	event.y = mouse.v;
+	event.time = (int)System.currentTimeMillis();
+	event.feedback = DND.FEEDBACK_SELECT;
+	event.dataTypes = dataTypes;
+	event.dataType = dataTypes[0];
+	event.operations = operations;
+	event.detail = operation;
+	
+	return true;
+}
+
 /**
  * Specifies the data types that can be transferred to this DropTarget.  If data is 
  * being dragged that does not match one of these types, the drop target will be notified of 
@@ -267,6 +739,22 @@ public void removeDropListener(DropTargetListener listener) {
 public void setTransfer(Transfer[] transferAgents){
 	if (transferAgents == null) DND.error(SWT.ERROR_NULL_ARGUMENT);
 	this.transferAgents = transferAgents;
+}
+
+private void updateDragOverHover(long delay, DNDEvent event) {
+	if (delay == 0) {
+		dragOverStart = 0;
+		dragOverEvent = null;
+		return;
+	}
+	dragOverStart = System.currentTimeMillis() + delay;
+	if (dragOverEvent == null) dragOverEvent = new DNDEvent();
+	dragOverEvent.x = event.x;
+	dragOverEvent.y = event.y;
+	dragOverEvent.dataTypes  = event.dataTypes;
+	dragOverEvent.operations = event.operations;
+	dragOverEvent.dataType  = event.dataType;
+	dragOverEvent.detail  = event.detail;
 }
 
 }

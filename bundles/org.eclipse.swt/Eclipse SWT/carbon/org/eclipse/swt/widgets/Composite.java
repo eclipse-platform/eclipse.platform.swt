@@ -42,6 +42,7 @@ import org.eclipse.swt.graphics.*;
 public class Composite extends Scrollable {
 	Layout layout;
 	Control[] tabList;
+	int scrolledVisibleRgn, siblingsVisibleRgn;
 
 Composite () {
 	/* Do nothing */
@@ -200,9 +201,9 @@ void createScrolledHandle (int parentHandle) {
 void drawBackground (int control) {
 	if (control == scrolledHandle) {
 		if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
-			drawFocus (control, hasFocus (), hasBorder (), inset ());
+			drawFocus (control, hasFocus (), hasBorder (), getParentBackground (), inset ());
 		} else {
-			drawBackground (control, null);			
+			drawBackground (control, getParentBackground ());			
 		}
 	} else {
 		if ((state & CANVAS) != 0) {
@@ -301,6 +302,29 @@ public Control [] getTabList () {
 	return tabList;
 }
 
+int getVisibleRegion (int control, boolean clipChildren) {
+	if (!clipChildren && control == handle) {
+		if (siblingsVisibleRgn == 0) {
+			siblingsVisibleRgn = OS.NewRgn ();
+			calculateVisibleRegion (control, siblingsVisibleRgn, clipChildren);
+		}
+		int result = OS.NewRgn ();
+		OS.CopyRgn (siblingsVisibleRgn, result);
+		return result;
+	}
+	if (control == scrolledHandle) {
+		if (!clipChildren) return super.getVisibleRegion (control, clipChildren);
+		if (scrolledVisibleRgn == 0) {
+			scrolledVisibleRgn = OS.NewRgn ();
+			calculateVisibleRegion (control, scrolledVisibleRgn, clipChildren);
+		}
+		int result = OS.NewRgn ();
+		OS.CopyRgn (scrolledVisibleRgn, result);
+		return result;
+	}
+	return super.getVisibleRegion (control, clipChildren);
+}
+
 int kEventControlClick (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventControlClick (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
@@ -332,16 +356,16 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 			if ((style & SWT.NO_FOCUS) == 0 && hooksKeys ()) {
 				short [] part = new short [1];
 				OS.GetEventParameter (theEvent, OS.kEventParamControlPart, OS.typeControlPartCode, null, 2, null, part);
-				drawFocusClipped (scrolledHandle, part [0] != 0, hasBorder (), inset ());
+				drawFocusClipped (scrolledHandle, part [0] != 0, hasBorder (), getParentBackground (), inset ());
 			}
 		}
 		return OS.noErr;
 	}
 	return result;
 }
-int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
-	int result = super.kEventRawKeyDown (nextHandler, theEvent, userData);
-	//TEMPORARY CODE - need to revisit when traversal fully implemented
+
+int kEventRawKey (int nextHandler, int theEvent, int userData) {
+	int result = super.kEventRawKey (nextHandler, theEvent, userData);
 	if ((state & CANVAS) != 0) {
 		int [] keyCode = new int [1];
 		OS.GetEventParameter (theEvent, OS.kEventParamKeyCode, OS.typeUInt32, null, keyCode.length * 4, null, keyCode);
@@ -357,8 +381,18 @@ int kEventRawKeyDown (int nextHandler, int theEvent, int userData) {
 	}
 	return result;
 }
+
 boolean hooksKeys () {
 	return hooks (SWT.KeyDown) || hooks (SWT.KeyUp);
+}
+
+void invalidateChildrenVisibleRegion (int control) {
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		child.resetVisibleRegion (control);
+		child.invalidateChildrenVisibleRegion (control);
+	}
 }
 
 /**
@@ -426,8 +460,23 @@ void releaseChildren () {
 void releaseWidget () {
 	releaseChildren ();
 	super.releaseWidget ();
+	if (scrolledVisibleRgn != 0) OS.DisposeRgn (scrolledVisibleRgn);
+	if (siblingsVisibleRgn != 0) OS.DisposeRgn (siblingsVisibleRgn);
+	siblingsVisibleRgn = scrolledVisibleRgn = 0;
 	layout = null;
 	tabList = null;
+}
+
+void resetVisibleRegion (int control) {
+	if (scrolledVisibleRgn != 0) {
+		OS.DisposeRgn (scrolledVisibleRgn);
+		scrolledVisibleRgn = 0;
+	}
+	if (siblingsVisibleRgn != 0) {
+		OS.DisposeRgn (siblingsVisibleRgn);
+		siblingsVisibleRgn = 0;
+	}
+	super.resetVisibleRegion (control);
 }
 
 int setBounds (int control, int x, int y, int width, int height, boolean move, boolean resize, boolean events) {
@@ -460,6 +509,33 @@ public boolean setFocus () {
 public void setLayout (Layout layout) {
 	checkWidget();
 	this.layout = layout;
+}
+
+boolean setTabItemFocus () {
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
+		if (takeFocus) {
+			if (!isShowing ()) return false;
+			if (forceFocus ()) return true;
+		}
+	}
+	return super.setTabItemFocus ();
+}
+
+boolean setTabGroupFocus () {
+	if (isTabItem ()) return setTabItemFocus ();
+	if ((style & SWT.NO_FOCUS) == 0) {
+		boolean takeFocus = true;
+		if ((state & CANVAS) != 0) takeFocus = hooksKeys ();
+		if (takeFocus && setTabItemFocus ()) return true;
+	}
+	Control [] children = _getChildren ();
+	for (int i=0; i<children.length; i++) {
+		Control child = children [i];
+		if (child.isTabItem () && child.setTabItemFocus ()) return true;
+	}
+	return false;
 }
 
 /**
@@ -506,6 +582,14 @@ public void setTabList (Control [] tabList) {
 void setZOrder () {
 	super.setZOrder ();
 	if (scrolledHandle != 0) OS.HIViewAddSubview (scrolledHandle, handle);
+}
+
+int traversalCode (int key, int theEvent) {
+	if ((state & CANVAS) != 0) {
+		if ((style & SWT.NO_FOCUS) != 0) return 0;
+		if (hooksKeys ()) return 0;
+	}
+	return super.traversalCode (key, theEvent);
 }
 
 }

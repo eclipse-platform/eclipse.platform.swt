@@ -16,6 +16,7 @@ import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.carbon.OS;
 import org.eclipse.swt.internal.carbon.CGPoint;
 import org.eclipse.swt.internal.carbon.CGRect;
+import org.eclipse.swt.internal.carbon.GDevice;
 import org.eclipse.swt.internal.carbon.HICommand;
 import org.eclipse.swt.internal.carbon.Rect;
 import org.eclipse.swt.internal.carbon.RGBColor;
@@ -99,20 +100,17 @@ import org.eclipse.swt.graphics.*;
  * @see #dispose
  */
 public class Display extends Device {
-
-	//TEMPORARY
-	int textHighlightThickness = 4;
 	
 	/* Windows and Events */
 	static final int WAKE_CLASS = 0;
 	static final int WAKE_KIND = 0;
 	Event [] eventQueue;
 	Callback actionCallback, appleEventCallback, commandCallback, controlCallback;
-	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, helpCallback;
-	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback;
+	Callback drawItemCallback, itemDataCallback, itemNotificationCallback, itemCompareCallback;
+	Callback hitTestCallback, keyboardCallback, menuCallback, mouseHoverCallback, helpCallback;
 	Callback mouseCallback, trackingCallback, windowCallback, colorCallback;
 	int actionProc, appleEventProc, commandProc, controlProc;
-	int drawItemProc, itemDataProc, itemNotificationProc, helpProc;
+	int drawItemProc, itemDataProc, itemNotificationProc, itemCompareProc, helpProc;
 	int hitTestProc, keyboardProc, menuProc, mouseHoverProc;
 	int mouseProc, trackingProc, windowProc, colorProc;
 	EventTable eventTable, filterTable;
@@ -130,6 +128,7 @@ public class Display extends Device {
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc;
+	boolean allowTimers = true;
 		
 	/* Current caret */
 	Caret currentCaret;
@@ -148,11 +147,12 @@ public class Display extends Device {
 	/* Mouse Enter/Exit/Hover */
 	Control currentControl;
 	int mouseHoverID;
+	org.eclipse.swt.internal.carbon.Point dragMouseStart = null;
+	boolean dragging = false;
 	
 	/* Menus */
 	Menu menuBar;
 	Menu [] menus, popups;
-	MenuItem [] items;
 	static final int ID_TEMPORARY = 1000;
 	static final int ID_START = 1001;
 	
@@ -399,22 +399,6 @@ void addMenu (Menu menu) {
 	menus = newMenus;
 }
 
-void addMenuItem (MenuItem item) {
-	if (items == null) items = new MenuItem [12];
-	for (int i=0; i<items.length; i++) {
-		if (items [i] == null) {
-			item.id = ID_START + i;
-			items [i] = item;
-			return;
-		}
-	}
-	MenuItem [] newItems = new MenuItem [items.length + 12];
-	item.id = ID_START + items.length;
-	newItems [items.length] = item;
-	System.arraycopy (items, 0, newItems, 0, items.length);
-	items = newItems;
-}
-
 void addPopup (Menu menu) {
 	if (popups == null) popups = new Menu [4];
 	int length = popups.length;
@@ -469,8 +453,6 @@ public void beep () {
 }
 
 int caretProc (int id, int clientData) {
-	//TEMPORARY CODE
-//	if (!allowTimers) return 0;
 	if (currentCaret == null) return 0;
 	if (currentCaret.blinkCaret ()) {
 		int blinkRate = currentCaret.blinkRate;
@@ -500,6 +482,20 @@ protected void checkDevice () {
  */
 protected void checkSubclass () {
 	if (!Display.isValidClass (getClass ())) error (SWT.ERROR_INVALID_SUBCLASS);
+}
+
+int createOverlayWindow () {
+	int gdevice = OS.GetMainDevice ();
+	int [] ptr = new int [1];
+	OS.memcpy (ptr, gdevice, 4);
+	GDevice device = new GDevice ();
+	OS.memcpy (device, ptr [0], GDevice.sizeof);
+	Rect rect = new Rect ();	
+	OS.SetRect (rect, (short) device.left, (short) device.top, (short) device.right, (short) device.bottom);
+	int [] outWindow = new int [1];
+	OS.CreateNewWindow (OS.kOverlayWindowClass, 0, rect, outWindow);
+	if (outWindow [0] == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	return outWindow [0];
 }
 
 /**
@@ -576,7 +572,7 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 						if (menu.closed && menu.modified) {
 							item = menu.lastTarget;
 						} else {
-							item = findMenuItem (command.commandID);
+							item = menu.getItem (command.menu_menuItemIndex - 1);
 						}
 						if (item != null) {
 							return item.kEventProcessCommand (nextHandler, theEvent, userData);
@@ -747,6 +743,16 @@ public void disposeExec (Runnable runnable) {
 	disposeList = newDisposeList;
 }
 
+void dragDetect (Control control) {
+	if (!dragging && control.hooks (SWT.DragDetect)) {
+		if (OS.WaitMouseMoved (dragMouseStart)) {
+			dragging = true;
+			//control.postEvent (SWT.DragDetect);
+			control.sendEvent (SWT.DragDetect);
+		}
+	}
+}
+
 int drawItemProc (int browser, int item, int property, int itemState, int theRect, int gdDepth, int colorDevice) {
 	Widget widget = WidgetTable.get (browser);
 	if (widget != null) return widget.drawItemProc (browser, item, property, itemState, theRect, gdDepth, colorDevice);
@@ -771,13 +777,6 @@ Menu findMenu (int id) {
 	if (menus == null) return null;
 	int index = id - ID_START;
 	if (0 <= index && index < menus.length) return menus [index];
-	return null;
-}
-
-MenuItem findMenuItem (int id) {
-	if (items == null) return null;
-	int index = id - ID_START;
-	if (0 <= index && index < items.length) return items [index];
 	return null;
 }
 
@@ -832,14 +831,31 @@ public static synchronized Display findDisplay (Thread thread) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-	int theWindow = OS.ActiveNonFloatingWindow ();
+	int theWindow = OS.FrontWindow ();
 	if (theWindow == 0) return null;
+	if (!OS.IsWindowActive (theWindow)) return null;
 	int [] theControl = new int [1];
 	OS.GetRootControl (theWindow, theControl);
 	Widget widget = WidgetTable.get (theControl [0]);
 	if (widget instanceof Shell) return (Shell) widget;
 	return null;
 }
+
+
+//3.0 API
+//public Rectangle getBounds () {
+//	checkDevice ();
+//	int gdevice = OS.GetDeviceList();
+//	if (gdevice == 0 || OS.GetNextDevice (gdevice) == 0) {
+//		return super.getBounds ();
+//	}
+//	Monitor [] monitors = getMonitors ();
+//	Rectangle rect = monitors [0].getBounds ();
+//	for (int i=1; i<monitors.length; i++) {
+//		rect = rect.union (monitors [i].getBounds ()); 
+//	}
+//	return rect;
+//}
 
 /**
  * Returns the display which the currently running thread is
@@ -855,6 +871,21 @@ public static synchronized Display getCurrent () {
 int getCaretBlinkTime () {
 	return OS.GetCaretTime () * 1000 / 60;
 }
+
+//3.0 API
+//public Rectangle getClientArea () {
+//	checkDevice ();
+//	int gdevice = OS.GetDeviceList();
+//	if (gdevice == 0 || OS.GetNextDevice (gdevice) == 0) {
+//		return super.getClientArea ();
+//	}
+//	Monitor [] monitors = getMonitors ();
+//	Rectangle rect = monitors [0].getBounds ();
+//	for (int i=1; i<monitors.length; i++) {
+//		rect = rect.union (monitors [i].getBounds ()); 
+//	}
+//	return rect;
+//}
 
 /**
  * Returns the control which the on-screen pointer is currently
@@ -1052,7 +1083,7 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
-	int theWindow = OS.ActiveNonFloatingWindow ();
+	int theWindow = OS.GetUserFocusWindow ();
 	if (theWindow == 0) return null;
 	return getFocusControl (theWindow);
 }
@@ -1120,6 +1151,82 @@ Menu getMenuBar () {
 }
 
 /**
+ * Returns an array of monitors attached to the device.
+ * 
+ * @return the array of monitors
+ * 
+ * @since 3.0
+ */
+//3.0 API
+//public Monitor [] getMonitors () {
+//	checkDevice ();
+//	int count = 0;
+//	Monitor [] monitors = new Monitor [1];
+//	Rect rect = new Rect ();
+//	GDevice device = new GDevice ();
+//	int gdevice = OS.GetDeviceList ();
+//	while (gdevice != 0) {
+//		if (count >= monitors.length) {
+//			Monitor [] newMonitors = new Monitor [monitors.length + 4];
+//			System.arraycopy (monitors, 0, newMonitors, 0, monitors.length);
+//			monitors = newMonitors;
+//		}
+//		Monitor monitor = new Monitor ();
+//		monitor.handle = gdevice;
+//		int [] ptr = new int [1];
+//		OS.memcpy (ptr, gdevice, 4);
+//		OS.memcpy (device, ptr [0], GDevice.sizeof);				
+//		monitor.x = device.left;
+//		monitor.y = device.top;
+//		monitor.width = device.right - device.left;
+//		monitor.height = device.bottom - device.top;
+//		OS.GetAvailableWindowPositioningBounds (gdevice, rect);
+//		monitor.clientX = rect.left;
+//		monitor.clientY = rect.top;
+//		monitor.clientWidth = rect.right - rect.left;
+//		monitor.clientHeight = rect.bottom - rect.top;
+//		monitors [count++] = monitor;
+//		gdevice = OS.GetNextDevice (gdevice);		
+//	}
+//	if (count < monitors.length) {
+//		Monitor [] newMonitors = new Monitor [count];
+//		System.arraycopy (monitors, 0, newMonitors, 0, count);
+//		monitors = newMonitors;
+//	}	
+//	return monitors;
+//}
+
+/**
+ * Returns the primary monitor for that device.
+ * 
+ * @return the primary monitor
+ * 
+ * @since 3.0
+ */
+//3.0 API
+//public Monitor getPrimaryMonitor () {
+//	checkDevice ();
+//	int gdevice = OS.GetMainDevice ();
+//	Monitor monitor = new Monitor ();
+//	monitor.handle = gdevice;
+//	int [] ptr = new int [1];
+//	OS.memcpy (ptr, gdevice, 4);
+//	GDevice device = new GDevice ();
+//	OS.memcpy (device, ptr [0], GDevice.sizeof);		
+//	monitor.x = device.left;
+//	monitor.y = device.top;
+//	monitor.width = device.right - device.left;
+//	monitor.height = device.bottom - device.top;
+//	Rect rect = new Rect ();		
+//	OS.GetAvailableWindowPositioningBounds (gdevice, rect);
+//	monitor.clientX = rect.left;
+//	monitor.clientY = rect.top;
+//	monitor.clientWidth = rect.right - rect.left;
+//	monitor.clientHeight = rect.bottom - rect.top;
+//	return monitor;
+//}
+
+/**
  * Returns an array containing all shells which have not been
  * disposed and have the receiver as their display.
  *
@@ -1142,7 +1249,7 @@ public Shell [] getShells () {
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed () && this == shell.getDisplay ()) {
+		if (!shell.isDisposed () && this == shell.display) {
 			count++;
 		}
 	}
@@ -1151,7 +1258,7 @@ public Shell [] getShells () {
 	Shell [] result = new Shell [count];
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
-		if (!shell.isDisposed () && this == shell.getDisplay ()) {
+		if (!shell.isDisposed () && this == shell.display) {
 			result [index++] = shell;
 		}
 	}
@@ -1292,6 +1399,9 @@ void initializeCallbacks () {
 	drawItemCallback = new Callback (this, "drawItemProc", 7);
 	drawItemProc = drawItemCallback.getAddress ();
 	if (drawItemProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
+	itemCompareCallback = new Callback (this, "itemCompareProc", 4);
+	itemCompareProc = itemCompareCallback.getAddress ();
+	if (itemCompareProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
 	itemDataCallback = new Callback (this, "itemDataProc", 5);
 	itemDataProc = itemDataCallback.getAddress ();
 	if (itemDataProc == 0) error (SWT.ERROR_NO_MORE_CALLBACKS);
@@ -1404,17 +1514,27 @@ void initializeInsets () {
  */
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	// NEEDS WORK
-	int window = OS.FrontWindow ();
+	//TODO - multiple monitors
+	int window = createOverlayWindow ();
+	OS.ShowWindow (window);
 	int port = OS.GetWindowPort (window);
 	int [] buffer = new int [1];
 	OS.CreateCGContextForPort (port, buffer);
 	int context = buffer [0];
 	if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+	Rect portRect = new Rect ();
+	OS.GetPortBounds (port, portRect);
+	OS.CGContextScaleCTM (context, 1, -1);
+	OS.CGContextTranslateCTM (context, 0, portRect.top - portRect.bottom);
 	if (data != null) {
+		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
+		if ((data.style & mask) == 0) {
+			data.style |= SWT.LEFT_TO_RIGHT;
+		}
 		data.device = this;
-		data.background = new float [] {0, 0, 0, 1};
-		data.foreground = new float [] {1, 1, 1, 1};
+		data.window = window;
+		data.background = new float [] {1, 1, 1, 1};
+		data.foreground = new float [] {0, 0, 0, 1};
 		data.font = getSystemFont ();
 	}
 	return context;
@@ -1435,8 +1555,18 @@ public int internal_new_GC (GCData data) {
  */
 public void internal_dispose_GC (int context, GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	// NEEDS WORK
-	OS.CGContextFlush (context);
+	if (data != null) {
+		int window = data.window;
+		OS.DisposeWindow (window);
+		data.window = 0;
+	}
+	
+	/*
+	* This code is intentionaly commented. Use CGContextSynchronize
+	* instead of CGContextFlush to improve performance.
+	*/
+//	OS.CGContextFlush (context);
+	OS.CGContextSynchronize (context);
 	OS.CGContextRelease (context);
 }
 
@@ -1448,6 +1578,12 @@ static boolean isValidClass (Class clazz) {
 
 boolean isValidThread () {
 	return thread == Thread.currentThread ();
+}
+
+int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
+	Widget widget = WidgetTable.get (browser);
+	if (widget != null) return widget.itemCompareProc (browser, itemOne, itemTwo, sortProperty);
+	return OS.noErr;
 }
 
 int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
@@ -1465,7 +1601,7 @@ int itemNotificationProc (int browser, int item, int message) {
 int keyboardProc (int nextHandler, int theEvent, int userData) {
 	Widget widget = WidgetTable.get (userData);
 	if (widget == null) {
-		int theWindow = OS.ActiveNonFloatingWindow ();
+		int theWindow = OS.GetUserFocusWindow ();
 		if (theWindow == 0) return OS.eventNotHandledErr;
 		int [] theControl = new int [1];
 		OS.GetKeyboardFocus (theWindow, theControl);
@@ -1499,6 +1635,42 @@ void postEvent (Event event) {
 	}
 	eventQueue [index] = event;
 }
+
+//3.0 API
+//public Rectangle map (Control from, Control to, Rectangle rectangle) {
+//	checkDevice ();
+//	if (rectangle == null) error (SWT.ERROR_NULL_ARGUMENT);	
+//	return map (from, to, rectangle.x, rectangle.y, rectangle.width, rectangle.height);
+//}
+
+//3.0 API
+//public Rectangle map (Control from, Control to, int x, int y, int width, int height) {
+//	checkDevice ();
+//	if (from != null && from.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+//	if (to != null && to.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+//	Rectangle rectangle = new Rectangle (x, y, width, height);
+//	if (from != null) {
+//		Rect rect = new Rect ();
+//		OS.GetControlBounds (from.handle, rect);
+//		rectangle.x += rect.left; 
+//		rectangle.y += rect.top;
+//		int window = OS.GetControlOwner (from.handle);
+//		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+//		rectangle.x += rect.left;
+//		rectangle.y += rect.top;
+//	}
+//	if (to != null) {
+//		Rect rect = new Rect ();
+//		OS.GetControlBounds (to.handle, rect);
+//		rectangle.x -= rect.left; 
+//		rectangle.y -= rect.top;
+//		int window = OS.GetControlOwner (to.handle);
+//		OS.GetWindowBounds (window, (short) OS.kWindowContentRgn, rect);
+//		rectangle.x -= rect.left;
+//		rectangle.y -= rect.top;
+//	}
+//	return rectangle;
+//}
 	
 int menuProc (int nextHandler, int theEvent, int userData) {
 	if (userData != 0) {
@@ -1609,7 +1781,7 @@ int mouseHoverProc (int id, int handle) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
-	runDisposeWidgets ();
+	runTimers ();
 	runEnterExit ();
 	int [] outEvent  = new int [1];
 	int status = OS.ReceiveNextEvent (0, null, OS.kEventDurationNoWait, true, outEvent);
@@ -1683,7 +1855,7 @@ protected void release () {
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
 		if (!shell.isDisposed ()) {
-			if (this == shell.getDisplay ()) shell.dispose ();
+			if (this == shell.display) shell.dispose ();
 		}
 	}
 	while (readAndDispatch ()) {};
@@ -1706,6 +1878,7 @@ void releaseDisplay () {
 	commandCallback.dispose ();
 	controlCallback.dispose ();
 	drawItemCallback.dispose ();
+	itemCompareCallback.dispose ();
 	itemDataCallback.dispose ();
 	itemNotificationCallback.dispose ();
 	helpCallback.dispose ();
@@ -1719,10 +1892,10 @@ void releaseDisplay () {
 	colorCallback.dispose ();
 	actionCallback = appleEventCallback = caretCallback = commandCallback = null;
 	controlCallback = drawItemCallback = itemDataCallback = itemNotificationCallback = null;
-	helpCallback = hitTestCallback = keyboardCallback = menuCallback = null;
+	helpCallback = hitTestCallback = keyboardCallback = menuCallback = itemCompareCallback = null;
 	mouseHoverCallback = mouseCallback = trackingCallback = windowCallback = colorCallback = null;
 	actionProc = appleEventProc = caretProc = commandProc = 0;
-	controlProc = drawItemProc = itemDataProc = itemNotificationProc = 0;
+	controlProc = drawItemProc = itemDataProc = itemNotificationProc = itemCompareProc = 0;
 	helpProc = hitTestProc = keyboardProc = menuProc = 0;
 	mouseHoverProc = mouseProc = trackingProc = windowProc = colorProc = 0;
 	timerCallback.dispose ();
@@ -1775,11 +1948,6 @@ public void removeListener (int eventType, Listener listener) {
 void removeMenu (Menu menu) {
 	if (menus == null) return;
 	menus [menu.id - ID_START] = null;
-}
-
-void removeMenuItem (MenuItem item) {
-	if (items == null) return;
-	items [item.id - ID_START] = null;
 }
 
 void removePopup (Menu menu) {
@@ -1883,7 +2051,7 @@ boolean runEnterExit () {
 		int modifiers = OS.GetCurrentEventKeyModifiers ();
 		boolean [] cursorWasSet = new boolean [1];
 		OS.HandleControlSetCursor (theControl [0], where, (short) modifiers, cursorWasSet);
-		if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
+		if (!OS.StillDown () && !cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
 	}
 	return eventSent;
 }
@@ -2012,7 +2180,11 @@ void runGrabs () {
 				}
 //				case OS.kMouseTrackingMouseExited: 				type = SWT.MouseExit; break;
 //				case OS.kMouseTrackingMouseEntered: 			type = SWT.MouseEnter; break;
-				case OS.kMouseTrackingMouseDragged: 			type = SWT.MouseMove; break;
+				case OS.kMouseTrackingMouseDragged: {
+					type = SWT.MouseMove;
+					dragDetect (grabControl);
+					break;
+				}
 				case OS.kMouseTrackingMouseKeyModifiersChanged:	break;
 				case OS.kMouseTrackingUserCancelled:			break;
 				case OS.kMouseTrackingTimedOut: 				break;
@@ -2023,7 +2195,9 @@ void runGrabs () {
 				int x = outPt.h - rect.left;
 				int y = outPt.v - rect.top;
 				int chord = OS.GetCurrentEventButtonState ();
-				grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
+				if (grabControl != null && !grabControl.isDisposed ()) {
+					grabControl.sendMouseEvent (type, (short)button, chord, (short)x, (short)y, outModifiers [0]);
+				}
 				//TEMPORARY CODE
 				if (grabControl != null && !grabControl.isDisposed ()) grabControl.update (true);
 			}
@@ -2051,6 +2225,23 @@ boolean runPopups () {
 		result = true;
 	}
 	popups = null;
+	return result;
+}
+
+boolean runTimers () {
+	if (timerList == null) return false;
+	boolean result = false;
+	for (int i=0; i<timerList.length; i++) {
+		if (timerIds [i] == -1) {
+			Runnable runnable = timerList [i];
+			timerList [i] = null;
+			timerIds [i] = 0;
+			if (runnable != null) {
+				result = true;
+				runnable.run ();
+			}
+		}
+	}
 	return result;
 }
 
@@ -2091,6 +2282,25 @@ void setCurrentCaret (Caret caret) {
 	}
 }
 
+void setCursor (int cursor) {
+	switch (cursor) {
+		case OS.kThemePointingHandCursor:
+		case OS.kThemeArrowCursor:
+		case OS.kThemeSpinningCursor:
+		case OS.kThemeCrossCursor:
+		case OS.kThemeWatchCursor:
+		case OS.kThemeIBeamCursor:
+		case OS.kThemeNotAllowedCursor:
+		case OS.kThemeResizeLeftRightCursor:
+		case OS.kThemeResizeLeftCursor:
+		case OS.kThemeResizeRightCursor:
+			OS.SetThemeCursor (cursor);
+			break;
+		default:
+			OS.SetCursor (cursor);
+	}
+}
+
 /**
  * Sets the location of the on-screen pointer relative to the top left corner
  * of the screen.  <b>Note: It is typically considered bad practice for a
@@ -2108,7 +2318,9 @@ void setCurrentCaret (Caret caret) {
  */
 public void setCursorLocation (int x, int y) {
 	checkDevice ();
-	/* Not possible on the MAC */
+	CGPoint pt = new CGPoint ();
+	pt.x = x;  pt.y = y;
+	OS.CGWarpMouseCursorPosition (pt);
 }
 
 /**
@@ -2298,7 +2510,10 @@ void setMenuBar (Menu menu) {
  */
 public boolean sleep () {
 	checkDevice ();
-	return OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
+	allowTimers = false;
+	boolean result = OS.ReceiveNextEvent (0, null, OS.kEventDurationForever, false, null) == OS.noErr;
+	allowTimers = true;
+	return result;
 }
 
 /**
@@ -2387,15 +2602,15 @@ public void timerExec (int milliseconds, Runnable runnable) {
 int timerProc (int id, int index) {
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
-//		if (allowTimers) {
+		if (allowTimers) {
 			Runnable runnable = timerList [index];
 			timerList [index] = null;
 			timerIds [index] = 0;
 			if (runnable != null) runnable.run ();
-//		} else {
-//			timerIds [index] = -1;
-//			wakeUp ();
-//		}
+		} else {
+			timerIds [index] = -1;
+			wakeUp ();
+		}
 	}
 	return 0;
 }

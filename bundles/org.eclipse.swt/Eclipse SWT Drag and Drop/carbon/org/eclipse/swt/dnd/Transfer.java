@@ -35,6 +35,7 @@ public abstract class Transfer {
  * @return a list of the data types that can be converted using this transfer agent
  */
 abstract public TransferData[] getSupportedTypes();
+
 /**
  * Returns true if the <code>TransferData</code> data type can be converted 
  * using this transfer agent.
@@ -48,15 +49,6 @@ abstract public TransferData[] getSupportedTypes();
 abstract public boolean isSupportedType(TransferData transferData);
 
 /**
- * Returns the platform specfic names of the  data types that can be converted 
- * using this transfer agent.
- * 
- * @return the platform specfic names of the data types that can be converted 
- * using this transfer agent.
- */
-abstract protected String[] getTypeNames();
-
-/**
  * Returns the platform specfic ids of the  data types that can be converted using 
  * this transfer agent.
  * 
@@ -64,6 +56,15 @@ abstract protected String[] getTypeNames();
  * this transfer agent
  */
 abstract protected int[] getTypeIds();
+
+/**
+ * Returns the platform specfic names of the  data types that can be converted 
+ * using this transfer agent.
+ * 
+ * @return the platform specfic names of the data types that can be converted 
+ * using this transfer agent.
+ */
+abstract protected String[] getTypeNames();
 
 /**
  * Converts a java representation of data to a platform specific representation of 
@@ -118,11 +119,17 @@ abstract protected Object nativeToJava(TransferData transferData);
  *
  * @param formatName the name of a data type
  *
- * @return the unique identifier associated with htis data type
+ * @return the unique identifier associated with this data type
  */
 public static int registerType(String formatName) {
-	// System.out.println("Transfer.registerType: " + formatName);
-	// AW: FIXME: hashCode may not be not unique!
-	return formatName.hashCode();
+	int length = formatName.length();
+	// TODO - hashcode may not be unique - need another way
+	if (length > 4) return formatName.hashCode();
+	int type = 0;
+	if (length > 0) type |= (formatName.charAt(0) & 0xff) << 24;
+	if (length > 1) type |= (formatName.charAt(1) & 0xff) << 16;
+	if (length > 2) type |= (formatName.charAt(2) & 0xff) << 8;
+	if (length > 3) type |= formatName.charAt(3) & 0xff; 
+	return type;
 }
 }

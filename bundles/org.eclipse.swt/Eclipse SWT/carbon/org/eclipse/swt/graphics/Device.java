@@ -207,10 +207,8 @@ public Rectangle getBounds () {
 	int[] ptr = new int[1];
 	OS.memcpy(ptr, gdevice, 4);
 	GDevice device = new GDevice();
-	OS.memcpy(device, ptr[0], GDevice.sizeof);
-	Rect rect = new Rect();
-	OS.GetPixBounds(device.gdPMap, rect);
-	return new Rectangle(rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
+	OS.memcpy(device, ptr[0], GDevice.sizeof);	
+	return new Rectangle(device.left, device.top, device.right - device.left, device.bottom - device.top);
 }
 
 /**

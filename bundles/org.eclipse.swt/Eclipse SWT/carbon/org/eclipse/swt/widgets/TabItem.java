@@ -130,11 +130,6 @@ public Control getControl () {
 	return control;
 }
 
-public Display getDisplay () {
-	TabFolder parent = this.parent;
-	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return parent.getDisplay ();
-}
 /**
  * Returns the receiver's parent, which must be a <code>TabFolder</code>.
  *

@@ -50,27 +50,27 @@ import org.eclipse.swt.events.*;
  */
 public abstract class Widget {
 	int style, state;
+	Display display;
 	EventTable eventTable;
 	Object data;
-	String [] keys;
-	Object [] values;
 
 	/* Global state flags */
 //	static final int AUTOMATIC		= 1 << 0;
 //	static final int ACTIVE			= 1 << 1;
-	static final int GRAB		= 1 << 2;
+	static final int GRAB			= 1 << 2;
 //	static final int MULTIEXPOSE	= 1 << 3;
 //	static final int RESIZEREDRAW	= 1 << 4;
 //	static final int WRAP			= 1 << 5;
-	static final int DISABLED	= 1 << 6;
-	static final int HIDDEN		= 1 << 7;
+	static final int DISABLED		= 1 << 6;
+	static final int HIDDEN			= 1 << 7;
 //	static final int FOREGROUND		= 1 << 8;
 //	static final int BACKGROUND		= 1 << 9;
-	static final int DISPOSED	= 1 << 10;
-//	static final int HANDLE		= 1 << 11;
-	static final int CANVAS		= 1 << 12;
-	static final int MOVED		= 1 << 13;
-	static final int RESIZED	= 1 << 14;
+	static final int DISPOSED		= 1 << 10;
+//	static final int HANDLE			= 1 << 11;
+	static final int CANVAS			= 1 << 12;
+	static final int MOVED			= 1 << 13;
+	static final int RESIZED		= 1 << 14;
+	static final int KEYED_DATA		= 1 << 15;
 
 	static final int DEFAULT_WIDTH	= 64;
 	static final int DEFAULT_HEIGHT	= 64;
@@ -114,6 +114,7 @@ public Widget (Widget parent, int style) {
 	checkSubclass ();
 	checkParent (parent);
 	this.style = style;
+	display = parent.display;
 }
 
 int actionProc (int theControl, int partCode) {
@@ -185,6 +186,44 @@ static int checkBits (int style, int int0, int int1, int int2, int int3, int int
 	return style;
 }
 
+void calculateVisibleRegion (int control, int visibleRgn, boolean clipChildren) {
+	int tempRgn = OS.NewRgn ();
+	if (OS.IsControlVisible (control)) {
+		int childRgn = OS.NewRgn ();
+		int window = OS.GetControlOwner (control);
+		short [] count = new short [1];
+		int [] outControl = new int [1];
+		OS.GetRootControl (window, outControl);
+		int root = outControl [0];
+		OS.GetControlRegion (root, (short) OS.kControlStructureMetaPart, visibleRgn);
+		int tempControl = control, lastControl = 0;
+		while (tempControl != root) {
+			OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
+			OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
+			if (OS.EmptyRgn (visibleRgn)) break;
+			if (clipChildren || tempControl != control) {
+				OS.CountSubControls (tempControl, count);
+				for (int i = 0; i < count [0]; i++) {
+					OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
+					int child = outControl [0];
+					if (child == lastControl) break;
+					if (!OS.IsControlVisible (child)) continue;
+					OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
+					OS.UnionRgn (tempRgn, childRgn, childRgn);
+				}
+			}
+			lastControl = tempControl;
+			OS.GetSuperControl (tempControl, outControl);
+			tempControl = outControl [0];
+		}
+		OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
+		OS.DisposeRgn (childRgn);
+	} else {
+		OS.CopyRgn (tempRgn, visibleRgn);
+	}
+	OS.DisposeRgn (tempRgn);
+}
+
 void checkOrientation (Widget parent) {
 	style &= ~SWT.MIRRORED;
 	if ((style & (SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT)) == 0) {
@@ -198,8 +237,7 @@ void checkOrientation (Widget parent) {
 
 void checkParent (Widget parent) {
 	if (parent == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (!parent.isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (parent.isDisposed()) error (SWT.ERROR_INVALID_ARGUMENT);
+	parent.checkWidget ();
 }
 
 /**
@@ -258,8 +296,10 @@ protected void checkSubclass () {
  * </ul>
  */
 protected void checkWidget () {
-	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	if (isDisposed ()) error (SWT.ERROR_WIDGET_DISPOSED);
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	if (display.thread != Thread.currentThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
+	if ((state & DISPOSED) != 0) error (SWT.ERROR_WIDGET_DISPOSED);
 }
 
 int colorProc (int inControl, int inMessage, int inDrawDepth, int inDrawInColor) {
@@ -382,7 +422,7 @@ int commandProc (int nextHandler, int theEvent, int userData) {
 void deregister () {
 }
 
-void destroyWidget (Display display) {
+void destroyWidget () {
 	releaseHandle ();
 }
 
@@ -441,10 +481,9 @@ public void dispose () {
 	*/
 	if (isDisposed()) return;
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
-	Display display = getDisplay ();
 	releaseChild ();
 	releaseWidget ();
-	destroyWidget (display);
+	destroyWidget ();
 }
 
 void drawBackground (int control) {
@@ -463,8 +502,8 @@ void drawBackground (int control, float [] background) {
 	}
 }
 
-void drawFocus (int control, boolean hasFocus, boolean hasBorder, Rect inset) {
-	drawBackground (control, null);
+void drawFocus (int control, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
+	drawBackground (control, background);
 	Rect rect = new Rect ();
 	OS.GetControlBounds (control, rect);
 	rect.left += inset.left;
@@ -481,7 +520,7 @@ void drawFocus (int control, boolean hasFocus, boolean hasBorder, Rect inset) {
 	}
 }
 
-void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, Rect inset) {
+void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, float[] background, Rect inset) {
 	int visibleRgn = getVisibleRegion (control, true);
 	if (!OS.EmptyRgn (visibleRgn)) {
 		int [] currentPort = new int [1];
@@ -492,7 +531,7 @@ void drawFocusClipped (int control, boolean hasFocus, boolean hasBorder, Rect in
 		int oldClip = OS.NewRgn ();
 		OS.GetClip (oldClip);
 		OS.SetClip (visibleRgn);
-		drawFocus (control, hasFocus, hasBorder, inset);
+		drawFocus (control, hasFocus, hasBorder, background, inset);
 		OS.SetClip (oldClip);
 		OS.SetPort (currentPort [0]);
 	}
@@ -507,7 +546,6 @@ void error (int code) {
 }
 
 boolean filters (int eventType) {
-	Display display = getDisplay ();
 	return display.filters (eventType);
 }
 
@@ -567,7 +605,7 @@ Rect getControlSize (int control) {
  */
 public Object getData () {
 	checkWidget();
-	return data;
+	return (state & KEYED_DATA) != 0 ? ((Object []) data) [0] : data;
 }
 
 /**
@@ -597,9 +635,11 @@ public Object getData () {
 public Object getData (String key) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if (keys == null) return null;
-	for (int i=0; i<keys.length; i++) {
-		if (keys [i].equals (key)) return values [i];
+	if ((state & KEYED_DATA) != 0) {
+		Object [] table = (Object []) data;
+		for (int i=1; i<table.length; i+=2) {
+			if (key.equals (table [i])) return table [i+1];
+		}
 	}
 	return null;
 }
@@ -620,7 +660,19 @@ public Object getData (String key) {
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
  */
-public abstract Display getDisplay ();
+public Display getDisplay () {
+	Display display = this.display;
+	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
+	return display;
+}
+
+int getDrawCount (int control) {
+	return 0;
+}
+
+Rect getInset () {
+	return EMPTY_RECT;
+}
 
 String getName () {
 	String string = getClass ().getName ();
@@ -660,35 +712,7 @@ public int getStyle () {
 
 int getVisibleRegion (int control, boolean clipChildren) {
 	int visibleRgn = OS.NewRgn ();
-	int childRgn = OS.NewRgn (), tempRgn = OS.NewRgn ();
-	int window = OS.GetControlOwner (control);
-	int port = OS.GetWindowPort (window);
-	OS.GetPortVisibleRegion (port, visibleRgn);
-	short [] count = new short [1];
-	int [] outControl = new int [1];
-	int tempControl = control, lastControl = 0;
-	while (tempControl != 0) {
-		OS.GetControlRegion (tempControl, (short) OS.kControlStructureMetaPart, tempRgn);
-		OS.SectRgn (tempRgn, visibleRgn, visibleRgn);
-		if (OS.EmptyRgn (visibleRgn)) break;
-		if (clipChildren || tempControl != control) {
-			OS.CountSubControls (tempControl, count);
-			for (int i = 0; i < count [0]; i++) {
-				OS.GetIndexedSubControl (tempControl, (short)(i + 1), outControl);
-				int child = outControl [0];
-				if (child == lastControl) break;
-				if (!OS.IsControlVisible (child)) continue;
-				OS.GetControlRegion (child, (short) OS.kControlStructureMetaPart, tempRgn);
-				OS.UnionRgn (tempRgn, childRgn, childRgn);
-			}
-		}
-		lastControl = tempControl;
-		OS.GetSuperControl (tempControl, outControl);
-		tempControl = outControl [0];
-	}
-	OS.DiffRgn (visibleRgn, childRgn, visibleRgn);
-	OS.DisposeRgn (childRgn);
-	OS.DisposeRgn (tempRgn);
+	calculateVisibleRegion (control, visibleRgn, clipChildren);
 	return visibleRgn;
 }
 
@@ -709,12 +733,7 @@ boolean hooks (int eventType) {
 	return eventTable.hooks (eventType);
 }
 
-int getDrawCount (int control) {
-	return 0;
-}
-
-Rect getInset () {
-	return EMPTY_RECT;
+void invalidateVisibleRegion (int control) {
 }
 
 /**
@@ -768,6 +787,10 @@ boolean isValidSubclass () {
 
 boolean isValidThread () {
 	return getDisplay ().isValidThread ();
+}
+
+int itemCompareProc (int browser, int itemOne, int itemTwo, int sortProperty) {
+	return OS.noErr;
 }
 
 int itemDataProc (int browser, int item, int property, int itemData, int setValue) {
@@ -1031,6 +1054,7 @@ void releaseChild () {
 
 void releaseHandle () {
 	state |= DISPOSED;
+	display = null;
 }
 
 void releaseResources () {
@@ -1043,8 +1067,6 @@ void releaseWidget () {
 	deregister ();
 	eventTable = null;
 	data = null;
-	keys = null;
-	values = null;
 }
 
 /**
@@ -1143,7 +1165,6 @@ void sendEvent (int eventType, Event event) {
 }
 
 void sendEvent (int eventType, Event event, boolean send) {
-	Display display = getDisplay ();
 	if (eventTable == null && !display.filters (eventType)) {
 		return;
 	}
@@ -1206,6 +1227,7 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
 	boolean visible = OS.IsControlVisible (control);
 	if (visible) OS.InvalWindowRect (window, oldBounds);
 	OS.SetControlBounds (control, newBounds);
+	invalidateVisibleRegion (control);
 	if (visible) OS.InvalWindowRect (window, newBounds);
 	int result = 0;
 	if (move && !sameOrigin) {
@@ -1241,7 +1263,11 @@ int setBounds (int control, int x, int y, int width, int height, boolean move, b
  */
 public void setData (Object data) {
 	checkWidget();
-	this.data = data;
+	if ((state & KEYED_DATA) != 0) {
+		((Object []) this.data) [0] = data;
+	} else {
+		this.data = data;
+	}
 }
 
 /**
@@ -1271,49 +1297,46 @@ public void setData (Object data) {
 public void setData (String key, Object value) {
 	checkWidget();
 	if (key == null) error (SWT.ERROR_NULL_ARGUMENT);
-
-	/* Remove the key/value pair */
-	if (value == null) {
-		if (keys == null) return;
-		int index = 0;
-		while (index < keys.length && !keys [index].equals (key)) index++;
-		if (index == keys.length) return;
-		if (keys.length == 1) {
-			keys = null;
-			values = null;
+	int index = 1;
+	Object [] table = null;
+	if ((state & KEYED_DATA) != 0) {
+		table = (Object []) data;
+		while (index < table.length) {
+			if (key.equals (table [index])) break;
+			index += 2;
+		}
+	}
+	if (value != null) {
+		if ((state & KEYED_DATA) != 0) {
+			if (index == table.length) {
+				Object [] newTable = new Object [table.length + 2];
+				System.arraycopy (table, 0, newTable, 0, table.length);
+				data = table = newTable;
+			}
 		} else {
-			String [] newKeys = new String [keys.length - 1];
-			Object [] newValues = new Object [values.length - 1];
-			System.arraycopy (keys, 0, newKeys, 0, index);
-			System.arraycopy (keys, index + 1, newKeys, index, newKeys.length - index);
-			System.arraycopy (values, 0, newValues, 0, index);
-			System.arraycopy (values, index + 1, newValues, index, newValues.length - index);
-			keys = newKeys;
-			values = newValues;
+			table = new Object [3];
+			table [0] = data;
+			data = table;
+			state |= KEYED_DATA;
 		}
-		return;
-	}
-
-	/* Add the key/value pair */
-	if (keys == null) {
-		keys = new String [] {key};
-		values = new Object [] {value};
-		return;
-	}
-	for (int i=0; i<keys.length; i++) {
-		if (keys [i].equals (key)) {
-			values [i] = value;
-			return;
+		table [index] = key;
+		table [index + 1] = value;
+	} else {
+		if ((state & KEYED_DATA) != 0) {
+			if (index != table.length) {
+				int length = table.length - 2;
+				if (length == 1) {
+					data = table [0];
+					state &= ~KEYED_DATA;
+				} else {
+					Object [] newTable = new Object [length];
+					System.arraycopy (table, 0, newTable, 0, index);
+					System.arraycopy (table, index + 2, newTable, index, length - index);
+					data = newTable;
+				}
+			}
 		}
 	}
-	String [] newKeys = new String [keys.length + 1];
-	Object [] newValues = new Object [values.length + 1];
-	System.arraycopy (keys, 0, newKeys, 0, keys.length);
-	System.arraycopy (values, 0, newValues, 0, values.length);
-	newKeys [keys.length] = key;
-	newValues [values.length] = value;
-	keys = newKeys;
-	values = newValues;
 }
 
 void setInputState (Event event, int theEvent) {
@@ -1354,7 +1377,6 @@ void setInputState (Event event, short button, int chord, int modifiers) {
 		case SWT.KeyDown:
 		case SWT.Traverse: {
 			if (event.keyCode != 0 || event.character != 0) return;
-			Display display = getDisplay ();
 			int lastModifiers = display.lastModifiers;
 			if ((modifiers & OS.shiftKey) != 0 && (lastModifiers & OS.shiftKey) == 0) {
 				event.stateMask &= ~SWT.SHIFT;
@@ -1380,7 +1402,6 @@ void setInputState (Event event, short button, int chord, int modifiers) {
 		}
 		case SWT.KeyUp: {
 			if (event.keyCode != 0 || event.character != 0) return;
-			Display display = getDisplay ();
 			int lastModifiers = display.lastModifiers;
 			if ((modifiers & OS.shiftKey) == 0 && (lastModifiers & OS.shiftKey) != 0) {
 				event.stateMask |= SWT.SHIFT;
@@ -1435,6 +1456,7 @@ void setVisible (int control, boolean visible) {
 	boolean drawing = getDrawCount (control) == 0;
 	if (drawing && !visible) visibleRgn = getVisibleRegion (control, false);
 	OS.SetControlVisibility (control, visible, false);
+	invalidateVisibleRegion (control);
 	if (drawing && visible) visibleRgn = getVisibleRegion (control, false);
 	if (drawing) {
 		int window = OS.GetControlOwner (control);
@@ -1443,14 +1465,32 @@ void setVisible (int control, boolean visible) {
 	}
 }
 
+void setZOrder (int control, int otheControl, boolean above) {
+	int inOp = above ?  OS.kHIViewZOrderBelow :  OS.kHIViewZOrderAbove;
+	int oldRgn = 0;
+	boolean drawing = isDrawing (control);
+	if (drawing) oldRgn = getVisibleRegion (control, false);
+	OS.HIViewSetZOrder (control, inOp, otheControl);
+	invalidateVisibleRegion (control);
+	if (drawing) {
+		int newRgn = getVisibleRegion (control, false);
+		if (above) {
+			OS.DiffRgn (newRgn, oldRgn, newRgn);
+		} else {
+			OS.DiffRgn (oldRgn, newRgn, newRgn);
+		}
+		int window = OS.GetControlOwner (control);
+		OS.InvalWindowRgn (window, newRgn);
+		OS.DisposeRgn (oldRgn);
+		OS.DisposeRgn (newRgn);
+	}
+}
+
 RGBColor toRGBColor (float [] color) {
-	int red = (short) (color [0] * 255);
-	int green = (short) (color [1] * 255);
-	int blue = (short) (color [2] * 255);
 	RGBColor rgb = new RGBColor ();
-	rgb.red = (short) (red << 8 | red);
-	rgb.green = (short) (green << 8 | green);
-	rgb.blue = (short) (blue << 8 | blue);
+	rgb.red = (short) (color [0] * 0xffff);
+	rgb.green = (short) (color [1] * 0xffff);
+	rgb.blue = (short) (color [2] * 0xffff);
 	return rgb;
 }
 

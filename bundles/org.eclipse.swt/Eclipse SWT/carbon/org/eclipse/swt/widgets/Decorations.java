@@ -300,7 +300,6 @@ Decorations menuShell () {
 void releaseWidget () {
 	if (menuBar != null) menuBar.dispose ();
 	menuBar = null;
-	Display display = getDisplay ();
 	Menu [] menus = display.getMenus (this);
 	if (menus != null) {
 		do {
@@ -332,7 +331,7 @@ boolean restoreFocus () {
 
 void saveFocus () {
 	int window = OS.GetControlOwner (handle);
-	Control control = getDisplay ().getFocusControl (window);
+	Control control = display.getFocusControl (window);
 	if (control != null) savedFocus = control;
 }
 
@@ -504,10 +503,10 @@ void setSavedFocus (Control control) {
  * window manager will typically display as the receiver's
  * <em>title</em>, to the argument, which may not be null. 
  *
- * @param text the new text
+ * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -518,6 +517,17 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	text = string;
+}
+
+boolean traverseItem (boolean next) {
+	return false;
+}
+
+boolean traverseReturn () {
+	if (defaultButton == null || defaultButton.isDisposed ()) return false;
+	if (!defaultButton.isVisible () || !defaultButton.isEnabled ()) return false;
+	defaultButton.click ();
+	return true;
 }
 
 }

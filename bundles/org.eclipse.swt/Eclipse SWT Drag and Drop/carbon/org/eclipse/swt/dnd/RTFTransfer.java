@@ -9,10 +9,10 @@
  *     IBM Corporation - initial API and implementation
  *******************************************************************************/
 package org.eclipse.swt.dnd;
+ 
+import org.eclipse.swt.internal.carbon.OS;
+import org.eclipse.swt.internal.carbon.CFRange;
 
- 
- import org.eclipse.swt.internal.Converter;
- 
 /**
  * The class <code>RTFTransfer</code> provides a platform specific mechanism 
  * for converting text in RTF format represented as a java <code>String</code> 
@@ -29,11 +29,10 @@ package org.eclipse.swt.dnd;
 public class RTFTransfer extends ByteArrayTransfer {
 
 	private static RTFTransfer _instance = new RTFTransfer();
-	private static final String TYPENAME1 = "RTF";
-	private static final int TYPEID1 = ('R'<<24) + ('T'<<16) + ('F'<<8) + ' ';
+	private static final String RTF = "RTF ";
+	private static final int RTFID = registerType(RTF);
 
-private RTFTransfer() {
-}
+private RTFTransfer() {}
 
 /**
  * Returns the singleton instance of the RTFTransfer class.
@@ -54,9 +53,31 @@ public static RTFTransfer getInstance () {
  *  object will be filled in on return with the platform specific format of the data
  */
 public void javaToNative (Object object, TransferData transferData){
-	if (object == null || !(object instanceof String)) return;
-	byte [] buffer = Converter.wcsToMbcs (null, (String)object, true);
-	super.javaToNative(buffer, transferData);
+	transferData.result = -1;
+	if (object == null || !(object instanceof String) || !isSupportedType(transferData)) return;
+	String string = (String)object;
+	int count = string.length();
+	if (count == 0) return;
+	char[] chars = new char[count];
+	string.getChars(0, count, chars, 0);
+	int cfstring = OS.CFStringCreateWithCharacters(OS.kCFAllocatorDefault, chars, count);
+	if (cfstring == 0) return;
+	try {
+		CFRange range = new CFRange();
+		range.length = chars.length;
+		int encoding = OS.CFStringGetSystemEncoding();
+		int[] size = new int[1];
+		int numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, null, 0, size);
+		if (numChars == 0 || size[0] == 0) return;
+		byte[] buffer = new byte[size[0]];
+		numChars = OS.CFStringGetBytes(cfstring, range, encoding, (byte)'?', true, buffer, size [0], size);
+		if (numChars == 0) return;
+		transferData.data = new byte[1][];
+		transferData.data[0] = buffer;
+		transferData.result = 0;
+	} finally {
+		OS.CFRelease(cfstring);
+	}
 }
 
 /**
@@ -70,21 +91,31 @@ public void javaToNative (Object object, TransferData transferData){
  * conversion was successful; otherwise null
  */
 public Object nativeToJava(TransferData transferData){
-	// get byte array from super
-	byte[] buffer = (byte[])super.nativeToJava(transferData);
-	if (buffer == null) return null;
-	// convert byte array to a string
-	char [] unicode = Converter.mbcsToWcs (null, buffer);
-	String string = new String (unicode);
-	int end = string.indexOf('\0');
-	return (end == -1) ? string : string.substring(0, end);
-}
-
-protected String[] getTypeNames() {
-	return new String[]{ TYPENAME1 };
+	if (!isSupportedType(transferData) || transferData.data == null) return null;
+	if (transferData.data.length == 0 || transferData.data[0].length == 0) return null;
+	byte[] buffer = transferData.data[0];
+	int encoding = OS.CFStringGetSystemEncoding();
+	int cfstring = OS.CFStringCreateWithBytes(OS.kCFAllocatorDefault, buffer, buffer.length, encoding, true);
+	if (cfstring == 0) return null;
+	try {
+		int length = OS.CFStringGetLength(cfstring);
+		if (length == 0) return null;
+		char[] chars = new char[length];
+		CFRange range = new CFRange();
+		range.length = length;
+		OS.CFStringGetCharacters(cfstring, range, chars);
+		return new String(chars);
+	} finally {
+		OS.CFRelease(cfstring);
+	}
 }
 
 protected int[] getTypeIds() {
-	return new int[] { TYPEID1 };
+	return new int[] {RTFID};
 }
+
+protected String[] getTypeNames() {
+	return new String[] {RTF};
+}
+
 }

@@ -37,7 +37,7 @@ import org.eclipse.swt.internal.carbon.Rect;
  * </p>
  */
 public class Group extends Composite {
-	String text;
+	String text = "";
 	
 /**
  * Constructs a new instance of this class given its parent
@@ -76,6 +76,7 @@ public Group (Composite parent, int style) {
 }
 
 static int checkStyle (int style) {
+	style |= SWT.NO_FOCUS;
 	/*
 	* Even though it is legal to create this widget
 	* with scroll bars, they serve no useful purpose
@@ -102,7 +103,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 	x -= client.left - bounds.left;
 	y -= client.top - bounds.top;
 	width += Math.max (8, (bounds.right - bounds.left) - (client.right - client.left));
-	height += Math.max (22, (bounds.bottom - bounds.top) - (client.bottom - client.top));
+	height += Math.max (text.length () == 0 ? 8 : 22, (bounds.bottom - bounds.top) - (client.bottom - client.top));
 	return new Rectangle (x, y, width, height);
 }
 
@@ -132,9 +133,9 @@ public Rectangle getClientArea () {
 	OS.GetRegionBounds (rgnHandle, client);
 	OS.DisposeRgn (rgnHandle);
 	int x = Math.max (0, client.left - bounds.left);
-	int y = text == null ? x : Math.max (0, client.top - bounds.top);
+	int y = text.length () == 0 ? x : Math.max (0, client.top - bounds.top);
 	int width = Math.max (0, client.right - client.left);
-	int height = Math.max (0, text == null ? bounds.bottom - bounds.top - 2*y : client.bottom - client.top);
+	int height = Math.max (0, text.length () == 0 ? bounds.bottom - bounds.top - 2*y : client.bottom - client.top);
 	return new Rectangle (x, y, width, height);
 }
 
@@ -169,10 +170,10 @@ public String getText () {
  *'&amp' can be escaped by doubling it in the string, causing
  * a single '&amp' to be displayed.
  * </p>
- * @param text the new text
+ * @param string the new text
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>

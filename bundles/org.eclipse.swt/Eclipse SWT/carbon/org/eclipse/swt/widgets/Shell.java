@@ -101,7 +101,6 @@ import org.eclipse.swt.graphics.*;
  * @see SWT
  */
 public class Shell extends Decorations {
-	Display display;
 	int shellHandle, windowGroup;
 	boolean resized;
 	Control lastActive;
@@ -312,7 +311,7 @@ public Shell (Shell parent) {
  * @see SWT#SYSTEM_MODAL
  */
 public Shell (Shell parent, int style) {
-	this (parent != null ? parent.getDisplay () : null, parent, style, 0);
+	this (parent != null ? parent.display : null, parent, style, 0);
 }
 
 static int checkStyle (int style) {
@@ -406,13 +405,13 @@ void createHandle () {
 		if ((style & SWT.RESIZE) != 0) {
 			attributes |= OS.kWindowResizableAttribute;
 			/*
-			* Bug in the Macintosh.  For some reason, when SetWindowActivationScope()
-			* is used to set the scope to kWindowActivationScopeNone, no feedback is
-			* given while the shell is resizing.  The fix is to create the window with
-			* kWindowLiveResizeAttribute in this case.  It's inconsistent with other
-			* windows, but at least the user will get feedback when resizing.
+			* Bug in the Macintosh.  For some reason, a window has no title bar
+			* and the kWindowResizableAttribute, no rubber banding feedback is
+			* given while the window is resizing.  The fix is to create the window 
+			* with kWindowLiveResizeAttribute in this case.  This is inconsistent
+			* with other windows, but the user will get feedback when resizing.
 			*/
-			if ((style & SWT.ON_TOP) != 0) attributes |= OS.kWindowLiveResizeAttribute;
+			if ((style & SWT.TITLE) == 0) attributes |= OS.kWindowLiveResizeAttribute;
 		}
 	}
 	int windowClass = OS.kDocumentWindowClass;
@@ -430,9 +429,6 @@ void createHandle () {
 	OS.CreateNewWindow (windowClass, attributes, rect, outWindow);
 	if (outWindow [0] == 0) error (SWT.ERROR_NO_HANDLES);
 	shellHandle = outWindow [0];
-	if ((style & SWT.ON_TOP) != 0) {
-		OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
-	}
 	OS.RepositionWindow (shellHandle, 0, OS.kWindowCascadeOnMainScreen);
 //	OS.SetThemeWindowBackground (shellHandle, (short) OS.kThemeBrushDialogBackgroundActive, false);
 	int [] theRoot = new int [1];
@@ -473,7 +469,8 @@ void deregister () {
 	WidgetTable.remove (theRoot [0]);
 }
 
-void destroyWidget (Display display) {
+void destroyWidget () {
+	Display display = this.display;
 	int theWindow = shellHandle;
 //	OS.HideWindow (shellHandle);
 	releaseHandle ();
@@ -527,11 +524,6 @@ public Rectangle getBounds () {
 	return new Rectangle (rect.left, rect.top, rect.right - rect.left, rect.bottom - rect.top);
 }
 
-public Display getDisplay () {
-	if (display == null) error (SWT.ERROR_WIDGET_DISPOSED);
-	return display;
-}
-
 int getDrawCount (int control) {
 	if (!isTrimHandle (control)) return drawCount;
 	return 0;
@@ -575,6 +567,10 @@ public boolean getMaximized () {
 public boolean getMinimized () {
 	checkWidget();
 	return OS.IsWindowCollapsed (shellHandle);
+}
+
+float [] getParentBackground () {
+	return null;
 }
 
 public Shell getShell () {
@@ -662,6 +658,11 @@ void hookEvents () {
 	OS.InstallEventHandler (windowTarget, mouseProc, mask2.length / 2, mask2, shellHandle, null);
 }
 
+void invalidateVisibleRegion (int control) {
+	resetVisibleRegion (control);
+	invalidateChildrenVisibleRegion (control);
+}
+
 public boolean isEnabled () {
 	checkWidget();
 	return getEnabled ();
@@ -684,7 +685,6 @@ int kEventWindowActivated (int nextHandler, int theEvent, int userData) {
 	int [] outScope = new int [1];
 	OS.GetWindowActivationScope (shellHandle, outScope); 
 	if (outScope [0] == OS.kWindowActivationScopeNone) return result;
-	Display display = getDisplay ();
 	display.setMenuBar (menuBar);
 	sendEvent (SWT.Activate);
 	if (isDisposed ()) return result;
@@ -726,8 +726,7 @@ int kEventWindowCollapsed (int nextHandler, int theEvent, int userData) {
 int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 	int result = super.kEventWindowDeactivated (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
-	//TEMPORARY CODE - Sending event from here causes a GP if Window is disposed (bug 34036)
-	//sendEvent (SWT.Deactivate);
+	//TEMPORARY CODE - should be send, but causes a GP
 	postEvent (SWT.Deactivate);
 	if (isDisposed ()) return result;
 	saveFocus ();
@@ -740,9 +739,9 @@ int kEventWindowDeactivated (int nextHandler, int theEvent, int userData) {
 		display.ignoreFocus = true;
 		OS.ClearKeyboardFocus (shellHandle);
 		display.ignoreFocus = false;
-		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (false);
+		//TEMPORARY CODE - should be send, but causes a GP
+		if (!savedFocus.isDisposed ()) savedFocus.sendFocusEvent (false, true);
 	}
-	Display display = getDisplay ();
 	display.setMenuBar (null);
 	return result;
 }
@@ -945,7 +944,6 @@ public void setBounds (int x, int y, int width, int height) {
 public void setMenuBar (Menu menu) {
 	checkWidget();
 	super.setMenuBar (menu);
-	Display display = getDisplay ();
 	if (display.getActiveShell () == this) {
 		display.setMenuBar (menuBar);
 	}
@@ -1048,12 +1046,23 @@ void setWindowVisible (boolean visible) {
 			if (parent != null) inUnavailableWindow = OS.GetControlOwner (parent.handle);
 			OS.SetWindowModality (shellHandle, inModalKind, inUnavailableWindow);
 		}
-		OS.SetControlVisibility (topHandle (), true, false);
-		display.runDisposeWidgets ();
+		int topHandle = topHandle ();
+		OS.SetControlVisibility (topHandle, true, false);
+		invalidateVisibleRegion (topHandle);
+		int [] scope = new int [1];
+		if ((style & SWT.ON_TOP) != 0) {
+			OS.GetWindowActivationScope (shellHandle, scope);
+	    	OS.SetWindowActivationScope (shellHandle, OS.kWindowActivationScopeNone);
+		}
 		OS.ShowWindow (shellHandle);
+		if ((style & SWT.ON_TOP) != 0) {
+			OS.SetWindowActivationScope (shellHandle, scope [0]);
+		}
 	} else {
     	OS.HideWindow (shellHandle);
-		OS.SetControlVisibility (topHandle (), false, false);
+		int topHandle = topHandle ();
+		OS.SetControlVisibility (topHandle, false, false);
+		invalidateVisibleRegion (topHandle);
 		sendEvent (SWT.Hide);
 	}
 }
@@ -1070,6 +1079,13 @@ void setZOrder (Control control, boolean above) {
 		int window = control == null ? 0 : OS.GetControlOwner (control.handle);
 		OS.SendBehind (shellHandle, window);
 	}
+}
+
+boolean traverseEscape () {
+	if (parent == null) return false;
+	if (!isVisible () || !isEnabled ()) return false;
+	close ();
+	return true;
 }
 
 }

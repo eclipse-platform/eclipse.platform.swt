@@ -12,6 +12,7 @@ package org.eclipse.swt.graphics;
 
 
 import org.eclipse.swt.*;
+import org.eclipse.swt.internal.carbon.Rect;
 
 /**
  * Instances of this class are descriptions of GCs in terms
@@ -25,6 +26,7 @@ import org.eclipse.swt.*;
  */
 public final class GCData {
 	public Device device;
+	public int style;
 	public Image image;
 	public float[] foreground;
 	public float[] background;
@@ -42,8 +44,12 @@ public final class GCData {
 	public String string;
 	public int stringPtr;
 	
+	public int window;	
 	public int paintEvent;
 	public int visibleRgn;
 	public int control;
 	public int port;
+	public Rect portRect;
+	public Rect controlRect;	
+	public boolean updateClip;
 }

@@ -200,7 +200,7 @@ public ToolItem getItem (int index) {
  * @return the item at the given point
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the listener is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
@@ -300,6 +300,14 @@ public int indexOf (ToolItem item) {
 		if (items [i] == item) return i;
 	}
 	return -1;
+}
+
+void invalidateChildrenVisibleRegion (int control) {
+	super.invalidateChildrenVisibleRegion (control);
+	for (int i=0; i<itemCount; i++) {
+		ToolItem item = items [i];
+		item.resetVisibleRegion (control);
+	}
 }
 
 int [] layoutHorizontal (int width, int height, boolean resize) {
