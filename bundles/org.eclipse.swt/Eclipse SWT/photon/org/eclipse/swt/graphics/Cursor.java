@@ -109,4 +109,9 @@ public static Cursor photon_new(Device device, int type, int handle) {
 	return cursor;
 }
 
+public String toString () {
+	if (isDisposed()) return "Cursor {*DISPOSED*}";
+	return "Cursor {" + handle + "}";
+}
+
 }

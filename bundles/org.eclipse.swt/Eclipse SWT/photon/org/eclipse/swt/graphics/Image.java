@@ -61,6 +61,7 @@ public Image(Device device, Image srcImage, int flag) {
 	if (device == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	this.device = device;
 	if (srcImage == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	if (srcImage.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 	switch (flag) {
 		case SWT.IMAGE_COPY:
 		case SWT.IMAGE_DISABLE:
@@ -238,6 +239,7 @@ public boolean equals (Object object) {
 }
 
 public Color getBackground() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (transparentPixel == -1) return null;
 
 	PhImage_t phImage = new PhImage_t();
@@ -274,13 +276,14 @@ public Color getBackground() {
 }
 
 public Rectangle getBounds() {
-	if (handle == 0) return new Rectangle(0, 0, 0, 0);
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhImage_t image = new PhImage_t();
 	OS.memmove(image, handle, PhImage_t.sizeof);
 	return new Rectangle(0, 0, image.size_w, image.size_h);
 }
 
 public ImageData getImageData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	PhImage_t phImage = new PhImage_t();
 	OS.memmove(phImage, handle, PhImage_t.sizeof);
 	int depth = 0;
@@ -580,8 +583,11 @@ public boolean isDisposed() {
 }
 
 public void setBackground(Color color) {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (color == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
-	if (transparentPixel == -1) return;	
+	if (color.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
+	if (transparentPixel == -1) return;
+
 	PhImage_t phImage = new PhImage_t();
 	OS.memmove(phImage, handle, PhImage_t.sizeof);
 	int phPalette = phImage.palette;
@@ -607,6 +613,11 @@ public static Image photon_new(Device device, int type, int handle) {
 	image.handle = handle;
 	image.device = device;
 	return image;
+}
+
+public String toString () {
+	if (isDisposed()) return "Image {*DISPOSED*}";
+	return "Image {" + handle + "}";
 }
 
 }

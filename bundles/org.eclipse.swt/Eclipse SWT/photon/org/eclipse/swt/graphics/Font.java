@@ -66,6 +66,7 @@ public boolean equals(Object object) {
 }
 
 public FontData[] getFontData() {
+	if (isDisposed()) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	return new FontData[]{new FontData(handle)};
 }
 
@@ -102,6 +103,11 @@ public static Font photon_new(Device device, byte[] stem) {
 	Font font = new Font();
 	font.init(device, null, 0, 0, stem);
 	return font;
+}
+
+public String toString () {
+	if (isDisposed()) return "Font {*DISPOSED*}";
+	return "Font {" + new String(handle).trim() + "}";
 }
 
 }
