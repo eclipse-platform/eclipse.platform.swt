@@ -590,7 +590,13 @@ int processMouse (int info) {
 	}
 	postEvent (event.type, event);
 	if (type == OS.Ph_EV_BUT_PRESS && click_count == 2) {
-		postEvent (SWT.MouseDoubleClick, event);
+		Event clickEvent = new Event ();
+		clickEvent.time = event.time;
+		clickEvent.x = event.x;
+		clickEvent.y = event.y;
+		clickEvent.button = event.button;
+		clickEvent.stateMask = event.stateMask;
+		postEvent (SWT.MouseDoubleClick, clickEvent);
 	}
 	return OS.Pt_END;
 }
