@@ -479,7 +479,7 @@ public boolean open () {
 							event.x = newX;
 							event.y = newY;
 							if ((style & SWT.RESIZE) != 0) {
-							   resizeRectangles (newX - oldX, newY - oldY);
+								resizeRectangles (newX - oldX, newY - oldY);
 								cursorPos = adjustResizeCursor ();
 								newX = cursorPos.x; newY = cursorPos.y;
 								inEvent = true;
