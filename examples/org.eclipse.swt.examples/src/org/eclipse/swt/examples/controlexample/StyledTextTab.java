@@ -193,6 +193,30 @@ class StyledTextTab extends ScrollableTab {
 	}
 	
 	/**
+	 * Creates the tab folder page.
+	 *
+	 * @param tabFolder org.eclipse.swt.widgets.TabFolder
+	 * @return the new page for the tab folder
+	 */
+	Composite createTabFolderPage (TabFolder tabFolder) {
+		super.createTabFolderPage (tabFolder);
+
+		/*
+		 * Add a resize listener to the tabFolderPage so that
+		 * if the user types into the example widget to change
+		 * its preferred size, and then resizes the shell, we
+		 * recalculate the preferred size correctly.
+		 */
+		tabFolderPage.addControlListener(new ControlAdapter() {
+			public void controlResized(ControlEvent e) {
+				setExampleWidgetSize ();
+			}
+		});
+		
+		return tabFolderPage;
+	}
+
+	/**
 	 * Gets the "Example" widget children.
 	 */
 	Control [] getExampleWidgets () {
