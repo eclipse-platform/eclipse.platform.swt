@@ -341,7 +341,7 @@ public ToolBar getParent () {
  */
 public boolean getSelection () {
 	checkWidget();
-	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
+	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return false;
 	int hwnd = parent.handle;
 	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
 	return (fsState & OS.TBSTATE_CHECKED) != 0;
@@ -613,7 +613,7 @@ public void setImage (Image image) {
  */
 public void setSelection (boolean selected) {
 	checkWidget();
-	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
+	if ((style & (SWT.CHECK | SWT.RADIO)) == 0) return;
 	int hwnd = parent.handle;
 	int fsState = OS.SendMessage (hwnd, OS.TB_GETSTATE, id, 0);
 	fsState &= ~OS.TBSTATE_CHECKED;
