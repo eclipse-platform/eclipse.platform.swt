@@ -12,7 +12,6 @@
 # this distribution shall govern.
 #
 # Contributors: 
-#    Kevin Cornell (Rational Software Corporation)
 #    Tom Tromey    (Red Hat, Inc.)
 #**********************************************************************
 
