@@ -108,7 +108,7 @@ public class Display extends Device {
 	Runnable [] disposeList;
 	
 	/* Timers */
-	int [] timers;
+	int [] timerIds;
 	Runnable [] timerList;
 	Callback timerCallback;
 	int timerProc, timerHandle;
@@ -1208,12 +1208,12 @@ void releaseDisplay () {
 	OS.PtAppDeletePulse (app_context, pulse);
 	
 	/* Free the timers */
-	if (timers != null) {
-		for (int i=0; i<timers.length; i++) {
-			 if (timers [i] != 0) OS.PtDestroyWidget (timers [i]);
+	if (timerIds != null) {
+		for (int i=0; i<timerIds.length; i++) {
+			 if (timerIds [i] != 0) OS.PtDestroyWidget (timerIds [i]);
 		}
 	}
-	timers = null;
+	timerIds = null;
 	timerList = null;
 	timerProc = 0;
 	timerCallback.dispose ();
@@ -1485,39 +1485,54 @@ int textWidth (String string, byte[] font) {
  */
 public void timerExec (int milliseconds, Runnable runnable) {
 	checkDevice ();
+	if (runnable == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (timerList == null) timerList = new Runnable [4];
-	if (timers == null) timers = new int [4];
+	if (timerIds == null) timerIds = new int [4];
 	int index = 0;
 	while (index < timerList.length) {
-		if (timerList [index] == null) break;
+		if (timerList [index] == runnable) break;
 		index++;
 	}
-	if (index == timerList.length) {
-		Runnable [] newTimerList = new Runnable [timerList.length + 4];
-		System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
-		timerList = newTimerList;
-		int [] newTimers = new int [timers.length + 4];
-		System.arraycopy (timers, 0, newTimers, 0, timers.length);
-		timers = newTimers;
+	if (index != timerList.length) {
+		OS.PtDestroyWidget (timerIds [index]);
+		timerList [index] = null;
+		timerIds [index] = 0;
+		if (milliseconds < 0) return;
+	} else {
+		if (milliseconds < 0) return;
+		index = 0;
+		while (index < timerList.length) {
+			if (timerList [index] == null) break;
+			index++;
+		}
+		if (index == timerList.length) {
+			Runnable [] newTimerList = new Runnable [timerList.length + 4];
+			System.arraycopy (timerList, 0, newTimerList, 0, timerList.length);
+			timerList = newTimerList;
+			int [] newTimerIds = new int [timerIds.length + 4];
+			System.arraycopy (timerIds, 0, newTimerIds, 0, timerIds.length);
+			timerIds = newTimerIds;
+		}
 	}
 	int [] args = {OS.Pt_ARG_TIMER_INITIAL, milliseconds, 0};
-	int handle = OS.PtCreateWidget (OS.PtTimer (), timerHandle, args.length / 3, args);
-	OS.PtRealizeWidget (handle);
-	if (handle != 0) {
-		OS.PtAddCallback (handle, OS.Pt_CB_TIMER_ACTIVATE, timerProc, index);
+	int timerId = OS.PtCreateWidget (OS.PtTimer (), timerHandle, args.length / 3, args);
+	if (timerId != 0) {
+		OS.PtRealizeWidget (timerId);
+		OS.PtAddCallback (timerId, OS.Pt_CB_TIMER_ACTIVATE, timerProc, index);
+		timerIds [index] = timerId;
 		timerList [index] = runnable;
-		timers [index] = handle;
 	}
-
 }
+
 int timerProc (int handle, int index, int info) {
 	if (timerList == null) return 0;
 	if (0 <= index && index < timerList.length) {
+		int timerId = timerIds [index];
 		Runnable runnable = timerList [index];
 		timerList [index] = null;
-		OS.PtDestroyWidget (timers [index]);
-		timers [index] = 0;
+		timerIds [index] = 0;
 		if (runnable != null) runnable.run ();
+		OS.PtDestroyWidget (timerId);
 	}
 	return 0;
 }
