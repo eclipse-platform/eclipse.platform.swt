@@ -494,6 +494,15 @@ public Rectangle getBounds () {
 	return new Rectangle(x, y, width, height);
 }
 /**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public Rectangle getCloseBounds() {
+	checkWidget();
+	return closeRect;
+}
+
+/**
 * Gets the control that is displayed in the content are of the tab item.
 *
 * @return the control

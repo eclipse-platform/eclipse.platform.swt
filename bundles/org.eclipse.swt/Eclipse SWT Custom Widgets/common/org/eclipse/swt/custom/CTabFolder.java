@@ -188,12 +188,7 @@ public class CTabFolder extends Composite {
 	static final int CURVE_LEFT = 30;
 	static final int CURVE_INDENT = 8;
 	static final int BUTTON_SIZE = 16;
-// Linda's curve
-//	static final int[] TOP_LEFT_CORNER = new int[] {0,9, 1,8, 1,7, 2,6, 2,5, 3,4, 4,3, 5,2, 6,2, 7,1, 8,1, 9,0};
-//	static final int[] TOP_RIGHT_CORNER = new int[] {-9,0, -8,1, -7,1, -6,2, -5,2, -4,3, -3,4, -2,5, -2,6, -1,7, -1,8, 0,9};
-//	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-9, 1,-8, 1,-7, 2,-6, 2,-5, 3,-4, 4,-3, 5,-2, 6,-2, 7,-1, 8,-1, 9,0};
-//	static final int[] BOTTOM_RIGHT_CORNER = new int[] {-9,0, -8,-1, -7,-1, -6,-2, -5,-2, -4,-3, -3,-4, -2,-5, -2,-6, -1,-7, -1,-8, 0,-9};
-// Mac / Windows XP curve
+
 	static final int[] TOP_LEFT_CORNER = new int[] {0,6, 1,5, 1,4, 4,1, 5,1, 6,0};
 	static final int[] TOP_RIGHT_CORNER = new int[] {-6,0, -5,1, -4,1, -1,4, -1,5, 0,6};
 	static final int[] BOTTOM_LEFT_CORNER = new int[] {0,-6, 1,-5, 1,-4, 4,-1, 5,-1, 6,0};
@@ -1182,6 +1177,14 @@ public boolean getBorderVisible() {
 	checkWidget();
 	return borderLeft == 1;
 }
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public Rectangle getChevronBounds() {
+	checkWidget();
+	return chevronRect;
+}
 public Rectangle getClientArea() {
 	checkWidget();
 	if (minimized) return new Rectangle(xClient, yClient, 0, 0);
@@ -1296,6 +1299,14 @@ char getMnemonic (String string) {
  	return '\0';
 }
 /**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public Rectangle getMinimizeBounds() {
+	checkWidget();
+	return minRect;
+}
+/**
  * Returns <code>true</code> if the receiver is minimized,
  * and false otherwise.
  * <p>
@@ -1321,6 +1332,14 @@ public boolean getMinimized() {
 public boolean getMinimizeVisible() {
 	checkWidget();
 	return showMin;
+}
+/**
+ * UNDER CONSTRUCTION
+ * @since 3.0
+ */
+public Rectangle getMaximizeBounds() {
+	checkWidget();
+	return maxRect;
 }
 /**
  * Returns <code>true</code> if the receiver is maximized,
@@ -3281,8 +3300,8 @@ void showList (Rectangle rect, int alignment) {
 			}
 		});
 	}
-	Point size = menu.getSize();
 	// Code commented due to bug 53404
+	//Point size = menu.getSize();
 	//int x = alignment == SWT.LEFT ? rect.x : rect.x + rect.width - size.x;
 	//int y = onBottom ? rect.y - size.y : rect.y + rect.height;
 	int x = rect.x;
