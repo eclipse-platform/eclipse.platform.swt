@@ -544,6 +544,7 @@ public void setText (String value) {
  */
 public void setWidth (int value) {
 	checkWidget ();
+	value = Math.max (value, 0);
 	if (width == value) return;							/* same value */
 	parent.updateColumnWidth (this, value);
 }

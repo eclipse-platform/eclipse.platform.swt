@@ -120,7 +120,6 @@ public TreeItem (Tree parent, int style, int index) {
 	int validItemIndex = parent.items.length;
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
 	this.parent = parent;
-	parent.createItem (this, index);
 	int columnCount = parent.columns.length;
 	if (columnCount > 0) {
 		displayTexts = new String [columnCount];
@@ -130,6 +129,7 @@ public TreeItem (Tree parent, int style, int index) {
 			images = new Image [columnCount];
 		}
 	}
+	parent.createItem (this, index);
 }
 /**
  * Constructs a new instance of this class given its parent
@@ -202,7 +202,6 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 	depth = parentItem.depth + 1;
 	int validItemIndex = parentItem.items.length;
 	if (!(0 <= index && index <= validItemIndex)) error (SWT.ERROR_INVALID_RANGE);
-	parentItem.addItem (this, index);
 	int columnCount = parent.columns.length;
 	if (columnCount > 0) {
 		displayTexts = new String [columnCount];
@@ -212,6 +211,7 @@ public TreeItem (TreeItem parentItem, int style, int index) {
 			images = new Image [columnCount];
 		}
 	}
+	parentItem.addItem (this, index);
 }
 /*
  * Updates internal structures in the receiver and its child items to handle the creation of a new column.
