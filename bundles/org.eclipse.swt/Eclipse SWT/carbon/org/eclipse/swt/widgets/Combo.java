@@ -832,6 +832,31 @@ public int getTextLimit () {
     return LIMIT; // NEEDS WORK
 }
 
+/**
+ * Gets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @return the number of items that are visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public int getVisibleCount () {
+	checkWidget ();
+	if ((style & SWT.READ_ONLY) != 0) {
+		//TODO
+		return getItemCount ();
+	} else {
+		int [] buffer = new int [1];
+		OS.GetControlData (handle, (short) OS.kControlEntireControl, OS.kHIComboBoxNumVisibleItemsTag, 4, buffer, null);
+		return buffer [0];
+	}
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.READ_ONLY) != 0) {
@@ -1421,6 +1446,29 @@ public void setTextLimit (int limit) {
 	checkWidget ();
 	if (limit == 0) error (SWT.ERROR_CANNOT_BE_ZERO);
 	// NEEDS WORK
+}
+
+/**
+ * Sets the number of items that are visible in the drop
+ * down portion of the receiver's list.
+ *
+ * @param count the new number of items to be visible
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.0
+ */
+public void setVisibleCount (int count) {
+	checkWidget ();
+	if (count < 0) return;
+	if ((style & SWT.READ_ONLY) != 0) {
+		//TODO 
+	} else {
+		OS.SetControlData (handle, OS.kControlEntireControl, OS.kHIComboBoxNumVisibleItemsTag, 4, new int[] {count});
+	}
 }
 
 }

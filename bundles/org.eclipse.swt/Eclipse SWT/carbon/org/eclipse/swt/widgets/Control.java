@@ -468,6 +468,7 @@ Control computeTabRoot () {
 void createWidget () {
 	checkOrientation (parent);
 	super.createWidget ();
+	setDefaultFont ();
 	setZOrder ();
 }
 
@@ -490,7 +491,8 @@ Color defaultForeground () {
 	return display.getSystemColor (SWT.COLOR_WIDGET_FOREGROUND);
 }
 
-int defaultThemeFont () {	
+int defaultThemeFont () {
+	if (display.smallFonts) return OS.kThemeSmallSystemFont;
 	return OS.kThemeSystemFont;
 }
 
@@ -505,6 +507,10 @@ void destroyWidget () {
 	if (theControl != 0) {
 		OS.DisposeControl (theControl);
 	}
+}
+
+boolean drawFocusRing () {
+	return !display.noFocusRing || getShell ().parent != null;
 }
 
 boolean drawGripper (int x, int y, int width, int height) {
@@ -2196,6 +2202,10 @@ public void setCursor (Cursor cursor) {
 	boolean [] cursorWasSet = new boolean [1];
 	OS.HandleControlSetCursor (theControl [0], where, (short) modifiers, cursorWasSet);
 	if (!cursorWasSet [0]) OS.SetThemeCursor (OS.kThemeArrowCursor);
+}
+
+void setDefaultFont () {
+	if (display.smallFonts) setFontStyle (getFont ());
 }
 
 /**
