@@ -760,6 +760,19 @@ public int indexOf (String string, int start) {
 	if (index == itemCount) return -1;
 	return index;
 }
+int processSelection (int callData) {
+	/*
+	* Bug in MOTIF.  If items have been added and removed from a
+	* combo then users are able to select an empty drop-down item
+	* in the combo once and force a resulting callback.  In such
+	* cases we want to eat this callback so that listeners are not
+	* notified.
+	*/
+	if (getSelectionIndex() == -1)
+		return 0;
+		
+	return super.processSelection(callData);
+}
 /**
  * Removes the item from the receiver's list at the given
  * zero-relative index.
