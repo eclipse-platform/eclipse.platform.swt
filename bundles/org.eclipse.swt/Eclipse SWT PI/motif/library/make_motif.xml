@@ -22,12 +22,22 @@
     <mkdir dir="${lib_destdir}" />
 </target>
 
-<target name="init_hpux">
+<target name="init_hpux_PA_RISC">
 	<tstamp/>
     <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
     <property name="jar_destdir" value="${fragment_dir}/ws/hpux" />
     <property name="lib_destdir" value="${fragment_dir}/os/hpux/PA_RISC" />
 	<property name="lib_extension" value=".sl"/>
+	
+    <mkdir dir="${lib_destdir}" />
+</target>
+
+<target name="init_hpux_ia64">
+	<tstamp/>
+    <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.motif" />
+    <property name="jar_destdir" value="${fragment_dir}/ws/hpux" />
+    <property name="lib_destdir" value="${fragment_dir}/os/hpux/ia64" />
+	<property name="lib_extension" value=".so"/>
 	
     <mkdir dir="${lib_destdir}" />
 </target>
@@ -63,8 +73,13 @@
 </target>
 
 <!-- Build swt.so for hpux PA_RISC -->
+<!-- Output .sl for this platform into the org.eclipse.swt.motif/os directory -->
+<target name="build_motif_hpux_PA_RISC_lib" depends="init_hpux_PA_RISC,build_file_lib">
+</target>
+
+<!-- Build swt.so for hpux ia64 -->
 <!-- Output .so for this platform into the org.eclipse.swt.motif/os directory -->
-<target name="build_motif_hpux_lib" depends="init_hpux,build_file_lib">
+<target name="build_motif_hpux_ia64_lib" depends="init_hpux_ia64,build_file_lib">
 </target>
 
 <!-- Build swt.so for solaris sparc -->

@@ -11,7 +11,7 @@
 #     Sridhar Bidigalu (ICS)
 #*******************************************************************************
 
-# Makefile for SWT libraries on HP-UX
+# Makefile for SWT libraries on HP-UX ia64 architechture
 
 include make_common.mak
 
@@ -29,13 +29,13 @@ CDE_HOME   = /usr/dt
 
 SWT_PREFIX   = swt
 WS_PREFIX    = motif
-SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).sl
+SWT_DLL      = lib$(SWT_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 SWT_OBJ      = callback.o os.o os_structs.o os_custom.o os_stats.o
 SWT_LIB      = -L$(MOTIF_HOME)/lib -L/usr/lib  \
 	       -G -lXm -lXt -lX11 -lc -ldld -lm -lXp -lXtst
 
 CDE_PREFIX   = swt-cde
-CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).sl
+CDE_DLL      = lib$(CDE_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).so
 CDE_OBJ      = cde.o
 CDE_LIB      = -G -L$(CDE_HOME)/lib -lDtSvc
 
@@ -50,8 +50,7 @@ CFLAGS = -Ae +z \
 	-I./ \
 	-I$(JAVA_HOME)/include -I$(JAVA_HOME)/include/hp-ux \
 	-I$(MOTIF_HOME)/include \
-	-I$(CDE_HOME)/include \
-	+DAportable
+	-I$(CDE_HOME)/include
 
 all: make_swt make_cde
 
@@ -66,5 +65,5 @@ $(CDE_DLL): $(CDE_OBJ)
 	ld -b -z -o $@ $(CDE_OBJ) $(CDE_LIB)
 
 clean:
-	rm -f *.sl *.o
+	rm -f *.so *.o
 
