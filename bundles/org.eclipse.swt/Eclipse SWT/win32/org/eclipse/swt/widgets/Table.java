@@ -735,8 +735,7 @@ void createItem (TableItem item, int index) {
 	LVITEM lvItem = new LVITEM ();
 	lvItem.iItem = index;
 	lvItem.pszText = OS.LPSTR_TEXTCALLBACK;
-	lvItem.mask |= OS.LVIF_TEXT;
-
+	lvItem.mask = OS.LVIF_TEXT | OS.LVIF_IMAGE;
 	/*
 	* Bug in Windows.  Despite the fact that the image list
 	* index has never been set for the item, Windows always
@@ -748,7 +747,6 @@ void createItem (TableItem item, int index) {
 	* the item is created.
 	*/
 	lvItem.iImage = OS.I_IMAGECALLBACK;
-	lvItem.mask |= OS.LVIF_IMAGE;
 
 	/* Insert the item */
 	ignoreSelect = true;
@@ -944,28 +942,32 @@ void destroyItem (TableColumn column) {
 	for (int i=0; i<itemCount; i++) {
 		TableItem item = items [i];
 		if (item != null) {
-			String [] strings = item.strings;
-			if (strings != null) {
-				if (columnCount == 0) {
-					item.strings = null;
-				} else {
+			if (columnCount == 0) {
+				item.strings = null;
+			} else {
+				String [] strings = item.strings;
+				if (strings != null) {
 					if (index == 0) item.text = strings [1];
 					String [] temp = new String [columnCount];
 					System.arraycopy (strings, 0, temp, 0, index);
 					System.arraycopy (strings, index + 1, temp, index, columnCount - index);
 					item.strings = temp;
+				} else {
+					if (index == 0) item.text = "";
 				}
 			}
-			Image [] images = item.images;
-			if (images != null) {
-				if (columnCount == 0) {
-					item.images = null;
-				} else {
+			if (columnCount == 0) {
+				item.images = null;
+			} else {
+				Image [] images = item.images;
+				if (images != null) {
 					if (index == 0) item.image = images [1];
 					Image [] temp = new Image [columnCount];
 					System.arraycopy (images, 0, temp, 0, index);
 					System.arraycopy (images, index + 1, temp, index, columnCount - index);
 					item.images = temp;
+				} else {
+					if (index == 0) item.image = null;
 				}
 			}
 			if (item.cellBackground != null) {
