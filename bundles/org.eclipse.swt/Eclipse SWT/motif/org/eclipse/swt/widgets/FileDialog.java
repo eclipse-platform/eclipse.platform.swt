@@ -11,7 +11,6 @@
 package org.eclipse.swt.widgets;
 
  
-import java.io.*; 
 import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.motif.*;
 import org.eclipse.swt.*;
@@ -40,7 +39,7 @@ public class FileDialog extends Dialog {
 	String fullPath;
 	boolean cancel = false;
 	static final String FILTER = "*";
-	static final String SEPARATOR = System.getProperty ("file.separator");
+	static final char SEPARATOR = System.getProperty ("file.separator").charAt (0);
 
 /**
  * Constructs a new instance of this class given only its
@@ -310,8 +309,11 @@ int okPressed (int widget, int client, int call) {
 		filterPath = new String (Converter.mbcsToWcs (null, buffer));
 	}
 	OS.XmStringFree (xmString2);
-	if (filterPath.endsWith (SEPARATOR)) {
-		filterPath = filterPath.substring (0, filterPath.length () - 1);
+	int length = filterPath.length ();
+	if (length > 0) {
+		if (filterPath.charAt (length - 1) == SEPARATOR) {
+			filterPath = filterPath.substring (0, length - 1);
+		}
 	}
 
 	this.fullPath = fullPath;
@@ -394,9 +396,9 @@ public String open () {
 
 	/* Compute the filter path */
 	if (filterPath == null) filterPath = "";
-	if (!filterPath.endsWith (SEPARATOR)) {
-		File dir = new File (filterPath);
-		if (dir.exists () && dir.isDirectory ()) filterPath += SEPARATOR;
+	int length = filterPath.length ();
+	if (length == 0 || filterPath.charAt (length - 1) != SEPARATOR) {
+		filterPath += SEPARATOR;
 	}
 	/* Use the character encoding for the default locale */
 	byte [] buffer3 = Converter.wcsToMbcs (null, filterPath, true);

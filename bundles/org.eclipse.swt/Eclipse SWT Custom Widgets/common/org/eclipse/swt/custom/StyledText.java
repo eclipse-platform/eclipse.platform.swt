@@ -551,8 +551,9 @@ public class StyledText extends Canvas {
 		
 		if (pageIndex != -1) {
 			final int PageTagLength = StyledTextPrintOptions.PAGE_TAG.length();
-			StringBuffer buffer = new StringBuffer(segment);
-			buffer.replace(pageIndex, pageIndex + PageTagLength, new Integer(page).toString());
+			StringBuffer buffer = new StringBuffer(segment.substring (0, pageIndex));
+			buffer.append (new Integer(page).toString());
+			buffer.append (segment.substring(pageIndex + PageTagLength));
 			segment = buffer.toString();
 		}
 		if (segment.length() > 0) {
@@ -1709,7 +1710,7 @@ public void setKeyBinding(int key, int action) {
 	int modifierValue = key & SWT.MODIFIER_MASK;
 	char keyChar = (char)keyValue;
 
-	if (Character.isLetter(keyChar)) {
+	if (Compatibility.isLetter(keyChar)) {
 		// make the keybinding case insensitive by adding it
 		// in its upper and lower case form
 		char ch = Character.toUpperCase(keyChar);
