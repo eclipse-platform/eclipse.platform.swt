@@ -1715,9 +1715,9 @@ static void blit(int op,
 
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
-	final int sfxi = (dwm1 != 0) ? ((srcWidth << 16) - 1) / dwm1 : 0;
+	final int sfxi = (dwm1 != 0) ? (int)((((long)srcWidth << 16) - 1) / dwm1) : 0;
 	final int dhm1 = destHeight - 1;
-	final int sfyi = (dhm1 != 0) ? ((srcHeight << 16) - 1) / dhm1 : 0;
+	final int sfyi = (dhm1 != 0) ? (int)((((long)srcHeight << 16) - 1) / dhm1) : 0;
 
 	/*** Prepare source-related data ***/
 	final int sbpp, stype;
@@ -2135,9 +2135,9 @@ static void blit(int op,
 
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
-	final int sfxi = (dwm1 != 0) ? ((srcWidth << 16) - 1) / dwm1 : 0;
+	final int sfxi = (dwm1 != 0) ? (int)((((long)srcWidth << 16) - 1) / dwm1) : 0;
 	final int dhm1 = destHeight - 1;
-	final int sfyi = (dhm1 != 0) ? ((srcHeight << 16) - 1) / dhm1 : 0;
+	final int sfyi = (dhm1 != 0) ? (int)((((long)srcHeight << 16) - 1) / dhm1) : 0;
 
 	/*** Prepare source-related data ***/
 	final int stype;
@@ -2663,9 +2663,9 @@ static void blit(int op,
 
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
-	final int sfxi = (dwm1 != 0) ? ((srcWidth << 16) - 1) / dwm1 : 0;
+	final int sfxi = (dwm1 != 0) ? (int)((((long)srcWidth << 16) - 1) / dwm1) : 0;
 	final int dhm1 = destHeight - 1;
-	final int sfyi = (dhm1 != 0) ? ((srcHeight << 16) - 1) / dhm1 : 0;
+	final int sfyi = (dhm1 != 0) ? (int)((((long)srcHeight << 16) - 1) / dhm1) : 0;
 
 	/*** Prepare source-related data ***/
 	final int stype;
@@ -3000,9 +3000,9 @@ static void blit(int op,
 
 	/*** Prepare scaling data ***/
 	final int dwm1 = destWidth - 1;
-	final int sfxi = (dwm1 != 0) ? ((srcWidth << 16) - 1) / dwm1 : 0;
+	final int sfxi = (dwm1 != 0) ? (int)((((long)srcWidth << 16) - 1) / dwm1) : 0;
 	final int dhm1 = destHeight - 1;
-	final int sfyi = (dhm1 != 0) ? ((srcHeight << 16) - 1) / dhm1 : 0;
+	final int sfyi = (dhm1 != 0) ? (int)((((long)srcHeight << 16) - 1) / dhm1) : 0;
 
 	/*** Prepare source-related data ***/
 	final int sbpp, stype;
