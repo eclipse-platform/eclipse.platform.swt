@@ -11,6 +11,7 @@
 package org.eclipse.swt.widgets;
 
 
+import org.eclipse.swt.internal.carbon.FontInfo;
 import org.eclipse.swt.internal.carbon.OS;
 
 import org.eclipse.swt.*;
@@ -109,25 +110,31 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			width = r.width;
 			height = r.height;
 		} else {
-			int [] ptr = new int [1];
-			int [] actualSize = new int [1];
-			OS.GetControlData (handle, (short)0 , OS.kControlStaticTextCFStringTag, 4, ptr, actualSize);
-			if (ptr [0] != 0) {
-				org.eclipse.swt.internal.carbon.Point bounds = new org.eclipse.swt.internal.carbon.Point ();
-				short [] baseLine = new short [1];
-				boolean wrap = false;
-				if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
-					wrap = true;
-					bounds.h = (short) wHint;
+			width = DEFAULT_WIDTH;
+			height = DEFAULT_HEIGHT;
+			if (text.length () != 0) {
+				int [] ptr = new int [1];
+				int [] actualSize = new int [1];
+				OS.GetControlData (handle, (short)0 , OS.kControlStaticTextCFStringTag, 4, ptr, actualSize);
+				if (ptr [0] != 0) {
+					org.eclipse.swt.internal.carbon.Point bounds = new org.eclipse.swt.internal.carbon.Point ();
+					short [] baseLine = new short [1];
+					boolean wrap = false;
+					if ((style & SWT.WRAP) != 0 && wHint != SWT.DEFAULT) {
+						wrap = true;
+						bounds.h = (short) wHint;
+					}
+					// NEEDS work - only works for default font
+					OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemeSystemFont, OS.kThemeStateActive, wrap, bounds, baseLine);
+					width = bounds.h;
+					height = bounds.v;
+					OS.CFRelease (ptr [0]);
 				}
-				// NEEDS work - only works for default font
-				OS.GetThemeTextDimensions (ptr [0], (short)OS.kThemeSystemFont, OS.kThemeStateActive, wrap, bounds, baseLine);
-				width = bounds.h;
-				height = bounds.v;
-				OS.CFRelease (ptr [0]);
 			} else {
-				width = DEFAULT_WIDTH;
-				height = DEFAULT_HEIGHT;
+				Font font = getFont ();
+				FontInfo info = new FontInfo ();
+				OS.FetchFontInfo(font.id, font.size, font.style, info);
+				height = info.ascent + info.descent;
 			}
 		}
 	}
