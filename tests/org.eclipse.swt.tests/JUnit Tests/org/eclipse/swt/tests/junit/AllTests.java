@@ -141,7 +141,7 @@ public AllTests() {
 	addTest(Test_org_eclipse_swt_custom_PopupList.suite());
 	addTest(Test_org_eclipse_swt_custom_CTabItem.suite());
 	addTest(Test_org_eclipse_swt_custom_BusyIndicator.suite());
-	//addTest(Test_org_eclipse_swt_custom_StyledText.suite());
+	addTest(Test_org_eclipse_swt_custom_StyledText.suite());
 	addTest(Test_org_eclipse_swt_custom_ControlEditor.suite());
 	addTest(Test_org_eclipse_swt_custom_ST.suite());
 	addTest(Test_org_eclipse_swt_custom_CTabFolder.suite());
