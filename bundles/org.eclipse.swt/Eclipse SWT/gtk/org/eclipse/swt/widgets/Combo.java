@@ -1277,8 +1277,7 @@ void setBackgroundColor (GdkColor color) {
 }
 
 int setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
-	int newHeight = (resize && (style & SWT.DROP_DOWN) != 0) ? getTextHeight () : height;
-	return super.setBounds (x, y, width, newHeight, move, resize);
+	return super.setBounds (x, y, width, getTextHeight (), move, resize);
 }
 
 void setFontDescription (int /*long*/ font) {
