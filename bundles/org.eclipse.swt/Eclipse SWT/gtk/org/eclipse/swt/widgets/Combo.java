@@ -1179,53 +1179,25 @@ public void setItems (String [] items) {
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
 	setItems (items, false, false);
 }
-	
+
 void setItems (String [] items, boolean keepText, boolean keepSelection) {
 	this.items = items;
 	String text = keepText ? getText() : "";
 	int selectedIndex = keepSelection ? getSelectionIndex() : -1;
 	ignoreSelect = true;
-	if (items.length == 0) {
-		int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
-		if (itemsList != 0) {
-			int count = OS.g_list_length (itemsList);
-			for (int i=count - 1; i>=0; i--) {
-				int /*long*/ widget = OS.g_list_nth_data (itemsList, i);
-				OS.gtk_container_remove (listHandle, widget);
-			}
-			OS.g_list_free (itemsList);
-		}
-	} else {
-		int /*long*/ glist = 0;
-		for (int i=0; i<items.length; i++) {
-			String string = items [i];
-			if (string == null) break;
-			byte [] buffer = Converter.wcsToMbcs (null, string, true);
-			int /*long*/ data = OS.g_malloc (buffer.length);
-			OS.memmove (data, buffer, buffer.length);
-			glist = OS.g_list_append (glist, data);
-		}
-		OS.gtk_combo_set_popdown_strings (handle, glist);
-		if (glist != 0) {
-			int count = OS.g_list_length (glist);
-			for (int i=0; i<count; i++) {
-				int /*long*/ data = OS.g_list_nth_data (glist, i);
-				if (data != 0) OS.g_free (data);
-			}
-			OS.g_list_free (glist);
-		}
-		int /*long*/ itemsList = OS.gtk_container_get_children (listHandle);
-		if (itemsList != 0) {
-			int /*long*/ font = getFontDescription ();
-			GdkColor color = getForegroundColor ();
-			int count = OS.g_list_length (itemsList);
-			for (int i=count - 1; i>=0; i--) {
-				int /*long*/ widget = OS.gtk_bin_get_child (OS.g_list_nth_data (itemsList, i));
-				OS.gtk_widget_modify_fg (widget,  OS.GTK_STATE_NORMAL, color);
-				OS.gtk_widget_modify_font (widget, font);
-			}
-			OS.g_list_free (itemsList);
-		}
+	OS.gtk_list_clear_items (listHandle, 0, -1);
+	int /*long*/ font = getFontDescription ();
+	GdkColor color = getForegroundColor ();
+	for (int i=0; i<items.length; i++) {
+		String string = items [i];
+		if (string == null) break;
+		byte [] buffer = Converter.wcsToMbcs (null, string, true);
+		int /*long*/ item = OS.gtk_list_item_new_with_label (buffer);
+		int /*long*/ label = OS.gtk_bin_get_child (item); 
+		OS.gtk_widget_modify_fg (label, OS.GTK_STATE_NORMAL, color);
+		OS.gtk_widget_modify_font (label, font);
+		OS.gtk_container_add (listHandle, item);
+		OS.gtk_widget_show (item);
 	}
 	OS.gtk_entry_set_text (entryHandle, Converter.wcsToMbcs (null, selectedIndex != -1 ? items [selectedIndex] : text, true));
 	ignoreSelect = false;

@@ -5893,6 +5893,31 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1label_1set_1text_1with_1mnemonic)
 }
 #endif
 
+#ifndef NO_gtk_1list_1clear_1items
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1list_1clear_1items)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	OS_NATIVE_ENTER(env, that, gtk_1list_1clear_1items_FUNC);
+	gtk_list_clear_items((GtkList *)arg0, arg1, arg2);
+	OS_NATIVE_EXIT(env, that, gtk_1list_1clear_1items_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1list_1item_1new_1with_1label
+JNIEXPORT jint JNICALL OS_NATIVE(gtk_1list_1item_1new_1with_1label)
+	(JNIEnv *env, jclass that, jbyteArray arg0)
+{
+	jbyte *lparg0=NULL;
+	jint rc;
+	OS_NATIVE_ENTER(env, that, gtk_1list_1item_1new_1with_1label_FUNC);
+	if (arg0) lparg0 = (*env)->GetByteArrayElements(env, arg0, NULL);
+	rc = (jint)gtk_list_item_new_with_label(lparg0);
+	if (arg0) (*env)->ReleaseByteArrayElements(env, arg0, lparg0, 0);
+	OS_NATIVE_EXIT(env, that, gtk_1list_1item_1new_1with_1label_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_gtk_1list_1store_1append
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1list_1store_1append)
 	(JNIEnv *env, jclass that, jint arg0, jint arg1)

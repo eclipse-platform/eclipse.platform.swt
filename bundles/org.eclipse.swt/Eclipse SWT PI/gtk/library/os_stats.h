@@ -485,6 +485,8 @@ typedef enum {
 	gtk_1label_1set_1line_1wrap_FUNC,
 	gtk_1label_1set_1text_FUNC,
 	gtk_1label_1set_1text_1with_1mnemonic_FUNC,
+	gtk_1list_1clear_1items_FUNC,
+	gtk_1list_1item_1new_1with_1label_FUNC,
 	gtk_1list_1store_1append_FUNC,
 	gtk_1list_1store_1clear_FUNC,
 	gtk_1list_1store_1insert_FUNC,

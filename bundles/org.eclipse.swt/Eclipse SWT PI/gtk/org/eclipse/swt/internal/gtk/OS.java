@@ -886,6 +886,8 @@ public static final synchronized native void gtk_label_set_justify(int /*long*/ 
 public static final synchronized native void gtk_label_set_line_wrap(int /*long*/ label, boolean wrap);
 public static final synchronized native void gtk_label_set_text(int /*long*/ label, int /*long*/ str);
 public static final synchronized native void gtk_label_set_text_with_mnemonic(int /*long*/ label, byte[] str);
+public static final synchronized native void gtk_list_clear_items(int /*long*/ list, int start, int end);
+public static final synchronized native int /*long*/ gtk_list_item_new_with_label(byte[] label);
 public static final synchronized native void gtk_list_store_append(int /*long*/ list_store, int /*long*/ iter);
 public static final synchronized native void gtk_list_store_clear(int /*long*/ store);
 public static final synchronized native void gtk_list_store_insert(int /*long*/ list_store, int /*long*/ iter, int position);
