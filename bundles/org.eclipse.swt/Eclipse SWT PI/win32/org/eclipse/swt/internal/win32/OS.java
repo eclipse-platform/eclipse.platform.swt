@@ -939,6 +939,8 @@ public class OS {
 	public static final int SM_CYCURSOR = 0xe;
 	public static final int SM_CYHSCROLL = 0x3;
 	public static final int SM_CYMENU = 0xf;
+	public static final int SM_CXMINTRACK = 34;
+	public static final int SM_CYMINTRACK = 35;
 	public static final int SM_CYSCREEN = 0x1;
 	public static final int SM_CYVSCROLL = 0x14;
 	public static final int SPI_GETHIGHCONTRAST = 66;
@@ -1291,6 +1293,7 @@ public class OS {
 	public static final int WM_GETFONT = 0x31;
 //	public static final int WM_GETICON = 0x7f;
 	public static final int WM_GETOBJECT = 0x003D;
+	public static final int WM_GETMINMAXINFO = 0x0024;
 	public static final int WM_HELP = 0x53;
 	public static final int WM_HOTKEY = 0x0312;
 	public static final int WM_HSCROLL = 0x114;
@@ -2481,6 +2484,7 @@ public static final native void MoveMemory (int Destination, GRADIENT_RECT Sourc
 public static final native void MoveMemory (int Destination, LOGFONTW Source, int Length);
 public static final native void MoveMemory (int Destination, LOGFONTA Source, int Length);
 public static final native void MoveMemory (int Destination, MEASUREITEMSTRUCT Source, int Length);
+public static final native void MoveMemory (int Destination, MINMAXINFO Source, int Length);
 public static final native void MoveMemory (int Destination, MSG Source, int Length);
 public static final native void MoveMemory (int Destination, NMTTDISPINFOW Source, int Length);
 public static final native void MoveMemory (int Destination, NMTTDISPINFOA Source, int Length);
@@ -2494,6 +2498,7 @@ public static final native void MoveMemory (HELPINFO Destination, int Source, in
 public static final native void MoveMemory (LOGFONTW Destination, int Source, int Length);
 public static final native void MoveMemory (LOGFONTA Destination, int Source, int Length);
 public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, int Source, int Length);
+public static final native void MoveMemory (MINMAXINFO Destination, int Source, int Length);
 public static final native void MoveMemory (POINT Destination, int Source, int Length);
 public static final native void MoveMemory (NMHDR Destination, int Source, int Length);
 public static final native void MoveMemory (NMRGINFO Destination, int Source, int Length);

@@ -475,6 +475,8 @@ public class OS {
 	public static final int XmNmenuBar = malloc ("menuBar", 4);
 	public static final int XmNmessageString = malloc ("messageString", 4);
 	public static final int XmNminimum = malloc ("minimum", 4);
+	public static final int XmNminHeight = malloc ("minHeight", 4);
+	public static final int XmNminWidth = malloc ("minWidth", 4);
 	public static final int XmNmnemonic = malloc ("mnemonic", 4);
 	public static final int XmNmodifyVerifyCallback = malloc ("modifyVerifyCallback", 4);
 	public static final int XmNmultipleSelectionCallback = malloc ("multipleSelectionCallback", 4);

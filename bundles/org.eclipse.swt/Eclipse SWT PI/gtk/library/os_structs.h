@@ -207,6 +207,18 @@ void setGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpStruct);
 #define GdkGCValues_sizeof() 0
 #endif
 
+#ifndef NO_GdkGeometry
+void cacheGdkGeometryFields(JNIEnv *env, jobject lpObject);
+GdkGeometry *getGdkGeometryFields(JNIEnv *env, jobject lpObject, GdkGeometry *lpStruct);
+void setGdkGeometryFields(JNIEnv *env, jobject lpObject, GdkGeometry *lpStruct);
+#define GdkGeometry_sizeof() sizeof(GdkGeometry)
+#else
+#define cacheGdkGeometryFields(a,b)
+#define getGdkGeometryFields(a,b,c) NULL
+#define setGdkGeometryFields(a,b,c)
+#define GdkGeometry_sizeof() 0
+#endif
+
 #ifndef NO_GdkImage
 void cacheGdkImageFields(JNIEnv *env, jobject lpObject);
 GdkImage *getGdkImageFields(JNIEnv *env, jobject lpObject, GdkImage *lpStruct);

@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 869;
-int OS_nativeFunctionCallCount[869];
+int OS_nativeFunctionCount = 871;
+int OS_nativeFunctionCallCount[871];
 char * OS_nativeFunctionNames[] = {
 	"GDK_1DISPLAY", 
 	"GDK_1ROOT_1PARENT", 
@@ -72,6 +72,7 @@ char * OS_nativeFunctionNames[] = {
 	"GdkEventWindowState_1sizeof", 
 	"GdkEvent_1sizeof", 
 	"GdkGCValues_1sizeof", 
+	"GdkGeometry_1sizeof", 
 	"GdkImage_1sizeof", 
 	"GdkRectangle_1sizeof", 
 	"GdkVisual_1sizeof", 
@@ -753,6 +754,7 @@ char * OS_nativeFunctionNames[] = {
 	"gtk_1window_1resize", 
 	"gtk_1window_1set_1default", 
 	"gtk_1window_1set_1destroy_1with_1parent", 
+	"gtk_1window_1set_1geometry_1hints", 
 	"gtk_1window_1set_1modal", 
 	"gtk_1window_1set_1resizable", 
 	"gtk_1window_1set_1title", 

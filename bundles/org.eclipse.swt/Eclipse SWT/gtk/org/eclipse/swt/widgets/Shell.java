@@ -103,6 +103,7 @@ public class Shell extends Decorations {
 	int /*long*/ shellHandle, tooltipsHandle;
 	boolean hasFocus, mapped;
 	int oldX, oldY, oldWidth, oldHeight;
+	int minWidth, minHeight;
 	Control lastActive;
 	Region region;
 
@@ -630,6 +631,11 @@ public Point getLocation () {
 	return new Point (x [0], y [0]);
 }
 
+public Point getMinimumSize () {
+	checkWidget ();
+	return new Point (minWidth + trimWidth (), minHeight + trimHeight ());
+}
+
 public Point getSize () {
 	checkWidget ();
 	int width = OS.GTK_WIDGET_WIDTH (scrolledHandle);
@@ -985,8 +991,8 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 	if (resize) {
 		int [] w = new int [1], h = new int [1];
 		OS.gtk_window_get_size (shellHandle, w, h);
-		width = Math.max (1, width - trimWidth ());
-		height = Math.max (1, height - trimHeight ());
+		width = Math.max (1, Math.max (minWidth, width - trimWidth ()));
+		height = Math.max (1, Math.max (minHeight, height - trimHeight ()));
 		OS.gtk_window_resize (shellHandle, width, height);
 		boolean changed = width != oldWidth || height != oldHeight;
 		if (changed) {
@@ -1132,6 +1138,20 @@ public void setMinimized (boolean minimized) {
 		OS.gtk_window_deiconify (shellHandle);
 		bringToTop (false);
 	}
+}
+
+public void setMinimumSize (int width, int height) {
+	checkWidget ();
+	GdkGeometry geometry = new GdkGeometry ();
+	geometry.min_width = minWidth = Math.max (0, width - trimWidth ());
+	geometry.min_height = minHeight = Math.max (0, height - trimHeight ());
+	OS.gtk_window_set_geometry_hints (shellHandle, 0, geometry, OS.GDK_HINT_MIN_SIZE);
+}
+
+public void setMinimumSize (Point size) {
+	checkWidget ();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setMinimumSize (size.x, size.y);
 }
 
 /**

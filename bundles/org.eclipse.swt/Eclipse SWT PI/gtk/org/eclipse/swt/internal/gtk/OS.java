@@ -100,6 +100,7 @@ public class OS {
 	public static final int GDK_GRAB_SUCCESS = 0x0;
 	public static final int GDK_HAND1 = 0x3a;
 	public static final int GDK_Help = 0xFF6A;
+	public static final int GDK_HINT_MIN_SIZE = 1 << 1;
 	public static final int GDK_Home = 0xff50;
 	public static final int GDK_INCLUDE_INFERIORS = 0x1;
 	public static final int GDK_INPUT_ONLY = 1;
@@ -395,6 +396,7 @@ public static final synchronized native int GdkEventMotion_sizeof();
 public static final synchronized native int GdkEventVisibility_sizeof();
 public static final synchronized native int GdkEventWindowState_sizeof();
 public static final synchronized native int GdkGCValues_sizeof();
+public static final synchronized native int GdkGeometry_sizeof();
 public static final synchronized native int GdkImage_sizeof();
 public static final synchronized native int GdkRectangle_sizeof();
 public static final synchronized native int GdkVisual_sizeof();
@@ -1147,6 +1149,7 @@ public static final synchronized native void gtk_window_remove_accel_group(int /
 public static final synchronized native void gtk_window_resize(int /*long*/ handle, int x, int y);
 public static final synchronized native void gtk_window_set_default(int /*long*/ window, int /*long*/ widget);
 public static final synchronized native void gtk_window_set_destroy_with_parent(int /*long*/ window, boolean setting);
+public static final synchronized native void gtk_window_set_geometry_hints(int /*long*/ window, int /*long*/ geometry_widget, GdkGeometry geometry, int geom_mask);
 public static final synchronized native void gtk_window_set_modal(int /*long*/ window, boolean modal);
 public static final synchronized native void gtk_window_set_resizable(int /*long*/ window, boolean resizable);
 public static final synchronized native void gtk_window_set_title(int /*long*/ window, byte[] title);

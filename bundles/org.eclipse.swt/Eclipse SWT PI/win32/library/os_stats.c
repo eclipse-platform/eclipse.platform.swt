@@ -1,21 +1,21 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+* Copyright (c) 2000, 2004 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 576;
-int OS_nativeFunctionCallCount[576];
+int OS_nativeFunctionCount = 578;
+int OS_nativeFunctionCallCount[578];
 char * OS_nativeFunctionNames[] = {
 	"AbortDoc", 
 	"ActivateKeyboardLayout", 
@@ -343,6 +343,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTA_2I", 
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_LOGFONTW_2I", 
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2I", 
+	"MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I", 
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I", 
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_MSG_2I", 
 	"MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I", 
@@ -366,6 +367,7 @@ char * OS_nativeFunctionNames[] = {
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTA_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_LOGFONTW_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II", 
+	"MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_MSG_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II", 
 	"MoveMemory__Lorg_eclipse_swt_internal_win32_NMHDR_2II", 

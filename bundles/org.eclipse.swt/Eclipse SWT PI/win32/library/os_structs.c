@@ -1,13 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+* Copyright (c) 2000, 2004 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -1886,6 +1886,64 @@ void setMENUITEMINFOFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpStruct
 #ifndef _WIN32_WCE
 	(*env)->SetIntField(env, lpObject, MENUITEMINFOFc.hbmpItem, (jint)lpStruct->hbmpItem);
 #endif
+}
+#endif
+
+#ifndef NO_MINMAXINFO
+typedef struct MINMAXINFO_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID ptReserved_x, ptReserved_y, ptMaxSize_x, ptMaxSize_y, ptMaxPosition_x, ptMaxPosition_y, ptMinTrackSize_x, ptMinTrackSize_y, ptMaxTrackSize_x, ptMaxTrackSize_y;
+} MINMAXINFO_FID_CACHE;
+
+MINMAXINFO_FID_CACHE MINMAXINFOFc;
+
+void cacheMINMAXINFOFields(JNIEnv *env, jobject lpObject)
+{
+	if (MINMAXINFOFc.cached) return;
+	MINMAXINFOFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	MINMAXINFOFc.ptReserved_x = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptReserved_x", "I");
+	MINMAXINFOFc.ptReserved_y = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptReserved_y", "I");
+	MINMAXINFOFc.ptMaxSize_x = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptMaxSize_x", "I");
+	MINMAXINFOFc.ptMaxSize_y = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptMaxSize_y", "I");
+	MINMAXINFOFc.ptMaxPosition_x = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptMaxPosition_x", "I");
+	MINMAXINFOFc.ptMaxPosition_y = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptMaxPosition_y", "I");
+	MINMAXINFOFc.ptMinTrackSize_x = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptMinTrackSize_x", "I");
+	MINMAXINFOFc.ptMinTrackSize_y = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptMinTrackSize_y", "I");
+	MINMAXINFOFc.ptMaxTrackSize_x = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptMaxTrackSize_x", "I");
+	MINMAXINFOFc.ptMaxTrackSize_y = (*env)->GetFieldID(env, MINMAXINFOFc.clazz, "ptMaxTrackSize_y", "I");
+	MINMAXINFOFc.cached = 1;
+}
+
+MINMAXINFO *getMINMAXINFOFields(JNIEnv *env, jobject lpObject, MINMAXINFO *lpStruct)
+{
+	if (!MINMAXINFOFc.cached) cacheMINMAXINFOFields(env, lpObject);
+	lpStruct->ptReserved.x = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptReserved_x);
+	lpStruct->ptReserved.y = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptReserved_y);
+	lpStruct->ptMaxSize.x = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptMaxSize_x);
+	lpStruct->ptMaxSize.y = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptMaxSize_y);
+	lpStruct->ptMaxPosition.x = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptMaxPosition_x);
+	lpStruct->ptMaxPosition.y = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptMaxPosition_y);
+	lpStruct->ptMinTrackSize.x = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptMinTrackSize_x);
+	lpStruct->ptMinTrackSize.y = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptMinTrackSize_y);
+	lpStruct->ptMaxTrackSize.x = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptMaxTrackSize_x);
+	lpStruct->ptMaxTrackSize.y = (*env)->GetIntField(env, lpObject, MINMAXINFOFc.ptMaxTrackSize_y);
+	return lpStruct;
+}
+
+void setMINMAXINFOFields(JNIEnv *env, jobject lpObject, MINMAXINFO *lpStruct)
+{
+	if (!MINMAXINFOFc.cached) cacheMINMAXINFOFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptReserved_x, (jint)lpStruct->ptReserved.x);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptReserved_y, (jint)lpStruct->ptReserved.y);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptMaxSize_x, (jint)lpStruct->ptMaxSize.x);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptMaxSize_y, (jint)lpStruct->ptMaxSize.y);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptMaxPosition_x, (jint)lpStruct->ptMaxPosition.x);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptMaxPosition_y, (jint)lpStruct->ptMaxPosition.y);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptMinTrackSize_x, (jint)lpStruct->ptMinTrackSize.x);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptMinTrackSize_y, (jint)lpStruct->ptMinTrackSize.y);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptMaxTrackSize_x, (jint)lpStruct->ptMaxTrackSize.x);
+	(*env)->SetIntField(env, lpObject, MINMAXINFOFc.ptMaxTrackSize_y, (jint)lpStruct->ptMaxTrackSize.y);
 }
 #endif
 

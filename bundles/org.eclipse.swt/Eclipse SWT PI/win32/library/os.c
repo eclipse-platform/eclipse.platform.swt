@@ -1,13 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+* Copyright (c) 2000, 2004 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "swt.h"
 #include "os_structs.h"
@@ -4913,6 +4913,18 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_ME
 }
 #endif
 
+#ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I)
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	MINMAXINFO _arg1, *lparg1=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I_FUNC);
+	if (arg1) lparg1 = getMINMAXINFOFields(env, arg1, &_arg1);
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+	OS_NATIVE_EXIT(env, that, MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I_FUNC);
+}
+#endif
+
 #ifndef NO_MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I
 JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__ILorg_eclipse_swt_internal_win32_MOUSEINPUT_2I)
 	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
@@ -5300,6 +5312,19 @@ JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_MEA
 	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
 	if (arg0) setMEASUREITEMSTRUCTFields(env, arg0, lparg0);
 	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II_FUNC);
+}
+#endif
+
+#ifndef NO_MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II
+JNIEXPORT void JNICALL OS_NATIVE(MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II)
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	MINMAXINFO _arg0, *lparg0=NULL;
+	OS_NATIVE_ENTER(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II_FUNC);
+	if (arg0) lparg0 = &_arg0;
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+	if (arg0) setMINMAXINFOFields(env, arg0, lparg0);
+	OS_NATIVE_EXIT(env, that, MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II_FUNC);
 }
 #endif
 

@@ -101,6 +101,7 @@ import org.eclipse.swt.events.*;
 public class Shell extends Decorations {
 	Menu activeMenu;
 	int hIMC, hwndMDIClient, toolTipHandle, lpstrTip;
+	int minWidth = SWT.DEFAULT, minHeight = SWT.DEFAULT;
 	int [] brushes;
 	boolean showWithParent;
 	Control lastActive;
@@ -631,6 +632,42 @@ public Point getLocation () {
 	return new Point (rect.left, rect.top);
 }
 
+/**
+ * Returns a point describing the minimum receiver's size. The
+ * x coordinate of the result is the minimum width of the receiver.
+ * The y coordinate of the result is the minimum height of the
+ * receiver.
+ *
+ * @return the receiver's size
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public Point getMinimumSize () {
+	checkWidget ();
+	int width = Math.max (0, minWidth);
+	int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+		width = Math.max (width, OS.GetSystemMetrics (OS.SM_CXMINTRACK));
+	}
+	int height = Math.max (0, minHeight);
+	if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+		if ((style & SWT.RESIZE) != 0) {
+			height = Math.max (height, OS.GetSystemMetrics (OS.SM_CYMINTRACK));
+		} else {
+			RECT rect = new RECT ();
+			int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+			OS.AdjustWindowRectEx (rect, bits, false, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+			height = Math.max (height, rect.bottom - rect.top);
+		}
+	}
+	return new Point (width,  height);
+}
+
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.
@@ -1009,6 +1046,53 @@ public void setImeInputMode (int mode) {
 		}
 	}
 	OS.ImmReleaseContext (handle, hIMC);
+}
+
+/**
+ * Sets the receiver's minimum size to the point specified by the arguments.
+ * If the new minimum size is larger than the current size of the receiver,
+ * the receiver is resized to the new minimum size.
+ *
+ * @param width the new minimum width for the receiver
+ * @param height the new minimum height for the receiver
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public void setMinimumSize (int width, int height) {
+	checkWidget ();
+	minWidth = width == SWT.DEFAULT ? SWT.DEFAULT : Math.max (0, width);
+	minHeight = height == SWT.DEFAULT ? SWT.DEFAULT : Math.max (0, height);
+	Point size = getSize ();
+	int newWidth = Math.max (size.x, minWidth), newHeight = Math.max (size.y, minHeight);
+	if (newWidth != size.x || newHeight != size.y) setSize (newWidth, newHeight);
+}
+
+/**
+ * Sets the receiver's minimum size to the point specified by the argument.
+ * If the new minimum size is larger than the current size of the receiver,
+ * the receiver is resized to the new minimum size.
+ *
+ * @param size the new minimum size for the receiver
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the point is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 3.1
+ */
+public void setMinimumSize (Point size) {
+	checkWidget ();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setMinimumSize (size.x, size.y);
 }
 
 void setItemEnabled (int cmd, boolean enabled) {
@@ -1400,6 +1484,20 @@ LRESULT WM_ENTERIDLE (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_GETMINMAXINFO (int wParam, int lParam) {
+	LRESULT result = super.WM_GETMINMAXINFO (wParam, lParam);
+	if (result != null) return result;
+	if (minWidth != SWT.DEFAULT || minHeight != SWT.DEFAULT) {
+		MINMAXINFO info = new MINMAXINFO ();
+		OS.MoveMemory (info, lParam, MINMAXINFO.sizeof);
+		if (minWidth != SWT.DEFAULT) info.ptMinTrackSize_x = minWidth;
+		if (minHeight != SWT.DEFAULT) info.ptMinTrackSize_y = minHeight;
+		OS.MoveMemory (lParam, info, MINMAXINFO.sizeof);
+		return LRESULT.ZERO;
+	}
+	return result;
+}
+
 LRESULT WM_MOUSEACTIVATE (int wParam, int lParam) {
 	LRESULT result = super.WM_MOUSEACTIVATE (wParam, lParam);
 	if (result != null) return result;
@@ -1652,4 +1750,30 @@ LRESULT WM_SHOWWINDOW (int wParam, int lParam) {
 	return result;
 }
 
+LRESULT WM_WINDOWPOSCHANGING (int wParam, int lParam) {
+	LRESULT result = super.WM_WINDOWPOSCHANGING (wParam,lParam);
+	if (result != null) return result;
+	WINDOWPOS lpwp = new WINDOWPOS ();
+	OS.MoveMemory (lpwp, lParam, WINDOWPOS.sizeof);
+	if ((lpwp.flags & OS.SWP_NOSIZE) == 0) {
+		lpwp.cx = Math.max (lpwp.cx, minWidth);
+		int trim = SWT.TITLE | SWT.CLOSE | SWT.MIN | SWT.MAX;
+		if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+			lpwp.cx = Math.max (lpwp.cx, OS.GetSystemMetrics (OS.SM_CXMINTRACK));
+		}
+		lpwp.cy = Math.max (lpwp.cy, minHeight);
+		if ((style & SWT.NO_TRIM) == 0 && (style & trim) != 0) {
+			if ((style & SWT.RESIZE) != 0) {
+				lpwp.cy = Math.max (lpwp.cy, OS.GetSystemMetrics (OS.SM_CYMINTRACK));
+			} else {
+				RECT rect = new RECT ();
+				int bits = OS.GetWindowLong (handle, OS.GWL_STYLE);
+				OS.AdjustWindowRectEx (rect, bits, false, OS.GetWindowLong (handle, OS.GWL_EXSTYLE));
+				lpwp.cy = Math.max (lpwp.cy, rect.bottom - rect.top);
+			}
+		}
+		OS.MoveMemory (lParam, lpwp, WINDOWPOS.sizeof);
+	}
+	return result;
+}
 }

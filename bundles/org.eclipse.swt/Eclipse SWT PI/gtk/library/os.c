@@ -612,6 +612,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(GdkGCValues_1sizeof)
 }
 #endif
 
+#ifndef NO_GdkGeometry_1sizeof
+JNIEXPORT jint JNICALL OS_NATIVE(GdkGeometry_1sizeof)
+	(JNIEnv *env, jclass that)
+{
+	jint rc;
+	OS_NATIVE_ENTER(env, that, GdkGeometry_1sizeof_FUNC);
+	rc = (jint)GdkGeometry_sizeof();
+	OS_NATIVE_EXIT(env, that, GdkGeometry_1sizeof_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO_GdkImage_1sizeof
 JNIEXPORT jint JNICALL OS_NATIVE(GdkImage_1sizeof)
 	(JNIEnv *env, jclass that)
@@ -9097,6 +9109,19 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1set_1destroy_1with_1parent)
 	OS_NATIVE_ENTER(env, that, gtk_1window_1set_1destroy_1with_1parent_FUNC);
 	gtk_window_set_destroy_with_parent((GtkWindow *)arg0, (gboolean)arg1);
 	OS_NATIVE_EXIT(env, that, gtk_1window_1set_1destroy_1with_1parent_FUNC);
+}
+#endif
+
+#ifndef NO_gtk_1window_1set_1geometry_1hints
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1window_1set_1geometry_1hints)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jobject arg2, jint arg3)
+{
+	GdkGeometry _arg2, *lparg2=NULL;
+	OS_NATIVE_ENTER(env, that, gtk_1window_1set_1geometry_1hints_FUNC);
+	if (arg2) lparg2 = getGdkGeometryFields(env, arg2, &_arg2);
+	gtk_window_set_geometry_hints((GtkWindow *)arg0, (GtkWidget *)arg1, lparg2, arg3);
+	if (arg2) setGdkGeometryFields(env, arg2, lparg2);
+	OS_NATIVE_EXIT(env, that, gtk_1window_1set_1geometry_1hints_FUNC);
 }
 #endif
 

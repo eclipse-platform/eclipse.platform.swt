@@ -845,6 +845,12 @@ public boolean getMaximized () {
 	}
 	return super.getMaximized ();
 }
+public Point getMinimumSize () {
+	checkWidget ();
+	int [] argList = {OS.XmNminWidth, 0, OS.XmNminHeight, 0};
+	OS.XtGetValues (shellHandle, argList, argList.length / 2);
+	return new Point (Math.max (0, argList [1]) + trimWidth (), Math.max (0, argList [3]) + trimHeight ());
+}
 /** 
  * Returns the region that defines the shape of the shell,
  * or null if the shell has the default shape.
@@ -1166,13 +1172,15 @@ public void setImeInputMode (int mode) {
 }
 boolean setBounds (int x, int y, int width, int height, boolean move, boolean resize) {
 	if (resize) {
+		int [] argList = {OS.XmNminWidth, 0, OS.XmNminHeight, 0};
+		OS.XtGetValues (shellHandle, argList, argList.length / 2);
 		/*
 		* Feature in Motif.  Motif will not allow a window
 		* to have a zero width or zero height.  The fix is
 		* to ensure these values are never zero.
 		*/
-		width = Math.max (width - trimWidth (), 1);
-		height = Math.max (height - trimHeight (), 1);
+		width = Math.max (1, Math.max (argList [1], width - trimWidth ()));
+		height = Math.max (1, Math.max (argList [3], height - trimHeight ()));
 	}
 	if (!reparented || !OS.XtIsRealized (shellHandle)) {
 		return super.setBounds (x, y, width, height, move, resize);
@@ -1269,6 +1277,19 @@ public void setMinimized (boolean minimized) {
 			setActive ();
 		}
 	}
+}
+public void setMinimumSize (int width, int height) {
+	checkWidget ();
+	int [] argList = {
+		OS.XmNminWidth, Math.max (0, width - trimWidth ()),
+		OS.XmNminHeight, Math.max (0, height - trimHeight ()),
+	};
+	OS.XtSetValues (shellHandle, argList, argList.length / 2);
+}
+public void setMinimumSize (Point size) {
+	checkWidget ();
+	if (size == null) error (SWT.ERROR_NULL_ARGUMENT);
+	setMinimumSize (size.x, size.y);	
 }
 void setParentTraversal () {
 	/* Do nothing - Child shells do not affect the traversal of their parent shell */
@@ -1486,7 +1507,7 @@ int trimWidth () {
 void updateResizable (int width, int height) {
 	if (!OS.XtIsRealized (shellHandle)) return;
 	if ((style & SWT.RESIZE) == 0) {
-		XSizeHints hints = new XSizeHints();
+		XSizeHints hints = new XSizeHints ();
 		hints.flags = OS.PMinSize | OS.PMaxSize;
 		hints.min_width = hints.max_width = width;
 		hints.min_height = hints.max_height = height;

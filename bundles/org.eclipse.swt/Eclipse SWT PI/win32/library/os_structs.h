@@ -1,13 +1,13 @@
 /*******************************************************************************
- * Copyright (c) 2000, 2004 IBM Corporation and others.
- * All rights reserved. This program and the accompanying materials
- * are made available under the terms of the Common Public License v1.0
- * which accompanies this distribution, and is available at
- * http://www.eclipse.org/legal/cpl-v10.html
- * 
- * Contributors:
- *     IBM Corporation - initial API and implementation
- *******************************************************************************/
+* Copyright (c) 2000, 2004 IBM Corporation and others.
+* All rights reserved. This program and the accompanying materials
+* are made available under the terms of the Common Public License v1.0
+* which accompanies this distribution, and is available at
+* http://www.eclipse.org/legal/cpl-v10.html
+* 
+* Contributors:
+*     IBM Corporation - initial API and implementation
+*******************************************************************************/
 
 #include "os.h"
 
@@ -453,6 +453,18 @@ void setMENUITEMINFOFields(JNIEnv *env, jobject lpObject, MENUITEMINFO *lpStruct
 #define getMENUITEMINFOFields(a,b,c) NULL
 #define setMENUITEMINFOFields(a,b,c)
 #define MENUITEMINFO_sizeof() 0
+#endif
+
+#ifndef NO_MINMAXINFO
+void cacheMINMAXINFOFields(JNIEnv *env, jobject lpObject);
+MINMAXINFO *getMINMAXINFOFields(JNIEnv *env, jobject lpObject, MINMAXINFO *lpStruct);
+void setMINMAXINFOFields(JNIEnv *env, jobject lpObject, MINMAXINFO *lpStruct);
+#define MINMAXINFO_sizeof() sizeof(MINMAXINFO)
+#else
+#define cacheMINMAXINFOFields(a,b)
+#define getMINMAXINFOFields(a,b,c) NULL
+#define setMINMAXINFOFields(a,b,c)
+#define MINMAXINFO_sizeof() 0
 #endif
 
 #ifndef NO_MONITORINFO

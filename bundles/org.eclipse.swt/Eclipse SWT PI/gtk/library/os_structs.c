@@ -857,6 +857,67 @@ void setGdkGCValuesFields(JNIEnv *env, jobject lpObject, GdkGCValues *lpStruct)
 }
 #endif
 
+#ifndef NO_GdkGeometry
+typedef struct GdkGeometry_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID min_width, min_height, max_width, max_height, base_width, base_height, width_inc, height_inc, min_aspect, max_aspect, win_gravity;
+} GdkGeometry_FID_CACHE;
+
+GdkGeometry_FID_CACHE GdkGeometryFc;
+
+void cacheGdkGeometryFields(JNIEnv *env, jobject lpObject)
+{
+	if (GdkGeometryFc.cached) return;
+	GdkGeometryFc.clazz = (*env)->GetObjectClass(env, lpObject);
+	GdkGeometryFc.min_width = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "min_width", "I");
+	GdkGeometryFc.min_height = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "min_height", "I");
+	GdkGeometryFc.max_width = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "max_width", "I");
+	GdkGeometryFc.max_height = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "max_height", "I");
+	GdkGeometryFc.base_width = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "base_width", "I");
+	GdkGeometryFc.base_height = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "base_height", "I");
+	GdkGeometryFc.width_inc = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "width_inc", "I");
+	GdkGeometryFc.height_inc = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "height_inc", "I");
+	GdkGeometryFc.min_aspect = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "min_aspect", "D");
+	GdkGeometryFc.max_aspect = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "max_aspect", "D");
+	GdkGeometryFc.win_gravity = (*env)->GetFieldID(env, GdkGeometryFc.clazz, "win_gravity", "I");
+	GdkGeometryFc.cached = 1;
+}
+
+GdkGeometry *getGdkGeometryFields(JNIEnv *env, jobject lpObject, GdkGeometry *lpStruct)
+{
+	if (!GdkGeometryFc.cached) cacheGdkGeometryFields(env, lpObject);
+	lpStruct->min_width = (*env)->GetIntField(env, lpObject, GdkGeometryFc.min_width);
+	lpStruct->min_height = (*env)->GetIntField(env, lpObject, GdkGeometryFc.min_height);
+	lpStruct->max_width = (*env)->GetIntField(env, lpObject, GdkGeometryFc.max_width);
+	lpStruct->max_height = (*env)->GetIntField(env, lpObject, GdkGeometryFc.max_height);
+	lpStruct->base_width = (*env)->GetIntField(env, lpObject, GdkGeometryFc.base_width);
+	lpStruct->base_height = (*env)->GetIntField(env, lpObject, GdkGeometryFc.base_height);
+	lpStruct->width_inc = (*env)->GetIntField(env, lpObject, GdkGeometryFc.width_inc);
+	lpStruct->height_inc = (*env)->GetIntField(env, lpObject, GdkGeometryFc.height_inc);
+	lpStruct->min_aspect = (*env)->GetDoubleField(env, lpObject, GdkGeometryFc.min_aspect);
+	lpStruct->max_aspect = (*env)->GetDoubleField(env, lpObject, GdkGeometryFc.max_aspect);
+	lpStruct->win_gravity = (*env)->GetIntField(env, lpObject, GdkGeometryFc.win_gravity);
+	return lpStruct;
+}
+
+void setGdkGeometryFields(JNIEnv *env, jobject lpObject, GdkGeometry *lpStruct)
+{
+	if (!GdkGeometryFc.cached) cacheGdkGeometryFields(env, lpObject);
+	(*env)->SetIntField(env, lpObject, GdkGeometryFc.min_width, (jint)lpStruct->min_width);
+	(*env)->SetIntField(env, lpObject, GdkGeometryFc.min_height, (jint)lpStruct->min_height);
+	(*env)->SetIntField(env, lpObject, GdkGeometryFc.max_width, (jint)lpStruct->max_width);
+	(*env)->SetIntField(env, lpObject, GdkGeometryFc.max_height, (jint)lpStruct->max_height);
+	(*env)->SetIntField(env, lpObject, GdkGeometryFc.base_width, (jint)lpStruct->base_width);
+	(*env)->SetIntField(env, lpObject, GdkGeometryFc.base_height, (jint)lpStruct->base_height);
+	(*env)->SetIntField(env, lpObject, GdkGeometryFc.width_inc, (jint)lpStruct->width_inc);
+	(*env)->SetIntField(env, lpObject, GdkGeometryFc.height_inc, (jint)lpStruct->height_inc);
+	(*env)->SetDoubleField(env, lpObject, GdkGeometryFc.min_aspect, (jdouble)lpStruct->min_aspect);
+	(*env)->SetDoubleField(env, lpObject, GdkGeometryFc.max_aspect, (jdouble)lpStruct->max_aspect);
+	(*env)->SetIntField(env, lpObject, GdkGeometryFc.win_gravity, (jint)lpStruct->win_gravity);
+}
+#endif
+
 #ifndef NO_GdkImage
 typedef struct GdkImage_FID_CACHE {
 	int cached;

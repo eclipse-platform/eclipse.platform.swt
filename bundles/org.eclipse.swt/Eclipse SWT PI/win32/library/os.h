@@ -66,6 +66,7 @@
 #define NO_MARGINS
 #define NO_MENUBARINFO
 #define NO_MENUINFO
+#define NO_MINMAXINFO
 #define NO_NMREBARCHEVRON
 #define NO_NMTTDISPINFO
 #define NO_NMTTDISPINFOA
@@ -259,6 +260,8 @@
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1ITEM_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1LOGATTR_2II
 #define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_SCRIPT_1PROPERTIES_2II
+#define NO_MoveMemory__ILorg_eclipse_swt_internal_win32_MINMAXINFO_2I
+#define NO_MoveMemory__Lorg_eclipse_swt_internal_win32_MINMAXINFO_2II
 #define NO_MoveToEx
 #define NO_NotifyWinEvent
 #define NO_OleInitialize
