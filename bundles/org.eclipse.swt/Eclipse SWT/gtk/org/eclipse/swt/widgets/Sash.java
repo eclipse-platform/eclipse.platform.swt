@@ -170,13 +170,12 @@ int /*long*/ gtk_button_press_event (int /*long*/ widget, int /*long*/ eventPtr)
 	OS.gdk_window_get_origin (window, origin_x, origin_y);
 	startX = (int) (gdkEvent.x_root - origin_x [0]);
 	startY = (int) (gdkEvent.y_root - origin_y [0]);
-	int border = 0;
 	int x = OS.GTK_WIDGET_X (handle);
 	int y = OS.GTK_WIDGET_Y (handle);
 	int width = OS.GTK_WIDGET_WIDTH (handle);
 	int height = OS.GTK_WIDGET_HEIGHT (handle);
-	lastX = x - border; 
-	lastY = y - border;
+	lastX = x; 
+	lastY = y;
 	Event event = new Event ();
 	event.time = gdkEvent.time;
 	event.x = lastX;
