@@ -358,19 +358,19 @@ public boolean open () {
 	tracking = true;
 	drawRectangles ();
 	int [] oldX = new int [1], oldY = new int [1];
-	int [] unused = new int [1];
+	int [] unused = new int [1], mask = new int [1];
+	OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, mask);
 	Point cursorPos;
-	if ((style & SWT.MENU) != 0) {
+	boolean mouseDown = (mask [0] & OS.Button1Mask) != 0;
+	if (!mouseDown) {
 		if ((style & SWT.RESIZE) != 0) {
 			cursorPos = adjustResizeCursor (xDisplay, xWindow);
 		} else {
 			cursorPos = adjustMoveCursor (xDisplay, xWindow);
 		}
 		oldX [0] = cursorPos.x;  oldY [0] = cursorPos.y;
-	} else {
-		OS.XQueryPointer (xDisplay, xWindow, unused, unused, oldX, oldY, unused, unused, unused);
 	}
-		
+
 	XAnyEvent xEvent = new XAnyEvent ();
 	int [] newX = new int [1], newY = new int [1];
 	int xtContext = OS.XtDisplayToApplicationContext (xDisplay);
