@@ -110,6 +110,7 @@ public class StyledText extends Canvas {
 	int textLimit = -1;					// limits the number of characters the user can type in the widget. Unlimited by default.
 	Hashtable keyActionMap = new Hashtable();
 	Font boldFont;
+//	Font italicFont = null;
 	Font regularFont;
 	Color background = null;			// workaround for bug 4791
 	Color foreground = null;			//
@@ -2815,47 +2816,50 @@ int getBidiOffsetAtMouseLocation(int x, int line) {
 	return lineOffset + offsetInLine;
 }
 /**
- * Returns an array of bold text ranges for a line.
+ * Returns an array of bold and italic text ranges for a line.
  * <p>
- * @param styles style ranges in the line, may be bold and non-bold
+ * @param styles style ranges in the line, may be bold, italic, non-bold/italic
  * @param lineOffset start index of the line, relative to the start of the document
  * @param length of the line
- * @return
- *	array[i] = bold start, relative to the start of the line
- * 	array[i + 1] = bold length, no more than lineLength
- *  null if styles parameter is null
+ * @return StyleRange[], null if styles parameter is null
  */
-int[] getBoldRanges(StyleRange[] styles, int lineOffset, int lineLength) {
-	int boldCount = 0;
-	int[] boldRanges = null;
+StyleRange[] getFontStyleRanges(StyleRange[] styles, int lineOffset, int lineLength) {
+	int count = 0;
+	StyleRange[] ranges = null;
 	
 	if (styles == null) {
 		return null;
 	}
+	// figure out the number of ranges with font styles
 	for (int i = 0; i < styles.length; i++) {
 		StyleRange style = styles[i];
-		if (style.fontStyle == SWT.BOLD && style.start - lineOffset < lineLength) {
-			boldCount++;
+		if (style.start - lineOffset < lineLength) {
+			if (style.fontStyle == SWT.BOLD /* || style.fontStyle == SWT.ITALIC */) {
+				count++;
+			}
 		}
 	}
-	if (boldCount > 0) {
-		boldRanges = new int[boldCount * 2];
-		boldCount = 0;
+	// get the style information
+	if (count > 0) {
+		ranges = new StyleRange[count];
+		count = 0;
 		for (int i = 0; i < styles.length; i++) {
 			StyleRange style = styles[i];
 			int styleLineStart = style.start - lineOffset;
-						
-			if (style.fontStyle == SWT.BOLD && styleLineStart < lineLength) {
-				int styleEnd = Math.min(styleLineStart + style.length, lineLength);
-				int styleStart = Math.max(0, styleLineStart);			
-				boldRanges[boldCount] = styleStart;
-				boldRanges[boldCount + 1] = styleEnd - styleStart;
-				boldCount += 2;
+			if (styleLineStart < lineLength) {			
+				if (style.fontStyle == SWT.BOLD /* || style.fontStyle == SWT.ITALIC */) {
+					StyleRange newStyle = new StyleRange();
+					newStyle.start = Math.max(0, styleLineStart);
+					newStyle.length = (Math.min(styleLineStart + style.length, lineLength)) - newStyle.start;
+					ranges[count] = newStyle;
+					count++;
+				}
 			}		
 		}
 	}
-	return boldRanges;
+	return ranges;
 }
+
 /** 
  * Returns the index of the last fully visible line.
  * <p>
@@ -3938,18 +3942,18 @@ StyledTextBidi getStyledTextBidi(String lineText, int lineOffset, GC gc) {
  * @return a StyledTextBidi object for the specified line.
  */
 StyledTextBidi getStyledTextBidi(String lineText, int lineOffset, GC gc, StyleRange[] styles) {
-	int[] boldStyles = null;
+	StyleRange[] fontStyles = null;
 	
 	if (styles == null) {
 		StyledTextEvent event = getLineStyleData(lineOffset, lineText);
 		if (event != null) {
-			boldStyles = getBoldRanges(event.styles, lineOffset, lineText.length());
+			fontStyles = getFontStyleRanges(event.styles, lineOffset, lineText.length());
 		}
 	}
 	else {
-		boldStyles = getBoldRanges(styles, lineOffset, lineText.length());
+		fontStyles = getFontStyleRanges(styles, lineOffset, lineText.length());
 	}
-	return new StyledTextBidi(gc, tabWidth, lineText, boldStyles, boldFont, getBidiSegments(lineText, lineOffset));
+	return new StyledTextBidi(gc, tabWidth, lineText, fontStyles, boldFont, null /* italicFont */, getBidiSegments(lineText, lineOffset));
 }		
 /**
  * Returns the tab width measured in characters.
@@ -4481,6 +4485,9 @@ void handleDispose() {
 	if (boldFont != null) {
 		boldFont.dispose();
 	}
+//	if (italicFont != null) {
+//		italicFont.dispose();
+//	}
 	if (content != null) {
 		content.removeTextChangeListener(textChangeListener);
 	}	
@@ -4796,6 +4803,9 @@ void initializeFonts() {
 	fontData = regularFont.getFontData()[0];
 	fontData.setStyle(fontData.getStyle() | SWT.BOLD);
 	boldFont = new Font(getDisplay(), fontData);
+//	fontData = regularFont.getFontData()[0];
+//	fontData.setStyle(fontData.getStyle() | SWT.ITALIC);
+//	italicFont = new Font(getDisplay(), fontData);
 	gc.dispose();
 }
 /**
@@ -6037,6 +6047,9 @@ public void setFont(Font font) {
 	if (boldFont != null) {
 		boldFont.dispose();
 	}
+//	if (italicFont != null) {
+//		italicFont.dispose();
+//	}
 	initializeFonts();
 	oldLineHeight = lineHeight;
 	calculateLineHeight();
@@ -6233,6 +6246,11 @@ void setLineFont(GC gc, FontData currentFont, int style) {
 			gc.setFont(boldFont);
 		}
 		else
+//		if (style == SWT.ITALIC) {
+//			currentFont.setStyle(style);
+//			gc.setFont(italicFont);
+//		}
+//		else
 		if (style == SWT.NORMAL) {
 			currentFont.setStyle(style);
 			gc.setFont(regularFont);

@@ -92,7 +92,7 @@ class StyledTextBidi {
  * 	separately, may be needed to preserve the order of separate R2L 
  * 	segments to each other
  */
-public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font boldFont, int[] offsets) {
+public StyledTextBidi(GC gc, int tabWidth, String text, StyleRange[] ranges, Font boldFont, Font italicFont, int[] offsets) {
 	int length = text.length();
 		
 	this.gc = gc;
@@ -106,21 +106,26 @@ public StyledTextBidi(GC gc, int tabWidth, String text, int[] boldRanges, Font b
 	}
 	else {
 		glyphBuffer = BidiUtil.getRenderInfo(gc, text, order, classBuffer, dx, 0, offsets);
-		if (boldRanges != null) {
-			Font normalFont = gc.getFont();
-			gc.setFont(boldFont);
-			// If the font supports characters shaping, break up the bold ranges based on 
+		if (ranges != null) {
+			// If the font supports characters shaping, break up the bold/italic ranges based on 
 			// the specified bidi segments.  Each bidi segment will be treated separately 
-			// for bold purposes.
-			int[] segmentedBoldRanges;
-			if (isCharacterShaped(gc)) segmentedBoldRanges = segmentedRangesFor(boldRanges);
-			else segmentedBoldRanges = boldRanges;
-			for (int i = 0; i < segmentedBoldRanges.length; i += 2) {
-				int rangeStart = segmentedBoldRanges[i];
-				int rangeLength = segmentedBoldRanges[i + 1];
-				// Bold text needs to be processed so that the dx array reflects the bold
+			// for bold/italic purposes.
+			StyleRange[] segmentedRanges;
+			if (isCharacterShaped(gc)) segmentedRanges = segmentedRangesFor(ranges);
+			else segmentedRanges = ranges;
+			Font normalFont = gc.getFont();
+			int previousStyle = -1;
+			for (int i = 0; i < segmentedRanges.length; i++) {
+				StyleRange segmentedRange = segmentedRanges[i];
+				if (segmentedRange.fontStyle != previousStyle) {
+					if (segmentedRange.fontStyle == SWT.ITALIC) gc.setFont(italicFont);
+					else gc.setFont(boldFont);
+				}
+				int rangeStart = segmentedRange.start;
+				int rangeLength = segmentedRange.length;
+				// Bold/italic text needs to be processed so that the dx array reflects the bold
 				// font.
-				prepareBoldText(text, rangeStart, rangeLength);
+				prepareFontStyledText(text, rangeStart, rangeLength);
 			}
 			gc.setFont(normalFont);
 		}
@@ -680,15 +685,15 @@ private int[] getRenderIndexesFor(int start, int length) {
  * Break up the given ranges such that each range is fully contained within a bidi
  * segment.
  */
-private int[] segmentedRangesFor(int[] ranges) {
+private StyleRange[] segmentedRangesFor(StyleRange[] ranges) {
 	if ((bidiSegments == null) || (bidiSegments.length == 0)) return ranges;
 	Vector newRanges = new Vector();
 	int j=0;
 	int startSegment;
 	int endSegment;
-	for (int i=0; i<ranges.length; i+=2) {
-		int start = ranges[i];
-		int end = start+ranges[i+1];
+	for (int i=0; i<ranges.length; i++) {
+		int start = ranges[i].start;
+		int end = start+ranges[i].length;
 		startSegment=-1;
 		endSegment=-1;
 		boolean done = false;
@@ -705,28 +710,28 @@ private int[] segmentedRangesFor(int[] ranges) {
 		}
 		if (startSegment == endSegment) {
 			// range is within one segment
-			newRanges.addElement(new Integer(start));
-			newRanges.addElement(new Integer(end-start));
+			StyleRange newStyle = new StyleRange(start, end-start, null, null);
+			newRanges.addElement(newStyle);
 		} else if (startSegment > endSegment) {
 			// range is within no segment (i.e., it's empty)
 		} else {
 			// range spans multiple segments
-			newRanges.addElement(new Integer(start));
-			newRanges.addElement(new Integer(bidiSegments[startSegment+1]-start));
+			StyleRange newStyle = new StyleRange(start, bidiSegments[startSegment+1]-start, null, null);
+			newRanges.addElement(newStyle);
 			startSegment++;
 			for (int k=startSegment; k<endSegment; k++) {
-				newRanges.addElement(new Integer(bidiSegments[k]));
-				newRanges.addElement(new Integer(bidiSegments[k+1]-bidiSegments[k]));
+				newStyle = new StyleRange(bidiSegments[k], bidiSegments[k+1]-bidiSegments[k], null, null);
+				newRanges.addElement(newStyle);
 			}
-			newRanges.addElement(new Integer(bidiSegments[endSegment]));
-			newRanges.addElement(new Integer(end-bidiSegments[endSegment]));
+			newStyle = new StyleRange(bidiSegments[endSegment], end-bidiSegments[endSegment], null, null);
+			newRanges.addElement(newStyle);
 		}	
 	}
-	int[] intArray = new int[newRanges.size()];
+	StyleRange[] rangeArray = new StyleRange[newRanges.size()];
 	for (int i=0; i<newRanges.size(); i++) {
-		intArray[i]=((Integer)newRanges.elementAt(i)).intValue();
+		rangeArray[i]=(StyleRange)newRanges.elementAt(i);
 	}
-	return intArray;
+	return rangeArray;
 }
 /**
  * Returns the number of characters in the line.
@@ -858,7 +863,7 @@ private boolean isStartOfBidiSegment(int logicalIndex) {
  * 	reorder.
  * @param length the number of characters to reorder
  */
-private void prepareBoldText(String textline, int logicalStart, int length) {
+private void prepareFontStyledText(String textline, int logicalStart, int length) {
 	int byteCount = length;
 	int flags = 0;
 	String text = textline.substring(logicalStart, logicalStart + length);
