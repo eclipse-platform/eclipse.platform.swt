@@ -4585,15 +4585,14 @@ boolean isBidi() {
  * false if the given offset is before or after a line delimiter.
  */
 boolean isLineDelimiter(int offset) {
-	return false;
-//	int line = content.getLineAtOffset(offset);
-//	int lineOffset = content.getOffsetAtLine(line);	
-//	int offsetInLine = offset - lineOffset;
-
+	int line = content.getLineAtOffset(offset);
+	int lineOffset = content.getOffsetAtLine(line);	
+	int offsetInLine = offset - lineOffset;
+
 	// offsetInLine will be greater than line length if the line 
 	// delimiter is longer than one character and the offset is set
 	// in between parts of the line delimiter.
-//	return offsetInLine > content.getLine(line).length();
+	return offsetInLine > content.getLine(line).length();
 }
 /**
  * Returns whether the widget can have only one line.
