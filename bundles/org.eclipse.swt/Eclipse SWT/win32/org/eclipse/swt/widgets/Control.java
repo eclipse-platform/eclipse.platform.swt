@@ -2661,7 +2661,7 @@ void unsubclass () {
 }
 
 /**
- * Forces all outstanding paint requests for the widget tree
+ * Forces all outstanding paint requests for the widget
  * to be processed before this method returns.
  *
  * @exception SWTException <ul>
@@ -2673,10 +2673,16 @@ void unsubclass () {
  */
 public void update () {
 	checkWidget ();
+	update (false);
+}
+
+void update (boolean all) {
+//	checkWidget ();
 	if (OS.IsWinCE) {
 		OS.UpdateWindow (handle);
 	} else {
-		int flags = OS.RDW_UPDATENOW | OS.RDW_ALLCHILDREN;
+		int flags = OS.RDW_UPDATENOW;
+		if (all) flags |= OS.RDW_ALLCHILDREN;
 		OS.RedrawWindow (handle, null, 0, flags);
 	}
 }
