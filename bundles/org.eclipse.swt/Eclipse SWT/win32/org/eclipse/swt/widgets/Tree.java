@@ -1875,9 +1875,6 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 				* being destroyed.  The TreeItem has already been
 				* removed from the items array and is no longer valid.
 				* The fix is to check for null. 
-				* 
-				* NOTE: This only happens on XP with the version 6.00 of
-				* COMCTL32.DLL,
 				*/
 				TreeItem item = items [tvItem.lParam];
 				if (item == null) break;
