@@ -38,15 +38,17 @@ MOZILLA_LIB     = $(MOZILLA_PREFIX)-$(WS_PREFIX)-$(SWT_VERSION).dll
 MOZILLA_LIBS	= embedstring.lib embed_base_s.lib xpcomglue_s.lib xpcom.lib nspr4.lib plds4.lib plc4.lib
 MOZILLA_OBJS	= xpcom.obj xpcom_stats.obj xpcom_structs.obj xpcom_custom.obj swt.obj
 
+# Uncomment for Native Stats tool
+#NATIVE_STATS = -DNATIVE_STATS
+
+# Uncomment for debug flags
+#SWT_CDEBUG = -Zi -Odi
+#SWT_LDEBUG = /DEBUG /DEBUGTYPE:both
+
 # note: thoroughly test all examples after changing any optimization flags
-SWT_CDEBUG = #-Zi -Odi
-SWT_LDEBUG = #/DEBUG /DEBUGTYPE:both
-CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I.
+CFLAGS = -c -W3 -G6 -GD -O1 $(SWT_CDEBUG) -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -D_MT -MT -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I.
 RCFLAGS = -DSWT_FILE_VERSION=\"$(maj_ver).$(min_ver)\" -DSWT_COMMA_VERSION=$(comma_ver)
 LFLAGS = /INCREMENTAL:NO /PDB:NONE /RELEASE /NOLOGO $(SWT_LDEBUG) -entry:_DllMainCRTStartup@12 -dll /BASE:0x10000000 /comment:$(pgm_ver_str) /comment:$(copyright) /DLL
-
-# Uncomment for native stats
-#CFLAGS = $(CFLAGS) -DNATIVE_STATS
 
 MOZILLA_INCLUDES = -I$(GECKO_SDK) \
 	-I$(GECKO_SDK)\nspr\include \
@@ -54,7 +56,7 @@ MOZILLA_INCLUDES = -I$(GECKO_SDK) \
 	-I$(GECKO_SDK)\string\include \
 	-I$(GECKO_SDK)\embed_base\include \
 	-I$(GECKO_SDK)\embedstring\include
-MOZILLACFLAGS = -c -W3 -O1 -DSWT_VERSION=$(SWT_VERSION) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I. \
+MOZILLACFLAGS = -c -W3 -O1 -DSWT_VERSION=$(SWT_VERSION) $(NATIVE_STATS) -nologo -D_X86_=1 -D_WIN32 -D_WIN95 -D_WIN32_WINDOWS=0x0400 -DWIN32 -D_WIN32_DCOM /I$(JAVA_HOME)\include /I$(JAVA_HOME)\include\win32 /I. \
 				 -DXPCOM_GLUE=1 -DMOZILLA_STRICT_API=1 -DXP_WIN -DXP_WIN32 $(MOZILLA_INCLUDES)
 MOZILLALFLAGS = $(LFLAGS) /NODEFAULTLIB:LIBC.lib /libpath:"$(GECKO_SDK)\embed_base\bin" /libpath:"$(GECKO_SDK)\xpcom\bin" /libpath:"$(GECKO_SDK)\nspr\bin" /libpath:"$(GECKO_SDK)\embedstring\bin"
 
