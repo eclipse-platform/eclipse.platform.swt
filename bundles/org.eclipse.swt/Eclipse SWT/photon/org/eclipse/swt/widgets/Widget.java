@@ -1021,9 +1021,16 @@ void setKeyState(Event event, PhKeyEvent_t ke) {
 		case OS.Pk_Escape:		event.character = 0x1B; break;
 		case OS.Pk_KP_Tab:
 		case OS.Pk_Tab: 		event.character = '\t'; break;
-//		case OS.Pk_Clear: 		event.character = 0xB; break;
-//		case OS.Pk_Pause:		event.character = 0x13; break;
-//		case OS.Pk_Scroll_Lock:	event.character = 0x14; break;
+		/* These keys have no mapping in SWT yet */
+		case OS.Pk_Clear:
+		case OS.Pk_Pause:
+		case OS.Pk_Print:
+		case OS.Pk_Menu:
+		case OS.Pk_Hyper_L:
+		case OS.Pk_Hyper_R:
+		case OS.Pk_Caps_Lock:
+		case OS.Pk_Num_Lock:
+		case OS.Pk_Scroll_Lock:	break;
 		default:
 			if (event.keyCode == 0) event.character = (char) key;
 	}

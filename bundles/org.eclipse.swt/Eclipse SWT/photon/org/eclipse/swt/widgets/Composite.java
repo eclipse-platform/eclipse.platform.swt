@@ -228,6 +228,7 @@ void drawWidget (int widget, int damage) {
 			
 			/* Get the clipping tiles for children and siblings */
 			int clip_tile = getClipping (handle, topHandle (), true, true);
+			if (clip_tile == 0) return;
 
 			/* Translate the clipping to the current GC coordinates */
 			short [] abs_x = new short [1], abs_y = new short [1];
