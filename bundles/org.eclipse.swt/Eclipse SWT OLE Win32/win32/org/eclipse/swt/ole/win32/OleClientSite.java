@@ -812,7 +812,8 @@ private int OnInPlaceDeactivate() {
 	return COM.S_OK;
 }
 private int OnPosRectChange(int lprcPosRect) {
-	setObjectRects();
+	// Not resetting object rects because this causes Word to loose its scrollbars
+	//setObjectRects();
 	return COM.S_OK;
 }
 private void onPaint(Event e) {
