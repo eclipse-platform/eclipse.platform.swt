@@ -312,6 +312,12 @@ void collapse(TreeItem item, boolean notifyListeners) {
 	if (item.getExpanded() == false) {
 		return;
 	}
+	if (notifyListeners == true) {
+		event = new Event();
+		event.item = item;
+		notifyListeners(SWT.Collapse, event);
+		if (isDisposed()) return;
+	}
 	collapseNoRedraw(item);
 	itemIndex = item.getVisibleIndex();
 	if (itemIndex != -1) {						// if the item's parent is not collapsed (and the item is thus visible) do the screen updates
@@ -321,11 +327,6 @@ void collapse(TreeItem item, boolean notifyListeners) {
 		calculateWidestShowingItem();
 		claimRightFreeSpace();
 		claimBottomFreeSpace();		
-	}
-	if (notifyListeners == true) {
-		event = new Event();
-		event.item = item;
-		notifyListeners(SWT.Collapse, event);
 	}
 }
 
