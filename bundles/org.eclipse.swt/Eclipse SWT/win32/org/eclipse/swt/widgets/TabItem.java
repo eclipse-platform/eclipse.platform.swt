@@ -90,7 +90,7 @@ public TabItem (TabFolder parent, int style) {
  * @param index the index to store the receiver in its parent
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null, or if the index is either negative or greater than the parent's current tab count</li>
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
