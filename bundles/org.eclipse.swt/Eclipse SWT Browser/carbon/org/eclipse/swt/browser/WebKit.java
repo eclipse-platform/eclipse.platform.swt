@@ -51,6 +51,7 @@ static final int S_release = WebKit.sel_registerName("release"); //$NON-NLS-1$
 static final int S_reload = WebKit.sel_registerName("reload:"); //$NON-NLS-1$
 static final int S_retain = WebKit.sel_registerName("retain"); //$NON-NLS-1$
 static final int S_removeObserver_name_object = WebKit.sel_registerName("removeObserver:name:object:"); //$NON-NLS-1$
+static final int S_removeObserver = WebKit.sel_registerName("removeObserver:"); //$NON-NLS-1$
 static final int S_requestWithURL = WebKit.sel_registerName("requestWithURL:"); //$NON-NLS-1$
 static final int S_request = WebKit.sel_registerName("request"); //$NON-NLS-1$
 static final int S_retainCount = WebKit.sel_registerName("retainCount"); //$NON-NLS-1$
