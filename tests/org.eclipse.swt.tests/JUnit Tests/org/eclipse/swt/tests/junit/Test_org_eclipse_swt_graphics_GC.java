@@ -456,7 +456,9 @@ public void test_getXORMode() {
 }
 
 public void test_hashCode() {
-	warnUnimpl("Test test_hashCode not written");
+	assertTrue(gc.hashCode() == gc.hashCode());
+	GC gc2 = new GC(shell);
+	assertFalse(gc.hashCode() == gc2.hashCode());
 }
 
 public void test_isClipped() {
