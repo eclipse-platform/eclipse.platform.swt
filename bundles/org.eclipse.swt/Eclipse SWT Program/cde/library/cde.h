@@ -17,6 +17,7 @@
 #include <stdio.h>
 #include <assert.h>
 
+#include <Dt/Dt.h>
 #include <Dt/Dts.h>
 #include <Dt/Action.h>
 
