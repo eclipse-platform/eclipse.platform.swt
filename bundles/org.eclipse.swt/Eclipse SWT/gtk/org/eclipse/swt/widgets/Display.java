@@ -3140,10 +3140,9 @@ public void wake () {
 
 void wakeThread () {
 	wake = true;
-// 	TEMPORARY CODE
-//	synchronized (OS_LOCK) {
-//		OS_LOCK.notifyAll ();
-//	}
+	synchronized (OS_LOCK) {
+		OS_LOCK.notifyAll ();
+	}
 }
 
 static char wcsToMbcs (char ch) {
