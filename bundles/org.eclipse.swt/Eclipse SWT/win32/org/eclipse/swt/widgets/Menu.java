@@ -806,8 +806,8 @@ public int indexOf (MenuItem item) {
 	checkWidget ();
 	if (item == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+	if (item.parent != this) return -1;
 	if ((OS.IsPPC || OS.IsSP) && hwndCB != 0) {
-		if (item.parent != this) return -1;
 		if (OS.IsPPC) {
 			return OS.SendMessage (hwndCB, OS.TB_COMMANDTOINDEX, item.id, 0);
 		}
@@ -1026,6 +1026,7 @@ public void setDefaultItem (MenuItem item) {
 	int newID = -1;
 	if (item != null) {
 		if (item.isDisposed()) error(SWT.ERROR_INVALID_ARGUMENT);
+		if (item.parent != this) return;
 		newID = item.id;
 	}
 	if (OS.IsWinCE) return;
