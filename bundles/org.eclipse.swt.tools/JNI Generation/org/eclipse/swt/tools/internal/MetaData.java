@@ -92,8 +92,7 @@ public ParameterData getMetaData(Method method, int parameter) {
 			value = getMetaData(key, null);
 		}
 	}	
-	if (value == null) value = "";
-	
+	if (value == null) value = "";	
 	return new ParameterData(method, parameter, value);
 }
 
