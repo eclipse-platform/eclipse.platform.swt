@@ -498,6 +498,13 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.SEPARATOR) != 0) return;
+	/*
+	* Feature in Motif.  Motif does not optimize the case
+	* when the same text is set into a label causing
+	* it to flash.  The fix is to test for equality and
+	* do nothing.
+	*/
+	if (text.equals (string)) return;
 	text = string;
 	/*
 	* Bug in Motif.  The widget will not receive mouse events, if the

@@ -693,6 +693,13 @@ public void setText (String string) {
 	checkWidget();
 	if (string == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if ((style & SWT.ARROW) != 0) return;
+	/*
+	* Feature in Motif.  Motif does not optimize the case
+	* when the same text is set into a button causing
+	* it to flash.  The fix is to test for equality and
+	* do nothing.
+	*/
+	if (text.equals (string)) return;
 	text = string;
 	char [] text = new char [string.length ()];
 	string.getChars (0, text.length, text, 0);
