@@ -1265,13 +1265,15 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		return focusControl;
+	}
 	int theWindow = OS.GetUserFocusWindow ();
 	if (theWindow == 0) return null;
 	return getFocusControl (theWindow);
 }
 
 Control getFocusControl (int window) {
-	if (focusControl != null) return focusControl;
 	int [] theControl = new int [1];
 	OS.GetKeyboardFocus (window, theControl);
 	if (theControl [0] == 0) return null;
