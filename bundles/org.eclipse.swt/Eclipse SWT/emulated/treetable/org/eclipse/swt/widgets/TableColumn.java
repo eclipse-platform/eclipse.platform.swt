@@ -13,7 +13,21 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
- 
+
+/**
+ * Instances of this class represent a column in a table widget.
+ *  <dl>
+ * <dt><b>Styles:</b></dt>
+ * <dd>LEFT, RIGHT, CENTER</dd>
+ * <dt><b>Events:</b></dt>
+ * <dd> Move, Resize, Selection</dd>
+ * </dl>
+ * <p>
+ * Note: Only one of the styles LEFT, RIGHT and CENTER may be specified.
+ * </p><p>
+ * IMPORTANT: This class is <em>not</em> intended to be subclassed.
+ * </p>
+ */
 public class TableColumn extends Item {
 	Table parent;
 	String displayText;

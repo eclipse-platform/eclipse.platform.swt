@@ -1532,6 +1532,34 @@ void removeColumn (TreeColumn column, int index) {
 		items [i].removeColumn (column, index);
 	}
 }
+/**
+ * Removes all of the items from the receiver.
+ * <p>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
+public void removeAll () {
+	checkWidget ();
+	if (items.length == 0) return;
+
+	int lastAvailableIndex = parent.availableItems.length - 1;
+	/* for performance do this upfront for whole descendent chain */
+	TreeItem focusItem = parent.focusItem; 
+	if (focusItem != null && focusItem.hasAncestor (this)) {
+		parent.setFocusItem (this, false);
+	}
+
+	for (int i = 0; i < items.length; i++) {
+		items [i].dispose (true);
+	}
+	items = NO_ITEMS;
+	expanded = false;
+	if (isAvailable ()) {
+		parent.redrawItems (availableIndex, lastAvailableIndex, false);
+	}
+}
 /*
  * Removes a child item from the receiver.
  */
