@@ -547,6 +547,7 @@ String getDisplayText (int columnIndex) {
  */
 Rectangle getFocusBounds () {
 	int x = 0;
+    TableColumn[] columns = parent.columns;
 	int[] columnOrder = parent.getColumnOrder ();
 	if ((parent.style & SWT.FULL_SELECTION) != 0) {
 		int col0index = columnOrder.length == 0 ? 0 : columnOrder [0];
@@ -558,8 +559,14 @@ Rectangle getFocusBounds () {
 	} else {
 		x = getTextX (0);
 	}
+
+    if (columns.length > 0) {
+        /* ensure that the focus x does not start beyond the right bound of column 0 */
+        int rightX = columns [0].getX () + columns [0].width;
+        x = Math.min (x, rightX - 1);
+    }
+
 	int width;
-	TableColumn[] columns = parent.columns;
 	if (columns.length == 0) {
 		width = textWidths [0] + 2 * MARGIN_TEXT;
 	} else {
