@@ -1021,17 +1021,6 @@ public void setVisible (boolean visible) {
 	checkWidget();
 	if ((OS.GTK_WIDGET_MAPPED (shellHandle) == visible)) return;
 	if (visible) {
-		/*
-		* Bug in GTK.  When an application opens a new modal top level
-		* shell from inside the "select_row" signal, the GtkCList does not get the
-		* mouse up and does not release grabs.  The fix is to release the grabs
-		* when any shell is opened.
-		*/
-		int grabHandle = OS.gtk_grab_get_current ();
-		if (grabHandle != 0) {
-			OS.gtk_grab_remove (grabHandle);
-			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
-		}
 		sendEvent (SWT.Show);
 		// widget could be disposed at this point
 		if (isDisposed ()) return;
@@ -1043,6 +1032,10 @@ public void setVisible (boolean visible) {
 		// widget could be disposed at this point
 		if (isDisposed ()) return;
 		adjustTrim ();
+		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
+		if ((style & mask) != 0) {
+			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+		}
 	} else {	
 		OS.gtk_widget_hide (shellHandle);
 		sendEvent (SWT.Hide);
