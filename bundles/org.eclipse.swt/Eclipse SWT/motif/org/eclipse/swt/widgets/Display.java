@@ -1912,7 +1912,7 @@ String wrapText (String text, int fontList, int width) {
 				if (lastStart == wordStart) {
 					while (wordStart < wordEnd) {
 						line = text.substring (lineStart, wordStart + 1);
-						lineWidth = textWidth (line, font);
+						lineWidth = textWidth (line, fontList);
 						if (lineWidth >= width) break;
 						wordStart++;
 					}
