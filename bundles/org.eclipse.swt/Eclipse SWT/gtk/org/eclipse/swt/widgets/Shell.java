@@ -101,8 +101,8 @@ import org.eclipse.swt.events.*;
  */
 public class Shell extends Decorations {
 	int /*long*/ shellHandle, tooltipsHandle;
-	boolean hasFocus, mapped;
-	int oldX = -1, oldY = -1, oldWidth, oldHeight;
+	boolean hasFocus, mapped, moved, resized;
+	int oldX, oldY, oldWidth, oldHeight;
 	int minWidth, minHeight;
 	Control lastActive;
 	Region region;
@@ -732,7 +732,8 @@ public Shell [] getShells () {
 int /*long*/ gtk_configure_event (int /*long*/ widget, int /*long*/ event) {
 	int [] x = new int [1], y = new int [1];
 	OS.gtk_window_get_position (shellHandle, x, y);
-	if (oldX != x [0] || oldY != y [0]) {
+	if (!moved || oldX != x [0] || oldY != y [0]) {
+		moved = true;
 		oldX = x [0];
 		oldY = y [0];
 		sendEvent (SWT.Move);
@@ -809,7 +810,7 @@ int /*long*/ gtk_map_event (int /*long*/ widget, int /*long*/ event) {
 int /*long*/ gtk_size_allocate (int /*long*/ widget, int /*long*/ allocation) {
 	int [] width = new int [1], height = new int [1];
 	OS.gtk_window_get_size (shellHandle, width, height);
-	if (oldWidth != width [0] || oldHeight != height [0]) {
+	if (!resized || oldWidth != width [0] || oldHeight != height [0]) {
 		oldWidth = width [0];
 		oldHeight = height [0];
 		resizeBounds (width [0], height [0], true);
@@ -974,6 +975,7 @@ void resizeBounds (int width, int height, boolean notify) {
 	OS.gtk_widget_set_size_request (scrolledHandle, width - (border  * 2), height - (border  * 2));
 	OS.gtk_container_resize_children (fixedHandle);
 	if (notify) {
+		resized = true;
 		sendEvent (SWT.Resize);
 		if (layout != null) layout.layout (this, false);
 	}
@@ -985,6 +987,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 		OS.gtk_window_get_position (shellHandle, x_pos, y_pos);
 		OS.gtk_window_move (shellHandle, x, y);
 		if (x_pos [0] != x || y_pos [0] != y) {
+			moved = true;
 			oldX = x;
 			oldY = y;
 			sendEvent(SWT.Move);
@@ -1250,6 +1253,21 @@ public void setVisible (boolean visible) {
 		int mask = SWT.PRIMARY_MODAL | SWT.APPLICATION_MODAL | SWT.SYSTEM_MODAL;
 		if ((style & mask) != 0) {
 			OS.gdk_pointer_ungrab (OS.GDK_CURRENT_TIME);
+		}
+		if (!moved) {
+			moved = true;
+			Point location = getLocation();
+			oldX = location.x;
+			oldY = location.y;
+			sendEvent (SWT.Move);
+		}
+		if (!resized) {
+			resized = true;
+			Point size = getSize ();
+			oldWidth = size.x - trimWidth ();
+			oldHeight = size.y - trimHeight ();
+			sendEvent (SWT.Resize);
+			if (layout != null) layout.layout (this, false);
 		}
 	} else {	
 		OS.gtk_widget_hide (shellHandle);
