@@ -15,29 +15,65 @@ import org.eclipse.swt.graphics.*;
 public class MacUtil {
 
 	public static boolean DEBUG;
-	public static boolean REVERSE;	// if true
+	public static boolean REVERSE;
 	
 	static final char MNEMONIC = '&';
 	
 	static {
 		DEBUG= false;
-		REVERSE= true;
+		REVERSE= !System.getProperty("os.version").startsWith("10.2");
+	}
+	
+	/**
+	 * Inserts the given child at position in the parent.
+	 * If pos is out of range the child is added at the end.
+	 */
+	public static void embedControl(int controlHandle, int parentControlHandle, int pos) {
+		
+		// add at end
+		if (OS.EmbedControl(controlHandle, parentControlHandle) != OS.kNoErr)
+			System.out.println("MacUtil.embedControl: could not embed control in parent");
+			
+		int n= countSubControls(parentControlHandle)-1;
+		
+		if (pos < 0 || pos > n)
+			pos= n;
+		
+		int[] outControl= new int[1];
+		if (REVERSE) {
+			for (int i= 0; i < pos; i++) {
+				if (OS.GetIndexedSubControl(parentControlHandle, (short)(n-pos+1), outControl) == 0)
+					if (OS.EmbedControl(outControl[0], parentControlHandle) != OS.kNoErr)
+						System.out.println("MacUtil.embedControl: couldn't move control to end");
+			}
+			
+		} else {
+			int count= n-pos;
+			for (int i= 0; i < count; i++) {
+				if (OS.GetIndexedSubControl(parentControlHandle, (short)(pos+1), outControl) == 0)
+					if (OS.EmbedControl(outControl[0], parentControlHandle) != OS.kNoErr)
+						System.out.println("MacUtil.embedControl: couldn't move control to end");
+			}
+		}
+		
+		// verify correct position
+		n++;
+		for (int i= 0; i < n; i++) {
+			int index= REVERSE ? (n-i) : (i+1);
+			int[] outHandle= new int[1];
+			if (OS.GetIndexedSubControl(parentControlHandle, (short)index, outHandle) == 0) {	// indices are 1 based
+				if (outHandle[0] == controlHandle) {
+					if (i != pos)
+						System.out.println("MacUtil.embedControl: creation at position nyi (is: "+i+" should: "+ pos+")");
+					return;
+				}
+			}
+		}
+		System.out.println("MacUtil.embedControl: new child not found");
 	}
 	
 	public static void embedControl(int controlHandle, int parentControlHandle) {
-		if (REVERSE) {
-			int count= countSubControls(parentControlHandle);
-			OS.EmbedControl(controlHandle, parentControlHandle);
-			int[] outControl= new int[1];
-			for (int i= 0; i < count; i++) {
-				if (OS.GetIndexedSubControl(parentControlHandle, (short)(1), outControl) == 0)
-					OS.EmbedControl(outControl[0], parentControlHandle);
-				else
-					throw new SWTError();
-			}
-		} else {
-			OS.EmbedControl(controlHandle, parentControlHandle);
-		}
+		embedControl(controlHandle, parentControlHandle, -1);
 	}
 	
 	public static int createSeparator(int parentHandle, int style) {
@@ -101,9 +137,8 @@ public class MacUtil {
 			if (n > 0) {
 				//System.out.println("have children on top");
 				int[] outHandle= new int[1];
-				for (int i= 0; i < n; i++) {
-					int index= REVERSE ? (n-i) : (i+1);
-					if (OS.GetIndexedSubControl(cHandle, (short)index, outHandle) == 0) {
+				for (int i= n; i > 0; i--) {
+					if (OS.GetIndexedSubControl(cHandle, (short)i, outHandle) == 0) {
 						if (OS.IsControlVisible(outHandle[0])) {
 							getControlRegion(outHandle[0], OS.kControlStructureMetaPart, tmpRgn);
 							OS.DiffRgn(result, tmpRgn, result);
@@ -116,7 +151,7 @@ public class MacUtil {
 				
 		OS.DisposeRgn(tmpRgn);
                 
-                return OS.kNoErr;
+		return OS.kNoErr;
 	}
 	
 	private static void getControlRegion(int cHandle, short part, int rgn) {
@@ -141,7 +176,7 @@ public class MacUtil {
 			return 0;
 		}
 		int cHandle= find(rootHandle[0], null, new MacRect(), w);
-		if (cHandle != 0) {
+		if (cHandle != 0 && cpart != null && cpart.length > 0) {
 			cpart[0]= OS.TestControl(cHandle, where.getData());
 			//System.out.println("findControlUnderMouse: " + cpart[0]);
 		}
@@ -177,9 +212,8 @@ public class MacUtil {
 		int n= countSubControls(cHandle);
 		if (n > 0) {
 			int[] outHandle= new int[1];
-			for (int i= 0; i < n; i++) {
-				int index= REVERSE ? (n-i) : (i+1);
-				if (OS.GetIndexedSubControl(cHandle, (short)index, outHandle) == 0) {
+			for (int i= n; i > 0; i--) {
+				if (OS.GetIndexedSubControl(cHandle, (short)i, outHandle) == 0) {
 					int result= find(outHandle[0], rr, tmp, where);
 					if (result != 0)
 						return result;
@@ -235,18 +269,21 @@ public class MacUtil {
 		return controlHandle;
 	}
 	
-	public static int createDrawingArea(int parentControlHandle, boolean visible, int width, int height, int border) {
+	public static int createDrawingArea(int parentControlHandle, int pos, boolean visible, int width, int height, int border) {
 		int windowHandle= OS.GetControlOwner(parentControlHandle);
 		int features= OS.kControlSupportsEmbedding | OS.kControlSupportsFocus | OS.kControlGetsFocusOnClick;
 		int controlHandle= OS.NewControl(windowHandle, false, (short)features, (short)0, (short)0, OS.kControlUserPaneProc);
 		OS.SizeControl(controlHandle, (short)width, (short)height);
-		embedControl(controlHandle, parentControlHandle);
+		embedControl(controlHandle, parentControlHandle, pos);
 		initLocation(controlHandle);
 		if (visible)
 			OS.ShowControl(controlHandle);
 		return controlHandle;
 	}
-
+	
+	public static int createDrawingArea(int parentControlHandle, boolean visible, int width, int height, int border) {
+		return createDrawingArea(parentControlHandle, -1, visible, width, height, border);
+	}
 	public static int createDrawingArea(int parentControlHandle, int width, int height, int border) {
 		return createDrawingArea(parentControlHandle, true, width, height, border);
 	}
