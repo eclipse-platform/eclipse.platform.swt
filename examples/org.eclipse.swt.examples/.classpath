@@ -2,6 +2,6 @@
 <classpath>
     <classpathentry kind="var" path="JRE_LIB"/>
     <classpathentry kind="src" path="/org.eclipse.swt"/>
-    <classpathentry kind="src" path="Eclipse SWT Examples/common"/>
+    <classpathentry kind="src" path=""/>
     <classpathentry kind="output" path="bin"/>
 </classpath>
