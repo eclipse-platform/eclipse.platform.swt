@@ -46,7 +46,7 @@ public class LineTool extends DragPaintSession implements PaintTool {
 	 * Template methods for drawing
 	 */
 	protected Figure createFigure(Point a, Point b) {
-		return new LineFigure(settings.commonForegroundColor, settings.commonLineStyle,
+		return new LineFigure(settings.commonForegroundColor, settings.commonBackgroundColor, settings.commonLineStyle,
 			a.x, a.y, b.x, b.y);
 	}
 }

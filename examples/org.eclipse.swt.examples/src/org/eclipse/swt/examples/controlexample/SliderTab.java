@@ -129,7 +129,7 @@ class SliderTab extends RangeTab {
 		/* Add the listeners */
 		pageIncrementScale.addSelectionListener (new SelectionAdapter () {
 			public void widgetSelected (SelectionEvent event) {
-				setWidgetIncrement ();
+				setWidgetPageIncrement ();
 			}
 		});
 	}

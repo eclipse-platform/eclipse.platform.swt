@@ -153,7 +153,7 @@ class LabelTab extends AlignableTab {
 		centerButton.setSelection (!isSeparator && (label1.getStyle () & SWT.CENTER) != 0);
 		rightButton.setSelection (!isSeparator && (label1.getStyle () & SWT.RIGHT) != 0);
 		shadowInButton.setSelection (isSeparator && (label1.getStyle () & SWT.SHADOW_IN) != 0);
-		shadowOutButton.setSelection (isSeparator && (label1.getStyle () & SWT.SHADOW_OUT) != 0);
+		shadowOutButton.setSelection (!shadowInButton.getSelection ());
 		leftButton.setEnabled (!isSeparator);
 		centerButton.setEnabled (!isSeparator);
 		rightButton.setEnabled (!isSeparator);

@@ -83,7 +83,7 @@ class TableTab extends ScrollableTab {
 		/* Create a group for the table */
 		tableGroup = new Group (exampleGroup, SWT.NULL);
 		tableGroup.setLayout (new GridLayout ());
-		tableGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.GRAB_VERTICAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
+		tableGroup.setLayoutData (new GridData (GridData.GRAB_HORIZONTAL | GridData.HORIZONTAL_ALIGN_FILL | GridData.VERTICAL_ALIGN_FILL));
 		tableGroup.setText (ControlExample.getResourceString("Table"));
 	}
 	

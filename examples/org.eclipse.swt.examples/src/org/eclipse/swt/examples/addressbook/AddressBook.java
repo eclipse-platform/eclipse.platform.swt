@@ -61,7 +61,7 @@ private boolean closeAddressBook() {
 			if (!save()) return false;
 		}
 	}
-	
+		
 	TableItem[] items = table.getItems();
 	for (int i = 0; i < items.length; i ++) {
 		items[i].dispose();
@@ -276,6 +276,7 @@ private String[][] mergeSort(String[][] items, int column) {
 }
 private void newAddressBook() {	
 	shell.setText(resAddressBook.getString("Title_bar") + resAddressBook.getString("New_title"));
+	file = null;
 	isModified = false;
 }
 private void newEntry() {

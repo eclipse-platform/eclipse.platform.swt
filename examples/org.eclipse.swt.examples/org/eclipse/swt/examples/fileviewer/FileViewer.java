@@ -33,6 +33,7 @@ public class FileViewer {
 	private Label diskSpaceLabel;
 	
 	private File currentDirectory = null;
+	private boolean initial = true;
 	
 	/* Drag and drop optimizations */
 	private boolean isDragging = false; // if this app is dragging
@@ -488,13 +489,10 @@ public class FileViewer {
 			}
 			private File getTargetFile(DropTargetEvent event) {
 				// Determine the target File for the drop 
-				final TreeItem item = tree.getItem(tree.toControl(new Point(event.x, event.y)));
-				final File targetFile;
-				if (item == null) {
-					// We dropped on an unoccupied area of the tree, we have no recourse. Quit.
-					targetFile = null;
-				} else {
-					// We dropped on a particular item in the tree, use the item's file
+				TreeItem item = tree.getItem(tree.toControl(new Point(event.x, event.y)));
+				File targetFile = null;
+				if (item != null) {
+					// We are over a particular item in the tree, use the item's file
 					targetFile = (File) item.getData(TREEITEMDATA_FILE);
 				}
 				return targetFile;
@@ -790,13 +788,16 @@ public class FileViewer {
 			}
 			private File getTargetFile(DropTargetEvent event) {
 				// Determine the target File for the drop 
-				final TableItem item = table.getItem(table.toControl(new Point(event.x, event.y)));
-				final File targetFile;
+				TableItem item = table.getItem(table.toControl(new Point(event.x, event.y)));
+				File targetFile = null;
 				if (item == null) {
-					// We dropped on an unoccupied area of the table, use the table's root file
-					targetFile = (File) table.getData(TABLEDATA_DIR);
+					// We are over an unoccupied area of the table.
+					// If it is a COPY, we can use the table's root file.
+					if (event.detail == DND.DROP_COPY) {
+						targetFile = (File) table.getData(TABLEDATA_DIR);
+					}
 				} else {
-					// We dropped on a particular item in the table, use the item's file
+					// We are over a particular item in the table, use the item's file
 					targetFile = (File) item.getData(TABLEITEMDATA_FILE);
 				}
 				return targetFile;
@@ -935,6 +936,11 @@ public class FileViewer {
 	 */
 	void handleDeferredRefresh() {
 		if (isDragging || isDropping || ! deferredRefreshRequested) return;
+		if (progressDialog != null) {
+			progressDialog.close();
+			progressDialog = null;
+		}
+
 		deferredRefreshRequested = false;
 		File[] files = deferredRefreshFiles;
 		deferredRefreshFiles = null;
@@ -1093,7 +1099,7 @@ public class FileViewer {
 			if (source.equals(dest)) continue; // ignore if in same location
 
 			progressDialog.setDetailFile(source, ProgressDialog.COPY);
-			for (;! progressDialog.isCancelled();) {
+			while (! progressDialog.isCancelled()) {
 				if (copyFileStructure(source, dest)) {
 					processedFiles.add(source);
 					break;
@@ -1170,7 +1176,7 @@ public class FileViewer {
 		for (int i = 0; (i < sourceFiles.length) && (! progressDialog.isCancelled()); i++){
 			final File source = sourceFiles[i];
 			progressDialog.setDetailFile(source, ProgressDialog.DELETE);
-			for (;! progressDialog.isCancelled();) {
+			while (! progressDialog.isCancelled()) {
 				if (deleteFileStructure(source)) {
 					break;
 				} else if (! progressDialog.isCancelled()) {
@@ -1196,7 +1202,7 @@ public class FileViewer {
 	 * @return an array of Files corresponding to the root directories on the platform,
 	 *         may be empty but not null
 	 */
-	static File[] getRoots() {
+	File[] getRoots() {
 		/*
 		 * On JDK 1.22 only...
 		 */
@@ -1214,13 +1220,21 @@ public class FileViewer {
 				File drive = new File(i + ":" + File.separator);
 				if (drive.isDirectory() && drive.exists()) {
 					list.add(drive);
+					if (initial && i == 'c') {
+						currentDirectory = drive;
+						initial = false;
+					}
 				}
 			}
 			File[] roots = (File[]) list.toArray(new File[list.size()]);
 			sortFiles(roots);
 			return roots;
 		} else {
-			return new File[] { new File(File.separator) };
+			File root = new File(File.separator);
+			if (initial) {
+				currentDirectory = root;
+			}
+			return new File[] { root };
 		}
 	}
 

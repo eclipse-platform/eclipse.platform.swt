@@ -92,6 +92,7 @@ public SearchDialog(Shell parent) {
 	
 	Button up = new Button(direction, SWT.RADIO);
 	up.setText(resAddressBook.getString("Dialog_dir_up"));
+	up.setSelection(false);
 		
 	down = new Button(direction, SWT.RADIO);
 	down.setText(resAddressBook.getString("Dialog_dir_down"));

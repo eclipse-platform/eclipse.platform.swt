@@ -54,13 +54,13 @@ public class PolyLineTool extends SegmentedPaintSession implements PaintTool {
 			for (int i = 0; i < numPoints - 1; ++i) {
 				final Point a = points[i];
 				final Point b = points[i + 1];
-				container.add(new LineFigure(settings.commonForegroundColor, settings.commonLineStyle,
+				container.add(new LineFigure(settings.commonForegroundColor, settings.commonBackgroundColor, settings.commonLineStyle,
 					a.x, a.y, b.x, b.y));
 			}
 			if (closed) {
 				final Point a = points[points.length - 1];
 				final Point b = points[0];
-				container.add(new LineFigure(settings.commonForegroundColor, settings.commonLineStyle,
+				container.add(new LineFigure(settings.commonForegroundColor, settings.commonBackgroundColor, settings.commonLineStyle,
 					a.x, a.y, b.x, b.y));
 			}
 		}

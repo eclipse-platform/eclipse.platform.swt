@@ -890,35 +890,41 @@ public class ImageAnalyzer {
 	void menuPrint() {
 		if (image == null) return;
 
-		// Ask the user to specify the printer.
-		PrintDialog dialog = new PrintDialog(shell, SWT.NULL);
-		PrinterData printerData = dialog.open();
-		if (printerData == null) return;
-		
-		Printer printer = new Printer(printerData);
-		
-		Point screenDPI = display.getDPI();
-		Point printerDPI = printer.getDPI();
-		int scaleFactor = printerDPI.x / screenDPI.x;
-		Rectangle trim = printer.computeTrim(0, 0, 0, 0);
-		if (printer.startJob(fileName)) {
-			GC gc = new GC(printer);
-			if (printer.startPage()) {
-				gc.drawImage(
-					image,
-					0,
-					0,
-					imageData.width,
-					imageData.height,
-					-trim.x,
-					-trim.y,
-					scaleFactor * imageData.width,
-					scaleFactor * imageData.height);
-				printer.endPage();
+		try {
+			// Ask the user to specify the printer.
+			PrintDialog dialog = new PrintDialog(shell, SWT.NULL);
+			PrinterData printerData = dialog.open();
+			if (printerData == null) return;
+			
+			Printer printer = new Printer(printerData);
+			
+			Point screenDPI = display.getDPI();
+			Point printerDPI = printer.getDPI();
+			int scaleFactor = printerDPI.x / screenDPI.x;
+			Rectangle trim = printer.computeTrim(0, 0, 0, 0);
+			if (printer.startJob(fileName)) {
+				GC gc = new GC(printer);
+				if (printer.startPage()) {
+					gc.drawImage(
+						image,
+						0,
+						0,
+						imageData.width,
+						imageData.height,
+						-trim.x,
+						-trim.y,
+						scaleFactor * imageData.width,
+						scaleFactor * imageData.height);
+					printer.endPage();
+				}
+				printer.endJob();
 			}
-			printer.endJob();
+			printer.dispose();
+		} catch (SWTError e) {
+			MessageBox box = new MessageBox(shell, SWT.ICON_ERROR);
+			box.setMessage(bundle.getString("Printing_error") + e.getMessage());
+			box.open();
 		}
-		printer.dispose();
 	}
 
 	void menuReopen() {

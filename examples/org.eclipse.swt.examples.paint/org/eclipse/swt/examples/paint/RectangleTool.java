@@ -49,14 +49,14 @@ public class RectangleTool extends DragPaintSession implements PaintTool {
 		switch (settings.commonFillType) {
 			default:
 			case ToolSettings.ftNone:
-				return new RectangleFigure(settings.commonForegroundColor, settings.commonLineStyle,
+				return new RectangleFigure(settings.commonForegroundColor, settings.commonBackgroundColor, settings.commonLineStyle,
 					a.x, a.y, b.x, b.y);
 			case ToolSettings.ftSolid:
 				return new SolidRectangleFigure(settings.commonBackgroundColor, a.x, a.y, b.x, b.y);
 			case ToolSettings.ftOutline: {
 				ContainerFigure container = new ContainerFigure();
 				container.add(new SolidRectangleFigure(settings.commonBackgroundColor, a.x, a.y, b.x, b.y));
-				container.add(new RectangleFigure(settings.commonForegroundColor, settings.commonLineStyle,
+				container.add(new RectangleFigure(settings.commonForegroundColor, settings.commonBackgroundColor, settings.commonLineStyle,
 					a.x, a.y, b.x, b.y));
 				return container;
 			}
