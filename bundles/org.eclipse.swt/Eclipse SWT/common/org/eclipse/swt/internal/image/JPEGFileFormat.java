@@ -1370,13 +1370,8 @@ void inverseDCT(int[] dataUnit) {
 public static boolean isJPEGFile(LEDataInputStream stream) {
 	try {
 		JPEGStartOfImage soi = new JPEGStartOfImage(stream);
-		byte[] header = new byte[16];
-		stream.read(header);
-		JPEGAppn appn = new JPEGAppn(header);
-		stream.unread(appn.reference);
 		stream.unread(soi.reference);
-		return soi.verify() && appn.verify();
-			// && appn.getSegmentMarker() == APP0; doesn't have to be app0
+		return soi.verify();  // we no longer check for appN
 	} catch (Exception e) {
 		return false;
 	}
