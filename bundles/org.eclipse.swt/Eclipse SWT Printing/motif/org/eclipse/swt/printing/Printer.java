@@ -40,6 +40,7 @@ public final class Printer extends Device {
 	PrinterData data;
 	int printContext, xScreen, xDrawable, xtContext;
 	Font defaultFont;
+	boolean isGCCreated;
 
 	static String APP_NAME = "SWT_Printer";
 	
@@ -362,9 +363,8 @@ protected void destroy() {
  * @return the platform specific GC handle
  */
 public int internal_new_GC(GCData data) {
-	int xGC = OS.XCreateGC(xDisplay, xDrawable, 0, null);
-	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	if (data != null) {
+		if (isGCCreated) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
 		int mask = SWT.LEFT_TO_RIGHT | SWT.RIGHT_TO_LEFT;
 		if ((data.style & mask) == 0) {
 			data.style |= SWT.LEFT_TO_RIGHT;
@@ -380,8 +380,11 @@ public int internal_new_GC(GCData data) {
 			OS.XGetGCValues(xDisplay, defaultGC, OS.GCBackground | OS.GCForeground, values);
 			data.foreground = values.foreground;
 			data.background = values.background;
-		}	
+		}
+		isGCCreated = true;
 	}
+	int xGC = OS.XCreateGC(xDisplay, xDrawable, 0, null);
+	if (xGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
 	return xGC;
 }
 
@@ -400,6 +403,7 @@ public int internal_new_GC(GCData data) {
  */
 public void internal_dispose_GC(int xGC, GCData data) {
 	OS.XFreeGC(xDisplay, xGC);
+	if (data != null) isGCCreated = false;
 }
 
 /**
