@@ -597,6 +597,8 @@ void drawImage(Image image, int srcX, int srcY, int srcWidth, int srcHeight, int
 		clip.lr_y = (short)(destY + destHeight - 1);
 		int prevContext = setGC();
 		setGCClipping();
+		OS.PgSetDrawMode(data.xorMode ? OS.Pg_DrawModeDSx : OS.Pg_DrawModeS);
+		dirtyBits |= DIRTY_XORMODE;
 		OS.PgSetUserClip(clip);
 		if (phDrawImage.palette != 0) OS.PgSetPalette(phDrawImage.palette, 0, (short)0, (short)phDrawImage.colors, OS.Pg_PALSET_SOFT, 0);
 		if (phDrawImage.alpha != 0) {
@@ -1190,6 +1192,8 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 				point.y = (short)y;
 				PhImage_t phImage = new PhImage_t();
 				OS.memmove(phImage, image, PhImage_t.sizeof);
+				OS.PgSetDrawMode(OS.Pg_DrawModeDSx);
+				dirtyBits |= DIRTY_XORMODE;
 				OS.PgDrawImage(phImage.image, phImage.type, point, dim, phImage.bpl, 0);
 				phImage.flags = OS.Ph_RELEASE_IMAGE_ALL;
 				OS.memmove(image, phImage, PhImage_t.sizeof);
@@ -2311,7 +2315,7 @@ int setGC() {
 			OS.PgSetStrokeWidth(data.lineWidth);
 		}
 		if ((dirtyBits & DIRTY_XORMODE) != 0) {
-			OS.PgSetDrawMode(data.xorMode ? OS.Pg_DrawModeDSx : OS.Pg_DrawModeS);
+			OS.PgSetDrawMode(data.xorMode ? OS.Pg_DRAWMODE_XOR : OS.Pg_DRAWMODE_OPAQUE);
 		}
 		dirtyBits = 0;
 	}
