@@ -198,8 +198,6 @@ public void dispose() {
 	if (style != 0) OS.ATSUDisposeTextLayout(style);
 
 	/* Dispose the GC */
-	
-	OS.CGContextRestoreGState(handle);
 	drawable.internal_dispose_GC(handle, data);
 
 	data.clipRgn = data.style = data.layout = 0;
@@ -1299,7 +1297,6 @@ void init(Drawable drawable, GCData data, int context) {
 	if (foreground != null) OS.CGContextSetStrokeColor(context, foreground);
 	float[] background = data.background;
 	if (background != null) OS.CGContextSetFillColor(context, background);
-	OS.CGContextSaveGState(context);
 
 	int[] buffer = new int[1];
 	OS.ATSUCreateTextLayout(buffer);
@@ -1463,13 +1460,42 @@ public void setClipping(Region region) {
 }
 
 void setCGClipping () {
-	OS.CGContextRestoreGState(handle);
-	OS.CGContextSaveGState(handle);
-	Rect rect = new Rect();
-	OS.SetRect(rect, (short)0, (short)0, (short)1000, (short)700);
-	OS.ClipCGContextToRegion(handle, data.portRect, data.clipRgn);
-	
-	//state bg, fg, linewidth, linedash, font
+	Rect rect = new Rect ();
+	//TEMPORARY CODE
+	if (data.paintEvent != 0 && data.control != 0) {
+		int window = OS.GetControlOwner(data.control);
+		int[] root = new int[1];
+		OS.GetRootControl(window, root);
+		OS.GetControlBounds(data.control, rect);
+		short x = 0, y = 0;
+		Rect tmpRect = new Rect();
+		int tempHandle = data.control;
+		int[] parentHandle = new int[1];
+		int rc= OS.GetSuperControl(tempHandle, parentHandle);
+		while (parentHandle[0] != root[0]) {
+			OS.GetControlBounds(parentHandle [0], tmpRect);
+			x += tmpRect.left;
+			y += tmpRect.top;
+			tempHandle = parentHandle[0];
+			OS.GetSuperControl(tempHandle, parentHandle);
+		}
+		rect.left += x;
+		rect.top += y;
+		rect.right += x;
+		rect.bottom += y;
+	}
+	OS.CGContextScaleCTM(handle, 1, -1);
+	OS.CGContextTranslateCTM(handle, 0, -(rect.bottom - rect.top));
+	int rgn = data.clipRgn;
+	if (data.damageRgn != 0) { 
+		rgn = OS.NewRgn();
+		OS.SectRgn(data.damageRgn, data.clipRgn, rgn);
+		org.eclipse.swt.internal.carbon.Point p = new org.eclipse.swt.internal.carbon.Point();
+	}
+	OS.ClipCGContextToRegion(handle, rect, rgn);
+	if (rgn != data.clipRgn) OS.DisposeRgn(rgn);
+	OS.CGContextScaleCTM(handle, 1, -1);
+	OS.CGContextTranslateCTM(handle, 0, -(rect.bottom - rect.top));
 }
 
 /** 

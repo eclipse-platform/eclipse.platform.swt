@@ -325,37 +325,79 @@ void hookEvents () {
 	OS.InstallEventHandler (controlTarget, controlProc, length / 2, mask, handle, null);
 }
 
+
 public int internal_new_GC (GCData data) {
 	checkWidget();
 	int context = 0;
+	int region = 0;
 	if (data.paintEvent != 0) {
-		int inEvent = data.paintEvent;
+		int theEvent = data.paintEvent;
 		int [] buffer = new int [1];
-		OS.GetEventParameter (inEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
-		context = buffer [0];
+		OS.GetEventParameter (theEvent, OS.kEventParamCGContextRef, OS.typeCGContextRef, null, 4, null, buffer);
+		context = buffer [0];	
+		if (context == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+		OS.GetEventParameter (theEvent, OS.kEventParamRgnHandle, OS.typeQDRgnHandle, null, 4, null, buffer);
+		region = buffer [0];
 	} else {
+		int window = OS.GetControlOwner (handle);
+		int port = OS.GetWindowPort (window);
+		int [] buffer = new int [1];
+		OS.CreateCGContextForPort (port, buffer);
+		context = buffer [0];
+		if (context == 0) SWT.error (SWT.ERROR_NO_HANDLES);
+		Rect portRect = new Rect ();
+		OS.GetPortBounds (port, portRect);
+		
+		//TEMPORARY CODE
+		Rect rect = new Rect ();
+		int[] root = new int[1];
+		OS.GetRootControl (window, root);
+		OS.GetControlBounds (handle, rect);
+		short x = 0, y = 0;
+		Rect tmpRect = new Rect ();
+		int tempHandle = handle;
+		int [] parentHandle = new int [1];
+		int rc= OS.GetSuperControl (tempHandle, parentHandle);
+		while (parentHandle [0] != root [0]) {
+			OS.GetControlBounds(parentHandle [0], tmpRect);
+			x += tmpRect.left;
+			y += tmpRect.top;
+			tempHandle = parentHandle [0];
+			OS.GetSuperControl (tempHandle, parentHandle);
+		}
+		rect.left += x;
+		rect.top += y;
+		rect.right += x;
+		rect.bottom += y;
+		
+		OS.CGContextScaleCTM (context, 1, -1);
+		OS.CGContextTranslateCTM (context, rect.left, -(portRect.bottom - portRect.top) + rect.top);
+		int rgn = OS.NewRgn();
+		OS.SetRectRgn (rgn, rect.left, rect.top, rect.right, rect.bottom);
+		OS.OffsetRgn(rgn, (short)-rect.left, (short)-rect.top);
+		OS.ClipCGContextToRegion (context, rect, rgn);
+		region = rgn;
 	}
 	if (data != null) {
 		data.device = getDisplay ();
 //		data.foreground = getForegroundPixel ();
 //		data.background = getBackgroundPixel ();
 //		data.hFont = OS.SendMessage (handle, OS.WM_GETFONT, 0, 0);
-//		data.hwnd = handle;
-		Rect rect = new Rect ();
-		int wHandle = OS.GetControlOwner (handle);
-		int port = OS.GetWindowPort (wHandle);
-		OS.GetPortBounds (port, rect);
-		data.portRect = rect;
+		data.damageRgn = region;
+		data.control = handle;
 	}
 	return context;
 }
 
 public void internal_dispose_GC (int context, GCData data) {
 	checkWidget ();
-	if (data.paintEvent != 0) {
-	} else {
+	if (data.paintEvent == 0) {
+		if (data.damageRgn != 0) OS.DisposeRgn (data.damageRgn);
+		OS.CGContextFlush (context);
+		OS.CGContextRelease (context);
 	}
 }
+
 
 public boolean isEnabled () {
 	checkWidget();
