@@ -289,6 +289,7 @@ public class OS {
 	public static final byte[] preedit_changed = signal("preedit_changed");
 	public static final byte[] realize = signal("realize");
 	public static final byte[] row_activated = signal("row_activated");
+	public static final byte[] scroll_child = signal("scroll_child");
 	public static final byte[] select = signal("select");
 	public static final byte[] show = signal("show");
 	public static final byte[] show_help = signal("show_help");

@@ -106,18 +106,19 @@ public abstract class Widget {
 	static final int PREEDIT_CHANGED = 27;
 	static final int REALIZE = 28;
 	static final int ROW_ACTIVATED = 29;
-	static final int SELECT = 30;
-	static final int SHOW = 31;
-	static final int SHOW_HELP = 32;
-	static final int SIZE_ALLOCATE = 33;
-	static final int SWITCH_PAGE = 34;
-	static final int TEST_COLLAPSE_ROW = 35;
-	static final int TEST_EXPAND_ROW = 36;
-	static final int TOGGLED = 37;
-	static final int UNMAP_EVENT = 38;
-	static final int UNREALIZE = 39;
-	static final int VALUE_CHANGED = 40;
-	static final int WINDOW_STATE_EVENT = 41;
+	static final int SCROLL_CHILD = 30;
+	static final int SELECT = 31;
+	static final int SHOW = 32;
+	static final int SHOW_HELP = 33;
+	static final int SIZE_ALLOCATE = 34;
+	static final int SWITCH_PAGE = 35;
+	static final int TEST_COLLAPSE_ROW = 36;
+	static final int TEST_EXPAND_ROW = 37;
+	static final int TOGGLED = 38;
+	static final int UNMAP_EVENT = 39;
+	static final int UNREALIZE = 40;
+	static final int VALUE_CHANGED = 41;
+	static final int WINDOW_STATE_EVENT = 42;
 
 /**
  * Prevents uninitialized instances from being created outside the package.
@@ -617,6 +618,10 @@ int gtk_realize (int widget) {
 }
 
 int gtk_row_activated (int tree, int path, int column) {
+	return 0;
+}
+
+int gtk_scroll_child (int widget, int scrollType, int horizontal) {
 	return 0;
 }
 
@@ -1240,6 +1245,7 @@ int windowProc (int handle, int arg0, int arg1, int user_data) {
 		case DELETE_RANGE: return gtk_delete_range (handle, arg0, arg1);
 		case DELETE_TEXT: return gtk_delete_text (handle, arg0, arg1);
 		case ROW_ACTIVATED: return gtk_row_activated (handle, arg0, arg1);
+		case SCROLL_CHILD: return gtk_scroll_child (handle, arg0, arg1);
 		case SWITCH_PAGE: return gtk_switch_page (handle, arg0, arg1);
 		case TEST_COLLAPSE_ROW: return gtk_test_collapse_row (handle, arg0, arg1);
 		case TEST_EXPAND_ROW: return gtk_test_expand_row(handle, arg0, arg1);
