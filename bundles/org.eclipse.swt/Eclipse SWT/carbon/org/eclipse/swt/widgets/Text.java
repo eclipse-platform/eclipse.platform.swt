@@ -52,7 +52,7 @@ public class Text extends Scrollable {
 	*/
 	static {
 		LIMIT = 0x7FFFFFFF;
-		DELIMITER = "\n";
+		DELIMITER = "\r";
 	}
 
 /**
@@ -756,7 +756,7 @@ public int getTopPixel () {
 
 String getTXNText (int iStartOffset, int iEndOffset) {
 	int [] oDataHandle = new int [1];
-	OS.TXNGetData (txnObject, iStartOffset, iEndOffset, oDataHandle);
+	OS.TXNGetData (txnObject, iStartOffset, iEndOffset + 1, oDataHandle);
 	if (oDataHandle [0] == 0) return "";
 	int length = OS.GetHandleSize (oDataHandle [0]);
 	if (length == 0) return "";
