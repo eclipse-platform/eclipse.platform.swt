@@ -1581,9 +1581,6 @@ public void setCursorLocation (Point point) {
 	if (point == null) error (SWT.ERROR_NULL_ARGUMENT);
 	int x = point.x;
 	int y = point.y;
-//	if (x < 0 || y < 0) error (SWT.ERROR_INVALID_ARGUMENT);
-//	Rectangle bounds = getBounds ();
-//	if (x > bounds.width || y > bounds.height) error (SWT.ERROR_INVALID_ARGUMENT);
 	int xWindow = OS.XDefaultRootWindow (xDisplay);	
 	OS.XWarpPointer (xDisplay, OS.None, xWindow, 0, 0, 0, 0, x, y);
 }
