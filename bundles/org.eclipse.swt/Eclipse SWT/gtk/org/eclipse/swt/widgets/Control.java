@@ -1390,6 +1390,7 @@ int /*long*/ fixedMapProc (int /*long*/ widget) {
  */
 public boolean forceFocus () {
 	checkWidget();
+	if (display.focusEvent == SWT.FocusOut) return false;
 	Shell shell = getShell ();
 	shell.setSavedFocus (this);
 	if (!isEnabled () || !isVisible ()) return false;
@@ -2270,35 +2271,29 @@ void releaseWidget () {
 
 void sendFocusEvent (int type) {
 	Shell shell = _getShell ();
+	Display display = this.display;
+	display.focusControl = this;
+	display.focusEvent = type;
 	sendEvent (type);
-	switch (type) {
-		case SWT.FocusIn: {
-			/*
-			* It is possible that the shell may be
-			* disposed at this point.  If this happens
-			* don't send the activate and deactivate
-			* events.
-			*/
-			if (!shell.isDisposed ()) {
+	display.focusControl = null;
+	display.focusEvent = SWT.None;
+	/*
+	* It is possible that the shell may be
+	* disposed at this point.  If this happens
+	* don't send the activate and deactivate
+	* events.
+	*/
+	if (!shell.isDisposed ()) {
+		switch (type) {
+			case SWT.FocusIn: 
 				shell.setActiveControl (this);
-			}			
-			break;
-		}
-		case SWT.FocusOut: {
-			/*
-			* It is possible that the shell may be
-			* disposed at this point.  If this happens
-			* don't send the activate and deactivate
-			* events.
-			*/
-			if (!shell.isDisposed ()) {
-				Display display = shell.display;
+				break;
+			case SWT.FocusOut:
 				Control control = display.getFocusControl ();
 				if (control == null || shell != control.getShell () ) {
 					shell.setActiveControl (null);
 				}
-			}
-			break;
+				break;
 		}
 	}
 }
@@ -2557,8 +2552,10 @@ public void setEnabled (boolean enabled) {
 	Control control = null;
 	boolean fixFocus = false;
 	if (!enabled) {
-		control = display.getFocusControl ();
-		fixFocus = isFocusAncestor (control);
+		if (display.focusEvent != SWT.FocusOut) {
+			control = display.getFocusControl ();
+			fixFocus = isFocusAncestor (control);
+		}
 	}
 	if (enabled) {
 		state &= ~DISABLED;
@@ -2913,8 +2910,10 @@ public void setVisible (boolean visible) {
 		Control control = null;
 		boolean fixFocus = false;
 		if (!visible) {
-			control = display.getFocusControl ();
-			fixFocus = isFocusAncestor (control);
+			if (display.focusEvent != SWT.FocusOut) {
+				control = display.getFocusControl ();
+				fixFocus = isFocusAncestor (control);
+			}
 		}
 		if (fixFocus) {
 			int flags = OS.GTK_WIDGET_FLAGS (topHandle);

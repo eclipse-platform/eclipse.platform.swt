@@ -119,6 +119,10 @@ public class Display extends Device {
 		SWT_OBJECT_INDEX = OS.g_quark_from_string (buffer);
 	}
 		
+	/* Focus */
+	int focusEvent;
+	Control focusControl;
+	
 	/* Input method resources */
 	Control imControl;
 	int /*long*/ preeditWindow, preeditLabel;
@@ -1251,6 +1255,9 @@ public int getDoubleClickTime () {
  */
 public Control getFocusControl () {
 	checkDevice ();
+	if (focusControl != null && !focusControl.isDisposed ()) {
+		return focusControl;
+	}
 	Shell shell = getActiveShell ();
 	if (shell == null) return null;
 	int /*long*/ shellHandle = shell.shellHandle;
