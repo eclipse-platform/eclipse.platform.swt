@@ -223,12 +223,7 @@ void createHandle () {
 		OS.kEventClassMenu, OS.kEventMenuOpening,
 		OS.kEventClassMenu, OS.kEventMenuClosed
 	};
-	OS.InstallEventHandler(OS.GetMenuEventTarget(handle), display.fMenuProc,
-		mask.length / 2,
-		mask,
-		handle,
-		null
-	);
+	OS.InstallEventHandler(OS.GetMenuEventTarget(handle), display.fMenuProc, mask.length / 2, mask, handle, null);
 }
 
 void createItem (MenuItem item, int index) {

@@ -229,11 +229,10 @@ void hookEvents () {
 	if ((style & SWT.SEPARATOR) != 0)
 		return;
 	Display display= getDisplay();
-	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, 1,
-		new int[] {
-			OS.kEventClassControl, OS.kEventControlDraw,
-		},
-		handle, null);	
+	int[] mask= new int[] {
+		OS.kEventClassControl, OS.kEventControlDraw,
+	};
+	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask.length/2, mask, handle, null);	
 }
 /* AW
 boolean mnemonicHit (char key) {

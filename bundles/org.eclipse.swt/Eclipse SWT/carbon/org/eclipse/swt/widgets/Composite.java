@@ -371,12 +371,12 @@ void hookEvents () {
 			OS.kEventClassMouse, OS.kEventMouseDown,
 			OS.kEventClassMouse, OS.kEventMouseWheelMoved,
 		};
-		OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fMouseProc, mask.length, mask, handle, null);
+		OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fMouseProc, mask.length/2, mask, handle, null);
 		
-		int[] mask2= new int[] {
+		mask= new int[] {
 			OS.kEventClassControl, OS.kEventControlDraw,
 		};
-		OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask2.length, mask2, handle, null);
+		OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask.length/2, mask, handle, null);
 	}
 }
 

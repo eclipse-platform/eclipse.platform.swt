@@ -200,11 +200,10 @@ void hookEvents () {
 	super.hookEvents ();
 	Display display= getDisplay();		
 	OS.SetControlData(handle, OS.kControlEntireControl, OS.kControlUserPaneHitTestProcTag, 4, new int[]{display.fUserPaneHitTestProc});
-	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, 1,
-		new int[] {
-			OS.kEventClassControl, OS.kEventControlDraw,
-		},
-		handle, null);	
+	int[] mask= new int[] {
+		OS.kEventClassControl, OS.kEventControlDraw,
+	};
+	OS.InstallEventHandler(OS.GetControlEventTarget(handle), display.fControlProc, mask.length/2, mask, handle, null);	
 }
 
 int processMouseDown (MacMouseEvent mmEvent) {
