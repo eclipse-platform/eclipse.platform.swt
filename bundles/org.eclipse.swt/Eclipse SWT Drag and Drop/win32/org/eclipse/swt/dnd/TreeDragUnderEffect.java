@@ -10,215 +10,101 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
-import org.eclipse.swt.SWT;
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.internal.win32.TVHITTESTINFO;
 import org.eclipse.swt.internal.win32.TVITEM;
+import org.eclipse.swt.widgets.Tree;
 
 class TreeDragUnderEffect extends DragUnderEffect {
 	private Tree tree;
-	private int currentEffect = DND.FEEDBACK_NONE;
-	private TreeItem[] selection = new TreeItem[0];
-	
-	private TreeItem scrollItem;
+	private int dropIndex;
+	private int scrollIndex;	
 	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
-	
-	private TreeItem expandItem;
+	private int expandIndex;
 	private long expandBeginTime;
-	private static final int EXPAND_HYSTERESIS = 1000; // milli seconds
+	
+	private static final int SCROLL_HYSTERESIS = 500; // milli seconds
+	private static final int EXPAND_HYSTERESIS = 600; // milli seconds
+	
 
 TreeDragUnderEffect(Tree tree) {
 	this.tree = tree;
 }
-void show(int effect, int x, int y) {
-	effect = checkEffect(effect);
-	TreeItem item = findItem(x, y);
-	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = tree.getSelection();
-		tree.deselectAll();
-	}
-	scrollHover(effect, item, x, y);
-	expandHover(effect, item, x, y);
-	setDragUnderEffect(effect, item);
-	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		for (int i = 0; i < selection.length; i++) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE;
-			tvItem.state = OS.TVIS_SELECTED;
-			tvItem.stateMask = OS.TVIS_SELECTED;
-			tvItem.hItem = selection[i].handle;
-			OS.SendMessage (tree.handle, OS.TVM_SETITEM, 0, tvItem);
-		}
-		selection = new TreeItem[0];
-	}
-	currentEffect = effect;
-}
+
 private int checkEffect(int effect) {
 	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
-	int mask = DND.FEEDBACK_INSERT_AFTER | DND.FEEDBACK_INSERT_BEFORE | DND.FEEDBACK_SELECT;
-	int bits = effect & mask;
-	if (bits == DND.FEEDBACK_INSERT_AFTER || bits == DND.FEEDBACK_INSERT_BEFORE || bits == DND.FEEDBACK_SELECT) return effect;
-	return (effect & ~mask);
+	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
+	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
+	return effect;
 }
-private TreeItem findItem(int x, int y){
+
+void show(int effect, int x, int y) {
+	effect = checkEffect(effect);
+	int handle = tree.handle;
 	Point coordinates = new Point(x, y);
 	coordinates = tree.toControl(coordinates);
-	Rectangle area = tree.getClientArea();
-	if (!area.contains(coordinates)) return null;
-	
-	TreeItem item = tree.getItem(coordinates);
-	if (item != null) return item;
-
-	// Scan across the width of the tree.
-	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		Point pt = new Point(x1, coordinates.y);
-		item = tree.getItem(pt);
-		if (item != null) return item;
-	}
-	// Check if we are just below the last item of the tree
-	if (coordinates.y > area.y + area.height - tree.getItemHeight()) {
-		int y1 = area.y + area.height - tree.getItemHeight();
-		Point pt = new Point(coordinates.x, y1);
-		item = tree.getItem(pt);	
-		if (item != null) return item;
-		
-		// Scan across the width of the tree just above the bottom..
-		for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-			pt = new Point(x1, y1);
-			item = tree.getItem(pt);
-			if (item != null) return item;
-		}
-	}
-	return null;
-}
-private void setDragUnderEffect(int effect, TreeItem item) {
-	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-		    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-			tree.setInsertMark(null, false);
-		}
-		setDropSelection(item); 
-		return;
-	}
-	if ((effect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-	    (effect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-		if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
-			setDropSelection(null);
-		}
-		setInsertMark(item, (effect & DND.FEEDBACK_INSERT_BEFORE) != 0);
-		return;
-	}
-	if ((currentEffect & DND.FEEDBACK_INSERT_AFTER) != 0 ||
-	    (currentEffect & DND.FEEDBACK_INSERT_BEFORE) != 0) {
-		tree.setInsertMark(null, false);
-	}
-	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(null);
-	}
-}
-private void setDropSelection (TreeItem item) {	
-	int hItem = (item != null) ? item.handle : 0;
-	OS.SendMessage (tree.handle, OS.TVM_SELECTITEM, OS.TVGN_DROPHILITED, hItem);
-}
-private void setInsertMark(TreeItem item, boolean before) {
-	int hItem = (item != null) ? item.handle : 0;
-	OS.SendMessage (tree.handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
-}
-private void scrollHover (int effect, TreeItem item, int x, int y) {
+	TVHITTESTINFO lpht = new TVHITTESTINFO ();
+	lpht.x = coordinates.x;
+	lpht.y = coordinates.y;
+	OS.SendMessage (handle, OS.TVM_HITTEST, 0, lpht);
+	int hItem = lpht.hItem;
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
-		scrollItem = null;
-		return;
-	}
-	if (scrollItem == item && scrollBeginTime != 0) {
-		if (System.currentTimeMillis() >= scrollBeginTime) {
-			scroll(item, x, y);
-			scrollBeginTime = 0;
-			scrollItem = null;
+		scrollIndex = -1;
+	} else {
+		if (hItem != -1 && scrollIndex == hItem && scrollBeginTime != 0) {
+			if (System.currentTimeMillis() >= scrollBeginTime) {
+				int topItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_FIRSTVISIBLE, 0);
+				int nextItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, hItem == topItem ? OS.TVGN_PREVIOUSVISIBLE : OS.TVGN_NEXTVISIBLE, hItem);
+				OS.SendMessage (handle, OS.TVM_ENSUREVISIBLE, 0, nextItem);
+				scrollBeginTime = 0;
+				scrollIndex = -1;
+			}
+		} else {
+			scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+			scrollIndex = hItem;
 		}
-		return;
 	}
-	scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
-	scrollItem = item;
-}
-private void scroll(TreeItem item, int x, int y) {
-	if (item == null) return;
-	Point coordinates = new Point(x, y);
-	coordinates = tree.toControl(coordinates);
-	Rectangle area = tree.getClientArea();
-	TreeItem top = tree.getTopItem();
-	TreeItem newTop = null;
-	// scroll if two lines from top or bottom
-	int scroll_width = 2*tree.getItemHeight();
-	if (coordinates.y < area.y + scroll_width) {
-		 newTop = getPreviousVisibleItem(top);
-	} else if (coordinates.y > area.y + area.height - scroll_width) {
-		newTop = getNextVisibleItem(top, true);
-	}
-	if (newTop != null && newTop != top) {
-		tree.setTopItem(newTop);
-	}		
-}
-private void expandHover (int effect, TreeItem item, int x, int y) {
 	if ((effect & DND.FEEDBACK_EXPAND) == 0) {
 		expandBeginTime = 0;
-		expandItem = null;
-		return;
-	}
-	if (expandItem == item && expandBeginTime != 0) {
-		if (System.currentTimeMillis() >= expandBeginTime) {
-			expand(item, x, y);
-			expandBeginTime = 0;
-			expandItem = null;
-		}
-		return;
-	}
-	expandBeginTime = System.currentTimeMillis() + EXPAND_HYSTERESIS;
-	expandItem = item;
-}
-private void expand(TreeItem item, int x, int y) {
-	if (item == null || item.getExpanded()) return;
-	Event event = new Event();
-	event.x = x;
-	event.y = y;
-	event.item = item;
-	event.time = (int) System.currentTimeMillis();
-	tree.notifyListeners(SWT.Expand, event);
-	if (item.isDisposed()) return;
-	item.setExpanded(true);
-}
-private TreeItem getNextVisibleItem(TreeItem item, boolean includeChildren) {
-	// look down
-	// neccesary on the first pass only
-	if (includeChildren && item.getItemCount() > 0 && item.getExpanded()) {
-		return item.getItems()[0];
-	}
-	// look sideways
-	TreeItem parent = item.getParentItem();
-	TreeItem[] peers = (parent != null) ? parent.getItems() : tree.getItems();
-	for (int i = 0; i < peers.length - 1; i++) {
-		if (peers[i] == item) return peers[i + 1];
-	}
-	// look up
-	if (parent != null) return getNextVisibleItem(parent, false);
-	return null;
-}
-private TreeItem getPreviousVisibleItem(TreeItem item) {
-	// look sideways
-	TreeItem parent = item.getParentItem();
-	TreeItem[] peers = (parent != null) ? parent.getItems() : tree.getItems();
-	for (int i = peers.length - 1; i > 0; i--) {
-		if (peers[i] == item) {
-			TreeItem peer = peers[i-1];
-			if (!peer.getExpanded() || peer.getItemCount() == 0) return peer;
-			TreeItem[] peerItems = peer.getItems();
-			return peerItems[peerItems.length - 1];
+		expandIndex = -1;
+	} else {
+		if (hItem != -1 && expandIndex == hItem && expandBeginTime != 0) {
+			if (System.currentTimeMillis() >= expandBeginTime) {
+				OS.SendMessage (handle, OS.TVM_EXPAND, OS.TVE_EXPAND, hItem);
+				expandBeginTime = 0;
+				expandIndex = -1;
+			}
+		} else {
+			expandBeginTime = System.currentTimeMillis() + EXPAND_HYSTERESIS;
+			expandIndex = hItem;
 		}
 	}
-	// look up
-	return parent;
+	if (dropIndex != -1 && (dropIndex != hItem || (effect & DND.FEEDBACK_SELECT) == 0)) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.hItem = dropIndex;
+		tvItem.mask = OS.TVIF_STATE;
+		tvItem.stateMask = OS.TVIS_DROPHILITED;
+		tvItem.state = 0;
+		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		dropIndex = -1;
+	}
+	if (hItem != -1 && hItem != dropIndex && (effect & DND.FEEDBACK_SELECT) != 0) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.hItem = hItem;
+		tvItem.mask = OS.TVIF_STATE;
+		tvItem.stateMask = OS.TVIS_DROPHILITED;
+		tvItem.state = OS.TVIS_DROPHILITED;
+		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+		dropIndex = hItem;
+	}
+	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0 || (effect & DND.FEEDBACK_INSERT_AFTER) != 0) {
+		boolean before = (effect & DND.FEEDBACK_INSERT_BEFORE) != 0;
+		OS.SendMessage (handle, OS.TVM_SETINSERTMARK, (before) ? 0 : 1, hItem);
+	} else {
+		OS.SendMessage (handle, OS.TVM_SETINSERTMARK, 0, 0);
+	}
+	return;
 }
 }

@@ -10,108 +10,74 @@
  *******************************************************************************/
 package org.eclipse.swt.dnd;
 
-
-import org.eclipse.swt.graphics.*;
-import org.eclipse.swt.widgets.*;
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.internal.win32.LVHITTESTINFO;
 import org.eclipse.swt.internal.win32.LVITEM;
 import org.eclipse.swt.internal.win32.OS;
+import org.eclipse.swt.widgets.Table;
 
 class TableDragUnderEffect extends DragUnderEffect {
 	private Table table;
-	private int currentEffect = DND.FEEDBACK_NONE;
-	private int[] selection = new int[0];
-	private TableItem scrollItem;
+	int scrollIndex;
 	private long scrollBeginTime;
-	private static final int SCROLL_HYSTERESIS = 600; // milli seconds
+	private static final int SCROLL_HYSTERESIS = 500; // milli seconds
 	
 TableDragUnderEffect(Table table) {
 	this.table = table;
 }
-void show(int effect, int x, int y) {
-	TableItem item = findItem(x, y);
-	if (item == null) effect = DND.FEEDBACK_NONE;
-	if (currentEffect == DND.FEEDBACK_NONE && effect != DND.FEEDBACK_NONE) {
-		selection = table.getSelectionIndices();
-		table.deselectAll();
-	}
-	scrollHover(effect, item, x, y);
-	setDragUnderEffect(effect, item);
-	if (currentEffect != DND.FEEDBACK_NONE && effect == DND.FEEDBACK_NONE) {
-		table.select(selection);
-		selection = new int[0];
-	}
-	currentEffect = effect;
+private int checkEffect(int effect) {
+	// Some effects are mutually exclusive.  Make sure that only one of the mutually exclusive effects has been specified.
+	if ((effect & DND.FEEDBACK_SELECT) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER & ~DND.FEEDBACK_INSERT_BEFORE;
+	if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0) effect = effect & ~DND.FEEDBACK_INSERT_AFTER;
+	return effect;
 }
-private TableItem findItem(int x, int y){
+public void show(int effect, int x, int y) {
+	effect = checkEffect(effect);
+	int handle = table.handle;
 	Point coordinates = new Point(x, y);
 	coordinates = table.toControl(coordinates);
-	Rectangle area = table.getClientArea();
-	if (!area.contains(coordinates)) return null;
-
-	TableItem item = table.getItem(coordinates);
-	if (item != null) return item;
-
-	// Scan across the width of the table
-	for (int x1 = area.x; x1 < area.x + area.width; x1++) {
-		Point pt = new Point(x1, coordinates.y);
-		item = table.getItem(pt);
-		if (item != null) return item;
-	}
-	return null;
-}
-private void setDragUnderEffect(int effect, TableItem item) {	
-	if ((effect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(item);
-		return;
-	}
-	if ((currentEffect & DND.FEEDBACK_SELECT) != 0) {
-		setDropSelection(null);
-	}
-}
-private void setDropSelection (TableItem item) {
-	LVITEM lvItem = new LVITEM ();
-	lvItem.stateMask = OS.LVIS_DROPHILITED;
-	// remove all drop highlighting
-	OS.SendMessage (table.handle, OS.LVM_SETITEMSTATE, -1, lvItem);
-	if (item != null) {
-		int index = table.indexOf(item);
-		lvItem.state = OS.LVIS_DROPHILITED;
-		OS.SendMessage (table.handle, OS.LVM_SETITEMSTATE, index, lvItem);
-	}
-}
-private void scrollHover (int effect, TableItem item, int x, int y) {
+	LVHITTESTINFO pinfo = new LVHITTESTINFO();
+	pinfo.x = coordinates.x;
+	pinfo.y = coordinates.y;
+	OS.SendMessage(handle, OS.LVM_HITTEST, 0, pinfo);	
 	if ((effect & DND.FEEDBACK_SCROLL) == 0) {
 		scrollBeginTime = 0;
-		scrollItem = null;
-		return;
-	}
-	if (scrollItem == item && scrollBeginTime != 0) {
-		if (System.currentTimeMillis() >= scrollBeginTime) {
-			scroll(item, x, y);
-			scrollBeginTime = 0;
-			scrollItem = null;
+		scrollIndex = -1;
+	} else {
+		if (pinfo.iItem != -1 && scrollIndex == pinfo.iItem && scrollBeginTime != 0) {
+			if (System.currentTimeMillis() >= scrollBeginTime) {
+				int top = Math.max (0, OS.SendMessage (handle, OS.LVM_GETTOPINDEX, 0, 0));
+				int count = OS.SendMessage (handle, OS.LVM_GETITEMCOUNT, 0, 0);
+				int index = (scrollIndex - 1 < top) ? Math.max(0, scrollIndex - 1) : Math.min(count - 1, scrollIndex + 1);
+				OS.SendMessage (handle, OS.LVM_ENSUREVISIBLE, index, 0);
+				scrollBeginTime = 0;
+				scrollIndex = -1;
+			}
+		} else {
+			scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
+			scrollIndex = pinfo.iItem;
 		}
-		return;
 	}
-	scrollBeginTime = System.currentTimeMillis() + SCROLL_HYSTERESIS;
-	scrollItem = item;
-}
-private void scroll(TableItem item, int x, int y) {
-	if (item == null) return;
-	Point coordinates = new Point(x, y);
-	coordinates = table.toControl(coordinates);
-	Rectangle area = table.getClientArea();
-	int top = table.getTopIndex();
-	int newTop = -1;
-	// scroll if two lines from top or bottom
-	int scroll_width = 2*table.getItemHeight();
-	if (coordinates.y < area.y + scroll_width) {
-		newTop = Math.max(0, top - 1);
-	} else if (coordinates.y > area.y + area.height - scroll_width) {
-		newTop = Math.min(table.getItemCount() - 1, top + 1);
+	LVITEM lvItem = new LVITEM ();
+	lvItem.stateMask = OS.LVIS_DROPHILITED;
+	OS.SendMessage (handle, OS.LVM_SETITEMSTATE, -1, lvItem);
+	if (pinfo.iItem != -1 && (effect & DND.FEEDBACK_SELECT) != 0) {
+		lvItem.state = OS.LVIS_DROPHILITED;
+		OS.SendMessage (handle, OS.LVM_SETITEMSTATE, pinfo.iItem, lvItem);
 	}
-	if (newTop != -1 && newTop != top) {
-		table.setTopIndex(newTop);
-	}
+// Insert mark only supported on Windows XP with manifest
+//	if (OS.COMCTL32_MAJOR >= 6) {
+//		if ((effect & DND.FEEDBACK_INSERT_BEFORE) != 0 || (effect & DND.FEEDBACK_INSERT_AFTER) != 0) {
+//			LVINSERTMARK lvinsertmark = new LVINSERTMARK();
+//			lvinsertmark.cbSize = LVINSERTMARK.sizeof;
+//			lvinsertmark.dwFlags = (effect & DND.FEEDBACK_INSERT_BEFORE) != 0 ? 0 : OS.LVIM_AFTER;
+//			lvinsertmark.iItem = pinfo.iItem == -1 ? 0 : pinfo.iItem;
+//			int hItem = pinfo.iItem;
+//			OS.SendMessage (handle, OS.LVM_SETINSERTMARK, 0, lvinsertmark);
+//		} else {
+//			OS.SendMessage (handle, OS.LVM_SETINSERTMARK, 0, 0);
+//		}
+//	}
+	return;
 }
 }
