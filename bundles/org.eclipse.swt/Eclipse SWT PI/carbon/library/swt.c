@@ -2260,6 +2260,22 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuItemComman
 }
 #endif /* NO_GetMenuItemCommandID */
 
+#ifndef NO_GetMenuItemHierarchicalMenu
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuItemHierarchicalMenu
+	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jintArray arg2)
+{
+	jint *lparg2=NULL;
+	jint rc;
+
+	DEBUG_CALL("GetMenuItemHierarchicalMenu\n")
+
+	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
+	rc = (jint)GetMenuItemHierarchicalMenu((MenuRef)arg0, (SInt16)arg1, (MenuRef *)lparg2);
+	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	return rc;
+}
+#endif /* NO_GetMenuItemHierarchicalMenu */
+
 #ifndef NO_GetMenuItemRefCon
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS_GetMenuItemRefCon
 	(JNIEnv *env, jclass that, jint arg0, jshort arg1, jintArray arg2)

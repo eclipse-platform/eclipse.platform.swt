@@ -505,6 +505,7 @@ public static final native int GetMenuEventTarget(int cHandle);
 public static final native int GetMenuFont(int mHandle, short[] fontID, short[] size);
 public static final native short GetMenuID(int mHandle);
 public static final native int GetMenuItemCommandID(int mHandle, short index, int[] outCommandID);
+public static final native int GetMenuItemHierarchicalMenu(int inMenu, short inItem, int []outHierMenu);
 public static final native int GetMenuItemRefCon(int mHandle, short index, int[] refCon);
 public static final native void GetMouse(Point where);
 public static final native void GetPixBounds(int pHandle, Rect bounds);

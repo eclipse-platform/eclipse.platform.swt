@@ -621,8 +621,8 @@ public void setMenu (Menu menu) {
 	if (OS.GetIndMenuItemWithCommandID (parent.handle, id, 1, null, outIndex) != OS.noErr) {
 		error (SWT.ERROR_CANNOT_SET_MENU);
 	}
-	int newHandle = menu != null ? menu.handle : 0;
-	if (OS.SetMenuItemHierarchicalMenu (parent.handle, outIndex [0], newHandle) != OS.noErr) {
+	int inHierMenu = menu != null ? menu.handle : 0;
+	if (OS.SetMenuItemHierarchicalMenu (parent.handle, outIndex [0], inHierMenu) != OS.noErr) {
 		error (SWT.ERROR_CANNOT_SET_MENU);
 	}
 	if ((this.menu = menu) != null) {
@@ -631,7 +631,7 @@ public void setMenu (Menu menu) {
 		if (OS.CopyMenuItemTextAsCFString (parent.handle, outIndex [0], outString) != OS.noErr) {
 			error (SWT.ERROR_CANNOT_SET_MENU);
 		}
-		OS.SetMenuTitleWithCFString (menu.handle, outString [0]);
+		OS.SetMenuTitleWithCFString (inHierMenu, outString [0]);
 		OS.CFRelease (outString [0]);
 	}
 }
@@ -686,6 +686,9 @@ void updateText () {
 	int str = OS.CFStringCreateWithCharacters (OS.kCFAllocatorDefault, buffer, j);
 	if (str == 0) error (SWT.ERROR_CANNOT_SET_TEXT);
 	OS.SetMenuItemTextWithCFString (parent.handle, outIndex [0], str);
+	int [] outHierMenu = new int [1];
+	OS.GetMenuItemHierarchicalMenu (parent.handle, outIndex [0], outHierMenu);
+	if (outHierMenu [0] != 0) OS.SetMenuTitleWithCFString (outHierMenu [0], str);
 	OS.CFRelease (str);
 }
 }
