@@ -113,7 +113,7 @@ public MenuItem (Menu parent, int style, int index) {
 	this.parent = parent;
 	int count = parent.getItemCount ();
 	if (!(0 <= index && index <= count)) {
-		error (SWT.ERROR_ITEM_NOT_ADDED);
+		error (SWT.ERROR_INVALID_RANGE);
 	}
 	createWidget (index);
 }

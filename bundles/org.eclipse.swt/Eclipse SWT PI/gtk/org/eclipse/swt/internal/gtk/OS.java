@@ -543,6 +543,7 @@ public static final native void gtk_im_context_get_preedit_string(int context, i
 public static final native void gtk_im_context_reset(int context);
 public static final native void gtk_im_context_set_client_window(int context, int window);
 public static final native void gtk_im_context_set_cursor_location(int context, GdkRectangle area);
+public static final native void gtk_im_multicontext_append_menuitems (int context, int menushell);
 public static final native int gtk_im_multicontext_new();
 public static final native int gtk_image_menu_item_new_with_label(byte[] label);
 public static final native void gtk_image_menu_item_set_image(int menu_item, int image);

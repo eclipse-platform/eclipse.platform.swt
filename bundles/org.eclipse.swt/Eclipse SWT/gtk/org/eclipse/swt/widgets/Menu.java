@@ -32,7 +32,8 @@ public class Menu extends Widget {
 	boolean hasLocation;
 	MenuItem cascade, selectedItem;
 	Decorations parent;
-	
+	int imItem, imSeparator, imHandle;
+
 /**
  * Constructs a new instance of this class given its parent,
  * and sets the style for the instance so that the instance
@@ -219,6 +220,36 @@ void createHandle (int index) {
 	}
 }
 
+void createIMMenu (int imHandle) {
+	if (this.imHandle == imHandle) return;
+	this.imHandle = imHandle;
+	if (imHandle == 0) {
+		if (imItem != 0) {
+			OS.gtk_widget_destroy (imItem);
+			imItem = 0;
+		}
+		if (imSeparator != 0) {
+			OS.gtk_widget_destroy (imSeparator);
+			imSeparator = 0;
+		}
+		return;
+	} 
+	if (imSeparator == 0) {
+		imSeparator = OS.gtk_separator_menu_item_new ();
+		OS.gtk_widget_show (imSeparator);
+		OS.gtk_menu_shell_insert (handle, imSeparator, -1);
+	}
+	if (imItem == 0) {
+		byte[] buffer = Converter.wcsToMbcs (null, SWT.getMessage("SWT_InputMethods"), true);
+		imItem = OS.gtk_image_menu_item_new_with_label (buffer);
+		OS.gtk_widget_show (imItem);
+		OS.gtk_menu_shell_insert (handle, imItem, -1);
+	}
+	int imSubmenu = OS.gtk_menu_new ();
+	OS.gtk_im_multicontext_append_menuitems (imHandle, imSubmenu);
+	OS.gtk_menu_item_set_submenu (imItem, imSubmenu);
+}
+
 void createWidget (int index) {
 	super.createWidget (index);
 	parent.add (this);
@@ -284,6 +315,10 @@ public MenuItem getItem (int index) {
 	checkWidget();
 	int list = OS.gtk_container_get_children (handle);
 	if (list == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
+	int count = OS.g_list_length (list);
+	if (imSeparator != 0) count--;
+	if (imItem != 0) count--;
+	if (!(0 <= index && index < count)) error (SWT.ERROR_INVALID_RANGE);
 	int data = OS.g_list_nth_data (list, index);
 	OS.g_list_free (list);
 	if (data == 0) error (SWT.ERROR_CANNOT_GET_ITEM);
@@ -304,9 +339,11 @@ public int getItemCount () {
 	checkWidget();
 	int list = OS.gtk_container_get_children (handle);
 	if (list == 0) return 0;
-	int itemCount = OS.g_list_length (list);
+	int count = OS.g_list_length (list);
 	OS.g_list_free (list);
-	return itemCount;
+	if (imSeparator != 0) count--;
+	if (imItem != 0) count--;
+	return count;
 }
 
 /**
@@ -330,6 +367,8 @@ public MenuItem [] getItems () {
 	int list = OS.gtk_container_get_children (handle);
 	if (list == 0) return new MenuItem [0];
 	int count = OS.g_list_length (list);
+	if (imSeparator != 0) count--;
+	if (imItem != 0) count--;
 	MenuItem [] items = new MenuItem [count];
 	for (int i=0; i<count; i++) {
 		int data = OS.g_list_nth_data (list, i);
@@ -560,6 +599,7 @@ void releaseWidget () {
 	super.releaseWidget ();
 	parent = null;
 	cascade = null;
+	imItem = imSeparator = imHandle = 0;
 }
 
 /**

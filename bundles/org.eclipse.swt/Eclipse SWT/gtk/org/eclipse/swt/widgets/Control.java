@@ -1587,7 +1587,10 @@ int gtk_event_after (int widget, int event) {
 		GdkEventButton gdkEventButton = new GdkEventButton ();
 		OS.memmove (gdkEventButton, event, GdkEventButton.sizeof);
 		int button = gdkEventButton.button;
-		if (button == 3) menu.setVisible (true);
+		if (button == 3) {
+			menu.createIMMenu (imHandle());
+			menu.setVisible (true);
+		}
 	}
 	return 0;
 }

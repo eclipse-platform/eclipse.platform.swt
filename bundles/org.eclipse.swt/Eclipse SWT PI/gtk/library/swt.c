@@ -3046,6 +3046,16 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1context_1se
 }
 #endif
 
+#ifndef NO_gtk_1im_1multicontext_1append_1menuitems
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1multicontext_1append_1menuitems
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("gtk_1im_1multicontext_1append_1menuitems\n")
+
+	gtk_im_multicontext_append_menuitems((GtkIMMulticontext *)arg0, (GtkMenuShell *)arg1);
+}
+#endif
+
 #ifndef NO_gtk_1im_1multicontext_1new
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1im_1multicontext_1new
 	(JNIEnv *env, jclass that)
