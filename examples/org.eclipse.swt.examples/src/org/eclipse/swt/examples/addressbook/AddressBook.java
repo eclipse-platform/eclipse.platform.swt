@@ -39,6 +39,8 @@ public class AddressBook {
 	private boolean isModified;
 	
 	private String[] copyBuffer;
+
+	private int lastSortColumn= -1;
 	
 	private static final String DELIMITER = "\t";
 	private static final String[] columnNames = {resAddressBook.getString("Last_name"),
@@ -417,8 +419,18 @@ private void sort(int column) {
 	
 	Arrays.sort(data, new RowComparator(column));
 	
-	for (int i = 0; i < data.length; i++) {
-		items[i].setText(data[i]);
+	if (lastSortColumn != column) {
+		for (int i = 0; i < data.length; i++) {
+			items[i].setText(data[i]);
+		}
+		lastSortColumn = column;
+	} else {
+		// reverse order if the current column is selected again
+		int j = data.length -1;
+		for (int i = 0; i < data.length; i++) {
+			items[i].setText(data[j--]);
+		}
+		lastSortColumn = -1;
 	}
 	
 }
