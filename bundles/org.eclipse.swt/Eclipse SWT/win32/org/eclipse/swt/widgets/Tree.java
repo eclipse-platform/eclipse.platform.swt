@@ -1060,48 +1060,43 @@ public void setRedraw (boolean redraw) {
 public void setSelection (TreeItem [] items) {
 	checkWidget ();
 	if (items == null) error (SWT.ERROR_NULL_ARGUMENT);
-	if ((style & SWT.SINGLE) != 0 && items.length > 1) {
+	int length = items.length;
+	if (length == 0) {
+		deselectAll();
+		return;
+	}
+	if ((style & SWT.SINGLE) != 0 && length > 1) {
 		deselectAll();
 		return;
 	}
 		
 	/* Select/deselect the first item */
 	int hOldItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
-	if (items.length == 0) {
-		if (hOldItem != 0) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE;
-			tvItem.stateMask = OS.TVIS_SELECTED;
-			tvItem.hItem = hOldItem;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-		}
-	} else {
-		int hNewItem = 0;
-		TreeItem item = items [0];
-		if (item != null) {
-			if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
-			hAnchor = hNewItem = item.handle;
-		}
-		ignoreSelect = true;
-		OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
-		ignoreSelect = false;
-		/*
-		* Feature in Windows.  When the old and new focused item
-		* are the same, Windows does not check to make sure that
-		* the item is actually selected, not just focused.  The
-		* fix is to force the item to draw selected by setting
-		* the state mask.
-		*/
-		if (hOldItem == hNewItem) {
-			TVITEM tvItem = new TVITEM ();
-			tvItem.mask = OS.TVIF_STATE;
-			tvItem.state = OS.TVIS_SELECTED;
-			tvItem.stateMask = OS.TVIS_SELECTED;
-			tvItem.hItem = hNewItem;
-			OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
-		}
-		showItem (hNewItem);
+	int hNewItem = 0;
+	TreeItem item = items [0];
+	if (item != null) {
+		if (item.isDisposed ()) error (SWT.ERROR_INVALID_ARGUMENT);
+		hAnchor = hNewItem = item.handle;
 	}
+	ignoreSelect = true;
+	OS.SendMessage (handle, OS.TVM_SELECTITEM, OS.TVGN_CARET, hNewItem);
+	ignoreSelect = false;
+	/*
+	* Feature in Windows.  When the old and new focused item
+	* are the same, Windows does not check to make sure that
+	* the item is actually selected, not just focused.  The
+	* fix is to force the item to draw selected by setting
+	* the state mask.
+	*/
+	if (hOldItem == hNewItem) {
+		TVITEM tvItem = new TVITEM ();
+		tvItem.mask = OS.TVIF_STATE;
+		tvItem.state = OS.TVIS_SELECTED;
+		tvItem.stateMask = OS.TVIS_SELECTED;
+		tvItem.hItem = hNewItem;
+		OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
+	}
+	showItem (hNewItem);
 	if ((style & SWT.SINGLE) != 0) return;
 
 	/* Select/deselect the rest of the items */
@@ -1111,22 +1106,22 @@ public void setSelection (TreeItem [] items) {
 	int oldProc = OS.GetWindowLong (handle, OS.GWL_WNDPROC);
 	OS.SetWindowLong (handle, OS.GWL_WNDPROC, TreeProc);
 	for (int i=0; i<this.items.length; i++) {
-		TreeItem item = this.items [i];
+		item = this.items [i];
 		if (item != null) {
 			int index = 0;
-			while (index < items.length) {
+			while (index < length) {
 				if (items [index] == item) break;
 				index++;
 			}
 			tvItem.hItem = item.handle;
 			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
 			if ((tvItem.state & OS.TVIS_SELECTED) != 0) {
-				if (index == items.length) {
+				if (index == length) {
 					tvItem.state = 0;
 					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 				}
 			} else {
-				if (index != items.length) {
+				if (index != length) {
 					tvItem.state = OS.TVIS_SELECTED;
 					OS.SendMessage (handle, OS.TVM_SETITEM, 0, tvItem);
 				}
