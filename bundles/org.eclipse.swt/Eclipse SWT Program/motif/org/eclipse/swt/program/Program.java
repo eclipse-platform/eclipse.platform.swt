@@ -64,11 +64,11 @@ static int getDesktop(Display display) {
 	int desktop = DESKTOP_UNKNOWN;
 
 	/* Get the list of properties on the root window. */
-	int xDisplay = display.xDisplay;
-	int rootWindow = OS.XDefaultRootWindow(xDisplay);
+	int /*long*/ xDisplay = display.xDisplay;
+	int /*long*/ rootWindow = OS.XDefaultRootWindow(xDisplay);
 	int[] numProp = new int[1];
-	int propList = OS.XListProperties(xDisplay, rootWindow, numProp);
-	int[] property = new int[numProp[0]];
+	int /*long*/ propList = OS.XListProperties(xDisplay, rootWindow, numProp);
+	int /*long*/ [] property = new int/*long*/ [numProp[0]];
 	if (propList != 0) {
 		OS.memmove(property, propList, (property.length * 4));
 		OS.XFree(propList);
@@ -77,7 +77,7 @@ static int getDesktop(Display display) {
 	/* KDE is detected by checking if the the KWIN_RUNNING exists */
 	if (desktop == DESKTOP_UNKNOWN) {
 		byte[] kdeName = Converter.wcsToMbcs(null, "KWIN_RUNNING", true);
-		int kde = OS.XInternAtom(xDisplay, kdeName, true);
+		int /*long*/ kde = OS.XInternAtom(xDisplay, kdeName, true);
 		for (int index = 0; desktop == DESKTOP_UNKNOWN && index < property.length; index++) {
 			if (property[index] == OS.None) continue;
 			if (property[index] == kde && kde_init()) desktop = DESKTOP_KDE;
@@ -97,7 +97,7 @@ static int getDesktop(Display display) {
 	 */
 	if (desktop == DESKTOP_UNKNOWN) {
 		byte[] gnomeName = Converter.wcsToMbcs(null, "_NET_SUPPORTING_WM_CHECK", true);
-		int gnome = OS.XInternAtom(xDisplay, gnomeName, true);
+		int /*long*/ gnome = OS.XInternAtom(xDisplay, gnomeName, true);
 		if (gnome != OS.None && gnome_init()) {
 			desktop = DESKTOP_GNOME;
 		}
