@@ -6238,6 +6238,22 @@ JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1set_1rules_1hint)
 }
 #endif
 
+#ifndef NO_gtk_1tree_1view_1tree_1to_1widget_1coords
+JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1tree_1to_1widget_1coords)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jintArray arg3, jintArray arg4)
+{
+	jint *lparg3=NULL;
+	jint *lparg4=NULL;
+	NATIVE_ENTER(env, that, "gtk_1tree_1view_1tree_1to_1widget_1coords\n")
+	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg4) lparg4 = (*env)->GetIntArrayElements(env, arg4, NULL);
+	gtk_tree_view_tree_to_widget_coords((GtkTreeView *)arg0, (gint)arg1, (gint)arg2, (gint *)lparg3, (gint *)lparg4);
+	if (arg4) (*env)->ReleaseIntArrayElements(env, arg4, lparg4, 0);
+	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
+	NATIVE_EXIT(env, that, "gtk_1tree_1view_1tree_1to_1widget_1coords\n")
+}
+#endif
+
 #ifndef NO_gtk_1tree_1view_1unset_1rows_1drag_1dest
 JNIEXPORT void JNICALL OS_NATIVE(gtk_1tree_1view_1unset_1rows_1drag_1dest)
 	(JNIEnv *env, jclass that, jint arg0)

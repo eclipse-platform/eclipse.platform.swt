@@ -895,6 +895,7 @@ public static final synchronized native void gtk_tree_view_set_cursor(int tree_v
 public static final synchronized native void gtk_tree_view_set_headers_visible(int tree_view, boolean visible);
 public static final synchronized native void gtk_tree_view_set_model(int tree_view, int model);
 public static final synchronized native void gtk_tree_view_set_rules_hint(int tree_view, boolean setting);
+public static final synchronized native void gtk_tree_view_tree_to_widget_coords(int tree_view, int tx, int ty, int[] wx, int[] wy);
 public static final synchronized native void gtk_tree_view_unset_rows_drag_dest(int tree_view);
 public static final synchronized native void gtk_tree_view_widget_to_tree_coords(int tree_view, int wx, int wy, int[] tx, int[] ty);
 public static final synchronized native int gtk_vbox_new(boolean homogeneous, int spacing);
