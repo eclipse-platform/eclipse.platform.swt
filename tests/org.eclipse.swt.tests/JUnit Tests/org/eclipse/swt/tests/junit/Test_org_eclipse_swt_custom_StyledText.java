@@ -1380,7 +1380,7 @@ public void test_getTextLimit() {
 }
 
 public void test_getTopIndex() {
-	text.setText("Line0\r\n");
+	text.setText("Line0\r\nLine0a\r\n");
 
 	assertTrue(":a:", text.getTopIndex() == 0);
 	text.setTopIndex(-2);
@@ -1402,7 +1402,7 @@ public void test_getTopIndex() {
 }
 
 public void test_getTopPixel() {
-	text.setText("Line0\r\n");
+	text.setText("Line0\r\nLine0a\r\n");
 
 	assertTrue(":a:", text.getTopPixel() == 0);
 	text.setTopIndex(-2);
@@ -3937,7 +3937,7 @@ public void test_setTopIndexI(){
 	text.setTopIndex(1);
 	assertTrue(":b:", text.getTopIndex() == 0);
 
-	text.setText("Line0\r\n");
+	text.setText("Line0\r\nLine0a\r\n");
 
 	text.setTopIndex(-2);
 	assertTrue(":c:", text.getTopIndex() == 0);
