@@ -433,6 +433,10 @@ public int getWidth () {
 	return args [1];
 }
 
+boolean hasFocus () {
+	return OS.PtIsFocused (handle) != 0;
+}
+
 void hookEvents () {
 	super.hookEvents ();
 	if ((style & SWT.SEPARATOR) != 0) return;
@@ -442,6 +446,7 @@ void hookEvents () {
 	if ((style & SWT.DROP_DOWN) != 0) {
 		OS.PtAddCallback (arrow, OS.Pt_CB_ACTIVATE, windowProc, SWT.Selection);
 	}
+	OS.PtAddCallback (handle, OS.Pt_CB_LOST_FOCUS, windowProc, SWT.FocusOut);
 }
 
 /**
@@ -472,6 +477,11 @@ int processEvent (int widget, int data, int info) {
 		return OS.Pt_CONTINUE;
 	}
 	return super.processEvent (widget, data, info);
+}
+
+int processFocusOut (int info) {
+	parent.lastFocus = this;
+	return OS.Pt_CONTINUE;
 }
 
 int processMouseEnter (int info) {
@@ -540,6 +550,7 @@ void releaseHandle () {
 void releaseWidget () {
 	super.releaseWidget ();
 	if (toolTipHandle != 0) destroyToolTip (toolTipHandle);
+	if (parent.lastFocus == this) parent.lastFocus = null;
 	toolTipHandle = 0;
 	parent = null;
 	control = null;
@@ -663,6 +674,22 @@ public void setEnabled (boolean enabled) {
 		OS.PtSetResource (button, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 		OS.PtSetResource (arrow, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 	}
+}
+
+boolean setFocus () {
+	if ((style & SWT.SEPARATOR) != 0) return false;
+	int focusHandle = (style & SWT.DROP_DOWN) != 0 ? button : handle;
+	/*
+	* Bug in Photon. Photon will stop sending key
+	* events, if a menu is up and focus is given to
+	* a widget by calling PtContainerGiveFocus(). The
+	* fix is to detect when a menu is up and avoid
+	* calling this function.
+	*/
+	Shell shell = parent.getShell ();
+	if (shell.activeMenu != null) return false;
+	OS.PtContainerGiveFocus (focusHandle, null);
+	return OS.PtIsFocused(focusHandle) != 0;
 }
 
 void setFont (int font) {

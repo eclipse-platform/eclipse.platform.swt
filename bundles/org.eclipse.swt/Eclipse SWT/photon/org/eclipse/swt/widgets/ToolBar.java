@@ -38,6 +38,7 @@ public class ToolBar extends Composite {
 	int parentingHandle;
 	int itemCount;
 	ToolItem [] items;
+	ToolItem lastFocus;
 
 /**
  * Constructs a new instance of this class given its parent
@@ -183,6 +184,16 @@ void destroyItem (ToolItem item) {
 	items [itemCount] = null;
 }
 
+public boolean forceFocus () {
+	checkWidget();
+	if (lastFocus != null && lastFocus.setFocus ()) return true;
+	for (int i = 0; i < itemCount; i++) {
+		ToolItem item = items [i];
+		if (item.setFocus ()) return true;
+	}
+	return super.forceFocus ();
+}
+
 /**
  * Returns the number of items contained in the receiver.
  *
@@ -261,8 +272,7 @@ public ToolItem getItem (int index) {
  */
 public ToolItem getItem (Point pt) {
 	checkWidget();
-	ToolItem [] items = getItems ();
-	for (int i=0; i<items.length; i++) {
+	for (int i=0; i<itemCount; i++) {
 		Rectangle rect = items [i].getBounds ();
 		if (rect.contains (pt)) return items [i];
 	}
@@ -290,8 +300,7 @@ public int getRowCount () {
 boolean hasFocus () {
 	for (int i=0; i<itemCount; i++) {
 		ToolItem item = items [i];
-		if ((item.style & SWT.SEPARATOR) != 0) continue;
-		if (OS.PtIsFocused(item.handle) != 0) return true;
+		if (item.hasFocus ()) return true;
 	}
 	return super.hasFocus();
 }
@@ -372,8 +381,7 @@ void releaseWidget () {
 
 void setBackgroundPixel (int pixel) {
 	super.setBackgroundPixel (pixel);
-	ToolItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items[i];
 		item.setBackgroundPixel (pixel);
 	}
@@ -391,8 +399,7 @@ boolean setBounds (int x, int y, int width, int height, boolean move, boolean re
 
 void setFont (int font) {
 	super.setFont (font);
-	ToolItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items[i];
 		item.setFont (font);
 	}
@@ -400,29 +407,45 @@ void setFont (int font) {
 
 void setForegroundPixel (int pixel) {
 	super.setForegroundPixel (pixel);
-	ToolItem [] items = getItems ();
-	for (int i = 0; i < items.length; i++) {
+	for (int i = 0; i < itemCount; i++) {
 		ToolItem item = items[i];
 		item.setForegroundPixel (pixel);
 	}
 }
 
-//boolean setTabGroupFocus () {
-//	Shell shell = getShell ();
-//	if (shell.activeMenu != null) return false;
-//	int shellHandle = shell.shellHandle;
-//	OS.PtWindowToFront (shellHandle);
-//	for (int i=0; i<itemCount;i++) {
-//		ToolItem item = items [i];
-//		if ((item.style & SWT.SEPARATOR) != 0) continue;
-//		OS.PtContainerGiveFocus (item.handle, null);
-//		if (OS.PtIsFocused(item.handle) != 0) return true;
-//	}
-//	return super.setTabGroupFocus ();
-//}
-
 int topHandle () {
 	return parentingHandle;
+}
+
+boolean translateTraversal (int key_sym, PhKeyEvent_t phEvent) {
+	boolean result = super.translateTraversal (key_sym, phEvent);
+	if (result) return result;
+	boolean next = false;
+	switch (key_sym) {
+		case OS.Pk_Up:
+		case OS.Pk_Left: next = false; break;
+		case OS.Pk_Down:
+		case OS.Pk_Right: next = true; break;
+		default: return false;
+	}
+	int length = itemCount;
+	int index = 0;
+	while (index < length) {
+		if (items [index].hasFocus ()) break;
+		index++;
+	}
+	/*
+	* It is possible (but unlikely), that application
+	* code could have disposed the widget in focus in
+	* or out events.  Ensure that a disposed widget is
+	* not accessed.
+	*/
+	int start = index, offset = (next) ? 1 : -1;
+	while ((index = (index + offset + length) % length) != start) {
+		ToolItem item = items [index];
+		if (item.setFocus ()) return true;
+	}
+	return false;
 }
 
 }
