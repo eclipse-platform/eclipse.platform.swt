@@ -314,6 +314,7 @@ int callback(int index, ...)
 #ifdef DEBUG_CALL_PRINTS
 	fprintf(stderr, "* callback exiting %d\n", --counter);
 #endif
+
 	return result;
 	}
 }

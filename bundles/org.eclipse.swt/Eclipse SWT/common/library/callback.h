@@ -11,8 +11,6 @@
 #ifndef INC_callback_H
 #define INC_callback_H
 
-int callback(int index, ...);
-
 #if defined (WIN32) || defined (_WIN32_WCE)
 #include "windows.h"
 #define PLATFORM "win32"
@@ -52,10 +50,10 @@ int callback(int index, ...);
 
 #define MAX_ARGS 12
 
-typedef struct SWT_CALLBACKINFO {
+typedef struct CALLBACK_DATA {
     jobject callin;
     jmethodID methodID;
-} SWT_CALLBACKINFO;
+} CALLBACK_DATA;
 
 #endif /* ifndef INC_callback_H */
 
