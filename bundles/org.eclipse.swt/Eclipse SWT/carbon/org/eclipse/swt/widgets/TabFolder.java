@@ -436,7 +436,7 @@ public int indexOf (TabItem item) {
 	}
 	return -1;
 }
-
+/* AW
 boolean mnemonicHit (char key) {
 	for (int i=0; i<items.length; i++) {
 		TabItem item = items [i];
@@ -452,7 +452,6 @@ boolean mnemonicHit (char key) {
 	}
 	return false;
 }
-
 boolean mnemonicMatch (char key) {
 	for (int i=0; i<items.length; i++) {
 		TabItem item = items [i];
@@ -465,7 +464,7 @@ boolean mnemonicMatch (char key) {
 	}
 	return false;
 }
-
+*/
 void releaseWidget () {
 	int count = OS.GetControl32BitMaximum(handle);
 	for (int i=0; i<count; i++) {
@@ -648,7 +647,7 @@ private void updateCarbon(int startIndex) {
 		TabItem item= items[i];
 		if (item != null) {
 			setTabText(i, item.getText());
-			setTabImage(i, item.getImage());
+			//setTabImage(i, item.getImage());
 		}
 	}
 	//redraw();
