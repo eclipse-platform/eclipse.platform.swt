@@ -2793,7 +2793,7 @@ int[] getBoldRanges(StyleRange[] styles, int lineOffset, int lineLength) {
  * @return index of the last fully visible line.
  */
 int getBottomIndex() {
-	return Math.max(0, Math.min(content.getLineCount(), topIndex + getLineCountWhole()) - 1);
+	return Math.min(content.getLineCount() - 1, topIndex + Math.max(0, getLineCountWhole() - 1));
 }
 /**
  * Returns the caret position relative to the start of the text.
@@ -3135,22 +3135,38 @@ StyledTextEvent getLineStyleData(int lineOffset, String line) {
 			GC gc = new GC(this);
 			if (StyledTextBidi.isLigated(gc)) {
 				// Check for ligatures that are partially styled, if one is found
-				// automatically apply the style to the entire ligature.  Note that
-				// there is no need to deal with segments when checking for the ligatures.
-				StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, null, null, new int[] {0, line.length()});
+				// automatically apply the style to the entire ligature.
+				// Since ligatures can't extend over multiple lines (they aren't 
+				// ligatures if they are separated by a line delimiter) we can ignore
+				// style starts or ends that are not on the current line.
+				// Note that there is no need to deal with segments when checking for
+				// the ligatures.
+				int lineLength = line.length();
+				StyledTextBidi bidi = new StyledTextBidi(gc, tabWidth, line, null, null, new int[] {0, lineLength});
 				for (int i=0; i<event.styles.length; i++) {
 					StyleRange range = event.styles[i];
+					StyleRange newRange = null;
 					int relativeStart = range.start - lineOffset;
-					int startLigature = bidi.getLigatureStartOffset(relativeStart);
-					if (startLigature != relativeStart) {
-						range.start = range.start - (relativeStart - startLigature);
-						range.length = range.length + (relativeStart - startLigature);
+					if (relativeStart >= 0) {
+						int startLigature = bidi.getLigatureStartOffset(relativeStart);
+						if (startLigature != relativeStart) {
+							newRange = (StyleRange) range.clone();
+							range = event.styles[i] = newRange;
+							range.start = range.start - (relativeStart - startLigature);
+							range.length = range.length + (relativeStart - startLigature);
+						}
 					}
 					int rangeEnd = range.start + range.length;
 					int relativeEnd = rangeEnd - lineOffset - 1;
-					int endLigature = bidi.getLigatureEndOffset(relativeEnd);
-					if (endLigature != relativeEnd) {
-						range.length = range.length + (endLigature - relativeEnd);
+					if (relativeEnd < lineLength) {
+						int endLigature = bidi.getLigatureEndOffset(relativeEnd);
+						if (endLigature != relativeEnd) {
+							if (newRange == null) {
+								newRange = (StyleRange) range.clone();
+								range = event.styles[i] = newRange;
+							}
+							range.length = range.length + (endLigature - relativeEnd);
+						}
 					}
 		        }
 		    }
@@ -4363,6 +4379,7 @@ void internalRedrawRange(int start, int length, boolean clearBackground) {
  * Returns the widget text with style information encoded using RTF format
  * specification version 1.5.
  *
+ * @return the widget text with style information encoded using RTF format
  * @exception SWTException <ul>
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
@@ -4370,14 +4387,9 @@ void internalRedrawRange(int start, int length, boolean clearBackground) {
  */
 String getRtf(){
 	checkWidget();
-	String rtfText = null;
-	int length = getCharCount();
-	
-	if (length > 0) {
-		RTFWriter rtfWriter = new RTFWriter(0, length);
-		rtfText = getPlatformDelimitedText(rtfWriter);
-	}
-	return rtfText;
+	RTFWriter rtfWriter = new RTFWriter(0, getCharCount());
+
+	return getPlatformDelimitedText(rtfWriter);
 }
 /** 
  * Frees resources.
@@ -5020,9 +5032,15 @@ public void print() {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when string is null</li>
+ * </ul>
  */
 public Runnable print(Printer printer) {
 	checkWidget();
+	if (printer == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
 	return new StyledTextPrinter(this, printer);
 }
 /**
@@ -5463,6 +5481,7 @@ public void removeVerifyKeyListener(VerifyKeyListener listener) {
  *   <li>ERROR_INVALID_RANGE when either start or end is outside the valid range (0 <= offset <= getCharCount())</li> 
  *   <li>ERROR_INVALID_ARGUMENT when either start or end is inside a multi byte line delimiter. 
  * 		Splitting a line delimiter for example by inserting text in between the CR and LF and deleting part of a line delimiter is not supported</li>  
+ *   <li>ERROR_NULL_ARGUMENT when string is null</li>
  * </ul>
  */
 public void replaceTextRange(int start, int length, String text) {
@@ -5474,6 +5493,9 @@ public void replaceTextRange(int start, int length, String text) {
 	if (start < 0 || start > contentLength || end < 0 || end > contentLength || start > end) {
 		SWT.error(SWT.ERROR_INVALID_RANGE);
 	}	
+	if (text == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
 	event.start = start;
 	event.end = end;
 	event.text = text;
@@ -6460,11 +6482,17 @@ public void setTabs(int tabs) {
  *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  * </ul>
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT when string is null</li>
+ * </ul>
  */
 public void setText(String text) {
 	checkWidget();
 	Event event = new Event();
 	
+	if (text == null) {
+		SWT.error(SWT.ERROR_NULL_ARGUMENT);
+	}
 	event.start = 0;
 	event.end = getCharCount();
 	event.text = text;
