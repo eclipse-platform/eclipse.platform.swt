@@ -1091,7 +1091,6 @@ public void setEnabled (boolean enabled) {
 				OS.gdk_flush ();
 			}
 			OS.gdk_window_set_user_data (enableWindow, parentHandle);
-			OS.gdk_window_raise (enableWindow);
 			OS.gdk_window_show (enableWindow);
 		}
 	}

@@ -2572,7 +2572,7 @@ public void setEnabled (boolean enabled) {
 				changes.stack_mode = OS.Above;
 				OS.XReconfigureWMWindow (xDisplay, xWindow, xScreen, flags, changes);
 			}
-			if (OS.GTK_WIDGET_VISIBLE (topHandle)) OS.gdk_window_show (enableWindow);
+			if (OS.GTK_WIDGET_VISIBLE (topHandle)) OS.gdk_window_show_unraised (enableWindow);
 		}
 	}
 	if (fixFocus) fixFocus (control);
@@ -2807,7 +2807,6 @@ public void setRedraw (boolean redraw) {
 						OS.GDK_BUTTON2_MOTION_MASK | OS.GDK_BUTTON3_MOTION_MASK;
 					OS.gdk_window_set_events (window, OS.gdk_window_get_events (window) & ~mouseMask);
 					OS.gdk_window_set_back_pixmap (redrawWindow, 0, false);
-					OS.gdk_window_raise (redrawWindow);
 					OS.gdk_window_show (redrawWindow);
 				}
 			}
@@ -2868,7 +2867,7 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
-		if (enableWindow != 0) OS.gdk_window_show (enableWindow);
+		if (enableWindow != 0) OS.gdk_window_show_unraised (enableWindow);
 		OS.gtk_widget_show (topHandle);
 	} else {
 		/*
