@@ -127,7 +127,7 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 void createHandle (int index) {
 	state |= HANDLE;
 	Display display = getDisplay ();
-	int clazz = display.PtSlider;
+	int clazz = Display.PtSlider;
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_MAXIMUM, 100, 0,

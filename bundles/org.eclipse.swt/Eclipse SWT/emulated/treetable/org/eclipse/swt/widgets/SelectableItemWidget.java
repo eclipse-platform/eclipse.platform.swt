@@ -10,7 +10,6 @@ package org.eclipse.swt.widgets;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.internal.Compatibility;
-import java.io.*;
 
 import java.util.Enumeration;
 import java.util.Vector;
@@ -210,7 +209,6 @@ public Point computeSize(int wHint, int hHint, boolean changed) {
 	checkWidget();
 	int width = getContentWidth();
 	int height = getItemCount() * getItemHeight();
-	int style = getStyle();
 	int scrollBarWidth = computeTrim(0, 0, 0, 0).width;
 				
 	if (width == 0) {
@@ -866,7 +864,6 @@ Point getCheckBoxExtent() {
  * Answer null if the image couldn't be loaded.
  */
 Image getCheckMarkImage() {
-	InputStream resourceStream;
 	
 	if (checkMarkImage == null) {
 		checkMarkImage = new Image(getDisplay(), CheckMarkImageData);
@@ -988,7 +985,7 @@ public int getItemHeight() {
  * Answer the number of pixels that should be added to the item height.
  */
 int getItemPadding() {
-	return 2 + getDisplay().textHighlightThickness;
+	return 2 + Display.textHighlightThickness;
 }
 /**
  * Answer the item that most recently received the input focus.
@@ -1069,7 +1066,6 @@ int getTopIndex() {
  * Answer the image for the deselected check box.
  */
 Image getUncheckedImage() {
-	InputStream resourceStream;
 	
 	if (uncheckedImage == null) {
 		uncheckedImage = new Image(getDisplay(), UncheckedImageData);
@@ -1081,7 +1077,6 @@ Image getUncheckedImage() {
  * Answer the image for the grayed eck box.
  */
 Image getGrayUncheckedImage() {
-	InputStream resourceStream;
 	
 	if (grayUncheckedImage == null) {
 		grayUncheckedImage = new Image(getDisplay(), GrayUncheckedImageData);

@@ -173,7 +173,7 @@ void createHandle (int index) {
 	int parentHandle = parent.parentingHandle ();
 		
 	if ((style & SWT.SEPARATOR) != 0) {
-		int clazz = display.PtSeparator;
+		int clazz = Display.PtSeparator;
 		int orientation = (style & SWT.HORIZONTAL) != 0 ? OS.Pt_SEP_HORIZONTAL : OS.Pt_SEP_VERTICAL;
 		int type = OS.Pt_ETCHED_IN;
 		if ((style & (SWT.SHADOW_OUT)) != 0) type = OS.Pt_ETCHED_OUT;
@@ -188,7 +188,7 @@ void createHandle (int index) {
 		return;
 	}
 
-	int clazz = display.PtLabel;
+	int clazz = Display.PtLabel;
 	int alignment = OS.Pt_LEFT;
 	if ((style & SWT.CENTER) != 0) alignment = OS.Pt_CENTER;
 	if ((style & SWT.RIGHT) != 0) alignment = OS.Pt_RIGHT;

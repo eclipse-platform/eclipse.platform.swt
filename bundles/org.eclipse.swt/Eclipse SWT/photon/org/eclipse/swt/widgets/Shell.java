@@ -412,7 +412,7 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 void createHandle (int index) {
 	state |= HANDLE | CANVAS;
 	if (handle != 0) {
-		int clazz = display.PtContainer;
+		int clazz = Display.PtContainer;
 		int [] args = {
 			OS.Pt_ARG_FILL_COLOR, OS.Pg_TRANSPARENT, 0,
 			OS.Pt_ARG_CONTAINER_FLAGS, OS.Pt_HOTKEYS_FIRST, OS.Pt_HOTKEYS_FIRST,

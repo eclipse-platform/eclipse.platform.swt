@@ -130,7 +130,6 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
@@ -143,7 +142,7 @@ void createHandle (int index) {
 		OS.Pt_ARG_TOOLBAR_FLAGS, 0, OS.Pt_TOOLBAR_DRAGGABLE | OS.Pt_TOOLBAR_END_SEPARATOR,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
-	handle = OS.PtCreateWidget (display.PtToolbar, parentingHandle, args.length / 3, args);
+	handle = OS.PtCreateWidget (Display.PtToolbar, parentingHandle, args.length / 3, args);
 	if ((style & SWT.FLAT) != 0) {
 		OS.PtSetResource (handle, OS.Pt_ARG_BASIC_FLAGS, OS.Pt_FLAT_FILL, OS.Pt_FLAT_FILL);
 	}

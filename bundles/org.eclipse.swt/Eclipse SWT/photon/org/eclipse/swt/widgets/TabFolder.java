@@ -7,7 +7,6 @@ package org.eclipse.swt.widgets;
  * http://www.eclipse.org/legal/cpl-v10.html
  */
 
-import org.eclipse.swt.internal.*;
 import org.eclipse.swt.internal.photon.*;
 import org.eclipse.swt.*;
 import org.eclipse.swt.graphics.*;
@@ -165,14 +164,13 @@ public Rectangle computeTrim (int x, int y, int width, int height) {
 
 void createHandle (int index) {
 	state |= HANDLE;
-	Display display = getDisplay ();
 	int parentHandle = parent.parentingHandle ();
 	int [] args = {
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
 	parentingHandle = OS.PtCreateWidget (OS.PtContainer (), parentHandle, args.length / 3, args);
 	if (parentingHandle == 0) error (SWT.ERROR_NO_HANDLES);
-	int clazz = display.PtPanelGroup;
+	int clazz = Display.PtPanelGroup;
 	args = new int []{
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};

@@ -335,7 +335,6 @@ void collapse(TreeItem item, boolean notifyListeners) {
  * @param item - item that should be collapsed.
  */
 void collapseNoRedraw(TreeItem item) {
-	int itemIndex;
 	
 	if (item.getExpanded() == false) {
 		return;

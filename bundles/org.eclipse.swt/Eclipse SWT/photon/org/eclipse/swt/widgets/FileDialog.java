@@ -191,7 +191,7 @@ public String open () {
 			int length = ext.length();
 			int end, start = 0;
 			do {
-				int index = end = ext.indexOf(';', start);
+				end = ext.indexOf(';', start);
 				if (end < 0) end = length;
 				String subExt = ext.substring(start, end).trim();
 				if (subExt.length() > 0) {

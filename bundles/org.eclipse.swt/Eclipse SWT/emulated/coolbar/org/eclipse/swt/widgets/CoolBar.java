@@ -635,9 +635,7 @@ void onPaint(Event event) {
 	Display display = getDisplay();
 	Color shadowColor = display.getSystemColor(SWT.COLOR_WIDGET_NORMAL_SHADOW);
 	Color highlightColor = display.getSystemColor(SWT.COLOR_WIDGET_HIGHLIGHT_SHADOW);
-	Color lightShadowColor = display.getSystemColor(SWT.COLOR_WIDGET_LIGHT_SHADOW);
 
-	int y = 0;
 	int stopX = getBounds().width;
 	for (int row = 0; row < items.length; row++) {
 		Rectangle bounds = new Rectangle(0, 0, 0, 0);

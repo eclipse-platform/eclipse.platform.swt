@@ -121,7 +121,7 @@ void addAccelerator () {
 	if ((accelerator & SWT.CONTROL) != 0) keyMods |= OS.Pk_KM_Ctrl;
 	int key = (accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CONTROL));
 	Display display = getDisplay ();
-	int keyCode = display.untranslateKey (key);
+	int keyCode = Display.untranslateKey (key);
 	if (keyCode != 0) key = keyCode;
 	else key = Character.toLowerCase ((char)key);
 	Shell shell = parent.getShell ();
@@ -446,7 +446,6 @@ int processShow (int info) {
 	* the menu item state and reset it when the menu item is
 	* realized.
 	*/
-	int topHandle = topHandle ();
 	int flags = enabled ? 0 : OS.Pt_BLOCKED | OS.Pt_GHOST;
 	OS.PtSetResource (handle, OS.Pt_ARG_FLAGS, flags, OS.Pt_BLOCKED | OS.Pt_GHOST);
 	return OS.Pt_CONTINUE;
@@ -529,7 +528,7 @@ void removeAccelerator () {
 	if ((accelerator & SWT.CONTROL) != 0) keyMods |= OS.Pk_KM_Ctrl;
 	int key = (accelerator & ~(SWT.ALT | SWT.SHIFT | SWT.CONTROL));
 	Display display = getDisplay ();
-	int keyCode = display.untranslateKey (key);
+	int keyCode = Display.untranslateKey (key);
 	if (keyCode != 0) key = keyCode;
 	else key = Character.toLowerCase ((char)key);
 	Shell shell = parent.getShell ();

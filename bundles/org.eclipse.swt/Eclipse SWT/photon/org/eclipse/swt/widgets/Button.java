@@ -214,7 +214,7 @@ void createHandle (int index) {
 			OS.Pt_ARG_BASIC_FLAGS, OS.Pt_HORIZONTAL_GRADIENT, OS.Pt_STATIC_GRADIENT | OS.Pt_HORIZONTAL_GRADIENT,
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};
-		handle = OS.PtCreateWidget (display.PtButton, parentHandle, args.length / 3, args);
+		handle = OS.PtCreateWidget (Display.PtButton, parentHandle, args.length / 3, args);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
@@ -233,7 +233,7 @@ void createHandle (int index) {
 			OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 		};	
 
-		handle = OS.PtCreateWidget (display.PtToggleButton, parentHandle, args.length / 3, args);
+		handle = OS.PtCreateWidget (Display.PtToggleButton, parentHandle, args.length / 3, args);
 		if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 		return;
 	}
@@ -244,7 +244,7 @@ void createHandle (int index) {
 		OS.Pt_ARG_HORIZONTAL_ALIGNMENT, alignment, 0,
 		OS.Pt_ARG_RESIZE_FLAGS, 0, OS.Pt_RESIZE_XY_BITS,
 	};
-	handle = OS.PtCreateWidget (display.PtButton, parentHandle, args.length / 3, args);
+	handle = OS.PtCreateWidget (Display.PtButton, parentHandle, args.length / 3, args);
 	if (handle == 0) error (SWT.ERROR_NO_HANDLES);
 }
 
