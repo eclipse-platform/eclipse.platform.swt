@@ -1233,9 +1233,20 @@ public void removeAll () {
 //	}
 
 	if (imageList != null) {
-		OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
-		Display display = getDisplay ();
-		display.releaseImageList (imageList);
+		int hwndHeader =  OS.SendMessage (handle, OS.LVM_GETHEADER, 0, 0);
+		int columnCount = OS.SendMessage (hwndHeader, OS.HDM_GETITEMCOUNT, 0, 0);
+		if (columnCount == 1 && columns [0] == null) columnCount = 0;
+		int i = 0;
+		while (i < columnCount) {
+			TableColumn column = columns [i];
+			if (column.getImage () != null) break;
+			i++;
+		}
+		if (i == columnCount) {
+			OS.SendMessage (handle, OS.LVM_SETIMAGELIST, OS.LVSIL_SMALL, 0);
+			Display display = getDisplay ();
+			display.releaseImageList (imageList);
+		}
 	}
 	imageList = null;
 	items = new TableItem [4];
