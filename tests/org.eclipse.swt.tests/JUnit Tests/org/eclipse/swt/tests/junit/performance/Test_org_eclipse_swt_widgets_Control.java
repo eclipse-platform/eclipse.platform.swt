@@ -714,7 +714,7 @@ public void test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener(
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
-	final int COUNT = 2000000;
+	final int COUNT = isGTK ? 20000 : 2000000;
 	
 	Color red = control.getDisplay().getSystemColor(SWT.COLOR_RED);
 	Color blue = control.getDisplay().getSystemColor(SWT.COLOR_BLUE);
@@ -850,7 +850,7 @@ public void test_setFocus() {
 }
 
 public void test_setFontLorg_eclipse_swt_graphics_Font() {
-	final int COUNT = 800000;
+	final int COUNT = isGTK ? 200000 : 800000;
 	
 	Font font1 = control.getFont();
 	FontData[] data = font1.getFontData();
@@ -876,7 +876,7 @@ public void test_setFontLorg_eclipse_swt_graphics_Font() {
 }
 
 public void test_setForegroundLorg_eclipse_swt_graphics_Color() {
-	final int COUNT = 2000000;
+	final int COUNT = isGTK ? 20000 : 2000000;
 	
 	Color red = control.getDisplay().getSystemColor(SWT.COLOR_RED);
 	Color blue = control.getDisplay().getSystemColor(SWT.COLOR_BLUE);

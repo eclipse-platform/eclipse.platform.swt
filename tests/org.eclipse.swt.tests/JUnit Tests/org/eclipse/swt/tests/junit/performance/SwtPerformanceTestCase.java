@@ -16,6 +16,7 @@ import java.net.URL;
 
 import junit.framework.TestCase;
 
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.internal.*;
 import org.eclipse.test.performance.*;
 
@@ -25,6 +26,8 @@ public class SwtPerformanceTestCase extends TestCase {
 	// be written to System.out
 	public static boolean verbose = false;
 
+	public final static boolean isGTK = SWT.getPlatform().equals("gtk");
+	
 	// allow specific image formats to be tested
 	public static String[] imageFormats = new String[] {"bmp", "jpg", "gif", "png"};
 	public static String[] imageFilenames = new String[] {"folder", "folderOpen", "target"};
@@ -70,7 +73,7 @@ protected String getPath(String fileName) {
 	}
 	
 	if (File.separatorChar != '/') urlPath = urlPath.replace('/', File.separatorChar);	
-	if (urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);
+//	if (urlPath.indexOf(File.separatorChar) == 0) urlPath = urlPath.substring(1);
 	urlPath = urlPath.replaceAll("%20", " ");	
 	
 	if (verbose) {
