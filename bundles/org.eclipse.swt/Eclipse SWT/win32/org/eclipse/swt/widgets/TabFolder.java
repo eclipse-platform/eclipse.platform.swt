@@ -223,6 +223,16 @@ void createItem (TabItem item, int index) {
 void createHandle () {
 	super.createHandle ();
 	state &= ~CANVAS;
+	
+	/*
+	* Feature in Windows.  Despite the fact that the
+	* tool tip text contains \r\n, the tooltip will
+	* not honour the new line unless TTM_SETMAXTIPWIDTH
+	* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+	* a large value.
+	*/
+	int hwndToolTip = OS.SendMessage (handle, OS.TCM_GETTOOLTIPS, 0, 0);
+	OS.SendMessage (hwndToolTip, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 }
 
 void createWidget () {
@@ -607,6 +617,7 @@ LRESULT WM_NOTIFY (int wParam, int lParam) {
 				if (item != null) string = item.toolTipText;
 			}
 			if (string != null && string.length () != 0) {
+				string = Display.withCrLf (string);
 				int length = string.length ();
 				char [] buffer = new char [length + 1];
 				string.getChars (0, length, buffer, 0);

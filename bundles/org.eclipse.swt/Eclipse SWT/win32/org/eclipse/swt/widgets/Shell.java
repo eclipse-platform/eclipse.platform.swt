@@ -760,6 +760,14 @@ void setToolTipText (int hwnd, String text) {
 			OS.GetModuleHandle (null),
 			null);
 		if (toolTipHandle == 0) error (SWT.ERROR_NO_HANDLES);
+		/*
+		* Feature in Windows.  Despite the fact that the
+		* tool tip text contains \r\n, the tooltip will
+		* not honour the new line unless TTM_SETMAXTIPWIDTH
+		* is set.  The fix is to set TTM_SETMAXTIPWIDTH to
+		* a large value.
+		*/
+		OS.SendMessage (toolTipHandle, OS.TTM_SETMAXTIPWIDTH, 0, 0x7FFF);
 	}
 	TOOLINFO lpti = new TOOLINFO ();
 	lpti.cbSize = TOOLINFO.sizeof;
