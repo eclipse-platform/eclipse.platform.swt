@@ -306,7 +306,7 @@ public String open () {
 				index++;
 			}
 		}
-		if (nFileOffset != 0) {
+		if (nFileOffset > 0) {
 		
 			/* Use the character encoding for the default locale */
 			TCHAR prefix = new TCHAR (0, nFileOffset - 1);
