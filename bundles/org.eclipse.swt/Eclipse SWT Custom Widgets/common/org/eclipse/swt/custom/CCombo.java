@@ -778,24 +778,7 @@ public void redraw () {
 	if (popup.isVisible()) list.redraw();
 }
 public void redraw (int x, int y, int width, int height, boolean all) {
-	super.redraw(x, y, width, height, all);
-	Display display = getDisplay();
-	Rectangle rect = new Rectangle(x, y, width, height);
-	Rectangle bounds = text.getBounds();
-	if (bounds.intersects(rect)) {
-		Rectangle damage = bounds.intersection(rect);
-		damage = display.map(this, text, damage);
-		text.redraw(damage.x, damage.y, damage.width, damage.height, all);
-	}
-	bounds = arrow.getBounds();
-	if (bounds.intersects(rect)) {
-		Rectangle damage = bounds.intersection(rect);
-		damage = display.map(this, arrow, damage);
-		arrow.redraw(damage.x, damage.y, damage.width, damage.height, all);
-	}
-	if (popup.isVisible()) {
-		list.redraw();
-	}
+	super.redraw(x, y, width, height, true);
 }
 
 /**
