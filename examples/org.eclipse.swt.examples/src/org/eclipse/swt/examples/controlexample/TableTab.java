@@ -263,6 +263,17 @@ class TableTab extends ScrollableTab {
 	}
 	
 	/**
+	 * Sets the font of the "Example" widgets.
+	 */
+	void setExampleWidgetFont () {
+		super.setExampleWidgetFont();
+		for (int i = 0; i < columnTitles.length; i++) {
+			TableColumn tableColumn = table1.getColumn(i);
+			tableColumn.pack();
+		}
+	}
+
+	/**
 	 * Sets the state of the "Example" widgets.
 	 */
 	void setExampleWidgetState () {
