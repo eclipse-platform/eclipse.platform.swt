@@ -405,8 +405,6 @@ int keyGlyph (int key) {
 
 void releaseChild () {
 	super.releaseChild ();
-	if (menu != null) menu.dispose ();
-	menu = null;
 	parent.destroyItem (this);
 }
 

@@ -303,15 +303,17 @@ void destroyItem (MenuItem item) {
 	System.arraycopy (items, index + 1, items, index, --count - index);
 	items [count] = null;
 	if (count == 0) items = new MenuItem [4];
-	modified = true;
 	if ((style & SWT.BAR) != 0) {
-//		int [] outMenuRef = new int [1];
-//		OS.GetMenuItemHierarchicalMenu (handle, outIndex [0], outMenuRef);
-//		if (outMenuRef [0] != 0) {
-//			OS.DeleteMenu (OS.GetMenuID (outMenuRef [0]));
-//			OS.DisposeMenu (outMenuRef [0]);
-//		}
+		if (item.menu == null) {
+			int [] outMenuRef = new int [1];
+			short menuIndex = (short) (index + 1);
+			OS.GetMenuItemHierarchicalMenu (handle, menuIndex, outMenuRef);
+			if (outMenuRef [0] != 0) {
+				OS.DisposeMenu (outMenuRef [0]);
+			}
+		}
 	}
+	modified = true;
 	OS.DeleteMenuItem (handle, (short) (index + 1));
 }
 
