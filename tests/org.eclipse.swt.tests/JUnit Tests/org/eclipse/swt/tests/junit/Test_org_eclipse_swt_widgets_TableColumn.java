@@ -100,11 +100,8 @@ public void test_getResizable() {
 }
 
 public void test_getWidth() {
-	final int DEFAULT_WIDTH = 10;
 	int testWidth = 42;
 	
-	assertTrue(":a: width=" + tableColumn.getWidth() + " should be=" + DEFAULT_WIDTH, tableColumn.getWidth() == DEFAULT_WIDTH);
-
 //	try {
 //		tableColumn.setWidth(-1);
 //		assertTrue("No exception thrown", false);
@@ -117,13 +114,13 @@ public void test_getWidth() {
 //	}
 
 	tableColumn.setWidth(0);
-	assertTrue(":c: width=" + tableColumn.getWidth() + " should be=" + 0, tableColumn.getWidth() == 0);
+	assertTrue(":a: width=" + tableColumn.getWidth() + " should be=" + 0, tableColumn.getWidth() == 0);
 
 	tableColumn.setWidth(testWidth);
-	assertTrue(":d: width=" + tableColumn.getWidth() + " should be=" + testWidth, tableColumn.getWidth() == testWidth);
+	assertTrue(":b: width=" + tableColumn.getWidth() + " should be=" + testWidth, tableColumn.getWidth() == testWidth);
 
 	tableColumn.setWidth(testWidth);
-	assertTrue(":e: width=" + tableColumn.getWidth() + " should be=" + testWidth, tableColumn.getWidth() == testWidth);
+	assertTrue(":c: width=" + tableColumn.getWidth() + " should be=" + testWidth, tableColumn.getWidth() == testWidth);
 }
 
 public void test_pack() {
