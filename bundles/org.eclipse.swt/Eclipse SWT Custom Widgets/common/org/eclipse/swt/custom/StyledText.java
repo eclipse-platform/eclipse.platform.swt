@@ -130,8 +130,6 @@ public class StyledText extends Canvas {
 	boolean overwrite = false;			// insert/overwrite edit mode
 	int textLimit = -1;					// limits the number of characters the user can type in the widget. Unlimited by default.
 	Hashtable keyActionMap = new Hashtable();
-	Color background = null;			// workaround for bug 4791
-	Color foreground = null;			//
 	Clipboard clipboard;
 	boolean mouseDoubleClick = false;	// true=a double click ocurred. Don't do mouse swipe selection.
 	int autoScrollDirection = SWT.NULL;	// the direction of autoscrolling (up, down, right, left)
@@ -1587,8 +1585,8 @@ public StyledText(Composite parent, int style) {
 	super(parent, checkStyle(style | SWT.NO_REDRAW_RESIZE | SWT.NO_BACKGROUND));
 	// set the bg/fg in the OS to ensure that these are the same as StyledText, necessary
 	// for ensuring that the bg/fg the IME box uses is the same as what StyledText uses
-	super.setForeground(getForeground());
-	super.setBackground(getBackground());
+	super.setForeground(null);
+	super.setBackground(null);
 	Display display = getDisplay();
 	isMirrored = (super.getStyle() & SWT.MIRRORED) != 0;
 	isBidi = BidiUtil.isBidiPlatform() || isMirrored;
@@ -3288,16 +3286,6 @@ void endAutoScroll() {
 	autoScrollDirection = SWT.NULL;
 }
 /**
- * @see org.eclipse.swt.widgets.Control#getBackground
- */
-public Color getBackground() {
-	checkWidget();
-	if (background == null) {
-		return getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND);
-	}
-	return background;
-}
-/**
  * Gets the BIDI coloring mode.  When true the BIDI text display
  * algorithm is applied to segments of text that are the same
  * color.
@@ -3464,16 +3452,6 @@ public boolean getDoubleClickEnabled() {
 public boolean getEditable() {
 	checkWidget();
 	return editable;
-}
-/**
- * @see org.eclipse.swt.widgets.Control#getForeground
- */
-public Color getForeground() {
-	checkWidget();
-	if (foreground == null) {
-		return getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND);
-	}
-	return foreground;
 }
 /** 
  * Return a GC to use for rendering and update the cached font style to
@@ -4892,8 +4870,6 @@ void handleDispose(Event event) {
 	selection = null;
 	doubleClickSelection = null;
 	keyActionMap = null;
-	background = null;
-	foreground = null;
 	clipboard = null;
 }
 /** 
@@ -6479,8 +6455,7 @@ public void setCaret(Caret caret) {
  */
 public void setBackground(Color color) {
 	checkWidget();
-	super.setBackground(color);
-	background = color;
+	super.setBackground(color != null ? color : getDisplay().getSystemColor(SWT.COLOR_LIST_BACKGROUND));
 	redraw();
 }
 /**
@@ -6728,8 +6703,7 @@ public void setFont(Font font) {
  */
 public void setForeground(Color color) {
 	checkWidget();
-	super.setForeground(color);
-	foreground = color;
+	super.setForeground(color != null ? color : getDisplay().getSystemColor(SWT.COLOR_LIST_FOREGROUND));
 	redraw();
 }
 /** 
