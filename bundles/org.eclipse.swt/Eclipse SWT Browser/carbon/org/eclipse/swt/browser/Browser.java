@@ -81,6 +81,7 @@ public void removeStatusTextListener(StatusTextListener listener) {
 
 public boolean setUrl(String url) {
 	checkWidget();
+	if (url == null) SWT.error(SWT.ERROR_NULL_ARGUMENT);
 	return false;
 }
 

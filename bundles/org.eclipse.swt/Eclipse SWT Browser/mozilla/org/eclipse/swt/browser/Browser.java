@@ -720,7 +720,7 @@ public void removeStatusTextListener(StatusTextListener listener) {
  * @return true if the operation was successfull and false otherwise.
  *
  * @exception IllegalArgumentException <ul>
- *    <li>ERROR_NULL_ARGUMENT - if the text is null</li>
+ *    <li>ERROR_NULL_ARGUMENT - if the url is null</li>
  * </ul>
  * 
  * @exception SWTError <ul>
