@@ -367,7 +367,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		output("\t\t");
 		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
 		output("fp");
-		generateFunctionCallRightSide(method, methodData, paramTypes);
+		generateFunctionCallRightSide(method, methodData, paramTypes, 0);
 		outputDelimiter();
 		output("\t\t}");
 		outputDelimiter();
@@ -403,7 +403,7 @@ void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] p
 		output("\t\t");
 		generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
 		output("(*fptr)");
-		generateFunctionCallRightSide(method, methodData, paramTypes);
+		generateFunctionCallRightSide(method, methodData, paramTypes, 0);
 		outputDelimiter();
 		output("\t\t}");
 		outputDelimiter();
@@ -431,13 +431,13 @@ void generateFunctionCallLeftSide(Method method, MethodData methodData, Class re
 	}	
 }
 
-void generateFunctionCallRightSide(Method method, MethodData methodData, Class[] paramTypes) {
+void generateFunctionCallRightSide(Method method, MethodData methodData, Class[] paramTypes, int paramStart) {
 	if (!methodData.getFlag("const")) {
 		output("(");
-		for (int i = 0; i < paramTypes.length; i++) {
+		for (int i = paramStart; i < paramTypes.length; i++) {
 			Class paramType = paramTypes[i];
 			ParameterData paramData = getMetaData().getMetaData(method, i);
-			if (i != 0) output(", ");
+			if (i != paramStart) output(", ");
 			if (paramData.getFlag("struct")) output("*");
 			output(paramData.getCast());
 			if (!paramType.isPrimitive()) output("lp");
@@ -450,8 +450,27 @@ void generateFunctionCallRightSide(Method method, MethodData methodData, Class[]
 
 void generateFunctionCall(Method method, MethodData methodData, Class[] paramTypes, Class returnType, boolean needsReturn) {
 	generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
-	output(method.getName());
-	generateFunctionCallRightSide(method, methodData, paramTypes);
+	/*
+	* 
+	*/
+	int paramStart = 0;
+	if (method.getName().equalsIgnoreCase("call")) {
+		output("(");
+		ParameterData paramData = getMetaData().getMetaData(method, 0);
+		String cast = paramData.getCast(); 
+		if (cast.length() != 0 && !cast.equals("()")) {
+			output(cast);
+		} else {
+			output("(");
+			output(getTypeSignature2(returnType));
+			output(" (*)())");
+		}
+		output("arg0)");
+		paramStart = 1;
+	} else {
+		output(method.getName());
+	}
+	generateFunctionCallRightSide(method, methodData, paramTypes, paramStart);
 	outputDelimiter();
 }
 
