@@ -560,7 +560,6 @@ public void setSelection (int selection) {
 	checkWidget();
 	if (selection < 0) return;
     OS.SetControl32BitValue(handle, selection);
-    redrawHandle(0, 0, 0, 0, handle, false);
 }
 /**
  * Sets the size of the receiver's thumb relative to the

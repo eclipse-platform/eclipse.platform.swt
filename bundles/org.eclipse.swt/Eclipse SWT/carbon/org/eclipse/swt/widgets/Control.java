@@ -2152,13 +2152,17 @@ public boolean setParent (Composite parent) {
  */
 public void setRedraw (boolean redraw) {
 	checkWidget();
-	if (redraw) {
-		if (--drawCount == 0)
-			OS.HIViewSetDrawingEnabled(topHandle(), true);
-	} else {
-		if (drawCount++ == 0)
-			OS.HIViewSetDrawingEnabled(topHandle(), false);
-	}
+	/*
+	 * AW: todo
+	 * The following is commented out intentionally.
+	 * If its uncommented certain kinds of damage events aren't processed correctly.	 */
+//	if (redraw) {
+//		if (--drawCount == 0)
+//			OS.HIViewSetDrawingEnabled(topHandle(), true);
+//	} else {
+//		if (drawCount++ == 0)
+//			OS.HIViewSetDrawingEnabled(topHandle(), false);
+//	}
 }
 /**
  * Sets the receiver's size to the point specified by the arguments.
@@ -2665,19 +2669,4 @@ public void update () {
 	void internalGetControlBounds(int hndl, Rect bounds) {
 		OS.GetControlBounds(hndl, bounds);
 	}
-
-	/**
-	 * Hook (overwritten in Text and Combo)
-	 */
-	/*
-	final int sendKeyEvent(int type, int nextHandler, int eRefHandle) {
-		
-		MacEvent mEvent= new MacEvent(eRefHandle);
-		if (translateTraversal(mEvent))
-			return 0;
-
-		processEvent (type, new MacEvent(eRefHandle));
-		return OS.kNoErr;
-	}
-	*/
 }
