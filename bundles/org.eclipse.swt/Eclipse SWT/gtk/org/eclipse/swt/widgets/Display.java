@@ -426,7 +426,7 @@ protected void create (DeviceData data) {
 
 synchronized void createDisplay (DeviceData data) {
 	/*
-	* This code is intentionally commneted.	*/
+	* This code is intentionally commented.	*/
 //	if (!OS.g_thread_supported ()) {
 //		OS.g_thread_init (0);
 //		OS.gdk_threads_init ();
@@ -530,28 +530,8 @@ void error (int code) {
  */
 public Widget findWidget (int handle) {
 	checkDevice ();
-	// In 0.058 and before, this used to go up the parent
-	// chain if the handle was not found in the widget
-	// table, up to the root.  Now, we require that all
-	// widgets register ALL their handles.
-	// If somebody creates their own handles outside
-	// SWT, it's their problem.
 	return WidgetTable.get (handle);
 }
-
-/*
- * In SWT, we force all widgets to have real Gdk windows,
- * thus getting rid of the concept of "lightweight" widgets.
- * Given a GdkWindow, answer a handle to the GtkWidget realized
- * through that window.
- * If the argument is not the pointe rto a GdkWindow, the
- * universe will be left in an inconsistent state.
- */
-int findGtkWidgetByGdkWindow (int gdkWindow) {
-	int[] pwidget = new int[1];
-	OS.gdk_window_get_user_data(gdkWindow, pwidget);
-	return pwidget[0];
-}	
  
 /**
  * Returns the currently active <code>Shell</code>, or null
@@ -566,7 +546,7 @@ int findGtkWidgetByGdkWindow (int gdkWindow) {
  */
 public Shell getActiveShell () {
 	checkDevice ();
-	Shell [] shells = getShells();
+	Shell [] shells = getShells ();
 	for (int i=0; i<shells.length; i++) {
 	   if (shells [i].hasFocus) return shells [i];
 	}
@@ -584,7 +564,7 @@ public Shell getActiveShell () {
  */
 public Rectangle getBounds () {
 	checkDevice ();
-	return new Rectangle(0, 0, OS.gdk_screen_width (), OS.gdk_screen_height ());
+	return new Rectangle (0, 0, OS.gdk_screen_width (), OS.gdk_screen_height ());
 }
 
 /**
@@ -617,11 +597,20 @@ public static synchronized Display getCurrent () {
 public Control getCursorControl () {
 	checkDevice();
 	int[] x = new int[1], y = new int[1];
-	int cursorWindowHandle = OS.gdk_window_at_pointer(x,y);
-	if (cursorWindowHandle==0) return null;
-	int handle = findGtkWidgetByGdkWindow(cursorWindowHandle);
-	if (handle==0) return null;
-	return findControl(handle);
+	int window = OS.gdk_window_at_pointer (x,y);
+	if (window ==0) return null;
+	int [] user_data = new int [1];
+	OS.gdk_window_get_user_data (window, user_data);
+	int handle = user_data [0];
+	if (handle == 0) return null;
+	do {
+		Widget widget = WidgetTable.get (handle);
+		if (widget != null && widget instanceof Control) {
+			Control control = (Control) widget;
+			if (control.getEnabled ()) return control;
+		}
+	} while ((handle = OS.gtk_widget_get_parent (handle)) != 0);
+	return null;
 }
 
 boolean filterEvent (Event event) {
@@ -632,15 +621,6 @@ boolean filterEvent (Event event) {
 boolean filters (int eventType) {
 	if (filterTable == null) return false;
 	return filterTable.hooks (eventType);
-}
-
-Control findControl(int h) {
-	Widget w = findWidget(h);
-	if (w==null) return null;
-	if (w instanceof Control) return (Control)w;
-
-	/* w is something like an Item.  Go for the parent */
-	return findControl(OS.gtk_widget_get_parent (h));
 }
 
 /**
@@ -734,10 +714,9 @@ public Object getData () {
  */
 public Point getDPI () {
 	checkDevice ();
-	/* Apparently, SWT believes pixels are always square */
 	int widthMM = OS.gdk_screen_width_mm ();
 	int width = OS.gdk_screen_width ();
-	int dpi = Compatibility.round(254 * width, widthMM * 10);
+	int dpi = Compatibility.round (254 * width, widthMM * 10);
 	return new Point (dpi, dpi);
 }
 
@@ -1174,7 +1153,7 @@ void initializeCallbacks () {
  * @private
  */
 public void internal_dispose_GC (int gdkGC, GCData data) {
-	OS.g_object_unref(gdkGC);
+	OS.g_object_unref (gdkGC);
 }
 
 /**	 
@@ -1194,9 +1173,9 @@ public void internal_dispose_GC (int gdkGC, GCData data) {
  */
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
-	int root = OS.GDK_ROOT_PARENT();
-	int gdkGC = OS.gdk_gc_new(root);
-	if (gdkGC == 0) SWT.error(SWT.ERROR_NO_HANDLES);
+	int root = OS.GDK_ROOT_PARENT ();
+	int gdkGC = OS.gdk_gc_new (root);
+	if (gdkGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
 	if (data != null) {
 		data.device = this;
 		data.drawable = root;
@@ -1263,16 +1242,6 @@ public boolean readAndDispatch () {
 	checkDevice ();
 	int status = OS.gtk_events_pending ();
 	if (status != 0) {
-//		if ((status & OS.XtIMTimer) != 0) OS.XtAppProcessEvent (context, OS.XtIMTimer);
-//		if ((status & OS.XtIMAlternateInput) != 0) OS.XtAppProcessEvent (context, OS.XtIMAlternateInput);
-//		if ((status & OS.XtIMXEvent) != 0) {
-//			OS.XtAppNextEvent (context, event);
-//			OS.XtDispatchEvent (event);
-//		}
-/*		int eventPtr = OS.gdk_event_get();
-		if (eventPtr != 0) {
-			OS.gtk_main_do_event(eventPtr);
-		}*/
 		OS.gtk_main_iteration ();
 		runDeferredEvents ();
 		return true;
@@ -1669,8 +1638,10 @@ void showIMWindow (Control control) {
  */
 public boolean sleep () {
 	checkDevice ();
-	/* Temporary code - need to sleep waiting for the next message */
-	try { Thread.sleep(50); } catch (Exception e) {};
+	//NOT DONE - need to sleep waiting for the next event
+	try {
+		Thread.sleep (50);
+	} catch (Exception e) {};
 	return true;
 }
 
@@ -1824,7 +1795,7 @@ static int untranslateKey (int key) {
  */
 public void update () {
 	checkDevice ();
-	/* NOT IMPLEMENTED - Need to flush only pending draws */
+	// NOT IMPLEMENTED - need to flush only pending exposes
 	OS.gdk_flush ();
 	while ((OS.gtk_events_pending ()) != 0) {
 		OS.gtk_main_iteration ();
@@ -1839,7 +1810,7 @@ public void update () {
  * @see #sleep
  */
 public void wake () {
-	/* NOT IMPLEMENTED - Need to wake up the event loop */
+	// NOT IMPLEMENTED - need to wake up the event loop
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
 	if (thread == Thread.currentThread ()) return;
 }
