@@ -2470,10 +2470,7 @@ public void setLineWidth(int width) {
  */
 public void setXORMode(boolean xor) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	if (xor)
-		OS.XSetFunction(data.display, handle, OS.GXxor);
-	else
-		OS.XSetFunction(data.display, handle, OS.GXcopy);
+	OS.XSetFunction(data.display, handle, xor ? OS.GXxor : OS.GXcopy);
 }
 /**
  * Returns the extent of the given string. No tab
