@@ -58,10 +58,10 @@ make_gnome: $(GNOME_DLL)
 $(GNOME_DLL): gnome.c 
 	gcc $(CFLAGS) $(GNOME_CFLAGS) $(GNOME_LIB)  -o $(GNOME_DLL) gnome.c
 
-$(SWT_DLL): callback.c
+$(SWT_DLL): callback.c callback.h
 	gcc  $(CFLAGS) -o $(SWT_DLL) callback.c
 
-$(SWTPI_DLL): swt.c structs.c
+$(SWTPI_DLL): swt.c swt.h structs.c structs.h
 	gcc  $(CFLAGS) $(GTKCFLAGS) $(GTKLIBS) -o $(SWTPI_DLL) swt.c structs.c
 
 clean:
