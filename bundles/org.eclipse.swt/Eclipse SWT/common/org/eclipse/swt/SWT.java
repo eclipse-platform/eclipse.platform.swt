@@ -1312,12 +1312,6 @@ public class SWT {
 	
 	/**
 	 * Keyboard event constant representing the numeric key
-	 * pad enter key (value is (1&lt;&lt;24)+44).
-	 */
-	public static final int KEYPAD_CR = KEYCODE_BIT + 44;
-	
-	/**
-	 * Keyboard event constant representing the numeric key
 	 * pad minus key (value is (1&lt;&lt;24)+45).
 	 */
 	public static final int KEYPAD_MINUS = KEYCODE_BIT + 45;
@@ -1395,8 +1389,20 @@ public class SWT {
 	public static final int KEYPAD_9 = KEYCODE_BIT + 57;
 
 	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad equal key (value is (1&lt;&lt;24)+61).
+	 */
+	public static final int KEYPAD_EQUAL = KEYCODE_BIT + 61;
+	
+	/**
+	 * Keyboard event constant representing the numeric key
+	 * pad enter key (value is (1&lt;&lt;24)+80).
+	 */
+	public static final int KEYPAD_CR = KEYCODE_BIT + 80;
+	
+	/**
 	 * Keyboard event constant representing the help
-	 * key (value is (1&lt;&lt;24)+58).
+	 * key (value is (1&lt;&lt;24)+81).
 	 * 
 	 * NOTE: The HELP key maps to the key labeled "help",
 	 * not "F1". If your keyboard does not have a HELP key,
@@ -1405,43 +1411,43 @@ public class SWT {
 	 * 
 	 * @see SWT.Help
 	 */
-	public static final int HELP = KEYCODE_BIT + 58;
+	public static final int HELP = KEYCODE_BIT + 81;
 	
 	/**
 	 * Keyboard event constant representing the caps
-	 * lock key (value is (1&lt;&lt;24)+59).
+	 * lock key (value is (1&lt;&lt;24)+82).
 	 */
-	public static final int CAPS_LOCK = KEYCODE_BIT + 59;
+	public static final int CAPS_LOCK = KEYCODE_BIT + 82;
 	
 	/**
 	 * Keyboard event constant representing the num
-	 * lock key (value is (1&lt;&lt;24)+60).
+	 * lock key (value is (1&lt;&lt;24)+83).
 	 */
-	public static final int NUM_LOCK = KEYCODE_BIT + 60;
+	public static final int NUM_LOCK = KEYCODE_BIT + 83;
 	
 	/**
 	 * Keyboard event constant representing the num
-	 * lock key (value is (1&lt;&lt;24)+61).
+	 * lock key (value is (1&lt;&lt;24)+84).
 	 */
-	public static final int SCROLL_LOCK = KEYCODE_BIT + 61;
+	public static final int SCROLL_LOCK = KEYCODE_BIT + 84;
 	
 	/**
 	 * Keyboard event constant representing the pause
-	 * key (value is (1&lt;&lt;24)+62).
+	 * key (value is (1&lt;&lt;24)+85).
 	 */
-	public static final int PAUSE = KEYCODE_BIT + 62;
+	public static final int PAUSE = KEYCODE_BIT + 85;
 	
 	/**
 	 * Keyboard event constant representing the break
-	 * key (value is (1&lt;&lt;24)+63).
+	 * key (value is (1&lt;&lt;24)+86).
 	 */
-	public static final int BREAK = KEYCODE_BIT + 63;
+	public static final int BREAK = KEYCODE_BIT + 86;
 	
 	/**
 	 * Keyboard event constant representing the break
-	 * key (value is (1&lt;&lt;24)+64).
+	 * key (value is (1&lt;&lt;24)+87).
 	 */
-	public static final int PRINT_SCREEN = KEYCODE_BIT + 64;
+	public static final int PRINT_SCREEN = KEYCODE_BIT + 87;
 	
 	/**
 	 * The <code>MessageBox</code> style constant for error icon
