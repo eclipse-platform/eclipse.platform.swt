@@ -404,28 +404,5 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_carbon_OS2_HIViewGetSubview
 	return status;
 }
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextBeginPath(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextBeginPath((CGContextRef)inContext);
-}
 
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextAddArc(JNIEnv *env, jclass zz,
-			jint inContext, jfloat x, jfloat y, jfloat radius, jfloat startAngle, jfloat endAngle, jint clockwise) {
-	CGContextAddArc((CGContextRef)inContext, x, y, radius, startAngle, endAngle, clockwise);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextClosePath(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextClosePath((CGContextRef)inContext);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextStrokePath(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextStrokePath((CGContextRef)inContext);
-}
-
-JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_carbon_OS2_CGContextFillPath(JNIEnv *env, jclass zz,
-			jint inContext) {
-	CGContextFillPath((CGContextRef)inContext);
-}
 

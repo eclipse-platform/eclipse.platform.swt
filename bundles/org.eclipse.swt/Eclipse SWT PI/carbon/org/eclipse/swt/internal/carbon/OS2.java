@@ -60,14 +60,6 @@ public static void RGBForeColor(short red, short green, short blue) {
 //////////////////////////////////////////
 //  added by AW while merging HIView stuff
 
-public static native void CGContextBeginPath(int inContext);
-public static native void CGContextAddArc(int inContext, float x, float y, float radius,
-				float startAngle, float endAngle, int clockwise);
-public static native void CGContextClosePath(int inContext);
-public static native void CGContextStrokePath(int inContext);
-
-public static native void CGContextFillPath(int inContext);
-
 public static native int HIViewSetBoundsOrigin(int inView, float x, float y);
 public static native int HIViewGetPartHit(int inView, float[] where, short[] outPart);
 public static native int HIViewGetSubviewHit(int inView, float[] inPoint, boolean inDeep, int[] outView);
