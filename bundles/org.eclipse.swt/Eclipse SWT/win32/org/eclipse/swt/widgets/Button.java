@@ -90,7 +90,6 @@ public class Button extends Control {
  * @see SWT#LEFT
  * @see SWT#RIGHT
  * @see SWT#CENTER
- * @see "style bits inherited from superclasses"
  * @see Widget#checkSubclass
  * @see Widget#getStyle
  */
