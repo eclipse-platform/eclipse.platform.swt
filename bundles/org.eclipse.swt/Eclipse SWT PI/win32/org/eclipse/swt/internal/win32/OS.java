@@ -2287,6 +2287,7 @@ public static final native boolean InsertMenuW (int hMenu, int uPosition, int uF
 public static final native boolean InsertMenuA (int hMenu, int uPosition, int uFlags, int uIDNewItem, byte [] lpNewItem);
 public static final native boolean InsertMenuItemW (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
 public static final native boolean InsertMenuItemA (int hMenu, int uItem, boolean fByPosition, MENUITEMINFO lpmii);
+public static final native boolean IntersectRect (RECT lprcDst, RECT lprcSrc1, RECT lprcSrc2);
 public static final native boolean InvalidateRect(int hWnd, RECT lpRect, boolean bErase);
 public static final native boolean InvalidateRgn (int hWnd, int hRgn, boolean bErase);
 public static final native boolean IsDBCSLeadByte (byte TestChar);
