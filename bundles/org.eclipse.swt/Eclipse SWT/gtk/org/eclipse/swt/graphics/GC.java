@@ -174,7 +174,10 @@ public void dispose() {
 	int clipRgn = data.clipRgn;
 	if (clipRgn != 0) OS.gdk_region_destroy(clipRgn);
 	Image image = data.image;
-	if (image != null) image.memGC = null;
+	if (image != null) {
+		image.memGC = null;
+		if (image.transparentPixel != -1) image.createMask();
+	}
 	
 	int context = data.context;
 	if (context != 0) OS.g_object_unref(context);

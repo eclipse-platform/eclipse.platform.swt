@@ -141,7 +141,11 @@ public void dispose () {
 	int clipRgn = data.clipRgn;
 	if (clipRgn != 0) OS.XDestroyRegion(clipRgn);
 	Image image = data.image;
-	if (image != null) image.memGC = null;
+	if (image != null) {
+		image.memGC = null;
+		if (image.transparentPixel != -1) image.createMask();
+	}
+
 	int renderTable = data.renderTable;
 	if (renderTable != 0) OS.XmRenderTableFree(renderTable);
 
