@@ -632,6 +632,8 @@ public class OS {
 	public static final int smSystemScript = -1;
 	public static final int srcCopy = 0;
 	public static final int srcOr = 1;
+	public static final int srcXor = 2;
+	public static final int notSrcXor = 6;
 	public static final int teFlushDefault = 0;
 	public static final int teCenter = 1;
 	public static final int teFlushRight = -1;

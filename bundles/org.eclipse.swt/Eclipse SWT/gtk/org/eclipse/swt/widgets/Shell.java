@@ -412,7 +412,10 @@ void bringToTop (boolean force) {
 	}
 	if (shell != null) shell.hasFocus = false;
 	/*
-	* Feature on GTK.  
+	* Feature in GTK.  When the shell is an override redirect
+	* window, gdk_window_focus() does not give focus to the
+	* window.  The fix is to use XSetInputFocus() to force
+	* the focus.
 	*/
 	int /*long*/ window = OS.GTK_WIDGET_WINDOW (shellHandle);
 	if ((style & SWT.ON_TOP) != 0 && OS.GDK_WINDOWING_X11 ()) {
