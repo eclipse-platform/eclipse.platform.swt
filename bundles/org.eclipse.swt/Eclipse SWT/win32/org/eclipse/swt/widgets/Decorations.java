@@ -825,6 +825,7 @@ public void setMenuBar (Menu menu) {
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}	
 	if (OS.IsWinCE) {
+		boolean resize = menuBar != menu;
 		if (menuBar != null) {
 			/*
 			* Because CommandBar_Destroy destroys the menu bar, it
@@ -843,7 +844,11 @@ public void setMenuBar (Menu menu) {
 		if (menuBar != null) {		
 			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), handle, 1);
 			OS.CommandBar_InsertMenubarEx (hwndCB, 0, menuBar.handle, 0);
-		}		
+		}
+		if (resize) {
+			sendEvent (SWT.Resize);
+			layout (false);
+		}
 	} else {
 		menuBar = menu;
 		int hMenu = 0;
