@@ -628,7 +628,7 @@ public void setFont (Font font) {
 	* The fix is to set a non-empty string, change the font,
 	* and restore the empty string at the end. 
 	*/	
-	int [] argList1 = {OS.XmNlabelString, 0};
+	int [] argList1 = {OS.XmNlabelString, 0, OS.XmNlabelType, 0};
 	OS.XtGetValues (handle, argList1, argList1.length / 2);
 	boolean fixString = OS.IsDBLocale && OS.XmStringEmpty (argList1 [1]); 
 	if (fixString) {
