@@ -40,7 +40,6 @@ import org.eclipse.swt.events.*;
  */
 
 public abstract class Widget {
-
 	int style, state;
 	EventTable eventTable;
 	Object data;
@@ -50,17 +49,17 @@ public abstract class Widget {
 	/* Global state flags */
 //	static final int AUTOMATIC		= 1<<0;
 //	static final int ACTIVE			= 1<<1;
-//	static final int AUTOGRAB		= 1<<2;
-//	static final int MULTIEXPOSE		= 1<<3;
-//	static final int RESIZEREDRAW		= 1<<4;
+//	static final int GRAB			= 1<<2;
+//	static final int MULTIEXPOSE	= 1<<3;
+//	static final int RESIZEREDRAW	= 1<<4;
 //	static final int WRAP			= 1<<5;
-	static final int DISABLED		= 1<<6;
-	static final int HIDDEN			= 1<<7;
+	static final int DISABLED	= 1<<6;
+	static final int HIDDEN		= 1<<7;
 //	static final int FOREGROUND		= 1<<8;
 //	static final int BACKGROUND		= 1<<9;
-	static final int DISPOSED		= 1<<10;
+	static final int DISPOSED	= 1<<10;
 //	static final int HANDLE			= 1<<11;
-	static final int CANVAS			= 1<<12;
+	static final int CANVAS		= 1<<12;
 	
 	/* Default widths for widgets */
 	static final int DEFAULT_WIDTH	= 64;
@@ -68,6 +67,7 @@ public abstract class Widget {
 	static final char Mnemonic = '&';
 
 	/* COMCTL32.DLL flags */
+	static final int MAJOR = 4, MINOR = 71;
 	static final int COMCTL32_MAJOR, COMCTL32_MINOR;
 	static {
 
@@ -91,8 +91,8 @@ public abstract class Widget {
 		COMCTL32_MAJOR = dvi.dwMajorVersion;
 		COMCTL32_MINOR = dvi.dwMinorVersion;
 		if (!OS.IsWinCE) {
-			if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) < (4 << 16 | 71)) {
-				System.out.println ("***WARNING: SWT requires comctl32.dll version 4.71 or greater");
+			if ((COMCTL32_MAJOR << 16 | COMCTL32_MINOR) < (MAJOR << 16 | MINOR)) {
+				System.out.println ("***WARNING: SWT requires comctl32.dll version " + MAJOR + "." + MINOR + " or greater");
 				System.out.println ("***WARNING: Detected: " + COMCTL32_MAJOR + "." + COMCTL32_MINOR);
 			}
 		}

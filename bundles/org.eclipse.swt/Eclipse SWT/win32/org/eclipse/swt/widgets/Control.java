@@ -2848,6 +2848,9 @@ LRESULT WM_CONTEXTMENU (int wParam, int lParam) {
 	*/
 	if (wParam != handle) return null;
 	if (menu != null && !menu.isDisposed ()) {
+//		int x = (short) (lParam & 0xFFFF);
+//		int y = (short) (lParam >> 16);
+//		menu.setLocation (x, y);
 		menu.setVisible (true);
 		return LRESULT.ZERO;
 	}
@@ -3315,7 +3318,6 @@ LRESULT WM_KEYUP (int wParam, int lParam) {
 		}
 		display.lastVirtual = display.isVirtualKey (display.lastKey);
 	}
-	
 	
 	LRESULT result = null;
 	if (!sendKeyEvent (SWT.KeyUp, OS.WM_KEYUP, wParam, lParam)) {
