@@ -3345,16 +3345,16 @@ JNIEXPORT jboolean JNICALL OS_NATIVE(XmStringEmpty)
 
 #ifndef NO_XmStringExtent
 JNIEXPORT void JNICALL OS_NATIVE(XmStringExtent)
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jintArray arg2, jintArray arg3)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jshortArray arg2, jshortArray arg3)
 {
-	jint *lparg2=NULL;
-	jint *lparg3=NULL;
+	jshort *lparg2=NULL;
+	jshort *lparg3=NULL;
 	NATIVE_ENTER(env, that, "XmStringExtent\n")
-	if (arg2) lparg2 = (*env)->GetIntArrayElements(env, arg2, NULL);
-	if (arg3) lparg3 = (*env)->GetIntArrayElements(env, arg3, NULL);
+	if (arg2) lparg2 = (*env)->GetShortArrayElements(env, arg2, NULL);
+	if (arg3) lparg3 = (*env)->GetShortArrayElements(env, arg3, NULL);
 	XmStringExtent((XmRenderTable)arg0, (XmString)arg1, (Dimension *)lparg2, (Dimension *)lparg3);
-	if (arg3) (*env)->ReleaseIntArrayElements(env, arg3, lparg3, 0);
-	if (arg2) (*env)->ReleaseIntArrayElements(env, arg2, lparg2, 0);
+	if (arg3) (*env)->ReleaseShortArrayElements(env, arg3, lparg3, 0);
+	if (arg2) (*env)->ReleaseShortArrayElements(env, arg2, lparg2, 0);
 	NATIVE_EXIT(env, that, "XmStringExtent\n")
 }
 #endif

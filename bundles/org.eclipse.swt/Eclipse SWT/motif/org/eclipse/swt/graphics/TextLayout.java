@@ -769,11 +769,11 @@ void place (StyleItem run) {
 	text.getChars(run.start, run.start + run.length, chars, 0);
 	int fontList = getItemFont(run).handle;
 	byte[] buffer = Converter.wcsToMbcs(null, chars, true);
-	int[] width = new int[1], height = new int[1];
+	short[] width = new short[1], height = new short[1];
 	int xmString = OS.XmStringCreateLocalized(buffer);
 	OS.XmStringExtent(fontList, xmString, width, height);
-	run.width = width[0];
-	run.height = height[0];
+	run.width = width[0] & 0xFFFF;
+	run.height = height[0] & 0xFFFF;
 	run.baseline = OS.XmStringBaseline(fontList, xmString);
 	OS.XmStringFree(xmString);
 }
