@@ -121,12 +121,11 @@ public class Display extends Device {
 	/* Default Fonts, Colors, Insets, Widths and Heights. */
 	Font defaultFont;
 	Font listFont, textFont, buttonFont, labelFont;
-	int dialogBackground, dialogForeground;
 	int buttonBackground, buttonForeground, buttonShadowThickness;
 	int compositeBackground, compositeForeground;
 	int compositeTopShadow, compositeBottomShadow, compositeBorder;
 	int listBackground, listForeground, listSelect, textBackground, textForeground;
-	int labelBackground, labelForeground, scrollBarBackground, scrollBarForeground;
+	int labelBackground, labelForeground;
 	int scrolledInsetX, scrolledInsetY, scrolledMarginX, scrolledMarginY;
 	int defaultBackground, defaultForeground;
 	int textHighlightThickness, blinkRate;
@@ -1957,16 +1956,16 @@ void initializeDefaults () {
 	defaultBackground = compositeBackground;
 }
 void initializeDialog () {
-	int shellHandle, widgetHandle;
-	int widgetClass = OS.topLevelShellWidgetClass ();
-	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
-	widgetHandle = OS.XmCreateDialogShell (shellHandle, null, null, 0);
-	OS.XtSetMappedWhenManaged (shellHandle, false);
-	OS.XtRealizeWidget (shellHandle);
-	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0};
-	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
-	dialogForeground = argList [1];  dialogBackground = argList [3];
-	OS.XtDestroyWidget (shellHandle);
+	//int shellHandle, widgetHandle;
+	//int widgetClass = OS.topLevelShellWidgetClass ();
+	//shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
+	//widgetHandle = OS.XmCreateDialogShell (shellHandle, null, null, 0);
+	//OS.XtSetMappedWhenManaged (shellHandle, false);
+	//OS.XtRealizeWidget (shellHandle);
+	//int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0};
+	//OS.XtGetValues (widgetHandle, argList, argList.length / 2);
+	//dialogForeground = argList [1];  dialogBackground = argList [3];
+	//OS.XtDestroyWidget (shellHandle);
 }
 void initializeDisplay () {
 	
@@ -2134,17 +2133,17 @@ void initializePixmaps () {
 	OS.XtDestroyWidget (dialog);
 }
 void initializeScrollBar () {
-	int shellHandle, widgetHandle;
-	int widgetClass = OS.topLevelShellWidgetClass ();
-	shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
-	widgetHandle = OS.XmCreateScrollBar (shellHandle, null, null, 0);
-	OS.XtManageChild (widgetHandle);
-	OS.XtSetMappedWhenManaged (shellHandle, false);
-	OS.XtRealizeWidget (shellHandle);
-	int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0};
-	OS.XtGetValues (widgetHandle, argList, argList.length / 2);
-	scrollBarForeground = argList [1];  scrollBarBackground = argList [3];
-	OS.XtDestroyWidget (shellHandle);
+	//int shellHandle, widgetHandle;
+	//int widgetClass = OS.topLevelShellWidgetClass ();
+	//shellHandle = OS.XtAppCreateShell (appName, appClass, widgetClass, xDisplay, null, 0);
+	//widgetHandle = OS.XmCreateScrollBar (shellHandle, null, null, 0);
+	//OS.XtManageChild (widgetHandle);
+	//OS.XtSetMappedWhenManaged (shellHandle, false);
+	//OS.XtRealizeWidget (shellHandle);
+	//int [] argList = {OS.XmNforeground, 0, OS.XmNbackground, 0};
+	//OS.XtGetValues (widgetHandle, argList, argList.length / 2);
+	//scrollBarForeground = argList [1];  scrollBarBackground = argList [3];
+	//OS.XtDestroyWidget (shellHandle);
 }
 void initializeSystemColors () {
 	int [] argList = {OS.XmNcolormap, 0};
