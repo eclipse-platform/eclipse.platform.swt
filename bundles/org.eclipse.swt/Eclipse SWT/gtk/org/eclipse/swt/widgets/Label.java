@@ -368,10 +368,15 @@ void resizeHandle (int width, int height) {
 	int topHandle = topHandle ();
 	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
 	OS.GTK_WIDGET_SET_FLAGS(topHandle, OS.GTK_VISIBLE);
+	OS.gtk_widget_set_size_request(handle, -1,-1);
+	GtkAllocation alloc = new GtkAllocation();
+	alloc.width = width;
+	alloc.height = height;
+	OS.gtk_widget_size_allocate(frameHandle, alloc);
+	int w = OS.GTK_WIDGET_WIDTH(handle), h = OS.GTK_WIDGET_HEIGHT(handle);
 	OS.gtk_widget_set_size_request (fixedHandle, width, height);
 	OS.gtk_widget_set_size_request (frameHandle, width, height);
-	//TEMPORARY CODE
-	OS.gtk_widget_set_size_request (handle, width, height);
+	OS.gtk_widget_set_size_request (handle, w, h);
 	//FIXME - causes scrollbar problems when button child of table
 	int parentHandle = parent.parentingHandle ();
 	Display display = getDisplay ();
