@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!-- This file defines tasks for preprocessing the SWT java source files  -->
+
+<project name="org.eclipse.swt.tools" default="swt.64" basedir="..">
+
+	<target name="init" depends="properties">
+		<property name="plugindir" value="../org.eclipse.swt"/>
+		<property name="bootclasspath" value=""/>
+		<taskdef name="swtreplace" classname="org.eclipse.swt.tools.internal.SwtReplace" classpath="./bin"/>
+		
+	</target>
+
+	<target name="properties" if="eclipse.running">
+		<property name="build.compiler" value="org.eclipse.jdt.core.JDTCompilerAdapter"/>
+	</target>
+		
+	<!-- Convert SWT 32 bit java source to 64 bit  -->
+	<target name="swt.64" depends="init">
+		<swtreplace from="int /*long*/" to="long /*int*/">
+			<fileset dir="${plugindir}" includes="**/*.java"/>
+		</swtreplace>
+	</target>
+	
+	<!-- Convert SWT 64 bit java source to 32 bit  -->
+	<target name="swt.32" depends="init">
+		<swtreplace from="long /*int*/" to="int /*long*/">
+			<fileset dir="${plugindir}" includes="**/*.java"/>
+		</swtreplace>
+	</target>
+
+</project>

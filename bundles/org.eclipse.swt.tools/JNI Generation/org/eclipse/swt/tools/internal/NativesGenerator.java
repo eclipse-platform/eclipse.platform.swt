@@ -1,0 +1,514 @@
+/*******************************************************************************
+ * Copyright (c) 2004 IBM Corporation and others.
+ * All rights reserved. This program and the accompanying materials 
+ * are made available under the terms of the Common Public License v1.0
+ * which accompanies this distribution, and is available at
+ * http://www.eclipse.org/legal/cpl-v10.html
+ * 
+ * Contributors:
+ *     IBM Corporation - initial API and implementation
+ *******************************************************************************/
+package org.eclipse.swt.tools.internal;
+
+import java.lang.reflect.*;
+import java.util.HashSet;
+import java.util.Iterator;
+
+public class NativesGenerator extends JNIGenerator {
+	
+boolean nativeMacro, enterExitMacro, useCritical;
+
+public NativesGenerator() {
+	useCritical = true;
+	enterExitMacro = true;
+	nativeMacro = true;
+}
+
+public void generate(Class clazz, String methodName) {
+	Method[] methods = clazz.getDeclaredMethods();
+	int count = 0;
+	for (int i = 0; i < methods.length; i++) {
+		if (methods[i].getName().startsWith(methodName)) count++;
+	}
+	Method[] result = new Method[count];
+	count = 0;
+	for (int i = 0; i < methods.length; i++) {
+		if (methods[i].getName().startsWith(methodName)) result[count++] = methods[i];
+	}
+	generate(result);
+}
+
+public void generate(Class clazz) {
+	ClassData classData = getMetaData().getMetaData(clazz);
+	if (classData.getFlag("no_gen")) return;
+	generateMetaData("swt_copyright");
+	generateMetaData("swt_includes");
+	generateNativeMacro(clazz);
+	Method[] methods = clazz.getDeclaredMethods();
+	generateExcludes(methods);
+	generate(methods);
+}
+
+public void generateExcludes(Method[] methods) {
+	sort(methods);
+	HashSet excludes = new HashSet();
+	for (int i = 0; i < methods.length; i++) {
+		Method method = methods[i];
+		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
+		MethodData methodData = getMetaData().getMetaData(method);
+		String exclude = methodData.getExclude();
+		if (exclude.length() != 0) {
+			excludes.add(exclude);
+		}
+	}
+	for (Iterator iter = excludes.iterator(); iter.hasNext();) {
+		String exclude = (String)iter.next();
+		output(exclude);
+		outputDelimiter();
+		for (int i = 0; i < methods.length; i++) {
+			Method method = methods[i];
+			if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
+			MethodData methodData = getMetaData().getMetaData(method);
+			String methodExclude = methodData.getExclude();
+			if (exclude.equals(methodExclude)) {
+				output("#define NO_");
+				output(getFunctionName(method));
+				outputDelimiter();
+			}
+		}
+		output("#endif");
+		outputDelimiter();
+		outputDelimiter();
+	}
+}
+
+public void generate(Method[] methods) {
+	sort(methods);	
+	for (int i = 0; i < methods.length; i++) {
+		Method method = methods[i];
+		if ((method.getModifiers() & Modifier.NATIVE) == 0) continue;
+		generate(method);
+	}
+}
+
+void generateGetParameter(int i, Class paramType, ParameterData paramData) {
+	if (paramType.isPrimitive()) return;
+	output("\tif (arg" + i);
+	output(") lparg" + i);
+	output(" = ");
+	if (paramType.isArray()) {
+		Class componentType = paramType.getComponentType();
+		if (componentType.isPrimitive()) {
+			if (useCritical && paramData.getFlag("critical")) {
+				output("(*env)->GetPrimitiveArrayCritical(env, arg" + i);
+				output(", NULL);");
+			} else {
+				output("(*env)->Get");
+				output(getTypeSignature1(componentType));
+				output("ArrayElements(env, arg" + i);
+				output(", NULL);");
+			}
+		} else {
+			throw new Error("not done");
+		}
+	} else if (paramType == String.class) {
+		if (paramData.getFlag("unicode")) {
+			output("(*env)->GetStringChars(env, arg" + i);
+			output(", NULL);");
+		} else {
+			output("(*env)->GetStringUTFChars(env, arg" + i);
+			output(", NULL);");
+		}
+	} else {
+		if (paramData.getFlag("no_in")) {
+			output("&_arg" + i);
+			output(";");
+		} else {
+			output("get");
+			output(getClassName(paramType));
+			output("Fields(env, arg" + i);
+			output(", &_arg" + i);
+			output(");");
+		}
+	}
+	outputDelimiter();
+}
+
+void genereateSetParameter(int i, Class paramType, ParameterData paramData) {
+	if (paramType.isPrimitive()) return;
+	if (paramType.isArray()) {
+		output("\tif (arg" + i);
+		output(") ");
+		Class componentType = paramType.getComponentType();
+		if (componentType.isPrimitive()) {
+			if (useCritical && paramData.getFlag("critical")) {
+				output("(*env)->ReleasePrimitiveArrayCritical(env, arg" + i);
+			} else {
+				output("(*env)->Release");
+				output(getTypeSignature1(componentType));
+				output("ArrayElements(env, arg" + i);
+			}
+			output(", lparg" + i);
+			output(", ");
+			if (paramData.getFlag("no_out")) {
+				output("JNI_ABORT");
+			} else {				
+				output("0");
+			}
+			output(");");
+		} else {
+			throw new Error("not done");
+		}
+		outputDelimiter();
+	} else if (paramType == String.class) {
+		output("\tif (arg" + i);
+		output(") ");
+		if (paramData.getFlag("unicode")) {
+			output("(*env)->ReleaseStringChars(env, arg" + i);
+		} else {
+			output("(*env)->ReleaseStringUTFChars(env, arg" + i);
+		}
+		output(", lparg" + i);
+		output(");");
+		outputDelimiter();
+	} else {
+		if (!paramData.getFlag("no_out")) {
+			output("\tif (arg" + i);
+			output(") ");
+			output("set");
+			output(getClassName(paramType));
+			output("Fields(env, arg" + i);
+			output(", lparg" + i);
+			output(");");
+			outputDelimiter();
+		}
+	}
+}
+
+void generateExitMacro(String function) {
+	if (!enterExitMacro) return;
+	output("\tNATIVE_EXIT(env, that, \"");
+	output(function);
+	output("\\n\")");
+	outputDelimiter();
+}
+
+void generateEnterMacro(String function) {
+	if (!enterExitMacro) return;
+	output("\tNATIVE_ENTER(env, that, \"");
+	output(function);
+	output("\\n\")");
+	outputDelimiter();
+}
+
+boolean generateLocalVars(Method method, Class[] paramTypes, Class returnType) {
+	boolean needsReturn = enterExitMacro;
+	for (int i = 0; i < paramTypes.length; i++) {
+		Class paramType = paramTypes[i];
+		if (paramType.isPrimitive()) continue;
+		ParameterData paramData = getMetaData().getMetaData(method, i);
+		output("\t");
+		if (paramType.isArray()) {
+			Class componentType = paramType.getComponentType();
+			if (componentType.isPrimitive()) {
+				output(getTypeSignature2(componentType));
+				output(" *lparg" + i);
+				output("=NULL;");
+			} else {
+				throw new Error("not done");
+			}
+		} else if (paramType == String.class) {
+			if (paramData.getFlag("unicode")) {
+				output("const jchar *lparg" + i);				
+			} else {
+				output("const jbyte *lparg" + i);
+			}
+			output("= NULL;");
+		} else {
+			output(getClassName(paramType));
+			output(" _arg" + i);
+			if (paramData.getFlag("init")) output("={0}");
+			output(", *lparg" + i);
+			output("=NULL;");
+		}
+		outputDelimiter();
+		needsReturn = true;
+	}
+	if (needsReturn) {
+		if (returnType != Void.TYPE) {
+			output("\t");
+			output(getTypeSignature2(returnType));
+			output(" rc;");
+			outputDelimiter();
+		}
+	}
+	return needsReturn;
+}
+
+void generateGetters(Method method, Class[] paramTypes) {
+	for (int i = 0; i < paramTypes.length; i++) {
+		Class paramType = paramTypes[i];
+		ParameterData paramData = getMetaData().getMetaData(method, i);
+		if (!paramData.getFlag("critical")) {
+			generateGetParameter(i, paramType, paramData);
+		}
+	}
+	for (int i = 0; i < paramTypes.length; i++) {
+		Class paramType = paramTypes[i];
+		ParameterData paramData = getMetaData().getMetaData(method, i);
+		if (paramData.getFlag("critical")) {
+			generateGetParameter(i, paramType, paramData);
+		}
+	}
+}
+
+void generateSetters(Method method, Class[] paramTypes) {
+	for (int i = paramTypes.length - 1; i >= 0; i--) {
+		Class paramType = paramTypes[i];
+		ParameterData paramData = getMetaData().getMetaData(method, i);
+		if (paramData.getFlag("critical")) {
+			genereateSetParameter(i, paramType, paramData);
+		}
+	}
+	for (int i = paramTypes.length - 1; i >= 0; i--) {
+		Class paramType = paramTypes[i];
+		ParameterData paramData = getMetaData().getMetaData(method, i);
+		if (!paramData.getFlag("critical")) {
+			genereateSetParameter(i, paramType, paramData);
+		}
+	}
+}
+
+void generateDynamicFunctionCall(Method method, MethodData methodData, Class[] paramTypes, Class returnType, boolean needsReturn) {
+	output("/*");
+	outputDelimiter();
+	generateFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
+	output("*/");
+	outputDelimiter();
+	
+	output("\t");
+	output("{");
+	outputDelimiter();
+	output("\tvoid *handle = NULL;");
+	outputDelimiter();
+	output("\tint (*fptr)();");
+	outputDelimiter();
+	if (returnType != Void.TYPE) {
+		if (needsReturn) {
+			output("\trc = 0;");
+			outputDelimiter();
+		}
+	}
+	output("\tif ((handle = dlopen(");
+	output(method.getName());
+	output("_LIB, RTLD_LAZY)) != NULL && (fptr = dlsym(handle, \"");
+	output(method.getName());
+	output("\")) != NULL) {");
+	outputDelimiter();
+	output("\t");
+	generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
+	output("(*fptr)");
+	generateFunctionCallRightSide(method, methodData, paramTypes);
+	outputDelimiter();
+	output("\t");
+	output("}");
+	outputDelimiter();
+	output("\t");
+	output("}");
+	outputDelimiter();
+}
+
+void generateFunctionCallLeftSide(Method method, MethodData methodData, Class returnType, boolean needsReturn) {
+	output("\t");
+	if (returnType != Void.TYPE) {
+		if (needsReturn) {
+			output("rc = ");
+		} else {
+			output("return ");
+		}
+		output("(");
+		output(getTypeSignature2(returnType));
+		output(")");
+	}
+	if (methodData.getFlag("address")) {
+		output("&");
+	}	
+}
+
+void generateFunctionCallRightSide(Method method, MethodData methodData, Class[] paramTypes) {
+	if (!methodData.getFlag("const")) {
+		output("(");
+		for (int i = 0; i < paramTypes.length; i++) {
+			Class paramType = paramTypes[i];
+			ParameterData paramData = getMetaData().getMetaData(method, i);
+			if (i != 0) output(", ");
+			if (paramData.getFlag("struct")) output("*");
+			output(paramData.getCast());
+			if (!paramType.isPrimitive()) output("lp");
+			output("arg" + i);
+		}
+		output(")");
+	}
+	output(";");
+}
+
+void generateFunctionCall(Method method, MethodData methodData, Class[] paramTypes, Class returnType, boolean needsReturn) {
+	generateFunctionCallLeftSide(method, methodData, returnType, needsReturn);
+	output(method.getName());
+	generateFunctionCallRightSide(method, methodData, paramTypes);
+	outputDelimiter();
+}
+
+void generateReturn(Method method, Class returnType, boolean needsReturn) {
+	if (needsReturn && returnType != Void.TYPE) {
+		output("\treturn rc;");
+		outputDelimiter();
+	}
+}
+
+void generateGTKmemmove(Method method, String function, Class[] paramTypes) {
+	generateEnterMacro(function);
+	output("\t");
+	boolean get = paramTypes[0].isPrimitive();
+	String className = getClassName(paramTypes[get ? 1 : 0]);
+	output(get ? "if (arg1) get" : "if (arg0) set");
+	output(className);
+	output(get ? "Fields(env, arg1, (" : "Fields(env, arg0, (");
+	output(className);
+	output(get ? " *)arg0)" : " *)arg1)");
+	output(";");
+	outputDelimiter();
+	generateExitMacro(function);	
+}
+
+void generateFunctionBody(Method method, MethodData methodData, String function, Class[] paramTypes, Class returnType) {
+	output("{");
+	outputDelimiter();
+	
+	/*
+	* 
+	*/
+	boolean isGTKmemove = method.getName().equals("memmove") && paramTypes.length == 2 && returnType == Void.TYPE;
+	if (isGTKmemove) {
+		generateGTKmemmove(method, function, paramTypes);
+	} else {
+		boolean needsReturn = generateLocalVars(method, paramTypes, returnType);
+		generateEnterMacro(function);
+		generateGetters(method, paramTypes);
+		if (methodData.getFlag("dynamic")) {
+			generateDynamicFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
+		} else {
+			generateFunctionCall(method, methodData, paramTypes, returnType, needsReturn);
+		}
+		generateSetters(method, paramTypes);
+		generateExitMacro(function);
+		generateReturn(method, returnType, needsReturn);
+	}
+	
+	output("}");
+	outputDelimiter();
+}
+
+void generateFunctionPrototype(Method method, String function, Class[] paramTypes, Class returnType) {
+	output("JNIEXPORT ");
+	output(getTypeSignature2(returnType));
+	output(" JNICALL ");
+	if (nativeMacro) {
+		output(getClassName(method.getDeclaringClass()));
+		output("_NATIVE(");
+	} else {
+		output("Java_");
+		output(toC(method.getDeclaringClass().getName()));
+		output("_");
+	}
+	output(function);
+	if (nativeMacro) {
+		output(")");
+	}
+	outputDelimiter();
+	output("\t(JNIEnv *env, ");
+	if ((method.getModifiers() & Modifier.STATIC) != 0) {
+		output("jclass");
+	} else {
+		output("jobject");
+	}
+	output(" that");
+	for (int i = 0; i < paramTypes.length; i++) {
+		Class paramType = paramTypes[i];
+		output(", ");
+		output(getTypeSignature2(paramType));
+		output(" arg" + i);
+	}
+	output(")");
+	outputDelimiter();
+}
+
+void generateSourceStart(String function) {
+	output("#ifndef NO_");
+	output(function);
+	outputDelimiter();	
+}
+
+void generateSourceEnd(String function) {
+	output("#endif");
+	outputDelimiter();
+}
+
+public void generate(Method method) {
+	MethodData methodData = getMetaData().getMetaData(method);
+	if (methodData.getFlag("no_gen")) return;
+	Class returnType = method.getReturnType();
+	Class[] paramTypes = method.getParameterTypes();
+	String function = getFunctionName(method);
+	
+	if (!(returnType == Void.TYPE || returnType.isPrimitive())) {
+		output("Warnning: bad return type. :" + method);
+		outputDelimiter();
+		return;
+	}
+	
+	generateSourceStart(function);
+	generateFunctionPrototype(method, function, paramTypes, returnType);
+	generateFunctionBody(method, methodData, function, paramTypes, returnType);
+	generateSourceEnd(function);
+	outputDelimiter();
+}
+
+boolean isUnique(Method method) {
+	return isUnique(method, Modifier.NATIVE);
+}
+
+public void setEnterExitMacro(boolean enterExitMacro) {
+	this.enterExitMacro = enterExitMacro;
+}
+
+public void setNativeMacro(boolean nativeMacro) {
+	this.nativeMacro = nativeMacro;
+}
+
+public void setUseCritical(boolean useCritical) {
+	this.useCritical = useCritical;
+}
+
+public static void main(String[] args) {
+//	args = new String[]{"org.eclipse.swt.internal.win32.OS"};
+	if (args.length < 1) {
+		System.out.println("Usage: java NativesGenerator <className1> <className2>");
+		return;
+	}
+	try {
+		NativesGenerator gen = new NativesGenerator();
+		gen.setNativeMacro(true);
+		for (int i = 0; i < args.length; i++) {
+			String clazzName = args[i];
+			Class clazz = Class.forName(clazzName);
+			gen.generate(clazz);
+//			gen.generate(clazz, "CommandBar_Destroy");
+		}
+	} catch (Exception e) {
+		System.out.println("Problem");
+		e.printStackTrace(System.out);
+	}
+}
+
+}
