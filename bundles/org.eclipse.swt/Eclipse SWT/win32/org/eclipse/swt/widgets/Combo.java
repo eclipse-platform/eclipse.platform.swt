@@ -1224,7 +1224,7 @@ boolean translateAccelerator (MSG msg) {
 	* widget and invoke the cooresponding key handler for the combo
 	* box as if the key was sent directly to the combo box, not the
 	* text field.  The key is still dispatched to the text widget, 
-	* in the normal fashion.  Note that we must call TranslateMessage
+	* in the normal fashion.  Note that we must call TranslateMessage()
 	* in order to process accented keys properly.
 	*/
 	int hwndText = OS.GetDlgItem (handle, CBID_EDIT);
