@@ -38,6 +38,7 @@ public class Tree extends Composite {
 	ImageList imageList;
 	boolean dragStarted;
 	boolean ignoreSelect, ignoreExpand, ignoreDeselect;
+	boolean customDraw;
 	static final int TreeProc;
 	static final TCHAR TreeClass = new TCHAR (0, OS.WC_TREEVIEW, true);
 	static {
@@ -212,6 +213,7 @@ void createHandle () {
 }
 
 void createItem (TreeItem item, int hParent, int hInsertAfter) {
+	item.foreground = item.background = -1;
 	int id = 0;
 	while (id < items.length && items [id] != null) id++;
 	if (id == items.length) {
@@ -328,7 +330,7 @@ void destroyItem (TreeItem item) {
 		OS.UpdateWindow (handle);
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	}
-	int result = OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
+	OS.SendMessage (handle, OS.TVM_DELETEITEM, 0, hItem);
 	if (fixRedraw) {
 		OS.SendMessage (handle, OS.WM_SETREDRAW, 1, 0);
 		OS.ValidateRect (handle, null);
@@ -1125,7 +1127,6 @@ LRESULT WM_KEYDOWN (int wParam, int lParam) {
 				int hItem = OS.SendMessage (handle, OS.TVM_GETNEXTITEM, OS.TVGN_CARET, 0);
 				if (hItem != 0) {
 					if (hAnchor == 0) hAnchor = hItem;
-					boolean selected = false;
 					ignoreSelect = ignoreDeselect = true;
 					int code = callWindowProc (OS.WM_KEYDOWN, wParam, lParam);
 					ignoreSelect = ignoreDeselect = false;
@@ -1586,6 +1587,30 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	int code = hdr.code;
 	switch (code) {
+		case OS.NM_CUSTOMDRAW: {
+			if (!customDraw || items == null) break; //null check due to bug in dispose (WinXP)
+			NMTVCUSTOMDRAW nmcd = new NMTVCUSTOMDRAW ();
+			OS.MoveMemory (nmcd,lParam,NMTVCUSTOMDRAW.sizeof);
+			TreeItem item = items [nmcd.lItemlParam];
+			if (item == null) break; //null check due to bug in first call (WinXP)
+			
+			TVITEM tvItem = new TVITEM ();
+			tvItem.mask = OS.TVIF_PARAM | OS.TVIF_STATE;
+			tvItem.hItem = item.handle;
+			OS.SendMessage (handle, OS.TVM_GETITEM, 0, tvItem);
+			if ((tvItem.state & OS.TVIS_SELECTED) != 0) break;
+			
+			switch (nmcd.dwDrawStage) {
+				case OS.CDDS_PREPAINT:
+					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
+				case OS.CDDS_ITEMPREPAINT:
+					nmcd.clrText = (item.foreground == -1) ? getForegroundPixel () : item.foreground;
+					nmcd.clrTextBk = (item.background == -1) ? getBackgroundPixel () : item.background;
+					OS.MoveMemory (lParam, nmcd, NMTVCUSTOMDRAW.sizeof);
+					return new LRESULT (OS.CDRF_NEWFONT);
+			}
+			break;
+		}
 		case OS.NM_DBLCLK:
 			int pos = OS.GetMessagePos ();
 			TVHITTESTINFO lpht = new TVHITTESTINFO ();

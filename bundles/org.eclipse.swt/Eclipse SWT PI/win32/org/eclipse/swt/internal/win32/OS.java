@@ -186,6 +186,14 @@ public class OS {
 	public static final int CC_ANYCOLOR = 0x100;
 	public static final int CC_ENABLEHOOK = 0x10;
 	public static final int CC_RGBINIT = 0x1;
+	public static final int CDDS_PREPAINT = 0x00000001;
+	public static final int CDDS_ITEM = 0x00010000;
+	public static final int CDDS_ITEMPREPAINT = CDDS_ITEM | CDDS_PREPAINT;
+	public static final int CDDS_SUBITEM = 0x00020000;
+	public static final int CDRF_DODEFAULT = 0x00000000;
+	public static final int CDRF_NEWFONT = 0x00000002;
+	public static final int CDRF_NOTIFYITEMDRAW = 0x00000020;
+	public static final int CDRF_NOTIFYSUBITEMDRAW = 0x00000020;
 	public static final int CFE_AUTOCOLOR = 0x40000000;
 	public static final int CFE_ITALIC = 0x2;
 	public static final int CFE_STRIKEOUT = 0x8;
@@ -593,6 +601,7 @@ public class OS {
 	public static final int MNC_CLOSE = 0x1;
 	public static final int MNS_CHECKORBMP = 0x4000000;
 	public static final int NM_CLICK = 0xfffffffe;
+	public static final int NM_CUSTOMDRAW = OS.NM_FIRST - 12;
 	public static final int NM_DBLCLK = 0xfffffffd;
 	public static final int NM_FIRST = 0x0;
 	public static final int NM_RETURN = 0xfffffffc;
@@ -2116,6 +2125,10 @@ public static final native void MoveMemoryW (LOGFONT Destination, int Source, in
 public static final native void MoveMemoryA (LOGFONT Destination, int Source, int Length);
 public static final native void MoveMemory (MEASUREITEMSTRUCT Destination, int Source, int Length);
 public static final native void MoveMemory (NMHDR Destination, int Source, int Length);
+public static final native void MoveMemory (NMLVCUSTOMDRAW Destination, int Source, int Length);
+public static final native void MoveMemory (NMTVCUSTOMDRAW Destination, int Source, int Length);
+public static final native void MoveMemory (int Destination, NMLVCUSTOMDRAW Source, int Length);
+public static final native void MoveMemory (int Destination, NMTVCUSTOMDRAW Source, int Length);
 public static final native void MoveMemory (NMHEADER Destination, int Source, int Length);
 public static final native void MoveMemory (NMLISTVIEW Destination, int Source, int Length);
 public static final native void MoveMemory (NMTOOLBAR Destination, int Source, int Length);

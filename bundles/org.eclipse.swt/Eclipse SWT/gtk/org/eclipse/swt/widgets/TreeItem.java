@@ -182,6 +182,25 @@ static TreeItem checkNull (TreeItem item) {
 }
 
 /**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getBackground () {
+	checkWidget ();
+	Tree parent = getParent();
+	return parent.getBackground();
+}
+
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent.
  *
@@ -290,6 +309,25 @@ public boolean getExpanded () {
 }
 
 /**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getForeground () {
+	checkWidget ();
+	Tree parent = getParent();
+	return parent.getForeground();
+}
+
+/**
  * Returns <code>true</code> if the receiver is grayed,
  * and false otherwise. When the parent does not have
  * the <code>CHECK style, return false.
@@ -393,6 +431,30 @@ void releaseWidget () {
 }
 
 /**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+}
+
+/**
  * Sets the checked state of the receiver.
  * <p>
  *
@@ -416,6 +478,32 @@ public void setChecked (boolean checked) {
 	if (!checked && pixmap [0] == parent.uncheck) return;
 	pixmap [0] = checked ? parent.check : parent.uncheck;
 	OS.gtk_ctree_set_node_info (ctree, handle, buffer, spacing [0], pixmap [0], mask [0], pixmap [0], mask [0], is_leaf [0], expanded [0]);				
+}
+
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @since 2.0
+ * 
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setForeground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
 }
 
 /**

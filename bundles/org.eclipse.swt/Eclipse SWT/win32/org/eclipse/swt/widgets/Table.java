@@ -37,7 +37,7 @@ public class Table extends Composite {
 	TableItem [] items;
 	TableColumn [] columns;
 	ImageList imageList;
-	boolean ignoreSelect, dragStarted, ignoreResize, mouseDown;
+	boolean ignoreSelect, dragStarted, ignoreResize, mouseDown, customDraw;
 	static final int TableProc;
 	static final TCHAR TableClass = new TCHAR (0, OS.WC_LISTVIEW, true);
 	static {
@@ -332,6 +332,7 @@ void createItem (TableItem item, int index) {
 	if (result == -1) error (SWT.ERROR_ITEM_NOT_ADDED);
 	System.arraycopy (items, index, items, index + 1, count - index);
 	items [index] = item;
+	item.foreground = item.background = -1;
 }
 
 ScrollBar createScrollBar (int type) {
@@ -1016,7 +1017,7 @@ void releaseWidget () {
 	OS.SendMessage (handle, OS.WM_SETREDRAW, 0, 0);
 	for (int i=itemCount-1; i>=0; --i) {
 		ignoreSelect = true;
-		int code = OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
+		OS.SendMessage (handle, OS.LVM_DELETEITEM, i, 0);
 		ignoreSelect = false;
 		TableItem item = items [i];
 		if (!item.isDisposed ()) item.releaseWidget ();
@@ -2292,6 +2293,23 @@ LRESULT wmNotifyChild (int wParam, int lParam) {
 	NMHDR hdr = new NMHDR ();
 	OS.MoveMemory (hdr, lParam, NMHDR.sizeof);
 	switch (hdr.code) {
+		case OS.NM_CUSTOMDRAW:
+			if (!customDraw) break;
+			NMLVCUSTOMDRAW nmcd = new NMLVCUSTOMDRAW ();
+			OS.MoveMemory (nmcd, lParam, NMLVCUSTOMDRAW.sizeof);
+			switch (nmcd.dwDrawStage) {
+				case OS.CDDS_PREPAINT:
+					return new LRESULT (OS.CDRF_NOTIFYITEMDRAW);
+				case OS.CDDS_ITEMPREPAINT:
+					return new LRESULT (OS.CDRF_NOTIFYSUBITEMDRAW);
+				case OS.CDDS_ITEMPREPAINT | OS.CDDS_SUBITEM:
+					TableItem item = items [nmcd.dwItemSpec];
+					nmcd.clrText = (item.foreground == -1) ? getForegroundPixel () : item.foreground;
+					nmcd.clrTextBk = (item.background == -1) ? getBackgroundPixel () : item.background;
+					OS.MoveMemory (lParam, nmcd, nmcd.sizeof);
+					return new LRESULT (OS.CDRF_NEWFONT);
+			}
+			break;
 		case OS.LVN_MARQUEEBEGIN: return LRESULT.ONE;
 		case OS.LVN_BEGINDRAG:
 		case OS.LVN_BEGINRDRAG:

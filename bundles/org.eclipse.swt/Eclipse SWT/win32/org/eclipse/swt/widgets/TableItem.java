@@ -26,7 +26,8 @@ import org.eclipse.swt.graphics.*;
 
 public class TableItem extends Item {
 	Table parent;
-	
+	int background, foreground;
+
 /**
  * Constructs a new instance of this class given its parent
  * (which must be a <code>Table</code>) and a style value
@@ -105,6 +106,25 @@ protected void checkSubclass () {
 }
 
 /**
+ * Returns the receiver's background color.
+ *
+ * @return the background color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getBackground () {
+	checkWidget ();
+	int pixel = (background == -1) ? parent.getBackgroundPixel() : background;
+	return Color.win32_new (getDisplay (), pixel);
+}
+
+/**
  * Returns a rectangle describing the receiver's size and location
  * relative to its parent at a column in the table.
  *
@@ -180,6 +200,25 @@ public Display getDisplay () {
 	Table parent = this.parent;
 	if (parent == null) error (SWT.ERROR_WIDGET_DISPOSED);
 	return parent.getDisplay ();
+}
+
+/**
+ * Returns the foreground color that the receiver will use to draw.
+ *
+ * @return the receiver's foreground color
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public Color getForeground () {
+	checkWidget ();
+	int pixel = (foreground == -1) ? parent.getForegroundPixel() : foreground;
+	return Color.win32_new (getDisplay (), pixel);
 }
 
 /**
@@ -343,6 +382,54 @@ void releaseWidget () {
 }
 
 /**
+ * Sets the receiver's background color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setBackground (Color color) {
+	checkWidget ();
+	if (color != null && color.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (color != null && color.handle != parent.getBackgroundPixel ())	{
+		parent.customDraw = true;
+	}
+	if ((color == null && background != -1) ||
+	    (color != null && background != color.handle)) {
+		int hwnd = parent.handle;
+		if (OS.IsWindowVisible (hwnd)) {
+			int itemIndex = parent.indexOf (this);
+			RECT rect = new RECT ();
+			rect.left = OS.LVIR_BOUNDS;
+			OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, itemIndex, rect);	
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;			
+			if (width > 0 || height > 0) {;
+				if (OS.IsWinCE) {
+					OS.InvalidateRect (hwnd, rect, true);
+				} else {
+					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE |OS.RDW_ALLCHILDREN;
+					OS.RedrawWindow (hwnd, rect, 0, flags);
+				}
+			}
+		}
+	}
+	background = color.handle;
+}
+
+/**
  * Sets the checked state of the receiver.
  *
  * @param checked the new checked state
@@ -373,6 +460,54 @@ public void setChecked (boolean checked) {
 	parent.ignoreSelect = true;
 	OS.SendMessage (hwnd, OS.LVM_SETITEM, 0, lvItem);
 	parent.ignoreSelect = false;
+}
+
+/**
+ * Sets the receiver's foreground color to the color specified
+ * by the argument, or to the default system color for the item
+ * if the argument is null.
+ *
+ * @param color the new color (or null)
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_INVALID_ARGUMENT - if the argument has been disposed</li> 
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ * 
+ * @since 2.0
+ * 
+ */
+public void setForeground (Color color){
+	checkWidget ();
+	if (color != null && color.isDisposed ())
+		SWT.error (SWT.ERROR_INVALID_ARGUMENT);
+	if (color != null && color.handle != parent.getForegroundPixel ())	{
+		parent.customDraw = true;
+	}
+	if ((color == null && foreground != -1) ||
+	    (color != null && foreground != color.handle)) {
+		int hwnd = parent.handle;
+		if (OS.IsWindowVisible (hwnd)) {
+			int itemIndex = parent.indexOf (this);
+			RECT rect = new RECT ();
+			rect.left = OS.LVIR_BOUNDS;
+			OS.SendMessage (hwnd, OS.LVM_GETITEMRECT, itemIndex, rect);	
+			int width = rect.right - rect.left;
+			int height = rect.bottom - rect.top;			
+			if (width > 0 || height > 0) {;
+				if (OS.IsWinCE) {
+					OS.InvalidateRect (hwnd, rect, true);
+				} else {
+					int flags = OS.RDW_ERASE | OS.RDW_FRAME | OS.RDW_INVALIDATE |OS.RDW_ALLCHILDREN;
+					OS.RedrawWindow (hwnd, rect, 0, flags);
+				}
+			}
+		}
+	}
+	foreground = color.handle;	
 }
 
 /**

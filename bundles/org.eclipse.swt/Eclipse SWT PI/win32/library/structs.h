@@ -422,6 +422,45 @@ void cacheNMHDRFids(JNIEnv *env, jobject lpObject, PNMHDR_FID_CACHE lpCache);
 NMHDR* getNMHDRFields(JNIEnv *env, jobject lpObject, NMHDR *lpStruct, PNMHDR_FID_CACHE lpCache);
 void setNMHDRFields(JNIEnv *env, jobject lpObject, NMHDR *lpStruct, PNMHDR_FID_CACHE lpCache);
 
+/* NMCUSTOMDRAW struct */
+typedef struct NMCUSTOMDRAW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hwndFrom, idFrom, code, dwDrawStage,hdc, left, top, right, bottom, dwItemSpec, uItemState, lItemlParam;
+} NMCUSTOMDRAW_FID_CACHE;
+typedef NMCUSTOMDRAW_FID_CACHE *PNMCUSTOMDRAW_FID_CACHE;
+
+void cacheNMCUSTOMDRAWFids(JNIEnv *env, jobject lpObject, PNMCUSTOMDRAW_FID_CACHE lpCache);
+NMCUSTOMDRAW* getNMCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMCUSTOMDRAW *lpStruct, PNMCUSTOMDRAW_FID_CACHE lpCache);
+void setNMCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMCUSTOMDRAW *lpStruct, PNMCUSTOMDRAW_FID_CACHE lpCache);
+
+/* NMLVCUSTOMDRAW struct */
+typedef struct NMLVCUSTOMDRAW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hwndFrom, idFrom, code, dwDrawStage,hdc, left, top, right, bottom, dwItemSpec, uItemState, lItemlParam, clrText, clrTextBk, iSubItem;
+} NMLVCUSTOMDRAW_FID_CACHE;
+typedef NMLVCUSTOMDRAW_FID_CACHE *PNMLVCUSTOMDRAW_FID_CACHE;
+
+void cacheNMLVCUSTOMDRAWFids(JNIEnv *env, jobject lpObject, PNMLVCUSTOMDRAW_FID_CACHE lpCache);
+NMLVCUSTOMDRAW* getNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpStruct, PNMLVCUSTOMDRAW_FID_CACHE lpCache);
+void setNMLVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMLVCUSTOMDRAW *lpStruct, PNMLVCUSTOMDRAW_FID_CACHE lpCache);
+
+/* NMTVCUSTOMDRAW struct */
+typedef struct NMTVCUSTOMDRAW_FID_CACHE {
+	int cached;
+	jclass clazz;
+	jfieldID hwndFrom, idFrom, code, dwDrawStage,hdc, left, top, right, bottom, dwItemSpec, uItemState, lItemlParam, clrText, clrTextBk;
+#ifndef _WIN32_WCE
+	jfieldID iLevel;
+#endif // _WIN32_WCE
+} NMTVCUSTOMDRAW_FID_CACHE;
+typedef NMTVCUSTOMDRAW_FID_CACHE *PNMTVCUSTOMDRAW_FID_CACHE;
+
+void cacheNMTVCUSTOMDRAWFids(JNIEnv *env, jobject lpObject, PNMTVCUSTOMDRAW_FID_CACHE lpCache);
+NMTVCUSTOMDRAW* getNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpStruct, PNMTVCUSTOMDRAW_FID_CACHE lpCache);
+void setNMTVCUSTOMDRAWFields(JNIEnv *env, jobject lpObject, NMTVCUSTOMDRAW *lpStruct, PNMTVCUSTOMDRAW_FID_CACHE lpCache);
+
 /* NMHEADER struct */
 typedef struct NMHEADER_FID_CACHE {
 	int cached;
@@ -1102,6 +1141,9 @@ extern MEASUREITEMSTRUCT_FID_CACHE MEASUREITEMSTRUCTFc;
 extern MENUITEMINFO_FID_CACHE MENUITEMINFOFc;
 extern MSG_FID_CACHE MSGFc;
 extern NMHDR_FID_CACHE NMHDRFc;
+extern NMCUSTOMDRAW_FID_CACHE NMCUSTOMDRAWFc;
+extern NMLVCUSTOMDRAW_FID_CACHE NMLVCUSTOMDRAWFc;
+extern NMTVCUSTOMDRAW_FID_CACHE NMTVCUSTOMDRAWFc;
 extern NMHEADER_FID_CACHE NMHEADERFc;
 extern NMLISTVIEW_FID_CACHE NMLISTVIEWFc;
 extern NMTOOLBAR_FID_CACHE NMTOOLBARFc;

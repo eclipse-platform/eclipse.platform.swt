@@ -4043,6 +4043,98 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_e
 	if (arg0) setNMHDRFields(env, arg0, lparg0, &PGLOB(NMHDRFc));
 }
 
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMCUSTOMDRAW _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = getNMCUSTOMDRAWFields(env, arg1, &_arg1, &PGLOB(NMCUSTOMDRAWFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) setNMCUSTOMDRAWFields(env, arg1, lparg1, &PGLOB(NMCUSTOMDRAWFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMLVCUSTOMDRAW _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = getNMLVCUSTOMDRAWFields(env, arg1, &_arg1, &PGLOB(NMLVCUSTOMDRAWFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) setNMLVCUSTOMDRAWFields(env, arg1, lparg1, &PGLOB(NMLVCUSTOMDRAWFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__ILorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2I
+	(JNIEnv *env, jclass that, jint arg0, jobject arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMTVCUSTOMDRAW _arg1, *lparg1=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg1) lparg1 = getNMTVCUSTOMDRAWFields(env, arg1, &_arg1, &PGLOB(NMTVCUSTOMDRAWFc));
+
+	MoveMemory((PVOID)arg0, (CONST VOID *)lparg1, arg2);
+
+	if (arg1) setNMTVCUSTOMDRAWFields(env, arg1, lparg1, &PGLOB(NMTVCUSTOMDRAWFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMCUSTOMDRAW_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMCUSTOMDRAW _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = getNMCUSTOMDRAWFields(env, arg0, &_arg0, &PGLOB(NMCUSTOMDRAWFc));
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setNMCUSTOMDRAWFields(env, arg0, lparg0, &PGLOB(NMCUSTOMDRAWFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMLVCUSTOMDRAW_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMLVCUSTOMDRAW _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	//if (arg0) lparg0 = getNMLVCUSTOMDRAWFields(env, arg0, &_arg0, &PGLOB(NMLVCUSTOMDRAWFc));
+	if (arg0) lparg0 = &_arg0;
+
+	//MoveMemory(lparg0, arg1, arg2);
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setNMLVCUSTOMDRAWFields(env, arg0, lparg0, &PGLOB(NMLVCUSTOMDRAWFc));
+}
+
+JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_NMTVCUSTOMDRAW_2II
+	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
+{
+	DECL_GLOB(pGlob)
+	NMTVCUSTOMDRAW _arg0, *lparg0=NULL;
+
+	DEBUG_CALL("MoveMemory\n")
+
+	if (arg0) lparg0 = getNMTVCUSTOMDRAWFields(env, arg0, &_arg0, &PGLOB(NMTVCUSTOMDRAWFc));
+
+	MoveMemory((PVOID)lparg0, (CONST VOID *)arg1, arg2);
+
+	if (arg0) setNMTVCUSTOMDRAWFields(env, arg0, lparg0, &PGLOB(NMTVCUSTOMDRAWFc));
+}
+
 JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_win32_OS_MoveMemory__Lorg_eclipse_swt_internal_win32_MEASUREITEMSTRUCT_2II
 	(JNIEnv *env, jclass that, jobject arg0, jint arg1, jint arg2)
 {
