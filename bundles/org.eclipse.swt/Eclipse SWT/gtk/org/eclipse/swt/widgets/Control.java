@@ -358,16 +358,31 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 }
 
 Point computeNativeSize (int /*long*/ h, int wHint, int hHint, boolean changed) {
-	int width = OS.GTK_WIDGET_WIDTH (h);
-	int height = OS.GTK_WIDGET_HEIGHT (h);
-	OS.gtk_widget_set_size_request (h, -1, -1);
-	GtkRequisition requisition = new GtkRequisition ();
-	OS.gtk_widget_size_request (h, requisition);
-	OS.gtk_widget_set_size_request (h, width, height);
-	width = wHint == SWT.DEFAULT ? requisition.width : wHint;
-	height = hHint == SWT.DEFAULT ? requisition.height : hHint;
-	return new Point (width, height);	
+	int width = wHint, height = hHint;
+	if (wHint == SWT.DEFAULT || hHint == SWT.DEFAULT) {
+		GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_size_request (h, requisition);
+		width = wHint == SWT.DEFAULT ? OS.GTK_WIDGET_REQUISITION_WIDTH (h) : wHint;
+		height = hHint == SWT.DEFAULT ? OS.GTK_WIDGET_REQUISITION_HEIGHT (h) : hHint;
+	}
+	return new Point (width, height);
 }
+
+void forceResize () {
+	resizeHandle (1, 1);
+	/*
+	* Force the container to allocate the size of its children.
+	*/
+	int /*long*/ topHandle = topHandle ();
+	int flags = OS.GTK_WIDGET_FLAGS (topHandle);
+	OS.GTK_WIDGET_SET_FLAGS (topHandle, OS.GTK_VISIBLE);
+	int /*long*/ parentHandle = parent.parentingHandle ();
+	OS.gtk_container_resize_children (parentHandle);
+	if ((flags & OS.GTK_VISIBLE) == 0) {
+		OS.GTK_WIDGET_UNSET_FLAGS (topHandle, OS.GTK_VISIBLE);	
+	}
+}
+
 
 /**
  * Returns the accessible object for the receiver.
@@ -2712,12 +2727,7 @@ void setInitialBounds () {
 		OS.GTK_WIDGET_SET_X (topHandle, 0);
 		OS.GTK_WIDGET_SET_Y (topHandle, 0);
 	} else {
-		resizeHandle (1, 1);
-		/*
-		* Force the container to allocate the size of its children.
-		*/
-		int /*long*/ parentHandle = parent.parentingHandle ();
-		OS.gtk_container_resize_children (parentHandle);
+		forceResize ();
 	}
 }
 

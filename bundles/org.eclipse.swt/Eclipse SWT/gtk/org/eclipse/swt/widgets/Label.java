@@ -104,31 +104,27 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 			if (hHint == SWT.DEFAULT) hHint = DEFAULT_HEIGHT;
 		}
 	}
-	int width = OS.GTK_WIDGET_WIDTH (handle);
-	int height = OS.GTK_WIDGET_HEIGHT (handle);
+	boolean fixWrap = labelHandle != 0 && (style & SWT.WRAP) != 0;
 	int labelWidth = 0, labelHeight = 0;
-	if (labelHandle != 0) {
+	if (fixWrap) {
 		labelWidth = OS.GTK_WIDGET_WIDTH (labelHandle);
 		labelHeight = OS.GTK_WIDGET_HEIGHT (labelHandle);
-		OS.gtk_widget_set_size_request (labelHandle, wHint, hHint);
-	}
-	GtkRequisition requisition = new GtkRequisition ();
+		OS.gtk_widget_set_size_request (labelHandle, -1, -1);
+	}	
+	Point size; 
 	if (frameHandle != 0) {
-		int frameWidth = OS.GTK_WIDGET_WIDTH (frameHandle);
-		int frameHeight = OS.GTK_WIDGET_HEIGHT (frameHandle);
-		OS.gtk_widget_set_size_request (frameHandle, -1, -1);
+		int width = OS.GTK_WIDGET_WIDTH (handle);
+		int height = OS.GTK_WIDGET_HEIGHT (handle);
 		OS.gtk_widget_set_size_request (handle, wHint, hHint);
-		OS.gtk_widget_size_request (frameHandle, requisition);
-		OS.gtk_widget_set_size_request (frameHandle, frameWidth, frameHeight);
+		size = computeNativeSize (frameHandle, -1, -1, changed);
+		OS.gtk_widget_set_size_request (handle, width, height);
 	} else {
-		OS.gtk_widget_set_size_request (handle, wHint, hHint);
-		OS.gtk_widget_size_request (handle, requisition);
+		size = computeNativeSize (handle, wHint, hHint, changed);
 	}
-	if (labelHandle != 0) {
+	if (fixWrap) {
 		OS.gtk_widget_set_size_request (labelHandle, labelWidth, labelHeight);
 	}
-	OS.gtk_widget_set_size_request (handle, width, height);
-	return new Point (requisition.width, requisition.height);	
+	return size;
 }
 
 void createHandle (int index) {

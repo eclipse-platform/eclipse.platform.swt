@@ -982,10 +982,9 @@ void resizeBounds (int width, int height, boolean notify) {
 	int menuHeight = 0;
 	if (menuBar != null) {
 		int /*long*/ menuHandle = menuBar.handle;
-		OS.gtk_widget_set_size_request (menuHandle, -1, -1);
 		GtkRequisition requisition = new GtkRequisition ();
 		OS.gtk_widget_size_request (menuHandle, requisition);
-		menuHeight = requisition.height;
+		menuHeight = OS.GTK_WIDGET_REQUISITION_HEIGHT (menuHandle);
 		OS.gtk_widget_set_size_request (menuHandle, width - (border  * 2), menuHeight);
 		height = Math.max (1, height - menuHeight);
 	}
