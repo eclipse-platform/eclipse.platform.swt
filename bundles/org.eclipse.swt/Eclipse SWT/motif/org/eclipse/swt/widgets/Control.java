@@ -1103,8 +1103,7 @@ public int internal_new_GC (GCData data) {
 		data.drawable = xWindow;
 		data.foreground = argList [1];
 		data.background = argList [3];
-		data.fontList = font.handle;
-		data.codePage = font.codePage;
+		data.font = font;
 		data.colormap = argList [5];
 	}
 	return xGC;

@@ -181,13 +181,13 @@ public void dispose () {
 	Device device = data.device;
 	if (drawable != null) drawable.internal_dispose_GC(handle, data);
 
-	data.display = data.drawable = data.colormap = data.fontList = 
+	data.display = data.drawable = data.colormap = 
 		data.clipRgn = data.renderTable = data.xmString = data.xmText = 
 			data.xmMnemonic = 0;
+	data.font = null;
 	drawable = null;
 	handle = 0;
 	data.image = null;
-	data.codePage = null;
 	if (device.tracking) device.dispose_Object(this);
 	data.device = null;
 	data = null;
@@ -949,14 +949,14 @@ public void drawString (String string, int x, int y, boolean isTransparent) {
 	if (string.length() == 0) return;
 	setString(string);
 	if (isTransparent) {
-		OS.XmStringDraw (data.display, data.drawable, data.fontList, data.xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
+		OS.XmStringDraw (data.display, data.drawable, data.font.handle, data.xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
 	} else {
-		OS.XmStringDrawImage (data.display, data.drawable, data.fontList, data.xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
+		OS.XmStringDrawImage (data.display, data.drawable, data.font.handle, data.xmString, handle, x, y, 0x7FFFFFFF, OS.XmALIGNMENT_BEGINNING, 0, null);
 	}			
 }
 void createRenderTable() {
 	int xDisplay = data.display;
-	int fontList = data.fontList;	
+	int fontList = data.font.handle;	
 	/* Get the width of the tabs */
 	byte[] buffer = {(byte)' ', 0};
 	int xmString = OS.XmStringCreate(buffer, OS.XmFONTLIST_DEFAULT_TAG);
@@ -1490,7 +1490,7 @@ char fixMnemonic(char[] text) {
  */
 public int getAdvanceWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int fontList  = data.fontList;
+	int fontList  = data.font.handle;
 	byte[] charBuffer = Converter.wcsToMbcs(getCodePage (), new char[] { ch }, false);
 	int val = charBuffer[0] & 0xFF;
 	/* Create a font context to iterate over each element in the font list */
@@ -1658,7 +1658,7 @@ public Color getBackground() {
  */
 public int getCharWidth(char ch) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	int fontList = data.fontList;
+	int fontList = data.font.handle;
 	byte[] charBuffer = Converter.wcsToMbcs(getCodePage (), new char[] { ch }, false);
 	int val = charBuffer[0] & 0xFF;
 	/* Create a font context to iterate over each element in the font list */
@@ -1870,7 +1870,7 @@ public void getClipping(Region region) {
 	OS.XUnionRegion (clipRgn, hRegion, hRegion);
 }
 String getCodePage () {
-	return data.codePage;
+	return data.font.codePage;
 }
 /** 
  * Returns the font currently being used by the receiver
@@ -1884,10 +1884,10 @@ String getCodePage () {
  */
 public Font getFont () {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
-	return Font.motif_new(data.device, data.fontList);
+	return Font.motif_new(data.device, data.font.handle);
 }
 int getFontHeight () {
-	int fontList = data.fontList;
+	int fontList = data.font.handle;
 	/* Create a font context to iterate over each element in the font list */
 	int [] buffer = new int [1];
 	if (!OS.XmFontListInitFontContext (buffer, fontList)) {
@@ -1905,11 +1905,11 @@ int getFontHeight () {
 	/* Go through each entry in the font list. */
 	while ((fontListEntry = OS.XmFontListNextEntry (context)) != 0) {
 		int fontPtr = OS.XmFontListEntryGetFont (fontListEntry, buffer);
-		if (buffer [0] == 0) { 
+		if (buffer [0] == 0) {
 			/* FontList contains a single font */
 			OS.memmove (fontStruct, fontPtr, XFontStruct.sizeof);
-			int fontHeight = fontStruct.ascent + fontStruct.descent;
-			if (fontHeight > height) height = fontHeight;
+			int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+			height = Math.max(height, fontHeight);
 		} else {
 			/* FontList contains a fontSet */
 			int nFonts = OS.XFontsOfFontSet (fontPtr, fontStructPtr, fontNamePtr);
@@ -1917,10 +1917,10 @@ int getFontHeight () {
 			OS.memmove (fontStructs, fontStructPtr [0], nFonts * 4);
 			
 			/* Go through each fontStruct in the font set */
-			for (int i=0; i<nFonts; i++) { 
+			for (int i=0; i<nFonts; i++) {
 				OS.memmove (fontStruct, fontStructs[i], XFontStruct.sizeof);
-				int fontHeight = fontStruct.ascent + fontStruct.descent;
-				if (fontHeight > height) height = fontHeight;
+				int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+				height = Math.max(height, fontHeight);
 			}
 		}
 	}
@@ -1942,7 +1942,8 @@ int getFontHeight () {
 public FontMetrics getFontMetrics() {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	int xDisplay = data.display;
-	int fontList = data.fontList;
+	Font font = data.font;
+	int fontList = font.handle;
 	/* Create a font context to iterate over each element in the font list */
 	int[] buffer = new int[1];
 	if (!OS.XmFontListInitFontContext(buffer, fontList)) {
@@ -1963,15 +1964,13 @@ public FontMetrics getFontMetrics() {
 	/* Go through each entry in the font list. */
 	while ((fontListEntry = OS.XmFontListNextEntry(context)) != 0) {
 		int fontPtr = OS.XmFontListEntryGetFont(fontListEntry, buffer);
-		if (buffer[0] == 0) { 
+		if (buffer[0] == 0) {
 			/* FontList contains a single font */
 			OS.memmove(fontStruct, fontPtr, XFontStruct.sizeof);
-			ascent = ascent > fontStruct.max_bounds_ascent ? ascent : fontStruct.max_bounds_ascent;
-			descent = descent > fontStruct.descent ? descent : fontStruct.descent;
-			int tmp = fontStruct.ascent + fontStruct.descent;
-			height = height > tmp ? height : tmp;
-			tmp = fontStruct.ascent - fontStruct.max_bounds_ascent;
-			leading = leading > tmp ? leading : tmp;
+			ascent = Math.max(ascent, fontStruct.max_bounds_ascent);
+			descent = Math.max(descent, fontStruct.max_bounds_descent);
+			int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+			height = Math.max(height, fontHeight);
 			/* Calculate average character width */
 			int propPtr = fontStruct.properties;
 			for (int i = 0; i < fontStruct.n_properties; i++) {
@@ -2029,21 +2028,18 @@ public FontMetrics getFontMetrics() {
 				}
 				propPtr += 8;
 			}
-		}
-		else { 
+		} else {
 			/* FontList contains a fontSet */
 			int nFonts = OS.XFontsOfFontSet(fontPtr, fontStructPtr, fontNamePtr);
 			int [] fontStructs = new int[nFonts];
 			OS.memmove(fontStructs, fontStructPtr[0], nFonts * 4);
 			/* Go through each fontStruct in the font set */
-			for (int i = 0; i < nFonts; i++) { 
+			for (int i = 0; i < nFonts; i++) {
 				OS.memmove(fontStruct, fontStructs[i], XFontStruct.sizeof);
-				ascent = ascent > fontStruct.max_bounds_ascent ? ascent : fontStruct.max_bounds_ascent;
-				descent = descent > fontStruct.descent ? descent : fontStruct.descent;
-				int tmp = fontStruct.ascent + fontStruct.descent;
-				height = height > tmp ? height : tmp;
-				tmp = fontStruct.ascent - fontStruct.max_bounds_ascent;
-				leading = leading > tmp ? leading : tmp;
+				ascent = Math.max(ascent, fontStruct.max_bounds_ascent);
+				descent = Math.max(descent, fontStruct.max_bounds_descent);
+				int fontHeight = fontStruct.max_bounds_ascent + fontStruct.max_bounds_descent;
+				height = Math.max(height, fontHeight);
 				/* Calculate average character width */
 				int propPtr = fontStruct.properties;
 				for (int j = 0; j < fontStruct.n_properties; j++) {
@@ -2435,8 +2431,7 @@ public void setFont (Font font) {
 	if (handle == 0) SWT.error(SWT.ERROR_GRAPHIC_DISPOSED);
 	if (font == null) font = data.device.systemFont;
 	if (font.isDisposed()) SWT.error(SWT.ERROR_INVALID_ARGUMENT);
-	data.fontList = font.handle;
-	data.codePage = font.codePage;
+	data.font = font;
 	if (data.renderTable != 0) OS.XmRenderTableFree(data.renderTable);
 	data.renderTable = 0;
 	data.stringWidth = data.stringHeight = data.textWidth = data.textHeight = -1;
@@ -2602,7 +2597,7 @@ public Point stringExtent(String string) {
 		width = 0;
 		height = getFontHeight();
 	} else {
-		int fontList = data.fontList;
+		int fontList = data.font.handle;
 		int xmString = data.xmString;
 		width = OS.XmStringWidth(fontList, xmString);
 		height = OS.XmStringHeight(fontList, xmString);
@@ -2672,7 +2667,7 @@ public Point textExtent(String string, int flags) {
 		width = 0;
 		height = getFontHeight();
 	} else {
-		int fontList = data.fontList;
+		int fontList = data.font.handle;
 		int xmText = data.xmText;
 		width = OS.XmStringWidth(fontList, xmText);
 		height = OS.XmStringHeight(fontList, xmText);

@@ -2011,8 +2011,7 @@ public int internal_new_GC (GCData data) {
 		data.device = this;
 		data.display = xDisplay;
 		data.drawable = xDrawable;
-		data.fontList = defaultFont.handle;
-		data.codePage = defaultFont.codePage;
+		data.font = defaultFont;
 		data.colormap = OS.XDefaultColormap (xDisplay, OS.XDefaultScreen (xDisplay));
 	}
 	return xGC;

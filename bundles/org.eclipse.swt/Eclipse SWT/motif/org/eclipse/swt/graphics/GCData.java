@@ -31,8 +31,7 @@ public final class GCData {
 	public int drawable;
 	public int foreground = -1;
 	public int background = -1;
-	public int fontList;
-	public String codePage;
+	public Font font;
 	public int colormap;
 	public int clipRgn;
 	public int lineStyle = SWT.LINE_SOLID;

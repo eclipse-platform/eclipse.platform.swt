@@ -1028,7 +1028,7 @@ int XmNexposureCallback (int w, int client_data, int call_data) {
 	data.device = display;
 	data.display = xDisplay;
 	data.drawable = xWindow;
-	data.fontList = parent.font.handle;
+	data.font = parent.font;
 	data.colormap = argList [1];
 	int xGC = OS.XCreateGC (xDisplay, xWindow, 0, null);
 	if (xGC == 0) SWT.error (SWT.ERROR_NO_HANDLES);
