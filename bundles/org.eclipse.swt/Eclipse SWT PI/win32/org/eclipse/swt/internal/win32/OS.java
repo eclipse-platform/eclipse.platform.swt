@@ -17,6 +17,7 @@ public class OS {
 	public static final boolean IsWinNT;
 	public static final boolean IsWinCE;
 	public static final boolean IsPPC;
+	public static final boolean IsHPC;
 	public static final boolean IsDBLocale;
 	public static final boolean IsUnicode;
 	public static final int WIN32_MAJOR, WIN32_MINOR;
@@ -70,7 +71,8 @@ public class OS {
 		IsWin95 = info.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS;
 		IsWinNT = info.dwPlatformId == VER_PLATFORM_WIN32_NT;
 		IsWinCE = info.dwPlatformId == VER_PLATFORM_WIN32_CE;
-		IsPPC  = IsPPC();	
+		IsPPC = IsPPC();
+		IsHPC = IsWinCE && !IsPPC; 	
 		WIN32_MAJOR = info.dwMajorVersion;
 		WIN32_MINOR = info.dwMinorVersion;
 
@@ -1831,7 +1833,11 @@ public static final native boolean ChooseFontA (CHOOSEFONT chooseFont);
 public static final native boolean ClientToScreen (int hWnd, POINT lpPoint);
 public static final native boolean CloseClipboard ();
 public static final native int CombineRgn (int hrgnDest, int hrgnSrc1, int hrgnSrc2, int fnCombineMode);
+public static final native int CommandBar_Create (int hInst, int hwndParent, int idCmdBar);
 public static final native void CommandBar_Destroy (int hwndCB);
+public static final native boolean CommandBar_DrawMenuBar (int hwndCB, int iButton);
+public static final native int CommandBar_Height (int hdnwCB);
+public static final native boolean CommandBar_InsertMenubarEx (int hwndCB, int hInst, int pszMenu, int iButton);
 public static final native int CommDlgExtendedError ();
 public static final native int CopyImage (int hImage, int uType, int cxDesired, int cyDesired, int fuFlags);
 public static final native int CreateAcceleratorTableW (byte [] lpaccl, int cEntries); 

@@ -126,7 +126,7 @@ void createHandle () {
 		* Note in WinCE PPC.  CreateMenu cannot insert items of type 
 		* separator.  The workaround is to always use CreatePopupMenu.
 		*/
-		handle = OS.IsWinCE ? OS.CreatePopupMenu () : OS.CreateMenu();
+		handle = OS.IsPPC ? OS.CreatePopupMenu () : OS.CreateMenu();
 	} else {
 		handle = OS.CreatePopupMenu ();
 	}
@@ -154,17 +154,19 @@ void createItem (MenuItem item, int index) {
 			info.dwItemData = item.id;
 			success = OS.SetMenuItemInfo (handle, index, true, info);
 			
-			/* if it is a top level menu item, display it on the toolbar */
-			if (item.parent == parent.menuBar) {
-				TBBUTTON lpButton = new TBBUTTON ();
-				lpButton.idCommand = item.id;
-				lpButton.fsStyle = (byte) (OS.TBSTYLE_DROPDOWN | OS.TBSTYLE_AUTOSIZE | 0x80);
-				lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
-				lpButton.iBitmap = OS.I_IMAGENONE;
-				if ((item.style & SWT.SEPARATOR) != 0) {
-					lpButton.fsStyle = (byte) OS.BTNS_SEP;
-				} 
-				success = OS.SendMessage (parent.hwndTB, OS.TB_INSERTBUTTON, index, lpButton) != 0;
+			if (OS.IsPPC) {
+				/* if it is a top level menu item, display it on the toolbar */
+				if (item.parent == parent.menuBar) {
+					TBBUTTON lpButton = new TBBUTTON ();
+					lpButton.idCommand = item.id;
+					lpButton.fsStyle = (byte) (OS.TBSTYLE_DROPDOWN | OS.TBSTYLE_AUTOSIZE | 0x80);
+					lpButton.fsState = (byte) OS.TBSTATE_ENABLED;
+					lpButton.iBitmap = OS.I_IMAGENONE;
+					if ((item.style & SWT.SEPARATOR) != 0) {
+						lpButton.fsStyle = (byte) OS.BTNS_SEP;
+					} 
+					success = OS.SendMessage (parent.hwndTB, OS.TB_INSERTBUTTON, index, lpButton) != 0;
+				}
 			}
 		}
 	} else {
@@ -575,7 +577,15 @@ public boolean isVisible () {
 }
 
 void redraw () {
-	if (OS.IsWinCE) return;
+	if (OS.IsPPC) return;
+	if (OS.IsHPC) {
+		/*
+		* Each time a menu has been modified, we need
+		* to redraw the command bar.
+		*/
+		OS.CommandBar_DrawMenuBar (parent.hwndCB, 0);
+		return;
+	}
 	if ((style & SWT.BAR) != 0) {
 		OS.DrawMenuBar (parent.handle);
 		return;

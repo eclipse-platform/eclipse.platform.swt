@@ -364,6 +364,20 @@ public Rectangle getBounds () {
 
 public Rectangle getClientArea () {
 	checkWidget ();
+	/* 
+	* Note: The CommandBar is part of the client area,
+	* not the trim.  Applications don't expect this so
+	* subtract the height of the CommandBar.
+	*/
+	if (OS.IsHPC) {
+		Rectangle rect = super.getClientArea ();
+		if (hwndCB != 0) {
+			int height = OS.CommandBar_Height (hwndCB);
+			rect.y += height;
+			rect.height -= height;
+		}
+		return rect;
+	}
 	if (!OS.IsWinCE) {
 		if (OS.IsIconic (handle)) {
 			RECT rect = new RECT ();
@@ -557,6 +571,59 @@ boolean isTabItem () {
 
 Decorations menuShell () {
 	return this;
+}
+
+boolean moveMenu (int hMenuSrc, int hMenuDest) {
+	boolean success = true;
+	TCHAR lpNewItem = new TCHAR (0, "", true);
+	int index = 0, cch = 128;
+	int byteCount = cch * TCHAR.sizeof;
+	int hHeap = OS.GetProcessHeap ();
+	int pszText = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, byteCount);
+	MENUITEMINFO lpmii = new MENUITEMINFO ();
+	lpmii.cbSize = MENUITEMINFO.sizeof;
+	lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA | OS.MIIM_SUBMENU;
+	lpmii.dwTypeData = pszText;
+	lpmii.cch = cch;
+	while (OS.GetMenuItemInfo (hMenuSrc, 0, true, lpmii)) {
+		int uFlags = OS.MF_BYPOSITION | OS.MF_ENABLED;
+		int uIDNewItem = lpmii.wID;
+		if ((lpmii.fType & OS.MFT_SEPARATOR) != 0) {
+			uFlags |= OS.MFT_SEPARATOR;
+		} else if (lpmii.hSubMenu != 0) {
+			uFlags |= OS.MF_POPUP;
+			uIDNewItem = lpmii.hSubMenu;
+		}
+		success = OS.InsertMenu (hMenuDest, index, uFlags, uIDNewItem, lpNewItem);
+		if (!success) break;
+		/* Set application data and text info */
+		if ((lpmii.fType & OS.MFT_SEPARATOR) != 0) {
+			lpmii.fMask = OS.MIIM_DATA;
+			success = OS.SetMenuItemInfo (hMenuDest, index, true, lpmii);
+			if (!success) break;
+		} else {
+			lpmii.fMask = OS.MIIM_DATA | OS.MIIM_TYPE;
+			success = OS.SetMenuItemInfo (hMenuDest, index, true, lpmii);
+			if (!success) break;
+			if ((lpmii.fState & (OS.MFS_DISABLED | OS.MFS_GRAYED)) != 0) {
+				OS.EnableMenuItem (hMenuDest, index, OS.MF_BYPOSITION | OS.MF_GRAYED);
+			}
+			if ((lpmii.fState & OS.MFS_CHECKED) != 0) {
+				OS.CheckMenuItem (hMenuDest, index, OS.MF_BYPOSITION | OS.MF_CHECKED);
+			}
+		}
+		OS.RemoveMenu (hMenuSrc, 0, OS.MF_BYPOSITION);
+		index++;
+		lpmii.fMask = OS.MIIM_STATE | OS.MIIM_ID | OS.MIIM_TYPE | OS.MIIM_DATA | OS.MIIM_SUBMENU;
+		/*
+		* Bug in WinCE.  Calling GetItemInfo on an item of type MFT_SEPARATOR with the mask MIIM_TYPE
+		* modifies the value of the field dwTypeData.  The workaround is to reset the field.
+		*/
+		lpmii.dwTypeData = pszText;
+		lpmii.cch = cch;
+	}
+	if (pszText != 0) OS.HeapFree (hHeap, 0, pszText);
+	return success;
 }
 
 void releaseWidget () {
@@ -833,11 +900,13 @@ public void setMaximized (boolean maximized) {
 			RECT rect = new RECT ();
 			OS.SystemParametersInfo (OS.SPI_GETWORKAREA, 0, rect, 0);
 			int width = rect.right - rect.left, height = rect.bottom - rect.top;
-			/* leave space for menubar */
-			if (menuBar != null) {
-				RECT rectCB = new RECT ();
-				OS.GetWindowRect (hwndCB, rectCB);
-				height -= rectCB.bottom - rectCB.top;
+			if (OS.IsPPC) {
+				/* leave space for menubar */
+				if (menuBar != null) {
+					RECT rectCB = new RECT ();
+					OS.GetWindowRect (hwndCB, rectCB);
+					height -= rectCB.bottom - rectCB.top;
+				}
 			}
 			OS.SetWindowPos (handle, 0, rect.left, rect.top, width, height, flags);	
 		} else {
@@ -896,7 +965,7 @@ public void setMenuBar (Menu menu) {
 		if ((menu.style & SWT.BAR) == 0) error (SWT.ERROR_MENU_NOT_BAR);
 		if (menu.parent != this) error (SWT.ERROR_INVALID_PARENT);
 	}	
-	if (OS.IsWinCE) {
+	if (OS.IsPPC) {
 		/*
 		* Note in WinCE PPC.  MenuBar is a separate popup window. If
 		* the Shell is full screen, resize its window to leave
@@ -987,6 +1056,31 @@ public void setMenuBar (Menu menu) {
 			}
 		}
 		if (resize) setMaximized (true);
+	} else if (OS.IsHPC) {
+		boolean resize = menuBar != menu;
+		if (menuBar != null) {
+			/*
+			* Because CommandBar_Destroy destroys the menu bar, it
+			* is necessary to move the current items into a new menu
+			* before it is called.
+			*/
+			int hMenu = OS.CreateMenu ();
+			if (!moveMenu (menuBar.handle, hMenu)) {
+				error (SWT.ERROR_CANNOT_SET_MENU);
+			}
+			menuBar.handle = hMenu;
+			if (hwndCB != 0) OS.CommandBar_Destroy (hwndCB);
+			hwndCB = 0;
+		}
+		menuBar = menu;
+		if (menuBar != null) {		
+			hwndCB = OS.CommandBar_Create (OS.GetModuleHandle (null), handle, 1);
+			OS.CommandBar_InsertMenubarEx (hwndCB, 0, menuBar.handle, 0);
+		}
+		if (resize) {
+			sendEvent (SWT.Resize);
+			layout (false);
+		}
 	} else {
 		menuBar = menu;
 		int hMenu = 0;
@@ -1131,6 +1225,7 @@ public void setVisible (boolean visible) {
 		*/
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
+		if (OS.IsHPC) OS.CommandBar_DrawMenuBar (hwndCB, 0);
 		if (OS.IsWinCE) {
 			OS.ShowWindow (handle, OS.SW_SHOW);
 		} else {

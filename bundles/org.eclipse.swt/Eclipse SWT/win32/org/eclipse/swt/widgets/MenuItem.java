@@ -505,13 +505,15 @@ public void setEnabled (boolean enabled) {
 		if (index == -1) return;
 		int uEnable = OS.MF_BYPOSITION | (enabled ? OS.MF_ENABLED : OS.MF_GRAYED);
 		OS.EnableMenuItem (hMenu, index, uEnable);
-		/* if it is a top level menu item, set the state in the corresponding tool item */
-		Decorations shell = parent.parent;
-		if (parent == shell.menuBar) {
-			int fsState = OS.SendMessage (shell.hwndTB, OS.TB_GETSTATE, id, 0);
-			fsState &= ~OS.TBSTATE_ENABLED;
-			if (enabled) fsState |= OS.TBSTATE_ENABLED;
-			OS.SendMessage (shell.hwndTB, OS.TB_SETSTATE, id, fsState);
+		if (OS.IsPPC) {
+			/* if it is a top level menu item, set the state in the corresponding tool item */
+			Decorations shell = parent.parent;
+			if (parent == shell.menuBar) {
+				int fsState = OS.SendMessage (shell.hwndTB, OS.TB_GETSTATE, id, 0);
+				fsState &= ~OS.TBSTATE_ENABLED;
+				if (enabled) fsState |= OS.TBSTATE_ENABLED;
+				OS.SendMessage (shell.hwndTB, OS.TB_SETSTATE, id, fsState);
+			}
 		}
 	} else {
 		MENUITEMINFO info = new MENUITEMINFO ();
@@ -651,12 +653,13 @@ public void setMenu (Menu menu) {
 			if ((info.fState & OS.MFS_CHECKED) != 0) {
 				OS.CheckMenuItem (hMenu, index, OS.MF_BYPOSITION | OS.MF_CHECKED);
 			}
-			
-			if (success) {
-				/* if it is a top level menu item, update the corresponding tool item */
-				Decorations shell = parent.parent;
-				if (parent == shell.menuBar) {
-					OS.SendMessage (shell.hwndCB, OS.SHCMBM_SETSUBMENU, id, uIDNewItem);
+			if (OS.IsPPC) {
+				if (success) {
+					/* if it is a top level menu item, update the corresponding tool item */
+					Decorations shell = parent.parent;
+					if (parent == shell.menuBar) {
+						OS.SendMessage (shell.hwndCB, OS.SHCMBM_SETSUBMENU, id, uIDNewItem);
+					}
 				}
 			}
 		}
@@ -711,7 +714,7 @@ public void setText (String string) {
 	if ((style & SWT.SEPARATOR) != 0) return;
 	super.setText (string);
 	boolean fixPPCMenuBar = false;
-	if (OS.IsWinCE) {
+	if (OS.IsPPC) {
 		Decorations shell = parent.parent;
 		if (parent == shell.menuBar) {
 			fixPPCMenuBar = true;

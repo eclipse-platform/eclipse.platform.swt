@@ -333,6 +333,16 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CombineRgn
 	return (jint)CombineRgn((HRGN)arg0, (HRGN)arg1, (HRGN)arg2, arg3);
 }
 
+#ifdef WIN32_PLATFORM_HPC2000 
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Create
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2)
+{
+	DEBUG_CALL("CommandBar_Create\n")
+
+	return (jint)CommandBar_Create((HINSTANCE)arg0, (HWND)arg1, (int)arg2);
+}
+#endif // WIN32_PLATFORM_HPC2000
+
 #ifdef _WIN32_WCE 
 JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Destroy
 	(JNIEnv *env, jclass that, jint arg0)
@@ -342,6 +352,36 @@ JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1De
 	return (jboolean)CommandBar_Destroy((HWND)arg0);
 }
 #endif // _WIN32_WCE
+
+#ifdef WIN32_PLATFORM_HPC2000 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1DrawMenuBar
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	DEBUG_CALL("CommandBar_DrawMenuBar\n")
+
+	return (jboolean)CommandBar_DrawMenuBar((HWND)arg0, (WORD)arg1);
+}
+#endif // WIN32_PLATFORM_HPC2000
+
+#ifdef WIN32_PLATFORM_HPC2000 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1Height
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	DEBUG_CALL("CommandBar_Height\n")
+
+	return (jint)CommandBar_Height((HWND)arg0);
+}
+#endif // WIN32_PLATFORM_HPC2000
+
+#ifdef WIN32_PLATFORM_HPC2000 
+JNIEXPORT jboolean JNICALL Java_org_eclipse_swt_internal_win32_OS_CommandBar_1InsertMenubarEx
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("CommandBar_InsertMenubarEx\n")
+
+	return (jboolean)CommandBar_InsertMenubarEx((HWND)arg0, (HINSTANCE)arg1, (LPTSTR)arg2, (WORD)arg3);
+}
+#endif // WIN32_PLATFORM_HPC2000
 
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_CommDlgExtendedError
 	(JNIEnv *env, jclass that)
