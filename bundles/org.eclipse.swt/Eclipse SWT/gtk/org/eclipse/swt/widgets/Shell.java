@@ -394,6 +394,7 @@ void bringToTop (boolean force) {
 	if ((style & SWT.ON_TOP) != 0) return;
 	if (!OS.GTK_WIDGET_VISIBLE (shellHandle)) return; 
 	Shell shell = display.getActiveShell ();
+	if (shell == this) return;
 	if (shell != null) shell.hasFocus = false;
 	OS.gtk_window_present (shellHandle);
 	hasFocus = true;
@@ -998,7 +999,7 @@ public void dispose () {
 
 	/*
 	* Feature in GTK.  When the active shell is disposed,
-	* Motif assigns focus temporarily to the root window
+	* GTK assigns focus temporarily to the root window
 	* unless it has previously been told to do otherwise.
 	* The fix is to make the parent be the active top level
 	* shell when the child shell is disposed.

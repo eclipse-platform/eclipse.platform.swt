@@ -1090,7 +1090,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1copy
 {
 	DEBUG_CALL("gdk_1event_1copy\n")
 
-	return (jint)gdk_event_copy(arg0);
+	return (jint)gdk_event_copy((GdkEvent *)arg0);
 }
 #endif
 
@@ -1165,7 +1165,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1event_1handler_
 {
 	DEBUG_CALL("gdk_1event_1handler_1set\n")
 
-	gdk_event_handler_set(arg0, arg1, arg2);
+	gdk_event_handler_set((GdkEventFunc)arg0, (gpointer)arg1, (GDestroyNotify)arg2);
 }
 #endif
 
@@ -1886,7 +1886,7 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_gtk_OS_gdk_1window_1get_1pa
 {
 	DEBUG_CALL("gdk_1window_1get_1parent\n")
 
-	return (GdkWindow *)gdk_window_get_parent((GdkWindow *)arg0);
+	return (jint)gdk_window_get_parent((GdkWindow *)arg0);
 }
 #endif
 
@@ -3509,7 +3509,7 @@ JNIEXPORT void JNICALL Java_org_eclipse_swt_internal_gtk_OS_gtk_1main_1do_1event
 {
 	DEBUG_CALL("gtk_1main_1do_1event\n")
 
-	gtk_main_do_event(arg0);
+	gtk_main_do_event((GdkEvent *)arg0);
 }
 #endif
 
