@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="build_dll" basedir="../../..">
+
+<target name="init">
+	<tstamp/>
+    <property name="fragment_dir" value="${basedir}/../org.eclipse.swt.win32" />
+    <property name="jar_destdir" value="${fragment_dir}/ws/win32" />
+    <property name="dll_destdir" value="${fragment_dir}/os/win32/x86" />
+    <property name="bin_dir" value="${basedir}/bin" />
+	
+    <mkdir dir="${jar_destdir}" />
+    <mkdir dir="${dll_destdir}" />
+</target>
+
+<!-- Build swt mozilla dll for Windows -->
+<target name="build_win32_dll" depends="init">
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build_mozilla.bat">
+	</exec>
+	<copy todir="${dll_destdir}">
+		<fileset dir="${basedir}\bin\library\" includes="*.dll"/>
+	</copy>
+</target>
+
+<!-- Build swt mozilla dlls -->
+<!-- Output .dlls for these platforms into the org.eclipse.swt.win32/os directory --> 
+<target name="build_dll" depends="build_win32_dll">
+</target>
+
+<target name="clean" depends="init">
+	<exec dir="./bin/library" executable="${basedir}\bin\library\build_mozilla.bat">
+	<arg line="clean"/>
+	</exec>
+</target>
+
+<target name="build" depends="init">
+   	<eclipse.incrementalBuild project="${plugin}" kind="incr" />
+</target>
+	
+<target name="build_jar" depends="build">
+    <jar
+        jarfile="${jar_destdir}/swt-mozilla.jar"
+        basedir="${bin_dir}"
+    />
+</target>
+    
+</project>
