@@ -541,6 +541,8 @@ public void setVisible (boolean visible) {
 		sendEvent (SWT.Show);
 		if (isDisposed ()) return;
 		OS.ShowWindow (shellHandle);
+		//WRONG
+		OS.BringToFront (shellHandle);
 	} else {
     	OS.HideWindow(shellHandle);
 		sendEvent (SWT.Hide);
