@@ -563,7 +563,6 @@ public void setThumb (int value) {
 	info.cbSize = SCROLLINFO.sizeof;
 	info.fMask = OS.SIF_PAGE | OS.SIF_RANGE | OS.SIF_DISABLENOSCROLL;
 	OS.GetScrollInfo (handle, OS.SB_CTL, info);
-	if (info.nMax - info.nMin - value < 0) return;
 	info.nPage = value;
 	if (info.nPage != 0) info.nPage++;
 	OS.SetScrollInfo (handle, OS.SB_CTL, info, true);
@@ -621,7 +620,6 @@ public void setValues (int selection, int minimum, int maximum, int thumb, int i
 	if (minimum < 0) return;
 	if (maximum < 0) return;
 	if (thumb < 1) return;
-	if (maximum - minimum - thumb < 0) return;
 	if (increment < 1) return;
 	if (pageIncrement < 1) return;
 	this.increment = increment;
