@@ -2102,8 +2102,7 @@ void doAutoScroll(int direction) {
 		timer = new Runnable() {
 			public void run() {
 				if (autoScrollDirection == SWT.UP) {
-					doLineUp();
-					doSelection(SWT.LEFT);
+					doSelectionLineUp();
 					display.timerExec(TIMER_INTERVAL, this);
 				}
 			}
@@ -2112,8 +2111,7 @@ void doAutoScroll(int direction) {
 		timer = new Runnable() {
 			public void run() {
 				if (autoScrollDirection == SWT.DOWN) {
-					doLineDown();
-					doSelection(SWT.RIGHT);
+					doSelectionLineDown();
 					display.timerExec(TIMER_INTERVAL, this);
 				}
 			}
@@ -2561,8 +2559,24 @@ void doDelete() {
  * Make the new caret position visible.
  */
 void doLineDown() {
-	doSelectionLineDown();
-	showCaret();
+	if (isSingleLine()) {
+		return;
+	}
+	// allow line down action only if receiver is not in single line mode.
+	// fixes 4820.
+	if (caretLine < content.getLineCount() - 1) {
+		String lineText = content.getLine(caretLine);
+		int offsetInLine = caretOffset - content.getOffsetAtLine(caretLine);
+		int caretX = getXAtOffset(lineText, caretLine, offsetInLine);
+		
+		caretLine++;
+		if (isBidi()) {
+			caretOffset = getBidiOffsetAtMouseLocation(caretX, caretLine);
+		}
+		else {
+			caretOffset = getOffsetAtMouseLocation(caretX, caretLine);
+		}		
+	}
 }
 /**
  * Moves the caret to the end of the line.
@@ -2599,27 +2613,20 @@ void doLineStart() {
  * if the new line is shorter than the character offset.
  */
 void doLineUp() {
-	int line = content.getLineAtOffset(caretOffset);
-	
-	if (line != caretLine) {
-		// caret is at end of visual line/start of next visual line in 
-		// word wrap mode
-		line = caretLine;
-	}
-	if (line > 0) {
-		String lineText = content.getLine(line);
-		int lineOffset = content.getOffsetAtLine(line);
+	if (caretLine > 0) {
+		String lineText = content.getLine(caretLine);
+		int lineOffset = content.getOffsetAtLine(caretLine);
 		int offsetInLine = caretOffset - lineOffset;		
-		int caretX = getXAtOffset(lineText, line, offsetInLine);
-		caretLine = --line;
+		int caretX = getXAtOffset(lineText, caretLine, offsetInLine);
+		
+		caretLine--;
 		if (isBidi()) {
-			caretOffset = getBidiOffsetAtMouseLocation(caretX, line);
+			caretOffset = getBidiOffsetAtMouseLocation(caretX, caretLine);
 		}
 		else {
-			caretOffset = getOffsetAtMouseLocation(caretX, line);
+			caretOffset = getOffsetAtMouseLocation(caretX, caretLine);
 		}		
 	}
-	showCaret();
 }
 /**
  * Moves the caret to the specified location.
@@ -2842,16 +2849,10 @@ void doSelection(int direction) {
  * next line if the cursor is at the end of a line.
  */
 void doSelectionCursorNext() {
-	int line = content.getLineAtOffset(caretOffset);
 	int offsetInLine;
 	
-	if (line != caretLine) {
-		// caret is at end of visual line/start of next visual line in 
-		// word wrap mode
-		line = caretLine;
-	}
-	offsetInLine = caretOffset - content.getOffsetAtLine(line);
-	if (offsetInLine < content.getLine(line).length()) {
+	offsetInLine = caretOffset - content.getOffsetAtLine(caretLine);
+	if (offsetInLine < content.getLine(caretLine).length()) {
 		// Remember the last direction. Always update lastCaretDirection,
 		// even though it's not used in non-bidi mode in order to avoid 
 		// extra methods.		
@@ -2860,11 +2861,10 @@ void doSelectionCursorNext() {
 		showCaret();
 	}
 	else
-	if (line < content.getLineCount() - 1 && isSingleLine() == false) {
+	if (caretLine < content.getLineCount() - 1 && isSingleLine() == false) {
 		// only go to next line if not in single line mode. fixes 5673
-		line++;
-		caretOffset = content.getOffsetAtLine(line);
-		caretLine = line;
+		caretLine++;
+		caretOffset = content.getOffsetAtLine(caretLine);
 		showCaret();
 	}
 }
@@ -2873,16 +2873,10 @@ void doSelectionCursorNext() {
  * line if the cursor is at the beginning of a line.
  */
 void doSelectionCursorPrevious() {
-	int line = content.getLineAtOffset(caretOffset);
 	int lineOffset;
 	int offsetInLine;
 	
-	if (line != caretLine) {
-		// caret is at end of visual line/start of next visual line in 
-		// word wrap mode
-		line = caretLine;
-	}
-	lineOffset = content.getOffsetAtLine(line);	
+	lineOffset = content.getOffsetAtLine(caretLine);	
 	offsetInLine = caretOffset - lineOffset;
 	if (offsetInLine > 0) {
 		// Remember the last direction. Always update lastCaretDirection,
@@ -2893,43 +2887,57 @@ void doSelectionCursorPrevious() {
 		showCaret();
 	}
 	else
-	if (line > 0) {
-		line--;
-		lineOffset = content.getOffsetAtLine(line);
-		caretOffset = lineOffset + content.getLine(line).length();
-		caretLine = line;
+	if (caretLine > 0) {
+		caretLine--;
+		lineOffset = content.getOffsetAtLine(caretLine);
+		caretOffset = lineOffset + content.getLine(caretLine).length();
 		showCaret();
 	}
 }
 /**
  * Moves the caret one line down and to the same character offset relative 
- * to the beginning of the line. Move the caret to the end of the new line 
+ * to the beginning of the line. Moves the caret to the end of the new line 
  * if the new line is shorter than the character offset.
+ * Moves the caret to the end of the text if the caret already is on the 
+ * last line.
+ * Adjusts the selection according to the caret change. This can either add
+ * to or subtract from the old selection, depending on the previous selection
+ * direction.
  */
-int doSelectionLineDown() {
-	int line = content.getLineAtOffset(caretOffset);
-	
-	if (line != caretLine) {
-		// caret is at end of visual line/start of next visual line in 
-		// word wrap mode
-		line = caretLine;
+void doSelectionLineDown() {
+	if (isSingleLine()) {
+		return;
 	}
-	// allow line down action only if receiver is not in single line mode.
-	// fixes 4820.
-	if (isSingleLine() == false && line < content.getLineCount() - 1) {
-		String lineText = content.getLine(line);
-		int offsetInLine = caretOffset - content.getOffsetAtLine(line);
-		int caretX = getXAtOffset(lineText, line, offsetInLine);
-		
-		caretLine = ++line;
-		if (isBidi()) {
-			caretOffset = getBidiOffsetAtMouseLocation(caretX, line);
-		}
-		else {
-			caretOffset = getOffsetAtMouseLocation(caretX, line);
-		}		
+	if (caretLine == content.getLineCount() - 1) {
+		caretOffset = content.getCharCount();
 	}
-	return line;
+	else {
+		doLineDown();
+	}
+	// select first and then scroll to reduce flash when key 
+	// repeat scrolls lots of lines
+	doSelection(SWT.RIGHT);
+	showCaret();	
+}
+/**
+ * Moves the caret one line up and to the same character offset relative 
+ * to the beginning of the line. Moves the caret to the end of the new line 
+ * if the new line is shorter than the character offset.
+ * Moves the caret to the beginning of the document if it is already on the
+ * first line.
+ * Adjusts the selection according to the caret change. This can either add
+ * to or subtract from the old selection, depending on the previous selection
+ * direction.
+ */
+void doSelectionLineUp() {
+	if (caretLine == 0) {
+		caretOffset = 0;
+	}
+	else {
+		doLineUp();
+	}
+	showCaret();
+	doSelection(SWT.LEFT);
 }
 /**
  * Moves the caret to the end of the next word .
@@ -4912,10 +4920,12 @@ public void invokeAction(int action) {
 		// Navigation
 		case ST.LINE_UP:
 			doLineUp();
+			showCaret();
 			clearSelection(true);
 			break;
 		case ST.LINE_DOWN:
 			doLineDown();
+			showCaret();
 			clearSelection(true);
 			break;
 		case ST.LINE_START:
@@ -4968,15 +4978,10 @@ public void invokeAction(int action) {
 			break;
 		// Selection	
 		case ST.SELECT_LINE_UP:
-			doLineUp();
-			doSelection(SWT.LEFT);
+			doSelectionLineUp();
 			break;
 		case ST.SELECT_LINE_DOWN:
 			doSelectionLineDown();
-			// select first and then scroll to reduce flash when key 
-			// repeat scrolls lots of lines
-			doSelection(SWT.RIGHT);
-			showCaret();
 			break;
 		case ST.SELECT_LINE_START:
 			doLineStart();
