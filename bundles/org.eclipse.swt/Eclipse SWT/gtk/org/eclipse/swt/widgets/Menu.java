@@ -153,6 +153,27 @@ static int checkStyle (int style) {
 	return checkBits (style, SWT.POP_UP, SWT.BAR, SWT.DROP_DOWN, 0, 0, 0);
 }
 
+public void _setVisible (boolean visible) {
+	if (visible == OS.GTK_WIDGET_MAPPED (handle)) return;
+	if (visible) {
+		sendEvent (SWT.Show);
+		if (getItemCount () != 0) {
+			int address = 0;
+			Callback GtkMenuPositionFunc = null;
+			if (hasLocation) {
+				GtkMenuPositionFunc = new Callback (this, "GtkMenuPositionFunc", 5);
+				address = GtkMenuPositionFunc.getAddress ();
+			}
+			OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, display.popupTime);
+			if (GtkMenuPositionFunc != null) GtkMenuPositionFunc.dispose ();
+		} else {
+			sendEvent (SWT.Hide);
+		}
+	} else {
+		OS.gtk_menu_popdown (handle);
+	}
+}
+
 void addAccelerators (int accelGroup) {
 	MenuItem [] items = getItems ();
 	for (int i = 0; i < items.length; i++) {
@@ -484,7 +505,15 @@ public Shell getShell () {
  */
 public boolean getVisible () {
 	checkWidget();
-	return OS.GTK_WIDGET_MAPPED (handle);    
+	if ((style & SWT.POP_UP) != 0) {
+		Menu [] popups = display.popups;
+		if (popups != null) {
+			for (int i=0; i<popups.length; i++) {
+				if (popups [i] == this) return true;
+			}
+		}
+	}
+	return OS.GTK_WIDGET_MAPPED (handle);
 }
 
 int GtkMenuPositionFunc (int menu, int x, int y, int push_in, int user_data) {
@@ -600,6 +629,10 @@ void releaseChild () {
 	if (cascade != null) cascade.setMenu (null);
 	if ((style & SWT.BAR) != 0 && this == parent.menuBar) {
 		parent.setMenuBar (null);
+	}  else {
+		if ((style & SWT.POP_UP) != 0) {
+			display.removePopup (this);
+		}
 	}
 }
 
@@ -796,24 +829,12 @@ public void setLocation (Point location) {
 public void setVisible (boolean visible) {
 	checkWidget();
 	if ((style & (SWT.BAR | SWT.DROP_DOWN)) != 0) return;
-	if (visible == OS.GTK_WIDGET_MAPPED (handle)) return;
 	if (visible) {
-		display.runDeferredEvents ();
-		sendEvent (SWT.Show);
-		if (getItemCount () != 0) {
-			int address = 0;
-			Callback GtkMenuPositionFunc = null;
-			if (hasLocation) {
-				GtkMenuPositionFunc = new Callback (this, "GtkMenuPositionFunc", 5);
-				address = GtkMenuPositionFunc.getAddress ();
-			}
-			OS.gtk_menu_popup (handle, 0, 0, address, 0, 0, OS.gtk_get_current_event_time());
-			if (GtkMenuPositionFunc != null) GtkMenuPositionFunc.dispose ();
-		} else {
-			sendEvent (SWT.Hide);
-		}
+		display.popupTime = OS.gtk_get_current_event_time();
+		display.addPopup (this);
 	} else {
-		OS.gtk_menu_popdown (handle);
+		display.removePopup (this);
+		_setVisible (false);
 	}
 }
 }

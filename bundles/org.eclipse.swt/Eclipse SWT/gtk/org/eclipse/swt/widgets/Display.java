@@ -150,7 +150,11 @@ public class Display extends Device {
 	GdkColor COLOR_TEXT_FOREGROUND, COLOR_TEXT_BACKGROUND, COLOR_INFO_BACKGROUND, COLOR_INFO_FOREGROUND;
 	GdkColor COLOR_TITLE_FOREGROUND, COLOR_TITLE_BACKGROUND, COLOR_TITLE_BACKGROUND_GRADIENT;
 	GdkColor COLOR_TITLE_INACTIVE_FOREGROUND, COLOR_TITLE_INACTIVE_BACKGROUND, COLOR_TITLE_INACTIVE_BACKGROUND_GRADIENT;
-		
+
+	/* Popup Menus */
+	Menu [] popups;
+	int popupTime;
+	
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
 		
@@ -343,6 +347,25 @@ void addMouseHoverTimeout (int handle) {
 	if (mouseHoverId != 0) OS.gtk_timeout_remove (mouseHoverId);
 	mouseHoverId = OS.gtk_timeout_add (400, mouseHoverProc, handle);
 	mouseHoverHandle = handle;
+}
+
+void addPopup (Menu menu) {
+	if (popups == null) popups = new Menu [4];
+	int length = popups.length;
+	for (int i=0; i<length; i++) {
+		if (popups [i] == menu) return;
+	}
+	int index = 0;
+	while (index < length) {
+		if (popups [index] == null) break;
+		index++;
+	}
+	if (index == length) {
+		Menu [] newPopups = new Menu [length + 4];
+		System.arraycopy (popups, 0, newPopups, 0, length);
+		popups = newPopups;
+	}
+	popups [index] = menu;
 }
 
 /**
@@ -1507,6 +1530,7 @@ void postEvent (Event event) {
  */
 public boolean readAndDispatch () {
 	checkDevice ();
+	runPopups ();
 	int status = OS.gtk_events_pending ();
 	if (status != 0) {
 		OS.gtk_main_iteration ();
@@ -1674,6 +1698,16 @@ void removeMouseHoverTimeout (int handle) {
 	mouseHoverId = mouseHoverHandle = 0;
 }
 
+void removePopup (Menu menu) {
+	if (popups == null) return;
+	for (int i=0; i<popups.length; i++) {
+		if (popups [i] == menu) {
+			popups [i] = null;
+			return;
+		}
+	}
+}
+
 boolean runAsyncMessages () {
 	return synchronizer.runAsyncMessages ();
 }
@@ -1717,6 +1751,23 @@ boolean runDeferredEvents () {
 	/* Clear the queue */
 	eventQueue = null;
 	return true;
+}
+
+boolean runPopups () {
+	if (popups == null) return false;
+	boolean result = false;
+	while (popups != null) {
+		Menu menu = popups [0];
+		if (menu == null) break;
+		int length = popups.length;
+		System.arraycopy (popups, 1, popups, 0, --length);
+		popups [length] = null;
+		runDeferredEvents ();
+		menu._setVisible (true);
+		result = true;
+	}
+	popups = null;
+	return result;
 }
 
 /**
