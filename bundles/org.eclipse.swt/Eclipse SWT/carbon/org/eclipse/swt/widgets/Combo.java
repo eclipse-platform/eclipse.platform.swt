@@ -1002,7 +1002,6 @@ int kEventControlSetFocusPart (int nextHandler, int theEvent, int userData) {
 }
 
 int kEventTextInputUnicodeForKeyEvent (int nextHandler, int theEvent, int userData) {
-	System.out.println("Combo.kEventTextInputUnicode");
 	int result = super.kEventTextInputUnicodeForKeyEvent (nextHandler, theEvent, userData);
 	if (result == OS.noErr) return result;
 	result = OS.CallNextEventHandler (nextHandler, theEvent);
