@@ -24,19 +24,20 @@ QT_HOME    = /usr/lib/qt-2.2.4
 # Define the various DLL (shared) libraries to be made.
 
 SWT_PREFIX   = swt
-SWT_DLL      = lib$(SWT_PREFIX)$(DLL_VERSION).so
+OS_PREFIX    = linux
+SWT_DLL      = lib$(SWT_PREFIX)-$(OS_PREFIX)-$(DLL_VERSION).so
 SWT_OBJ      = callback.o globals.o library.o structs.o swt.o
 SWT_LIB      = -L$(MOTIF_HOME)/lib -lXm -L/usr/lib -L/usr/X11R6/lib \
 	           -x -shared -lX11 -lm -lXext -lXt -lXp -ldl
 
 GNOME_PREFIX = swt-gnome
-GNOME_DLL    = lib$(GNOME_PREFIX)$(DLL_VERSION).so
+GNOME_DLL    = lib$(GNOME_PREFIX)-$(OS_PREFIX)-$(DLL_VERSION).so
 GNOME_OBJ    = gnome.o 
 GNOME_LIB    = -x -shared \
 	           `gnome-config --libs gnome`
 
 KDE_PREFIX   = swt-kde
-KDE_DLL      = lib$(KDE_PREFIX)$(DLL_VERSION).so
+KDE_DLL      = lib$(KDE_PREFIX)-$(OS_PREFIX)-$(DLL_VERSION).so
 KDE_OBJ      = kde.o
 KDE_LIB      = -L/usr/lib  -L$(QT_HOME)/lib \
 	           -shared -lksycoca -lkdecore -lqt

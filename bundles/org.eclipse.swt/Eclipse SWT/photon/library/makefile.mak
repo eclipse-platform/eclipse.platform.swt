@@ -10,7 +10,8 @@ revision=0
 #assumes IVE_HOME is set in the environment
 
 DLLPREFIX=swt
-DLLNAME=lib$(DLLPREFIX)$(maj_ver)$(min_ver).so
+OS_PREFIX=qnx
+DLLNAME=lib$(DLLPREFIX)-$(OS_PREFIX)-$(maj_ver)$(min_ver).so
 #DLLNAME=lib$(DLLPREFIX)$(maj_ver)$(min_ver)r$(revision).so
 
 DEBUG =  
