@@ -122,22 +122,26 @@ public RGB getRGB () {
 public RGB open () {
 	
 	/* Get the owner HWND for the dialog */
-	int hwndOwner = 0;
-	if (parent != null) hwndOwner = parent.handle;
+	int hwndOwner = parent.handle;
 
 	/* Create the CCHookProc */
 	Callback callback = new Callback (this, "CCHookProc", 4);
 	int lpfnHook = callback.getAddress ();
 	
-	/* Open the dialog */
-	int hHeap = OS.GetProcessHeap ();
-	int lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 16 * 4);
+	/* Allocate the Custom Colors */
+	Display display = parent.getDisplay ();
+	if (display.lpCustColors == 0) {
+		int hHeap = OS.GetProcessHeap ();
+		display.lpCustColors = OS.HeapAlloc (hHeap, OS.HEAP_ZERO_MEMORY, 16 * 4);
+	}
+	
+	/* Open the dialog */	
 	CHOOSECOLOR lpcc = new CHOOSECOLOR ();
 	lpcc.lStructSize = CHOOSECOLOR.sizeof;
 	lpcc.Flags = OS.CC_ANYCOLOR | OS.CC_ENABLEHOOK;
 	lpcc.lpfnHook = lpfnHook;
 	lpcc.hwndOwner = hwndOwner;
-	lpcc.lpCustColors = lpCustColors;
+	lpcc.lpCustColors = display.lpCustColors;
 	if (rgb != null) {
 		lpcc.Flags |= OS.CC_RGBINIT;
 		int red = rgb.red & 0xFF;
@@ -156,8 +160,14 @@ public RGB open () {
 	/* Free the CCHookProc */
 	callback.dispose ();
 	
-	/* Free the OS memory */
-	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
+	/* Free the Custom Colors */
+	/*
+	* This code is intentionally commented.  Currently,
+	* there is exactly one set of custom colors per display.
+	* The memory associated with these colors is released
+	* when the display is disposed.
+	*/
+//	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
 	
 	/*
 	* This code is intentionally commented.  On some

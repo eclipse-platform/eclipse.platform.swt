@@ -122,6 +122,14 @@ public class Display extends Device {
 	/* Image list cache */	
 	ImageList[] imageList, toolImageList, toolHotImageList, toolDisabledImageList;
 
+	/* Custom Colors for ChooseColor */
+	int lpCustColors;
+
+	/* Display Data */
+	Object data;
+	String [] keys;
+	Object [] values;
+
 	/* Key Mappings */
 	static final int [] [] KeyTable = {
 		
@@ -205,12 +213,7 @@ public class Display extends Device {
 //		int index = name.lastIndexOf ('.');
 //		PACKAGE_PREFIX = name.substring (0, index + 1);
 //	}
-	
-	/* Display Data */
-	Object data;
-	String [] keys;
-	Object [] values;
-	
+
 	/*
 	* TEMPORARY CODE.  Install the runnable that
 	* gets the current display. This code will
@@ -226,7 +229,7 @@ public class Display extends Device {
 				setDevice (device);
 			}
 		};
-	}
+	}	
 
 /*
 * TEMPORARY CODE.
@@ -1299,6 +1302,10 @@ void releaseDisplay () {
 		}
 	}
 	systemFonts = null;
+	
+	/* Release Custom Colors for ChooseColor */
+	if (lpCustColors != 0) OS.HeapFree (hHeap, 0, lpCustColors);
+	lpCustColors = 0;
 	
 	/* Release references */
 	thread = null;
