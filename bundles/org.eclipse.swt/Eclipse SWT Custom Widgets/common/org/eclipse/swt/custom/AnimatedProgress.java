@@ -11,6 +11,10 @@ import org.eclipse.swt.events.*;
 
 /**
  * A control for showing progress feedback for a long running operation.
+ * 
+ * <dl>
+ * <dt><b>Styles:</b><dd>VERTICAL, HORIZONTAL, BORDER
+ * </dl>
  */
 public class AnimatedProgress extends Canvas {
 
@@ -23,6 +27,32 @@ public class AnimatedProgress extends Canvas {
 	private int orientation = SWT.HORIZONTAL;
 	private boolean showBorder = false;
 
+/**
+ * Constructs a new instance of this class given its parent
+ * and a style value describing its behavior and appearance.
+ * <p>
+ * The style value is either one of the style constants defined in
+ * class <code>SWT</code> which is applicable to instances of this
+ * class, or must be built by <em>bitwise OR</em>'ing together 
+ * (that is, using the <code>int</code> "|" operator) two or more
+ * of those <code>SWT</code> style constants. The class description
+ * for all SWT widget classes should include a comment which
+ * describes the style constants which are applicable to the class.
+ * </p>
+ *
+ * @param parent a widget which will be the parent of the new instance (cannot be null)
+ * @param style the style of widget to construct
+ *
+ * @exception IllegalArgumentException <ul>
+ *    <li>ERROR_NULL_ARGUMENT - if the parent is null</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the parent</li>
+ * </ul>
+ *
+ * @see SWT
+ * @see #getStyle
+ */
 public AnimatedProgress(Composite parent, int style) {
 	super(parent, checkStyle(style));
 	
@@ -54,6 +84,11 @@ private static int checkStyle (int style) {
 /**
  * Stop the animation if it is not already stopped and 
  * reset the presentation to a blank appearance.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
  */
 public synchronized void clear(){
 	checkWidget();
@@ -138,6 +173,11 @@ private void paintStripes(GC gc) {
 }
 /**
 * Start the animation.
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public synchronized void start() {
 	checkWidget();
@@ -161,6 +201,11 @@ public synchronized void start() {
 }
 /**
 * Stop the animation.   Freeze the presentation at its current appearance.
+* 
+* @exception SWTException <ul>
+*    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+*    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+* </ul>
 */
 public synchronized void stop() {
 	checkWidget();
