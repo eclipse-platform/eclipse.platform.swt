@@ -96,6 +96,11 @@ protected void disposeCOMInterfaces() {
 	}
 }
 
+protected int AddRef() {
+	/* Workaround for javac 1.1.8 bug */
+	return super.AddRef();
+}
+
 protected int QueryInterface(int riid, int ppvObject) {
 	int result = super.QueryInterface(riid, ppvObject);
 	if (result == COM.S_OK) return result;
@@ -157,6 +162,11 @@ int OnDocWindowActivate(int fActivate) {
 
 int OnFrameWindowActivate(int fActivate) {
 	return COM.E_NOTIMPL;
+}
+
+protected int Release() {
+	/* Workaround for javac 1.1.8 bug */
+	return super.Release();
 }
 
 int ResizeBorder(int prcBorder, int pUIWindow, int fFrameWindow) {
