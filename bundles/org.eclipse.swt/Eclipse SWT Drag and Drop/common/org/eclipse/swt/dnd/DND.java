@@ -22,6 +22,26 @@ import org.eclipse.swt.*;
 public class DND {
 	
 	/**
+	 * The transfer mechanism for data that is being cut
+	 * and then pasted or copied and then pasted (value is 1).
+	 * 
+	 * @see Clipboard
+	 * 
+	 * @since 3.1
+	 */
+	public final static int CLIPBOARD = 1 << 0;
+	
+	/**
+	 * The transfer mechanism for clients that use the selection 
+	 * mechanism (value is 2).
+	 * 
+	 * @see Clipboard
+	 *
+	 * @since 3.1
+	 */
+	public final static int SELECTION_CLIPBOARD = 1 << 1;
+
+	/**
 	 * Drag and Drop Operation: no drag/drop operation performed
 	 * (value is 0).
 	 */
@@ -167,10 +187,17 @@ public class DND {
 	 */
 	public static final int ERROR_CANNOT_SET_CLIPBOARD = 2002;
 	
+	/**
+	 * Error code: Data does not have correct format for type (value is 2003).
+	 * @since 3.1
+	 */
+	public static final int ERROR_INVALID_DATA = 2003;
+	
 
-	static final String INIT_DRAG_MESSAGE =  "Cannot initialize Drag"; //$NON-NLS-1$
-	static final String INIT_DROP_MESSAGE =  "Cannot initialize Drop"; //$NON-NLS-1$
-	static final String CANNOT_SET_CLIPBOARD_MESSAGE =  "Cannot set data in clipboard"; //$NON-NLS-1$
+	static final String INIT_DRAG_MESSAGE = "Cannot initialize Drag"; //$NON-NLS-1$
+	static final String INIT_DROP_MESSAGE = "Cannot initialize Drop"; //$NON-NLS-1$
+	static final String CANNOT_SET_CLIPBOARD_MESSAGE = "Cannot set data in clipboard"; //$NON-NLS-1$
+	static final String INVALID_DATA_MESSAGE = "Data does not have correct format for type"; //$NON-NLS-1$
 
 /**
  * Throws an appropriate exception based on the passed in error code.
@@ -223,6 +250,11 @@ public static void error (int code, int hresult) {
 			String msg = DND.CANNOT_SET_CLIPBOARD_MESSAGE;
 			if (hresult != 0) msg += " result = "+hresult; //$NON-NLS-1$
 			throw new SWTError (code, msg);
+		}
+		case DND.ERROR_INVALID_DATA:{
+			String msg = DND.INVALID_DATA_MESSAGE;
+			if (hresult != 0) msg += " result = "+hresult; //$NON-NLS-1$
+			throw new SWTException (code, msg);
 		}
 	}
 			
