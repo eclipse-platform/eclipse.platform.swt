@@ -12,15 +12,18 @@
 Eclipse Platform Build Notes<br>
 SWT</h1>
 
+<h2> SWT Build 3.0 038 - Tuesday February 10, 2004 </h2>
+
 <h3><a NAME="New APIs"></a>New APIs</h3>
 <blockquote>
 ACC.ROLE_TREEITEM added
 <br>ACC.ROLE_TABLECELL added
 <br>ACC.ROLE_TABLECOLUMNHEADER added
 <br>ACC.ROLE_TABLEROWHEADER added
-<br>TableItem.setFont(Font) and TableItem.setFont(int, Font) added.
-<br>TableItem.getFont() and TableItem.getFont(int) added.
-<br>Table.showColumn(TableColumn) added.
+<br>TableItem.setFont(Font) and TableItem.setFont(int, Font) added
+<br>TableItem.getFont() and TableItem.getFont(int) added
+<br>Table.showColumn(TableColumn) added
+<br>LocationEvent.top added
 </blockquote>
 
 <h3><a NAME="Breaking Changes"></a>Breaking Changes</h3>
@@ -28,7 +31,20 @@ ACC.ROLE_TREEITEM added
 ACC.ROLE_TABLECOLUMN deprecated - use ROLE_TABLECOLUMNHEADER instead.
 </blockquote>
 
-<h2> SWT Build 3.0 037 - Tuesday February 2, 2004 </h2>
+<h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
+<blockquote>
+37742:  ACC: missing an item correspondent with ROLE_SYSTEM_OUTLINEITEM defined by MSAA  
+<br>43091:  [browser] Browser - LocationEvent behavior  
+<br>44063:  Clipboard of GTK on KDE : Eclipse crash  
+<br>44943:  TableCursor color set incorrectly  
+<br>50522:  [interop] Components in SWT_AWT don't show in Workbench.  
+<br>50907:  JPEG loader fails to load image  
+<br>51081:  Tracker flickers when using setRectangles to hold it in place  
+<br>51325:  SWT_AWT:The color depth of the display changed cause NullPointerException  
+<br>51372:  [browser] certain event strings contain an extra null char
+</blockquote>
+
+<h2> SWT Build 3.0 037 - Tuesday February 3, 2004 </h2>
 
 <h3><a NAME="Problem reports fixed"></a>Problem reports fixed</h3>
 <blockquote>
