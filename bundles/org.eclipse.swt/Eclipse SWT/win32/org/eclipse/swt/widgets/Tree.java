@@ -2346,10 +2346,11 @@ LRESULT WM_CHAR (int wParam, int lParam) {
 LRESULT WM_GETOBJECT (int wParam, int lParam) {
 	/*
 	* Ensure that there is an accessible object created for this
-	* control because support for checked item and tree column accessibility is
-	* temporarily implemented in the accessibility package.
+	* control because support for checked item and tree column
+	* accessibility is temporarily implemented in the accessibility
+	* package.
 	*/
-	if ((style & SWT.CHECK) != 0 || getColumnCount () > 0) { // Not sure
+	if ((style & SWT.CHECK) != 0 || hwndParent != 0) {
 		if (accessible == null) accessible = new_Accessible (this);
 	}
 	return super.WM_GETOBJECT (wParam, lParam);
