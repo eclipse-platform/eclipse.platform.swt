@@ -1049,6 +1049,7 @@ public class OS {
 	public static final int WM_CUT = 0x300;
 	public static final int WM_DESTROY = 0x2;
 	public static final int WM_DRAWITEM = 0x2b;
+	public static final int WM_ENDSESSION = 0x16;
 	public static final int WM_ERASEBKGND = 0x14;
 	public static final int WM_GETDLGCODE = 0x87;
 	public static final int WM_GETFONT = 0x31;

@@ -1249,8 +1249,12 @@ static synchronized void register (Display display) {
  * @see #destroy
  */
 protected void release () {
-
-	/* Release shells */
+	if (disposeList != null) {
+		for (int i=0; i<disposeList.length; i++) {
+			if (disposeList [i] != null) disposeList [i].run ();
+		}
+	}
+	disposeList = null;
 	Shell [] shells = WidgetTable.shells ();
 	for (int i=0; i<shells.length; i++) {
 		Shell shell = shells [i];
@@ -1259,21 +1263,9 @@ protected void release () {
 		}
 	}
 	while (readAndDispatch ()) {};
-	
-	/* Run dispose list */
-	if (disposeList != null) {
-		for (int i=0; i<disposeList.length; i++) {
-			if (disposeList [i] != null) disposeList [i].run ();
-		}
-	}
-	disposeList = null;
-	
-	/* Release synchronizer */
 	synchronizer.releaseSynchronizer ();
 	synchronizer = null;
-
 	releaseDisplay ();
-
 	super.release ();
 }
 
@@ -1802,9 +1794,23 @@ public void wake () {
 }
 
 int windowProc (int hwnd, int msg, int wParam, int lParam) {
-	if (hwnd == hwndShell && msg == OS.WM_SETTINGCHANGE) updateFont ();
 	Control control = WidgetTable.get (hwnd);
-	if (control != null) return control.windowProc (msg, wParam, lParam);
+	if (control != null) {
+		return control.windowProc (msg, wParam, lParam);
+	}
+	if (hwnd == hwndShell) {
+		switch (msg) {
+			case OS.WM_ENDSESSION:
+				/*
+				* This code is intentionally commented.
+				*/
+//				if (wParam != 0) dispose ();
+				break;
+			case OS.WM_SETTINGCHANGE:
+				updateFont ();
+				break;
+		}
+	}
 	return OS.DefWindowProc (hwnd, msg, wParam, lParam);
 }
 

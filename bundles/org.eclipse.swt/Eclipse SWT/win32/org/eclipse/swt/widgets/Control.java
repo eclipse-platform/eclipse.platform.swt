@@ -2653,6 +2653,7 @@ int windowProc (int msg, int wParam, int lParam) {
 		case OS.WM_CUT:				result = WM_CUT (wParam, lParam); break;
 		case OS.WM_DESTROY:			result = WM_DESTROY (wParam, lParam); break;
 		case OS.WM_DRAWITEM:			result = WM_DRAWITEM (wParam, lParam); break;
+		case OS.WM_ENDSESSION:			result = WM_ENDSESSION (wParam, lParam); break;
 		case OS.WM_ERASEBKGND:			result = WM_ERASEBKGND (wParam, lParam); break;
 		case OS.WM_GETDLGCODE:			result = WM_GETDLGCODE (wParam, lParam); break;
 		case OS.WM_HELP:				result = WM_HELP (wParam, lParam); break;
@@ -2829,6 +2830,10 @@ LRESULT WM_DRAWITEM (int wParam, int lParam) {
 	Control control = WidgetTable.get (struct.hwndItem);
 	if (control == null) return null;
 	return control.wmDrawChild (wParam, lParam);
+}
+
+LRESULT WM_ENDSESSION (int wParam, int lParam) {
+	return null;
 }
 
 LRESULT WM_ERASEBKGND (int wParam, int lParam) {
