@@ -400,6 +400,7 @@ void addFilter (int eventType, Listener listener) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see Listener
@@ -422,6 +423,10 @@ public void addListener (int eventType, Listener listener) {
  *
  * @param runnable code to run on the user-interface thread.
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
  * @see #syncExec
  */
 public void asyncExec (Runnable runnable) {
@@ -431,6 +436,11 @@ public void asyncExec (Runnable runnable) {
 /**
  * Causes the system hardware to emit a short sound
  * (if it supports this capability).
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void beep () {
 	checkDevice ();
@@ -508,6 +518,7 @@ protected void checkSubclass () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #dispose
@@ -681,6 +692,11 @@ void destroyDisplay () {
  * receiver is disposed.
  *
  * @param runnable code to run at dispose time.
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public void disposeExec (Runnable runnable) {
 	checkDevice ();
@@ -791,6 +807,7 @@ boolean filterEvent (XAnyEvent event) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public Widget findWidget (int handle) {
@@ -806,6 +823,7 @@ public Widget findWidget (int handle) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public Shell getActiveShell () {
@@ -861,6 +879,7 @@ public static synchronized Display findDisplay (Thread thread) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public Control getCursorControl () {
@@ -892,6 +911,7 @@ public Control getCursorControl () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public Point getCursorLocation () {
@@ -931,6 +951,7 @@ public static synchronized Display getDefault () {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #setData
@@ -961,7 +982,8 @@ public Object getData (String key) {
  * @return the display specific data
  *
  * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #setData
@@ -983,6 +1005,7 @@ public Object getData () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
  * @since 2.1
@@ -1000,6 +1023,7 @@ public int getDismissalAlignment () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public int getDoubleClickTime () {
@@ -1016,6 +1040,7 @@ public int getDoubleClickTime () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public Control getFocusControl () {
@@ -1046,6 +1071,7 @@ public Control getFocusControl () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public int getIconDepth () {
@@ -1062,6 +1088,7 @@ int getLastEventTime () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public Shell [] getShells () {
@@ -1101,6 +1128,10 @@ public Shell [] getShells () {
  * </p>
  *
  * @return the receiver's sync-interface thread
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Thread getSyncThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
@@ -1120,6 +1151,7 @@ public Thread getSyncThread () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see SWT
@@ -1171,6 +1203,7 @@ public Color getSystemColor (int id) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public Font getSystemFont () {
@@ -1181,6 +1214,10 @@ public Font getSystemFont () {
  * Returns the user-interface thread for the receiver.
  *
  * @return the receiver's user-interface thread
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public Thread getThread () {
 	if (isDisposed ()) error (SWT.ERROR_DEVICE_DISPOSED);
@@ -1568,6 +1605,13 @@ void initializeTranslations () {
  * @return the platform specific GC handle
  *
  * @private
+ * 
+ * @exception SWTError <ul>
+ *    <li>ERROR_NO_HANDLES if a handle could not be obtained for image creation</li>
+ * </ul>
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
  */
 public int internal_new_GC (GCData data) {
 	if (isDisposed()) SWT.error(SWT.ERROR_DEVICE_DISPOSED);
@@ -1655,6 +1699,7 @@ void postEvent (Event event) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #sleep
@@ -1877,6 +1922,7 @@ void removeFilter (int eventType, Listener listener) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see Listener
@@ -1978,6 +2024,7 @@ void sendEvent (int eventType, Event event) {
  * 
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
  * @since 2.1
@@ -1997,6 +2044,7 @@ public void setCursorLocation (int x, int y) {
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
  *    <li>ERROR_NULL_ARGUMENT - if the point is null
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  * 
  * @since 2.0
@@ -2045,6 +2093,7 @@ void setCurrentCaret (Caret caret) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #setData
@@ -2113,7 +2162,8 @@ public void setData (String key, Object value) {
  * @param data the new display specific data
  *
  * @exception SWTException <ul>
- *    <li>ERROR_THREAD_INVALID_ACCESS - when called from the wrong thread</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #getData
@@ -2134,6 +2184,7 @@ public void setData (Object data) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
 public void setSynchronizer (Synchronizer synchronizer) {
@@ -2219,6 +2270,7 @@ void showToolTip (int handle, String toolTipText) {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #wake
@@ -2259,6 +2311,7 @@ public boolean sleep () {
  *
  * @exception SWTException <ul>
  *    <li>ERROR_FAILED_EXEC - if an exception occured when executing the runnable</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #asyncExec
@@ -2291,6 +2344,7 @@ int textWidth (String string, Font font) {
  * </ul>
  * @exception SWTException <ul>
  *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  *
  * @see #asyncExec
@@ -2359,6 +2413,11 @@ static int untranslateKey (int key) {
  * Forces all outstanding paint requests for the display
  * to be processed before this method returns.
  *
+ * @exception SWTException <ul>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
  * @see Control#update
  */
 public void update () {
@@ -2374,7 +2433,11 @@ public void update () {
  * If the receiver's user-interface thread was <code>sleep</code>'ing, 
  * causes it to be awakened and start running again. Note that this
  * method may be called from any thread.
- *
+ * 
+ * @exception SWTException <ul>
+ *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
+ * </ul>
+ * 
  * @see #sleep
  */
 public void wake () {
