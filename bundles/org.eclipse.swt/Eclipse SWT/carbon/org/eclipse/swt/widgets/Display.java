@@ -206,7 +206,7 @@ int appleEventProc (int nextHandler, int theEvent, int userData) {
 	return OS.eventNotHandledErr;
 }
 
-public void addFilter (int eventType, Listener listener) {
+void addFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) filterTable = new EventTable ();
@@ -1098,7 +1098,7 @@ void releaseDisplay () {
 
 }
 
-public void removeFilter (int eventType, Listener listener) {
+void removeFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) return;

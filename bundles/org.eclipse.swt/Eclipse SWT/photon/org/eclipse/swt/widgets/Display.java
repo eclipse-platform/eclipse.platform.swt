@@ -330,7 +330,7 @@ public Display (DeviceData data) {
  * 
  * @since 2.1 
  */
-public void addFilter (int eventType, Listener listener) {
+void addFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) filterTable = new EventTable ();
@@ -1427,7 +1427,7 @@ void releaseDisplay () {
  * 
  * @since 2.1 
  */
-public void removeFilter (int eventType, Listener listener) {
+void removeFilter (int eventType, Listener listener) {
 	checkDevice ();
 	if (listener == null) error (SWT.ERROR_NULL_ARGUMENT);
 	if (filterTable == null) return;
