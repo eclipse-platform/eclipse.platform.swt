@@ -1748,7 +1748,7 @@ public Point stringExtent(String string) {
 	int[] width = new int[1];
 	int[] height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
-	return new Point(width[0] / OS.PANGO_SCALE, height[0] / OS.PANGO_SCALE);
+	return new Point(OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
 }
 
 /**
@@ -1815,7 +1815,7 @@ public Point textExtent(String string, int flags) {
 	int[] width = new int[1];
 	int[] height = new int[1];
 	OS.pango_layout_get_size(layout, width, height);
-	return new Point(width[0] / OS.PANGO_SCALE, height[0] / OS.PANGO_SCALE);
+	return new Point(OS.PANGO_PIXELS(width[0]), OS.PANGO_PIXELS(height[0]));
 }
 
 /**
