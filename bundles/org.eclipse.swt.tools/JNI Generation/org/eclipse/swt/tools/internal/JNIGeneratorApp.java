@@ -70,7 +70,9 @@ void generateSTRUCTS_H() {
 void generateSTRUCTS_C() {
 	try {
 		String outputName = getClassName(mainClass).toLowerCase();
-		metaData.setMetaData("swt_includes", "#include \"swt.h\"\n#include \"" + outputName + "_structs.h\"\n");
+		String inc = 
+			"#include \"swt.h\"\n" +
+			"#include \"" + outputName + "_structs.h\"\n";
 		StructsGenerator gen = new StructsGenerator();
 		gen.setMetaData(metaData);
 		ByteArrayOutputStream out = new ByteArrayOutputStream();
