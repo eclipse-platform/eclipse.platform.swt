@@ -1767,26 +1767,26 @@ void redrawFromItemDownwards (int index) {
  * Redraws the tree item at the specified index.  It is valid for this index to reside
  * beyond the last available item in the receiver.
  */
-void redrawItem (int itemIndex, boolean column0only) {
-	redrawItems (itemIndex, itemIndex, column0only);
+void redrawItem (int itemIndex, boolean focusBoundsOnly) {
+	redrawItems (itemIndex, itemIndex, focusBoundsOnly);
 }
 /*
  * Redraws the tree between the start and end item indices inclusive.  It is valid
  * for the end index value to extend beyond the last available item in the receiver.
  */
-void redrawItems (int startIndex, int endIndex, boolean column0only) {
+void redrawItems (int startIndex, int endIndex, boolean focusBoundsOnly) {
 	int startY = (startIndex - topIndex) * itemHeight + getHeaderHeight ();
 	int height = (endIndex - startIndex + 1) * itemHeight;
-	if (column0only) {
-		int width = 0;
-		if (columns.length == 0) {
-			width = getClientArea ().width;
-		} else {
-			TreeColumn column = columns [0];
-			width = column.width - horizontalOffset;
-			if (width <= 0) return;	/* first column not visible */
+	if (focusBoundsOnly) {
+		if (columns.length > 0) {
+			int rightX = columns [0].width - horizontalOffset;
+			if (rightX <= 0) return;	/* first column not visible */
 		}
-		redraw (0, startY, width, height, false);
+		endIndex = Math.min (endIndex, availableItems.length - 1);
+		for (int i = startIndex; i <= endIndex; i++) {
+			Rectangle bounds = availableItems [i].getFocusBounds ();
+			redraw (bounds.x, startY, bounds.width, height, false);
+		}
 	} else {
 		Rectangle bounds = getClientArea ();
 		redraw (0, startY, bounds.width, height, false);
