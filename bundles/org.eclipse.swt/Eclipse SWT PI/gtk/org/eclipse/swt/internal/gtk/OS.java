@@ -5280,6 +5280,25 @@ public static final int /*long*/ gtk_spin_button_get_adjustment(int /*long*/ spi
 		lock.unlock();
 	}
 }
+
+public static final native int _gtk_spin_button_get_digits(int /*long*/ spin_button);
+public static final int gtk_spin_button_get_digits(int /*long*/ spin_button) {
+	lock.lock();
+	try {
+		return _gtk_spin_button_get_digits(spin_button);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_spin_button_set_digits(int /*long*/ spin_button, int digits);
+public static final void gtk_spin_button_set_digits(int /*long*/ spin_button, int digits) {
+	lock.lock();
+	try {
+		_gtk_spin_button_set_digits(spin_button, digits);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_spin_button_set_increments(int /*long*/ spin_button, double step, double page);
 public static final void gtk_spin_button_set_increments(int /*long*/ spin_button, double step, double page) {
 	lock.lock();

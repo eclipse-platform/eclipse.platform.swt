@@ -7775,6 +7775,18 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1spin_1button_1get_1adjustment)
 }
 #endif
 
+#ifndef NO__1gtk_1spin_1button_1get_1digits
+JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1spin_1button_1get_1digits)
+	(JNIEnv *env, jclass that, jint arg0)
+{
+	jint rc = 0;
+	OS_NATIVE_ENTER(env, that, _1gtk_1spin_1button_1get_1digits_FUNC);
+	rc = (jint)gtk_spin_button_get_digits((GtkSpinButton*)arg0);
+	OS_NATIVE_EXIT(env, that, _1gtk_1spin_1button_1get_1digits_FUNC);
+	return rc;
+}
+#endif
+
 #ifndef NO__1gtk_1spin_1button_1new
 JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1spin_1button_1new)
 	(JNIEnv *env, jclass that, jint arg0, jdouble arg1, jint arg2)
@@ -7784,6 +7796,16 @@ JNIEXPORT jint JNICALL OS_NATIVE(_1gtk_1spin_1button_1new)
 	rc = (jint)gtk_spin_button_new((GtkAdjustment *)arg0, arg1, arg2);
 	OS_NATIVE_EXIT(env, that, _1gtk_1spin_1button_1new_FUNC);
 	return rc;
+}
+#endif
+
+#ifndef NO__1gtk_1spin_1button_1set_1digits
+JNIEXPORT void JNICALL OS_NATIVE(_1gtk_1spin_1button_1set_1digits)
+	(JNIEnv *env, jclass that, jint arg0, jint arg1)
+{
+	OS_NATIVE_ENTER(env, that, _1gtk_1spin_1button_1set_1digits_FUNC);
+	gtk_spin_button_set_digits((GtkSpinButton*)arg0, arg1);
+	OS_NATIVE_EXIT(env, that, _1gtk_1spin_1button_1set_1digits_FUNC);
 }
 #endif
 

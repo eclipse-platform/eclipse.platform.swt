@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 977;
-int OS_nativeFunctionCallCount[977];
+int OS_nativeFunctionCount = 979;
+int OS_nativeFunctionCallCount[979];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -619,7 +619,9 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1socket_1get_1id",
 	"_1gtk_1socket_1new",
 	"_1gtk_1spin_1button_1get_1adjustment",
+	"_1gtk_1spin_1button_1get_1digits",
 	"_1gtk_1spin_1button_1new",
+	"_1gtk_1spin_1button_1set_1digits",
 	"_1gtk_1spin_1button_1set_1increments",
 	"_1gtk_1spin_1button_1set_1range",
 	"_1gtk_1spin_1button_1set_1value",
