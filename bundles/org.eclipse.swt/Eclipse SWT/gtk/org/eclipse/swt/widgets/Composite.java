@@ -547,12 +547,12 @@ void moveAbove (int /*long*/ child, int /*long*/ sibling) {
 	OS.memmove (fixed, parentHandle);
 	int /*long*/ children = fixed.children;
 	if (children == 0) return;
-	int [] data = new int [1];
-	int [] widget = new int [1];
+	int /*long*/ [] data = new int /*long*/ [1];
+	int /*long*/ [] widget = new int /*long*/ [1];
 	int /*long*/ childData = 0, childLink = 0, siblingLink = 0, temp = children;
 	while (temp != 0) {
-		OS.memmove (data, temp, 4);
-		OS.memmove (widget, data [0], 4);
+		OS.memmove (data, temp, OS.PTR_SIZEOF);
+		OS.memmove (widget, data [0], OS.PTR_SIZEOF);
 		if (child == widget [0]) {
 			childLink = temp;
 			childData = data [0];
@@ -584,12 +584,12 @@ void moveBelow (int /*long*/ child, int /*long*/ sibling) {
 	OS.memmove (fixed, parentHandle);
 	int /*long*/ children = fixed.children;
 	if (children == 0) return;
-	int [] data = new int [1];
-	int [] widget = new int [1];
+	int /*long*/ [] data = new int /*long*/ [1];
+	int /*long*/ [] widget = new int /*long*/ [1];
 	int /*long*/ childData = 0, childLink = 0, siblingLink = 0, temp = children;
 	while (temp != 0) {
-		OS.memmove (data, temp, 4);
-		OS.memmove (widget, data [0], 4);
+		OS.memmove (data, temp, OS.PTR_SIZEOF);
+		OS.memmove (widget, data [0], OS.PTR_SIZEOF);
 		if (child == widget [0]) {
 			childLink = temp;
 			childData = data [0];

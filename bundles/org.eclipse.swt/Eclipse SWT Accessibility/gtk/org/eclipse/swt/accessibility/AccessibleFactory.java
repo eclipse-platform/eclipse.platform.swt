@@ -208,7 +208,7 @@ class AccessibleFactory {
 		return DefaultParentType;
 	}
 
-	int gTypeInfo_base_init_factory (int klass) {
+	int /*long*/ gTypeInfo_base_init_factory (int /*long*/ klass) {
 		int /*long*/ atkObjectFactoryClass = ATK.ATK_OBJECT_FACTORY_CLASS (klass);
 		AtkObjectFactoryClass objectFactoryClassStruct = new AtkObjectFactoryClass ();
 		ATK.memmove (objectFactoryClassStruct, atkObjectFactoryClass);
@@ -218,7 +218,7 @@ class AccessibleFactory {
 		return 0;
 	}
 	
-	static int gTypeInfo_base_init_type (int klass) {
+	static int /*long*/ gTypeInfo_base_init_type (int /*long*/ klass) {
 		AtkObjectClass objectClass = new AtkObjectClass ();
 		ATK.memmove (objectClass, klass);
 		objectClass.get_name = AtkObjectCB_get_name.getAddress ();
@@ -238,7 +238,7 @@ class AccessibleFactory {
 		return 0;
 	}
 	
-	static int initActionIfaceCB (int iface) {
+	static int /*long*/ initActionIfaceCB (int /*long*/ iface) {
 		AtkActionIface actionIface = new AtkActionIface ();
 		ATK.memmove (actionIface, iface);
 		actionIface.get_keybinding = AtkActionCB_get_keybinding.getAddress (); 
@@ -247,7 +247,7 @@ class AccessibleFactory {
 		return 0;
 	}
 	
-	static int initComponentIfaceCB (int iface) {
+	static int /*long*/ initComponentIfaceCB (int /*long*/ iface) {
 		AtkComponentIface componentIface = new AtkComponentIface ();
 		ATK.memmove (componentIface, iface);
 		componentIface.get_extents = AtkComponentCB_get_extents.getAddress ();
@@ -258,7 +258,7 @@ class AccessibleFactory {
 		return 0;
 	}
 
-	static int initSelectionIfaceCB (int iface) {
+	static int /*long*/ initSelectionIfaceCB (int /*long*/ iface) {
 		AtkSelectionIface selectionIface = new AtkSelectionIface ();
 		ATK.memmove (selectionIface, iface);
 		selectionIface.is_child_selected = AtkSelectionCB_is_child_selected.getAddress ();
@@ -267,7 +267,7 @@ class AccessibleFactory {
 		return 0;
 	}
 
-	static int initTextIfaceCB (int iface) {
+	static int /*long*/ initTextIfaceCB (int /*long*/ iface) {
 		AtkTextIface textInterface = new AtkTextIface ();
 		ATK.memmove (textInterface, iface);
 		textInterface.get_caret_offset = AtkTextCB_get_caret_offset.getAddress ();

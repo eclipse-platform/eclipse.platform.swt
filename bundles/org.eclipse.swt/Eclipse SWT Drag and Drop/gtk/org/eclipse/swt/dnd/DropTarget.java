@@ -238,31 +238,33 @@ static int checkStyle (int style) {
 	return style;
 }
 
-private static int Drag_Data_Received ( int widget, int context, int x, int y, int data, int info, int time){
+private static int /*long*/ Drag_Data_Received ( int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ data, int /*long*/ info, int /*long*/ time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
-	return target.drag_data_received (widget, context, x, y, data, info, time);
+	target.drag_data_received (widget, context, (int)/*64*/x, (int)/*64*/y, data, (int)/*64*/info, (int)/*64*/time);
+	return 0;
 }
 
-private static int Drag_Drop(int widget, int context, int x, int y, int time) {
+private static int /*long*/ Drag_Drop(int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ time) {
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
-	return target.drag_drop (widget, context, x, y, time);
+	return target.drag_drop (widget, context, (int)/*64*/x, (int)/*64*/y, (int)/*64*/time) ? 1 : 0;
 }
 
-private static int Drag_Leave ( int widget, int context, int time){
+private static int /*long*/ Drag_Leave ( int /*long*/ widget, int /*long*/ context, int /*long*/ time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
-	return target.drag_leave (widget, context, time);
+	target.drag_leave (widget, context, (int)/*64*/time);
+	return 0;
 }
 
-private static int Drag_Motion ( int widget, int context, int x, int y, int time){
+private static int /*long*/ Drag_Motion ( int /*long*/ widget, int /*long*/ context, int /*long*/ x, int /*long*/ y, int /*long*/ time){
 	DropTarget target = FindDropTarget(widget);
 	if (target == null) return 0;
-	return target.drag_motion (widget, context, x, y, time);
+	return target.drag_motion (widget, context, (int)/*64*/x, (int)/*64*/y, (int)/*64*/time) ? 1 : 0;
 }
 	
-private static DropTarget FindDropTarget(int handle) {
+private static DropTarget FindDropTarget(int /*long*/ handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
@@ -321,11 +323,11 @@ protected void checkSubclass () {
 	}
 }
 
-private int drag_data_received ( int widget, int context, int x, int y, int data, int info, int time){
+private void drag_data_received ( int /*long*/ widget, int /*long*/ context, int x, int y, int /*long*/ data, int info, int time){
 	DNDEvent event = new DNDEvent();
 	if (data == 0 || !setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
-		return 0;
+		return;
 	}
 	keyOperation = -1;
 	
@@ -367,14 +369,14 @@ private int drag_data_received ( int widget, int context, int x, int y, int data
 	
 	//notify source of action taken
 	OS.gtk_drag_finish(context, selectedOperation != DND.DROP_NONE, selectedOperation== DND.DROP_MOVE, time); 			
-	return 1;	
+	return;	
 }
 
-private int drag_drop(int widget, int context, int x, int y, int time) {
+private boolean drag_drop(int /*long*/ widget, int /*long*/ context, int x, int y, int time) {
 	DNDEvent event = new DNDEvent();
 	if (!setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
-		return 0;
+		return false;
 	}
 	keyOperation = -1;
 	
@@ -408,19 +410,19 @@ private int drag_drop(int widget, int context, int x, int y, int time) {
 	
 	if (selectedOperation == DND.DROP_NONE) {
 		// this was not a successful drop
-		return 0;
+		return false;
 	}
 
 	// ask drag source for dropped data
 	OS.gtk_drag_get_data(widget, context, selectedDataType.type, time);
-	return 1;
+	return true;
 }
 
-private int drag_leave ( int widget, int context, int time){
+private void drag_leave ( int /*long*/ widget, int /*long*/ context, int time){
 	updateDragOverHover(0, null);
 	effect.show(DND.FEEDBACK_NONE, 0, 0);
 	
-	if (keyOperation == -1) return 1;
+	if (keyOperation == -1) return;
 	keyOperation = -1;
 	
 	DNDEvent event = new DNDEvent();
@@ -430,10 +432,9 @@ private int drag_leave ( int widget, int context, int time){
 	try {
 		notifyListeners(DND.DragLeave, event);
 	} catch (Throwable e) {}
-	return 1;
 }
 
-private int drag_motion ( int widget, int context, int x, int y, int time){
+private boolean drag_motion ( int /*long*/ widget, int /*long*/ context, int x, int y, int time){
 	int oldKeyOperation = keyOperation;
 	
 	if (oldKeyOperation == -1) { //drag enter
@@ -445,7 +446,7 @@ private int drag_motion ( int widget, int context, int x, int y, int time){
 	if (!setEventData(context, x, y, time, event)) {
 		keyOperation = -1;
 		OS.gdk_drag_status(context, 0, time);
-		return 0;
+		return false;
 	}
 	
 	int allowedOperations = event.operations;
@@ -471,7 +472,7 @@ private int drag_motion ( int widget, int context, int x, int y, int time){
 		notifyListeners(event.type, event);	
 	} catch (Throwable e) {
 		OS.gdk_drag_status(context, 0, time);
-		return 0;
+		return false;
 	}
 
 	if (event.detail == DND.DROP_DEFAULT) {
@@ -513,7 +514,7 @@ private int drag_motion ( int widget, int context, int x, int y, int time){
 	if (oldKeyOperation == -1) {
 		dragOverHeartbeat.run();
 	}
-	return 1;
+	return true;
 }
 
 /**
@@ -703,7 +704,7 @@ public void setTransfer(Transfer[] transferAgents){
 	}
 }
 
-private boolean setEventData(int context, int x, int y, int time, DNDEvent event) {
+private boolean setEventData(int /*long*/ context, int x, int y, int time, DNDEvent event) {
 	if (context == 0) return false;
 	GdkDragContext dragContext = new GdkDragContext();
 	OS.memmove(dragContext, context, GdkDragContext.sizeof);

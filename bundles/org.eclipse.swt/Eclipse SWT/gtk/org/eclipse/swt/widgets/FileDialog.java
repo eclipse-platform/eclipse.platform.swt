@@ -281,17 +281,17 @@ String interpretOsAnswer(String osAnswer) {
 	} else {
 		int /*long*/ namesPtr = OS.gtk_file_selection_get_selections (handle);
 		int /*long*/ namesPtr1 = namesPtr;
-		int [] namePtr = new int [1];
-		OS.memmove (namePtr, namesPtr1, 4);
+		int /*long*/ [] namePtr = new int /*long*/ [1];
+		OS.memmove (namePtr, namesPtr1, OS.PTR_SIZEOF);
 		int length = 0;
 		while (namePtr[0] != 0) {
 			length++;
-			namesPtr1+=4;
-			OS.memmove(namePtr, namesPtr1, 4);
+			namesPtr1+=OS.PTR_SIZEOF;
+			OS.memmove(namePtr, namesPtr1, OS.PTR_SIZEOF);
 		}
 		fileNames = new String [length];
-		namePtr = new int [length];
-		OS.memmove (namePtr, namesPtr, length * 4);
+		namePtr = new int /*long*/ [length];
+		OS.memmove (namePtr, namesPtr, length * OS.PTR_SIZEOF);
 		for (int i = 0; i < length; i++) {			
 			int /*long*/ utf8Ptr = OS.g_filename_to_utf8 (namePtr [i], -1, null, null, null);
 			int [] items_written = new int [1];

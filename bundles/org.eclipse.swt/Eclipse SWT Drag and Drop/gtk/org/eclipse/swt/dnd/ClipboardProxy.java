@@ -59,7 +59,7 @@ private ClipboardProxy(Display display) {
 	clearFunc = new Callback( this, "clearFunc", 2);
 }
 
-private int clearFunc(int clipboard,int user_data_or_owner){
+private int /*long*/ clearFunc(int /*long*/ clipboard,int /*long*/ user_data_or_owner){
 	if (clipboard == Clipboard.GTKCLIPBOARD) {
 		onClipboard = false;
 	}
@@ -90,7 +90,7 @@ private void dispose () {
  * This function provides the data to the clipboard on request.
  * When this clipboard is disposed, the data will no longer be available.
  */
-private int getFunc( int clipboard, int selection_data, int info, int user_data_or_owner){
+private int /*long*/ getFunc( int /*long*/ clipboard, int /*long*/ selection_data, int /*long*/ info, int /*long*/ user_data_or_owner){
 	if (selection_data == 0) return 0;
 	GtkSelectionData selectionData = new GtkSelectionData();
 	OS.memmove(selectionData, selection_data, GtkSelectionData.sizeof);

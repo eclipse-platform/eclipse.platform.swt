@@ -103,8 +103,8 @@ public Object nativeToJava(TransferData transferData){
 		int /*long*/[] list = new int /*long*/[1];
 		int count = OS.gdk_text_property_to_utf8_list(transferData.type, transferData.format, transferData.pValue, transferData.length, list);
 		if (count == 0) return null;
-		int[] ptr = new int[1];
-		OS.memmove(ptr, list[0], 4);
+		int /*long*/[] ptr = new int /*long*/[1];
+		OS.memmove(ptr, list[0], OS.PTR_SIZEOF);
 		int length = OS.strlen(ptr[0]);
 		buffer = new byte[length];
 		OS.memmove(buffer, ptr[0], length);

@@ -324,7 +324,7 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	checkDevice ();
 	if (!scalable) return new FontData[0];
 	int /*long*/[] family = new int /*long*/[1];
-	int[] face = new int[1];
+	int /*long*/[] face = new int /*long*/[1];
 	int /*long*/[] families = new int /*long*/[1];
 	int[] n_families = new int[1];
 	int /*long*/[] faces = new int /*long*/[1];
@@ -334,10 +334,10 @@ public FontData[] getFontList (String faceName, boolean scalable) {
 	int nFds = 0;
 	FontData[] fds = new FontData[faceName != null ? 4 : n_families[0]];
 	for (int i=0; i<n_families[0]; i++) {
-		OS.memmove(family, families[0] + i * 4, 4);
+		OS.memmove(family, families[0] + i * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
 		OS.pango_font_family_list_faces(family[0], faces, n_faces);
 		for (int j=0; j<n_faces[0]; j++) {
-			OS.memmove(face, faces[0] + j * 4, 4);
+			OS.memmove(face, faces[0] + j * OS.PTR_SIZEOF, OS.PTR_SIZEOF);
 			int /*long*/ fontDesc = OS.pango_font_face_describe(face[0]);
 			Font font = Font.gtk_new(this, fontDesc);
 			FontData data = font.getFontData()[0];

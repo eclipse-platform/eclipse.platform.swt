@@ -350,7 +350,7 @@ class AccessibleObject {
 		return descriptionPtr; 
 	}
 
-	static int /*long*/ atkObject_get_name (int atkObject) {
+	static int /*long*/ atkObject_get_name (int /*long*/ atkObject) {
 		if (DEBUG) System.out.println ("-->atkObject_get_name: " + atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object == null) return 0;
@@ -1254,7 +1254,7 @@ class AccessibleObject {
 		return accessible.getTextListeners ();
 	}
 
-	static int gObjectClass_finalize (int atkObject) {
+	static int /*long*/ gObjectClass_finalize (int /*long*/ atkObject) {
 		int /*long*/ superType = ATK.g_type_class_peek_parent (ATK.G_OBJECT_GET_CLASS (atkObject));
 		int /*long*/ gObjectClass = ATK.G_OBJECT_CLASS (superType);
 		GObjectClass objectClassStruct = new GObjectClass ();
@@ -1262,7 +1262,7 @@ class AccessibleObject {
 		ATK.call (objectClassStruct.finalize, atkObject);
 		AccessibleObject object = getAccessibleObject (atkObject);
 		if (object != null) {
-			AccessibleObjects.remove (new Integer (atkObject));
+			AccessibleObjects.remove (new LONG (atkObject));
 			object.release ();
 		}
 		return 0;

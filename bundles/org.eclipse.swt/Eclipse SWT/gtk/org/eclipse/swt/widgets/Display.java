@@ -743,7 +743,7 @@ int /*long*/ eventProc (int /*long*/ event, int /*long*/ data) {
  *    <li>ERROR_DEVICE_DISPOSED - if the receiver has been disposed</li>
  * </ul>
  */
-public Widget findWidget (int handle) {
+public Widget findWidget (int /*long*/ handle) {
 	checkDevice ();
 	return getWidget (handle);
 }

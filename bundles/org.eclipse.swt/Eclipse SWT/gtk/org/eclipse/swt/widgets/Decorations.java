@@ -189,7 +189,7 @@ void _setImages (Image [] images) {
 	int /*long*/ [] data = new int /*long*/ [1];
 	int /*long*/ temp = pixbufs;
 	while (temp != 0) {
-		OS.memmove (data, temp, 4);
+		OS.memmove (data, temp, OS.PTR_SIZEOF);
 		OS.g_object_unref (data [0]);
 		temp = OS.g_list_next (temp);
 	}

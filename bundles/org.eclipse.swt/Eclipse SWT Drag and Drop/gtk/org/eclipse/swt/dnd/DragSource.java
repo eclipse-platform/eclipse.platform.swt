@@ -187,25 +187,28 @@ static int checkStyle (int style) {
 	return style;
 }
 
-static int DragDataDelete(int widget, int context, int data){
+static int /*long*/ DragDataDelete(int /*long*/ widget, int /*long*/ context){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
-	return source.dragDataDelete(widget, context, data);
+	source.dragDataDelete(widget, context);
+	return 0;
 }
 
-static int DragEnd(int widget, int context, int data){
+static int /*long*/ DragEnd(int /*long*/ widget, int /*long*/ context){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
-	return source.dragEnd(widget, context, data);
+	source.dragEnd(widget, context);
+	return 0;
 }
 	
-static int DragGetData(int widget, int context, int selection_data,  int info, int time, int data){
+static int /*long*/ DragGetData(int /*long*/ widget, int /*long*/ context, int /*long*/ selection_data,  int /*long*/ info, int /*long*/ time){
 	DragSource source = FindDragSource(widget);
 	if (source == null) return 0;
-	return source.dragGetData(widget, context, selection_data, info, time, data);
+	source.dragGetData(widget, context, selection_data, (int)/*64*/info, (int)/*64*/time);
+	return 0;
 }
 
-static DragSource FindDragSource(int handle) {
+static DragSource FindDragSource(int /*long*/ handle) {
 	Display display = Display.findDisplay(Thread.currentThread());
 	if (display == null || display.isDisposed()) return null;
 	Widget widget = display.findWidget(handle);
@@ -275,7 +278,7 @@ private void drag(Event dragEvent) {
 	OS.gtk_drag_begin(control.handle, targetList, actions, 1, 0);
 }
 
-int dragEnd(int widget, int context, int data){
+void dragEnd(int /*long*/ widget, int /*long*/ context){
 	/*
 	 * Bug in GTK.  If a drag is initiated using gtk_drag_begin and the 
 	 * mouse is released immediately, the mouse and keyboard remain
@@ -308,15 +311,14 @@ int dragEnd(int widget, int context, int data){
 		notifyListeners(DND.DragEnd, event);
 	} catch (Throwable e) {}
 
-	moveData = false;
-	return 1;	
+	moveData = false;	
 }	
 
-int dragGetData(int widget, int context, int selection_data,  int info, int time, int data){
-	if (selection_data == 0) return 0;	
+void dragGetData(int /*long*/ widget, int /*long*/ context, int /*long*/ selection_data,  int info, int time){
+	if (selection_data == 0) return;	
 	GtkSelectionData gtkSelectionData = new GtkSelectionData();
 	OS.memmove(gtkSelectionData, selection_data, GtkSelectionData.sizeof);
-	if (gtkSelectionData.target == 0) return 0;
+	if (gtkSelectionData.target == 0) return;
 	
 	TransferData transferData = new TransferData();
 	transferData.type = gtkSelectionData.target;
@@ -331,9 +333,9 @@ int dragGetData(int widget, int context, int selection_data,  int info, int time
 	try {
 		notifyListeners(DND.DragSetData, event);
 	} catch (Throwable e) {
-		return 0;
+		return;
 	}
-	if (event.data == null) return 0;
+	if (event.data == null) return;
 		
 	Transfer transfer = null;
 	for (int i = 0; i < transferAgents.length; i++) {
@@ -342,16 +344,15 @@ int dragGetData(int widget, int context, int selection_data,  int info, int time
 			break;
 		}
 	}
-	if (transfer == null) return 0;
+	if (transfer == null) return;
 	transfer.javaToNative(event.data, transferData);
-	if (transferData.result != 1) return transferData.result;
+	if (transferData.result != 1) return;
 	OS.gtk_selection_data_set(selection_data, transferData.type, transferData.format, transferData.pValue, transferData.length);
-	return transferData.result;	
+	return;	
 }
 
-int dragDataDelete(int widget, int context, int data){
+void dragDataDelete(int /*long*/ widget, int /*long*/ context){
 	moveData = true;
-	return 1;
 }
 
 /**
