@@ -18,8 +18,8 @@
 
 #ifdef NATIVE_STATS
 
-int OS_nativeFunctionCount = 937;
-int OS_nativeFunctionCallCount[937];
+int OS_nativeFunctionCount = 945;
+int OS_nativeFunctionCallCount[945];
 char * OS_nativeFunctionNames[] = {
 	"Call",
 	"GDK_1WINDOWING_1X11",
@@ -104,6 +104,7 @@ char * OS_nativeFunctionNames[] = {
 	"_1GTK_1WIDGET_1MAPPED",
 	"_1GTK_1WIDGET_1SENSITIVE",
 	"_1GTK_1WIDGET_1SET_1FLAGS",
+	"_1GTK_1WIDGET_1STATE",
 	"_1GTK_1WIDGET_1UNSET_1FLAGS",
 	"_1GTK_1WIDGET_1VISIBLE",
 	"_1G_1OBJECT_1CLASS",
@@ -511,10 +512,15 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1label_1set_1attributes",
 	"_1gtk_1label_1set_1justify",
 	"_1gtk_1label_1set_1line_1wrap",
-	"_1gtk_1label_1set_1text",
+	"_1gtk_1label_1set_1text__II",
+	"_1gtk_1label_1set_1text__I_3B",
 	"_1gtk_1label_1set_1text_1with_1mnemonic",
+	"_1gtk_1list_1append_1items",
 	"_1gtk_1list_1clear_1items",
+	"_1gtk_1list_1insert_1items",
 	"_1gtk_1list_1item_1new_1with_1label",
+	"_1gtk_1list_1remove_1items",
+	"_1gtk_1list_1select_1item",
 	"_1gtk_1list_1store_1append",
 	"_1gtk_1list_1store_1clear",
 	"_1gtk_1list_1store_1insert",
@@ -525,6 +531,8 @@ char * OS_nativeFunctionNames[] = {
 	"_1gtk_1list_1store_1set__IIILorg_eclipse_swt_internal_gtk_GdkColor_2I",
 	"_1gtk_1list_1store_1set__IIIZI",
 	"_1gtk_1list_1store_1set__III_3BI",
+	"_1gtk_1list_1unselect_1all",
+	"_1gtk_1list_1unselect_1item",
 	"_1gtk_1main",
 	"_1gtk_1main_1do_1event",
 	"_1gtk_1main_1iteration",

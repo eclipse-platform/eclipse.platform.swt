@@ -879,6 +879,15 @@ public static final int GTK_WIDGET_FLAGS(int /*long*/ wid) {
 		lock.unlock();
 	}
 }
+public static final native int _GTK_WIDGET_STATE(int /*long*/ wid);
+public static final int GTK_WIDGET_STATE(int /*long*/ wid) {
+	lock.lock();
+	try {
+		return _GTK_WIDGET_STATE(wid);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native boolean _GTK_WIDGET_HAS_DEFAULT(int /*long*/ wid);
 public static final boolean GTK_WIDGET_HAS_DEFAULT(int /*long*/ wid) {
 	lock.lock();
@@ -4363,11 +4372,29 @@ public static final void gtk_label_set_text(int /*long*/ label, int /*long*/ str
 		lock.unlock();
 	}
 }
+public static final native void _gtk_label_set_text(int /*long*/ label, byte[] str);
+public static final void gtk_label_set_text(int /*long*/ label, byte[] str) {
+	lock.lock();
+	try {
+		_gtk_label_set_text(label, str);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native void _gtk_label_set_text_with_mnemonic(int /*long*/ label, byte[] str);
 public static final void gtk_label_set_text_with_mnemonic(int /*long*/ label, byte[] str) {
 	lock.lock();
 	try {
 		_gtk_label_set_text_with_mnemonic(label, str);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_list_append_items(int /*long*/ list, int /*long*/ items);
+public static final void gtk_list_append_items(int /*long*/ list, int /*long*/ items) {
+	lock.lock();
+	try {
+		_gtk_list_append_items(list, items);
 	} finally {
 		lock.unlock();
 	}
@@ -4381,11 +4408,56 @@ public static final void gtk_list_clear_items(int /*long*/ list, int start, int 
 		lock.unlock();
 	}
 }
+public static final native void _gtk_list_insert_items(int /*long*/ list, int /*long*/ items, int position);
+public static final void gtk_list_insert_items(int /*long*/ list, int /*long*/ items, int position) {
+	lock.lock();
+	try {
+		_gtk_list_insert_items(list, items, position);
+	} finally {
+		lock.unlock();
+	}
+}
 public static final native int /*long*/ _gtk_list_item_new_with_label(byte[] label);
 public static final int /*long*/ gtk_list_item_new_with_label(byte[] label) {
 	lock.lock();
 	try {
 		return _gtk_list_item_new_with_label(label);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_list_remove_items(int /*long*/ list, int /*long*/ items);
+public static final void gtk_list_remove_items(int /*long*/ list, int /*long*/ items) {
+	lock.lock();
+	try {
+		_gtk_list_remove_items(list, items);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_list_select_item(int /*long*/ list, int item);
+public static final void gtk_list_select_item(int /*long*/ list, int item) {
+	lock.lock();
+	try {
+		_gtk_list_select_item(list, item);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_list_unselect_all(int /*long*/ list);
+public static final void gtk_list_unselect_all(int /*long*/ list) {
+	lock.lock();
+	try {
+		_gtk_list_unselect_all(list);
+	} finally {
+		lock.unlock();
+	}
+}
+public static final native void _gtk_list_unselect_item(int /*long*/ list, int item);
+public static final void gtk_list_unselect_item(int /*long*/ list, int item) {
+	lock.lock();
+	try {
+		_gtk_list_unselect_item(list, item);
 	} finally {
 		lock.unlock();
 	}
