@@ -148,7 +148,38 @@ public Point computeSize (int wHint, int hHint, boolean changed) {
 
 public void copy () {
 	checkWidget ();
-	// NEEDS WORK
+	int [] str = new int [1];
+	short start, end;
+	if ((style & SWT.READ_ONLY) != 0) {
+		// NEEDS WORK - getting whole text, not just selection
+		int index = OS.GetControlValue (handle);
+		if (OS.CopyMenuItemTextAsCFString(menuHandle, (short)index, str) != OS.noErr) return;
+		start = 0; end = (short)OS.CFStringGetLength (str [0]);
+		if (start >= end) {
+			OS.CFRelease (str [0]);
+			return;
+		}
+	} else {
+		short [] s = new short [2];
+		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
+		if (s [0] >= s [1]) return;
+		start = s [0]; end = s [1];
+		if (OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, str, null) != OS.noErr) return;
+	}
+	CFRange range = new CFRange ();
+	range.location = start;
+	range.length = end - start;
+	int encoding = OS.CFStringGetSystemEncoding ();
+	int [] size = new int [1];
+	OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, null, 0, size);
+	byte [] buffer = new byte [size [0]];
+	OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, buffer, size [0], size);
+	OS.CFRelease (str [0]);
+	
+	OS.ClearCurrentScrap();
+	int[] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	OS.PutScrapFlavor(scrap [0], OS.kScrapFlavorTypeText, 0, buffer.length, buffer);
 }
 
 void createHandle () {
@@ -183,7 +214,64 @@ void createHandle () {
 
 public void cut () {
 	checkWidget ();
-	// NEEDS WORK
+	int [] str = new int [1];
+	short start, end;
+	if ((style & SWT.READ_ONLY) != 0) {
+		// NEEDS WORK - getting whole text, not just selection
+		int index = OS.GetControlValue (handle);
+		if (OS.CopyMenuItemTextAsCFString(menuHandle, (short)index, str) != OS.noErr) return;
+		start = 0; end = (short)OS.CFStringGetLength (str [0]);
+		if (start >= end) {
+			OS.CFRelease (str [0]);
+			return;
+		}
+	} else {
+		short [] s = new short [2];
+		OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
+		if (s [0] >= s [1]) return;
+		start = s [0]; end = s [1];
+		if (OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, str, null) != OS.noErr) return;
+	}
+	CFRange range = new CFRange ();
+	range.location = start;
+	range.length = end - start;
+	int encoding = OS.CFStringGetSystemEncoding ();
+	int [] size = new int [1];
+	OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, null, 0, size);
+	byte [] buffer = new byte [size [0]];
+	OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, buffer, size [0], size);
+
+	OS.ClearCurrentScrap();
+	int[] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	OS.PutScrapFlavor (scrap [0], OS.kScrapFlavorTypeText, 0, buffer.length, buffer);
+	
+	// delete selection
+	if ((style & SWT.READ_ONLY) != 0) {
+		// NEEDS WORK
+	} else {
+		byte [] newBuffer;
+		range.location = 0;
+		range.length = start;
+		size = new int [1];
+		OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, null, 0, size);
+		byte [] preBuffer = new byte [size [0]];
+		OS.CFStringGetBytes(str [0], range, encoding, (byte)'?', true, preBuffer, size [0], size);
+		range.location = end;
+		range.length = OS.CFStringGetLength (str [0]) - end;
+		size = new int [1];
+		OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, null, 0, size);
+		byte [] postBuffer = new byte [size [0]];
+		OS.CFStringGetBytes (str [0], range, encoding, (byte)'?', true, postBuffer, size [0], size);
+		newBuffer = new byte [preBuffer.length + postBuffer.length];
+		System.arraycopy(preBuffer, 0, newBuffer, 0, preBuffer.length);
+		System.arraycopy(postBuffer, 0, newBuffer, preBuffer.length, postBuffer.length);
+		int ptr = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, newBuffer, newBuffer.length, encoding, true);
+		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
+		OS.CFRelease (ptr);
+	}
+	
+	OS.CFRelease (str [0]);
 }
 
 public void deselect (int index) {
@@ -317,7 +405,48 @@ public int indexOf (String string, int start) {
 
 public void paste () {
 	checkWidget ();
-	// NEEDS WORK
+	int[] scrap = new int [1];
+	OS.GetCurrentScrap (scrap);
+	int [] size = new int [1];
+	if (OS.GetScrapFlavorSize (scrap [0], OS.kScrapFlavorTypeText, size) != OS.noErr || size [0] == 0) return;
+	byte [] buffer = new byte[size [0]];
+	if (OS.GetScrapFlavorData (scrap [0], OS.kScrapFlavorTypeText, size, buffer) != OS.noErr) return;
+	if ((style & SWT.READ_ONLY) != 0) {
+		String string = new String (buffer); //??
+		int index = indexOf (string);
+		if (index != -1) select(index);
+	} else {
+		byte [] newBuffer;
+		int encoding = OS.CFStringGetSystemEncoding ();
+		int[] ptrOld = new int [1];
+		if (OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, ptrOld, null) == OS.noErr) {
+			short [] s = new short [2];
+			OS.GetControlData (handle, (short)OS.kHIComboBoxEditTextPart, OS.kControlEditTextSelectionTag, 4, s, null);
+			CFRange range = new CFRange ();
+			range.location = 0;
+			range.length = s [0];
+			size = new int [1];
+			OS.CFStringGetBytes (ptrOld [0], range, encoding, (byte)'?', true, null, 0, size);
+			byte [] preBuffer = new byte [size [0]];
+			OS.CFStringGetBytes(ptrOld [0], range, encoding, (byte)'?', true, preBuffer, size [0], size);
+			range.location = s [1];
+			range.length = OS.CFStringGetLength (ptrOld [0]) - s [1];
+			size = new int [1];
+			OS.CFStringGetBytes (ptrOld [0], range, encoding, (byte)'?', true, null, 0, size);
+			byte [] postBuffer = new byte [size [0]];
+			OS.CFStringGetBytes(ptrOld [0], range, encoding, (byte)'?', true, postBuffer, size [0], size);
+			newBuffer = new byte [preBuffer.length + buffer.length + postBuffer.length];
+			System.arraycopy(preBuffer, 0, newBuffer, 0, preBuffer.length);
+			System.arraycopy(buffer, 0, newBuffer, preBuffer.length, buffer.length);
+			System.arraycopy(postBuffer, 0, newBuffer, preBuffer.length + buffer.length, postBuffer.length);
+			OS.CFRelease (ptrOld [0]);
+		} else {
+			newBuffer = buffer;
+		}
+		int ptr = OS.CFStringCreateWithBytes (OS.kCFAllocatorDefault, newBuffer, newBuffer.length, encoding, true);
+		OS.SetControlData (handle, OS.kHIComboBoxEditTextPart, OS.kControlEditTextCFStringTag, 4, new int[] {ptr});
+		OS.CFRelease (ptr);
+	}
 }
 
 public void remove (int index) {
