@@ -1211,9 +1211,11 @@ int widgetExtStyle () {
 	* even when it has no title.  The fix is to use WS_EX_TOOLWINDOW
 	* which does not cause the window to appear in the Task Bar.
 	*/
-	if (parent == null) {
-		if ((style & SWT.NO_TRIM) != 0 || (style & SWT.TITLE) == 0) {
-			bits |= OS.WS_EX_TOOLWINDOW;
+	if (!OS.IsWinCE) {
+		if (parent == null) {
+			if ((style & SWT.NO_TRIM) != 0 || (style & SWT.TITLE) == 0) {
+				bits |= OS.WS_EX_TOOLWINDOW;
+			}
 		}
 	}
 	
