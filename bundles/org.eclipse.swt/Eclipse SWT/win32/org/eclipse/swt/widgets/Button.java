@@ -284,7 +284,8 @@ String getNameText () {
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
  * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
- * it is selected when it is pushed.
+ * it is selected when it is pushed. If the receiver is of any other type,
+ * this method returns false.
  *
  * @return the selection state
  *
@@ -487,7 +488,9 @@ boolean setRadioFocus () {
 }
 
 /**
- * Sets the selection state of the receiver.
+ * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
+ * <code>RADIO</code>, or <code>TOGGLE</code>.
+ *
  * <p>
  * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
  * it is selected when it is checked. When it is of type <code>TOGGLE</code>,

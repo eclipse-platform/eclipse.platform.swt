@@ -183,6 +183,22 @@ public Image getImage () {
 	return image;
 }
 
+/**
+ * Returns <code>true</code> if the receiver is selected,
+ * and false otherwise.
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed. If the receiver is of any other type,
+ * this method returns false.
+ *
+ * @return the selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public boolean getSelection () {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return false;
@@ -351,6 +367,22 @@ void setDefault (boolean value) {
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
+/**
+ * Sets the selection state of the receiver, if it is of type <code>CHECK</code>, 
+ * <code>RADIO</code>, or <code>TOGGLE</code>.
+ *
+ * <p>
+ * When the receiver is of type <code>CHECK</code> or <code>RADIO</code>,
+ * it is selected when it is checked. When it is of type <code>TOGGLE</code>,
+ * it is selected when it is pushed.
+ *
+ * @param selected the new selection state
+ *
+ * @exception SWTException <ul>
+ *    <li>ERROR_WIDGET_DISPOSED - if the receiver has been disposed</li>
+ *    <li>ERROR_THREAD_INVALID_ACCESS - if not called from the thread that created the receiver</li>
+ * </ul>
+ */
 public void setSelection (boolean selected) {
 	checkWidget();
 	if ((style & (SWT.CHECK | SWT.RADIO | SWT.TOGGLE)) == 0) return;
