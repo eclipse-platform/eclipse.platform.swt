@@ -1907,26 +1907,33 @@ static String convertToLf(String text) {
 				if (widget instanceof Shell)
 					fMenuRootShell= (Shell) widget;
 				windowProc(whichWindow, SWT.FocusIn, new Boolean(true));
-				return OS.kNoErr;
+				break; //return OS.kNoErr;
+				
 			case OS.kEventWindowDeactivated:
 				fMenuRootShell= null;
 				windowProc(whichWindow, SWT.FocusIn, new Boolean(false));
-				return OS.kNoErr;
+				break; // return OS.kNoErr;
+				
 			case OS.kEventWindowBoundsChanged:
 				int[] attr= new int[1];
 				OS.GetEventParameter(eRefHandle, OS.kEventParamAttributes, OS.typeUInt32, null, null, attr);	
 				windowProc(whichWindow, SWT.Resize, new Integer(attr[0]));
 				return OS.kNoErr;
+				
 			case OS.kEventWindowClose:
 				windowProc(whichWindow, SWT.Dispose, null);
 				return OS.kNoErr;
+				
 			case OS.kEventWindowDrawContent:
 				if (toolTipWindowHandle == whichWindow) {
 					processPaintToolTip(whichWindow);
 				} else {
+					if (MacUtil.HIVIEW)
+						break;
 					updateWindow2(whichWindow);
 				}
 				return OS.kNoErr;
+				
 			default:
 				System.out.println("handleWindowCallback: kEventClassWindow kind:" + eventKind);
 				break;
@@ -2091,9 +2098,13 @@ static String convertToLf(String text) {
 		
 			hideToolTip ();
 		
-			if (part == OS.inContent)
-				if (!handleContentClick(me, whichWindow))
-					return OS.kNoErr;
+			if (part == OS.inContent || (MacUtil.HIVIEW && part == OS.inStructure))
+				if (false && MacUtil.HIVIEW) {
+					return OS.eventNotHandledErr;
+				} else {
+					if (!handleContentClick(me, whichWindow))
+						return OS.kNoErr;
+				}
 
 			break;
 		
@@ -2229,9 +2240,15 @@ static String convertToLf(String text) {
 				
 			default:
 				windowProc(whichControl, SWT.MouseDown, me);
-				int cpart2= OS.HandleControlClick(whichControl, where.getData(), me.getModifiers(), -1);
-				if (cpart2 != 0) {
-					windowProc(whichControl, SWT.Selection, new MacControlEvent(whichControl, cpart2, false));
+				
+				if (false) {
+					// AW: Jaguar:
+					OS.HIViewClick(whichControl, me.getEventRef());
+				} else {
+					int cpart2= OS.HandleControlClick(whichControl, where.getData(), me.getModifiers(), -1);
+					if (cpart2 != 0) {
+						windowProc(whichControl, SWT.Selection, new MacControlEvent(whichControl, cpart2, false));
+					}
 				}
 				break;
 			}
@@ -2361,4 +2378,10 @@ static String convertToLf(String text) {
 			error (SWT.ERROR_NO_MORE_CALLBACKS);
 		return proc;
 	}
+	
+	private int hiobProc (int inHandlerCallRef, int inEvent, int inUserData) {
+		System.out.println("hiobProc: " + inUserData);
+		return 0;
+	}
+
 }
