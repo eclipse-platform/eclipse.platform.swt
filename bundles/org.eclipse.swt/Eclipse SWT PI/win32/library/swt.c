@@ -34,6 +34,10 @@
 #define NO_CreateFontIndirectA__Lorg_eclipse_swt_internal_win32_LOGFONT_2
 #define NO_CreateFontIndirectA__I
 #define NO_CreateWindowExA
+#define NO_DefFrameProcA
+#define NO_DefFrameProcW
+#define NO_DefMDIChildProcA
+#define NO_DefMDIChildProcW
 #define NO_DefWindowProcA
 #define NO_DestroyCursor
 #define NO_DispatchMessageA
@@ -75,6 +79,7 @@
 #define NO_GetKeyNameTextA
 #define NO_GetKeyNameTextW
 #define NO_GetLastActivePopup
+#define NO_GetLayout
 #define NO_GetLocaleInfoA
 #define NO_GetMenu
 #define NO_GetMenuDefaultItem
@@ -200,6 +205,7 @@
 #define NO_ToUnicode
 #define NO_TrackMouseEvent
 #define NO_TranslateAcceleratorA
+#define NO_TranslateMDISysAccel
 #define NO_UnhookWindowsHookEx
 #define NO_UnregisterClassA
 #define NO_VkKeyScanA
@@ -997,26 +1003,6 @@ JNIEXPORT jint JNICALL OS_NATIVE(CreateWindowExW)
 }
 #endif /* NO_CreateWindowExW */
 
-#ifndef NO_DefMDIChildProcA
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefMDIChildProcA
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
-{
-	DEBUG_CALL("DefMDIChildProcA\n")
-
-	return (jint)DefMDIChildProcA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
-}
-#endif
-
-#ifndef NO_DefMDIChildProcW
-JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefMDIChildProcW
-	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
-{
-	DEBUG_CALL("DefMDIChildProcW\n")
-
-	return (jint)DefMDIChildProcW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
-}
-#endif
-
 #ifndef NO_DefFrameProcA
 JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefFrameProcA
 	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3, jint arg4)
@@ -1034,6 +1020,26 @@ JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefFrameProcW
 	DEBUG_CALL("DefFrameProcW\n")
 
 	return (jint)DefFrameProcW((HWND)arg0, (HWND)arg1, arg2, (WPARAM)arg3, (LPARAM)arg4);
+}
+#endif
+
+#ifndef NO_DefMDIChildProcA
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefMDIChildProcA
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("DefMDIChildProcA\n")
+
+	return (jint)DefMDIChildProcA((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
+}
+#endif
+
+#ifndef NO_DefMDIChildProcW
+JNIEXPORT jint JNICALL Java_org_eclipse_swt_internal_win32_OS_DefMDIChildProcW
+	(JNIEnv *env, jclass that, jint arg0, jint arg1, jint arg2, jint arg3)
+{
+	DEBUG_CALL("DefMDIChildProcW\n")
+
+	return (jint)DefMDIChildProcW((HWND)arg0, arg1, (WPARAM)arg2, (LPARAM)arg3);
 }
 #endif
 
