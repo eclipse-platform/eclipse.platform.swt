@@ -188,6 +188,7 @@ public Shell (Display display, int style) {
 
 Shell (Display display, Shell parent, int style, int handle) {
 	super ();
+	checkSubclass ();
 	if (display == null) display = Display.getCurrent ();
 	if (display == null) display = Display.getDefault ();
 	if (!display.isValidThread ()) {
@@ -840,6 +841,7 @@ void setToolTipText (int hwnd, String text) {
 		lpti.lpszText = OS.LPSTR_TEXTCALLBACK;
 		OS.SendMessage (toolTipHandle, OS.TTM_ADDTOOL, 0, lpti);
 	}
+	OS.SendMessage (toolTipHandle, OS.TTM_UPDATE, 0, 0);
 }
 
 void setToolTipText (NMTTDISPINFO lpnmtdi, TCHAR buffer) {
