@@ -238,63 +238,6 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLjava_lang_String() 
 	}
 }
 
-public void test_dispose() {
-	final int COUNT = 50000000;
-	
-	/*
-	* test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageData
-	* covers the base dispose case since it has to dispose of created Images within its timer block.  
-	*/
-	
-	Image disposedImage = new Image (display, 100, 100);
-	disposedImage.dispose();
-	
-	PerformanceMeter meter = createMeter("Image dispose - disposed");
-
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		disposedImage.dispose();	// disposed
-	}
-	meter.stop();
-	
-    disposeMeter(meter);
-}
-
-public void test_equalsLjava_lang_Object() {
-	final int COUNT = 70000000;
-	
-	ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	Image image1 = new Image(display, imageData);
-	Image image2 = new Image(display, imageData);
-	
-	PerformanceMeter meter = createMeter("Image equals - yes");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		image1.equals(image2);	// equal
-	}
-	meter.stop();
-	
-	image1.dispose();
-	image2.dispose();
-	
-	disposeMeter(meter);
-		
-	image1 = new Image(display, imageData);
-	image2 = new Image(display, 8, 8);
-	
-	meter = createMeter("Image equals - no");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		image1.equals(image2);	// not equal
-	}
-	meter.stop();
-	
-	image1.dispose();
-	image2.dispose();
-	
-	disposeMeter(meter);
-}
-
 public void test_getBackground() {
 	final int COUNT = 60000000;
 	
@@ -348,50 +291,6 @@ public void test_getImageData() {
 	disposeMeter(meter);
 }
 
-public void test_hashCode() {
-	final int COUNT = 700000000;
-	
-	ImageData imageData = new ImageData(10, 10, 1, new PaletteData(new RGB[] {new RGB(0, 0, 0)}));
-	Image image = new Image(display, imageData);
-	
-	PerformanceMeter meter = createMeter("Image hashCode");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		image.hashCode();
-	}
-	meter.stop();
-	
-	image.dispose();
-	
-	disposeMeter(meter);
-}
-
-public void test_isDisposed() {
-	final int COUNT = 500000000;
-	
-	Image image = new Image(display, 10, 10);
-	
-	PerformanceMeter meter = createMeter("Image isDisposed - no");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		image.isDisposed();	// not disposed
-	}
-	meter.stop();
-	
-	image.dispose();
-	
-	disposeMeter(meter);
-	
-	meter = createMeter("Image isDisposed - yes");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		image.isDisposed();	// disposed
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
 	final int COUNT = 60000000;
 	
@@ -430,13 +329,9 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI");
 	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_dispose");
-	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_getBackground");
 	methodNames.addElement("test_getBounds");
 	methodNames.addElement("test_getImageData");
-	methodNames.addElement("test_hashCode");
-	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	return methodNames;
 }
@@ -448,13 +343,9 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageDataLorg_eclipse_swt_graphics_ImageData();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_ImageI();
 	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle")) test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_dispose")) test_dispose();
-	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getBackground")) test_getBackground();
 	else if (getName().equals("test_getBounds")) test_getBounds();
 	else if (getName().equals("test_getImageData")) test_getImageData();
-	else if (getName().equals("test_hashCode")) test_hashCode();
-	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 }
 /* custom */

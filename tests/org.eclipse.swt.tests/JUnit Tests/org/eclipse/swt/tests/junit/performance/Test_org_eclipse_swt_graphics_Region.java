@@ -37,41 +37,16 @@ protected void setUp() throws Exception {
 	display = Display.getDefault();
 }
 
-public void test_Constructor() {
+public void test_createAndDisposeRegion() {
 	final int COUNT = 2000000;
 	
-	PerformanceMeter meter = createMeter("Region constr.()");
+	PerformanceMeter meter = createMeter("Region create and dispose");
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
-		/*
-		* This test is not really valid since it's measuring both creation and
-		* disposal of the Regions.  This is necessary because attempting to defer
-		* the region disposal until the timer has been stopped causes a No More
-		* Handles error.
-		*/
 		new Region().dispose();
 	}
 	meter.stop();
 
-	disposeMeter(meter);
-}
-
-public void test_ConstructorLorg_eclipse_swt_graphics_Device() {
-	final int COUNT = 2000000;
-	
-	PerformanceMeter meter = createMeter("Region constr.(Device)");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		/*
-		* This test is not really valid since it's measuring both creation and
-		* disposal of the Regions.  This is necessary because attempting to defer
-		* the region disposal until the timer has been stopped causes a No More
-		* Handles error.
-		*/
-		new Region(display).dispose();
-	}
-	meter.stop();
-	
 	disposeMeter(meter);
 }
 
@@ -208,28 +183,6 @@ public void test_containsLorg_eclipse_swt_graphics_Point() {
 	disposeMeter(meter);
 }
 
-public void test_dispose() {
-	final int COUNT = 50000000;
-
-	/*
-	* The tests for the constructors cover the base dispose case since
-	* they have to dispose of created Regions within their timer blocks.  
-	*/
-    
-	Region region = new Region(display);
-	region.dispose();
-	
-	PerformanceMeter meter = createMeter("Region dispose - disposed");
-	
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		region.dispose();	// dispose disposed
-	}
-	meter.stop();
-	
-    disposeMeter(meter);
-}
-
 public void test_equalsLjava_lang_Object() {
 	final int COUNT = 50000000;
 	
@@ -280,24 +233,6 @@ public void test_getBounds() {
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		region.getBounds();
-	}
-	meter.stop();
-	
-	region.dispose();
-	
-	disposeMeter(meter);
-}
-
-public void test_hashCode() {
-	final int COUNT = 700000000;
-	
-	Region region = new Region(display);
-	region.add(new Rectangle(10,10,20,20));
-
-	PerformanceMeter meter = createMeter("Region hashCode");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		region.hashCode();
 	}
 	meter.stop();
 	
@@ -443,33 +378,6 @@ public void test_intersectsLorg_eclipse_swt_graphics_Rectangle() {
 	disposeMeter(meter);
 }
 
-public void test_isDisposed() {
-	final int COUNT = 500000000;
-	
-	Region region = new Region(display);
-	region.add(new Rectangle(10,10,10,10));
-	
-	PerformanceMeter meter = createMeter("Region isDisposed - no");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		region.isDisposed();	// not disposed
-	}
-	meter.stop();
-	
-	region.dispose();
-	
-	disposeMeter(meter);
-	
-	meter = createMeter("Region isDisposed - yes");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		region.isDisposed();	// disposed
-	}
-	meter.stop();
-	
-	disposeMeter(meter);
-}
-
 public void test_isEmpty() {
 	final int COUNT = 5000000;
 	
@@ -580,22 +488,18 @@ public static Test suite() {
 }
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_Constructor");
-	methodNames.addElement("test_ConstructorLorg_eclipse_swt_graphics_Device");
+	methodNames.addElement("test_createAndDisposeRegion");
 	methodNames.addElement("test_add$I");
 	methodNames.addElement("test_addLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_addLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_containsII");
 	methodNames.addElement("test_containsLorg_eclipse_swt_graphics_Point");
-	methodNames.addElement("test_dispose");
 	methodNames.addElement("test_equalsLjava_lang_Object");
 	methodNames.addElement("test_getBounds");
-	methodNames.addElement("test_hashCode");
 	methodNames.addElement("test_intersectLorg_eclipse_swt_graphics_Rectangle");
 	methodNames.addElement("test_intersectLorg_eclipse_swt_graphics_Region");
 	methodNames.addElement("test_intersectsIIII");
 	methodNames.addElement("test_intersectsLorg_eclipse_swt_graphics_Rectangle");
-	methodNames.addElement("test_isDisposed");
 	methodNames.addElement("test_isEmpty");
 	methodNames.addElement("test_subtract$I");
 	methodNames.addElement("test_subtractLorg_eclipse_swt_graphics_Rectangle");
@@ -603,22 +507,18 @@ public static java.util.Vector methodNames() {
 	return methodNames;
 }
 protected void runTest() throws Throwable {
-	if (getName().equals("test_Constructor")) test_Constructor();
-	else if (getName().equals("test_ConstructorLorg_eclipse_swt_graphics_Device")) test_ConstructorLorg_eclipse_swt_graphics_Device();
+	if (getName().equals("test_createAndDisposeRegion")) test_createAndDisposeRegion();
 	else if (getName().equals("test_add$I")) test_add$I();
 	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Rectangle")) test_addLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_addLorg_eclipse_swt_graphics_Region")) test_addLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_containsII")) test_containsII();
 	else if (getName().equals("test_containsLorg_eclipse_swt_graphics_Point")) test_containsLorg_eclipse_swt_graphics_Point();
-	else if (getName().equals("test_dispose")) test_dispose();
 	else if (getName().equals("test_equalsLjava_lang_Object")) test_equalsLjava_lang_Object();
 	else if (getName().equals("test_getBounds")) test_getBounds();
-	else if (getName().equals("test_hashCode")) test_hashCode();
 	else if (getName().equals("test_intersectLorg_eclipse_swt_graphics_Rectangle")) test_intersectLorg_eclipse_swt_graphics_Rectangle();
 	else if (getName().equals("test_intersectLorg_eclipse_swt_graphics_Region")) test_intersectLorg_eclipse_swt_graphics_Region();
 	else if (getName().equals("test_intersectsIIII")) test_intersectsIIII();
 	else if (getName().equals("test_intersectsLorg_eclipse_swt_graphics_Rectangle")) test_intersectsLorg_eclipse_swt_graphics_Rectangle();
-	else if (getName().equals("test_isDisposed")) test_isDisposed();
 	else if (getName().equals("test_isEmpty")) test_isEmpty();
 	else if (getName().equals("test_subtract$I")) test_subtract$I();
 	else if (getName().equals("test_subtractLorg_eclipse_swt_graphics_Rectangle")) test_subtractLorg_eclipse_swt_graphics_Rectangle();

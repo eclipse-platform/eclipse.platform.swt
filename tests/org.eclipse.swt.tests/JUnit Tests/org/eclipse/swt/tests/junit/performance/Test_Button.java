@@ -14,7 +14,6 @@ import junit.framework.*;
 import junit.textui.*;
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.*;
 import org.eclipse.swt.graphics.*;
 import org.eclipse.swt.widgets.*;
 import org.eclipse.test.performance.*;
@@ -24,9 +23,9 @@ import org.eclipse.test.performance.*;
  *
  * @see org.eclipse.swt.widgets.Control
  */
-public class Test_org_eclipse_swt_widgets_Control extends Test_org_eclipse_swt_widgets_Widget {
+public class Test_Button extends SwtPerformanceTestCase {
 
-public Test_org_eclipse_swt_widgets_Control(String name) {
+public Test_Button(String name) {
 	super(name);
 }
 
@@ -35,173 +34,22 @@ public static void main(String[] args) {
 }
 
 protected void setUp() {
-	super.setUp();
+	shell = new Shell();
+	Button button = new Button(shell, SWT.PUSH);
+	setWidget(button);
 }
 
 protected void tearDown() {
-	super.tearDown();
-}
+	if (widget != null) {
+		assertEquals(false, widget.isDisposed());
+	}
+	assertEquals(false, shell.isDisposed());
+	shell.dispose();
+	if (widget != null) {
+		assertTrue(widget.isDisposed());
+	}
+	assertTrue(shell.isDisposed());
 
-public void test_addControlListenerLorg_eclipse_swt_events_ControlListener() {
-	final int COUNT = 7500;
-	
-	ControlListener[] listeners = new ControlListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new ControlAdapter() {}; 
-	}
-	
-	PerformanceMeter meter = createMeter(getTypeString() + "addControlListener");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.addControlListener(listeners[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
-public void test_addFocusListenerLorg_eclipse_swt_events_FocusListener() {
-	final int COUNT = 7500;
-	
-	FocusListener[] listeners = new FocusListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new FocusAdapter() {}; 
-	}
-	
-	PerformanceMeter meter = createMeter(getTypeString() + "addFocusListener");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.addFocusListener(listeners[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
-public void test_addHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	final int COUNT = 14000;
-	
-	HelpListener[] listeners = new HelpListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new HelpListener() {
-			public void helpRequested(HelpEvent e) {} 
-		};
-	}
-	
-	PerformanceMeter meter = createMeter(getTypeString() + "addHelpListener");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.addHelpListener(listeners[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
-public void test_addKeyListenerLorg_eclipse_swt_events_KeyListener() {
-	final int COUNT = 7500;
-	
-	KeyListener[] listeners = new KeyListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new KeyAdapter() {}; 
-	}
-
-	PerformanceMeter meter = createMeter(getTypeString() + "addKeyListener");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.addKeyListener(listeners[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
-public void test_addMouseListenerLorg_eclipse_swt_events_MouseListener() {
-	final int COUNT = 5000;
-	
-	MouseListener[] listeners = new MouseListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new MouseAdapter() {}; 
-	}
-
-	PerformanceMeter meter = createMeter(getTypeString() + "addMouseListener");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.addMouseListener(listeners[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
-public void test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener() {
-	final int COUNT = 14000;
-	
-	MouseMoveListener[] listeners = new MouseMoveListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new MouseMoveListener() {
-			public void mouseMove(MouseEvent e) {}
-		};
-	}
-
-	PerformanceMeter meter = createMeter(getTypeString() + "addMouseMoveListener");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.addMouseMoveListener(listeners[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
-public void test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener() {
-	final int COUNT = 5000;
-	
-	MouseTrackListener[] listeners = new MouseTrackListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new MouseTrackAdapter() {}; 
-	}
-
-	PerformanceMeter meter = createMeter(getTypeString() + "addMouseTrackListener");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.addMouseTrackListener(listeners[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
-public void test_addPaintListenerLorg_eclipse_swt_events_PaintListener() {
-	final int COUNT = 14000;
-	
-	PaintListener[] listeners = new PaintListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new PaintListener() {
-			public void paintControl(PaintEvent e) {}
-		}; 
-	}
-
-	PerformanceMeter meter = createMeter(getTypeString() + "addPaintListener");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.addPaintListener(listeners[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
-public void test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
-	final int COUNT = 14000;
-	
-	TraverseListener[] listeners = new TraverseListener[COUNT];
-	for (int i = 0; i < COUNT; i++) {
-		listeners[i] = new TraverseListener() {
-			public void keyTraversed(TraverseEvent e) {
-			}
-		}; 
-	}
-
-	PerformanceMeter meter = createMeter(getTypeString() + "addTraverseListener");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.addTraverseListener(listeners[i]);
-	}
-	meter.stop();
-	disposeMeter(meter);
 }
 
 public void test_computeSizeII() {
@@ -274,18 +122,6 @@ public void test_forceFocus() {
 	meter.start();
 	for (int i = 0; i < COUNT; i++) {
 		control.forceFocus();
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
-public void test_getAccessible() {
-	final int COUNT = 50000000;
-	
-	PerformanceMeter meter = createMeter(getTypeString() + "getAccessible");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.getAccessible();
 	}
 	meter.stop();
 	disposeMeter(meter);
@@ -542,18 +378,6 @@ public void test_isFocusControl() {
 	disposeMeter(meter);
 }
 
-public void test_isReparentable() {
-	final int COUNT = 45000000;
-	
-	PerformanceMeter meter = createMeter(getTypeString() + "isReparentable");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.isReparentable();
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
 public void test_isVisible() {
 	final int COUNT = 9000000;
 	
@@ -675,42 +499,6 @@ public void test_redrawIIIIZ() {
 	}
 	meter.stop();
 	disposeMeter(meter);
-}
-
-public void test_removeControlListenerLorg_eclipse_swt_events_ControlListener() {
-	// TODO
-}
-
-public void test_removeFocusListenerLorg_eclipse_swt_events_FocusListener() {
-	// TODO
-}
-
-public void test_removeHelpListenerLorg_eclipse_swt_events_HelpListener() {
-	// TODO
-}
-
-public void test_removeKeyListenerLorg_eclipse_swt_events_KeyListener() {
-	// TODO
-}
-
-public void test_removeMouseListenerLorg_eclipse_swt_events_MouseListener() {
-	// TODO
-}
-
-public void test_removeMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener() {
-	// TODO
-}
-
-public void test_removeMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener() {
-	// TODO
-}
-
-public void test_removePaintListenerLorg_eclipse_swt_events_PaintListener() {
-	// TODO
-}
-
-public void test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener() {
-	// TODO
 }
 
 public void test_setBackgroundLorg_eclipse_swt_graphics_Color() {
@@ -1197,43 +985,21 @@ public void test_traverseI() {
 	disposeMeter(meter);
 }
 
-public void test_update() {
-	final int COUNT = isGTK ? 20000 : 2000000;
-	
-	PerformanceMeter meter = createMeter(getTypeString() + "update");
-	meter.start();
-	for (int i = 0; i < COUNT; i++) {
-		control.update();
-	}
-	meter.stop();
-	disposeMeter(meter);
-}
-
 public static Test suite() {
 	TestSuite suite = new TestSuite();
 	java.util.Vector methodNames = methodNames();
 	java.util.Enumeration e = methodNames.elements();
 	while (e.hasMoreElements()) {
-		suite.addTest(new Test_org_eclipse_swt_widgets_Control((String)e.nextElement()));
+		suite.addTest(new Test_Button((String)e.nextElement()));
 	}
 	return suite;
 }
 
 public static java.util.Vector methodNames() {
 	java.util.Vector methodNames = new java.util.Vector();
-	methodNames.addElement("test_addControlListenerLorg_eclipse_swt_events_ControlListener");
-	methodNames.addElement("test_addFocusListenerLorg_eclipse_swt_events_FocusListener");
-	methodNames.addElement("test_addHelpListenerLorg_eclipse_swt_events_HelpListener");
-	methodNames.addElement("test_addKeyListenerLorg_eclipse_swt_events_KeyListener");
-	methodNames.addElement("test_addMouseListenerLorg_eclipse_swt_events_MouseListener");
-	methodNames.addElement("test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener");
-	methodNames.addElement("test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener");
-	methodNames.addElement("test_addPaintListenerLorg_eclipse_swt_events_PaintListener");
-	methodNames.addElement("test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener");
 	methodNames.addElement("test_computeSizeII");
 	methodNames.addElement("test_computeSizeIIZ");
 	methodNames.addElement("test_forceFocus");
-	methodNames.addElement("test_getAccessible");
 	methodNames.addElement("test_getBackground");
 	methodNames.addElement("test_getBorderWidth");
 	methodNames.addElement("test_getBounds");
@@ -1250,7 +1016,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_getVisible");
 	methodNames.addElement("test_isEnabled");
 	methodNames.addElement("test_isFocusControl");
-	methodNames.addElement("test_isReparentable");
 	methodNames.addElement("test_isVisible");
 	methodNames.addElement("test_moveAboveLorg_eclipse_swt_widgets_Control");
 	methodNames.addElement("test_moveBelowLorg_eclipse_swt_widgets_Control");
@@ -1258,15 +1023,6 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_packZ");
 	methodNames.addElement("test_redraw");
 	methodNames.addElement("test_redrawIIIIZ");
-	methodNames.addElement("test_removeControlListenerLorg_eclipse_swt_events_ControlListener");
-	methodNames.addElement("test_removeFocusListenerLorg_eclipse_swt_events_FocusListener");
-	methodNames.addElement("test_removeHelpListenerLorg_eclipse_swt_events_HelpListener");
-	methodNames.addElement("test_removeKeyListenerLorg_eclipse_swt_events_KeyListener");
-	methodNames.addElement("test_removeMouseListenerLorg_eclipse_swt_events_MouseListener");
-	methodNames.addElement("test_removeMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener");
-	methodNames.addElement("test_removeMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener");
-	methodNames.addElement("test_removePaintListenerLorg_eclipse_swt_events_PaintListener");
-	methodNames.addElement("test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener");
 	methodNames.addElement("test_setBackgroundLorg_eclipse_swt_graphics_Color");
 	methodNames.addElement("test_setBoundsIIII");
 	methodNames.addElement("test_setBoundsLorg_eclipse_swt_graphics_Rectangle");
@@ -1289,24 +1045,12 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_toDisplayII");
 	methodNames.addElement("test_toDisplayLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_traverseI");
-	methodNames.addElement("test_update");
-	methodNames.addAll(Test_org_eclipse_swt_widgets_Widget.methodNames()); // add superclass method names
 	return methodNames;
 }
 protected void runTest() throws Throwable {
-	if (getName().equals("test_addControlListenerLorg_eclipse_swt_events_ControlListener")) test_addControlListenerLorg_eclipse_swt_events_ControlListener();
-	else if (getName().equals("test_addFocusListenerLorg_eclipse_swt_events_FocusListener")) test_addFocusListenerLorg_eclipse_swt_events_FocusListener();
-	else if (getName().equals("test_addHelpListenerLorg_eclipse_swt_events_HelpListener")) test_addHelpListenerLorg_eclipse_swt_events_HelpListener();
-	else if (getName().equals("test_addKeyListenerLorg_eclipse_swt_events_KeyListener")) test_addKeyListenerLorg_eclipse_swt_events_KeyListener();
-	else if (getName().equals("test_addMouseListenerLorg_eclipse_swt_events_MouseListener")) test_addMouseListenerLorg_eclipse_swt_events_MouseListener();
-	else if (getName().equals("test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener")) test_addMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener();
-	else if (getName().equals("test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener")) test_addMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener();
-	else if (getName().equals("test_addPaintListenerLorg_eclipse_swt_events_PaintListener")) test_addPaintListenerLorg_eclipse_swt_events_PaintListener();
-	else if (getName().equals("test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener")) test_addTraverseListenerLorg_eclipse_swt_events_TraverseListener();
-	else if (getName().equals("test_computeSizeII")) test_computeSizeII();
+	if (getName().equals("test_computeSizeII")) test_computeSizeII();
 	else if (getName().equals("test_computeSizeIIZ")) test_computeSizeIIZ();
 	else if (getName().equals("test_forceFocus")) test_forceFocus();
-	else if (getName().equals("test_getAccessible")) test_getAccessible();
 	else if (getName().equals("test_getBackground")) test_getBackground();
 	else if (getName().equals("test_getBorderWidth")) test_getBorderWidth();
 	else if (getName().equals("test_getBounds")) test_getBounds();
@@ -1323,7 +1067,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_getVisible")) test_getVisible();
 	else if (getName().equals("test_isEnabled")) test_isEnabled();
 	else if (getName().equals("test_isFocusControl")) test_isFocusControl();
-	else if (getName().equals("test_isReparentable")) test_isReparentable();
 	else if (getName().equals("test_isVisible")) test_isVisible();
 	else if (getName().equals("test_moveAboveLorg_eclipse_swt_widgets_Control")) test_moveAboveLorg_eclipse_swt_widgets_Control();
 	else if (getName().equals("test_moveBelowLorg_eclipse_swt_widgets_Control")) test_moveBelowLorg_eclipse_swt_widgets_Control();
@@ -1331,15 +1074,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_packZ")) test_packZ();
 	else if (getName().equals("test_redraw")) test_redraw();
 	else if (getName().equals("test_redrawIIIIZ")) test_redrawIIIIZ();
-	else if (getName().equals("test_removeControlListenerLorg_eclipse_swt_events_ControlListener")) test_removeControlListenerLorg_eclipse_swt_events_ControlListener();
-	else if (getName().equals("test_removeFocusListenerLorg_eclipse_swt_events_FocusListener")) test_removeFocusListenerLorg_eclipse_swt_events_FocusListener();
-	else if (getName().equals("test_removeHelpListenerLorg_eclipse_swt_events_HelpListener")) test_removeHelpListenerLorg_eclipse_swt_events_HelpListener();
-	else if (getName().equals("test_removeKeyListenerLorg_eclipse_swt_events_KeyListener")) test_removeKeyListenerLorg_eclipse_swt_events_KeyListener();
-	else if (getName().equals("test_removeMouseListenerLorg_eclipse_swt_events_MouseListener")) test_removeMouseListenerLorg_eclipse_swt_events_MouseListener();
-	else if (getName().equals("test_removeMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener")) test_removeMouseMoveListenerLorg_eclipse_swt_events_MouseMoveListener();
-	else if (getName().equals("test_removeMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener")) test_removeMouseTrackListenerLorg_eclipse_swt_events_MouseTrackListener();
-	else if (getName().equals("test_removePaintListenerLorg_eclipse_swt_events_PaintListener")) test_removePaintListenerLorg_eclipse_swt_events_PaintListener();
-	else if (getName().equals("test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener")) test_removeTraverseListenerLorg_eclipse_swt_events_TraverseListener();
 	else if (getName().equals("test_setBackgroundLorg_eclipse_swt_graphics_Color")) test_setBackgroundLorg_eclipse_swt_graphics_Color();
 	else if (getName().equals("test_setBoundsIIII")) test_setBoundsIIII();
 	else if (getName().equals("test_setBoundsLorg_eclipse_swt_graphics_Rectangle")) test_setBoundsLorg_eclipse_swt_graphics_Rectangle();
@@ -1362,7 +1096,6 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_toDisplayII")) test_toDisplayII();
 	else if (getName().equals("test_toDisplayLorg_eclipse_swt_graphics_Point")) test_toDisplayLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_traverseI")) test_traverseI();
-	else if (getName().equals("test_update")) test_update();
 	else super.runTest();
 }
 
@@ -1373,7 +1106,7 @@ protected void runTest() throws Throwable {
 
 protected void setWidget(Widget w) {
 	control = (Control)w;
-	super.setWidget(w);
+	widget = w;
 	String fullName = control.getClass().getName();
 	typeString = fullName.substring(fullName.lastIndexOf(".") + 1) + " ";
 }
@@ -1381,4 +1114,7 @@ protected void setWidget(Widget w) {
 private String getTypeString() {
 	return typeString;
 }
+/* custom */
+public Shell shell;
+private Widget widget;
 }
