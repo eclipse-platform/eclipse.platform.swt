@@ -943,8 +943,6 @@ int XKeyPress (int w, int client_data, int call_data, int continue_to_dispatch) 
 			click (false, xEvent.state);
 			result = 1;
 			break;
-		case OS.XK_KP_Enter:
-		case OS.XK_Return:
 		case OS.XK_Down:
 			click (true, xEvent.state);
 			result = 1;
