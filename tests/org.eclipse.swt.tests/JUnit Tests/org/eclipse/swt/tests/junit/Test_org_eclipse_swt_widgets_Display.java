@@ -148,7 +148,14 @@ public void test_getDefault() {
 }
 
 public void test_getDismissalAlignment() {
-	warnUnimpl("Test test_getDismissalAlignment not written");
+	Display display = new Display();
+	try {
+		int alignment = display.getDismissalAlignment();
+		assertTrue("getDismissalAlignment should return SWT.LEFT or SWT.RIGHT",
+			alignment == SWT.LEFT || alignment == SWT.RIGHT);
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_getDataLjava_lang_String() {
@@ -244,7 +251,27 @@ public void test_setAppNameLjava_lang_String() {
 }
 
 public void test_setCursorLocationII() {
-	warnUnimpl("Test test_setCursorLocationII not written");
+	Display display = new Display();
+	try {
+		display.setCursorLocation(0,0);
+	} finally {
+		display.dispose();
+	}
+}
+
+public void test_setCursorLocationLorg_eclipse_swt_graphics_Point() {
+	Display display = new Display();
+	try {
+		display.setCursorLocation(new Point(0,0));
+		try {
+			display.setCursorLocation(null);
+			fail("No exception thrown for null argument");
+		}
+		catch (IllegalArgumentException e) {
+		}
+	} finally {
+		display.dispose();
+	}
 }
 
 public void test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer() {
@@ -320,6 +347,7 @@ public static java.util.Vector methodNames() {
 	methodNames.addElement("test_setDataLjava_lang_Object");
 	methodNames.addElement("test_setAppNameLjava_lang_String");
 	methodNames.addElement("test_setCursorLocationII");
+	methodNames.addElement("test_setCursorLocationLorg_eclipse_swt_graphics_Point");
 	methodNames.addElement("test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer");
 	methodNames.addElement("test_sleep");
 	methodNames.addElement("test_syncExecLjava_lang_Runnable");
@@ -367,6 +395,7 @@ protected void runTest() throws Throwable {
 	else if (getName().equals("test_setDataLjava_lang_Object")) test_setDataLjava_lang_Object();
 	else if (getName().equals("test_setAppNameLjava_lang_String")) test_setAppNameLjava_lang_String();
 	else if (getName().equals("test_setCursorLocationII")) test_setCursorLocationII();
+	else if (getName().equals("test_setCursorLocationLorg_eclipse_swt_graphics_Point")) test_setCursorLocationLorg_eclipse_swt_graphics_Point();
 	else if (getName().equals("test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer")) test_setSynchronizerLorg_eclipse_swt_widgets_Synchronizer();
 	else if (getName().equals("test_sleep")) test_sleep();
 	else if (getName().equals("test_syncExecLjava_lang_Runnable")) test_syncExecLjava_lang_Runnable();
