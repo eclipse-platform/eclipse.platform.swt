@@ -176,6 +176,9 @@ public class OS {
 	public static final int Pt_ARG_MODIFIER_KEYS                                    = ( 7 * 1000 + 4 );
 
 	public static final byte [] Pg_PAT_HALF = {(byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55, (byte)0xAA, (byte)0x55};
+
+	public static final int Pt_ARG_BEVEL_CONTRAST                                    = ( 2 * 1000 + 20 );
+
 /*** END MANUALLY ADDED/FIXED ***/
 
 //public static final int Aw_ARG_ONOFF_STATE                                    = ( 5 * 1000 + 1 );

@@ -14,6 +14,7 @@ public class Decorations extends Canvas {
 	Menu [] menus;
 	String text = "";
 	Image image;
+	Button defaultButton, saveDefault;
 
 Decorations () {
 	/* Do nothing */
@@ -54,7 +55,7 @@ protected void checkSubclass () {
 public Button getDefaultButton () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	return null;
+	return defaultButton;
 }
 
 public Image getImage () {
@@ -112,8 +113,9 @@ void releaseWidget () {
 	menuBar = null;
 	menus = null;
 	image = null;
-	text = null;
 	super.releaseWidget ();
+	defaultButton = saveDefault = null;
+	text = null;
 }
 
 void remove (Menu menu) {
@@ -155,7 +157,24 @@ void resizeBounds (int width, int height) {
 public void setDefaultButton (Button button) {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
-	//NOT DONE
+	setDefaultButton (button, true);
+}
+void setDefaultButton (Button button, boolean save) {
+	if (button == null) {
+		if (defaultButton == saveDefault) return;
+	} else {
+		if ((button.style & SWT.PUSH) == 0) return;
+		if (button == defaultButton) return;
+	}
+	if (defaultButton != null) {
+		if (!defaultButton.isDisposed ()) defaultButton.setDefault (false);
+	}
+	if ((defaultButton = button) == null) defaultButton = saveDefault;
+	if (defaultButton != null) {
+		if (!defaultButton.isDisposed ()) defaultButton.setDefault (true);
+	}
+	if (save || saveDefault == null) saveDefault = defaultButton;
+	if (saveDefault != null && saveDefault.isDisposed ()) saveDefault = null;
 }
 
 public void setImage (Image image) {

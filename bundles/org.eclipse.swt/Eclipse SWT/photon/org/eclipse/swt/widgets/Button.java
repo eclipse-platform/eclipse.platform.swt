@@ -174,6 +174,13 @@ public int getAlignment () {
 	return SWT.LEFT;
 }
 
+boolean getDefault () {
+	if ((style & SWT.PUSH) == 0) return false;
+	int [] args = {OS.Pt_ARG_BEVEL_CONTRAST, 0, 0};
+	OS.PtGetResources (handle, args.length / 3, args);
+	return args [1] == 100;
+}
+
 public Image getImage () {
 	if (!isValidThread ()) error (SWT.ERROR_THREAD_INVALID_ACCESS);
 	if (!isValidWidget ()) error (SWT.ERROR_WIDGET_DISPOSED);
@@ -246,6 +253,26 @@ void hookEvents () {
 int processActivate (int info) {
 	if (setFocus ()) click ();
 	return OS.Pt_CONTINUE;
+}
+
+int processFocusIn (int info) {
+	super.processFocusIn (info);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if ((style & SWT.PUSH) == 0) return 0;
+	getShell ().setDefaultButton (this, false);
+	return 0;
+}
+
+int processFocusOut (int info) {
+	super.processFocusOut (info);
+	// widget could be disposed at this point
+	if (handle == 0) return 0;
+	if ((style & SWT.PUSH) == 0) return 0;
+	if (getDefault ()) {
+		getShell ().setDefaultButton (null, false);
+	}
+	return 0;
 }
 
 int processPaint (int damage) {
@@ -322,6 +349,13 @@ public void setAlignment (int alignment) {
 	int [] args = {OS.Pt_ARG_HORIZONTAL_ALIGNMENT, OS.Pt_LEFT, 0};
 	if ((style & SWT.CENTER) != 0) args [1] = OS.Pt_CENTER;
 	if ((style & SWT.RIGHT) != 0) args [1] = OS.Pt_RIGHT;
+	OS.PtSetResources (handle, args.length / 3, args);
+}
+
+void setDefault (boolean value) {
+	if ((style & SWT.PUSH) == 0) return;
+	if (getShell ().parent == null) return;
+	int [] args = {OS.Pt_ARG_BEVEL_CONTRAST, value ? 100 : 20, 0};
 	OS.PtSetResources (handle, args.length / 3, args);
 }
 
