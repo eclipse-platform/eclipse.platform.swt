@@ -1089,6 +1089,10 @@ public Control getFocusControl () {
 /**
  * Returns true when the high contrast mode is enabled.
  * Otherwise, false is returned.
+ * <p>
+ * Note: This operation is a hint and is not supported on
+ * platforms that do not have this concept.
+ * </p>
  *
  * @return the high contrast mode
  *
