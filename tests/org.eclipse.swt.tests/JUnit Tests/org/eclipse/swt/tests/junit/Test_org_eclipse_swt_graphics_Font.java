@@ -77,7 +77,7 @@ public void test_ConstructorLorg_eclipse_swt_graphics_DeviceLorg_eclipse_swt_gra
 
 	// illegal argument, fontData == null
 	try {
-		font = new Font(display, null);
+		font = new Font(display, (FontData)null);
 		font.dispose();
 		fail("No exception thrown for fontData == null");
 	} catch (IllegalArgumentException e) {
