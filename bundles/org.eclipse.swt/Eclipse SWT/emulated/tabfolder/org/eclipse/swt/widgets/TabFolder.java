@@ -515,9 +515,7 @@ public TabItem getItem (int index) {
  */
 public int getItemCount(){
 	checkWidget();
-	if (items == null) 
-		return 0;
-	else return items.length;
+	return items == null ? 0 : items.length;
 }
 /**
  * Returns an array of <code>TabItem</code>s which are the items
@@ -1077,6 +1075,7 @@ boolean pageTraversal(Event event) {
 }
 
 boolean mnemonicTraversal (Event event) {
+	if (items == null) return false;
 	char key = event.character;
 	for (int i = 0; i < items.length; i++) {
 		if (items[i] != null) {
